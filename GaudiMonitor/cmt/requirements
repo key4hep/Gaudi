@@ -1,0 +1,24 @@
+package GaudiMonitor
+version v2r3
+
+branches src cmt doc
+use GaudiKernel v*
+
+# build the component library
+library GaudiMonitor  -no_static \
+                 DataListenerSvc/*.cpp \
+                 Dll/GaudiMonitor*.cpp
+
+# define component library link options
+apply_pattern component_library library=GaudiMonitor
+
+
+macro_append GaudiMonitor_use_linkopts " -pthread " \
+             target-winxp ""
+
+private
+macro_append cppflags "" \
+   target-linux  " -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long " \
+   target-darwin "" \
+   target-winxp  ""
+

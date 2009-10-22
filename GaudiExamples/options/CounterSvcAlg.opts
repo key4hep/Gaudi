@@ -1,0 +1,28 @@
+#!/usr/bin/env Gaudi.exe 
+// ============================================================================
+// $Id: CounterSvcAlg.opts,v 1.1 2007/06/18 16:43:23 hmd Exp $ 
+// ============================================================================
+// CVS tag $Name:  $, version $Revision: 1.1 $
+// ============================================================================
+// Include files
+// ============================================================================
+#include "Common.opts"
+// ============================================================================
+/** @file
+ *  Simple configuration file to run CounterSvc example
+ *  @see GaudiExamples::CounterSvcAlg 
+ *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
+ *  @date 2007-05-25
+ */
+// ============================================================================
+ApplicationMgr.ExtSvc += { "CounterSvc" } ;
+
+ApplicationMgr.TopAlg += { "GaudiExamples::CounterSvcAlg/CounterAlg"} ;
+
+ApplicationMgr.EvtMax   = 10000 ; // events to be processed
+ApplicationMgr.EvtSel   = "NONE"; // do not use any event input
+
+
+// ============================================================================
+// The END 
+// ============================================================================

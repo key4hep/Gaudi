@@ -1,0 +1,81 @@
+# Microsoft Developer Studio Project File - Name="${CONSTITUENT}" - Package Owner=<4>
+# Microsoft Developer Studio Generated Build File, Format Version 6.00
+# ** DO NOT EDIT **
+
+# TARGTYPE "Win32 (x86) Static Library" 0x0104
+
+CFG=${CONSTITUENT} - $(tag)
+!MESSAGE This is not a valid makefile. To build this project using NMAKE,
+!MESSAGE use the Export Makefile command and run
+!MESSAGE 
+!MESSAGE NMAKE /f "${CONSTITUENT}.mak".
+!MESSAGE 
+!MESSAGE You can specify a configuration when running NMAKE
+!MESSAGE by defining the macro CFG on the command line. For example:
+!MESSAGE 
+!MESSAGE NMAKE /f "${CONSTITUENT}.mak" CFG="${CONSTITUENT} - $(tag)"
+!MESSAGE 
+!MESSAGE Possible choices for configuration are:
+!MESSAGE 
+!MESSAGE "${CONSTITUENT} - $(tag)" (based on "Win32 (x86) Static Library")
+!MESSAGE 
+
+# Begin Project
+# PROP AllowPerConfigDependencies 0
+# PROP Scc_ProjName ""
+# PROP Scc_LocalPath ""
+CPP=cl.exe
+RSC=rc.exe
+F90=df.exe
+
+!IF  "$(CFG)" == "${CONSTITUENT} - $(tag)"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "..\$(tag)"
+# PROP BASE Intermediate_Dir "..\$(tag)"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "..\$(tag)"
+# PROP Intermediate_Dir "..\$(tag)\${CONSTITUENT}"
+# PROP Target_Dir ""
+# ADD BASE F90 $(${CONSTITUENT}_fflags) $(fdebugflags) $(fflags) $(use_fflags)
+# ADD F90 $(${CONSTITUENT}_fflags) $(fdebugflags) $(fflags)  $(use_fflags)
+# ADD BASE CPP $(${CONSTITUENT}_cppflags) $(cppdebugflags) $(cppflags) $(use_cppflags) $(lib_${CONSTITUENT}_cppflags)
+# ADD CPP $(${CONSTITUENT}_cppflags) $(cppdebugflags) $(cppflags) $(use_cppflags) $(lib_${CONSTITUENT}_cppflags)
+# ADD BASE RSC /l 0x40c /d "NDEBUG"
+# ADD RSC /l 0x40c /d "NDEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LIB32=link.exe -lib
+# ADD BASE LIB32 /nologo
+# ADD LIB32 /nologo /out:..\$(tag)\${CONSTITUENT}.${LIBRARYSUFFIX}
+
+# Begin Custom Build
+..\$(tag)\${CONSTITUENT}.stamp :
+..\$(tag)\${CONSTITUENT}.shstamp :
+..\$(tag)\${CONSTITUENT}.dll :
+   type NUL > ..\$(tag)\${CONSTITUENT}.stamp
+   set CMTROOT=$(CMTROOT)
+   call $(make_shlib) $(tag) ${CONSTITUENT} $(cpplinkflags) $(${CONSTITUENT}_shlibflags)
+   if exist ..\$(tag)\${CONSTITUENT}.dll type NUL > ..\$(tag)\${CONSTITUENT}.shstamp
+   $(${CONSTITUENT}_customBuild)
+   $(${CONSTITUENT}_customBuild1)
+   $(${CONSTITUENT}_customBuild2)
+   $(${CONSTITUENT}_customBuild3)
+# End Custom Build
+
+# Begin Special Build Tool
+SOURCE=$(InputPath)
+PreLink_Cmds=$(${CONSTITUENT}_preLink) $(${CONSTITUENT}_preLink1) $(${CONSTITUENT}_preLink2)
+PostBuild_Cmds=$(${CONSTITUENT}_postBuild) $(${CONSTITUENT}_postBuild1) $(${CONSTITUENT}_postBuild2)
+# End Special Build Tool
+
+!ENDIF
+
+# Begin Target
+
+# Name "${CONSTITUENT} - $(tag)"
+

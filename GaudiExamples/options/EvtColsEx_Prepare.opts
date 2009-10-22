@@ -1,0 +1,37 @@
+// $Id: EvtColsEx_Prepare.opts,v 1.8 2008/01/30 17:06:50 marcocle Exp $ 
+// ============================================================================
+// CVS tag $Name:  $, version $Revision: 1.8 $
+// ============================================================================
+/** @file
+ *  Helper options file to run ExtColsEx 
+ *  In "prepares" input "DST" file (only "/Event" ) object
+ *  to be used to run later real EvtColsEx example
+ *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
+ *  @date   2005-08-19  
+ *  @date   2007-04-09  
+ */
+// ============================================================================
+// POOL/persistency configuration 
+// ============================================================================
+#include "GaudiPoolDbRoot.opts"
+PoolDbCacheSvc.DLLs  += { "GaudiExamplesDict"             } ;
+FileCatalog.Catalogs  = { "xmlcatalog_file:EvtColsEx.xml" } ;
+// ============================================================================
+
+// do not use any event input
+ApplicationMgr.EvtSel      = "NONE"; 
+// define the output stream 
+ApplicationMgr.OutStream  += { "PoolDst"  } ;
+
+// number of events in the pseudo-DST
+ApplicationMgr.EvtMax   = 50000 ;
+
+// content of pseudo-DST and the output pseudo-DST file 
+PoolDst.ItemList = { "/Event#1" } ;
+
+// output pseudo-DST file 
+PoolDst.Output = "DATAFILE='PFN:EvtColsEx.dst' TYP='POOL_ROOTTREE' OPT='RECREATE'";
+
+// ============================================================================
+/// The END 
+// ============================================================================

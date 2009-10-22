@@ -1,0 +1,80 @@
+//##############################################################
+// Job options file
+//==============================================================
+#include "Common.opts"
+
+// Set of tests provided by Kirill Miklyaev kirillm@iris1.itep.ru
+// to check the GaudiGSL package
+
+// Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
+MessageSvc.OutputLevel  = 3;
+ApplicationMgr.EvtMax   = 1     ; // events to be processed (default is 10)
+ApplicationMgr.EvtSel   = "NONE"; // do not use any event input
+ApplicationMgr.AppName  = "GSLTools" ;
+
+ToolSvc.EqSolver.OutputLevel = 2;
+// Choose algorithm for multidimensional root-finding:
+// (fdfsolver_hybridsj = gsl_multiroot_fdfsolver_hybridsj ,
+//  fdfsolver_hybridj = gsl_multiroot_fdfsolver_hybridj   ,
+//  fdfsolver_newton = gsl_multiroot_fdfsolver_newton     ,
+//  fdfsolver_gnewton = gsl_multiroot_fdfsolver_gnewton   )
+/// declare type of the algorithm for the multidimensional root-finding
+ToolSvc.EqSolver.Algorithm = "fdfsolver_hybridsj";
+/// declare maximum of iteration
+ToolSvc.EqSolver.Iteration = 10000;
+/// declare the absolute error bound for the residual value
+ToolSvc.EqSolver.Residual  = 1e-7;
+
+//--------------------------------------------------------------
+// EqSolverIAlg
+//--------------------------------------------------------------
+ApplicationMgr.TopAlg  += { "EqSolverIAlg" }  ;
+EqSolverIAlg.OutputLevel     = 3;
+//--------------------------------------------------------------
+// EqSolverGenAlg
+//--------------------------------------------------------------
+ApplicationMgr.TopAlg  += { "EqSolverGenAlg" }  ;
+EqSolverGenAlg.OutputLevel   = 3;
+//--------------------------------------------------------------
+// EqSolverPAlg
+//--------------------------------------------------------------
+ApplicationMgr.TopAlg  += { "EqSolverPAlg" }  ;
+EqSolverPAlg.OutputLevel   = 3;
+
+// Choose algorithm for multidimensional minimization:
+// (conjugate_fr = gsl_multimin_fdfminimizer_conjugate_fr         ,
+//  conjugate_pr = gsl_multimin_fdfminimizer_conjugate_pr         ,
+//  vector_bfgs = gsl_multimin_fdfminimizer_vector_bfgs           ,
+//  steepest_descent = gsl_multimin_fdfminimizer_steepest_descent ) 
+
+/// declare type of the algorithm for the multidimensional minimization
+ToolSvc.FuncMinimum.Algorithm = "conjugate_pr" ;
+/// declare maximum of iteration
+ToolSvc.FuncMinimum.Iteration = 10000          ; 
+/// declare the absolute tolerance for the Euclidean norm of the gradient
+ToolSvc.FuncMinimum.Gradient  = 1e-10          ;
+/// declare the size of the first trial step
+ToolSvc.FuncMinimum.Step_size = 0.01           ;
+/// declare the accuracy of the line minimization
+ToolSvc.FuncMinimum.Tol       = 1e-10          ;
+
+FuncMinimumIAlg.OutputLevel     = 3;
+
+//--------------------------------------------------------------
+// FuncMinimumIAlg
+//--------------------------------------------------------------
+ApplicationMgr.TopAlg  += { "FuncMinimumIAlg" }  ;
+FuncMinimumIAlg.OutputLevel     = 3;
+//--------------------------------------------------------------
+// FuncMinimumGenAlg
+//--------------------------------------------------------------
+ApplicationMgr.TopAlg  += { "FuncMinimumGenAlg" }  ;
+FuncMinimumGenAlg.OutputLevel   = 3;
+//--------------------------------------------------------------
+// FunMinimumPAlg
+//--------------------------------------------------------------
+ApplicationMgr.TopAlg  += { "FuncMinimumPAlg" }  ;
+FuncMinimumPAlg.OutputLevel   = 3;
+
+
+

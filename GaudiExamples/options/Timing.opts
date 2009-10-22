@@ -1,0 +1,17 @@
+#!/usr/bin/env gaudirun.py 
+// ============================================================================
+#include "Common.opts"
+// ============================================================================
+/** @file
+ *  Simple file to run GaudiExamples::TimingAlg example 
+ *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
+ *  @date 2008-04-02
+ */
+// ============================================================================
+ApplicationMgr.ExtSvc += {   "RndmGenSvc" };
+ApplicationMgr.TopAlg  = { "GaudiExamples::TimingAlg/Timing" };
+ApplicationMgr.EvtSel   = "NONE"; // do not use any event input
+ApplicationMgr.EvtMax   = 400   ;
+// ============================================================================
+// The END 
+// ============================================================================

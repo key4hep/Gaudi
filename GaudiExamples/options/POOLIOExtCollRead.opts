@@ -1,0 +1,39 @@
+// $Id: POOLIOExtCollRead.opts,v 1.4 2008/01/30 17:06:49 marcocle Exp $ 
+// ============================================================================
+// CVS tag $Name:  $, version $Revision: 1.4 $
+// ============================================================================
+/** @file
+ *  Configuratuon file to read extended event tag collections
+ *  @see Gaudi::Examples::ExtendedEvtCol
+ *  @see ExtendedEvtCol.cpp
+ *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
+ *  @date 2007-04-08
+ */
+// ============================================================================
+// POOL persistency setup
+// ============================================================================
+#include "GaudiPoolDbRoot.opts"
+ApplicationMgr.ExtSvc += { "TagCollectionSvc/EvtTupleSvc"  } ;
+PoolDbCacheSvc.DLLs   += { "GaudiExamplesDict"             } ;
+FileCatalog.Catalogs  += { "xmlcatalog_file:POOLIO.xml"    } ;
+// ============================================================================
+/// Input Event Tag collections
+// ============================================================================
+EventSelector.Input = {
+  // new:
+  "COLLECTION='Fill/MyCOL1' DATAFILE='PFN:POOLIO.etags' TYP='POOL_ROOT' SEL='(Ntrack>9 && Ntrack<20 && Energy<180)' FUN='Gaudi::Examples::EvtCollectionSelector'"
+  ,
+  // old:
+  "COLLECTION='Dir1/Dir2/Dir3/Collection' DATAFILE='PFN:POOLIO.tags' TYP='POOL_ROOT' SEL='(Ntrack>15)' FUN='Gaudi::Examples::EvtCollectionSelector'"
+} ;
+// ============================================================================
+
+ApplicationMgr.TopAlg = { "ReadAlg" } ;
+
+
+ApplicationMgr.EvtMax       = -1 ;
+EventSelector.PrintFreq    = 100;
+
+// ============================================================================
+// The END 
+// ============================================================================

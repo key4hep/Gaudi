@@ -1,0 +1,6 @@
+// In this case the configurable is already instantiated
+MyAlg1.testproperty = "AValue";
+MyAlg1.AnotherTest = "AValue"; // should not give warnings
+
+// For this one the configurable will be instantiated later
+MyAlg2.testproperty = "AValue";

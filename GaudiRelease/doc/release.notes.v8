@@ -1,0 +1,203 @@
+package Gaudi
+package manager: Pere Mato
+
+! ============================================================================
+! 20010706 GaudiKernel v10
+
+- Changes in interfaces needed for improved interactivity support :
+  IService.h   : Added new method reinitialize() to allow services to 
+                 take into account changes after the first time initialization
+  IAlgorithm.h : Added beginRun() and endRun() methods. These are called each time
+                 the event loop is executed.
+  IEventProcessor.h : Added executeRun() and nextEvent() methods. This is to 
+                      eliminate the need to use the IAppMgrUI interface in the
+                      EventLoopMgr components.
+  IAppMgrUI.h  : Renamed method state() to stateName().
+  IScriptingSvc.h : Deleted
+ 
+- Changes in support classes for transient data stores 
+
+  Bootstrap.h/cpp : Allow to set the instance of the service locator
+                    in case several ApplicationMgr instances are present.
+  ObjectVector.h,
+  ObjectList.h    : Add forward typedefs for pointer and const_pointer
+                    (Requested by P.Calafiura/LBL)
+  RefTable.h      : Implement serialize methods
+  RegistryEntry.h/cpp,
+  DataSvc.h/cpp   : Implement several bug-fixes
+                     - allow for objects in locations like /AA/BB/BB/BB/...
+                     - allow to access objects with omission of the root
+                       directory: "/Event/MC" is equivalent to "MC"
+                     - execution optimization
+  SmartDataObjectPtr.h : Fix annoying compiler warning
+  SmartRefBase.h,
+  SmartRef.h      : operator==() was badly implemented (Found by O.Callot)
+  strcasecmp.h    : WIN32 needs an additional #include <cstring> 
+
+- Added remote properties functionality. Changed PropertyMgr and base classes Service
+  and Algorithm
+- Added MsgStream::endmsg with same functionality as endreq. (Request from ATLAS)
+- Using AIDA Historams instead of LHCb private ones. The existing include files 
+  include the new ones but generating a warning. The IAnnotation interface is added
+  because it does not exists in the used AIDA release
+
+- Fixed bug reported by M. Cattaneo. The OutputLevel of AlgTools was not
+  set correctly if the parent Algorithm didn't set it explicitely.
+
+- Allow access to data store items without specification of the top level
+  directory. It is equivalent to specify an histogram like "/stat/simple/1"
+  or simply "simple/1". Note that the the entire prefix "/stat/" must be 
+  omitted. The use is backwards compatible.
+
+- Added a qualifier ALWAYS to the message service specifying that a given 
+  message should always be printed.
+  ie.
+  MsgStream log (msgSvc(), "Name")
+  log << MSG::ALWAYS << "Hello." << endreq;
+  will result in
+  Name      SUCCESS Hello.
+  and will not be omitted.
+
+- Bug fixes:
+  GaudiKernel/DllMain.icpp WINNT: Processhandle should no longer be closed
+                           since the handle is shared for all DLLs.
+  GaudiKernel/INTuple.h    Interface extended to directly use NTuple pointer
+                           to write/read n-tuple. It is no longer necessary to
+                           use the n-tuple service for these actions.
+  NTupleImplementation.h/cpp dto.
+  GaudiKernel/SmartDataPtr.h        Bug fix: 
+                                    SmartDataPtr<Object> obj (...)
+                                    if ( obj ) {...}
+                                    Check succeeded if object is present however
+                                    had bad type. Now this check checks for the
+                                    presence of the object AND the data type.
+                                    Moved pointer to object from SmartDataObjectPtr
+                                    to SmartDataStorePtr (template class).
+                                    Also moved corresponding check operators.
+  GaudiKernel/SmartDataLocator.h    dto.
+  GaudiKernel/SmartDataStorePtr.h   dto.
+  GaudiKernel/SmartDataObjectPtr.h  dto.
+  GaudiKernel/SmartDataObjectPtr.cpp dto.
+
+! ============================================================================
+! 20010706 GaudiSvc v6
+
+- Bug Fix in JobOptions. Scientific notation in floats/doubles is now working correctly
+- Fixed problem "Gaudi jobs do not fail if the job options service fails 
+  to set an option" CT0000000060711 by M. Cattaneo
+- Fixed bug on Histograms projections introduced when going to AIDA
+
+- Minor bug fixes to logic for the interactivity support (scripting).
+- Minor tweaks to avoid warning messages with gcc 2.95.2.
+
+- Number of changes needed for the interactivity support (scripting)
+  the ApplicationMgr and EventLoopMgr make use of the newly added method 
+  reinitialize()  to take into account changes in the configuration done
+  by the user interaction like adding new services or algorithms. These
+  new components are initialized in the reinitialize() method.
+- Deleted GaudiEventLoopMgr class and moved its functionality to EventLoopMgr.
+- Implemented IEventProcessor::executeRun() in ApplicationMgr and EventLoopMgr
+  to call beginRun() and endRun() to all Algorithms.
+- Callbacks (handlers) in AppicationMgr to support scripting have been simplified.
+- HistogramSvc implements reinitialize()
+
+- ChronoStatSvc : modification for improved printout 
+
+- Dll/GaudiSvc_Load.cpp : Add new factory for event tag collections
+  NTuples/*             : update to separate event tag collections from 
+                          NTuples. NTuple persistency is now completely 
+                          steered by the option 
+                          ApplicationMgr.HistogramPersistency 
+                          See mail of D.Rousseau in GAUDI_DEVELOPERS
+- PersistencySvc/EvtCollectionStream.cpp
+                          Update for separation of NTuples and
+                          event tag collections
+
+- Modified HistogramSvc to use the AIDA interfaces (1.0). This required quite a lot 
+  of changes due to the fact that setTitle() method was not definied. Instead the
+  IAnnotation has been used.
+
+- Allow Histograms and N-tuples to be booked without the top level directory
+  ie. without always specifying "/stat/....". The specification of an histogram
+  such as "/stat/simple/1" is now equivalent to "simple/1". The use of 
+  histograms and N-tuples is backwards compatible.
+
+- NTupleSvc/NTupleSvc.cpp                    Simplification using changes in
+                                             GaudiKernel v10
+- EventSelector/EventSelectorDataStream.cpp  Recognize SICB file type also for
+                                             specs like:
+                                             "DATAFILE='xxx.dat' TYP='SICB'"
+                                             is now equivalent to 
+                                             "FILE='xxx.dat'"
+
+- Fixed bug concerning histograms being saved to disk before Algoritms are 
+  finalized, reported by Stefan Piperov (HARP). Changed GaudiEventLoopMgr.cpp
+
+! ============================================================================
+! 20010706 HbookCnv v10
+
+- Introduced new option to Hbook histogram persistency service
+  to steer the handling of row-wise N-tuples, because many people 
+  complained about the additional column in the N-tuple.
+  The following options are possible:
+  Note: New DEFAULT is FLOAT_ONLY.
+
+  // Old style (uses the additional column - backwards compatible)
+  HistogramPersistencySvc.RowWiseNtuplePolicy = "USE_DATA_TYPES";
+  // Save and retrieve all variables as NTuple::Item<float> ONLY
+  HistogramPersistencySvc.RowWiseNtuplePolicy = "FLOAT_ONLY";
+  // Fortran: IMPLICIT REAL*4 A-H,O-Z
+  //          IMPLICIT INTEGER*4 I-N
+  HistogramPersistencySvc.RowWiseNtuplePolicy = "FORTRAN_STYLE";
+  // Hungarian notation: Use variable name to determine type
+  // (first and possibly second char)
+  // Bxxx -> bool
+  // Cxxx -> char
+  // Ixxx -> int
+  // UIxxx-> unsigned int
+  // Fxxx -> float etc.
+  HistogramPersistencySvc.RowWiseNtuplePolicy = "HUNGARIAN_STYLE";
+
+- Fixed problem that histogras and NTuples could not have the same ID
+  HbookDef.h             Add declaration for HRESET
+  HConverter.h/cpp       Common base class now for NTuples & Histograms.
+                         Proper RZ directory handling for both
+                         RZ and //PAWC objects. Histograms now 
+                         temporarily go to the //PAWC/stat/... directory
+                         instead of being created in //PAWC, which caused
+                         clashes.
+  H1DCnv.h/cpp
+  H1DVarCnv.h/cpp
+  H2DCnv.h/cpp           Adjusted to make use of base class HConverter, 
+                         including proper directory handling.
+  DirectoryCnv.h/cpp     Nearly dummy; uses base class HDirectoryCnv
+  PersSvc.cpp            Cosmetics
+
+- Changed to use the AIDA interfaces. The IAnnotation is used to obtain the histogram
+  title and histogram id.
+
+! ============================================================================
+! 20010706 GaudiDb v4
+
+- DbBaseConverter.cpp : Enhanced error printing in case of failures
+
+! ============================================================================
+! 20010706 GaudiRootDb v4
+
+- Updated for use of ROOT version 3.01
+
+! ============================================================================
+! 20010706 SIPython v2
+
+- Modify logic to only execute the AppMgr.JobOptionsPath script
+  if none is explicitly specified _and_ the AppMgr.JobOptionsType
+  is set to NONE.
+- Changed to use the IRunable interface. 
+- Getting the startup script from the ApplicationMgr options
+
+! ============================================================================
+! 20010706 RootHistCnv v4
+
+- Changed to use AIDA interfaces
+- Modified to not create a directory (/stat) if histograms are at top level
+- Updated for use of ROOT version 3.01

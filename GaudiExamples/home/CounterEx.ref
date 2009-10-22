@@ -1,0 +1,109 @@
+JobOptionsSvc        INFO
+//GP:================================================================================
+//GP: include "../options/CounterEx.opts"                                     (0,0)
+ApplicationMgr.ExtSvc +=  [ "RndmGenSvc" ] ;                            //GP: (1,1)
+ApplicationMgr.TopAlg =  [ "CounterAlg/Counter" ] ;                     //GP: (1,1)
+MessageSvc.OutputLevel = 3;                                             //GP: (1,1)
+ApplicationMgr.EvtMax = 5400;                                           //GP: (1,1)
+ApplicationMgr.EvtSel = "NONE";                                         //GP: (1,1)
+//GP: end  "../options/CounterEx.opts"                                        (27,1)
+//GP:================================================================================
+
+JobOptionsSvc        INFO Job options successfully read in from ../options/CounterEx.opts
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.31 $
+                                          running on pclhcb55.cern.ch on Wed Jun  4 15:23:35 2008
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
+RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
+RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
+HistogramPersis...WARNING Histograms saving not required.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+Counter              INFO  Event number 1000
+Counter           SUCCESS Number of counters : 9
+ |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+ | "G"                                             |      4887 |  -82.31362 |  -0.016843 |    0.97934 |     -3.8263 |      3.4606 |
+ | "Gneg"                                          |       502 |        502 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "Gpos"                                          |       498 |        498 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "NG"                                            |      4887 |       4887 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "assign"                                        |         1 | -0.4383993 |   -0.43840 |     0.0000 |    -0.43840 |    -0.43840 |
+ |*"eff"                                           |      1000 |        498 |(  49.8000 +- 1.58113  )%|   -------   |   -------   |
+ | "executed"                                      |      1000 |       1000 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "g2"                                            |      1000 |   994.1202 |    0.99412 |     1.4171 |  1.1641e-05 |      12.305 |
+ | "gauss"                                         |      1000 |  -24.66952 |  -0.024670 |    0.99675 |     -3.1296 |      3.5079 |
+Counter              INFO  Efficiency (binomial counter: "eff"): (49.8 +- 1.58113)%
+Counter              INFO  Event number 2000
+Counter           SUCCESS Number of counters : 9
+ |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+ | "G"                                             |      9802 |   -137.399 |  -0.014017 |    0.99570 |     -3.8836 |      3.7179 |
+ | "Gneg"                                          |       998 |        998 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "Gpos"                                          |      1002 |       1002 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "NG"                                            |      9802 |       9802 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "assign"                                        |         1 |  0.2301197 |    0.23012 |     0.0000 |     0.23012 |     0.23012 |
+ |*"eff"                                           |      2000 |       1002 |(  50.1000 +- 1.11803  )%|   -------   |   -------   |
+ | "executed"                                      |      2000 |       2000 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "g2"                                            |      2000 |    1915.24 |    0.95762 |     1.3824 |  2.8347e-06 |      12.305 |
+ | "gauss"                                         |      2000 |   17.20366 |  0.0086018 |    0.97854 |     -3.1296 |      3.5079 |
+Counter              INFO  Efficiency (binomial counter: "eff"): (50.1 +- 1.11803)%
+Counter              INFO  Event number 3000
+Counter           SUCCESS Number of counters : 9
+ |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+ | "G"                                             |     14691 |  -162.8489 |  -0.011085 |    0.99656 |     -3.8836 |      3.7179 |
+ | "Gneg"                                          |      1487 |       1487 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "Gpos"                                          |      1513 |       1513 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "NG"                                            |     14691 |      14691 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "assign"                                        |         1 |  0.8796986 |    0.87970 |     0.0000 |     0.87970 |     0.87970 |
+ |*"eff"                                           |      3000 |       1513 |(  50.4333 +- 0.912837 )%|   -------   |   -------   |
+ | "executed"                                      |      3000 |       3000 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "g2"                                            |      3000 |    2899.71 |    0.96657 |     1.3626 |  1.8914e-06 |      12.305 |
+ | "gauss"                                         |      3000 |   28.98501 |  0.0096617 |    0.98310 |     -3.1296 |      3.5079 |
+Counter              INFO  Efficiency (binomial counter: "eff"): (50.4333 +- 0.912837)%
+Counter              INFO  Event number 4000
+Counter           SUCCESS Number of counters : 9
+ |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+ | "G"                                             |     19545 |  -200.3068 |  -0.010248 |    0.99889 |     -3.8836 |      3.7179 |
+ | "Gneg"                                          |      2003 |       2003 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "Gpos"                                          |      1997 |       1997 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "NG"                                            |     19545 |      19545 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "assign"                                        |         1 |   1.087542 |     1.0875 |     0.0000 |      1.0875 |      1.0875 |
+ |*"eff"                                           |      4000 |       1997 |(  49.9250 +- 0.790569 )%|   -------   |   -------   |
+ | "executed"                                      |      4000 |       4000 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "g2"                                            |      4000 |   3946.969 |    0.98674 |     1.3657 |  1.8914e-06 |      12.305 |
+ | "gauss"                                         |      4000 |  -11.09144 | -0.0027729 |    0.99335 |     -3.1296 |      3.5079 |
+Counter              INFO  Efficiency (binomial counter: "eff"): (49.925 +- 0.790569)%
+Counter              INFO  Event number 5000
+Counter           SUCCESS Number of counters : 9
+ |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+ | "G"                                             |     24446 |  -236.0763 | -0.0096571 |    0.99432 |     -3.8836 |      3.8273 |
+ | "Gneg"                                          |      2506 |       2506 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "Gpos"                                          |      2494 |       2494 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "NG"                                            |     24446 |      24446 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "assign"                                        |         1 |   1.826941 |     1.8269 |     0.0000 |      1.8269 |      1.8269 |
+ |*"eff"                                           |      5000 |       2494 |(  49.8800 +- 0.707105 )%|   -------   |   -------   |
+ | "executed"                                      |      5000 |       5000 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "g2"                                            |      5000 |   4962.283 |    0.99246 |     1.3638 |  1.8914e-06 |      13.130 |
+ | "gauss"                                         |      5000 |  -4.027803 |-0.00080556 |    0.99622 |     -3.6235 |      3.5079 |
+Counter              INFO  Efficiency (binomial counter: "eff"): (49.88 +- 0.707105)%
+ApplicationMgr       INFO Application Manager Stopped successfully
+Counter           SUCCESS Number of counters : 9
+ |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+ | "G"                                             |     26490 |   -326.309 |  -0.012318 |    0.99484 |     -3.8836 |      3.8273 |
+ | "Gneg"                                          |      2712 |       2712 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "Gpos"                                          |      2688 |       2688 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "NG"                                            |     26490 |      26490 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "assign"                                        |         1 |  0.2275352 |    0.22754 |     0.0000 |     0.22754 |     0.22754 |
+ |*"eff"                                           |      5400 |       2688 |(  49.7778 +- 0.680407 )%|   -------   |   -------   |
+ | "executed"                                      |      5400 |       5400 |     1.0000 |     0.0000 |      1.0000 |      1.0000 |
+ | "g2"                                            |      5400 |   5341.386 |    0.98915 |     1.3535 |  1.8914e-06 |      13.130 |
+ | "gauss"                                         |      5400 |  -8.611384 | -0.0015947 |    0.99456 |     -3.6235 |      3.5079 |
+EventLoopMgr         INFO Histograms converted successfully according to request.
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully
+Number of MyTrack instances:0
+Number of MyVertex instances:0

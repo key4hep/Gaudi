@@ -1,0 +1,5 @@
+ApplicationMgr.TopAlg     += { "StoreExplorerAlg/Explorer" };
+Explorer.Printfreq = 1.0;
+Explorer.Load = 1;
+
+

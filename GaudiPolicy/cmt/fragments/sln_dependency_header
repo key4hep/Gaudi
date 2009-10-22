@@ -1,0 +1,7 @@
+Global
+        GlobalSection(SolutionConfiguration) = preSolution
+                ConfigName.0 = Debug
+                ConfigName.1 = Release
+        EndGlobalSection
+        GlobalSection(ProjectDependencies) = postSolution
+

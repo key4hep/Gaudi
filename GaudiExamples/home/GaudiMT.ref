@@ -1,0 +1,42 @@
+JobOptionsSvc        INFO 
+//GP:================================================================================
+//GP: include "../options/GaudiMT.opts"                                       (0,0)
+ApplicationMgr.EventLoop = "MTEventLoopMgr";                            //GP: (7,1)
+ApplicationMgr.ExtSvc +=  [ "NTupleSvc" ] ;                             //GP: (8,1)
+ApplicationMgr.MultiThreadExtSvc +=  [ "RndmGenSvc" , "ParticlePropertySvc" ] ;//GP: (9,1)
+ApplicationMgr.OutputLevel = 1;                                         //GP: (11,1)
+ApplicationMgr.TopAlg =  [ "MTHelloWorld" ] ;                           //GP: (18,1)
+MessageSvc.OutputLevel = 1;                                             //GP: (21,1)
+ApplicationMgr.EvtMax = 2;                                              //GP: (26,1)
+ApplicationMgr.EvtSel = "NONE";                                         //GP: (27,1)
+MTHelloWorld.MyInt = 42;                                                //GP: (34,1)
+MTHelloWorld.MyBool = 1;                                                //GP: (35,1)
+MTHelloWorld.MyDouble = 3.14159;                                        //GP: (36,1)
+MTHelloWorld.MyStringVec =  [ "Welcome" , "to" , "MT" , "Gaudi" ] ;     //GP: (37,1)
+MTHelloWorld__1.MyInt = 21;                                             //GP: (40,1)
+MTHelloWorld__1.MyBool = 0;                                             //GP: (41,1)
+MTHelloWorld__1.MyDouble = 6.28;                                        //GP: (42,1)
+MTHelloWorld__1.MyStringVec =  [ "Welcome" , "to" , "Thread" , "1" ] ;  //GP: (43,1)
+//GP: end  "../options/GaudiMT.opts"                                          (45,1)
+//GP:================================================================================
+
+JobOptionsSvc        INFO Job options successfully read in from ../options/GaudiMT.opts
+ApplicationMgr      DEBUG Getting my own properties
+ApplicationMgr    SUCCESS 
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.38 $
+                                          running on pclhcb55.cern.ch on Tue Sep 25 16:50:23 2007
+====================================================================================================================================
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service EvtDataSvc/EventDataSvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service DetDataSvc/DetectorDataSvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service HistogramSvc/HistogramDataSvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service HbookCnv::PersSvc/HbookHistSvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service RootHistCnv::PersSvc/RootHistSvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service EvtPersistencySvc/EventPersistencySvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service DetPersistencySvc/DetectorPersistencySvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service HistogramPersistencySvc/HistogramPersistencySvc
+ApplicationMgr      DEBUG Loading declared DLL's
+ServiceManager      FATAL No Service factory for MTEventLoopMgr available.
+ApplicationMgr      ERROR addMultiSvc: Cannot add service MTEventLoopMgr/MTEventLoopMgr
+ApplicationMgr      FATAL Error adding :MTEventLoopMgr
+ApplicationMgr      FATAL Application configuration failed

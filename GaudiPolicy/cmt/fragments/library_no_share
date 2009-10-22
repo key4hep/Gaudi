@@ -1,0 +1,15 @@
+
+${CONSTITUENT}LIB :: $(${CONSTITUENT}lib)
+	@/bin/echo ${CONSTITUENT} : library ok
+
+$(${CONSTITUENT}lib) :: ${OBJS}
+	$(lib_echo) library
+	$(lib_silent) cd $(bin); $(ar) $(${CONSTITUENT}lib) $?; \
+                      /bin/rm -f $?;touch $? 
+	$(lib_silent)  $(ranlib) $(${CONSTITUENT}lib); \
+	  cat /dev/null >$(${CONSTITUENT}stamp)
+
+${CONSTITUENT}clean ::
+	$(cleanup_echo) ${OBJS}
+	$(cleanup_silent) cd $(bin); /bin/rm -f ${OBJS}
+

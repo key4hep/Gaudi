@@ -1,0 +1,264 @@
+
+! === GaudiKernel v12r0 =================================================
+! 20020408 Pere Mato
+  - Included ISvcLocator.h and IMessageSvc.h in Algorithm.h instead
+    of the existing forward declaration
+
+! 20020405 Pere Mato
+  - Added two new accessors to AlgTool base class
+    templated  service( name, svc, createif) to access any service
+		tooSvc() to access the tool service
+
+! 20020327 Pere Mato
+  - Changes needed for Solaris (by Wim Lavrijsen). Details:
+    +++ GaudiKernel/src/Lib/Property.cpp
+       getQuotedItem() in unnamed namespace instead of static
+    +++ GaudiKernel/src/Lib/ModuleInfo.cpp
+       explicit cast added: "if ( 0 != ::dladdr((void*)System::moduleHandle,...
+    +++ GaudiKernel/src/Lib/System.cpp
+       in System::typeinfoName(), added a #elif defined(sun)
+    +++ GaudiKernel/CnvFactory.h
+       removed virtual inheritence in class CnvFactory & CnvFactory2 
+    +++ GaudiKernel/ObjectFactory.h
+       removed virtual inheritence in class ObjectFactory & ObjectFactory2 
+
+! 20020315 Markus Frank
+  - Kernel.h
+    Properly #ifdef LONGLONG_MAX, LONGLONG_MIN
+  - MsgStream.h
+    Add operator<<(longlong), operator>>(longlong&)
+  - StreamBuffer.h
+    Add serialization for std::vector, std::list
+    Add operator<<(longlong), operator>>(longlong&)
+  - Converter.cpp
+    Do not dereference dataProvider if pointer is invalid
+  - TimePoint.h
+    Add StreamBuffer& operator<<(), StreamBuffer& operator>>(), 
+    MsgStream& operator<<()
+  - TimePoint.h
+    Add MsgStream& operator<<()
+  - ITime.h
+    Add MsgStream& operator<<()
+
+! 20020213 - Markus Frank
+  - Added clear() method to ObjectVector<T> and ObjectList<T>
+    clear() removes all elements from the ObjectVector and  ObjectList<T>
+
+! 20020215 Pere Mato
+  - Removed dependency with AIDA
+  - Eliminated the old IHistogramXXX interfaces. Users should use the 
+    AIDA ones directly
+  - Changed ClassId.h and IHistogramSvc.h to include 3D histograms
+  
+! 20020225 Markus Frank
+  - Problem reported by Kambiz Mahboubi fixed concerning the
+    user defined random number generator (i.e. DefinedPdf)
+  - GaudiKernel/RndmGenerators.h
+
+! 20020213 - Pere Mato
+  - Algorithm.cpp: Fixed bug 
+    The status code of sysInitilize() of sub-algorithms was not 
+    checked. Now it should fail and report an error.
+
+=== GaudiSvc v9r0  =========================================================
+! 20020407 Pere Mato
+  - Decrease dependency with HTL by addding -no_auto_imports
+
+! 20020327 Pere Mato
+  - Changes needed for Solaris (by Wim Lavrijsen). Details:
+    +++ GaudiSvc/src/EventSelector/EventSelector.cpp
+        prepended "const"
+    +++ GaudiSvc/src/MessageSvc/MessageSvc.h
+        removed virtual inheritence in class MessageSvc
+    +++ GaudiSvc/src/ChronoStatSvc/ChronoStatSvc.h
+        removed virtual inheritence in class ChronoStatSvc
+    +++ GaudiSvc/src/JobOptionsSvc/JobOptionsSvc.h
+        removed virtual inheritence in class JobOptionsSvc
+
+! 20010315  Markus Frank
+  PersistencySvc.h/cpp add call "commitOutput" as required by interface
+                       IConversionSvc
+  OutputStream.cpp     Call commitOutput after object conversion.
+
+! 20020318 - Pere Mato
+  - Moved ListItem.h to GaudiKernel package since it is quite usefull helper class.
+
+! 20020313 - Pere Mato (David Quarrie)
+  - New property "OutStreamType" for the ApplicationMgr to select the 
+	  default type for Output Streams. The default value is "OutputStream" 
+		be compatible.
+
+! 20020226 - Pere Mato
+  - Adapted to use AIDA 2.2
+  - Introduced 3D Histograms (fix and variable binning)
+
+! 20020225 - Markus Frank
+  - Problem reported by Kambiz Mahboubi fixed concerning the
+    user defined random number generator (i.e. DefinedPdf)
+  - RndmGenSvc/HepRndmGerators.cpp
+
+=== HBookCnv v12r0 =======================================================
+! 20020408 - Pere Mato
+  - Removed importing dependency to CERBLIB
+
+! 20020227 - Pere Mato
+  - Modified to be adapted to the new AIDA interfaces (2.2)
+
+=== RootHistCnv v6r0 =====================================================
+! 20020405 - Markus Frank
+ - Adapted to the new version of Gaudi
+ - Removal of all global static storage
+ - Major cleanup
+
+! 20020327 - Pere Mato
+ - Adapted to use the new AIDA interfaces (2.2)
+ - Added converters for 3D histograms support
+
+===GaudiODBCDb v6r0 ======================================================
+! 20020402 Pere Mato
+  - Changes needed for Solaris (by Wim Lavrijsen). Details:
+
+=== GaudiDb v6r0 =========================================================
+
+! 20020402 Pere Mato
+  - Changes needed for Solaris (by Wim Lavrijsen). Details:
+    +++ GaudiDb/DbFederation.h
+        removed includes of DbSession.h and DbDataBase.h
+        added forward declaration of DbFederation
+        added include of DbBase.h
+        added forward declaration of dbHandle< DbSession >
+    +++ GaudiDb/DbDataBase.h
+        added forward declarations of DbFederation and DbSession
+        added forward declaration of dbHandle< DbFederation >  
+    +++ GaudiDb/DbSession.h
+        removed include of DbFederation.h
+        removed include guard of DbBase.h
+        removed forward declaration of specialisation of template dbHandle< DbSession >
+        added forward declaration of class DbDataBase
+        added forward declaration of dbHandle< DbFederation >  and dbHandle< DbDataBase > 
+    +++ GaudiDb/src/Base/DbBaseConverter.cpp
+        added include of DbFederation.h as first of the GaudiDb includes
+        moved DbDataBase.h include to just before DbFederation.h include
+    +++ GaudiDb/src/Base/DbContainer.cpp
+        added include of DbFederation.h followed by DbDataBase.h just after include of DbHandle.h
+    +++ GaudiDb/src/Base/DbContainerObj.cpp
+        added include of DbDataBase.h just after include of DbHandle.h
+    +++ GaudiDb/src/Base/DbDataBaseObj.cpp
+        added include of DbDataBase.h just before include of DbIter.h
+    +++ GaudiDb/src/Base/DbFederation.cpp
+        added include of DbSession.h just after include of DbFederation.h
+    +++ GaudiDb/src/Base/DbFederationObj.cpp
+        moved include of DbSession.h just before include of DbFederation.h
+    +++ GaudiDb/src/Base/DbGenericConverter.cpp
+        explicit construction of a string (std::string(""))
+    +++ GaudiDb/src/Base/DbImplementation.cpp
+        moved include of DbImplementation.h to just after include of DbDataBase.h
+    +++ GaudiDb/src/Base/DbObject.cpp
+        moved include of DbDataBase.h to just after include of DbHandle.h
+    +++ GaudiDb/src/Base/DbObjectAccessor.cpp
+        moved include of DbDataBase.h to just after include of DbHandle.h
+    +++ GaudiDb/src/Base/DbSession.cpp
+        added include of DbSession.h just before include of DbFederation.h
+        explicit construction of a string (std::string("UNKNOWN"))
+    +++ GaudiDb/src/Base/DbTypeInfo.cpp
+        added const on char*
+    +++ GaudiDb/src/Base/DbDataBase.cpp
+        moved include of DbHandle.h before include of DbDataBase.h
+        added include of DbFederation.h before include of DbDataBase.h
+    +++ GaudiDb/src/Base/IDbDataBase.cpp
+        moved include of DbDataBase.h before include of DbIter.h
+    +++ GaudiDb/src/Ntuples/DnNTupleCnv.cpp
+        added include of DbFederation.h before include of DbContainer.h
+        added include of DbDataBase.h before include of DbContainer.h
+        unnamed namespace instead of static
+    +++ GaudiDb/src/Services/DbCnvSvc.cpp
+        added include of DSession.h before include of DbIter.h
+        added include of DbFederation.h before include of DbIter.h
+        added include of DbDataBase.h before include of DbIter.h
+    +++ GaudiDb/src/Services/DbEvtSelector.h
+        made DbEvtSelector::ListName publicly accessible
+        added include of DbDataBase.h before include of DbIter.h
+    +++ GaudiODBC/src/ODBCDb.h
+        use non-const strings for map of tables
+
+!=== GaudiIntrospection v4r0 ==============================================
+! 20020328 - Stefan Roiser
+ - changed version to v4r0
+ - added doxygen-documentation
+
+! 20020319 - Stefan Roiser
+ - changes to the interface when adding information about methods, passing only strings for return-types and 
+   argument-types. Internal resolving of information about MetaClasses.
+ - default modifier for meta-fields set to 'private'
+ - added MetaConstructor
+
+!=== GaudiObjDesc v4r0  ====================================================
+! 20020328 Stefan Roiser
+  - changes to produce dictionary-information compliant to the new interface of GaudiIntrospection v4r0
+
+! 20020328 Pere Mato
+  - Added ${CONSTITUENT}_GODflags in fragments
+
+! 20020327 Pere Mato
+  - Changes needed for Solaris (by Wim.Lavrijsen). Details:
+    +++ GaudiObjDesc/src/DaDiCppHeader.cpp
+        several const added
+    +++ GaudiObjDesc/src/DaDiCppDict.cpp
+        several const added
+
+! 20020325 - Stefan Roiser
+ - bugfix no reference for arguments which are fundamental types of more then one word (e.g. signed int)
+
+! 20020319 - Stefan Roiser
+ - bugfix when using stdVectorTypeDef to create type std::vector<classname*>
+
+!=== GaudiPython v4r0 ======================================================
+! 20020321 - Pere Mato
+ - Adapted to the new GaudiIntrospection, which adds method support 
+
+! 20020319 - Markus Frank
+ - Added the possibility to obtain any interface implemented by
+   a component (service)
+
+
+! === GaudiExamples v10r0 =================================================
+! 20020327 - Pere Mato
+  Added test for Ntuples and histograms
+
+! 20020213 - Pere Mato
+  Enhanced AlgSequecer test with Sub- and Parent-Algorithms
+
+!=== GaudiPolicy v5r5 =====================================================
+! 20020321 - GaudiPolicy v5r5 (Flr)
+  - new patterns accept an argument  library=<library name>
+    libraryShr, library_stamps, library_Clinkopts, library_Cshlibflags
+    library_Llinkopts, library_Lshlibflags, library_Softlinks, library_path
+    i.e. apply_pattern libraryShr library=GaudiAlg
+         apply_pattern library_path library=GaudiAlgLIb 
+ 
+  - new patterns to handle component library and linker library
+    accepts one argument library=<library name>
+    i.e. apply_pattern component_library library=GaudiAlg
+         apply_pattern linker_library library=GaudiAlgLib
+
+  - following patterns accept an argument 
+    library=<library name> 
+    packageShr, package_stamps, package_Clinkopts, package_Cshlibflags,
+    package_Llinkopts, package_Lshlibflags
+
+  - package_libraries,linker_path patterns accept an argument
+    library = <list of libraries for wich SoftLinks are required>
+    i.e. - apply_pattern package_Llinkopts library=GaudiAlgLib
+           apply_pattern package_Clinkopts library=GaudiAlg
+           apply_pattern package_libraries library=GaudiAlg GaudiAlgLib
+           apply_pattern linker_path       library=GaudiAlg GaudiAlgLib
+
+! 20020321 - GaudiPolicy (Pere)
+  - added tags from ATLAS and definition of a set of "primitive" tags
+    to be used when defining macros and sets.
+ 
+! 20020313 - GaudiPolicy (Pere)
+  - changed dsp_all fragment to add the release.notes in the DevStudio project
+
+! 20020307 - GaudiPolicy (Pere)
+  - added <package>Dict in linker_path pattern

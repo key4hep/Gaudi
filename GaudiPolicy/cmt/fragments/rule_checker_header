@@ -1,0 +1,4 @@
+checker_command = java -classpath ${IRST_DIR} rules.RuleChecker
+checker_patch = ${IRST_DIR}/patches/patch.prl
+${CONSTITUENT}_output = ${PACKAGE_ROOT}/Check/
+${CONSTITUENT} :: ${OBJS}

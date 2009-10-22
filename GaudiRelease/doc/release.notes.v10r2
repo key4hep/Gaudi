@@ -1,0 +1,36 @@
+================GaudiSvc v8r1 ==================================
+! 20020618 Markus Frank
+  - Add option to output stream: OutputStream.OptItemList
+    Elements in this option are not required to be present
+    in the transient datastore to be written. However, if
+    present, they get wrttwen to the stream as well.
+
+================ GaudiDb v8r0 ======================================
+! 20020522 Frank Markus
+  - New File: Services/DbGenericDataBase.h/cpp
+    Implementation of generic database access.
+  - Support for sequences if supported by technology
+  - Better access to SQL-like databases by extending
+    the container interface.
+
+================ GaudiRootDb v8r0======================================
+! 20020622 - Markus Frank
+  - Enable to generate the operator<< for TBlob objects on creating
+    the ROOT dictionary
+  - Re-compilation needed for new GaudiDb 
+    and ROOT version v3.02 (v3.02.07)
+
+================ RootHistCnv v7r0==========================================
+! 20020618 - Pere Mato
+ - Change of the ROOT version to v3.02 (v3.02.07)
+
+================ GaudiObjDesc v4r4========================================
+!20020619 - Stefan
+- introduced new value for 'inout'-attribute of <arg>-element called 'BYVALUE' to be
+  able to force the passing of a non-simple argument by value
+
+!20020617 - Stefan
+- handling of offsets to abstract-interface-classes
+- use friend-classes for investigation of offsets instead of defines
+- no dictionary-information for private, protected, pure virtual and friend-functions
+- changes to dictionary-fragments to produce the class with the friend-class in the dict-directory

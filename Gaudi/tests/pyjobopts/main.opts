@@ -1,0 +1,17 @@
+
+MessageSvc.OutputLevel = 3; // INFO
+
+// ---> Testing the parsing of comments
+// a comment
+
+/* multi
+   line
+   comment */
+
+myAlg.Dict = { "a":1, "b":2, /* "c":3 commented-out */ }; // another comment
+
+#include "test1.opts"
+#include "test2.opts"
+#include "test1.opts"
+
+#include "test1.py"

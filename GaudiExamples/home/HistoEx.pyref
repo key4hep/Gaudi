@@ -1,0 +1,35 @@
+
+*******************************************************************************
+*                                                                             *
+* Simple example which illustrate the usage of useful algorithm  base class   *
+* HistoAlgo (python version of C++ GaudiHistoAlg) for "easy" histogramming.   *
+*                                                                             *
+*******************************************************************************
+Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.26 $
+                                          running on pclhcb55.cern.ch on Fri May 30 20:37:24 2008
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+ApplicationMgr       INFO Successfully loaded modules : GaudiAlg, RootHistCnv
+HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
+RootHistSvc          INFO Writing ROOT histograms to: histo1.root
+HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
+DetectorDataSvc      INFO Detector description not requested to be loaded
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+ApplicationMgr       INFO Application Manager Stopped successfully
+HistoEx           SUCCESS Booked 3 Histogram(s) : 1D=1 2D=1 3D=1
+HistoEx           SUCCESS List of booked 1D histograms in directory         "HistoEx" :-
+ | ID                        |   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
+ |  1D histo                 | " 1D histo "                                  |   200   |        4.5 | 2.8723     |    0.52751 |    -1.0415 |
+HistoEx           SUCCESS List of booked 2D histograms in directory         "HistoEx" :-
+ ID= 2D histo                  " 2D histo "                                     Ents/All= 2000/2000 <X>/sX=4.5/2.8723,<Y>/sY=4.5/2.8723
+HistoEx           SUCCESS List of booked 3D histograms in directory         "HistoEx" :-
+ ID= 3D histo                  " 3D histo "                                     Ents/All=20000/20000<X>/sX=4.5/2.8723,<Y>/sY=4.5/2.8723,<Z>/sZ=4.5/2.8723
+EventLoopMgr         INFO Histograms converted successfully according to request.
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

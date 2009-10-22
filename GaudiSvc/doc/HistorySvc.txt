@@ -1,0 +1,110 @@
+                      History Service
+                      ===============
+
+The HistorySvc collates information about the source and properties of
+the job, services, algorithms, algtools, and data objects. Five
+differnt objects are recorded by the HistorySvc, as listed below. They
+all inherit from the HistoryObj base class.
+
+
+Objects:
+   HistoryObj
+      <- JobHistory
+      <- ServiceHistory
+      <- AlgorithmHistory
+      <- AlgToolHistory
+      <- DataHistory
+
+JobHistory
+----------
+ 1 per job
+
+  - release version
+  - osname
+  - hostname
+  - os version
+  - machine name
+  - run directory
+  - cmt config
+  - start time
+
+ServiceHistory
+--------------
+  1 per service instantiation
+
+  - link to IService
+  - link to JobHistory
+  - properties of service
+
+AlgorithmHistory
+----------------
+  1 per algorithm instantiation
+
+  - alg type
+  - alg version
+  - alg name
+  - properties
+  - list<AlgorithmHistory> of all sub algorithms
+  - link to Algorithm
+  - link to JobHistory
+
+AlgToolHistory
+--------------
+  1 per algtool instantiation
+
+  - alg tool type
+  - alg tool version
+  - alg tool name
+  - properties
+  - link to AlgTool
+  - link to JobHistory
+
+DataHistory
+-----------
+  1 per data object in store
+
+  - storeName
+  - dataKey
+  - dataClassID
+  - link to AlgorithmHistory of alg that created it
+
+
+
+Navigating the HistorySvc
+-------------------------
+
+Get the history service the normal way with the serviceLocator.
+
+From the service, the following can be accessed:
+
+ Job:
+  -> get jobHistory
+  -> get all properties of job
+
+ Service:
+  -> get SeriviceHistory of a given IService
+  -> get all ServiceHistory objs
+  -> get properties of a given IService
+
+same for Algorithms, AlgTools
+
+ Data:
+  -> get DataHistory obj given (clid,key,store)
+
+
+Each history object contains links back to the object that it references,
+eg an AlgorithmHistory obj will contain a pointer to the Algorithm,
+as well as links to a higher level history object. That means that
+a DataHistory obj will link back to the AlgorithmHistory obj of the
+Algorithm where it was created, and the AlgorithmHistory obj will link
+back to the JobHistory of the current job.
+
+The HistorySvc uses the AlgContextSvc to determine which algorithm
+is currently being executed, and is thus dependent on the info that
+this svc returns. Since AlgTools are NOT instrumented by the
+AlgContextSvc, any DataHistory obj that is created by an AlgTool
+will report its parent Algorithm as the Algorithm that called
+the AlgTool, and not the AlgTool itself. Similarly, if a DataHistory
+obj is created from outside an Algorithm, then no AlgHistory obj
+will be linked to it.
+

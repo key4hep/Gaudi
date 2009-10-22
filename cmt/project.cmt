@@ -1,0 +1,9 @@
+project GAUDI
+
+use LCGCMT LCGCMT_57
+
+build_strategy with_installarea
+setup_strategy root
+structure_strategy without_version_directory
+
+container GaudiRelease

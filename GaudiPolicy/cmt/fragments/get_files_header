@@ -1,0 +1,38 @@
+#--- Begin of get_files_header
+
+
+##get_files $(copymethod) -jo ${${name}jo} -scripts ${${name}scripts} -data ${${name}data} -xmls ${${name}xmls}
+
+${CONSTITUENT} ::
+	@if test ! -d ${install_dir}; then mkdir -p ${install_dir}; fi
+	@cd ${install_dir}; \
+	  jonames=`echo "$(${name}jo)" | \
+		     awk '{for (i=1;i<=NF;i++){print $$i}}' | \
+		     grep -v '=' | \
+		     sed -e 's#,##' | \
+		     sort -u` ; \
+	  datanames=`echo "$(${name}data)" | \
+		     awk '{for (i=1;i<=NF;i++){print $$i}}' | \
+		     grep -v '=' | \
+		     sed -e 's#,##' | \
+		     sort -u` ; \
+	  scriptnames=`echo "$(${name}scripts)" | \
+		     awk '{for (i=1;i<=NF;i++){print $$i}}' | \
+		     grep -v '=' | \
+		     sed -e 's#,##' | \
+		     sort -u` ; \
+	  xmlnames=`echo "$(${name}xmls)" | \
+		     awk '{for (i=1;i<=NF;i++){print $$i}}' | \
+		     grep -v '=' | \
+		     sed -e 's#,##' | \
+		     sort -u` ; \
+	  get_files $(copymethod) -jo $${jonames} -scripts $${scriptnames} -data "$${datanames}" -xmls $${xmlnames}
+
+${CONSTITUENT}clean ::
+	@if test -d ${install_dir}; then \
+	  cd ${install_dir}; \
+	fi
+
+
+#--- End of get_files_header
+

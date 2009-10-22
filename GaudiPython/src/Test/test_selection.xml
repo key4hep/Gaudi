@@ -1,0 +1,7 @@
+<lcgdict>
+  <class name="Event"/>
+  <class name="MyTrack"/>
+  <class name="MyVertex"/>
+  <class pattern="KeyedContainer<*>"/>
+  <class name="std::vector<MyTrack*>"/>
+</lcgdict>

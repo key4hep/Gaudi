@@ -1,0 +1,100 @@
+/*
+ * Short user manual for work with tool EqSolver from package GaudiGSL
+ * @see GaudiGSL/IEqSolver.h
+ * @author Kirill Miklyaev kirillm@iris1.itep.ru
+ * @date 2003-08-14
+ */
+
+EqSolver is the tool for multidimensional root-finding (solving nonlinear system
+with n equations in n  unknowns).  In the method "solver" (GaudiGSL/IEqSolver.h)
+type    of     the    nonlinear    system's     functions    is    "GenFunction"
+(CLHEP/AbsFunction.h). The functions of the nonlinear system and their dimension
+are   defined  in   the  Algorithm   file  (EqSolverGenAlg.h   in  GaudiExamples
+package). For example for solving 
+( x[0] * x[0] + x[1] * x[1]- 1    = 0
+  x[0] + x[1]                     = 0
+  x[2] * x[2] * x[2] * x[1] - 120 = 0 ), 
+the code in the algorithm file to be written so:
+
+class Func1 : public AbsFunction 
+{ 
+public:
+  FUNCTION_OBJECT_DEF(Func1); public:
+  Func1 () {};
+  Func1 ( const Func1& )
+    : AbsFunction() {};
+  
+  virtual double operator() (double /* argument */) const {return 0;};
+  virtual double operator() (const Argument& x) const
+  {
+    return x[0] * x[0] + x[1] * x[1]- 1;
+  };
+  virtual unsigned int dimensionality () const { return 3; };
+  virtual ~Func1 () {}; 
+}; 
+FUNCTION_OBJECT_IMP(Func1);
+
+class Func2 : public AbsFunction 
+{ 
+public:
+  FUNCTION_OBJECT_DEF(Func2); public:
+  Func2 () {};
+  Func2 ( const Func2& )
+    : AbsFunction() {};
+  
+  virtual double operator() (double /* argument */) const {return 0;};
+  virtual double operator() (const Argument& x) const
+  {
+    return x[0] + x[1];
+  };
+  virtual unsigned int dimensionality () const { return 3; };
+  virtual ~Func2 () {}; 
+}; 
+FUNCTION_OBJECT_IMP(Func2);
+
+class Func3 : public AbsFunction 
+{ 
+public:
+  FUNCTION_OBJECT_DEF(Func3); public:
+  Func3 () {};
+  Func3 ( const Func3& )
+    : AbsFunction() {};
+  
+  virtual double operator() (double /* argument */) const {return 0;};
+  virtual double operator() (const Argument& x) const
+  {
+    return x[2] * x[2] * x[2] * x[1] - 120;
+  };
+  virtual unsigned int dimensionality () const { return 3; };
+  virtual ~Func3 () {}; 
+}; 
+FUNCTION_OBJECT_IMP(Func3);
+
+Arguments of the nonlinear system's functions are defined in following way:
+IEqSolver::Arg arg (function.size ());
+  
+  arg[0] = 10;
+  arg[1] = 5;
+  arg[2] = 29;
+
+ 
+Method "solver" is called by:
+ m_publicTool->solver( function ,
+                       arg      );
+
+Class Adapter (GaudiMath/Adapter.h) converts function types "pointer to function"
+and  "IFunction" (AIDA/IFunction)  to  "GenFunction".  The  new Algorithm  files
+(EqSolverPAlg.h,  EqSolverIAlg.h from GaudiExamples  package) should  be created
+for each function types.
+
+Types  of  the  algorithm  for  the multidimensional  root-finding,  maximum  of
+iterations, the absolute  error bound for the residual value  are changed in the
+options files:
+
+/// declare  type   of  the   algorithm  for   the  multidimensional 
+/// root-finding
+ToolSvc.EqSolver.Algorithm = "fdfsolver_hybridsj" ; 
+/// declare maximum of iteration  
+ToolSvc.EqSolver.Iteration = 10000                ;  
+/// declare the absolute error bound for the residual value 
+ToolSvc.EqSolver.Residual = 1e-7                  ;

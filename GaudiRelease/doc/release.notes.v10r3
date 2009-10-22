@@ -1,0 +1,42 @@
+
+
+================ GaudiKernel v12r3=====================================
+
+! 20020628 Pere Mato, Sebastien Ponce
+ - Improved error reporting when loading dynamic libraries
+ - Changed INFO messages to DEBUG when initializing services
+ - Replaced forward class declarations in Algorithm.h by including the concerned 
+   header files. This is to aliviate user confusion.
+ - Added function format(char* fmt, ...) that can be used to format messages
+   within the MsgStream class.
+   Example: 
+   log << MSG::INFO << format("Evt: %8d Run: %8d", evt, run) << endmsg;
+   Caveat: Since the unspecified argument list is used (...) the arguments can not
+   be cheched for the correct type and possible conversions are not triggered. 
+
+! 20020529 Paolo Calafiura
+ - Auditor.h: service() needs IServiceLocator header file
+ - DeclareFactoryEntries.h: typo in AudFactory name
+ 
+! 20020506 Andrea Valassi
+ - Change in MsgStream.h to allow the use of std::hex on Windows
+
+================ GaudiSvc v8r2==================================
+! 20020701 Pere Mato
+  - Removed printout when loading dll modules
+  - Print summary of loaded modules successfully and failed
+  - Implemented "GaussianTail distribution" requested by Chris Parkes
+    Rndm::GaussianTail( cut, sigma)
+
+================ GaudiRootDb v8r1======================================
+! 20020627 - Markus Frank, Pere Mato
+  - Patched to allow RFIO file access (files in castor). This should not
+    be necessary but is nedeed in the current version of ROOT
+    Files changed: RootDbase.cpp and requirements
+
+!=============== GaudiAlg v6r1===========================================================
+! 20020704 - Pere Mato
+ - Eliminated INFO messages during the construction of the algorithm sequence
+   Output a summary of it.
+
+

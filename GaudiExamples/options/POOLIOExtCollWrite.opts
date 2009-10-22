@@ -1,0 +1,41 @@
+// $Id: POOLIOExtCollWrite.opts,v 1.5 2008/11/04 22:49:25 marcocle Exp $ 
+// ============================================================================
+/** @file
+ *  Configuration file to run ExtendedEvtCol example
+ *  @see Gaudi::Examples::ExtendedEvtCol
+ *  @see ExtendedEvtCol.cpp
+ *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
+ *  @date 2007-04-08
+ */
+// ============================================================================
+// POOL persistency setup
+// ============================================================================
+#include "GaudiPoolDbRoot.opts"
+ApplicationMgr.ExtSvc  += { "TagCollectionSvc/EvtTupleSvc"  } ;
+PoolDbCacheSvc.DLLs    += { "GaudiExamplesDict"             } ;
+FileCatalog.Catalogs    = { "xmlcatalog_file:POOLIO.xml"    } ;
+// ============================================================================
+/// Input data 
+// ============================================================================
+EventSelector.Input  = {"DATAFILE='PFN:POOLIO.dst'   TYP='POOL_ROOT' OPT='READ'" };
+EventSelector.Input += {"DATAFILE='PFN:POOLIO.mdst'  TYP='POOL_ROOT' OPT='READ'" };
+// ============================================================================
+/// Output Event Tag Collection
+// ============================================================================
+EvtTupleSvc.Output   = {"EXTEVT DATAFILE='PFN:POOLIO.etags' OPT='RECREATE' TYP='POOL_ROOTTREE'" };
+// ============================================================================
+
+ApplicationMgr.TopAlg = { "GaudiSequencer/EventAlgs" };
+EventAlgs.Members = { "Gaudi::Examples::ExtendedEvtCol/Fill" };
+EventAlgs.VetoObjects = {"FSR"};
+Fill.EvtColLUN   = "EXTEVT" ; /// Logical unit for Event Tag Collection 
+
+// Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
+ToolSvc.SequencerTimerTool.OutputLevel = 4 ;
+
+EventSelector.PrintFreq = 100;
+ApplicationMgr.EvtMax   = -1 ;
+
+// ============================================================================
+// The END 
+// ============================================================================

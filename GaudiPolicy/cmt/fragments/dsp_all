@@ -1,0 +1,76 @@
+# Microsoft Developer Studio Project File - Name="all" - Package Owner=<4>
+# Microsoft Developer Studio Generated Build File, Format Version 6.00
+# ** DO NOT EDIT **
+
+# TARGTYPE "Win32 (x86) Generic Project" 0x010a
+
+CFG=all - $(tag)
+!MESSAGE This is not a valid makefile. To build this project using NMAKE,
+!MESSAGE use the Export Makefile command and run
+!MESSAGE
+!MESSAGE NMAKE /f "all.mak".
+!MESSAGE
+!MESSAGE You can specify a configuration when running NMAKE
+!MESSAGE by defining the macro CFG on the command line. For example:
+!MESSAGE
+!MESSAGE NMAKE /f "all.mak" CFG="all - $tag)"
+!MESSAGE
+!MESSAGE Possible choices for configuration are:
+!MESSAGE
+!MESSAGE "all - $(tag)" (based on "Win32 (x86) Generic Project" )
+!MESSAGE
+
+# Begin Project
+# PROP Scc_ProjName ""
+# PROP Scc_LocalPath ""
+CPP=cl.exe
+F90=df.exe
+RSC=rc.exe
+
+!IF  "$(CFG)" == "all - $(tag)"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "../$(tag)"
+# PROP BASE Intermediate_Dir "../$(tag)"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "../$(tag)"
+# PROP Intermediate_Dir "../$(tag)"
+# PROP Target_Dir ""
+# ADD BASE F90 /libs:dll /dll
+# ADD F90 /libs:dll /dll
+# ADD BASE CPP  /YX
+# ADD CPP  /GR /O2 /Ob2 /D "NDEBUG" /D "_WINDOWS" /D "_DLL" /Zm500
+# SUBTRACT CPP /YX
+# ADD BASE RSC /l 0x409 /d "NDEBUG"
+# ADD RSC /l 0x409 /d "NDEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 /nologo /nodefaultlib /subsystem:windows /dll /machine:I386
+
+!ENDIF
+
+# Begin Target
+
+# Name "all - $(tag)"
+
+# Begin Group "cmt"
+# PROP Default_Filter ""
+# Begin Source File
+SOURCE=..\cmt\requirements
+# End Source File
+# End Group
+
+# Begin Group "doc"
+# PROP Default_Filter ""
+# Begin Source File
+SOURCE=..\doc\release.notes
+# End Source File
+# End Group
+
+# End Target
+# End Project

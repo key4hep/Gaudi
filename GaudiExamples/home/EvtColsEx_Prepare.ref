@@ -1,0 +1,51 @@
+JobOptionsSvc        INFO
+//GP:================================================================================
+//GP: include "../options/EvtColsEx_Prepare.opts"                             (0,0)
+//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace-europa/GAUDI/GaudiPoolDb/options/GaudiPoolDbRoot.opts" (16,10)
+ApplicationMgr.ExtSvc +=  [ "Gaudi::MultiFileCatalog/FileCatalog" , "Gaudi::IODataManager/IODataManager" , "PoolDbCacheSvc/PoolDbCacheSvc" , "PoolDbCnvSvc/PoolRootEvtCnvSvc" , "PoolDbCnvSvc/PoolRootKeyEvtCnvSvc" , "PoolDbCnvSvc/PoolRootTreeEvtCnvSvc" ] ;//GP: (1,1)
+EventPersistencySvc.CnvServices +=  [ "PoolRootEvtCnvSvc" ] ;           //GP: (1,1)
+EventPersistencySvc.CnvServices +=  [ "PoolRootTreeEvtCnvSvc" ] ;       //GP: (1,1)
+EventPersistencySvc.CnvServices +=  [ "PoolRootKeyEvtCnvSvc" ] ;        //GP: (1,1)
+PoolRootEvtCnvSvc.DbType = "POOL_ROOT";                                 //GP: (1,1)
+PoolRootKeyEvtCnvSvc.DbType = "POOL_ROOTKEY";                           //GP: (1,1)
+PoolRootTreeEvtCnvSvc.DbType = "POOL_ROOTTREE";                         //GP: (1,1)
+PoolDbCacheSvc.Dlls =  [ "lcg_RootStorageSvc" , "GaudiKernelDict" ] ;   //GP: (1,1)
+PoolDbCacheSvc.OutputLevel = 4;                                         //GP: (1,1)
+PoolDbCacheSvc.DomainOpts =  [ "Domain[ROOT_All].TREE_MAX_SIZE=500000000000 TYP=longlong" ] ;//GP: (1,1)
+//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace-europa/GAUDI/GaudiPoolDb/options/GaudiPoolDbRoot.opts" (22,1)
+PoolDbCacheSvc.DLLs +=  [ "GaudiExamplesDict" ] ;                       //GP: (16,10)
+FileCatalog.Catalogs =  [ "xmlcatalog_file:EvtColsEx.xml" ] ;           //GP: (16,10)
+ApplicationMgr.EvtSel = "NONE";                                         //GP: (16,10)
+ApplicationMgr.OutStream +=  [ "PoolDst" ] ;                            //GP: (16,10)
+ApplicationMgr.EvtMax = 50000;                                          //GP: (16,10)
+PoolDst.ItemList =  [ "/Event#1" ] ;                                    //GP: (16,10)
+PoolDst.Output = "DATAFILE='PFN:EvtColsEx.dst' TYP='POOL_ROOTTREE' OPT='RECREATE'";//GP: (16,10)
+//GP: end  "../options/EvtColsEx_Prepare.opts"                                (38,1)
+//GP:================================================================================
+
+JobOptionsSvc        INFO Job options successfully read in from ../options/EvtColsEx_Prepare.opts
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.26 $
+                                          running on pclhcb55.cern.ch on Fri May 30 20:37:04 2008
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+EventPersistenc...   INFO  'CnvServices':[ 'PoolRootEvtCnvSvc' , 'PoolRootTreeEvtCnvSvc' , 'PoolRootKeyEvtCnvSvc' ]
+EventPersistenc...   INFO Added successfully Conversion service:PoolRootEvtCnvSvc
+EventPersistenc...   INFO Added successfully Conversion service:PoolRootTreeEvtCnvSvc
+PoolDst              INFO Data source: EventDataSvc output: DATAFILE='PFN:EvtColsEx.dst' TYP='POOL_ROOTTREE' OPT='RECREATE'
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
+HistogramPersis...WARNING Histograms saving not required.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+EvtColsEx.dst     SUCCESS Root file version:51800
+ApplicationMgr       INFO Application Manager Stopped successfully
+PoolDst              INFO Events output: 50000
+EventLoopMgr         INFO Histograms converted successfully according to request.
+PoolRootTreeEvt...   INFO Disconnected data IO:64B272A6-54CF-DC11-9F6F-001320A397BC[EvtColsEx.dst]
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully
+Number of MyTrack instances:0
+Number of MyVertex instances:0

@@ -1,0 +1,301 @@
+Package: RootHistCnv
+Package manager : David Quarrie
+
+
+================ RootHistCnv v10r2 ====================================
+! 2009-07-30 - Marco Clemencic
+ - Fixed some doxygen warnings.
+
+! 2009-07-21 - Hubert Degaudenzi
+ - Fixed typo in the -no_static usage.
+
+! 2009-07-20 - Marco Clemencic
+ - Added '-no_static' to the declaration of the libraries (implemented since CMT
+   v1r20p20081118).
+
+================ RootHistCnv v10r1 ====================================
+! 2009-06-26 - Marco Clemencic
+ - Fixed bug #52316: Silence WARNINGS from RootHistSvc
+   Added the boolean property OutputEnabled to be able to disable the output of
+   histograms on ROOT files without warnings.
+
+! 2009-06-15 - Hubert Degaudenzi
+ - use the new LCG tag convention.
+
+! 2009-06-10 - Marco Clemencic
+ - Removed _dll.cpp and _load.cpp files (not needed anymore).
+
+================ RootHistCnv v10r0 ====================================
+! 2009-04-07 - Marco Clemencic
+ - Moved back the namespace MSG to the global namespace.
+
+! 2009-04-06 - Marco Clemencic
+ - Renamed back the namespace Msg to MSG and moved it into the namespace Gaudi.
+
+! 2009-03-13 - Marco Clemencic
+ - Task #9061: Introduction of component managers
+   - Adapted to use the changes in the ISvcLocator, ISvcManager and IAlgManager
+     interfaces.
+
+! 2009-02-19 - Marco Clemencic
+ - Patch #2790: Rename the namespace MSG to Msg
+
+! 2009-02-07 - Marco Clemencic
+ - Fixed uninitialized variable (RootHistCnv::PersSvc::m_hfile).
+
+! 2009-01-30 - Marco Clemencic
+ - Replaced all the occurrences of endreq with endmsg.
+
+! 2009-01-22 - Marco Clemencic
+ - Adapted to the new IInterface functionalities (see GaudiKernel release.notes)
+
+================ RootHistCnv v9r17 ====================================
+! 2008-01-29 - Marco Clemencic
+ - Modified the fix for libNet on OSX to be compatible with LCGCMT 53.
+
+================ RootHistCnv v9r16 ====================================
+! 2007-12-12 - Marco Clemencic
+ - patch #1585.
+   Fixed warnings about breaking of strict-aliasing rules (gcc 4.1 optimized).
+
+================= RootHistCnv v9r15 =====================================
+! 2007-07-16 - Marco Clemencic
+ - changed the syntax for specialization of templated function in namespace 
+   for gcc 4.1 future use
+
+================= RootHistCnv v9r14 =====================================
+! 2007-05-15 - Pere Mato
+ - Added extra argument needed in constructor of TBranch. 
+   This is new in version 5.15.06 of ROOT.
+
+================= RootHistCnv v9r13 =====================================
+! 2007-03-15 - Hubert Degaudenzi
+ - fixed bug #24769. use of the TFile::Open method instead of the
+   TFile constructor to open a file. This enable the use of the ROOT
+   plugins (castor, rfio, gfal, ...)
+
+================= RootHistCnv v9r11 =====================================
+! 2007-01-08 Markus Frank
+  - Fix histogram converters to automatically convert THxF to THxD
+    when reading from file.
+ 
+! 2006-11-30 - Pere Mato
+  Adpated package to the new PluginSvc
+  - Removed protected from constructor/destructors and fiendship of
+    Factory class
+
+! 2006-11-13 Markus Frank -- patch #908
+ - Simplify histogram conversion. Take advantage of the fact that the
+   underlying implementation is realized using ROOT.
+
+================= RootHistCnv v9r10 =====================================
+! 2006-03-13 - Hubert Degaudenzi
+ - changed the default tile for trees form "Athena Trees" to "Gaudi
+   Trees".
+
+================= RootHistCnv v9r9 =====================================
+! 2006-03-13 - Hubert Degaudenzi
+ - fix for patches #691-694 by Markus Frank which allow support for
+   objects in Evt collections
+
+================= RootHistCnv v9r8 =====================================
+! 2006-01-10 - Hubert Degaudenzi
+ - use of the DECLARE_XXX_FACTORY macros. replacement of the
+   corresponding code.
+
+================= RootHistCnv v9r7 =====================================
+! 2005-12-20 - Hubert Degaudenzi
+ - PI has been replaced by GaudiPI.
+
+================= RootHistCnv v9r6 =====================================
+! 2005-10-27 - Hubert Degaudenzi
+ - modified requirements file for future use of the new package GaudiPI.
+
+================= RootHistCnv v9r5 =====================================
+! 2005-08-15 - Hubert Degaudenzi
+ - patch #506. Creating H2D and H3D histograms (function
+   createPersistent) was creating wrong values for weights in some
+   cases. This patch removes all the implementation code and calls the
+   Aida Root histogram converter (from pi) instead (Stephan Roiser).
+	Remarks:	
+	-> this fix adds a dependency on PI in RootHistConv
+	-> it also calls the conversion routine for H1D (to be consistent)
+
+ - RFileCnv.cpp: Fixed small bug concerning checking output level
+   before printing (Leggett)
+
+================= RootHistCnv v9r4 =====================================
+! 2005-01-11 - Pere Mato
+ - Added profile histograms converters (Charles Leggett)
+
+================= RootHistCnv v9r3 =====================================
+! 2004-07-22 - Pere Mato
+ - HxDCnv.cpp, PersSvc.cpp, RConverter.*: added the option to prefix
+   histograms id with "h" when they are numerical (mandatoty for
+   HBOOK). This faciliates the interaction with them from the ROOT
+   application.
+       RootHistSvc.ForceAlphaIds  = true;
+
+================= RootHistCnv v9r2 =====================================
+! 2004-07-05 - Pere Mato
+ - requirements: changed to use the new LCGCMT interface packages
+ 
+================= RootHistCnv v9r1p1 =====================================
+! 2004-05-07 - Pere Mato
+ - RConverter.cpp: Fixed a problem that affected reading histogram
+   files from Windows. Probably due to ":" or "\" in file
+   name. Replaced gDirectory->cd() by TFile::cd()
+
+================= RootHistCnv v9r1 =====================================
+! 2003-01-14 - Charles Leggett
+ - RNTuple.cpp deal with empty ntuples
+
+================= RootHistCnv v9r0 =====================================
+! 2003-11-28 - Pere Mato
+ - Fixed: [ Bug #1772 ] RootHistCnv produces too many INFO messages
+   Changed from INFO to DEBUG messages related to conversion of histograms
+   Changed names from YYY::XXXX to XXXX to allow easy control with job options
+
+! 2003-10-28 - Grigori Rybkine
+ - Adapted for use with the version of HistogramSvc using (instead of HTL)
+   the ROOT based AIDA histograms implementation from the LCG PI project
+   This includes:
+   - change to the new AIDA version 3.0.0
+   - the modified histogram converter classes H1DCnv, H2DCnv, H3DCnv,
+     each responsible now for conversion of the corresponding fixed and
+     variable bin size histograms (classes H1DVarCnv, H2DVarCnv,
+     H3DVarCnv removed)
+ - Added setting of statistics for 1D, 2D, 3D histograms being made persistent
+ - Made changes (in particular, to RDirectoryCnv.cpp) so as to make
+   reading of 1D variable bin size histograms and 2D fixed bin size
+   histograms possible
+ - Added ability to read in 2D variable bin size histograms
+
+! 2003-11-26 - Pere Mato
+ - Changes for Mac OSX (Guy Barrand)
+
+! 2003-08-05 - Pere Mato
+ - Removed warnings produced by VC7
+ - Adapted to new version of GaudiKernel (POOL integration)
+
+================= RootHistCnv v8r2p3 =====================================
+! 2003-06-10 - Charles Leggett
+ - Added ability to read in Matrices, and fixed size Arrays
+
+================= RootHistCnv v8r2p2 =====================================
+! 2003-06-04 - Charles Leggett
+ - fixed bug in RCWNtupleCnv::book, where was setting range for
+    non integer TLeaf
+ - FIXME: when next version of ROOT appears, add TLeafI->SetMinimum() call
+
+================= RootHistCnv v8r2p1 =====================================
+! 2003-05-19 - Charles Leggett
+ - fixed bug in analyzeItem (Bug #576 Matrices in CWN not filled correctly)
+
+================= RootHistCnv v8r2 =======================================
+! 2003-03-10 - Charles Leggett
+ - Added ability to read H1D, H2D, H1DVar
+ - added direct accessor to TObject* in RootObjAddress (ipar[2])
+ - Added bool flag to PersSvc, so warning of "undefined output file name"
+   only gets printed once.
+
+! 2003-02-13 - Charles Leggett
+ - Added ability to read in CWNT
+ - Added RootObjAddress to keep track of TObject* ptr (m_ipar[2])
+ - got rid of regNTuple as functionality is supplanted by RootObjAddress
+ - block names are part of full variable names, as BLK::var[size]/Type
+ - fix core dump on destruct of PersSvc if hist output file not set
+ - fix Write() so only one copy of ntuples gets written
+
+================= RootHistCnv v8r1p2 =======================================
+! 2002-11-29 - Pere Mato
+ - Corrections to support linking applications statically
+
+================= v8r1p1 =======================================
+! 2002-10-29 - Pere Mato
+
+================= v8r0p2 =======================================
+! 2002-10-10 - Pere Mato
+ - Corrected bug reported by Thomas Ruf concerning the filling of
+   underflow and overflow contents for 2D and 3D histograms.
+  
+================= v8r1 =========================================
+
+================= v8r0p1 =======================================
+! 2002-09-23 - Florence Ranjard
+ - requirements - use v*
+
+===================v8r0==========================================
+! 20020717 - Pere Mato
+ - Change of the ROOT version to v3.03 (3.03/06)
+
+! 20020703 - Paolo Calafiura 
+ - PersSvc.cpp: disambiguate method overload for SmartDataPtr
+ - RCWNtupleCnv.cpp: removed static parseName qualifier
+
+===================v7r0==========================================
+! 20020618 - Pere Mato
+ - Change of the ROOT version to v3.02 (v3.02.07)
+
+===================v6r0==========================================
+! 20020405 - Markus Frank
+ - Adapted to the new version of Gaudi
+ - Removal of all global static storage
+ - Major cleanup
+
+! 20020327 - Pere Mato
+ - Adapted to use the new AIDA interfaces (2.2)
+ - Added converters for 3D histograms support
+
+===================v5r0==========================================
+! 20011122 - Pere Mato (v5)
+ - Adapted to use the new GaudiKernel and the re-design of the
+   data sore classes
+
+! 20010626 - Pere Mato
+ - Changed to use AIDA interfaces
+ - Modified to not create a directory (/stat) if histograms are at top level
+
+! 20010618 - v4 (Flr)
+  requirements - use ROOT v3r01
+
+! 20010508 - Pere Mato
+ - Using GaudiKernel v10
+
+! 20010315 - David Quarrie
+  Fix problems when using ROOT for both event and histogram persistency.
+
+! 20010223 - David Quarrie
+  Tweaks to NTupleINfo.h for template handling on Solaris.
+
+! 20010119 - Pere Mato
+  Accomodate to the changes in GaudiKernel. Removed the extern declarations to access
+  IIDs.
+
+!20001128 RootHistCnv v1 (P.Mato)
+  Adapted to new version of CMT and NMake for NT
+
+!20001106 RootHistCnv v1 Marco Cattaneo
+- removed unneccessary dependence on CERNLIB, and explicit dependence on EXTLIB
+  (implicit through dependence on Gaudi)
+
+!20001027 Pere Mato
+- Removed compilations problems for NT
+
+!20001020 Pere Mato
+- Few changes needed to be compatible with current head revision of Gaudi
+  and fixes to compilation problems in Windows
+
+!20001013 David Quarrie
+- New package developed by Charles Leggett to support Histogram 
+  Persistency based on ROOTsupport. As far as the user is concerned,
+  They need to add to their jobOptions.txt file the following lines:
+
+// Specify Share Library for ROOT persistency support
+ApplicationMgr.DLLs += "RootHistSvc";
+// Specify ROOT or HBOOK persistency (HBOOK is default)
+ApplicationMgr.HistogramPersistency = "ROOT";
+// Specify Histogram Persistency Output File
+HistogramPersistencySvc.OutputFile = "histo.rt"
+
+

@@ -1,0 +1,6 @@
+
+${FILEPATH}${NAME}.dvi : ${FULLNAME}
+	cd ${doc}; latex ${FULLNAME}
+
+${FILEPATH}${NAME}.ps : ${FILEPATH}${NAME}.dvi
+	cd ${doc}; dvips ${FILEPATH}${NAME}.dvi

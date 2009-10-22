@@ -1,0 +1,9 @@
+
+MyAlg.Cut = 10.;
+MyAlg.Tool1 = "ThisTool";
+MyAlg.File = "C:\something\vXrY\filename";
+
+MyAlg.MyTool.Cut = @MyAlg.Cut;
+MyAlg.MyTool.WhichTool1 = @MyAlg.Tool1;
+MyAlg.MyTool.WhichTool2 = @MyAlg.Tool2;
+MyAlg.MyTool.WhichFile = @MyAlg.File;

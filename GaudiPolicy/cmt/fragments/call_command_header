@@ -1,0 +1,17 @@
+# ============= call_command_header:begin =============
+deps        = $(${name}_deps)
+command     = $(${name}_command)
+output      = $(${name}_output)
+
+.PHONY: ${CONSTITUENT} ${CONSTITUENT}clean
+
+${CONSTITUENT} :: $(output)
+
+${CONSTITUENT}clean ::
+	$(cmt_uninstallarea_command) $(output)
+
+$(output):: $(deps)
+	$(command)
+
+FORCE:
+# ============= call_command_header:end =============

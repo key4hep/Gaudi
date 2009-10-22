@@ -1,0 +1,42 @@
+
+
+!=============== ROOT v2r303p0 ============================
+! 2002-07-17 - Pere Mato
+  requirements - use version 3.03/06 of ROOT
+
+================ GaudiSvc v8r3==================================
+! 20020717 Markus Frank
+  - Bug fix in EventSelector.h/.cpp added finalize stream. This fixes
+    the problem detected when running a job over several ROOT files that
+    were not closed properly and their memory buffers deallocated.
+    
+! 20020705 Pere Mato
+  - Modified/Fixed JobOptions service (PropertyCompiler) to support properties with units.
+    The file containing the unit equivalences is specified as:
+    #units "units file"
+    The format of the file is:
+    <value> <unit_name> = <equivalent_value>
+    For example:
+      1 m  = 1000
+      1 cm = 10
+    The syntax in the JobOptions files is:
+    <numerical_value>[*]<unit_name>
+    For example:
+    PropertyAlg.ArrayWithUnits  = { 1.1 m2 , 2.cm, 3.3*cm, 0.4e-03 * m };
+    
+!================ GaudiDb v8r1======================================
+! 20020718 Frank Markus
+  - Bug fix in DbEvtSelector: properly close the database
+    once the iteration is finished.
+    
+!================ GaudiRootDb v9r0======================================
+! 20020717 - Pere Mato
+  - Re-compilation needed for ROOT version 3.03 (3.02/06)
+
+!================ RootHistCnv v8r0 ==========================================
+! 20020717 - Pere Mato
+ - Change of the ROOT version to v3.03 (3.03/06)
+
+! 20020703 - Paolo Calafiura 
+ - PersSvc.cpp: disambiguate method overload for SmartDataPtr
+ - RCWNtupleCnv.cpp: removed static parseName qualifier

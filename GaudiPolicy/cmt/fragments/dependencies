@@ -1,0 +1,21 @@
+#-- start of dependency ------------------
+
+$(bin)${CONSTITUENT}_dependencies.make :: dirs
+
+ifndef QUICK
+$(bin)${CONSTITUENT}_dependencies.make :: ${LINE} requirements $(use_requirements) $(cmt_final_setup_${CONSTITUENT})
+	@echo "------> (${CONSTITUENT}.make) Rebuilding $@"; \
+	  args=`echo $? | sed -e "s#requirements.*##"`; \
+	  $(build_dependencies) ${CONSTITUENT} -all_sources $${args}
+endif
+
+#$(${CONSTITUENT}_dependencies)
+
+ifndef QUICK
+-include $(bin)${CONSTITUENT}_dependencies.make
+else
+ifneq ($(QUICK),2)
+-include $(bin)${CONSTITUENT}_dependencies.make
+endif
+endif
+#-- end of dependency -------------------

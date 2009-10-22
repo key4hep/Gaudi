@@ -1,0 +1,24 @@
+
+
+ifeq ($(INSTALLAREA),)
+installarea = $(CMTINSTALLAREA)
+else
+ifeq ($(findstring `,$(INSTALLAREA)),`)
+installarea = $(shell $(subst `,, $(INSTALLAREA)))
+else
+installarea = $(INSTALLAREA)
+endif
+endif
+
+install_dir = ${installarea}/$(prefix)/${package}
+
+${CONSTITUENT} :: ${CONSTITUENT}install
+
+install :: ${CONSTITUENT}install
+
+${CONSTITUENT}clean :: ${CONSTITUENT}uninstall
+
+uninstall :: ${CONSTITUENT}uninstall
+
+
+

@@ -1,0 +1,354 @@
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.7 $
+                                          running on pclhcb55.cern.ch on Thu May 29 18:45:26 2008
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
+RootHistSvc          INFO Writing ROOT histograms to: UndefinedROOTOutputFileName
+HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
+ApplicationMgr       INFO Application Manager Initialized successfully
+RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
+RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
+RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+NTupleSvc            INFO Added stream file:TupleEx4_1.root as MYLUN1
+NTupleSvc            INFO Added stream file:TupleEx4_2.root as MYLUN2
+NTupleSvc            INFO Added stream file:TupleEx4_3.root as MYLUN3
+ARGS: ('It is a title for my n-tuple',)
+RFileCnv             INFO opening Root file "TupleEx4_1.root" for writing
+RCWNTupleCnv         INFO Booked TTree with ID: It is a title for my n-tuple "It is a title for my n-tuple" in directory TupleEx4_1.root:/path
+ARGS: ('MyTupleLV', 'N-tuple: Lorentz Vectors ')
+RCWNTupleCnv         INFO Booked TTree with ID: MyTupleLV "N-tuple: Lorentz Vectors " in directory TupleEx4_1.root:/another/path
+ARGS: ('MyTuple3DV', 'N-tuple: 3D-Vectors ')
+RFileCnv             INFO opening Root file "TupleEx4_2.root" for writing
+RCWNTupleCnv         INFO Booked TTree with ID: MyTuple3DV "N-tuple: 3D-Vectors " in directory TupleEx4_2.root:/another/path
+ARGS: ('MyTuple3DP', 'N-tuple: 3D-Points')
+RFileCnv             INFO opening Root file "TupleEx4_3.root" for writing
+RCWNTupleCnv         INFO Booked TTree with ID: MyTuple3DP "N-tuple: 3D-Points" in directory TupleEx4_3.root:/another/path
+ARGS: (415, 'N-tuple: VarArrays')
+RCWNTupleCnv         INFO Booked TTree with ID: 415 "N-tuple: VarArrays" in directory TupleEx4_1.root:/another/path
+ARGS: ('xTuple', 'N-tuple: FixArrays')
+RCWNTupleCnv         INFO Booked TTree with ID: xTuple "N-tuple: FixArrays" in directory TupleEx4_2.root:/another/path
+ARGS: ('FixMatrices', 'N-tuple: FixMatrices')
+RCWNTupleCnv         INFO Booked TTree with ID: FixMatrices "N-tuple: FixMatrices" in directory TupleEx4_3.root:/another/path
+ARGS: ('FixSymMatrices', 'N-tuple: FixSymMatrices')
+RCWNTupleCnv         INFO Booked TTree with ID: FixSymMatrices "N-tuple: FixSymMatrices" in directory TupleEx4_2.root:/another/path
+GaudiPython.TupleUtils: release all pending ITupleTools: 8
+ToolSvc.TupleMY...SUCCESS Booked 1 N-Tuples and 0 Event Tag Collections
+ToolSvc.TupleMY...SUCCESS List of booked N-Tuples in directory "MYLUN2/another/path"
+ToolSvc.TupleMY...SUCCESS  ID=FixSymMatricesTitle="N-tuple: FixSymMatrices"                 #items=6  {m2[2],m3[2],m4[2],m5[2],m6[2],m7[2]}
+ToolSvc.TupleMY...SUCCESS Booked 1 N-Tuples and 0 Event Tag Collections
+ToolSvc.TupleMY...SUCCESS List of booked N-Tuples in directory "MYLUN3/another/path"
+ToolSvc.TupleMY...SUCCESS  ID=FixMatrices   Title="N-tuple: FixMatrices"                    #items=6  {m2[2],m3[2],m4[2],m5[2],m6[2],m7[2]}
+ToolSvc.TupleMY...SUCCESS Booked 1 N-Tuples and 0 Event Tag Collections
+ToolSvc.TupleMY...SUCCESS List of booked N-Tuples in directory "MYLUN2/another/path"
+ToolSvc.TupleMY...SUCCESS  ID=xTuple        Title="N-tuple: FixArrays"                      #items=8  {v1[1],v2[1],v3[1],v4[1],v5[1],v6[1],v7[1],v8[1]}
+ToolSvc.TupleMY...SUCCESS Booked 1 N-Tuples and 0 Event Tag Collections
+ToolSvc.TupleMY...SUCCESS List of booked N-Tuples in directory "MYLUN1/another/path"
+ToolSvc.TupleMY...SUCCESS  ID=415           Title="N-tuple: VarArrays"                      #items=4  {len1,vct1[1]/V,len2,vct2[1]/V}
+ToolSvc.TupleMY...SUCCESS Booked 1 N-Tuples and 0 Event Tag Collections
+ToolSvc.TupleMY...SUCCESS List of booked N-Tuples in directory "MYLUN3/another/path"
+ToolSvc.TupleMY...SUCCESS  ID=MyTuple3DP    Title="N-tuple: 3D-Points"                      #items=12 {p1X,p1Y,p1Z,p2X,p2Y,p2Z,p3X,p3Y,p3Z,p4X,p4Y,p4Z}
+ToolSvc.TupleMY...SUCCESS Booked 1 N-Tuples and 0 Event Tag Collections
+ToolSvc.TupleMY...SUCCESS List of booked N-Tuples in directory "MYLUN2/another/path"
+ToolSvc.TupleMY...SUCCESS  ID=MyTuple3DV    Title="N-tuple: 3D-Vectors "                    #items=12 {v1X,v1Y,v1Z,v2X,v2Y,v2Z,v3X,v3Y,v3Z,v4X,v4Y,v4Z}
+ToolSvc.TupleMY...SUCCESS Booked 1 N-Tuples and 0 Event Tag Collections
+ToolSvc.TupleMY...SUCCESS List of booked N-Tuples in directory "MYLUN1/another/path"
+ToolSvc.TupleMY...SUCCESS  ID=MyTupleLV     Title="N-tuple: Lorentz Vectors "               #items=8  {lv1E,lv1X,lv1Y,lv1Z,lv2E,lv2X,lv2Y,lv2Z}
+ToolSvc.TupleMY...SUCCESS Booked 1 N-Tuples and 0 Event Tag Collections
+ToolSvc.TupleMY...SUCCESS List of booked N-Tuples in directory "MYLUN1/path"
+ToolSvc.TupleMY...SUCCESS  ID=It is a title for my n-tupleTitle="It is a title for my n-tuple"            #items=4  {i,g1,g2,b1}
+RootHistSvc       WARNING no ROOT output file name, Histograms cannot be persistified
+EventLoopMgr         INFO Histograms converted successfully according to request.
+RFileCnv             INFO dumping contents of /NTUPLES/MYLUN1
+TFile: name=TupleEx4_1.root, title=Gaudi Trees, option=CREATE
+******************************************************************************
+*Tree    :It is a title for my n-tuple: It is a title for my n-tuple                           *
+*Entries :     5000 : Total =           83012 bytes  File  Size =      48133 *
+*        :          : Tree compression factor =   1.00                       *
+******************************************************************************
+*Br    0 :i         : i/I                                                    *
+*Entries :     5000 : Total  Size=      20650 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    1 :g1        : g1/F                                                   *
+*Entries :     5000 : Total  Size=      20656 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    2 :g2        : g2/F                                                   *
+*Entries :     5000 : Total  Size=      20656 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    3 :b1        : b1/I                                                   *
+*Entries :     5000 : Total  Size=      20656 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+******************************************************************************
+*Tree    :MyTupleLV : N-tuple: Lorentz Vectors                               *
+*Entries :     1000 : Total =           37371 bytes  File  Size =      30392 *
+*        :          : Tree compression factor =   1.00                       *
+******************************************************************************
+*Br    0 :lv1E      : lv1E/F                                                 *
+*Entries :     1000 : Total  Size=       4630 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    1 :lv1X      : lv1X/F                                                 *
+*Entries :     1000 : Total  Size=       4630 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    2 :lv1Y      : lv1Y/F                                                 *
+*Entries :     1000 : Total  Size=       4630 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    3 :lv1Z      : lv1Z/F                                                 *
+*Entries :     1000 : Total  Size=       4630 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    4 :lv2E      : lv2E/F                                                 *
+*Entries :     1000 : Total  Size=       4630 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    5 :lv2X      : lv2X/F                                                 *
+*Entries :     1000 : Total  Size=       4630 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    6 :lv2Y      : lv2Y/F                                                 *
+*Entries :     1000 : Total  Size=       4630 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    7 :lv2Z      : lv2Z/F                                                 *
+*Entries :     1000 : Total  Size=       4630 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+******************************************************************************
+*Tree    :415       : N-tuple: VarArrays                                     *
+*Entries :      100 : Total =           39712 bytes  File  Size =      20372 *
+*        :          : Tree compression factor =   1.00                       *
+******************************************************************************
+*Br    0 :len1      : len1/I                                                 *
+*Entries :      100 : Total  Size=       1018 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    1 :vct1      : vct1[len1]/F                                           *
+*Entries :      100 : Total  Size=      20845 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    2 :len2      : len2/I                                                 *
+*Entries :      100 : Total  Size=       1018 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    3 :vct2      : vct2[len2]/F                                           *
+*Entries :      100 : Total  Size=      16657 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+RFileCnv             INFO dumping contents of /NTUPLES/MYLUN2
+TFile: name=TupleEx4_2.root, title=Gaudi Trees, option=CREATE
+******************************************************************************
+*Tree    :MyTuple3DV: N-tuple: 3D-Vectors                                    *
+*Entries :     1000 : Total =           55823 bytes  File  Size =      45788 *
+*        :          : Tree compression factor =   1.00                       *
+******************************************************************************
+*Br    0 :v1X       : v1X/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    1 :v1Y       : v1Y/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    2 :v1Z       : v1Z/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    3 :v2X       : v2X/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    4 :v2Y       : v2Y/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    5 :v2Z       : v2Z/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    6 :v3X       : v3X/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    7 :v3Y       : v3Y/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    8 :v3Z       : v3Z/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    9 :v4X       : v4X/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br   10 :v4Y       : v4Y/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br   11 :v4Z       : v4Z/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+******************************************************************************
+*Tree    :xTuple    : N-tuple: FixArrays                                     *
+*Entries :       10 : Total =            6937 bytes  File  Size =       1150 *
+*        :          : Tree compression factor =   1.00                       *
+******************************************************************************
+*Br    0 :v1        : v1[5]/F                                                *
+*Entries :       10 : Total  Size=        818 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    1 :v2        : v2[10]/F                                               *
+*Entries :       10 : Total  Size=       1020 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    2 :v3        : v3[2]/F                                                *
+*Entries :       10 : Total  Size=        698 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    3 :v4        : v4[3]/F                                                *
+*Entries :       10 : Total  Size=        738 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    4 :v5        : v5[4]/F                                                *
+*Entries :       10 : Total  Size=        778 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    5 :v6        : v6[5]/F                                                *
+*Entries :       10 : Total  Size=        818 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    6 :v7        : v7[6]/F                                                *
+*Entries :       10 : Total  Size=        858 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    7 :v8        : v8[7]/F                                                *
+*Entries :       10 : Total  Size=        898 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+******************************************************************************
+*Tree    :FixSymMatrices: N-tuple: FixSymMatrices                                *
+*Entries :      100 : Total =          157783 bytes  File  Size =       5625 *
+*        :          : Tree compression factor =   1.00                       *
+******************************************************************************
+*Br    0 :m2        : m2[8][8]/F                                             *
+*Entries :      100 : Total  Size=      26240 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    1 :m3        : m3[8][8]/F                                             *
+*Entries :      100 : Total  Size=      26240 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    2 :m4        : m4[8][8]/F                                             *
+*Entries :      100 : Total  Size=      26240 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    3 :m5        : m5[8][8]/F                                             *
+*Entries :      100 : Total  Size=      26240 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    4 :m6        : m6[8][8]/F                                             *
+*Entries :      100 : Total  Size=      26240 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    5 :m7        : m7[8][8]/F                                             *
+*Entries :      100 : Total  Size=      26240 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+RFileCnv             INFO dumping contents of /NTUPLES/MYLUN3
+TFile: name=TupleEx4_3.root, title=Gaudi Trees, option=CREATE
+******************************************************************************
+*Tree    :MyTuple3DP: N-tuple: 3D-Points                                     *
+*Entries :     1000 : Total =           55819 bytes  File  Size =      45773 *
+*        :          : Tree compression factor =   1.00                       *
+******************************************************************************
+*Br    0 :p1X       : p1X/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    1 :p1Y       : p1Y/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    2 :p1Z       : p1Z/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    3 :p2X       : p2X/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    4 :p2Y       : p2Y/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    5 :p2Z       : p2Z/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    6 :p3X       : p3X/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    7 :p3Y       : p3Y/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    8 :p3Z       : p3Z/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    9 :p4X       : p4X/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br   10 :p4Y       : p4Y/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br   11 :p4Z       : p4Z/F                                                  *
+*Entries :     1000 : Total  Size=       4626 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+******************************************************************************
+*Tree    :FixMatrices: N-tuple: FixMatrices                                   *
+*Entries :      100 : Total =           59735 bytes  File  Size =       1177 *
+*        :          : Tree compression factor =   1.00                       *
+******************************************************************************
+*Br    0 :m2        : m2[2][2]/F                                             *
+*Entries :      100 : Total  Size=       2234 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    1 :m3        : m3[3][3]/F                                             *
+*Entries :      100 : Total  Size=       4234 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    2 :m4        : m4[4][4]/F                                             *
+*Entries :      100 : Total  Size=       7034 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    3 :m5        : m5[5][5]/F                                             *
+*Entries :      100 : Total  Size=      10634 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    4 :m6        : m6[6][6]/F                                             *
+*Entries :      100 : Total  Size=      15034 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    5 :m7        : m7[7][7]/F                                             *
+*Entries :      100 : Total  Size=      20234 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+NTupleSvc            INFO NTuples saved successfully
+ToolSvc              INFO Removing all tools created by ToolSvc
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

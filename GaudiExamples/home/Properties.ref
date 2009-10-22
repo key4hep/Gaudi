@@ -1,0 +1,181 @@
+JobOptionsSvc        INFO
+//GP:================================================================================
+//GP: include "../options/Properties.opts"                                    (0,0)
+//GP: include "../options/Common.opts"                                        (4,10)
+//GP: include "../options/Services.opts"                                      (7,10)
+AuditorSvc.Auditors =  [ "ChronoAuditor" ] ;                            //GP: (1,1)
+//GP: end  "../options/Services.opts"                                         (24,1)
+ApplicationMgr.StatusCodeCheck = 1;                                     //GP: (7,10)
+//GP: end  "../options/Common.opts"                                           (16,1)
+#units "../options/units.opts"                                          //GP: (5,10)
+//GP: m  = 1000;                                                              (1,1)
+//GP: cm  = 10;                                                               (2,1)
+//GP: mm  = 1;                                                                (3,1)
+//GP: m2  = 1e+06;                                                            (4,1)
+//GP: end  "../options/units.opts"                                            (5,1)
+//GP: include "../options/optsub1/dummy1.opts"                                (9,10)
+Dummy1.Property = 1;                                                    //GP: (1,1)
+//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace-europa/GAUDI/GaudiExamples/options/optsub2/dummy2.opts" (3,10)
+Dummy2.Property = 1;                                                    //GP: (1,1)
+//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace-europa/GAUDI/GaudiExamples/options/optsub2/dummy2.opts" (3,1)
+//GP: end  "../options/optsub1/dummy1.opts"                                   (4,1)
+ApplicationMgr.TopAlg =  [ "PropertyAlg" ] ;                            //GP: (9,10)
+ApplicationMgr.TopAlg +=  [ "PropertyAlg" , "PropertyProxy" ] ;         //GP: (9,10)
+ApplicationMgr.TopAlg -=  [ "PropertyAlg" ] ;                           //GP: (9,10)
+MessageSvc.OutputLevel = 3;                                             //GP: (9,10)
+ApplicationMgr.EvtMax = 1;                                              //GP: (9,10)
+ApplicationMgr.EvtSel = "NONE";                                         //GP: (9,10)
+ApplicationMgr.HistogramPersistency = "NONE";                           //GP: (9,10)
+PropertyAlg.OutputLevel = 3;                                            //GP: (9,10)
+PropertyAlg.Int = 101;                                                  //GP: (9,10)
+PropertyAlg.Double = 1.011e+12;                                         //GP: (9,10)
+PropertyAlg.String = "hundred one";                                     //GP: (9,10)
+PropertyAlg.Bool = 0;                                                   //GP: (9,10)
+PropertyAlg.IntArray =  [ 1 , 2 , 3 , 5 ] ;                             //GP: (9,10)
+PropertyAlg.DoubleArray =  [ -11 , 2 , 3.3 , 0.0004 ] ;                 //GP: (9,10)
+PropertyAlg.StringArray =  [ "one" , "two" , "four" ] ;                 //GP: (9,10)
+PropertyAlg.BoolArray =  [ 0 , 1 , 0 ] ;                                //GP: (9,10)
+PropertyAlg.EmptyArray =  [  ] ;                                        //GP: (9,10)
+PropertyAlg.DoubleArrayWithUnits =  [ 1100000 , -20 , 33 , 0.4 ] ;      //GP: (9,10)
+PropertyAlg.DoubleArrayWithoutUnits =  [ 1100000 , -20 , 33 , 0.4 ] ;   //GP: (9,10)
+PropertyAlg.PInt = 101;                                                 //GP: (9,10)
+PropertyAlg.PDouble = 10100000;                                         //GP: (9,10)
+PropertyAlg.PString = "hundred one";                                    //GP: (9,10)
+PropertyAlg.PBool = 1;                                                  //GP: (9,10)
+PropertyAlg.PIntArray =  [ 1 , 2 , 3 , 5 ] ;                            //GP: (9,10)
+PropertyAlg.PDoubleArray =  [ 1.1 , 2 , 3.3 ] ;                         //GP: (9,10)
+PropertyAlg.PStringArray =  [ "one" , "two" , "four" ] ;                //GP: (9,10)
+PropertyAlg.PBoolArray =  [ 1 , 0 , 1 , 0 ] ;                           //GP: (9,10)
+PropertyAlg.IntPairArray =  [ (1,2) , (3,4) , (5,6) ] ;                 //GP: (9,10)
+PropertyAlg.DoublePairArray =  [ (1.1,2.1) , (2.3,4.5) , (5.6,6.7) ] ;  //GP: (9,10)
+PropertyProxy.String = "This is set by the proxy";                      //GP: (9,10)
+MessageSvc.setDebug +=  [ "EventLoopMgr" ] ;                            //GP: (9,10)
+MessageSvc.setVerbose +=  [ "MsgTest" ] ;                               //GP: (9,10)
+MessageSvc.setWarning +=  [ "MsgTest" ] ;                               //GP: (9,10)
+//GP: end  "../options/Properties.opts"                                       (79,1)
+//GP:================================================================================
+
+JobOptionsSvc        INFO Job options successfully read in from ../options/Properties.opts
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.42 $
+                                          running on pclhcb55.cern.ch on Fri May 30 20:38:35 2008
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+StatusCodeSvc        INFO initialize
+EventLoopMgr        DEBUG Service base class initialized successfully
+EventLoopMgr        DEBUG Creating Top Algorithm PropertyAlg with name PropertyAlg
+PropertyAlg          INFO Before Initialization......
+PropertyAlg          INFO Int    = 100
+PropertyAlg          INFO Double = 100
+PropertyAlg          INFO String = hundred
+PropertyAlg          INFO Bool   = 1
+PropertyAlg          INFO IntArray    = []
+PropertyAlg          INFO DoubleArray = []
+PropertyAlg          INFO StringArray = []
+PropertyAlg          INFO BoolArray   = []
+PropertyAlg          INFO EmptyArray  = []
+PropertyAlg          INFO IntPairArray  = []
+PropertyAlg          INFO DoublePairArray  = []
+PropertyAlg          INFO PInt    =  'PInt':100
+PropertyAlg          INFO Read handler called for property:  'PDouble':100
+PropertyAlg          INFO PDouble =  'PDouble':100
+PropertyAlg          INFO PString =  'PString':hundred
+PropertyAlg          INFO PBool   =  'PBool':False
+PropertyAlg          INFO PIntArray    =  'PIntArray':[  ]
+PropertyAlg          INFO PDoubleArray =  'PDoubleArray':[  ]
+PropertyAlg          INFO PStringArray =  'PStringArray':[  ]
+PropertyAlg          INFO PBoolArray   =  'PBoolArray':[  ]
+EventLoopMgr        DEBUG Creating Top Algorithm PropertyProxy with name PropertyProxy
+PropertyAlg          INFO Read handler called for property:  'PDouble':10100000
+PropertyAlg          INFO Update handler called for property:  'PDouble':10100000
+PropertyAlg          INFO After Initialization having read the JobOptions file...
+PropertyAlg          INFO Int    = 101
+PropertyAlg          INFO Double = 1.011e+12
+PropertyAlg          INFO String = hundred one
+PropertyAlg          INFO Bool   = 0
+PropertyAlg          INFO IntArray    = [1, 2, 3, 5]
+PropertyAlg          INFO DoubleArray = [-11, 2, 3.3, 0.0004]
+PropertyAlg          INFO StringArray = [one, two, four]
+PropertyAlg          INFO BoolArray   = [0, 1, 0]
+PropertyAlg          INFO EmptyArray  = []
+PropertyAlg          INFO IntPairArray  = [(1, 2), (3, 4), (5, 6)]
+PropertyAlg          INFO DoublePairArray  = [(1.1, 2.1), (2.3, 4.5), (5.6, 6.7)]
+PropertyAlg          INFO PInt    =  'PInt':101
+PropertyAlg          INFO Read handler called for property:  'PDouble':10100000
+PropertyAlg          INFO PDouble =  'PDouble':10100000
+PropertyAlg          INFO PString =  'PString':hundred one
+PropertyAlg          INFO PBool   =  'PBool':True
+PropertyAlg          INFO PIntArray    =  'PIntArray':[ 1 , 2 , 3 , 5 ]
+PropertyAlg          INFO PDoubleArray =  'PDoubleArray':[ 1.1 , 2 , 3.3 ]
+PropertyAlg          INFO PStringArray =  'PStringArray':[ 'one' , 'two' , 'four' ]
+PropertyAlg          INFO PBoolArray   =  'PBoolArray':[ True , False , True , False ]
+PropertyAlg          INFO DoubleArrayWithUnits[0] = 1.1e+06
+PropertyAlg          INFO DoubleArrayWithUnits[1] = -20
+PropertyAlg          INFO DoubleArrayWithUnits[2] = 33
+PropertyAlg          INFO DoubleArrayWithUnits[3] = 0.4
+PropertyAlg          INFO ===============Checking Property Verifier ===============
+PropertyAlg          INFO Playing with PropertyVerifiers...
+PropertyAlg          INFO PInt= 155 [should be 155, bounds are 0, 200]
+PropertyAlg          INFO Got an exception when setting a value outside bounds
+PropertyAlg          INFO PInt=  'PInt':155 [should be 155]
+PropertyAlg          INFO ===============Checking Property CallBaks ===============
+PropertyAlg          INFO Accessing PDouble ...
+PropertyAlg          INFO Read handler called for property:  'PDouble':10100000
+PropertyAlg          INFO Value obtained is: 1.01e+07
+PropertyAlg          INFO Updating PDouble ...
+PropertyAlg          INFO Read handler called for property:  'PDouble':999
+PropertyAlg          INFO Update handler called for property:  'PDouble':999
+PropertyAlg          INFO ==========Checking Accesing Properties by string=========
+PropertyAlg          INFO  Got property ApplicationMgr.ExtSvc = [  ];
+DetectorDataSvc      INFO Detector description not requested to be loaded
+PropertyAlg          INFO  Set property ApplicationMgr.ExtSvc =  ["EvtDataSvc/EventDataSvc", "DetDataSvc/DetectorDataSvc"];
+PropertyAlg          INFO  Got property ApplicationMgr.ExtSvc = [ 'EvtDataSvc/EventDataSvc' , 'DetDataSvc/DetectorDataSvc' ];
+PropertyAlg          INFO  Set property ApplicationMgr.ExtSvc =  [ 'EventDataSvc', 'DetectorDataSvc'];
+PropertyAlg          INFO  Got property ApplicationMgr.ExtSvc = [ 'EventDataSvc' , 'DetectorDataSvc' ];
+PropertyAlg         ERROR PBool can not be set to T
+PropertyAlg         ERROR Bool can not be set to T
+PropertyAlg         ERROR PBool can not be set to F
+PropertyAlg         ERROR Bool can not be set to F
+PropertyAlg         ERROR PBool can not be set to 10
+PropertyAlg         ERROR Bool can not be set to 10
+MsgTest           WARNING This should be printed if threshold is WARNING
+MsgTest             ERROR This should be printed if threshold is ERROR
+MsgTest             FATAL This should be printed if threshold is FATAL
+MsgTest           SUCCESS This should be printed ALWAYS
+PropertyAlg          INFO =================================================
+PropertyAlg          INFO Dump of the property catalogue....
+PropertyAlg          INFO  Properties of ApplicationMgr: EvtMax, EvtSel, HistogramPersistency, StatusCodeCheck, TopAlg
+PropertyAlg          INFO  Properties of AuditorSvc: Auditors
+PropertyAlg          INFO  Properties of Dummy1: Property
+PropertyAlg          INFO  Properties of Dummy2: Property
+PropertyAlg          INFO  Properties of MessageSvc: OutputLevel, setDebug, setVerbose, setWarning
+PropertyAlg          INFO  Properties of PropertyAlg: Bool, BoolArray, Double, DoubleArray, DoubleArrayWithoutUnits, DoubleArrayWithUnits, DoublePairArray, EmptyArray, Int, IntArray, IntPairArray, OutputLevel, PBool, PBoolArray, PDouble, PDoubleArray, PInt, PIntArray, PString, PStringArray, String, StringArray
+PropertyAlg          INFO  Properties of PropertyProxy: String
+PropertyAlg          INFO =================================================
+PropertyAlg          INFO Changed property DoubleArray in catalogue
+PropertyAlg          INFO Read handler called for property:  'PDouble':10100000
+PropertyAlg          INFO Update handler called for property:  'PDouble':10100000
+JobOptionsSvc       ERROR Unable to set the property 'DoubleArray' of 'PropertyAlg'. Check option and algorithm names, type and bounds.
+PropertyAlg          INFO DoubleArray = [-11, 2, 3.3, 0.0004]
+PropertyAlg          INFO =================================================
+PropertyProxy        INFO  Got property this.RInt = 101;
+PropertyProxy        INFO  Set property this.RInt = 1001;
+PropertyProxy        INFO  Got property this.RInt = 101;
+PropertyProxy        INFO  Got property this.String = This is set by the proxy;
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
+HistogramPersis...WARNING Histograms saving not required.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+PropertyAlg          INFO executing....
+PropertyProxy        INFO executing....
+ApplicationMgr       INFO Application Manager Stopped successfully
+PropertyAlg          INFO finalizing....
+PropertyProxy        INFO finalizing....
+EventLoopMgr         INFO Histograms converted successfully according to request.
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully
+Number of MyTrack instances:0
+Number of MyVertex instances:0

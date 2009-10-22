@@ -1,0 +1,245 @@
+Package: GaudiUtils
+Package manager : Marco Clemencic
+
+================ GaudiUtils v3r5 ====================================
+! 2009-10-08 - Vanya Belyaev
+ - Patch #3311: Add ASCII dump for 1D-profile histograms
+   Extension of patch #3261 to 1D-profile histograms
+
+! 2009-10-07 - Vanya Belyaev
+ - Patch #3261: Utility for ASCII dump of 1D-histograms
+   Added the function Gaudi::Utils::Histo::histoDump.
+
+! 2009-09-08 - Rob Lambert
+ - Patch #3222: Patch to Issue incidents for Input Files
+   - Details required for the documentation of output
+     files in the Summary services
+   - Added functionality to IODataManager
+     will now fire a FailedInputFile incident when there is a problem
+
+================ GaudiUtils v3r4 ====================================
+! 2009-08-01 - Rob Lambert
+ - Patch #3174: Added GaudiUtils/RegEx.h
+   It containes templated functions to deal with Regular Expressions.
+   Uses boost/regex.hpp, and std::string.
+
+! 2009-07-21 - Hubert Degaudenzi
+ - Fixed typo in the -no_static usage.
+
+! 2009-07-20 - Marco Clemencic
+ - Added '-no_static' to the declaration of the libraries (implemented since CMT
+   v1r20p20081118).
+
+================ GaudiUtils v3r3 ====================================
+! 2009-07-08 - Marco Clemencic
+ - Removed the usage of extend_interfaces1.
+
+================ GaudiUtils v3r2 ====================================
+! 2009-06-23 - Marco Clemencic, Vanya Belyaev
+ - Patch #2980: Moved Range.h and NamedRange.h from GaudiUtils to GaudiKernel.
+
+! 2009-06-15 - Hubert Degaudenzi
+ - use the new LCG tag convention.
+
+================ GaudiUtils v3r1 ====================================
+! 2009-05-15 - Marco Clemencic
+ - Fixed bug #50389: AppMgr.algorithm/tool/algorithms does not work for
+                     GaudiPython::PyAlg<TYPE>
+   Changed the inheritance from "implements#": replaced "virtual public" with
+   "public" (more correct and does not confuse PyROOT).
+
+================ GaudiUtils v3r0 ====================================
+! 2009-04-07 - Marco Clemencic
+ - Moved back the namespace MSG to the global namespace.
+
+! 2009-04-06 - Vanya Belyaev
+ - Patch #2930: improve the manipulations with AIDA histograms
+   - GaudiUtils/HistoStats.h, src/Lib/HistoStats.cpp
+     1) fix the bug in evaluation of error in kurotsis (thanks to Dmitry Golubkov!)
+     2) fix the bug in evaluation of error in moment
+     3) add new methods for class Gaudi::Utils::HistoStats
+        sumBinHeightErr          : the error for AIDA::IHistogram1D::sumBinHeights
+        sumAllBinHeightErr       : the error for AIDA::IHistogram1D::sumAllBinHeights
+        overflowEntriesFrac      : the fraction of overflow entries
+        underflowEntriesFrac     : the fraction of underflow entries
+        overflowEntriesFracErr   : the (binomial) error on fraction of overflow entries
+        underflowEntriesFracErr  : the (binomial) error on fraction of underflow entries
+        overflowIntegralFrac     : the fraction of overflow integral
+        underflowIntegralFrac    : the fraction of underflow integral
+        overflowIntergalFracErr  : the error on fraction of overflow integral
+        underflowIntegralFracErr : the error on fraction of underflow integral
+        nEntries                 : number of entries for certain ranges
+        nEntriesFrac             : fraction entries for certain ranges
+        nEntriesFracErr          : the (binomial) error for the fraction entries for certain ranges
+   - GaudiUtils/HistoTableFormat.h, src/Lib/HistoTableFormat.cpp
+     1) Add the possibility to print new estimators from class HistoStats.
+        The overall number of the predefined fields in table printout
+        now is 26.. see GaudiUtils/HistoTableFormat.h for the list
+     2) add few new reference formats:
+          StatOnly  : #entries, mean, rms, skewness & kurtosis
+          Stat1     : similar to StatOnly but with errors
+          ShapeOnly : mean.rms, skewness,kurtosis, overflow&underflow fractions
+          Shape     : similar for ShapeOnly but with errors
+       "Shape"-format are very useful for comparison of histograms by shapes,
+       ignoring the normalization
+
+! 2009-04-06 - Marco Clemencic
+ - Renamed back the namespace Msg to MSG and moved it into the namespace Gaudi.
+
+! 2009-03-13 - Marco Clemencic
+ - Task #9061: Introduction of component managers
+   - Adapted to use the changes in the ISvcLocator, ISvcManager and IAlgManager
+     interfaces.
+
+! 2009-02-19 - Marco Clemencic
+ - Patch #2790: Rename the namespace MSG to Msg
+
+! 2009-02-06 - Marco Clemencic
+ - Moved the implementation of the methods addRef and release to the templated
+   base class implements<> (avoids duplication). 
+
+! 2009-01-30 - Marco Clemencic
+ - Replaced all the occurrences of endreq with endmsg. 
+
+! 2009-01-29 - Marco Clemencic
+ - Symbol visibility
+   - Decorated all the classes and functions that needs to be exported (see
+     GaudiKernel release.notes).
+   - Added a hack to force the export of the symbols of AIDA interfaces to allow
+     the dynamic_cast (see GaudiSvc release.notes).
+
+! 2009-01-22 - Marco Clemencic
+ - Adapted to the new IInterface functionalities (see GaudiKernel release.notes)
+ - Removed the IID_* constants.
+
+================ GaudiUtils v2r2 ====================================
+! 2008-11-27 - Marco Clemencic
+ - Fixed compilation problems with ROOT 5.21/06.
+
+================ GaudiUtils v2r1 ====================================
+! 2008-10-10 - Vanya Belyaev
+ - Patch #2073: SharedObjectsContainer and 'blind' access to TYPE::Container &
+                TYPE::Selection
+    * GaudiUtils/Range.h
+    * GaudiUtils/NamedRange.h
+    * src/Lib/Range.cpp
+   The light representation of containers through the par of iterators.
+   The files are copied (and renamed) from LoKi project. 
+
+! 2008-10-03 - Vanya Belyaev
+ - Patch #1943. Added update handler to MultiFileCatalog.Catalogs
+
+================ GaudiUtils v2r0 ====================================
+! 2008-06-04 - Chris Jones
+ - Patch #1861. Prevent division-by-zero results in skewness and kurtosis.
+   Protection against NaN/Inf in Gaudi::Utils::HistoStats::skewness and
+   Gaudi::Utils::HistoStats::kurtosis (return 0 instead).
+
+! 2008-06-02 - Marco Clemencic
+ - Task #5809. Extension to Gaudi Application state machine.
+   - Renamed the method IFileCatalog::start to IFileCatalog::init, to avoid
+     clashes with IService::start.
+
+================ GaudiUtils v1r6 ====================================
+! 2008-04-03 - Vanya BELYAEV 
+ - Patch #1749. Improve some printout of the histogram.
+   The default width of "ID" and the "title" fields are incremented to improve
+   the printout. 
+   Also more coherent treatment of HistoStats is performed to minimize the
+   cross references.
+
+! 2008-04-03 - Markus Frank
+ - Bug #33372 (Patch #1746). Memory leak in XmlFileCatalog. 
+   - Fix memory leak on transcoding XML strings during Xerces exception handling.
+
+================ GaudiUtils v1r5 ====================================
+! 2008-03-04 - Markus Frank
+ - Patch #1722. 
+   - Fix dataset access by LFN. Was simply not working.
+
+! 2008-02-21 - Markus Frank
+ - patch #1700. Fix the filter mechanism to reduce the number of messages 
+   for inaccessible objects.
+
+! 2008-02-11 - Markus Frank
+ - Fixed Bug #33372. Tiny memory leak in XmlFileCatalog.
+
+================ GaudiUtils v1r4 ====================================
+! 2008-01-30 - Markus Frank
+ - Fix bug in XMLCatalog (protect if element is not a DOMElement)
+ - Fix bug in IODataManager catalog lookup
+
+! 2008-01-19 - Markus Frank
+ - Fix bug in file aging: only age files when new read-only connections appear
+   (like in POOL)
+
+! 2008-01-19 - Markus Frank
+ - Fix printout level of messages from the IODataManager.
+
+! 2008-01-15 - Markus Frank
+ - Patch #1622. Reduce printout level on unsuccessful catalog lookup.
+                (MultiFileCatalog) 
+   An unsuccessful catalog lookup is not an error, but rather a normal operation
+   if e.g. the existence of a file should be checked. 
+
+! 2007-12-12 - Marco Clemencic
+ - patch #1585.
+   Fixed warnings about breaking of strict-aliasing rules (gcc 4.1 optimized).
+
+================ GaudiUtils v1r3 ====================================
+! 2007-10-21 - Markus Frank
+ - Patch #1534. Fixed compilation warning which didn't appear on 
+   windows.
+
+! 2007-10-19 - Markus Frank
+ - Patch #149[234]. Add components library containing file catalog and I/O data manager.
+   Used by DAQ/MDF and GaudiPoolDb
+
+================ GaudiUtils v1r2 ======================================
+! 2007-09-19 - Vanya Belyaev
+ - Fixed bug #29969 (Error compiling GaudiUtils/HistoTableFormat with gcc4.1)
+ 	 
+! 2007-09-19 - Vanya Belyaev
+ - patch #1273.
+   - GaudiUtils/HistoStats.h
+      add new functions
+      - meanErr
+      - rmsErr    
+      - kurtosisErr 
+      - skewnessErr 
+      - momentErr
+      - centralMomenErr
+      rmsErr is more precise that ROOT, since ROOT neglects kurtosis.
+      Please note that ROOT has a completely wrong calculations
+      of errors in skewness and kurtosis
+
+   - GaudiUtils/HistoTableFormat.h
+     new utilities for highly customizable printout of histograms
+
+! 2007-08-07 - Vanya BELYAEV
+ Patch #1266:
+ - GaudiUtils/HistoStats.h, src/Lib/HistoStats.cpp
+     new files with simple class Gaudi::Utils::HistoStats for evaluation 
+     of few basic statistical quantities for AIDA::historgams: 
+       - moments 
+       - central moments 
+       - skewness
+       - kurtosis 
+    The moments (and therefore all other quantities) are calculated on 
+    "bin-by-bin"-basis, since the corresponding cumulants needed
+    for "event-by-event"-calculations are not available.
+ - GaudiUtils/Aida2ROOT.h, src/Lib/Aida2ROOT.cpp
+   fix doxygen comments 
+
+
+================ GaudiUtils v1r1 ======================================
+! 2007-04-27 - Hubert Degaudenzi
+ - fixed compilation problem with ROOT libHist which requires
+   libMatrix on mac osx.
+
+================ GaudiUtils v1r0 ======================================
+! 2007-02-07 - Ivan Belyaev
+ - patch #989. GaudiUtils/Aida2ROOT.h, src/Lib/Aida2ROOT.cpp, new
+   class Gaudi::Aida2ROOT for access for internal ROOT implementation
+   of transient histograms in Gaudi [Useful functions, heavily used in
+   the context of Bender/Panoramix&Online]

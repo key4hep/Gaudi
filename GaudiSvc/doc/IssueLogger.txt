@@ -1,0 +1,110 @@
+
+IssueLogger
+===========
+
+Available Job Options:
+ (StringArray) Output
+ (Integer)     ReportLevel
+ (Integer)     TracebackLevel
+ (Boolean)     ShowTime
+  
+
+
+The IssueLogger service makes use of the IssueSeverity object, to
+automatically record and stream errors to various outputs.
+
+IssueSeverity objects are created using the macro "ISSUE",
+with two parameters: the error level, and a message. eg:
+
+    ISSUE(Severity::WARNING,"track Chi2 is too high");
+
+The available error levels are:
+
+    VERBOSE,
+    DEBUG,
+    DEBUG1,
+    DEBUG2,
+    DEBUG3,
+    INFO,
+    WARNING,
+    RECOVERABLE,
+    ERROR,
+    FATAL
+
+which are enums in the "Severity" namespace, as defined in 
+GaudiKernel/IssueSeverity.h.
+
+The ISSUE macro wraps an IssueSeverity object, and inserts
+the file and line number where the object was created. The 
+constructor of the IssueSeverity object passes this information
+to the IssueLogger, which passes it to the appropriate stream,
+and appends a stack traceback if desired.
+
+The IssueLogger output streams are defined at run time, via
+jobOptions:
+
+IssueLogger.Output = {"_Level_='_StreamType_'"};
+
+
+where _Level_ can be one of 
+
+    VERBOSE,
+    DEBUG,
+    DEBUG1,
+    DEBUG2,
+    DEBUG3,
+    INFO,
+    WARNING,
+    RECOVERABLE,
+    ERROR,
+    FATAL
+
+(ie, the same as the Severity levels), and the _StreamType_
+can be one of
+    MsgSvc        : write to the message service
+    STDOUT        : write to the standard out
+    STDERR        : write to the standard error
+    a file name   : write to a file
+
+eg:
+
+IssueLogger.Output  = {"DEBUG='MsgSvc'"};
+IssueLogger.Output += {"WARNING='warnings.out'"};
+IssueLogger.Output += {"ERROR='STDERR'"};
+
+The default output stream is "MsgSvc". When streaming to the MsgSvc,
+the message level used is the same as the that of the IssueSeverity,
+ie an IssueSeverity::WARNING object will be written with a
+MSG::WARNING message.
+
+The level of reporting is controlled via two options: "ReportLevel",
+and "TraceBackLevel". "ReportLevel" controls the level at which
+messages are written out, eg if it's set to INFO, only INFO and
+higher ErrorObjects are written out to whatever stream they're
+associated with. The "TraceBackLevel" option controls the level at
+which a stack trace is attached to the message.
+
+
+IssueSeverity objects can be attached to StatusCodes, either via
+the constructor of the StatusCode, or with the conversion operator:
+   StatusCode sc(StatusCode::FAILURE, 
+                 ISSUE(Severity::ERROR,"HV set too low!"));
+
+
+   StatusCode sc(ISSUE(Severity::WARNING,"fit parameters off"));
+
+when the conversion operator is used (ie, the second case), the
+IssueSeverity level is used to set the type of the
+StatusCode. Anything of WARNING level and down, is set to a 
+StatusCode::SUCCESS, a RECOVERABLE is set as a StatusCode::RECOVERABLE, 
+and anything above that is set to a StatusCode::FAILURE.
+
+Attaching an ISSUE to a StatusCode does not obviate the need to check
+whether the StatusCode is a success or failure!
+
+The IssueSeverity object can be retrieved from a StatusCode using the
+StatusCode::severity() method.
+
+ 
+A timestamp can be printed along with the error message, by setting
+the boolean jobOption "ShowTime" to "true".

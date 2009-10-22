@@ -1,0 +1,374 @@
+! =============================================================================
+! Package     : GaudiGSL
+! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
+! =============================================================================
+
+================ GaudiGSL v7r3 ====================================
+! 2009-07-30 - Marco Clemencic
+ - Fixed some doxygen warnings.
+
+! 2009-07-20 - Marco Clemencic
+ - Added '-no_static' to the declaration of the libraries (implemented since CMT
+   v1r20p20081118).
+
+================ GaudiGSL v7r2 ====================================
+! 2009-07-08 - Marco Clemencic
+ - Removed the usage of extend_interfaces1.
+
+================ GaudiGSL v7r1 ====================================
+! 2009-06-15 - Hubert Degaudenzi
+ - use the new LCG tag convention.
+
+! 2009-06-10 - Marco Clemencic
+ - Removed _dll.cpp and _load.cpp files (not needed anymore).
+
+================ GaudiGSL v7r0 ====================================
+! 2009-04-07 - Marco Clemencic
+ - Moved back the namespace MSG to the global namespace.
+
+! 2009-04-06 - Marco Clemencic
+ - Renamed back the namespace Msg to MSG and moved it into the namespace Gaudi.
+
+! 2009-03-13 - Marco Clemencic
+ - Task #9061: Introduction of component managers
+   - Adapted to use the changes in the ISvcLocator, ISvcManager and IAlgManager
+     interfaces.
+
+! 2009-02-19 - Marco Clemencic
+ - Patch #2790: Rename the namespace MSG to Msg
+
+! 2009-01-30 - Marco Clemencic
+ - Replaced all the occurrences of endreq with endmsg. 
+
+! 2009-01-29 - Marco Clemencic
+ - Symbol visibility
+   - Decorated all the classes and functions that needs to be exported (see
+     GaudiKernel release.notes).
+
+! 2009-01-22 - Marco Clemencic
+ - Adapted to the new IInterface functionalities (see GaudiKernel release.notes)
+ - Removed the IID_* constants.
+
+================ GaudiGSL v6r10 ====================================
+! 2008-10-27 - Marco Clemencic
+ - Fixed warnings reported by gcc 4.3:
+   - type qualifiers ignored on function return type
+
+================ GaudiGSL v6r9 ====================================
+! 2008-02-25 - Hubert Degaudenzi & Marco Clemencic
+ - Fixed a linkage problem with libgsl.so and libgslcblas.so.
+
+================ GaudiGSL v6r8 ====================================
+! 2007-11-20 - Marco Clemencic
+ - Fixed few compilation warnings on win32.
+
+================ GaudiGSL v6r7 ====================================
+! 2007-05-24 - Hubert Degaudenzi
+ - Comments clean-up.
+
+================ GaudiGSL v6r6 =======================================
+================ GaudiGSL v6r5 =======================================
+! 2006-11-30 - Pere Mato
+  Adpated package to the new PluginSvc
+  - Removed protected from constructor/destructors and fiendship of
+    Factory class
+
+================ GaudiGSL v6r4 =======================================
+! 2006-01-10 - Hubert Degaudenzi
+ - use of the DECLARE_XXX_FACTORY macros. replacement of the
+   corresponding code.
+
+================ GaudiGSL v6r3 =======================================
+! 2005-11-25 - Pere Mato
+ - requirements: adapted to use generate reflex dictionary
+
+================ GaudiGSL v6r2 =======================================
+! 200501-10 - Pere Mato
+ - requirements: adapted to use CLHEP 1.9.x.x (with namespace CLHEP) and GSL 1.5
+
+================ GaudiGSL v6r1 =======================================
+! 2004-07-06 - Pere Mato
+ - requirements: adapted to use new LCGCMT interface packages
+ 
+================ GaudiGSL v6r0 =======================================
+! 2004-03-06 - Vanya BELYAEV
+
+New files:
+============
+  GaudiMath/Adapters.h
+  GaudiMath/FunAdapters.h
+  GaudiMath/GSLFunAdapters.h
+  GaudiMath/Interpolation.h
+  GaudiMath/Splines.h
+
+  src/Lib/Adapters.cpp
+  src/Lib/GSLFunAdapters.cpp
+  src/Lib/Splines.cpp
+  src/Tests/GSLAdaptersTest.cpp
+  src/Tests/Interp.cpp
+
+	dict/GaudiGSLMath.h
+	dict/GaudiGSLMath.xml
+
+Modified files:
+===============
+  GaudiMath/GaudiMath.h
+  cmt/requirements
+  doc/release.notes
+  src/Components/EqSolver.cpp
+  src/Components/FuncMinimum.cpp
+  src/Lib/Adapter.cpp
+  src/Tests/2DoubleFuncTest.cpp
+  src/Tests/3DoubleFuncTest.cpp
+  src/Tests/PFuncTest.cpp
+
+removed file :
+==============
+   GaudiMath/Adapter.h
+
+                   ===============================================
+                            Modifcations in details:
+                   ===============================================
+
+ - src/Component/FuncMininum.cpp   
+       fix a compiler warning 
+ - src/Component/EqSolver.cpp      
+       fix a compiler warning 
+
+ - GaudiMath/GSLFunAdapters.h 
+    - new file with adapters to "typical" GSL fucntions 
+   
+ - improvemend with different adapters 
+  
+ - GaudiMath/GaudiMath.h 
+       add NumericalDefiniteIntegral into namespace GaudiMath with name 
+       DefIntegral 
+  - GaudiMath/Interpolation.h
+       new file with definition of Interpolation types 
+       available interpolation types:
+          - Linear 
+          - Polynomial 
+          - Cubic spline with natural  boundary conditions 
+          - Cubic spline with periodic boudary conditions 
+          - Akima spline with natural  boundary conditions 
+          - Akima spline with periodic boundary conditions 
+  - GaudiMath/Splines.h 
+      new classes 
+     SplineBase - more or less effective (but not inlined) 
+                  definition of spline function 
+     GSLSpline       - "GenericFunction" (Genfun) which performs spline 
+                       interpolation using SplineBase object 
+     GSLSplineDeriv  - "GenericFunction" (Genfun) which corresponds to 
+                       the first  derivative of spline function 
+     GSLSplineDeriv2 - "GenericFunction" (Genfun) which corresponds to 
+                       the second derivative of spline function 
+     GSLSplineInteg  - "GenericFunction" (Genfun) which corresponds to 
+                       the integral of spline function 
+ 
+    All these objects are imported into gamespace GaudiMath under the names 
+     GaudiMath::SimpleSpline 
+     GaudiMath::Spline 
+     GaudiMath::SplineDeriv 
+     GaudiMath::SplineDeriv2
+     GaudiMath::SplineInteg  
+      
+    All objects have few constructors:
+     1)  "a'la Matt" 
+     FUN ( const std::vector<double>&           x    , 
+           const std::vector<double>&           y    , 
+           const GaudiMath::Interpolation::Type type ) ;
+     2) constructor from pairs (x,y(x)) 
+     FUN ( const std::vector<std::pair<double,double> >& data , 
+           const GaudiMath::Interpolation::Type          type ) ;
+     3) templated constructor in STL spirit 
+        from 2 sequences
+     template <class DATAX,class DATAY>
+     FUN ( DATAX  xbegin                            , 
+           DATAX  xend                              , 
+           DATAY  ybegin                            , 
+           const GaudMath::Interpolation::Type type ) ;
+     3) templated constructor in STL spirit 
+        from sequence of (x,y(x)) pairs
+      template <class DATA>
+     FUN ( DATA  begin                            , 
+           DATA  end                              , 
+           const GaudMath::Interpolation::Type type ) ;
+      
+        This constructor is well suited to be used in conjuncion 
+        with class TabulatedPropery:  
+       
+        // tabulated property   
+        const TabulatedProperty* prop = ... ;
+        // create the interpolation function 
+        const GaudiMath::Function& fun = 
+               GaudiMath::Spline( prop->table().begin() , 
+                                  prop->table().end  () , 
+                                  GaudiMath::Interpolation::Akima ) ;
+         // use the constructed interpolation function 
+         double value = fun( -1.0 ) ;
+
+================ GaudiGSL v5r1 =======================================
+! 2004-02-03 - Vanya Belyaev
+ - serious bug in GaudiGSL code for numerical integration
+
+================ GaudiGSL v5r0 =======================================
+! 2003-08-18 - Kirill Miklyaev
+ - new solving nonlinear system with n equations in n unknowns is added
+  GaudiGSL/IEqSolver.h                   the abstract interface
+  src/Components/EqSolver.h, .cpp        the concrete implementation of solving tool
+ - class Adapter is added
+  GaudiMath/Adapter.h                    convert function types "point to function" 
+  src/Lib/Adapter.cpp                    and "IFunction" to "GenFunction"
+					          
+================ GaudiGSL v4r0 =======================================
+! 2003-05-12 - Kirill Miklyaev
+ - minimization tool is changed
+ - the abstract interface is updated
+ - error handling is added
+	GaudiGSL/IFuncMinimum.h     the abstact interface is changed
+	src/FuncMinimum.h, .cpp     the concrete implementation 
+                              of minimization tool are changed
+ ================ GaudiGSL v3r0 =======================================
+! 2003-01-22 - Kirill Miklyaev
+ - minimization tool is changed
+ - all static variables and static methods are removed
+  scr/FuncMinimum.h,.cpp      the concrete implementation 
+                              of minimization tool are changed
+
+================ GaudiGSL v2r0 =======================================
+! 2002-09-27 - Ivan Belyaev & Kirill Miklyaev 
+ - new minimization tool is added   
+  GaudiGSL/IFuncMinimum.h     the abstract interface 
+  src/FuncMinimum.h,.cpp      the concrete implementation 
+                              of minimization tool
+
+  Example of the configuration of minimization tool:
+
+// choice of underlying minimization algorithms: 
+//  (1) conjugate_fr  ( default )
+//  (2) conjugate_pr 
+//  (3) vector_bfgs 
+//  (4) steepest_descendent 
+ToolSvc.FuncMinimum.Algorithm = "conjugate_fr" ;  /// default value 
+ 
+/// declare maximum of iteration
+ToolSvc.FuncMinimum.Iteration = 1000           ; // default value is 200 
+ 
+/// declare the absolute tolerance for the Euclidean norm of the gradient
+ToolSvc.FuncMinimum.Gradient  = 1e-10          ; // defualt value 
+
+!==========================GaudiGSL v1r0=========================================
+! 2001-05-12  Vanya Belyaev
+  New package
+
+    The Gsl Service is the service which perform intelligent error handling
+    for GSL (GNU Scientific Library)
+
+  It provides a choice between different "Error Handling Policies"
+
+  Current implementation supports the
+  several "error handling policies", which are driven by
+  "ErrorPolicy" property of class GslSvc:
+
+  - "GSL":
+    The simplest error policy, no action, the error
+    hadling defined in GSL does not redefined
+
+  - "Off":
+    The GSL empty error handling is used, what means the
+    ignorance of all GSL errors. Program continues after
+    any error, so the return values from any library routines
+    must be checked. This policy is recommended by GSL team for
+    production programs
+
+  - "Abort"
+    The default GSL error policy, causes abort on error.
+
+  - "Ignore"
+    The policy which is essentialy the same as "Off",
+    but performed with local error handler GslErrorHandlers::ignoreTheError
+
+  - "Exception"
+    This policy throws the GaudiException with tag *GSL Error" to be thrown
+    at the error. The policy implemented by lcal error handler
+    GslErrorHandlers::throwException
+
+  - "Handle"
+    The policy which uses the call back from local error handler
+    GslErrorHandlers::handleTheError to IGslSvc::handle method.
+    Current implementation of this method is sequential execution of
+    declared handlers, defined throught the property "Handlers" of
+    class GslSvc in a format:
+    GslSvc.Handlers = { "H1Type/H1Name" , "H2Type/H2Name" , "H3ype/3Name" };
+    The "handlers" must implement IGslErrorHandler interface
+    The three concrete simple handlers are provided in GaudiGSL package:
+    class GslErorCount, GslErrorPrint and GslErrorException.
+
+  The  typical job-configurations:
+
+  //
+  // This configuration perform the "on-flight" printout of all GSL
+  // errors and the printout of overall statistics of all errors
+  // at the end of the job
+  ApplicationMgr.DLLs         += { "GaudiGSL" };
+  ApplicationMgr.ExtSvc       += { "GslSvc"   };
+  ApplicationMgr.ErrorPolicy   = "Handle" ;
+  ApplicationMgr.Handlers     += { "GslErrorPrint/GslPrint" };
+  ApplicationMgr.Handlers     += { "GslErrorCount/GslCount" };
+
+  //
+  // This configuration is good for massive production.
+  // Program continues after any error, so the return values from
+  // any library routines must be checked. This policy is recommended
+  // by GSL team for production programs
+  ApplicationMgr.DLLs         += { "GaudiGSL" };
+  ApplicationMgr.ExtSvc       += { "GslSvc"   };
+  ApplicationMgr.ErrorPolicy   = "Off" ;
+
+  //
+  // This configuration corresponds to default GSL behaviour and
+  // functional it is equivalent to the absence of special error
+  // handling at all. Program just makes abortion on errors.
+  ApplicationMgr.DLLs         += { "GaudiGSL" };
+  ApplicationMgr.ExtSvc       += { "GslSvc"   };
+  ApplicationMgr.ErrorPolicy   = "Abort" ;
+
+  //
+  // Under this configuration on the error the handler throws
+  // GaudiException with tag = *GSL Error*
+  ApplicationMgr.DLLs         += { "GaudiGSL" };
+  ApplicationMgr.ExtSvc       += { "GslSvc"   };
+  ApplicationMgr.ErrorPolicy   = "Exception" ;
+
+  //
+  // This configuration is similar to the previous one
+  // but GaudiException is throwed by specialized handler, and
+  // thus it could be combined in a sequence with other
+  // specialized handlers
+  ApplicationMgr.DLLs         += { "GaudiGSL" };
+  ApplicationMgr.ExtSvc       += { "GslSvc"   };
+  ApplicationMgr.ErrorPolicy   = "Handle" ;
+
+  //
+  // "Everything altogether" configuration.
+  // It prints the error message, accumulate statistics of errors
+  // and throws the exception
+  ApplicationMgr.DLLs         += { "GaudiGSL" };
+  ApplicationMgr.ExtSvc       += { "GslSvc"   };
+  ApplicationMgr.ErrorPolicy   = "Handle" ;
+  ApplicationMgr.Handlers     += { "GslErrorPrint/GslPrint" };
+  ApplicationMgr.Handlers     += { "GslErrorCount/GslCount" };
+  ApplicationMgr.Handlers     += { "GslErrorException/GslException" };
+
+
+   The handling of some error codes could be suppressed explicitely, e.g.:
+
+   GslSvc.IgnoreCodes = {  0 , 15 , -1 , 158 } ;
+
+   (this option is valid only for "Handle" mode)
+
+
+  In addition one could forbid the exception throws for certain erro codes:
+
+   GslException.IgnoreCodes = { 0 , -1 };
+

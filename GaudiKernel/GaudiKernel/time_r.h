@@ -1,0 +1,28 @@
+#ifndef GAUDIKERNEL_TIME_R_H
+#define GAUDIKERNEL_TIME_R_H
+
+#include <ctime>
+
+/*
+  This header file provides the functions localtime_r and time_r (available on Linux)
+  to the Win32 platform.
+
+  Marco Clemencic
+*/
+
+#ifdef _WIN32
+
+extern "C" {
+  inline struct tm *localtime_r ( const time_t *sec, struct tm *result) {
+    *result = *localtime(sec);
+    return result;
+  }
+  inline struct tm *gmtime_r ( const time_t *sec, struct tm *result) {
+    *result = *gmtime(sec);
+    return result;
+  }
+}
+
+#endif
+
+#endif    // GAUDIKERNEL_TIME_R_H

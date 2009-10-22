@@ -1,0 +1,72 @@
+# $Id: requirements,v 1.28 2008/11/10 18:51:15 marcocle Exp $
+# =============================================================================
+#
+# =============================================================================
+# Created    : 29/04/2002
+# Maintainer : Vanya Belyaev Ivan.Belyaev@itep.ru
+# =============================================================================
+package           GaudiGSL
+version           v7r3
+
+# =============== package structure ===========================================
+branches          cmt doc src dict GaudiGSL GaudiMath
+
+# =============== explicit dependencies =======================================
+use GaudiKernel   v*
+use GaudiAlg      v*
+use GSL           v* LCG_Interfaces
+use CLHEP         v* LCG_Interfaces
+use AIDA          v* LCG_Interfaces -no_auto_imports
+
+# =============== own includes (for interfaces only!) =========================
+apply_pattern     install_more_includes more=GaudiGSL offset=GaudiMath
+# =============== constitutuents: 1) linker library ===========================
+library           GaudiGSLLib -import=AIDA -no_static ../src/Lib/*.cpp
+apply_pattern     linker_library    library=GaudiGSLLib
+# =============== constitutuents: 2) component library ========================
+library           GaudiGSL    -import=AIDA -no_static ../src/Components/*.cpp
+apply_pattern     component_library library=GaudiGSL
+# =============== constitutuents: 3) LCG dictonary ============================
+apply_pattern     lcg_dictionary dictionary=GaudiGSLMath              \
+                  headerfiles=$(GAUDIGSLROOT)/dict/GaudiGSLMath.h     \
+                  selectionfile=$(GAUDIGSLROOT)/dict/GaudiGSLMath.xml \
+                  options="--split --reflex"
+
+macro_prepend GaudiGSLMathDict_shlibflags  " $(GaudiGSL_linkopts) "
+
+# ==================== test application =======================================
+private
+apply_pattern application_path
+application   ExceptionsTest              -check -group=tests  Tests/ExceptionsTest.cpp 
+macro_prepend ExceptionsTestlinkopts   " $(GaudiGSL_linkopts) $(use_linkopts) "
+application   DerivativeTest              -check -group=tests  Tests/DerivativeTest.cpp 
+macro_prepend DerivativeTestlinkopts   " $(GaudiGSL_linkopts) $(use_linkopts) "
+application   SimpleFuncTest              -check -group=tests  Tests/SimpleFuncTest.cpp 
+macro_prepend SimpleFuncTestlinkopts   " $(GaudiGSL_linkopts) $(use_linkopts) "
+application   IntegralInTest              -check -group=tests  Tests/IntegralInTest.cpp 
+macro_prepend IntegralInTestlinkopts   " $(GaudiGSL_linkopts) $(use_linkopts) "
+application   Integral1Test               -check -group=tests  Tests/Integral1Test.cpp 
+macro_prepend Integral1Testlinkopts    " $(GaudiGSL_linkopts) $(use_linkopts) "
+application   2DoubleFuncTest             -check -group=tests  Tests/2DoubleFuncTest.cpp
+macro_prepend 2DoubleFuncTestlinkopts  " $(GaudiGSL_linkopts) $(use_linkopts) "
+application   3DoubleFuncTest             -check -group=tests  Tests/3DoubleFuncTest.cpp
+macro_prepend 3DoubleFuncTestlinkopts  " $(GaudiGSL_linkopts) $(use_linkopts) "
+application   PFuncTest                   -check -group=tests  Tests/PFuncTest.cpp
+macro_prepend PFuncTestlinkopts        " $(GaudiGSL_linkopts) $(use_linkopts) "
+application   InterpTest                  -check -group=tests  Tests/Interp.cpp
+macro_prepend InterpTestlinkopts        " $(GaudiGSL_linkopts) $(use_linkopts) "
+application   GSLAdaptersTest             -check -group=tests  Tests/GSLAdaptersTest.cpp
+macro_prepend GSLAdaptersTestlinkopts   " $(GaudiGSL_linkopts) $(use_linkopts) "
+
+# Note: libgslcblas is needed by libgsl, but the link is missing.
+macro_prepend GSL_linkopts " -Wl,--no-as-needed " \
+             target-darwin "" \
+             target-winxp  ""
+macro_append GSL_linkopts " -Wl,--as-needed " \
+            target-darwin "" \
+            target-winxp  "" 
+
+# =============================================================================
+# The END 
+# =============================================================================
+

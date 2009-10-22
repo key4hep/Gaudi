@@ -1,0 +1,61 @@
+package GaudiPoolDb
+version v5r5
+
+branches  cmt doc src GaudiPoolDb options main test
+
+use GaudiKernel  v*
+use GaudiUtils   v*
+#
+use POOL         v* LCG_Interfaces -no_auto_imports
+use CORAL        v* LCG_Interfaces -no_auto_imports
+use Reflex       v* LCG_Interfaces -no_auto_imports
+use RELAX        v* LCG_Interfaces -no_auto_imports
+
+#===========================================================================
+apply_pattern install_more_includes more=GaudiPoolDb
+#===========================================================================
+document reflex_dictionary_generator GaudiPoolDbGen $(GAUDIPOOLDBROOT)/src/PoolDb_dict.h dictionary=GaudiPoolDb
+macro_append GaudiPoolDb_reflex_options '--select=$(GAUDIPOOLDBROOT)/src/PoolDb_dict.xml $(gccxmlopts) --gccxmlpath=$(GCCXML_home)/bin -I"$(POOL_base)/include" $(includes) '
+#===========================================================================
+# Linker + Component library (we have the _dll, _load files!)
+library     GaudiPoolDb -no_static ../src/*.cpp ../$(tag)/dict/GaudiPoolDb/*.cpp -import=Boost -import=Reflex -import=POOL
+
+apply_pattern linker_library library=GaudiPoolDb
+apply_pattern generate_rootmap library=GaudiPoolDb
+apply_pattern generate_configurables library=GaudiPoolDb
+
+macro POOL_linkopts '-L$(POOL_home)/lib -llcg_StorageSvc -llcg_POOLCore -lCintex ' \
+      target-winxp  '/libpath:"$(POOL_home)/lib" lcg_StorageSvc.lib lcg_POOLCore.lib libCintex.lib '
+
+macro_append GaudiPoolDb_dependencies GaudiPoolDbGen
+
+path_append JOBOPTSEARCHPATH  ${GAUDIPOOLDBROOT}/options
+
+#===============================================================
+private
+
+use ROOT            v* LCG_Interfaces
+
+#===============================================================
+document reflex_dictionary_generator testGaudiPoolDbGen -group=tests $(GAUDIPOOLDBROOT)/test/dict.h dictionary=testGaudiPoolDb
+macro_append testGaudiPoolDb_reflex_options '--select=$(GAUDIPOOLDBROOT)/test/dict.xml $(gccxmlopts) --gccxmlpath=$(GCCXML_home)/bin '
+library testGaudiPoolDb -no_static -group=tests -import=Reflex -import=POOL ../$(tag)/dict/testGaudiPoolDb/*.cpp ../test/*.cpp
+macro_append testGaudiPoolDb_shlibflags ' $(GaudiPoolDb_linkopts) '
+apply_pattern component_library library=testGaudiPoolDb group=tests
+
+macro_append testGaudiPoolDb_dependencies testGaudiPoolDbGen
+macro_remove_regexp tests_constituents ".*" GaudiPoolDbTests ""
+#===============================================================
+document reflex_dictionary_generator schemaGaudiPoolDbGen -group=t_tests $(GAUDIPOOLDBROOT)/test/dict.h dictionary=schemaGaudiPoolDb
+macro_append schemaGaudiPoolDb_reflex_options '--select=$(GAUDIPOOLDBROOT)/test/schema_dict.xml $(gccxmlopts) --gccxmlpath=$(GCCXML_home)/bin -D__SCHEMA_CHANGE__ '
+macro_append lib_schemaGaudiPoolDb_cppflags   ' -D__SCHEMA_CHANGE__ '
+
+library schemaGaudiPoolDb -no_static -group=t_tests -import=Reflex -import=POOL -import=GaudiPoolDb ../$(tag)/dict/schemaGaudiPoolDb/*.cpp ../test/*.cpp
+apply_pattern component_library library=schemaGaudiPoolDb group=t_tests
+macro_append schemaGaudiPoolDb_shlibflags ' $(GaudiPoolDb_linkopts) '
+
+macro_append schemaGaudiPoolDb_dependencies schemaGaudiPoolDbGen
+macro_append schemaGaudiPoolDb_dependencies GaudiPoolDb
+macro_remove_regexp t_tests_constituents ".*" GaudiPoolDbTests ""
+#===============================================================
+

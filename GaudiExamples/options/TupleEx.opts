@@ -1,0 +1,51 @@
+// ============================================================================
+// CVS tag $NAme:$ , version $Revision: 1.9 $
+// ============================================================================
+// ============================================================================
+
+/** @file
+ *
+ *  Job options file  to run TupleEx example
+ *
+ *  @author Vanya BELYAEV Ivan.Belyave@itep.ru
+ *  @date 2005-11-29
+ */
+
+ApplicationMgr.StatusCodeCheck = false ;
+//--------------------------------------------------------------
+
+//--------------------------------------------------------------
+// Private Application Configuration options
+//--------------------------------------------------------------
+ApplicationMgr.ExtSvc  += { "RndmGenSvc"       } ;
+ApplicationMgr.TopAlg   = { "TupleAlg/Tuple"   } ;
+ApplicationMgr.TopAlg  += { "TupleAlg2/Tuple2" } ;
+ApplicationMgr.TopAlg  += { "TupleAlg3/Tuple3" } ;
+
+Tuple.NTupleLUN  = "MYLUN" ;
+Tuple2.NTupleLUN = "MYLUN" ;
+Tuple3.NTupleLUN = "MYLUN" ;
+
+// Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
+MessageSvc.OutputLevel  = 3;
+
+//--------------------------------------------------------------
+// Event related parameters
+//--------------------------------------------------------------
+ApplicationMgr.EvtMax  =  10000 ;
+ApplicationMgr.EvtSel  = "NONE" ;
+
+//--------------------------------------------------------------
+// Other Service Options
+//--------------------------------------------------------------
+// Histogram output file
+//ApplicationMgr.HistogramPersistency = "HBOOK";
+//HistogramPersistencySvc.OutputFile = "histo.hbook";
+//NTupleSvc.Output = { "MYLUN DATAFILE='TupleEx.hbook' OPT='NEW' TYP='HBOOK'" };
+
+ApplicationMgr.HistogramPersistency = "ROOT";
+NTupleSvc.Output = { "MYLUN DATAFILE='TupleEx.root'  OPT='NEW' TYP='ROOT'"  };
+
+// ============================================================================
+// The END 
+// ============================================================================

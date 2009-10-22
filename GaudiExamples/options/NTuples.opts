@@ -1,0 +1,33 @@
+//##############################################################
+// Job options file
+//==============================================================
+
+//--------------------------------------------------------------
+
+//--------------------------------------------------------------
+// Private Application Configuration options
+//--------------------------------------------------------------
+ApplicationMgr.TopAlg   = { "NTupleAlgorithm" };
+
+// Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
+MessageSvc.OutputLevel  = 3;
+
+//--------------------------------------------------------------
+// Event related parameters
+//--------------------------------------------------------------
+ApplicationMgr.EvtMax   = 10000;
+ApplicationMgr.EvtSel  = "NONE";
+
+//--------------------------------------------------------------
+// Other Service Options
+//--------------------------------------------------------------
+// Histogram output file
+//ApplicationMgr.HistogramPersistency = "HBOOK";
+//HistogramPersistencySvc.OutputFile = "histo.hbook";
+//NTupleSvc.Output = { "FILE1 DATAFILE='NTuple.hbook' OPT='NEW' TYP='HBOOK'" };
+ApplicationMgr.HistogramPersistency = "ROOT";
+HistogramPersistencySvc.OutputFile = "histo.root";
+NTupleSvc.Output = { "MyTuples DATAFILE='ntuple.root' OPT='NEW' TYP='ROOT'" };
+
+//RndmGenSvc.Engine.Seeds = { 70, 71, 0 };
+

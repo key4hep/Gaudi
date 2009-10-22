@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="program"><text>../scripts/test_purge.py</text></argument>
+<argument name="validator"><text>
+from pprint import PrettyPrinter
+pp = PrettyPrinter()
+
+expected = {'AuditorSvc': {'Auditors': ['ChronoAuditor', 'TimingAuditor/TIMER']}}
+exec("\n".join(stdout.splitlines())) # stdout needs to be sanitized for windows
+
+result["GaudiTest.expected_config"] = result.Quote(pp.pformat(expected))
+result["GaudiTest.initial_config"]  = result.Quote(pp.pformat(first))
+result["GaudiTest.purged_config"] = result.Quote(pp.pformat(purged))
+result["GaudiTest.final_config"] = result.Quote(pp.pformat(second))
+
+if first != expected:
+    causes.append("initial configuration")
+elif purged != {}:
+    causes.append("purged configuration")
+elif second != expected:
+    causes.append("final configuration")
+</text></argument>
+</extension>

@@ -1,0 +1,138 @@
+
+*******************************************************************************
+*                                                                             *
+* Simple example which illustrate the usage of useful                         *
+* algorithm  base class for N-Tuple manipulations                             *
+*                                                                             *
+*******************************************************************************
+
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.26 $
+                                          running on pclhcb55.cern.ch on Fri May 30 20:40:07 2008
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+ApplicationMgr       INFO Successfully loaded modules : GaudiAlg, RootHistCnv
+NTupleSvc            INFO Added stream file:TupleEx1.root as MYLUN
+HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
+RootHistSvc          INFO Writing ROOT histograms to: UndefinedROOTOutputFileName
+HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
+DetectorDataSvc      INFO Detector description not requested to be loaded
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
+RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
+RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+RFileCnv             INFO opening Root file "TupleEx1.root" for writing
+RRWNTupleCnv         INFO ID 1: added branch: gauss / gauss/F
+RRWNTupleCnv         INFO ID 1: added branch: flat / flat/F
+RRWNTupleCnv         INFO ID 1: added branch: expo / expo/F
+RRWNTupleCnv         INFO ID 1: added branch: breit / breit/F
+RRWNTupleCnv         INFO ID 1: added branch: poiss / poiss/I
+RRWNTupleCnv         INFO ID 1: added branch: binom / binom/I
+RRWNTupleCnv         INFO ID 1: added branch: poisb / poisb/I
+RRWNTupleCnv         INFO Booked TTree with ID:1 "Trivial Row-Wise Tuple"
+RCWNTupleCnv         INFO Booked TTree with ID: 2 "Trivial Column-Wise Tuple" in directory TupleEx1.root:/TupleEx1
+RCWNTupleCnv         INFO Booked TTree with ID: 3 "Fixed-size arrays/vectors" in directory TupleEx1.root:/TupleEx1
+ApplicationMgr       INFO Application Manager Stopped successfully
+TupleEx1          SUCCESS Booked 3 N-Tuples and 0 Event Tag Collections
+TupleEx1          SUCCESS List of booked N-Tuples in directory "MYLUN/TupleEx1"
+TupleEx1          SUCCESS  ID=1             Title="Trivial Row-Wise Tuple"                  #items=7  {gauss,flat,expo,breit,poiss,binom,poisb}
+TupleEx1          SUCCESS  ID=2             Title="Trivial Column-Wise Tuple"               #items=7  {gauss,flat,expo,breit,poiss,binom,poisb}
+TupleEx1          SUCCESS  ID=3             Title="Fixed-size arrays/vectors"               #items=4  {arflat[1],arexpo[1],argau[1],argau2[1]}
+RootHistSvc       WARNING no ROOT output file name, Histograms cannot be persistified
+EventLoopMgr         INFO Histograms converted successfully according to request.
+RFileCnv             INFO dumping contents of /NTUPLES/MYLUN
+TFile: name=TupleEx1.root, title=Gaudi Trees, option=CREATE
+******************************************************************************
+*Tree    :1         : Trivial Row-Wise Tuple                                 *
+*Entries :       20 : Total =            5207 bytes  File  Size =       1234 *
+*        :          : Tree compression factor =   1.00                       *
+******************************************************************************
+*Br    0 :gauss     : gauss/F                                                *
+*Entries :       20 : Total  Size=        700 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    1 :flat      : flat/F                                                 *
+*Entries :       20 : Total  Size=        694 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    2 :expo      : expo/F                                                 *
+*Entries :       20 : Total  Size=        694 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    3 :breit     : breit/F                                                *
+*Entries :       20 : Total  Size=        700 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    4 :poiss     : poiss/I                                                *
+*Entries :       20 : Total  Size=        700 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    5 :binom     : binom/I                                                *
+*Entries :       20 : Total  Size=        700 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    6 :poisb     : poisb/I                                                *
+*Entries :       20 : Total  Size=        700 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+******************************************************************************
+*Tree    :2         : Trivial Column-Wise Tuple                              *
+*Entries :       20 : Total =            5213 bytes  File  Size =       1242 *
+*        :          : Tree compression factor =   1.00                       *
+******************************************************************************
+*Br    0 :gauss     : gauss/F                                                *
+*Entries :       20 : Total  Size=        700 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    1 :flat      : flat/F                                                 *
+*Entries :       20 : Total  Size=        694 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    2 :expo      : expo/F                                                 *
+*Entries :       20 : Total  Size=        694 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    3 :breit     : breit/F                                                *
+*Entries :       20 : Total  Size=        700 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    4 :poiss     : poiss/I                                                *
+*Entries :       20 : Total  Size=        700 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    5 :binom     : binom/I                                                *
+*Entries :       20 : Total  Size=        700 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    6 :poisb     : poisb/I                                                *
+*Entries :       20 : Total  Size=        700 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+******************************************************************************
+*Tree    :3         : Fixed-size arrays/vectors                              *
+*Entries :       20 : Total =           18537 bytes  File  Size =      15520 *
+*        :          : Tree compression factor =   1.00                       *
+******************************************************************************
+*Br    0 :arflat    : arflat[50]/F                                           *
+*Entries :       20 : Total  Size=       4634 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    1 :arexpo    : arexpo[62]/F                                           *
+*Entries :       20 : Total  Size=       5594 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    2 :argau     : argau[42]/F                                            *
+*Entries :       20 : Total  Size=       3988 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+*Br    3 :argau2    : argau2[42]/F                                           *
+*Entries :       20 : Total  Size=       3994 bytes  One basket in memory    *
+*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*............................................................................*
+NTupleSvc            INFO NTuples saved successfully
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

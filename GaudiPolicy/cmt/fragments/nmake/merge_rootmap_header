@@ -1,0 +1,34 @@
+# File: cmt/fragments/merge_rootmap_header
+# Author: Sebastien Binet (binet@cern.ch)
+#         Pere Mato - for the Windows version
+
+# Makefile fragment to merge a <library>.rootmap file into a single
+# <project>.rootmap file in the (lib) install area
+# If no InstallArea is present the fragment is dummy
+
+.PHONY: ${CONSTITUENT} ${CONSTITUENT}clean
+
+!if defined (CMTINSTALLAREA) 
+rootMapDir    = $(CMTINSTALLAREA)\$(tag)\lib
+mergedRootMap = $(rootMapDir)\$(project).rootmap
+stampRootMap  = $(rootMapDir)\$(library).rootmap.stamp
+!else
+rootMapDir    = ..\$(tag)
+mergedRootMap = 
+stampRootMap  =
+!endif
+
+rootMapRef    = ..\$(tag)\$(library).rootmap
+
+${CONSTITUENT} :: $(stampRootMap) $(mergedRootMap)
+	@:
+
+$(stampRootMap) $(mergedRootMap) :: $(rootMapRef)
+	@echo "Running merge_rootmap  ${CONSTITUENT}" 
+	python $(merge_rootmap_cmd) $(merge_rootmap_switch) \
+         --input-file $(rootMapRef) --merged-file $(mergedRootMap)
+
+${CONSTITUENT}clean ::
+	$(cleanup_silent) python $(merge_rootmap_cmd) --un-merge \
+         --input-file $(rootMapRef) --merged-file $(mergedRootMap) ;
+	$(cleanup_silent) $(remove_command) $(stampRootMap)

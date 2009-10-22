@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-US.UTF-8" xmlns="http://www.w3.org/1999/xhtml"
+	lang="en-US.UTF-8">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>GAUDI - Patches: patch #3134, Replace for patch #3007 and
+patch #2873 [LCG Savannah]</title>
+</head>
+<body>
+<h2><em><a href="https://savannah.cern.ch/patch/?3134">patch
+#3134</a></em>: Replace for patch <a href="https://savannah.cern.ch/patch/?3007">#3007</a>
+and patch <a href="https://savannah.cern.ch/patch/?2873">#2873</a></h2>
+
+2009-07-11 15:34,
+<strong>original submission:</strong>
+<br>
+<p>This patch is an improved combination of #patch 3007 and #patch
+2873. <br>
+</p>
+<p>It allows flexibility for interactive
+inspection&amp;manipulation&amp;mointoring of algoritms and tools. <br>
+From the given component one can extract the counters, tools &amp;
+histograms. 
+<br>
+</p>
+<textarea readonly="readonly" rows="20" cols="80">&gt;&gt;&gt; cmp = ...   ## get the component: algorithm or tool 
+
+&gt;&gt;&gt; counters = cmp.Counters()  ## get the dictionary of counetrs
+&gt;&gt;&gt; for key in counters : 
+...     print key, counters[key] 
+
+
+&gt;&gt;&gt; tools = cmp.Tools()   ## get the list of iAlgTool-objects
+&gt;&gt;&gt; for t in tools :
+...     if hasattr ( t , 'Context' ) : print t.Context() 
+
+
+&gt;&gt;&gt; counter = cmp.Counter('#accept')  ## get the counter by name
+&gt;&gt;&gt; print counter 
+
+
+&gt;&gt;&gt; histos = cmp.Histos()  ## get the dictionary of histograms
+&gt;&gt;&gt; for key in histos :  
+...      print key , histos[key] 
+
+
+</textarea>
+
+<p>These methods are applicable both to proxy-classes iAlgorithm and
+iAlgTool from GaudiPython.Bindings module, as well as for the actual
+Python algorithms from GaudiPython.GaudiAlgs module, e.g. <br>
+</p>
+<textarea readonly="readonly" rows="7" cols="80">&gt;&gt;&gt; alg = gaudi.algorithm ('MyAlg')    ## use proxy class 
+
+or
+
+&gt;&gt;&gt; alg = MyPythonAlg( ... )   ## use the actual Python algorithm from GaudiPython.GaudiAlgs module
+
+</textarea>
+
+<p>The following modules are cleaned : <br>
+</p>
+<ol>
+	<li>GaudiPython.GaudiAlgs</li>
+	<li>GaudiPython.TupleUtils</li>
+	<li>GaudiPython.HistoUtils</li>
+</ol>
+<p>To be useful as key for python dictionary, the class GaudiAlg::ID
+has got the hash-function and all non-const methods have been removed
+[preincrement has been used only in two files, fixed properly, other
+(pre/post/in/de)crement operators have not been user at all]. <br>
+</p>
+<p>The usage of "fictive" gaudimodule module has been removed. <br>
+</p>
+<p>AIDA-histograms are decorated with usage of
+Gaudi::Utils::Histos::Path and Gaudi::Utils::HistoStats functions <br>
+</p>
+<p>GaudiPython.HistoUtils module has been updated taking into
+account the feedback from June analysis hands-on workshop. One needs in
+addition to add class HistoFile by Juan into this updated module.. (see
+#patch 3091) <br>
+</p>
+<p>GaudiPython.TupleUtils module now warns at "atexit", if helper
+tuple-tools are not released explicitly. <br>
+</p>
+<p>The real python algorithms form GaudiPython.GaudiAlgs moduel have
+got keywords arguments for constructors, thus making possible to set the
+properties and attributes at construction time: <br>
+</p>
+<textarea readonly="readonly" rows="3" cols="80">&gt;&gt;&gt; alg = MyPythonAlg ( 'MyName' , OutputLevel = 3 , PtCut = 5 * GeV , ... )
+ 
+</textarea>
+
+<p>The non-nesessary public-virtual bases have been removed from
+GaudiPython::PyAlg template class. <br>
+</p>
+<p>The (python) documentation has been drastically improved for <strong>all</strong>
+cases, listed above.. <br>
+</p>
+<p>All this functionality&amp; decorations is <strong>not</strong>
+applied automatically! To access new functionality one needs to import
+GaudiPython.GaudiAlgs, GaudiPython.HistoUtils and/or
+GaudiPython.TupleUtils modules correspondingly <br>
+</p>
+<p>New example HistoUtilsEx.py for illustration of
+GaudiPython.HistoUtils module is attached.. <br>
+</p>
+<p>Affected packages: <br>
+</p>
+<ol>
+	<li>GaudiAlg</li>
+	<li>GaudiPython</li>
+</ol>
+
+<p>The modified files for GaudiAlg package: <br>
+</p>
+<ol>
+	<li>src/lib/GaudiCommon.icpp</li>
+	<li>src/lib/GaudiHistoID.cpp</li>
+	<li>GaudiAlg/GaudiTuples.icpp</li>
+	<li>GaudiAlg/GaudiCommonImp.h</li>
+	<li>GaudiAlg/GaudiHistos.h</li>
+	<li>GaudiAlg/GaudiCommon.h</li>
+	<li>GaudiAlg/GaudiHistoID.h</li>
+	<li>GaudiAlg/GaudiTuples.h</li>
+	<li>GaudiAlg/GaudiHistos.icpp</li>
+</ol>
+<p>The modified files for GaudiPython package: <br>
+</p>
+<ol>
+	<li>python/GaudiPython/TupleUtils.py</li>
+	<li>python/GaudiPython/GaudiAlgs.py</li>
+	<li>python/GaudiPython/HistoUtils.py</li>
+	<li>dict/selection_kernel.xml</li>
+	<li>dict/kernel.h</li>
+	<li>src/Lib/AlgDecorators.cpp</li>
+	<li>src/Lib/HistoDecorator.cpp</li>
+	<li>GaudiPython/AlgDecorators.h</li>
+	<li>GaudiPython/HistoDecorator.h</li>
+	<li>GaudiPython/Algorithm.h</li>
+</ol>
+
+<p><a href="https://savannah.cern.ch/users/ibelyaev">Vanya
+Belyaev &lt;ibelyaev&gt;</a></p>
+</body>
+</html>

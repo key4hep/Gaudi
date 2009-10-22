@@ -1,0 +1,344 @@
+package Gaudi
+package manager: Pere Mato
+
+
+! ============================================================================
+! 20010316 GaudiKernel v9
+
+ - New Interface added IEventProcessor
+ - Minor changes in IValidity.h, MsgStream.h ClassID.h
+ - Removed const in IProperty::getProperty(const string&, string&)
+   Implies to modify all the classes implementing such interface
+ - IScriptingSvc.h Add execute( const std::string& ) to allow for execution
+                   of a script.
+ - Property.cpp    Fix problem in dealing with either double or single quotes
+                  as delimiters for string values.
+
+ - GaudiKernel/
+	Bootstrap.h    Add entry point to create multiple Application Managers
+        StreamBuffer.h Change in buffer allocation (See Gaudi Developers message)
+        strcasecmp.h   Make inline function for WIN32 to standardize on Linux str(n)casecmp
+                       without all the #ifdefs
+        HashTable.h    Bug fix by Traudl Hansl-Kozanecka (GLAST)
+        RefTable.h     dto. Moved from LHCbEvent to GaudiKernel.
+        IRunable.h     new interface for Runable
+        IAppMgrUI.h    Allow access to the application managers state.
+			  (May need changes to ApplicationMgr in GaudiSvc)
+        SystemBase.h   ->@System
+        System.h       ->@System
+        Timing.h       ->@System
+	Memory.h       ->@System
+        ModuleInfo.h   ->@System
+        Debugger.h     ->@System
+
+ - src/static/  Move all files to LIB - static is no longer needed at all!
+
+ - src/Lib
+	Bootstrap.cpp  Add entry point to create multiple Application Managers
+        DataObject.cpp Remove warning on linux in acceptInspector()
+        ConversionSvc.cpp Bug-Fix: if on creating persistent objects no converter was
+                          found success (!!) was returned. No correctly returns error.
+
+	System.cpp                ->@System
+	Debugger.cpp              ->@System
+	Memory.cpp                ->@System
+        Timing.cpp                ->@System
+        ModuleInfo.cpp            ->@System
+        Win32PsApi.h              ->@System
+        ProcessDescriptor.h       ->@System
+        ProcessDescriptor.cpp     ->@System
+
+ -@System:
+       Major code reshuffeling.
+        - Static class was changed to namespace. This will make it much simpler to
+        extend the functionality without actually having the default header System.h.
+        System.h containes the declarations of all functions in a backwards-compatible way.
+      - All other functionality was factorized out:
+        Memory.h/cpp 		Info about memory consumption
+        Timing.h/cpp   		Info about time consumption
+        ModuleInfo.h/cpp	Info about running modules
+	Debugger.h/cpp          Invoke debugger from running program (NT only)
+        ProcessDescriptor.h/cpp **Internal** access to process specific information
+        + Win32Api.h            as it is exported by Linux/NT. This header is PURELY internal
+                                and should never be included directly.
+
+ - Moved files ISolid.h, IPVolume.h, ILVolume.h, IDetectorElement.h, IGeometryInfo.h
+   ITransportSvc.h to the DesDesc package. Forward links to the new position have been
+   left in place.
+
+ - Implemented PropertyMgr::setProperty( const std::string& n, const std::string& v )
+ - Properly implement the macro QUOTEDELEMENTINPUT.
+   CTDay ir right when he quotes that this is "HACK Big Time". It's also undebuggable.
+
+ - Corrected bug reported by O. Callot that the OutputLevel was not working
+   for Algorithms.
+
+ - ARM page 210 tweaks to IToolFactory.h to avoid compiler warnings. Add
+   DECLARE_ALGTOOL(X) and DECLARE_TOOL(X) macros to DeclareFactoryEntries.h
+
+ - Changes for Solaris support, which is incomplete. The package compiles on
+   this platform, but some of the required template specialization "hacks" are
+   not fully understood and need to be revisited. Run-time debugging hasn't
+   yet begun.
+ - Changes to avoid compiler warning messages. These are all due to function
+   overloading across class hierarchies. The policy is described on Page 210
+   of the ARM. It's not yet clear whether these are compatible with the Visual
+   C++ compiler on NT. Modified files:
+       GenericLink.h IAlgFactory.h IAuditorFactory.h IDataDirectory.h
+       IFactory.h IHistogramSvc.h ISvcFactory.h ObjectContainerBase.h
+       ObjectFactory.h ObjectList.h ObjectVector.h
+ - Changes to support the scripting service. SimpleProperties now support
+   callback handlers for both reading and updating. The IProperty interface
+   has been extended to allow more flexible setting & retrieving of properties
+   from streams and strings. Modified files:
+       IProperty.h Property PropertyMgr PropertyVerifier
+ - Add support for explicitly specifying the CLID and name of the root
+   object in the transient event store (defaults are CLID_Event and "/Event").
+   Modified files:
+    DataSvc IDataManagerSvc
+ - Other details:
+   AlgTool Algorithm Auditor Service
+       Support new IProperty interface. Use function template for
+       declareProperty. Support deferred service instantiation in service
+       accessors.
+   FactoryTable.h
+        Fix compiler warning because of missing comment characters
+   System.cpp
+        Minor tweak to avoid SOlaris compiler warning.
+
+
+ - Changes to deal with the template specialization in the new version of GNU c++ compiler
+
+ - Modified System.cpp. Added suffix in the DLL name when loading
+ 
+ - Changed CLID& by CLID in Converter base class to avoid weird problems with some
+   converters in Linux.
+ - Corrected bug in Algorithm::service()
+ - In Bootstrap.h, added static method Gaudi::svcLocator() to get the ISvcLocator* 
+   in isolation.
+ - In ISvcLocation.h added a templated method ISvcLocator::service() to facilitate 
+   retrival of services.
+
+ - GaudiKernel/IGiGa*.h - update include file path to new schema.
+
+ <<< Changes are not compatible with existing packages. Everything should be re-built >>>>
+ - Eliminated static library GaudiBase.
+ - Eliminated the constant data files IInterface.cpp and Kernel.cpp
+ - Renamed class IID to InterfaceID
+ - Added de definition of the InterfaceID (IID) constants in each interface Ixxxx.h file
+ - Introduced new file ClassID.h which constains some the definition of CLID and some basic
+   constants.
+ - Changes asked by Vanya for the classes: ILVolume, IPVolume, ISolid, IGeometryInfo,
+   IDetectorElement
+
+ - Renamed Time::Time class by TimePoint class
+ - The constants Time::time_absolutepast and Time::time_absolutefutre are now defined 
+   in the TimePoint.h. The namespace Time has been removed.
+  
+ - Cleanup and adaptation to the new way of documenting the code based
+   on Doxygen (JavaDoc style)
+ - Incorparated changes done by D.Quarrie in the old LHCb repository
+
+ - Add isInitialized() and seInitialized() member functions and handling to prevent
+   multiple initialization attempts on the same Algorithm. This protection is needed
+   when scripting is in use.
+
+ - Implemented a new service called ScriptingSvc. This is a service (with an
+   initial implementation based on Python), which provides a scripting capability
+   at run-time as opposed to the JobOptionsSvc which is limited to run startup
+   time. This service has entailed some changes to the Gaudi kernel classes, which
+   are mainly extensions to existing interfaces, but with some backwards-compatible
+   rework of several of the Property classes.
+   + Added new interface: IScriptingSvc
+
+ - Auditor/Auditor
+   Same changes as for Algorithm.
+
+ - Interfaces/IServiceLocator
+   Add list<IService*> getServices() for symmetry with the IAlgManager.
+
+ - JobOptionsSvc
+   A major rework of the Property class hierarchy to better support the scripting
+   interface. For the most part the changes are backwards compatible, with the
+   exception that bounds checking involves use of a verifier().  Note that the
+   PropertyRef.cpp & .h files are obsolete since that class is now typedef'd.
+   The PropertyList class for nested properties is not yet functional. Both of
+   these classes have been retained but bypassed in the build for now.
+
+ - Kernel/Service
+   Replace overloaded declareProperty function by function template.
+   Add PropertyMgr* accessor
+
+ - ApplicationMgr/AppMgrUI
+   Add AppMgrUI class as intermediate class between IAppMgrUI and
+   ApplicationMgr. This simplifies the scripting interface.
+
+ - Moved in ObjectVector<T> and ObjectList<T> from the LHCbEvent package.
+   Removed iterator from ObjectContainerBase class
+
+ - Various changes needed for CMT v1r7 and Nmake
+
+ - Moved *.cpp into src/static/ and src/Lib/
+ - Moved *.h, *.icpp and GaudiFactory.cpp into GaudiKernel/
+ - Updated #include statements
+
+! ============================================================================
+! 20010316 GaudiSvc v5
+
+ - HistogramSvc: Remove redundant trailing "/" character in histogram paths.
+
+ - Some restructuring done on the ApplicationMgr.
+   New classes: EventLoopMgr, MinimalEventLoopMgr, GaudiEventLoopMgr with increasing
+   specialization. The ApplicationMgr delegates the Event Loop functionality to these ones.
+   AppMgrRunable it is the default runable (implements IRunable) that is activated
+   after the initialization is complete. It calls the nextEvent() of the ApplicationMgr.
+ - Changed in HistogramSvc and NTupleSvc the strtream for convering numbers to strings for
+   the itoa() function.    
+
+ - Adapted to the new method IProperty::getProperty(const string&, string&)
+ - Adapted to the new method IAppMgrUI::state()
+
+ - ApplicationMgr
+   Add a temporary "Exit" command for force program termination from within
+   a script. This will be replaced at some point once we have proper control
+   mechanisms in place.
+
+   Add an update callback handler to the OutStream Property. Allow the
+   HistogramPersistencySvc to be specified as "NONE" to avoid having
+   to specify one of "HBOOK" or "ROOT" when none is required.
+
+ - JobOptionsSvc
+   Add source type "NONE" to bypass usage of the PropertyCompiler
+   and thence result in the catalog being empty.
+
+ - Changes to the job options processing
+   - Make the job options service re-entrant.
+     Removed all static storage, which prevented reading the options twice.
+   - Add value-of operator '@' to assign a job option the value of another
+     option
+     Usage:
+        MyAlg.OutputLevel = @MessageSvc.OutputLevel;
+        ApplicationMgr.TopAlgs += { @ApplicationMgr.ExtSvc };
+     Note:
+        The value-of of a vector addresses the elements, not the vector itself.
+   - Allow reset of vector lists to empty lists.
+     Usage:
+        ApplicationMgr.TopAlgs += {};
+
+ - Corrected bug in EventSelector.cpp which core dumped when accessing a non
+   existing file. 
+
+ - ApplicationMgr
+   Added update callback handlers to "TopAlg", "ExtSvc" and "Dlls" properties.
+   This allows them to be updated at run-time by the scripting interface, and
+   to act immediately upon such updates. Also added a "Go" Property which
+   allows minimal control handling. This will probably be replaced in the
+   future. Interchange the sequence of initialization of Algorithms and
+   Output Streams to allow the latter to reference the former. Deal with
+   the expanded IProperty interface.
+ - EventSelectorDataStream
+   Deal with support for renaming the root object of the transient event
+   store. Use StringProperty declaration from Property.h instead of its own.
+ - HistogramSvc
+   Deal with compiler warnings on Linux & Solaris related to ARM Page 210.
+ - OutputStream
+   Add "AcceptAlgs","RequireAlgs", "VetoAlgs" properties. This allows filtering
+   depending on the filter passed flags from the specified Algorithms. The
+   event will be written to the output stream if _any_ of the Algorithms in
+   the "AcceptAlgs" list was executed for this event and has its filter
+   passed set. The event will only be written if _all_ of the Algorithms in
+   the "RequireAlgs" list were executed and had their filter passed set. The
+   event will not be written if _any_ of the Algorithms in the "VetoAlgs"
+   list was executed and has its filter passed set. Combinations are logically
+   and'ed. The default remains to output every event. These properties have
+   update callback handlers associated with them so they can be modified at
+   run-time by the scripting interface and have an immediate effect.
+ - HepRndmEngin & HepRndmEngines
+   Correct a bug in the declaration of rndm( ) function which does not correctly
+   override the parent version.
+
+ - Modified StatEntity.h by Vanya
+
+ - Changes needed to accomodate to the new GaudiKernel that avoids the static library. This
+   means that the IIDs are now a static constant in the .h file instead of accessing them
+   by and external declaration.
+ - FactoryTable is cleaned each time a dynamic library gets loaded
+
+
+! ============================================================================
+! 20010316 GaudiAud v3
+
+ - New Auditor MemStatAuditor made by I. Belyaev added to the package
+
+! ============================================================================
+! 20010316 GaudiAlg v3
+
+ - Small changes to make it compile in NT
+ - Add update callback handler for "Members" and "BranchMembers" properties.
+   This allows them to be changed at run-time via the scripting interface.
+ - Rename *.cxx to *.cpp to conform to GAUDI file name conventions.
+
+! ============================================================================
+! 20010316 GaudiTools v3
+
+ - Accommodate to the changes in GaudiKernel. Removed extern declaration for IIDs.
+
+! ============================================================================
+! 20010316 GaudiNagC v5r3p1
+
+ - Adapted to CMT v1r7
+
+! ============================================================================
+! 20010316 GaudiDb v3
+
+ - Adapted to the new method IProperty::getProperty(const string&, string&)
+
+ - Add support to re-locate (rename etc) files. 
+   References are now consistent within the same file.
+
+ - Changes for Solaris support.
+ - Changes to avoid compiler warnings (see ARM Page 210) on Linux & Solaris
+ - Changes to allow the CLID and name of the root object to be specified.
+   The defaults remain as CLID_Event and "/Event".
+
+ - Changed to accomodate to the changes in GaudiKernel.
+
+ - Add macros to DbContainerConverter.h and DbGenericConverter.h that support
+   classes in different namespaces.
+
+ - Package supporting data persistency within the Gaudi framework.
+   Result of the splitting of the package DbCnv (v3) from LHCb.
+
+! ============================================================================
+! 20010316 HbookCnv v9
+
+ - Support multiple blocks per ntuple. Fix some minor character string handling
+   problems.
+ - Fixes to avoid having to specify a histogram output file even if only ntuples
+   are being created.  Template specialization tweaks for Solaris.
+ - Accomodate to the changes in GaudiKernel. Removed the extern declarations to access
+   IIDs.
+
+! ============================================================================
+! 20010316 RootHistCnv v3
+
+ - Fix problems when using ROOT for both event and histogram persistency.
+ - Tweaks to NTupleINfo.h for template handling on Solaris.
+ - Accomodate to the changes in GaudiKernel. Removed the extern declarations to access
+   IIDs.
+
+! ============================================================================
+! 20010316 SIPython v1r1
+
+ - Corrected some problems for NT
+ - Eliminated from the cvs repository unnessary files
+ - Add support for the "theApp.Exit" command as a temporary method of forcing
+   program termination from within a script.
+ - Add handling for direct execution of a script from the C++ side.
+
+ - This package is an implementation of the ScriptingSvc based on the Python 
+   scripting language. The package name derives from "Scripting Interface, 
+   Python". Note that many of the files are in fact generic, and might be 
+   moved to a SIGeneric package in the future, leaving only the minimal 
+   Python-specific C++ file and Python scripts.
+

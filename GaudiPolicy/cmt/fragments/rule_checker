@@ -1,0 +1,20 @@
+$(${CONSTITUENT}_output)${NAME}.viol : ${FULLNAME}
+	$(cpp_echo) $@ 
+	$(cpp_silent) cd ${FILEPATH}; $(cppcomp) -E -o \
+${NAME}.i $(use_pp_cppflags) \
+$(${CONSTITUENT}_pp_cppflags) $(${NAME}_pp_cppflags) $(use_cppflags) \
+$(${CONSTITUENT}_cppflags) $(${NAME}_${FILESUFFIX}_cppflags) \
+${ADDINCLUDE} ${FILENAME}
+
+	$(cpp_silent) if test ! -d $(${CONSTITUENT}_output) ; then mkdir $(${CONSTITUENT}_output); fi;
+	$(cpp_silent) cd ${FILEPATH}; if test -f ${PACKAGE_ROOT}/$(package)/${NAME}.h ; then /bin/ln -fs ${PACKAGE_ROOT}/$(package)/${NAME}.h ${NAME}.h; fi;
+	$(cpp_silent) cd ${FILEPATH}; if test -f $(checker_patch) ; then $(checker_patch) ${NAME}.i; fi;
+	$(cpp_silent) cd ${FILEPATH}; /bin/rm -f ./${NAME}.viol; $(checker_command) ./${NAME}.i ./ >& $(${CONSTITUENT}_output)${NAME}.viol;
+ 
+	$(cpp_silent) cd ${FILEPATH}; if test -h ${NAME}.h ; then /bin/rm -f ${NAME}.h; fi 
+	$(cpp_silent) cd ${FILEPATH}; /bin/rm -f ${NAME}.i ${NAME}.ii
+	
+
+${CONSTITUENT}clean::
+	/bin/rm -f ${FILEPATH}${NAME}.i ${FILEPATH}${NAME}.ii $(${CONSTITUENT}_output)${NAME}.viol
+

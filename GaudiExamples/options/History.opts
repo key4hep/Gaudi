@@ -1,0 +1,42 @@
+//##############################################################
+// Job options file
+//==============================================================
+
+#include "$STDOPTS/Common.opts"
+//--------------------------------------------------------------
+// Private Application Configuration options
+//--------------------------------------------------------------
+
+ApplicationMgr.TopAlg = { "History"};
+ApplicationMgr.ActivateHistory = true ;
+//--------------------------------------------------------------
+// Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
+//--------------------------------------------------------------
+
+MessageSvc.OutputLevel      = 1;
+MessageSvc.useColors        = true;
+
+MessageSvc.setVerbose	+= { "HistorySvc" };
+MessageSvc.setDebug	+= { "FastHistorySvc" };
+MessageSvc.setDebug	+= { "StatusCodeSvc", "IncidentSvc" };
+
+HistorySvc.Dump             = false;
+HistorySvc.OutputFile       = "history.dat";
+HistorySvc.OutputLevel	    = 0;
+
+FastHistorySvc.Dump             = true;
+FastHistorySvc.OutputFile       = "history.dat";
+
+//--------------------------------------------------------------
+// Event related parameters
+//--------------------------------------------------------------
+
+// Number of events to be processed (default is 10)
+ApplicationMgr.EvtMax = 2;
+ApplicationMgr.EvtSel = "NONE";
+
+//==============================================================
+//
+// End of job options file
+//
+//##############################################################

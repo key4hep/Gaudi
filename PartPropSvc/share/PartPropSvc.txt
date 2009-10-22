@@ -1,0 +1,9 @@
+//--------------------------------------------------------------
+// PartPropSvc Service options
+//--------------------------------------------------------------
+ApplicationMgr.DLLs += { "PartPropSvc" };
+ApplicationMgr.ExtSvc += {"PartPropSvc"};
+
+PartPropSvc.InputType = "PDG";
+PartPropSvc.InputFile = {"PDGTABLE.MeV"};
+//--------------------------------------------------------------

@@ -1,0 +1,71 @@
+================GaudiSvc v7r3=====================================
+! 20020205 - Gloria Corti 
+ - Modification necessary to correctly name a private tool belonging 
+   to an other tool in ToolSvc.
+
+================GaudiIntrospection v3r0=====================================
+! 20020214 - Stefan Roiser
+ - added handling of Arrays
+ - added handling of std::vectors
+ - generic invocation of methods added
+ - handling of inheritance when searching for methods and fields
+ - functions 'field' and 'method' of MetaClass will only return a pointer to a public meta-field/method if exists
+ - functions 'fields' and 'methods' of MetaClass will return vectors of pointers to meta-fields/methods
+ - added 'declaredMethod(s)' and 'declaredField(s)' which search in the inheritance-tree for all fields/methods
+
+================GaudiObjDesc v3r2=====================================
+! 20020319 - Stefan Roiser
+ - introduced new <class>-attribute 'stdVectorTypeDef' for typedef of a std::vector of class-pointer
+ - introduced new <class>-attribute 'serializers' to enable/disable writing of serialize-functions
+ - bugfix typedefs and enums used in function-implementations outside class now prefixed with 'ClassName::'
+
+! 20020318 - Stefan Roiser
+ - applying naming rules for getters with abbreviations also to _dict.cpp-files
+
+! 20020314 - Stefan Roiser
+ - bugfix when using methods inside namespaces
+ - bugfix declaring public enums before method-definitions
+
+! 20020313 - Stefan Roiser
+ - attribute 'array' introduced in <attribute>-element
+ - element <method> inside <namespace> introduced
+ - bugfix when using forward-declarations <import name='packname/classname' soft='TRUE'/>
+ - bugfix no double includes of classes when specified in package- and class-scope
+ - attribute noQuote for <location>-element introduced (when concatenating variables)
+
+! 20020227 - Stefan Roiser
+ - GaudiObjDesc independent from GaudiKernel
+ - added tag 'ignore' to <import>-element for non-inclusion of types
+ - new naming-conventions for getters with abbreviations
+ - non-const getter for non-simple attributes, 1-M relations and pointers
+ - empty initialization of members in standard-constructor when initialization-value is given
+ - only one setter for 1-1-relations with SmartRef<Type> as argument 
+ - only one addTo- and removeFrom-function for 1-M-relations with SmartRef<Type> as argument
+
+================GaudiObjDesc v3r1=====================================
+! 20020214 - Stefan Roiser
+ - added <typedef> and <desc> as sub-elements of <namespace>
+ - added 'author'-attribute to <namespace>
+ - bugfix: Defs of <typedef>s recognized as types which do not have to be included
+ - bugfix: classes created through xml-file will be added to 'class-database' ad Event/'ClassName'
+ - handling of pointers as simple types
+ 
+================GaudiObjDesc v3r0=====================================
+! 20020130 - Stefan Roiser
+ - added function to locate the place in the TDS
+ - added possibility to make pure virtual functions
+ - added 'translator' for unregular plurals
+
+! 20021028 - Stefan Roiser
+ - <namespace>-element introduced
+ - fragments will now write the output to sub-dir "Event"
+ - new 'database' of classes generated from Gaudi v9r0
+ - bugfixes applied (writing to public, protected, private; including of unknown classes)
+ - typedef for KeyedContainer added if derived from KeyedObject
+
+! 20020118 - Stefan Roiser
+ - bugfix applied for better handling of fundamental types
+ - <enum>-element introduced
+ - attribute 'initList' for special constructors introduced, which will handle initialization
+   outside the {-paranthesis
+

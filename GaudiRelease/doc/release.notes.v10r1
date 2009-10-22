@@ -1,0 +1,71 @@
+================ GaudiKernel v12r2====================================
+! 22020506 Pere Mato
+ - Bug fix in AlgTool.cpp. Pointer to ToolSvc not initialized
+   (Reported by O. Callot)
+
+! 22020502 Pere Mato
+ - Bug fix in base classes Service and Converter. The accessor msgsvc() shpould 
+   returns always a valid MessageSvc (Reported by RD Schaffer)
+ - Added templated function service() in Converter base class.
+ - Bug fix in Service.cpp. The finalize method access violates if called before
+   initialize (Reported by Wim Lavrijsen)
+
+================ GaudiObjDesc v4r2====================================
+! 20020503 Pere Mato
+- Small problem on the fragment obj2doth_header that forced the re-creation of 
+  all header files each time.
+- Some changes in the generation of dictionaries:
+  ~ In methods avoid use of static variables for complex types (one one instance available)
+  ~ The same for accessor methods
+  ~ The return type for relations was not correct in the MetaMethod creation
+
+================ GaudiIntrospection v4r2==============================
+! 20020503 - Pere Mato
+ - changed MetaMethod class to allow its use with GaudiPython for
+   calling methods of the new event model. The only package affected
+   by these changes is GaudiPython itself.
+
+================ GaudiPython v4r1=====================================
+! 20020503 - Pere Mato
+ - Adapted to new LHCb event model (KeyedContainers in addition to
+   ObjectVectors).
+ - Re-structured a bit: the IntrosObj and IntrosFunc share a single
+   function to handle conversion of single and complex types to python. 
+
+================ GaudiKernel v12r1=====================================
+! 20020426 Markus Frank
+  - Bug fix in DataSvc, which inhibited automatic directory
+    generation if intermediate leafs were present.
+
+================ GaudiDb v7r0======================================
+! 20020426 Frank Markus
+  - New files:
+    +++ IGenericDatabase.h/cpp	: Generic database access
+  - Changed files:
+    +++ GaudiDb_load.cpp	: GenericDataBase factory
+
+    +++ IOODataBase.h,		
+    +++ DbContainer.h/cpp
+    +++ DbImplementation.h/cpp,
+    +++ DbContainerObj.h/cpp  	: Enhanced SQL access
+    +++ IDataBaseMgr.h		: Const access to implementation IOODataBase
+    +++ DbContainerConverter.cpp: Remove unused variable
+    +++ DbCnvSvc.h/cpp		: Handle generic conversions using "any" converters
+
+! 20020417 Markus Frank
+  - Bug fix to handle keyed containers when elements have been
+    removed
+
+================ GaudiODBCDb v7r0======================================
+! 20020426 - Markus Frank (v6r0)
+ - Allow for deletion and updates using SQL statements
+
+================ GaudiRootDb v7r0======================================
+! 20020429 - Markus Frank
+  Re-compilation needed for new GaudiDb
+
+================ GaudiIntrospection v4r1===============================
+! 20020419 - Stefan Roiser
+ - changed static maps of MetaClass to pointers to maps to be able to check 
+   whether they are created or not
+

@@ -1,0 +1,327 @@
+JobOptionsSvc        INFO
+//GP:================================================================================
+//GP: include "..\options\Maps.opts"                                          (0,0)
+ApplicationMgr.ExtSvc +=  [ "RndmGenSvc" ] ;                            //GP: (1,1)
+ApplicationMgr.TopAlg =  [ "MapAlg/Map" ] ;                             //GP: (1,1)
+MessageSvc.OutputLevel = 3;                                             //GP: (1,1)
+ApplicationMgr.EvtMax = 10;                                             //GP: (1,1)
+ApplicationMgr.EvtSel = "NONE";                                         //GP: (1,1)
+//GP: end  "..\options\Maps.opts"                                             (31,1)
+//GP:================================================================================
+
+JobOptionsSvc        INFO Job options successfully read in from ..\options\Maps.opts
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.4 $
+                                          running on MCLVIRT01 on Tue Jun 03 11:42:22 2008
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
+RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
+RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
+HistogramPersis...WARNING Histograms saving not required.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+Map               SUCCESS  Inserting key -2 1st:  True True True True
+Map               SUCCESS 1 Map1: { -2 : -1.56 }
+Map               SUCCESS 1 Map2: { -2 : -1.56 }
+Map               SUCCESS 1 Map3: { -2 : -1.56 }
+Map               SUCCESS 1 Map4: { -2 : -1.56 }
+Map               SUCCESS      CONST:   map2['1']: 0, map3['1']: 0, map4['1']: 0
+Map               SUCCESS 2 Map1: { -2 : -1.56 }
+Map               SUCCESS 2 Map2: { -2 : -1.56 }
+Map               SUCCESS 2 Map3: { -2 : -1.56 }
+Map               SUCCESS 2 Map4: { -2 : -1.56 }
+Map               SUCCESS  NON-CONST:   map1['7']: 0, map2['7']: 0, map3['7']: 0, map4['7']: 0
+Map               SUCCESS 3 Map1: { -2 : -1.56 , 7 : 0 }
+Map               SUCCESS 3 Map2: { -2 : -1.56 }
+Map               SUCCESS 3 Map3: { -2 : -1.56 , 7 : 0 }
+Map               SUCCESS 3 Map4: { -2 : -1.56 , 7 : 0 }
+Map               SUCCESS  Inserting key -2 2nd:  False False False False
+Map               SUCCESS 4 Map1: { -2 : -1.56 , 7 : 0 }
+Map               SUCCESS 4 Map2: { -2 : -1.56 }
+Map               SUCCESS 4 Map3: { -2 : -1.56 , 7 : 0 }
+Map               SUCCESS 4 Map4: { -2 : -1.56 , 7 : 0 }
+Map               SUCCESS  Erased :  True True True True
+Map               SUCCESS 5 Map1: { 7 : 0 }
+Map               SUCCESS 5 Map2: {  }
+Map               SUCCESS 5 Map3: { 7 : 0 }
+Map               SUCCESS 5 Map4: { 7 : 0 }
+Map               SUCCESS  Count key    0 :  0 0 0 0
+Map               SUCCESS  Count key    1 :  0 0 0 0
+Map               SUCCESS  Count key    7 :  1 0 1 1
+Map               SUCCESS  Count key -100 :  0 0 0 0
+Map               SUCCESS  Inserting key 8 1st:  True True True True
+Map               SUCCESS 1 Map1: { 7 : 0 , 8 : 0.4 }
+Map               SUCCESS 1 Map2: { 8 : 0.4 }
+Map               SUCCESS 1 Map3: { 7 : 0 , 8 : 0.4 }
+Map               SUCCESS 1 Map4: { 7 : 0 , 8 : 0.4 }
+Map               SUCCESS      CONST:   map2['1']: 0, map3['1']: 0, map4['1']: 0
+Map               SUCCESS 2 Map1: { 7 : 0 , 8 : 0.4 }
+Map               SUCCESS 2 Map2: { 8 : 0.4 }
+Map               SUCCESS 2 Map3: { 7 : 0 , 8 : 0.4 }
+Map               SUCCESS 2 Map4: { 7 : 0 , 8 : 0.4 }
+Map               SUCCESS  NON-CONST:   map1['7']: 0, map2['7']: 0, map3['7']: 0, map4['7']: 0
+Map               SUCCESS 3 Map1: { 7 : 0 , 8 : 0.4 }
+Map               SUCCESS 3 Map2: { 8 : 0.4 }
+Map               SUCCESS 3 Map3: { 7 : 0 , 8 : 0.4 }
+Map               SUCCESS 3 Map4: { 7 : 0 , 8 : 0.4 }
+Map               SUCCESS  Inserting key 8 2nd:  False False False False
+Map               SUCCESS 4 Map1: { 7 : 0 , 8 : 0.4 }
+Map               SUCCESS 4 Map2: { 8 : 0.4 }
+Map               SUCCESS 4 Map3: { 7 : 0 , 8 : 0.4 }
+Map               SUCCESS 4 Map4: { 7 : 0 , 8 : 0.4 }
+Map               SUCCESS  Erased :  True True True True
+Map               SUCCESS 5 Map1: { 7 : 0 }
+Map               SUCCESS 5 Map2: {  }
+Map               SUCCESS 5 Map3: { 7 : 0 }
+Map               SUCCESS 5 Map4: { 7 : 0 }
+Map               SUCCESS  Count key    0 :  0 0 0 0
+Map               SUCCESS  Count key    1 :  0 0 0 0
+Map               SUCCESS  Count key    7 :  1 0 1 1
+Map               SUCCESS  Count key -100 :  0 0 0 0
+Map               SUCCESS  Inserting key -12 1st:  True True True True
+Map               SUCCESS 1 Map1: { -12 : 0.09 , 7 : 0 }
+Map               SUCCESS 1 Map2: { -12 : 0.09 }
+Map               SUCCESS 1 Map3: { -12 : 0.09 , 7 : 0 }
+Map               SUCCESS 1 Map4: { -12 : 0.09 , 7 : 0 }
+Map               SUCCESS      CONST:   map2['1']: 0, map3['1']: 0, map4['1']: 0
+Map               SUCCESS 2 Map1: { -12 : 0.09 , 7 : 0 }
+Map               SUCCESS 2 Map2: { -12 : 0.09 }
+Map               SUCCESS 2 Map3: { -12 : 0.09 , 7 : 0 }
+Map               SUCCESS 2 Map4: { -12 : 0.09 , 7 : 0 }
+Map               SUCCESS  NON-CONST:   map1['7']: 0, map2['7']: 0, map3['7']: 0, map4['7']: 0
+Map               SUCCESS 3 Map1: { -12 : 0.09 , 7 : 0 }
+Map               SUCCESS 3 Map2: { -12 : 0.09 }
+Map               SUCCESS 3 Map3: { -12 : 0.09 , 7 : 0 }
+Map               SUCCESS 3 Map4: { -12 : 0.09 , 7 : 0 }
+Map               SUCCESS  Inserting key -12 2nd:  False False False False
+Map               SUCCESS 4 Map1: { -12 : 0.09 , 7 : 0 }
+Map               SUCCESS 4 Map2: { -12 : 0.09 }
+Map               SUCCESS 4 Map3: { -12 : 0.09 , 7 : 0 }
+Map               SUCCESS 4 Map4: { -12 : 0.09 , 7 : 0 }
+Map               SUCCESS  Erased :  True True True True
+Map               SUCCESS 5 Map1: { 7 : 0 }
+Map               SUCCESS 5 Map2: {  }
+Map               SUCCESS 5 Map3: { 7 : 0 }
+Map               SUCCESS 5 Map4: { 7 : 0 }
+Map               SUCCESS  Count key    0 :  0 0 0 0
+Map               SUCCESS  Count key    1 :  0 0 0 0
+Map               SUCCESS  Count key    7 :  1 0 1 1
+Map               SUCCESS  Count key -100 :  0 0 0 0
+Map               SUCCESS  Inserting key 0 1st:  True True True True
+Map               SUCCESS 1 Map1: { 0 : -0.27 , 7 : 0 }
+Map               SUCCESS 1 Map2: { 0 : -0.27 }
+Map               SUCCESS 1 Map3: { 0 : -0.27 , 7 : 0 }
+Map               SUCCESS 1 Map4: { 0 : -0.27 , 7 : 0 }
+Map               SUCCESS      CONST:   map2['1']: 0, map3['1']: 0, map4['1']: 0
+Map               SUCCESS 2 Map1: { 0 : -0.27 , 7 : 0 }
+Map               SUCCESS 2 Map2: { 0 : -0.27 }
+Map               SUCCESS 2 Map3: { 0 : -0.27 , 7 : 0 }
+Map               SUCCESS 2 Map4: { 0 : -0.27 , 7 : 0 }
+Map               SUCCESS  NON-CONST:   map1['7']: 0, map2['7']: 0, map3['7']: 0, map4['7']: 0
+Map               SUCCESS 3 Map1: { 0 : -0.27 , 7 : 0 }
+Map               SUCCESS 3 Map2: { 0 : -0.27 }
+Map               SUCCESS 3 Map3: { 0 : -0.27 , 7 : 0 }
+Map               SUCCESS 3 Map4: { 0 : -0.27 , 7 : 0 }
+Map               SUCCESS  Inserting key 0 2nd:  False False False False
+Map               SUCCESS 4 Map1: { 0 : -0.27 , 7 : 0 }
+Map               SUCCESS 4 Map2: { 0 : -0.27 }
+Map               SUCCESS 4 Map3: { 0 : -0.27 , 7 : 0 }
+Map               SUCCESS 4 Map4: { 0 : -0.27 , 7 : 0 }
+Map               SUCCESS  Erased :  True True True True
+Map               SUCCESS 5 Map1: { 7 : 0 }
+Map               SUCCESS 5 Map2: {  }
+Map               SUCCESS 5 Map3: { 7 : 0 }
+Map               SUCCESS 5 Map4: { 7 : 0 }
+Map               SUCCESS  Count key    0 :  0 0 0 0
+Map               SUCCESS  Count key    1 :  0 0 0 0
+Map               SUCCESS  Count key    7 :  1 0 1 1
+Map               SUCCESS  Count key -100 :  0 0 0 0
+Map               SUCCESS  Inserting key 4 1st:  True True True True
+Map               SUCCESS 1 Map1: { 4 : 1.43 , 7 : 0 }
+Map               SUCCESS 1 Map2: { 4 : 1.43 }
+Map               SUCCESS 1 Map3: { 4 : 1.43 , 7 : 0 }
+Map               SUCCESS 1 Map4: { 4 : 1.43 , 7 : 0 }
+Map               SUCCESS      CONST:   map2['1']: 0, map3['1']: 0, map4['1']: 0
+Map               SUCCESS 2 Map1: { 4 : 1.43 , 7 : 0 }
+Map               SUCCESS 2 Map2: { 4 : 1.43 }
+Map               SUCCESS 2 Map3: { 4 : 1.43 , 7 : 0 }
+Map               SUCCESS 2 Map4: { 4 : 1.43 , 7 : 0 }
+Map               SUCCESS  NON-CONST:   map1['7']: 0, map2['7']: 0, map3['7']: 0, map4['7']: 0
+Map               SUCCESS 3 Map1: { 4 : 1.43 , 7 : 0 }
+Map               SUCCESS 3 Map2: { 4 : 1.43 }
+Map               SUCCESS 3 Map3: { 4 : 1.43 , 7 : 0 }
+Map               SUCCESS 3 Map4: { 4 : 1.43 , 7 : 0 }
+Map               SUCCESS  Inserting key 4 2nd:  False False False False
+Map               SUCCESS 4 Map1: { 4 : 1.43 , 7 : 0 }
+Map               SUCCESS 4 Map2: { 4 : 1.43 }
+Map               SUCCESS 4 Map3: { 4 : 1.43 , 7 : 0 }
+Map               SUCCESS 4 Map4: { 4 : 1.43 , 7 : 0 }
+Map               SUCCESS  Erased :  True True True True
+Map               SUCCESS 5 Map1: { 7 : 0 }
+Map               SUCCESS 5 Map2: {  }
+Map               SUCCESS 5 Map3: { 7 : 0 }
+Map               SUCCESS 5 Map4: { 7 : 0 }
+Map               SUCCESS  Count key    0 :  0 0 0 0
+Map               SUCCESS  Count key    1 :  0 0 0 0
+Map               SUCCESS  Count key    7 :  1 0 1 1
+Map               SUCCESS  Count key -100 :  0 0 0 0
+Map               SUCCESS  Inserting key -13 1st:  True True True True
+Map               SUCCESS 1 Map1: { -13 : 2.58 , 7 : 0 }
+Map               SUCCESS 1 Map2: { -13 : 2.58 }
+Map               SUCCESS 1 Map3: { -13 : 2.58 , 7 : 0 }
+Map               SUCCESS 1 Map4: { -13 : 2.58 , 7 : 0 }
+Map               SUCCESS      CONST:   map2['1']: 0, map3['1']: 0, map4['1']: 0
+Map               SUCCESS 2 Map1: { -13 : 2.58 , 7 : 0 }
+Map               SUCCESS 2 Map2: { -13 : 2.58 }
+Map               SUCCESS 2 Map3: { -13 : 2.58 , 7 : 0 }
+Map               SUCCESS 2 Map4: { -13 : 2.58 , 7 : 0 }
+Map               SUCCESS  NON-CONST:   map1['7']: 0, map2['7']: 0, map3['7']: 0, map4['7']: 0
+Map               SUCCESS 3 Map1: { -13 : 2.58 , 7 : 0 }
+Map               SUCCESS 3 Map2: { -13 : 2.58 }
+Map               SUCCESS 3 Map3: { -13 : 2.58 , 7 : 0 }
+Map               SUCCESS 3 Map4: { -13 : 2.58 , 7 : 0 }
+Map               SUCCESS  Inserting key -13 2nd:  False False False False
+Map               SUCCESS 4 Map1: { -13 : 2.58 , 7 : 0 }
+Map               SUCCESS 4 Map2: { -13 : 2.58 }
+Map               SUCCESS 4 Map3: { -13 : 2.58 , 7 : 0 }
+Map               SUCCESS 4 Map4: { -13 : 2.58 , 7 : 0 }
+Map               SUCCESS 5 Map1: { -13 : 2.58 , 7 : 0 }
+Map               SUCCESS 5 Map2: { -13 : 2.58 }
+Map               SUCCESS 5 Map3: { -13 : 2.58 , 7 : 0 }
+Map               SUCCESS 5 Map4: { -13 : 2.58 , 7 : 0 }
+Map               SUCCESS  Count key    0 :  0 0 0 0
+Map               SUCCESS  Count key    1 :  0 0 0 0
+Map               SUCCESS  Count key    7 :  1 0 1 1
+Map               SUCCESS  Count key -100 :  0 0 0 0
+Map               SUCCESS  Inserting key -1 1st:  True True True True
+Map               SUCCESS 1 Map1: { -13 : 2.58 , -1 : -2.18 , 7 : 0 }
+Map               SUCCESS 1 Map2: { -13 : 2.58 , -1 : -2.18 }
+Map               SUCCESS 1 Map3: { -13 : 2.58 , -1 : -2.18 , 7 : 0 }
+Map               SUCCESS 1 Map4: { -13 : 2.58 , -1 : -2.18 , 7 : 0 }
+Map               SUCCESS      CONST:   map2['1']: 0, map3['1']: 0, map4['1']: 0
+Map               SUCCESS 2 Map1: { -13 : 2.58 , -1 : -2.18 , 7 : 0 }
+Map               SUCCESS 2 Map2: { -13 : 2.58 , -1 : -2.18 }
+Map               SUCCESS 2 Map3: { -13 : 2.58 , -1 : -2.18 , 7 : 0 }
+Map               SUCCESS 2 Map4: { -13 : 2.58 , -1 : -2.18 , 7 : 0 }
+Map               SUCCESS  NON-CONST:   map1['7']: 0, map2['7']: 0, map3['7']: 0, map4['7']: 0
+Map               SUCCESS 3 Map1: { -13 : 2.58 , -1 : -2.18 , 7 : 0 }
+Map               SUCCESS 3 Map2: { -13 : 2.58 , -1 : -2.18 }
+Map               SUCCESS 3 Map3: { -13 : 2.58 , -1 : -2.18 , 7 : 0 }
+Map               SUCCESS 3 Map4: { -13 : 2.58 , -1 : -2.18 , 7 : 0 }
+Map               SUCCESS  Inserting key -1 2nd:  False False False False
+Map               SUCCESS 4 Map1: { -13 : 2.58 , -1 : -2.18 , 7 : 0 }
+Map               SUCCESS 4 Map2: { -13 : 2.58 , -1 : -2.18 }
+Map               SUCCESS 4 Map3: { -13 : 2.58 , -1 : -2.18 , 7 : 0 }
+Map               SUCCESS 4 Map4: { -13 : 2.58 , -1 : -2.18 , 7 : 0 }
+Map               SUCCESS 5 Map1: { -13 : 2.58 , -1 : -2.18 , 7 : 0 }
+Map               SUCCESS 5 Map2: { -13 : 2.58 , -1 : -2.18 }
+Map               SUCCESS 5 Map3: { -13 : 2.58 , -1 : -2.18 , 7 : 0 }
+Map               SUCCESS 5 Map4: { -13 : 2.58 , -1 : -2.18 , 7 : 0 }
+Map               SUCCESS  Count key    0 :  0 0 0 0
+Map               SUCCESS  Count key    1 :  0 0 0 0
+Map               SUCCESS  Count key    7 :  1 0 1 1
+Map               SUCCESS  Count key -100 :  0 0 0 0
+Map               SUCCESS  Inserting key 0 1st:  True True True True
+Map               SUCCESS 1 Map1: { -13 : 2.58 , -1 : -2.18 , 0 : -0.87 , 7 : 0 }
+Map               SUCCESS 1 Map2: { -13 : 2.58 , -1 : -2.18 , 0 : -0.87 }
+Map               SUCCESS 1 Map3: { -13 : 2.58 , -1 : -2.18 , 0 : -0.87 , 7 : 0 }
+Map               SUCCESS 1 Map4: { -13 : 2.58 , -1 : -2.18 , 0 : -0.87 , 7 : 0 }
+Map               SUCCESS      CONST:   map2['1']: 0, map3['1']: 0, map4['1']: 0
+Map               SUCCESS 2 Map1: { -13 : 2.58 , -1 : -2.18 , 0 : -0.87 , 7 : 0 }
+Map               SUCCESS 2 Map2: { -13 : 2.58 , -1 : -2.18 , 0 : -0.87 }
+Map               SUCCESS 2 Map3: { -13 : 2.58 , -1 : -2.18 , 0 : -0.87 , 7 : 0 }
+Map               SUCCESS 2 Map4: { -13 : 2.58 , -1 : -2.18 , 0 : -0.87 , 7 : 0 }
+Map               SUCCESS  NON-CONST:   map1['7']: 0, map2['7']: 0, map3['7']: 0, map4['7']: 0
+Map               SUCCESS 3 Map1: { -13 : 2.58 , -1 : -2.18 , 0 : -0.87 , 7 : 0 }
+Map               SUCCESS 3 Map2: { -13 : 2.58 , -1 : -2.18 , 0 : -0.87 }
+Map               SUCCESS 3 Map3: { -13 : 2.58 , -1 : -2.18 , 0 : -0.87 , 7 : 0 }
+Map               SUCCESS 3 Map4: { -13 : 2.58 , -1 : -2.18 , 0 : -0.87 , 7 : 0 }
+Map               SUCCESS  Inserting key 0 2nd:  False False False False
+Map               SUCCESS 4 Map1: { -13 : 2.58 , -1 : -2.18 , 0 : -0.87 , 7 : 0 }
+Map               SUCCESS 4 Map2: { -13 : 2.58 , -1 : -2.18 , 0 : -0.87 }
+Map               SUCCESS 4 Map3: { -13 : 2.58 , -1 : -2.18 , 0 : -0.87 , 7 : 0 }
+Map               SUCCESS 4 Map4: { -13 : 2.58 , -1 : -2.18 , 0 : -0.87 , 7 : 0 }
+Map               SUCCESS  Erased :  True True True True
+Map               SUCCESS 5 Map1: { -13 : 2.58 , -1 : -2.18 , 7 : 0 }
+Map               SUCCESS 5 Map2: { -13 : 2.58 , -1 : -2.18 }
+Map               SUCCESS 5 Map3: { -13 : 2.58 , -1 : -2.18 , 7 : 0 }
+Map               SUCCESS 5 Map4: { -13 : 2.58 , -1 : -2.18 , 7 : 0 }
+Map               SUCCESS  Count key    0 :  0 0 0 0
+Map               SUCCESS  Count key    1 :  0 0 0 0
+Map               SUCCESS  Count key    7 :  1 0 1 1
+Map               SUCCESS  Count key -100 :  0 0 0 0
+Map               SUCCESS  Inserting key 15 1st:  True True True True
+Map               SUCCESS 1 Map1: { -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 1 Map2: { -13 : 2.58 , -1 : -2.18 , 15 : -0.54 }
+Map               SUCCESS 1 Map3: { -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 1 Map4: { -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS      CONST:   map2['1']: 0, map3['1']: 0, map4['1']: 0
+Map               SUCCESS 2 Map1: { -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 2 Map2: { -13 : 2.58 , -1 : -2.18 , 15 : -0.54 }
+Map               SUCCESS 2 Map3: { -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 2 Map4: { -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS  NON-CONST:   map1['7']: 0, map2['7']: 0, map3['7']: 0, map4['7']: 0
+Map               SUCCESS 3 Map1: { -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 3 Map2: { -13 : 2.58 , -1 : -2.18 , 15 : -0.54 }
+Map               SUCCESS 3 Map3: { -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 3 Map4: { -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS  Inserting key 15 2nd:  False False False False
+Map               SUCCESS 4 Map1: { -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 4 Map2: { -13 : 2.58 , -1 : -2.18 , 15 : -0.54 }
+Map               SUCCESS 4 Map3: { -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 4 Map4: { -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 5 Map1: { -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 5 Map2: { -13 : 2.58 , -1 : -2.18 , 15 : -0.54 }
+Map               SUCCESS 5 Map3: { -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 5 Map4: { -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS  Count key    0 :  0 0 0 0
+Map               SUCCESS  Count key    1 :  0 0 0 0
+Map               SUCCESS  Count key    7 :  1 0 1 1
+Map               SUCCESS  Count key -100 :  0 0 0 0
+Map               SUCCESS  Inserting key -22 1st:  True True True True
+Map               SUCCESS 1 Map1: { -22 : 0.09 , -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 1 Map2: { -22 : 0.09 , -13 : 2.58 , -1 : -2.18 , 15 : -0.54 }
+Map               SUCCESS 1 Map3: { -22 : 0.09 , -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 1 Map4: { -22 : 0.09 , -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS      CONST:   map2['1']: 0, map3['1']: 0, map4['1']: 0
+Map               SUCCESS 2 Map1: { -22 : 0.09 , -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 2 Map2: { -22 : 0.09 , -13 : 2.58 , -1 : -2.18 , 15 : -0.54 }
+Map               SUCCESS 2 Map3: { -22 : 0.09 , -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 2 Map4: { -22 : 0.09 , -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS  NON-CONST:   map1['7']: 0, map2['7']: 0, map3['7']: 0, map4['7']: 0
+Map               SUCCESS 3 Map1: { -22 : 0.09 , -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 3 Map2: { -22 : 0.09 , -13 : 2.58 , -1 : -2.18 , 15 : -0.54 }
+Map               SUCCESS 3 Map3: { -22 : 0.09 , -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 3 Map4: { -22 : 0.09 , -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS  Inserting key -22 2nd:  False False False False
+Map               SUCCESS 4 Map1: { -22 : 0.09 , -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 4 Map2: { -22 : 0.09 , -13 : 2.58 , -1 : -2.18 , 15 : -0.54 }
+Map               SUCCESS 4 Map3: { -22 : 0.09 , -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 4 Map4: { -22 : 0.09 , -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS  Erased :  True True True True
+Map               SUCCESS 5 Map1: { -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 5 Map2: { -13 : 2.58 , -1 : -2.18 , 15 : -0.54 }
+Map               SUCCESS 5 Map3: { -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS 5 Map4: { -13 : 2.58 , -1 : -2.18 , 7 : 0 , 15 : -0.54 }
+Map               SUCCESS  Count key    0 :  0 0 0 0
+Map               SUCCESS  Count key    1 :  0 0 0 0
+Map               SUCCESS  Count key    7 :  1 0 1 1
+Map               SUCCESS  Count key -100 :  0 0 0 0
+ApplicationMgr       INFO Application Manager Stopped successfully
+Map               SUCCESS
+Map               SUCCESS  FINALIZE
+Map               SUCCESS  	Tested maps :
+Map               SUCCESS  	1) std::map<int,double,std::less<int>,std::allocator<std::pair<int const ,double> > >
+Map               SUCCESS  	2) GaudiUtils::VectorMap<int,double,std::less<int const >,std::allocator<std::pair<int,double> > >
+Map               SUCCESS  	3) GaudiUtils::Map<int,double,std::map<int,double,std::less<int>,std::allocator<std::pair<int const ,double> > > >
+Map               SUCCESS  	4) GaudiUtils::HashMap<int,double,GaudiUtils::Hash<int>,std::map<int,double,std::less<int>,std::allocator<std::pair<int const ,double> > > >
+EventLoopMgr         INFO Histograms converted successfully according to request.
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully
+Number of MyTrack instances:0
+Number of MyVertex instances:0

@@ -1,0 +1,118 @@
+#pragma print ON
+// $Id: ExtendedProperties.opts,v 1.6 2008/01/14 19:45:34 marcocle Exp $ 
+// ============================================================================
+// Include files 
+// ============================================================================
+// STDOPTS
+// ============================================================================
+#include "Common.opts"
+#units   "units.opts"
+// ============================================================================
+
+/** @file
+ *  Configuration file to run ExtendedProperties algorithm
+ *  @see ExtendedProperties
+ *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+ *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
+ */
+
+// ============================================================================
+ApplicationMgr.TopAlg  = {   "ExtendedProperties/xProps" };
+ApplicationMgr.EvtMax   = 1;   // events to be processed (default is 10)
+ApplicationMgr.EvtSel   = "NONE"; // do not use any event input
+ApplicationMgr.HistogramPersistency = "NONE";
+// ============================================================================
+
+// ============================================================================
+xProps.PairDD = ( 3.141592*m , 2.18281828 ) ; // std::pair<double,double>
+xProps.PairII = ( 3        , 2          ) ; // std::pair<int,int>
+xProps.VectorOfPairsDD +=     // std::vector<std::pair<double,double> > 
+  {
+    (0,1), (1,2), (2,3), (3,4) 
+  } ;
+xProps.VectorOfPairsDD +=     // std::vector<std::pair<double,double> > 
+  {
+    (4,5), (5,6), (6,7), (7,8) 
+  } ;
+xProps.VectorOfVectorsString = // std::vector<std::vector<std::string> >
+  {
+    { "a", "b" , "c" } , 
+    { "A", "B" , "C" }  
+  };
+xProps.VectorOfVectorsDouble = // std::vector<std::vector<double> >
+  {
+    { 0 , 1 , 2 } , 
+    { 0 , -0.5 , -0.25  }  
+  };
+xProps.MapIntDouble = // std::map<int,double>
+  { 
+    1 : 0.1 
+    , 2 : 0.2  
+    , 3 : 0.3
+  };
+xProps.MapStringString = // std::map<std::string,std::string>
+  {
+    'a' : 'sddsgsgsdgdggf' 
+    , 'b' : 'sddsgsgsdgdggf' 
+    , 'c' : 'sddsgsgsdgdggf' 
+  } ;
+xProps.MapStringInt = // std::map<std::string,int>
+  {
+    'a' : 1 
+    , 'b' : 2 
+    ,"c" : 3 
+  };
+xProps.MapStringDouble = // std::map<std::string,int>
+  {
+    'aa' : 0.1
+    , 'bb' : 0.2 
+    ,"cc" : 3 
+  };
+xProps.MapStringVectorOfStrings = // std::map<std::string,std::vector<std::string> >
+  {
+    'aaa' : { 'a' , 'b' ,'c' }
+   , 'bbb' : { 'a' , 'b' ,'c' }
+   , 'ccc' : { 'a' , 'b' ,'c' }
+  } ;
+xProps.MapStringVectorOfDoubles = // std::map<std::string,std::vector<double> >
+  {
+    'aaa' : { 1 , 2 , 3  }
+   , 'bbb' : { 1. , 2. , 3. }
+   , 'ccc' : { 0.1 , 0.2 , 0.3 }
+  } ;
+xProps.MapStringVectorOfInts = // std::map<std::string,std::vector<int> >
+  {
+    'aaa' : {  1 , 2 , 3 }
+   , 'bbb' : { 4 , 5 , 6 }
+   , 'ccc' : { 7 , 8 , 9 }
+  } ;
+
+xProps.MapIntInt = // std::map<int,int>
+  { 1: 10,
+    2: 20,
+    3: 30
+    };
+
+xProps.VectorOfPairsII = // std::vector<std::pair<int,int> >
+  { (1,1), (2,1), (3,2), (4,3), (5,5) };
+
+xProps.MapIntString = // std::map<int,std::string>
+  { 
+    0 : "zero" ,
+    2 : "two"  ,
+    -1 : "minus one"
+  } ;
+
+xProps.MapUIntString = // std::map<unsigned int,std::string>
+  { 
+    0 : "UZero" ,
+    2 : "UTwo"  ,
+    1 : "UOne"
+  } ;
+
+
+// ============================================================================
+
+// ============================================================================
+//  The END 
+// ============================================================================

@@ -1,0 +1,4 @@
+myAlg.myTool.Bool = True;
+myAlg.myTool.Int = 10;
+
+MessageSvc.OutputLevel = 2;

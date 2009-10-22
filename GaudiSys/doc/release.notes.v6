@@ -1,0 +1,571 @@
+Package : GaudiSys
+Package manager : M.Cattaneo
+
+! 20001109 GaudiSys v6
+
+! =====================================================================
+! 20001108 Gaudi v8
+
+! 20001018 - Pere Mato
+ - Implemented a new service called IncidentSvc. This allows to communicate
+   asynchronously things that happen in the system. The ApplicationMgr uses it to inform
+   when begining and ending the processing of one physics event.
+   + Added new interfaces related to the new service: IIncidentSvc.h, IIncidentListener.h
+   + Added new base class: Incident.h
+
+ - Changed IHistogramSvc to be consistent with the (HTL) histogram implementation using
+   double for defining histogram edges instead of float. Code using histograms needs to
+   be re-compiled!!. (CT0000000035488)
+
+! 20001310 - Markus Frank
+ Changes files:
+        DataSvc/DataSvc.cpp
+        DataSvc/DataSvc.h
+        PersistencySvc/ConversionSvc.cpp;
+        System/System.cpp;
+
+      New Interfaces:
+      Interfaces/IDataSourceMgr.h;
+      Interfaces/IInspectable.h;
+      Interfaces/IInspector.h;
+      Interfaces/ISelectStatement.h;
+
+      Changed interfaces:
+      Interfaces/INTuple.h      Extension for N-tuples to accept pre-selections
+      Interfaces/IPersistencySvc.h;
+
+        Kernel/DataObject.cpp;    Extended to make dataobject inspectable
+        Kernel/DataObject.h;      dto.
+
+        // New files:
+      Kernel/DataTypeInfo.cpp;  allow access to primitive type information
+      Kernel/DataTypeInfo.h;    dto.
+      Kernel/SelectStatement.h; base calss for selct statements (e.g. for N-tuples)
+      Kernel/Tokenizer.cpp;     small parser for qualified strings of type: ITEM='value'
+      Kernel/Tokenizer.h;       dto.
+
+        Kernel/GenericAddress.h; Fix bug when returning object name from datadirectory
+      Kernel/IInterface.cpp;   Added Interface and storage types
+
+      Kernel/ObjectFactory.h;
+      Kernel/StreamBuffer.h;
+        MessageSvc/MsgStream.h;
+
+      NtupleSvc/NTuple.h;       Extension for N-tuples to accept pre-selections
+      NTupleSvc/NTupleImplementation.cpp;  dto.
+      NTupleSvc/NTupleImplementation.h;    dto.
+      NTupleSvc/NTupleItems.cpp;           dto.
+      NTupleSvc/NTupleItems.h;             dto.
+      NTupleSvc/Selector.cpp;              Base class for user preselectors
+      NTupleSvc/Selector.h;                dto.
+
+! 20001009 - Vanya Belyaev
+   (1) Gaudi/Kernel/IInterface.cpp - added definition of IID_IGiGaCnvSvc
+              and 2 definitions of pseudy-technology types, needed for GiGa
+   (2) remove obsolete method from IGiGaSvc interface, the functionality of these
+       method is replaced by  GiGa Conversion Sercice
+
+! 20001009 - David Quarrie, Pere Mato
+ - Added the support for "Auditors". The following existing files has been changed:
+   Algorithm.h (.cpp), ISvcLocator.h, IInterface.cpp
+   New interfaces: IAuditor.h, IAuditorFactory.h
+   New classes: Auditor.h (.cpp), AudFactory.h
+
+! 20000731 - Vanya Belyaev
+  - Gaudi/DetectorDataSvc/DetectorElement.h bug fix
+       (1) remove empty default constructor         (incorrect initialization)
+       (2) now default construction is not empty!!!
+
+! ======================================================================================
+
+! 20001030 - GaudiSvc v4
+
+! 20001030 - M.Cattaneo
+ - GaudiSvc_load.cpp  Add Auditor service to factories
+
+! 20001027 - G.Corti
+ - ToolSvc/ToolSvc.cpp add try/catch when creating tool
+
+! 20001027 - Markus Frank
+ - ApplicationMgr.cpp Call sysExecute instead of execute for output streams
+ - GaudiSvc_load.cpp  Add incident service to factories
+ - EventSelector:     Add print frequency, max events and first event to process
+                      to options
+ - Output streams     Use same option format as for NTupleSvc and EventSelector.
+
+! 20001026 - Marco Cattaneo
+ - requirements: use clhep v1r6, htl v13
+
+! 20001018 - Pere Mato
+ - Implemented a new service called IncidentSvc. This allows to communicate
+   asynchronously things that happen in the system. The ApplicationMgr uses it to inform
+   when begining and ending the processing of one physics event.
+   + New subpackage added: IncidentSvc
+   + Modified ApplicationMgr to make use of the new service
+
+! 20001017 - Markus Frank
+  - NTupleSvc
+    Properly merge my previous changes and the changes of C.Leggett
+
+! 20001013 - Markus Frank
+  - ApplicationMgr/ApplicationMgr.cpp: Allow to specify the type of output streams
+  - Dll/GaudiSvc_load.cpp:             Added new Factories
+  - EventSelector                      New sub-package
+  - NTupleSvc/NTupleSvc.cpp            Service creates conversion service for different
+                                       NTuple sources (HBOOK, ROOT...).
+                                       I hope this is compatibel with Charles Leggett's
+                                       changes.
+  - PersistencySvc/OutputStream.cpp    Make data service a variable
+  - PersistencySvc/PersistencySvc.cpp  Allow to retrieve conversion service
+                                       identified by technology type
+! 20001012 - Vanya Belyaev
+ - ChronoStatSvc/StatEntity.h - fix Remedy problem ID= CT0000000036451
+    ( remove misprint in output functions for statistics)
+
+! 20001011 - Pere Mato
+ - JobOption files: the operation += will not generate an error is the property does not
+   exists, it creates an new one.
+
+! 20001009 - David Quarrie, Pere Mato
+ - Added new Auditor service. This is service is managing a number of configurable
+   auditors that can be installed. The default behaviour is the same as obtained with
+   the ChonoSvc.
+   File Modified: ApplicationMgr.h (.cpp)
+   New Files: AuditorSvc.h (.cpp)
+
+! 20001006 - Pere Mato
+ - Histogram persistency service is not required
+
+! 20000815 - Pere Mato
+ - ApplicationMgr creates a "DataObject" object as the event data store
+   root ("/Event") if EvtSel = "NONE" is specified.
+
+!=============================================================================
+
+! 20001108 GaudiAlg v1r1
+
+! 20001025 - David Quarrie
+
+  - Add support for an explicit branch and for inverted logic. The syntax
+    is:
+
+    Sequencer.Members       = { "First", "Second", "Third" };
+    Sequencer.BranchMembers = { "Second", "Forth" };
+
+    If the "Second" Algorithm passes the event, the "Third" Algorithm
+    is executed. If it fails the "Forth" Algorithm is executed. The
+    branch point is determined by the first element of the BranchMembers.
+
+    The syntax for inverted logic is:
+
+    Sequencer1.Members = { "First", "Second", "Third" };
+    Sequencer2.Members = { "First", "Second:invert", "Forth" };
+
+    If the "Second" Algorithm passes and event, the "Third" Algorithm
+    is executed, otherwise the "Forth" Algorithm is executed.
+
+!=============================================================================
+
+! 20001108 - LHCbEvent v8
+
+! 20001027 - G.Corti
+  - TopLevel/EventModel.cpp: introduce CLID_AxPart2MCParticle
+
+! 20001026 - M.Cattaneo - preparation for v8
+  - Requirements: use Gaudi v8, CLHEP v1r6
+
+! 20000919 - Pere Mato
+  - Removed file "Run.h". It was not used and caused confusion.
+
+! 20000815 - Markus Frank
+  - Added sub-event ID to Monte-Carlo Particles and vertices.
+    The sub-event ID indicates whether the event origines
+    from pileup (then <> 0) or from the physics interaction (==0).
+
+!=============================================================================
+
+! 20001031 - SicCnv v9
+! 20001031 M.Cattaneo
+  SicbCnvDll/SicbCnv_load.cpp - Add PileUpAlg to factories
+
+! 20001027 G.Corti
+  Analysis/SicbAxPart2MCParticleCnv.cpp  - new converter for
+                                           SmartRefTable<AxPartCandidate,MCParticle>
+  SicbCnvDll/SicbCnv_load.cpp modified to load new converter
+
+! 20001027 Gonzalo Gracia
+        Access to Book Keeping Data Base from NT works now
+        Modifications in PileUpAlg to handle differently pile
+           up for signal and minimum bias events.
+        Write a line in a log file every time the bookeeping DB
+        is accessed
+        Mods: EventSelector.cpp, JobId.cpp, Tape.cpp, GaudiSocket.cp/.h
+              PileUpAlgo.cpp
+        New files: BookKeepingDBTracer.cpp/.h
+
+! 20001003 SicbCnv v8r1 is built on the v8b branch
+   requirements - use Futio v* (Flr)
+                  append -u SicbKern_loadRef to application_linkopts
+                  to avoid to have to update SicbCnv_linkopts in application
+                  packages
+   SicbCnvDll/SicbCnv_dll.cpp - remove fake main program (Flr)
+
+! 20000815 - Markus Frank
+  - Added sub-event ID to Monte-Carlo Particles and vertices.
+    The sub-event ID indicates whether the event origines
+    from pileup (then <> 0) or from the physics interaction (==0).
+!=============================================================================
+
+! 20001108 - DbCnv v3
+
+!=============================================================================
+
+! 20001108 - HbookCnv v7
+
+!=============================================================================
+
+! 20001108 - DetDesc v5
+
+! 20001102 - Changes done by Radovan Chytracek
+
+Bug fixes
+---------
+
+- Due to small change in Gaudi a few Xml converters have to be fixed to handle it properly,
+  affected converters are XmlGenericCnv, XmlCatalogCnv, XmlIsotopeCnv, XmlElementCnv, XmlMixtureCnv.
+
+New functionality
+-----------------
+
+- New materials.dtd is understood by converters, affected converters are XmlCatalogCnv
+  XmlIsotopeCnv, XmlElementCnv, XmlMixtureCnv.
+
+
+
+! 20001004 - DetDesc
+Vanya Belyaev
+ DetDesc/Solid/SolidTrap.h
+ DetDesc/Solid/SolidTrap.cpp
+ A new type of Solid is added (general trapezoid) by request of Velo group.
+
+
+! 20000908 - DetDesc pre v4r1
+Changes done by Radovan Chytracek
+
+Bug fixes
+---------
+
+- XML converters assumed the input from XML in absolute numbers. Now they work internally with raw values.
+  The effect is now that user who wants to get the values out of the system in the given units must
+  divide the raw values by the corresponding  units.
+- Fixed inheritance in the material classes hierarchy (hopefully the last change in this area). No side effect.
+- Fixed accessors for the Element class, needed for the conversion into Geant4.
+- Fixed the algorithm for the radiation length in the mixtures.
+- Fixed bug in the XML element converter which did not initialize proiperly the material elements created from
+  scratch.
+
+!========================================================================================
+!20001025 Auditors v1
+
+!20001025 David Quarrie
+- This package contains concrete Auditors. An Auditor monitors some resource
+  on a per-Algorithm basis. It performs this monitoring by calls immediately
+  before and after the appropriate initialize, execute and finalize calls.
+
+  Initial implementations are:
+
+  NameAuditor   This is a diagnostic tool that just displays the name of
+                each Algorithm.
+
+  ChronoAuditor This displays at the end of job the total and per event
+                cpu time taken by each Algorithm.
+
+  MemoryAuditor This warns of possible memory leaks. However, Algorithms
+                that register objects with the transient event store will
+                cause this warning to be triggered. It is designed to
+                warn of memory leaks from Algorithms that retrieve objects
+                from the transient event store.
+
+!========================================================================================
+
+!20001106 RootHistCnv v1 Marco Cattaneo
+- removed unneccessary dependence on CERNLIB, and explicit dependence on EXTLIB
+  (implicit through dependence on Gaudi)
+
+!20001027 Pere Mato
+- Removed compilations problems for NT
+
+!20001020 Pere Mato
+- Few changes needed to be compatible with current head revision of Gaudi
+  and fixes to compilation problems in Windows
+
+!20001013 David Quarrie
+- New package developed by Charles Leggett to support Histogram
+  Persistency based on ROOTsupport. As far as the user is concerned,
+  They need to add to their jobOptions.txt file the following lines:
+
+// Specify Share Library for ROOT persistency support
+ApplicationMgr.DLLs += "RootHistSvc";
+// Specify ROOT or HBOOK persistency (HBOOK is default)
+ApplicationMgr.HistogramPersistency = "ROOT";
+// Specify Histogram Persistency Output File
+HistogramPersistencySvc.OutputFile = "histo.rt"
+
+!========================================================================================
+
+! 20001108 GaudiTools v1
+
+! 20001027 - G.Corti
+  New package to hold general GaudiTools
+
+  Introduce Associator base class and IAssociator interface.
+
+!========================================================================================
+
+! 20001030 - GaudiConf v3 - changes by M.Cattaneo
+  options/ - New files Dlls.txt, Services.txt included by Common.txt, to allow
+             possibility to include only Services.txt by static linked programs
+
+! 20001027 - GaudiConf v3 - changes by M.Cattaneo for GaudiSys v6
+  mgr/     - requirements:  add STDOPTS logical to point to options directory
+  options/ - StandardOptions.txt:  renamed Common.txt
+             Common.txt:           removed SicbEventSelector
+             DetDesc.txt:          additional options to use XML database
+             SicbTestDataFile.txt: EventSelector.Input for test jobs
+
+! 20000726 - GaudiConf v2
+           - StandardOptions.txt: remove TapesDatabase option, not needed
+             with GaudiSys v5
+
+! 20000530 - changes for GaudiConf v2 by M.Cattaneo
+           - StandardOptions.txt: use AFSROOT environment variable
+             for TapesDatabase path, and remove #ifdef WIN32
+           - requirements: change version to v2
+             (use of AFSROOT requires GaudiSvc v3)
+
+! 20000413 - GaudiConf v1
+             this package must be used by any application, it contains:
+  mgr/     - requirements to set STDOPTIONS environment variable
+  options/ - StandardOptions.txt  the Standard Options
+
+! =================================================================================
+! 20001107 -  XmlDDDB v4r2
+!    Marco Cattaneo
+        - Replace (again!) the SPD directory by Spd to be consistent. Changes were
+          lost in October, following fixes to problems found by XmlEditor
+
+! 20001012 -  XmlDDDB v4r2
+!    Pere Mato
+
+  Added environment variable DDDB that points to $XMLDDDBROOT/DDDB
+
+! 20001012 -  XmlDDDB v4r2
+!    Radovan Chytracek
+
+   xmldb.dtd has been split into DTD for materials(materials.dtd), structure(structure.dtd),
+   geometry(geometry.dtd) and CLHEP units( CLHEPUnits.ent). All of theese together with the
+   original DTD have been placed to a new directory DTD. All of the XML data files have been
+   changed to use the new DTDs.
+   DDDB version is increased to '4.0' now.
+
+! 20000915 -  XmlDDDB v4r1
+!    Olivier Callot
+
+   Improved version of the Calorimeter geometry.
+        - Use of CLHEP units.
+        - New parameters for the Digitisation
+        - Replace the SPD directory by Spd to be consistent.
+
+! 20000727 -  XmlDDDB v4
+!    Olivier Callot & Vanya Belyaev
+
+   New version of CalorimeterXml-descrption
+
+! 20000618 - Vanya Belyaev
+
+   Bug fix in Hcal/structure.xml file
+
+! 20000524 - XmlDDDB v3r1 Radovan Chytracek
+
+   Removed files in Calo directory. Folders left since CVS somehow wants to keep them
+
+! 20000519 - XmlDDDB v3r1  Olivier Callot
+
+   Remove Calo, add Ecal, Hcal, Prs and SPD with proper geometry
+
+! 20000407 - XmlDDDB v3
+
+   New Package.
+   Detector Toy Model.
+   Restrusturised.
+   No Envelops
+   Entry points for subsystem:
+      XXXX/geometry.xml and XXXX/structure.xml files
+   in the correspsonding subdirectory
+
+!========================================================================================
+
+! 20001108 - GaudiExamples v9
+
+! 20001023 - Markus Frank
+  Added new example describing the use of event collections
+
+! 20000908 - Radovan Chytracek
+  Added units to the printouts to get the proper absolute values in the given units.
+
+!========================================================================================
+
+! 20001031 - EXTLIB v2r3 (MC)
+  requirements - add include_path none
+
+! 20001030 - EXTLIB v2r3 (MC)
+  requirements - take CERNLIB from asis for CERN_WIN32
+
+! 20000825 - EXTLIB v2r3 (Flr)
+  BECAREFULL -> move mgr/ to cmt/ to conforme to new CMT style.
+
+  requirements - remove use of $COMPILER (nolonger necessary) in LHCXX_DIR.
+                 remove AFSROOT replace it with SITEROOT which must be set at
+                 login time:
+                 setenv SITEROOT /afs/cern.ch
+                                 P:/cern.ch
+               - introduce SWROOT
+                 define most commonly location as default location.
+                 at CERN EXT_DIR is now set to /afs/cern.ch/sw/contrib the new
+                 area forseen for external packages.
+                 - XML is installed there for Linux, sun and NT
+                   XML_DIR has to be updated to point to the new EXT_DIR area.
+                 - LAL_DIR should point to this area as soon as G.Barrand has
+                   moved OPACS to there.
+               - replace/add PDCF with LBNL
+               - add ROMA1
+
+!========================================================================================
+! 20001108 - LHCbCMT v3r4
+
+! 20001027  Gonzalo Gracia
+        Changed wsock32.lib by ws2_32.lib in the fragments:
+         dsp_application_headers, dsp_shared_library_header
+
+! 20001009 - LHCbCMT v3r3 (Flr)
+   requirements - add tag i386_rh61 "Linux" for CC/Lyon RedHat6.1 installation.
+
+! 20001003 - LHCbCMT v3r3 (Flr)
+   requirements - add global pattern package_tag to allow Brunel to link
+                  in static mode.
+                  remove HPdbx, OSFdbx, LinuxStaticdbx, VisualCStatic.
+                  define LinuxStatic tag to be Linux.
+
+!========================================================================
+! 20000905 - LHCbCMT v3r2 (Flr)
+   requirements - remove the global pattern introduced on 20000829 because it
+                  prevents Brunel to find Gaudi include files.
+
+! 20000829 - LHCbCMT v3r2 (Flr)
+   requirements - define global pattern include_path as "none".
+
+! 20000803 - LHCbCMT v3r2 (Flr)
+   requirements - add Linux-i586 as a Linux tag for Rio-Brasil.
+
+! 20000802 - LHCbCMT v3r2 (Pere)
+   Added changes suggested by T. Burnett for the NT platform in requirements and
+   fragments.
+
+!========================================================================================
+
+>>>> CMT Interfaces to external packages <<<<
+
+!========================================================================================
+
+! 20001030 - CLHEP v1r6 (MC)
+  requirements - replace include_dirs by include_path
+
+! 20001026 - CLHEP v1r6 (MC)
+  requirements - link to CLHEP/1.6.0.0
+
+!========================================================================================
+
+! 20001026 - HTL v13
+  requirements - interface to HTL 1.3.0.0
+
+!========================================================================================
+
+! 20001109 - NAGC v5r3p1
+  requirements - use Gaudi v*
+
+! 20000824 - NAGC v5r3
+  GaudiNagHandler.h - v5r2 implementation did not compile on NT.
+                      declareHandler function now returns NagError*
+
+! 20000823 - NAGC v5r2p2
+  GaudiErrorHandler.h   - Add virtual destructor, Fix URL of documentation
+  GaudiErrorHandler.cpp - Add virtual destructor to avoid compilation warning
+                          (Case CT0000000032902)
+
+!========================================================================================
+
+! 20001013 - ROOT v2r25 M.Frank
+  This version is availible on AFS for both NT and Linux on the NA49 disks
+  Also fragments were added to automate the cint dictionary generation
+
+!========================================================================================
+
+! 20000825 - XML v3r1
+  move mgr/ to cmt/ to conform to new CMT style.
+
+  requirements - xerces-c_1_2_0 has been moved to the new area
+                 /afs/cern.ch/sw/contrib
+                 under the XML directory for linux, sun and NT.
+                 this requires changes in the requirements file to access
+                 include files and libraries.
+
+!========================================================================================
+
+! 20000720 - OBJY v5r21
+
+!========================================================================================
+
+! 20000720 - ODBC v3
+
+!========================================================================================
+
+>>>>> Fortran stuff <<<<
+
+!========================================================================================
+
+! CERNLIB v2000 (interface package)
+
+!========================================================================================
+
+! 20000922 - dbase v229r1
+  rich.cdf - remove extra material in front of ECAL (GW)
+
+!========================================================================
+
+! 20001003 - GDUMMY v1r4
+             To use LHCbCMT v* (Flr)
+
+!========================================================================
+
+! 20000808 - Finclude v7 (T.Ruf)
+ inc/vrht_bank.inc
+ inc/vrpr_bank.inc
+ inc/vscp_bank.inc
+ inc/vscr_bank.inc
+ reason: max nr. of stations  18->27
+         max nr. of sectors  648->972
+ mgr/requirements
+
+!====================================================================
+
+! 20001004 - Futio v6r6 (Flr)
+  ubpress  - move it from Futil to Futio because remerge is calling it.
+
+! 20000808 - Futio v6r5 (T.Ruf)
+  requirements - use Finclude v7
+
+! 20000803 - Futio v6r4
+  ubinfo     - fix for the DST2 problem (Andrei)
+  remerge    - PGEN merging bug fix, added bank compressing (Andrei)
+  remergeraw - added bank compressing (Andrei)
+

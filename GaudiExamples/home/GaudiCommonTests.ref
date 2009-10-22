@@ -1,0 +1,175 @@
+JobOptionsSvc        INFO
+//GP:================================================================================
+//GP: include "../options/GaudiCommonTests.opts"                              (0,0)
+//GP: include "../options/Common.opts"                                        (6,10)
+//GP: include "../options/Services.opts"                                      (7,10)
+AuditorSvc.Auditors =  [ "ChronoAuditor" ] ;                            //GP: (1,1)
+//GP: end  "../options/Services.opts"                                         (24,1)
+ApplicationMgr.StatusCodeCheck = 1;                                     //GP: (7,10)
+//GP: end  "../options/Common.opts"                                           (16,1)
+EventDataSvc.ForceLeaves = 1;                                           //GP: (6,10)
+EventDataSvc.RootCLID = 1;                                              //GP: (6,10)
+MessageSvc.OutputLevel = 3;                                             //GP: (6,10)
+ApplicationMgr.TopAlg +=  [ "GaudiCommonTests/Test1" ] ;                //GP: (6,10)
+Test1.OutputLevel = 2;                                                  //GP: (6,10)
+Test1.RootInTES = "";                                                   //GP: (6,10)
+ApplicationMgr.TopAlg +=  [ "GaudiCommonTests/Test2" ] ;                //GP: (6,10)
+Test2.OutputLevel = 2;                                                  //GP: (6,10)
+Test2.RootOnTES = "microDST/";                                          //GP: (6,10)
+ApplicationMgr.EvtMax = 1;                                              //GP: (6,10)
+ApplicationMgr.EvtSel = "NONE";                                         //GP: (6,10)
+ApplicationMgr.HistogramPersistency = "NONE";                           //GP: (6,10)
+//GP: end  "../options/GaudiCommonTests.opts"                                 (34,1)
+//GP:================================================================================
+
+JobOptionsSvc        INFO Job options successfully read in from ../options/GaudiCommonTests.opts
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.77 $
+                                          running on pclhcb55 on Wed Sep  2 15:05:50 2009
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+StatusCodeSvc        INFO initialize
+Test1               DEBUG Property update for OutputLevel : new value = 2
+Test1               DEBUG Property update for OutputLevel : new value = 2
+Test1               DEBUG Initialize base class GaudiCommon<Algorithm>
+Test1               DEBUG could not locate CounterSummarySvc, no counter summary will be made
+Test1               DEBUG List of ALL properties of GaudiCommonTests/Test1  #properties = 33
+Test1               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
+Test1               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
+Test1               DEBUG Property ['Name': Value] =  'RegisterForContextService':True
+Test1               DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
+Test1               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
+Test1               DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
+Test1               DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
+Test1               DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
+Test1               DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
+Test1               DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+Test1               DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0
+Test1               DEBUG Property ['Name': Value] =  'RootOnTES':
+Test1               DEBUG Property ['Name': Value] =  'RootInTES':
+Test1               DEBUG Property ['Name': Value] =  'Context':
+Test1               DEBUG Property ['Name': Value] =  'TypePrint':True
+Test1               DEBUG Property ['Name': Value] =  'StatPrint':True
+Test1               DEBUG Property ['Name': Value] =  'PropertiesPrint':False
+Test1               DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+Test1               DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+Test1               DEBUG Property ['Name': Value] =  'AuditStop':False
+Test1               DEBUG Property ['Name': Value] =  'AuditStart':False
+Test1               DEBUG Property ['Name': Value] =  'AuditEndRun':False
+Test1               DEBUG Property ['Name': Value] =  'AuditBeginRun':False
+Test1               DEBUG Property ['Name': Value] =  'AuditFinalize':False
+Test1               DEBUG Property ['Name': Value] =  'AuditExecute':False
+Test1               DEBUG Property ['Name': Value] =  'AuditRestart':False
+Test1               DEBUG Property ['Name': Value] =  'AuditReinitialize':False
+Test1               DEBUG Property ['Name': Value] =  'AuditInitialize':False
+Test1               DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
+Test1               DEBUG Property ['Name': Value] =  'ErrorCount':0
+Test1               DEBUG Property ['Name': Value] =  'ErrorMax':1
+Test1               DEBUG Property ['Name': Value] =  'Enable':True
+Test1               DEBUG Property ['Name': Value] =  'OutputLevel':2
+Test2               DEBUG Property update for OutputLevel : new value = 2
+Test2               DEBUG Property update for OutputLevel : new value = 2
+Test2               DEBUG Initialize base class GaudiCommon<Algorithm>
+Test2             WARNING GaudiCommonTests:: RootOnTES option is OBSOLETE -> Use RootInTES instead. RootInTES has been updated to microDST/
+Test2               DEBUG could not locate CounterSummarySvc, no counter summary will be made
+Test2               DEBUG List of ALL properties of GaudiCommonTests/Test2  #properties = 33
+Test2               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
+Test2               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
+Test2               DEBUG Property ['Name': Value] =  'RegisterForContextService':True
+Test2               DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
+Test2               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
+Test2               DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
+Test2               DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
+Test2               DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
+Test2               DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
+Test2               DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+Test2               DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0
+Test2               DEBUG Property ['Name': Value] =  'RootOnTES':microDST/
+Test2               DEBUG Property ['Name': Value] =  'RootInTES':microDST/
+Test2               DEBUG Property ['Name': Value] =  'Context':
+Test2               DEBUG Property ['Name': Value] =  'TypePrint':True
+Test2               DEBUG Property ['Name': Value] =  'StatPrint':True
+Test2               DEBUG Property ['Name': Value] =  'PropertiesPrint':False
+Test2               DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+Test2               DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+Test2               DEBUG Property ['Name': Value] =  'AuditStop':False
+Test2               DEBUG Property ['Name': Value] =  'AuditStart':False
+Test2               DEBUG Property ['Name': Value] =  'AuditEndRun':False
+Test2               DEBUG Property ['Name': Value] =  'AuditBeginRun':False
+Test2               DEBUG Property ['Name': Value] =  'AuditFinalize':False
+Test2               DEBUG Property ['Name': Value] =  'AuditExecute':False
+Test2               DEBUG Property ['Name': Value] =  'AuditRestart':False
+Test2               DEBUG Property ['Name': Value] =  'AuditReinitialize':False
+Test2               DEBUG Property ['Name': Value] =  'AuditInitialize':False
+Test2               DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
+Test2               DEBUG Property ['Name': Value] =  'ErrorCount':0
+Test2               DEBUG Property ['Name': Value] =  'ErrorMax':1
+Test2               DEBUG Property ['Name': Value] =  'Enable':True
+Test2               DEBUG Property ['Name': Value] =  'OutputLevel':2
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
+HistogramPersis...WARNING Histograms saving not required.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+Test1                INFO Execute
+Test1               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address '/Event/Test1/Tracks1'
+Test1               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address '/Event/Test1/Tracks2'
+Test1               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'Test1/Tracks3'
+Test1               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'Test1/Tracks4'
+Test1               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address '/Event/Test1/Tracks1'
+Test1               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address '/Event/Test1/Tracks2'
+Test1               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'Test1/Tracks3'
+Test1               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'Test1/Tracks4'
+Test1               DEBUG The object of type 'DataObject*' has been retrieved from TS at address '/Event'
+Test1               DEBUG The object of type 'DataObject*' has been retrieved from TS at address '/Event'
+Test1               DEBUG The object of type 'DataObject*' has been retrieved from TS at address ''
+Test1               DEBUG The object of type 'DataObject*' has been retrieved from TS at address ''
+Test1                INFO Loaded Objects:
+Test1                INFO /Event/Test1/Tracks1
+Test1                INFO /Event/Test1/Tracks2
+Test1                INFO /Event/Test1/Tracks3
+Test1                INFO /Event/Test1/Tracks4
+Test1                INFO /Event
+Test1                INFO /Event
+Test1                INFO /Event
+Test1                INFO /Event
+Test2                INFO Execute
+Test2               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'microDST/Test2/Tracks1'
+Test2               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address '/Event/Test2/Tracks2'
+Test2               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'microDST/Test2/Tracks3'
+Test2               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address 'Test2/Tracks4'
+Test2               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'microDST/Test2/Tracks1'
+Test2               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address '/Event/Test2/Tracks2'
+Test2               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'microDST/Test2/Tracks3'
+Test2               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'Test2/Tracks4'
+Test2               DEBUG The object of type 'DataObject*' has been retrieved from TS at address 'microDST'
+Test2               DEBUG The object of type 'DataObject*' has been retrieved from TS at address '/Event'
+Test2               DEBUG The object of type 'DataObject*' has been retrieved from TS at address 'microDST'
+Test2               DEBUG The object of type 'DataObject*' has been retrieved from TS at address ''
+Test2                INFO Loaded Objects:
+Test2                INFO /Event/microDST/Test2/Tracks1
+Test2                INFO /Event/Test2/Tracks2
+Test2                INFO /Event/microDST/Test2/Tracks3
+Test2                INFO /Event/Test2/Tracks4
+Test2                INFO /Event/microDST
+Test2                INFO /Event
+Test2                INFO /Event/microDST
+Test2                INFO /Event
+ApplicationMgr       INFO Application Manager Stopped successfully
+Test1               DEBUG Finalize base class GaudiAlgorithm
+Test1               DEBUG Tools to release :
+Test1               DEBUG Services to release : AlgContextSvc
+Test1               DEBUG Releasing service 'AlgContextSvc'
+Test2               DEBUG Finalize base class GaudiAlgorithm
+Test2               DEBUG Tools to release :
+Test2               DEBUG Services to release : AlgContextSvc
+Test2               DEBUG Releasing service 'AlgContextSvc'
+Test2             SUCCESS Exceptions/Errors/Warnings/Infos Statistics : 0/0/1/0
+Test2             SUCCESS  #WARNINGS   = 1        Message = 'RootOnTES option is OBSOLETE -> Use RootInTES instead. RootInTES has been updated to microDST/'
+EventLoopMgr         INFO Histograms converted successfully according to request.
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully
+Number of MyVertex instances:0
+Number of MyTrack instances:0

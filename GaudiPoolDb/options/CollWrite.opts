@@ -1,0 +1,34 @@
+// $Id: CollWrite.opts,v 1.8 2008/05/05 19:48:13 marcocle Exp $ 
+// ============================================================================
+// CVS tag $Name:  $, version $Revision: 1.8 $
+// ============================================================================
+// Define the other standard DLLs and services
+ApplicationMgr.TopAlg      = { "ReadAlg", "EvtCollectionWrite/Writer" };
+ApplicationMgr.TopAlg      = { "EvtCollectionWrite/Writer" };
+
+// Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
+MessageSvc.OutputLevel      = 3;
+EventSelector.PrintFreq    = 100;
+
+//--------------------------------------------------------------
+// Input File. For example, the output of the RootIOWrite Example
+//--------------------------------------------------------------
+ApplicationMgr.EvtMax               = -1 ;
+ApplicationMgr.Histogrampersistency = "NONE";
+//--------------------------------------------------------------
+//  Setup for ROOT I/O System
+//--------------------------------------------------------------
+#include "GaudiPoolDbRoot.opts"
+ApplicationMgr.ExtSvc += { "TagCollectionSvc/EvtTupleSvc" };
+//--------------------------------------------------------------
+// EventCollection Output Stream parameters 
+//--------------------------------------------------------------
+EvtTupleSvc.Output   = {"EvtColl DATAFILE='PFN:POOLIO.tags' OPT='RECREATE' TYP='POOL_ROOTTREE'" };
+EventSelector.Input  = {"DATAFILE='PFN:POOLIO.dst'   TYP='POOL_ROOT' OPT='READ'" };
+EventSelector.Input += {"DATAFILE='PFN:POOLIO.mdst'  TYP='POOL_ROOT' OPT='READ'" };
+
+FileCatalog.Catalogs = { "xmlcatalog_file:POOLIO.xml" } ;
+
+// ============================================================================
+// The END 
+// ============================================================================

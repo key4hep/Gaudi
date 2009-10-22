@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="program"><text>gaudirun.py</text></argument>
+<argument name="args"><set>
+<text>-v</text>
+<text>--dry-run</text>
+<text>conf_to_str.py</text>
+</set></argument>
+<argument name="validator"><text>
+# skip Athena common messages
+conf_dict = eval('\n'.join(stdout.splitlines()))
+expected = {'Algorithm1': {'Service': 'MySvc/JustAName'},
+            'Algorithm2': {'Members': ['HelloWorld', 'MyAlg/Algorithm1']},
+            'Algorithm3': {'Members': ['MyAlg/Algorithm1',
+                                       'HelloWorld',
+                                       'MyAlg/Algorithm2']},
+            'JustAName': {'OutputLevel': 1},
+            'MessageSvc': {'OutputLevel': 3}}
+
+if conf_dict != expected:
+    causes.append("configuration result")
+    from pprint import PrettyPrinter
+    pp = PrettyPrinter()
+    result["GaudiTest.configuration.expected"] = result.Quote(pp.pformat(expected))
+    result["GaudiTest.configuration.found"] = result.Quote(pp.pformat(conf_dict))
+</text></argument>
+</extension>

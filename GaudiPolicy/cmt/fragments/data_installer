@@ -1,0 +1,22 @@
+
+
+${CONSTITUENT}install :: $(install_dir)/$(FULLNAME)
+	@if test ! "${installarea}" = ""; then\
+	  echo "installation done"; \
+	fi
+
+$(install_dir)/$(FULLNAME) :: $(FULLNAME)
+	@if test ! "${installarea}" = ""; then \
+	  d=`dirname $(FULLNAME)`; \
+	  d=`(cd $${d}; pwd)`; \
+	  CMTINSTALLAREA=${CMTINSTALLAREA}; export CMTINSTALLAREA; \
+	  $(cmt_install_action) "$${d}" "$(FILENAME)" "$(install_dir)" "$(cmt_install_area_command)" ; \
+	fi
+
+${CONSTITUENT}uninstall ::
+	@if test ! "${installarea}" = ""; then \
+	  d=`dirname $(FULLNAME)`; \
+	  d=`(cd $${d}; pwd)`; \
+	  CMTINSTALLAREA=${CMTINSTALLAREA}; export CMTINSTALLAREA; \
+	  $(cmt_uninstall_action) "$${d}" "$(FILENAME)" "$(install_dir)" "$(cmt_install_area_command)" ; \
+	fi

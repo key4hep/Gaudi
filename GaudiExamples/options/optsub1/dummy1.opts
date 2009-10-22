@@ -1,0 +1,3 @@
+//this is a dummy job opt file to test the job opts search path mechanism
+Dummy1.Property=true;
+#include "optsub2/dummy2.opts"

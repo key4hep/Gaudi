@@ -1,0 +1,163 @@
+#-- start of library ----------------------
+
+!IF "$(CMTVERSION)" == "v1r20p20090520"
+# --- CMT v1r20p20090520 version
+
+${CONSTITUENT}LIB :: $(${CONSTITUENT}shstamp)
+	$(echo) "${CONSTITUENT} : library ok"
+
+$(${CONSTITUENT}arc) :: ${OBJS}
+	$(lib_echo) library
+	$(lib_silent) $(ar) /out:$(bin)${CONSTITUENT}.arc @<<
+${OBJS}
+<<
+	$(lib_silent) echo "" >$(${CONSTITUENT}stamp)
+
+$(${CONSTITUENT}shstamp) :: $(${CONSTITUENT}arc) requirements $(use_requirements) $(${CONSTITUENT}stamps)
+	$(lib_echo) dynamic library $(bin)${CONSTITUENT}.dll
+	$(lib_silent) $(make_shlib) $(${CONSTITUENT}exportsymb) $(tag) ${CONSTITUENT} $(cpplinkflags) $(${CONSTITUENT}_shlibflags)
+	$(lib_silent) if exist $(bin)${CONSTITUENT}.dll echo "" >$(${CONSTITUENT}shstamp)
+
+${CONSTITUENT}clean ::
+	$(cleanup_echo) #objects
+	$(cleanup_silent) for %f in (${OBJS}) do $(cleanup_silent)if exist %f del %f
+	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.arc del $(bin)${CONSTITUENT}.arc
+	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.lib del $(bin)${CONSTITUENT}.lib
+	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.def del $(bin)${CONSTITUENT}.def
+	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.exp del $(bin)${CONSTITUENT}.exp
+	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.dll del $(bin)${CONSTITUENT}.dll
+	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.pdb del $(bin)${CONSTITUENT}.pdb
+
+
+install_dir = $(CMTINSTALLAREA)\$(tag)\lib
+${CONSTITUENT}installlibname = $(library_prefix)${CONSTITUENT}$(library_suffix).lib
+${CONSTITUENT}installdllname = $(library_prefix)${CONSTITUENT}$(library_suffix).dll
+${CONSTITUENT}installpdbname = $(library_prefix)${CONSTITUENT}$(library_suffix).pdb
+
+${CONSTITUENT} :: ${CONSTITUENT}install
+
+install :: ${CONSTITUENT}install
+
+!IF "$(vsCONFIG)" == "Debug"
+!IF "$(${CONSTITUENT}installlib)" == "yes"
+${CONSTITUENT}libfiles = $(install_dir)\$(${CONSTITUENT}installdllname) $(install_dir)\$(${CONSTITUENT}installpdbname) $(install_dir)\$(${CONSTITUENT}installlibname)
+!ELSE
+${CONSTITUENT}libfiles = $(install_dir)\$(${CONSTITUENT}installdllname) $(install_dir)\$(${CONSTITUENT}installpdbname)
+!ENDIF
+!ELSE
+!IF "$(${CONSTITUENT}installlib)" == "yes"
+${CONSTITUENT}libfiles = $(install_dir)\$(${CONSTITUENT}installdllname) $(install_dir)\$(${CONSTITUENT}installlibname)
+!ELSE
+${CONSTITUENT}libfiles = $(install_dir)\$(${CONSTITUENT}installdllname)
+!ENDIF
+!ENDIF
+
+${CONSTITUENT}install :: $(${CONSTITUENT}shstamp) $(${CONSTITUENT}libfiles)
+!if "$(CMTINSTALLAREA)" != ""
+	$(echo) "installation done"
+!endif
+
+$(install_dir)\$(${CONSTITUENT}installlibname) :: $(bin)$(${CONSTITUENT}installlibname)
+!if "$(CMTINSTALLAREA)" != ""
+	$(install_echo) $(@F) into $(@D)
+	$(install_silent) $(cmt_install_action) "$(BIN)" "$(${CONSTITUENT}installlibname)" "$(install_dir)"
+!endif
+
+$(install_dir)\$(${CONSTITUENT}installdllname) :: $(bin)$(${CONSTITUENT}installdllname)
+!if "$(CMTINSTALLAREA)" != ""
+	$(install_echo) $(@F) into $(@D)
+	$(install_silent) $(cmt_install_action) "$(BIN)" "$(${CONSTITUENT}installdllname)" "$(install_dir)"
+!endif
+
+$(install_dir)\$(${CONSTITUENT}installpdbname) :: $(bin)$(${CONSTITUENT}installpdbname)
+!if "$(CMTINSTALLAREA)" != ""
+	$(install_echo) $(@F) into $(@D)
+	$(install_silent) $(cmt_install_action) "$(BIN)" "$(${CONSTITUENT}installpdbname)" "$(install_dir)"
+!endif
+
+##${CONSTITUENT}clean :: ${CONSTITUENT}uninstall
+
+uninstall :: ${CONSTITUENT}uninstall
+
+${CONSTITUENT}uninstall ::
+!if "$(CMTINSTALLAREA)" != ""
+	$(cleanup_echo) "$(${CONSTITUENT}installlibname)" from "$(install_dir)"
+	$(cleanup_silent) $(cmt_uninstall_action) "$(BIN)" "$(${CONSTITUENT}installlibname)" "$(install_dir)"
+	$(cleanup_echo) "$(${CONSTITUENT}installdllname)" from "$(install_dir)"
+	$(cleanup_silent) $(cmt_uninstall_action) "$(BIN)" "$(${CONSTITUENT}installdllname)" "$(install_dir)"
+!endif
+
+!ELSE
+# --- CMT v1r20p20070208 version
+
+${CONSTITUENT}LIB :: $(${CONSTITUENT}shstamp)
+	@echo "------> ${CONSTITUENT} : library ok"
+
+$(${CONSTITUENT}arc) :: ${OBJS}
+	$(lib_echo) library
+	$(lib_silent) $(ar) /out:$(bin)${CONSTITUENT}.arc @<<
+${OBJS}
+<<
+	echo "" >$(${CONSTITUENT}stamp)
+
+$(${CONSTITUENT}shstamp) :: $(${CONSTITUENT}arc) requirements $(use_requirements) $(${CONSTITUENT}stamps)
+	$(make_shlib) $(${CONSTITUENT}exportsymb) $(tag) ${CONSTITUENT} $(cpplinkflags) $(${CONSTITUENT}_shlibflags)
+	if exist $(bin)${CONSTITUENT}.dll echo "" >$(${CONSTITUENT}shstamp)
+
+${CONSTITUENT}clean ::
+	$(cleanup_echo) #objects
+	$(cleanup_silent) for %f in (${OBJS}) do if exist %f del %f
+	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.arc del $(bin)${CONSTITUENT}.arc
+	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.lib del $(bin)${CONSTITUENT}.lib
+	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.def del $(bin)${CONSTITUENT}.def
+	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.exp del $(bin)${CONSTITUENT}.exp
+	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.dll del $(bin)${CONSTITUENT}.dll
+	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.pdb del $(bin)${CONSTITUENT}.pdb
+
+
+install_dir = $(CMTINSTALLAREA)\$(tag)\lib
+${CONSTITUENT}installlibname = $(library_prefix)${CONSTITUENT}$(library_suffix).lib
+${CONSTITUENT}installdllname = $(library_prefix)${CONSTITUENT}$(library_suffix).dll
+${CONSTITUENT}installpdbname = $(library_prefix)${CONSTITUENT}$(library_suffix).pdb
+
+${CONSTITUENT} :: ${CONSTITUENT}install
+
+install :: ${CONSTITUENT}install
+
+!IF "$(vsCONFIG)" == "Debug"
+!IF "$(${CONSTITUENT}installlib)" == "yes"
+${CONSTITUENT}libfiles = $(install_dir)\$(${CONSTITUENT}installdllname) $(install_dir)\$(${CONSTITUENT}installpdbname) $(install_dir)\$(${CONSTITUENT}installlibname)
+!ELSE
+${CONSTITUENT}libfiles = $(install_dir)\$(${CONSTITUENT}installdllname) $(install_dir)\$(${CONSTITUENT}installpdbname)
+!ENDIF
+!ELSE
+!IF "$(${CONSTITUENT}installlib)" == "yes"
+${CONSTITUENT}libfiles = $(install_dir)\$(${CONSTITUENT}installdllname) $(install_dir)\$(${CONSTITUENT}installlibname)
+!ELSE
+${CONSTITUENT}libfiles = $(install_dir)\$(${CONSTITUENT}installdllname)
+!ENDIF
+!ENDIF
+
+${CONSTITUENT}install :: $(${CONSTITUENT}shstamp) $(${CONSTITUENT}libfiles)
+	@if NOT "$(CMTINSTALLAREA)"=="" echo "installation done"
+
+$(install_dir)\$(${CONSTITUENT}installlibname) :: $(bin)$(${CONSTITUENT}installlibname)
+	@if NOT "$(CMTINSTALLAREA)"=="" $(cmt_install_action) "$(PACKAGE_ROOT)\$(tag)" "$(${CONSTITUENT}installlibname)" "$(install_dir)"
+
+$(install_dir)\$(${CONSTITUENT}installdllname) :: $(bin)$(${CONSTITUENT}installdllname)
+	@if NOT "$(CMTINSTALLAREA)"=="" $(cmt_install_action) "$(PACKAGE_ROOT)\$(tag)" "$(${CONSTITUENT}installdllname)" "$(install_dir)"
+
+$(install_dir)\$(${CONSTITUENT}installpdbname) :: $(bin)$(${CONSTITUENT}installpdbname)
+	@if NOT "$(CMTINSTALLAREA)"=="" $(cmt_install_action) "$(PACKAGE_ROOT)\$(tag)" "$(${CONSTITUENT}installpdbname)" "$(install_dir)"
+
+${CONSTITUENT}clean :: ${CONSTITUENT}uninstall
+
+uninstall :: ${CONSTITUENT}uninstall
+
+${CONSTITUENT}uninstall ::
+	@if NOT "$(CMTINSTALLAREA)"=="" $(cmt_uninstall_action) "$(PACKAGE_ROOT)\$(tag)" "$(${CONSTITUENT}installlibname)" "$(install_dir)"
+	@if NOT "$(CMTINSTALLAREA)"=="" $(cmt_uninstall_action) "$(PACKAGE_ROOT)\$(tag)" "$(${CONSTITUENT}installdllname)" "$(install_dir)"
+
+!ENDIF
+
+#-- end of library -----------------------

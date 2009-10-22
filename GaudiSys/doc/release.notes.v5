@@ -1,0 +1,486 @@
+Package : GaudiSys
+Package manager : M.Cattaneo
+
+! 20000720 GaudiSys v5
+
+! =====================================================================
+! 20000720 - Gaudi v7
+
+! 20000717 - Radovan Chytracek
+  - Fixed inheritance order for DetectorElement class + class ID getters
+
+! 20000710 - Gloria Corti
+  - Introduce the interfaces and base classes for the ToolSvc
+     new files in Interfaces: IAlgTool.h, IToolFactory.h, IToolSvc.h
+     new files in Kernel: AlgTool.h, AlgTool.cpp, ToolFactory.h
+     modified IInterface.cpp (in Kernel) to add the IID for IAlgTool,IToolFactory and 
+     IToolSvc
+  - requirements: introduce AlgTool.cpp in Gaudilib
+  - Change obsolete comment in IParticlePropertySvc
+
+! 20000709 - Markus Frank
+  - Bug fixes for release
+  - Randm number wrapper as described in the Sotfware week
+
+! 20000704 - Pavel Binko
+  - Interfaces - the interfaces IAxis, IHistogram and IHistogramSvc
+                 have been enhanced by function :
+                 - returning all edges in a given axis
+                 - setting the histogram title
+                 - allowing to register, unregister, retrieve and find
+                   a histogram in the transient histogram data store 
+
+! 20000704 - Marco Cattaneo
+  - requirements : use LHCbCMT v3r1 (to pick up EXTLIB v2r1)
+
+! 20000630 - Pere Mato
+  - Removed implementations of initialize(), finalize() and execute() 
+    in Algorithm base class as a response to the e-discussion concerning
+    the spelling of such methods.
+
+! 20000622 - Vanya Belyaev
+  - System.cpp : introduce "more correct" coefficient between time clocks and seconds :-))
+
+! 20000622 - Vanya Belyaev
+  - System.cpp : introduce "correct" coefficient between time clocks and seconds 
+
+
+! 20000621 - Marco Cattaneo
+  - requirements: insert underscore in name of Gaudi_shlibflags macro, 
+                  to please CMT v1r5
+
+! 20000617 - Vanya Belyaev
+  - Bug fix in Gaudi/System/System.cpp file in method char** System::argv()
+
+! 20000616 - Pere Mato
+  - Changed Algorithm base class. Added an error counter and max error 
+    limit to allow continuation of trhe program. Default is one.
+    Added accessor to RndmGenSvc from base class.
+
+! 20000615 - (Pere Mato, David Quarrie)
+  - Changed interface IAlgorithm and base class Algorithm to support 
+    Algorithm sequences (Babar style). Added some more algorithm flags
+   (enabled, executed, fileter passed, ...) in base class. Added method
+    reasetExecuted() in the IAlgorithm interface.
+  - Changed IProperty interface to support property browsing. Added the
+    following methods:
+    const Property& getProperty( const std::string& name ) const = 0;
+    const std::vector<Property*>& getProperties( ) const = 0;
+  - Changed base class Property to introduce the possibility of asking
+    to a property for its type. 
+  - Introduced new classes: PropertyList, CommandProperty
+    A PropertyList is a Property that contains an array of other properties
+    A CommandProperty has a callback function associated that is called 
+    when a new value of the property is set.
+    The PropertyList can handle property nesting. The name convention is
+    that names are separated by ":".  
+  - Changed PropertyMgr to base its implementation with PropertyList
+
+! 20000609 - (Markus Frank)
+  - Main improvement:
+    Implementation of the public part of the random number generator package.
+
+  Besides this I **had** to do some code cleanup:
+  - Algorithm.h: Removed Algorithm::create(...) 
+    Function was declared but never implemented.
+  - IChronoStatSvc.h: "long double" is not really a ansi data type.
+    Changed to double.
+  - IDataManagerSvc.h
+    IID_IDataManagerSvc_NO_ERROR = SUCCESS becomes
+    IID_IDataManagerSvc_NO_ERROR = IInterface::SUCCESS
+  - ITime.h: use longlong data type from kernel.h instead
+    of __int64 and "long long" + #ifdef.
+  - PropertyRef.h: Simple typedefs of simple properties.
+    e.g. typedef SimplePropertyRef<int> IntegerPropertyRef;
+    just as it is done in "Property.h".
+  - DataObject.cpp: Actually implement 2 member functions which
+    were always in the header, but never made it to code.
+  - Kernel.h: If neither Linux nor WIN32 is the platform,
+    fix "longlong" to a 64 bit structure capable of holding
+    the variable.
+  - StreamBuffer.h: Clean up internal classes ContainedLink and 
+    IdentifiedLink, get rid of macros
+  - Message.h: There is no such class "ostream". Use #include <iostream> instead;
+  - MsgStream.h: Added copy constructor
+  - NTuple.h:    Get rid of a few macros and write the proper code instead.
+  - Get rid of NTupleFile.h and NTupleDirectory.h - should never have 
+    been used at all. The classes were always defined in NTuple.h!
+
+
+! 20000525 
+
+- Fixed template instantiation in Ntuple::Item (For version 6 of Visual C++
+- Corrected "OuputLevel" bug in Service.cpp. This would not take into account
+  a change in the OuputLevel for services.
+
+! 20000523 
+
+Markus Frank Make System.cpp compile under VC 6.0 which opposite to VC 5.0
+             defines STRICT by default.
+
+! =====================================================================
+! 20000720 - GaudiSvc v3
+
+! 20000710 - Gloria Corti
+ - Implementation of new service ToolSvc
+     in new directory ToolSvc: ToolSvc.h and ToolSvc.cpp
+   the service creates new concrete tools on retrieval and manages the tools
+ - modify requirements file to include ToolSvc 
+
+! 20000709 - Markus Frank
+ - Comment some argument variables to suppress warnings on Linux
+
+! 20000707 - Pavel Binko
+ - requirements: use HTL v11r12
+ - Implementation of enhanced interfaces IAxis, IHistogram and IHistogramSvc
+   The newly implemented function are :
+                 - returning all edges in a given axis
+                 - setting the histogram title
+                 - allowing to register, unregister, retrieve and find
+                   a histogram in the transient histogram data store 
+
+! 20000704 - Pere Mato
+ApplicationMgr.cpp:
+- Allow applications without input data (EventSelector) by
+  specifiying 'ApplicationMgr.EvtSel = "NONE";' in job options
+- Fail initialization if any algorithm fails
+- Clear data stores at finalize
+- Add RndmSvc as a known service to the ApplicationMgr
+
+! 20000626 - Marco Cattaneo 
+- requirements: use HTL v11r11
+
+! 20000623 - Vanya Belyaev
+
+- ChronoStatSvc - improved printout (add possibility to output also elapsed 
+                  time of the job).
+                  by default only used time statistics is printed 
+                  optionally system time and elapsed time could be printed 
+- requirements: remove GaudiSvc_stamps for non-static linkage (do not force 
+                to relink the executable in the case of dynamic loading when 
+                shared library is changed)  
+
+
+! 20000621 - Marco Cattaneo
+- requirements: insert underscore in name of GaudiSvc_shlibflags macro, 
+                to please CMT v1r5
+
+!20000616 Pere Mato
+- Added default seeds in RndmGenSvc such that it can be initialized without the
+  being declared in the jobOptions file.
+
+!20000615 Pere Mato
+- Changed ApplicationMgr to stop the event loop when execution errors and 
+  call resetExecuted() for all top level algorithms.
+   
+!20000530 Markus Frank
+- NTupleSvc:
+    Fix in order to not close files twice.
+
+!20000526 - Stefan Probst, Markus Frank
+- JobOptionsSvc/UnitsExtension.cpp, .h : 
+    New classes for handling units within the property compiler  
+- JobOptionsSvc/PropertyCompiler.cpp : 
+    Add feature to read units via job options file 
+    Fix bug for proper number conversions
+    Resolve environment variables for all string properties
+
+!20000505 - Marco Cattaneo
+- Removed GaudiErrorHandler.h .cpp, GaudiNagHandler.h from MessageSvc
+  (moved to NAGC v5r1 package) 
+
+! =====================================================================
+!20000720 GaudiAlg v1
+
+!20000621 Pere Mato
+- This is a new package based on the code provided by David Quarrie (ATLAS)
+
+! =====================================================================
+! 20000717 - DetDesc v4
+Changes done by Radovan Chytracek
+
+New functionality
+-----------------
+1. Switched from XML4C & ICU libraries for XML processing to Apache's XML parser for C++
+   Xerces-C 1.2.0.
+
+2. The new feature allowing generic detector element conversion has been introduced.
+   This feature should be used in cases where either specific information about user defined
+   detector elements is not needed (e.g. visualization) or can be ignored (e.g. testing).
+   This feature is triggered by the new property of the XmlCnvSvc called "AllowGenericConversion".
+
+Bug fixes
+---------
+
+- CLHEP translation vector NAN bug ( appeared after switch to CLEHP 1.5.0.0 )
+- Fixed SAX callbacks for XmlDetectorElementCnv and XMLUserDeCnv.
+- Fixed order of inheritance for DetectorElement subclasses + class ID getters
+
+! =====================================================================
+! 20000720 - LHCbEvent v7r1
+
+! 20000709 - Markus Frank
+  - requirements: define logical name for shared images
+  - Update to RefTable definition
+
+! 20000626
+  - requirements: use Gaudi v7 (+LHCbCMT v3), CLHEP v1r5
+
+! 20000418 - LHCbEvent v7
+  - TopLevel/RefTable.h : definition of map iterator is different on NT 
+                          and Linux (M.Franck).
+
+! =====================================================================
+! 20000720 SicbCnv v8
+
+! 20000709 Markus Frank
+  Fix Reference table converter for Velo/L1
+
+! 20000707 Gonzalo Gracia
+  Access to ORACLE book-keeping DB and Pile up are working
+  Files Modified:
+        EventSelector/EventSelector.cpp/.h
+                     JobId.cpp/.h
+        TopLevel/SicbFortranEx.cpp
+                 SicbFortran.cpp/h
+        PileUpAlg/PileUpAlg.cpp/h
+  New Files
+        TopLevel/IniLumi.F
+                /SetNPileUp.F
+        EventSelector/GaudiSocket.cpp/h
+
+! 20002606 Gonzalo Gracia
+  Several changes related with the Event Selector:
+        Pre-staging of several tapes
+        Print Event number on INFO (the frequency of the print-out
+         is given by the property Event selector property PrintFreq
+        Total number of events to be read in is now a property of Eventselector
+        (still should be backwards compatible if somebody defines it
+        as an ApplicationMgr property)
+  File modified:
+        EventSelector.cpp/.h
+        JobId.cpp/.h
+        Tape.cpp/.h
+        SicbEventIterator.h
+  New files
+        DataFile.h
+        Inputdata.h
+
+! 20000622 SicbCnv v7r3 Marco Cattaneo
+  - New Fortran routine GetZebraSize.F returns size of ZEBRA COMMON block
+  - Modified SicbFortran.h, .cpp, SicbFortranEx.cpp to declare GetZebraSize
+  - SicbEventCnvSvc.cpp calls GetZebraSize to get size to declare to UTZEBRA
+  - requirements: add underscore to <package>_shlibflags for CMT v1r5
+
+! 20000606 Bruce Hay
+  SicbDataObjectCnv.cpp : Added data leaves for L0 data objects
+
+! 20000602 Markus Frank
+  Changes necessary to track properly references in
+  merged pileup events since banks are no longer 
+  contiguous. There is a pending problem with
+  all Calorimeter MC banks, where the reference is within a
+  data word (LONGREFs), which apparently is not updated
+  properly during the pile-up.
+
+
+Gonzalo Gracia 18/05/2000
+  Bug fixed in TopLevel/ReadEvent.F
+  Fortran algorithm was unable to read SICB banks
+  Changed in the same routine:
+  #include "geant321/gcflag.inc"
+  to
+  #include "inc/gcflag.inc"  
+  requirements: dependency on Futio v6r2 needed by the change in ReadEvent.F
+
+! 20000502 
+  Minor modification if GaudiGufld to make it 
+  compatible with modifications in SICB routine GUFLD
+
+! =====================================================================
+! 20000720 - DbCnv v2
+
+! =====================================================================
+! 20000720 - HbookCnv v6r1
+
+! 20000603
+
+ Increased buffer size of PAWC = 1MByte; adjust buffer size of N-tuples.
+ Compiles on Linux without warnings using -ansi -Wall
+ M.Frank
+
+! 20000530 
+
+ The hbook file used for NTuples was not closed properly.
+ (wrong arguments to HREND(...) call)
+ M.Frank
+
+! =====================================================================
+! 20000720 - GaudiExamples v8
+
+! 20000717 - Radovan Chytracek
+  Updated DDexample for use of the new feature allowing generic detector element conversion.
+  This feature should be used in cases where either specific information about user defined
+  detector elements is not needed (e.g. visualization) or can be ignored (e.g. testing).
+  This feature is triggered by the new property of the XmlCnvSvc called "AllowGenericConversion".
+
+! 20000713 - Gloria Corti
+  Removed old tape database (obsolete) from Win32StandardJob.txt
+  Changes to JobOptions files of various examples to use AFSROOT variable. 
+  In DDExample/JopObptions also removed different ways of loading DLL for
+  Win32 and Unix.
+  In NTuples job options remove unused FILE2#tuple2.hbook from NTupleSvc.Output
+  property.
+  Updated PlotHisto.kumac in Histograms example to be consistent with code
+  Modified files:
+   Common/Win32StandardJob.txt
+   DDexample/jobOptions.txt
+   DumpEvent/jobOptions.txt
+   FieldGeom/jobOptions.txt
+   FortranAlg/jobOptions.txt
+   Histograms/jobOptions.txt
+   MCPrimaryVertex/jobOptions.txt
+   NTuples/NTuple.JobOptions.read
+   NTuples/NTuple.JobOptions.write
+   Rio.Example1/Rio.Example1.JobOptions.write
+   SimpleAnalysis/jobOptions.txt
+   ToolsAnalysis/jobOptions.txt
+
+! 20000711 - Gonzalo Gracia
+  Changed required to test all the examples in Linux for
+  release 5 of GaudiSys
+  Many algorithms were returning FAILURE even if they ran properly,
+   changed to returns SUCCESS.
+  JopOptions modified in many cases to use new features and new data
+  Modified files:
+    mgr/requirements
+    Common/UnixStandardJob.txt
+    DDexample/jobOptions.txt
+    DumpEvent/PrintAll.cpp
+    DumpEvent/jobOptions.txt
+    FieldGeom/jobOptions.txt
+    FortranAlgorithm/jobOptions.txt
+    Histograms/jobOptions.txt
+    MCPrimaryVertex/jobOptions.txt
+    NTuples/NTuples.JobOptions.read
+    NTuples/NTuples.JobOptions.write
+    ParticleProperties/ParticlePrtyAlgorithm.cpp
+    ParticleProperties/jobOptions.txt
+    RandomNumber/RandomNumber.Alg.cpp
+    RandomNumber/RandomNumber.txt
+    Rio.Example1/Rio.Example1.JobOptions.write
+    SimpleAnalysis/MCDecayFinderAlgorithm.cpp
+    SimpleAnalysis/SimpleAnalysisAlgorithm.cpp
+    SimpleAnalysis/jobOptions.txt
+    ToolsAnalysis/jobOptions.txt
+
+! 20000710 - Gloria Corti
+   Introduce new example ToolsAnalysis to show writing and use of concrete tools: there
+    are examples for both private and common tools. The example shows how to retrive
+    tools via the ToolSvc in both cases.
+   Introduce use of dbase in requirements file
+
+! =====================================================================
+! 20000720 - LHCbCMT v3r1 (MC)
+   requirements - use EXTLIB v2r2 - version number not changed
+
+! 20000704 - LHCbCMT v3r1 (MC)
+   requirements - use EXTLIB v2r1
+
+! 20000621 - LHCbCMT v3 (MC)
+   N.B. Following change not backwards compatible, requires corresponding 
+        change in requirements of all packages building shared libraries
+
+   fragments/dsp_shared_library_header - Insert _ (underscore) in name of
+                                         <package>_shlibflags macro, to please
+                                         CMT v1r5
+! 20000616 - LHCbCMT v3 (MC)
+   requirements - add include_path none. 
+                  Needs CMT v1r5, not backward compatible
+   fragments    - modifications by Markus
+ 
+! 20000614 - LHCbCMT v2r1 
+   requirements - replace \ with / in VisualC and VisualD settings to
+                  please CMT v1r5 (Flr)
+                  add macro gmake_hosts and everywhere
+                  use EXTLIB v2
+
+! 20000605 - LHCbCMT v2 (Pere)
+   Added "-Dlinux -Dunix -pipe -ansi -Wall -W" to Linux compile flags
+
+! 20000511 - LHCbCMT v2 (Pere)
+   Changed the DEBUGDIR for debug version to use Lunuxdbx
+   Added a alias of DEBUGDIR to BINDIR
+   Added a tag for debug versions of common tags
+
+! 20000510 - LHCbCMT v2 (Pere)
+   added fortran preprocessor flag "/m"
+   changed v5 to v6 in DevStudio fragments
+
+! 20000505 - LHCbCMT v2   (Flr)
+   add tag rs_aix43 "AIX"
+   add -fixed=90 in fortran flags for AIX and AIXdbx on Andrei's demand
+
+! =====================================================================
+! 20000720 - EXTLIB v2r2 (MC)
+  requirements - add ROOT_DIR
+
+! 20000704 - EXTLIB v2r1 (Flr)
+  requirements - replace .@sys with @sys in EXT_DIR definition
+                 remove definitions of XML_DIR ICU_DIR
+                 define EXT_DIR for Win32
+
+! 20000522 - EXTLIB v2 (Andrei,Flr)
+  requirements - add CCIN2P3 and CCPM
+
+! 20000511 - EXTLIB v2 (Pere)
+  set default for COMPILER to the redHad6 one
+
+! 20000504 - EXTLIB v2
+  requirements - set COMPILER variable at CERN for redHat5 and redHat6.
+                 remove setting of NAGC_DIR
+
+! =====================================================================
+! 20000524 - CLHEP v1r5
+  requirements - link to CLHEP/1.5.0.0
+                 remove VisualC definition of CLHEP_DIR: it is nolonger
+                 necessary because LHCXX_DIR contains the platform.
+
+!=======================================================================
+! 20000607 - NAGC v5r2
+  - Removed static member definiton in GaudiNagHandler.h to avoid linking error when 
+    included in more than one place (Case CT0000000023379)
+  - Moved external include files in directory $(NAGCROOT)/NAGC. Left links in old location.
+
+! 20000505 - NAGC v5r1
+  GaudiNagC    - library containing Gaudi error handling interface to NAGC
+  requirements - updated to set NAGC_DIR and link also to GaudiNagC 
+                 error handliing library (adds dependency to Gaudi v6)
+
+! =====================================================================
+! 20000720 HTL v11r12
+
+! =====================================================================
+! 20000704 - XML v3
+  this version uses xerces-c_1_2_0 instead of xml_2_3_1 and icu
+  on unix the version is stored on $EXT_DIR/@sys
+  on NT the version is stored in optimized and debug on $EXT_DIR/Win32
+  the XML_linkopts on NT uses the debug version.
+
+!==========================================================================
+! 20000720 ODBC v3
+
+! =====================================================================
+! 20000720 OBJY v5r21
+
+! =====================================================================
+! 20000720 - ROOT v2r23
+  N.B. This version is not made available on NT by the ROOT team. 
+  We have a privately built version of v2r24 on the CERN LHCb WNT server.
+
+! =====================================================================
+! 20000303 OpenScientist v5r0
+
+
+
+
