@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2009-10-23 - Marco Clemencic
+ - Modified genconfuser.py to also print a stack trace in case of ImportError.
+
 ================ GaudiKernel v27r5 ====================================
 ! 2009-10-19 - Marco Clemencic
  - Improved error reporting in genconfuser.py in case of missing modules and

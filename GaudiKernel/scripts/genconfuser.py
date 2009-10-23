@@ -169,7 +169,9 @@ def main():
         try:
             lst = getConfigurableUsers(mod, root = opts.root, mayNotExist = usingConvention)
         except ImportError:
-            logging.error("Cannot import module %r", mod)
+            import traceback
+            logging.error("Cannot import module %r:\n%s", mod,
+                          traceback.format_exc().rstrip()) # I remove the trailing '\n'
             return 2
         if lst:
             cus[mod] = lst
