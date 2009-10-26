@@ -10,13 +10,8 @@
   <class name    = "std::vector<const Property*>"/>
   <class name    = "std::vector<std::basic_string<char> >" rootmap="false"/>
   <class name    = "std::vector<std::vector<double> >" rootmap="false"/> 
-  <class name    = "std::vector<int>" rootmap="false"/>
-  <class name    = "std::vector<unsigned int>" rootmap="false"/>
-  <class name    = "std::vector<double>" rootmap="false"/>
-  <class name    = "std::vector<bool>" rootmap="false" />
   <class name    = "std::vector<IRegistry*>"/>
   <class name    = "std::ostream"/>
-  <class name    = "std::istream"/>
   <!--class name    = "std::basic_ostream<char,std::char_traits<char> >" rootmap="false"/-->
   <class name    = "std::basic_stringbuf<char,std::char_traits<char>,std::allocator<char> >" rootmap="false"/>
   <class name    = "std::map<std::basic_string<char>,std::basic_string<char> >"  rootmap="false"/>
