@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2009-10-29 - Marco Clemencic
+ - Fixed few minor problems (including a possible buffer overflow).
+
 ! 2009-10-23 - Marco Clemencic
  - Modified genconfuser.py to also print a stack trace in case of ImportError.
 

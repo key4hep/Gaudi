@@ -331,7 +331,7 @@ std::string __typeName(char*&  name) {
   else  {
     std::string result;
     char* ptr;
-    int i = ::strtol(name, &ptr, 10);
+    long i = ::strtol(name, &ptr, 10);
     if ( i <= 0 )  {
       name = ptr;
       while ( *name != 0 && *name != 'Z' )  {

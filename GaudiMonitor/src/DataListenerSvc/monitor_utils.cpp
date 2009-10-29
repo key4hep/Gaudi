@@ -1005,7 +1005,7 @@ void apmon_mon_utils::readJobInfo(long pid, PsInfo& info) throw(runtime_error) {
   int i, nChildren, status, ch, ret, open_fd;
   char *cmd , *mem_cmd_s, *argv[4], *ret_s;
   char pid_s[10], msg[100];
-  char cmdName[MAX_STRING_LEN1], buf[MAX_STRING_LEN1], buf2[100];
+  char cmdName[MAX_STRING_LEN1], buf[MAX_STRING_LEN1], buf2[MAX_STRING_LEN1];
   char etime_s[20], cputime_s[20];
   double rsz, vsz;
   double etime, cputime;

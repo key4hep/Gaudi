@@ -3,6 +3,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cstdlib>
+#include <cstdio>
 #include <cctype>
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/Message.h"
@@ -471,7 +472,7 @@ namespace {
     std::string::size_type n = fmt.find("%f") ;
     if ( n != std::string::npos ) {
       char subs[4] ;
-      sprintf ( subs, "%03d", msec ) ;
+      std::sprintf ( subs, "%03d", msec ) ;
       while ( n != std::string::npos ) {
         fmt.replace ( n, 2, subs ) ;
         n = fmt.find("%f") ;

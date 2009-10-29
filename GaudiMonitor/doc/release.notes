@@ -1,6 +1,9 @@
 Package: GaudiMonitor
 Package manager : Marco Clemencic
 
+! 2009-10-29 - Marco Clemencic
+ - Fixed few minor problems (including a possible buffer overflow).
+
 ================ GaudiMonitor v2r3 ====================================
 ! 2009-07-20 - Marco Clemencic
  - Added '-no_static' to the declaration of the libraries (implemented since CMT

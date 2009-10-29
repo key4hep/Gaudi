@@ -76,7 +76,7 @@ const std::string& System::moduleNameFull()   {
   static std::string module("");
   if ( module == "" )   {
     if ( processHandle() && moduleHandle() )    {
-      char name[512] = {"Unknown.module"};
+      char name[PATH_MAX] = {"Unknown.module"};
       name[0] = 0;
 #ifdef _WIN32
       if ( _psApi.isValid() )   {
@@ -199,7 +199,7 @@ System::ImageHandle System::exeHandle()    {
 const std::string& System::exeName()    {
   static std::string module("");
   if ( module.length() == 0 )    {
-    char name[512] = {"Unknown.module"};
+    char name[PATH_MAX] = {"Unknown.module"};
     name[0] = 0;
 #ifdef _WIN32
     if ( _psApi.isValid() && processHandle() )   {
