@@ -297,14 +297,14 @@ make_fragment install_scripts -header=install_scripts_header
 #
 # Some data files are specified using a directory.
 #
-macro install_command 'python $(GaudiPolicy_root)/scripts/install.py -xCVS -x.cvsignore -x.svn -x*~ -x*.stamp -x*.bak -x.* --log=./install.history '
+macro install_command 'python $(GaudiPolicy_root)/scripts/install.py -xCVS -x*~ -x*.stamp -x*.bak -x.* -x*.pyc -x*.pyo --log=./install.history '
 macro uninstall_command 'python $(GaudiPolicy_root)/scripts/install.py -u --log=./install.history '
 
 macro remove_command "$(cmt_uninstallarea_command)"
 
-macro library_install_command "python $(GaudiPolicy_root)/scripts/install.py -xCVS -x.cvsignore -x.svn -x*~ -x*.stamp -x*.bak -x.* -s --log=./install.history " \
+macro library_install_command "python $(GaudiPolicy_root)/scripts/install.py -xCVS -x*~ -x*.stamp -x*.bak -x.* -x*.pyc -x*.pyo -s --log=./install.history " \
       host-winxp              "copy "
-macro cmt_installarea_command "python $(GaudiPolicy_root)/scripts/install.py -xCVS -x.cvsignore -x.svn -x*~ -x*.stamp -x*.bak -x.* -s --log=./install.history " \
+macro cmt_installarea_command "python $(GaudiPolicy_root)/scripts/install.py -xCVS -x*~ -x*.stamp -x*.bak -x.* -x*.pyc -x*.pyo -s --log=./install.history " \
       host-winxp              "xcopy /S /E /Y "
 
 pattern declare_runtime \
@@ -431,44 +431,6 @@ pattern generate_rootmap \
 # Tags and Global macros=====================================================
 
 macro BINDIR              "$(tag)"
-
-# LHCb tags
-
-tag slc4_ia32_gcc34_cov    slc4_ia32_gcc34_dbg target-cov
-tag slc4_ia32_gcc34_pro    slc4_ia32_gcc34_dbg target-pro
-tag slc4_amd64_gcc34_cov   slc4_amd64_gcc34_dbg target-cov
-tag slc4_amd64_gcc34_pro   slc4_amd64_gcc34_dbg target-pro
-
-tag slc4_ia32_gcc41_cov    slc4_ia32_gcc41_dbg target-cov
-tag slc4_ia32_gcc41_pro    slc4_ia32_gcc41_dbg target-pro
-tag slc4_amd64_gcc41_cov   slc4_amd64_gcc41_dbg target-cov
-tag slc4_amd64_gcc41_pro   slc4_amd64_gcc41_dbg target-pro
-
-tag slc4_ia32_gcc43_cov    slc4_ia32_gcc43_dbg target-cov
-tag slc4_ia32_gcc43_pro    slc4_ia32_gcc43_dbg target-pro
-tag slc4_amd64_gcc43_cov   slc4_amd64_gcc43_dbg target-cov
-tag slc4_amd64_gcc43_pro   slc4_amd64_gcc43_dbg target-pro
-
-tag osx105_ia32_gcc401_cov  target-unix target-darwin target-i386 target-mac105 target-gcc40 target-cov
-tag osx105_ia32_gcc401_pro  target-unix target-darwin target-i386 target-mac105 target-gcc40 target-pro
-
-
-# common tags
-
-tag i686-slc5-gcc34-cov    i686-slc5-gcc34-dbg target-cov
-tag i686-slc5-gcc34-pro    i686-slc5-gcc34-dbg target-pro
-tag x86_64-slc5-gcc34-cov  x86_64-slc5-gcc34-dbg target-cov
-tag x86_64-slc5-gcc34-pro  x86_64-slc5-gcc34-dbg target-pro
-
-tag i686-slc5-gcc41-cov    i686-slc5-gcc41-dbg target-cov
-tag i686-slc5-gcc41-pro    i686-slc5-gcc41-dbg target-pro
-tag x86_64-slc5-gcc41-cov  x86_64-slc5-gcc41-dbg target-cov
-tag x86_64-slc5-gcc41-pro  x86_64-slc5-gcc41-dbg target-pro
-
-tag i686-slc5-gcc43-cov    i686-slc5-gcc43-dbg target-cov
-tag i686-slc5-gcc43-pro    i686-slc5-gcc43-dbg target-pro
-tag x86_64-slc5-gcc43-cov  x86_64-slc5-gcc43-dbg target-cov
-tag x86_64-slc5-gcc43-pro  x86_64-slc5-gcc43-dbg target-pro
 
 # Specify Common Unix tag associations
 tag host-darwin    host-unix
@@ -1118,6 +1080,7 @@ pattern real_genconfuser \
 	                            target-winxp "$(<package>_root)$(genconfDir)<package>\<package>_user_confDb.py" ; \
 	macro <package>GenConfUser_python "$(<package>_root)/python" \
                                     target-winxp "$(<package>_root)\python" ; \
+	macro <package>GenConfUser_deps "FORCE" ; \
 	macro <package>GenConfUser_command "$(GenConfUser_script) --lockerpath $(GaudiPolicy_root)/scripts -r $(<package>GenConfUser_python) -o $(<package>GenConfUser_output) <package> $(<package>ConfUserModules)" ; \
 	apply_pattern CallCommand target=<package>GenConfUser ; \
 	document merge_genconfDb <package>ConfUserDbMerge -group=<group> \

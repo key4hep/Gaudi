@@ -1,15 +1,21 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2009-11-09 - Marco Clemencic
+ - Minor changes to the requirements:
+   - added *.py[co] to the exclusion list of install.py
+   - removed the _cov and _pro tags because conflicting with the LCG ones  
+
 ! 2009-11-03 - Hubert Degaudenzi
- - requirements: added a switch on the StripPath script. if GAUDI_NO_STRIP_PATH is 
+ - Fixed bug #57319: Suppression of GaudiPolicy/scripts/StripPath.sh
+   requirements: added a switch on the StripPath script. if GAUDI_NO_STRIP_PATH is 
    set in the environment, no path stripping will occur at setup time.
- 
+
 ================ GaudiPolicy v10r3 ====================================
 ! 2009-10-16 - Hubert Degaudenzi
  - requirements: removed the compile option "-ff90" for the target-gcc4 tag. 
    This flag is obsolete for the gfortran compiler.
- 
+
 ! 2009-10-13 - Marco Clemencic
  - GaudiTest.py: remove leading '0' from Windows' exponential notation when
    comparing stdout with reference files in tests (not perfect)  
