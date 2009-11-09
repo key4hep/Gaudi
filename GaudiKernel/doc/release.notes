@@ -1,6 +1,15 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2009-11-09 - Vanya Belyaev
+ - Patch #3357: Comparison of floating point numbers
+   GaudiKernel/Lomont.h, src/Lib/Lomont.cpp
+     *  The equality comparison of double numbers using as the metric the maximal 
+     *  number of Units in the Last Place (ULP).
+     *  It is a slightly modified version of very efficient implementation 
+     *  of the initial Bruce Dawson's algorithm by Chris Lomont.
+   The functions are copied from Kernel/LHCbMath package 
+
 ! 2009-11-09 - Marco Clemencic
  - Modified the dictionary for DataObject to make the version persistent. 
 
