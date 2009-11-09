@@ -116,7 +116,6 @@
   </class>
   <class name="DataObject"              id="00000001-0000-0000-0000-000000000000">
     <field name="m_refCount"  transient="true"/>
-    <field name="m_version"   transient="true"/>
     <field name="m_pRegistry" transient="true"/>
     <field name="m_pLinkMgr"  transient="true"/>
   </class>

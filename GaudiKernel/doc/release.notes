@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2009-11-09 - Marco Clemencic
+ - Modified the dictionary for DataObject to make the version persistent. 
+
 ! 2009-10-29 - Marco Clemencic
  - Fixed few minor problems (including a possible buffer overflow).
 
