@@ -207,17 +207,20 @@ void IncidentSvc::i_fireIncident( const Incident& incident, const std::string& l
       (*itlist).iListener->handle(incident);
     }
     catch( const GaudiException& exc ) {
-      m_log << MSG::ERROR << "Exception with tag=" << exc.tag() << " is caught " << endmsg;
+      m_log << MSG::ERROR << "Exception with tag=" << exc.tag() << " is caught"
+          " handling incident" << m_currentIncidentType << endmsg;
       m_log << MSG::ERROR <<  exc  << endmsg;
       if ( (*itlist).rethrow ) { throw (exc); }
     }
     catch( const std::exception& exc ) {
-      m_log << MSG::ERROR << "Standard std::exception is caught " << endmsg;
+      m_log << MSG::ERROR << "Standard std::exception is caught"
+          " handling incident" << m_currentIncidentType << endmsg;
       m_log << MSG::ERROR << exc.what()  << endmsg;
       if ( (*itlist).rethrow ) { throw (exc); }
     }
     catch(...) {
-      m_log << MSG::ERROR << "UNKNOWN Exception is caught " << endmsg;
+      m_log << MSG::ERROR << "UNKNOWN Exception is caught"
+          " handling incident" << m_currentIncidentType << endmsg;
       if ( (*itlist).rethrow ) { throw; }
     }
     // check if at least one of the listeners is a one-shot

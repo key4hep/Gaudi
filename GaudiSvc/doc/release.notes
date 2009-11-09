@@ -1,6 +1,10 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2009-11-09 - Marco Clemencic
+ - Fixed bug #57416: improve IncidentSvc printout when an exception is thrown by handlers
+   Added the incident type to the message, as suggested.
+
 ================ GaudiSvc v18r5 ====================================
 ! 2009-10-12 - Roel Aaij
  - Patch #3330: SequentialOutputStream, create several sequentially numbered output files
