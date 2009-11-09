@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2009-11-09 - Marco Clemencic
+ - Fixed a problem with ConfigurableUser.propagateProperty when the property is
+   a list (or dictionary). 
+
 ! 2009-11-09 - Vanya Belyaev
  - Patch #3357: Comparison of floating point numbers
    GaudiKernel/Lomont.h, src/Lib/Lomont.cpp

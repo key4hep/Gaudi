@@ -1218,7 +1218,12 @@ class ConfigurableUser( Configurable ):
             # If not, and other property also not set, propagate the default
             elif not other.isPropertySet(name):
                 if isinstance(other,ConfigurableUser):
+                    otherType = type(other._properties[name].getDefault())
                     other._properties[name].setDefault(value)
+                    if otherType in [list, dict]:
+                        # Special case for list and dictionaries:
+                        # also set the property to the same value of the default (copy)
+                        other.setProp(name, otherType(value))
                 else:
                     other.setProp(name, value)
             # If not set and other set, do nothing

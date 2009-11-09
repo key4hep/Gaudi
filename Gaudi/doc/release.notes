@@ -1,6 +1,10 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+! 2009-11-09 - Marco Clemencic
+ - Extended the test gaudi.propagate_properties to expose a bug affecting
+   properties of type list and dict (fixed).
+
 ================ Gaudi v21r5 ====================================
 ! 2009-10-19 - Marco Clemencic
  - Modified the python modules Gaudi, Gaudi.Main and the script guadirun.py
