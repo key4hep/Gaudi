@@ -1,6 +1,4 @@
 from Gaudi.Configuration import *
-print "=" * 80
-print "=" * 80
 
 # use cases:
 #     parent, used
