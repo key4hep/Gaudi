@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2009-11-10 - Marco Clemencic
+ - Added mapping of SL5 tags to host-slc5 (the will go in LCG 57b).
+
 ! 2009-11-09 - Marco Clemencic
  - Minor changes to the requirements:
    - added *.py[co] to the exclusion list of install.py

@@ -435,6 +435,15 @@ macro BINDIR              "$(tag)"
 # Specify Common Unix tag associations
 tag host-darwin    host-unix
 
+# SL5 to SLC5 mapping (should go in LCG_Settings in LCG 57b)
+tag sl51   host-slc5 
+tag sl52   host-slc5 
+tag sl53   host-slc5 
+tag sl54   host-slc5 
+tag sl55   host-slc5 
+tag sl56   host-slc5 
+tag sl57   host-slc5 
+
 # Fragments =================================================================
 
 # MS DeveloperStudio 
