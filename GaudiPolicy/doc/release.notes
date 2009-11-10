@@ -2,6 +2,8 @@ package GaudiPolicy
 package manager: Marco Clemencic
 
 ! 2009-11-10 - Marco Clemencic
+ - Modified ZipPythonDir.py to remove old .pyc files before adding the .py to
+   the .zip file to force a re-compilation.
  - Added mapping of SL5 tags to host-slc5 (the will go in LCG 57b).
 
 ! 2009-11-09 - Marco Clemencic

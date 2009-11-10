@@ -38,7 +38,7 @@ def _zipChanges(directory, infolist):
     
     log = logging.getLogger("zipdir")
     dirlen = len(directory) + 1
-    for root, dirs, files in os.walk(directory):
+    for root, _dirs, files in os.walk(directory):
         arcdir = root[dirlen:]
         for f in files:
             ext = os.path.splitext(f)[1]
@@ -97,10 +97,17 @@ def zipdir(directory, no_pyc = False):
             tempBuf = StringIO()
             z = zipfile.PyZipFile(tempBuf, "w", zipfile.ZIP_DEFLATED)
             for f in added + modified + untouched:
+                src = os.path.join(directory, f)
                 if no_pyc:
-                    z.write(os.path.join(directory, f), f)
+                    log.debug("adding '%s'", f)
+                    z.write(src, f)
                 else:
-                    z.writepy(os.path.join(directory, f), os.path.dirname(f))
+                    # Remove the .pyc file to always force a re-compilation
+                    if os.path.exists(src + 'c'):
+                        log.debug("removing old .pyc for '%s'", f)
+                        os.remove(src + 'c')
+                    log.debug("adding '%s'", f)
+                    z.writepy(src, os.path.dirname(f))
             z.close()
             zipFile.seek(0)
             zipFile.write(tempBuf.getvalue())
@@ -121,6 +128,8 @@ def main(argv = None):
                       help = "copy the .py files without pre-compiling them")
     parser.add_option("--quiet", action = "store_true",
                       help = "do not print info messages")
+    parser.add_option("--debug", action = "store_true",
+                      help = "print debug messages (has priority over --quiet)")
     
     if argv is None:
         argv = sys.argv
@@ -133,10 +142,12 @@ def main(argv = None):
     level = logging.INFO
     if opts.quiet:
         level = logging.WARNING
+    if opts.debug:
+        level = logging.DEBUG
     logging.basicConfig(level = level)
     
     if "GAUDI_BUILD_LOCK" in os.environ:
-        scopedLock = locker.LockFile(os.environ["GAUDI_BUILD_LOCK"], temporary =  True) 
+        _scopedLock = locker.LockFile(os.environ["GAUDI_BUILD_LOCK"], temporary =  True) 
     # zip all the directories passed as arguments
     for d in args:
         zipdir(d, opts.no_pyc)
