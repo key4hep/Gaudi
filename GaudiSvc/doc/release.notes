@@ -1,6 +1,11 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2009-11-10 - Rob Lambert
+ - Patch #3444: Patch to fix logic error in RecordStream
+   - Suppress incidents for RecordService
+   - This would cause a logic error in event counting for luminosity purposes
+
 ! 2009-11-09 - Marco Clemencic
  - Fixed bug #57416: improve IncidentSvc printout when an exception is thrown by handlers
    Added the incident type to the message, as suggested.

@@ -1347,6 +1347,7 @@ ServiceManager      DEBUG Finalizing service EventLoopMgr
 RootDst              INFO Events output: 1000
 RootMini             INFO Events output: 1000
 FileRecords          INFO Set up File Summary Record
+FileRecords       VERBOSE will not fire incidents
 PoolDbBaseCnv       DEBUG Created object shape for class:DataObject
 PoolDbBaseCnv       DEBUG {ID=00000001-0000-0000-0000-000000000000}{CL=DataObject}{NCOL=3}{CNT=0}{COL={{NAME=DataObject}{CLASS=DataObject}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}{COL={{NAME=Links}{CLASS=LinkManager}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}{COL={{NAME=Refs}{CLASS=PoolDbLinkManager}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}
 PoolDbBaseCnv       DEBUG Created object shape for class:Gaudi::Examples::Counter

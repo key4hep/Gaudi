@@ -1,6 +1,10 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2009-11-10 - Rob Lambert
+ - Patch #3444: Patch to fix logic error in RecordStream
+   - updated reference files
+
 ================ GaudiExamples v21r5 ====================================
 ! 2009-10-13 - Marco Clemencic
  - Disabled the support for LorentzVector as Property (patch #3223) on Windows

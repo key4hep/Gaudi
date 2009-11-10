@@ -117,7 +117,11 @@ protected:
   DataStoreItem* findItem(const std::string& path);
   /// Select the different objects and write them to file
   virtual StatusCode writeObjects();
-
+  
+  ///should I fire incidents for writing opening/closing etc?
+  bool m_fireIncidents;
+  
+  
 public:
   /// Initialize OutputStream
 	virtual StatusCode initialize();

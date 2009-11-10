@@ -14,7 +14,7 @@
 class RecordStream : public OutputStream     {
 public:
   /// Standard algorithm Constructor
-  RecordStream(const std::string& nam, ISvcLocator* svc) : OutputStream(nam,svc) {}
+  RecordStream(const std::string&, ISvcLocator*);
   /// Standard Destructor
   virtual ~RecordStream() {}
   /// Algorithm overload: finalization

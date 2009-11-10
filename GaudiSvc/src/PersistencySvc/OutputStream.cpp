@@ -41,6 +41,9 @@ OutputStream::OutputStream(const std::string& name, ISvcLocator* pSvcLocator)
   m_acceptAlgs     = new std::vector<Algorithm*>();
   m_requireAlgs    = new std::vector<Algorithm*>();
   m_vetoAlgs       = new std::vector<Algorithm*>();
+  ///in the baseclass, always fire the incidents by default
+  ///in e.g. RecordStream this will be set to false, and configurable
+  m_fireIncidents  = true;
   declareProperty("ItemList",         m_itemNames);
   declareProperty("OptItemList",      m_optItemNames);
   declareProperty("Preload",          m_doPreLoad);
@@ -53,6 +56,8 @@ OutputStream::OutputStream(const std::string& name, ISvcLocator* pSvcLocator)
   declareProperty("RequireAlgs",      m_requireNames);
   declareProperty("VetoAlgs",         m_vetoNames);
   declareProperty("VerifyItems",      m_verifyItems);
+  ///in the baseclass, always fire the incidents by default
+  ///in RecordStream this will be set to false, and configurable
 
   // Associate action handlers with the AcceptAlgs, RequireAlgs & VetoAlgs properties
   m_acceptNames.declareUpdateHandler ( &OutputStream::acceptAlgsHandler , this );
@@ -96,7 +101,7 @@ StatusCode OutputStream::initialize() {
     StatusCode status = connectConversionSvc();
     if( !status.isSuccess() )   {
       log << MSG::FATAL << "Unable to connect to conversion service." << endmsg;
-      if(m_outputName!="") m_incidentSvc->fireIncident(Incident(m_outputName,
+      if(m_outputName!="" && m_fireIncidents) m_incidentSvc->fireIncident(Incident(m_outputName,
                                            IncidentType::FailOutputFile));
       return status;
     }
@@ -152,7 +157,7 @@ StatusCode OutputStream::initialize() {
 StatusCode OutputStream::finalize() {
   MsgStream log(msgSvc(), name());
   log << MSG::INFO << "Events output: " << m_events << endmsg;
-  m_incidentSvc->fireIncident(Incident(m_outputName,
+  if(m_fireIncidents) m_incidentSvc->fireIncident(Incident(m_outputName,
                                        IncidentType::EndOutputFile));
   m_incidentSvc.reset();
   m_pDataProvider.reset();
@@ -172,10 +177,10 @@ StatusCode OutputStream::execute() {
     StatusCode sc = writeObjects();
     clearSelection();
     m_events++;
-    if(sc.isSuccess()) 
+    if(sc.isSuccess() && m_fireIncidents) 
       m_incidentSvc->fireIncident(Incident(m_outputName,
                                            IncidentType::WroteToOutputFile));
-    else 
+    else if(m_fireIncidents) 
       m_incidentSvc->fireIncident(Incident(m_outputName,
                                            IncidentType::FailOutputFile));
     return sc;
