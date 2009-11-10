@@ -1,5 +1,5 @@
 package GaudiExamples
-version v21r5
+version v21r6
 
 use ROOT         v* LCG_Interfaces
 use Reflex       v* LCG_Interfaces -no_auto_imports

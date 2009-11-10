@@ -1,6 +1,7 @@
 Package: GaudiMonitor
 Package manager : Marco Clemencic
 
+============================= GaudiMonitor v2r4 ==============================
 ! 2009-10-29 - Marco Clemencic
  - Fixed few minor problems (including a possible buffer overflow).
 

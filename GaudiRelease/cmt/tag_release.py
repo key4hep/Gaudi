@@ -38,72 +38,70 @@ def svn(*args, **kwargs):
 
 def svn_ls(url):
     return svn("ls", url, stdout = PIPE).communicate()[0].splitlines()
+
+def basename(url):
+    return url.rsplit("/", 1)[-1] 
+
+def checkout_structure(url, proj):
+    def checkout_level(base):
+        dirs = ["%s/%s" % (base, d) for d in svn_ls(base) if d.endswith("/")]
+        apply(svn, ["up", "-N"] + dirs).wait()
+        return dirs
+    
+    root = basename(url)
+    svn("co","-N", url, root).wait()
+    old_dir = os.getcwd()
+    os.chdir(root)
+    svn("up", "-N", proj).wait() 
+    for base in [proj, proj + "/trunk"]:
+        checkout_level(base)
+    for t in checkout_level(proj + "/tags"):
+        checkout_level(t)
+    os.chdir(old_dir)
+    return root
     
 def main():
     use_pre = len(sys.argv) > 1 and 'pre' in  sys.argv
     url = "svn+ssh://svn.cern.ch/reps/gaudi"
-    puburl = "https://svnweb.cern.ch/guest/gaudi"
+    proj = "Gaudi"
+    container = "GaudiRelease"
     packages = gather_new_versions("requirements")
-    packages["GaudiRelease"] = extract_version("requirements")
+    packages[container] = extract_version("requirements")
     tempdir = tempfile.mkdtemp()
     try:
         os.chdir(tempdir)
-        # prepare root dir
-        svn("co","-N", url, "gaudi").wait()
-        os.chdir("gaudi")
+        # prepare repository structure (and move to its top level)
+        os.chdir(checkout_structure(url, proj))
         
-        pvers = packages["GaudiRelease"]
-        if use_pre:
-            pvers += "-pre"
-        
-        to_commit = []
+        # note that the project does not have "-pre"
+        pvers = "%s_%s" % (proj.upper(), packages[container])
         
         # prepare project tag
-        if (pvers + "/") not in svn_ls("%s/projects/GAUDI/tags" % url):
-            svn("co", "-N", "%s/projects/GAUDI/tags" % url, "ProjTags").wait()
-            svn("cp", "%s/projects/GAUDI/trunk" % url, os.path.join("ProjTags",pvers)).wait()
-            to_commit.append("ProjTags")
+        ptagdir = "%s/tags/%s/%s" % (proj, proj.upper(), pvers)
+        if not os.path.exists(ptagdir):
+            svn("mkdir", ptagdir)
+            svn("cp", "%s/trunk/cmt" % proj, ptagdir + "/cmt").wait()
         
         # prepare package tags
         for p in packages:
-            tagsdir = "%s/packages/%s/tags" % (url, p) 
-            tags = svn_ls(tagsdir)
             tag = packages[p]
-            pre_tag = tag + "-pre"
+            pktagdir = "%s/tags/%s/%s" % (proj, p, tag)
             # I have to make the tag if it doesn't exist and (if we use -pre tags)
             # neither the -pre tag exists.
-            make_tag = (tag+"/") not in tags and (use_pre and (pre_tag+"/") not in tags)
+            make_tag = not os.path.exists(pktagdir) and (use_pre and not os.path.exists(pktagdir + "-pre"))
             if make_tag:
-                svn("co", "-N", tagsdir, "%s_Tags" % p).wait()
                 if use_pre:
-                    tag = pre_tag
-                svn("cp", "%s/packages/%s/trunk" % (url, p), "%s_Tags/%s" % (p, tag)).wait()
-                to_commit.append("%s_Tags" % p)
+                    pktagdir += "-pre"
+                svn("cp", "%s/trunk/%s" % (proj, p), pktagdir).wait()
+
+        if not use_pre:
+            # prepare the full global tag too
+            for p in packages:
+                tag = packages[p]
+                pktagdir = "%s/tags/%s/%s" % (proj, p, tag)
+                svn("cp", pktagdir, "%s/%s" % (ptagdir, p))
         
-        # prepare "distribution" dir
-        distvers = pvers
-        if ("GAUDI_%s/" % distvers) not in svn_ls("%s/distribution/tags/GAUDI" % url):
-            svn("co","-N", "%s/distribution/tags/GAUDI" % url, "DistTags").wait()
-            svn("mkdir", os.path.join("DistTags", "GAUDI_%s" % distvers)).wait()
-            externals = open(os.path.join(tempdir, "svn_externals"), "w")
-            pks = packages.keys()
-            pks.sort()
-            for p in pks:
-                externals.write("%(pack)-20s %(url)s/packages/%(pack)s/tags/%(vers)s\n" % { "pack": p,
-                                                                                            "vers": packages[p],
-                                                                                            "url" : puburl })
-            externals.write("%(dir)-20s %(url)s/projects/%(proj)s/tags/%(vers)s\n" % { "dir" : "cmt",
-                                                                                       "proj": "GAUDI",
-                                                                                       "vers": pvers,
-                                                                                       "url" : puburl })
-            externals.close()
-            svn("ps", "-F", externals.name, "svn:externals", os.path.join("DistTags", "GAUDI_%s" % distvers)).wait()
-            to_commit.append("DistTags")
-        
-        if to_commit:
-            apply(svn, ["ci"] + to_commit).wait()
-        else:
-            print "Nothing to commit"
+        svn("ci").wait()
         
     finally:
         shutil.rmtree(tempdir, ignore_errors = True)

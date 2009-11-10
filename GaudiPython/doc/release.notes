@@ -1,6 +1,7 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+============================= GaudiPython v10r6 ==============================
 ! 2009-10-26 - Marco Clemencic
  - Removed some dictionaries of basic types that conflict with the CINT ones.
 

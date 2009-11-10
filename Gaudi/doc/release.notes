@@ -1,6 +1,7 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+================================ Gaudi v21r6 =================================
 ! 2009-11-09 - Marco Clemencic
  - Extended the test gaudi.propagate_properties to expose a bug affecting
    properties of type list and dict (fixed).

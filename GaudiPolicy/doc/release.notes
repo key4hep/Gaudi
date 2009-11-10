@@ -1,6 +1,7 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v10r4 ==============================
 ! 2009-11-10 - Marco Clemencic
  - Modified ZipPythonDir.py to remove old .pyc files before adding the .py to
    the .zip file to force a re-compilation.

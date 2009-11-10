@@ -1,6 +1,7 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v21r6 =============================
 ! 2009-11-10 - Rob Lambert
  - Patch #3444: Patch to fix logic error in RecordStream
    - updated reference files

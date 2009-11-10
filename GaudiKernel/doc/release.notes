@@ -1,6 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v27r6 ==============================
 ! 2009-11-09 - Marco Clemencic
  - Fixed a problem with ConfigurableUser.propagateProperty when the property is
    a list (or dictionary). 
