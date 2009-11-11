@@ -40,7 +40,15 @@ def svn_ls(url):
     return svn("ls", url, stdout = PIPE).communicate()[0].splitlines()
 
 def basename(url):
-    return url.rsplit("/", 1)[-1] 
+    return url.rsplit("/", 1)[-1]
+
+def dirname(url):
+    return url.rsplit("/", 1)[1]
+
+def svn_exists(url):
+    d,b = url.rsplit("/", 1)
+    l = [x.rstrip("/") for x in svn_ls(d)]
+    return b in l 
 
 def checkout_structure(url, proj):
     def checkout_level(base):
@@ -55,8 +63,7 @@ def checkout_structure(url, proj):
     svn("up", "-N", proj).wait() 
     for base in [proj, proj + "/trunk"]:
         checkout_level(base)
-    for t in checkout_level(proj + "/tags"):
-        checkout_level(t)
+    checkout_level(proj + "/tags")
     os.chdir(old_dir)
     return root
     
@@ -78,7 +85,7 @@ def main():
         
         # prepare project tag
         ptagdir = "%s/tags/%s/%s" % (proj, proj.upper(), pvers)
-        if not os.path.exists(ptagdir):
+        if not svn_exists(ptagdir):
             svn("mkdir", ptagdir)
             svn("cp", "%s/trunk/cmt" % proj, ptagdir + "/cmt").wait()
         
@@ -88,24 +95,28 @@ def main():
             pktagdir = "%s/tags/%s/%s" % (proj, p, tag)
             # I have to make the tag if it doesn't exist and (if we use -pre tags)
             # neither the -pre tag exists.
-            make_tag = not os.path.exists(pktagdir) and (use_pre and not os.path.exists(pktagdir + "-pre"))
+            no_tag = not svn_exists(pktagdir)
+            make_tag = no_tag or (use_pre and no_tag and not svn_exists(pktagdir + "-pre"))
             if make_tag:
                 if use_pre:
                     pktagdir += "-pre"
                 svn("cp", "%s/trunk/%s" % (proj, p), pktagdir).wait()
+            else:
+                if not no_tag:
+                    svn("up", "-N", pktagdir).wait() # needed for the copy in the global tag
 
         if not use_pre:
             # prepare the full global tag too
             for p in packages:
                 tag = packages[p]
                 pktagdir = "%s/tags/%s/%s" % (proj, p, tag)
-                svn("cp", pktagdir, "%s/%s" % (ptagdir, p))
+                svn("cp", pktagdir, "%s/%s" % (ptagdir, p)).wait()
         
         svn("ci").wait()
         
     finally:
         shutil.rmtree(tempdir, ignore_errors = True)
-    
+
     return 0
 
 if __name__ == '__main__':
