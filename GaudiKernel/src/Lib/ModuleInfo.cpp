@@ -34,6 +34,9 @@ static PsApiFunctions _psApi;
   #define getpid _getpid
   #undef NOMSG
   #undef NOGDI
+  #ifndef PATH_MAX
+  #  define PATH_MAX 1024
+  #endif
 #else  // UNIX...: first the EGCS stuff, then the OS dependent includes
   #include <errno.h>
   #include <string.h>
