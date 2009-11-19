@@ -21,10 +21,7 @@
  *  @date 2007-03-08
  */
 // ============================================================================
-class ExceptionSvc
-  : public               Service
-  , public virtual IExceptionSvc
-{
+class ExceptionSvc: public extends1<Service, IExceptionSvc> {
   friend class SvcFactory<ExceptionSvc> ;
 public:
   /// Handle caught GaudiExceptions
@@ -48,13 +45,6 @@ public:
   /// finalize the service
   virtual StatusCode finalize     () ;
 public:
-  /**  query the interface
-   *   @see IInterface
-   */
-  virtual StatusCode queryInterface
-  ( const InterfaceID& iid  ,
-    void**             ppvi ) ;
-public:
   /** standard constructor
    *  @param name service instance name
    *  @param pSvc pointer to Service Locator
@@ -69,7 +59,7 @@ private:
   ExceptionSvc () ; ///< no default constructor
   // copy constructor is disabled
   ExceptionSvc ( const ExceptionSvc& ) ; ///< no copy constructor
-  // assignement operator is disabled
+  // assignment operator is disabled
   ExceptionSvc& operator=( const ExceptionSvc& ) ; ///< no assignement
 private:
 

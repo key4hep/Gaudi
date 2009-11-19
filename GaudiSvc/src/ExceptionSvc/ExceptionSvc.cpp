@@ -40,7 +40,7 @@ inline void toupper(std::string &s)
 //
 
 ExceptionSvc::ExceptionSvc( const std::string& name, ISvcLocator* svc )
-  : Service( name, svc )
+  : base_class( name, svc )
   , m_mode_exc ( ALL ), m_mode_err( NONE )
   , m_log(msgSvc(), name )
 {
@@ -208,26 +208,6 @@ ExceptionSvc::finalize() {
   StatusCode status = Service::finalize();
 
   return status;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-StatusCode
-ExceptionSvc::queryInterface
-( const InterfaceID&  iid  ,
-  void**              ppvi )
-{
-  // invalid placeholder
-  if ( 0 == ppvi ) { return StatusCode::FAILURE   ; }   // RETURN
-  // check the identidier
-  if ( IExceptionSvc::interfaceID().versionMatch( iid ) )
-  { *ppvi = static_cast<IExceptionSvc*>  ( this ) ; }  // OK !
-  else  // ask for base class
-  { return Service::queryInterface ( iid , ppvi ) ; }  // RETURN
-  // increment the reference counter
-  addRef() ;
-  //
-  return StatusCode::SUCCESS ;                        // RETURN
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

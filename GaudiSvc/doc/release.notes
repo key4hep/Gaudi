@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2009-11-19 - Marco Clemencic
+ - Modified ExceptionSvc to use the "new" system of interfaces (removed by patch #3083).
+
 =============================== GaudiSvc v18r6 ===============================
 ! 2009-11-10 - Rob Lambert
  - Patch #3444: Patch to fix logic error in RecordStream
