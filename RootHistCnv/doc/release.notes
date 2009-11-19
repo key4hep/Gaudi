@@ -1,6 +1,8 @@
 Package: RootHistCnv
 Package manager : David Quarrie
 
+! 2009-11-19 - Marco Clemencic
+ - Removed run-time dependency on PCRE (which has been removed from LCGCMT).
 
 ================ RootHistCnv v10r2 ====================================
 ! 2009-07-30 - Marco Clemencic

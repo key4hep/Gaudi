@@ -7,7 +7,6 @@ use CLHEP       v* LCG_Interfaces -no_auto_imports
 use AIDA        v* LCG_Interfaces -no_auto_imports
 use Boost       v* LCG_Interfaces -no_auto_imports
 use ROOT        v* LCG_Interfaces -no_auto_imports
-use PCRE        v* LCG_Interfaces -no_auto_imports
 
 
 # build the component library

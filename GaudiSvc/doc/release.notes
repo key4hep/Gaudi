@@ -2,6 +2,7 @@ Package: GaudiSvc
 Package manager : Marco Clemencic
 
 ! 2009-11-19 - Marco Clemencic
+ - Removed run-time dependency on PCRE (which has been removed from LCGCMT).
  - Modified ExceptionSvc to use the "new" system of interfaces (removed by patch #3083).
 
 =============================== GaudiSvc v18r6 ===============================

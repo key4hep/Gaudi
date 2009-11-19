@@ -6,7 +6,6 @@ branches doc cmt src
 use GaudiKernel   v*
 use AIDA          v* LCG_Interfaces -no_auto_imports
 use ROOT          v* LCG_Interfaces -no_auto_imports
-use PCRE          v* LCG_Interfaces -no_auto_imports
 
 # component library
 library RootHistCnv -no_static -import=ROOT -import=AIDA ../src/*.cpp

@@ -1,0 +1,5 @@
+Package: GaudiRelease
+Manatiner: Marco Clemencic
+
+! 2009-11-19 - Marco Clemencic
+ - Removed dependency on rx for Windows (which has been removed from LCGCMT).

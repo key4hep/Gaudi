@@ -1159,7 +1159,6 @@ apply_pattern doxy_vers_set external=CORAL
 apply_pattern doxy_vers_set external=ROOT
 apply_pattern doxy_vers_set external=Boost
 apply_pattern doxy_vers_set external=uuid
-apply_pattern doxy_vers_set external=PCRE
 apply_pattern doxy_vers_set external=GCCXML
 apply_pattern doxy_vers_set external=AIDA
 apply_pattern doxy_vers_set external=XercesC
