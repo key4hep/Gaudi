@@ -64,7 +64,6 @@
       document.write("<LI> <a href=\"" + url + "\" target=\"_blank\">Boost " + boostVers + "</a>");
     </script>
     <LI> <a href="http://lcgsoft.cern.ch/index.py?page=pkg_overview&pkg=uuid" target="_blank">uuid $(uuidVERS)</A>
-    <LI> <a href="http://lcgsoft.cern.ch/index.py?page=pkg_overview&pkg=pcre" target="_blank">pcre $(PCREVERS)</A>
     <LI> <a href="http://lcgsoft.cern.ch/index.py?page=pkg_overview&pkg=gccxml" target="_blank">GCC-XML $(GCCXMLVERS)</A>
     <LI> <a href="http://aida.freehep.org/doc/v$(AIDAVERS)/api/index.html" target="_blank">AIDA $(AIDAVERS)</A> (histogramming)
     <script type="text/javascript" language="JavaScript">
