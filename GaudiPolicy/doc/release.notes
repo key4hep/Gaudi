@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2009-11-26 - Marco Clemencic
+ - Fixed a problem in locker.py (LockFile) on Win32. 
+
 ! 2009-11-19 - Marco Clemencic
  - Removed run-time dependency on PCRE (which has been removed from LCGCMT).
 

@@ -3,7 +3,7 @@
 ##  http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/65203
 ##
 
-import os, sys 
+import os, time
 
 if os.name == 'nt':
     import msvcrt
@@ -44,7 +44,7 @@ if os.name == 'nt':
         file.seek(pos) # reset position
 
 elif os.name =='posix':
-    import socket,errno,time
+    import socket, errno
 
     def _tmpFileName(fileName):
         return "%s.%s.%d" % ( fileName, socket.gethostname(), os.getpid() )
