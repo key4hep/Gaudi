@@ -1,8 +1,13 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2009-12-04 - Marco Clemencic
+ - Avoid the manipulation of the compiler name for the LCG compiler if the tag
+   CERNDISTCC (Atlas distcc cluster) is defined, because the manipulation for
+   that case is already done in LCG_Settings.
+
 ! 2009-11-26 - Marco Clemencic
- - Fixed a problem in locker.py (LockFile) on Win32. 
+ - Fixed a problem in locker.py (LockFile) on Win32.
 
 ! 2009-11-19 - Marco Clemencic
  - Removed run-time dependency on PCRE (which has been removed from LCGCMT).

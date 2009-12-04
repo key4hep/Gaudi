@@ -516,20 +516,26 @@ make_fragment $(lib_no_static_fragment)
 
 # C++ compiler
 macro_prepend  cpp_name "" \
+    lcg-compiler&target-gcc&CERNDISTCC ""
     lcg-compiler&target-gcc       "lcg-"
 macro_append   cpp_name "" \
+    lcg-compiler&target-gcc&CERNDISTCC ""
     lcg-compiler&target-gcc       "-$(gcc_config_version)"
 
 # C compiler
 macro_prepend  cc_name  "" \
+    lcg-compiler&target-gcc&CERNDISTCC ""
     lcg-compiler&target-gcc       "lcg-"
 macro_append   cc_name  "" \
+    lcg-compiler&target-gcc&CERNDISTCC ""
     lcg-compiler&target-gcc       "-$(gcc_config_version)"
 
 # FORTRAN compiler
 macro_prepend  for_name "" \
+    lcg-compiler&target-gcc&CERNDISTCC ""
     lcg-compiler&target-gcc       "lcg-"
 macro_append   for_name "" \
+    lcg-compiler&target-gcc&CERNDISTCC ""
     lcg-compiler&target-gcc       "-$(gcc_config_version)"
 
 # C++ debug, optimized and profiled options
