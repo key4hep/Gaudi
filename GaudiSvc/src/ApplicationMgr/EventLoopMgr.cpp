@@ -316,13 +316,13 @@ StatusCode EventLoopMgr::executeRun( int maxevt )    {
 StatusCode EventLoopMgr::nextEvent(int maxevt)   {
   static int        total_nevt = 0;
   DataObject*       pObject = 0;
-  StatusCode        sc;
+  StatusCode        sc(StatusCode::SUCCESS, true);
   MsgStream         log( msgSvc(), name() );
 
   // loop over events if the maxevt (received as input) if different from -1.
   // if evtmax is -1 it means infinite loop
   for( int nevt = 0; (maxevt == -1 ? true : nevt < maxevt);  nevt++, total_nevt++) {
-    // Check if there is a scheduled stop issued by some algorithm/sevice
+    // Check if there is a scheduled stop issued by some algorithm/service
     if ( m_scheduledStop ) {
       m_scheduledStop = false;
       log << MSG::ALWAYS << "Terminating event processing loop due to scheduled stop" << endmsg;
