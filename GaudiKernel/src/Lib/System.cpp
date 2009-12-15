@@ -170,6 +170,8 @@ unsigned long System::unloadDynamicLib(ImageHandle handle)    {
     delete mod;
   }
   else {
+#else
+  if (false){
 #endif
     return getLastError();
   }
