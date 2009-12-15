@@ -258,7 +258,7 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
           if ( !m_useGFAL )   {
             if ( m_quarantine ) s_badFiles.insert(dsn);
             m_incSvc->fireIncident(Incident(dsn,IncidentType::FailInputFile));
-            error("connectDataIO> failed to resolve FID:"+dsn,false);
+            error("connectDataIO> failed to resolve FID:"+dsn,false).ignore();
 	    return IDataConnection::BAD_DATA_CONNECTION;
           }
           else if ( dsn.length() == 36 && dsn[8]=='-' && dsn[13]=='-' )  {
@@ -270,7 +270,7 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
           }
           if ( m_quarantine ) s_badFiles.insert(dsn);
           m_incSvc->fireIncident(Incident(dsn,IncidentType::FailInputFile));
-          error("connectDataIO> Failed to resolve FID:"+dsn,false);
+          error("connectDataIO> Failed to resolve FID:"+dsn,false).ignore();
           return IDataConnection::BAD_DATA_CONNECTION;
         }
         std::string pfn = files[0].first;
@@ -336,7 +336,7 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
           delete e;
           if ( m_quarantine ) s_badFiles.insert(dsn);
           m_incSvc->fireIncident(Incident(dsn,IncidentType::FailInputFile));
-          error("connectDataIO> Cannot connect to database: PFN="+dsn+" FID="+fid,false);
+          error("connectDataIO> Cannot connect to database: PFN="+dsn+" FID="+fid,false).ignore();
           return IDataConnection::BAD_DATA_CONNECTION;
         }
         fid = connection->fid();
@@ -356,7 +356,7 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
       if ( !reconnect((*fi).second).isSuccess() )   {
         if ( m_quarantine ) s_badFiles.insert(dsn);
         m_incSvc->fireIncident(Incident(dsn,IncidentType::FailInputFile));
-        error("connectDataIO> Cannot connect to database: PFN="+dsn+" FID="+fid,false);
+        error("connectDataIO> Cannot connect to database: PFN="+dsn+" FID="+fid,false).ignore();
         return IDataConnection::BAD_DATA_CONNECTION;
       }
       return S_OK;
@@ -371,9 +371,10 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
     return sc;
   }
   catch (std::exception& e)  {
-    error(std::string("connectDataIO> Caught exception:")+e.what(), false);
+    error(std::string("connectDataIO> Caught exception:")+e.what(), false).ignore();
   }
-  catch(...)  {
+  catch(...) {
+    error(std::string("connectDataIO> Caught unknown exception"), false).ignore();
   }
   m_incSvc->fireIncident(Incident(dsn,IncidentType::FailInputFile));
   error("connectDataIO> The dataset "+dsn+" cannot be opened.",false).ignore();

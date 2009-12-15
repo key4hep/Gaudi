@@ -1,6 +1,9 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2009-12-15 - Marco Clemencic
+ - Fixed bug #59659: Untested StatusCodes in IODataManager.cpp
+
 ================ GaudiUtils v3r5 ====================================
 ! 2009-10-08 - Vanya Belyaev
  - Patch #3311: Add ASCII dump for 1D-profile histograms
