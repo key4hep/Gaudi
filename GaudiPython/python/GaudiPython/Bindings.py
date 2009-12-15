@@ -224,7 +224,7 @@ class iProperty(object) :
             if   StringProperty    == type( prop )   : return prop.value()
             elif StringPropertyRef == type( prop )   : return prop.value()
             try:     return eval( prop.toString(), {}, {} )
-            except : return p.value()
+            except : return prop.value()
         else :
             props = self._optsvc.getProperties(self._name)
             for p in props :

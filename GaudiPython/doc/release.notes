@@ -1,6 +1,9 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2009-12-15 - Charles Leggett
+ - Fixed bug #60502: typo in GaudiPython/Bindings.py
+
 ============================= GaudiPython v10r6 ==============================
 ! 2009-10-26 - Marco Clemencic
  - Removed some dictionaries of basic types that conflict with the CINT ones.
