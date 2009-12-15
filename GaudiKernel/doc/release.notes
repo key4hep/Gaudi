@@ -1,6 +1,11 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2009-12-15 - Marco Clemencic
+ - Fixed bug #59450: valgrind reports conditional or jump depends upon
+                     uninitialized variable in ProcessDescriptor
+   Fixed following the suggestion in the bug report.
+
 ============================= GaudiKernel v27r6 ==============================
 ! 2009-11-09 - Marco Clemencic
  - Fixed a problem with ConfigurableUser.propagateProperty when the property is

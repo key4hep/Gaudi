@@ -388,8 +388,10 @@ long System::ProcessDescriptor::query(long pid,
     sprintf(buf,"/proc/%ld/statm", processID(pid));
     long size, resident, share, trs, lrs, drs, dt;
     int fd = open(buf,O_RDONLY);
-    read(fd, buf, sizeof(buf));  
+    ssize_t nread = read(fd, buf, sizeof(buf));
     close(fd);
+    if ( nread < sizeof(buf) && nread >= 0 )
+      buf[nread]='\0';
     fd = sscanf(buf, "%ld %ld %ld %ld %ld %ld %ld",
                      &size, &resident, &share, &trs, &drs, &lrs, &dt);
     linux_proc prc;
