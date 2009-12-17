@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2009-12-17 - Vanya Belyaev
+ - Patch #3486: Class LockedChrono
+   Helper class to measure CPU-performance of highly recursive objects. 
+
 ! 2009-12-15 - Marco Clemencic
  - Fixed bug #59450: valgrind reports conditional or jump depends upon
                      uninitialized variable in ProcessDescriptor
