@@ -39,9 +39,16 @@ def main():
     #   - CMTCONFIG etc. are correctly defined
     #   - we can call cmt
     
-    # Directory where to store the report
-    if "CMTINSTALLAREA" not in os.environ:
-        os.environ["CMTINSTALLAREA"] = os.popen("cmt show macro_value CMTINSTALLAREA","r").read().strip()
+    # If the use specifies a directory where to collect all the results
+    # (e.g. because running from a read-only location) we must use it
+    if "QMTESTRESULTSDIR" in os.environ:
+        outputdir = os.path.normpath(os.path.expandvars(os.environ["QMTESTRESULTSDIR"]))
+    else:
+        outputdir = None
+    
+    ## Directory where to store the report
+    #if "CMTINSTALLAREA" not in os.environ:
+    #    os.environ["CMTINSTALLAREA"] = os.popen("cmt show macro_value CMTINSTALLAREA","r").read().strip()
     
     # Find the packages (their cmt dirs)
     cmt_br_header_re = re.compile(r"^# Now trying.*in (.*) \([0-9]+/[0-9]+\)")
@@ -63,7 +70,15 @@ def main():
         os.environ["CMTUSERCONTEXT"] = old_CMTUSERCONTEXT
     
     # Find the results.qmr files
-    results = filter(os.path.isfile,[ os.path.realpath(os.path.join(d,'..',os.environ["CMTCONFIG"],"results.qmr")) for d in dirs ])
+    if not outputdir:
+        results = filter(os.path.isfile,[ os.path.realpath(os.path.join(d,'..',os.environ["CMTCONFIG"],"results.qmr")) for d in dirs ])
+    else:
+        results = []
+        for d in dirs:
+            pkg = os.path.basename(os.path.dirname(d))
+            r = os.path.join(outputdir, "%s.%s.qmr" % (pkg, os.environ.get("CMTCONFIG", "noConfig")))
+            if os.path.isfile(r):
+                results.append(r)
     
     # Check if the result files have been found
     if len(results) == 0:
@@ -115,11 +130,14 @@ def main():
     #"       2        tests total"
     tot = report["statistics"]["total"]
     statistics_output.append("%8d        tests total"%(tot))
+    success = True 
     for k in [ "ERROR", "FAIL", "UNTESTED", "PASS" ]:
         if k in report["statistics"]:
             n = report["statistics"][k]
             p = round(100. * n / tot)
             statistics_output.append("%8d (%3d%%) tests %s"%(n,p,k))
+            if k in ["ERROR", "FAIL"]:
+                success = False
     statistics_output.append('')
     
     results_output = ['--- TEST RESULTS -------------------------------------------------------------']
@@ -132,6 +150,9 @@ def main():
     
     output = statistics_output + not_passed_output + results_output + not_passed_output + statistics_output
     print '\n'.join(output)
+    return success
 
 if __name__ == '__main__':
-    main()
+    if not main():
+        # failure
+        sys.exit(1)

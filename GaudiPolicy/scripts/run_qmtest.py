@@ -25,6 +25,13 @@ def parseOptions(argv = None):
     if argv:
         opts.package = argv.pop(0)
     
+    # If the use specifies a directory where to collect all the results
+    # (e.g. because running from a read-only location) we must use it
+    if "QMTESTRESULTSDIR" in os.environ:
+        opts.output = os.path.normpath(os.path.expandvars(os.environ["QMTESTRESULTSDIR"]))
+        opts.output = os.path.join(opts.output,
+                                   "%s.%s.qmr" % (opts.package, os.environ.get("CMTCONFIG", "noConfig")))
+    
     # Do we have user options? 
     opts.have_user_options = len(argv)
     # Scan the user options (if any) to look for options we must intercept

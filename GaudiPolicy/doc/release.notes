@@ -1,6 +1,15 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2009-12-18 - Marco Clemencic
+ - Improvements to the testing infrastructure.
+   - Allow testing from a read-only location:
+     - modified GaudiExeTest to ignore failures when writing the new reference
+       files
+     - modified run_qmtest.py and qmtest_summarize.py to use the environment
+       variable QMTESTRESULTSDIR as base path for the QMTest result files (.qmr)
+   - Modified GaudiExeTest to correctly report a failure due to timeout limits.  
+
 ! 2009-12-04 - Marco Clemencic
  - Avoid the manipulation of the compiler name for the LCG compiler if the tag
    CERNDISTCC (Atlas distcc cluster) is defined, because the manipulation for

@@ -1224,12 +1224,16 @@ class GaudiExeTest(ExecTestBase):
         causes = self.CheckHistosSummaries(stdout, result, causes)
         
         if causes: # Write a new reference file for stdout
-            newref = open(reference + ".new","w")
-            # sanitize newlines
-            for l in stdout.splitlines():
-                newref.write(l.rstrip() + '\n')
-            del newref # flush and close
-        
+            try:
+                newref = open(reference + ".new","w")
+                # sanitize newlines
+                for l in stdout.splitlines():
+                    newref.write(l.rstrip() + '\n')
+                del newref # flush and close
+            except IOError:
+                # Ignore IO errors when trying to update reference files
+                # because we may be in a read-only filesystem
+                pass
         
         # check standard error
         reference = self._expandReferenceFileName(self.error_reference)
@@ -1401,8 +1405,11 @@ class GaudiExeTest(ExecTestBase):
         origdir = os.getcwd()
         if self.workdir:
             os.chdir(str(os.path.normpath(os.path.expandvars(self.workdir))))
-        elif "qmtest.tmpdir" in context and self.use_temp_dir == "true":
-            os.chdir(context["qmtest.tmpdir"])
+        elif self.use_temp_dir == "true":
+            if "QMTEST_TMPDIR" in os.environ:
+                os.chdir(os.environ["QMTEST_TMPDIR"])
+            elif "qmtest.tmpdir" in context: 
+                os.chdir(context["qmtest.tmpdir"])
         
         if "QMTEST_IGNORE_TIMEOUT" not in os.environ:
             self.timeout = max(self.timeout,600)
@@ -1502,7 +1509,12 @@ class GaudiExeTest(ExecTestBase):
             # The target program terminated with a signal.  Construe
             # that as a test failure.
             signal_number = str(os.WTERMSIG(exit_status))
-            result.Fail("Program terminated by signal.")
+            if not stack_trace:
+                result.Fail("Program terminated by signal.")
+            else:
+                # The presence of stack_trace means tha we stopped the job because
+                # of a time-out
+                result.Fail("Exceeded time limit (%ds), terminated." % timeout)
             result["ExecTest.signal_number"] = signal_number
             result["ExecTest.stdout"] = result.Quote(e.stdout)
             result["ExecTest.stderr"] = result.Quote(e.stderr)
@@ -1510,7 +1522,12 @@ class GaudiExeTest(ExecTestBase):
             # The target program was stopped.  Construe that as a
             # test failure.
             signal_number = str(os.WSTOPSIG(exit_status))
-            result.Fail("Program stopped by signal.")
+            if not stack_trace:
+                result.Fail("Program stopped by signal.")
+            else:
+                # The presence of stack_trace means tha we stopped the job because
+                # of a time-out
+                result.Fail("Exceeded time limit (%ds), stopped." % timeout)
             result["ExecTest.signal_number"] = signal_number
             result["ExecTest.stdout"] = result.Quote(e.stdout)
             result["ExecTest.stderr"] = result.Quote(e.stderr)
