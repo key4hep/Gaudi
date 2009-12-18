@@ -178,6 +178,7 @@ def main():
                          "x86_64-slc4-gcc41*",
                          "i686-slc5-gcc43*",
                          "x86_64-slc5-gcc43*",
+                         "build.*.log",
                          "genConf",
                          "cmt/version.cmt",
                          ]
