@@ -200,17 +200,18 @@ def main():
         return 2
     patch_id = sys.argv[1]
     if os.path.isfile(patch_id):
-        patch_data = open(patch_id).read()
+        patch_data = open(patch_id, "b").read()
     else:
         patch = get_patch_info(patch_id)
         patch_file_id = patch.files[0][1]
         patch_data = get_patch_data(patch_file_id)
     
-    td = TempDir()
+    td = TempDir(prefix = patch_id + "-")
     if check_out_gaudi(str(td)) != 0:
         print "Sorry, problems checking out Gaudi. Try again."
         return 0
     top_dir = os.path.join(str(td), "Gaudi")
+    open(os.path.join(top_dir, patch_id) ,"wb").write(patch_data)
     
     revision = -1
     for l in Popen(["svn", "info", top_dir], stdout = PIPE).communicate()[0].splitlines():
@@ -221,7 +222,7 @@ def main():
     actions = [(lambda path: apply_patch(patch_data, path), "application of the patch"),
                (check, "check of the configuration"),
                (build, "build"),
-               (test, "best"),
+               (test, "test"),
                ]
     failure = False
     for action, title in actions:
