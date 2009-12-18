@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2009-12-18 - Marco Clemencic
+ - Modified the tests to be able to run them from a read-only area.
+
 ============================ GaudiExamples v21r6 =============================
 ! 2009-11-10 - Rob Lambert
  - Patch #3444: Patch to fix logic error in RecordStream

@@ -2,6 +2,6 @@
 <extension class="GaudiTest.GaudiExeTest" kind="test">
   <argument name="program"><text>gaudirun.py</text></argument>
   <argument name="args"><set><text>-v</text><text>Selections.py</text></set></argument>
-  <argument name="workdir"><text>../../home</text></argument>
-  <argument name="reference"><text>Selections.ref</text></argument>
+  <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+  <argument name="reference"><text>../../home/Selections.ref</text></argument>
 </extension>
