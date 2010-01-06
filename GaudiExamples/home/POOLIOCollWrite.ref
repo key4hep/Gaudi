@@ -1,6 +1,6 @@
 JobOptionsSvc        INFO
 //GP:================================================================================
-//GP: include "../options/POOLIOCollWrite.opts"                               (0,0)
+//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/POOLIOCollWrite.opts" (0,0)
 ApplicationMgr.TopAlg =  [ "GaudiSequencer/EventAlgs" ] ;               //GP: (1,1)
 EventAlgs.Members =  [ "EvtCollectionWrite/Writer" ] ;                  //GP: (1,1)
 EventAlgs.VetoObjects =  [ "FSR" ] ;                                    //GP: (1,1)
@@ -8,7 +8,7 @@ ToolSvc.SequencerTimerTool.OutputLevel = 4;                             //GP: (1
 EventSelector.PrintFreq = 100;                                          //GP: (1,1)
 ApplicationMgr.EvtMax = -1;                                             //GP: (1,1)
 ApplicationMgr.Histogrampersistency = "NONE";                           //GP: (1,1)
-//GP: include "/build/marcocle/test_patches/p2792.patch/GAUDI/GaudiPoolDb/options/GaudiPoolDbRoot.opts" (20,10)
+//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiPoolDb/options/GaudiPoolDbRoot.opts" (20,10)
 ApplicationMgr.ExtSvc +=  [ "Gaudi::MultiFileCatalog/FileCatalog" , "Gaudi::IODataManager/IODataManager" , "PoolDbCacheSvc/PoolDbCacheSvc" , "PoolDbCnvSvc/PoolRootEvtCnvSvc" , "PoolDbCnvSvc/PoolRootKeyEvtCnvSvc" , "PoolDbCnvSvc/PoolRootTreeEvtCnvSvc" ] ;//GP: (1,1)
 EventPersistencySvc.CnvServices +=  [ "PoolRootEvtCnvSvc" ] ;           //GP: (1,1)
 EventPersistencySvc.CnvServices +=  [ "PoolRootTreeEvtCnvSvc" ] ;       //GP: (1,1)
@@ -22,27 +22,27 @@ PoolDbCacheSvc.DomainOpts =  [ "Domain[ROOT_All].TREE_MAX_SIZE=500000000000 TYP=
 ApplicationMgr.ExtSvc +=  [ "PoolDbCnvSvc/FileRecordCnvSvc" ] ;         //GP: (1,1)
 FileRecordPersistencySvc.CnvServices +=  [ "FileRecordCnvSvc" ] ;       //GP: (1,1)
 FileRecordCnvSvc.DbType = "POOL_ROOTTREE";                              //GP: (1,1)
-FileRecordCnvSvc.ShareFiles = 1;                                        //GP: (1,1)
+FileRecordCnvSvc.ShareFiles = "YES";                                    //GP: (1,1)
 FileRecordDataSvc.ForceLeaves = 1;                                      //GP: (1,1)
 FileRecordDataSvc.EnableFaultHandler = 1;                               //GP: (1,1)
 FileRecordDataSvc.RootCLID = 1;                                         //GP: (1,1)
 PoolRootEvtCnvSvc.EnableIncident = 1;                                   //GP: (1,1)
 PoolRootKeyEvtCnvSvc.EnableIncident = 1;                                //GP: (1,1)
 PoolRootTreeEvtCnvSvc.EnableIncident = 1;                               //GP: (1,1)
-//GP: end  "/build/marcocle/test_patches/p2792.patch/GAUDI/GaudiPoolDb/options/GaudiPoolDbRoot.opts" (36,1)
+//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiPoolDb/options/GaudiPoolDbRoot.opts" (36,1)
 ApplicationMgr.ExtSvc +=  [ "TagCollectionSvc/EvtTupleSvc" ] ;          //GP: (20,10)
 EvtTupleSvc.Output =  [ "EvtColl DATAFILE='PFN:POOLIO.tags' OPT='RECREATE' TYP='POOL_ROOTTREE'" ] ;//GP: (20,10)
 EventSelector.Input =  [ "DATAFILE='PFN:POOLIO.dst'   TYP='POOL_ROOT' OPT='READ'" ] ;//GP: (20,10)
 EventSelector.Input +=  [ "DATAFILE='PFN:POOLIO.mdst'  TYP='POOL_ROOT' OPT='READ'" ] ;//GP: (20,10)
 FileCatalog.Catalogs =  [ "xmlcatalog_file:POOLIO.xml" ] ;              //GP: (20,10)
-//GP: end  "../options/POOLIOCollWrite.opts"                                  (34,1)
+//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/POOLIOCollWrite.opts" (34,1)
 //GP:================================================================================
 
-JobOptionsSvc        INFO Job options successfully read in from ../options/POOLIOCollWrite.opts
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/POOLIOCollWrite.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on lxbuild120.cern.ch on Fri Apr  3 17:02:45 2009
+                                          running on pclhcb55 on Wed Jan  6 17:07:15 2010
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EvtTupleSvc          INFO Added stream file:PFN:POOLIO.tags as EvtColl
@@ -50,8 +50,8 @@ EventAlgs            INFO Member list: EvtCollectionWrite/Writer
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
-IODataManager        INFO Referring to dataset POOLIO.tags by its file ID:C0A67D7E-6020-DE11-B5E9-0030487C5E0E
-RootDBase.open    SUCCESS POOLIO.tags File version:52200
+IODataManager        INFO Referring to dataset POOLIO.tags by its file ID:C4B7E891-DDFA-DE11-962C-001320A397BC
+RootDBase.open    SUCCESS POOLIO.tags File version:52600
 PoolDbDatabaseCnv    INFO Recreate Database file:PFN:POOLIO.tags as /EvtColl
 EventPersistenc...   INFO  'CnvServices':[ 'PoolRootEvtCnvSvc' , 'PoolRootTreeEvtCnvSvc' , 'PoolRootKeyEvtCnvSvc' ]
 EventPersistenc...   INFO Added successfully Conversion service:PoolRootEvtCnvSvc
@@ -60,8 +60,8 @@ HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
 HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
-RootDBase.open    SUCCESS POOLIO.dst File version:52200
-PoolRootEvtCnvSvc    INFO Records token:[DB=EC634514-5120-DE11-A05A-0030487C5E0E][CNT=/FileRecords][CLID=00000001-0000-0000-0000-000000000000][TECH=00000202][OID=0000000A-00000000]
+RootDBase.open    SUCCESS POOLIO.dst File version:52600
+PoolRootEvtCnvSvc    INFO Records token:[DB=3C569088-DDFA-DE11-87AE-001320A397BC][CNT=/FileRecords][CLID=00000001-0000-0000-0000-000000000000][TECH=00000202][OID=0000000A-00000000]
 EventSelector     SUCCESS Reading Event record 1. Record number within stream 1: 1
 EventPersistenc...   INFO Added successfully Conversion service:PoolRootTreeEvtCnvSvc
 Writer               INFO ================ EVENT:1 RUN:999 ====== N(Track)=39 FAILED selection (<50) ============
@@ -85,8 +85,8 @@ EventSelector     SUCCESS Reading Event record 801. Record number within stream 
 EventSelector     SUCCESS Reading Event record 901. Record number within stream 1: 901
 Writer               INFO ================ EVENT:1000 RUN:999 ====== N(Track)=55 PASSED selection (>=50) ============
 EventSelector        INFO Stream:EventSelector.DataStreamTool_2 Def:DATAFILE='PFN:POOLIO.mdst'  TYP='POOL_ROOT' OPT='READ'
-RootDBase.open    SUCCESS POOLIO.mdst File version:52200
-PoolRootEvtCnvSvc    INFO No Records /FileRecords present in:F4839F14-5120-DE11-A05A-0030487C5E0E
+RootDBase.open    SUCCESS POOLIO.mdst File version:52600
+PoolRootEvtCnvSvc    INFO No Records /FileRecords present in:C6570989-DDFA-DE11-87AE-001320A397BC
 EventSelector     SUCCESS Reading Event record 1001. Record number within stream 2: 1
 Writer               INFO ================ EVENT:1 RUN:999 ====== N(Track)=39 FAILED selection (<50) ============
 Writer               INFO ================ EVENT:2 RUN:999 ====== N(Track)=93 PASSED selection (>=50) ============
@@ -113,10 +113,11 @@ ApplicationMgr       INFO Application Manager Stopped successfully
 EventLoopMgr         INFO Histograms converted successfully according to request.
 ToolSvc              INFO Removing all tools created by ToolSvc
 EvtTupleSvc          INFO NTuples saved successfully
-EvtTupleSvc.Evt...   INFO Disconnected data IO:C0A67D7E-6020-DE11-B5E9-0030487C5E0E[POOLIO.tags]
-PoolRootEvtCnvSvc    INFO Disconnected data IO:EC634514-5120-DE11-A05A-0030487C5E0E[POOLIO.dst]
-PoolRootEvtCnvSvc    INFO Disconnected data IO:F4839F14-5120-DE11-A05A-0030487C5E0E[POOLIO.mdst]
+EvtTupleSvc.Evt...   INFO Disconnected data IO:C4B7E891-DDFA-DE11-962C-001320A397BC[POOLIO.tags]
+FileRecordCnvSvc     INFO File sharing enabled. Do not retire files.
+PoolRootEvtCnvSvc    INFO Disconnected data IO:3C569088-DDFA-DE11-87AE-001320A397BC[POOLIO.dst]
+PoolRootEvtCnvSvc    INFO Disconnected data IO:C6570989-DDFA-DE11-87AE-001320A397BC[POOLIO.mdst]
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyTrack instances:0
 Number of MyVertex instances:0
+Number of MyTrack instances:0

@@ -24,7 +24,7 @@ PoolDbCacheSvc.DomainOpts        = { "Domain[ROOT_All].TREE_MAX_SIZE=50000000000
 ApplicationMgr.ExtSvc                += { "PoolDbCnvSvc/FileRecordCnvSvc" };
 FileRecordPersistencySvc.CnvServices += { "FileRecordCnvSvc" };
 FileRecordCnvSvc.DbType               = "POOL_ROOTTREE";
-FileRecordCnvSvc.ShareFiles           = true;
+FileRecordCnvSvc.ShareFiles           = "YES";
 
 FileRecordDataSvc.ForceLeaves         = true;
 FileRecordDataSvc.EnableFaultHandler  = true;

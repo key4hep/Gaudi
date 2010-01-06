@@ -1,7 +1,7 @@
 JobOptionsSvc        INFO
 //GP:================================================================================
-//GP: include "../options/EvtColsEx_Prepare.opts"                             (0,0)
-//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace-europa/GAUDI/GaudiPoolDb/options/GaudiPoolDbRoot.opts" (16,10)
+//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/EvtColsEx_Prepare.opts" (0,0)
+//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiPoolDb/options/GaudiPoolDbRoot.opts" (16,10)
 ApplicationMgr.ExtSvc +=  [ "Gaudi::MultiFileCatalog/FileCatalog" , "Gaudi::IODataManager/IODataManager" , "PoolDbCacheSvc/PoolDbCacheSvc" , "PoolDbCnvSvc/PoolRootEvtCnvSvc" , "PoolDbCnvSvc/PoolRootKeyEvtCnvSvc" , "PoolDbCnvSvc/PoolRootTreeEvtCnvSvc" ] ;//GP: (1,1)
 EventPersistencySvc.CnvServices +=  [ "PoolRootEvtCnvSvc" ] ;           //GP: (1,1)
 EventPersistencySvc.CnvServices +=  [ "PoolRootTreeEvtCnvSvc" ] ;       //GP: (1,1)
@@ -12,7 +12,17 @@ PoolRootTreeEvtCnvSvc.DbType = "POOL_ROOTTREE";                         //GP: (1
 PoolDbCacheSvc.Dlls =  [ "lcg_RootStorageSvc" , "GaudiKernelDict" ] ;   //GP: (1,1)
 PoolDbCacheSvc.OutputLevel = 4;                                         //GP: (1,1)
 PoolDbCacheSvc.DomainOpts =  [ "Domain[ROOT_All].TREE_MAX_SIZE=500000000000 TYP=longlong" ] ;//GP: (1,1)
-//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace-europa/GAUDI/GaudiPoolDb/options/GaudiPoolDbRoot.opts" (22,1)
+ApplicationMgr.ExtSvc +=  [ "PoolDbCnvSvc/FileRecordCnvSvc" ] ;         //GP: (1,1)
+FileRecordPersistencySvc.CnvServices +=  [ "FileRecordCnvSvc" ] ;       //GP: (1,1)
+FileRecordCnvSvc.DbType = "POOL_ROOTTREE";                              //GP: (1,1)
+FileRecordCnvSvc.ShareFiles = "YES";                                    //GP: (1,1)
+FileRecordDataSvc.ForceLeaves = 1;                                      //GP: (1,1)
+FileRecordDataSvc.EnableFaultHandler = 1;                               //GP: (1,1)
+FileRecordDataSvc.RootCLID = 1;                                         //GP: (1,1)
+PoolRootEvtCnvSvc.EnableIncident = 1;                                   //GP: (1,1)
+PoolRootKeyEvtCnvSvc.EnableIncident = 1;                                //GP: (1,1)
+PoolRootTreeEvtCnvSvc.EnableIncident = 1;                               //GP: (1,1)
+//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiPoolDb/options/GaudiPoolDbRoot.opts" (36,1)
 PoolDbCacheSvc.DLLs +=  [ "GaudiExamplesDict" ] ;                       //GP: (16,10)
 FileCatalog.Catalogs =  [ "xmlcatalog_file:EvtColsEx.xml" ] ;           //GP: (16,10)
 ApplicationMgr.EvtSel = "NONE";                                         //GP: (16,10)
@@ -20,14 +30,14 @@ ApplicationMgr.OutStream +=  [ "PoolDst" ] ;                            //GP: (1
 ApplicationMgr.EvtMax = 50000;                                          //GP: (16,10)
 PoolDst.ItemList =  [ "/Event#1" ] ;                                    //GP: (16,10)
 PoolDst.Output = "DATAFILE='PFN:EvtColsEx.dst' TYP='POOL_ROOTTREE' OPT='RECREATE'";//GP: (16,10)
-//GP: end  "../options/EvtColsEx_Prepare.opts"                                (38,1)
+//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/EvtColsEx_Prepare.opts" (38,1)
 //GP:================================================================================
 
-JobOptionsSvc        INFO Job options successfully read in from ../options/EvtColsEx_Prepare.opts
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/EvtColsEx_Prepare.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr $Revision: 1.26 $
-                                          running on pclhcb55.cern.ch on Fri May 30 20:37:04 2008
+                                                   Welcome to ApplicationMgr $Revision: 1.77 $
+                                          running on pclhcb55 on Wed Jan  6 17:05:13 2010
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EventPersistenc...   INFO  'CnvServices':[ 'PoolRootEvtCnvSvc' , 'PoolRootTreeEvtCnvSvc' , 'PoolRootKeyEvtCnvSvc' ]
@@ -40,12 +50,15 @@ HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
 HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
-EvtColsEx.dst     SUCCESS Root file version:51800
+IODataManager        INFO Referring to dataset EvtColsEx.dst by its file ID:C4E46E48-DDFA-DE11-874F-001320A397BC
+RootDBase.open    SUCCESS EvtColsEx.dst File version:52600
 ApplicationMgr       INFO Application Manager Stopped successfully
 PoolDst              INFO Events output: 50000
 EventLoopMgr         INFO Histograms converted successfully according to request.
-PoolRootTreeEvt...   INFO Disconnected data IO:64B272A6-54CF-DC11-9F6F-001320A397BC[EvtColsEx.dst]
+FileRecordCnvSvc     INFO File sharing enabled. Do not retire files.
+PoolRootTreeEvt...   INFO Disconnected data IO:C4E46E48-DDFA-DE11-874F-001320A397BC[EvtColsEx.dst]
+XMLCatalog           INFO File 'EvtColsEx.xml' does not exist. New file created.
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyTrack instances:0
 Number of MyVertex instances:0
+Number of MyTrack instances:0

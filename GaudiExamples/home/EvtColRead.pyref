@@ -9,11 +9,10 @@
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on lxbuild120.cern.ch on Fri Apr  3 17:01:19 2009
+                                          running on pclhcb55 on Wed Jan  6 17:34:53 2010
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ApplicationMgr       INFO Successfully loaded modules : GaudiAlg, RootHistCnv
-Note: (file "(tmpfile)", line 2) File "set" already loaded
 EventPersistenc...   INFO  'CnvServices':[ 'PoolRootEvtCnvSvc' , 'PoolRootTreeEvtCnvSvc' , 'PoolRootKeyEvtCnvSvc' ]
 HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
 RootHistSvc          INFO Writing ROOT histograms to: UndefinedROOTOutputFileName
@@ -23,13 +22,13 @@ EventPersistenc...   INFO  'CnvServices':[ 'PoolRootEvtCnvSvc' , 'PoolRootTreeEv
 ApplicationMgr       INFO Application Manager Started successfully
 EvtTupleSvc          INFO Added stream file:PFN:EvtTags1.root as EventSelector.DataStreamTool_1
 PoolDbDatabaseCnv    INFO Connect to existing Database file:PFN:EvtTags1.root as /EventSelector.DataStreamTool_1 for READ
-RootDBase.open    SUCCESS EvtTags1.root File version:52200
+RootDBase.open    SUCCESS EvtTags1.root File version:52600
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='PFN:EvtTags1.root' TYP='POOL_ROOT' OPT='READ' SEL='binom==6' COLLECTION='Fill/COL1'
 EventSelector     SUCCESS Reading Event record 1. Record number within stream 1: 1
 EventPersistenc...   INFO Added successfully Conversion service:PoolRootEvtCnvSvc
 EventPersistenc...   INFO Added successfully Conversion service:PoolRootTreeEvtCnvSvc
-RootDBase.open    SUCCESS EvtColsEx.dst File version:52200
-PoolRootTreeEvt...   INFO No Records /FileRecords present in:7C3FE3CE-5020-DE11-8C34-0030487C5E0E
+RootDBase.open    SUCCESS EvtColsEx.dst File version:52600
+PoolRootTreeEvt...   INFO No Records /FileRecords present in:FCCEDD53-E1FA-DE11-A6D2-001320A397BC
 EventSelector     SUCCESS Reading Event record 11. Record number within stream 1: 11
 EventSelector     SUCCESS Reading Event record 21. Record number within stream 1: 21
 EventSelector     SUCCESS Reading Event record 31. Record number within stream 1: 31
@@ -39,7 +38,8 @@ ApplicationMgr       INFO Application Manager Stopped successfully
 RootHistSvc       WARNING no ROOT output file name, Histograms cannot be persistified
 EventLoopMgr         INFO Histograms converted successfully according to request.
 ToolSvc              INFO Removing all tools created by ToolSvc
-EvtTupleSvc.Eve...   INFO Disconnected data IO:08F436D6-5020-DE11-89A3-0030487C5E0E[EvtTags1.root]
-PoolRootTreeEvt...   INFO Disconnected data IO:7C3FE3CE-5020-DE11-8C34-0030487C5E0E[EvtColsEx.dst]
+EvtTupleSvc.Eve...   INFO Disconnected data IO:2C12615D-E1FA-DE11-8A8F-001320A397BC[EvtTags1.root]
+FileRecordCnvSvc     INFO File sharing enabled. Do not retire files.
+PoolRootTreeEvt...   INFO Disconnected data IO:FCCEDD53-E1FA-DE11-A6D2-001320A397BC[EvtColsEx.dst]
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully

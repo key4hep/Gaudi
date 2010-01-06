@@ -1,6 +1,9 @@
 Package: GaudiPoolDb
 Package Manager: Markus Frank, Marco Clemencic
 
+! 2010-01-06 - Jaap Panman
+ - Fixed an error in GaudiPoolDbRoot.opts.
+
 ================ GaudiPoolDb v5r5 ====================================
 ! 2009-10-08 - Rob Lambert
  - Patch #3310: Issue incidents for failed files in PoolDbCnvSvc

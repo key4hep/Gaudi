@@ -1368,6 +1368,7 @@ ServiceManager      DEBUG Finalizing service FileRecordPersistencySvc
 ServiceManager      DEBUG Finalizing service IncidentSvc
 ServiceManager      DEBUG Finalizing service AppMgrRunable
 ServiceManager      DEBUG Finalizing service FileRecordCnvSvc
+FileRecordCnvSvc     INFO File sharing enabled. Do not retire files.
 FileRecordCnvSvc    DEBUG POOL conversion service finalized FileRecordCnvSvc successfully
 ServiceManager      DEBUG Finalizing service PoolRootTreeEvtCnvSvc
 PoolRootTreeEvt...   INFO Disconnected data IO:9C18F483-71A4-DE11-BF08-093FFB60BD71[POOLIO.dst]

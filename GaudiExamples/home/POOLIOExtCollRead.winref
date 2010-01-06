@@ -187,6 +187,7 @@ ApplicationMgr       INFO Application Manager Stopped successfully
 EventLoopMgr         INFO Histograms converted successfully according to request.
 ToolSvc              INFO Removing all tools created by ToolSvc
 EvtTupleSvc.Eve...   INFO Disconnected data IO:D8A361F7-672E-DE11-93DE-DF537B2BE706[POOLIO.tags]
+FileRecordCnvSvc     INFO File sharing enabled. Do not retire files.
 PoolRootTreeEvt...   INFO Disconnected data IO:68D46351-5F2E-DE11-88AB-AB48B2B65F5C[POOLIO.mdst]
 PoolRootTreeEvt...   INFO Disconnected data IO:80392851-5F2E-DE11-88AB-AB48B2B65F5C[POOLIO.dst]
 ApplicationMgr       INFO Application Manager Finalized successfully
