@@ -11,6 +11,14 @@ def _fillCfgDb():
                package = 'GaudiTests',
                module  = 'TestConf',
                lib     = 'None' )
+    cfgDb.add( configurable = 'APublicTool',
+               package = 'GaudiTests',
+               module  = 'TestConf',
+               lib     = 'None' )
+    cfgDb.add( configurable = 'APrivateTool',
+               package = 'GaudiTests',
+               module  = 'TestConf',
+               lib     = 'None' )
     
     return #_fillCfgDb
 # fill cfgDb at module import...

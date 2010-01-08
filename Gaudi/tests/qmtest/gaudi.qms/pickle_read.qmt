@@ -11,7 +11,8 @@
 <argument name="validator"><text>
 conf_dict = eval('\n'.join(stdout.splitlines()))
 expected = { 'ToolSvc.MyTestTool': { 'PubToolHndl' : 'Public1',
-                                     'PrivToolHndl' : 'Pivate1' } }
+                                     'PrivToolHndl' : 'Pivate1', 
+                                     'PrivEmptyToolHndl' : ''} }
 
 if conf_dict != expected:
     causes.append("configuration result")

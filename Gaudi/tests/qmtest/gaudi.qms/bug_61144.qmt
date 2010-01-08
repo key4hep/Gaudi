@@ -1,9 +1,8 @@
-<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.4/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.4/-//qm/2.4/extension//en.dtd'>
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="program"><text>gaudirun.py</text></argument>
 <argument name="args"><set><text>-v</text>
                            <text>-n</text>
-                           <text>-p</text><text>options.pkl</text>
                       </set></argument>
 <argument name="options"><text>
 # Add the fake configurables to the path
@@ -12,11 +11,9 @@ from Gaudi.Configuration import *
 import Test_confDb # only the _merge_confDb.py in InstallArea/python/* are used automatically
 
 #------------------------------------------------------------------------------\
-# https://savannah.cern.ch/bugs/?43065
+# https://savannah.cern.ch/bugs/?61144
 from Configurables import MyTestTool
-MyTestTool().PubToolHndl = "Public1"
-MyTestTool().PrivToolHndl = "Pivate1"
-MyTestTool().PrivEmptyToolHndl = ""
+print MyTestTool()
 #------------------------------------------------------------------------------/
 
 </text></argument>

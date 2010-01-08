@@ -1,6 +1,9 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+! 2010-01-08 - Marco Clemencic
+ - Added test for bug #61144 (configuration problem for 'empty' tool handles)
+
 ================================ Gaudi v21r6 =================================
 ! 2009-11-09 - Marco Clemencic
  - Extended the test gaudi.propagate_properties to expose a bug affecting

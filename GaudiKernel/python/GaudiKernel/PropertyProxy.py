@@ -176,7 +176,8 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
             try:
                 default = obj.__class__.getDefaultProperty( self.descr.__name__ )
                 default = self.convertDefaultToBeSet( obj, default )
-                self.__set__( obj, default )
+                if default:
+                    self.__set__( obj, default )
             except AttributeError,e:
                 # change type of exception to avoid false error message
                 raise RuntimeError(*e.args)
@@ -241,6 +242,8 @@ class GaudiHandlePropertyProxyBase(PropertyProxy):
             else:
                 typeAndName = default.typeAndName
             if not self._handleType.isPublic:
+                if not typeAndName:
+                    return None
                 # Find corresponding default configurable of private handles
                 try:
                     conf = self.getDefaultConfigurable(typeAndName, self.fullPropertyName(obj))

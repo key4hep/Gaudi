@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-01-08 - Marco Clemencic
+ - Fixed bug #61144: configuration problem for 'empty' tool handles
+
 ! 2009-12-17 - Vanya Belyaev
  - Patch #3486: Class LockedChrono
    Helper class to measure CPU-performance of highly recursive objects. 
