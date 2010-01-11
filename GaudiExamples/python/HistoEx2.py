@@ -15,19 +15,18 @@
 # =============================================================================
 __author__ = 'Vanya BELYAEV ibelyaev@physics.syr.edu'
 # =============================================================================
+import os
 
-import GaudiPython
+from GaudiPython.GaudiAlgs   import HistoAlgo, SUCCESS 
 
-from   GaudiPython.GaudiAlgs   import HistoAlgo
-
-Rndm    = GaudiPython.gbl.Rndm
-SUCCESS = GaudiPython.SUCCESS 
+from GaudiPython.Bindings    import gbl as cpp 
+Rndm    = cpp.Rndm
 
 # =============================================================================
 # Simple algorithm which book&fill two profile histograms
 # =============================================================================
 class HistoEx2 (HistoAlgo) :
-    """ Simple algorithm which explicitely book&fill profile histograms """
+    """ Simple algorithm which explicitly book&fill profile histograms """
     def __init__ ( self , name = 'HistoEx2' ) :
         """ Constructor """
         HistoAlgo.__init__( self , name )
@@ -71,16 +70,33 @@ def configure( gaudi = None  ) :
 
 
 # =============================================================================
-# The actual job excution 
+# The actual job execution 
 # =============================================================================
 if '__main__' == __name__ :
     print __doc__ , __author__
-    gaudi = GaudiPython.AppMgr()
+
+    from GaudiPython.Bindings import AppMgr
+    import GaudiPython.HistoUtils
+    
+    gaudi = AppMgr()
     configure( gaudi )
+
     gaudi.run(20)
 
-    
-    
-# =============================================================================
-# The END
-# =============================================================================
+    # Skip the next part when running within QMTest
+    if "QMTESTLOCALDIR" not in os.environ:
+        for alg in ['HistoEx', 'HistoEx1', 'HistoEx2']:
+            alg = gaudi.algorithm ( alg ) 
+            histos = alg.Histos()
+            for key in histos :
+                histo = histos[key]
+                print " Alg='%s', ID='%s' , Histo=%s " % ( alg.name() , key , histo ) 
+                if hasattr ( histo , 'dump' ) :
+                    print histo.dump(50,20)
+        
+        alg = gaudi.algorithm('HistoEx1')
+        histo  = alg.Histos(' 1D histo ')
+        histos = alg.Histos()
+        print ' Histos : ', histos 
+        print ' Histo  : ', histo 
+        print ' Histo  : ', histos[' 1D histo ']

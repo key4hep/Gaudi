@@ -1,6 +1,11 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2010-01-11 - Vanya Belyaev
+ - Patch #3588: Fix a typo (&logic) in GaudiPython.GaudiAlgs module for "Histo()" method
+   - python/GaudiPython/GaudiAlgs.py
+     fix the typo (and invalid logic) for "Histos()" method
+      
 ! 2009-12-15 - Charles Leggett
  - Fixed bug #60502: typo in GaudiPython/Bindings.py
 

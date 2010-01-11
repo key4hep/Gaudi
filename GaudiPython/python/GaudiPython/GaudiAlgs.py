@@ -1289,8 +1289,17 @@ def _get_all_histos_  ( component , method , name ) :
             else               : _id = _is.idAsString ()
             _res [ _id ] = _his[ _i ]
 
-    if not name : return _res                         ## return the dictionary
-    return res.get( cpp.GaudiAlg.ID( name ) , None )  ## return the histogram
+    if not name : return _res                          ## return the dictionary
+
+    id = cpp.GaudiAlg.ID ( name ) 
+    for i in ( name            ,
+               id.literalID () ,
+               id.numericID () ,
+               id.idAsString() , id  ) :
+        h = _res.get( i , None  )
+        if not not h : return h   ## return the histogram
+        
+    return None
 # =============================================================================
 def _Histos_a_ ( self , name = None ) :
     """
@@ -1301,7 +1310,7 @@ def _Histos_a_ ( self , name = None ) :
     >>> for key in histos :
     ...        print key, histos[key]
 
-    Retrive the historgam with certain ID :
+    Retrive the histogram with the certain ID :
 
     >>> alg = ...                           ## get the algorithm
     >>> histo = alg.Histos('some histo ID') ## get the histo by ID

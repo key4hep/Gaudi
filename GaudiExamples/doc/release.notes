@@ -1,6 +1,11 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2010-01-11 - Vanya Belyaev
+ - Patch #3588: Fix a typo (&logic) in GaudiPython.GaudiAlgs module for "Histo()" method
+   - python/HistoEx2.py:
+     extend a little bit the example to test "Histos()" method.
+
 ! 2010-01-11 - Marco Clemencic
  - Updated the reference files after patch #3478. 
 
