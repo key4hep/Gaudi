@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2010-01-11 - Marco Clemencic
+ - Updated the reference files after patch #3478. 
+
 ! 2010-01-06 - Marco Clemencic
  - Updates reference files after a change in GaudiPoolDb default options (fix).
 

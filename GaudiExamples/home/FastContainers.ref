@@ -28,9 +28,14 @@ IncidentSvc         DEBUG Adding [AbortEvent] listener '<unknown>' with priority
 EventLoopMgr        DEBUG Creating Top Algorithm GaudiSequencer with name GaudiSequencer
 GaudiSequencer      DEBUG Releasing service 'JobOptionsSvc'
 GaudiSequencer      DEBUG Property update for OutputLevel : new value = 1
+AlgContextSvc       DEBUG Service base class initialized successfully
+AlgContextSvc     VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
+IncidentSvc         DEBUG Adding [BeginEvent] listener 'AlgContextSvc' with priority 0
+IncidentSvc         DEBUG Adding [EndEvent] listener 'AlgContextSvc' with priority 0
+GaudiSequencer    VERBOSE ServiceLocatorHelper::service: found service AlgContextSvc
 GaudiSequencer      DEBUG Initialize base class GaudiCommon<Algorithm>
 GaudiSequencer      DEBUG could not locate CounterSummarySvc, no counter summary will be made
-GaudiSequencer      DEBUG List of ALL properties of GaudiSequencer/GaudiSequencer  #properties = 39
+GaudiSequencer      DEBUG List of ALL properties of GaudiSequencer/GaudiSequencer  #properties = 38
 GaudiSequencer      DEBUG Property ['Name': Value] =  'ShortCircuit':True
 GaudiSequencer      DEBUG Property ['Name': Value] =  'ReturnOK':False
 GaudiSequencer      DEBUG Property ['Name': Value] =  'MeasureTime':True
@@ -39,8 +44,6 @@ GaudiSequencer      DEBUG Property ['Name': Value] =  'ModeOR':False
 GaudiSequencer      DEBUG Property ['Name': Value] =  'Members':[ 'FastContainerProducer' , 'FastContainerConsumer' ]
 GaudiSequencer      DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 GaudiSequencer      DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-GaudiSequencer      DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-GaudiSequencer      DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
 GaudiSequencer      DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 GaudiSequencer      DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
 GaudiSequencer      DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
@@ -55,6 +58,7 @@ GaudiSequencer      DEBUG Property ['Name': Value] =  'TypePrint':True
 GaudiSequencer      DEBUG Property ['Name': Value] =  'StatPrint':True
 GaudiSequencer      DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 GaudiSequencer      DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+GaudiSequencer      DEBUG Property ['Name': Value] =  'RegisterForContextService':True
 GaudiSequencer      DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 GaudiSequencer      DEBUG Property ['Name': Value] =  'AuditStop':False
 GaudiSequencer      DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -118,14 +122,13 @@ RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
 ToolSvc.Sequenc...   INFO This machine has a speed about   1.05 times the speed of a 2.8 GHz Xeon.
 FastContainerPr...  DEBUG Property update for OutputLevel : new value = 1
+FastContainerPr...VERBOSE ServiceLocatorHelper::service: found service AlgContextSvc
 FastContainerPr...  DEBUG Initialize base class GaudiCommon<Algorithm>
 FastContainerPr...  DEBUG could not locate CounterSummarySvc, no counter summary will be made
-FastContainerPr...  DEBUG List of ALL properties of FastContainerProducer/FastContainerProducer  #properties = 34
+FastContainerPr...  DEBUG List of ALL properties of FastContainerProducer/FastContainerProducer  #properties = 33
 FastContainerPr...  DEBUG Property ['Name': Value] =  'Container':MyContainer
 FastContainerPr...  DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 FastContainerPr...  DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-FastContainerPr...  DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-FastContainerPr...  DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
 FastContainerPr...  DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 FastContainerPr...  DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
 FastContainerPr...  DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
@@ -140,6 +143,7 @@ FastContainerPr...  DEBUG Property ['Name': Value] =  'TypePrint':True
 FastContainerPr...  DEBUG Property ['Name': Value] =  'StatPrint':True
 FastContainerPr...  DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 FastContainerPr...  DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+FastContainerPr...  DEBUG Property ['Name': Value] =  'RegisterForContextService':True
 FastContainerPr...  DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 FastContainerPr...  DEBUG Property ['Name': Value] =  'AuditStop':False
 FastContainerPr...  DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -162,14 +166,13 @@ FastContainersSvc VERBOSE creating root node
 FastContainersSvc VERBOSE registering to the incident service for BeginEvent
 IncidentSvc         DEBUG Adding [BeginEvent] listener 'FastContainersSvc' with priority 0
 FastContainerCo...  DEBUG Property update for OutputLevel : new value = 1
+FastContainerCo...VERBOSE ServiceLocatorHelper::service: found service AlgContextSvc
 FastContainerCo...  DEBUG Initialize base class GaudiCommon<Algorithm>
 FastContainerCo...  DEBUG could not locate CounterSummarySvc, no counter summary will be made
-FastContainerCo...  DEBUG List of ALL properties of FastContainerConsumer/FastContainerConsumer  #properties = 34
+FastContainerCo...  DEBUG List of ALL properties of FastContainerConsumer/FastContainerConsumer  #properties = 33
 FastContainerCo...  DEBUG Property ['Name': Value] =  'Container':MyContainer
 FastContainerCo...  DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 FastContainerCo...  DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-FastContainerCo...  DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-FastContainerCo...  DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
 FastContainerCo...  DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 FastContainerCo...  DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
 FastContainerCo...  DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
@@ -184,6 +187,7 @@ FastContainerCo...  DEBUG Property ['Name': Value] =  'TypePrint':True
 FastContainerCo...  DEBUG Property ['Name': Value] =  'StatPrint':True
 FastContainerCo...  DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 FastContainerCo...  DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+FastContainerCo...  DEBUG Property ['Name': Value] =  'RegisterForContextService':True
 FastContainerCo...  DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 FastContainerCo...  DEBUG Property ['Name': Value] =  'AuditStop':False
 FastContainerCo...  DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -214,6 +218,7 @@ HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service Histogram
 ApplicationMgr       INFO Application Manager Initialized successfully
 ServiceManager      DEBUG Starting service AppMgrRunable
 ServiceManager      DEBUG Starting service IncidentSvc
+ServiceManager      DEBUG Starting service AlgContextSvc
 ServiceManager      DEBUG Starting service ToolSvc
 ToolSvc             DEBUG START transition for AlgTools
 ToolSvc           VERBOSE ToolSvc.SequencerTimerTool::start()
@@ -225,11 +230,8 @@ ServiceManager      DEBUG Starting service HistogramPersistencySvc
 ServiceManager      DEBUG Starting service HistogramDataSvc
 ServiceManager      DEBUG Starting service EventLoopMgr
 ApplicationMgr       INFO Application Manager Started successfully
+IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [BeginEvent]
 IncidentSvc       VERBOSE Calling 'FastContainersSvc' for incident [BeginEvent]
-AlgContextSvc       DEBUG Service base class initialized successfully
-AlgContextSvc     VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
-IncidentSvc         DEBUG Adding [BeginEvent] listener 'AlgContextSvc' with priority 0
-IncidentSvc         DEBUG Adding [EndEvent] listener 'AlgContextSvc' with priority 0
 GaudiSequencer      DEBUG ==> Execute
 FastContainerPr...  DEBUG ==> Execute
 FastContainerPr...  DEBUG container size = 0
@@ -239,8 +241,8 @@ FastContainerCo...   INFO event 1
 FastContainerCo...   INFO       2.5
 FastContainerCo...   INFO       1.5
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [EndEvent]
-IncidentSvc       VERBOSE Calling 'FastContainersSvc' for incident [BeginEvent]
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [BeginEvent]
+IncidentSvc       VERBOSE Calling 'FastContainersSvc' for incident [BeginEvent]
 GaudiSequencer      DEBUG ==> Execute
 FastContainerPr...  DEBUG ==> Execute
 FastContainerPr...  DEBUG container size = 0
@@ -250,8 +252,8 @@ FastContainerCo...   INFO event 2
 FastContainerCo...   INFO       5
 FastContainerCo...   INFO       3
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [EndEvent]
-IncidentSvc       VERBOSE Calling 'FastContainersSvc' for incident [BeginEvent]
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [BeginEvent]
+IncidentSvc       VERBOSE Calling 'FastContainersSvc' for incident [BeginEvent]
 GaudiSequencer      DEBUG ==> Execute
 FastContainerPr...  DEBUG ==> Execute
 FastContainerPr...  DEBUG container size = 0
@@ -261,8 +263,8 @@ FastContainerCo...   INFO event 3
 FastContainerCo...   INFO       7.5
 FastContainerCo...   INFO       4.5
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [EndEvent]
-IncidentSvc       VERBOSE Calling 'FastContainersSvc' for incident [BeginEvent]
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [BeginEvent]
+IncidentSvc       VERBOSE Calling 'FastContainersSvc' for incident [BeginEvent]
 GaudiSequencer      DEBUG ==> Execute
 FastContainerPr...  DEBUG ==> Execute
 FastContainerPr...  DEBUG container size = 0
@@ -272,8 +274,8 @@ FastContainerCo...   INFO event 4
 FastContainerCo...   INFO       10
 FastContainerCo...   INFO       6
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [EndEvent]
-IncidentSvc       VERBOSE Calling 'FastContainersSvc' for incident [BeginEvent]
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [BeginEvent]
+IncidentSvc       VERBOSE Calling 'FastContainersSvc' for incident [BeginEvent]
 GaudiSequencer      DEBUG ==> Execute
 FastContainerPr...  DEBUG ==> Execute
 FastContainerPr...  DEBUG container size = 0
@@ -283,8 +285,8 @@ FastContainerCo...   INFO event 5
 FastContainerCo...   INFO       12.5
 FastContainerCo...   INFO       7.5
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [EndEvent]
-IncidentSvc       VERBOSE Calling 'FastContainersSvc' for incident [BeginEvent]
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [BeginEvent]
+IncidentSvc       VERBOSE Calling 'FastContainersSvc' for incident [BeginEvent]
 GaudiSequencer      DEBUG ==> Execute
 FastContainerPr...  DEBUG ==> Execute
 FastContainerPr...  DEBUG container size = 0
@@ -294,8 +296,8 @@ FastContainerCo...   INFO event 6
 FastContainerCo...   INFO       15
 FastContainerCo...   INFO       9
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [EndEvent]
-IncidentSvc       VERBOSE Calling 'FastContainersSvc' for incident [BeginEvent]
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [BeginEvent]
+IncidentSvc       VERBOSE Calling 'FastContainersSvc' for incident [BeginEvent]
 GaudiSequencer      DEBUG ==> Execute
 FastContainerPr...  DEBUG ==> Execute
 FastContainerPr...  DEBUG container size = 0
@@ -305,8 +307,8 @@ FastContainerCo...   INFO event 7
 FastContainerCo...   INFO       17.5
 FastContainerCo...   INFO       10.5
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [EndEvent]
-IncidentSvc       VERBOSE Calling 'FastContainersSvc' for incident [BeginEvent]
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [BeginEvent]
+IncidentSvc       VERBOSE Calling 'FastContainersSvc' for incident [BeginEvent]
 GaudiSequencer      DEBUG ==> Execute
 FastContainerPr...  DEBUG ==> Execute
 FastContainerPr...  DEBUG container size = 0
@@ -316,8 +318,8 @@ FastContainerCo...   INFO event 8
 FastContainerCo...   INFO       20
 FastContainerCo...   INFO       12
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [EndEvent]
-IncidentSvc       VERBOSE Calling 'FastContainersSvc' for incident [BeginEvent]
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [BeginEvent]
+IncidentSvc       VERBOSE Calling 'FastContainersSvc' for incident [BeginEvent]
 GaudiSequencer      DEBUG ==> Execute
 FastContainerPr...  DEBUG ==> Execute
 FastContainerPr...  DEBUG container size = 0
@@ -327,8 +329,8 @@ FastContainerCo...   INFO event 9
 FastContainerCo...   INFO       22.5
 FastContainerCo...   INFO       13.5
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [EndEvent]
-IncidentSvc       VERBOSE Calling 'FastContainersSvc' for incident [BeginEvent]
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [BeginEvent]
+IncidentSvc       VERBOSE Calling 'FastContainersSvc' for incident [BeginEvent]
 GaudiSequencer      DEBUG ==> Execute
 FastContainerPr...  DEBUG ==> Execute
 FastContainerPr...  DEBUG container size = 0
@@ -339,7 +341,6 @@ FastContainerCo...   INFO       25
 FastContainerCo...   INFO       15
 ServiceManager      DEBUG Stopping service EventLoopMgr
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [EndEvent]
-ServiceManager      DEBUG Stopping service AlgContextSvc
 ServiceManager      DEBUG Stopping service HistogramDataSvc
 ServiceManager      DEBUG Stopping service HistogramPersistencySvc
 ServiceManager      DEBUG Stopping service EventDataSvc
@@ -349,6 +350,7 @@ ServiceManager      DEBUG Stopping service RndmGenSvc
 ServiceManager      DEBUG Stopping service ToolSvc
 ToolSvc             DEBUG STOP transition for AlgTools
 ToolSvc           VERBOSE ToolSvc.SequencerTimerTool::stop()
+ServiceManager      DEBUG Stopping service AlgContextSvc
 ServiceManager      DEBUG Stopping service IncidentSvc
 ServiceManager      DEBUG Stopping service AppMgrRunable
 ApplicationMgr       INFO Application Manager Stopped successfully
@@ -356,26 +358,20 @@ ServiceManager      DEBUG Finalizing service EventLoopMgr
 FastContainerPr...  DEBUG ==> Finalize
 FastContainerPr...  DEBUG Finalize base class GaudiAlgorithm
 FastContainerPr...  DEBUG Tools to release :
-FastContainerPr...  DEBUG Services to release : AlgContextSvc FastContainersSvc
-FastContainerPr...  DEBUG Releasing service 'AlgContextSvc'
+FastContainerPr...  DEBUG Services to release : FastContainersSvc
 FastContainerPr...  DEBUG Releasing service 'FastContainersSvc'
 FastContainerCo...  DEBUG ==> Finalize
 FastContainerCo...  DEBUG Finalize base class GaudiAlgorithm
 FastContainerCo...  DEBUG Tools to release :
-FastContainerCo...  DEBUG Services to release : AlgContextSvc FastContainersSvc
-FastContainerCo...  DEBUG Releasing service 'AlgContextSvc'
+FastContainerCo...  DEBUG Services to release : FastContainersSvc
 FastContainerCo...  DEBUG Releasing service 'FastContainersSvc'
 GaudiSequencer      DEBUG ==> Finalize
 GaudiSequencer      DEBUG Finalize base class GaudiAlgorithm
 GaudiSequencer      DEBUG Tools to release : ToolSvc.SequencerTimerTool
 GaudiSequencer      DEBUG Releasing tool 'ToolSvc.SequencerTimerTool'
-GaudiSequencer      DEBUG Services to release : AlgContextSvc
-GaudiSequencer      DEBUG Releasing service 'AlgContextSvc'
+GaudiSequencer      DEBUG Services to release :
 IncidentSvc         DEBUG Removing [AbortEvent] listener '<unknown>'
 EventLoopMgr         INFO Histograms converted successfully according to request.
-ServiceManager      DEBUG Finalizing service AlgContextSvc
-IncidentSvc         DEBUG Removing [BeginEvent] listener 'AlgContextSvc'
-IncidentSvc         DEBUG Removing [EndEvent] listener 'AlgContextSvc'
 ServiceManager      DEBUG Finalizing service EventDataSvc
 ServiceManager      DEBUG Finalizing service EventPersistencySvc
 ServiceManager      DEBUG Finalizing service FastContainersSvc
@@ -402,6 +398,9 @@ ToolSvc.Sequenc...  DEBUG Services to release : RndmGenSvc
 ToolSvc.Sequenc...  DEBUG Releasing service 'RndmGenSvc'
 ToolSvc             DEBUG Deleting 1 finalized tools
 ToolSvc             DEBUG   Performing deletion of ToolSvc.SequencerTimerTool
+ServiceManager      DEBUG Finalizing service AlgContextSvc
+IncidentSvc         DEBUG Removing [BeginEvent] listener 'AlgContextSvc'
+IncidentSvc         DEBUG Removing [EndEvent] listener 'AlgContextSvc'
 ServiceManager      DEBUG Finalizing service IncidentSvc
 ServiceManager      DEBUG Finalizing service AppMgrRunable
 ServiceManager      DEBUG Finalizing service HistogramDataSvc
@@ -414,12 +413,12 @@ ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 2)
 ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 3)
 ServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)
 ServiceManager      DEBUG ---- IncidentSvc (refCount = 2)
+ServiceManager      DEBUG ---- AlgContextSvc (refCount = 2)
 ServiceManager      DEBUG ---- ToolSvc (refCount = 2)
 ServiceManager      DEBUG ---- RndmGenSvc (refCount = 2)
 ServiceManager      DEBUG ---- FastContainersSvc (refCount = 2)
 ServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)
 ServiceManager      DEBUG ---- EventDataSvc (refCount = 3)
-ServiceManager      DEBUG ---- AlgContextSvc (refCount = 2)
 ServiceManager      DEBUG ---- EventLoopMgr (refCount = 3)
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully

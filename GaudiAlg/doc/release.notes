@@ -1,6 +1,10 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2010-01-11 - Vanya Belyaev
+ - Patch #3478: Registration for Algorithm Context Service 
+   Moved the registration for the context service from GaudiAlgorithm to Algorithm
+
 ================ GaudiAlg v12r4 ====================================
 ! 2009-10-05 - Marco Clemencic
  - Improvement to the fix to bug #55292:

@@ -20,7 +20,6 @@
 // forward declarations:
 // ============================================================================
 class                   INTupleSvc     ; // GaudiKernel
-class                   IAlgContextSvc ; // GaudiKernel
 template<class T> class  AlgFactory    ; // GaudiKernel
 // ============================================================================
 /* @file GaudiAlgorithm.h
@@ -528,20 +527,10 @@ public:
   // ==========================================================================
 public:
   // ==========================================================================
-  /// register for Algorithm Context Service ?
-  inline bool registerContext() const { return m_registerContext ; }
-  // ==========================================================================
-public:
-  // ==========================================================================
   /** Access the standard event collection service
    *  @return pointer to the event collection service
    */
-  INTupleSvc*     evtColSvc  () const;
-  // ==========================================================================
-  /** Access the standard Algorithm Context Service
-   *  @return pointer to the Algorithm Context Service
-   */
-  IAlgContextSvc* contextSvc () const;
+  SmartIF<INTupleSvc>&     evtColSvc  () const;
   // ==========================================================================
 private:
   // ==========================================================================
@@ -557,18 +546,11 @@ private:
 private:
   // ==========================================================================
   // Pointer to the Event Tag Collection Service
-  mutable INTupleSvc*     m_evtColSvc      ; ///< Event Tag Collection Service
-  // Pointer to the Algorithm Context Service
-  mutable IAlgContextSvc* m_contextSvc     ; ///< Algorithm Context Service
-  // The name of the Algorithm Context Service
-  std::string             m_contextSvcName ; ///< Algorithm Context Service
-  // enforce the algorithm registration for Algorithm Context Service
-  bool    m_registerContext ; ///< register in Algorithm Context Service
+  mutable SmartIF<INTupleSvc> m_evtColSvc ; ///< Event Tag Collection Service
   /// skip the event if any of these objects are present in TES
   std::vector<std::string> m_vetoObjs;
   /// process the event only if one or more of these objects are present in TES
   std::vector<std::string> m_requireObjs;
-
   // ==========================================================================
 };
 // ============================================================================

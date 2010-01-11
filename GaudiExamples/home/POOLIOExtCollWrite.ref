@@ -51,7 +51,7 @@ EventAlgs            INFO Member list: Gaudi::Examples::ExtendedEvtCol/Fill
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
-Fill              SUCCESS List of ALL properties of Gaudi::Examples::ExtendedEvtCol/Fill  #properties = 62
+Fill              SUCCESS List of ALL properties of Gaudi::Examples::ExtendedEvtCol/Fill  #properties = 61
 Fill              SUCCESS Property ['Name': Value] =  'Tracks':MyTracks
 Fill              SUCCESS Property ['Name': Value] =  'EvtColDir':Fill
 Fill              SUCCESS Property ['Name': Value] =  'EvtColTopDir':
@@ -83,8 +83,6 @@ Fill              SUCCESS Property ['Name': Value] =  'HistoPrint':False
 Fill              SUCCESS Property ['Name': Value] =  'HistoProduce':True
 Fill              SUCCESS Property ['Name': Value] =  'RequireObjects':[  ]
 Fill              SUCCESS Property ['Name': Value] =  'VetoObjects':[  ]
-Fill              SUCCESS Property ['Name': Value] =  'RegisterForContextService':True
-Fill              SUCCESS Property ['Name': Value] =  'ContextService':AlgContextSvc
 Fill              SUCCESS Property ['Name': Value] =  'StatEntityList':[  ]
 Fill              SUCCESS Property ['Name': Value] =  'CounterList':[ '.*' ]
 Fill              SUCCESS Property ['Name': Value] =  'UseEfficiencyRowFormat':True
@@ -99,6 +97,7 @@ Fill              SUCCESS Property ['Name': Value] =  'TypePrint':False
 Fill              SUCCESS Property ['Name': Value] =  'StatPrint':True
 Fill              SUCCESS Property ['Name': Value] =  'PropertiesPrint':True
 Fill              SUCCESS Property ['Name': Value] =  'ErrorsPrint':True
+Fill              SUCCESS Property ['Name': Value] =  'RegisterForContextService':True
 Fill              SUCCESS Property ['Name': Value] =  'MonitorService':MonitorSvc
 Fill              SUCCESS Property ['Name': Value] =  'AuditStop':False
 Fill              SUCCESS Property ['Name': Value] =  'AuditStart':False

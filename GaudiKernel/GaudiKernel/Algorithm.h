@@ -27,6 +27,7 @@
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/IMonitorSvc.h"
 #include "GaudiKernel/IExceptionSvc.h"
+#include "GaudiKernel/IAlgContextSvc.h"
 #include "GaudiKernel/Property.h"
 
 #ifndef PACKAGE_VERSION
@@ -301,6 +302,9 @@ public:
   /// Get the exception Service
   SmartIF<IExceptionSvc>& exceptionSvc() const;
 
+  /// get Algorithm Context Service 
+  SmartIF<IAlgContextSvc>& contextSvc() const ;
+  
   /** The standard service locator.
    *  Returns a pointer to the service locator service.
    *  This service may be used by an algorithm to request
@@ -310,6 +314,9 @@ public:
   /// shortcut for method serviceLocator
   SmartIF<ISvcLocator>& svcLoc        () const { return serviceLocator() ; }
 
+  /// register for Algorithm Context Service? 
+  bool registerContext() const { return m_registerContext ; }
+  
   /** Create a sub algorithm.
    *  A call to this method creates a child algorithm object.
    *  Note that the returned pointer is to Algorithm
@@ -536,6 +543,8 @@ private:
   mutable SmartIF<IAuditorSvc>      m_pAuditorSvc; ///< Auditor Service
   mutable SmartIF<IToolSvc>         m_ptoolSvc;    ///< ToolSvc Service
   mutable SmartIF<IMonitorSvc>      m_pMonitorSvc; ///< Online Monitoring Service
+  mutable SmartIF<IAlgContextSvc>   m_contextSvc ; ///< Algorithm Context Service
+  bool  m_registerContext ; ///< flag to register for Algorithm Context Service 
   std::string               m_monitorSvcName; ///< Name to use for Monitor Service
   SmartIF<ISvcLocator>  m_pSvcLocator;      ///< Pointer to service locator service
   PropertyMgr* m_propertyMgr;      ///< For management of properties

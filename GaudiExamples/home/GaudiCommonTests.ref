@@ -34,11 +34,9 @@ Test1               DEBUG Property update for OutputLevel : new value = 2
 Test1               DEBUG Property update for OutputLevel : new value = 2
 Test1               DEBUG Initialize base class GaudiCommon<Algorithm>
 Test1               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-Test1               DEBUG List of ALL properties of GaudiCommonTests/Test1  #properties = 33
+Test1               DEBUG List of ALL properties of GaudiCommonTests/Test1  #properties = 32
 Test1               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 Test1               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-Test1               DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-Test1               DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
 Test1               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 Test1               DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
 Test1               DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
@@ -53,6 +51,7 @@ Test1               DEBUG Property ['Name': Value] =  'TypePrint':True
 Test1               DEBUG Property ['Name': Value] =  'StatPrint':True
 Test1               DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 Test1               DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+Test1               DEBUG Property ['Name': Value] =  'RegisterForContextService':True
 Test1               DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 Test1               DEBUG Property ['Name': Value] =  'AuditStop':False
 Test1               DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -73,11 +72,9 @@ Test2               DEBUG Property update for OutputLevel : new value = 2
 Test2               DEBUG Initialize base class GaudiCommon<Algorithm>
 Test2             WARNING GaudiCommonTests:: RootOnTES option is OBSOLETE -> Use RootInTES instead. RootInTES has been updated to microDST/
 Test2               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-Test2               DEBUG List of ALL properties of GaudiCommonTests/Test2  #properties = 33
+Test2               DEBUG List of ALL properties of GaudiCommonTests/Test2  #properties = 32
 Test2               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 Test2               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-Test2               DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-Test2               DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
 Test2               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 Test2               DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
 Test2               DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
@@ -92,6 +89,7 @@ Test2               DEBUG Property ['Name': Value] =  'TypePrint':True
 Test2               DEBUG Property ['Name': Value] =  'StatPrint':True
 Test2               DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 Test2               DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+Test2               DEBUG Property ['Name': Value] =  'RegisterForContextService':True
 Test2               DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 Test2               DEBUG Property ['Name': Value] =  'AuditStop':False
 Test2               DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -160,12 +158,10 @@ Test2                INFO /Event
 ApplicationMgr       INFO Application Manager Stopped successfully
 Test1               DEBUG Finalize base class GaudiAlgorithm
 Test1               DEBUG Tools to release :
-Test1               DEBUG Services to release : AlgContextSvc
-Test1               DEBUG Releasing service 'AlgContextSvc'
+Test1               DEBUG Services to release :
 Test2               DEBUG Finalize base class GaudiAlgorithm
 Test2               DEBUG Tools to release :
-Test2               DEBUG Services to release : AlgContextSvc
-Test2               DEBUG Releasing service 'AlgContextSvc'
+Test2               DEBUG Services to release :
 Test2             SUCCESS Exceptions/Errors/Warnings/Infos Statistics : 0/0/1/0
 Test2             SUCCESS  #WARNINGS   = 1        Message = 'RootOnTES option is OBSOLETE -> Use RootInTES instead. RootInTES has been updated to microDST/'
 EventLoopMgr         INFO Histograms converted successfully according to request.

@@ -37,23 +37,13 @@ GaudiAlgorithm::GaudiAlgorithm ( const std::string&  name        ,
                                  ISvcLocator*        pSvcLocator )
   : GaudiCommon<Algorithm> ( name , pSvcLocator )
   //
-  , m_evtColSvc  ( 0        ) // pointer to Event Tag Collection Service
-  , m_contextSvc ( 0        ) // pointer to Algorithm Context Service
-  , m_contextSvcName ( "AlgContextSvc" ) // Algorithm Context Service name
-  // enforce the algorithm registration for Algorithm Context Service
-  , m_registerContext ( true )
+  , m_evtColSvc  ()  // pointer to Event Tag Collection Service
 {
   m_vetoObjs.clear();
   m_requireObjs.clear();
-
-  declareProperty
-    ( "ContextService" ,
-      m_contextSvcName ,
-      "The name of Algorithm Context Service" ) ;
-  declareProperty
-    ( "RegisterForContextService" ,
-      m_registerContext  ,
-      "The flag to enforce the registration for Algorithm Context Service") ;
+  
+  setProperty ( "RegisterForContextService" , true ).ignore() ;
+  
   declareProperty( "VetoObjects", m_vetoObjs,
                    "Skip execute if one or more of these TES objects exists" );
   declareProperty( "RequireObjects", m_requireObjs,
@@ -84,10 +74,10 @@ StatusCode GaudiAlgorithm::finalize()
 {
   if ( msgLevel(MSG::DEBUG) )
     debug() << "Finalize base class GaudiAlgorithm" << endmsg;
-
+  
   // reset pointers
-  m_evtColSvc = 0 ;
-
+  m_evtColSvc.reset() ;
+  
   // finalize the base class and return
   return GaudiCommon<Algorithm>::finalize() ;
 }
@@ -101,24 +91,12 @@ StatusCode GaudiAlgorithm::execute()
 // ============================================================================
 // The standard event collection service
 // ============================================================================
-INTupleSvc* GaudiAlgorithm::evtColSvc() const
+SmartIF<INTupleSvc>& GaudiAlgorithm::evtColSvc() const
 {
-  if ( 0 == m_evtColSvc )
-  {
-    m_evtColSvc = svc< INTupleSvc > ( "EvtTupleSvc" , true ) ;
-  }
+  if ( !m_evtColSvc.isValid() )
+  { m_evtColSvc = svc< INTupleSvc > ( "EvtTupleSvc" , true ) ; }
+  //
   return m_evtColSvc ;
-}
-// ============================================================================
-// The standard Algorithm Context Service
-// ============================================================================
-IAlgContextSvc* GaudiAlgorithm::contextSvc() const
-{
-  if ( 0 == m_contextSvc )
-  {
-    m_contextSvc = svc< IAlgContextSvc > ( m_contextSvcName , true ) ;
-  }
-  return m_contextSvc ;
 }
 // ============================================================================
 /*  The generic actions for the execution.

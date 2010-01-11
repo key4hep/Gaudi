@@ -12,6 +12,7 @@
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/IExceptionSvc.h"
+#include "GaudiKernel/IAlgContextSvc.h"
 #include "GaudiKernel/IProperty.h"
 
 #include "GaudiKernel/Algorithm.h"
@@ -29,6 +30,7 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
                       const std::string& version)
   : m_name(name),
     m_version(version),
+    m_registerContext ( false ) ,
     m_pSvcLocator(pSvcLocator),
     m_filterPassed(true),
     m_isEnabled(true),
@@ -72,6 +74,11 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
 
   declareProperty( "MonitorService"   , m_monitorSvcName      = "MonitorSvc" );
 
+  declareProperty
+    ( "RegisterForContextService" ,
+      m_registerContext  ,
+      "The flag to enforce the registration for Algorithm Context Service") ;
+  
   // update handlers.
   m_outputLevel.declareUpdateHandler(&Algorithm::initOutputLevel, this);
 
@@ -108,14 +115,20 @@ StatusCode Algorithm::sysInitialize() {
   // TODO: (MCl) where shoud we do this? initialize or start?
   // Reset Error count
   //m_errorCount = 0;
-
+  
+  // lock the context service 
+  Gaudi::Utils::AlgContext cnt
+    ( this , registerContext() ? contextSvc().get() : 0 ) ;
+  
   // Invoke initialize() method of the derived class inside a try/catch clause
   try {
+    
     { // limit the scope of the guard
-      Gaudi::Guards::AuditorGuard guard(this,
-                                        // check if we want to audit the initialize
-                                        (m_auditorInitialize) ? auditorSvc().get() : 0,
-                                        IAuditor::Initialize);
+      Gaudi::Guards::AuditorGuard guard
+        ( this,
+          // check if we want to audit the initialize
+          (m_auditorInitialize) ? auditorSvc().get() : 0,
+          IAuditor::Initialize);
       // Invoke the initialize() method of the derived class
       sc = initialize();
     }
@@ -129,7 +142,7 @@ StatusCode Algorithm::sysInitialize() {
       if( sc.isFailure() ) result = sc;
     }
     if( result.isFailure() ) {
-      MsgStream log ( msgSvc() , name() + ".sysInitialize()" );
+      MsgStream log ( msgSvc() , name() );
       log << MSG::ERROR << " Error initializing one or several sub-algorithms"
           << endmsg;
       return result;
@@ -138,21 +151,24 @@ StatusCode Algorithm::sysInitialize() {
     m_state = m_targetState;
     return StatusCode::SUCCESS;
   }
-  catch ( const GaudiException& Exception )  {
-    MsgStream log ( msgSvc() , name() + ".sysInitialize()" );
+  catch ( const GaudiException& Exception )  
+  {
+    MsgStream log ( msgSvc() , name() ) ;
     log << MSG::FATAL << " Exception with tag=" << Exception.tag()
         << " is caught " << endmsg;
     log << MSG::ERROR << Exception  << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
   }
-  catch( const std::exception& Exception ) {
-    MsgStream log ( msgSvc() , name() + ".sysInitialize()" );
+  catch( const std::exception& Exception ) 
+  {
+    MsgStream log ( msgSvc() , name() ) ;
     log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
     log << MSG::ERROR << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
   }
-  catch(...) {
-    MsgStream log ( msgSvc() , name() + ".sysInitialize()" );
+  catch(...) 
+  {
+    MsgStream log ( msgSvc() , name() ) ;
     log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
   }
@@ -173,14 +189,20 @@ StatusCode Algorithm::sysStart() {
   // Reset Error count
   m_errorCount = 0;
 
+  // lock the context service 
+  Gaudi::Utils::AlgContext cnt
+    ( this , registerContext() ? contextSvc().get() : 0 ) ;
+  
   StatusCode sc;
   // Invoke start() method of the derived class inside a try/catch clause
-  try {
+  try 
+  {
     { // limit the scope of the guard
-      Gaudi::Guards::AuditorGuard guard(this,
-                                        // check if we want to audit the initialize
-                                        (m_auditorStart) ? auditorSvc().get() : 0,
-                                        IAuditor::Start);
+      Gaudi::Guards::AuditorGuard guard
+        (this,
+         // check if we want to audit the initialize
+         (m_auditorStart) ? auditorSvc().get() : 0,
+         IAuditor::Start);
       // Invoke the start() method of the derived class
       sc = start();
     }
@@ -194,8 +216,8 @@ StatusCode Algorithm::sysStart() {
       if( sc.isFailure() ) result = sc;
     }
     if( result.isFailure() ) {
-      MsgStream log ( msgSvc() , name() + ".sysInitialize()" );
-      log << MSG::ERROR << " Error initializing one or several sub-algorithms"
+      MsgStream log ( msgSvc() , name() );
+      log << MSG::ERROR << " Error starting one or several sub-algorithms"
           << endmsg;
       return result;
     }
@@ -203,20 +225,23 @@ StatusCode Algorithm::sysStart() {
     m_state = m_targetState;
     return StatusCode::SUCCESS;
   }
-  catch ( const GaudiException& Exception )  {
+  catch ( const GaudiException& Exception ) 
+  {
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "in sysStart(): exception with tag=" << Exception.tag()
         << " is caught" << endmsg;
     log << MSG::ERROR << Exception << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
   }
-  catch( const std::exception& Exception ) {
+  catch( const std::exception& Exception ) 
+  {
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "in sysStart(): standard std::exception is caught" << endmsg;
     log << MSG::ERROR << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
   }
-  catch(...) {
+  catch(...) 
+  {
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "in sysStart(): UNKNOWN Exception is caught" << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
@@ -248,6 +273,10 @@ StatusCode Algorithm::sysReinitialize() {
   // Reset Error count
   // m_errorCount = 0; // done during start
 
+  // lock the context service 
+  Gaudi::Utils::AlgContext cnt
+    ( this , registerContext() ? contextSvc().get() : 0 ) ;
+  
   StatusCode sc(StatusCode::SUCCESS,true);
   // Invoke reinitialize() method of the derived class inside a try/catch clause
   try {
@@ -268,7 +297,8 @@ StatusCode Algorithm::sysReinitialize() {
       sc = (*it)->sysReinitialize();
       if( sc.isFailure() ) result = sc;
     }
-    if( result.isFailure() ) {
+    if( result.isFailure() )
+    {
       MsgStream log ( msgSvc() , name() );
       log << MSG::ERROR
           << "sysReinitialize(): Error reinitializing one or several sub-algorithms"
@@ -277,25 +307,28 @@ StatusCode Algorithm::sysReinitialize() {
     }
     return StatusCode::SUCCESS;
   }
-  catch ( const GaudiException& Exception )  {
+  catch ( const GaudiException& Exception )  
+  {
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "sysReinitialize(): Exception with tag=" << Exception.tag()
         << " is caught" << endmsg;
     log << MSG::ERROR << Exception  << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
   }
-  catch( const std::exception& Exception ) {
+  catch( const std::exception& Exception ) 
+  {
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "sysReinitialize(): Standard std::exception is caught" << endmsg;
     log << MSG::ERROR << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
   }
-  catch(...) {
+  catch(...) 
+  {
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "sysReinitialize(): UNKNOWN Exception is caught" << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
   }
-
+  
   return StatusCode::FAILURE;
 }
 
@@ -322,6 +355,10 @@ StatusCode Algorithm::sysRestart() {
   // Reset Error count
   m_errorCount = 0;
 
+  // lock the context service 
+  Gaudi::Utils::AlgContext cnt
+    ( this , registerContext() ? contextSvc().get() : 0 ) ;
+
   StatusCode sc(StatusCode::SUCCESS,true);
   // Invoke reinitialize() method of the derived class inside a try/catch clause
   try {
@@ -334,7 +371,7 @@ StatusCode Algorithm::sysRestart() {
       sc = restart();
     }
     if( sc.isFailure() ) return StatusCode::FAILURE;
-
+    
     // Now initialize care of any sub-algorithms
     std::vector<Algorithm *>::iterator it;
     StatusCode result = StatusCode::SUCCESS;
@@ -351,20 +388,23 @@ StatusCode Algorithm::sysRestart() {
     }
     return StatusCode::SUCCESS;
   }
-  catch ( const GaudiException& Exception )  {
+  catch ( const GaudiException& Exception )  
+  {
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "sysRestart(): Exception with tag=" << Exception.tag()
         << " is caught" << endmsg;
     log << MSG::ERROR << Exception  << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
   }
-  catch( const std::exception& Exception ) {
+  catch( const std::exception& Exception ) 
+  {
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "sysRestart(): Standard std::exception is caught" << endmsg;
     log << MSG::ERROR << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
   }
-  catch(...) {
+  catch(...) 
+  {
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "sysRestart(): UNKNOWN Exception is caught" << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
@@ -386,6 +426,10 @@ StatusCode Algorithm::sysBeginRun() {
 
   // Reset Error count
   m_errorCount = 0;
+  
+  // lock the context service 
+  Gaudi::Utils::AlgContext cnt
+    ( this , registerContext() ? contextSvc().get() : 0 ) ;
 
   StatusCode sc;
   // Invoke beginRun() method of the derived class inside a try/catch clause
@@ -407,29 +451,33 @@ StatusCode Algorithm::sysBeginRun() {
       sc = (*it)->sysBeginRun();
       if( sc.isFailure() ) result = sc;
     }
-    if( result.isFailure() ) {
-      MsgStream log ( msgSvc() , name() + ".sysBeginRun()" );
+    if( result.isFailure() ) 
+    {
+      MsgStream log ( msgSvc() , name() );
       log << MSG::ERROR << " Error executing BeginRun for one or several sub-algorithms"
           << endmsg;
       return result;
     }
     return StatusCode::SUCCESS;
   }
-  catch ( const GaudiException& Exception )  {
-    MsgStream log ( msgSvc() , name() + ".sysBeginRun()" );
+  catch ( const GaudiException& Exception ) 
+  {
+    MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << " Exception with tag=" << Exception.tag()
         << " is caught " << endmsg;
     log << MSG::ERROR << Exception  << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
   }
-  catch( const std::exception& Exception ) {
-    MsgStream log ( msgSvc() , name() + ".sysBeginRun()" );
+  catch( const std::exception& Exception ) 
+  {
+    MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
     log << MSG::ERROR << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
   }
-  catch(...) {
-    MsgStream log ( msgSvc() , name() + ".sysBeginRun()" );
+  catch(...) 
+  {
+    MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
   }
@@ -442,17 +490,21 @@ StatusCode Algorithm::beginRun() {
 
 // IAlgorithm implementation
 StatusCode Algorithm::sysEndRun() {
-
+  
   // Bypass the endRun if the algorithm is disabled.
   if ( !isEnabled( ) ) return StatusCode::SUCCESS;
-
+  
   // Check current outputLevel to eventually inform the MessagsSvc
   //if( m_outputLevel != MSG::NIL ) {
   setOutputLevel( m_outputLevel );
   //}
-
+  
   // Reset Error count
   m_errorCount = 0;
+
+  // lock the context service 
+  Gaudi::Utils::AlgContext cnt
+    ( this , registerContext() ? contextSvc().get() : 0 ) ;
 
   // Invoke endRun() method of the derived class inside a try/catch clause
   StatusCode sc;
@@ -474,29 +526,33 @@ StatusCode Algorithm::sysEndRun() {
       sc = (*it)->sysEndRun();
       if( sc.isFailure() ) result = sc;
     }
-    if( result.isFailure() ) {
-      MsgStream log ( msgSvc() , name() + ".sysEndRun()" );
+    if( result.isFailure() ) 
+    {
+      MsgStream log ( msgSvc() , name() );
       log << MSG::ERROR << " Error calling endRun for one or several sub-algorithms"
           << endmsg;
       return result;
     }
     return StatusCode::SUCCESS;
   }
-  catch ( const GaudiException& Exception )  {
-    MsgStream log ( msgSvc() , name() + ".sysEndRun()" );
+  catch ( const GaudiException& Exception ) 
+  {
+    MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << " Exception with tag=" << Exception.tag()
         << " is caught " << endmsg;
     log << MSG::ERROR << Exception  << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
   }
-  catch( const std::exception& Exception ) {
-    MsgStream log ( msgSvc() , name() + ".sysEndRun()" );
+  catch( const std::exception& Exception ) 
+  {
+    MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
     log << MSG::ERROR << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
   }
-  catch(...) {
-    MsgStream log ( msgSvc() , name() + ".sysEndRun()" );
+  catch(...) 
+  {
+    MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
   }
@@ -514,13 +570,17 @@ StatusCode Algorithm::sysExecute() {
     log << MSG::VERBOSE << ".sysExecute(): is not enabled. Skip execution" <<endmsg;
     return StatusCode::SUCCESS;
   }
-
+  
   StatusCode status;
-
+  
   // Should performance profile be performed ?
   // invoke execute() method of Algorithm class
   //   and catch all uncaught exceptions
 
+  // lock the context service 
+  Gaudi::Utils::AlgContext cnt
+    ( this , registerContext() ? contextSvc().get() : 0 ) ;
+  
   Gaudi::Guards::AuditorGuard guard(this,
                                     // check if we want to audit the initialize
                                     (m_auditorExecute) ? auditorSvc().get() : 0,
@@ -535,16 +595,17 @@ StatusCode Algorithm::sysExecute() {
     }
 
   }
-  catch( const GaudiException& Exception ) {
+  catch( const GaudiException& Exception ) 
+  {
     setExecuted(true);  // set the executed flag
-
-    MsgStream log ( msgSvc() , name() + ".sysExecute()" );
+    
+    MsgStream log ( msgSvc() , name() );
     if (Exception.code() == StatusCode::FAILURE) {
       log << MSG::FATAL;
     } else {
       log << MSG::ERROR << " Recoverable";
     }
-
+    
     log << " Exception with tag=" << Exception.tag()
         << " is caught " << endmsg;
 
@@ -553,25 +614,27 @@ StatusCode Algorithm::sysExecute() {
     Stat stat( chronoSvc() , Exception.tag() ) ;
     status = exceptionSvc()->handle(*this,Exception);
   }
-  catch( const std::exception& Exception ) {
+  catch( const std::exception& Exception ) 
+  {
     setExecuted(true);  // set the executed flag
-
-    MsgStream log ( msgSvc() , name() + ".sysExecute()" );
+    
+    MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
     log << MSG::ERROR << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" ) ;
     status = exceptionSvc()->handle(*this,Exception);
   }
-  catch(...) {
+  catch(...) 
+  {
     setExecuted(true);  // set the executed flag
-
-    MsgStream log ( msgSvc() , name() + ".sysExecute()" );
+    
+    MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
-
+    
     status = exceptionSvc()->handle(*this);
   }
-
+  
   if( status.isFailure() ) {
     MsgStream log ( msgSvc() , name() );
     // Increment the error count
@@ -596,6 +659,10 @@ StatusCode Algorithm::sysStop() {
 
   m_targetState = Gaudi::StateMachine::ChangeState(Gaudi::StateMachine::STOP,m_state);
 
+  // lock the context service 
+  Gaudi::Utils::AlgContext cnt
+    ( this , registerContext() ? contextSvc().get() : 0 ) ;
+  
   StatusCode sc;
   // Invoke stop() method of the derived class inside a try/catch clause
   try {
@@ -609,7 +676,7 @@ StatusCode Algorithm::sysStop() {
                                         // check if we want to audit the initialize
                                         (m_auditorStop) ? auditorSvc().get() : 0,
                                         IAuditor::Stop);
-
+      
       // Invoke the stop() method of the derived class
       sc = stop();
     }
@@ -649,6 +716,10 @@ StatusCode Algorithm::sysFinalize() {
 
   m_targetState = Gaudi::StateMachine::ChangeState(Gaudi::StateMachine::FINALIZE,m_state);
 
+  // lock the context service 
+  Gaudi::Utils::AlgContext cnt
+    ( this , registerContext() ? contextSvc().get() : 0 ) ;
+  
   // Invoke finalize() method of the derived class inside a try/catch clause
   StatusCode sc = StatusCode::SUCCESS;
   try {
@@ -658,7 +729,7 @@ StatusCode Algorithm::sysFinalize() {
     bool fail(false);
     for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
       if (!(*it)->sysFinalize().isSuccess()) {
-	fail = true;
+        fail = true;
       }
     }
 
@@ -680,21 +751,24 @@ StatusCode Algorithm::sysFinalize() {
     m_state = m_targetState;
     return sc;
   }
-  catch( const GaudiException& Exception ) {
-    MsgStream log ( msgSvc() , name() + ".sysFinalize()" );
+  catch( const GaudiException& Exception ) 
+  {
+    MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << " Exception with tag=" << Exception.tag()
         << " is caught " << endmsg;
     log << MSG::ERROR << Exception  << endmsg;
     Stat stat( chronoSvc() , Exception.tag() ) ;
   }
-  catch( const std::exception& Exception ) {
-    MsgStream log ( msgSvc() , name() + ".sysFinalize()" );
+  catch( const std::exception& Exception ) 
+  {
+    MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
     log << MSG::ERROR << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" ) ;
   }
-  catch( ... ) {
-    MsgStream log ( msgSvc() , name() + ".sysFinalize()" );
+  catch( ... ) 
+  {
+    MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
   }
@@ -822,6 +896,8 @@ serviceAccessor(ntupleSvc, INTupleSvc, "NTupleSvc", m_NTS)
 //serviceAccessor(atupleSvc, IAIDATupleSvc, "AIDATupleSvc", m_ATS)
 serviceAccessor(randSvc, IRndmGenSvc, "RndmGenSvc", m_RGS)
 serviceAccessor(toolSvc, IToolSvc, "ToolSvc", m_ptoolSvc)
+serviceAccessor(contextSvc, IAlgContextSvc,"AlgContextSvc", m_contextSvc)
+
 
 // Obsoleted name, kept due to the backwards compatibility
 SmartIF<IChronoStatSvc>& Algorithm::chronoStatService() const {

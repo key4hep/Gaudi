@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-01-11 - Vanya Belyaev
+ - Patch #3478: Registration for Algorithm Context Service 
+   Moved the registration for the context service from GaudiAlgorithm to Algorithm
+
 ! 2010-01-11 - Paolo Calafiura
  - Fixed bug #61169: confusing behavior of PathResolver when dealing with relative paths
    Fixed handling of paths like "../test/A:../test/B".

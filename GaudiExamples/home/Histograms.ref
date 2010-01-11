@@ -35,7 +35,7 @@ SimpleHistos        DEBUG Property update for OutputLevel : new value = 2
 SimpleHistos        DEBUG Property update for OutputLevel : new value = 2
 SimpleHistos        DEBUG Initialize base class GaudiCommon<Algorithm>
 SimpleHistos        DEBUG could not locate CounterSummarySvc, no counter summary will be made
-SimpleHistos        DEBUG List of ALL properties of GaudiHistoAlgorithm/SimpleHistos  #properties = 47
+SimpleHistos        DEBUG List of ALL properties of GaudiHistoAlgorithm/SimpleHistos  #properties = 46
 SimpleHistos        DEBUG Property ['Name': Value] =  'AutoStringIDPurgeMap':{ '/' : '=SLASH=' }
 SimpleHistos        DEBUG Property ['Name': Value] =  'UseSequencialNumericAutoIDs':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'HeaderFor1DHistoTable':|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
@@ -52,8 +52,6 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'HistoPrint':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'HistoProduce':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 SimpleHistos        DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
-SimpleHistos        DEBUG Property ['Name': Value] =  'RegisterForContextService':True
-SimpleHistos        DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
 SimpleHistos        DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
 SimpleHistos        DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
 SimpleHistos        DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
@@ -68,6 +66,7 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'TypePrint':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'StatPrint':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+SimpleHistos        DEBUG Property ['Name': Value] =  'RegisterForContextService':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 SimpleHistos        DEBUG Property ['Name': Value] =  'AuditStop':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -91,7 +90,7 @@ HistogramDataSvc     INFO Added stream file:../home/input.hbook as InFile
 HistogramDataSvc     INFO  Predefined 1D-Histograms:
 HistogramDataSvc     INFO  Path='Histos2/2' Description ('TEST2',-100,200,100)
 SimpleHistos        DEBUG GaudiHistoAlgorithm:: The histogram path is set to be 'SimpleHistos'
-Histos2           SUCCESS List of ALL properties of Gaudi::Examples::HistoProps/Histos2  #properties = 49
+Histos2           SUCCESS List of ALL properties of Gaudi::Examples::HistoProps/Histos2  #properties = 48
 Histos2           SUCCESS Property ['Name': Value] =  'Histo2':('',-5,5,200)
 Histos2           SUCCESS Property ['Name': Value] =  'Histo1':('Histogram1',-3,3,200)
 Histos2           SUCCESS Property ['Name': Value] =  'AutoStringIDPurgeMap':{ '/' : '=SLASH=' }
@@ -110,8 +109,6 @@ Histos2           SUCCESS Property ['Name': Value] =  'HistoPrint':True
 Histos2           SUCCESS Property ['Name': Value] =  'HistoProduce':True
 Histos2           SUCCESS Property ['Name': Value] =  'RequireObjects':[  ]
 Histos2           SUCCESS Property ['Name': Value] =  'VetoObjects':[  ]
-Histos2           SUCCESS Property ['Name': Value] =  'RegisterForContextService':True
-Histos2           SUCCESS Property ['Name': Value] =  'ContextService':AlgContextSvc
 Histos2           SUCCESS Property ['Name': Value] =  'StatEntityList':[  ]
 Histos2           SUCCESS Property ['Name': Value] =  'CounterList':[ '.*' ]
 Histos2           SUCCESS Property ['Name': Value] =  'UseEfficiencyRowFormat':True
@@ -126,6 +123,7 @@ Histos2           SUCCESS Property ['Name': Value] =  'TypePrint':True
 Histos2           SUCCESS Property ['Name': Value] =  'StatPrint':True
 Histos2           SUCCESS Property ['Name': Value] =  'PropertiesPrint':True
 Histos2           SUCCESS Property ['Name': Value] =  'ErrorsPrint':True
+Histos2           SUCCESS Property ['Name': Value] =  'RegisterForContextService':True
 Histos2           SUCCESS Property ['Name': Value] =  'MonitorService':MonitorSvc
 Histos2           SUCCESS Property ['Name': Value] =  'AuditStop':False
 Histos2           SUCCESS Property ['Name': Value] =  'AuditStart':False
@@ -252,8 +250,7 @@ SimpleHistos      SUCCESS List of booked 2D profile histograms in directory "Sim
  ID=varBinning/b               "2D Profile Variable Binning"                    Ents/All=50000/50000<X>/sX=-0.028452/2.8834,<Y>/sY=-0.0081283/1.0011
 SimpleHistos        DEBUG Finalize base class GaudiAlgorithm
 SimpleHistos        DEBUG Tools to release :
-SimpleHistos        DEBUG Services to release : AlgContextSvc
-SimpleHistos        DEBUG Releasing service 'AlgContextSvc'
+SimpleHistos        DEBUG Services to release :
 Histos2           SUCCESS Booked 2 Histogram(s) : 1D=2
 Histos2           SUCCESS List of booked 1D histograms in directory         "Histos2" :-
  | ID                        |   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
