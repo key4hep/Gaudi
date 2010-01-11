@@ -17,6 +17,7 @@
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/ChronoEntity.h"
 #include "GaudiKernel/StatEntity.h"
+#include "GaudiKernel/StringKey.h"
 // ============================================================================
 // Reflex
 // ============================================================================
@@ -30,7 +31,7 @@ class IAlgManager;
 class IIncidentSvc;
 class IDataProviderSvc;
 // ============================================================================
-/** @class DataOnDemandSvc DataOnDemandSvc.h IncidentSvc/DataOnDemandSvc.h
+/** @class DataOnDemandSvc DataOnDemandSvc.h
  *
  * The DataOnDemandSvc listens to incidents typically
  * triggered by the data service of the configurable name
@@ -86,7 +87,8 @@ class IDataProviderSvc;
  * @author  M.Frank
  * @version 1.0
  */
-class DataOnDemandSvc: public extends1<Service, IIncidentListener> {
+class DataOnDemandSvc: public extends1<Service, IIncidentListener> 
+{
 public:
   // ==========================================================================
   // Typedefs
@@ -111,15 +113,41 @@ public:
    */
   struct Node
   {
-    ClassH        clazz     ;
-    bool          executing ;
-    std::string   name      ;
-    unsigned long num       ;
-    Node() : clazz() , executing(false) , name (), num(0) {}
-    Node(ClassH c, bool e, const std::string& n)
-      : clazz(c), executing(e), name(n), num(0) {}
-    Node(const Node& c)
-      : clazz(c.clazz), executing(c.executing), name(c.name), num(c.num) {}
+    // ========================================================================
+    /// the actual class
+    ClassH        clazz      ;                              // the actual class
+    bool          executing  ;
+    std::string   name       ;
+    unsigned long num        ;
+    /// trivial object? DataObject?
+    bool          dataObject ;                  // trivial object? DataObject?
+    // =======================================================================
+    Node() 
+      : clazz      (       ) 
+      , executing  ( false ) 
+      , name       (       )
+      , num        ( 0     )  
+      , dataObject ( false ) 
+    {}
+    // ========================================================================
+    Node ( ClassH             c , 
+           bool               e , 
+           const std::string& n )
+      : clazz     ( c )
+      , executing ( e )
+      , name      ( n )
+      , num       ( 0 )
+      , dataObject ( "DataObject" == n ) 
+    {}
+    //
+    Node( const Node& c )
+      : clazz      ( c.clazz      )
+      , executing  ( c.executing  )
+      , name       ( c.name       ) 
+      , num        ( c.num        )  
+      , dataObject ( c.dataObject ) 
+    {}
+    // ========================================================================
   };
   // ==========================================================================
   /// @struct Leaf
@@ -138,32 +166,10 @@ public:
       : algorithm(0), executing(false), name(n), type(t), num(0)  {}
   };
   // ==========================================================================
-  /// @struct Timer
-  struct Timer
-  {
-  public:
-    // ========================================================================
-    /// constructor form the actual timer: start the timer
-    Timer  ( ChronoEntity& c ) : m_timer ( c ) { m_timer.start () ; }
-    /// destructor:
-    ~Timer ( )        { m_timer.stop  () ; }
-    // ========================================================================
-  private:
-    // ========================================================================
-    /// no default constructor
-    Timer() ; // no default constructor
-    // ========================================================================
-  private:
-    // ========================================================================
-    /// the actual timer
-    ChronoEntity& m_timer ;  // the actual timer
-    // ========================================================================
-  } ;
-  // ==========================================================================
 public:
   // ==========================================================================
-  typedef std::map<std::string, Node>  NodeMap;
-  typedef std::map<std::string, Leaf>  AlgMap;
+  typedef GaudiUtils::HashMap<Gaudi::StringKey, Node>  NodeMap;
+  typedef GaudiUtils::HashMap<Gaudi::StringKey, Leaf>  AlgMap;
   /// Inherited Service overrides: Service initialization
   virtual StatusCode initialize();
   /// Inherited Service overrides: Service finalization
@@ -173,13 +179,15 @@ public:
   /// IIncidentListener interfaces overrides: incident handling
   virtual void handle(const Incident& incident);
   /** Standard initializing service constructor.
-   *  @param   name   [IN]    Service name
+   *  @param   name   [IN]    Service instance name
    *  @param   svc    [IN]    Pointer to service locator
    *  @return Reference to DataOnDemandSvc object.
    */
-  DataOnDemandSvc( const std::string& name, ISvcLocator* svc );
+  DataOnDemandSvc 
+  ( const std::string& name ,                    //       Service instance name
+    ISvcLocator*       svc  ) ;                  //  Pointer to service locator
   /// Standard destructor.
-  virtual ~DataOnDemandSvc();
+  virtual ~DataOnDemandSvc();                            // Standard destructor
   // ==========================================================================
 protected:
   // ==========================================================================
@@ -217,6 +225,8 @@ public:
   void update_1 ( Property& p ) ;
   void update_2 ( Property& p ) ;
   void update_3 ( Property& p ) ;
+  /// update handler for 'Dump' property 
+  void update_dump ( Property& /* p */ ) ;// update handler for 'Dump' property 
   // ==========================================================================
 protected:
   // ==========================================================================
@@ -249,7 +259,9 @@ private:
   /// Flag to allow for the creation of partial leaves
   bool              m_partialPath;
   /// flag to force the printout
-  bool              m_dump;
+  bool              m_dump ;
+  /// flag to warm up the configuration 
+  bool              m_init ;
   /// Mapping to algorithms
   Setup             m_algMapping;
   /// Mapping to nodes
@@ -272,6 +284,13 @@ private:
   ulonglong          m_statAlg         ;
   ulonglong          m_statNode        ;
   ulonglong          m_stat            ;
+  // ==========================================================================  
+  ChronoEntity       m_timer_nodes     ;
+  ChronoEntity       m_timer_algs      ;
+  ChronoEntity       m_timer_all       ;
+  bool               m_locked_nodes    ;
+  bool               m_locked_algs     ;
+  bool               m_locked_all      ;
   // ==========================================================================
 } ;
 // ============================================================================

@@ -457,6 +457,7 @@ normalizeExamples = LineSkipper(["//GP:",
                                  "DEBUG No writable file catalog found which contains FID:",
                                  "0 local", # hack for ErrorLogExample
                                  "DEBUG Service base class initialized successfully", # changed between v20 and v21 
+                                 "DEBUG Incident  timing:", # introduced with patch #3487
                                  # This comes from ROOT, when using GaudiPython 
                                  'Note: (file "(tmpfile)", line 2) File "set" already loaded',
                                  ],regexps = [

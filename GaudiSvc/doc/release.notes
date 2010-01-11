@@ -1,6 +1,12 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2010-01-11 - Vanya Belyaev
+ - Patch #3487: Minor improvement for CPU-performance of DataOnDemand & Incident Services
+   Use Gaudi::StringKey class for the implementation of internal "maps" for
+   DataOnDemand & Incident Services (see the detailed discussion for patch #2978).
+   The patch allows to minimize a bit the (small) overhead for these services.
+
 ! 2010-01-11 - Charles Leggett
  - Fixed bug #60162: THistSvc::initialize changes the current ROOT directory
 

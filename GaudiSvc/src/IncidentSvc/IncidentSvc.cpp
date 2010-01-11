@@ -1,98 +1,114 @@
 // $Id: $
-
+// ============================================================================
 #ifdef _WIN32
+// ============================================================================
 // Avoid conflicts between windows and the message service.
+// ============================================================================
 #define NOMSG
 #define NOGDI
 #endif
-
+// ============================================================================
 // Include Files
+// ============================================================================
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/GaudiException.h"
+#include "GaudiKernel/LockedChrono.h"
+// ============================================================================
+// Local 
+// ============================================================================
 #include "IncidentSvc.h"
-
+// ============================================================================
 // Instantiation of a static factory class used by clients to create
 //  instances of this service
 DECLARE_SERVICE_FACTORY(IncidentSvc)
-
-namespace {
+// ============================================================================ 
+namespace 
+{
+  // ==========================================================================
+  static const std::string s_unknown = "<unknown>" ;
   // Helper to get the name of the listener
-  std::string getListenerName(IIncidentListener* lis)
+  inline const std::string& getListenerName ( IIncidentListener* lis )
   {
     SmartIF<INamedInterface> iNamed(lis);
-    if (iNamed.isValid()) return iNamed->name();
-    else return "<unknown>";
+    return iNamed.isValid() ? iNamed->name() : s_unknown ;
   }
+  // ==========================================================================
 }
-
-
-//============================================================================================
+// ============================================================================
 // Constructors and Desctructors
-//============================================================================================
+// ============================================================================
 IncidentSvc::IncidentSvc( const std::string& name, ISvcLocator* svc )
-  : base_class(name, svc),
-    m_currentIncidentType(0),
-    m_log(msgSvc(), name)
+  : base_class(name, svc)
+  , m_currentIncidentType(0)
+  , m_log(msgSvc(), name)
+  , m_timer() 
+  , m_timerLock ( false ) 
+{}
+// ============================================================================
+IncidentSvc::~IncidentSvc() 
 {
-}
-
-IncidentSvc::~IncidentSvc() {
   boost::recursive_mutex::scoped_lock lock(m_listenerMapMutex);
-
+  
   for (ListenerMap::iterator i = m_listenerMap.begin();
        i != m_listenerMap.end();
        ++i) {
     delete i->second;
   }
 }
-
-//============================================================================================
+// ============================================================================
 // Inherited Service overrides:
-//============================================================================================
-//
-StatusCode IncidentSvc::initialize() {
+// ============================================================================
+StatusCode IncidentSvc::initialize() 
+{
   // initialize the Service Base class
   StatusCode sc = Service::initialize();
   if ( sc.isFailure() ) {
     return sc;
   }
-
+  
   m_log.setLevel(outputLevel());
   m_currentIncidentType = 0;
-
+  
   // set my own (IncidentSvc) properties via the jobOptionService
   sc = setProperties();
-  if ( sc.isFailure() ) {
+  if ( sc.isFailure() ) 
+  {
     m_log << MSG::ERROR << "Could not set my properties" << endmsg;
     return sc;
   }
-
+  
   return StatusCode::SUCCESS;
 }
-
-StatusCode IncidentSvc::finalize() {
+// ============================================================================
+StatusCode IncidentSvc::finalize() 
+{
+  m_log 
+    << MSG::DEBUG
+    << m_timer.outputUserTime
+    ( "Incident  timing: Mean(+-rms)/Min/Max:%3%(+-%4%)/%6%/%7%[ms] " , System::milliSec )
+    << m_timer.outputUserTime ( "Total:%2%[s]" , System::Sec ) << endmsg ;
+  
   // Finalize this specific service
   StatusCode sc = Service::finalize();
-  if ( sc.isFailure() ) {
-    return sc;
-  }
-
+  if ( sc.isFailure() ) { return sc; }
+  
   return StatusCode::SUCCESS;
 }
-
-//============================================================================================
+// ============================================================================
 // Inherited IIncidentSvc overrides:
-//============================================================================================
-//
-void IncidentSvc::addListener(IIncidentListener* lis, const std::string& type,
-			      long prio, bool rethrow, bool singleShot) {
-
+// ============================================================================
+void IncidentSvc::addListener 
+( IIncidentListener* lis , 
+  const std::string& type ,
+  long prio, bool rethrow, bool singleShot) 
+{
+  
   boost::recursive_mutex::scoped_lock lock(m_listenerMapMutex);
-
+  
   std::string ltype;
   if( type == "" ) ltype = "ALL";
   else             ltype = type;
@@ -120,17 +136,22 @@ void IncidentSvc::addListener(IIncidentListener* lis, const std::string& type,
 
   llist->insert(itlist, Listener(lis, prio, rethrow, singleShot));
 }
-
-void IncidentSvc::removeListener(IIncidentListener* lis, const std::string& type) {
+// ============================================================================
+void IncidentSvc::removeListener 
+( IIncidentListener* lis  , 
+  const std::string& type ) 
+{
 
   boost::recursive_mutex::scoped_lock lock(m_listenerMapMutex);
 
   if( type == "") {
     // remove Listener from all the lists
     ListenerMap::iterator itmap;
-    for ( itmap = m_listenerMap.begin(); itmap != m_listenerMap.end();) {
+    for ( itmap = m_listenerMap.begin(); itmap != m_listenerMap.end();)
+    {
       // since the current entry may be eventually deleted
-      // we need to keep a memory of the next index before calling recursively this method
+      // we need to keep a memory of the next index before 
+      // calling recursively this method
       ListenerMap::iterator itmap_old = itmap;
       itmap++;
       removeListener( lis, (*itmap_old).first );
@@ -148,8 +169,10 @@ void IncidentSvc::removeListener(IIncidentListener* lis, const std::string& type
       ListenerList::iterator itlist;
       bool justScheduleForRemoval = ( 0!= m_currentIncidentType )
                                     && (type == *m_currentIncidentType);
-      // loop over all the entries in the Listener list to remove all of them than matches
-      // the listener address. Remember the next index before erasing the current one
+      // loop over all the entries in the Listener list 
+      // to remove all of them than matches
+      // the listener address. Remember the next index 
+      // before erasing the current one
       for( itlist = llist->begin(); itlist != llist->end(); ) {
         if( (*itlist).iListener == lis || lis == 0) {
           if (justScheduleForRemoval) {
@@ -172,7 +195,7 @@ void IncidentSvc::removeListener(IIncidentListener* lis, const std::string& type
     }
   }
 }
-
+// ============================================================================
 namespace {
   /// @class listenerToBeRemoved
   /// Helper class to identify a Listener that have to be removed from a list.
@@ -182,26 +205,39 @@ namespace {
     }
   };
 }
-
-void IncidentSvc::i_fireIncident( const Incident& incident, const std::string& listenerType ) {
-
+// ============================================================================
+void IncidentSvc::i_fireIncident 
+( const Incident&    incident     , 
+  const std::string& listenerType ) 
+{
+  
   boost::recursive_mutex::scoped_lock lock(m_listenerMapMutex);
-
+  
   ListenerMap::iterator itmap = m_listenerMap.find( listenerType );
   if ( m_listenerMap.end() == itmap ) return;
-
+  
   // setting this pointer will avoid that a call to removeListener() during
   // the loop triggers a segfault
   m_currentIncidentType = &(incident.type());
-
+  
   ListenerList* llist = (*itmap).second;
   ListenerList::iterator itlist;
   bool weHaveToCleanUp = false;
   // loop over all registered Listeners
-  for( itlist = llist->begin(); itlist != llist->end(); itlist++ ) {
-    m_log << MSG::VERBOSE << "Calling '" << getListenerName((*itlist).iListener)
-          << "' for incident [" << incident.type() << "]" << endmsg;
 
+  const bool verbose =  MSG::VERBOSE >= outputLevel() ;
+  
+  for( itlist = llist->begin(); itlist != llist->end(); itlist++ ) 
+  {
+    
+    if ( verbose )
+    {
+      m_log 
+        << MSG::VERBOSE 
+        << "Calling '" << getListenerName((*itlist).iListener)
+        << "' for incident [" << incident.type() << "]" << endmsg;
+    }
+    
     // handle exceptions if they occur
     try {
       (*itlist).iListener->handle(incident);
@@ -238,9 +274,12 @@ void IncidentSvc::i_fireIncident( const Incident& incident, const std::string& l
 
   m_currentIncidentType = 0;
 }
-
-void IncidentSvc::fireIncident( const Incident& incident ) {
-
+// ============================================================================
+void IncidentSvc::fireIncident( const Incident& incident ) 
+{
+  
+  Gaudi::Utils::LockedChrono timer ( m_timer , m_timerLock ) ;
+  
   // Call specific listeners
   i_fireIncident(incident, incident.type());
   // Try listeners registered for ALL incidents
@@ -248,3 +287,6 @@ void IncidentSvc::fireIncident( const Incident& incident ) {
     i_fireIncident(incident, "ALL");
   }
 }
+// ============================================================================
+// The END
+// ============================================================================

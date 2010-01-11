@@ -24,13 +24,17 @@
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/TypeNameString.h"
 #include "GaudiKernel/ToStream.h"
+#include "GaudiKernel/Chrono.h"
+#include "GaudiKernel/LockedChrono.h"
+// ============================================================================
+// Local 
+// ============================================================================
 #include "DataOnDemandSvc.h"
 // ============================================================================
 // Boost
 // ============================================================================
 #include "boost/format.hpp"
 #include "boost/lexical_cast.hpp"
-// ============================================================================
 // ============================================================================
 // Constructors and Destructor
 // ============================================================================
@@ -45,6 +49,7 @@ DataOnDemandSvc::DataOnDemandSvc
   , m_dataSvcName ( "EventDataSvc" )
   , m_partialPath ( true  )
   , m_dump        ( false )
+  , m_init        ( false )
   //
   , m_algMapping  ()
   , m_nodeMapping ()
@@ -59,12 +64,34 @@ DataOnDemandSvc::DataOnDemandSvc
   , m_statAlg  ( 0 )
   , m_statNode ( 0 )
   , m_stat     ( 0 )
+  //
+  , m_timer_nodes  () 
+  , m_timer_algs   ()
+  , m_timer_all    ()
+  , m_locked_nodes ( false ) 
+  , m_locked_algs  ( false )
+  , m_locked_all   ( false )
+  //
 {
   // ==========================================================================
-  declareProperty ( "IncidentName"       , m_trapType    ) ;
+  declareProperty 
+    ( "IncidentName"       , 
+      m_trapType           , 
+      "The type of handled Incident" ) ;
+  //
   declareProperty ( "DataSvc"            , m_dataSvcName ) ;
+  //
   declareProperty ( "UsePreceedingPath"  , m_partialPath ) ;
-  declareProperty ( "Dump"               , m_dump        ) ;
+  declareProperty 
+    ( "Dump"        , 
+      m_dump        ,
+      "Dump the configuration and stastics" )  -> 
+    declareUpdateHandler ( &DataOnDemandSvc::update_dump , this ) ;
+  //
+  declareProperty 
+    ( "PreInitialize" , 
+      m_init          , 
+      "Flag to (pre)initialize all algorithms" ) ;
   //
   declareProperty ( "Algorithms"         , m_algMapping  )  ->
     declareUpdateHandler ( &DataOnDemandSvc::update_2 , this ) ;
@@ -111,6 +138,16 @@ void DataOnDemandSvc::update_2 ( Property& /* p */ )
            << endmsg ;
   // force update
   m_updateRequired = true ;
+}
+// ============================================================================
+// Update handler
+// ============================================================================
+void DataOnDemandSvc::update_dump ( Property& /* p */ )
+{
+  // no action if not yet initialized 
+  if ( FSMState() < Gaudi::StateMachine::INITIALIZED ) { return ; }
+  // dump the configuration:
+  if ( m_dump ) { dump ( MSG::ALWAYS ) ; }
 }
 // ============================================================================
 // anonymous namespace to hide few local functions
@@ -197,9 +234,10 @@ namespace
 // ============================================================================
 StatusCode DataOnDemandSvc::update ()
 {
-  StatusCode sc = StatusCode::SUCCESS ;
+  if ( !m_updateRequired ) { return StatusCode::SUCCESS  ; }
+  
   /// convert obsolete "Nodes"      into new "NodeMap"
-  sc = setupNodeHandlers() ; // convert "Nodes"      new "NodeMap"
+  StatusCode sc = setupNodeHandlers() ; // convert "Nodes"      new "NodeMap"
   if ( sc.isFailure() )
   {
     stream() << MSG::ERROR << "Failed to setup old \"Nodes\""      << endmsg ;
@@ -240,7 +278,13 @@ StatusCode DataOnDemandSvc::update ()
         m_algMap.end() != ialg ; ++ialg )
   {
     Gaudi::Utils::TypeNameString alg ( ialg->second ) ;
-    m_algs[ialg->first] =  Leaf( alg.type() , alg.name() ) ;
+    Leaf leaf ( alg.type() , alg.name() ) ;
+    if  ( m_init ) 
+    {
+      StatusCode sc = configureHandler ( leaf ) ; 
+      if ( sc.isFailure() ) {  leaf =  Leaf( alg.type() , alg.name() ) ; }
+    }
+    m_algs[ialg->first] =  leaf ;
   }
   /// setup nodes
   for ( Map::const_iterator inode = m_nodeMap.begin() ;
@@ -279,122 +323,9 @@ StatusCode DataOnDemandSvc::initialize()
   if      ( m_dump )                      { dump ( MSG::INFO  ) ; }
   else if ( MSG::DEBUG >= outputLevel() ) { dump ( MSG::DEBUG ) ; }
   //
+  if ( m_init ) { return update () ; }
+  //
   return StatusCode::SUCCESS ;
-}
-// ============================================================================
-/* dump the content of DataOnDemand service
- *  @param level the printout level
- *  @param mode  the printout mode
- */
-// ============================================================================
-void DataOnDemandSvc::dump
-( const MSG::Level level ,
-  const bool       mode  )  const
-{
-  if ( m_algs.empty()  &&  m_nodes.empty() ) { return ; }
-
-  typedef std::pair<std::string,std::string> Pair ;
-  typedef std::map<std::string,Pair>         PMap ;
-
-  PMap _m ;
-  for ( AlgMap::const_iterator alg = m_algs.begin() ;
-        m_algs.end() != alg ; ++alg )
-  {
-    PMap::const_iterator check = _m.find(alg->first) ;
-    if ( _m.end() != check )
-    {
-      stream()
-        << MSG::WARNING
-        << " The data item is activated for '"
-        << check->first << "' as '" << check->second.first << "'" << endmsg ;
-    }
-    const Leaf& l = alg->second ;
-    std::string nam = ( l.name == l.type ? l.type  : (l.type+"/"+l.name) ) ;
-    //
-    if ( !mode && 0 == l.num ) { continue ; }
-    //
-    std::string val ;
-    if ( mode ) { val = ( 0 == l.algorithm ) ? "F" : "T" ; }
-    else { val = boost::lexical_cast<std::string>( l.num ) ; }
-    //
-    _m[ no_prefix ( alg->first , m_prefix ) ] = std::make_pair ( nam , val ) ;
-  }
-  // nodes:
-  for ( NodeMap::const_iterator node = m_nodes.begin() ;
-        m_nodes.end() != node ; ++node )
-  {
-    PMap::const_iterator check = _m.find(node->first) ;
-    if ( _m.end() != check )
-    {
-      stream()
-        << MSG::WARNING
-        << " The data item is already activated for '"
-        << check->first << "' as '" << check->second.first << "'" << endmsg ;
-    }
-    const Node& n = node->second ;
-    std::string nam = "'" + n.name + "'"  ;
-    //
-    std::string val ;
-
-    if ( !mode && 0 == n.num ) { continue ; }
-
-    if ( mode ) { val = ( 0 == n.clazz ) ? "F" : "T" ; }
-    else { val = boost::lexical_cast<std::string>( n.num ) ; }
-    //
-    _m[ no_prefix ( node->first , m_prefix ) ] = std::make_pair ( nam , val ) ;
-  }
-  //
-  if ( _m.empty() ) { return ; }
-
-  // find the correct formats
-  size_t n1 = 0 ;
-  size_t n2 = 0 ;
-  size_t n3 = 0 ;
-  for  ( PMap::const_iterator it = _m.begin() ; _m.end() != it ; ++it )
-  {
-    n1 = std::max ( n1 , it->first.size()         ) ;
-    n2 = std::max ( n2 , it->second.first.size()  ) ;
-    n3 = std::max ( n3 , it->second.second.size() ) ;
-  }
-  if ( 10 > n1 ) { n1 = 10 ; }
-  if ( 10 > n2 ) { n2 = 10 ; }
-  if ( 60 < n1 ) { n1 = 60 ; }
-  if ( 60 < n2 ) { n2 = 60 ; }
-  //
-
-  const std::string _f = " | %%1$-%1%.%1%s | %%2$-%2%.%2%s | %%3$%3%.%3%s |" ;
-  boost::format _ff ( _f ) ;
-  _ff % n1 % n2 % n3 ;
-
-  const std::string _format  = _ff.str() ;
-
-  MsgStream& msg = stream() << level ;
-
-  if ( mode ) { msg << "Data-On-Demand Actions enabled for:"       ; }
-  else        { msg << "Data-On-Demand Actions has been used for:" ; }
-
-  boost::format fmt1( _format)  ;
-  fmt1 % "Address" % "Creator" % ( mode ? "S" : "#" ) ;
-  //
-  const std::string header = fmt1.str() ;
-  std::string line = std::string( header.size() , '-' ) ;
-  line[0] = ' ' ;
-
-  msg << std::endl << line
-      << std::endl << header
-      << std::endl << line ;
-
-  // make the actual printout:
-  for ( PMap::const_iterator item = _m.begin() ;
-        _m.end() != item ; ++item )
-  {
-    boost::format fmt( _format)  ;
-    msg << std::endl <<
-      ( fmt % item->first % item->second.first % item->second.second ) ;
-  }
-
-  msg << std::endl << line << endmsg ;
-
 }
 // ============================================================================
 // finalization of the service
@@ -414,6 +345,21 @@ StatusCode DataOnDemandSvc::finalize()
       << m_total.outputUserTime
       ( "Algorithm timing: Mean(+-rms)/Min/Max:%3%(+-%4%)/%6%/%7%[ms] " , System::milliSec )
       << m_total.outputUserTime ( "Total:%2%[s]" , System::Sec ) << endmsg ;
+    stream ()
+      << MSG::INFO
+      << m_timer_nodes.outputUserTime
+      ( "Nodes     timing: Mean(+-rms)/Min/Max:%3%(+-%4%)/%6%/%7%[ms] " , System::milliSec )
+      << m_timer_nodes.outputUserTime ( "Total:%2%[s]" , System::Sec ) << endmsg ;
+    stream ()
+      << MSG::INFO
+      << m_timer_algs .outputUserTime
+      ( "Algs      timing: Mean(+-rms)/Min/Max:%3%(+-%4%)/%6%/%7%[ms] " , System::milliSec )
+      << m_timer_algs .outputUserTime ( "Total:%2%[s]" , System::Sec ) << endmsg ;
+    stream ()
+      << MSG::INFO
+      << m_timer_all  .outputUserTime
+      ( "All       timing: Mean(+-rms)/Min/Max:%3%(+-%4%)/%6%/%7%[ms] " , System::milliSec )
+      << m_timer_all  .outputUserTime ( "Total:%2%[s]" , System::Sec ) << endmsg ;
   }
   // dump it!
   if      ( m_dump )                      { dump ( MSG::INFO  , false ) ; }
@@ -577,27 +523,56 @@ StatusCode DataOnDemandSvc::setupAlgHandlers()
 // ============================================================================
 StatusCode DataOnDemandSvc::configureHandler(Leaf& l)
 {
-  StatusCode sc = StatusCode::FAILURE;
-  if ( 0 == m_algMgr  ) { return sc; }
+  if ( 0 != l.algorithm ) { return StatusCode::SUCCESS ; }  
+  if ( 0 == m_algMgr  ) { return StatusCode::FAILURE ; } 
   l.algorithm = m_algMgr->algorithm(l.name, false);
-  if ( 0 == l.algorithm )
+  if ( 0 != l.algorithm ) { return StatusCode::SUCCESS ; }
+  // create it! 
+  StatusCode sc = m_algMgr->createAlgorithm ( l.type , l.name , l.algorithm , true ) ;
+  if ( sc.isFailure() )
   {
-    sc = m_algMgr->createAlgorithm(l.type, l.name, l.algorithm, true );
-    if ( sc.isFailure() )
-    {
-      stream()
-        << MSG::ERROR
-        << "Failed to create algorithm "
-        << l.type << "('" << l.name<< "')" << endmsg;
-    }
+    stream()
+      << MSG::ERROR
+      << "Failed to create algorithm "
+      << l.type << "('" << l.name<< "')" << endmsg;
+    l.algorithm = 0 ;
+    return sc ;                                                    // RETURN
   }
-  return sc;
+  if ( l.algorithm->isInitialized() ) { return StatusCode:: SUCCESS ;}
+  // initialize it! 
+  sc = l.algorithm -> sysInitialize () ;
+  if ( sc.isFailure() )
+  {
+    stream()
+      << MSG::ERROR
+      << "Failed to initialize algorithm "
+      << l.type << "('" << l.name<< "')" << endmsg;
+    l.algorithm = 0 ;
+    return sc ;                                                    // RETURN
+  }
+  if ( Gaudi::StateMachine::RUNNING == l.algorithm->FSMState() ) 
+  { return StatusCode::SUCCESS ; }
+  // run it!
+  sc = l.algorithm->sysStart() ;
+  if ( sc.isFailure() )
+  {
+    stream()
+      << MSG::ERROR
+      << "Failed to 'run'      algorithm "
+      << l.type << "('" << l.name<< "')" << endmsg;
+    l.algorithm = 0 ;
+    return sc ;                                                    // RETURN
+  }
+  return StatusCode::SUCCESS  ;
 }
 // ===========================================================================
-/// IIncidentListener interfaces overrides: incident handling
+// IIncidentListener interfaces overrides: incident handling
 // ===========================================================================
 void DataOnDemandSvc::handle ( const Incident& incident )
 {
+  
+  Gaudi::Utils::LockedChrono timer ( m_timer_all , m_locked_all ) ;
+  
   ++m_stat ;
   // proper incident type?
   if ( incident.type() != m_trapType ) { return ; }             // RETURN
@@ -605,15 +580,18 @@ void DataOnDemandSvc::handle ( const Incident& incident )
   if ( 0 == inc                      ) { return ; }             // RETURN
   // update if needed!
   if ( m_updateRequired ) { update() ; }
-  const std::string& tag = inc->tag();
+
   if ( MSG::VERBOSE >= outputLevel() )
   {
     stream()
       << MSG::VERBOSE
       << "Incident: [" << incident.type   () << "] "
       << " = "         << incident.source ()
-      << " Location:"  << tag  << endmsg;
+      << " Location:"  << inc->tag()         << endmsg;
   }
+  // ==========================================================================
+  // const std::string& tag = inc->tag();
+  Gaudi::StringKey tag ( inc->tag() ) ;
   // ==========================================================================
   NodeMap::iterator icl = m_nodes.find ( tag ) ;
   if ( icl != m_nodes.end() )
@@ -635,41 +613,53 @@ void DataOnDemandSvc::handle ( const Incident& incident )
 // ecxecute the handler
 // ===========================================================================
 StatusCode
-DataOnDemandSvc::execHandler(const std::string& tag, Node& n)
+DataOnDemandSvc::execHandler ( const std::string& tag, Node& n)
 {
+  
+  Gaudi::Utils::LockedChrono timer ( m_timer_nodes ,  m_locked_nodes ) ;
+  
   if ( n.executing ) { return StatusCode::FAILURE ; }            // RETURN
-
-  // try to recover the handler
-  if ( !n.clazz  ) { n.clazz = ROOT::Reflex::Type::ByName(n.name) ; }
-  if ( !n.clazz  )
+  
+  Protection p(n.executing);
+  
+  DataObject* object= 0 ;
+  
+  if ( n.dataObject )  { object = new DataObject() ; }
+  else 
   {
-    stream()
-      << MSG::ERROR
-      << "Failed to get dictionary for class '"
-      << n.name
-      << "' for location:" << tag << endmsg;
-    return StatusCode::FAILURE ;                               // RETURN
-  }
-
-  ROOT::Reflex::Object obj = n.clazz.Construct();
-  DataObject* pO = (DataObject*)obj.Address();
-  if ( !pO )
-  {
-    stream()
-      << MSG::ERROR
-      << "Failed to create an object of type:"
-      << n.clazz.Name(ROOT::Reflex::SCOPED) << " for location:" << tag
-      << endmsg;
-    return StatusCode::FAILURE  ;                               // RETURN
+    // try to recover the handler
+    if ( !n.clazz  ) { n.clazz = ROOT::Reflex::Type::ByName(n.name) ; }
+    if ( !n.clazz  )
+    {
+      stream()
+        << MSG::ERROR
+        << "Failed to get dictionary for class '"
+        << n.name
+        << "' for location:" << tag << endmsg;
+      return StatusCode::FAILURE ;                               // RETURN
+    }
+    //
+    ROOT::Reflex::Object obj = n.clazz.Construct();
+    
+    object = (DataObject*) obj.Address();
+    
+    if ( !object )
+    {
+      stream()
+        << MSG::ERROR
+        << "Failed to create an object of type:"
+        << n.clazz.Name(ROOT::Reflex::SCOPED) << " for location:" << tag
+        << endmsg;
+      return StatusCode::FAILURE  ;                               // RETURN
+    }
   }
   //
-  Protection p(n.executing);
-  StatusCode sc = m_dataSvc->registerObject(tag, pO);
+  StatusCode sc = m_dataSvc->registerObject(tag, object );
   if ( sc.isFailure() )
   {
     stream()
       << MSG::ERROR << "Failed to register an object of type:"
-      << n.clazz.Name(ROOT::Reflex::SCOPED) << " at location:" << tag
+      << n.name << " at location:" << tag
       << endmsg;
     return sc ;                                                  // RETURN
   }
@@ -683,6 +673,7 @@ DataOnDemandSvc::execHandler(const std::string& tag, Node& n)
 StatusCode
 DataOnDemandSvc::execHandler(const std::string& tag, Leaf& l)
 {
+  Gaudi::Utils::LockedChrono timer ( m_timer_algs ,  m_locked_algs ) ;
   //
   if ( l.executing ) { return StatusCode::FAILURE ; }             // RETURN
   //
@@ -699,7 +690,7 @@ DataOnDemandSvc::execHandler(const std::string& tag, Leaf& l)
     }
   }
   //
-  Timer timer ( m_total ) ;
+  Chrono atimer ( m_total ) ;
   //
   Protection p(l.executing);
   StatusCode sc = l.algorithm->sysExecute();
@@ -713,6 +704,121 @@ DataOnDemandSvc::execHandler(const std::string& tag, Leaf& l)
   ++l.num ;
   //
   return StatusCode::SUCCESS ;
+}
+// ============================================================================
+/* dump the content of DataOnDemand service
+ *  @param level the printout level
+ *  @param mode  the printout mode
+ */
+// ============================================================================
+void DataOnDemandSvc::dump
+( const MSG::Level level ,
+  const bool       mode  )  const
+{
+  if ( m_algs.empty()  &&  m_nodes.empty() ) { return ; }
+
+  typedef std::pair<std::string,std::string> Pair ;
+  typedef std::map<std::string,Pair>         PMap ;
+
+  PMap _m ;
+  for ( AlgMap::const_iterator alg = m_algs.begin() ;
+        m_algs.end() != alg ; ++alg )
+  {
+    PMap::const_iterator check = _m.find(alg->first) ;
+    if ( _m.end() != check )
+    {
+      stream()
+        << MSG::WARNING
+        << " The data item is activated for '"
+        << check->first << "' as '" << check->second.first << "'" << endmsg ;
+    }
+    const Leaf& l = alg->second ;
+    std::string nam = ( l.name == l.type ? l.type  : (l.type+"/"+l.name) ) ;
+    //
+    if ( !mode && 0 == l.num ) { continue ; }
+    //
+    std::string val ;
+    if ( mode ) { val = ( 0 == l.algorithm ) ? "F" : "T" ; }
+    else { val = boost::lexical_cast<std::string>( l.num ) ; }
+    //
+    _m[ no_prefix ( alg->first , m_prefix ) ] = std::make_pair ( nam , val ) ;
+  }
+  // nodes:
+  for ( NodeMap::const_iterator node = m_nodes.begin() ;
+        m_nodes.end() != node ; ++node )
+  {
+    PMap::const_iterator check = _m.find(node->first) ;
+    if ( _m.end() != check )
+    {
+      stream()
+        << MSG::WARNING
+        << " The data item is already activated for '"
+        << check->first << "' as '" << check->second.first << "'" << endmsg ;
+    }
+    const Node& n = node->second ;
+    std::string nam = "'" + n.name + "'"  ;
+    //
+    std::string val ;
+
+    if ( !mode && 0 == n.num ) { continue ; }
+
+    if ( mode ) { val = ( 0 == n.clazz ) ? "F" : "T" ; }
+    else { val = boost::lexical_cast<std::string>( n.num ) ; }
+    //
+    _m[ no_prefix ( node->first , m_prefix ) ] = std::make_pair ( nam , val ) ;
+  }
+  //
+  if ( _m.empty() ) { return ; }
+
+  // find the correct formats
+  size_t n1 = 0 ;
+  size_t n2 = 0 ;
+  size_t n3 = 0 ;
+  for  ( PMap::const_iterator it = _m.begin() ; _m.end() != it ; ++it )
+  {
+    n1 = std::max ( n1 , it->first.size()         ) ;
+    n2 = std::max ( n2 , it->second.first.size()  ) ;
+    n3 = std::max ( n3 , it->second.second.size() ) ;
+  }
+  if ( 10 > n1 ) { n1 = 10 ; }
+  if ( 10 > n2 ) { n2 = 10 ; }
+  if ( 60 < n1 ) { n1 = 60 ; }
+  if ( 60 < n2 ) { n2 = 60 ; }
+  //
+
+  const std::string _f = " | %%1$-%1%.%1%s | %%2$-%2%.%2%s | %%3$%3%.%3%s |" ;
+  boost::format _ff ( _f ) ;
+  _ff % n1 % n2 % n3 ;
+
+  const std::string _format  = _ff.str() ;
+
+  MsgStream& msg = stream() << level ;
+
+  if ( mode ) { msg << "Data-On-Demand Actions enabled for:"       ; }
+  else        { msg << "Data-On-Demand Actions has been used for:" ; }
+
+  boost::format fmt1( _format)  ;
+  fmt1 % "Address" % "Creator" % ( mode ? "S" : "#" ) ;
+  //
+  const std::string header = fmt1.str() ;
+  std::string line = std::string( header.size() , '-' ) ;
+  line[0] = ' ' ;
+
+  msg << std::endl << line
+      << std::endl << header
+      << std::endl << line ;
+
+  // make the actual printout:
+  for ( PMap::const_iterator item = _m.begin() ;
+        _m.end() != item ; ++item )
+  {
+    boost::format fmt( _format)  ;
+    msg << std::endl <<
+      ( fmt % item->first % item->second.first % item->second.second ) ;
+  }
+
+  msg << std::endl << line << endmsg ;
+
 }
 // ============================================================================
 /** Instantiation of a static factory class used by clients to create
