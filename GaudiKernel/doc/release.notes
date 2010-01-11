@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-01-11 - Paolo Calafiura
+ - Fixed bug #61169: confusing behavior of PathResolver when dealing with relative paths
+   Fixed handling of paths like "../test/A:../test/B".
+
 ! 2010-01-08 - Marco Clemencic
  - Fixed bug #61144: configuration problem for 'empty' tool handles
 

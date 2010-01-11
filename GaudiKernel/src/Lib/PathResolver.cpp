@@ -336,8 +336,6 @@ static bool PR_find (const std::string& search_base,
   std::string file_path = "";
   std::string real_name = "";
 
-  bool found = false;
-
   //PR_indent (level); std::cout << "PR_find> sb=" << search_base << " lfp=" << logical_file_prefix << " lfn=" << logical_file_name << std::endl;
 
   if (search_base != "")
@@ -355,10 +353,7 @@ static bool PR_find (const std::string& search_base,
   //PR_indent (level); std::cout << "PR_find> test1 file_path=" << file_path << std::endl;
 
   result = file_path;
-  if (PR_test_exist (file_path, result, file_type))
-    {
-      found = true;
-    }
+  bool found = PR_test_exist (file_path, result, file_type);
 
   if (!found && (logical_file_prefix != ""))
     {
@@ -379,10 +374,7 @@ static bool PR_find (const std::string& search_base,
       //PR_indent (level); std::cout << "PR_find> test2 file_path=" << file_path << std::endl;
 
       result = file_path;
-      if (PR_test_exist (file_path, result, file_type))
-        {
-          found = true;
-        }
+      found = PR_test_exist (file_path, result, file_type);
     }
 
   //PR_indent (level); std::cout << "PR_find> test3 found=" << found << " search_type=" << search_type << std::endl;
@@ -441,6 +433,12 @@ static bool PR_find_from_list (const std::string& logical_file_name,
 
   PR_basename (logical_file_name, file_name);
   PR_dirname (logical_file_name, file_prefix);
+
+  //consider relative paths to be part of file_name
+  if (!file_prefix.empty() && file_prefix[0]!='/') {
+    file_name = file_prefix + '/' + file_name;
+    file_prefix="";
+  }
 
   std::string real_name = "";
 
