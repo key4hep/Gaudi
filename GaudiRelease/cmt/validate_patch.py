@@ -200,7 +200,7 @@ def main():
         return 2
     patch_id = sys.argv[1]
     if os.path.isfile(patch_id):
-        patch_data = open(patch_id, "b").read()
+        patch_data = open(patch_id, "rb").read()
     else:
         patch = get_patch_info(patch_id)
         patch_file_id = patch.files[0][1]
