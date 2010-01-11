@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2010-01-11 - Charles Leggett
+ - Fixed bug #60162: THistSvc::initialize changes the current ROOT directory
+
 ! 2009-12-15 - Marco Clemencic
  - Fixed bug #59797: Untested StatusCodes in EventLoopMgr.cpp
 

@@ -59,12 +59,12 @@ THistSvc::~THistSvc() {
 
 StatusCode
 THistSvc::initialize() {
+  GlobalDirectoryRestore restore;
+
   m_alreadyConnectedOutFiles.clear();
   m_alreadyConnectedInFiles.clear();
 
   StatusCode status = Service::initialize();
-
-  GlobalDirectoryRestore restore;
 
   if (status.isFailure()) {
     MsgStream log ( msgSvc(), name() );
