@@ -1,6 +1,9 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+! 2010-01-11 - Marco CLemencic
+ - Added "fastjet" to the list of LHCb extra packages.
+
 ! 2009-11-20 - Marco Clemencic
  - Minor improvements to the doxygen configuration files (documentation is now
    built in the InstallArea under the directory doc).

@@ -72,6 +72,7 @@ apply_pattern LHCb_external pkg=CppUnit
 apply_pattern LHCb_external pkg=processing
 apply_pattern LHCb_external pkg=cernlib
 apply_pattern LHCb_external pkg=fftw
+apply_pattern LHCb_external pkg=fastjet
 apply_pattern LHCb_external pkg=cx_oracle
 #apply_pattern LHCb_external package=
 
