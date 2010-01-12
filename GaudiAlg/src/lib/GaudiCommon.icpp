@@ -560,15 +560,14 @@ StatusCode GaudiCommon<PBASE>::Print( const std::string& msg ,
 // Create and (re)-throw the exception
 // ============================================================================
 template < class PBASE >
-StatusCode GaudiCommon<PBASE>::Exception( const std::string    & msg ,
-                                          const GaudiException & exc ,
-                                          const StatusCode       sc  ) const
+void GaudiCommon<PBASE>::Exception( const std::string    & msg ,
+                                    const GaudiException & exc ,
+                                    const StatusCode       sc  ) const
 {
   // increase local counter of exceptions
   ++m_exceptions[ msg ];
   Print ( "Exception (re)throw: " + msg , sc , MSG::FATAL );
-  throw   GaudiException( this->name() + ":: " + msg , this->name() , sc, exc);
-  return  sc ;
+  throw GaudiException( this->name() + ":: " + msg , this->name() , sc, exc);
 }
 // ============================================================================
 
@@ -576,15 +575,14 @@ StatusCode GaudiCommon<PBASE>::Exception( const std::string    & msg ,
 // Create and (re)-throw the exception
 // ============================================================================
 template < class PBASE >
-StatusCode GaudiCommon<PBASE>::Exception( const std::string    & msg ,
-                                          const std::exception & exc ,
-                                          const StatusCode       sc  ) const
+void GaudiCommon<PBASE>::Exception( const std::string    & msg ,
+                                    const std::exception & exc ,
+                                    const StatusCode       sc  ) const
 {
   // increase local counter of exceptions
   ++m_exceptions[ msg ];
   Print ( "Exception (re)throw: " + msg , sc , MSG::FATAL  );
   throw GaudiException( this->name() + ":: " + msg+"("+exc.what()+")", "", sc );
-  return  sc ;
 }
 // ============================================================================
 
@@ -592,14 +590,13 @@ StatusCode GaudiCommon<PBASE>::Exception( const std::string    & msg ,
 // Create and throw the exception
 // ============================================================================
 template < class PBASE >
-StatusCode GaudiCommon<PBASE>::Exception( const std::string    & msg ,
-                                          const StatusCode       sc  ) const
+void GaudiCommon<PBASE>::Exception( const std::string    & msg ,
+                                    const StatusCode       sc  ) const
 {
   // increase local counter of exceptions
   ++m_exceptions[ msg ];
   Print ( "Exception throw: " + msg , sc , MSG::FATAL );
   throw GaudiException( this->name() + ":: " + msg , "",  sc );
-  return  sc ;
 }
 // ============================================================================
 

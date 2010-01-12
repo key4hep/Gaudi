@@ -265,11 +265,11 @@ GaudiCommon<PBASE>::msgStream ( const MSG::Level level ) const
 // Assertion - throw exception, if condition is not fulfilled
 // ============================================================================
 template <class PBASE>
-inline StatusCode GaudiCommon<PBASE>::Assert( const bool         OK  ,
-                                              const std::string& msg ,
-                                              const StatusCode   sc  ) const
+inline void GaudiCommon<PBASE>::Assert( const bool         ok  ,
+                                        const std::string& msg ,
+                                        const StatusCode   sc  ) const
 {
-  return ( OK ? StatusCode(StatusCode::SUCCESS, true) : Exception( msg , sc ) ) ;
+  if (!ok) Exception( msg , sc );
 }
 // ============================================================================
 // Delete the current message stream object
@@ -283,12 +283,11 @@ inline void GaudiCommon<PBASE>::resetMsgStream() const
 // Assertion - throw exception, if condition is not fulfilled
 // ============================================================================
 template <class PBASE>
-inline StatusCode
-GaudiCommon<PBASE>::Assert( const bool        OK  ,
-                            const char*       msg ,
-                            const StatusCode  sc  ) const
+inline void GaudiCommon<PBASE>::Assert( const bool        ok  ,
+                                        const char*       msg ,
+                                        const StatusCode  sc  ) const
 {
-  return OK ? StatusCode(StatusCode::SUCCESS, true) : Exception( msg , sc ) ;
+  if (!ok) Exception( msg , sc );
 }
 // ============================================================================
 /** @def ALG_ERROR

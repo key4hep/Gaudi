@@ -1,6 +1,10 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2010-01-12 - Marco Clemencic
+ - Fixed bug #61116: GaudiCommon::Assert and GaudiCommon::Exception should return void
+   Changed the return type to void and modified the code accordingly.
+
 ! 2010-01-11 - Vanya Belyaev
  - Patch #3478: Registration for Algorithm Context Service 
    Moved the registration for the context service from GaudiAlgorithm to Algorithm

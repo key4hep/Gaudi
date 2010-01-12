@@ -412,10 +412,8 @@ public:
    *  @exception          Exception for invalid condition
    *  @param ok           Condition which should be "true"
    *  @param message      Message to be associated with the exception
-   *  @param sc           StatusCode to be returned (artificial)
-   *  @return             StatusCode
    */
-  inline StatusCode Assert
+  inline void Assert
   ( const bool         ok                            ,
     const std::string& message = ""                  ,
     const StatusCode   sc      = StatusCode(StatusCode::FAILURE, true) ) const;
@@ -426,10 +424,8 @@ public:
    *  @exception          Exception for invalid condition
    *  @param ok           Condition which should be "true"
    *  @param message      Message to be associated with the exception
-   *  @param sc           StatusCode to be returned (artificial)
-   *  @return             StatusCode
    */
-  inline StatusCode Assert
+  inline void Assert
   ( const bool         ok                            ,
     const char*        message                       ,
     const StatusCode   sc      = StatusCode(StatusCode::FAILURE, true) ) const;
@@ -437,13 +433,11 @@ public:
    *
    *  @see GaudiException
    *
-   *  @exception    CaudiException always thrown!
+   *  @exception    GaudiException always thrown!
    *  @param msg    Exception message
    *  @param exc    (previous) exception of type GaudiException
-   *  @param sc     StatusCode
-   *  @return       StatusCode (fictive)
    */
-  StatusCode Exception
+  void Exception
   ( const std::string    & msg                        ,
     const GaudiException & exc                        ,
     const StatusCode       sc  = StatusCode(StatusCode::FAILURE, true) ) const ;
@@ -455,9 +449,8 @@ public:
    *  @param msg    Exception message
    *  @param exc    (previous) exception of type std::exception
    *  @param sc     StatusCode
-   *  @return       StatusCode (fictive)
    */
-  StatusCode Exception
+  void Exception
   ( const std::string    & msg                        ,
     const std::exception & exc                        ,
     const StatusCode       sc  = StatusCode(StatusCode::FAILURE, true) ) const ;
@@ -468,9 +461,8 @@ public:
    *  @exception    GaudiException always thrown!
    *  @param msg    Exception message
    *  @param sc     StatusCode
-   *  @return       StatusCode (fictive)
    */
-  StatusCode Exception
+  void Exception
   ( const std::string& msg = "no message"        ,
     const StatusCode   sc  = StatusCode(StatusCode::FAILURE, true) ) const ;
 public: // predefined streams

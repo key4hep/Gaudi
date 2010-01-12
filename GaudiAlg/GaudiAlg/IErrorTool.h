@@ -95,7 +95,7 @@ public:
    *  @param sc           status code to be returned (artificial)
    *  @return             status code
    */
-  virtual StatusCode Assert
+  virtual void Assert
   ( const bool         ok                            ,
     const std::string& message = ""                  ,
     const StatusCode   sc      = StatusCode::FAILURE ) const = 0 ;
@@ -108,7 +108,7 @@ public:
    *  @param sc     status code
    *  @return       status code (fictive)
    */
-  virtual StatusCode Exception
+  virtual void Exception
   ( const std::string    & msg                        ,
     const GaudiException & exc                        ,
     const StatusCode       sc  = StatusCode::FAILURE  ) const = 0 ;
@@ -121,7 +121,7 @@ public:
    *  @param sc     status code
    *  @return       status code (fictive)
    */
-  virtual StatusCode Exception
+  virtual void Exception
   ( const std::string    & msg                        ,
     const std::exception & exc                        ,
     const StatusCode       sc  = StatusCode::FAILURE  ) const = 0 ;
@@ -133,7 +133,7 @@ public:
    *  @param sc     status code
    *  @return       status code (fictive)
    */
-  virtual StatusCode Exception
+  virtual void Exception
   ( const std::string& msg = "no message"        ,
     const StatusCode   sc  = StatusCode::FAILURE ) const = 0 ;
 
