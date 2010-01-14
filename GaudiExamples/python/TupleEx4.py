@@ -14,41 +14,57 @@ N-Tuples outside of algoruthm-scope in 'script-like' environment
 __author__ = "Vanya BELYAEV ibelyaev@physics.syr.edu"
 # =============================================================================
 
-import GaudiPython
+
+## static configuration : "Configurbales"
+
+from Gaudi.Configuration import * 
+from Configurables import NTupleSvc, ToolSvc, RndmGenSvc , ApplicationMgr 
+
+## configure N-Tuple Service 
+
+## define 3 output files in 'NEW' mode
+ntSvc = NTupleSvc ( Output = [
+    "MYLUN1 DATAFILE='TupleEx4_1.root' OPT='NEW'" ,
+    "MYLUN2 DATAFILE='TupleEx4_2.root' OPT='NEW'" ,
+    "MYLUN3 DATAFILE='TupleEx4_3.root' OPT='NEW'" ]
+                    )
+
+## ensure that NTuple Service will be finalized AFTER ToolSvc 
+ApplicationMgr (
+    ExtSvc = [ NTupleSvc() , ToolSvc()  , RndmGenSvc() ]
+    )
+
+## go to dynamic configuration
+
+from   GaudiPython.Bindings   import AppMgr, loaddict 
+from   GaudiPython.Bindings   import gbl as cpp 
 import GaudiPython.TupleUtils as TupleUtils
 
+
 ## get the application manager   (create if needed) 
-gaudi = GaudiPython.AppMgr() 
+gaudi = AppMgr() 
+
+import atexit
+atexit.register ( gaudi.exit )
 
 
 gaudi.EvtSel               = 'NONE' ## no external event input
 #gaudi.HistogramPersistency = 'HBOOK' ## define the persistency type for N-tuples
 gaudi.HistogramPersistency = 'ROOT' ## define the persistency type for N-tuples
 
-toolSvc = gaudi.toolsvc()
-#print 'tool service: ', toolSvc
-
-## configure N-Tuple Service 
-## ntSvc = gaudi.service ( 'NTupleSvc' )
-ntSvc = GaudiPython.iService ( 'NTupleSvc' )
-## define 3 output files in 'NEW' mode
-ntSvc.Output = [ "MYLUN1 DATAFILE='TupleEx4_1.root' OPT='NEW'" ,
-                 "MYLUN2 DATAFILE='TupleEx4_2.root' OPT='NEW'" ,
-                 "MYLUN3 DATAFILE='TupleEx4_3.root' OPT='NEW'" ]
 
 ## configure & initialize 
 gaudi.config()
 gaudi.initialize()
 
 ## get some random numbers
-Rndm        = GaudiPython.gbl.Rndm
-IRndmGenSvc = GaudiPython.gbl.IRndmGenSvc
+Rndm        = cpp.Rndm
+IRndmGenSvc = cpp.IRndmGenSvc
 rndmSvc     = gaudi.service('RndmGenSvc',IRndmGenSvc) 
 if not rndmSvc : gaudi.createSvc('RndmGenSvc') 
 rndmSvc     = gaudi.service('RndmGenSvc',IRndmGenSvc)
 
-gauss       = Rndm.Numbers ( GaudiPython.gbl.SmartIF("IRndmGenSvc")(rndmSvc) , Rndm.Gauss ( 0.0 , 1.0 ) )
-
+gauss       = Rndm.Numbers ( cpp.SmartIF("IRndmGenSvc")(rndmSvc) , Rndm.Gauss ( 0.0 , 1.0 ) )
     
 ## get the first N-tuple
 tup1 = TupleUtils.nTuple( "path"             , ## the path 
@@ -65,7 +81,7 @@ for i in xrange(0,5000) :
 
 
 # get some math-stuff
-Math = GaudiPython.gbl.ROOT.Math
+Math = cpp.ROOT.Math
 
 ## get the second N-tuple
 tup2 = TupleUtils.nTuple( "another/path"                  , ## the path
@@ -149,9 +165,13 @@ tup5 = TupleUtils.nTuple( "another/path"                  , ## the path
                           "N-tuple: VarArrays"            , ## the title
                           LUN = 'MYLUN1'                  ) ## logical unit
 
-vct1 = GaudiPython.gbl.vector('double')
-GaudiPython.loaddict('CLHEPRflx')
-vct2 = GaudiPython.gbl.CLHEP.HepVector
+##
+std   = cpp.std 
+vct1 = std.vector('double')
+
+loaddict('CLHEPRflx')
+CLHEP = cpp.CLHEP
+vct2 = CLHEP.HepVector
 
 ## fill it!
 for i in xrange ( 0 , 100 ) :
@@ -172,14 +192,13 @@ for i in xrange ( 0 , 100 ) :
     tup5.write ()
 
 
-
 ## get the 6th N-tuple
 tup6 = TupleUtils.nTuple( "another/path"                  , ## the path
                           "xTuple"                        , ## literal ID 
                           "N-tuple: FixArrays"            , ## the title
                           LUN = 'MYLUN2'                  ) ## logical unit
 
-Gaudi = GaudiPython.gbl.Gaudi
+Gaudi = cpp.Gaudi
 
 for i in xrange(0,10) :
 
@@ -266,7 +285,6 @@ for i in xrange(0,100) :
     tup8.matrix ( "m7" , m7 )                            ## Gaudi::SymMatrix7x7
     
     tup8.write () 
-
 
 
 ## release all tuples at the end 

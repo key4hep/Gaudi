@@ -46,6 +46,9 @@ from   GaudiPython.Bindings import iHistogramSvc
 from   GaudiPython.Bindings import gbl as cpp
 HID = cpp.GaudiAlg.ID
 
+## global flag 
+useROOT = False 
+
 # =============================================================================
 ## Helper private auxiliary function to get Application Manager
 def _getAppMgr   ( **kwargs  ) :
@@ -55,6 +58,12 @@ def _getAppMgr   ( **kwargs  ) :
     gaudi = kwargs.get ( 'gaudi' , None )
     if not gaudi : gaudi = AppMgr()
     if not gaudi : raise RuntimeError, 'Unable to get valid ApplicationMgr'
+
+    state = gaudi._isvc.FSMState() 
+    if state < cpp.Gaudi.StateMachine.CONFIGURED  : gaudi.config     () 
+    state = gaudi._isvc.FSMState()    
+    if state < cpp.Gaudi.StateMachine.INITIALIZED : gaudi.initialize ()
+    
     return gaudi                                               ## RETURN
 
 # =============================================================================
@@ -196,6 +205,18 @@ def book ( *args , **kwargs ) :
     e.g. for the histograms with non-equidistant bins, see IHistogamSvc::book
 
     """
+    if useROOT or kwargs.get( 'useROOT' , False ) or not kwargs.get('useAIDA' , True ) :
+        from ROOT import TH1D 
+        a0 = args[0]
+        a1 = args[1]
+        a2 = args[2]
+        if not str is type(a1) :
+            a1 = 'h'+str(a1)
+        if     str is type(a2) :
+            return TH1D ( a0+a1 , a2 , *args[3:] )
+        else :
+            return TH1D ( a0    , a1 , *args[2:] )
+        
     svc = _getHistoSvc ( **kwargs )
     if not svc : raise RuntimeError, 'Unable to get valid HistogramService '
     ## book the histogram using the service
@@ -433,8 +454,11 @@ def _to_root_ ( self ) :
 
 _to_root_ . __doc__  += aida2root . __doc__
 
-for t in ( cpp.AIDA.IHistogram3D , cpp.AIDA.IHistogram2D , cpp.AIDA.IHistogram1D ,
-           cpp.AIDA.IProfile2D   , cpp.AIDA.IProfile1D   ) :
+for t in ( cpp.AIDA.IHistogram3D ,
+           cpp.AIDA.IHistogram2D ,
+           cpp.AIDA.IHistogram1D ,
+           cpp.AIDA.IProfile2D   ,
+           cpp.AIDA.IProfile1D   ) :
     if not hasattr ( t , 'Fill' ) and hasattr ( t , 'fill' ) :
         setattr ( t , 'Fill' , getattr ( t , 'fill' ) )
     for attr in ( 'toROOT' , 'toRoot' ,
@@ -503,7 +527,7 @@ def _centralMomentErr_ ( self , order ) :
 ## Evaluate 'bin-by-bin' skewness for 1D histogram
 def _skewness_ ( self ) :
     """
-    Evaluate 'bin-by-bin' skewness for 1D histogram
+    Evaluate 'bin-by-bin' skewness for 1D AIDA histogram
 
     >>> h1 = ...
     >>> print h1.skewness()
@@ -515,7 +539,7 @@ def _skewness_ ( self ) :
 ## Evaluate error for 'bin-by-bin' skewness for 1D histogram
 def _skewnessErr_ ( self ) :
     """
-    Evaluate error for 'bin-by-bin' skewness for 1D histogram
+    Evaluate error for 'bin-by-bin' skewness 
 
     >>> h1 = ...
     >>> print h1.skewnessErr()
@@ -527,7 +551,7 @@ def _skewnessErr_ ( self ) :
 ## Evaluate 'bin-by-bin' kurtosis for 1D histogram
 def _kurtosis_ ( self ) :
     """
-    Evaluate 'bin-by-bin' kurtosis for 1D histogram
+    Evaluate 'bin-by-bin' kurtosis
 
     >>> h1 = ...
     >>> print h1.kurtosis ()
@@ -539,7 +563,7 @@ def _kurtosis_ ( self ) :
 ## Evaluate error for 'bin-by-bin' kurtosis for 1D histogram
 def _kurtosisErr_ ( self ) :
     """
-    Evaluate error for 'bin-by-bin' kurtotis for 1D histogram
+    Evaluate error for 'bin-by-bin' kurtotis for 1D AIDA histogram
 
     >>> h1 = ...
     >>> print h1.kurtotisErr()
@@ -562,14 +586,14 @@ def _mean_    ( self ) :
 # =============================================================================
 def _meanErr_ ( self ) :
     """
-    Evaluate the error for MEAN estimate
+    Evaluate the error for MEAN estimate 
     """
     return HistoStats.meanErr ( self )
 
 # =============================================================================
 def _rms_    ( self ) :
     """
-    Evaluate the RMS
+    Evaluate the RMS for AIDA histogram 
     """
     return HistoStats.rms ( self )
 # =============================================================================
@@ -582,7 +606,7 @@ def _rmsErr_ ( self ) :
 # =============================================================================
 def _sumBinHeightErr_    ( self ) :
     """
-    Get an error in the sum bin height ('in-range integral')
+    Get an error in the sum bin height ('in-range integral') 
     """
     return HistoStats.sumBinHeightErr ( self )
 
@@ -807,13 +831,13 @@ class HistoFile :
     def __init__(self, fileName) :
         self.file = TFile(fileName, "RECREATE")
         self.aida2root = gbl.Gaudi.Utils.Aida2ROOT.aida2root
-        self.aidaTypes = [gbl.AIDA.IHistogram1D,
-                          gbl.AIDA.IHistogram2D,
-                          gbl.AIDA.IHistogram3D,
-                          gbl.AIDA.IProfile1D,
-                          gbl.AIDA.IProfile2D,
-                          gbl.AIDA.IHistogram    ]
-
+        self.aidaTypes = [ gbl.AIDA.IHistogram1D,
+                           gbl.AIDA.IHistogram2D,
+                           gbl.AIDA.IHistogram3D,
+                           gbl.AIDA.IProfile1D,
+                           gbl.AIDA.IProfile2D,
+                           gbl.AIDA.IHistogram    ]
+        
     def __convertibleType(self, histo) :
         histoType = type(histo)
         for t in self.aidaTypes :

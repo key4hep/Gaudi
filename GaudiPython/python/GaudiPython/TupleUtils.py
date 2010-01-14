@@ -127,8 +127,6 @@ def nTuple ( dirpath , ID , ID2 = None , topdir = None , LUN = 'FILE1' ) :
     if topdir and ( t1.NTupleTopDir != topdir ) :
         t1.NTupleTopDir = topdir
 
-    while 1 < tool.refCount() : toolSvc._its.releaseTool ( tool )
-
     _TOOLS_.append ( tool )
     if not ID2 : return tool.nTuple ( ID )               ## RETURN
 
@@ -164,10 +162,16 @@ def releaseTuples () :
     print ' %s/%s: release all pending ITupleTools: %s' % ( __file__     ,
                                                            __name__     ,
                                                            len(_TOOLS_) )
+    from GaudiPython.Bindings import _gaudi
+    if not _gaudi : return
+    
     toolSvc = _getToolSvc()
-    while _TOOLS_ and toolSvc.isValid() :
-        t = _TOOLS_.pop()
-        if t and 0 < t.refCount() : toolSvc._its.releaseTool( t )
+    if toolSvc.isValid() : 
+        while _TOOLS_ :
+            t = _TOOLS_.pop()
+            if not t : continue
+            while 1 < t.refCount() :
+                toolSvc._its.releaseTool( t )
 
 # =============================================================================
 def _TupleUtils_AtExit_ () :
