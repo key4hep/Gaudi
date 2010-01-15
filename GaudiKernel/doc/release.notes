@@ -1,6 +1,11 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-01-15 - Marco Clemencic
+ - Fixed a bug in genconf: the third argument passed to the factory of tools was
+   IService* instead of IInterface* (it works as long as the memory address is
+   the same).
+
 ! 2010-01-11 - Vanya Belyaev
  - Patch #3478: Registration for Algorithm Context Service 
    Moved the registration for the context service from GaudiAlgorithm to Algorithm

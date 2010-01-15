@@ -256,7 +256,7 @@ int main ( int argc, char** argv )
 
     po::notify(vm);
 
-    // try to read configuration from the optionnally given configuration file
+    // try to read configuration from the optionally given configuration file
     if( vm.count("input-cfg") ) {
       string cfgFileName = vm["input-cfg"].as<string>();
       cfgFileName = fs::complete( fs::path( cfgFileName,
@@ -446,7 +446,7 @@ int configGenerator::genConfig( const Strings_t& libs )
   }
 
   ISvcLocator* svcLoc = Gaudi::svcLocator();
-  IService*    dummySvc = new Service( "DummySvc", svcLoc );
+  IInterface*  dummySvc = new Service( "DummySvc", svcLoc );
   dummySvc->addRef();
 
   bool allGood = true;
@@ -462,7 +462,7 @@ int configGenerator::genConfig( const Strings_t& libs )
     m_dbBuf.str("");
 
     // Scan the pluginSvc namespace and store the "background" of already
-    // alived components, so we can extract our signal later on
+    // alive components, so we can extract our signal later on
     set<string> bkgNames;
     if ( !isGaudiSvc ) {
       for ( Member_Iterator it = factories.FunctionMember_Begin();
@@ -655,8 +655,8 @@ void configGenerator::genImport( std::ostream& s,
     std::ostringstream import;
     import << boost::format(frmt) % mod;
 
-    // append a normal import or a try/excpet enclosed one depending
-    // on availability of a fall-back bodule (next in the list)
+    // append a normal import or a try/except enclosed one depending
+    // on availability of a fall-back module (next in the list)
     if ( std::string::npos == nxtpos ) {
       // last possible module
       s << indent << import.str() << "\n" << flush;
@@ -884,7 +884,7 @@ int createAppMgr()
   SmartIF<IAppMgrUI> appUI  ( iface );
 
   if ( propMgr.isValid() && appUI.isValid() ) {
-    propMgr->setProperty( "JobOptionsType", "NONE" );  // No joboptions
+    propMgr->setProperty( "JobOptionsType", "NONE" );  // No job options
     propMgr->setProperty( "AppName", "");              // No initial printout message
     propMgr->setProperty( "OutputLevel", "7");         // No other printout messages
     appUI->configure();
