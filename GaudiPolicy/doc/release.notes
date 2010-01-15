@@ -1,6 +1,12 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-01-15 - Marco Clemencic
+ - Fixed compilation on icc 11.
+   - cmt/requirements:
+     removed the cppflags -pedantic, -Wextra and -Wno-long-long, because not
+     understood by icc (only for icc). 
+
 ! 2010-01-11 - Marco Clemencic
  - Added an excluded line when comparing reference files in the tests to avoid
    (because of patch #3487).

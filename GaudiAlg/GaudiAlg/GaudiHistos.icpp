@@ -48,11 +48,6 @@ namespace AIDA
   class IProfile1D     ;
   class IProfile2D     ;
 }
-// ============================================================================
-// Destructor
-// ============================================================================
-template <class PBASE>
-GaudiHistos<PBASE>::~GaudiHistos() {}
 // =============================================================================
 // Constructor initialisation and job options
 // =============================================================================
@@ -127,7 +122,13 @@ void GaudiHistos<PBASE>::initGaudiHistosConstructor()
 // Initialise Histogramming
 // ============================================================================
 template <class PBASE>
-StatusCode GaudiHistos<PBASE>::initialize()
+StatusCode GaudiHistos<PBASE>::
+#ifdef __ICC
+  i_ghInitialize
+#else
+  initialize
+#endif
+  ()
 {
   // initialize base class
   const StatusCode sc = PBASE::initialize();
@@ -153,7 +154,7 @@ StatusCode GaudiHistos<PBASE>::initialize()
   }
 
   // Finally, print the location histogram will be written to
-  Print
+  this->Print
     ( "The histogram path is set to be '" + histoPath() + "'",
       StatusCode( StatusCode::SUCCESS, true )  , MSG::DEBUG );
 
@@ -163,7 +164,13 @@ StatusCode GaudiHistos<PBASE>::initialize()
 // Finalise Histogramming
 // ============================================================================
 template <class PBASE>
-StatusCode GaudiHistos<PBASE>::finalize()
+StatusCode GaudiHistos<PBASE>::
+#ifdef __ICC
+  i_ghFinalize
+#else
+  finalize
+#endif
+  ()
 {
 
   if ( produceHistos() )

@@ -113,7 +113,7 @@ namespace Tuples
    *  the same algorithm. Such approach requires to keep track of the
    *  tuple structure through different method and event through different
    *  files. And even minor modification of the structure of the ntuple
-   *  will reqire the modification of at least 2 methods and 2 files.
+   *  will require the modification of at least 2 methods and 2 files.
    *
    *  The <tt>Tuples::Tuple</tt> wrapper over standard Gaudi
    *  <tt>NTuple::Tuple</tt> class solves all above listed problems with
@@ -166,7 +166,7 @@ namespace Tuples
    *  in any 'concrete class.
    *   Helper classes TupleObjImp, ErrorHandler and functions
    *   createTupleObj and make_handler allows to
-   *   create concrete objects 'on-fligh'
+   *   create concrete objects 'on-flight'
    *
    *  @attention
    *    <c>long long</c> and <c>unsigned long long</c>
@@ -1799,7 +1799,7 @@ namespace Tuples
       if ( rowWise () ) { return InvalidOperation ; }
 
       // get the matrix itself
-      FMatrix* var  = fMatrix ( name , D1 , D2 ) ;
+      FMatrix* var  = fMatrix ( name , (MIndex)D1 , (MIndex)D2 ) ;
       if ( 0 == var   ) { return InvalidColumn ; }
 
       /// fill the matrix

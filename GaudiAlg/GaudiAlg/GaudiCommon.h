@@ -679,14 +679,24 @@ public:
   /** standard initialization method
    *  @return status code
    */
-  virtual StatusCode initialize ();
+  virtual StatusCode initialize()
+#ifdef __ICC
+   { return i_gcInitialize(); }
+  StatusCode i_gcInitialize()
+#endif
+  ;
   /** standard finalization method
    *  @return status code
    */
-  virtual StatusCode finalize   ();
+  virtual StatusCode finalize()
+#ifdef __ICC
+   { return i_gcFinalize(); }
+  StatusCode i_gcFinalize()
+#endif
+  ;
 protected:
   /// Destructor
-  virtual ~GaudiCommon( );
+  virtual ~GaudiCommon() {resetMsgStream();}
 private :
   // default constructor is disabled
   GaudiCommon() ;

@@ -605,6 +605,11 @@ macro cppflags         " -fmessage-length=0 -Df2cFortran -fPIC -shared -D_GNU_SO
       target-darwin    " -Df2cFortran -fPIC -D_GNU_SOURCE -Dunix -pipe -ansi -Wall -Wextra -Wno-long-double " \
       target-winxp     '$(includes) /D "WIN32" /D "_MBCS"  /D "_WINDOWS" /FD /c /nologo /W3 /GX /MD /GR /Zm500'
 
+# Intel compiler support
+macro_remove cppflags "" target-icc "-pedantic"
+macro_remove cppflags "" target-icc "-Wextra"
+macro_remove cppflags "" target-icc "-Wno-long-long"
+
 # macro_append cppflags " -msse2 -mfpmath=sse" \
 #             target-winxp    " /arch:SSE2"
 
@@ -699,6 +704,7 @@ macro makeLinkMap            ""\
       target-winxp           "/map"
 
 macro cpplinkflags "" \
+      target-icc   "-Wl,-Bdynamic $(linkdebugflags) -ldl " \
       target-linux "-Wl,-Bdynamic $(linkdebugflags) -ldl -Wl,--as-needed " \
       target-vc    "/nologo /machine:ix86 $(linkdebugflags) $(makeLinkMap) /nodefaultlib kernel32.lib user32.lib ws2_32.lib advapi32.lib shell32.lib msvcrt.lib msvcprt.lib oldnames.lib "
 
@@ -1178,3 +1184,6 @@ set LCGCMTVERS "$(LCG_config_version)"
 # Base directory of doxygen documentation
 set GAUDI_DOXY_HOME $(GAUDI_home)/GaudiRelease/doc
 
+
+
+# ICC hacks for LCG_Interfaces

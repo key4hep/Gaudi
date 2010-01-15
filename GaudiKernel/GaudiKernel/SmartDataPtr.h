@@ -47,8 +47,12 @@ template<class TYPE> class SmartDataPtr : public SmartDataStorePtr<TYPE, SmartDa
 public:
 
   /// unhides assignment operator of base class
+#ifndef __ICC
+  // icc doesn't like this line, it fails with
+  // SmartDataPtr.h(147): internal error: assertion failed: add_symbol_to_overload_list:
+  //   symbol not in symbol header list (shared/edgcpfe/symbol_tbl.c, line 4804)
   using SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>::operator=;
-
+#endif
   /** Standard constructor: Construct an SmartDataPtr instance which is 
                             able to connect to a DataObject instance
                             which is identified by its parent object and

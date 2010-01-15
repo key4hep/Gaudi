@@ -61,10 +61,12 @@ macro_prepend GSLAdaptersTestlinkopts   " $(GaudiGSL_linkopts) $(use_linkopts) "
 # Note: libgslcblas is needed by libgsl, but the link is missing.
 macro_prepend GSL_linkopts " -Wl,--no-as-needed " \
              target-darwin "" \
-             target-winxp  ""
+             target-winxp  "" \
+             target-icc    ""
 macro_append GSL_linkopts " -Wl,--as-needed " \
             target-darwin "" \
-            target-winxp  "" 
+            target-winxp  "" \
+            target-icc    ""
 
 # =============================================================================
 # The END 

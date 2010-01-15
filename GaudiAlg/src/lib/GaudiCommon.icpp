@@ -60,13 +60,6 @@
 #endif
 // ============================================================================
 
-//=============================================================================
-// Destructor
-//=============================================================================
-template < class PBASE >
-GaudiCommon<PBASE>::~GaudiCommon() { resetMsgStream(); }
-//==========================================================================
-
 // ============================================================================
 // constructor initialisation
 // ============================================================================
@@ -221,7 +214,13 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
 // Initialise the common functionality
 //=============================================================================
 template < class PBASE >
-StatusCode GaudiCommon<PBASE>::initialize()
+StatusCode GaudiCommon<PBASE>::
+#ifdef __ICC
+  i_gcInitialize
+#else
+  initialize
+#endif
+  ()
 {
 
   // initialize base class
@@ -277,7 +276,13 @@ StatusCode GaudiCommon<PBASE>::initialize()
 // Finalize the common functionality
 //=============================================================================
 template < class PBASE >
-StatusCode GaudiCommon<PBASE>::finalize()
+StatusCode GaudiCommon<PBASE>::
+#ifdef __ICC
+  i_gcFinalize
+#else
+  finalize
+#endif
+  ()
 {
   StatusCode sc = StatusCode::SUCCESS;
 

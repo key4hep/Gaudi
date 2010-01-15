@@ -40,7 +40,13 @@ GaudiTuples<PBASE>::~GaudiTuples() {}
 // Initialize ntupling
 //=============================================================================
 template <class PBASE>
-StatusCode GaudiTuples<PBASE>::initialize()
+StatusCode GaudiTuples<PBASE>::
+#ifdef __ICC
+  i_gtInitialize
+#else
+  initialize
+#endif
+  ()
 {
   // initialize base class
   const StatusCode sc = PBASE::initialize();
@@ -52,8 +58,8 @@ StatusCode GaudiTuples<PBASE>::initialize()
     if ( this->ntupleSvc() == 0 )
     { return  this->Error( "INTupleSvc* points to NULL!" ); }
     // Print ntuple path
-    Print( "The N-Tuple   path is set to be '" + nTuplePath() + "'",
-           StatusCode(StatusCode::SUCCESS, true) , MSG::DEBUG);
+    this->Print( "The N-Tuple   path is set to be '" + nTuplePath() + "'",
+                 StatusCode(StatusCode::SUCCESS, true) , MSG::DEBUG);
   }
   else
   { this->debug() << "Production of N-Tuples is switched OFF" << endmsg; }
@@ -64,8 +70,8 @@ StatusCode GaudiTuples<PBASE>::initialize()
     if ( 0 == this->evtColSvc() )
     { return  this->Error( "INTupleSvc* points to NULL!" ); }
     // Print EvtCol path
-    Print( "The EventCol  path is set to be '" + evtColPath() + "'",
-           StatusCode(StatusCode::SUCCESS, true) , MSG::DEBUG );
+    this->Print( "The EventCol  path is set to be '" + evtColPath() + "'",
+                 StatusCode(StatusCode::SUCCESS, true) , MSG::DEBUG );
   }
   else
   { this->debug() << "Production of Event Collections is switched OFF" << endmsg; }
@@ -77,7 +83,13 @@ StatusCode GaudiTuples<PBASE>::initialize()
 // finalize ntupling
 //=============================================================================
 template <class PBASE>
-StatusCode GaudiTuples<PBASE>::finalize()
+StatusCode GaudiTuples<PBASE>::
+#ifdef __ICC
+  i_gtFinalize
+#else
+  finalize
+#endif
+  ()
 {
   if ( !( nTupleMapTitle () . empty () &&
           nTupleMapID    () . empty () &&

@@ -166,6 +166,9 @@ def main():
                          "cmt/*.nmakesav",
                          "cmt/NMake",
                          "cmt/install.history",
+                         "cmt/build.*.log",
+                         "cmt/version.cmt",
+                         "genConf",
                          "slc3_ia32_gcc323*",
                          "slc4_ia32_gcc34*",
                          "slc4_amd64_gcc34*",
@@ -178,9 +181,7 @@ def main():
                          "x86_64-slc4-gcc41*",
                          "i686-slc5-gcc43*",
                          "x86_64-slc5-gcc43*",
-                         "build.*.log",
-                         "genConf",
-                         "cmt/version.cmt",
+                         "x86_64-slc5-icc*",
                          ]
     if "CMTCONFIG" in os.environ:
         opts.exclusions.append(os.environ["CMTCONFIG"])

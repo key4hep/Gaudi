@@ -1,6 +1,21 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2010-01-15 - Marco Clemencic
+ - Fixed compilation on icc 11.
+   - GaudiCommon, GaudiHistos, GaudiTuples:
+     icc requires that virtual methods of templated classes are defined in the
+     class declaration (at least is seems so), otherwise you get an undefined
+     reference to virtual thunk at link time.
+     For the virtual destructors the change was easy (just move the definition).
+     For initialize an finalize, the implementation has been wrapped in
+     non-virtual methods and the virtual methods have been modified to call
+     their non-virtual counterparts (to be reviewed).
+   - TupleObj.h:
+     in Tuples::TupleObj::matrix(string,SMatrix), icc cannot tell if the
+     unisgned int template argument D1 is a int* or a MIndex (typedef of
+     unsigned short), so a hint has been added.
+
 ! 2010-01-12 - Marco Clemencic
  - Fixed bug #61116: GaudiCommon::Assert and GaudiCommon::Exception should return void
    Changed the return type to void and modified the code accordingly.

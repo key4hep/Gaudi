@@ -3028,19 +3028,29 @@ public:
                 const IInterface*  parent );
   // ==========================================================================
   /// Destructor
-  virtual ~GaudiHistos();
+  virtual ~GaudiHistos() {}
   // ==========================================================================
 protected:
   // ==========================================================================
   /** standard initialization method
    *  @return status code
    */
-  virtual StatusCode initialize ();
+  virtual StatusCode initialize()
+#ifdef __ICC
+    { return i_ghInitialize(); }
+  StatusCode i_ghInitialize()
+#endif
+  ;
   // ==========================================================================
   /** standard finalization method
    *  @return status code
    */
-  virtual StatusCode finalize   ();
+  virtual StatusCode finalize()
+#ifdef __ICC
+    { return i_ghFinalize(); }
+  StatusCode i_ghFinalize()
+#endif
+  ;
   // ==========================================================================
 private:
   // ==========================================================================

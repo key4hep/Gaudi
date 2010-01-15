@@ -316,11 +316,21 @@ protected:
   /** standard initialization method
    *  @return status code
    */
-  virtual StatusCode initialize ();
+  virtual StatusCode initialize()
+#ifdef __ICC
+    { return i_gtInitialize(); }
+  StatusCode i_gtInitialize()
+#endif
+  ;
   /** standard finalization method
    *  @return status code
    */
-  virtual StatusCode finalize   ();
+  virtual StatusCode finalize()
+#ifdef __ICC
+    { return i_gtFinalize(); }
+  StatusCode i_gtFinalize()
+#endif
+  ;
   // ==========================================================================
 private:
   // ==========================================================================

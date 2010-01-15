@@ -673,8 +673,6 @@ const std::string System::getEnv(const char* var) {
 const std::vector<std::string> System::getEnv() {
 #if defined(_WIN32)
 #  define environ _environ
-#elif defined(linux)
-  extern char **environ;
 #elif defined(__APPLE__)
   static char **environ = *_NSGetEnviron();
 #endif

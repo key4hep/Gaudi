@@ -209,12 +209,6 @@ namespace {
       facName = copy.facName;
       fac     = copy.fac;
     }
-    ShadowEntry& operator=(const ShadowEntry& copy)   {
-      dllName = copy.dllName;
-      facName = copy.facName;
-      fac     = copy.fac;
-      return *this;
-    }
   };
 }
 

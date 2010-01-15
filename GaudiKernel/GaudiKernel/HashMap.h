@@ -6,8 +6,11 @@
 #include "Map.h"
 #include "Hash.h"
 
-#if defined(_WIN32) || defined(__ICC) || defined(__ECC)
+#if defined(_WIN32) || defined(__ECC)
 #include <hash_map>
+#elif defined(__ICC)
+// icc uses the headers from GCC...
+#include <ext/hash_map>
 #elif __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 3 )
 #include <ext/hash_map>
 #elif __GNUC__ >= 4
@@ -34,14 +37,17 @@ namespace GaudiUtils {
 // we use a normal map instead.
 //            typename M = stdext::hash_map<K,T,H>
             typename M = std::map<K,T>
-#elif defined(__ICC) || defined(__ECC)
+#elif defined(__ECC)
             typename M = std::hash_map<K,T,H>
+#elif defined(__ICC)
+            // icc uses the headers from GCC...
+            typename M = __gnu_cxx::hash_map<K,T,H>
 #elif __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 3 )
-          typename M = __gnu_cxx::hash_map<K,T,H>
+            typename M = __gnu_cxx::hash_map<K,T,H>
 #elif __GNUC__ >= 4
 // Marco Cl.: in gcc >= 4.3 the hash_map has been replaced by unordered_map
 //          typename M = std::tr1::unordered_map<K,T,H>
-          typename M = __gnu_cxx::hash_map<K,T,H>
+            typename M = __gnu_cxx::hash_map<K,T,H>
 //            but gccxml has problems with it
 #endif
             >

@@ -2,6 +2,27 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 
 ! 2010-01-15 - Marco Clemencic
+ - Fixed compilation on icc 11.
+   - cmt/requirements:
+     removed the cppflag -Wno-unused-parameter because not understood by icc
+     (only for icc).
+   - GaudiKernel/HashMap.h:
+     modified to use the same code as gcc < 4.3 (ext/hash_map)
+   - GaudiKernel/SmartDataPtr.h:
+     disabled (icc only) a trick to avoid problems with hidden operator=,
+     otherwise icc gives the error
+       internal error: assertion failed: add_symbol_to_overload_list
+   - src/Lib/Bootstrap.cpp:
+     removed the method <anonymous>::ShadowEntry::operator=, never used and not
+     accessible outside the translation unit, to avoid a warning.
+   - src/Lib/System.cpp:
+     removed the declaration "extern char **environ;" from within the method
+     System::getEnv() (if on linux), because not needed and icc was trying to
+     resolve it as System::environ.
+   - scripts/make_patch.py:
+     updated the default exclusion list.
+     
+! 2010-01-15 - Marco Clemencic
  - Fixed a bug in genconf: the third argument passed to the factory of tools was
    IService* instead of IInterface* (it works as long as the memory address is
    the same).
