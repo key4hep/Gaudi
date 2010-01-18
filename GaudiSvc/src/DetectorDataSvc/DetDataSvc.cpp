@@ -290,7 +290,8 @@ StatusCode DetDataSvc::updateObject( DataObject* toUpdate ) {
 	<< "Updated DataObject does not implement IValidity" << endmsg;
     return StatusCode::FAILURE;
   }
-  if ( !condition->isValid( eventTime() ) ) {
+  if ( FSMState() == Gaudi::StateMachine::RUNNING &&
+       !condition->isValid( eventTime() ) ) {
     log << MSG::ERROR
 	<< "Updated DataObject is not valid" << endmsg;
     log << MSG::ERROR

@@ -1,6 +1,11 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2009-12-18 - Marco Clemencic
+ - Modified DetDataSvc::updateObject to avoid the check of the validity of the
+   updated object if not in the RUNNING state (needed for conditions database
+   validation in LHCb).
+
 ! 2010-01-11 - Vanya Belyaev
  - Patch #3487: Minor improvement for CPU-performance of DataOnDemand & Incident Services
    Use Gaudi::StringKey class for the implementation of internal "maps" for
