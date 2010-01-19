@@ -136,7 +136,7 @@ def main():
         reqfile = os.path.join(all_packages[pkg], "requirements")
         relnotefile = os.path.join(all_packages[pkg], "..", "doc", "release.notes")
         old_versions[pkg] = extract_version(reqfile)
-        if pkg != "GaudiRelease": # pointless to extract rel notes from GaudiRelease
+        if os.path.exists(relnotefile): # ignore missing release.notes
             release_notes[pkg] = extract_recent_rel_notes(relnotefile)
         else:
             release_notes[pkg] = ""
@@ -172,6 +172,8 @@ def main():
     new_lines.append('<h2><a name="%(vers)s">Gaudi %(vers)s</a> (%(date)s)</h2>' % data)
     data = { "vers": LCGCMTVers }
     new_lines.append('<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=%(vers)s">LCGCMT_%(vers)s</a></h3>' % data)
+    new_lines.append("<h3>General Changes</h3>")
+    new_lines.append('<ul>\n<li><br/>\n    (<span class="author"></span>)</li>\n</ul>')
     new_lines.append("<h3>Packages Changes</h3>")
     new_lines.append("<ul>")
     for pkg in all_packages_names:
@@ -186,9 +188,11 @@ def main():
     global_rel_notes = os.path.join("..", "doc", "release.notes.html")
     out = []
     separator = re.compile("<!-- =+ -->")
+    block_added = False
     for l in open(global_rel_notes):
-        if separator.match(l.strip()):
+        if not block_added and separator.match(l.strip()):
             out.append("\n".join(new_lines) + "\n")
+            block_added = True
         out.append(l)
     open(global_rel_notes, "w").writelines(out)
 
