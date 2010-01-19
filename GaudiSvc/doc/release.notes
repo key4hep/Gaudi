@@ -1,6 +1,7 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+=============================== GaudiSvc v18r7 ===============================
 ! 2010-01-19 - Markus Frank
  - Modified EventCollectionSvc to accept the syntax SVC= (alternative to TYP=)
    when specifying collection files for the EventSelector, as it was already the

@@ -1,6 +1,7 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v21r7 =============================
 ! 2010-01-14 - Juan Palacios
  - Patch #3652: Bug fixes for GaudiPython HistoUtils.py and TupleUtils.py
    - TupleEx4.py : update the example of usage of Gaudi-NTuples for GaudiPython

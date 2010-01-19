@@ -1,6 +1,7 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+============================== GaudiUtils v3r6 ===============================
 ! 2009-12-15 - Marco Clemencic
  - Fixed bug #59659: Untested StatusCodes in IODataManager.cpp
 

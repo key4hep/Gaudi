@@ -1,6 +1,7 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v10r5 ==============================
 ! 2010-01-15 - Marco Clemencic
  - Fixed compilation on icc 11.
    - cmt/requirements:

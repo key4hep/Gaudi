@@ -1,6 +1,7 @@
 Package: GaudiPoolDb
 Package Manager: Markus Frank, Marco Clemencic
 
+============================== GaudiPoolDb v5r6 ==============================
 ! 2010-01-06 - Jaap Panman
  - Fixed an error in GaudiPoolDbRoot.opts.
 

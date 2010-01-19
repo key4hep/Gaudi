@@ -1,6 +1,7 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+============================= GaudiPython v10r7 ==============================
 ! 2010-01-14 - Juan Palacios
  - Patch #3652: Bug fixes for GaudiPython HistoUtils.py and TupleUtils.py
    - Fix order of services initialization and release.

@@ -1,6 +1,7 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+=============================== GaudiAlg v13r0 ===============================
 ! 2010-01-15 - Marco Clemencic
  - Fixed compilation on icc 11.
    - GaudiCommon, GaudiHistos, GaudiTuples:
