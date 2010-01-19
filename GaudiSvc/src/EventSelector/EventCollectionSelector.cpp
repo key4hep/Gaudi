@@ -86,6 +86,7 @@ EventCollectionSelector::EventCollectionSelector(const std::string& name, ISvcLo
   declareProperty("Criteria",      m_criteria = "");
   declareProperty("DB",            m_database = "");
   declareProperty("DbType",        m_dbType   = "");
+  declareProperty("DbService",     m_dbSvc    = "");
   declareProperty("Function",      m_statement= "NTuple::Selector");
 }
 
@@ -122,7 +123,10 @@ EventCollectionSelector::connectDataSource(const std::string& db, const std::str
   if ( svc.isValid( ) && db.length() > 0 )   {
     std::string ident = name() + ' ';
     ident += "DATAFILE='" + m_database.substr(5,m_database.length()) + "' ";
-    ident += "TYP='" + m_dbType + "' ";
+    if ( !m_dbSvc.empty() )
+      ident += "SVC='" + m_dbSvc + "' ";
+    else
+      ident += "TYP='" + m_dbType + "' ";
     ident += "OPT='READ' ";
     if ( m_authentication.length() > 0 )    {
       ident += "AUTH='" + m_authentication + "' ";

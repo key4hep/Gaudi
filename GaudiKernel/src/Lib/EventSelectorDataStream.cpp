@@ -82,7 +82,7 @@ const StringProperty* EventSelectorDataStream::property(const std::string& nam) 
 // Parse input criteria
 StatusCode EventSelectorDataStream::initialize()   {
   bool isData = true;
-  std::string auth, dbtyp, item, crit, sel, svc, stmt;
+  std::string auth, dbtyp, collsvc, item, crit, sel, svc, stmt;
   std::string cnt    = "/Event";
   std::string db     = "<Unknown>";
   Tokenizer tok(true);
@@ -129,7 +129,6 @@ StatusCode EventSelectorDataStream::initialize()   {
     case 'F':
       switch( ::toupper(tag[1]) )    {
       case 'I':
-        dbtyp        = "SICB";
         m_criteria   = "FILE " + val;
 	m_dbName=val;
         break;
@@ -150,11 +149,6 @@ StatusCode EventSelectorDataStream::initialize()   {
       case 'Y':
         dbtyp = val;
         break;
-      case 'A':
-        m_criteria   = "TAPE " + val;
-	m_dbName=val;
-        dbtyp        = "SICB";
-        break;
       default:
         break;
       }
@@ -166,6 +160,7 @@ StatusCode EventSelectorDataStream::initialize()   {
         break;
       case 'V':
         svc = val;
+	collsvc = val;
         break;
       default:
         break;
@@ -178,9 +173,7 @@ StatusCode EventSelectorDataStream::initialize()   {
   }
   if ( !isData )    { // Unfortunately options do not come in order...
     m_selectorType = "EventCollectionSelector";
-  }
-  else if ( dbtyp == "SICB" )    {
-    m_selectorType = "SicbEventSelector";
+    svc  = "EvtTupleSvc";
   }
   else if ( dbtyp.substr(0,4) == "POOL" )    {
     m_selectorType = "PoolDbEvtSelector";
@@ -215,6 +208,10 @@ StatusCode EventSelectorDataStream::initialize()   {
   m_properties->push_back( StringProperty("Criteria",      sel));
   m_properties->push_back( StringProperty("DbType",        dbtyp));
   m_properties->push_back( StringProperty("DB",            m_criteria));
+  if ( !isData && !collsvc.empty() )    {
+    m_properties->push_back( StringProperty("DbService",   collsvc));
+  }
+
   m_initialized = status.isSuccess();
   return status;
 }

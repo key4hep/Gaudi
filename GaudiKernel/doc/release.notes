@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-01-19 - Markus Frank
+ - Fixed EventSelectorDataStream to fit with the changes in GaudiSvc
+   (support of 'SVC=' in EventCollectionSvc) and removed references to SICB.
+
 ! 2010-01-15 - Marco Clemencic
  - Fixed compilation on icc 11.
    - cmt/requirements:

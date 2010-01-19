@@ -92,6 +92,8 @@ protected:
   std::string              m_database;
   /// Database type identifier
   std::string              m_dbType;
+  /// Database service (exclusive property with db type)
+  std::string              m_dbSvc;
   /// Selector name
   std::string              m_statement;
 public:

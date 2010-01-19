@@ -1,6 +1,11 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2010-01-19 - Markus Frank
+ - Modified EventCollectionSvc to accept the syntax SVC= (alternative to TYP=)
+   when specifying collection files for the EventSelector, as it was already the
+   case for normal files. 
+
 ! 2009-12-18 - Marco Clemencic
  - Modified DetDataSvc::updateObject to avoid the check of the validity of the
    updated object if not in the RUNNING state (needed for conditions database
