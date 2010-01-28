@@ -10,6 +10,12 @@
 #define NOGDI
 #endif
 
+#ifdef __ICC
+// Disable remark #193: zero used for undefined preprocessing identifier X
+// coming from boost/program_options.hpp
+#pragma warning (disable:193)
+#endif
+
 // Include files----------------------------------------------------------------
 #include "boost/program_options.hpp"
 #include "boost/filesystem/operations.hpp"
