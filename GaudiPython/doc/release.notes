@@ -3,6 +3,7 @@ Package manager : Marco Clemencic
 
 ! 2010-01-28 - Marco Clemencic
  - Fixed icc remark #424: extra ";" ignored
+ - Fixed icc remark #522: function "X" redeclared "inline" after being called
 
 ============================= GaudiPython v10r7 ==============================
 ! 2010-01-14 - Juan Palacios

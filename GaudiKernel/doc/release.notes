@@ -5,6 +5,7 @@ Package manager : Marco Clemencic
  - Fixed icc remark #424: extra ";" ignored
  - Fixed icc remark #111: statement is unreachable
  - Fixed icc remark #193: zero used for undefined preprocessing identifier
+ - Fixed icc remark #522: function "X" redeclared "inline" after being called
 
 ============================= GaudiKernel v27r7 ==============================
 ! 2010-01-19 - Markus Frank

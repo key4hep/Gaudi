@@ -58,7 +58,7 @@ public:
     return obj.fillStream(s);
   }
   /// Fill the output stream (ASCII)
-  virtual std::ostream& fillStream( std::ostream& s ) const;
+  virtual inline std::ostream& fillStream( std::ostream& s ) const;
 
 private:
   /// Event number

@@ -178,7 +178,7 @@ public:
   /// implicit conversion to the type 
   operator const TYPE&      () const { return value() ;}
   /// explicit conversion 
-  const TYPE& value() const ;
+  inline const TYPE& value() const ;
   // ==========================================================================
 public:
   // ==========================================================================
