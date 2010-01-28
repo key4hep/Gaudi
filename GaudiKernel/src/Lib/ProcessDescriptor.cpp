@@ -274,7 +274,7 @@ long System::ProcessDescriptor::query(long pid,
                                               sizeof(IO_COUNTERS),
                                               0);
     status = (status==0) ? 1 : 0;
-#elif _WIN32                              // Windows 95,98...
+#elif defined(_WIN32)                     // Windows 95,98...
 #elif defined(linux)
     linux_proc prc;
     readProcStat(processID(pid), prc);
@@ -307,7 +307,7 @@ long System::ProcessDescriptor::query(long pid,
                                               sizeof(POOLED_USAGE_AND_LIMITS),
                                               0);
     status = (status==0) ? 1 : 0;
-#elif _WIN32                              // Windows 95,98...
+#elif defined(_WIN32)                     // Windows 95,98...
 #elif defined(linux)                      // Linux
     //rusage usage;
     //getrusage(RUSAGE_SELF, &usage);
@@ -351,7 +351,7 @@ long System::ProcessDescriptor::query(long pid, InfoType fetch, long* info)    {
                                               vb,
                                               sizeof(long),
                                               0);
-#elif _WIN32                              // Windows 95,98...
+#elif defined(_WIN32)                     // Windows 95,98...
 #else
     // Not applicable
     status = 0;
@@ -382,7 +382,7 @@ long System::ProcessDescriptor::query(long pid,
                                               sizeof(VM_COUNTERS),
                                               0);
     status = (status==0) ? 1 : 0;
-#elif _WIN32                              // Windows 95,98...
+#elif defined(_WIN32)                     // Windows 95,98...
 #elif defined(linux)                      // Linux
     const ssize_t bufsize = 1024;
     char buf[bufsize];
@@ -430,7 +430,7 @@ long System::ProcessDescriptor::query(long pid,
                                               sizeof(QUOTA_LIMITS),
                                               0);
     status = (status==0) ? 1 : 0;
-#elif _WIN32                              // Windows 95,98...
+#elif defined(_WIN32)                     // Windows 95,98...
 #elif defined(linux)                      // Linux
     // On linux all this stuff typically is not set
     // (ie. rlim_max=RLIM_INFINITY...)
@@ -477,7 +477,7 @@ long System::ProcessDescriptor::query(long pid,
                                               sizeof(PROCESS_BASIC_INFORMATION),
                                               0);
     status = (status==0) ? 1 : 0;
-#elif _WIN32                              // Windows 95,98...
+#elif defined(_WIN32)                     // Windows 95,98...
 #elif defined(linux)                      // Linux
     linux_proc prc;
     readProcStat( processID(pid), prc);
