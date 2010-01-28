@@ -609,6 +609,26 @@ macro cppflags         " -fmessage-length=0 -Df2cFortran -fPIC -shared -D_GNU_SO
 macro_remove cppflags "" target-icc "-pedantic"
 macro_remove cppflags "" target-icc "-Wextra"
 macro_remove cppflags "" target-icc "-Wno-long-long"
+# Disable some non interesting "remarks" (copied from CoolKernel)
+#  - remark #383:  valued copied to temporary, reference to temporary
+macro_append cppflags '' target-icc '-wd383 '
+#  - remark #981:  operands are evaluated in unspecified order
+macro_append cppflags '' target-icc '-wd981 '
+#  - remark #1418: external function definition with no prior declaration
+macro_append cppflags '' target-icc '-wd1418 '
+#  - remark #82:   storage class is not first
+#                  (appears only once in ROOT)
+macro_append cppflags '' no-hide-warnings '' target-icc '-wd82 '
+#  - remark #522:  function "X" redeclared "inline" after being called
+#                  (fixed those in Gaudi, but a lot are coming from ROOT, Reflex and HepPDT)
+macro_append cppflags '' no-hide-warnings '' target-icc '-wd522 '
+#  - remark #444:  destructor for base class "X" is not virtual
+#                  (gives a lot of fals positives, e.g. std::unary_function)
+macro_append cppflags '' no-hide-warnings '' target-icc '-wd444 '
+#  - remark #304:  access control not specified ("public/private" by default)
+#                  (fixed one in GaudiKernel, but most are from Boost)
+macro_append cppflags '' no-hide-warnings '' target-icc '-wd304 '
+
 
 # macro_append cppflags " -msse2 -mfpmath=sse" \
 #             target-winxp    " /arch:SSE2"

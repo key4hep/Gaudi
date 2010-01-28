@@ -1,6 +1,22 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-01-28 - Marco Clemencic
+ - Ignored icc remarks
+   #383:  valued copied to temporary, reference to temporary
+   #981:  operands are evaluated in unspecified order
+   #1418: external function definition with no prior declaration
+          (triggers on templates)
+   #82:   storage class is not first
+          (appears only once in ROOT)
+   #522:  function "X" redeclared "inline" after being called
+          (fixed those in Gaudi, but a lot are coming from ROOT, Reflex and
+           HepPDT)
+   #444:  destructor for base class "X" is not virtual
+          (gives a lot of fals positives, e.g. std::unary_function)
+   #304:  access control not specified ("public/private" by default)
+          (fixed one in GaudiKernel, but most are from Boost)
+
 ============================= GaudiPolicy v10r5 ==============================
 ! 2010-01-15 - Marco Clemencic
  - Fixed compilation on icc 11.
