@@ -582,13 +582,11 @@ void ApMon::updateGeneralInfo() {
 void ApMon::sendGeneralInfo() {
 #ifndef WIN32
   int nParams, maxNParams, i;
-  long crtTime;
   char tmp_s[50];
   
   char **paramNames, **paramValues;
   int *valueTypes;
 
-  crtTime = time(NULL);
   logger(INFO, "Sending general monitoring information...");
   
   maxNParams = nGenMonitorParams + numIPs;

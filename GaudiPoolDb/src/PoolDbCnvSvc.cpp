@@ -285,16 +285,15 @@ StatusCode PoolDbCnvSvc::accessStorageType(CSTR type_string, long& gaudi_type) {
 /// Connect the output file to the service with open mode.
 StatusCode PoolDbCnvSvc::connectOutput(CSTR dsn, CSTR openMode)   {
   StatusCode sc = StatusCode::FAILURE;
-  DbAccessMode mode = pool::NOT_OPEN;
   m_current = 0;
   if ( ::strncasecmp(openMode.c_str(),"RECREATE",3)==0 )
-    sc = connectDatabase(UNKNOWN, dsn, mode=pool::RECREATE, &m_current);
+    sc = connectDatabase(UNKNOWN, dsn, pool::RECREATE, &m_current);
   else if ( ::strncasecmp(openMode.c_str(),"NEW",1)==0 )
-    sc = connectDatabase(UNKNOWN, dsn, mode=pool::CREATE, &m_current);
+    sc = connectDatabase(UNKNOWN, dsn, pool::CREATE, &m_current);
   else if ( ::strncasecmp(openMode.c_str(),"CREATE",1)==0 )
-    sc = connectDatabase(UNKNOWN, dsn, mode=pool::CREATE, &m_current);
+    sc = connectDatabase(UNKNOWN, dsn, pool::CREATE, &m_current);
   else if ( ::strncasecmp(openMode.c_str(),"UPDATE",1)==0 )
-    sc = connectDatabase(UNKNOWN, dsn, mode=pool::UPDATE, &m_current);
+    sc = connectDatabase(UNKNOWN, dsn, pool::UPDATE, &m_current);
   if ( sc.isSuccess() && m_current && m_current->isConnected() )  {
     return S_OK;
   }

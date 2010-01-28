@@ -116,7 +116,8 @@ throw(runtime_error) {
   char msg[MAX_STRING_LEN];
   
   int sd, rc;
-  struct sockaddr_in localAddr, servAddr;
+  // struct sockaddr_in localAddr;
+  struct sockaddr_in servAddr;
   struct hostent *h;
   struct timeval optval;
 
@@ -167,11 +168,11 @@ throw(runtime_error) {
   setsockopt(sd, SOL_SOCKET, SO_RCVTIMEO, (char *) &optval, 
 			sizeof(optval));
   
+  /*
   localAddr.sin_family = AF_INET;
   localAddr.sin_addr.s_addr = htonl(INADDR_ANY);
   localAddr.sin_port = htons(0);
   
-  /*
   rc = bind(sd, (struct sockaddr *) &localAddr, sizeof(localAddr));
   if(rc<0) {
     free(request);

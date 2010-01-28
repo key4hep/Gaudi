@@ -636,7 +636,6 @@ int ProcUtils::countOpenFiles(long pid) throw(procutils_error) {
   char dirname[50];
   char msg[MAX_STRING_LEN];
   DIR *dir;
-  struct dirent *dir_entry;
   int cnt = 0;
  
   /* in /proc/<pid>/fd/ there is an entry for each opened file descriptor */
@@ -648,7 +647,7 @@ int ProcUtils::countOpenFiles(long pid) throw(procutils_error) {
   }
 
   /* count the files from /proc/<pid>/fd/ */
-  while ((dir_entry = readdir(dir)) != NULL) {
+  while (readdir(dir) != NULL) {
     cnt++;
   }
   

@@ -423,11 +423,12 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
   INTupleItem* item=0;
 
   std::string itemName, indexName, item_type, itemTitle, blockName;
-  long  numEnt, numVar, size, totsize=0;
+  // long numEnt, numVar;
+  long size, totsize=0;
   std::list< std::pair<TLeaf*,int> > itemList;
 
-  numEnt = (int)tree->GetEntries();
-  numVar = tree->GetNbranches();
+  // numEnt = (int)tree->GetEntries();
+  // numVar = tree->GetNbranches();
 
   // loop over all branches (==leaves)
   TObjArray* lbr = tree->GetListOfBranches();
@@ -449,7 +450,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
     TIter litr ( lf );
     while ( TObject *tobj = litr() ) {
 
-      bool hasIndex = false, hasRange=false;
+      bool hasRange=false;
       int indexRange = 0;
       int itemSize;
       item = 0;
@@ -481,7 +482,6 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
       if (indexLeaf != 0) {
 	//index Arrays and Matrices
 
-        hasIndex = true;
         indexName = indexLeaf->GetName();
         //	  indexRange = tl->GetNdata();
         indexRange = indexLeaf->GetMaximum();

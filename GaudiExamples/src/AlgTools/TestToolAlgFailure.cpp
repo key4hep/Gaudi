@@ -50,6 +50,8 @@ StatusCode TestToolAlgFailure::initialize() {
     info() << "Loading tool " << *it << endmsg;
     try {
       mytool = tool<IAlgTool>( *it );
+      // Avoids icc remark #593 variable "X" was set but never used
+      mytool->refCount();
       info() << "Tool loaded successfully" << endmsg;
     } catch (GaudiException &e) {
       if ( m_ignoreFailure ) {

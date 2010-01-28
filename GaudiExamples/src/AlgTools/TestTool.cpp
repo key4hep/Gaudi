@@ -50,6 +50,8 @@ StatusCode TestTool::initialize()
     }
     debug() << "Loading tool " << name << " of type " << type << endmsg;
     mytool = tool<IAlgTool>( type, name );
+    // Avoids icc remark #593 variable "X" was set but never used
+    mytool->refCount();
   }
 
   return StatusCode::SUCCESS;
