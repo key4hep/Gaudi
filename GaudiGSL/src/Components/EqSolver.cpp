@@ -224,7 +224,6 @@ StatusCode EqSolver::solver (const Equations&  funcs ,
           return Error
             ("Error from gsl_gsl_multiroot_fdfsolver_iterate '"
              + std::string(gsl_strerror(status)) + "'") ;
-          break;
         }
 
       status = gsl_multiroot_test_residual (s->f,

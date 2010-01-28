@@ -78,7 +78,7 @@ PoolDbKeyedContainerCnv::updateObjRefs(IOpaqueAddress* pAddr, DataObject* pObj)
     default:
       return obj.update(0);
     }
-    return StatusCode::FAILURE;
+    // cannot reach this point
   }
   return sc;
 }

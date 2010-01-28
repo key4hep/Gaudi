@@ -559,8 +559,7 @@ long KeyedObjectManager< __A >::erase(seq_type::iterator beg,
     }
     return OBJ_ERASED;
   }
-  invalidContainerOperation();
-  return 0;
+  // cannot reach this point
 }
 
 template<>

@@ -39,10 +39,7 @@ StatusCode AlgTool::queryInterface
     *ppvi = 0 ;
     return NO_INTERFACE ;  // RETURN
   }
-  // increment the reference counter
-  addRef() ;
-  //
-  return SUCCESS;
+  // cannot reach this point
 }
 //------------------------------------------------------------------------------
 void AlgTool::declInterface( const InterfaceID& iid, void* ii)

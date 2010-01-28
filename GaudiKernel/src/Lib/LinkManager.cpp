@@ -125,7 +125,6 @@ long LinkManager::removeLink(long id)  const  {
   delete (*i);
   m_linkVector.erase(i);
   return id;
-  return INVALID;
 }
 
 /// Remove all possibly existing symbolic links

@@ -3,6 +3,7 @@ Package manager : Marco Clemencic
 
 ! 2010-01-28 - Marco Clemencic
  - Fixed icc remark #424: extra ";" ignored
+ - Fixed icc remark #111: statement is unreachable
 
 ============================= GaudiKernel v27r7 ==============================
 ! 2010-01-19 - Markus Frank

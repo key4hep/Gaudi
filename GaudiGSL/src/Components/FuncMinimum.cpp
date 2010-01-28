@@ -185,7 +185,6 @@ StatusCode FuncMinimum::minimum (const IFuncMinimum::GenFunc&   func  ,
           return Error
             ("Error from gsl_multimin_fdfminimizer_iterate '"
              + std::string(gsl_strerror(status)) + "'") ;
-          break;
         }
 
       status = gsl_multimin_test_gradient (s->gradient,

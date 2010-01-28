@@ -310,7 +310,7 @@ ChronoEntity::delta ( IChronoSvc::ChronoType type ) const
   case IChronoSvc::ELAPSED : return m_delta_elapsed ;
   default                  : return result          ;
   }
-  return result;
+  // cannot reach this point
 }
 // ============================================================================
 /*  print the chrono according the format and units

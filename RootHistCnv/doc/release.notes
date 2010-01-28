@@ -3,6 +3,7 @@ Package manager : David Quarrie
 
 ! 2010-01-28 - Marco Clemencic
  - Fixed icc remark #424: extra ";" ignored
+ - Fixed icc remark #111: statement is unreachable
 
 ============================= RootHistCnv v10r3 ==============================
 ! 2009-11-19 - Marco Clemencic

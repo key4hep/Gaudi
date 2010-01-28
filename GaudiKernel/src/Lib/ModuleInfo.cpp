@@ -175,6 +175,7 @@ System::ImageHandle System::exeHandle()    {
     }
     return handle;
   }
+  return 0;
 #elif defined(linux) || defined(__APPLE__)
   // This does NOT work!
   static Dl_info infoBuf, *info = &infoBuf;
@@ -195,8 +196,8 @@ System::ImageHandle System::exeHandle()    {
   return info;
 #elif __hpux
   // Don't know how to solve this .....
-#endif
   return 0;
+#endif
 }
 
 const std::string& System::exeName()    {

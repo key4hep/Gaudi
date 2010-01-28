@@ -236,7 +236,7 @@ std::string RootHistCnv::RNTupleCnv::rootVarType(int type) {
   case DataTypeInfo::DOUBLE:  return "/D";           // double
   default:                    return "";
   }
-  return "";
+  // cannot reach this point
 }
 
 //-----------------------------------------------------------------------------

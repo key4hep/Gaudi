@@ -180,12 +180,8 @@ StatusCode ApplicationMgr::queryInterface
     // MsgStream).
     return StatusCode::SUCCESS;
   }
-  else
-  { *ppvi = 0 ; return StatusCode::FAILURE; }              // RETURN
-  // increment the reference counter:
-  addRef ();
-  //
-  return StatusCode::SUCCESS ;
+  *ppvi = 0;
+  return StatusCode::FAILURE;
 }
 
 //============================================================================
