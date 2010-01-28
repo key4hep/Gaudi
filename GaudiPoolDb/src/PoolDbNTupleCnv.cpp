@@ -136,27 +136,11 @@ PLUGINSVC_FACTORY_WITH_ID( PoolDbNTupleCnv,
                            ConverterID(POOL_StorageType,CLID_ColumnWiseTuple),
                            IConverter*(long, CLID, ISvcLocator*) )
 
-static inline std::istream& loadLong(std::istream& is)    {
+static inline std::istream&
+operator>>(std::istream& is, IOpaqueAddress*& /*pObj*/)   {
   long i;
   is >> i;
   return is;
-}
-static inline std::istream&
-operator>>(std::istream& is, SmartRef<DataObject>& /*pObj*/)   {
-  return loadLong(is);
-}
-static inline std::istream&
-operator>>(std::istream& is, SmartRef<ContainedObject>& /*pObj*/)   {
-  return loadLong(is);
-}
-static inline std::istream&
-operator>>(std::istream& is, IOpaqueAddress*& /*pObj*/)   {
-  return loadLong(is);
-}
-static inline std::istream&
-operator>>(std::istream& is, std::string& /*pObj*/)
-{
-  return loadLong(is);
 }
 
 template<class TYP> static
@@ -418,7 +402,6 @@ PoolDbNTupleCnv::createRep(DataObject* pObj, IOpaqueAddress*& pAddr)  {
     PoolDbAddress* pdbA = dynamic_cast<PoolDbAddress*>(pAddr);
     if ( 0 == pdbA )  {
       const INTuple* nt  = dynamic_cast<const INTuple*>(pObj);
-      std::string    loc = containerName(pObj->registry());
       if ( 0 != nt )  {
         const INTuple::ItemContainer& items = nt->items();
         std::vector<const pool::DbColumn*> cols;

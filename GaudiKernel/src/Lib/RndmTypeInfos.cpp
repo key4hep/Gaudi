@@ -6,6 +6,11 @@
 #include "GaudiKernel/IRndmGen.h"
 #include "GaudiKernel/RndmGenerators.h"
 
+#ifdef __ICC
+// disable icc remark #177: declared but never referenced
+#pragma warning(disable:177)
+#endif
+
 /**
  * This is needed to insure that the typeinfo symbols are defined
  * in the GaudiKernel library. However it is never used.

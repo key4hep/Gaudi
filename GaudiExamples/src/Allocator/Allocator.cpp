@@ -36,12 +36,6 @@
 
 namespace 
 {
-  inline std::string
-  fmt ( const double /* value */  ) 
-  {
-    return std::string();
-  }
-  
   
   std::ostream& operator<< 
     ( std::ostream&       stream ,

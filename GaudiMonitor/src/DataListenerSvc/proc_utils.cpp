@@ -390,7 +390,7 @@ void ProcUtils::getNetInfo(ApMon& apm, double **vNetIn,
   if (apm.lastSysInfoSend == 0) {
     try {
       bootTime = getBootTime();
-    } catch (procutils_error& err) {
+    } catch (procutils_error& /*err*/) {
       logger(WARNING, "[ getNetInfo() ] Error obtaining boot time. The first system monitoring datagram will contain incorrect data.");
       bootTime = 0;
     }

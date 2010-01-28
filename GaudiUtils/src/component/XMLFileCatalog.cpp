@@ -64,7 +64,7 @@ namespace {
     ~XMLTag()                            {  }
     operator CSTR () const  { return m_str; }
   };
-  bool operator==(const XMLTag& b, CSTR c) {  return c==b.m_str; }
+  // bool operator==(const XMLTag& b, CSTR c) {  return c==b.m_str; }
   bool operator==(CSTR c, const XMLTag& b) {  return c==b.m_str; }
   struct XMLCollection  {
     DOMElement* m_node;

@@ -17,6 +17,11 @@
 #include "GaudiKernel/GaudiHandle.h"
 #endif
 
+#ifdef __ICC
+// disable icc remark #177: declared but never referenced
+#pragma warning(disable:177)
+#endif
+
 // Force visibility of the classes
 #define class class GAUDI_API
 #ifdef _WIN32

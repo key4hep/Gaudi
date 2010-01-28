@@ -5,6 +5,11 @@
  *      Author: Marco Clemencic
  */
 
+#ifdef __ICC
+// disable icc remark #177: declared but never referenced
+#pragma warning(disable:177)
+#endif
+
 /// @FIXME: AIDA interfaces visibility
 #include "AIDA_visibility_hack.h"
 

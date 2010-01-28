@@ -5,6 +5,11 @@
 #include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/MsgStream.h"
 
+#ifdef __ICC
+//  disable icc remark #593: variable "X" was set but never used
+#pragma warning(disable:593)
+#endif
+
 // local
 #include "TestToolAlgFailure.h"
 
@@ -50,8 +55,6 @@ StatusCode TestToolAlgFailure::initialize() {
     info() << "Loading tool " << *it << endmsg;
     try {
       mytool = tool<IAlgTool>( *it );
-      // Avoids icc remark #593 variable "X" was set but never used
-      mytool->refCount();
       info() << "Tool loaded successfully" << endmsg;
     } catch (GaudiException &e) {
       if ( m_ignoreFailure ) {

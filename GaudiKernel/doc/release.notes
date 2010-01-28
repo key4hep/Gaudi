@@ -7,6 +7,7 @@ Package manager : Marco Clemencic
  - Fixed icc remark #193: zero used for undefined preprocessing identifier
  - Fixed icc remark #522: function "X" redeclared "inline" after being called
  - Fixed icc remark #304: access control not specified ("private" by default)
+ - Fixed icc remark #177: X declared but never referenced
 
 ============================= GaudiKernel v27r7 ==============================
 ! 2010-01-19 - Markus Frank

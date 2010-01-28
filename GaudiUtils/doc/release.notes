@@ -1,6 +1,9 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2010-01-28 - Marco Clemencic
+ - Fixed icc remark #177: X declared but never referenced
+
 ============================== GaudiUtils v3r6 ===============================
 ! 2009-12-15 - Marco Clemencic
  - Fixed bug #59659: Untested StatusCodes in IODataManager.cpp

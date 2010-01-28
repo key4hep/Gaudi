@@ -5,6 +5,7 @@ Package Manager: Markus Frank, Marco Clemencic
  - Fixed icc remark #424: extra ";" ignored
  - Fixed icc remark #111: statement is unreachable
  - Fixed icc remark #593: variable "X" was set but never used
+ - Fixed icc remark #177: X declared but never referenced
 
 ============================== GaudiPoolDb v5r6 ==============================
 ! 2010-01-06 - Jaap Panman

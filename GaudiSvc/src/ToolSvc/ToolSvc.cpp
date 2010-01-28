@@ -450,10 +450,6 @@ public:
   IAlgTool* get() {
     return m_tool;
   }
-  IAlgTool& operator*() const {
-    assert(m_tool != 0);
-    return *m_tool;
-  }
   IAlgTool* operator->() const {
     assert(m_tool != 0);
     return m_tool;

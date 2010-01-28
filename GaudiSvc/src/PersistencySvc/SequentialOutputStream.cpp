@@ -85,7 +85,7 @@ void SequentialOutputStream::makeFilename()
       if ( m_events == 0 ) {
          try {
             m_iFile = lexical_cast< unsigned int >( stem );
-         } catch( const bad_lexical_cast& cast ) {
+         } catch( const bad_lexical_cast& /* cast */ ) {
             stringstream stream;
             stream << "Filename " << filename 
                    << " is not a number, which was needed.";

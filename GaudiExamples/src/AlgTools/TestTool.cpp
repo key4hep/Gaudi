@@ -8,6 +8,11 @@
 // local
 #include "TestTool.h"
 
+#ifdef __ICC
+//  disable icc remark #593: variable "X" was set but never used
+#pragma warning(disable:593)
+#endif
+
 //-----------------------------------------------------------------------------
 // Implementation file for class : TestTool
 //
@@ -50,8 +55,6 @@ StatusCode TestTool::initialize()
     }
     debug() << "Loading tool " << name << " of type " << type << endmsg;
     mytool = tool<IAlgTool>( type, name );
-    // Avoids icc remark #593 variable "X" was set but never used
-    mytool->refCount();
   }
 
   return StatusCode::SUCCESS;

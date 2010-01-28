@@ -3,6 +3,7 @@ Package manager : Marco Clemencic
 
 ! 2010-01-28 - Marco Clemencic
  - Fixed icc remark #111: statement is unreachable
+ - Fixed icc remark #177: X declared but never referenced
 
 =============================== GaudiSvc v18r7 ===============================
 ! 2010-01-19 - Markus Frank

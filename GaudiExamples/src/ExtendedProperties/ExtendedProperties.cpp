@@ -18,6 +18,11 @@
 #include "GaudiAlg/GaudiAlgorithm.h"
 // ============================================================================
 
+#ifdef __ICC
+// disable icc remark #177: declared but never referenced
+#pragma warning(disable:177)
+#endif
+
 // needed to compile on gcc4.x
 namespace 
 {

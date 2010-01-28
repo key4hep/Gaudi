@@ -83,7 +83,7 @@ HistorySvc::HistorySvc( const std::string& name, ISvcLocator* svc )
 
     // hack to bring in environ
     vector<string> envtmp = System::getEnv();
-
+    envtmp.size(); // prevent icc remark #177: X declared but never referenced
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
