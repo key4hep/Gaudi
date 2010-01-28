@@ -48,7 +48,7 @@ using ROOT::Reflex::PluginService;
 static pool::DbInstanceCount::Counter* s_count =
   pool::DbInstanceCount::getCounter(typeid(PoolDbCnvSvc));
 
-DECLARE_SERVICE_FACTORY(PoolDbCnvSvc);
+DECLARE_SERVICE_FACTORY(PoolDbCnvSvc)
 
 typedef std::vector<std::string> StringV;
 typedef const std::string& CSTR;

@@ -36,7 +36,7 @@ const IGslSvc* GaudiGSL::gslSvc () { return s_gslSvc ; }
  */
 // ============================================================================
 const IGslSvc* GaudiGSL::setGslSvc ( const IGslSvc* value ) 
-{ s_gslSvc = value ; return gslSvc() ; };
+{ s_gslSvc = value ; return gslSvc() ; }
 // ============================================================================
 
 // ============================================================================

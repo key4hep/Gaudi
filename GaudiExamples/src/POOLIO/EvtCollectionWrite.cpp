@@ -24,7 +24,7 @@
 
 using namespace Gaudi::Examples;
 
-DECLARE_ALGORITHM_FACTORY(EvtCollectionWrite);
+DECLARE_ALGORITHM_FACTORY(EvtCollectionWrite)
 
 /**  Algorithm parameters which can be set at run time must be declared.
      This should be done in the constructor.

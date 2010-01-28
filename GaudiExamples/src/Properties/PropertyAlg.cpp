@@ -15,7 +15,7 @@
 
 // Static Factory declaration
 
-DECLARE_ALGORITHM_FACTORY(PropertyAlg);
+DECLARE_ALGORITHM_FACTORY(PropertyAlg)
 
 // Read Handler
 //------------------------------------------------------------------------------

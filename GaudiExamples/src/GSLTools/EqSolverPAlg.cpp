@@ -36,7 +36,7 @@ EqSolverPAlg::EqSolverPAlg( const std::string& name,
 //=============================================================================
 // Destructor
 //=============================================================================
-EqSolverPAlg::~EqSolverPAlg() {};
+EqSolverPAlg::~EqSolverPAlg() {}
 
 //=============================================================================
 typedef Genfun::AbsFunction GenFunc;
@@ -45,17 +45,17 @@ typedef Genfun::AbsFunction GenFunc;
 double function1 ( const std::vector<double>& x  )
 {
   return x[0] * x[0] + x[1] * x[1]- 1;
-};
+}
 
 double function2 ( const std::vector<double>& x  )
 {
   return x[0] + x[1] ;
-};
+}
 
 double function3 ( const std::vector<double>& x  )
 {
   return x[2] * x[2] * x[2] * x[1] - 120 ;
-};
+}
 
 //=============================================================================
 // Initialisation. Check parameters
@@ -79,7 +79,7 @@ StatusCode EqSolverPAlg::initialize() {
   log << MSG::INFO << "....initialization done" << endmsg;
 
   return StatusCode::SUCCESS;
-};
+}
 
 //=============================================================================
 // Main execution
@@ -124,7 +124,7 @@ StatusCode EqSolverPAlg::execute() {
   log << endmsg;
 
   return StatusCode::SUCCESS;
-};
+}
 
 //=============================================================================
 //  Finalize

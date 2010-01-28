@@ -31,7 +31,7 @@ TestToolAlg::TestToolAlg( const std::string& name,
 //=============================================================================
 // Destructor
 //=============================================================================
-TestToolAlg::~TestToolAlg() {};
+TestToolAlg::~TestToolAlg() {}
 
 //=============================================================================
 // Initialisation. Check parameters
@@ -58,7 +58,7 @@ StatusCode TestToolAlg::initialize() {
   }
 
   return StatusCode::SUCCESS;
-};
+}
 
 //=============================================================================
 // Main execution
@@ -68,7 +68,7 @@ StatusCode TestToolAlg::execute() {
   debug() << "Execute" << endmsg;
 
   return StatusCode::SUCCESS;
-};
+}
 
 //=============================================================================
 //  Finalize

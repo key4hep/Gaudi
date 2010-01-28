@@ -24,7 +24,7 @@ namespace GaudiPython
 {
   /// call the python method
   GAUDI_API StatusCode call_python_method ( PyObject* self , const char* method ) ;
-};
+}
 
 namespace GaudiPython
 {

@@ -46,13 +46,13 @@ GslErrorException::GslErrorException
   , m_ignore ()
 {
   declareProperty ( "IgnoreCodes" , m_ignore );
-};
+}
 // ============================================================================
 
 // ============================================================================
 /// destructor (protetced and virtual)
 // ============================================================================
-GslErrorException::~GslErrorException(){};
+GslErrorException::~GslErrorException(){}
 // ============================================================================
 
 // ============================================================================
@@ -87,7 +87,7 @@ StatusCode GslErrorException::handle
   throw GaudiException( message , "*GLS Error*" , StatusCode::FAILURE );
   ///
   return StatusCode::SUCCESS ;
-};
+}
 // ============================================================================
 
 

@@ -50,5 +50,5 @@ namespace Gaudi
   typedef ROOT::Math::SVector<float, 8> Vector8F;   ///< 8D Vector (float)
   typedef ROOT::Math::SVector<float, 9> Vector9F;   ///< 9D Vector (float)
 
-};
+}
 #endif // KERNEL_GENERICVECTORTYPES_H

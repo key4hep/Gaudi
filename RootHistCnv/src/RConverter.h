@@ -88,6 +88,6 @@ namespace RootHistCnv {
     /// Switch to object directory (=Parent directory)
     TDirectory* changeDirectory(DataObject* pObject);
   };
-};    // namespace RootHistCnv
+} // namespace RootHistCnv
 
 #endif    // RootHistCnv_RConverter_H

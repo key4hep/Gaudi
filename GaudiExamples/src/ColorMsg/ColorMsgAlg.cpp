@@ -6,7 +6,7 @@
 
 // Static Factory declaration
 
-DECLARE_ALGORITHM_FACTORY(ColorMsgAlg);
+DECLARE_ALGORITHM_FACTORY(ColorMsgAlg)
 
 
 ///////////////////////////////////////////////////////////////////////////

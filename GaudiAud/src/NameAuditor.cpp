@@ -9,7 +9,7 @@
 
 #include <sstream>
 
-DECLARE_AUDITOR_FACTORY(NameAuditor);
+DECLARE_AUDITOR_FACTORY(NameAuditor)
 
 NameAuditor::NameAuditor(const std::string& name, ISvcLocator* pSvcLocator) :
   Auditor(name, pSvcLocator)

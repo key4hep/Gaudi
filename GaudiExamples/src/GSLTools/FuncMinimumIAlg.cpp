@@ -37,7 +37,7 @@ FuncMinimumIAlg::FuncMinimumIAlg( const std::string& name,
 //=============================================================================
 // Destructor
 //=============================================================================
-FuncMinimumIAlg::~FuncMinimumIAlg() {};
+FuncMinimumIAlg::~FuncMinimumIAlg() {}
 
 //=============================================================================
 // Class for the function "IFunction"
@@ -109,7 +109,7 @@ StatusCode FuncMinimumIAlg::initialize() {
   log << MSG::INFO << "....initialization done" << endmsg;
 
   return StatusCode::SUCCESS;
-};
+}
 
 //=============================================================================
 // Main execution
@@ -183,7 +183,7 @@ StatusCode FuncMinimumIAlg::execute() {
   log << endmsg;
 
   return StatusCode::SUCCESS;
-};
+}
 
 //=============================================================================
 //  Finalize

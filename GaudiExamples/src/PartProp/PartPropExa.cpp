@@ -10,7 +10,7 @@
 
 // Static Factory declaration
 
-DECLARE_ALGORITHM_FACTORY(PartPropExa);
+DECLARE_ALGORITHM_FACTORY(PartPropExa)
 
 PartPropExa::PartPropExa( const std::string& name, ISvcLocator* pSvcLocator ) :
   Algorithm(name, pSvcLocator)

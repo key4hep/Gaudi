@@ -35,7 +35,7 @@ namespace TupleExample
     t -> column ( n + "F" , p.first  ) ;
     t -> column ( n + "S" , p.second ) ;    
     return t ;
-  } ;
+  }
   
   /** helper function useful for the partial 
    *  specialization of N-Tuple fills
@@ -55,9 +55,9 @@ namespace TupleExample
     t -> column ( n + "S" , p.first.second ) ;    
     t -> column ( n + "T" , p.second       ) ;    
     return t ;
-  } ;
+  }
   
-};
+}
 
 // ============================================================================
 // The END 

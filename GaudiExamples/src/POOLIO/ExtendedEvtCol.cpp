@@ -82,7 +82,7 @@ namespace Gaudi
 // ============================================================================
 /// MANDATORY factory for instantiation 
 // ============================================================================
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(Gaudi::Examples,ExtendedEvtCol) ;
+DECLARE_NAMESPACE_ALGORITHM_FACTORY(Gaudi::Examples,ExtendedEvtCol)
 // ============================================================================
 /// local anonymous namespace to hide some technicalities
 // ============================================================================
@@ -95,10 +95,10 @@ namespace
     return ::sqrt ( track -> px () * track -> px () +
                     track -> py () * track -> py () +
                     track -> pz () * track -> pz () );
-  } ;
+  }
   /// local function for summation of Tracks's momenta
   inline double sumEnergy ( const double e , const Gaudi::Examples::MyTrack* track ) 
-  { return trkMomentum ( track ) + e ; } ;
+  { return trkMomentum ( track ) + e ; }
 }
 // ============================================================================
 /// the only one essential method: execute the algorithm

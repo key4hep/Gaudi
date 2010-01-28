@@ -133,9 +133,9 @@ StatusCode Gaudi::Examples::EvtColAlg::execute()
   tuple -> write  () ; ///< The action is restored again!           NB !!
   
   return StatusCode::SUCCESS ;
-};
+}
 // ============================================================================
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(Gaudi::Examples,EvtColAlg) ;
+DECLARE_NAMESPACE_ALGORITHM_FACTORY(Gaudi::Examples,EvtColAlg)
 // ============================================================================
 // The END 
 // ============================================================================

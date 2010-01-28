@@ -31,7 +31,7 @@
 
 using namespace Gaudi::Examples;
 
-DECLARE_ALGORITHM_FACTORY(ReadAlg);
+DECLARE_ALGORITHM_FACTORY(ReadAlg)
 
 //--------------------------------------------------------------------
 // Initialize

@@ -77,7 +77,7 @@ namespace Genfun
       {
         std::copy ( begin_x , end_x                         , m_x ) ;
         std::copy ( begin_y , begin_y + ( end_x - begin_x ) , m_y ) ;
-      };
+      }
       /** templated constructor from the sequence of (x,y(x)) pairs
        *  as sequence of pairs the class TabulatedProperty
        *  can be used
@@ -105,7 +105,7 @@ namespace Genfun
           *_x = it -> first  ; ++_x ;
           *_y = it -> second ; ++_y ;
         };
-      };
+      }
       /// copy constructor
       SplineBase( const SplineBase& ) ;
       /// destructor
@@ -144,7 +144,7 @@ namespace Genfun
       typedef SplineBase::Data2D Data2D ;
     public:
       /// mandatory macro from CLHEP/GenericFunctions
-      FUNCTION_OBJECT_DEF( GSLSpline ) ;
+      FUNCTION_OBJECT_DEF( GSLSpline )
     public:
       /** constructor from vectors and type
        *
@@ -225,7 +225,7 @@ namespace Genfun
         DATAY                                begin_y )
         : AbsFunction ( )
         , m_spline( type , begin_x , end_x , begin_y )
-      {};
+      {}
       /** templated constructor from the sequence of pairs
        *  as sequence of pairs the class TabulatedProperty
        *  can be used
@@ -244,7 +244,7 @@ namespace Genfun
         DATA                                 end   )
         : AbsFunction ( )
         , m_spline( type , begin , end )
-      {};
+      {}
       /// constructor from base
       GSLSpline ( const SplineBase& ) ;
       /// copy constructor
@@ -283,7 +283,7 @@ namespace Genfun
       typedef SplineBase::Data2D Data2D ;
     public:
       /// mandatory macro from CLHEP/GenericFunctions
-      FUNCTION_OBJECT_DEF( GSLSplineDeriv ) ;
+      FUNCTION_OBJECT_DEF( GSLSplineDeriv )
     public:
       /** constructor from vectors and type
        *
@@ -364,7 +364,7 @@ namespace Genfun
         DATAY                                begin_y )
         : AbsFunction ( )
         , m_spline( type , begin_x , end_x , begin_y )
-      {};
+      {}
       /** templated constructor from the sequence of pairs
        *  as sequence of pairs the class TabulatedProperty
        *  can be used
@@ -383,7 +383,7 @@ namespace Genfun
         DATA                                 end   )
         : AbsFunction ( )
         , m_spline( type , begin , end )
-      {};
+      {}
       /// constructor from base
       GSLSplineDeriv ( const SplineBase&     ) ;
       /// copy constructor
@@ -422,7 +422,7 @@ namespace Genfun
       typedef SplineBase::Data2D Data2D ;
     public:
       /// mandatory macro from CLHEP/GenericFunctions
-      FUNCTION_OBJECT_DEF( GSLSplineDeriv2 ) ;
+      FUNCTION_OBJECT_DEF( GSLSplineDeriv2 )
     public:
       /** constructor from vectors and type
        *
@@ -503,7 +503,7 @@ namespace Genfun
         DATAY                                begin_y )
         : AbsFunction ( )
         , m_spline( type , begin_x , end_x , begin_y )
-      {};
+      {}
       /** templated constructor from the sequence of pairs
        *  as sequence of pairs the class TabulatedProperty
        *  can be used
@@ -522,7 +522,7 @@ namespace Genfun
         DATA                                 end   )
         : AbsFunction ( )
         , m_spline( type , begin , end )
-      {};
+      {}
       /// constructor from base
       GSLSplineDeriv2 ( const SplineBase&      ) ;
       /// copy constructor
@@ -562,7 +562,7 @@ namespace Genfun
       typedef SplineBase::Data2D Data2D ;
     public:
       /// mandatory macro from CLHEP/GenericFunctions
-      FUNCTION_OBJECT_DEF( GSLSplineInteg ) ;
+      FUNCTION_OBJECT_DEF( GSLSplineInteg )
     public:
       /** constructor from vectors and type
        *
@@ -649,7 +649,7 @@ namespace Genfun
         : AbsFunction (      )
         , m_spline    ( type , begin_x , end_x , begin_y )
         , m_low       ( low  )
-      {};
+      {}
       /** templated constructor from the sequence of pairs
        *  as sequence of pairs the class TabulatedProperty
        *  can be used
@@ -671,7 +671,7 @@ namespace Genfun
         : AbsFunction (      )
         , m_spline    ( type , begin , end )
         , m_low       ( low  )
-      {};
+      {}
       /// constructor from base
       GSLSplineInteg ( const SplineBase&              ,
                        const double           low = 0 ) ;
@@ -705,8 +705,8 @@ namespace Genfun
       double     m_low    ;
     };
 
-  };
-};
+  }
+}
 
 
 #endif // GAUDIMATH_SPLINES_H

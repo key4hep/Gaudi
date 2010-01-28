@@ -46,8 +46,8 @@ namespace Genfun
     
     double GSL_Adaptor( double x , void* params ) ;
       
-  }; // end of namespace GaudiMathImplementation
-}; // end of namespace Genfun 
+  } // end of namespace GaudiMathImplementation
+} // end of namespace Genfun 
 // ============================================================================
 
     

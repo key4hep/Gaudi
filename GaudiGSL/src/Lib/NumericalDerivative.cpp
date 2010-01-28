@@ -38,7 +38,7 @@ namespace Genfun
     // ========================================================================
     /// from CLHEP/GenericFunctions
     // ========================================================================
-    FUNCTION_OBJECT_IMP( NumericalDerivative );
+    FUNCTION_OBJECT_IMP( NumericalDerivative )
     // ========================================================================
     
     // ========================================================================
@@ -64,7 +64,7 @@ namespace Genfun
     {
       if( m_index >= m_DIM ) 
         { Exception ( "::constructor invalid variable index " ) ; };
-    } ;
+    }
     // ========================================================================
     
     // ========================================================================
@@ -80,14 +80,14 @@ namespace Genfun
       , m_argument  ( right.m_DIM               )
       , m_result    ( GSL_NEGINF                )
       , m_error     ( GSL_POSINF                )
-    {} ;
+    {}
     // ========================================================================
     
     // ========================================================================
     /// destructor 
     // ========================================================================
     NumericalDerivative::~NumericalDerivative()
-    { if( 0 != m_function ) { delete m_function ; m_function = 0 ; } };
+    { if( 0 != m_function ) { delete m_function ; m_function = 0 ; } }
     // ========================================================================
     
     // ========================================================================
@@ -108,7 +108,7 @@ namespace Genfun
       const  AbsFunction& aux = 
         NumericalDerivative( *this , idx , type() ) ;
       return FunctionNoop( &aux ) ;
-    };
+    }
     // ========================================================================
     
     // ========================================================================
@@ -155,7 +155,7 @@ namespace Genfun
                       __FILE__ , __LINE__ , ierrno ) ; }
       
       return result() ;
-    };
+    }
     // ========================================================================
     
     // ========================================================================
@@ -173,7 +173,7 @@ namespace Genfun
       Argument arg(1) ;
       arg[0] = argument ;
       return (*this)( arg ) ;
-    };
+    }
     // ========================================================================
     
     // ========================================================================
@@ -186,13 +186,13 @@ namespace Genfun
       throw GaudiException( "NumericalDerivative" + message , 
                             "*GaudiMath*"         , sc      ) ;
       return sc ;
-    };
+    }
     // ========================================================================
     
  
-  }; // end of namespace GaudiMathImplementation 
+  } // end of namespace GaudiMathImplementation 
 
-}; // end of namespace Genfun (due to GSL) 
+} // end of namespace Genfun (due to GSL) 
  
 // ============================================================================
 // The END 

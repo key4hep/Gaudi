@@ -31,7 +31,7 @@
 
 PLUGINSVC_FACTORY_WITH_ID( PoolDbDirectoryCnv, 
                            ConverterID(POOL_StorageType,CLID_StatisticsDirectory),
-                           IConverter*(long, CLID, ISvcLocator*) );
+                           IConverter*(long, CLID, ISvcLocator*) )
 
 
 // Standard Constructor

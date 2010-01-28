@@ -11,7 +11,7 @@
 
 // Static Factory declaration
 
-DECLARE_ALGORITHM_FACTORY(StopperAlg);
+DECLARE_ALGORITHM_FACTORY(StopperAlg)
 
 // Constructor
 //------------------------------------------------------------------------------

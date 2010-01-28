@@ -15,6 +15,6 @@
  */
 namespace GaudiPython 
 {
-} ; // end of namespace GaudiPython
+} // end of namespace GaudiPython
 
 #endif // GAUDIPYTHON_GAUDIPYTHON_H

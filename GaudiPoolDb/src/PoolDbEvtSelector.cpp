@@ -26,7 +26,7 @@
 #include "StorageSvc/DbSelect.h"
 #include "StorageSvc/DbInstanceCount.h"
 
-DECLARE_SERVICE_FACTORY(PoolDbEvtSelector);
+DECLARE_SERVICE_FACTORY(PoolDbEvtSelector)
 
 /** @class PoolDbContext
  *

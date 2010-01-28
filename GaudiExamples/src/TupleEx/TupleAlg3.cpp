@@ -69,7 +69,7 @@ private:
   TupleAlg3& operator=( const TupleAlg3& ) ;
 };
 // ============================================================================
-DECLARE_ALGORITHM_FACTORY(TupleAlg3) ;
+DECLARE_ALGORITHM_FACTORY(TupleAlg3)
 // ============================================================================
 /** the only one essential method
  *  @see IAlgoruthm
@@ -217,7 +217,7 @@ StatusCode TupleAlg3::execute()
   
   return StatusCode::SUCCESS ;
   
-};
+}
 // ============================================================================
 
 // ============================================================================

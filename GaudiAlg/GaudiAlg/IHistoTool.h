@@ -20,7 +20,7 @@ namespace AIDA
   class IHistogram1D;
   class IHistogram2D;
   class IHistogram3D;
-};
+}
 
 /** @class IHistoTool IHistoTool.h GaudiTools/IHistoTool.h
  *
@@ -766,7 +766,7 @@ public:  // non-virtual methods
     while ( first != last && 0 != h  )
     { h = fill ( h , func( *first ) , 1.0 , title  ) ; ++first ; }
     return h ;
-  };
+  }
 
   /** fill the 1D histogram with forced ID and information from
    *  [first,last) sequence
@@ -834,7 +834,7 @@ public:  // non-virtual methods
     while ( first != last && 0 != h )
     { h = fill( h , func( *first ) , 1.0 , title  ) ; ++first ; }
     return h ;
-  };
+  }
 
   /** book and fill the 1D histogram with information from
    *  [first,last) sequence with given weight
@@ -909,7 +909,7 @@ public:  // non-virtual methods
                  func   ( *first ) ,
                  weight ( *first ) , title  ) ; ++first ; }
     return h ;
-  };
+  }
 
   /** book and fill the 1D histogram with forced ID and information from
    *  [first,last) sequence with given weight
@@ -990,7 +990,7 @@ public:  // non-virtual methods
                   func   ( *first ) ,
                   weight ( *first ) , title  ) ; ++first ; }
     return h ;
-  };
+  }
 
 protected:
 

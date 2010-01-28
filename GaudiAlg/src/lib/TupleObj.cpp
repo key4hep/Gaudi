@@ -246,7 +246,7 @@ namespace
       
     }
     return tokens.size();
-  };
+  }
 }
 // ============================================================================
 StatusCode Tuples::TupleObj::fill( const char*  format ... )

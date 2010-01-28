@@ -8,7 +8,7 @@
 
 // Static Factory declaration
 
-DECLARE_ALGORITHM_FACTORY(MyDataAlgorithm);
+DECLARE_ALGORITHM_FACTORY(MyDataAlgorithm)
 
 // Constructor
 //------------------------------------------------------------------------------

@@ -89,7 +89,7 @@ StatusCode Gaudi::Examples::ArrayProperties::execute ()
 // ============================================================================
 /// The Factory
 // ============================================================================
-DECLARE_NAMESPACE_ALGORITHM_FACTORY( Gaudi::Examples , ArrayProperties ) ;
+DECLARE_NAMESPACE_ALGORITHM_FACTORY( Gaudi::Examples , ArrayProperties )
 // ============================================================================
 // The END 
 // ============================================================================

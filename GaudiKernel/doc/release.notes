@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-01-28 - Marco Clemencic
+ - Fixed icc remark #424: extra ";" ignored
+
 ============================= GaudiKernel v27r7 ==============================
 ! 2010-01-19 - Markus Frank
  - Fixed EventSelectorDataStream to fit with the changes in GaudiSvc

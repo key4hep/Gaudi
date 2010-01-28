@@ -130,11 +130,11 @@ static inline int load(void* ptr,PoolDbTokenWrap* lnk)   {
 // instances of this service
 PLUGINSVC_FACTORY_WITH_ID( PoolDbNTupleCnv,
                            ConverterID(POOL_StorageType,CLID_RowWiseTuple),
-                           IConverter*(long, CLID, ISvcLocator*) );
+                           IConverter*(long, CLID, ISvcLocator*) )
 
 PLUGINSVC_FACTORY_WITH_ID( PoolDbNTupleCnv,
                            ConverterID(POOL_StorageType,CLID_ColumnWiseTuple),
-                           IConverter*(long, CLID, ISvcLocator*) );
+                           IConverter*(long, CLID, ISvcLocator*) )
 
 static inline std::istream& loadLong(std::istream& is)    {
   long i;

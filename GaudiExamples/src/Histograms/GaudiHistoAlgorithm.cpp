@@ -37,7 +37,7 @@ GaudiHistoAlgorithm::GaudiHistoAlgorithm( const std::string& name,
 //=============================================================================
 // Destructor
 //=============================================================================
-GaudiHistoAlgorithm::~GaudiHistoAlgorithm() {};
+GaudiHistoAlgorithm::~GaudiHistoAlgorithm() {}
 
 //=============================================================================
 // Initialization
@@ -49,7 +49,7 @@ StatusCode GaudiHistoAlgorithm::initialize()
   if ( sc.isFailure() ) return sc;
 
   return sc;
-};
+}
 
 //=============================================================================
 // Main execution
@@ -175,7 +175,7 @@ StatusCode GaudiHistoAlgorithm::execute()
   if (0==nCalls) Print( "Filling Histograms...... Please be patient !" );
   ++nCalls;
   return StatusCode::SUCCESS;
-};
+}
 
 //=============================================================================
 //  Finalize

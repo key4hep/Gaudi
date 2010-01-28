@@ -77,7 +77,7 @@ namespace GslErrorHandlers
     int         line   ,
     int         code   );
 
-};
+}
 
 // ============================================================================
 // The END

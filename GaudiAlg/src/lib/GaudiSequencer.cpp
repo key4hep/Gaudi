@@ -34,7 +34,7 @@ GaudiSequencer::GaudiSequencer( const std::string& name,
 //=============================================================================
 // Destructor
 //=============================================================================
-GaudiSequencer::~GaudiSequencer() {};
+GaudiSequencer::~GaudiSequencer() {}
 
 //=============================================================================
 // Initialisation. Check parameters
@@ -74,7 +74,7 @@ StatusCode GaudiSequencer::initialize() {
   if ( m_measureTime ) m_timerTool->decreaseIndent();
 
   return StatusCode::SUCCESS;
-};
+}
 
 //=============================================================================
 // Main execution
@@ -136,7 +136,7 @@ StatusCode GaudiSequencer::execute() {
   if ( m_measureTime ) m_timerTool->stop( m_timer );
 
   return m_returnOK ? StatusCode::SUCCESS : result;
-};
+}
 
 //=============================================================================
 //  Finalize

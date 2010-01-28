@@ -30,5 +30,5 @@
  */
 // ============================================================================
 std::string fileLine( const int number ) 
-{ return boost::lexical_cast<std::string>( number ) ; } ;
+{ return boost::lexical_cast<std::string>( number ) ; }
 // ============================================================================

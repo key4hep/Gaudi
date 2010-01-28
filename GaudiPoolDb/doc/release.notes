@@ -1,6 +1,9 @@
 Package: GaudiPoolDb
 Package Manager: Markus Frank, Marco Clemencic
 
+! 2010-01-28 - Marco Clemencic
+ - Fixed icc remark #424: extra ";" ignored
+
 ============================== GaudiPoolDb v5r6 ==============================
 ! 2010-01-06 - Jaap Panman
  - Fixed an error in GaudiPoolDbRoot.opts.

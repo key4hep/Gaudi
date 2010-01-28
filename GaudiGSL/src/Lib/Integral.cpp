@@ -42,7 +42,7 @@ namespace GaudiMath
       ( cross , 1 , a , b, type , rule , epsabs , epsrel , size ) ;
     
     return result( Genfun::Argument(1) ) ;
-  };
+  }
   
   double Integral 
   ( const Genfun::AbsFunction&                 function  ,
@@ -70,7 +70,7 @@ namespace GaudiMath
       ( cross , 1 , a , b, points , epsabs , epsrel , size ) ;
     
     return result( Genfun::Argument(1) ) ;
-  } ;
+  }
   
   double Integral 
   ( const Genfun::AbsFunction&                 function  ,
@@ -96,7 +96,7 @@ namespace GaudiMath
       ( cross , 1 , a , b , epsabs , epsrel , size ) ;
     
     return result( Genfun::Argument(1) ) ;
-  };
+  }
   
   double Integral 
   ( const Genfun::AbsFunction&                 function  ,
@@ -122,7 +122,7 @@ namespace GaudiMath
       ( cross , 1 , a , b , epsabs , epsrel , size ) ;
     
     return result( Genfun::Argument(1) ) ;
-  };
+  }
   
   
 
@@ -152,14 +152,14 @@ namespace GaudiMath
       ( cross , 1 , static_cast<float>(epsabs) , static_cast<float>(epsrel) , size ) ;
     
     return result( Genfun::Argument(1) ) ;
-  };
+  }
   
   
 
 
 
   
-};
+}
 
 
 // ============================================================================

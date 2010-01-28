@@ -82,7 +82,7 @@ namespace Genfun
     public:
 
       /// From CLHEP/GenericFunctions
-      FUNCTION_OBJECT_DEF( NumericalDefiniteIntegral ) ;
+      FUNCTION_OBJECT_DEF( NumericalDefiniteIntegral )
 
     public:
 
@@ -409,8 +409,8 @@ namespace Genfun
 
     };
 
-  };   // end of namespace GaudiMathImplementation
-};   // end of namespace Genfun
+  } // end of namespace GaudiMathImplementation
+} // end of namespace Genfun
 
 // ============================================================================
 // The END

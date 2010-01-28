@@ -36,7 +36,7 @@ namespace Genfun
       typedef int (*Function)( double , gsl_sf_result* ) ;
     public:
       /// mandatory macro from CLHEP/GenericFunctions
-      FUNCTION_OBJECT_DEF( GSLFunctionWithError ) ;
+      FUNCTION_OBJECT_DEF( GSLFunctionWithError )
     public:
       /// constructor with pointer to function
       GSLFunctionWithError ( Function function ) ;
@@ -74,7 +74,7 @@ namespace Genfun
       typedef double (*Function)( double , gsl_mode_t ) ;
     public:
       /// mandatory macro from CLHEP/GenericFunctions
-      FUNCTION_OBJECT_DEF( GSLFunctionWithMode ) ;
+      FUNCTION_OBJECT_DEF( GSLFunctionWithMode )
     public:
       /// constructor with pointer to function
       GSLFunctionWithMode ( Function          fun  ,
@@ -112,7 +112,7 @@ namespace Genfun
                                gsl_sf_result*  ) ;
     public:
       /// mandatory macro from CLHEP/GenericFunctions
-      FUNCTION_OBJECT_DEF( GSLFunctionWithModeAndError ) ;
+      FUNCTION_OBJECT_DEF( GSLFunctionWithModeAndError )
     public:
       /// constructor with pointer to function
       GSLFunctionWithModeAndError ( Function          fun  ,
@@ -147,8 +147,8 @@ namespace Genfun
       gsl_sf_result*  m_result   ;
     };
 
-  } ; // end of namespace GaudiMath Implemnentation
-}; // end of namespace Genfun
+  } // end of namespace GaudiMath Implemnentation
+} // end of namespace Genfun
 
 #endif // GAUDIMATH_GSLFUNADAPTERS_H
 // ============================================================================

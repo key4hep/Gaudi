@@ -41,8 +41,8 @@ namespace GaudiMath
                         Gauss51 =       5 , 
                         Gauss61 =       6 , 
                         Default = Gauss31 } ;
-  }; // end of namespace Integration  
-}; // end of namespace GaudiMath
+  } // end of namespace Integration  
+} // end of namespace GaudiMath
 
 // ============================================================================
 // The END 

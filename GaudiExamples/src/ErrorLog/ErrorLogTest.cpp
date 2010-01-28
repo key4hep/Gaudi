@@ -10,7 +10,7 @@
 
 #include "GaudiKernel/IssueSeverity.h"
 
-DECLARE_ALGORITHM_FACTORY(ErrorLogTest);
+DECLARE_ALGORITHM_FACTORY(ErrorLogTest)
 
 //------------------------------------------------------------------------------
 ErrorLogTest::ErrorLogTest(const std::string& name,

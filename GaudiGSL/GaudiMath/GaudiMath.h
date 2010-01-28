@@ -47,7 +47,7 @@ namespace GaudiMath
   typedef Genfun::GaudiMathImplementation::GSLSplineInteg  
   SplineInteg  ;
   
-}; // end of namespace 
+} // end of namespace 
 
 // ============================================================================
 // The END 

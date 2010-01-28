@@ -49,13 +49,13 @@ static pool::DbInstanceCount::Counter* s_count =
 
 PLUGINSVC_FACTORY_WITH_ID( PoolDbBaseCnv,
                            ConverterID(POOL_StorageType,CLID_Any),
-                           IConverter*(long, CLID, ISvcLocator*) );
+                           IConverter*(long, CLID, ISvcLocator*) )
 PLUGINSVC_FACTORY_WITH_ID( PoolDbBaseCnv,
                            ConverterID(POOL_StorageType,CLID_Any+CLID_ObjectList),
-                           IConverter*(long, CLID, ISvcLocator*) );
+                           IConverter*(long, CLID, ISvcLocator*) )
 PLUGINSVC_FACTORY_WITH_ID( PoolDbBaseCnv,
                            ConverterID(POOL_StorageType,CLID_Any+CLID_ObjectVector),
-                           IConverter*(long, CLID, ISvcLocator*) );
+                           IConverter*(long, CLID, ISvcLocator*) )
 
 class PoolDbObjectContext;
 static PoolDbObjectContext* s_context = 0;

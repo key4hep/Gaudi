@@ -5,11 +5,11 @@
 #include "GaudiAlg/GaudiSequencer.h"
 #include "GaudiKernel/DeclareFactoryEntries.h"
 
-DECLARE_ALGORITHM_FACTORY( EventCounter   );
-DECLARE_ALGORITHM_FACTORY( Prescaler      );
-DECLARE_ALGORITHM_FACTORY( Sequencer      );
-DECLARE_ALGORITHM_FACTORY( GaudiAlgorithm );
-DECLARE_ALGORITHM_FACTORY( GaudiSequencer );
+DECLARE_ALGORITHM_FACTORY( EventCounter   )
+DECLARE_ALGORITHM_FACTORY( Prescaler      )
+DECLARE_ALGORITHM_FACTORY( Sequencer      )
+DECLARE_ALGORITHM_FACTORY( GaudiAlgorithm )
+DECLARE_ALGORITHM_FACTORY( GaudiSequencer )
 
 DECLARE_FACTORY_ENTRIES( GaudiAlg ) {
     DECLARE_ALGORITHM( EventCounter   );

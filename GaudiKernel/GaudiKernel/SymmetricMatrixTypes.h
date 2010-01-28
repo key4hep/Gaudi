@@ -67,5 +67,5 @@ namespace Gaudi
                               ROOT::Math::MatRepSym<float,9> > SymMatrix9x9F; ///< Symmetrix 9x9 matrix (float)
 
 
-};
+}
 #endif // KERNEL_SYMMETRICMATRIXTYPES_H

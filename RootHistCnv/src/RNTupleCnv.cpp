@@ -336,4 +336,4 @@ namespace RootHistCnv  {
   INSTANTIATE(unsigned int)
   INSTANTIATE(unsigned short)
   INSTANTIATE(unsigned long)
-};
+}

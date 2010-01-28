@@ -1,6 +1,9 @@
 Package: GaudiAud
 Package manager : David Quarrie, Marco Clemencic
 
+! 2010-01-28 - Marco Clemencic
+ - Fixed icc remark #424: extra ";" ignored
+
 ================ GaudiAud v9r1 ====================================
 ! 2009-07-30 - Marco Clemencic
  - Fixed some doxygen warnings.

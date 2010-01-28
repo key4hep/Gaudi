@@ -19,8 +19,8 @@ namespace GaudiMath
         Akima            ,  // Akima spline with natural  boundary conditions 
         Akima_Periodic      // Akima spline with periodic boundary conditions 
       };
-  }; // end of namespace Interpolation
-}; //end of namespace GaudiMath
+  } // end of namespace Interpolation
+} //end of namespace GaudiMath
 
 #endif // GAUDIMATH_INTERPOLATION_H
 // ============================================================================

@@ -431,7 +431,7 @@ StatusCode TupleAlg::execute()
   
   
   return StatusCode::SUCCESS ;
-};
+}
 
 // ============================================================================
 // The END 

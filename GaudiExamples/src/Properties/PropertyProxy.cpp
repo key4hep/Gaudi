@@ -12,7 +12,7 @@
 
 // Static Factory declaration
 
-DECLARE_ALGORITHM_FACTORY(PropertyProxy);
+DECLARE_ALGORITHM_FACTORY(PropertyProxy)
 
 // Constructor
 //------------------------------------------------------------------------------

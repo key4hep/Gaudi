@@ -66,5 +66,5 @@ namespace Gaudi
   typedef ROOT::Math::SMatrix<float, 2, 3> Matrix2x3F;   ///< Generic 2x3 matrix (float)
   typedef ROOT::Math::SMatrix<float, 3, 2> Matrix3x2F;   ///< Generic 3x2 matrix (float)
 
-};
+}
 #endif // KERNEL_GENERICMATRIXTYPES_H

@@ -40,11 +40,11 @@ TupleTool::TupleTool( const std::string& type,
   : GaudiTupleTool ( type, name , parent )
 {
   declareInterface<ITupleTool>(this);
-};
+}
 
 
 // ============================================================================
 /// destructor: virtual and protected 
 // ============================================================================
-TupleTool::~TupleTool() {}; 
+TupleTool::~TupleTool() {}
 // ============================================================================

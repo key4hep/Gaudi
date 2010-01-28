@@ -13,7 +13,7 @@
 // ============================================================================
 #include "GaudiKernel/Kernel.h"
 
-namespace AIDA { class IFunction ; };
+namespace AIDA { class IFunction ; }
 
 namespace Genfun
 {
@@ -32,7 +32,7 @@ namespace Genfun
     {
     public:
       /// mandatory macro from CLHEP/GenericFunctions
-      FUNCTION_OBJECT_DEF( AdapterIFunction ) ;
+      FUNCTION_OBJECT_DEF( AdapterIFunction )
     public:
       /** constructor from AIDA::Function
        *  @param fun AIDA function
@@ -96,7 +96,7 @@ namespace Genfun
                                   const double ) ;
     public:
       /// mandatory macro from CLHEP/GenericFunctions
-      FUNCTION_OBJECT_DEF( Adapter2DoubleFunction ) ;
+      FUNCTION_OBJECT_DEF( Adapter2DoubleFunction )
     public:
       /// constructor
       Adapter2DoubleFunction ( Function func );
@@ -160,7 +160,7 @@ namespace Genfun
                                   const double ) ;
     public:
       /// mandatory macro from CLHEP/GenericFunctions
-      FUNCTION_OBJECT_DEF( Adapter3DoubleFunction ) ;
+      FUNCTION_OBJECT_DEF( Adapter3DoubleFunction )
     public:
       /// constructor
       Adapter3DoubleFunction ( Function func );
@@ -209,7 +209,7 @@ namespace Genfun
       enum Case { TrivialArg , ArrayArg , VectorArg } ;
     public:
       /// From CLHEP/GenericFunctions
-      FUNCTION_OBJECT_DEF( SimpleFunction ) ;
+      FUNCTION_OBJECT_DEF( SimpleFunction )
 
     public:
 
@@ -271,8 +271,8 @@ namespace Genfun
       mutable std::vector<double>  m_arg3     ;
     };
 
-  }; // end of namespace GaudiMathImeplementation
-}; // end of namespace Genfun
+  } // end of namespace GaudiMathImeplementation
+} // end of namespace Genfun
 
 
 #endif // GAUDIMATH_FUNADAPTERS_H

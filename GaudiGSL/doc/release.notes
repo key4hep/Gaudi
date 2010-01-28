@@ -3,6 +3,9 @@
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! =============================================================================
 
+! 2010-01-28 - Marco Clemencic
+ - Fixed icc remark #424: extra ";" ignored
+
 =============================== GaudiGSL v7r4 ================================
 ! 2010-01-15 - Marco Clemencic
  - Fixed compilation on icc 11.

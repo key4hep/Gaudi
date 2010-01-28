@@ -96,7 +96,7 @@ StatusCode Gaudi::Examples::BoostArrayProperties::execute ()
 // ============================================================================
 /// The Factory
 // ============================================================================
-DECLARE_NAMESPACE_ALGORITHM_FACTORY( Gaudi::Examples , BoostArrayProperties ) ;
+DECLARE_NAMESPACE_ALGORITHM_FACTORY( Gaudi::Examples , BoostArrayProperties )
 // ============================================================================
 // The END 
 // ============================================================================

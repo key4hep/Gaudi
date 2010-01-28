@@ -69,7 +69,7 @@ namespace GaudiMath
     const double                               epsrel    = 1.e-6   ,
     const size_t                               size      = 1000    ) ;
 
-};
+}
 
 // ============================================================================
 // The END

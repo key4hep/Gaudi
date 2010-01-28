@@ -85,5 +85,5 @@ StatusCode MyAlgorithm::finalize() {
 }
 
 // Static Factory declaration
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(bug_34121,MyAlgorithm);
+DECLARE_NAMESPACE_ALGORITHM_FACTORY(bug_34121,MyAlgorithm)
 

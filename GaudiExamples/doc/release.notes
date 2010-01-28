@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2010-01-28 - Marco Clemencic
+ - Fixed icc remark #424: extra ";" ignored
+
 ============================ GaudiExamples v21r7 =============================
 ! 2010-01-14 - Juan Palacios
  - Patch #3652: Bug fixes for GaudiPython HistoUtils.py and TupleUtils.py

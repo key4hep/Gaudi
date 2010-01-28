@@ -7,7 +7,7 @@
 #include "GaudiKernel/IChronoStatSvc.h"
 #include "GaudiKernel/Chrono.h"
 
-DECLARE_AUDITOR_FACTORY(ChronoAuditor);
+DECLARE_AUDITOR_FACTORY(ChronoAuditor)
 
 ChronoAuditor::ChronoAuditor(const std::string& name, ISvcLocator* pSvcLocator)
 : Auditor(name, pSvcLocator) {

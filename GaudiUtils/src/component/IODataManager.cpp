@@ -11,7 +11,7 @@
 
 #include <set>
 
-DECLARE_NAMESPACE_SERVICE_FACTORY(Gaudi,IODataManager);
+DECLARE_NAMESPACE_SERVICE_FACTORY(Gaudi,IODataManager)
 
 using namespace Gaudi;
 

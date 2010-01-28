@@ -39,7 +39,7 @@ EqSolverIAlg::EqSolverIAlg( const std::string& name,
 //=============================================================================
 // Destructor
 //=============================================================================
-EqSolverIAlg::~EqSolverIAlg() {};
+EqSolverIAlg::~EqSolverIAlg() {}
 
 typedef Genfun::AbsFunction GenFunc;
 
@@ -171,7 +171,7 @@ StatusCode EqSolverIAlg::initialize() {
   log << MSG::INFO << "....initialization done" << endmsg;
 
   return StatusCode::SUCCESS;
-};
+}
 
 //=============================================================================
 // Main execution
@@ -221,7 +221,7 @@ StatusCode EqSolverIAlg::execute() {
   log << endmsg;
 
   return StatusCode::SUCCESS;
-};
+}
 
 //=============================================================================
 //  Finalize

@@ -45,14 +45,14 @@ FuncMinimum::FuncMinimumMisc::FuncMinimumMisc
       Genfun::GENFUNCTION fun = func.partial(i);
       m_grad.push_back (fun.clone());
     }
-};
+}
 // ============================================================================
 
 // ============================================================================
 FuncMinimum::FuncMinimumMisc::~FuncMinimumMisc()
 {
   m_grad.clear();
-};
+}
 // ============================================================================
 
 //=============================================================================
@@ -138,7 +138,7 @@ namespace
     dfun_gsl ( v , params, df);
   }
 
-};
+}
 
 //=============================================================================
 /** Find minimum of the function "GenFunc"
@@ -235,7 +235,7 @@ StatusCode FuncMinimum::minimum (const IFuncMinimum::GenFunc&   func  ,
     }
 
   return StatusCode::SUCCESS;
-};
+}
 
 //=============================================================================
 /** Find minimum of the function "GenFunc"
@@ -283,7 +283,7 @@ StatusCode FuncMinimum::minimum (const IFuncMinimum::GenFunc&   func  ,
       return StatusCode::SUCCESS;
     }
 
-};
+}
 
 //=============================================================================
 StatusCode  FuncMinimum::initialize()
@@ -350,7 +350,7 @@ StatusCode FuncMinimum::finalize   ()
       return Error("Could not finaliaze base class GaudiTool", sc);
     }
   return StatusCode::SUCCESS;
-};
+}
 //=============================================================================
 FuncMinimum::~FuncMinimum( ) ///< Destructor
 

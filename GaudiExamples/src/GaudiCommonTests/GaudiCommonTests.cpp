@@ -21,7 +21,7 @@ using namespace Gaudi::Examples ;
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY(GaudiCommonTests);
+DECLARE_ALGORITHM_FACTORY(GaudiCommonTests)
 
 //=============================================================================
 // Standard constructor, initializes variables
@@ -34,7 +34,7 @@ GaudiCommonTests::GaudiCommonTests( const std::string& name,
 //=============================================================================
 // Destructor
 //=============================================================================
-GaudiCommonTests::~GaudiCommonTests() {};
+GaudiCommonTests::~GaudiCommonTests() {}
 
 //=============================================================================
 // Initialization

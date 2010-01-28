@@ -15,7 +15,7 @@
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY( DataListenerAlg );
+DECLARE_ALGORITHM_FACTORY( DataListenerAlg )
 
 
 //=============================================================================

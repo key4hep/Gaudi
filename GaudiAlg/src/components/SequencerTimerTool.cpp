@@ -38,7 +38,7 @@ SequencerTimerTool::SequencerTimerTool( const std::string& type,
 //=============================================================================
 // Destructor
 //=============================================================================
-SequencerTimerTool::~SequencerTimerTool() {};
+SequencerTimerTool::~SequencerTimerTool() {}
 
 
 //=========================================================================

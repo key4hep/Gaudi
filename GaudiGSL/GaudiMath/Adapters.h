@@ -53,7 +53,7 @@ namespace GaudiMath
   ( GSLFunctionWithModeAndError::Function function ,
     const gsl_mode_t&                     mode     ) ;
 
-}; // end of namespace GaudiMath
+} // end of namespace GaudiMath
 
 #endif // GAUDIMATH_ADAPTERS_H
 // ============================================================================

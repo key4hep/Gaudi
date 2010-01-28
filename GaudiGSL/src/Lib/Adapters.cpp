@@ -65,7 +65,7 @@ namespace GaudiMath
   { return GSLFunctionWithModeAndError ( function , mode ) ; }
   
 
-} ; // end of namespace GaudiMath 
+} // end of namespace GaudiMath 
 // ============================================================================
 // The END 
 // ============================================================================

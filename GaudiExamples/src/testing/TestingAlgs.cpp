@@ -28,4 +28,4 @@ namespace GaudiTesting {
 
 #include "GaudiKernel/AlgFactory.h"
 
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, DestructorCheckAlg);
+DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, DestructorCheckAlg)

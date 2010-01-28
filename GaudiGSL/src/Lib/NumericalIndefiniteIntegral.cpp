@@ -48,7 +48,7 @@ namespace Genfun
     // ========================================================================
     /// from CLHEP/GenericFunctions
     // ========================================================================
-    FUNCTION_OBJECT_IMP( NumericalIndefiniteIntegral );
+    FUNCTION_OBJECT_IMP( NumericalIndefiniteIntegral )
     // ========================================================================
 
     // ========================================================================
@@ -104,7 +104,7 @@ namespace Genfun
         { m_rule = GaudiMath::Integration::Default ; }
       if ( m_index >= m_DIM  ) 
         { Exception("::constructor: invalid variable index") ; }
-    };
+    }
     // ========================================================================
     
     /** standard constructor 
@@ -154,7 +154,7 @@ namespace Genfun
       std::sort( m_points.begin() , m_points.end() ) ;
       m_points.erase ( std::unique( m_points.begin () , 
                                     m_points.end   () ) , m_points.end() );
-    };
+    }
     
     // ========================================================================
     /** standard constructor 
@@ -193,7 +193,7 @@ namespace Genfun
     {
       if ( m_index >= m_DIM ) 
         { Exception("::constructor: invalid variable index") ; }
-    };
+    }
     // ========================================================================
 
     
@@ -222,7 +222,7 @@ namespace Genfun
       , m_argument  ( right.m_argument )
     {
       m_pdata = new double[ 2 + m_points.size() ] ; // attention! 
-    };
+    }
     // ========================================================================
 
       
@@ -239,7 +239,7 @@ namespace Genfun
         }
       if ( 0 != m_pdata    ) { delete m_pdata    ; m_pdata    = 0 ; }
       if ( 0 != m_function ) { delete m_function ; m_function = 0 ; }
-    };
+    }
     // ========================================================================
 
     // ========================================================================
@@ -252,7 +252,7 @@ namespace Genfun
       throw GaudiException( "NumericalIndefiniteIntegral::" + message , 
                             "*GaudiMath*" , sc ) ;
       return sc ;
-    };
+    }
     // ========================================================================
     
     // ========================================================================
@@ -270,7 +270,7 @@ namespace Genfun
       
       m_argument[0] = argument ;
       return (*this) ( m_argument );
-    };
+    }
     // ========================================================================
 
     // ========================================================================
@@ -293,7 +293,7 @@ namespace Genfun
         }
       const AbsFunction& aux = function() ;
       return Genfun::FunctionNoop( &aux ) ;
-    };
+    }
     
     // ========================================================================
     /// evaluate the function 
@@ -339,7 +339,7 @@ namespace Genfun
         { Exception ( "::operator(): invalid category "  ); }
       
       return 0 ;
-    };
+    }
     // ========================================================================
     
     // ========================================================================
@@ -355,7 +355,7 @@ namespace Genfun
       m_ws = new _Workspace() ;
       m_ws->ws = aux ;
       return m_ws ;
-    };
+    }
     // ========================================================================
     
     // ========================================================================
@@ -392,7 +392,7 @@ namespace Genfun
                                 __FILE__ , __LINE__ , ierror ) ;}
       
       return m_result ;
-    };
+    }
     // ========================================================================
     
     // ========================================================================
@@ -448,7 +448,7 @@ namespace Genfun
                 &&  x > m_a  ) { m_result *= -1 ; }
       
       return m_result ;
-    };
+    }
     // ========================================================================
     
     // ========================================================================
@@ -487,7 +487,7 @@ namespace Genfun
                 &&  x > m_a  ) { m_result *= -1 ; }
 
       return m_result ;
-    };
+    }
     
     // ========================================================================
     // simple adaptive integration 
@@ -528,7 +528,7 @@ namespace Genfun
                 &&  x > m_a  ) { m_result *= -1 ; }
       
       return m_result ;
-    };
+    }
     // ========================================================================
     
     // ========================================================================
@@ -570,11 +570,11 @@ namespace Genfun
                 &&  x > m_a  ) { m_result *= -1 ; }
       
       return m_result ;
-    };
+    }
     // ========================================================================
 
-  }; // end of namespace GaudiMathImplementation
-}; // end of namespace Genfun
+  } // end of namespace GaudiMathImplementation
+} // end of namespace Genfun
 
 
 // ============================================================================

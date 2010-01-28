@@ -50,4 +50,4 @@ public:
 
 }
 
-DECLARE_NAMESPACE_AUDITOR_FACTORY(GaudiExamples,LoggingAuditor);
+DECLARE_NAMESPACE_AUDITOR_FACTORY(GaudiExamples,LoggingAuditor)

@@ -64,7 +64,7 @@ namespace
 // ============================================================================
 // mandatory auditor fatcory, needed for instantiation
 // ============================================================================
-DECLARE_AUDITOR_FACTORY(AlgContextAuditor) ;
+DECLARE_AUDITOR_FACTORY(AlgContextAuditor)
 // ============================================================================
 // standard constructor @see Auditor
 // ============================================================================

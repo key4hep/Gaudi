@@ -9,7 +9,7 @@
 #include "GaudiKernel/AlgFactory.h"
 
 // Static Factory declaration
-DECLARE_ALGORITHM_FACTORY(IncidentListenerTestAlg);
+DECLARE_ALGORITHM_FACTORY(IncidentListenerTestAlg)
 
 std::string IncidentListenerTestAlg::s_incidentType = "TestIncident";
 

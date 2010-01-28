@@ -18,7 +18,7 @@
 // Factory declaration
 PLUGINSVC_FACTORY_WITH_ID( PoolDbDatabaseCnv,
                            ConverterID(POOL_StorageType,CLID_StatisticsFile),
-                           IConverter*(long, CLID, ISvcLocator*) );
+                           IConverter*(long, CLID, ISvcLocator*) )
 
 /// Standard Constructor
 PoolDbDatabaseCnv::PoolDbDatabaseCnv(long typ, const CLID& cl, ISvcLocator* svc)

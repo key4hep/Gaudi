@@ -9,7 +9,7 @@
 
 // Static Factory declaration
 
-DECLARE_ALGORITHM_FACTORY(SubAlg);
+DECLARE_ALGORITHM_FACTORY(SubAlg)
 
 // Constructor
 //------------------------------------------------------------------------------

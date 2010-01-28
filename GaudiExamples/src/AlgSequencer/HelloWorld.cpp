@@ -9,7 +9,7 @@
 
 // Static Factory declaration
 
-DECLARE_ALGORITHM_FACTORY(HelloWorld);
+DECLARE_ALGORITHM_FACTORY(HelloWorld)
 
 // Constructor
 //------------------------------------------------------------------------------

@@ -24,11 +24,11 @@ namespace Genfun
       : m_function ( function ) , 
         m_argument ( argument ) , 
         m_index    ( index    ) 
-    {};
+    {}
     // ========================================================================
     
     // ========================================================================
-    GSL_Helper::~GSL_Helper(){};
+    GSL_Helper::~GSL_Helper(){}
     // ========================================================================
     
     // ========================================================================
@@ -49,11 +49,11 @@ namespace Genfun
       // restore the argument 
       argument[index] = x_prev  ;
       return fun ;
-    };
+    }
     // ========================================================================
     
-  }; // end of namespace GaudiMathImplementation
-}; // end of namespace Genfun
+  } // end of namespace GaudiMathImplementation
+} // end of namespace Genfun
 
 // ============================================================================
 // The END 

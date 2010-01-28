@@ -40,7 +40,7 @@ namespace
   fmt ( const double /* value */  ) 
   {
     return std::string();
-  } ;
+  }
   
   
   std::ostream& operator<< 
@@ -69,8 +69,8 @@ namespace
 //       << " \t" << ent.eMeanTime      () 
 //       << " \t" << ent.eMeanErrorTime () 
 //       << " \t" << ent.eRMSTime       () ;
-  } ;
-};
+  }
+}
 
 
 namespace 
@@ -131,8 +131,8 @@ namespace
       }
       
     } // end of repetition loop
-  } ;
-};
+  }
+}
 
 int main()
 {
@@ -212,7 +212,7 @@ int main()
 
   
   return 0 ;
-} ;
+}
 
 
 // ============================================================================

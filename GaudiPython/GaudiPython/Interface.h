@@ -91,6 +91,6 @@ namespace GaudiPython
     
   };
   
-} ; // end of namespace GaudiPython 
+} // end of namespace GaudiPython 
 
 #endif // GAUDIPYTHON_INTERFACE_H

@@ -32,7 +32,7 @@ HistoTool::HistoTool( const std::string& type,
   : GaudiHistoTool ( type, name , parent )
 {
   declareInterface<IHistoTool>(this);  
-};
+}
 // ============================================================================
 
 

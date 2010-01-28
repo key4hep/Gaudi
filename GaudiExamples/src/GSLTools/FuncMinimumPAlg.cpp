@@ -36,14 +36,14 @@ FuncMinimumPAlg::FuncMinimumPAlg( const std::string& name,
 //=============================================================================
 // Destructor
 //=============================================================================
-FuncMinimumPAlg::~FuncMinimumPAlg() {};
+FuncMinimumPAlg::~FuncMinimumPAlg() {}
 
 //=============================================================================
 // Our function
 double function ( const std::vector<double>& x  )
 {
   return 10 * x[0] * x[0] + 20 * x[1] * x[1] + 40;
-};
+}
 
 //=============================================================================
 // Initialisation. Check parameters
@@ -67,7 +67,7 @@ StatusCode FuncMinimumPAlg::initialize() {
   log << MSG::INFO << "....initialization done" << endmsg;
 
   return StatusCode::SUCCESS;
-};
+}
 
 //=============================================================================
 // Main execution
@@ -139,7 +139,7 @@ StatusCode FuncMinimumPAlg::execute() {
   log << endmsg;
 
   return StatusCode::SUCCESS;
-};
+}
 
 //=============================================================================
 //  Finalize

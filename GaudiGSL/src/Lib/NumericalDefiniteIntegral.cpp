@@ -41,7 +41,7 @@ namespace Genfun
     // ========================================================================
     /// from CLHEP/GenericFunctions
     // ========================================================================
-    FUNCTION_OBJECT_IMP( NumericalDefiniteIntegral );
+    FUNCTION_OBJECT_IMP( NumericalDefiniteIntegral )
     // ========================================================================
     
     /** Standard constructor
@@ -138,7 +138,7 @@ namespace Genfun
       m_argument = Argument( m_DIM      ) ;
       m_argF     = Argument( m_DIM + 1  ) ;
 
-    };  
+    }
                    
                      
     /** standard constructor 
@@ -210,7 +210,7 @@ namespace Genfun
       
       m_pdata = new double[ m_points.size() ] ;
       std::copy( m_points.begin() , m_points.end() , m_pdata );
-    };
+    }
     
     /** Standard constructor
      *  The function created with this constructor compute
@@ -278,7 +278,7 @@ namespace Genfun
       m_argument = Argument( m_DIM      ) ;
       m_argF     = Argument( m_DIM + 1  ) ;
 
-    };
+    }
     
     
     /** Standard constructor
@@ -346,7 +346,7 @@ namespace Genfun
       m_DIM = function.dimensionality() - 1 ;
       m_argument = Argument( m_DIM      ) ;
       m_argF     = Argument( m_DIM + 1  ) ;
-    };
+    }
 
     /** Standard constructor
      *  The function created with this constructor compute
@@ -410,7 +410,7 @@ namespace Genfun
       m_argument = Argument( m_DIM      ) ;
       m_argF     = Argument( m_DIM + 1  ) ;
       
-    };
+    }
     
     /// copy constructor 
     NumericalDefiniteIntegral::NumericalDefiniteIntegral
@@ -442,13 +442,13 @@ namespace Genfun
           m_pdata = new double[m_points.size()] ;
           std::copy( m_points.begin() , m_points.end() , m_pdata );
         } 
-    };
+    }
 
     NumericalDefiniteIntegral::~NumericalDefiniteIntegral()
     {
       if( 0 != m_function ) { delete m_function ; m_function = 0 ; }
       if( 0 != m_pdata    ) { delete m_pdata    ; m_pdata    = 0 ; }      
-    };
+    }
     
     // ========================================================================
     // throw the exception
@@ -460,7 +460,7 @@ namespace Genfun
       throw GaudiException( "NumericalDefiniteIntegral::" + message , 
                             "*GaudiMath*" , sc ) ;
       return sc ;
-    };
+    }
     // ========================================================================
     
     // ========================================================================
@@ -478,7 +478,7 @@ namespace Genfun
       
       m_argument[0] = argument ;
       return (*this) ( m_argument );
-    };
+    }
     // ========================================================================
     
     // ========================================================================
@@ -492,7 +492,7 @@ namespace Genfun
       //
       const AbsFunction& aux = NumericalDerivative( *this , idx ) ;
       return Genfun::FunctionNoop( &aux ) ;
-    };
+    }
     // ========================================================================
 
     
@@ -553,7 +553,7 @@ namespace Genfun
         { Exception ( "::operator(): invalid category "  ); }
       
       return 0 ;
-    };
+    }
     // ========================================================================
     
     // ========================================================================
@@ -569,7 +569,7 @@ namespace Genfun
       m_ws = new _Workspace() ;
       m_ws->ws = aux ;
       return m_ws ;
-    };
+    }
     // ========================================================================
     
     // ========================================================================
@@ -613,7 +613,7 @@ namespace Genfun
                                 __FILE__ , __LINE__ , ierror ) ;}
       
       return m_result ;
-    };
+    }
     // ========================================================================
     
     // ========================================================================
@@ -643,7 +643,7 @@ namespace Genfun
       if ( m_a > m_b ) { m_result *= -1 ; }
       
       return m_result ;
-    };
+    }
     // ========================================================================
  
     // ========================================================================
@@ -671,7 +671,7 @@ namespace Genfun
       if ( m_a > m_b ) { m_result *= -1 ; }
       
       return m_result ;
-    };
+    }
     // ========================================================================
     
     
@@ -703,7 +703,7 @@ namespace Genfun
       if ( m_a > m_b ) { m_result *= -1 ; }
       
       return m_result ;
-    };
+    }
     // ========================================================================
     
     // ========================================================================
@@ -741,12 +741,12 @@ namespace Genfun
       if ( m_a > m_b ) { m_result *= -1 ; }
       
       return m_result ;
-    };
+    }
     // ========================================================================
 
 
-  };  // end of namespace GaudiMathImplementation 
-}; // end of namespace Genfun 
+  } // end of namespace GaudiMathImplementation 
+} // end of namespace Genfun 
 
 
 

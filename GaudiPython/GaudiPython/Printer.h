@@ -57,7 +57,7 @@ namespace GaudiPython
     } ;
   };
 
-}; // end of namespace GaudiPython 
+} // end of namespace GaudiPython 
 
 #endif // GAUDIPYTHON_PRINTER_H
 // ============================================================================

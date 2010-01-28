@@ -11,7 +11,7 @@ namespace Gaudi { std::string createGuidAsString(); }
 using ROOT::Reflex::PluginService;
 using namespace Gaudi;
 using namespace std;
-DECLARE_NAMESPACE_SERVICE_FACTORY(Gaudi,MultiFileCatalog);
+DECLARE_NAMESPACE_SERVICE_FACTORY(Gaudi,MultiFileCatalog)
 
 namespace {
   template <class V,class F>

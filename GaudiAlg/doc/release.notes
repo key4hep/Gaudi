@@ -1,6 +1,9 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2010-01-28 - Marco Clemencic
+ - Fixed icc remark #424: extra ";" ignored
+
 =============================== GaudiAlg v13r0 ===============================
 ! 2010-01-15 - Marco Clemencic
  - Fixed compilation on icc 11.

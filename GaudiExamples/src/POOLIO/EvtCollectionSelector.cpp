@@ -105,7 +105,7 @@ namespace Gaudi
   } // end of namespace Gaudi::Exmaples 
 } // end of namespace Gaudi
 // ============================================================================
-DECLARE_NAMESPACE_OBJECT_FACTORY(Gaudi::Examples,EvtCollectionSelector) ;
+DECLARE_NAMESPACE_OBJECT_FACTORY(Gaudi::Examples,EvtCollectionSelector)
 // ============================================================================
 // The END 
 // ============================================================================

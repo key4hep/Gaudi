@@ -9,7 +9,7 @@
 #include "ProcStats.h"
 #include "MemStatAuditor.h"
 
-DECLARE_AUDITOR_FACTORY(MemStatAuditor);
+DECLARE_AUDITOR_FACTORY(MemStatAuditor)
 
 MemStatAuditor::MemStatAuditor(const std::string& name, ISvcLocator* pSvcLocator) :
   Auditor(name, pSvcLocator), m_vSize(-1.)
@@ -189,7 +189,7 @@ bool MemStatAuditor::printinfo(const std::string& theString, const std::string& 
 
   ///
   return status; //FIXME
-};
+}
 
 
 

@@ -18,7 +18,7 @@ namespace Genfun
     // ========================================================================
     /// from CLHGEP/GenericFunctions
     // ========================================================================
-    FUNCTION_OBJECT_IMP( Constant );
+    FUNCTION_OBJECT_IMP( Constant )
     // ========================================================================
     
     // ========================================================================
@@ -33,7 +33,7 @@ namespace Genfun
       : AbsFunction () 
       , m_value     ( value ) 
       , m_DIM       ( dim   ) 
-    {};
+    {}
     // ========================================================================
     
     // ========================================================================
@@ -44,7 +44,7 @@ namespace Genfun
       : AbsFunction() 
       , m_value ( right.m_value ) 
       , m_DIM   ( right.m_DIM   )
-    {};
+    {}
     // ========================================================================
     
     // ========================================================================
@@ -60,13 +60,13 @@ namespace Genfun
     {
       const AbsFunction& aux = Constant( 0.0 , m_DIM );
       return FunctionNoop( &aux );
-    };
+    }
     // ========================================================================
     
     
-  }; // end of namespace GaudiMathImplementation
+  } // end of namespace GaudiMathImplementation
   
-}; // end of namespace Genfun (due to CLHEP)
+} // end of namespace Genfun (due to CLHEP)
 
 // ============================================================================
 // The END 

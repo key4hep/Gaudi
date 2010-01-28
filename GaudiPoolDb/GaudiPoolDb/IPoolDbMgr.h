@@ -36,7 +36,7 @@ namespace seal {
   namespace reflex {
     class Type;
   }
-};
+}
 
 /** @class IPoolDbMgr IPoolDbMgr.h PoolDb/IPoolDbMgr.h
   *

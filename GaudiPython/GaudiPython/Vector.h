@@ -35,5 +35,5 @@ namespace GaudiPython
       ( const Vector::value_type& value ) const { return value ; }
   };
   
-}; // end of namespace GaudiPython 
+} // end of namespace GaudiPython 
 #endif // GAUDIPYTHON_VECTOR_H

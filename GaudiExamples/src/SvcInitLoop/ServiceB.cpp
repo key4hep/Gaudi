@@ -4,7 +4,7 @@
 
 // Static Factory declaration
 
-DECLARE_SERVICE_FACTORY(ServiceB);
+DECLARE_SERVICE_FACTORY(ServiceB)
 
 ServiceB::ServiceB(const std::string& nam, ISvcLocator* svcLoc) :
  Service(nam, svcLoc)

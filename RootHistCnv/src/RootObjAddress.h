@@ -128,6 +128,6 @@ namespace RootHistCnv {
     }
 
   };
-};
+}
 
 #endif

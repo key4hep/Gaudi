@@ -38,7 +38,7 @@ void GslErrorHandlers::handleTheError
   const IGslSvc* svc = GaudiGSL::gslSvc() ;
   // handle the error if service is valid 
   if( 0 != svc ) { svc->handle( GslError( reason , file , line , code ) ) ; }
-};
+}
 
 void GslErrorHandlers::throwException 
 ( const char* reason , 
@@ -57,7 +57,7 @@ void GslErrorHandlers::throwException
   error += std::string( s_aux  , s_aux  + sprintf( s_aux , "%d" , line ) );
   error += "'"     ;
   throw GaudiException( error , "*GLS Error*" , StatusCode::FAILURE );
-};
+}
 
 // ============================================================================
 // The END 

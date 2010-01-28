@@ -15,36 +15,36 @@ namespace Genfun
   namespace GaudiMathImplementation
   {
     
-    FUNCTION_OBJECT_IMP( AdapterIFunction ) ;
+    FUNCTION_OBJECT_IMP( AdapterIFunction )
     
     AdapterIFunction::AdapterIFunction ( const AIDA::IFunction& fun) 
       : AbsFunction ( )
       , m_fun ( &fun  )
       , m_dim ( fun.dimension() )
       , m_arg ( fun.dimension() , 0 ) 
-    {} ;
+    {}
     
     AdapterIFunction:: AdapterIFunction ( const AdapterIFunction& right )
       : AbsFunction (  ) 
       , m_fun ( right.m_fun )
       , m_dim ( right.m_dim )
       , m_arg ( right.m_arg ) 
-    {} ;
+    {}
 
-    AdapterIFunction::~AdapterIFunction(){};
+    AdapterIFunction::~AdapterIFunction(){}
     
     double AdapterIFunction::operator() ( double x ) const
     {
       for ( size_t i = 0; i < m_dim; ++i ) { m_arg[i] = 0.0 ; }
       m_arg[0] = x ;
       return m_fun -> value ( m_arg ) ;
-    };
+    }
     
     double AdapterIFunction::operator() ( const Genfun::Argument& x ) const
     {
       for ( size_t i = 0; i < m_dim; ++i ) { m_arg[i] = x[i] ; }
       return m_fun -> value ( m_arg ) ;
-    } ;
+    }
     
     Genfun::Derivative AdapterIFunction::partial( unsigned int i  ) const 
     {
@@ -55,9 +55,9 @@ namespace Genfun
       };
       const AbsFunction& aux = GaudiMath::Derivative( *this , i ) ;
       return Genfun::FunctionNoop ( &aux ) ;
-    };
+    }
     
-    FUNCTION_OBJECT_IMP( Adapter2DoubleFunction ) ;
+    FUNCTION_OBJECT_IMP( Adapter2DoubleFunction )
     
     Adapter2DoubleFunction::Adapter2DoubleFunction 
     ( Adapter2DoubleFunction::Function  func )
@@ -69,22 +69,22 @@ namespace Genfun
     ( const Adapter2DoubleFunction& right )
       : AbsFunction (              )
       , m_func    ( right.m_func )
-    {} ;
+    {}
 
-    Adapter2DoubleFunction::~Adapter2DoubleFunction(){};
+    Adapter2DoubleFunction::~Adapter2DoubleFunction(){}
     
     double Adapter2DoubleFunction::operator() 
       (       double    x ) const 
-    { return m_func ( x , 0 ) ; } ;
+    { return m_func ( x , 0 ) ; }
     
     double Adapter2DoubleFunction::operator() 
       ( const Genfun::Argument& x ) const
-    { return m_func ( x[0] , x[1] ) ; };
+    { return m_func ( x[0] , x[1] ) ; }
      
     double Adapter2DoubleFunction::operator() 
       ( const double x , 
         const double y ) const 
-    { return m_func ( x , y ) ; } ;
+    { return m_func ( x , y ) ; }
     
     /// Derivatives 
     Genfun::Derivative Adapter2DoubleFunction::partial( unsigned int i  ) const 
@@ -96,9 +96,9 @@ namespace Genfun
       };
       const AbsFunction& aux = GaudiMath::Derivative( *this , i ) ;
       return Genfun::FunctionNoop ( &aux ) ;
-    };
+    }
 
-    FUNCTION_OBJECT_IMP( Adapter3DoubleFunction ) ;
+    FUNCTION_OBJECT_IMP( Adapter3DoubleFunction )
     
     Adapter3DoubleFunction::Adapter3DoubleFunction 
     ( Adapter3DoubleFunction::Function  func )
@@ -110,23 +110,23 @@ namespace Genfun
     ( const Adapter3DoubleFunction& right )
       : AbsFunction (              )
       , m_func      ( right.m_func )
-    {} ;
+    {}
     
-    Adapter3DoubleFunction::~Adapter3DoubleFunction(){};
+    Adapter3DoubleFunction::~Adapter3DoubleFunction(){}
 
     double Adapter3DoubleFunction::operator() 
       (       double    x ) const 
-    { return m_func ( x , 0 , 0 ) ; } ;
+    { return m_func ( x , 0 , 0 ) ; }
     
     double Adapter3DoubleFunction::operator() 
       ( const Genfun::Argument& x ) const 
-    { return m_func ( x[0] , x[1] , x[2] ) ; };
+    { return m_func ( x[0] , x[1] , x[2] ) ; }
     
     double Adapter3DoubleFunction::operator() 
       ( const double x , 
         const double y , 
         const double z ) const 
-    { return m_func ( x , y , z ) ; } ;
+    { return m_func ( x , y , z ) ; }
     
     /// Derivatives 
     Genfun::Derivative Adapter3DoubleFunction::partial( unsigned int i  ) const 
@@ -138,12 +138,12 @@ namespace Genfun
       };
       const AbsFunction& aux = GaudiMath::Derivative( *this , i ) ;
       return Genfun::FunctionNoop ( &aux ) ;
-    };
+    }
     
     // ========================================================================
     /// from CLHGEP/GenericFunctions
     // ========================================================================
-    FUNCTION_OBJECT_IMP( SimpleFunction );
+    FUNCTION_OBJECT_IMP( SimpleFunction )
     // ========================================================================
     
     // =======================================================================
@@ -161,7 +161,7 @@ namespace Genfun
       , m_arg2      ( 0    ) 
       , m_func3     ( 0    ) 
       , m_arg3      (      ) 
-    {};
+    {}
     // ========================================================================
     
     // ========================================================================
@@ -183,7 +183,7 @@ namespace Genfun
       , m_arg3      (      )
     {
       m_arg2 = new double[dim];
-    };
+    }
     // ========================================================================
     
     // ========================================================================
@@ -203,7 +203,7 @@ namespace Genfun
       , m_arg2      ( 0    )
       , m_func3     ( func ) 
       , m_arg3      ( dim  , 0 )
-    {};
+    {}
     // ========================================================================
     
     // ========================================================================
@@ -225,7 +225,7 @@ namespace Genfun
         m_arg2 = new double[m_DIM] ;
         std::copy( right.m_arg2 , right.m_arg2 + m_DIM , m_arg2 );
       } 
-    };
+    }
     // ========================================================================
     
     // ========================================================================
@@ -247,7 +247,7 @@ namespace Genfun
       }
       const  AbsFunction& aux = GaudiMath::Derivative( *this , i ) ;
       return Genfun::FunctionNoop( &aux );
-    };
+    }
     
     // ========================================================================
     /// Function value
@@ -271,7 +271,7 @@ namespace Genfun
         break ;
       };
       return result ;
-    };
+    }
     // ========================================================================
     
     // ========================================================================
@@ -294,10 +294,10 @@ namespace Genfun
         break ;
       }      
       return result ;
-    };
+    }
     
-  } ; // end of namespace GaudiMathImplementation
-}; // end of namespace Genfun
+  } // end of namespace GaudiMathImplementation
+} // end of namespace Genfun
 
 
 // ============================================================================

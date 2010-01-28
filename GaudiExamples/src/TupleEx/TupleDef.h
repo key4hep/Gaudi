@@ -64,7 +64,7 @@ namespace TupleExample
   ( Tuples::Tuple&     t , 
     const std::string& n ,
     const Triplet&     p ) ;  
-}; // end of namespace TupleExample 
+} // end of namespace TupleExample 
 
 
 // ============================================================================
@@ -78,7 +78,7 @@ inline Tuples::Tuple& operator<<
   return TupleExample::fillNTuple ( tuple         , 
                                     item.name  () , 
                                     item.value () ) ;
-};
+}
 // ============================================================================
 template <> 
 inline Tuples::Tuple& operator<< 
@@ -88,7 +88,7 @@ inline Tuples::Tuple& operator<<
   return TupleExample::fillNTuple ( tuple         , 
                                     item.name  () , 
                                     item.value () ) ;
-};
+}
 // ============================================================================
 
 

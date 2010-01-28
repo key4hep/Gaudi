@@ -37,7 +37,7 @@ private:
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY( AuditorTestAlg );
+DECLARE_ALGORITHM_FACTORY( AuditorTestAlg )
 
 //=============================================================================
 // Standard constructor, initializes variables

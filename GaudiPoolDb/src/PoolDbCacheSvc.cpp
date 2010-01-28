@@ -28,7 +28,7 @@ namespace GaudiPoolDb  {  bool patchStreamers(MsgStream& log);     }
 static pool::DbInstanceCount::Counter* s_count =
   pool::DbInstanceCount::getCounter(typeid(PoolDbCacheSvc));
 
-DECLARE_SERVICE_FACTORY(PoolDbCacheSvc);
+DECLARE_SERVICE_FACTORY(PoolDbCacheSvc)
 
 /** @class MsgReporter MessageStream.h CoralBase/MessageStream.h
  *

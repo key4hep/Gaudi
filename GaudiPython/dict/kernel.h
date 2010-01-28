@@ -187,7 +187,7 @@ namespace GaudiPython
     ~__Instantiations () ;
   };
 
-}; // end of namespace GaudiPython
+} // end of namespace GaudiPython
 
 namespace __gnu_cxx { struct dummy {}; }  // hack to please CINT
 

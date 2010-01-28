@@ -6,7 +6,7 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/AudFactory.h"
 
-DECLARE_AUDITOR_FACTORY(MemoryAuditor);
+DECLARE_AUDITOR_FACTORY(MemoryAuditor)
 
 MemoryAuditor::MemoryAuditor(const std::string& name, ISvcLocator* pSvcLocator) :
   Auditor(name, pSvcLocator)

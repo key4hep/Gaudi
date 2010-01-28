@@ -33,7 +33,7 @@ EqSolverGenAlg::EqSolverGenAlg( const std::string& name,
 //=============================================================================
 // Destructor
 //=============================================================================
-EqSolverGenAlg::~EqSolverGenAlg() {};
+EqSolverGenAlg::~EqSolverGenAlg() {}
 
 typedef Genfun::AbsFunction GenFunc;
 
@@ -42,7 +42,7 @@ typedef Genfun::AbsFunction GenFunc;
 class Func1 : public AbsFunction
 {
 public:
-  FUNCTION_OBJECT_DEF(Func1);
+  FUNCTION_OBJECT_DEF(Func1)
 public:
   Func1 () {};
   Func1 ( const Func1&  )
@@ -56,14 +56,14 @@ public:
   virtual unsigned int dimensionality () const { return 3; };
   virtual ~Func1 () {};
 };
-FUNCTION_OBJECT_IMP(Func1);
+FUNCTION_OBJECT_IMP(Func1)
 
 
 // Class for the function "GenFunc" @see IEqSolver.h
 class Func2 : public AbsFunction
 {
 public:
-  FUNCTION_OBJECT_DEF(Func2);
+  FUNCTION_OBJECT_DEF(Func2)
 public:
   Func2 () {};
   Func2 ( const Func2&  )
@@ -77,14 +77,14 @@ public:
   virtual unsigned int dimensionality () const { return 3; };
   virtual ~Func2 () {};
 };
-FUNCTION_OBJECT_IMP(Func2);
+FUNCTION_OBJECT_IMP(Func2)
 
 
 // Class for the function "GenFunc" @see IEqSolver.h
 class Func3 : public AbsFunction
 {
 public:
-  FUNCTION_OBJECT_DEF(Func3);
+  FUNCTION_OBJECT_DEF(Func3)
 public:
   Func3 () {};
   Func3 ( const Func3&  )
@@ -98,7 +98,7 @@ public:
   virtual unsigned int dimensionality () const { return 3; };
   virtual ~Func3 () {};
 };
-FUNCTION_OBJECT_IMP(Func3);
+FUNCTION_OBJECT_IMP(Func3)
 
 //=============================================================================
 // Initialisation. Check parameters
@@ -122,7 +122,7 @@ StatusCode EqSolverGenAlg::initialize() {
   log << MSG::INFO << "....initialization done" << endmsg;
 
   return StatusCode::SUCCESS;
-};
+}
 
 //=============================================================================
 // Main execution
@@ -161,7 +161,7 @@ StatusCode EqSolverGenAlg::execute() {
   log << endmsg;
 
   return StatusCode::SUCCESS;
-};
+}
 
 //=============================================================================
 //  Finalize

@@ -125,5 +125,5 @@ StatusCode CounterAlg::execute ()
   }
   
   return StatusCode::SUCCESS ;
-} ;
+}
 // ============================================================================

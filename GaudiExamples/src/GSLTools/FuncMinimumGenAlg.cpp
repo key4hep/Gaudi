@@ -37,7 +37,7 @@ FuncMinimumGenAlg::FuncMinimumGenAlg( const std::string& name,
 //=============================================================================
 // Destructor
 //=============================================================================
-FuncMinimumGenAlg::~FuncMinimumGenAlg() {};
+FuncMinimumGenAlg::~FuncMinimumGenAlg() {}
 
 //=============================================================================
 // Class for the function "GenFunc"
@@ -46,7 +46,7 @@ class Func : public AbsFunction
 
 {
 public:
-  FUNCTION_OBJECT_DEF(Func);
+  FUNCTION_OBJECT_DEF(Func)
 public:
   Func () {};
   Func ( const Func&  )
@@ -60,7 +60,7 @@ public:
   }
   virtual unsigned int dimensionality () const {return 2;}
 };
-FUNCTION_OBJECT_IMP(Func);
+FUNCTION_OBJECT_IMP(Func)
 
 //=============================================================================
 // Initialisation. Check parameters
@@ -84,7 +84,7 @@ StatusCode FuncMinimumGenAlg::initialize() {
   log << MSG::INFO << "....initialization done" << endmsg;
 
   return StatusCode::SUCCESS;
-};
+}
 
 //=============================================================================
 // Main execution
@@ -156,7 +156,7 @@ StatusCode FuncMinimumGenAlg::execute() {
   log << endmsg;
 
   return StatusCode::SUCCESS;
-};
+}
 
 //=============================================================================
 //  Finalize

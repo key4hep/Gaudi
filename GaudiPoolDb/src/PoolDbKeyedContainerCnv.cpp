@@ -37,7 +37,7 @@ namespace {
       return StatusCode::FAILURE;
     }
   };
-};
+}
 
 /// Standard Constructor
 PoolDbKeyedContainerCnv::PoolDbKeyedContainerCnv(long typ, const CLID& clid, ISvcLocator* svc)
@@ -85,13 +85,13 @@ PoolDbKeyedContainerCnv::updateObjRefs(IOpaqueAddress* pAddr, DataObject* pObj)
 
 PLUGINSVC_FACTORY_WITH_ID( PoolDbKeyedContainerCnv, 
                            ConverterID(POOL_StorageType,CLID_Any + CLID_ObjectVector+0x00030000),
-                           IConverter*(long, CLID, ISvcLocator*) );
+                           IConverter*(long, CLID, ISvcLocator*) )
 PLUGINSVC_FACTORY_WITH_ID( PoolDbKeyedContainerCnv, 
                            ConverterID(POOL_StorageType,CLID_Any + CLID_ObjectVector+0x00040000),
-                           IConverter*(long, CLID, ISvcLocator*) );
+                           IConverter*(long, CLID, ISvcLocator*) )
 PLUGINSVC_FACTORY_WITH_ID( PoolDbKeyedContainerCnv, 
                            ConverterID(POOL_StorageType,CLID_Any + CLID_ObjectVector+0x00050000),
-                           IConverter*(long, CLID, ISvcLocator*) );
+                           IConverter*(long, CLID, ISvcLocator*) )
 PLUGINSVC_FACTORY_WITH_ID( PoolDbKeyedContainerCnv, 
                            ConverterID(POOL_StorageType,CLID_Any | (1<<31)),
-                           IConverter*(long, CLID, ISvcLocator*) );
+                           IConverter*(long, CLID, ISvcLocator*) )

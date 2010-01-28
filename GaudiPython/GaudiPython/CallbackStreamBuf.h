@@ -24,6 +24,6 @@ namespace GaudiPython
       virtual int sync() ;
   }; //CallbackStreamBuf
 
-}; //namespace GaudiPython
+} //namespace GaudiPython
 
 #endif

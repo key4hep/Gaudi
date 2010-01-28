@@ -43,7 +43,7 @@ namespace Genfun
           Backward } ;
     public:
       /// From CLHEP/GenericFunctions
-      FUNCTION_OBJECT_DEF( NumericalDerivative ) ;
+      FUNCTION_OBJECT_DEF( NumericalDerivative )
 
     public:
 
@@ -149,8 +149,8 @@ namespace Genfun
       mutable double     m_error     ;
     };
 
-  }; // end of namespace GaudiMathImplementation
-}; // end of namespace GenFun
+  } // end of namespace GaudiMathImplementation
+} // end of namespace GenFun
 
 // ============================================================================
 // The END
