@@ -170,7 +170,7 @@ namespace GaudiUtils
     // Pool of elements of sizeof(Type)
   };
 
-} ; // end of the namespace GaudiUtils
+} // end of the namespace GaudiUtils
 
 // ------------------------------------------------------------
 // Inline implementation
