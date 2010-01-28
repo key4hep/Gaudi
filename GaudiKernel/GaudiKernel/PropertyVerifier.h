@@ -67,7 +67,7 @@ public:
  *  @author CTDay
  */
 template< class T >
-class BoundedVerifier : PropertyVerifier< T > {     // Abstract derived class
+class BoundedVerifier : public PropertyVerifier< T > {     // Abstract derived class
 public:
   /// Constructors
   BoundedVerifier()
