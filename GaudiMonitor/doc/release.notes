@@ -1,6 +1,9 @@
 Package: GaudiMonitor
 Package manager : Marco Clemencic
 
+! 2010-01-28 - Marco Clemencic
+ - Removed a couple of leftovers from the removal of _dll.cpp and _load.cpp.
+
 ============================= GaudiMonitor v2r4 ==============================
 ! 2009-10-29 - Marco Clemencic
  - Fixed few minor problems (including a possible buffer overflow).

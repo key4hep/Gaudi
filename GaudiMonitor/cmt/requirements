@@ -6,8 +6,7 @@ use GaudiKernel v*
 
 # build the component library
 library GaudiMonitor  -no_static \
-                 DataListenerSvc/*.cpp \
-                 Dll/GaudiMonitor*.cpp
+                 DataListenerSvc/*.cpp
 
 # define component library link options
 apply_pattern component_library library=GaudiMonitor
