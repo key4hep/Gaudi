@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2010-01-29 - Marco Clemencic
+ - Fixed icc warning #279: controlling expression is constant
+
 ! 2010-01-28 - Marco Clemencic
  - Fixed icc remark #424: extra ";" ignored
  - Fixed icc remark #593: variable "X" was set but never used

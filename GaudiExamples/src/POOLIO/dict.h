@@ -34,3 +34,9 @@ struct __Instantiations
   //KeyedObject<long> i11;
   //std::vector<KeyedObject<long int>* > i12;
 };
+
+#ifdef __ICC
+// disable icc warning #279: controlling expression is constant
+// ... a lot of noise produced by the dictionary
+#pragma warning(disable:279)
+#endif
