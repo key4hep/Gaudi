@@ -36,7 +36,7 @@ struct __Instantiations
 };
 
 #ifdef __ICC
-// disable icc warning #279: controlling expression is constant
+// disable icc warning #191: type qualifier is meaningless on cast type
 // ... a lot of noise produced by the dictionary
-#pragma warning(disable:279)
+#pragma warning(disable:191)
 #endif

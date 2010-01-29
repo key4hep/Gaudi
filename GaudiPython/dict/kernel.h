@@ -201,10 +201,12 @@ namespace __gnu_cxx { struct dummy {}; }  // hack to please CINT
 #pragma warning ( disable : 4624 )
 #endif
 
+#ifdef __ICC
+// disable icc warning #191: type qualifier is meaningless on cast type
+// ... a lot of noise produced by the dictionary
+#pragma warning(disable:191)
+#endif
+
 // ============================================================================
 // The END
 // ============================================================================
-
-
-
-

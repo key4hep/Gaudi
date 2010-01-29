@@ -3,6 +3,7 @@ Package manager : Marco Clemencic
 
 ! 2010-01-29 - Marco Clemencic
  - Fixed icc remark #1599: declaration hides variable
+ - Fixed icc warning #191: type qualifier is meaningless on cast type
 
 ! 2010-01-28 - Marco Clemencic
  - Fixed icc remark #424: extra ";" ignored

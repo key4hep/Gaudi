@@ -1,6 +1,11 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-01-29 - Marco Clemencic
+ - Ignored icc remarks
+   #1419: external declaration in primary source file
+          (triggers on forward declarations in a .cpp)
+
 ! 2010-01-28 - Marco Clemencic
  - Ignored icc remarks
    #383:  valued copied to temporary, reference to temporary

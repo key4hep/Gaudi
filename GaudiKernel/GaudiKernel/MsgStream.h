@@ -182,10 +182,10 @@ public:
     return isActive() ? m_stream.width(v)    : 0;
   }
   char fill() const {
-    return isActive() ? m_stream.fill()     : -1;
+    return isActive() ? m_stream.fill()     : (char)-1;
   }
   char fill(char v) {
-    return isActive() ? m_stream.fill(v)     : -1;
+    return isActive() ? m_stream.fill(v)     : (char)-1;
   }
   int precision() const  {
     return isActive() ? m_stream.precision(): 0;

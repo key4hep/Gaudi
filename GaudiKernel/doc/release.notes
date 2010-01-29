@@ -3,6 +3,8 @@ Package manager : Marco Clemencic
 
 ! 2010-01-29 - Marco Clemencic
  - Fixed icc remark #1599: declaration hides variable
+ - Fixed icc warning #858: type qualifier on return type is meaningless
+ - Fixed icc warning #279: controlling expression is constant
 
 ! 2010-01-28 - Marco Clemencic
  - Fixed icc remark #424: extra ";" ignored
