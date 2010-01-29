@@ -267,8 +267,8 @@ StatusCode EventSelector::previous(Context& refCtxt) const  {
 }
 
 /// Get previous iteration item from the event loop context, but skip jump elements
-StatusCode EventSelector::previous(Context& it,int jump) const  {
-  EvtSelectorContext *pIt  = dynamic_cast<EvtSelectorContext*>(&it);
+StatusCode EventSelector::previous(Context& refCtxt, int jump) const  {
+  EvtSelectorContext *pIt  = dynamic_cast<EvtSelectorContext*>(&refCtxt);
   if ( pIt && jump > 0 )    {
     StatusCode sc = StatusCode::SUCCESS;
     for ( int i = 0; i < jump && sc.isSuccess(); ++i ) {

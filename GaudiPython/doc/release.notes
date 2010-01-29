@@ -1,6 +1,9 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2010-01-29 - Marco Clemencic
+ - Fixed icc remark #1599: declaration hides variable
+
 ! 2010-01-28 - Marco Clemencic
  - Fixed icc remark #424: extra ";" ignored
  - Fixed icc remark #522: function "X" redeclared "inline" after being called

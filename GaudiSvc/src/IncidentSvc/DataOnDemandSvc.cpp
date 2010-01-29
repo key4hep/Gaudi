@@ -281,8 +281,9 @@ StatusCode DataOnDemandSvc::update ()
     Leaf leaf ( alg.type() , alg.name() ) ;
     if  ( m_init ) 
     {
-      StatusCode sc = configureHandler ( leaf ) ; 
-      if ( sc.isFailure() ) {  leaf =  Leaf( alg.type() , alg.name() ) ; }
+      if (configureHandler(leaf).isFailure()) {
+        leaf = Leaf(alg.type(), alg.name());
+      }
     }
     m_algs[ialg->first] =  leaf ;
   }

@@ -604,7 +604,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
   int ts = 0;
   for (; iitr!= itemList.end(); ++iitr) {
     TLeaf* leaf = (*iitr).first;
-    int size    = (*iitr).second;
+    int isize   = (*iitr).second;
 
     log << MSG::VERBOSE << "setting TBranch " << leaf->GetBranch()->GetName()
 	<< " buffer at " << (void*) bufpos << endmsg;
@@ -622,9 +622,9 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
 //  	}
 //        }
 
-    ts += size;
+    ts += isize;
 
-    bufpos += size;
+    bufpos += isize;
   }
 
   if (totsize != ts ) {

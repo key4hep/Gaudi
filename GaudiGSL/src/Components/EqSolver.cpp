@@ -174,8 +174,8 @@ namespace
         gsl_vector_set(f, i, (*eqs[i])(arg ) ) ;
         for (unsigned int j = 0; j < v->size; ++j)
           {
-            Genfun::GENFUNCTION  f = *(jac[i][j]) ;
-            gsl_matrix_set      ( df , i , j , f(arg) ) ;
+            Genfun::GENFUNCTION  f1 = *(jac[i][j]) ;
+            gsl_matrix_set      ( df , i , j , f1(arg) ) ;
           }
       }
     }

@@ -510,7 +510,6 @@ StatusCode ToolSvc::create(const std::string& tooltype,
   }
   catch ( const GaudiException& Exception )  {
     // (1) perform the printout of message
-    MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "Exception with tag=" << Exception.tag()
 	<< " is caught whilst instantiating tool '" << tooltype << "'" << endmsg;
     // (2) print  the exception itself
@@ -520,7 +519,6 @@ StatusCode ToolSvc::create(const std::string& tooltype,
   }
   catch( const std::exception& Exception ) {
     // (1) perform the printout of message
-    MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL
 	<< "Standard std::exception is caught whilst instantiating tool '"
           << tooltype << "'" << endmsg;
@@ -531,7 +529,6 @@ StatusCode ToolSvc::create(const std::string& tooltype,
   }
   catch(...) {
     // (1) perform the printout
-    MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "UNKNOWN Exception is caught whilst instantiating tool '"
 	<< tooltype << "'" << endmsg;
     return StatusCode::FAILURE;
@@ -545,7 +542,6 @@ StatusCode ToolSvc::create(const std::string& tooltype,
   if ( mytool != 0 ) {
     StatusCode sc = mytool->setProperties();
     if ( sc.isFailure() ) {
-      MsgStream log ( msgSvc() , name() );
       log << MSG::ERROR << "Error setting properties for tool '"
 	  << fullname << "'" << endmsg;
       return sc;
@@ -559,8 +555,7 @@ StatusCode ToolSvc::create(const std::string& tooltype,
   // Catch any exceptions
   catch ( const GaudiException & Exception )
     {
-      MsgStream msg ( msgSvc(), name() );
-      msg << MSG::ERROR
+      log << MSG::ERROR
           << "GaudiException with tag=" << Exception.tag()
           << " caught whilst initializing tool '" << fullname << "'" << endmsg
           << Exception << endmsg;
@@ -568,16 +563,14 @@ StatusCode ToolSvc::create(const std::string& tooltype,
     }
   catch( const std::exception & Exception )
     {
-      MsgStream msg ( msgSvc(), name() );
-      msg << MSG::ERROR
+      log << MSG::ERROR
           << "Standard std::exception caught whilst initializing tool '"
           << fullname << "'" << endmsg << Exception.what() << endmsg;
       return StatusCode::FAILURE;
     }
   catch (...)
     {
-      MsgStream msg ( msgSvc(), name() );
-      msg << MSG::ERROR
+      log << MSG::ERROR
           << "UNKNOWN Exception caught whilst initializing tool '"
           << fullname << "'" << endmsg;
       return StatusCode::FAILURE;
@@ -585,7 +578,6 @@ StatusCode ToolSvc::create(const std::string& tooltype,
 
   // Status of tool initialization
   if ( sc.isFailure() ) {
-    MsgStream log( msgSvc(), name() );
     log << MSG::ERROR << "Error initializing tool '" << fullname << "'" << endmsg;
     return sc;
   }
@@ -595,7 +587,6 @@ StatusCode ToolSvc::create(const std::string& tooltype,
     sc = toolguard->sysStart();
 
     if (sc.isFailure()) {
-      MsgStream log( msgSvc(), name() );
       log << MSG::ERROR << "Error starting tool '" << fullname << "'" << endmsg;
       return sc;
     }

@@ -169,7 +169,7 @@ void GaudiPython::TESSerializer::loadBuffer(TBufferFile& buffer) {
       LinkManager* lnkMgr = obj->linkMgr();
       buffer.ReadInt(nlink);
       
-      for (int i=0; i<nlink; ++i) {
+      for (int j=0; j<nlink; ++j) {
         buffer.ReadString(text,sizeof(text));
         lnkMgr->addLink(text,0);
       }
@@ -180,13 +180,13 @@ void GaudiPython::TESSerializer::loadBuffer(TBufferFile& buffer) {
       if ( location == "/Event" ) {
         sc = m_TESMgr->setRoot(location, obj);
         if(sc.isFailure()) {
-          string text("Cannot set root at location ");
-          throw GaudiException(text+location,"", sc);
+          string msg("Cannot set root at location ");
+          throw GaudiException(msg+location,"", sc);
         } 
       }
       else {
-        string text("Cannot register object at location ");
-        throw GaudiException(text+location,"", sc);
+        string msg("Cannot register object at location ");
+        throw GaudiException(msg+location,"", sc);
       }      
     }
   }

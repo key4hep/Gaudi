@@ -117,7 +117,7 @@ StatusCode TimingAuditor::initialize ()
   // get tool service
   if ( 0 == m_toolSvc )
   {
-    StatusCode sc = Auditor::service ( "ToolSvc" , m_toolSvc ) ;
+    sc = Auditor::service ( "ToolSvc" , m_toolSvc ) ;
     if ( sc.isFailure() )
     {
       log << "Could not retrieve 'ToolSvc' " << sc << endmsg ;
@@ -138,7 +138,7 @@ StatusCode TimingAuditor::initialize ()
   // get incident service
   if ( 0 == m_incSvc )
   {
-    StatusCode sc = Auditor::service ( "IncidentSvc" , m_incSvc ) ;
+    sc = Auditor::service ( "IncidentSvc" , m_incSvc ) ;
     if ( sc.isFailure() )
     {
       log << MSG::ERROR
@@ -151,7 +151,7 @@ StatusCode TimingAuditor::initialize ()
   // get the application manager
   if ( 0 == m_appMgr )
   {
-    StatusCode sc = Auditor::service ( "ApplicationMgr" , m_appMgr ) ;
+    sc = Auditor::service ( "ApplicationMgr" , m_appMgr ) ;
     if ( sc.isFailure() )
     {
       log << MSG::ERROR

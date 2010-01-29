@@ -173,7 +173,6 @@ THistSvc::finalize() {
       }
     }
 
-    MsgStream log ( msgSvc(), name() );
     log << MSG::DEBUG << "uid: \"" << uitr->first << "\"  temp: "
         << uitr->second.temp << "  dir: " << dirname
         << endmsg;
@@ -188,7 +187,6 @@ THistSvc::finalize() {
 
   StatusCode sc = write();
   if (sc.isFailure()) {
-    MsgStream log ( msgSvc(), name() );
     log << MSG::ERROR << "problems writing histograms" << endmsg;
   }
 

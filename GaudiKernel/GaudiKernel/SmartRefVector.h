@@ -137,12 +137,14 @@ public:
   /// Helper to write references
   StreamBuffer& writeRefs(StreamBuffer& s)  const;
   /// Output Streamer operator
-  friend StreamBuffer& operator<< (StreamBuffer& s, const SmartRefVector<TYPE>& ptr)   {
-    return ptr.writeRefs(s);
+  // MCl: it is "_s" instead of the most common "s" to avoid a fake icc remark #1599
+  friend StreamBuffer& operator<< (StreamBuffer& _s, const SmartRefVector<TYPE>& ptr)   {
+    return ptr.writeRefs(_s);
   }
   /// Input Streamer operator
-  friend StreamBuffer& operator>> (StreamBuffer& s, SmartRefVector<TYPE>& ptr)     {
-    return ptr.readRefs(s);
+  // MCl: it is "_s" instead of the most common "s" to avoid a fake icc remark #1599
+  friend StreamBuffer& operator>> (StreamBuffer& _s, SmartRefVector<TYPE>& ptr)     {
+    return ptr.readRefs(_s);
   }
 };
 

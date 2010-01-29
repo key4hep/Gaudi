@@ -337,8 +337,8 @@ PoolDbNTupleCnv::createObj(IOpaqueAddress* pAddress, DataObject*& refpObject)
             }
             if ( status.isSuccess() )  {
               PoolDbTupleCallback* hdlr = new PoolDbTupleCallback(nt);
-              const pool::DbTypeInfo* typ = pool::DbTypeInfo::fromString(par_typ);
-              hdlr->configure(nt, typ, cntH);
+              const pool::DbTypeInfo* typ1 = pool::DbTypeInfo::fromString(par_typ);
+              hdlr->configure(nt, typ1, cntH);
               pdbA->setHandler(hdlr);
               refpObject  = nt;
             }
@@ -536,10 +536,10 @@ PoolDbNTupleCnv::createRep(DataObject* pObj, IOpaqueAddress*& pAddr)  {
               goto MakeCol;
   MakeCol:
               if ( it->length() == 1 )  {
-                pool::DbColumn* col = new pool::DbColumn(it->name(),
-                                                         pool_type,
-                                                         0,
-                                                         DataTypeInfo::size(it->type()));
+                col = new pool::DbColumn(it->name(),
+                                         pool_type,
+                                         0,
+                                         DataTypeInfo::size(it->type()));
                 item_map[item_no] = cols.size();
                 cols.push_back(col);
               }
@@ -575,13 +575,12 @@ PoolDbNTupleCnv::createRep(DataObject* pObj, IOpaqueAddress*& pAddr)  {
         if ( sc.isSuccess() )  {
           // Check if the database container can be connected
           pool::DbContainer cntH(POOL_StorageType);
-          StatusCode sc =
-            m_dbMgr->connectContainer(IPoolDbMgr::UNKNOWN,
-                                      path,
-                                      cntName,
-                                      pool::RECREATE|pool::UPDATE,
-                                      typH,
-                                      cntH);
+          sc = m_dbMgr->connectContainer(IPoolDbMgr::UNKNOWN,
+                                         path,
+                                         cntName,
+                                         pool::RECREATE|pool::UPDATE,
+                                         typH,
+                                         cntH);
           if ( sc.isSuccess() )  {
             PoolDbTupleCallback* hdlr = new PoolDbTupleCallback(pObj);
             pool::Token*         tok = new pool::Token(cntH.token());

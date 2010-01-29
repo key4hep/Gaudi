@@ -229,7 +229,7 @@ StatusCode ChronoStatSvc::finalize()
 {
   std::string local = name()+".finalize()";
   ///
-  MsgStream log( msgSvc() , local );
+  MsgStream main_log( msgSvc() , local );
   ///
   /// stop its own chrono
   chronoStop( name() ) ;
@@ -287,8 +287,8 @@ StatusCode ChronoStatSvc::finalize()
 		  { std::cout << *tag << "\t"  << entity->outputUserTime  () << std::endl ; }
 		else                         /// print to MsgStream
 		  {
-		    MsgStream log( msgSvc() , *tag ) ;
-		    log << m_chronoPrintLevel << entity->outputUserTime  () << endmsg ;
+		    MsgStream(msgSvc(), *tag)
+          << m_chronoPrintLevel << entity->outputUserTime  () << endmsg ;
 		  }
 		//
 	      }
@@ -315,8 +315,8 @@ StatusCode ChronoStatSvc::finalize()
 		  { std::cout << *tag << "\t"  << entity->outputSystemTime() << std::endl ; }
 		else                         /// print to MsgStream
 		  {
-		    MsgStream log( msgSvc() , *tag ) ;
-		    log << m_chronoPrintLevel << entity->outputSystemTime() << endmsg ;
+		    MsgStream(msgSvc(), *tag)
+          << m_chronoPrintLevel << entity->outputSystemTime() << endmsg ;
 		  }
 		//
 	      }
@@ -343,8 +343,8 @@ StatusCode ChronoStatSvc::finalize()
 		  { std::cout << *tag << "\t"  << entity->outputElapsedTime() << std::endl ; }
 		else                         /// print to MsgStream
 		  {
-		    MsgStream log( msgSvc() , *tag ) ;
-		    log << m_chronoPrintLevel << entity->outputElapsedTime() << endmsg ;
+		    MsgStream(msgSvc(), *tag)
+          << m_chronoPrintLevel << entity->outputElapsedTime() << endmsg ;
 		  }
 		//
 	      }
@@ -366,7 +366,7 @@ StatusCode ChronoStatSvc::finalize()
     saveStats();
   }
 
-  log << MSG::INFO << " Service finalized successfully " << endmsg;
+  main_log << MSG::INFO << " Service finalized successfully " << endmsg;
 
   return Service::finalize(); ///< finalize the base class
 }

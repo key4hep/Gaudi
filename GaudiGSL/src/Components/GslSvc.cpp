@@ -123,7 +123,6 @@ StatusCode GslSvc::initialize()
         log << MSG::ERROR << " Could not locate Tool Service! " << endmsg;
         return StatusCode::FAILURE;
       }
-      StatusCode sc;
       for( Names::const_iterator it = m_handlersTypeNames.begin() ;
            m_handlersTypeNames.end() != it ; ++it )
         {

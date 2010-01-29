@@ -473,10 +473,10 @@ void PersistencySvc::decodeAddrHdr( const std::string& address,
           pos = address.find("clid=\"");
         if (std::string::npos != pos) {
           pos += 6;
-          size_t end = address.find('\"', pos);
-          if (std::string::npos != end) {
+          size_t end1 = address.find('\"', pos);
+          if (std::string::npos != end1) {
             std::string str1;
-            str1.insert(0, address, pos, end-pos);
+            str1.insert(0, address, pos, end1-pos);
             sscanf(str1.c_str(),"%d",&temp);
             clid = temp;
             // Get trailer_address

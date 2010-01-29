@@ -254,12 +254,14 @@ public:
   /// Read the reference from the stream buffer (needed due to stupid G++ compiler)
   StreamBuffer& readRef(StreamBuffer& s);
   /// Output Streamer operator
-  friend StreamBuffer& operator<< (StreamBuffer& s, const SmartRef<TYPE>& ptr)  {
-    return ptr.writeRef(s);
+  // MCl: it is "_s" instead of the most common "s" to avoid a fake icc remark #1599
+  friend StreamBuffer& operator<< (StreamBuffer& _s, const SmartRef<TYPE>& ptr)  {
+    return ptr.writeRef(_s);
   }
   /// Input Streamer operator
-  friend StreamBuffer& operator>> (StreamBuffer& s, SmartRef<TYPE>& ptr)    {
-    return ptr.readRef(s);
+  // MCl: it is "_s" instead of the most common "s" to avoid a fake icc remark #1599
+  friend StreamBuffer& operator>> (StreamBuffer& _s, SmartRef<TYPE>& ptr)    {
+    return ptr.readRef(_s);
   }
 };
 

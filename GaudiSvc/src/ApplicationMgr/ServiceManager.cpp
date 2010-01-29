@@ -416,9 +416,8 @@ StatusCode ServiceManager::finalize()
   ListSvc tmpList(m_listsvc);
 
   StatusCode sc(StatusCode::SUCCESS, true);
-  ListSvc::reverse_iterator it;
   // call finalize() for all services in reverse order
-  for (it = tmpList.rbegin(); it != tmpList.rend(); ++it ) {
+  for (ListSvc::reverse_iterator it = tmpList.rbegin(); it != tmpList.rend(); ++it ) {
     if (!it->active) continue; // only act on active services
     const std::string& name = it->service->name();
     // ignore the current state for the moment
@@ -430,8 +429,9 @@ StatusCode ServiceManager::finalize()
     }
   }
   debug() << "Service reference count check:" << endmsg;
+  ListSvc::iterator it;
   while (!tmpList.empty()) {
-    ListSvc::iterator it = tmpList.begin();
+    it = tmpList.begin();
     const std::string& name = it->service->name(); 
     const unsigned long rc = it->service->refCount() - 1; // exclude the count due to the temporary list
     debug() << "---- " << name
@@ -446,12 +446,12 @@ StatusCode ServiceManager::finalize()
 
   // loop over all Active Services, removing them one by one.
   // They should be deleted because the reference counting goes to 0.
-  ListSvc::iterator it2 = m_listsvc.begin();
-  while (it2 != m_listsvc.end()) {
-    if (it2->active) {
-      it2 = m_listsvc.erase(it2);
+  it = m_listsvc.begin();
+  while (it != m_listsvc.end()) {
+    if (it->active) {
+      it = m_listsvc.erase(it);
     } else {
-      ++it2;
+      ++it;
     }
   }
   return sc ;

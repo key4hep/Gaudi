@@ -494,10 +494,10 @@ StatusCode MinimalEventLoopMgr::decodeTopAlgs()    {
         else {
           log << MSG::DEBUG << "Creating Top Algorithm " << item.type() << " with name " << item_name << endmsg;
           IAlgorithm *ialg = 0;
-          StatusCode sc = algMan->createAlgorithm(item.type(), item_name, ialg);
-          if( !sc.isSuccess() ) {
+          StatusCode sc1 = algMan->createAlgorithm(item.type(), item_name, ialg);
+          if( !sc1.isSuccess() ) {
             log << MSG::ERROR << "Unable to create Top Algorithm " << item.type() << " with name " << item_name << endmsg;
-            return sc;
+            return sc1;
           }
           alg = ialg; // manage reference counting
         }
@@ -544,10 +544,10 @@ StatusCode MinimalEventLoopMgr::decodeOutStreams( )    {
         else {
           log << MSG::DEBUG << "Creating Output Stream " << (*it) << endmsg;
           IAlgorithm* ios = 0;
-          StatusCode sc = algMan->createAlgorithm( item.type(), item.name(), ios );
-          if( !sc.isSuccess() ) {
+          StatusCode sc1 = algMan->createAlgorithm( item.type(), item.name(), ios );
+          if( !sc1.isSuccess() ) {
             log << MSG::ERROR << "Unable to create Output Stream " << (*it) << endmsg;
-            return sc;
+            return sc1;
           }
           os = ios; // manage reference counting
         }

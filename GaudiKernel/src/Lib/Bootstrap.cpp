@@ -173,11 +173,11 @@ IInterface* Gaudi::createInstance( const std::string& name,
   void* libHandle = 0;
   status = System::loadDynamicLib( dllname, &libHandle);
   if ( status.isSuccess() )   {
-    IInterface* ii = PluginService::Create<IInterface*>(factname, (IInterface*)0);
+    ii = PluginService::Create<IInterface*>(factname, (IInterface*)0);
     if ( ii ) return ii;
-    IService* is = PluginService::Create<IService*>(factname, name, (ISvcLocator*)0);
+    is = PluginService::Create<IService*>(factname, name, (ISvcLocator*)0);
     if ( is ) return is;
-    IAlgorithm* ia = PluginService::Create<IAlgorithm*>(factname, name, (ISvcLocator*)0);
+    ia = PluginService::Create<IAlgorithm*>(factname, name, (ISvcLocator*)0);
     if ( ia ) return ia;
 
     return 0;

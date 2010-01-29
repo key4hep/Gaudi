@@ -211,8 +211,8 @@ PoolDbCnvSvc::createConverter(long typ,const CLID& wanted,const ICnvFactory*)
     };
     for ( unsigned int i = 0; i < sizeof(gen_clids)/sizeof(gen_clids[0]); i++ ) {
       if ( (wanted>>16) == (gen_clids[i]>>16) )  {
-        ConverterID cnvid(POOL_StorageType, gen_clids[i]);
-        pConverter = PluginService::CreateWithId<IConverter*>(cnvid, typ, wanted, serviceLocator().get());
+        ConverterID cnvid1(POOL_StorageType, gen_clids[i]);
+        pConverter = PluginService::CreateWithId<IConverter*>(cnvid1, typ, wanted, serviceLocator().get());
         if ( 0 != pConverter ) {
           return pConverter;
         }
@@ -220,8 +220,8 @@ PoolDbCnvSvc::createConverter(long typ,const CLID& wanted,const ICnvFactory*)
     }
     // Check if a converter using object update is needed
     if ( (wanted>>24) != 0 )  {
-      ConverterID cnvid(POOL_StorageType, CLID_Any | 1<<31);
-      pConverter = PluginService::CreateWithId<IConverter*>(cnvid, typ, wanted, serviceLocator().get());
+      ConverterID cnvid1(POOL_StorageType, CLID_Any | 1<<31);
+      pConverter = PluginService::CreateWithId<IConverter*>(cnvid1, typ, wanted, serviceLocator().get());
       if ( 0 != pConverter ) {
         return pConverter;
       }
@@ -229,8 +229,8 @@ PoolDbCnvSvc::createConverter(long typ,const CLID& wanted,const ICnvFactory*)
     // If we do not have found any suitable container after searching
     // for standard containers, we will use the "ANY" converter
     // ... and pray for everything will go well.
-    ConverterID cnvid(POOL_StorageType, CLID_Any);
-    pConverter = PluginService::CreateWithId<IConverter*>(cnvid, typ, wanted, serviceLocator().get());
+    ConverterID cnvid1(POOL_StorageType, CLID_Any);
+    pConverter = PluginService::CreateWithId<IConverter*>(cnvid1, typ, wanted, serviceLocator().get());
     if ( 0 != pConverter ) {
       MsgStream log(msgSvc(), name());
       log << MSG::INFO << "Using \"Any\" converter "
