@@ -417,13 +417,14 @@ StatusCode ServiceManager::finalize()
 
   StatusCode sc(StatusCode::SUCCESS, true);
   // call finalize() for all services in reverse order
-  for (ListSvc::reverse_iterator it = tmpList.rbegin(); it != tmpList.rend(); ++it ) {
-    if (!it->active) continue; // only act on active services
-    const std::string& name = it->service->name();
+  ListSvc::reverse_iterator rit;
+  for (rit = tmpList.rbegin(); rit != tmpList.rend(); ++rit ) {
+    if (!rit->active) continue; // only act on active services
+    const std::string& name = rit->service->name();
     // ignore the current state for the moment
-    // if( Gaudi::StateMachine::INITIALIZED == it->service->state() ) {
+    // if( Gaudi::StateMachine::INITIALIZED == rit->service->state() ) {
     debug() << "Finalizing service " << name << endmsg;
-    if ( !(it->service->sysFinalize()).isSuccess() ) {
+    if ( !(rit->service->sysFinalize()).isSuccess() ) {
       warning() << "Finalization of service " << name << " failed" << endmsg;
       sc = StatusCode::FAILURE;
     }
