@@ -1,6 +1,14 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2010-02-19 - Marco Clemencic
+ - Fixed bug #62374: Handling of signal SIGXCPU
+   Added a small signal handler to keep track of the received signals (only for
+   the requested ones).
+   Modified EventLoopMgr to check for SIGINT (ctrl-c) and SIGXCPU (used by LSF)
+   and stop the event loop as soon as possible, printing a message with the
+   received signal. Configuration options allow to ignore the signals.
+
 ! 2010-01-29 - Marco Clemencic
  - Fixed icc remark #1599: declaration hides variable
 

@@ -15,6 +15,112 @@
 #include "HistogramAgent.h"
 #include "EventLoopMgr.h"
 
+#include <csignal>
+
+namespace {
+  /// Small (singleton) helper class to keep track of occurred signals.
+  /// The signals to be recorded must be declared with monitorSignal() and the
+  /// check can be disabled with ignoreSignal().
+  class SignalHandler {
+  public:
+#ifdef _WIN32
+    typedef void (__cdecl *handler_t)(int);
+#else
+    typedef struct sigaction handler_t;
+#endif
+
+    /// Method to get the singleton instance.
+    static SignalHandler &instance() {
+      static SignalHandler sh;
+      return sh;
+    }
+
+    /// Declare a signal to be monitored.
+    /// It installs a signal handler for the requested signal.
+    void monitorSignal(int signum) {
+      if (!m_monitored[signum]) {
+        handler_t sa;
+        handler_t oldact;
+#ifdef _WIN32
+        sa = SignalHandler::dispatcher;
+	oldact = signal(signum, sa);
+#else
+        sa.sa_handler = SignalHandler::dispatcher;
+        sigemptyset(&sa.sa_mask);
+        sa.sa_flags = 0;
+        sigaction(signum, &sa, &oldact);
+#endif
+	m_oldActions[signum] = oldact;
+        m_monitored[signum] = true;
+      }
+    }
+
+    /// Remove the specific signal handler for the requested signal, restoring
+    /// the previous signal handler.
+    void ignoreSignal(int signum) {
+      if (m_monitored[signum]) {
+#ifdef _WIN32
+        (void) signal(signum, m_oldActions[signum]);
+#else
+        sigaction(signum, &m_oldActions[signum], 0);
+#endif
+        m_oldActions[signum] = m_defaultAction;
+        m_monitored[signum] = false;
+      }
+    }
+
+    /// Check if the given signal has been received.
+    bool gotSignal(int signum) const {
+      return m_caught[signum] != 0;
+    }
+
+    /// Set the flag for the given signal, as if the signal was received.
+    void setSignal(int signum) {
+      m_caught[signum] = 1;
+    }
+
+    /// Clear the flag for the given signal, so that a new occurrence can be identified.
+    void clearSignal(int signum) {
+      m_caught[signum] = 0;
+    }
+
+  private:
+    /// Constructor.
+    SignalHandler(){
+#ifdef _WIN32
+      m_defaultAction = SIG_DFL;
+#else
+      m_defaultAction.sa_handler = SIG_DFL;
+      sigemptyset(&m_defaultAction.sa_mask);
+      m_defaultAction.sa_flags = 0;
+#endif
+      for(int i = 0; i < NSIG; ++i){
+        m_caught[i] = 0;
+        m_monitored[i] = false;
+        m_oldActions[i] = m_defaultAction;
+      }
+    }
+
+    /// Array of flags to keep track of monitored signals.
+    bool             m_monitored[NSIG];
+    /// Array of flags for received signals.
+    sig_atomic_t     m_caught[NSIG];
+    /// Helper variable for default signal action.
+    handler_t        m_defaultAction;
+    /// List of replaced signal actions (for the recovery when disable the monitoring).
+    handler_t        m_oldActions[NSIG];
+
+    /// Signal handler function.
+    static void dispatcher(int signum);
+  };
+
+  // Implementation of the signal handler function.
+  void SignalHandler::dispatcher(int signum){
+    instance().m_caught[signum] = 1;
+  }
+}
+
+
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY(EventLoopMgr)
 
@@ -37,6 +143,11 @@ EventLoopMgr::EventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
   declareProperty("EvtSel", m_evtsel );
   declareProperty("Warnings",m_warnings=true,
 		  "Set this property to false to suppress warning messages");
+
+  declareProperty("HandleSIGINT", m_handleSIGINT = true,
+                  "Intercept the SIGINT signal (CTRL-C) and stop the event loop.");
+  declareProperty("HandleSIGXCPU", m_handleSIGXCPU = true,
+                  "Intercept the SIGXCPU signal and stop the event loop (ignored on Windows).");
 }
 
 //--------------------------------------------------------------------------------------------
@@ -52,10 +163,10 @@ EventLoopMgr::~EventLoopMgr()   {
 }
 
 //--------------------------------------------------------------------------------------------
-// implementation of IAppMgrUI::initalize
+// implementation of IAppMgrUI::initialize
 //--------------------------------------------------------------------------------------------
 StatusCode EventLoopMgr::initialize()    {
-  // initilaize the base class
+  // Initialize the base class
   StatusCode sc = MinimalEventLoopMgr::initialize();
   MsgStream log(msgSvc(), name());
   if( !sc.isSuccess() ) {
@@ -124,6 +235,11 @@ StatusCode EventLoopMgr::initialize()    {
     log << MSG::WARNING << "Histograms cannot not be saved - though required." << endmsg;
     return sc;
   }
+
+  if (m_handleSIGINT) SignalHandler::instance().monitorSignal(SIGINT);
+#ifndef _WIN32
+  if (m_handleSIGXCPU) SignalHandler::instance().monitorSignal(SIGXCPU);
+#endif
   return StatusCode::SUCCESS;
 }
 //--------------------------------------------------------------------------------------------
@@ -132,7 +248,7 @@ StatusCode EventLoopMgr::initialize()    {
 StatusCode EventLoopMgr::reinitialize() {
   MsgStream log(msgSvc(), name());
 
-  // initilaize the base class
+  // Initialize the base class
   StatusCode sc = MinimalEventLoopMgr::reinitialize();
   if( !sc.isSuccess() ) {
     log << MSG::DEBUG << "Error Initializing base class MinimalEventLoopMgr." << endmsg;
@@ -217,6 +333,11 @@ StatusCode EventLoopMgr::finalize()    {
     log << MSG::ERROR << "Error finalizing base class" << endmsg;
     return sc;
   }
+
+  if (m_handleSIGINT) SignalHandler::instance().ignoreSignal(SIGINT);
+#ifndef _WIN32
+  if (m_handleSIGXCPU) SignalHandler::instance().ignoreSignal(SIGXCPU);
+#endif
 
   // Save Histograms Now
   if ( m_histoPersSvc != 0 )    {
@@ -322,6 +443,33 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
   // loop over events if the maxevt (received as input) if different from -1.
   // if evtmax is -1 it means infinite loop
   for( int nevt = 0; (maxevt == -1 ? true : nevt < maxevt);  nevt++, total_nevt++) {
+
+    if (
+        SignalHandler::instance().gotSignal(SIGINT)
+#ifndef _WIN32		    
+        or SignalHandler::instance().gotSignal(SIGXCPU)
+#endif
+        ){
+      log << MSG::ALWAYS << "Stop of event loop after receiving a ";
+      if (SignalHandler::instance().gotSignal(SIGINT)) {
+        log << "SIGINT";
+      }
+#ifndef _WIN32
+      else {
+        log << "SIGXCPU";
+      }
+#endif
+      log << " signal" << endmsg;
+      // Clear the signal flags
+      if (SignalHandler::instance().gotSignal(SIGINT))
+        SignalHandler::instance().clearSignal(SIGINT);
+#ifndef _WIN32
+      if (SignalHandler::instance().gotSignal(SIGXCPU))
+        SignalHandler::instance().clearSignal(SIGXCPU);
+#endif
+      break;
+    }
+
     // Check if there is a scheduled stop issued by some algorithm/service
     if ( m_scheduledStop ) {
       m_scheduledStop = false;
@@ -332,7 +480,7 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
     if( 0 != total_nevt ) {
 
       if ( ! m_endEventFired ) {
-        // Fire EndEvent "Incident" (it is considered part of the clearsing of the TS)
+        // Fire EndEvent "Incident" (it is considered part of the clearing of the TS)
         m_incidentSvc->fireIncident(Incident(name(),IncidentType::EndEvent));
         m_endEventFired = true;
       }

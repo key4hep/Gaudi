@@ -60,6 +60,10 @@ protected:
   bool              m_endEventFired;
   /// Flag to disable warning messages when using external input
   bool              m_warnings;
+  /// Flag to enable/disable handling of SIGINT
+  bool              m_handleSIGINT;
+  /// Flag to enable/disable handling of SIGXCPU
+  bool              m_handleSIGXCPU;
 
 public:
   /// Standard Constructor
