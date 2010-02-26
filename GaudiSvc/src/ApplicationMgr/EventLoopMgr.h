@@ -6,10 +6,14 @@
 #include "GaudiKernel/IEvtSelector.h"
 #include "GaudiKernel/MinimalEventLoopMgr.h"
 
+// std includes
+#include <memory>
+
 // Forward declarations
 class IIncidentSvc;
 class IDataManagerSvc;
 class IDataProviderSvc;
+class WatchdogThread;
 
 /** Class definition of EventLoopMgr.
     This is the default processing manager of the application manager.
@@ -64,6 +68,10 @@ protected:
   bool              m_handleSIGINT;
   /// Flag to enable/disable handling of SIGXCPU
   bool              m_handleSIGXCPU;
+  /// Number of seconds allowed to process a single event
+  unsigned int      m_eventTimeout;
+  /// Pointer to the watchdog thread that checks for the event timeout.
+  std::auto_ptr<WatchdogThread> m_watchdog;
 
 public:
   /// Standard Constructor

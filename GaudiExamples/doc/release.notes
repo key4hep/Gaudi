@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2010-02-26 - Marco Clemencic
+ - Added a test for the EventTimeoutWatchdog of the EventLoopMgr.
+
 ! 2010-01-29 - Marco Clemencic
  - Fixed icc warning #191: type qualifier is meaningless on cast type
 

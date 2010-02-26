@@ -1,0 +1,44 @@
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+  <argument name="program"><text>gaudirun.py</text></argument>
+  <argument name="options"><text>
+from Gaudi.Configuration import *
+
+from Configurables import GaudiTesting__SleepyAlg as SleepyAlg, EventLoopMgr
+
+importOptions("Common.opts")
+
+alg = SleepyAlg("Sleepy", SleepTime = 11)
+EventLoopMgr().EventTimeout = 2
+
+app = ApplicationMgr(TopAlg = [alg],
+                     EvtSel = "NONE", EvtMax = 2)
+
+</text></argument>
+<argument name="validator"><text>
+findReferenceBlock("""
+Sleepy               INFO Executing event 1
+Sleepy               INFO Sleeping for 11 seconds
+EventWatchdog     WARNING More than 2s to process an event.
+EventWatchdog     WARNING Other 2s and we are still on the same event.
+EventWatchdog     WARNING We are still at the same point:
+""", id = "1st_evt")
+findReferenceBlock("""
+EventWatchdog     WARNING I'm not going to print other messages for this event.
+Sleepy               INFO Back from sleep
+EventWatchdog        INFO Starting a new event after ~11s
+""", signature_offset = 2, id = "1st_evt_end")
+findReferenceBlock("""
+Sleepy               INFO Executing event 2
+Sleepy               INFO Sleeping for 11 seconds
+EventWatchdog     WARNING More than 2s to process an event.
+EventWatchdog     WARNING Other 2s and we are still on the same event.
+EventWatchdog     WARNING We are still at the same point:
+""", id = "2nd_evt")
+findReferenceBlock("""
+EventWatchdog     WARNING I'm not going to print other messages for this event.
+Sleepy               INFO Back from sleep
+EventWatchdog        INFO The last event took ~11s
+""", signature_offset = 2, id = "2nd_evt_end")
+</text></argument>
+</extension>

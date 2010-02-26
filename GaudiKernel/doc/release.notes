@@ -1,6 +1,14 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-02-26 - Marco Clemencic
+ - Added a simple generic class (WatchdogThread) for implementation of software
+   watchdogs (in the sense of a secondary thread that periodically checks that
+   an event has occurred).
+   A derived class should implement (at least) the method "action()", which is
+   invoked when the time-out occurs without that another thread called the
+   "ping()" method ofthe watchdog.
+
 ! 2010-01-29 - Marco Clemencic
  - Fixed icc remark #1599: declaration hides variable
  - Fixed icc warning #858: type qualifier on return type is meaningless

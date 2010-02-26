@@ -15,6 +15,8 @@
 #include "HistogramAgent.h"
 #include "EventLoopMgr.h"
 
+#include "GaudiKernel/WatchdogThread.h"
+
 #include <csignal>
 
 namespace {
@@ -118,6 +120,51 @@ namespace {
   void SignalHandler::dispatcher(int signum){
     instance().m_caught[signum] = 1;
   }
+
+  /// Specialized watchdog to monitor the event loop and spot possible infinite loops.
+  class EventWatchdog: public WatchdogThread {
+  public:
+    EventWatchdog(const SmartIF<IMessageSvc> &msgSvc,
+                  const std::string &name,
+                  boost::posix_time::time_duration timeout,
+                  bool autostart = false):
+        WatchdogThread(timeout, autostart),
+        log(msgSvc, name),
+        m_counter(0) {}
+    virtual ~EventWatchdog() {}
+  private:
+    MsgStream log;
+    long m_counter;
+    void action() {
+      if (!m_counter) {
+        log << MSG::WARNING << "More than " << getTimeout().seconds()
+            << "s to process an event." << endmsg;
+      }
+      else if (m_counter < 2) {
+        log << MSG::WARNING << "Other " << getTimeout().seconds()
+            << "s and we are still on the same event." << endmsg;
+      }
+      else if (m_counter < 3) {
+        log << MSG::WARNING << "We are still at the same point:" << endmsg;
+        // log << MSG::WARNING << "*** stack trace ***" << endmsg;
+        log << MSG::WARNING << "I'm not going to print other messages for this event." << endmsg;
+      }
+      ++m_counter;
+    }
+    void onPing() {
+      if (m_counter) {
+        if (m_counter >= 3)
+          log << MSG::INFO << "Starting a new event after ~"
+              << m_counter * getTimeout().seconds() << "s" << endmsg;
+        m_counter = 0;
+      }
+    }
+    void onStop() {
+      if (m_counter >= 3)
+        log << MSG::INFO << "The last event took ~"
+        << m_counter * getTimeout().seconds() << "s" << endmsg;
+    }
+  };
 }
 
 
@@ -148,6 +195,8 @@ EventLoopMgr::EventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
                   "Intercept the SIGINT signal (CTRL-C) and stop the event loop.");
   declareProperty("HandleSIGXCPU", m_handleSIGXCPU = true,
                   "Intercept the SIGXCPU signal and stop the event loop (ignored on Windows).");
+  declareProperty("EventTimeout", m_eventTimeout = 600,
+                  "Number of seconds allowed to process a single event (0 to disable the check)");
 }
 
 //--------------------------------------------------------------------------------------------
@@ -234,6 +283,13 @@ StatusCode EventLoopMgr::initialize()    {
   if( !m_histoPersSvc.isValid() ) {
     log << MSG::WARNING << "Histograms cannot not be saved - though required." << endmsg;
     return sc;
+  }
+
+  if (m_eventTimeout) {
+    m_watchdog = std::auto_ptr<WatchdogThread>(
+        new EventWatchdog(msgSvc(),
+            "EventWatchdog",
+            boost::posix_time::seconds(m_eventTimeout)));
   }
 
   if (m_handleSIGINT) SignalHandler::instance().monitorSignal(SIGINT);
@@ -440,9 +496,12 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
   StatusCode        sc(StatusCode::SUCCESS, true);
   MsgStream         log( msgSvc(), name() );
 
+  if (m_watchdog.get()) m_watchdog->start();
+
   // loop over events if the maxevt (received as input) if different from -1.
   // if evtmax is -1 it means infinite loop
   for( int nevt = 0; (maxevt == -1 ? true : nevt < maxevt);  nevt++, total_nevt++) {
+    if (m_watchdog.get()) m_watchdog->ping();
 
     if (
         SignalHandler::instance().gotSignal(SIGINT)
@@ -525,6 +584,7 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
       break;
     }
   }
+  if (m_watchdog.get()) m_watchdog->stop();
   return StatusCode::SUCCESS;
 }
 
