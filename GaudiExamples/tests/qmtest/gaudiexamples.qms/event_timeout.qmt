@@ -26,7 +26,7 @@ EventWatchdog     WARNING We are still at the same point:
 findReferenceBlock("""
 EventWatchdog     WARNING I'm not going to print other messages for this event.
 Sleepy               INFO Back from sleep
-EventWatchdog        INFO Starting a new event after ~11s
+EventWatchdog        INFO Starting a new event after ~10s
 """, signature_offset = 2, id = "1st_evt_end")
 findReferenceBlock("""
 Sleepy               INFO Executing event 2
@@ -38,7 +38,7 @@ EventWatchdog     WARNING We are still at the same point:
 findReferenceBlock("""
 EventWatchdog     WARNING I'm not going to print other messages for this event.
 Sleepy               INFO Back from sleep
-EventWatchdog        INFO The last event took ~11s
+EventWatchdog        INFO The last event took ~10s
 """, signature_offset = 2, id = "2nd_evt_end")
 </text></argument>
 </extension>
