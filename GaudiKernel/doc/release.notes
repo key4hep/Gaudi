@@ -2,6 +2,16 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 
 ! 2010-03-02 - Marco Clemencic
+  - Improvements in ConfigurableUser:
+    - Allow dependency between named ConfigurableUser instances.
+      The entry in __used_configurables__ can be a tuple where the first element
+      is the class (or class name) and the second element is the instance name.
+      If the instance name is equivalent to False (None, "", etc.), the name of
+      the instance is obtained through the method self._instanceName() that, by
+      default, returns "<userclass>_<class>", but can be overridden.
+    - Added a method to get a used instance by name: self.getUsedInstance().
+  - Minor fix in Configurable: allow to instantiate it passing the name as a
+    keyword argument (it was failing if the instance already existed).
   - Fixed a race condition in WatchdogThread.
 
 ! 2010-02-26 - Marco Clemencic

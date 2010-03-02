@@ -1,6 +1,10 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+! 2010-03-02 - Marco Clemencic
+  - Modified the test gaudi.conf_user_autoapply to test the dependency between
+    named ConfigurableUser instances.
+
 ================================ Gaudi v21r7 =================================
 ! 2010-01-08 - Marco Clemencic
  - Added test for bug #61144 (configuration problem for 'empty' tool handles)

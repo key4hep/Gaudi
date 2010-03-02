@@ -171,7 +171,8 @@ class Configurable( object ):
                 cls.configurables[ conf.getType() ] = conf
             #---PM: Initialize additional properties
             for n,v in kwargs.items():
-                setattr(conf, n, v)
+                if n != "name": # it should not be confused with a normal property
+                    setattr(conf, n, v)
             if not cls._configurationLocked and not "_enabled" in kwargs and isinstance(conf, ConfigurableUser):
                 # Ensure that the ConfigurableUser gets enabled if nothing is
                 # specified in the constructor.
@@ -1113,7 +1114,13 @@ class ConfigurableUser( Configurable ):
                   "__used_instances__": [],
                   "_enabled": True }
     ## list of ConfigurableUser classes this one is going to modify in the
-    #  __apply_configuration__ method
+    #  __apply_configuration__ method.
+    #  The list may contain class objects, strings representing class objects or
+    #  tuples with the class object (or a string) as first element and the instance
+    #  name as second element.
+    #  If the instance name is None or not present, the function _instanceName()
+    #  is used to determine the name of the instance (the default implementation
+    #  returns "<this name>_<other name>".
     __used_configurables__ = []
     ## list of ConfigurableUser classes this one is going to query in the
     #  __apply_configuration__ method
@@ -1130,14 +1137,30 @@ class ConfigurableUser( Configurable ):
         from GaudiKernel.ConfigurableDb import getConfigurable as confDbGetConfigurable
 
         # Set the list of users of the used configurables
+        # 
         self.__used_instances__ = []
         for used in self.__used_configurables__:
+            # By default we want to use the default name of the instances
+            # for the used configurables
+            used_name = Configurable.DefaultName
+            # If the entry in the list is a tuple, we need a named instance
+            if type(used) is tuple:
+                used, used_name = used # we re-set used to re-use the code below
+                if not used_name:
+                    used_name = self._instanceName(used)
+            # Check is 'used' is a string or not
+            if type(used) is str:
+                used_class = confDbGetConfigurable(used)
+            else:
+                used_class = used
+            # Instantiate the configurable that we are going to use 
             try:
-                if type(used) is str:
-                    used = confDbGetConfigurable(used)
-                inst = used(_enabled = False)
+                inst = used_class(name = used_name, _enabled = False)
             except AttributeError:
-                inst = used()
+                # This cover the case where the used configurable is not a
+                # ConfigurableUser instance, i.e. id doesn't have the attribute
+                # '_enabled'.
+                inst = used_class(name = used_name)
             self.__addActiveUseOf(inst)
         for queried in self.__queried_configurables__:
             try:
@@ -1254,6 +1277,32 @@ class ConfigurableUser( Configurable ):
         low level one.
         """
         pass
+    
+    def _instanceName(self, cls):
+        """
+        Function used to define the name of the private instance of a given class
+        name.
+        This method is used when the __used_configurables_property__ declares the
+        need of a private used configurable without specifying the name. 
+        """
+        if type(cls) is str:
+            clName = cls
+        else:
+            clName = cls.__name__
+        return "%s_%s" % (self.name(), clName)
+    
+    def getUsedInstance(self, name):
+        """
+        Return the used instance with a given name.
+        """
+        for i in self.__used_instances__:
+            if i.name() == name:
+                if hasattr(i, "_enabled"):
+                    # ensure that the instances retrieved through the method are
+                    # enabled
+                    i._enabled = True 
+                return i
+        raise KeyError(name)
 
 # list of callables to be called after all the __apply_configuration__ are called.
 postConfigActions = []
