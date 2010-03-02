@@ -86,6 +86,9 @@ private:
   /// Pointer to the running thread;
   std::auto_ptr<boost::thread> m_thread;
 
+  /// Flag to mark the thread as running/stopped (avoid possible race conditions).
+  bool m_running;
+
   /// Core function of the secondary thread.
   //  Waits for the time-out and if there was not a ping in the mean time, calls
   //  i_action().

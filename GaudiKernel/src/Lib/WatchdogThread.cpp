@@ -9,7 +9,7 @@
 #include <boost/thread/thread.hpp>
 
 WatchdogThread::WatchdogThread(boost::posix_time::time_duration timeout, bool autostart):
-  m_timeout(timeout)
+  m_timeout(timeout), m_running(false)
 {
   // Start the thread immediately if requested.
   if (autostart) start();
@@ -22,6 +22,7 @@ WatchdogThread::~WatchdogThread() {
 
 void WatchdogThread::start() {
   if (!m_thread.get()) { // can be started only if the thread is not yet started
+    m_running = true;
     // call user-defined function
     onStart();
     // Initialize the first "last ping"
@@ -33,7 +34,8 @@ void WatchdogThread::start() {
 
 void WatchdogThread::stop() {
   if (m_thread.get()) {
-    m_thread->interrupt(); // tell the thread to stop
+    m_running = false; // mark the thread as stopped (interrupt doesn't work if the thread is not sleeping)
+    m_thread->interrupt(); // tell the thread to stop (if it is waiting)
     m_thread->join(); // wait for it
     m_thread.reset(); // delete it
     // call user-defined function
@@ -50,7 +52,7 @@ void WatchdogThread::i_run() {
 
   try {
     // enter infinite loop
-    while (true) {
+    while (m_running) {
       // Wait until the next check point time is reached.
       // An early exit must be triggered by a call to this->interrupt(), which
       // will produce an exception during the sleep.

@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-03-02 - Marco Clemencic
+  - Fixed a race condition in WatchdogThread.
+
 ! 2010-02-26 - Marco Clemencic
  - Added a simple generic class (WatchdogThread) for implementation of software
    watchdogs (in the sense of a secondary thread that periodically checks that
