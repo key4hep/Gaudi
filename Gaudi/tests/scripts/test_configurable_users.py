@@ -20,9 +20,11 @@ class SubModule3(ConfigurableUser):
 
 class MultiInstance(ConfigurableUser):
     __slots__ = { "Property": 0 }
+    __used_configurables__ = [ (SubModule1, None) ]
     def __apply_configuration__(self):
         print "Applying", self.getName()
         print self
+        SubModule1(self._instanceName(SubModule1))
 
 class Application(ConfigurableUser):
     __slots__ = { "Property1": 10 }

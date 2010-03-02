@@ -24,6 +24,14 @@ Applying SubModule2
 /***** User SubModule2/SubModule2 ******************************************************************
 |-Property1 = 10  (default: 2)
 \----- (End of User SubModule2/SubModule2) ---------------------------------------------------------
+Applying TestInstance_SubModule1
+/***** User SubModule1/TestInstance_SubModule1 *****************************************************
+|-Property1 = 0
+\----- (End of User SubModule1/TestInstance_SubModule1) --------------------------------------------
+Applying Application_MultiInstance_SubModule1
+/***** User SubModule1/Application_MultiInstance_SubModule1 ****************************************
+|-Property1 = 0
+\----- (End of User SubModule1/Application_MultiInstance_SubModule1) -------------------------------
 Action Object One
 Action Function
 Action Object Two
