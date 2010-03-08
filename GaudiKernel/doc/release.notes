@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-03-08 - Charles Leggett
+  - Fixed bug #63502: GaudiKernel/Converter.cpp don't assume converter
+    is a ConverterSvc when retrieving name
+
 ! 2010-03-02 - Marco Clemencic
   - Improvements in ConfigurableUser:
     - Allow dependency between named ConfigurableUser instances.

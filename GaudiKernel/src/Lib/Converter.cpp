@@ -2,6 +2,7 @@
 
 // Include Files
 #include "GaudiKernel/Converter.h"
+#include "GaudiKernel/INamedInterface.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IDataManagerSvc.h"
@@ -158,7 +159,7 @@ StatusCode
 Converter::service_i(const std::string& svcName, bool createIf,
 		     const InterfaceID& iid, void** ppSvc) const {
   // Check for name of conversion service
-  SmartIF<IService> cnvsvc(conversionSvc());
+  SmartIF<INamedInterface> cnvsvc(conversionSvc());
   if (cnvsvc.isValid()) {
     const ServiceLocatorHelper helper(*serviceLocator(), "Converter", cnvsvc->name());
     return helper.getService(svcName, createIf, iid, ppSvc);
