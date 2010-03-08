@@ -1,6 +1,17 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2010-03-08 - Charles Leggett
+ - Fixed bug #63844: Various fixes to THistSvc
+   - when root TTrees grow beyond TTree::fgMaxFileSize, a new file is created,
+     and the UIDs in the THistSvc need to be updated. THistSvc had a minor bug
+     in this regard where the iterator was incremented incorrectly
+   - we need the job to abort if the output file gets too large. This is done by
+     polling the size of each TFile once per each EndEvent incident, and issuing
+     a stopRun() if it gets too large. a job option (MaxFileSize) is added to
+     control the max size
+   - made the MsgStream a member data to speed up message output. 
+
 ! 2010-02-26 - Marco Clemencic
  - Added an implementation of the WatchdogThread in the EventLoopMgr
    (EventTimeoutWatchdog) to spot events that are taking too much time (10min by

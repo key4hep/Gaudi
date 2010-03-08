@@ -147,7 +147,8 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
 template <typename T>
-StatusCode THistSvc::getHist_i(const std::string& id, T*& hist) const {
+StatusCode 
+THistSvc::getHist_i(const std::string& id, T*& hist, bool quiet) const {
   // id starts with "/": unique
 
   GlobalDirectoryRestore restore;
@@ -158,23 +159,34 @@ StatusCode THistSvc::getHist_i(const std::string& id, T*& hist) const {
   if (idr.find("/") == 0) {
     std::map<std::string, THistID>::const_iterator itr = m_uids.find(id);
     if (itr == m_uids.end()) {
-      MsgStream log( msgSvc(), name() );
-      log << MSG::ERROR << "Could not locate Hist with id \"" << idr << "\""
-          << endmsg;
+      if (!quiet) {
+	MsgStream log( msgSvc(), name() );
+	log << MSG::ERROR << "Could not locate Hist with id \"" << idr << "\""
+	    << endmsg;
+      }
       hist = 0;
       return StatusCode::FAILURE;
     }
 
     THistID hid = itr->second;
-    hist = dynamic_cast<T*>(hid.obj);
-    if (hist == 0) {
+    if (!quiet) {
+      hist = dynamic_cast<T*>(hid.obj);
+      if (hist == 0) {
+	MsgStream log( msgSvc(), name() );
+	log << MSG::ERROR << "dcast failed, Hist id: \"" << idr << "\"" 
+	    << endmsg;
+	return StatusCode::FAILURE;
+      }
       MsgStream log( msgSvc(), name() );
-      log << MSG::ERROR << "dcast failed, Hist id: \"" << idr << "\"" << endmsg;
-      return StatusCode::FAILURE;
+      log << MSG::VERBOSE << "found unique Hist title: \"" << hist->GetTitle()
+	  << "\"  id: \"" << idr << "\"" << endmsg;
+    } else {
+      MsgStream log( msgSvc(), name() );
+      log << MSG::VERBOSE << "found unique Hist id: \"" << idr << "\" type: \""
+	  << hid.obj->IsA()->GetName() << "\""
+	  << endmsg;
     }
-    MsgStream log( msgSvc(), name() );
-    log << MSG::VERBOSE << "found unique Hist title: \"" << hist->GetTitle()
-        << "\"  id: \"" << idr << "\"" << endmsg;
+
     return StatusCode::SUCCESS;
 
 
@@ -195,23 +207,39 @@ StatusCode THistSvc::getHist_i(const std::string& id, T*& hist) const {
 
       if (distance(mitr.first,mitr.second) == 1) {
         THistID hid = mitr.first->second;
-        hist = dynamic_cast<T*>(hid.obj);
-        if (hist == 0) {
-          MsgStream log( msgSvc(), name() );
-          log << MSG::ERROR << "dcast failed" << endmsg;
-          return StatusCode::FAILURE;
-        }
-        MsgStream log( msgSvc(), name() );
-        log << MSG::VERBOSE << "found Hist title: \"" << hist->GetTitle()
-            << "\"  id: \"" << idr << "\"" << endmsg;
+	if (!quiet) {
+	  hist = dynamic_cast<T*>(hid.obj);
+	  if (hist == 0) {
+	    MsgStream log( msgSvc(), name() );
+	    log << MSG::ERROR << "dcast failed" << endmsg;
+	    return StatusCode::FAILURE;
+	  }
+	  MsgStream log( msgSvc(), name() );
+	  log << MSG::VERBOSE << "found Hist title: \"" << hist->GetTitle()
+	      << "\"  id: \"" << idr << "\"" << endmsg;
+	} else {
+	  MsgStream log( msgSvc(), name() );
+	  log << MSG::VERBOSE << "found Hist id: \"" << idr << "\" type: \""
+	      << hid.obj->IsA()->GetName() << "\""
+	      << endmsg;
+	}
         return StatusCode::SUCCESS;
       } else {
-        MsgStream log( msgSvc(), name() );
-        log << MSG::ERROR << "Multiple matches with id \"" << idr << "\"."
-            << " Further specifications required."
-            << endmsg;
-        hist = 0;
-        return StatusCode::FAILURE;
+	MsgStream log( msgSvc(), name() );
+	if (!quiet) {
+	  // return failure if trying to GET a single hist
+	  log << MSG::ERROR << "Multiple matches with id \"" << idr << "\"."
+	      << " Further specifications required."
+	      << endmsg;
+	  hist = 0;
+	  return StatusCode::FAILURE;
+	} else {
+	  // return a SUCCESS if just INQUIRING
+	  log << MSG::INFO << "Found multiple matches with id \"" << idr 
+	      << "\"" << endmsg;
+	  hist = 0;
+	  return StatusCode::SUCCESS;
+	}
       }
     }
   }

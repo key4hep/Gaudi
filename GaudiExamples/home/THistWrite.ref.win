@@ -56,6 +56,46 @@ ApplicationMgr       INFO Application Manager Started successfully
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319
 ApplicationMgr       INFO Application Manager Stopped successfully
 THistWrite           INFO Finalizing...
 EventLoopMgr         INFO Histograms converted successfully according to request.
@@ -86,7 +126,7 @@ TH1.Print Name  = profile, Entries= 0, Total sum= 0
           NbinsX= 100, xmin= -50, xmax=-50
 ******************************************************************************
 *Tree    :treename  : tree title                                             *
-*Entries :     1000 : Total =           14025 bytes  File  Size =       2326 *
+*Entries :     1000 : Total =           14045 bytes  File  Size =       2326 *
 *        :          : Tree compression factor =   6.63                       *
 ******************************************************************************
 *Br    0 :branch1   : point1/I                                               *

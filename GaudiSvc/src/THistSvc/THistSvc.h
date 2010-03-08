@@ -3,6 +3,8 @@
 
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/ITHistSvc.h"
+#include "GaudiKernel/IIncidentListener.h"
+#include "GaudiKernel/MsgStream.h"
 
 #include "TObject.h"
 #include "TH1.h"
@@ -21,7 +23,7 @@
 // Forward declarations
 template <class TYPE> class SvcFactory;
 
-class THistSvc: public extends1<Service, ITHistSvc> {
+class THistSvc: public extends2<Service, ITHistSvc, IIncidentListener> {
 
 public:
 
@@ -59,9 +61,11 @@ public:
   virtual StatusCode getTTrees(TDirectory *td, TList &) const;
   virtual StatusCode getTTrees(const std::string& name, TList &) const;
 
+  virtual bool exists(const std::string& name) const;
 
   THistSvc(const std::string& name, ISvcLocator *svc );
 
+  void handle(const Incident&);
 
 protected:
 
@@ -105,6 +109,8 @@ private:
     SHARE
   };
 
+  mutable MsgStream m_log;
+
   typedef std::map<std::string, THistID> uidMap;
   typedef std::multimap<std::string, THistID> idMap;
   typedef std::map<TObject*, THistID> objMap;
@@ -113,7 +119,7 @@ private:
   template <typename T>
   StatusCode regHist_i(T* hist, const std::string& name);
   template <typename T>
-  StatusCode getHist_i(const std::string& name, T*& hist) const;
+  StatusCode getHist_i(const std::string& name, T*& hist, bool quiet=false) const;
   template <typename T>
   StatusCode readHist_i(const std::string& name, T*& hist) const;
 
@@ -140,12 +146,12 @@ private:
   /// call-back method to handle input stream property
   void setupInputFile( Property& inputfile );
 
-  /// call-back method to handle input stream property
+  /// call-back method to handle output stream property
   void setupOutputFile( Property& outputfile );
 
   StringArrayProperty m_inputfile, m_outputfile;
   std::vector<std::string> m_Rstream, m_Wstream;
-  IntegerProperty m_autoSave, m_compressionLevel;
+  IntegerProperty m_autoSave, m_compressionLevel, m_maxFileSize;
   BooleanProperty m_print;
 
   /// list of already connected files. This is to keep track of files
@@ -166,7 +172,9 @@ private:
   streamMap m_fileStreams;                                // fileName->streams
 
   std::map<std::string, std::string > m_sharedFiles; // stream->filename of shared files
-  void MergeRootFile( TDirectory *target, TDirectory *source);
+  void MergeRootFile( TDirectory *target, TDirectory *source); 
+
+  bool signaledStop;
 
 };
 
