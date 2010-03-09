@@ -59,8 +59,9 @@ GaudiCommon<PBASE>::get( IDataProviderSvc*  service ,
   // check the environment
   Assert( 0 != service ,    "get():: IDataProvider* points to NULL!"      ) ;
   // get the helper object:
-  Gaudi::Utils::GetData<TYPE> helper ;
-  return helper ( *this , service ,
+  Gaudi::Utils::GetData<TYPE> getter ;
+  return getter ( *this    ,
+                  service  ,
                   fullTESLocation ( location , useRootInTES ) ) ;
 }
 // ============================================================================
@@ -75,9 +76,9 @@ inline bool GaudiCommon<PBASE>::exist( IDataProviderSvc*  service  ,
   // check the environment
   Assert( 0 != service , "exist():: IDataProvider* points to NULL!"      ) ;
   // check the data object
-  const std::string & fullLoc = fullTESLocation( location, useRootInTES );
-  SmartDataPtr<TYPE> obj( service , fullLoc ) ;
-  return obj ? true : false ;
+  Gaudi::Utils::CheckData<TYPE> checker ;
+  return checker ( service,
+                   fullTESLocation ( location , useRootInTES ) ) ;
 }
 // ============================================================================
 // get the existing object from Gaudi Event Transient store
@@ -86,25 +87,19 @@ inline bool GaudiCommon<PBASE>::exist( IDataProviderSvc*  service  ,
 // ============================================================================
 template <class PBASE>
 template <class TYPE,class TYPE2>
-inline TYPE* GaudiCommon<PBASE>::getOrCreate( IDataProviderSvc* svc ,
-                                              const std::string& location ,
-                                              const bool useRootInTES  ) const
+inline typename Gaudi::Utils::GetData<TYPE>::return_type
+GaudiCommon<PBASE>::getOrCreate( IDataProviderSvc*  service  ,
+                                 const std::string& location ,
+                                 const bool useRootInTES  ) const
 {
   // check the environment
-  Assert( 0 != svc , "getOrCreate():: svc points to NULL!" ) ;
-  const std::string & fullLoc = fullTESLocation( location, useRootInTES );
-  SmartDataPtr<TYPE> obj ( svc , fullLoc ) ;
-  if ( !obj )
-  {
-    TYPE2* o = new TYPE2() ;
-    put ( svc , o , location ) ; // do not use fullLoc here as put recreates it
-    return o ;
-  }
-  TYPE* aux = obj ;
-  if( !aux )
-  { Exception ( "getOrCreate():: No valid data at '" + fullLoc + "'" ) ; }
-  // return located *VALID* data
-  return aux ;
+  Assert ( 0 != service , "getOrCreate():: svc points to NULL!" ) ;
+  // get the helper object
+  Gaudi::Utils::GetOrCreateData<TYPE,TYPE2> getter ;
+  return getter ( *this                                     ,
+                  service                                   ,
+                  fullTESLocation( location, useRootInTES ) ,
+                  location                                  ) ;
 }
 // ============================================================================
 // the useful method for location of tools.

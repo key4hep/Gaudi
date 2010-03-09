@@ -1,6 +1,17 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2010-03-09 - Vanya Belyaev
+ - Patch #3892: Proper implementation of GaudiCommon::exist
+   - GaudiCommon<>:exist: provide the proper implementation, 
+                  compatible with "blind" access to data 
+   - Reimplement GaudiCommon<>::get : make it more efficient 
+                 (thanks to Gerhard for nice suggestion) 
+   - Reimplement GaudiCommon<>::getOrCreate provide the proper implementation 
+                 to be compatible with "blind access to the data"
+   - GaudiCommon<>::addToToolList/releaseTool
+                 add "debug" printout for added/release tools
+
 ! 2010-01-29 - Marco Clemencic
  - Fixed icc remark #1599: declaration hides variable
 

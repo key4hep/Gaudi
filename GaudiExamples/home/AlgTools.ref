@@ -1,12 +1,12 @@
 JobOptionsSvc        INFO
 //GP:================================================================================
-//GP: include "../options/AlgTools.opts"                                      (0,0)
-//GP: include "../options/Common.opts"                                        (4,10)
-//GP: include "../options/Services.opts"                                      (7,10)
+//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/AlgTools.opts" (0,0)
+//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Common.opts" (4,10)
+//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Services.opts" (7,10)
 AuditorSvc.Auditors =  [ "ChronoAuditor" ] ;                            //GP: (1,1)
-//GP: end  "../options/Services.opts"                                         (24,1)
+//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Services.opts" (24,1)
 ApplicationMgr.StatusCodeCheck = 1;                                     //GP: (7,10)
-//GP: end  "../options/Common.opts"                                           (16,1)
+//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Common.opts" (16,1)
 ApplicationMgr.TopAlg =  [ "MyAlgorithm/MyAlg" ] ;                      //GP: (4,10)
 MessageSvc.OutputLevel = 3;                                             //GP: (4,10)
 ApplicationMgr.EvtMax = 10;                                             //GP: (4,10)
@@ -27,14 +27,14 @@ ToolSvc.ToolA.Tools =  [ "TestTool/ToolB" ] ;                           //GP: (4
 ToolSvc.ToolB.Tools =  [ "TestTool/ToolA" ] ;                           //GP: (4,10)
 ToolSvc.ToolA.OutputLevel = 2;                                          //GP: (4,10)
 ToolSvc.ToolB.OutputLevel = 2;                                          //GP: (4,10)
-//GP: end  "../options/AlgTools.opts"                                         (48,1)
+//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/AlgTools.opts" (48,1)
 //GP:================================================================================
 
-JobOptionsSvc        INFO Job options successfully read in from ../options/AlgTools.opts
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/AlgTools.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on pclhcb55 on Wed Sep  2 15:04:45 2009
+                                          running on pclhcb55 on Tue Mar  9 15:58:59 2010
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -125,6 +125,8 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditTools':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'OutputLevel':2
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 ToolSvc.ToolB       DEBUG Loading tool ToolA of type TestTool
+ToolSvc.ToolB       DEBUG The tool of type 'TestTool' has been added with the name 'ToolSvc.ToolA'
+ToolSvc.ToolA       DEBUG The tool of type 'TestTool' has been added with the name 'ToolSvc.ToolB'
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
@@ -214,11 +216,13 @@ ToolSvc.ToolB       DEBUG Finalize
 ToolSvc.ToolB       DEBUG  ==> Finalize the base class GaudiTool
 ToolSvc.ToolB       DEBUG Tools to release : ToolSvc.ToolA
 ToolSvc.ToolB       DEBUG Releasing tool 'ToolSvc.ToolA'
+ToolSvc.ToolB       DEBUG The tool 'ToolSvc.ToolA' of type 'TestTool' is released
 ToolSvc.ToolB       DEBUG Services to release :
 ToolSvc.ToolA       DEBUG Finalize
 ToolSvc.ToolA       DEBUG  ==> Finalize the base class GaudiTool
 ToolSvc.ToolA       DEBUG Tools to release : ToolSvc.ToolB
 ToolSvc.ToolA       DEBUG Releasing tool 'ToolSvc.ToolB'
+ToolSvc.ToolA       DEBUG The tool 'ToolSvc.ToolB' of type 'TestTool' is released
 ToolSvc.ToolA       DEBUG Services to release :
 MyAlg.ToolWithName   INFO destructor has been called
 MyAlg.MyGaudiTool    INFO destructor has been called

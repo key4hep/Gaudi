@@ -1,15 +1,15 @@
-# --> Including file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/GaudiExamples/options/AlgTools.py'
-# --> Including file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/GaudiExamples/options/Common.opts'
-# --> Including file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/GaudiExamples/options/Services.opts'
+# --> Including file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/AlgTools.py'
+# --> Including file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Common.opts'
+# --> Including file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Services.opts'
 # AuditorSvc.Auditors = { "ChronoAuditor" };
-# <-- End of file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/GaudiExamples/options/Services.opts'
+# <-- End of file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Services.opts'
 # ApplicationMgr.StatusCodeCheck = true;
-# <-- End of file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/GaudiExamples/options/Common.opts'
-# <-- End of file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/GaudiExamples/options/AlgTools.py'
+# <-- End of file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Common.opts'
+# <-- End of file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/AlgTools.py'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on pclhcb55 on Wed Sep  2 15:04:47 2009
+                                          running on pclhcb55 on Tue Mar  9 15:59:03 2010
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -127,6 +127,8 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditTools':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'OutputLevel':2
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 ToolSvc.ToolB       DEBUG Loading tool ToolA of type TestTool
+ToolSvc.ToolB       DEBUG The tool of type 'TestTool' has been added with the name 'ToolSvc.ToolA'
+ToolSvc.ToolA       DEBUG The tool of type 'TestTool' has been added with the name 'ToolSvc.ToolB'
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
@@ -310,11 +312,13 @@ ToolSvc.ToolB       DEBUG Finalize
 ToolSvc.ToolB       DEBUG  ==> Finalize the base class GaudiTool
 ToolSvc.ToolB       DEBUG Tools to release : ToolSvc.ToolA
 ToolSvc.ToolB       DEBUG Releasing tool 'ToolSvc.ToolA'
+ToolSvc.ToolB       DEBUG The tool 'ToolSvc.ToolA' of type 'TestTool' is released
 ToolSvc.ToolB       DEBUG Services to release :
 ToolSvc.ToolA       DEBUG Finalize
 ToolSvc.ToolA       DEBUG  ==> Finalize the base class GaudiTool
 ToolSvc.ToolA       DEBUG Tools to release : ToolSvc.ToolB
 ToolSvc.ToolA       DEBUG Releasing tool 'ToolSvc.ToolB'
+ToolSvc.ToolA       DEBUG The tool 'ToolSvc.ToolB' of type 'TestTool' is released
 ToolSvc.ToolA       DEBUG Services to release :
 ToolSvc.TestPub...   INFO finalize() has been called
 MyGaudiAlg.Priv...   INFO finalize() has been called

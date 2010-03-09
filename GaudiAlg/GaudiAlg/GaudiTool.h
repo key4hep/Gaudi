@@ -490,9 +490,10 @@ public:
    *  @return A valid pointer to the object
    */
   template < class TYPE , class TYPE2 >
-  inline TYPE* getOrCreate ( IDataProviderSvc*  svc      ,
-                             const std::string& location ,
-                             const bool useRootInTES = true ) const
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type 
+  getOrCreate ( IDataProviderSvc*  svc                 ,
+                const std::string& location            ,
+                const bool         useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::getOrCreate<TYPE,TYPE2> ( svc , location , useRootInTES ) ;
   }
@@ -523,8 +524,9 @@ public:
    *  @return A valid pointer to the object
    */
   template < class TYPE , class TYPE2 >
-  inline TYPE* getOrCreate ( const std::string& location ,
-                             const bool useRootInTES = true ) const
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type 
+  getOrCreate ( const std::string& location            ,
+                const bool         useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::getOrCreate<TYPE,TYPE2> ( evtSvc() , location , useRootInTES ) ;
   }

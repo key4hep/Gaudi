@@ -62,6 +62,21 @@ namespace Gaudi
           tracks -> insert ( track ) ;
         }
         
+        typedef Gaudi::NamedRange_<Gaudi::Examples::MyTrack::ConstVector> Range ;
+        if ( !exist<Range> ( name()  ) ) 
+        { err () << "No Range is available at location " << name() << endmsg ; }
+        
+        // test "get-or-create":
+        
+        Range r1 = getOrCreate<Range,Gaudi::Examples::MyTrack::Container> ( name() + "_1" ) ;
+        Range r2 = getOrCreate<Range,Gaudi::Examples::MyTrack::Selection> ( name() + "_2" ) ;
+        
+        getOrCreate<Gaudi::Examples::MyTrack::Container,
+          Gaudi::Examples::MyTrack::Container> ( name() + "_3" ) ;
+        getOrCreate<Gaudi::Examples::MyTrack::Selection,
+          Gaudi::Examples::MyTrack::Selection> ( name() + "_4" ) ;
+        
+        
         return StatusCode::SUCCESS ; 
       }
       // ======================================================================

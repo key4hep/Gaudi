@@ -199,9 +199,10 @@ public:
    *  @return A valid pointer to the data object
    */
   template < class TYPE , class TYPE2 >
-  TYPE* getOrCreate ( IDataProviderSvc* svc ,
-                      const std::string& location ,
-                      const bool useRootInTES = true ) const  ;
+  typename Gaudi::Utils::GetData<TYPE>::return_type
+  getOrCreate ( IDataProviderSvc*  svc                 ,
+                const std::string& location            ,
+                const bool         useRootInTES = true ) const  ;
   /** @brief Register a data object or container into Gaudi Event Transient Store
    *
    *  @see IDataProviderSvc

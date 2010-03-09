@@ -61,6 +61,9 @@ namespace Gaudi
         { info() << "Selection at '" << m_input << "'" << endmsg ; }
         else if ( exist<Gaudi::Examples::MyTrack::Container> ( m_input ) ) 
         { info() << "Container at '" << m_input << "'" << endmsg ; }
+
+        if ( !exist<Range> ( m_input ) ) 
+        { err () << "No Range is available at location " << m_input << endmsg ; }
         
         // get input data in 'blind' way 
         Range range = get<Range> ( m_input ) ;

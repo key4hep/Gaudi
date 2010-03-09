@@ -411,6 +411,11 @@ StatusCode GaudiCommon<PBASE>::releaseTool ( const IAlgTool* algTool ) const
   // remove the tool from the lists
   m_tools.erase( --it.base() ) ;
   // release tool
+  if ( msgLevel(MSG::DEBUG) ) {
+    this->debug() << "The tool '" << t->name() << "' of type '"
+                  << System::typeinfoName(typeid(*t))
+                  << "' is released" << endmsg;
+  }
   const StatusCode sc = this->toolSvc()->releaseTool( t ) ;
   if ( sc.isFailure() )
   { return Warning ( "releaseTool(IAlgTool):: error from IToolSvc whilst releasing "+name , sc ) ; }
@@ -450,7 +455,15 @@ StatusCode GaudiCommon<PBASE>::releaseSvc ( const IInterface* Svc  ) const
 template < class PBASE >
 void GaudiCommon<PBASE>::addToToolList( IAlgTool * tool ) const
 {
-  m_tools.push_back( tool ) ;
+  if( 0 != tool ) {
+    if ( this->msgLevel ( MSG::DEBUG ) ) {
+      this->debug() << "The tool of type '"
+                    << System::typeinfoName(typeid(*tool))
+                    << "' has been added with the name '"
+                    << tool->name() << "'" << endmsg ;
+    }
+    m_tools.push_back( tool ) ;
+  }
 }
 // ============================================================================
 
