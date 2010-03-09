@@ -54,7 +54,7 @@ THistRead            INFO profile: 0[m
 THistSvc            DEBUG Read in TTree  "treename" from file tuple3.rt[m
 ******************************************************************************
 *Tree    :treename  : tree title                                             *
-*Entries :     1000 : Total =           14001 bytes  File  Size =       2326 *
+*Entries :     1000 : Total =           14021 bytes  File  Size =       2337 *
 *        :          : Tree compression factor =   6.63                       *
 ******************************************************************************
 *Br    0 :branch1   : point1/I                                               *
@@ -77,6 +77,46 @@ HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ][m
 [93;1mHistogramPersis...WARNING Histograms saving not required.[m
 ApplicationMgr       INFO Application Manager Initialized successfully[m
 ApplicationMgr       INFO Application Manager Started successfully[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687[m
 ApplicationMgr       INFO Application Manager Stopped successfully[m
 EventLoopMgr         INFO Histograms converted successfully according to request.[m
 THistSvc            DEBUG THistSvc::finalize[m
@@ -109,7 +149,7 @@ TH1.Print Name  = profile, Entries= 0, Total sum= 0
           NbinsX= 100, xmin= -50, xmax=-50
 ******************************************************************************
 *Tree    :treename  : tree title                                             *
-*Entries :     1000 : Total =           14001 bytes  File  Size =       2326 *
+*Entries :     1000 : Total =           14021 bytes  File  Size =       2337 *
 *        :          : Tree compression factor =   6.63                       *
 ******************************************************************************
 *Br    0 :branch1   : point1/I                                               *

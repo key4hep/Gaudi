@@ -76,6 +76,46 @@ HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
 HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4149
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88687
 ApplicationMgr       INFO Application Manager Stopped successfully
 EventLoopMgr         INFO Histograms converted successfully according to request.
 THistSvc            DEBUG THistSvc::finalize
