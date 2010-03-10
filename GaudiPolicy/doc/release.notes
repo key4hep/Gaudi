@@ -1,6 +1,18 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-03-10 - Marco Clemencic
+ - Added a specialized QMTest ResultStream implementation to produce an HTML
+   summary with collapsable lists and AJAX-style dynamic load of the content.
+   The generation of the HTML output can be generated using the option
+   --html-output to TestPackage or the environment variable
+   GAUDI_QMTEST_HTML_OUTPUT. In both cases the user should specify the full path
+   to the directory meant to contain the data.
+   Note: The HTMLResultStream class uses the Python module "simplejson" included
+         in qmtest_classes (backport of the Python 2.6 module "json"), unless
+         the native Python module is found.
+         The dynamic HTML uses the jQuery JavaScript library (included).
+
 ! 2010-01-29 - Marco Clemencic
  - Ignored icc remarks
    #1419: external declaration in primary source file

@@ -4,4 +4,5 @@
   'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/class-directory//en.dtd'>
 <class-directory>
   <class kind="test" name="GaudiTest.GaudiExeTest"/>
+  <class kind="result_stream" name="GaudiTest.HTMLResultStream"/>
 </class-directory>

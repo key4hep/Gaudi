@@ -19,6 +19,7 @@ from subprocess import Popen, PIPE, STDOUT
 
 import qm
 from qm.test.classes.command import ExecTestBase
+from qm.test.result_stream import ResultStream
 
 ### Needed by the re-implementation of TimeoutExecutable
 import qm.executable
@@ -1646,3 +1647,146 @@ class GaudiExeTest(ExecTestBase):
         # Write the output file
         open(destfile, "w").write(xml)
         #open(destfile + "_copy.xml", "w").write(xml)
+
+
+try:
+    import json
+except ImportError:
+    # Hack: json is not available, so I use the version we ship 
+    sys.path.append(os.path.dirname(__file__))
+    import simplejson as json
+
+class HTMLResultStream(ResultStream):
+    """An 'HTMLResultStream' writes its output to a set of HTML files.
+
+    The argument 'dir' is used to select the destination directory for the HTML
+    report.
+    The destination directory may already contain the report from a previous run
+    (for example of a different package), in which case it will be extended to
+    include the new data. 
+    """
+    arguments = [
+        qm.fields.TextField(
+            name = "dir",
+            title = "Destination Directory",
+            description = """The name of the directory.
+
+            All results will be written to the directory indicated.""",
+            verbatim = "true",
+            default_value = ""),
+    ]
+    
+    def __init__(self, arguments = None, **args):
+        """Prepare the destination directory.
+        
+        Creates the destination directory and store in it some preliminary
+        annotations and the static files found in the template directory
+        'html_report'. 
+        """
+        ResultStream.__init__(self, arguments, **args)
+        self._summary = []
+        self._summaryFile = os.path.join(self.dir, "summary.json")
+        self._annotationsFile = os.path.join(self.dir, "annotations.json")
+        # Prepare the destination directory using the template 
+        templateDir = os.path.join(os.path.dirname(__file__), "html_report")
+        if not os.path.isdir(self.dir):
+            os.makedirs(self.dir)                
+        for f in os.listdir(templateDir):
+            src = os.path.join(templateDir, f)
+            dst = os.path.join(self.dir, f)
+            if not os.path.exists(dst):
+                shutil.copy(src, dst)
+        # Add some non-QMTest attributes
+        if "CMTCONFIG" in os.environ:
+            self.WriteAnnotation("cmt.cmtconfig", os.environ["CMTCONFIG"])
+        import socket 
+        self.WriteAnnotation("hostname", socket.gethostname())
+        
+    def _updateSummary(self):
+        """Helper function to extend the global summary file in the destination
+        directory.
+        """
+        if os.path.exists(self._summaryFile):
+            oldSummary = json.load(open(self._summaryFile))
+        else:
+            oldSummary = []
+        ids = set([ i["id"] for i in self._summary ])
+        newSummary = [ i for i in oldSummary if i["id"] not in ids ]
+        newSummary.extend(self._summary)
+        json.dump(newSummary, open(self._summaryFile, "w"),
+                  sort_keys = True)
+    
+    def WriteAnnotation(self, key, value):
+        """Writes the annotation to the annotation file.
+        If the key is already present with a different value, the value becomes
+        a list and the new value is appended to it, except for start_time and
+        end_time. 
+        """
+        # Initialize the annotation dict from the file (if present)
+        if os.path.exists(self._annotationsFile):
+            annotations = json.load(open(self._annotationsFile))
+        else:
+            annotations = {}
+        # hack because we do not have proper JSON support
+        key, value = map(str, [key, value])
+        if key == "qmtest.run.start_time":
+            # Special handling of the start time:
+            # if we are updating a result, we have to keep the original start
+            # time, but remove the original end time to mark the report to be
+            # in progress.
+            if key not in annotations:
+                annotations[key] = value
+            if "qmtest.run.end_time" in annotations:
+                del annotations["qmtest.run.end_time"]
+        else:
+            # All other annotations are added to a list
+            if key in annotations:
+                old = annotations[key]
+                if type(old) is list:
+                    if value not in old:
+                        annotations[key].append(value)
+                elif value != old:
+                    annotations[key] = [old, value]
+            else:
+                annotations[key] = value
+        # Write the new annotations file
+        json.dump(annotations, open(self._annotationsFile, "w"),
+                  sort_keys = True)
+         
+    def WriteResult(self, result):
+        """Prepare the test result directory in the destination directory storing
+        into it the result fields.
+        A summary of the test result is stored both in a file in the test directory
+        and in the global summary file. 
+        """
+        summary = {}
+        summary["id"] = result.GetId()
+        summary["outcome"] = result.GetOutcome()
+        summary["cause"] = result.GetCause()
+        summary["fields"] = result.keys()
+        summary["fields"].sort()
+        
+        # Since we miss proper JSON support, I hack a bit 
+        for f in ["id", "outcome", "cause"]:
+            summary[f] = str(summary[f])
+        summary["fields"] = map(str, summary["fields"])
+        
+        self._summary.append(summary)
+        
+        # format:
+        # testname/summary.json
+        # testname/field1
+        # testname/field2
+        testOutDir = os.path.join(self.dir, summary["id"])
+        if not os.path.isdir(testOutDir):
+            os.makedirs(testOutDir)
+        json.dump(summary, open(os.path.join(testOutDir, "summary.json"), "w"),
+                  sort_keys = True)
+        for f in summary["fields"]:
+            open(os.path.join(testOutDir, f), "w").write(result[f])
+        
+        self._updateSummary()
+        
+    def Summarize(self):
+        # Not implemented.
+        pass

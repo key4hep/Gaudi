@@ -1,0 +1,27 @@
+/* Coloring of results */
+.results .PASS {
+color: green;
+}
+.results .FAIL, .results .ERROR {
+color: red;
+}
+.results .UNTESTED {
+color: orange;
+}
+.results .cause {
+color: gray;
+font-size: small;
+}
+.results span.testid:hover {
+color: red;
+}
+.results span.fieldid:hover {
+color: red;
+}
+/* "Collapse all" */
+.results ul + div:hover  {
+color: blue;
+}
+span.togglelink:hover {
+color: red;
+}

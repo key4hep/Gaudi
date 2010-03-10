@@ -21,6 +21,11 @@ def parseOptions(argv = None):
     opts.output = os.path.normpath(os.path.expandvars(os.environ["QMTESTRESULTS"]))
     opts.qmtest_dir = os.path.normpath(os.path.expandvars(os.environ["QMTESTLOCALDIR"]))
     opts.dry_run = False
+    if "GAUDI_QMTEST_HTML_OUTPUT" in os.environ:
+        opts.html_output = os.path.normpath(os.path.expandvars(os.environ.get("GAUDI_QMTEST_HTML_OUTPUT")))
+    else:
+        opts.html_output = None
+    
     # First argument is the package name:
     if argv:
         opts.package = argv.pop(0)
@@ -47,6 +52,9 @@ def parseOptions(argv = None):
         elif o in ["--dry-run"]:
             opts.dry_run = True
             opts.have_user_options -= 1
+        elif o in ["--html-output"]:
+            opts.html_output = os.path.realpath(argv.pop(0))
+            opts.have_user_options -= 2
         else:
             opts.qmtest_args.append(o)
     # Add the option for the output to the qmtest_args
@@ -76,6 +84,9 @@ def main(argv = None):
         print "==========> Initializing QMTest database"
         os.system("qmtest create-tdb")
 
+    if opts.html_output:
+        opts.qmtest_args.insert(0, """--result-stream 'GaudiTest.HTMLResultStream(dir="%s")'""" % opts.html_output)
+    
     # prepare the qmtest command
     cmd = "qmtest run %s" % (" ".join(opts.qmtest_args))
     
