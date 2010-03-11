@@ -2,8 +2,11 @@ Package : Gaudi
 Package manager : Marco Clemencic
 
 ! 2010-03-02 - Marco Clemencic
-  - Modified the test gaudi.conf_user_autoapply to test the dependency between
-    named ConfigurableUser instances.
+ - Added test for bug #64164 (pickling of ConfigurableUser not supported).
+
+! 2010-03-02 - Marco Clemencic
+ - Modified the test gaudi.conf_user_autoapply to test the dependency between
+   named ConfigurableUser instances.
 
 ================================ Gaudi v21r7 =================================
 ! 2010-01-08 - Marco Clemencic
