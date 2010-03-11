@@ -3,6 +3,7 @@
  */
 
 #include "GaudiKernel/WatchdogThread.h"
+#include "GaudiKernel/Sleep.h"
 
 #include <functional>
 
@@ -35,6 +36,7 @@ void WatchdogThread::start() {
 void WatchdogThread::stop() {
   if (m_thread.get()) {
     m_running = false; // mark the thread as stopped (interrupt doesn't work if the thread is not sleeping)
+    Gaudi::NanoSleep(1000000); // Wait a bit (1ms) to be sure that the interrupt happens during the sleep
     m_thread->interrupt(); // tell the thread to stop (if it is waiting)
     m_thread->join(); // wait for it
     m_thread.reset(); // delete it
