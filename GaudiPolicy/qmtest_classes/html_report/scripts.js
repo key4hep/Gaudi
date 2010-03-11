@@ -127,13 +127,14 @@ function updateResults(summary) {
 			pattern = new RegExp($(this).attr("filter"));
 		// Top-level list
 		var html = "<ul>";
+		var any_match = false; // to store if we put anything in the list
 		for (var i in summary) { // one item per test
 			var test_data = summary[i];
 			var outcome = test_data["outcome"];
 			// operate only on the outcomes matching the pattern (if specified)
 			if ( !pattern || outcome.match(pattern) ) { 
+				any_match = true;
 				html += "<li><span class=\"testid\">" + test_data["id"] + "</span>: ";
-				var outcome = test_data["outcome"];
 				html += "<span class=\"" + outcome + "\""
 				if (test_data["cause"]) {
 					html += " title=\"" + test_data["cause"] + "\"";
@@ -156,7 +157,11 @@ function updateResults(summary) {
 		}
 		// add a small link to collapse the tree
 		html += "</ul><span>Collapse all</span>";
-		$(this).html(html);
+		if (any_match) {
+			$(this).html(html);
+		} else {
+			$(this).html("None.");
+		}
 	});
 	// Instrument nodes
 	$('.results span.testid').click(function(){
