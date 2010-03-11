@@ -137,11 +137,11 @@ namespace {
     long m_counter;
     void action() {
       if (!m_counter) {
-        log << MSG::WARNING << "More than " << getTimeout().seconds()
+        log << MSG::WARNING << "More than " << getTimeout().total_seconds()
             << "s to process an event." << endmsg;
       }
       else if (m_counter < 2) {
-        log << MSG::WARNING << "Other " << getTimeout().seconds()
+        log << MSG::WARNING << "Other " << getTimeout().total_seconds()
             << "s and we are still on the same event." << endmsg;
       }
       else if (m_counter < 3) {
@@ -155,14 +155,14 @@ namespace {
       if (m_counter) {
         if (m_counter >= 3)
           log << MSG::INFO << "Starting a new event after ~"
-              << m_counter * getTimeout().seconds() << "s" << endmsg;
+              << m_counter * getTimeout().total_seconds() << "s" << endmsg;
         m_counter = 0;
       }
     }
     void onStop() {
       if (m_counter >= 3)
         log << MSG::INFO << "The last event took ~"
-        << m_counter * getTimeout().seconds() << "s" << endmsg;
+        << m_counter * getTimeout().total_seconds() << "s" << endmsg;
     }
   };
 }
