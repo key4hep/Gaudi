@@ -1690,11 +1690,12 @@ class HTMLResultStream(ResultStream):
         # Prepare the destination directory using the template 
         templateDir = os.path.join(os.path.dirname(__file__), "html_report")
         if not os.path.isdir(self.dir):
-            os.makedirs(self.dir)                
+            os.makedirs(self.dir)
+        # Copy the files in the template directory excluding the directories
         for f in os.listdir(templateDir):
             src = os.path.join(templateDir, f)
             dst = os.path.join(self.dir, f)
-            if not os.path.exists(dst):
+            if not os.path.isdir(src) and not os.path.exists(dst):
                 shutil.copy(src, dst)
         # Add some non-QMTest attributes
         if "CMTCONFIG" in os.environ:

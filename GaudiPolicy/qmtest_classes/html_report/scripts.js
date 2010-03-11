@@ -1,6 +1,9 @@
 // Global variables
 var title = "QMTest Report";
 
+// If set to false, the automatic polling of new data is interrupted.
+var polling = true;
+
 /**
  * Load the annotations file (annotations.json) and fill the annotations block of
  * the DOM.
@@ -34,7 +37,7 @@ function loadAnnotations() {
 					// ... if the key is "end_time", it means the tests are running
 					value = "RUNNING".italics() +
 					        " (the page will be updated every 5s)".small();
-					running = true;
+					running = polling;
 				} else {
 					// ... otherwise print a meaningful "None"
 					value = "None".italics();
@@ -56,12 +59,14 @@ function loadAnnotations() {
 			// modify the title
 			$("title").html(title + " (running)");
 			$("#title").html(title + " (running)");
+			$("#stop_polling").show();
 			// schedule an upload
 			setTimeout(getData, 5000);
 		} else {
 			// set the title to the actual value
 			$("title").html(title);
 			$("#title").html(title);
+			$("#stop_polling").hide();
 		}
 	}, "json");
 }
@@ -150,7 +155,7 @@ function updateResults(summary) {
 			}
 		}
 		// add a small link to collapse the tree
-		html += "</ul><div>Collapse all</div>";
+		html += "</ul><span>Collapse all</span>";
 		$(this).html(html);
 	});
 	// Instrument nodes
@@ -166,7 +171,8 @@ function updateResults(summary) {
 		}
 		div.toggle();
 	});
-	$('.results ul + div').click(function(){
+	// "Collapse all" link
+	$('.results ul + span').click(function(){
 		$('.results div.fields').hide();
 		$('.results div[href]').hide();
 	});
@@ -191,8 +197,8 @@ function getData() {
 
 // Function to be executed on load.
 $('body').ready(function(){
-	$(".collapsable").hide();
-	$(".collapsable").before("<span class=\"togglelink\">(show)</span>");
+	$(".hidable").hide();
+	$(".hidable").before("<span class=\"togglelink\">(show)</span>");
 	$("span.togglelink").click(function(){
 		var me = $(this);
 		me.next().toggle();
@@ -201,6 +207,10 @@ $('body').ready(function(){
 		} else {
 			me.html("(show)");
 		}
+	});
+	$("#stop_polling").click(function(){
+		polling = false;
+		getData();
 	});
 	getData();
 });
