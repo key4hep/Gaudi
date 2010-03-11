@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2010-03-11 - Markus Frank
+ - Patch #3875: Small fix to GaudiSvc/EventLoopMgr
+
 ! 2010-03-08 - Charles Leggett
  - Fixed bug #63844: Various fixes to THistSvc
    - when root TTrees grow beyond TTree::fgMaxFileSize, a new file is created,

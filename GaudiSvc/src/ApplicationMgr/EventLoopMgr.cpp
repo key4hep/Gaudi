@@ -318,6 +318,11 @@ StatusCode EventLoopMgr::reinitialize() {
     SmartIF<IEvtSelector> theEvtSel(theSvc);
     if( theEvtSel.isValid() && ( theEvtSel.get() != m_evtSelector.get() ) ) {
       // Setup Event Selector
+      if ( m_evtSelector.get() && m_evtContext ) {
+        // Need to release context before switching to new event selector
+        m_evtSelector->releaseContext(m_evtContext);
+        m_evtContext = 0;
+      }
       m_evtSelector = theEvtSel;
       if (theSvc->FSMState() == Gaudi::StateMachine::INITIALIZED) {
         sc = theSvc->reinitialize();
@@ -344,9 +349,11 @@ StatusCode EventLoopMgr::reinitialize() {
       log << MSG::INFO << "EventSelector service changed to "
           << theSvc->name( ) << endmsg;
     }
-    else if ( m_evtSelector.isValid() && m_evtContext ) {
-      m_evtSelector->releaseContext(m_evtContext);
-      m_evtContext = 0;
+    else if ( m_evtSelector.isValid() ) {
+      if ( m_evtContext ) {
+        m_evtSelector->releaseContext(m_evtContext);
+        m_evtContext = 0;
+      }
       sc = m_evtSelector->createContext(m_evtContext);
       if( !sc.isSuccess() ) {
         log << MSG::ERROR << "Can not create Context "
@@ -434,7 +441,7 @@ StatusCode EventLoopMgr::finalize()    {
     }
   }
 
-  // Release evemt selector context
+  // Release event selector context
   if ( m_evtSelector && m_evtContext )   {
     m_evtSelector->releaseContext(m_evtContext).ignore();
     m_evtContext = 0;
