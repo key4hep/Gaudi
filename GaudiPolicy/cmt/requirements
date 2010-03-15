@@ -992,6 +992,7 @@ pattern QMTest \
     macro_append qmtest_run_dependencies " tests " ; \
     action TestPackage "cmt qmtest_run $(cmt_args)" ; \
     action QMTestTestsDatabase "cmt qmtest_run --no-output --dry-run" ; \
+    action QMTestGUI "cmt -tag_add=QMTest run 'cd $(qmtest_local_dir) ; qmtest gui'" ; \
   end_private
 
 # Pattern allowing a package to generate a summary of the results run in the
@@ -1015,6 +1016,7 @@ macro_remove cmt_actions_constituents 'qmtest_run'
 macro_remove cmt_actions_constituents 'qmtest_summarize'
 macro_remove cmt_actions_constituents 'TestPackage'
 macro_remove cmt_actions_constituents 'TestProject'
+macro_remove cmt_actions_constituents 'QMTestGUI'
 
 #-------------------------------------------------------------------
 # Pattern to disable a package on ath given platform or combination of tags.

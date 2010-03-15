@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-03-15 - Marco Clemencic
+ - Added a cmt action to start the QMTest GUI (cmt QMTestGUI).
+   It simplifies the creation of tests, but still has some problems to run them.
+
 ! 2010-03-15 - Gerhard Raven
  - Patch #3854: Reduce verbosity of zipping of python modules.
 
@@ -33,7 +37,7 @@ package manager: Marco Clemencic
           (fixed those in Gaudi, but a lot are coming from ROOT, Reflex and
            HepPDT)
    #444:  destructor for base class "X" is not virtual
-          (gives a lot of fals positives, e.g. std::unary_function)
+          (gives a lot of false positives, e.g. std::unary_function)
    #304:  access control not specified ("public/private" by default)
           (fixed one in GaudiKernel, but most are from Boost)
 
