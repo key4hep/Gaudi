@@ -1,9 +1,12 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-03-15 - Markus Frank
+ - Patch #3912: Add a IInterface-based version of IUpdateable. 
+
 ! 2010-03-08 - Charles Leggett
-  - Fixed bug #63502: GaudiKernel/Converter.cpp don't assume converter
-    is a ConverterSvc when retrieving name
+ - Fixed bug #63502: GaudiKernel/Converter.cpp don't assume converter
+   is a ConverterSvc when retrieving name
 
 ! 2010-03-02 - Marco Clemencic
   - Improvements in ConfigurableUser:

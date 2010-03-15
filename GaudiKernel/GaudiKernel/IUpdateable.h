@@ -1,8 +1,9 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IUpdateable.h,v 1.2 2006/11/30 15:22:07 dquarrie Exp $
+// $Header:$
 #ifndef GAUDIKERNEL_IUPDATEABLE_H
 #define GAUDIKERNEL_IUPDATEABLE_H
 
 #include "GaudiKernel/StatusCode.h"
+#include "GaudiKernel/IInterface.h"
 
 /** @class IUpdateable IUpdateable.h GaudiKernel/IUpdateable.h
   *
@@ -18,12 +19,25 @@ public:
   /// destructor
   virtual ~IUpdateable() { }
 
-  /** Output serialisation to stream buffer. Saves the status of the object.
+  /** Output serialization to stream buffer. Saves the status of the object.
     * @param   flag    Flag to trigger implementation specific action.
     *
     * @return  Status code indicating success or failure.
     */
   virtual StatusCode update(int flag) = 0;
+};
+
+/** @class IUpdateableInterface IUpdateable.h GaudiKernel/IUpdateable.h
+  *
+  *  Component interface counterpart to the above ABC.
+  *
+  *   @author  M.Frank
+  *   @version 1.0
+  */
+class GAUDI_API IUpdateableIF : virtual public IInterface, virtual public IUpdateable {
+public:
+  /// InterfaceID
+  DeclareInterfaceID(IUpdateableIF,1,0);
 };
 
 #endif // GAUDIKERNEL_IUPDATEABLE_H
