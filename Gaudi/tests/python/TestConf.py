@@ -42,11 +42,3 @@ class MyTestTool( ConfigurableAlgTool ):
     def getType( self ):
         return 'MyTestTool'
 
-class MyConfUser( ConfigurableUser ):
-    __slots__ = { "EvtMax": 0,
-                  "OutputLevel": 3 }
-    def __apply_configuration__(self):
-        from Configurables import ApplicationMgr
-        ApplicationMgr(EvtMax = self.getProp("EvtMax"),
-                       OutputLevel = self.getProp("OutputLevel"))
-        
