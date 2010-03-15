@@ -19,7 +19,7 @@ color: red;
 color: red;
 }
 /* "Collapse all" */
-.results ul + div:hover  {
+.results ul + span:hover  {
 color: blue;
 }
 span.togglelink:hover {
