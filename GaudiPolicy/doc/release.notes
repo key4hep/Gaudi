@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-03-15 - Gerhard Raven
+ - Patch #3854: Reduce verbosity of zipping of python modules.
+
 ! 2010-03-10 - Marco Clemencic
  - Added a specialized QMTest ResultStream implementation to produce an HTML
    summary with collapsable lists and AJAX-style dynamic load of the content.

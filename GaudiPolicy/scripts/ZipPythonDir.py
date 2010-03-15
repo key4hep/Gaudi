@@ -56,7 +56,10 @@ def _zipChanges(directory, infolist):
                     else:
                         action = "U"
                         untouched.append(filename)
-                log.info(" %s -> %s", action, filename)
+                if action in ['U']:
+                    log.debug(" %s -> %s", action, filename)
+                else:
+                    log.info(" %s -> %s", action, filename)
             elif ext not in [".pyc", ".pyo", ".stamp", ".cmtref"]: # extensions that can be ignored
                 raise ZipdirError("Cannot add '%s' to the zip file, only '.py' are allowed." % os.path.join(arcdir, f))
     # check for removed files
