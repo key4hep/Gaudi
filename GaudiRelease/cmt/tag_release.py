@@ -86,7 +86,7 @@ def main():
         # prepare project tag
         ptagdir = "%s/tags/%s/%s" % (proj, proj.upper(), pvers)
         if not svn_exists(ptagdir):
-            svn("mkdir", ptagdir)
+            svn("mkdir", ptagdir).wait()
             svn("cp", "%s/trunk/cmt" % proj, ptagdir + "/cmt").wait()
         
         # prepare package tags
