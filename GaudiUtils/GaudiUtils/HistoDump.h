@@ -44,7 +44,7 @@ namespace Gaudi
        *  @date 2009-09-19
        */ 
       GAUDI_API 
-      std::ostream& histoDump 
+      std::ostream& histoDump_ 
       ( const AIDA::IHistogram1D* histo          , 
         std::ostream&             stream         , 
         const std::size_t         width  = 80    ,  
@@ -78,7 +78,7 @@ namespace Gaudi
        *  @date 2009-09-19
        */ 
       GAUDI_API 
-      std::ostream& histoDump 
+      std::ostream& histoDump_ 
       ( const AIDA::IProfile1D*   histo          , 
         std::ostream&             stream         , 
         const std::size_t         width  = 80    ,  
@@ -112,7 +112,7 @@ namespace Gaudi
        *  @date 2009-09-19
        */ 
       GAUDI_API 
-      std::ostream& histoDump 
+      std::ostream& histoDump_
       ( const TProfile*           histo           , 
         std::ostream&             stream          ,
         const std::size_t         width   = 80    , 
@@ -144,7 +144,7 @@ namespace Gaudi
        *  @date 2009-09-19
        */ 
       GAUDI_API 
-      std::ostream& histoDump 
+      std::ostream& histoDump_ 
       ( const TH1*                histo           , 
         std::ostream&             stream          ,
         const std::size_t         width   = 80    , 

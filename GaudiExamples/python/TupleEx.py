@@ -24,12 +24,13 @@
 __author__ = 'Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr'
 # =============================================================================
 
-import GaudiPython, math
+import math
 
-Rndm    = GaudiPython.gbl.Rndm
-SUCCESS = GaudiPython.SUCCESS
+from GaudiPython.Bindings import gbl as cpp
 
-from   GaudiPython.GaudiAlgs   import TupleAlgo
+Rndm = cpp.Rndm
+
+from   GaudiPython.GaudiAlgs   import TupleAlgo, SUCCESS
 
 # =============================================================================
 ## @class TupleEx
@@ -41,9 +42,9 @@ class TupleEx(TupleAlgo) :
     Simple algorithm which implicitely book&fill N-Tuples
     """
     ## standard constructor
-    def __init__ ( self , name = 'TupleEx' ) :
+    def __init__ ( self , name = 'TupleEx' , **args ) :
         """ Constructor """
-        TupleAlgo.__init__( self , name )
+        TupleAlgo.__init__( self , name , **args )
 
     ## the main execution method
     def execute( self ) :
@@ -71,7 +72,9 @@ class TupleEx(TupleAlgo) :
 def configure( gaudi = None  ) :
     """ Configuration of the job """
 
-    if not gaudi : gaudi = GaudiPython.AppMgr()
+    if not gaudi :
+        from GaudiPython.Bindings import AppMgr
+        gaudi = AppMgr()
 
     gaudi.JobOptionsType       = 'NONE'
     gaudi.EvtSel               = 'NONE'
@@ -86,11 +89,12 @@ def configure( gaudi = None  ) :
 
     gaudi.DLLs = [ 'GaudiAlg', 'RootHistCnv', ]
 
-    alg = TupleEx()
+    alg = TupleEx(
+        ## configure the property
+        NTupleLUN = 'MYLUN'
+        )
+    
     gaudi.setAlgorithms( [alg] )
-
-    ## configure the property
-    alg.NTupleLUN = 'MYLUN'
 
     return SUCCESS
 
@@ -101,7 +105,8 @@ def configure( gaudi = None  ) :
 #  @date 2006-11-26
 if '__main__' == __name__ :
     print __doc__
-    gaudi = GaudiPython.AppMgr()
+    from GaudiPython.Bindings import AppMgr 
+    gaudi = AppMgr()
     configure( gaudi )
     gaudi.run(20)
 

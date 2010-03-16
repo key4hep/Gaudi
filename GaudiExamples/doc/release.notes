@@ -1,6 +1,11 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2010-03-16 - Vanya Belyaev
+ - Patch #3840: Fix for bug #59009
+   Add ascii-dump for python histogram examples fix the corresponding reference
+   files.
+
 ! 2010-02-26 - Marco Clemencic
  - Added a test for the EventTimeoutWatchdog of the EventLoopMgr.
 

@@ -1,6 +1,14 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2010-03-16 - Vanya Belyaev
+ - Patch #3840: Fix for bug #59009
+   - HistoDump:
+     Rename the functions with return value of std::ostream&, they produce
+     messages to std::err in python.
+     Since "std::ostream&" variants are useless to python, just rename them,
+     thus avoiding the dictionaries.
+
 ! 2010-01-28 - Marco Clemencic
  - Fixed icc remark #177: X declared but never referenced
 

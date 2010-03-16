@@ -57,7 +57,9 @@ def configure( gaudi = None  ) :
     
     import HistoEx1
 
-    if not gaudi : gaudi = GaudiPython.AppMgr()
+    if not gaudi :
+        from GaudiPython.Bindings import AppMgr
+        gaudi = AppMgr()
 
     HistoEx1.configure( gaudi ) 
 
@@ -84,19 +86,14 @@ if '__main__' == __name__ :
     gaudi.run(20)
 
     # Skip the next part when running within QMTest
-    if "QMTESTLOCALDIR" not in os.environ:
-        for alg in ['HistoEx', 'HistoEx1', 'HistoEx2']:
-            alg = gaudi.algorithm ( alg ) 
-            histos = alg.Histos()
-            for key in histos :
-                histo = histos[key]
-                print " Alg='%s', ID='%s' , Histo=%s " % ( alg.name() , key , histo ) 
-                if hasattr ( histo , 'dump' ) :
-                    print histo.dump(50,20)
-        
-        alg = gaudi.algorithm('HistoEx1')
-        histo  = alg.Histos(' 1D histo ')
+    for alg in ( 'HistoEx'  ,
+                 'HistoEx1' ,
+                 'HistoEx2' ) :
+        alg = gaudi.algorithm ( alg )
         histos = alg.Histos()
-        print ' Histos : ', histos 
-        print ' Histo  : ', histo 
-        print ' Histo  : ', histos[' 1D histo ']
+        for key in histos :
+            histo = histos[key]
+            print " Alg='%s', ID='%s' , Histo=%s " % ( alg.name() , key , histo ) 
+            if hasattr ( histo , 'dump' ) :
+                print histo.dump ( 60 , 20 , True)
+        

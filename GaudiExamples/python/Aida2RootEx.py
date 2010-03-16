@@ -19,20 +19,22 @@ if "-b" in sys.argv:
     # Force batch mode
     ROOT.gROOT.SetBatch(True)
 
-import GaudiPython
-from GaudiPython.GaudiAlgs import HistoAlgo
-
-SUCCESS = GaudiPython.SUCCESS
-
-## @see Gaudi::Aida2ROOT
-aida2root = GaudiPython.gbl.Gaudi.Utils.Aida2ROOT.aida2root
+from GaudiPython.GaudiAlgs  import HistoAlgo, aida2root, SUCCESS
 
 ## list of booked histograms
-paths = [ 'HistoEx/ 1D histo '  , 'HistoEx/ 2D histo '  , 'HistoEx/ 3D histo ' ,
-          'HistoEx1/ 1D histo '  , 'HistoEx1/ 2D histo '  , 'HistoEx1/ 3D histo ' ,
-          'HistoEx2/ x vs y    '  ,         'HistoEx2/ x vs y+3x '  ,         'HistoEx2/ x vs y-3x ' ,
-          'HistoEx2/ x vs y    (profile)' , 'HistoEx2/ x vs y+3x (profile)' , 'HistoEx2/ x vs y-3x (profile)' ,
-          ]
+paths = ( 'HistoEx/ 1D histo '    ,
+          'HistoEx/ 2D histo '    ,
+          'HistoEx/ 3D histo '    ,
+          'HistoEx1/ 1D histo '   ,
+          'HistoEx1/ 2D histo '   ,
+          'HistoEx1/ 3D histo '   ,
+          'HistoEx2/ x vs y    '  ,
+          'HistoEx2/ x vs y+3x '  ,
+          'HistoEx2/ x vs y-3x '  ,
+          'HistoEx2/ x vs y    (profile)' ,
+          'HistoEx2/ x vs y+3x (profile)' ,
+          'HistoEx2/ x vs y-3x (profile)' 
+          )
 
 # =============================================================================
 ## @class Aida2RootEx1
@@ -100,7 +102,9 @@ class Aida2RootEx2 (HistoAlgo) :
 def configure( gaudi = None ) :
     """ the main configuration method """
 
-    if not gaudi : gaudi = GaudiPython.AppMgr()
+    if not gaudi :
+        from GaudiPython.Bindings import AppMgr
+        gaudi = AppMgr()
 
     # reuse the previous example
     import HistoEx2
@@ -122,8 +126,10 @@ def configure( gaudi = None ) :
 #  @date 2007-01-24
 def useScript( histos ) :
     "  the third way to convert AIDA histograms into ROOT "
+    
+    from GaudiPython.Bindings import AppMgr
+    g    = AppMgr()
 
-    g    = GaudiPython.AppMgr()
     hsvc = g.histsvc()
 
     i = 0
@@ -156,7 +162,10 @@ def useScript( histos ) :
 # =============================================================================
 if '__main__' == __name__ :
     print __doc__ , __author__
-    gaudi = GaudiPython.AppMgr()
+    
+    from GaudiPython.Bindings import AppMgr
+    
+    gaudi = AppMgr()
     configure( gaudi )
     gaudi.run(5)
 

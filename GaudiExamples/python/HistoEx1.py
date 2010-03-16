@@ -16,11 +16,7 @@
 __author__ = 'Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr'
 # =============================================================================
 
-import GaudiPython
-
-from   GaudiPython.GaudiAlgs   import HistoAlgo
-
-SUCCESS = GaudiPython.SUCCESS
+from   GaudiPython.GaudiAlgs   import HistoAlgo, SUCCESS
 
 # =============================================================================
 # Simple algorithm which book&fill 3 histograms
@@ -69,8 +65,10 @@ def configure( gaudi = None  ) :
     """ Configuration of the job """
 
     import HistoEx
-
-    if not gaudi : gaudi = GaudiPython.AppMgr()
+    
+    if not gaudi :
+        from GaudiPython.Bindings import AppMgr
+        gaudi = AppMgr()
 
     HistoEx.configure( gaudi )
 
@@ -87,8 +85,20 @@ def configure( gaudi = None  ) :
 # =============================================================================
 if '__main__' == __name__ :
     print __doc__ , __author__
-    gaudi = GaudiPython.AppMgr()
+    
+    from GaudiPython.Bindings import AppMgr
+    gaudi = AppMgr()
+    
     configure( gaudi )
+    
     gaudi.run(20)
+    import GaudiPython.HistoUtils
+    
+    alg = gaudi.algorithm( 'HistoEx1' )
+    histos = alg.Histos()
+    for key in histos :
+        histo = histos[ key ]
+        if hasattr ( histo , 'dump' ) :
+            print histo.dump ( 80 , 20 , True )
 
 # =============================================================================
