@@ -1,6 +1,7 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+============================== GaudiUtils v3r7 ===============================
 ! 2010-03-16 - Vanya Belyaev
  - Patch #3840: Fix for bug #59009
    - HistoDump:

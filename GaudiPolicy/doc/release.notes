@@ -1,6 +1,7 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v10r6 ==============================
 ! 2010-03-15 - Marco Clemencic
  - Added a cmt action to start the QMTest GUI (cmt QMTestGUI).
    It simplifies the creation of tests, but still has some problems to run them.

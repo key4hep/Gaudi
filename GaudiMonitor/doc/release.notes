@@ -1,6 +1,7 @@
 Package: GaudiMonitor
 Package manager : Marco Clemencic
 
+============================= GaudiMonitor v2r5 ==============================
 ! 2010-01-28 - Marco Clemencic
  - Removed a couple of leftovers from the removal of _dll.cpp and _load.cpp.
  - Fixed icc remark #177: X declared but never referenced

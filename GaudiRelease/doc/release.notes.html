@@ -38,12 +38,82 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
+<h2><a name="v21r8">Gaudi v21r8</a> (2010-03-16)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=58b">LCGCMT_58b</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Some icc fixes<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added a simple generic class (WatchdogThread) for implementation of software
+    watchdogs (in the sense of a secondary thread that periodically checks that
+    an event has occurred).<br/>
+    A first implementation to monitor hangs during events has been added too.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li><br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v10r6):
+<ul>
+<li>Added a specialized QMTest ResultStream implementation to produce an HTML
+   summary with collapsable lists and AJAX-style dynamic load of the content.
+   The generation of the HTML output can be generated using the option
+   --html-output to TestPackage or the environment variable
+   GAUDI_QMTEST_HTML_OUTPUT. (see release notes for details)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Patch #3854: Reduce verbosity of zipping of python modules.<br/>
+    (<span class="author">Gerhard Raven</span>)</li>
+<li>Added a cmt action to start the QMTest GUI (cmt QMTestGUI).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v27r8):
+<ul>
+<li>Patch #3718: Unchecked StatusCode in GaudiKernel/Algorithm.cpp<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Patch #3912: Add a IInterface-based version of IUpdateable<br/>
+    (<span class="author">Markus Frank</span>)</li>
+<li>Fixed bug #63502: GaudiKernel/Converter.cpp don't assume converter
+    is a ConverterSvc when retrieving name<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Improvements in ConfigurableUser: Allow dependency between named
+    ConfigurableUser instances (LHCb task #12691)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiSvc (v18r8):
+<ul>
+<li>Patch #3875: Small fix to GaudiSvc/EventLoopMgr<br/>
+    (<span class="author">Markus Frank</span>)</li>
+<li>Patch #3876: Added StoreSnifferAlg<br/>
+    (<span class="author">Markus Frank</span>)</li>
+<li>Fixed bug #63844: Various fixes to THistSvc<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Fixed bug #62374: Handling of signal SIGXCPU<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiUtils (v3r7):
+<ul>
+<li>Patch #3840: Fix for bug #59009<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+</ul>
+</li>
+<li>GaudiAlg (v13r1):
+<ul>
+<li>Patch #3892: Proper implementation of GaudiCommon::exist<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
 <h2><a name="v21r7">Gaudi v21r7</a> (2010-01-19)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=58">LCGCMT_58</a></h3>
 <h3>General Changes</h3>
 <ul>
 <li>Fixed compilation on icc 11. The warnings are still to be investigated.<br/>
-    See full release notes of GaudiPolici, GaudiKernel and GaudiGSL for details.<br/>
+    See full release notes of GaudiPolicy, GaudiKernel and GaudiGSL for details.<br/>
     (<span class="author">Marco Clemencic</span>)</li>
 <li>Removed (unused) dependency on <tt>PCRE</tt> and <tt>rx</tt> externals.<br/>
     (<span class="author">Marco Clemencic</span>)</li>

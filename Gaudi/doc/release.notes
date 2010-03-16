@@ -1,6 +1,7 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+================================ Gaudi v21r8 =================================
 ! 2010-03-02 - Marco Clemencic
   - Modified the test gaudi.conf_user_autoapply to test the dependency between
     named ConfigurableUser instances.

@@ -1,6 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v27r8 ==============================
 ! 2010-03-16 -Charles Leggett
  - Patch #3718: Unchecked StatusCode in GaudiKernel/Algorithm.cpp
    Modified the code to avoid Unchecked StatusCode in case of failures.

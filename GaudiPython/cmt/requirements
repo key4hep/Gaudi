@@ -1,5 +1,5 @@
 package GaudiPython
-version v10r7
+version v10r8
 
 branches      GaudiPython cmt doc src
 

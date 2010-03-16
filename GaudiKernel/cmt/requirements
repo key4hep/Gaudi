@@ -1,5 +1,5 @@
 package GaudiKernel
-version v27r7
+version v27r8
 author "LHCb Gaudi Team"
 
 branches GaudiKernel cmt doc src

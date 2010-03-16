@@ -1,6 +1,7 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+=============================== GaudiAlg v13r1 ===============================
 ! 2010-03-09 - Vanya Belyaev
  - Patch #3892: Proper implementation of GaudiCommon::exist
    - GaudiCommon<>:exist: provide the proper implementation, 

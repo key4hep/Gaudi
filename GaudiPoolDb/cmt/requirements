@@ -1,5 +1,5 @@
 package GaudiPoolDb
-version v5r6
+version v5r7
 
 branches  cmt doc src GaudiPoolDb options main test
 
