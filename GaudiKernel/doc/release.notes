@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-03-16 -Charles Leggett
+ - Patch #3718: Unchecked StatusCode in GaudiKernel/Algorithm.cpp
+   Modified the code to avoid Unchecked StatusCode in case of failures.
+   
 ! 2010-03-15 - Markus Frank
  - Patch #3912: Add a IInterface-based version of IUpdateable. 
 
@@ -27,7 +31,7 @@ Package manager : Marco Clemencic
    an event has occurred).
    A derived class should implement (at least) the method "action()", which is
    invoked when the time-out occurs without that another thread called the
-   "ping()" method ofthe watchdog.
+   "ping()" method of the watchdog.
 
 ! 2010-01-29 - Marco Clemencic
  - Fixed icc remark #1599: declaration hides variable

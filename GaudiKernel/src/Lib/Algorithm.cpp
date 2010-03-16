@@ -132,24 +132,24 @@ StatusCode Algorithm::sysInitialize() {
       // Invoke the initialize() method of the derived class
       sc = initialize();
     }
-    if( sc.isFailure() ) return StatusCode::FAILURE;
+    if( sc.isSuccess() ) {
 
-    // Now initialize care of any sub-algorithms
-    std::vector<Algorithm *>::iterator it;
-    StatusCode result = StatusCode::SUCCESS;
-    for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-      sc = (*it)->sysInitialize();
-      if( sc.isFailure() ) result = sc;
+      // Now initialize care of any sub-algorithms
+      std::vector<Algorithm *>::iterator it;
+      bool fail(false);
+      for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
+	if ((*it)->sysInitialize().isFailure()) fail = true;
+      }
+      if( fail ) {
+	sc = StatusCode::FAILURE;
+	MsgStream log ( msgSvc() , name() );
+	log << MSG::ERROR << " Error initializing one or several sub-algorithms"
+	    << endmsg;
+      } else {
+	// Update the state.
+	m_state = m_targetState;
+      }
     }
-    if( result.isFailure() ) {
-      MsgStream log ( msgSvc() , name() );
-      log << MSG::ERROR << " Error initializing one or several sub-algorithms"
-          << endmsg;
-      return result;
-    }
-    // Update the state.
-    m_state = m_targetState;
-    return StatusCode::SUCCESS;
   }
   catch ( const GaudiException& Exception )  
   {
@@ -158,6 +158,7 @@ StatusCode Algorithm::sysInitialize() {
         << " is caught " << endmsg;
     log << MSG::ERROR << Exception  << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
+    sc = StatusCode::FAILURE;
   }
   catch( const std::exception& Exception ) 
   {
@@ -165,15 +166,17 @@ StatusCode Algorithm::sysInitialize() {
     log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
     log << MSG::ERROR << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
+    sc = StatusCode::FAILURE;
   }
   catch(...) 
   {
     MsgStream log ( msgSvc() , name() ) ;
     log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
+    sc = StatusCode::FAILURE;
   }
 
-  return StatusCode::FAILURE;
+  return sc;
 }
 
 // IAlgorithm implementation
@@ -193,7 +196,7 @@ StatusCode Algorithm::sysStart() {
   Gaudi::Utils::AlgContext cnt
     ( this , registerContext() ? contextSvc().get() : 0 ) ;
   
-  StatusCode sc;
+  StatusCode sc(StatusCode::FAILURE);
   // Invoke start() method of the derived class inside a try/catch clause
   try 
   {
@@ -206,24 +209,24 @@ StatusCode Algorithm::sysStart() {
       // Invoke the start() method of the derived class
       sc = start();
     }
-    if( sc.isFailure() ) return StatusCode::FAILURE;
+    if( sc.isSuccess() ) {
 
-    // Now start any sub-algorithms
-    std::vector<Algorithm *>::iterator it;
-    StatusCode result = StatusCode::SUCCESS;
-    for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-      sc = (*it)->sysStart();
-      if( sc.isFailure() ) result = sc;
+      // Now start any sub-algorithms
+      std::vector<Algorithm *>::iterator it;
+      bool fail(false);
+      for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
+	if ((*it)->sysStart().isFailure()) fail = true;
+      }
+      if( fail ) {
+	sc = StatusCode::FAILURE;
+	MsgStream log ( msgSvc() , name() );
+	log << MSG::ERROR << " Error starting one or several sub-algorithms"
+	    << endmsg;
+      } else {
+	// Update the state.
+	m_state = m_targetState;
+      }
     }
-    if( result.isFailure() ) {
-      MsgStream log ( msgSvc() , name() );
-      log << MSG::ERROR << " Error starting one or several sub-algorithms"
-          << endmsg;
-      return result;
-    }
-    // Update the state.
-    m_state = m_targetState;
-    return StatusCode::SUCCESS;
   }
   catch ( const GaudiException& Exception ) 
   {
@@ -232,6 +235,7 @@ StatusCode Algorithm::sysStart() {
         << " is caught" << endmsg;
     log << MSG::ERROR << Exception << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
+    sc = StatusCode::FAILURE;
   }
   catch( const std::exception& Exception ) 
   {
@@ -239,15 +243,17 @@ StatusCode Algorithm::sysStart() {
     log << MSG::FATAL << "in sysStart(): standard std::exception is caught" << endmsg;
     log << MSG::ERROR << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
+    sc = StatusCode::FAILURE;
   }
   catch(...) 
   {
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "in sysStart(): UNKNOWN Exception is caught" << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
+    sc = StatusCode::FAILURE;
   }
 
-  return StatusCode::FAILURE;
+  return sc;
 }
 
 // IAlgorithm implementation
@@ -277,7 +283,7 @@ StatusCode Algorithm::sysReinitialize() {
   Gaudi::Utils::AlgContext cnt
     ( this , registerContext() ? contextSvc().get() : 0 ) ;
   
-  StatusCode sc(StatusCode::SUCCESS,true);
+  StatusCode sc(StatusCode::SUCCESS);
   // Invoke reinitialize() method of the derived class inside a try/catch clause
   try {
     { // limit the scope of the guard
@@ -288,24 +294,23 @@ StatusCode Algorithm::sysReinitialize() {
       // Invoke the reinitialize() method of the derived class
       sc = reinitialize();
     }
-    if( sc.isFailure() ) return StatusCode::FAILURE;
+    if( sc.isSuccess() ) { 
 
-    // Now initialize care of any sub-algorithms
-    std::vector<Algorithm *>::iterator it;
-    StatusCode result = StatusCode::SUCCESS;
-    for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-      sc = (*it)->sysReinitialize();
-      if( sc.isFailure() ) result = sc;
+      // Now initialize care of any sub-algorithms
+      std::vector<Algorithm *>::iterator it;
+      bool fail(false);
+      for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
+	if((*it)->sysReinitialize().isFailure()) fail = true;
+      }
+
+      if (fail) {
+	sc = StatusCode::FAILURE;
+	MsgStream log ( msgSvc() , name() );
+	log << MSG::ERROR
+	    << "sysReinitialize(): Error reinitializing one or several "
+	    << "sub-algorithms" << endmsg;
+      }
     }
-    if( result.isFailure() )
-    {
-      MsgStream log ( msgSvc() , name() );
-      log << MSG::ERROR
-          << "sysReinitialize(): Error reinitializing one or several sub-algorithms"
-          << endmsg;
-      return result;
-    }
-    return StatusCode::SUCCESS;
   }
   catch ( const GaudiException& Exception )  
   {
@@ -314,6 +319,7 @@ StatusCode Algorithm::sysReinitialize() {
         << " is caught" << endmsg;
     log << MSG::ERROR << Exception  << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
+    sc = StatusCode::FAILURE;
   }
   catch( const std::exception& Exception ) 
   {
@@ -321,15 +327,17 @@ StatusCode Algorithm::sysReinitialize() {
     log << MSG::FATAL << "sysReinitialize(): Standard std::exception is caught" << endmsg;
     log << MSG::ERROR << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
+    sc = StatusCode::FAILURE;
   }
   catch(...) 
   {
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "sysReinitialize(): UNKNOWN Exception is caught" << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
+    sc = StatusCode::FAILURE;
   }
   
-  return StatusCode::FAILURE;
+  return sc;
 }
 
 // IAlgorithm implementation
@@ -359,7 +367,7 @@ StatusCode Algorithm::sysRestart() {
   Gaudi::Utils::AlgContext cnt
     ( this , registerContext() ? contextSvc().get() : 0 ) ;
 
-  StatusCode sc(StatusCode::SUCCESS,true);
+  StatusCode sc(StatusCode::FAILURE);
   // Invoke reinitialize() method of the derived class inside a try/catch clause
   try {
     { // limit the scope of the guard
@@ -370,23 +378,22 @@ StatusCode Algorithm::sysRestart() {
       // Invoke the reinitialize() method of the derived class
       sc = restart();
     }
-    if( sc.isFailure() ) return StatusCode::FAILURE;
+    if( sc.isSuccess() ) {
     
-    // Now initialize care of any sub-algorithms
-    std::vector<Algorithm *>::iterator it;
-    StatusCode result = StatusCode::SUCCESS;
-    for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-      sc = (*it)->sysRestart();
-      if( sc.isFailure() ) result = sc;
+      // Now initialize care of any sub-algorithms
+      std::vector<Algorithm *>::iterator it;
+      bool fail(false);
+      for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
+	if ((*it)->sysRestart().isFailure()) fail = true;
+      }
+      if( fail ) {
+	sc = StatusCode::FAILURE;
+	MsgStream log ( msgSvc() , name() );
+	log << MSG::ERROR
+	    << "sysRestart(): Error restarting one or several sub-algorithms"
+	    << endmsg;
+      }
     }
-    if( result.isFailure() ) {
-      MsgStream log ( msgSvc() , name() );
-      log << MSG::ERROR
-          << "sysRestart(): Error restarting one or several sub-algorithms"
-          << endmsg;
-      return result;
-    }
-    return StatusCode::SUCCESS;
   }
   catch ( const GaudiException& Exception )  
   {
@@ -395,6 +402,7 @@ StatusCode Algorithm::sysRestart() {
         << " is caught" << endmsg;
     log << MSG::ERROR << Exception  << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
+    sc = StatusCode::FAILURE;
   }
   catch( const std::exception& Exception ) 
   {
@@ -402,15 +410,17 @@ StatusCode Algorithm::sysRestart() {
     log << MSG::FATAL << "sysRestart(): Standard std::exception is caught" << endmsg;
     log << MSG::ERROR << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
+    sc = StatusCode::FAILURE;
   }
   catch(...) 
   {
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "sysRestart(): UNKNOWN Exception is caught" << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
+    sc = StatusCode::FAILURE;
   }
 
-  return StatusCode::FAILURE;
+  return sc;
 }
 
 // IAlgorithm implementation
@@ -431,7 +441,7 @@ StatusCode Algorithm::sysBeginRun() {
   Gaudi::Utils::AlgContext cnt
     ( this , registerContext() ? contextSvc().get() : 0 ) ;
 
-  StatusCode sc;
+  StatusCode sc(StatusCode::FAILURE);
   // Invoke beginRun() method of the derived class inside a try/catch clause
   try {
     { // limit the scope of the guard
@@ -442,23 +452,21 @@ StatusCode Algorithm::sysBeginRun() {
       // Invoke the beginRun() method of the derived class
       sc = beginRun();
     }
-    if( sc.isFailure() ) return StatusCode::FAILURE;
+    if( sc.isSuccess() ) {
 
-    // Now call beginRun for any sub-algorithms
-    std::vector<Algorithm *>::iterator it;
-    StatusCode result = StatusCode::SUCCESS;
-    for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-      sc = (*it)->sysBeginRun();
-      if( sc.isFailure() ) result = sc;
-    }
-    if( result.isFailure() ) 
-    {
-      MsgStream log ( msgSvc() , name() );
-      log << MSG::ERROR << " Error executing BeginRun for one or several sub-algorithms"
+      // Now call beginRun for any sub-algorithms
+      std::vector<Algorithm *>::iterator it;
+      bool fail(false);
+      for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
+	if((*it)->sysBeginRun().isFailure()) fail = true;
+      }
+      if( fail ) {
+	sc = StatusCode::FAILURE;
+	MsgStream log ( msgSvc() , name() );
+	log << MSG::ERROR << " Error executing BeginRun for one or several sub-algorithms"
           << endmsg;
-      return result;
+      }
     }
-    return StatusCode::SUCCESS;
   }
   catch ( const GaudiException& Exception ) 
   {
@@ -467,6 +475,7 @@ StatusCode Algorithm::sysBeginRun() {
         << " is caught " << endmsg;
     log << MSG::ERROR << Exception  << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
+    sc = StatusCode::FAILURE;
   }
   catch( const std::exception& Exception ) 
   {
@@ -474,14 +483,16 @@ StatusCode Algorithm::sysBeginRun() {
     log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
     log << MSG::ERROR << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
+    sc = StatusCode::FAILURE;
   }
   catch(...) 
   {
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
+    sc = StatusCode::FAILURE;
   }
-  return StatusCode::FAILURE;
+  return sc;
 }
 
 StatusCode Algorithm::beginRun() {
@@ -507,7 +518,7 @@ StatusCode Algorithm::sysEndRun() {
     ( this , registerContext() ? contextSvc().get() : 0 ) ;
 
   // Invoke endRun() method of the derived class inside a try/catch clause
-  StatusCode sc;
+  StatusCode sc(StatusCode::FAILURE);
   try {
     { // limit the scope of the guard
       Gaudi::Guards::AuditorGuard guard(this,
@@ -517,23 +528,21 @@ StatusCode Algorithm::sysEndRun() {
       // Invoke the endRun() method of the derived class
       sc = endRun();
     }
-    if( sc.isFailure() ) return StatusCode::FAILURE;
+    if( sc.isSuccess() ) {
 
-    // Now call endRun for any sub-algorithms
-    std::vector<Algorithm *>::iterator it;
-    StatusCode result = StatusCode::SUCCESS;
-    for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-      sc = (*it)->sysEndRun();
-      if( sc.isFailure() ) result = sc;
+      // Now call endRun for any sub-algorithms
+      std::vector<Algorithm *>::iterator it;
+      bool fail(false);
+      for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
+	if ((*it)->sysEndRun().isFailure()) fail = true;
+      }
+      if( fail ) {
+	sc = StatusCode::FAILURE;
+	MsgStream log ( msgSvc() , name() );
+	log << MSG::ERROR << " Error calling endRun for one or several sub-algorithms"
+	    << endmsg;
+      }
     }
-    if( result.isFailure() ) 
-    {
-      MsgStream log ( msgSvc() , name() );
-      log << MSG::ERROR << " Error calling endRun for one or several sub-algorithms"
-          << endmsg;
-      return result;
-    }
-    return StatusCode::SUCCESS;
   }
   catch ( const GaudiException& Exception ) 
   {
@@ -542,6 +551,7 @@ StatusCode Algorithm::sysEndRun() {
         << " is caught " << endmsg;
     log << MSG::ERROR << Exception  << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
+    sc = StatusCode::FAILURE;
   }
   catch( const std::exception& Exception ) 
   {
@@ -549,14 +559,16 @@ StatusCode Algorithm::sysEndRun() {
     log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
     log << MSG::ERROR << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
+    sc = StatusCode::FAILURE;
   }
   catch(...) 
   {
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
+    sc = StatusCode::FAILURE;
   }
-  return StatusCode::FAILURE;
+  return sc;
 }
 
 StatusCode Algorithm::endRun() {
@@ -663,7 +675,7 @@ StatusCode Algorithm::sysStop() {
   Gaudi::Utils::AlgContext cnt
     ( this , registerContext() ? contextSvc().get() : 0 ) ;
   
-  StatusCode sc;
+  StatusCode sc(StatusCode::FAILURE);
   // Invoke stop() method of the derived class inside a try/catch clause
   try {
     // Stop first any sub-algorithms (in reverse order)
@@ -680,11 +692,10 @@ StatusCode Algorithm::sysStop() {
       // Invoke the stop() method of the derived class
       sc = stop();
     }
-    if( sc.isFailure() ) return StatusCode::FAILURE;
-
-    // Update the state.
-    m_state = m_targetState;
-    return StatusCode::SUCCESS;
+    if( sc.isSuccess() ) {
+      // Update the state.
+      m_state = m_targetState;
+    }
   }
   catch ( const GaudiException& Exception )  {
     MsgStream log ( msgSvc() , name() );
@@ -692,20 +703,23 @@ StatusCode Algorithm::sysStop() {
         << " is caught" << endmsg;
     log << MSG::ERROR << Exception << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
+    sc = StatusCode::FAILURE;
   }
   catch( const std::exception& Exception ) {
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "in sysStop(): standard std::exception is caught" << endmsg;
     log << MSG::ERROR << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
+    sc = StatusCode::FAILURE;
   }
   catch(...) {
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "in sysStop(): UNKNOWN Exception is caught" << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
+    sc = StatusCode::FAILURE;
   }
 
-  return StatusCode::FAILURE;
+  return sc;
 }
 
 StatusCode Algorithm::sysFinalize() {
@@ -720,8 +734,8 @@ StatusCode Algorithm::sysFinalize() {
   Gaudi::Utils::AlgContext cnt
     ( this , registerContext() ? contextSvc().get() : 0 ) ;
   
+  StatusCode sc(StatusCode::FAILURE);
   // Invoke finalize() method of the derived class inside a try/catch clause
-  StatusCode sc = StatusCode::SUCCESS;
   try {
     // Order changed (bug #3903 overview: finalize and nested algorithms)
     // Finalize first any sub-algoithms (it can be done more than once)
@@ -741,15 +755,17 @@ StatusCode Algorithm::sysFinalize() {
       // Invoke the finalize() method of the derived class
       sc = finalize();
     }
-    if( !sc.isSuccess() || fail )  return StatusCode::FAILURE;
+    if (fail) sc = StatusCode::FAILURE;
 
-    // Release all sub-algorithms
-    for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-      (*it)->release();
+    if( sc.isSuccess() ) {
+
+      // Release all sub-algorithms
+      for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
+	(*it)->release();
+      }
+      // Indicate that this Algorithm has been finalized to prevent duplicate attempts
+      m_state = m_targetState;
     }
-    // Indicate that this Algorithm has been finalized to prevent duplicate attempts
-    m_state = m_targetState;
-    return sc;
   }
   catch( const GaudiException& Exception ) 
   {
@@ -758,6 +774,7 @@ StatusCode Algorithm::sysFinalize() {
         << " is caught " << endmsg;
     log << MSG::ERROR << Exception  << endmsg;
     Stat stat( chronoSvc() , Exception.tag() ) ;
+    sc = StatusCode::FAILURE;
   }
   catch( const std::exception& Exception ) 
   {
@@ -765,14 +782,16 @@ StatusCode Algorithm::sysFinalize() {
     log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
     log << MSG::ERROR << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" ) ;
+    sc = StatusCode::FAILURE;
   }
   catch( ... ) 
   {
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
+    sc = StatusCode::FAILURE;
   }
-  return StatusCode::FAILURE ;
+  return sc;
 }
 
 StatusCode Algorithm::reinitialize() {
