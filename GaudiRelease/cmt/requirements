@@ -84,6 +84,7 @@ apply_pattern LHCb_external ext=Grid pkg=dcache_client
 
 # Hack to avoid externals that do not exist on WinXP (in the LHCb distribution)
 macro tcmalloc_native_version "$(tcmalloc_native_version)" LHCb&target-winxp ""
+macro libunwind_native_version "$(libunwind_native_version)" LHCb&target-winxp ""
 macro sip_native_version "$(sip_native_version)" LHCb&target-winxp ""
 
 
