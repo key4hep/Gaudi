@@ -76,7 +76,6 @@ StatusCode RecordDataSvc::initialize()    {
   /// 1) FILE_OPEN_READ:            fired by conversion service on open file
   /// 2) IncidentType::BeginEvent   fired by event loop BEFORE the event processing starts.
   ///                               Do everything to bootstract access to the old event record.
-  m_incidentSvc->addListener(this,IncidentType::BeginEvent);
   m_incidentSvc->addListener(this,"FILE_OPEN_READ");
   m_incidentSvc->addListener(this,m_saveIncidentName);
   return sc;
@@ -104,18 +103,16 @@ void RecordDataSvc::handle(const Incident& incident) {
     const Ctxt* inc = dynamic_cast<const Ctxt*>(&incident);
     if ( inc ) {
       registerRecord(inc->source(),inc->tag());
+      if ( !m_incidentName.empty() ) {
+	StringV incidents(m_incidents);
+	m_incidents.clear();
+	for( StringV::const_iterator i=incidents.begin(); i!=incidents.end();++i)
+	  m_incidentSvc->fireIncident(Incident(*i,m_incidentName));
+      }
       return;
     }
     MsgStream log(msgSvc(),name());
     log << MSG::ALWAYS << "Received invalid incident of type:" << incident.type() << endmsg;
-  }
-  else if ( incident.type() == IncidentType::BeginEvent ) {
-    if ( !m_incidentName.empty() ) {
-      StringV incidents(m_incidents);
-      m_incidents.clear();
-      for( StringV::const_iterator i=incidents.begin(); i!=incidents.end();++i)
-	m_incidentSvc->fireIncident(Incident(*i,m_incidentName));
-    }
   }
   else if ( incident.type() == m_saveIncidentName ) {
     MsgStream log(msgSvc(),name());

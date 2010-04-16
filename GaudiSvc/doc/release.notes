@@ -2,6 +2,12 @@ Package: GaudiSvc
 Package manager : Marco Clemencic
 
 ! 2010-04-16 - Markus Frank
+ - Patch #4008: Fix for task #13714: FSRs should be copied as the OpenNewFile
+                incident
+   Fix to ensure FSRs are read in the event the file has no events.
+   On a FILE_OPEN_READ incident, the incident is handled and if
+   RecordDataSvc.AutoLoad is set to true, the entire FSR is automatically
+   loaded into the records-store.
  - Patch #3942: Patch to reduce output level in records service (bug #64477)
 
 ! 2010-04-16 - Marco Clemencic

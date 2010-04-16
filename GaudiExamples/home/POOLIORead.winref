@@ -75,12 +75,12 @@ ApplicationMgr       INFO Application Manager Started successfully
 POOLIO.dst        SUCCESS Root file version:51800
 PoolRootEvtCnvSvc    INFO Records token:[DB=80392851-5F2E-DE11-88AB-AB48B2B65F5C][CNT=/FileRecords][CLID=00000001-0000-0000-0000-000000000000][TECH=00000202][OID=0000000A-00000000]
 FileRecordPersi...   INFO Added successfully Conversion service:FileRecordCnvSvc
-EventSelector     SUCCESS Reading Event record 1. Record number within stream 1: 1
-EventPersistenc...   INFO Added successfully Conversion service:PoolRootTreeEvtCnvSvc
 ReadAlg           SUCCESS Got incident: NEW_FILE_RECORD Source:/FileRecords/80392851-5F2E-DE11-88AB-AB48B2B65F5C
 ReadAlg           SUCCESS Received incident:NEW_FILE_RECORD: /FileRecords/80392851-5F2E-DE11-88AB-AB48B2B65F5C
 ReadAlg           SUCCESS Incident: FileInfo record: /FileRecords/80392851-5F2E-DE11-88AB-AB48B2B65F5C/EvtCount=1000
 ReadAlg           SUCCESS Incident: FileInfo record: /FileRecords/80392851-5F2E-DE11-88AB-AB48B2B65F5C/SumCount=123456
+EventSelector     SUCCESS Reading Event record 1. Record number within stream 1: 1
+EventPersistenc...   INFO Added successfully Conversion service:PoolRootTreeEvtCnvSvc
 ReadAlg           VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 ReadAlg              INFO ========= EVENT:1 RUN:999 TIME:1240314751.3873305 0 (0) 1 (1) 2 (2)
 ReadAlg           SUCCESS FileInfo record: 80392851-5F2E-DE11-88AB-AB48B2B65F5C/EvtCount=1000
