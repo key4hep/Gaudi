@@ -70,7 +70,7 @@ int StatEntity::size  ()
 // ============================================================================
 // mean value of flag 
 // ============================================================================
-double StatEntity::flagMean   () const 
+double StatEntity::mean   () const 
 { 
   if ( 0 >= nEntries() ) { return 0 ;}
   const long double f1 = m_se_accumulatedFlag ;
@@ -80,7 +80,7 @@ double StatEntity::flagMean   () const
 // ============================================================================
 // r.m.s of flag
 // ============================================================================
-double StatEntity::flagRMS    () const 
+double StatEntity::rms    () const 
 {
   if ( 0 >= nEntries() ) { return 0 ; }
   const long double f1  = m_se_accumulatedFlag  ;
@@ -93,7 +93,7 @@ double StatEntity::flagRMS    () const
 // ============================================================================
 // error in mean value of flag 
 // ============================================================================
-double StatEntity::flagMeanErr() const 
+double StatEntity::meanErr() const 
 {
   if ( 0 >= nEntries () ) { return 0 ; }
   const long double f1  = m_se_accumulatedFlag  ;
@@ -110,12 +110,12 @@ double StatEntity::flagMeanErr() const
 // ============================================================================
 double StatEntity::efficiency    () const 
 {
-  if ( 1 > nEntries () || 0 > flag() || flag() > nEntries() ) { return -1 ; }
-  const long double fMin = flagMin () ;
+  if ( 1 > nEntries () || 0 > sum() || sum() > nEntries() ) { return -1 ; }
+  const long double fMin = min () ;
   if ( 0 != fMin && 1 != fMin ) { return -1 ; }
-  const long double fMax = flagMax () ;
+  const long double fMax = max () ;
   if ( 0 != fMax && 1 != fMax ) { return -1 ; }
-  return flagMean() ;
+  return mean() ;
 }
 // ============================================================================
 // evaluate the binomial error in efficiency
@@ -123,8 +123,8 @@ double StatEntity::efficiency    () const
 double StatEntity::efficiencyErr () const 
 {
   if ( 0 > efficiency() ) { return -1 ; }
-  
-  long double n1 = flag() ;
+  //
+  long double n1 = sum () ;
   // treat properly the bins with eff=0 
   if ( 0 == n1 ) { n1 = 1 ; } ///< @attention treat properly the bins with eff=0 
   const long double n3 = nEntries  () ;
@@ -155,26 +155,26 @@ bool StatEntity::operator< ( const StatEntity& se ) const
   if      ( &se == this                     ) { return false ; }
   else if ( nEntries () <   se.nEntries ()  ) { return true  ; }
   else if ( nEntries () ==  se.nEntries () && 
-            flag     () <   se.flag     ()  ) { return true  ; } 
+            sum      () <   se.sum      ()  ) { return true  ; } 
   else if ( nEntries () ==  se.nEntries () && 
-            flag     () ==  se.flag     () &&  
-            flagMin  () <   se.flagMin  ()  ) { return true  ; } 
+            sum      () ==  se.sum      () &&  
+            min      () <   se.min      ()  ) { return true  ; } 
   else if ( nEntries () ==  se.nEntries () && 
-            flag     () ==  se.flag     () &&  
-            flagMin  () ==  se.flagMin  () &&
-            flagMax  () <   se.flagMax  ()  ) { return true  ; } 
+            sum      () ==  se.sum      () &&  
+            min      () ==  se.min      () &&
+            max      () <   se.max      ()  ) { return true  ; } 
   else if ( nEntries () ==  se.nEntries () && 
-            flag     () ==  se.flag     () &&  
-            flagMin  () ==  se.flagMin  () &&
-            flagMax  () ==  se.flagMax  () && 
-            flag2    () <   se.flag2    ()  ) { return true  ; }
+            sum      () ==  se.flag     () &&  
+            min      () ==  se.min      () &&
+            max      () ==  se.max      () && 
+            sum2     () <   se.sum2     ()  ) { return true  ; }
   ///
   return false; 
 }
 // ============================================================================
 // increment a flag  
 // ============================================================================
-unsigned long StatEntity::addFlag ( const double Flag ) 
+unsigned long StatEntity::add ( const double Flag ) 
 {  
   //
   if      ( 0 <  m_se_nEntriesBeforeReset ) { --m_se_nEntriesBeforeReset; }
@@ -224,9 +224,9 @@ std::string StatEntity::toString () const
 std::ostream& StatEntity::print ( std::ostream& o ) const
 {
   boost::format fmt1 ("#=%|-7lu| Sum=%|-11.5g|" ) ;
-  o << fmt1 % nEntries() % flag() ;
+  o << fmt1 % nEntries() % sum() ;
   boost::format fmt2 ( " Mean=%|#10.4g| +- %|-#10.5g| Min/Max=%|#10.4g|/%|-#10.4g|" ) ;
-  o << fmt2 % flagMean() % flagRMS() % flagMin() % flagMax() ;
+  o << fmt2 % mean() % rms() % min() % max() ;
   return o ;
 }
 // ============================================================================
@@ -299,7 +299,7 @@ std::string Gaudi::Utils::formatAsTableRow
     fmt.exceptions ( all_error_bits ^ ( too_many_args_bit | too_few_args_bit ) ) ;
     fmt 
       %   counter.nEntries ()       
-      %   counter.flag     () 
+      %   counter.sum      () 
       % ( counter.eff      () * 100 ) 
       % ( counter.effErr   () * 100 ) ;
     return fmt.str() ;
@@ -308,11 +308,11 @@ std::string Gaudi::Utils::formatAsTableRow
   fmt.exceptions ( all_error_bits ^ ( too_many_args_bit | too_few_args_bit ) ) ;
   fmt 
     %   counter.nEntries () 
-    %   counter.flag     () 
-    %   counter.flagMean () 
-    %   counter.flagRMS  ()  
-    %   counter.flagMin  () 
-    %   counter.flagMax  () ;
+    %   counter.sum      () 
+    %   counter.mean     () 
+    %   counter.rms      ()  
+    %   counter.min      () 
+    %   counter.max      () ;
   return fmt.str() ;
 }
 // ============================================================================
@@ -340,7 +340,7 @@ std::string Gaudi::Utils::formatAsTableRow
     fmt 
       % ( "\"" + name + "\"" ) 
       %   counter.nEntries ()       
-      %   counter.flag     () 
+      %   counter.sum      () 
       % ( counter.eff      () * 100 ) 
       % ( counter.effErr   () * 100 ) ;
     return fmt.str() ;
@@ -350,11 +350,11 @@ std::string Gaudi::Utils::formatAsTableRow
   fmt 
     % ( "\"" + name + "\"" ) 
     %   counter.nEntries () 
-    %   counter.flag     () 
-    %   counter.flagMean () 
-    %   counter.flagRMS  ()  
-    %   counter.flagMin  () 
-    %   counter.flagMax  () ;
+    %   counter.sum      () 
+    %   counter.mean     () 
+    %   counter.rms      ()  
+    %   counter.min      () 
+    %   counter.max      () ;
   return fmt.str() ;
 }
 // ============================================================================
@@ -386,7 +386,7 @@ std::string Gaudi::Utils::formatAsTableRow
       % ( "\"" + name  + ":"  ) 
       % ( ":"  + group + "\"" ) 
       %   counter.nEntries () 
-      %   counter.flag     () 
+      %   counter.sum      () 
       % ( counter.eff      () * 100 ) 
       % ( counter.effErr   () * 100 ) ;
     return fmt.str() ;
@@ -397,11 +397,11 @@ std::string Gaudi::Utils::formatAsTableRow
     % ( "\""  + name  + ":"  ) 
     % ( ":"   + group + "\"" ) 
     %   counter.nEntries () 
-    %   counter.flag     () 
-    %   counter.flagMean () 
-    %   counter.flagRMS  ()  
-    %   counter.flagMin  () 
-    %   counter.flagMax  () ;
+    %   counter.sum      () 
+    %   counter.mean     () 
+    %   counter.rms      ()  
+    %   counter.min      () 
+    %   counter.max      () ;
   return fmt.str() ;
 }
 // ============================================================================

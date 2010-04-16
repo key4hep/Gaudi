@@ -2,6 +2,17 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 
 ! 2010-04-16 - Vanya Belyaev
+ - Patch #3943: Good names for StatEntity methods
+   - GaudiKernel/StatEntity.h: add new names for "ugly methods"
+         flag        -> sum 
+         flagMean    -> mean      
+         flagMeanErr -> meanErr 
+         flagRMS     -> rms 
+             ...
+     All "flag" methods are moved into "legacy"-section.
+     The old methods were OK when Counter has two fields "flag"(additive) and
+     "weight" (multiplicative), but after removal of "weight" all these flag*
+     methods are ugly.
  - Patch #3989: Tiny (but very important) fix for Gaudi::RangeBase_
    The patch removes the protected destructor form Gaudi::RangeBase_.
 

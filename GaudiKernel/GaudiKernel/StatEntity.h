@@ -65,10 +65,10 @@
  *  @date    26/11/1999
  *  @date    2005-08-02
  */
-
 class GAUDI_API StatEntity
 {
 public:
+  // ==========================================================================
   /// the default constructor
   StatEntity  () { reset() ; }
   /* The full constructor from all important values:
@@ -89,40 +89,28 @@ public:
                const double        maxFlag ) ;
   /// destructor
   ~StatEntity () {}
-  ///
-public:
-  /** the internal format description
-   *  @attention: it needs to be coherent with the actual
-   *              class structure!
-   *  It is useful for DIM publishing
-   *  @see StatEntity::size
-   */
-  static const std::string& format () ;
-  /** the actual size of published data
-   *  @attention: it needs to be coherent with the actual
-   *              class structure!
-   *  It is useful for DIM publishing
-   *  @see StatEntity::format
-   */
-  static int                size  () ;
-public:
+  // ==========================================================================
+public: // the basic quantities 
+  // ==========================================================================
   /// getters
-  unsigned long nEntries           () const { return m_se_nEntries         ; }
-  // "flag" statistics:
-  /// accumulated "flag"
-  double   flag               () const { return m_se_accumulatedFlag  ; }
-  /// accumulated "flag squared"
-  double   flag2              () const { return m_se_accumulatedFlag2 ; }
-  /// mean value of flag
-  double   flagMean           () const ;
-  /// r.m.s of flag
-  double   flagRMS            () const ;
-  /// error in mean value of flag
-  double   flagMeanErr        () const ;
-  /// minimal flag
-  double   flagMin            () const { return m_se_minimalFlag      ; }
-  /// maximal flag
-  double   flagMax            () const { return m_se_maximalFlag      ; }
+  unsigned long nEntries      () const { return m_se_nEntries         ; }
+  /// accumulated value 
+  double   sum                () const { return m_se_accumulatedFlag  ; }  
+  /// accumulated valeu**2 
+  double   sum2               () const { return m_se_accumulatedFlag2 ; }
+  /// mean value of counter 
+  double   mean               () const ;
+  /// r.m.s of value 
+  double   rms                () const ;
+  /// error in mean value of counter 
+  double   meanErr            () const ;
+  /// minimal value 
+  double   min                () const { return m_se_minimalFlag ; }
+  /// maximal value 
+  double   max                () const { return m_se_maximalFlag ; }
+  // ==========================================================================
+public:
+  // ==========================================================================
   /** Interpret the counter as some measure of efficiency
    *  The efficiency is calculated as the ratio of the weight
    *  over the number of entries
@@ -197,6 +185,9 @@ public:
   double eff           () const { return efficiency    () ; }
   /// shortcut, @see StatEntity::efficiencyErr
   double effErr        () const { return efficiencyErr () ; }
+  // ==========================================================================
+public: // operators 
+  // ==========================================================================
   /** General increment operator for the flag
    *  Could be used for easy manipulation with StatEntity object:
    *
@@ -358,16 +349,18 @@ public:
    *  @return self-reference
    */
   StatEntity& operator+= ( const StatEntity& other ) ;
+  // ==========================================================================
 public:
+  // ==========================================================================
   /// comparison
   bool operator<( const StatEntity& se ) const ;
-  /** add a flag
+  /** add a value 
    *  @param Flag value to be added
    *  @return number of entries
    */
-  unsigned long addFlag ( const double Flag    ) ;
+  unsigned long add ( const double Flag ) ;
   /// reset the counters
-  void reset() ;
+  void reset () ;
   /// DR specify number of entry before reset
   void setnEntriesBeforeReset ( unsigned long nEntriesBeforeReset );
   /// representation as string
@@ -380,7 +373,67 @@ public:
    *  @param s the reference to the output stream
    */
   std::ostream& fillStream ( std::ostream& o ) const { return print ( o ) ; }
+  // ==========================================================================
+public: // aliases (a'la ROOT)
+  // ==========================================================================
+  /// get sum
+  inline double Sum     () const { return sum     () ; } // get sum
+  /// get mean
+  inline double Mean    () const { return mean    () ; } // get mean
+  /// get error in mean
+  inline double MeanErr () const { return meanErr () ; } // get error in mean
+  /// get rms 
+  inline double Rms     () const { return rms     () ; } // get rms 
+  /// get rms 
+  inline double RMS     () const { return rms     () ; } // get rms 
+  /// get efficiency
+  inline double Eff     () const { return eff     () ; } // get efficiency
+  /// get minimal value 
+  inline double Min     () const { return min     () ; } // get minimal value 
+  /// get maximal value 
+  inline double Max     () const { return max     () ; } // get maximal value 
+  // ==========================================================================
+public: // some legacy methods, to be removed ... 
+  // ==========================================================================
+  /// accumulated "flag"
+  inline double   flag               () const { return sum     () ; }
+  /// accumulated "flag squared"
+  inline double   flag2              () const { return sum2    () ; }
+  /// mean value of flag
+  inline double   flagMean           () const { return mean    () ; }
+  /// r.m.s of flag
+  inline double   flagRMS            () const { return rms     () ; }
+  /// error in mean value of flag
+  inline double   flagMeanErr        () const { return meanErr () ; }
+  /// minimal flag
+  inline double   flagMin            () const { return min     () ; }
+  /// maximal flag
+  inline double   flagMax            () const { return max     () ; }
+  /** add a flag
+   *  @param Flag value to be added
+   *  @return number of entries
+   */
+  inline unsigned long addFlag ( const double Flag ) { return add ( Flag ) ; }
+  // ==========================================================================
+public:
+  // ==========================================================================
+  /** the internal format description
+   *  @attention: it needs to be coherent with the actual
+   *              class structure!
+   *  It is useful for DIM publishing
+   *  @see StatEntity::size
+   */
+  static const std::string& format () ;
+  /** the actual size of published data
+   *  @attention: it needs to be coherent with the actual
+   *              class structure!
+   *  It is useful for DIM publishing
+   *  @see StatEntity::format
+   */
+  static int                size  () ;
+  // ==========================================================================
 private:
+  // ==========================================================================
   /// number of calls
   unsigned long                m_se_nEntries          ;
   /// accumulated flag
@@ -390,6 +443,7 @@ private:
   double                       m_se_maximalFlag       ;
   // DR number of calls before reset
   long                         m_se_nEntriesBeforeReset ;
+  // ==========================================================================
 };
 // ============================================================================
 /// external operator for addition of StatEntity and a number
@@ -405,6 +459,7 @@ GAUDI_API std::ostream& operator<<( std::ostream& stream , const StatEntity& ent
 // ============================================================================
 namespace Gaudi
 {
+  // ==========================================================================
   namespace Utils
   {
     // ========================================================================
@@ -611,8 +666,9 @@ namespace Gaudi
       const std::string& format2 =
       "*%|15.15s|%|-15.15s|%|32t||%|7d| |%|11.5g| |(%|#9.7g| +- %|-#8.6g|)%%|    -----    |   -----   |" ) ;
     // ========================================================================
-  } // end of namespace Gaudi::Utils
-} // end of namespace Gaudi
+  } //                                            end of namespace Gaudi::Utils
+  // ==========================================================================
+} //                                                     end of namespace Gaudi
 // ============================================================================
 // The END
 // ============================================================================
