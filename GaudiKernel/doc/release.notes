@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-04-16 - Vanya Belyaev
+ - Patch #3989: Tiny (but very important) fix for Gaudi::RangeBase_
+   The patch removes the protected destructor form Gaudi::RangeBase_.
+
 ============================= GaudiKernel v27r8 ==============================
 ! 2010-03-16 -Charles Leggett
  - Patch #3718: Unchecked StatusCode in GaudiKernel/Algorithm.cpp

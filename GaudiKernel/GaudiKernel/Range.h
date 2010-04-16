@@ -43,20 +43,12 @@ namespace Gaudi
     // ========================================================================
   }
   // ==========================================================================
-  /** @struct RangeBase_ Range.h GaudiUtils/Range.h
+  /** @struct RangeBase_ GaudiUtils/Range.h
    *  helper class to simplify the dealing with ranges in Python
    *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
    *  @date 2006-09-01
    */
-  struct RangeBase_
-  {
-#ifdef _WIN32
-    virtual ~RangeBase_() {}
-#else
-  protected :
-    ~RangeBase_ (){}
-#endif
-  } ;
+  struct RangeBase_ {} ;
   // ==========================================================================
   /** @class Range_ Range.h GaudiUtils/Range.h
    *

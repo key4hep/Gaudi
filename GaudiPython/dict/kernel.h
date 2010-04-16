@@ -12,6 +12,7 @@
 #include "GaudiKernel/StatEntity.h"
 #include "GaudiKernel/SerializeSTL.h"
 #include "GaudiKernel/StringKey.h"
+#include "GaudiKernel/Range.h"
 
 #ifdef _WIN32
 #include "GaudiKernel/GaudiHandle.h"

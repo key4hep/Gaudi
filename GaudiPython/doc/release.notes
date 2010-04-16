@@ -1,6 +1,10 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2010-04-16 - Vanya Belyaev
+ - Patch #3989: Tiny (but very important) fix for Gaudi::RangeBase_
+   Added dictionary for Gaudi::RangeBase_.
+
 ============================= GaudiPython v10r8 ==============================
 ! 2010-01-29 - Marco Clemencic
  - Fixed icc remark #1599: declaration hides variable
