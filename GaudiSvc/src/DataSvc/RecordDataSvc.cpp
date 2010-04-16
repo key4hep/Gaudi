@@ -154,7 +154,7 @@ void RecordDataSvc::registerRecord(const string& data, IOpaqueAddress* pAddr)   
     log << MSG::DEBUG << "Request to load record for file " << fid << endmsg;
     StatusCode sc = registerAddress(m_root,fid,pAddr);
     if ( !sc.isSuccess() ) {
-      log << MSG::ERROR << "Failed to register record for:" << fid << endmsg;
+      log << MSG::WARNING << "Failed to register record for:" << fid << endmsg;
       pAddr->release();
       return;
     }
@@ -165,7 +165,7 @@ void RecordDataSvc::registerRecord(const string& data, IOpaqueAddress* pAddr)   
   }
   else if ( !data.empty() && 0 == pAddr ) {
     MsgStream log(msgSvc(),name());
-    log << MSG::ERROR << "Failed to register run record for:" << data << " [Invalid Address]" << endmsg;
+    log << MSG::INFO << "Failed to register record for:" << data << " [Invalid Address]" << endmsg;
   }
 }
 

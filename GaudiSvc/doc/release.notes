@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2010-04-16 - Markus Frank
+ - Patch #3942: Patch to reduce output level in records service (bug #64477)
+
 ! 2010-04-16 - Marco Clemencic
  - Modified the implementation of the fix to bug #62374 (Handling of signal
    SIGXCPU).

@@ -155,7 +155,7 @@ Gaudi::Examples::EvtCollectionSelector   SELECTED : True
 POOLIO.mdst       SUCCESS Root file version:51800
 IODataManager        INFO Disconnect from dataset POOLIO.etags [941E2BFC-672E-DE11-9F81-81DFC6A12599]
 PoolRootTreeEvt...   INFO No Records /FileRecords present in:68D46351-5F2E-DE11-88AB-AB48B2B65F5C
-FileRecordDataSvc   ERROR Failed to register run record for:68D46351-5F2E-DE11-88AB-AB48B2B65F5C [Invalid Address]
+FileRecordDataSvc    INFO Failed to register record for:68D46351-5F2E-DE11-88AB-AB48B2B65F5C [Invalid Address]
 ReadAlg              INFO ========= EVENT:2 RUN:999 TIME:1240315574.8301005 0 (0) 1 (1) 2 (2)
 Gaudi::Examples::EvtCollectionSelector	 -> #tracks : 76
 Gaudi::Examples::EvtCollectionSelector	 -> Momenta : [0]=17.7422 [1]=16.7922 [2]=17.6961 [3]=16.0612 [4]=15.7365
