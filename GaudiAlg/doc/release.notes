@@ -1,6 +1,16 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2010-04-16 - Vanya Belyaev
+ - Patch #3982: Tiny fix for Gaudi::Utils::GetData
+   The purpose is to make the utility more safe, in particular the creation of
+   ranges is allowed now only for T::Selection and T::container types. Now the
+   helper range-creation methods can be used outside the context (e.g. for
+   Phys and Hlt), and one can immediately profit e.g. in the fixing of
+   FilterDesktop.
+   Also the bug("feature") on creation of named-range from container is fixed
+   now (the empty name have been always assigned to the range).
+
 =============================== GaudiAlg v13r1 ===============================
 ! 2010-03-09 - Vanya Belyaev
  - Patch #3892: Proper implementation of GaudiCommon::exist

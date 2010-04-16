@@ -9,6 +9,7 @@
 // ============================================================================
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/SmartDataPtr.h"
+#include "GaudiKernel/IRegistry.h"
 // ============================================================================
 // GaudiUtils
 // ============================================================================
@@ -166,9 +167,12 @@ namespace Gaudi
       // ======================================================================
     public:
       // ======================================================================
-      template <class TYPE3>
-      return_type make_range ( const TYPE3* obj ) const 
-      { return this->make_range ( obj->begin() , obj->end() ) ; }  
+      // create the range from the container 
+      return_type make_range ( const typename TYPE::Container* cnt ) const 
+      { return 0 == cnt ? return_type() : make_range  ( cnt->begin() , cnt->end() ) ; }
+      // create the range from the selection 
+      return_type make_range ( const typename TYPE::Selection* cnt ) const 
+      { return 0 == cnt ? return_type() : return_type ( cnt->begin() , cnt->end() ) ; }
       // ======================================================================
       /** get the data form transient store 
        *  @param service   pointer to data provider service 
@@ -228,9 +232,25 @@ namespace Gaudi
       // ======================================================================
     public:
       // ======================================================================
-      template <class TYPE3>
-      return_type make_range ( const TYPE3* obj ) const 
-      { return m_range.make_range ( obj->begin() , obj->end() ) ; }  
+      // create the range from the container 
+      return_type make_range ( const typename TYPE::Container* cnt ) const 
+      {
+        if ( 0 == cnt ) { return return_type() ; }
+        static const std::string s_empty = "" ;
+        const IRegistry* reg = cnt->registry() ;
+        return return_type 
+          ( m_range.make_range  ( cnt ) , 0 != reg ? reg->identifier() : s_empty ) ;
+      }
+      // create the range from the selection 
+      return_type make_range ( const typename TYPE::Selection* cnt ) const 
+      {
+        if ( 0 == cnt ) { return return_type() ; }
+        static const std::string s_empty = "" ;
+        const IRegistry* reg = cnt->registry() ;
+        return return_type 
+          ( m_range.make_range  ( cnt ) , 0 != reg ? reg->identifier() : s_empty ) ;
+      }
+      // ======================================================================
       /** get the data form transient store 
        *  @param service   pointer to data provider service 
        *  @param location  the location 
