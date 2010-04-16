@@ -264,6 +264,10 @@ protected:
   /// For ServiceMgr initialization loop checking
   BooleanProperty      m_loopCheck;
 
+  /// Property to enable/disable the "stop on signal" service (enabled by default).
+  /// @see Gaudi::Utils::StopSignalHandler
+  BooleanProperty      m_stopOnSignal;
+
   // Flag to activate the printout of properties
   bool                 m_propertiesPrint ; ///< flag to activate the printout of properties
 

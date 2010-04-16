@@ -119,6 +119,9 @@ ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
 
   m_propertyMgr->declareProperty("ReflexPluginDebugLevel", m_reflexDebugLevel = 0 );
 
+  m_propertyMgr->declareProperty("StopOnSignal", m_stopOnSignal = true,
+      "Flag to enable/disable the signal handler that schedule a stop of the event loop");
+
   // Add action handlers to the appropriate properties
   m_SIGo.declareUpdateHandler  ( &ApplicationMgr::SIGoHandler         , this );
   m_SIExit.declareUpdateHandler( &ApplicationMgr::SIExitHandler       , this );
@@ -489,6 +492,15 @@ StatusCode ApplicationMgr::configure() {
             << endmsg;
         return StatusCode::FAILURE;
       }
+    }
+  }
+
+  if (m_stopOnSignal) {
+    // Instantiate the service that schedules a stop when a signal is received
+    std::string svcname("Gaudi::Utils::StopSignalHandler");
+    sc = svcManager()->addService(svcname);
+    if ( sc.isFailure() ) {
+      log << MSG::INFO << "Cannot instantiate " << svcname << "signals will be ignored" << endmsg;
     }
   }
 

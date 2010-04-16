@@ -461,6 +461,8 @@ normalizeExamples = LineSkipper(["//GP:",
                                  "DEBUG Incident  timing:", # introduced with patch #3487
                                  # This comes from ROOT, when using GaudiPython 
                                  'Note: (file "(tmpfile)", line 2) File "set" already loaded',
+                                 # The signal handler complains about SIGXCPU not defined on some platforms
+                                 'SIGXCPU',
                                  ],regexps = [
                                  r"^#", # Ignore python comments
                                  r"(Always|SUCCESS)\s*(Root f|[^ ]* F)ile version:", # skip the message reporting the version of the root file

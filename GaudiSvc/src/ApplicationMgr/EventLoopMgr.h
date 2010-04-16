@@ -64,10 +64,6 @@ protected:
   bool              m_endEventFired;
   /// Flag to disable warning messages when using external input
   bool              m_warnings;
-  /// Flag to enable/disable handling of SIGINT
-  bool              m_handleSIGINT;
-  /// Flag to enable/disable handling of SIGXCPU
-  bool              m_handleSIGXCPU;
   /// Number of seconds allowed to process a single event
   unsigned int      m_eventTimeout;
   /// Pointer to the watchdog thread that checks for the event timeout.
@@ -81,9 +77,9 @@ public:
   /// Create event address using event selector
   StatusCode getEventRoot(IOpaqueAddress*& refpAddr);
 
-  /// implementation of IService::initalize
+  /// implementation of IService::initialize
   virtual StatusCode initialize();
-  /// implementation of IService::reinitalize
+  /// implementation of IService::reinitialize
   virtual StatusCode reinitialize();
   /// implementation of IService::stop
   virtual StatusCode stop();

@@ -1,12 +1,12 @@
 JobOptionsSvc        INFO
 //GP:================================================================================
-//GP: include "..\options\History.opts"                                       (0,0)
-//GP: include "D:\Profiles\clemenci\cmtuser\GAUDI\GaudiExamples\options\Common.opts" (5,10)
-//GP: include "D:\Profiles\clemenci\cmtuser\GAUDI\GaudiExamples\options\Services.opts" (7,10)
+//GP: include "D:\Profiles\clemenci\cmtuser\GAUDI\GAUDI_HEAD\GaudiExamples\options\History.opts" (0,0)
+//GP: include "D:\Profiles\clemenci\cmtuser\GAUDI\GAUDI_HEAD\GaudiExamples\options\Common.opts" (5,10)
+//GP: include "D:\Profiles\clemenci\cmtuser\GAUDI\GAUDI_HEAD\GaudiExamples\options\Services.opts" (7,10)
 AuditorSvc.Auditors =  [ "ChronoAuditor" ] ;                            //GP: (1,1)
-//GP: end  "D:\Profiles\clemenci\cmtuser\GAUDI\GaudiExamples\options\Services.opts" (24,1)
+//GP: end  "D:\Profiles\clemenci\cmtuser\GAUDI\GAUDI_HEAD\GaudiExamples\options\Services.opts" (24,1)
 ApplicationMgr.StatusCodeCheck = 1;                                     //GP: (7,10)
-//GP: end  "D:\Profiles\clemenci\cmtuser\GAUDI\GaudiExamples\options\Common.opts" (16,1)
+//GP: end  "D:\Profiles\clemenci\cmtuser\GAUDI\GAUDI_HEAD\GaudiExamples\options\Common.opts" (16,1)
 ApplicationMgr.TopAlg =  [ "History" ] ;                                //GP: (5,10)
 ApplicationMgr.ActivateHistory = 1;                                     //GP: (5,10)
 MessageSvc.OutputLevel = 1;                                             //GP: (5,10)
@@ -21,15 +21,15 @@ FastHistorySvc.Dump = 1;                                                //GP: (5
 FastHistorySvc.OutputFile = "history.dat";                              //GP: (5,10)
 ApplicationMgr.EvtMax = 2;                                              //GP: (5,10)
 ApplicationMgr.EvtSel = "NONE";                                         //GP: (5,10)
-//GP: end  "..\options\History.opts"                                          (43,1)
+//GP: end  "D:\Profiles\clemenci\cmtuser\GAUDI\GAUDI_HEAD\GaudiExamples\options\History.opts" (43,1)
 //GP:================================================================================
 
-JobOptionsSvc        INFO Job options successfully read in from ..\options\History.opts
+JobOptionsSvc        INFO Job options successfully read in from D:\Profiles\clemenci\cmtuser\GAUDI\GAUDI_HEAD\GaudiExamples\options\History.opts
 ApplicationMgr      DEBUG Getting my own properties
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on CERNTSLHCB01 on Tue Apr 21 13:19:05 2009
+                                          running on CERNTSLHCB01 on Fri Apr 16 15:58:52 2010
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ServiceManager      DEBUG Initializing service StatusCodeSvc
@@ -37,9 +37,20 @@ StatusCodeSvc       DEBUG Service base class initialized successfully
 StatusCodeSvc        INFO initialize
 ServiceManager      DEBUG Initializing service AppMgrRunable
 AppMgrRunable       DEBUG Service base class initialized successfully
+ServiceManager      DEBUG Initializing service Gaudi::Utils::StopSignalHandler
+Gaudi::Utils::S...  DEBUG Service base class initialized successfully
+Gaudi::Utils::S...  DEBUG Service base class initialized successfully
+IncidentSvc         DEBUG Service base class initialized successfully
+Gaudi::Utils::S...  DEBUG Decoding signal declaration 'SIGINT'
+Gaudi::Utils::S...VERBOSE Matched signal 'SIGINT' (2, Interrupt)
+Gaudi::Utils::S...  DEBUG Decoding signal declaration 'SIGXCPU'
+Gaudi::Utils::S...WARNING Cannot understand signal identifier 'SIGXCPU', ignored
+Gaudi::Utils::S...  DEBUG Stopping on the signals:
+Gaudi::Utils::S...  DEBUG 	SIGINT: Interrupt (2)
+Gaudi::Utils::S...  DEBUG Register to the IncidentSvc
+IncidentSvc         DEBUG Adding [BeginEvent] listener 'Gaudi::Utils::StopSignalHandler' with priority 0
 ServiceManager      DEBUG Initializing service EventLoopMgr
 EventLoopMgr        DEBUG Service base class initialized successfully
-IncidentSvc         DEBUG Service base class initialized successfully
 IncidentSvc         DEBUG Adding [AbortEvent] listener '<unknown>' with priority 0
 EventLoopMgr        DEBUG Creating Top Algorithm History with name History
 History           VERBOSE ServiceLocatorHelper::service: found service HistorySvc
@@ -70,6 +81,8 @@ IncidentSvc         DEBUG Adding [BeginEvent] listener 'HistorySvc' with priorit
 ApplicationMgr       INFO Application Manager Initialized successfully
 ServiceManager      DEBUG Starting service StatusCodeSvc
 ServiceManager      DEBUG Starting service AppMgrRunable
+ServiceManager      DEBUG Starting service Gaudi::Utils::StopSignalHandler
+ServiceManager      DEBUG Starting service Gaudi::Utils::SignalMonitorSvc
 ServiceManager      DEBUG Starting service IncidentSvc
 ServiceManager      DEBUG Starting service EventPersistencySvc
 ServiceManager      DEBUG Starting service EventDataSvc
@@ -81,6 +94,7 @@ ToolSvc             DEBUG START transition for AlgTools
 ServiceManager      DEBUG Starting service EventLoopMgr
 ServiceManager      DEBUG Starting service HistorySvc
 ApplicationMgr       INFO Application Manager Started successfully
+IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [BeginEvent]
 IncidentSvc       VERBOSE Calling 'HistorySvc' for incident [BeginEvent]
 HistorySvc        VERBOSE ServiceLocatorHelper::service: found service JobOptionsSvc
@@ -91,6 +105,8 @@ HistorySvc          DEBUG Registering Service: StatusCodeSvc
 HistorySvc          DEBUG Registering Service: MessageSvc
 HistorySvc          DEBUG Registering Service: JobOptionsSvc
 HistorySvc          DEBUG Registering Service: AppMgrRunable
+HistorySvc          DEBUG Registering Service: Gaudi::Utils::StopSignalHandler
+HistorySvc          DEBUG Registering Service: Gaudi::Utils::SignalMonitorSvc
 HistorySvc          DEBUG Registering Service: IncidentSvc
 HistorySvc          DEBUG Registering Service: EventPersistencySvc
 HistorySvc          DEBUG Registering Service: EventDataSvc
@@ -100,8 +116,9 @@ HistorySvc          DEBUG Registering Service: AlgContextSvc
 HistorySvc          DEBUG Registering Service: ToolSvc
 HistorySvc          DEBUG Registering Service: EventLoopMgr
 HistorySvc          DEBUG Registering Service: HistorySvc
-HistorySvc           INFO Registered 13 Services
+HistorySvc           INFO Registered 15 Services
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [EndEvent]
+IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [BeginEvent]
 ServiceManager      DEBUG Stopping service HistorySvc
 ServiceManager      DEBUG Stopping service EventLoopMgr
@@ -114,6 +131,8 @@ ServiceManager      DEBUG Stopping service HistogramPersistencySvc
 ServiceManager      DEBUG Stopping service EventDataSvc
 ServiceManager      DEBUG Stopping service EventPersistencySvc
 ServiceManager      DEBUG Stopping service IncidentSvc
+ServiceManager      DEBUG Stopping service Gaudi::Utils::SignalMonitorSvc
+ServiceManager      DEBUG Stopping service Gaudi::Utils::StopSignalHandler
 ServiceManager      DEBUG Stopping service AppMgrRunable
 ServiceManager      DEBUG Stopping service StatusCodeSvc
 ApplicationMgr       INFO Application Manager Stopped successfully
@@ -127,22 +146,28 @@ ToolSvc              INFO Removing all tools created by ToolSvc
 ToolSvc             DEBUG   Tool List :
 ToolSvc             DEBUG Deleting 0 finalized tools
 ServiceManager      DEBUG Finalizing service AlgContextSvc
-IncidentSvc         DEBUG Removing [BeginEvent] listener 'AlgContextSvc'
 IncidentSvc         DEBUG Removing [EndEvent] listener 'AlgContextSvc'
+IncidentSvc         DEBUG Removing [BeginEvent] listener 'AlgContextSvc'
 ServiceManager      DEBUG Finalizing service EventDataSvc
 ServiceManager      DEBUG Finalizing service EventPersistencySvc
 ServiceManager      DEBUG Finalizing service IncidentSvc
+IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0(+-0)/0/0[ms] Total:0[s]
+ServiceManager      DEBUG Finalizing service Gaudi::Utils::SignalMonitorSvc
+ServiceManager      DEBUG Finalizing service Gaudi::Utils::StopSignalHandler
+IncidentSvc         DEBUG Removing [BeginEvent] listener 'Gaudi::Utils::StopSignalHandler'
 ServiceManager      DEBUG Finalizing service AppMgrRunable
 ServiceManager      DEBUG Finalizing service HistogramDataSvc
 ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
 ServiceManager      DEBUG Finalizing service StatusCodeSvc
 ServiceManager      DEBUG Service reference count check:
 ServiceManager      DEBUG ---- StatusCodeSvc (refCount = 3)
-ServiceManager      DEBUG ---- MessageSvc (refCount = 15)
+ServiceManager      DEBUG ---- MessageSvc (refCount = 17)
 ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 4)
 ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 3)
 ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 4)
 ServiceManager      DEBUG ---- AppMgrRunable (refCount = 4)
+ServiceManager      DEBUG ---- Gaudi::Utils::StopSignalHandler (refCount = 3)
+ServiceManager      DEBUG ---- Gaudi::Utils::SignalMonitorSvc (refCount = 3)
 ServiceManager      DEBUG ---- IncidentSvc (refCount = 4)
 ServiceManager      DEBUG ---- EventPersistencySvc (refCount = 3)
 ServiceManager      DEBUG ---- EventDataSvc (refCount = 4)

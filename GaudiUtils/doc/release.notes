@@ -1,6 +1,19 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2010-04-16 - Marco Clemencic
+ - Modified the implementation of the fix to bug #62374 (Handling of signal
+   SIGXCPU).
+   The new implementation is based on a couple of extra services instead of
+   being integrated in EventLoopMgr (less intrusive).
+   - Gaudi::Utils::SignalMonitorSvc (implementing the interface ISignalMonitor)
+     is a service that just keep track of the occurrences of the requested
+     signals and, optionally, propagates them to the previously registered
+     handlers (if any).
+   - Gaudi::Utils::StopSignalHandler uses SignalMonitorSvc to check if any of
+     the signals in the list (property) "Signals" has been received and trigger
+     a stop of the event loop in that case (during the BeginEvent incident).
+
 ============================== GaudiUtils v3r7 ===============================
 ! 2010-03-16 - Vanya Belyaev
  - Patch #3840: Fix for bug #59009

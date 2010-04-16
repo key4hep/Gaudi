@@ -1,6 +1,12 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-04-16 - Marco Clemencic
+ - Modified the implementation of the fix to bug #62374 (Handling of signal
+   SIGXCPU).
+   A minor change in GaudiTest.py (exclusion list for reference files) was
+   needed.
+
 ============================= GaudiPolicy v10r6 ==============================
 ! 2010-03-15 - Marco Clemencic
  - Added a cmt action to start the QMTest GUI (cmt QMTestGUI).

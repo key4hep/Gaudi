@@ -1,6 +1,6 @@
 JobOptionsSvc        INFO
 //GP:================================================================================
-//GP: include "../options/RandomNumber.opts"                                  (0,0)
+//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/RandomNumber.opts" (0,0)
 AuditorSvc.Auditors =  [ "ChronoAuditor" ] ;                            //GP: (1,1)
 ApplicationMgr.TopAlg =  [ "RandomNumberAlg" ] ;                        //GP: (1,1)
 MessageSvc.OutputLevel = 2;                                             //GP: (1,1)
@@ -9,22 +9,32 @@ ApplicationMgr.EvtSel = "NONE";                                         //GP: (1
 ApplicationMgr.HistogramPersistency = "ROOT";                           //GP: (1,1)
 HistogramPersistencySvc.OutputFile = "histo.root";                      //GP: (1,1)
 NTupleSvc.Output =  [ "FILE1 DATAFILE='NTuple.root' OPT='NEW' TYP='ROOT'" ] ;//GP: (1,1)
-//GP: end  "../options/RandomNumber.opts"                                     (36,1)
+//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/RandomNumber.opts" (36,1)
 //GP:================================================================================
 
-JobOptionsSvc        INFO Job options successfully read in from ../options/RandomNumber.opts
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/RandomNumber.opts
 ApplicationMgr      DEBUG Getting my own properties
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr $Revision: 1.43 $
-                                          running on pclhcb55.cern.ch on Fri Jun  6 14:46:11 2008
+                                                   Welcome to ApplicationMgr $Revision: 1.77 $
+                                          running on pclhcb55 on Fri Apr 16 13:59:34 2010
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ServiceManager      DEBUG Initializing service AppMgrRunable
 AppMgrRunable       DEBUG Service base class initialized successfully
+ServiceManager      DEBUG Initializing service Gaudi::Utils::StopSignalHandler
+Gaudi::Utils::S...  DEBUG Service base class initialized successfully
+Gaudi::Utils::S...  DEBUG Service base class initialized successfully
+IncidentSvc         DEBUG Service base class initialized successfully
+Gaudi::Utils::S...  DEBUG Decoding signal declaration 'SIGINT'
+Gaudi::Utils::S...  DEBUG Decoding signal declaration 'SIGXCPU'
+Gaudi::Utils::S...  DEBUG Stopping on the signals:
+Gaudi::Utils::S...  DEBUG 	SIGINT: Interrupt (2)
+Gaudi::Utils::S...  DEBUG 	SIGXCPU: CPU time limit exceeded (24)
+Gaudi::Utils::S...  DEBUG Register to the IncidentSvc
+IncidentSvc         DEBUG Adding [BeginEvent] listener 'Gaudi::Utils::StopSignalHandler' with priority 0
 ServiceManager      DEBUG Initializing service EventLoopMgr
 EventLoopMgr        DEBUG Service base class initialized successfully
-IncidentSvc         DEBUG Service base class initialized successfully
 IncidentSvc         DEBUG Adding [AbortEvent] listener '<unknown>' with priority 0
 EventLoopMgr        DEBUG Creating Top Algorithm RandomNumberAlg with name RandomNumberAlg
 RndmGenSvc          DEBUG Service base class initialized successfully
@@ -49,6 +59,8 @@ EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ServiceManager      DEBUG Starting service AppMgrRunable
+ServiceManager      DEBUG Starting service Gaudi::Utils::StopSignalHandler
+ServiceManager      DEBUG Starting service Gaudi::Utils::SignalMonitorSvc
 ServiceManager      DEBUG Starting service IncidentSvc
 ServiceManager      DEBUG Starting service RndmGenSvc
 ServiceManager      DEBUG Starting service RootHistSvc
@@ -73,6 +85,8 @@ ServiceManager      DEBUG Stopping service HistogramPersistencySvc
 ServiceManager      DEBUG Stopping service RootHistSvc
 ServiceManager      DEBUG Stopping service RndmGenSvc
 ServiceManager      DEBUG Stopping service IncidentSvc
+ServiceManager      DEBUG Stopping service Gaudi::Utils::SignalMonitorSvc
+ServiceManager      DEBUG Stopping service Gaudi::Utils::StopSignalHandler
 ServiceManager      DEBUG Stopping service AppMgrRunable
 ApplicationMgr       INFO Application Manager Stopped successfully
 ServiceManager      DEBUG Finalizing service EventLoopMgr
@@ -86,24 +100,24 @@ RFileCnv             INFO dumping contents of /NTUPLES/FILE1
 TFile: name=NTuple.root, title=Gaudi Trees, option=CREATE
 ******************************************************************************
 *Tree    :100       : Hello World                                            *
-*Entries :     1000 : Total =           18812 bytes  File  Size =      10626 *
-*        :          : Tree compression factor =   1.00                       *
+*Entries :     1000 : Total =           18571 bytes  File  Size =      10130 *
+*        :          : Tree compression factor =   1.71                       *
 ******************************************************************************
 *Br    0 :Event#    : Event#/I                                               *
-*Entries :     1000 : Total  Size=       4630 bytes  One basket in memory    *
-*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Entries :     1000 : Total  Size=       4558 bytes  File Size  =       1516 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   2.69     *
 *............................................................................*
 *Br    1 :Gauss     : Gauss/F                                                *
-*Entries :     1000 : Total  Size=       4624 bytes  One basket in memory    *
-*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Entries :     1000 : Total  Size=       4553 bytes  File Size  =       3676 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.11     *
 *............................................................................*
 *Br    2 :Exp       : Exp/F                                                  *
-*Entries :     1000 : Total  Size=       4612 bytes  One basket in memory    *
-*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Entries :     1000 : Total  Size=       4543 bytes  File Size  =       3757 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.08     *
 *............................................................................*
 *Br    3 :Poisson   : Poisson/F                                              *
-*Entries :     1000 : Total  Size=       4636 bytes  One basket in memory    *
-*Baskets :        0 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Entries :     1000 : Total  Size=       4563 bytes  File Size  =        564 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   7.22     *
 *............................................................................*
 NTupleSvc            INFO NTuples saved successfully
 ServiceManager      DEBUG Finalizing service HistogramDataSvc
@@ -117,12 +131,18 @@ ServiceManager      DEBUG Finalizing service RootHistSvc
 RootHistSvc         DEBUG RootHistCnv::PersSvc::finalize()
 ServiceManager      DEBUG Finalizing service RndmGenSvc
 ServiceManager      DEBUG Finalizing service IncidentSvc
+IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0.0034995(+-0.0590487)/0/1[ms] Total:0.006999[s]
+ServiceManager      DEBUG Finalizing service Gaudi::Utils::SignalMonitorSvc
+ServiceManager      DEBUG Finalizing service Gaudi::Utils::StopSignalHandler
+IncidentSvc         DEBUG Removing [BeginEvent] listener 'Gaudi::Utils::StopSignalHandler'
 ServiceManager      DEBUG Finalizing service AppMgrRunable
 ServiceManager      DEBUG Service reference count check:
-ServiceManager      DEBUG ---- MessageSvc (refCount = 14)
+ServiceManager      DEBUG ---- MessageSvc (refCount = 16)
 ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)
 ServiceManager      DEBUG ---- RndmGenSvc.Engine (refCount = 3)
 ServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)
+ServiceManager      DEBUG ---- Gaudi::Utils::StopSignalHandler (refCount = 2)
+ServiceManager      DEBUG ---- Gaudi::Utils::SignalMonitorSvc (refCount = 2)
 ServiceManager      DEBUG ---- IncidentSvc (refCount = 2)
 ServiceManager      DEBUG ---- RndmGenSvc (refCount = 2)
 ServiceManager      DEBUG ---- RootHistSvc (refCount = 6)
@@ -134,5 +154,5 @@ ServiceManager      DEBUG ---- EventDataSvc (refCount = 3)
 ServiceManager      DEBUG ---- EventLoopMgr (refCount = 3)
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyTrack instances:0
 Number of MyVertex instances:0
+Number of MyTrack instances:0
