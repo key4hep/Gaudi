@@ -268,6 +268,10 @@ protected:
   /// @see Gaudi::Utils::StopSignalHandler
   BooleanProperty      m_stopOnSignal;
 
+  /// Property to enable/disable the monitoring and reporting of stalled events (enabled by default).
+  /// @see StalledEventMonitor
+  BooleanProperty      m_stalledEventMonitoring;
+
   // Flag to activate the printout of properties
   bool                 m_propertiesPrint ; ///< flag to activate the printout of properties
 

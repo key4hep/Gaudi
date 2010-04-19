@@ -1,6 +1,12 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2010-04-19 - Marco Clemencic
+ - Moved the EventTimeoutWatchdog thread from the EventLoopMgr to a dedicated
+   service in GaudiUtils.
+   The thread is enabled by default, but can be disabled using the
+   ApplicationMgr property "StalledEventMonitoring".
+
 ! 2010-04-16 - Markus Frank
  - Patch #4008: Fix for task #13714: FSRs should be copied as the OpenNewFile
                 incident

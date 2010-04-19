@@ -13,7 +13,6 @@
 class IIncidentSvc;
 class IDataManagerSvc;
 class IDataProviderSvc;
-class WatchdogThread;
 
 /** Class definition of EventLoopMgr.
     This is the default processing manager of the application manager.
@@ -64,10 +63,6 @@ protected:
   bool              m_endEventFired;
   /// Flag to disable warning messages when using external input
   bool              m_warnings;
-  /// Number of seconds allowed to process a single event
-  unsigned int      m_eventTimeout;
-  /// Pointer to the watchdog thread that checks for the event timeout.
-  std::auto_ptr<WatchdogThread> m_watchdog;
 
 public:
   /// Standard Constructor

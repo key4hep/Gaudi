@@ -15,57 +15,6 @@
 #include "HistogramAgent.h"
 #include "EventLoopMgr.h"
 
-#include "GaudiKernel/WatchdogThread.h"
-
-#include <csignal>
-
-namespace {
-  /// Specialized watchdog to monitor the event loop and spot possible infinite loops.
-  class EventWatchdog: public WatchdogThread {
-  public:
-    EventWatchdog(const SmartIF<IMessageSvc> &msgSvc,
-                  const std::string &name,
-                  boost::posix_time::time_duration timeout,
-                  bool autostart = false):
-        WatchdogThread(timeout, autostart),
-        log(msgSvc, name),
-        m_counter(0) {}
-    virtual ~EventWatchdog() {}
-  private:
-    MsgStream log;
-    long m_counter;
-    void action() {
-      if (!m_counter) {
-        log << MSG::WARNING << "More than " << getTimeout().total_seconds()
-            << "s to process an event." << endmsg;
-      }
-      else if (m_counter < 2) {
-        log << MSG::WARNING << "Other " << getTimeout().total_seconds()
-            << "s and we are still on the same event." << endmsg;
-      }
-      else if (m_counter < 3) {
-        log << MSG::WARNING << "We are still at the same point:" << endmsg;
-        // log << MSG::WARNING << "*** stack trace ***" << endmsg;
-        log << MSG::WARNING << "I'm not going to print other messages for this event." << endmsg;
-      }
-      ++m_counter;
-    }
-    void onPing() {
-      if (m_counter) {
-        if (m_counter >= 3)
-          log << MSG::INFO << "Starting a new event after ~"
-              << m_counter * getTimeout().total_seconds() << "s" << endmsg;
-        m_counter = 0;
-      }
-    }
-    void onStop() {
-      if (m_counter >= 3)
-        log << MSG::INFO << "The last event took ~"
-        << m_counter * getTimeout().total_seconds() << "s" << endmsg;
-    }
-  };
-}
-
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY(EventLoopMgr)
@@ -89,9 +38,6 @@ EventLoopMgr::EventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
   declareProperty("EvtSel", m_evtsel );
   declareProperty("Warnings",m_warnings=true,
 		  "Set this property to false to suppress warning messages");
-
-  declareProperty("EventTimeout", m_eventTimeout = 600,
-                  "Number of seconds allowed to process a single event (0 to disable the check)");
 }
 
 //--------------------------------------------------------------------------------------------
@@ -180,12 +126,6 @@ StatusCode EventLoopMgr::initialize()    {
     return sc;
   }
 
-  if (m_eventTimeout) {
-    m_watchdog = std::auto_ptr<WatchdogThread>(
-        new EventWatchdog(msgSvc(),
-            "EventWatchdog",
-            boost::posix_time::seconds(m_eventTimeout)));
-  }
   return StatusCode::SUCCESS;
 }
 //--------------------------------------------------------------------------------------------
@@ -388,12 +328,9 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
   StatusCode        sc(StatusCode::SUCCESS, true);
   MsgStream         log( msgSvc(), name() );
 
-  if (m_watchdog.get()) m_watchdog->start();
-
   // loop over events if the maxevt (received as input) if different from -1.
   // if evtmax is -1 it means infinite loop
   for( int nevt = 0; (maxevt == -1 ? true : nevt < maxevt);  nevt++, total_nevt++) {
-    if (m_watchdog.get()) m_watchdog->ping();
 
     // Check if there is a scheduled stop issued by some algorithm/service
     if ( m_scheduledStop ) {
@@ -450,7 +387,6 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
       break;
     }
   }
-  if (m_watchdog.get()) m_watchdog->stop();
   return StatusCode::SUCCESS;
 }
 

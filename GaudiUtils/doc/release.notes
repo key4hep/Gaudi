@@ -1,6 +1,10 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2010-04-19 - Marco Clemencic
+ - Moved the EventTimeoutWatchdog thread from the EventLoopMgr to a dedicated
+   service in GaudiUtils.
+
 ! 2010-04-16 - Marco Clemencic
  - Modified the implementation of the fix to bug #62374 (Handling of signal
    SIGXCPU).

@@ -122,6 +122,9 @@ ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
   m_propertyMgr->declareProperty("StopOnSignal", m_stopOnSignal = true,
       "Flag to enable/disable the signal handler that schedule a stop of the event loop");
 
+  m_propertyMgr->declareProperty("StalledEventMonitoring", m_stalledEventMonitoring = true,
+      "Flag to enable/disable the monitoring and reporting of stalled events");
+
   // Add action handlers to the appropriate properties
   m_SIGo.declareUpdateHandler  ( &ApplicationMgr::SIGoHandler         , this );
   m_SIExit.declareUpdateHandler( &ApplicationMgr::SIExitHandler       , this );
@@ -508,11 +511,20 @@ StatusCode ApplicationMgr::initialize() {
   MsgStream log( m_messageSvc, name() );
   StatusCode sc;
 
-  // I cannot add this service in configure() because it is coming from GaudiUtils
+  // I cannot add these services in configure() because they are coming from GaudiUtils
   // and it messes up genconf when rebuilding it.
   if (m_stopOnSignal) {
     // Instantiate the service that schedules a stop when a signal is received
     std::string svcname("Gaudi::Utils::StopSignalHandler");
+    sc = svcManager()->addService(svcname);
+    if ( sc.isFailure() ) {
+      log << MSG::INFO << "Cannot instantiate " << svcname << "signals will be ignored" << endmsg;
+    }
+  }
+
+  if (m_stalledEventMonitoring) {
+    // Instantiate the service that schedules a stop when a signal is received
+    std::string svcname("StalledEventMonitor");
     sc = svcManager()->addService(svcname);
     if ( sc.isFailure() ) {
       log << MSG::INFO << "Cannot instantiate " << svcname << "signals will be ignored" << endmsg;
@@ -647,7 +659,7 @@ StatusCode ApplicationMgr::finalize() {
   }
   else if( m_state != Gaudi::StateMachine::INITIALIZED ) {
     log << MSG::FATAL << "finalize: Invalid state \"" << m_state << "\""
-	<< endmsg;
+        << endmsg;
     return StatusCode::FAILURE;
   }
   m_targetState = Gaudi::StateMachine::CONFIGURED;
@@ -687,7 +699,7 @@ StatusCode ApplicationMgr::terminate() {
   }
   else if( m_state != Gaudi::StateMachine::CONFIGURED ) {
     log << MSG::FATAL << "terminate: Invalid state \"" << m_state << "\""
-	<< endmsg;
+        << endmsg;
     return StatusCode::FAILURE;
   }
   // release all Services
@@ -970,8 +982,8 @@ void ApplicationMgr::evtLoopPropertyHandler( Property& p ) {
 void ApplicationMgr::createSvcNameListHandler( Property& /* theProp */ ) {
   if ( !(decodeCreateSvcNameList()).isSuccess() ) {
     throw GaudiException("Failed to create ext services",
- 			 "MinimalEventLoopMgr::createSvcNameListHandler",
- 			 StatusCode::FAILURE);
+                         "MinimalEventLoopMgr::createSvcNameListHandler",
+                         StatusCode::FAILURE);
   }
 }
 //============================================================================
@@ -1028,7 +1040,7 @@ StatusCode ApplicationMgr::decodeExtSvcNameList( ) {
       }
     } else {
       if( ( result = svcManager()->declareSvcType(item.name(),
-						  item.type()) ).isFailure()) {
+                                                  item.type()) ).isFailure()) {
         MsgStream log( m_messageSvc, m_name );
         log << MSG::ERROR << "decodeExtSvcNameList: Cannot declare service "
             << item.type() << "/" << item.name() << endmsg;
