@@ -495,15 +495,6 @@ StatusCode ApplicationMgr::configure() {
     }
   }
 
-  if (m_stopOnSignal) {
-    // Instantiate the service that schedules a stop when a signal is received
-    std::string svcname("Gaudi::Utils::StopSignalHandler");
-    sc = svcManager()->addService(svcname);
-    if ( sc.isFailure() ) {
-      log << MSG::INFO << "Cannot instantiate " << svcname << "signals will be ignored" << endmsg;
-    }
-  }
-
   log << MSG::INFO << "Application Manager Configured successfully" << endmsg;
   m_state = m_targetState;
   return StatusCode::SUCCESS;
@@ -516,6 +507,17 @@ StatusCode ApplicationMgr::initialize() {
 
   MsgStream log( m_messageSvc, name() );
   StatusCode sc;
+
+  // I cannot add this service in configure() because it is coming from GaudiUtils
+  // and it messes up genconf when rebuilding it.
+  if (m_stopOnSignal) {
+    // Instantiate the service that schedules a stop when a signal is received
+    std::string svcname("Gaudi::Utils::StopSignalHandler");
+    sc = svcManager()->addService(svcname);
+    if ( sc.isFailure() ) {
+      log << MSG::INFO << "Cannot instantiate " << svcname << "signals will be ignored" << endmsg;
+    }
+  }
 
   if( m_state == Gaudi::StateMachine::INITIALIZED ) {
     log << MSG::INFO << "Already Initialized!" << endmsg;
