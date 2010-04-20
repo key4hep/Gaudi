@@ -11,6 +11,11 @@
 //
 //	Author     : M.Frank
 //====================================================================
+#ifdef __ICC
+// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
+//   TODO: To be removed, coming from CORAL
+#pragma warning(disable:2259)
+#endif
 
 // Include files
 #include "GaudiPoolDb/PoolDbEvtSelector.h"

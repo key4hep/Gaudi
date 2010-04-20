@@ -622,17 +622,17 @@ macro_append cppflags '' target-icc '-wd1418 '
 #                  (triggers on forward declarations in a .cpp)
 macro_append cppflags '' target-icc '-wd1419 '
 # Non permanent
-#  - remark #82:   storage class is not first
-#                  (appears only once in ROOT)
+#  - remark #82:     storage class is not first
+#                    (appears only once in ROOT)
 macro_append cppflags '' no-hide-warnings '' target-icc '-wd82 '
-#  - remark #522:  function "X" redeclared "inline" after being called
-#                  (fixed those in Gaudi, but a lot are coming from ROOT, Reflex and HepPDT)
+#  - remark #522:    function "X" redeclared "inline" after being called
+#                    (fixed those in Gaudi, but a lot are coming from ROOT, Reflex and HepPDT)
 macro_append cppflags '' no-hide-warnings '' target-icc '-wd522 '
-#  - remark #444:  destructor for base class "X" is not virtual
-#                  (gives a lot of fals positives, e.g. std::unary_function)
+#  - remark #444:    destructor for base class "X" is not virtual
+#                    (gives a lot of fals positives, e.g. std::unary_function)
 macro_append cppflags '' no-hide-warnings '' target-icc '-wd444 '
-#  - remark #304:  access control not specified ("public/private" by default)
-#                  (fixed one in GaudiKernel, but most are from Boost)
+#  - remark #304:    access control not specified ("public/private" by default)
+#                    (fixed one in GaudiKernel, but most are from Boost)
 macro_append cppflags '' no-hide-warnings '' target-icc '-wd304 '
 ##############################################################################
 

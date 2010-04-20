@@ -1,3 +1,9 @@
+#ifdef __ICC
+// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
+//  TODO: should be removed because come from HepPDT
+#pragma warning(disable:1572)
+#endif
+
 //Include files
 #include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ISvcLocator.h"

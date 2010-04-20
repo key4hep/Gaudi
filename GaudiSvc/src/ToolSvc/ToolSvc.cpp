@@ -17,14 +17,10 @@
 #include <cassert>
 #ifdef __ICC
 // disable icc remark #177: declared but never referenced
-// Problem with boost::lambda
+// TODO: Remove. Problem with boost::lambda
 #pragma warning(disable:177)
 #endif
 #include "boost/lambda/bind.hpp"
-#ifdef __ICC
-// re-enable icc remark #177: declared but never referenced
-#pragma warning(enable:177)
-#endif
 
 // Instantiation of a static factory class used by clients to create
 //  instances of this service

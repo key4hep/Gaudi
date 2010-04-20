@@ -1,3 +1,8 @@
+#ifdef __ICC
+// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
+//   TODO: To be removed, since it comes from ROOT TMathBase.h
+#pragma warning(disable:2259)
+#endif
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/ObjectFactory.h"
 #include "GaudiPI.h"

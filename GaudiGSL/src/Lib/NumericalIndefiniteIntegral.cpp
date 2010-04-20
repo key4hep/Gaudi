@@ -35,6 +35,12 @@
  */
 // ============================================================================
 
+#ifdef __ICC
+// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
+//   The comparison are meant
+#pragma warning(disable:1572)
+#endif
+
 namespace Genfun 
 {
   namespace GaudiMathImplementation 

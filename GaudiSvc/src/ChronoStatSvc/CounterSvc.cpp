@@ -260,6 +260,11 @@ ICounterSvc::Counters CounterSvc::get ( const std::string& group ) const
 // ===========================================================================
 // Create/get a counter object.
 // ===========================================================================
+#ifdef __ICC
+// disable icc remark #2259: non-pointer conversion from "longlong={long long}" to "double" may lose significant bits
+#pragma warning(push)
+#pragma warning(disable:2259)
+#endif
 StatusCode CounterSvc::create
 ( const std::string& grp ,
   const std::string& nam ,
@@ -273,7 +278,7 @@ StatusCode CounterSvc::create
   Counter* newc = new Counter() ;
   refpCounter = newc ;
   if ( 0 != initial_value ) {
-	refpCounter->addFlag ( static_cast<double>(initial_value) ) ;
+    refpCounter->addFlag ( static_cast<double>(initial_value) ) ; // icc remark #2259
   }
   // find a proper group
   CountMap::iterator i = m_counts.find  ( grp ) ;
@@ -284,6 +289,10 @@ StatusCode CounterSvc::create
   i->second.insert( std::make_pair( nam , newc ) ).first ;
   return StatusCode::SUCCESS ;                                     // RETURN
 }
+#ifdef __ICC
+// re-enable icc remark #2259
+#pragma warning(pop)
+#endif
 // ===========================================================================
 // Create a new counter object. If the counter object exists already,
 // ===========================================================================

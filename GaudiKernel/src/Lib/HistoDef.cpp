@@ -84,6 +84,11 @@ bool Gaudi::Histo1DDef::operator< ( const Gaudi::Histo1DDef& right ) const
 // ============================================================================
 // equality operator 
 // ============================================================================
+#ifdef __ICC
+// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
+#pragma warning(push)
+#pragma warning(disable:1572)
+#endif
 bool Gaudi::Histo1DDef::operator==( const Gaudi::Histo1DDef& right ) const 
 {
   return ( this == &right ) || 
@@ -92,6 +97,10 @@ bool Gaudi::Histo1DDef::operator==( const Gaudi::Histo1DDef& right ) const
       highEdge () == right.highEdge () && 
       bins     () == right.bins     () );
 }
+#ifdef __ICC
+// re-enable icc remark #1572
+#pragma warning(pop)
+#endif
 // ============================================================================
 // non-equality 
 // ============================================================================

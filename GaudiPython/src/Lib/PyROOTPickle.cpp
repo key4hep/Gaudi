@@ -5,6 +5,12 @@
  * @brief Port pickling functionality while awaiting newer release.
  */
 
+#ifdef __ICC
+// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
+//   TODO: To be removed, since it comes from ROOT
+#pragma warning(disable:2259)
+#endif
+
 #include "GaudiPython/PyROOTPickle.h"
 #include "Python.h"
 #include "TClass.h"

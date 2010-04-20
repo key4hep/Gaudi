@@ -66,6 +66,11 @@ ChronoEntity::ChronoEntity()
 // ============================================================================
 // start the chrono
 // ============================================================================
+#ifdef __ICC
+// disable icc remark #2259: non-pointer conversion from "long double" to "double" may lose significant bits
+#pragma warning(push)
+#pragma warning(disable:2259)
+#endif
 IChronoSvc::ChronoStatus  ChronoEntity::start()
 {
   if ( IChronoSvc::RUNNING == m_status ) { return m_status ; }
@@ -81,6 +86,10 @@ IChronoSvc::ChronoStatus  ChronoEntity::start()
   ///
   return m_status ;
 }
+#ifdef __ICC
+// re-enable icc remark #2259
+#pragma warning(pop)
+#endif
 // ============================================================================
 // stop the chrono
 // ============================================================================

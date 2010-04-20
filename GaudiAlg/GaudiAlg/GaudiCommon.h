@@ -731,6 +731,8 @@ public:
    *  @retval           StatusCode::FAILURE Error releasing too or service
    */
   StatusCode release ( const IInterface* interface ) const ;
+  /// Un-hide IInterface::release (ICC warning #1125)
+  virtual inline unsigned long release() { return PBASE::release(); }
   // ==========================================================================
 public:
   // ==========================================================================

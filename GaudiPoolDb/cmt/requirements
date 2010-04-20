@@ -59,3 +59,11 @@ macro_append schemaGaudiPoolDb_dependencies GaudiPoolDb
 macro_remove_regexp t_tests_constituents ".*" GaudiPoolDbTests ""
 #===============================================================
 
+##############################################################################
+# Intel compiler support
+### Disable some non interesting "remarks" (inspired by CoolKernel)
+# Non permanent
+#  - warning #68: integer conversion resulted in a change of sign
+#                 (due to conversion from enum constants to unsigned int in POOL)
+macro_append cppflags '' no-hide-warnings '' target-icc '-wd68 '
+end_private

@@ -1,4 +1,11 @@
 // $Id: Aida2Root.cpp,v 1.6 2008/01/17 15:06:55 marcocle Exp $
+
+#ifdef __ICC
+// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
+//   TODO: To be removed, since it comes from ROOT TMathBase.h
+#pragma warning(disable:2259)
+#endif
+
 // ============================================================================
 // Include files 
 // ============================================================================

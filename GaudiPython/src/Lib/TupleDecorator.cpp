@@ -1,4 +1,9 @@
 // $Id: TupleDecorator.cpp,v 1.7 2007/08/07 14:05:33 marcocle Exp $
+#ifdef __ICC
+// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
+//   Coming from ROOT GenVector
+#pragma warning(disable:1572)
+#endif
 // ============================================================================
 // Include files 
 // ============================================================================

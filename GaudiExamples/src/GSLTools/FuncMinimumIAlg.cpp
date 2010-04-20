@@ -14,6 +14,12 @@
 // local
 #include "FuncMinimumIAlg.h"
 
+#ifdef __ICC
+// disable icc warning #327: NULL reference is not allowed
+//   It's a real problem, but here it is used for test purposes
+#pragma warning(disable:327)
+#endif
+
 //-----------------------------------------------------------------------------
 /** @file Implementation file for class : FuncMinimumIAlg
  *  @see FuncMinimumIAlg.h

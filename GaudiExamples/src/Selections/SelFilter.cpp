@@ -25,10 +25,6 @@
 #endif
 #include "boost/lambda/lambda.hpp"
 #include "boost/lambda/bind.hpp"
-#ifdef __ICC
-// re-enable icc remark #177: declared but never referenced
-#pragma warning(enable:177)
-#endif
 // ============================================================================
 namespace bl = boost::lambda ;
 // ============================================================================

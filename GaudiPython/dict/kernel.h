@@ -21,6 +21,8 @@
 #ifdef __ICC
 // disable icc remark #177: declared but never referenced
 #pragma warning(disable:177)
+// disable icc warning #1125: function "C::X()" is hidden by "Y::X" -- virtual function override intended?
+#pragma warning(disable:1125)
 #endif
 
 // Force visibility of the classes

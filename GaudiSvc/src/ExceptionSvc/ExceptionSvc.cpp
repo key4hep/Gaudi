@@ -7,6 +7,7 @@
 // STD & STL
 // ============================================================================
 #include <cassert>
+#include <algorithm>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -27,12 +28,8 @@ DECLARE_SERVICE_FACTORY(ExceptionSvc)
 
 inline void toupper(std::string &s)
 {
-    std::string::iterator it=s.begin();
-    while(it != s.end())
-    {
-        *it = toupper(*it);
-        it++;
-    }
+  std::transform(s.begin(), s.end(), s.begin(), 
+                 (int(*)(int)) toupper);
 }
 
 //

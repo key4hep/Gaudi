@@ -22,6 +22,12 @@
 // ============================================================================
 #include "MyTrack.h"
 // ============================================================================
+#ifdef __ICC
+// disable icc warning #1125: function "ISelectStatement::operator()(void *)"
+//           is hidden by "Gaudi::Examples::EvtCollectionSelector::operator()"
+//            -- virtual function override intended?
+#pragma warning(disable:1125)
+#endif
 namespace Gaudi
 {
   namespace Examples

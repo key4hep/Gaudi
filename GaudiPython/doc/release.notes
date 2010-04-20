@@ -1,6 +1,9 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2010-04-20 - Marco Clemencic
+ - Removed ICC warnings and remarks.
+
 ! 2010-04-16 - Vanya Belyaev
  - Patch #3989: Tiny (but very important) fix for Gaudi::RangeBase_
    Added dictionary for Gaudi::RangeBase_.

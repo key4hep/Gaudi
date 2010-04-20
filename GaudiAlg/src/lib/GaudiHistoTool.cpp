@@ -25,9 +25,6 @@
 // ============================================================================
 // Force creation of templated class
 #include "GaudiAlg/GaudiHistos.icpp"
-template class GaudiHistos<GaudiTool> ;
-// ============================================================================
-
 // ============================================================================
 // Forward declaration of the actual constructors, to tell the compiler that
 // they do exist and will be found at link time (warning C4661 in VC7.1)
@@ -39,6 +36,7 @@ template <>
 GaudiHistos<GaudiTool>::GaudiHistos( const std::string& type   ,
                                      const std::string& name   ,
                                      const IInterface*  parent );
+template class GaudiHistos<GaudiTool> ;
 // ============================================================================
 
 // ============================================================================

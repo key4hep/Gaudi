@@ -1,4 +1,14 @@
 // $Id: PoolDbCnvSvc.cpp,v 1.30 2008/10/27 16:41:33 marcocle Exp $
+
+#ifdef __ICC
+// disable icc warning #654: overloaded virtual function "IAddressCreator::createAddress" is only partially overridden in class "PoolDbCnvSvc"
+//   TODO: there is only a partial overload of IAddressCreator::createAddress
+#pragma warning(disable:654)
+// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
+//   TODO: To be removed, coming from CORAL
+#pragma warning(disable:2259)
+#endif
+
 //====================================================================
 //	PoolDbCnvSvc implementation
 //--------------------------------------------------------------------

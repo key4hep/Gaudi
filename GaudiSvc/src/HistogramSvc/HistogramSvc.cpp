@@ -1,4 +1,9 @@
 // $Id: HistogramSvc.cpp,v 1.28 2007/09/26 16:14:47 marcocle Exp $
+#ifdef __ICC
+// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
+//   TODO: To be removed, since it comes from ROOT TMathBase.h
+#pragma warning(disable:2259)
+#endif
 // ============================================================================
 // Include files
 // ============================================================================

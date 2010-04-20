@@ -1,6 +1,9 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2010-04-20 - Marco Clemencic
+ - Removed ICC warnings and remarks.
+
 ! 2010-04-16 - Vanya Belyaev
  - Patch #3982: Tiny fix for Gaudi::Utils::GetData
    The purpose is to make the utility more safe, in particular the creation of

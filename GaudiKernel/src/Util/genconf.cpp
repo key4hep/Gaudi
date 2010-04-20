@@ -11,9 +11,13 @@
 #endif
 
 #ifdef __ICC
-// Disable remark #193: zero used for undefined preprocessing identifier X
-// coming from boost/program_options.hpp
-#pragma warning (disable:193)
+// disable icc warning #279: controlling expression is constant
+// ... a lot of noise produced by the boost/filesystem/operations.hpp
+#pragma warning(disable:279)
+// Avoid icc remark #193: zero used for undefined preprocessing identifier "_MSC_VER"
+#if !defined(_WIN32) && !defined(_MSC_VER)
+#define _MSC_VER 0
+#endif
 #endif
 
 // Include files----------------------------------------------------------------

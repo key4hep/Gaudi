@@ -539,6 +539,12 @@ StatusCode ParticlePropertySvc::addParticles()
   return StatusCode::SUCCESS ;
 }
 // ============================================================================
+#ifdef __ICC
+// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
+//   The comparison are meant
+#pragma warning(push)
+#pragma warning(disable:1572)
+#endif
 bool ParticlePropertySvc::diff
 ( const ParticleProperty* o ,
   const ParticleProperty* n ,
@@ -605,10 +611,10 @@ bool ParticlePropertySvc::diff
   //
   return result ;
 }
-
-
-
-
+#ifdef __ICC
+// re-enable icc remark #1572
+#pragma warning(pop)
+#endif
 
 // ============================================================================
 // The END

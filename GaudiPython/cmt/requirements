@@ -61,3 +61,4 @@ macro test_GPyTest_rootmap   $(GAUDIPYTHONROOT)/$(tag)/$(rootmap_name) \
       GAUDI_with_installarea $(CMTINSTALLAREA)/$(tag)/lib/$(rootmap_name) \
       GAUDIATLAS_with_installarea $(CMTINSTALLAREA)/$(tag)/lib/$(rootmap_name)
 
+end_private

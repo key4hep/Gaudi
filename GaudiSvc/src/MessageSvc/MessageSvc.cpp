@@ -244,27 +244,13 @@ void MessageSvc::setupColors(Property& prop) {
 //#############################################################################
 
 void MessageSvc::setupLimits(Property& prop) {
-
-  int ic = 0;
-  if (prop.name() == "fatalLimit") {
-    ic = MSG::FATAL;
-  } else if (prop.name() == "errorLimit") {
-    ic = MSG::ERROR;
-  } else if (prop.name() == "warningLimit") {
-    ic = MSG::WARNING;
-  } else if (prop.name() == "infoLimit") {
-    ic = MSG::INFO;
-  } else if (prop.name() == "debugLimit") {
-    ic = MSG::DEBUG;
-  } else if (prop.name() == "verboseLimit") {
-    ic = MSG::VERBOSE;
-  } else if (prop.name() == "alwaysLimit") {
+  // Just report problems in the settings of the limits
+  if (prop.name() == "alwaysLimit") {
     IntegerProperty *p = dynamic_cast<IntegerProperty*>(&prop);
     if (p && p->value() != 0) {
       cout << "MessageSvc ERROR: cannot suppress ALWAYS messages" << endl;
       p->setValue(0);
     }
-    ic = MSG::ALWAYS;
   } else if (prop.name() == "defaultLimit") {
     for (int i = MSG::VERBOSE; i< MSG::NUM_LEVELS; ++i) {
       if (i != MSG::ALWAYS) {

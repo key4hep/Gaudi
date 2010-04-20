@@ -183,6 +183,12 @@ void GaudiSequencer::resetExecuted ( ) {
 //=========================================================================
 //  Decode the input names and fills the m_algs vector.
 //=========================================================================
+#ifdef __ICC
+// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
+//   The comparison are meant
+#pragma warning(push)
+#pragma warning(disable:1572)
+#endif
 StatusCode GaudiSequencer::decodeNames( )  {
 
   StatusCode final = StatusCode::SUCCESS;
@@ -326,6 +332,10 @@ StatusCode GaudiSequencer::decodeNames( )  {
   return final;
 
 }
+#ifdef __ICC
+// re-enable icc remark #1572
+#pragma warning(pop)
+#endif
 
 //=========================================================================
 //  Interface for the Property manager

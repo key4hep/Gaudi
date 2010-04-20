@@ -1,3 +1,9 @@
+#ifdef __ICC
+// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
+//   TODO: To be removed, since it comes from ROOT TMathBase.h
+#pragma warning(disable:2259)
+#endif
+
 #include "THistSvc.h"
 
 #include "GaudiKernel/SvcFactory.h"
@@ -18,6 +24,7 @@
 #include <sstream>
 #include <streambuf>
 #include <cstdio>
+#include <algorithm>
 
 using namespace std;
 
@@ -26,12 +33,8 @@ DECLARE_SERVICE_FACTORY(THistSvc)
 
 inline void toupper(std::string &s)
 {
-    std::string::iterator it=s.begin();
-    while(it != s.end())
-    {
-        *it = toupper(*it);
-        it++;
-    }
+  std::transform(s.begin(), s.end(), s.begin(), 
+                 (int(*)(int)) toupper);
 }
 
 

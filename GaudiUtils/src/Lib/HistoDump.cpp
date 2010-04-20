@@ -1,4 +1,12 @@
 // $Id: $
+#ifdef __ICC
+// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
+//   TODO: To be removed, since it comes from ROOT TMathBase.h
+#pragma warning(disable:2259)
+// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
+//   The comparison are meant
+#pragma warning(disable:1572)
+#endif
 // ============================================================================
 // Include files 
 // ============================================================================
@@ -350,7 +358,7 @@ namespace
    */
   inline double rValMax ( const double v ) 
   {
-    if      ( 0 == v  ) { return 0                   ; }             // REUTRN    
+    if      ( 0 == v  ) { return 0                   ; }             // RETURN    
     else if ( 0 >  v  ) { return -1 * rValMin ( -v ) ; }             // RETURN 
     // decompose the double value into decimal significand and mantissa  
     std::pair<double,int> r = decompose ( v ) ;
@@ -366,7 +374,7 @@ namespace
    */
   inline double rValMin ( const double v ) 
   {
-    if      ( 0 == v  ) { return 0                   ; }             // REUTRN    
+    if      ( 0 == v  ) { return 0                   ; }             // RETURN    
     else if ( 0 >  v  ) { return -1 * rValMax ( -v ) ; }             // RETURN 
     // decompose the double value into decimal significand and mantissa  
     std::pair<double,int> r = decompose ( v ) ;

@@ -1,4 +1,9 @@
 // $Id: H1D.cpp,v 1.14 2007/07/16 13:36:17 hmd Exp $
+#ifdef __ICC
+// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
+//   TODO: To be removed, since it comes from ROOT TMathBase.h
+#pragma warning(disable:2259)
+#endif
 #include "H1D.h"
 #include "GaudiPI.h"
 #include "GaudiKernel/StreamBuffer.h"
@@ -106,6 +111,12 @@ bool Gaudi::Histogram1D::setBinContents(int i,int entries ,double height,double 
   return true;
 }
 
+#ifdef __ICC
+// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
+//   The comparison are meant
+#pragma warning(push)
+#pragma warning(disable:1572)
+#endif
 bool Gaudi::Histogram1D::setRms(double rms) {
   m_rep->SetEntries(m_sumEntries);
   std::vector<double> stat(11);
@@ -193,6 +204,11 @@ void Gaudi::Histogram1D::copyFromAida(const AIDA::IHistogram1D & h) {
   stat[3] = sumwx2;
   m_rep->PutStats(&stat.front());
 }
+
+#ifdef __ICC
+// re-enable icc remark #1572
+#pragma warning(pop)
+#endif
 
 StreamBuffer& Gaudi::Histogram1D::serialize(StreamBuffer& s) {
   DataObject::serialize(s);

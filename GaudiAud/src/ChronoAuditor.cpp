@@ -1,6 +1,12 @@
 // ChronoAuditor:
 //  An auditor that monitors memory usage
 
+#ifdef __ICC
+// disable icc warning #654: overloaded virtual function "B::Y" is only partially overridden in class "C"
+//   TODO: there is only a partial overload of IAuditor::before and IAuditor::after
+#pragma warning(disable:654)
+#endif
+
 #include "ChronoAuditor.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/AudFactory.h"

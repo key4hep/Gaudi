@@ -23,3 +23,12 @@ library         GaudiAlg    components/*.cpp -import=AIDA -no_static
 apply_pattern   linker_library    library="GaudiAlgLib"
 apply_pattern   component_library library="GaudiAlg"
 
+private
+##############################################################################
+# Intel compiler support
+### Disable some non interesting "remarks" (inspired by CoolKernel)
+# Non permanent
+#  - warning #1125:  function "C::X()" is hidden by "Y::X" -- virtual function override intended?
+#                    (coming from ISequencerTimerTool methods start, stop and name)
+macro_append cppflags '' no-hide-warnings '' target-icc '-wd1125 '
+end_private

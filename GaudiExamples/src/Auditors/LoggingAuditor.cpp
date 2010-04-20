@@ -29,6 +29,30 @@ public:
     log << endmsg;
   }
 
+  virtual void before(CustomEventTypeRef evt, INamedInterface* caller) {
+    MsgStream log ( msgSvc() , name() );
+    log << MSG::INFO << "Auditing before of " << evt;
+    if (caller) log << " for " << caller->name();
+    log << endmsg;
+  }
+
+  virtual void after(CustomEventTypeRef evt, INamedInterface* caller, const StatusCode &) {
+    MsgStream log ( msgSvc() , name() );
+    log << MSG::INFO << "Auditing after of " << evt;
+    if (caller) log << " for " << caller->name();
+    log << endmsg;
+  }
+
+  virtual void before(StandardEventType evt, const std::string& caller) {
+    MsgStream log ( msgSvc() , name() );
+    log << MSG::INFO << "Auditing before of " << evt << " for " << caller << endmsg;
+  }
+
+  virtual void after(StandardEventType evt, const std::string& caller, const StatusCode &) {
+    MsgStream log ( msgSvc() , name() );
+    log << MSG::INFO << "Auditing after of " << evt << " for " << caller << endmsg;
+  }
+
   virtual void before(CustomEventTypeRef evt, const std::string& caller) {
     MsgStream log ( msgSvc() , name() );
     log << MSG::INFO << "Auditing before of " << evt << " for " << caller << endmsg;

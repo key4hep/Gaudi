@@ -58,10 +58,21 @@ namespace HepRndm  {
     return RandGaussQ::shoot(m_hepEngine, m_specs->mean(), m_specs->sigma());
   }
 
+#ifdef __ICC
+// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
+//   Mandatory because RandPoisson::shoot returns "long"
+#pragma warning(push)
+#pragma warning(disable:2259)
+#endif
   // Specialized shoot function for Poisson distributed random number generation
   template <> double Generator<Rndm::Poisson>::shoot()    const     {
     return RandPoisson::shoot(m_hepEngine, m_specs->mean());
   }
+
+#ifdef __ICC
+// re-enable icc remark #2259
+#pragma warning(pop)
+#endif
 
   // Specialized shoot function
   template <> double Generator<Rndm::Exponential>::shoot()    const     {
@@ -369,6 +380,12 @@ namespace HepRndm  {
     }
   };
 
+#ifdef __ICC
+// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
+//   The comparison is meant
+#pragma warning(push)
+#pragma warning(disable:1572)
+#endif
   // Specialized shoot function
   template <> double Generator<Rndm::GaussianTail>::shoot()    const     {
     /* Code obtained and adapted from GSL 
@@ -406,6 +423,10 @@ namespace HepRndm  {
       } while (x * u > s);
       return x * sigma;
     }
+#ifdef __ICC
+// re-enable icc remark #1572
+#pragma warning(pop)
+#endif
   } 
 }
 

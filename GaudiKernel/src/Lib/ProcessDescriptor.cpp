@@ -529,12 +529,10 @@ long System::ProcessDescriptor::query(long pid,
     if ( processID(pid) == s_myPid ) {
       struct rusage r;
       getrusage( RUSAGE_SELF, &r );
-      const double utime = static_cast<double>(r.ru_utime.tv_sec )*1e6 +
-	                   static_cast<double>(r.ru_utime.tv_usec);
-      const double stime = static_cast<double>(r.ru_stime.tv_sec )*1e6 +
-			   static_cast<double>(r.ru_stime.tv_usec);
-      tb->UserTime   = static_cast<longlong>( utime * 10. );
-      tb->KernelTime = static_cast<longlong>( stime * 10. );
+      tb->UserTime   = (static_cast<long long>(r.ru_utime.tv_sec) * 1000000 +
+                        r.ru_utime.tv_usec) * 10;
+      tb->KernelTime = (static_cast<long long>(r.ru_stime.tv_sec) * 1000000 +
+                        r.ru_stime.tv_usec) * 10;
       tb->CreateTime = prc_start;
     }
     else {

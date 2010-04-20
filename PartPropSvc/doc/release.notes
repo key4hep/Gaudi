@@ -1,6 +1,9 @@
 Package : ParticleProp
 Package manager : Charles Leggett
 
+! 2010-04-20 - Marco Clemencic
+ - Removed ICC warnings and remarks.
+
 ================ PartPropSvc v3r2 ====================================
 ! 2009-07-21 - Hubert Degaudenzi
  - Fixed typo in the -no_static usage.

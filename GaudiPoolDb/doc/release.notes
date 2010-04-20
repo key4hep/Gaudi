@@ -1,6 +1,9 @@
 Package: GaudiPoolDb
 Package Manager: Markus Frank, Marco Clemencic
 
+! 2010-04-20 - Marco Clemencic
+ - Removed ICC warnings and remarks.
+
 ============================== GaudiPoolDb v5r7 ==============================
 ! 2010-01-29 - Marco Clemencic
  - Fixed icc remark #1599: declaration hides variable

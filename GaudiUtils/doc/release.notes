@@ -1,6 +1,9 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2010-04-20 - Marco Clemencic
+ - Removed ICC warnings and remarks.
+
 ! 2010-04-19 - Marco Clemencic
  - Moved the EventTimeoutWatchdog thread from the EventLoopMgr to a dedicated
    service in GaudiUtils.

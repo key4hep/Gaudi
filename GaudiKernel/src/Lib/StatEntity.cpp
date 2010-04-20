@@ -24,6 +24,18 @@
 #include "boost/static_assert.hpp"
 #include "boost/algorithm/string/case_conv.hpp"
 // ============================================================================
+
+#ifdef __ICC
+// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
+//  A lot of comparisons are done and "meant".
+#pragma warning(disable:1572)
+// disable icc remark #2259: non-pointer conversion from "long double" to "double" may lose significant bits
+//  Internal operations are done with "long double", but the interface exposes only
+//  "double", so the conversions are required.
+#pragma warning(disable:2259)
+#endif
+
+
 /** @file 
  *  Implementation file for class StatEntity
  *  @date 26/06/2001 

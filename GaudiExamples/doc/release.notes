@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2010-04-20 - Marco Clemencic
+ - Removed ICC warnings and remarks.
+
 ============================ GaudiExamples v21r8 =============================
 ! 2010-03-16 - Vanya Belyaev
  - Patch #3840: Fix for bug #59009

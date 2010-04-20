@@ -33,6 +33,11 @@
 // ============================================================================
 // Boost
 // ============================================================================
+#ifdef __ICC
+// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
+//   TODO: To be removed, since it comes from Boost
+#pragma warning(disable:2259)
+#endif
 #include "boost/format.hpp"
 #include "boost/lexical_cast.hpp"
 // ============================================================================

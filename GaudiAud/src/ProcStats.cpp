@@ -2,6 +2,11 @@
 // Class: ProcStats
 // Purpose:  To keep statistics on memory use
 // Warning:  Only Linux implementation at the present time...
+#ifdef __ICC
+// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
+//   meant
+#pragma warning(disable:2259)
+#endif
 
 #include "ProcStats.h"
 

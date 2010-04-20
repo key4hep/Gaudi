@@ -8,6 +8,7 @@
 
 #include <sstream>
 #include <streambuf>
+#include <algorithm>
 #include <time.h>
 
 #include "boost/bind.hpp"
@@ -19,12 +20,8 @@ DECLARE_SERVICE_FACTORY(IssueLogger)
 //*************************************************************************//
 inline void toupper(std::string &s)
 {
-    std::string::iterator it=s.begin();
-    while(it != s.end())
-    {
-        *it = toupper(*it);
-        it++;
-    }
+  std::transform(s.begin(), s.end(), s.begin(), 
+                 (int(*)(int)) toupper);
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -164,7 +161,7 @@ IssueLogger::connect(const std::string& ident) {
   Tokenizer tok(true);
 
   string::size_type loc = ident.find(" ");
-  string stream = ident.substr(0,loc);
+//  string stream = ident.substr(0,loc); // icc remark #177: variable "stream" was declared but never referenced
 //   typedef std::pair<std::string,std::string>      Prop;
 //   std::vector<Prop> props;
   string val,VAL,TAG,filename;

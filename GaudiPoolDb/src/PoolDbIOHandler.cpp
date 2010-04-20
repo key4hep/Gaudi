@@ -8,6 +8,12 @@
 //
 //	@author      M.Frank
 //====================================================================
+#ifdef __ICC
+// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
+//   TODO: To be removed, coming from ROOT
+#pragma warning(disable:2259)
+#endif
+
 #include "GaudiPoolDb/PoolDbIOHandler.h"
 #include "GaudiKernel/ObjectContainerBase.h"
 #include "GaudiKernel/ContainedObject.h"

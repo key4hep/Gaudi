@@ -1,3 +1,9 @@
+#ifdef __ICC
+// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
+//   TODO: To be removed, since it comes from ROOT TMathBase.h
+#pragma warning(disable:2259)
+#endif
+
 #include <cmath>
 #include "P1D.h"
 #include "GaudiKernel/ObjectFactory.h"
@@ -96,6 +102,11 @@ bool Gaudi::Profile1D::setBinContents(int i, int entries,double height,double /*
   return true;
 }
 
+#ifdef __ICC
+// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
+//   The comparison is correct
+#pragma warning(disable:1572)
+#endif
 bool Gaudi::Profile1D::fill ( double x, double y, double weight )  {
   (weight == 1.) ? m_rep->Fill(x,y) : m_rep->Fill(x,y,weight);
   return true;

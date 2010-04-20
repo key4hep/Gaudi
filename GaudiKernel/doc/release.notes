@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-04-20 - Marco Clemencic
+ - Removed ICC warnings and remarks.
+
 ! 2010-04-16 - Vanya Belyaev
  - Patch #3943: Good names for StatEntity methods
    - GaudiKernel/StatEntity.h: add new names for "ugly methods"

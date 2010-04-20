@@ -1,4 +1,9 @@
 // $Id: H2D.cpp,v 1.16 2007/07/16 13:36:17 hmd Exp $
+#ifdef __ICC
+// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
+//   TODO: To be removed, since it comes from ROOT TMathBase.h
+#pragma warning(disable:2259)
+#endif
 #include "H2D.h"
 #include "H1D.h"
 #include "P1D.h"
@@ -126,11 +131,6 @@ Gaudi::Histogram2D::Histogram2D(TH2D* rep)  {
   m_rep->SetDirectory(0);
 }
 
-bool Gaudi::Histogram2D::fill ( double x,double y,double weight) {
-  (weight==1.) ? m_rep->Fill(x,y) : m_rep->Fill(x,y,weight ); 
-  return true;
-}
-
 bool Gaudi::Histogram2D::setBinContents( int i,int j,int entries,double height,double error,double centreX,double centreY) {
   m_rep->SetBinContent(rIndexX(i), rIndexY(j), height); 
   m_rep->SetBinError(rIndexX(i), rIndexY(j), error); 
@@ -140,6 +140,23 @@ bool Gaudi::Histogram2D::setBinContents( int i,int j,int entries,double height,d
     m_sumwy += centreY*height; 
   }
   m_sumEntries += entries;
+  return true;
+}
+
+bool  Gaudi::Histogram2D::reset() {
+  m_sumwx = 0; 
+  m_sumwy = 0; 
+  return Base::reset();
+}
+
+#ifdef __ICC
+// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
+//   The comparison are meant
+#pragma warning(push)
+#pragma warning(disable:1572)
+#endif
+bool Gaudi::Histogram2D::fill ( double x,double y,double weight) {
+  (weight==1.) ? m_rep->Fill(x,y) : m_rep->Fill(x,y,weight ); 
   return true;
 }
 
@@ -161,12 +178,6 @@ bool Gaudi::Histogram2D::setRms(double rmsX,double rmsY) {
   stat[6] = 0; 
   m_rep->PutStats(&stat.front()); 
   return true; 
-}
-
-bool  Gaudi::Histogram2D::reset() {
-  m_sumwx = 0; 
-  m_sumwy = 0; 
-  return Base::reset();
 }
 
 void Gaudi::Histogram2D::copyFromAida(const IHistogram2D& h) { 
@@ -232,3 +243,8 @@ void Gaudi::Histogram2D::copyFromAida(const IHistogram2D& h) {
   stat[6] = sumwxy; 
   m_rep->PutStats(&stat.front());
 }
+
+#ifdef __ICC
+// re-enable icc remark #1572
+#pragma warning(pop)
+#endif

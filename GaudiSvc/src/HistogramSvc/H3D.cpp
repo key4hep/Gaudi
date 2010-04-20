@@ -1,3 +1,9 @@
+#ifdef __ICC
+// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
+//   TODO: To be removed, since it comes from ROOT TMathBase.h
+#pragma warning(disable:2259)
+#endif
+
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/ObjectFactory.h"
 #include "GaudiPI.h"
@@ -120,6 +126,36 @@ bool Gaudi::Histogram3D::setBinContents(int i,int j,int k,int entries,double hei
   return true;
 }
 
+bool Gaudi::Histogram3D::reset (  )   {
+  m_sumwx = 0;
+  m_sumwy = 0;
+  m_sumwz = 0;
+  m_sumEntries = 0;
+  m_rep->Reset ( );
+  return true;
+}
+
+bool Gaudi::Histogram3D::fill ( double x, double y, double z, double weight)  {
+  m_rep->Fill ( x , y, z, weight );
+  return true;
+}
+
+void* Gaudi::Histogram3D::cast(const std::string & className) const   {
+  if (className == "AIDA::IHistogram3D")   {
+    return (AIDA::IHistogram3D*)this;
+  }
+  else if (className == "AIDA::IHistogram")   {
+    return (AIDA::IHistogram*)this;
+  }
+  return 0;
+}
+
+#ifdef __ICC
+// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
+//   The comparison are meant
+#pragma warning(push)
+#pragma warning(disable:1572)
+#endif
 bool Gaudi::Histogram3D::setRms(double rmsX, double rmsY, double rmsZ   ) {
   m_rep->SetEntries(m_sumEntries);
   std::vector<double> stat(11);
@@ -145,30 +181,6 @@ bool Gaudi::Histogram3D::setRms(double rmsX, double rmsY, double rmsZ   ) {
 
   m_rep->PutStats(&stat.front());
   return true;
-}
-
-bool Gaudi::Histogram3D::reset (  )   {
-  m_sumwx = 0;
-  m_sumwy = 0;
-  m_sumwz = 0;
-  m_sumEntries = 0;
-  m_rep->Reset ( );
-  return true;
-}
-
-bool Gaudi::Histogram3D::fill ( double x, double y, double z, double weight)  {
-  m_rep->Fill ( x , y, z, weight );
-  return true;
-}
-
-void* Gaudi::Histogram3D::cast(const std::string & className) const   {
-  if (className == "AIDA::IHistogram3D")   {
-    return (AIDA::IHistogram3D*)this;
-  }
-  else if (className == "AIDA::IHistogram")   {
-    return (AIDA::IHistogram*)this;
-  }
-  return 0;
 }
 
 void Gaudi::Histogram3D::copyFromAida(const AIDA::IHistogram3D & h) {
@@ -256,3 +268,8 @@ void Gaudi::Histogram3D::copyFromAida(const AIDA::IHistogram3D & h) {
   stat[10] = sumwyz;
   m_rep->PutStats(&stat.front());
 }
+
+#ifdef __ICC
+// re-enable icc remark #1572
+#pragma warning(pop)
+#endif

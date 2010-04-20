@@ -2,6 +2,7 @@ package GaudiPolicy
 package manager: Marco Clemencic
 
 ! 2010-04-20 - Marco Clemencic
+ - Removed ICC warnings and remarks.
  - Fixed a problem in install.py when using shared directories.
    If the destination file is owned by somebody else and writable, shutil.copy2
    fails in copystat because the access and modify times of the destination
