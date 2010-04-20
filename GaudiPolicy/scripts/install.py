@@ -230,8 +230,14 @@ def update(src,dest,old_dest = None, syml = False, logdir = realpath(".")):
             print "Create Link to '%s' in '%s'"%(src,dest_path)
             os.symlink(src,realdest)
         else:
-            print "Copy '%s' -> '%s'"%(src,realdest)
-            shutil.copy2(realsrc,realdest) # do the copy (cp -p src dest)
+            print "Copy '%s' -> '%s'"%(src, realdest)
+            if exists(realdest):
+                # If the destination path exists it is better to remove it before
+                # doing the copy (shutil.copystat fails if the destination file
+                # is not owned by the current user).
+                os.remove(realdest)
+            shutil.copy2(realsrc, realdest) # do the copy (cp -p src dest)
+            
     #if old_dest != dest: # the file was installed somewhere else
     #    # remove the old destination
     #    if old_dest is not None:

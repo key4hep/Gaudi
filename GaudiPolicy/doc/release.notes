@@ -1,6 +1,13 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-04-20 - Marco Clemencic
+ - Fixed a problem in install.py when using shared directories.
+   If the destination file is owned by somebody else and writable, shutil.copy2
+   fails in copystat because the access and modify times of the destination
+   cannot be changed.
+   The solution is to remove the file before making the copy.
+
 ! 2010-04-16 - Marco Clemencic
  - Modified the implementation of the fix to bug #62374 (Handling of signal
    SIGXCPU).
