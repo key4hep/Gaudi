@@ -47,6 +47,10 @@ ApplicationMgr    SUCCESS
 [92;1mGaudi::Utils::S...  DEBUG 	SIGXCPU: CPU time limit exceeded (24)[m
 [92;1mGaudi::Utils::S...  DEBUG Register to the IncidentSvc[m
 [92;1mIncidentSvc         DEBUG Adding [BeginEvent] listener 'Gaudi::Utils::StopSignalHandler' with priority 0[m
+[92;1mServiceManager      DEBUG Initializing service StalledEventMonitor[m
+[92;1mStalledEventMon...  DEBUG Service base class initialized successfully[m
+[92;1mStalledEventMon...  DEBUG Register to the IncidentSvc[m
+[92;1mIncidentSvc         DEBUG Adding [BeginEvent] listener 'StalledEventMonitor' with priority 0[m
 [92;1mServiceManager      DEBUG Initializing service EventLoopMgr[m
 [92;1mEventLoopMgr        DEBUG Service base class initialized successfully[m
 [92;1mIncidentSvc         DEBUG Adding [AbortEvent] listener '<unknown>' with priority 0[m
@@ -66,6 +70,7 @@ ApplicationMgr    SUCCESS
 [92;1mServiceManager      DEBUG Starting service StatusCodeSvc[m
 [92;1mServiceManager      DEBUG Starting service AppMgrRunable[m
 [92;1mServiceManager      DEBUG Starting service Gaudi::Utils::StopSignalHandler[m
+[92;1mServiceManager      DEBUG Starting service StalledEventMonitor[m
 [92;1mServiceManager      DEBUG Starting service Gaudi::Utils::SignalMonitorSvc[m
 [92;1mServiceManager      DEBUG Starting service IncidentSvc[m
 [92;1mServiceManager      DEBUG Starting service EventPersistencySvc[m
@@ -75,6 +80,7 @@ ApplicationMgr    SUCCESS
 [92;1mServiceManager      DEBUG Starting service EventLoopMgr[m
 [96;1mApplicationMgr       INFO Application Manager Started successfully[m
 [95;4mIncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent][m
+[95;4mIncidentSvc       VERBOSE Calling 'StalledEventMonitor' for incident [BeginEvent][m
 [98;108;1mColorMsgAlg         FATAL THIS IS A FATAL MESSAGE[m
 [97;101;1mColorMsgAlg         ERROR THIS IS AN ERROR MESSAGE[m
 [98;1mColorMsgAlg       WARNING THIS IS A WARNING MESSAGE[m
@@ -88,6 +94,7 @@ ApplicationMgr    SUCCESS
 [96;1mColorMsgAlg          INFO multicolor: [94;102;1mthis is blue on green[95;107;1m and purple on white[m
 [96;1mColorMsgAlg          INFO [92;1mThis is green. [93;104;1mThis is in yellow on blue. [m[96;1mThis is back to normal[m
 [95;4mIncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent][m
+[95;4mIncidentSvc       VERBOSE Calling 'StalledEventMonitor' for incident [BeginEvent][m
 [98;108;1mColorMsgAlg         FATAL THIS IS A FATAL MESSAGE[m
 [97;101;1mColorMsgAlg         ERROR THIS IS AN ERROR MESSAGE[m
 [98;1mColorMsgAlg       WARNING THIS IS A WARNING MESSAGE[m
@@ -107,6 +114,7 @@ ApplicationMgr    SUCCESS
 [92;1mServiceManager      DEBUG Stopping service EventPersistencySvc[m
 [92;1mServiceManager      DEBUG Stopping service IncidentSvc[m
 [92;1mServiceManager      DEBUG Stopping service Gaudi::Utils::SignalMonitorSvc[m
+[92;1mServiceManager      DEBUG Stopping service StalledEventMonitor[m
 [92;1mServiceManager      DEBUG Stopping service Gaudi::Utils::StopSignalHandler[m
 [92;1mServiceManager      DEBUG Stopping service AppMgrRunable[m
 [92;1mServiceManager      DEBUG Stopping service StatusCodeSvc[m
@@ -119,18 +127,21 @@ ApplicationMgr    SUCCESS
 [92;1mServiceManager      DEBUG Finalizing service EventDataSvc[m
 [92;1mServiceManager      DEBUG Finalizing service EventPersistencySvc[m
 [92;1mServiceManager      DEBUG Finalizing service IncidentSvc[m
-[92;1mIncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0.25(+-0.433013)/0/1[ms] Total:0.001[s][m
+[92;1mIncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0(+-0)/0/0[ms] Total:0[s][m
 [92;1mServiceManager      DEBUG Finalizing service Gaudi::Utils::SignalMonitorSvc[m
+[92;1mServiceManager      DEBUG Finalizing service StalledEventMonitor[m
+[92;1mIncidentSvc         DEBUG Removing [BeginEvent] listener 'StalledEventMonitor'[m
 [92;1mServiceManager      DEBUG Finalizing service Gaudi::Utils::StopSignalHandler[m
 [92;1mIncidentSvc         DEBUG Removing [BeginEvent] listener 'Gaudi::Utils::StopSignalHandler'[m
 [92;1mServiceManager      DEBUG Finalizing service AppMgrRunable[m
 [92;1mServiceManager      DEBUG Finalizing service StatusCodeSvc[m
 [92;1mServiceManager      DEBUG Service reference count check:[m
 [92;1mServiceManager      DEBUG ---- StatusCodeSvc (refCount = 2)[m
-[92;1mServiceManager      DEBUG ---- MessageSvc (refCount = 13)[m
+[92;1mServiceManager      DEBUG ---- MessageSvc (refCount = 14)[m
 [92;1mServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)[m
 [92;1mServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)[m
 [92;1mServiceManager      DEBUG ---- Gaudi::Utils::StopSignalHandler (refCount = 2)[m
+[92;1mServiceManager      DEBUG ---- StalledEventMonitor (refCount = 2)[m
 [92;1mServiceManager      DEBUG ---- Gaudi::Utils::SignalMonitorSvc (refCount = 2)[m
 [92;1mServiceManager      DEBUG ---- IncidentSvc (refCount = 2)[m
 [92;1mServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)[m
