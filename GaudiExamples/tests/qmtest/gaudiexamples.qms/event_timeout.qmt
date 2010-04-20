@@ -4,12 +4,13 @@
   <argument name="options"><text>
 from Gaudi.Configuration import *
 
-from Configurables import GaudiTesting__SleepyAlg as SleepyAlg, EventLoopMgr
+from Configurables import GaudiTesting__SleepyAlg as SleepyAlg
+from Configurables import StalledEventMonitor
 
 importOptions("Common.opts")
 
 alg = SleepyAlg("Sleepy", SleepTime = 11)
-EventLoopMgr().EventTimeout = 2
+sem = StalledEventMonitor(EventTimeout = 2)
 
 app = ApplicationMgr(TopAlg = [alg],
                      EvtSel = "NONE", EvtMax = 2)
