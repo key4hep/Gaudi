@@ -244,7 +244,7 @@ void MessageSvc::setupColors(Property& prop) {
 //#############################################################################
 
 void MessageSvc::setupLimits(Property& prop) {
-  // Just report problems in the settings of the limits
+  // Just report problems in the settings of the limits and unknown limit parameters
   if (prop.name() == "alwaysLimit") {
     IntegerProperty *p = dynamic_cast<IntegerProperty*>(&prop);
     if (p && p->value() != 0) {
@@ -257,12 +257,16 @@ void MessageSvc::setupLimits(Property& prop) {
         m_msgLimit[i] = m_msgLimit[MSG::NIL].value();
       }
     }
-  } else {
+  } else if (prop.name() != "fatalLimit" &&
+             prop.name() != "errorLimit" &&
+             prop.name() != "warningLimit" &&
+             prop.name() == "infoLimit" &&
+             prop.name() == "debugLimit" &&
+             prop.name() == "verboseLimit") {
     cout << "MessageSvc ERROR: Unknown message limit parameter: "
          << prop.name() << endl;
     return;
   }
-
 }
 //#############################################################################
 
