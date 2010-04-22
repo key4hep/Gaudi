@@ -90,9 +90,23 @@ def main(argv = None):
     # prepare the qmtest command
     cmd = "qmtest run %s" % (" ".join(opts.qmtest_args))
     
-    # check if we have a test suite called as the package
-    if not opts.have_user_options and os.path.exists("%s.qms" % opts.package.lower()):
-        cmd += " %s" % opts.package.lower()
+    if not opts.have_user_options:
+        # If there are no user options, we should check for a default test suite
+        # to run.
+        # The suite to run is the first one available in the list passed via
+        # the environment variable GAUDI_QMTEST_DEFAULT_SUITE (comma-separated list)
+        # or the suite with the same name as the package.
+        # If none of them is present, no argument is passed to qmtest, so all the tests
+        # are run.
+        suites = []
+        if "GAUDI_QMTEST_DEFAULT_SUITE" in os.environ:
+            suites.extend([s.strip().lower()
+                           for s in os.environ["GAUDI_QMTEST_DEFAULT_SUITE"].split(",")])
+        suites.append(opts.package.lower())
+        for s in suites:
+            if os.path.exists("%s.qms" % s):
+                cmd += " %s" % s
+                break
     
     if opts.dry_run:
         print "==========> Would run '%s'"%cmd

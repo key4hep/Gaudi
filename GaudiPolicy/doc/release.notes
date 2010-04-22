@@ -1,6 +1,14 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-04-22 - Marco Clemencic
+ - Added the possibility to choose the test suite to run with QMTest via an
+   environment variable (GAUDI_QMTEST_DEFAULT_SUITE).
+   The content of the variable must be a comma-separated list of possible names
+   among which the first one is chosen. If the variable is not set or none of
+   its entries is found, the suite with the same name as the package is tried
+   (old behavior).
+
 ! 2010-04-20 - Marco Clemencic
  - Removed ICC warnings and remarks.
  - Fixed a problem in install.py when using shared directories.
