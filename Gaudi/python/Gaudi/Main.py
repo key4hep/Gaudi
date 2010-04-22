@@ -100,6 +100,7 @@ class gaudimain(object) :
             result = self.runParallel(ncpus)
         return result
 
+    
     def runSerial(self) :
         #--- Instantiate the ApplicationMgr------------------------------
         import GaudiPython
@@ -110,13 +111,14 @@ class gaudimain(object) :
         self.g = GaudiPython.AppMgr()
         success = self.g.run(self.g.EvtMax).isSuccess()
         success = self.g.exit().isSuccess() and success
-        if not success:
-            return 1
+        if not success and self.g.ReturnCode == 0:
+            # ensure that the return code is correctly set
+            self.g.ReturnCode = 1
         sysTime = time()-sysStart
         log.debug('-'*80)
         log.debug('%s: serial system finished, time taken: %5.4fs', __name__, sysTime)
         log.debug('-'*80)
-        return 0
+        return self.g.ReturnCode
 
     def runParallel(self, ncpus) :
         from Gaudi.Configuration import Configurable

@@ -15,6 +15,7 @@
 #include "GaudiKernel/IAddressCreator.h"
 #include "GaudiKernel/PropertyMgr.h"
 #include "GaudiKernel/EventSelectorDataStream.h"
+#include "GaudiKernel/AppReturnCode.h"
 
 #include "EventSelector.h"
 #include "EventIterator.h"
@@ -126,7 +127,12 @@ EventSelector::firstOfNextStream(bool shutDown, EvtSelectorContext& iter) const 
         }
       }
     }
-    if(s!=NULL) m_incidentSvc->fireIncident(Incident(s->dbName(),IncidentType::FailInputFile));
+    if(s!=NULL) {
+      m_incidentSvc->fireIncident(Incident(s->dbName(),IncidentType::FailInputFile));
+      // Set the return code to 2
+      SmartIF<IProperty> appmgr(serviceLocator());
+      Gaudi::setAppReturnCode(appmgr, 2).ignore();
+    }
   }
 
   iter.set(this, -1, 0, 0);

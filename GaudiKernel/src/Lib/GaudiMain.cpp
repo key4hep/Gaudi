@@ -8,6 +8,7 @@
 #include "GaudiKernel/Bootstrap.h"
 #include "GaudiKernel/IAppMgrUI.h"
 #include "GaudiKernel/IProperty.h"
+#include "GaudiKernel/Property.h"
 #include "GaudiKernel/StatusCode.h"
 #include <iostream>
 
@@ -34,9 +35,15 @@ extern "C" GAUDI_API int GaudiMain(int argc,char **argv) {
   }
 
   // Run the application manager and process events
-  StatusCode sc=appMgr->run();
+  StatusCode sc = appMgr->run();
+  IntegerProperty returnCode("ReturnCode", 0);
+  propMgr->getProperty(&returnCode).ignore();
   // Release Application Manager
   iface->release();
   // All done - exit
-  return (sc.isSuccess())?0:1;
+  if (sc.isFailure() && returnCode.value() == 0) {
+    // propagate a valid error code in case of failure
+    returnCode.setValue(1);
+  }
+  return returnCode.value();
 }

@@ -16,6 +16,7 @@ app = ApplicationMgr(TopAlg = [alg],
                      
 MessageSvc().setDebug.append("EventLoopMgr")
 </text></argument>
+<argument name="exit_code"><integer>130</integer></argument>
 <argument name="validator"><text>
 findReferenceBlock("""
 GaudiTesting::S...   INFO 3 events to go

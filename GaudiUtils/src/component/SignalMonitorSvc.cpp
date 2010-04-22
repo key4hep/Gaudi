@@ -175,6 +175,7 @@ namespace Gaudi {
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/IEventProcessor.h"
+#include "GaudiKernel/AppReturnCode.h"
 
 namespace {
   // hack because windows doesn't provide sys_siglist
@@ -369,6 +370,12 @@ namespace Gaudi {
           error() << "Cannot retrieve " << serviceName << endmsg;
           return StatusCode::FAILURE;
         }
+        // Get the IMainAppStatus interface of the ApplicationMgr
+        m_appProperty = serviceLocator();
+        if ( ! m_appProperty ) {
+          warning() << "Cannot retrieve IProperty interface of ApplicationMgr, "
+                       "the return code will not be changed" << endmsg;
+        }
         // Decode the signal names
         std::pair<int, bool> sigid;
         for (std::vector<std::string>::const_iterator signame = m_usedSignals.begin();
@@ -421,6 +428,28 @@ namespace Gaudi {
               }
               warning() << ")" << endmsg;
               m_stopRequested = true;
+              // Report the termination by signal at the end of the application
+              if (Gaudi::setAppReturnCode(m_appProperty, 128 + s->first).isFailure()) {
+                error() << "Could not set return code of the application ("
+                    << 128 + s->first << ")"
+                    << endmsg;
+              }
+              if (m_appProperty) {
+                // Check the current return code (we want to keep the first error)
+                IntegerProperty returnCode("ReturnCode", 0);
+                StatusCode sc = m_appProperty->getProperty(&returnCode);
+                if (sc.isSuccess()) {
+                  if (returnCode.value() == 0) {
+                    returnCode.setValue(128 + s->first);
+                    sc = m_appProperty->setProperty(returnCode);
+                  }
+                }
+                if (sc.isFailure()) {
+                  error() << "Could not set return code of the application ("
+                      << 128 + s->first << ")"
+                      << endmsg;
+                }
+              }
             }
           }
           if (m_stopRequested) {
@@ -446,6 +475,8 @@ namespace Gaudi {
       SmartIF<Gaudi::ISignalMonitor> m_signalMonitor;
       /// Pointer to the incident service.
       SmartIF<IIncidentSvc> m_incidentSvc;
+      /// Pointer to the interface to set the return code of the application.
+      SmartIF<IProperty> m_appProperty;
       /// Function to translate the signal name to the signal number.
       std::pair<int, bool> i_decodeSignal(const std::string &sig) {
         debug() << "Decoding signal declaration '" << sig << "'" << endmsg;

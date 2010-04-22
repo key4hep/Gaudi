@@ -125,6 +125,9 @@ ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
   m_propertyMgr->declareProperty("StalledEventMonitoring", m_stalledEventMonitoring = true,
       "Flag to enable/disable the monitoring and reporting of stalled events");
 
+  m_propertyMgr->declareProperty("ReturnCode", m_returnCode = 0,
+      "Return code of the application. Set internally in case of error conditions.");
+
   // Add action handlers to the appropriate properties
   m_SIGo.declareUpdateHandler  ( &ApplicationMgr::SIGoHandler         , this );
   m_SIExit.declareUpdateHandler( &ApplicationMgr::SIExitHandler       , this );

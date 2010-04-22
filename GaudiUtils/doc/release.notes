@@ -1,6 +1,10 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2010-04-22 - Marco Clemencic
+ - Set the return code of the application to (128 + signal number) when a signal
+   is trapped by the StopSignalHandler.
+
 ! 2010-04-21 - Marco Clemencic
  - Changed the messages in StalledEventMonitor to report about memory usage and
    not stop printing after 3 calls.

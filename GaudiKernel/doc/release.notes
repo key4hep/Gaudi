@@ -1,6 +1,12 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-04-22 - Marco Clemencic
+ - Use the property "ReturnCode" of the ApplicationMgr as return value of the
+   application (Gaudi.exe).
+ - Added a couple of helper functions to easily set/get the return code of the
+   application (GaudiKernel/AppReturnCode.h).
+
 ! 2010-04-20 - Marco Clemencic
  - Removed ICC warnings and remarks.
 

@@ -1,6 +1,12 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2010-04-22 - Marco Clemencic
+ - Added the integer property "ReturnCode" to the ApplicationMgr to record error
+   conditions occurring during the execution and that should trigger a non-zero
+   exit code (e.g. signals).
+ - Set the ReturnCode to 2 in case of problems opening files.
+
 ! 2010-04-20 - Marco Clemencic
  - Removed ICC warnings and remarks.
 

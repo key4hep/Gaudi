@@ -275,6 +275,9 @@ protected:
   // Flag to activate the printout of properties
   bool                 m_propertiesPrint ; ///< flag to activate the printout of properties
 
+  /// Property to record the error conditions occurring during the running.
+  IntegerProperty      m_returnCode;
+
 private:
    std::vector<std::string> m_okDlls;       ///< names of successfully loaded dlls
 };
