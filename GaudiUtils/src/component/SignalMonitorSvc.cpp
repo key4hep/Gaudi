@@ -427,7 +427,7 @@ namespace Gaudi {
             SmartIF<IEventProcessor> ep(serviceLocator());
             if (ep) {
               warning() << "Scheduling a stop" << endmsg;
-              ep->stopRun();
+              ep->stopRun().ignore();
             }
             else {
               warning() << "Cannot stop the processing because the IEventProcessor interface cannot be retrieved." << endmsg;
