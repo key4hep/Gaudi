@@ -17,29 +17,40 @@ app = ApplicationMgr(TopAlg = [alg],
 
 </text></argument>
 <argument name="validator"><text>
+import re
+stdout = re.subn(r"size = [0-9]+(\.[0-9]*)? MB", "size = # MB", stdout)[0] 
+
 findReferenceBlock("""
+ApplicationMgr       INFO Application Manager Started successfully
 Sleepy               INFO Executing event 1
 Sleepy               INFO Sleeping for 11 seconds
-EventWatchdog     WARNING More than 2s to process an event.
-EventWatchdog     WARNING Other 2s and we are still on the same event.
-EventWatchdog     WARNING We are still at the same point:
-""", id = "1st_evt")
-findReferenceBlock("""
-EventWatchdog     WARNING I'm not going to print other messages for this event.
+EventWatchdog     WARNING More than 2s since the last BeginEvent
+EventWatchdog        INFO Current memory usage is virtual size = # MB, resident set size = # MB
+EventWatchdog     WARNING Other 2s passed
+EventWatchdog        INFO Current memory usage is virtual size = # MB, resident set size = # MB
+EventWatchdog     WARNING Other 2s passed
+EventWatchdog        INFO Current memory usage is virtual size = # MB, resident set size = # MB
+EventWatchdog     WARNING Other 2s passed
+EventWatchdog        INFO Current memory usage is virtual size = # MB, resident set size = # MB
+EventWatchdog     WARNING Other 2s passed
+EventWatchdog        INFO Current memory usage is virtual size = # MB, resident set size = # MB
 Sleepy               INFO Back from sleep
 EventWatchdog        INFO Starting a new event after ~10s
-""", signature_offset = 2, id = "1st_evt_end")
-findReferenceBlock("""
 Sleepy               INFO Executing event 2
 Sleepy               INFO Sleeping for 11 seconds
-EventWatchdog     WARNING More than 2s to process an event.
-EventWatchdog     WARNING Other 2s and we are still on the same event.
-EventWatchdog     WARNING We are still at the same point:
-""", id = "2nd_evt")
-findReferenceBlock("""
-EventWatchdog     WARNING I'm not going to print other messages for this event.
+EventWatchdog     WARNING More than 2s since the last BeginEvent
+EventWatchdog        INFO Current memory usage is virtual size = # MB, resident set size = # MB
+EventWatchdog     WARNING Other 2s passed
+EventWatchdog        INFO Current memory usage is virtual size = # MB, resident set size = # MB
+EventWatchdog     WARNING Other 2s passed
+EventWatchdog        INFO Current memory usage is virtual size = # MB, resident set size = # MB
+EventWatchdog     WARNING Other 2s passed
+EventWatchdog        INFO Current memory usage is virtual size = # MB, resident set size = # MB
+EventWatchdog     WARNING Other 2s passed
+EventWatchdog        INFO Current memory usage is virtual size = # MB, resident set size = # MB
 Sleepy               INFO Back from sleep
 EventWatchdog        INFO The last event took ~10s
-""", signature_offset = 2, id = "2nd_evt_end")
+ApplicationMgr       INFO Application Manager Stopped successfully
+""", stdout = stdout)
 </text></argument>
 </extension>

@@ -1,12 +1,16 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2010-04-21 - Marco Clemencic
+ - Changed the messages in StalledEventMonitor to report about memory usage and
+   not stop printing after 3 calls.
+
 ! 2010-04-20 - Marco Clemencic
  - Removed ICC warnings and remarks.
 
 ! 2010-04-19 - Marco Clemencic
  - Moved the EventTimeoutWatchdog thread from the EventLoopMgr to a dedicated
-   service in GaudiUtils.
+   service in GaudiUtils (StalledEventMonitor).
 
 ! 2010-04-16 - Marco Clemencic
  - Modified the implementation of the fix to bug #62374 (Handling of signal

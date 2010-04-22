@@ -10,6 +10,7 @@
 
 #include "GaudiKernel/WatchdogThread.h"
 #include "GaudiKernel/IIncidentSvc.h"
+#include "GaudiKernel/Memory.h"
 
 namespace {
   /// Specialized watchdog to monitor the event loop and spot possible infinite loops.
@@ -29,17 +30,15 @@ namespace {
     void action() {
       if (!m_counter) {
         log << MSG::WARNING << "More than " << getTimeout().total_seconds()
-            << "s to process an event." << endmsg;
-      }
-      else if (m_counter < 2) {
+            << "s since the last " << IncidentType::BeginEvent << endmsg;
+      } else {
         log << MSG::WARNING << "Other " << getTimeout().total_seconds()
-            << "s and we are still on the same event." << endmsg;
+            << "s passed" << endmsg;
       }
-      else if (m_counter < 3) {
-        log << MSG::WARNING << "We are still at the same point:" << endmsg;
-        // log << MSG::WARNING << "*** stack trace ***" << endmsg;
-        log << MSG::WARNING << "I'm not going to print other messages for this event." << endmsg;
-      }
+      log << MSG::INFO << "Current memory usage is"
+          " virtual size = " << System::virtualMemory() / 1024. << " MB"
+          ", resident set size = " << System::pagedMemory() / 1024.<< " MB"
+          << endmsg;
       ++m_counter;
     }
     void onPing() {
