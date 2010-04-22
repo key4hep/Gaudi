@@ -10,6 +10,8 @@
 
 #include <iostream>
 
+#include <csignal>
+
 namespace GaudiTesting {
 
   class DestructorCheckAlg: public GaudiAlgorithm {
@@ -44,9 +46,39 @@ namespace GaudiTesting {
     int m_counter;
   };
 
+  /**
+   * Simple algorithm that raise a signal after N events.
+   */
+  class SignallingAlg: public GaudiAlgorithm {
+    public:
+    SignallingAlg(const std::string& name, ISvcLocator *pSvcLocator):
+        GaudiAlgorithm(name, pSvcLocator){
+      declareProperty("EventCount", m_eventCount = 3,
+          "Number of events to let go before raising the signal");
+      declareProperty("Signal", m_signal = SIGINT,
+          "Signal to raise");
+    }
+    virtual ~SignallingAlg(){}
+    StatusCode execute(){
+      if (m_eventCount <= 0) {
+        info() << "Raising signal now" << endmsg;
+        std::raise(m_signal);
+      } else {
+        info() << m_eventCount << " events to go" << endmsg;
+      }
+      --m_eventCount;
+      return StatusCode::SUCCESS;
+    }
+    private:
+    /// Events to let go before the signal
+    int m_eventCount;
+    /// Signal (id) to raise
+    int m_signal;
+  };
 }
 
 #include "GaudiKernel/AlgFactory.h"
 
 DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, DestructorCheckAlg)
 DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, SleepyAlg)
+DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, SignallingAlg)

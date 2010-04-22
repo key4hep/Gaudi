@@ -1,6 +1,10 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2010-04-22 - Marco Clemencic
+ - Added an algorithm to test the signal handler (GaudiTesting::SignallingAlg)
+   and the QMTest test.
+
 ! 2010-04-20 - Marco Clemencic
  - Removed ICC warnings and remarks.
 
