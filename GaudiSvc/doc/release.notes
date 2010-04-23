@@ -1,6 +1,7 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+=============================== GaudiSvc v18r9 ===============================
 ! 2010-04-22 - Marco Clemencic
  - Changed the default values of ApplicationMgr properties StopOnSignal and
    StalledEventMonitoring.

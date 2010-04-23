@@ -1,6 +1,7 @@
 Package: GaudiPoolDb
 Package Manager: Markus Frank, Marco Clemencic
 
+============================== GaudiPoolDb v5r8 ==============================
 ! 2010-04-20 - Marco Clemencic
  - Removed ICC warnings and remarks.
 

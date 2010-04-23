@@ -1,6 +1,7 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+============================= GaudiPython v10r9 ==============================
 ! 2010-04-20 - Marco Clemencic
  - Removed ICC warnings and remarks.
 

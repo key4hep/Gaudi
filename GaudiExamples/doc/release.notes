@@ -1,6 +1,7 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v21r9 =============================
 ! 2010-04-23 - Marco Clemencic
  - Adapted the tests to the changed the default values of ApplicationMgr
    properties StopOnSignal and StalledEventMonitoring.

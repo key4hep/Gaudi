@@ -3,6 +3,7 @@
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! =============================================================================
 
+============================== GaudiGSL v7r6 =================================
 ! 2010-04-23 - Marco Clemencic
  - Minor fix to compile with gcc 4.5.0
 

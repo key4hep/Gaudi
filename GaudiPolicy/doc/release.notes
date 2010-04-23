@@ -1,8 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v10r7 ==============================
 ! 2010-04-23 - Marco Clemencic
- - Hack to allow the copmpilation with the gcc preview provided by LCGCMT
+ - Hack to allow the compilation with the gcc preview provided by LCGCMT
    (AKA gccmax).
 
 ! 2010-04-22 - Marco Clemencic

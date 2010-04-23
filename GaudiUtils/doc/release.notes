@@ -1,6 +1,7 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+============================== GaudiUtils v3r8 ===============================
 ! 2010-04-23 - Marco Clemencic
  - Minor fix to compile with gcc 4.5.0
 
