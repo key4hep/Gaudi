@@ -22,7 +22,7 @@ apply_pattern install_more_includes more="GaudiUtils"
 library         GaudiUtilsLib Lib/*.cpp -import=AIDA -import=Boost -no_static
 apply_pattern   linker_library    library="GaudiUtilsLib"
 # ============== constituents =================================================
-library GaudiUtils component/*.cpp -import=XercesC -import=Reflex -import=uuid -no_static
+library GaudiUtils component/*.cpp -import=XercesC -import=Reflex -import=uuid -import=Boost -no_static
 apply_pattern component_library library=GaudiUtils
 # ============== patterns =====================================================
 
@@ -32,3 +32,6 @@ private
 macro_append ROOT_linkopts " -lHist " \
               target-winxp " libHist.lib " \
              target-mac104 " -lHist -lMatrix "
+
+macro_append Boost_linkopts " $(Boost_linkopts_date_time) "
+
