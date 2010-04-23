@@ -12,7 +12,8 @@ alg = SignallingAlg(Signal = 2) # SIGINT
 #StopSignalHandler(Signals = ["SIGINT", "SIGXCPU"]) # this is the default
 
 app = ApplicationMgr(TopAlg = [alg],
-                     EvtSel = "NONE", EvtMax = 5)
+                     EvtSel = "NONE", EvtMax = 5,
+                     StopOnSignal = True)
                      
 MessageSvc().setDebug.append("EventLoopMgr")
 </text></argument>

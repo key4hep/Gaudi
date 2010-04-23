@@ -13,7 +13,8 @@ alg = SleepyAlg("Sleepy", SleepTime = 11)
 sem = StalledEventMonitor(EventTimeout = 2)
 
 app = ApplicationMgr(TopAlg = [alg],
-                     EvtSel = "NONE", EvtMax = 2)
+                     EvtSel = "NONE", EvtMax = 2,
+                     StalledEventMonitoring = True)
 
 </text></argument>
 <argument name="validator"><text>

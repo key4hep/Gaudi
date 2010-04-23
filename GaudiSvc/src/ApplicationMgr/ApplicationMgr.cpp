@@ -119,10 +119,10 @@ ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
 
   m_propertyMgr->declareProperty("ReflexPluginDebugLevel", m_reflexDebugLevel = 0 );
 
-  m_propertyMgr->declareProperty("StopOnSignal", m_stopOnSignal = true,
+  m_propertyMgr->declareProperty("StopOnSignal", m_stopOnSignal = false,
       "Flag to enable/disable the signal handler that schedule a stop of the event loop");
 
-  m_propertyMgr->declareProperty("StalledEventMonitoring", m_stalledEventMonitoring = true,
+  m_propertyMgr->declareProperty("StalledEventMonitoring", m_stalledEventMonitoring = false,
       "Flag to enable/disable the monitoring and reporting of stalled events");
 
   m_propertyMgr->declareProperty("ReturnCode", m_returnCode = 0,

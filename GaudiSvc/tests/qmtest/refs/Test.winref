@@ -1,20 +1,20 @@
 JobOptionsSvc        INFO
 //GP:================================================================================
-//GP: include "D:\Profiles\clemenci\cmtuser\GAUDI\GAUDI_HEAD\GaudiSvc\options\Test.opts" (0,0)
+//GP: include "D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiSvc\options\Test.opts" (0,0)
 ApplicationMgr.DLLs =  [ "GaudiSvcTest" ] ;                             //GP: (1,1)
 MessageSvc.OutputLevel = 1;                                             //GP: (1,1)
 ApplicationMgr.HistogramPersistency = "NONE";                           //GP: (1,1)
 ApplicationMgr.EvtSel = "NONE";                                         //GP: (1,1)
 ApplicationMgr.EvtMax = 100;                                            //GP: (1,1)
-//GP: include "D:\Profiles\clemenci\cmtuser\GAUDI\GAUDI_HEAD\GaudiSvc\options\CounterAlg.opts" (7,10)
+//GP: include "D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiSvc\options\CounterAlg.opts" (7,10)
 ApplicationMgr.TopAlg +=  [ "GaudiSvcTest::CounterTestAlg" ] ;          //GP: (1,1)
-//GP: end  "D:\Profiles\clemenci\cmtuser\GAUDI\GAUDI_HEAD\GaudiSvc\options\CounterAlg.opts" (2,1)
-//GP: include "D:\Profiles\clemenci\cmtuser\GAUDI\GAUDI_HEAD\GaudiSvc\options\StoreExplorer.opts" (8,10)
+//GP: end  "D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiSvc\options\CounterAlg.opts" (2,1)
+//GP: include "D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiSvc\options\StoreExplorer.opts" (8,10)
 ApplicationMgr.TopAlg +=  [ "StoreExplorerAlg/Explorer" ] ;             //GP: (1,1)
 Explorer.Printfreq = 1;                                                 //GP: (1,1)
 Explorer.Load = 1;                                                      //GP: (1,1)
-//GP: end  "D:\Profiles\clemenci\cmtuser\GAUDI\GAUDI_HEAD\GaudiSvc\options\StoreExplorer.opts" (6,1)
-//GP: include "D:\Profiles\clemenci\cmtuser\GAUDI\GAUDI_HEAD\GaudiSvc\options\MultiStore.opts" (9,10)
+//GP: end  "D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiSvc\options\StoreExplorer.opts" (6,1)
+//GP: include "D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiSvc\options\MultiStore.opts" (9,10)
 ApplicationMgr.ExtSvc +=  [ "MultiStoreSvc/EventDataSvc" ] ;            //GP: (1,1)
 EventDataSvc.Partitions =  [ "NAME='Buffer1' TYPE='EvtDataSvc/EvtBuff1'" , "NAME='Buffer2' TYPE='EvtDataSvc/EvtBuff2'" ] ;//GP: (1,1)
 EventDataSvc.DefaultPartition = "Buffer1";                              //GP: (1,1)
@@ -23,16 +23,16 @@ Exp.Printfreq = 1;                                                      //GP: (1
 Switcher.Partition = "Buffer2";                                         //GP: (1,1)
 Switcher.Tool = "PartitionSwitchTool";                                  //GP: (1,1)
 Switcher.PartitionSwitchTool.Actor = "EventDataSvc";                    //GP: (1,1)
-//GP: end  "D:\Profiles\clemenci\cmtuser\GAUDI\GAUDI_HEAD\GaudiSvc\options\MultiStore.opts" (10,1)
-//GP: end  "D:\Profiles\clemenci\cmtuser\GAUDI\GAUDI_HEAD\GaudiSvc\options\Test.opts" (10,1)
+//GP: end  "D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiSvc\options\MultiStore.opts" (10,1)
+//GP: end  "D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiSvc\options\Test.opts" (10,1)
 //GP:================================================================================
 
-JobOptionsSvc        INFO Job options successfully read in from D:\Profiles\clemenci\cmtuser\GAUDI\GAUDI_HEAD\GaudiSvc\options\Test.opts
+JobOptionsSvc        INFO Job options successfully read in from D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiSvc\options\Test.opts
 ApplicationMgr      DEBUG Getting my own properties
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on CERNTSLHCB01 on Fri Apr 16 15:45:42 2010
+                                          running on CERNTSLHCB03 on Fri Apr 23 11:11:25 2010
 ====================================================================================================================================
 ApplicationMgr       INFO Successfully loaded modules : GaudiSvcTest
 ApplicationMgr       INFO Application Manager Configured successfully
@@ -49,17 +49,6 @@ EventDataSvc      VERBOSE ServiceLocatorHelper::service: found service EventPers
 EventDataSvc      VERBOSE ServiceLocatorHelper::service: found service EventPersistencySvc
 ServiceManager      DEBUG Initializing service AppMgrRunable
 AppMgrRunable       DEBUG Service base class initialized successfully
-ServiceManager      DEBUG Initializing service Gaudi::Utils::StopSignalHandler
-Gaudi::Utils::S...  DEBUG Service base class initialized successfully
-Gaudi::Utils::S...  DEBUG Service base class initialized successfully
-Gaudi::Utils::S...  DEBUG Decoding signal declaration 'SIGINT'
-Gaudi::Utils::S...VERBOSE Matched signal 'SIGINT' (2, Interrupt)
-Gaudi::Utils::S...  DEBUG Decoding signal declaration 'SIGXCPU'
-Gaudi::Utils::S...WARNING Cannot understand signal identifier 'SIGXCPU', ignored
-Gaudi::Utils::S...  DEBUG Stopping on the signals:
-Gaudi::Utils::S...  DEBUG 	SIGINT: Interrupt (2)
-Gaudi::Utils::S...  DEBUG Register to the IncidentSvc
-IncidentSvc         DEBUG Adding [BeginEvent] listener 'Gaudi::Utils::StopSignalHandler' with priority 0
 ServiceManager      DEBUG Initializing service EventLoopMgr
 EventLoopMgr        DEBUG Service base class initialized successfully
 IncidentSvc         DEBUG Adding [AbortEvent] listener '<unknown>' with priority 0
@@ -91,11 +80,9 @@ ApplicationMgr       INFO Application Manager Initialized successfully
 ServiceManager      DEBUG Starting service IncidentSvc
 ServiceManager      DEBUG Starting service EventDataSvc
 ServiceManager      DEBUG Starting service AppMgrRunable
-ServiceManager      DEBUG Starting service Gaudi::Utils::StopSignalHandler
 ServiceManager      DEBUG Starting service EventPersistencySvc
 ServiceManager      DEBUG Starting service EvtBuff1
 ServiceManager      DEBUG Starting service EvtBuff2
-ServiceManager      DEBUG Starting service Gaudi::Utils::SignalMonitorSvc
 ServiceManager      DEBUG Starting service CounterSvc
 ServiceManager      DEBUG Starting service ToolSvc
 ToolSvc             DEBUG START transition for AlgTools
@@ -104,507 +91,407 @@ ServiceManager      DEBUG Starting service HistogramPersistencySvc
 ServiceManager      DEBUG Starting service HistogramDataSvc
 ServiceManager      DEBUG Starting service EventLoopMgr
 ApplicationMgr       INFO Application Manager Started successfully
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
 Explorer          VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
-Exp                  INFO ========= /Event[0xf780d0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf70700@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
 Exp               VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf77470@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf68b80@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf5a1d8@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf5a568@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf6f350@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf6b838@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf6f390@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf713e0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78190@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71420@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf781d0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71460@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78210@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf714a0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78250@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf714e0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78290@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71520@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78490@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71640@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf784d0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71680@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78510@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf716c0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78550@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71700@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78590@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71740@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf785d0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71780@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78610@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf717c0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78650@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71800@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78690@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71840@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf786d0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71880@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78710@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf718c0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78750@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71900@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78790@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71940@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf787d0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71980@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78810@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf719c0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78850@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71a00@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78890@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71a40@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf788d0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71a80@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78910@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71ac0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78950@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71b00@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78990@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71b40@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf789d0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71b80@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78a10@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71bc0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78a50@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71c00@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78a90@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71c40@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78ad0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71c80@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78b10@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71cc0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78b50@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71d00@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78b90@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71d40@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78bd0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71d80@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78c10@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71dc0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78c50@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71e00@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78c90@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71e40@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78cd0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71e80@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78d10@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71ec0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78d50@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71f00@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78d90@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71f40@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78dd0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71f80@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78e10@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf71fc0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78e50@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72000@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78e90@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72040@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78ed0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72080@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78f10@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf720c0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78f50@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72100@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78f90@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72140@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf78fd0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72180@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79010@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf721c0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79050@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72200@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79090@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72240@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf790d0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72280@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79110@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf722c0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79150@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72300@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79190@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72340@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf791d0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72380@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79210@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf723c0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79250@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72400@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79290@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72440@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf792d0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72480@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79310@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf724c0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79350@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72500@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79390@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72540@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf793d0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72580@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79410@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf725c0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79450@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72600@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79490@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72640@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf794d0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72680@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79510@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf726c0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79550@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72700@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79590@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72740@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf795d0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72780@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79610@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf727c0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79650@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72800@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79690@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72840@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf796d0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72880@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79710@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf728c0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79750@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72900@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79790@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72940@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf797d0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72980@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79810@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf729c0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79850@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72a00@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79890@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72a40@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf798d0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72a80@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79910@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72ac0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79950@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72b00@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79990@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72b40@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf799d0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72b80@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79a10@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72bc0@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79a50@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72c00@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79a90@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72c40@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
-IncidentSvc       VERBOSE Calling 'Gaudi::Utils::StopSignalHandler' for incident [BeginEvent]
-Explorer             INFO ========= /Event[0xf78110@EvtBuff1]:
+Explorer             INFO ========= /Event[0xf71360@EvtBuff1]:
 Explorer             INFO +--> /Event [No Address]  DataObject
-Exp                  INFO ========= /Event[0xf79ad0@EvtBuff2]:
+Exp                  INFO ========= /Event[0xf72c80@EvtBuff2]:
 Exp                  INFO +--> /Event [No Address]  DataObject
 ServiceManager      DEBUG Stopping service EventLoopMgr
 ServiceManager      DEBUG Stopping service HistogramDataSvc
@@ -613,11 +500,9 @@ ServiceManager      DEBUG Stopping service ToolSvc
 ToolSvc             DEBUG STOP transition for AlgTools
 ToolSvc           VERBOSE Switcher.PartitionSwitchTool::stop()
 ServiceManager      DEBUG Stopping service CounterSvc
-ServiceManager      DEBUG Stopping service Gaudi::Utils::SignalMonitorSvc
 ServiceManager      DEBUG Stopping service EvtBuff2
 ServiceManager      DEBUG Stopping service EvtBuff1
 ServiceManager      DEBUG Stopping service EventPersistencySvc
-ServiceManager      DEBUG Stopping service Gaudi::Utils::StopSignalHandler
 ServiceManager      DEBUG Stopping service AppMgrRunable
 ServiceManager      DEBUG Stopping service EventDataSvc
 ServiceManager      DEBUG Stopping service IncidentSvc
@@ -644,12 +529,9 @@ ServiceManager      DEBUG Finalizing service CounterSvc
 CounterSvc        SUCCESS Number of counters : 1
 CounterSvc        SUCCESS        Counter :: Group         |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
 CounterSvc        SUCCESS     "TotalCount::CounterTest"   |       100 |        100 |     1.0000 |    0.00000 |      1.0000 |      1.0000 |
-ServiceManager      DEBUG Finalizing service Gaudi::Utils::SignalMonitorSvc
 ServiceManager      DEBUG Finalizing service EvtBuff2
 ServiceManager      DEBUG Finalizing service EvtBuff1
 ServiceManager      DEBUG Finalizing service EventPersistencySvc
-ServiceManager      DEBUG Finalizing service Gaudi::Utils::StopSignalHandler
-IncidentSvc         DEBUG Removing [BeginEvent] listener 'Gaudi::Utils::StopSignalHandler'
 ServiceManager      DEBUG Finalizing service AppMgrRunable
 ServiceManager      DEBUG Finalizing service EventDataSvc
 ServiceManager      DEBUG Finalizing service IncidentSvc
@@ -657,18 +539,16 @@ IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0(+-0)/0/0[ms] T
 ServiceManager      DEBUG Finalizing service HistogramDataSvc
 ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
 ServiceManager      DEBUG Service reference count check:
-ServiceManager      DEBUG ---- MessageSvc (refCount = 17)
+ServiceManager      DEBUG ---- MessageSvc (refCount = 15)
 ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)
 ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 2)
 ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 3)
 ServiceManager      DEBUG ---- IncidentSvc (refCount = 2)
 ServiceManager      DEBUG ---- EventDataSvc (refCount = 3)
 ServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)
-ServiceManager      DEBUG ---- Gaudi::Utils::StopSignalHandler (refCount = 2)
 ServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)
 ServiceManager      DEBUG ---- EvtBuff1 (refCount = 2)
 ServiceManager      DEBUG ---- EvtBuff2 (refCount = 3)
-ServiceManager      DEBUG ---- Gaudi::Utils::SignalMonitorSvc (refCount = 2)
 ServiceManager      DEBUG ---- CounterSvc (refCount = 2)
 ServiceManager      DEBUG ---- ToolSvc (refCount = 2)
 ServiceManager      DEBUG ---- EventLoopMgr (refCount = 3)

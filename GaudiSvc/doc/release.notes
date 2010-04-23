@@ -2,6 +2,11 @@ Package: GaudiSvc
 Package manager : Marco Clemencic
 
 ! 2010-04-22 - Marco Clemencic
+ - Changed the default values of ApplicationMgr properties StopOnSignal and
+   StalledEventMonitoring.
+   The event watchdog and the signal handler are disabled by default.
+
+! 2010-04-22 - Marco Clemencic
  - Added the integer property "ReturnCode" to the ApplicationMgr to record error
    conditions occurring during the execution and that should trigger a non-zero
    exit code (e.g. signals).
