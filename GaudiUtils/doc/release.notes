@@ -1,6 +1,9 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2010-04-23 - Marco Clemencic
+ - Minor fix to compile with gcc 4.5.0
+
 ! 2010-04-22 - Marco Clemencic
  - Set the return code of the application to (128 + signal number) when a signal
    is trapped by the StopSignalHandler.

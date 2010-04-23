@@ -6,6 +6,7 @@
 // ============================================================================
 #include <cmath>
 #include <iostream>
+#include <cstdio>
 #include "GaudiKernel/SystemOfUnits.h"
 #include "GaudiMath/GaudiMath.h"
 

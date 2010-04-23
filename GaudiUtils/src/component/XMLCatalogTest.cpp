@@ -1,5 +1,6 @@
 #include "XMLFileCatalog.h"
 #include <iostream>
+#include <cstdio>
 #include <ctime>
 
 using namespace Gaudi;
