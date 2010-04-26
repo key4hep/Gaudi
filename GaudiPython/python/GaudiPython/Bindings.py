@@ -744,6 +744,36 @@ class AppMgr(iService) :
                 self._optsvc.addPropertyToCatalogue(n, StringProperty(p,str(v)))
         if hasattr(Configurable,"_configurationLocked"):
             Configurable._configurationLocked = True
+        
+        # Ensure that the exit method is called when exiting from Python 
+        import atexit
+        atexit.register(self.exit)
+
+        #---Hack to avoid bad interactions with the ROOT exit handler
+        # Look for an exit handler installed by ROOT
+        root_handler_installed = False
+        for h in atexit._exithandlers:
+            func = h[0]
+            if hasattr(func, "__module__") and func.__module__ == "ROOT":
+                root_handler_installed = True
+                break
+        
+        # If the handler is not yet installed, let's install our private version
+        # that detects that the ROOT exit handler is installed and add our own
+        # after it to ensure it is called before. 
+        if not root_handler_installed:
+            orig_register = atexit.register
+            def register(func, *targs, **kargs):
+                orig_register(func, *targs, **kargs)
+                if hasattr(func, "__module__") and func.__module__ == "ROOT":
+                    orig_register(self.exit)
+                    # we do not need to remove out handler from the list because
+                    # it can be safely called more than once
+            register.__doc__ = (orig_register.__doc__ +
+                                "\nNote: version hacked by GaudiPython to work " +
+                                "around a problem with the ROOT exit handler")
+            atexit.register = register
+
     def state(self) : return self._isvc.FSMState()
     def FSMState(self) : return self._isvc.FSMState()
     def targetFSMState(self) : return self._isvc.targetFSMState()
@@ -1084,7 +1114,7 @@ class PyAlgorithm (_PyAlgorithm) :
 
 #----Enable tab completion------------------------------------------------------------
 try:
-    import rlcompleter,readline
+    import rlcompleter, readline
     readline.parse_and_bind("tab: complete")
 except:
     pass
