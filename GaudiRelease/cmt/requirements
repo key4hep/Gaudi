@@ -74,7 +74,10 @@ apply_pattern LHCb_external pkg=cernlib
 apply_pattern LHCb_external pkg=fftw
 apply_pattern LHCb_external pkg=fastjet
 apply_pattern LHCb_external pkg=cx_oracle
-#apply_pattern LHCb_external package=
+apply_pattern LHCb_external pkg=pytools
+apply_pattern LHCb_external pkg=pyanalysis
+apply_pattern LHCb_external pkg=pygraphics
+#apply_pattern LHCb_external pkg=
 
 # -- LHCbGrid external packages --
 apply_pattern LHCb_external ext=Grid pkg=gfal
