@@ -965,6 +965,8 @@ pattern QMTestCommon \
   private ; \
     macro use_qmtest "" QMTest "QMtest v* LCG_Interfaces -no_auto_imports" ; \
     use $(use_qmtest) ; \
+    macro use_pytools "" QMTest "pytools * LCG_Interfaces -no_auto_imports" ; \
+    use $(use_pytools) ; \    
     set QMTESTRESULTS "" QMTest "../../$(tag)/results.qmr" ; \
   end_private
 

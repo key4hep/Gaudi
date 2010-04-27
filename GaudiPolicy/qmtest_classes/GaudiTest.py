@@ -1654,8 +1654,7 @@ class GaudiExeTest(ExecTestBase):
 try:
     import json
 except ImportError:
-    # Hack: json is not available, so I use the version we ship 
-    sys.path.append(os.path.dirname(__file__))
+    # Use simplejson for LCG
     import simplejson as json
 
 class HTMLResultStream(ResultStream):

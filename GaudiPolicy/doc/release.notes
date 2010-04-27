@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-04-27 - Marco Clemencic
+ - Use the simplejson Python module from LCG instead of shipping it.
+
 ============================= GaudiPolicy v10r7 ==============================
 ! 2010-04-23 - Marco Clemencic
  - Hack to allow the compilation with the gcc preview provided by LCGCMT
