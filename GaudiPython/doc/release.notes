@@ -1,6 +1,10 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2010-05-11 - Marco Clemencic
+ - Fixed bug #64571: Python 2.6 warnings
+   Removed extra arguments in the call to "object.__new__".
+
 ! 2010-04-26 - Marco Clemencic
  - Re-introduce the usage of the exit handler to finalize the application when
    exiting from Python.

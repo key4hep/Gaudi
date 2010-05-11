@@ -77,7 +77,7 @@ class Task(object) :
         initializeRemote, process and finalize.   """
     _initializeDone = False
     def __new__ ( cls, *args, **kwargs ):
-        task = object.__new__( cls, *args, **kwargs )
+        task = object.__new__( cls )
         task.output = ()
         task.environ = {}
         for k,v in os.environ.items(): task.environ[k] = v

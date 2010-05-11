@@ -657,7 +657,7 @@ class AppMgr(iService) :
     def __new__ ( cls, *args, **kwargs ):
         global _gaudi
         if not _gaudi :
-            newobj = object.__new__( cls, *args, **kwargs )
+            newobj = object.__new__( cls )
             cls.__init__(newobj, *args, **kwargs)
             _gaudi = newobj
         return _gaudi

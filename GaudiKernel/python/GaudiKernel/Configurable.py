@@ -204,8 +204,8 @@ class Configurable( object ):
                 #  If the instance found is ConfigurableGeneric then
                 #  we create a new one with the proper type and fill with
                 #  the contents of the generic one
-                newconf = object.__new__( cls, *args, **kwargs )
-                cls.__init__( newconf, *args )
+                newconf = object.__new__( cls )
+                cls.__init__( newconf, *args, **kwargs )
                 #  initialize with the properties of generic configurable
                 #  (we map the names of the properties to lowercase versions because
                 #  old options are not case sensitive)
@@ -234,7 +234,7 @@ class Configurable( object ):
                 return conf
 
         # still here: create a new instance and initialize it
-        conf = object.__new__( cls, *args, **kwargs )
+        conf = object.__new__(cls)
         cls.__init__( conf, *args, **kwargs )
 
         # update normal, per-class cache
@@ -332,7 +332,7 @@ class Configurable( object ):
 
     # ownership rules of self through copying
     def __deepcopy__( self, memo ):
-        newconf = object.__new__( self.__class__, self.getName() )
+        newconf = object.__new__( self.__class__ )
         self.__class__.__init__( newconf, self.getName() )
 
         for proxy in self._properties.values():

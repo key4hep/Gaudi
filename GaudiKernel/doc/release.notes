@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-05-11 - Marco Clemencic
+ - Fixed bug #64571: Python 2.6 warnings
+   Removed extra arguments in the call to "object.__new__".
+
 ============================= GaudiKernel v27r9 ==============================
 ! 2010-04-22 - Marco Clemencic
  - Use the property "ReturnCode" of the ApplicationMgr as return value of the
