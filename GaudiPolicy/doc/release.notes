@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-05-12 - Marco Clemencic
+ - Fixed a compilation problem on MacOSX 10.6.
+
 ! 2010-04-27 - Marco Clemencic
  - Use the simplejson Python module from LCG instead of shipping it.
 

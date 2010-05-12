@@ -611,6 +611,11 @@ macro cppflags         " -fmessage-length=0 -Df2cFortran -fPIC -shared -D_GNU_SO
       target-darwin    " -Df2cFortran -fPIC -D_GNU_SOURCE -Dunix -pipe -ansi -Wall -Wextra -Wno-long-double " \
       target-winxp     '$(includes) /D "WIN32" /D "_MBCS"  /D "_WINDOWS" /FD /c /nologo /W3 /GX /MD /GR /Zm500'
 
+# @TODO: gcc 4.2 on mac (10.6) doesn't support anymore -Wno-long-double
+# probably it is pointless on 10.5 too, but for sake of backward compatibility...
+macro_remove cppflags "" \
+      target-darwin&target-gcc42    "-Wno-long-double"
+
 ##############################################################################
 # Intel compiler support
 macro_remove cppflags "" target-icc "-pedantic"
