@@ -673,7 +673,8 @@ macro_append pp_cppflags "" \
 
 macro_append cppflags  "" \
       target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32"
+      target-gcc&target-i386&host-x86_64 " -m32" \
+      target-gcc&target-i386&host-darwin " -m32"
 
 # ---- Disable warnings coming from external libraries
 #      the hacks can be disabled with the tag "no-hide-warnings".
@@ -699,11 +700,13 @@ macro for "$(for_name)"
       
 macro_append fflags  "" \
       target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32"
+      target-gcc&target-i386&host-x86_64 " -m32" \
+      target-gcc&target-i386&host-darwin " -m32"
 
 macro_append shlibflags ""\
       target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32"
+      target-gcc&target-i386&host-x86_64 " -m32" \
+      target-gcc&target-i386&host-darwin " -m32"
 
 macro fflags           "-fmessage-length=0 -O2 -fdollar-ok -ff90 -w -fPIC" \
       target-gcc4      "-fmessage-length=0 -O2 -fdollar-ok -w -fPIC" \
@@ -722,7 +725,8 @@ macro_append cflags " -fmessage-length=0 -fPIC " \
              target-winxp    " "
 macro_append cflags  "" \
       target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32"
+      target-gcc&target-i386&host-x86_64 " -m32" \
+      target-gcc&target-i386&host-darwin " -m32"
 
 # macro_append cflags " -msse2 -mfpmath=sse" \
 #             target-winxp    " /arch:SSE2"
@@ -750,7 +754,8 @@ macro_append cpplinkflags "" \
 
 macro_append cpplinkflags  "" \
       target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32"
+      target-gcc&target-i386&host-x86_64 " -m32" \
+      target-gcc&target-i386&host-darwin " -m32"
 
 macro_append cpplinkflags "" \
       target-cov " $(linkdebugflags) "
@@ -776,7 +781,8 @@ macro_append componentshr_linkopts "" \
 
 macro_append componentshr_linkopts "" \
       target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32"
+      target-gcc&target-i386&host-x86_64 " -m32" \
+      target-gcc&target-i386&host-darwin " -m32"
 
 macro libraryshr_linkopts   "" \
       target-linux          "-fPIC -ldl -Wl,--as-needed " \
@@ -790,7 +796,8 @@ macro_append libraryshr_linkopts   "" \
 
 macro_append libraryshr_linkopts   "" \
       target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32"
+      target-gcc&target-i386&host-x86_64 " -m32" \
+      target-gcc&target-i386&host-darwin " -m32"
 
 # Add 64-bit link options for SLC5. This overrides the default library segment
 # alignment of 1MB
