@@ -28,6 +28,11 @@ using namespace xercesc;
 using namespace Gaudi;
 using namespace std;
 
+#if _XERCES_VERSION <= 30000
+// API change between XercesC 2 and 3
+#define setIdAttribute(a, b) setIdAttribute(a)
+#endif
+
 PLUGINSVC_FACTORY(XMLFileCatalog,IInterface*(std::string, IMessageSvc*))
 
 namespace {
@@ -368,7 +373,7 @@ std::pair<DOMElement*,DOMElement*> XMLFileCatalog::i_registerFID(CSTR fid) const
       DOMNode* fde = doc->getElementsByTagName(XMLStr("*"))->item(0);
       file = m_doc->createElement(XMLStr("File"));
       file->setAttribute(Attr_ID, XMLStr(fid));
-      file->setIdAttribute(Attr_ID);
+      file->setIdAttribute(Attr_ID, true);
       fde->appendChild(file);
       m_update = true;
     }
@@ -416,7 +421,7 @@ void XMLFileCatalog::registerPFN(CSTR fid, CSTR pfn, CSTR ftype) const {
       phyelem->appendChild(fnelem);
       fnelem->setAttribute(Attr_ftype,XMLStr(ftype));
       fnelem->setAttribute(Attr_name,XMLStr(pfn));
-      fnelem->setIdAttribute(Attr_name);
+      fnelem->setIdAttribute(Attr_name, true);
       m_update = true;
     }
     return;
@@ -444,7 +449,7 @@ void XMLFileCatalog::registerLFN(CSTR fid, CSTR lfn) const {
       fnelem = getDoc(true)->createElement(LFNNODE);
       logelem->appendChild(fnelem);
       fnelem->setAttribute(Attr_name,XMLStr(lfn));
-      fnelem->setIdAttribute(Attr_name);
+      fnelem->setIdAttribute(Attr_name, true);
       m_update = true;
     }
     return;
@@ -458,11 +463,20 @@ void XMLFileCatalog::commit()    {
       string xmlfile = getfile(true);
       XMLStr ii("LS");
       DOMImplementation *imp = DOMImplementationRegistry::getDOMImplementation(ii);
-      DOMWriter         *wr  = ((DOMImplementationLS*)imp)->createDOMWriter();
       XMLFormatTarget   *tar = new LocalFileFormatTarget(xmlfile.c_str());
+#if _XERCES_VERSION <= 30000
+      DOMWriter         *wr  = imp->createDOMWriter();
       wr->setFeature(XMLUni::fgDOMWRTFormatPrettyPrint, true);
       wr->writeNode(tar, *m_doc);
       wr->release();
+#else
+      DOMLSSerializer   *wr     = imp->createLSSerializer();
+      DOMLSOutput       *output = imp->createLSOutput();
+      output->setByteStream(tar);
+      wr->write(m_doc, output);
+      output->release();
+      wr->release();
+#endif
       delete  tar;
     }
   }

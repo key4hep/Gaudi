@@ -1,6 +1,9 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2010-05-17 - Marco Clemencic
+ - Adepted to work with Xerces-C 3.1.0 (as well as 2.8.0).
+
 ============================== GaudiUtils v3r8 ===============================
 ! 2010-04-23 - Marco Clemencic
  - Minor fix to compile with gcc 4.5.0
