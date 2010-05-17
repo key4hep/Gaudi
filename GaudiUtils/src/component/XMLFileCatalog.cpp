@@ -141,7 +141,8 @@ namespace {
     if (m.find("The values for attribute 'name' must be names or name tokens")!=string::npos ||
       m.find("The values for attribute 'ID' must be names or name tokens")!=string::npos   ||
       m.find("for attribute 'name' must be Name or Nmtoken")!=string::npos                 ||
-      m.find("for attribute 'ID' must be Name or Nmtoken")!=string::npos      )
+      m.find("for attribute 'ID' must be Name or Nmtoken")!=string::npos                   ||
+      m.find("for attribute 'ID' is invalid Name or NMTOKEN value")!=string::npos      )
       return;
     string sys(_toString(e.getSystemId()));
     MsgStream log(m_msg,"XMLCatalog");
@@ -470,9 +471,10 @@ void XMLFileCatalog::commit()    {
       wr->writeNode(tar, *m_doc);
       wr->release();
 #else
-      DOMLSSerializer   *wr     = imp->createLSSerializer();
       DOMLSOutput       *output = imp->createLSOutput();
       output->setByteStream(tar);
+      DOMLSSerializer   *wr     = imp->createLSSerializer();
+      wr->getDomConfig()->setParameter(XMLStr("format-pretty-print"), true);
       wr->write(m_doc, output);
       output->release();
       wr->release();
