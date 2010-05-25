@@ -1,6 +1,10 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2010-02-20 - Vanya Belyaev
+ - Patch #3677: Iteration over map-like containers in python
+   Proper pythonization of the class Gaudi::Utils::MapBase.
+
 ! 2010-05-11 - Marco Clemencic
  - Fixed bug #64571: Python 2.6 warnings
    Removed extra arguments in the call to "object.__new__".

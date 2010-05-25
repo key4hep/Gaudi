@@ -82,7 +82,8 @@
   <class name    = "InterfaceID"/>
   
   <class name    = "Gaudi::StringKey" />
-  
+  <class name    = "Gaudi::Utils::MapBase" />
+
   <class name = "IErrorTool" />
   <class name = "IGenericTool" />
   <class name = "IHistoTool" />
@@ -110,7 +111,10 @@
     <class name    = "GaudiAlg::HistoBinEdges" />
     <class pattern = "std::list<std::pair<InterfaceID,*" />
     <class pattern = "std::vector<*table_node*"          />
-    <class pattern = "GaudiUtils::HashMap<*>"            />
+    <class pattern = "GaudiUtils::HashMap<*Tuple*>"       />
+    <class pattern = "GaudiUtils::HashMap<*Histo*>"       />
+    <class pattern = "GaudiUtils::HashMap<*Profi*>"       />
+    <class pattern = "GaudiUtils::HashMap<GaudiAlg::ID*>" />
     <class pattern = "GaudiAlg::*Map*"                   />
     <class pattern = "GaudiHistos<*>::*Map*"             />
     <class pattern = "GaudiTuples<*>::*Map*"             />

@@ -16,17 +16,9 @@
 // ============================================================================
 /** @file 
  *  Implementation file for the function 
- *    GaudiUtils::_throw_out_of_range_exception_
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date 2006-11-26
  */
-// ============================================================================
-/// throw the out_of_range_exception 
-// ============================================================================
-void GaudiUtils::_throw_out_of_range_exception_()
-{
-  throw std::out_of_range("GaudiUtils::XXXMap::invalid key!") ;
-}
 // ============================================================================
 
 // ============================================================================

@@ -12,6 +12,10 @@
 #include "GaudiKernel/StatEntity.h"
 #include "GaudiKernel/SerializeSTL.h"
 #include "GaudiKernel/StringKey.h"
+#include "GaudiKernel/MapBase.h"
+#include "GaudiKernel/Map.h"
+#include "GaudiKernel/HashMap.h"
+#include "GaudiKernel/VectorMap.h"
 #include "GaudiKernel/Range.h"
 
 #ifdef _WIN32
@@ -193,6 +197,7 @@ namespace GaudiPython
 
     __Instantiations  () ;
     ~__Instantiations () ;
+
   };
 
 } // end of namespace GaudiPython

@@ -1,6 +1,11 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-05-25 - Vanya Belyaev
+ - Patch #3677: Iteration over map-like containers in python
+   Added an empty base class for Map and HashMap to be able to easily pythonize
+   the maps and make them behave as Python dictionaries.
+
 ! 2010-05-11 - Marco Clemencic
  - Fixed bug #64571: Python 2.6 warnings
    Removed extra arguments in the call to "object.__new__".

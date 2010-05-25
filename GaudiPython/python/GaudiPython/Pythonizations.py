@@ -117,3 +117,340 @@ if hasattr ( gbl.Gaudi.StringKey ,'__cpp_ne__' ) :
 if  gbl.gROOT.GetVersionInt() <= 51800 :
     import libPyROOT
     gbl.GaudiPython.PyROOTPickle.Initialize(libPyROOT, libPyROOT.ObjectProxy)
+
+# =============================================================================
+## decorate some map-like objects 
+# =============================================================================
+## The iterator for MapBase class
+#
+#  @code
+#
+#    >>> m = ...  ## the map
+#    >>> for key in m : print key , m[key]
+#    
+#  @endcode 
+#  @see Gaudi::Utils::MapBase
+#  @see GaudiUtils::Map
+#  @see GaudiUtils::HashMap
+#  @see GaudiUtils::VectorMap
+#  @see GaudiUtils::Map::key_at
+#  @see GaudiUtils::HashMap::key_at
+#  @see GaudiUtils::VectorMap::key_at
+#  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
+#  @date 2010-02-20
+def __mapbase_iter__ ( self ) :
+    """
+    The iterator for MapBase-based containers
+    
+    >>> m = ...  ## the map
+    >>> for key in m : print key , m[key]
+    
+    """
+    _size  = len ( self )
+    _index = 0
+    while _index < _size :
+        yield self.key_at ( _index )
+        _index +=1
+
+# =============================================================================
+## The iterator for MapBase class
+#
+#  @code
+#
+#    >>> m = ...  ## the map
+#    >>> for key,value in m.iteritems() : print key , value 
+#    
+#  @endcode 
+#  @see Gaudi::Utils::MapBase
+#  @see GaudiUtils::Map
+#  @see GaudiUtils::HashMap
+#  @see GaudiUtils::VectorMap
+#  @see GaudiUtils::Map::key_at
+#  @see GaudiUtils::HashMap::key_at
+#  @see GaudiUtils::VectorMap::key_at
+#  @see GaudiUtils::Map::value_at
+#  @see GaudiUtils::HashMap::value_at
+#  @see GaudiUtils::VectorMap::value_at
+#  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
+#  @date 2010-02-20
+def __mapbase_iteritems__ ( self ) :
+    """
+    The iterator for MapBase-based containers
+    
+    >>> m = ...  ## the map
+    >>> for key,value in m.iteritems() : print key, value
+    
+    """
+    _size  = len ( self )
+    _index = 0
+    while _index < _size :
+        _key = self.key_at  ( _index ) 
+        yield ( _key , self.at ( _key ) ) 
+        _index +=1
+        
+# ============================================
+## Get the list of keys for the map
+#
+#  @code
+#
+#    >>> m    = ...        ## the map
+#    >>> keys = m.keys()   ## get the list of keys
+#
+#  @endcode
+#  @see Gaudi::Utils::MapBase
+#  @see GaudiUtils::Map
+#  @see GaudiUtils::HashMap
+#  @see GaudiUtils::VectorMap
+#  @see GaudiUtils::Map::key_at
+#  @see GaudiUtils::HashMap::key_at
+#  @ see GaudiUtils::VectorMap::key_at
+#  @author Vanya BELYAEV Ivan.BElyaev@itep.ru
+#  @date 2010-02-20
+def __mapbase_keys__ ( self ) :
+    """
+    Get the list of keys 
+    
+    >>> m = ...           ## the map
+    >>> keys = m.keys()   ## get the list of keys 
+    
+    """
+    _size  = len ( self )
+    _keys  = [] 
+    for i in range ( 0 , _size ) : _keys.append ( self.key_at ( i ) ) 
+    return _keys
+
+# ============================================
+## Get the list of items for the map
+#
+#  @code
+#
+#    >>> m     = ...        ## the map
+#    >>> items = m.items()   ## get the list of items
+#
+#  @endcode
+#  @see Gaudi::Utils::MapBase
+#  @see GaudiUtils::Map
+#  @see GaudiUtils::HashMap
+#  @see GaudiUtils::VectorMap
+#  @see GaudiUtils::Map::key_at
+#  @see GaudiUtils::HashMap::key_at
+#  @ see GaudiUtils::VectorMap::key_at
+#  @author Vanya BELYAEV Ivan.BElyaev@itep.ru
+#  @date 2010-02-20
+def __mapbase_items__ ( self ) :
+    """
+    Get the list of items
+    
+    >>> m     = ...        ## the map
+    >>> items = m.keys()   ## get the list of items
+    
+    """
+    _size  = len ( self )
+    _items = []
+    for i in range ( 0 , _size )  : 
+        _key   = self.key_at   ( i     )
+        _value = self.at       ( _key  )  
+        _items.append ( ( _key , _value ) ) 
+    return _items
+
+# ============================================
+## Get the list of values for the map
+#
+#  @code
+#
+#    >>> m      = ...           ## the map
+#    >>> values = m.values ()   ## get the list of values
+#
+#  @endcode
+#  @see Gaudi::Utils::MapBase
+#  @see GaudiUtils::Map
+#  @see GaudiUtils::HashMap
+#  @see GaudiUtils::VectorMap
+#  @see GaudiUtils::Map::value_at
+#  @see GaudiUtils::HashMap::value_at
+#  @ see GaudiUtils::VectorMap::value_at
+#  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
+#  @date 2010-02-20
+def __mapbase_values__ ( self ) :
+    """
+    Get the list of values
+    
+    >>> m      = ...          ## the map
+    >>> values = m.values()   ## get the list of values
+    
+    """
+    _size   = len ( self )
+    _values = []
+    for i in range ( 0 , _size ) : 
+        _value = self.value_at ( i ) 
+        _values.append ( _value ) 
+    return _values
+
+# ============================================
+## Check if the certain key is in the map 
+#
+#  @code
+#
+#    >>> m      = ...        ## the map
+#    >>> if 'a' in m : print 'key is in the map!'
+#
+#  @endcode
+#  @see Gaudi::Utils::MapBase
+#  @see GaudiUtils::Map
+#  @see GaudiUtils::HashMap
+#  @see GaudiUtils::VectorMap
+#  @see GaudiUtils::Map::count
+#  @see GaudiUtils::HashMap::count
+#  @ see GaudiUtils::VectorMap::count 
+#  @author Vanya BELYAEV Ivan.BElyaev@itep.ru
+#  @date 2010-02-20
+def __mapbase_contains__ ( self , key ) :
+    """
+    Check if the certainkey is in the map
+    
+    >>> m     = ...        ## the map
+    >>> if 'a' in m : ...  ##  chekc the presence of the key in the map
+    
+    """
+    _num = self.count ( key )
+    return False if 0 == _num else True 
+
+# ============================================
+## Get the value for certain key,
+#   return predefined value otherwise 
+#
+#  @code
+#
+#    >>> m      = ...          ## the map
+#    >>> v = m.get( key , 15 ) ## return the value[key] for existing key, else 15
+#
+#  @endcode
+#  @see Gaudi::Utils::MapBase
+#  @see GaudiUtils::Map
+#  @see GaudiUtils::HashMap
+#  @see GaudiUtils::VectorMap
+#  @see GaudiUtils::Map::count
+#  @see GaudiUtils::HashMap::count
+#  @ see GaudiUtils::VectorMap::count 
+#  @author Vanya BELYAEV Ivan.BElyaev@itep.ru
+#  @date 2010-02-20
+def __mapbase_get__ ( self , key , value = None ) :
+    """
+    Get the value for the certain key, or 'value' otherwise 
+    
+    >>> m     = ...        ## the map
+    >>> v = m.get ( key , 15 ) 
+    
+    """
+    if key in self : return self.at( key ) 
+    return value 
+
+# ============================================
+## Representation of MapBase-based maps 
+#
+#  @code
+#
+#    >>> m      = ...        ## the map
+#    >>> print m 
+#
+#  @endcode
+#  @see Gaudi::Utils::MapBase
+#  @see GaudiUtils::Map
+#  @see GaudiUtils::HashMap
+#  @see GaudiUtils::VectorMap
+#  @author Vanya BELYAEV Ivan.BElyaev@itep.ru
+#  @date 2010-02-20
+def __mapbase_str__ ( self  ) :
+    """
+    Representation of MapBase-based maps:
+    
+    >>> m     = ...        ## the map
+    >>> print map 
+    
+    """
+    _result  = ' { '
+    _size  = len ( self )
+    for i in range ( 0 , _size ) :
+        _key = self.key_at   ( i    )
+        _val = self.at       ( _key )  
+        if 0 != i : _result += ' , '
+        _result += " %s : %s " % ( str ( _key ) , str ( _val ) )
+    _result += ' } '
+    return _result 
+
+# ============================================
+## "Setitem" for MapBase-based maps:
+#
+#  @code
+#
+#    >>> m        = ...        ## the map
+#    >>> m [ key] = value    ## set the item 
+#
+#  @endcode
+#  @see Gaudi::Utils::MapBase
+#  @see GaudiUtils::Map
+#  @see GaudiUtils::HashMap
+#  @see GaudiUtils::VectorMap
+#  @see GaudiUtils::Map::update
+#  @see GaudiUtils::HashMap::update
+#  @see GaudiUtils::VectorMap::update
+#  @author Vanya BELYAEV Ivan.BElyaev@itep.ru
+#  @date 2010-02-20
+def __mapbase_setitem__ ( self , key , value ) :
+    """
+    'Set-item' for MapBase-based maps:
+    
+    >>> m      = ...        ## the map
+    >>> m[key] = value     ## set the item 
+    
+    """
+    _replaced = True if key in self else False 
+    self.update ( key , value )
+    return _replaced
+
+# ============================================
+## "Del-item" for MapBase-based maps:
+#
+#  @code
+#
+#    >>> m        = ...   ## the map
+#    >>> del m [ key]     ## del th eitem 
+#
+#  @endcode
+#
+#  @see Gaudi::Utils::MapBase
+#  @see GaudiUtils::Map
+#  @see GaudiUtils::HashMap
+#  @see GaudiUtils::VectorMap
+#  @see GaudiUtils::Map::erase
+#  @see GaudiUtils::HashMap::erase
+#  @see GaudiUtils::VectorMap::erase
+#  @author Vanya BELYAEV Ivan.BElyaev@itep.ru
+#  @date 2010-02-20
+def __mapbase_delitem__ ( self , key ) :
+    """
+    'Del-item' for MapBase-based maps:
+    
+    >>> m      = ...        ## the map
+    >>> del m[key] 
+    
+    """
+    _erased = True if key in self else False 
+    self.erase ( key ) 
+    return _erased
+
+gbl.Gaudi.Utils.MapBase . __len__       = lambda s   : s.size()
+gbl.Gaudi.Utils.MapBase . __iter__      = __mapbase_iter__ 
+gbl.Gaudi.Utils.MapBase .   keys        = __mapbase_keys__ 
+gbl.Gaudi.Utils.MapBase . __iteritems__ = __mapbase_iteritems__ 
+gbl.Gaudi.Utils.MapBase .   iteritems   = __mapbase_iteritems__ 
+gbl.Gaudi.Utils.MapBase .   items       = __mapbase_items__ 
+gbl.Gaudi.Utils.MapBase .   values      = __mapbase_values__
+gbl.Gaudi.Utils.MapBase . __contains__  = __mapbase_contains__ 
+gbl.Gaudi.Utils.MapBase .   has_key     = __mapbase_contains__ 
+gbl.Gaudi.Utils.MapBase .   get         = __mapbase_get__      
+gbl.Gaudi.Utils.MapBase . __str__       = __mapbase_str__     
+gbl.Gaudi.Utils.MapBase . __repr__      = __mapbase_str__ 
+gbl.Gaudi.Utils.MapBase . __setitem__   = __mapbase_setitem__ 
+gbl.Gaudi.Utils.MapBase . __delitem__   = __mapbase_delitem__ 
+gbl.Gaudi.Utils.MapBase . __getitem__   = lambda s,key : s.at ( key )  
