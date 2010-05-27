@@ -8,7 +8,7 @@ Package manager : Marco Clemencic
    As a result, one resurrect the possibility for very flexible manipulations
    with GaudiPython algorithms.
 
-! 2010-02-20 - Vanya Belyaev
+! 2010-05-20 - Vanya Belyaev
  - Patch #3677: Iteration over map-like containers in python
    Proper pythonization of the class Gaudi::Utils::MapBase.
 
