@@ -1,6 +1,9 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2010-05-27 - Chris Jones
+ - Patch #4045: Utilities to set histogram axis and bin labels for GaudiUtils
+
 ! 2010-05-17 - Marco Clemencic
  - Adepted to work with Xerces-C 3.1.0 (as well as 2.8.0).
 
