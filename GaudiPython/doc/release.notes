@@ -1,6 +1,13 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2010-05-27 - Vanya Belyaev
+ - Patch #4044: Fix for bug #66397 and task #13911
+   Now all python algorithms of "GaudiAlgo"-type are protected from deletion in
+   python by copy them into local storage of application manager...
+   As a result, one resurrect the possibility for very flexible manipulations
+   with GaudiPython algorithms.
+
 ! 2010-02-20 - Vanya Belyaev
  - Patch #3677: Iteration over map-like containers in python
    Proper pythonization of the class Gaudi::Utils::MapBase.

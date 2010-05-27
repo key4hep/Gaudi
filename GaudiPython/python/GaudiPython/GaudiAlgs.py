@@ -199,6 +199,10 @@ def _init_ ( self , name , **args ) :
         raise RuntimeError, 'Unable to add Algorithm "' + name + '"'
     iAlgorithm.__init__ ( self , name , self )
     for key in args : setattr ( self , key , args[key] )
+    # take some care about the ownership of the algorithms
+    if not appMgr.__dict__.has_key ( 'GaudiPythonAlgos') :
+        appMgr.__dict__[ 'GaudiPythonAlgos'] = []
+    appMgr.__dict__[ 'GaudiPythonAlgos'].append( self ) 
 
 # =============================================================================
 ## The default initialization (initialization of base C++ class + data

@@ -1,6 +1,18 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2010-05-27 - Vanya Belyaev
+ - Patch #4044: Fix for bug #66397 and task #13911
+   src/GaudiSequencer.cpp
+   Fixes to (re)enable the "interactive" insertion of sub-algorithms into
+   GaudiSequencer:
+    1. Fix the invalid "isInitialized" condition in property handler for
+       "Members". 
+    2. "Upgrade" the state for located sub-algorithms up to the own state
+       through the calls for sysInitialize/sysStart.
+    3. Add new entries into the timing table in case of update for "Members" 
+       property.
+
 =============================== GaudiAlg v13r2 ===============================
 ! 2010-04-20 - Marco Clemencic
  - Removed ICC warnings and remarks.
