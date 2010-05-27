@@ -1,6 +1,12 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2010-05-27 - Charles Leggett
+ - Patch #3683: Ignore unchecked StatusCodes in xxxDict.so libraries
+   Added the property IgnoreDicts (default = true) to StatusCodeSvc to instruct
+   it to ignore unchecked status codes from Reflex dictionaries (usually false
+   positives).
+
 =============================== GaudiSvc v18r9 ===============================
 ! 2010-04-22 - Marco Clemencic
  - Changed the default values of ApplicationMgr properties StopOnSignal and

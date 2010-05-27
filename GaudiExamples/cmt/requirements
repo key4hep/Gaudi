@@ -55,6 +55,7 @@ library GaudiExamples    -no_static \
                           Selections/*.cpp \
                           SvcInitLoop/*.cpp \
                           StringKeys/*.cpp \
+                          StatusCodeSvc/*.cpp \
                           testing/*.cpp \
                           Dll/GaudiExamples*.cpp
 

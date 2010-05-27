@@ -1,0 +1,35 @@
+//##############################################################
+// Job options file
+//==============================================================
+
+#include "Common.opts"
+//--------------------------------------------------------------
+// Private Application Configuration options
+//--------------------------------------------------------------
+
+ApplicationMgr.TopAlg = { "SCSAlg"};
+
+//--------------------------------------------------------------
+// Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
+//--------------------------------------------------------------
+
+StatusCodeSvc.OutputLevel = 1;
+StatusCodeSvc.SuppressCheck=false;
+// StatusCodeSvc.Filter = { "FNC=SCSAlg::fncUnchecked2()" };
+// StatusCodeSvc.Filter = { "SCSAlg::fncUnchecked2()" };
+StatusCodeSvc.Filter = { "LIB=libGaudiExamples.so" };
+
+
+//--------------------------------------------------------------
+// Event related parameters
+//--------------------------------------------------------------
+
+// Number of events to be processed (default is 10)
+ApplicationMgr.EvtMax = 5;
+ApplicationMgr.EvtSel = "NONE";
+
+//==============================================================
+//
+// End of job options file
+//
+//##############################################################

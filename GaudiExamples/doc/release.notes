@@ -1,6 +1,10 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2010-05-27 - Charles Leggett
+ - Patch #3683: Ignore unchecked StatusCodes in xxxDict.so libraries
+   Added an example of usage of the StatusCodeSvc filters.
+
 ============================ GaudiExamples v21r9 =============================
 ! 2010-04-23 - Marco Clemencic
  - Adapted the tests to the changed the default values of ApplicationMgr

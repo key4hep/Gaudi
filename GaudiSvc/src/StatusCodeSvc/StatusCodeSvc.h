@@ -37,17 +37,18 @@ private:
   };
 
 
-  void filterFnc(std::string);
+  void parseFilter(const std::string& str, std::string& fnc, std::string& lib);
+  void filterFnc(const std::string&);
+  void filterLib(const std::string&);
 
   // Allow SvcFactory to instantiate the service.
   friend class SvcFactory<StatusCodeSvc>;
 
   StringArrayProperty m_pFilter;
-  BooleanProperty m_abort;
-  BooleanProperty m_suppress;
+  BooleanProperty m_abort, m_suppress, m_dict;
 
   std::map<std::string,StatCodeDat> m_dat;
-  std::set<std::string> m_filter;
+  std::set<std::string> m_filterfnc, m_filterlib;
 
 
 };

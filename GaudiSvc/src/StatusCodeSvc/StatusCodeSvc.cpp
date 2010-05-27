@@ -11,6 +11,16 @@ using namespace std;
 //
 ///////////////////////////////////////////////////////////////////////////
 //
+inline void toupper(std::string &s)
+{
+    std::string::iterator it=s.begin();
+    while(it != s.end())
+    {
+        *it = toupper(*it);
+        it++;
+    }
+}
+
 
 StatusCodeSvc::StatusCodeSvc(const std::string& name, ISvcLocator* svc )
   : base_class( name, svc )
@@ -19,6 +29,7 @@ StatusCodeSvc::StatusCodeSvc(const std::string& name, ISvcLocator* svc )
   declareProperty("Filter",m_pFilter);
   declareProperty("AbortOnError",m_abort=false);
   declareProperty("SuppressCheck", m_suppress=false);
+  declareProperty("IgnoreDicts",m_dict=true);
 
 }
 
@@ -43,9 +54,20 @@ StatusCodeSvc::initialize() {
   std::vector<std::string>::const_iterator itr;
   for (itr = m_pFilter.value().begin(); itr != m_pFilter.value().end(); ++itr) {
     // we need to do this if someone has gotten to regFnc before initialize
-    filterFnc(*itr);
+    
+    string fnc,lib;
+    parseFilter(*itr,fnc,lib);
 
-    m_filter.insert(*itr);
+    if (fnc != "") {
+      filterFnc(fnc);
+      m_filterfnc.insert(fnc);
+    }
+
+    if (lib != "") {
+      filterLib(lib);
+      m_filterlib.insert(lib);
+    }
+
   }
 
   return StatusCode::SUCCESS;
@@ -93,7 +115,16 @@ StatusCodeSvc::regFnc(const std::string& fnc, const std::string& lib) {
     return;
   }
 
-  if (m_filter.find(fnc) != m_filter.end()) {
+  if (m_dict && lib.rfind("Dict.so") == (lib.length()-7) ) {
+    return;
+  }
+
+  int i1 = lib.rfind("/",lib.length());
+  string rlib = lib.substr(i1+1,lib.length()-i1-1);
+
+
+  if (m_filterfnc.find(fnc) != m_filterfnc.end() || 
+      m_filterlib.find(rlib) != m_filterlib.end() ) {
     return;
   }
 
@@ -174,7 +205,7 @@ StatusCodeSvc::list() const {
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void
-StatusCodeSvc::filterFnc(std::string str) {
+StatusCodeSvc::filterFnc(const std::string& str) {
 
   std::map<std::string, StatCodeDat>::iterator itr;
   for (itr = m_dat.begin(); itr != m_dat.end(); ++itr ) {
@@ -182,7 +213,57 @@ StatusCodeSvc::filterFnc(std::string str) {
       m_dat.erase(itr);
       return;
     }
+      
+  }
 
+}
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void
+StatusCodeSvc::filterLib(const std::string& str) {
+
+  std::map<std::string, StatCodeDat>::iterator itr;
+  for (itr = m_dat.begin(); itr != m_dat.end(); ++itr ) {
+    if (itr->second.lib == str) {
+      m_dat.erase(itr);
+      return;
+    }
+      
+  }
+
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void
+StatusCodeSvc::parseFilter(const string& str, string& fnc, string& lib) {
+
+
+  string::size_type loc = str.find("=");
+  if (loc == std::string::npos) {
+    fnc = str;
+    lib = "";
+  } else {
+    string key,val;
+    key = str.substr(0,loc);
+    val = str.substr(loc+1,str.length()-loc-1);
+
+    toupper(key);
+
+    if (key == "FCN" || key == "FNC") {
+      fnc = val;
+      lib = "";
+    } else if (key == "LIB") {
+      fnc = "";
+      lib = val;
+    } else {
+      fnc = "";
+      lib = "";
+
+      MsgStream log( msgSvc(), name() );
+      log << MSG::WARNING << "ignoring unknown token in Filter: " << str 
+	  << endmsg;
+    }
   }
 
 }
