@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-06-07 - Marco Clemencic
+ - Fixed a warning introduced with patch #3677.
+
 ! 2010-05-25 - Vanya Belyaev
  - Patch #3677: Iteration over map-like containers in python
    Added an empty base class for Map and HashMap to be able to easily pythonize

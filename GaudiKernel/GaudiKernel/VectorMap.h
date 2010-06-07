@@ -713,7 +713,7 @@ namespace GaudiUtils
      *  @param right object to be copied
      */
     VectorMap ( const VectorMap& right )
-      : m_vct ( right.m_vct )
+      : Gaudi::Utils::MapBase(right), m_vct ( right.m_vct )
     {}
     // ========================================================================
     /** templated constructor from "convertible" sequence
