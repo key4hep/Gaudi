@@ -1,6 +1,9 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2010-06-17 - Marco Clemencic
+ - Fixed a bug in patch #3311 (wild import of GaudiPython.HistoUtils broken).
+
 ! 2010-05-27 - Vanya Belyaev
  - Patch #4044: Fix for bug #66397 and task #13911
    Now all python algorithms of "GaudiAlgo"-type are protected from deletion in
@@ -49,7 +52,7 @@ Package manager : Marco Clemencic
  - Patch #3588: Fix a typo (&logic) in GaudiPython.GaudiAlgs module for "Histo()" method
    - python/GaudiPython/GaudiAlgs.py
      fix the typo (and invalid logic) for "Histos()" method
-      
+
 ! 2009-12-15 - Charles Leggett
  - Fixed bug #60502: typo in GaudiPython/Bindings.py
 
@@ -71,21 +74,21 @@ Package manager : Marco Clemencic
 
 ! 2009-10-12 - Vanya Belyaev
  - Patch #3328: iDataSvc.findObject
-   - GauidPython::Helper 
+   - GauidPython::Helper
      1. add method findobject (wrapper for IDataProviderSvc::findObject)
-     to get object from Transient store without trying to load or 
+     to get object from Transient store without trying to load or
      use on-demand actions
-     2. add method getobject with allows total control over access 
-     object in Transient Store : retrieve versus find, and allows 
+     2. add method getobject with allows total control over access
+     object in Transient Store : retrieve versus find, and allows
      temporarily disable on-demand actions. Thus one can allow loading
      the object from tape, but switch off on-demand actions
    - GaudiPyton/Bindings.py
      1. iDataSvc      : add methods findObject and getObject
-     2. PropertyEntry : for properties with missing dictionaries 
-        (essentially,  missing "value" attribute) use the 
+     2. PropertyEntry : for properties with missing dictionaries
+        (essentially,  missing "value" attribute) use the
         "toString"-result as self._value.
  - Patch #2978: GaudiKernel/StringKey.h
-   Added dictionary and support in Pythonizations.py and Bindings.py 
+   Added dictionary and support in Pythonizations.py and Bindings.py
 
 ! 2009-10-09 - Eoin Smith
  - Patch #3297: Support for GaudiPython Parallel in gaudirun.py
@@ -127,7 +130,7 @@ Package manager : Marco Clemencic
 
 ! 2009-10-02 - Vanya Belyaev
  - Patch #3157: Remove redundant duplicated  maps from GaudiHistos/GaudiTuples
-   Adapted HistoDecorator to the changes in GaudiHistos. 
+   Adapted HistoDecorator to the changes in GaudiHistos.
 
 ! 2009-10-02 - Marco Clemencic
  - Fixed bug #56358: Algorithms crashing in finalize are finalized a second time
@@ -194,13 +197,13 @@ Package manager : Marco Clemencic
 ! 2009-05-06 - Charles Leggett
  - Patch #2977: catch exception in GaudiPython Bindings.py
    Added a try-catch block around the call to queryInterface in
-   InterfaceCast.__call__ to print a meaningful error message. 
+   InterfaceCast.__call__ to print a meaningful error message.
 
 ================ GaudiPython v10r0 ====================================
 ! 2009-04-08 - Pere Mato
  - Patch #2958: New runSelectedEvents() method in GaudiPython.AppMgr
    Added new method runSelectedEvents(self, pfn, events) on AppMgr class
-   This method allows to execute the event loop on a specific event(s) for a given input (POOL) 
+   This method allows to execute the event loop on a specific event(s) for a given input (POOL)
    file (physical file name).
    It requires new version of GaudiUtils including the dictionary for IFileCatalog interface
 
@@ -223,7 +226,7 @@ Package manager : Marco Clemencic
  - Patch #2790: Rename the namespace MSG to Msg
 
 ! 2009-01-30 - Marco Clemencic
- - Replaced all the occurrences of endreq with endmsg. 
+ - Replaced all the occurrences of endreq with endmsg.
 
 ! 2009-01-29 - Marco Clemencic
  - Symbol visibility
@@ -234,7 +237,7 @@ Package manager : Marco Clemencic
 
 ! 2009-01-22 - Marco Clemencic
  - Adapted to the new IInterface functionalities (see GaudiKernel release.notes)
- - Replaced the usage of TimePoint with Gaudi::Time. 
+ - Replaced the usage of TimePoint with Gaudi::Time.
 
 ================ GaudiPython v9r4 ====================================
 ! 2008-12-16 - Marco Clemencic
@@ -249,7 +252,7 @@ Package manager : Marco Clemencic
 
 ! 2008-10-31 - Vanya Belyaev
  - Fixed a typo in Bindings.iDataSvc (it was "self.dict" instead of
-   "self.__dict__"). 
+   "self.__dict__").
 
 ! 2008-10-30 - Marco Clemencic
  - Modified AppMgr to ensure that GaudiKernel.Configurable.applyConfigurableUsers()
@@ -338,7 +341,7 @@ Package manager : Marco Clemencic
    needed).
    The conflict is resolved by using a function to return the needed
    configurables, implemented to return the keys of allConfigurables for Gaudi
-   and and empty list for Athena. 
+   and and empty list for Athena.
 
 ! 2008-01-29 - Marco Clemencic
  - Fixed Bug #32854. (MessageSvc options ignored in Python)
@@ -360,7 +363,7 @@ Package manager : Marco Clemencic
 
 ! 2008-01-16 - Wim Lavrijsen
  - Fixed a bug in Pythonization._loadDict. Missing "import sys".
- 
+
 ! 2008-01-15 - Wim Lavrijsen
  - AthenaCommon does not have Configurable.PropertyReference and this must be
    considered in GaudiPython.Bindings.
@@ -378,7 +381,7 @@ Package manager : Marco Clemencic
 
 ! 2007-11-30 - Pere Mato
  - Fix for bug #31819: Reduce GaudiPython dictionaries to strict minimum.
-   Removed common STL classes (9 in total) from the rootmap file using 
+   Removed common STL classes (9 in total) from the rootmap file using
    the attribute rootmap="false" in the selection file.
 
 ! 2007-11-28 - Paolo Calafiura & Sebastien Binet
@@ -388,10 +391,10 @@ Package manager : Marco Clemencic
 ================ GaudiPython v8r17 ====================================
 ! 2007-11-13 - Marco Clemencic
  - Remove the dependency of GaudiPython/__init__.py from Gaudi.Configuration.
- - Use GaudiKernel.Proxy to get the correct version of Configurable. 
- 
+ - Use GaudiKernel.Proxy to get the correct version of Configurable.
+
 ! 2007-10-29 - Pere Mato
- - Changed the structure of the package. 
+ - Changed the structure of the package.
    decribed at:  https://twiki.cern.ch/twiki/bin/viewfile/LHCb/GaudiPython?rev=1;filename=GaudiPython_20071017.pdf
 
 ! 2007-10-24 - Marco Clemencic
@@ -406,7 +409,7 @@ Package manager : Marco Clemencic
 
 ! 2007-09-27 - Sebastien Binet
  - patch #1158. (slightly modified by Marco Clemencic)
-   - Minor changes to GaudiHandles.py to improve memory footprint 
+   - Minor changes to GaudiHandles.py to improve memory footprint
 
 ! 2007-08-07 - Vanya Belyaev
  - patch 1265.
@@ -431,11 +434,11 @@ Package manager : Marco Clemencic
      iProperty.
    - Added module HistoUtils containing "script-friendly" functions
      to manipulate histograms.
- 
+
 ! 2007-07-16 - Hubert Degaudenzi
  - remove the explicit Dlls options from gaudimodule.py (not needed
    any more)
-   
+
 =================== v8r15 ==================================
 ! 2007-05-10 - Ivan Belyaev
  - Patch #1126. dict/selection_kernel.xml update the exclusion list
@@ -443,7 +446,7 @@ Package manager : Marco Clemencic
    particular:
 	"std::unary_function<std::pair<,Tuples::>"
 	"std::unary_function<std::pair<,NTuple::>"
-	"std::unary_function<std::pair<,AIDA::>" 
+	"std::unary_function<std::pair<,AIDA::>"
 
 ! 2007-04-27 - Mattias Ellert
  - patch #24974. fixed test building.
@@ -457,7 +460,7 @@ Package manager : Marco Clemencic
    GaudiHandleArrayProperty, and an update to genconf to support it
 
 ! 2007-04-04 - Pere Mato
- - added setOwnership() calls in addAlg() and removeAlg() to avoid 
+ - added setOwnership() calls in addAlg() and removeAlg() to avoid
    segfault at the end of the execution due to double deletion of
    algorithms
 
@@ -465,19 +468,19 @@ Package manager : Marco Clemencic
   Patch #1106. possible solution for Savannah bug #25109 and patch
   #1024 (wrongly closed)
  - dict/selection_kernel.xml
-    add the dictionary for GaudiHandleProperty class 
+    add the dictionary for GaudiHandleProperty class
  - python/gaudimodule.xml
-    a) PropertyEntry 
-      1) reimplement constructor in a way to 
-      set the data member _value to be valid python type for 
-      LHCbproperties and to keep the previousl behaviour for ATLAS 
+    a) PropertyEntry
+      1) reimplement constructor in a way to
+      set the data member _value to be valid python type for
+      LHCbproperties and to keep the previousl behaviour for ATLAS
       GaudiHandleProperty
-      2) add local data mamber PropertyEntry._property and 
-       function PropertyEntry.property() to access to the original 
-       property. (Useful to perform the second try, if the 
+      2) add local data mamber PropertyEntry._property and
+       function PropertyEntry.property() to access to the original
+       property. (Useful to perform the second try, if the
        failure occurs in constructor)
-    b) minor modification of iProperty.__getattr__ 
-       to avoid the sad printout of numerous warning messages: 
+    b) minor modification of iProperty.__getattr__
+       to avoid the sad printout of numerous warning messages:
      "Warning in <TClass::TClass>: no dictionary for class
      vector<pair<double,double> > is available "..
 
@@ -495,26 +498,26 @@ Package manager : Marco Clemencic
 ! 2007-01-26 - Vanya BELYAEV
  Patch #989:
  - GaudiPython/TupleDecorator.h, src/Lib/TupleDecorator.cpp
-     use new typedefs from GaudiKernel instead of local types 
+     use new typedefs from GaudiKernel instead of local types
  - dict/kernel.h, dict/selection_kernel.h
-     add the new class Gaudi::Aida2ROOT 
- - python/GaudiAlgs.py 
-     add the default None argument for method "histoSvc" to be coherent 
-     with documentation and "evtSvc"/"detSvc" methods 
+     add the new class Gaudi::Aida2ROOT
+ - python/GaudiAlgs.py
+     add the default None argument for method "histoSvc" to be coherent
+     with documentation and "evtSvc"/"detSvc" methods
 
        # get histogram data service iself
        svc = self.histoSvc()
        # get the data
-       histo = self.histoSvc('/stat/Calo/1')     
+       histo = self.histoSvc('/stat/Calo/1')
  - python/gaudimodule.py
     add 2 methods for HistogramService:
- 
-       # return the native ROOT representation of the 
+
+       # return the native ROOT representation of the
        # underlying histogram
-       hsvc.getAsROOT('/stat/Calo/1') 
+       hsvc.getAsROOT('/stat/Calo/1')
        # return the histogram (the same as hsvc['/stat/Calo/1']
-       hsvc.getAsAIDA('/stat/Calo/1') 
-    
+       hsvc.getAsAIDA('/stat/Calo/1')
+
 
 ! 2007-01-27 - Pere Mato
  - Applied patch #987, new GaudiPython module...
@@ -530,29 +533,29 @@ Package manager : Marco Clemencic
 ! 2006-11-26 - Vanya BELYAEV - patch #923
  - GaudiPython/TupleDecorator.h
    src/Lib/TupleDecorator.cpp
-    add few method for easy filing of N-tupel with 
-    few basic objects, like 3D/4D vectors, points, SVector 
+    add few method for easy filing of N-tupel with
+    few basic objects, like 3D/4D vectors, points, SVector
     and SMatrix
  - python/GaudiAlgs.py
-    improve the both the on-line (Python) and off-line (Doxygen) 
-    documentation strings 
+    improve the both the on-line (Python) and off-line (Doxygen)
+    documentation strings
 
 =================== v8r12 ==================================
 ! 2006-11-09 - Pere Mato
- - python/gaudimodule.py 
+ - python/gaudimodule.py
      Added __del__ to PyAlgorithm to remove it from the list of known algorithms of Gaudi.
-     This change allows to reload modules containing new versions of algorithms. 
+     This change allows to reload modules containing new versions of algorithms.
      Problem reported by Ulrich Kerzel
 
 ! 2006-11-08 - Vanya BELYAEV ibelyaev@physics.syr.edu
  - python/gaudimodule.py
       fix a major problem with AppMgr::config method:
        - the lists of DLLs&ExtSvc must be APPENDED (and not assigned)
-    
-     In addition some decoration:  
-      1) add new class iJobOptSvc for easy handling of properties  
+
+     In addition some decoration:
+      1) add new class iJobOptSvc for easy handling of properties
                                               (import from Bender)
-      2) add new method ApMgr::optSvc - accessor to iJobOptSvc 
+      2) add new method ApMgr::optSvc - accessor to iJobOptSvc
 
 =================== v8r11 ==================================
 ! 2006-11-03 - Pere Mato
@@ -560,13 +563,13 @@ Package manager : Marco Clemencic
    name. The error was that eval() was evaluating the value of
    variables defined locally or globaly. Problem detected by Thomas
    with variable ROOT
- 
+
 ! 2006-11-02 - Pere Mato
  - Adapted config() to deal with new JobOptions that are always
    strings. Detected by Thomas when running Panoramix from Pyhton
 
 ! 2006-10-24 - Pere Mato
- - Add default initialize() method in PyAlgorithm. 
+ - Add default initialize() method in PyAlgorithm.
    This fixes bug #20957, GaudiPython segfaults if an Python...
 
 =================== v8r10 ==================================
@@ -594,9 +597,9 @@ Package manager : Marco Clemencic
 
 =================== v8r6 ===================================
 ! 2006-05-24 - Pere Mato
- - Added changes from Radu Stoica: 
+ - Added changes from Radu Stoica:
  - More protections in iDataService
- - Introduction of CallbackStreamBuf to be implemented from Python to 
+ - Introduction of CallbackStreamBuf to be implemented from Python to
     catch stream output.
 
 =================== v8r5 ===================================
@@ -607,11 +610,11 @@ Package manager : Marco Clemencic
 ! 2006-03-28 - Hubert Degaudenzi
  - commented out the generation of the dictionary for vector<double>
    which is already present in ROOT
- 
+
 ! 2006-03-17 - Pere Mato
  - Changed TootSvc.create() to input requested interface
  - Dictionaries do not need to be loaded. Done with ROOT autoload
- 
+
 =================== v8r3 ===================================
 ! 2006-01-26 - Pere Mato
  - moved classes in dictionary to GaudiKernel dictionary
@@ -620,7 +623,7 @@ Package manager : Marco Clemencic
  - gaudimodule.py: added iteration catabilities to ObjectContainedBase
    (all KeyedContainers)
  - tests: updated to use KeyedContained instead of ObjectVector
- 
+
 ! 2006-01-23 - Hubert Degaudenzi
  - added IUpdateManagerSvc in the dictionary generation.
 
@@ -648,8 +651,8 @@ Package manager : Marco Clemencic
 ! 2005-11-25 - Pere Mato
  - Added PyCintex.py as a temporary basis
  - Changed the order when loading the dictionaries
- - Minor changes to make python GaudiExamples to work 
- 
+ - Minor changes to make python GaudiExamples to work
+
 =================== v8r1 ===================================
 ! 2005-11-16 - Pere Mato
  - Removed GaudiPython.Interface classes from the generated dictionary. They are not
@@ -658,28 +661,28 @@ Package manager : Marco Clemencic
 =================== v8r0 ===================================
 ! 2005-10-27 - Pere Mato
  - Adapted to generate Reflex dictionaries and use PyROOT instead of PyLCGDict
- - Improved unit test test_basics.py 
+ - Improved unit test test_basics.py
  - Added support for long types (long long, long double) as properties
 
 =================== v7r0 ===================================
 ! 2005-08-17 - Vanya BELYAEV
- - modifications for updated GaudiAlg to incorporate 
-  very attractive feature: "universal" (numeric or 
-  alphanumeric) histogram/ntuple identifier, introduced 
-  by Chris into GaudiAlg 
+ - modifications for updated GaudiAlg to incorporate
+  very attractive feature: "universal" (numeric or
+  alphanumeric) histogram/ntuple identifier, introduced
+  by Chris into GaudiAlg
 
   Now major methods of Python's HistoAlgo and Tuple Algo
-  from now could accept both numerical identifier, 
+  from now could accept both numerical identifier,
   string identifier or "universal identifier:
 
-  e.g. for N-Tuples : 
+  e.g. for N-Tuples :
 
-    t1 = self.nTuple( 1             , 'My first  NTuple'     ) 
-    t1 = self.nTuple( 'BLAH'        , 'My second NTuple'     ) 
-    t1 = self.nTuple( TID ( 16 )    , 'My third NTuple # 16' ) 
-    t1 = self.nTuple( TID ( 'XXX' ) , 'My fourth NTuple '    ) 
-    t1 = self.nTuple( 'SUBDIR/AA'   , 'My fifth NTuple in subdirectory') 
- 
+    t1 = self.nTuple( 1             , 'My first  NTuple'     )
+    t1 = self.nTuple( 'BLAH'        , 'My second NTuple'     )
+    t1 = self.nTuple( TID ( 16 )    , 'My third NTuple # 16' )
+    t1 = self.nTuple( TID ( 'XXX' ) , 'My fourth NTuple '    )
+    t1 = self.nTuple( 'SUBDIR/AA'   , 'My fifth NTuple in subdirectory')
+
   similar for (1D,2D,3D)-histograms:
 
     self.plot1D( mass ,          ' This is 1st histogram ' , 1 , 10 )
@@ -690,44 +693,44 @@ Package manager : Marco Clemencic
     self.plot1D( mass , HID('M')  , ' This is 6th histogram ' , 1 , 10 )
 
   for profiles, one need to use HID explicitly:
-    
-     self.profile1D ( x , y ,                  ' title1 ' , 0 , 10 ) 
-     self.profile1D ( x , y , HID(25)        , ' title2 ' , 0 , 10 )  
-     self.profile1D ( x , y , HID('x%y')     , ' title3 ' , 0 , 10 )  
-     self.profile1D ( x , y , HID('dir/x%y') , ' title4 ' , 0 , 10 )  
+
+     self.profile1D ( x , y ,                  ' title1 ' , 0 , 10 )
+     self.profile1D ( x , y , HID(25)        , ' title2 ' , 0 , 10 )
+     self.profile1D ( x , y , HID('x%y')     , ' title3 ' , 0 , 10 )
+     self.profile1D ( x , y , HID('dir/x%y') , ' title4 ' , 0 , 10 )
 
 
 ! 2005-08-07 - Vanya BELYAEV
- - few major (*BACKWARD COMPATIBLE*) modifications to simplify 
-   the interactive analysis. Namely the useful base classes from 
-   GaudiAlg package are imported into the Python. 
-   Also major reshuffling of existing codes is performed to allow 
-   the reuse of code outside the GaudiPython package (e.g. 
-   in the context of Bender or Panoramix projects) without 
-   multiple explicit code duplicated (as it is now... :-((( )  
-   
-   From now package builds also linker library GaudiPythonLib 
-   The dictionary is renamed to GaudiPythonDict (to avoid the 
-   masking of GaudiKernelDict built by GaudiKernel package) 
-   As a result the package now builds 3 library: 
-     1) component library  GaudiPython     
-     2) linker library     GaudiPythonLib
-     3) dictionary library GaudiPythonDict 
- 
-   New module GaudiAlgs.py is added into $GAUDIPYTHONROOT/python 
-   directory. This module contains essentially the base classes 
-   GaudiAlgo, HistoAlgo and TupleAlgo and the extensive documentations 
-   
-   GaudiPython/kernel.h and GaudiPython/selection_kernel.xml
-   now contains *ALL* abstract interfaces from GaudiKernel and 
-   GaudiAlgs packages 
+ - few major (*BACKWARD COMPATIBLE*) modifications to simplify
+   the interactive analysis. Namely the useful base classes from
+   GaudiAlg package are imported into the Python.
+   Also major reshuffling of existing codes is performed to allow
+   the reuse of code outside the GaudiPython package (e.g.
+   in the context of Bender or Panoramix projects) without
+   multiple explicit code duplicated (as it is now... :-((( )
 
-   $GAUDIPYTHON/python/gaudimodule.py file gets "atexit" function, 
+   From now package builds also linker library GaudiPythonLib
+   The dictionary is renamed to GaudiPythonDict (to avoid the
+   masking of GaudiKernelDict built by GaudiKernel package)
+   As a result the package now builds 3 library:
+     1) component library  GaudiPython
+     2) linker library     GaudiPythonLib
+     3) dictionary library GaudiPythonDict
+
+   New module GaudiAlgs.py is added into $GAUDIPYTHONROOT/python
+   directory. This module contains essentially the base classes
+   GaudiAlgo, HistoAlgo and TupleAlgo and the extensive documentations
+
+   GaudiPython/kernel.h and GaudiPython/selection_kernel.xml
+   now contains *ALL* abstract interfaces from GaudiKernel and
+   GaudiAlgs packages
+
+   $GAUDIPYTHON/python/gaudimodule.py file gets "atexit" function,
    making the exit statement optional (it is VERY convenient
-   for scripts which is supposed to work both interactively and 
+   for scripts which is supposed to work both interactively and
    "as batch")
- 
-     New files: 
+
+     New files:
      ==========
      $GAUDIPYTHONROOT/python/GaudiAlgs.py
      $GAUDIPYTHONROOT/GaudiPython/GaudiPython.h
@@ -736,21 +739,21 @@ Package manager : Marco Clemencic
      $GAUDIPYTHONROOT/GaudiPython/Printer.h
      $GAUDIPYTHONROOT/GaudiPython/TupleDecorator.h
      $GAUDIPYTHONROOT/GaudiPython/Vector.h
-     $GAUDIPYTHONROOT/src/Lib/Algorithm.cpp   
+     $GAUDIPYTHONROOT/src/Lib/Algorithm.cpp
      $GAUIDIPYTHOROOT/src/Lib/AlgDecorators.cpp
      $GAUDIPYTHONROOT/src/Lib/HistoDecorator.cpp
      $GAUDIPYTHONROOT/src/Lib/TupleDecorator.cpp
 
-  
+
 ! 20050804 - Pere Mato
  - gaudiconf.py: added new module to support configuration using Python
  - Gaudi.py: main top level gaudi script (still quite primitive)
  - genconf.py: the script to generate the "shadow-classes" from the C++ libraries
- - gaudimodule.py: added optional argument in AppMgr.__init__ to set ApplicationMgr 
+ - gaudimodule.py: added optional argument in AppMgr.__init__ to set ApplicationMgr
    own properties "before" configuration
    Added conversion to string of property values of non Python primitives
    Modified getComponentProperties() to handle the GaudiSvc case
-   
+
 
 =================== v6r13 ===================================
  - gaudimodule.py: removed 'GaudiDb' from the list of DLLs
@@ -772,7 +775,7 @@ Package manager : Marco Clemencic
    It is now possible to do access existing tools, or create new instances.
      gaudi.toolsvc().create('MyTool')
      gaudi.tool('Alg.Tool.SubTool').MyProperty = value
- - Added extra Helper functions toArray() to convert pointers (int*, float*,...) to sequenceable 
+ - Added extra Helper functions toArray() to convert pointers (int*, float*,...) to sequenceable
    Python objects (needed for LHCb DAQBuffer)
  - Added also toXXXArray() functions for unknown pointer types (void*) like "raw_int", "l1_int"
      For example in the case of RawBuffer:
@@ -786,23 +789,23 @@ Package manager : Marco Clemencic
  - Implementation of AppMgr.tool()
  - Implementation of AppMgr.setAlgorithms()
  - Implementation of iNTupleSvc class and AppMgr.ntuplesvc()
- - Implementation of iNtupleSvc.defineOutput( {}, type='ROOT' ) 
+ - Implementation of iNtupleSvc.defineOutput( {}, type='ROOT' )
 
 Not Done yet....
  - Check that EvtSel.open() does not work without "stream=..."
 
 ! 20041004 - Pere Mato
- - gaudimodule.py: changed AppMgr.__init__() to avoid changing OutputLevel back to default (3) 
+ - gaudimodule.py: changed AppMgr.__init__() to avoid changing OutputLevel back to default (3)
 
 =================== v6r8 ===================================
 ! 20040910 - Pere Mato
  - gaudimodule.py: reworked AppMgr.run() to avoid calling reinitialize(). This is currently a problem because
    resets the event stream to the beginning each time. Problem reported by Vanya.
-   
+
 ! 20040908 - Wim Lavrijsen
  - gaudimodule.py: added protection when algorithm/service does not exists and no properties are
                    yet defined.
-                   
+
 =================== v6r7 ===================================
 ! 20040726 - Pere Mato
  - Moved method AppMgr.loaddict() as module function
@@ -812,7 +815,7 @@ Not Done yet....
 ! 20040706 - Pere Mato
  - requirements: adapted to use new LCGCMT interface packages
  - renamed type IID to InterfaceID
- 
+
 ! 20040622 - Wim Lavrijsen
  - Small correction on String properties to add " " to take into account blanks
 
@@ -822,7 +825,7 @@ Not Done yet....
 
 ! 20040524 - Wim Lavrijsen
  - Small corrections in in iProperty
- 
+
 =================== v6r4 ===================================
 ! 20040315 - Pere Mato
  - Change the initialization of AppMgr. Initialize() is not called at AppMgr.__init__() and
@@ -844,11 +847,11 @@ Not Done yet....
  - Added a number of new functions to AppMgr class to simplify the end-user interaction
  - The constructor AppMgr() configures and initializes the Gaudi Application manager
  - Added new class EventSelector to manage the opening of input files
- 
+
 ! 20040202 - Pere Mato
  - Added histogram service functionality. retrieve1D(), 2D(), 3D()
  - Updated test_basics to test this functionality
- 
+
 =================== v6r1 ===================================
 ! 20040126 - Pere Mato
  - A number of small corrections mainly coming from feedback of Vanya
@@ -859,7 +862,7 @@ Not Done yet....
  - New dictionaries for IRegister, IDataManagerSvc
  - DataSvc: Added new methods: clearStore, leaves, dump, setRoot
  - Extended the test test_basics.py
- 
+
 ! 200401208 - Pere Mato
  - This is a complete new version of GaudiPython using LCG dictionaries to provide
    python bindings and it does not use boost.python.
@@ -871,13 +874,13 @@ Not Done yet....
  - Changes due to AIDA namespace (3.0)
  - Replaced macro WIN32 by _WIN32
  - Minor changes in requirement file for vc++ 7.1
- 
+
 ! 20031029 - Paolo Calafiura (for wlav)
  -bug fixes in HistosFunctionality.cpp and HistoSvc.cpp
 ! 20030805 - Pere Mato
- - PythonScriptinfSvc.cpp 
+ - PythonScriptinfSvc.cpp
    avoid using FILE* since there are problems when libraries are compiled with different versions
-   of the Visual C++. (currently Python 2.2.3 the binaries are produced by VC6 and 
+   of the Visual C++. (currently Python 2.2.3 the binaries are produced by VC6 and
    does not compile out-of-the box with VC7)
 
 =================== v5r0p1 ===================================
@@ -888,7 +891,7 @@ Not Done yet....
 
 =================== v5r0======================================
 ! 20030408 - Pere Mato
- - Added new method execute(n) to AppMgr to overcome the problem that 
+ - Added new method execute(n) to AppMgr to overcome the problem that
    run(n) does always a reinitialize() in addition to execute events. The
    re-initialize is not well handled by DetDataSvc and Algorithms.
 
@@ -904,16 +907,16 @@ Not Done yet....
 =================== v4r3======================================
 ! 20020930 - Pere Mato
  - Added Auditor support (Wim Lavrijsen)
- 
+
 =================== v4r2p1======================================
 ! 20020910 - Flr
  - requirements - use v*
 
 ===================v4r2==============================================
 ! 20020517 - Pere Mato
- - PyhtonScriptingSvc.cpp: load the python dynamic library with the 
+ - PyhtonScriptingSvc.cpp: load the python dynamic library with the
    global flag turned on to avoid problems when importing python modules
-	 later that require resolving symbols from the python library 
+	 later that require resolving symbols from the python library
 	 but they do not depend explicitly from it.
 
 ! 20020515 - Paolo Calafiura
@@ -924,12 +927,12 @@ Not Done yet....
  - Adapted to new LHCb event model (KeyedContainers in addition to
    ObjectVectors).
  - Re-structured a bit: the IntrosObj and IntrosFunc share a single
-   function to handle conversion of single and complex types to python. 
+   function to handle conversion of single and complex types to python.
  - Better handling argument conversions for methods and functions
 
 ===================v4r0==========================================
 ! 20020321 - Pere Mato
- - Adapted to the new GaudiIntrospection, which adds method support 
+ - Adapted to the new GaudiIntrospection, which adds method support
 
 ! 20020319 - Markus Frank
  - Added the possibility to obtain any interface implemented by

@@ -36,7 +36,7 @@ __all__    = (
     'HistoStats', ##                  statistical information for 1D-histograms
     'HistoFile' , ##                     class for storing histograms to a file
     'histoDump' , ##                     dump histogramintext format a'la HBOOK
-    'dumphisto'   ##                     dump histogramintext format a'la HBOOK
+    'dumpHisto'   ##                     dump histogramintext format a'la HBOOK
     )
 # =============================================================================
 ## import core of Gaudi
@@ -46,8 +46,8 @@ from   GaudiPython.Bindings import iHistogramSvc
 from   GaudiPython.Bindings import gbl as cpp
 HID = cpp.GaudiAlg.ID
 
-## global flag 
-useROOT = False 
+## global flag
+useROOT = False
 
 # =============================================================================
 ## Helper private auxiliary function to get Application Manager
@@ -59,11 +59,11 @@ def _getAppMgr   ( **kwargs  ) :
     if not gaudi : gaudi = AppMgr()
     if not gaudi : raise RuntimeError, 'Unable to get valid ApplicationMgr'
 
-    state = gaudi._isvc.FSMState() 
-    if state < cpp.Gaudi.StateMachine.CONFIGURED  : gaudi.config     () 
-    state = gaudi._isvc.FSMState()    
+    state = gaudi._isvc.FSMState()
+    if state < cpp.Gaudi.StateMachine.CONFIGURED  : gaudi.config     ()
+    state = gaudi._isvc.FSMState()
     if state < cpp.Gaudi.StateMachine.INITIALIZED : gaudi.initialize ()
-    
+
     return gaudi                                               ## RETURN
 
 # =============================================================================
@@ -206,7 +206,7 @@ def book ( *args , **kwargs ) :
 
     """
     if useROOT or kwargs.get( 'useROOT' , False ) or not kwargs.get('useAIDA' , True ) :
-        from ROOT import TH1D 
+        from ROOT import TH1D
         a0 = args[0]
         a1 = args[1]
         a2 = args[2]
@@ -216,7 +216,7 @@ def book ( *args , **kwargs ) :
             return TH1D ( a0+a1 , a2 , *args[3:] )
         else :
             return TH1D ( a0    , a1 , *args[2:] )
-        
+
     svc = _getHistoSvc ( **kwargs )
     if not svc : raise RuntimeError, 'Unable to get valid HistogramService '
     ## book the histogram using the service
@@ -539,7 +539,7 @@ def _skewness_ ( self ) :
 ## Evaluate error for 'bin-by-bin' skewness for 1D histogram
 def _skewnessErr_ ( self ) :
     """
-    Evaluate error for 'bin-by-bin' skewness 
+    Evaluate error for 'bin-by-bin' skewness
 
     >>> h1 = ...
     >>> print h1.skewnessErr()
@@ -586,14 +586,14 @@ def _mean_    ( self ) :
 # =============================================================================
 def _meanErr_ ( self ) :
     """
-    Evaluate the error for MEAN estimate 
+    Evaluate the error for MEAN estimate
     """
     return HistoStats.meanErr ( self )
 
 # =============================================================================
 def _rms_    ( self ) :
     """
-    Evaluate the RMS for AIDA histogram 
+    Evaluate the RMS for AIDA histogram
     """
     return HistoStats.rms ( self )
 # =============================================================================
@@ -606,7 +606,7 @@ def _rmsErr_ ( self ) :
 # =============================================================================
 def _sumBinHeightErr_    ( self ) :
     """
-    Get an error in the sum bin height ('in-range integral') 
+    Get an error in the sum bin height ('in-range integral')
     """
     return HistoStats.sumBinHeightErr ( self )
 
@@ -837,7 +837,7 @@ class HistoFile :
                            gbl.AIDA.IProfile1D,
                            gbl.AIDA.IProfile2D,
                            gbl.AIDA.IHistogram    ]
-        
+
     def __convertibleType(self, histo) :
         histoType = type(histo)
         for t in self.aidaTypes :
