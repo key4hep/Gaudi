@@ -135,6 +135,22 @@ public:
   /** Access a service by name, creating it if it doesn't already exist.
   */
   template <class T>
+  StatusCode service( const std::string& name, const T*& psvc, bool createIf = true ) const {
+    ISvcLocator& svcLoc = *serviceLocator();
+    SmartIF<T> ptr(
+      ServiceLocatorHelper(svcLoc, *this).service(name, !createIf, // quiet
+                                                  createIf));
+    if (ptr.isValid()) {
+      psvc = ptr.get();
+      const_cast<T*>(psvc)->addRef();
+      return StatusCode::SUCCESS;
+    }
+    // else
+    psvc = 0;
+    return StatusCode::FAILURE;
+  }
+
+  template <class T>
   StatusCode service( const std::string& name, T*& psvc, bool createIf = true ) const {
     ISvcLocator& svcLoc = *serviceLocator();
     SmartIF<T> ptr(

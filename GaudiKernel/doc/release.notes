@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-06-21 - Charles Leggett
+ - Fix to bug #68555: getting const services
+
 ! 2010-06-07 - Marco Clemencic
  - Fixed a warning introduced with patch #3677.
 
@@ -26,10 +29,10 @@ Package manager : Marco Clemencic
 ! 2010-04-16 - Vanya Belyaev
  - Patch #3943: Good names for StatEntity methods
    - GaudiKernel/StatEntity.h: add new names for "ugly methods"
-         flag        -> sum 
-         flagMean    -> mean      
-         flagMeanErr -> meanErr 
-         flagRMS     -> rms 
+         flag        -> sum
+         flagMean    -> mean
+         flagMeanErr -> meanErr
+         flagRMS     -> rms
              ...
      All "flag" methods are moved into "legacy"-section.
      The old methods were OK when Counter has two fields "flag"(additive) and
@@ -42,9 +45,9 @@ Package manager : Marco Clemencic
 ! 2010-03-16 -Charles Leggett
  - Patch #3718: Unchecked StatusCode in GaudiKernel/Algorithm.cpp
    Modified the code to avoid Unchecked StatusCode in case of failures.
-   
+
 ! 2010-03-15 - Markus Frank
- - Patch #3912: Add a IInterface-based version of IUpdateable. 
+ - Patch #3912: Add a IInterface-based version of IUpdateable.
 
 ! 2010-03-08 - Charles Leggett
  - Fixed bug #63502: GaudiKernel/Converter.cpp don't assume converter
@@ -110,14 +113,14 @@ Package manager : Marco Clemencic
      resolve it as System::environ.
    - scripts/make_patch.py:
      updated the default exclusion list.
-     
+
 ! 2010-01-15 - Marco Clemencic
  - Fixed a bug in genconf: the third argument passed to the factory of tools was
    IService* instead of IInterface* (it works as long as the memory address is
    the same).
 
 ! 2010-01-11 - Vanya Belyaev
- - Patch #3478: Registration for Algorithm Context Service 
+ - Patch #3478: Registration for Algorithm Context Service
    Moved the registration for the context service from GaudiAlgorithm to Algorithm
 
 ! 2010-01-11 - Paolo Calafiura
@@ -129,7 +132,7 @@ Package manager : Marco Clemencic
 
 ! 2009-12-17 - Vanya Belyaev
  - Patch #3486: Class LockedChrono
-   Helper class to measure CPU-performance of highly recursive objects. 
+   Helper class to measure CPU-performance of highly recursive objects.
 
 ! 2009-12-15 - Marco Clemencic
  - Fixed bug #59450: valgrind reports conditional or jump depends upon
@@ -139,19 +142,19 @@ Package manager : Marco Clemencic
 ============================= GaudiKernel v27r6 ==============================
 ! 2009-11-09 - Marco Clemencic
  - Fixed a problem with ConfigurableUser.propagateProperty when the property is
-   a list (or dictionary). 
+   a list (or dictionary).
 
 ! 2009-11-09 - Vanya Belyaev
  - Patch #3357: Comparison of floating point numbers
    GaudiKernel/Lomont.h, src/Lib/Lomont.cpp
-     *  The equality comparison of double numbers using as the metric the maximal 
+     *  The equality comparison of double numbers using as the metric the maximal
      *  number of Units in the Last Place (ULP).
-     *  It is a slightly modified version of very efficient implementation 
+     *  It is a slightly modified version of very efficient implementation
      *  of the initial Bruce Dawson's algorithm by Chris Lomont.
-   The functions are copied from Kernel/LHCbMath package 
+   The functions are copied from Kernel/LHCbMath package
 
 ! 2009-11-09 - Marco Clemencic
- - Modified the dictionary for DataObject to make the version persistent. 
+ - Modified the dictionary for DataObject to make the version persistent.
 
 ! 2009-10-29 - Marco Clemencic
  - Fixed few minor problems (including a possible buffer overflow).
@@ -165,7 +168,7 @@ Package manager : Marco Clemencic
    always fail on ImportError.
  - Fixed a problem in genconfuser.py occurring when a ConfigurableUser was found
    in more than one python module of the package. Not it is reported as existing
-   only in the first imported module. 
+   only in the first imported module.
 
 ! 2009-10-15 - Marco Clemencic
  - Minor change to ConfigurableUser to allow the declaration of
@@ -192,40 +195,40 @@ Package manager : Marco Clemencic
  - Patch #3223: Add some more "Extended" property types to Gaudi
 
    "Vectors"
-        Gaudi::Point3D 
+        Gaudi::Point3D
         Gaudi::Vector3D
         Gaudi::LorentzVector
-  
+
     "SVector"
-        ROOT::Math::SVector 
+        ROOT::Math::SVector
 
     "BoostArrays"
         boost::arrays
 
     "CArray"
-        C-arrays 
- 
+        C-arrays
+
     These properties are not available "on-default"  (why?)
     To use these properties one needs to include the corresponding files
-       GaudiKernel/VectorsAsProperty.h 
-       GaudiKernel/SVectorAsProperty.h 
-       GaudiKernel/BoostArrayAsProperty.h 
-       GaudiKernel/CArrayAsProperty.h 
+       GaudiKernel/VectorsAsProperty.h
+       GaudiKernel/SVectorAsProperty.h
+       GaudiKernel/BoostArrayAsProperty.h
+       GaudiKernel/CArrayAsProperty.h
 
-    The usage is new proeprties is fairly trivial and illsutrated by 
+    The usage is new proeprties is fairly trivial and illsutrated by
     new exampeles in GaudiExamples package:
-       ExtenderProperties2, 
-       ArrayProperties 
-       BoostArrayProperties 
+       ExtenderProperties2,
+       ArrayProperties
+       BoostArrayProperties
 
     Attention:
-      For *NOW* one needs to include these files before direct or 
-      indirect inclusion of  GaudiKernel/Property.h. 
-      The problem comes from some invalid design of "generic" 
+      For *NOW* one needs to include these files before direct or
+      indirect inclusion of  GaudiKernel/Property.h.
+      The problem comes from some invalid design of "generic"
       function in GaudiKernel/ToStream.h  (mia culpa).
-      I am goind to provide the redesigned version of ToStream.h, 
+      I am goind to provide the redesigned version of ToStream.h,
       but it will take some time.
-      For a time being one needs to take crea botu the 
+      For a time being one needs to take crea botu the
       inclusion of new headers
 
 ! 2009-10-07 - Marco Clemencic
@@ -292,7 +295,7 @@ Package manager : Marco Clemencic
    locker module.
  - The scripts merge_files.py, ZipPythonDir.py and genconfuser.py can now be
    synchronized with a "global lock file" defined with the environment variable
-   GAUDI_BUILD_LOCK (needed when using tbroadcast or equivalent). 
+   GAUDI_BUILD_LOCK (needed when using tbroadcast or equivalent).
 
 ! 2009-07-27 - Vanya Belyaev
  - Patch #2979: Modified version of file GaudiKernel/Hash.h
@@ -310,7 +313,7 @@ Package manager : Marco Clemencic
  - Modified genconfuser.py to explicitly avoid errors if the imported file tries
    to imports configurables that do not exist.
  - Removed the obsolete merge_genconfDb.py.
- 
+
 ! 2009-07-20 - Marco Clemencic
  - Fixed a compilation warning in PropertyMgr.cpp.
  - Added '-no_static' to the declaration of the libraries (implemented since CMT
@@ -357,7 +360,7 @@ Package manager : Marco Clemencic
 
 ! 2009-05-29 - Marco Cattaneo
  - Added "define NOMINMAX" in boost_allocator.h to avoid compilation problems on
-   Windows.  
+   Windows.
 
 ! 2009-05-25 - Marco Clemencic
  - Fixed bug #45517: Units not taken into account in .opts files
@@ -394,7 +397,7 @@ Package manager : Marco Clemencic
    class. It requires some more code duplication in the implementation of
    SmartIF<IInterface>.
    Part of the simplification comes from auto_ptr and the Boost smart pointers.
-   Note: NOT backward compatible. 
+   Note: NOT backward compatible.
 
 ! 2009-04-27 - Marco Clemencic
  - Added specific macros to disable specific backward compatibility hacks.
@@ -417,7 +420,7 @@ Package manager : Marco Clemencic
                      explicit \n and \t in strings
 
 ! 2009-04-08 - Marco Clemencic, Vanya Belyaev
- - Fixed bug #48401: No dictionaries for IStatSvc and IChronoSvc 
+ - Fixed bug #48401: No dictionaries for IStatSvc and IChronoSvc
 
 ! 2009-04-07 - Marco Clemencic
  - Moved back the namespace MSG to the global namespace.
@@ -454,7 +457,7 @@ Package manager : Marco Clemencic
    The main function now returns a SmartIF instead of a StatusCode.
  - Added a templated base class (CommonMessaging) to instrument classes with
    common messaging functionalities: msgSvc(), caching of the message stream,
-   info(), etc.      
+   info(), etc.
  - Disabled the constructor of InterfaceID from a long (conditional to
    GAUDI_V20_COMPAT). The result was not correct.
  - Removed "void** operator& ()" from SmartIF because prevents the creation of
@@ -471,7 +474,7 @@ Package manager : Marco Clemencic
 
 ! 2009-02-06 - Marco Clemencic
  - Moved the implementation of the methods addRef and release to the templated
-   base class implements<> (avoids duplication). 
+   base class implements<> (avoids duplication).
  - Modified implements.h to use preprocessor macros instead of replicated code.
  - Fixed a problem with MinimalEventLoopMgr::executeEvent. An AbortEvent
    incident fired by the last top alg in the list caused the skipping of the
@@ -495,7 +498,7 @@ Package manager : Marco Clemencic
      - non-inline functions (i.e. implemented in .cpp)
      - all the classes that are part of an hierarchy that has to be navigated
        with dynamic_cast
-   Usually it is not needed to decorate the fully-inlined classes/functions and 
+   Usually it is not needed to decorate the fully-inlined classes/functions and
    the templated ones (unless they are using globals or are not completely
    implemented in the .h).
    In some cases it is enough to decorate only the non-inline methods of a
@@ -508,7 +511,7 @@ Package manager : Marco Clemencic
  - Fixes
    - added Boost_linkopts_date_time to avoid a compilation problem on win32
      with the LCGCMT 56 candidate (Boost 1.37)
-   - removed fake declaration of mpl_::na (Boost) used for GCCXML 
+   - removed fake declaration of mpl_::na (Boost) used for GCCXML
    - constantness problems in the new code discovered by gcc 4.3
    - warning about non specified base class in a copy constructor
 
@@ -532,12 +535,12 @@ Package manager : Marco Clemencic
      for the interface; it must be put in the public section of the interface
      declaration using the interface as first argument, then major and minor
      versions:
-     
+
        class IMyFunctionality: virtual public extendInterfaces1<IInterface> {
        public:
          DeclareIterfaceID(IMyFunctionality,1,0);
        };
-     
+
    - modified the interfaces to use the new functionalities
    - NOTE: An updated interfaces does not require changes in the concrete
            implementations if GAUDI_V20_COMPAT is enabled. On the other hand, an
@@ -551,7 +554,7 @@ Package manager : Marco Clemencic
  - Renamed INamedInterface to INamed. The old header and a typedef are provided
    for backward compatibility (only if the macro GAUDI_V20_COMPAT is used).
  - Removed the obsolete ITime.h, TimePoint.h and Algorithm.icc.
-    
+
 ================ GaudiKernel v26r1 ====================================
 ! 2008-12-16 - Marco Clemencic
  - Modified the Configurable.getValuedProperties logic to use all the explicitly
@@ -700,7 +703,7 @@ Package manager : Marco Clemencic
    Added SharedObjectsContainer.
 
 ! 2008-10-09 - Pere Mato
- - Patch #2261. Introducing name alias for Algorithms and Services 
+ - Patch #2261. Introducing name alias for Algorithms and Services
    Added the new macros DECLARE_NAMED_ALGORITHM_FACTORY(type,name) to be used
    instead of the current DECLARE_ALGORITHM_FACTORY(type) for algorithms with
    templates. Similarly for Services.
@@ -736,7 +739,7 @@ Package manager : Marco Clemencic
                      of type map<str,str>.
  - Fixed bug #39117. gaudirun.py export to old options does not handle correctly
                      GaudiHandles.
-   Added the method getFullName. 
+   Added the method getFullName.
  - Fixed bug #39116. gaudirun.py export to old options prints '#' instead of '//'
    The fix required a review of the way messages are printed across the whole
    Configurables machinery. The Python standard logging module is now used and
@@ -751,7 +754,7 @@ Package manager : Marco Clemencic
 
 ! 2008-07-15 - Marco Clemencic
  - Fixed bug #38868. MinimalEventLoopMgr does not restart algorithms
-   Implemented restart so that it calls the restart of all the algorithms. 
+   Implemented restart so that it calls the restart of all the algorithms.
    Fixed the implementation of reinitialize too.
 
 ! 2008-07-15 - Gerhard Raven
@@ -790,7 +793,7 @@ Package manager : Marco Clemencic
  - Added platform-independent sleep functions:
    - Gaudi::Sleep(int)
    - Gaudi::NanoSleep(long long)
- 
+
 ! 2008-06-06 - Marco Clemencic
  - Fixed Windows compilation warning (caused by patch #1756).
 
@@ -808,7 +811,7 @@ Package manager : Marco Clemencic
  - Fixed bug #34769. Assigning a configurable to a list property does not fail.
    - Values for properties expecting lists, tuples and dictionaries must match
      the type (before it was possible to set a list from an iterable object).
- - Fixed handling of files starting with '#!' in gaudirun.py 
+ - Fixed handling of files starting with '#!' in gaudirun.py
 
 ! 2008-06-04 - Marco Clemencic
  - Fixed the last place where dylib was used on OSX (DsoUtils.h).
@@ -840,7 +843,7 @@ Package manager : Marco Clemencic
    removed.
    IAuditor has been extended to support auditing of the new transitions (start
    and stop).
-   The Reflex dictionary has been updated to include the new classes/enums. 
+   The Reflex dictionary has been updated to include the new classes/enums.
 
 ! 2008-05-29 - Charles Leggett
  - Changed the name of the extension for libraries on OSX from ".dylib" to ".so".
@@ -868,7 +871,7 @@ Package manager : Marco Clemencic
  - Added small interface (IFileAccess) for services/tools that allow read-only
    file access agnostic of the storage backend (filesystem, web, CondDB, ...).
  - Fixed a minor problem in ProcessJobOptions.py strip away spaces in component
-   and property names ("MyAlg . MyProp" -> "MyAlg.MyProp"). 
+   and property names ("MyAlg . MyProp" -> "MyAlg.MyProp").
 
 ================ GaudiKernel v24r0 ====================================
 ! 2008-04-04 - Vanya BELYAEV
@@ -885,14 +888,14 @@ Package manager : Marco Clemencic
  - Fixed a problem introduced with patch #1757.
    Modified DataStreamTool to call sysInitialize instead of initialize for
    conversion services.
- 
+
 ! 2008-04-04 - Charles Leggett
  - Patch #1757. detect creation/initialization loops for services.
    Modified the way the state of the service is set:
     - the base class initialize sets the state to CONFIGURED
     - the service becomes INITIALIZED in the sysInitialized, after the
       specialized service completed (successfully) the initialization.
- 
+
 ! 2008-04-03 - Sebastien Binet / Martin Woudstra
  - Bug #34752/Patch #1747. GaudiHandleArray.__getstate__ prevents pickling.
    Fixed.
@@ -904,7 +907,7 @@ Package manager : Marco Clemencic
     - for Algorithm/Service/AlgTool/Auditor base classes from StatusCode to
       "Property*"
 
-   The previous return value was completely useless: 
+   The previous return value was completely useless:
     - either "void" or (always) StatusCode::SUCCESS
 
    With the pointer to the actual property returned, one can easily use it, e.g.
@@ -912,17 +915,17 @@ Package manager : Marco Clemencic
    //----------------------------------------------------------------------
    class MyAlg : public Algorithm
    {
-   
-   public: 
 
-     // constructor 
+   public:
 
-     MyAlg ( ... ): Algorithm ( ... ) 
-                  , m_property( .... ) 
+     // constructor
+
+     MyAlg ( ... ): Algorithm ( ... )
+                  , m_property( .... )
      {
-       declareProperty ("Property" , m_property , "some documentation") 
+       declareProperty ("Property" , m_property , "some documentation")
          -> declareUpdateHandler ( &MyAlg::handler ) ;
-     }      
+     }
 
    private:
 
@@ -946,22 +949,22 @@ Package manager : Marco Clemencic
    - AuditorGuard has been adapted to the new interface and the audit with a
      status code check is simpler.
    - The standard event types defined in the enum IAuditor::StandardEventType
-     can be printed and converted to strings with operator<<. 
+     can be printed and converted to strings with operator<<.
 
 ! 2008-04-02 - Marco Clemencic
  - Python job options:
    - Removed the possibility of assigning a tool to an attribute of a
      configurable if that attribute/property does not exists. It was intended to
      allow simple declaration of private tools, but it is dangerous because it
-     avoids the checking of the spelling of properties. 
+     avoids the checking of the spelling of properties.
    - Modified Configurable.addTool() to accept a subclass of ConfigurableAlgTool
      as first argument (as well as an instance) to avoid the instantiation of an
-     unneeded instance of the public tool configurable. 
+     unneeded instance of the public tool configurable.
 
 ! 2008-03-11 - Hubert Degaudenzi
  - added 2 patterns to create and use helper library for genconf. Some libraries
-   need to have other preloaded libraries in order to perform the genconf 
-   procedure correctly. While this can be fixed on linux with the 
+   need to have other preloaded libraries in order to perform the genconf
+   procedure correctly. While this can be fixed on linux with the
    LD_PRELOAD environment variable, this is not possible on windows. Thus
    the genconf executable takes an extra argument "--load-library" to which
    the full path of the helper library is passed.
@@ -991,7 +994,7 @@ Package manager : Marco Clemencic
    needed).
    The conflict is resolved by using a function to return the needed
    configurables, implemented to return the keys of allConfigurables for Gaudi
-   and and empty list for Athena. 
+   and and empty list for Athena.
 
 ! 2008-02-27 - Wim Lavrijsen
  - Patch #1710. Convenience method for removing entries from GaudiHandleArray
@@ -1008,14 +1011,14 @@ Package manager : Marco Clemencic
    as well as in ROOT) in Athena.
 
 ! 2008-02-20 - Hubert Degaudenzi
- - added static function to Message.{h,cpp} in order to be able to access 
+ - added static function to Message.{h,cpp} in order to be able to access
    Message::DEFAULT_FORMAT and Message::DEFAULT_TIME_FORMAT.
 
 ! 2008-02-04 - Charles Leggett
  - Patch #1668.
    In Python 2.5, the method __str__ of ServiceHandles gets called causing some
    problems. The reason has to be investigated, but the patch allows to work.
-   
+
 ! 2008-02-04 - Yushu Yao
  - Patch #1666: Add AlgTool::declareRemoteProperty
    Added the member function declareRemoteProperty to AlgTool (present in
@@ -1031,7 +1034,7 @@ Package manager : Marco Clemencic
    The flag is set in GaudiPython.AppMgr after the application manager has been
    configured, to prevent that people try to manipulate the configuration when
    it is too late.
-   The lock does not (and cannot) work for in-place changes (like += on a list).  
+   The lock does not (and cannot) work for in-place changes (like += on a list).
 
 ! 2008-01-29 - Vanya BELYAEV
  - Modified IInterface::hash32 to use and return "unsigned int" instead of
@@ -1041,8 +1044,8 @@ Package manager : Marco Clemencic
 ! 2008-01-18 - Marco Clemencic
  - Fixed bug #32549.
    Changed the level of the message about the AbortEvent incident from ERROR to
-   DEBUG. 
- - Fixed a compilation warning in genconf.cpp with Boost 1.34.1 on Win32.  
+   DEBUG.
+ - Fixed a compilation warning in genconf.cpp with Boost 1.34.1 on Win32.
 
 ! 2008-01-14 - Vanya BELYAEV
  - Patch #1581.
@@ -1050,8 +1053,8 @@ Package manager : Marco Clemencic
       add the parser functions for parsion of following types:
       1) std::map<int,std::string>
       2) std::map<unsigned int, std::string>
-    These types play important roles for LHCb-HLT and are requested 
-      by Gerhard Raven 
+    These types play important roles for LHCb-HLT and are requested
+      by Gerhard Raven
 
 ! 2008-01-11 - Gerhard Raven
  - patch #1621 (bug #32466).
@@ -1068,13 +1071,13 @@ Package manager : Marco Clemencic
      binding of properties as it was possible in old options (mainly needed for
      backward compatibility).
      The option:
-     
+
         MyAlg.MyProp = @AnotherAlg.AProp;
-        
+
      translates to:
-     
+
         MyAlg().MyProp = Configurable.PropertyReference("AnotherAlg.AProp")
-     
+
    - Modified the parser of old job options to correctly translate references.
    - Modified ConfigurableAlgTool.getFullName to return only the instance name
      (instead of the fully qualified name).
@@ -1093,7 +1096,7 @@ Package manager : Marco Clemencic
      GaudiKernel.Constants.
    - Made "Configurable" equivalent to "str", so that it is possible to set a
      string property from a configurable instance.  It allows something like:
-     
+
        mySvc = AService("theService",...)
        myAlg = AnAlgorithm("theAlgorithm")
        myAlg.ServiceToUse = mySvc
@@ -1109,15 +1112,15 @@ Package manager : Marco Clemencic
    of the passed exception and its message are appended to the message of the
    GaudiException.
  - Fixed a problem in ProcessJoboptions.py when DOS new-lines were found on
-   Unix. 
- 
+   Unix.
+
 ! 2007-12-19 - Marco Clemencic
  - Fixed a couple of typos in Map.h (preventing the generation of dictionary).
  - Check if a value is in the list before trying to delete it when interpreting
    "-=" in old job options.
  - Restored the original logic for parsing list in old job options (replace all
    "{}" with "[]", unless there is a ':').
-    
+
 ! 2007-12-12 - Marco Clemencic
  - patch #1585.
    - Added the templated function pp_cast<DEST>(SRC**) to replace the common casts
@@ -1156,7 +1159,7 @@ Package manager : Marco Clemencic
  - Added a new incident type (AbortEvent) that force the (Minimal)EventLoopMgr
    to skips all the top algorithms still to be executed for the current event.
    It can be used when a reconstruction step fails so it does not make sense to
-   process the event, but we do not want to stop the application.   
+   process the event, but we do not want to stop the application.
  - Fixed a bug in the old job option interpretation if mixed with python
    options.
    The sequence:
@@ -1182,12 +1185,12 @@ Package manager : Marco Clemencic
    configurables and the list of already imported files from the memory.
    After a call to "purge" one is able to restart the configuration from scratch
    without having to leave the python session.
-    
+
 ! 2007-11-13 - Marco Clemencic
  - Instead of generating *Conf.py files trying to import AthenaCommon and fail
    back on GaudiKernel, use the module GaudiKernel.Proxy, which internally does
    the same kind of trick but only once.
- 
+
 ! 2007-11-13 - Sebastien Binet
  - patch #1520 (bug #31097)
    Removed a duplicated data member in ServiceHandle (same information already
@@ -1195,7 +1198,7 @@ Package manager : Marco Clemencic
  - patch #1158
    Modified genconf.exe to generate modules (*_confDb.py) with a smaller memory
    footprint. The code to fill the DB is encapsulated in a function that is then
-   deleted after being called. 
+   deleted after being called.
 
 ! 2007-11-12 - Marco Clemencic
  - Moved the *.qmt files to the implicit suite (directory) "gaudikernel.qms".
@@ -1213,7 +1216,7 @@ Package manager : Marco Clemencic
    To get timing information, it tries to open /proc/$PID/stats, which does not
    exist in OSX. The alternative is to use some other mechanism, but the one
    implemented in ProcessDescriptor seems to cause a segmentation fault.
-   (to be investigated) 
+   (to be investigated)
 
 ! 2007-10-31 - Marco Clemencic
  - Rewritten ProcessJobOptions.py. Major changes:
@@ -1260,7 +1263,7 @@ Package manager : Marco Clemencic
  - Patch #1345.
    minor modifications to improve Tuples::TupleObj (GaudiAlg package)
    - GaudiKernel/NTuple.h
-       1) substitute the explicit specialization for NTuple::Range with 
+       1) substitute the explicit specialization for NTuple::Range with
           the regular calls of std::numeric_limits<T>::min()/max()
        2) disable "#ifndef ALLOW_ALL_TYPES"
 
@@ -1307,7 +1310,7 @@ Package manager : Marco Clemencic
    GaudiKernel. This is a temporary fix until both approaches are merged.
 
 ! 2007-08-31 - Hubert Degaudenzi & Paolo Calafiura
- - Patch #1260.moved the MinimalEventLoopMgr from GaudiSvc to GaudiKernel. The factory 
+ - Patch #1260.moved the MinimalEventLoopMgr from GaudiSvc to GaudiKernel. The factory
    for this service is still in GaudiSvc
 
 ! 2007-08-06 - Vanya Belyaev
@@ -1371,16 +1374,16 @@ Package manager : Marco Clemencic
    be used, the timing is measured in the old way.
 
 ! 2007-07-16 - Marco Clemencic
- - changed the syntax for specialization of templated function in namespace 
+ - changed the syntax for specialization of templated function in namespace
    for gcc 4.1 future use
-   
+
 ! 2007-07-16 - Hubert Degaudenzi
  - added the possibility to use the universal time for the messages.
-   there is a new "%u" format for this. It replaces the usual "%t" in 
+   there is a new "%u" format for this. It replaces the usual "%t" in
    the MessageSvc.Format.
 
 ! 2007-06-18 - Vanya Belyaev
- - patch #1178. 
+ - patch #1178.
     * The patch substitute the internal counters, used for
       (I)CounterSvc by generic counters of type StatEntity.
     * This allow to reuse the useful functionality of StatEntity class.
@@ -1430,14 +1433,14 @@ Package manager : Marco Clemencic
 	 std::map<std::string,std::string> dict = ... ; //new
 	 setProperty( "Dictionary" , dict ) ; //new
    The setting of properties through strings is still possible.
-   
+
 ! 2007-05-23 - Marco Clemencic
  - patch #1168. Added specialization for void* to GaudiUtils::Hash.
 
 ! 2007-05-23 - Charles Leggett
  - patch #1176. Added few missing functions in ITHistSvc
    (already present in THistSvc)
- 
+
 ! 2007-05-23 - Vanya Belyaev
  - patch #1161. Improvements and clean-up in StatEntity:
     - Removed "weight"-related functions and methods (unused)
@@ -1445,7 +1448,7 @@ Package manager : Marco Clemencic
     - Improved print-out format
     - Added methods to make StatEntity mode DIM friendly
     - Some clean up in comments
- 
+
 ! 2007-05-23 - Marco Clemencic
  - patch #1160. Changed the returned value of
     - Algorithm::setExecuted()
@@ -1473,7 +1476,7 @@ Package manager : Marco Clemencic
    also added this method to MsgStream:
 	void setMsgSvc( IMessageSvc* svc ) {
 	     m_service = svc;
-	} 
+	}
 
 ! 2007-05-15 - Chris Jones
  - patch #1136: Updates to Algorithm and AlgTool required for
@@ -1495,8 +1498,8 @@ Package manager : Marco Clemencic
    (header GaudiKernel/time_r.h).
    Removed also a couple of compilation warnings.
 
-! 2007-05-10 - Ivan Belyaev 
- Patch #1126: 
+! 2007-05-10 - Ivan Belyaev
+ Patch #1126:
  - GaudiKernel/StatEntity.h, src/Lib/StatEntity.cpp
    1) Add the assignment operator from the scalar value according to
       the request by Ulrich Kerzel (LHCb/RICH)
@@ -1547,11 +1550,11 @@ Package manager : Marco Clemencic
    anything that is accepted by strftime plus additional '%f' code for
    milliseconds.
 
-! 2007-04-27 - Sebastien Binet 
+! 2007-04-27 - Sebastien Binet
  - patch #25888. Fixed uninitialized variable in Algorithm.cpp.
 
 ! 2007-04-09 - Marco Clemencic
- - patch #1125. Fixed INamedInterface in order to provide the right 
+ - patch #1125. Fixed INamedInterface in order to provide the right
    IInterfaceID. An empty virtual destructor has been added.
 
 ! 2007-04-05 - Martin Woudstra
@@ -1579,7 +1582,7 @@ Package manager : Marco Clemencic
       char * c = format("XXX,x);
       to
       std::string s = format("XXX,x);
-      c = s.c_str(); 
+      c = s.c_str();
 
 ================ GaudiKernel v22r2 ====================================
 ! 2007-03-14 - Sebastien Binet
@@ -1660,7 +1663,7 @@ Package manager : Marco Clemencic
 
 ! 2007-02-14 - Pere Mato
  - Fixed bug #23811: patch #1001 is breaking Configurables generation
- 
+
 ! 2007-02-14 - Vanya BELYAEV
  Patch #1001
  - a) couple of fixes, which allows to retrieve the private tools not
@@ -1669,29 +1672,29 @@ Package manager : Marco Clemencic
    b) Update the queryInteface method for AlgTool,Algorithm,Auditor
       and Servicebase classes to allow query for INamedInterface, in
       addition "C-cast" is substituted with "static_cast"
-   The modified files: 
+   The modified files:
        src/Lib/AlgTool.cpp
        src/Lib/Algorithm.cpp
-       src/Lib/Auditor.cpp 
+       src/Lib/Auditor.cpp
        src/Lib/Service.cpp
 
 ! 2007-02-13 - Pere Mato
  - Reverted change in Booststrap.cpp. This fixes "bug #23684: BootSvcLocator is breaking athena.py"
  - genconf.cpp: applied "patch #1016: configurable genconf"
                 fixed "bug #23649: ICounterSvc inheritance tree and Reflex::PluginSvc"
- 
+
 ! 2007-02-08 - Pere Mato (David Quarrie)
  - Bootstrap.cpp:
    Introduced a dual-stage boostrap mechanism to ensure an orderly startup
    of the ApplicationMgr. If the Gaudi::svcLocator() function is called before the singleton
    ApplicationMgr instance exists, a BootSvcLocator singleton instance is
    created. This responds to any subsequent requests for services by
-   returning StatusCode::FAILURE, unless the ApplicationMgr singleton 
+   returning StatusCode::FAILURE, unless the ApplicationMgr singleton
    instance has been created in the interim. In this case, the BootSvcLocator
    forwards the request to the ApplicationMgr instance. The motiviation for
    this is to handle static object instances where the constructor attempts
    to locate services and would otherwise instantiate the ApplicationMgr
-   instance in an unorderly manner. This logic requires that the 
+   instance in an unorderly manner. This logic requires that the
    ApplicationMgr instance is created explicitly.
 
 
@@ -1717,7 +1720,7 @@ Package manager : Marco Clemencic
  - Applied patch #1000: improvement in ConfigurableDb output for genconf
 
 ! 2007-01-30 - Pere Mato (
- - Applied [partially] patch #997: genconf.cpp patch       
+ - Applied [partially] patch #997: genconf.cpp patch
  - It adds to genconf.cpp:
       - a "double loading" libraries to shield against dual_use
         libraries (which could bring lots of external
@@ -1735,7 +1738,7 @@ Package manager : Marco Clemencic
  - patch #977 on MsgStream.
 
 ! 2007-01-18 - Charles Leggett
- patch #972. 
+ patch #972.
  - add messageCount to IMessageSvc
  - extend Auditor::(sys)afterExecute to pass a const StatusCode&,
    which is the return code of the algorithm
@@ -1754,7 +1757,7 @@ Package manager : Marco Clemencic
    overcome a problem with Reflex and the name given to std::string. The change can be removed when Reflex
    will be modified.
  - MsgStream.h: Corrected compilation error.
-   
+
 ! 2007-01-12 - Marco Clemencic
  - fix to patch #954. Modification of the interface of IDataStreamTool
    to avoid explicit reference to std::vector.
@@ -1790,7 +1793,7 @@ Package manager : Marco Clemencic
 
 ! 2006-12-15 - Pere Mato
  - VectorMap.h: removed protected find() method to avoid compilation error in
-                Event/HtlEvent package 
+                Event/HtlEvent package
 
 ! 2006-12-14 - Hubert Degaudenzi
  - removed duplicated dictionary entry for InterfaceID (it is located in the
@@ -1807,14 +1810,14 @@ Package manager : Marco Clemencic
  - extra ";": AllocatorPool.h/.cpp, ChronoEntit, Debugger.h, Environment.h
               KeyedObject.cpp, KeyedObjectManager.h/.cpp, KeyedTraits.h
               Memory.h,  NTupleImplementation, NTupleItems.h, ProcessDescriptor
-              Property.cpp, PropertyMgr.cpp, Selector.h, Stat.cpp, 
+              Property.cpp, PropertyMgr.cpp, Selector.h, Stat.cpp,
               StatEntity.cpp, TimePoint.h
  - auditors: Algorithm.h/cpp, AlgTool.h, Auditor.h/cpp, IAuditorSvc,
              Service.h/cpp
  - doc string for props: Algorithm.h, AlgTool.h, Auditor.h/cpp, Property.h/.cpp
  - service creation on demand: ServiceLocatorHelper.cpp, ISvcLocator
  - setPriority of services: ISvcManager
- - fire ModuleIncident when module loaded: IClassManager, 
+ - fire ModuleIncident when module loaded: IClassManager,
 	ModuleIncident.h (new)
  - IIncidentSvc.h: rethrow incident if requested with extra param to
                    addListener()
@@ -1844,31 +1847,31 @@ Package manager : Marco Clemencic
  - GaudiKernel/VectorMap.h
     1) On the request form ATLAS (Savannah reports  #21395 and #21394)
        add the method "update" to class GaudiUtils::VectorMap.
-       NOTE: It is nor STL-compliant! 
-       It behaves like "insert", but it OVERRIDES the mapped value 
-    2) Also  "const-look-up" is added through the methods 
-       "operator()" and "operator[]" 
-       Again it is nto STL-complient signature: 
-       the methdod are "const" , and there are no 
-       "non-const" analogues 
+       NOTE: It is nor STL-compliant!
+       It behaves like "insert", but it OVERRIDES the mapped value
+    2) Also  "const-look-up" is added through the methods
+       "operator()" and "operator[]"
+       Again it is nto STL-complient signature:
+       the methdod are "const" , and there are no
+       "non-const" analogues
 
-     *  For typical usage of this class in LHCb context 
-     *  as "ExtraInfo" field I would like to recommend 
-     *  to AVOID this method 
- 
-    3) Add also the checked access in STL-spirit: 
-        GaudiUtils::VectorMap::at   
-       throw std::out_of_range exception for non-existing keys 
+     *  For typical usage of this class in LHCb context
+     *  as "ExtraInfo" field I would like to recommend
+     *  to AVOID this method
+
+    3) Add also the checked access in STL-spirit:
+        GaudiUtils::VectorMap::at
+       throw std::out_of_range exception for non-existing keys
  - GaudiKernel/ToStream.h
-    add the partial specialization for printout of following classes:  
-     1) GaudiUtils::Map   
-     2) GaudiUtils::HashMap   
+    add the partial specialization for printout of following classes:
+     1) GaudiUtils::Map
+     2) GaudiUtils::HashMap
      3) GaudiUtils::VectorMap
-    The printout done in a style of "Python-dictionary", similar to 
-     std::map 
-    Also print out for std::set is added 
+    The printout done in a style of "Python-dictionary", similar to
+     std::map
+    Also print out for std::set is added
  - src/Lib/VectorMap.cpp
-     new file fith implementtation of action for nonexisting key 
+     new file fith implementtation of action for nonexisting key
 
 ! 2006-11-22 - Hubert Degaudenzi
  - added environment variable GCCXML_CXXFLAGS=" -m32" for 32 bits
@@ -1957,66 +1960,66 @@ Package manager : Marco Clemencic
 
 ! 2006-09-09 - Vanya BELYAEV - patch #839
  - GaudiKernel/Grammars.h
-     Add a method StringGrammar::matchString, which allows to 
+     Add a method StringGrammar::matchString, which allows to
      substitute all "std::isspace" symbols with the blank.
-     It is a bit incorrect operation, but it allows 
+     It is a bit incorrect operation, but it allows
      to split very long string into few lines.
-     It is incorrect since the overall number of blank symbols 
+     It is incorrect since the overall number of blank symbols
      in the string is a quantity which is difficult to control.
-     One still needs to be very careful with CR/LF symbols in the 
-     opts-files. 
+     One still needs to be very careful with CR/LF symbols in the
+     opts-files.
      This particular fix solves the problem with configuration
-     of DataOnDemandSvc, where long string are unavoidable. 
-     The solution  ( 'std::isspace' --> ' ' ) has been discussed with 
-     Marco Cattaneo. We have agreed that this solution is not safe, 
-     but it solves the particular problem. 
+     of DataOnDemandSvc, where long string are unavoidable.
+     The solution  ( 'std::isspace' --> ' ' ) has been discussed with
+     Marco Cattaneo. We have agreed that this solution is not safe,
+     but it solves the particular problem.
 
      The fix is kindly provided by Sasha Mazurov (Alexander.Mazurov@gmail.com)
 
- - GaudiKernel/Property.h 
-    1) reshuffle the property assignment/load methods to eliminate the 
-       duplication of actions, from now Property::load is implemented 
-       through Property::assign. It provides a bit more coherency in 
+ - GaudiKernel/Property.h
+    1) reshuffle the property assignment/load methods to eliminate the
+       duplication of actions, from now Property::load is implemented
+       through Property::assign. It provides a bit more coherency in
        the code.
-    2) the actual action for Property::assign and Property::load is 
-       been released a bit, not one can load/assign either from the 
-       property of the same type or from the valid string representation 
-       of property of any type. Previously only StringProperty has been 
+    2) the actual action for Property::assign and Property::load is
+       been released a bit, not one can load/assign either from the
+       property of the same type or from the valid string representation
+       of property of any type. Previously only StringProperty has been
        allowed.
-    3) The full template specializations of 
-       PropertyWithValue<std::string>::toString and  
-       PropertyWithValue<std::string>::assign are provided 
-        - there are no "extra" confusing double quotes now in the 
-          string printout 
+    3) The full template specializations of
+       PropertyWithValue<std::string>::toString and
+       PropertyWithValue<std::string>::assign are provided
+        - there are no "extra" confusing double quotes now in the
+          string printout
         - the string is always parsed at assign, in particular it means
-          that all surrounding pairs of quotes will be removed 
-          automatically as redundant  
+          that all surrounding pairs of quotes will be removed
+          automatically as redundant
  - GaudiKernel/ToStream.h
-      - modify a bit the implementation of Gaudi::Utils::toStream 
-        for std::string to use single quotes if the string containt 
+      - modify a bit the implementation of Gaudi::Utils::toStream
+        for std::string to use single quotes if the string containt
         double quotes
-      - add the implementation of Gaudi::Utils::toStream for boolean values 
-        to print boolean values "à la Python" as "True" or "False" 
-      - add the implementation for float/double/long double to print them 
-        with reasonable precision. It is important since the default 
-        precision of ios_base is 6, which could be not enough, and 
-        the precision of boost::lexical_cast is 
-         std::numerical_limit<...>::digit10+1, 
+      - add the implementation of Gaudi::Utils::toStream for boolean values
+        to print boolean values "à la Python" as "True" or "False"
+      - add the implementation for float/double/long double to print them
+        with reasonable precision. It is important since the default
+        precision of ios_base is 6, which could be not enough, and
+        the precision of boost::lexical_cast is
+         std::numerical_limit<...>::digit10+1,
         which is much more than we need.
-  - GaudiKernel/Property.h, src/Lib/Property.cpp 
-     add few useful functions to descrease the number of ugly  
-     technical lines in some public code 
+  - GaudiKernel/Property.h, src/Lib/Property.cpp
+     add few useful functions to descrease the number of ugly
+     technical lines in some public code
 
      namespace Gaudi { namespace Utils {
        bool      hasProperty ( const IProperty*  p  , const std::string& name ) ;
        bool      hasProperty ( const IInterface* p  , const std::string& name ) ;
        Property* getProperty ( const IProperty*  p  , const std::string& name ) ;
        Property* getProperty ( const IInterface* p  , const std::string& name ) ;
-       bool      hasProperty 
+       bool      hasProperty
        ( const std::vector<const Property*> , const std::string& name ) ;
-       const Property* getProperty 
+       const Property* getProperty
        ( const std::vector<const Property*> , const std::string& name ) ;
-     
+
      }}
 
 ================ GaudiKernel v20r9 ====================================
@@ -2024,7 +2027,7 @@ Package manager : Marco Clemencic
  - patch #817. For new associatiove properties, e.g. map
    the implemented behaviour do not fulfill the naive expectations. E.g:
 
-   A.a = { "a" : 1 , "a" : 2 , "b" : 3 , "a" : 10 } ; 
+   A.a = { "a" : 1 , "a" : 2 , "b" : 3 , "a" : 10 } ;
    A.a += { "a" : 100 , "a" : 200 };
 
    The result will be the map:
@@ -2042,7 +2045,7 @@ Package manager : Marco Clemencic
    internally allocates memory, but is the **correct** usage of these
    functions according to the docs. Otherwise repeated calls tend to
    screw up malloc.
- 
+
 ! 2006-07-31 - Pere Mato
  - Changed interface IJobOptionsSvc from pointer to reference to fix
    bug #18581 overview: Memory leak due to changed behaviour of
@@ -2067,11 +2070,11 @@ Package manager : Marco Clemencic
    in the UNIX command line way.
       - "0" for success
       - "1" for failure
-   to test it for examples one could do: 
+   to test it for examples one could do:
      >Gaudi.exe some.opts && echo "Gaudi has succeeded"
 
 ! 2006-06-15 - Hubert Degaudenzi
- - Fix gcc 3.4.5 compilation problems in the new property parser. 
+ - Fix gcc 3.4.5 compilation problems in the new property parser.
 
 ! 2006-06-06 - Alexander Mazurov & Ivan Belyaev
  - new property parser installed. It relies on the Boost::spirit
@@ -2100,7 +2103,7 @@ Package manager : Marco Clemencic
 
 ! 2006-05-11 - Vanya Belyaev
  - added templated SmartRefVector constructor with first and last
-   iterator pointers as arguments 
+   iterator pointers as arguments
 
 ================ GaudiKernel v20r6 ====================================
 ! 2006-05-04 Marco Clemencic
@@ -2113,7 +2116,7 @@ Package manager : Marco Clemencic
 ! 2006-05-02 Hubert Degaudenzi
  - Added PhysicalConstants.h and SystemOfUnits.h (from CLHEP) in
    GaudiKernel. The constants and units are in the Gaudi::Units
-   namespace. 
+   namespace.
  - patch #715. Added boost allocator wrapper (Marco Clemencic).
  - patch #719. Added 2 functions to make the UpdateManagerSvc work
    safely in multi-thread environment. They allow to block the
@@ -2175,7 +2178,7 @@ Package manager : Marco Clemencic
  - Added new program genconf to generate the python configuration file for component libraries
  - Fix bug #14665 overview: IID_IAlgorithm and IID_IConversionSvc Conflict
  - Moved some class in the dictionary of GaudiPython to the dictionary in GaudiKernel
- 
+
 ! 2006-01-25 Marco Clemencic
  - Added class Gaudi::Time (based on seal::Time). Updated interfaces
    IDetDataSvc, IValidity and IUpdateManager in order to use the new class.
@@ -2222,9 +2225,9 @@ Package manager : Marco Clemencic
  - Booststrap.h: converted Gaudi class into a Gaudi namespace
 
 ! 2005-11-22 Vanya Belyaev
- - Added class GaudiUtils::VectorMap (former _VctMap from Vanya) that implements associative version inspirer 
+ - Added class GaudiUtils::VectorMap (former _VctMap from Vanya) that implements associative version inspirer
    from the Loki library by Andrei Alexandrescu.
- 
+
  an associative vector
    inspired from Loki associative vector.
    Fix problems of KeyedContainer when using keys with explicit constructors.
@@ -2237,14 +2240,14 @@ Package manager : Marco Clemencic
 
 ! 2005-11-18 -  Marco Clemencic
   - Added 3 classes to replace the HashTable and the hacks in stl_hash.h
-  
-    * GaudiUtils::Map is a simple associative container. It is implemented as a proxy 
-      to a template class implementing the underlying container (defaulting to std::map). 
-      It features "operator[](key) const" and "operator()(key) const". It has a virtual 
+
+    * GaudiUtils::Map is a simple associative container. It is implemented as a proxy
+      to a template class implementing the underlying container (defaulting to std::map).
+      It features "operator[](key) const" and "operator()(key) const". It has a virtual
       destructor so that it can be extended via inheritance.
-    * GaudiUtils::Hash is a simple hash function (based on Stroustrup's example) which 
+    * GaudiUtils::Hash is a simple hash function (based on Stroustrup's example) which
       correctly handle pointers, std::string and char*. It is portable between Linux and Windows.
-    * GaudiYUtils::HashMap is a Map which uses internally a hash_map. The differences 
+    * GaudiYUtils::HashMap is a Map which uses internally a hash_map. The differences
       between gcc and VC7 are taken into account in order avoid users having to put "#ifdef"s.
 
 ! 2005-11-09 - Chris Jones
@@ -2292,13 +2295,13 @@ Package manager : Marco Clemencic
 ! 2005-07-25 - Hubert Degaudenzi
  - fixed bug #9474. fixed bad friend declaration. According to the C++
    standard typedef'ed typenames may not be declared friends. (Mattias
-   Ellert). 
+   Ellert).
 
 ! 2005-07-25 - Hubert Degaudenzi
- - fixed bug #9468. Missing typname keyword within templates (Mattias Ellert). 
+ - fixed bug #9468. Missing typname keyword within templates (Mattias Ellert).
 
 ! 2005-07-21 - Hubert Degaudenzi
- - fixed bug #9467 
+ - fixed bug #9467
 
 ! 2005-07-21  Markus Frank
  - patch #445. Move basic dictionaries from GaudiPoolDb to GaudiKernel
@@ -2316,7 +2319,7 @@ Package manager : Marco Clemencic
    could be done (Stefan Roiser).
 
 ! 2005-07-18  Hubert Degaudenzi
- - fixed bug #9466. extra semicolon (Mattias Ellert).	
+ - fixed bug #9466. extra semicolon (Mattias Ellert).
 
 ! 2005-07-15  Hubert Degaudenzi  <Hubert.Degaudenzi@cern.ch>
  - fixed bug #9476. Missing keyword "class". (Mattias Ellert)
@@ -2328,26 +2331,26 @@ Package manager : Marco Clemencic
 ! 2005-05-10  Hubert Degaudenzi  <Hubert.Degaudenzi@cern.ch>
  - modifications for the new service StagerSvc. Added IStagerSvc and a
    new incident "EndStream" that will trigger the end of the
-   processing of one file. 
+   processing of one file.
 
 ================ GaudiKernel v19r2 ====================================
 ! 2005-05-10  Hubert Degaudenzi  <Hubert.Degaudenzi@cern.ch>
  - added path access to SmartRef (Marco Clemencic)
 
 ! 2005-04-22  Hubert Degaudenzi  <Hubert.Degaudenzi@cern.ch>
- - GaudiKernel/IValidity.h (IValidity): added some const qualifiers 
+ - GaudiKernel/IValidity.h (IValidity): added some const qualifiers
    to function members of the IValidity class (Marco Clemencic).
 
 ================ GaudiKernel v19r1 ====================================
 
-! 2005-04-14 - Eric VAN HERWIJNEN 
+! 2005-04-14 - Eric VAN HERWIJNEN
  - modification of the IMonitor.h interface
 
 
 ! 2005-04-14 - Hubert Degaudenzi
  - removed the following interface files:
-	
-  GaudiKernel/IDetectorElement.h 
+
+  GaudiKernel/IDetectorElement.h
   GaudiKernel/IGeometryInfo.h
   GaudiKernel/ILVolume.h
   GaudiKernel/IPVolume.h
@@ -2362,21 +2365,21 @@ Package manager : Marco Clemencic
  - Obsolete interface call: StatusCode ISvcManager::declareSvcCreator
  - Obsolete interface call: StatusCode ISvcManager::declareSvcModule
  - New interface call:      StatusCode ISvcManager::getFactory(const std::string& svc_type, ISvcFactory*& fac);
- 
+
 ================ GaudiKernel v18r3 ====================================
 ! 2005-02-25 - Pere Mato
  - System.cpp: applied patch to overcome CXXABI problem (merge from v17r1)
- 
+
 ! 2005-02-24 - Manuel Domenech
 - Added the interface IAIDATupleSvc.h for the AIDA-based tuple service.
 - ClassID, Algorithm.h and lib/Algorithm.cpp: added declarations for the AIDATupleSvc.
 
 ================GaudiKernel v18r2=====================================
 ! 2005-02-15 - Markus Frank
- - SealDictionary.h - fix for SmartRefDict. 
+ - SealDictionary.h - fix for SmartRefDict.
 
 ! 2005-02-11 - Pere Mato
- - Algorithm.cpp: removed the name extensions such as  ".sysInitialize()", ".sysExecute()" 
+ - Algorithm.cpp: removed the name extensions such as  ".sysInitialize()", ".sysExecute()"
    and ".sysFinalize()" in the messages generated by the base class.
    It makes it simple to control over the threshold messages from algorithm. (suggested by Vanya)
 
@@ -2401,11 +2404,11 @@ Package manager : Marco Clemencic
  - Changed IEventProcessor interface to add stopRun() method
  - Changed System.cpp to load dynamic libraries with RTLD_GLOBAL flag and commented out
    the special typo_info implementation
- 
+
 ! 2004-12-10 - Pere Mato
  - Added interface IMonitorSvc.h (from Gaucho)
  - Algorithm.h,.cpp: Added new method declateInfo(...) to declare monitoring variables
- 
+
 ! 2004-12-06 - Markus Frank
  - SealDictionary.h
    Make use of ReflectionBuilder/CollectionProxy.h
@@ -2427,22 +2430,22 @@ Package manager : Marco Clemencic
 ! 2004-10-27 - Pere Mato
  - Changed order of finalization of Algorithm/Sub-algorithms
    bug #3903 overview: finalize and nested algorithms
-   
+
 ================GaudiKernel v17r0=====================================
 ! 2004-10-25 - Pere Mato
  - Algorithm.cpp: added setFinalized() at the end of of the finalization to avoid doing it
                   more than once.
  - Service.cpp: added protection on accessor msgSvc() for the MessageSvc itself.
- - Changed IAlgManager interface. 
+ - Changed IAlgManager interface.
    - Added initializeAlgorithms() and finalizeAlgorithms()
    - Removed declareAlgCreator()
    - Added optional argument to createAlgorithm() to tell if the Algorithm should be managed
  - Removed PathResolver.h,cpp because of compilation problems on Windows
- 
+
 ! 2004-08-10 - Charles Leggett
  - new class ServiceLocatorHelper used to implement service methods
    in Algorithm.(h,cpp), Service.(h,cpp), AlgTool.(h,cpp), Converter.(h,cpp)
- - ISvcLocator.h:  new method service<T>(type, name, T*, bool) to 
+ - ISvcLocator.h:  new method service<T>(type, name, T*, bool) to
     create/retrieve a non-default instance of a service
 
 ! 2004-08-10 - Charles Leggett
@@ -2453,19 +2456,19 @@ Package manager : Marco Clemencic
 
 ! 2004-08-03 - Vanya BELYAEV
  - GaudiKernel/ParticleProperty.h
-   Two methods for particle<-->antiparticle relations 
+   Two methods for particle<-->antiparticle relations
        const ParticleProeprty* antiParticle() const ;
        void setAntiParticle( const PArticleProeprty* ) ;
  - GaudiKernel/ChronoEntity.h, GaudiKernel/StatEntity.h
    src/Lib/ChronoEntity.cpp,   src/Lib/StatEntity.cpp
-   Files are moved from GaudiSvc package to allow run-time 
-   public inspection of Chrono & Stat counters 
- - GaudiKernel/IChronostatSvc.h 
+   Files are moved from GaudiSvc package to allow run-time
+   public inspection of Chrono & Stat counters
+ - GaudiKernel/IChronostatSvc.h
    Two method are added to allow run-time publc inspection of
-   Chrono & Stat counters: 
+   Chrono & Stat counters:
      const ChronoEntity* chrono ( const ChronoTag& tag ) const ;
      const StatEntity*   stat   ( const StatTag&   tag ) const ;
- 
+
 ================GaudiKernel v16r1=====================================
 ! 2004-07-22 - Pere Mato
   - DataObject.h: Added ostream operator << . In this way we can output DataObjects using ostream or MsgStream. This was
@@ -2474,10 +2477,10 @@ Package manager : Marco Clemencic
   - KeyedDictionary.h: Reverted typo removal in KeyedContainer<> class name. Otherwise the existing files are not
     readable.
   - Incicent.h: Added doxygen comments (from Chris Jones)
-  - Property.h/MsgStream.h: added more specialized templates for handling MsgStream operator << and 
+  - Property.h/MsgStream.h: added more specialized templates for handling MsgStream operator << and
     stream operator << for ArrayProperties and vector<T>. This should avoid compilation errors
     detected by Marco.
-    
+
 ! 2004-07-19 - Pere Mato
   - System.h/cpp: added implementation for Windows
   - MsgStream: replaced a bunch MsgStream& operator <<(MsgStream&,...) by a templated one
@@ -2498,7 +2501,7 @@ Package manager : Marco Clemencic
   - ParticleProperty.h: added pdgID() and setPdgID() as alises to jetsetID() and setJetsetID()
   - Property.cpp: added template specialization to support string booleans in setProperty()
                   ("false", "true", "False", "True", ...)
-                  
+
 ! 2004-26-06 - Markus Frank
   - Small update in SmartIF.h to get a cleaner API
   - New interface: IPartitionControl
@@ -2533,32 +2536,32 @@ Package manager : Marco Clemencic
 ================GaudiKernel v15r3=======================================
 ! 2004-04-19 - Markus Frank
  - KeyedContainer.h: Modified erase() method to use a temporary vector to improve performance.
-   Tested by Chris Parkes: The new keyed container code  
+   Tested by Chris Parkes: The new keyed container code
      VeloSim:execute  238ms/event
    to be compared with the old timing
      VeloSim:execute  638ms/event - old code, using original keyed container
- 
+
 ================GaudiKernel v15r2=======================================
 ! 2004-03-04 - Gloria Corti
  - IParticlePropertySvc.h: Changed interface to add the Pythia ID
- - ParticleProperty.h: Changed to Pythia ID in constructor and remove obsolete 
+ - ParticleProperty.h: Changed to Pythia ID in constructor and remove obsolete
                        accessors.
 
 ================GaudiKernel v15r1=======================================
 ! 2004-01-23 - Markus Frank
  - SmartRef.h/SmartRefbase.h  Replaced inheritance by object embedding. This change
                               is neded to optimize CPU for persistency based on POOL.
-                                 
-! 2004-01-20 - Vanya BELYAEV  
- - Algorithm.h  1) add protected accessor to m_outputLevel field 
-                2) add shortcuts evtSvc() and svcLoc() 
-                3) resurrect default(empty) Algorithm::initialize() 
+
+! 2004-01-20 - Vanya BELYAEV
+ - Algorithm.h  1) add protected accessor to m_outputLevel field
+                2) add shortcuts evtSvc() and svcLoc()
+                3) resurrect default(empty) Algorithm::initialize()
                    and Algorithm::finalize() methods
-                4) split 'long' lines to please LHCb-flavour Emacs 
- - AlgTool.h    1) add protected accessor to m_outputLevel field 
-                2) add shortcut svcLoc() to serviceLocator() method 
-                3) split 'long' lines to please LHCb-flavour Emacs 
-  
+                4) split 'long' lines to please LHCb-flavour Emacs
+ - AlgTool.h    1) add protected accessor to m_outputLevel field
+                2) add shortcut svcLoc() to serviceLocator() method
+                3) split 'long' lines to please LHCb-flavour Emacs
+
 ================GaudiKernel v15r0=======================================
 ! 2004-01-08 - Werner Wiedenmann
  - System.h:        use gaudi "__linux" #define rather than LINUX
@@ -2581,7 +2584,7 @@ Package manager : Marco Clemencic
 ! 2003-12-09 - Markus Frank
  - A bunch og changes in preparation to the integration with SEAL/POOL
  - Added dependency with SEAL
- 
+
 
 ================GaudiKernel v14r2=======================================
 ! 2003-12-03 - Grigori Rybkine
@@ -2591,7 +2594,7 @@ Package manager : Marco Clemencic
 ! 2003-11-26 - Pere Mato
  - Adapted to new version of AIDA (namespaces)
  - Replaced macro WIN32 by _WIN32
- 
+
 ================GaudiKernel v14r1=======================================
 ! 2003-11-25 - Pere Mato
  - Modifications for Mac OSX (Guy Barrand)
@@ -2607,8 +2610,8 @@ Package manager : Marco Clemencic
 ! 2003-07-03 - Markus Frank
   Major upgrade for use of POOL. Main change: extend technology specifier to
   int from unsigned char. Please note, that the changed interfaces are NOT BACKWARDS
-  compatible. In particular in the converter area concrete user classes must 
-  support integer technology types. To create a compiler error, the converter 
+  compatible. In particular in the converter area concrete user classes must
+  support integer technology types. To create a compiler error, the converter
   base class does no longer have the method repSvcType().
 
   ModuleInfo.cpp        Remove signed/unsigned warning
@@ -2639,12 +2642,12 @@ Package manager : Marco Clemencic
 
 ! 2003-06-25 - Paolo Calafiura, Pere Mato
  - SmartDataObjectPtr: added const in operator = argument
- - Algorithm.cpp, Converter.cpp, Service.cpp: Fixed service_i() [ Bug #927 ] 
+ - Algorithm.cpp, Converter.cpp, Service.cpp: Fixed service_i() [ Bug #927 ]
 
 ================GaudiKernel v13r4p1=====================================
 ! 2003-06-26 - Pere Mato
  - System.cpp: removed white spaces in System::typeinfoName() for templated classes with more than one argument.
- 
+
 ================GaudiKernel v13r4=====================================
 
 ! 2003-05-07 - Paolo Calafiura
@@ -2652,14 +2655,14 @@ Package manager : Marco Clemencic
 
 ! 2003-05-06 - Paolo Calafiura for RD Schaffer
  - IAddressCreator.h and ConversionSvc: new creatAddress from string interface
-  
+
 ! 2003-04-29 - Sebastien Ponce
  - solution to the gcc 3.2 dynamic_cast problem. For deeeeeep explanations
    of both the problem and the solution, see doc/dynamic_cast.pb
 
 ! 2003-04-18 - Paolo Calafiura
  - DataSvc.cpp: protect registerObject against null DataObj pointer (fail)
-  
+
 ! 2003-04-15 - Paolo Calafiura
  - NTupleImplementation.cpp: delete m_buffer mismatched with array new in
    RootHistCnv::RCWNTupleCnv::book
@@ -2668,14 +2671,14 @@ Package manager : Marco Clemencic
 ! 2003-04-10 - Marco Cattaneo
  - RndmGenerators.cpp: Fix a memory leak at finalisation
 
-! 3002-04-04 - Pere Mato 
+! 3002-04-04 - Pere Mato
  - Updated IAddressCreator interface with two convert IOpaqueAddresses to
    string format and vise versa (proposal by RD Shaffer)
    virtual StatusCode convertAddress( const IOpaqueAddress* pAddress,
                                       std::string& refAddress) = 0;
    virtual StatusCode createAddress( const std::string& refAddress,
                                      IOpaqueAddress*& refpAddress) = 0;
-                                    
+
 ! 2003-04-01 - Sebastien PONCE
  - some coding convention applications
  - bug fix in PropertyMgr concerning the output of property names
@@ -2699,7 +2702,7 @@ Package manager : Marco Clemencic
 
 ! 2003-02-25 - Werner Wiedenmann & Paolo Calafiura
  - add ThreadLibGaudi.{h,cpp}: utilities to get and parse thread
-   instance names 
+   instance names
  - changes to Service and Algorithm:
          - service method asks first for thread specific service
 	   instance, if not available get generic service instance
@@ -2708,12 +2711,12 @@ Package manager : Marco Clemencic
 
 ! 2003-01-21 - Markus Frank
   - Add second connectOutput call to conversion service interface.
-    Second argument allows to specify the opening mode 
+    Second argument allows to specify the opening mode
     (NEW, RECREATE, UPDATE)
   - DataTypeInfo: add 2 new types: LONG_STRING, LONG_NTCHAR
   - (I)SelectStatement: Allow for more generic selects than
     only FUNCTION and STRING
-    
+
 ! 2003-01-06 - Sebastien Ponce
  - improvements in support for gcc 3.2
 
@@ -2732,16 +2735,16 @@ Package manager : Marco Clemencic
 
 ! 2002-11-11 - Markus Frank
  - Timing.cpp: Use routine ::gettimeofday(...) to measure current time.
-   This improves the precision of several timing measurements 
+   This improves the precision of several timing measurements
    (current time, elapsed time) to 1 micro second.
    The change affects linux only.
- 
+
 ! 2002-11-08 - Markus Frank
  - Move CLID for N-tuples into ClassID.h
  - Fix bug in ISvcLocator.h: If service initialization failed, status was still OK.
 
 ! 2002-11-06 - Markus Frank
- - DeclareObjectFactory.h - add declarations for containedobject factories 
+ - DeclareObjectFactory.h - add declarations for containedobject factories
    and dataobject factories.
 
 ================GaudiKernel v13r1=====================================
@@ -2752,14 +2755,14 @@ Package manager : Marco Clemencic
  - Bug fix in StreamBuffer for deserialization of char*
 
 ! 2002-10-11 - Paolo Calafiura
- - Added protection in ConversionService::setDataProvider: since ATLAS use 
+ - Added protection in ConversionService::setDataProvider: since ATLAS use
    StoreGate and pass a NULL pDataSvc pointer.
 
 ================GaudiKernel v13r0=====================================
 ! 2002-10-04 - Pere Mato
- - Changed interface IJobOptionsSvc to add accessors to the JobOptions 
+ - Changed interface IJobOptionsSvc to add accessors to the JobOptions
    catalogue
-   
+
 ! 2002-09-27 - Sebastien Ponce
  - fixes in order to compile on gcc 3.2
  - lots of coding conventions applications
@@ -2777,7 +2780,7 @@ Package manager : Marco Clemencic
 
 ! 20020703 Paolo Calafiura
  - RegistryEntry.h: put DataSvc in the global ns when declaring as friend
- - Service.h: add ISvcLocator include for service() inline implementation        
+ - Service.h: add ISvcLocator include for service() inline implementation
 
 ! 20020628 Pere Mato, Sebastien Ponce
  - Improved error reporting when loading dynamic libraries
@@ -2786,28 +2789,28 @@ Package manager : Marco Clemencic
    is to aliviate user confusion.
  - Added function format(string fmt, ...) that can be used to format messages
    within the MsgStream class.
-   Example: 
+   Example:
    log << MSG::INFO << format("Evt: %8d Run: %8d", evt, run) << endmsg;
 	 Caveat: Since the unspecified argument list is used (...) the arguments can not
-	 be cheched for the correct type and possible conversions are not triggered. 
+	 be cheched for the correct type and possible conversions are not triggered.
 
 ! 20020529 Paolo Calafiura
  - Auditor.h: service() needs IServiceLocator header file
  - DeclareFactoryEntries.h: typo in AudFactory name
- 
+
 ! 20020506 Paolo Calafiura
  - PropertyMgr: use interface hub (Massimo ApplicationMgr refactoring)
 
 ! 20020506 Andrea Valassi
  - Change in MsgStream.h to allow the use of std::hex on Windows
- 
+
 ================v12r2=====================================
 ! 20020506 Pere Mato
  - Bug fix in AlgTool.cpp. Pointer to ToolSvc not initialized
    (Reported by O. Callot)
 
 ! 20020502 Pere Mato
- - Bug fix in base classes Service and Converter. The accessor msgsvc() shpould 
+ - Bug fix in base classes Service and Converter. The accessor msgsvc() shpould
    returns always a valid MessageSvc (Reported by RD Schaffer)
  - Added templated function service() in Converter base class.
  - Bug fix in Service.cpp. The finalize method access violates if called before
@@ -2837,9 +2840,9 @@ Package manager : Marco Clemencic
     +++ GaudiKernel/src/Lib/System.cpp
        in System::typeinfoName(), added a #elif defined(sun)
     +++ GaudiKernel/CnvFactory.h
-       removed virtual inheritence in class CnvFactory & CnvFactory2 
+       removed virtual inheritence in class CnvFactory & CnvFactory2
     +++ GaudiKernel/ObjectFactory.h
-       removed virtual inheritence in class ObjectFactory & ObjectFactory2 
+       removed virtual inheritence in class ObjectFactory & ObjectFactory2
 
 ! 20020315 Markus Frank
   - Kernel.h
@@ -2852,7 +2855,7 @@ Package manager : Marco Clemencic
   - Converter.cpp
     Do not dereference dataProvider if pointer is invalid
   - TimePoint.h
-    Add StreamBuffer& operator<<(), StreamBuffer& operator>>(), 
+    Add StreamBuffer& operator<<(), StreamBuffer& operator>>(),
     MsgStream& operator<<()
   - TimePoint.h
     Add MsgStream& operator<<()
@@ -2865,23 +2868,23 @@ Package manager : Marco Clemencic
 
 ! 20020215 Pere Mato
   - Removed dependency with AIDA
-  - Eliminated the old IHistogramXXX interfaces. Users should use the 
+  - Eliminated the old IHistogramXXX interfaces. Users should use the
     AIDA ones directly
   - Changed ClassId.h and IHistogramSvc.h to include 3D histograms
-  
+
 ! 20020225 Markus Frank
   - Problem reported by Kambiz Mahboubi fixed concerning the
     user defined random number generator (i.e. DefinedPdf)
   - GaudiKernel/RndmGenerators.h
 
 ! 20020213 - Pere Mato
-  - Algorithm.cpp: Fixed bug 
-    The status code of sysInitilize() of sub-algorithms was not 
+  - Algorithm.cpp: Fixed bug
+    The status code of sysInitilize() of sub-algorithms was not
     checked. Now it should fail and report an error.
-    
+
 ================v11r1=====================================
 ! 20020128 - Markus Frank
-  - DataObejct.cpp: Fixed bug 
+  - DataObejct.cpp: Fixed bug
     Automatically create leaves on registerAddress if the
     Option "ForceLeaves" is set to true
   - SmartRefs.cpp:
@@ -2890,7 +2893,7 @@ Package manager : Marco Clemencic
   - ConversionSvc.cpp:
     Bug fix: Converters were never finalized. Done from now on, whenever the
     converter gets disconnected from the conversion service.
-    
+
 ================v11r0=====================================
 ! 20011212 - Pere Mato
   - Added dependency to AIDA requested by David Quarrie
@@ -2902,7 +2905,7 @@ Package manager : Marco Clemencic
 ! 20011126 - Markus Frank
   - MsgStream.cpp
     Any change of the printout level from the application program
-    using MsgStream::setLevel(...) is ignored by the message service. 
+    using MsgStream::setLevel(...) is ignored by the message service.
     Update the local printout level on a by message bases and restore
     the previous printout level.
 
@@ -2919,9 +2922,9 @@ Package manager : Marco Clemencic
   - The base class AlgTool implemements them as dummy but allows an implementation
     of  them on specific Algorithm Tools
   - Removed the need to implement a queryInterface() in specific Algorithm tools. Instead
-    use the expresion declareInterface<Ixxxx>(this) in the constructor.  
+    use the expresion declareInterface<Ixxxx>(this) in the constructor.
   - Added releaseTool() method in IToolSvc.
- 
+
 ! 20011111 - Pere Mato
   - Many Changes from Markus for the DataStore classes re-design.
 
@@ -2929,7 +2932,7 @@ Package manager : Marco Clemencic
   New versions of interfaces:
   - ISvcManager.h (incompatible) Added more functionality to offload ApplicationMgr
   - ISvsLocator.h (compatible) Changed getServices() to const
-  
+
 ! 20011105 - Sebastien Ponce
   Added new methods in DataSvc to be able to set the root without clearing
   the store
@@ -2959,11 +2962,11 @@ Package manager : Marco Clemencic
 
 ! 20010629 - Pere Mato
   Changes in interfaces needed for improved interactivity support :
-  IService.h   : Added new method reinitialize() to allow services to 
+  IService.h   : Added new method reinitialize() to allow services to
                  take into account changes after the first time initialization
   IAlgorithm.h : Added beginRun() and endRun() methods. These are called each time
                  the event loop is executed.
-  IEventProcessor.h : Added executeRun() and nextEvent() methods. This is to 
+  IEventProcessor.h : Added executeRun() and nextEvent() methods. This is to
                       eliminate the need to use the IAppMgrUI interface in the
                       EventLoopMgr components.
   IAppMgrUI.h  : Renamed method state() to stateName().
@@ -2985,16 +2988,16 @@ Package manager : Marco Clemencic
   SmartDataObjectPtr.h : Fix annoying compiler warning
   SmartRefBase.h,
   SmartRef.h      : operator==() was badly implemented (Found by O.Callot)
-  strcasecmp.h    : WIN32 needs an additional #include <cstring> 
+  strcasecmp.h    : WIN32 needs an additional #include <cstring>
 
 ! 20010625 - Pere Mato
   - Added remote properties functionality. Changed PropertyMgr and base classes Service
     and Algorithm
   - Added MsgStream::endmsg with same functionality as endreq. (Request from ATLAS)
-  - Using AIDA Historams instead of LHCb private ones. The existing include files 
+  - Using AIDA Historams instead of LHCb private ones. The existing include files
     include the new ones but generating a warning. The IAnnotation interface is added
     because it does not exists in the used AIDA release
-    
+
 
 ! 20010618 - v10 (Flr)
   requirements - use GaudiPolicy v5
@@ -3010,9 +3013,9 @@ Package manager : Marco Clemencic
 ! 20010503 - Markus Frank
   Allow access to data store items without specification of the top level
   directory. It is equivalent to specify an histogram like "/stat/simple/1"
-  or simply "simple/1". Note that the the entire prefix "/stat/" must be 
+  or simply "simple/1". Note that the the entire prefix "/stat/" must be
   omitted. The use is backwards compatible.
-  Added a qualifier ALWAYS to the message service specifying that a given 
+  Added a qualifier ALWAYS to the message service specifying that a given
   message should always be printed.
   ie.
   MsgStream log (msgSvc(), "Name")
@@ -3029,7 +3032,7 @@ Package manager : Marco Clemencic
                            to write/read n-tuple. It is no longer necessary to
                            use the n-tuple service for these actions.
   NTupleImplementation.h/cpp dto.
-  GaudiKernel/SmartDataPtr.h        Bug fix: 
+  GaudiKernel/SmartDataPtr.h        Bug fix:
                                     SmartDataPtr<Object> obj (...)
                                     if ( obj ) {...}
                                     Check succeeded if object is present however
@@ -3046,7 +3049,7 @@ Package manager : Marco Clemencic
 ! 20010320 - Sebastien Ponce
   - PropertyMgr.h Avoid compiation errors for egcs 2.95.2
   - Debugger.cpp, ProcessDescriptor.cpp Avoid compilation errors for 2.95.2
-  - MsgStream.h Added the bool type in the operator<<(). 
+  - MsgStream.h Added the bool type in the operator<<().
 
 ! 20010320 David Quarrie
  - Fix Linux macro problem in Kernel.h (should be __linux, not linux).  Fix
@@ -3182,14 +3185,14 @@ Package manager : Marco Clemencic
 
 ! 20010208 Pere Mato
  - Modified System.cpp. Added suffix in the DLL name when loading
- 
+
 ! 20000125 Pere Mato
  - Changed CLID& by CLID in Converter base class to avoid weird problems with some
    converters in Linux.
  - Corrected bug in Algorithm::service()
- - In Bootstrap.h, added static method Gaudi::svcLocator() to get the ISvcLocator* 
+ - In Bootstrap.h, added static method Gaudi::svcLocator() to get the ISvcLocator*
    in isolation.
- - In ISvcLocation.h added a templated method ISvcLocator::service() to facilitate 
+ - In ISvcLocation.h added a templated method ISvcLocator::service() to facilitate
    retrival of services.
 
 ! 20010122 - GaudiKernel v8r1 and head revision (Flr)
@@ -3208,9 +3211,9 @@ Package manager : Marco Clemencic
 
 ! 20001215 Pere Mato
  - Renamed Time::Time class by TimePoint class
- - The constants Time::time_absolutepast and Time::time_absolutefutre are now defined 
+ - The constants Time::time_absolutepast and Time::time_absolutefutre are now defined
    in the TimePoint.h. The namespace Time has been removed.
-   
+
 ! 20001213 Pere Mato
  - Cleanup and adaptation to the new way of documenting the code based
    on Doxygen (JavaDoc style)
@@ -3266,7 +3269,7 @@ Package manager : Marco Clemencic
 
 !=============================================================================
 ! 20001018 - Pere Mato
- - Implemented a new service called IncidentSvc. This allows to communicate 
+ - Implemented a new service called IncidentSvc. This allows to communicate
    asynchronously things that happen in the system. The ApplicationMgr uses it to inform
    when begining and ending the processing of one physics event.
    + Added new interfaces related to the new service: IIncidentSvc.h, IIncidentListener.h
@@ -3320,11 +3323,11 @@ Package manager : Marco Clemencic
       NTupleSvc/Selector.h;                dto.
 
 !=======================================================================================
-! 20001009 - Vanya Belyaev 
-   (1) Gaudi/Kernel/IInterface.cpp - added definition of IID_IGiGaCnvSvc 
-              and 2 definitions of pseudy-technology types, needed for GiGa 
-   (2) remove obsolete method from IGiGaSvc interface, the functionality of these 
-       method is replaced by  GiGa Conversion Sercice 
+! 20001009 - Vanya Belyaev
+   (1) Gaudi/Kernel/IInterface.cpp - added definition of IID_IGiGaCnvSvc
+              and 2 definitions of pseudy-technology types, needed for GiGa
+   (2) remove obsolete method from IGiGaSvc interface, the functionality of these
+       method is replaced by  GiGa Conversion Sercice
 
 !========================================================================================
 ! 20001009 - David Quarrie, Pere Mato
@@ -3334,9 +3337,9 @@ Package manager : Marco Clemencic
    New classes: Auditor.h (.cpp), AudFactory.h
 
 ! ======================================================================================
-! 20000731 - Vanya Belyaev 
-  - Gaudi/DetectorDataSvc/DetectorElement.h bug fix 
-       (1) remove empty default constructor         (incorrect initialization) 
+! 20000731 - Vanya Belyaev
+  - Gaudi/DetectorDataSvc/DetectorElement.h bug fix
+       (1) remove empty default constructor         (incorrect initialization)
        (2) now default construction is not empty!!!
 
 ! ======================================================================================
@@ -3349,7 +3352,7 @@ Package manager : Marco Clemencic
   - Introduce the interfaces and base classes for the ToolSvc
      new files in Interfaces: IAlgTool.h, IToolFactory.h, IToolSvc.h
      new files in Kernel: AlgTool.h, AlgTool.cpp, ToolFactory.h
-     modified IInterface.cpp (in Kernel) to add the IID for IAlgTool,IToolFactory and 
+     modified IInterface.cpp (in Kernel) to add the IID for IAlgTool,IToolFactory and
      IToolSvc
   - requirements: introduce AlgTool.cpp in Gaudilib
   - Change obsolete comment in IParticlePropertySvc
@@ -3364,13 +3367,13 @@ Package manager : Marco Clemencic
                  - returning all edges in a given axis
                  - setting the histogram title
                  - allowing to register, unregister, retrieve and find
-                   a histogram in the transient histogram data store 
+                   a histogram in the transient histogram data store
 
 ! 20000704 - Marco Cattaneo
   - requirements : use LHCbCMT v3r1 (to pick up EXTLIB v2r1)
 
 ! 20000630 - Pere Mato
-  - Removed implementations of initialize(), finalize() and execute() 
+  - Removed implementations of initialize(), finalize() and execute()
     in Algorithm base class as a response to the e-discussion concerning
     the spelling of such methods.
 
@@ -3378,23 +3381,23 @@ Package manager : Marco Clemencic
   - System.cpp : introduce "more correct" coefficient between time clocks and seconds :-))
 
 ! 20000622 - Vanya Belyaev
-  - System.cpp : introduce "correct" coefficient between time clocks and seconds 
+  - System.cpp : introduce "correct" coefficient between time clocks and seconds
 
 
 ! 20000621 - Marco Cattaneo
-  - requirements: insert underscore in name of Gaudi_shlibflags macro, 
+  - requirements: insert underscore in name of Gaudi_shlibflags macro,
                   to please CMT v1r5
 
 ! 20000617 - Vanya Belyaev
   - Bug fix in Gaudi/System/System.cpp file in method char** System::argv()
 
 ! 20000616 - Pere Mato
-  - Changed Algorithm base class. Added an error counter and max error 
+  - Changed Algorithm base class. Added an error counter and max error
     limit to allow continuation of trhe program. Default is one.
     Added accessor to RndmGenSvc from base class.
 
 ! 20000615 - (Pere Mato, David Quarrie)
-  - Changed interface IAlgorithm and base class Algorithm to support 
+  - Changed interface IAlgorithm and base class Algorithm to support
     Algorithm sequences (Babar style). Added some more algorithm flags
    (enabled, executed, fileter passed, ...) in base class. Added method
     reasetExecuted() in the IAlgorithm interface.
@@ -3403,13 +3406,13 @@ Package manager : Marco Clemencic
     const Property& getProperty( const std::string& name ) const = 0;
     const std::vector<Property*>& getProperties( ) const = 0;
   - Changed base class Property to introduce the possibility of asking
-    to a property for its type. 
+    to a property for its type.
   - Introduced new classes: PropertyList, CommandProperty
     A PropertyList is a Property that contains an array of other properties
-    A CommandProperty has a callback function associated that is called 
+    A CommandProperty has a callback function associated that is called
     when a new value of the property is set.
     The PropertyList can handle property nesting. The name convention is
-    that names are separated by ":".  
+    that names are separated by ":".
   - Changed PropertyMgr to base its implementation with PropertyList
 
 ! 20000609 - (Markus Frank)
@@ -3417,7 +3420,7 @@ Package manager : Marco Clemencic
     Implementation of the public part of the random number generator package.
 
   Besides this I **had** to do some code cleanup:
-  - Algorithm.h: Removed Algorithm::create(...) 
+  - Algorithm.h: Removed Algorithm::create(...)
     Function was declared but never implemented.
   - IChronoStatSvc.h: "long double" is not really a ansi data type.
     Changed to double.
@@ -3434,29 +3437,29 @@ Package manager : Marco Clemencic
   - Kernel.h: If neither Linux nor WIN32 is the platform,
     fix "longlong" to a 64 bit structure capable of holding
     the variable.
-  - StreamBuffer.h: Clean up internal classes ContainedLink and 
+  - StreamBuffer.h: Clean up internal classes ContainedLink and
     IdentifiedLink, get rid of macros
   - Message.h: There is no such class "ostream". Use #include <iostream> instead;
   - MsgStream.h: Added copy constructor
   - NTuple.h:    Get rid of a few macros and write the proper code instead.
-  - Get rid of NTupleFile.h and NTupleDirectory.h - should never have 
+  - Get rid of NTupleFile.h and NTupleDirectory.h - should never have
     been used at all. The classes were always defined in NTuple.h!
 
 
-! 20000525 
+! 20000525
 
 - Fixed template instantiation in Ntuple::Item (For version 6 of Visual C++
 - Corrected "OuputLevel" bug in Service.cpp. This would not take into account
   a change in the OuputLevel for services.
 
-! 20000523 
+! 20000523
 
 Markus Frank Make System.cpp compile under VC 6.0 which opposite to VC 5.0
              defines STRICT by default.
 
 ! 20000410 - Gaudi v6
 
-New EventSelector Interface  06/04/2000 
+New EventSelector Interface  06/04/2000
 ----------------------------------------
 Gonzalo Gracia Abril: IEvtSelector.h modified
 
@@ -3470,7 +3473,7 @@ Gaudi splited into Gaudi and GaudiSvc
 
 Small correction in Service.cpp/h
 ---------------------------------
-- Added const function messageService() which was 
+- Added const function messageService() which was
   necessary to get a MsgStream in any constant function
   (Gonzalo Gracia Abril)
 
@@ -3493,7 +3496,7 @@ New Functionality
 - Support for dynamic library loading
 
 Improvemenets
-------------- 
+-------------
 - Added interfaces for detector description
 - Improved ParticleProperty service. Added index by LundID.
 - Modified ApplicationManager to acommonatye other changes
@@ -3512,7 +3515,7 @@ New Funtionality
 Changes done by Markus Frank, Pere Mato, Pavel Binko
 
 
-! 19990812 
+! 19990812
 
 New Funtionality
 ----------------
@@ -3559,7 +3562,7 @@ Improvements
   Added classes: SmartDataLocator, SmartDataObjectPtr
 - MessageSvc:
   Added classes GaudiErrorHandler and GaudiNagHandler to
-  interface NAG C error handling to Gaudi/MessageSvc. 
+  interface NAG C error handling to Gaudi/MessageSvc.
   In order to avoid compile time dependency of Gaudi on <nag.h>,
   GaudiNagHandler is defined inline. Applications using this
   facility must #include "Gaudi/MessageSvc/GaudiNagHandler.h".
@@ -3567,6 +3570,6 @@ Improvements
   http://lhcb.cern.ch/~cattanem/LHCb/GaudiNagC.html
 - PersistencySvc:
   Changed to support two or more conversion services. This was needed to
-  support the Root conversion service. 
+  support the Root conversion service.
   Added classes OutputStream, OutputStreamAgent
 
