@@ -46,11 +46,13 @@ struct Helper {
     return svcloc->service(name, createif).get();
   }
   // Provided for backward compatibility
-  static IAlgorithm* algorithm(IAlgManager* algmgr, const std::string& name) {
-    const bool createIf = false;
+  static IAlgorithm* algorithm
+  ( IAlgManager*       algmgr           , 
+    const std::string& name             ,
+    const bool         createIf = false )
+  {
     return algmgr->algorithm(name, createIf).get();
-  } 
-
+  }
   // ==========================================================================
   static DataObject* dataobject ( IDataProviderSvc*  dpsvc , 
                                   const std::string& path  ) 

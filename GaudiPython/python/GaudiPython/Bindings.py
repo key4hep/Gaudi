@@ -797,9 +797,10 @@ class AppMgr(iService) :
             s.append(nl.front().name())
             nl.pop_front()
         return s
-    def algorithm(self, name ) :
-        alg = Helper.algorithm( self._algmgr, name )
-        return iAlgorithm(name, alg )
+    def algorithm(self, name , createIf = False ) :
+        alg = Helper.algorithm( self._algmgr, name , createIf )
+        if not alg : return iAlgorithm ( name       , alg )
+        else       : return iAlgorithm ( alg.name() , alg )
     def algorithms(self) :
         l = self._algmgr.getAlgorithms()
         nl = l.__class__(l)  # get a copy
