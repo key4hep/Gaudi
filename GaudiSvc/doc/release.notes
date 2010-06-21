@@ -1,6 +1,11 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2010-06-21 - Marco Clemencic
+ - Fixed bug #67366: undefined pattern library_Clinkopts
+   Removed the usage of pattern library_Clinkopts (a left-over of some old
+   clean-up).
+
 ! 2010-05-27 - Charles Leggett
  - Patch #3683: Ignore unchecked StatusCodes in xxxDict.so libraries
    Added the property IgnoreDicts (default = true) to StatusCodeSvc to instruct
@@ -63,7 +68,7 @@ Package manager : Marco Clemencic
      polling the size of each TFile once per each EndEvent incident, and issuing
      a stopRun() if it gets too large. a job option (MaxFileSize) is added to
      control the max size
-   - made the MsgStream a member data to speed up message output. 
+   - made the MsgStream a member data to speed up message output.
 
 ! 2010-02-26 - Marco Clemencic
  - Added an implementation of the WatchdogThread in the EventLoopMgr
@@ -91,7 +96,7 @@ Package manager : Marco Clemencic
 ! 2010-01-19 - Markus Frank
  - Modified EventCollectionSvc to accept the syntax SVC= (alternative to TYP=)
    when specifying collection files for the EventSelector, as it was already the
-   case for normal files. 
+   case for normal files.
 
 ! 2009-12-18 - Marco Clemencic
  - Modified DetDataSvc::updateObject to avoid the check of the validity of the
@@ -232,7 +237,7 @@ Package manager : Marco Clemencic
      if empty no incident will be fired.
      Default: FileRecordsDataSvc: NEW_FILE_RECORD
      Default: RunRecordsDataSvc:  NEW_RUN_RECORD
-     to retrieve incident name in order to connect clients use e.g.: 
+     to retrieve incident name in order to connect clients use e.g.:
 	SmartIF<IProperty> prp(m_recordSvc);
 	setProperty("IncidentName",prp->getProperty("IncidentName"));
    - Automatically load all file records on registering a new leaf.
@@ -256,12 +261,12 @@ Package manager : Marco Clemencic
 ! 2009-04-03 - Markus Frank
  - Patch #2792: Update to file records service
    - Renamed /RunRecords to /FileRecords.
-   - Removed the default sub-directories in the RecordDataSvc. 
+   - Removed the default sub-directories in the RecordDataSvc.
 
 ! 2009-04-03 - Charles Leggett
  - Patch #2721: Differentiate between exceptions and return codes in ExceptionSvc
    Added a new Property to control the return code behavior of the service.
- 
+
 ! 2009-03-26 - Marco Clemencic
  - Fixed a problem in the return value of OutputStream::connectConversionSvc().
 
@@ -280,11 +285,11 @@ Package manager : Marco Clemencic
 
 ! 2009-02-06 - Marco Clemencic
  - Moved the implementation of the methods addRef and release to the templated
-   base class implements<> (avoids duplication). 
+   base class implements<> (avoids duplication).
 
 ! 2009-01-30 - Marco Clemencic
  - Fixed compilation warnings when using Boost 1.38 (Spirit changed includes).
- - Replaced all the occurrences of endreq with endmsg. 
+ - Replaced all the occurrences of endreq with endmsg.
 
 ! 2009-01-29 - Marco Clemencic
  - Symbol visibility
@@ -353,7 +358,7 @@ Package manager : Marco Clemencic
 
 ! 2008-10-30 - Marco Clemencic
  - Clean the the DataStreamTool memory during initialize of EventSelector to be
-   sure that we start from an empty list during a re-initialize. 
+   sure that we start from an empty list during a re-initialize.
 
 ! 2008-10-28 - Marco Clemencic
  - Fixed bug #38572, THistSvc initialize/finalize cycles
@@ -378,7 +383,7 @@ Package manager : Marco Clemencic
 
 ! 2008-10-21 - Marco Clemencic, Frank Winklmeier
  - Fixed bug #37049. Use recursive mutexes in MessageSvc
-   - Replaced boost::mutex to boost::recursive_mutex.   
+   - Replaced boost::mutex to boost::recursive_mutex.
 
 ! 2008-10-20 - Marco Clemencic
  - Fixed bug #41058. Better warning messages when a factory can't be loaded
@@ -390,10 +395,10 @@ Package manager : Marco Clemencic
  - Fixed bug #36917. Listen to all incidents
    Fixed a problem with listeners registered for "ALL" incidents: they were
    never triggered. The current behavior is to call the specific listeners, then
-   loop over the list of generic ones. 
+   loop over the list of generic ones.
 
 ! 2008-10-09 - Pere Mato
- - Patch #2261. Introducing name alias for Algorithms and Services 
+ - Patch #2261. Introducing name alias for Algorithms and Services
    Added the new macros DECLARE_NAMED_ALGORITHM_FACTORY(type,name) to be used
    instead of the current DECLARE_ALGORITHM_FACTORY(type) for algorithms with
    templates. Similarly for Services.
@@ -418,14 +423,14 @@ Package manager : Marco Clemencic
  - Patch #1963. Add getGraphs() method to THistSvc.
 
 ! 2008-10-01 - Marco Clemencic, Frank Winklmeier
- - Reimplemented IssueLogger::getTraceBack() in terms of the version of 
+ - Reimplemented IssueLogger::getTraceBack() in terms of the version of
    System::backTrace() introduced with patch #1797.
 
 ! 2008-10-01 - Frank Winklmeier
  - Patch #1796: Performance improvement for message reporting
 
 ! 2008-10-01 - Vanya Belyaev
- - Patch #1750. Improved printout of Data-On-Demand Service. 
+ - Patch #1750. Improved printout of Data-On-Demand Service.
 
 ================ GaudiSvc v17r1 ====================================
 ! 2008-06-30 - Marco Clemencic
@@ -469,11 +474,11 @@ Package manager : Marco Clemencic
    - Updated the reference file of the test.
 
 ! 2008-05-23 - Marco Clemencic
- - Fixed the misplacement of the release of the MessageSvc. Now is located in the 
-   terminate() method of the ApplicationMgr (the symmetric of the creation location).  
+ - Fixed the misplacement of the release of the MessageSvc. Now is located in the
+   terminate() method of the ApplicationMgr (the symmetric of the creation location).
 
 ! 2008-05-14 - Patrick Koppenburg
- - Patch #1806. Reduced default print-out of DataOnDemandSvc.  
+ - Patch #1806. Reduced default print-out of DataOnDemandSvc.
 
 ! 2008-05-14 - Vanya Belyaev
  - Patch #1801. Allow exclusion in HistogramPersistencySvc
@@ -494,7 +499,7 @@ Package manager : Marco Clemencic
      message service, making problematic the control of output level.
  - Patch #1756. Improvements for Chrono/ChronoStat&IChronoSvc
    - src/Lib/ChronoStatSvc.h,.cpp
-     update for change in chronoStart/chronoStop return values 
+     update for change in chronoStart/chronoStop return values
      "(const) StatEntity*" instead of "void"
 
 ! 2008-05-09 - Marco Clemencic
@@ -511,7 +516,7 @@ Package manager : Marco Clemencic
  - Patch #1765: Patch to THistSvc to be able to write to the same file that
                 storegate is writing to.
    It caches all output in a temp file and merge the differences in finalize().
-   This functionality is needed for the UserDataSvc in ATLAS. 
+   This functionality is needed for the UserDataSvc in ATLAS.
 
 ! 2008-04-11 - Marco Clemencic
  - Hack to change the order of finalization such that HistorgamDataSvc is
@@ -527,44 +532,44 @@ Package manager : Marco Clemencic
 ! 2008-04-04 - Charles Leggett
  - Patch #1763. Demote some ERROR messages to WARNINGs in HistorySvc.
    The modified messages were not errors in the sense that the HistorySvc does
-   not fail in those cases, but can go on happily. 
+   not fail in those cases, but can go on happily.
  - Patch #1757. Detect creation/initialization loops for services.
    Modified the service manager to check if the requested service is actually
    initialized. If it is only CONFIGURED, it means that there is a loop
    (service1 needs a service2 that needs service1) and an error is reported.
- 
+
 ! 2008-04-03 - Charles Leggett
  - Patch #1744. Speed up HistorySvc caching a MsgStream.
-   Added a MsgStream data member to HistorySvc in order to improve performances. 
+   Added a MsgStream data member to HistorySvc in order to improve performances.
 
 ! 2008-04-03 - Marco Clemencic
  - Patch #1725. New IAuditor interface.
    Modified AuditorSvc according to the new interface of IAuditor and
    IAuditorSvc.
-   The obsolete methods cannot be called (they throw and exception). 
+   The obsolete methods cannot be called (they throw and exception).
 
 ! 2008-03-03 - Marco Clemencic
  - Fixed Bug #34121. Setting tool properties in Python
    The check on the emptiness of tool type/name moved from
-   
+
       ToolSvc::retrieve ( const std::string& tooltype ,
                           const std::string& toolname ,
                           const InterfaceID& iid      ,
                           IAlgTool*&         tool     ,
                           const IInterface*  parent   ,
                           bool               createIf )
-   
+
    where it should be allowed (if toolname is not empty and createIf is false),
    to
-   
+
       ToolSvc::retrieve ( const std::string& tooltype ,
                           const InterfaceID& iid      ,
                           IAlgTool*&         tool     ,
                           const IInterface*  parent   ,
                           bool               createIf )
-   
+
    where it was missing.
- 
+
 ================ GaudiSvc v16r4 ====================================
 ! 2008-02-27 - Charles Leggett
  - Patch #1711. Get all instances of a tool type.
@@ -573,8 +578,8 @@ Package manager : Marco Clemencic
 ! 2008-02-21 - Charles Leggett
  - Improved a nested loop in THistSvc.cpp.
 
-! 2008-02-20 - Hubert Degaudenzi 
- - replaced the default values for the format and the timeFormat with the ones 
+! 2008-02-20 - Hubert Degaudenzi
+ - replaced the default values for the format and the timeFormat with the ones
    defined in Message.h (Message::DEFAULT_FORMAT and Message::DEFAULT_TIME_FORMAT)
 
 ! 2008-02-04 - Frank Winklmeier
@@ -615,7 +620,7 @@ Package manager : Marco Clemencic
 ! 2008-01-14 - Chris Rob Jones
  - Patch #1584.
    - Fixed a crash (WIN32) or an infinite loop (Linux) when the DataOnDemandSvc
-     is configured but not initialized. 
+     is configured but not initialized.
 
 ! 2008-01-14 - Marco Clemencic
  - Fixed a problem introduced with patch #1621.
@@ -628,7 +633,7 @@ Package manager : Marco Clemencic
 
 ! 2008-01-11 - Marco Clemencic
  - Modified ToolSvc to allow to specify the name of a tool in the type argument
-   (Type/Name), which takes precedence over the provided name. 
+   (Type/Name), which takes precedence over the provided name.
 
 ! 2008-01-10 - Marco Clemencic
  - Fixed a bug in StatusCodeSvc which was making it ignore the options.
@@ -652,7 +657,7 @@ Package manager : Marco Clemencic
    Modified THistSvc to check if the file associated with a TTree has changed
    and update the relevant structures. This happens when a ROOT file grows above
    the maximum allowed size (a parameter in ROOT).
-   
+
 ! 2007-11-16 - Marco Clemencic
  - Moved the pointer to the IncidentSvc from EventloopMgr to MinimalEventLoopMgr
    (needed to handle the new type of incident AbortEvent).
@@ -665,7 +670,7 @@ Package manager : Marco Clemencic
    if the list of loaded modules is empty.
 
 ! 2007-10-25 - Markus Frank
- - patch #1469. PersistencySvc.cpp 
+ - patch #1469. PersistencySvc.cpp
    improve method getService(const std::string& service_type, IConversionSvc*& refpSvc)
    to also check attached services and services known by name
 
@@ -675,7 +680,7 @@ Package manager : Marco Clemencic
  - Moved the source code for the test component library (GaudiSvcTest) from
    "test" to "tests/src/component".
  - Added a QMTest test (with a reference file) for the option
-   "options/Test.opts". 
+   "options/Test.opts".
 
 ! 2007-10-16 - Paolo Calafiura
  - patch #1416. new DirSearchPath method and test
@@ -692,7 +697,7 @@ Package manager : Marco Clemencic
    Removed the second (useless) "private".
 
 ! 2007-09-28 - Sascha Mazurov
- - Fix to allow any of the following commands in the job options: 
+ - Fix to allow any of the following commands in the job options:
    #printOptions full
    #printOptions FULL
    #printOptions
@@ -716,7 +721,7 @@ Package manager : Marco Clemencic
 ! 2007-09-25 - Charles Leggett
  - Patch #1358.
    Fixed a bug in THistSvc. In the initialization clause of a "for" loop, the
-   iterator was set using "==" instead of "=".  
+   iterator was set using "==" instead of "=".
 
 ! 2007-09-25 - Vanya Belyaev
  - Patch #1359. (fixes bug #28603)
@@ -726,9 +731,9 @@ Package manager : Marco Clemencic
 
 ! 2007-09-24 - Vanya Belyaev
  - Patch #1346.
-   - Add the possibility to print all properties of application manager 
+   - Add the possibility to print all properties of application manager
      (it is VERY convenient for debugging).
-     The properties are printed in ApplicationMgr::configure() 
+     The properties are printed in ApplicationMgr::configure()
      if the (new) property "PropertiesPrint" is set to true (default is false).
 
 ! 2007-09-19 - Vanya Belyaev
@@ -736,7 +741,7 @@ Package manager : Marco Clemencic
    - Avoid print out of the table header for empty stats (ChronoStatSvc).
 
 ! 2007-08-31 - Hubert Degaudenzi & Paolo Calafiura
- - Patch #1260.moved the MinimalEventLoopMgr from GaudiSvc to GaudiKernel. 
+ - Patch #1260.moved the MinimalEventLoopMgr from GaudiSvc to GaudiKernel.
    The factory for this service is still in GaudiSvc
 
 ! 2007-08-06 - Vanya Belyaev
@@ -749,7 +754,7 @@ Package manager : Marco Clemencic
                                        efficiency counters"
     * "UseEfficiencyRowFormat": (bool) the flag to allow the special formatting
                                        of "binomial efficiency" counters
-    
+
 ! 2007-07-24 - Charles Leggett
  - patch #1252.
    * Do not dereference the TFile pointer in finalize if it is a temporary
@@ -762,28 +767,28 @@ Package manager : Marco Clemencic
 
 ! 2007-07-18 - Sebastien Binet
  - patch #1249. Fix to avoid "use" cycle with GaudiSvc.
- 
+
 ! 2007-07-18 - Charles Leggett
  - patch #1234.
    Modified the way the ToolSvc uses the HistorySvc. ToolSvc will try to
-   get the HistorySvc when creating a tool and cache the pointer if it is 
+   get the HistorySvc when creating a tool and cache the pointer if it is
    available.
 
 ! 2007-07-17 - Scott Snyder
- - patch #1242. fixed small memory leak in THistSvc::finalize: when 
-   files are closed, the TFile objects are not deleted. 
+ - patch #1242. fixed small memory leak in THistSvc::finalize: when
+   files are closed, the TFile objects are not deleted.
 
 ! 2007-07-17 - Charles Leggett
  - patch #1218.
    Added missing initialization of MessageSvc::m_msgCount elements.
 
 ! 2007-07-16 - Marco Clemencic
- - changed the syntax for specialization of templated function in namespace 
+ - changed the syntax for specialization of templated function in namespace
    for gcc 4.1 future use.
 
 ! 2007-07-13 - Chris Jones
- - Patch #1243: Equipe ApplicationMgr with a new job option 
-   ReflexPluginDebugLevel which is used to set the debug level of 
+ - Patch #1243: Equipe ApplicationMgr with a new job option
+   ReflexPluginDebugLevel which is used to set the debug level of
       ROOT::Reflex::PluginService::SetDebug(level).
    Useful to aid in the debugging of library loading problems.
 
@@ -791,9 +796,9 @@ Package manager : Marco Clemencic
  - task #5157 (Make MessageSvc thread-safe)
     * Added 3 boost mutexes to MessageSvc to protect few internal data
       members from possible concurrent access.
-    
+
 ! 2007-06-18 - Vanya Belyaev
- - patch #1178. 
+ - patch #1178.
     * The proposed patch substitute the internal counters, used for
       (I)CounterSvc by generic counters of type StatEntity.
     * This allow to reuse the useful functionality of StatEntity class.
@@ -843,7 +848,7 @@ Package manager : Marco Clemencic
     - Improved print-out format
     - Added methods to make StatEntity mode DIM friendly
     - Some clean up in comments
- 
+
 ! 2007-05-23 - Marco Clemencic
  - patch #1160. Changed the returned value of
     - Algorithm::setExecuted()
@@ -883,13 +888,13 @@ Package manager : Marco Clemencic
 ! 2007-05-15 - Sebastien Binet
  - patch #1130. Here is a patch to allow doing this (in pseudo-code)
    from the C++ side:
-	StatusCode Alg::initialize() 
-	{ 
-	 // blah-blah IProperty * svc = 0; 
-	 service( "THistSvc", svc, createIf=false ).ignore(); 
+	StatusCode Alg::initialize()
+	{
+	 // blah-blah IProperty * svc = 0;
+	 service( "THistSvc", svc, createIf=false ).ignore();
 	 StringArrayProperty outputProperty( svc->getProperty(pName) );
 	 // update/modify the property and send it back to the service
-	 return svc->setProperty( outputProperty ); 
+	 return svc->setProperty( outputProperty );
 	}
     ie: even if the THistSvc has already gone through its initialize
     method, the configuration of in-/output (ROOT) streams will be
@@ -970,7 +975,7 @@ Package manager : Marco Clemencic
 ================ GaudiSvc v15r2   ==========================================
 ! 2007-02-23 - Hubert Degaudenzi
  - added the factory declaration of the DataStreamTool (removed from
-   GaudiKernel). 
+   GaudiKernel).
 
 ! 2007-02-13 - Sebastien Binet
   Patch #1017: Here is a patch to ChronoStatSvc to optionally dumps
@@ -987,7 +992,7 @@ Package manager : Marco Clemencic
     valid query for "INamedInterface"
  - src/AuditorSvc/AuditorSvc.cpp
     Allow to have an auditor with name not equal to the type, e.g.
-    opts-file:  
+    opts-file:
        AuditorSvc.Auditors += { "TimingAuditor/TIMER"} ;
  - src/ApplicationMgr/ApplicationMgr.cpp
     add INamedInterface into ApplicationMgr::queryInterface method
@@ -1024,8 +1029,8 @@ Package manager : Marco Clemencic
 
 ! 2007-01-23 - Pere Mato
  - ToolSvc.cpp: Fixed problem reported by David Quarrie. Return
-   StatusCode::FAILURE if tool can not be instantiated. 
- 
+   StatusCode::FAILURE if tool can not be instantiated.
+
 ! 2007-01-22 - Charles Leggett
  patch #973.
  - sets up limits on numbers of messages issued by any
@@ -1035,7 +1040,7 @@ Package manager : Marco Clemencic
  - also prints out stats on all messages if requested.
 
 ! 2007-01-18 - Charles Leggett
- patch #972. 
+ patch #972.
  - add messageCount to IMessageSvc
  - extend Auditor::(sys)afterExecute to pass a const StatusCode&,
    which is the return code of the algorithm
@@ -1059,7 +1064,7 @@ Package manager : Marco Clemencic
 
 ! 2007-01-10 - Hubert Degaudenzi
  - fixed DataListenerSvc in order to respect the new IMonitorSvc
-   interface introduced by the patch #943. 
+   interface introduced by the patch #943.
 
 ================ GaudiSvc v15r1   ==========================================
 ! 2006-12-15 - Andres Osorio
@@ -1143,7 +1148,7 @@ Package manager : Marco Clemencic
    Old properties "Algorithms" and "Nodes" are still exist. But they
    are primary internally translated into new maps. Currently
    everything is backward compatible.  Old properties are also
-   equipped with update handlers.  
+   equipped with update handlers.
 
    The treatment of "preceding paths" has been modified a bit. Now
    for each data location also all upwards directories are
@@ -1203,7 +1208,7 @@ Package manager : Marco Clemencic
  - removed AlgContextAuditor (moved to GaudiAud)
  - fixed many StatusCode Check.
  - dynamic switch of the StatusCode checking in the Application
-   manager. 
+   manager.
 
 	    ApplicationMgr.StatusCodeCheck = true/false;
 
@@ -1216,14 +1221,14 @@ Package manager : Marco Clemencic
 ! 2006-09-09 - Vanya BELYAEV patch #839
  - src/JobOptionsSvc/JobOptionsSvc.cpp
    remove ugly cast from JobOptionsSvc::setMyProperties
-   from not the setting of properties relies only on 
-   IProperty::setProperty ( const Property& ) and 
-   Property::load/Property::assign. No extra gymnastic is required 
+   from not the setting of properties relies only on
+   IProperty::setProperty ( const Property& ) and
+   Property::load/Property::assign. No extra gymnastic is required
  - src/JobOptionsSvc/ParserGrammar.h
-    use Gaudi::Utils::toString conversion instead of 
+    use Gaudi::Utils::toString conversion instead of
     lexical_cast in the method RealUnitsGrammar::matchRealUnits
-    to avoid the absolutely ugly printout of doubles [the problem has been 
-    reported by Florence in the tests of Panoramix] 
+    to avoid the absolutely ugly printout of doubles [the problem has been
+    reported by Florence in the tests of Panoramix]
  - src/JobOptionsSvc/Parser.cpp
     improve a little bit the printout of options, when the directive
      "#printOptions full" is activated
@@ -1240,7 +1245,7 @@ Package manager : Marco Clemencic
 
 ! 2006-08-30 - Ben King
  - creation of the DataListenerSvc service
-   
+
    DataListenerSvc implements the declareInfo methods from IMonitorSvc
    (without the histogram and pair methods which have empty
    implementations) and the handle method from IIncidentListener to
@@ -1260,7 +1265,7 @@ Package manager : Marco Clemencic
        when written 0,1,...
      * MonALISA publishing - sent to MonALISA server which can produce
        history plots
-      
+
    Options file usage:
      * Monitoring can be turned on or off
             DataListenerSvc.MonALISAMonitoring = 1;
@@ -1276,7 +1281,7 @@ Package manager : Marco Clemencic
             DataListenerSvc.MonaLisaMonitoring = "./destinations.conf";
             DataListenerSvc.MLjobID = 1;
 
-! 2006-08-21 - Alexander Mazurov 
+! 2006-08-21 - Alexander Mazurov
  - Patch #816. Fix for "-=" to work nicely with new Job Options.
    - it remove the first occurance of the element in the sequence,
      e.g.
@@ -1309,11 +1314,11 @@ Package manager : Marco Clemencic
      In this case he key 'a' will not be remove from the map.
 
      A.a -= { 'a' : 10 } ;
-     
+
      In this case the key 'a' will be removed from the map. (Vanya for
      the detailed explanations).
 
-! 2006-08-02 - Markus Frank 
+! 2006-08-02 - Markus Frank
  patch #796
  - Improve output stream:
    - If intermediate leaves in the TES are not given in the ItemList
@@ -1356,14 +1361,14 @@ Package manager : Marco Clemencic
 
 ! 2006-07-11 - Ivan Belyaev
  - fix for the reading of environment variable in the options files.
- - fix for reading empty property vector 
+ - fix for reading empty property vector
 
 ! 2006-06-28 - Ivan Belyaev
  - A number of changes in the JobOptions service to avoid to use the
    cout directly and use MessageSvc instead
 
 ! 2006-06-28 - Pere Mato
- - changed fs::no_check by fs::native to avoid fatal exceptions when the 
+ - changed fs::no_check by fs::native to avoid fatal exceptions when the
    new properties are used on Windows. It was never tested :-(
 
 ! 2006-06-01 - Ivan Belyaev & Alexander Mazurov
@@ -1400,14 +1405,14 @@ Package manager : Marco Clemencic
 ! 2006-04-12 Pere Mato
  - PropertyCompiler.cpp: fixed to allow for a 'f', 'F', 'l', 'L', 'u',
    or 'U' at the end of a numerical value. Reported by Wim Lavrijsen.
- 
+
 ================ GaudiSvc v14r7   ==========================================
 ! 2006-04-04 Pere Mato
  - EventSelector.cpp: reset flag m_reconfigure after first call to
    firstOfNextStream() This should solved the problem observed by
    Thomas that from Python the same first file was read again and
    again.
- 
+
 ! 2006-03-06 Markus Frank
  patch #692:
  - Add support for objects in N-tuples. Note: This only works for
@@ -1461,7 +1466,7 @@ Package manager : Marco Clemencic
    instead to only the topAlgs. This is need to be able to call
    sequences by the DataOnDemand service (for more than just the first
    event).
-   
+
 ================ GaudiSvc v14r3   ==========================================
 ! 2005-11-09 - Pere Mato
  - DirSearchPath.cpp: fixed joboption path on Windows
@@ -1480,10 +1485,10 @@ Package manager : Marco Clemencic
 
 ================ GaudiSvc v14r1   ==========================================
 ! 2005-07-21 - Hubert Degaudenzi
- - fixed bug #9467 
+ - fixed bug #9467
 
 2005-07-15 - Hubert Degaudenzi
-   - fix bug #9477. fixed name clash (Mattias Ellert) 
+   - fix bug #9477. fixed name clash (Mattias Ellert)
 
 ================ GaudiSvc v14r0   ==========================================
 2005-07-7 - Marco Clemencic - patch #443
@@ -1508,7 +1513,7 @@ Package manager : Marco Clemencic
     Also sub-trees may be written for interactive analysis,
     by specifying several sub-trees in ItemList.
     Otherwise identical behavior to OutputStream.
-  - src/EventSelector/EventSelectorDataStream.h/cpp, 
+  - src/EventSelector/EventSelectorDataStream.h/cpp,
   - src/EventSelector/EventSelector.cpp
     Explicitly finalize each stream after usage. It turns out
     that for several thousands of input files even the properties
@@ -1549,10 +1554,10 @@ Package manager : Marco Clemencic
 ! 2005-03-18 - Manuel Domenech
  - AidaTupleSvc - few fix for Windows
  - requirements - compile AIDATupleSvc
-                  append the required libraries to PI_linkopts ( should be 
+                  append the required libraries to PI_linkopts ( should be
                   moved to LCG_Interface/PI/requirements)
                   update version to v13r3
- 
+
 ! 2005-03-07 - Marco Cattaneo
  - ApplicationMgr: Add AppName and AppVersion properties, and print a welcome
                    message using their value
@@ -1614,11 +1619,11 @@ Package manager : Marco Clemencic
 ! 2005-01-10 - Pere Mato
  - EventSelector: Changed the printout of record numbers and streams
    to start from 1 instead of 0. This is
-                  to match numerically with the property "FirstEvent".  
+                  to match numerically with the property "FirstEvent".
  - EventLoopMgr: Added inplemenation of IEventProcessor::stopRun() to
    schedule a stop of the event loop
  - Adapted to new CLHEP version taking into account namespace CLHEP
- 
+
 ! 2004-12-07 - Markus Frank
  - EventSelector.cpp: Properly handle failures when "next()"
    fails. Until now this gave a core dump in the event the last input
@@ -1636,7 +1641,7 @@ Package manager : Marco Clemencic
 
 ! 2004-09-03 - Markus Frank
  - Changes to options for the DataOnDemandSvc.Algorithms property:
-   DataOnDemandSvc.Algorithms = { 
+   DataOnDemandSvc.Algorithms = {
      "DATA='/Event/Rec/Muon/Digits' TYPE='MuonDigitAlg/MyMuonDigits'"
    };
    If the algorithm name is omitted the class name will be the
@@ -1660,12 +1665,12 @@ Package manager : Marco Clemencic
  - ApplicationMgr.cpp: added a call to
    m_algManager->finalizeAlgorithms();
  - DataOnDemandSvc.cpp: added managed=true when creating an Algorithm
- 
+
 ================ GaudiSvc v12r4   ==========================================
 ! 2004-10-19 - Patrick Koppenburg
  - Bug fix in CollectionCloneAlg.cpp: typo in float and double
    types. It prevented stripping.
-   
+
 ! 2004-10-11 - Marco Cattaneo
  - Bug fix in DataOnDemandSvc.cpp: initialize algorithms when they are
    created by the service
@@ -1683,7 +1688,7 @@ Package manager : Marco Clemencic
 
 ! 2004-09-03 - Markus Frank
  - Changes to options for the DataOnDemandSvc.Algorithms property:
-   DataOnDemandSvc.Algorithms = { 
+   DataOnDemandSvc.Algorithms = {
      "DATA='/Event/Rec/Muon/Digits' TYPE='MuonDigitAlg/MyMuonDigits'"
    };
    If the algorithm name is omitted the class name will be the
@@ -1694,15 +1699,15 @@ Package manager : Marco Clemencic
    src/ChronoStatSvc/ChronoEntity.cpp
    src/ChronoStatSvc/StatEntity.h
    src/ChronoStatSvc/StatEntity.cpp
-   Files are moved into GaudiKernel package 
- - src/ChronoStatSvc/ChronoStatSvc.h(.cpp) 
-   Two new methods from IChronoStatSvc are 
-   implemented to allow public run-time inspection of 
-   Chrono & Stat counters 
+   Files are moved into GaudiKernel package
+ - src/ChronoStatSvc/ChronoStatSvc.h(.cpp)
+   Two new methods from IChronoStatSvc are
+   implemented to allow public run-time inspection of
+   Chrono & Stat counters
  - src/ParticlePropertySvc/ParticlePropertySvc.h(.cpp)
-   Modification to fill a proper 
-   particle <--> antiparticle relations for 
-   ParticleProperty objects  
+   Modification to fill a proper
+   particle <--> antiparticle relations for
+   ParticleProperty objects
 
 ================ GaudiSvc v12r2p1   ==========================================
 ! 2004-08-05 - Markus Frank
@@ -1715,26 +1720,26 @@ Package manager : Marco Clemencic
    top Algorihms. We need first to reset the executed flag of all
    Algorithms before starting executing them.  (Reported by Patrick
    Koppenburg)
- 
+
 ================ GaudiSvc v12r2   ==========================================
 ! 2004-07-24 - Pere Mato
  - EvtSelector: Fixed bug that the option EventSelector.FirstEvent was
    skiping twice the number of events. Reported by Marco Cattaneo.
  - EvtSelector: Improved printout of EvtSelector with the real record
    number (total and per stream)
- 
+
  ! 2004-07-24 - Vanya Belyaev
  - ToolSvc: Added the option to switch between "private" and "public"
    tools based on the name given to the tool. If the tool name ends
    with ":PUBLIC", the tool will be public.  This allows to change the
    nature of the tool just by using JobOptions and without chnanging
    the code.
- 
+
 ================ GaudiSvc v12r1   ==========================================
 ! 2004-07-20 - Pere Mato
  - Fixed bug concerning empty or non specified Event selector input.
    Reported by Marco when running Ex/DetDescExample.
-    
+
 ! 2004-07-13 - Charles Leggett
  - Added HistorySvc/* and moved AlgContextSvc/* from Athena
  - use property callbacks in MessageSvc so works properly with Python.
@@ -1745,7 +1750,7 @@ Package manager : Marco Clemencic
     for JobOptionsDir
   - Changed to non-cheking mode DirSearchPath (replaced native by
     no_check)
-  
+
 ! 2004-06-20 - Markus Frank
   - Add new Service: MultiStoreSvc Transient datastore with several
     concurrent partitions all initialized with the same opaque
@@ -1769,28 +1774,28 @@ Package manager : Marco Clemencic
     store explorer, but can easily be extended.  The corresponding job
     options file is in gaudiSvc/options/Test.opts.
 
-  
+
 ! 2004-05-05 - Markus Frank
-  - New Service: DataOnDemandSvc 
+  - New Service: DataOnDemandSvc
     The DataOnDemandSvc listens to
     incidents typically triggered by the data service of the
     configurable name "IncidentName".  In the job options handlers can
     be declared, which allow to configure this service. Such handlers
     are either:
-   
+
     - Node handlers, if objects other than the default object
       type have to be instantiated.
-      DataOnDemandSvc.Nodes = { 
+      DataOnDemandSvc.Nodes = {
         "DATA='/Event/Rec'      TYPE='DataObject'",
         "DATA='/Event/Rec/Muon' TYPE='DataObject'"
       };
-   
+
     - Leaf handlers (Algorithms), which get instantiated
       and executed on demand.
-      DataOnDemandSvc.Algorithms = { 
+      DataOnDemandSvc.Algorithms = {
         "DATA='/Event/Rec/Muon/Digits' TYPE='MuonDigitAlg' NAME='MyMuonDigits'"
       };
-      
+
     The handlers only get called if the exact path matches. In the
     event already the partial path to any handler is missing a leaf
     handler may be triggered, which includes the partal pathes (
@@ -1809,7 +1814,7 @@ Package manager : Marco Clemencic
 ! 2004-06-02 - Pere Mato
   - PropertyCompiler.cpp: Fixed infinite loop reporting errors when
     "unit" file is not present
- 
+
 ================ GaudiSvc v11r6p1 ==========================================
 ! 2004-04-19 - Pere Mato
  - ServiceManager: added debug output when finilizing services
@@ -1819,7 +1824,7 @@ Package manager : Marco Clemencic
  - DetDataSvc: output in log file the database name used by the
    service [bugs #2854] Print the abosule path of the XML detector
    geometry/description file
-   
+
 ! 2004-03-29 - Marco Cattaneo
  - OutputStream: add an option PreloadOptItems (default false) to
    preload also the objects defined in OptItemList. This is needed
@@ -1828,7 +1833,7 @@ Package manager : Marco Clemencic
 ! 2004-03-10 - Chris Jones
  - ToolSvc: Follow up from the previous change that didn't fully solve
    the problem.
- 
+
      The problem is essentially that Marco warned of, which is released
    tools being used after deletion. I am not 100% sure how or where
    this happens, but my suspicion lies with the fact it is possible
@@ -1850,30 +1855,30 @@ Package manager : Marco Clemencic
 ! 2004-03-09 - Chris Jones
  - ToolSvc: Fixed a long standing problem on the finalize Tools when they
             have cyclic dependencies. Here is the full explanation from Chris:
-            
+
   1. ToolSvc::finalize()
-    This method was making a single loop over all known tools, and tries 
-  to  finalise each of them. If it failed (since the ref. count wasn't 
-  equal to 1) it simple removed this tool from the list and went to the 
-  next. The problem here was that at least for the RICH I have tools using 
-  other tools, and thus the order you try to finalise the tools is 
-  important. I've re-worked this so that instead of simply removing a tool 
-  from the list which cannot be finalised, it is placed at the front of 
+    This method was making a single loop over all known tools, and tries
+  to  finalise each of them. If it failed (since the ref. count wasn't
+  equal to 1) it simple removed this tool from the list and went to the
+  next. The problem here was that at least for the RICH I have tools using
+  other tools, and thus the order you try to finalise the tools is
+  important. I've re-worked this so that instead of simply removing a tool
+  from the list which cannot be finalised, it is placed at the front of
   the list so it will be tried again in due course.
 
   2.  ToolSvc::releaseTool( IAlgTool* tool )
-    A second problem I found (after fixing the first one) was that for 
-  reasons I haven't been able to fully understand, this method was being 
-  called for tools that actually already been finalised and deleted, and 
-  thus was crashing. I "fixed" this by first making a test to check if the 
+    A second problem I found (after fixing the first one) was that for
+  reasons I haven't been able to fully understand, this method was being
+  called for tools that actually already been finalised and deleted, and
+  thus was crashing. I "fixed" this by first making a test to check if the
   tool being released is in the list of active tools.
 
-  I think that the fact this fix is needed indicates a deeper problem, 
-  which is tools are being finalised and deleted before all users have 
-  released them. One thing which does confuse me a little is the fact that 
-  the method ToolSvc::finalize() contains one call to itool->addRef() but 
-  two calls to itool->release() ? I don't really understand why this is 
-  done, but my guess is this is forcing the refcout down by 1and thus 
+  I think that the fact this fix is needed indicates a deeper problem,
+  which is tools are being finalised and deleted before all users have
+  released them. One thing which does confuse me a little is the fact that
+  the method ToolSvc::finalize() contains one call to itool->addRef() but
+  two calls to itool->release() ? I don't really understand why this is
+  done, but my guess is this is forcing the refcout down by 1and thus
   forcing some tools to finalise.
 
 ================ GaudiSvc v11r4 ==========================================
@@ -1884,7 +1889,7 @@ Package manager : Marco Clemencic
    A new input file is also provided, that has a new name:
    ParticleTable.txt.  This new file should be put in $PARAMFILESROOT
    and is used now instead of particle.cdf.
- 
+
 ================ GaudiSvc v11r3 ==========================================
 ! 2004-02-09 - Pere Mato
  - EventSelector.cpp: Fixed a crash that was preventing from using the
@@ -1893,11 +1898,11 @@ Package manager : Marco Clemencic
 
 ================ GaudiSvc v11r2 ==========================================
 ! 2004-01-01 - David Rousseau
- - ChronoStatSvc: improve printout 
+ - ChronoStatSvc: improve printout
  - DetectorDataSvc: Removed the action done in reinitialize() to avoid
    to clear the
                     detector transient store.
-! 2003-11-06 - David Rousseau 
+! 2003-11-06 - David Rousseau
  - ChronoStatSvc: add possibility for MemStatAuditor to skip 1st nevents
  - StatEntity.h: idem!
 
@@ -1906,9 +1911,9 @@ Package manager : Marco Clemencic
  - PropertyCompiler.cpp: Removed dependency to ecvt function that is
    not portable
 
-                    
+
 !-2004-01-08 - Vanya Belyaev
- - JobOptionsSvc: Added the possibility to read additional option files. 
+ - JobOptionsSvc: Added the possibility to read additional option files.
    >>>IJobOptionsSvc interface has been modified<<<<
 
 ! 2003-12-12 - Markus Frank
@@ -1935,10 +1940,10 @@ Package manager : Marco Clemencic
     - use of interface package PI (instead of HTL)
 
 ! 2003-11-26 - Pere Mato
- - Chnages for Mac OSX (Guy Barrand) 
+ - Chnages for Mac OSX (Guy Barrand)
 
 ! 2003-11-20 - Pere Mato
- - Added incident type names in GaudiKernel/Incident.h 
+ - Added incident type names in GaudiKernel/Incident.h
 
 ! 2003-10-24 - Paolo Calafiura
  - DirSearchPath: don't force alpha ordering of SEARCHPATH (bug #1663)
@@ -1954,7 +1959,7 @@ Package manager : Marco Clemencic
 
 ! 2003-08-05 - Vanya Belyaev
   ToolSvc.cpp. Minor modification in ToolSvc::retrieve methods nesessary to
-  support new GaudiTool class  
+  support new GaudiTool class
 
 ! 2003-07-03 - Markus Frank
   Major upgrade for use of POOL. Main change: extend technology specifier to
@@ -1983,49 +1988,49 @@ Package manager : Marco Clemencic
  - JobOptionsSvc: introduced search path for job opts (a la LD_LIBRARY_PATH)
  - src/tests: new directory for unit tests
  - PersistencySvc: gcc 3.2 bug fix (remove ends) in encodeAddrHdr
-    
+
 ================ GaudiSvc v10r2 ============================================
 
 ! 2003-05-06 - Paolo Calafiura
  - PersistencySvc: use updated IAddressCreator interface
-    
+
 ! 2003-04-29 - Sebastien Ponce
  - Undo previous change. See comment in EventSelector.cpp.
 
 ! 2003-04-15 - Paolo Calafiura
  - EventSelector.cpp: delete m_start in destructor
-    
+
 ! 2003-04-12 - Markus Frank
  - Fix memory leak in the event selector. The opaque object address
    was not deleted when skipping initial event records (FirstEvent
    property set).
-    
+
 ! 2003-04-04 - Pere Mato
  - Fixed Bug #348. Modified PropertyCompiler to to do a case
    insensitive compare when appending string options into an option
    array.
-    
+
 ! 2003-04-01 - Sebastien PONCE
  - coding conventions application
  - add error handling missing in ApplicationMgr
 
 ! 2003-03-11 - Paolo Calafiura
  - src/ApplicationMgr: rename ThreadLibGaudi.h as ThreadGaudi.h
-                  
+
 ! 2003-03-07 - Pere Mato, Witek Pokorski
  - Changed CLHEP Random Number distribution from RandGauss to RandGaussQ.
    This avoids the problem that the former was always generating the numbers
    in pairs thus caching the next one even in the case of setting a new seed.
-    
+
 ! 2003-02-27 - Charles Leggett
  - MessageSvc: support colored messages on xterms
 
 ! 2003-02-25 - Werner Wiedenmann, Paolo Calafiura
- - Added NoOfThreads and MultiThreadExtSvc properties to ApplicationMgr to 
+ - Added NoOfThreads and MultiThreadExtSvc properties to ApplicationMgr to
    support event-level multi-threading. Throw when property handlers fail.
- - MinimalEventLoopMgr throws when top algs and output streams can not 
-   be loaded 
- - MinimalEventLoopMgr.{h,cpp} : create automatically an 
+ - MinimalEventLoopMgr throws when top algs and output streams can not
+   be loaded
+ - MinimalEventLoopMgr.{h,cpp} : create automatically an
       algorithm copy for each thread when necessary
 
 ! 2003-01-29 - Florence Ranjard
@@ -2039,7 +2044,7 @@ Package manager : Marco Clemencic
   - PersistencySvc.cpp/h
     OutputStream.cpp/h
     Implement/use connectOutput call of conversion service interface.
-    Second argument allows to specify the opening mode 
+    Second argument allows to specify the opening mode
     (NEW, RECREATE, UPDATE)
 
 ! 2003-01-22 - Markus Frank
@@ -2047,7 +2052,7 @@ Package manager : Marco Clemencic
                           changing the input specification
  - HepRndmEngine.cpp/h  : Implement new option RandSvc.Engine.SetSingleton
                           If set to true, set the default engine in
-                          HepRandom. 
+                          HepRandom.
                           (Does not work for the time being, because CLHEP
                            is not a shared image)
 
@@ -2076,7 +2081,7 @@ Package manager : Marco Clemencic
 ! 2002-11-06 - Sebastien Ponce
  - fixes in order to remove deprecated warnings on gcc 3.2
  - coding conventions applications
- 
+
 ================ GaudiSvc v10r1 ============================================
 ! 2002-11-08 - M.Frank
  - Add seperate service for histogram persistency. Allows to read
@@ -2091,7 +2096,7 @@ Package manager : Marco Clemencic
 
      End user implications: Normally None
      However, if explicit properties for HBOOK/ROOT should be set
-     like the PAWC size, the service to talk to is 
+     like the PAWC size, the service to talk to is
      - HbookHistSvc for HBOOK
      - RootHistSvc  for ROOT
 
@@ -2099,36 +2104,36 @@ Package manager : Marco Clemencic
      - ApplicationMgr
      - EventLoopMgr
      - HistogramSvc
-       New property "Input": vector<string> histogram input 
+       New property "Input": vector<string> histogram input
        (format as for N-tuple Svc)
      - PersistencySvc
        Minor updates.
-       
+
    New files:
      - src/ApplicationMgr/HistogramAgent.h
      - src/PersistencySvc/HistogramPersistencySvc.cpp
      - src/PersistencySvc/HistogramPersistencySvc.h
 
 ================ GaudiSvc v10r0p1 ============================================
- - Change all factories to export only IFactory reference: 
-   Makes GaudiSvc_load much simpler. 
+ - Change all factories to export only IFactory reference:
+   Makes GaudiSvc_load much simpler.
    Specialized IXXXFactory reference is not necessary
 
 ! 2002-11-04 - Pere Mato
- - Changed INFO to DEBUG the messages generated by OutputStream when adding 
+ - Changed INFO to DEBUG the messages generated by OutputStream when adding
    items into the output list
- - Changes in printing in JobOptions: 
+ - Changes in printing in JobOptions:
    - printing always what include files are included
    - do not print when switch on/off printing
    - printing on/off is inherited by included files but not inherited back
      when returning to parent file.
- 
+
 ! 2002-10-29 - Pere Mato
  - Minor warnings on gcc 3.2
 
 ================ GaudiSvc v10r0 ============================================
 ! 2002-10-04 - Pere Mato
- - Added accessors to the JobOptions Catalogue to allow to edit from any 
+ - Added accessors to the JobOptions Catalogue to allow to edit from any
    client: getClients(), getProperties(...), addProperyToCatalogue(...),
    removePropertyFromcatalogue(...)
    New version of IJobOptionsSvc.
@@ -2147,16 +2152,16 @@ Package manager : Marco Clemencic
    options (e.g. DetectorElement, etc.)  MessageSvc.setVerbose +=
    {"name1", "name2"}; (or setDebug, setInfo, setWarning, setError,
    setFatal, setAlways )
-   
+
 ! 2002-09-25 - Sebastien Ponce
  - implementation of reinitialize method for DetDataSvc
  - implementation of histogram serialization and deserialization
 
 ! 20020924 - Pere Mato
  - Changes to clean the reference counting and memory deallocation
-   detected by the "valgrind" tool. 
-   Modified files: ApplicationMgr.cpp(h), 
-   AlgorithmFactory.cpp, AppMgrRunable.cpp(h),  ConverterFactory.cpp, 
+   detected by the "valgrind" tool.
+   Modified files: ApplicationMgr.cpp(h),
+   AlgorithmFactory.cpp, AppMgrRunable.cpp(h),  ConverterFactory.cpp,
    DLLClassManager.cpp(h), EventLoopMgr.cpp(h), MinimalEventLoopMgr.cpp,
    ObjectManager.cpp(h), ServiceManager.cpp, AuditorSvc.cpp, EvtDataSvc.cpp(h),
    EventSelector.cpp, HistogramSvc.cpp, PropertyCompiler.cpp, MessageSvc.cpp,
@@ -2168,7 +2173,7 @@ Package manager : Marco Clemencic
 
 !============================== v9r0p0======================================
 ! 20020903 Pere Mato
-  - Fixed uninitialized m_refCount in RndmGen class 
+  - Fixed uninitialized m_refCount in RndmGen class
 
 ! 20020805 Markus Frank
   - Fix bug in CLHEP random number engine:
@@ -2252,8 +2257,8 @@ Package manager : Marco Clemencic
     helper class.
 
 ! 20020313 - Pere Mato (David Quarrie)
-  - New property "OutStreamType" for the ApplicationMgr to select the 
-	  default type for Output Streams. The default value is "OutputStream" 
+  - New property "OutStreamType" for the ApplicationMgr to select the
+	  default type for Output Streams. The default value is "OutputStream"
 		be compatible.
 
 ! 20020226 - Pere Mato
@@ -2268,14 +2273,14 @@ Package manager : Marco Clemencic
 ================v7r3==================================
 
 ! 20020205 - Gloria Corti (v7r3)
- - Modification necessary to correctly name a private tool belonging 
+ - Modification necessary to correctly name a private tool belonging
    to an other tool.
 
 ================v7r2==================================
 ! 20020205 - Pere Mato (v7r2)
  - Fixed bug reported by O. Callot that failing to load a DLL
-   should fail the configuration phase of ApplicationMgr. 
-    
+   should fail the configuration phase of ApplicationMgr.
+
 ! 20020123 - Marco Cattaneo & Pere Mato (v7r1)
  - Changed search list for the job options path.
    It would take:
@@ -2294,10 +2299,10 @@ Package manager : Marco Clemencic
  - Minor correction in DetDataSvc
  - Changed ApplicationMgr to take precedence of the joboptions file
    the command argument and then the JOBOPTPATH environment variable.
- 
+
 ! 20011130 - Gloria Corti - Pere mato
  - ParticlePropertySvc. Fixing mapping of geant3 id to PDG number for non
-   standard PDG particles. 
+   standard PDG particles.
 
 ! 20011130 - Andrea Valassi - Pere mato
  - DetDataSvc.h .cpp added functionality for the conditions data
@@ -2317,7 +2322,7 @@ Package manager : Marco Clemencic
   - Changed ToolSvc to make use of the new methods initialize() and
     finalize() in the IAlgTool interface modified in GaudiKernel.
   - Implement new method of IToolSvc::releaseTool()
- 
+
 ! 20011112 - Markus Frank
   - Many Changes for the DataStore classes re-design. See details in
     separate note
@@ -2341,7 +2346,7 @@ Package manager : Marco Clemencic
  - JobOptions: scientific notation in floats/doubles is now working correctly
 
 ! 20010702 - Pere Mato
- - Fixed problem "Gaudi jobs do not fail if the job options service fails 
+ - Fixed problem "Gaudi jobs do not fail if the job options service fails
    to set an option" CT0000000060711 by M. Cattaneo
  - Fixed bug on Histograms projections introduced when going to AIDA
 
@@ -2351,7 +2356,7 @@ Package manager : Marco Clemencic
 
 ! 20010629 - Pere Mato
  - Number of changes needed for the interactivity support (scripting)
-  The ApplicationMgr and EventLoopMgr make use of the newly added method 
+  The ApplicationMgr and EventLoopMgr make use of the newly added method
   reinitialize()  to take into account changes in the configuration done
   by the user interaction like adding new services or algorithms. These
   new components are initialized in the reinitialize() method.
@@ -2363,14 +2368,14 @@ Package manager : Marco Clemencic
  - HistogramSvc implements reinitialize()
 
 ! 20010627 - Vanya Belyaev
-  ChronoStatSvc : modification for improved printout 
+  ChronoStatSvc : modification for improved printout
 
 ! 20010627 - Markus Frank
   Dll/GaudiSvc_Load.cpp : Add new factory for event tag collections
-  NTuples/*             : update to separate event tag collections from 
-                          NTuples. NTuple persistency is now completely 
-                          steered by the option 
-                          ApplicationMgr.HistogramPersistency 
+  NTuples/*             : update to separate event tag collections from
+                          NTuples. NTuple persistency is now completely
+                          steered by the option
+                          ApplicationMgr.HistogramPersistency
                           See mail of D.Rousseau in GAUDI_DEVELOPERS
   PersistencySvc/EvtCollectionStream.cpp
                           Update for separation of NTuples and
@@ -2383,7 +2388,7 @@ Package manager : Marco Clemencic
 ! 20010503 - Markus Frank
   Allow Histograms and N-tuples to be booked without the top level directory
   ie. without always specifying "/stat/....". The specification of an histogram
-  such as "/stat/simple/1" is now equivalent to "simple/1". The use of 
+  such as "/stat/simple/1" is now equivalent to "simple/1". The use of
   histograms and N-tuples is backwards compatible.
 
 ! 20010430 - Markus Frank
@@ -2392,7 +2397,7 @@ Package manager : Marco Clemencic
   EventSelector/EventSelectorDataStream.cpp  Recognize SICB file type also for
                                              specs like:
                                              "DATAFILE='xxx.dat' TYP='SICB'"
-                                             is now equivalent to 
+                                             is now equivalent to
                                              "FILE='xxx.dat'"
 
 ! 20010430 - Pere Mato  (Version v5r1)
@@ -2478,13 +2483,13 @@ Package manager : Marco Clemencic
 
 ! 20010229 - Pere Mato (from Sebastien Ponce)
  - Corrected bug in EventSelector.cpp which core dumped when accessing a non
-   existing file. 
+   existing file.
 
 ! 20010226 - Pere Mato
  - Small chnages to make it compile in NT
 
 ! 20010223 - David Quarrie
- - ApplicationMgr 
+ - ApplicationMgr
    Added update callback handlers to "TopAlg", "ExtSvc"
    and "Dlls" properties.  This allows them to be updated at run-time
    by the scripting interface, and to act immediately upon such
@@ -2510,7 +2515,7 @@ Package manager : Marco Clemencic
    and'ed. The default remains to output every event. These properties have
    update callback handlers associated with them so they can be modified at
    run-time by the scripting interface and have an immediate effect.
- - HepRndmEngin & HepRndmEngines 
+ - HepRndmEngin & HepRndmEngines
    Correct a bug in the declaration of
    rndm( ) function which does not correctly override the parent
    version.
@@ -2560,7 +2565,7 @@ Package manager : Marco Clemencic
 
 ! 20001017 - Markus Frank
   - NTupleSvc
-    Properly merge my previous changes and the changes of C.Leggett 
+    Properly merge my previous changes and the changes of C.Leggett
 
 ! 20001013 - Markus Frank
   - ApplicationMgr/ApplicationMgr.cpp: Allow to specify the type of
@@ -2573,11 +2578,11 @@ Package manager : Marco Clemencic
 				       is compatibel with Charles Leggett's
                                        changes.
   - PersistencySvc/OutputStream.cpp    Make data service a variable
-  - PersistencySvc/PersistencySvc.cpp  Allow to retrieve conversion service 
+  - PersistencySvc/PersistencySvc.cpp  Allow to retrieve conversion service
                                        identified by technology type
 ! 20001012 - Vanya Belyaev
  - ChronoStatSvc/StatEntity.h - fix Remedy problem ID= CT0000000036451
-    ( remove misprint in output functions for statistics) 
+    ( remove misprint in output functions for statistics)
 
 ! 20001011 - Pere Mato
  - JobOption files: the operation += will not generate an error is the
@@ -2591,18 +2596,18 @@ Package manager : Marco Clemencic
 
 ! 20001006 - Pere Mato
  - Histogram persistency service is not required
- 
+
 ! 20000815 - Pere Mato
- - ApplicationMgr creates a "DataObject" object as the event data store 
-   root ("/Event") if EvtSel = "NONE" is specified. 
-    
+ - ApplicationMgr creates a "DataObject" object as the event data store
+   root ("/Event") if EvtSel = "NONE" is specified.
+
 ! 20000720 - GaudiSvc v3
 
 ! 20000710 - Gloria Corti
  - Implementation of new service ToolSvc
      in new directory ToolSvc: ToolSvc.h and ToolSvc.cpp
    the service creates new concrete tools on retrieval and manages the tools
- - modify requirements file to include ToolSvc 
+ - modify requirements file to include ToolSvc
 
 ! 20000709 - Markus Frank
  - Comment some argument variables to suppress warnings on Linux
@@ -2614,7 +2619,7 @@ Package manager : Marco Clemencic
                  - returning all edges in a given axis
                  - setting the histogram title
                  - allowing to register, unregister, retrieve and find
-                   a histogram in the transient histogram data store 
+                   a histogram in the transient histogram data store
 
 ! 20000704 - Pere Mato
 ApplicationMgr.cpp:
@@ -2624,22 +2629,22 @@ ApplicationMgr.cpp:
 - Clear data stores at finalize
 - Add RndmSvc as a known service to the ApplicationMgr
 
-! 20000626 - Marco Cattaneo 
+! 20000626 - Marco Cattaneo
 - requirements: use HTL v11r11
 
 ! 20000623 - Vanya Belyaev
 
-- ChronoStatSvc - improved printout (add possibility to output also elapsed 
+- ChronoStatSvc - improved printout (add possibility to output also elapsed
                   time of the job).
-                  by default only used time statistics is printed 
-                  optionally system time and elapsed time could be printed 
-- requirements: remove GaudiSvc_stamps for non-static linkage (do not force 
-                to relink the executable in the case of dynamic loading when 
-                shared library is changed)  
+                  by default only used time statistics is printed
+                  optionally system time and elapsed time could be printed
+- requirements: remove GaudiSvc_stamps for non-static linkage (do not force
+                to relink the executable in the case of dynamic loading when
+                shared library is changed)
 
 
 ! 20000621 - Marco Cattaneo
-- requirements: insert underscore in name of GaudiSvc_shlibflags macro, 
+- requirements: insert underscore in name of GaudiSvc_shlibflags macro,
                 to please CMT v1r5
 
 !20000616 Pere Mato
@@ -2647,37 +2652,37 @@ ApplicationMgr.cpp:
   being declared in the jobOptions file.
 
 !20000615 Pere Mato
-- Changed ApplicationMgr to stop the event loop when execution errors and 
+- Changed ApplicationMgr to stop the event loop when execution errors and
   call resetExecuted() for all top level algorithms.
-   
+
 !20000530 Markus Frank
 - NTupleSvc:
     Fix in order to not close files twice.
 
 !20000526 - Stefan Probst, Markus Frank
-- JobOptionsSvc/UnitsExtension.cpp, .h : 
-    New classes for handling units within the property compiler  
-- JobOptionsSvc/PropertyCompiler.cpp : 
-    Add feature to read units via job options file 
+- JobOptionsSvc/UnitsExtension.cpp, .h :
+    New classes for handling units within the property compiler
+- JobOptionsSvc/PropertyCompiler.cpp :
+    Add feature to read units via job options file
     Fix bug for proper number conversions
     Resolve environment variables for all string properties
 
 !20000505 - Marco Cattaneo
 - Removed GaudiErrorHandler.h .cpp, GaudiNagHandler.h from MessageSvc
-  (moved to NAGC v5r1 package) 
+  (moved to NAGC v5r1 package)
 
-!20000410 - GaudiSvc v2 (v1 does not exist due to wrong use of this tag 
+!20000410 - GaudiSvc v2 (v1 does not exist due to wrong use of this tag
                          when package was created)
 
 Vanya Belyaev :
-- ApplicationMgr.cpp has changed to look for XMLDDDBROOT 
+- ApplicationMgr.cpp has changed to look for XMLDDDBROOT
   variable for location of XmlDDDB
-  If the data base location is not given explicitely throught 
-  ApplicationMgr properties, it is set to $XMLDDDBROOT/DDDB/dddb.xml 
+  If the data base location is not given explicitely throught
+  ApplicationMgr properties, it is set to $XMLDDDBROOT/DDDB/dddb.xml
 
 Gonzalo Gracia Abril :
-- ApplicationMgr.cpp changed to according to the new 
-  Event Selector Interface 
+- ApplicationMgr.cpp changed to according to the new
+  Event Selector Interface
 
 Pavel Binko :
 - Application manager moved from Gaudi to GaudiSvc

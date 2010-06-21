@@ -41,7 +41,6 @@ library GaudiSvc -import=AIDA -import=Boost -import=CLHEP -import=ROOT -no_stati
 library GaudiSvcTest -group=tests ../tests/src/component/*.cpp -no_static
 
 # define component library link options
-apply_pattern library_Clinkopts library=GaudiSvc import=ROOT import2=Reflex import3=Boost
 apply_pattern libraryShr        library=GaudiSvc
 
 # this pattern is applied instead of "generate_configurables" to
@@ -49,7 +48,6 @@ apply_pattern libraryShr        library=GaudiSvc
 apply_pattern generate_configurables_internal library=GaudiSvc
 apply_pattern generate_configurables_internal library=GaudiSvcTest group=tests
 
-apply_pattern library_Clinkopts library=GaudiSvcTest import=ROOT import2=Reflex import3=Boost
 apply_pattern libraryShr        library=GaudiSvcTest
 
 macro_append Boost_linkopts " $(Boost_linkopts_system) $(Boost_linkopts_filesystem) $(Boost_linkopts_regex) $(Boost_linkopts_thread) "

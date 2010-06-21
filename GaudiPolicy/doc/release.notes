@@ -1,6 +1,11 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-06-21 - Marco Clemencic
+ - Fixed bug #67366: undefined pattern library_Clinkopts
+   Removed the usage of pattern library_Clinkopts (a left-over of some old
+   clean-up).
+
 ! 2010-05-15 - Marco Clemencic
  - Fixed a compilation problem on MacOSX 10.6.
 
@@ -83,7 +88,7 @@ package manager: Marco Clemencic
  - Fixed compilation on icc 11.
    - cmt/requirements:
      removed the cppflags -pedantic, -Wextra and -Wno-long-long, because not
-     understood by icc (only for icc). 
+     understood by icc (only for icc).
 
 ! 2010-01-11 - Marco Clemencic
  - Added an excluded line when comparing reference files in the tests to avoid
@@ -96,7 +101,7 @@ package manager: Marco Clemencic
        files
      - modified run_qmtest.py and qmtest_summarize.py to use the environment
        variable QMTESTRESULTSDIR as base path for the QMTest result files (.qmr)
-   - Modified GaudiExeTest to correctly report a failure due to timeout limits.  
+   - Modified GaudiExeTest to correctly report a failure due to timeout limits.
 
 ! 2009-12-04 - Marco Clemencic
  - Avoid the manipulation of the compiler name for the LCG compiler if the tag
@@ -118,21 +123,21 @@ package manager: Marco Clemencic
 ! 2009-11-09 - Marco Clemencic
  - Minor changes to the requirements:
    - added *.py[co] to the exclusion list of install.py
-   - removed the _cov and _pro tags because conflicting with the LCG ones  
+   - removed the _cov and _pro tags because conflicting with the LCG ones
 
 ! 2009-11-03 - Hubert Degaudenzi
  - Fixed bug #57319: Suppression of GaudiPolicy/scripts/StripPath.sh
-   requirements: added a switch on the StripPath script. if GAUDI_NO_STRIP_PATH is 
+   requirements: added a switch on the StripPath script. if GAUDI_NO_STRIP_PATH is
    set in the environment, no path stripping will occur at setup time.
 
 ================ GaudiPolicy v10r3 ====================================
 ! 2009-10-16 - Hubert Degaudenzi
- - requirements: removed the compile option "-ff90" for the target-gcc4 tag. 
+ - requirements: removed the compile option "-ff90" for the target-gcc4 tag.
    This flag is obsolete for the gfortran compiler.
 
 ! 2009-10-13 - Marco Clemencic
  - GaudiTest.py: remove leading '0' from Windows' exponential notation when
-   comparing stdout with reference files in tests (not perfect)  
+   comparing stdout with reference files in tests (not perfect)
 
 ! 2009-10-07 - Marco Clemencic
  - Fixed a problem with the generation of the python.zip files on Windows.
@@ -146,7 +151,7 @@ package manager: Marco Clemencic
 
 ! 2009-10-02 - Marco Clemencic
  - Modified the generated Eclipse launchers, such that the options file extracted
-   from the .qmt files can be added easily to the ignored list of SVN/CVS. 
+   from the .qmt files can be added easily to the ignored list of SVN/CVS.
 
 ! 2009-09-25 - Marco Clemencic
  - Instrumented GaudiTest.py to produce an Eclipse CDT debug launcher
@@ -163,7 +168,7 @@ package manager: Marco Clemencic
    (container_package).
  - Modified the effect of the no-pyzip tag at compile time. If specified, the
    python.zip file is generated only once, during the build of the container
-   package.  
+   package.
 
 ! 2009-07-30 - Marco Clemencic
  - Fixed some doxygen warnings.
@@ -187,7 +192,7 @@ package manager: Marco Clemencic
    - solved a portability problem in ZipPythonDir.py
 
 ! 2009-07-24 - Marco Clemencic
- - Fixed a problem of ZipPythonDir.py on Windows (unlocking must precede close).   
+ - Fixed a problem of ZipPythonDir.py on Windows (unlocking must precede close).
 
 ! 2009-07-21 - Marco Clemencic
  - Added .cvsignore to the exclusion list of install.py
@@ -226,11 +231,11 @@ package manager: Marco Clemencic
    become a problem with very large projects. A merge feature would be welcome,
    but it has to allow also the removal of the files that have been removed from
    the original python directory (a la install.py). Note that the current
-   implementation of the module "zipfile" does not allow replacement or removal.     
+   implementation of the module "zipfile" does not allow replacement or removal.
      This, implicitely, addresses bug #39868 because the .pyc files are
    automatically generated during the zipping step to be included in the .zip
    file.
-   
+
    See http://www.python.org/dev/peps/pep-0273 for more information.
 
 ================ GaudiPolicy v10r1 ====================================
@@ -254,7 +259,7 @@ package manager: Marco Clemencic
 
 ! 2009-07-02 - Marco Clemencic, Hubert Degaudenzi
  - Modified the patterns for PYTHONPATH to remove the project name or the
-   package name instead of the full path to them. 
+   package name instead of the full path to them.
 
 ================ GaudiPolicy v10r0 ====================================
   *** requires LCGCMT >= 56b ***
@@ -278,7 +283,7 @@ package manager: Marco Clemencic
  - use the new LCG tag convention.
  - removed slc3
  - removed static build
- 
+
 ! 2009-06-11 - Marco Clemencic
  - Modified the way to locate gcc43 (expected to be in LGC_contrib).
  - Use the special imported fragments "library" and "dependencies" only with
@@ -297,8 +302,8 @@ package manager: Marco Clemencic
  - Modified createProjVersHeader.py to create the destination directory if it
    does not exist.
  - Removed the "touch" command in merge_genconfDb_header, not needed because the
-   Python script is able to handle new files (related to bug #50600). 
- 
+   Python script is able to handle new files (related to bug #50600).
+
 ================ GaudiPolicy v9r1 ====================================
 ! 2009-05-12 - Marco Clemencic
  - Fixed bug #50070: error in GaudiPolicy for gcc43 and 32 bits.
@@ -318,7 +323,7 @@ package manager: Marco Clemencic
 ! 2009-04-24 - Marco Clemencic
  - Extended GaudiTest.py with a re-implementation of the QMTest
    TimeoutExecutable class that allows to get the stack trace for a process
-   being terminated. 
+   being terminated.
 
 ! 2009-04-21 - Marco Clemencic
  - Added a work-around in install.py for a problem of shutil.copy2 on win32
@@ -328,7 +333,7 @@ package manager: Marco Clemencic
 
 ! 2009-03-13 - Marco Clemencic
  - Added the tag GAUDI_V22 to enable future API changes.
- - Minor updates of GaudiTest.py to absorb changes in the reference files. 
+ - Minor updates of GaudiTest.py to absorb changes in the reference files.
 
 ! 2009-02-13 - Marco Clemencic
  - Fixed a problem in the histogram summary comparison in GaudiTest.py.
@@ -340,7 +345,7 @@ package manager: Marco Clemencic
    - Added the (C++) compiler flag -fvisibility=hidden for gcc-4 to switch on
      the symbol hiding if the CMT tag "GAUDI_V21" is used. In the future it
      should be on by default unless a special tag is used
-     (e.g. EXPORT_ALL_SYMBOLS). 
+     (e.g. EXPORT_ALL_SYMBOLS).
    - When compiling a linker library the preprocessor macro GAUDI_LINKER_LIBRARY
      is defined, so that the macro GAUDI_API (defined in GaudiKernel) is mapped
      to GAUDI_EXPORT. The default (for component libraries) is to have GAUDI_API
@@ -375,7 +380,7 @@ package manager: Marco Clemencic
  - Fixed a problem in the logic of cmpTreesDicts in GaudiTest.py.
  - Added -ldl to the link flags of the executables. It was already present in
    the libraries, but it is needed explicitely in the executables on SLC5
-   (problem with cppunit).   
+   (problem with cppunit).
 
 ! 2008-12-05 - Marco Clemencic
  - Updates in the standard output filter of GaudiTest.py
@@ -397,10 +402,10 @@ package manager: Marco Clemencic
 
 ! 2008-10-30 - Hubert Degaudenzi
  - Added cmt action to create .pyc file in the InstallArea. This action is called
-   by "cmt CompilePython". This is not added by default to the build procedure 
-   since these created files are location dependent. They have to be created at 
+   by "cmt CompilePython". This is not added by default to the build procedure
+   since these created files are location dependent. They have to be created at
    installation time.
- 
+
 ! 2008-10-28 - Marco Clemencic
  - Fixed bug #43114. Python clean make target not removing .pyc files
    - Modified install.py to remove the corresponding .py[co] files when removing
@@ -456,7 +461,7 @@ package manager: Marco Clemencic
  - Fixed bug #35792: merge_genconfDb fragment does not need -dependencies
    Removed the '-dependencies' as suggested. Remoed it from the python_init
    fragment too.
- 
+
 ! 2008-08-05 - Marco Clemencic
  - Fixed bug #39272. Cannot use cmt TestPackage before cmt make
    Now the binary directory (to hold the results report of the tests) is
@@ -474,7 +479,7 @@ package manager: Marco Clemencic
    slc4_ia32_gcc34, slc4_ia32_gcc34_dbg, slc4_ia32_gcc41.
 
 ! 2008-07-31 - Hubert Degaudenzi
- - added the application of the linker library pattern to the genconf 
+ - added the application of the linker library pattern to the genconf
    helper library. This will ensure the creation of the dll on windows.
  - fixed the gcov support for gcc 3.4 and above.
  - added the ccache support. It works with/without distcc
@@ -499,20 +504,20 @@ package manager: Marco Clemencic
  - Added a pattern to generate a header file containing macros to identify the
    version of a project at compile-time.
    It is enough to add the line
-   
+
      apply_pattern ProjectVersionHeader
-   
+
    to a package that has the same version number of the project (like the
    steering project) and it will create a file called "<PROJECT>_VERSION.h" in
-   InstallArea/include.  
+   InstallArea/include.
 
 ! 2008-05-29 - Charles Leggett
  - Changed the name of the extension for libraries on OSX from ".dylib" to ".so".
 
 ! 2008-05-28 - Hubert Degaudenzi
- - Added a path cleaner to the global Gaudi setup. This is removing invalid or 
+ - Added a path cleaner to the global Gaudi setup. This is removing invalid or
    empty components in the PATH, LD_LIBRARY_PATH, JOBOPTSEARCHPATH, PYTHONPATH
- - Added the pattern pyd_module in order to be able to create python binary 
+ - Added the pattern pyd_module in order to be able to create python binary
    modules (.pyd files).
  - Added generic "template" document/fragment which allows to transform some
    spam.txt.tmpl file into spam.txt expanding all the cmt macros. It uses internally
@@ -530,8 +535,8 @@ package manager: Marco Clemencic
 
 ! 2008-03-11 - Hubert Degaudenzi
  - added 2 patterns to create and use helper library for genconf. Some libraries
-   need to have other preloaded libraries in order to perform the genconf 
-   procedure correctly. While this can be fixed on linux with the 
+   need to have other preloaded libraries in order to perform the genconf
+   procedure correctly. While this can be fixed on linux with the
    LD_PRELOAD environment variable, this is not possible on windows. Thus
    the genconf executable takes an extra argument "--load-library" to which
    the full path of the helper library is passed.
@@ -543,7 +548,7 @@ package manager: Marco Clemencic
    startup. The script and the related fragments have been modified to create
    the stamp files in the same directories of the files to be merged.
  - (Marco Clemencic) Added *.stamp to the list of the files to be excluded by
-   install.py. 
+   install.py.
 
 ! 2008-03-06 - Marco Clemencic
  - Added a pattern to define the environment variables GAUDIAPPNAME and
@@ -552,11 +557,11 @@ package manager: Marco Clemencic
  - Added a generic fragment/document to call a script.
    Most of the fragments are makefile-wrappers around simple commands. With the
    generic fragment is possible to define input, output and command in the
-   requirements file, using dedicated fragments for more complicated use-cases.  
+   requirements file, using dedicated fragments for more complicated use-cases.
 
 ================ GaudiPolicy v8r1 ====================================
 ! 2008-02-11 - Hubert Degaudenzi
- - Improved removal of constituents in the "disable_package_on" pattern with a 
+ - Improved removal of constituents in the "disable_package_on" pattern with a
    regexp action.
  - Empty the <package>_stamps macro as well if the package is disabled.
 
@@ -590,10 +595,10 @@ package manager: Marco Clemencic
 ! 2008-01-14 - Marco Clemencic
  - Modified locker.py to use msvcrt.locking instead of win32file.LockFileEx
    to fix a proble on win32 + Python2.5 (win32files is not available, while
-   msvcrt exists in Python 2.4 too). 
+   msvcrt exists in Python 2.4 too).
 
 ! 2007-12-20 - Hubert Degaudenzi
- - fixed bug #32341. install.py uses absolute path if the source and 
+ - fixed bug #32341. install.py uses absolute path if the source and
    the destination files are on different windows drives.
 
 ! 2007-12-20 - Marco Clemencic
@@ -605,7 +610,7 @@ package manager: Marco Clemencic
 ! 2007-12-19 - Marco Clemencic
  - Fixed a problem in install.py in the computation of the relative path in case
    of symlinks. It was failing if the link was already there and the packages
-   has a "hat". 
+   has a "hat".
 
 ! 2007-12-13 - Marco Clemencic
  - Modified qmtest_summarize.py to work on both QMtest 2.3 and 2.4.
@@ -628,7 +633,7 @@ package manager: Marco Clemencic
  - Added a default time-out to the Gaudi QMTest extension (10 minutes if the
    test does not give a larger time). The time-out can be disabled with the
    environment variable QMTEST_IGNORE_TIMEOUT.
-  
+
 ! 2007-11-15 - David Quarrie & Marco Clemencic
  - Fixed a problem in install.py when installing single files: the files were
    installed and immediately removed. Now install.py does not try to remove the
@@ -648,7 +653,7 @@ package manager: Marco Clemencic
    option files (to add a sensible extension to the temporary file).
  - Fixed a problem in run_qmtest.py occurring when the test suite with the same
    name of the package exists and the user specifies arguments to the action
-   qmtest_run. 
+   qmtest_run.
 
 ! 2007-11-09 - Marco Clemencic
  - bug #31136. (install.py copies emacs back-up files)
@@ -665,22 +670,22 @@ package manager: Marco Clemencic
    run a single test from the pattern, e.g.: "cmt qmtest_run mytest".
  - Modified GaudiTest.py to allow a more flexible use of the check on the
    reference file. It should be easy enough to add to each test its specific
-   manipulation of the output file (like skipping special lines, etc.).   
+   manipulation of the output file (like skipping special lines, etc.).
 
 ! 2007-11-06 - Marco Clemencic
  - Added a pattern to disable the build of a package for a given platform or
    combination of tags. E.g.:
-   
+
      apply_pattern disable_package_on platform=Darwin
      apply_pattern disable_package_on platform=slc4-amd64&gcc41
 
- - fixed install.py: continues gracefully even if the previous 
+ - fixed install.py: continues gracefully even if the previous
    installation destination is not accessible any more for deletion.
  - Moved qmtest_summarize.py from GaudiRelease to GaudiPolicy. The action to use
    it is available to any package. The name of the report file to be generated
-   can be passed with the command line option "-o". 
+   can be passed with the command line option "-o".
 
-! 2007-11-06 - Hubert Degaudenzi 
+! 2007-11-06 - Hubert Degaudenzi
  - fixed bug in install.py. Failure when the source and the destination
    have nothing in common except the root of the filesystem ("/").
 
@@ -689,9 +694,9 @@ package manager: Marco Clemencic
    escape the "escape" char used when printing with colors (it was preventing
    the merge of result files).
 
-! 2007-11-02 - Hubert Degaudenzi 
+! 2007-11-02 - Hubert Degaudenzi
  - fixed bug in install.py when calculating the relative path.
- - fixed the limit case where the installation is done in the 
+ - fixed the limit case where the installation is done in the
    same directory (Marco Clemencic)
 
 ! 2007-11-01 - Marco Clemencic
@@ -721,10 +726,10 @@ package manager: Marco Clemencic
     3b - make tests
     4b - cmt run_qmtest
  - Modified install.py to handle relative installation. The install.history
-   file is storing relative informations (to its own location). When 
+   file is storing relative informations (to its own location). When
    creating links, it creates also relative links (with regards to the
    destination directory).
-   
+
 ! 2007-10-22 - Hubert Degaudenzi
  - added options to create a link for a single file installation in
    install.py.
@@ -733,13 +738,13 @@ package manager: Marco Clemencic
 
 !================ GaudiPolicy v7r1 ================================
 ! 2007-09-28 - Sebastien Binet
- - patch #1284. <project> is massaged to get a valid python module name 
+ - patch #1284. <project> is massaged to get a valid python module name
    (ie: remove dots and dashes) in the merge_genConfDb fragment.
 
 ! 2007-09-24 - Marco Clemencic
  - fixed a problem with the dependency of *_python_init when the package
    has non default groups (e.g. GaudiPoolDb)
- 
+
 ! 2007-09-24 - Hubert Degaudenzi & Marco Clemencic
  - defined the module import strategy used by genconf:
    - no tag / LHCb tag : GaudiKernel
@@ -749,7 +754,7 @@ package manager: Marco Clemencic
 
 ! 2007-09-20 - Hubert Degaudenzi
  - added global macro <project>_home.
- 
+
 ! 2007-08-21 - Hubert Degaudenzi
  - factor out the creation of the __init__.py file in the InstallArea into a
    separate document. This will ensure the correctness of the parallel build
@@ -771,8 +776,8 @@ package manager: Marco Clemencic
    and install_scripts_header)
 
 ! 2007-07-30 - Hubert Degaudenzi
- - introduced 2 new make fragments (install_python and install_scripts) 
-   based on the install.py script for the python modules and script 
+ - introduced 2 new make fragments (install_python and install_scripts)
+   based on the install.py script for the python modules and script
    installation.
  - added the corresponding patterns: install_python_modules and
    install_scripts
@@ -785,7 +790,7 @@ package manager: Marco Clemencic
 
 ! 2007-07-18 - Sebastien Binet
  - patch #1249. Fix to avoid "use" cycle with GaudiSvc.
- 
+
 ! 2007-07-16 - Hubert Degaudenzi
  - fixed use of "distcc"
  - added "use Python * LCG_Interfaces -no_auto_imports" for
@@ -809,7 +814,7 @@ package manager: Marco Clemencic
  - Applied an committed a slightly modified version of the latest
    version of patch #1159 (file #4075), to allow the concurrent
    merging of files on NFS.
-   
+
 ! 2007-05-15 - Pere Mato
  - Commited patch 1159: merging files during build procedure
    with some additional changes:
@@ -837,13 +842,13 @@ package manager: Marco Clemencic
    install area.
 
 ! 2007-03-28 - Mattias Ellert
- - fix to bug #24973. Two pattern in GaudiPolicy uses private ... public 
-   instead of private ... end_private. This causes some private 
+ - fix to bug #24973. Two pattern in GaudiPolicy uses private ... public
+   instead of private ... end_private. This causes some private
    definitions the leak into public.
-   The attached patch fixes this problem (and also adds a macro_append 
-   to GaudiExamples that is needed since after the fix a private 
-   macro_append in a different package doesn't leak to GaudiExamples 
-   anymore). 
+   The attached patch fixes this problem (and also adds a macro_append
+   to GaudiExamples that is needed since after the fix a private
+   macro_append in a different package doesn't leak to GaudiExamples
+   anymore).
 
 !================ GaudiPolicy v6r5 ================================
 ! 2007-03-22 - Hubert Degaudenzi
@@ -866,7 +871,7 @@ package manager: Marco Clemencic
  - Applied again path  #1016: configurable genconf
 
 ! 2007-02-14 - Pere Mato (David Quarrie)
- - Modified GaudiPolicy so that it supports distcc at CERN. The value of the macro "cpp" has been changed. 
+ - Modified GaudiPolicy so that it supports distcc at CERN. The value of the macro "cpp" has been changed.
 
 ! 2007-02-13 - Pere Mato
  - Applied patch #1016: configurable genconf
@@ -904,13 +909,13 @@ package manager: Marco Clemencic
 
 ! 2006-12-18 - Pere Mato
  - added $(cmt_installarea_linkopts) in the <library>_shlibflags for the component library pattern.
-   Was failing on Windows becuase the script to build the shared library does not add it as it is 
+   Was failing on Windows becuase the script to build the shared library does not add it as it is
    on Linux.
-  
+
 ! 2006-12-19 - Florence RANJARD
  - set the cppcomp macro with a cmtpath_pattern to reverse the order
-   of $(includes) and $(pp_cppflags) macros depending of with/without 
-   installArea 
+   of $(includes) and $(pp_cppflags) macros depending of with/without
+   installArea
 
 ! 2006-12-14 - Florence Ranjard
  - set a macro copyInclude depending on the platform to be used in
@@ -930,7 +935,7 @@ package manager: Marco Clemencic
   - added new pattern and fragments to generate rootmap files from
     component libraries
   - added generate_rootmap in the component_library pattern
- 
+
 ! 2006-11-27 - David Quarrie
  - added tags for MacOS 10.4
 
@@ -943,13 +948,13 @@ package manager: Marco Clemencic
    machines, when slc4-ia32 tag is set.
 
 !================= GaudiPolicy v6r0 =================================
-! 2006-10-05 - Hubert Degaudenzi & Florence Ranjard 
+! 2006-10-05 - Hubert Degaudenzi & Florence Ranjard
  - Merge from branch v5r25b (tag v5r25p2) to introduce the use of the
    InstallArea
 
 !================= GaudiPolicy v5r25p2 =================================
                built on v5r25b branch
-! 2006-10-04 - Hubert Degaudenzi 
+! 2006-10-04 - Hubert Degaudenzi
  - modified the tag for slc4 platforms. Now uses gcc34 instead of
    gcc345 (like LCGCMT)
 
@@ -964,23 +969,23 @@ package manager: Marco Clemencic
 ! 2006-08-15 - Florence RANJARD
  - add fragments install_more_includes and install_more_includes_header
  - modify patterns setting linkopts and LD_LIBRARY_PATH to make use of the
-   InstallArea if required. 
+   InstallArea if required.
  - set BINDIR as a macro (it was a set)
 
-!================ GaudiPolicy v5r26 ====================================== 
+!================ GaudiPolicy v5r26 ======================================
 ! 2006-09-21 - Marco Cattaneo
  - added SSE2 options to cppflags, cflags and fflags.
 
-!================ GaudiPolicy v5r25 ====================================== 
+!================ GaudiPolicy v5r25 ======================================
 ! 2006-07-17 - Hubert Degaudenzi
  - fixed length of messages.
  - added -fPIC for the compilation of C files (required by amd64 platform)
 
-!================ GaudiPolicy v5r24 ====================================== 
+!================ GaudiPolicy v5r24 ======================================
 ! 2006-05-02 - Hubert Degaudenzi
  - added slc4_ia32_gcc345 tags.
 
-!================ GaudiPolicy v5r23 ====================================== 
+!================ GaudiPolicy v5r23 ======================================
 ! 2006-03-15 - Hubert Degaudenzi
  - removed the obsolete Solaris platform tags.
  - changed default optimization for fflags to "-O2".
@@ -993,17 +998,17 @@ package manager: Marco Clemencic
  - add tags slc3_ia32_gcc344
  - remove rh* and slc3_gcc323 tags
 
-!================ GaudiPolicy v5r22 ====================================== 
+!================ GaudiPolicy v5r22 ======================================
 ! 2006-01-23 - Pere Mato
  - removed <package>_linkopts from $(<library>_use_linkopts). To fix
    the problem with latest change.
-   
+
 ! 2006-01-17 - Pere Mato
  - added $(<library>_use_linkopts) into the macro <library>_shlibflags
    for various patterns. This fixes the problem with the -import
    option not taken into account when building libraries (visible on
    windows only)
-   
+
 !================ GaudiPolicy v5r21 ======================================
 ! 2006-01-16 - Hubert Degaudenzi
  - modified the definition of the slc3_ia32_gcc323_cov and
@@ -1040,9 +1045,9 @@ package manager: Marco Clemencic
 
 ! 2004-07-06 - Pere Mato
  - added "setup_strategy root" to set <PACKAGE>ROOT environment variables during setup. It seems
-   that the latest version of CMT has the default not to create them and they are needed in 
+   that the latest version of CMT has the default not to create them and they are needed in
    JobOptions files.
-   
+
 !================ GaudiPolicy v5r16 ======================================
 ! 2004-06-28 - Florence RANJARD
  - add tags for FedoraCore2
@@ -1057,17 +1062,17 @@ package manager: Marco Clemencic
 !================ GaudiPolicy v5r15 =======================================
 ! 2004-04-02 - Guy Barrand
  - append options to shlibflags for MacOSX
-  
+
 ! 2004-03-23 - Florence Ranjard
  - set ppcmd as -I on all platforms
 
 ! 2004-03-09 - Pere Mato
- - Changed libraryShr pattern for MacOSX 
+ - Changed libraryShr pattern for MacOSX
 
 !================ GaudiPolicy v5r14 =======================================
 ! 2003-12-11 - Pere Mato
  - Put back that rh73_gcc32 is optimized by default
- 
+
 !================ GaudiPolicy v5r13 =======================================
 ! 2003-11-25 - Pere Mato
  - changes from Guy Barrand concerning the Mac-OSX platform (Darwin)
@@ -1087,7 +1092,7 @@ package manager: Marco Clemencic
 !================ GaudiPolicy v5r11p2 =======================================
 ! 2003-06-16 - Florence RANJARD
  - fix BINDIR definition : there was a missing " at the end of the statment
-                           which removes the -tag=$CMTDEB in some packages 
+                           which removes the -tag=$CMTDEB in some packages
                            during a cmt broadcast gmake -tag=$CMTDEB
                            the bug was introduced in v5r5
 
@@ -1104,13 +1109,13 @@ package manager: Marco Clemencic
  - cleaned up atlas tags. Always define "platform" tags
  (e.g. rh73_gcc32) no matter which compile option is chosen
 ! 2003-02-25 - Paolo Calafiura
- - added compilation flag pthread for gcc/linux 
+ - added compilation flag pthread for gcc/linux
  - added a few "forwarding tags" for Atlas platform names
 
 !================ GaudiPolicy v5r10============================================
 ! 2003-02-04 - Pere Mato
  - Removed compilation flag /Ob2 on windows to disable inline function expansion
-  
+
 ! 2003-02-03 - Florence RANJARD
  - remove egcs tags
  - add UnixStatic in some patterns
@@ -1137,7 +1142,7 @@ package manager: Marco Clemencic
 
 !============================v5r6=============================================
 ! 20020913 - Pere Mato
-  - removed -Bsymbolic in the componentshr_linkopts macro. This is 
+  - removed -Bsymbolic in the componentshr_linkopts macro. This is
     suspected of producing memory leaks.
   - added more tags to take into account new version of redhat and gcc compiler
 
@@ -1147,15 +1152,15 @@ package manager: Marco Clemencic
     libraryShr, library_stamps, library_Clinkopts, library_Cshlibflags
     library_Llinkopts, library_Lshlibflags, library_Softlinks, library_path
     i.e. apply_pattern libraryShr library=GaudiAlg
-         apply_pattern library_path library=GaudiAlgLIb 
- 
+         apply_pattern library_path library=GaudiAlgLIb
+
   - new patterns to handle component library and linker library
     accepts one argument library=<library name>
     i.e. apply_pattern component_library library=GaudiAlg
          apply_pattern linker_library library=GaudiAlgLib
 
-  - following patterns accept an argument 
-    library=<library name> 
+  - following patterns accept an argument
+    library=<library name>
     packageShr, package_stamps, package_Clinkopts, package_Cshlibflags,
     package_Llinkopts, package_Lshlibflags
 
@@ -1169,7 +1174,7 @@ package manager: Marco Clemencic
 ! 20020321 - GaudiPolicy (Pere)
   - added tags from ATLAS and definition of a set of "primitive" tags
     to be used when defining macros and sets.
- 
+
 ! 20020313 - GaudiPolicy (Pere)
   - changed dsp_all fragment to add the release.notes in the DevStudio project
 
@@ -1183,8 +1188,8 @@ package manager: Marco Clemencic
 ! 20011121 - GaudiPolicy v5r3 (Pere)
   - Replaced several " " by "" which caused extra blanks in PATH and LD_LIBRARY_PATH
   - Added by default to create a map when linking a library on Windows
-  - Updated Developer Studio addin (CmtAddIn.dll) 
-  
+  - Updated Developer Studio addin (CmtAddIn.dll)
+
 ! 20010928 - GaudiPolicy v5r2 (Marco)
   - add fragments rule_checker_header, rule_checker, rule_checker_trailer
   - in requirements: add global pattern RuleChecker
@@ -1205,28 +1210,28 @@ package manager: Marco Clemencic
 
 ! 20010619 - GaudiPolicy v5 (flr)
    requirements - restrict pattern <package>_libraries to Unix.
-                - define pattern linker_path as LD_LIBRARY_PATH for WIN32 
+                - define pattern linker_path as LD_LIBRARY_PATH for WIN32
                   and as <package>_libraries for Unix.
                 - define pattern application_path to add application path to
                   LD_LIBRARY_PATH on Unix.
                 - remove all tags related to AIX.
                 - add tags rh61_gcc2952, rh61_gcc2952dbx, rh61_gcc2952Static
                 - pattern package_stamps is NOT global anylonger
-                - define pattern package_Lstamps 
+                - define pattern package_Lstamps
                 - remove pattern package_tag
                 - patterns include_none and packageDir are kept global
                 - keep BINDIR because of LinuxStatic and SolarisStatic
                 - use <package>_tag in application_path pattern
 
-   packages which produce only a component library (i.e. Calo/CaloAgs) should 
-   - call the library as <package> 
+   packages which produce only a component library (i.e. Calo/CaloAgs) should
+   - call the library as <package>
    - apply patterns packageShr, package_Clinkopts, package_Cshlibflags
 
    packages which produce only a linker library (i.e. Tr/TrKernel) should
    - call the library as <package>
    - apply patterns package_stamps, package_linkopts, package_shlibflags
    - apply_pattern linker_path
-     in case the linker library is -no_share it is not necessary to apply 
+     in case the linker library is -no_share it is not necessary to apply
      pattern linker_path
 
    packages which produce 2 libraries (i.e. Det/CaloDet), should
@@ -1234,10 +1239,10 @@ package manager: Marco Clemencic
    - apply patterns package_Clinkopts, package_Cshlibflags
    - call the linker library as <package>Lib
    - apply patterns package_Lstamps, package_Llinkopts, package_Lshlibflags
-   - apply_pattern linker_path 
+   - apply_pattern linker_path
      in case the linker library is -no_share the pattern linker_path can be
      replaced with the pattern packageShr
-                
+
 !=============================================================================
 ! 20010523 - GaudiPolicy v4r4p1 (Pere Mato)
   - Removed extra $(includes) in dsp_xxxx fragments
@@ -1259,7 +1264,7 @@ package manager: Marco Clemencic
                    replace *.o with empty *.o to remove unecessary *.o but keep
                    the time stamp
    requirements - add the 2 library fragments
- 
+
 ! 20010223 - David Quarrie
    requirements - added support for Solaris.
 
@@ -1276,9 +1281,9 @@ package manager: Marco Clemencic
                   macros.
 
 ! 20010109 - GaudiPolicy v4r1 (Flr)
-   requirements - use -Lpath -llibname in package_Llinkopts and 
+   requirements - use -Lpath -llibname in package_Llinkopts and
                   package_linkopts
-                  use <package>Dir where ever possible instead of the full 
+                  use <package>Dir where ever possible instead of the full
                   definition.
                   remove path/libname.a in package_Lshlibflags.
 
@@ -1296,7 +1301,7 @@ package manager: Marco Clemencic
                   define patterns :
                   component - package_Clinkopts, package_Cshlibflags
                               packageShr
-                  link      - package_Llinkopts, package_Lshlibflags 
+                  link      - package_Llinkopts, package_Lshlibflags
                   default   - package_linkopts, package_shlibflags
                               ld_library_path
                   Fortran   - package_Flinkopts

@@ -129,7 +129,6 @@ pattern library_path \
 
 pattern component_library \
     apply_pattern libraryShr library="<library>" ; \
-    apply_pattern library_Clinkopts library="<library>" ; \
     apply_pattern library_Cshlibflags library="<library>" ;\
     macro <library>_dependencies "$(<package>_linker_library) " ;\
     apply_pattern generate_rootmap library=<library> group=<group> ; \
@@ -357,9 +356,6 @@ pattern package_libraries \
 
 pattern packageShr \
     apply_pattern libraryShr library="<package>"
-
-pattern package_Clinkopts \
-    apply_pattern library_Clinkopts library="<package>"
 
 pattern package_Cshlibflags \
     apply_pattern library_Cshlibflags library="<package>"
