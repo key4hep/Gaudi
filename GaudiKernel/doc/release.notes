@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-06-07 - Marco Clemencic
+ - Fixed bug #66454: Fixing Converter::service_i
+
 ! 2010-06-21 - Charles Leggett
  - Fix to bug #68555: getting const services
 

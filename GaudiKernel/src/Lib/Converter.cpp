@@ -171,7 +171,7 @@ StatusCode
 Converter::service_i(const std::string& svcType, const std::string& svcName,
 		     const InterfaceID& iid, void** ppSvc) const {
   // Check for name of conversion service
-  SmartIF<IService> cnvsvc(conversionSvc());
+  SmartIF<INamedInterface> cnvsvc(conversionSvc());
   if (cnvsvc.isValid()) {
     const ServiceLocatorHelper helper(*serviceLocator(), "Converter", cnvsvc->name());
     return helper.createService(svcType, svcName, iid, ppSvc);
@@ -180,7 +180,7 @@ Converter::service_i(const std::string& svcType, const std::string& svcName,
 }
 
 SmartIF<IService> Converter::service(const std::string& name, const bool createIf) const {
-  SmartIF<IService> cnvsvc(conversionSvc());
+  SmartIF<INamedInterface> cnvsvc(conversionSvc());
   SmartIF<IService> svc;
   if (cnvsvc.isValid()) {
     const ServiceLocatorHelper helper(*serviceLocator(), "Converter", cnvsvc->name());
