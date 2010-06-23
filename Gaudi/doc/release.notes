@@ -1,6 +1,9 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+! 2010-06-23 - Marco Clemencic
+ - Minor fix in Configuration.getConfigurable.
+
 ================================ Gaudi v21r9 =================================
 ! 2010-04-22 - Marco Clemencic
  - Use the property "ReturnCode" of the ApplicationMgr as return value of the
@@ -24,7 +27,7 @@ Package manager : Marco Clemencic
 ! 2009-10-19 - Marco Clemencic
  - Modified the python modules Gaudi, Gaudi.Main and the script guadirun.py
    to avoid that an "import Gaudi" indirectly triggers a load of the configurables
-   database (it is necessary to import Gaudi.Configuration). 
+   database (it is necessary to import Gaudi.Configuration).
 
 ! 2009-10-12 - Marco Clemencic
  - Normalization of white-spaces in Python files.
@@ -42,15 +45,15 @@ Package manager : Marco Clemencic
    found.
    The meta-module "Configuables" should be deprecated in favor of
    "Gaudi.Configurables", that can also be used as in:
-   
+
      import Gaudi.Configurables as cfgs
      cfgs.MyConf
-   
+
    The exception for missing configurables can be disabled with
-   
+
      import Gaudi.Configurables
      Gaudi.Configurables.ignoreMissingConfigurables = True
-   
+
    (done by default in genconfuser.py for backward compatibility).
 
 ! 2009-07-20 - Marco Clemencic
@@ -107,7 +110,7 @@ Package manager : Marco Clemencic
  - Added the function Gaudi.Configuration.getConfigurable to simplify the
    creation of configurable instances. If a configurable wit the give name
    exists it is returned, otherwise it is created using the name as its type or
-   the specified type. 
+   the specified type.
 
 ! 2008-10-30 - Marco Clemencic
  - Extended gaudirun.py to use the automatic apply of ConfigurableUser.
@@ -171,8 +174,8 @@ Package manager : Marco Clemencic
  - Added to the command line option "--option" to gaudirun.py.
    It allows to specify Python lines to be executed after the standard
    configuration to modify it. E.g.:
-   
-     gaudirun.py default.py --option "MessageSvc().OutputLevel = DEBUG" 
+
+     gaudirun.py default.py --option "MessageSvc().OutputLevel = DEBUG"
 
    A test has been added too (gaudi.cmdline_conf).
 
@@ -180,7 +183,7 @@ Package manager : Marco Clemencic
 ! 2008-04-04 - Marco Clemencic
  - Bug #35201. Python options parser '//' interpreted as comment in strings.
    Added a test for the bug.
- 
+
 ! 2008-03-07 - Marco Clemencic
  - Fixed Bug #34046. False warning when mixing Python options and old options.
    Improved the test on case sensitivity to expose the bug (if present).
@@ -204,8 +207,8 @@ Package manager : Marco Clemencic
 ! 2008-01-11 - Marco Clemencic
  - Added a test to check the late-bound references in old options
    (e.g. "MyAlg.MyProp = @AnotherAlg.AProp;").
- - Added a simple test for properties with wrong cases in (old) job options.  
- 
+ - Added a simple test for properties with wrong cases in (old) job options.
+
 ! 2008-01-09 - Marco Clemencic
  - Added a test to check the conversion between configurables and strings.
 
@@ -239,7 +242,7 @@ Package manager : Marco Clemencic
    dictionary (formatted such that it can be evaluated in Python).
  - Renamed some command line options.
  - The different behaviors depending on the file name extension, are delegated
-   to Configuration.importOptions(). 
+   to Configuration.importOptions().
 
 ! 2007-10-29 - Pere Mato
  - Adapted to new GaudiPython structure
@@ -253,12 +256,12 @@ Package manager : Marco Clemencic
 
 ! 2007-09-28 - Pere Mato
  - Renamed the meta module containing common configurables from ConfDb to
-   Configurables. 
+   Configurables.
 
 ! 2007-09-24 - Hubert Degaudenzi
  - changed back Configurables.py into Configurable.py (it was
    a mistake)
-   
-! 2007-09-21 - Hubert Degaudenzi 
+
+! 2007-09-21 - Hubert Degaudenzi
  - New package to contain the main part of the Gaudi application.
    Moved the necessary parts from GaudiKernel.

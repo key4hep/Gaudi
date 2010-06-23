@@ -101,5 +101,6 @@ def getConfigurable(name, defaultType = None):
                 defaultType = globals()[defaultType]
             else:
                 # otherwise we try to get it from the Configurables database
+                import Configurables
                 defaultType = getattr(Configurables, defaultType)
         return defaultType(name)
