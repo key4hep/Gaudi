@@ -14,14 +14,18 @@ font-size: small;
 }
 .results span.testid:hover {
 color: red;
+cursor: pointer;
 }
 .results span.fieldid:hover {
 color: red;
+cursor: pointer;
 }
 /* "Collapse all" */
 .results ul + span:hover  {
 color: blue;
+cursor: pointer;
 }
 span.togglelink:hover {
 color: red;
+cursor: pointer;
 }
