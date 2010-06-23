@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-06-23 - Marco Clemencic
+ - Fixed bug #66973: Bug in SharedObjectsContainer
+   Removed the copy constructor of SharedObjectsContainer.
+
 ! 2010-06-07 - Marco Clemencic
  - Fixed bug #66454: Fixing Converter::service_i
 

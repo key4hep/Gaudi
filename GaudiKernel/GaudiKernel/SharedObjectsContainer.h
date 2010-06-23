@@ -95,9 +95,6 @@ public:
   {
     insert ( first , last , cut ) ;
   }
-  /// copy constructor
-  SharedObjectsContainer ( const SharedObjectsContainer& right )
-    : DataObject ( right ) , m_data ( right.m_data ) {}
   /// destructor
   ~SharedObjectsContainer() { m_data.clear() ; }
   // ==========================================================================
