@@ -49,6 +49,7 @@
 #include "GaudiKernel/IDataSelector.h"
 #include "GaudiKernel/IDataSourceMgr.h"
 #include "GaudiKernel/IDataStoreAgent.h"
+#include "GaudiKernel/IDataStoreLeaves.h"
 #include "GaudiKernel/IDetDataSvc.h"
 #include "GaudiKernel/IEventProcessor.h"
 #include "GaudiKernel/IEventTimeDecoder.h"
@@ -155,6 +156,7 @@ namespace {
       NTuple::Matrix<unsigned int>    UIntMatrix;
       NTuple::Matrix<float>           FloatMatrix;
       NTuple::Matrix<double>          DoubleMatrix;
+
       SmartDataPtr<DataObject> p1;
       SmartDataPtr<ObjectContainerBase> p2;
       __Instantiations() : p1(0,""), p2(0,"") {}

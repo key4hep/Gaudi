@@ -40,7 +40,7 @@
   <!--class name="IAuditorFactory"/-->
   <class name="IAuditor"/>
   <class name="IAuditorSvc"/>
-  <class name="IChronoSvc"/>     
+  <class name="IChronoSvc"/>
   <class name="IStatSvc"/>
   <class name="IChronoStatSvc"/>
   <class name="IClassInfo"/>
@@ -56,6 +56,8 @@
   <class name="IDataSelector"/>
   <class name="IDataSourceMgr"/>
   <class name="IDataStoreAgent"/>
+  <class name="IDataStoreLeaves"/>
+  <class name="IDataStoreLeaves::LeavesList" />
   <class name="IDataStreamTool"/>
   <class name="IDetDataSvc"/>
   <class name="IEventProcessor"/>
@@ -236,7 +238,7 @@
   <enum name="Gaudi::StateMachine::Transition"/>
 
   <enum name="Gaudi::CounterSummary::SaveType"/>
-  
+
   <enum name="MSG::Level"/>
   <enum name="MSG::Color"/>
 

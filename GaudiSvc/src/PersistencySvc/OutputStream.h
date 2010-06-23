@@ -1,4 +1,4 @@
-// $Id: OutputStream.h,v 1.10 2006/11/30 14:57:04 mato Exp $
+// $Id: OutputStream.h,v 1.4 2010/05/20 17:07:50 marcocle Exp $
 #ifndef GAUDISVC_PERSISTENCYSVC_OUTPUTSTREAM_H
 #define GAUDISVC_PERSISTENCYSVC_OUTPUTSTREAM_H
 
@@ -73,7 +73,7 @@ protected:
   ItemNames                m_optItemNames;
   /// Vector of optional items to be saved to this stream
   Items                    m_optItemList;
-  /// Collection of objects beeing selected
+  /// Collection of objects being selected
   IDataSelector            m_objects;
   /// Number of events written to this output stream
   int                      m_events;
@@ -133,11 +133,11 @@ public:
   virtual StatusCode connectConversionSvc();
   /// Store agent's classback
   virtual bool collect(IRegistry* dir, int level);
-  /// Collect all objects to be written tio the output stream
+  /// Collect all objects to be written to the output stream
   virtual StatusCode collectObjects();
   /// Clear item list
   void clearItems(Items& itms);
-  /// Add item to output stramer list
+  /// Add item to output streamer list
   void addItem(Items& itms, const std::string& descriptor);
   /// Clear list of selected objects
   void clearSelection();

@@ -1,6 +1,12 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2010-06-23 - Marco Clemencic
+ - Fixed bug #67543: InputCopyStream copies data not defined in its OptItemList
+   Added an implementation of the interface IDataStoreLeaves and modified
+   InputCopyStream to use it.
+   Modified OutputStream to avoid duplicates in the output.
+
 ! 2010-06-21 - Marco Clemencic
  - Fixed bug #67366: undefined pattern library_Clinkopts
    Removed the usage of pattern library_Clinkopts (a left-over of some old

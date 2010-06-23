@@ -6,27 +6,40 @@
 // Required for inheritance
 #include "OutputStream.h"
 
-/** A small to stream Data I/O.
-    Author:  M.Frank
-    Version: 1.0
-*/
-class InputCopyStream : public OutputStream     {
-  friend class AlgFactory<InputCopyStream>;
-  friend class Factory<InputCopyStream,IAlgorithm* (std::string,ISvcLocator *)>;
+class IDataStoreLeaves;
 
+/** Extension of OutputStream to copy the content of the main input file.
+ *
+ *  On top of the standard behavior of OutputStream, this class takes also all
+ *  the entries that come from the same file as the root entry in the data
+ *  service.
+ *
+ *  @author:  M. Frank
+ *  @author:  P. Koppenburg
+ *  @author:  M. Clemencic
+*/
+class InputCopyStream : public OutputStream {
 public:
-	/// Standard algorithm Constructor
-	InputCopyStream(const std::string& name, ISvcLocator* pSvcLocator); 
+  /// Standard algorithm Constructor
+  InputCopyStream(const std::string& name, ISvcLocator* pSvcLocator); 
   /// Standard Destructor
   virtual ~InputCopyStream();
-  /// Collect leaves from input file
-  virtual StatusCode collectLeaves(IRegistry* dir, int level);
-  /// Collect all objects to be written tio the output stream
+
+  /// Initialize the instance.
+  virtual StatusCode initialize();
+
+  /// Finalize the instance.
+  virtual StatusCode finalize();
+
+  /// Collect all objects to be written to the output stream
   virtual StatusCode collectObjects();
 
 private:
   /// Allow optional items to be on TES instead of input file
   bool m_takeOptionalFromTES;
+
+  /// Pointer to the (public) tool used to retrieve the objects in a file.
+  IDataStoreLeaves *m_leavesTool;
 };
 
 #endif // GAUDISVC_PERSISTENCYSVC_INPUTCOPYSTREAM_H

@@ -22,6 +22,8 @@
 #include "OutputStream.h"
 #include "OutputStreamAgent.h"
 
+#include <set>
+
 // Define the algorithm factory for the standard output data writer
 DECLARE_ALGORITHM_FACTORY(OutputStream)
 
@@ -177,10 +179,10 @@ StatusCode OutputStream::execute() {
     StatusCode sc = writeObjects();
     clearSelection();
     m_events++;
-    if(sc.isSuccess() && m_fireIncidents) 
+    if(sc.isSuccess() && m_fireIncidents)
       m_incidentSvc->fireIncident(Incident(m_outputName,
                                            IncidentType::WroteToOutputFile));
-    else if(m_fireIncidents) 
+    else if(m_fireIncidents)
       m_incidentSvc->fireIncident(Incident(m_outputName,
                                            IncidentType::FailOutputFile));
     return sc;
@@ -269,7 +271,7 @@ StatusCode OutputStream::collectObjects()   {
       status = iret;
     }
   }
-  // Traverse the tree and collect the requested objects (tolerate missing itmes here)
+  // Traverse the tree and collect the requested objects (tolerate missing items here)
   for ( i = m_optItemList.begin(); i != m_optItemList.end(); i++ )    {
     DataObject* obj = 0;
     m_currentItem = (*i);
@@ -282,6 +284,22 @@ StatusCode OutputStream::collectObjects()   {
           << m_currentItem->path() << endmsg;
     }
   }
+
+  if (status.isSuccess()){
+    // Remove duplicates from the list of objects, preserving the order in the list
+    std::set<DataObject*> unique;
+    std::vector<DataObject*> tmp; // temporary vector with the reduced list
+    tmp.reserve(m_objects.size());
+    for (std::vector<DataObject*>::iterator o = m_objects.begin(); o != m_objects.end(); ++o) {
+      if (!unique.count(*o)) {
+        // if the pointer is not in the set, add it to both the set and the temporary vector
+        unique.insert(*o);
+        tmp.push_back(*o);
+      }
+    }
+    m_objects.swap(tmp); // swap the data of the two vectors
+  }
+
   return status;
 }
 
