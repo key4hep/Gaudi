@@ -13,7 +13,7 @@ def StripPath(path):
         rp = realpath(p)
         # We keep the entry if it is a directory not empty or a zipfile
         if exists(rp) and ((isdir(rp) and listdir(rp))
-                           or is_zipfile(rp)):
+                           or is_zipfile(rp)) and p not in collected:
             collected.append(p)
     return pathsep.join(collected)
 

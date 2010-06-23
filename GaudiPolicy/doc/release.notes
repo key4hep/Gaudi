@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-06-23 - Marco Clemencic
+ - Synchronized PathStripper with the version in LbScripts.
+
 ! 2010-06-21 - Marco Clemencic
  - Fixed bug #67366: undefined pattern library_Clinkopts
    Removed the usage of pattern library_Clinkopts (a left-over of some old
