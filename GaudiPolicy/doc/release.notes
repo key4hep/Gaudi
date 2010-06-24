@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-06-24 - Marco Clemencic
+ - Easthetic and technical improvements to the QMTest HTML output.
+
 ! 2010-06-23 - Marco Clemencic
  - Synchronized PathStripper with the version in LbScripts.
 

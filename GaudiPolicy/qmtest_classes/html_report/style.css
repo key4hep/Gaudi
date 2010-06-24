@@ -1,4 +1,7 @@
 /* Coloring of results */
+.with_tooltip {
+cursor: help;
+}
 .results .PASS {
 color: green;
 }

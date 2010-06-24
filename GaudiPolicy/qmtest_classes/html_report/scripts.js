@@ -7,11 +7,11 @@ var polling = true;
 /**
  * Load the annotations file (annotations.json) and fill the annotations block of
  * the DOM.
- * 
+ *
  * If the key "qmtest.run.end_time" is not present, the test is considered to be
  * running, so a new call to getData() is scheduled and the title of the page
  * is modified to show that it is running.
- * 
+ *
  * Once the test is completed, the data are not polled anymore.
  */
 function loadAnnotations() {
@@ -54,7 +54,7 @@ function loadAnnotations() {
 		formatted += "</table>";
 		// Insert the code in the annotations block
 		$('.annotations').html(formatted);
-		
+
 		if (running) {
 			// modify the title
 			$("title").html(title + " (running)");
@@ -73,10 +73,10 @@ function loadAnnotations() {
 
 /**
  * Update the summary block from a list of objects.
- * 
+ *
  * The minimal requirement for the objects is that they have the field "outcome",
  * which value must be one of ["FAIL", "ERROR", "UNTESTED", "PASS"].
- *  
+ *
  * @param summary
  */
 function updateSummary(summary) {
@@ -85,7 +85,7 @@ function updateSummary(summary) {
 			"UNTESTED":0,
 			"ERROR":0};
 	var total = summary.length;
-	// Count the outcomes in the summary.  
+	// Count the outcomes in the summary.
 	for (var i in summary) {
 		++counter[summary[i]["outcome"]];
 	}
@@ -103,83 +103,110 @@ function updateSummary(summary) {
 			        "%</td><td>)</td><td>tests " + result_type + "</td></tr>";
 		}
 	}
-	html += "<tbody></table>";
+	html += "</tbody></table>";
 	// Put the table in the summary block.
 	$('.summary').html(html);
 }
 
 /**
  * Update the results from a list of objects.
- * 
+ *
  * The format of the objects in the list must be:
- * 
+ *
  * {"id": "...", "outcome": "...", "cause": "...", "fields": [...]}
- *  
+ *
  * @param summary
  */
 function updateResults(summary) {
 	// Loop over each block with class "results" to fill it
 	$(".results").each(function(){
 		// Allow a custom regexp to select which outcomes to include.
-		// The regexp must be included in the attribute "filter". 
+		// The regexp must be included in the attribute "filter".
 		var pattern = null;
 		if ($(this).attr("filter"))
 			pattern = new RegExp($(this).attr("filter"));
 		// Top-level list
-		var html = "<ul>";
+		var html = $("<ul/>");
 		var any_match = false; // to store if we put anything in the list
 		for (var i in summary) { // one item per test
 			var test_data = summary[i];
 			var outcome = test_data["outcome"];
 			// operate only on the outcomes matching the pattern (if specified)
-			if ( !pattern || outcome.match(pattern) ) { 
+			if ( !pattern || outcome.match(pattern) ) {
 				any_match = true;
-				html += "<li><span class=\"testid\">" + test_data["id"] + "</span>: ";
-				html += "<span class=\"" + outcome + "\""
+				var it_res = $("<li/>").css("list-style-image", "url(plus.png)")
+					.append($("<span/>").addClass("testid clickable")
+						.append(test_data["id"]))
+					.append(": ");
+				var outcome_el = $("<span/>").addClass(outcome)
+						.append(outcome);
 				if (test_data["cause"]) {
-					html += " title=\"" + test_data["cause"] + "\"";
+					outcome_el.attr("title", test_data["cause"])
+					.addClass("with_tooltip");
 				}
-				html += ">" + outcome + "</span>";
-				html += "<div class=\"fields\" style=\"display:none\">";
+				it_res.append(outcome_el);
+				var fields_el = $("<div/>").addClass("fields").hide();
 				if (test_data["cause"]) {
-					html += " <div class=\"cause\">" + test_data["cause"] + "</div>";
+					fields_el.append($("<div/>").addClass("cause")
+						.append(test_data["cause"]));
 				}
 				// Add the list of available fields for the test.
 				var fields = summary[i]["fields"];
-				html += "<ul>";
+				var sublist = $("<ul/>");
 				for (var j in fields) {
-					html += "<li><span class=\"fieldid\">" + fields[j] + "</span>" +
-					"<div href=\"" + test_data["id"] + "/" + fields[j] +
-					"\" loaded=\"false\" style=\"display:none\"/></li>";
+					sublist.append($("<li/>").css("list-style-image", "url(plus.png)")
+						.append($("<span/>").addClass("fieldid clickable")
+							.append(fields[j]))
+						.append($("<div/>")
+							.attr("href",test_data["id"] + "/" + fields[j])
+							.attr("loaded", "false").hide()
+							));
 				}
-				html += "</ul></div></li>";
+				it_res.append(fields_el.append(sublist));
+				html.append(it_res);
 			}
 		}
-		// add a small link to collapse the tree
-		html += "</ul><span>Collapse all</span>";
 		if (any_match) {
-			$(this).html(html);
+			$(this).html(html)
+			// add also a small link to collapse the tree
+			.append($("<span>Collapse all</span>")
+					.click(function(){
+						$('.results div.fields').hide();
+						$('.results div[href]').hide();
+						$('.results span.testid').parent().css('list-style-image', 'url(plus.png)');
+						$('.results span.fieldid').parent().css('list-style-image', 'url(plus.png)');
+					}));
 		} else {
 			$(this).html("None.");
 		}
 	});
 	// Instrument nodes
 	$('.results span.testid').click(function(){
-		$(this).parent().find('div.fields').toggle();
+		var parent = $(this).parent();
+		var child = parent.find('div.fields');
+		if (child.is(':hidden')) {
+			child.show();
+			parent.css('list-style-image', 'url(minus.png)');
+		} else {
+			child.hide();
+			parent.css('list-style-image', 'url(plus.png)');
+		}
 	});
 	$('.results span.fieldid').click(function(){
-		var div = $(this).parent().find('div');
+		var parent = $(this).parent();
+		var div = parent.find('div');
 		if (div.attr("loaded") == "false") {
 			div.load(div.attr("href"), function(){
 				$(this).attr("loaded", "true");
 			});
 		}
-		div.toggle();
-	});
-	// "Collapse all" link
-	$('.results ul + span').click(function(){
-		$('.results div.fields').hide();
-		$('.results div[href]').hide();
+		if (div.is(':hidden')) {
+			div.show();
+			parent.css('list-style-image', 'url(minus.png)');
+		} else {
+			div.hide();
+			parent.css('list-style-image', 'url(plus.png)');
+		}
 	});
 }
 /**
@@ -203,7 +230,7 @@ function getData() {
 // Function to be executed on load.
 $('body').ready(function(){
 	$(".hidable").hide();
-	$(".hidable").before("<span class=\"togglelink\">(show)</span>");
+	$(".hidable").before($("<span>(show)</span>").addClass("togglelink clickable"));
 	$("span.togglelink").click(function(){
 		var me = $(this);
 		me.next().toggle();
