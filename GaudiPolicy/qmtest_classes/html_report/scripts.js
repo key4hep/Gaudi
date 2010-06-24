@@ -174,7 +174,7 @@ function updateResults(summary) {
 		if (any_match) {
 			$(this).html(html)
 			// add also a small link to collapse the tree
-			.append($("<span>Collapse all</span>")
+			.append($("<span>Collapse all</span>").addClass("clickable")
 					.click(function(){
 						$('.results div.fields').hide();
 						$('.results div[href]').hide();
