@@ -14,6 +14,7 @@ ApplicationMgr.EvtMax       = -1 ;
 ApplicationMgr.Histogrampersistency = "NONE";
 EventSelector.Input = {
   "COLLECTION='Dir1/Dir2/Dir3/Collection' DATAFILE='PFN:POOLIO.tags' TYP='POOL_ROOT' SEL='(Ntrack>15)' FUN='Gaudi::Examples::EvtCollectionSelector'"
+ ,"COLLECTION='Dir1/Dir2/Dir3/Collection#Addr' DATAFILE='PFN:POOLIO.tags' TYP='POOL_ROOT' SEL='(Ntrack>15)' FUN='Gaudi::Examples::EvtCollectionSelector'"
 };
 
 ApplicationMgr.TopAlg      = { "ReadAlg"};
@@ -21,5 +22,5 @@ ApplicationMgr.TopAlg      = { "ReadAlg"};
 FileCatalog.Catalogs += { "xmlcatalog_file:POOLIO.xml" } ;
 
 // ============================================================================
-// The END 
+// The END
 // ============================================================================

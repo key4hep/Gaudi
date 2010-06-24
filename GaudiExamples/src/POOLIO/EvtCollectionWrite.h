@@ -1,12 +1,12 @@
-//	====================================================================
+//      ====================================================================
 //  EvtCollection.Write.h
-//	--------------------------------------------------------------------
+//      --------------------------------------------------------------------
 //
-//	Package   : GaudiExamples/EvtCollection
+//      Package   : GaudiExamples/EvtCollection
 //
-//	Author    : Markus Frank
+//      Author    : Markus Frank
 //
-//	====================================================================
+//      ====================================================================
 #ifndef EVTCOLLECTION_WRITE_H
 #define EVTCOLLECTION_WRITE_H
 
@@ -35,13 +35,15 @@ class EvtCollectionWrite : public Algorithm {
   NTuple::Item<float>             m_eneColl;
   NTuple::Item<Gaudi::Examples::MyTrack*>          m_trackItem;
   NTuple::Array<float>            m_trkMom;
+  NTuple::Array<float>            m_trkMomFixed;
   NTuple::Item<IOpaqueAddress*>   m_evtAddrColl;
+  NTuple::Item<IOpaqueAddress*>   m_evtAddrCollEx;
   int                             m_nMCcut;
   INTupleSvc*                     m_evtTupleSvc;
-  
+
 public:
   /// Constructor: A constructor of this form must be provided.
-  EvtCollectionWrite(const std::string& name, ISvcLocator* pSvcLocator); 
+  EvtCollectionWrite(const std::string& name, ISvcLocator* pSvcLocator);
   /// Standard Destructor
   virtual ~EvtCollectionWrite();
   /// Initialize
