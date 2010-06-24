@@ -18,7 +18,7 @@ function loadAnnotations() {
 	// Asynchronous retrieval
 	$.get('annotations.json', function(data) {
 		// Prepare a table with the annotations
-		var formatted = "<table>";
+		var tbody = $("<tbody/>");
 		// This keys are special and must appear first in the table
 		var keys = ["qmtest.run.start_time", "qmtest.run.end_time"];
 		// Add all the other keys to the list of keys
@@ -45,15 +45,19 @@ function loadAnnotations() {
 			} else {
 				if ($.isArray(value)) {
 					// In case the value is an Array, let's format it as a list
-					value = "<ul><li>" + value.join("</li><li>") + "</li></ul>";
+					var tmp = $('<ul/>');
+					for (i in value) {
+						tmp.append($('<li/>').text(value[i]))
+					}
+					value = tmp;
 				}
 			}
-			formatted += '<tr><td class="key">' + key + '</td><td class="value">'
-						+ value + '</td></tr>';
+			tbody.append($("<tr/>")
+				.append($('<td/>').addClass("key").text(key))
+				.append($('<td/>').addClass("value").html(value)));
 		}
-		formatted += "</table>";
 		// Insert the code in the annotations block
-		$('.annotations').html(formatted);
+		$('.annotations').html($('<table/>').append(tbody));
 
 		if (running) {
 			// modify the title
