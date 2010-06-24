@@ -90,22 +90,27 @@ function updateSummary(summary) {
 		++counter[summary[i]["outcome"]];
 	}
 	// Prepare a table layout (like the one produced usually by QMTest).
-	var html = "<table><tbody><tr><td align='right'>" + total
-	           + "</td><td colspan='3'/><td>tests total</td></tr>";
+	var tbody = $("<tbody/>");
+	// row with the total
+	tbody.append($("<tr>")
+		.append($("<td/>").attr("align", "right").text(total))
+		.append($("<td/>").attr("colspan", "3"))
+		.append($("<td/>").text("tests total")));
 	var result_types = ["FAIL", "ERROR", "UNTESTED", "PASS"];
 	for (var i in result_types) {
 		var result_type = result_types[i];
 		if (counter[result_type]) {
-			html += "<tr><td align='right'>" +
-			        counter[result_type] +
-			        "</td><td>(</td><td align='right'>" +
-			        Math.round(counter[result_type] / total * 100) +
-			        "%</td><td>)</td><td>tests " + result_type + "</td></tr>";
+			tbody.append($("<tr>")
+				.append($("<td/>").attr("align", "right").text(counter[result_type]))
+				.append("<td>(</td>")
+				.append($("<td/>").attr("align", "right").text(Math.round(counter[result_type] / total * 100)))
+				.append("<td>)</td>")
+				.append($("<td/>").text("tests " + result_type)).addClass(result_type)
+				);
 		}
 	}
-	html += "</tbody></table>";
 	// Put the table in the summary block.
-	$('.summary').html(html);
+	$('.summary').html($("<table/>").append(tbody));
 }
 
 /**
