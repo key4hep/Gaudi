@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-06-24 - Markus Frank
+ - Patch #4211: Fix bug in data length calculation for fixed
+                length ntuple items arrays/matrices
+
 ! 2010-06-23 - Marco Clemencic
  - Fixed bug #67543: InputCopyStream copies data not defined in its OptItemList
    Added The interface for a tool that returns the list of objects of the

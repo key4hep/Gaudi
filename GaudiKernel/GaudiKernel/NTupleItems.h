@@ -101,8 +101,8 @@ namespace NTuple    {
           long *ll = (long*)m_indexItem->buffer();
           len *= *ll;
         }
-        else if ( nd > 1 )   {
-          len *= dim(nd);
+        else if ( nd > 0 )   {
+          len *= dim(nd-1);
         }
       }
       return len;
