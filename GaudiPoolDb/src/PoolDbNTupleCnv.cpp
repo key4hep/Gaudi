@@ -707,8 +707,8 @@ StatusCode PoolDbNTupleCnv::readData(INTuple* nt,
       case DataTypeInfo::DOUBLE:      sc=load<double>        (s,buf); break;
       case DataTypeInfo::STRING:      sc=load<std::string>   (s,buf); break;
       case DataTypeInfo::NTCHAR:      sc=load<char*>         (s,buf); break;
-      case DataTypeInfo::OBJECT_ADDR: sc=load(buf,links[count]);      break;
-      case DataTypeInfo::POINTER:                                     break;
+      case DataTypeInfo::OBJECT_ADDR: sc=load(buf,links[cnt]);        break;
+      case DataTypeInfo::POINTER:     sc = 0;                         break;
       case DataTypeInfo::UNKNOWN:                                     break;
       default:                                                        break;
       }
