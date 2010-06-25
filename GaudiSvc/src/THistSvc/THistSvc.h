@@ -55,11 +55,25 @@ public:
   virtual std::vector<std::string> getTrees() const;
   virtual std::vector<std::string> getGraphs() const;
 
-  virtual StatusCode getTHists(TDirectory *td, TList &) const;
-  virtual StatusCode getTHists(const std::string& name, TList &) const;
+  virtual StatusCode getTHists(TDirectory *td, TList &, 
+			       bool recurse=false) const;
+  virtual StatusCode getTHists(const std::string& name, TList &, 
+			       bool recurse=false) const;
 
-  virtual StatusCode getTTrees(TDirectory *td, TList &) const;
-  virtual StatusCode getTTrees(const std::string& name, TList &) const;
+  virtual StatusCode getTHists(TDirectory *td, TList &tl,
+			       bool recurse=false, bool reg=false);
+  virtual StatusCode getTHists(const std::string& name, TList &tl,
+			       bool recurse=false, bool reg=false);
+
+  virtual StatusCode getTTrees(TDirectory *td, TList &, 
+			       bool recurse=false) const;
+  virtual StatusCode getTTrees(const std::string& name, TList &, 
+			       bool recurse=false) const;
+
+  virtual StatusCode getTTrees(TDirectory *td, TList & tl,
+			       bool recurse=false, bool reg=false);
+  virtual StatusCode getTTrees(const std::string& name, TList & tl,
+			       bool recurse=false, bool reg=false);
 
   virtual bool exists(const std::string& name) const;
 
@@ -149,6 +163,8 @@ private:
   /// call-back method to handle output stream property
   void setupOutputFile( Property& outputfile );
 
+  void setupCompressionLevel( Property& cmp );
+
   StringArrayProperty m_inputfile, m_outputfile;
   std::vector<std::string> m_Rstream, m_Wstream;
   IntegerProperty m_autoSave, m_compressionLevel, m_maxFileSize;
@@ -175,6 +191,8 @@ private:
   void MergeRootFile( TDirectory *target, TDirectory *source); 
 
   bool signaledStop;
+
+  mutable std::string m_curstream;
 
 };
 

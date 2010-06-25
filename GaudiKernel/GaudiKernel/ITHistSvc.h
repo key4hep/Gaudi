@@ -43,16 +43,31 @@ public:
   virtual std::vector<std::string> getGraphs() const = 0;
 
   //  virtual StatusCode getTHists(TList&) const = 0;
-  virtual StatusCode getTHists(TDirectory *td, TList &) const = 0;
-  virtual StatusCode getTHists(const std::string& name, TList &) const = 0;
+  virtual StatusCode getTHists(TDirectory *td, TList &, 
+			       bool recurse=false) const = 0;
+  virtual StatusCode getTHists(const std::string& name, TList &, 
+			       bool recurse=false) const = 0;
+
+  virtual StatusCode getTHists(TDirectory *td, TList &, 
+			       bool recurse=false, bool reg=false) = 0;
+  virtual StatusCode getTHists(const std::string& name, TList &, 
+			       bool recurse=false, bool reg=false) = 0;
 
   //  virtual StatusCode getTTrees(TList&) const = 0;
-  virtual StatusCode getTTrees(TDirectory *td, TList &) const = 0;
-  virtual StatusCode getTTrees(const std::string& name, TList &) const = 0;
+  virtual StatusCode getTTrees(TDirectory *td, TList &, 
+			       bool recurse=false) const = 0;
+  virtual StatusCode getTTrees(const std::string& name, TList &, 
+			       bool recurse=false) const = 0;
+  virtual StatusCode getTTrees(TDirectory *td, TList &, 
+			       bool recurse=false, bool reg=false) = 0;
+  virtual StatusCode getTTrees(const std::string& name, TList &, 
+			       bool recurse=false, bool reg=false) = 0;
 
   virtual StatusCode regGraph(const std::string& name) = 0;
   virtual StatusCode regGraph(const std::string& name, TGraph*) = 0;
   virtual StatusCode getGraph(const std::string& name, TGraph*&) const = 0;
+
+  virtual bool exists(const std::string& name) const = 0;
 
 };
 

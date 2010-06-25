@@ -1,6 +1,15 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2010-06-25 - Charles Leggett
+ - Patch #4215: updates to THistSvc
+   - setting max file size of output to 10Gb (user definable)
+   - expanded interface to get all hists/trees in a file/dir
+   - register all hists/trees in a file/dir
+   - fire FileIncident when there are errors opening/writing/closing files
+   - test if tree/hist exists
+   (includes patch #3447)
+
 ! 2010-06-23 - Marco Clemencic
  - Fixed bug #67543: InputCopyStream copies data not defined in its OptItemList
    Added an implementation of the interface IDataStoreLeaves and modified

@@ -12,7 +12,10 @@
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/Property.h"
 #include "GaudiKernel/IIncidentSvc.h"
+#include "GaudiKernel/FileIncident.h"
 #include "GaudiKernel/IEventProcessor.h"
+#include "GaudiKernel/IJobOptionsSvc.h"
+
 
 #include "TROOT.h"
 #include "TFile.h"
@@ -24,7 +27,6 @@
 #include <sstream>
 #include <streambuf>
 #include <cstdio>
-#include <algorithm>
 
 using namespace std;
 
@@ -43,16 +45,15 @@ inline void toupper(std::string &s)
 THistSvc::THistSvc( const std::string& name, ISvcLocator* svc )
   : base_class(name, svc), m_log(msgSvc(), name ), signaledStop(false) {
 
-  declareProperty ("Output", m_outputfile );
-  declareProperty ("Input", m_inputfile );
   declareProperty ("AutoSave", m_autoSave=0 );
   declareProperty ("PrintAll", m_print=false);
-  declareProperty ("CompressionLevel", m_compressionLevel=1 );
-  declareProperty ("MaxFileSize", m_maxFileSize=5120, 
+  declareProperty ("MaxFileSize", m_maxFileSize=10240, 
 		   "maximum file size in MB. if exceeded, will cause an abort");
+  declareProperty ("CompressionLevel", m_compressionLevel=1 )->declareUpdateHandler( &THistSvc::setupCompressionLevel, this );
+  declareProperty ("Output", m_outputfile )->declareUpdateHandler( &THistSvc::setupOutputFile, this );
+  declareProperty ("Input", m_inputfile )->declareUpdateHandler ( &THistSvc::setupInputFile,  this );
 
-  m_inputfile.declareUpdateHandler ( &THistSvc::setupInputFile,  this );
-  m_outputfile.declareUpdateHandler( &THistSvc::setupOutputFile, this );
+
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -70,12 +71,31 @@ THistSvc::initialize() {
   m_alreadyConnectedOutFiles.clear();
   m_alreadyConnectedInFiles.clear();
 
+
+  // Super ugly hack to make sure we have the OutputLevel set first, so we
+  // can see DEBUG printouts in update handlers.
+  IJobOptionsSvc* jos(0);
+  if( serviceLocator()->service( "JobOptionsSvc", jos, true ).isSuccess() ) {
+    const std::vector<const Property*> *props = jos->getProperties( name() );
+
+    if (props != NULL) {
+      for ( std::vector<const Property*>::const_iterator cur = props->begin();
+	    cur != props->end(); cur++) {
+	if ( (*cur)->name() == "OutputLevel" ) {
+	  setProperty( **cur ).ignore();
+	  m_log.setLevel( m_outputLevel.value() );
+	  break;
+	}
+      }
+    }
+  }
+
+
   StatusCode status = Service::initialize();
   m_log.setLevel( m_outputLevel.value() );
 
   if (status.isFailure()) {
-    MsgStream log ( msgSvc(), name() );
-    log << MSG::ERROR << "initializing service" << endmsg;
+    m_log << MSG::ERROR << "initializing service" << endmsg;
     return status;
   }
 
@@ -182,9 +202,11 @@ THistSvc::finalize() {
       }
     }
 
+#ifndef NDEBUG
     m_log << MSG::DEBUG << "uid: \"" << uitr->first << "\"  temp: "
         << uitr->second.temp << "  dir: " << dirname
         << endmsg;
+#endif
 
 
 //     if (uitr->second.temp == true) {
@@ -209,11 +231,15 @@ THistSvc::finalize() {
 	deleted_files.end()) {
       deleted_files.push_back(itr->second.first);
 
+#ifndef NDEBUG
       m_log << MSG::DEBUG << "finalizing stream/file " << itr->first << ":"
 	    << itr->second.first->GetName()
 	    << endmsg;
+#endif
     } else {
+#ifndef NDEBUG
       m_log << MSG::DEBUG << "already finalized stream " << itr->first << endmsg;
+#endif
       continue;
     }
 
@@ -231,6 +257,12 @@ THistSvc::finalize() {
 
     itr->second.first->Close();
 
+    IIncidentSvc *pi(0);
+    if (service("IncidentSvc",pi).isFailure()) {
+      m_log << MSG::ERROR << "Unable to get the IncidentSvc" << endmsg;
+      return StatusCode::FAILURE;
+    }
+
     if (itr->second.second==SHARE) {
       TFile *outputfile;
       //Merge File
@@ -238,15 +270,23 @@ THistSvc::finalize() {
 	m_log << MSG::DEBUG << "Opening Final Output File: " <<m_sharedFiles[itr->first].c_str()<<endmsg;
 	outputfile = new TFile(m_sharedFiles[itr->first].c_str(), "UPDATE");
       } catch (const std::exception& Exception) {
-      m_log << MSG::ERROR << "exception caught while trying to open root"
-	    << " file for appending: " << Exception.what() << std::endl
-	    << "  -> file probably corrupt." << endmsg;
-      return StatusCode::FAILURE;
+	m_log << MSG::ERROR << "exception caught while trying to open root"
+	      << " file for appending: " << Exception.what() << std::endl
+	      << "  -> file probably corrupt." << endmsg;
+ 	pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile, 
+ 				      m_sharedFiles[itr->first]));
+	return StatusCode::FAILURE;
       } catch (...) {
-	m_log << MSG::ERROR << "Problems opening output file  \"" << m_sharedFiles[itr->first]
-	    << "\" for append: probably corrupt" << endmsg;
+	m_log << MSG::ERROR << "Problems opening output file  \"" 
+	      << m_sharedFiles[itr->first]
+	      << "\" for append: probably corrupt" << endmsg;
+ 	pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile, 
+ 				      m_sharedFiles[itr->first]));
 	return StatusCode::FAILURE;
       }
+      
+      pi->fireIncident(FileIncident(name(), IncidentType::WroteToOutputFile, 
+ 				    m_sharedFiles[itr->first]));
 
       m_log << MSG::DEBUG << "THistSvc::write()::Merging Rootfile "<<endmsg;
       TFile *inputfile;
@@ -265,9 +305,9 @@ THistSvc::finalize() {
 	return StatusCode::FAILURE;
       }
 
-      MergeRootFile(outputfile, inputfile);
+      outputfile->SetCompressionLevel( inputfile->GetCompressionLevel() );
 
-      outputfile->SetCompressionLevel( m_compressionLevel );
+      MergeRootFile(outputfile, inputfile);
 
       outputfile->Write();
       outputfile->Close();
@@ -336,37 +376,60 @@ THistSvc::browseTDir(TDirectory *dir) const {
   return true;
 }
 
+
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
 StatusCode
-THistSvc::getTHists(TDirectory *td, TList & tl) const {
-
+THistSvc::getTHists(TDirectory *td, TList & tl, bool rcs) const {
   GlobalDirectoryRestore restore;
 
   gErrorIgnoreLevel = kBreak;
 
   if (!td->cd()) {
-    m_log << MSG::ERROR << "No such TDirectory \"" << td->GetPath() << "\""
-	  << endmsg;
+    m_log << MSG::ERROR << "getTHists: No such TDirectory \"" << td->GetPath() 
+	  << "\"" << endmsg;
     return StatusCode::FAILURE;
   }
 
-  TIter nextkey(td->GetList());
-  while (TObject *key = (TObject*)nextkey()) {
-    if (key != 0) {
-      if (key->IsA()->InheritsFrom("TH1")) { tl.Add(key); }
+  m_log << MSG::DEBUG << "getTHists: \"" << td->GetPath() << "\": found " 
+	<< td->GetListOfKeys()->GetSize() << " keys" << endmsg;
+
+  TIter nextkey(td->GetListOfKeys());
+  while (TKey *key = (TKey*)nextkey()) {
+    m_log << MSG::DEBUG << "  key: " << key->GetName();
+    TObject *obj = key->ReadObj();
+    if (obj != 0 && obj->IsA()->InheritsFrom("TDirectory")) {
+      m_log << " (" << obj->IsA()->GetName() << ")";
+    } else if (obj != 0 && obj->IsA()->InheritsFrom("TH1")) {
+      m_log << " (" << obj->IsA()->GetName() << ")";
+      tl.Add(obj);
+    } else if (obj != 0) {
+      m_log << " [" << obj->IsA()->GetName() << "]";
+    }
+    m_log << endmsg;
+  }
+
+  // operate recursively
+  if (rcs) {
+    nextkey = td->GetListOfKeys();
+    while (TKey *key = (TKey*)nextkey()) {
+      TObject *obj = key->ReadObj();
+      if (obj != 0 && obj->IsA()->InheritsFrom("TDirectory")) {
+	  TDirectory *tt = dynamic_cast<TDirectory*>(obj);
+	  getTHists(tt, tl, rcs);
+      }
     }
   }
 
-
   return StatusCode::SUCCESS;
+
 
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
 StatusCode
-THistSvc::getTHists(const std::string& dir, TList & tl) const {
+THistSvc::getTHists(const std::string& dir, TList & tl, bool rcs) const {
 
   GlobalDirectoryRestore restore;
 
@@ -374,12 +437,40 @@ THistSvc::getTHists(const std::string& dir, TList & tl) const {
 
   StatusCode sc;
 
-  if (!gDirectory->cd(dir.c_str())) {
-    m_log << MSG::ERROR << "No such TDirectory \"" << dir << "\""
+  std::string stream,rem,r2;
+  parseString(dir,stream,rem);
+
+  map< string,pair<TFile*,Mode> >::const_iterator itr = m_files.find(stream);
+  if (itr != m_files.end()) {
+    r2 = itr->second.first->GetName();
+    r2 += ":/";
+    r2 += rem;
+
+    m_log << MSG::DEBUG << "getTHists: \"" << dir 
+	  << "\" looks like a stream name."  << " associated TFile: \"" 
+	  << itr->second.first->GetName() << "\"" << endmsg;
+
+    if (gDirectory->cd(r2.c_str())) {
+      m_curstream = stream;
+      sc = getTHists(gDirectory,tl,rcs);
+      m_curstream = "";
+      return sc;
+    } else {
+      m_log << MSG::DEBUG << "getTHists: no such TDirectory \"" 
+	    << r2 << "\"" << endmsg;
+    }
+
+  } else {
+    m_log << MSG::DEBUG << "getTHists: stream \"" << stream << "\" not found" 
 	  << endmsg;
+  }
+
+  if (!gDirectory->cd(dir.c_str())) {
+    m_log << MSG::ERROR << "getTHists: No such TDirectory/stream \"" << dir 
+	  << "\"" << endmsg;
     sc = StatusCode::FAILURE;
   } else {
-    sc = getTHists(gDirectory,tl);
+    sc = getTHists(gDirectory,tl,rcs);
   }
 
   return sc;
@@ -388,22 +479,44 @@ THistSvc::getTHists(const std::string& dir, TList & tl) const {
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
 StatusCode
-THistSvc::getTTrees(TDirectory *td, TList & tl) const {
-
+THistSvc::getTTrees(TDirectory *td, TList & tl, bool rcs) const {
   GlobalDirectoryRestore restore;
 
   gErrorIgnoreLevel = kBreak;
 
   if (!td->cd()) {
-    m_log << MSG::ERROR << "No such TDirectory \"" << td->GetPath() << "\""
-	  << endmsg;
+    m_log << MSG::ERROR << "getTTrees: No such TDirectory \"" 
+	  << td->GetPath() << "\"" << endmsg;
     return StatusCode::FAILURE;
   }
 
-  TIter nextkey(td->GetList());
-  while (TObject *key = (TObject*)nextkey()) {
-    if (key != 0) {
-      if (key->IsA()->InheritsFrom("TTree")) { tl.Add(key); }
+  m_log << MSG::DEBUG << "getTHists: \"" << td->GetPath() << "\": found " 
+	<< td->GetListOfKeys()->GetSize() << " keys" << endmsg;
+
+  TIter nextkey(td->GetListOfKeys());
+  while (TKey *key = (TKey*)nextkey()) {
+    m_log << MSG::DEBUG << "  key: " << key->GetName();
+    TObject *obj = key->ReadObj();
+    if (obj != 0 && obj->IsA()->InheritsFrom("TDirectory")) {
+      m_log << " (" << obj->IsA()->GetName() << ")";
+    } else if (obj != 0 && obj->IsA()->InheritsFrom("TTree")) {
+      m_log << " (" << obj->IsA()->GetName() << ")";
+      tl.Add(obj);
+    } else if (obj != 0) {
+      m_log << " [" << obj->IsA()->GetName() << "]";
+    }
+    m_log << endmsg;
+  }
+  
+  // operate recursively
+  if (rcs) {
+    nextkey = td->GetListOfKeys();
+    while (TKey *key = (TKey*)nextkey()) {
+      TObject *obj = key->ReadObj();
+      if (obj != 0 && obj->IsA()->InheritsFrom("TDirectory")) {
+	  TDirectory *tt = dynamic_cast<TDirectory*>(obj);
+	  getTTrees(tt, tl, rcs);
+      }
     }
   }
 
@@ -414,7 +527,122 @@ THistSvc::getTTrees(TDirectory *td, TList & tl) const {
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
 StatusCode
-THistSvc::getTTrees(const std::string& dir, TList & tl) const {
+THistSvc::getTTrees(const std::string& dir, TList & tl, bool rcs) const {
+  GlobalDirectoryRestore restore;
+
+  gErrorIgnoreLevel = kBreak;
+
+  StatusCode sc;
+
+  std::string stream,rem,r2;
+  parseString(dir,stream,rem);
+
+  map< string,pair<TFile*,Mode> >::const_iterator itr = m_files.find(stream);
+  if (itr != m_files.end()) {
+    r2 = itr->second.first->GetName();
+    r2 += ":/";
+    r2 += rem;
+
+    m_log << MSG::DEBUG << "getTTrees: \"" << dir 
+	  << "\" looks like a stream name."  << " associated TFile: \"" 
+	  << itr->second.first->GetName() << "\"" << endmsg;
+
+    if (gDirectory->cd(r2.c_str())) {
+      return getTTrees(gDirectory,tl,rcs);
+    } else {
+      m_log << MSG::DEBUG << "getTTrees: no such TDirectory \"" 
+	    << r2 << "\"" << endmsg;
+    }
+
+  } else {
+    m_log << MSG::DEBUG << "getTTrees: stream \"" << stream << "\" not found" 
+	  << endmsg;
+  }
+
+  if (!gDirectory->cd(dir.c_str())) {
+    m_log << MSG::ERROR << "getTTrees: No such TDirectory/stream \"" << dir 
+	  << "\"" << endmsg;
+    sc = StatusCode::FAILURE;
+  } else {
+    sc = getTTrees(gDirectory,tl,rcs);
+  }
+
+  return sc;
+
+
+}
+
+
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+StatusCode
+THistSvc::getTHists(TDirectory *td, TList & tl, bool rcs, bool reg) {
+
+  GlobalDirectoryRestore restore;
+
+  gErrorIgnoreLevel = kBreak;
+
+  if (!td->cd()) {
+    m_log << MSG::ERROR << "getTHists: No such TDirectory \"" << td->GetPath() 
+	  << "\"" << endmsg;
+    return StatusCode::FAILURE;
+  }
+
+  m_log << MSG::DEBUG << "getTHists: \"" << td->GetPath() << "\": found " 
+	<< td->GetListOfKeys()->GetSize() << " keys" << endmsg;
+
+  TIter nextkey(td->GetListOfKeys());
+  while (TKey *key = (TKey*)nextkey()) {
+    m_log << MSG::DEBUG << "  key: " << key->GetName();
+    TObject *obj = key->ReadObj();
+    if (obj != 0 && obj->IsA()->InheritsFrom("TDirectory")) {
+      m_log << " (" << obj->IsA()->GetName() << ")";
+    } else if (obj != 0 && obj->IsA()->InheritsFrom("TH1")) {
+      m_log << " (" << obj->IsA()->GetName() << ")";
+      tl.Add(obj);
+      if (reg && m_curstream != "") {
+	string dir = td->GetPath();
+	string fil = td->GetFile()->GetName();
+	dir.erase(0,fil.length()+1);
+	string id = "/" + m_curstream;
+	if ( dir == "/" ) {
+	  id = id + "/" + key->GetName();
+	} else {
+	  id = id + dir + "/" + key->GetName();
+	}
+	if (!exists(id)) {
+	  m_log << "  reg as \"" << id << "\"";
+	  regHist(id).ignore();
+	} else {
+	  m_log << "  already registered";
+	}
+      }
+    } else if (obj != 0) {
+      m_log << " [" << obj->IsA()->GetName() << "]";
+    }
+    m_log << endmsg;
+  }
+
+  // operate recursively
+  if (rcs) {
+    nextkey = td->GetListOfKeys();
+    while (TKey *key = (TKey*)nextkey()) {
+      TObject *obj = key->ReadObj();
+      if (obj != 0 && obj->IsA()->InheritsFrom("TDirectory")) {
+	  TDirectory *tt = dynamic_cast<TDirectory*>(obj);
+	  getTHists(tt, tl, rcs, reg);
+      }
+    }
+  }
+
+  return StatusCode::SUCCESS;
+
+}
+
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+StatusCode
+THistSvc::getTHists(const std::string& dir, TList & tl, bool rcs, bool reg) {
 
   GlobalDirectoryRestore restore;
 
@@ -422,12 +650,158 @@ THistSvc::getTTrees(const std::string& dir, TList & tl) const {
 
   StatusCode sc;
 
-  if (!gDirectory->cd(dir.c_str())) {
-    m_log << MSG::ERROR << "No such TDirectory \"" << dir << "\""
+  std::string stream,rem,r2;
+  parseString(dir,stream,rem);
+
+  map< string,pair<TFile*,Mode> >::const_iterator itr = m_files.find(stream);
+  if (itr != m_files.end()) {
+    r2 = itr->second.first->GetName();
+    r2 += ":/";
+    r2 += rem;
+
+    m_log << MSG::DEBUG << "getTHists: \"" << dir 
+	  << "\" looks like a stream name."  << " associated TFile: \"" 
+	  << itr->second.first->GetName() << "\"" << endmsg;
+
+    if (gDirectory->cd(r2.c_str())) {
+      m_curstream = stream;
+      sc = getTHists(gDirectory,tl,rcs,reg);
+      m_curstream = "";
+      return sc;
+    } else {
+      m_log << MSG::DEBUG << "getTHists: no such TDirectory \"" 
+	    << r2 << "\"" << endmsg;
+    }
+
+  } else {
+    m_log << MSG::DEBUG << "getTHists: stream \"" << stream << "\" not found" 
 	  << endmsg;
+  }
+
+  if (!gDirectory->cd(dir.c_str())) {
+    m_log << MSG::ERROR << "getTHists: No such TDirectory/stream \"" << dir 
+	  << "\"" << endmsg;
     sc = StatusCode::FAILURE;
   } else {
-    sc = getTTrees(gDirectory,tl);
+    if (reg) {
+      m_log << MSG::WARNING << "Unable to register histograms automatically "
+	    << "without a valid stream name" << endmsg;
+      reg = false;
+    }
+    sc = getTHists(gDirectory,tl,rcs,reg);
+  }
+
+  return sc;
+
+}
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+StatusCode
+THistSvc::getTTrees(TDirectory *td, TList & tl, bool rcs, bool reg) {
+
+  GlobalDirectoryRestore restore;
+
+  gErrorIgnoreLevel = kBreak;
+
+  if (!td->cd()) {
+    m_log << MSG::ERROR << "getTTrees: No such TDirectory \"" 
+	  << td->GetPath() << "\"" << endmsg;
+    return StatusCode::FAILURE;
+  }
+
+  m_log << MSG::DEBUG << "getTHists: \"" << td->GetPath() << "\": found " 
+	<< td->GetListOfKeys()->GetSize() << " keys" << endmsg;
+
+  TIter nextkey(td->GetListOfKeys());
+  while (TKey *key = (TKey*)nextkey()) {
+    m_log << MSG::DEBUG << "  key: " << key->GetName();
+    TObject *obj = key->ReadObj();
+    if (obj != 0 && obj->IsA()->InheritsFrom("TDirectory")) {
+      m_log << " (" << obj->IsA()->GetName() << ")";
+    } else if (obj != 0 && obj->IsA()->InheritsFrom("TTree")) {
+      m_log << " (" << obj->IsA()->GetName() << ")";
+      tl.Add(obj);
+      if (reg && m_curstream != "") {
+	string dir = td->GetPath();
+	string fil = td->GetFile()->GetName();
+	dir.erase(0,fil.length()+1);
+	string id = "/" + m_curstream;
+	if ( dir == "/" ) {
+	  id = id + "/" + key->GetName();
+	} else {
+	  id = id + dir + "/" + key->GetName();
+	}
+	if (!exists(id)) {
+	  m_log << "  reg as \"" << id << "\"";
+	  regHist(id).ignore();
+	} else {
+	  m_log << "  already registered";
+	}
+      }
+    } else if (obj != 0) {
+      m_log << " [" << obj->IsA()->GetName() << "]";
+    }
+    m_log << endmsg;
+  }
+  
+  // operate recursively
+  if (rcs) {
+    nextkey = td->GetListOfKeys();
+    while (TKey *key = (TKey*)nextkey()) {
+      TObject *obj = key->ReadObj();
+      if (obj != 0 && obj->IsA()->InheritsFrom("TDirectory")) {
+	  TDirectory *tt = dynamic_cast<TDirectory*>(obj);
+	  getTTrees(tt, tl, rcs, reg);
+      }
+    }
+  }
+
+  return StatusCode::SUCCESS;
+
+}
+
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+StatusCode
+THistSvc::getTTrees(const std::string& dir, TList & tl, bool rcs, bool reg) {
+
+  GlobalDirectoryRestore restore;
+
+  gErrorIgnoreLevel = kBreak;
+
+  StatusCode sc;
+
+  std::string stream,rem,r2;
+  parseString(dir,stream,rem);
+
+  map< string,pair<TFile*,Mode> >::const_iterator itr = m_files.find(stream);
+  if (itr != m_files.end()) {
+    r2 = itr->second.first->GetName();
+    r2 += ":/";
+    r2 += rem;
+
+    m_log << MSG::DEBUG << "getTTrees: \"" << dir 
+	  << "\" looks like a stream name."  << " associated TFile: \"" 
+	  << itr->second.first->GetName() << "\"" << endmsg;
+
+    if (gDirectory->cd(r2.c_str())) {
+      return getTTrees(gDirectory,tl,rcs,reg);
+    } else {
+      m_log << MSG::DEBUG << "getTTrees: no such TDirectory \"" 
+	    << r2 << "\"" << endmsg;
+    }
+
+  } else {
+    m_log << MSG::DEBUG << "getTTrees: stream \"" << stream << "\" not found" 
+	  << endmsg;
+  }
+
+  if (!gDirectory->cd(dir.c_str())) {
+    m_log << MSG::ERROR << "getTTrees: No such TDirectory/stream \"" << dir 
+	  << "\"" << endmsg;
+    sc = StatusCode::FAILURE;
+  } else {
+    sc = getTTrees(gDirectory,tl,rcs,reg);
   }
 
   return sc;
@@ -784,6 +1158,19 @@ THistSvc::parseString(const string& id, string& root, string& rem) const {
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
 void
+THistSvc::setupCompressionLevel( Property& /* cl */ ) 
+{
+
+  m_log << MSG::WARNING << "\"CompressionLevel\" Property has been deprecated. "
+	<< "Set it via the \"CL=\" parameter in the \"Output\" Property"
+	<< endmsg;
+
+}
+  
+
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+void
 THistSvc::setupInputFile( Property& /*m_inputfile*/ )
 {
   StatusCode sc = StatusCode::SUCCESS;
@@ -968,6 +1355,7 @@ THistSvc::connect(const std::string& ident) {
   typedef std::pair<std::string,std::string>      Prop;
   std::vector<Prop> props;
   string val,VAL,TAG,filename,db_typ("ROOT");
+  int cl(1);
 
   tok.analyse(ident.substr(loc+1,ident.length()), " ", "", "", "=", "'", "'");
 
@@ -1001,6 +1389,8 @@ THistSvc::connect(const std::string& ident) {
       }
     } else if (TAG == "TYP") {
       db_typ = (*i).value();
+    } else if (TAG == "CL") {
+      cl = atoi(val.c_str());
     } else {
       props.push_back( Prop((*i).tag(), (*i).value()));
     }
@@ -1074,6 +1464,12 @@ THistSvc::connect(const std::string& ident) {
   }
 
 
+  IIncidentSvc *pi(0);
+  if (service("IncidentSvc",pi).isFailure()) {
+    m_log << MSG::ERROR << "Unable to get the IncidentSvc" << endmsg;
+    return StatusCode::FAILURE;
+  }
+
   TFile *f(0) ;
   if (newMode == THistSvc::READ) {
     // old file
@@ -1084,53 +1480,75 @@ THistSvc::connect(const std::string& ident) {
       m_log << MSG::ERROR << "exception caught while trying to open root"
 	    << " file for reading: " << Exception.what() << std::endl
 	    << "  -> file probably corrupt." << endmsg;
+      pi->fireIncident(FileIncident(name(), IncidentType::FailInputFile, 
+				    filename));
       return StatusCode::FAILURE;
     } catch (...) {
       m_log << MSG::ERROR << "Problems opening input file  \"" << filename
 	    << "\": probably corrupt" << endmsg;
+      pi->fireIncident(FileIncident(name(), IncidentType::FailInputFile, 
+ 				    filename));
       return StatusCode::FAILURE;
     }
 
     if (!f->IsOpen()) {
       m_log << MSG::ERROR << "Unable to open input file \"" << filename
 	    << "\": file does not exist" << endmsg;
+      pi->fireIncident(FileIncident(name(), IncidentType::FailInputFile, 
+				    filename));
       return StatusCode::FAILURE;
     }
+
+    // FIX ME!
+    pi->fireIncident(FileIncident(name(), "BeginHistFile", 
+ 				  filename));
 
 
   } else if (newMode == THistSvc::WRITE) {
     // new file
 
-    f = TFile::Open(filename.c_str(),"NEW");
+    f = TFile::Open(filename.c_str(),"NEW",stream.c_str(),cl);
     if (!f->IsOpen()) {
       m_log << MSG::ERROR << "Unable to create new output file \"" << filename
 	    << "\" for writing: file already exists" << endmsg;
+      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile, 
+				    filename));
       return StatusCode::FAILURE;
     }
-    f->SetCompressionLevel( m_compressionLevel );
+
+    // FIX ME!
+    pi->fireIncident(FileIncident(name(), "BeginHistFile", 
+ 				  filename));
 
   } else if (newMode == THistSvc::APPEND) {
     // update file
 
     try {
-      f =  TFile::Open(filename.c_str(),"UPDATE");
+      f =  TFile::Open(filename.c_str(),"UPDATE",stream.c_str(),cl);
     } catch (const std::exception& Exception) {
       m_log << MSG::ERROR << "exception caught while trying to open root"
 	    << " file for appending: " << Exception.what() << std::endl
 	    << "  -> file probably corrupt." << endmsg;
+      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile, 
+				    filename));
       return StatusCode::FAILURE;
     } catch (...) {
       m_log << MSG::ERROR << "Problems opening output file  \"" << filename
 	    << "\" for append: probably corrupt" << endmsg;
+      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile, 
+				    filename));
       return StatusCode::FAILURE;
     }
 
     if (!f->IsOpen()) {
       m_log << MSG::ERROR << "Unable to open output file \"" << filename
 	    << "\" for appending" << endmsg;
+      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile, 
+				    filename));
       return StatusCode::FAILURE;
     }
-    f->SetCompressionLevel( m_compressionLevel );
+    pi->fireIncident(FileIncident(name(), IncidentType::BeginOutputFile, 
+				  filename));
 
   } else if (newMode == THistSvc::SHARE) {
     // SHARE file type
@@ -1148,47 +1566,61 @@ THistSvc::connect(const std::string& ident) {
     m_sharedFiles[stream]=realfilename;
     
     try {
-      f = TFile::Open(filename.c_str(),"NEW");
+      f = TFile::Open(filename.c_str(),"NEW",stream.c_str(),cl);
     } catch (const std::exception& Exception) {
       m_log << MSG::ERROR << "exception caught while trying to open root"
 	    << " file for appending: " << Exception.what() << std::endl
 	    << "  -> file probably corrupt." << endmsg;
+      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile, 
+				    filename));
       return StatusCode::FAILURE;
     } catch (...) {
       m_log << MSG::ERROR << "Problems opening output file  \"" << filename
 	    << "\" for append: probably corrupt" << endmsg;
+      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile, 
+				    filename));
       return StatusCode::FAILURE;
     }
     
     if (!f->IsOpen()) {
       m_log << MSG::ERROR << "Unable to open output file \"" << filename
-	  << "\" for appending" << endmsg;
+	    << "\" for appending" << endmsg;
+      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile, 
+				    filename));
       return StatusCode::FAILURE;
     }
-    f->SetCompressionLevel( m_compressionLevel );
-
+    pi->fireIncident(FileIncident(name(), IncidentType::BeginOutputFile, 
+				  filename));
+    
   } else if (newMode == THistSvc::UPDATE) {
     // update file
 
     try {
-      f =  TFile::Open(filename.c_str(),"RECREATE");
+      f =  TFile::Open(filename.c_str(),"RECREATE",stream.c_str(),cl);
     } catch (const std::exception& Exception) {
       m_log << MSG::ERROR << "exception caught while trying to open root"
 	    << " file for updating: " << Exception.what() << std::endl
 	    << "  -> file probably corrupt." << endmsg;
+      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile, 
+				    filename));
       return StatusCode::FAILURE;
     } catch (...) {
       m_log << MSG::ERROR << "Problems opening output file  \"" << filename
 	    << "\" for update: probably corrupt" << endmsg;
+      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile, 
+				    filename));
       return StatusCode::FAILURE;
     }
 
     if (!f->IsOpen()) {
       m_log << MSG::ERROR << "Unable to open output file \"" << filename
 	    << "\" for updating" << endmsg;
+      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile, 
+				    filename));
       return StatusCode::FAILURE;
     }
-    f->SetCompressionLevel( m_compressionLevel );
+    pi->fireIncident(FileIncident(name(), IncidentType::BeginOutputFile, 
+				  filename));
 
   }
 
@@ -1196,7 +1628,7 @@ THistSvc::connect(const std::string& ident) {
   m_fileStreams.insert(make_pair<std::string,std::string>(filename,stream));
 
   m_log << MSG::DEBUG << "Opening TFile \"" << filename << "\"  stream: \""
-	<< stream << "\"  mode: \"" << typ << "\""
+	<< stream << "\"  mode: \"" << typ << "\"" << " comp level: " << cl
 	<< endmsg;
 
   return StatusCode::SUCCESS;
@@ -1369,6 +1801,7 @@ THistSvc::handle( const Incident& /* inc */ ) {
 
   // convert to bytes.
   Long64_t mfs = (Long64_t)m_maxFileSize.value() * (Long64_t)1048576;
+  Long64_t mfs_warn = mfs * 0.95;
 
   updateFiles();
 
@@ -1400,6 +1833,12 @@ THistSvc::handle( const Incident& /* inc */ ) {
       } else {
 	abort();
       }
+    } else if (tf->GetSize() > mfs_warn) {
+      m_log << MSG::WARNING << "file \"" << tf->GetName() 
+	    << "\" associated with stream \"" << itr->first 
+	    << "\" is at 95% of its maximum allowable file size of "
+	    << m_maxFileSize.value() << "MB"
+	    << endmsg;
     }
   }
 }

@@ -1,6 +1,12 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-06-25 - Charles Leggett
+ - Patch #4215: updates to THistSvc
+   - expanded interface to get all hists/trees in a file/dir
+   - add class FileIncident
+   (includes patch #3447)
+
 ! 2010-06-24 - Markus Frank
  - Patch #4211: Fix bug in data length calculation for fixed
                 length ntuple items arrays/matrices

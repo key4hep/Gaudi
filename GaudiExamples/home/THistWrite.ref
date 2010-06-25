@@ -1,6 +1,6 @@
 JobOptionsSvc        INFO
 //GP:================================================================================
-//GP: include "../options/THistWrite.opts"                                    (0,0)
+//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/THistWrite.opts" (0,0)
 AuditorSvc.Auditors =  [ "ChronoAuditor" ] ;                            //GP: (1,1)
 ApplicationMgr.TopAlg =  [ "THistWrite" ] ;                             //GP: (1,1)
 MessageSvc.OutputLevel = 3;                                             //GP: (1,1)
@@ -14,14 +14,14 @@ THistSvc.Output +=  [ "rec DATAFILE='tuple3.rt' TYP='ROOT' OPT='RECREATE'" ] ;//
 THistSvc.PrintAll = 1;                                                  //GP: (1,1)
 ApplicationMgr.EvtMax = 20;                                             //GP: (1,1)
 ApplicationMgr.EvtSel = "NONE";                                         //GP: (1,1)
-//GP: end  "../options/THistWrite.opts"                                       (37,1)
+//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/THistWrite.opts" (37,1)
 //GP:================================================================================
 
-JobOptionsSvc        INFO Job options successfully read in from ../options/THistWrite.opts
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/THistWrite.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on lxbuild120.cern.ch on Fri Mar 13 16:33:41 2009
+                                          running on pclhcb55 on Fri Jun 25 09:23:43 2010
 ====================================================================================================================================[m
 ApplicationMgr    VERBOSE declareMultiSvcType: declared service EvtDataSvc/EventDataSvc[m
 ApplicationMgr    VERBOSE declareMultiSvcType: declared service DetDataSvc/DetectorDataSvc[m
@@ -34,6 +34,8 @@ ApplicationMgr    VERBOSE declareMultiSvcType: declared service HistogramPersist
 ApplicationMgr      DEBUG Loading declared DLL's[m
 ApplicationMgr    VERBOSE addMultiSvc: added service EventLoopMgr/EventLoopMgr[m
 ApplicationMgr       INFO Application Manager Configured successfully[m
+THistSvc            DEBUG Opening TFile "tuple2.rt"  stream: "upd"  mode: "A" comp level: 1[m
+THistSvc            DEBUG Opening TFile "tuple3.rt"  stream: "rec"  mode: "R" comp level: 1[m
 THistSvc            DEBUG Service base class initialized successfully[m
 THistSvc            DEBUG Historgram with id "TempHist1" is temporary[m
 THistSvc            DEBUG Registering TH1F title: "Temporary Tree 1"  id: "/temp/TempHist1"  dir: root:/  file: none[m
@@ -56,46 +58,46 @@ ApplicationMgr       INFO Application Manager Started successfully[m
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine[m
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3[m
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
-THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 432[m
-THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 319[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
 ApplicationMgr       INFO Application Manager Stopped successfully[m
 THistWrite           INFO Finalizing...[m
 EventLoopMgr         INFO Histograms converted successfully according to request.[m
@@ -114,7 +116,7 @@ THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT: "t
 THistSvc             INFO Listing contents of ROOT files: [m
 THistSvc            DEBUG finalizing stream/file rec:tuple3.rt[m
 THistSvc             INFO ==> File: tuple3.rt  stream: rec[m
-TFile: name=tuple3.rt, title=, option=CREATE
+TFile: name=tuple3.rt, title=rec, option=CREATE
 TH1.Print Name  = 2Dgauss, Entries= 20000, Total sum= 19978
           Title = 2D Gaussian
           NbinsX= 100, xmin= -50, xmax=50, NbinsY= 100, ymin= -50, ymax=50
@@ -126,7 +128,7 @@ TH1.Print Name  = profile, Entries= 0, Total sum= 0
           NbinsX= 100, xmin= -50, xmax=-50
 ******************************************************************************
 *Tree    :treename  : tree title                                             *
-*Entries :     1000 : Total =           14045 bytes  File  Size =       2337 *
+*Entries :     1000 : Total =           14045 bytes  File  Size =       2333 *
 *        :          : Tree compression factor =   6.63                       *
 ******************************************************************************
 *Br    0 :branch1   : point1/I                                               *
@@ -143,11 +145,11 @@ TH1.Print Name  = profile, Entries= 0, Total sum= 0
 *............................................................................*
 THistSvc            DEBUG finalizing stream/file upd:tuple2.rt[m
 THistSvc             INFO ==> File: tuple2.rt  stream: upd[m
-TFile: name=tuple2.rt, title=, option=UPDATE
+TFile: name=tuple2.rt, title=upd, option=UPDATE
 TH1.Print Name  = 1Dgauss, Entries= 20000, Total sum= 19984
           Title = 1D Gaussian
           NbinsX= 100, xmin= -50, xmax=50
 ApplicationMgr       INFO Application Manager Finalized successfully[m
 ApplicationMgr       INFO Application Manager Terminated successfully[m
-Number of MyTrack instances:0
 Number of MyVertex instances:0
+Number of MyTrack instances:0
