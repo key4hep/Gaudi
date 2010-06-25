@@ -37,7 +37,7 @@ JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/use
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on pclhcb55 on Thu Jun 24 12:11:48 2010
+                                          running on pclhcb55 on Fri Jun 25 09:44:18 2010
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 FileRecordPersi...   INFO  'CnvServices':[ 'FileRecordCnvSvc' ]
@@ -56,96 +56,96 @@ RootDBase.open    SUCCESS POOLIO.tags File version:52600
 EventSelector        INFO Stream:EventSelector.DataStreamTool_2 Def:COLLECTION='Dir1/Dir2/Dir3/Collection' DATAFILE='PFN:POOLIO.tags' TYP='POOL_ROOT' SEL='(Ntrack>15)' FUN='Gaudi::Examples::EvtCollectionSelector'
 Gaudi::Examples::EvtCollectionSelector	 -> #tracks : 93
 Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Var): [0]=16.6809 [1]=14.9037 [2]=16.7944 [3]=17.0709 [4]=17.3469
-Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=-2.10048e+21 [1]=0 [2]=0 [3]=0 [4]=0
+Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=16.6809 [1]=14.9037 [2]=16.7944 [3]=17.0709 [4]=17.3469
 Gaudi::Examples::EvtCollectionSelector	 -> Track :  px=10.1578 py=9.51566 pz=9.19358
 Gaudi::Examples::EvtCollectionSelector   SELECTED : True
 EventSelector     SUCCESS Reading Event record 1. Record number within stream 2: 1
 EventPersistenc...   INFO Added successfully Conversion service:PoolRootEvtCnvSvc
 EventPersistenc...   INFO Added successfully Conversion service:PoolRootTreeEvtCnvSvc
 RootDBase.open    SUCCESS POOLIO.dst File version:52600
-PoolRootTreeEvt...   INFO Records token:[DB=C2E432CA-787F-DF11-9B8C-001320A397BC][CNT=/FileRecords][CLID=00000001-0000-0000-0000-000000000000][TECH=00000202][OID=0000000A-00000000]
+PoolRootTreeEvt...   INFO Records token:[DB=E0EEE656-2D80-DF11-B285-001320A397BC][CNT=/FileRecords][CLID=00000001-0000-0000-0000-000000000000][TECH=00000202][OID=0000000A-00000000]
 FileRecordPersi...   INFO Added successfully Conversion service:FileRecordCnvSvc
-ReadAlg              INFO ========= EVENT:2 RUN:999 TIME:1277374261.723235 0 (0) 1 (1) 2 (2)
-ReadAlg           SUCCESS FileInfo record: C2E432CA-787F-DF11-9B8C-001320A397BC/EvtCount=1000
-ReadAlg           SUCCESS FileInfo record: C2E432CA-787F-DF11-9B8C-001320A397BC/SumCount=123456
+ReadAlg              INFO ========= EVENT:2 RUN:999 TIME:1277451807.309231 0 (0) 1 (1) 2 (2)
+ReadAlg           SUCCESS FileInfo record: E0EEE656-2D80-DF11-B285-001320A397BC/EvtCount=1000
+ReadAlg           SUCCESS FileInfo record: E0EEE656-2D80-DF11-B285-001320A397BC/SumCount=123456
 Gaudi::Examples::EvtCollectionSelector	 -> #tracks : 76
 Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Var): [0]=17.7422 [1]=16.7922 [2]=17.6961 [3]=16.0612 [4]=15.7365
-Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=2.03188e-43 [1]=0 [2]=0 [3]=0 [4]=0
+Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=17.7422 [1]=16.7922 [2]=17.6961 [3]=16.0612 [4]=15.7365
 Gaudi::Examples::EvtCollectionSelector	 -> Track :  px=10.4989 py=10.4342 pz=9.78193
 Gaudi::Examples::EvtCollectionSelector   SELECTED : True
-ReadAlg              INFO ========= EVENT:3 RUN:999 TIME:1277374261.746644 0 (0) 1 (1) 2 (2)
+ReadAlg              INFO ========= EVENT:3 RUN:999 TIME:1277451807.359005 0 (0) 1 (1) 2 (2)
 Gaudi::Examples::EvtCollectionSelector	 -> #tracks : 93
 Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Var): [0]=16.7554 [1]=16.91 [2]=17.424 [3]=17.0529 [4]=16.2021
-Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=0 [1]=0 [2]=0 [3]=0 [4]=0
+Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=16.7554 [1]=16.91 [2]=17.424 [3]=17.0529 [4]=16.2021
 Gaudi::Examples::EvtCollectionSelector	 -> Track :  px=8.95659 py=9.22111 pz=10.7468
 Gaudi::Examples::EvtCollectionSelector   SELECTED : True
-ReadAlg              INFO ========= EVENT:4 RUN:999 TIME:1277374261.762376 0 (0) 1 (1) 2 (2)
+ReadAlg              INFO ========= EVENT:4 RUN:999 TIME:1277451807.387562 0 (0) 1 (1) 2 (2)
 Gaudi::Examples::EvtCollectionSelector	 -> #tracks : 54
 Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Var): [0]=18.3973 [1]=15.7355 [2]=17.3919 [3]=17.6139 [4]=15.3032
-Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=3.36312e-43 [1]=0 [2]=0 [3]=0 [4]=0
+Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=18.3973 [1]=15.7355 [2]=17.3919 [3]=17.6139 [4]=15.3032
 Gaudi::Examples::EvtCollectionSelector	 -> Track :  px=10.7592 py=9.68162 pz=11.3563
 Gaudi::Examples::EvtCollectionSelector   SELECTED : True
-ReadAlg              INFO ========= EVENT:6 RUN:999 TIME:1277374261.794388 0 (0) 1 (1) 2 (2)
+ReadAlg              INFO ========= EVENT:6 RUN:999 TIME:1277451807.438256 0 (0) 1 (1) 2 (2)
 Gaudi::Examples::EvtCollectionSelector	 -> #tracks : 52
 Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Var): [0]=16.7278 [1]=19.0105 [2]=17.2653 [3]=17.9376 [4]=18.0045
-Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=6.86636e-44 [1]=0 [2]=0 [3]=0 [4]=0
+Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=16.7278 [1]=19.0105 [2]=17.2653 [3]=17.9376 [4]=18.0045
 Gaudi::Examples::EvtCollectionSelector	 -> Track :  px=9.79151 py=8.83918 pz=10.2866
 Gaudi::Examples::EvtCollectionSelector   SELECTED : True
-ReadAlg              INFO ========= EVENT:500 RUN:999 TIME:1277374265.770038 0 (0) 1 (1) 2 (2)
+ReadAlg              INFO ========= EVENT:500 RUN:999 TIME:1277451811.529893 0 (0) 1 (1) 2 (2)
 Gaudi::Examples::EvtCollectionSelector	 -> #tracks : 55
 Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Var): [0]=17.3344 [1]=16.8644 [2]=17.1626 [3]=19.4074 [4]=18.0094
-Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=0 [1]=0 [2]=0 [3]=0 [4]=0
+Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=17.3344 [1]=16.8644 [2]=17.1626 [3]=19.4074 [4]=18.0094
 Gaudi::Examples::EvtCollectionSelector	 -> Track :  px=10.7646 py=8.89134 pz=10.2737
 Gaudi::Examples::EvtCollectionSelector   SELECTED : True
-ReadAlg              INFO ========= EVENT:1000 RUN:999 TIME:1277374270.017126 0 (0) 1 (1) 2 (2)
+ReadAlg              INFO ========= EVENT:1000 RUN:999 TIME:1277451816.097456 0 (0) 1 (1) 2 (2)
 Gaudi::Examples::EvtCollectionSelector	 -> #tracks : 93
 Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Var): [0]=16.6809 [1]=14.9037 [2]=16.7944 [3]=17.0709 [4]=17.3469
-Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=0 [1]=0 [2]=0 [3]=0 [4]=0
+Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=16.6809 [1]=14.9037 [2]=16.7944 [3]=17.0709 [4]=17.3469
 Gaudi::Examples::EvtCollectionSelector	 -> Track :  px=10.1578 py=9.51566 pz=9.19358
 Gaudi::Examples::EvtCollectionSelector   SELECTED : True
 RootDBase.open    SUCCESS POOLIO.mdst File version:52600
-IODataManager        INFO Disconnect from dataset POOLIO.etags [5E764DE1-787F-DF11-86A0-001320A397BC]
-PoolRootTreeEvt...   INFO No Records /FileRecords present in:6E41A7CA-787F-DF11-9B8C-001320A397BC
-FileRecordDataSvc    INFO Failed to register record for:6E41A7CA-787F-DF11-9B8C-001320A397BC [Invalid Address]
-ReadAlg              INFO ========= EVENT:2 RUN:999 TIME:1277374261.723235 0 (0) 1 (1) 2 (2)
+IODataManager        INFO Disconnect from dataset POOLIO.etags [3AA27E70-2D80-DF11-81EB-001320A397BC]
+PoolRootTreeEvt...   INFO No Records /FileRecords present in:FACC6B57-2D80-DF11-B285-001320A397BC
+FileRecordDataSvc    INFO Failed to register record for:FACC6B57-2D80-DF11-B285-001320A397BC [Invalid Address]
+ReadAlg              INFO ========= EVENT:2 RUN:999 TIME:1277451807.309231 0 (0) 1 (1) 2 (2)
 Gaudi::Examples::EvtCollectionSelector	 -> #tracks : 76
 Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Var): [0]=17.7422 [1]=16.7922 [2]=17.6961 [3]=16.0612 [4]=15.7365
-Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=9.10844e-44 [1]=0 [2]=0 [3]=0 [4]=0
+Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=17.7422 [1]=16.7922 [2]=17.6961 [3]=16.0612 [4]=15.7365
 Gaudi::Examples::EvtCollectionSelector	 -> Track :  px=10.4989 py=10.4342 pz=9.78193
 Gaudi::Examples::EvtCollectionSelector   SELECTED : True
-ReadAlg              INFO ========= EVENT:3 RUN:999 TIME:1277374261.746644 0 (0) 1 (1) 2 (2)
+ReadAlg              INFO ========= EVENT:3 RUN:999 TIME:1277451807.359005 0 (0) 1 (1) 2 (2)
 Gaudi::Examples::EvtCollectionSelector	 -> #tracks : 93
 Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Var): [0]=16.7554 [1]=16.91 [2]=17.424 [3]=17.0529 [4]=16.2021
-Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=0 [1]=0 [2]=0 [3]=0 [4]=0
+Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=16.7554 [1]=16.91 [2]=17.424 [3]=17.0529 [4]=16.2021
 Gaudi::Examples::EvtCollectionSelector	 -> Track :  px=8.95659 py=9.22111 pz=10.7468
 Gaudi::Examples::EvtCollectionSelector   SELECTED : True
-ReadAlg              INFO ========= EVENT:4 RUN:999 TIME:1277374261.762376 0 (0) 1 (1) 2 (2)
+ReadAlg              INFO ========= EVENT:4 RUN:999 TIME:1277451807.387562 0 (0) 1 (1) 2 (2)
 Gaudi::Examples::EvtCollectionSelector	 -> #tracks : 54
 Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Var): [0]=18.3973 [1]=15.7355 [2]=17.3919 [3]=17.6139 [4]=15.3032
-Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=3.36312e-43 [1]=0 [2]=0 [3]=0 [4]=0
+Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=18.3973 [1]=15.7355 [2]=17.3919 [3]=17.6139 [4]=15.3032
 Gaudi::Examples::EvtCollectionSelector	 -> Track :  px=10.7592 py=9.68162 pz=11.3563
 Gaudi::Examples::EvtCollectionSelector   SELECTED : True
-ReadAlg              INFO ========= EVENT:6 RUN:999 TIME:1277374261.794388 0 (0) 1 (1) 2 (2)
+ReadAlg              INFO ========= EVENT:6 RUN:999 TIME:1277451807.438256 0 (0) 1 (1) 2 (2)
 Gaudi::Examples::EvtCollectionSelector	 -> #tracks : 52
 Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Var): [0]=16.7278 [1]=19.0105 [2]=17.2653 [3]=17.9376 [4]=18.0045
-Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=1.35926e-43 [1]=0 [2]=0 [3]=0 [4]=0
+Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=16.7278 [1]=19.0105 [2]=17.2653 [3]=17.9376 [4]=18.0045
 Gaudi::Examples::EvtCollectionSelector	 -> Track :  px=9.79151 py=8.83918 pz=10.2866
 Gaudi::Examples::EvtCollectionSelector   SELECTED : True
-ReadAlg              INFO ========= EVENT:500 RUN:999 TIME:1277374265.770038 0 (0) 1 (1) 2 (2)
+ReadAlg              INFO ========= EVENT:500 RUN:999 TIME:1277451811.529893 0 (0) 1 (1) 2 (2)
 Gaudi::Examples::EvtCollectionSelector	 -> #tracks : 55
 Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Var): [0]=17.3344 [1]=16.8644 [2]=17.1626 [3]=19.4074 [4]=18.0094
-Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=0 [1]=0 [2]=0 [3]=0 [4]=0
+Gaudi::Examples::EvtCollectionSelector	 -> Momenta(Fix): [0]=17.3344 [1]=16.8644 [2]=17.1626 [3]=19.4074 [4]=18.0094
 Gaudi::Examples::EvtCollectionSelector	 -> Track :  px=10.7646 py=8.89134 pz=10.2737
 Gaudi::Examples::EvtCollectionSelector   SELECTED : True
-ReadAlg              INFO ========= EVENT:1000 RUN:999 TIME:1277374270.017126 0 (0) 1 (1) 2 (2)
+ReadAlg              INFO ========= EVENT:1000 RUN:999 TIME:1277451816.097456 0 (0) 1 (1) 2 (2)
 EventLoopMgr         INFO No more events in event selection
 ApplicationMgr       INFO Application Manager Stopped successfully
 EventLoopMgr         INFO Histograms converted successfully according to request.
 ToolSvc              INFO Removing all tools created by ToolSvc
-EvtTupleSvc.Eve...   INFO Disconnected data IO:F450E0D3-787F-DF11-AF9D-001320A397BC[POOLIO.tags]
+EvtTupleSvc.Eve...   INFO Disconnected data IO:B8195C61-2D80-DF11-A9C1-001320A397BC[POOLIO.tags]
 FileRecordCnvSvc     INFO File sharing enabled. Do not retire files.
-PoolRootTreeEvt...   INFO Disconnected data IO:6E41A7CA-787F-DF11-9B8C-001320A397BC[POOLIO.mdst]
-PoolRootTreeEvt...   INFO Disconnected data IO:C2E432CA-787F-DF11-9B8C-001320A397BC[POOLIO.dst]
+PoolRootTreeEvt...   INFO Disconnected data IO:E0EEE656-2D80-DF11-B285-001320A397BC[POOLIO.dst]
+PoolRootTreeEvt...   INFO Disconnected data IO:FACC6B57-2D80-DF11-B285-001320A397BC[POOLIO.mdst]
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
 Number of MyVertex instances:0
