@@ -249,7 +249,7 @@ $('body').ready(function(){
 			me.html("(show)");
 		}
 	});
-	$("#stop_polling").click(function(){
+	$("#stop_polling").addClass("clickable").click(function(){
 		polling = false;
 		getData();
 	});
