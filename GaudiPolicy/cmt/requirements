@@ -505,7 +505,8 @@ macro lib_fragment "" \
 make_fragment $(lib_fragment)
 macro lib_no_static_fragment "" \
        CMTp20070208&target-winxp "library_no_static" \
-       CMTp20090520&target-winxp "library_no_static"
+       CMTp20090520&target-winxp "library_no_static" \
+       CMTr21&target-unix "library_no_static" 
 make_fragment $(lib_no_static_fragment)
 
 # Compilation and Linking flags==============================================
@@ -1228,6 +1229,5 @@ set LCGCMTVERS "$(LCG_config_version)"
 # Base directory of doxygen documentation
 set GAUDI_DOXY_HOME $(GAUDI_home)/GaudiRelease/doc
 
-
-
-# ICC hacks for LCG_Interfaces
+pattern -global CppCheck \
+     action CppCheck "cppcheck --all --quiet $(includes) ../src || echo 'No Cpp files' "

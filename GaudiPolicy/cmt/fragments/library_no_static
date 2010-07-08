@@ -1,1 +1,86 @@
-# Dummy file, needed to ba able to access the nmake version
+#-- start of library_no_static ------
+
+#${CONSTITUENT}LIB :: $(${CONSTITUENT}lib) $(${CONSTITUENT}shstamp)
+${CONSTITUENT}LIB :: $(${CONSTITUENT}shstamp)
+	$(echo) "${CONSTITUENT} : library ok"
+
+$(${CONSTITUENT}lib) :: ${OBJS}
+	$(lib_echo) "static library $@"
+	$(lib_silent) cd $(bin); \
+	  $(ar) $(${CONSTITUENT}lib) $?
+	$(lib_silent) $(ranlib) $(${CONSTITUENT}lib)
+	$(lib_silent) cat /dev/null >$(${CONSTITUENT}stamp)
+
+#------------------------------------------------------------------
+#  Future improvement? to empty the object files after
+#  storing in the library
+#
+##	  for f in $?; do \
+##	    rm $${f}; touch $${f}; \
+##	  done
+#------------------------------------------------------------------
+
+#
+# We add one level of dependency upon the true shared library 
+# (rather than simply upon the stamp file)
+# this is for cases where the shared library has not been built
+# while the stamp was created (error??) 
+#
+
+$(${CONSTITUENT}libname).$(shlibsuffix) :: ${OBJS} $(use_requirements) $(${CONSTITUENT}stamps)
+	$(lib_echo) "shared library $@"
+	$(lib_silent) $(shlibbuilder) $(shlibflags) -o $@ ${OBJS} $(${CONSTITUENT}_shlibflags)
+
+$(${CONSTITUENT}shstamp) :: $(${CONSTITUENT}libname).$(shlibsuffix)
+	$(lib_silent) if test -f $(${CONSTITUENT}libname).$(shlibsuffix) ; then \
+	  cat /dev/null >$(${CONSTITUENT}stamp) && \
+	  cat /dev/null >$(${CONSTITUENT}shstamp) ; fi
+
+${CONSTITUENT}clean ::
+	$(cleanup_echo) objects ${CONSTITUENT}
+	$(cleanup_silent) /bin/rm -f ${OBJS}
+	$(cleanup_silent) /bin/rm -f $(patsubst %.o,%.d,${OBJS}) $(patsubst %.o,%.dep,${OBJS}) $(patsubst %.o,%.d.stamp,${OBJS})
+	$(cleanup_silent) cd $(bin); /bin/rm -rf ${CONSTITUENT}_deps ${CONSTITUENT}_dependencies.make
+
+#-----------------------------------------------------------------
+#
+#  New section for automatic installation
+#
+#-----------------------------------------------------------------
+
+install_dir = ${CMTINSTALLAREA}/$(tag)/lib
+${CONSTITUENT}installname = $(library_prefix)${CONSTITUENT}$(library_suffix).$(shlibsuffix)
+
+${CONSTITUENT} :: ${CONSTITUENT}install
+
+install :: ${CONSTITUENT}install
+
+${CONSTITUENT}install :: $(install_dir)/$(${CONSTITUENT}installname)
+ifdef CMTINSTALLAREA
+	$(echo) "installation done"
+endif
+
+$(install_dir)/$(${CONSTITUENT}installname) :: $(bin)$(${CONSTITUENT}installname)
+ifdef CMTINSTALLAREA
+	$(install_silent) $(cmt_install_action) \
+	    -source "`(cd $(bin); pwd)`" \
+	    -name "$(${CONSTITUENT}installname)" \
+	    -out "$(install_dir)" \
+	    -cmd "$(cmt_installarea_command)" \
+	    -cmtpath "$($(package)_cmtpath)"
+endif
+
+##${CONSTITUENT}clean :: ${CONSTITUENT}uninstall
+
+uninstall :: ${CONSTITUENT}uninstall
+
+${CONSTITUENT}uninstall ::
+ifdef CMTINSTALLAREA
+	$(cleanup_silent) $(cmt_uninstall_action) \
+	    -source "`(cd $(bin); pwd)`" \
+	    -name "$(${CONSTITUENT}installname)" \
+	    -out "$(install_dir)" \
+	    -cmtpath "$($(package)_cmtpath)"
+endif
+
+#-- end of library_no_static ------
