@@ -1229,5 +1229,5 @@ set LCGCMTVERS "$(LCG_config_version)"
 # Base directory of doxygen documentation
 set GAUDI_DOXY_HOME $(GAUDI_home)/GaudiRelease/doc
 
-pattern -global CppCheck \
-     action CppCheck "cppcheck --all --quiet $(includes) ../src || echo 'No Cpp files' "
+# pattern -global CppCheck \
+#     action CppCheck "cppcheck --all --quiet $(includes) ../src || echo 'No Cpp files' "
