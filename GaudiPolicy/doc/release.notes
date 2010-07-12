@@ -2,6 +2,8 @@ package GaudiPolicy
 package manager: Marco Clemencic
 
 ! 2010-07-12 - Charles Leggett
+ - Patch #4260: small change in the way -Wno-long-double is
+   disabled on Mac OSX 10.6
  - Patch #4254: special tags/features for ATLAS in GaudiPolicy
 
 ! 2010-07-08 - Charles Leggett
