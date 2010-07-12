@@ -31,6 +31,7 @@ class GAUDI_API GaudiException: virtual public std::exception {
                                            const GaudiException&   ge ) ;
   friend inline MsgStream&    operator<< ( MsgStream&    os ,
                                            const GaudiException*  pge ) ;
+  friend class StatusCode;
 
 public:
   /** Constructor (1)
@@ -45,7 +46,7 @@ public:
     , m_tag        ( Tag        )
     , m_code       ( Code       )
     , m_previous   (     0      )
-    {}
+    { s_proc = true; }
 
   /** Constructor (2)
       @param Message error message
@@ -78,6 +79,7 @@ public:
     , m_code       ( Code       )
     , m_previous   (     0      )
     {
+      s_proc = true;
       m_message += ": " + System::typeinfoName(typeid(Exception)) + ", " +
                    Exception.what();
     }
@@ -85,6 +87,7 @@ public:
   /// Copy constructor (deep copying!)
   GaudiException( const GaudiException& Exception ) : std::exception(Exception)
   {
+    s_proc     = true;
     m_message  =   Exception.message() ;
     m_tag      =   Exception.tag    () ;
     m_code     =   Exception.code   () ;
@@ -94,7 +97,9 @@ public:
 
   /// destructor (perform the deletion of "previous" field!)
   virtual ~GaudiException() throw() {
+    m_code.setChecked();
     if( 0 != m_previous ) { delete m_previous ; m_previous = 0 ; }
+    s_proc = false;
   }
 
   /// assignment operator
@@ -168,6 +173,7 @@ protected:
   mutable std::string     m_tag     ;  /// exception tag
   mutable StatusCode      m_code    ;  /// status code for exception
   mutable GaudiException* m_previous;  /// "previous" element in the linked list
+  static bool             s_proc;
 };
 
 /// overloaded printout to std::ostream

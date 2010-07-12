@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-07-12 - Charles Leggett
+ - Patch #4216: Don't check StatusCode when GaudiException is thrown
+
 ! 2010-06-25 - Charles Leggett
  - Patch #4215: updates to THistSvc
    - expanded interface to get all hists/trees in a file/dir

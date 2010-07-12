@@ -32,7 +32,7 @@ const IssueSeverity& StatusCode::severity() const {
 StatusCode::~StatusCode() {
   if(s_checking) {
 
-    if (!m_checked ) {
+    if (!m_checked && !GaudiException::s_proc) {
 
       SmartIF<IMessageSvc> msg(Gaudi::svcLocator());
 
