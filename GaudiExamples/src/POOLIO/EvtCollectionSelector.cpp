@@ -81,7 +81,7 @@ namespace Gaudi
         sc = nt->item ( "Track" , m_track ) ;
         if ( !sc.isSuccess() ) {
           std::cerr << "EvtCollectionSelector: initialize " << sc << std::endl;
-          std::cerr << "TrkMom" << std::endl;
+          std::cerr << "Track" << std::endl;
           return sc;
         }
 
