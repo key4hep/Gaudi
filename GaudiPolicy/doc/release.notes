@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-07-12 - Charles Leggett
+ - Patch #4254: special tags/features for ATLAS in GaudiPolicy
+
 ! 2010-07-08 - Charles Leggett
  - Inserted override of the library_no_static for Unix and CMT v1r21. This is to cure
    bug #69427 where the .stamp file is missing with the env variable PEDANTIC set.
