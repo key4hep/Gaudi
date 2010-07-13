@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-07-13 - Hubert Degaudenzi
+ - Added protection against directories which are not listable in StripPath.
+
 ! 2010-07-12 - Charles Leggett
  - Patch #4260: small change in the way -Wno-long-double is
    disabled on Mac OSX 10.6
