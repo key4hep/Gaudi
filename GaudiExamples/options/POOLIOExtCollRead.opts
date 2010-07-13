@@ -1,4 +1,4 @@
-// $Id: POOLIOExtCollRead.opts,v 1.4 2008/01/30 17:06:49 marcocle Exp $ 
+// $Id: POOLIOExtCollRead.opts,v 1.4 2008/01/30 17:06:49 marcocle Exp $
 // ============================================================================
 // CVS tag $Name:  $, version $Revision: 1.4 $
 // ============================================================================
@@ -21,7 +21,7 @@ FileCatalog.Catalogs  += { "xmlcatalog_file:POOLIO.xml"    } ;
 // ============================================================================
 EventSelector.Input = {
   // new:
-  "COLLECTION='Fill/MyCOL1' DATAFILE='PFN:POOLIO.etags' TYP='POOL_ROOT' SEL='(Ntrack>9 && Ntrack<20 && Energy<180)' FUN='Gaudi::Examples::EvtCollectionSelector'"
+  "COLLECTION='Fill/MyCOL1' DATAFILE='PFN:POOLIO.etags' TYP='POOL_ROOT' SEL='(Ntrack>9 && Ntrack<20 && Energy<180)' FUN='Gaudi::Examples::EvtExtCollectionSelector'"
   ,
   // old:
   "COLLECTION='Dir1/Dir2/Dir3/Collection' DATAFILE='PFN:POOLIO.tags' TYP='POOL_ROOT' SEL='(Ntrack>15)' FUN='Gaudi::Examples::EvtCollectionSelector'"
@@ -35,5 +35,5 @@ ApplicationMgr.EvtMax       = -1 ;
 EventSelector.PrintFreq    = 100;
 
 // ============================================================================
-// The END 
+// The END
 // ============================================================================

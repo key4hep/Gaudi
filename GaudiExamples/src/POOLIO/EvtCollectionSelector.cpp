@@ -43,7 +43,9 @@ namespace Gaudi
     protected:
       NTuple::Item<int>                       m_ntrack ;
       NTuple::Array<float>                    m_trkMom ;
+#ifndef NO_TRKMOMFIX
       NTuple::Array<float>                    m_trkMomFixed ;
+#endif
       NTuple::Item<Gaudi::Examples::MyTrack*> m_track  ;
       int                                     m_cut    ;
     public:
@@ -63,14 +65,14 @@ namespace Gaudi
           std::cerr << "TrkMom" << std::endl;
           return sc;
         }
-
+#ifndef NO_TRKMOMFIX
         sc = nt->item ( "TrkMomFix" , m_trkMomFixed ) ;
         if ( !sc.isSuccess() ) {
           std::cerr << "EvtCollectionSelector: initialize " << sc << std::endl;
           std::cerr << "TrkMomFix" << std::endl;
           return sc;
         }
-
+#endif
         sc = nt->item ( "Ntrack" , m_ntrack ) ;
         if ( !sc.isSuccess() ) {
           std::cerr << "EvtCollectionSelector: initialize " << sc << std::endl;
@@ -97,17 +99,19 @@ namespace Gaudi
                   << "\t -> Momenta(Var): ";
         for ( int i = 0 ; i < std::min ( 5 , n ) ; ++i )
         { std::cout << "[" << i << "]=" << m_trkMom[i] << " "; }
+#ifndef NO_TRKMOMFIX
         std::cout << std::endl
                   << System::typeinfoName ( typeid ( *this ) )
                   << "\t -> Momenta(Fix): ";
         for ( int i = 0 ; i < std::min ( 5 , n ) ; ++i )
         { std::cout << "[" << i << "]=" << m_trkMomFixed[i] << " "; }
-        std::cout << std::endl;
         for ( int i = 5 ; i < 99; ++i )   {
           if ( m_trkMomFixed[i] != 0.f ) {
             std::cout << "[" << i << "]= Error in Fixed momentum" << std::endl;
           }
         }
+#endif
+        std::cout << std::endl;
         std::cout << System::typeinfoName ( typeid ( *this ) ) ;
         if ( 0 != *m_track )
         {

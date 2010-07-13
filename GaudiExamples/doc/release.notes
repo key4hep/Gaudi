@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2010-07-13 - Markus Frank
+ - Patch #4212: Fix to POOLIOextColl tests
+
 ! 2010-06-24 - Markus Frank
  - Patch #4212: Adapt POOLIO tests to check event tag collection bug
    in case address column is booked AFTER arrays/matrices.
