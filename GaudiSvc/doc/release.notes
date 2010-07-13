@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2010-07-13 - Marco Clemencic
+ - Fixed a bug in InputCopyStream when no input items where specified.
+
 ! 2010-06-25 - Charles Leggett
  - Patch #4215: updates to THistSvc
    - setting max file size of output to 10Gb (user definable)

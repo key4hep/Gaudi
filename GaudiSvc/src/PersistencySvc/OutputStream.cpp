@@ -99,7 +99,7 @@ StatusCode OutputStream::initialize() {
     log << MSG::FATAL << "Unable to locate IDataProviderSvc interface of " << m_storeName << endmsg;
     return StatusCode::FAILURE;
   }
-  if ( !(m_itemNames.empty() && m_optItemNames.empty()) )  {
+  if ( hasInput() )  {
     StatusCode status = connectConversionSvc();
     if( !status.isSuccess() )   {
       log << MSG::FATAL << "Unable to connect to conversion service." << endmsg;
@@ -583,4 +583,8 @@ bool OutputStream::isEventAccepted( ) const  {
     }
   }
   return result;
+}
+
+bool OutputStream::hasInput() const {
+  return !(m_itemNames.empty() && m_optItemNames.empty());
 }

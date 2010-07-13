@@ -117,11 +117,13 @@ protected:
   DataStoreItem* findItem(const std::string& path);
   /// Select the different objects and write them to file
   virtual StatusCode writeObjects();
-  
+
   ///should I fire incidents for writing opening/closing etc?
   bool m_fireIncidents;
-  
-  
+
+  /// Tell if the instance has been configured with input items or not.
+  virtual bool hasInput() const;
+
 public:
   /// Initialize OutputStream
 	virtual StatusCode initialize();

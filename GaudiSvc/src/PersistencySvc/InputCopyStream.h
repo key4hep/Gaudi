@@ -21,7 +21,7 @@ class IDataStoreLeaves;
 class InputCopyStream : public OutputStream {
 public:
   /// Standard algorithm Constructor
-  InputCopyStream(const std::string& name, ISvcLocator* pSvcLocator); 
+  InputCopyStream(const std::string& name, ISvcLocator* pSvcLocator);
   /// Standard Destructor
   virtual ~InputCopyStream();
 
@@ -40,6 +40,15 @@ private:
 
   /// Pointer to the (public) tool used to retrieve the objects in a file.
   IDataStoreLeaves *m_leavesTool;
+
+protected:
+
+  /// Overriden from the base class (InputCopyStream has always input).
+  virtual bool hasInput() const
+  {
+    return true;
+  }
+
 };
 
 #endif // GAUDISVC_PERSISTENCYSVC_INPUTCOPYSTREAM_H
