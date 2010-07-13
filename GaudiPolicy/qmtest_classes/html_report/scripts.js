@@ -108,7 +108,7 @@ function updateSummary(summary) {
 				.append($("<td/>").attr("align", "right").text(counter[result_type]))
 				.append("<td>(</td>")
 				.append($("<td/>").attr("align", "right").text(Math.round(counter[result_type] / total * 100)))
-				.append("<td>)</td>")
+				.append("<td>%)</td>")
 				.append($("<td/>").text("tests " + result_type)).addClass(result_type)
 				);
 		}
