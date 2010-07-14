@@ -90,7 +90,7 @@ def main():
             svn("cp", "%s/trunk/cmt" % proj, ptagdir + "/cmt").wait()
 
         # prepare package tags
-        tag_re = re.compile(r"^v(\d+)r(\d+)(?:p(\d+))$")
+        tag_re = re.compile(r"^v(\d+)r(\d+)(?:p(\d+))?$")
         for p in packages:
             tag = packages[p]
             pktagdir = "%s/tags/%s/%s" % (proj, p, tag)
@@ -119,10 +119,11 @@ def main():
                 pktagdir = "%s/tags/%s/%s" % (proj, p, tag)
                 svn("cp", pktagdir, "%s/%s" % (ptagdir, p)).wait()
 
-        svn("ci").wait()
+        # svn("ci").wait()
 
     finally:
-        shutil.rmtree(tempdir, ignore_errors = True)
+        print tempdir
+        # shutil.rmtree(tempdir, ignore_errors = True)
 
     return 0
 
