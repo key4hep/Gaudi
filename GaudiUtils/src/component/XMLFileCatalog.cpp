@@ -142,6 +142,7 @@ namespace {
       m.find("The values for attribute 'ID' must be names or name tokens")!=string::npos   ||
       m.find("for attribute 'name' must be Name or Nmtoken")!=string::npos                 ||
       m.find("for attribute 'ID' must be Name or Nmtoken")!=string::npos                   ||
+      m.find("for attribute 'name' is invalid Name or NMTOKEN value")!=string::npos        ||
       m.find("for attribute 'ID' is invalid Name or NMTOKEN value")!=string::npos      )
       return;
     string sys(_toString(e.getSystemId()));

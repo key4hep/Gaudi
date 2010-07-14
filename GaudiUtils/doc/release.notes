@@ -1,6 +1,9 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2010-07-14 - Marco Clemencic
+ - Another small fix for Xerces-C 3.1.
+
 ! 2010-05-27 - Chris Jones
  - Patch #4045: Utilities to set histogram axis and bin labels for GaudiUtils
 
@@ -150,10 +153,10 @@ Package manager : Marco Clemencic
 
 ! 2009-02-06 - Marco Clemencic
  - Moved the implementation of the methods addRef and release to the templated
-   base class implements<> (avoids duplication). 
+   base class implements<> (avoids duplication).
 
 ! 2009-01-30 - Marco Clemencic
- - Replaced all the occurrences of endreq with endmsg. 
+ - Replaced all the occurrences of endreq with endmsg.
 
 ! 2009-01-29 - Marco Clemencic
  - Symbol visibility
@@ -178,7 +181,7 @@ Package manager : Marco Clemencic
     * GaudiUtils/NamedRange.h
     * src/Lib/Range.cpp
    The light representation of containers through the par of iterators.
-   The files are copied (and renamed) from LoKi project. 
+   The files are copied (and renamed) from LoKi project.
 
 ! 2008-10-03 - Vanya Belyaev
  - Patch #1943. Added update handler to MultiFileCatalog.Catalogs
@@ -195,24 +198,24 @@ Package manager : Marco Clemencic
      clashes with IService::start.
 
 ================ GaudiUtils v1r6 ====================================
-! 2008-04-03 - Vanya BELYAEV 
+! 2008-04-03 - Vanya BELYAEV
  - Patch #1749. Improve some printout of the histogram.
    The default width of "ID" and the "title" fields are incremented to improve
-   the printout. 
+   the printout.
    Also more coherent treatment of HistoStats is performed to minimize the
    cross references.
 
 ! 2008-04-03 - Markus Frank
- - Bug #33372 (Patch #1746). Memory leak in XmlFileCatalog. 
+ - Bug #33372 (Patch #1746). Memory leak in XmlFileCatalog.
    - Fix memory leak on transcoding XML strings during Xerces exception handling.
 
 ================ GaudiUtils v1r5 ====================================
 ! 2008-03-04 - Markus Frank
- - Patch #1722. 
+ - Patch #1722.
    - Fix dataset access by LFN. Was simply not working.
 
 ! 2008-02-21 - Markus Frank
- - patch #1700. Fix the filter mechanism to reduce the number of messages 
+ - patch #1700. Fix the filter mechanism to reduce the number of messages
    for inaccessible objects.
 
 ! 2008-02-11 - Markus Frank
@@ -232,9 +235,9 @@ Package manager : Marco Clemencic
 
 ! 2008-01-15 - Markus Frank
  - Patch #1622. Reduce printout level on unsuccessful catalog lookup.
-                (MultiFileCatalog) 
+                (MultiFileCatalog)
    An unsuccessful catalog lookup is not an error, but rather a normal operation
-   if e.g. the existence of a file should be checked. 
+   if e.g. the existence of a file should be checked.
 
 ! 2007-12-12 - Marco Clemencic
  - patch #1585.
@@ -242,7 +245,7 @@ Package manager : Marco Clemencic
 
 ================ GaudiUtils v1r3 ====================================
 ! 2007-10-21 - Markus Frank
- - Patch #1534. Fixed compilation warning which didn't appear on 
+ - Patch #1534. Fixed compilation warning which didn't appear on
    windows.
 
 ! 2007-10-19 - Markus Frank
@@ -252,15 +255,15 @@ Package manager : Marco Clemencic
 ================ GaudiUtils v1r2 ======================================
 ! 2007-09-19 - Vanya Belyaev
  - Fixed bug #29969 (Error compiling GaudiUtils/HistoTableFormat with gcc4.1)
- 	 
+
 ! 2007-09-19 - Vanya Belyaev
  - patch #1273.
    - GaudiUtils/HistoStats.h
       add new functions
       - meanErr
-      - rmsErr    
-      - kurtosisErr 
-      - skewnessErr 
+      - rmsErr
+      - kurtosisErr
+      - skewnessErr
       - momentErr
       - centralMomenErr
       rmsErr is more precise that ROOT, since ROOT neglects kurtosis.
@@ -273,17 +276,17 @@ Package manager : Marco Clemencic
 ! 2007-08-07 - Vanya BELYAEV
  Patch #1266:
  - GaudiUtils/HistoStats.h, src/Lib/HistoStats.cpp
-     new files with simple class Gaudi::Utils::HistoStats for evaluation 
-     of few basic statistical quantities for AIDA::historgams: 
-       - moments 
-       - central moments 
+     new files with simple class Gaudi::Utils::HistoStats for evaluation
+     of few basic statistical quantities for AIDA::historgams:
+       - moments
+       - central moments
        - skewness
-       - kurtosis 
-    The moments (and therefore all other quantities) are calculated on 
+       - kurtosis
+    The moments (and therefore all other quantities) are calculated on
     "bin-by-bin"-basis, since the corresponding cumulants needed
     for "event-by-event"-calculations are not available.
  - GaudiUtils/Aida2ROOT.h, src/Lib/Aida2ROOT.cpp
-   fix doxygen comments 
+   fix doxygen comments
 
 
 ================ GaudiUtils v1r1 ======================================
