@@ -119,11 +119,10 @@ def main():
                 pktagdir = "%s/tags/%s/%s" % (proj, p, tag)
                 svn("cp", pktagdir, "%s/%s" % (ptagdir, p)).wait()
 
-        # svn("ci").wait()
+        svn("ci").wait()
 
     finally:
-        print tempdir
-        # shutil.rmtree(tempdir, ignore_errors = True)
+        shutil.rmtree(tempdir, ignore_errors = True)
 
     return 0
 
