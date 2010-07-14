@@ -1,6 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v27r10 =============================
 ! 2010-07-12 - Charles Leggett
  - Patch #4216: Don't check StatusCode when GaudiException is thrown
 

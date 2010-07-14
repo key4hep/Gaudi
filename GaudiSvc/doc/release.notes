@@ -1,6 +1,7 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+============================== GaudiSvc v18r10 ===============================
 ! 2010-07-13 - Marco Clemencic
  - Fixed a bug in InputCopyStream when no input items where specified.
 

@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-  
+
   <title>Gaudi Release Notes</title>
   <script type="text/javascript" language="JavaScript">
 <!-- Work around for old browsers
@@ -37,6 +37,112 @@ Package: GaudiRelease<br>
 Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
+<!-- ====================================================================== -->
+<h2><a name="v21r10">Gaudi v21r10</a> (2010-07-14)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=58d">LCGCMT_58d</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Improved support for Mac OSX 10.6<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed issues with CMT for Atlas<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v10r8):
+<ul>
+<li>Fixes/improvements to PathStripper<br/>
+    (<span class="author">Hubert Degaudenzi, Marco Clemencic</span>)</li>
+<li>Improvements to the QMTest HTML output<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v27r10):
+<ul>
+<li>Patch #4216: Don't check StatusCode when GaudiException is thrown<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Patch #4215: updates to THistSvc (includes patch #3447)<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Patch #4211: Fix bug in data length calculation for fixed
+                length ntuple items arrays/matrices<br/>
+    (<span class="author">Markus Frank</span>)</li>
+<li>Fixed bug #67543: InputCopyStream copies data not defined in its OptItemList<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed bug #66973: Removed the copy constructor of SharedObjectsContainer<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed bug #66454: Fixing Converter::service_i<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fix to bug #68555: getting const services<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Patch #3677: Iteration over map-like containers in python<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+<li>Fixed bug #64571: Python 2.6 warnings<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiSvc (v18r10):
+<ul>
+<li>Patch #4215: updates to THistSvc (includes patch #3447)<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Fixed bug #67543: InputCopyStream copies data not defined in its OptItemList<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Patch #3683: Ignore unchecked StatusCodes in xxxDict.so libraries<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiUtils (v3r9):
+<ul>
+<li>Adepted to work with Xerces-C 3.1.x (as well as 2.8.0).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Patch #4045: Utilities to set histogram axis and bin labels for GaudiUtils<br/>
+    (<span class="author">Chris Jones</span>)</li>
+</ul>
+</li>
+<li>GaudiPoolDb (v5r9):
+<ul>
+<li>Patch #4210: Fix bug when reading event tag collections<br/>
+    (<span class="author">Markus Frank</span>)</li>
+</ul>
+</li>
+<li>GaudiAlg (v13r3):
+<ul>
+<li>Patch #4044: Fix for bug #66397 and task #13911<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+</ul>
+</li>
+<li>GaudiPython (v10r10):
+<ul>
+<li>Patch #4207: Allow creation of new C++ algorithms from GaudiPython<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+<li>Patch #4044: Fix for bug #66397 and task #13911<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+<li>Patch #3677: Iteration over map-like containers in python<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+<li>Fixed bug #64571: Python 2.6 warnings<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Re-introduce the usage of the exit handler to finalize the application when
+   exiting from Python<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v21r10):
+<ul>
+<li>Patch #4212: Fix to POOLIOextColl tests<br/>
+    (<span class="author">Markus Frank</span>)</li>
+<li>Patch #4212: Adapt POOLIO tests to check event tag collection bug
+   in case address column is booked AFTER arrays/matrices<br/>
+    (<span class="author">Markus Frank</span>)</li>
+<li>Patch #3683: Ignore unchecked StatusCodes in xxxDict.so libraries<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiRelease (v21r10):
+<ul>
+<li>Added the new python modules packages to the list of LHCb extra packages<br/>
+    (<span class="author">Marco CLemencic</span>)</li>
+</ul>
+</li>
+</ul>
 <!-- ====================================================================== -->
 <h2><a name="v21r9">Gaudi v21r9</a> (2010-04-23)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=58c">LCGCMT_58c</a></h3>
@@ -414,7 +520,7 @@ Purpose: Gaudi common set of packages<br><br>
     <p>The creation of the archives cannot be disabled, but the plain directories
     are always accessible and can be used instead of the archives using the CMT
     tag <tt>no-pyzip</tt>, for example to do some debugging.</p>
-    <p>More details in the <a href="#GaudiPolicy_v10r2_pyzip">notes of GaudiPolicy</a>.</p> 
+    <p>More details in the <a href="#GaudiPolicy_v10r2_pyzip">notes of GaudiPolicy</a>.</p>
     (<span class="author">Marco Clemencic</span>)</li>
 <li>Disabled the creation of static libraries (<tt>-no_static</tt>). Available
     since cmt v1r20p20090520.<br/>
@@ -485,7 +591,7 @@ Purpose: Gaudi common set of packages<br><br>
     become a problem with very large projects. A merge feature would be welcome,
     but it has to allow also the removal of the files that have been removed from
     the original python directory (a la install.py). Note that the current
-    implementation of the module "zipfile" does not allow replacement or removal.</p>     
+    implementation of the module "zipfile" does not allow replacement or removal.</p>
     <p>This, implicitly, addresses bug #39868 because the .pyc files are
     automatically generated during the zipping step to be included in the .zip
     file.</p>
@@ -508,7 +614,7 @@ cfgs.MyConf
 <pre>
 import Gaudi.Configurables
 Gaudi.Configurables.ignoreMissingConfigurables = True
-</pre>   
+</pre>
     (done by default in genconfuser.py for backward compatibility).</p>
     (<span class="author">Marco Clemencic</span>)</li>
 </ul>

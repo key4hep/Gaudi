@@ -1,6 +1,7 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+============================== GaudiUtils v3r9 ===============================
 ! 2010-07-14 - Marco Clemencic
  - Another small fix for Xerces-C 3.1.
 

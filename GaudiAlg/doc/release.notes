@@ -1,6 +1,7 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+=============================== GaudiAlg v13r3 ===============================
 ! 2010-05-27 - Vanya Belyaev
  - Patch #4044: Fix for bug #66397 and task #13911
    src/GaudiSequencer.cpp

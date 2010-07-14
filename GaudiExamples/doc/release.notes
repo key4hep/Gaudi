@@ -1,6 +1,7 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v21r10 ============================
 ! 2010-07-13 - Markus Frank
  - Patch #4212: Fix to POOLIOextColl tests
 

@@ -1,6 +1,7 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+================================ Gaudi v21r10 ================================
 ! 2010-06-23 - Marco Clemencic
  - Minor fix in Configuration.getConfigurable.
 

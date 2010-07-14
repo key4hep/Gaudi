@@ -1,6 +1,7 @@
 Package: GaudiPoolDb
 Package Manager: Markus Frank, Marco Clemencic
 
+============================== GaudiPoolDb v5r9 ==============================
 ! 2010-06-24 - Markus Frank
   - Patch #4210: Fix bug when reading event tag collections
     If the address column is booked AFTER arrays/matrices,
