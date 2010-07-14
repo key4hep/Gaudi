@@ -14,7 +14,7 @@ _req_version_pattern = re.compile(r"^\s*version\s*(v[0-9]+r[0-9]+(?:p[0-9]+)?)\s
 def extract_version(f):
     """
     Find the version number in a requirements file.
-    """ 
+    """
     global _req_version_pattern
     for l in open(f):
         m = _req_version_pattern.match(l)
@@ -48,25 +48,25 @@ def dirname(url):
 def svn_exists(url):
     d,b = url.rsplit("/", 1)
     l = [x.rstrip("/") for x in svn_ls(d)]
-    return b in l 
+    return b in l
 
 def checkout_structure(url, proj):
     def checkout_level(base):
         dirs = ["%s/%s" % (base, d) for d in svn_ls(base) if d.endswith("/")]
         apply(svn, ["up", "-N"] + dirs).wait()
         return dirs
-    
+
     root = basename(url)
     svn("co","-N", url, root).wait()
     old_dir = os.getcwd()
     os.chdir(root)
-    svn("up", "-N", proj).wait() 
+    svn("up", "-N", proj).wait()
     for base in [proj, proj + "/trunk"]:
         checkout_level(base)
     checkout_level(proj + "/tags")
     os.chdir(old_dir)
     return root
-    
+
 def main():
     use_pre = len(sys.argv) > 1 and 'pre' in  sys.argv
     url = "svn+ssh://svn.cern.ch/reps/gaudi"
@@ -79,17 +79,18 @@ def main():
         os.chdir(tempdir)
         # prepare repository structure (and move to its top level)
         os.chdir(checkout_structure(url, proj))
-        
+
         # note that the project does not have "-pre"
         pvers = "%s_%s" % (proj.upper(), packages[container])
-        
+
         # prepare project tag
         ptagdir = "%s/tags/%s/%s" % (proj, proj.upper(), pvers)
         if not svn_exists(ptagdir):
             svn("mkdir", ptagdir).wait()
             svn("cp", "%s/trunk/cmt" % proj, ptagdir + "/cmt").wait()
-        
+
         # prepare package tags
+        tag_re = re.compile(r"^v(\d+)r(\d+)(?:p(\d+))$")
         for p in packages:
             tag = packages[p]
             pktagdir = "%s/tags/%s/%s" % (proj, p, tag)
@@ -101,6 +102,12 @@ def main():
                 if use_pre:
                     pktagdir += "-pre"
                 svn("cp", "%s/trunk/%s" % (proj, p), pktagdir).wait()
+                # Atlas type of tag
+                tagElements = tag_re.match(tag)
+                if tagElements:
+                    tagElements = "-".join([ "%02d" % int(el or "0") for el in tagElements.groups() ])
+                    pktagdir = "%s/tags/%s/%s-%s" % (proj, p, p, tagElements)
+                    svn("cp", "%s/trunk/%s" % (proj, p), pktagdir).wait()
             else:
                 if not no_tag:
                     svn("up", "-N", pktagdir).wait() # needed for the copy in the global tag
@@ -111,9 +118,9 @@ def main():
                 tag = packages[p]
                 pktagdir = "%s/tags/%s/%s" % (proj, p, tag)
                 svn("cp", pktagdir, "%s/%s" % (ptagdir, p)).wait()
-        
+
         svn("ci").wait()
-        
+
     finally:
         shutil.rmtree(tempdir, ignore_errors = True)
 

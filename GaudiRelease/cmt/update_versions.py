@@ -12,7 +12,7 @@ _req_version_pattern = re.compile(r"^\s*version\s*(v[0-9]+r[0-9]+(?:p[0-9]+)?)\s
 def extract_version(f):
     """
     Find the version number in a requirements file.
-    """ 
+    """
     global _req_version_pattern
     for l in open(f):
         m = _req_version_pattern.match(l)
@@ -24,8 +24,8 @@ def change_version(packagedir, newversion):
     """
     Compare the version of the package with the new one and update the package if
     needed.
-    
-    Returns true if the package have been modified. 
+
+    Returns true if the package have been modified.
     """
     global _req_version_pattern
     changed = False
@@ -65,7 +65,7 @@ def extract_recent_rel_notes(filename):
     notes = []
     state = "searching"
     for l in open(filename):
-        # looking for the first changelog entry 
+        # looking for the first changelog entry
         if state == "searching":
             if changelog_entry.match(l):
                 state = "found"
@@ -88,7 +88,7 @@ def add_release_separator_bar(filename, pkg, version):
     out = []
     found = False
     for l in open(filename):
-        # looking for the first changelog entry 
+        # looking for the first changelog entry
         if not found:
             if changelog_entry.match(l):
                 out.append(separator)
@@ -101,7 +101,7 @@ def add_release_separator_bar(filename, pkg, version):
         print "Warning: could not update release.notes in %s" % pkg
 
 def main():
-    
+
     # Find the version of LCGCMT
     m = re.search("use\s*LCGCMT\s*LCGCMT_(\S*)",open(os.path.join("..","..","cmt","project.cmt")).read())
     if m:
@@ -109,8 +109,8 @@ def main():
         print "Using LCGCMT", LCGCMTVers
     else:
         print "Cannot find LCGCMT version"
-        sys.exit(1)  
-    
+        sys.exit(1)
+
     # Collect all the packages in the project with their directory
     # (I want to preserve the order that cmt broadcast gives)
     all_packages_tmp = []
@@ -127,7 +127,7 @@ def main():
     # Ask for the version of the project
     old_version = extract_version("requirements")
     new_version = raw_input("The old version of the project is %s, which is the new one? " % old_version)
-    
+
     old_versions = {}
     release_notes = {}
     new_versions = {}
@@ -144,7 +144,7 @@ def main():
             new_versions[pkg] = new_version
         else:
             if release_notes[pkg]:
-                new_versions[pkg] = raw_input("\nThe old version of %s is %s, this are the changes:\n%s\nWhich version you want? " % (pkg, old_versions[pkg], release_notes[pkg]))
+                new_versions[pkg] = raw_input("\nThe old version of %s is %s, this are the changes:\n%s\nWhich version you want (old is %s)? " % (pkg, old_versions[pkg], release_notes[pkg], old_versions[pkg]))
             else:
                 new_versions[pkg] = old_versions[pkg]
         # update infos
