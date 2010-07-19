@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2010-07-19 - Marco Clemencic
+ - Fixed a warning introduced with patch #4215 (appearing only on SLC4).
+
 ============================== GaudiSvc v18r10 ===============================
 ! 2010-07-13 - Marco Clemencic
  - Fixed a bug in InputCopyStream when no input items where specified.
