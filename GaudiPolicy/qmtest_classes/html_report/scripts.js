@@ -148,17 +148,14 @@ function updateResults(summary) {
 						.append(test_data["id"]))
 					.append(": ");
 				var outcome_el = $("<span/>").addClass(outcome)
-						.append(outcome);
-				if (test_data["cause"]) {
-					outcome_el.attr("title", test_data["cause"])
-					.addClass("with_tooltip");
-				}
+						.text(outcome);
 				it_res.append(outcome_el);
-				var fields_el = $("<div/>").addClass("fields").hide();
 				if (test_data["cause"]) {
-					fields_el.append($("<div/>").addClass("cause")
-						.append(test_data["cause"]));
+					it_res.append(" ")
+					      .append($("<span/>").addClass("cause")
+							      .text(test_data["cause"]));
 				}
+				var fields_el = $("<div/>").addClass("fields").hide();
 				// Add the list of available fields for the test.
 				var fields = summary[i]["fields"];
 				var sublist = $("<ul/>");

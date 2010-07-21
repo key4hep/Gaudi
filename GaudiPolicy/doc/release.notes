@@ -1,6 +1,11 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-07-21 - Marco Clemencic
+ - Improvements to the QMTest HTML output:
+   cause of the failure written just after the result message, so that it is
+   visible without having to click.
+
 ============================= GaudiPolicy v10r8 ==============================
 ! 2010-07-13 - Hubert Degaudenzi
  - Added protection against directories which are not listable in StripPath.
