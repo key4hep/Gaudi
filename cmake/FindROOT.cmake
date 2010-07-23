@@ -1,6 +1,6 @@
 INCLUDE(Configuration)
 
-SET(ROOT_native_version ${ROOT_config_version})
+SET(ROOT_native_version ${ROOT_config_version}_python${Python_config_version_twodigit})
 SET(ROOT_base ${LCG_releases}/ROOT/${ROOT_native_version})
 SET(ROOT_home ${ROOT_base}/${LCG_platform}/root)
 

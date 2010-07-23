@@ -195,7 +195,7 @@ ENDFUNCTION()
 #---GAUDI_INSTALL_CONFIGURATION
 ##############################
 FUNCTION(GAUDI_INSTALL_CONFIGURATION)  
-  INSTALL(DIRECTORY genConf/ DESTINATION python 
+  INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/genConf/ DESTINATION python 
           PATTERN "*.stamp" EXCLUDE
           PATTERN "*.pyc" EXCLUDE )
   GAUDI_INSTALL_PYTHON_INIT()  
@@ -285,7 +285,7 @@ FUNCTION( GAUDI_BUILD_PROJECT_SETUP )
 
   #----Get the setup fro each external package
   GET_PROPERTY(found_packages GLOBAL PROPERTY PACKAGES_FOUND)
-  MESSAGE("Found packages = ${found_packages}")
+  #MESSAGE("Found packages = ${found_packages}")
   FOREACH( package ${found_packages} )
     GAUDI_BUILD_PACKAGE_SETUP( ${setup} ${package} "${${package}_environment}")
   ENDFOREACH()
@@ -299,7 +299,6 @@ FUNCTION( GAUDI_BUILD_PROJECT_SETUP )
       GET_FILENAME_COMPONENT(directory ${path} NAME)
       STRING(TOUPPER ${directory} DIRECTORY)
       SET( ${directory}_environment ${${directory}_environment} ${DIRECTORY}ROOT=${path})
-      MESSAGE("DIR --> ${${directory}_environment}")
       GAUDI_BUILD_PACKAGE_SETUP( ${setup} ${directory} "${${directory}_environment}")
     ENDIF()
   ENDFOREACH()
