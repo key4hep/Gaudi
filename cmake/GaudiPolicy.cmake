@@ -1,13 +1,30 @@
 CMAKE_POLICY(SET CMP0003 NEW) # See "cmake --help-policy CMP0003" for more details
 CMAKE_POLICY(SET CMP0011 NEW) # See "cmake --help-policy CMP0011" for more details
 
+SET(CMAKE_VERBOSE_MAKEFILES ON)
 SET(CMAKE_CXX_COMPILER g++)
+
 # Compilation Flags
-SET(CMAKE_CXX_FLAGS "-D_GNU_SOURCE -Dlinux -Dunix -pipe -ansi -Wall -Wextra -pthread  -Wno-deprecated -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long")
+SET(CMAKE_CXX_FLAGS "-D_GNU_SOURCE -Dunix -pipe -ansi -Wall -Wextra -pthread  -Wno-deprecated -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long")
+IF (CMAKE_SYSTEM_NAME MATCHES Linux) 
+  SET(CMAKE_CXX_FLAGS "-Dlinux ${CMAKE_CXX_FLAGS}")
+ENDIF()
 
 # Link shared flags
-SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000")
+IF (CMAKE_SYSTEM_NAME MATCHES Linux) 
+  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000")
+ENDIF()
 
+IF(APPLE)
+   SET(CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS} -flat_namespace -single_module -undefined dynamic_lookup")
+   SET(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -flat_namespace -single_module -undefined dynamic_lookup")
+ENDIF()
+
+IF(APPLE)
+  SET(ld_library_path DYLD_LIBRARY_PATH)
+ELSE()
+  SET(ld_library_path LD_LIBRARY_PATH)
+ENDIF() 
 
 FIND_PROGRAM(python_cmd python)
 SET(merge_rootmap_cmd ${python_cmd} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/merge_files.py)
@@ -50,7 +67,13 @@ MACRO(REFLEX_GENERATE_DICTIONARY dictionary _headerfiles _selectionfile)
       ARGS ${headerfiles} -o ${gensrcdict} ${gccxmlopts} ${rootmapopts} --select=${selectionfile}
            --gccxmlpath=${GCCXML_home}/bin ${include_dirs}
       DEPENDS ${headerfiles} ${selectionfile})  
-  ELSE ()    
+  ELSE () 
+    ADD_CUSTOM_COMMAND(
+      OUTPUT ${gensrcdict}       
+      COMMAND ${ROOT_genreflex_cmd}       
+      ARGS ${headerfiles} -o ${gensrcdict} ${gccxmlopts} ${rootmapopts} --select=${selectionfile}
+           --gccxmlpath=${GCCXML_home}/bin ${include_dirs}
+      DEPENDS ${headerfiles} ${selectionfile})     
   ENDIF ()
 ENDMACRO()
 
@@ -60,6 +83,9 @@ ENDMACRO()
 FUNCTION(REFLEX_BUILD_DICTIONARY dictionary headerfiles selectionfile libraries)  
   REFLEX_GENERATE_DICTIONARY(${dictionary} ${headerfiles} ${selectionfile})
   ADD_LIBRARY(${dictionary}Dict SHARED ${gensrcdict})
+  IF (APPLE) 
+    SET_TARGET_PROPERTIES(${dictionary}Dict PROPERTIES SUFFIX .so)
+  ENDIF()
   TARGET_LINK_LIBRARIES(${dictionary}Dict ${libraries} )
   INSTALL(TARGETS ${dictionary}Dict LIBRARY DESTINATION lib)
   INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${rootmapname} DESTINATION lib)
@@ -69,13 +95,23 @@ ENDFUNCTION()
 #---SET_RUNTIME_PATH
 ##############################
 MACRO( SET_RUNTIME_PATH var)
-  SET( ${var} )
-  FOREACH(p ${GAUDI_LIBRARY_DIRS})
-   IF( ${var} )
-     SET(${var} ${${var}}:${p})
-   ELSE()
-     SET(${var} ${p})
-   ENDIF()
+  SET( runtime_dirs ${GAUDI_LIBRARY_DIRS})
+  GET_PROPERTY(found_packages GLOBAL PROPERTY PACKAGES_FOUND)
+  FOREACH( package ${found_packages} )
+     FOREACH( env ${${package}_environment})
+         IF(env MATCHES "LD_LIBRARY_PATH[+]=.*")
+            STRING(REGEX REPLACE "LD_LIBRARY_PATH[+]=(.+)" "\\1"  val ${env})
+            SET(runtime_dirs ${val} ${runtime_dirs})
+         ENDIF()
+     ENDFOREACH()
+  ENDFOREACH()
+  #MESSAGE("runtime_dirs --> ${runtime_dirs}")
+  FOREACH(p ${runtime_dirs})
+    IF( ${var} )
+      SET(${var} ${${var}}:${p})
+    ELSE()
+      SET(${var} ${p})
+    ENDIF()
   ENDFOREACH()
 ENDMACRO()
 
@@ -86,9 +122,12 @@ FUNCTION(GAUDI_GENERATE_ROOTMAP library)
   FIND_PACKAGE(ROOT)
   SET(rootmapfile ${library}.rootmap)
   SET(fulllibname lib${library}.so)
-  ADD_CUSTOM_COMMAND(
-    TARGET ${library} POST_BUILD
-    COMMAND LD_LIBRARY_PATH=.:${ROOT_LIBRARY_DIRS}:$ENV{LD_LIBRARY_PATH} ${ROOT_genmap_cmd} -i ${fulllibname} -o ${rootmapfile} )
+  SET_RUNTIME_PATH(ld_path)
+  ADD_CUSTOM_COMMAND( OUTPUT ${rootmapfile}
+                      COMMAND ${ld_library_path}=.:${ld_path}:$ENV{${ld_library_path}} ${ROOT_genmap_cmd} -i ${fulllibname} -o ${rootmapfile} 
+                      DEPENDS ${library} )
+  ADD_CUSTOM_TARGET( ${library}Rootmap ALL DEPENDS  ${rootmapfile})
+  #----Installation details-------------------------------------------------------
   SET(mergedRootMap ${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_PROJECT_NAME}.rootmap)
   SET(srcRootMap ${CMAKE_CURRENT_BINARY_DIR}/${library}.rootmap)
   INSTALL(CODE "EXECUTE_PROCESS(COMMAND ${merge_rootmap_cmd} --do-merge --input-file ${srcRootMap} --merged-file ${mergedRootMap})")
@@ -109,19 +148,27 @@ FUNCTION(GAUDI_GENERATE_CONFIGURATION library)
   SET(confAuditor ConfigurableAuditor)
   SET(confService ConfigurableService)
   SET_RUNTIME_PATH(ld_path)
-  ADD_CUSTOM_COMMAND(
-    TARGET ${library} POST_BUILD
-    COMMAND LD_LIBRARY_PATH=.:${ld_path}:$ENV{LD_LIBRARY_PATH} ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package} 
-	    --configurable-module=${confModuleName}
+  IF( TARGET GaudiSvc)
+	  SET(GaudiSvc_dependency GaudiSvc)
+  ENDIF()
+  ADD_CUSTOM_COMMAND( 
+    OUTPUT ${outdir}/${library}_confDb.py
+    COMMAND ${ld_library_path}=.:${ld_path}:$ENV{${ld_library_path}} ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package} 
+						--configurable-module=${confModuleName}
             --configurable-default-name=${confDefaultName}
             --configurable-algorithm=${confAlgorithm}
- 	    --configurable-algtool=${confAlgTool}
- 	    --configurable-auditor=${confAuditor}
+ 	    	 		--configurable-algtool=${confAlgTool}
+ 	    			--configurable-auditor=${confAuditor}
             --configurable-service=${confService}
-            -i lib${library}.so )
+            -i lib${library}.so 
+    DEPENDS ${library} ${GaudiSvc_dependency} )
+  ADD_CUSTOM_TARGET( ${library}Conf ALL DEPENDS  ${outdir}/${library}_confDb.py )
+  #----Installation details-------------------------------------------------------
   SET(mergedConf ${CMAKE_INSTALL_PREFIX}/python/${CMAKE_PROJECT_NAME}_merged_confDb.py)
   SET(srcConf ${outdir}/${library}_confDb.py)
+  INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/genConf/ DESTINATION python PATTERN "*.stamp" EXCLUDE PATTERN "*.pyc" EXCLUDE )
   INSTALL(CODE "EXECUTE_PROCESS(COMMAND ${merge_conf_cmd} --do-merge --input-file ${srcConf} --merged-file ${mergedConf})")
+  GAUDI_INSTALL_PYTHON_INIT()  
 ENDFUNCTION()
 
 ##############################
@@ -140,6 +187,7 @@ FUNCTION(GAUDI_LINKER_LIBRARY library sources )
   ADD_LIBRARY( ${library} ${lib_srcs})
   SET_TARGET_PROPERTIES(${library} PROPERTIES COMPILE_FLAGS -DGAUDI_LINKER_LIBRARY)
   TARGET_LINK_LIBRARIES(${library} ${ARGN})
+  #----Installation details-------------------------------------------------------
   INSTALL(TARGETS ${library} LIBRARY DESTINATION lib)
 ENDFUNCTION()
 
@@ -152,12 +200,12 @@ FUNCTION(GAUDI_COMPONENT_LIBRARY library sources )
     FILE(GLOB files src/${fp})
     SET( lib_srcs ${lib_srcs} ${files})
   ENDFOREACH()
-  ADD_LIBRARY( ${library} ${lib_srcs})
-  TARGET_LINK_LIBRARIES(${library} ${ARGN})
+  ADD_LIBRARY( ${library} MODULE ${lib_srcs})
   GAUDI_GENERATE_ROOTMAP(${library})
   GAUDI_GENERATE_CONFIGURATION(${library})
+  TARGET_LINK_LIBRARIES(${library} ${ARGN})
+  #----Installation details-------------------------------------------------------
   INSTALL(TARGETS ${library} LIBRARY DESTINATION lib)
-  GAUDI_INSTALL_CONFIGURATION()
 ENDFUNCTION()
 
 ##############################
@@ -170,8 +218,8 @@ FUNCTION(GAUDI_EXECUTABLE executable sources)
     SET( exe_srcs ${exe_srcs} ${files})
   ENDFOREACH()
   ADD_EXECUTABLE( ${executable} ${exe_srcs})
-
   TARGET_LINK_LIBRARIES(${executable} ${ARGN} )
+  #----Installation details-------------------------------------------------------
   INSTALL(TARGETS ${executable} RUNTIME DESTINATION bin)
 ENDFUNCTION()
 
@@ -188,17 +236,6 @@ FUNCTION(GAUDI_INSTALL_HEADERS)
   FOREACH( inc ${dirs})  
     INSTALL(DIRECTORY ${inc} DESTINATION include PATTERN ".svn" EXCLUDE )
   ENDFOREACH()
-ENDFUNCTION()
-
-
-##############################
-#---GAUDI_INSTALL_CONFIGURATION
-##############################
-FUNCTION(GAUDI_INSTALL_CONFIGURATION)  
-  INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/genConf/ DESTINATION python 
-          PATTERN "*.stamp" EXCLUDE
-          PATTERN "*.pyc" EXCLUDE )
-  GAUDI_INSTALL_PYTHON_INIT()  
 ENDFUNCTION()
 
 ##############################
@@ -222,7 +259,6 @@ FUNCTION(GAUDI_INSTALL_PYTHON_INIT)
                                TYPE FILE 
                                FILES \"${GAUDI_SOURCE_DIR}/GaudiPolicy/cmt/fragments/__init__.py\"  )
                 ENDIF()" )
-  #INSTALL(CODE "EXECUTE_PROCESS(COMMAND ${python_cmd} -m compileall  ${CMAKE_INSTALL_PREFIX}/python/${package})")
 ENDFUNCTION()
 
 
@@ -235,7 +271,6 @@ FUNCTION(GAUDI_INSTALL_SCRIPTS)
                            GROUP_EXECUTE GROUP_READ 
           PATTERN ".svn" EXCLUDE
           PATTERN "*.pyc" EXCLUDE )
-  #INSTALL(CODE "EXECUTE_PROCESS(COMMAND ${python_cmd} -m compileall  ${CMAKE_INSTALL_PREFIX}/scripts)")
 ENDFUNCTION()
 
 ################################
@@ -257,7 +292,12 @@ MACRO( GAUDI_USE_PACKAGE package )
   FIND_PACKAGE(${package})
   #DEFINE_PROPERTY(GLOBAL PROPERTY ${package}_environment)
   #SET_PROPERTY(GLOBAL PROPERTY "${package}_environment"  ${${package}_environment})
-  SET(${package}_environment  ${${package}_environment} PARENT_SCOPE)
+  GET_PROPERTY(parent DIRECTORY PROPERTY PARENT_DIRECTORY)
+  IF(parent)
+    SET(${package}_environment  ${${package}_environment} PARENT_SCOPE)
+  ELSE()
+    SET(${package}_environment  ${${package}_environment} )
+  ENDIF()
 ENDMACRO()
 
 ################################

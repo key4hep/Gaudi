@@ -8,4 +8,5 @@ SET(Python_INCLUDE_DIRS ${Python_home}/include/python${Python_config_version_two
 SET(Python_LIBRARY_DIRS ${Python_home}/lib)
 SET(Python_LIBRARIES python${Python_config_version_twodigit} util pthread)
 
-SET(Python_environment LD_LIBRARY_PATH+=${Python_home}/lib)
+SET(Python_environment LD_LIBRARY_PATH+=${Python_home}/lib
+                       PATH+=${Python_home}/bin)

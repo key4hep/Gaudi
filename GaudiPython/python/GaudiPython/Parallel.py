@@ -393,7 +393,7 @@ class CollectHistograms( PyAlgorithm ) :
 # The Reader
 # ===========================================================================================
 
-class Reader( ) :
+class Reader(object) :
     def __init__( self, inq, commonQueue, rstatq, qToParent, workers, config, qLimit, _app ) :
         self.inq       = inq
         self.c         = config
@@ -496,7 +496,7 @@ class Reader( ) :
 # The Worker
 # ===========================================================================================
 
-class Worker( ) :
+class Worker(object) :
     def __init__( self, wid, inq, cq, outq, cstatq, qToParent, nprocs, config, qLimit, _app, itemlist=None ) :
 
         # wid      : an integer (0...Nworkers-1) identifying the worker
@@ -658,7 +658,7 @@ class Worker( ) :
 # The Writer
 # ===========================================================================================
 
-class Writer( ) :
+class Writer(object) :
     def __init__( self, common_queue, out_qList, cstatq, rstatq, qToParent, workers, config, qLimit, _app ) :
         self.qList     = out_qList
         self.cq        = common_queue
