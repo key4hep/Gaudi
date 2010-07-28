@@ -1,6 +1,9 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+! 2010-07-28 - Marco Clemencic
+ - Added dependency on pytools to be able to use Gaudi.Parallel.
+
 ================================ Gaudi v21r10 ================================
 ! 2010-06-23 - Marco Clemencic
  - Minor fix in Configuration.getConfigurable.

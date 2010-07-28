@@ -1,6 +1,10 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+! 2010-07-28 - Marco CLemencic
+ - Remove the dependencies on pyqt and pyqt_compat, and adde the dependency on
+   Qt (for the LHCb distribution).
+
 ! 2010-07-14 - Marco CLemencic
  - Small updates for the scripts to prepare the release.
 

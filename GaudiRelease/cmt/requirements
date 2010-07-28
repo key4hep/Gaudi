@@ -4,7 +4,7 @@
 package GaudiRelease
 
 version v21r10
-branches doc cmt 
+branches doc cmt
 
 # CMT and Gaudi policy
 use GaudiPolicy	   v10r8
@@ -65,8 +65,6 @@ apply_pattern LHCb_external pkg=RELAX
 apply_pattern LHCb_external pkg=sqlite
 apply_pattern LHCb_external pkg=HepMC
 apply_pattern LHCb_external pkg=oracle
-apply_pattern LHCb_external pkg=pyqt
-apply_pattern LHCb_external_cond pkg=pyqt_compat except=target-winxp
 apply_pattern LHCb_external pkg=QMtest
 apply_pattern LHCb_external pkg=CppUnit
 apply_pattern LHCb_external pkg=processing
@@ -77,6 +75,7 @@ apply_pattern LHCb_external pkg=cx_oracle
 apply_pattern LHCb_external pkg=pytools
 apply_pattern LHCb_external pkg=pyanalysis
 apply_pattern LHCb_external pkg=pygraphics
+apply_pattern LHCb_external pkg=Qt
 #apply_pattern LHCb_external pkg=
 
 # -- LHCbGrid external packages --
@@ -91,5 +90,5 @@ macro libunwind_native_version "$(libunwind_native_version)" LHCb&target-winxp "
 macro sip_native_version "$(sip_native_version)" LHCb&target-winxp ""
 
 
-# Allow the generation of QMTest summary 
+# Allow the generation of QMTest summary
 apply_pattern QMTestSummarize
