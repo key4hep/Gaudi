@@ -3,8 +3,7 @@
 # @author Pere Mato, CERN
 ###########################################
 
-INCLUDE_DIRECTORIES( ${GAUDI_INCLUDE_DIRS} ) 
-LINK_DIRECTORIES( ${GAUDI_LIBRARY_DIRS} ) 
+GAUDI_USE_PACKAGE(GaudiKernel)
 
 #---Component Library
 

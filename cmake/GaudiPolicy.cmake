@@ -2,6 +2,7 @@ CMAKE_POLICY(SET CMP0003 NEW) # See "cmake --help-policy CMP0003" for more detai
 CMAKE_POLICY(SET CMP0011 NEW) # See "cmake --help-policy CMP0011" for more details
 
 SET(CMAKE_VERBOSE_MAKEFILES ON)
+SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 SET(CMAKE_CXX_COMPILER g++)
 
 # Compilation Flags
@@ -55,11 +56,12 @@ MACRO(REFLEX_GENERATE_DICTIONARY dictionary _headerfiles _selectionfile)
   SET(rootmapname ${dictionary}Dict.rootmap)
   SET(rootmapopts --rootmap=${rootmapname} --rootmap-lib=lib${dictionary}Dict)
 
+  SET(include_dirs -I${CMAKE_CURRENT_SOURCE_DIR})
   GET_DIRECTORY_PROPERTY(_incdirs INCLUDE_DIRECTORIES)
   FOREACH ( d ${_incdirs})    
    SET(include_dirs ${include_dirs} -I${d})
-  ENDFOREACH() 
-
+  ENDFOREACH()
+ 
   IF (CMAKE_SYSTEM_NAME MATCHES Linux)    
     ADD_CUSTOM_COMMAND(
       OUTPUT ${gensrcdict}       
@@ -82,10 +84,7 @@ ENDMACRO()
 ##############################
 FUNCTION(REFLEX_BUILD_DICTIONARY dictionary headerfiles selectionfile libraries)  
   REFLEX_GENERATE_DICTIONARY(${dictionary} ${headerfiles} ${selectionfile})
-  ADD_LIBRARY(${dictionary}Dict SHARED ${gensrcdict})
-  IF (APPLE) 
-    SET_TARGET_PROPERTIES(${dictionary}Dict PROPERTIES SUFFIX .so)
-  ENDIF()
+  ADD_LIBRARY(${dictionary}Dict MODULE ${gensrcdict})
   TARGET_LINK_LIBRARIES(${dictionary}Dict ${libraries} )
   INSTALL(TARGETS ${dictionary}Dict LIBRARY DESTINATION lib)
   INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${rootmapname} DESTINATION lib)
@@ -289,14 +288,24 @@ ENDFUNCTION()
 #---GAUDI_USE_PACKAGE
 ################################
 MACRO( GAUDI_USE_PACKAGE package )
-  FIND_PACKAGE(${package})
-  #DEFINE_PROPERTY(GLOBAL PROPERTY ${package}_environment)
-  #SET_PROPERTY(GLOBAL PROPERTY "${package}_environment"  ${${package}_environment})
-  GET_PROPERTY(parent DIRECTORY PROPERTY PARENT_DIRECTORY)
-  IF(parent)
-    SET(${package}_environment  ${${package}_environment} PARENT_SCOPE)
+  IF( EXISTS ${CMAKE_SOURCE_DIR}/${package}/CMakeLists.txt)
+    INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/${package} ) 
+    FILE(READ ${CMAKE_SOURCE_DIR}/${package}/CMakeLists.txt file_contents)
+    STRING( REGEX MATCHALL "GAUDI_USE_PACKAGE[ ]*[(][ ]*([^ )])+" vars ${file_contents})
+    FOREACH( var ${vars})
+      STRING(REGEX REPLACE "GAUDI_USE_PACKAGE[ ]*[(][ ]*([^ )])" "\\1" p ${var})
+      GAUDI_USE_PACKAGE(${p})
+    ENDFOREACH()
   ELSE()
-    SET(${package}_environment  ${${package}_environment} )
+    FIND_PACKAGE(${package})
+    GET_PROPERTY(parent DIRECTORY PROPERTY PARENT_DIRECTORY)
+    IF(parent)
+      SET(${package}_environment  ${${package}_environment} PARENT_SCOPE)
+    ELSE()
+      SET(${package}_environment  ${${package}_environment} )
+    ENDIF()
+    INCLUDE_DIRECTORIES( ${${package}_INCLUDE_DIRS} ) 
+    LINK_DIRECTORIES( ${${package}_LIBRARY_DIRS} ) 
   ENDIF()
 ENDMACRO()
 

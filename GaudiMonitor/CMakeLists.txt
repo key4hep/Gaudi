@@ -3,9 +3,7 @@
 # @author Pere Mato, CERN
 ###############################################
 
-
-INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR} ${GAUDI_INCLUDE_DIRS} ) 
-LINK_DIRECTORIES(${GAUDI_LIBRARY_DIRS})
+GAUDI_USE_PACKAGE(GaudiKernel)
 
 #---Component Library
 GAUDI_COMPONENT_LIBRARY( GaudiMonitor "DataListenerSvc/*.cpp;Dll/GaudiMonitor*.cpp"

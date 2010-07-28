@@ -4,9 +4,8 @@
 ###########################################
 
 GAUDI_USE_PACKAGE(CLHEP)
+GAUDI_USE_PACKAGE(GaudiKernel)
 
-INCLUDE_DIRECTORIES( ${GAUDI_INCLUDE_DIRS} ${CLHEP_INCLUDE_DIRS} ) 
-LINK_DIRECTORIES( ${GAUDI_LIBRARY_DIRS} ${CLHEP_LIBRARY_DIRS} ) 
 
 SET( srcs AlgContextSvc/*.cpp 
           ApplicationMgr/*.cpp 
@@ -32,10 +31,11 @@ SET( srcs AlgContextSvc/*.cpp
           FastContainersSvc/*.cpp
           VFSSvc/*.cpp
           Dll/GaudiSvc*.cpp )
-#---Component Library
 
+#---Component Library
 GAUDI_COMPONENT_LIBRARY(GaudiSvc "${srcs}" GaudiKernel ${ROOT_LIBRARIES} Hist RIO Tree ${CLHEP_LIBRARIES})
 
+#---This is needed by SET_RUNTIME_PATH() :-(
 SET( GAUDI_LIBRARY_DIRS ${GAUDI_LIBRARY_DIRS} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE )
 
 
