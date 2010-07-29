@@ -47,50 +47,50 @@ struct Helper {
   }
   // Provided for backward compatibility
   static IAlgorithm* algorithm
-  ( IAlgManager*       algmgr           , 
+  ( IAlgManager*       algmgr           ,
     const std::string& name             ,
     const bool         createIf = false )
   {
     return algmgr->algorithm(name, createIf).get();
   }
   // ==========================================================================
-  static DataObject* dataobject ( IDataProviderSvc*  dpsvc , 
-                                  const std::string& path  ) 
+  static DataObject* dataobject ( IDataProviderSvc*  dpsvc ,
+                                  const std::string& path  )
   {
     DataObject* o;
     if ( dpsvc->retrieveObject(path,o).isSuccess() ) return o;
     else return 0;
-  } 
+  }
   // ==========================================================================
   /** simple wrapper for IDataProviderSvc::findObject
    *  The methdod does NOT trigger the loading the object from tape or Data-On-Demand action
    *  @see IDataProviderSvc
    *  @see IDataProviderSvc::findObject
-   *  @param psvc (INPUT) pointer to Data ProviderService 
-   *  @param path the full path in TES 
-   *  @return the object 
+   *  @param psvc (INPUT) pointer to Data ProviderService
+   *  @param path the full path in TES
+   *  @return the object
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2009-10-09
    */
   static GAUDI_API DataObject* findobject
-  ( IDataProviderSvc*  dpsvc , 
+  ( IDataProviderSvc*  dpsvc ,
     const std::string& path  ) ;
   // ==========================================================================
-  /** the generic function to get object from TES 
+  /** the generic function to get object from TES
    *  @see IDataProviderSvc
    *  @see IDataProviderSvc::findObject
    *  @see IDataProviderSvc::retriveObject
-   *  @param psvc       (INPUT) pointer to Data ProviderService 
-   *  @param path the full path in TES 
+   *  @param psvc       (INPUT) pointer to Data ProviderService
+   *  @param path the full path in TES
    *  @param rerieve    (INPUT) retrieve or find object ?
-   *  @param disableDoD (INPUT) disable 'on-demand-actions' ? 
+   *  @param disableDoD (INPUT) disable 'on-demand-actions' ?
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2009-10-09
    */
   static GAUDI_API DataObject* getobject
-  ( IDataProviderSvc*  dpsvc               , 
-    const std::string& path                ,  
-    const bool         retrieve    = true  , 
+  ( IDataProviderSvc*  dpsvc               ,
+    const std::string& path                ,
+    const bool         retrieve    = true  ,
     const bool         disableDoD  = false ) ;
   // ==========================================================================
   static IAlgTool* tool(IToolSvc* toolsvc, const std::string& type, const std::string& name, IInterface* p, bool cif ) {
@@ -183,8 +183,8 @@ public:
 #endif
    type.tp_as_sequence  = &meth;
    PyObject* buf = PyBuffer_FromReadWriteMemory( ptr, size*sizeof(T) );
-   Py_INCREF( &type );
    buf->ob_type = &type;
+   Py_INCREF( buf->ob_type );
    return buf;
   }
   static PyObject* toIntArray    ( void* ptr, Py_ssize_t size ) { return toArray( (int*)    ptr , size ); }
