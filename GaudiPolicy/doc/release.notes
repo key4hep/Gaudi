@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-07-29 - Marco Clemencic
+ - Fixed a problem in the generation of Eclipse debug launchers from QMTest and
+   adapted them to CDT 7 (Eclipse Helios, 3.6).
+
 ! 2010-07-21 - Marco Clemencic
  - Improvements to the QMTest HTML output:
    cause of the failure written just after the result message, so that it is
