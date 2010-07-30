@@ -29,6 +29,7 @@ SET(GSL_config_version             1.10)
 SET(Boost_config_version           1.42.0)
 SET(Boost_file_version             1_42)
 SET(HepPDT_config_version          2.06.01)
+SET(HepMC_config_version           2.03.11)
 
 SET(py_config_version              1.2.1)
 SET(pydot_config_version           1.0.2)

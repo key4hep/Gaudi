@@ -22,7 +22,6 @@ set(CMAKE_MODULE_PATH
     ${GAUDI_SOURCE_DIR}/cmake
     ${CMAKE_MODULE_PATH})
 
-set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/InstallArea )
 #
 # Common includes
 #
@@ -42,7 +41,10 @@ ADD_SUBDIRECTORY(GaudiPoolDb)
 ADD_SUBDIRECTORY(PartPropSvc)
 ADD_SUBDIRECTORY(RootHistCnv)
 ADD_SUBDIRECTORY(GaudiExamples)
+ADD_SUBDIRECTORY(GaudiPolicy)
 ADD_SUBDIRECTORY(Gaudi)
+
+INSTALL(DIRECTORY cmake/ DESTINATION cmake)
 
 # Global actions for the project
 GAUDI_USE_PACKAGE(QMtest)

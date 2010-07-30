@@ -14,9 +14,9 @@ SET( srcs AlgContextSvc/*.cpp
           EventSelector/*.cpp
           ExceptionSvc/*.cpp
           DataSvc/*.cpp
-	  DetectorDataSvc/*.cpp
-	  HistogramSvc/*.cpp
-	  HistorySvc/*.cpp
+          DetectorDataSvc/*.cpp
+	        HistogramSvc/*.cpp
+	        HistorySvc/*.cpp
           IncidentSvc/*.cpp
           IssueLogger/*.cpp
           JobOptionsSvc/*.cpp

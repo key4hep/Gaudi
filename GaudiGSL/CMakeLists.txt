@@ -31,10 +31,6 @@ REFLEX_GENERATE_DICTIONARY( GaudiGSLMath
                             dict/GaudiGSLMath.xml
                             GaudiGSLLib )
 
-
-#---Set variables for clients!!
-#SET( GAUDI_INCLUDE_DIRS  ${CMAKE_CURRENT_SOURCE_DIR} ${GAUDI_INCLUDE_DIRS}  PARENT_SCOPE )
-
 #---Installation
 GAUDI_INSTALL_HEADERS(GaudiGSL GaudiMath)
 

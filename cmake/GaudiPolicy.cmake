@@ -1,6 +1,7 @@
 CMAKE_POLICY(SET CMP0003 NEW) # See "cmake --help-policy CMP0003" for more details
 CMAKE_POLICY(SET CMP0011 NEW) # See "cmake --help-policy CMP0011" for more details
 
+set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/InstallArea )
 SET(CMAKE_VERBOSE_MAKEFILES ON)
 SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 SET(CMAKE_CXX_COMPILER g++)
@@ -28,9 +29,16 @@ ELSE()
 ENDIF() 
 
 FIND_PROGRAM(python_cmd python)
-SET(merge_rootmap_cmd ${python_cmd} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/merge_files.py)
-SET(genconf_cmd ${CMAKE_BINARY_DIR}/GaudiKernel/genconf.exe)
-SET(merge_conf_cmd ${python_cmd} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/merge_files.py)
+IF(CMAKE_PROJECT_NAME STREQUAL GAUDI)
+  SET(merge_rootmap_cmd ${python_cmd} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/merge_files.py)
+  SET(merge_conf_cmd ${python_cmd} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/merge_files.py)
+  SET(genconf_cmd ${CMAKE_BINARY_DIR}/GaudiKernel/genconf.exe)
+ELSE()
+  SET(merge_rootmap_cmd ${python_cmd} ${GAUDI_installarea}/scripts/merge_files.py)
+  SET(merge_conf_cmd ${python_cmd} ${GAUDI_installarea}/scripts/merge_files.py)
+  SET(genconf_cmd ${GAUDI_installarea}/bin/genconf.exe)
+ENDIF()
+
 
 ##############################
 #---REFLEX_GENERATE_DICTIONARY
@@ -39,6 +47,7 @@ MACRO(REFLEX_GENERATE_DICTIONARY dictionary _headerfiles _selectionfile)
   FIND_PACKAGE(GCCXML)
   FIND_PACKAGE(ROOT)
 
+  SET(options ${ARGN})
   IF( IS_ABSOLUTE ${_selectionfile}) 
    SET( selectionfile ${_selectionfile})
   ELSE() 
@@ -64,14 +73,14 @@ MACRO(REFLEX_GENERATE_DICTIONARY dictionary _headerfiles _selectionfile)
  
   IF (CMAKE_SYSTEM_NAME MATCHES Linux)    
     ADD_CUSTOM_COMMAND(
-      OUTPUT ${gensrcdict}       
+      OUTPUT ${gensrcdict} ${rootmapname}     
       COMMAND ${ROOT_genreflex_cmd}       
       ARGS ${headerfiles} -o ${gensrcdict} ${gccxmlopts} ${rootmapopts} --select=${selectionfile}
-           --gccxmlpath=${GCCXML_home}/bin ${include_dirs}
+           --gccxmlpath=${GCCXML_home}/bin ${options} ${include_dirs}
       DEPENDS ${headerfiles} ${selectionfile})  
   ELSE () 
     ADD_CUSTOM_COMMAND(
-      OUTPUT ${gensrcdict}       
+      OUTPUT ${gensrcdict} ${rootmapname}      
       COMMAND ${ROOT_genreflex_cmd}       
       ARGS ${headerfiles} -o ${gensrcdict} ${gccxmlopts} ${rootmapopts} --select=${selectionfile}
            --gccxmlpath=${GCCXML_home}/bin ${include_dirs}
@@ -82,10 +91,10 @@ ENDMACRO()
 ##############################
 #---REFLEX_BUILD_DICTIONARY
 ##############################
-FUNCTION(REFLEX_BUILD_DICTIONARY dictionary headerfiles selectionfile libraries)  
+FUNCTION(REFLEX_BUILD_DICTIONARY dictionary headerfiles selectionfile )  
   REFLEX_GENERATE_DICTIONARY(${dictionary} ${headerfiles} ${selectionfile})
   ADD_LIBRARY(${dictionary}Dict MODULE ${gensrcdict})
-  TARGET_LINK_LIBRARIES(${dictionary}Dict ${libraries} )
+  TARGET_LINK_LIBRARIES(${dictionary}Dict ${ARGN} Reflex)
   INSTALL(TARGETS ${dictionary}Dict LIBRARY DESTINATION lib)
   INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${rootmapname} DESTINATION lib)
 ENDFUNCTION()
@@ -186,6 +195,9 @@ FUNCTION(GAUDI_LINKER_LIBRARY library sources )
   ADD_LIBRARY( ${library} ${lib_srcs})
   SET_TARGET_PROPERTIES(${library} PROPERTIES COMPILE_FLAGS -DGAUDI_LINKER_LIBRARY)
   TARGET_LINK_LIBRARIES(${library} ${ARGN})
+  IF(TARGET ${library}Obj2doth)
+    ADD_DEPENDENCIES( ${library} ${library}Obj2doth) 
+  ENDIF()
   #----Installation details-------------------------------------------------------
   INSTALL(TARGETS ${library} LIBRARY DESTINATION lib)
 ENDFUNCTION()
@@ -202,7 +214,7 @@ FUNCTION(GAUDI_COMPONENT_LIBRARY library sources )
   ADD_LIBRARY( ${library} MODULE ${lib_srcs})
   GAUDI_GENERATE_ROOTMAP(${library})
   GAUDI_GENERATE_CONFIGURATION(${library})
-  TARGET_LINK_LIBRARIES(${library} ${ARGN})
+  TARGET_LINK_LIBRARIES(${library} Reflex ${ARGN})
   #----Installation details-------------------------------------------------------
   INSTALL(TARGETS ${library} LIBRARY DESTINATION lib)
 ENDFUNCTION()
@@ -222,6 +234,20 @@ FUNCTION(GAUDI_EXECUTABLE executable sources)
   INSTALL(TARGETS ${executable} RUNTIME DESTINATION bin)
 ENDFUNCTION()
 
+##############################
+#---GAUDI_TEST
+##############################
+FUNCTION(GAUDI_TEST executable sources)
+  SET(exe_srcs)
+  FOREACH( fp ${sources})  
+    FILE(GLOB files ${fp})
+    SET( exe_srcs ${exe_srcs} ${files})
+  ENDFOREACH()
+  ADD_EXECUTABLE( ${executable} ${exe_srcs})
+  TARGET_LINK_LIBRARIES(${executable} ${ARGN} )
+  #----Installation details-------------------------------------------------------
+  INSTALL(TARGETS ${executable} RUNTIME DESTINATION bin/tests)
+ENDFUNCTION()
 
 ##############################
 #---GAUDI_INSTALL_HEADERS
