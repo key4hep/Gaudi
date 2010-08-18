@@ -1,6 +1,14 @@
 Package : ParticleProp
 Package manager : Charles Leggett
 
+! 2010-08-18 - Charles Leggett
+ - Patch #4323: allow user defined heavy ion handling in PartPropSvc
+   - change way jobOpts handled: now assign type with each file
+   - make log member var
+   - allow user to specify UnknownParticleHandler function
+   - instantiate PDT on first use, not before
+   - PartPropSvc.cpp: handle heavy ions
+
 ============================= PartPropSvc v3r3 ===============================
 ! 2010-04-20 - Marco Clemencic
  - Removed ICC warnings and remarks.
@@ -28,7 +36,7 @@ Package manager : Charles Leggett
  - Patch #2790: Rename the namespace MSG to Msg
 
 ! 2009-01-30 - Marco Clemencic
- - Replaced all the occurrences of endreq with endmsg. 
+ - Replaced all the occurrences of endreq with endmsg.
 
 ! 2009-01-22 - Marco Clemencic
  - Adapted to the new IInterface functionalities (see GaudiKernel release.notes)
@@ -36,7 +44,7 @@ Package manager : Charles Leggett
 ================ PartPropSvc v2r7 ====================================
 ! 20081028 Marco Clemencic
  - Removed extra "-lHepPID" from link options (already included in the LCG
-   interface package). 
+   interface package).
 
 ================ PartPropSvc v2r6 =========================================
 ! 20070605 Paolo Calafiura
@@ -56,10 +64,10 @@ Package manager : Charles Leggett
  - moved PartPropSvc.h to src/
 
 ! 20070202 Hubert Degaudenzi
- - added missing library (CLHEP-HepPDT) in the CLHEP_linkopts macro 
+ - added missing library (CLHEP-HepPDT) in the CLHEP_linkopts macro
    (in the private section for the moment).
  - commented out the "apply_pattern install_runtime".
- 
+
 ================ PartPropSvc v2r3p1 =========================================
 ! 20040910 Charles Leggett
  - src/PartPropSvc.cpp: uses PathResolver to locate PDT files

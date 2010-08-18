@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-08-18 - Charles Leggett
+ - Patch #4323: allow user defined heavy ion handling in PartPropSvc
+
 ============================= GaudiKernel v27r10 =============================
 ! 2010-07-12 - Charles Leggett
  - Patch #4216: Don't check StatusCode when GaudiException is thrown

@@ -2,6 +2,8 @@
 #define GAUDIEXAMPLES_PARTPROPEXA_H 1
 
 #include "GaudiKernel/Algorithm.h"
+#include "HepPDT/ProcessUnknownID.hh"
+#include "HepPDT/CommonParticleData.hh"
 
 class IPartPropSvc;
 
@@ -19,5 +21,17 @@ private:
 
 };
 
+namespace HepPDT {
+class TestUnknownID : public ProcessUnknownID {
+public:
+  TestUnknownID() {}
+
+  virtual 
+  CommonParticleData *processUnknownID( ParticleID, 
+					const ParticleDataTable & pdt );
+
+};
+
+}
 
 #endif // GAUDIEXAMPLES_PARTPROPEXA_H

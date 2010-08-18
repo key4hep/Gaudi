@@ -13,8 +13,10 @@ ApplicationMgr.TopAlg = { "PartPropExa"};
 
 MessageSvc.OutputLevel      = 1;
 
-PartPropSvc.InputType = "PDG";
-PartPropSvc.InputFile = { "PartPropSvc/PDGTABLE.MeV" };
+//PartPropSvc.InputType = "PDG";
+//PartPropSvc.InputFile = { "PartPropSvc/PDGTABLE.MeV" };
+PartPropSvc.InputFile = "PartPropSvc/PDGTABLE.MeV=PDG";
+
 
 //--------------------------------------------------------------
 // Event related parameters

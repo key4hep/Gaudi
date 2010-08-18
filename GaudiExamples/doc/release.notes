@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2010-08-18 - Charles Leggett
+ - Patch #4323: allow user defined heavy ion handling in PartPropSvc
+
 ============================ GaudiExamples v21r10 ============================
 ! 2010-07-13 - Markus Frank
  - Patch #4212: Fix to POOLIOextColl tests

@@ -29,7 +29,14 @@ StatusCode PartPropExa::initialize() {
     return StatusCode::FAILURE;
   }
 
+  m_pps->setUnknownParticleHandler(new HepPDT::TestUnknownID, "My Unknwon PID Test");
+
+  log << MSG::INFO << "this should cause a warning: " << endmsg;
+  m_pps->setUnknownParticleHandler(new HepPDT::TestUnknownID, "Second Unknwon PID Test");
+
   HepPDT::ParticleDataTable *pdt = m_pps->PDT();
+
+  m_pps->setUnknownParticleHandler(new HepPDT::TestUnknownID, "Third Unknwon PID Test");
 
   std::ostringstream ost;
   pdt->writeParticleData( ost );
@@ -57,3 +64,36 @@ StatusCode PartPropExa::finalize() {
   return StatusCode::SUCCESS;
 
 }
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+namespace HepPDT {
+
+CommonParticleData* 
+TestUnknownID::processUnknownID
+              ( ParticleID key, const ParticleDataTable & pdt ) { 
+
+  std::cout << "TestUnknownID: " << key.PDTname() << std::endl;
+
+  CommonParticleData * cpd = 0;
+  if( key.isNucleus() ) {
+    
+    // have to create a TempParticleData with all properties first
+    TempParticleData tpd(key);
+    // calculate approximate mass
+    // WARNING: any calls to particle() from here MUST reference 
+    //          a ParticleData which is already in the table
+    // This convention is enforced.
+    const ParticleData * proton = pdt.particle(2212);
+    if( proton ) {
+      double protonMass = proton->mass();
+      tpd.tempMass = Measurement(key.A()*protonMass, 0.);
+      // now create CommonParticleData
+      cpd = new CommonParticleData(tpd);
+    }
+  }
+  return cpd;
+};
+
+}
+
