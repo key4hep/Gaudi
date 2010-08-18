@@ -1,6 +1,9 @@
 Package: GaudiMonitor
 Package manager : Marco Clemencic
 
+! 2010-08-18 - Marco Clemencic
+ - Fixed a bug spotted by Coverity (BAD_FREE).
+
 ============================= GaudiMonitor v2r5 ==============================
 ! 2010-01-28 - Marco Clemencic
  - Removed a couple of leftovers from the removal of _dll.cpp and _load.cpp.
@@ -38,7 +41,7 @@ Package manager : Marco Clemencic
  - Patch #2790: Rename the namespace MSG to Msg
 
 ! 2009-01-30 - Marco Clemencic
- - Replaced all the occurrences of endreq with endmsg. 
+ - Replaced all the occurrences of endreq with endmsg.
 
 ! 2009-01-22 - Marco Clemencic
  - Adapted to the new IInterface functionalities (see GaudiKernel release.notes)
