@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-08-19 - Marco Clemencic
+ - Minor fix in SmartDataPtr.h to allow code analysis with Coverity.
+ - Fix for ICC in GaudiKernel/StreamBuffer.h.
+
 ! 2010-08-18 - Charles Leggett
  - Patch #4323: allow user defined heavy ion handling in PartPropSvc
 

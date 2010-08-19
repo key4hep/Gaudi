@@ -20,12 +20,12 @@
     residing in data stores.
 
       The class constructors take several arguments neccessary to be passed
-    tyo the data services in order to automatically load objects in case 
-    they are not yet loaded. This is achieved through a smart pointer 
-    mechanism i.e. by overloading the operator->() at dereferencing time 
+    tyo the data services in order to automatically load objects in case
+    they are not yet loaded. This is achieved through a smart pointer
+    mechanism i.e. by overloading the operator->() at dereferencing time
     the the object will be requested from the store.
 
-      The SmartDataPtr is meant to be "short living". It only makes 
+      The SmartDataPtr is meant to be "short living". It only makes
     sense to keep an object instance within e.g. the scope of one method.
     "long living" instances do not make sense and in the contrary
     would be harmful, because the information passed during construction
@@ -47,13 +47,13 @@ template<class TYPE> class SmartDataPtr : public SmartDataStorePtr<TYPE, SmartDa
 public:
 
   /// unhides assignment operator of base class
-#ifndef __ICC
-  // icc doesn't like this line, it fails with
+#if !defined(__ICC) && !defined(__COVERITY__)
+  // icc and Coverity do not like this line, they fail with
   // SmartDataPtr.h(147): internal error: assertion failed: add_symbol_to_overload_list:
   //   symbol not in symbol header list (shared/edgcpfe/symbol_tbl.c, line 4804)
   using SmartDataStorePtr<TYPE, SmartDataObjectPtr::ObjectLoader>::operator=;
 #endif
-  /** Standard constructor: Construct an SmartDataPtr instance which is 
+  /** Standard constructor: Construct an SmartDataPtr instance which is
                             able to connect to a DataObject instance
                             which is identified by its parent object and
                             the path relative to the parent.
@@ -66,20 +66,20 @@ public:
   {
   }
 
-  /** Standard constructor: Construct an SmartDataPtr instance which is 
+  /** Standard constructor: Construct an SmartDataPtr instance which is
                             able to connect to a DataObject instance
                             which is identified by its directory entry.
                             *** FASTEST ACCESS TO THE DATA STORE ***
       @param  pService      Pointer to the data service interface which
                             should be used to load the object.
-      @param  pDirectory    Pointer to the data directory entry. 
+      @param  pDirectory    Pointer to the data directory entry.
   */
   SmartDataPtr(IDataProviderSvc* pService, IRegistry* pDirectory)
     : SmartDataStorePtr<TYPE,SmartDataObjectPtr::ObjectLoader>( pService,pDirectory,"")
   {
   }
-  
-  /** Standard constructor: Construct an SmartDataPtr instance which is 
+
+  /** Standard constructor: Construct an SmartDataPtr instance which is
                             able to connect to a DataObject instance
                             which is identified by its parent object and
                             the path relative to the parent.
@@ -97,22 +97,22 @@ public:
       this->m_pRegistry = pObject->registry();
     }
   }
-  
-  /** Standard constructor: Construct an SmartDataPtr instance which is 
+
+  /** Standard constructor: Construct an SmartDataPtr instance which is
                             able to connect to a DataObject instance
                             which is identified by its parent object and
                             the path relative to the parent.
                             The path is meant to address only ONE level,
                             multiple path layers are invalid.
       @param  refObject     Smart Pointer to the parent object.
-      @param  pDirectory    Pointer to the data directory entry. 
+      @param  pDirectory    Pointer to the data directory entry.
   */
   SmartDataPtr(SmartDataObjectPtr& refObject, IRegistry* pDirectory)
     : SmartDataStorePtr<TYPE,SmartDataObjectPtr::ObjectLoader>( refObject.service(), pDirectory, "")
   {
   }
-  
-  /** Standard constructor: Construct an SmartDataPtr instance which is 
+
+  /** Standard constructor: Construct an SmartDataPtr instance which is
                             able to connect to a DataObject instance
                             which is identified by its parent object and
                             the path relative to the parent.
@@ -125,7 +125,7 @@ public:
     : SmartDataStorePtr<TYPE,SmartDataObjectPtr::ObjectLoader>( refObject.service(), refObject.directory(), path)
   {
   }
-  
+
   /** Copy constructor: Construct an copy of a SmartDataPtr instance.
       @param  copy          Copy Smart Pointer to object.
   */

@@ -9,6 +9,7 @@
 #include <iostream>
 #include <cstring>
 #include <cstdlib>
+#include <typeinfo>
 
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/swab.h"
@@ -29,10 +30,10 @@ class ContainedObject;
     data can be stored in the buffer, but also pointers to DataObjects
     (symbolic links) and pointers to contained objects. Automatically during
     serialization the persistent references to the corresponding objects
-    and containers must be stored. These objects are accessible 
+    and containers must be stored. These objects are accessible
     from the StreamBuffer object.
 
-    "On the fly" data conversion to non persistent 
+    "On the fly" data conversion to non persistent
 
     @author   M.Frank
 */
@@ -168,7 +169,7 @@ protected:
 
   /// Flag indicating swapping
   bool             m_swapEnabled;
-  
+
   /// Container with links to contained objects
   ContainedLinks   m_containedLinks;
 
@@ -203,10 +204,10 @@ protected:
   }
 public:
   /// Standard constructor
-  StreamBuffer(bool do_swap=true) : 
-    m_mode(UNINITIALIZED), 
-    m_pointer(0), 
-    m_length(0), 
+  StreamBuffer(bool do_swap=true) :
+    m_mode(UNINITIALIZED),
+    m_pointer(0),
+    m_length(0),
     m_buffer(0),
     m_swapEnabled(do_swap)
   {
@@ -231,7 +232,7 @@ public:
   /// Reserve buffer space; Default: 16 k buffer size
   void reserve(long len)   {
     if ( len > m_length )   {
-      m_length = (len < 16384) ? 16384 : len; 
+      m_length = (len < 16384) ? 16384 : len;
       m_buffer = (char*)::realloc (m_buffer,m_length);
     }
   }
@@ -274,7 +275,7 @@ public:
     m_containedLinks.erase (m_containedLinks.begin(), m_containedLinks.end());
     m_identifiedLinks.erase(m_identifiedLinks.begin(),m_identifiedLinks.end());
   }
-  
+
   /// Get stream buffer state
   bool isReading()    const     {
     return m_mode == READING;
@@ -355,126 +356,126 @@ public:
 // But we can easily live without it!
 #undef IMPLEMENT_STREAMER
 
-  ///  Output Streamer                              
-  StreamBuffer& operator<<(longlong   data)     {                       
-    swapToBuffer(&data, sizeof(data));                              
-    STREAM_ANALYSE(data, sizeof(data));                             
-    return *this;                                                   
-  }                                                                 
-  ///  Input Streamer                                   
-  StreamBuffer& operator>>(longlong & data)     {                       
-    swapFromBuffer(&data, sizeof(data));                            
-    return *this;                                                   
+  ///  Output Streamer
+  StreamBuffer& operator<<(longlong   data)     {
+    swapToBuffer(&data, sizeof(data));
+    STREAM_ANALYSE(data, sizeof(data));
+    return *this;
   }
-  ///  Output Streamer                              
-  StreamBuffer& operator<<(int   data)     {                       
-    swapToBuffer(&data, sizeof(data));                              
-    STREAM_ANALYSE(data, sizeof(data));                             
-    return *this;                                                   
-  }                                                                 
-  ///  Input Streamer                                   
-  StreamBuffer& operator>>(int & data)     {                       
-    swapFromBuffer(&data, sizeof(data));                            
-    return *this;                                                   
+  ///  Input Streamer
+  StreamBuffer& operator>>(longlong & data)     {
+    swapFromBuffer(&data, sizeof(data));
+    return *this;
   }
-  ///  Output Streamer                              
-  StreamBuffer& operator<<(unsigned int   data)     {                       
-    swapToBuffer(&data, sizeof(data));                              
-    STREAM_ANALYSE(data, sizeof(data));                             
-    return *this;                                                   
-  }                                                                 
-  ///  Input Streamer                                   
-  StreamBuffer& operator>>(unsigned int & data)     {                       
-    swapFromBuffer(&data, sizeof(data));                            
-    return *this;                                                   
+  ///  Output Streamer
+  StreamBuffer& operator<<(int   data)     {
+    swapToBuffer(&data, sizeof(data));
+    STREAM_ANALYSE(data, sizeof(data));
+    return *this;
   }
-  ///  Output Streamer                              
-  StreamBuffer& operator<<(long   data)     {                       
-    swapToBuffer(&data, sizeof(data));                              
-    STREAM_ANALYSE(data, sizeof(data));                             
-    return *this;                                                   
-  }                                                                 
-  ///  Input Streamer                                   
-  StreamBuffer& operator>>(long & data)     {                       
-    swapFromBuffer(&data, sizeof(data));                            
-    return *this;                                                   
+  ///  Input Streamer
+  StreamBuffer& operator>>(int & data)     {
+    swapFromBuffer(&data, sizeof(data));
+    return *this;
   }
-  ///  Output Streamer                              
-  StreamBuffer& operator<<(unsigned long   data)     {                       
-    swapToBuffer(&data, sizeof(data));                              
-    STREAM_ANALYSE(data, sizeof(data));                             
-    return *this;                                                   
-  }                                                                 
-  ///  Input Streamer                                   
-  StreamBuffer& operator>>(unsigned long & data)     {                       
-    swapFromBuffer(&data, sizeof(data));                            
-    return *this;                                                   
+  ///  Output Streamer
+  StreamBuffer& operator<<(unsigned int   data)     {
+    swapToBuffer(&data, sizeof(data));
+    STREAM_ANALYSE(data, sizeof(data));
+    return *this;
   }
-  ///  Output Streamer                              
-  StreamBuffer& operator<<(short   data)     {                       
-    swapToBuffer(&data, sizeof(data));                              
-    STREAM_ANALYSE(data, sizeof(data));                             
-    return *this;                                                   
-  }                                                                 
-  ///  Input Streamer                                   
-  StreamBuffer& operator>>(short & data)     {                       
-    swapFromBuffer(&data, sizeof(data));                            
-    return *this;                                                   
+  ///  Input Streamer
+  StreamBuffer& operator>>(unsigned int & data)     {
+    swapFromBuffer(&data, sizeof(data));
+    return *this;
   }
-  ///  Output Streamer                              
-  StreamBuffer& operator<<(unsigned short   data)     {                       
-    swapToBuffer(&data, sizeof(data));                              
-    STREAM_ANALYSE(data, sizeof(data));                             
-    return *this;                                                   
-  }                                                                 
-  ///  Input Streamer                                   
-  StreamBuffer& operator>>(unsigned short & data)     {                       
-    swapFromBuffer(&data, sizeof(data));                            
-    return *this;                                                   
+  ///  Output Streamer
+  StreamBuffer& operator<<(long   data)     {
+    swapToBuffer(&data, sizeof(data));
+    STREAM_ANALYSE(data, sizeof(data));
+    return *this;
   }
-  ///  Output Streamer                              
-  StreamBuffer& operator<<(char   data)     {                       
-    swapToBuffer(&data, sizeof(data));                              
-    STREAM_ANALYSE(data, sizeof(data));                             
-    return *this;                                                   
-  }                                                                 
-  ///  Input Streamer                                   
-  StreamBuffer& operator>>(char & data)     {                       
-    swapFromBuffer(&data, sizeof(data));                            
-    return *this;                                                   
+  ///  Input Streamer
+  StreamBuffer& operator>>(long & data)     {
+    swapFromBuffer(&data, sizeof(data));
+    return *this;
   }
-  ///  Output Streamer                              
-  StreamBuffer& operator<<(unsigned char   data)     {                       
-    swapToBuffer(&data, sizeof(data));                              
-    STREAM_ANALYSE(data, sizeof(data));                             
-    return *this;                                                   
-  }                                                                 
-  ///  Input Streamer                                   
-  StreamBuffer& operator>>(unsigned char & data)     {                       
-    swapFromBuffer(&data, sizeof(data));                            
-    return *this;                                                   
+  ///  Output Streamer
+  StreamBuffer& operator<<(unsigned long   data)     {
+    swapToBuffer(&data, sizeof(data));
+    STREAM_ANALYSE(data, sizeof(data));
+    return *this;
   }
-  ///  Output Streamer                              
-  StreamBuffer& operator<<(float   data)     {                       
-    swapToBuffer(&data, sizeof(data));                              
-    STREAM_ANALYSE(data, sizeof(data));                             
-    return *this;                                                   
-  }                                                                 
-  ///  Input Streamer                                   
-  StreamBuffer& operator>>(float & data)     {                       
-    swapFromBuffer(&data, sizeof(data));                            
-    return *this;                                                   
+  ///  Input Streamer
+  StreamBuffer& operator>>(unsigned long & data)     {
+    swapFromBuffer(&data, sizeof(data));
+    return *this;
   }
-  ///  Output Streamer                              
-  StreamBuffer& operator<<(double   data)     {                       
-    swapToBuffer(&data, sizeof(data));                              
-    STREAM_ANALYSE(data, sizeof(data));                             
-    return *this;                                                   
-  }                                                                 
-  ///  Input Streamer                                   
-  StreamBuffer& operator>>(double & data)     {                       
-    swapFromBuffer(&data, sizeof(data));                            
-    return *this;                                                   
+  ///  Output Streamer
+  StreamBuffer& operator<<(short   data)     {
+    swapToBuffer(&data, sizeof(data));
+    STREAM_ANALYSE(data, sizeof(data));
+    return *this;
+  }
+  ///  Input Streamer
+  StreamBuffer& operator>>(short & data)     {
+    swapFromBuffer(&data, sizeof(data));
+    return *this;
+  }
+  ///  Output Streamer
+  StreamBuffer& operator<<(unsigned short   data)     {
+    swapToBuffer(&data, sizeof(data));
+    STREAM_ANALYSE(data, sizeof(data));
+    return *this;
+  }
+  ///  Input Streamer
+  StreamBuffer& operator>>(unsigned short & data)     {
+    swapFromBuffer(&data, sizeof(data));
+    return *this;
+  }
+  ///  Output Streamer
+  StreamBuffer& operator<<(char   data)     {
+    swapToBuffer(&data, sizeof(data));
+    STREAM_ANALYSE(data, sizeof(data));
+    return *this;
+  }
+  ///  Input Streamer
+  StreamBuffer& operator>>(char & data)     {
+    swapFromBuffer(&data, sizeof(data));
+    return *this;
+  }
+  ///  Output Streamer
+  StreamBuffer& operator<<(unsigned char   data)     {
+    swapToBuffer(&data, sizeof(data));
+    STREAM_ANALYSE(data, sizeof(data));
+    return *this;
+  }
+  ///  Input Streamer
+  StreamBuffer& operator>>(unsigned char & data)     {
+    swapFromBuffer(&data, sizeof(data));
+    return *this;
+  }
+  ///  Output Streamer
+  StreamBuffer& operator<<(float   data)     {
+    swapToBuffer(&data, sizeof(data));
+    STREAM_ANALYSE(data, sizeof(data));
+    return *this;
+  }
+  ///  Input Streamer
+  StreamBuffer& operator>>(float & data)     {
+    swapFromBuffer(&data, sizeof(data));
+    return *this;
+  }
+  ///  Output Streamer
+  StreamBuffer& operator<<(double   data)     {
+    swapToBuffer(&data, sizeof(data));
+    STREAM_ANALYSE(data, sizeof(data));
+    return *this;
+  }
+  ///  Input Streamer
+  StreamBuffer& operator>>(double & data)     {
+    swapFromBuffer(&data, sizeof(data));
+    return *this;
   }
   /// Streamer to read strings in (char*) format
   StreamBuffer& operator>>(char* data)    {
@@ -489,7 +490,7 @@ public:
   StreamBuffer& operator<<(const char *data)     {
     const char* ptr = 0 == data ? "" : data;
     int len = strlen(ptr)+1;
-    if ( 0 == m_analyzer ) 
+    if ( 0 == m_analyzer )
       writeBytes(ptr, len);
     else  {
       STREAM_ANALYSE(data, len);
@@ -528,7 +529,7 @@ public:
   }
 
   /** Streamer to write links to contained objects.
-      Links to contained objects are not stored immediately, 
+      Links to contained objects are not stored immediately,
       but collected instead and analyzed later.
       @param       pObject Pointer to object to be loaded.
       @return              Reference to StreamBuffer object
@@ -540,7 +541,7 @@ public:
   }
 
   /** Streamer to write links to identified objects.
-      Links to identified objects are not stored immediately, 
+      Links to identified objects are not stored immediately,
       but collected instead and analyzed later.
       @param       pObject Pointer to object to be loaded.
       @return              Reference to StreamBuffer object
@@ -568,7 +569,7 @@ public:
 /// Check for byte swapping
 inline StreamBuffer::SwapAction StreamBuffer::swapBuffer(int siz)  const    {
   switch(siz)   {
-  case 1:  
+  case 1:
     return SINGLE_BYTE;
   default:
 #if defined(__alpha) && !defined(__VMS)
@@ -639,7 +640,7 @@ inline void StreamBuffer::swapFromBuffer(void* target, int siz)   {
 }
 
 // Output serialize a vector of items
-template <class T> inline 
+template <class T> inline
 StreamBuffer& operator << (StreamBuffer& s, const std::vector<T>& v)  {
   s << v.size();
   for ( typename std::vector<T>::const_iterator i = v.begin(); i != v.end(); i++ )  {
@@ -663,7 +664,7 @@ StreamBuffer& operator >> (StreamBuffer& s, std::vector<T>& v)  {
 }
 
 // Output serialize a list of items
-template <class T> inline 
+template <class T> inline
 StreamBuffer& operator << (StreamBuffer& s, const std::list<T>& l)  {
   s << l.size();
   for ( typename std::list<T>::const_iterator i = l.begin(); i != l.end(); i++ )  {
