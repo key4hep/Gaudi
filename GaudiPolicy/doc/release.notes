@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-08-20 - Marco Clemencic
+ - Fixed a compilation warning in VC9 (option 'GX' has been deprecated).
+
 ! 2010-07-29 - Marco Clemencic
  - Fixed a problem in the generation of Eclipse debug launchers from QMTest and
    adapted them to CDT 7 (Eclipse Helios, 3.6).
