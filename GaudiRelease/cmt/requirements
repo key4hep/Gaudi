@@ -76,6 +76,7 @@ apply_pattern LHCb_external pkg=pytools
 apply_pattern LHCb_external pkg=pyanalysis
 apply_pattern LHCb_external pkg=pygraphics
 apply_pattern LHCb_external pkg=Qt
+apply_pattern LHCb_external pkg=XQilla
 #apply_pattern LHCb_external pkg=
 
 # -- LHCbGrid external packages --
