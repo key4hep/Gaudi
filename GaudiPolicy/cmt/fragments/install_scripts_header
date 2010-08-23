@@ -1,7 +1,7 @@
 #-- start of install_scripts_header ------
 
 
-installarea = ${CMTINSTALLAREA}
+installarea = ${CMTINSTALLAREA}$(shared_install_subdir)
 install_scripts_dir = $(installarea)/$(offset)
 
 ${CONSTITUENT} :: ${CONSTITUENT}install

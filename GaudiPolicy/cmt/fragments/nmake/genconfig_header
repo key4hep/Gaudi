@@ -1,6 +1,6 @@
 # File: cmt/fragments/genconfig_header
 # Author: Wim Lavrijsen (WLavrijsen@lbl.gov)
-#         Pere Mato 
+#         Pere Mato
 
 # Use genconf.exe to create configurables python modules, then have the
 # normal python install procedure take over.
@@ -10,7 +10,7 @@
 confpy  = ${CONSTITUENT}.py
 conflib = $(bin)$(library_prefix)$(library).$(shlibsuffix)
 dbpy    = $(library)_confDb.py
-instdir = $(CMTINSTALLAREA)\python\$(package)
+instdir = $(CMTINSTALLAREA)$(shared_install_subdir)\python\$(package)
 product = $(instdir)\$(confpy)
 initpy  = $(instdir)\__init__.py
 
@@ -47,5 +47,5 @@ ${CONSTITUENT}clean :: ${CONSTITUENT}uninstall
 
 uninstall :: ${CONSTITUENT}uninstall
 
-${CONSTITUENT}uninstall :: 
+${CONSTITUENT}uninstall ::
 	@$(uninstall_command) $(conf_destdir)

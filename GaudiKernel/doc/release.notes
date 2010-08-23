@@ -1,6 +1,11 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-08-23 - Marco Clemencic
+ - Modified "loadConfigurableDb" to be able to find *_merged_confDb.py in any
+   subdirectory of the InstallArea (needed to be able to install platform-
+   independent files in the platform-specific directories, see GaudiPolicy).
+
 ! 2010-08-20 - Marco Clemencic
  - Modified src/Lib/Debugger.cpp to compile on VC9.
 

@@ -9,7 +9,7 @@
 confpy  := ${CONSTITUENT}.py
 conflib := $(bin)$(library_prefix)$(library).$(shlibsuffix)
 dbpy    := $(library)_confDb.py
-instdir := $(CMTINSTALLAREA)/python/$(package)
+instdir := $(CMTINSTALLAREA)$(shared_install_subdir)/python/$(package)
 product := $(instdir)/$(confpy)
 initpy  := $(instdir)/__init__.py
 
@@ -35,15 +35,15 @@ $(outdir)/$(confpy) : $(conflib) $(outdir)
 	  --configurable-algtool=$(confAlgTool) \
 	  --configurable-auditor=$(confAuditor) \
           --configurable-service=$(confService) \
-	  -i ../$(tag)/$(library_prefix)$(library).$(shlibsuffix) 
+	  -i ../$(tag)/$(library_prefix)$(library).$(shlibsuffix)
 
 $(outdir):
-	@ if [ ! -d $(outdir) ] ; then mkdir -p $(outdir) ; fi ; 
+	@ if [ ! -d $(outdir) ] ; then mkdir -p $(outdir) ; fi ;
 
 ${CONSTITUENT}clean :: ${CONSTITUENT}uninstall
 	$(cleanup_silent) $(remove_command) $(outdir)/$(confpy) $(outdir)/$(dbpy)
 
 uninstall :: ${CONSTITUENT}uninstall
 
-${CONSTITUENT}uninstall :: 
+${CONSTITUENT}uninstall ::
 	@$(uninstall_command) $(conf_destdir)

@@ -3,15 +3,15 @@
 
 # Makefile fragment to merge a <library>_confDb.py file into a single
 # <project>_merged_confDb.py file in the (python) install area
-# Note that <project> is massaged to get a valid python module name 
+# Note that <project> is massaged to get a valid python module name
 # (ie: remove dots and dashes)
- 
+
 .PHONY: ${CONSTITUENT} ${CONSTITUENT}clean
 
 # default is already '#'
 #genconfDb_comment_char := "'#'"
 
-instdir      := ${CMTINSTALLAREA}
+instdir      := ${CMTINSTALLAREA}$(shared_install_subdir)
 confDbRef    := $(inDir)/$(library)_confDb.py
 stampConfDb  := $(confDbRef).stamp
 mergedConfDb := $(instdir)/python/$(subst .,_,$(subst -,_,$(project)))_merged_confDb.py
@@ -26,7 +26,7 @@ $(stampConfDb) $(mergedConfDb) :: $(confDbRef)
 	$(merge_genconfDb_cmd) \
           $(merge_genconfDb_switch) \
           --input-file $(confDbRef) \
-          --merged-file $(mergedConfDb)	  
+          --merged-file $(mergedConfDb)
 
 ${CONSTITUENT}clean ::
 	$(cleanup_silent) $(merge_genconfDb_cmd) \

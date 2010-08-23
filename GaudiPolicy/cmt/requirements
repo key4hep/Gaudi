@@ -45,8 +45,8 @@ cmtpath_pattern \
 cmtpath_pattern_reverse \
    macro <project>_install_include "" \
          <project>_without_installarea "" \
-         <project>_with_installarea&target-unix " <path>/$(<project>_installarea_prefix)/include "\
-         <project>_with_installarea&target-winxp ' "<path>\$(<project>_installarea_prefix)\include"' ; \
+         <project>_with_installarea&target-unix " <path>/$(<project>_installarea_prefix)$(shared_install_subdir)/include "\
+         <project>_with_installarea&target-winxp ' "<path>\$(<project>_installarea_prefix)$(shared_install_subdir)\include"' ; \
    include_dirs ${<project>_install_include}
 
 macro copyInclude "cp -Rup " \
@@ -115,7 +115,7 @@ pattern library_Softlinks \
                  target-winxp                     ""
 
 cmtpath_pattern \
-    path_prepend DYLD_LIBRARY_PATH "" <project>_with_installarea&target-darwin "<path>/$(<project>_installarea_prefix)/${CMTCONFIG}/lib"
+    path_prepend DYLD_LIBRARY_PATH "" <project>_with_installarea&target-darwin "<path>/$(<project>_installarea_prefix)/$(tag)/lib"
 
 pattern library_path \
     path_remove PATH ""  target-winxp "\<package>\" ; \
@@ -155,7 +155,7 @@ make_fragment data_installer -header=data_installer_header
 
 pattern declare_joboptions \
     macro_append <package>_joboptions " -s=../share <files> " ; \
-    document data_installer install_<name>joboptions prefix=jobOptions $(<package>_joboptions) ; \
+    document data_installer install_<name>joboptions prefix=$(shared_install_subdir)/jobOptions $(<package>_joboptions) ; \
     macro_remove constituents " " target-winxp install_<name>joboptions
 
 pattern declare_scripts \
@@ -171,10 +171,10 @@ pattern declare_scripts \
 cmtpath_pattern \
    macro <project>_install_python "" \
          <project>_without_installarea "" \
-         <project>_with_installarea&target-unix&no-pyzip "<path>/$(<project>_installarea_prefix)/python"\
-         <project>_with_installarea&target-winxp&no-pyzip "<path>\$(<project>_installarea_prefix)\python" \
-         <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)/python.zip" \
-         <project>_with_installarea&target-winxp "<path>\$(<project>_installarea_prefix)\python.zip" ; \
+         <project>_with_installarea&target-unix&no-pyzip "<path>/$(<project>_installarea_prefix)$(shared_install_subdir)/python"\
+         <project>_with_installarea&target-winxp&no-pyzip "<path>\$(<project>_installarea_prefix)$(shared_install_subdir)\python" \
+         <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)$(shared_install_subdir)/python.zip" \
+         <project>_with_installarea&target-winxp "<path>\$(<project>_installarea_prefix)$(shared_install_subdir)\python.zip" ; \
     path_remove  PYTHONPATH ${<project>_install_python} ; \
     path_prepend PYTHONPATH ${<project>_install_python}
 
@@ -242,8 +242,8 @@ cmtpath_pattern \
     path_prepend PYTHONPATH $(<project>_install_pyd_module) ;
 
 
-action CompilePython "python -m compileall $(CMTINSTALLAREA)/python $(CMTINSTALLAREA)/scripts" \
-	    target-winxp "python -m compileall $(CMTINSTALLAREA)\python $(CMTINSTALLAREA)\scripts"
+action CompilePython "python -m compileall $(CMTINSTALLAREA)$(shared_install_subdir)/python $(CMTINSTALLAREA)$(shared_install_subdir)/scripts" \
+	    target-winxp "python -m compileall $(CMTINSTALLAREA)$(shared_install_subdir)\python $(CMTINSTALLAREA)$(shared_install_subdir)\scripts"
 
 macro_remove cmt_actions_constituents "CompilePython "
 macro_remove cmt_actions_constituentsclean "CompilePythonclean "
@@ -266,8 +266,8 @@ cmtpath_pattern \
 cmtpath_pattern \
    macro <project>_install_scripts "" \
          <project>_without_installarea "" \
-         <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)/$(scripts_dir)"\
-         <project>_with_installarea&target-winxp "<path>\$(<project>_installarea_prefix)\$(scripts_dir)" ; \
+         <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)$(shared_install_subdir)/$(scripts_dir)"\
+         <project>_with_installarea&target-winxp "<path>\$(<project>_installarea_prefix)$(shared_install_subdir)\$(scripts_dir)" ; \
     path_remove  PATH ${<project>_install_scripts} ; \
     path_prepend PATH ${<project>_install_scripts}
 
@@ -296,14 +296,14 @@ make_fragment install_scripts -header=install_scripts_header
 #
 # Some data files are specified using a directory.
 #
-macro install_command 'python $(GaudiPolicy_root)/scripts/install.py -xCVS -x*~ -x*.stamp -x*.bak -x.* -x*.pyc -x*.pyo --log=./install.history '
+macro install_command 'python $(GaudiPolicy_root)/scripts/install.py -xCVS -x*~ -x*.stamp -x*.bak -x.* -x*.pyc -x*.pyo --log=./install.$(tag).history '
 macro uninstall_command 'python $(GaudiPolicy_root)/scripts/install.py -u --log=./install.history '
 
 macro remove_command "$(cmt_uninstallarea_command)"
 
-macro library_install_command "python $(GaudiPolicy_root)/scripts/install.py -xCVS -x*~ -x*.stamp -x*.bak -x.* -x*.pyc -x*.pyo -s --log=./install.history " \
+macro library_install_command "python $(GaudiPolicy_root)/scripts/install.py -xCVS -x*~ -x*.stamp -x*.bak -x.* -x*.pyc -x*.pyo -s --log=./install.$(tag).history " \
       host-winxp              "copy "
-macro cmt_installarea_command "python $(GaudiPolicy_root)/scripts/install.py -xCVS -x*~ -x*.stamp -x*.bak -x.* -x*.pyc -x*.pyo -s --log=./install.history " \
+macro cmt_installarea_command "python $(GaudiPolicy_root)/scripts/install.py -xCVS -x*~ -x*.stamp -x*.bak -x.* -x*.pyc -x*.pyo -s --log=./install.$(tag).history " \
       host-winxp              "xcopy /S /E /Y "
 
 pattern declare_runtime \
@@ -817,6 +817,18 @@ macro shlibsuffix   "so" \
 #macro GaudiPolicy_CMT_files "../src/symlink.sh"
 
 #-------------------------------------------------------------------
+# Shared installation options
+#   if the extra tag no-shared-dir is specified, the
+#   platform-independent files will be installed in the binary
+#   directory in the InstallArea
+#-------------------------------------------------------------------
+macro shared_install_subdir '' \
+                      ATLAS '' \
+             use-shared-dir '' \
+ no-shared-dir&target-winxp '\$(tag)' \
+              no-shared-dir '/$(tag)'
+
+#-------------------------------------------------------------------
 # begin of genconf
 #-------------------------------------------------------------------
 public
@@ -841,8 +853,8 @@ cmtpath_pattern \
     macro genconfInstallDir "" \
        <project>_without_installarea&target-unix "$(<package>_root)/python" \
        <project>_without_installarea&target-winxp "$(<package>_root)\python" \
-       <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)/python"\
-       <project>_with_installarea&target-winxp '"<path>\$(<project>_installarea_prefix)\python"'
+       <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)$(shared_install_subdir)/python"\
+       <project>_with_installarea&target-winxp '"<path>\$(<project>_installarea_prefix)$(shared_install_subdir)\python"'
 
 make_fragment genconfig -header=genconfig_header
 
@@ -1030,6 +1042,7 @@ macro_remove cmt_actions_constituents 'qmtest_run'
 macro_remove cmt_actions_constituents 'qmtest_summarize'
 macro_remove cmt_actions_constituents 'TestPackage'
 macro_remove cmt_actions_constituents 'TestProject'
+macro_remove cmt_actions_constituents 'QMTestTestsDatabase'
 macro_remove cmt_actions_constituents 'QMTestGUI'
 
 #-------------------------------------------------------------------
@@ -1100,7 +1113,7 @@ pattern NullCommand \
 #-------------------------------------------------------------------
 pattern ProjectVersionHeader \
 	private ; \
-	macro ProjectVersionHeader_output "$(CMTINSTALLAREA)/include/<project>_VERSION.h" ; \
+	macro ProjectVersionHeader_output "$(CMTINSTALLAREA)$(shared_install_subdir)/include/<project>_VERSION.h" ; \
 	macro ProjectVersionHeader_deps "../cmt/requirements" ; \
 	macro ProjectVersionHeader_command "python $(GaudiPolicy_root)/scripts/createProjVersHeader.py <project> <version> $(ProjectVersionHeader_output)" \
 	     <project>_without_installarea "" ; \
@@ -1182,9 +1195,9 @@ pattern container_package \
 #-------------------------------------------------------------------
 pattern zip_python_modules \
 	private ; \
-	macro zip_<group><package>_python_modules_output "$(CMTINSTALLAREA)/python.zip" ; \
+	macro zip_<group><package>_python_modules_output "$(CMTINSTALLAREA)$(shared_install_subdir)/python.zip" ; \
 	macro zip_<group><package>_python_modules_deps "FORCE" ; \
-	macro zip_<group><package>_python_modules_command "python $(GaudiPolicy_root)/scripts/ZipPythonDir.py $(CMTINSTALLAREA)/python" ; \
+	macro zip_<group><package>_python_modules_command "python $(GaudiPolicy_root)/scripts/ZipPythonDir.py $(CMTINSTALLAREA)$(shared_install_subdir)/python" ; \
 	macro zip_<group><package>_python_modules_pattern_applied "CallCommand" \
 		no-pyzip&container-package "CallCommand" \
 		no-pyzip "NullCommand" ; \
@@ -1238,4 +1251,3 @@ tag ATLAS no-pyzip
 
 macro_append pp_cppflags "" \
       ATLAS " -DATLAS_GAUDI_V21 "
-

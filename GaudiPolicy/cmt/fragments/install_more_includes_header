@@ -9,7 +9,7 @@
 #  the standard convention.
 #
 
-installarea = ${CMTINSTALLAREA}
+installarea = ${CMTINSTALLAREA}$(shared_install_subdir)
 install_include_dir = $(installarea)/include
 
 ${CONSTITUENT} :: ${CONSTITUENT}install

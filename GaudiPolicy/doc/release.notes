@@ -1,6 +1,16 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-08-23 - Marco Clemencic
+ - Added the possibility of installing the platform-independent files in the
+   platform-specific directory in the InstallArea.
+   The new behavior is disabled by default at the moment, and it can be enabled
+   with the CMT extra tags 'no-shared-dir' (always disabled for ATLAS).
+ - Improved run_qmtest.py to be able to run the tests from a read-only location
+   even if the "QMTest" directory is not present.
+   The QMTestTestsDatabase action is not executed anymore during the build
+   since it is not needed.
+
 ! 2010-08-20 - Marco Clemencic
  - Fixed a compilation warning in VC9 (option 'GX' has been deprecated).
 
