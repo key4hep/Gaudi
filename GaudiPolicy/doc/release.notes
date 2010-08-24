@@ -4,6 +4,10 @@ package manager: Marco Clemencic
 ! 2010-08-24 - Marco Clemencic
  - Hide deprecation warnings in ICC (due to the usage of hash_map, unavoidable
    because of gccxml).
+ - Enabled "-Wl,--as-needed" for ICC.
+ - Added an ugly work-around for the ICC warning
+    libimf.so: warning: warning: feupdateenv is not implemented and will always
+    fail
 
 ! 2010-08-23 - Marco Clemencic
  - Added the possibility of installing the platform-independent files in the

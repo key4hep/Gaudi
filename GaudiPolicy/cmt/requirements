@@ -641,6 +641,11 @@ macro_append cppflags '' no-hide-warnings '' target-icc '-wd444 '
 macro_append cppflags '' no-hide-warnings '' target-icc '-wd304 '
 #  - Hide deprecation warnings (due to the usage of hash_map, unavoidable because of gccxml)
 macro_append cppflags '' no-hide-warnings '' target-icc '-Wno-deprecated '
+### Special link option to avoid the warning:
+#     'libimf.so: warning: warning: feupdateenv is not implemented and will always fail'
+#   Note: we use this macro because it is the only one that is used in the
+#   right place in the command line options of (every) executable
+macro_append GaudiKernel_linkopts '' target-icc '-limf -lm '
 ##############################################################################
 
 # macro_append cppflags " -msse2 -mfpmath=sse" \
@@ -741,7 +746,6 @@ macro makeLinkMap            ""\
       target-winxp           "/map"
 
 macro cpplinkflags "" \
-      target-icc   "-Wl,-Bdynamic $(linkdebugflags) -ldl " \
       target-linux "-Wl,-Bdynamic $(linkdebugflags) -ldl -Wl,--as-needed " \
       target-vc    "/nologo /machine:ix86 $(linkdebugflags) $(makeLinkMap) /nodefaultlib kernel32.lib user32.lib ws2_32.lib advapi32.lib shell32.lib msvcrt.lib msvcprt.lib oldnames.lib "
 
