@@ -1,37 +1,38 @@
-###############################################
+############################################################################
 # CMakeLists.txt file for building GaudiGSL
-# @author Pere Mato, CERN
-###############################################
-
-GAUDI_USE_PACKAGE(GSL)
-GAUDI_USE_PACKAGE(CLHEP)
+# @author Pere Mato, CERN (semi-automaticaly generated)
+############################################################################
 GAUDI_USE_PACKAGE(GaudiKernel)
 GAUDI_USE_PACKAGE(GaudiAlg)
+GAUDI_USE_PACKAGE(GSL)
+GAUDI_USE_PACKAGE(CLHEP)
+GAUDI_USE_PACKAGE(AIDA)
 
-#INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR} ${GAUDI_INCLUDE_DIRS} ${CLHEP_INCLUDE_DIRS} ${GSL_INCLUDE_DIRS}) 
-#LINK_DIRECTORIES(${GAUDI_LIBRARY_DIRS} ${CLHEP_LIBRARY_DIRS} ${GSL_LIBRARY_DIRS})
 
-IF( NOT APPLE)
-   SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-as-needed")
-ENDIF()
+if( NOT APPLE)
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-as-needed")
+endif()
 
-#---Linker Library
-GAUDI_LINKER_LIBRARY( GaudiGSLLib 
-                      Lib/*.cpp 
-                      GaudiKernel ${CLHEP_LIBRARIES} ${GSL_LIBRARIES})
+#---Libraries---------------------------------------------------------------
+GAUDI_COMPONENT_LIBRARY(GaudiGSL Components/*.cpp GaudiGSLLib)
+GAUDI_LINKER_LIBRARY(GaudiGSLLib Lib/*.cpp GaudiAlgLib ${GSL_LIBRARIES} ${CLHEP_LIBRARIES})
 
-#---Component Library
-GAUDI_COMPONENT_LIBRARY( GaudiGSL 
-                         Components/*.cpp 
-                         GaudiGSLLib GaudiAlgLib)
+#---Dictionaries------------------------------------------------------------
+REFLEX_GENERATE_DICTIONARY( GaudiGSLMath dict/GaudiGSLMath.h dict/GaudiGSLMath.xml GaudiGSLLib )
 
-#---Dictionary
-REFLEX_GENERATE_DICTIONARY( GaudiGSLMath 
-                            dict/GaudiGSLMath.h 
-                            dict/GaudiGSLMath.xml
-                            GaudiGSLLib )
+#---Executables-------------------------------------------------------------
+GAUDI_TEST(IntegralInTest Tests/IntegralInTest.cpp GaudiGSLLib GaudiUtilsLib)
+GAUDI_TEST(DerivativeTest Tests/DerivativeTest.cpp GaudiGSLLib GaudiUtilsLib)
+GAUDI_TEST(2DoubleFuncTest Tests/2DoubleFuncTest.cpp GaudiGSLLib GaudiUtilsLib)
+GAUDI_TEST(GSLAdaptersTest Tests/GSLAdaptersTest.cpp GaudiGSLLib GaudiUtilsLib)
+GAUDI_TEST(PFuncTest Tests/PFuncTest.cpp GaudiGSLLib GaudiUtilsLib)
+GAUDI_TEST(ExceptionsTest Tests/ExceptionsTest.cpp GaudiGSLLib GaudiUtilsLib)
+GAUDI_TEST(SimpleFuncTest Tests/SimpleFuncTest.cpp GaudiGSLLib GaudiUtilsLib)
+GAUDI_TEST(3DoubleFuncTest Tests/3DoubleFuncTest.cpp GaudiGSLLib GaudiUtilsLib)
+GAUDI_TEST(InterpTest Tests/Interp.cpp GaudiGSLLib GaudiUtilsLib)
+GAUDI_TEST(Integral1Test Tests/Integral1Test.cpp GaudiGSLLib GaudiUtilsLib)
 
-#---Installation
+#---Installation------------------------------------------------------------
 GAUDI_INSTALL_HEADERS(GaudiGSL GaudiMath)
 
 

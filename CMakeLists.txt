@@ -1,48 +1,22 @@
-#
-# Define project and CMake requirements
-#
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4.6)
-PROJECT(GAUDI)
 
-# Define the version of the project - can be used to generate sources,
-SET(GAUDI_VERSION "v21r7")
-SET(GAUDI_VERSION_MAJOR "21")
-SET(GAUDI_VERSION_MINOR "7")
-SET(GAUDI_VERSION_PATCH "0")
+#---Do not know how to do this yet----------------------------
+INCLUDE(/build/mato/GAUDI/GAUDI_cmake/cmake/GaudiProject.cmake)
+#-------------------------------------------------------------
 
-#
-# Project Options
-#
-OPTION(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
-
-#
-# Set up path to internal set of CMake modules.
-#
-set(CMAKE_MODULE_PATH
-    ${GAUDI_SOURCE_DIR}/cmake
-    ${CMAKE_MODULE_PATH})
+GAUDI_PROJECT(GAUDI v21r10p1)
 
 #
 # Common includes
 #
 INCLUDE(GaudiPolicy)
 
-# Add the Project Packages to process the CMakeLists.txt there
-#
-ADD_SUBDIRECTORY(GaudiKernel)
-ADD_SUBDIRECTORY(GaudiSvc)
-ADD_SUBDIRECTORY(GaudiPython)
-ADD_SUBDIRECTORY(GaudiAud)
-ADD_SUBDIRECTORY(GaudiUtils)
-ADD_SUBDIRECTORY(GaudiAlg)
-ADD_SUBDIRECTORY(GaudiGSL)
-ADD_SUBDIRECTORY(GaudiMonitor)
-ADD_SUBDIRECTORY(GaudiPoolDb)
-ADD_SUBDIRECTORY(PartPropSvc)
-ADD_SUBDIRECTORY(RootHistCnv)
-ADD_SUBDIRECTORY(GaudiExamples)
-ADD_SUBDIRECTORY(GaudiPolicy)
-ADD_SUBDIRECTORY(Gaudi)
+GAUDI_GET_PACKAGES(packages)
+GAUDI_SORT_PACKAGES( packages ${packages})
+
+foreach( package ${packages})
+  add_subdirectory(${package})
+endforeach()
 
 INSTALL(DIRECTORY cmake/ DESTINATION cmake)
 

@@ -1,10 +1,12 @@
-#############################################
-# CMakeList.txt file for building RootHistCnv
-# @author Pere Mato, CERN
-#############################################
-
+############################################################################
+# CMakeLists.txt file for building RootHistCnv
+# @author Pere Mato, CERN (semi-automaticaly generated)
+############################################################################
 GAUDI_USE_PACKAGE(GaudiKernel)
+GAUDI_USE_PACKAGE(AIDA)
+GAUDI_USE_PACKAGE(ROOT)
 
-#---Component Library
-GAUDI_COMPONENT_LIBRARY(RootHistCnv *.cpp GaudiKernel Hist Tree Matrix RIO)
+#---Libraries---------------------------------------------------------------
+GAUDI_COMPONENT_LIBRARY(RootHistCnv *.cpp GaudiKernel ${ROOT_LIBRARIES} RIO Hist Matrix Tree)
+
 

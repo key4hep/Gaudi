@@ -1,13 +1,9 @@
-###############################################
+############################################################################
 # CMakeLists.txt file for building GaudiMonitor
-# @author Pere Mato, CERN
-###############################################
-
+# @author Pere Mato, CERN (semi-automaticaly generated)
+############################################################################
 GAUDI_USE_PACKAGE(GaudiKernel)
 
-#---Component Library
-GAUDI_COMPONENT_LIBRARY( GaudiMonitor "DataListenerSvc/*.cpp;Dll/GaudiMonitor*.cpp"
-                         GaudiKernel)
-
-
+#---Libraries---------------------------------------------------------------
+GAUDI_COMPONENT_LIBRARY(GaudiMonitor DataListenerSvc/*.cpp GaudiKernel)
 

@@ -1,22 +1,18 @@
-###############################################
+############################################################################
 # CMakeLists.txt file for building GaudiAlg
-# @author Pere Mato, CERN
-###############################################
-
+# @author Pere Mato, CERN (semi-automaticaly generated)
+############################################################################
 GAUDI_USE_PACKAGE(GaudiKernel)
 GAUDI_USE_PACKAGE(GaudiUtils)
+GAUDI_USE_PACKAGE(ROOT)
+GAUDI_USE_PACKAGE(AIDA)
+GAUDI_USE_PACKAGE(Boost)
 
-#---Linker Library
-GAUDI_LINKER_LIBRARY( GaudiAlgLib 
-                      lib/*.cpp 
-                      GaudiKernel GaudiUtilsLib )
+#---Libraries---------------------------------------------------------------
+GAUDI_LINKER_LIBRARY(GaudiAlgLib lib/*.cpp GaudiUtilsLib)
+GAUDI_COMPONENT_LIBRARY(GaudiAlg components/*.cpp GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES} RIO)
 
-#---Component Library
-GAUDI_COMPONENT_LIBRARY( GaudiAlg 
-                         components/*.cpp 
-                         GaudiAlgLib )
-
-#---Installation
+#---Installation------------------------------------------------------------
 GAUDI_INSTALL_HEADERS(GaudiAlg)
 
 

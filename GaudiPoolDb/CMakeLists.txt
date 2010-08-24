@@ -3,6 +3,7 @@
 # @author Pere Mato, CERN
 ###############################################
 
+GAUDI_USE_PACKAGE(ROOT)
 GAUDI_USE_PACKAGE(POOL)
 GAUDI_USE_PACKAGE(CORAL)
 GAUDI_USE_PACKAGE(GaudiKernel)
@@ -14,7 +15,7 @@ REFLEX_GENERATE_DICTIONARY( GaudiPoolDb src/PoolDb_dict.h  src/PoolDb_dict.xml)
 #---Linker/Component Library-----------------------------------------------------------------
 GAUDI_LINKER_LIBRARY( GaudiPoolDb 
                       "*.cpp;${CMAKE_CURRENT_BINARY_DIR}/GaudiPoolDb_dict.cpp"
-                      GaudiKernel ${POOL_LIBRARIES} ${CORAL_LIBRARIES} Cintex)
+                      GaudiKernel ${POOL_LIBRARIES} ${CORAL_LIBRARIES} ${ROOT_LIBRARIES} Cintex Tree RIO)
 IF (APPLE)
   SET_TARGET_PROPERTIES(GaudiPoolDb PROPERTIES SUFFIX .so)
 ENDIF()

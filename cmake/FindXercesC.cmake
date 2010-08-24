@@ -8,4 +8,5 @@ SET(XercesC_INCLUDE_DIRS ${XercesC_home}/include)
 SET(XercesC_LIBRARY_DIRS ${XercesC_home}/lib)
 SET(XercesC_LIBRARIES xerces-c pthread)
 
+ADD_DEFINITIONS(-DXERCESC_GE_31)
 SET(XercesC_environment LD_LIBRARY_PATH+=${XercesC_home}/lib)

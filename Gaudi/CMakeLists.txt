@@ -1,15 +1,13 @@
-###############################################
+############################################################################
 # CMakeLists.txt file for building Gaudi
-# @author Pere Mato, CERN
-###############################################
-
-
+# @author Pere Mato, CERN (semi-automaticaly generated)
+############################################################################
 GAUDI_USE_PACKAGE(GaudiKernel)
 
-#---Gaudi main program ----------------------------------------------------------------------
-GAUDI_EXECUTABLE( Gaudi.exe main.cpp GaudiKernel)
+#---Executables-------------------------------------------------------------
+GAUDI_EXECUTABLE(Gaudi main.cpp GaudiKernel)
 
-#---Installation-----------------------------------------------------------------------------
+#---Installation------------------------------------------------------------
 GAUDI_INSTALL_PYTHON_MODULES()
 GAUDI_INSTALL_SCRIPTS()
 
