@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-08-24 - Marco Clemencic
+ - Hide deprecation warnings in ICC (due to the usage of hash_map, unavoidable
+   because of gccxml).
+
 ! 2010-08-23 - Marco Clemencic
  - Added the possibility of installing the platform-independent files in the
    platform-specific directory in the InstallArea.
