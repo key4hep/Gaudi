@@ -615,8 +615,6 @@ macro cppflags         " -fmessage-length=0 -Df2cFortran -fPIC -shared -D_GNU_SO
 macro_remove cppflags "" target-icc "-pedantic"
 macro_remove cppflags "" target-icc "-Wextra"
 macro_remove cppflags "" target-icc "-Wno-long-long"
-# Hide deprecation warnings (due to the usage of hash_map, unavoidable because of gccxml)
-macro_append cppflags "" target-icc "-Wno-deprecated "
 ### Disable some non interesting "remarks" (inspired by CoolKernel)
 # Permanently disabled
 #  - remark #383:  valued copied to temporary, reference to temporary
@@ -641,6 +639,8 @@ macro_append cppflags '' no-hide-warnings '' target-icc '-wd444 '
 #  - remark #304:    access control not specified ("public/private" by default)
 #                    (fixed one in GaudiKernel, but most are from Boost)
 macro_append cppflags '' no-hide-warnings '' target-icc '-wd304 '
+#  - Hide deprecation warnings (due to the usage of hash_map, unavoidable because of gccxml)
+macro_append cppflags '' no-hide-warnings '' target-icc '-Wno-deprecated '
 ##############################################################################
 
 # macro_append cppflags " -msse2 -mfpmath=sse" \
