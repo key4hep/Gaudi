@@ -481,7 +481,9 @@ make_fragment $(app_fragment)
 macro vsCONFIG   "Release"   target-dbg  "Debug"
 macro vsDebug    "2"         target-dbg  "1"
 macro vsOptimize "2"         target-dbg  "0"
-macro vsVersion  ""   vc++7.1  "7.10"  vc++7.0 "7.00"  vc++9 "9.00"
+# The vsnet generated files are not correct for VC++9, so it is better
+# to claim that they are for VC++7.1 and let VC++9 do the conversion
+macro vsVersion  ""   vc++7.1  "7.10"  vc++7.0 "7.00"  vc++9 "7.10"
 macro package_GUID "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
 macro GUID_all "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC955}"
 
