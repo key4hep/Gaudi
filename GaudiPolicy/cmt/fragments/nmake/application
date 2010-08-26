@@ -1,0 +1,42 @@
+#-- start of application
+
+$(bin)${CONSTITUENT}$(application_suffix) :: ${OBJS} $(use_stamps) $(${CONSTITUENT}_stamps) $(${CONSTITUENT}stamps) $(use_requirements)
+	$(link_echo) application $@
+	$(link_silent) ${LINKMACRO} /out:$(bin)${CONSTITUENT}$(application_suffix) @<<
+${OBJS}
+$(cmt_installarea_linkopts)
+$(${CONSTITUENT}_use_linkopts)
+$(${CONSTITUENT}linkopts)
+<<
+	$(link_silent) mt.exe -nologo -manifest $(bin)${CONSTITUENT}$(application_suffix).manifest -outputresource:$(bin)${CONSTITUENT}$(application_suffix);1
+
+
+install_dir = $(CMTINSTALLAREA)\$(tag)\bin
+${CONSTITUENT}installname = ${CONSTITUENT}$(application_suffix)
+
+${CONSTITUENT} :: ${CONSTITUENT}install
+
+install :: ${CONSTITUENT}install
+
+${CONSTITUENT}install :: $(install_dir)\$(${CONSTITUENT}installname)
+!if "$(CMTINSTALLAREA)" != ""
+	$(echo) "installation done"
+!endif
+
+$(install_dir)\$(${CONSTITUENT}installname) :: $(bin)$(${CONSTITUENT}installname)
+!if "$(CMTINSTALLAREA)" != ""
+	$(install_echo) $(@F) into $(@D)
+	$(install_silent) $(cmt_install_action) "$(BIN)" "$(${CONSTITUENT}installname)" "$(install_dir)"
+!endif
+
+##${CONSTITUENT}clean :: ${CONSTITUENT}uninstall
+
+uninstall :: ${CONSTITUENT}uninstall
+
+${CONSTITUENT}uninstall ::
+!if "$(CMTINSTALLAREA)" != ""
+	$(cleanup_echo) "$(${CONSTITUENT}installname)" from "$(install_dir)"
+	$(cleanup_silent) $(cmt_uninstall_action) "$(BIN)" "$(${CONSTITUENT}installname)" "$(install_dir)"
+!endif
+
+#-- end of application

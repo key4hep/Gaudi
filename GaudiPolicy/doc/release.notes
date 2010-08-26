@@ -1,6 +1,11 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-08-26 - Marco Clemencic
+ - Fixed a problem in the linking of executables with VC9
+   (manifest files must be embedded in the executable, e.g.
+   http://msdn.microsoft.com/en-us/library/ms235560%28VS.80%29.aspx).
+
 ! 2010-08-24 - Marco Clemencic
  - Hide deprecation warnings in ICC (due to the usage of hash_map, unavoidable
    because of gccxml).
