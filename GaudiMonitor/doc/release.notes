@@ -1,6 +1,9 @@
 Package: GaudiMonitor
 Package manager : Marco Clemencic
 
+! 2010-08-27 - Marco Clemencic
+ - Fixed a problem breaking compilation on VC9.
+
 ! 2010-08-18 - Marco Clemencic
  - Fixed a bug spotted by Coverity (BAD_FREE).
 

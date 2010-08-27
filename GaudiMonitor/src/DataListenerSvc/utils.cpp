@@ -487,7 +487,7 @@ int apmon_utils::getVectIndex(char *item, char **vect, int vectDim) {
 void apmon_utils::logger(int msgLevel, const char *msg, int newLevel) {
   char time_s[30];
   int len;
-  long crtTime = time(NULL);
+  time_t crtTime = time(NULL);
   char *levels[5] = {(char*)"FATAL",
 		     (char*)"WARNING",
 		     (char*)"INFO",
