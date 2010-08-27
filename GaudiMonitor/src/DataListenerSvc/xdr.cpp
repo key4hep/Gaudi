@@ -239,7 +239,7 @@ bool_t
 xdr_opaque(register XDR *xdrs, caddr_t cp, register u_int cnt)
 {
         register u_int rndup;
-        static crud[BYTES_PER_XDR_UNIT];
+        static byte crud[BYTES_PER_XDR_UNIT];
 
         /*
          * if no data we are done
