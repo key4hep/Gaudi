@@ -216,6 +216,11 @@ pattern install_python_init \
 make_fragment python_init -header=python_init_header
 
 # creates an python extension binary modules with the "pyd" file extension
+macro python_bin_module_dir '$(tag)/python' \
+                      ATLAS '$(tag)/python' \
+             use-shared-dir '$(tag)/python' \
+ no-shared-dir&target-winxp '$(tag)\python-bin' \
+              no-shared-dir '$(tag)/python-bin'
 
 pattern pyd_module \
   macro <package>_install_pyd_module "" \
@@ -228,7 +233,7 @@ pattern pyd_module \
   private ; \
   macro shlibsuffix "$(shlibsuffix)" target_<module> "pyd" ; \
   macro library_prefix "$(library_prefix)" target_<module> "" ; \
-  macro <module>_install_dir "$(CMTINSTALLAREA)/$(tag)/python" target-winxp "$(CMTINSTALLAREA)\$(tag)\python" ; \
+  macro <module>_install_dir "$(CMTINSTALLAREA)/$(python_bin_module_dir)" target-winxp "$(CMTINSTALLAREA)\$(python_bin_module_dir)" ; \
   library <module> -import=Python -target_tag install_dir="$(<module>_install_dir)" <files> ; \
   end_private ; \
   macro_append <module>_cppflags " -ftemplate-depth-64" target-winxp "" ;
@@ -236,8 +241,8 @@ pattern pyd_module \
 cmtpath_pattern \
    macro <project>_install_pyd_module "" \
          <project>_without_installarea "" \
-         <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)/$(tag)/python" \
-         <project>_with_installarea&target-winxp "<path>\$(<project>_installarea_prefix)\$(tag)\python" ; \
+         <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)/$(python_bin_module_dir)" \
+         <project>_with_installarea&target-winxp "<path>\$(<project>_installarea_prefix)\$(python_bin_module_dir)" ; \
     path_remove  PYTHONPATH $(<project>_install_pyd_module) ; \
     path_prepend PYTHONPATH $(<project>_install_pyd_module) ;
 

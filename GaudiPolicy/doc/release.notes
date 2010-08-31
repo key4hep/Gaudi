@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-08-31 - Marco Clemencic
+ - Use a different directory for Python binary modules if the tag no-shared-dir
+   is used.
+
 ! 2010-08-26 - Marco Clemencic
  - Fixed a problem in the linking of executables with VC9
    (manifest files must be embedded in the executable, e.g.
