@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-09-01 - Marco Clemencic
+ - Fixed compilation problem on the gcov platform.
+
 ! 2010-08-31 - Marco Clemencic
  - Use a different directory for Python binary modules if the tag no-shared-dir
    is used.

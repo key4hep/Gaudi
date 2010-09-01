@@ -564,20 +564,12 @@ macro cppprofiled_s   "-pg" \
       target-winxp            ""
 macro_append cppdebugflags "" \
       target-pro        " $(cppprofiled_s)"
-macro cppcoverage_s   "-fprofile-arcs -ftest-coverage" \
-      target-winxp            ""
-macro_append cppdebugflags "" \
-      target-cov        " $(cppcoverage_s)"
 
 # C debug, optimized and profiled options
 macro cdebugflags     "" \
       target-dbg           "$(cdebugflags_s)"
 macro cdebugflags_s   "-g" \
       target-winxp           "/Od /Z7"
-macro ccoverage_s     "-fprofile-arcs -ftest-coverage" \
-      target-winxp            ""
-macro_append cdebugflags "" \
-      target-cov        " $(ccoverage_s)"
 
 # Fortran debug, optimized and profiled options
 macro fdebugflags      "" \
@@ -592,10 +584,6 @@ macro fprofiled_s      "-pg" \
       target-winxp            ""
 macro_append fdebugflags "" \
       target-pro        " $(fprofiled_s)"
-macro fcoverage_s     "-fprofile-arcs -ftest-coverage" \
-      target-winxp            ""
-macro_append fdebugflags "" \
-      target-cov        " $(fcoverage_s)"
 
 # Link debug options
 macro linkdebugflags   "" \
@@ -603,17 +591,16 @@ macro linkdebugflags   "" \
 macro linkdebugflags_s "" \
       target-winxp            "/debug /verbose:lib "
 
-
-macro linkcoverage_s   "-lgcov" \
-      target-winxp            ""
-
-macro_append linkdebugflags "" \
-      target-cov        " $(linkcoverage_s)"
-
-macro_append use_linkopts "" \
-	  target-cov            " $(linkcoverage_s) "
-
-
+# gcov special option (added to LCG_Platforms_linkopts because it is the last macro in the
+# link options and --coverage must appear very late on the command line).
+macro_append LCG_Platforms_linkopts "" \
+                         target-cov " --coverage"
+macro_append LCG_Platforms_cppflags "" \
+                         target-cov " --coverage"
+macro_append LCG_Platforms_cflags "" \
+                       target-cov " --coverage"
+macro_append LCG_Platforms_fflags "" \
+                       target-cov " --coverage"
 
 macro cppflags         " -fmessage-length=0 -Df2cFortran -fPIC -shared -D_GNU_SOURCE -Dlinux -Dunix -pipe -ansi -Wall -Wextra -pthread " \
       target-mac105    " -Df2cFortran -fPIC -D_GNU_SOURCE -Dunix -pipe -ansi -Wall -Wextra -Wno-long-double " \
