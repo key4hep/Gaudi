@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2010-09-01 - Marco Clemencic
+ - Added an example of a Python binary module in src/PythonModule (plus test).
+
 ! 2010-08-18 - Charles Leggett
  - Patch #4323: allow user defined heavy ion handling in PartPropSvc
 
