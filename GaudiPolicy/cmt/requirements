@@ -215,7 +215,7 @@ pattern install_python_init \
 
 make_fragment python_init -header=python_init_header
 
-# creates an python extension binary modules with the "pyd" file extension
+# Creates a Python extension binary modules with the "so" (or "pyd" on Win) file extension
 macro python_bin_module_dir '$(tag)/python' \
                       ATLAS '$(tag)/python' \
              use-shared-dir '$(tag)/python' \
@@ -231,7 +231,7 @@ pattern pyd_module \
   macro <module>_shlibflags  "$(libraryshr_linkopts) $(use_linkopts)" ;\
   macro_append <module>_dependencies " <name> " ; \
   private ; \
-  macro shlibsuffix "$(shlibsuffix)" target_<module> "pyd" ; \
+  macro shlibsuffix "$(shlibsuffix)" target_<module>&target-winxp "pyd" ; \
   macro library_prefix "$(library_prefix)" target_<module> "" ; \
   macro <module>_install_dir "$(CMTINSTALLAREA)/$(python_bin_module_dir)" target-winxp "$(CMTINSTALLAREA)\$(python_bin_module_dir)" ; \
   library <module> -import=Python -target_tag install_dir="$(<module>_install_dir)" <files> ; \
