@@ -215,28 +215,66 @@ pattern install_python_init \
 
 make_fragment python_init -header=python_init_header
 
-# Creates a Python extension binary modules with the "so" (or "pyd" on Win) file extension
+#-------------------------------------------------------------------
+# Pattern: pyd_module, pyd_boost_module
+#   Creates a Python extension binary modules with the "so" (or "pyd" on Win) file extension.
+#   The version 'pyd_boost_module' should be used in case the module
+#   uses Boost.Python (http://www.boost.org/doc/libs/release/libs/python/doc/).
+#
+# Parameters:
+#
+#   module:  name of the final python module
+#   files:   source files of the module
+#   deps:    targets to be build before the module (e.g. the linker library)
+#
+# Usage:
+#
+#   use Python v* LCG_Interfaces -no_auto_imports
+#   apply_pattern pyd_module module=MyPyModule files=MyPyModule/*.cpp deps=MyPackageLib
+#
+#   use Python v* LCG_Interfaces -no_auto_imports
+#   use Boost v* LCG_Interfaces -no_auto_imports
+#   apply_pattern pyd_boost_module module=MyPyModule files=MyPyModule/*.cpp deps=MyPackageLib
+#
+# Notes:
+#
+#   The python binary module is linked by default against teh linker library
+#   in the package, so, if there is one, it is mandatory either to specify
+#   the 'deps' parameter or to remove the link options from <module>_use_linkopts,
+#   e.g.:
+#
+#      macro_remove MyPyModule_use_linkopts '$(MyPackage_linkopts)'
+#
+#   As well, additional libraries needed by the module (or link options) must be
+#   added to the macro <module>_shlibflags.
+#
+#-------------------------------------------------------------------
+# Macro used to define where Python binary modules have to be installed
 macro python_bin_module_dir '$(tag)/python' \
                       ATLAS '$(tag)/python' \
              use-shared-dir '$(tag)/python' \
  no-shared-dir&target-winxp '$(tag)\python-bin' \
               no-shared-dir '$(tag)/python-bin'
-
+# Main pattern
 pattern pyd_module \
   macro <package>_install_pyd_module "" \
         <project>_without_installarea&target-unix "$(<package>_root)/$(tag)" \
         <project>_without_installarea&target-winxp "$(<package>_root)\$(tag)" ; \
   path_remove  PYTHONPATH $(<package>_install_pyd_module) ; \
   path_prepend PYTHONPATH $(<package>_install_pyd_module) ; \
-  macro <module>_shlibflags  "$(libraryshr_linkopts) $(use_linkopts)" ;\
-  macro_append <module>_dependencies " <name> " ; \
+  macro <module>_shlibflags  "$(libraryshr_linkopts) $(cmt_installarea_linkopts) $(<module>_use_linkopts)" ;\
+  macro_append <module>_dependencies " <name> <deps> " ; \
   private ; \
   macro shlibsuffix "$(shlibsuffix)" target_<module>&target-winxp "pyd" ; \
   macro library_prefix "$(library_prefix)" target_<module> "" ; \
   macro <module>_install_dir "$(CMTINSTALLAREA)/$(python_bin_module_dir)" target-winxp "$(CMTINSTALLAREA)\$(python_bin_module_dir)" ; \
-  library <module> -import=Python -target_tag install_dir="$(<module>_install_dir)" <files> ; \
+  library <module> -no_static -import=Python -target_tag install_dir="$(<module>_install_dir)" <files> ; \
   end_private ; \
   macro_append <module>_cppflags " -ftemplate-depth-64" target-winxp "" ;
+# Boost version of the pattern
+pattern pyd_boost_module \
+  apply_pattern pyd_module module=<module> files=<files> deps=<deps> name=<name> ; \
+  macro_append <module>_use_linkopts " $(Boost_linkopts_python)"
 
 cmtpath_pattern \
    macro <project>_install_pyd_module "" \
@@ -245,6 +283,7 @@ cmtpath_pattern \
          <project>_with_installarea&target-winxp "<path>\$(<project>_installarea_prefix)\$(python_bin_module_dir)" ; \
     path_remove  PYTHONPATH $(<project>_install_pyd_module) ; \
     path_prepend PYTHONPATH $(<project>_install_pyd_module) ;
+#-------------------------------------------------------------------
 
 
 action CompilePython "python -m compileall $(CMTINSTALLAREA)$(shared_install_subdir)/python $(CMTINSTALLAREA)$(shared_install_subdir)/scripts" \

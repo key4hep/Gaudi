@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-09-02 - Marco Clemencic
+ - Improved and documented the 'pyd_module' and 'pyd_boost_module' (new) patterns.
+
 ! 2010-09-01 - Marco Clemencic
  - Fixed compilation problem on the gcov platform.
  - Fixed a problem with Python binary modules on Linux (the extension must be .so)

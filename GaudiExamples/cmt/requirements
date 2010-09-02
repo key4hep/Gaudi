@@ -102,8 +102,11 @@ macro_append ROOT_linkopts        "" \
 # Create a python binary module
 # -----------------------------
 use Python v* LCG_Interfaces -no_auto_imports
-apply_pattern pyd_module module=PyExample files=PythonModule/*.cpp
-macro_append PyExample_shlibflags " $(Boost_linkopts_python) $(Python_linkopts)"
+apply_pattern pyd_boost_module module=PyExample files=PythonModule/*.cpp
+# we do not need/want to link the module against the package library
+macro_remove PyExample_use_linkopts '$(GaudiExamples_linkopts)'
+# otherwise we should have used
+# apply_pattern pyd_boost_module module=PyExample files=PythonModule/*.cpp deps=GaudiExamplesLib
 #------------------------------------------------------------------------------
 
 apply_pattern QMTest

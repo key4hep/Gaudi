@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2010-09-02 - Marco Clemencic
+ - Fixed configuration for the Python binary module.
+
 ! 2010-09-01 - Marco Clemencic
  - Added an example of a Python binary module in src/PythonModule (plus test).
 
