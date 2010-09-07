@@ -29,6 +29,8 @@ macro(GAUDI_PROJECT project version)
   OPTION(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
   OPTION(BUILD_TESTS "Set to OFF to build static libraries" ON)
 
+  INSTALL(DIRECTORY cmake/ DESTINATION cmake)
+
   #--- Global actions for the project
   #GAUDI_USE_PACKAGE(QMtest)
   #GAUDI_USE_PACKAGE(pytools)

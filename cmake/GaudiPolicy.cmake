@@ -91,7 +91,7 @@ macro(REFLEX_GENERATE_DICTIONARY dictionary _headerfiles _selectionfile)
    set(definitions ${definitions} -D${d})
   endforeach()
  
-  if (CMAKE_SYSTEM_NAME MATCHES Linux)    
+  if (CMAKE_SYSTEM_NAME MATCHES Linux)
     add_custom_command(
       OUTPUT ${gensrcdict} ${rootmapname}     
       COMMAND ${ROOT_genreflex_cmd}       

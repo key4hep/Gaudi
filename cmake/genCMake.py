@@ -14,6 +14,7 @@ import os, pickle
 
 package = os.getcwd().split('/')[-2]
 project = os.popen('cmt show macro_value project').readlines()[0].strip()
+project_home = os.popen('cmt show macro_value %s_home' % project ).readlines()[0].strip()
 picklefile = '/tmp/%s/%s_libraries.pkl'% (os.environ['USER'], project)
 
 root = os.path.dirname(os.getcwd())+'/'
@@ -23,37 +24,36 @@ header = """####################################################################
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################""" % package
 
-#knownlibs = ['Reflex', 'Core', 'Cint', 'Tree', 'pthread', 'RIO', 'boost_system-gcc43-mt',
-#             'boost_filesystem-gcc43-mt', 'boost_regex-gcc43-mt', 'boost_thread-gcc43-mt']
-knownlibs = []
+ignorelibs = []
 
 def getlibs(library):
   libs = []
   linkopts = os.popen('cmt show macro_value %s_use_linkopts' % library).readlines()[0][:-1]
   for opt in linkopts.split():
     if opt[:2] == '-l':
-      if opt[2:] not in knownlibs and opt[2:] not in libs: libs.append(opt[2:])
+      if opt[2:] not in ignorelibs and opt[2:] not in libs: libs.append(opt[2:])
   return libs
 
 replacetable = [('boost_system', '${Boost_LIBRARIES}'),
                 ('boost_filesystem', ''),
-                ('boost_regex', ''),
+                ('boost_regex', '${Boost_regex}'),
                 ('boost_thread', ''),
                 ('boost_program_options', ''),
                 ('boost_date_time', '${Boost_date_time}'),
-                ('Core', '${ROOT_LIBRARIES}'),
-                ('Cint', ''),
-                ('Tree', ''),
-                ('dl', ''),
-                ('util', ''),
-                ('xerces-c', '${XercesC_LIBRARIES}'),
-                ('uuid', '${uuid_LIBRARIES}'),
-                ('pthread', ''),
-                ('gslcblas', '${GSL_LIBRARIES}'),
-                ('gsl', ''),
-                ('CLHEP-Cast-1.9.4.4', '${CLHEP_LIBRARIES}'),
+                ('=Core', '${ROOT_LIBRARIES}'),
+                ('=Cint', ''),
+                ('=Tree', ''),
+                ('=dl', ''),
+                ('=util', ''),
+                ('=xerces-c', '${XercesC_LIBRARIES}'),
+                ('=uuid', '${uuid_LIBRARIES}'),
+                ('=pthread', ''),
+                ('=gslcblas', '${GSL_LIBRARIES}'),
+                ('=gsl', ''),
+                ('=CLHEP-Cast-1.9.4.4', '${CLHEP_LIBRARIES}'),
                 ('CLHEP', ''),
-                ('python2.5', '${Python_LIBRARIES}')
+                ('=python2.5', '${Python_LIBRARIES}'),
+                ('=fftw3', '${fftw_LIBRARIES}')
                 ]
                 
 
@@ -61,9 +61,14 @@ def prettylibs(libraries):
   libs = []
   for lib in libraries:
     for p,v in replacetable:
-      if p in lib :
-        lib = v
-        break
+      if p[0] == '=' :
+        if p[1:] == lib :
+          lib = v
+          break
+      else :
+        if p in lib :
+          lib = v
+          break
     if lib: libs.append(lib)
   return ' '.join(libs)
 
@@ -78,19 +83,30 @@ else:
 print header
 
 #---Find dependent packages--------------------------------------------------------------------------
-gaudipackages = ('GaudiPolicy', 'GaudiPython', 'GaudiPoolDb', 'RootHistCnv', 
+gaudipackages = ['GaudiPolicy', 'GaudiPython', 'GaudiPoolDb', 'RootHistCnv', 
                  'GaudiKernel', 'GaudiAlg', 'GaudiUtils', 'GaudiObjDesc',
-                 'GaudiSvc')
+                 'GaudiSvc']
 if (project == 'GAUDI' ):
-  outsidepackages = ('GaudiSvc')
+  outsidepackages = ['GaudiSvc']
 else :
   outsidepackages = gaudipackages
   
-ignorepackages = ('GaudiPolicy', 'LCG_Interfaces/Reflex', 'LCG_Interfaces/oracle',
+ignorepackages = ['GaudiPolicy', 'LCG_Interfaces/Reflex', 'LCG_Interfaces/oracle',
                   'LCG_Interfaces/lfc','LCG_Interfaces/sqlite', 'LCG_Interfaces/mysql',
-                  'LCG_Interfaces/pyqt', 'Det/SQLDDDB', 'FieldMap', )
+                  'LCG_Interfaces/pyqt', 'Det/SQLDDDB', 'FieldMap']
+
 deppackages = []
 lines = os.popen('cmt show uses').readlines()
+#---Find remote packages-----------------------------------------------------------------------------
+for l in lines:
+  if l[:4] == 'use ':
+    items = l[4:].split()
+    p = items[0]
+    if items[2][0] != '(' :p = items[2]+'/'+p
+    if items[2] == 'LCG_Interfaces' : continue
+    if project_home in l : continue
+    outsidepackages.append(p)   
+    
 for l in lines:
   if l[:5] == '# use':
     p = l[5:].split()[0]
@@ -106,6 +122,12 @@ for l in lines:
 
 for p in deppackages:
   print 'GAUDI_USE_PACKAGE(%s)'%p
+
+#---Include Dirs-------------------------------------------------------------------------------------
+dirs = os.popen('cmt show include_dirs').readlines()[0]
+for d in dirs.split():
+  if root in d:
+    print 'include_directories(${CMAKE_CURRENT_SOURCE_DIR}/%s)' % d.replace(root,'')
 
 #---Find Constinuents--------------------------------------------------------------------------------
 
@@ -137,7 +159,9 @@ for l in lines:
     elif t[1] == 'genconfig' :
       genconfig.append(t[2][:-4])
     elif t[1] == 'install_more_includes':
-      install_headers.append([t[3].replace('more=','')])
+      dirs = [t[3].replace('more=','')]
+      if t[4].replace('offset=','') :  dirs.append(t[4].replace('offset=',''))
+      install_headers.append(dirs)
     elif t[1] == 'obj2doth' :
       god_headers.append([t[3].replace('../','')])
     elif t[1] == 'obj2dict' :
@@ -253,7 +277,7 @@ if not god_dictionaries and reflex_dictionaries:
 print '\n#---Installation------------------------------------------------------------'
 
 for i in install_headers:
-  print 'GAUDI_INSTALL_HEADERS(%s)' % i[0]
+  print 'GAUDI_INSTALL_HEADERS(%s)' % ' '.join(i)
 
 if install_python:
   print 'GAUDI_INSTALL_PYTHON_MODULES()'
