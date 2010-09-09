@@ -250,11 +250,11 @@ make_fragment python_init -header=python_init_header
 #
 #-------------------------------------------------------------------
 # Macro used to define where Python binary modules have to be installed
-macro python_bin_module_dir '$(tag)/python' \
-                      ATLAS '$(tag)/python' \
-             use-shared-dir '$(tag)/python' \
- no-shared-dir&target-winxp '$(tag)\python-bin' \
-              no-shared-dir '$(tag)/python-bin'
+macro python_bin_module_dir '$(tag)/python-bin' \
+               target-winxp '$(tag)\python-bin' \
+ use-shared-dir&target-winxp '$(tag)\python' \
+              use-shared-dir '$(tag)/python'
+
 # Main pattern
 pattern pyd_module \
   macro <package>_install_pyd_module "" \
@@ -483,6 +483,8 @@ tag sl54   host-slc5
 tag sl55   host-slc5
 tag sl56   host-slc5
 tag sl57   host-slc5
+# Atlas uses shared directories
+tag ATLAS  use-shared-dir
 
 # Fragments =================================================================
 
@@ -861,15 +863,13 @@ macro shlibsuffix   "so" \
 
 #-------------------------------------------------------------------
 # Shared installation options
-#   if the extra tag no-shared-dir is specified, the
-#   platform-independent files will be installed in the binary
-#   directory in the InstallArea
+#   if the extra tag use-shared-dir is specified, the
+#   platform-independent files will be installed in shared
+#   directories in the InstallArea
 #-------------------------------------------------------------------
-macro shared_install_subdir '' \
-                      ATLAS '' \
-             use-shared-dir '' \
- no-shared-dir&target-winxp '\$(tag)' \
-              no-shared-dir '/$(tag)'
+macro shared_install_subdir '/$(tag)' \
+               target-winxp '\$(tag)' \
+             use-shared-dir ''
 
 #-------------------------------------------------------------------
 # begin of genconf

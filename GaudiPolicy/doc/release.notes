@@ -1,6 +1,11 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-09-09 - Marco Clemencic
+ - Changed the default behavior about shared directories: by default shared
+   directories are not used. The old behavior can be restored with the tag
+   'user-shared-dir' (the tag ATLAS implies it).
+
 ! 2010-09-02 - Marco Clemencic
  - Improved and documented the 'pyd_module' and 'pyd_boost_module' (new) patterns.
 
