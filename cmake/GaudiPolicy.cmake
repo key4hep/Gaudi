@@ -17,6 +17,8 @@ set(CMAKE_CXX_COMPILER g++)
 
 # Compilation Flags
 #-->set(CMAKE_CXX_FLAGS "-Dunix -pipe -ansi -Wall -Wextra -pthread  -Wno-deprecated -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long")
+
+
 set(CMAKE_CXX_FLAGS "-Dunix -pipe -ansi -Wall -Wextra -pthread  -Wno-deprecated -Wwrite-strings -Wpointer-arith -Wno-long-long")
 if (CMAKE_SYSTEM_NAME MATCHES Linux) 
   set(CMAKE_CXX_FLAGS "-Dlinux ${CMAKE_CXX_FLAGS}")
@@ -27,6 +29,7 @@ add_definitions(-D_GNU_SOURCE -DGAUDI_V20_COMPAT)
 # Link shared flags
 if (CMAKE_SYSTEM_NAME MATCHES Linux) 
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000")
+  set(CMAKE_MODULE_LINKER_FLAGS "-Wl,--as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000")
 endif()
 
 if(APPLE)
@@ -261,6 +264,7 @@ function(GAUDI_EXECUTABLE executable sources)
   endforeach()
   add_executable( ${executable} ${exe_srcs})
   target_link_libraries(${executable} ${ARGN} )
+  set_target_properties(${executable} PROPERTIES SUFFIX .exe)
   #----Installation details-------------------------------------------------------
   install(TARGETS ${executable} RUNTIME DESTINATION ${bin})
 endfunction()
@@ -281,7 +285,8 @@ function(GAUDI_TEST executable sources)
   add_executable( ${executable} ${exe_srcs})
   target_link_libraries(${executable} ${ARGN} )
   #----Installation details-------------------------------------------------------
-  install(TARGETS ${executable} RUNTIME DESTINATION ${bin}/tests)
+  set_target_properties(${executable} PROPERTIES SUFFIX .exe)
+  install(TARGETS ${executable} RUNTIME DESTINATION ${bin})
 endfunction()
 
 #---------------------------------------------------------------------------------------------------

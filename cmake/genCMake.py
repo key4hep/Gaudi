@@ -7,25 +7,20 @@
 
         ---for a complete project---
      cd <project>/XXXXSys/cmt
-     cmt br "python genCmake > ../CMakeLists.txt"
+     cmt br "python genCMake > ../CMakeLists.txt"
 """
 
 import os, pickle
 
+#---Useful global valiables-------------------------------------------------------------------------- 
 package = os.getcwd().split('/')[-2]
 project = os.popen('cmt show macro_value project').readlines()[0].strip()
 project_home = os.popen('cmt show macro_value %s_home' % project ).readlines()[0].strip()
 picklefile = '/tmp/%s/%s_libraries.pkl'% (os.environ['USER'], project)
-
 root = os.path.dirname(os.getcwd())+'/'
 
-header = """############################################################################
-# CMakeLists.txt file for building %s
-# @author Pere Mato, CERN (semi-automaticaly generated)
-############################################################################""" % package
-
+#---Useful functions---------------------------------------------------------------------------------
 ignorelibs = []
-
 def getlibs(library):
   libs = []
   linkopts = os.popen('cmt show macro_value %s_use_linkopts' % library).readlines()[0][:-1]
@@ -53,10 +48,11 @@ replacetable = [('boost_system', '${Boost_LIBRARIES}'),
                 ('=CLHEP-Cast-1.9.4.4', '${CLHEP_LIBRARIES}'),
                 ('CLHEP', ''),
                 ('=python2.5', '${Python_LIBRARIES}'),
-                ('=fftw3', '${fftw_LIBRARIES}')
+                ('=fftw3', '${fftw_LIBRARIES}'),
+                ('=HepPDT', '${HepPDT_LIBRARIES}'),
+                ('=HepPID', '')
                 ]
                 
-
 def prettylibs(libraries):
   libs = []
   for lib in libraries:
@@ -72,7 +68,7 @@ def prettylibs(libraries):
     if lib: libs.append(lib)
   return ' '.join(libs)
 
-#---Find dependent packages--------------------------------------------------------------------------
+#---Read Global libraries ---------------------------------------------------------------------------
 if os.path.exists(picklefile):
   input = open(picklefile, 'rb')
   gbl_libraries = pickle.load(input)
@@ -80,22 +76,27 @@ if os.path.exists(picklefile):
 else:
   gbl_libraries = {}
 
-print header
+print """############################################################################
+# CMakeLists.txt file for building %s
+# @author Pere Mato, CERN (semi-automaticaly generated)
+############################################################################""" % package
+
 
 #---Find dependent packages--------------------------------------------------------------------------
 gaudipackages = ['GaudiPolicy', 'GaudiPython', 'GaudiPoolDb', 'RootHistCnv', 
                  'GaudiKernel', 'GaudiAlg', 'GaudiUtils', 'GaudiObjDesc',
                  'GaudiSvc']
-if (project == 'GAUDI' ):
-  outsidepackages = ['GaudiSvc']
-else :
-  outsidepackages = gaudipackages
+#if (project == 'GAUDI' ):
+#  outsidepackages = ['GaudiSvc']
+#else :
+#  outsidepackages = gaudipackages
+outsidepackages = []
   
 ignorepackages = ['GaudiPolicy', 'LCG_Interfaces/Reflex', 'LCG_Interfaces/oracle',
                   'LCG_Interfaces/lfc','LCG_Interfaces/sqlite', 'LCG_Interfaces/mysql',
                   'LCG_Interfaces/pyqt', 'Det/SQLDDDB', 'FieldMap']
 
-deppackages = []
+dependentpackages = []
 lines = os.popen('cmt show uses').readlines()
 #---Find remote packages-----------------------------------------------------------------------------
 for l in lines:
@@ -103,7 +104,10 @@ for l in lines:
     items = l[4:].split()
     p = items[0]
     if items[2][0] != '(' :p = items[2]+'/'+p
-    if items[2] == 'LCG_Interfaces' : continue
+    if items[2] == 'LCG_Interfaces' :
+      if not 'no_auto_imports' in l and not p in ignorepackages:
+        dependentpackages.append(p)
+        continue
     if project_home in l : continue
     outsidepackages.append(p)   
     
@@ -115,13 +119,13 @@ for l in lines:
       pass
     elif p in ignorepackages :
       pass
-    elif p in deppackages :
+    elif p in dependentpackages :
       pass
     else :
-      deppackages.append(p.replace('LCG_Interfaces/',''))
+      dependentpackages.append(p)
 
-for p in deppackages:
-  print 'GAUDI_USE_PACKAGE(%s)'%p
+for p in dependentpackages:
+  print 'GAUDI_USE_PACKAGE(%s)' % p.replace('LCG_Interfaces/','')
 
 #---Include Dirs-------------------------------------------------------------------------------------
 dirs = os.popen('cmt show include_dirs').readlines()[0]
@@ -147,9 +151,9 @@ for l in lines:
   t = l.split()
   if t[0] == 'document' :
     if t[1] == 'install_python':
-      install_python = True
+      if os.path.exists('python') : install_python = True
     elif t[1] == 'install_scripts':
-      install_scripts = True
+      if os.path.exists('scripts') : install_scripts = True
     elif t[1] == 'reflex_dictionary_generator' :
       name =  t[2][:-3]
       sel = os.popen('cmt show macro_value %s_reflex_selection_file' % name).readlines()[0][:-1]
@@ -159,9 +163,12 @@ for l in lines:
     elif t[1] == 'genconfig' :
       genconfig.append(t[2][:-4])
     elif t[1] == 'install_more_includes':
-      dirs = [t[3].replace('more=','')]
-      if t[4].replace('offset=','') :  dirs.append(t[4].replace('offset=',''))
-      install_headers.append(dirs)
+      dir1 = t[3].replace('more=','')
+      dir2 = t[4].replace('offset=','')
+      dirs = []
+      if dir1 and os.path.exists(dir1) : dirs.append(dir1)
+      if dir2 and os.path.exists(dir2) : dirs.append(dir2)
+      if dirs : install_headers.append(dirs)
     elif t[1] == 'obj2doth' :
       god_headers.append([t[3].replace('../','')])
     elif t[1] == 'obj2dict' :
@@ -276,8 +283,8 @@ if not god_dictionaries and reflex_dictionaries:
   
 print '\n#---Installation------------------------------------------------------------'
 
-for i in install_headers:
-  print 'GAUDI_INSTALL_HEADERS(%s)' % ' '.join(i)
+for lst in install_headers:
+  print 'GAUDI_INSTALL_HEADERS(%s)' % ' '.join(lst)
 
 if install_python:
   print 'GAUDI_INSTALL_PYTHON_MODULES()'

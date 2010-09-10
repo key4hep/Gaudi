@@ -52,7 +52,7 @@ StatusCodeSvc/*.cpp
 testing/*.cpp )
 
 GAUDI_COMPONENT_LIBRARY(GaudiExamples "${GaudiExamples_srcs}" GaudiExamplesLib)
-GAUDI_LINKER_LIBRARY(GaudiExamplesLib Lib/*.cpp GaudiGSLLib GaudiUtilsLib HepPDT HepPID)
+GAUDI_LINKER_LIBRARY(GaudiExamplesLib Lib/*.cpp GaudiGSLLib GaudiUtilsLib HepPDT HepPID Tree)
 
 #---Executables-------------------------------------------------------------
 GAUDI_EXECUTABLE(Allocator Allocator/*.cpp GaudiExamplesLib GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES} RIO Hist ${CLHEP_LIBRARIES} ${GSL_LIBRARIES})
