@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-09-10 - Marco Clemencic
+ - Fixed a minor problems in the 'uninstall_command' macro and in the NMake version
+   of the install_scripts_header fragment.
+
 ! 2010-09-09 - Marco Clemencic
  - Changed the default behavior about shared directories: by default shared
    directories are not used. The old behavior can be restored with the tag

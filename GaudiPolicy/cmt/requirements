@@ -341,7 +341,7 @@ make_fragment install_scripts -header=install_scripts_header
 # Some data files are specified using a directory.
 #
 macro install_command 'python $(GaudiPolicy_root)/scripts/install.py -xCVS -x*~ -x*.stamp -x*.bak -x.* -x*.pyc -x*.pyo --log=./install.$(tag).history '
-macro uninstall_command 'python $(GaudiPolicy_root)/scripts/install.py -u --log=./install.history '
+macro uninstall_command 'python $(GaudiPolicy_root)/scripts/install.py -u --log=./install.$(tag).history '
 
 macro remove_command "$(cmt_uninstallarea_command)"
 
