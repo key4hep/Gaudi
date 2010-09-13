@@ -4,9 +4,11 @@
 #include <string>
 #include "GaudiKernel/Kernel.h"
 
+
 namespace System {
 
 class GAUDI_API PathResolver
+
 {
 public:
   typedef enum
@@ -48,6 +50,7 @@ public:
 					  const std::string& search_list,
 					  SearchType search_type = LocalSearch);
 
+
   /**
 
     @arg @c logical_file_name the name of the directory to locate in the search path
@@ -74,6 +77,7 @@ public:
 					       const std::string& search_list,
 					       SearchType search_type = LocalSearch);
 
+
   /**
 
   @arg @c search_path the name of a path-like environment variable
@@ -82,17 +86,10 @@ public:
 
    */
   static SearchPathStatus check_search_path (const std::string& search_path);
+
+
 };
 
-GAUDI_API PathResolver::SearchPathStatus PathResolverCheckSearchPath (const std::string& search_path);
-GAUDI_API std::string PathResolverFindDirectory (const std::string& logical_file_name,
-			 const std::string& search_path);
-GAUDI_API std::string PathResolverFindDirectoryFromList (const std::string& logical_file_name,
-				 const std::string& search_list);
-GAUDI_API std::string PathResolverFindFile (const std::string& logical_file_name,
-		    const std::string& search_path);
-GAUDI_API std::string PathResolverFindFileFromList (const std::string& logical_file_name,
-			    const std::string& search_list);
 GAUDI_API std::string PathResolverFindXMLFile (const std::string& logical_file_name);
 GAUDI_API std::string PathResolverFindDataFile (const std::string& logical_file_name);
 
