@@ -1,6 +1,14 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-09-13 - Charles Leggett
+ - Patch #4394: rewriting PathResolver using boost::filesystem
+   - simplified the code
+   - small change in behavior:
+     if the search for "B/a.txt" is not successful, the original PathResolver
+     would traverse the search list again looking for just "a.txt"; not it is
+     not the case anymore
+
 ! 2010-08-23 - Marco Clemencic
  - Modified "loadConfigurableDb" to be able to find *_merged_confDb.py in any
    subdirectory of the InstallArea (needed to be able to install platform-
