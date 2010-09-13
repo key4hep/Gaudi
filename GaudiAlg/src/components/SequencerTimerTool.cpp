@@ -34,6 +34,7 @@ SequencerTimerTool::SequencerTimerTool( const std::string& type,
   declareProperty( "shots"        , m_shots );
   declareProperty( "Normalised"   , m_normalised = false );
   declareProperty( "GlobalTiming" , m_globalTiming = false );
+  declareProperty( "ColumnWidth"  , m_characters = 30, "Number of characters to be used in algorithm name column" );
 }
 //=============================================================================
 // Destructor
@@ -72,7 +73,7 @@ StatusCode SequencerTimerTool::initialize ( ) {
 //=========================================================================
 StatusCode SequencerTimerTool::finalize ( ) {
 
-  std::string line(96, '-');
+  std::string line( 68 + m_characters, '-' );
   info() << line << endmsg
          << "This machine has a speed about "
          << format( "%6.2f", 1000.*m_speedRatio)

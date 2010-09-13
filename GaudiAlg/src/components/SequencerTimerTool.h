@@ -14,6 +14,12 @@
 /** @class SequencerTimerTool SequencerTimerTool.h
  *  Implements the time measurement inside a sequencer
  *
+ *  The width of the timing table column printing the algorithm name
+ *  is 30 by default. That can be changed via
+ *  \verbatim
+TimingAuditor().addTool(SequencerTimerTool("TIMER"))
+TimingAuditor().TIMER.ColumnWidth = 50 \endverbatim
+ *
  *  @author Olivier Callot
  *  @date   2004-05-19
  */
@@ -41,7 +47,7 @@ public:
       std::string prefix( m_indent, ' ' );
       myName += prefix;
     }
-    unsigned int headerSize = 30;
+    unsigned int headerSize = m_characters;
     
     std::string space( headerSize, ' ' );
     myName += name + space ;
@@ -88,5 +94,6 @@ private:
   double m_normFactor; ///< Factor to convert to standard CPU (1 GHz PIII)
   double m_speedRatio;
   bool   m_globalTiming;
+  unsigned int m_characters; ///< Number of characters to use in prinout of algorithm name
 };
 #endif // SEQUENCERTIMERTOOL_H

@@ -90,8 +90,9 @@ public:
 
   /** header matching the previous format **/
   std::string header( ) const {
-    std::string s = "Algorithm          (millisec) |    <user> |   <clock> |";
-    s += "      min       max | entries | total (s) |";
+    std::string space( m_name.size() - 20, ' ' );
+    std::string s = "Algorithm" + space + "(millisec) |    <user> |";
+    s += "   <clock> |      min       max | entries | total (s) |";
     return s;
   }
 
