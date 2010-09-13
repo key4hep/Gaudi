@@ -89,8 +89,10 @@ public:
   }
 
   /** header matching the previous format **/
-  std::string header( ) const {
-    std::string s = "Algorithm          (millisec) |    <user> |   <clock> |";
+  std::string header( int size ) const {
+    if ( size < 21 ) size=21;
+    std::string blank( size-20, ' ' );
+    std::string s = "Algorithm" + blank + "(millisec) |    <user> |   <clock> |";
     s += "      min       max | entries | total (s) |";
     return s;
   }

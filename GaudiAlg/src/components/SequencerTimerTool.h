@@ -41,11 +41,9 @@ public:
       std::string prefix( m_indent, ' ' );
       myName += prefix;
     }
-    unsigned int headerSize = 30;
-    
-    std::string space( headerSize, ' ' );
+    std::string space( m_headerSize, ' ' );
     myName += name + space ;
-    myName = myName.substr( 0, headerSize );
+    myName = myName.substr( 0, m_headerSize );
     
     m_timerList.push_back( TimerForSequencer(myName, m_normFactor) );
     return m_timerList.size() -1;
@@ -88,5 +86,6 @@ private:
   double m_normFactor; ///< Factor to convert to standard CPU (1 GHz PIII)
   double m_speedRatio;
   bool   m_globalTiming;
+  int    m_headerSize;   ///< Size of the name field
 };
 #endif // SEQUENCERTIMERTOOL_H

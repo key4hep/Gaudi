@@ -34,6 +34,7 @@ SequencerTimerTool::SequencerTimerTool( const std::string& type,
   declareProperty( "shots"        , m_shots );
   declareProperty( "Normalised"   , m_normalised = false );
   declareProperty( "GlobalTiming" , m_globalTiming = false );
+  declareProperty( "NameSize"     , m_headerSize   = 30 );
 }
 //=============================================================================
 // Destructor
@@ -72,13 +73,13 @@ StatusCode SequencerTimerTool::initialize ( ) {
 //=========================================================================
 StatusCode SequencerTimerTool::finalize ( ) {
 
-  std::string line(96, '-');
+  std::string line(m_headerSize+66, '-');
   info() << line << endmsg
          << "This machine has a speed about "
          << format( "%6.2f", 1000.*m_speedRatio)
          << " times the speed of a 2.8 GHz Xeon.";
   if ( m_normalised ) info() <<" *** All times are renormalized ***";
-  info() << endmsg << m_timerList[0].header() << endmsg
+  info() << endmsg << m_timerList[0].header( m_headerSize ) << endmsg
          << line << endmsg;
 
   std::string lastName = "";
