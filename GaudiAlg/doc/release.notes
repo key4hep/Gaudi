@@ -1,6 +1,11 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2010-09-13 - Olivier Callot, Patrick Koppenburg, Roel Aaij, Marco Clemencic
+ - Patch #4299, patch #4332: Add option for filed size in SequencerTimerTool
+   Added an option to change the size of the algorithm name in the Sequencer Timer tool:
+   SequencerTimerTool("TimingAuditor.TIMER").NameSize = 30
+
 ! 2010-08-19 - Marco Clemencic
  - Fix for ICC in GaudiAlg/CheckForNaN.h.
 
