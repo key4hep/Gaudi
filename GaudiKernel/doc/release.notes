@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-09-14 - Marco Clemencic
+ - Fixed a warning introduced with patch #4394.
+
 ! 2010-09-13 - Charles Leggett
  - Patch #4394: rewriting PathResolver using boost::filesystem
    - simplified the code
