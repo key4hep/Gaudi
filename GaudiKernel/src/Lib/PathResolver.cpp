@@ -28,12 +28,12 @@ typedef enum {
   PR_regular_file,
   PR_directory
 } PR_file_type;
-  
+
 typedef enum {
   PR_local,
   PR_recursive
 } PR_search_type;
-  
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 static bool
@@ -45,7 +45,7 @@ PR_find( const bf::path& file, const string& search_list,
 
   // assume that "." is always part of the search path, so check locally first
 
-  try { 
+  try {
     bf::path local = bf::initial_path() / file;
     if ( ( file_type == PR_regular_file && is_regular_file( local ) ) ||
          ( file_type == PR_directory && is_directory( local ) ) ) {
@@ -59,11 +59,11 @@ PR_find( const bf::path& file, const string& search_list,
   // iterate through search list
   vector<string> spv;
   split(spv, search_list, boost::is_any_of( path_separator), boost::token_compress_on);
-  for (vector<string>::const_iterator itr = spv.begin(); 
+  for (vector<string>::const_iterator itr = spv.begin();
        itr != spv.end(); ++itr ) {
 
     bf::path fp = *itr / file;
-      
+
     try {
       if ( ( file_type == PR_regular_file && is_regular_file( fp ) ) ||
            ( file_type == PR_directory && is_directory( fp ) ) ) {
@@ -75,14 +75,14 @@ PR_find( const bf::path& file, const string& search_list,
 
 
     // if recursive searching requested, drill down
-    if (search_type == PathResolver::RecursiveSearch && 
+    if (search_type == PathResolver::RecursiveSearch &&
         is_directory( bf::path(*itr) ) ) {
 
       bf::recursive_directory_iterator end_itr;
       try {
-        for ( bf::recursive_directory_iterator ritr( *itr ); 
+        for ( bf::recursive_directory_iterator ritr( *itr );
               ritr != end_itr; ++ritr) {
-          
+
           // skip if not a directory
           if (! is_directory( bf::path(*ritr) ) ) { continue; }
 
@@ -96,7 +96,7 @@ PR_find( const bf::path& file, const string& search_list,
       } catch (bf::filesystem_error /*err*/) {
       }
     }
-    
+
   }
 
   return found;
@@ -108,22 +108,22 @@ string
 PathResolver::find_file(const std::string& logical_file_name,
               const std::string& search_path,
               SearchType search_type) {
-  
+
   const char* path_env = ::getenv (search_path.c_str ());
-  
+
   std::string path_list;
-  
+
   if (path_env != 0)
   {
     path_list = path_env;
   }
-  
+
   return (find_file_from_list (logical_file_name, path_list, search_type));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-std::string 
+std::string
 PathResolver::find_file_from_list (const std::string& logical_file_name,
                                    const std::string& search_list,
                                    SearchType search_type)
@@ -132,21 +132,22 @@ PathResolver::find_file_from_list (const std::string& logical_file_name,
 
   bf::path lfn( logical_file_name );
 
-  bool found = PR_find (lfn, search_list, PR_regular_file, search_type, result);
+  /* bool found = */
+  PR_find (lfn, search_list, PR_regular_file, search_type, result);
 
-  // The following functionality was in the original PathResolver, but I believe 
+  // The following functionality was in the original PathResolver, but I believe
   // that it's WRONG. It extracts the filename of the requested item, and searches
-  // for that if the preceeding search fails. ie, if you're looking for "B/a.txt",
+  // for that if the preceding search fails. i.e., if you're looking for "B/a.txt",
   // and that fails, it will look for just "a.txt" in the search list.
 
   // if (! found && lfn.filename() != lfn ) {
   //   result = "";
   //   PR_find (lfn.filename(), search_list, PR_regular_file, search_type, result);
   // }
-  
+
   return (result);
 }
- 
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 string PathResolver::find_directory (const std::string& logical_file_name,
@@ -167,25 +168,25 @@ string PathResolver::find_directory (const std::string& logical_file_name,
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-string 
+string
 PathResolver::find_directory_from_list (const std::string& logical_file_name,
                                         const std::string& search_list,
                                         SearchType search_type)
 {
   std::string result;
-  
+
   if (!PR_find (logical_file_name, search_list, PR_directory, search_type, result))
   {
     result = "";
   }
-  
+
   return (result);
 }
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-PathResolver::SearchPathStatus 
+PathResolver::SearchPathStatus
 PathResolver::check_search_path (const std::string& search_path)
 {
   const char* path_env = ::getenv (search_path.c_str ());
@@ -193,7 +194,7 @@ PathResolver::check_search_path (const std::string& search_path)
   if (path_env == 0) return (EnvironmentVariableUndefined);
 
   std::string path_list (path_env);
-  
+
   vector<string> spv;
   boost::split( spv, path_list, boost::is_any_of( path_separator ), boost::token_compress_on);
   vector<string>::iterator itr=spv.begin();
@@ -223,5 +224,5 @@ std::string PathResolverFindDataFile (const std::string& logical_file_name)
 {
   return PathResolver::find_file (logical_file_name, "DATAPATH");
 }
-  
+
 }  // System namespace
