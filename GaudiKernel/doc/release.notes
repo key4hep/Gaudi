@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-09-17 - Vanya Belyaev
+ - Fixed bug #72170: Python Parsers and map of <string, unsigned int>
+   Added support for map<string,unsigned int>.
+
 ! 2010-09-17 - Marco Clemencic
  - Minor fix to make_patch.py
 
