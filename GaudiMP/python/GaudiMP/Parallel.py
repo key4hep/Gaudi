@@ -1,7 +1,7 @@
-# File: GaudiPython/Parallel.py
+# File: GaudiMP/Parallel.py
 # Author: Pere Mato (pere.mato@cern.ch)
 
-""" GaudiPython.Parallel module.
+""" GaudiMP.Parallel module.
     This module provides 'parallel' processing support for GaudiPyhton.
     It is adding some sugar on top of public domain packages such as
     the 'multiprocessing' or the 'pp' packages. The interface can be made
@@ -15,8 +15,9 @@ excluded_varnames = ['HOSTNAME', 'SSH_CLIENT', 'SSH_CONNECTION', 'DISPLAY']
 import sys, os, time, copy
 
 # == Eoin's adds for Parallel Mode ====
+import multiprocessing
 from multiprocessing import Process, Queue, Pool, current_process
-from ROOT import TBufferFile, TBuffer
+from ROOT import TBufferFile, TBuffer, TMessage
 from Gaudi.Configuration import appendPostConfigAction, Configurable, INFO, ERROR, VERBOSE
 from GaudiPython import AppMgr, gbl, setOwnership, SUCCESS, PyAlgorithm
 # from ParallelStats import recordReaderStats, recordWorkerStats, recordWriterStats
@@ -41,34 +42,6 @@ def _ppfunction( args ) :
     #--- Collect statistics
     stat.stop()
     return (copy.deepcopy(task.output), stat)
-
-def _detect_ncpus():
-    """Detects the number of effective CPUs in the system"""
-    try:
-        from multiprocessing import cpu_count
-        return cpu_count()
-    except NotImplementedError:
-        return 1
-    
-def _detect_ncpus():
-    """Detects the number of effective CPUs in the system"""
-    #for Linux, Unix and MacOS
-    if hasattr(os, "sysconf"):
-        if os.sysconf_names.has_key("SC_NPROCESSORS_ONLN"):
-            #Linux and Unix
-            ncpus = os.sysconf("SC_NPROCESSORS_ONLN")
-            if isinstance(ncpus, int) and ncpus > 0:
-                return ncpus
-            else:
-                #MacOS X
-                return int(os.popen2("sysctl -n hw.ncpu")[1].read())
-    #for Windows
-    if os.environ.has_key("NUMBER_OF_PROCESSORS"):
-        ncpus = int(os.environ["NUMBER_OF_PROCESSORS"]);
-        if ncpus > 0:
-            return ncpus
-    #return the default value
-    return 1
 
 class Statistics(object):
     def __init__(self):
@@ -139,7 +112,7 @@ class WorkManager(object) :
         using other nodes in the local cluster """
 
     def __init__( self, ncpus='autodetect', ppservers=None) :
-        if ncpus == 'autodetect' : self.ncpus = _detect_ncpus()
+        if ncpus == 'autodetect' : self.ncpus = multiprocessing.cpu_count()
         else :                     self.ncpus = ncpus
         if ppservers :
             import pp
@@ -148,7 +121,6 @@ class WorkManager(object) :
             self.server = pp.Server(ncpus=self.ncpus, ppservers=self.ppservers)
             self.mode = 'cluster'
         else :
-            import multiprocessing
             self.pool = multiprocessing.Pool(self.ncpus)
             self.mode = 'multicore'
         self.stats = {}
@@ -163,7 +135,7 @@ class WorkManager(object) :
         task.initializeLocal()
         # --- Schedule all the jobs ....
         if self.mode == 'cluster' :
-            jobs = [self.server.submit(_prefunction, (_ppfunction, task, item), (), ('GaudiPython.Parallel','time')) for item in items]
+            jobs = [self.server.submit(_prefunction, (_ppfunction, task, item), (), ('GaudiMP.Parallel','time')) for item in items]
             for job in jobs :
                 result, stat = job()
                 task._mergeResults(result)
@@ -236,7 +208,7 @@ aidatypes = ( gbl.AIDA.IHistogram,
               gbl.AIDA.IProfile1D,
               gbl.AIDA.IProfile2D )
 thtypes   = ( gbl.TH1D, gbl.TH2D, gbl.TH3D, gbl.TProfile, gbl.TProfile2D )
-gppHead   = '[ GaudiPythonParallel ] '
+gmpHead   = '[ GaudiMP.Parallel ] '
 line      = '-'*80
 
 def setupSystem(nWorkers, config) :
@@ -331,7 +303,7 @@ def dumpHistograms( hvt, node='Unspecified', omitList=[] ) :
                 objects += 1
             histDict[ n ] = o
     else :
-        print head+'WARNING : no histograms to recover?'
+        print gmpHead+'WARNING : no histograms to recover?'
     # print line
     # print '%s : Histos collected'%(node)
     # print 'Objects : %i'%( objects    )
@@ -401,7 +373,7 @@ class CollectHistograms( PyAlgorithm ) :
 # The Reader
 # ===========================================================================================
 
-class Reader( ) :
+class Reader(object) :
     def __init__( self, inq, commonQueue, rstatq, qToParent, workers, config, qLimit, _app ) :
         self.inq       = inq
         self.c         = config
@@ -446,18 +418,18 @@ class Reader( ) :
             gs.Members = ed
 
     def read( self ):
-        current_process().name ='+Reader+'
+        current_process().name = '+Reader+'
         appendPostConfigAction( self.readerConfig() )
 
-        # print '[ GaudiPython.Parallel ] Reader Started : Process %i'%( os.getpid() )
+        # print '[ GaudiMP.Parallel ] Reader Started : Process %i'%( os.getpid() )
 
         self.ct       = 0
 
-        # GaudiPython Tools
+        # GaudiMP Tools
         self.a = AppMgr()
         self.evt = self.a.evtsvc()
         self.hvt = self.a.histsvc()
-        self.ts = gbl.GaudiPython.TESSerializer(self.evt._idp)
+        self.ts = gbl.GaudiMP.TESSerializer(self.evt._idp)
         self.omitHistos = ['/stat/CaloPIDs']
         collectHistos = CollectHistograms( self )
         self.a.addAlgorithm( collectHistos )
@@ -466,7 +438,7 @@ class Reader( ) :
 
         for i in xrange( self.c['ApplicationMgr'].EvtMax ) :
             self.a.run(1)
-            self.ts = gbl.GaudiPython.TESSerializer(self.evt._idp)
+            self.ts = gbl.GaudiMP.TESSerializer(self.evt._idp)
 
             if self._app == 'Gauss' :
                 if self.evt.getHistoNames() :
@@ -504,7 +476,7 @@ class Reader( ) :
 # The Worker
 # ===========================================================================================
 
-class Worker( ) :
+class Worker(object) :
     def __init__( self, wid, inq, cq, outq, cstatq, qToParent, nprocs, config, qLimit, _app, itemlist=None ) :
 
         # wid      : an integer (0...Nworkers-1) identifying the worker
@@ -536,7 +508,7 @@ class Worker( ) :
         else           : self.eventOutput = False
 
         w = Process( target=self.work )
-        w.daemon = True
+        w.setDaemon(True)
         w.start()
 
     def workerConfig( self ) :
@@ -605,13 +577,13 @@ class Worker( ) :
         # take first event
         buf = self.inq.get()
         if buf is not None :
-            # set up GaudiPython tools
+            # set up GaudiMP tools
             self.a   = AppMgr()
             self.evt = self.a.evtsvc()
             self.hvt = self.a.histsvc()
             self.nvt = self.a.ntuplesvc()
             first = True
-            self.ts = gbl.GaudiPython.TESSerializer(self.evt._idp)
+            self.ts = gbl.GaudiMP.TESSerializer(self.evt._idp)
             self.omitHistos = ['/stat/CaloPIDs']
             collectHistos = CollectHistograms( self )
             self.a.addAlgorithm( collectHistos )
@@ -647,7 +619,7 @@ class Worker( ) :
 
             sc = self.finalize()
             self.qToParent.put(None)
-            # print '[ GaudiPython Parallel ] : Worker has sent dict and None flag back to Parent'
+            # print '[ GaudiMP Parallel ] : Worker has sent dict and None flag back to Parent'
         else : # if the buffer is None...
             self.outq.put(None)
             sc = self.finalize()
@@ -666,7 +638,7 @@ class Worker( ) :
 # The Writer
 # ===========================================================================================
 
-class Writer( ) :
+class Writer(object) :
     def __init__( self, common_queue, out_qList, cstatq, rstatq, qToParent, workers, config, qLimit, _app ) :
         self.qList     = out_qList
         self.cq        = common_queue
@@ -742,17 +714,17 @@ class Writer( ) :
             if hasattr(self.c[k], 'RequireAlgs') : self.c[k].RequireAlgs = []
 
     def write( self ):
-        current_process().name ='+Writer+'
+        current_process().name = '+Writer+'
         print 'WRITER : applying PostConfigAction'
         appendPostConfigAction( self.writerConfig() )
-        print '[ GaudiPython.Parallel ] Writer started : Process %i'%( os.getpid() )
+        print '[ GaudiMP.Parallel ] Writer started : Process %i'%( os.getpid() )
 
         self.a = AppMgr()
         self.a.initialize()
         self.a.start()
         self.evt = self.a.evtsvc()
         self.hvt = self.a.histsvc()
-        self.ts = gbl.GaudiPython.TESSerializer(self.evt._idp)
+        self.ts = gbl.GaudiMP.TESSerializer(self.evt._idp)
 
         self.ct = 0
         status = [True]*self.workers
@@ -779,14 +751,14 @@ class Writer( ) :
                     self.a._evtpro.executeEvent()   # fire the writing of TES to output file
                     self.evt.clearStore()           # and clear out the TES
                     self.ct += 1
-                    if not self.ct%20 : print '[ GaudiPython.Parallel ] Writer Progress (n. Events) : %i'%self.ct
+                    if not self.ct%20 : print '[ GaudiMP.Parallel ] Writer Progress (n. Events) : %i'%self.ct
                 except :
-                    print '[ GaudiPython.Parallel ] Writer trying to load a ', type(tbuf), tbuf[:10] ,  '??... skipping to next'
+                    print '[ GaudiMP.Parallel ] Writer trying to load a ', type(tbuf), tbuf[:10] ,  '??... skipping to next'
             else :
                 status[whichQ] = False   # that worker is finished...
                 # print 'Writer received None from worker %i'%( whichQ )
 
-        # print '[ GaudiPython.Parallel ] Writer Complete : %i Events received'%self.ct
+        # print '[ GaudiMP.Parallel ] Writer Complete : %i Events received'%self.ct
         if self.output : self.finalize()
         else           : self.a.stop()   ; self.a.finalize()
         # self.constructWriterDict()
@@ -828,7 +800,7 @@ class Writer( ) :
 
         self.a.stop()
         self.a.finalize()
-        # print '[ GaudiPython.Parallel ] Writer Complete.'
+        # print '[ GaudiMP.Parallel ] Writer Complete.'
 
     def RebuildHistoStore( self ) :
         for tup in self.HistoCollection :
