@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-09-17 - Marco Clemencic
+ - Minor fix to make_patch.py
+
 ! 2010-09-14 - Marco Clemencic
  - Fixed a warning introduced with patch #4394.
 
