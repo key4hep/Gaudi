@@ -6,6 +6,9 @@ AIDA::IProfile1D*  GaudiHistos<PBASE>::bookProfile1D
 ( const std::string&   title      ,
   const HistoBinEdges& edges      ) const
 {
+  //
+  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  //
   // exist?
   AIDA::IProfile1D* hist = profile1D ( title ) ;
   // histogram is already booked
@@ -27,6 +30,9 @@ AIDA::IProfile1D*  GaudiHistos<PBASE>::bookProfile1D
   const std::string&   title     ,
   const HistoBinEdges& edges     ) const
 {
+  //
+  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  //
   // Check ID
   if (ID.undefined())
   {
@@ -97,8 +103,7 @@ AIDA::IProfile1D* GaudiHistos<PBASE>::profile1D
   {
     // retrieve or book the histogram
     h = profile1D ( title ) ;
-    if ( NULL == h )
-    { h = bookProfile1D ( title , edges ) ; }
+    if ( NULL == h ) { h = bookProfile1D ( title , edges ) ; }
     // fill the histogram
     h = fill ( h , valueX , valueY , weight , title ) ;
   }
@@ -121,10 +126,12 @@ AIDA::IProfile1D* GaudiHistos<PBASE>::profile1D
   {
     // retrieve or book the histogram
     h = profile1D ( ID ) ;
-    if ( NULL == h )
-    { h = bookProfile1D ( ID , title , edges ) ; }
+    if ( NULL == h ) { h = bookProfile1D ( ID , title , edges ) ; }
     // fill the histogram
     h = fill ( h , valueX , valueY , weight , title ) ;
   }
   return h;
 }
+// ============================================================================
+// The END
+// ============================================================================

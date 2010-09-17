@@ -10,6 +10,9 @@ AIDA::IHistogram1D*  GaudiHistos<PBASE>::book1D
   const double        high         ,
   const unsigned long bins         ) const
 {
+  //
+  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  //
   // exist?
   AIDA::IHistogram1D* hist = histo1D ( title ) ;
   // histogram is already booked
@@ -33,8 +36,12 @@ AIDA::IHistogram1D*  GaudiHistos<PBASE>::book1D
   const double                  high   ,
   const unsigned long           bins   ) const
 {
+  //
+  if  ( !produceHistos() ) { return 0 ; }  // RETURN
+  //
+
   // Check ID
-  if (ID.undefined())
+  if ( ID.undefined() )
   {
     this->Error("Undefined Histogram ID : Title='"+title+"'");
     return NULL;
@@ -100,24 +107,23 @@ AIDA::IHistogram1D* GaudiHistos<PBASE>::fill
   const double         weight ,
   const std::string&   title  ) const
 {
-  if ( NULL != histo && produceHistos() )
+  if ( 0 == histo     ) { return 0 ; }                          // RETURN
+  //
+  if ( !checkForNaN() )
+  { Gaudi::Utils::Histos::fill ( histo , value , weight ) ; }
+  else if  ( lfin ( value ) && lfin ( weight ) )
+  { Gaudi::Utils::Histos::fill ( histo , value , weight ) ; }
+  else if  ( lnan ( value ) || lnan ( weight ) )
   {
-    if ( !checkForNaN() )
-    { Gaudi::Utils::Histos::fill ( histo , value , weight ) ; }
-    else if  ( lfin ( value ) && lfin ( weight ) )
-    { Gaudi::Utils::Histos::fill ( histo , value , weight ) ; }
-    else if  ( lnan ( value ) || lnan ( weight ) )
-    {
-      this -> Warning
-        ("fill():: 'NaN'      value is skipped from the histogram '"
-         + Gaudi::Utils::Histos::htitle ( histo , title ) + "'" ) ;
-    }
-    else
-    {
-      this -> Warning
-        ("fill():: 'Infinite' value is skipped from the histogram '"
-         + Gaudi::Utils::Histos::htitle ( histo , title ) + "'" ) ;
-    }
+    this -> Warning
+      ("fill():: 'NaN'      value is skipped from the histogram '"
+       + Gaudi::Utils::Histos::htitle ( histo , title ) + "'" ) ;
+  }
+  else
+  {
+    this -> Warning
+      ("fill():: 'Infinite' value is skipped from the histogram '"
+       + Gaudi::Utils::Histos::htitle ( histo , title ) + "'" ) ;
   }
   // return
   return histo ;

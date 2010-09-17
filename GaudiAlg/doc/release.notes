@@ -1,6 +1,13 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2010-09-17 - Vanya Belyaev
+ - Patch #4360: Fix for bug #71237 (GaudiHistos treatment of histoProduce incomplete)
+   GaudiAlg/GaudiHistos*.h(.icpp)
+   - book* & plot* return NULL if histogram are disabled
+   - fill          does not rely on "produceHistogram" at all
+   with such behaviour everything is coherent.
+
 ! 2010-09-13 - Olivier Callot, Patrick Koppenburg, Roel Aaij, Marco Clemencic
  - Patch #4299, patch #4332: Add option for filed size in SequencerTimerTool
    Added an option to change the size of the algorithm name in the Sequencer Timer tool:

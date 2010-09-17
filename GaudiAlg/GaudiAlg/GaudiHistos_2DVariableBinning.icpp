@@ -9,6 +9,9 @@ AIDA::IHistogram2D*  GaudiHistos<PBASE>::book2D
   const HistoBinEdges& edgesX       ,
   const HistoBinEdges& edgesY       ) const
 {
+  //
+  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  //
   // exist?
   AIDA::IHistogram2D * hist = histo2D ( title ) ;
   // histogram is already booked
@@ -31,6 +34,9 @@ AIDA::IHistogram2D*  GaudiHistos<PBASE>::book2D
   const HistoBinEdges& edgesX       ,
   const HistoBinEdges& edgesY       ) const
 {
+  //
+  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  //
   // Check ID
   if (ID.undefined())
   {
@@ -135,3 +141,7 @@ GaudiHistos<PBASE>::plot2D
   }
   return h;
 }
+// ============================================================================
+// The END
+// ============================================================================
+
