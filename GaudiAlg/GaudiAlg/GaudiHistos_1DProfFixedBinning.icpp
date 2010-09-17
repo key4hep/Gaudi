@@ -11,6 +11,9 @@ AIDA::IProfile1D*  GaudiHistos<PBASE>::bookProfile1D
   const double        lowY         ,
   const double        highY        ) const
 {
+  //
+  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  //
   // exist?
   AIDA::IProfile1D* hist = profile1D ( title ) ;
   // histogram is already booked
@@ -37,6 +40,9 @@ AIDA::IProfile1D*  GaudiHistos<PBASE>::bookProfile1D
   const double        lowY         ,
   const double        highY        ) const
 {
+  //
+  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  //
   // Check ID
   if (ID.undefined())
   {
@@ -112,24 +118,24 @@ AIDA::IProfile1D* GaudiHistos<PBASE>::fill
   const double         weight ,
   const std::string&   title  ) const
 {
-  if ( NULL != histo && produceHistos() )
+  //
+  if ( 0 == histo ) { return 0 ; }   // RETURN
+  //
+  if ( !checkForNaN() )
+  { Gaudi::Utils::Histos::fill ( histo , valueX , valueY , weight ); }
+  else if  ( lfin ( valueX ) && lfin ( valueY ) && lfin ( weight ) )
+  { Gaudi::Utils::Histos::fill ( histo , valueX , valueY , weight ); }
+  else if  ( lnan ( valueX ) || lnan ( valueY ) || lnan ( weight ) )
   {
-    if ( !checkForNaN() )
-    { Gaudi::Utils::Histos::fill ( histo , valueX , valueY , weight ); }
-    else if  ( lfin ( valueX ) && lfin ( valueY ) && lfin ( weight ) )
-    { Gaudi::Utils::Histos::fill ( histo , valueX , valueY , weight ); }
-    else if  ( lnan ( valueX ) || lnan ( valueY ) || lnan ( weight ) )
-    {
-      this -> Warning
-        ("fill():: 'NaN'      value is skipped from the histogram '"
-         + Gaudi::Utils::Histos::htitle ( histo , title  ) + "'" ) ;
-    }
-    else
-    {
-      this -> Warning
-        ("fill():: 'Infinite' value is skipped from the histogram '"
-         + Gaudi::Utils::Histos::htitle ( histo , title  ) + "'" ) ;
-    }
+    this -> Warning
+      ("fill():: 'NaN'      value is skipped from the histogram '"
+       + Gaudi::Utils::Histos::htitle ( histo , title  ) + "'" ) ;
+  }
+  else
+  {
+    this -> Warning
+      ("fill():: 'Infinite' value is skipped from the histogram '"
+       + Gaudi::Utils::Histos::htitle ( histo , title  ) + "'" ) ;
   }
   // return
   return histo ;
@@ -191,3 +197,6 @@ AIDA::IProfile1D* GaudiHistos<PBASE>::profile1D
   }
   return h;
 }
+// ============================================================================
+// The END
+// ============================================================================
