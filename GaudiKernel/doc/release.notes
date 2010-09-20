@@ -4,7 +4,8 @@ Package manager : Marco Clemencic
 ! 2010-09-20 - Marco Clemencic
  - Defined constants for application return codes and minor change to the logic
    (GaudiKernel/AppReturnCode.h)
- - Set appropriate return code in case of "scheduled stop" (MinimalEventLoopMgr)
+ - Set appropriate return code in case of "scheduled stop" and unhandled exceptions
+   (MinimalEventLoopMgr)
 
 ! 2010-09-17 - Marco Clemencic
  - Minor fix to make_patch.py

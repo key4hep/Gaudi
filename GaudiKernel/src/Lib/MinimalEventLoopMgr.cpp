@@ -370,6 +370,26 @@ StatusCode MinimalEventLoopMgr::executeRun( int maxevt ) {
   }
 }
 
+namespace {
+  /// Helper class to set the application return code in case of early exit
+  /// (e.g. exception).
+  class RetCodeGuard {
+  public:
+    inline RetCodeGuard(const SmartIF<IProperty> &appmgr, int retcode):
+      m_appmgr(appmgr), m_retcode(retcode) {}
+    inline void ignore() {
+      m_retcode = Gaudi::ReturnCode::Success;
+    }
+    inline ~RetCodeGuard() {
+      if (Gaudi::ReturnCode::Success != m_retcode) {
+        Gaudi::setAppReturnCode(m_appmgr, m_retcode);
+      }
+    }
+  private:
+    SmartIF<IProperty> m_appmgr;
+    int m_retcode;
+  };
+}
 //--------------------------------------------------------------------------------------------
 // Implementation of IEventProcessor::executeEvent(void* par)
 //--------------------------------------------------------------------------------------------
@@ -386,6 +406,8 @@ StatusCode MinimalEventLoopMgr::executeEvent(void* /* par */)    {
     }
   }
 
+  // Get the IProperty interface of the ApplicationMgr to pass it to RetCodeGuard
+  const SmartIF<IProperty> appmgr(serviceLocator());
   // Call the execute() method of all top algorithms
   for (ListAlg::iterator ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
     StatusCode sc(StatusCode::FAILURE);
@@ -398,7 +420,9 @@ StatusCode MinimalEventLoopMgr::executeEvent(void* /* par */)    {
         sc.ignore();
         break;
       }
+      RetCodeGuard rcg(appmgr, Gaudi::ReturnCode::UnhandledException);
       sc = (*ita)->sysExecute();
+      rcg.ignore(); // disarm the guard
     } catch ( const GaudiException& Exception ) {
       MsgStream log ( msgSvc() , "MinimalEventLoopMgr.executeEvent()" );
       log << MSG::FATAL << " Exception with tag=" << Exception.tag()
