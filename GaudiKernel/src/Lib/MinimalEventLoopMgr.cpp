@@ -11,6 +11,7 @@
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/IIncidentSvc.h"
+#include "GaudiKernel/AppReturnCode.h"
 
 #include "GaudiKernel/MinimalEventLoopMgr.h"
 
@@ -455,6 +456,13 @@ StatusCode MinimalEventLoopMgr::executeEvent(void* /* par */)    {
 // Implementation of IEventProcessor::stopRun()
 //--------------------------------------------------------------------------------------------
 StatusCode MinimalEventLoopMgr::stopRun() {
+  // Set the application return code
+  SmartIF<IProperty> appmgr(serviceLocator());
+  if(Gaudi::setAppReturnCode(appmgr, Gaudi::ReturnCode::ScheduledStop).isFailure()) {
+    MsgStream( msgSvc(), name() )
+        << MSG::ERROR << "Could not set return code of the application ("
+        << Gaudi::ReturnCode::ScheduledStop << ")" << endmsg;
+  }
   m_scheduledStop = true;
   return StatusCode::SUCCESS;
 }
