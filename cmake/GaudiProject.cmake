@@ -26,8 +26,14 @@ macro(GAUDI_PROJECT project version)
   set(${project}_VERSION_PATCH ${patch})
 
   #--- Project Options-------------------------------------------------------------------------------
-  OPTION(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
-  OPTION(BUILD_TESTS "Set to OFF to build static libraries" ON)
+  option(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
+  option(BUILD_TESTS "Set to ON to build the tests (libraries and executables)" OFF)
+  set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/InstallArea)
+  set(CMAKE_BUILD_TYPE Release)
+  #if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING
+      "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
+  #endif()
 
   INSTALL(DIRECTORY cmake/ DESTINATION cmake)
 
@@ -97,6 +103,7 @@ macro( GAUDI_USE_PROJECT project version )
                                  PATH+=${${project}_binaryarea}/bin
                                  PATH+=${${project}_installarea}/scripts
                                  PYTHONPATH+=${${project}_installarea}/python )
+      include(${project}Exports)
       set(${project}_used 1)
       #------------------------------------------------------------------------------
       if( EXISTS ${${project}_installation}/CMakeLists.txt)

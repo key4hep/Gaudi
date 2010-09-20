@@ -51,14 +51,14 @@ StringKeys/*.cpp
 StatusCodeSvc/*.cpp 
 testing/*.cpp )
 
-GAUDI_COMPONENT_LIBRARY(GaudiExamples "${GaudiExamples_srcs}" GaudiExamplesLib)
-GAUDI_LINKER_LIBRARY(GaudiExamplesLib Lib/*.cpp GaudiGSLLib GaudiUtilsLib HepPDT HepPID Tree)
+GAUDI_COMPONENT_LIBRARY(GaudiExamples ${GaudiExamples_srcs} LIBRARIES GaudiExamplesLib)
+GAUDI_LINKER_LIBRARY(GaudiExamplesLib Lib/*.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib HepPDT HepPID Tree)
 
 #---Executables-------------------------------------------------------------
-GAUDI_EXECUTABLE(Allocator Allocator/*.cpp GaudiExamplesLib GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES} RIO Hist ${CLHEP_LIBRARIES} ${GSL_LIBRARIES})
+GAUDI_EXECUTABLE(Allocator Allocator/*.cpp LIBRARIES GaudiExamplesLib GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES} RIO Hist ${CLHEP_LIBRARIES} ${GSL_LIBRARIES})
 
 #---Dictionaries------------------------------------------------------------
-REFLEX_BUILD_DICTIONARY(GaudiExamples src/POOLIO/dict.h  src/POOLIO/dict.xml  GaudiExamplesLib)
+REFLEX_BUILD_DICTIONARY(GaudiExamples src/POOLIO/dict.h  src/POOLIO/dict.xml  LIBRARIES GaudiExamplesLib)
 
 
 SET(GaudiExamples_environment STDOPTS=${CMAKE_SOURCE_DIR}/GaudiExamples/options

@@ -5,7 +5,7 @@
 GAUDI_USE_PACKAGE(GaudiKernel)
 
 #---Executables-------------------------------------------------------------
-GAUDI_EXECUTABLE(Gaudi main.cpp GaudiKernel)
+GAUDI_EXECUTABLE(Gaudi main.cpp LIBRARIES GaudiKernel)
 
 #---Installation------------------------------------------------------------
 GAUDI_INSTALL_PYTHON_MODULES()

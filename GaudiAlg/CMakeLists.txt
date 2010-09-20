@@ -9,8 +9,8 @@ GAUDI_USE_PACKAGE(AIDA)
 GAUDI_USE_PACKAGE(Boost)
 
 #---Libraries---------------------------------------------------------------
-GAUDI_LINKER_LIBRARY(GaudiAlgLib lib/*.cpp GaudiUtilsLib)
-GAUDI_COMPONENT_LIBRARY(GaudiAlg components/*.cpp GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES} RIO)
+GAUDI_LINKER_LIBRARY(GaudiAlgLib lib/*.cpp LIBRARIES GaudiUtilsLib)
+GAUDI_COMPONENT_LIBRARY(GaudiAlg components/*.cpp LIBRARIES GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES} RIO)
 
 #---Installation------------------------------------------------------------
 GAUDI_INSTALL_HEADERS(GaudiAlg)

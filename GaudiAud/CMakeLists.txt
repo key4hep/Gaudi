@@ -5,6 +5,6 @@
 GAUDI_USE_PACKAGE(GaudiKernel)
 
 #---Libraries---------------------------------------------------------------
-GAUDI_COMPONENT_LIBRARY(GaudiAud *.cpp GaudiKernel)
+GAUDI_COMPONENT_LIBRARY(GaudiAud *.cpp LIBRARIES GaudiKernel)
 
 

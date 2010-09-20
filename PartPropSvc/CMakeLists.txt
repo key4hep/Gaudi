@@ -8,6 +8,6 @@ GAUDI_USE_PACKAGE(GaudiKernel)
 GAUDI_USE_PACKAGE(GaudiSvc)
 
 #---Libraries---------------------------------------------------------------
-GAUDI_COMPONENT_LIBRARY(PartPropSvc *.cpp GaudiKernel Reflex ${Boost_LIBRARIES} ${Boost_regex} ${HepPDT_LIBRARIES})
+GAUDI_COMPONENT_LIBRARY(PartPropSvc *.cpp LIBRARIES GaudiKernel Reflex ${Boost_LIBRARIES} ${Boost_regex} ${HepPDT_LIBRARIES})
 
 #---Installation------------------------------------------------------------

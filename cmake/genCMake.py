@@ -10,13 +10,13 @@
      cmt br "python genCMake > ../CMakeLists.txt"
 """
 
-import os, pickle
+import os, pickle, copy
 
 #---Useful global valiables-------------------------------------------------------------------------- 
 package = os.getcwd().split('/')[-2]
 project = os.popen('cmt show macro_value project').readlines()[0].strip()
 project_home = os.popen('cmt show macro_value %s_home' % project ).readlines()[0].strip()
-picklefile = '/tmp/%s/%s_libraries.pkl'% (os.environ['USER'], project)
+picklefile = '/tmp/%s/%s_libraries.pkl'% (os.environ['USER'], '%s')
 root = os.path.dirname(os.getcwd())+'/'
 
 #---Useful functions---------------------------------------------------------------------------------
@@ -68,13 +68,21 @@ def prettylibs(libraries):
     if lib: libs.append(lib)
   return ' '.join(libs)
 
-#---Read Global libraries ---------------------------------------------------------------------------
-if os.path.exists(picklefile):
-  input = open(picklefile, 'rb')
-  gbl_libraries = pickle.load(input)
-  input.close()
-else:
-  gbl_libraries = {}
+#---Get the list of dependent proejcts---------------------------------------------------------------
+projects = []
+gbl_libraries = {}
+loc_libraries = {}
+for l in os.popen('cmt show projects').readlines():
+  p = l.split()[0]
+  if p not in projects : projects.append(p)
+for p in projects:
+  #---Read Global libraries ---------------------------------------------------------------------------
+  if os.path.exists(picklefile % p):
+    input = open(picklefile % p, 'rb')
+    libs = pickle.load(input)
+    gbl_libraries.update(libs)
+    if p == project : loc_libraries.update(libs)
+    input.close()
 
 print """############################################################################
 # CMakeLists.txt file for building %s
@@ -166,8 +174,8 @@ for l in lines:
       dir1 = t[3].replace('more=','')
       dir2 = t[4].replace('offset=','')
       dirs = []
-      if dir1 and os.path.exists(dir1) : dirs.append(dir1)
-      if dir2 and os.path.exists(dir2) : dirs.append(dir2)
+      if dir1 and os.path.exists('../'+dir1) : dirs.append(dir1)
+      if dir2 and os.path.exists('../'+dir2) : dirs.append(dir2)
       if dirs : install_headers.append(dirs)
     elif t[1] == 'obj2doth' :
       god_headers.append([t[3].replace('../','')])
@@ -193,8 +201,12 @@ for l in lines:
     print 'ERROR ---- constituents unknown', t[0]
 
 #---Clean libraries and executables dependent libraries---------------
+for k, l in libraries.items():
+  if k[-4:] == 'Dict' : continue
+  if k not in genconfig : loc_libraries[k] = copy.deepcopy(l)
+
 for i, iv in libraries.items() +  executables.items() :
- for j, jv in libraries.items() + gbl_libraries.items() :
+ for j, jv in gbl_libraries.items() :
    if i is not j :
      if j in iv[1]:
        for k in jv[1]:
@@ -224,14 +236,14 @@ for k,l in libraries.items():
   if len(l[0]) > 1:
     sources = ' \n'.join([s.replace('../src/','')  for s in l[0]])  
     print 'SET( %s_srcs %s )' % (k, sources)
-    srcs = '"${%s_srcs}"' % k
+    srcs = '${%s_srcs}' % k
   else:
     srcs = l[0][0].replace('../src/','')
   if k in genconfig :
-    print 'GAUDI_COMPONENT_LIBRARY(%s %s %s)'%(k, srcs, prettylibs(l[1]))
+    print 'GAUDI_COMPONENT_LIBRARY(%s %s LIBRARIES %s)'%(k, srcs, prettylibs(l[1]))
   else :
-    print 'GAUDI_LINKER_LIBRARY(%s %s %s)'%(k, srcs, prettylibs(l[1]))
-    gbl_libraries[k] = l
+    print 'GAUDI_LINKER_LIBRARY(%s %s LIBRARIES %s)'%(k, srcs, prettylibs(l[1]))
+    #gbl_libraries[k] = l
 
 if executables:
   print '\n#---Executables-------------------------------------------------------------'
@@ -239,13 +251,13 @@ for k,l in executables.items():
   if len(l[0]) > 1:
     sources = ' \n'.join([s.replace('../src/','')  for s in l[0]])  
     print 'SET( %s_srcs %s )' % (k, sources)
-    srcs = '"${%s_srcs}"' % k
+    srcs = '${%s_srcs}' % k
   else:
     srcs = l[0][0].replace('../src/','')
   if l[2] :
-    print 'GAUDI_TEST(%s %s %s)'%(k, srcs, prettylibs(l[1]))
+    print 'GAUDI_TEST(%s %s LIBRARIES %s)'%(k, srcs, prettylibs(l[1]))
   else :
-    print 'GAUDI_EXECUTABLE(%s %s %s)'%(k, srcs, prettylibs(l[1]))
+    print 'GAUDI_EXECUTABLE(%s %s LIBRARIES %s)'%(k, srcs, prettylibs(l[1]))
 
 
 if god_customdicts or god_dictionaries:
@@ -265,12 +277,10 @@ for d in  god_dictionaries :
   else :
     print 'GOD_BUILD_DICTIONARY(%s)'%(d[0],)
   libs = []
-  for l in libraries :
-    if l[0] == package+'Dict' :
-      for i in l[2]:
-        if i != package : libs.append(i)
+  for i in libraries[package+'Dict'][1]:
+    if i != package : libs.append(i)
   if libs :
-    print 'TARGET_LINK_LIBRARIES(%s %s)'%(package+'Dict',prettylibs(libs))
+    print 'target_link_libraries(%s %s)'%(package+'Dict',prettylibs(libs))
       
     
 if not god_dictionaries and reflex_dictionaries:
@@ -279,7 +289,7 @@ if not god_dictionaries and reflex_dictionaries:
     libs = ''
     for k,l in libraries.items() :
       if k == d[0]+'Dict' : libs = prettylibs(l[1]) 
-    print 'REFLEX_BUILD_DICTIONARY(%s %s %s %s)'% (d[0],d[1],d[2], libs)
+    print 'REFLEX_BUILD_DICTIONARY(%s %s %s LIBRARIES %s)'% (d[0],d[1],d[2], libs)
   
 print '\n#---Installation------------------------------------------------------------'
 
@@ -293,8 +303,8 @@ if install_scripts:
   print 'GAUDI_INSTALL_SCRIPTS()'
 
 
-output = open(picklefile, 'wb')
-pickle.dump(gbl_libraries, output)
+output = open(picklefile % project, 'wb')
+pickle.dump(loc_libraries, output)
 output.close()
 
 

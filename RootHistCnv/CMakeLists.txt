@@ -7,6 +7,6 @@ GAUDI_USE_PACKAGE(AIDA)
 GAUDI_USE_PACKAGE(ROOT)
 
 #---Libraries---------------------------------------------------------------
-GAUDI_COMPONENT_LIBRARY(RootHistCnv *.cpp GaudiKernel ${ROOT_LIBRARIES} RIO Hist Matrix Tree)
+GAUDI_COMPONENT_LIBRARY(RootHistCnv *.cpp LIBRARIES GaudiKernel ${ROOT_LIBRARIES} RIO Hist Matrix Tree)
 
 

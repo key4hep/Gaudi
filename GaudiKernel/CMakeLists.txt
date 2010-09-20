@@ -7,17 +7,17 @@ GAUDI_USE_PACKAGE(CppUnit)
 GAUDI_USE_PACKAGE(ROOT)
 
 #---Libraries---------------------------------------------------------------
-GAUDI_LINKER_LIBRARY(GaudiKernel Lib/*.cpp Reflex dl ${Boost_LIBRARIES})
+GAUDI_LINKER_LIBRARY(GaudiKernel Lib/*.cpp LIBRARIES Reflex dl ${Boost_LIBRARIES})
 
 #---Executables-------------------------------------------------------------
-GAUDI_EXECUTABLE(genconf Util/genconf.cpp GaudiKernel)
+GAUDI_EXECUTABLE(genconf Util/genconf.cpp LIBRARIES GaudiKernel)
 
 #---Tests-------------------------------------------------------------------
-GAUDI_TEST(DirSearchPath_test ../tests/src/DirSearchPath_test.cpp GaudiKernel)
-GAUDI_TEST(test_SerializeSTL ../tests/src/test_SerializeSTL.cpp GaudiKernel cppunit dl)
+GAUDI_TEST(DirSearchPath_test ../tests/src/DirSearchPath_test.cpp LIBRARIES GaudiKernel)
+GAUDI_TEST(test_SerializeSTL ../tests/src/test_SerializeSTL.cpp LIBRARIES GaudiKernel cppunit dl)
 
 #---Dictionaries------------------------------------------------------------
-REFLEX_BUILD_DICTIONARY(GaudiKernel dict/dictionary.h  dict/dictionary.xml  GaudiKernel)
+REFLEX_BUILD_DICTIONARY(GaudiKernel dict/dictionary.h  dict/dictionary.xml LIBRARIES GaudiKernel)
 
 #---Installation------------------------------------------------------------
 GAUDI_INSTALL_HEADERS(GaudiKernel)

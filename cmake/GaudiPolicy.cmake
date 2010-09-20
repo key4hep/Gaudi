@@ -6,14 +6,16 @@ cmake_policy(SET CMP0003 NEW) # See "cmake --help-policy CMP0003" for more detai
 cmake_policy(SET CMP0011 NEW) # See "cmake --help-policy CMP0011" for more details
 cmake_policy(SET CMP0009 NEW) # See "cmake --help-policy CMP0009" for more details
 
-set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/InstallArea)
+
 set(lib $ENV{CMTCONFIG}/lib)
 set(bin $ENV{CMTCONFIG}/bin)
 
-set(CMAKE_VERBOSE_MAKEFILES ON)
+set(CMAKE_VERBOSE_MAKEFILES OFF)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+#set(CMAKE_SKIP_BUILD_RPATH TRUE)
 set(CMAKE_CXX_COMPILER g++)
 
+include(CMakeMacroParseArguments)
 
 # Compilation Flags
 #-->set(CMAKE_CXX_FLAGS "-Dunix -pipe -ansi -Wall -Wextra -pthread  -Wno-deprecated -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long")
@@ -59,13 +61,12 @@ endif()
 
 
 #---------------------------------------------------------------------------------------------------
-#---REFLEX_GENERATE_DICTIONARY
+#---REFLEX_GENERATE_DICTIONARY( dictionary headerfiles selectionfile OPTIONS opt1 opt2 ...)
 #---------------------------------------------------------------------------------------------------
 macro(REFLEX_GENERATE_DICTIONARY dictionary _headerfiles _selectionfile)  
   find_package(GCCXML)
   find_package(ROOT)
-
-  set(options ${ARGN})
+  PARSE_ARGUMENTS(ARG "OPTIONS" "" ${ARGN})  
   if( IS_ABSOLUTE ${_selectionfile}) 
    set( selectionfile ${_selectionfile})
   else() 
@@ -93,31 +94,28 @@ macro(REFLEX_GENERATE_DICTIONARY dictionary _headerfiles _selectionfile)
   foreach( d ${_defs})    
    set(definitions ${definitions} -D${d})
   endforeach()
+
+  add_custom_command(
+    OUTPUT ${gensrcdict} ${rootmapname}     
+    COMMAND ${ROOT_genreflex_cmd}       
+    ARGS ${headerfiles} -o ${gensrcdict} ${gccxmlopts} ${rootmapopts} --select=${selectionfile}
+         --gccxmlpath=${GCCXML_home}/bin ${ARG_OPTIONS} ${include_dirs} ${definitions}
+    DEPENDS ${headerfiles} ${selectionfile})  
+
+  # Creating this target at ALL level enables the possibility to generate dictionaries (genreflex step)
+  # well before the dependent libraries of the dictionary are build  
+  add_custom_target(${dictionary}Gen ALL DEPENDS ${gensrcdict})
  
-  if (CMAKE_SYSTEM_NAME MATCHES Linux)
-    add_custom_command(
-      OUTPUT ${gensrcdict} ${rootmapname}     
-      COMMAND ${ROOT_genreflex_cmd}       
-      ARGS ${headerfiles} -o ${gensrcdict} ${gccxmlopts} ${rootmapopts} --select=${selectionfile}
-           --gccxmlpath=${GCCXML_home}/bin ${options} ${include_dirs} ${definitions}
-      DEPENDS ${headerfiles} ${selectionfile})  
-  else() 
-    add_custom_command(
-      OUTPUT ${gensrcdict} ${rootmapname}      
-      COMMAND ${ROOT_genreflex_cmd}       
-      ARGS ${headerfiles} -o ${gensrcdict} ${gccxmlopts} ${rootmapopts} --select=${selectionfile}
-           --gccxmlpath=${GCCXML_home}/bin ${include_dirs} ${definitions}
-      DEPENDS ${headerfiles} ${selectionfile})     
-  endif()
 endmacro()
 
 #---------------------------------------------------------------------------------------------------
-#---REFLEX_BUILD_DICTIONARY
+#---REFLEX_BUILD_DICTIONARY( dictionary headerfiles selectionfile OPTIONS opt1 opt2 ...  LIBRARIES lib1 lib2 ... )
 #---------------------------------------------------------------------------------------------------
-function(REFLEX_BUILD_DICTIONARY dictionary headerfiles selectionfile )  
-  REFLEX_GENERATE_DICTIONARY(${dictionary} ${headerfiles} ${selectionfile})
+function(REFLEX_BUILD_DICTIONARY dictionary headerfiles selectionfile )
+  PARSE_ARGUMENTS(ARG "LIBRARIES;OPTIONS" "" ${ARGN})
+  REFLEX_GENERATE_DICTIONARY(${dictionary} ${headerfiles} ${selectionfile} OPTIONS ${ARG_OPTIONS})
   add_library(${dictionary}Dict MODULE ${gensrcdict})
-  target_link_libraries(${dictionary}Dict ${ARGN} Reflex)
+  target_link_libraries(${dictionary}Dict ${ARG_LIBRARIES} Reflex)
   #----Installation details-------------------------------------------------------
   install(TARGETS ${dictionary}Dict LIBRARY DESTINATION ${lib})
   set(mergedRootMap ${CMAKE_INSTALL_PREFIX}/${lib}/${CMAKE_PROJECT_NAME}Dict.rootmap)
@@ -126,7 +124,7 @@ function(REFLEX_BUILD_DICTIONARY dictionary headerfiles selectionfile )
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---SET_RUNTIME_PATH
+#---SET_RUNTIME_PATH( var )
 #---------------------------------------------------------------------------------------------------
 macro( SET_RUNTIME_PATH var)
   set( runtime_dirs ${GAUDI_LIBRARY_DIRS})
@@ -150,7 +148,7 @@ macro( SET_RUNTIME_PATH var)
 endmacro()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_GENERATE_ROOTMAP
+#---GAUDI_GENERATE_ROOTMAP( library )
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_GENERATE_ROOTMAP library)
   find_package(ROOT)
@@ -168,7 +166,7 @@ function(GAUDI_GENERATE_ROOTMAP library)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_GENERATE_CONFIGURATION
+#---GAUDI_GENERATE_CONFIGURATION( library )
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_GENERATE_CONFIGURATION library)
   get_filename_component(package ${CMAKE_CURRENT_SOURCE_DIR} NAME)
@@ -206,11 +204,12 @@ function(GAUDI_GENERATE_CONFIGURATION library)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_LINKER_LIBRARY
+#---GAUDI_LINKER_LIBRARY( <name> source1 source2 ... LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
-function(GAUDI_LINKER_LIBRARY library sources )
+function(GAUDI_LINKER_LIBRARY library)
+  PARSE_ARGUMENTS(ARG "LIBRARIES" "" ${ARGN})
   set(lib_srcs)
-  foreach( fp ${sources})
+  foreach( fp ${ARG_DEFAULT_ARGS})
     file(GLOB files src/${fp})
     if(files) 
       set( lib_srcs ${lib_srcs} ${files})
@@ -219,21 +218,25 @@ function(GAUDI_LINKER_LIBRARY library sources )
     endif()
   endforeach()
   add_library( ${library} ${lib_srcs})
-  set_target_properties(${library} PROPERTIES COMPILE_FLAGS -DGAUDI_LINKER_LIBRARY)
-  target_link_libraries(${library} ${ARGN})
+  set_target_properties(${library} PROPERTIES 
+         COMPILE_FLAGS -DGAUDI_LINKER_LIBRARY )
+  target_link_libraries(${library} ${ARG_LIBRARIES})
   if(TARGET ${library}Obj2doth)
     add_dependencies( ${library} ${library}Obj2doth) 
   endif()
   #----Installation details-------------------------------------------------------
-  install(TARGETS ${library} LIBRARY DESTINATION  ${lib})
+  install(TARGETS ${library} EXPORT ${CMAKE_PROJECT_NAME}Exports LIBRARY DESTINATION  ${lib})
+  install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake) 
+
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_COMPONENT_LIBRARY
+#---GAUDI_COMPONENT_LIBRARY( <name> source1 source2 ... LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
-function(GAUDI_COMPONENT_LIBRARY library sources )
+function(GAUDI_COMPONENT_LIBRARY library)
+  PARSE_ARGUMENTS(ARG "LIBRARIES" "" ${ARGN})
   set(lib_srcs)
-  foreach( fp ${sources})  
+  foreach( fp ${ARG_DEFAULT_ARGS})  
     file(GLOB files src/${fp})
     if(files) 
       set( lib_srcs ${lib_srcs} ${files})
@@ -244,17 +247,18 @@ function(GAUDI_COMPONENT_LIBRARY library sources )
   add_library( ${library} MODULE ${lib_srcs})
   GAUDI_GENERATE_ROOTMAP(${library})
   GAUDI_GENERATE_CONFIGURATION(${library})
-  target_link_libraries(${library} Reflex ${ARGN})
+  target_link_libraries(${library} Reflex ${ARG_LIBRARIES})
   #----Installation details-------------------------------------------------------
   install(TARGETS ${library} LIBRARY DESTINATION ${lib})
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_EXECUTABLE
+#---GAUDI_EXECUTABLE( <name> source1 source2 ... LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
-function(GAUDI_EXECUTABLE executable sources)
+function(GAUDI_EXECUTABLE executable)
+  PARSE_ARGUMENTS(ARG "LIBRARIES" "" ${ARGN})
   set(exe_srcs)
-  foreach( fp ${sources})  
+  foreach( fp ${ARG_DEFAULT_ARGS})  
     file(GLOB files src/${fp})
     if(files) 
       set( exe_srcs ${exe_srcs} ${files})
@@ -263,18 +267,19 @@ function(GAUDI_EXECUTABLE executable sources)
     endif()
   endforeach()
   add_executable( ${executable} ${exe_srcs})
-  target_link_libraries(${executable} ${ARGN} )
+  target_link_libraries(${executable} ${ARG_LIBRARIES} )
   set_target_properties(${executable} PROPERTIES SUFFIX .exe)
   #----Installation details-------------------------------------------------------
   install(TARGETS ${executable} RUNTIME DESTINATION ${bin})
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_TEST
+#---GAUDI_TEST( <name> source1 source2 ... LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
-function(GAUDI_TEST executable sources)
+function(GAUDI_TEST executable)
+  PARSE_ARGUMENTS(ARG "LIBRARIES" "" ${ARGN})
   set(exe_srcs)
-  foreach( fp ${sources})  
+  foreach( fp ${ARG_DEFAULT_ARGS})  
     file(GLOB files src/${fp})
     if(files) 
       set( exe_srcs ${exe_srcs} ${files})
@@ -283,14 +288,14 @@ function(GAUDI_TEST executable sources)
     endif()
   endforeach()
   add_executable( ${executable} ${exe_srcs})
-  target_link_libraries(${executable} ${ARGN} )
+  target_link_libraries(${executable} ${ARG_LIBRARIES} )
   #----Installation details-------------------------------------------------------
   set_target_properties(${executable} PROPERTIES SUFFIX .exe)
   install(TARGETS ${executable} RUNTIME DESTINATION ${bin})
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_INSTALL_HEADERS
+#---GAUDI_INSTALL_HEADERS([dir1 dir2 ...])
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_INSTALL_HEADERS)
   if( ARGN )
@@ -304,7 +309,7 @@ function(GAUDI_INSTALL_HEADERS)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_INSTALL_PYTHON_MODULES
+#---GAUDI_INSTALL_PYTHON_MODULES( )
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_INSTALL_PYTHON_MODULES)  
   install(DIRECTORY python/ DESTINATION python 
@@ -315,7 +320,7 @@ endfunction()
 
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_INSTALL_PYTHON_INIT
+#---GAUDI_INSTALL_PYTHON_INIT( )
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_INSTALL_PYTHON_INIT)    
   get_filename_component(package ${CMAKE_CURRENT_SOURCE_DIR} NAME)
@@ -328,7 +333,7 @@ endfunction()
 
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_INSTALL_SCRIPTS
+#---GAUDI_INSTALL_SCRIPTS( )
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_INSTALL_SCRIPTS)
   install(DIRECTORY scripts/ DESTINATION scripts 
@@ -339,7 +344,7 @@ function(GAUDI_INSTALL_SCRIPTS)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_PROJECT_VERSION_HEADER
+#---GAUDI_PROJECT_VERSION_HEADER( )
 #---------------------------------------------------------------------------------------------------
 function( GAUDI_PROJECT_VERSION_HEADER )
   set(project ${CMAKE_PROJECT_NAME})
@@ -350,7 +355,7 @@ function( GAUDI_PROJECT_VERSION_HEADER )
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_USE_PACKAGE
+#---GAUDI_USE_PACKAGE( package )
 #---------------------------------------------------------------------------------------------------
 macro( GAUDI_USE_PACKAGE package )
   if( EXISTS ${CMAKE_SOURCE_DIR}/${package}/CMakeLists.txt)
@@ -375,7 +380,7 @@ macro( GAUDI_USE_PACKAGE package )
 endmacro()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_BUILD_SETUP
+#---GAUDI_BUILD_SETUP( )
 #---------------------------------------------------------------------------------------------------
 function( GAUDI_BUILD_SETUP )
   GAUDI_BUILD_PROJECT_SETUP()
@@ -387,10 +392,10 @@ function( GAUDI_BUILD_SETUP )
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_BUILD_PROJECT_SETUP
+#---GAUDI_BUILD_PROJECT_SETUP( )
 #---------------------------------------------------------------------------------------------------
 function( GAUDI_BUILD_PROJECT_SETUP )
-  set( setup  ${CMAKE_INSTALL_PREFIX}/setup.csh )
+  set( setup  setup.csh )
   file(WRITE  ${setup} "# ${CMAKE_PROJECT_NAME} Setup file\n")
   file(APPEND ${setup} "setenv PATH  ${CMAKE_INSTALL_PREFIX}/${bin}:${CMAKE_INSTALL_PREFIX}/scripts:\${PATH}\n")
   file(APPEND ${setup} "setenv LD_LIBRARY_PATH  ${CMAKE_INSTALL_PREFIX}/${lib}:\${LD_LIBRARY_PATH}\n")
@@ -400,7 +405,6 @@ function( GAUDI_BUILD_PROJECT_SETUP )
   #----Get the setup fro each external package
   get_property(found_packages GLOBAL PROPERTY PACKAGES_FOUND)
   get_property(found_projects GLOBAL PROPERTY PROJECTS_FOUND)
-  #MESSAGE("Found packages = ${found_packages}")
   foreach( package ${found_projects} ${found_packages} )
     GAUDI_BUILD_PACKAGE_SETUP( ${setup} ${package} "${${package}_environment}")
   endforeach()
@@ -417,10 +421,12 @@ function( GAUDI_BUILD_PROJECT_SETUP )
       GAUDI_BUILD_PACKAGE_SETUP( ${setup} ${directory} "${${directory}_environment}")
     endif()
   endforeach()
+  #---Installation---------------------------------------------------------------------------------
+  install(FILES setup.csh DESTINATION .)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_BUILD_PACKAGE_SETUP
+#---GAUDI_BUILD_PACKAGE_SETUP( setupfile package envlist )
 #---------------------------------------------------------------------------------------------------
 function( GAUDI_BUILD_PACKAGE_SETUP setup package envlist )
   if ( NOT setup )
