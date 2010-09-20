@@ -1,6 +1,10 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2010-09-20 - Marco Clemencic
+ - Use the new return code constants in case of failure opening input files
+   (EventSelector).
+
 ! 2010-07-19 - Marco Clemencic
  - Fixed a warning introduced with patch #4215 (appearing only on SLC4).
 
