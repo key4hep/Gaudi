@@ -7,6 +7,7 @@
 
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiKernel/Sleep.h"
+#include "GaudiKernel/IEventProcessor.h"
 
 #include <iostream>
 
@@ -75,6 +76,44 @@ namespace GaudiTesting {
     /// Signal (id) to raise
     int m_signal;
   };
+
+  class StopLoopAlg: public GaudiAlgorithm {
+  public:
+    StopLoopAlg(const std::string& name, ISvcLocator *pSvcLocator):
+      GaudiAlgorithm(name, pSvcLocator) {
+      declareProperty("EventCount", m_eventCount = 3,
+          "Number of events to let go before breaking the event loop");
+      declareProperty("Mode", m_mode = "failure",
+          "Type of interruption ['exception', 'stopRun', 'failure']");
+    }
+    virtual ~StopLoopAlg(){}
+    StatusCode execute(){
+      if (m_eventCount <= 0) {
+        info() << "Stopping loop with " << m_mode << endmsg;
+        if (m_mode == "exception") {
+          Exception("Stopping loop");
+        } else if (m_mode == "stopRun") {
+          SmartIF<IEventProcessor> ep(serviceLocator());
+          if (ep) ep->stopRun();
+          else {
+            error() << "Cannot get IEventProcessor" << endmsg;
+            return StatusCode::FAILURE;
+          }
+        } else { // "failure"
+          return StatusCode::FAILURE;
+        }
+      } else {
+        info() << m_eventCount << " events to go" << endmsg;
+      }
+      --m_eventCount;
+      return StatusCode::SUCCESS;
+    }
+  private:
+    /// Events to let go before the signal
+    int m_eventCount;
+    /// Signal (id) to raise
+    std::string m_mode;
+  };
 }
 
 #include "GaudiKernel/AlgFactory.h"
@@ -82,3 +121,4 @@ namespace GaudiTesting {
 DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, DestructorCheckAlg)
 DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, SleepyAlg)
 DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, SignallingAlg)
+DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, StopLoopAlg)

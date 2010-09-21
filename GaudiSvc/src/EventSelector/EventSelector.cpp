@@ -129,9 +129,6 @@ EventSelector::firstOfNextStream(bool shutDown, EvtSelectorContext& iter) const 
     }
     if(s!=NULL) {
       m_incidentSvc->fireIncident(Incident(s->dbName(),IncidentType::FailInputFile));
-      // Set the return code to 2
-      SmartIF<IProperty> appmgr(serviceLocator());
-      Gaudi::setAppReturnCode(appmgr, 2).ignore();
     }
   }
 

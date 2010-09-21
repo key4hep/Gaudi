@@ -429,26 +429,11 @@ namespace Gaudi {
               warning() << ")" << endmsg;
               m_stopRequested = true;
               // Report the termination by signal at the end of the application
-              if (Gaudi::setAppReturnCode(m_appProperty, 128 + s->first).isFailure()) {
+              using Gaudi::ReturnCode::SignalOffset;
+              if (Gaudi::setAppReturnCode(m_appProperty, SignalOffset + s->first).isFailure()) {
                 error() << "Could not set return code of the application ("
-                    << 128 + s->first << ")"
+                    << SignalOffset + s->first << ")"
                     << endmsg;
-              }
-              if (m_appProperty) {
-                // Check the current return code (we want to keep the first error)
-                IntegerProperty returnCode("ReturnCode", 0);
-                StatusCode sc = m_appProperty->getProperty(&returnCode);
-                if (sc.isSuccess()) {
-                  if (returnCode.value() == 0) {
-                    returnCode.setValue(128 + s->first);
-                    sc = m_appProperty->setProperty(returnCode);
-                  }
-                }
-                if (sc.isFailure()) {
-                  error() << "Could not set return code of the application ("
-                      << 128 + s->first << ")"
-                      << endmsg;
-                }
               }
             }
           }
