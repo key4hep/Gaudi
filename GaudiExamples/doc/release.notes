@@ -2,7 +2,9 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 
 ! 2010-09-21 - Marco Clemencic
- - Added tests for the various application return codes.
+ - Fixed bug #70956: Add method to find the reason for termination of the
+                     event loop
+   - Added tests for the various application return codes.
 
 ! 2010-09-02 - Marco Clemencic
  - Fixed configuration for the Python binary module.
