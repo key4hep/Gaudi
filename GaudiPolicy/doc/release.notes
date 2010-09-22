@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-09-20 - Marco Clemencic
+ - Minor improvements to the generated Eclipse launchers (GaudiTest).
+
 ! 2010-09-10 - Marco Clemencic
  - Fixed a minor problems in the 'uninstall_command' macro and in the NMake version
    of the install_scripts_header fragment.
