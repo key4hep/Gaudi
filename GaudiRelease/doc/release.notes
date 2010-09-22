@@ -1,6 +1,9 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+! 2010-09-22 - Marco CLemencic
+ - Added neurobayes to the list of external packages needed by LHCb.
+
 ! 2010-08-23 - Marco CLemencic
  - Added XQilla to the list of external packages needed by LHCb.
 
