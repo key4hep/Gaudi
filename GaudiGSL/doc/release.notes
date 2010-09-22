@@ -3,6 +3,7 @@
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! =============================================================================
 
+=============================== GaudiGSL v7r7 ================================
 ! 2010-08-24 - Marco Clemencic
  - Fixed a linkage problem with ICC.
 

@@ -1,6 +1,7 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+=============================== GaudiAlg v13r4 ===============================
 ! 2010-09-17 - Vanya Belyaev
  - Patch #4360: Fix for bug #71237 (GaudiHistos treatment of histoProduce incomplete)
    GaudiAlg/GaudiHistos*.h(.icpp)

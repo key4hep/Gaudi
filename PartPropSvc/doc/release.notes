@@ -1,6 +1,7 @@
 Package : ParticleProp
 Package manager : Charles Leggett
 
+============================== PartPropSvc v4r0 ==============================
 ! 2010-08-18 - Charles Leggett
  - Patch #4323: allow user defined heavy ion handling in PartPropSvc
    - change way jobOpts handled: now assign type with each file

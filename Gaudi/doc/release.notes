@@ -1,6 +1,7 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+================================ Gaudi v21r11 ================================
 ! 2010-07-28 - Marco Clemencic
  - Added dependency on pytools to be able to use Gaudi.Parallel.
 

@@ -1,6 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v27r11 =============================
 ! 2010-09-20 - Marco Clemencic
  - Fixed bug #70956: Add method to find the reason for termination of the
                      event loop
