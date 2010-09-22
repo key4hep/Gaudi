@@ -1,6 +1,10 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2010-09-22 - Marco Clemencic
+ - Added test for bug #71216
+   (Gaudi crashes when output nTuple file cannot be written)
+
 ! 2010-09-21 - Marco Clemencic
  - Fixed bug #70956: Add method to find the reason for termination of the
                      event loop
