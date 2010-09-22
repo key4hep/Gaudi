@@ -88,7 +88,7 @@ StatusCode RootHistCnv::RFileCnv::createObj(IOpaqueAddress* pAddress,
 
 
     rfile = TFile::Open(fname.c_str(),"RECREATE","Gaudi Trees");
-    if (! rfile->IsOpen() ) {
+    if ( ! ( rfile && rfile->IsOpen() ) ) {
       log << MSG::ERROR << "Could not open file " << fname << " for writing"
           << endmsg;
       return StatusCode::FAILURE;
