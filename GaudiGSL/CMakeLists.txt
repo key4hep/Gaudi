@@ -21,16 +21,16 @@ GAUDI_LINKER_LIBRARY(GaudiGSLLib Lib/*.cpp LIBRARIES GaudiAlgLib ${GSL_LIBRARIES
 REFLEX_GENERATE_DICTIONARY( GaudiGSLMath dict/GaudiGSLMath.h dict/GaudiGSLMath.xml LIBRARIES GaudiGSLLib )
 
 #---Executables-------------------------------------------------------------
-GAUDI_TEST(IntegralInTest Tests/IntegralInTest.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
-GAUDI_TEST(DerivativeTest Tests/DerivativeTest.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
-GAUDI_TEST(2DoubleFuncTest Tests/2DoubleFuncTest.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
-GAUDI_TEST(GSLAdaptersTest Tests/GSLAdaptersTest.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
-GAUDI_TEST(PFuncTest Tests/PFuncTest.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
-GAUDI_TEST(ExceptionsTest Tests/ExceptionsTest.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
-GAUDI_TEST(SimpleFuncTest Tests/SimpleFuncTest.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
-GAUDI_TEST(3DoubleFuncTest Tests/3DoubleFuncTest.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
-GAUDI_TEST(InterpTest Tests/Interp.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
-GAUDI_TEST(Integral1Test Tests/Integral1Test.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
+GAUDI_UNIT_TEST(IntegralInTest Tests/IntegralInTest.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
+GAUDI_UNIT_TEST(DerivativeTest Tests/DerivativeTest.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
+GAUDI_UNIT_TEST(2DoubleFuncTest Tests/2DoubleFuncTest.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
+GAUDI_UNIT_TEST(GSLAdaptersTest Tests/GSLAdaptersTest.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
+GAUDI_UNIT_TEST(PFuncTest Tests/PFuncTest.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
+GAUDI_UNIT_TEST(ExceptionsTest Tests/ExceptionsTest.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
+GAUDI_UNIT_TEST(SimpleFuncTest Tests/SimpleFuncTest.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
+GAUDI_UNIT_TEST(3DoubleFuncTest Tests/3DoubleFuncTest.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
+GAUDI_UNIT_TEST(InterpTest Tests/Interp.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
+GAUDI_UNIT_TEST(Integral1Test Tests/Integral1Test.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib)
 
 #---Installation------------------------------------------------------------
 GAUDI_INSTALL_HEADERS(GaudiGSL GaudiMath)

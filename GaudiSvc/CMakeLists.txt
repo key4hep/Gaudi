@@ -36,6 +36,8 @@ VFSSvc/*.cpp )
 GAUDI_COMPONENT_LIBRARY(GaudiSvc ${GaudiSvc_srcs} LIBRARIES GaudiKernel ${ROOT_LIBRARIES} Hist RIO Tree ${CLHEP_LIBRARIES})
 GAUDI_COMPONENT_LIBRARY(GaudiSvcTest ../tests/src/component/*.cpp LIBRARIES GaudiKernel ${Boost_regex})
 
-#---This is needed by SET_RUNTIME_PATH() :-(
+#---This is needed by SET_RUNTIME_PATH() :-(-----------------------------------
 SET( GAUDI_LIBRARY_DIRS ${GAUDI_LIBRARY_DIRS} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE )
 
+#---Test-----------------------------------------------------------------------
+GAUDI_QMTEST_TEST(gaudisvc.gaudisvctest)

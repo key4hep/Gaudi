@@ -7,8 +7,11 @@ cmake_policy(SET CMP0011 NEW) # See "cmake --help-policy CMP0011" for more detai
 cmake_policy(SET CMP0009 NEW) # See "cmake --help-policy CMP0009" for more details
 
 
-set(lib $ENV{CMTCONFIG}/lib)
-set(bin $ENV{CMTCONFIG}/bin)
+#set(lib $ENV{CMTCONFIG}/lib)
+#set(bin $ENV{CMTCONFIG}/bin)
+set(lib ${BINARY_TAG}/lib)
+set(bin ${BINARY_TAG}/bin)
+
 
 set(CMAKE_VERBOSE_MAKEFILES OFF)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -45,18 +48,23 @@ else()
   set(ld_library_path LD_LIBRARY_PATH)
 endif() 
 
-find_program(python_cmd python)
+find_package(Python)
+#find_program(python_cmd python ${Python_home}/bin)
+set(python_cmd ${Python_home}/bin/python CACHE FILEPATH "Path to the python command") 
+
 if(CMAKE_PROJECT_NAME STREQUAL GAUDI)
   set(merge_rootmap_cmd ${python_cmd} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/merge_files.py)
   set(merge_conf_cmd ${python_cmd} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/merge_files.py)
   set(genconf_cmd ${CMAKE_BINARY_DIR}/GaudiKernel/genconf.exe)
   set(versheader_cmd ${python_cmd} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/createProjVersHeader.py)
+  set(gaudirun ${CMAKE_SOURCE_DIR}/Gaudi/scripts/gaudirun.py)
 else()
   set(merge_rootmap_cmd ${python_cmd}  ${GAUDI_installation}/GaudiPolicy/scripts/merge_files.py)
   set(merge_conf_cmd ${python_cmd}  ${GAUDI_installation}/GaudiPolicy/scripts/merge_files.py)
   set(genconf_cmd ${GAUDI_binaryarea}/bin/genconf.exe)
   set(versheader_cmd ${python_cmd} ${GAUDI_installation}/GaudiPolicy/scripts/createProjVersHeader.py)
   set(GAUDI_SOURCE_DIR ${GAUDI_installation})
+  set(gaudirun ${GAUDI_installarea}/scripts/gaudirun.py)
 endif()
 
 
@@ -124,28 +132,35 @@ function(REFLEX_BUILD_DICTIONARY dictionary headerfiles selectionfile )
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---SET_RUNTIME_PATH( var )
+#---SET_RUNTIME_PATH( ldvar [pyvar] )
 #---------------------------------------------------------------------------------------------------
-macro( SET_RUNTIME_PATH var)
-  set( runtime_dirs ${GAUDI_LIBRARY_DIRS})
+function( SET_RUNTIME_PATH ldvar)
+  if(ARG1)
+    set(pyvar ${ARG1})
+  endif()
+  set( lddirs ${GAUDI_LIBRARY_DIRS})
+  set( pydirs )
   get_property(found_packages GLOBAL PROPERTY PACKAGES_FOUND)
   get_property(found_projects GLOBAL PROPERTY PROJECTS_FOUND)
   foreach( package ${found_projects} ${found_packages} )
      foreach( env ${${package}_environment})
          if(env MATCHES "LD_LIBRARY_PATH[+]=.*")
             string(REGEX REPLACE "LD_LIBRARY_PATH[+]=(.+)" "\\1"  val ${env})
-            set(runtime_dirs ${val} ${runtime_dirs})
+            set(lddirs ${val} ${lddirs})
+         endif()
+         if(env MATCHES "PYTHONPATH[+]=.*")
+            string(REGEX REPLACE "PYTHONPATH[+]=(.+)" "\\1"  val ${env})
+            set(pydirs ${val} ${pydirs})
          endif()
      endforeach()
   endforeach()
-  foreach(p ${runtime_dirs})
-    if( ${var} )
-      set(${var} ${${var}}:${p})
-    else()
-      set(${var} ${p})
-    endif()
-  endforeach()
-endmacro()
+  string(REPLACE ";" ":" lddirs "${lddirs}")
+  set(${ldvar} ${lddirs} PARENT_SCOPE)
+  if(pyvar) 
+    string(REPLACE ";" ":" pydirs "${pydirs}")
+    set(${pyvar} ${pydirs} PARENT_SCOPE)
+  endif()
+endfunction()
 
 #---------------------------------------------------------------------------------------------------
 #---GAUDI_GENERATE_ROOTMAP( library )
@@ -274,9 +289,9 @@ function(GAUDI_EXECUTABLE executable)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_TEST( <name> source1 source2 ... LIBRARIES library1 library2 ...)
+#---GAUDI_UNIT_TEST( <name> source1 source2 ... LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
-function(GAUDI_TEST executable)
+function(GAUDI_UNIT_TEST executable)
   PARSE_ARGUMENTS(ARG "LIBRARIES" "" ${ARGN})
   set(exe_srcs)
   foreach( fp ${ARG_DEFAULT_ARGS})  
@@ -287,11 +302,63 @@ function(GAUDI_TEST executable)
       set( exe_srcs ${exe_srcs} ${fp})
     endif()
   endforeach()
-  add_executable( ${executable} ${exe_srcs})
-  target_link_libraries(${executable} ${ARG_LIBRARIES} )
-  #----Installation details-------------------------------------------------------
-  set_target_properties(${executable} PROPERTIES SUFFIX .exe)
-  install(TARGETS ${executable} RUNTIME DESTINATION ${bin})
+  if(BUILD_TESTS)
+    add_executable( ${executable} ${exe_srcs})
+    target_link_libraries(${executable} ${ARG_LIBRARIES} )
+    add_test(${executable} ${executable}.exe)
+    #----Installation details-------------------------------------------------------
+    set_target_properties(${executable} PROPERTIES SUFFIX .exe)
+    install(TARGETS ${executable} RUNTIME DESTINATION ${bin})
+  endif()
+endfunction()
+
+#---------------------------------------------------------------------------------------------------
+#---GAUDI_FRAMEWORK_TEST( <name> conf1 conf2 ... ENVIRONMENT env=val ...)
+#---------------------------------------------------------------------------------------------------
+function(GAUDI_FRAMEWORK_TEST name)
+  if(BUILD_TESTS)
+    PARSE_ARGUMENTS(ARG "ENVIRONMENT" "" ${ARGN})
+    foreach( optfile  ${ARG_DEFAULT_ARGS} )
+      if( IS_ABSOLUTE ${optfile}) 
+        set( optfiles ${optfiles} ${optfile})
+      else() 
+        set( optfiles ${optfiles} ${CMAKE_CURRENT_SOURCE_DIR}/${optfile}) 
+      endif()
+    endforeach()
+    add_test(${name} ${CMAKE_INSTALL_PREFIX}/scripts/testwrap.csh ${CMAKE_INSTALL_PREFIX}/setup.csh "." ${gaudirun} ${optfiles})
+    set_property(TEST ${name} PROPERTY ENVIRONMENT 
+      LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:$ENV{LD_LIBRARY_PATH}
+      ${ARG_ENVIRONMENT})
+  endif()
+endfunction()
+
+#---------------------------------------------------------------------------------------------------
+#---GAUDI_QMTEST_TEST( <name> TESTS qmtest1 qmtest2 ... ENVIRONMENT env=val ...)
+#---------------------------------------------------------------------------------------------------
+function(GAUDI_QMTEST_TEST name)
+  if(BUILD_TESTS)
+    PARSE_ARGUMENTS(ARG "TESTS;ENVIRONMENT" "" ${ARGN})
+    foreach(arg ${ARG_TESTS})
+      set(tests "${tests} ${arg}")
+    endforeach()
+    if( NOT tests )
+      set(tests ${name})
+    endif()
+    GAUDI_USE_PACKAGE(QMtest)
+    add_test(${name} ${CMAKE_INSTALL_PREFIX}/scripts/testwrap.csh  ${CMAKE_INSTALL_PREFIX}/setup.csh 
+                     ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest 
+                     ${QMtest_home}/bin/qmtest run ${tests})
+    set_property(TEST ${name} PROPERTY ENVIRONMENT 
+      LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:$ENV{LD_LIBRARY_PATH}
+      QMTEST_CLASS_PATH=${CMAKE_SOURCE_DIR}/GaudiPolicy/qmtest_classes
+      ${ARG_ENVIRONMENT})
+    install(CODE "if( NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest/QMTest) 
+                    execute_process(COMMAND  ${CMAKE_INSTALL_PREFIX}/scripts/testwrap.csh  
+                                             ${CMAKE_INSTALL_PREFIX}/setup.csh 
+                                             ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest 
+                                             ${QMtest_home}/bin/qmtest create-tdb )
+                  endif()")
+  endif()
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -312,6 +379,7 @@ endfunction()
 #---GAUDI_INSTALL_PYTHON_MODULES( )
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_INSTALL_PYTHON_MODULES)  
+  get_filename_component(package ${CMAKE_CURRENT_SOURCE_DIR} NAME)
   install(DIRECTORY python/ DESTINATION python 
           PATTERN ".svn" EXCLUDE
           PATTERN "*.pyc" EXCLUDE )
@@ -395,12 +463,11 @@ endfunction()
 #---GAUDI_BUILD_PROJECT_SETUP( )
 #---------------------------------------------------------------------------------------------------
 function( GAUDI_BUILD_PROJECT_SETUP )
-  set( setup  setup.csh )
+  set( setup  ${CMAKE_BINARY_DIR}/setup.csh )
   file(WRITE  ${setup} "# ${CMAKE_PROJECT_NAME} Setup file\n")
   file(APPEND ${setup} "setenv PATH  ${CMAKE_INSTALL_PREFIX}/${bin}:${CMAKE_INSTALL_PREFIX}/scripts:\${PATH}\n")
   file(APPEND ${setup} "setenv LD_LIBRARY_PATH  ${CMAKE_INSTALL_PREFIX}/${lib}:\${LD_LIBRARY_PATH}\n")
   file(APPEND ${setup} "setenv PYTHONPATH  ${CMAKE_INSTALL_PREFIX}/python:\${PYTHONPATH}\n")
-  file(APPEND ${setup} "setenv JOBOPTSEARCHPATH  ${CMAKE_SOURCE_DIR}/GaudiPoolDb/options:${CMAKE_SOURCE_DIR}/GaudiExamples/options\n")
 
   #----Get the setup fro each external package
   get_property(found_packages GLOBAL PROPERTY PACKAGES_FOUND)
@@ -422,7 +489,10 @@ function( GAUDI_BUILD_PROJECT_SETUP )
     endif()
   endforeach()
   #---Installation---------------------------------------------------------------------------------
-  install(FILES setup.csh DESTINATION .)
+  install(FILES ${setup}  DESTINATION . 
+                          PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ 
+                                      GROUP_EXECUTE GROUP_READ 
+                                      WORLD_EXECUTE WORLD_READ )
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -440,7 +510,11 @@ function( GAUDI_BUILD_PACKAGE_SETUP setup package envlist )
     if(env MATCHES ".*[+]=.*")
       string(REGEX REPLACE "([^=+]+)[+]=.*" "\\1" var ${env})
       string(REGEX REPLACE ".*[+]=(.+)" "\\1"  val ${env})
-      file(APPEND ${setup} "setenv ${var} ${val}:\${${var}}\n")
+      file(APPEND ${setup} "if \$?${var} then\n")
+      file(APPEND ${setup} "  setenv ${var} ${val}:\${${var}}\n")
+      file(APPEND ${setup} "else\n")
+      file(APPEND ${setup} "  setenv ${var} ${val}\n")
+      file(APPEND ${setup} "endif\n")      
     elseif ( env MATCHES ".*=.*")
       string(REGEX REPLACE "([^=+]+)=.*" "\\1" var ${env})
       string(REGEX REPLACE ".*=(.+)" "\\1"  val ${env})

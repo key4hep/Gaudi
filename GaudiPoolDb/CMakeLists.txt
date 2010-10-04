@@ -15,13 +15,16 @@ REFLEX_GENERATE_DICTIONARY( GaudiPoolDb src/PoolDb_dict.h  src/PoolDb_dict.xml)
 #---Linker/Component Library-----------------------------------------------------------------
 GAUDI_LINKER_LIBRARY( GaudiPoolDb *.cpp ${CMAKE_CURRENT_BINARY_DIR}/GaudiPoolDb_dict.cpp
                       LIBRARIES GaudiKernel ${POOL_LIBRARIES} ${CORAL_LIBRARIES} ${ROOT_LIBRARIES} Cintex Tree RIO)
-IF (APPLE)
+if(APPLE)
   SET_TARGET_PROPERTIES(GaudiPoolDb PROPERTIES SUFFIX .so)
-ENDIF()
+endif()
 GAUDI_GENERATE_ROOTMAP(GaudiPoolDb)
 GAUDI_GENERATE_CONFIGURATION(GaudiPoolDb)
 
-#---Installation
+set(GaudiPoolDb_environment JOBOPTSEARCHPATH+=${CMAKE_SOURCE_DIR}/GaudiPoolDb/options 
+                            PARENT_SCOPE)
+
+#---Installation-----------------------------------------------------------------------------
 GAUDI_INSTALL_HEADERS(GaudiPoolDb)
 
 

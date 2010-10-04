@@ -3,7 +3,7 @@ cmake_policy(SET CMP0003 NEW) # See "cmake --help-policy CMP0003" for more detai
 cmake_policy(SET CMP0011 NEW) # See "cmake --help-policy CMP0011" for more details
 cmake_policy(SET CMP0009 NEW) # See "cmake --help-policy CMP0009" for more details
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_PROJECT
+#---GAUDI_PROJECT( project version)
 #---------------------------------------------------------------------------------------------------
 macro(GAUDI_PROJECT project version)  
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
@@ -25,17 +25,28 @@ macro(GAUDI_PROJECT project version)
   set(${project}_VERSION_MINOR ${minor})
   set(${project}_VERSION_PATCH ${patch})
 
-  #--- Project Options-------------------------------------------------------------------------------
+  #--- Project Options and Global settings----------------------------------------------------------
   option(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
   option(BUILD_TESTS "Set to ON to build the tests (libraries and executables)" OFF)
-  set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/InstallArea)
-  set(CMAKE_BUILD_TYPE Release)
-  #if(NOT CMAKE_BUILD_TYPE)
+  if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING
       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
-  #endif()
+  endif()
+  if(CMAKE_INSTALL_PREFIX STREQUAL /usr/local)
+    set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/InstallArea CACHE PATH 
+      "Install path prefix, prepended onto install directories." FORCE )
+  endif()
+  GAUDI_BINARY_TAG()
 
-  INSTALL(DIRECTORY cmake/ DESTINATION cmake)
+  if(BUILD_TESTS) 
+    enable_testing()
+  endif()
+
+  #--- Project Installations------------------------------------------------------------------------
+  install(DIRECTORY cmake/ DESTINATION cmake 
+                           FILES_MATCHING PATTERN "*.cmake"
+                           PATTERN ".svn" EXCLUDE )
+  install(PROGRAMS cmake/testwrap.sh cmake/testwrap.csh cmake/genCMake.py DESTINATION scripts)
 
   #--- Global actions for the project
   #GAUDI_USE_PACKAGE(QMtest)
@@ -44,11 +55,37 @@ macro(GAUDI_PROJECT project version)
   #SET( QMtest_environment ${QMtest_environment} QMTEST_CLASS_PATH=${CMAKE_SOURCE_DIR}/GaudiPolicy/qmtest_classes )
   #GAUDI_PROJECT_VERSION_HEADER()
   #GAUDI_BUILD_PROJECT_SETUP()
-  
 endmacro()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_FIND_PROJECT
+#---GAUDI_BINARY_TAG()
+#---------------------------------------------------------------------------------------------------
+function(GAUDI_BINARY_TAG)
+  if( DEFINED ENV{CMAKECONFIG} )
+    string(REGEX MATCHALL "[^-]+" out $ENV{CMAKECONFIG})
+    list(GET out 0 arch)
+    list(GET out 1 os)
+    list(GET out 2 comp)
+  elseif( DEFINED ENV{CMTCONFIG}  )
+    string(REGEX MATCHALL "[^-]+" out $ENV{CMTCONFIG})
+    list(GET out 0 arch)
+    list(GET out 1 os)
+    list(GET out 2 comp)
+  else()
+  endif()
+  if( CMAKE_BUILD_TYPE STREQUAL Release )
+    set(type opt)
+  elseif( CMAKE_BUILD_TYPE STREQUAL Debug )
+    set(type dbg)
+  else()
+    set(type)
+  endif()
+  set(BINARY_TAG_PREFIX ${arch}-${os}-${comp} CACHE STRING "Installation binary tag prefix. The final tag will be made using the BUILD_TYPE" )
+  set(BINARY_TAG ${BINARY_TAG_PREFIX}-${type} PARENT_SCOPE) 
+endfunction()
+
+#---------------------------------------------------------------------------------------------------
+#---GAUDI_FIND_PROJECT(project version)
 #---------------------------------------------------------------------------------------------------
 macro( GAUDI_FIND_PROJECT project version)
   file(TO_CMAKE_PATH "$ENV{CMAKEPROJECTPATH}" projectpath)
@@ -85,7 +122,7 @@ macro( GAUDI_FIND_PROJECT project version)
 endmacro()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_USE_PROJECT
+#---GAUDI_USE_PROJECT(project version)
 #---------------------------------------------------------------------------------------------------
 macro( GAUDI_USE_PROJECT project version )
   if( NOT ${project}_used )
