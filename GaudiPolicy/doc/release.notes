@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-10-05 - Marco Clemencic
+ - Work-around for an icc-related configuration problems in LCG_Settings.
+
 ! 2010-09-20 - Marco Clemencic
  - Minor improvements to the generated Eclipse launchers (GaudiTest).
 
