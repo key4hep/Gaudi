@@ -26,12 +26,12 @@ Properties).
 @author: Marco Clemencic <marco.clemencic@cern.ch>
 """
 
-import Properties, Validators
+import Properties
 
 class MetaConfigurable(type):
     """
     Meta-class for Configurables.
-    
+
     Instrument the Configurable class with the properties defined in
     __properties__.
     """
@@ -57,7 +57,7 @@ class MetaConfigurable(type):
             dict["__defaultInstanceName__"] = name
         # generate the class
         return type.__new__(cls, name, bases, dict)
-    
+
     def __setattr__(self, name, value):
         """
         A __setattr__ declaration here forbids modifications of the class object.
@@ -72,7 +72,7 @@ class Configurable(object):
     __slots__ = ("_name", "_propertyData")
     # All instantiated configurables
     _instances = {}
-    
+
     def _getName(self):
         """
         Getter for property 'name'.
@@ -91,15 +91,15 @@ class Configurable(object):
             self._instances[self._name] = self
         else:
             raise ValueError("cannot rename '%s' to '%s', name already used"
-                             % (self._name, name)) 
+                             % (self._name, name))
     def _delName(self):
         """
         Delete handler for property 'name'.
         """
         raise AttributeError("cannot remove attribute 'name'")
-    
+
     name = property(_getName, _setName, _delName, "Name of the instance")
-    
+
     def __new__(cls, name = None, **kwargs):
         # Instance default name
         if name is None:
@@ -125,11 +125,11 @@ class Configurable(object):
         for attr, value in kwargs.items():
             setattr(instance, attr, value)
         return instance
-    
+
     def __repr__(self):
         """
         Return representation string for the configurable instance.
-        
+
         The string can be evaluated to obtain an equivalent instance.
         """
         retval = self.__class__.__name__ + "("
@@ -164,7 +164,7 @@ class Configurable(object):
                 pass
         raise AttributeError("'%s' object has no property '%s'"
                              % (cls.__name__, prop))
-    
+
     @classmethod
     def propertyNames(cls):
         """
@@ -176,11 +176,11 @@ class Configurable(object):
         names = list(set(names)) # uniquify
         names.sort()
         return names
-    
+
     def propertyDict(self, defaults = False):
         """
         Return a dictionary with the value of the properties.
-        
+
         @param defaults: if True, the properties that are not set are included
         in the returned dictionary with the default value, if False, only the
         properties that are explicitly set are returned.
@@ -190,7 +190,7 @@ class Configurable(object):
             for prop in [ p for p in self.propertyNames() if p not in d ]:
                 d[prop] = self.getDefault(prop)
         return d
-    
+
     def __getnewargs__(self):
         """
         Needed for pickling with protocol 2.
@@ -236,3 +236,18 @@ class Auditor(Configurable):
     """
     pass
 
+def makeConfigurables(defs, globals):
+    """
+    Generate the configurable classes from descriptions in the form of dictionaries:
+
+    { "ConfName": [("Prop1Name","Prop1Type",default,doc), ...], ... }
+    """
+    template = """class %(name)s(%(base)s):\n    __properties__ = (%(props)s)"""
+    for name, props in defs.items():
+        propdescs = []
+        for p in props:
+            propdescs.append("Property(%r,getattr(_validators,%r),%r,%r)" % p)
+        code = template % {"name": name,
+                           "base": "Configurable",
+                           "props": ",".join(propdescs)}
+        exec code in globals, globals

@@ -91,6 +91,10 @@ class configGenerator
   /// buffer of auto-generated configurables
   stringstream m_pyBuf;
 
+  stringstream m_newConfBuf;
+  set<string> m_propertyTypes;
+  set<string> m_headers;
+
   /// switch to decide if the generated configurables need
   /// to import GaudiHandles (ie: if one of the components has a XyzHandle<T>)
   bool    m_importGaudiHandles;
@@ -114,6 +118,7 @@ public:
     m_pkgName           ( pkgName ),
     m_outputDirName     ( outputDirName ),
     m_pyBuf             ( ),
+    m_newConfBuf        ( ),
     m_importGaudiHandles( false ),
     m_dbBuf             ( ),
     m_configurable      ( )
@@ -161,6 +166,9 @@ public:
     m_configurable[ "Service" ] = cfgService;
     m_configurable[ "ApplicationMgr" ] = cfgService;
   }
+  void setValidatorHeaders(const Strings_t& hdrs) {
+    m_headers.insert(hdrs.begin(), hdrs.end());
+  }
 
 private:
   void genComponent( const std::string& libName,
@@ -173,6 +181,42 @@ private:
 		std::ostream& dbOut ) {
     pyOut << m_pyBuf.str() << flush;
     dbOut << m_dbBuf.str() << flush;
+  }
+  void genNewConf(const string &dir, const string &lib) {
+    {
+      fstream data((fs::path(dir) / fs::path(lib + "_components.py")).string().c_str(),
+          ios_base::out|ios_base::trunc);
+      data << "from GaudiConfigurables import Configurable, makeConfigurables\n"
+           << "from GaudiConfigurables.Properties import Property\n"
+           << "import " << lib << "_validators as _validators\n"
+           << "makeConfigurables({\n"
+           << m_newConfBuf.str()
+           << "},globals())\n"
+           << "del Configurable, makeConfigurables, Property\n";
+    }
+    {
+      fstream data((fs::path(dir) / fs::path(lib + "_validators.cpp")).string().c_str(),
+          ios_base::out|ios_base::trunc);
+      for (set<string>::iterator t = m_headers.begin();
+           t != m_headers.end(); ++t) {
+        data << "#include <" << *t << ">\n";
+      }
+      data << "#define PYCONF_VALIDATOR_MODULE\n"
+              "#include \"GaudiKernel/PyConfValidators.h\"\n"
+              "BOOST_PYTHON_MODULE(" << lib << "_validators)\n{\n"
+              "using namespace boost::python;\n";
+      for (set<string>::iterator t = m_propertyTypes.begin();
+          t != m_propertyTypes.end(); ++t) {
+        data << "def(\"" << *t << "\",\n"
+                "    check";
+        string::size_type p = t->find_first_of('<');
+        if (p != string::npos) {
+          data << t->substr(p);
+        }
+        data << ");\n";
+      }
+      data << "}\n";
+    }
   }
   void genTrailer( std::ostream& pyOut,
 		   std::ostream& dbOut );
@@ -222,6 +266,9 @@ int main ( int argc, char** argv )
     ("load-library,l",
      po::value< Strings_t >()->composing(),
      "preloading library")
+    ("validator-headers,I",
+     po::value<Strings_t>(),
+     "extra headers to be added to the validator C++/Python module")
     ;
 
   // declare a group of options that will be allowed both on command line
@@ -383,6 +430,8 @@ int main ( int argc, char** argv )
   py.setConfigurableAlgTool    (vm["configurable-algtool"].as<string>());
   py.setConfigurableAuditor    (vm["configurable-auditor"].as<string>());
   py.setConfigurableService    (vm["configurable-service"].as<string>());
+  if (vm.count("validator-headers"))
+    py.setValidatorHeaders(vm["validator-headers"].as<Strings_t>());
 
   int sc = EXIT_FAILURE;
   try {
@@ -469,6 +518,9 @@ int configGenerator::genConfig( const Strings_t& libs )
     // reset state
     m_importGaudiHandles = false;
     m_pyBuf.str("");
+    m_newConfBuf.str("");
+    m_propertyTypes.clear();
+    m_headers.clear();
     m_dbBuf.str("");
 
     // Scan the pluginSvc namespace and store the "background" of already
@@ -641,6 +693,8 @@ int configGenerator::genConfig( const Strings_t& libs )
     genBody   ( py, db );
     genTrailer( py, db );
 
+    genNewConf(m_outputDirName, *iLib);
+
   } //> end loop over libraries
 
   dummySvc->release();
@@ -756,18 +810,30 @@ void configGenerator::genComponent( const std::string& libName,
           << "( " << m_configurable[componentType] << " ) :"
           << "\n";
   m_pyBuf << "  __slots__ = { \n";
+  m_newConfBuf << "'" << cname << "':[";
   for ( vector<Property*>::const_iterator it = properties.begin() ;
         it != properties.end(); ++it ) {
     const string pname  = (*it)->name();
+    const string pclass = (*it)->propertyClass();
+
     string pvalue, ptype;
     pythonizeValue( (*it), pvalue, ptype );
+
+    m_pyBuf << "    # " << pclass << "\n";
     m_pyBuf << "    '" << pname << "' : " << pvalue <<", # " << ptype << "\n";
 
     if ( (*it)->documentation() != "none" ) {
       propDoc[pname] = (*it)->documentation();
     }
 
+    m_newConfBuf << "('" << pname << "'"
+                 << ",'" << pclass << "'"
+                 << ',' << pvalue
+                 << ",'''" << (*it)->documentation() << "'''),";
+    m_propertyTypes.insert(pclass);
   }
+  m_newConfBuf << "],\n" << flush;
+
   m_pyBuf << "  }\n";
   m_pyBuf << "  _propertyDocDct = { \n";
   for ( PropertyDoc_t::const_iterator iProp = propDoc.begin();

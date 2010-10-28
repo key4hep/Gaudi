@@ -40,3 +40,45 @@ instance to another and the function to get the existing instance.
 
 2010-05-31 16:14:10
 Warning: ctypes-based floating point number validator not yet implemented.
+
+2010-10-28 15:30:36
+A simple extension to the Property base class allow genconf to print the C++ type of
+the Property itself.
+The template arguments of the property class can be used as template argument of
+a small helper function to produce an effective validator (using Boost Python).
+E.g.:
+// in the C++ python module
+BOOST_PYTHON_MODULE(validators)
+{
+  using namespace boost::python;
+  def("SimpleProperty<int,BoundedVerifier<int> >",
+      check<int,BoundedVerifier<int> >);
+}
+# in Python
+Property(name = "MyInt",
+         validator = findValidator('SimpleProperty<int,BoundedVerifier<int> >'),
+         default = 123,
+         doc = "An integer property")
+
+An open question is how to effectively avoid duplications. For small projects it
+may be OK to have one validation module per component library, but we should not
+need more than a handful of validators modules (we have only a limited set of
+properties).
+
+2010-10-28 18:34:20
+It has been sort of easy to modify genconf and GaudiPolicy to allow for the creation
+of the binary python validators (still with duplicates).
+I also added the generation of a python module for the configurable classes. The
+description of the components is done with a dictionary, passed to a generic function
+that translates the descriptions in classes in the namespace of the module (it
+should reduce the memory footprint of the components modules without funny deletes
+of functions).
+The database of configurables and of validators still has to be added.
+
+2010-10-28 19:25:32
+I cannot compile the validators for GaudiExamples, but I managed to get the components
+module right (at least a preliminary version).
+The requirements in GaudiPolicy may need tuning to correctly re-generate the
+configurables.
+I should also improve the documentation of the properties adding type and default
+value.
