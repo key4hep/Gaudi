@@ -32,7 +32,9 @@ def report(fn):
     return wrap
 
 # Default no-op validation function.
-_defaultValidator = lambda _: True
+def _defaultValidator(_):
+    """_defaultValidator"""
+    return True
 
 class Property(object):
     '''
@@ -53,8 +55,8 @@ class Property(object):
             if self._validator(repr(default)):
                 self.default = default
             else:
-                raise TypeError("Bad default value %r (%s)" %
-                                (default, self._propType))
+                raise TypeError("Bad default value %r: %s" %
+                                (default, self._validator.__doc__))
 
         self.doc = doc
 
@@ -70,8 +72,8 @@ class Property(object):
         if self._validator(repr(value)):
             owner._propertyData[self.name] = value
         else:
-            raise TypeError("Property '%s.%s' cannot accept value %r (%s)" %
-                            (owner.__class__.__name__, self.name, value, self._propType))
+            raise TypeError("Property '%s.%s' cannot accept value %r: %s" %
+                            (owner.__class__.__name__, self.name, value, self._validator.__doc__))
 
     def delete(self, owner):
         if self.name in owner._propertyData:
