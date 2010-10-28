@@ -1,0 +1,42 @@
+2010-05-31 08:47:06
+Features to add:
+ * "Map" special property value (as for Vector)
+ * implementation of class aliases (e.g. EvtDataSvc -> EventDataSvc)
+   Probably it is enough to just subclass the actual class with the new name
+ * support for namespaces (how?)
+ * tools: may be with a property 'parent' that reflects itself in the name used
+   in Configurable._instances (it might not be needed to touch the actual name),
+   then the change of name of the parent must update the _instances map for the
+   private tools (do we want the tools to be accessible from the parent?)
+ * validators for components: a string property is often a place-holder for a
+   component type/name. The property should accept strings or instances and
+   validate (at least) the type of component (Algorithm, AlgTool, Service) and
+   possibly the requested interfaces.
+   When requested, the property should instantiate the proper configurable instance
+   and return it (implement the same semantic as Vector and Map?)
+ * we need a way of selecting the right validator from the C++.
+   One possibility is to pass to "genconf" the module with custom validators,
+   which must contain a map "C++ typeinfo" -> "validator instance" (or update the
+   main map in the main modules)
+ * Database of configurables.
+   It must be a text database, instead of a module, a la rootmap:
+     C++ class -> Python configurable class
+   It could be generated from the Python modules in post-process step (like the
+   rootmap or the configurable user).
+   (remember to treat correctly the zipped python directories)
+
+2010-05-31 10:46:50
+Added base classes for Service, Algorithm and AlgTool.
+
+2010-05-31 12:06:52
+Instead of the selection of the validator, we need to select the property according
+to the C++ typeinfo.
+
+2010-05-31 14:23:15
+Since the instantiation of an object with a name already used is not possible, an
+easy way of replacing the existing instance with an instance of the new type is
+needed. Or better, we need a way to copy all the set properties from one
+instance to another and the function to get the existing instance.
+
+2010-05-31 16:14:10
+Warning: ctypes-based floating point number validator not yet implemented.

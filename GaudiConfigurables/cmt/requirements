@@ -1,0 +1,18 @@
+package GaudiConfigurables
+version v0r0
+author "Marco Clemencic"
+
+branches cmt doc python
+
+use GaudiPolicy v*
+
+use Python v* LCG_Interfaces -no_auto_imports
+
+# For pyparsing
+use pygraphics v*  LCG_Interfaces -no_auto_imports
+
+
+private
+apply_pattern install_python_modules
+
+end_private
