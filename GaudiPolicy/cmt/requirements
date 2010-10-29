@@ -268,12 +268,12 @@ pattern pyd_module \
   macro shlibsuffix "$(shlibsuffix)" target_<module>&target-winxp "pyd" ; \
   macro library_prefix "$(library_prefix)" target_<module> "" ; \
   macro <module>_install_dir "$(CMTINSTALLAREA)/$(python_bin_module_dir)" target-winxp "$(CMTINSTALLAREA)\$(python_bin_module_dir)" ; \
-  library <module> -no_static -import=Python -target_tag install_dir="$(<module>_install_dir)" <files> ; \
+  library <module> -no_static -group=<group> -import=Python -target_tag install_dir="$(<module>_install_dir)" <files> ; \
   end_private ; \
   macro_append <module>_cppflags " -ftemplate-depth-64" target-winxp "" ;
 # Boost version of the pattern
 pattern pyd_boost_module \
-  apply_pattern pyd_module module=<module> files=<files> deps=<deps> name=<name> ; \
+  apply_pattern pyd_module module=<module> files=<files> deps=<deps> name=<name> group=<group> ; \
   macro_append <module>_use_linkopts " $(Boost_linkopts_python)"
 
 cmtpath_pattern \
@@ -988,7 +988,7 @@ pattern do_real_genconfig \
            $(library_prefix)<library>.$(shlibsuffix) ; \
   macro_append <library>Conf_dependencies " <library> " ; \
   apply_pattern install_python_init package=<package> group=<group> ; \
-  apply_pattern pyd_boost_module module=<library>_validators files=../genConf/<package>/<library>_validators.cpp ; \
+  apply_pattern pyd_boost_module module=<library>_validators group=<group> files=../genConf/<package>/<library>_validators.cpp ; \
   macro_append <library>_validators_dependencies "<library>Conf" ; \
   macro_append <group><package>_python_init_dependencies " <library>Conf " ; \
   private ; \
