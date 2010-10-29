@@ -250,8 +250,8 @@ make_fragment python_init -header=python_init_header
 #
 #-------------------------------------------------------------------
 # Macro used to define where Python binary modules have to be installed
-macro python_bin_module_dir '$(tag)/python-bin' \
-               target-winxp '$(tag)\python-bin' \
+macro python_bin_module_dir '$(tag)/lib-dynload' \
+               target-winxp '$(tag)\lib-dynload' \
  use-shared-dir&target-winxp '$(tag)\python' \
               use-shared-dir '$(tag)/python'
 
