@@ -2,12 +2,9 @@
 #error This header is meant only to be used in the implementation of validators for configurables
 #endif
 
-// few common standard headers
-#include <string>
-#include <vector>
-#include <map>
-#include <list>
-#include <set>
+// This must be included before GCC standard headers to avoid warnings about
+// redefined macros in Python.
+#include <boost/python.hpp>
 
 // Property classes/headers
 #include "GaudiKernel/Property.h"
@@ -27,5 +24,3 @@ bool check(const std::string &s) {
   return Gaudi::Parsers::parse(tmp, s).isSuccess()
          && VERIFIER().isValid(&tmp);
 }
-
-#include <boost/python.hpp>
