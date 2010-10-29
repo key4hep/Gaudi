@@ -82,3 +82,10 @@ The requirements in GaudiPolicy may need tuning to correctly re-generate the
 configurables.
 I should also improve the documentation of the properties adding type and default
 value.
+
+2010-10-29 08:23:21
+One interesting possibility for the configurables database is to use a BerkleyDB.
+It will efficiently handle automatically merge and locking (no need for 2 steps).
+The problem is that it cannot be stored in a zip file, so either we use the binary
+Python modules directory or PATH or LD_LIBRARY_PATH. Alternatively, we can add yet
+one more environment variable.
