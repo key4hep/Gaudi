@@ -92,6 +92,22 @@ private
 apply_pattern linker_library    library=GaudiExamplesLib
 apply_pattern component_library library=GaudiExamples
 
+# StringKeyEx.cpp
+macro_append genconfig_extra_options " --validator-include GaudiKernel/StringKey.h"
+# BoostArrayProperties.cpp
+macro_append genconfig_extra_options " --validator-include GaudiKernel/BoostArrayAsProperty.h"
+# ExtendedProperties2.cpp
+macro_append genconfig_extra_options " --validator-include GaudiKernel/AlgFactory.h"
+macro_append genconfig_extra_options " --validator-include GaudiKernel/Point3DTypes.h"
+macro_append genconfig_extra_options " --validator-include GaudiKernel/Point4DTypes.h"
+macro_append genconfig_extra_options " --validator-include GaudiKernel/Vector3DTypes.h"
+macro_append genconfig_extra_options " --validator-include GaudiKernel/Vector4DTypes.h"
+macro_append genconfig_extra_options " --validator-include GaudiKernel/GenericVectorTypes.h"
+macro_append genconfig_extra_options " --validator-include GaudiKernel/VectorsAsProperty.h"
+macro_append genconfig_extra_options " --validator-include GaudiKernel/SVectorAsProperty.h"
+# HistoProps.cpp
+macro_append genconfig_extra_options " --validator-include GaudiKernel/HistoProperty.h"
+
 macro_append ROOT_linkopts " -lHist " \
               target-winxp " libHist.lib " \
               target-mac104 " -lHist -lMatrix "
@@ -112,3 +128,5 @@ macro_remove PyExample_use_linkopts '$(GaudiExamples_linkopts)'
 apply_pattern QMTest
 path_prepend PYTHONPATH "" \
                  QMTest "${GAUDIEXAMPLESROOT}/tests/qmtest"
+
+end_private

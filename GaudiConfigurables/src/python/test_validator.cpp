@@ -1,3 +1,5 @@
+#include <boost/python.hpp>
+#include <GaudiKernel/Property.h>
 #define PYCONF_VALIDATOR_MODULE
 #include "GaudiKernel/PyConfValidators.h"
 
@@ -8,10 +10,12 @@ BOOST_PYTHON_MODULE(test_validator)
       check<int,BoundedVerifier<int> >);
   def("SimpleProperty<bool,BoundedVerifier<bool> >",
       check<bool,BoundedVerifier<bool> >);
-  def("SimplePropertyRef<std::vector<std::string,std::allocator<std::string> >,NullVerifier<std::vector<std::string,std::allocator<std::string> > > >",
-      check<std::vector<std::string,std::allocator<std::string> >,NullVerifier<std::vector<std::string,std::allocator<std::string> > > >);
   def("SimplePropertyRef<std::string,NullVerifier<std::string> >",
       check<std::string,NullVerifier<std::string> >);
+  def("SimplePropertyRef<std::vector<int,std::allocator<int> >,NullVerifier<std::vector<int,std::allocator<int> > > >",
+      check<std::vector<int,std::allocator<int> >,NullVerifier<std::vector<int,std::allocator<int> > > >);
+  def("SimplePropertyRef<std::vector<std::string,std::allocator<std::string> >,NullVerifier<std::vector<std::string,std::allocator<std::string> > > >",
+      check<std::vector<std::string,std::allocator<std::string> >,NullVerifier<std::vector<std::string,std::allocator<std::string> > > >);
   def("SimplePropertyRef<std::vector<long,std::allocator<long> >,NullVerifier<std::vector<long,std::allocator<long> > > >",
       check<std::vector<long,std::allocator<long> >,NullVerifier<std::vector<long,std::allocator<long> > > >);
 }

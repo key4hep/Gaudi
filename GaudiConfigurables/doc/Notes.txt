@@ -89,3 +89,8 @@ It will efficiently handle automatically merge and locking (no need for 2 steps)
 The problem is that it cannot be stored in a zip file, so either we use the binary
 Python modules directory or PATH or LD_LIBRARY_PATH. Alternatively, we can add yet
 one more environment variable.
+
+2010-10-29 15:54:47
+Several improvements in the creation, documentation of the properties.
+Tried to run the tests, but need to be fixed.
+GaudiExamples compiles and mainly works (Handles must be tested).

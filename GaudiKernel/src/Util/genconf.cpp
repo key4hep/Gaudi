@@ -188,22 +188,24 @@ private:
           ios_base::out|ios_base::trunc);
       data << "from GaudiConfigurables import Configurable, makeConfigurables\n"
            << "from GaudiConfigurables.Properties import Property\n"
+           << "from GaudiKernel.GaudiHandles import *\n"
            << "import " << lib << "_validators as _validators\n"
-           << "makeConfigurables({\n"
+           << "makeConfigurables([\n"
            << m_newConfBuf.str()
-           << "},globals())\n"
-           << "del Configurable, makeConfigurables, Property\n";
+           << "],globals())\n";
     }
     {
       fstream data((fs::path(dir) / fs::path(lib + "_validators.cpp")).string().c_str(),
           ios_base::out|ios_base::trunc);
+      data << "#include <boost/python.hpp>\n" // needs to be first to avoid warnings
+              "#include <GaudiKernel/Property.h>\n";
       for (set<string>::iterator t = m_headers.begin();
-           t != m_headers.end(); ++t) {
+          t != m_headers.end(); ++t) {
         data << "#include <" << *t << ">\n";
       }
       data << "#define PYCONF_VALIDATOR_MODULE\n"
-              "#include \"GaudiKernel/PyConfValidators.h\"\n"
-              "BOOST_PYTHON_MODULE(" << lib << "_validators)\n{\n"
+              "#include <GaudiKernel/PyConfValidators.h>\n" // must be after the headers
+           << "BOOST_PYTHON_MODULE(" << lib << "_validators)\n{\n"
               "using namespace boost::python;\n";
       for (set<string>::iterator t = m_propertyTypes.begin();
           t != m_propertyTypes.end(); ++t) {
@@ -212,6 +214,15 @@ private:
         string::size_type p = t->find_first_of('<');
         if (p != string::npos) {
           data << t->substr(p);
+        } // Special cases
+        else if (*t == "GaudiHandleProperty") { // equivalent to a string
+          data << "<std::string,NullVerifier<std::string> >";
+        }
+        else if (*t == "GaudiHandleArrayProperty") { // equivalent to vector<string>
+          data << "<std::vector<std::string,std::allocator<std::string> >,NullVerifier<std::vector<std::string,std::allocator<std::string> > > >";
+        }
+        else { // If unknown, use the catch-all string type
+          data << "<std::string,NullVerifier<std::string> >";
         }
         data << ");\n";
       }
@@ -266,7 +277,7 @@ int main ( int argc, char** argv )
     ("load-library,l",
      po::value< Strings_t >()->composing(),
      "preloading library")
-    ("validator-headers,I",
+    ("validator-include,I",
      po::value<Strings_t>(),
      "extra headers to be added to the validator C++/Python module")
     ;
@@ -430,8 +441,8 @@ int main ( int argc, char** argv )
   py.setConfigurableAlgTool    (vm["configurable-algtool"].as<string>());
   py.setConfigurableAuditor    (vm["configurable-auditor"].as<string>());
   py.setConfigurableService    (vm["configurable-service"].as<string>());
-  if (vm.count("validator-headers"))
-    py.setValidatorHeaders(vm["validator-headers"].as<Strings_t>());
+  if (vm.count("validator-include"))
+    py.setValidatorHeaders(vm["validator-include"].as<Strings_t>());
 
   int sc = EXIT_FAILURE;
   try {
@@ -520,7 +531,6 @@ int configGenerator::genConfig( const Strings_t& libs )
     m_pyBuf.str("");
     m_newConfBuf.str("");
     m_propertyTypes.clear();
-    m_headers.clear();
     m_dbBuf.str("");
 
     // Scan the pluginSvc namespace and store the "background" of already
@@ -810,7 +820,7 @@ void configGenerator::genComponent( const std::string& libName,
           << "( " << m_configurable[componentType] << " ) :"
           << "\n";
   m_pyBuf << "  __slots__ = { \n";
-  m_newConfBuf << "'" << cname << "':[";
+  m_newConfBuf << "('" << componentName << "',[";
   for ( vector<Property*>::const_iterator it = properties.begin() ;
         it != properties.end(); ++it ) {
     const string pname  = (*it)->name();
@@ -826,13 +836,21 @@ void configGenerator::genComponent( const std::string& libName,
       propDoc[pname] = (*it)->documentation();
     }
 
+    // Property description:
+    //   (name, cppType, default, propClass, doc)
     m_newConfBuf << "('" << pname << "'"
-                 << ",'" << pclass << "'"
+                 << ",'" << System::typeinfoName(*(*it)->type_info()) << "'"
                  << ',' << pvalue
-                 << ",'''" << (*it)->documentation() << "'''),";
+                 << ",'" << pclass << "',";
+    if ( (*it)->documentation() != "none" ) {
+      m_newConfBuf << "'''" << (*it)->documentation() << "'''";
+    } else {
+      m_newConfBuf << "None";
+    }
+    m_newConfBuf << "),";
     m_propertyTypes.insert(pclass);
   }
-  m_newConfBuf << "],\n" << flush;
+  m_newConfBuf << "]),\n" << flush;
 
   m_pyBuf << "  }\n";
   m_pyBuf << "  _propertyDocDct = { \n";

@@ -34,7 +34,8 @@ $(outdir)/$(confpy) : $(conflib) $(outdir)
 	  --configurable-algorithm=$(confAlgorithm) \
 	  --configurable-algtool=$(confAlgTool) \
 	  --configurable-auditor=$(confAuditor) \
-          --configurable-service=$(confService) \
+	  --configurable-service=$(confService) \
+	  $(genconfig_extra_options) \
 	  -i ../$(tag)/$(library_prefix)$(library).$(shlibsuffix)
 
 $(outdir):

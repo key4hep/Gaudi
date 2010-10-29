@@ -40,25 +40,33 @@ class Property(object):
     '''
     Generic property class to handle
     '''
-    def __init__(self, name, validator = _defaultValidator,
-                 default = None, doc = "Undocumented"):
+    def __init__(self, name,
+                 cppType, default,
+                 validator = _defaultValidator, doc = None):
         '''
         Constructor
         '''
         self.name = name
-
+        self.cppType = cppType
         self._validator = validator
 
-        if default is None:
-            self.default = self._validator.default
+        if self._validator(repr(default)):
+            self.default = default
         else:
-            if self._validator(repr(default)):
-                self.default = default
-            else:
-                raise TypeError("Bad default value %r: %s" %
-                                (default, self._validator.__doc__))
+            raise TypeError("Bad default value %r: %s" %
+                            (default, self._validator.__doc__))
 
-        self.doc = doc
+        # The documentation of a property is:
+        #  - optional text (specified in C++)
+        #  - C++ type
+        #  - default value
+        docs = []
+        if doc:
+            docs.append(doc.strip())
+            docs.append("")
+        docs.append("type: " + self.cppType)
+        docs.append("default: " + repr(self.default))
+        self.doc = "\n".join(docs)
 
     def get(self, owner):
         if self.name in owner._propertyData:

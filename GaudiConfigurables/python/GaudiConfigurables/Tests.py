@@ -7,25 +7,34 @@ import unittest
 
 from GaudiConfigurables import *
 from GaudiConfigurables.Properties import *
-from GaudiConfigurables.Validators import *
-from CppTypeDecoding import Type, parse
+import test_validator
+int_val = getattr(test_validator,
+                  "SimpleProperty<int,BoundedVerifier<int> >")
+str_val = getattr(test_validator,
+                  "SimplePropertyRef<std::string,NullVerifier<std::string> >")
+vec_int_val = getattr(test_validator,
+                      "SimplePropertyRef<std::vector<int,std::allocator<int> >,NullVerifier<std::vector<int,std::allocator<int> > > >")
+vec_str_val = getattr(test_validator,
+                      "SimplePropertyRef<std::vector<std::string,std::allocator<std::string> >,NullVerifier<std::vector<std::string,std::allocator<std::string> > > >")
 
 class TestAlgorithm(Algorithm):
-    __properties__ = (BaseProperty("OutputLevel",
-                               CTypesValidator("int"),
-                               3,
+    __properties__ = (Property("OutputLevel",
+                               "int", 3,
+                               int_val,
                                "something"),
-                      VectorProperty("Items",
-                                     CTypesValidator("int"),
-                                     doc = "A vector of ints"),
-                      VectorProperty("Tools",
-                                     StringValidator(),
-                                     doc = "A vector of strings"))
+                      Property("Items",
+                               "vector<int>", [],
+                               vec_int_val,
+                               doc = "A vector of ints"),
+                      Property("Tools",
+                               "vector<string>", [],
+                               vec_str_val,
+                               doc = "A vector of strings"))
 
 class MyAlgorithm(TestAlgorithm):
-    __properties__ = (BaseProperty("OutputLevel",
-                               StringValidator(),
-                               "ciao",
+    __properties__ = (Property("OutputLevel",
+                               "string", "ciao",
+                               str_val,
                                "something new"),)
 
 class Test(unittest.TestCase):
@@ -39,13 +48,10 @@ class Test(unittest.TestCase):
         # Remove all instances
         Configurable._instances.clear()
 
-    def test_000_ValidatorError(self):
-        "ValidatorError"
-        str(ValidatorError("int", "value"))
-
     def test_000_defaultValidator(self):
         "defaultValidator"
-        defaultValidator("anything")
+        from GaudiConfigurables.Properties import _defaultValidator
+        self.assert_(_defaultValidator("anything"))
 
 #    def test_000_CppTypes(self):
 #        "Decoding of C++ types"
@@ -69,31 +75,28 @@ class Test(unittest.TestCase):
 
     def test_000_validators(self):
         "Validators"
-        i32 = CIntValidator(32)
-        i32(-100)
-        i32(0)
-        i32(100)
-        self.failUnlessRaises(ValidatorError, i32, 1 << 31)
-        self.failUnlessRaises(ValidatorError, i32, "test")
-        self.failUnlessRaises(ValidatorError, i32, [])
+        self.assert_(int_val("-100"))
+        self.assert_(int_val("0"))
+        self.assert_(int_val("100"))
+        self.assertFalse(int_val(str(1 << 31)))
+        self.assertFalse(int_val("test"))
+        self.assertFalse(int_val("[]"))
 
-        ui32 = CIntValidator(32, signed = False)
-        self.failUnlessRaises(ValidatorError, ui32, -100)
-        ui32(0)
-        ui32(100)
-        self.failUnlessRaises(ValidatorError, ui32, 1 << 32)
+        #ui32 = CIntValidator(32, signed = False)
+        #self.failUnlessRaises(ValidatorError, ui32, -100)
+        #ui32(0)
+        #ui32(100)
+        #self.failUnlessRaises(ValidatorError, ui32, 1 << 32)
 
-        fp = CFPValidator()
-        fp(100)
-        fp(1000L)
-        fp(1e10)
-        self.failUnlessRaises(ValidatorError, fp, [])
-        self.failUnlessRaises(ValidatorError, fp, "test")
+        #fp = CFPValidator()
+        #fp(100)
+        #fp(1000L)
+        #fp(1e10)
+        #self.failUnlessRaises(ValidatorError, fp, [])
+        #self.failUnlessRaises(ValidatorError, fp, "test")
 
-        s = StringValidator()
-        s("test")
-        self.failUnlessRaises(ValidatorError, s, [])
-        self.failUnlessRaises(ValidatorError, s, 10)
+        self.assert_(str_val("test"))
+        self.assertFalse(str_val("[]"))
 
     def test_010_singleton(self):
         "Named singleton"

@@ -9,9 +9,6 @@ use GaudiKernel v*
 
 use Python v* LCG_Interfaces -no_auto_imports
 
-# For pyparsing
-use pygraphics v*  LCG_Interfaces -no_auto_imports
-
 #############################################################################
 private
 

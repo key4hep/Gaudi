@@ -26,6 +26,8 @@ Properties).
 @author: Marco Clemencic <marco.clemencic@cern.ch>
 """
 
+import string
+
 import Properties
 
 class MetaConfigurable(type):
@@ -34,6 +36,8 @@ class MetaConfigurable(type):
 
     Instrument the Configurable class with the properties defined in
     __properties__.
+    The optional __cpp_type__ can be used to specify the corresponding C++ type
+    (if not present, the Python class name is used).
     """
     def __new__(cls, name, bases, dict):
         """
@@ -52,9 +56,12 @@ class MetaConfigurable(type):
             slots.add(p.name)
         # update the slots
         dict["__slots__"] = tuple(slots)
+        # Add the __cpp_type__ property if not defined
+        if "__cpp_type__" not in dict:
+            dict["__cpp_type__"] = name
         # set the default instance name if not defined
         if "__defaultInstanceName__" not in dict:
-            dict["__defaultInstanceName__"] = name
+            dict["__defaultInstanceName__"] = dict["__cpp_type__"]
         # generate the class
         return type.__new__(cls, name, bases, dict)
 
@@ -140,6 +147,12 @@ class Configurable(object):
         retval += ",".join(pars + [ "%s=%r" % i for i in self._propertyData.items()])
         retval += ")"
         return retval
+
+    def __str__(self):
+        """
+        String representation as <C++ class>/<instance name>.
+        """
+        return "/".join((self.__cpp_type__, self.name))
 
     def isSet(self, prop):
         """
@@ -236,18 +249,25 @@ class Auditor(Configurable):
     """
     pass
 
+_makeConfTemplate = "class %(name)s(%(base)s):\n\t__properties__=(%(props)s)\n\t__cpp_type__=%(type)r"
+_makeConfTransTable = string.maketrans("<>&*,: ().","__rp__s___")
 def makeConfigurables(defs, globals):
     """
-    Generate the configurable classes from descriptions in the form of dictionaries:
+    Generate the configurable classes from descriptions in the form of a list of
+    component descriptions:
 
-    { "ConfName": [("Prop1Name","Prop1Type",default,doc), ...], ... }
+    [("ComponentName", [("Prop1Name","Prop1Type",default,doc), ...]), ... ]
     """
-    template = """class %(name)s(%(base)s):\n    __properties__ = (%(props)s)"""
-    for name, props in defs.items():
+    all = []
+    for cppType, props in defs:
+        name = cppType.translate(_makeConfTransTable)
         propdescs = []
         for p in props:
-            propdescs.append("Property(%r,getattr(_validators,%r),%r,%r)" % p)
-        code = template % {"name": name,
-                           "base": "Configurable",
-                           "props": ",".join(propdescs)}
+            propdescs.append("Property(%r,%r,%r,getattr(_validators,%r),%r)" % p)
+        code = _makeConfTemplate % {"name": name,
+                                    "type": cppType,
+                                    "base": "Configurable",
+                                    "props": ",".join(propdescs)}
         exec code in globals, globals
+        all.append(name)
+    globals["__all__"] = all
