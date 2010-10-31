@@ -94,3 +94,18 @@ one more environment variable.
 Several improvements in the creation, documentation of the properties.
 Tried to run the tests, but need to be fixed.
 GaudiExamples compiles and mainly works (Handles must be tested).
+
+2010-10-29 20:01:11
+To play with BDM, probably it is best to start with the validators. For the configurables
+themselves I may directly store their description directly in a DB and be done
+with it.
+
+2010-10-31 14:52:40
+The tricky part of using a db of the validators is to build the validators module
+only if needed.
+Possible solutions are:
+1) collect all the validators in a single module for the whole
+project (similar to the "merged" confDb or to the python.zip (build delayed to the
+container?).
+2) put the code to build the validator module in the genconfig fragment, so that
+it can be triggered conditionally by the presence of the .cpp file.

@@ -60,10 +60,10 @@
 #include <set>
 #include <vector>
 
+#include <gdbm.h>
+#include <sys/stat.h>
 
 #include "DsoUtils.h"
-
-
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
@@ -112,18 +112,29 @@ class configGenerator
   ///  - Name of the configurable base class for the Service component
   GaudiUtils::HashMap<std::string, std::string> m_configurable;
 
+  /// gdbm file with the database of validators.
+  GDBM_FILE m_validators_db;
+
 public:
   configGenerator( const string& pkgName,
-		   const string& outputDirName ) :
+		   const string& outputDirName,
+		   const string& validatorsDB ) :
     m_pkgName           ( pkgName ),
     m_outputDirName     ( outputDirName ),
     m_pyBuf             ( ),
     m_newConfBuf        ( ),
     m_importGaudiHandles( false ),
     m_dbBuf             ( ),
-    m_configurable      ( )
+    m_configurable      ( ),
+    m_validators_db     (gdbm_open(const_cast<char*>(validatorsDB.c_str()),
+                                   4096, GDBM_WRCREAT,
+                                   S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH, 0))
   {}
-
+  ~configGenerator() {
+    if (m_validators_db) {
+      gdbm_close(m_validators_db);
+    }
+  }
   /// main entry point of this class:
   ///  - iterate over all the modules (ie: library names)
   ///  - for each module extract component informations
@@ -194,6 +205,24 @@ private:
            << m_newConfBuf.str()
            << "],globals())\n";
     }
+    list<string> m_unknownPropTypes;
+    for (set<string>::iterator t = m_propertyTypes.begin();
+         t != m_propertyTypes.end(); ++t) {
+      datum k = {const_cast<char*>(t->c_str()), t->size()};
+      datum d = gdbm_fetch(m_validators_db, k);
+      if (d.dptr) {
+        if (lib == d.dptr) {
+          m_unknownPropTypes.push_back(*t);
+        }
+        free(d.dptr);
+      }
+      else {
+        m_unknownPropTypes.push_back(*t);
+        datum v = {const_cast<char*>(lib.c_str()), lib.size()};
+        gdbm_store(m_validators_db, k, v, GDBM_REPLACE);
+      }
+    }
+    //if (!m_unknownPropTypes.empty())
     {
       fstream data((fs::path(dir) / fs::path(lib + "_validators.cpp")).string().c_str(),
           ios_base::out|ios_base::trunc);
@@ -207,8 +236,8 @@ private:
               "#include <GaudiKernel/PyConfValidators.h>\n" // must be after the headers
            << "BOOST_PYTHON_MODULE(" << lib << "_validators)\n{\n"
               "using namespace boost::python;\n";
-      for (set<string>::iterator t = m_propertyTypes.begin();
-          t != m_propertyTypes.end(); ++t) {
+      for (list<string>::iterator t = m_unknownPropTypes.begin();
+          t != m_unknownPropTypes.end(); ++t) {
         data << "def(\"" << *t << "\",\n"
                 "    check";
         string::size_type p = t->find_first_of('<');
@@ -280,6 +309,9 @@ int main ( int argc, char** argv )
     ("validator-include,I",
      po::value<Strings_t>(),
      "extra headers to be added to the validator C++/Python module")
+    ("validators-db",
+     po::value<string>()->default_value("../genConf/_validators.db"),
+     "gdbm file containing the database of validators modules")
     ;
 
   // declare a group of options that will be allowed both on command line
@@ -434,7 +466,8 @@ int main ( int argc, char** argv )
   copy( libs.begin(), libs.end(), ostream_iterator<string>(cout, " ") );
   cout << "] ::::::" << endl;
 
-  configGenerator py( pkgName, out.string() );
+  configGenerator py( pkgName, out.string(),
+                      vm["validators-db"].as<string>() );
   py.setConfigurableModule     (vm["configurable-module"].as<string>());
   py.setConfigurableDefaultName(vm["configurable-default-name"].as<string>());
   py.setConfigurableAlgorithm  (vm["configurable-algorithm"].as<string>());

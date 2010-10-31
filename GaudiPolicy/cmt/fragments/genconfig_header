@@ -35,6 +35,7 @@ $(outdir)/$(confpy) : $(conflib) $(outdir)
 	  --configurable-algtool=$(confAlgTool) \
 	  --configurable-auditor=$(confAuditor) \
 	  --configurable-service=$(confService) \
+	  --validators-db=$(CMTINSTALLAREA)$(shared_install_subdir)/lib-dynload/_validators.db \
 	  $(genconfig_extra_options) \
 	  -i ../$(tag)/$(library_prefix)$(library).$(shlibsuffix)
 

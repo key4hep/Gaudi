@@ -32,7 +32,7 @@ macro GaudiKernelDict_use_linkopts $(use_linkopts)
 # MCl: ensure that the headers are installed before the build of the dictionary (should not be needed)
 macro_append GaudiKernelGen_dependencies "install_more_includes"
 
-#-----Generate Configurables 
+#-----Generate Configurables
 macro genconfig_cmd           $(GAUDIKERNELROOT)/$(tag)/genconf.exe \
      GAUDI_with_installarea  genconf.exe \
      GAUDIATLAS_with_installarea  genconf.exe
@@ -40,7 +40,8 @@ macro genconfig_cmd           $(GAUDIKERNELROOT)/$(tag)/genconf.exe \
 private
 
 application genconf -import=Boost Util/genconf.cpp
-macro_append genconflinkopts "$(GaudiKernel_linkopts) $(Boost_linkopts) $(Boost_linkopts_filesystem) $(Boost_linkopts_program_options)"
+macro_append genconflinkopts "$(GaudiKernel_linkopts) $(Boost_linkopts) $(Boost_linkopts_filesystem) $(Boost_linkopts_program_options) "
+macro_append genconflinkopts "-lgdbm " target-winxp ""
 macro genconf_dependencies GaudiKernel
 
 # FIXME: (MCl) I do not understand why genconf gets the CppUnit link options,
@@ -53,7 +54,7 @@ macro_append cppflags "" \
          target-winxp ""
 
 ## For Gaudi::Sleep and Gaudi::NanoSleep
-macro_append Boost_linkopts ' $(Boost_linkopts_thread) $(Boost_linkopts_date_time)' 
+macro_append Boost_linkopts ' $(Boost_linkopts_thread) $(Boost_linkopts_date_time)'
 
 ## For DirSearchPath
 macro_append Boost_linkopts ' $(Boost_linkopts_system) $(Boost_linkopts_filesystem) '
