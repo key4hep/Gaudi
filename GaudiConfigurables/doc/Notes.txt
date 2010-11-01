@@ -109,3 +109,17 @@ project (similar to the "merged" confDb or to the python.zip (build delayed to t
 container?).
 2) put the code to build the validator module in the genconfig fragment, so that
 it can be triggered conditionally by the presence of the .cpp file.
+
+2010-11-01 19:10:51
+This is an interesting idea about how to deal with the validators database.
+We can use a single validators module per projects (option '1' above), but we do
+not need a database, because the database of configurables is enough.
+This is how we can do it:
+ - genconf just updates the database with the configurables description
+   (it has to remove everything for the current library and re-add it)
+ - in a second step (triggered like the zipping of python modules) we can go
+   through the database of configurables to generate the python binary module
+   with the validators
+In this scheme there is no need for an actual python module with the configurables,
+but the "Configurables" module can just look-up in the database the descriptions
+and create the actual classes on demand.
