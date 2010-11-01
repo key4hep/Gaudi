@@ -1,6 +1,22 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+=============================== GaudiAlg v13r4 ===============================
+! 2010-09-17 - Vanya Belyaev
+ - Patch #4360: Fix for bug #71237 (GaudiHistos treatment of histoProduce incomplete)
+   GaudiAlg/GaudiHistos*.h(.icpp)
+   - book* & plot* return NULL if histogram are disabled
+   - fill          does not rely on "produceHistogram" at all
+   with such behaviour everything is coherent.
+
+! 2010-09-13 - Olivier Callot, Patrick Koppenburg, Roel Aaij, Marco Clemencic
+ - Patch #4299, patch #4332: Add option for filed size in SequencerTimerTool
+   Added an option to change the size of the algorithm name in the Sequencer Timer tool:
+   SequencerTimerTool("TimingAuditor.TIMER").NameSize = 30
+
+! 2010-08-19 - Marco Clemencic
+ - Fix for ICC in GaudiAlg/CheckForNaN.h.
+
 =============================== GaudiAlg v13r3 ===============================
 ! 2010-05-27 - Vanya Belyaev
  - Patch #4044: Fix for bug #66397 and task #13911
@@ -8,10 +24,10 @@ Package manager : Marco Clemencic
    Fixes to (re)enable the "interactive" insertion of sub-algorithms into
    GaudiSequencer:
     1. Fix the invalid "isInitialized" condition in property handler for
-       "Members". 
+       "Members".
     2. "Upgrade" the state for located sub-algorithms up to the own state
        through the calls for sysInitialize/sysStart.
-    3. Add new entries into the timing table in case of update for "Members" 
+    3. Add new entries into the timing table in case of update for "Members"
        property.
 
 =============================== GaudiAlg v13r2 ===============================
@@ -31,11 +47,11 @@ Package manager : Marco Clemencic
 =============================== GaudiAlg v13r1 ===============================
 ! 2010-03-09 - Vanya Belyaev
  - Patch #3892: Proper implementation of GaudiCommon::exist
-   - GaudiCommon<>:exist: provide the proper implementation, 
-                  compatible with "blind" access to data 
-   - Reimplement GaudiCommon<>::get : make it more efficient 
-                 (thanks to Gerhard for nice suggestion) 
-   - Reimplement GaudiCommon<>::getOrCreate provide the proper implementation 
+   - GaudiCommon<>:exist: provide the proper implementation,
+                  compatible with "blind" access to data
+   - Reimplement GaudiCommon<>::get : make it more efficient
+                 (thanks to Gerhard for nice suggestion)
+   - Reimplement GaudiCommon<>::getOrCreate provide the proper implementation
                  to be compatible with "blind access to the data"
    - GaudiCommon<>::addToToolList/releaseTool
                  add "debug" printout for added/release tools
@@ -67,7 +83,7 @@ Package manager : Marco Clemencic
    Changed the return type to void and modified the code accordingly.
 
 ! 2010-01-11 - Vanya Belyaev
- - Patch #3478: Registration for Algorithm Context Service 
+ - Patch #3478: Registration for Algorithm Context Service
    Moved the registration for the context service from GaudiAlgorithm to Algorithm
 
 ================ GaudiAlg v12r4 ====================================
@@ -78,16 +94,16 @@ Package manager : Marco Clemencic
 
 ! 2009-10-02 - Vanya Belyaev
  - Patch #3157: Remove redundant duplicated  maps from GaudiHistos/GaudiTuples
-   - GaudiHistos, GaudiTuples 
+   - GaudiHistos, GaudiTuples
      remove the separate maps by numerical and by literal ID, use the unique "ID"
      User code which relies on methods
-     
+
        histoXDMapXXXID    -> histoXDMapID
-       profileXDMapXXXID  -> profileXDMapID  
-       nTupleMapXXXID     -> nTupleMapID 
-       evtColMapXXXID     -> evtColMapID    
-     
-     where XXX = { Lit, Num , Numeric ,Literal } 
+       profileXDMapXXXID  -> profileXDMapID
+       nTupleMapXXXID     -> nTupleMapID
+       evtColMapXXXID     -> evtColMapID
+
+     where XXX = { Lit, Num , Numeric ,Literal }
 
 ! 2009-10-02 - Marco Clemencic
  - Fixed bug #55292: Algorithms are never deleted
@@ -129,7 +145,7 @@ Package manager : Marco Clemencic
    Detailed description in GaudiAlg/doc/patch_3134.html
 
 ================ GaudiAlg v12r2 ====================================
-! 2009-07-08 - Christopher Rob Jones 
+! 2009-07-08 - Christopher Rob Jones
  - Patch #3095: Add support for variable bin width histograms to GaudiAlg
 
 ! 2009-07-08 - Marco Clemencic
@@ -171,7 +187,7 @@ Package manager : Marco Clemencic
  - Patch #2790: Rename the namespace MSG to Msg
 
 ! 2009-01-30 - Marco Clemencic
- - Replaced all the occurrences of endreq with endmsg. 
+ - Replaced all the occurrences of endreq with endmsg.
 
 ! 2009-01-29 - Marco Clemencic
  - Symbol visibility
@@ -183,7 +199,7 @@ Package manager : Marco Clemencic
 ! 2009-01-22 - Marco Clemencic
  - Adapted to the new IInterface functionalities (see GaudiKernel release.notes)
  - Removed the IID_* constants.
- 
+
 ================ GaudiAlg v11r3 ====================================
 ! 2008-12-01 - Marco Clemencic
  - Fixed bug #44504. Inconsistent default for createIf flag for services.
@@ -205,7 +221,7 @@ Package manager : Marco Clemencic
 ! 2008-10-10 - Chris Jones
  - Patch #2509. Suppress messages in GaudiAlg when tools are loaded multiple times
    Suppress the warnings when a component loads a tool with the same name
-   more than once as this makes sometimes sense (tools with multiple 
+   more than once as this makes sometimes sense (tools with multiple
    interfaces for instance).
 
 ! 2008-10-10 - Gerhard Raven
@@ -234,7 +250,7 @@ Package manager : Marco Clemencic
     * GaudiAlg/GaudiHistos.icpp
    add more default arguments to the methods GaudiHistos::profile1D and
    GaudiHistos::bookProfile1D to allow definition of Y-range and options.
- 
+
 ================ GaudiAlg v11r1 ====================================
 ! 2008-07-17 - Marco Clemencic
  - Added the interface IGenericTool (from LHCb).
@@ -246,7 +262,7 @@ Package manager : Marco Clemencic
 ! 2008-06-04 - Chris Jones
  - Patch #1862. Extend space for 'counter' name in GaudiAlg summary.
    - Changed the default format of the counters report table in GaudiAlg to
-     give more space for counter names. 
+     give more space for counter names.
 
 ! 2008-06-02 - Marco Clemencic
  - Task #5809. Extension to Gaudi Application state machine.
@@ -254,7 +270,7 @@ Package manager : Marco Clemencic
      the state is set in sysInitialize.
 
 ! 2008-05-14 - Patrick Koppenburg
- - Patch #1807. Reduced default print-out of GaudiHistos and GaudiTuples.  
+ - Patch #1807. Reduced default print-out of GaudiHistos and GaudiTuples.
 
 ================ GaudiAlg v10r5 ====================================
 ! 2008-04-04 - Marco Clemencic
@@ -267,17 +283,17 @@ Package manager : Marco Clemencic
 ! 2008-04-03 - Vanya BELYAEV
  - Patch #1749. Improvements of print-outs.
    - Decrease a little bit the number of lines produced by GaudiHistos &
-     GaudiTuples classes (requested by Patrick KOPPENBURG). 
-   - Improve the print-out of the statistical counters & histograms, 
+     GaudiTuples classes (requested by Patrick KOPPENBURG).
+   - Improve the print-out of the statistical counters & histograms,
      in particular now the final tables looks much nicer, they are not prepended
      with "standard" prefixes, and are more readable.
    - GaudiAlg/Print.h, add the methods PrintXXX::toString.
- 
+
 ! 2008-04-03 - Marco Clemencic
  - Patch #1725. New IAuditor interface.
    Modified TimingAuditor to implement the new IAuditor interface for both
    standard events and user events.
-   
+
 ================ GaudiAlg v10r4 ====================================
 ! 2008-02-21 - Marco Clemencic
  - Fixed bug #30209. Support for namespaced algorithms in Sequencer
@@ -296,19 +312,19 @@ Package manager : Marco Clemencic
 
 ! 2008-01-17 - Chris Jones
  - Patch #1625.
-   - Introduce fix for the problem of non-deterministic automatically 
-     assigned numerical IDs in the GaudiTuples and GaudiHistos base 
+   - Introduce fix for the problem of non-deterministic automatically
+     assigned numerical IDs in the GaudiTuples and GaudiHistos base
      classes.
-    + New default behavior is to create a literal (string) auto-ID using 
+    + New default behavior is to create a literal (string) auto-ID using
       the histogram title as a basis.
      + Various problematic characters are purged from the string ID.
        By default / is replaced with =SLASH=
     + An option exists to allow the user to switch back to the old way
-      if they prefer (a warning is printed to remind the user this is 
+      if they prefer (a warning is printed to remind the user this is
       potentially dangerous)
-   - Remove direct (unnecessary) inclusion of GaudiHistos.icpp in the 
+   - Remove direct (unnecessary) inclusion of GaudiHistos.icpp in the
      public headers GaudiHistoAlg.h and GaudiHistoTool.h - This include
-     draws in other headers that are not needed (and in fact was causing 
+     draws in other headers that are not needed (and in fact was causing
      compilation problems when the user also included certain ROOT includes).
    - Move a few more methods from inlined in GaudiHistos.h to non-inlined
      in GaudiHistos.icpp (Started by Vanya).
@@ -316,7 +332,7 @@ Package manager : Marco Clemencic
 
 ! 2008-01-14 - Gerhard Raven + Marco Cattaneo + Marco Clemencic
  - Re-introduced some code that was removed with patch #1620, but needed for the
-   correct work of contexts and rootOnTES. 
+   correct work of contexts and rootOnTES.
 
 ! 2008-01-10 - Gerhard Raven
  - patch #1620 (bug #32030).
@@ -338,33 +354,33 @@ Package manager : Marco Clemencic
                  instead of just base ID)
    Minor fix to GaudiHistos<PBASE>::monitorHisto to use the full TES path
    instead of just the base histogram ID when registering the histogram to
-   the monitoring service. I.e. When an algorithm called 'MyAlg' creates a 
+   the monitoring service. I.e. When an algorithm called 'MyAlg' creates a
    histogram with ID 'MyID' register this as 'MyAlg/MyID' instead of just
-   'MyID', in order to prevent conflicts in the case some another algorithm 
+   'MyID', in order to prevent conflicts in the case some another algorithm
    also creates a histogram with base ID MyID.
 
 ================ GaudiAlg v10r1 =====================================
 ! 2007-10-02 - Vanya Belyaev
  - Added a few wrapper functions to remove unwanted explicit dependency
-   on AIDA (was breaking LHCb compilation). 
+   on AIDA (was breaking LHCb compilation).
 
 ! 2007-09-28 - Vanya Belyaev
  - patch #1345.
    - GaudiAlg/TupleObj.h
      1) change the default type for "integer" data-fields from "long" to "int".
         (it requires some changes in GaudiKernel)
-     2) change the signature of some methods for (1) 
-     3) issue the warning messages for truncated fields: 
-          - long 
-          - unsigned long  
-          - unsigned int 
-          - double 
-     4) add a shortcut for column ( IOpaqueAddress* ) 
-     5) remove some clearly confusing "put"-methods  
+     2) change the signature of some methods for (1)
+     3) issue the warning messages for truncated fields:
+          - long
+          - unsigned long
+          - unsigned int
+          - double
+     4) add a shortcut for column ( IOpaqueAddress* )
+     5) remove some clearly confusing "put"-methods
      6) improve doxygen comments
    - src/lib/TupleObj.cpp
-     add few static (boost)assertions for explicit checking of 
-     all assumptions used for Tuples::TupleObj 
+     add few static (boost)assertions for explicit checking of
+     all assumptions used for Tuples::TupleObj
    - Changed names from "Long" to "Int" (Marco Clemencic).
 
 ! 2007-09-26 - Vanya Belyaev
@@ -404,7 +420,7 @@ Package manager : Marco Clemencic
                                        efficiency counters"
     * "UseEfficiencyRowFormat": (bool) the flag to allow the special formatting
                                        of "binomial efficiency" counters
-    
+
 ! 2007-07-16 - Marco Clemencic
  - fixes to please gcc 4.1.
 
@@ -420,7 +436,7 @@ Package manager : Marco Clemencic
     - Improved print-out format
     - Added methods to make StatEntity mode DIM friendly
     - Some clean up in comments
- 
+
 ! 2007-05-23 - Marco Clemencic
  - patch #1160. Changed the returned value of
     - Algorithm::setExecuted()
@@ -456,7 +472,7 @@ Package manager : Marco Clemencic
    to write as N-tuples items almost all objects, known for
    POOL/Reflex. However this nice fucntionality was not available from
    "friendly" N-tuples interface, used in GaudiTupleAlg and
-   GaudiTupleTool.  
+   GaudiTupleTool.
    The proposed patch solved this problem. Now for tuples with POOL
    persistency one can store ANY objects, known for POOL/Reflex. It is
    done through new (templated) method Tuples::TupleObj::put.
@@ -564,17 +580,17 @@ Package manager : Marco Clemencic
 ! 2006-11-27 - Vanya BELYAEV
   Patch #923
   Fixes in reply to Savannah bug-reports #20265 and #20198
-  - GaudiAlg/TupleObj.h 
-    add the method for filling N-Tuples with 
-    few basic ROOT::Math objects: 
-      - 3D/4D vectors and points 
+  - GaudiAlg/TupleObj.h
+    add the method for filling N-Tuples with
+    few basic ROOT::Math objects:
+      - 3D/4D vectors and points
           using "TupleObj::columns"
-      - SVectors & SMatrices 
-          using "TupleObj::array" and "TupleObj::matrix" 
+      - SVectors & SMatrices
+          using "TupleObj::array" and "TupleObj::matrix"
       - "ExtraInfo" objects
           using "TupleObj::fmatrix"
   - cmt/requirements
-    add explicit usage of ROOT 
+    add explicit usage of ROOT
 
 ! 2006-11-08 - Hubert Degaudenzi
  - fixed memory leak in GaudiCommon.
@@ -587,17 +603,17 @@ Package manager : Marco Clemencic
 
 ! 2006-10-04 - Olivier Callot
  patch #861:
- - Add two new options 'RootOnTES' and 'GlobalTimeOffset' to work 
+ - Add two new options 'RootOnTES' and 'GlobalTimeOffset' to work
    with Time Alignment events, propagated to members of a Sequencer
-   and to dependent tools of GAudiAlgorithms/Tools like the 
-   'Context' property. 
+   and to dependent tools of GAudiAlgorithms/Tools like the
+   'Context' property.
 
  - The value of Context, RootOnTES and GlobalTimeOffset is printed at
    the end of the list of algorithms in GaudiSequencer
 
 ! 2006-09-19 - Olivier Callot
  - Fix the GaudiSequencer setting of the Context property for non-
-   GaudiAlgorithm algorithms. This correct a bug due to bug fix 
+   GaudiAlgorithm algorithms. This correct a bug due to bug fix
    #18581 on 31/07/2006
 
 ================ GaudiAlg v9r8 ======================================
@@ -639,9 +655,9 @@ Package manager : Marco Clemencic
  - changed the return value of the {GaudiAlgorithm,GaudiTool}::put
    from StatusCode::SUCCESS to void. It was meaningless.
 
- patch #669: 
+ patch #669:
  - Remove boost from public interface (includes in GaudiAlg directory)
- - Implement proper postfix and prefix ++ and -- operators to 
+ - Implement proper postfix and prefix ++ and -- operators to
    GaudiAlg::ID
 
 ! 2006-03-09 - Chris Jones
@@ -671,24 +687,24 @@ Package manager : Marco Clemencic
  - GaudiAlg/Tuple.h
    GaudiAlg/TupleObj.h
    src/lib/TupleObj.cpp
-      remove the member functions of class Tuples::TupleObj 
+      remove the member functions of class Tuples::TupleObj
       for filling the N-Tuple with CLHEP objects (3D and 4D-vectors).
-   
+
     The recommended substitutions:
 
-     SOMEWHERE in LOCAL package, which depends on corresponding 
+     SOMEWHERE in LOCAL package, which depends on corresponding
      Geometry or Math library:
 
 
-      typedef XXXXXX    MyVector3D ; 
+      typedef XXXXXX    MyVector3D ;
 
-      // define corresponding partial specialization: 
-     template <> 
-     inline Tuples::Tuple& operator<< 
-        ( Tuples::Tuple&                      tuple , 
-         const Tuples::TupleColumn<MyVector>& item  ) 
+      // define corresponding partial specialization:
+     template <>
+     inline Tuples::Tuple& operator<<
+        ( Tuples::Tuple&                      tuple ,
+         const Tuples::TupleColumn<MyVector>& item  )
       {
-        if( !tuple.valid() ) { return tuple ;} 
+        if( !tuple.valid() ) { return tuple ;}
         const MyVector& vct = item.value() ;
         tuple -> column ( item.name() + "X" , vct.x() ) ;
         tuple -> column ( item.name() + "Y" , vct.y() ) ;
@@ -698,56 +714,56 @@ Package manager : Marco Clemencic
 
    Of course it is a bit better to split this code into 2 parts
 
-    some *.h file: 
+    some *.h file:
 
       // forward declaration:
-      Tuples::Tuple& 
-          fillNTuple ( tuple                     , 
-                       const std::string&  name  , 
+      Tuples::Tuple&
+          fillNTuple ( tuple                     ,
+                       const std::string&  name  ,
                        const MyVector&     vct   ) ;
-  
-      // define corresponding partial specialization: 
-     template <> 
-     inline Tuples::Tuple& operator<< 
-        ( Tuples::Tuple&                      tuple , 
-         const Tuples::TupleColumn<MyVector>& item  ) 
-      {  
+
+      // define corresponding partial specialization:
+     template <>
+     inline Tuples::Tuple& operator<<
+        ( Tuples::Tuple&                      tuple ,
+         const Tuples::TupleColumn<MyVector>& item  )
+      {
         return fillNTuple( tuple , item.name() , item.value() ) ;
       }
-   
+
      and in some *.cpp file:
-    
+
      // forward declaration:
-      Tuples::Tuple& 
-          fillNTuple ( tuple                     , 
-                       const std::string&  name  , 
-                       const MyVector&     vct   ) 
+      Tuples::Tuple&
+          fillNTuple ( tuple                     ,
+                       const std::string&  name  ,
+                       const MyVector&     vct   )
        {
-        if ( !tuple.valid() ) { return tuple ; } 
+        if ( !tuple.valid() ) { return tuple ; }
         tuple -> column ( name + "X" , vct.x() ) ;
         tuple -> column ( name + "Y" , vct.y() ) ;
         tuple -> column ( name + "Z" , vct.z() ) ;
         return tuple ;
      };
-    
-  As an example one can see the partial specialization 
-  from LoKi packages for types "TrgDecision*" , 
+
+  As an example one can see the partial specialization
+  from LoKi packages for types "TrgDecision*" ,
   "L0DUReport", "L1Score" and many others..
 
-  Simple examples could be found in the head revision of 
-  GaudiExample package src/TupleEx 
+  Simple examples could be found in the head revision of
+  GaudiExample package src/TupleEx
 
- - cmt/requirements 
-   remove the dependency on CLHEP 
+ - cmt/requirements
+   remove the dependency on CLHEP
 
 ================ GaudiAlg v9r2 ======================================
 ! 2005-11-18 -  Marco Clemencic
-  - Adapted to use the new classes (GaudiUtils::Map, GaudiUtils::Hash, 
-    GaudiUtils::HashMap) replacing HashTable and the hacks in stl_hash.h 
- 
+  - Adapted to use the new classes (GaudiUtils::Map, GaudiUtils::Hash,
+    GaudiUtils::HashMap) replacing HashTable and the hacks in stl_hash.h
+
  ! 2005-11-09 - Chris Jones
- - Add fix to GaudiCommon to allow the changes in the messaging levels 
-   to be correctly picked up. Attaches a callback function to the 
+ - Add fix to GaudiCommon to allow the changes in the messaging levels
+   to be correctly picked up. Attaches a callback function to the
    OutputLevel property of the Algorithm or AlgTool base classes
 
 ! 2005-11-03 - Chris Jones
@@ -761,9 +777,9 @@ Package manager : Marco Clemencic
  - Add (another) fix for a problem found whilst testing GaudiAlg against
    all of LHCb code. Despite the fact that some methods are members of
    the base class GaudiCommon,
-   such as get( IDataProviderSvc*, const std::string& location), it seems 
+   such as get( IDataProviderSvc*, const std::string& location), it seems
    they are not found unless a forwarding method is placed in both
-   GaudiAlgorithm and GaudiTool. ( Possible it could be fixed in user code 
+   GaudiAlgorithm and GaudiTool. ( Possible it could be fixed in user code
    by using the "template" or some such qualifier when making the call,
    but this avoids the need )
 
@@ -814,67 +830,67 @@ Package manager : Marco Clemencic
 ================ GaudiAlg v9r0 ======================================
 ! 2005-08-06 - Vanya BELYAEV
 
- - a lot of minor modifications, but everything 
-   is *BACKWARD COMPATIBLE* modifications are forced mainly 
-   by requirement of better interactive functionality in 
-   Python-mode 
+ - a lot of minor modifications, but everything
+   is *BACKWARD COMPATIBLE* modifications are forced mainly
+   by requirement of better interactive functionality in
+   Python-mode
 
-                    Major Modifications: 
+                    Major Modifications:
                    ======================
 
-       I. GaudiAlgorithm & GaudiTool 
+       I. GaudiAlgorithm & GaudiTool
        -----------------------------
 
-   I.A) The same classes GaudiAlgorithm & GaudiTools now are equipped 
+   I.A) The same classes GaudiAlgorithm & GaudiTools now are equipped
       with the embedded generic statistical "counters", e.g.
-    
-       if ( 100 < nTrack  ) { ++counter("busy event") ; } 
+
+       if ( 100 < nTrack  ) { ++counter("busy event") ; }
 
        counter("#Tracks") += tracks->size() ;
-  
-   The counters are based on modified  StatEntity object from 
-   GaudiKernel package. 
+
+   The counters are based on modified  StatEntity object from
+   GaudiKernel package.
 
        StatEntity& ok = counter("OK") ;
         ok += 10 ;
         ok -= 10 ;
-        ++ok ; 
+        ++ok ;
         --ok ;
         ok++ ;
         ok-- ;
 
-   They provide the access to the overall number 
+   They provide the access to the overall number
    of invocations, mean value min/max/rms, etc... , e.g.
 
-        const StatEntyty& nTrack = counter("#nTrack") ;   
+        const StatEntyty& nTrack = counter("#nTrack") ;
         double nTrack_MEAN = nTrack.flagMean() ;
-        double nTrack_RMS  = nTrack.flagRMS () ; 
+        double nTrack_RMS  = nTrack.flagRMS () ;
         double nTrack_MIN  = nTrack.flagMin () ;
         double nTrack_MAX  = nTrack.flagMax () ;
 
-   The actual functionality comes from StatEntity object, 
+   The actual functionality comes from StatEntity object,
    which allows "additive" and "multiplicative" arithmetic.
- 
-   I.B) The base classes GaudiAlgorithm and GaudiTool now get three 
+
+   I.B) The base classes GaudiAlgorithm and GaudiTool now get three
       new properties:
-      
+
    ======================================================================
       Property   | default value |       description
    ==============+===============+=======================================
     "TypePrint"  |    true       | The actual algorithm/tool C++ type
-                 |               | to be used in the standard "Print" 
-                 |               | printout. 
+                 |               | to be used in the standard "Print"
+                 |               | printout.
    --------------+---------------+---------------------------------------
-    "StatPrint"  |   false       | The printout of general statistical 
-                 |               | counters to be performed at the   
-                 |               | finalization step. 
+    "StatPrint"  |   false       | The printout of general statistical
+                 |               | counters to be performed at the
+                 |               | finalization step.
    --------------+---------------+---------------------------------------
    "ErrorsPrint" |    true       | The printout of exception/error/warning
-                 |               | counters to be performed at the 
-                 |               | finalization step. 
+                 |               | counters to be performed at the
+                 |               | finalization step.
    ======================================================================
 
-   The choice of default values guarantees the absolute backward 
+   The choice of default values guarantees the absolute backward
    compatibility.
 
    The public accessors("getters") to these new properties are provided:
@@ -883,67 +899,67 @@ Package manager : Marco Clemencic
          bool statPrint   () const ;
          bool errorsPrint () const ;
 
-   I.C) The base classes GaudiAlgorithm and GaudiTool now get two 
+   I.C) The base classes GaudiAlgorithm and GaudiTool now get two
       new public methods:
 
-         long printStat   () const ;   
-         long printErrors () const ;   
+         long printStat   () const ;
+         long printErrors () const ;
 
-      These new methods allows "dump" the current values of 
-      general statistical counters ("printStat") and the 
-      exception/error/warning counters ("printErrors"). 
-      The return value is a total number of corresponding 
+      These new methods allows "dump" the current values of
+      general statistical counters ("printStat") and the
+      exception/error/warning counters ("printErrors").
+      The return value is a total number of corresponding
       counters
-      
-     II. GaudiHistoAlg & GaudiHistoTool 
+
+     II. GaudiHistoAlg & GaudiHistoTool
      -----------------------------------
 
   II.A) The base classes GaudiHistoAlg and GaudiHistoTool now get
         new property:
-      
+
    ======================================================================
       Property   | default value |       description
    ==============+===============+=======================================
-    "HistoPrint" |   false       | The printout of general information 
+    "HistoPrint" |   false       | The printout of general information
                  |               | about booked histograms (ID,title,
-                 |               | #entries,<X>,rms) to be performed  
-                 |               | at finalization step 
+                 |               | #entries,<X>,rms) to be performed
+                 |               | at finalization step
    ======================================================================
 
    The public accessor("getter") to this new property is provided:
 
          bool histosPrint   () const ;
 
-   II.B) The base classes GaudiHistoAlg and GaudiHistoTool now get 
+   II.B) The base classes GaudiHistoAlg and GaudiHistoTool now get
          the new public method:
 
-         long printHistos () const ;   
+         long printHistos () const ;
 
-      These new methods allows to perform printout of 
-      general information about all currently booked 
+      These new methods allows to perform printout of
+      general information about all currently booked
       histograms (ID, title, #entries, <X>, rms, ...)
 
-   II.C) The bug is fixed in the filling of 3D-histograms 
+   II.C) The bug is fixed in the filling of 3D-histograms
 
 
-     III. GaudiTupleAlg & GaudiTupleTool 
+     III. GaudiTupleAlg & GaudiTupleTool
      -----------------------------------
 
   III.A) The base classes GaudiTupleAlg and GaudiTupleTool now get
          two new properties:
-      
+
    ======================================================================
       Property   | default value |       description
    ==============+===============+=======================================
-   "NTuplePrint" |   false       | The printout of general information 
+   "NTuplePrint" |   false       | The printout of general information
                  |               | about booked N-Tuples (ID,title,
-                 |               | #items, item list,...) to be performed  
-                 |               | at finalization step 
+                 |               | #items, item list,...) to be performed
+                 |               | at finalization step
    --------------+---------------+---------------------------------------
-   "EvtColsPrint"|   false       | The printout of general information 
+   "EvtColsPrint"|   false       | The printout of general information
                  |               | about booked Event Tag Collections
-                 |               | (ID,title, #items, item list,...) to 
-                 |               | be performed  at finalization step 
+                 |               | (ID,title, #items, item list,...) to
+                 |               | be performed  at finalization step
    ======================================================================
 
    The public accessors("getters") to these new properties are provided:
@@ -951,39 +967,39 @@ Package manager : Marco Clemencic
          bool tuplesPrint    () const ;
          bool evtColsPrint   () const ;
 
-  III.B) The base classes GaudiTupleAlg and GaudiTupleTool now get 
+  III.B) The base classes GaudiTupleAlg and GaudiTupleTool now get
          two new public method:
 
-         long printTuples  () const ;   
-         long printEvtCols () const ;   
+         long printTuples  () const ;
+         long printEvtCols () const ;
 
-      These new methods allows to perform a printout of 
+      These new methods allows to perform a printout of
       general information about all currently booked
-      N-Tuples and Event Tag Collections 
+      N-Tuples and Event Tag Collections
       (ID, title, #items, item list, etc..)
 
       IV. Technical modifictaions to please python.
       ----------------------------------------------
-   
-   1) For *Tool.h classes few methods have been moved from 
-   the private/protected into the public interface  
-   2) For *Tuple* classes few methods have been moved from 
-   the private/protected into the public interface  
-   3) Some code duplication is eliminated from GaudiToolImpl.h 
-   and GaudiAlgorithmIml.h files. In particular the namespaces 
+
+   1) For *Tool.h classes few methods have been moved from
+   the private/protected into the public interface
+   2) For *Tuple* classes few methods have been moved from
+   the private/protected into the public interface
+   3) Some code duplication is eliminated from GaudiToolImpl.h
+   and GaudiAlgorithmIml.h files. In particular the namespaces
    GaudiAlgLocal and GaudiToolLocal are eliminated. The components
    have been merged togather into reimplemented GaudiAlg namespace
-   4) New files GaudiAlg/Print.h and src/lib/Print.cpp to 
-      (a) make easier implementation of new "print*" methods in 
-      the base classes and (b) make trivial printout of this 
+   4) New files GaudiAlg/Print.h and src/lib/Print.cpp to
+      (a) make easier implementation of new "print*" methods in
+      the base classes and (b) make trivial printout of this
       classes in the python
-   5) Imporved Doxygen comments for some classes/files/methods 
+   5) Imporved Doxygen comments for some classes/files/methods
 
   Nes files:
   ==========
 
-  $GAUDIALGROOT/GaudiAlg/GaudiAlg.h   
-  $GAUDIALGROOT/GaudiAlg/Print.h 
+  $GAUDIALGROOT/GaudiAlg/GaudiAlg.h
+  $GAUDIALGROOT/GaudiAlg/Print.h
   $GAUDIALGROOT/src/lib/GaudiAlg.cpp
   $GAUDIALGROOT/src/lib/Print.cpp
 
@@ -1004,11 +1020,11 @@ Package manager : Marco Clemencic
 
 ================ GaudiAlg v8r9 ======================================
 ! 2005-06-23 - Olivier Callot
- - New data member 'm_context' and public accessor 'context()' for 
+ - New data member 'm_context' and public accessor 'context()' for
    GaudiAlgorithm and GaudiTool, a string which is passed from
-	 GaudiSequencer to created GAudiAlgorithms, or to GaudiTools 
+	 GaudiSequencer to created GAudiAlgorithms, or to GaudiTools
    created by a GaudiAlgorithm or GaudiTool.
-   If the value is non empty, it is printed in the base class 
+   If the value is non empty, it is printed in the base class
    constructor and available as early as in the class constructor.
 
 ! 2005-06-17 - Olivier Callot
@@ -1027,102 +1043,102 @@ Package manager : Marco Clemencic
 ! 2005-05-01 - Vanya BELYAEV
 
  - GaudiAlg/TupleObj.h, src/lib/TupleObj.cpp
-  
+
    add 3 families of new methods
    (1) "array" :
-       put a FIXED-size arrays/vetors in to N-Tuple 
+       put a FIXED-size arrays/vetors in to N-Tuple
        This possibility is often useful to allow
        a more names/varianbles to be put into N-Tuple
-   (2) "matrix" : 
-       put a FIXED-size MATRICES into N-Tuple 
-   (3) "fmatrix" : 
-       put a VARIABLE-size MATRICES into N-Tuple 
+   (2) "matrix" :
+       put a FIXED-size MATRICES into N-Tuple
+   (3) "fmatrix" :
+       put a VARIABLE-size MATRICES into N-Tuple
 
-  Typical examples:  
+  Typical examples:
   =================
-   
-    // fixed-size array (A) 
+
+    // fixed-size array (A)
     const size_t nCol =  50 ;
     double array1[nCol] ;
     tuple -> array( "a1" , array1 , array1 + nCol ) ;
-  
-    // fixed-size array (B) 
+
+    // fixed-size array (B)
     typedef std::vector<double> Array ;
     Array array2 = ... ;
     tuple -> array( "a2" , array2 ) ;
-    
-    // fixed-size array (C) 
+
+    // fixed-size array (C)
     CLHEP::HepVector array3 = ... ;
     tuple -> array( "a3" , array3 , array3.num_row() ) ;
 
-    // fixed-size matrix (A) 
-    const size_t nRow = 15 ; 
+    // fixed-size matrix (A)
+    const size_t nRow = 15 ;
     const size_t nCol =  5 ;
-    double mtrx1[nRow][nCol] ; 
-    ... 
+    double mtrx1[nRow][nCol] ;
+    ...
     tuple -> matrix ( "m1" , mtrx1 , nRow , nCol ) ;
 
-    // fixed-size matrix (B) 
-    const CLHEP::HepMatrix mtrx2 = ... ; 
-    tuple -> matrix ( "m2"            ,  
-                      mtrx2           , 
+    // fixed-size matrix (B)
+    const CLHEP::HepMatrix mtrx2 = ... ;
+    tuple -> matrix ( "m2"            ,
+                      mtrx2           ,
                       mtrx2.num_row() ,
                       mtrx2.num_col() ) ;
 
-    // fixed-size matrix (C) 
-    typedef std::vector<double> Row  ; 
-    typedef std::vector<Row>    Mtrx ; 
+    // fixed-size matrix (C)
+    typedef std::vector<double> Row  ;
+    typedef std::vector<Row>    Mtrx ;
     Mtrx mtrx3 = Mtrx( nRow , Row( nCol ) ) ;
-    ... 
+    ...
     tuple -> matrix ( "m3" , mtrx3 , nRow , nCol ) ;
-    
-    // variable-size matrix (A) 
-    Mtrx mtrx4 = Mtrx( nRow , Row ( nCol ) ) ; 
-    ... 
-    tuple-> fmatrix( "m4"          , 
-                     mtrx.begin () , 
-                     mtrx.end   () , 
-                     nCol          , 
-                     "Len1"        , 
+
+    // variable-size matrix (A)
+    Mtrx mtrx4 = Mtrx( nRow , Row ( nCol ) ) ;
+    ...
+    tuple-> fmatrix( "m4"          ,
+                     mtrx.begin () ,
+                     mtrx.end   () ,
+                     nCol          ,
+                     "Len1"        ,
                      100           ) ;
 
-    // variable-size matrix (B) 
-    Mtrx mtrx5 = Mtrx( nRow , Row ( nCol ) ) ; 
-    ... 
-    tuple-> fmatrix( "m5"          , 
-                     mtrx          , 
-                     nRow          , 
-                     nCol          , 
-                     "Len2"        , 
+    // variable-size matrix (B)
+    Mtrx mtrx5 = Mtrx( nRow , Row ( nCol ) ) ;
+    ...
+    tuple-> fmatrix( "m5"          ,
+                     mtrx          ,
+                     nRow          ,
+                     nCol          ,
+                     "Len2"        ,
                      100           ) ;
- 
-    // "direct"("cross") product of variable vector of data 
+
+    // "direct"("cross") product of variable vector of data
     // with fixed size vector of  functions/functors
     Array array4 = .... ; // vector of data (variable size)
     ...
-    typedef double (*fun) ( double ) ; 
-    typedef std::vector<fun> Funs    ; 
+    typedef double (*fun) ( double ) ;
+    typedef std::vector<fun> Funs    ;
     Funs.push_back( sin ) ;
     Funs.push_back( cos ) ;
     Funs.push_back( tan ) ;
-  
-    tuple -> fmatrix ( "m6"            , 
-                       funs.begin   () , 
-                       funs.end     () , 
+
+    tuple -> fmatrix ( "m6"            ,
+                       funs.begin   () ,
+                       funs.end     () ,
                        array4.begin () ,
-                       array4.begin () , 
-                       "Len6"          , 
+                       array4.begin () ,
+                       "Len6"          ,
                        200             ) ;
 
-     //It is especially convinient to be used in conjunction with 
-     //LoKi functors (or any piece of software which uses the concept 
-     //of generic functors)    
+     //It is especially convinient to be used in conjunction with
+     //LoKi functors (or any piece of software which uses the concept
+     //of generic functors)
 
       typedef std::vector<Fun>  VctFun ;
-        
-      // sequence of Particles 
+
+      // sequence of Particles
       Range particles = .... ;
-      
+
       // vector of functions:
       VctFun funs ;
       funs.push_back( E  / GeV ) ;
@@ -1130,44 +1146,44 @@ Package manager : Marco Clemencic
       funs.push_back( PY / GeV ) ;
       funs.push_back( PZ / GeV ) ;
       funs.push_back( PT / GeV ) ;
-      funs.push_back( M  / GeV ) ; 
-      funs.push_back( ID       ) ; 
-     
-       // fill N-Tuple with information abvout each particle 
-       tuple -> fmatrix ( "vars"             , 
-                          funs.begin      () , 
-                          funs.end        () , 
-                          particles.begin () , 
-                          particles.end   () , 
-                          "nParts"           , 
+      funs.push_back( M  / GeV ) ;
+      funs.push_back( ID       ) ;
+
+       // fill N-Tuple with information abvout each particle
+       tuple -> fmatrix ( "vars"             ,
+                          funs.begin      () ,
+                          funs.end        () ,
+                          particles.begin () ,
+                          particles.end   () ,
+                          "nParts"           ,
                           200                ) ;
 
   - GaudiAlg/Tuples.h
-    add new useful adapter to resurrect a possibility to 
-    use pointer to functions in conjunction with 
-    TupleObj::* methods (this possiblity has been 
-    eliminated by gcc 3.X compiler: pointer to function 
-    has never been evaluates as "const TYPE&" in template 
-    instantiations) 
+    add new useful adapter to resurrect a possibility to
+    use pointer to functions in conjunction with
+    TupleObj::* methods (this possiblity has been
+    eliminated by gcc 3.X compiler: pointer to function
+    has never been evaluates as "const TYPE&" in template
+    instantiations)
 
     using namespace Tuples ;
-     
+
     typedef std::vector<double> Array ;
     Array arr = ... ;
-      
-    tuple -> farray ( "sinarr"        , 
-                      useFun  ( sin ) , // use adapter! 
-                      "cosarr"        , 
+
+    tuple -> farray ( "sinarr"        ,
+                      useFun  ( sin ) , // use adapter!
+                      "cosarr"        ,
                       useFun  ( cos ) , // use adapter!
-                      "tanarr"        , 
+                      "tanarr"        ,
                       useFun  ( tan ) , // use adapter!
-                      arr.begin ()    , 
-                      arr.end   ()    , 
+                      arr.begin ()    ,
+                      arr.end   ()    ,
                       "Length"        ,
                       500             ) ;
-   
-  
-   
+
+
+
 ================ GaudiAlg v8r7 ======================================
 ! 2005-04-14 - Vanya Belyaev
   - removed memory leaks in GaudiTool and GaudiAlgorithm finalize method.
@@ -1178,9 +1194,9 @@ The missing include is
 
 ================ GaudiAlg v8r6 ======================================
 ! 2005-02-02 - Vanya Belyaev
- - TupleObj.h/.cpp: Overcome the problem that CLHEP::Hep3Vector and 
+ - TupleObj.h/.cpp: Overcome the problem that CLHEP::Hep3Vector and
                     HepGeom::BasicVector3D<double>  are completely unrelated classes
-                    in the new CLHEP. 
+                    in the new CLHEP.
 
 ================ GaudiAlg v8r5 ======================================
 ! 2005-02-02 - Chris Jones
@@ -1190,14 +1206,14 @@ The missing include is
 ! 2005-01-18 - Chris Jones
  - Updates to GaudHistoAlg and GaudiHistoTool to add 2D and 3D histograms
  - Various improvements to the doxygen comments
- - Downgrade the warning messages about histogramming or ntupling turned off 
+ - Downgrade the warning messages about histogramming or ntupling turned off
    to debug level
 
 ================ GaudiAlg v8r3 ======================================
 ! 2005-01-10 - Pere Mato
- - GaudiSequencer: Added the option "ReturnOK" forcing the sequencer to return a good status. 
+ - GaudiSequencer: Added the option "ReturnOK" forcing the sequencer to return a good status.
    This will be useful for DaVinci and Hlt studies.  (Olivier Callot)
-   
+
 ! 2004-11-12 - Olivier Callot
  - Change the normalisation of the SequencerTimerTool: Now done with user time,
    less accuirate ( 10ms step) but reproducible ! Need to measure on 1 second
@@ -1232,25 +1248,25 @@ The missing include is
 
 
 ================ GaudiAlg v8r0 ======================================
-! 2004-07-12 - Pere Mato 
- - Merged with GaudiTools package to avoid cyclic dependency 
- 
+! 2004-07-12 - Pere Mato
+ - Merged with GaudiTools package to avoid cyclic dependency
+
 ! 2004-07-02 - Vanya BELYAEV
- - GaudiAlgorithm: Added exist() method to check existence of objects in Gaudi Transient Store 
-                   Added existDet() method to check existence of objects in Detector Transient Store 
+ - GaudiAlgorithm: Added exist() method to check existence of objects in Gaudi Transient Store
+                   Added existDet() method to check existence of objects in Detector Transient Store
                    Added getOrCreate() method to get or create objects in the Event Transient Store
- - GaudiTool: Added exist() method to check existence of objects in Gaudi Transient Store 
+ - GaudiTool: Added exist() method to check existence of objects in Gaudi Transient Store
               Added getOrCreate() method to get or create objects in the Event Transient Store
  - Added AIDA namespace for Histograms
  - Added the message "The ERROR message is suppressed : ....." when a error is supressed
  - CheckForNaN.h header file
- - New GaudiHistoTool: The base class for tools, equipped with histogramming facilities 
- - New GaudiTupleTool: The base class for tools, equipped with N-tuple facilities 
+ - New GaudiHistoTool: The base class for tools, equipped with histogramming facilities
+ - New GaudiTupleTool: The base class for tools, equipped with N-tuple facilities
  - Added three new tools:  ErrorTool, HistoTool, TupleTool
 
 ! 2004-07-06 - Pere Mato
  - requirements: adapted to use new LCGCMT interface packages
- 
+
 ================ GaudiAlg v7r3p1 ======================================
 ! 2004-07-02 - Patrick Koppenburg
  - GaudiHistoAlg.cpp Fixed uninitialzed variable.
@@ -1262,12 +1278,12 @@ The missing include is
 
 ! 2004-06-14 - Marco Cattaneo
  - HbookName.h: Changed the length of Hbook names from 8 to 16
- 
+
 
 ! 2004-05-24 - Olivier Callot
  - Add new algorithm GaudiSequencer (.h, .cpp), to replace the Sequencer. Uses
    a private auxiliary class AlgorithmEntry.h.
-   Auxiliary tool SequencerTimerTool(.h, .cpp), with private class 
+   Auxiliary tool SequencerTimerTool(.h, .cpp), with private class
    TimerForSequencer.h, to measure the time taken in the sequencer.
 
 ! 2004-05-28 - Marco Cattaneo
@@ -1277,7 +1293,7 @@ The missing include is
    . Re-order data member initialization to avoid gcc warnings
 
 ! 2004-04-28 - Matthew David Needham
- - GaudiHistoAlg.h: Added function missing from the implementation of the 
+ - GaudiHistoAlg.h: Added function missing from the implementation of the
   GaudiHistoAlg class (as is described in the documentation !)
 
 ! 2004-04-28 - Gerhard.Raven@nikhef.nl
@@ -1285,35 +1301,35 @@ The missing include is
 
 ================ GaudiAlg v7r2 =======================================
 ! 2004-04-01 - Pere Mato
- - requirements: added -no_auto_imports for AIDA 
+ - requirements: added -no_auto_imports for AIDA
    [bugs #2797] Missing no_auto_import in GaudiAlg requirements (Marco Cattaneo)
-      
+
 ! 2004-03-15 - Vanya BELYAEV
- - GaudiAlg/Tuple.h   
-  fix a trivial and stupid bug in the 
-  implementation of Tuples::make_column and Tuples::Column 
-  partial specializations  
-  
+ - GaudiAlg/Tuple.h
+  fix a trivial and stupid bug in the
+  implementation of Tuples::make_column and Tuples::Column
+  partial specializations
+
 ================ GaudiAlg v7r1 =======================================
 ! 2004-03-04 - Vanya Belyaev
  - The purpose of these modification is to provide the possibility
    to extend the N-tuple "representation" of specific "complex" objects
    (e.g. EventHeader, L0DUReport, or L1Report) through class template
-   specializations. It could be useful also to modify the default representation 
+   specializations. It could be useful also to modify the default representation
    of e.g. HepLorentzVector. The default implemtation puts 4 components in the
-   Ntuple, but for local specialization one could use alternative 
-   representation e.g. mass & pt. 
-   Aslo the possibility to use other implementations of TupleObj class in 
+   Ntuple, but for local specialization one could use alternative
+   representation e.g. mass & pt.
+   Aslo the possibility to use other implementations of TupleObj class in
    derived classes is provided.
 
 ================ GaudiAlg v7r0 =======================================
- - GaudiAlgorithm, GaudiHistoAlg,GaudiTupleAlg - new base classes for 
-   user algorithms with 
-    - easy and safe access to tools, services, and data in  TES 
-    - error handling 
-    - histogramming 
-    - ntuples 
-   The detailed description if available  in doc/GaudiAlg.tex file 
+ - GaudiAlgorithm, GaudiHistoAlg,GaudiTupleAlg - new base classes for
+   user algorithms with
+    - easy and safe access to tools, services, and data in  TES
+    - error handling
+    - histogramming
+    - ntuples
+   The detailed description if available  in doc/GaudiAlg.tex file
 
 ================ GaudiAlg v6r5 =======================================
 ! 2003-11-20 - Pere Mato
@@ -1326,7 +1342,7 @@ The missing include is
 ================ GaudiAlg v6r3p1 =======================================
 ! 2002-11-29 - Pere Mato
  - Corrections to support linking applications statically
- 
+
 ================ GaudiAlg v6r3 =======================================
 ! 2002-09-27 - Vanya Belyaev
  - Corrected bug it setDetData()
@@ -1334,17 +1350,17 @@ The missing include is
 
 ================ GaudiAlg v6r2 =======================================
 ! 2002-09-27 - Pere Mato
- - Added new base class GaudiAlgorithm developed originally in the context of 
+ - Added new base class GaudiAlgorithm developed originally in the context of
    the LHCb Calorimeter (Ivan Belyaev [Ivan.Belyaev@cern.ch])
- 
+
    The most essential features
 
-   1) 3 predefined properties: a) "Input", b) "Output", c) "Detector" 
+   1) 3 predefined properties: a) "Input", b) "Output", c) "Detector"
       for value of each property the special accessor is defined:
-      inputData(), outputData(), detData() 
+      inputData(), outputData(), detData()
 
-   2) initialize method prints the values of all used properties 
-      in MSG::DEBUG mode 
+   2) initialize method prints the values of all used properties
+      in MSG::DEBUG mode
 
    3) Simplified error/warning/exceptions/printing:
 
@@ -1352,82 +1368,82 @@ The missing include is
       if( sc.isFailure() ) { return Error("something wrong here!",sc);}
       ...
       if( sc.isFailure() ) { return Warning("something wrong here!",sc);}
- 
-      Each errors and warning are counted internally and at the end 
-      one has the full printout of all errors, warnings and exceptions. 
- 
-      The actual error message is extended with the name the actual
-      type (RTTI) of the algorithm 
 
-   4) Easy way to deal with exceptions (catch, throw, re-throw) 
-   
+      Each errors and warning are counted internally and at the end
+      one has the full printout of all errors, warnings and exceptions.
+
+      The actual error message is extended with the name the actual
+      type (RTTI) of the algorithm
+
+   4) Easy way to deal with exceptions (catch, throw, re-throw)
+
      a) throw the exception:
 
       if( sc.isFailure() ) { return Exception(" something wrong here!");}
 
       "Return" here is artificial. Nothing is actually returned.
-      and exception is thrown 
+      and exception is thrown
 
      b) catch and rethrow the exceptions
       try { ... }
       catch( const GaudiException& e1 )  {
-        /* do something here */ 
-        /// rethrow the exception (if needed) 
+        /* do something here */
+        /// rethrow the exception (if needed)
         return Exception(" coudl not recove Gaudi exception, rethrow it ", e1 );
       }
       catch( const std::exception& e2 )  {
-        /* do something here */ 
-        /// rethrow the exception (if needed) 
+        /* do something here */
+        /// rethrow the exception (if needed)
         return Exception(" could not recove the std::exception, rethrow it ", e2 );
       }
       catch( ... ) {
-        /* do something here */ 
-        /// rethrow the exception (if needed) 
+        /* do something here */
+        /// rethrow the exception (if needed)
         return Exception(" could not recove the unknown  exception ");
       }
 
- 
-   5) easy ("1 line") access to the data, e.g. 
- 
+
+   5) easy ("1 line") access to the data, e.g.
+
      const MCParticles* particles = get( eventSvc() , inputData() , particles  );
 
-     In the case of errors, method throws an exception. 
-     Error message is printed. 
-     One does not need to check the value of pointer against null.  
+     In the case of errors, method throws an exception.
+     Error message is printed.
+     One does not need to check the value of pointer against null.
      For "DEBUG" output level the actual data type and location will be
      printed.
 
-   6) easy ("one line) registration of object into GTES: 
+   6) easy ("one line) registration of object into GTES:
 
      MCParticles* particles = ... ;
      StatusCode sc = put( particles , outputData() );
 
-     In the case of errors, method throws an exception. 
-     Error message is printed. 
-     One does not need to check the return value.  
-     For "DEBUG" output level the actual data type and 
+     In the case of errors, method throws an exception.
+     Error message is printed.
+     One does not need to check the return value.
+     For "DEBUG" output level the actual data type and
      location will be printed.
- 
+
 
    7) easy ("one line") access to tools:
 
-     IMyTool* mytool1 = tool( "some combination of type and name" , mytool1 , this ) ; 
-     IMyTool* mytool2 = tool( "some type", "some name" , mytool2 , this ) ; 
- 
-     Both methods throw exception for unlocated tools. 
-     Type coudl be "Type" or "Type/Name" , Name could be "Name" or "", 
+     IMyTool* mytool1 = tool( "some combination of type and name" , mytool1 , this ) ;
+     IMyTool* mytool2 = tool( "some type", "some name" , mytool2 , this ) ;
+
+     Both methods throw exception for unlocated tools.
+     Type coudl be "Type" or "Type/Name" , Name could be "Name" or "",
      and any combination is possible and has sence.
      It is useful if one specify Type, Name or  Type/Name from properties.
-     The methods are able to decoder properly all these cases. 
+     The methods are able to decoder properly all these cases.
      For "DEBUG" output level the actual tool type and name will be printed.
-  
+
    8) Assertions
 
      StatusCode sc = ... ;
-     Assert( sc.isSuccess() , " soem failure occurs! " ); 
+     Assert( sc.isSuccess() , " soem failure occurs! " );
 
-     Assertions are efficient (they are inlined), they do not 
-     result in significant performance degradation and could be 
+     Assertions are efficient (they are inlined), they do not
+     result in significant performance degradation and could be
      used for all purposes.
 
 ! 2002-09-24 - Pere Mato
@@ -1445,7 +1461,7 @@ The missing include is
 
 !===============v6r0===========================================================
 ! 20020205 - Pere Mato (v5r1)
- - Fixed bug reported by O. Callot that a Sequence must return an 
+ - Fixed bug reported by O. Callot that a Sequence must return an
    error when it can not create one or more of the member Algorithms.
    Changed Sequencer.cpp
 
@@ -1463,7 +1479,7 @@ The missing include is
  - requirements - adapt to GaudiPolicy v5 and CMT v1r8
 
 ! 20010509 - Pere Mato
- - Fixed bug reported by M. Cattaneo (CT0000000059803). Sequencer should fail 
+ - Fixed bug reported by M. Cattaneo (CT0000000059803). Sequencer should fail
    initialize() if any sub-algorithm fails.
  - Using GaudiKernel v10
 

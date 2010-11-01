@@ -6,7 +6,7 @@
 # Maintainer : Vanya Belyaev Ivan.Belyaev@itep.ru
 # =============================================================================
 package           GaudiGSL
-version           v7r6
+version           v7r7
 
 # =============== package structure ===========================================
 branches          cmt doc src dict GaudiGSL GaudiMath
@@ -37,15 +37,15 @@ macro_prepend GaudiGSLMathDict_shlibflags  " $(GaudiGSL_linkopts) "
 # ==================== test application =======================================
 private
 apply_pattern application_path
-application   ExceptionsTest              -check -group=tests  Tests/ExceptionsTest.cpp 
+application   ExceptionsTest              -check -group=tests  Tests/ExceptionsTest.cpp
 macro_prepend ExceptionsTestlinkopts   " $(GaudiGSL_linkopts) $(use_linkopts) "
-application   DerivativeTest              -check -group=tests  Tests/DerivativeTest.cpp 
+application   DerivativeTest              -check -group=tests  Tests/DerivativeTest.cpp
 macro_prepend DerivativeTestlinkopts   " $(GaudiGSL_linkopts) $(use_linkopts) "
-application   SimpleFuncTest              -check -group=tests  Tests/SimpleFuncTest.cpp 
+application   SimpleFuncTest              -check -group=tests  Tests/SimpleFuncTest.cpp
 macro_prepend SimpleFuncTestlinkopts   " $(GaudiGSL_linkopts) $(use_linkopts) "
-application   IntegralInTest              -check -group=tests  Tests/IntegralInTest.cpp 
+application   IntegralInTest              -check -group=tests  Tests/IntegralInTest.cpp
 macro_prepend IntegralInTestlinkopts   " $(GaudiGSL_linkopts) $(use_linkopts) "
-application   Integral1Test               -check -group=tests  Tests/Integral1Test.cpp 
+application   Integral1Test               -check -group=tests  Tests/Integral1Test.cpp
 macro_prepend Integral1Testlinkopts    " $(GaudiGSL_linkopts) $(use_linkopts) "
 application   2DoubleFuncTest             -check -group=tests  Tests/2DoubleFuncTest.cpp
 macro_prepend 2DoubleFuncTestlinkopts  " $(GaudiGSL_linkopts) $(use_linkopts) "
@@ -61,14 +61,14 @@ macro_prepend GSLAdaptersTestlinkopts   " $(GaudiGSL_linkopts) $(use_linkopts) "
 # Note: libgslcblas is needed by libgsl, but the link is missing.
 macro_prepend GSL_linkopts " -Wl,--no-as-needed " \
              target-darwin "" \
-             target-winxp  "" \
-             target-icc    ""
+             target-winxp  ""
 macro_append GSL_linkopts " -Wl,--as-needed " \
             target-darwin "" \
             target-winxp  "" \
             target-icc    ""
-
+# Note: we pass only "--no-as-needed" to icc because the icc linker seems not
+# to understand positional arguments, so the last of "--as-needed" or
+# "--no-as-needed" wins.
 # =============================================================================
-# The END 
+# The END
 # =============================================================================
-

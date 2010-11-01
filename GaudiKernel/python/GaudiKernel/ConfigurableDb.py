@@ -105,18 +105,19 @@ def loadConfigurableDb():
         if not os.path.exists(path):
             continue
         # speed-up: <project>_merged_confDb.py files are installed as :
-        # "/some/path/InstallArea/python/<project>_merged_confDb.py
+        # "/some/path/InstallArea/[<CMTCONFIG>/]python/<project>_merged_confDb.py"
         # so why bother wandering in other directories ?
-        if path.endswith(path_join("InstallArea","python")):
-            # turn filename syntax into module syntax: remove path+extension and replace / with . (dot)
-            confDbModules = [ os.path.splitext( f[len(path)+1:] )[0].replace(os.sep,'.')
-                              for f in glob(path_join(path, "*_merged_confDb.py"))
-                              if os.path.isfile(f) ]
-        elif path.endswith(path_join("InstallArea","python.zip")) and is_zipfile(path):
-            # turn filename syntax into module syntax: remove path+extension and replace / with . (dot)
-            confDbModules = [ os.path.splitext(f)[0].replace('/','.')
-                             for f in ZipFile(path).namelist()
-                             if f.endswith("_merged_confDb.py") or f.endswith("_merged_confDb.pyc") ]
+        if "InstallArea" in path:
+            if is_zipfile(path):
+                # turn filename syntax into module syntax: remove path+extension and replace / with . (dot)
+                confDbModules = [ os.path.splitext(f)[0].replace('/','.')
+                                  for f in ZipFile(path).namelist()
+                                  if f.endswith("_merged_confDb.py") or f.endswith("_merged_confDb.pyc") ]
+            else:
+                # turn filename syntax into module syntax: remove path+extension and replace / with . (dot)
+                confDbModules = [ os.path.splitext( f[len(path)+1:] )[0].replace(os.sep,'.')
+                                  for f in glob(path_join(path, "*_merged_confDb.py"))
+                                  if os.path.isfile(f) ]
         else:
             continue
         for confDbModule in confDbModules:

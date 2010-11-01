@@ -1,6 +1,13 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+============================== GaudiUtils v3r10 ==============================
+! 2010-09-20 - Marco Clemencic
+ - Fixed bug #70956: Add method to find the reason for termination of the
+                     event loop
+   - Use the new return code constants in case of signal
+     (Gaudi::Utils::StopSignalHandler).
+
 ============================== GaudiUtils v3r9 ===============================
 ! 2010-07-14 - Marco Clemencic
  - Another small fix for Xerces-C 3.1.

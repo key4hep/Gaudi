@@ -32,11 +32,13 @@ macro(GAUDI_PROJECT project version)
   set(CMAKE_BUILD_TYPE Release CACHE STRING
       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
   endif()
+
+  GAUDI_BINARY_TAG()
+
   if(CMAKE_INSTALL_PREFIX STREQUAL /usr/local)
-    set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/InstallArea CACHE PATH 
+    set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/InstallArea/${BINARY_TAG} CACHE PATH 
       "Install path prefix, prepended onto install directories." FORCE )
   endif()
-  GAUDI_BINARY_TAG()
 
   if(BUILD_TESTS) 
     enable_testing()

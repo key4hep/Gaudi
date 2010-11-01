@@ -23,7 +23,7 @@ svn = lambda *args, **kwargs: apply(command, ("svn",) + args, kwargs)
 def broadcast_packages():
     """
     Find the local packages the current one depends on (using 'cmt broadcast').
-    Returns a list of pairs ("package name","path to the cmt directory"). 
+    Returns a list of pairs ("package name","path to the cmt directory").
     """
     # make cmt print one line per package with python syntax
     if not sys.platform.startswith("win"):
@@ -37,7 +37,7 @@ def broadcast_packages():
 def matches(filename, patterns):
     """
     Returns True if any of the specified glob patterns (list of strings) matched
-    the string 'filename'. 
+    the string 'filename'.
     """
     for p in patterns:
         if fnmatch(filename, p):
@@ -48,7 +48,7 @@ def matches(filename, patterns):
 def expand_dirs(files, basepath = ""):
     """
     Replace the entries in files that correspond to directories with the list of
-    files in those directories. 
+    files in those directories.
     """
     if basepath:
         lb = len(basepath)+1
@@ -71,13 +71,13 @@ def revision_diff_cmd(cwd):
     else:
         # special treatment to show new files in a way compatible with CVS
         out, err = svn("status", cwd = cwd)
-        
+
         newfiles = [ l
                      for l in out.splitlines()
                      if l.startswith("? ") ]
         out, err = svn("diff", cwd = cwd)
         if newfiles:
-            out = "\n".join(newfiles) + "\n" + out        
+            out = "\n".join(newfiles) + "\n" + out
         return out, err
 
 def diff_pkg(name, cmtdir, exclusions = []):
@@ -147,9 +147,9 @@ def main():
     parser.add_option("--debug", action="store_true",
                       help="Print debug information on standard error")
     parser.set_defaults(exclusions = [])
-    
+
     opts, args = parser.parse_args()
-    
+
     if opts.debug:
         logging.basicConfig(level = logging.DEBUG)
     elif opts.verbose:
@@ -165,7 +165,7 @@ def main():
                          "cmt/*.nmake",
                          "cmt/*.nmakesav",
                          "cmt/NMake",
-                         "cmt/install.history",
+                         "cmt/install*.history",
                          "cmt/build.*.log",
                          "cmt/version.cmt",
                          "genConf",
@@ -185,16 +185,16 @@ def main():
                          ]
     if "CMTCONFIG" in os.environ:
         opts.exclusions.append(os.environ["CMTCONFIG"])
-    
+
     # check if we are in the cmt directory before broadcasting
     if not (os.path.basename(os.getcwd()) == "cmt" and os.path.exists("requirements")):
         logging.error("This script must be executed from the cmt directory of a package.")
-        return 1 
-    
+        return 1
+
     pkgs = broadcast_packages()
     num_pkgs = len(pkgs)
     count = 0
-    
+
     patch = ""
     for name, path in pkgs:
         count += 1

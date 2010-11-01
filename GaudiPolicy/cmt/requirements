@@ -45,8 +45,8 @@ cmtpath_pattern \
 cmtpath_pattern_reverse \
    macro <project>_install_include "" \
          <project>_without_installarea "" \
-         <project>_with_installarea&target-unix " <path>/$(<project>_installarea_prefix)/include "\
-         <project>_with_installarea&target-winxp ' "<path>\$(<project>_installarea_prefix)\include"' ; \
+         <project>_with_installarea&target-unix " <path>/$(<project>_installarea_prefix)$(shared_install_subdir)/include "\
+         <project>_with_installarea&target-winxp ' "<path>\$(<project>_installarea_prefix)$(shared_install_subdir)\include"' ; \
    include_dirs ${<project>_install_include}
 
 macro copyInclude "cp -Rup " \
@@ -115,7 +115,7 @@ pattern library_Softlinks \
                  target-winxp                     ""
 
 cmtpath_pattern \
-    path_prepend DYLD_LIBRARY_PATH "" <project>_with_installarea&target-darwin "<path>/$(<project>_installarea_prefix)/${CMTCONFIG}/lib"
+    path_prepend DYLD_LIBRARY_PATH "" <project>_with_installarea&target-darwin "<path>/$(<project>_installarea_prefix)/$(tag)/lib"
 
 pattern library_path \
     path_remove PATH ""  target-winxp "\<package>\" ; \
@@ -155,7 +155,7 @@ make_fragment data_installer -header=data_installer_header
 
 pattern declare_joboptions \
     macro_append <package>_joboptions " -s=../share <files> " ; \
-    document data_installer install_<name>joboptions prefix=jobOptions $(<package>_joboptions) ; \
+    document data_installer install_<name>joboptions prefix=$(shared_install_subdir)/jobOptions $(<package>_joboptions) ; \
     macro_remove constituents " " target-winxp install_<name>joboptions
 
 pattern declare_scripts \
@@ -171,10 +171,10 @@ pattern declare_scripts \
 cmtpath_pattern \
    macro <project>_install_python "" \
          <project>_without_installarea "" \
-         <project>_with_installarea&target-unix&no-pyzip "<path>/$(<project>_installarea_prefix)/python"\
-         <project>_with_installarea&target-winxp&no-pyzip "<path>\$(<project>_installarea_prefix)\python" \
-         <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)/python.zip" \
-         <project>_with_installarea&target-winxp "<path>\$(<project>_installarea_prefix)\python.zip" ; \
+         <project>_with_installarea&target-unix&no-pyzip "<path>/$(<project>_installarea_prefix)$(shared_install_subdir)/python"\
+         <project>_with_installarea&target-winxp&no-pyzip "<path>\$(<project>_installarea_prefix)$(shared_install_subdir)\python" \
+         <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)$(shared_install_subdir)/python.zip" \
+         <project>_with_installarea&target-winxp "<path>\$(<project>_installarea_prefix)$(shared_install_subdir)\python.zip" ; \
     path_remove  PYTHONPATH ${<project>_install_python} ; \
     path_prepend PYTHONPATH ${<project>_install_python}
 
@@ -215,35 +215,79 @@ pattern install_python_init \
 
 make_fragment python_init -header=python_init_header
 
-# creates an python extension binary modules with the "pyd" file extension
+#-------------------------------------------------------------------
+# Pattern: pyd_module, pyd_boost_module
+#   Creates a Python extension binary modules with the "so" (or "pyd" on Win) file extension.
+#   The version 'pyd_boost_module' should be used in case the module
+#   uses Boost.Python (http://www.boost.org/doc/libs/release/libs/python/doc/).
+#
+# Parameters:
+#
+#   module:  name of the final python module
+#   files:   source files of the module
+#   deps:    targets to be build before the module (e.g. the linker library)
+#
+# Usage:
+#
+#   use Python v* LCG_Interfaces -no_auto_imports
+#   apply_pattern pyd_module module=MyPyModule files=MyPyModule/*.cpp deps=MyPackageLib
+#
+#   use Python v* LCG_Interfaces -no_auto_imports
+#   use Boost v* LCG_Interfaces -no_auto_imports
+#   apply_pattern pyd_boost_module module=MyPyModule files=MyPyModule/*.cpp deps=MyPackageLib
+#
+# Notes:
+#
+#   The python binary module is linked by default against teh linker library
+#   in the package, so, if there is one, it is mandatory either to specify
+#   the 'deps' parameter or to remove the link options from <module>_use_linkopts,
+#   e.g.:
+#
+#      macro_remove MyPyModule_use_linkopts '$(MyPackage_linkopts)'
+#
+#   As well, additional libraries needed by the module (or link options) must be
+#   added to the macro <module>_shlibflags.
+#
+#-------------------------------------------------------------------
+# Macro used to define where Python binary modules have to be installed
+macro python_bin_module_dir '$(tag)/python-bin' \
+               target-winxp '$(tag)\python-bin' \
+ use-shared-dir&target-winxp '$(tag)\python' \
+              use-shared-dir '$(tag)/python'
 
+# Main pattern
 pattern pyd_module \
   macro <package>_install_pyd_module "" \
         <project>_without_installarea&target-unix "$(<package>_root)/$(tag)" \
         <project>_without_installarea&target-winxp "$(<package>_root)\$(tag)" ; \
   path_remove  PYTHONPATH $(<package>_install_pyd_module) ; \
   path_prepend PYTHONPATH $(<package>_install_pyd_module) ; \
-  macro <module>_shlibflags  "$(libraryshr_linkopts) $(use_linkopts)" ;\
-  macro_append <module>_dependencies " <name> " ; \
+  macro <module>_shlibflags  "$(libraryshr_linkopts) $(cmt_installarea_linkopts) $(<module>_use_linkopts)" ;\
+  macro_append <module>_dependencies " <name> <deps> " ; \
   private ; \
-  macro shlibsuffix "$(shlibsuffix)" target_<module> "pyd" ; \
+  macro shlibsuffix "$(shlibsuffix)" target_<module>&target-winxp "pyd" ; \
   macro library_prefix "$(library_prefix)" target_<module> "" ; \
-  macro <module>_install_dir "$(CMTINSTALLAREA)/$(tag)/python" target-winxp "$(CMTINSTALLAREA)\$(tag)\python" ; \
-  library <module> -import=Python -target_tag install_dir="$(<module>_install_dir)" <files> ; \
+  macro <module>_install_dir "$(CMTINSTALLAREA)/$(python_bin_module_dir)" target-winxp "$(CMTINSTALLAREA)\$(python_bin_module_dir)" ; \
+  library <module> -no_static -import=Python -target_tag install_dir="$(<module>_install_dir)" <files> ; \
   end_private ; \
   macro_append <module>_cppflags " -ftemplate-depth-64" target-winxp "" ;
+# Boost version of the pattern
+pattern pyd_boost_module \
+  apply_pattern pyd_module module=<module> files=<files> deps=<deps> name=<name> ; \
+  macro_append <module>_use_linkopts " $(Boost_linkopts_python)"
 
 cmtpath_pattern \
    macro <project>_install_pyd_module "" \
          <project>_without_installarea "" \
-         <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)/$(tag)/python" \
-         <project>_with_installarea&target-winxp "<path>\$(<project>_installarea_prefix)\$(tag)\python" ; \
+         <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)/$(python_bin_module_dir)" \
+         <project>_with_installarea&target-winxp "<path>\$(<project>_installarea_prefix)\$(python_bin_module_dir)" ; \
     path_remove  PYTHONPATH $(<project>_install_pyd_module) ; \
     path_prepend PYTHONPATH $(<project>_install_pyd_module) ;
+#-------------------------------------------------------------------
 
 
-action CompilePython "python -m compileall $(CMTINSTALLAREA)/python $(CMTINSTALLAREA)/scripts" \
-	    target-winxp "python -m compileall $(CMTINSTALLAREA)\python $(CMTINSTALLAREA)\scripts"
+action CompilePython "python -m compileall $(CMTINSTALLAREA)$(shared_install_subdir)/python $(CMTINSTALLAREA)$(shared_install_subdir)/scripts" \
+	    target-winxp "python -m compileall $(CMTINSTALLAREA)$(shared_install_subdir)\python $(CMTINSTALLAREA)$(shared_install_subdir)\scripts"
 
 macro_remove cmt_actions_constituents "CompilePython "
 macro_remove cmt_actions_constituentsclean "CompilePythonclean "
@@ -266,8 +310,8 @@ cmtpath_pattern \
 cmtpath_pattern \
    macro <project>_install_scripts "" \
          <project>_without_installarea "" \
-         <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)/$(scripts_dir)"\
-         <project>_with_installarea&target-winxp "<path>\$(<project>_installarea_prefix)\$(scripts_dir)" ; \
+         <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)$(shared_install_subdir)/$(scripts_dir)"\
+         <project>_with_installarea&target-winxp "<path>\$(<project>_installarea_prefix)$(shared_install_subdir)\$(scripts_dir)" ; \
     path_remove  PATH ${<project>_install_scripts} ; \
     path_prepend PATH ${<project>_install_scripts}
 
@@ -296,14 +340,14 @@ make_fragment install_scripts -header=install_scripts_header
 #
 # Some data files are specified using a directory.
 #
-macro install_command 'python $(GaudiPolicy_root)/scripts/install.py -xCVS -x*~ -x*.stamp -x*.bak -x.* -x*.pyc -x*.pyo --log=./install.history '
-macro uninstall_command 'python $(GaudiPolicy_root)/scripts/install.py -u --log=./install.history '
+macro install_command 'python $(GaudiPolicy_root)/scripts/install.py -xCVS -x*~ -x*.stamp -x*.bak -x.* -x*.pyc -x*.pyo --log=./install.$(tag).history '
+macro uninstall_command 'python $(GaudiPolicy_root)/scripts/install.py -u --log=./install.$(tag).history '
 
 macro remove_command "$(cmt_uninstallarea_command)"
 
-macro library_install_command "python $(GaudiPolicy_root)/scripts/install.py -xCVS -x*~ -x*.stamp -x*.bak -x.* -x*.pyc -x*.pyo -s --log=./install.history " \
+macro library_install_command "python $(GaudiPolicy_root)/scripts/install.py -xCVS -x*~ -x*.stamp -x*.bak -x.* -x*.pyc -x*.pyo -s --log=./install.$(tag).history " \
       host-winxp              "copy "
-macro cmt_installarea_command "python $(GaudiPolicy_root)/scripts/install.py -xCVS -x*~ -x*.stamp -x*.bak -x.* -x*.pyc -x*.pyo -s --log=./install.history " \
+macro cmt_installarea_command "python $(GaudiPolicy_root)/scripts/install.py -xCVS -x*~ -x*.stamp -x*.bak -x.* -x*.pyc -x*.pyo -s --log=./install.$(tag).history " \
       host-winxp              "xcopy /S /E /Y "
 
 pattern declare_runtime \
@@ -439,6 +483,8 @@ tag sl54   host-slc5
 tag sl55   host-slc5
 tag sl56   host-slc5
 tag sl57   host-slc5
+# Atlas uses shared directories
+tag ATLAS  use-shared-dir
 
 # Fragments =================================================================
 
@@ -474,10 +520,16 @@ make_fragment sln_dependency_trailer
 macro dep_fragment "" CMTp20070208 "dependencies"
 make_fragment $(dep_fragment)
 
+# Local copy of the application fragment to be able to use VC9 (embed manifest in executables)
+macro app_fragment "" target-winxp&target-vc9 "application"
+make_fragment $(app_fragment)
+
 macro vsCONFIG   "Release"   target-dbg  "Debug"
 macro vsDebug    "2"         target-dbg  "1"
 macro vsOptimize "2"         target-dbg  "0"
-macro vsVersion  ""   vc++7.1  "7.10"  vc++7.0 "7.00"
+# The vsnet generated files are not correct for VC++9, so it is better
+# to claim that they are for VC++7.1 and let VC++9 do the conversion
+macro vsVersion  ""   vc++7.1  "7.10"  vc++7.0 "7.00"  vc++9 "7.10"
 macro package_GUID "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
 macro GUID_all "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC955}"
 
@@ -520,6 +572,7 @@ macro_append   cpp_name "" \
     lcg-compiler&target-gcc&CERNDISTCC "" \
     lcg-compiler&target-gccmax    "" \
     lcg-compiler&target-gcc       "-$(gcc_config_version)"
+macro cpp_name "$(cpp_name)" target-icc "icpc"
 
 # C compiler
 macro_prepend  cc_name  "" \
@@ -553,20 +606,12 @@ macro cppprofiled_s   "-pg" \
       target-winxp            ""
 macro_append cppdebugflags "" \
       target-pro        " $(cppprofiled_s)"
-macro cppcoverage_s   "-fprofile-arcs -ftest-coverage" \
-      target-winxp            ""
-macro_append cppdebugflags "" \
-      target-cov        " $(cppcoverage_s)"
 
 # C debug, optimized and profiled options
 macro cdebugflags     "" \
       target-dbg           "$(cdebugflags_s)"
 macro cdebugflags_s   "-g" \
       target-winxp           "/Od /Z7"
-macro ccoverage_s     "-fprofile-arcs -ftest-coverage" \
-      target-winxp            ""
-macro_append cdebugflags "" \
-      target-cov        " $(ccoverage_s)"
 
 # Fortran debug, optimized and profiled options
 macro fdebugflags      "" \
@@ -581,10 +626,6 @@ macro fprofiled_s      "-pg" \
       target-winxp            ""
 macro_append fdebugflags "" \
       target-pro        " $(fprofiled_s)"
-macro fcoverage_s     "-fprofile-arcs -ftest-coverage" \
-      target-winxp            ""
-macro_append fdebugflags "" \
-      target-cov        " $(fcoverage_s)"
 
 # Link debug options
 macro linkdebugflags   "" \
@@ -592,22 +633,22 @@ macro linkdebugflags   "" \
 macro linkdebugflags_s "" \
       target-winxp            "/debug /verbose:lib "
 
-
-macro linkcoverage_s   "-lgcov" \
-      target-winxp            ""
-
-macro_append linkdebugflags "" \
-      target-cov        " $(linkcoverage_s)"
-
-macro_append use_linkopts "" \
-	  target-cov            " $(linkcoverage_s) "
-
-
+# gcov special option (added to LCG_Platforms_linkopts because it is the last macro in the
+# link options and --coverage must appear very late on the command line).
+macro_append LCG_Platforms_linkopts "" \
+                         target-cov " --coverage"
+macro_append LCG_Platforms_cppflags "" \
+                         target-cov " --coverage"
+macro_append LCG_Platforms_cflags "" \
+                       target-cov " --coverage"
+macro_append LCG_Platforms_fflags "" \
+                       target-cov " --coverage"
 
 macro cppflags         " -fmessage-length=0 -Df2cFortran -fPIC -shared -D_GNU_SOURCE -Dlinux -Dunix -pipe -ansi -Wall -Wextra -pthread " \
       target-mac105    " -Df2cFortran -fPIC -D_GNU_SOURCE -Dunix -pipe -ansi -Wall -Wextra -Wno-long-double " \
       target-mac106    " -Df2cFortran -fPIC -D_GNU_SOURCE -Dunix -pipe -ansi -Wall -Wextra " \
-      target-winxp     '$(includes) /D "WIN32" /D "_MBCS"  /D "_WINDOWS" /FD /c /nologo /W3 /GX /MD /GR /Zm500'
+      target-vc9       '$(includes) /D "WIN32" /D "_MBCS"  /D "_WINDOWS" /FD /c /nologo /W3 /EHsc /MD /GR /Zm500' \
+      target-vc7       '$(includes) /D "WIN32" /D "_MBCS"  /D "_WINDOWS" /FD /c /nologo /W3 /GX /MD /GR /Zm500'
 
 ##############################################################################
 # Intel compiler support
@@ -638,6 +679,13 @@ macro_append cppflags '' no-hide-warnings '' target-icc '-wd444 '
 #  - remark #304:    access control not specified ("public/private" by default)
 #                    (fixed one in GaudiKernel, but most are from Boost)
 macro_append cppflags '' no-hide-warnings '' target-icc '-wd304 '
+#  - Hide deprecation warnings (due to the usage of hash_map, unavoidable because of gccxml)
+macro_append cppflags '' no-hide-warnings '' target-icc '-Wno-deprecated '
+### Special link option to avoid the warning:
+#     'libimf.so: warning: warning: feupdateenv is not implemented and will always fail'
+#   Note: we use this macro because it is the only one that is used in the
+#   right place in the command line options of (every) executable
+macro_append GaudiKernel_linkopts '' target-icc '-limf -lm '
 ##############################################################################
 
 # macro_append cppflags " -msse2 -mfpmath=sse" \
@@ -738,7 +786,6 @@ macro makeLinkMap            ""\
       target-winxp           "/map"
 
 macro cpplinkflags "" \
-      target-icc   "-Wl,-Bdynamic $(linkdebugflags) -ldl " \
       target-linux "-Wl,-Bdynamic $(linkdebugflags) -ldl -Wl,--as-needed " \
       target-vc    "/nologo /machine:ix86 $(linkdebugflags) $(makeLinkMap) /nodefaultlib kernel32.lib user32.lib ws2_32.lib advapi32.lib shell32.lib msvcrt.lib msvcprt.lib oldnames.lib "
 
@@ -816,6 +863,16 @@ macro shlibsuffix   "so" \
 #macro GaudiPolicy_CMT_files "../src/symlink.sh"
 
 #-------------------------------------------------------------------
+# Shared installation options
+#   if the extra tag use-shared-dir is specified, the
+#   platform-independent files will be installed in shared
+#   directories in the InstallArea
+#-------------------------------------------------------------------
+macro shared_install_subdir '/$(tag)' \
+               target-winxp '\$(tag)' \
+             use-shared-dir ''
+
+#-------------------------------------------------------------------
 # begin of genconf
 #-------------------------------------------------------------------
 public
@@ -840,8 +897,8 @@ cmtpath_pattern \
     macro genconfInstallDir "" \
        <project>_without_installarea&target-unix "$(<package>_root)/python" \
        <project>_without_installarea&target-winxp "$(<package>_root)\python" \
-       <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)/python"\
-       <project>_with_installarea&target-winxp '"<path>\$(<project>_installarea_prefix)\python"'
+       <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)$(shared_install_subdir)/python"\
+       <project>_with_installarea&target-winxp '"<path>\$(<project>_installarea_prefix)$(shared_install_subdir)\python"'
 
 make_fragment genconfig -header=genconfig_header
 
@@ -1029,6 +1086,7 @@ macro_remove cmt_actions_constituents 'qmtest_run'
 macro_remove cmt_actions_constituents 'qmtest_summarize'
 macro_remove cmt_actions_constituents 'TestPackage'
 macro_remove cmt_actions_constituents 'TestProject'
+macro_remove cmt_actions_constituents 'QMTestTestsDatabase'
 macro_remove cmt_actions_constituents 'QMTestGUI'
 
 #-------------------------------------------------------------------
@@ -1099,7 +1157,7 @@ pattern NullCommand \
 #-------------------------------------------------------------------
 pattern ProjectVersionHeader \
 	private ; \
-	macro ProjectVersionHeader_output "$(CMTINSTALLAREA)/include/<project>_VERSION.h" ; \
+	macro ProjectVersionHeader_output "$(CMTINSTALLAREA)$(shared_install_subdir)/include/<project>_VERSION.h" ; \
 	macro ProjectVersionHeader_deps "../cmt/requirements" ; \
 	macro ProjectVersionHeader_command "python $(GaudiPolicy_root)/scripts/createProjVersHeader.py <project> <version> $(ProjectVersionHeader_output)" \
 	     <project>_without_installarea "" ; \
@@ -1181,9 +1239,9 @@ pattern container_package \
 #-------------------------------------------------------------------
 pattern zip_python_modules \
 	private ; \
-	macro zip_<group><package>_python_modules_output "$(CMTINSTALLAREA)/python.zip" ; \
+	macro zip_<group><package>_python_modules_output "$(CMTINSTALLAREA)$(shared_install_subdir)/python.zip" ; \
 	macro zip_<group><package>_python_modules_deps "FORCE" ; \
-	macro zip_<group><package>_python_modules_command "python $(GaudiPolicy_root)/scripts/ZipPythonDir.py $(CMTINSTALLAREA)/python" ; \
+	macro zip_<group><package>_python_modules_command "python $(GaudiPolicy_root)/scripts/ZipPythonDir.py $(CMTINSTALLAREA)$(shared_install_subdir)/python" ; \
 	macro zip_<group><package>_python_modules_pattern_applied "CallCommand" \
 		no-pyzip&container-package "CallCommand" \
 		no-pyzip "NullCommand" ; \
@@ -1237,4 +1295,3 @@ tag ATLAS no-pyzip
 
 macro_append pp_cppflags "" \
       ATLAS " -DATLAS_GAUDI_V21 "
-

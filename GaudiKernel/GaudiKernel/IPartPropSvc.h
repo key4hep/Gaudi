@@ -7,6 +7,7 @@
 
 namespace HepPDT {
   class ParticleDataTable;
+  class ProcessUnknownID;
 }
 
 /* @class IPartPropSvc IPartPropSvc.h GaudiKernel/IPartPropSvc.h
@@ -23,6 +24,8 @@ public:
   DeclareInterfaceID(IPartPropSvc,2,0);
 
   virtual HepPDT::ParticleDataTable* PDT() = 0;
+  virtual void setUnknownParticleHandler( HepPDT::ProcessUnknownID*,
+					  const std::string& ) = 0;
 
 };
 

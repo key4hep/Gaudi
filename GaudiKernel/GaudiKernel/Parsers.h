@@ -561,6 +561,14 @@ namespace Gaudi
     ( std::map<unsigned int, std::string>& result ,
       const std::string&          input  ) ;
     // ========================================================================
+    /** parse the <c>std::map\<unsigned int,std::string\> \></c> objects
+     *
+     *  @see Gaudi::Parsers::MapGrammar
+     */
+    GAUDI_API StatusCode parse
+    ( std::map<std::string, unsigned int>& result ,
+      const std::string&          input  ) ;
+    // ========================================================================
     /** parse the pair expression (map-component)  " 'name' :value"
      *
      *  @code
@@ -616,11 +624,11 @@ namespace Gaudi
     ( std::map<std::string,Gaudi::Histo1DDef>& histos ,
       const std::string&                       input  ) ;
     // ========================================================================
-    /** helper function, needed for implementation of map of pairs 
-     *  It is very useful construction for monitoring to 
-     *  represent the value and error or the allowed range for 
+    /** helper function, needed for implementation of map of pairs
+     *  It is very useful construction for monitoring to
+     *  represent the value and error or the allowed range for
      *  some parameter
-     *  @param params the map of pair 
+     *  @param params the map of pair
      *  @param input the string to be parsed
      *  @return status code
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
@@ -631,7 +639,7 @@ namespace Gaudi
     ( std::map<std::string,std::pair<double,double> >& params ,
       const std::string&                               input  ) ;
     // ========================================================================
-    /** parser function for C-arrays 
+    /** parser function for C-arrays
      *  @param params C-array
      *  @param input the string to be parsed
      *  @return status code
@@ -639,14 +647,14 @@ namespace Gaudi
      *  @date 2009-09-15
      */
     template <class T, unsigned int N>
-    StatusCode parse ( T(&result)[N] , const std::string& input ) 
+    StatusCode parse ( T(&result)[N] , const std::string& input )
     {
       typedef std::vector<T> _Vct ;
-      // create the temporary vector 
+      // create the temporary vector
       _Vct tmp ;
       StatusCode sc = parse ( tmp , input ) ;
-      if ( sc.isFailure()  ) { return sc                  ; }  //  RETURN 
-      if ( N != tmp.size() ) { return StatusCode::FAILURE ; }  //  RETURN 
+      if ( sc.isFailure()  ) { return sc                  ; }  //  RETURN
+      if ( N != tmp.size() ) { return StatusCode::FAILURE ; }  //  RETURN
       //
       std::copy ( tmp.begin() , tmp.end() , result ) ;
       //
@@ -661,20 +669,20 @@ namespace Gaudi
      *  @date 2009-09-15
      */
     template <unsigned int N>
-    StatusCode parse ( char(&result)[N] , const std::string& input ) 
+    StatusCode parse ( char(&result)[N] , const std::string& input )
     {
-      // clear the string 
-      std::fill_n ( result , N , ' ' ) ; 
+      // clear the string
+      std::fill_n ( result , N , ' ' ) ;
       // create the temporary string
       std::string tmp ;
       StatusCode sc = parse ( tmp , input ) ;
-      if ( sc.isFailure()  ) { return sc                 ; }  //  RETURN 
+      if ( sc.isFailure()  ) { return sc                 ; }  //  RETURN
       if       ( N     == tmp.size() )
       { std::copy ( tmp.begin() , tmp.end() , result ) ; }
-      else if  ( N + 2    == tmp.size()                 && 
-                 ( '\''   == tmp[0] || '\"' == tmp[0] ) && 
+      else if  ( N + 2    == tmp.size()                 &&
+                 ( '\''   == tmp[0] || '\"' == tmp[0] ) &&
                  ( tmp[0] == tmp[tmp.size()-1]          ))
-      { std::copy ( tmp.begin() + 1 , tmp.end() -1 , result ) ; }        
+      { std::copy ( tmp.begin() + 1 , tmp.end() -1 , result ) ; }
       else { return StatusCode::FAILURE ; }
       //
       return StatusCode::SUCCESS ;                            //  RETURN

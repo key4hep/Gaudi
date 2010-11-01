@@ -147,6 +147,7 @@ reflex_dictionaries = []
 install_python = False
 install_scripts = False
 install_headers = []
+install_joboptions = []
 libraries = {}
 executables = {}
 genconfig = []
@@ -162,6 +163,9 @@ for l in lines:
       if os.path.exists('python') : install_python = True
     elif t[1] == 'install_scripts':
       if os.path.exists('scripts') : install_scripts = True
+    elif t[1] == 'data_installer'and t[2] == 'install_joboptions':
+      for f in t[3:] :
+        if f.find('prefix=') != 0 : install_joboptions.append(f.replace('../',''))
     elif t[1] == 'reflex_dictionary_generator' :
       name =  t[2][:-3]
       sel = os.popen('cmt show macro_value %s_reflex_selection_file' % name).readlines()[0][:-1]
@@ -239,11 +243,12 @@ for k,l in libraries.items():
     srcs = '${%s_srcs}' % k
   else:
     srcs = l[0][0].replace('../src/','')
+  if l[2] : print 'if(BUILD_TESTS)\n  ',
   if k in genconfig :
     print 'GAUDI_COMPONENT_LIBRARY(%s %s LIBRARIES %s)'%(k, srcs, prettylibs(l[1]))
   else :
     print 'GAUDI_LINKER_LIBRARY(%s %s LIBRARIES %s)'%(k, srcs, prettylibs(l[1]))
-    #gbl_libraries[k] = l
+  if l[2] : print 'endif()'
 
 if executables:
   print '\n#---Executables-------------------------------------------------------------'
@@ -255,7 +260,7 @@ for k,l in executables.items():
   else:
     srcs = l[0][0].replace('../src/','')
   if l[2] :
-    print 'GAUDI_TEST(%s %s LIBRARIES %s)'%(k, srcs, prettylibs(l[1]))
+    print 'GAUDI_UNIT_TEST(%s %s LIBRARIES %s)'%(k, srcs, prettylibs(l[1]))
   else :
     print 'GAUDI_EXECUTABLE(%s %s LIBRARIES %s)'%(k, srcs, prettylibs(l[1]))
 
@@ -301,6 +306,9 @@ if install_python:
 
 if install_scripts:
   print 'GAUDI_INSTALL_SCRIPTS()'
+
+if install_joboptions:
+  print 'GAUDI_INSTALL_JOBOPTIONS(%s)' % ' '.join(install_joboptions)
 
 
 output = open(picklefile % project, 'wb')

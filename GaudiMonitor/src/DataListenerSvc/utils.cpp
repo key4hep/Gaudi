@@ -9,11 +9,11 @@
  *
  * Copyright (C) 2006 California Institute of Technology
  *
- * Permission is hereby granted, free of charge, to use, copy and modify 
+ * Permission is hereby granted, free of charge, to use, copy and modify
  * this software and its documentation (the "Software") for any
- * purpose, provided that existing copyright notices are retained in 
+ * purpose, provided that existing copyright notices are retained in
  * all copies and that this notice is included verbatim in any distributions
- * or substantial portions of the Software. 
+ * or substantial portions of the Software.
  * This software is a part of the MonALISA framework (http://monalisa.cacr.caltech.edu).
  * Users of the Software are asked to feed back problems, benefits,
  * and/or suggestions about the software to the MonALISA Development Team
@@ -40,7 +40,7 @@
 
 
 bool apmon_utils::urlModified(char *url, char *lastModified) throw(runtime_error) {
-  char temp_filename[300]; 
+  char temp_filename[300];
   FILE *tmp_file;
   bool lineFound;
   char line[MAX_STRING_LEN1];
@@ -78,7 +78,6 @@ bool apmon_utils::urlModified(char *url, char *lastModified) throw(runtime_error
   if (atoi(str2) != 200) {
     fclose(tmp_file);
     unlink(temp_filename);
-    free(line);
     throw runtime_error("[ urlModified() ] Error getting the configuration web page");
   }
 
@@ -90,8 +89,8 @@ bool apmon_utils::urlModified(char *url, char *lastModified) throw(runtime_error
       break;
     }
   }
- 
-  fclose(tmp_file); 
+
+  fclose(tmp_file);
   unlink(temp_filename);
   if (lineFound) {
     if (strcmp(line, lastModified) != 0) {
@@ -103,18 +102,18 @@ bool apmon_utils::urlModified(char *url, char *lastModified) throw(runtime_error
     // if the line was not found we must assume the page was modified
     return true;
 
-}  
+}
 
-int apmon_utils::httpRequest(char *url, char *reqType, char *temp_filename) 
+int apmon_utils::httpRequest(char *url, char *reqType, char *temp_filename)
 throw(runtime_error) {
   // the server from which we get the configuration file
-  char hostname[MAX_STRING_LEN]; 
+  char hostname[MAX_STRING_LEN];
   // the name of the remote file
   char filename[MAX_STRING_LEN];
   // the port on which the server listens (by default 80)
   int port;
   char msg[MAX_STRING_LEN];
-  
+
   int sd, rc;
   // struct sockaddr_in localAddr;
   struct sockaddr_in servAddr;
@@ -125,14 +124,14 @@ throw(runtime_error) {
 
   char buffer[MAX_STRING_LEN]; // for reading from the socket
   int totalSize; // the size of the remote file
-  FILE *tmp_file; 
+  FILE *tmp_file;
 
   parse_URL(url, hostname, &port, filename);
 
-  sprintf(msg, "Sending HTTP %s request to: \n Hostname: %s , Port: %d , Filename: %s", 
+  sprintf(msg, "Sending HTTP %s request to: \n Hostname: %s , Port: %d , Filename: %s",
 	 reqType, hostname, port, filename);
   logger(INFO, msg);
-  
+
   request = (char *)malloc(MAX_STRING_LEN * sizeof(char));
   strcpy(request, reqType);
   strcat(request, " ");
@@ -160,19 +159,19 @@ throw(runtime_error) {
   }
 
   /* set connection timeout */
-  
+
   optval.tv_sec = 10;
   optval.tv_usec = 0;
-  //setsockopt(sd, SOL_SOCKET, SO_SNDTIMEO, (char *) &optval, 
+  //setsockopt(sd, SOL_SOCKET, SO_SNDTIMEO, (char *) &optval,
   //		sizeof(optval));
-  setsockopt(sd, SOL_SOCKET, SO_RCVTIMEO, (char *) &optval, 
+  setsockopt(sd, SOL_SOCKET, SO_RCVTIMEO, (char *) &optval,
 			sizeof(optval));
-  
+
   /*
   localAddr.sin_family = AF_INET;
   localAddr.sin_addr.s_addr = htonl(INADDR_ANY);
   localAddr.sin_port = htons(0);
-  
+
   rc = bind(sd, (struct sockaddr *) &localAddr, sizeof(localAddr));
   if(rc<0) {
     free(request);
@@ -181,7 +180,7 @@ throw(runtime_error) {
     throw runtime_error(msg);
   }
   */
-				
+
   // connect to the server
   rc = connect(sd, (struct sockaddr *) &servAddr, sizeof(servAddr));
   if(rc<0) {
@@ -196,7 +195,7 @@ throw(runtime_error) {
 
   // send the request
   rc = send(sd, request, strlen(request), 0);
-  if(rc<0) {  
+  if(rc<0) {
 #ifndef WIN32
 	close(sd);
 #else
@@ -205,7 +204,7 @@ throw(runtime_error) {
     free(request);
     throw runtime_error("[ httpRequest() ] Cannot send the request to the http server");
   }
- 
+
   free(request);
 
   /* read the response and put it in a temporary file */
@@ -221,15 +220,15 @@ throw(runtime_error) {
 
   rc = 0, totalSize = 0;
   do {
-    memset(buffer,0x0,MAX_STRING_LEN);    //  init line 
+    memset(buffer,0x0,MAX_STRING_LEN);    //  init line
     rc = recv(sd, buffer, MAX_STRING_LEN, 0);
-    if( rc > 0) { 
+    if( rc > 0) {
       fwrite(buffer, rc, 1, tmp_file);
       totalSize +=rc;
     }
   }while(rc>0);
 
-  sprintf(msg, "Received response from  %s, response size is %d bytes", 
+  sprintf(msg, "Received response from  %s, response size is %d bytes",
 	  hostname, totalSize);
   logger(INFO, msg);
 
@@ -249,13 +248,13 @@ char *apmon_utils::findIP(char *address) throw(runtime_error) {
   unsigned int j;
   bool ipFound;
 
-  for (j = 0; j < strlen(address); j++) 
+  for (j = 0; j < strlen(address); j++)
       if (isalpha(address[j])) {
 	// if we found a letter, this is not an IP address
 	isIP = 0;
 	break;
       }
-     
+
     if (!isIP) {  // the user provided a hostname, find the IP
       struct hostent *he = gethostbyname(address);
       if (he == NULL) {
@@ -264,7 +263,7 @@ char *apmon_utils::findIP(char *address) throw(runtime_error) {
 	throw runtime_error(tmp_msg);
       }
       j = 0;
-      /* get from the list the first IP address 
+      /* get from the list the first IP address
 	 (which is not a loopback one) */
       ipFound = false;
       while ((he -> h_addr_list)[j] != NULL) {
@@ -281,15 +280,15 @@ char *apmon_utils::findIP(char *address) throw(runtime_error) {
 	destIP = strdup("127.0.0.1");
 	fprintf(stderr, "The destination for datagrams is localhost\n");
       }
-    
+
     } else // the string was an IP address
       destIP = strdup(address);
-    
+
     return destIP;
 }
 
 
-void apmon_utils::parse_URL(char *url, char *hostname, int *port, char *identifier) 
+void apmon_utils::parse_URL(char *url, char *hostname, int *port, char *identifier)
 throw(runtime_error) {
     char protocol[MAX_STRING_LEN], scratch[MAX_STRING_LEN], *ptr=0, *nptr=0;
     char msg[MAX_STRING_LEN];
@@ -318,7 +317,7 @@ throw(runtime_error) {
     if (!nptr) {
 	*port = 80; /* use the default HTTP port number */
 	nptr = (char *)strchr(hostname, '/');
-    } else {	
+    } else {
 	sscanf(nptr, ":%d", port);
 	nptr = (char *)strchr(hostname, ':');
     }
@@ -350,7 +349,7 @@ char *apmon_utils::trimString(char *s) {
   for (i = 0; i < strlen(s); i++)
     if (!isspace(s[i]))
       break;
-  firstpos = i; 
+  firstpos = i;
 
   if (firstpos == strlen(s)) {
     ret[0] = 0;
@@ -361,7 +360,7 @@ char *apmon_utils::trimString(char *s) {
   for (i = strlen(s) ; i > 0; i--)
     if (!isspace(s[i-1]))
 	break;
-  lastpos = i; 
+  lastpos = i;
 
   for (i = firstpos; i <= lastpos; i++)
       ret[j++] = s[i];
@@ -372,7 +371,7 @@ char *apmon_utils::trimString(char *s) {
 
 int apmon_utils::xdrSize(int type, char *value) {
   int size;
-  
+
   switch (type) {
 //  case XDR_INT16: (not supported)
   case XDR_INT32:
@@ -396,12 +395,12 @@ int apmon_utils::xdrSize(int type, char *value) {
       return size;
     }
   }
-  
+
   return RET_ERROR;
 }
 
 int apmon_utils::sizeEval(int type, char *value) {
-  
+
   switch (type) {
 //  case XDR_INT16:
   case XDR_INT32:
@@ -413,16 +412,16 @@ int apmon_utils::sizeEval(int type, char *value) {
   case XDR_STRING:
     return (strlen(value) + 1);
   }
-  
+
   return RET_ERROR;
 }
 
 
 
-void apmon_utils::logParameters(int level, int nParams, char **paramNames, 
+void apmon_utils::logParameters(int level, int nParams, char **paramNames,
 		     int *valueTypes, char **paramValues) {
   int i;
-  char typeNames[][15] = {"XDR_STRING", "", "XDR_INT32", "", "XDR_REAL32", 
+  char typeNames[][15] = {"XDR_STRING", "", "XDR_INT32", "", "XDR_REAL32",
 		 "XDR_REAL64"};
   char logmsg[200], val[100];
 
@@ -444,7 +443,7 @@ void apmon_utils::logParameters(int level, int nParams, char **paramNames,
       break;
     case XDR_REAL64:
       sprintf(val, "%f", *(double *)(paramValues[i]));
-      break;  
+      break;
     }
     strcat(logmsg, val);
     logger(level, logmsg);
@@ -460,7 +459,7 @@ bool apmon_utils::isPrivateAddress(char *addr) {
 //  char *pbuf = buf;
 
   strcpy(tmp, addr);
-  s1 = strtok/*_r*/(tmp,".");//, &pbuf); 
+  s1 = strtok/*_r*/(tmp,".");//, &pbuf);
   n1 = atoi(s1);
 
   s2 = strtok/*_r*/(NULL, ".");//, &pbuf);
@@ -484,15 +483,15 @@ int apmon_utils::getVectIndex(char *item, char **vect, int vectDim) {
       return i;
   return -1;
 }
-  
+
 void apmon_utils::logger(int msgLevel, const char *msg, int newLevel) {
   char time_s[30];
   int len;
-  long crtTime = time(NULL);
-  char *levels[5] = {(char*)"FATAL", 
-		     (char*)"WARNING", 
-		     (char*)"INFO", 
-		     (char*)"FINE", 
+  time_t crtTime = time(NULL);
+  char *levels[5] = {(char*)"FATAL",
+		     (char*)"WARNING",
+		     (char*)"INFO",
+		     (char*)"FINE",
 		     (char*)"DEBUG"};
   static int loglevel = INFO;
 #ifndef WIN32

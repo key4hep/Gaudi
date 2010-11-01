@@ -1,6 +1,13 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+============================= GaudiPython v10r11 =============================
+! 2010-08-24 - Marco Clemencic
+ - Fixed a compilation problem on mac106.
+
+! 2010-07-29 - Marco Clemencic
+ - Fixed a compilation warning with Python 2.6.5 and gcc 4.3.
+
 ============================= GaudiPython v10r10 =============================
 ! 2010-06-21 - Vanya Belyaev
  - Patch #4207: Allow creation of new C++ algorithms from GaudiPython

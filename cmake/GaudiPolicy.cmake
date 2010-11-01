@@ -7,10 +7,8 @@ cmake_policy(SET CMP0011 NEW) # See "cmake --help-policy CMP0011" for more detai
 cmake_policy(SET CMP0009 NEW) # See "cmake --help-policy CMP0009" for more details
 
 
-#set(lib $ENV{CMTCONFIG}/lib)
-#set(bin $ENV{CMTCONFIG}/bin)
-set(lib ${BINARY_TAG}/lib)
-set(bin ${BINARY_TAG}/bin)
+set(lib lib)
+set(bin bin)
 
 
 set(CMAKE_VERBOSE_MAKEFILES OFF)
@@ -20,7 +18,7 @@ set(CMAKE_CXX_COMPILER g++)
 
 include(CMakeMacroParseArguments)
 
-# Compilation Flags
+#---Compilation Flags--------------------------------------------------------------------------------
 #-->set(CMAKE_CXX_FLAGS "-Dunix -pipe -ansi -Wall -Wextra -pthread  -Wno-deprecated -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long")
 
 
@@ -31,7 +29,7 @@ endif()
 
 add_definitions(-D_GNU_SOURCE -DGAUDI_V20_COMPAT)
 
-# Link shared flags
+#---Link shared flags--------------------------------------------------------------------------------
 if (CMAKE_SYSTEM_NAME MATCHES Linux) 
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000")
   set(CMAKE_MODULE_LINKER_FLAGS "-Wl,--as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000")
@@ -58,6 +56,7 @@ if(CMAKE_PROJECT_NAME STREQUAL GAUDI)
   set(genconf_cmd ${CMAKE_BINARY_DIR}/GaudiKernel/genconf.exe)
   set(versheader_cmd ${python_cmd} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/createProjVersHeader.py)
   set(gaudirun ${CMAKE_SOURCE_DIR}/Gaudi/scripts/gaudirun.py)
+  set(zippythondir_cmd ${python_cmd} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/ZipPythonDir.py)
 else()
   set(merge_rootmap_cmd ${python_cmd}  ${GAUDI_installation}/GaudiPolicy/scripts/merge_files.py)
   set(merge_conf_cmd ${python_cmd}  ${GAUDI_installation}/GaudiPolicy/scripts/merge_files.py)
@@ -65,6 +64,7 @@ else()
   set(versheader_cmd ${python_cmd} ${GAUDI_installation}/GaudiPolicy/scripts/createProjVersHeader.py)
   set(GAUDI_SOURCE_DIR ${GAUDI_installation})
   set(gaudirun ${GAUDI_installarea}/scripts/gaudirun.py)
+  set(zippythondir_cmd ${python_cmd} ${GAUDI_installation}/GaudiPolicy/scripts/ZipPythonDir.py)
 endif()
 
 
@@ -267,6 +267,32 @@ function(GAUDI_COMPONENT_LIBRARY library)
   install(TARGETS ${library} LIBRARY DESTINATION ${lib})
 endfunction()
 
+
+#---------------------------------------------------------------------------------------------------
+#---GAUDI_PYTHON_MODULE( <name> source1 source2 ... LIBRARIES library1 library2 ...)
+#---------------------------------------------------------------------------------------------------
+function(GAUDI_PYTHON_MODULE module)
+  PARSE_ARGUMENTS(ARG "LIBRARIES" "" ${ARGN})
+  set(lib_srcs)
+  foreach( fp ${ARG_DEFAULT_ARGS})  
+    file(GLOB files src/${fp})
+    if(files) 
+      set( lib_srcs ${lib_srcs} ${files})
+    else()
+      set( lib_srcs ${lib_srcs} ${fp})
+    endif()
+  endforeach()
+  add_library( ${module} MODULE ${lib_srcs})
+  if(win32)
+    set_target_properties( ${module} PROPERTIES SUFFIX .pyd PREFIX "")
+  else()
+    set_target_properties( ${module} PROPERTIES SUFFIX .so PREFIX "")
+  endif() 
+  target_link_libraries(${module} ${Python_LIBRARIES} ${ARG_LIBRARIES})
+  #----Installation details-------------------------------------------------------
+  install(TARGETS ${module} LIBRARY DESTINATION python-bin)
+endfunction()
+
 #---------------------------------------------------------------------------------------------------
 #---GAUDI_EXECUTABLE( <name> source1 source2 ... LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
@@ -383,7 +409,7 @@ function(GAUDI_INSTALL_PYTHON_MODULES)
   install(DIRECTORY python/ DESTINATION python 
           PATTERN ".svn" EXCLUDE
           PATTERN "*.pyc" EXCLUDE )
-  GAUDI_INSTALL_PYTHON_INIT()  
+  GAUDI_INSTALL_PYTHON_INIT()
 endfunction()
 
 
@@ -397,8 +423,16 @@ function(GAUDI_INSTALL_PYTHON_INIT)
                                TYPE FILE 
                                FILES \"${GAUDI_SOURCE_DIR}/GaudiPolicy/cmt/fragments/__init__.py\"  )
                 endif()" )
+  GAUDI_ZIP_PYTHON_MODULES()
 endfunction()
 
+#---------------------------------------------------------------------------------------------------
+#---GAUDI_ZIP_PYTHON_MODULES( )
+#---------------------------------------------------------------------------------------------------
+function(GAUDI_ZIP_PYTHON_MODULES)
+  #python $(GaudiPolicy_root)/scripts/ZipPythonDir.py $(CMTINSTALLAREA)$(shared_install_subdir)/python
+  install(CODE "execute_process(COMMAND  ${zippythondir_cmd} ${CMAKE_INSTALL_PREFIX}/python)")  
+endfunction()    
 
 #---------------------------------------------------------------------------------------------------
 #---GAUDI_INSTALL_SCRIPTS( )
@@ -409,6 +443,14 @@ function(GAUDI_INSTALL_SCRIPTS)
                            GROUP_EXECUTE GROUP_READ 
           PATTERN ".svn" EXCLUDE
           PATTERN "*.pyc" EXCLUDE )
+endfunction()
+
+#---------------------------------------------------------------------------------------------------
+#---GAUDI_INSTALL_JOBOPTIONS( )
+#---------------------------------------------------------------------------------------------------
+function(GAUDI_INSTALL_JOBOPTIONS)
+  get_filename_component(package ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+  install(FILES ${ARGN} DESTINATION jobOptions/${package}) 
 endfunction()
 
 #---------------------------------------------------------------------------------------------------

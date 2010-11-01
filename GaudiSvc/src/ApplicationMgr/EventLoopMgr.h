@@ -57,7 +57,7 @@ protected:
   /// Name of the Hist Pers type
   std::string       m_histPersName;
   /// Property interface of ApplicationMgr
-  IProperty*        m_appMgrProperty;
+  SmartIF<IProperty>        m_appMgrProperty;
   /// Flag to avoid to fire the EnvEvent incident twice in a row
   /// (and also not before the first event)
   bool              m_endEventFired;

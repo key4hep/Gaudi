@@ -10,6 +10,9 @@ AIDA::IHistogram3D*  GaudiHistos<PBASE>::book3D
   const HistoBinEdges&        edgesY       ,
   const HistoBinEdges&        edgesZ       ) const
 {
+  //
+  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  //
   // exist?
   AIDA::IHistogram3D * hist = histo3D ( title ) ;
   // histogram is already booked
@@ -33,6 +36,9 @@ AIDA::IHistogram3D*  GaudiHistos<PBASE>::book3D
   const HistoBinEdges&        edgesY       ,
   const HistoBinEdges&        edgesZ       ) const
 {
+  //
+  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  //
   // Check ID
   if (ID.undefined())
   {
@@ -143,3 +149,7 @@ GaudiHistos<PBASE>::plot3D
   }
   return h;
 }
+// ============================================================================
+// The END
+// ============================================================================
+

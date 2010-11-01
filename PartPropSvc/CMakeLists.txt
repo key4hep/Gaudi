@@ -11,3 +11,5 @@ GAUDI_USE_PACKAGE(GaudiSvc)
 GAUDI_COMPONENT_LIBRARY(PartPropSvc *.cpp LIBRARIES GaudiKernel Reflex ${Boost_LIBRARIES} ${Boost_regex} ${HepPDT_LIBRARIES})
 
 #---Installation------------------------------------------------------------
+GAUDI_INSTALL_JOBOPTIONS(share/PartPropSvc.py)
+

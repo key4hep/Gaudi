@@ -150,7 +150,7 @@ def main():
         # update infos
         if new_versions[pkg] != old_versions[pkg]:
             change_version(all_packages[pkg], new_versions[pkg])
-            if pkg != "GaudiRelease":
+            if os.path.exists(relnotefile):
                 add_release_separator_bar(relnotefile, pkg, new_versions[pkg])
         print "=" * 80
     # The changes in the GaudiRelease requirements for the other packages can be postponed to now

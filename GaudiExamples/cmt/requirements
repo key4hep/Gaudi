@@ -1,5 +1,5 @@
 package GaudiExamples
-version v21r10
+version v21r11
 
 use ROOT         v* LCG_Interfaces
 use Reflex       v* LCG_Interfaces -no_auto_imports
@@ -37,10 +37,10 @@ library GaudiExamples    -no_static \
                           PartProp/*.cpp \
                           Properties/*.cpp \
                           ExtendedProperties/*.cpp \
-                          $(datalistener_use) \			  
+                          $(datalistener_use) \
                           POOLIO/*.cpp \
-                          ColorMsg/ColorMsgAlg.cpp \ 
-                          History/History.cpp \ 
+                          ColorMsg/ColorMsgAlg.cpp \
+                          History/History.cpp \
                           THist/*.cpp \
                           ErrorLog/ErrorLogTest.cpp \
                           EvtColsEx/EvtColAlg.cpp \
@@ -78,7 +78,7 @@ macro GaudiExamplesDict_use_linkopts $(use_linkopts)
 #macro_append GaudiMTlinkopts " -L$(GAUDISVCROOT)/$(tag) -lGaudiSvc -lpthread "
 #macro_remove constituents "" target-winxp "GaudiMT"      # not working on Windows
 
-application Allocator         Allocator/*.cpp 
+application Allocator         Allocator/*.cpp
 macro_append Allocator_dependencies GaudiExamples
 #-------Options------------------------------------------------------------------
 apply_pattern  application_path
@@ -97,6 +97,17 @@ macro_append ROOT_linkopts " -lHist " \
               target-mac104 " -lHist -lMatrix "
 macro_append ROOT_linkopts        "" \
        ROOT_GE_5_15&target-mac104 " -lNet "
+
+#------------------------------------------------------------------------------
+# Create a python binary module
+# -----------------------------
+use Python v* LCG_Interfaces -no_auto_imports
+apply_pattern pyd_boost_module module=PyExample files=PythonModule/*.cpp
+# we do not need/want to link the module against the package library
+macro_remove PyExample_use_linkopts '$(GaudiExamples_linkopts)'
+# otherwise we should have used
+# apply_pattern pyd_boost_module module=PyExample files=PythonModule/*.cpp deps=GaudiExamplesLib
+#------------------------------------------------------------------------------
 
 apply_pattern QMTest
 path_prepend PYTHONPATH "" \

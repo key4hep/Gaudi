@@ -14,6 +14,7 @@ SET(Boost_thread boost_thread-${Boost_compiler_version}-mt )
 SET(Boost_program_options boost_program_options-${Boost_compiler_version}-mt )
 SET(Boost_regex boost_regex-${Boost_compiler_version}-mt )
 SET(Boost_date_time boost_date_time-${Boost_compiler_version}-mt )
+SET(Boost_python boost_python-${Boost_compiler_version}-mt )
 
 #SET(Boost_libraries ${Boost_filesystem} ${Boost_system} ${Boost_thread} ${Boost_program_options} )
 

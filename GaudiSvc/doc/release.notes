@@ -1,6 +1,15 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+============================== GaudiSvc v18r11 ===============================
+! 2010-09-20 - Marco Clemencic
+ - Fixed bug #70956: Add method to find the reason for termination of the
+                     event loop
+   - Use the new return code constants in case of failure opening input files
+     (EventSelector).
+   - Modified EventLoopMgr to propagate failures to the caller of
+     nextEvent(int) and set the application return code.
+
 ! 2010-07-19 - Marco Clemencic
  - Fixed a warning introduced with patch #4215 (appearing only on SLC4).
 

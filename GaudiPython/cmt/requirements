@@ -1,11 +1,11 @@
 package GaudiPython
-version v10r10
+version v10r11
 
 branches      GaudiPython cmt doc src
 
 use GaudiKernel        v*
-use GaudiAlg           v* 
-use GaudiUtils         v* 
+use GaudiAlg           v*
+use GaudiUtils         v*
 use AIDA               v*  LCG_Interfaces
 use CLHEP              v*  LCG_Interfaces -no_auto_imports
 use Python             v*  LCG_Interfaces -no_auto_imports
@@ -38,7 +38,7 @@ use GaudiSvc v* -no_auto_imports
 #apply_pattern package_Cshlibflags
 
 ###--- Test library
-library GPyTest  -group=tests   Test/*.cpp -import=CLHEP -no_static
+library GPyTest  -group=tests   Test/*.cpp -import=Python -import=CLHEP -no_static
 apply_pattern library_Cshlibflags library="GPyTest"
 
 ###--- Test dictionary
@@ -54,7 +54,7 @@ apply_pattern reflex_test_dictionary dictionary=GPyTest \
 # -libdirname option. To work around this we have to override the definition
 # of the GPyTest_rootmap macro defined by the pattern.
 
-# The rootmap name we have to use depends on the version of ROOT: ROOT 5.14 (LCG <= 53*) and ROOT 5.15 (LCG >= 54) 
+# The rootmap name we have to use depends on the version of ROOT: ROOT 5.14 (LCG <= 53*) and ROOT 5.15 (LCG >= 54)
 macro rootmap_name "rootmap" ROOT_GE_5_15 "reflex.rootmap"
 
 macro test_GPyTest_rootmap   $(GAUDIPYTHONROOT)/$(tag)/$(rootmap_name) \

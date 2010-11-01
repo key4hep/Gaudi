@@ -1,6 +1,48 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v27r11 =============================
+! 2010-09-20 - Marco Clemencic
+ - Fixed bug #70956: Add method to find the reason for termination of the
+                     event loop
+   - Defined constants for application return codes and minor change to the logic
+     (GaudiKernel/AppReturnCode.h)
+   - Set appropriate return code in case of "scheduled stop" and unhandled exceptions
+     (MinimalEventLoopMgr)
+
+! 2010-09-17 - Vanya Belyaev
+ - Fixed bug #72170: Python Parsers and map of <string, unsigned int>
+   Added support for map<string,unsigned int>.
+
+! 2010-09-17 - Marco Clemencic
+ - Minor fix to make_patch.py
+
+! 2010-09-14 - Marco Clemencic
+ - Fixed a warning introduced with patch #4394.
+
+! 2010-09-13 - Charles Leggett
+ - Patch #4394: rewriting PathResolver using boost::filesystem
+   - simplified the code
+   - small change in behavior:
+     if the search for "B/a.txt" is not successful, the original PathResolver
+     would traverse the search list again looking for just "a.txt"; not it is
+     not the case anymore
+
+! 2010-08-23 - Marco Clemencic
+ - Modified "loadConfigurableDb" to be able to find *_merged_confDb.py in any
+   subdirectory of the InstallArea (needed to be able to install platform-
+   independent files in the platform-specific directories, see GaudiPolicy).
+
+! 2010-08-20 - Marco Clemencic
+ - Modified src/Lib/Debugger.cpp to compile on VC9.
+
+! 2010-08-19 - Marco Clemencic
+ - Minor fix in SmartDataPtr.h to allow code analysis with Coverity.
+ - Fix for ICC in GaudiKernel/StreamBuffer.h.
+
+! 2010-08-18 - Charles Leggett
+ - Patch #4323: allow user defined heavy ion handling in PartPropSvc
+
 ============================= GaudiKernel v27r10 =============================
 ! 2010-07-12 - Charles Leggett
  - Patch #4216: Don't check StatusCode when GaudiException is thrown

@@ -79,18 +79,65 @@ HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ][m
 [93;1mHistogramPersis...WARNING Histograms saving not required.[m
 ApplicationMgr       INFO Application Manager Initialized successfully[m
 ApplicationMgr       INFO Application Manager Started successfully[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
+THistSvc            DEBUG stream: read1  name: tuple2.rt  size: 4161[m
+THistSvc            DEBUG stream: read2  name: tuple3.rt  size: 88695[m
 ApplicationMgr       INFO Application Manager Stopped successfully[m
 EventLoopMgr         INFO Histograms converted successfully according to request.[m
 THistSvc            DEBUG THistSvc::finalize[m
+THistSvc            DEBUG uid: "/read1/xxx/1Dgauss"  temp: 0  dir: tuple2.rt:/xxx[m
+THistSvc            DEBUG uid: "/read2/2Dgauss"  temp: 0  dir: tuple3.rt:/[m
+THistSvc            DEBUG uid: "/read2/3Dgauss"  temp: 0  dir: tuple3.rt:/[m
+THistSvc            DEBUG uid: "/read2/profile"  temp: 0  dir: tuple3.rt:/[m
+THistSvc            DEBUG uid: "/read2/trees/stuff/treename"  temp: 0  dir: tuple3.rt:/trees/stuff[m
 THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT [m
 THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT: "tuple2.rt"[m
 THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT: "tuple3.rt"[m
 THistSvc             INFO Listing contents of ROOT files: [m
+THistSvc            DEBUG finalizing stream/file read1:tuple2.rt[m
 THistSvc             INFO ==> File: tuple2.rt  stream: read1[m
 TFile: name=tuple2.rt, title=upd, option=READ
 TH1.Print Name  = 1Dgauss, Entries= 20000, Total sum= 19984
           Title = 1D Gaussian
           NbinsX= 100, xmin= -50, xmax=50
+THistSvc            DEBUG finalizing stream/file read2:tuple3.rt[m
 THistSvc             INFO ==> File: tuple3.rt  stream: read2[m
 TFile: name=tuple3.rt, title=rec, option=READ
 TH1.Print Name  = 2Dgauss, Entries= 20000, Total sum= 19978

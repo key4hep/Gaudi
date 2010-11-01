@@ -1,6 +1,6 @@
 JobOptionsSvc        INFO
 //GP:================================================================================
-//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/FastContainers.opts" (0,0)
+//GP: include "/tmp/marcocle/Gaudi/GaudiExamples/options/FastContainers.opts" (0,0)
 ApplicationMgr.TopAlg =  [ "GaudiSequencer" ] ;                         //GP: (1,1)
 GaudiSequencer.Members =  [ "FastContainerProducer" ] ;                 //GP: (1,1)
 GaudiSequencer.Members +=  [ "FastContainerConsumer" ] ;                //GP: (1,1)
@@ -8,15 +8,15 @@ GaudiSequencer.MeasureTime = 1;                                         //GP: (1
 ApplicationMgr.EvtSel = "NONE";                                         //GP: (1,1)
 ApplicationMgr.EvtMax = 10;                                             //GP: (1,1)
 MessageSvc.OutputLevel = 1;                                             //GP: (1,1)
-//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/FastContainers.opts" (34,1)
+//GP: end  "/tmp/marcocle/Gaudi/GaudiExamples/options/FastContainers.opts"    (34,1)
 //GP:================================================================================
 
-JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/FastContainers.opts
+JobOptionsSvc        INFO Job options successfully read in from /tmp/marcocle/Gaudi/GaudiExamples/options/FastContainers.opts
 ApplicationMgr      DEBUG Getting my own properties
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on pclhcb55 on Fri Apr 23 10:06:53 2010
+                                          running on lxplus255.cern.ch on Mon Sep 13 21:35:41 2010
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ServiceManager      DEBUG Initializing service AppMgrRunable
@@ -89,7 +89,8 @@ ToolSvc           VERBOSE Created tool SequencerTimerTool/ToolSvc.SequencerTimer
 ToolSvc.Sequenc...  DEBUG Property update for OutputLevel : new value = 1
 ToolSvc.Sequenc...  DEBUG Initialize base class GaudiCommon<AlgTool>
 ToolSvc.Sequenc...  DEBUG could not locate CounterSummarySvc, no counter summary will be made
-ToolSvc.Sequenc...  DEBUG List of ALL properties of SequencerTimerTool/ToolSvc.SequencerTimerTool  #properties = 25
+ToolSvc.Sequenc...  DEBUG List of ALL properties of SequencerTimerTool/ToolSvc.SequencerTimerTool  #properties = 26
+ToolSvc.Sequenc...  DEBUG Property ['Name': Value] =  'NameSize':30
 ToolSvc.Sequenc...  DEBUG Property ['Name': Value] =  'GlobalTiming':False
 ToolSvc.Sequenc...  DEBUG Property ['Name': Value] =  'Normalised':False
 ToolSvc.Sequenc...  DEBUG Property ['Name': Value] =  'shots':3500000
@@ -120,7 +121,7 @@ RndmGenSvc.Engine   DEBUG Service base class initialized successfully
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
-ToolSvc.Sequenc...   INFO This machine has a speed about   1.01 times the speed of a 2.8 GHz Xeon.
+ToolSvc.Sequenc...   INFO This machine has a speed about   1.89 times the speed of a 2.8 GHz Xeon.
 GaudiSequencer      DEBUG The tool of type 'SequencerTimerTool' has been added with the name 'ToolSvc.SequencerTimerTool'
 FastContainerPr...  DEBUG Property update for OutputLevel : new value = 1
 FastContainerPr...VERBOSE ServiceLocatorHelper::service: found service AlgContextSvc
@@ -386,14 +387,14 @@ ToolSvc             DEBUG   Tool List : ToolSvc.SequencerTimerTool:1
 ToolSvc             DEBUG 1 tools left to finalize. Summed refCounts: 1
 ToolSvc             DEBUG Will finalize tools with refCount <= 1
 ToolSvc             DEBUG   Performing finalization of ToolSvc.SequencerTimerTool (refCount 1)
-ToolSvc.Sequenc...   INFO ------------------------------------------------------------------------------------------------
-ToolSvc.Sequenc...   INFO This machine has a speed about   1.01 times the speed of a 2.8 GHz Xeon.
+ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
+ToolSvc.Sequenc...   INFO This machine has a speed about   1.89 times the speed of a 2.8 GHz Xeon.
 ToolSvc.Sequenc...   INFO Algorithm          (millisec) |    <user> |   <clock> |      min       max | entries | total (s) |
-ToolSvc.Sequenc...   INFO ------------------------------------------------------------------------------------------------
-ToolSvc.Sequenc...   INFO GaudiSequencer                |     0.200 |     0.205 |    0.194       0.2 |      10 |     0.002 |
-ToolSvc.Sequenc...   INFO   FastContainerProducer       |     0.000 |     0.051 |    0.048       0.1 |      10 |     0.001 |
-ToolSvc.Sequenc...   INFO   FastContainerConsumer       |     0.100 |     0.126 |    0.118       0.1 |      10 |     0.001 |
-ToolSvc.Sequenc...   INFO ------------------------------------------------------------------------------------------------
+ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
+ToolSvc.Sequenc...   INFO GaudiSequencer                |     0.000 |     0.076 |    0.062       0.1 |      10 |     0.001 |
+ToolSvc.Sequenc...   INFO   FastContainerProducer       |     0.000 |     0.018 |    0.013       0.0 |      10 |     0.000 |
+ToolSvc.Sequenc...   INFO   FastContainerConsumer       |     0.000 |     0.043 |    0.037       0.1 |      10 |     0.000 |
+ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
 ToolSvc.Sequenc...  DEBUG  ==> Finalize the base class GaudiTool
 ToolSvc.Sequenc...  DEBUG Tools to release :
 ToolSvc.Sequenc...  DEBUG Services to release : RndmGenSvc
@@ -404,7 +405,7 @@ ServiceManager      DEBUG Finalizing service AlgContextSvc
 IncidentSvc         DEBUG Removing [BeginEvent] listener 'AlgContextSvc'
 IncidentSvc         DEBUG Removing [EndEvent] listener 'AlgContextSvc'
 ServiceManager      DEBUG Finalizing service IncidentSvc
-IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0.04995(+-0.217727)/0/0.999[ms] Total:0.000999[s]
+IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0.05(+-0.217945)/0/1[ms] Total:0.001[s]
 ServiceManager      DEBUG Finalizing service AppMgrRunable
 ServiceManager      DEBUG Finalizing service HistogramDataSvc
 ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
@@ -425,5 +426,5 @@ ServiceManager      DEBUG ---- EventDataSvc (refCount = 3)
 ServiceManager      DEBUG ---- EventLoopMgr (refCount = 3)
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyVertex instances:0
 Number of MyTrack instances:0
+Number of MyVertex instances:0

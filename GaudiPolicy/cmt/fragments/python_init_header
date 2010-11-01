@@ -1,6 +1,6 @@
 #-- start of python_init_header ------
 
-installarea = ${CMTINSTALLAREA}
+installarea = ${CMTINSTALLAREA}$(shared_install_subdir)
 install_python_dir = $(installarea)/python/$(package)
 init_file = $(install_python_dir)/__init__.py
 

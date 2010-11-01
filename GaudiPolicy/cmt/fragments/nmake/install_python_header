@@ -1,7 +1,7 @@
 #-- start of install_python_header ------
 
 
-installarea = $(CMTINSTALLAREA)
+installarea = $(CMTINSTALLAREA)$(shared_install_subdir)
 install_python_dir = $(installarea)
 
 !IF "$(source)"!=""
@@ -25,7 +25,7 @@ ${CONSTITUENT}install :: $(install_python_dir)
 
 $(install_python_dir) ::
 	@if NOT "$(CMTINSTALLAREA)"=="" if "$(offset)"=="" $(install_command) --exclude="*.py?" "$(src)" "$(dest)"
-	@if NOT "$(CMTINSTALLAREA)"=="" if NOT "$(offset)"=="" $(install_command) --exclude="*.py?" "$(src)" "$(dest)" --destname $(offset)  
+	@if NOT "$(CMTINSTALLAREA)"=="" if NOT "$(offset)"=="" $(install_command) --exclude="*.py?" "$(src)" "$(dest)" --destname $(offset)
 
 ${CONSTITUENT}clean :: ${CONSTITUENT}uninstall
 

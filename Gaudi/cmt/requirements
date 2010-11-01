@@ -1,9 +1,12 @@
 package Gaudi
 
-version v21r10
-branches doc cmt 
+version v21r11
+branches doc cmt
 
 use GaudiSys v*
+
+# Provide the processing module to be able to run gaudi parallel.
+use pytools v* LCG_Interfaces -no_auto_imports
 
 apply_pattern ProjectVersionHeader
 
@@ -30,7 +33,7 @@ path_prepend JOBOPTSEARCHPATH "$(GAUDIROOT)/options" target-winxp "$(GAUDIROOT)\
 apply_pattern QMTest
 path_prepend JOBOPTSEARCHPATH "" \
                  QMTest&target-winxp "$(GAUDIROOT)\tests\pyjobopts" \
-                       QMTest "$(GAUDIROOT)/tests/pyjobopts" 
+                       QMTest "$(GAUDIROOT)/tests/pyjobopts"
 path_prepend PYTHONPATH "" \
            QMTest&target-winxp "$(GAUDIROOT)\tests\python" \
-                 QMTest "$(GAUDIROOT)/tests/python" 
+                 QMTest "$(GAUDIROOT)/tests/python"

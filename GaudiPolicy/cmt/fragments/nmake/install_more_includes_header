@@ -5,7 +5,7 @@
 #    ../<package>
 #
 
-install_dir = $(CMTINSTALLAREA)\include
+install_dir = $(CMTINSTALLAREA)$(shared_install_subdir)\include
 
 ${CONSTITUENT} :: ${CONSTITUENT}install
 

@@ -1,6 +1,25 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v21r11 ============================
+! 2010-09-22 - Marco Clemencic
+ - Added test for bug #71216
+   (Gaudi crashes when output nTuple file cannot be written)
+
+! 2010-09-21 - Marco Clemencic
+ - Fixed bug #70956: Add method to find the reason for termination of the
+                     event loop
+   - Added tests for the various application return codes.
+
+! 2010-09-02 - Marco Clemencic
+ - Fixed configuration for the Python binary module.
+
+! 2010-09-01 - Marco Clemencic
+ - Added an example of a Python binary module in src/PythonModule (plus test).
+
+! 2010-08-18 - Charles Leggett
+ - Patch #4323: allow user defined heavy ion handling in PartPropSvc
+
 ============================ GaudiExamples v21r10 ============================
 ! 2010-07-13 - Markus Frank
  - Patch #4212: Fix to POOLIOextColl tests

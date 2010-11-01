@@ -53,6 +53,7 @@ testing/*.cpp )
 
 GAUDI_COMPONENT_LIBRARY(GaudiExamples ${GaudiExamples_srcs} LIBRARIES GaudiExamplesLib)
 GAUDI_LINKER_LIBRARY(GaudiExamplesLib Lib/*.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib HepPDT HepPID Tree)
+GAUDI_PYTHON_MODULE(PyExample PythonModule/*.cpp LIBRARIES ${Boost_python} )
 
 #---Executables-------------------------------------------------------------
 GAUDI_EXECUTABLE(Allocator Allocator/*.cpp LIBRARIES GaudiExamplesLib GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES} RIO Hist ${CLHEP_LIBRARIES} ${GSL_LIBRARIES})
@@ -146,6 +147,8 @@ GAUDI_QMTEST_TEST(gaudiexamples.poolio TESTS gaudiexamples.pooliowrite gaudiexam
 GAUDI_QMTEST_TEST(gaudiexamples.evtcol TESTS gaudiexamples.evtcolwrite gaudiexamples.evtcolread 
                                              gaudiexamples.evtcolsex_prepare gaudiexamples.evtcolsex_write  gaudiexamples.evtcolsex_read)
 GAUDI_QMTEST_TEST(gaudiexamples.thist  TESTS gaudiexamples.thistwrite gaudiexamples.thistread) 
+GAUDI_QMTEST_TEST(gaudiexamples.return_codes) 
+GAUDI_QMTEST_TEST(gaudiexamples.bug) 
 
 
 SET(GaudiExamples_environment STDOPTS=${CMAKE_SOURCE_DIR}/GaudiExamples/options
