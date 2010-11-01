@@ -60,8 +60,7 @@
 #include <set>
 #include <vector>
 
-#include <gdbm.h>
-#include <sys/stat.h>
+#include "GaudiDBM.h"
 
 #include "DsoUtils.h"
 
@@ -113,7 +112,7 @@ class configGenerator
   GaudiUtils::HashMap<std::string, std::string> m_configurable;
 
   /// gdbm file with the database of validators.
-  GDBM_FILE m_validators_db;
+  Gaudi::DBM m_validators_db;
 
 public:
   configGenerator( const string& pkgName,
@@ -126,15 +125,8 @@ public:
     m_importGaudiHandles( false ),
     m_dbBuf             ( ),
     m_configurable      ( ),
-    m_validators_db     (gdbm_open(const_cast<char*>(validatorsDB.c_str()),
-                                   4096, GDBM_WRCREAT,
-                                   S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH, 0))
+    m_validators_db     (validatorsDB, Gaudi::DBM::WriteOrCreate)
   {}
-  ~configGenerator() {
-    if (m_validators_db) {
-      gdbm_close(m_validators_db);
-    }
-  }
   /// main entry point of this class:
   ///  - iterate over all the modules (ie: library names)
   ///  - for each module extract component informations
@@ -208,18 +200,12 @@ private:
     list<string> m_unknownPropTypes;
     for (set<string>::iterator t = m_propertyTypes.begin();
          t != m_propertyTypes.end(); ++t) {
-      datum k = {const_cast<char*>(t->c_str()), t->size()};
-      datum d = gdbm_fetch(m_validators_db, k);
-      if (d.dptr) {
-        if (lib == d.dptr) {
-          m_unknownPropTypes.push_back(*t);
+      const std::string d = m_validators_db.fetch(*t);
+      if (d.empty() || d == lib) {
+        m_unknownPropTypes.push_back(d);
+        if (d.empty()) {
+          m_validators_db.store(*t, lib);
         }
-        free(d.dptr);
-      }
-      else {
-        m_unknownPropTypes.push_back(*t);
-        datum v = {const_cast<char*>(lib.c_str()), lib.size()};
-        gdbm_store(m_validators_db, k, v, GDBM_REPLACE);
       }
     }
     //if (!m_unknownPropTypes.empty())
