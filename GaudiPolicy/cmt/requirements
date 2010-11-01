@@ -988,8 +988,12 @@ pattern do_real_genconfig \
            $(library_prefix)<library>.$(shlibsuffix) ; \
   macro_append <library>Conf_dependencies " <library> " ; \
   apply_pattern install_python_init package=<package> group=<group> ; \
-  apply_pattern pyd_boost_module module=<library>_validators group=<group> files=../genConf/<package>/<library>_validators.cpp ; \
-  macro_append <library>_validators_dependencies "<library>Conf" ; \
+  macro GenValCommand<library>_output "../$(tag)/<project>_validators.cpp" ; \
+  macro GenValCommand<library>_dependencies "<library>Conf" ; \
+  macro GenValCommand<library>_command "python $(GaudiPolicy_root)/scripts/gen_validators_src.py $(CMTINSTALLAREA)/$(tag)/lib/_configurables.db $(GenValCommand<library>_output)" ; \
+  apply_pattern CallCommand target=GenValCommand<library> group=<group> ; \
+  apply_pattern pyd_boost_module module=<project>_validators group=<group> files=../$(tag)/<project>_validators.cpp ; \
+  macro_append <project>_validators_dependencies "GenValCommand<library>" ; \
   macro_append <group><package>_python_init_dependencies " <library>Conf " ; \
   private ; \
     macro merge_genconfDb_tag "--do-merge"   \

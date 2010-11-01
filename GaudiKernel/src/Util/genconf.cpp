@@ -30,6 +30,8 @@
 #include "boost/algorithm/string/trim.hpp"
 #include "boost/algorithm/string/case_conv.hpp"
 #include "boost/format.hpp"
+#include <boost/foreach.hpp>
+#include <boost/tokenizer.hpp>
 
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/ISvcLocator.h"
@@ -111,13 +113,13 @@ class configGenerator
   ///  - Name of the configurable base class for the Service component
   GaudiUtils::HashMap<std::string, std::string> m_configurable;
 
-  /// gdbm file with the database of validators.
-  Gaudi::DBM m_validators_db;
+  /// gdbm file with the database of configurables.
+  Gaudi::DBM m_confDB;
 
 public:
   configGenerator( const string& pkgName,
 		   const string& outputDirName,
-		   const string& validatorsDB ) :
+		   const string& confDB ) :
     m_pkgName           ( pkgName ),
     m_outputDirName     ( outputDirName ),
     m_pyBuf             ( ),
@@ -125,7 +127,7 @@ public:
     m_importGaudiHandles( false ),
     m_dbBuf             ( ),
     m_configurable      ( ),
-    m_validators_db     (validatorsDB, Gaudi::DBM::WriteOrCreate)
+    m_confDB            (confDB, Gaudi::DBM::WriteOrCreate)
   {}
   /// main entry point of this class:
   ///  - iterate over all the modules (ie: library names)
@@ -185,65 +187,7 @@ private:
     pyOut << m_pyBuf.str() << flush;
     dbOut << m_dbBuf.str() << flush;
   }
-  void genNewConf(const string &dir, const string &lib) {
-    {
-      fstream data((fs::path(dir) / fs::path(lib + "_components.py")).string().c_str(),
-          ios_base::out|ios_base::trunc);
-      data << "from GaudiConfigurables import Configurable, makeConfigurables\n"
-           << "from GaudiConfigurables.Properties import Property\n"
-           << "from GaudiKernel.GaudiHandles import *\n"
-           << "import " << lib << "_validators as _validators\n"
-           << "makeConfigurables([\n"
-           << m_newConfBuf.str()
-           << "],globals())\n";
-    }
-    list<string> m_unknownPropTypes;
-    for (set<string>::iterator t = m_propertyTypes.begin();
-         t != m_propertyTypes.end(); ++t) {
-      const std::string d = m_validators_db.fetch(*t);
-      if (d.empty() || d == lib) {
-        m_unknownPropTypes.push_back(d);
-        if (d.empty()) {
-          m_validators_db.store(*t, lib);
-        }
-      }
-    }
-    //if (!m_unknownPropTypes.empty())
-    {
-      fstream data((fs::path(dir) / fs::path(lib + "_validators.cpp")).string().c_str(),
-          ios_base::out|ios_base::trunc);
-      data << "#include <boost/python.hpp>\n" // needs to be first to avoid warnings
-              "#include <GaudiKernel/Property.h>\n";
-      for (set<string>::iterator t = m_headers.begin();
-          t != m_headers.end(); ++t) {
-        data << "#include <" << *t << ">\n";
-      }
-      data << "#define PYCONF_VALIDATOR_MODULE\n"
-              "#include <GaudiKernel/PyConfValidators.h>\n" // must be after the headers
-           << "BOOST_PYTHON_MODULE(" << lib << "_validators)\n{\n"
-              "using namespace boost::python;\n";
-      for (list<string>::iterator t = m_unknownPropTypes.begin();
-          t != m_unknownPropTypes.end(); ++t) {
-        data << "def(\"" << *t << "\",\n"
-                "    check";
-        string::size_type p = t->find_first_of('<');
-        if (p != string::npos) {
-          data << t->substr(p);
-        } // Special cases
-        else if (*t == "GaudiHandleProperty") { // equivalent to a string
-          data << "<std::string,NullVerifier<std::string> >";
-        }
-        else if (*t == "GaudiHandleArrayProperty") { // equivalent to vector<string>
-          data << "<std::vector<std::string,std::allocator<std::string> >,NullVerifier<std::vector<std::string,std::allocator<std::string> > > >";
-        }
-        else { // If unknown, use the catch-all string type
-          data << "<std::string,NullVerifier<std::string> >";
-        }
-        data << ");\n";
-      }
-      data << "}\n";
-    }
-  }
+
   void genTrailer( std::ostream& pyOut,
 		   std::ostream& dbOut );
 
@@ -295,9 +239,9 @@ int main ( int argc, char** argv )
     ("validator-include,I",
      po::value<Strings_t>(),
      "extra headers to be added to the validator C++/Python module")
-    ("validators-db",
-     po::value<string>()->default_value("../genConf/_validators.db"),
-     "gdbm file containing the database of validators modules")
+    ("configurables-db",
+     po::value<string>()->default_value("../genConf/_configurables.db"),
+     "gdbm file containing the database of configurables")
     ;
 
   // declare a group of options that will be allowed both on command line
@@ -453,7 +397,7 @@ int main ( int argc, char** argv )
   cout << "] ::::::" << endl;
 
   configGenerator py( pkgName, out.string(),
-                      vm["validators-db"].as<string>() );
+                      vm["configurables-db"].as<string>() );
   py.setConfigurableModule     (vm["configurable-module"].as<string>());
   py.setConfigurableDefaultName(vm["configurable-default-name"].as<string>());
   py.setConfigurableAlgorithm  (vm["configurable-algorithm"].as<string>());
@@ -576,6 +520,21 @@ int configGenerator::genConfig( const Strings_t& libs )
       continue;
     }
 
+    const std::string compLibKey(*iLib + "->components");
+    {
+      // Remove the components belonging to this library from the database
+      std::string components = m_confDB.fetch(compLibKey);
+      typedef boost::char_separator<char> sep;
+      typedef boost::tokenizer<sep> tokenizer;
+      tokenizer tokens(components, sep(";"));
+      BOOST_FOREACH(std::string t, tokens)
+      {
+        m_confDB.remove(t);
+      }
+    }
+    // keep trace of the components in the current library, to store them in the
+    stringstream componentsInLib;
+    bool firstComponentInLib = true;
     for ( Member_Iterator it = factories.FunctionMember_Begin();
           it != factories.FunctionMember_End();
           ++it ) {
@@ -695,6 +654,12 @@ int configGenerator::genConfig( const Strings_t& libs )
       if( prop ) {
         genComponent( *iLib, name, type, prop->getProperties() );
         prop->release();
+        if (!firstComponentInLib) {
+          componentsInLib << ';';
+        } else {
+          firstComponentInLib = false;
+        }
+        componentsInLib << name;
       } else {
         cout << "ERROR: could not cast IInterface* object to an IProperty* !\n"
              << "ERROR: return type from PluginSvc is [" << rtype << "]...\n"
@@ -704,6 +669,9 @@ int configGenerator::genConfig( const Strings_t& libs )
         allGood = false;
       }
     } //> end loop over factories
+
+    /// Store in the database the list of components that are in the library.
+    m_confDB.store(compLibKey, componentsInLib.str(), true);
 
     ///
     /// write-out files for this library
@@ -722,7 +690,21 @@ int configGenerator::genConfig( const Strings_t& libs )
     genBody   ( py, db );
     genTrailer( py, db );
 
-    genNewConf(m_outputDirName, *iLib);
+    // update the list of headers required by the validators
+    {
+      const string k(*iLib + "->headers");
+      if (!m_headers.empty()) {
+        stringstream hdrs;
+        for (set<string>::iterator h = m_headers.begin(); h != m_headers.end(); ++h) {
+          if (h != m_headers.begin())
+            hdrs << ';';
+          hdrs << *h;
+        }
+        m_confDB.store(k, hdrs.str(), true);
+      } else {
+        if (m_confDB.exists(k)) m_confDB.remove(k);
+      }
+    }
 
   } //> end loop over libraries
 
@@ -831,6 +813,8 @@ void configGenerator::genComponent( const std::string& libName,
   string cname = componentName;
   pythonizeName(cname);
 
+  stringstream compDesc;
+
   typedef GaudiUtils::HashMap<std::string, std::string> PropertyDoc_t;
   PropertyDoc_t propDoc;
 
@@ -839,7 +823,12 @@ void configGenerator::genComponent( const std::string& libName,
           << "( " << m_configurable[componentType] << " ) :"
           << "\n";
   m_pyBuf << "  __slots__ = { \n";
-  m_newConfBuf << "('" << componentName << "',[";
+
+
+  // The format of a component description is:
+  //   [<prop_desc>,...]
+  // The class name is the key in the database.
+  compDesc << '[';
   for ( vector<Property*>::const_iterator it = properties.begin() ;
         it != properties.end(); ++it ) {
     const string pname  = (*it)->name();
@@ -857,19 +846,19 @@ void configGenerator::genComponent( const std::string& libName,
 
     // Property description:
     //   (name, cppType, default, propClass, doc)
-    m_newConfBuf << "('" << pname << "'"
-                 << ",'" << System::typeinfoName(*(*it)->type_info()) << "'"
-                 << ',' << pvalue
-                 << ",'" << pclass << "',";
+    compDesc << "('" << pname << "'"
+             << ",'" << System::typeinfoName(*(*it)->type_info()) << "'"
+             << ',' << pvalue
+             << ",'" << pclass << "',";
     if ( (*it)->documentation() != "none" ) {
-      m_newConfBuf << "'''" << (*it)->documentation() << "'''";
+      compDesc << "'''" << (*it)->documentation() << "'''";
     } else {
-      m_newConfBuf << "None";
+      compDesc << "None";
     }
-    m_newConfBuf << "),";
-    m_propertyTypes.insert(pclass);
+    compDesc << "),";
   }
-  m_newConfBuf << "]),\n" << flush;
+  compDesc << "]";
+  m_confDB.store(componentName, compDesc.str());
 
   m_pyBuf << "  }\n";
   m_pyBuf << "  _propertyDocDct = { \n";
