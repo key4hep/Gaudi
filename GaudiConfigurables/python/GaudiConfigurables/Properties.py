@@ -4,6 +4,9 @@ Created on 28/mag/2010
 @author: Marco Clemencic
 '''
 
+# FIXME: This is needed for properties of type handle.
+from GaudiKernel.GaudiHandles import *
+
 # Number of times to indent output
 # A list is used to force access by reference
 __report_indent = [0]
@@ -31,10 +34,16 @@ def report(fn):
     wrap.callcount = 0
     return wrap
 
-# Default no-op validation function.
 def _defaultValidator(_):
-    """_defaultValidator"""
+    """Default no-op validation function."""
     return True
+
+def _getValidator(s):
+    """Look for the validator of a specific property type and return it.
+    If it cannot be found, returns the default one.
+    """
+    # FIXME: to be implemented
+    return _defaultValidator
 
 class Property(object):
     '''
@@ -48,6 +57,8 @@ class Property(object):
         '''
         self.name = name
         self.cppType = cppType
+        if type(validator) is str:
+            validator = _getValidator(validator)
         self._validator = validator
 
         if self._validator(repr(default)):

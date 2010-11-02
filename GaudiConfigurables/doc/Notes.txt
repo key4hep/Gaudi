@@ -123,3 +123,18 @@ This is how we can do it:
 In this scheme there is no need for an actual python module with the configurables,
 but the "Configurables" module can just look-up in the database the descriptions
 and create the actual classes on demand.
+
+2010-11-02 14:03:13
+Created the meta-module GaudiConfigurables.Components which dynamically retrieve
+the component description from the database(s) and generate the code for the
+configurable class. It is interesting to not a couple of nice implementation
+details that could be used in the old Gaudi.Configurables:
+ - __all__ is a property of the instance instead of being a special case in the
+   __getattr__ method (same for __path__ and __name__)
+ - the classes that are accessed through the module become attributes of the
+   instance, so that there is no need to go through __getattr__ a second time
+The main limitations of this preliminary implementation are that the databases
+are open when the module is loaded and never closed. It should be better to open
+the databases only if we need to look into them and close them immediately after
+or, at least, when we have generated all the classes that they contain.
+I also disabled (temporarily) the generation of the validation modules.

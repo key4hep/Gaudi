@@ -340,7 +340,7 @@ make_fragment install_scripts -header=install_scripts_header
 #
 # Some data files are specified using a directory.
 #
-macro install_command 'python $(GaudiPolicy_root)/scripts/install.py -xCVS -x*~ -x*.stamp -x*.bak -x.* -x*.pyc -x*.pyo -x*_validators.cpp --log=./install.$(tag).history '
+macro install_command 'python $(GaudiPolicy_root)/scripts/install.py -xCVS -x*~ -x*.stamp -x*.bak -x.* -x*.pyc -x*.pyo --log=./install.$(tag).history '
 macro uninstall_command 'python $(GaudiPolicy_root)/scripts/install.py -u --log=./install.$(tag).history '
 
 macro remove_command "$(cmt_uninstallarea_command)"
@@ -988,12 +988,6 @@ pattern do_real_genconfig \
            $(library_prefix)<library>.$(shlibsuffix) ; \
   macro_append <library>Conf_dependencies " <library> " ; \
   apply_pattern install_python_init package=<package> group=<group> ; \
-  macro GenValCommand<library>_output "../$(tag)/<project>_validators.cpp" ; \
-  macro GenValCommand<library>_dependencies "<library>Conf" ; \
-  macro GenValCommand<library>_command "python $(GaudiPolicy_root)/scripts/gen_validators_src.py $(CMTINSTALLAREA)/$(tag)/lib/_configurables.db $(GenValCommand<library>_output)" ; \
-  apply_pattern CallCommand target=GenValCommand<library> group=<group> ; \
-  apply_pattern pyd_boost_module module=<project>_validators group=<group> files=../$(tag)/<project>_validators.cpp ; \
-  macro_append <project>_validators_dependencies "GenValCommand<library>" ; \
   macro_append <group><package>_python_init_dependencies " <library>Conf " ; \
   private ; \
     macro merge_genconfDb_tag "--do-merge"   \
@@ -1287,7 +1281,7 @@ apply_pattern doxy_vers_set external=QMtest
 set LCGCMTVERS "$(LCG_config_version)"
 
 # Base directory of doxygen documentation
-#set GAUDI_DOXY_HOME $(GAUDI_home)/GaudiRelease/doc
+set GAUDI_DOXY_HOME $(GAUDI_home)/GaudiRelease/doc
 
 # pattern -global CppCheck \
 #     action CppCheck "cppcheck --all --quiet $(includes) ../src || echo 'No Cpp files' "

@@ -26,8 +26,6 @@ Properties).
 @author: Marco Clemencic <marco.clemencic@cern.ch>
 """
 
-import string
-
 import Properties
 
 class MetaConfigurable(type):
@@ -248,26 +246,3 @@ class Auditor(Configurable):
     Base class for standard component type "Auditor".
     """
     pass
-
-_makeConfTemplate = "class %(name)s(%(base)s):\n\t__properties__=(%(props)s)\n\t__cpp_type__=%(type)r"
-_makeConfTransTable = string.maketrans("<>&*,: ().","__rp__s___")
-def makeConfigurables(defs, globals):
-    """
-    Generate the configurable classes from descriptions in the form of a list of
-    component descriptions:
-
-    [("ComponentName", [("Prop1Name","Prop1Type",default,doc), ...]), ... ]
-    """
-    all = []
-    for cppType, props in defs:
-        name = cppType.translate(_makeConfTransTable)
-        propdescs = []
-        for p in props:
-            propdescs.append("Property(%r,%r,%r,getattr(_validators,%r),%r)" % p)
-        code = _makeConfTemplate % {"name": name,
-                                    "type": cppType,
-                                    "base": "Configurable",
-                                    "props": ",".join(propdescs)}
-        exec code in globals, globals
-        all.append(name)
-    globals["__all__"] = all
