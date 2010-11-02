@@ -1013,12 +1013,12 @@ pattern do_null_genconfig \
 
 pattern GenConfValidatorsSource \
   private ; \
-  macro GenConfValidatorsSourceCmd_output "$(<package>_root)/$(tag)/<project><group>_validators.cpp" ; \
-  macro GenConfValidatorsSourceCmd_deps   "$(genconfig_configurablesDB)" ; \
-  macro GenConfValidatorsSourceCmd_command "python $(GaudiPolicy_root)/scripts/gen_validators_src.py $(GenConfValidatorsSourceCmd_deps) $(GenConfValidatorsSourceCmd_output)" ; \
-  macro_append GenConfValidatorsSourceCmd_dependencies " <library>Conf " ; \
-  apply_pattern CallCommand target=GenConfValidatorsSourceCmd group=<group> ; \
-  apply_pattern pyd_boost_module module=<project><group>_validators files=$(GenConfValidatorsSourceCmd_output) group=<group> ; \
+  macro GenConfValidatorsSourceCmd<group>_output "$(<package>_root)/$(tag)/<project><group>_validators.cpp" ; \
+  macro GenConfValidatorsSourceCmd<group>_deps   "$(genconfig_configurablesDB)" ; \
+  macro GenConfValidatorsSourceCmd<group>_command "python $(GaudiPolicy_root)/scripts/gen_validators_src.py $(GenConfValidatorsSourceCmd<group>_deps) $(GenConfValidatorsSourceCmd<group>_output)" ; \
+  macro_append GenConfValidatorsSourceCmd<group>_dependencies " <library>Conf " ; \
+  apply_pattern CallCommand target=GenConfValidatorsSourceCmd<group> group=<group> ; \
+  apply_pattern pyd_boost_module module=<project><group>_validators files=$(GenConfValidatorsSourceCmd<group>_output) group=<group> ; \
   macro_append <project><group>_validators_dependencies " GenConfValidatorsSourceCmd " ; \
   end_private
 
