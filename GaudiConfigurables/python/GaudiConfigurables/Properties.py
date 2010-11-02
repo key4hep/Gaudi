@@ -3,6 +3,7 @@ Created on 28/mag/2010
 
 @author: Marco Clemencic
 '''
+import os, sys, logging
 
 # FIXME: This is needed for properties of type handle.
 from GaudiKernel.GaudiHandles import *
@@ -38,12 +39,57 @@ def _defaultValidator(_):
     """Default no-op validation function."""
     return True
 
-def _getValidator(s):
-    """Look for the validator of a specific property type and return it.
-    If it cannot be found, returns the default one.
+class ValidatorsDB(object):
+    """Class to dynamically load the validator modules.
     """
-    # FIXME: to be implemented
-    return _defaultValidator
+    def __init__(self):
+        self._log = logging.getLogger("ValidatorsDB")
+        self._modIter = self._modules()
+
+    def _modules(self):
+        """Iterator over the list of validator modules.
+        """
+        # collect the list of validator modules
+        suff = "_validators."
+        if sys.platform.startswith("win"):
+            suff += "pyd"
+        else:
+            suff += "so"
+        # actual loop
+        for d in sys.path:
+            if not d: d = '.' # empty name means '.'
+            elif not os.path.isdir(d): # skip non-directories (elif because '' is a directory)
+                continue
+            self._log.debug("Scanning directory %s", d)
+            for m in ( os.path.splitext(f)[0]
+                       for f in os.listdir(d)
+                       if f.endswith(suff) ):
+                yield m
+
+    def __getattr__(self, name):
+        """Import the validator modules until the validator for the requested
+        type is found.
+        """
+        self._log.debug("Requested validator for unknown type %s", name)
+        # loop over the "other" modules
+        for m in self._modIter:
+            # import
+            self._log.debug("Importing %s", m)
+            m = __import__(m)
+            # add the validators to the instance scope
+            for v in dir(m):
+                self._log.debug("Registering type %s", v)
+                if not v.startswith("_"):
+                    self.__dict__[v] = getattr(m, v)
+            # check if now we have what was requested
+            if name in self.__dict__:
+                self._log.debug("Found")
+                return self.__dict__[name]
+        self._log.debug("Not found, using default")
+        self.__dict__[name] = _defaultValidator
+        return _defaultValidator
+
+_validatorsDB = ValidatorsDB()
 
 class Property(object):
     '''
@@ -58,7 +104,7 @@ class Property(object):
         self.name = name
         self.cppType = cppType
         if type(validator) is str:
-            validator = _getValidator(validator)
+            validator = getattr(_validatorsDB, validator)
         self._validator = validator
 
         if self._validator(repr(default)):

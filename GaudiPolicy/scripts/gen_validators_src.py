@@ -2,6 +2,9 @@
 
 import os, sys, anydbm
 
+# FIXME: This is needed for properties of type handle.
+from GaudiKernel.GaudiHandles import *
+
 if os.path.exists(sys.argv[1]):
     db = anydbm.open(sys.argv[1])
 else:
@@ -9,8 +12,10 @@ else:
     db = {}
 keys = db.keys()
 
-cpp = ['// needs to be first to avoid warnings',
+cpp = ['// --- Auto generated file: DO NOT EDIT ---\n',
+       '// This needs to be first to avoid warnings',
        '#include <boost/python.hpp>',
+       '// Headers required by the validators',
        '#include <GaudiKernel/Property.h>']
 
 # collect extra headers
@@ -21,8 +26,10 @@ for h in sorted(hdrs):
     cpp.append("#include <%s>" % h)
 
 module = os.path.splitext(os.path.basename(sys.argv[2]))[0]
-cpp += ['#define PYCONF_VALIDATOR_MODULE',
+cpp += ['// Common code for the validators (implementation of "check")',
+        '#define PYCONF_VALIDATOR_MODULE',
         '#include <GaudiKernel/PyConfValidators.h>',
+        '// Code of the Python module',
         'BOOST_PYTHON_MODULE(%s)' % module,
         '{',
         'using namespace boost::python;']

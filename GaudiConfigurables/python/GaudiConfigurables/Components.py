@@ -103,7 +103,7 @@ class %(name)s(%(base)s):
         """Retrieve the requested class from the database.
         """
         # FIXME: This is needed for properties of type handle.
-        from GaudiKernel.GaudiHandles import *
+        exec "from GaudiKernel.GaudiHandles import *"
         self._log.debug("Requested attribute %s", name)
         nd = self._getCompDesc(name)
         if nd is None:

@@ -989,6 +989,7 @@ pattern do_real_genconfig \
            confDB=$(genconfig_configurablesDB) \
            $(library_prefix)<library>.$(shlibsuffix) ; \
   macro_append <library>Conf_dependencies " <library> " ; \
+  apply_pattern GenConfValidatorsSource library=<library> group=<group> ; \
   apply_pattern install_python_init package=<package> group=<group> ; \
   macro_append <group><package>_python_init_dependencies " <library>Conf " ; \
   private ; \
@@ -1008,6 +1009,17 @@ pattern do_real_genconfig \
 pattern do_null_genconfig \
   private ; \
    macro dummy_for_<library>Conf "<library> <group>" ; \
+  end_private
+
+pattern GenConfValidatorsSource \
+  private ; \
+  macro GenConfValidatorsSourceCmd_output "$(<package>_root)/$(tag)/<project><group>_validators.cpp" ; \
+  macro GenConfValidatorsSourceCmd_deps   "$(genconfig_configurablesDB)" ; \
+  macro GenConfValidatorsSourceCmd_command "python $(GaudiPolicy_root)/scripts/gen_validators_src.py $(GenConfValidatorsSourceCmd_deps) $(GenConfValidatorsSourceCmd_output)" ; \
+  macro_append GenConfValidatorsSourceCmd_dependencies " <library>Conf " ; \
+  apply_pattern CallCommand target=GenConfValidatorsSourceCmd group=<group> ; \
+  apply_pattern pyd_boost_module module=<project><group>_validators files=$(GenConfValidatorsSourceCmd_output) group=<group> ; \
+  macro_append <project><group>_validators_dependencies " GenConfValidatorsSourceCmd " ; \
   end_private
 
 #-------------------------------------------------------------------

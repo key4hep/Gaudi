@@ -138,3 +138,8 @@ are open when the module is loaded and never closed. It should be better to open
 the databases only if we need to look into them and close them immediately after
 or, at least, when we have generated all the classes that they contain.
 I also disabled (temporarily) the generation of the validation modules.
+
+2010-11-02 17:18:15
+Generation of validator modules re-enabled (we still have duplications, but less).
+Proper discovery of validator functions for a given type. To be noted the
+interesting use of the generator function in ValidatorsDB.
