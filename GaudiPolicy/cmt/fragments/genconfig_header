@@ -35,7 +35,7 @@ $(outdir)/$(confpy) : $(conflib) $(outdir)
 	  --configurable-algtool=$(confAlgTool) \
 	  --configurable-auditor=$(confAuditor) \
 	  --configurable-service=$(confService) \
-	  --configurables-db=$(CMTINSTALLAREA)/$(tag)/lib/_configurables.db \
+	  --configurables-db=$(confDB) \
 	  $(genconfig_extra_options) \
 	  -i ../$(tag)/$(library_prefix)$(library).$(shlibsuffix)
 

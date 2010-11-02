@@ -912,6 +912,7 @@ macro genconfig_configurableAlgorithm "ConfigurableAlgorithm"
 macro genconfig_configurableAlgTool "ConfigurableAlgTool"
 macro genconfig_configurableAuditor "ConfigurableAuditor"
 macro genconfig_configurableService "ConfigurableService"
+macro genconfig_configurablesDB "$(CMTINSTALLAREA)/$(tag)/lib/_configurables.db"
 
 ## add pattern and macro for library preloading for genconf
 
@@ -985,6 +986,7 @@ pattern do_real_genconfig \
            confAlgTool=$(genconfig_configurableAlgTool) \
            confAuditor=$(genconfig_configurableAuditor) \
            confService=$(genconfig_configurableService) \
+           confDB=$(genconfig_configurablesDB) \
            $(library_prefix)<library>.$(shlibsuffix) ; \
   macro_append <library>Conf_dependencies " <library> " ; \
   apply_pattern install_python_init package=<package> group=<group> ; \
