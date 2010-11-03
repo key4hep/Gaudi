@@ -188,6 +188,58 @@ private:
     dbOut << m_dbBuf.str() << flush;
   }
 
+  void genValidatorSource(const string &dir, const string &lib) {
+    {
+      fstream data((fs::path(dir) / fs::path(lib + "_validators.cpp")).string().c_str(),
+          ios_base::out|ios_base::trunc);
+      data << "// --- Auto generated file: DO NOT EDIT ---\n\n"
+              "// This needs to be first to avoid warnings\n"
+              "#include <boost/python.hpp>\n"
+              "// Headers required by the validators\n"
+              "#include <GaudiKernel/Property.h>\n";
+      for (set<string>::iterator t = m_headers.begin();
+          t != m_headers.end(); ++t) {
+        data << "#include <" << *t << ">\n";
+      }
+      data << "// Common code for the validators (implementation of \"check\")\n"
+              "//   must be after the headers\n"
+              "#define PYCONF_VALIDATOR_MODULE\n"
+              "#include <GaudiKernel/PyConfValidators.h>\n"
+              "// Code of the Python module\n"
+           << "BOOST_PYTHON_MODULE(" << lib << "_validators)\n{\n"
+              "using namespace boost::python;\n";
+
+      for (set<string>::iterator t = m_propertyTypes.begin();
+          t != m_propertyTypes.end(); ++t) {
+        const string valKey = "validator->" + *t;
+        if (m_confDB.exists(valKey) && (m_confDB.fetch(valKey) != lib))
+          continue; // skip the property type if already present in another validator library
+
+        data << "def(\"" << *t << "\",\n"
+                "    check";
+        string::size_type p = t->find_first_of('<');
+        if (p != string::npos) {
+          data << t->substr(p);
+        } // Special cases
+        else if (*t == "GaudiHandleProperty") { // equivalent to a string
+          data << "<std::string,NullVerifier<std::string> >";
+        }
+        else if (*t == "GaudiHandleArrayProperty") { // equivalent to vector<string>
+          data << "<std::vector<std::string,std::allocator<std::string> >,NullVerifier<std::vector<std::string,std::allocator<std::string> > > >";
+        }
+        else { // If unknown, use the catch-all string type
+          data << "<std::string,NullVerifier<std::string> >";
+        }
+        data << ");\n";
+
+        // mark this property type as present for this library
+        m_confDB.store(valKey, lib, true);
+      }
+      data << "}\n";
+
+    }
+  }
+
   void genTrailer( std::ostream& pyOut,
 		   std::ostream& dbOut );
 
@@ -706,6 +758,9 @@ int configGenerator::genConfig( const Strings_t& libs )
       }
     }
 
+    genValidatorSource((fs::path("..") / System::getEnv("CMTCONFIG")).string(),
+                       *iLib);
+
   } //> end loop over libraries
 
   dummySvc->release();
@@ -856,6 +911,7 @@ void configGenerator::genComponent( const std::string& libName,
       compDesc << "None";
     }
     compDesc << "),";
+    m_propertyTypes.insert(pclass);
   }
   compDesc << "]";
   m_confDB.store(componentName, compDesc.str());
