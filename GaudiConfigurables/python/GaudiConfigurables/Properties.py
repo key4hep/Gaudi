@@ -78,8 +78,8 @@ class ValidatorsDB(object):
             m = __import__(m)
             # add the validators to the instance scope
             for v in dir(m):
-                self._log.debug("Registering type %s", v)
                 if not v.startswith("_"):
+                    self._log.debug("Registering type %s", v)
                     self.__dict__[v] = getattr(m, v)
             # check if now we have what was requested
             if name in self.__dict__:
