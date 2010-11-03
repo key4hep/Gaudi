@@ -6,7 +6,7 @@ Created on 28/mag/2010
 import os, sys, logging
 
 # FIXME: This is needed for properties of type handle.
-from GaudiKernel.GaudiHandles import *
+from GaudiKernel.GaudiHandles import * # pylint: disable-msg=F0401
 
 # Number of times to indent output
 # A list is used to force access by reference
@@ -20,7 +20,11 @@ def report(fn):
     returns.
     """
     def wrap(*params,**kwargs):
+        # pylint: disable-msg=E1101
+        # pylint: disable-msg=W0612
         call = wrap.callcount = wrap.callcount + 1
+        # pylint: enable-msg=E1101
+        # pylint: enable-msg=W0612
         indent = ' ' * __report_indent[0]
         fc = "%s(%s)" % (fn.__name__, ', '.join(
             [a.__repr__() for a in params] +
@@ -91,6 +95,10 @@ class ValidatorsDB(object):
 
 _validatorsDB = ValidatorsDB()
 
+# Property and Wrapper has to be considered as a "friend" of Configurable,
+# because they have to access some internal storage, so
+# pylint: disable-msg=W0212
+# (Access to a protected member X of a client class)
 class Property(object):
     '''
     Generic property class to handle
@@ -194,6 +202,3 @@ class DefaultWrapper(object):
         return str(self._value)
     def __repr__(self):
         return repr(self._value)
-
-
-

@@ -37,31 +37,31 @@ class MetaConfigurable(type):
     The optional __cpp_type__ can be used to specify the corresponding C++ type
     (if not present, the Python class name is used).
     """
-    def __new__(cls, name, bases, dict):
+    def __new__(cls, name, bases, dct):
         """
         Add the property data members to the generated class and fill the __slots__
         data member accordingly.
         """
         # get the slots from the base class
-        slots = set(dict.get("__slots__", []))
+        slots = set(dct.get("__slots__", []))
         # if there are no properties defined, add anyway the __properties__
         # member
-        if "__properties__" not in dict:
-            dict["__properties__"] = []
+        if "__properties__" not in dct:
+            dct["__properties__"] = []
         # add the requested properties
-        for p in dict["__properties__"]:
-            dict[p.name] = property(p.get, p.set, p.delete, p.doc)
+        for p in dct["__properties__"]:
+            dct[p.name] = property(p.get, p.set, p.delete, p.doc)
             slots.add(p.name)
         # update the slots
-        dict["__slots__"] = tuple(slots)
+        dct["__slots__"] = tuple(slots)
         # Add the __cpp_type__ property if not defined
-        if "__cpp_type__" not in dict:
-            dict["__cpp_type__"] = name
+        if "__cpp_type__" not in dct:
+            dct["__cpp_type__"] = name
         # set the default instance name if not defined
-        if "__defaultInstanceName__" not in dict:
-            dict["__defaultInstanceName__"] = dict["__cpp_type__"]
+        if "__defaultInstanceName__" not in dct:
+            dct["__defaultInstanceName__"] = dct["__cpp_type__"]
         # generate the class
-        return type.__new__(cls, name, bases, dict)
+        return type.__new__(cls, name, bases, dct)
 
     def __setattr__(self, name, value):
         """
@@ -69,6 +69,9 @@ class MetaConfigurable(type):
         """
         raise AttributeError("'%s' class has no attribute '%s'" % (self.__name__, name))
 
+# The class Configurable has got several data members that are automatically
+# added by the meta-class.
+# pylint: disable-msg=E1101
 class Configurable(object):
     """
     Base class for configurables.
@@ -90,9 +93,9 @@ class Configurable(object):
         if name not in self._instances:
             # rename allowed
             # remove old entry
-            del self._instances[self._name]
+            del self._instances[self._name] # pylint: disable-msg=E0203
             # add self with the new name
-            self._name = name
+            self._name = name # pylint: disable-msg=W0201
             self._instances[self._name] = self
         else:
             raise ValueError("cannot rename '%s' to '%s', name already used"
@@ -209,6 +212,7 @@ class Configurable(object):
         # return the instance name in a tuple, so that it is passed to the
         # __new__ method.
         return (self.name,)
+
     def __getstate__(self):
         """
         Required for pickling with protocol 2.
@@ -216,12 +220,15 @@ class Configurable(object):
         get set)
         """
         return self.propertyDict()
+
     def __setstate__(self, state):
         """
         Required for pickling with protocol 2 (to match __getstate__).
         """
         for prop, value in state.items():
             setattr(self, prop, value)
+
+# pylint: enable-msg=E1101
 
 class Service(Configurable):
     """
