@@ -143,3 +143,14 @@ I also disabled (temporarily) the generation of the validation modules.
 Generation of validator modules re-enabled (we still have duplications, but less).
 Proper discovery of validator functions for a given type. To be noted the
 interesting use of the generator function in ValidatorsDB.
+
+2010-11-03 09:31:52
+I decided, for the moment, to stick to the original plan of one validator library
+per component library.
+At least I removed the duplicated checkers leveraging on the database. I may
+have to find a way to reduce the memory usage due to the empty modules that get
+loaded (may be by flagging them somehow and not loading them).
+I also need to change genconfig to take into account all the databases to avoid
+duplicates across projects. (problem: how can I tell the difference between the
+database I have to write into and the others? "realpath" would be good, but I
+have to check if Boost has something like that)
