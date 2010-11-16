@@ -1,5 +1,5 @@
 package GaudiPolicy
-version v10r8
+version v10r9
 
 branches cmt doc
 
@@ -713,10 +713,12 @@ macro_append pp_cppflags "" \
 macro_append pp_cppflags "" \
        G22_NO_DEPRECATED " -DG22_NO_DEPRECATED "
 
-macro_append cppflags  "" \
-      target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-darwin " -m32"
+macro_append cppflags       "" \
+      host-x86_64&target-i386 " -m32" \
+      host-x86_64&target-i686 " -m32" \
+      host-darwin&target-i386 " -m32" \
+      host-i686&target-x86_64 " -m64" \
+      host-i386&target-x86_64 " -m64"
 
 # ---- Disable warnings coming from external libraries
 #      the hacks can be disabled with the tag "no-hide-warnings".
@@ -740,20 +742,24 @@ macro for_name      "gfortran" \
 
 macro for "$(for_name)"
 
-macro_append fflags  "" \
-      target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-darwin " -m32"
-
 macro_append shlibflags ""\
-      target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-darwin " -m32"
+      host-x86_64&target-i686 " -m32" \
+      host-x86_64&target-i386 " -m32" \
+      host-darwin&target-i386 " -m32" \
+      host-i686&target-x86_64 " -m64" \
+      host-i386&target-x86_64 " -m64"
 
 macro fflags           "-fmessage-length=0 -O2 -fdollar-ok -ff90 -w -fPIC" \
       target-gcc4      "-fmessage-length=0 -O2 -fdollar-ok -w -fPIC" \
       target-darwin    "-fno-automatic -fdollar-ok -w" \
       target-winxp     '/compile_only /nologo /warn:nofileopt /warn:nouncalled /fpp:"/m" /fpp:"/I.." '
+
+macro_append fflags  ""  \
+      host-x86_64&target-i686 " -m32" \
+      host-x86_64&target-i386 " -m32" \
+      host-darwin&target-i386 " -m32" \
+      host-i686&target-x86_64 " -m64" \
+      host-i386&target-x86_64 " -m64"
 
 # macro_append fflags " -msse2 -mfpmath=sse" \
 #             target-winxp    " "
@@ -765,10 +771,13 @@ macro fcomp            "$(for) -c $(fincludes) $(fdebugflags) $(fflags) $(pp_ffl
 
 macro_append cflags " -fmessage-length=0 -fPIC " \
              target-winxp    " "
+
 macro_append cflags  "" \
-      target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-darwin " -m32"
+      host-x86_64&target-i686 " -m32" \
+      host-x86_64&target-i386 " -m32" \
+      host-darwin&target-i386 " -m32" \
+      host-i686&target-x86_64 " -m64" \
+      host-i386&target-x86_64 " -m64"
 
 # macro_append cflags " -msse2 -mfpmath=sse" \
 #             target-winxp    " /arch:SSE2"
@@ -794,9 +803,11 @@ macro_append cpplinkflags "" \
       target-linux               "-Wl,--no-undefined "
 
 macro_append cpplinkflags  "" \
-      target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-darwin " -m32"
+      host-x86_64&target-i686 " -m32" \
+      host-x86_64&target-i386 " -m32" \
+      host-darwin&target-i386 " -m32" \
+      host-i686&target-x86_64 " -m64" \
+      host-i386&target-x86_64 " -m64"
 
 macro_append cpplinkflags "" \
       target-cov " $(linkdebugflags) "
@@ -820,10 +831,12 @@ macro_append componentshr_linkopts "" \
 macro_append componentshr_linkopts "" \
       target-cov  " $(linkdebugflags) "
 
-macro_append componentshr_linkopts "" \
-      target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-darwin " -m32"
+macro_append componentshr_linkopts   "" \
+      host-x86_64&target-i686 " -m32" \
+      host-x86_64&target-i386 " -m32" \
+      host-darwin&target-i386 " -m32" \
+      host-i686&target-x86_64 " -m64" \
+      host-i386&target-x86_64 " -m64"
 
 macro libraryshr_linkopts   "" \
       target-linux          "-fPIC -ldl -Wl,--as-needed " \
@@ -836,9 +849,11 @@ macro_append libraryshr_linkopts   "" \
 	  target-cov  " $(linkdebugflags) "
 
 macro_append libraryshr_linkopts   "" \
-      target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-darwin " -m32"
+      host-x86_64&target-i386 " -m32" \
+      host-x86_64&target-i686 " -m32" \
+      host-darwin&target-i386 " -m32" \
+      host-i686&target-x86_64 " -m64" \
+      host-i386&target-x86_64 " -m64"
 
 # Add 64-bit link options for SLC5. This overrides the default library segment
 # alignment of 1MB
