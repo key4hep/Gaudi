@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-11-16 - Charles Leggett
+ - Fixed 32bit compilation with ICC on 64bit host.
+
 ! 2010-11-05 - Marco Clemencic
  - Added the "soname" flag to the linker libraries (to help the test of cmake).
 
