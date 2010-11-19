@@ -4,6 +4,9 @@
 ############################################################################
 GAUDI_USE_PACKAGE(GaudiKernel)
 
+if(WIN32)
+  set(winsocklib ws2_32.lib)
+endif()
 #---Libraries---------------------------------------------------------------
-GAUDI_COMPONENT_LIBRARY(GaudiMonitor DataListenerSvc/*.cpp LIBRARIES GaudiKernel ws2_32.lib)
+GAUDI_COMPONENT_LIBRARY(GaudiMonitor DataListenerSvc/*.cpp LIBRARIES GaudiKernel ${winsocklib})
 

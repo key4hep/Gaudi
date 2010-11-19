@@ -225,6 +225,7 @@ function(GAUDI_GENERATE_CONFIGURATION library)
     set(genconf_command ${CMAKE_SOURCE_DIR}/cmake/cmdwrap ${path} ${genconf_cmd} )
   else()
     SET_RUNTIME_PATH(path LD_LIBRARY_PATH)  
+    message("PATH(${library}) ---> ${path}")
     set(genconf_command ${ld_library_path}=.:${path}:$ENV{${ld_library_path}} ${genconf_cmd} )
   endif()
   add_custom_command( 
