@@ -9,25 +9,39 @@ cmake_policy(SET CMP0009 NEW) # See "cmake --help-policy CMP0009" for more detai
 
 set(lib lib)
 set(bin bin)
-
+if(WIN32)
+  set(ssuffix .bat)
+  set(scomment rem)
+  set(libprefix "")
+else()
+  set(ssuffix .csh)
+  set(scomment \#)
+  set(libprefix lib)
+endif()
 
 set(CMAKE_VERBOSE_MAKEFILES OFF)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 #set(CMAKE_SKIP_BUILD_RPATH TRUE)
-set(CMAKE_CXX_COMPILER g++)
+#set(CMAKE_CXX_COMPILER g++)
 
 include(CMakeMacroParseArguments)
 
 #---Compilation Flags--------------------------------------------------------------------------------
-#-->set(CMAKE_CXX_FLAGS "-Dunix -pipe -ansi -Wall -Wextra -pthread  -Wno-deprecated -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long")
 
+if(MSVC90)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS /wd4275 /wd4251)
+  add_definitions(-DBOOST_ALL_DYN_LINK -DBOOST_ALL_NO_LIB)
+  add_definitions(-DGAUDI_V20_COMPAT -DG21_HIDE_SYMBOLS)
+  set(CMAKE_CXX_FLAGS_DEBUG "/D_NDEBUG /MD /Zi /Ob0 /Od /RTC1") 
+else()
+  set(CMAKE_CXX_FLAGS "-Dunix -pipe -ansi -Wall -Wextra -pthread  -Wno-deprecated -Wwrite-strings -Wpointer-arith -Wno-long-long")
+  add_definitions(-D_GNU_SOURCE -DGAUDI_V20_COMPAT)
+endif()
 
-set(CMAKE_CXX_FLAGS "-Dunix -pipe -ansi -Wall -Wextra -pthread  -Wno-deprecated -Wwrite-strings -Wpointer-arith -Wno-long-long")
 if (CMAKE_SYSTEM_NAME MATCHES Linux) 
   set(CMAKE_CXX_FLAGS "-Dlinux ${CMAKE_CXX_FLAGS}")
 endif()
 
-add_definitions(-D_GNU_SOURCE -DGAUDI_V20_COMPAT)
 
 #---Link shared flags--------------------------------------------------------------------------------
 if (CMAKE_SYSTEM_NAME MATCHES Linux) 
@@ -47,8 +61,11 @@ else()
 endif() 
 
 find_package(Python)
-#find_program(python_cmd python ${Python_home}/bin)
-set(python_cmd ${Python_home}/bin/python CACHE FILEPATH "Path to the python command") 
+if(WIN32)
+  set(python_cmd ${Python_home}/python CACHE FILEPATH "Path to the python command") 
+else()
+  set(python_cmd ${Python_home}/bin/python CACHE FILEPATH "Path to the python command") 
+endif()
 
 if(CMAKE_PROJECT_NAME STREQUAL GAUDI)
   set(merge_rootmap_cmd ${python_cmd} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/merge_files.py)
@@ -87,10 +104,16 @@ macro(REFLEX_GENERATE_DICTIONARY dictionary _headerfiles _selectionfile)
   endif()
  
   set(gensrcdict ${dictionary}_dict.cpp)
-  #set(gccxmlopts "--gccxmlopt=\'--gccxml-cxxflags -m64 \'")
-  set(gccxmlopts)
+
+  if(MSVC)
+    set(gccxmlopts "--gccxmlopt=\"--gccxml-compiler cl\"")
+  else()
+    #set(gccxmlopts "--gccxmlopt=\'--gccxml-cxxflags -m64 \'")
+    set(gccxmlopts)
+  endif()
+  
   set(rootmapname ${dictionary}Dict.rootmap)
-  set(rootmapopts --rootmap=${rootmapname} --rootmap-lib=lib${dictionary}Dict)
+  set(rootmapopts --rootmap=${rootmapname} --rootmap-lib=${libprefix}${dictionary}Dict)
 
   set(include_dirs -I${CMAKE_CURRENT_SOURCE_DIR})
   get_directory_property(_incdirs INCLUDE_DIRECTORIES)
@@ -123,7 +146,7 @@ function(REFLEX_BUILD_DICTIONARY dictionary headerfiles selectionfile )
   PARSE_ARGUMENTS(ARG "LIBRARIES;OPTIONS" "" ${ARGN})
   REFLEX_GENERATE_DICTIONARY(${dictionary} ${headerfiles} ${selectionfile} OPTIONS ${ARG_OPTIONS})
   add_library(${dictionary}Dict MODULE ${gensrcdict})
-  target_link_libraries(${dictionary}Dict ${ARG_LIBRARIES} Reflex)
+  target_link_libraries(${dictionary}Dict ${ARG_LIBRARIES} ${ROOT_Reflex_LIBRARY})
   #----Installation details-------------------------------------------------------
   install(TARGETS ${dictionary}Dict LIBRARY DESTINATION ${lib})
   set(mergedRootMap ${CMAKE_INSTALL_PREFIX}/${lib}/${CMAKE_PROJECT_NAME}Dict.rootmap)
@@ -132,34 +155,26 @@ function(REFLEX_BUILD_DICTIONARY dictionary headerfiles selectionfile )
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---SET_RUNTIME_PATH( ldvar [pyvar] )
+#---SET_RUNTIME_PATH( var [LD_LIBRARY_PATH | PATH] )
 #---------------------------------------------------------------------------------------------------
-function( SET_RUNTIME_PATH ldvar)
-  if(ARG1)
-    set(pyvar ${ARG1})
-  endif()
-  set( lddirs ${GAUDI_LIBRARY_DIRS})
-  set( pydirs )
+function( SET_RUNTIME_PATH var pathname)
+  set( dirs ${GAUDI_LIBRARY_DIRS})
   get_property(found_packages GLOBAL PROPERTY PACKAGES_FOUND)
   get_property(found_projects GLOBAL PROPERTY PROJECTS_FOUND)
   foreach( package ${found_projects} ${found_packages} )
      foreach( env ${${package}_environment})
-         if(env MATCHES "LD_LIBRARY_PATH[+]=.*")
-            string(REGEX REPLACE "LD_LIBRARY_PATH[+]=(.+)" "\\1"  val ${env})
-            set(lddirs ${val} ${lddirs})
-         endif()
-         if(env MATCHES "PYTHONPATH[+]=.*")
-            string(REGEX REPLACE "PYTHONPATH[+]=(.+)" "\\1"  val ${env})
-            set(pydirs ${val} ${pydirs})
+         if(env MATCHES "^${pathname}[+]=.*")
+            string(REGEX REPLACE "^${pathname}[+]=(.+)" "\\1"  val ${env})
+            set(dirs ${val} ${dirs})
          endif()
      endforeach()
   endforeach()
-  string(REPLACE ";" ":" lddirs "${lddirs}")
-  set(${ldvar} ${lddirs} PARENT_SCOPE)
-  if(pyvar) 
-    string(REPLACE ";" ":" pydirs "${pydirs}")
-    set(${pyvar} ${pydirs} PARENT_SCOPE)
+  if(WIN32)
+    string(REPLACE ";" "[:]" dirs "${dirs}")
+  else()
+    string(REPLACE ";" ":" dirs "${dirs}")
   endif()
+  set(${var} "${dirs}" PARENT_SCOPE)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -168,10 +183,18 @@ endfunction()
 function(GAUDI_GENERATE_ROOTMAP library)
   find_package(ROOT)
   set(rootmapfile ${library}.rootmap)
-  set(fulllibname lib${library}.so)
-  SET_RUNTIME_PATH(ld_path)
+  if(WIN32)
+    set(fulllibname ${library})
+    SET_RUNTIME_PATH(path PATH)
+    set(genmap_command ${CMAKE_SOURCE_DIR}/cmake/cmdwrap ${path} ${ROOT_genmap_cmd} )
+  else()
+    set(fulllibname lib${library}.so)
+    SET_RUNTIME_PATH(path LD_LIBRARY_PATH)
+    set(genmap_command ${ld_library_path}=.:${path}:$ENV{${ld_library_path}} ${ROOT_genmap_cmd} )
+  endif()
+
   add_custom_command( OUTPUT ${rootmapfile}
-                      COMMAND ${ld_library_path}=.:${ld_path}:$ENV{${ld_library_path}} ${ROOT_genmap_cmd} -i ${fulllibname} -o ${rootmapfile} 
+                      COMMAND ${genmap_command} -i ${fulllibname} -o ${rootmapfile} 
                       DEPENDS ${library} )
   add_custom_target( ${library}Rootmap ALL DEPENDS  ${rootmapfile})
   #----Installation details-------------------------------------------------------
@@ -194,21 +217,27 @@ function(GAUDI_GENERATE_CONFIGURATION library)
   set(confAlgTool ConfigurableAlgTool)
   set(confAuditor ConfigurableAuditor)
   set(confService ConfigurableService)
-  SET_RUNTIME_PATH(ld_path)
   if( TARGET GaudiSvc)
 	  set(GaudiSvc_dependency GaudiSvc)
   endif()
+  if(WIN32)
+    SET_RUNTIME_PATH(path PATH)
+    set(genconf_command ${CMAKE_SOURCE_DIR}/cmake/cmdwrap ${path} ${genconf_cmd} )
+  else()
+    SET_RUNTIME_PATH(path LD_LIBRARY_PATH)  
+    set(genconf_command ${ld_library_path}=.:${path}:$ENV{${ld_library_path}} ${genconf_cmd} )
+  endif()
   add_custom_command( 
     OUTPUT ${outdir}/${library}_confDb.py
-    COMMAND ${ld_library_path}=.:${ld_path}:$ENV{${ld_library_path}} ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package} 
-						--configurable-module=${confModuleName}
-            --configurable-default-name=${confDefaultName}
-            --configurable-algorithm=${confAlgorithm}
- 	    	 		--configurable-algtool=${confAlgTool}
- 	    			--configurable-auditor=${confAuditor}
-            --configurable-service=${confService}
-            -i lib${library}.so 
-    DEPENDS ${library} ${GaudiSvc_dependency} )
+		COMMAND ${genconf_command} ${library_preload} -o ${outdir} -p ${package} 
+				--configurable-module=${confModuleName}
+				--configurable-default-name=${confDefaultName}
+				--configurable-algorithm=${confAlgorithm}
+				--configurable-algtool=${confAlgTool}
+				--configurable-auditor=${confAuditor}
+				--configurable-service=${confService}
+				-i lib${library}.so
+		DEPENDS ${library} ${GaudiSvc_dependency} )
   add_custom_target( ${library}Conf ALL DEPENDS  ${outdir}/${library}_confDb.py )
   #----Installation details-------------------------------------------------------
   set(mergedConf ${CMAKE_INSTALL_PREFIX}/python/${CMAKE_PROJECT_NAME}_merged_confDb.py)
@@ -240,8 +269,9 @@ function(GAUDI_LINKER_LIBRARY library)
     add_dependencies( ${library} ${library}Obj2doth) 
   endif()
   #----Installation details-------------------------------------------------------
-  install(TARGETS ${library} EXPORT ${CMAKE_PROJECT_NAME}Exports LIBRARY DESTINATION  ${lib})
-  install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake) 
+  install(TARGETS ${library} DESTINATION  ${lib})
+  #install(TARGETS ${library} EXPORT ${CMAKE_PROJECT_NAME}Exports LIBRARY DESTINATION  ${lib})
+  #install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake) 
 
 endfunction()
 
@@ -262,7 +292,7 @@ function(GAUDI_COMPONENT_LIBRARY library)
   add_library( ${library} MODULE ${lib_srcs})
   GAUDI_GENERATE_ROOTMAP(${library})
   GAUDI_GENERATE_CONFIGURATION(${library})
-  target_link_libraries(${library} Reflex ${ARG_LIBRARIES})
+  target_link_libraries(${library} ${ROOT_Reflex_LIBRARY} ${ARG_LIBRARIES})
   #----Installation details-------------------------------------------------------
   install(TARGETS ${library} LIBRARY DESTINATION ${lib})
 endfunction()
@@ -331,7 +361,12 @@ function(GAUDI_UNIT_TEST executable)
   if(BUILD_TESTS)
     add_executable( ${executable} ${exe_srcs})
     target_link_libraries(${executable} ${ARG_LIBRARIES} )
-    add_test(${executable} ${executable}.exe)
+	if(WIN32)
+	  SET_RUNTIME_PATH(path PATH)
+      add_test(${executable} ${CMAKE_SOURCE_DIR}/cmake/cmdwrap.bat ${path} ${executable}.exe )
+    else()
+      add_test(${executable} ${executable}.exe)
+	endif()
     #----Installation details-------------------------------------------------------
     set_target_properties(${executable} PROPERTIES SUFFIX .exe)
     install(TARGETS ${executable} RUNTIME DESTINATION ${bin})
@@ -351,7 +386,7 @@ function(GAUDI_FRAMEWORK_TEST name)
         set( optfiles ${optfiles} ${CMAKE_CURRENT_SOURCE_DIR}/${optfile}) 
       endif()
     endforeach()
-    add_test(${name} ${CMAKE_INSTALL_PREFIX}/scripts/testwrap.csh ${CMAKE_INSTALL_PREFIX}/setup.csh "." ${gaudirun} ${optfiles})
+    add_test(${name} ${CMAKE_INSTALL_PREFIX}/scripts/testwrap${ssuffix} ${CMAKE_INSTALL_PREFIX}/setup${ssuffix} "." ${gaudirun} ${optfiles})
     set_property(TEST ${name} PROPERTY ENVIRONMENT 
       LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:$ENV{LD_LIBRARY_PATH}
       ${ARG_ENVIRONMENT})
@@ -371,18 +406,18 @@ function(GAUDI_QMTEST_TEST name)
       set(tests ${name})
     endif()
     GAUDI_USE_PACKAGE(QMtest)
-    add_test(${name} ${CMAKE_INSTALL_PREFIX}/scripts/testwrap.csh  ${CMAKE_INSTALL_PREFIX}/setup.csh 
+    add_test(${name} ${CMAKE_INSTALL_PREFIX}/scripts/testwrap${ssuffix} ${CMAKE_INSTALL_PREFIX}/setup${ssuffix} 
                      ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest 
-                     ${QMtest_home}/bin/qmtest run ${tests})
+                     qmtest run ${tests})
     set_property(TEST ${name} PROPERTY ENVIRONMENT 
       LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:$ENV{LD_LIBRARY_PATH}
       QMTEST_CLASS_PATH=${CMAKE_SOURCE_DIR}/GaudiPolicy/qmtest_classes
       ${ARG_ENVIRONMENT})
     install(CODE "if( NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest/QMTest) 
-                    execute_process(COMMAND  ${CMAKE_INSTALL_PREFIX}/scripts/testwrap.csh  
-                                             ${CMAKE_INSTALL_PREFIX}/setup.csh 
+                    execute_process(COMMAND  ${CMAKE_INSTALL_PREFIX}/scripts/testwrap${ssuffix}  
+                                             ${CMAKE_INSTALL_PREFIX}/setup${ssuffix}
                                              ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest 
-                                             ${QMtest_home}/bin/qmtest create-tdb )
+                                             qmtest create-tdb )
                   endif()")
   endif()
 endfunction()
@@ -430,8 +465,7 @@ endfunction()
 #---GAUDI_ZIP_PYTHON_MODULES( )
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_ZIP_PYTHON_MODULES)
-  #python $(GaudiPolicy_root)/scripts/ZipPythonDir.py $(CMTINSTALLAREA)$(shared_install_subdir)/python
-  install(CODE "execute_process(COMMAND  ${zippythondir_cmd} ${CMAKE_INSTALL_PREFIX}/python)")  
+  install(CODE "execute_process(COMMAND  ${zippythondir_cmd} --quiet ${CMAKE_INSTALL_PREFIX}/python)")  
 endfunction()    
 
 #---------------------------------------------------------------------------------------------------
@@ -505,11 +539,17 @@ endfunction()
 #---GAUDI_BUILD_PROJECT_SETUP( )
 #---------------------------------------------------------------------------------------------------
 function( GAUDI_BUILD_PROJECT_SETUP )
-  set( setup  ${CMAKE_BINARY_DIR}/setup.csh )
-  file(WRITE  ${setup} "# ${CMAKE_PROJECT_NAME} Setup file\n")
-  file(APPEND ${setup} "setenv PATH  ${CMAKE_INSTALL_PREFIX}/${bin}:${CMAKE_INSTALL_PREFIX}/scripts:\${PATH}\n")
-  file(APPEND ${setup} "setenv LD_LIBRARY_PATH  ${CMAKE_INSTALL_PREFIX}/${lib}:\${LD_LIBRARY_PATH}\n")
-  file(APPEND ${setup} "setenv PYTHONPATH  ${CMAKE_INSTALL_PREFIX}/python:\${PYTHONPATH}\n")
+  set( setup  ${CMAKE_BINARY_DIR}/setup${ssuffix} )
+  file(WRITE  ${setup} "${scomment} ${CMAKE_PROJECT_NAME} Setup file\n")
+  if(WIN32)
+	file(APPEND ${setup} "@echo off\n")
+    file(APPEND ${setup} "set PATH=${CMAKE_INSTALL_PREFIX}/${bin};${CMAKE_INSTALL_PREFIX}/${lib};${CMAKE_INSTALL_PREFIX}/scripts;%PATH%\n")
+    file(APPEND ${setup} "set PYTHONPATH=${CMAKE_INSTALL_PREFIX}/python;%PYTHONPATH%\n")
+  else()
+    file(APPEND ${setup} "setenv PATH  ${CMAKE_INSTALL_PREFIX}/${bin}:${CMAKE_INSTALL_PREFIX}/scripts:\${PATH}\n")
+    file(APPEND ${setup} "setenv LD_LIBRARY_PATH  ${CMAKE_INSTALL_PREFIX}/${lib}:\${LD_LIBRARY_PATH}\n")
+    file(APPEND ${setup} "setenv PYTHONPATH  ${CMAKE_INSTALL_PREFIX}/python:\${PYTHONPATH}\n")
+  endif()
 
   #----Get the setup fro each external package
   get_property(found_packages GLOBAL PROPERTY PACKAGES_FOUND)
@@ -519,7 +559,7 @@ function( GAUDI_BUILD_PROJECT_SETUP )
   endforeach()
 
   #---Get the setup for each package (directory)
-  file(APPEND  ${setup} "\n# Standard variables for each package\n")
+  file(APPEND  ${setup} "\n${scomment} Standard variables for each package\n")
   file(GLOB_RECURSE cmakelist_files  ${CMAKE_SOURCE_DIR} CMakeLists.txt)
   foreach( file ${cmakelist_files} )
     GET_FILENAME_COMPONENT(path ${file} PATH)
@@ -543,24 +583,31 @@ endfunction()
 function( GAUDI_BUILD_PACKAGE_SETUP setup package envlist )
   if ( NOT setup )
     set( setup ${CMAKE_INSTALL_PREFIX}/${package}_setup.csh )
-    file(WRITE  ${setup} "# Package ${package} setup file\n")
+    file(WRITE  ${setup} "${scomment} Package ${package} setup file\n")
   else()
-    file(APPEND  ${setup} "\n# Package ${package} setup file\n")
+    file(APPEND  ${setup} "\n${scomment} Package ${package} setup file\n")
   endif()
   foreach( env ${envlist} )
-    #MESSAGE("env = ${env}")
     if(env MATCHES ".*[+]=.*")
       string(REGEX REPLACE "([^=+]+)[+]=.*" "\\1" var ${env})
       string(REGEX REPLACE ".*[+]=(.+)" "\\1"  val ${env})
-      file(APPEND ${setup} "if \$?${var} then\n")
-      file(APPEND ${setup} "  setenv ${var} ${val}:\${${var}}\n")
-      file(APPEND ${setup} "else\n")
-      file(APPEND ${setup} "  setenv ${var} ${val}\n")
-      file(APPEND ${setup} "endif\n")      
+	  if(WIN32)
+        file(APPEND ${setup} "set ${var}=${val};%${var}%\n")
+	  else()
+        file(APPEND ${setup} "if \$?${var} then\n")
+        file(APPEND ${setup} "  setenv ${var} ${val}:\${${var}}\n")
+        file(APPEND ${setup} "else\n")
+        file(APPEND ${setup} "  setenv ${var} ${val}\n")
+        file(APPEND ${setup} "endif\n")      
+	  endif()
     elseif ( env MATCHES ".*=.*")
       string(REGEX REPLACE "([^=+]+)=.*" "\\1" var ${env})
       string(REGEX REPLACE ".*=(.+)" "\\1"  val ${env})
-      file(APPEND ${setup} "setenv ${var} ${val}\n")
+	  if(WIN32)
+        file(APPEND ${setup} "set ${var}=${val}\n")
+	  else()
+        file(APPEND ${setup} "setenv ${var} ${val}\n")
+	  endif()
    endif() 
   endforeach()
 endfunction()

@@ -31,7 +31,7 @@ class HistoryObj;
     @author Charles Leggett
 */
 
-class GAUDI_API IHistorySvc : virtual public IService {
+class IHistorySvc : virtual public IService {
 public:
   /// InterfaceID
   DeclareInterfaceID(IHistorySvc,2,0);

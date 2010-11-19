@@ -23,7 +23,7 @@ namespace Gaudi {
     *  @version 1.0
     *  @date    20/10/2007
     */
-  class GAUDI_API IFileCatalogMgr : virtual public IInterface {
+  class IFileCatalogMgr : virtual public IInterface {
   public:
     /// InterfaceID
     DeclareInterfaceID(IFileCatalogMgr,2,0);

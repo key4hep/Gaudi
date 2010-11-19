@@ -5,5 +5,5 @@
 GAUDI_USE_PACKAGE(GaudiKernel)
 
 #---Libraries---------------------------------------------------------------
-GAUDI_COMPONENT_LIBRARY(GaudiMonitor DataListenerSvc/*.cpp LIBRARIES GaudiKernel)
+GAUDI_COMPONENT_LIBRARY(GaudiMonitor DataListenerSvc/*.cpp LIBRARIES GaudiKernel ws2_32.lib)
 

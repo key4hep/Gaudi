@@ -33,7 +33,8 @@ THistSvc/*.cpp
 FastContainersSvc/*.cpp 
 VFSSvc/*.cpp )
 
-GAUDI_COMPONENT_LIBRARY(GaudiSvc ${GaudiSvc_srcs} LIBRARIES GaudiKernel ${ROOT_LIBRARIES} Hist RIO Tree ${CLHEP_LIBRARIES})
+GAUDI_COMPONENT_LIBRARY(GaudiSvc ${GaudiSvc_srcs} LIBRARIES GaudiKernel ${ROOT_LIBRARIES} 
+                        ${ROOT_Hist_LIBRARY} ${ROOT_RIO_LIBRARY} ${ROOT_Tree_LIBRARY} ${CLHEP_LIBRARIES})
 GAUDI_COMPONENT_LIBRARY(GaudiSvcTest ../tests/src/component/*.cpp LIBRARIES GaudiKernel ${Boost_regex})
 
 #---This is needed by SET_RUNTIME_PATH() :-(-----------------------------------

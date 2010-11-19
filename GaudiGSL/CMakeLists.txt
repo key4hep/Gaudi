@@ -9,7 +9,7 @@ GAUDI_USE_PACKAGE(CLHEP)
 GAUDI_USE_PACKAGE(AIDA)
 
 
-if( NOT APPLE)
+if(NOT APPLE AND NOT WIN32)
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-as-needed")
 endif()
 
@@ -35,5 +35,7 @@ GAUDI_UNIT_TEST(Integral1Test Tests/Integral1Test.cpp LIBRARIES GaudiGSLLib Gaud
 #---Installation------------------------------------------------------------
 GAUDI_INSTALL_HEADERS(GaudiGSL GaudiMath)
 
+#---This is needed by SET_RUNTIME_PATH() :-(-----------------------------------
+SET( GAUDI_LIBRARY_DIRS ${GAUDI_LIBRARY_DIRS} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE )
 
 

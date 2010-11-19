@@ -7,7 +7,7 @@
 /// Version for one interface.
 /// @author Marco Clemencic
 template <typename BASE, typename I1>
-struct GAUDI_API extends1: public BASE, virtual public extend_interfaces1<I1> {
+struct extends1: public BASE, virtual public extend_interfaces1<I1> {
   /// Typedef to this class.
   typedef extends1 base_class;
   /// Typedef to the base of this class.
@@ -24,7 +24,7 @@ struct GAUDI_API extends1: public BASE, virtual public extend_interfaces1<I1> {
   /// Templated constructor with 1 argument.
   template <typename A1> extends1(A1 a1): BASE(a1){}
   /// Default constructor.
-  extends1(): BASE(){}
+  //-->PM<--extends1(): BASE(){}
 
   /// Implementation of IInterface::i_cast.
   virtual void *i_cast(const std::type_info &tid) const {
@@ -72,7 +72,7 @@ struct GAUDI_API extends1: public BASE, virtual public extend_interfaces1<I1> {
 /// Version for two interfaces.
 /// @author Marco Clemencic
 template <typename BASE, typename I1, typename I2>
-struct GAUDI_API extends2: public BASE, virtual public extend_interfaces2<I1,I2> {
+struct extends2: public BASE, virtual public extend_interfaces2<I1,I2> {
   /// Typedef to this class.
   typedef extends2 base_class;
   /// Typedef to the base of this class.
@@ -89,7 +89,7 @@ struct GAUDI_API extends2: public BASE, virtual public extend_interfaces2<I1,I2>
   /// Templated constructor with 1 argument.
   template <typename A1> extends2(A1 a1): BASE(a1){}
   /// Default constructor.
-  extends2(): BASE(){}
+  //-->PM<-- extends2(): BASE(){}
 
   /// Implementation of IInterface::i_cast.
   virtual void *i_cast(const std::type_info &tid) const {
@@ -137,7 +137,7 @@ struct GAUDI_API extends2: public BASE, virtual public extend_interfaces2<I1,I2>
 /// Version for three interfaces.
 /// @author Marco Clemencic
 template <typename BASE, typename I1, typename I2, typename I3>
-struct GAUDI_API extends3: public BASE, virtual public extend_interfaces3<I1,I2,I3> {
+struct extends3: public BASE, virtual public extend_interfaces3<I1,I2,I3> {
   /// Typedef to this class.
   typedef extends3 base_class;
   /// Typedef to the base of this class.

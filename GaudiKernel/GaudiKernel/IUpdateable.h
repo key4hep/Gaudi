@@ -13,7 +13,7 @@
   *   @author  M.Frank
   *   @version 1.0
   */
-class GAUDI_API IUpdateable {
+class IUpdateable {
 public:
 
   /// destructor

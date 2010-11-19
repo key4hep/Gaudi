@@ -33,7 +33,7 @@ namespace ROOT {
 
     @author Iain Last
 */
-class GAUDI_API IMagneticFieldSvc: virtual public IService {
+class IMagneticFieldSvc: virtual public IService {
 
 public:
   /// InterfaceID

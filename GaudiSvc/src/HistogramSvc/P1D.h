@@ -17,7 +17,7 @@ namespace Gaudi {
     *
     * @author  M.Frank
     */
-  class GAUDI_API Profile1D : public DataObject, public Generic1D<AIDA::IProfile1D,TProfile>  {
+  class Profile1D : public DataObject, public Generic1D<AIDA::IProfile1D,TProfile>  {
     typedef AIDA::IAnnotation IAnnotation;
   private:
     void init(const std::string& title, bool initialize_axis=true);

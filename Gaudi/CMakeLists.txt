@@ -23,14 +23,14 @@ set( QMtests
 
 foreach( test ${QMtests})
   GAUDI_QMTEST_TEST(gaudi.${test} ENVIRONMENT 
-                    JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/tests/pyjobopts:$ENV{JOBOPTSEARCHPATH}
-                    PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/tests/python:$ENV{PYTHONPATH} )
+                    JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/tests/pyjobopts
+                    PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/tests/python )
 endforeach()
 #---Combined Tests-----------------------------------------------------------
 GAUDI_QMTEST_TEST( gaudi.pickle TESTS  gaudi.pickle_write gaudi.pickle_read  ENVIRONMENT 
-                      JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/tests/pyjobopts:$ENV{JOBOPTSEARCHPATH}
-                      PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/tests/python:$ENV{PYTHONPATH} )
+                      JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/tests/pyjobopts
+                      PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/tests/python )
 GAUDI_QMTEST_TEST( gaudi.bug_36742 TESTS  gaudi.bug_36742 gaudi.bug_36742b ENVIRONMENT 
-                      JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/tests/pyjobopts:$ENV{JOBOPTSEARCHPATH}
-                      PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/tests/python:$ENV{PYTHONPATH} )
+                      JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/tests/pyjobopts
+                      PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/tests/python )
 

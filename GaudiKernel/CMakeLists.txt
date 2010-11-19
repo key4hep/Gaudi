@@ -7,7 +7,7 @@ GAUDI_USE_PACKAGE(CppUnit)
 GAUDI_USE_PACKAGE(ROOT)
 
 #---Libraries---------------------------------------------------------------
-GAUDI_LINKER_LIBRARY(GaudiKernel Lib/*.cpp LIBRARIES Reflex dl ${Boost_LIBRARIES})
+GAUDI_LINKER_LIBRARY(GaudiKernel Lib/*.cpp LIBRARIES ${ROOT_LIBRARIES} ${Boost_LIBRARIES})
 
 #---Executables-------------------------------------------------------------
 GAUDI_EXECUTABLE(genconf Util/genconf.cpp LIBRARIES GaudiKernel)
@@ -23,4 +23,7 @@ REFLEX_BUILD_DICTIONARY(GaudiKernel dict/dictionary.h  dict/dictionary.xml LIBRA
 GAUDI_INSTALL_HEADERS(GaudiKernel)
 GAUDI_INSTALL_PYTHON_MODULES()
 GAUDI_INSTALL_SCRIPTS()
+
+#---This is needed by SET_RUNTIME_PATH() :-(-----------------------------------
+SET( GAUDI_LIBRARY_DIRS ${GAUDI_LIBRARY_DIRS} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE )
 

@@ -35,7 +35,7 @@ macro(GAUDI_PROJECT project version)
 
   GAUDI_BINARY_TAG()
 
-  if(CMAKE_INSTALL_PREFIX STREQUAL /usr/local)
+  if(CMAKE_INSTALL_PREFIX STREQUAL /usr/local OR CMAKE_INSTALL_PREFIX STREQUAL "C:/Program Files/Project")
     set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/InstallArea/${BINARY_TAG} CACHE PATH 
       "Install path prefix, prepended onto install directories." FORCE )
   endif()
@@ -48,7 +48,7 @@ macro(GAUDI_PROJECT project version)
   install(DIRECTORY cmake/ DESTINATION cmake 
                            FILES_MATCHING PATTERN "*.cmake"
                            PATTERN ".svn" EXCLUDE )
-  install(PROGRAMS cmake/testwrap.sh cmake/testwrap.csh cmake/genCMake.py DESTINATION scripts)
+  install(PROGRAMS cmake/testwrap.sh cmake/testwrap.csh cmake/testwrap.bat cmake/genCMake.py cmake/cmdwrap.bat DESTINATION scripts)
 
   #--- Global actions for the project
   #GAUDI_USE_PACKAGE(QMtest)

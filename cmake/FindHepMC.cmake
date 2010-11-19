@@ -1,12 +1,16 @@
-INCLUDE(Configuration)
+include(Configuration)
 
-SET(HepMC_native_version ${HepMC_config_version})
-SET(HepMC_home ${LCG_external}/HepMC/${HepMC_native_version}/${LCG_system})
+set(HepMC_native_version ${HepMC_config_version})
+set(HepMC_home ${LCG_external}/HepMC/${HepMC_native_version}/${LCG_system})
 
-SET(HepMC_FOUND 1)
-SET(HepMC_INCLUDE_DIRS ${HepMC_home}/include)
-SET(HepMC_LIBRARY_DIRS ${HepMC_home}/lib)
-SET(HepMC_LIBRARIES HepMC)
+set(HepMC_FOUND 1)
+set(HepMC_INCLUDE_DIRS ${HepMC_home}/include)
+set(HepMC_LIBRARY_DIRS ${HepMC_home}/lib)
+set(HepMC_LIBRARIES HepMC)
  
-SET(HepMC_environment LD_LIBRARY_PATH+=${HepMC_home}/lib)
+if(WIN32)
+  set(HepMC_environment PATH+=${HepMC_home}/lib)
+else()
+  set(HepMC_environment LD_LIBRARY_PATH+=${HepMC_home}/lib)
+endif()
 

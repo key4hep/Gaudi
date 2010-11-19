@@ -13,7 +13,7 @@
 
     @author David Quarrie
 */
-class GAUDI_API CommandProperty: public StringProperty {
+class CommandProperty: public StringProperty {
 public:
   /// Constructors and destructors
 	CommandProperty();

@@ -17,7 +17,7 @@ namespace HepPDT {
     @author Charles Leggett
 
 */
-class GAUDI_API IPartPropSvc: virtual public IService {
+class IPartPropSvc: virtual public IService {
 
 public:
   /// InterfaceID

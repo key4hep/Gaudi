@@ -66,10 +66,10 @@ public:
   bool operator < ( const Message& test );
 
   /// Insert the message into a stream.
-  friend std::ostream& operator << ( std::ostream& stream, const Message& msg );
+  GAUDI_API friend std::ostream& operator << ( std::ostream& stream, const Message& msg );
 
   /// Insert the message into a stream.
-  friend bool operator == ( const Message& a, const Message& b );
+  GAUDI_API friend bool operator == ( const Message& a, const Message& b );
 
 protected:
   /// Called when an invalid format string is encountered.

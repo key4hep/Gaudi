@@ -1,21 +1,16 @@
 #------------Based on LCGCMT_59-------------------------
-SET(LCG_home /afs/cern.ch/sw/lcg)
+if(WIN32)
+  set(LCG_home E:/local/lib/lcg)
+  set(LCG_releases ${LCG_home}/external)
+else()
+  set(LCG_home /afs/cern.ch/sw/lcg)
+  set(LCG_releases ${LCG_home}/app/releases)
+endif()
+set(LCG_external ${LCG_home}/external)
 
-IF (CMAKE_SYSTEM_NAME MATCHES Linux) 
-  SET(LCG_platform x86_64-slc5-gcc43-dbg)
-  SET(LCG_basesystem x86_64-slc5-gcc43)
-ELSEIF( CMAKE_SYSTEM_NAME MATCHES Darwin)
-  SET(LCG_platform x86_64-mac106-gcc42-dbg)
-  SET(LCG_basesystem x86_64-mac106-gcc42)
-ENDIF()
-
-SET(LCG_system ${LCG_basesystem}-opt)
-
-
-SET(LCG_releases ${LCG_home}/app/releases)
-SET(LCG_external ${LCG_home}/external)
-
-set(CMAKE_CXX_COMPILER g++)
+set(LCG_platform ${BINARY_TAG})
+set(LCG_basesystem ${BINARY_TAG_PREFIX})
+set(LCG_system ${LCG_basesystem}-opt)
 
 # please keep alphabetic order and the structure (tabbing).
 # it makes it much easier to edit/read this file !
@@ -23,13 +18,10 @@ set(CMAKE_CXX_COMPILER g++)
 SET(LCG_config_version  58d)
 
 SET(COOL_config_version   COOL_2_8_6c)
-SET(CORAL_config_version  CORAL_2_3_10)
-SET(POOL_config_version   POOL_2_9_9)
+SET(CORAL_config_version  CORAL-preview)
+SET(POOL_config_version   POOL-preview)
 SET(RELAX_config_version  RELAX_1_2_1e)
-SET(ROOT_config_version   5.26.00cp1)
-
-#apply_tag ROOT_GE_5_15  
-#apply_tag ROOT_GE_5_19  
+SET(ROOT_config_version   ROOT_today)
 
 # externals:
 
@@ -39,14 +31,14 @@ SET(AIDA_config_version             3.2.1)
 SET(4suite_config_version           1.0.2p1)
 SET(bjam_config_version             3.1.13)
 SET(blas_config_version             20070405)
-SET(Boost_config_version            1.42.0)
-SET(Boost_file_version              1_42)
+SET(Boost_config_version            1.44.0)
+SET(Boost_file_version              1_44)
 SET(bz2lib_config_version           1.0.2)
 SET(CASTOR_config_version           2.1.8-10)
 SET(cernlib_config_version          2006a)
 SET(cgal_config_version             3.3.1)
 SET(cgsigsoap_config_version        1.3.3-1)
-SET(CLHEP_config_version            1.9.4.4)
+SET(CLHEP_config_version            1.9.4.7)
 SET(cmake_config_version            2.6.4)
 SET(cmt_config_version              v1r20p20081118)
 SET(coin3d_config_version           3.1.2)
@@ -105,12 +97,12 @@ SET(pyanalysis_config_version       1.2)
 SET(pygraphics_config_version       1.1) 
 SET(pyminuit_config_version         0.0.1)
 SET(pytools_config_version          1.1)
-SET(Python_config_version           2.5.4p2)
-SET(Python_config_version_twodigit  2.5)
+SET(Python_config_version           2.6.5)
+SET(Python_config_version_twodigit  2.6)
 SET(pyqt_config_version             4.7)
 SET(pyparsing_config_version        1.5.1)
 SET(pyxml_config_version            0.8.4p1)
-SET(QMtest_config_version           2.4p1)
+SET(QMtest_config_version           2.4.1)
 SET(Qt_config_version               4.6.3) 
 SET(qwt_config_version              5.2.1)
 SET(readline_config_version         2.5.1p1)

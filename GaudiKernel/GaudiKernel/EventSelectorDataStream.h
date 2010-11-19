@@ -44,9 +44,9 @@ class EventSelectorDataStream;
 */
 class GAUDI_API EventSelectorDataStream: public implements1<IInterface> {
   /// Output friend for MsgStream
-  friend MsgStream& operator<<(MsgStream& s, const EventSelectorDataStream& obj);
+  GAUDI_API friend MsgStream& operator<<(MsgStream& s, const EventSelectorDataStream& obj);
   /// Output friend for standard I/O
-  friend std::ostream& operator<<(std::ostream& s, const EventSelectorDataStream& obj);
+  GAUDI_API friend std::ostream& operator<<(std::ostream& s, const EventSelectorDataStream& obj);
 public:
   typedef std::vector< StringProperty >  Properties;
 protected:

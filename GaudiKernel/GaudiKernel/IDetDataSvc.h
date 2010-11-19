@@ -18,7 +18,7 @@ namespace Gaudi { class Time; }
     @date August 2001
 *///--------------------------------------------------------------------------
 
-class GAUDI_API IDetDataSvc: virtual public IInterface
+class IDetDataSvc: virtual public IInterface
 {
 public:
   /// InterfaceID

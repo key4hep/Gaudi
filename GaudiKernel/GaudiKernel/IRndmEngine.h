@@ -17,7 +17,7 @@
     @author  M.Frank
     @version 1.0
 */
-class GAUDI_API IRndmEngine: virtual public IInterface {
+class IRndmEngine: virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID(IRndmEngine,2,0);

@@ -14,7 +14,7 @@ class GslError;
  *  @author Vanya Ivan.Belyaev@itep.ru
  *  @date   30/04/2002
  */
-class GAUDI_API IGslErrorHandler: public virtual IAlgTool {
+class IGslErrorHandler: public virtual IAlgTool {
 public:
   /// InterfaceID
   DeclareInterfaceID(IGslErrorHandler,2,0);

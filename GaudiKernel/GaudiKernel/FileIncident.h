@@ -15,7 +15,7 @@
 /** @class FileIncident
  *  @brief This class is the FileIncident.
  **/
-class GAUDI_API FileIncident : public Incident {
+class FileIncident : public Incident {
 public:
    /// standard constructor
    FileIncident(const std::string& source,

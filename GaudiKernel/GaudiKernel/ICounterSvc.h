@@ -108,7 +108,7 @@ public:
    *  @author  Markus Frank
    *  @version 1.0
    */
-  class Printout
+  class GAUDI_API Printout
   {
   public:
     /// Standard initializing constructor
@@ -264,7 +264,7 @@ protected:
 // ============================================================================
 /// output operator for the counter object
 // ============================================================================
-std::ostream& operator<<( std::ostream& , const ICounterSvc::CountObject& ) ;
+GAUDI_API std::ostream& operator<<( std::ostream& , const ICounterSvc::CountObject& ) ;
 // ============================================================================
 /// The END
 // ============================================================================

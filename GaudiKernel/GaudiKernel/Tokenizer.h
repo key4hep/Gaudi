@@ -25,7 +25,7 @@ class GAUDI_API Tokenizer   {
 public:
   /** Definition of the sub-class Token.
   */
-  class Token   {
+  class GAUDI_API Token   {
     /// Toke length
     long        m_length;
     /// Tag variable

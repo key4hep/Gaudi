@@ -16,7 +16,7 @@
    @author Markus Frank
    @version 2.0
 */
-class GAUDI_API IRunable: virtual public IInterface {
+class IRunable: virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID(IRunable,2,0);

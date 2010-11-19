@@ -1,14 +1,18 @@
-INCLUDE(Configuration)
+include(Configuration)
 
 
-SET(CORAL_native_version ${CORAL_config_version})
-SET(CORAL_base ${LCG_releases}/CORAL/${CORAL_native_version})
-SET(CORAL_home ${CORAL_base}/${LCG_platform})
+set(CORAL_native_version ${CORAL_config_version})
+set(CORAL_base ${LCG_releases}/CORAL/${CORAL_native_version})
+set(CORAL_home ${CORAL_base}/${LCG_platform})
 
-SET(CORAL_FOUND 1)
-SET(CORAL_INCLUDE_DIRS ${CORAL_base}/include)
-SET(CORAL_LIBRARY_DIRS ${CORAL_home}/lib)
-SET(CORAL_LIBRARIES lcg_CoralBase )
+set(CORAL_FOUND 1)
+set(CORAL_INCLUDE_DIRS ${CORAL_base}/include)
+set(CORAL_LIBRARY_DIRS ${CORAL_home}/lib)
+set(CORAL_LIBRARIES lcg_CoralBase )
 
-SET(CORAL_environment LD_LIBRARY_PATH+=${CORAL_home}/lib)
+if(WIN32)
+  SET(CORAL_environment PATH+=${CORAL_home}/lib)
+else()
+  SET(CORAL_environment LD_LIBRARY_PATH+=${CORAL_home}/lib)
+endif()
 

@@ -17,7 +17,7 @@ namespace Gaudi {
     *
     * @author  M.Frank
     */
-  class GAUDI_API Histogram2D : public DataObject, public Generic2D<IHistogram2D,TH2D>   {
+  class Histogram2D : public DataObject, public Generic2D<IHistogram2D,TH2D>   {
   public:
     /// Standard Constructor
     Histogram2D();

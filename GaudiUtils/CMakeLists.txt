@@ -3,6 +3,7 @@
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
 GAUDI_USE_PACKAGE(GaudiKernel)
+GAUDI_USE_PACKAGE(GaudiSvc)
 GAUDI_USE_PACKAGE(ROOT)
 GAUDI_USE_PACKAGE(AIDA)
 GAUDI_USE_PACKAGE(Boost)
@@ -11,7 +12,11 @@ GAUDI_USE_PACKAGE(XercesC)
 
 #---Libraries---------------------------------------------------------------
 GAUDI_COMPONENT_LIBRARY(GaudiUtils component/*.cpp LIBRARIES GaudiUtilsLib ${uuid_LIBRARIES} ${XercesC_LIBRARIES})
-GAUDI_LINKER_LIBRARY(GaudiUtilsLib Lib/*.cpp LIBRARIES GaudiKernel ${ROOT_LIBRARIES} RIO Hist)
+GAUDI_LINKER_LIBRARY(GaudiUtilsLib Lib/*.cpp LIBRARIES GaudiKernel ${ROOT_LIBRARIES} 
+                     ${ROOT_RIO_LIBRARY} ${ROOT_Hist_LIBRARY} )
 
 #---Installation------------------------------------------------------------
 GAUDI_INSTALL_HEADERS(GaudiUtils)
+
+#---This is needed by SET_RUNTIME_PATH() :-(-----------------------------------
+SET( GAUDI_LIBRARY_DIRS ${GAUDI_LIBRARY_DIRS} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE )

@@ -17,7 +17,7 @@
  *  @author Marco Clemencic
  *  @date   2006-09-21
  */
-class GAUDI_API IEventTimeDecoder: virtual public IAlgTool {
+class IEventTimeDecoder: virtual public IAlgTool {
 public:
   /// InterfaceID
   DeclareInterfaceID(IEventTimeDecoder,2,0);

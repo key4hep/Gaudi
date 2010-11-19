@@ -80,7 +80,7 @@ struct DefaultObjectCleaner: public std::unary_function<T*,T*>{
  *  @date   2006-05-02
  */
 template <class T, class CLEANER = DefaultObjectCleaner<T> >
-class GAUDI_API TransientFastContainer: public TransientFastContainerBase {
+class TransientFastContainer: public TransientFastContainerBase {
 public:
   // ---- types
   typedef T                                  contained_type;

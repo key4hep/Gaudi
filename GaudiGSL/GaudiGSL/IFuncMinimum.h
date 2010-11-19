@@ -26,7 +26,7 @@ namespace CLHEP {
  *  @date   2002-09-14
  */
 
-class GAUDI_API IFuncMinimum: virtual public IAlgTool {
+class IFuncMinimum: virtual public IAlgTool {
 public:
   /// InterfaceID
   DeclareInterfaceID(IFuncMinimum,2,0);

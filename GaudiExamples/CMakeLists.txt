@@ -52,11 +52,12 @@ StatusCodeSvc/*.cpp
 testing/*.cpp )
 
 GAUDI_COMPONENT_LIBRARY(GaudiExamples ${GaudiExamples_srcs} LIBRARIES GaudiExamplesLib)
-GAUDI_LINKER_LIBRARY(GaudiExamplesLib Lib/*.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib HepPDT HepPID Tree)
-GAUDI_PYTHON_MODULE(PyExample PythonModule/*.cpp LIBRARIES ${Boost_python} )
+GAUDI_LINKER_LIBRARY(GaudiExamplesLib Lib/*.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib HepPDT HepPID ${ROOT_Tree_LIBRARY})
+GAUDI_PYTHON_MODULE(PyExample PythonModule/*.cpp LIBRARIES ${Boost_python_LIBRARY} )
 
 #---Executables-------------------------------------------------------------
-GAUDI_EXECUTABLE(Allocator Allocator/*.cpp LIBRARIES GaudiExamplesLib GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES} RIO Hist ${CLHEP_LIBRARIES} ${GSL_LIBRARIES})
+GAUDI_EXECUTABLE(Allocator Allocator/*.cpp LIBRARIES GaudiExamplesLib GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES} 
+                 ${ROOT_RIO_LIBRARY} ${ROOT_Hist_LIBRARY} ${CLHEP_LIBRARIES} ${GSL_LIBRARIES})
 
 
 #---Dictionaries------------------------------------------------------------
