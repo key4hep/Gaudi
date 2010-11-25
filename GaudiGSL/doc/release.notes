@@ -3,6 +3,10 @@
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! =============================================================================
 
+! 2010-11-25 - Marco Clemencic
+ - Fixed Coverity detected defect
+   http://lhcb-coverity.cern.ch:8080/sourcebrowser.htm?projectId=10001#mergedDefectId=10027
+
 =============================== GaudiGSL v7r7 ================================
 ! 2010-08-24 - Marco Clemencic
  - Fixed a linkage problem with ICC.
@@ -28,7 +32,7 @@
    - cmt/requirements:
      removed "--as-needed" and "--no-as-needed", they do not work when linking
      executables (only for icc).
-   The test gaudiexamples.gsltools fails because of 
+   The test gaudiexamples.gsltools fails because of
      symbol lookup error: libgsl.so.0: undefined symbol: cblas_dnrm2
    probably we need some tuning of the link options.
 
@@ -67,7 +71,7 @@
  - Patch #2790: Rename the namespace MSG to Msg
 
 ! 2009-01-30 - Marco Clemencic
- - Replaced all the occurrences of endreq with endmsg. 
+ - Replaced all the occurrences of endreq with endmsg.
 
 ! 2009-01-29 - Marco Clemencic
  - Symbol visibility
@@ -118,7 +122,7 @@
 ================ GaudiGSL v6r1 =======================================
 ! 2004-07-06 - Pere Mato
  - requirements: adapted to use new LCGCMT interface packages
- 
+
 ================ GaudiGSL v6r0 =======================================
 ! 2004-03-06 - Vanya BELYAEV
 
@@ -159,81 +163,81 @@ removed file :
                             Modifcations in details:
                    ===============================================
 
- - src/Component/FuncMininum.cpp   
-       fix a compiler warning 
- - src/Component/EqSolver.cpp      
-       fix a compiler warning 
+ - src/Component/FuncMininum.cpp
+       fix a compiler warning
+ - src/Component/EqSolver.cpp
+       fix a compiler warning
 
- - GaudiMath/GSLFunAdapters.h 
-    - new file with adapters to "typical" GSL fucntions 
-   
- - improvemend with different adapters 
-  
- - GaudiMath/GaudiMath.h 
-       add NumericalDefiniteIntegral into namespace GaudiMath with name 
-       DefIntegral 
+ - GaudiMath/GSLFunAdapters.h
+    - new file with adapters to "typical" GSL fucntions
+
+ - improvemend with different adapters
+
+ - GaudiMath/GaudiMath.h
+       add NumericalDefiniteIntegral into namespace GaudiMath with name
+       DefIntegral
   - GaudiMath/Interpolation.h
-       new file with definition of Interpolation types 
+       new file with definition of Interpolation types
        available interpolation types:
-          - Linear 
-          - Polynomial 
-          - Cubic spline with natural  boundary conditions 
-          - Cubic spline with periodic boudary conditions 
-          - Akima spline with natural  boundary conditions 
-          - Akima spline with periodic boundary conditions 
-  - GaudiMath/Splines.h 
-      new classes 
-     SplineBase - more or less effective (but not inlined) 
-                  definition of spline function 
-     GSLSpline       - "GenericFunction" (Genfun) which performs spline 
-                       interpolation using SplineBase object 
-     GSLSplineDeriv  - "GenericFunction" (Genfun) which corresponds to 
-                       the first  derivative of spline function 
-     GSLSplineDeriv2 - "GenericFunction" (Genfun) which corresponds to 
-                       the second derivative of spline function 
-     GSLSplineInteg  - "GenericFunction" (Genfun) which corresponds to 
-                       the integral of spline function 
- 
-    All these objects are imported into gamespace GaudiMath under the names 
-     GaudiMath::SimpleSpline 
-     GaudiMath::Spline 
-     GaudiMath::SplineDeriv 
+          - Linear
+          - Polynomial
+          - Cubic spline with natural  boundary conditions
+          - Cubic spline with periodic boudary conditions
+          - Akima spline with natural  boundary conditions
+          - Akima spline with periodic boundary conditions
+  - GaudiMath/Splines.h
+      new classes
+     SplineBase - more or less effective (but not inlined)
+                  definition of spline function
+     GSLSpline       - "GenericFunction" (Genfun) which performs spline
+                       interpolation using SplineBase object
+     GSLSplineDeriv  - "GenericFunction" (Genfun) which corresponds to
+                       the first  derivative of spline function
+     GSLSplineDeriv2 - "GenericFunction" (Genfun) which corresponds to
+                       the second derivative of spline function
+     GSLSplineInteg  - "GenericFunction" (Genfun) which corresponds to
+                       the integral of spline function
+
+    All these objects are imported into gamespace GaudiMath under the names
+     GaudiMath::SimpleSpline
+     GaudiMath::Spline
+     GaudiMath::SplineDeriv
      GaudiMath::SplineDeriv2
-     GaudiMath::SplineInteg  
-      
+     GaudiMath::SplineInteg
+
     All objects have few constructors:
-     1)  "a'la Matt" 
-     FUN ( const std::vector<double>&           x    , 
-           const std::vector<double>&           y    , 
+     1)  "a'la Matt"
+     FUN ( const std::vector<double>&           x    ,
+           const std::vector<double>&           y    ,
            const GaudiMath::Interpolation::Type type ) ;
-     2) constructor from pairs (x,y(x)) 
-     FUN ( const std::vector<std::pair<double,double> >& data , 
+     2) constructor from pairs (x,y(x))
+     FUN ( const std::vector<std::pair<double,double> >& data ,
            const GaudiMath::Interpolation::Type          type ) ;
-     3) templated constructor in STL spirit 
+     3) templated constructor in STL spirit
         from 2 sequences
      template <class DATAX,class DATAY>
-     FUN ( DATAX  xbegin                            , 
-           DATAX  xend                              , 
-           DATAY  ybegin                            , 
+     FUN ( DATAX  xbegin                            ,
+           DATAX  xend                              ,
+           DATAY  ybegin                            ,
            const GaudMath::Interpolation::Type type ) ;
-     3) templated constructor in STL spirit 
+     3) templated constructor in STL spirit
         from sequence of (x,y(x)) pairs
       template <class DATA>
-     FUN ( DATA  begin                            , 
-           DATA  end                              , 
+     FUN ( DATA  begin                            ,
+           DATA  end                              ,
            const GaudMath::Interpolation::Type type ) ;
-      
-        This constructor is well suited to be used in conjuncion 
-        with class TabulatedPropery:  
-       
-        // tabulated property   
+
+        This constructor is well suited to be used in conjuncion
+        with class TabulatedPropery:
+
+        // tabulated property
         const TabulatedProperty* prop = ... ;
-        // create the interpolation function 
-        const GaudiMath::Function& fun = 
-               GaudiMath::Spline( prop->table().begin() , 
-                                  prop->table().end  () , 
+        // create the interpolation function
+        const GaudiMath::Function& fun =
+               GaudiMath::Spline( prop->table().begin() ,
+                                  prop->table().end  () ,
                                   GaudiMath::Interpolation::Akima ) ;
-         // use the constructed interpolation function 
+         // use the constructed interpolation function
          double value = fun( -1.0 ) ;
 
 ================ GaudiGSL v5r1 =======================================
@@ -246,45 +250,45 @@ removed file :
   GaudiGSL/IEqSolver.h                   the abstract interface
   src/Components/EqSolver.h, .cpp        the concrete implementation of solving tool
  - class Adapter is added
-  GaudiMath/Adapter.h                    convert function types "point to function" 
+  GaudiMath/Adapter.h                    convert function types "point to function"
   src/Lib/Adapter.cpp                    and "IFunction" to "GenFunction"
-					          
+
 ================ GaudiGSL v4r0 =======================================
 ! 2003-05-12 - Kirill Miklyaev
  - minimization tool is changed
  - the abstract interface is updated
  - error handling is added
 	GaudiGSL/IFuncMinimum.h     the abstact interface is changed
-	src/FuncMinimum.h, .cpp     the concrete implementation 
+	src/FuncMinimum.h, .cpp     the concrete implementation
                               of minimization tool are changed
  ================ GaudiGSL v3r0 =======================================
 ! 2003-01-22 - Kirill Miklyaev
  - minimization tool is changed
  - all static variables and static methods are removed
-  scr/FuncMinimum.h,.cpp      the concrete implementation 
+  scr/FuncMinimum.h,.cpp      the concrete implementation
                               of minimization tool are changed
 
 ================ GaudiGSL v2r0 =======================================
-! 2002-09-27 - Ivan Belyaev & Kirill Miklyaev 
- - new minimization tool is added   
-  GaudiGSL/IFuncMinimum.h     the abstract interface 
-  src/FuncMinimum.h,.cpp      the concrete implementation 
+! 2002-09-27 - Ivan Belyaev & Kirill Miklyaev
+ - new minimization tool is added
+  GaudiGSL/IFuncMinimum.h     the abstract interface
+  src/FuncMinimum.h,.cpp      the concrete implementation
                               of minimization tool
 
   Example of the configuration of minimization tool:
 
-// choice of underlying minimization algorithms: 
+// choice of underlying minimization algorithms:
 //  (1) conjugate_fr  ( default )
-//  (2) conjugate_pr 
-//  (3) vector_bfgs 
-//  (4) steepest_descendent 
-ToolSvc.FuncMinimum.Algorithm = "conjugate_fr" ;  /// default value 
- 
+//  (2) conjugate_pr
+//  (3) vector_bfgs
+//  (4) steepest_descendent
+ToolSvc.FuncMinimum.Algorithm = "conjugate_fr" ;  /// default value
+
 /// declare maximum of iteration
-ToolSvc.FuncMinimum.Iteration = 1000           ; // default value is 200 
- 
+ToolSvc.FuncMinimum.Iteration = 1000           ; // default value is 200
+
 /// declare the absolute tolerance for the Euclidean norm of the gradient
-ToolSvc.FuncMinimum.Gradient  = 1e-10          ; // defualt value 
+ToolSvc.FuncMinimum.Gradient  = 1e-10          ; // defualt value
 
 !==========================GaudiGSL v1r0=========================================
 ! 2001-05-12  Vanya Belyaev
