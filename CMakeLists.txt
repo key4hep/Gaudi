@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4.6)
 
 #---Do not know how to do this yet------------------------------
-INCLUDE(/build/mato/GAUDI/GAUDI_cmake/cmake/GaudiProject.cmake)
+INCLUDE($ENV{CMAKEGAUDIPROJECT})
 #---------------------------------------------------------------
 
 GAUDI_PROJECT(GAUDI v21r10p1)
