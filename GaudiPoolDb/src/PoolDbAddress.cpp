@@ -26,6 +26,7 @@ PoolDbAddress::PoolDbAddress(pool::Token* aToken)
   : m_refCount(0), m_pRegistry(0), m_handler(0), m_token(aToken)
 {
   s_count->increment();
+  m_ipar[0]=m_ipar[1]=0;
   if ( m_token )  {
     m_token->addRef();
     return;

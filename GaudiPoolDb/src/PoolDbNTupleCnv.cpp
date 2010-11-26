@@ -161,6 +161,9 @@ StatusCode createItem ( INTuple* tuple, std::istream& is,
   is >> len    >> c
      >> ndim   >> c
      >> hasIdx >> c;
+  if ( !is.good() ) {
+    return S_FAIL;
+  }
   if ( hasIdx )  {
     std::getline(is, idxName, ';') >> idxLow >> c >> idxLen >> c;
   }
@@ -207,8 +210,12 @@ StatusCode createItem ( INTuple* tuple, std::istream& is,
 template <class T> static inline
 void putRange(std::ostream& os, NTuple::_Data<T>* it)
 {
-  const NTuple::Range<T>& x = it->range();
-  os << x.lower() << ';' << x.upper() << ';';
+  if ( it ) {
+    const NTuple::Range<T>& x = it->range();
+    os << x.lower() << ';' << x.upper() << ';';
+    return;
+  }
+  os << "0;0;";  
 }
 
 /// Standard constructor
@@ -366,30 +373,32 @@ PoolDbNTupleCnv::updateObj(IOpaqueAddress* pAddr, DataObject* pObj)  {
   PoolDbAddress* pdbA = dynamic_cast<PoolDbAddress*>(pAddr);
   if ( 0 != tupl && 0 != pdbA )  {
     PoolDbTupleCallback* hdlr = dynamic_cast<PoolDbTupleCallback*>(pdbA->handler());
-    pool::DbSelect* it = hdlr->iterator();
-    if ( 0 == it )  {
-      it = hdlr->select(tupl->selector());
-    }
-    if ( it )  {
-      pool::Token* t = 0;
-      if ( hdlr->iterator()->next(t).isSuccess() )  {
-        std::auto_ptr<pool::Token> next(t);
-        // Now reload!
-        if ( bindRead(tupl, hdlr).isSuccess() )  {
-          // No support for SmartRefs<T> for N-tuples
-          //pushCurrentDataObject((DataObject**)&pObj);
-          if ( m_dbMgr->read(hdlr, *next.get()).isSuccess() )  {
-            if ( readData(tupl, hdlr).isSuccess() )  {
-              //popCurrentDataObject();
-              return S_OK;
-            }
-            //popCurrentDataObject();
-            return makeError("updateObj> Cannot interprete data.");
-          }
-          //popCurrentDataObject();
-          return makeError("updateObj> Cannot read data.");
-        }
-        return makeError("updateObj> Cannot bind data.");
+    if ( 0 != hdlr ) {
+      pool::DbSelect* it = hdlr->iterator();
+      if ( 0 == it )  {
+	it = hdlr->select(tupl->selector());
+      }
+      if ( it )  {
+	pool::Token* t = 0;
+	if ( hdlr->iterator()->next(t).isSuccess() )  {
+	  std::auto_ptr<pool::Token> next(t);
+	  // Now reload!
+	  if ( bindRead(tupl, hdlr).isSuccess() )  {
+	    // No support for SmartRefs<T> for N-tuples
+	    //pushCurrentDataObject((DataObject**)&pObj);
+	    if ( m_dbMgr->read(hdlr, *next.get()).isSuccess() )  {
+	      if ( readData(tupl, hdlr).isSuccess() )  {
+		//popCurrentDataObject();
+		return S_OK;
+	      }
+	      //popCurrentDataObject();
+	      return makeError("updateObj> Cannot interprete data.");
+	    }
+	    //popCurrentDataObject();
+	    return makeError("updateObj> Cannot read data.");
+	  }
+	  return makeError("updateObj> Cannot bind data.");
+	}
       }
       return S_FAIL;
     }
