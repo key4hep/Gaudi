@@ -178,7 +178,7 @@ PoolDbDataObjectHandler::bind(pool::DataCallBack::CallType action_type,
       *data_pointer = &m_refs;
       return pool::Success;
     }
-
+    break;
   case PUT:
     switch(col_number) {
     case 0:
@@ -192,6 +192,9 @@ PoolDbDataObjectHandler::bind(pool::DataCallBack::CallType action_type,
       *data_pointer = m_refs;
       return pool::Success;
     }
+    break;
+  default:
+    break;
   }
   return pool::Error;
 }
@@ -236,10 +239,10 @@ PoolDbDataObjectHandler::start( pool::DataCallBack::CallType action_type,
 
 /// Standard Constructor
 PoolDbBaseCnv::PoolDbBaseCnv(long typ, const CLID& clid, ISvcLocator* svc)
-: Converter(typ, clid, svc), m_objGuid(pool::Guid::null()), m_call(0)
+  : Converter(typ, clid, svc), m_dbMgr(0), m_dataMgr(0), 
+    m_objGuid(pool::Guid::null()), m_call(0)
 {
   s_count->increment();
-  m_dbMgr = 0;
   m_objGuid.Data1 = clid;
 }
 
@@ -393,7 +396,7 @@ PoolDbBaseCnv::setReferences(PoolDbLinkManager* mgr,
       // The fix should be removed when these files are obsolete
       if ( location.substr(0,7) == "/Event/" )  {
         size_t idx = location.rfind("/");
-        tmp = location.substr(idx);
+        tmp = (idx==std::string::npos) ? location : location.substr(idx);
         location = tmp;
       }
       sc = m_dataMgr->registerAddress(pReg, location, pA);

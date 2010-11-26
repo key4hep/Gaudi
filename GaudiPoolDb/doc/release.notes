@@ -1,6 +1,12 @@
 Package: GaudiPoolDb
 Package Manager: Markus Frank, Marco Clemencic
 
+
+! 2010-11-26 - Markus Frank
+ - Patch #4541
+   Fixes to address coverity errors:
+   bug #75702: Coverity detected defect: Operands don't affect result (id=10016)
+
 ============================== GaudiPoolDb v5r9 ==============================
 ! 2010-06-24 - Markus Frank
   - Patch #4210: Fix bug when reading event tag collections
