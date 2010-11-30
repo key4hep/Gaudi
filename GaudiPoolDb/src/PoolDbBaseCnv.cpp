@@ -310,6 +310,7 @@ StatusCode PoolDbBaseCnv::initialize()   {
     log << MSG::DEBUG << "Created object shape for class:"
         << m_class.Name(ROOT::Reflex::SCOPED) << endmsg
         << shapeH->toString() << endmsg;
+    shapeH->addRef();
     m_call = new PoolDbDataObjectHandler(m_class);
     m_call->setShape(shapeH);
   }
@@ -322,6 +323,11 @@ StatusCode PoolDbBaseCnv::initialize()   {
 
 /// Finalize the Db converter
 StatusCode PoolDbBaseCnv::finalize()   {
+  pool::DbTypeInfo* shapeH = 0;
+  if ( m_call ) {
+    shapeH = dynamic_cast<pool::DbTypeInfo*>((pool::Shape*)m_call->shape());
+    if ( shapeH ) shapeH->deleteRef();
+  }
   pool::releasePtr(m_call);
   pool::releasePtr(m_dbMgr);
   pool::releasePtr(m_dataMgr);
