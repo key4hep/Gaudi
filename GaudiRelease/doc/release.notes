@@ -1,6 +1,9 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+! 2010-11-30 - Marco Clemencic
+ - Added graphviz to the list of external packages needed by LHCb.
+
 ============================ GaudiRelease v21r11 =============================
 ! 2010-09-22 - Marco Clemencic
  - Added neurobayes to the list of external packages needed by LHCb.
