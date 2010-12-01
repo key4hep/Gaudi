@@ -1,6 +1,11 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2010-12-01 - Charles Leggett
+ - Added a reference to the Gaudi C++ namespace in AppMgr, so that it is still
+   available during "atexit".
+   (included in the attachment of bug #75834)
+
 ============================= GaudiPython v10r11 =============================
 ! 2010-08-24 - Marco Clemencic
  - Fixed a compilation problem on mac106.
