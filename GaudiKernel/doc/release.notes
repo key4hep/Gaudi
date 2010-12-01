@@ -1,6 +1,11 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2010-12-01 - Marco Clemencic
+ - Fixed bug #70770: inconsistent order of stop/finalize of sub-algorithms
+   As suggested, modified the order in which the sub-algorithms are stopped
+   to match the order in which they are finalized.
+
 ============================= GaudiKernel v27r11 =============================
 ! 2010-09-20 - Marco Clemencic
  - Fixed bug #70956: Add method to find the reason for termination of the
