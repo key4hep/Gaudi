@@ -1,5 +1,5 @@
 package PartPropSvc
-version v4r0
+version v4r1
 
 branches src cmt doc
 
@@ -29,5 +29,6 @@ private
 
 # apply_pattern install_runtime
 apply_pattern declare_joboptions files="PartPropSvc.py"
+#apply_pattern declare_runtime files="PDGTABLE PDGTABLE.MeV"
 
 

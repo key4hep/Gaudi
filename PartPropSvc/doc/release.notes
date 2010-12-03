@@ -1,6 +1,13 @@
 Package : ParticleProp
 Package manager : Charles Leggett
 
+============================== PartPropSvc v4r1 ==============================
+! 2010-12-03 - Charles Leggett
+ - Patch #76003: fix bug in initialize
+   - change default location of PDGTABLE to remove "share" dir. Should
+     really do this with a declare_runtime_extras to copy it to the Gaudi
+     InstallArea/share dir, but this seems to be broken.
+
 ============================== PartPropSvc v4r0 ==============================
 ! 2010-08-18 - Charles Leggett
  - Patch #4323: allow user defined heavy ion handling in PartPropSvc
