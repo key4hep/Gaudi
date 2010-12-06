@@ -19,7 +19,7 @@ use GaudiPolicy	   v10r9
 use Gaudi          v21r11
 
 # Gaudi libraries - generic
-use GaudiKernel    v27r11
+use GaudiKernel    v27r11p1
 use GaudiSvc       v18r11
 use GaudiAud       v9r3
 use GaudiAlg       v13r4
@@ -44,7 +44,7 @@ use GaudiExamples   v21r11
 
 
 # Atlas packages
-use PartPropSvc      v4r0
+use PartPropSvc      v4r1
 
 ### Mark the package as the container package of the project.
 apply_pattern container_package
