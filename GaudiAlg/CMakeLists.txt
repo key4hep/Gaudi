@@ -14,9 +14,3 @@ GAUDI_COMPONENT_LIBRARY(GaudiAlg components/*.cpp LIBRARIES GaudiAlgLib GaudiKer
 
 #---Installation------------------------------------------------------------
 GAUDI_INSTALL_HEADERS(GaudiAlg)
-
-#---This is needed by SET_RUNTIME_PATH() :-(-----------------------------------
-SET( GAUDI_LIBRARY_DIRS ${GAUDI_LIBRARY_DIRS} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE )
-
-
-

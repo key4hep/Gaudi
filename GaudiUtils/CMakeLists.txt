@@ -17,6 +17,3 @@ GAUDI_LINKER_LIBRARY(GaudiUtilsLib Lib/*.cpp LIBRARIES GaudiKernel ${ROOT_LIBRAR
 
 #---Installation------------------------------------------------------------
 GAUDI_INSTALL_HEADERS(GaudiUtils)
-
-#---This is needed by SET_RUNTIME_PATH() :-(-----------------------------------
-SET( GAUDI_LIBRARY_DIRS ${GAUDI_LIBRARY_DIRS} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE )

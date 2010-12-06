@@ -13,7 +13,7 @@
 import os, pickle, copy
 
 #---Useful global valiables-------------------------------------------------------------------------- 
-package = os.getcwd().split('/')[-2]
+package = os.getcwd().split(os.sep)[-2]
 project = os.popen('cmt show macro_value project').readlines()[0].strip()
 project_home = os.popen('cmt show macro_value %s_home' % project ).readlines()[0].strip()
 picklefile = '/tmp/%s/%s_libraries.pkl'% (os.environ['USER'], '%s')
@@ -31,14 +31,21 @@ def getlibs(library):
 
 replacetable = [('boost_system', '${Boost_LIBRARIES}'),
                 ('boost_filesystem', ''),
-                ('boost_regex', '${Boost_regex}'),
+                ('boost_regex', '${Boost_regex_LIBRARY}'),
                 ('boost_thread', ''),
                 ('boost_program_options', ''),
-                ('boost_date_time', '${Boost_date_time}'),
+                ('boost_date_time', '${Boost_date_time_LIBRARY}'),
                 ('=Core', '${ROOT_LIBRARIES}'),
                 ('=Cint', ''),
-                ('=Tree', ''),
+				('=Reflex', ''),
                 ('=dl', ''),
+                ('=Tree', '${ROOT_Tree_LIBRARY}'),
+                ('=RIO', ' ${ROOT_RIO_LIBRARY}'),
+                ('=Matrix','${ROOT_Matrix_LIBRARY}'),
+                ('=MathCore', '${ROOT_MathCore_LIBRARY}'),
+                ('=MathMore', '${ROOT_MathMore_LIBRARY}'),
+                ('=GenVector', '${ROOT_GenVector_LIBRARY}'),
+                ('=Hist', '${ROOT_Hist_LIBRARY}'),
                 ('=util', ''),
                 ('=xerces-c', '${XercesC_LIBRARIES}'),
                 ('=uuid', '${uuid_LIBRARIES}'),

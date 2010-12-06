@@ -54,9 +54,9 @@ namespace Gaudi
           Gaudi::Examples::MyTrack* track = new Gaudi::Examples::MyTrack() ;
           
           // fill it with some "data"
-          track -> setPx ( gauss ()           ) ;
-          track -> setPy ( gauss ()           ) ;
-          track -> setPz ( gauss () + flat () ) ;
+          track -> setPx ( (float)gauss ()           ) ;
+          track -> setPy ( (float)gauss ()           ) ;
+          track -> setPz ( (float)gauss () + flat () ) ;
           
           // insert it into the container 
           tracks -> insert ( track ) ;

@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.4.6)
 cmake_policy(SET CMP0003 NEW) # See "cmake --help-policy CMP0003" for more details
 cmake_policy(SET CMP0011 NEW) # See "cmake --help-policy CMP0011" for more details
 cmake_policy(SET CMP0009 NEW) # See "cmake --help-policy CMP0009" for more details
+
+
 #---------------------------------------------------------------------------------------------------
 #---GAUDI_PROJECT( project version)
 #---------------------------------------------------------------------------------------------------
@@ -28,17 +30,49 @@ macro(GAUDI_PROJECT project version)
   #--- Project Options and Global settings----------------------------------------------------------
   option(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
   option(BUILD_TESTS "Set to ON to build the tests (libraries and executables)" OFF)
+  #-------------------------------------------------------------------------------------------------
+  #--- Build type and tag strings-------------------------------------------------------------------
+
+  set(opt2buildtype Release)
+  set(dbg2buildtype Debug)
+  set(Debug2type dbg)
+  set(Release2type opt)
+  
+  if(DEFINED ENV{CMAKECONFIG})
+    set(tag $ENV{CMAKECONFIG})
+  elseif(DEFINED ENV{CMTCONFIG})
+    set(tag $ENV{CMTCONFIG})
+  else()
+    GAUDI_BINARY_TAG(tag)
+  endif()
+  string(REGEX MATCHALL "[^-]+" out ${tag})
+  list(GET out 0 arch)
+  list(GET out 1 os)
+  list(GET out 2 comp)
+  list(GET out 3 type)
+  
   if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release CACHE STRING
-      "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
+    set(CMAKE_BUILD_TYPE ${${type}2buildtype} CACHE STRING
+        "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
   endif()
 
-  GAUDI_BINARY_TAG()
+  set(BINARY_TAG_PREFIX ${arch}-${os}-${comp} CACHE STRING "Installation binary tag prefix. The final tag will be made using the BUILD_TYPE" )
+  set(BINARY_TAG ${BINARY_TAG_PREFIX}-${${CMAKE_BUILD_TYPE}2type}) 
 
-  if(CMAKE_INSTALL_PREFIX STREQUAL /usr/local OR CMAKE_INSTALL_PREFIX STREQUAL "C:/Program Files/Project")
+  if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/InstallArea/${BINARY_TAG} CACHE PATH 
       "Install path prefix, prepended onto install directories." FORCE )
   endif()
+  
+  if( NOT EXECUTABLE_OUTPUT_PATH)
+    set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE STRING 
+	   "Single build output directory for all executables" FORCE)
+  endif()
+  if( NOT LIBRARY_OUTPUT_PATH)
+    set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib CACHE STRING 
+	   "Single build output directory for all libraries" FORCE)
+  endif()
+  
 
   if(BUILD_TESTS) 
     enable_testing()
@@ -63,27 +97,9 @@ endmacro()
 #---GAUDI_BINARY_TAG()
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_BINARY_TAG)
-  if( DEFINED ENV{CMAKECONFIG} )
-    string(REGEX MATCHALL "[^-]+" out $ENV{CMAKECONFIG})
-    list(GET out 0 arch)
-    list(GET out 1 os)
-    list(GET out 2 comp)
-  elseif( DEFINED ENV{CMTCONFIG}  )
-    string(REGEX MATCHALL "[^-]+" out $ENV{CMTCONFIG})
-    list(GET out 0 arch)
-    list(GET out 1 os)
-    list(GET out 2 comp)
-  else()
-  endif()
-  if( CMAKE_BUILD_TYPE STREQUAL Release )
-    set(type opt)
-  elseif( CMAKE_BUILD_TYPE STREQUAL Debug )
-    set(type dbg)
-  else()
-    set(type)
-  endif()
-  set(BINARY_TAG_PREFIX ${arch}-${os}-${comp} CACHE STRING "Installation binary tag prefix. The final tag will be made using the BUILD_TYPE" )
-  set(BINARY_TAG ${BINARY_TAG_PREFIX}-${type} PARENT_SCOPE) 
+  message("CMAKE_SYSTEM --> ${CMAKE_SYSTEM}")
+  execute_process(COMMAND uname -i OUTPUT_VARIABLE arch)
+  message("arch --> ${arch}")
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -96,13 +112,13 @@ macro( GAUDI_FIND_PROJECT project version)
       if(${version} STREQUAL "*")
         file(GLOB installations ${path}/${project}/${project}_* )
         foreach( installation ${installations})
-          if(EXISTS ${installation}/InstallArea/cmake )
+          if(EXISTS ${installation}/InstallArea/${BINARY_TAG}/cmake )
             set(${project}_installation ${installation})
             break()
           endif()
         endforeach()
       else()
-        if(EXISTS  ${path}/${project}/${project}_${version}/InstallArea/cmake)
+        if(EXISTS  ${path}/${project}/${project}_${version}/InstallArea/${BINARY_TAG}/cmake)
           set(${project}_installation ${path}/${project}/${project}_${version})
           break()
         endif()
@@ -117,7 +133,7 @@ macro( GAUDI_FIND_PROJECT project version)
     message("Found project ${project} with version ${version} at ${${project}_installation}")
     set(${project}_found 1)
     set(${project}_installarea ${${project}_installation}/InstallArea)
-    set(${project}_binaryarea  ${${project}_installation}/InstallArea/$ENV{CMTCONFIG})
+    set(${project}_binaryarea  ${${project}_installation}/InstallArea/${BINARY_TAG})
   else()
     message(ERROR " Project ${project} with version ${version} not found!!")
   endif()
@@ -130,18 +146,22 @@ macro( GAUDI_USE_PROJECT project version )
   if( NOT ${project}_used )
     GAUDI_FIND_PROJECT(${project} ${version})  
     if( ${project}_installation )
-
+	  if(WIN32)
+        set(dllpath PATH)
+      else()
+        set(dllpath LD_LIBRARY_PATH)
+      endif()
       #------Set the list of variables to make a effective 'use' of the project-----
       get_property(projects GLOBAL PROPERTY PROJECTS_FOUND)
       set_property(GLOBAL PROPERTY PROJECTS_FOUND ${projects} ${project})
       get_property(projects GLOBAL PROPERTY PROJECTS_FOUND)
-      set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${${project}_installarea}/cmake)
-      include_directories( ${${project}_installarea}/include )
+      set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${${project}_binaryarea}/cmake)
+      include_directories( ${${project}_binaryarea}/include )
       link_directories( ${${project}_binaryarea}/lib )
-      set(${project}_environment LD_LIBRARY_PATH+=${${project}_binaryarea}/lib 
+      set(${project}_environment ${dllpath}+=${${project}_binaryarea}/lib 
                                  PATH+=${${project}_binaryarea}/bin
-                                 PATH+=${${project}_installarea}/scripts
-                                 PYTHONPATH+=${${project}_installarea}/python )
+                                 PATH+=${${project}_binaryarea}/scripts
+                                 PYTHONPATH+=${${project}_binaryarea}/python )
       include(${project}Exports)
       set(${project}_used 1)
       #------------------------------------------------------------------------------
