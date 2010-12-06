@@ -7,11 +7,11 @@ version v13r4
 branches        GaudiAlg src cmt doc
 
 # ============== dependencies =================================================
-use             GaudiKernel v* 
-use             GaudiUtils  v* 
-use		ROOT	    v* LCG_Interfaces
-use             AIDA        v* LCG_Interfaces -no_auto_imports
-use             Boost       v* LCG_Interfaces -no_auto_imports
+use             GaudiKernel * 
+use             GaudiUtils  * 
+use		ROOT	    * LCG_Interfaces
+use             AIDA        * LCG_Interfaces -no_auto_imports
+use             Boost       * LCG_Interfaces -no_auto_imports
  
 # ============== own includes =================================================
 apply_pattern install_more_includes more="GaudiAlg"

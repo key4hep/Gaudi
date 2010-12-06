@@ -2,11 +2,11 @@ package GaudiSvc
 version v18r11
 
 branches src cmt doc
-use GaudiKernel v*
-use CLHEP       v* LCG_Interfaces -no_auto_imports
-use AIDA        v* LCG_Interfaces -no_auto_imports
-use Boost       v* LCG_Interfaces -no_auto_imports
-use ROOT        v* LCG_Interfaces -no_auto_imports
+use GaudiKernel *
+use CLHEP       * LCG_Interfaces -no_auto_imports
+use AIDA        * LCG_Interfaces -no_auto_imports
+use Boost       * LCG_Interfaces -no_auto_imports
+use ROOT        * LCG_Interfaces -no_auto_imports
 
 
 # build the component library
