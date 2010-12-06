@@ -1,8 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
-
-
+============================= GaudiKernel v27r11p1 =============================
 ! 2010-12-05 - Charles Leggett
  - Added PathResolver tests as per patch #4394
    M cmt/requirements

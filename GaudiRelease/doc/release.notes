@@ -1,8 +1,16 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+============================ GaudiRelease v21r11p2 =============================
+! 2010-12-06 - Charles Leggett
+ - Updated GaudiKernel to v27r11p1
+
 ! 2010-11-30 - Marco Clemencic
  - Added graphviz to the list of external packages needed by LHCb.
+
+============================ GaudiRelease v21r11p1 =============================
+! 2010-12-03 - Charles Leggett
+ - Updated PartPropSvc to v4r1
 
 ============================ GaudiRelease v21r11 =============================
 ! 2010-09-22 - Marco Clemencic
