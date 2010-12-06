@@ -1,6 +1,16 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+
+
+! 2010-12-05 - Charles Leggett
+ - Added PathResolver tests as per patch #4394
+   M cmt/requirements
+   A tests/PathResolver/...
+   A tests/src/PathResolver_test.cpp
+ - bug #76057: PathResolver looks for file as if fully specified first
+   M src/Lib/PathResolver.cpp
+
 ! 2010-12-01 - Marco Clemencic
  - Fixed bug #70770: inconsistent order of stop/finalize of sub-algorithms
    As suggested, modified the order in which the sub-algorithms are stopped

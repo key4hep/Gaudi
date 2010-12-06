@@ -60,6 +60,8 @@ macro_append Boost_linkopts ' $(Boost_linkopts_system) $(Boost_linkopts_filesyst
 
 application DirSearchPath_test -group=tests ../tests/src/DirSearchPath_test.cpp
 
+application PathResolver_test -group=tests ../tests/src/PathResolver_test.cpp
+
 use CppUnit v* LCG_Interfaces -no_auto_imports
 
 application test_SerializeSTL -group=tests -import=CppUnit \
