@@ -10,9 +10,9 @@ private
 apply_tag skip_genconfuser
 end_private
 
-use GaudiPolicy  v*
-use Reflex       v*   LCG_Interfaces
-use Boost        v*   LCG_Interfaces
+use GaudiPolicy  *
+use Reflex       *   LCG_Interfaces
+use Boost        *   LCG_Interfaces
 
 apply_pattern install_more_includes more=GaudiKernel
 
@@ -62,7 +62,7 @@ application DirSearchPath_test -group=tests ../tests/src/DirSearchPath_test.cpp
 
 application PathResolver_test -group=tests ../tests/src/PathResolver_test.cpp
 
-use CppUnit v* LCG_Interfaces -no_auto_imports
+use CppUnit * LCG_Interfaces -no_auto_imports
 
 application test_SerializeSTL -group=tests -import=CppUnit \
                        ../tests/src/test_SerializeSTL.cpp

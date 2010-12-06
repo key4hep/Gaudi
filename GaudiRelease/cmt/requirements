@@ -51,11 +51,11 @@ apply_pattern container_package
 
 # Simple pattern for LHCb external packages
 pattern LHCb_external \
-    macro <pkg>_use "" LHCb<ext> "<pkg> v* LCG_Interfaces" ; \
+    macro <pkg>_use "" LHCb<ext> "<pkg> * LCG_Interfaces" ; \
     use $(<pkg>_use)
 
 pattern LHCb_external_cond \
-    macro <pkg>_use "" <except> "" LHCb<ext> "<pkg> v* LCG_Interfaces" ; \
+    macro <pkg>_use "" <except> "" LHCb<ext> "<pkg> * LCG_Interfaces" ; \
     use $(<pkg>_use)
 
 # -- LHCb external packages --

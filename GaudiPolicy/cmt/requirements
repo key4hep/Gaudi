@@ -8,7 +8,7 @@ use LCG_Settings *
 use Python * LCG_Interfaces -no_auto_imports
 
 # Add Google malloc replacement to the LD_LIBRARY_PATH
-use tcmalloc v* LCG_Interfaces -no_auto_imports
+use tcmalloc * LCG_Interfaces -no_auto_imports
 
 # Note: Local installations except WinXP use the optimized versions of the AA
 #       projects instead of the debug ones.
@@ -230,11 +230,11 @@ make_fragment python_init -header=python_init_header
 #
 # Usage:
 #
-#   use Python v* LCG_Interfaces -no_auto_imports
+#   use Python * LCG_Interfaces -no_auto_imports
 #   apply_pattern pyd_module module=MyPyModule files=MyPyModule/*.cpp deps=MyPackageLib
 #
-#   use Python v* LCG_Interfaces -no_auto_imports
-#   use Boost v* LCG_Interfaces -no_auto_imports
+#   use Python * LCG_Interfaces -no_auto_imports
+#   use Boost * LCG_Interfaces -no_auto_imports
 #   apply_pattern pyd_boost_module module=MyPyModule files=MyPyModule/*.cpp deps=MyPackageLib
 #
 # Notes:
@@ -960,10 +960,10 @@ pattern use_genconf_helper_lib \
 # this use statement is here only to get the building order right
 # ie: tell CMT that genconf needs (at runtime) the GaudiSvc component
 #     library to be available for loading.
-macro use_GaudiSvc "GaudiSvc v* -no_auto_imports" \
+macro use_GaudiSvc "GaudiSvc * -no_auto_imports" \
         no_genconf "" \
-        do_genconf "GaudiSvc v* -no_auto_imports" \
-        ATLAS "GaudiSvc v* -no_auto_imports"
+        do_genconf "GaudiSvc * -no_auto_imports" \
+        ATLAS "GaudiSvc * -no_auto_imports"
 
 # if one wants to modify this pattern, the correction has to be made also
 # in the GaudiSvc requirements file since it is using directly
@@ -1041,7 +1041,7 @@ action TestProject "echo You need to apply the pattern QMTestSummarize to use th
 # Pattern used internally by the 2 main patterns
 pattern QMTestCommon \
   private ; \
-    macro use_qmtest "" QMTest "QMtest v* LCG_Interfaces -no_auto_imports" ; \
+    macro use_qmtest "" QMTest "QMtest * LCG_Interfaces -no_auto_imports" ; \
     use $(use_qmtest) ; \
     macro use_pytools "" QMTest "pytools * LCG_Interfaces -no_auto_imports" ; \
     use $(use_pytools) ; \
@@ -1135,7 +1135,7 @@ pattern disable_package_on \
 # (Marco Clemencic)
 #-------------------------------------------------------------------
 pattern GaudiApp \
-    use Gaudi v* ; \
+    use Gaudi * ; \
     set GAUDIAPPNAME "<package>" ; \
     set GAUDIAPPVERSION "<version>"
 

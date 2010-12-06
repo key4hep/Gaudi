@@ -6,9 +6,9 @@ branches doc cmt
 
 #---Gaudi libraries - generic
 
-use GaudiKernel    v*
-use GaudiSvc       v* -no_auto_imports
-use GaudiAud       v* -no_auto_imports
-use GaudiAlg       v* -no_auto_imports
+use GaudiKernel    *
+use GaudiSvc       * -no_auto_imports
+use GaudiAud       * -no_auto_imports
+use GaudiAlg       * -no_auto_imports
 # Needed by gaudirun.py
-use GaudiPython    v* -no_auto_imports
+use GaudiPython    * -no_auto_imports
