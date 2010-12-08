@@ -1,0 +1,15 @@
+#-- start of cpp_library -----------------
+
+# $(bin)$(binobj)${NAME}${CONSTITUENTSUFFIX}.d :: $(use_requirements) $(cmt_final_setup_${CONSTITUENT})
+
+-include $(bin)$(binobj)${NAME}${CONSTITUENTSUFFIX}.d
+
+
+
+$(bin)$(binobj)${NAME}${CONSTITUENTSUFFIX}.o $(bin)$(binobj)${NAME}${CONSTITUENTSUFFIX}.d : ${FULLNAME}  $(use_requirements) $(cmt_final_setup_${CONSTITUENT})
+	$(cpp_echo) ${FULLNAME}
+	$(cpp_silent) mkdir -p $(@D)
+	$(cpp_silent) $(cppcomp) -MP -MMD -MT $(bin)$(binobj)${NAME}${CONSTITUENTSUFFIX}.o -MT $(bin)$(binobj)${NAME}${CONSTITUENTSUFFIX}.d -o $(bin)$(binobj)${NAME}${CONSTITUENTSUFFIX}.o $(use_pp_cppflags) $(${CONSTITUENT}_pp_cppflags) $(app_${CONSTITUENT}_pp_cppflags) $(${NAME}_pp_cppflags) $(use_cppflags) $(${CONSTITUENT}_cppflags) $(app_${CONSTITUENT}_cppflags) $(${NAME}_cppflags) $(${NAME}_${FILESUFFIX}_cppflags) ${ADDINCLUDE} ${FULLNAME}
+
+
+#-- end of cpp_library ------------------

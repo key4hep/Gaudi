@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-12-08 - Hubert Degaudenzi
+ - Initial commit for gcc native dependency calculations.
+
 ! 2010-11-16 - Charles Leggett
  - Fixed 32bit compilation with ICC on 64bit host.
 
