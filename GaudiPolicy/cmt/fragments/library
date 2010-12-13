@@ -1,12 +1,12 @@
 #-- start of libary ----------------------
 
 ${CONSTITUENT}LIB :: $(${CONSTITUENT}lib) $(${CONSTITUENT}shstamp)
-	@/bin/echo "------> ${CONSTITUENT} : library ok"
+	$(echo) "${CONSTITUENT} : library ok"
 
 $(${CONSTITUENT}lib) :: ${OBJS}
-	$(lib_echo) library
-	$(lib_silent) cd $(bin); \
-	  $(ar) $(${CONSTITUENT}lib) $?
+	$(lib_echo) "static library $@"
+	$(lib_silent) [ ! -f $@ ] || \rm -f $@
+	$(lib_silent) $(ar) $(${CONSTITUENT}lib) ${OBJS}
 	$(lib_silent) $(ranlib) $(${CONSTITUENT}lib)
 	$(lib_silent) cat /dev/null >$(${CONSTITUENT}stamp)
 
@@ -27,14 +27,16 @@ $(${CONSTITUENT}lib) :: ${OBJS}
 #
 
 $(${CONSTITUENT}libname).$(shlibsuffix) :: $(${CONSTITUENT}lib) requirements $(use_requirements) $(${CONSTITUENT}stamps)
-	$(lib_silent) cd $(bin); QUIET=$(QUIET); $(make_shlib) "$(tags)" ${CONSTITUENT} $(${CONSTITUENT}_shlibflags)
+	$(lib_echo) "shared library $@"
+	$(lib_silent) if test "$(makecmd)"; then QUIET=; else QUIET=1; fi; QUIET=$${QUIET} bin=$(bin) $(make_shlib) "$(tags)" ${CONSTITUENT} $(${CONSTITUENT}_shlibflags)
 
 $(${CONSTITUENT}shstamp) :: $(${CONSTITUENT}libname).$(shlibsuffix)
-	@if test -f $(${CONSTITUENT}libname).$(shlibsuffix) ; then cat /dev/null >$(${CONSTITUENT}shstamp) ; fi
+	$(lib_silent) if test -f $(${CONSTITUENT}libname).$(shlibsuffix) ; then cat /dev/null >$(${CONSTITUENT}shstamp) ; fi
 
 ${CONSTITUENT}clean ::
-	$(cleanup_echo) objects
-	$(cleanup_silent) cd $(bin); /bin/rm -f ${OBJS}
+	$(cleanup_echo) objects ${CONSTITUENT}
+	$(cleanup_silent) /bin/rm -f ${OBJS}
+	$(cleanup_silent) /bin/rm -f $(patsubst %.o,%.d,${OBJS}) $(patsubst %.o,%.dep,${OBJS}) $(patsubst %.o,%.d.stamp,${OBJS})
 	$(cleanup_silent) cd $(bin); /bin/rm -rf ${CONSTITUENT}_deps ${CONSTITUENT}_dependencies.make
 
 #-----------------------------------------------------------------
@@ -51,32 +53,31 @@ ${CONSTITUENT} :: ${CONSTITUENT}install
 install :: ${CONSTITUENT}install
 
 ${CONSTITUENT}install :: $(install_dir)/$(${CONSTITUENT}installname)
-	@if test ! "${CMTINSTALLAREA}" = ""; then\
-	  echo "installation done"; \
-	fi
+ifdef CMTINSTALLAREA
+	$(echo) "installation done"
+endif
 
 $(install_dir)/$(${CONSTITUENT}installname) :: $(bin)$(${CONSTITUENT}installname)
-	@if test ! "${CMTINSTALLAREA}" = ""; then \
-	  $(cmt_install_action) \
+ifdef CMTINSTALLAREA
+	$(install_silent) $(cmt_install_action) \
 	    -source "`(cd $(bin); pwd)`" \
 	    -name "$(${CONSTITUENT}installname)" \
 	    -out "$(install_dir)" \
 	    -cmd "$(cmt_installarea_command)" \
-	    -cmtpath "$($(package)_cmtpath)" ; \
-	fi
+	    -cmtpath "$($(package)_cmtpath)"
+endif
 
 ##${CONSTITUENT}clean :: ${CONSTITUENT}uninstall
 
 uninstall :: ${CONSTITUENT}uninstall
 
 ${CONSTITUENT}uninstall ::
-	@if test ! "${CMTINSTALLAREA}" = ""; then \
-	  $(cmt_uninstall_action) \
+ifdef CMTINSTALLAREA
+	$(cleanup_silent) $(cmt_uninstall_action) \
 	    -source "`(cd $(bin); pwd)`" \
 	    -name "$(${CONSTITUENT}installname)" \
 	    -out "$(install_dir)" \
-	    -cmtpath "$($(package)_cmtpath)" ; \
-	fi
-
+	    -cmtpath "$($(package)_cmtpath)"
+endif
 
 #-- end of libary -----------------------
