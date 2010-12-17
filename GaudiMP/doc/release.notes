@@ -1,0 +1,6 @@
+Package: GaudiMP
+Package manager : Sebastien Binet
+
+! 2010-12-16 - Sebastien Binet
+ - Patch #4074: migrate GaudiPython.Parallel to multiprocessing
+   First import

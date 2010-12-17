@@ -10,7 +10,7 @@
 // in python.  Sometimes, creating the buffer internally was causing errors when using TMessages and 
 // TSockets.  Creating the empty buffer in python and passing as an argument fixes this.
 
-#include "GaudiPython/TESSerializer.h"
+#include "GaudiMP/TESSerializer.h"
 
 // Framework include files
 #include "GaudiKernel/IRegistry.h"
@@ -45,7 +45,7 @@ namespace {
 using namespace std;
 
 
-bool GaudiPython::TESSerializer::analyse(IRegistry* dir, int level)   {
+bool GaudiMP::TESSerializer::analyse(IRegistry* dir, int level)   {
   if ( level < m_currentItem->depth() )   {
     if ( dir->object() != 0 )   {
       m_objects.push_back(dir->object());
@@ -55,13 +55,13 @@ bool GaudiPython::TESSerializer::analyse(IRegistry* dir, int level)   {
   return false;
 }
 
-GaudiPython::TESSerializer::TESSerializer( IDataProviderSvc* svc )
+GaudiMP::TESSerializer::TESSerializer( IDataProviderSvc* svc )
   : m_TES(svc) 
 {
   m_TESMgr = dynamic_cast<IDataManagerSvc*>(svc);
 }
 
-void GaudiPython::TESSerializer::dumpBuffer(TBufferFile& buffer) {
+void GaudiMP::TESSerializer::dumpBuffer(TBufferFile& buffer) {
   StatusCode status;
   DataObject* obj;
 
@@ -140,7 +140,7 @@ void GaudiPython::TESSerializer::dumpBuffer(TBufferFile& buffer) {
 }
 
 /* ----------- define loads --------------------- */
-void GaudiPython::TESSerializer::loadBuffer(TBufferFile& buffer) {
+void GaudiMP::TESSerializer::loadBuffer(TBufferFile& buffer) {
   
   // reverse mechanism of dumps
   // buffer is: length of DataObjects vector, location string, type name string, the object itself, num of links, list of links
@@ -193,17 +193,17 @@ void GaudiPython::TESSerializer::loadBuffer(TBufferFile& buffer) {
 }
 
 // Add item to output to list for serialization (protected)
-void GaudiPython::TESSerializer::addItem(Items& itms, const std::string& path, int level)   {
+void GaudiMP::TESSerializer::addItem(Items& itms, const std::string& path, int level)   {
   DataStoreItem* item = new DataStoreItem(path, level);
   itms.push_back( item );
 }
 
 // Add item to serialization list; ie append to std::vector of DataStoreItems
-void GaudiPython::TESSerializer::addItem(const std::string& path, int level)   {
+void GaudiMP::TESSerializer::addItem(const std::string& path, int level)   {
   addItem( m_itemList, path, level);
 }
 
 // Add item to output streamer list
-void GaudiPython::TESSerializer::addOptItem(const std::string& path, int level)   {
+void GaudiMP::TESSerializer::addOptItem(const std::string& path, int level)   {
   addItem( m_optItemList, path, level);
 }

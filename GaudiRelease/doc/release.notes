@@ -1,6 +1,10 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+! 2010-12-16 - Sebastien Binet
+ - Patch #4074: migrate GaudiPython.Parallel to multiprocessing
+   Added new package GaudiMP.
+
 ============================ GaudiRelease v21r11p2 =============================
 ! 2010-12-06 - Charles Leggett
  - Updated GaudiKernel to v27r11p1
