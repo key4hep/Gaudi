@@ -4,6 +4,8 @@ version v1r0
 branches      GaudiMP cmt doc src dict python scripts
 
 use GaudiKernel        *
+use GaudiPython        * -no_auto_imports
+
 use Python             *  LCG_Interfaces -no_auto_imports
 use Reflex             *  LCG_Interfaces -no_auto_imports
 use ROOT               *  LCG_Interfaces -no_auto_imports

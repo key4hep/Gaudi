@@ -18,8 +18,14 @@ if __name__ == "__main__":
                       help="format printed options in old option files style")
     parser.add_option("--all-opts", action="store_true",
                       help="print all the option (even if equal to default)")
-    parser.add_option("--parallel", action="store", dest="ncpus", type="int",
-                      help="start the application in parallel mode using NCPUS processes")
+    # GaudiPython Parallel Mode Option
+    #   Argument must be an integer in range [ -1, sys_cpus ]
+    #   -1   : All available cpus
+    #    0   : Serial Mode (traditional gaudirun)
+    #    n>0 : parallel with n cpus (n <= sys_cpus)
+    parser.add_option("--ncpus", action="store", type="int", default=0,
+                      help="start the application in parallel mode using NCPUS processes. "
+                           "0 => serial mode (default), -1 => use all CPUs")
 
     def option_cb(option, opt, value, parser):
         """Add the option line to a list together with its position in the
@@ -28,8 +34,8 @@ if __name__ == "__main__":
         parser.values.options.append((len(parser.largs), value))
     parser.add_option("--option", action="callback", callback=option_cb,
                       type = "string", nargs = 1,
-                      help="add a single line (Python) option to the configuration." +
-                           "All options lines are executed, one after the other, in " +
+                      help="add a single line (Python) option to the configuration. "
+                           "All options lines are executed, one after the other, in "
                            "the same context.")
     parser.add_option("--no-conf-user-apply", action="store_true",
                       help="disable the automatic application of configurable "
@@ -44,8 +50,8 @@ if __name__ == "__main__":
     parser.add_option("--post-option", action="append", type="string",
                       dest="post_options",
                       help="Python options to be executed after the ConfigurableUser "
-                           "are applied." 
-                           "All options lines are executed, one after the other, in " +
+                           "are applied. "
+                           "All options lines are executed, one after the other, in "
                            "the same context.")
     parser.add_option("--debug", action="store_true",
                       help="enable some debug print-out")
@@ -61,16 +67,34 @@ if __name__ == "__main__":
                         tcmalloc = False,
                         ncpus = None)
 
-    opts, args = parser.parse_args() 
-    
+    opts, args = parser.parse_args()
+
     # Check consistency of options
-    if opts.ncpus is not None and opts.ncpus < 1:
-        parser.error("Invalid value for --parallel: must be >= 1")
-    
+
+    # Parallel Option ---------------------------------------------------------
+    from commands import getstatusoutput as gso
+    if opts.ncpus != None :
+        # try to find the max number of cpus in system (with builtin modules!)
+        stat, out = gso('cat /proc/cpuinfo | grep processor | wc -l')
+        if stat :
+            # command failed, set a default
+            sys_cpus = 8
+        else :
+            sys_cpus = int(out)
+        if opts.ncpus < -1 :
+            s = "Invalid value : --ncpus must be integer >= -1"
+            parser.error( s )
+        if opts.ncpus > sys_cpus :
+            s = "Invalid value : --ncpus : only %i cpus available"%(sys_cpus)
+            parser.error( s )
+        if opts.ncpus == 0 :
+            # revert to serial version, as if the option was not used.
+            opts.ncpus = None
+
     # configure the logging
     import logging
     from GaudiKernel.ProcessJobOptions import InstallRootLoggingHandler
-    
+
     if opts.old_opts: prefix = "// "
     else: prefix = "# "
     level = logging.INFO
@@ -78,7 +102,7 @@ if __name__ == "__main__":
         level = logging.DEBUG
     InstallRootLoggingHandler(prefix, level = level)
     root_logger = logging.getLogger()
-    
+
     # tcmalloc support
     if opts.tcmalloc:
         libname = os.environ.get("TCMALLOCLIB", "libtcmalloc.so")
@@ -95,7 +119,7 @@ if __name__ == "__main__":
         else:
             logging.warning("Option --tcmalloc ignored because the library %s is "
                             " already in LD_PRELOAD.", libname)
-    
+
     if opts.pickle_output:
         if opts.output:
             root_logger.error("Conflicting options: use only --pickle-output or --output")
@@ -103,7 +127,7 @@ if __name__ == "__main__":
         else:
             root_logger.warning("--pickle-output is deprecated, use --output instead")
             opts.output = opts.pickle_output
-    
+
     from Gaudi.Main import gaudimain
     c = gaudimain()
 
@@ -112,12 +136,12 @@ if __name__ == "__main__":
     # decides to do importOptions or exec)
     options = [ "importOptions(%r)" % f for f in args ]
     # The option lines are inserted into the list of commands using their
-    # position on the command line 
+    # position on the command line
     optlines = list(opts.options)
     optlines.reverse() # this allows to avoid to have to care about corrections of the positions
     for pos, l in optlines:
         options.insert(pos,l)
-    
+
     # "execute" the configuration script generated (if any)
     if options:
         g = {}
@@ -126,17 +150,17 @@ if __name__ == "__main__":
         for o in options:
             logging.debug(o)
             exec o in g, l
-    
+
     import GaudiKernel.Proxy.Configurable
     if opts.no_conf_user_apply:
         logging.info("Disabling automatic apply of ConfigurableUser")
         # pretend that they have been already applied
         GaudiKernel.Proxy.Configurable._appliedConfigurableUsers_ = True
-    
+
     # This need to be done before dumping
     from GaudiKernel.Proxy.Configurable import applyConfigurableUsers
     applyConfigurableUsers()
-    
+
     # Options to be processed after applyConfigurableUsers
     if opts.post_options:
         g = {}
@@ -145,7 +169,7 @@ if __name__ == "__main__":
         for o in opts.post_options:
             logging.debug(o)
             exec o in g, l
-    
+
     if opts.verbose:
         c.printconfig(opts.old_opts, opts.all_opts)
     if opts.output:

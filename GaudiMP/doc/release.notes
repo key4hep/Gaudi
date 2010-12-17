@@ -1,6 +1,17 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+! 2010-12-17 - Eoin Smith
+  - Updated TESSerializer.h/cpp, python/GaudiPython for Multicore Execution
+    TESSerializer class can now serialize/reconstruct Opaque Addresses using
+    the GaudiKernel IOpaqueAddress interface.
+    TESSerializer now uses a map as member variable for TClass names, to
+    improve performance (initialize once, refer back on each event iteration)
+    Multicore components collected in GMPBase.py ; the Reader, Worker and
+    Writer.  pTools.py contains extra classes; HistoAgent, FileRecordsAgent
+    for communication and consolidation of Histo and Records stores. pTools
+    also contains some extra methods used by the Reader, Writer, Workers.
+
 ! 2010-12-16 - Sebastien Binet
  - Patch #4074: migrate GaudiPython.Parallel to multiprocessing
    First import
