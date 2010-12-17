@@ -39,7 +39,7 @@ use GaudiSys       v21r11
 use GaudiMonitor   v2r6
 
 # Multi Processing libraries
-use GaudiMP v1r1
+use GaudiMP v1r0
 
 # Examples packages
 use GaudiExamples   v21r11
