@@ -11,6 +11,7 @@
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IConversionSvc.h"
+#include "GaudiKernel/AppReturnCode.h"
 
 #include "HistogramAgent.h"
 #include "EventLoopMgr.h"
@@ -77,13 +78,10 @@ StatusCode EventLoopMgr::initialize()    {
   }
 
   // Obtain the IProperty of the ApplicationMgr
-  SmartIF<IProperty> prpMgr(serviceLocator());
-  if ( ! prpMgr.isValid() )   {
+  m_appMgrProperty = serviceLocator();
+  if ( ! m_appMgrProperty.isValid() )   {
     log << MSG::FATAL << "IProperty interface not found in ApplicationMgr." << endmsg;
     return StatusCode::FAILURE;
-  }
-  else {
-    m_appMgrProperty = prpMgr;
   }
 
   // We do not expect a Event Selector necessarily being declared
@@ -328,6 +326,9 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
   StatusCode        sc(StatusCode::SUCCESS, true);
   MsgStream         log( msgSvc(), name() );
 
+  // Reset the application return code.
+  Gaudi::setAppReturnCode(m_appMgrProperty, Gaudi::ReturnCode::Success, true).ignore();
+
   // loop over events if the maxevt (received as input) if different from -1.
   // if evtmax is -1 it means infinite loop
   for( int nevt = 0; (maxevt == -1 ? true : nevt < maxevt);  nevt++, total_nevt++) {
@@ -384,7 +385,8 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
     m_endEventFired = false;
     if( !sc.isSuccess() ){
       log << MSG::ERROR << "Terminating event processing loop due to errors" << endmsg;
-      break;
+      Gaudi::setAppReturnCode(m_appMgrProperty, Gaudi::ReturnCode::AlgorithmFailure).ignore();
+      return sc;
     }
   }
   return StatusCode::SUCCESS;

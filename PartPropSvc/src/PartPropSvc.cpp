@@ -58,8 +58,6 @@ PartPropSvc::~PartPropSvc() {
 StatusCode
 PartPropSvc::initialize() {
 
-  std::vector<std::string>::const_iterator itr;
-
   StatusCode status = Service::initialize();
   m_log.setLevel( m_outputLevel.value() );
 
@@ -82,7 +80,7 @@ PartPropSvc::initialize() {
     // see if input file exists in $DATAPATH
     std::string rfile = System::PathResolver::find_file(fname,"DATAPATH");
     if (rfile == "") {
-      m_log << MSG::ERROR << "Could not find PDT file: \"" << *itr
+      m_log << MSG::ERROR << "Could not find PDT file: \"" << fname
 	    << "\" in $DATAPATH" << endmsg;
       return StatusCode::FAILURE;
     }

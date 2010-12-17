@@ -1,6 +1,10 @@
 Package: RootHistCnv
 Package manager : David Quarrie
 
+============================= RootHistCnv v10r5 ==============================
+! 2010-09-22 - Marco Clemencic
+ - Fixed bug #71216: Gaudi crashes when output nTuple file cannot be written
+
 ============================= RootHistCnv v10r4 ==============================
 ! 2010-01-29 - Marco Clemencic
  - Fixed icc remark #1599: declaration hides variable
@@ -72,12 +76,12 @@ Package manager : David Quarrie
 
 ================= RootHistCnv v9r15 =====================================
 ! 2007-07-16 - Marco Clemencic
- - changed the syntax for specialization of templated function in namespace 
+ - changed the syntax for specialization of templated function in namespace
    for gcc 4.1 future use
 
 ================= RootHistCnv v9r14 =====================================
 ! 2007-05-15 - Pere Mato
- - Added extra argument needed in constructor of TBranch. 
+ - Added extra argument needed in constructor of TBranch.
    This is new in version 5.15.06 of ROOT.
 
 ================= RootHistCnv v9r13 =====================================
@@ -90,7 +94,7 @@ Package manager : David Quarrie
 ! 2007-01-08 Markus Frank
   - Fix histogram converters to automatically convert THxF to THxD
     when reading from file.
- 
+
 ! 2006-11-30 - Pere Mato
   Adpated package to the new PluginSvc
   - Removed protected from constructor/destructors and fiendship of
@@ -129,7 +133,7 @@ Package manager : David Quarrie
    createPersistent) was creating wrong values for weights in some
    cases. This patch removes all the implementation code and calls the
    Aida Root histogram converter (from pi) instead (Stephan Roiser).
-	Remarks:	
+	Remarks:
 	-> this fix adds a dependency on PI in RootHistConv
 	-> it also calls the conversion routine for H1D (to be consistent)
 
@@ -151,7 +155,7 @@ Package manager : David Quarrie
 ================= RootHistCnv v9r2 =====================================
 ! 2004-07-05 - Pere Mato
  - requirements: changed to use the new LCGCMT interface packages
- 
+
 ================= RootHistCnv v9r1p1 =====================================
 ! 2004-05-07 - Pere Mato
  - RConverter.cpp: Fixed a problem that affected reading histogram
@@ -230,7 +234,7 @@ Package manager : David Quarrie
 ! 2002-10-10 - Pere Mato
  - Corrected bug reported by Thomas Ruf concerning the filling of
    underflow and overflow contents for 2D and 3D histograms.
-  
+
 ================= v8r1 =========================================
 
 ================= v8r0p1 =======================================
@@ -241,7 +245,7 @@ Package manager : David Quarrie
 ! 20020717 - Pere Mato
  - Change of the ROOT version to v3.03 (3.03/06)
 
-! 20020703 - Paolo Calafiura 
+! 20020703 - Paolo Calafiura
  - PersSvc.cpp: disambiguate method overload for SmartDataPtr
  - RCWNtupleCnv.cpp: removed static parseName qualifier
 
@@ -299,7 +303,7 @@ Package manager : David Quarrie
   and fixes to compilation problems in Windows
 
 !20001013 David Quarrie
-- New package developed by Charles Leggett to support Histogram 
+- New package developed by Charles Leggett to support Histogram
   Persistency based on ROOTsupport. As far as the user is concerned,
   They need to add to their jobOptions.txt file the following lines:
 

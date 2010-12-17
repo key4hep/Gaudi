@@ -38,6 +38,95 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
+<h2><a name="v21r11">Gaudi v21r11</a> (2010-09-22)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=58f">LCGCMT_58f</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Fixed compilation on ICC, VC9 and gcov<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed compilation on ICC, VC9 and gcov<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed bug #70956: Add method to find the reason for termination of the event loop<br/>
+    <b>Note:</b> the error codes will change in the next releaes of Gaudi</br>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v10r9):
+<ul>
+<li>Improvements in QMTest
+    <ul>
+    <li>fixes in the generated Eclipse launchers</li>
+    <li>always show the cause of failures in the HTML output</li>
+    <li>improved run_qmtest.py to be able to run the tests from a read-only location</li>
+    </ul>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Improved and documented the 'pyd_module' and 'pyd_boost_module' (new) patterns<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added the possibility of installing the platform-independent files in the
+    platform-specific directory in the InstallArea.<br/>
+    The new behavior is disabled by default at the moment, and it can be enabled
+    with the CMT extra tags <code>no-shared-dir</code> (always disabled for ATLAS).
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v27r11):
+<ul>
+<li>Fixed bug #72170: Python Parsers and map of &lt;string, unsigned int&gt;<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+<li>Patch #4394: rewriting PathResolver using boost::filesystem<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Minor fix in SmartDataPtr.h to allow code analysis with Coverity.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Patch #4323: allow user defined heavy ion handling in PartPropSvc<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>PartPropSvc (v4r0):
+<ul>
+<li>Patch #4323: allow user defined heavy ion handling in PartPropSvc<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiMonitor (v2r6):
+<ul>
+<li>Fixed a bug spotted by Coverity (BAD_FREE).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>RootHistCnv (v10r5):
+<ul>
+<li>Fixed bug #71216: Gaudi crashes when output nTuple file cannot be written<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiAlg (v13r4):
+<ul>
+<li>Patch #4360: Fix for bug #71237 (GaudiHistos treatment of histoProduce incomplete)<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+<li>Patch #4299, patch #4332: Add option for filed size in SequencerTimerTool<br/>
+    (<span class="author">Olivier Callot, Patrick Koppenburg, Roel Aaij, Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v21r11):
+<ul>
+<li>Added dependency on pytools to be able to use Gaudi.Parallel<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v21r11):
+<ul>
+<li>Added some tests<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added an example of a Python binary module in src/PythonModule.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v21r10p1">Gaudi v21r10p1</a> (2010-07-28)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=58e">LCGCMT_58e</a></h3>
+<!-- ====================================================================== -->
 <h2><a name="v21r10">Gaudi v21r10</a> (2010-07-14)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=58d">LCGCMT_58d</a></h3>
 <h3>General Changes</h3>

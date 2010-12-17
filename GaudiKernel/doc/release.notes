@@ -1,6 +1,33 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v27r11p1 =============================
+! 2010-12-05 - Charles Leggett
+ - Added PathResolver tests as per patch #4394
+   M cmt/requirements
+   A tests/PathResolver/...
+   A tests/src/PathResolver_test.cpp
+ - bug #76057: PathResolver looks for file as if fully specified first
+   M src/Lib/PathResolver.cpp
+
+! 2010-12-01 - Marco Clemencic
+ - Fixed bug #70770: inconsistent order of stop/finalize of sub-algorithms
+   As suggested, modified the order in which the sub-algorithms are stopped
+   to match the order in which they are finalized.
+
+============================= GaudiKernel v27r11 =============================
+! 2010-09-20 - Marco Clemencic
+ - Fixed bug #70956: Add method to find the reason for termination of the
+                     event loop
+   - Defined constants for application return codes and minor change to the logic
+     (GaudiKernel/AppReturnCode.h)
+   - Set appropriate return code in case of "scheduled stop" and unhandled exceptions
+     (MinimalEventLoopMgr)
+
+! 2010-09-17 - Vanya Belyaev
+ - Fixed bug #72170: Python Parsers and map of <string, unsigned int>
+   Added support for map<string,unsigned int>.
+
 ! 2010-09-17 - Marco Clemencic
  - Minor fix to make_patch.py
 

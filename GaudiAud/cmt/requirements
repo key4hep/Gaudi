@@ -3,7 +3,7 @@ version v9r3
 
 branches doc src cmt
 
-use GaudiKernel v*
+use GaudiKernel *
 
 # component library
 library GaudiAud ../src/*.cpp -no_static

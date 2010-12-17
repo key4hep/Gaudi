@@ -1,8 +1,8 @@
 package GaudiMonitor
-version v2r5
+version v2r6
 
 branches src cmt doc
-use GaudiKernel v*
+use GaudiKernel *
 
 # build the component library
 library GaudiMonitor  -no_static \

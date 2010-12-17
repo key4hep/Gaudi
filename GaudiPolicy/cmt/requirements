@@ -1,5 +1,5 @@
 package GaudiPolicy
-version v10r8
+version v10r9
 
 branches cmt doc
 
@@ -8,7 +8,7 @@ use LCG_Settings *
 use Python * LCG_Interfaces -no_auto_imports
 
 # Add Google malloc replacement to the LD_LIBRARY_PATH
-use tcmalloc v* LCG_Interfaces -no_auto_imports
+use tcmalloc * LCG_Interfaces -no_auto_imports
 
 # Note: Local installations except WinXP use the optimized versions of the AA
 #       projects instead of the debug ones.
@@ -106,6 +106,7 @@ pattern library_Llinkopts \
 pattern library_Lshlibflags \
     private ; \
     macro <library>_shlibflags "$(libraryshr_linkopts) $(cmt_installarea_linkopts) $(<library>_use_linkopts)" ; \
+    macro_append <library>_shlibflags "" target-linux " -Wl,-soname=$(library_prefix)<library>.$(shlibsuffix) " ; \
     macro_remove <library>_use_linkopts "$(<package>_linkopts)" ; \
     end_private
 
@@ -229,16 +230,16 @@ make_fragment python_init -header=python_init_header
 #
 # Usage:
 #
-#   use Python v* LCG_Interfaces -no_auto_imports
+#   use Python * LCG_Interfaces -no_auto_imports
 #   apply_pattern pyd_module module=MyPyModule files=MyPyModule/*.cpp deps=MyPackageLib
 #
-#   use Python v* LCG_Interfaces -no_auto_imports
-#   use Boost v* LCG_Interfaces -no_auto_imports
+#   use Python * LCG_Interfaces -no_auto_imports
+#   use Boost * LCG_Interfaces -no_auto_imports
 #   apply_pattern pyd_boost_module module=MyPyModule files=MyPyModule/*.cpp deps=MyPackageLib
 #
 # Notes:
 #
-#   The python binary module is linked by default against teh linker library
+#   The python binary module is linked by default against the linker library
 #   in the package, so, if there is one, it is mandatory either to specify
 #   the 'deps' parameter or to remove the link options from <module>_use_linkopts,
 #   e.g.:
@@ -572,6 +573,7 @@ macro_append   cpp_name "" \
     lcg-compiler&target-gcc&CERNDISTCC "" \
     lcg-compiler&target-gccmax    "" \
     lcg-compiler&target-gcc       "-$(gcc_config_version)"
+macro cpp_name "$(cpp_name)" target-icc "icpc"
 
 # C compiler
 macro_prepend  cc_name  "" \
@@ -711,10 +713,12 @@ macro_append pp_cppflags "" \
 macro_append pp_cppflags "" \
        G22_NO_DEPRECATED " -DG22_NO_DEPRECATED "
 
-macro_append cppflags  "" \
-      target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-darwin " -m32"
+macro_append cppflags       "" \
+      host-x86_64&target-i386 " -m32" \
+      host-x86_64&target-i686 " -m32" \
+      host-darwin&target-i386 " -m32" \
+      host-i686&target-x86_64 " -m64" \
+      host-i386&target-x86_64 " -m64"
 
 # ---- Disable warnings coming from external libraries
 #      the hacks can be disabled with the tag "no-hide-warnings".
@@ -738,20 +742,24 @@ macro for_name      "gfortran" \
 
 macro for "$(for_name)"
 
-macro_append fflags  "" \
-      target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-darwin " -m32"
-
 macro_append shlibflags ""\
-      target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-darwin " -m32"
+      host-x86_64&target-i686 " -m32" \
+      host-x86_64&target-i386 " -m32" \
+      host-darwin&target-i386 " -m32" \
+      host-i686&target-x86_64 " -m64" \
+      host-i386&target-x86_64 " -m64"
 
 macro fflags           "-fmessage-length=0 -O2 -fdollar-ok -ff90 -w -fPIC" \
       target-gcc4      "-fmessage-length=0 -O2 -fdollar-ok -w -fPIC" \
       target-darwin    "-fno-automatic -fdollar-ok -w" \
       target-winxp     '/compile_only /nologo /warn:nofileopt /warn:nouncalled /fpp:"/m" /fpp:"/I.." '
+
+macro_append fflags  ""  \
+      host-x86_64&target-i686 " -m32" \
+      host-x86_64&target-i386 " -m32" \
+      host-darwin&target-i386 " -m32" \
+      host-i686&target-x86_64 " -m64" \
+      host-i386&target-x86_64 " -m64"
 
 # macro_append fflags " -msse2 -mfpmath=sse" \
 #             target-winxp    " "
@@ -763,10 +771,13 @@ macro fcomp            "$(for) -c $(fincludes) $(fdebugflags) $(fflags) $(pp_ffl
 
 macro_append cflags " -fmessage-length=0 -fPIC " \
              target-winxp    " "
+
 macro_append cflags  "" \
-      target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-darwin " -m32"
+      host-x86_64&target-i686 " -m32" \
+      host-x86_64&target-i386 " -m32" \
+      host-darwin&target-i386 " -m32" \
+      host-i686&target-x86_64 " -m64" \
+      host-i386&target-x86_64 " -m64"
 
 # macro_append cflags " -msse2 -mfpmath=sse" \
 #             target-winxp    " /arch:SSE2"
@@ -792,9 +803,11 @@ macro_append cpplinkflags "" \
       target-linux               "-Wl,--no-undefined "
 
 macro_append cpplinkflags  "" \
-      target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-darwin " -m32"
+      host-x86_64&target-i686 " -m32" \
+      host-x86_64&target-i386 " -m32" \
+      host-darwin&target-i386 " -m32" \
+      host-i686&target-x86_64 " -m64" \
+      host-i386&target-x86_64 " -m64"
 
 macro_append cpplinkflags "" \
       target-cov " $(linkdebugflags) "
@@ -818,10 +831,12 @@ macro_append componentshr_linkopts "" \
 macro_append componentshr_linkopts "" \
       target-cov  " $(linkdebugflags) "
 
-macro_append componentshr_linkopts "" \
-      target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-darwin " -m32"
+macro_append componentshr_linkopts   "" \
+      host-x86_64&target-i686 " -m32" \
+      host-x86_64&target-i386 " -m32" \
+      host-darwin&target-i386 " -m32" \
+      host-i686&target-x86_64 " -m64" \
+      host-i386&target-x86_64 " -m64"
 
 macro libraryshr_linkopts   "" \
       target-linux          "-fPIC -ldl -Wl,--as-needed " \
@@ -834,9 +849,11 @@ macro_append libraryshr_linkopts   "" \
 	  target-cov  " $(linkdebugflags) "
 
 macro_append libraryshr_linkopts   "" \
-      target-gcc&target-i686&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-x86_64 " -m32" \
-      target-gcc&target-i386&host-darwin " -m32"
+      host-x86_64&target-i386 " -m32" \
+      host-x86_64&target-i686 " -m32" \
+      host-darwin&target-i386 " -m32" \
+      host-i686&target-x86_64 " -m64" \
+      host-i386&target-x86_64 " -m64"
 
 # Add 64-bit link options for SLC5. This overrides the default library segment
 # alignment of 1MB
@@ -943,10 +960,10 @@ pattern use_genconf_helper_lib \
 # this use statement is here only to get the building order right
 # ie: tell CMT that genconf needs (at runtime) the GaudiSvc component
 #     library to be available for loading.
-macro use_GaudiSvc "GaudiSvc v* -no_auto_imports" \
+macro use_GaudiSvc "GaudiSvc * -no_auto_imports" \
         no_genconf "" \
-        do_genconf "GaudiSvc v* -no_auto_imports" \
-        ATLAS "GaudiSvc v* -no_auto_imports"
+        do_genconf "GaudiSvc * -no_auto_imports" \
+        ATLAS "GaudiSvc * -no_auto_imports"
 
 # if one wants to modify this pattern, the correction has to be made also
 # in the GaudiSvc requirements file since it is using directly
@@ -1024,7 +1041,7 @@ action TestProject "echo You need to apply the pattern QMTestSummarize to use th
 # Pattern used internally by the 2 main patterns
 pattern QMTestCommon \
   private ; \
-    macro use_qmtest "" QMTest "QMtest v* LCG_Interfaces -no_auto_imports" ; \
+    macro use_qmtest "" QMTest "QMtest * LCG_Interfaces -no_auto_imports" ; \
     use $(use_qmtest) ; \
     macro use_pytools "" QMTest "pytools * LCG_Interfaces -no_auto_imports" ; \
     use $(use_pytools) ; \
@@ -1118,7 +1135,7 @@ pattern disable_package_on \
 # (Marco Clemencic)
 #-------------------------------------------------------------------
 pattern GaudiApp \
-    use Gaudi v* ; \
+    use Gaudi * ; \
     set GAUDIAPPNAME "<package>" ; \
     set GAUDIAPPVERSION "<version>"
 

@@ -1,6 +1,18 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2010-11-16 - Charles Leggett
+ - Fixed 32bit compilation with ICC on 64bit host.
+
+! 2010-11-05 - Marco Clemencic
+ - Added the "soname" flag to the linker libraries (to help the test of cmake).
+
+! 2010-10-05 - Marco Clemencic
+ - Work-around for an icc-related configuration problems in LCG_Settings.
+
+! 2010-09-20 - Marco Clemencic
+ - Minor improvements to the generated Eclipse launchers (GaudiTest).
+
 ! 2010-09-10 - Marco Clemencic
  - Fixed a minor problems in the 'uninstall_command' macro and in the NMake version
    of the install_scripts_header fragment.

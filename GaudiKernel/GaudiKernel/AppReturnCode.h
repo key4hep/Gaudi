@@ -10,6 +10,26 @@
 #include "GaudiKernel/Property.h"
 
 namespace Gaudi {
+  /// ApplicationMgr return code definitions.
+  namespace ReturnCode {
+
+    const int Success                  = 0x00;
+
+    const int GenericFailure           = 0x01;
+
+    /// @defgroup loop_stop Loop termination
+    /// Error codes for abnormal loop termination.
+    /// @{
+    const int FailInput                = 0x02; //< Error opening file
+    const int AlgorithmFailure         = 0x03; //<
+    const int ScheduledStop            = 0x04; //< Loop terminated because of user request
+    const int IncidentFailure          = 0x05; //< Fatal error in Incident handling
+    const int UnhandledException       = 0x06; //<
+    /// @}
+    const int SignalOffset             = 0x80; //< Offset for signal-related return codes
+
+  }
+
   /**
    * Set the application return code.
    * By default the return code of the application is modified only if the
@@ -20,7 +40,7 @@ namespace Gaudi {
    * @param value   value to assign to the return code
    * @param force   if set to true, the return code is set even if it was already set
    *
-   * @return SUCCESS if it was possible to set the return code
+   * @return SUCCESS if it was possible to set the return code or the return code was already set
    */
   inline StatusCode setAppReturnCode(SmartIF<IProperty> &appmgr, int value, bool force = false) {
     if (appmgr) {
@@ -30,6 +50,8 @@ namespace Gaudi {
           returnCode.setValue(value);
           return appmgr->setProperty(returnCode);
         }
+        // Consider is a success if we do already have an error code.
+        return StatusCode::SUCCESS;
       }
     }
     return StatusCode::FAILURE;

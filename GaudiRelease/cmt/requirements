@@ -3,11 +3,11 @@
 
 package GaudiRelease
 
-version v21r10
+version v21r11
 branches doc cmt
 
 # CMT and Gaudi policy
-use GaudiPolicy	   v10r8
+use GaudiPolicy	   v10r9
 
 # Note for conditional use statements: only the tags which are defined
 # at the level of CMT (and CMTSITE) can be used. This means that
@@ -16,46 +16,46 @@ use GaudiPolicy	   v10r8
 # the level of the package itself with a "macro_remove constituents"
 
 # Gaudi executable
-use Gaudi          v21r10
+use Gaudi          v21r11
 
 # Gaudi libraries - generic
-use GaudiKernel    v27r10
-use GaudiSvc       v18r10
+use GaudiKernel    v27r11p1
+use GaudiSvc       v18r11
 use GaudiAud       v9r3
-use GaudiAlg       v13r3
-use GaudiGSL       v7r6
-use GaudiUtils     v3r9
+use GaudiAlg       v13r4
+use GaudiGSL       v7r7
+use GaudiUtils     v3r10
 
 # Technology-specific Persistency packages
 #use HbookCnv       v15r0
-use RootHistCnv    v10r4
+use RootHistCnv    v10r5
 use GaudiPoolDb    v5r9
-use GaudiPython    v10r10
+use GaudiPython    v10r11
 
 # Container package specifying the minimum set of core packages
-use GaudiSys       v21r10
+use GaudiSys       v21r11
 
 # Monitoring utility. Can use also MonaLisa
-use GaudiMonitor   v2r5
+use GaudiMonitor   v2r6
 
 
 # Examples packages
-use GaudiExamples   v21r10
+use GaudiExamples   v21r11
 
 
 # Atlas packages
-use PartPropSvc      v3r3
+use PartPropSvc      v4r1
 
 ### Mark the package as the container package of the project.
 apply_pattern container_package
 
 # Simple pattern for LHCb external packages
 pattern LHCb_external \
-    macro <pkg>_use "" LHCb<ext> "<pkg> v* LCG_Interfaces" ; \
+    macro <pkg>_use "" LHCb<ext> "<pkg> * LCG_Interfaces" ; \
     use $(<pkg>_use)
 
 pattern LHCb_external_cond \
-    macro <pkg>_use "" <except> "" LHCb<ext> "<pkg> v* LCG_Interfaces" ; \
+    macro <pkg>_use "" <except> "" LHCb<ext> "<pkg> * LCG_Interfaces" ; \
     use $(<pkg>_use)
 
 # -- LHCb external packages --
@@ -76,7 +76,9 @@ apply_pattern LHCb_external pkg=pytools
 apply_pattern LHCb_external pkg=pyanalysis
 apply_pattern LHCb_external pkg=pygraphics
 apply_pattern LHCb_external pkg=Qt
-apply_pattern LHCb_external pkg=XQilla
+apply_pattern LHCb_external pkg=xqilla
+apply_pattern LHCb_external pkg=neurobayes_expert
+apply_pattern LHCb_external pkg=graphviz
 #apply_pattern LHCb_external pkg=
 
 # -- LHCbGrid external packages --

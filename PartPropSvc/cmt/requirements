@@ -1,12 +1,12 @@
 package PartPropSvc
-version v3r3
+version v4r1
 
 branches src cmt doc
 
-use GaudiPolicy v*
-use GaudiKernel v*
+use GaudiPolicy *
+use GaudiKernel *
 
-use HepPDT       v* LCG_Interfaces
+use HepPDT       * LCG_Interfaces
 
 apply_pattern install_more_includes more=PartPropSvc
 
@@ -29,5 +29,6 @@ private
 
 # apply_pattern install_runtime
 apply_pattern declare_joboptions files="PartPropSvc.py"
+#apply_pattern declare_runtime files="PDGTABLE PDGTABLE.MeV"
 
 

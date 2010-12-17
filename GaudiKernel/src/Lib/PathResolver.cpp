@@ -43,6 +43,17 @@ PR_find( const bf::path& file, const string& search_list,
 
   bool found(false);
 
+  // look for file as specified first
+
+  try {
+    if ( ( file_type == PR_regular_file && is_regular_file( file ) ) ||
+         ( file_type == PR_directory && is_directory( file ) ) ) {
+      result = bf::complete(file).string();
+      return true;
+    }
+  } catch (bf::filesystem_error /*err*/) {
+  }
+
   // assume that "." is always part of the search path, so check locally first
 
   try {
