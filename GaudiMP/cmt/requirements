@@ -24,7 +24,7 @@ apply_pattern reflex_dictionary dictionary=GaudiMP \
                                 headerfiles=$(GAUDIMPROOT)/dict/gaudimp_dict.h \
                                 selectionfile=../dict/selection.xml \
                                 options="--no_templatetypedefs -I$(Python_inc)" \
-                                imports="Python -import=Reflex"
+                                imports="Python -import=Reflex -import=ROOT"
 
 #--------------------------------------------------------------------------------
 private

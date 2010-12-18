@@ -338,7 +338,7 @@ void GaudiMP::TESSerializer::addItem(Items& itms, const std::string& descriptor)
 
   // Process the incoming string
   size_t sep = descriptor.rfind("#");
-  if ( (sep<0)||(sep>descriptor.length()) ) {
+  if (sep > descriptor.length()) {
     // invalid sep case (# not found in string)
     obj_path = descriptor;
     slevel   = "1";
