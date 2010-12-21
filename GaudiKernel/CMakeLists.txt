@@ -9,9 +9,6 @@ GAUDI_USE_PACKAGE(ROOT)
 #---Libraries---------------------------------------------------------------
 GAUDI_LINKER_LIBRARY(GaudiKernel Lib/*.cpp LIBRARIES ${ROOT_LIBRARIES} ${Boost_LIBRARIES})
 
-#---Executables-------------------------------------------------------------
-GAUDI_EXECUTABLE(genconf Util/genconf.cpp LIBRARIES GaudiKernel)
-
 #---Tests-------------------------------------------------------------------
 GAUDI_UNIT_TEST(DirSearchPath_test ../tests/src/DirSearchPath_test.cpp LIBRARIES GaudiKernel)
 GAUDI_UNIT_TEST(test_SerializeSTL ../tests/src/test_SerializeSTL.cpp LIBRARIES GaudiKernel cppunit)
