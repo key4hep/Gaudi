@@ -48,6 +48,7 @@ public:
   virtual StatusCode initialize();
   virtual StatusCode reinitialize();
   virtual StatusCode finalize();
+  virtual StatusCode stop();
 
   virtual StatusCode captureState();
 
@@ -142,6 +143,7 @@ private:
   IAlgorithm* getCurrentIAlg() const;
 
   IIncidentSvc *m_incidentSvc;
+  SmartIF<IToolSvc> m_toolSvc;
 
   mutable MsgStream m_log;
 
