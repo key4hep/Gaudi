@@ -18,18 +18,16 @@ int main ()
   std::cout << "initial path: " << local << std::endl;
 
 
-#ifdef _WIN32
-  setEnv("DATAPATH","..\\tests\\PathResolver;..\\tests\\PathResolver\\A;..\\tests\\PathResolver\\B",1);
-  std::string ref1("..\\tests\\PathResolver\\A\\a.txt");
-  std::string ref2("..\\tests\\PathResolver\\B\\a.txt");
-  std::string ref3("..\\tests\\PathResolver\\C\\c.txt");
-  std::string ref4("\\bin\\true");
-#else
-  setEnv("DATAPATH","../tests/PathResolver:../tests/PathResolver/A:../tests/PathResolver/B",1);
   std::string ref1("../tests/PathResolver/A/a.txt");
   std::string ref2("../tests/PathResolver/B/a.txt");
   std::string ref3("../tests/PathResolver/C/c.txt");
+
+#ifdef _WIN32
+  std::string ref4("C:/WINNT/explorer.exe");
+  setEnv("DATAPATH","..\\tests\\PathResolver;..\\tests\\PathResolver\\A;..\\tests\\PathResolver\\B",1);
+#else
   std::string ref4("/bin/true");
+  setEnv("DATAPATH","../tests/PathResolver:../tests/PathResolver/A:../tests/PathResolver/B",1);
 #endif
 
   std::cout << "DATAPATH: " << getEnv ("DATAPATH") << std::endl;
