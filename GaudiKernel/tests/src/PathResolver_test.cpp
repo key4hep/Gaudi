@@ -1,5 +1,5 @@
 #include "GaudiKernel/PathResolver.h"
-
+#include "GaudiKernel/System.h"
 
 #include <string>
 #include <iostream>
@@ -16,23 +16,23 @@ int main ()
 
   std::string local = bf::initial_path().string();
   std::cout << "initial path: " << local << std::endl;
-    
+
 
 #ifdef _WIN32
-  ::setenv("DATAPATH","..\tests\PathResolver;..\tests\PathResolver\A;..\tests\PathResolver\B",1);
-  std::string ref1("..\tests/PathResolver\A\a.txt");
-  std::string ref2("..\tests/PathResolver\B\a.txt");
-  std::string ref3("..\tests/PathResolver\C\c.txt");
-  std::string ref4("\bin\true");
+  setEnv("DATAPATH","..\\tests\\PathResolver;..\\tests\\PathResolver\\A;..\\tests\\PathResolver\\B",1);
+  std::string ref1("..\\tests\\PathResolver\\A\\a.txt");
+  std::string ref2("..\\tests\\PathResolver\\B\\a.txt");
+  std::string ref3("..\\tests\\PathResolver\\C\\c.txt");
+  std::string ref4("\\bin\\true");
 #else
-  ::setenv("DATAPATH","../tests/PathResolver:../tests/PathResolver/A:../tests/PathResolver/B",1);
+  setEnv("DATAPATH","../tests/PathResolver:../tests/PathResolver/A:../tests/PathResolver/B",1);
   std::string ref1("../tests/PathResolver/A/a.txt");
   std::string ref2("../tests/PathResolver/B/a.txt");
   std::string ref3("../tests/PathResolver/C/c.txt");
   std::string ref4("/bin/true");
 #endif
 
-  std::cout << "DATAPATH: " << ::getenv ("DATAPATH") << std::endl;
+  std::cout << "DATAPATH: " << getEnv ("DATAPATH") << std::endl;
 
   std::string filename = "a.txt";
   std::string fileLocation("");
@@ -41,7 +41,7 @@ int main ()
   std::cout << "search for: " << filename << std::endl;
   std::cout << "fileLocation: " << fileLocation << std::endl;
   if (fileLocation == "") {
-    std::cout << "  => ERROR: file not found." << std::endl;    
+    std::cout << "  => ERROR: file not found." << std::endl;
     err++;
   } else if ( fileLocation.find(local) != std::string::npos ) {
     fileLocation.replace(fileLocation.find(local), local.length()+1, "");
@@ -56,7 +56,7 @@ int main ()
 	      << std::endl;
     err++;
   }
-    
+
   fileLocation = "";
 
 
@@ -66,7 +66,7 @@ int main ()
   std::cout << "search for: " << filename << std::endl;
   std::cout << "fileLocation: " << fileLocation << std::endl;
   if (fileLocation == "") {
-    std::cout << "  => ERROR: file not found." << std::endl;    
+    std::cout << "  => ERROR: file not found." << std::endl;
     err++;
   } else if ( fileLocation.find(local) != std::string::npos ) {
     fileLocation.replace(fileLocation.find(local), local.length()+1, "");
@@ -90,7 +90,7 @@ int main ()
   std::cout << "recursive search for: " << filename << std::endl;
   std::cout << "fileLocation:" << fileLocation << std::endl;
   if (fileLocation == "") {
-    std::cout << "  => ERROR: file not found." << std::endl;    
+    std::cout << "  => ERROR: file not found." << std::endl;
     err++;
   } else if ( fileLocation.find(local) != std::string::npos ) {
     fileLocation.replace(fileLocation.find(local), local.length()+1, "");
@@ -113,7 +113,7 @@ int main ()
   std::cout << "search for: " << filename << std::endl;
   std::cout << "fileLocation: " << fileLocation << std::endl;
   if (fileLocation == "") {
-    std::cout << "  => ERROR: file not found." << std::endl;    
+    std::cout << "  => ERROR: file not found." << std::endl;
     err++;
   } else if ( fileLocation != filename ) {
     std::cout << "  => ERROR: should have been \"" << ref4 << "\"  was \""
@@ -123,7 +123,7 @@ int main ()
   }
 
 
-  std::cout << "*** PathResolver_test ends (" << (err == 0 ? "OK" : "ERROR" ) 
+  std::cout << "*** PathResolver_test ends (" << (err == 0 ? "OK" : "ERROR" )
 	    << ") ***" << std::endl;
 
   return (err);
