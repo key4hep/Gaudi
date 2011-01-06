@@ -48,6 +48,6 @@ namespace Gaudi
   typedef ROOT::Math::Transform3D     Transform3D;     ///< General 3D transformation (rotation+translation)
   typedef ROOT::Math::XYZVector       TranslationXYZ;  ///< 3D translation
 
-};
+}
 
 #endif // EVENT_TRANSFORM3DTYPES_H
