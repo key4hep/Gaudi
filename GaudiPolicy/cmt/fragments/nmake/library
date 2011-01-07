@@ -14,9 +14,12 @@ ${OBJS}
 	$(lib_silent) echo "" >$(${CONSTITUENT}stamp)
 
 $(${CONSTITUENT}shstamp) :: $(${CONSTITUENT}arc) requirements $(use_requirements) $(${CONSTITUENT}stamps)
-	$(lib_echo) dynamic library $(bin)${CONSTITUENT}.dll
+	$(lib_echo) dynamic library $(bin)${CONSTITUENT}.$(shlibsuffix)
 	$(lib_silent) $(make_shlib) $(${CONSTITUENT}exportsymb) $(tag) ${CONSTITUENT} $(cpplinkflags) $(${CONSTITUENT}_shlibflags)
-	$(lib_silent) if exist $(bin)${CONSTITUENT}.dll echo "" >$(${CONSTITUENT}shstamp)
+!IF "$(shlibsuffix)" != "dll"
+	$(lib_silent) if exist $(bin)${CONSTITUENT}.dll rename $(bin)${CONSTITUENT}.dll ${CONSTITUENT}.$(shlibsuffix)
+!ENDIF
+	$(lib_silent) if exist $(bin)${CONSTITUENT}.$(shlibsuffix) echo "" >$(${CONSTITUENT}shstamp)
 
 ${CONSTITUENT}clean ::
 	$(cleanup_echo) #objects
@@ -25,13 +28,13 @@ ${CONSTITUENT}clean ::
 	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.lib del $(bin)${CONSTITUENT}.lib
 	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.def del $(bin)${CONSTITUENT}.def
 	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.exp del $(bin)${CONSTITUENT}.exp
-	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.dll del $(bin)${CONSTITUENT}.dll
+	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.$(shlibsuffix) del $(bin)${CONSTITUENT}.$(shlibsuffix)
 	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.pdb del $(bin)${CONSTITUENT}.pdb
 
 
 install_dir = $(CMTINSTALLAREA)\$(tag)\lib
 ${CONSTITUENT}installlibname = $(library_prefix)${CONSTITUENT}$(library_suffix).lib
-${CONSTITUENT}installdllname = $(library_prefix)${CONSTITUENT}$(library_suffix).dll
+${CONSTITUENT}installdllname = $(library_prefix)${CONSTITUENT}$(library_suffix).$(shlibsuffix)
 ${CONSTITUENT}installpdbname = $(library_prefix)${CONSTITUENT}$(library_suffix).pdb
 
 ${CONSTITUENT} :: ${CONSTITUENT}install
@@ -102,6 +105,9 @@ ${OBJS}
 
 $(${CONSTITUENT}shstamp) :: $(${CONSTITUENT}arc) requirements $(use_requirements) $(${CONSTITUENT}stamps)
 	$(make_shlib) $(${CONSTITUENT}exportsymb) $(tag) ${CONSTITUENT} $(cpplinkflags) $(${CONSTITUENT}_shlibflags)
+!IF "$(shlibsuffix)" != "dll"
+	if exist $(bin)${CONSTITUENT}.dll rename $(bin)${CONSTITUENT}.dll ${CONSTITUENT}.$(shlibsuffix)
+!ENDIF
 	if exist $(bin)${CONSTITUENT}.dll echo "" >$(${CONSTITUENT}shstamp)
 
 ${CONSTITUENT}clean ::
@@ -111,13 +117,13 @@ ${CONSTITUENT}clean ::
 	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.lib del $(bin)${CONSTITUENT}.lib
 	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.def del $(bin)${CONSTITUENT}.def
 	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.exp del $(bin)${CONSTITUENT}.exp
-	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.dll del $(bin)${CONSTITUENT}.dll
+	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.$(shlibsuffix) del $(bin)${CONSTITUENT}.$(shlibsuffix)
 	$(cleanup_silent) if exist $(bin)${CONSTITUENT}.pdb del $(bin)${CONSTITUENT}.pdb
 
 
 install_dir = $(CMTINSTALLAREA)\$(tag)\lib
 ${CONSTITUENT}installlibname = $(library_prefix)${CONSTITUENT}$(library_suffix).lib
-${CONSTITUENT}installdllname = $(library_prefix)${CONSTITUENT}$(library_suffix).dll
+${CONSTITUENT}installdllname = $(library_prefix)${CONSTITUENT}$(library_suffix).$(shlibsuffix)
 ${CONSTITUENT}installpdbname = $(library_prefix)${CONSTITUENT}$(library_suffix).pdb
 
 ${CONSTITUENT} :: ${CONSTITUENT}install

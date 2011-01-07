@@ -7,6 +7,7 @@ package manager: Marco Clemencic
 
 ! 2011-01-07 - Marco Clemencic
  - Fixes to run_qmtest.py to allow creation of HTML output on Windows.
+ - Fixed nmake fragments to honor the shlibsuffix macro.
 
 ! 2010-11-16 - Charles Leggett
  - Fixed 32bit compilation with ICC on 64bit host.
