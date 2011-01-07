@@ -98,7 +98,8 @@ def main(argv = None):
         os.system(" ".join(qmtest_cmd + ["create-tdb"]))
 
     if opts.html_output:
-        opts.qmtest_args.insert(0, """--result-stream 'GaudiTest.HTMLResultStream(dir="%s")'""" % opts.html_output)
+        opts.qmtest_args.insert(0, '''--result-stream "GaudiTest.HTMLResultStream(dir='%s')"'''
+                                  % opts.html_output.replace("\\","\\\\"))
 
     # prepare the qmtest command
     cmd = " ".join(qmtest_cmd + ["run"] + opts.qmtest_args)
