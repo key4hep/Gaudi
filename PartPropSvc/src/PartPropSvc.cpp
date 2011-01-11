@@ -22,21 +22,11 @@
 
 using namespace std;
 
-// Instantiation of a static factory class used by clients to create
-//  instances of this service
-DECLARE_SERVICE_FACTORY(PartPropSvc);
-
 inline void toupper(std::string &s)
 {
-    std::string::iterator it=s.begin();
-    while(it != s.end())
-    {
-        *it = toupper(*it);
-        it++;
-    }
+  std::transform(s.begin(), s.end(), s.begin(),
+                 (int(*)(int)) toupper);
 }
-
-
 
 //*************************************************************************//
 
@@ -274,6 +264,8 @@ PartPropSvc::setUnknownParticleHandler(HepPDT::ProcessUnknownID* puid,
 
 }
 
-
+// Instantiation of a static factory class used by clients to create
+//  instances of this service
+DECLARE_SERVICE_FACTORY(PartPropSvc)
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//

@@ -3,6 +3,9 @@
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! =============================================================================
 
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+
 ! 2010-11-25 - Marco Clemencic
  - Fixed Coverity detected defect
    http://lhcb-coverity.cern.ch:8080/sourcebrowser.htm?projectId=10001#mergedDefectId=10027

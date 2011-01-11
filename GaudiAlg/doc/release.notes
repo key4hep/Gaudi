@@ -1,6 +1,9 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+
 =============================== GaudiAlg v13r4 ===============================
 ! 2010-09-17 - Vanya Belyaev
  - Patch #4360: Fix for bug #71237 (GaudiHistos treatment of histoProduce incomplete)
