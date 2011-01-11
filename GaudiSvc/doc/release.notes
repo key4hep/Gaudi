@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+
 ! 2011-01-06 - Charles Leggett
  - Patch #4588: moved code from HistorySvc::finalize to HistorySvc::stop
 

@@ -27,6 +27,8 @@
 //           is hidden by "Gaudi::Examples::EvtCollectionSelector::operator()"
 //            -- virtual function override intended?
 #pragma warning(disable:1125)
+// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
+#pragma warning(disable:1572)
 #endif
 namespace Gaudi
 {

@@ -1,6 +1,6 @@
 /**
  * \file monitor_utils.cpp
- * This file contains the implementations of some functions used for 
+ * This file contains the implementations of some functions used for
  * obtaining monitoring information.
  */
 
@@ -10,11 +10,11 @@
  *
  * Copyright (C) 2006 California Institute of Technology
  *
- * Permission is hereby granted, free of charge, to use, copy and modify 
+ * Permission is hereby granted, free of charge, to use, copy and modify
  * this software and its documentation (the "Software") for any
- * purpose, provided that existing copyright notices are retained in 
+ * purpose, provided that existing copyright notices are retained in
  * all copies and that this notice is included verbatim in any distributions
- * or substantial portions of the Software. 
+ * or substantial portions of the Software.
  * This software is a part of the MonALISA framework (http://monalisa.cacr.caltech.edu).
  * Users of the Software are asked to feed back problems, benefits,
  * and/or suggestions about the software to the MonALISA Development Team
@@ -50,7 +50,7 @@ void ApMon::sendJobInfo() {
   int i;
   long crtTime;
 
- /* the apMon_free() function calls sendJobInfo() from another thread and 
+ /* the apMon_free() function calls sendJobInfo() from another thread and
      we need mutual exclusion */
   pthread_mutex_lock(&mutexBack);
 
@@ -62,10 +62,10 @@ void ApMon::sendJobInfo() {
 
   crtTime = time(NULL);
   logger(INFO, "Sending job monitoring information...");
-  lastJobInfoSend = (time_t)crtTime; 
+  lastJobInfoSend = (time_t)crtTime;
 
   /* send monitoring information for all the jobs specified by the user */
-  for (i = 0; i < nMonJobs; i++) 
+  for (i = 0; i < nMonJobs; i++)
     sendOneJobInfo(monJobs[i]);
 
   pthread_mutex_unlock(&mutexBack);
@@ -80,21 +80,21 @@ void ApMon::updateJobInfo(MonitoredJob job) {
   PsInfo jobInfo;
   JobDirInfo dirInfo;
 
-  /**** runtime, CPU & memory usage information ****/ 
-  needJobInfo = actJobMonitorParams[JOB_RUN_TIME] 
-    || actJobMonitorParams[JOB_CPU_TIME] 
-    || actJobMonitorParams[JOB_CPU_USAGE] 
-    || actJobMonitorParams[JOB_MEM_USAGE] 
-    || actJobMonitorParams[JOB_VIRTUALMEM] 
-    || actJobMonitorParams[JOB_RSS] 
+  /**** runtime, CPU & memory usage information ****/
+  needJobInfo = actJobMonitorParams[JOB_RUN_TIME]
+    || actJobMonitorParams[JOB_CPU_TIME]
+    || actJobMonitorParams[JOB_CPU_USAGE]
+    || actJobMonitorParams[JOB_MEM_USAGE]
+    || actJobMonitorParams[JOB_VIRTUALMEM]
+    || actJobMonitorParams[JOB_RSS]
     || actJobMonitorParams[JOB_OPEN_FILES];
   if (needJobInfo) {
     try {
       readJobInfo(job.pid, jobInfo);
       currentJobVals[JOB_RUN_TIME] = jobInfo.etime;
-      currentJobVals[JOB_CPU_TIME] = jobInfo.cputime; 
+      currentJobVals[JOB_CPU_TIME] = jobInfo.cputime;
       currentJobVals[JOB_CPU_USAGE] = jobInfo.pcpu;
-      currentJobVals[JOB_MEM_USAGE] = jobInfo.pmem; 
+      currentJobVals[JOB_MEM_USAGE] = jobInfo.pmem;
       currentJobVals[JOB_VIRTUALMEM] = jobInfo.vsz;
       currentJobVals[JOB_RSS] = jobInfo.rsz;
 
@@ -104,14 +104,14 @@ void ApMon::updateJobInfo(MonitoredJob job) {
 
     } catch (runtime_error &err) {
       logger(WARNING, err.what());
-      jobRetResults[JOB_RUN_TIME] = jobRetResults[JOB_CPU_TIME] = 
+      jobRetResults[JOB_RUN_TIME] = jobRetResults[JOB_CPU_TIME] =
 	jobRetResults[JOB_CPU_USAGE] = jobRetResults[JOB_MEM_USAGE] =
 	jobRetResults[JOB_VIRTUALMEM] = jobRetResults[JOB_RSS] =
 	jobRetResults[JOB_OPEN_FILES] = RET_ERROR;
       strcpy(err_msg, err.what());
       if (strstr(err_msg, "does not exist") != NULL)
 	jobExists = false;
-    } 
+    }
   }
 
   /* if the monitored job has terminated, remove it */
@@ -125,30 +125,30 @@ void ApMon::updateJobInfo(MonitoredJob job) {
   }
 
   /* disk usage information */
-  needDiskInfo = actJobMonitorParams[JOB_DISK_TOTAL] 
-    || actJobMonitorParams[JOB_DISK_USED] 
-    || actJobMonitorParams[JOB_DISK_FREE] 
-    || actJobMonitorParams[JOB_DISK_USAGE] 
+  needDiskInfo = actJobMonitorParams[JOB_DISK_TOTAL]
+    || actJobMonitorParams[JOB_DISK_USED]
+    || actJobMonitorParams[JOB_DISK_FREE]
+    || actJobMonitorParams[JOB_DISK_USAGE]
     || actJobMonitorParams[JOB_WORKDIR_SIZE];
   if (needDiskInfo) {
     try {
       readJobDiskUsage(job, dirInfo);
       currentJobVals[JOB_WORKDIR_SIZE] = dirInfo.workdir_size;
-      currentJobVals[JOB_DISK_TOTAL] = dirInfo.disk_total; 
+      currentJobVals[JOB_DISK_TOTAL] = dirInfo.disk_total;
       currentJobVals[JOB_DISK_USED] = dirInfo.disk_used;
-      currentJobVals[JOB_DISK_USAGE] = dirInfo.disk_usage; 
+      currentJobVals[JOB_DISK_USAGE] = dirInfo.disk_usage;
       currentJobVals[JOB_DISK_FREE] = dirInfo.disk_free;
     } catch (runtime_error& err) {
       logger(WARNING, err.what());
-      jobRetResults[JOB_WORKDIR_SIZE] = jobRetResults[JOB_DISK_TOTAL] 
-	= jobRetResults[JOB_DISK_USED] 
-	= jobRetResults[JOB_DISK_USAGE] 
-	= jobRetResults[JOB_DISK_FREE] 
+      jobRetResults[JOB_WORKDIR_SIZE] = jobRetResults[JOB_DISK_TOTAL]
+	= jobRetResults[JOB_DISK_USED]
+	= jobRetResults[JOB_DISK_USAGE]
+	= jobRetResults[JOB_DISK_FREE]
 	= RET_ERROR;
     }
   }
 }
- 
+
 void ApMon::sendOneJobInfo(MonitoredJob job) {
   int i;
   int nParams = 0;
@@ -164,17 +164,17 @@ void ApMon::sendOneJobInfo(MonitoredJob job) {
     jobRetResults[i] = RET_SUCCESS;
     currentJobVals[i] = 0;
   }
-    
+
   updateJobInfo(job);
 
   for (i = 0; i < nJobMonitorParams; i++) {
     if (actJobMonitorParams[i] && jobRetResults[i] != RET_ERROR) {
-     
+
       paramNames[nParams] = jobMonitorParams[i];
       paramValues[nParams] = (char *)&currentJobVals[i];
       valueTypes[nParams] = XDR_REAL64;
       nParams++;
-    } 
+    }
     /* don't disable the parameter (maybe for another job it can be
 	 obtained) */
       /*
@@ -192,7 +192,7 @@ void ApMon::sendOneJobInfo(MonitoredJob job) {
 
   try {
     if (nParams > 0)
-      sendParameters(job.clusterName, job.nodeName, nParams, 
+      sendParameters(job.clusterName, job.nodeName, nParams,
 		     paramNames, valueTypes, paramValues);
   } catch (runtime_error& err) {
     logger(WARNING, err.what());
@@ -206,81 +206,81 @@ void ApMon::sendOneJobInfo(MonitoredJob job) {
 
 void ApMon::updateSysInfo() {
   int needCPUInfo, needSwapPagesInfo, needLoadInfo, needMemInfo,
-    needNetInfo, needUptime, needProcessesInfo, needNetstatInfo; 
- 
-  /**** CPU usage information ****/ 
-  needCPUInfo = actSysMonitorParams[SYS_CPU_USAGE] 
-    || actSysMonitorParams[SYS_CPU_USR] 
-    || actSysMonitorParams[SYS_CPU_SYS] 
-    || actSysMonitorParams[SYS_CPU_NICE] 
+    needNetInfo, needUptime, needProcessesInfo, needNetstatInfo;
+
+  /**** CPU usage information ****/
+  needCPUInfo = actSysMonitorParams[SYS_CPU_USAGE]
+    || actSysMonitorParams[SYS_CPU_USR]
+    || actSysMonitorParams[SYS_CPU_SYS]
+    || actSysMonitorParams[SYS_CPU_NICE]
     || actSysMonitorParams[SYS_CPU_IDLE];
   if (needCPUInfo) {
     try {
-      ProcUtils::getCPUUsage(*this, currentSysVals[SYS_CPU_USAGE], 
-			     currentSysVals[SYS_CPU_USR], 
+      ProcUtils::getCPUUsage(*this, currentSysVals[SYS_CPU_USAGE],
+			     currentSysVals[SYS_CPU_USR],
 			     currentSysVals[SYS_CPU_SYS],
-			     currentSysVals[SYS_CPU_NICE], 
+			     currentSysVals[SYS_CPU_NICE],
 			     currentSysVals[SYS_CPU_IDLE], numCPUs);
     } catch (procutils_error &perr) {
       /* "permanent" error (the parameters could not be obtained) */
       logger(WARNING, perr.what());
-      sysRetResults[SYS_CPU_USAGE] = sysRetResults[SYS_CPU_SYS] = 
+      sysRetResults[SYS_CPU_USAGE] = sysRetResults[SYS_CPU_SYS] =
 	sysRetResults[SYS_CPU_USR] = sysRetResults[SYS_CPU_NICE] =
 	sysRetResults[SYS_CPU_IDLE] = sysRetResults[SYS_CPU_USAGE] = PROCUTILS_ERROR;
     } catch (runtime_error &err) {
       /* temporary error (next time we might be able to get the paramerers) */
       logger(WARNING, err.what());
-      sysRetResults[SYS_CPU_USAGE] = sysRetResults[SYS_CPU_SYS] 
-	= sysRetResults[SYS_CPU_USR] 
-	= sysRetResults[SYS_CPU_NICE] 
-	= sysRetResults[SYS_CPU_IDLE] 
-	= sysRetResults[SYS_CPU_USAGE] 
+      sysRetResults[SYS_CPU_USAGE] = sysRetResults[SYS_CPU_SYS]
+	= sysRetResults[SYS_CPU_USR]
+	= sysRetResults[SYS_CPU_NICE]
+	= sysRetResults[SYS_CPU_IDLE]
+	= sysRetResults[SYS_CPU_USAGE]
 	= RET_ERROR;
     }
   }
 
-  needSwapPagesInfo = actSysMonitorParams[SYS_PAGES_IN] 
-    || actSysMonitorParams[SYS_PAGES_OUT] 
-    || actSysMonitorParams[SYS_SWAP_IN] 
+  needSwapPagesInfo = actSysMonitorParams[SYS_PAGES_IN]
+    || actSysMonitorParams[SYS_PAGES_OUT]
+    || actSysMonitorParams[SYS_SWAP_IN]
     || actSysMonitorParams[SYS_SWAP_OUT];
 
   if (needSwapPagesInfo) {
     try {
-      ProcUtils::getSwapPages(*this, currentSysVals[SYS_PAGES_IN], 
-			      currentSysVals[SYS_PAGES_OUT], 
+      ProcUtils::getSwapPages(*this, currentSysVals[SYS_PAGES_IN],
+			      currentSysVals[SYS_PAGES_OUT],
 			      currentSysVals[SYS_SWAP_IN],
 			      currentSysVals[SYS_SWAP_OUT]);
     } catch (procutils_error &perr) {
       /* "permanent" error (the parameters could not be obtained) */
       logger(WARNING, perr.what());
-      sysRetResults[SYS_PAGES_IN] = sysRetResults[SYS_PAGES_OUT] = 
+      sysRetResults[SYS_PAGES_IN] = sysRetResults[SYS_PAGES_OUT] =
       sysRetResults[SYS_SWAP_OUT] = sysRetResults[SYS_SWAP_IN] = PROCUTILS_ERROR;
     } catch (runtime_error &err) {
       /* temporary error (next time we might be able to get the paramerers) */
       logger(WARNING, err.what());
-      sysRetResults[SYS_PAGES_IN] = sysRetResults[SYS_PAGES_OUT] 
-	= sysRetResults[SYS_SWAP_IN] 
-	= sysRetResults[SYS_SWAP_OUT] 
+      sysRetResults[SYS_PAGES_IN] = sysRetResults[SYS_PAGES_OUT]
+	= sysRetResults[SYS_SWAP_IN]
+	= sysRetResults[SYS_SWAP_OUT]
 	= RET_ERROR;
     }
   }
 
-  needLoadInfo = actSysMonitorParams[SYS_LOAD1] 
-    || actSysMonitorParams[SYS_LOAD5] 
+  needLoadInfo = actSysMonitorParams[SYS_LOAD1]
+    || actSysMonitorParams[SYS_LOAD5]
     || actSysMonitorParams[SYS_LOAD15];
-    
+
   if (needLoadInfo) {
     double dummyVal;
     try {
       /* the number of processes is now obtained with the getProcesses()
 	 function, not with getLoad() */
-      ProcUtils::getLoad(currentSysVals[SYS_LOAD1], currentSysVals[SYS_LOAD5], 
+      ProcUtils::getLoad(currentSysVals[SYS_LOAD1], currentSysVals[SYS_LOAD5],
 			 currentSysVals[SYS_LOAD15],dummyVal);
     } catch (procutils_error& perr) {
       /* "permanent" error (the parameters could not be obtained) */
       logger(WARNING, perr.what());
-      sysRetResults[SYS_LOAD1] = sysRetResults[SYS_LOAD5] 
-	= sysRetResults[SYS_LOAD15] 
+      sysRetResults[SYS_LOAD1] = sysRetResults[SYS_LOAD5]
+	= sysRetResults[SYS_LOAD15]
 	= PROCUTILS_ERROR;
     }
   }
@@ -289,7 +289,7 @@ void ApMon::updateSysInfo() {
   needProcessesInfo = actSysMonitorParams[SYS_PROCESSES];
   if (needProcessesInfo) {
     try {
-      ProcUtils::getProcesses(currentSysVals[SYS_PROCESSES], 
+      ProcUtils::getProcesses(currentSysVals[SYS_PROCESSES],
 			      currentProcessStates);
     } catch (runtime_error& err) {
       logger(WARNING, err.what());
@@ -298,61 +298,61 @@ void ApMon::updateSysInfo() {
   }
 
   /**** get the amount of memory currently in use ****/
-  needMemInfo = actSysMonitorParams[SYS_MEM_USED] 
-    || actSysMonitorParams[SYS_MEM_FREE] 
-    || actSysMonitorParams[SYS_SWAP_USED] 
-    || actSysMonitorParams[SYS_SWAP_FREE] 
-    || actSysMonitorParams[SYS_MEM_USAGE] 
+  needMemInfo = actSysMonitorParams[SYS_MEM_USED]
+    || actSysMonitorParams[SYS_MEM_FREE]
+    || actSysMonitorParams[SYS_SWAP_USED]
+    || actSysMonitorParams[SYS_SWAP_FREE]
+    || actSysMonitorParams[SYS_MEM_USAGE]
     || actSysMonitorParams[SYS_SWAP_USAGE];
 
   if (needMemInfo) {
     try {
-      ProcUtils::getMemUsed(currentSysVals[SYS_MEM_USED], 
-			    currentSysVals[SYS_MEM_FREE], 
+      ProcUtils::getMemUsed(currentSysVals[SYS_MEM_USED],
+			    currentSysVals[SYS_MEM_FREE],
 			    currentSysVals[SYS_SWAP_USED],
 			    currentSysVals[SYS_SWAP_FREE]);
       currentSysVals[SYS_MEM_USAGE] = 100 * currentSysVals[SYS_MEM_USED] /
-	(currentSysVals[SYS_MEM_USED] +  currentSysVals[SYS_MEM_FREE]); 
+	(currentSysVals[SYS_MEM_USED] +  currentSysVals[SYS_MEM_FREE]);
       currentSysVals[SYS_SWAP_USAGE] = 100 * currentSysVals[SYS_SWAP_USED] /
-	(currentSysVals[SYS_SWAP_USED] +  currentSysVals[SYS_SWAP_FREE]); 
+	(currentSysVals[SYS_SWAP_USED] +  currentSysVals[SYS_SWAP_FREE]);
     } catch (procutils_error &perr) {
       logger(WARNING, perr.what());
-      sysRetResults[SYS_MEM_USED] = sysRetResults[SYS_MEM_FREE] = 
-	sysRetResults[SYS_SWAP_USED] = sysRetResults[SYS_SWAP_FREE] = 
-	sysRetResults[SYS_MEM_USAGE] = sysRetResults[SYS_SWAP_USAGE] = 
+      sysRetResults[SYS_MEM_USED] = sysRetResults[SYS_MEM_FREE] =
+	sysRetResults[SYS_SWAP_USED] = sysRetResults[SYS_SWAP_FREE] =
+	sysRetResults[SYS_MEM_USAGE] = sysRetResults[SYS_SWAP_USAGE] =
 	PROCUTILS_ERROR;
     }
   }
 
-  
+
   /**** network monitoring information ****/
-  needNetInfo = actSysMonitorParams[SYS_NET_IN] || 
+  needNetInfo = actSysMonitorParams[SYS_NET_IN] ||
     actSysMonitorParams[SYS_NET_OUT] || actSysMonitorParams[SYS_NET_ERRS];
   if (needNetInfo && this -> nInterfaces > 0) {
     try {
-      ProcUtils::getNetInfo(*this, &currentNetIn, &currentNetOut, 
+      ProcUtils::getNetInfo(*this, &currentNetIn, &currentNetOut,
 			    &currentNetErrs);
     } catch (procutils_error &perr) {
       logger(WARNING, perr.what());
-      sysRetResults[SYS_NET_IN] = sysRetResults[SYS_NET_OUT] = 
-	sysRetResults[SYS_NET_ERRS] = PROCUTILS_ERROR;     
+      sysRetResults[SYS_NET_IN] = sysRetResults[SYS_NET_OUT] =
+	sysRetResults[SYS_NET_ERRS] = PROCUTILS_ERROR;
     } catch (runtime_error &err) {
       logger(WARNING, err.what());
-      sysRetResults[SYS_NET_IN] = sysRetResults[SYS_NET_OUT] = 
-	sysRetResults[SYS_NET_ERRS] = RET_ERROR; 
+      sysRetResults[SYS_NET_IN] = sysRetResults[SYS_NET_OUT] =
+	sysRetResults[SYS_NET_ERRS] = RET_ERROR;
     }
   }
 
-  needNetstatInfo = actSysMonitorParams[SYS_NET_SOCKETS] || 
+  needNetstatInfo = actSysMonitorParams[SYS_NET_SOCKETS] ||
     actSysMonitorParams[SYS_NET_TCP_DETAILS];
   if (needNetstatInfo) {
     try {
-      ProcUtils::getNetstatInfo(*this, this -> currentNSockets, 
-				this -> currentSocketsTCP); 
+      ProcUtils::getNetstatInfo(*this, this -> currentNSockets,
+				this -> currentSocketsTCP);
     } catch (runtime_error &err) {
       logger(WARNING, err.what());
-      sysRetResults[SYS_NET_SOCKETS] = sysRetResults[SYS_NET_TCP_DETAILS] = 
-	RET_ERROR; 
+      sysRetResults[SYS_NET_SOCKETS] = sysRetResults[SYS_NET_TCP_DETAILS] =
+	RET_ERROR;
     }
   }
 
@@ -363,7 +363,7 @@ void ApMon::updateSysInfo() {
     } catch (procutils_error &perr) {
       logger(WARNING, perr.what());
       sysRetResults[SYS_UPTIME] = PROCUTILS_ERROR;
-    } 
+    }
   }
 
 }
@@ -386,17 +386,17 @@ void ApMon::sendSysInfo() {
     for (i = 0; i < this -> nInterfaces; i++) {
      this -> lastBytesSent[i] = this -> lastBytesReceived[i] = 0.0;
      this -> lastNetErrs[i] = 0;
-     
+
     }
     this -> sysInfo_first = FALSE;
   }
 
   /* the maximum number of parameters that can be included in a datagram */
   /* (the last three terms are for: parameters corresponding to each possible
-     state of the processes, parameters corresponding to the types of open 
+     state of the processes, parameters corresponding to the types of open
      sockets, parameters corresponding to each possible state of the TCP
      sockets.) */
-  maxNParams = nSysMonitorParams + (2 * nInterfaces - 1) + 15 + 4 + 
+  maxNParams = nSysMonitorParams + (2 * nInterfaces - 1) + 15 + 4 +
     N_TCP_STATES;
 
   valueTypes = (int *)malloc(maxNParams * sizeof(int));
@@ -429,7 +429,7 @@ void ApMon::sendSysInfo() {
       paramValues[nParams] = (char *)&currentSysVals[i];
       valueTypes[nParams] = XDR_REAL64;
       nParams++;
-    } 
+    }
   }
 
   if (actSysMonitorParams[SYS_NET_IN] == 1) {
@@ -437,7 +437,7 @@ void ApMon::sendSysInfo() {
       if (autoDisableMonitoring)
 	actSysMonitorParams[SYS_NET_IN] = 0;
     } else  if (sysRetResults[SYS_NET_IN] != RET_ERROR) {
-      for (i = 0; i < nInterfaces; i++) { 
+      for (i = 0; i < nInterfaces; i++) {
 	paramNames[nParams] =  (char *)malloc(20 * sizeof(char));
 	strcpy(paramNames[nParams], interfaceNames[i]);
 	strcat(paramNames[nParams], "_in");
@@ -453,7 +453,7 @@ void ApMon::sendSysInfo() {
       if (autoDisableMonitoring)
 	actSysMonitorParams[SYS_NET_OUT] = 0;
     } else  if (sysRetResults[SYS_NET_OUT] != RET_ERROR) {
-      for (i = 0; i < nInterfaces; i++) { 
+      for (i = 0; i < nInterfaces; i++) {
 	paramNames[nParams] =  (char *)malloc(20 * sizeof(char));
 	strcpy(paramNames[nParams], interfaceNames[i]);
 	strcat(paramNames[nParams], "_out");
@@ -469,7 +469,7 @@ void ApMon::sendSysInfo() {
       if (autoDisableMonitoring)
 	actSysMonitorParams[SYS_NET_ERRS] = 0;
     } else  if (sysRetResults[SYS_NET_ERRS] != RET_ERROR) {
-      for (i = 0; i < nInterfaces; i++) { 
+      for (i = 0; i < nInterfaces; i++) {
 	paramNames[nParams] =  (char *)malloc(20 * sizeof(char));
 	strcpy(paramNames[nParams], interfaceNames[i]);
 	strcat(paramNames[nParams], "_errs");
@@ -484,7 +484,7 @@ void ApMon::sendSysInfo() {
   if (actSysMonitorParams[SYS_PROCESSES] == 1) {
     if (sysRetResults[SYS_PROCESSES] != RET_ERROR) {
       char act_states[] = {'D', 'R', 'S', 'T', 'Z'};
-      for (i = 0; i < 5; i++) { 
+      for (i = 0; i < 5; i++) {
 	paramNames[nParams] =  (char *)malloc(20 * sizeof(char));
 	sprintf(paramNames[nParams], "processes_%c", act_states[i]);
 	paramValues[nParams] = (char *)&currentProcessStates[act_states[i] - 65];
@@ -497,7 +497,7 @@ void ApMon::sendSysInfo() {
   if (actSysMonitorParams[SYS_NET_SOCKETS] == 1) {
     if (sysRetResults[SYS_NET_SOCKETS] != RET_ERROR) {
       const char *socket_types[] = {"tcp", "udp", "icm", "unix"};
-      for (i = 0; i < 4; i++) { 
+      for (i = 0; i < 4; i++) {
 	paramNames[nParams] =  (char *)malloc(30 * sizeof(char));
 	sprintf(paramNames[nParams], "sockets_%s", socket_types[i]);
 	paramValues[nParams] = (char *)&currentNSockets[i];
@@ -509,7 +509,7 @@ void ApMon::sendSysInfo() {
 
   if (actSysMonitorParams[SYS_NET_TCP_DETAILS] == 1) {
     if (sysRetResults[SYS_NET_TCP_DETAILS] != RET_ERROR) {
-      for (i = 0; i < N_TCP_STATES; i++) { 
+      for (i = 0; i < N_TCP_STATES; i++) {
 	paramNames[nParams] =  (char *)malloc(30 * sizeof(char));
 	sprintf(paramNames[nParams], "sockets_tcp_%s", socketStatesMapTCP[i]);
 	paramValues[nParams] = (char *)&currentSocketsTCP[i];
@@ -521,7 +521,7 @@ void ApMon::sendSysInfo() {
 
   try {
     if (nParams > 0)
-      sendParameters(sysMonCluster, sysMonNode, nParams, 
+      sendParameters(sysMonCluster, sysMonNode, nParams,
 		     paramNames, valueTypes, paramValues);
   } catch (runtime_error& err) {
     logger(WARNING, err.what());
@@ -548,10 +548,10 @@ void ApMon::updateGeneralInfo() {
   strcpy(cpuVendor, ""); strcpy(cpuFamily, "");
   strcpy(cpuModel, ""); strcpy(cpuModelName, "");
 
-  if (actGenMonitorParams[GEN_CPU_MHZ] == 1 || 
-      actGenMonitorParams[GEN_BOGOMIPS] == 1 || 
+  if (actGenMonitorParams[GEN_CPU_MHZ] == 1 ||
+      actGenMonitorParams[GEN_BOGOMIPS] == 1 ||
       actGenMonitorParams[GEN_CPU_VENDOR_ID] == 1 ||
-      actGenMonitorParams[GEN_CPU_FAMILY] == 1 || 
+      actGenMonitorParams[GEN_CPU_FAMILY] == 1 ||
       actGenMonitorParams[GEN_CPU_MODEL] == 1 ||
       actGenMonitorParams[GEN_CPU_MODEL_NAME] == 1) {
     try {
@@ -562,10 +562,10 @@ void ApMon::updateGeneralInfo() {
     }
   }
 
-  if (actGenMonitorParams[GEN_TOTAL_MEM] == 1 || 
+  if (actGenMonitorParams[GEN_TOTAL_MEM] == 1 ||
       actGenMonitorParams[GEN_TOTAL_SWAP] == 1) {
     try {
-      ProcUtils::getSysMem(currentGenVals[GEN_TOTAL_MEM], 
+      ProcUtils::getSysMem(currentGenVals[GEN_TOTAL_MEM],
 			   currentGenVals[GEN_TOTAL_SWAP]);
     } catch (procutils_error& perr) {
       logger(WARNING, perr.what());
@@ -583,17 +583,17 @@ void ApMon::sendGeneralInfo() {
 #ifndef WIN32
   int nParams, maxNParams, i;
   char tmp_s[50];
-  
+
   char **paramNames, **paramValues;
   int *valueTypes;
 
   logger(INFO, "Sending general monitoring information...");
-  
+
   maxNParams = nGenMonitorParams + numIPs;
   valueTypes = (int *)malloc(maxNParams * sizeof(int));
   paramNames = (char **)malloc(maxNParams * sizeof(char *));
   paramValues = (char **)malloc(maxNParams * sizeof(char *));
-  
+
   nParams = 0;
 
   updateGeneralInfo();
@@ -636,7 +636,7 @@ void ApMon::sendGeneralInfo() {
     paramValues[nParams] = cpuModel;
     nParams++;
   }
-  
+
   if (actGenMonitorParams[GEN_CPU_MODEL_NAME] && strlen(cpuModelName) != 0) {
     paramNames[nParams] = strdup(genMonitorParams[GEN_CPU_MODEL_NAME]);
     valueTypes[nParams] = XDR_STRING;
@@ -660,12 +660,12 @@ void ApMon::sendGeneralInfo() {
       paramValues[nParams] = (char *)&currentGenVals[i];
       valueTypes[nParams] = XDR_REAL64;
       nParams++;
-    } 
+    }
   }
 
   try {
     if (nParams > 0)
-      sendParameters(sysMonCluster, sysMonNode, nParams, 
+      sendParameters(sysMonCluster, sysMonNode, nParams,
 		     paramNames, valueTypes, paramValues);
   } catch (runtime_error& err) {
     logger(WARNING, err.what());
@@ -735,14 +735,14 @@ void ApMon::initMonitoring() {
   initSocketStatesMapTCP(this -> socketStatesMapTCP);
 
   this -> sysInfo_first = true;
-  
+
   try {
     this -> lastSysInfoSend = ProcUtils::getBootTime();
   } catch (procutils_error& perr) {
     logger(WARNING, perr.what());
     logger(WARNING, "The first system monitoring values may be inaccurate");
     this -> lastSysInfoSend = 0;
-  } 
+  }
 
   for (i = 0; i < nSysMonitorParams; i++)
     this -> lastSysVals[i] = 0;
@@ -811,7 +811,7 @@ void ApMon::parseXApMonLine(char *line) {
     this -> confCheck = flag; found = true;
   }
   if (strcmp(param, "recheck_interval") == 0) {
-    this -> recheckInterval = this -> crtRecheckInterval = atol(value); 
+    this -> recheckInterval = this -> crtRecheckInterval = atol(value);
     found = true;
   }
   if (strcmp(param, "auto_disable") == 0) {
@@ -829,7 +829,7 @@ void ApMon::parseXApMonLine(char *line) {
   }
 
   if (strstr(param, "sys_") == param) {
-    ind = getVectIndex(param + strlen("sys_"), sysMonitorParams, 
+    ind = getVectIndex(param + strlen("sys_"), sysMonitorParams,
 		       nSysMonitorParams);
     if (ind < 0) {
       pthread_mutex_unlock(&mutexBack);
@@ -843,9 +843,9 @@ void ApMon::parseXApMonLine(char *line) {
   }
 
   if (strstr(param, "job_") == param) {
-    ind = getVectIndex(param + strlen("job_"), jobMonitorParams, 
+    ind = getVectIndex(param + strlen("job_"), jobMonitorParams,
 		       nJobMonitorParams);
-    
+
     if (ind < 0) {
       pthread_mutex_unlock(&mutexBack);
       sprintf(logmsg, "Invalid parameter name in the configuration file: %s",
@@ -858,7 +858,7 @@ void ApMon::parseXApMonLine(char *line) {
   }
 
   if (!found) {
-    ind = getVectIndex(param, genMonitorParams, 
+    ind = getVectIndex(param, genMonitorParams,
 		       nGenMonitorParams);
     if (ind < 0) {
       pthread_mutex_unlock(&mutexBack);
@@ -879,8 +879,8 @@ void ApMon::parseXApMonLine(char *line) {
   }
   pthread_mutex_unlock(&mutexBack);
 }
-  
-long *apmon_mon_utils::getChildren(long pid, int& nChildren) 
+
+long *apmon_mon_utils::getChildren(long pid, int& nChildren)
   throw(runtime_error) {
 #ifdef WIN32
 	return 0;
@@ -918,7 +918,7 @@ long *apmon_mon_utils::getChildren(long pid, int& nChildren)
     if (waitpid(cpid, &status, 0) == -1) {
       sprintf(msg, "[ getChildren() ] The number of sub-processes for %ld could not be determined", pid);
       unlink(children_f); unlink(np_f);
-      throw runtime_error(msg); 
+      throw runtime_error(msg);
     }
   }
 
@@ -929,13 +929,13 @@ long *apmon_mon_utils::getChildren(long pid, int& nChildren)
     sprintf(msg, "[ getChildren() ] The number of sub-processes for %ld could not be determined",
 	    pid);
     throw runtime_error(msg);
-  } 
+  }
   fscanf(pf, "%d", &nProcesses);
-  fclose(pf);   
+  fclose(pf);
   unlink(np_f);
 
-  pids = (long *)malloc(nProcesses * sizeof(long)); 
-  ppids = (long *)malloc(nProcesses * sizeof(long)); 
+  pids = (long *)malloc(nProcesses * sizeof(long));
+  ppids = (long *)malloc(nProcesses * sizeof(long));
   /* estimated maximum size for the returned vector; it will be realloc'ed */
   children = (long *)malloc(nProcesses * sizeof(long));
 
@@ -945,8 +945,8 @@ long *apmon_mon_utils::getChildren(long pid, int& nChildren)
     unlink(children_f);
     sprintf(msg, "[ getChildren() ] The sub-processes for %ld could not be determined", pid);
     throw runtime_error(msg);
-  } 
- 
+  }
+
   /* scan the output of the ps command and find the children of the process,
    and also check if the process is still running */
   children[0] = pid; nChildren = 1;
@@ -968,12 +968,12 @@ long *apmon_mon_utils::getChildren(long pid, int& nChildren)
     nChildren = 0;
     sprintf(msg, "[ getChildren() ] The process %ld does not exist", pid);
     throw runtime_error(msg);
-  } 
+  }
 
   /* find the PIDs of all the descendant processes */
   i = 1;
   while (i < nChildren) {
-    /* find the children of the i-th child */ 
+    /* find the children of the i-th child */
     for (j = 0; j < nProcesses; j++) {
       if (ppids[j] == children[i]) {
 	children[nChildren++] = pids[j];
@@ -1009,10 +1009,10 @@ void apmon_mon_utils::readJobInfo(long pid, PsInfo& info) throw(runtime_error) {
   double etime, cputime;
   double pcpu, pmem;
   /* this list contains strings of the form "rsz_vsz_command" for every pid;
-     it is used to avoid adding several times processes that have multiple 
-     threads and appear in ps as sepparate processes, occupying exactly the 
-     same amount of memory and having the same command name. For every line 
-     from the output of the ps command we verify if the rsz_vsz_command 
+     it is used to avoid adding several times processes that have multiple
+     threads and appear in ps as sepparate processes, occupying exactly the
+     same amount of memory and having the same command name. For every line
+     from the output of the ps command we verify if the rsz_vsz_command
      combination is already in the list.
   */
   char **mem_cmd_list;
@@ -1025,7 +1025,7 @@ void apmon_mon_utils::readJobInfo(long pid, PsInfo& info) throw(runtime_error) {
   /* get the list of the process' descendants */
   children = getChildren(pid, nChildren);
 
-  /* generate a name for the temporary file which holds the output of the 
+  /* generate a name for the temporary file which holds the output of the
      ps command */
   sprintf(ps_f, "/tmp/apmon_ps%ld", mypid);
 
@@ -1073,7 +1073,7 @@ void apmon_mon_utils::readJobInfo(long pid, PsInfo& info) throw(runtime_error) {
     if (waitpid(cpid, &status, 0) == -1) {
       free(cmd);
       sprintf(msg, "[ readJobInfo() ] The job information for %ld could not be determined", pid);
-      throw runtime_error(msg); 
+      throw runtime_error(msg);
     }
   }
 
@@ -1094,7 +1094,7 @@ void apmon_mon_utils::readJobInfo(long pid, PsInfo& info) throw(runtime_error) {
   cmdName[0] = 0;
   while (1) {
     ret_s = fgets(buf, MAX_STRING_LEN, fp);
-    if (ret_s == NULL) 
+    if (ret_s == NULL)
       break;
     buf[MAX_STRING_LEN - 1] = 0;
 
@@ -1102,7 +1102,7 @@ void apmon_mon_utils::readJobInfo(long pid, PsInfo& info) throw(runtime_error) {
     /* keep only the first 512 chars from the line */
     ch = fgetc(fp); // see if we are at the end of the file
     ungetc(ch, fp);
-    if (buf[strlen(buf) - 1] != 10 && ch != EOF) { 
+    if (buf[strlen(buf) - 1] != 10 && ch != EOF) {
       while (1) {
 	char *sret = fgets(buf2, MAX_STRING_LEN, fp);
 	if (sret == NULL || buf[strlen(buf) - 1] == 10)
@@ -1110,7 +1110,7 @@ void apmon_mon_utils::readJobInfo(long pid, PsInfo& info) throw(runtime_error) {
       }
     }
 
-    ret = sscanf(buf, "%ld %s %s %lf %lf %lf %lf %s", &crt_pid, etime_s, 
+    ret = sscanf(buf, "%ld %s %s %lf %lf %lf %lf %s", &crt_pid, etime_s,
 		 cputime_s, &pcpu, &pmem, &rsz, &vsz, cmdName);
     if (ret != 8) {
       fclose(fp);
@@ -1125,6 +1125,7 @@ void apmon_mon_utils::readJobInfo(long pid, PsInfo& info) throw(runtime_error) {
 
     /* etime is the maximum of the elapsed times for the subprocesses */
     etime = parsePSTime(etime_s);
+
     info.etime = (info.etime > etime) ? info.etime : etime;
 
     /* cputime is the sum of the cpu times for the subprocesses */
@@ -1146,8 +1147,8 @@ void apmon_mon_utils::readJobInfo(long pid, PsInfo& info) throw(runtime_error) {
     sprintf(mem_cmd_s, "%f_%f_%s", rsz, vsz, cmdName);
     //printf("### mem_cmd_s: %s\n", mem_cmd_s);
     if (getVectIndex(mem_cmd_s, mem_cmd_list, listSize) == -1) {
-      /* aonther pid with the same command name, rsz and vsz was not found,
-	 so this is a new process and we can add the amount of memory used by 
+      /* another pid with the same command name, rsz and vsz was not found,
+	 so this is a new process and we can add the amount of memory used by
 	 it */
       info.pmem += pmem;
       info.vsz += vsz; info.rsz += rsz;
@@ -1156,7 +1157,7 @@ void apmon_mon_utils::readJobInfo(long pid, PsInfo& info) throw(runtime_error) {
 	info.open_fd += open_fd;
       /* add an entry in the list so that next time we see another thread of
 	 this process we don't add the amount of  memory again */
-      mem_cmd_list[listSize++] = mem_cmd_s;     
+      mem_cmd_list[listSize++] = mem_cmd_s;
     } else {
       free(mem_cmd_s);
     }
@@ -1167,7 +1168,7 @@ void apmon_mon_utils::readJobInfo(long pid, PsInfo& info) throw(runtime_error) {
     */
     if (crt_pid == getpid())
       info.open_fd -= 2;
-  } 
+  }
 
   fclose(fp);
   unlink(ps_f);
@@ -1179,20 +1180,20 @@ void apmon_mon_utils::readJobInfo(long pid, PsInfo& info) throw(runtime_error) {
 #endif
 }
 
-long apmon_mon_utils::parsePSTime(char *s) {
+double apmon_mon_utils::parsePSTime(char *s) {
   long days, hours, mins, secs;
 
   if (strchr(s, '-') != NULL) {
     sscanf(s, "%ld-%ld:%ld:%ld", &days, &hours, &mins, &secs);
-    return 24 * 3600 * days + 3600 * hours + 60 * mins + secs;
+    return 24. * 3600 * days + 3600 * hours + 60 * mins + secs;
   } else {
     if (strchr(s, ':') != NULL && strchr(s, ':') !=  strrchr(s, ':')) {
        sscanf(s, "%ld:%ld:%ld", &hours, &mins, &secs);
-       return 3600 * hours + 60 * mins + secs;
+       return 3600. * hours + 60 * mins + secs;
     } else {
       if (strchr(s, ':') != NULL) {
 	sscanf(s, "%ld:%ld", &mins, &secs);
-	return 60 * mins + secs;
+	return 60. * mins + secs;
       } else {
 	return RET_ERROR;
       }
@@ -1200,7 +1201,7 @@ long apmon_mon_utils::parsePSTime(char *s) {
   }
 }
 
-void apmon_mon_utils::readJobDiskUsage(MonitoredJob job, 
+void apmon_mon_utils::readJobDiskUsage(MonitoredJob job,
 				JobDirInfo& info) throw(runtime_error) {
 #ifndef WIN32
   int status;
@@ -1208,23 +1209,23 @@ void apmon_mon_utils::readJobDiskUsage(MonitoredJob job,
   char *cmd, s_tmp[20], *argv[4], msg[100];
   FILE *fp;
   long mypid = getpid();
-  char du_f[50], df_f[50]; 
+  char du_f[50], df_f[50];
 
   /* generate names for the temporary files which will hold the output of the
      du and df commands */
   sprintf(du_f, "/tmp/apmon_du%ld", mypid);
   sprintf(df_f, "/tmp/apmon_df%ld", mypid);
-  
+
   if (strlen(job.workdir) == 0) {
     sprintf(msg, "[ readJobDiskUsage() ] The working directory for the job %ld was not specified, not monitoring disk usage", job.pid);
     throw runtime_error(msg);
   }
-  
+
   cmd = (char *)malloc((300 + 2 * strlen(job.workdir)) * sizeof(char));
   strcpy(cmd, "PRT=`du -Lsk ");
   strcat(cmd, job.workdir);
   //strcat(cmd, " | tail -1 | cut -f 1 > ");
-  strcat(cmd, " ` ; if [[ $? -eq 0 ]] ; then OUT=`echo $PRT | cut -f 1` ; echo $OUT ; exit 0 ; else exit -1 ; fi > "); 
+  strcat(cmd, " ` ; if [[ $? -eq 0 ]] ; then OUT=`echo $PRT | cut -f 1` ; echo $OUT ; exit 0 ; else exit -1 ; fi > ");
   strcat(cmd, du_f);
 
 
@@ -1242,7 +1243,7 @@ void apmon_mon_utils::readJobDiskUsage(MonitoredJob job,
       free(cmd);
       sprintf(msg, "[ readJobDiskUsage() ] The disk usage (du) information for %ld could not be determined", job.pid);
       unlink(du_f); unlink(df_f);
-      throw runtime_error(msg); 
+      throw runtime_error(msg);
     }
   }
 
@@ -1268,7 +1269,7 @@ void apmon_mon_utils::readJobDiskUsage(MonitoredJob job,
       free(cmd);
       sprintf(msg, "[ readJobDiskUsage() ] The disk usage (df) information for %ld could not be determined", job.pid);
       unlink(du_f); unlink(df_f);
-      throw runtime_error(msg); 
+      throw runtime_error(msg);
     }
   }
 
@@ -1284,13 +1285,13 @@ void apmon_mon_utils::readJobDiskUsage(MonitoredJob job,
   info.workdir_size /= 1024.0;
   fclose(fp);
   unlink(du_f);
- 
+
   fp = fopen(df_f, "rt");
   if (fp == NULL) {
     sprintf(msg, "[ readJobDiskUsage() ] Error opening df output file for process %ld", job.pid);
     throw runtime_error(msg);
   }
-  fscanf(fp, "%s %lf %lf %lf %lf", s_tmp, &(info.disk_total), 
+  fscanf(fp, "%s %lf %lf %lf %lf", s_tmp, &(info.disk_total),
 	 &(info.disk_used), &(info.disk_free), &(info.disk_usage));
   fclose(fp);
   unlink(df_f);

@@ -194,4 +194,6 @@ public:
 //    Strange, things like NTuple::Item<char> produce this warning, as if the operation between chars are done
 //    converting them to integers first.
 #pragma warning(disable:2259)
+// disable icc remark #177: variable "X" was declared but never referenced
+#pragma warning(disable:177)
 #endif

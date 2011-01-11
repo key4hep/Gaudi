@@ -24,9 +24,11 @@
 #include "TLeafF.h"
 #include "TLeafD.h"
 
-// Instantiation of a static factory class used by clients to create
-// instances of this service
-DECLARE_NAMESPACE_CONVERTER_FACTORY(RootHistCnv,RCWNTupleCnv)
+#ifdef __ICC
+// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
+//     they are intended
+#pragma warning(disable:1572)
+#endif
 
 //-----------------------------------------------------------------------------
 template <class T> void analyzeItem(std::string typ,
@@ -57,7 +59,7 @@ template <class T> void analyzeItem(std::string typ,
     RootHistCnv::parseName(ind,ind_blk,ind_var);
     if (ind_blk != block_name) {
       std::cerr << "ERROR: Index for CWNT variable " << ind_var
-		<< " is in a differnt block: " << ind_blk << std::endl;
+		<< " is in a different block: " << ind_blk << std::endl;
     }
     desc += ind_var;
   }
@@ -637,4 +639,6 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
   return StatusCode::SUCCESS;
 }
 
-
+// Instantiation of a static factory class used by clients to create
+// instances of this service
+DECLARE_NAMESPACE_CONVERTER_FACTORY(RootHistCnv, RCWNTupleCnv)

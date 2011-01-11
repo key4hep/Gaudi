@@ -1,6 +1,9 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+
 ! 2010-12-17 - Eoin Smith
   - Updated TESSerializer.h/cpp, python/GaudiPython for Multicore Execution
     TESSerializer class can now serialize/reconstruct Opaque Addresses using

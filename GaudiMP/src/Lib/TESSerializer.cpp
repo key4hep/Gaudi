@@ -256,7 +256,7 @@ void GaudiMP::TESSerializer::loadBuffer(TBufferFile& buffer) {
       LinkManager* lnkMgr = obj->linkMgr();
       buffer.ReadInt(nlink);
 
-      for (int i=0; i<nlink; ++i) {
+      for (int j = 0; j < nlink; ++j) {
         buffer.ReadString(text,sizeof(text));
         lnkMgr->addLink(text,0);
       }
@@ -268,17 +268,15 @@ void GaudiMP::TESSerializer::loadBuffer(TBufferFile& buffer) {
       if ( location == "/Event" ) {
         sc = m_TESMgr->setRoot(location, obj);
         if(sc.isFailure()) {
-          string text("Cannot set root at location ");
-          throw GaudiException(text+location,"", sc);
+          throw GaudiException("Cannot set root at location " + location, "", sc);
         }
       }
       else {
-        string text("Cannot register object at location ");
-        text += location;
+        const char* msg = "Cannot register object at location ";
         if ( m_strict ) {
-          throw GaudiException(text+location,"", registerStat);
+          throw GaudiException(msg + location, "", registerStat);
         } else {
-          cout << "WARNING : " << text << endl;
+          cout << "WARNING : " << msg << location << endl;
           continue;
         }
       }
@@ -317,8 +315,7 @@ void GaudiMP::TESSerializer::loadBuffer(TBufferFile& buffer) {
       // now create the address
       createAddressStat = m_addressCreator->createAddress( gadd.svcType(), gadd.clID(), gadd.par(), gadd.ipar(), iopref );
       if (createAddressStat.isFailure()) {
-        string text("Failure in creating OpaqueAddress for reconstructed registry");
-        throw GaudiException(text,"", createAddressStat);
+        throw GaudiException("Failure in creating OpaqueAddress for reconstructed registry", "", createAddressStat);
       }
       // And finally, set this address
       obj->registry()->setAddress(iop);

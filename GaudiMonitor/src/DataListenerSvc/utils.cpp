@@ -38,6 +38,10 @@
 #include "utils.h"
 #include "ApMon.h"
 
+#ifdef __ICC
+// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
+#pragma warning(disable:2259)
+#endif
 
 bool apmon_utils::urlModified(char *url, char *lastModified) throw(runtime_error) {
   char temp_filename[300];
