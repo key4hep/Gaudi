@@ -4,6 +4,8 @@ package manager: Marco Clemencic
 ! 2011-01-12 - Marco Clemencic
  - Modified the directory where Python binary modules are installed to me
    more standard (python/lib-dynload)
+ - Fixed a problem in a regular expression used in the exclusion of lines
+   from the references of the tests
 
 ! 2011-01-07 - Marco Clemencic
  - Fixes to run_qmtest.py to allow creation of HTML output on Windows.

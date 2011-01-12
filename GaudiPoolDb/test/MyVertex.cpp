@@ -5,7 +5,8 @@ namespace {
     long count;
     InstanceCount() : count(0) {}
     ~InstanceCount() {
-      std::cout << "Number of MyVertex instances:" << count << std::endl;
+      if (count)
+        std::cout << "Number of MyVertex instances:" << count << std::endl;
     }
   };
 }

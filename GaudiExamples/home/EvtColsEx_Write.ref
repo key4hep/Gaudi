@@ -183,5 +183,3 @@ FileRecordCnvSvc     INFO File sharing enabled. Do not retire files.
 PoolRootEvtCnvSvc    INFO Disconnected data IO:3A00DD55-DFFA-DE11-B9B8-001320A397BC[EvtColsEx.dst]
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyVertex instances:0
-Number of MyTrack instances:0

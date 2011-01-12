@@ -218,5 +218,3 @@ ToolSvc.Sequenc...   INFO   Simple3                     |     0.000 |     0.043 
 ToolSvc.Sequenc...   INFO ------------------------------------------------------------------------------------------------
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyVertex instances:0
-Number of MyTrack instances:0

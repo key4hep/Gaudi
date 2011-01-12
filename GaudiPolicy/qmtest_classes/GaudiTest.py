@@ -478,7 +478,7 @@ normalizeExamples = LineSkipper(["//GP:",
                                  # I want to ignore the header of the unchecked StatusCode report
                                  r"^StatusCodeSvc.*listing all unchecked return codes:",
                                  r"^StatusCodeSvc\s*INFO\s*$",
-                                 r"Num\s*|\s*Function\s*|\s*Source Library",
+                                 r"Num\s*\|\s*Function\s*\|\s*Source Library",
                                  r"^[-+]*\s*$",
                                  # Hide the fake error message coming from POOL/ROOT (ROOT 5.21)
                                  r"ERROR Failed to modify file: .* Errno=2 No such file or directory",
