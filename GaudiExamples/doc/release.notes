@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+
 ============================ GaudiExamples v21r11 ============================
 ! 2010-09-22 - Marco Clemencic
  - Added test for bug #71216

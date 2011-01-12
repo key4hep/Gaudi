@@ -4,12 +4,7 @@
 
 #include "GaudiKernel/AlgFactory.h"
 
-// Static Factory declaration
-
-DECLARE_ALGORITHM_FACTORY(SCSAlg);
-
 ///////////////////////////////////////////////////////////////////////////
-
 SCSAlg::SCSAlg( const std::string& name, ISvcLocator* pSvcLocator ) :
   Algorithm(name, pSvcLocator)
 {
@@ -55,13 +50,16 @@ void SCSAlg::fncChecked() {
 }
 
 void SCSAlg::fncUnchecked() {
-  
+
   test();
 
 }
 
 void SCSAlg::fncUnchecked2() {
-  
+
   test();
 
 }
+
+// Static Factory declaration
+DECLARE_ALGORITHM_FACTORY(SCSAlg)
