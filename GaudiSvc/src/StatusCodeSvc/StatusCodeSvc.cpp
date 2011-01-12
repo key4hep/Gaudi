@@ -5,22 +5,15 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-DECLARE_SERVICE_FACTORY(StatusCodeSvc)
-
 using namespace std;
 //
 ///////////////////////////////////////////////////////////////////////////
 //
 inline void toupper(std::string &s)
 {
-    std::string::iterator it=s.begin();
-    while(it != s.end())
-    {
-        *it = toupper(*it);
-        it++;
-    }
+  std::transform(s.begin(), s.end(), s.begin(),
+                 (int(*)(int)) toupper);
 }
-
 
 StatusCodeSvc::StatusCodeSvc(const std::string& name, ISvcLocator* svc )
   : base_class( name, svc )
@@ -54,7 +47,7 @@ StatusCodeSvc::initialize() {
   std::vector<std::string>::const_iterator itr;
   for (itr = m_pFilter.value().begin(); itr != m_pFilter.value().end(); ++itr) {
     // we need to do this if someone has gotten to regFnc before initialize
-    
+
     string fnc,lib;
     parseFilter(*itr,fnc,lib);
 
@@ -119,13 +112,13 @@ StatusCodeSvc::regFnc(const std::string& fnc, const std::string& lib) {
     return;
   }
 
-  int i1 = lib.rfind("/",lib.length());
-  string rlib = lib.substr(i1+1,lib.length()-i1-1);
+  {
+    const string rlib = lib.substr(lib.rfind("/") + 1);
 
-
-  if (m_filterfnc.find(fnc) != m_filterfnc.end() || 
-      m_filterlib.find(rlib) != m_filterlib.end() ) {
-    return;
+    if (m_filterfnc.find(fnc) != m_filterfnc.end() ||
+        m_filterlib.find(rlib) != m_filterlib.end() ) {
+      return;
+    }
   }
 
   if (m_abort) {
@@ -143,8 +136,7 @@ StatusCodeSvc::regFnc(const std::string& fnc, const std::string& lib) {
     itr->second.count += 1;
   } else {
 
-    int i1 = lib.rfind("/",lib.length());
-    string rlib = lib.substr(i1+1,lib.length()-i1-1);
+    const string rlib = lib.substr(lib.rfind("/") + 1);
 
     StatCodeDat dat;
     dat.fnc = fnc;
@@ -213,7 +205,7 @@ StatusCodeSvc::filterFnc(const std::string& str) {
       m_dat.erase(itr);
       return;
     }
-      
+
   }
 
 }
@@ -228,7 +220,7 @@ StatusCodeSvc::filterLib(const std::string& str) {
       m_dat.erase(itr);
       return;
     }
-      
+
   }
 
 }
@@ -261,9 +253,13 @@ StatusCodeSvc::parseFilter(const string& str, string& fnc, string& lib) {
       lib = "";
 
       MsgStream log( msgSvc(), name() );
-      log << MSG::WARNING << "ignoring unknown token in Filter: " << str 
+      log << MSG::WARNING << "ignoring unknown token in Filter: " << str
 	  << endmsg;
     }
   }
 
 }
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+DECLARE_SERVICE_FACTORY(StatusCodeSvc)
