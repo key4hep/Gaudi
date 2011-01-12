@@ -60,5 +60,3 @@ PoolRootTreeEvt...   INFO Disconnected data IO:C4E46E48-DDFA-DE11-874F-001320A39
 XMLCatalog           INFO File 'EvtColsEx.xml' does not exist. New file created.
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyVertex instances:0
-Number of MyTrack instances:0

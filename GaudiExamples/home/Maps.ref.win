@@ -323,5 +323,3 @@ Map               SUCCESS  	4) GaudiUtils::HashMap<int,double,GaudiUtils::Hash<i
 EventLoopMgr         INFO Histograms converted successfully according to request.
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyTrack instances:0
-Number of MyVertex instances:0

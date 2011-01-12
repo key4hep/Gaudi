@@ -163,5 +163,4 @@ PoolRootEvtCnvSvc    INFO Disconnected data IO:3C569088-DDFA-DE11-87AE-001320A39
 PoolRootEvtCnvSvc    INFO Disconnected data IO:C6570989-DDFA-DE11-87AE-001320A397BC[POOLIO.mdst]
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyVertex instances:0
 Number of MyTrack instances:18

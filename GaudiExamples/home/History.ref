@@ -152,5 +152,3 @@ ServiceManager      DEBUG ---- EventLoopMgr (refCount = 4)[m
 ServiceManager      DEBUG ---- HistorySvc (refCount = 4)[m
 ApplicationMgr       INFO Application Manager Finalized successfully[m
 ApplicationMgr       INFO Application Manager Terminated successfully[m
-Number of MyTrack instances:0
-Number of MyVertex instances:0

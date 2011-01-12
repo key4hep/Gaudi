@@ -1,6 +1,11 @@
 Package: GaudiPoolDb
 Package Manager: Markus Frank, Marco Clemencic
 
+! 2011-01-12 - Marco Clemencic
+ - Fixed bug #76395: spurious count printouts in MyTrack and MyVertex classes
+   Modified MyTrack and MyVertex to print the count of lost instances only
+   if different from 0.
+
 ! 2010-11-30 - Markus Frank
  - Patch #4545: Fix to run with AgeLimit=1
    Each converter explicitly pins the data type info structures on initialize
@@ -10,6 +15,7 @@ Package Manager: Markus Frank, Marco Clemencic
  - Patch #4541
    Fixes to address coverity errors:
    bug #75702: Coverity detected defect: Operands don't affect result (id=10016)
+
 ============================== GaudiPoolDb v5r9 ==============================
 ! 2010-06-24 - Markus Frank
   - Patch #4210: Fix bug when reading event tag collections
