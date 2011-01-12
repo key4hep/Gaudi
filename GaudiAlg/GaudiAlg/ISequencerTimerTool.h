@@ -27,12 +27,15 @@ public:
   /** Decrease the indentation of the name **/
   virtual void decreaseIndent() = 0;
 
+  using IAlgTool::start;
   /** start the counter, i.e. register the current time **/
   virtual void start( int index ) = 0;
 
+  using IAlgTool::stop;
   /** stop the counter, return the elapsed time **/
   virtual double stop( int index ) = 0;
 
+  using IAlgTool::name;
   /** returns the name of the counter **/
   virtual std::string name( int index ) = 0;
 
