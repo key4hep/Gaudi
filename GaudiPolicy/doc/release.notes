@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-01-12 - Marco Clemencic
+ - Modified the directory where Python binary modules are installed to me
+   more standard (python/lib/dynload)
+
 ! 2011-01-07 - Marco Clemencic
  - Fixes to run_qmtest.py to allow creation of HTML output on Windows.
 
