@@ -9,11 +9,11 @@
  *
  * Copyright (C) 2006 California Institute of Technology
  *
- * Permission is hereby granted, free of charge, to use, copy and modify 
+ * Permission is hereby granted, free of charge, to use, copy and modify
  * this software and its documentation (the "Software") for any
- * purpose, provided that existing copyright notices are retained in 
+ * purpose, provided that existing copyright notices are retained in
  * all copies and that this notice is included verbatim in any distributions
- * or substantial portions of the Software. 
+ * or substantial portions of the Software.
  * This software is a part of the MonALISA framework (http://monalisa.cacr.caltech.edu).
  * Users of the Software are asked to feed back problems, benefits,
  * and/or suggestions about the software to the MonALISA Development Team
@@ -51,9 +51,14 @@ using namespace apmon_mon_utils;
 
 char boolStrings[][10] = {"false", "true"};
 
+#ifdef __ICC
+// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
+#pragma warning(disable:2259)
+#endif
+
 //========= Implementations of the functions ===================
 
-ApMon::ApMon(char *initsource) 
+ApMon::ApMon(char *initsource)
   throw(runtime_error) {
 
   if (initsource == NULL)
@@ -69,7 +74,7 @@ ApMon::ApMon(char *initsource)
     initSources = (char **)malloc(nInitSources * sizeof(char *));
     if (initSources == NULL)
       throw runtime_error("[ ApMon() ] Error allocating memory.");
-    
+
     initSources[0] = strdup(initsource);
     initMonitoring();
 
@@ -77,15 +82,15 @@ ApMon::ApMon(char *initsource)
   }
 }
 
-void ApMon::initialize(char *filename, bool firstTime) 
+void ApMon::initialize(char *filename, bool firstTime)
   throw(runtime_error) {
 
   char *destAddresses[MAX_N_DESTINATIONS];
   int destPorts[MAX_N_DESTINATIONS];
   char *destPasswds[MAX_N_DESTINATIONS];
-  int nDest = 0, i; 
+  int nDest = 0, i;
   ConfURLs confURLs;
-  
+
   confURLs.nConfURLs = 0;
 
   try {
@@ -112,12 +117,12 @@ void ApMon::initialize(char *filename, bool firstTime)
   pthread_mutex_unlock(&mutex);
 }
 
-void ApMon::loadFile(char *filename, int *nDestinations, char **destAddresses, 
+void ApMon::loadFile(char *filename, int *nDestinations, char **destAddresses,
 		     int *destPorts, char **destPasswds)
   throw(runtime_error) {
   FILE *f;
   char msg[100];
- 
+
   /* initializations for the destination addresses */
   f = fopen(filename, "rt");
   if (f == NULL) {
@@ -128,8 +133,8 @@ void ApMon::loadFile(char *filename, int *nDestinations, char **destAddresses,
   logger(INFO, msg);
 
   lastModifFile = time(NULL);
-  
-  parseConf(f, nDestinations, destAddresses, destPorts, 
+
+  parseConf(f, nDestinations, destAddresses, destPorts,
 	    destPasswds);
   fclose(f);
 }
@@ -142,9 +147,9 @@ void ApMon::constructFromList(int nDestinations, char **destinationsList)
   throw(runtime_error) {
   int i;
 
-  if (destinationsList == NULL) 
+  if (destinationsList == NULL)
     throw runtime_error("[ constructFromList() ] Null destination list");
- 
+
 #ifdef __APPLE__
   initType = OLIST_INIT;
 #else
@@ -166,7 +171,7 @@ void ApMon::constructFromList(int nDestinations, char **destinationsList)
 }
 
 void ApMon::initialize(int nDestinations, char **destinationsList,
-		       bool firstTime) throw(runtime_error) { 
+		       bool firstTime) throw(runtime_error) {
   char *destAddresses[MAX_N_DESTINATIONS];
   int destPorts[MAX_N_DESTINATIONS];
   char *destPasswds[MAX_N_DESTINATIONS];
@@ -180,16 +185,16 @@ void ApMon::initialize(int nDestinations, char **destinationsList,
   if (nDestinations > MAX_N_DESTINATIONS)
     throw runtime_error("[ initialize() ] Maximum number of destinations exceeded");
 
-  
+
   confURLs.nConfURLs = 0;
 
   for (i = 0; i < nDestinations; i++) {
-    try { 
+    try {
       if (strstr(destinationsList[i], "http") == destinationsList[i])
-	getDestFromWeb(destinationsList[i], &cnt, 
+	getDestFromWeb(destinationsList[i], &cnt,
 		       destAddresses, destPorts, destPasswds, confURLs);
-      else 
-	addToDestinations(destinationsList[i], &cnt, 
+      else
+	addToDestinations(destinationsList[i], &cnt,
 			destAddresses, destPorts, destPasswds);
 
     } catch (runtime_error &e) {
@@ -201,8 +206,8 @@ void ApMon::initialize(int nDestinations, char **destinationsList,
 	  free(destPasswds[i]);
 	}
 	logger(WARNING, "Configuration not reloaded successfully. Keeping the previous one.");
-	return; 
-      }     
+	return;
+      }
     }  // catch
   }  // for
 
@@ -216,7 +221,7 @@ void ApMon::initialize(int nDestinations, char **destinationsList,
       return;
     }
   }
-  
+
   for (i = 0; i < cnt; i++) {
     free(destAddresses[i]);
     free(destPasswds[i]);
@@ -227,12 +232,12 @@ void ApMon::initialize(int nDestinations, char **destinationsList,
   pthread_mutex_unlock(&mutex);
 }
 
-void ApMon::addToDestinations(char *line, int *nDestinations, 
+void ApMon::addToDestinations(char *line, int *nDestinations,
 	       char *destAddresses[], int destPorts[], char *destPasswds[]) {
   char *addr, *port, *passwd;
   const char *sep1 = " \t";
   const char *sep2 = ":";
- 
+
   char *tmp = strdup(line);
   char *firstToken;
 //  char buf[MAX_STRING_LEN];
@@ -258,8 +263,8 @@ void ApMon::addToDestinations(char *line, int *nDestinations,
 
   free(tmp);
 }
-  
-void ApMon::getDestFromWeb(char *url, int *nDestinations, 
+
+void ApMon::getDestFromWeb(char *url, int *nDestinations,
   char *destAddresses[], int destPorts[], char *destPasswds[],
 			   ConfURLs& confURLs) throw(runtime_error) {
   char temp_filename[300];
@@ -279,7 +284,7 @@ void ApMon::getDestFromWeb(char *url, int *nDestinations,
   if(tmpp == NULL)
 	  tmpp = "c:";
   sprintf(temp_filename, "%s\\apmon_webconf%ld", tmpp, mypid);
-#endif 
+#endif
   /* get the configuration file from web and put it in a temporary file */
   totalSize = httpRequest(url, (char*)"GET", temp_filename);
 
@@ -302,7 +307,7 @@ void ApMon::getDestFromWeb(char *url, int *nDestinations,
   confURLs.vURLs[confURLs.nConfURLs] = strdup(url);
 
   // check the  header for the "Last-Modified" and "Content-Length" lines
-  modifLineFound = false; 
+  modifLineFound = false;
   contentSize = 0;
   do {
     if (tmp != NULL)
@@ -336,36 +341,36 @@ void ApMon::getDestFromWeb(char *url, int *nDestinations,
   }
 
   try {
-    parseConf(tmp_file, nDestinations, destAddresses, destPorts, 
+    parseConf(tmp_file, nDestinations, destAddresses, destPorts,
 	      destPasswds);
   } catch (...) {
     fclose(tmp_file);
     unlink(temp_filename);
     throw;
-  } 
+  }
 
   fclose(tmp_file);
   unlink(temp_filename);
 }
 
 
-ApMon::ApMon(int nDestinations, char **destAddresses, int *destPorts, 
-	     char **destPasswds) 
+ApMon::ApMon(int nDestinations, char **destAddresses, int *destPorts,
+	     char **destPasswds)
 throw(runtime_error) {
   initMonitoring();
 
   arrayInit(nDestinations, destAddresses, destPorts, destPasswds);
 }
 
-void ApMon::arrayInit(int nDestinations, char **destAddresses, 
-		      int *destPorts, char **destPasswds) 
+void ApMon::arrayInit(int nDestinations, char **destAddresses,
+		      int *destPorts, char **destPasswds)
   throw(runtime_error) {
 	arrayInit(nDestinations, destAddresses, destPorts, destPasswds, true);
 }
 
 
 void ApMon::arrayInit(int nDestinations, char **destAddresses, int *destPorts,
-		      char **destPasswds, bool firstTime) 
+		      char **destPasswds, bool firstTime)
 throw(runtime_error) {
   int i, j;
   int ret;
@@ -383,9 +388,9 @@ throw(runtime_error) {
     //this -> appPID = getpid();
 
     this -> nMonJobs = 0;
-    this -> monJobs = (MonitoredJob *)malloc(MAX_MONITORED_JOBS * 
+    this -> monJobs = (MonitoredJob *)malloc(MAX_MONITORED_JOBS *
 					    sizeof(MonitoredJob));
-   
+
     try {
       this -> numCPUs = ProcUtils::getNumCPUs();
     } catch (procutils_error &err) {
@@ -396,13 +401,13 @@ throw(runtime_error) {
     /* get the names of the network interfaces */
     this -> nInterfaces = 0;
     try {
-      ProcUtils::getNetworkInterfaces(this -> nInterfaces, 
+      ProcUtils::getNetworkInterfaces(this -> nInterfaces,
 				     this -> interfaceNames);
     } catch (procutils_error &err) {
       logger(WARNING, err.what());
       this -> nInterfaces = 0;
-    } 
-     
+    }
+
     /* get the hostname of the machine */
     ret = gethostname(this -> myHostname, MAX_STRING_LEN -1);
     if (ret < 0) {
@@ -414,7 +419,7 @@ throw(runtime_error) {
     /* get the IPs of the machine */
     this -> numIPs = 0; havePublicIP = false;
     strcpy(this -> myIP, "unknown");
-   
+
     /* default values for cluster name and node name */
     this -> clusterName = strdup("ApMon_UserSend");
     this -> nodeName = strdup(myHostname);
@@ -427,7 +432,7 @@ throw(runtime_error) {
       for (i = 0; i < this -> nInterfaces; i++) {
     struct ifreq ifr;
 	memset(&ifr, 0, sizeof(ifr));
-	strncpy(ifr.ifr_name, this -> interfaceNames[i], sizeof(ifr.ifr_name) - 1); 
+	strncpy(ifr.ifr_name, this -> interfaceNames[i], sizeof(ifr.ifr_name) - 1);
 	if(ioctl(sockd, SIOCGIFADDR, &ifr)<0)
 	  continue;	//????????
 	char ip[4], tmp_s[20];
@@ -492,7 +497,7 @@ throw(runtime_error) {
     instance_id = rand();
     seq_nr = 0;
   }
-  
+
   /* put the destination addresses, ports & passwords in some temporary
      buffers (because we don't want to lock mutex while making DNS
      requests)
@@ -501,7 +506,7 @@ throw(runtime_error) {
   tmpPorts = (int *)malloc(nDestinations * sizeof(int));
   tmpAddresses = (char **)malloc(nDestinations * sizeof(char *));
   tmpPasswds = (char **)malloc(nDestinations * sizeof(char *));
-  if (tmpPorts == NULL || tmpAddresses == NULL || 
+  if (tmpPorts == NULL || tmpAddresses == NULL ||
       tmpPasswds == NULL)
     throw runtime_error("[ arrayInit() ] Error allocating memory");
 
@@ -512,7 +517,7 @@ throw(runtime_error) {
       logger(FATAL, err.what());
       continue;
     }
-    
+
     /* make sure this address is not already in the list */
     found = false;
     for (j = 0; j < tmpNDestinations; j++) {
@@ -528,7 +533,7 @@ throw(runtime_error) {
       tmpPorts[tmpNDestinations] = destPorts[i];
       tmpPasswds[tmpNDestinations] = strdup(destPasswds[i]);
 
-      sprintf(logmsg, "Adding destination host: %s  - port %d", 
+      sprintf(logmsg, "Adding destination host: %s  - port %d",
 	     tmpAddresses[tmpNDestinations], tmpPorts[tmpNDestinations]);
       logger(INFO, logmsg);
 
@@ -538,7 +543,7 @@ throw(runtime_error) {
 
   if (tmpNDestinations == 0) {
     freeMat(tmpAddresses, tmpNDestinations);
-    freeMat(tmpPasswds, tmpNDestinations);  
+    freeMat(tmpPasswds, tmpNDestinations);
     throw runtime_error("[ arrayInit() ] There is no destination host specified correctly!");
   }
 
@@ -551,7 +556,7 @@ throw(runtime_error) {
   this -> destPasswds = tmpPasswds;
   pthread_mutex_unlock(&mutex);
 
-  /* start job/system monitoring according to the settings previously read 
+  /* start job/system monitoring according to the settings previously read
      from the configuration file */
   setJobMonitoring(jobMonitoring, jobMonitorInterval);
   setSysMonitoring(sysMonitoring, sysMonitorInterval);
@@ -591,7 +596,7 @@ ApMon::~ApMon() {
     free(initSources[i]);
   }
   free(initSources);
-  
+
   free(buf);
 #ifndef WIN32
   close(sockfd);
@@ -614,14 +619,14 @@ void ApMon::freeConf() {
 }
 
 int ApMon::sendParameters(char *clusterName, char *nodeName,
-	       int nParams, char **paramNames, int *valueTypes, 
+	       int nParams, char **paramNames, int *valueTypes,
 			 char **paramValues) throw(runtime_error){
- return sendTimedParameters(clusterName, nodeName, nParams, 
+ return sendTimedParameters(clusterName, nodeName, nParams,
 			    paramNames, valueTypes, paramValues, -1);
 }
 
 int ApMon::sendTimedParameters(char *clusterName, char *nodeName,
-	       int nParams, char **paramNames, int *valueTypes, 
+	       int nParams, char **paramNames, int *valueTypes,
 	       char **paramValues, int timestamp) throw(runtime_error){
   int i;
   int ret, ret1, ret2;
@@ -641,12 +646,12 @@ int ApMon::sendTimedParameters(char *clusterName, char *nodeName,
      pthread_mutex_unlock(&mutex);
      return RET_NOT_SENT;
   }
-		
+
   if (clusterName != NULL) { // don't keep the cached values for cluster name
     // and node name
     free(this -> clusterName);
     this -> clusterName = strdup(clusterName);
-    
+
     if (nodeName != NULL) {  /* the user provided a name */
       free(this -> nodeName);
       this -> nodeName = strdup(nodeName);
@@ -656,7 +661,7 @@ int ApMon::sendTimedParameters(char *clusterName, char *nodeName,
       this -> nodeName = strdup(this -> myHostname);
     }  // else
   } // if
-  
+
   if (this -> clusterName == NULL || this -> nodeName == NULL) {
     pthread_mutex_unlock(&mutex);
     throw runtime_error("[ sendTimedParameters() ] Null cluster name or node name");
@@ -672,7 +677,7 @@ int ApMon::sendTimedParameters(char *clusterName, char *nodeName,
     throw err;
   }
 
-  headerTmp = (char *)malloc(MAX_HEADER_LENGTH * sizeof(char)); 
+  headerTmp = (char *)malloc(MAX_HEADER_LENGTH * sizeof(char));
   /* for each destination */
   for (i = 0; i < nDestinations; i++) {
     XDR xdrs;
@@ -695,12 +700,12 @@ int ApMon::sendTimedParameters(char *clusterName, char *nodeName,
     }
 #endif
     /* add the header (which is different for each destination) */
-   
+
     strcpy(headerTmp, header);
     strcat(headerTmp, destPasswds[i]);
 
     /* initialize the XDR stream to encode the header */
-    xdrmem_create(&xdrs, buf2, MAX_HEADER_LENGTH, XDR_ENCODE); 
+    xdrmem_create(&xdrs, buf2, MAX_HEADER_LENGTH, XDR_ENCODE);
 
     /* encode the header */
     ret = xdr_string(&xdrs, &(headerTmp), strlen(headerTmp) + 1);
@@ -720,7 +725,7 @@ int ApMon::sendTimedParameters(char *clusterName, char *nodeName,
     memcpy(newBuf + buf2Length, buf, dgramSize);
 
     /* send the buffer */
-    ret = sendto(sockfd, newBuf, dgramSize + buf2Length, 0, 
+    ret = sendto(sockfd, newBuf, dgramSize + buf2Length, 0,
 		 (struct sockaddr *)&destAddr, sizeof(destAddr));
     if (ret == RET_ERROR) {
       free(headerTmp);
@@ -735,18 +740,18 @@ int ApMon::sendTimedParameters(char *clusterName, char *nodeName,
       initSocket();
 
       /* throw exception because the datagram was not sent */
-      sprintf(msg, "[ sendTimedParameters() ] Error sending data to destination %s ", 
+      sprintf(msg, "[ sendTimedParameters() ] Error sending data to destination %s ",
 	      destAddresses[i]);
       throw runtime_error(msg);
     }
     else {
-      sprintf(msg, "Datagram with size %d, instance id %d, sequence number %d, sent to %s, containing parameters:", 
+      sprintf(msg, "Datagram with size %d, instance id %d, sequence number %d, sent to %s, containing parameters:",
 	     ret, instance_id, seq_nr, destAddresses[i]);
       logger(FINE, msg);
       logParameters(FINE, nParams, paramNames, valueTypes, paramValues);
     }
     xdr_destroy(&xdrs);
-    
+
   }
 
   seq_nr = (seq_nr + 1) % TWO_BILLION;
@@ -757,51 +762,51 @@ int ApMon::sendTimedParameters(char *clusterName, char *nodeName,
 
 
 int ApMon::sendParameter(char *clusterName, char *nodeName,
-			char *paramName, int valueType, char *paramValue) 
+			char *paramName, int valueType, char *paramValue)
  throw(runtime_error){
 
-  return sendParameters(clusterName, nodeName, 1, &paramName, 
+  return sendParameters(clusterName, nodeName, 1, &paramName,
 			      &valueType, &paramValue);
 }
 
 int ApMon::sendTimedParameter(char *clusterName, char *nodeName,
-	      char *paramName, int valueType, char *paramValue, int timestamp) 
+	      char *paramName, int valueType, char *paramValue, int timestamp)
  throw(runtime_error){
 
-  return sendTimedParameters(clusterName, nodeName, 1, &paramName, 
+  return sendTimedParameters(clusterName, nodeName, 1, &paramName,
 			      &valueType, &paramValue, timestamp);
 }
 
 int ApMon::sendParameter(char *clusterName, char *nodeName,
 		char *paramName, int paramValue) throw(runtime_error) {
-  
-  return sendParameter(clusterName, nodeName, paramName, XDR_INT32, 
+
+  return sendParameter(clusterName, nodeName, paramName, XDR_INT32,
 		    (char *)&paramValue);
 }
 
 int ApMon::sendParameter(char *clusterName, char *nodeName,
 		char *paramName, float paramValue) throw(runtime_error) {
-  
-  return sendParameter(clusterName, nodeName, paramName, XDR_REAL32, 
+
+  return sendParameter(clusterName, nodeName, paramName, XDR_REAL32,
 		    (char *)&paramValue);
 }
 
 int ApMon::sendParameter(char *clusterName, char *nodeName,
 		char *paramName, double paramValue) throw(runtime_error) {
-  
-  return sendParameter(clusterName, nodeName, paramName, XDR_REAL64, 
+
+  return sendParameter(clusterName, nodeName, paramName, XDR_REAL64,
 		    (char *)&paramValue);
 }
 
 int ApMon::sendParameter(char *clusterName, char *nodeName,
 		char *paramName, char *paramValue) throw(runtime_error) {
-  
-  return sendParameter(clusterName, nodeName, paramName, XDR_STRING, 
+
+  return sendParameter(clusterName, nodeName, paramName, XDR_STRING,
 		    paramValue);
 }
 
-void ApMon::encodeParams(int nParams, char **paramNames, int *valueTypes, 
-			char **paramValues, int timestamp) 
+void ApMon::encodeParams(int nParams, char **paramNames, int *valueTypes,
+			char **paramValues, int timestamp)
   throw(runtime_error){
   XDR xdrs; /* XDR handle. */
   int i, effectiveNParams;
@@ -812,7 +817,7 @@ void ApMon::encodeParams(int nParams, char **paramNames, int *valueTypes,
   */
   effectiveNParams = nParams;
   for (i = 0; i < nParams; i++) {
-      if (paramNames[i] == NULL || (valueTypes[i] == XDR_STRING && 
+      if (paramNames[i] == NULL || (valueTypes[i] == XDR_STRING &&
 				    paramValues[i] == NULL)) {
 	effectiveNParams--;
       }
@@ -823,7 +828,7 @@ void ApMon::encodeParams(int nParams, char **paramNames, int *valueTypes,
   /*** estimate the length of the send buffer ***/
 
   /* add the length of the cluster name & node name */
-  dgramSize =  xdrSize(XDR_STRING, clusterName) + 
+  dgramSize =  xdrSize(XDR_STRING, clusterName) +
       xdrSize(XDR_STRING, nodeName) + xdrSize(XDR_INT32, NULL);
   /* add the lengths for the parameters (name + size + value) */
   for (i = 0; i < nParams; i++) {
@@ -832,27 +837,27 @@ void ApMon::encodeParams(int nParams, char **paramNames, int *valueTypes,
   }
 
   /* check that the maximum datagram size is not exceeded */
-  if (dgramSize + MAX_HEADER_LENGTH > MAX_DGRAM_SIZE) 
+  if (dgramSize + MAX_HEADER_LENGTH > MAX_DGRAM_SIZE)
     throw runtime_error("[ encodeParams() ] Maximum datagram size exceeded");
 
   /* initialize the XDR stream */
-  xdrmem_create(&xdrs, buf, MAX_DGRAM_SIZE, XDR_ENCODE); 
+  xdrmem_create(&xdrs, buf, MAX_DGRAM_SIZE, XDR_ENCODE);
 
   try {
     /* encode the cluster name, the node name and the number of parameters */
-    if (!xdr_string(&xdrs, &(clusterName), strlen(clusterName) 
+    if (!xdr_string(&xdrs, &(clusterName), strlen(clusterName)
 		    + 1))
       throw runtime_error("[ encodeParams() ] XDR encoding error for the cluster name");
 
     if (!xdr_string(&xdrs, &(nodeName), strlen(nodeName) + 1))
       throw runtime_error("[ encodeParams() ] XDR encoding error for the node name");
-    
+
     if (!xdr_int(&xdrs, &(effectiveNParams)))
       throw runtime_error("[ encodeParams() ] XDR encoding error for the number of parameters");
 
     /* encode the parameters */
     for (i = 0; i < nParams; i++) {
-      if (paramNames[i] == NULL || (valueTypes[i] == XDR_STRING && 
+      if (paramNames[i] == NULL || (valueTypes[i] == XDR_STRING &&
 				    paramValues[i] == NULL)) {
 	logger(WARNING, "NULL parameter name or value - skipping parameter...");
 	continue;
@@ -861,25 +866,25 @@ void ApMon::encodeParams(int nParams, char **paramNames, int *valueTypes,
       /* parameter name */
       if (!xdr_string(&xdrs, &(paramNames[i]), strlen(paramNames[i]) + 1))
 	throw runtime_error("[ encodeParams() ] XDR encoding error for parameter name");
-    
+
       /* parameter value type */
-      if (!xdr_int(&xdrs, &(valueTypes[i])))  
+      if (!xdr_int(&xdrs, &(valueTypes[i])))
 	throw runtime_error("[ encodeParams() ] XDR encoding error for parameter value type");
 
       /* parameter value */
       switch (valueTypes[i]) {
       case XDR_STRING:
-	if (!xdr_string(&xdrs, &(paramValues[i]), 
+	if (!xdr_string(&xdrs, &(paramValues[i]),
 			strlen(paramValues[i]) + 1))
 	  throw runtime_error("[ encodeParams() ] XDR encoding error for parameter value");
 	break;
 	//INT16 is not supported
-	/*    case XDR_INT16:  
+	/*    case XDR_INT16:
 	      if (!xdr_short(&xdrs, (short *)(paramValues[i])))
 	      return RET_ERROR;
 	      break;
 	*/    case XDR_INT32:
-		if (!xdr_int(&xdrs, (int *)(paramValues[i])))  
+		if (!xdr_int(&xdrs, (int *)(paramValues[i])))
 		  throw runtime_error("[ encodeParams() ] XDR encoding error for parameter value");
 		break;
       case XDR_REAL32:
@@ -894,10 +899,10 @@ void ApMon::encodeParams(int nParams, char **paramNames, int *valueTypes,
 	throw runtime_error("[ encodeParams() ] Unknown type for XDR encoding");
       }
     }
-   
+
     /* encode the timestamp if necessary */
     if (timestamp > 0) {
-      if (!xdr_int(&xdrs, &timestamp))  
+      if (!xdr_int(&xdrs, &timestamp))
 	throw runtime_error("[ encodeParams() ] XDR encoding error for the timestamp");
       dgramSize += xdrSize(XDR_INT32, NULL);
     }
@@ -910,7 +915,7 @@ void ApMon::encodeParams(int nParams, char **paramNames, int *valueTypes,
 }
 
 #ifndef WIN32
-void *bkTask(void *param) { 
+void *bkTask(void *param) {
 #else
 DWORD WINAPI bkTask(void *param) {
 #endif
@@ -946,7 +951,7 @@ DWORD WINAPI bkTask(void *param) {
   if (apm -> sysMonitoring)
     nextSysInfoSend = crtTime + apm -> sysMonitorInterval;
   pthread_mutex_unlock(&(apm -> mutexBack));
-  
+
   timeRemained = -1;
   generalInfoCount = 0;
 
@@ -959,12 +964,12 @@ DWORD WINAPI bkTask(void *param) {
     }
     pthread_mutex_unlock(&apm -> mutexBack);
 
-    //sprintf(logmsg, "### 2 recheck %ld sys %ld ", nextRecheck, 
+    //sprintf(logmsg, "### 2 recheck %ld sys %ld ", nextRecheck,
     //    nextSysInfoSend);
     //logger(FINE, logmsg);
 
     /* determine the next operation that must be performed */
-    if (nextRecheck > 0 && (nextJobInfoSend <= 0 || 
+    if (nextRecheck > 0 && (nextJobInfoSend <= 0 ||
 			    nextRecheck <= nextJobInfoSend)) {
       if (nextSysInfoSend <= 0 || nextRecheck <= nextSysInfoSend) {
 	nextOp = RECHECK_CONF;
@@ -974,7 +979,7 @@ DWORD WINAPI bkTask(void *param) {
 	timeRemained = nextSysInfoSend - crtTime;
       }
     } else {
-      if (nextJobInfoSend > 0 && (nextSysInfoSend <= 0 || 
+      if (nextJobInfoSend > 0 && (nextSysInfoSend <= 0 ||
 				  nextJobInfoSend <= nextSysInfoSend)) {
 	nextOp = JOB_INFO_SEND;
 	timeRemained = nextJobInfoSend - crtTime;
@@ -1003,14 +1008,14 @@ DWORD WINAPI bkTask(void *param) {
     if (apm -> jobMonChanged || apm -> sysMonChanged || apm -> recheckChanged)
       haveChange = true;
     if (apm -> jobMonChanged) {
-      if (apm -> jobMonitoring) 
+      if (apm -> jobMonitoring)
 	nextJobInfoSend = crtTime + apm -> jobMonitorInterval;
       else
 	nextJobInfoSend = -1;
       apm -> jobMonChanged = false;
     }
     if (apm -> sysMonChanged) {
-      if (apm -> sysMonitoring) 
+      if (apm -> sysMonitoring)
 	nextSysInfoSend = crtTime + apm -> sysMonitorInterval;
       else
 	nextSysInfoSend = -1;
@@ -1030,11 +1035,11 @@ DWORD WINAPI bkTask(void *param) {
       pthread_mutex_unlock(&(apm -> mutexCond));
       continue;
     }
-    
+
     /* wait until the next operation should be performed or until
        a change in the settings occurs */
 #ifndef WIN32
-    ret = pthread_cond_timedwait(&(apm -> confChangedCond), 
+    ret = pthread_cond_timedwait(&(apm -> confChangedCond),
 				&(apm -> mutexCond), &delay);
     pthread_mutex_unlock(&(apm -> mutexCond));
 #else
@@ -1049,7 +1054,7 @@ DWORD WINAPI bkTask(void *param) {
 	crtTime = time(NULL);
 	nextJobInfoSend = crtTime + apm -> getJobMonitorInterval();
       }
-      
+
       if (nextOp == SYS_INFO_SEND) {
 	apm -> sendSysInfo();
 	if (apm -> getGenMonitoring()) {
@@ -1066,7 +1071,7 @@ DWORD WINAPI bkTask(void *param) {
 	resourceChanged = false;
 	try {
 	  if (apm -> initType == FILE_INIT) {
-	    sprintf(logmsg, "Checking for modifications for file %s ", 
+	    sprintf(logmsg, "Checking for modifications for file %s ",
 		    apm -> initSources[0]);
 	    logger(INFO, logmsg);
 	    stat(apm -> initSources[0], &st);
@@ -1079,7 +1084,7 @@ DWORD WINAPI bkTask(void *param) {
 
 	  // check the configuration URLs
 	  for (i = 0; i < apm -> confURLs.nConfURLs; i++) {
-	    sprintf(logmsg, "[Checking for modifications for URL %s ] ", 
+	    sprintf(logmsg, "[Checking for modifications for URL %s ] ",
 		   apm -> confURLs.vURLs[i]);
 	    logger(INFO, logmsg);
 	    if (urlModified(apm -> confURLs.vURLs[i], apm -> confURLs.lastModifURLs[i])) {
@@ -1108,7 +1113,7 @@ DWORD WINAPI bkTask(void *param) {
 	//sleep(apm -> getCrtRecheckInterval());
       }
     }
- 
+
   } // while
 
 #ifndef WIN32
@@ -1121,7 +1126,7 @@ DWORD WINAPI bkTask(void *param) {
 void ApMon::setConfRecheck(bool confCheck, long interval) {
   char logmsg[100];
   if (confCheck) {
-    sprintf(logmsg, "Enabling configuration reloading (interval %ld)", 
+    sprintf(logmsg, "Enabling configuration reloading (interval %ld)",
 	    interval);
     logger(INFO, logmsg);
   }
@@ -1149,7 +1154,7 @@ void ApMon::setConfRecheck(bool confCheck, long interval) {
       setBackgroundThread(false);
   }
   pthread_mutex_unlock(&mutexBack);
-    
+
 }
 
 void ApMon::setRecheckInterval(long val) {
@@ -1206,7 +1211,7 @@ void ApMon::setSysMonitoring(bool sysMonitoring, long interval) {
   if (sysMonitoring == true) {
     if (interval > 0)
       this -> sysMonitorInterval = interval;
-    else 
+    else
       this -> sysMonitorInterval = SYS_MONITOR_INTERVAL;
     setBackgroundThread(true);
   }  else {
@@ -1216,10 +1221,10 @@ void ApMon::setSysMonitoring(bool sysMonitoring, long interval) {
   }
   pthread_mutex_unlock(&mutexBack);
 }
-  
+
 void ApMon::setGenMonitoring(bool genMonitoring, int nIntervals) {
   char logmsg[100];
-  sprintf(logmsg, "Setting general information monitoring to %s ", 
+  sprintf(logmsg, "Setting general information monitoring to %s ",
 	 boolStrings[(int)genMonitoring]);
   logger(INFO, logmsg);
 
@@ -1229,9 +1234,9 @@ void ApMon::setGenMonitoring(bool genMonitoring, int nIntervals) {
   if (genMonitoring == true) {
     if (nIntervals > 0)
       this -> genMonitorIntervals = nIntervals;
-    else 
-      this -> genMonitorIntervals = GEN_MONITOR_INTERVALS; 
-    
+    else
+      this -> genMonitorIntervals = GEN_MONITOR_INTERVALS;
+
     if (this -> sysMonitoring == false) {
       pthread_mutex_unlock(&mutexBack);
       setSysMonitoring(true);
@@ -1290,16 +1295,16 @@ void ApMon::addJobToMonitor(long pid, char *workdir, char *clusterName,
     throw runtime_error("[ addJobToMonitor() ] Maximum number of jobs that can be monitored exceeded.");
   MonitoredJob job;
   job.pid = pid;
-  if (workdir == NULL) 
+  if (workdir == NULL)
     strcpy(job.workdir, "");
   else
     strcpy(job.workdir, workdir);
 
- if (clusterName == NULL || strlen(clusterName) == 0) 
+ if (clusterName == NULL || strlen(clusterName) == 0)
     strcpy(job.clusterName, "ApMon_JobMon");
   else
     strcpy(job.clusterName, clusterName);
- if (nodeName == NULL || strlen(nodeName) == 0) 
+ if (nodeName == NULL || strlen(nodeName) == 0)
     strcpy(job.nodeName, this -> myIP);
   else
     strcpy(job.nodeName, nodeName);
@@ -1313,8 +1318,8 @@ void ApMon::removeJobToMonitor(long pid) throw(runtime_error) {
 
   if (nMonJobs <= 0)
     throw runtime_error("[ removeJobToMonitor() ] There are no monitored jobs.");
-  
-  for (i = 0; i < nMonJobs; i++) { 
+
+  for (i = 0; i < nMonJobs; i++) {
     if (monJobs[i].pid == pid) {
       /* found the job, now remove it */
       for (j = i; j < nMonJobs - 1; j++)
@@ -1346,13 +1351,13 @@ void ApMon::setLogLevel(char *newLevel_s) {
 
   if (newLevel >= 5) {
     sprintf(logmsg, "[ setLogLevel() ] Invalid level value: %s", newLevel_s);
-    logger(WARNING, logmsg); 
+    logger(WARNING, logmsg);
   }
   else
     logger(0, NULL, newLevel);
 }
 
-	
+
 void ApMon::setMaxMsgRate(int maxRate) {
   if (maxRate > 0)
     this -> maxMsgRate  = maxRate;
@@ -1360,33 +1365,33 @@ void ApMon::setMaxMsgRate(int maxRate) {
 
 void ApMon::initSocket() throw(runtime_error) {
   int optval1 = 1;
-  struct timeval optval2; 
+  struct timeval optval2;
   int ret1, ret2, ret3;
 
   sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-  if (sockfd < 0) 
+  if (sockfd < 0)
     throw runtime_error("[ initSocket() ] Error creating socket");
-  ret1 = setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (char *) &optval1, 
+  ret1 = setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (char *) &optval1,
 		    sizeof(optval1));
-    
+
   /* set connection timeout */
   optval2.tv_sec = 20;
   optval2.tv_usec = 0;
-  ret2 = setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, (char *) &optval2, 
+  ret2 = setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, (char *) &optval2,
 		    sizeof(optval2));
-  ret3 = setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (char *) &optval2, 
+  ret3 = setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (char *) &optval2,
 		    sizeof(optval2));
   if (ret1 != 0 || ret2 != 0 || ret3 != 0)
     throw runtime_error("[ initSocket() ] Error initializing socket.");
 }
 
 
-void ApMon::parseConf(FILE *fp, int *nDestinations, char **destAddresses, 
+void ApMon::parseConf(FILE *fp, int *nDestinations, char **destAddresses,
 		     int *destPorts, char **destPasswds)
   throw(runtime_error) {
   int i, ch;
   char *line = (char *)malloc ((MAX_STRING_LEN1) * sizeof(char));
-  char *tmp = NULL; 
+  char *tmp = NULL;
   char *loglevel_s;
 //  char sbuf[30];
 //  char *pbuf = sbuf;
@@ -1411,11 +1416,11 @@ void ApMon::parseConf(FILE *fp, int *nDestinations, char **destAddresses,
     }
 
     tmp = trimString(line);
-      
+
     /* skip the blank lines and the comment lines */
     if (strlen(tmp) == 0 || strchr(tmp, '#') == tmp)
       continue;
-    
+
     if (strstr(tmp, "xApMon_loglevel") == tmp) {
       char *tmp2 = tmp;
       strtok/*_r*/(tmp2, "= ");//, &pbuf);
@@ -1428,9 +1433,9 @@ void ApMon::parseConf(FILE *fp, int *nDestinations, char **destAddresses,
       parseXApMonLine(tmp);
       continue;
     }
-    
+
     if (*nDestinations >= MAX_N_DESTINATIONS) {
-      free(line); free(tmp); 
+      free(line); free(tmp);
       for (i = 0; i < *nDestinations; i++) {
 	free(destAddresses[i]);
 	free(destPasswds[i]);
@@ -1439,7 +1444,7 @@ void ApMon::parseConf(FILE *fp, int *nDestinations, char **destAddresses,
       throw runtime_error("[ parseConf() ] Maximum number of destinations exceeded.");
     }
 
-    addToDestinations(tmp, nDestinations, destAddresses, destPorts, 
+    addToDestinations(tmp, nDestinations, destAddresses, destPorts,
 		      destPasswds);
   }
 
@@ -1468,7 +1473,7 @@ bool ApMon::shouldSend() {
     crtDrop = 0;
     //printf("\n");
   }
-		
+
   /** compute the history */
   int valSent = (int)(prvSent * hWeight + crtSent * (1.0 - hWeight));
 
@@ -1476,7 +1481,7 @@ bool ApMon::shouldSend() {
   /** when we should start dropping messages */
   int level = this -> maxMsgRate - this -> maxMsgRate / 10;
 
- 
+
   if (valSent > (this -> maxMsgRate - level)) {
     //int max10 = this -> maxMsgRate / 10;
     int rnd  = rand() % (this -> maxMsgRate / 10);
@@ -1490,11 +1495,11 @@ bool ApMon::shouldSend() {
     crtDrop++;
     //printf(".");
   }
-  
+
   return doSend;
 }
-	
- 
 
 
-  
+
+
+

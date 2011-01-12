@@ -1,6 +1,6 @@
 /**
  * \file monitor_utils.h
- * This file contains declarations for functions and data structured 
+ * This file contains declarations for functions and data structured
  * used for obtaining monitoring information.
  */
 
@@ -10,11 +10,11 @@
  *
  * Copyright (C) 2006 California Institute of Technology
  *
- * Permission is hereby granted, free of charge, to use, copy and modify 
+ * Permission is hereby granted, free of charge, to use, copy and modify
  * this software and its documentation (the "Software") for any
- * purpose, provided that existing copyright notices are retained in 
+ * purpose, provided that existing copyright notices are retained in
  * all copies and that this notice is included verbatim in any distributions
- * or substantial portions of the Software. 
+ * or substantial portions of the Software.
  * This software is a part of the MonALISA framework (http://monalisa.cacr.caltech.edu).
  * Users of the Software are asked to feed back problems, benefits,
  * and/or suggestions about the software to the MonALISA Development Team
@@ -60,38 +60,38 @@ namespace apmon_mon_utils {
    */
   typedef struct JobDirInfo {
     /* the size of the job's working directory */
-    double workdir_size; 
+    double workdir_size;
     /* size of the partition on which the working directory resides, in MB */
-    double disk_total; 
+    double disk_total;
     /* the amount of disk used on the working directory's partition */
     double disk_used;
     /* the amount of disk free on the working directory's partition */
     double disk_free;
     /* disk usage in percent on the working directort's partition */
-    double disk_usage; 
+    double disk_usage;
   } JobDirInfo;
 
   /** Determines all the descendants of a given process. */
   long *getChildren(long pid, int& nChildren) throw(runtime_error);
-  
-  /** Obtains monitoring information for a given job and all its sub-jobs 
-   * (descendant processes) with the aid of the ps command. 
+
+  /** Obtains monitoring information for a given job and all its sub-jobs
+   * (descendant processes) with the aid of the ps command.
    */
   void readJobInfo(long pid, PsInfo& info) throw(runtime_error);
 
   /**
-   * Function that parses a time formatted like "days-hours:min:sec" and 
+   * Function that parses a time formatted like "days-hours:min:sec" and
    * returns the corresponding number of seconds.
    */
-  long parsePSTime(char *s);
+  double parsePSTime(char *s);
 
   /**
-   * If there is an work directory defined, then compute the used space in 
-   * that directory and the free disk space on the partition to which that 
+   * If there is an work directory defined, then compute the used space in
+   * that directory and the free disk space on the partition to which that
    * directory belongs. Sizes are given in MB.
    */
-  void readJobDiskUsage(MonitoredJob job, JobDirInfo& info) 
-    throw(runtime_error); 
+  void readJobDiskUsage(MonitoredJob job, JobDirInfo& info)
+    throw(runtime_error);
 }
 
 #endif
