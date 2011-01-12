@@ -19,6 +19,12 @@
 // Root
 #include "TTree.h"
 
+#ifdef __ICC
+// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
+//     they are intended
+#pragma warning(disable:1572)
+#endif
+
 //-----------------------------------------------------------------------------
 //
 // Implementation of class :  RootHistCnv::RNTupleCnv
