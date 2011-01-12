@@ -9,12 +9,12 @@
 #include <cmath>
 
 /** @file cbrt.h
- * 
+ *
  *  Provide the function cbrt (gcc specific) to all platforms.
- * 
+ *
  *  @author Marco Clemencic (form an idea of Chris Jones)
  *  @date   27/07/2007
- * 
+ *
  */
 
 // double cbrt(double) is a gcc built-in
@@ -42,6 +42,11 @@ inline long double cbrt( long double __x ) {
 #endif
 }
 
+#ifdef __INTEL_COMPILER        // Disable ICC remark
+  #pragma warning(push)
+  #pragma warning(disable:2259) // non-pointer conversion may lose significant bits
+#endif
+
 // use cbrt(double) for integers
 #define cbrt_for_int_type(t) \
 inline double cbrt( t __x ) { return cbrt ( static_cast<double>(__x) ); }
@@ -52,6 +57,10 @@ cbrt_for_int_type(long long)
 cbrt_for_int_type(unsigned int)
 cbrt_for_int_type(unsigned long)
 cbrt_for_int_type(unsigned long long)
+
+#ifdef __INTEL_COMPILER        // End disable ICC remark
+  #pragma warning(pop)
+#endif
 
 #undef cbrt_for_int_type
 
