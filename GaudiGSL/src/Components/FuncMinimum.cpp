@@ -252,7 +252,7 @@ StatusCode FuncMinimum::minimum (const IFuncMinimum::GenFunc&   func  ,
 
   if (sc.isFailure())
     {
-      std:ostringstream buffer;
+      std::ostringstream buffer;
       buffer << "MINIMUM IS NOT FOUND. StatusCode =  '" << sc.getCode() << '\'';
       return Error (buffer.str(), sc);
     }

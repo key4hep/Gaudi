@@ -595,8 +595,8 @@ const std::vector<std::string> System::cmdLineArgs()    {
 #ifdef _WIN32
     /// @todo: rewrite the tokenizer to avoid strncpy, etc
     // Disable warning C4996 triggered by C standard library calls
-#pragma windows(push)
-#pragma windows(disable:4996)
+#pragma warning(push)
+#pragma warning(disable:4996)
     // For compatibility with UNIX we CANNOT use strtok!
     // If we would use strtok, options like -g="My world" at
     // the command line level would result on NT in TWO options
