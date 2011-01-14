@@ -48,8 +48,9 @@ void GslErrorHandlers::throwException
   int         line   ,
   int         code   )
 {
-  std::ostringstream error(" GSL ErrorCode=");
-  error << code << ": '" << reason << "' in the file '" << file << "' at the line " << line;
+  std::ostringstream error;
+  error << " GSL ErrorCode=" << code << ": '" << reason
+        << "' in the file '" << file << "' at the line " << line;
   throw GaudiException( error.str() , "*GLS Error*" , StatusCode::FAILURE );
 }
 

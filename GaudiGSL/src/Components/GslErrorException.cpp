@@ -71,9 +71,9 @@ StatusCode GslErrorException::handle
                                    m_ignore.end   () ,
                                    error.code        ) ) { return sc ; }
   //
-  std::ostringstream message(" GSL ErrorCode=");
-  static char s_aux[512];
-  message << error.code << ": '" << error.reason << "' in the file '"
+  std::ostringstream message;
+  message << " GSL ErrorCode="
+          << error.code << ": '" << error.reason << "' in the file '"
           << error.file << "' at the line " << error.line;
   throw GaudiException( message.str() , "*GLS Error*" , StatusCode::FAILURE );
   ///

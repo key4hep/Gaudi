@@ -262,10 +262,10 @@ DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find(const std::
     for (Store::const_iterator i = m_store.begin(); i != m_store.end(); i++ )   {
       RegistryEntry* regEnt = CAST_REGENTRY(RegistryEntry*, *i);
       const std::string& nam = regEnt->name();
-      // check that the first len2 chars of nam and path are the same and that
-      // nam is not longer than len2 (i.e. match {len2:3 nam:"/Ab" path:"/Ab/C"}
+      // check that the first len2 chars of path are the same as nam
+      // (i.e. match {len2:3 nam:"/Ab" path:"/Ab/C"}
       // but not {len2:3 nam:"/Abc" path:"/Ab/C"})
-      if ( (nam.length() == len2) && (nam.compare(0, len2, path) == 0) ) {
+      if ( path.compare(0, len2, nam) == 0 ) {
         try {
           if ( loc1 != std::string::npos ) {
             std::string search_path(path, loc1, len);
@@ -285,7 +285,7 @@ DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find(const std::
     }
     // If this node is "/NodeA", this part allows to find "/NodeA/NodeB" as
     // our "/NodeB" child.
-    if ( (m_path.length() == len2) && (m_path.compare(0, len2, path) == 0) ) {
+    if ( path.compare(0, len2, m_path) == 0 ) {
       if (len2 < len)   {
         std::string search_path(path, loc1, len);
         return i_find(search_path);

@@ -348,7 +348,7 @@ StatusCode ApplicationMgr::configure() {
         << std::endl
         << "                                "
         << "          running on " << System::hostName()
-        << " on " << Gaudi::Time::current().format(true)
+        << " on " << Gaudi::Time::current().format(true) << std::endl
         << "=================================================================="
         << "=================================================================="
         << endmsg;

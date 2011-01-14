@@ -48,7 +48,8 @@ template <class T> void analyzeItem(std::string typ,
   long item_size = (sizeof(T) < 4) ? 4 : sizeof(T);
   long dimension = it->length();
   long ndim = it->ndim()-1;
-  std::ostringstream text(var_name);
+  std::ostringstream text;
+  text << var_name;
   if ( it->hasIndex() || it->length() > 1 )   {
     text << '[';
   }

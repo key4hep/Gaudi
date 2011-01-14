@@ -197,7 +197,7 @@ std::string ChronoEntity::format
   if( 1 < number )
   {
     /// @todo: cache the format
-    boost::format fmt1("Ave/Min/Max=%2$5.3g(+-%3$5.3g)/%4$5.3g/%5.3g%1$s");
+    boost::format fmt1("Ave/Min/Max=%2$5.3g(+-%3$5.3g)/%4$5.3g/%5$5.3g%1$s");
     if     ( mean / microsecond  <  500 )
     { unit = microsecond ; fmt1 % " [us]" ; }
     else if( mean / millisecond  <  500 )

@@ -82,8 +82,8 @@ StatusCode DataStreamTool::addStream(const std::string & input) {
 
   m_streamSpecs.push_back(input);
 
-  std::ostringstream strname(name());
-  strname << '_' << ++m_streamCount;
+  std::ostringstream strname;
+  strname << name() << '_' << ++m_streamCount;
 
   EventSelectorDataStream* s = 0;
 
@@ -298,8 +298,8 @@ StatusCode DataStreamTool::connectStream( const std::string & info )
     MsgStream log(msgSvc(), name());
     log << MSG::WARNING << "Input stream " << info << "already in use" << endmsg;
   }
-  std::ostringstream nam(name());
-  nam << '_' << ++m_streamCount;
+  std::ostringstream nam;
+  nam << name() << '_' << ++m_streamCount;
   EventSelectorDataStream* s = 0;
   StatusCode status = createStream(nam.str(), info, s);
   if ( status.isSuccess() )   {

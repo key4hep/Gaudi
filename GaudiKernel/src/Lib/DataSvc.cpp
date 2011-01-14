@@ -45,8 +45,8 @@ namespace {
   /// Helper function to convert item numbers to path strings
   /// i.e. int -> "/" + int
   inline std::string itemToPath(int item) {
-    std::ostringstream path("/");
-    path << item;
+    std::ostringstream path;
+    path << '/' << item;
     return path.str();
   }
 }
