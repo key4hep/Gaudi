@@ -12,6 +12,8 @@
 #include "GaudiMath/Splines.h"
 #include "GaudiMath/GaudiMath.h"
 // ============================================================================
+#include <cstring>
+
 
 /** @file
  *  Implementation file for class GSLSplines
