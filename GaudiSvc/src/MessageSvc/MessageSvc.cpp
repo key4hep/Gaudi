@@ -416,12 +416,12 @@ void MessageSvc::reportMessage( const Message& msg, int outputLevel )    {
 
       if ( m_msgLimit[key] != 0 ) {
         if (nmsg == m_msgLimit[key]) {
-          char lim[16];
-          std::string str = levelNames[key] + " message limit (";
-          str += ::_itoa(m_msgLimit[key].value(),lim,10);
-          str += ") reached for ";
-          str += msg.getSource() + ". Suppressing further output.";
-          cmsg = new Message(msg.getSource(),MSG::WARNING,str);
+          std::ostringstream txt;
+          txt << levelNames[key] << " message limit ("
+              << m_msgLimit[key].value()
+              << ") reached for "
+              << msg.getSource() + ". Suppressing further output.";
+          cmsg = new Message(msg.getSource(), MSG::WARNING, txt.str());
           cmsg->setFormat(msg.getFormat());
         } else if (nmsg > m_msgLimit[key]) {
           return;

@@ -145,15 +145,7 @@ public:
     try {
       // this may throw, and we cannot afford it if the stream is used in a catch block
       if(isActive()) {
-#ifdef _WIN32
-        int flg = m_stream.flags();
-        char buf[128];
-        (flg & std::ios::hex) ?
-          ::sprintf(buf,"%I64x",arg) : ::sprintf(buf,"%I64d",arg);
-        m_stream << buf;
-#else
         m_stream << arg;
-#endif
       }
     } catch (...) {}
     return *this;

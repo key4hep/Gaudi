@@ -43,12 +43,14 @@
 
 #include "NTupleSvc.h"
 
-// Instantiation of a static factory class used by clients to create
-// instances of this service
-DECLARE_SERVICE_FACTORY(NTupleSvc)
+#include <sstream>
 
-/// Selector factory instantiation
-DECLARE_NAMESPACE_OBJECT_FACTORY(NTuple,Selector)
+namespace {
+  inline std::string toStr(long id) {
+    std::ostringstream s; s << id;
+    return s.str();
+  }
+}
 
 /// Standard Constructor
 NTupleSvc::NTupleSvc(const std::string& name, ISvcLocator* svc)
@@ -419,8 +421,7 @@ NTuple::Tuple* NTupleSvc::book (const std::string& dirPath, const std::string& r
 
 /// Book Ntuple and register it with the data store.
 NTuple::Tuple* NTupleSvc::book (const std::string& dirPath, long id, const CLID& type, const std::string& title)  {
-  char txt[32];
-  return book( dirPath, _itoa(id, txt, 10), type, title);
+  return book( dirPath, toStr(id), type, title);
 }
 
 /// Book Ntuple and register it with the data store.
@@ -448,8 +449,7 @@ NTuple::Tuple* NTupleSvc::book (DataObject* pParent,
                                 long id,
                                 const CLID& type,
                                 const std::string& title)  {
-  char txt[32];
-  return book( pParent, ::_itoa(id, txt,10), type, title);
+  return book( pParent, toStr(id), type, title);
 }
 
 /// Create Ntuple directory and register it with the data store.
@@ -469,14 +469,12 @@ NTuple::Directory* NTupleSvc::createDirectory (DataObject* pParent,
 
 /// Create Ntuple directory and register it with the data store.
 NTuple::Directory* NTupleSvc::createDirectory (DataObject* pParent, long id)    {
-  char txt[32];
-  return createDirectory( pParent, ::_itoa(id, txt,10) );
+  return createDirectory( pParent, toStr(id) );
 }
 
 /// Create Ntuple directory and register it with the data store.
 NTuple::Directory* NTupleSvc::createDirectory (const std::string& dirPath, long id)    {
-  char txt[32];
-  return createDirectory( dirPath, ::_itoa(id, txt,10) );
+  return createDirectory( dirPath, toStr(id) );
 }
 
 /// Create Ntuple directory and register it with the data store.
@@ -700,3 +698,9 @@ StatusCode NTupleSvc::readRecord(DataObject* pParent, const std::string& relPath
   return INVALID_OBJ_PATH;
 }
 
+// Instantiation of a static factory class used by clients to create
+// instances of this service
+DECLARE_SERVICE_FACTORY(NTupleSvc)
+
+/// Selector factory instantiation
+DECLARE_NAMESPACE_OBJECT_FACTORY(NTuple,Selector)

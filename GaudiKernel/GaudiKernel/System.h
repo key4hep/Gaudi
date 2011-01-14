@@ -71,16 +71,24 @@ namespace System  {
   GAUDI_API const std::vector<std::string> cmdLineArgs();
   ///char** command line arguments including executable name as arg[0]; You may not modify them!
   GAUDI_API char** argv();
-  ///get a particular environment variable
-  GAUDI_API const std::string getEnv(const char* var);
+  ///get a particular environment variable (returning "UNKNOWN" if not set)
+  GAUDI_API std::string getEnv(const char* var);
+  /// get a particular environment variable, storing the value in the passed string if the
+  /// variable is set. Returns true if the variable is set, false otherwise.
+  GAUDI_API bool getEnv(const char* var, std::string &value);
+  inline bool getEnv(const std::string &var, std::string &value) {
+    return getEnv(var.c_str(), value);
+  }
   ///get all environment variables
-  GAUDI_API const std::vector<std::string> getEnv();
+  GAUDI_API std::vector<std::string> getEnv();
   ///Set an environment variables.
   ///If value is empty, the variable is removed from the environment.
   ///When overwrite is 0, the variable is not set if already present.
   ///Returns 0 on success, -1 on failure.
   ///See man 3 setenv.
   GAUDI_API int setEnv(const std::string &name, const std::string &value, int overwrite = 1);
+  /// Check if an environment variable is set or not.
+  GAUDI_API bool isEnvSet(const char* var);
 #ifdef __linux
   ///A Thread handle
   typedef pthread_t ThreadHandle;

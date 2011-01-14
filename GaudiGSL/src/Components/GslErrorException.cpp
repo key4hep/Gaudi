@@ -8,6 +8,7 @@
 #include "GaudiKernel/GaudiException.h"
 // STD & STL
 #include <algorithm>
+#include <sstream>
 // local
 #include "GslErrorException.h"
 
@@ -27,8 +28,6 @@
  *  @see IToolFactory
  *  @see     IFactory
  */
-// ============================================================================
-DECLARE_TOOL_FACTORY(GslErrorException)
 // ============================================================================
 
 // ============================================================================
@@ -72,24 +71,17 @@ StatusCode GslErrorException::handle
                                    m_ignore.end   () ,
                                    error.code        ) ) { return sc ; }
   //
-  std::string message( " GSL ErrorCode=" );
+  std::ostringstream message(" GSL ErrorCode=");
   static char s_aux[512];
-  message +=
-    std::string( s_aux  , s_aux  + sprintf( s_aux , "%d" , error.code  ) );
-  message += ": '"   ;
-  message += error.reason  ;
-  message += "' in the file '" ;
-  message += error.file    ;
-  message += "' at the line "  ;
-  message +=
-    std::string( s_aux  , s_aux  + sprintf( s_aux , "%d" , error.line ) );
-  message += "'"     ;
-  throw GaudiException( message , "*GLS Error*" , StatusCode::FAILURE );
+  message << error.code << ": '" << error.reason << "' in the file '"
+          << error.file << "' at the line " << error.line;
+  throw GaudiException( message.str() , "*GLS Error*" , StatusCode::FAILURE );
   ///
   return StatusCode::SUCCESS ;
 }
 // ============================================================================
 
+DECLARE_TOOL_FACTORY(GslErrorException)
 
 // ============================================================================
 // The END

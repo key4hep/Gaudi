@@ -1,4 +1,5 @@
 #include "GaudiKernel/PathResolver.h"
+#include "GaudiKernel/System.h"
 
 #include <iostream>
 #include <string>
@@ -120,14 +121,8 @@ PathResolver::find_file(const std::string& logical_file_name,
               const std::string& search_path,
               SearchType search_type) {
 
-  const char* path_env = ::getenv (search_path.c_str ());
-
   std::string path_list;
-
-  if (path_env != 0)
-  {
-    path_list = path_env;
-  }
+  System::getEnv(search_path, path_list);
 
   return (find_file_from_list (logical_file_name, path_list, search_type));
 }
@@ -165,14 +160,8 @@ string PathResolver::find_directory (const std::string& logical_file_name,
                                      const std::string& search_path,
                                      SearchType search_type)
 {
-  const char* path_env = ::getenv (search_path.c_str ());
-
   std::string path_list;
-
-  if (path_env != 0)
-    {
-      path_list = path_env;
-    }
+  System::getEnv(search_path, path_list);
 
   return (find_directory_from_list (logical_file_name, path_list, search_type));
 }
@@ -200,11 +189,9 @@ PathResolver::find_directory_from_list (const std::string& logical_file_name,
 PathResolver::SearchPathStatus
 PathResolver::check_search_path (const std::string& search_path)
 {
-  const char* path_env = ::getenv (search_path.c_str ());
-
-  if (path_env == 0) return (EnvironmentVariableUndefined);
-
-  std::string path_list (path_env);
+  std::string path_list;
+  if ( ! System::getEnv(search_path, path_list) )
+    return (EnvironmentVariableUndefined);
 
   vector<string> spv;
   boost::split( spv, path_list, boost::is_any_of( path_separator ), boost::token_compress_on);

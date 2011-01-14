@@ -11,6 +11,7 @@
 // ============================================================================
 #include <cstdlib>
 #include <stdexcept>
+#include <sstream>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -26,9 +27,6 @@
 // Local
 // ============================================================================
 #include "HistogramSvc.h"
-// ============================================================================
-// Instantiation of a factory class used by clients
-DECLARE_SERVICE_FACTORY(HistogramSvc)
 // ============================================================================
 using namespace AIDA;
 // ============================================================================
@@ -60,8 +58,8 @@ namespace
 }
 //------------------------------------------------------------------------------
 std::string HistogramSvc::_STR(int i)  {
-  char txt[32];
-  return _itoa(i, txt, 10);
+  std::ostringstream txt; txt << i;
+  return txt.str();
 }
 //------------------------------------------------------------------------------
 StatusCode HistogramSvc::registerObject(CSTR full, IBaseHistogram* obj)  {
@@ -71,7 +69,7 @@ StatusCode HistogramSvc::registerObject(CSTR full, IBaseHistogram* obj)  {
 //------------------------------------------------------------------------------
 StatusCode HistogramSvc::registerObject
 (DataObject* pPar,CSTR obj,IBaseHistogram* hObj) {
-  // Set the hstogram id
+  // Set the histogram id
   if (obj[0] == SEPARATOR)    {
     // hObj->setTitle(obj.substr(1) + "|" + hObj->title());
     if (!hObj->annotation().addItem("id", obj.substr(1)))
@@ -82,7 +80,7 @@ StatusCode HistogramSvc::registerObject
     if (!hObj->annotation().addItem("id", obj))
       hObj->annotation().setValue("id", obj);
   }
-  // Register the hstogram in the hstogram data store
+  // Register the histogram in the histogram data store
   return DataSvc::registerObject(pPar,obj,__cast(hObj));
 }
 
@@ -451,7 +449,8 @@ StatusCode HistogramSvc::finalize     ()
   return DataSvc::finalize () ;
 }
 // ============================================================================
-
+// Instantiation of a factory class used by clients
+DECLARE_SERVICE_FACTORY(HistogramSvc)
 // ============================================================================
 // The END
 // ============================================================================

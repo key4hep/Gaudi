@@ -24,6 +24,8 @@
 #include <sys/stat.h>
 #include "uuid/uuid.h"
 
+#include <boost/format.hpp>
+
 using namespace xercesc;
 using namespace Gaudi;
 using namespace std;
@@ -32,8 +34,6 @@ using namespace std;
 // API change between XercesC 2 and 3
 #define setIdAttribute(a, b) setIdAttribute(a)
 #endif
-
-PLUGINSVC_FACTORY(XMLFileCatalog,IInterface*(std::string, IMessageSvc*))
 
 namespace {
 
@@ -180,7 +180,7 @@ namespace {
 
 /// Create file identifier using UUID mechanism
 std::string Gaudi::createGuidAsString()  {
-  char text[64];
+  boost::format text("%08X-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX");
   uuid_t uuid;
   ::uuid_generate_time(uuid);
   struct Guid {
@@ -189,11 +189,11 @@ std::string Gaudi::createGuidAsString()  {
     unsigned short Data3;
     unsigned char  Data4[8];
   } *g = (Guid*)&uuid;
-  ::sprintf(text, "%08X-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX",
-            g->Data1, g->Data2, g->Data3,
-            g->Data4[0], g->Data4[1], g->Data4[2], g->Data4[3],
-            g->Data4[4], g->Data4[5], g->Data4[6], g->Data4[7]);
-  return text;
+
+  text % g->Data1 % g->Data2 % g->Data3 %
+         g->Data4[0] % g->Data4[1] % g->Data4[2] % g->Data4[3] %
+         g->Data4[4] % g->Data4[5] % g->Data4[6] % g->Data4[7];
+  return text.str();
 }
 // ----------------------------------------------------------------------------
 XMLFileCatalog::XMLFileCatalog(CSTR uri, IMessageSvc* m)
@@ -536,3 +536,5 @@ string XMLFileCatalog::getfile(bool create)   {
   }
   return path;
 }
+
+PLUGINSVC_FACTORY(XMLFileCatalog,IInterface*(std::string, IMessageSvc*))

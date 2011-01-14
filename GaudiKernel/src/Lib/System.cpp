@@ -128,9 +128,8 @@ unsigned long System::loadDynamicLib(const std::string& name, ImageHandle* handl
   } else {
     // If the name is a logical name (environment variable), the try
     // to load the corresponding library from there.
-    std::string env = name;
-    if ( 0 != ::getenv(env.c_str()) )    {
-      std::string imgName = ::getenv(env.c_str());
+    std::string imgName;
+    if ( getEnv(name, imgName) )    {
       res = loadWithoutEnvironment(imgName, handle);
     } else {
       // build the dll name
@@ -526,9 +525,9 @@ const std::string& System::osVersion() {
   OSVERSIONINFO ut;
   ut.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
   ::GetVersionEx(&ut);
-  char ver[64];
-  sprintf(ver,"%d.%d",ut.dwMajorVersion,ut.dwMinorVersion);
-  osver = ver;
+  std::ostringstream ver;
+  ver << ut.dwMajorVersion << '.' << ut.dwMinorVersion;
+  osver = ver.str();
 #else
   struct utsname ut;
   if (uname(&ut) == 0) {
@@ -546,9 +545,9 @@ const std::string& System::machineType() {
 #ifdef _WIN32
   SYSTEM_INFO ut;
   ::GetSystemInfo(&ut);
-  char arch[64];
-  sprintf(arch,"%d",ut.wProcessorArchitecture);
-  mach =  arch;
+  std::ostringstream arch;
+  arch << ut.wProcessorArchitecture;
+  mach = arch.str();
 #else
   struct utsname ut;
   if (uname(&ut) == 0) {
@@ -594,6 +593,10 @@ const std::vector<std::string> System::cmdLineArgs()    {
   if ( s_argvChars.size() == 0 )    {
     char exe[1024];
 #ifdef _WIN32
+    /// @todo: rewrite the tokenizer to avoid strncpy, etc
+    // Disable warning C4996 triggered by C standard library calls
+#pragma windows(push)
+#pragma windows(disable:4996)
     // For compatibility with UNIX we CANNOT use strtok!
     // If we would use strtok, options like -g="My world" at
     // the command line level would result on NT in TWO options
@@ -624,6 +627,7 @@ const std::vector<std::string> System::cmdLineArgs()    {
       s_argvStrings.push_back(exe);
       s_argvChars.push_back( s_argvStrings.back().c_str());
     }
+#pragma warning(pop)
 #elif defined(linux) || defined(__APPLE__)
     sprintf(exe, "/proc/%d/cmdline", ::getpid());
     FILE *cmdLine = ::fopen(exe,"r");
@@ -655,8 +659,14 @@ char** System::argv()    {
   return (char**)&s_argvChars[0];
 }
 
+#ifdef WIN32
+// disable warning
+//   C4996: 'getenv': This function or variable may be unsafe.
+#pragma warning(disable:4996)
+#endif
+
 /// get a particular env var, return "UNKNOWN" if not defined
-const std::string System::getEnv(const char* var) {
+std::string System::getEnv(const char* var) {
   char* env;
   if  ( (env = getenv(var)) != 0 ) {
     return env;
@@ -665,12 +675,27 @@ const std::string System::getEnv(const char* var) {
   }
 }
 
+/// get a particular env var, storing the value in the passed string (if set)
+bool System::getEnv(const char* var, std::string &value) {
+  char* env;
+  if  ( (env = getenv(var)) != 0 ) {
+    value = env;
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool System::isEnvSet(const char* var) {
+  return getenv(var) != 0;
+}
+
 /// get all defined environment vars
 #if defined(__APPLE__)
 // Needed for _NSGetEnviron(void)
 #include "crt_externs.h"
 #endif
-const std::vector<std::string> System::getEnv() {
+std::vector<std::string> System::getEnv() {
 #if defined(_WIN32)
 #  define environ _environ
 #elif defined(__APPLE__)

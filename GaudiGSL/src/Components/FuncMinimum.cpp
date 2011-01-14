@@ -16,6 +16,8 @@
 #include "gsl/gsl_blas.h"
 #include "gsl/gsl_errno.h"
 
+#include <sstream>
+
 // local
 #include "FuncMinimum.h"
 
@@ -25,9 +27,6 @@
  *  @author Kirill Miklyaev kirillm@iris1.itep.ru
  *  @date 2002-09-14
  */
-
-// Declaration of the Tool Factory
-DECLARE_TOOL_FACTORY(FuncMinimum)
 
 // ============================================================================
 // ============================================================================
@@ -250,13 +249,12 @@ StatusCode FuncMinimum::minimum (const IFuncMinimum::GenFunc&   func  ,
 
   /// Find minimum of our function
   StatusCode sc = minimum (func, arg) ;
-  char buffer[100];
-  sprintf(buffer, "%lu", sc.getCode());
 
   if (sc.isFailure())
     {
-      return Error ("MINIMUM IS NOT FOUND. StatusCode =  '"
-                    + std::string(buffer) + "'", sc);
+      std:ostringstream buffer;
+      buffer << "MINIMUM IS NOT FOUND. StatusCode =  '" << sc.getCode() << '\'';
+      return Error (buffer.str(), sc);
     }
   else
     {
@@ -294,7 +292,7 @@ StatusCode  FuncMinimum::initialize()
 
   if ( sc.isFailure() )
     {
-      return Error ("Could not initiliaze base class GaudiTool", sc);
+      return Error ("Could not initialize base class GaudiTool", sc);
     }
 
   /// The algorithm for multidimensional minimization
@@ -331,7 +329,7 @@ StatusCode  FuncMinimum::initialize()
     }
   else
     {
-      return Error(" Unknown algorith type '"
+      return Error(" Unknown algorithm type '"
                    + std::string(m_algType) + "'");
     }
 
@@ -346,7 +344,7 @@ StatusCode FuncMinimum::finalize   ()
 
   if ( sc.isFailure() )
     {
-      return Error("Could not finaliaze base class GaudiTool", sc);
+      return Error("Could not finalize base class GaudiTool", sc);
     }
   return StatusCode::SUCCESS;
 }
@@ -355,3 +353,6 @@ FuncMinimum::~FuncMinimum( ) ///< Destructor
 
 {}
 //=============================================================================
+
+// Declaration of the Tool Factory
+DECLARE_TOOL_FACTORY(FuncMinimum)

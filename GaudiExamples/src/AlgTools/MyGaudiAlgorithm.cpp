@@ -11,15 +11,11 @@
 #include "MyGaudiAlgorithm.h"
 
 
-// Static Factory declaration
-
-DECLARE_ALGORITHM_FACTORY(MyGaudiAlgorithm)
-
 // Constructor
 //------------------------------------------------------------------------------
 MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
   : GaudiAlgorithm(name, ploc)
-  , m_myPrivToolHandle("MyTool/PrivToolHandle",this)
+  , m_myPrivToolHandle("MyTool/PrivToolHandle", this)
   , m_myPubToolHandle("MyTool/PubToolHandle") {
   //------------------------------------------------------------------------------
   declareProperty("ToolWithName", m_privateToolType = "MyTool",
@@ -81,3 +77,6 @@ StatusCode MyGaudiAlgorithm::finalize() {
 
   return GaudiAlgorithm::finalize();
 }
+
+// Static Factory declaration
+DECLARE_ALGORITHM_FACTORY(MyGaudiAlgorithm)

@@ -105,6 +105,11 @@ void MsgStream::resetColor() {
 #endif
 }
 
+#ifdef WIN32
+// Disable warning
+//   C4996: 'vsprintf': This function or variable may be unsafe.
+#pragma warning(disable:4996)
+#endif
 std::string format( const char* fmt, ... )
 {
   const int buffsize = 2048;

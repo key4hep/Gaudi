@@ -2,6 +2,8 @@
 // Include files
 #include "GaudiKernel/Time.h"
 
+#include "GaudiKernel/time_r.h"
+
 #include <iostream>
 #include <cstdio>
 #include <ctime>
@@ -66,8 +68,9 @@ using namespace Gaudi;
 static time_t timegm (struct tm *t) {
   // This code is adapted from wine, samba
   time_t t1 = mktime (t);
-  struct tm gmt = *gmtime (&t1);
-  time_t t2 = mktime (&gmt);
+  struct tm gmt;
+  gmtime_s(&gmt, &t1);
+  time_t t2 = mktime(&gmt);
   return t1 + (t1 - t2);
 }
 #endif
@@ -122,7 +125,7 @@ Time Time::current (void) {
     if( strerror_r(errno, buf, 256) == 0 ) {
       msg << buf;
     } else {
-      msg << "Unknown error retriving current time";
+      msg << "Unknown error retrieving current time";
     }
     throw GaudiException(msg.str(),tag.str(),StatusCode::FAILURE);
   }
@@ -145,7 +148,14 @@ tm Time::split (bool local, int *nsecpart /* = 0 */) const {
     *nsecpart = (int)(m_nsecs % SEC_NSECS);
 
   time_t val = (time_t)(m_nsecs / SEC_NSECS);
-  return *(local ? localtime (&val) : gmtime (&val));
+
+  tm retval;
+  if (local)
+	localtime_r(&val, &retval);
+  else
+	gmtime_r(&val, &retval);
+
+  return retval;
 }
 
 /** Break up the time to the standard library representation, keeping
@@ -221,7 +231,7 @@ bool Time::isdst (bool local) const {
     status (that is, tm.tm_isdst for the effective local time).  */
 Time::ValueType Time::utcoffset (int *daylight /* = 0 */) const {
   ValueType n = 0;
-  
+
 #ifndef WIN32
   tm localtm = local ();
   n = localtm.tm_gmtoff;
@@ -229,18 +239,26 @@ Time::ValueType Time::utcoffset (int *daylight /* = 0 */) const {
 #else
   // Adapted from WINE.
   time_t	utctime = (time_t)(m_nsecs / SEC_NSECS);
-  tm		localtm = *localtime (&utctime);
+  tm		localtm;
+  localtime_s(&localtm, &utctime);
   int		savedaylight = localtm.tm_isdst;
-  tm		gmt = *gmtime (&utctime);
-  
+  tm		gmt;
+  gmtime_s(&gmt, &utctime);
+
   gmt.tm_isdst = savedaylight;
   n = utctime - mktime (&gmt);
-  
+
   if (daylight) *daylight = savedaylight;
 #endif
   return n * SEC_NSECS;
 }
 
+#ifdef WIN32
+// disable warning
+// C4996: 'tzname': This function or variable may be unsafe.
+#pragma warning(push)
+#pragma warning(disable:4996)
+#endif
 /** Return the local timezone name that applies at this time value.
     On some platforms returns the most recent timezone name (dst or
     non-dst one depending on the time value), not the one that applies
@@ -251,21 +269,43 @@ const char * Time::timezone (int *daylight /* = 0 */) const {
   // extern "C" { extern char *tzname [2]; }
   return tzname [localtm.tm_isdst > 0 ? 1 : 0];
 }
+#ifdef WIN32
+#pragma warning(pop)
+#endif
 
-/** Format the time using @c strftime.  */
-std::string Time::format (bool local, const std::string &spec) const {
-  // FIXME: This doesn't account for nsecs part!
-  std::string	result;
-  tm		time = split (local);
-  int		length = 0;
-  
+/** Format the time using @c strftime.
+ *  The additional conversion specifier %f can be used to display
+ *  milliseconds (extension for compatibility with MessageSvc time format).
+ */
+std::string Time::format (bool local, std::string spec) const {
+  /// @FIXME: This doesn't account for nsecs part!
+  std::string            result;
+  tm                     time = split (local);
+  std::string::size_type length = 0;
+
+  // handle the special case of "%f"
+  std::string::size_type pos = spec.find("%f");
+  if (std::string::npos != pos) {
+    // Get the milliseconds string
+    std::string ms = nanoformat(3,3);
+    // Replace all the occurrences of '%f' (if not preceded by '%')
+    while (std::string::npos != pos) {
+      if (pos != 0 && spec[pos-1] != '%') {
+        spec.replace(pos, 2, ms);
+      }
+      pos = spec.find("%f", pos + 1); // search for the next occurrence
+    }
+  }
+  const int MIN_BUF_SIZE = 128;
   do
   {
-    // Guess how much we'll expand.  If we go wrong, we'll expand again.
-    result.resize (result.size() ? result.size()*2 : spec.size()*2, 0);
+    // Guess how much we'll expand.  If we go wrong, we'll expand again. (with a minimum)
+    result.resize(std::max<std::string::size_type>(result.size()*2,
+                    std::max<std::string::size_type>(spec.size()*2, MIN_BUF_SIZE))
+                  , 0);
     length = ::strftime (&result[0], result.size(), spec.c_str(), &time);
   } while (! length);
-  
+
   result.resize (length);
   return result;
 }
@@ -280,36 +320,25 @@ std::string Time::format (bool local, const std::string &spec) const {
     have at most that many digits.  Both @a minwidth and @a maxwidth
     must be between one and nine inclusive and @a minwidth must be
     less or equal to @a maxwidth.  */
-std::string Time::nanoformat (int minwidth /* = 1 */, int maxwidth /* = 9 */) const {
+std::string Time::nanoformat (size_t minwidth /* = 1 */, size_t maxwidth /* = 9 */) const {
   TimeAssert( (minwidth >= 1) && (minwidth <= maxwidth) && (maxwidth <= 9),
               "nanoformat options do not satisfy: 1 <= minwidth <= maxwidth <= 9");
-  
+
   // Calculate the nanosecond fraction.  This will be < 1000000000.
   int value = (int)(m_nsecs % SEC_NSECS);
-  
-  // Calculate modulus by which we truncate value.  If maxwidth is
-  // say 3, we want to mask of the last 6 digits.
-  int modulus = 1;
-  for (int i = 0; i < 9 - maxwidth; ++i)
-    modulus *= 10;
 
-  // Round value by the desired modulus.
-  int rem = value % modulus;
-  value -= rem;
-  if (rem > modulus / 2)
-    value += modulus;
-  
-  // Format it, then strip off digits from the right as long as
-  // we zeroes.  The above guarantees enough zeroes on right to
-  // satisfy maxwidth so we need to concern ourselves only about
-  // minwidth.
-  char buf [10];
-  char *p = buf + 8;
-  sprintf (buf, "%09d", value);
-  while (p > buf + minwidth - 1 && *p == '0')
-    *p-- = '\0';
-  
-  return buf;
+  std::ostringstream buf;
+  buf.fill('0');
+  buf.width(9);
+  buf << value;
+  std::string out = buf.str();
+  // Find the last non-0 char before maxwidth, but after minwidth
+  // (Note: -1 and +1 are to account for difference between position and size.
+  //        moreover, npos + 1 == 0, so it is correct to say that 'not found' means size of 0)
+  size_t len = out.find_last_not_of('0', maxwidth - 1) + 1;
+  // Truncate the output string to at least minwidth chars
+  out.resize(std::max(len, minwidth));
+  return out;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -317,7 +346,7 @@ std::string Time::nanoformat (int minwidth /* = 1 */, int maxwidth /* = 9 */) co
 unsigned Time::toDosDate (Time time) {
   // Use local time since DOS does too.
   struct tm localtm = time.local ();
-  
+
   unsigned mday = localtm.tm_mday;
   unsigned mon  = localtm.tm_mon + 1;
   unsigned year = (localtm.tm_year > 80 ? localtm.tm_year - 80 : 0);
@@ -343,7 +372,7 @@ Time Time::fromDosDate (unsigned dosDate) {
   localtm.tm_min   = (dosDate >> 5) & 0x3f;
   localtm.tm_sec   = (dosDate & 0x1f) * 2;
   localtm.tm_isdst = -1;
-  
+
   return Time (mktime (&localtm), 0);
 }
 
