@@ -13,6 +13,12 @@
 //   TODO: To be removed, coming from ROOT
 #pragma warning(disable:2259)
 #endif
+#ifdef WIN32
+// Disable warning
+//   warning C4996: 'sprintf': This function or variable may be unsafe.
+// coming from TString.h
+#pragma warning(disable:4996)
+#endif
 
 #include "GaudiPoolDb/PoolDbIOHandler.h"
 #include "GaudiKernel/ObjectContainerBase.h"

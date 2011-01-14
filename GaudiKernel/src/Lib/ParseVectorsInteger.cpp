@@ -1,21 +1,26 @@
 // $Id: ParseVectorsInteger.cpp,v 1.2 2007/05/24 14:39:11 hmd Exp $
 // ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.2 $ 
+// CVS tag $Name:  $, version $Revision: 1.2 $
 // ============================================================================
 // Include files
 // ============================================================================
 // Local
 // ============================================================================
+#ifdef WIN32
+// Disable warning
+//   C4146: unary minus operator applied to unsigned type, result still unsigned
+// Coming from the parsers of unsigned integers.
+#pragma warning(disable:4146)
+#endif
 #include "GaudiKernel/Parsers.icpp"
 // ============================================================================
-
 // ============================================================================
-/** @file 
+/** @file
  *
- *  Implementation of the parsing functions for std::vetctor<TYPE>
- *  
- *  For adding new type you should have only grammar class which recognize 
- *  this type. Then by combining this grammar with such already implemented 
+ *  Implementation of the parsing functions for std::vector<TYPE>
+ *
+ *  For adding new type you should have only grammar class which recognize
+ *  this type. Then by combining this grammar with such already implemented
  *  grammars  like VectorGrammar, MapGrammar, PairGrammar you can very simply
  *  implement container types which will work with your type.
  *
@@ -24,43 +29,43 @@
  *
  *  @author Alexander MAZUROV  Alexander.Mazurov@gmail.com
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
- *  @date   2006-05-12 
+ *  @date   2006-05-12
  */
 // ============================================================================
 namespace Gaudi
-{ 
+{
   namespace Parsers
   {
     // ========================================================================
-    StatusCode parse ( vector<short>&              result , 
+    StatusCode parse ( vector<short>&              result ,
                        const string&               input  )
     { return parse_integer_vector ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( vector<unsigned short>&     result , 
+    StatusCode parse ( vector<unsigned short>&     result ,
                        const string&               input  )
     { return parse_integer_vector ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( vector<int>&                result , 
+    StatusCode parse ( vector<int>&                result ,
                        const string&               input  )
     { return parse_integer_vector ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( vector<unsigned int>&       result , 
+    StatusCode parse ( vector<unsigned int>&       result ,
                        const string&               input  )
     { return parse_integer_vector ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( vector<long>&               result , 
+    StatusCode parse ( vector<long>&               result ,
                        const string&               input  )
     { return parse_integer_vector ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( vector<unsigned long>&      result , 
+    StatusCode parse ( vector<unsigned long>&      result ,
                        const string&               input  )
     { return parse_integer_vector ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( vector<long long>&          result , 
-                       const string&               input  ) 
+    StatusCode parse ( vector<long long>&          result ,
+                       const string&               input  )
     { return parse_integer_vector ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( vector<unsigned long long>& result , 
+    StatusCode parse ( vector<unsigned long long>& result ,
                        const string&               input  )
     { return parse_integer_vector ( result , input ) ; }
 
@@ -68,7 +73,7 @@ namespace Gaudi
 } // end of namespace Gaudi
 
 // ============================================================================
-// The END 
+// The END
 // ============================================================================
 
 

@@ -4,6 +4,12 @@
 //   TODO: To be removed, since it comes from ROOT TMathBase.h
 #pragma warning(disable:2259)
 #endif
+#ifdef WIN32
+// Disable warning
+//   warning C4996: 'sprintf': This function or variable may be unsafe.
+// coming from TString.h
+#pragma warning(disable:4996)
+#endif
 // ============================================================================
 // Include files
 // ============================================================================

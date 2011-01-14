@@ -4,12 +4,16 @@
 //   TODO: To be removed, since it comes from ROOT TMathBase.h
 #pragma warning(disable:2259)
 #endif
+#ifdef WIN32
+// Disable warning
+//   warning C4996: 'sprintf': This function or variable may be unsafe.
+// coming from TString.h
+#pragma warning(disable:4996)
+#endif
 #include "H1D.h"
 #include "GaudiPI.h"
 #include "GaudiKernel/StreamBuffer.h"
 #include "GaudiKernel/ObjectFactory.h"
-typedef Gaudi::Histogram1D H1D;
-DECLARE_DATAOBJECT_FACTORY(H1D)
 
 std::pair<DataObject*,AIDA::IHistogram1D*> Gaudi::createH1D(const std::string& title,int nBins,double xlow, double xup)  {
   Histogram1D* p = new Histogram1D(new TH1D(title.c_str(),title.c_str(),nBins,xlow,xup));
@@ -286,3 +290,5 @@ StreamBuffer& Gaudi::Histogram1D::serialize(StreamBuffer& s) const {
   return s;
 }
 
+typedef Gaudi::Histogram1D H1D;
+DECLARE_DATAOBJECT_FACTORY(H1D)

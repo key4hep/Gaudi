@@ -1,6 +1,13 @@
 // $Id: DirSearchPath.cpp,v 1.2 2007/10/16 15:37:25 marcocle Exp $
 
 //<<<<<< INCLUDES                                                       >>>>>>
+#ifdef WIN32
+// Disable warning
+//    C4996: '...': Function call with parameters that may be unsafe
+// Noise probably coming from the use of Boost tokenizer
+#pragma warning(disable:4996)
+#endif
+
 #include <algorithm>  /* find */
 #include <iostream>
 #ifdef __ICC

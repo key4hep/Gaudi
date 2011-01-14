@@ -1,6 +1,13 @@
 #include "GaudiKernel/PathResolver.h"
 #include "GaudiKernel/System.h"
 
+#ifdef WIN32
+// Disable warning
+//   C4996: 'std::copy': Function call with parameters that may be unsafe
+// Probably coming from Boost classification.
+#pragma warning(disable:4996)
+#endif
+
 #include <iostream>
 #include <string>
 #include <vector>
