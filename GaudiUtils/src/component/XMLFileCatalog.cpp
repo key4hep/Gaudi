@@ -180,7 +180,6 @@ namespace {
 
 /// Create file identifier using UUID mechanism
 std::string Gaudi::createGuidAsString()  {
-  boost::format text("%08X-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX");
   uuid_t uuid;
   ::uuid_generate_time(uuid);
   struct Guid {
@@ -190,9 +189,10 @@ std::string Gaudi::createGuidAsString()  {
     unsigned char  Data4[8];
   } *g = (Guid*)&uuid;
 
-  text % g->Data1 % g->Data2 % g->Data3 %
-         g->Data4[0] % g->Data4[1] % g->Data4[2] % g->Data4[3] %
-         g->Data4[4] % g->Data4[5] % g->Data4[6] % g->Data4[7];
+  boost::format text("%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X");
+  text % g->Data1 % g->Data2 % g->Data3;
+  for (int i = 0; i < 8; ++i)
+    text % (unsigned short)g->Data4[i];
   return text.str();
 }
 // ----------------------------------------------------------------------------
