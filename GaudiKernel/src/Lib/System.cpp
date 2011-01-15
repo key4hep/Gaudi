@@ -288,78 +288,10 @@ const std::string System::getErrorString(unsigned long error)    {
   return errString;
 }
 
-// This is a little bit complicated....but at least it gives
-// usable results:
-// Native class template:
-//  Spac::templa<Spac::templa<Spac::templ<Spac::templa<AAA::a,Spac::templa<double,unsigned char>>>,B::bbb>,float>
-// is translated under egcs to the unreadable string:
-//  Q24Spact6templa2ZQ24Spact6templa2ZQ24Spact5templ1ZQ24Spact6templa2ZQ23AAA1aZQ24Spact6templa2ZdZUcZQ21B3bbbZf
-
-std::string __typeName(char*&  name);
-std::string __className(char*& name) {
-  std::string result;
-  int j = 0, k, i;
-  if ( 't' == *name ) {
-    goto Template;
-  }
-  for ( i = ::strtol(name, &name, 10);  i > 0; i = ::strtol(name, &name, 10) ) {
-    if ( j++ != 0 ) result.append("::",2);
-    result.append(name, i);
-    if ( *(name+=i) == 't' ) {
-      result.append("::",2);
-    Template:
-      result.append(name, (i=::strtol(++name, &name, 10)));
-      result.append("<");
-      for (k = 0, i=::strtol(name+i, &name, 10); k < i; k++ ) {
-	result += __typeName( ++name );
-	if ( k+1 < i ) result += ",";
-      }
-      result.append(">");
-    }
-  }
-  return result;
-}
-
-std::string __typeName(char*&  name) {
-  if ( *name == 'Q' ) {              // Handle name spaces
-    if ( *(++name) == '_' )          // >= 10 nested name spaces
-      ::strtol(++name, &name, 10);   // type Q_##_...
-    return __className(++name);
-  }
-  else if ( 't' == *name )  {
-    return __className(name);
-  }
-  else  {
-    std::string result;
-    char* ptr;
-    long i = ::strtol(name, &ptr, 10);
-    if ( i <= 0 )  {
-      name = ptr;
-      while ( *name != 0 && *name != 'Z' )  {
-	if ( *name == 'U' )  {
-	  result += "unsigned ";
-	  name++;
-	}
-	switch( *name++ )  {
-	case 'c': result += "char"; break;
-	case 's': result += "short"; break;
-	case 'i': result += "int"; break;
-	case 'l': result += "long"; break;
-	case 'f': result += "float"; break;
-	case 'd': result += "double"; break;
-	default:  result += *(name-1);
-	}
-      }
-      return result;
-    }
-    else {
-      return __className(name);
-    }
-  }
-}
 const std::string System::typeinfoName( const std::type_info& tinfo) {
   return typeinfoName(tinfo.name());
 }
+
 const std::string System::typeinfoName( const char* class_name) {
   std::string result;
 #ifdef _WIN32
