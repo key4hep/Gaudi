@@ -1,6 +1,9 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+! 2011-01-16 - Karol Kruzelecki
+ - Patch #4608: new Package GaudiProfiling
+
 ! 2010-12-16 - Sebastien Binet
  - Patch #4074: migrate GaudiPython.Parallel to multiprocessing
    Added new package GaudiMP.
