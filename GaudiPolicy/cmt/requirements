@@ -14,7 +14,8 @@ use tcmalloc * LCG_Interfaces -no_auto_imports
 #       projects instead of the debug ones.
 macro  LCG_platform      "$(LCG_platform)" \
        target-winxp      "$(LCG_platform)" \
-       LOCAL&target-dbg  "$(LCG_system)"
+       LOCAL&target-dbg  "$(LCG_system)" \
+       LOCAL&target-cov  "$(LCG_system)"
 
 
 # project strategies ========================================================
