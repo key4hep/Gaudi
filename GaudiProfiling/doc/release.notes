@@ -1,0 +1,8 @@
+!-----------------------------------------------------------------------------
+! Package     : GaudiProfiling
+! Responsible : Karol Kruzelecki
+! Purpose     : Profiling and performance monitoring of Gaudi/LHCb software
+!-----------------------------------------------------------------------------
+
+! 2011-01-16 - Karol Kruzelecki
+ - new package
