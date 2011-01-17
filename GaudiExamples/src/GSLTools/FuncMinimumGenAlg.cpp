@@ -13,6 +13,9 @@
 #include "FuncMinimumGenAlg.h"
 
 using namespace Genfun;
+// Handle CLHEP 2.0.x move to CLHEP namespace
+namespace CLHEP { }
+using namespace CLHEP;
 
 //-----------------------------------------------------------------------------
 /** @file Implementation file for class : FuncMinimumGenAlg
@@ -21,9 +24,6 @@ using namespace Genfun;
  *  @date 2002-09-14
  */
 //-----------------------------------------------------------------------------
-
-// Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY(FuncMinimumGenAlg)
 
 //=============================================================================
 // Standard constructor, initializes variables
@@ -173,3 +173,5 @@ StatusCode FuncMinimumGenAlg::finalize() {
 }
 
 //=============================================================================
+// Declaration of the Algorithm Factory
+DECLARE_ALGORITHM_FACTORY(FuncMinimumGenAlg)
