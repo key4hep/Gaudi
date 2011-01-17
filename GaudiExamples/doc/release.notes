@@ -1,6 +1,11 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2011-01-17 - Marco Clemencic
+ - Bug #76642: Strange behaviour of InputCopyStream
+   Added a test to validate the new behavior of InputCopyStream (fail if
+   called after OutputStream).
+
 ! 2011-01-12 - Marco Clemencic
  - Fixed bug #76395: spurious count printouts in MyTrack and MyVertex classes
    Modified MyTrack and MyVertex to print the count of lost instances only
