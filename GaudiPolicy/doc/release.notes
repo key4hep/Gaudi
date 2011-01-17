@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-01-17 - Marco Clemencic
+ - Fixed a small problem with the recent change in the nmake fragments
+
 ! 2011-01-12 - Marco Clemencic
  - Modified the directory where Python binary modules are installed to me
    more standard (python/lib-dynload)
