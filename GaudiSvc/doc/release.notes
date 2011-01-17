@@ -1,6 +1,10 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-01-17 - Brett Viren, Marco Clemencic
+ - Fixed bug #75996: Support for CLHEP 2.0
+   Added a "using namespace CLHEP".
+
 ! 2011-01-17 - Marco Clemencic
  - Bug #76642: Strange behaviour of InputCopyStream
    Modified DataSvcFileEntriesTool to detect when the objects in the transient
