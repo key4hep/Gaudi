@@ -1,6 +1,12 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-01-14 - Markus Frank
+ - Patch #4607: Do not store process id.
+   ProcessDescriptor.cpp Do not locally store the process id (pid).
+   This causes problems e.g. after a call to fork(), because the data
+   accessed are those of the parent process, not the newly created process.
+
 ! 2011-01-11 - Marco Clemencic
  - Fixed some ICC remarks.
 

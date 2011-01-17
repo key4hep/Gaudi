@@ -83,7 +83,7 @@ Time::Time( int year, int month, int day,
             ValueType nsecs,
             bool local /* = true */ ) {
   tm val;
-  memset (&val, sizeof (val), 0);
+  memset (&val, 0, sizeof (val));
   val.tm_sec = sec;
   val.tm_min = min;
   val.tm_hour = hour;

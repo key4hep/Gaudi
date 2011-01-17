@@ -84,7 +84,7 @@ using namespace Gaudi;
 
 static void checkAccessMode(DbAccessMode mode, DbDatabase& dbH)  {
   DbAccessMode m = dbH.openMode();
-  if ( m&mode || m&pool::UPDATE || m&pool::RECREATE )  {
+  if ( (m & mode) || (m & pool::UPDATE) || (m & pool::RECREATE) )  {
     return;
   }
   std::string err =
@@ -466,11 +466,11 @@ PoolDbCnvSvc::connectContainer(DbDatabase& dbH,
     fid = dbH.token()->dbID();
     pfn = dbH.token()->contID();
     int m   = dbH.openMode();
-    if ( (m&all) && mode == pool::READ )    {
+    if ( (m & all) && (mode == pool::READ) )    {
     }
-    else if ( m&wr && mode&pool::CREATE )   {
+    else if ( (m & wr) && (mode & pool::CREATE) )   {
     }
-    else if ( m&wr && mode&pool::UPDATE )   {
+    else if ( (m & wr) && (mode & pool::UPDATE) )   {
     }
     else  {
       dbH.reopen(pool::UPDATE);

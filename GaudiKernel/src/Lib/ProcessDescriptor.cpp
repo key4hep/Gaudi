@@ -199,7 +199,9 @@ void readProcStat(long pid, linux_proc& pinfo) {
 }
 #endif
 
-static long s_myPid  = ::getpid();
+//static long s_myPid  = ::getpid();
+// In order to properly support e.g. fork() calls, we cannot keep a copy of the pid!
+#define s_myPid (::getpid())
 static inline long processID(long pid) {
   long thePid = (pid>0) ? pid : s_myPid;
   return thePid;

@@ -38,6 +38,9 @@ use GaudiSys       v21r11
 # Monitoring utility. Can use also MonaLisa
 use GaudiMonitor   v2r6
 
+# Profiling components and tools
+use GaudiProfiling v1r0
+
 # Multi Processing libraries
 use GaudiMP v1r0
 
