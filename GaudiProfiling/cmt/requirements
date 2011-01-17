@@ -16,11 +16,10 @@ application     GaudiGenProfilingHtml app/pfm_gen_analysis.cpp
 
 # ============== patterns =====================================================
 apply_pattern   component_library library="GaudiProfiling"
-#apply_pattern   python_alias script=GaudiProfiler
 apply_pattern   install_python_modules
 apply_pattern   install_scripts
-#macro_append GaudiProfiling_linkopts " -lpfm " target-winxp ""
-macro_append GaudiProfiling_linkopts " -ldl -lz " target-winxp ""
+
+macro_append GaudiProfiling_linkopts " -ldl " target-winxp ""
 
 # ============== private ======================================================
 private
@@ -28,9 +27,9 @@ private
 use             libunwind   v* LCG_Interfaces
 # Not using the libunwind library, only the headers
 macro libunwind_linkopts ''
-#macro_append pp_cppflags " -I/usr/include/perfmon -I../GaudiProfiling "
-macro_append pp_cppflags " -I../GaudiProfiling "
 
+macro_append GaudiProfiling_use_linkopts " -lz " target-winxp ""
+macro_append GaudiGenProfilingHtml_use_linkopts " -lz " target-winxp ""
 
 apply_pattern disable_package_on platform=target-winxp
 apply_pattern disable_package_on platform=target-i686
@@ -44,10 +43,7 @@ apply_pattern install_more_includes more=GaudiProfiling
 use Python v* LCG_Interfaces -no_auto_imports
 apply_pattern pyd_boost_module module=PyCPUFamily files=python/CPUFamily.cpp
 # we do not need/want to link the module against the package library
-###macro_remove PyCPUFamily_use_linkopts '$(GaudiProfiling_linkopts)'
-# otherwise we should have used
-# apply_pattern pyd_boost_module module=PyExample files=PythonModule/*.cpp deps=GaudiExamplesLib
+macro_remove PyCPUFamily_use_linkopts '$(GaudiProfiling_linkopts)'
 #------------------------------------------------------------------------------
-
 
 end_private
