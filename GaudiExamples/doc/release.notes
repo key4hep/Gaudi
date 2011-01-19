@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2011-01-18 - Marco Clemencic
+ - Added a test for bug #74981.
+
 ! 2011-01-17 - Brett Viren, Marco Clemencic
  - Fixed bug #75996: Support for CLHEP 2.0
    Added a "using namespace CLHEP".

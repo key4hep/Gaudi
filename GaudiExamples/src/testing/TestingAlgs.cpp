@@ -114,7 +114,57 @@ namespace GaudiTesting {
     /// Signal (id) to raise
     std::string m_mode;
   };
+
+  /**
+   * Simple algorithm that raise a signal after N events.
+   */
+  class GetDataObjectAlg: public GaudiAlgorithm {
+  public:
+    GetDataObjectAlg(const std::string& name, ISvcLocator *pSvcLocator):
+      GaudiAlgorithm(name, pSvcLocator){
+      declareProperty("Paths", m_paths,
+                      "List of paths in the transient store to load");
+      declareProperty("DataSvc", m_dataSvc = "EventDataSvc",
+                      "Name of the data service to use");
+    }
+
+    StatusCode initialize() {
+      StatusCode sc = GaudiAlgorithm::initialize();
+      if (sc.isFailure()) return sc;
+
+      m_dataProvider = service(m_dataSvc);
+      if (!m_dataProvider) return StatusCode::FAILURE;
+
+      return StatusCode::SUCCESS;
+    }
+
+    StatusCode execute() {
+      StatusCode sc = StatusCode::SUCCESS;
+      info() << "Getting " << m_paths.size() << " objects from " << m_dataSvc << endmsg;
+      std::vector<std::string>::iterator p;
+      for (p = m_paths.begin(); sc.isSuccess() && (p != m_paths.end()); ++p) {
+        info() << "Getting '" << *p << "'" << endmsg;
+        if (! get<DataObject>(m_dataProvider, *p)) {
+          sc = StatusCode::FAILURE;
+        }
+      }
+
+      return sc;
+    }
+
+    StatusCode finalize() {
+      m_dataProvider.reset();
+      return GaudiAlgorithm::finalize();
+    }
+  private:
+    std::vector<std::string> m_paths;
+    std::string m_dataSvc;
+    SmartIF<IDataProviderSvc> m_dataProvider;
+  };
+
 }
+
+
 
 #include "GaudiKernel/AlgFactory.h"
 
@@ -122,3 +172,4 @@ DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, DestructorCheckAlg)
 DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, SleepyAlg)
 DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, SignallingAlg)
 DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, StopLoopAlg)
+DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, GetDataObjectAlg)
