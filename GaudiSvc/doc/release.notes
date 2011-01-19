@@ -7,7 +7,7 @@ Package manager : Marco Clemencic
    Added a "using namespace CLHEP".
 
 ! 2011-01-17 - Marco Clemencic
- - Bug #76642: Strange behaviour of InputCopyStream
+ - Bug #76642: Strange behavior of InputCopyStream
    Modified DataSvcFileEntriesTool to detect when the objects in the transient
    store have changed the address between the BeginEvent incident and the
    moment they collect the list of entries, so that an error is reported when
