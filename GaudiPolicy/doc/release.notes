@@ -1,6 +1,7 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v11r0 ==============================
 ! 2011-01-17 - Marco Clemencic
  - Fixed a small problem with the recent change in the nmake fragments
 

@@ -38,6 +38,359 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
+<h2><a name="v22r0">Gaudi v22r0</a> (2011-01-19)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=60">LCGCMT_60</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v11r0):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2011-01-17 - Marco Clemencic
+ - Fixed a small problem with the recent change in the nmake fragments
+
+! 2011-01-12 - Marco Clemencic
+ - Modified the directory where Python binary modules are installed to me
+   more standard (python/lib-dynload)
+ - Fixed a problem in a regular expression used in the exclusion of lines
+   from the references of the tests
+
+! 2011-01-07 - Marco Clemencic
+ - Fixes to run_qmtest.py to allow creation of HTML output on Windows.
+ - Fixed nmake fragments to honor the shlibsuffix macro.
+
+! 2010-11-16 - Charles Leggett
+ - Fixed 32bit compilation with ICC on 64bit host.
+
+! 2010-11-05 - Marco Clemencic
+ - Added the "soname" flag to the linker libraries (to help the test of cmake).
+
+! 2010-10-05 - Marco Clemencic
+ - Work-around for an icc-related configuration problems in LCG_Settings.
+
+! 2010-09-20 - Marco Clemencic
+ - Minor improvements to the generated Eclipse launchers (GaudiTest).
+
+! 2010-09-10 - Marco Clemencic
+ - Fixed a minor problems in the 'uninstall_command' macro and in the NMake version
+   of the install_scripts_header fragment.
+
+! 2010-09-09 - Marco Clemencic
+ - Changed the default behavior about shared directories: by default shared
+   directories are not used. The old behavior can be restored with the tag
+   'user-shared-dir' (the tag ATLAS implies it).
+
+! 2010-09-02 - Marco Clemencic
+ - Improved and documented the 'pyd_module' and 'pyd_boost_module' (new) patterns.
+
+! 2010-09-01 - Marco Clemencic
+ - Fixed compilation problem on the gcov platform.
+ - Fixed a problem with Python binary modules on Linux (the extension must be .so)
+
+! 2010-08-31 - Marco Clemencic
+ - Use a different directory for Python binary modules if the tag no-shared-dir
+   is used.
+
+! 2010-08-26 - Marco Clemencic
+ - Fixed a problem in the linking of executables with VC9
+   (manifest files must be embedded in the executable, e.g.
+   http://msdn.microsoft.com/en-us/library/ms235560%28VS.80%29.aspx).
+
+! 2010-08-24 - Marco Clemencic
+ - Hide deprecation warnings in ICC (due to the usage of hash_map, unavoidable
+   because of gccxml).
+ - Enabled "-Wl,--as-needed" for ICC.
+ - Added an ugly work-around for the ICC warning
+    libimf.so: warning: warning: feupdateenv is not implemented and will always
+    fail
+
+! 2010-08-23 - Marco Clemencic
+ - Added the possibility of installing the platform-independent files in the
+   platform-specific directory in the InstallArea.
+   The new behavior is disabled by default at the moment, and it can be enabled
+   with the CMT extra tags 'no-shared-dir' (always disabled for ATLAS).
+ - Improved run_qmtest.py to be able to run the tests from a read-only location
+   even if the "QMTest" directory is not present.
+   The QMTestTestsDatabase action is not executed anymore during the build
+   since it is not needed.
+
+! 2010-08-20 - Marco Clemencic
+ - Fixed a compilation warning in VC9 (option 'GX' has been deprecated).
+
+! 2010-07-29 - Marco Clemencic
+ - Fixed a problem in the generation of Eclipse debug launchers from QMTest and
+   adapted them to CDT 7 (Eclipse Helios, 3.6).
+
+! 2010-07-21 - Marco Clemencic
+ - Improvements to the QMTest HTML output:
+   cause of the failure written just after the result message, so that it is
+   visible without having to click.
+</pre>
+</li>
+<li>GaudiKernel (v27r12):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2011-01-14 - Markus Frank
+ - Patch #4607: Do not store process id.
+   ProcessDescriptor.cpp Do not locally store the process id (pid).
+   This causes problems e.g. after a call to fork(), because the data
+   accessed are those of the parent process, not the newly created process.
+
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+
+! 2011-01-07 - Marco Cattaneo
+ - Locally disable few ICC remarks.
+
+! 2011-01-06 - Marco Clemencic
+ - removed extra ';'
+ - added QMTest wrapper for PathResolver_test and fixed compilation errors on
+   windows
+</pre>
+</li>
+<li>GaudiSvc (v18r12):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2011-01-17 - Brett Viren, Marco Clemencic
+ - Fixed bug #75996: Support for CLHEP 2.0
+   Added a "using namespace CLHEP".
+
+! 2011-01-17 - Marco Clemencic
+ - Bug #76642: Strange behaviour of InputCopyStream
+   Modified DataSvcFileEntriesTool to detect when the objects in the transient
+   store have changed the address between the BeginEvent incident and the
+   moment they collect the list of entries, so that an error is reported when
+   OutputStream is called before InputCopyStream. It doesn't fix the bug, but
+   it change the behavior such that we get an error instead of the wrong
+   output.
+
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+
+! 2011-01-06 - Charles Leggett
+ - Patch #4588: moved code from HistorySvc::finalize to HistorySvc::stop
+</pre>
+</li>
+<li>PartPropSvc (v4r2):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+</pre>
+</li>
+<li>GaudiProfiling ():
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2011-01-19 - Marco Clemencic
+ - Fixed ICC warnings.
+
+! 2011-01-16 - Karol Kruzelecki
+ - new package
+</pre>
+</li>
+<li>GaudiMonitor (v2r7):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+</pre>
+</li>
+<li>RootHistCnv (v10r6):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+</pre>
+</li>
+<li>GaudiUtils (v3r11):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+</pre>
+</li>
+<li>GaudiPoolDb (v5r10):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2011-01-12 - Marco Clemencic
+ - Fixed bug #76395: spurious count printouts in MyTrack and MyVertex classes
+   Modified MyTrack and MyVertex to print the count of lost instances only
+   if different from 0.
+
+! 2010-11-30 - Markus Frank
+ - Patch #4545: Fix to run with AgeLimit=1
+   Each converter explicitly pins the data type info structures on initialize
+   and unpis them on finalize.
+
+! 2010-11-26 - Markus Frank
+ - Patch #4541
+   Fixes to address coverity errors:
+   bug #75702: Coverity detected defect: Operands don't affect result (id=10016)
+</pre>
+</li>
+<li>GaudiAlg (v13r5):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+</pre>
+</li>
+<li>GaudiGSL (v7r8):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2011-01-17 - Brett Viren, Marco Clemencic
+ - Fixed bug #75996: Support for CLHEP 2.0
+   Added a "using namespace CLHEP".
+
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+
+! 2010-11-25 - Marco Clemencic
+ - Fixed Coverity detected defect
+   http://lhcb-coverity.cern.ch:8080/sourcebrowser.htm?projectId=10001#mergedDefectId=10027
+</pre>
+</li>
+<li>GaudiPython (v11r0):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2011-01-17 - Brett Viren, Marco Clemencic
+ - Fixed bug #75996: Support for CLHEP 2.0
+   Added a "using namespace CLHEP".
+
+! 2010-12-16 - Sebastien Binet
+ - Patch #4074: migrate GaudiPython.Parallel to multiprocessing
+   Modified GaudiPython.Parallel to use 'multiprocessing' instead of
+   'processing'.
+
+! 2010-12-01 - Charles Leggett
+ - Added a reference to the Gaudi C++ namespace in AppMgr, so that it is still
+   available during "atexit".
+   (included in the attachment of bug #75834)
+</pre>
+</li>
+<li>GaudiMP (v1r0):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+
+! 2010-12-17 - Eoin Smith
+  - Updated TESSerializer.h/cpp, python/GaudiPython for Multicore Execution
+    TESSerializer class can now serialize/reconstruct Opaque Addresses using
+    the GaudiKernel IOpaqueAddress interface.
+    TESSerializer now uses a map as member variable for TClass names, to
+    improve performance (initialize once, refer back on each event iteration)
+    Multicore components collected in GMPBase.py ; the Reader, Worker and
+    Writer.  pTools.py contains extra classes; HistoAgent, FileRecordsAgent
+    for communication and consolidation of Histo and Records stores. pTools
+    also contains some extra methods used by the Reader, Writer, Workers.
+
+! 2010-12-16 - Sebastien Binet
+ - Patch #4074: migrate GaudiPython.Parallel to multiprocessing
+   First import
+</pre>
+</li>
+<li>Gaudi (v22r0):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2010-12-17 - Eoin Smith
+ - Updated gaudirun.py and python/Gaudi/Main.py for multicore execution
+   Multicore Execution with flag : --ncpus=N ( N in {-1,0,...,Z} )
+     -1 : all available cores
+      0 : conventional serial execution
+      1 : parallel execution with 1 worker
+   parallel execution generates log file named by date and time of run
+</pre>
+</li>
+<li>GaudiExamples (v22r0):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2011-01-17 - Brett Viren, Marco Clemencic
+ - Fixed bug #75996: Support for CLHEP 2.0
+   Added a "using namespace CLHEP".
+
+! 2011-01-17 - Marco Clemencic
+ - Bug #76642: Strange behaviour of InputCopyStream
+   Added a test to validate the new behavior of InputCopyStream (fail if
+   called after OutputStream).
+
+! 2011-01-12 - Marco Clemencic
+ - Fixed bug #76395: spurious count printouts in MyTrack and MyVertex classes
+   Modified MyTrack and MyVertex to print the count of lost instances only
+   if different from 0.
+
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+</pre>
+</li>
+<li>GaudiRelease (v22r0):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2011-01-17 - Marco Clemencic
+ - Removed a couple of obsolete LHCb-specific pacakages from the requirements.
+
+! 2011-01-16 - Karol Kruzelecki
+ - Patch #4608: new Package GaudiProfiling
+
+! 2010-12-16 - Sebastien Binet
+ - Patch #4074: migrate GaudiPython.Parallel to multiprocessing
+   Added new package GaudiMP.
+</pre>
+</li>
+</ul>
+<!-- ====================================================================== -->
 <h2><a name="v21r11">Gaudi v21r11</a> (2010-09-22)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=58f">LCGCMT_58f</a></h3>
 <h3>General Changes</h3>

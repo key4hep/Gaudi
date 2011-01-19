@@ -1,6 +1,7 @@
 Package: GaudiPoolDb
 Package Manager: Markus Frank, Marco Clemencic
 
+============================= GaudiPoolDb v5r10 ==============================
 ! 2011-01-12 - Marco Clemencic
  - Fixed bug #76395: spurious count printouts in MyTrack and MyVertex classes
    Modified MyTrack and MyVertex to print the count of lost instances only

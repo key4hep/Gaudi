@@ -1,6 +1,7 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+============================== GaudiMP v1r0 ==================================
 ! 2011-01-11 - Marco Clemencic
  - Fixed some ICC remarks.
 

@@ -1,6 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v27r12 =============================
 ! 2011-01-14 - Markus Frank
  - Patch #4607: Do not store process id.
    ProcessDescriptor.cpp Do not locally store the process id (pid).

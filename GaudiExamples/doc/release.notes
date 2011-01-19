@@ -1,6 +1,7 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v22r0 =============================
 ! 2011-01-17 - Brett Viren, Marco Clemencic
  - Fixed bug #75996: Support for CLHEP 2.0
    Added a "using namespace CLHEP".
