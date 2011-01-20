@@ -48,11 +48,6 @@ public:
   /// Update reference to event time stamp
   void setTime (const Gaudi::Time& value) { m_time = value; }
 
-  /// Serialize the object for writing
-  virtual StreamBuffer& serialize( StreamBuffer& s ) const;
-  /// Serialize the object for reading
-  virtual StreamBuffer& serialize( StreamBuffer& s );
-
   /// Output operator (ASCII)
   friend std::ostream& operator<< ( std::ostream& s, const Event& obj ) {
     return obj.fillStream(s);
@@ -68,21 +63,6 @@ private:
   /// Time stamp
   Gaudi::Time         m_time;
 };
-
-
-/// Serialize the object for writing
-inline StreamBuffer& Event::serialize( StreamBuffer& s ) const {
-  DataObject::serialize(s);
-  return s << m_event << m_run << m_time;
-}
-
-
-/// Serialize the object for reading
-inline StreamBuffer& Event::serialize( StreamBuffer& s ) {
-  DataObject::serialize(s);
-  return s >> m_event >> m_run >> m_time;
-}
-
 
 /// Fill the output stream (ASCII)
 inline std::ostream& Event::fillStream( std::ostream& s ) const {
