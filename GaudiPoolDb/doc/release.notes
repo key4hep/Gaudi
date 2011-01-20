@@ -1,6 +1,7 @@
 Package: GaudiPoolDb
 Package Manager: Markus Frank, Marco Clemencic
 
+============================= GaudiPoolDb v5r10 ==============================
 ! 2011-01-19 - Markus Frank
  - Fixes for bug #77109.
    Add spport for the DataObject::update() method in the PoolDbBaseCnv.

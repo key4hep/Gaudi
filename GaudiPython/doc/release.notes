@@ -1,6 +1,7 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+============================= GaudiPython v11r0 ==============================
 ! 2011-01-19 - Markus Frank
  - Fixes for bug #77109.  Remove calls to DataObject::serialize.
    (patch #4613)

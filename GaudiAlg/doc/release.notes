@@ -1,6 +1,7 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+=============================== GaudiAlg v13r5 ===============================
 ! 2011-01-11 - Marco Clemencic
  - Fixed some ICC remarks.
 

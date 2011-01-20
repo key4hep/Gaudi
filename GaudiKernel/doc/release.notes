@@ -1,6 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v27r12 =============================
 ! 2011-01-19 - Markus Frank
  - Fixes for bug #77109.
    Add a virtual "update()" method to the DataObject.

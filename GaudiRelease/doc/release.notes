@@ -1,8 +1,9 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+============================= GaudiRelease v22r0 =============================
 ! 2011-01-17 - Marco Clemencic
- - Removed a couple of obsolete LHCb-specific pacakages from the requirements.
+ - Removed a couple of obsolete LHCb-specific packages from the requirements.
 
 ! 2011-01-16 - Karol Kruzelecki
  - Patch #4608: new Package GaudiProfiling
