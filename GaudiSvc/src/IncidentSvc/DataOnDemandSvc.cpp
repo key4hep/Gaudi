@@ -27,7 +27,7 @@
 #include "GaudiKernel/Chrono.h"
 #include "GaudiKernel/LockedChrono.h"
 // ============================================================================
-// Local 
+// Local
 // ============================================================================
 #include "DataOnDemandSvc.h"
 // ============================================================================
@@ -55,6 +55,7 @@ DataOnDemandSvc::DataOnDemandSvc
   , m_partialPath ( true  )
   , m_dump        ( false )
   , m_init        ( false )
+  , m_allowInitFailure(false)
   //
   , m_algMapping  ()
   , m_nodeMapping ()
@@ -70,33 +71,37 @@ DataOnDemandSvc::DataOnDemandSvc
   , m_statNode ( 0 )
   , m_stat     ( 0 )
   //
-  , m_timer_nodes  () 
+  , m_timer_nodes  ()
   , m_timer_algs   ()
   , m_timer_all    ()
-  , m_locked_nodes ( false ) 
+  , m_locked_nodes ( false )
   , m_locked_algs  ( false )
   , m_locked_all   ( false )
   //
 {
   // ==========================================================================
-  declareProperty 
-    ( "IncidentName"       , 
-      m_trapType           , 
+  declareProperty
+    ( "IncidentName"       ,
+      m_trapType           ,
       "The type of handled Incident" ) ;
   //
   declareProperty ( "DataSvc"            , m_dataSvcName ) ;
   //
   declareProperty ( "UsePreceedingPath"  , m_partialPath ) ;
-  declareProperty 
-    ( "Dump"        , 
+  declareProperty
+    ( "Dump"        ,
       m_dump        ,
-      "Dump the configuration and stastics" )  -> 
+      "Dump the configuration and stastics" )  ->
     declareUpdateHandler ( &DataOnDemandSvc::update_dump , this ) ;
   //
-  declareProperty 
-    ( "PreInitialize" , 
-      m_init          , 
+  declareProperty
+    ( "PreInitialize" ,
+      m_init          ,
       "Flag to (pre)initialize all algorithms" ) ;
+  declareProperty
+    ( "AllowPreInitializeFailure" ,
+      m_allowInitFailure          ,
+      "Allow (pre)initialization of algorithms to fail without stopping the application" ) ;
   //
   declareProperty ( "Algorithms"         , m_algMapping  )  ->
     declareUpdateHandler ( &DataOnDemandSvc::update_2 , this ) ;
@@ -149,7 +154,7 @@ void DataOnDemandSvc::update_2 ( Property& /* p */ )
 // ============================================================================
 void DataOnDemandSvc::update_dump ( Property& /* p */ )
 {
-  // no action if not yet initialized 
+  // no action if not yet initialized
   if ( FSMState() < Gaudi::StateMachine::INITIALIZED ) { return ; }
   // dump the configuration:
   if ( m_dump ) { dump ( MSG::ALWAYS ) ; }
@@ -240,7 +245,7 @@ namespace
 StatusCode DataOnDemandSvc::update ()
 {
   if ( !m_updateRequired ) { return StatusCode::SUCCESS  ; }
-  
+
   /// convert obsolete "Nodes"      into new "NodeMap"
   StatusCode sc = setupNodeHandlers() ; // convert "Nodes"      new "NodeMap"
   if ( sc.isFailure() )
@@ -284,10 +289,17 @@ StatusCode DataOnDemandSvc::update ()
   {
     Gaudi::Utils::TypeNameString alg ( ialg->second ) ;
     Leaf leaf ( alg.type() , alg.name() ) ;
-    if  ( m_init ) 
+    if  ( m_init )
     {
-      if (configureHandler(leaf).isFailure()) {
-        leaf = Leaf(alg.type(), alg.name());
+      sc = configureHandler(leaf);
+      if (sc.isFailure()) {
+        if (m_allowInitFailure) {
+          // re-store the content of the leaf object to try again to initialize
+          // the algorithm later (on demand)
+          leaf = Leaf(alg.type(), alg.name());
+        }
+        else
+          return sc;
       }
     }
     m_algs[ialg->first] =  leaf ;
@@ -529,11 +541,11 @@ StatusCode DataOnDemandSvc::setupAlgHandlers()
 // ============================================================================
 StatusCode DataOnDemandSvc::configureHandler(Leaf& l)
 {
-  if ( 0 != l.algorithm ) { return StatusCode::SUCCESS ; }  
-  if ( 0 == m_algMgr  ) { return StatusCode::FAILURE ; } 
+  if ( 0 != l.algorithm ) { return StatusCode::SUCCESS ; }
+  if ( 0 == m_algMgr  ) { return StatusCode::FAILURE ; }
   l.algorithm = m_algMgr->algorithm(l.name, false);
   if ( 0 != l.algorithm ) { return StatusCode::SUCCESS ; }
-  // create it! 
+  // create it!
   StatusCode sc = m_algMgr->createAlgorithm ( l.type , l.name , l.algorithm , true ) ;
   if ( sc.isFailure() )
   {
@@ -545,7 +557,7 @@ StatusCode DataOnDemandSvc::configureHandler(Leaf& l)
     return sc ;                                                    // RETURN
   }
   if ( l.algorithm->isInitialized() ) { return StatusCode:: SUCCESS ;}
-  // initialize it! 
+  // initialize it!
   sc = l.algorithm -> sysInitialize () ;
   if ( sc.isFailure() )
   {
@@ -556,7 +568,7 @@ StatusCode DataOnDemandSvc::configureHandler(Leaf& l)
     l.algorithm = 0 ;
     return sc ;                                                    // RETURN
   }
-  if ( Gaudi::StateMachine::RUNNING == l.algorithm->FSMState() ) 
+  if ( Gaudi::StateMachine::RUNNING == l.algorithm->FSMState() )
   { return StatusCode::SUCCESS ; }
   // run it!
   sc = l.algorithm->sysStart() ;
@@ -576,9 +588,9 @@ StatusCode DataOnDemandSvc::configureHandler(Leaf& l)
 // ===========================================================================
 void DataOnDemandSvc::handle ( const Incident& incident )
 {
-  
+
   Gaudi::Utils::LockedChrono timer ( m_timer_all , m_locked_all ) ;
-  
+
   ++m_stat ;
   // proper incident type?
   if ( incident.type() != m_trapType ) { return ; }             // RETURN
@@ -621,17 +633,17 @@ void DataOnDemandSvc::handle ( const Incident& incident )
 StatusCode
 DataOnDemandSvc::execHandler ( const std::string& tag, Node& n)
 {
-  
+
   Gaudi::Utils::LockedChrono timer ( m_timer_nodes ,  m_locked_nodes ) ;
-  
+
   if ( n.executing ) { return StatusCode::FAILURE ; }            // RETURN
-  
+
   Protection p(n.executing);
-  
+
   DataObject* object= 0 ;
-  
+
   if ( n.dataObject )  { object = new DataObject() ; }
-  else 
+  else
   {
     // try to recover the handler
     if ( !n.clazz  ) { n.clazz = ROOT::Reflex::Type::ByName(n.name) ; }
@@ -646,9 +658,9 @@ DataOnDemandSvc::execHandler ( const std::string& tag, Node& n)
     }
     //
     ROOT::Reflex::Object obj = n.clazz.Construct();
-    
+
     object = (DataObject*) obj.Address();
-    
+
     if ( !object )
     {
       stream()

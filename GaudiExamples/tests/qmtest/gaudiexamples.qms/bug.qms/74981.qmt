@@ -6,13 +6,28 @@ from Gaudi.Configuration import *
 
 from Configurables import GaudiTesting__GetDataObjectAlg as GetDataObjectAlg
 
+dod = DataOnDemandSvc(
+    UsePreceedingPath = True,
+    AlgMap  = { "MissingObject": "NoAlgorithm" },
+    PreInitialize = True
+    )
+
 alg = GetDataObjectAlg()
-alg.Paths = ["/Event/MissingObject"]
+alg.Paths = ["MissingObject"]
 
 ApplicationMgr(TopAlg = [alg],
-               EvtSel = "NONE", EvtMax = 1)
+               ExtSvc = [dod],
+               EvtSel = "NONE",
+               EvtMax = 1)
 
 EventDataSvc().EnableFaultHandler = True
 
+</text></argument>
+<argument name="exit_code"><integer>1</integer></argument>
+<argument name="validator"><text>
+expected = "ERROR Unable to initialize Service: DataOnDemandSvc"
+if not expected in stdout:
+    causes.append("missing signature")
+    result["GaudiTest.expected_line"] = result.Quote(expected)
 </text></argument>
 </extension>

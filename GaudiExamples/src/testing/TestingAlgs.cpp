@@ -142,11 +142,12 @@ namespace GaudiTesting {
       StatusCode sc = StatusCode::SUCCESS;
       info() << "Getting " << m_paths.size() << " objects from " << m_dataSvc << endmsg;
       std::vector<std::string>::iterator p;
-      for (p = m_paths.begin(); sc.isSuccess() && (p != m_paths.end()); ++p) {
+      for (p = m_paths.begin(); p != m_paths.end(); ++p) {
         info() << "Getting '" << *p << "'" << endmsg;
-        if (! get<DataObject>(m_dataProvider, *p)) {
-          sc = StatusCode::FAILURE;
-        }
+        DataObject *obj;
+        sc = m_dataProvider->retrieveObject(*p, obj);
+        if (sc.isFailure())
+          warning() << "Cannot retrieve object '" << *p << "'" << endmsg;
       }
 
       return sc;
