@@ -2,6 +2,15 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 
 ============================= GaudiKernel v27r12 =============================
+! 2011-01-19 - Markus Frank
+ - Fixes for bug #77109.
+   Add a virtual "update()" method to the DataObject.
+   This method should then be called unconditionally by converters.
+   Remove the obsolete "serialize()" methods.
+   Apply this method to the keyed containers and replace the
+   existing "configureDirectAccess()" method with "update()".
+   (patch #4613)
+
 ! 2011-01-14 - Markus Frank
  - Patch #4607: Do not store process id.
    ProcessDescriptor.cpp Do not locally store the process id (pid).

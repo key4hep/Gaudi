@@ -101,14 +101,12 @@ namespace Gaudi {
 
     /// Serialize the object for writing
     inline StreamBuffer& Event::serialize( StreamBuffer& s ) const {
-      DataObject::serialize(s);
       return s << m_event << m_run << m_time << m_collisions(this);
     }
 
 
     /// Serialize the object for reading
     inline StreamBuffer& Event::serialize( StreamBuffer& s ) {
-      DataObject::serialize(s);
       return s >> m_event >> m_run >> m_time >> m_collisions(this);
     }
 

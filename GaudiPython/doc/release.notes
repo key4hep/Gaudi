@@ -2,6 +2,10 @@ Package: GaudiPython
 Package manager : Marco Clemencic
 
 ============================= GaudiPython v11r0 ==============================
+! 2011-01-19 - Markus Frank
+ - Fixes for bug #77109.  Remove calls to DataObject::serialize.
+   (patch #4613)
+
 ! 2011-01-17 - Brett Viren, Marco Clemencic
  - Fixed bug #75996: Support for CLHEP 2.0
    Added a "using namespace CLHEP".

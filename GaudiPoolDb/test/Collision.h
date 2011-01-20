@@ -30,29 +30,10 @@ public:
   long collision() const {
     return m_collision;
   }
-  /// Serialize the object for writing
-  virtual StreamBuffer& serialize( StreamBuffer& s ) const;
-  /// Serialize the object for reading
-  virtual StreamBuffer& serialize( StreamBuffer& s );
-
   std::vector<std::pair<int,int> > m_mcTags;
 
 private:
   /// Collision number
   long                m_collision;
 };
-
-/// Serialize the object for writing
-inline StreamBuffer& Collision::serialize( StreamBuffer& s ) const {
-  DataObject::serialize(s);
-  return s << m_collision;
-}
-
-
-/// Serialize the object for reading
-inline StreamBuffer& Collision::serialize( StreamBuffer& s ) {
-  DataObject::serialize(s);
-  return s >> m_collision;
-}
-
 #endif    // GAUDIEXAMPLES_COLLISION_H
