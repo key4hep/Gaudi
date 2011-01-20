@@ -74,16 +74,10 @@ const std::string& DataObject::name() const {
   }
 }
 
-/// ISerialize implementation: Serialize the object for reading
-StreamBuffer& DataObject::serialize(StreamBuffer& s)   {
-  return s >> m_version;
+/// Provide empty placeholder for internal object reconfiguration callback
+StatusCode DataObject::update() {
+  return StatusCode::SUCCESS;
 }
-
-/// ISerialize implementation: Serialize the object for writing
-StreamBuffer& DataObject::serialize(StreamBuffer& s)  const    {
-  return s << m_version;
-}
-
 
 static DataObject*       s_objPtr = 0;
 static DataObject**      s_currObj = &s_objPtr;
