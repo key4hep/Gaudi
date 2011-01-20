@@ -1,6 +1,13 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-01-19 - Markus Frank
+ - Fixes for bug #77109.
+   Remove call to "DataObject::serialize()" from H1D, since these are no
+   longer supported by the base class. Though keep methods to allow
+   e.g. sending histograms through sockets.
+   (patch #4613)
+
 ! 2011-01-17 - Brett Viren, Marco Clemencic
  - Fixed bug #75996: Support for CLHEP 2.0
    Added a "using namespace CLHEP".
