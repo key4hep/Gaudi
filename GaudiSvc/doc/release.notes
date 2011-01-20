@@ -2,6 +2,13 @@ Package: GaudiSvc
 Package manager : Marco Clemencic
 
 ============================== GaudiSvc v18r12 ===============================
+! 2011-01-20 - Marco Clemencic
+ - Fixed bug #74981: failure in algorithm initialization doesn't stop
+                     DataOnDemandSvc
+   Changed the behavior of the PreInitialize flag so that a failure can be
+   trapped at initialize time (a new flag can be used to restore the old
+   behavior).
+
 ! 2011-01-19 - Markus Frank
  - Fixes for bug #77109.
    Remove call to "DataObject::serialize()" from H1D, since these are no
