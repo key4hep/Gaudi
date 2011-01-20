@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2011-01-20 - Marco Clemencic
+ - Added a test for bug #74981.
+
 ! 2011-01-19 - Markus Frank
  - Fixes for bug #77109.  Remove calls to DataObject::serialize.
    (patch #4613)
