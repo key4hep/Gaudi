@@ -17,6 +17,7 @@ $(${CONSTITUENT}shstamp) :: $(${CONSTITUENT}arc) requirements $(use_requirements
 	$(lib_echo) dynamic library $(bin)${CONSTITUENT}.$(shlibsuffix)
 	$(lib_silent) $(make_shlib) $(${CONSTITUENT}exportsymb) $(tag) ${CONSTITUENT} $(cpplinkflags) $(${CONSTITUENT}_shlibflags)
 !IF "$(shlibsuffix)" != "dll"
+	$(lib_silent) if exist $(bin)${CONSTITUENT}.$(shlibsuffix) del /q /f $(bin)${CONSTITUENT}.$(shlibsuffix)
 	$(lib_silent) if exist $(bin)${CONSTITUENT}.dll rename $(bin)${CONSTITUENT}.dll ${CONSTITUENT}.$(shlibsuffix)
 !ENDIF
 	$(lib_silent) if exist $(bin)${CONSTITUENT}.$(shlibsuffix) echo "" >$(${CONSTITUENT}shstamp)

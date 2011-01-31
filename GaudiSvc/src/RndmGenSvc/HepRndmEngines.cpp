@@ -48,6 +48,10 @@
 #include "CLHEP/Random/RanluxEngine.h"
 #include "CLHEP/Random/RanshiEngine.h"
 
+// Handle CLHEP 2.0.x move to CLHEP namespace
+namespace CLHEP { }
+using namespace CLHEP;
+
 namespace HepRndm  {
 
   // Standard constructor
@@ -98,7 +102,7 @@ namespace HepRndm  {
         log << endmsg;
         // Use the default static engine if required (e.g. for GEANT4)
         if ( m_setSingleton )   {
-          HepRandom::setTheEngine(m_hepEngine);
+            HepRandom::setTheEngine(m_hepEngine);
           log << "This is the GEANT4 engine!" << endmsg;
         }
         return status;

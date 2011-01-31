@@ -57,10 +57,8 @@ public:
   /// Retreive DataObject name. It is the name when registered in the store.
   const std::string& name() const;
 
-  /// Serialization mechanism: Serialize the object for reading
-  virtual StreamBuffer& serialize(StreamBuffer& s);
-  /// Serialization mechanism: Serialize the object for writing
-  virtual StreamBuffer& serialize(StreamBuffer& s)  const;
+  /// Provide empty placeholder for internal object reconfiguration callback
+  virtual StatusCode update();
 
   /**@name inline code of class DataObject    */
   /// Set pointer to Registry

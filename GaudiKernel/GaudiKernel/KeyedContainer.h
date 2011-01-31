@@ -284,8 +284,11 @@ public:
    *  @return             Reference to sequencal access container.
    */
   virtual const std::vector<const ContainedObject*>* containedObjects() const;
-  /// Reconfigure direct access to elements (Needed by POOL data loading)
-  virtual void configureDirectAccess();
+  /** Reconfigure direct access to elements (Needed by POOL data loading)
+   *  This function reuses the "update" callback of the generic DataObject
+   *  base class.
+   */
+  virtual StatusCode update();
   //@}
 
   /**@name Sequential array access to objects using iterators.
@@ -493,7 +496,7 @@ KeyedContainer<DATATYPE, MAPPING>::~KeyedContainer()
 
 // Configure direct access
 template <class DATATYPE, class MAPPING> inline
-void KeyedContainer<DATATYPE, MAPPING>::configureDirectAccess()
+StatusCode KeyedContainer<DATATYPE, MAPPING>::update()
 {
   int count = 0;
   m_cont.clearDirect();
@@ -517,6 +520,7 @@ void KeyedContainer<DATATYPE, MAPPING>::configureDirectAccess()
   if ( count > 0 )  {
     Containers::cannotInsertToContainer();
   }
+  return StatusCode::SUCCESS;
 }
 
 

@@ -3,6 +3,11 @@
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! =============================================================================
 
+=============================== GaudiGSL v7r8 ================================
+! 2011-01-17 - Brett Viren, Marco Clemencic
+ - Fixed bug #75996: Support for CLHEP 2.0
+   Added a "using namespace CLHEP".
+
 ! 2011-01-11 - Marco Clemencic
  - Fixed some ICC remarks.
 
