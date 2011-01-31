@@ -680,6 +680,8 @@ class AppMgr(iService) :
         if _gaudi : return
         # Protection against multiple calls to exit() if the finalization fails
         self.__dict__['_exit_called'] = False
+        # keep the Gaudi namespace around (so it is still available during atexit shutdown)...
+        self.__dict__['_gaudi_ns'] = Gaudi
         try:
             from GaudiKernel.Proxy.Configurable import expandvars
         except ImportError:
@@ -995,6 +997,7 @@ class AppMgr(iService) :
         # Protection against multiple calls to exit() if the finalization fails
         if not self._exit_called:
             self.__dict__['_exit_called'] = True
+            Gaudi = self._gaudi_ns
             if self.FSMState() == Gaudi.StateMachine.RUNNING:
                 self._appmgr.stop().ignore()
             if self.FSMState() == Gaudi.StateMachine.INITIALIZED:

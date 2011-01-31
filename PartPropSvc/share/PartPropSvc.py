@@ -3,6 +3,6 @@
 #--------------------------------------------------------------
 from PartPropSvc.PartPropSvcConf import PartPropSvc
 ServiceMgr += PartPropSvc()
-PartPropSvc.InputFile = "PartPropSvc/PDGTABLE.MeV=PDG" 
+PartPropSvc.InputFile = "PDGTABLE.MeV=PDG" 
 
 #--------------------------------------------------------------

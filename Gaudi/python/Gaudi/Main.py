@@ -13,6 +13,41 @@ class gaudimain(object) :
             appMgr.AppName = str(os.environ["GAUDIAPPNAME"])
         if "GAUDIAPPVERSION" in os.environ:
             appMgr.AppVersion = str(os.environ["GAUDIAPPVERSION"])
+        self.log = logging.getLogger(__name__)
+
+    def setupParallelLogging( self ) :
+        # ---------------------------------------------------
+        # set up Logging
+        # ----------------
+        # from multiprocessing import enableLogging, getLogger
+        import multiprocessing
+        # preliminaries for handlers/output files, etc.
+        from time import ctime
+        datetime = ctime()
+        datetime = datetime.replace(' ', '_')
+        outfile = open( 'gaudirun-%s.log'%(datetime), 'w' )
+        # two handlers, one for a log file, one for terminal
+        streamhandler = logging.StreamHandler(strm=outfile)
+        console       = logging.StreamHandler()
+        # create formatter : the params in parentheses are variable names available via logging
+        formatter = logging.Formatter( "%(asctime)s - %(name)s - %(levelname)s - %(message)s" )
+        # add formatter to Handler
+        streamhandler.setFormatter(formatter)
+        console.setFormatter(formatter)
+        # now, configure the logger
+        # enableLogging( level=0 )
+        # self.log = getLogger()
+        self.log = multiprocessing.log_to_stderr()
+        self.log.setLevel( logging.INFO )
+        self.log.name = 'Gaudi/Main.py Logger'
+        self.log.handlers = []
+        # add handlers to logger : one for output to a file, one for console output
+        self.log.addHandler(streamhandler)
+        self.log.addHandler(console)
+        self.log.removeHandler(console)
+        # set level!!
+        self.log.setLevel = logging.INFO
+        # ---------------------------------------------------
 
     def generatePyOutput(self, all = False):
         from pprint import pformat
@@ -93,20 +128,17 @@ class gaudimain(object) :
             # Standard sequential mode
             result = self.runSerial()
         else:
-            # Doing the checking here because it is not done in runParallel
-            ncpus = int(ncpus)
-            assert(ncpus > 0)
-            # Parallel mode
+            # Otherwise, run with the specified number of cpus
             result = self.runParallel(ncpus)
         return result
 
-    
+
     def runSerial(self) :
         #--- Instantiate the ApplicationMgr------------------------------
         import GaudiPython
-        log.debug('-'*80)
-        log.debug('%s: running in serial mode', __name__)
-        log.debug('-'*80)
+        self.log.debug('-'*80)
+        self.log.debug('%s: running in serial mode', __name__)
+        self.log.debug('-'*80)
         sysStart = time()
         self.g = GaudiPython.AppMgr()
         success = self.g.run(self.g.EvtMax).isSuccess()
@@ -115,24 +147,45 @@ class gaudimain(object) :
             # ensure that the return code is correctly set
             self.g.ReturnCode = 1
         sysTime = time()-sysStart
-        log.debug('-'*80)
-        log.debug('%s: serial system finished, time taken: %5.4fs', __name__, sysTime)
-        log.debug('-'*80)
+        self.log.debug('-'*80)
+        self.log.debug('%s: serial system finished, time taken: %5.4fs', __name__, sysTime)
+        self.log.debug('-'*80)
         return self.g.ReturnCode
 
     def runParallel(self, ncpus) :
+        self.setupParallelLogging( )
         from Gaudi.Configuration import Configurable
-        import GaudiPython.Parallel as gpp
+        import GaudiMP.GMPBase as gpp
         c = Configurable.allConfigurables
-        log.info('-'*80)
-        log.info('%s: running in parallel mode', __name__)
-        log.info('-'*80)
+        self.log.info('-'*80)
+        self.log.info('%s: Parallel Mode : %i '%(__name__, ncpus))
+        from commands import getstatusoutput as gso
+        metadataCommands = [ 'uname -a',
+                             'echo $CMTCONFIG',
+                             'echo $GAUDIAPPNAME',
+                             'echo $GAUDIAPPVERSION']
+        for comm in metadataCommands :
+            s, o = gso( comm )
+            if s :
+                o = "Undetermined"
+            string = '%s: %30s : %s '%(__name__, comm, o)
+            self.log.info( string )
+        try :
+            events = str(c['ApplicationMgr'].EvtMax)
+        except :
+            events = "Undetermined"
+        self.log.info('%s: Events Specified : %s '%(__name__,events))
+        self.log.info('-'*80)
+        # Parall = gpp.Coordinator(ncpus, shared, c, self.log)
+        Parall = gpp.Coord( ncpus, c, self.log )
         sysStart = time()
-        sc = gpp.setupSystem(ncpus, c)
-        if not sc:
+        sc = Parall.Go()
+        self.log.info('MAIN.PY : received %s from Coordinator'%(sc))
+        if sc.isFailure() :
             return 1
         sysTime = time()-sysStart
-        log.info('-'*80)
-        log.info('%s: parallel system finished, time taken: %5.4fs', __name__, sysTime)
-        log.info('-'*80)
+        self.log.name = 'Gaudi/Main.py Logger'
+        self.log.info('-'*80)
+        self.log.info('%s: parallel system finished, time taken: %5.4fs', __name__, sysTime)
+        self.log.info('-'*80)
         return 0

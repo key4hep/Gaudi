@@ -2,14 +2,14 @@
 
 ## file ZipPythonDir.py
 #  Script to generate a zip file that can replace a directory in the python path.
- 
+
 import os, sys, zipfile, logging, stat, time
 from StringIO import StringIO
 
 # Add to the path the entry needed to import the locker module.
 import locker
 
-## Class for generic exception coming from the zipdir() function 
+## Class for generic exception coming from the zipdir() function
 class ZipdirError(RuntimeError):
     pass
 
@@ -19,7 +19,7 @@ class ZipdirError(RuntimeError):
 #  @param infolist: list of ZipInfo objects already contained in the zip archive
 #
 #  @return: tuple of (added, modified, untouched, removed) entries in the directory with respect to the zip file
-#  
+#
 def _zipChanges(directory, infolist):
     # gets the dates of the files in the zip archive
     infos = {}
@@ -28,17 +28,20 @@ def _zipChanges(directory, infolist):
         if fn.endswith(".pyc"):
             fn = fn[:-1]
         infos[fn] = i.date_time
-    
+
     # gets the changes
     added = []
     modified = []
     untouched = []
     removed = []
     all_files = set()
-    
+
     log = logging.getLogger("zipdir")
     dirlen = len(directory) + 1
-    for root, _dirs, files in os.walk(directory):
+    for root, dirs, files in os.walk(directory):
+        if "lib-dynload" in dirs:
+            # exclude the directory containing binary modules
+            dirs.remove("lib-dynload")
         arcdir = root[dirlen:]
         for f in files:
             ext = os.path.splitext(f)[1]
@@ -79,7 +82,7 @@ def zipdir(directory, no_pyc = False):
         msg += " (without pre-compilation)"
     log.info(msg, directory)
     filename = os.path.realpath(directory + ".zip")
-    
+
     # Open the file in read an update mode
     if os.path.exists(filename):
         zipFile = open(filename, "r+b")
@@ -88,7 +91,7 @@ def zipdir(directory, no_pyc = False):
         # "append mode" ensures that, in case of two processes trying to
         # create the file, they do not truncate each other file
         zipFile = open(filename, "ab")
-    
+
     locker.lock(zipFile)
     try:
         if zipfile.is_zipfile(filename):
@@ -133,14 +136,14 @@ def main(argv = None):
                       help = "do not print info messages")
     parser.add_option("--debug", action = "store_true",
                       help = "print debug messages (has priority over --quiet)")
-    
+
     if argv is None:
         argv = sys.argv
     opts, args = parser.parse_args(argv[1:])
-    
+
     if not args:
         parser.error("Specify at least one directory to zip")
-    
+
     # Initialize the logging module
     level = logging.INFO
     if opts.quiet:
@@ -148,9 +151,9 @@ def main(argv = None):
     if opts.debug:
         level = logging.DEBUG
     logging.basicConfig(level = level)
-    
+
     if "GAUDI_BUILD_LOCK" in os.environ:
-        _scopedLock = locker.LockFile(os.environ["GAUDI_BUILD_LOCK"], temporary =  True) 
+        _scopedLock = locker.LockFile(os.environ["GAUDI_BUILD_LOCK"], temporary =  True)
     # zip all the directories passed as arguments
     for d in args:
         zipdir(d, opts.no_pyc)

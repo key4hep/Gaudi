@@ -167,5 +167,3 @@ Test2             SUCCESS  #WARNINGS   = 1        Message = 'RootOnTES option is
 EventLoopMgr         INFO Histograms converted successfully according to request.
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyVertex instances:0
-Number of MyTrack instances:0

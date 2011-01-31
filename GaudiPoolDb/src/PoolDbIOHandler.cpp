@@ -163,7 +163,7 @@ void PoolDbIOHandler<SmartRefBase>::put(TBuffer &b, void* obj) {
       m_root->WriteBuffer(b, obj);
       return;
     }
-    else if ( pDO ) {
+    else {
       LinkManager* mgr = curr->linkMgr();
       IRegistry*   reg = pDO->registry();
       if ( reg && mgr )  {
@@ -171,9 +171,6 @@ void PoolDbIOHandler<SmartRefBase>::put(TBuffer &b, void* obj) {
         last_link_hint   = hint;
         last_link_object = pDO;
       }
-    }
-    else {
-      hint = link = StreamBuffer::INVALID;
     }
   }
   //if ( hint == StreamBuffer::INVALID )  {

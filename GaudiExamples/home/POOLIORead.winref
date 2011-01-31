@@ -2441,5 +2441,3 @@ PoolRootEvtCnvSvc    INFO Disconnected data IO:68D46351-5F2E-DE11-88AB-AB48B2B65
 PoolRootEvtCnvSvc    INFO Disconnected data IO:80392851-5F2E-DE11-88AB-AB48B2B65F5C[POOLIO.dst]
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyTrack instances:0
-Number of MyVertex instances:0

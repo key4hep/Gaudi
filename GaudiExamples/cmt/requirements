@@ -1,20 +1,20 @@
 package GaudiExamples
-version v21r11
+version v22r0
 
-use ROOT         v* LCG_Interfaces
-use Reflex       v* LCG_Interfaces -no_auto_imports
-use AIDA         v* LCG_Interfaces
+use ROOT         * LCG_Interfaces
+use Reflex       * LCG_Interfaces -no_auto_imports
+use AIDA         * LCG_Interfaces
 
-use Gaudi        v*
+use Gaudi        *
 
-use PartPropSvc  v* -no_auto_imports
-use GaudiPoolDb  v* -no_auto_imports
-use GaudiPython  v* -no_auto_imports
-use GaudiGSL     v*
-use RootHistCnv  v* -no_auto_imports
+use PartPropSvc  * -no_auto_imports
+use GaudiPoolDb  * -no_auto_imports
+use GaudiPython  * -no_auto_imports
+use GaudiGSL     *
+use RootHistCnv  * -no_auto_imports
 
-use Boost v* LCG_Interfaces
-use HepPDT	v*	LCG_Interfaces
+use Boost * LCG_Interfaces
+use HepPDT * LCG_Interfaces
 
 include_dirs $(GAUDIEXAMPLESROOT)/src/Lib
 
@@ -117,7 +117,7 @@ macro_append ROOT_linkopts        "" \
 #------------------------------------------------------------------------------
 # Create a python binary module
 # -----------------------------
-use Python v* LCG_Interfaces -no_auto_imports
+use Python * LCG_Interfaces -no_auto_imports
 apply_pattern pyd_boost_module module=PyExample files=PythonModule/*.cpp
 # we do not need/want to link the module against the package library
 macro_remove PyExample_use_linkopts '$(GaudiExamples_linkopts)'

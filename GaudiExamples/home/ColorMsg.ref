@@ -117,5 +117,3 @@ ApplicationMgr    SUCCESS
 [92;1mServiceManager      DEBUG ---- EventLoopMgr (refCount = 3)[m
 [96;1mApplicationMgr       INFO Application Manager Finalized successfully[m
 [96;1mApplicationMgr       INFO Application Manager Terminated successfully[m
-Number of MyVertex instances:0
-Number of MyTrack instances:0

@@ -211,7 +211,7 @@ void Gaudi::Histogram1D::copyFromAida(const AIDA::IHistogram1D & h) {
 #endif
 
 StreamBuffer& Gaudi::Histogram1D::serialize(StreamBuffer& s) {
-  DataObject::serialize(s);
+  //DataObject::serialize(s);
   std::string title;
   int size;
   s >> size;
@@ -258,7 +258,7 @@ StreamBuffer& Gaudi::Histogram1D::serialize(StreamBuffer& s) {
 }
 
 StreamBuffer& Gaudi::Histogram1D::serialize(StreamBuffer& s) const {
-  DataObject::serialize(s);
+  //DataObject::serialize(s);
   s << static_cast<int>( annotation().size() );
   for (int i = 0; i < annotation().size(); i++) {
     s << annotation().key(i);
@@ -285,4 +285,3 @@ StreamBuffer& Gaudi::Histogram1D::serialize(StreamBuffer& s) const {
   s << stats[0] << stats[1] << stats[2] << stats[3];
   return s;
 }
-

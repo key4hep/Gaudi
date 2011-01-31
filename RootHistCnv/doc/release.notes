@@ -1,6 +1,10 @@
 Package: RootHistCnv
 Package manager : David Quarrie
 
+============================= RootHistCnv v10r6 ==============================
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+
 ============================= RootHistCnv v10r5 ==============================
 ! 2010-09-22 - Marco Clemencic
  - Fixed bug #71216: Gaudi crashes when output nTuple file cannot be written

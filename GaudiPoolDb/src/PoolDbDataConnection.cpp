@@ -52,7 +52,9 @@ PoolDbDataConnection::~PoolDbDataConnection()         {
 /// Open data stream
 StatusCode PoolDbDataConnection::i_connect()  {
   DbAccessMode mode = (DbAccessMode)m_mode;
-  bool open_existing = isEqualMode(mode,pool::READ)||isEqualMode(mode,pool::UPDATE)||(1<<4);
+  // Note: (1<<4) means RECREATE existing: We need to get the GUID in order to not
+  //       create a new one, if the catalog is pre-allocated
+  bool open_existing = isEqualMode(mode,pool::READ)||isEqualMode(mode,pool::UPDATE|(1<<4));
   m_dbH = DbDatabase(m_domH.find(fid()));
   if ( !m_dbH.isValid() )  {
     std::string true_fid;

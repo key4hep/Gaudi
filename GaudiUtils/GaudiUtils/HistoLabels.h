@@ -12,7 +12,7 @@ namespace AIDA
   class IHistogram2D;
   class IProfile1D;
   class IProfile2D;
-};
+}
 
 namespace Gaudi
 {
