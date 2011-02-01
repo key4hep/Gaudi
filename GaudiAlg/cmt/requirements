@@ -1,18 +1,18 @@
-# $Id: requirements,v 1.73 2008/11/10 18:48:45 marcocle Exp $ 
+# $Id: requirements,v 1.73 2008/11/10 18:48:45 marcocle Exp $
 # =============================================================================
 package GaudiAlg
 version v13r5
 
-# ============== structure ====================================================	
+# ============== structure ====================================================
 branches        GaudiAlg src cmt doc
 
 # ============== dependencies =================================================
-use             GaudiKernel * 
-use             GaudiUtils  * 
+use             GaudiKernel *
+use             GaudiUtils  *
 use		ROOT	    * LCG_Interfaces
 use             AIDA        * LCG_Interfaces -no_auto_imports
 use             Boost       * LCG_Interfaces -no_auto_imports
- 
+
 # ============== own includes =================================================
 apply_pattern install_more_includes more="GaudiAlg"
 # ============== constituents =================================================
@@ -22,13 +22,3 @@ library         GaudiAlg    components/*.cpp -import=AIDA -no_static
 # ============== patterns =====================================================
 apply_pattern   linker_library    library="GaudiAlgLib"
 apply_pattern   component_library library="GaudiAlg"
-
-private
-##############################################################################
-# Intel compiler support
-### Disable some non interesting "remarks" (inspired by CoolKernel)
-# Non permanent
-#  - warning #1125:  function "C::X()" is hidden by "Y::X" -- virtual function override intended?
-#                    (coming from ISequencerTimerTool methods start, stop and name)
-macro_append cppflags '' no-hide-warnings '' target-icc '-wd1125 '
-end_private
