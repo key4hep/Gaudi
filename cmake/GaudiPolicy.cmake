@@ -31,25 +31,25 @@ include(CMakeMacroParseArguments)
 if(MSVC90)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS /wd4275 /wd4251 /wd4351)
   add_definitions(-DBOOST_ALL_DYN_LINK -DBOOST_ALL_NO_LIB)
-  add_definitions(-DGAUDI_V20_COMPAT)  
+  add_definitions(-DGAUDI_V20_COMPAT)
   add_definitions(/nologo)
-  set(CMAKE_CXX_FLAGS_DEBUG "/D_NDEBUG /MD /Zi /Ob0 /Od /RTC1") 
+  set(CMAKE_CXX_FLAGS_DEBUG "/D_NDEBUG /MD /Zi /Ob0 /Od /RTC1")
 else()
   set(CMAKE_CXX_FLAGS "-Dunix -pipe -ansi -Wall -Wextra -pthread  -Wno-deprecated -Wwrite-strings -Wpointer-arith -Wno-long-long")
   add_definitions(-D_GNU_SOURCE -DGAUDI_V20_COMPAT)
 endif()
 
 if(BUILD_DLLEXPORT_LIBS)
-  add_definitions(-DG21_HIDE_SYMBOLS)    
+  add_definitions(-DG21_HIDE_SYMBOLS)
 endif()
 
-if (CMAKE_SYSTEM_NAME MATCHES Linux) 
+if (CMAKE_SYSTEM_NAME MATCHES Linux)
   set(CMAKE_CXX_FLAGS "-Dlinux ${CMAKE_CXX_FLAGS}")
 endif()
 
 
 #---Link shared flags--------------------------------------------------------------------------------
-if (CMAKE_SYSTEM_NAME MATCHES Linux) 
+if (CMAKE_SYSTEM_NAME MATCHES Linux)
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000")
   set(CMAKE_MODULE_LINKER_FLAGS "-Wl,--as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000")
 endif()
@@ -65,13 +65,13 @@ elseif(APPLE)
   set(ld_library_path DYLD_LIBRARY_PATH)
 else()
   set(ld_library_path LD_LIBRARY_PATH)
-endif() 
+endif()
 
 find_package(Python)
 if(WIN32)
-  set(python_cmd ${Python_home}/python CACHE FILEPATH "Path to the python command") 
+  set(python_cmd ${Python_home}/python CACHE FILEPATH "Path to the python command")
 else()
-  set(python_cmd ${Python_home}/bin/python CACHE FILEPATH "Path to the python command") 
+  set(python_cmd ${Python_home}/bin/python CACHE FILEPATH "Path to the python command")
 endif()
 
 if(CMAKE_PROJECT_NAME STREQUAL GAUDI)
@@ -99,21 +99,21 @@ endif()
 #---------------------------------------------------------------------------------------------------
 #---REFLEX_GENERATE_DICTIONARY( dictionary headerfiles selectionfile OPTIONS opt1 opt2 ...)
 #---------------------------------------------------------------------------------------------------
-macro(REFLEX_GENERATE_DICTIONARY dictionary _headerfiles _selectionfile)  
+macro(REFLEX_GENERATE_DICTIONARY dictionary _headerfiles _selectionfile)
   find_package(GCCXML)
   find_package(ROOT)
-  PARSE_ARGUMENTS(ARG "OPTIONS" "" ${ARGN})  
-  if( IS_ABSOLUTE ${_selectionfile}) 
+  PARSE_ARGUMENTS(ARG "OPTIONS" "" ${ARGN})
+  if( IS_ABSOLUTE ${_selectionfile})
    set( selectionfile ${_selectionfile})
-  else() 
-   set( selectionfile ${CMAKE_CURRENT_SOURCE_DIR}/${_selectionfile}) 
+  else()
+   set( selectionfile ${CMAKE_CURRENT_SOURCE_DIR}/${_selectionfile})
   endif()
-  if( IS_ABSOLUTE ${_headerfiles}) 
+  if( IS_ABSOLUTE ${_headerfiles})
     set( headerfiles ${_headerfiles})
   else()
     set( headerfiles ${CMAKE_CURRENT_SOURCE_DIR}/${_headerfiles})
   endif()
- 
+
   set(gensrcdict ${dictionary}_dict.cpp)
 
   if(MSVC)
@@ -122,32 +122,32 @@ macro(REFLEX_GENERATE_DICTIONARY dictionary _headerfiles _selectionfile)
     #set(gccxmlopts "--gccxmlopt=\'--gccxml-cxxflags -m64 \'")
     set(gccxmlopts)
   endif()
-  
+
   set(rootmapname ${dictionary}Dict.rootmap)
   set(rootmapopts --rootmap=${rootmapname} --rootmap-lib=${libprefix}${dictionary}Dict)
 
   set(include_dirs -I${CMAKE_CURRENT_SOURCE_DIR})
   get_directory_property(_incdirs INCLUDE_DIRECTORIES)
-  foreach( d ${_incdirs})    
+  foreach( d ${_incdirs})
    set(include_dirs ${include_dirs} -I${d})
   endforeach()
 
   get_directory_property(_defs COMPILE_DEFINITIONS)
-  foreach( d ${_defs})    
+  foreach( d ${_defs})
    set(definitions ${definitions} -D${d})
   endforeach()
 
   add_custom_command(
-    OUTPUT ${gensrcdict} ${rootmapname}     
-    COMMAND ${ROOT_genreflex_cmd}       
+    OUTPUT ${gensrcdict} ${rootmapname}
+    COMMAND ${ROOT_genreflex_cmd}
     ARGS ${headerfiles} -o ${gensrcdict} ${gccxmlopts} ${rootmapopts} --select=${selectionfile}
          --gccxmlpath=${GCCXML_home}/bin ${ARG_OPTIONS} ${include_dirs} ${definitions}
-    DEPENDS ${headerfiles} ${selectionfile})  
+    DEPENDS ${headerfiles} ${selectionfile})
 
   # Creating this target at ALL level enables the possibility to generate dictionaries (genreflex step)
-  # well before the dependent libraries of the dictionary are build  
+  # well before the dependent libraries of the dictionary are build
   add_custom_target(${dictionary}Gen ALL DEPENDS ${gensrcdict})
- 
+
 endmacro()
 
 #---------------------------------------------------------------------------------------------------
@@ -205,7 +205,7 @@ function(GAUDI_GENERATE_ROOTMAP library)
   endif()
 
   add_custom_command( OUTPUT ${rootmapfile}
-                      COMMAND ${genmap_command} -i ${fulllibname} -o ${rootmapfile} 
+                      COMMAND ${genmap_command} -i ${fulllibname} -o ${rootmapfile}
                       DEPENDS ${library} )
   add_custom_target( ${library}Rootmap ALL DEPENDS  ${rootmapfile})
   #----Installation details-------------------------------------------------------
@@ -235,12 +235,12 @@ function(GAUDI_GENERATE_CONFIGURATION library)
     SET_RUNTIME_PATH(path PATH)
     set(genconf_command ${cmdwrap_cmd} ${path} ${genconf_cmd} )
   else()
-    SET_RUNTIME_PATH(path LD_LIBRARY_PATH)  
+    SET_RUNTIME_PATH(path LD_LIBRARY_PATH)
     set(genconf_command ${ld_library_path}=.:${path}:$ENV{${ld_library_path}} ${genconf_cmd} )
   endif()
-  add_custom_command( 
+  add_custom_command(
     OUTPUT ${outdir}/${library}_confDb.py
-		COMMAND ${genconf_command} ${library_preload} -o ${outdir} -p ${package} 
+		COMMAND ${genconf_command} ${library_preload} -o ${outdir} -p ${package}
 				--configurable-module=${confModuleName}
 				--configurable-default-name=${confDefaultName}
 				--configurable-algorithm=${confAlgorithm}
@@ -255,7 +255,7 @@ function(GAUDI_GENERATE_CONFIGURATION library)
   set(srcConf ${outdir}/${library}_confDb.py)
   install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/genConf/ DESTINATION python PATTERN "*.stamp" EXCLUDE PATTERN "*.pyc" EXCLUDE )
   install(CODE "EXECUTE_PROCESS(COMMAND ${merge_conf_cmd} --do-merge --input-file ${srcConf} --merged-file ${mergedConf})")
-  GAUDI_INSTALL_PYTHON_INIT()  
+  GAUDI_INSTALL_PYTHON_INIT()
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -266,7 +266,7 @@ function(GAUDI_LINKER_LIBRARY library)
   set(lib_srcs)
   foreach( fp ${ARG_DEFAULT_ARGS})
     file(GLOB files src/${fp})
-    if(files) 
+    if(files)
       set( lib_srcs ${lib_srcs} ${files})
     else()
       set( lib_srcs ${lib_srcs} ${fp})
@@ -275,7 +275,7 @@ function(GAUDI_LINKER_LIBRARY library)
   if(WIN32 AND NOT BUILD_DLLEXPORT_LIBS AND NOT ARG_DLLEXPORT)
 	add_library( ${library}-arc STATIC EXCLUDE_FROM_ALL ${lib_srcs})
     set_target_properties(${library}-arc PROPERTIES COMPILE_FLAGS -DGAUDI_LINKER_LIBRARY )
-    add_custom_command( 
+    add_custom_command(
       OUTPUT ${library}.def
 	  COMMAND ${genwindef_cmd} -o ${library}.def -l ${library} ${LIBRARY_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/${library}-arc.lib
 	  DEPENDS ${library}-arc genwindef)
@@ -290,11 +290,11 @@ function(GAUDI_LINKER_LIBRARY library)
     target_link_libraries(${library} ${ARG_LIBRARIES})
   endif()
   if(TARGET ${library}Obj2doth)
-    add_dependencies( ${library} ${library}Obj2doth) 
+    add_dependencies( ${library} ${library}Obj2doth)
   endif()
   #----Installation details-------------------------------------------------------
   install(TARGETS ${library} EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION  ${lib})
-  install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake) 
+  install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -303,9 +303,9 @@ endfunction()
 function(GAUDI_COMPONENT_LIBRARY library)
   PARSE_ARGUMENTS(ARG "LIBRARIES" "" ${ARGN})
   set(lib_srcs)
-  foreach( fp ${ARG_DEFAULT_ARGS})  
+  foreach( fp ${ARG_DEFAULT_ARGS})
     file(GLOB files src/${fp})
-    if(files) 
+    if(files)
       set( lib_srcs ${lib_srcs} ${files})
     else()
       set( lib_srcs ${lib_srcs} ${fp})
@@ -326,9 +326,9 @@ endfunction()
 function(GAUDI_PYTHON_MODULE module)
   PARSE_ARGUMENTS(ARG "LIBRARIES" "" ${ARGN})
   set(lib_srcs)
-  foreach( fp ${ARG_DEFAULT_ARGS})  
+  foreach( fp ${ARG_DEFAULT_ARGS})
     file(GLOB files src/${fp})
-    if(files) 
+    if(files)
       set( lib_srcs ${lib_srcs} ${files})
     else()
       set( lib_srcs ${lib_srcs} ${fp})
@@ -339,10 +339,10 @@ function(GAUDI_PYTHON_MODULE module)
     set_target_properties( ${module} PROPERTIES SUFFIX .pyd PREFIX "")
   else()
     set_target_properties( ${module} PROPERTIES SUFFIX .so PREFIX "")
-  endif() 
+  endif()
   target_link_libraries(${module} ${Python_LIBRARIES} ${ARG_LIBRARIES})
   #----Installation details-------------------------------------------------------
-  install(TARGETS ${module} LIBRARY DESTINATION python-bin)
+  install(TARGETS ${module} LIBRARY DESTINATION python/lib-dynload)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -351,9 +351,9 @@ endfunction()
 function(GAUDI_EXECUTABLE executable)
   PARSE_ARGUMENTS(ARG "LIBRARIES" "" ${ARGN})
   set(exe_srcs)
-  foreach( fp ${ARG_DEFAULT_ARGS})  
+  foreach( fp ${ARG_DEFAULT_ARGS})
     file(GLOB files src/${fp})
-    if(files) 
+    if(files)
       set( exe_srcs ${exe_srcs} ${files})
     else()
       set( exe_srcs ${exe_srcs} ${fp})
@@ -364,7 +364,7 @@ function(GAUDI_EXECUTABLE executable)
   set_target_properties(${executable} PROPERTIES SUFFIX .exe)
   #----Installation details-------------------------------------------------------
   install(TARGETS ${executable} EXPORT ${CMAKE_PROJECT_NAME}Exports RUNTIME DESTINATION ${bin})
-  install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake) 
+  install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake)
 
 endfunction()
 
@@ -374,9 +374,9 @@ endfunction()
 function(GAUDI_UNIT_TEST executable)
   PARSE_ARGUMENTS(ARG "LIBRARIES" "" ${ARGN})
   set(exe_srcs)
-  foreach( fp ${ARG_DEFAULT_ARGS})  
+  foreach( fp ${ARG_DEFAULT_ARGS})
     file(GLOB files src/${fp})
-    if(files) 
+    if(files)
       set( exe_srcs ${exe_srcs} ${files})
     else()
       set( exe_srcs ${exe_srcs} ${fp})
@@ -404,14 +404,14 @@ function(GAUDI_FRAMEWORK_TEST name)
   if(BUILD_TESTS)
     PARSE_ARGUMENTS(ARG "ENVIRONMENT" "" ${ARGN})
     foreach( optfile  ${ARG_DEFAULT_ARGS} )
-      if( IS_ABSOLUTE ${optfile}) 
+      if( IS_ABSOLUTE ${optfile})
         set( optfiles ${optfiles} ${optfile})
-      else() 
-        set( optfiles ${optfiles} ${CMAKE_CURRENT_SOURCE_DIR}/${optfile}) 
+      else()
+        set( optfiles ${optfiles} ${CMAKE_CURRENT_SOURCE_DIR}/${optfile})
       endif()
     endforeach()
     add_test(${name} ${CMAKE_INSTALL_PREFIX}/scripts/testwrap${ssuffix} ${CMAKE_INSTALL_PREFIX}/setup${ssuffix} "." ${gaudirun} ${optfiles})
-    set_property(TEST ${name} PROPERTY ENVIRONMENT 
+    set_property(TEST ${name} PROPERTY ENVIRONMENT
       LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:$ENV{LD_LIBRARY_PATH}
       ${ARG_ENVIRONMENT})
   endif()
@@ -430,17 +430,17 @@ function(GAUDI_QMTEST_TEST name)
       set(tests ${name})
     endif()
     GAUDI_USE_PACKAGE(QMtest)
-    add_test(${name} ${CMAKE_INSTALL_PREFIX}/scripts/testwrap${ssuffix} ${CMAKE_INSTALL_PREFIX}/setup${ssuffix} 
-                     ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest 
+    add_test(${name} ${CMAKE_INSTALL_PREFIX}/scripts/testwrap${ssuffix} ${CMAKE_INSTALL_PREFIX}/setup${ssuffix}
+                     ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
                      qmtest run ${tests})
-    set_property(TEST ${name} PROPERTY ENVIRONMENT 
+    set_property(TEST ${name} PROPERTY ENVIRONMENT
       LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:$ENV{LD_LIBRARY_PATH}
       QMTEST_CLASS_PATH=${CMAKE_SOURCE_DIR}/GaudiPolicy/qmtest_classes
       ${ARG_ENVIRONMENT})
-    install(CODE "if( NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest/QMTest) 
-                    execute_process(COMMAND  ${CMAKE_INSTALL_PREFIX}/scripts/testwrap${ssuffix}  
+    install(CODE "if( NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest/QMTest)
+                    execute_process(COMMAND  ${CMAKE_INSTALL_PREFIX}/scripts/testwrap${ssuffix}
                                              ${CMAKE_INSTALL_PREFIX}/setup${ssuffix}
-                                             ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest 
+                                             ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
                                              qmtest create-tdb )
                   endif()")
   endif()
@@ -455,7 +455,7 @@ function(GAUDI_INSTALL_HEADERS)
   else()
     get_filename_component(dirs ${CMAKE_CURRENT_SOURCE_DIR} NAME)
   endif()
-  foreach( inc ${dirs})  
+  foreach( inc ${dirs})
     install(DIRECTORY ${inc} DESTINATION include PATTERN ".svn" EXCLUDE )
   endforeach()
 endfunction()
@@ -463,9 +463,9 @@ endfunction()
 #---------------------------------------------------------------------------------------------------
 #---GAUDI_INSTALL_PYTHON_MODULES( )
 #---------------------------------------------------------------------------------------------------
-function(GAUDI_INSTALL_PYTHON_MODULES)  
+function(GAUDI_INSTALL_PYTHON_MODULES)
   get_filename_component(package ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-  install(DIRECTORY python/ DESTINATION python 
+  install(DIRECTORY python/ DESTINATION python
           PATTERN ".svn" EXCLUDE
           PATTERN "*.pyc" EXCLUDE )
   GAUDI_INSTALL_PYTHON_INIT()
@@ -475,11 +475,11 @@ endfunction()
 #---------------------------------------------------------------------------------------------------
 #---GAUDI_INSTALL_PYTHON_INIT( )
 #---------------------------------------------------------------------------------------------------
-function(GAUDI_INSTALL_PYTHON_INIT)    
+function(GAUDI_INSTALL_PYTHON_INIT)
   get_filename_component(package ${CMAKE_CURRENT_SOURCE_DIR} NAME)
   install(CODE "if (NOT EXISTS \"${CMAKE_INSTALL_PREFIX}/python/${package}/__init__.py\")
                   file(INSTALL DESTINATION \"${CMAKE_INSTALL_PREFIX}/python/${package}\"
-                               TYPE FILE 
+                               TYPE FILE
                                FILES \"${GAUDI_SOURCE_DIR}/GaudiPolicy/cmt/fragments/__init__.py\"  )
                 endif()" )
   GAUDI_ZIP_PYTHON_MODULES()
@@ -489,16 +489,16 @@ endfunction()
 #---GAUDI_ZIP_PYTHON_MODULES( )
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_ZIP_PYTHON_MODULES)
-  install(CODE "execute_process(COMMAND  ${zippythondir_cmd} --quiet ${CMAKE_INSTALL_PREFIX}/python)")  
-endfunction()    
+  install(CODE "execute_process(COMMAND  ${zippythondir_cmd} --quiet ${CMAKE_INSTALL_PREFIX}/python)")
+endfunction()
 
 #---------------------------------------------------------------------------------------------------
 #---GAUDI_INSTALL_SCRIPTS( )
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_INSTALL_SCRIPTS)
-  install(DIRECTORY scripts/ DESTINATION scripts 
+  install(DIRECTORY scripts/ DESTINATION scripts
           FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
-                           GROUP_EXECUTE GROUP_READ 
+                           GROUP_EXECUTE GROUP_READ
           PATTERN ".svn" EXCLUDE
           PATTERN "*.pyc" EXCLUDE )
 endfunction()
@@ -508,7 +508,7 @@ endfunction()
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_INSTALL_JOBOPTIONS)
   get_filename_component(package ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-  install(FILES ${ARGN} DESTINATION jobOptions/${package}) 
+  install(FILES ${ARGN} DESTINATION jobOptions/${package})
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -527,7 +527,7 @@ endfunction()
 #---------------------------------------------------------------------------------------------------
 macro( GAUDI_USE_PACKAGE package )
   if( EXISTS ${CMAKE_SOURCE_DIR}/${package}/CMakeLists.txt)
-    include_directories( ${CMAKE_SOURCE_DIR}/${package} ) 
+    include_directories( ${CMAKE_SOURCE_DIR}/${package} )
     file(READ ${CMAKE_SOURCE_DIR}/${package}/CMakeLists.txt file_contents)
     string( REGEX MATCHALL "GAUDI_USE_PACKAGE[ ]*[(][ ]*([^ )])+" vars ${file_contents})
     foreach( var ${vars})
@@ -542,8 +542,8 @@ macro( GAUDI_USE_PACKAGE package )
     else()
       set(${package}_environment  ${${package}_environment} )
     endif()
-    include_directories( ${${package}_INCLUDE_DIRS} ) 
-    link_directories( ${${package}_LIBRARY_DIRS} ) 
+    include_directories( ${${package}_INCLUDE_DIRS} )
+    link_directories( ${${package}_LIBRARY_DIRS} )
   endif()
 endmacro()
 
@@ -595,9 +595,9 @@ function( GAUDI_BUILD_PROJECT_SETUP )
     endif()
   endforeach()
   #---Installation---------------------------------------------------------------------------------
-  install(FILES ${setup}  DESTINATION . 
-                          PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ 
-                                      GROUP_EXECUTE GROUP_READ 
+  install(FILES ${setup}  DESTINATION .
+                          PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+                                      GROUP_EXECUTE GROUP_READ
                                       WORLD_EXECUTE WORLD_READ )
 endfunction()
 
@@ -622,7 +622,7 @@ function( GAUDI_BUILD_PACKAGE_SETUP setup package envlist )
         file(APPEND ${setup} "  setenv ${var} ${val}:\${${var}}\n")
         file(APPEND ${setup} "else\n")
         file(APPEND ${setup} "  setenv ${var} ${val}\n")
-        file(APPEND ${setup} "endif\n")      
+        file(APPEND ${setup} "endif\n")
 	  endif()
     elseif ( env MATCHES ".*=.*")
       string(REGEX REPLACE "([^=+]+)=.*" "\\1" var ${env})
@@ -632,6 +632,6 @@ function( GAUDI_BUILD_PACKAGE_SETUP setup package envlist )
 	  else()
         file(APPEND ${setup} "setenv ${var} ${val}\n")
 	  endif()
-   endif() 
+   endif()
   endforeach()
 endfunction()

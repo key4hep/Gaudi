@@ -1,7 +1,7 @@
 from Gaudi.Configuration import *
 from GaudiPython import AppMgr, gbl
 from ROOT import TFile, TBufferFile, TBuffer
-from processing import Process, Queue
+from multiprocessing import Process, Queue
 
 import sys, sets
 

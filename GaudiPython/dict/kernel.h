@@ -76,9 +76,6 @@
 #include "GaudiUtils/HistoStats.h"
 #include "GaudiUtils/HistoDump.h"
 
-#include "GaudiPython/PyROOTPickle.h"
-#include "GaudiPython/TESSerializer.h"
-
 #include <iostream>
 #include <istream>
 #include <sstream>

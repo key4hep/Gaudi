@@ -1,5 +1,5 @@
 package GaudiKernel
-version v27r11
+version v27r12
 author "LHCb Gaudi Team"
 
 branches GaudiKernel cmt doc src
@@ -10,9 +10,9 @@ private
 apply_tag skip_genconfuser
 end_private
 
-use GaudiPolicy  v*
-use Reflex       v*   LCG_Interfaces
-use Boost        v*   LCG_Interfaces
+use GaudiPolicy  *
+use Reflex       *   LCG_Interfaces
+use Boost        *   LCG_Interfaces
 
 apply_pattern install_more_includes more=GaudiKernel
 
@@ -32,7 +32,7 @@ macro GaudiKernelDict_use_linkopts $(use_linkopts)
 # MCl: ensure that the headers are installed before the build of the dictionary (should not be needed)
 macro_append GaudiKernelGen_dependencies "install_more_includes"
 
-#-----Generate Configurables 
+#-----Generate Configurables
 macro genconfig_cmd           $(GAUDIKERNELROOT)/$(tag)/genconf.exe \
      GAUDI_with_installarea  genconf.exe \
      GAUDIATLAS_with_installarea  genconf.exe
@@ -53,14 +53,16 @@ macro_append cppflags "" \
          target-winxp ""
 
 ## For Gaudi::Sleep and Gaudi::NanoSleep
-macro_append Boost_linkopts ' $(Boost_linkopts_thread) $(Boost_linkopts_date_time)' 
+macro_append Boost_linkopts ' $(Boost_linkopts_thread) $(Boost_linkopts_date_time)'
 
 ## For DirSearchPath
 macro_append Boost_linkopts ' $(Boost_linkopts_system) $(Boost_linkopts_filesystem) '
 
 application DirSearchPath_test -group=tests ../tests/src/DirSearchPath_test.cpp
 
-use CppUnit v* LCG_Interfaces -no_auto_imports
+application PathResolver_test -group=tests ../tests/src/PathResolver_test.cpp
+
+use CppUnit * LCG_Interfaces -no_auto_imports
 
 application test_SerializeSTL -group=tests -import=CppUnit \
                        ../tests/src/test_SerializeSTL.cpp

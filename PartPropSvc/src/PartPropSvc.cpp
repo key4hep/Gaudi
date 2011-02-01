@@ -22,21 +22,11 @@
 
 using namespace std;
 
-// Instantiation of a static factory class used by clients to create
-//  instances of this service
-DECLARE_SERVICE_FACTORY(PartPropSvc);
-
 inline void toupper(std::string &s)
 {
-    std::string::iterator it=s.begin();
-    while(it != s.end())
-    {
-        *it = toupper(*it);
-        it++;
-    }
+  std::transform(s.begin(), s.end(), s.begin(),
+                 (int(*)(int)) toupper);
 }
-
-
 
 //*************************************************************************//
 
@@ -58,8 +48,6 @@ PartPropSvc::~PartPropSvc() {
 StatusCode
 PartPropSvc::initialize() {
 
-  std::vector<std::string>::const_iterator itr;
-
   StatusCode status = Service::initialize();
   m_log.setLevel( m_outputLevel.value() );
 
@@ -67,6 +55,109 @@ PartPropSvc::initialize() {
     m_log << MSG::ERROR << "Could not initialize main svc" << endmsg;
     return StatusCode::FAILURE;
   }
+
+
+  std::string key = m_pdtFiles.value();
+
+  Tokenizer tok(true);
+
+  tok.analyse( key, " ", "", "", "=", "", "");
+
+  for ( Tokenizer::Items::iterator i = tok.items().begin();
+	i != tok.items().end(); i++)    {
+    const std::string& fname = (*i).tag();
+
+    // see if input file exists in $DATAPATH
+    std::string rfile = System::PathResolver::find_file(fname,"DATAPATH");
+    if (rfile == "") {
+      m_log << MSG::ERROR << "Could not find PDT file: \"" << fname
+	    << "\" in $DATAPATH" << endmsg;
+      return StatusCode::FAILURE;
+    }
+
+
+    // is the file readable?
+    std::ifstream pdfile( rfile.c_str() );
+    if (!pdfile) {
+      m_log << MSG::ERROR << "Could not open PDT file: \"" << rfile
+	    << "\"" << endmsg;
+      return StatusCode::FAILURE;
+    }
+
+    std::string val,VAL;
+    val = (*i).value();
+    VAL = val;
+    toupper(VAL);
+
+    // default: no type specified, assume PDG
+    if (val == fname) {
+      m_log << MSG::INFO << "No table format type specified for \"" << fname
+	    << "\". Assuming PDG" << endmsg;
+      VAL = "PDG";
+    }
+
+    bool (*pF)  (std::istream &,
+		 HepPDT::TableBuilder &);
+    try {
+      pF = parseTableType(VAL);
+    } catch (...) {
+      m_log << MSG::ERROR
+	    << "Could not determine Particle Property table type: \""
+	    << val << "\" for file \"" << fname << "\"" << endmsg;
+      return StatusCode::FAILURE;
+    }
+
+    m_log << MSG::DEBUG << "Adding PDT file \"" << rfile << "\" type "
+	  << VAL << endmsg;
+
+    m_inputs.push_back( make_pair<std::string, bool(*) (std::istream&,HepPDT::TableBuilder&)>( rfile, pF ) );
+
+  }
+
+
+  return status;
+}
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+StatusCode
+PartPropSvc::reinitialize() {
+
+  return StatusCode::SUCCESS;
+
+}
+
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+StatusCode
+PartPropSvc::finalize() {
+
+  if (m_pdt != 0) {
+    delete m_pdt;
+    m_pdt = 0;
+  }
+
+  if (m_upid_local && m_upid != 0) {
+    m_upid_local = false;
+    // This will cause a memory leak, but we can't delete it as the
+    // destructor of HepPDT::processUnknownID is protected.
+    // We need this though to call reinitialize successfully.
+    m_upid = 0;
+  }
+
+  MsgStream m_log( msgSvc(), name() );
+  StatusCode status = Service::finalize();
+
+  if ( status.isSuccess() )
+    m_log << MSG::DEBUG << "Service finalised successfully" << endmsg;
+
+  return status;
+}
+
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+bool
+(*PartPropSvc::parseTableType(std::string& typ))(std::istream&,
+						 HepPDT::TableBuilder&) {
 
 
   std::string key = m_pdtFiles.value();
@@ -276,6 +367,8 @@ PartPropSvc::setUnknownParticleHandler(HepPDT::ProcessUnknownID* puid,
 
 }
 
-
+// Instantiation of a static factory class used by clients to create
+//  instances of this service
+DECLARE_SERVICE_FACTORY(PartPropSvc)
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//

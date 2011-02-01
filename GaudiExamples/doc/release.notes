@@ -1,6 +1,31 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v22r0 =============================
+! 2011-01-20 - Marco Clemencic
+ - Added a test for bug #74981.
+
+! 2011-01-19 - Markus Frank
+ - Fixes for bug #77109.  Remove calls to DataObject::serialize.
+   (patch #4613)
+
+! 2011-01-17 - Brett Viren, Marco Clemencic
+ - Fixed bug #75996: Support for CLHEP 2.0
+   Added a "using namespace CLHEP".
+
+! 2011-01-17 - Marco Clemencic
+ - Bug #76642: Strange behaviour of InputCopyStream
+   Added a test to validate the new behavior of InputCopyStream (fail if
+   called after OutputStream).
+
+! 2011-01-12 - Marco Clemencic
+ - Fixed bug #76395: spurious count printouts in MyTrack and MyVertex classes
+   Modified MyTrack and MyVertex to print the count of lost instances only
+   if different from 0.
+
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+
 ============================ GaudiExamples v21r11 ============================
 ! 2010-09-22 - Marco Clemencic
  - Added test for bug #71216

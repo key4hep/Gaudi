@@ -168,5 +168,3 @@ TH1.Print Name  = profile, Entries= 0, Total sum= 0
 *............................................................................*
 ApplicationMgr       INFO Application Manager Finalized successfully[m
 ApplicationMgr       INFO Application Manager Terminated successfully[m
-Number of MyVertex instances:0
-Number of MyTrack instances:0

@@ -30,8 +30,9 @@
 
 using namespace Genfun;
 
-// Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY(EqSolverIAlg)
+// Handle CLHEP 2.0.x move to CLHEP namespace
+namespace CLHEP { }
+using namespace CLHEP;
 
 //=============================================================================
 // Standard constructor, initializes variables
@@ -244,3 +245,5 @@ StatusCode EqSolverIAlg::finalize() {
 }
 
 //=============================================================================
+// Declaration of the Algorithm Factory
+DECLARE_ALGORITHM_FACTORY(EqSolverIAlg)

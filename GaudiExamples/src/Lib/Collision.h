@@ -52,14 +52,12 @@ namespace Gaudi {
 
     /// Serialize the object for writing
     inline StreamBuffer& Collision::serialize( StreamBuffer& s ) const {
-      DataObject::serialize(s);
       return s << m_collision;
     }
 
 
     /// Serialize the object for reading
     inline StreamBuffer& Collision::serialize( StreamBuffer& s ) {
-      DataObject::serialize(s);
       return s >> m_collision;
     }
 

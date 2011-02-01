@@ -87,7 +87,7 @@ class IDataProviderSvc;
  * @author  M.Frank
  * @version 1.0
  */
-class DataOnDemandSvc: public extends1<Service, IIncidentListener> 
+class DataOnDemandSvc: public extends1<Service, IIncidentListener>
 {
 public:
   // ==========================================================================
@@ -122,30 +122,30 @@ public:
     /// trivial object? DataObject?
     bool          dataObject ;                  // trivial object? DataObject?
     // =======================================================================
-    Node() 
-      : clazz      (       ) 
-      , executing  ( false ) 
+    Node()
+      : clazz      (       )
+      , executing  ( false )
       , name       (       )
-      , num        ( 0     )  
-      , dataObject ( false ) 
+      , num        ( 0     )
+      , dataObject ( false )
     {}
     // ========================================================================
-    Node ( ClassH             c , 
-           bool               e , 
+    Node ( ClassH             c ,
+           bool               e ,
            const std::string& n )
       : clazz     ( c )
       , executing ( e )
       , name      ( n )
       , num       ( 0 )
-      , dataObject ( "DataObject" == n ) 
+      , dataObject ( "DataObject" == n )
     {}
     //
     Node( const Node& c )
       : clazz      ( c.clazz      )
       , executing  ( c.executing  )
-      , name       ( c.name       ) 
-      , num        ( c.num        )  
-      , dataObject ( c.dataObject ) 
+      , name       ( c.name       )
+      , num        ( c.num        )
+      , dataObject ( c.dataObject )
     {}
     // ========================================================================
   };
@@ -183,7 +183,7 @@ public:
    *  @param   svc    [IN]    Pointer to service locator
    *  @return Reference to DataOnDemandSvc object.
    */
-  DataOnDemandSvc 
+  DataOnDemandSvc
   ( const std::string& name ,                    //       Service instance name
     ISvcLocator*       svc  ) ;                  //  Pointer to service locator
   /// Standard destructor.
@@ -225,8 +225,8 @@ public:
   void update_1 ( Property& p ) ;
   void update_2 ( Property& p ) ;
   void update_3 ( Property& p ) ;
-  /// update handler for 'Dump' property 
-  void update_dump ( Property& /* p */ ) ;// update handler for 'Dump' property 
+  /// update handler for 'Dump' property
+  void update_dump ( Property& /* p */ ) ;// update handler for 'Dump' property
   // ==========================================================================
 protected:
   // ==========================================================================
@@ -260,8 +260,11 @@ private:
   bool              m_partialPath;
   /// flag to force the printout
   bool              m_dump ;
-  /// flag to warm up the configuration 
+  /// flag to warm up the configuration
   bool              m_init ;
+  /// flag to allow DataOnDemand initialization to succeed even if the
+  /// (pre)initialization of the algorithms fails (m_init).
+  bool              m_allowInitFailure;
   /// Mapping to algorithms
   Setup             m_algMapping;
   /// Mapping to nodes
@@ -284,7 +287,7 @@ private:
   ulonglong          m_statAlg         ;
   ulonglong          m_statNode        ;
   ulonglong          m_stat            ;
-  // ==========================================================================  
+  // ==========================================================================
   ChronoEntity       m_timer_nodes     ;
   ChronoEntity       m_timer_algs      ;
   ChronoEntity       m_timer_all       ;

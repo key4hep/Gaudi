@@ -132,5 +132,4 @@ PoolRootTreeEvt...   INFO Disconnected data IO:80392851-5F2E-DE11-88AB-AB48B2B65
 EvtTupleSvc.Eve...   INFO Disconnected data IO:D8A361F7-672E-DE11-93DE-DF537B2BE706[POOLIO.tags]
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyTrack instances:1
-Number of MyVertex instances:0
+Number of MyTrack instances:2

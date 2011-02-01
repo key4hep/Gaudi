@@ -1,6 +1,47 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v27r12 =============================
+! 2011-01-19 - Markus Frank
+ - Fixes for bug #77109.
+   Add a virtual "update()" method to the DataObject.
+   This method should then be called unconditionally by converters.
+   Remove the obsolete "serialize()" methods.
+   Apply this method to the keyed containers and replace the
+   existing "configureDirectAccess()" method with "update()".
+   (patch #4613)
+
+! 2011-01-14 - Markus Frank
+ - Patch #4607: Do not store process id.
+   ProcessDescriptor.cpp Do not locally store the process id (pid).
+   This causes problems e.g. after a call to fork(), because the data
+   accessed are those of the parent process, not the newly created process.
+
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+
+! 2011-01-07 - Marco Cattaneo
+ - Locally disable few ICC remarks.
+
+! 2011-01-06 - Marco Clemencic
+ - removed extra ';'
+ - added QMTest wrapper for PathResolver_test and fixed compilation errors on
+   windows
+
+============================= GaudiKernel v27r11p1 =============================
+! 2010-12-05 - Charles Leggett
+ - Added PathResolver tests as per patch #4394
+   M cmt/requirements
+   A tests/PathResolver/...
+   A tests/src/PathResolver_test.cpp
+ - bug #76057: PathResolver looks for file as if fully specified first
+   M src/Lib/PathResolver.cpp
+
+! 2010-12-01 - Marco Clemencic
+ - Fixed bug #70770: inconsistent order of stop/finalize of sub-algorithms
+   As suggested, modified the order in which the sub-algorithms are stopped
+   to match the order in which they are finalized.
+
 ============================= GaudiKernel v27r11 =============================
 ! 2010-09-20 - Marco Clemencic
  - Fixed bug #70956: Add method to find the reason for termination of the

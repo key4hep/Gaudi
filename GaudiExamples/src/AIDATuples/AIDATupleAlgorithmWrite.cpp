@@ -11,9 +11,9 @@
 #include "CLHEP/Random/RandGauss.h"
 #include "CLHEP/Random/DRand48Engine.h"
 
-// Static factory declaration
-
-DECLARE_ALGORITHM_FACTORY(AIDATupleAlgorithmWrite)
+// Handle CLHEP 2.0.x move to CLHEP namespace
+namespace CLHEP { }
+using namespace CLHEP;
 
 //--------------------------------------------------------
 AIDATupleAlgorithmWrite::AIDATupleAlgorithmWrite(const std::string& name,
@@ -96,3 +96,6 @@ StatusCode AIDATupleAlgorithmWrite::finalize()
 
 	return StatusCode::SUCCESS;
 }
+
+// Static factory declaration
+DECLARE_ALGORITHM_FACTORY(AIDATupleAlgorithmWrite)

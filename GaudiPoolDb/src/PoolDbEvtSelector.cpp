@@ -376,12 +376,12 @@ PoolDbEvtSelector::resetCriteria(const std::string& criteria,
     std::string rest = db;
     ctxt->files().clear();
     while(true)  {
-      int ipos = rest.find_first_not_of(" ,");
-      if (ipos == -1 ) break;
+      size_t ipos = rest.find_first_not_of(" ,");
+      if (ipos == std::string::npos ) break;
       rest = rest.substr(ipos, std::string::npos);// remove blanks before
-      int lpos  = rest.find_first_of(" ,");       // locate next blank
+      size_t lpos  = rest.find_first_of(" ,");       // locate next blank
       ctxt->files().push_back( rest.substr(0,lpos )); // insert in list
-      if (lpos == -1 ) break;
+      if (lpos == std::string::npos ) break;
       rest = rest.substr(lpos, std::string::npos);// get the rest
     }
     ctxt->setFileIterator(ctxt->files().begin());

@@ -338,7 +338,7 @@ void DataListenerSvc::handle (const Incident& Inc)
     try {
       Log4.open("MonitorLog.txt", std::ios::trunc);
       XMLLog.open(("./log" + stringConverter(fileCounter)  + ".xml").c_str() , std::ios::trunc);
-    } catch(std::exception /*&e*/) {
+    } catch(std::exception &/*e*/) {
       msg << MSG::INFO
 	  << "Log File could not be opened, no monitoring available"
 	  << endmsg;

@@ -334,5 +334,3 @@ ToolSvc.TestPub...   INFO destructor has been called
 MyGaudiAlg.Priv...   INFO destructor has been called
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyVertex instances:0
-Number of MyTrack instances:0

@@ -268,5 +268,3 @@ DataListenerSvc     DEBUG ApMon deleted
 DataListenerSvc      INFO finalized successfully
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyTrack instances:0
-Number of MyVertex instances:0

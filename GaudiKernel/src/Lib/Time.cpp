@@ -80,7 +80,7 @@ Time::Time( int year, int month, int day,
             ValueType nsecs,
             bool local /* = true */ ) {
   tm val;
-  memset (&val, sizeof (val), 0);
+  memset (&val, 0, sizeof (val));
   val.tm_sec = sec;
   val.tm_min = min;
   val.tm_hour = hour;
@@ -221,7 +221,7 @@ bool Time::isdst (bool local) const {
     status (that is, tm.tm_isdst for the effective local time).  */
 Time::ValueType Time::utcoffset (int *daylight /* = 0 */) const {
   ValueType n = 0;
-  
+
 #ifndef WIN32
   tm localtm = local ();
   n = localtm.tm_gmtoff;
@@ -232,10 +232,10 @@ Time::ValueType Time::utcoffset (int *daylight /* = 0 */) const {
   tm		localtm = *localtime (&utctime);
   int		savedaylight = localtm.tm_isdst;
   tm		gmt = *gmtime (&utctime);
-  
+
   gmt.tm_isdst = savedaylight;
   n = utctime - mktime (&gmt);
-  
+
   if (daylight) *daylight = savedaylight;
 #endif
   return n * SEC_NSECS;
@@ -258,14 +258,14 @@ std::string Time::format (bool local, const std::string &spec) const {
   std::string	result;
   tm		time = split (local);
   int		length = 0;
-  
+
   do
   {
     // Guess how much we'll expand.  If we go wrong, we'll expand again.
     result.resize (result.size() ? result.size()*2 : spec.size()*2, 0);
     length = ::strftime (&result[0], result.size(), spec.c_str(), &time);
   } while (! length);
-  
+
   result.resize (length);
   return result;
 }
@@ -283,10 +283,10 @@ std::string Time::format (bool local, const std::string &spec) const {
 std::string Time::nanoformat (int minwidth /* = 1 */, int maxwidth /* = 9 */) const {
   TimeAssert( (minwidth >= 1) && (minwidth <= maxwidth) && (maxwidth <= 9),
               "nanoformat options do not satisfy: 1 <= minwidth <= maxwidth <= 9");
-  
+
   // Calculate the nanosecond fraction.  This will be < 1000000000.
   int value = (int)(m_nsecs % SEC_NSECS);
-  
+
   // Calculate modulus by which we truncate value.  If maxwidth is
   // say 3, we want to mask of the last 6 digits.
   int modulus = 1;
@@ -298,7 +298,7 @@ std::string Time::nanoformat (int minwidth /* = 1 */, int maxwidth /* = 9 */) co
   value -= rem;
   if (rem > modulus / 2)
     value += modulus;
-  
+
   // Format it, then strip off digits from the right as long as
   // we zeroes.  The above guarantees enough zeroes on right to
   // satisfy maxwidth so we need to concern ourselves only about
@@ -308,7 +308,7 @@ std::string Time::nanoformat (int minwidth /* = 1 */, int maxwidth /* = 9 */) co
   sprintf (buf, "%09d", value);
   while (p > buf + minwidth - 1 && *p == '0')
     *p-- = '\0';
-  
+
   return buf;
 }
 
@@ -317,7 +317,7 @@ std::string Time::nanoformat (int minwidth /* = 1 */, int maxwidth /* = 9 */) co
 unsigned Time::toDosDate (Time time) {
   // Use local time since DOS does too.
   struct tm localtm = time.local ();
-  
+
   unsigned mday = localtm.tm_mday;
   unsigned mon  = localtm.tm_mon + 1;
   unsigned year = (localtm.tm_year > 80 ? localtm.tm_year - 80 : 0);
@@ -343,7 +343,7 @@ Time Time::fromDosDate (unsigned dosDate) {
   localtm.tm_min   = (dosDate >> 5) & 0x3f;
   localtm.tm_sec   = (dosDate & 0x1f) * 2;
   localtm.tm_isdst = -1;
-  
+
   return Time (mktime (&localtm), 0);
 }
 
