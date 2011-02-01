@@ -1,13 +1,13 @@
-# $Id: requirements,v 1.11 2008/11/10 18:54:35 marcocle Exp $
+# $Id: requirements,v 1.11 2008/11/10 18:54:35 marcocle Exp $ 
 # =============================================================================
 package GaudiUtils
 version v3r11
 
-# ============== structure ====================================================
+# ============== structure ====================================================	
 branches        GaudiUtils src cmt doc
 
 # ============== dependencies =================================================
-use             GaudiKernel *
+use             GaudiKernel * 
 
 use             ROOT        * LCG_Interfaces
 use             AIDA        * LCG_Interfaces -no_auto_imports
@@ -27,7 +27,7 @@ apply_pattern component_library library=GaudiUtils
 # ============== patterns =====================================================
 
 
-private
+private 
 
 macro_append ROOT_linkopts " -lHist " \
               target-winxp " libHist.lib " \

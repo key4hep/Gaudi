@@ -73,7 +73,7 @@ namespace GaudiAlg
     /// Returns the numerical ID
     inline NumericID        numericID() const { return m_nID; }
     /// Return ID as string, for both numeric and literal IDs
-    LiteralID idAsString() const ;
+    GAUDI_API LiteralID idAsString() const ;
     /// cast operator to std::string
     operator std::string () const { return idAsString () ; }
     /** @brief Implement the operator ==
@@ -104,7 +104,7 @@ namespace GaudiAlg
         idAsString () < id.idAsString() ;
     }
     // ========================================================================
-    std::ostream& fillStream ( std::ostream& s ) const ;
+    GAUDI_API std::ostream& fillStream ( std::ostream& s ) const ;
     // ========================================================================
   public:
     // ========================================================================

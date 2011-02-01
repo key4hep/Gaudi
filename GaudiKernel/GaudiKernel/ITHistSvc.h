@@ -16,7 +16,7 @@ class TList;
 class TDirectory;
 class TGraph;
 
-class ITHistSvc: virtual public IService {
+class GAUDI_API ITHistSvc: virtual public IService {
 
 public:
   /// InterfaceID

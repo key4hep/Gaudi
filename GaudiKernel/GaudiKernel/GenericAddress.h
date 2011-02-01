@@ -18,7 +18,7 @@ class IRegistry;
     @author Markus Frank
     @version 1.0
 */
-class GenericAddress: public IOpaqueAddress  {
+class GAUDI_API GenericAddress: public IOpaqueAddress  {
 protected:
   /// Reference count
   unsigned long   m_refCount;

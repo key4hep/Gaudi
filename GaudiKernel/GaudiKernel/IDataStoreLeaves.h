@@ -12,7 +12,7 @@ class DataObject;
  *
  *  @author Marco Clemencic
  */
-class IDataStoreLeaves: virtual public IAlgTool {
+class GAUDI_API IDataStoreLeaves: virtual public IAlgTool {
 
 public:
   /// InterfaceID

@@ -35,12 +35,6 @@
 class Algorithm ; // GaudiKernel
 class AlgTool   ; // GaudiKernel
 namespace Gaudi { namespace Utils { template <class TYPE> struct GetData ; } }
-
-// Disable warning on windows
-#ifdef _WIN32
-#pragma warning ( disable:4661 ) // incomplete explicit templates
-#endif
-
 // ============================================================================
 /*  @file GaudiCommon.h
  *
@@ -63,7 +57,7 @@ namespace Gaudi { namespace Utils { template <class TYPE> struct GetData ; } }
  */
 // ============================================================================
 template < class PBASE >
-class GaudiCommon: public PBASE
+class GAUDI_API GaudiCommon: public PBASE
 {
 protected: // definitions
   /** Simple definition to be used with the new useRootInTES argument get<TYPE>

@@ -172,7 +172,7 @@ private:
  *  @author Marco CLEMENCIC
  *  @date   2005-03-30
  */
-class IUpdateManagerSvc: virtual public IInterface {
+class GAUDI_API IUpdateManagerSvc: virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID(IUpdateManagerSvc,2,0);

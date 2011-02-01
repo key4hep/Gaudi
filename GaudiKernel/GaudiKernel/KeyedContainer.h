@@ -61,7 +61,7 @@ namespace GaudiDict  {
  *
  */
 template <class DATATYPE, class MAPPING=Containers::HashMap >
-class KeyedContainer: public ObjectContainerBase
+class GAUDI_API KeyedContainer: public ObjectContainerBase
 {
   friend struct GaudiDict::KeyedContainerDict<DATATYPE>;
 

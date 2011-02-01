@@ -26,7 +26,7 @@ namespace GaudiDict  {
  *
  */
 template < class KEY >
-class KeyedObject: public ContainedObject {
+class GAUDI_API KeyedObject: public ContainedObject {
   friend struct GaudiDict::KeyedObjectDict<KEY>;
 public:
   /// Definition of the key-type to access object

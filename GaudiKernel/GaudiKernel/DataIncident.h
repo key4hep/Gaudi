@@ -13,7 +13,7 @@
  * @version  1.0
  */
 template<class T>
-class ContextIncident: public Incident {
+class GAUDI_API ContextIncident: public Incident {
 public:
   /// Initializing Constructor
   /** @param source   [IN]  Incident source (service or algorithm name)

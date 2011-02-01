@@ -16,7 +16,7 @@ namespace Gaudi {
    *
    *  @author  Marco Clemencic
    */
-  class ISignalMonitor: virtual public IInterface {
+  class GAUDI_API ISignalMonitor: virtual public IInterface {
   public:
     /// InterfaceID
     DeclareInterfaceID(ISignalMonitor, 1, 0);

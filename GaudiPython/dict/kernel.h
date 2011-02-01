@@ -30,7 +30,7 @@
 #endif
 
 // Force visibility of the classes
-//#define class class GAUDI_API
+#define class class GAUDI_API
 #ifdef _WIN32
 #include "AIDA/IAnnotation.h"
 #endif
@@ -41,7 +41,7 @@
 #include "AIDA/IProfile1D.h"
 #include "AIDA/IProfile2D.h"
 #include "AIDA/IAxis.h"
-//#undef class
+#undef class
 
 #include "GaudiPython/Helpers.h"
 
@@ -67,7 +67,7 @@
 #include "GaudiAlg/ITupleTool.h"
 #include "GaudiAlg/ISequencerTimerTool.h"
 // Added to avoid warnings about inlined functions never implemented.
-//#include "GaudiAlg/GaudiHistos.icpp"
+#include "GaudiAlg/GaudiHistos.icpp"
 
 #include "GaudiUtils/Aida2ROOT.h"
 #include "GaudiUtils/IFileCatalog.h"

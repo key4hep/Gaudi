@@ -41,7 +41,12 @@ public:
   */
   GaudiException( const std::string& Message,
                   const std::string& Tag,
-                  const StatusCode & Code );
+                  const StatusCode & Code )
+    : m_message    ( Message    )
+    , m_tag        ( Tag        )
+    , m_code       ( Code       )
+    , m_previous   (     0      )
+    { s_proc = true; }
 
   /** Constructor (2)
       @param Message error message
@@ -52,7 +57,12 @@ public:
   GaudiException( const std::string&     Message    ,
                   const std::string&     Tag        ,
                   const StatusCode &     Code       ,
-                  const GaudiException&  Exception  );
+                  const GaudiException&  Exception  )
+    : m_message    ( Message            )
+    , m_tag        ( Tag                )
+    , m_code       ( Code               )
+    , m_previous   ( Exception.clone()  )
+    {}
 
   /** Constructor (3)
       @param Message error message
@@ -63,49 +73,101 @@ public:
   GaudiException( const std::string&     Message    ,
                   const std::string&     Tag        ,
                   const StatusCode &     Code       ,
-                  const std::exception&  Exception  );
+                  const std::exception&  Exception  )
+    : m_message    ( Message    )
+    , m_tag        ( Tag        )
+    , m_code       ( Code       )
+    , m_previous   (     0      )
+    {
+      s_proc = true;
+      m_message += ": " + System::typeinfoName(typeid(Exception)) + ", " +
+                   Exception.what();
+    }
 
   /// Copy constructor (deep copying!)
-  GaudiException( const GaudiException& Exception );
+  GaudiException( const GaudiException& Exception ) : std::exception(Exception)
+  {
+    s_proc     = true;
+    m_message  =   Exception.message() ;
+    m_tag      =   Exception.tag    () ;
+    m_code     =   Exception.code   () ;
+    m_previous = ( 0 == Exception.previous() ) ?
+      0 : Exception.previous()->clone() ;
+  }
 
   /// destructor (perform the deletion of "previous" field!)
-  virtual ~GaudiException() throw();
+  virtual ~GaudiException() throw() {
+    m_code.setChecked();
+    if( 0 != m_previous ) { delete m_previous ; m_previous = 0 ; }
+    s_proc = false;
+  }
 
   /// assignment operator
-  GaudiException& operator=( const GaudiException& Exception );
+  GaudiException& operator=( const GaudiException& Exception ) {
+    if ( &Exception == this ) { return *this; }
+    m_message  =   Exception.message() ;
+    m_tag      =   Exception.tag    () ;
+    m_code     =   Exception.code   () ;
+    if( 0 != m_previous ) { delete m_previous; m_previous = 0 ; }
+    m_previous = ( 0 == Exception.previous() ) ?
+      0 : Exception.previous()->clone() ;
+    return *this;
+  }
 
   ///  error message to be printed
-  virtual const std::string&    message   () const;
+  virtual const std::string&    message   () const { return m_message; }
 
   /// update the error message to be printed
-  virtual const std::string&    setMessage( const std::string& newMessage );
+  virtual const std::string&    setMessage( const std::string& newMessage ) {
+    m_message = newMessage; return message() ;
+  }
 
   ///  name tag for the exception, or exception type
-  virtual const std::string&    tag       () const;
+  virtual const std::string&    tag       () const { return m_tag; }
 
   /// update name tag
-  virtual const std::string&    setTag    ( const std::string& newTag     );
+  virtual const std::string&    setTag    ( const std::string& newTag     ) {
+    m_tag = newTag ; return tag() ;
+  }
 
   /// StatusCode for Exception
-  virtual const StatusCode&     code      () const ;
+  virtual const StatusCode&     code      () const { return m_code; }
 
   ///  update the status code for the exception
-  virtual const StatusCode&     setCode   ( const StatusCode& newStatus  );
+  virtual const StatusCode&     setCode   ( const StatusCode& newStatus  ) {
+    m_code = newStatus; return code() ;
+  }
 
   /// get the previous exception ( "previous" element in the linked list)
-  virtual GaudiException*       previous  () const;
+  virtual GaudiException*       previous  () const { return m_previous ; }
 
   /// methods  for overloaded printout to std::ostream& and MsgStream&
-  virtual std::ostream& printOut  ( std::ostream& os = std::cerr ) const;
+  virtual std::ostream& printOut  ( std::ostream& os = std::cerr ) const {
+    os << tag() << " \t " << message() ;
+    switch( code() ) {
+      case StatusCode::SUCCESS : os << "\t StatusCode=SUCCESS"    ;  break ;
+      case StatusCode::FAILURE : os << "\t StatusCode=FAILURE"    ;  break ;
+      default                  : os << "\t StatusCode=" << code() ;  break ;
+    }
+    return ( 0 != previous() ) ? previous()->printOut( os << std::endl ) : os ;
+  };
 
   /// Output the exception to the Gaudi MsgStream
-  virtual MsgStream& printOut ( MsgStream& os ) const;
+  virtual MsgStream& printOut ( MsgStream& os ) const {
+    os << tag() << "\t" << message() ;
+    switch( code() ) {
+	    case StatusCode::SUCCESS : os << "\t StatusCode=SUCCESS"    ;  break ;
+	    case StatusCode::FAILURE : os << "\t StatusCode=FAILURE"    ;  break ;
+	    default                  : os << "\t StatusCode=" << code().getCode() ;  break ;
+    }
+    return ( 0 != previous() ) ? previous()->printOut( os << endmsg ) : os ;
+  }
 
   /// clone operation
-  virtual GaudiException* clone() const;
+  virtual GaudiException* clone() const { return new GaudiException(*this); };
 
   /// method from std::exception
-  virtual const char* what () const throw();
+  virtual const char* what () const throw() { return message().c_str() ; }
 protected:
   mutable std::string     m_message ;  /// error message
   mutable std::string     m_tag     ;  /// exception tag

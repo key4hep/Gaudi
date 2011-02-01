@@ -8,9 +8,6 @@ use GaudiSys *
 # Provide the processing module to be able to run gaudi parallel.
 use pytools * LCG_Interfaces -no_auto_imports
 
-# Provide the processing module to be able to run gaudi parallel.
-use pytools v* LCG_Interfaces -no_auto_imports
-
 apply_pattern ProjectVersionHeader
 
 apply_pattern install_scripts

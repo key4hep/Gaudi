@@ -145,7 +145,7 @@ private:
 /// Version for one interface.
 /// @author Marco Clemencic
 template <typename I1>
-struct implements1: virtual public extend_interfaces1<I1> {
+struct GAUDI_API implements1: virtual public extend_interfaces1<I1> {
   /// Typedef to this class.
   typedef implements1 base_class;
   /// Typedef to the base of this class.
@@ -179,7 +179,7 @@ struct GAUDI_API implements2: virtual public extend_interfaces2<I1,I2> {
 /// Version for three interfaces.
 /// @author Marco Clemencic
 template <typename I1, typename I2, typename I3>
-struct implements3: virtual public extend_interfaces3<I1,I2,I3> {
+struct GAUDI_API implements3: virtual public extend_interfaces3<I1,I2,I3> {
   /// Typedef to this class.
   typedef implements3 base_class;
   /// Typedef to the base of this class.
@@ -196,7 +196,7 @@ struct implements3: virtual public extend_interfaces3<I1,I2,I3> {
 /// Version for four interfaces.
 /// @author Marco Clemencic
 template <typename I1, typename I2, typename I3, typename I4>
-struct implements4: virtual public extend_interfaces4<I1,I2,I3,I4> {
+struct GAUDI_API implements4: virtual public extend_interfaces4<I1,I2,I3,I4> {
   /// Typedef to this class.
   typedef implements4 base_class;
   /// Typedef to the base of this class.

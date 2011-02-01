@@ -124,10 +124,10 @@ namespace NTuple
   // ==========================================================================
   /** Abstract class describing a column in a N tuple.
    */
-  template <class TYP> class _Item : virtual public _Data<TYP>  {
+  template <class TYP> class GAUDI_API _Item : virtual public _Data<TYP>  {
   public:
     /// Create instance
-    GAUDI_API static _Item* create(INTuple* tup,
+    static _Item* create(INTuple* tup,
                          const std::string& name,
                          const std::type_info& info,
                          TYP min,
@@ -147,10 +147,10 @@ namespace NTuple
   // ==========================================================================
   /** Abstract class describing a column-array in a N tuple.
    */
-  template <class TYP> class _Array : virtual public _Data<TYP>  {
+  template <class TYP> class GAUDI_API _Array : virtual public _Data<TYP>  {
   public:
     /// Create instance
-    GAUDI_API static _Array* create(INTuple* tup,
+    static _Array* create(INTuple* tup,
                           const std::string& name,
                           const std::type_info& info,
                           const std::string& index,
@@ -181,13 +181,13 @@ namespace NTuple
   // ==========================================================================
   /** Abstract class describing a matrix column in a N tuple.
    */
-  template <class TYP> class _Matrix : virtual public _Data<TYP>    {
+  template <class TYP> class GAUDI_API _Matrix : virtual public _Data<TYP>    {
   protected:
     /// Number of rows per column
     long  m_rows;
   public:
     /// Create instance
-    GAUDI_API static _Matrix* create(INTuple* tup,
+    static _Matrix* create(INTuple* tup,
                            const std::string& name,
                            const std::type_info& info,
                            const std::string& index,

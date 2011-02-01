@@ -27,7 +27,7 @@ namespace Gaudi {
     *  @author M.Frank
     */
   template <class INTERFACE, class IMPLEMENTATION>
-  class Generic2D : virtual public INTERFACE, virtual public HistogramBase  {
+  class GAUDI_API Generic2D : virtual public INTERFACE, virtual public HistogramBase  {
   public:
     typedef Generic2D<INTERFACE,IMPLEMENTATION> Base;
 
