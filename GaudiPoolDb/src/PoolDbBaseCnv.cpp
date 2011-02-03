@@ -62,6 +62,20 @@ PLUGINSVC_FACTORY_WITH_ID( PoolDbBaseCnv,
                            ConverterID(POOL_StorageType,CLID_Any+CLID_ObjectVector),
                            IConverter*(long, CLID, ISvcLocator*) )
 
+PLUGINSVC_FACTORY_WITH_ID( PoolDbBaseCnv, 
+                           ConverterID(POOL_StorageType,CLID_Any + CLID_ObjectVector+0x00030000),
+                           IConverter*(long, CLID, ISvcLocator*) )
+PLUGINSVC_FACTORY_WITH_ID( PoolDbBaseCnv, 
+                           ConverterID(POOL_StorageType,CLID_Any + CLID_ObjectVector+0x00040000),
+                           IConverter*(long, CLID, ISvcLocator*) )
+PLUGINSVC_FACTORY_WITH_ID( PoolDbBaseCnv, 
+                           ConverterID(POOL_StorageType,CLID_Any + CLID_ObjectVector+0x00050000),
+                           IConverter*(long, CLID, ISvcLocator*) )
+PLUGINSVC_FACTORY_WITH_ID( PoolDbBaseCnv, 
+                           ConverterID(POOL_StorageType,CLID_Any | (1<<31)),
+                           IConverter*(long, CLID, ISvcLocator*) )
+
+
 class PoolDbObjectContext;
 static PoolDbObjectContext* s_context = 0;
 
@@ -549,7 +563,9 @@ StatusCode
 PoolDbBaseCnv::updateObjRefs(IOpaqueAddress* /*pAddr*/, DataObject* pObj)
 {
   if ( 0 != pObj )  {
-    if ( printLinks() )  {
+    // First call the reconfiguration callback
+    StatusCode sc = pObj->update();
+    if ( sc.isSuccess() && printLinks() )  {
       MsgStream log(msgSvc(), "updateObjRefs");
       LinkManager* mgr = pObj->linkMgr();
       std::string id = pObj->registry()->identifier();
@@ -558,7 +574,7 @@ PoolDbBaseCnv::updateObjRefs(IOpaqueAddress* /*pAddr*/, DataObject* pObj)
         log << MSG::ALWAYS << "GET> " << id << "[" << i << "] = " << lnk->path() << endmsg;
       }
     }
-    return StatusCode::SUCCESS;
+    return sc;
   }
   return makeError("updateObjRefs> Invalid object reference.");
 }

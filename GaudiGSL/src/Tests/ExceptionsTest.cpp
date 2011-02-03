@@ -2,7 +2,7 @@
 // ============================================================================
 // Include files
 // ============================================================================
-// STD & STL 
+// STD & STL
 // ============================================================================
 #include <math.h>
 #include <stdio.h>
@@ -22,53 +22,56 @@
 // ============================================================================
 #include "CLHEP/GenericFunctions/Sin.hh"
 // ============================================================================
+// Handle CLHEP 2.0.x move to CLHEP namespace
+namespace CLHEP { }
+using namespace CLHEP;
 
 // ============================================================================
-/** @file 
- *  
- *  Test file for the class NumericalDerivative 
- * 
- *  @date 2003-08-31 
+/** @file
+ *
+ *  Test file for the class NumericalDerivative
+ *
+ *  @date 2003-08-31
  *  @author Vanya  BELYAEV Ivan.Belyaev@itep.ru
  */
 // ============================================================================
 
-int main() 
+int main()
 {
-  
+
   std::cout <<
-    " Test for embedded exceptions ( 2 exception shoudl be catched) " 
+    " Test for embedded exceptions ( 2 exception shoudl be catched) "
             << std::endl ;
-  
+
   try {
     const GaudiMath::Function&   mysin  = Genfun::Sin();
-    // the exception!!! showl be thrown!  
+    // the exception!!! showl be thrown!
     const GaudiMath::Function&   prim   = GaudiMath::Derivative( mysin , 5 );
     std::cout << "One should never see this line!! " << std::endl ;
     mysin + prim ;
   }
-  catch( const std::exception& e ) 
+  catch( const std::exception& e )
     {
-      std::cout << " OK 1) The exception is catched with 'what'='" 
+      std::cout << " OK 1) The exception is catched with 'what'='"
                 << e.what() << "'" << std::endl;
     }
-  
+
   try {
     const GaudiMath::Function&   mysin  = Genfun::Sin();
-    // the exception!!! showl be thrown!  
+    // the exception!!! showl be thrown!
     const GaudiMath::Function&   prim   = GaudiMath::Derivative( mysin , 10 );
-    std::cout << "One should never see this line!! " << std::endl ;    
+    std::cout << "One should never see this line!! " << std::endl ;
     mysin + prim ;
   }
-  catch( const GaudiException& e ) 
+  catch( const GaudiException& e )
     {
       std::cout << " OK 2) " << e << std::endl ;
     }
-  
+
   exit(0);
 
 }
 
 // ============================================================================
-// The END 
+// The END
 // ============================================================================

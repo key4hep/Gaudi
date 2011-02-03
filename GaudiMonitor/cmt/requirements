@@ -1,5 +1,5 @@
 package GaudiMonitor
-version v2r6
+version v2r7
 
 branches src cmt doc
 use GaudiKernel *

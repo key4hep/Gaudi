@@ -4,5 +4,9 @@
 ! Purpose     : Profiling and performance monitoring of Gaudi/LHCb software
 !-----------------------------------------------------------------------------
 
+============================== GaudiProfiling v1r0 ===========================
+! 2011-01-19 - Marco Clemencic
+ - Fixed ICC warnings.
+
 ! 2011-01-16 - Karol Kruzelecki
  - new package

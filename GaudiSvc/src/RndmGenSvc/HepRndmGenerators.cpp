@@ -41,6 +41,10 @@
 #include "CLHEP/Random/RandExponential.h"
 #include "CLHEP/Random/RandBreitWigner.h"
 
+// Handle CLHEP 2.0.x move to CLHEP namespace
+namespace CLHEP { }
+using namespace CLHEP;
+
 namespace HepRndm  {
 
   // Specialized shoot function for flat distributed random number generation

@@ -1,6 +1,34 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+============================== GaudiSvc v18r12 ===============================
+! 2011-01-20 - Marco Clemencic
+ - Fixed bug #74981: failure in algorithm initialization doesn't stop
+                     DataOnDemandSvc
+   Changed the behavior of the PreInitialize flag so that a failure can be
+   trapped at initialize time (a new flag can be used to restore the old
+   behavior).
+
+! 2011-01-19 - Markus Frank
+ - Fixes for bug #77109.
+   Remove call to "DataObject::serialize()" from H1D, since these are no
+   longer supported by the base class. Though keep methods to allow
+   e.g. sending histograms through sockets.
+   (patch #4613)
+
+! 2011-01-17 - Brett Viren, Marco Clemencic
+ - Fixed bug #75996: Support for CLHEP 2.0
+   Added a "using namespace CLHEP".
+
+! 2011-01-17 - Marco Clemencic
+ - Bug #76642: Strange behavior of InputCopyStream
+   Modified DataSvcFileEntriesTool to detect when the objects in the transient
+   store have changed the address between the BeginEvent incident and the
+   moment they collect the list of entries, so that an error is reported when
+   OutputStream is called before InputCopyStream. It doesn't fix the bug, but
+   it change the behavior such that we get an error instead of the wrong
+   output.
+
 ! 2011-01-11 - Marco Clemencic
  - Fixed some ICC remarks.
 

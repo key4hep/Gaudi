@@ -1,6 +1,7 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+============================== GaudiUtils v3r11 ==============================
 ! 2011-01-11 - Marco Clemencic
  - Fixed some ICC remarks.
 
