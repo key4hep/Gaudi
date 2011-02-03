@@ -26,5 +26,4 @@ endif()
 #---Installation------------------------------------------------------------
 GAUDI_INSTALL_HEADERS(GaudiPython)
 GAUDI_INSTALL_PYTHON_MODULES()
-GAUDI_INSTALL_SCRIPTS()
 
