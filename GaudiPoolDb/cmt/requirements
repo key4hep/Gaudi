@@ -1,15 +1,15 @@
 package GaudiPoolDb
-version v5r9
+version v5r10
 
 branches  cmt doc src GaudiPoolDb options main test
 
-use GaudiKernel  v*
-use GaudiUtils   v*
+use GaudiKernel  *
+use GaudiUtils   *
 #
-use POOL         v* LCG_Interfaces -no_auto_imports
-use CORAL        v* LCG_Interfaces -no_auto_imports
-use Reflex       v* LCG_Interfaces -no_auto_imports
-use RELAX        v* LCG_Interfaces -no_auto_imports
+use POOL         * LCG_Interfaces -no_auto_imports
+use CORAL        * LCG_Interfaces -no_auto_imports
+use Reflex       * LCG_Interfaces -no_auto_imports
+use RELAX        * LCG_Interfaces -no_auto_imports
 
 #===========================================================================
 apply_pattern install_more_includes more=GaudiPoolDb
@@ -34,7 +34,7 @@ path_append JOBOPTSEARCHPATH  ${GAUDIPOOLDBROOT}/options
 #===============================================================
 private
 
-use ROOT            v* LCG_Interfaces
+use ROOT            * LCG_Interfaces
 
 #===============================================================
 document reflex_dictionary_generator testGaudiPoolDbGen -group=tests $(GAUDIPOOLDBROOT)/test/dict.h dictionary=testGaudiPoolDb

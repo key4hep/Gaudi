@@ -170,7 +170,8 @@ StatusCode HistorySvc::initialize() {
 
   // create a weak dependency on the ToolSvc, so that it doesn't get deleted
   // before we're done with it in finalize
-  if (ServiceHandle<IToolSvc>("ToolSvc/ToolSvc",name()).retrieve().isFailure()) {
+  m_toolSvc = serviceLocator()->service("ToolSvc");
+  if (! m_toolSvc)  {
     m_log << MSG::ERROR << "could not retrieve the ToolSvc handle !"
 	  << endmsg;
     return StatusCode::FAILURE;
@@ -294,7 +295,7 @@ StatusCode HistorySvc::captureState() {
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode HistorySvc::finalize() {
+StatusCode HistorySvc::stop() {
 
   if (!m_activate) return StatusCode::SUCCESS;
 
@@ -317,6 +318,17 @@ StatusCode HistorySvc::finalize() {
     }
   }
 
+  clearState();
+
+  return StatusCode::SUCCESS;
+
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+StatusCode HistorySvc::finalize() {
+
+ 
   clearState();
 
   StatusCode status = Service::finalize();
@@ -451,7 +463,8 @@ HistorySvc::listProperties() const {
 
   m_log << MSG::INFO;
   m_log.setColor(MSG::CYAN);
-  m_log << "Dumping properties for all Algorithms" << endmsg;
+  m_log << "Dumping properties for all Algorithms (" << m_algmap.size() 
+	<< ")" << endmsg;
 
   std::map<const Algorithm*, AlgorithmHistory*>::const_iterator itr;
   for (itr=m_algmap.begin(); itr != m_algmap.end(); ++itr) {
@@ -463,10 +476,12 @@ HistorySvc::listProperties() const {
 
   m_log << MSG::INFO;
   m_log.setColor(MSG::CYAN);
-  m_log << "Dumping properties for all AlgTools" << endmsg;
+  m_log << "Dumping properties for all AlgTools (" << m_algtoolmap.size()
+	<< ")" << endmsg;
 
   std::map<const AlgTool*, AlgToolHistory*>::const_iterator itr_a;
   for (itr_a=m_algtoolmap.begin(); itr_a != m_algtoolmap.end(); ++itr_a) {
+    m_log << MSG::DEBUG << " --> " << itr_a->second->algtool_name() << endmsg;
     const AlgTool* alg = itr_a->first;
 
     listProperties( *alg ).ignore();
@@ -475,7 +490,8 @@ HistorySvc::listProperties() const {
 
   m_log << MSG::INFO;
   m_log.setColor(MSG::CYAN);
-  m_log << "Dumping properties for all Services" << endmsg;
+  m_log << "Dumping properties for all Services (" << m_svcmap.size()
+	<< ")" << endmsg;
 
   std::map<const IService*, ServiceHistory*>::const_iterator itr_s;
   for (itr_s=m_svcmap.begin(); itr_s != m_svcmap.end(); ++itr_s) {

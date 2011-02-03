@@ -70,5 +70,3 @@ TFile: name=ntuple.root, title=Gaudi Trees, option=CREATE
 NTupleSvc            INFO NTuples saved successfully
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyTrack instances:0
-Number of MyVertex instances:0

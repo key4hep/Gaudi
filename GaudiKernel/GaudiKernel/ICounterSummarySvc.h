@@ -34,7 +34,7 @@ namespace Gaudi
  *  @author Rob Lambert
  *  @date   2009-07-29
  */
-class ICounterSummarySvc: virtual public IService {
+class GAUDI_API ICounterSummarySvc: virtual public IService {
 
 public:
   /// InterfaceID

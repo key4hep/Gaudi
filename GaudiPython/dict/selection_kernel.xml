@@ -3,8 +3,6 @@
   <!--class pattern = "GaudiPython::Interface<*>"/-->
   <class pattern = "std::unary_function<*>"/>
   <class name    = "GaudiPython::Helper"/>
-  <class name    = "GaudiPython::PyROOTPickle"/>
-  <class name    = "GaudiPython::TESSerializer"/>
 
   <class name    = "std::vector<Property*>" />
   <class name    = "std::vector<const Property*>"/>

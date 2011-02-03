@@ -1,6 +1,6 @@
 #include "MyTrack.h"
 #include "GaudiKernel/KeyedContainer.h"
-#include "GaudiPoolDb/PoolDbKeyedContainerCnv.h"
+#include "GaudiPoolDb/PoolDbBaseCnv.h"
 #include "GaudiKernel/CnvFactory.h"
 
 /*
@@ -14,20 +14,20 @@ namespace Tests  {
     *
     *  Author:  M.Frank
     */
-  class MyTrackContainerCnv : public PoolDbKeyedContainerCnv    {
+  class MyTrackContainerCnv : public PoolDbBaseCnv    {
   public:
     typedef KeyedContainer<MyTrack> container_t;
 
     /// Standard Constructor
     MyTrackContainerCnv(const long typ,const CLID& clid, ISvcLocator* svc)
-    : PoolDbKeyedContainerCnv(typ,clid,svc) {                                 }
+    : PoolDbBaseCnv(typ,clid,svc) {                                 }
     /// Standard Destructor
     virtual ~MyTrackContainerCnv()          {                                 }
     /// Container's class ID (needed by the converter factory!)
     static const CLID& classID()            {  return container_t::classID(); }
     /// Update the references of an updated transient object.
     virtual StatusCode updateObjRefs(IOpaqueAddress* pAddr, DataObject* pObj)  {
-      StatusCode sc = PoolDbKeyedContainerCnv::updateObjRefs(pAddr, pObj);
+      StatusCode sc = PoolDbBaseCnv::updateObjRefs(pAddr, pObj);
       if ( sc.isSuccess() )  {
         container_t* c = dynamic_cast<container_t*>(pObj);
         if ( c )  {

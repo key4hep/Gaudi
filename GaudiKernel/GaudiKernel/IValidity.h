@@ -6,7 +6,7 @@ namespace Gaudi { class Time; }
 
 /// @class IValidity IValidity.h GaudiKernel/IValidity.h
 /// Interface for objects with a validity
-class IValidity {
+class GAUDI_API IValidity {
 public:
 
   /// Check if the object is valid (it can be always invalid).

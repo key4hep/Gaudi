@@ -64,7 +64,7 @@
   *  @author  Markus Frank
   *  @version 1.0
   */
-class IPartitionControl: virtual public IInterface {
+class GAUDI_API IPartitionControl: virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID(IPartitionControl,1,0);

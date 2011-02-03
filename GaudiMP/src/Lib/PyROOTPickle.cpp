@@ -1,5 +1,5 @@
 /**
- * @file GaudiPython/src/Lib/PyROOTPickle.cpp
+ * @file GaudiMP/src/Lib/PyROOTPickle.cpp
  * @author Wim Lavrijsen
  * @date Apr 2008
  * @brief Port pickling functionality while awaiting newer release.
@@ -11,7 +11,7 @@
 #pragma warning(disable:2259)
 #endif
 
-#include "GaudiPython/PyROOTPickle.h"
+#include "GaudiMP/PyROOTPickle.h"
 #include "Python.h"
 #include "TClass.h"
 #include "TClassRef.h"
@@ -24,7 +24,7 @@
 static PyObject* gExpand = 0;
 #endif
 
-namespace GaudiPython {
+namespace GaudiMP {
 
 #if ROOT_VERSION_CODE < ROOT_VERSION(5,19,0)
 
@@ -186,4 +186,4 @@ void PyROOTPickle::Initialize( PyObject*, PyObject* )
 
 #endif //  ROOT_VERSION_CODE < ROOT_VERSION(5,19,0)
 
-} // namespace GaudiPython
+} // namespace GaudiMP

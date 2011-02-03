@@ -69,19 +69,19 @@ StatusCode PartPropExa::finalize() {
 
 namespace HepPDT {
 
-CommonParticleData* 
+CommonParticleData*
 TestUnknownID::processUnknownID
-              ( ParticleID key, const ParticleDataTable & pdt ) { 
+              ( ParticleID key, const ParticleDataTable & pdt ) {
 
   std::cout << "TestUnknownID: " << key.PDTname() << std::endl;
 
   CommonParticleData * cpd = 0;
   if( key.isNucleus() ) {
-    
+
     // have to create a TempParticleData with all properties first
     TempParticleData tpd(key);
     // calculate approximate mass
-    // WARNING: any calls to particle() from here MUST reference 
+    // WARNING: any calls to particle() from here MUST reference
     //          a ParticleData which is already in the table
     // This convention is enforced.
     const ParticleData * proton = pdt.particle(2212);
@@ -93,7 +93,7 @@ TestUnknownID::processUnknownID
     }
   }
   return cpd;
-};
+}
 
 }
 

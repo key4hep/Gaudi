@@ -35,7 +35,7 @@ class ICnvFactory;
   - Version 1.2 Remove createReps, updateReps - replaced by interface IConverter
 
 */
-class IConversionSvc: virtual public IConverter {
+class GAUDI_API IConversionSvc: virtual public IConverter {
 public:
   /// InterfaceID
   DeclareInterfaceID(IConversionSvc,4,0);

@@ -12,7 +12,7 @@
     @author Markus Frank
     @version 1.0
 */
-class IDataSourceMgr: virtual public IInterface {
+class GAUDI_API IDataSourceMgr: virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID(IDataSourceMgr,2,0);

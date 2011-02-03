@@ -1,12 +1,12 @@
 package Gaudi
 
-version v21r11
+version v22r0
 branches doc cmt
 
-use GaudiSys v*
+use GaudiSys *
 
 # Provide the processing module to be able to run gaudi parallel.
-use pytools v* LCG_Interfaces -no_auto_imports
+use pytools * LCG_Interfaces -no_auto_imports
 
 apply_pattern ProjectVersionHeader
 

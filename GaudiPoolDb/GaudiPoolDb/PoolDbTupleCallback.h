@@ -38,7 +38,7 @@ namespace pool {
   * @author  M.Frank
   * @version 1.0
   */
-class PoolDbTupleCallback
+class GAUDI_API PoolDbTupleCallback
   : public pool::DbDefaultDataHandler,
     public pool::DbObjectCallBack
 {

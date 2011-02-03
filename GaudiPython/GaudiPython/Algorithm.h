@@ -62,7 +62,7 @@ namespace GaudiPython
    *  @date 2005-08-03
    */
   template <class ALGORITHM>
-  class PyAlg : public          ALGORITHM 
+  class GAUDI_API PyAlg : public          ALGORITHM 
   {
     // ========================================================================
   public:

@@ -204,5 +204,4 @@ PoolRootTreeEvt...   INFO Disconnected data IO:90946E2E-928E-DF11-8941-001320A39
 PoolRootTreeEvt...   INFO Disconnected data IO:C2E1B22E-928E-DF11-8941-001320A397BC[POOLIO.mdst]
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyVertex instances:0
 Number of MyTrack instances:2

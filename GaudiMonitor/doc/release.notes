@@ -1,6 +1,10 @@
 Package: GaudiMonitor
 Package manager : Marco Clemencic
 
+============================= GaudiMonitor v2r7 ==============================
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+
 ============================= GaudiMonitor v2r6 ==============================
 ! 2010-08-27 - Marco Clemencic
  - Fixed a problem breaking compilation on VC9.

@@ -22,7 +22,7 @@ namespace Gaudi  {
     *  @version 1.0
     *  @date    20/10/2007
     */
-  class IDataConnection  {
+  class GAUDI_API IDataConnection  {
   protected:
     /// Connection name/identifier
     std::string              m_name;
@@ -85,7 +85,7 @@ namespace Gaudi  {
     *  @version 1.0
     *  @date    20/10/2007
     */
-  class IIODataManager : virtual public IInterface {
+  class GAUDI_API IIODataManager : virtual public IInterface {
   public:
     /// InterfaceID
     DeclareInterfaceID(IIODataManager,2,0);

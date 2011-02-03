@@ -15,7 +15,7 @@ class GslError ;
  *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
  *  @date   29/04/2002
  */
-class IGslSvc : virtual public IService {
+class GAUDI_API IGslSvc : virtual public IService {
 public:
   /// InterfaceID
   DeclareInterfaceID(IGslSvc,2,0);

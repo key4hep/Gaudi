@@ -20,7 +20,7 @@
  *
  */
 template <class BASE>
-class CommonMessaging: public BASE {
+class GAUDI_API CommonMessaging: public BASE {
 public:
   typedef CommonMessaging base_class;
 

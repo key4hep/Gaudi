@@ -11,7 +11,7 @@
 #include <stdexcept>
 #include <iostream>
 
-class GaudiHandleInfo {
+class GAUDI_API GaudiHandleInfo {
 protected:
   /** Some basic information and helper functions shared between various handles/arrays.
    @param myComponentType: string indicating what type of component the handle is pointing to.
@@ -155,7 +155,7 @@ private:
     @author Martin.Woudstra@cern.ch
 */
 template< class T >
-class GaudiHandle: public GaudiHandleBase {
+class GAUDI_API GaudiHandle: public GaudiHandleBase {
   //
   // Constructors etc.
   //

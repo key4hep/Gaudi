@@ -21,18 +21,15 @@
 #include "CLHEP/Random/DRand48Engine.h"
 #include <math.h>
 //-------------------------------------
+// Handle CLHEP 2.0.x move to CLHEP namespace
+namespace CLHEP { }
+using namespace CLHEP;
 
 /**  AIDATupleSvc class implementation
  *
  *  @author Manuel Domenech Saavedra
  *  @date   2005-05-23
  */
-
-// Instantiation of a static factory class used by clients to create
-// instances of this service
-
-DECLARE_SERVICE_FACTORY(AIDATupleSvc)
-
 
 StatusCode AIDATupleSvc::myTest()
 {
@@ -617,3 +614,7 @@ StatusCode AIDATupleSvc::finalize()
   log << MSG::ERROR << "Error finalizing AIDATupleSvc." << endmsg;
   return status;
 }
+
+// Instantiation of a static factory class used by clients to create
+// instances of this service
+DECLARE_SERVICE_FACTORY(AIDATupleSvc)

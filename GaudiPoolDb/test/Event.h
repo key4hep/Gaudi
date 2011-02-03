@@ -60,12 +60,6 @@ public:
   /// Remove collision
   void removeCollision(Collision* vtx);
 
-
-  /// Serialize the object for writing
-  virtual StreamBuffer& serialize( StreamBuffer& s ) const;
-  /// Serialize the object for reading
-  virtual StreamBuffer& serialize( StreamBuffer& s );
-
   /// Output operator (ASCII)
   friend std::ostream& operator<< ( std::ostream& s, const Event& obj ) {
     return obj.fillStream(s);
@@ -91,20 +85,6 @@ private:
 //
 // Inline code must be outside the class definition
 //
-
-/// Serialize the object for writing
-inline StreamBuffer& Event::serialize( StreamBuffer& s ) const {
-  DataObject::serialize(s);
-  return s << m_event << m_run << m_time << m_collisions(this);
-}
-
-
-/// Serialize the object for reading
-inline StreamBuffer& Event::serialize( StreamBuffer& s ) {
-  DataObject::serialize(s);
-  return s >> m_event >> m_run >> m_time >> m_collisions(this);
-}
-
 
 /// Fill the output stream (ASCII)
 inline std::ostream& Event::fillStream( std::ostream& s ) const {

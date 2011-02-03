@@ -16,7 +16,7 @@ class ParticleProperty;
     @author Iain Last
     @author G.Corti
 */
-class IParticlePropertySvc: virtual public IService {
+class GAUDI_API IParticlePropertySvc: virtual public IService {
 
 public:
   /// InterfaceID

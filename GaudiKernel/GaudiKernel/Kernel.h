@@ -79,14 +79,16 @@
 #endif
 
 #ifdef _WIN32
+/*
 #  define GAUDI_IMPORT __declspec(dllimport)
 #  define GAUDI_EXPORT __declspec(dllexport)
 #  define GAUDI_LOCAL
+*/
 // The symbol visibility is disabled on Win32 because it is not possible to
 // make coexists the gcc and VC ways.
-//#    define GAUDI_IMPORT
-//#    define GAUDI_EXPORT
-//#    define GAUDI_LOCAL
+#    define GAUDI_IMPORT
+#    define GAUDI_EXPORT
+#    define GAUDI_LOCAL
 #else
 #  if defined(GAUDI_HASCLASSVISIBILITY)
 #    define GAUDI_IMPORT __attribute__((visibility("default")))

@@ -19,6 +19,10 @@
 // local
 #include "FuncMinimum.h"
 
+// Handle CLHEP 2.0.x move to CLHEP namespace
+namespace CLHEP { }
+using namespace CLHEP;
+
 /** @file
  *  Implementation file for class : FuncMinimum
  *  @see FuncMinimum.h

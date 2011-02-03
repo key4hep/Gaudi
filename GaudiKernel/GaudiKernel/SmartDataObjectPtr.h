@@ -36,13 +36,13 @@ public:
   /// Helper class to configure smart pointer functionality
   class ObjectLoader    {
   public:
-    static GAUDI_API AccessFunction access();
+    static AccessFunction access();
   };
 
   /// Helper class to configure smart pointer functionality
   class ObjectFinder    {
   public:
-    static GAUDI_API AccessFunction access();
+    static AccessFunction access();
   };
 
 public:

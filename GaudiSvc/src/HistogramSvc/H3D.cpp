@@ -18,7 +18,7 @@ namespace Gaudi {
     *
     * @author  M.Frank
     */
-  class Histogram3D : public DataObject, public Generic3D<AIDA::IHistogram3D,TH3D>   {
+  class GAUDI_API Histogram3D : public DataObject, public Generic3D<AIDA::IHistogram3D,TH3D>   {
   public:
     /// Standard Constructor
     Histogram3D();

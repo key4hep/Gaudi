@@ -10,7 +10,7 @@
 /// Version for one base interface.
 /// @author Marco Clemencic
 template <typename I1>
-struct extend_interfaces1: virtual public I1 {
+struct GAUDI_API extend_interfaces1: virtual public I1 {
 #ifndef __GCCXML__
   /// MPL set of interfaces extended by this one.
   typedef typename I1::iid::iids::type ext_iids;
@@ -23,7 +23,7 @@ struct extend_interfaces1: virtual public I1 {
 /// Version for two base interfaces.
 /// @author Marco Clemencic
 template <typename I1, typename I2>
-struct extend_interfaces2: virtual public I1, virtual public I2 {
+struct GAUDI_API extend_interfaces2: virtual public I1, virtual public I2 {
 #ifndef __GCCXML__
   /// MPL set of interfaces extended by this one.
   typedef typename mpl::fold<
@@ -40,7 +40,7 @@ struct extend_interfaces2: virtual public I1, virtual public I2 {
 /// Version for three base interfaces.
 /// @author Marco Clemencic
 template <typename I1, typename I2, typename I3>
-struct extend_interfaces3: virtual public I1,
+struct GAUDI_API extend_interfaces3: virtual public I1,
                                      virtual public I2,
                                      virtual public I3 {
 #ifndef __GCCXML__
@@ -63,7 +63,7 @@ struct extend_interfaces3: virtual public I1,
 /// Version for four base interfaces.
 /// @author Marco Clemencic
 template <typename I1, typename I2, typename I3, typename I4>
-struct extend_interfaces4: virtual public I1,
+struct GAUDI_API extend_interfaces4: virtual public I1,
                                      virtual public I2,
                                      virtual public I3,
                                      virtual public I4 {

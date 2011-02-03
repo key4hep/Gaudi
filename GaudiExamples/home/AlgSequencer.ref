@@ -248,5 +248,3 @@ ChronoStatSvc        INFO Time User   : Tot= 1.16  [s]                          
 ChronoStatSvc.f...   INFO  Service finalized successfully
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyTrack instances:0
-Number of MyVertex instances:0

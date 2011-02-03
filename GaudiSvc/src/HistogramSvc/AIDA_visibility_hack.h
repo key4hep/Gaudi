@@ -17,7 +17,7 @@
 #include <vector>
 
 // Force visibility of the classes
-//#define class class GAUDI_API
+#define class class GAUDI_API
 #include "AIDA/IBaseHistogram.h"
 #include "AIDA/IHistogram1D.h"
 #include "AIDA/IHistogram2D.h"
@@ -26,7 +26,7 @@
 #include "AIDA/IProfile2D.h"
 #include "AIDA/IAnnotation.h"
 #include "AIDA/IAxis.h"
-//#undef class
+#undef class
 
 
 #endif /* AIDA_VISIBILITY_HACK_H_ */

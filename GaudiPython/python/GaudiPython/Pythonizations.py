@@ -313,7 +313,7 @@ def __mapbase_contains__ ( self , key ) :
     
     """
     _num = self.count ( key )
-    return 0 == _num 
+    return False if 0 == _num else True 
 
 # ============================================
 ## Get the value for certain key,
@@ -404,7 +404,7 @@ def __mapbase_setitem__ ( self , key , value ) :
     >>> m[key] = value     ## set the item 
     
     """
-    _replaced = key in self 
+    _replaced = True if key in self else False 
     self.update ( key , value )
     return _replaced
 
@@ -435,7 +435,7 @@ def __mapbase_delitem__ ( self , key ) :
     >>> del m[key] 
     
     """
-    _erased = key in self 
+    _erased = True if key in self else False 
     self.erase ( key ) 
     return _erased
 

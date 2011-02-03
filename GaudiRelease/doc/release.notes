@@ -1,6 +1,28 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+============================= GaudiRelease v22r0 =============================
+! 2011-01-17 - Marco Clemencic
+ - Removed a couple of obsolete LHCb-specific packages from the requirements.
+
+! 2011-01-16 - Karol Kruzelecki
+ - Patch #4608: new Package GaudiProfiling
+
+! 2010-12-16 - Sebastien Binet
+ - Patch #4074: migrate GaudiPython.Parallel to multiprocessing
+   Added new package GaudiMP.
+
+============================ GaudiRelease v21r11p2 =============================
+! 2010-12-06 - Charles Leggett
+ - Updated GaudiKernel to v27r11p1
+
+! 2010-11-30 - Marco Clemencic
+ - Added graphviz to the list of external packages needed by LHCb.
+
+============================ GaudiRelease v21r11p1 =============================
+! 2010-12-03 - Charles Leggett
+ - Updated PartPropSvc to v4r1
+
 ============================ GaudiRelease v21r11 =============================
 ! 2010-09-22 - Marco Clemencic
  - Added neurobayes to the list of external packages needed by LHCb.

@@ -27,7 +27,7 @@ public:
     * Note: No copy constructor; bitwise copy (done by the compiler)
     *       is just fine.
     */
-  class GAUDI_API Link  {
+  class Link  {
     /// DataObject is a friend
     friend class LinkManager;
   protected:

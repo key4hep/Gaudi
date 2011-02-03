@@ -13,9 +13,10 @@
 
 #include "PropertyAlg.h"
 
-// Static Factory declaration
-
-DECLARE_ALGORITHM_FACTORY(PropertyAlg)
+#ifdef __ICC
+// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
+#pragma warning(disable:1572)
+#endif
 
 // Read Handler
 //------------------------------------------------------------------------------
@@ -138,6 +139,7 @@ StatusCode PropertyAlg::initialize() {
   // Checking units
   //
   for (unsigned int i = 0; i < u_doublearrayunits.size(); i++ ) {
+
     if( u_doublearrayunits[i] != u_doublearray[i] ) {
       log << MSG::ERROR
           << format
@@ -303,4 +305,5 @@ StatusCode PropertyAlg::finalize() {
   return StatusCode::SUCCESS;
 }
 
-
+// Static Factory declaration
+DECLARE_ALGORITHM_FACTORY(PropertyAlg)

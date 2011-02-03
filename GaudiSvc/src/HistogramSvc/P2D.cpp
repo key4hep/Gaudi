@@ -18,7 +18,7 @@ namespace Gaudi {
     *
     * @author  M.Frank
     */
-  class Profile2D : public DataObject, public Generic2D<AIDA::IProfile2D,TProfile2D>   {
+  class GAUDI_API Profile2D : public DataObject, public Generic2D<AIDA::IProfile2D,TProfile2D>   {
   public:
     /// Default Constructor
     Profile2D() {
