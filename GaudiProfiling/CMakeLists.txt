@@ -8,6 +8,7 @@ GAUDI_USE_PACKAGE(Boost)
 #GAUDI_USE_PACKAGE(ROOT)
 GAUDI_USE_PACKAGE(libunwind)
 
+if (CMAKE_SYSTEM_NAME MATCHES Linux)
 #---Libraries---------------------------------------------------------------
 include_directories(src/component)
 GAUDI_COMPONENT_LIBRARY(GaudiProfiling component/*.cpp LIBRARIES GaudiKernel z)
@@ -20,3 +21,4 @@ GAUDI_EXECUTABLE(GaudiGenProfilingHtml app/pfm_gen_analysis.cpp LIBRARIES z Gaud
 GAUDI_INSTALL_HEADERS(GaudiProfiling)
 GAUDI_INSTALL_PYTHON_MODULES()
 GAUDI_INSTALL_SCRIPTS()
+endif()

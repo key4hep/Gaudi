@@ -467,6 +467,7 @@ function(GAUDI_INSTALL_PYTHON_MODULES)
   get_filename_component(package ${CMAKE_CURRENT_SOURCE_DIR} NAME)
   install(DIRECTORY python/ DESTINATION python
           PATTERN ".svn" EXCLUDE
+          PATTERN "*~" EXCLUDE
           PATTERN "*.pyc" EXCLUDE )
   GAUDI_INSTALL_PYTHON_INIT()
 endfunction()
@@ -500,6 +501,7 @@ function(GAUDI_INSTALL_SCRIPTS)
           FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
                            GROUP_EXECUTE GROUP_READ
           PATTERN ".svn" EXCLUDE
+          PATTERN "*~" EXCLUDE
           PATTERN "*.pyc" EXCLUDE )
 endfunction()
 
@@ -568,11 +570,11 @@ function( GAUDI_BUILD_PROJECT_SETUP )
   if(WIN32)
 	file(APPEND ${setup} "@echo off\n")
     file(APPEND ${setup} "set PATH=${CMAKE_INSTALL_PREFIX}/${bin};${CMAKE_INSTALL_PREFIX}/${lib};${CMAKE_INSTALL_PREFIX}/scripts;%PATH%\n")
-    file(APPEND ${setup} "set PYTHONPATH=${CMAKE_INSTALL_PREFIX}/python;%PYTHONPATH%\n")
+    file(APPEND ${setup} "set PYTHONPATH=${CMAKE_INSTALL_PREFIX}/python;${CMAKE_INSTALL_PREFIX}/python/lib-dynload;%PYTHONPATH%\n")
   else()
     file(APPEND ${setup} "setenv PATH  ${CMAKE_INSTALL_PREFIX}/${bin}:${CMAKE_INSTALL_PREFIX}/scripts:\${PATH}\n")
     file(APPEND ${setup} "setenv LD_LIBRARY_PATH  ${CMAKE_INSTALL_PREFIX}/${lib}:\${LD_LIBRARY_PATH}\n")
-    file(APPEND ${setup} "setenv PYTHONPATH  ${CMAKE_INSTALL_PREFIX}/python:\${PYTHONPATH}\n")
+    file(APPEND ${setup} "setenv PYTHONPATH  ${CMAKE_INSTALL_PREFIX}/python:${CMAKE_INSTALL_PREFIX}/python/lib-dynload:\${PYTHONPATH}\n")
   endif()
 
   #----Get the setup fro each external package
