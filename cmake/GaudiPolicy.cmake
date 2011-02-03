@@ -31,12 +31,11 @@ include(CMakeMacroParseArguments)
 if(MSVC90)
   add_definitions(/wd4275 /wd4251 /wd4351)
   add_definitions(-DBOOST_ALL_DYN_LINK -DBOOST_ALL_NO_LIB)
-  add_definitions(-DGAUDI_V20_COMPAT)
   add_definitions(/nologo)
   set(CMAKE_CXX_FLAGS_DEBUG "/D_NDEBUG /MD /Zi /Ob0 /Od /RTC1")
 else()
   set(CMAKE_CXX_FLAGS "-Dunix -pipe -ansi -Wall -Wextra -pthread  -Wno-deprecated -Wwrite-strings -Wpointer-arith -Wno-long-long")
-  add_definitions(-D_GNU_SOURCE -DGAUDI_V20_COMPAT)
+  add_definitions(-D_GNU_SOURCE)
 endif()
 
 if(BUILD_DLLEXPORT_LIBS)
@@ -47,6 +46,53 @@ if (CMAKE_SYSTEM_NAME MATCHES Linux)
   set(CMAKE_CXX_FLAGS "-Dlinux ${CMAKE_CXX_FLAGS}")
 endif()
 
+#---Gaudi Build Options---------------------------------------------------------
+# Build options that map to compile time features
+#
+option(GAUDI_V21
+       "disable backward compatibility hacks (implies all G21_* options)"
+       OFF)
+option(G21_HIDE_SYMBOLS
+       "enable explicit symbol visibility on gcc-4"
+       OFF)
+option(G21_NEW_INTERFACES
+       "disable backward-compatibility hacks in IInterface and InterfaceID"
+       OFF)
+option(G21_NO_ENDREQ
+       "disable the 'endreq' stream modifier (use 'endmsg' instead)"
+       OFF)
+option(G21_NO_DEPRECATED
+       "remove deprecated methods and functions"
+       OFF)
+option(G22_NEW_SVCLOCATOR
+       "use (only) the new interface of the ServiceLocator"
+       OFF)
+option(GAUDI_V22
+       "enable some API extensions"
+       OFF)
+
+# Use the options
+if ((GAUDI_V21 OR G21_HIDE_SYMBOLS) AND (comp MATCHES gcc4))
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden")
+endif()
+
+if(NOT GAUDI_V21)
+  if(GAUDI_V22)
+    add_definitions(-DGAUDI_V22_API)
+  else()
+    add_definitions(-DGAUDI_V20_COMPAT)
+  endif()
+  # special case
+  if(G21_HIDE_SYMBOLS AND (comp MATCHES gcc4))
+    add_definitions(-DG21_HIDE_SYMBOLS)
+  endif()
+  #
+  foreach (feature G21_NEW_INTERFACES G21_NO_ENDREQ G21_NO_DEPRECATED G22_NEW_SVCLOCATOR)
+    if (${feature})
+      add_definitions(-D${feature})
+    endif()
+  endforeach()
+endif()
 
 #---Link shared flags--------------------------------------------------------------------------------
 if (CMAKE_SYSTEM_NAME MATCHES Linux)
