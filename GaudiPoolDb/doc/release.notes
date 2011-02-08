@@ -1,5 +1,8 @@
 Package: GaudiPoolDb
-Package Manager: Markus Frank, Marco Clemencic
+Package Manager: Markus Frank
+
+! 2011-02-08 - Markus Frank
+ - Patch #4662: Fix for ROOT bug #77747
 
 ============================= GaudiPoolDb v5r10 ==============================
 ! 2011-01-19 - Markus Frank
