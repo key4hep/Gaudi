@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-02-04 - Charles Leggett
+ - Fixed bug #77806: createProjVersHeader breaks with Atlas style tags
+   allow Atlas style GaudiPKJ-XX-YY-ZZ tags
+
 ============================= GaudiPolicy v11r0 ==============================
 ! 2011-01-17 - Marco Clemencic
  - Fixed a small problem with the recent change in the nmake fragments
