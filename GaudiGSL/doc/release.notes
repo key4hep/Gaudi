@@ -3,6 +3,10 @@
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! =============================================================================
 
+! 2011-02-13 - Marco Clemencic
+ - Exclude few classes from the dictionary because they are typedefs to
+   vector<double> and cause problems (duplicated dictionaries warnings).
+
 ! 2011-02-08 - Charles Leggett
  - Fixed bug #77948: GaudiGSL/requirements calls for lcg_dictionary
    replace lcg_dictionary pattern with reflex_dictionary
