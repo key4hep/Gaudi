@@ -1,6 +1,9 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2011-02-18 - Marco Clemencic
+ - Fixed icc warnings.
+
 ! 2011-02-01 - Marco Clemencic
  - Fixed a configuration problem with icc on i686.
 
