@@ -11,8 +11,8 @@
 /*  @file GaudiTupleAlg.cpp
  *
  *  Implementation file for class : GaudiTupleAlg
- * 
- *  @date 2004-01-23 
+ *
+ *  @date 2004-01-23
  *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  *  @author Chris Jones   Christopher.Rob.Jones@cern.ch
  */
@@ -33,15 +33,15 @@ GaudiTupleAlg::GaudiTupleAlg( const std::string& name ,
 // ============================================================================
 
 // ============================================================================
-/// destructor 
+/// destructor
 // ============================================================================
-GaudiTupleAlg::~GaudiTupleAlg() { } 
+GaudiTupleAlg::~GaudiTupleAlg() { }
 // ============================================================================
 
 // ============================================================================
 // standard initialization method
 // ============================================================================
-StatusCode GaudiTupleAlg::initialize() 
+StatusCode GaudiTupleAlg::initialize()
 {
   // initialize the base class and return
   return GaudiTuples<GaudiHistoAlg>::initialize();
@@ -51,10 +51,20 @@ StatusCode GaudiTupleAlg::initialize()
 // ============================================================================
 // standard finalization method
 // ============================================================================
-StatusCode GaudiTupleAlg::finalize() 
+StatusCode GaudiTupleAlg::finalize()
 {
   // finalize the base class and return
   return GaudiTuples<GaudiHistoAlg>::finalize();
+}
+// ============================================================================
+
+// ============================================================================
+// standard stop method
+// ============================================================================
+StatusCode GaudiTupleAlg::stop()
+{
+  // finalize the base class and return
+  return GaudiTuples<GaudiHistoAlg>::stop();
 }
 // ============================================================================
 

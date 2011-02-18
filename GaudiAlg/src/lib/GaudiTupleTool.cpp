@@ -12,7 +12,7 @@
  *
  *  Implementation file for class : GaudiTupleTool
  *
- *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru 
+ *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  *  @author Chris Jones   Christopher.Rob.Jones@cern.ch
  *  @date   2004-06-28
  */
@@ -48,6 +48,15 @@ StatusCode GaudiTupleTool::initialize()
   return GaudiTuples<GaudiHistoTool>::initialize();
 }
 // ============================================================================
+
+// ============================================================================
+// standard stop method
+// ============================================================================
+StatusCode GaudiTupleTool::stop()
+{
+  // finalize the base class and return
+  return GaudiTuples<GaudiHistoTool>::stop();
+}
 
 // ============================================================================
 // standard finalization method

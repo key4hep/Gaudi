@@ -63,6 +63,13 @@ protected:
    */
   virtual StatusCode initialize ();
 
+  /** standard stop method
+   *  @see  Algorithm
+   *  @see IAlgorithm
+   *  @return status code
+   */
+  virtual StatusCode stop  ();
+
   /** standard finalization method
    *  @see  Algorithm
    *  @see IAlgorithm

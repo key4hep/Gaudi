@@ -331,6 +331,10 @@ protected:
   StatusCode i_gtFinalize()
 #endif
   ;
+  /** standard stop method
+   *  @return status code
+   */
+  virtual StatusCode stop();
   // ==========================================================================
 private:
   // ==========================================================================

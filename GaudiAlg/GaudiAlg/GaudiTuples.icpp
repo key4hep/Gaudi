@@ -83,13 +83,7 @@ StatusCode GaudiTuples<PBASE>::
 // finalize ntupling
 //=============================================================================
 template <class PBASE>
-StatusCode GaudiTuples<PBASE>::
-#ifdef __ICC
-  i_gtFinalize
-#else
-  finalize
-#endif
-  ()
+StatusCode GaudiTuples<PBASE>::stop()
 {
   if ( !( nTupleMapTitle () . empty () &&
           nTupleMapID    () . empty () &&
@@ -132,9 +126,21 @@ StatusCode GaudiTuples<PBASE>::
     m_evtColMapID.clear() ;
   }
   // finalize base class
-  return PBASE::finalize();
+  return PBASE::stop();
 }
 
+template <class PBASE>
+StatusCode GaudiTuples<PBASE>::
+#ifdef __ICC
+  i_gtFinalize
+#else
+  finalize
+#endif
+  ()
+{
+  // finalize base class
+  return PBASE::finalize();
+}
 // ============================================================================
 // get N-tuple object ( book on-demand ) with unique identidier
 // ============================================================================
@@ -225,11 +231,11 @@ Tuples::Tuple GaudiTuples<PBASE>::nTuple
   // Check ID
   if ( ID.undefined() )
   { this->Error("Undefined NTuple ID : Title='"+title1+"'"); return Tuple(0); }
-  
+
   // look up in the table
   Tuples::TupleObj * tuple = m_nTupleMapID[ ID ] ;
   if( 0 != tuple ) { return Tuple( tuple ) ; }                   // RETURN
-  
+
   // convert ID to the string
   const std::string tID = ID.idAsString() ;
 
@@ -289,7 +295,7 @@ Tuples::Tuple GaudiTuples<PBASE>::evtCol
   // look up in the table
   Tuples::TupleObj* tuple = m_evtColMapID[ID] ;
   if ( 0 != tuple ) { return Tuple( tuple ) ; }                   // RETURN
-  
+
   // convert ID to the string
   const std::string tID = ID.idAsString() ;
 
@@ -373,7 +379,7 @@ long GaudiTuples<PBASE>::printTuples  () const
   else
   { this->always() << "List of booked N-Tuples in directory "
                    << "\"" << nTuplePath() << "\"" << endmsg ; }
-  
+
   // helper container to sort it:
   typedef std::map<TupleID,const Tuples::TupleObj*> OrderedMapType;
   OrderedMapType OrderedMap ( nTupleMapID().begin() , nTupleMapID().end() ) ;
@@ -401,7 +407,7 @@ long GaudiTuples<PBASE>::printEvtCols () const
   else
   { this->always() << "List of booked Event Tag Collections in directory "
                    << "\"" << evtColPath() << "\"" << endmsg ; }
-  
+
   // helper container to sort it:
   typedef std::map<TupleID,const Tuples::TupleObj*> OrderedMapType;
   OrderedMapType OrderedMap ( evtColMapID().begin() , evtColMapID().end() ) ;
