@@ -50,7 +50,7 @@ document reflex_dictionary_generator schemaGaudiPoolDbGen -group=t_tests $(GAUDI
 macro_append schemaGaudiPoolDb_reflex_options '--select=$(GAUDIPOOLDBROOT)/test/schema_dict.xml $(gccxmlopts) --gccxmlpath=$(GCCXML_home)/bin -D__SCHEMA_CHANGE__ '
 macro_append lib_schemaGaudiPoolDb_cppflags   ' -D__SCHEMA_CHANGE__ '
 
-library schemaGaudiPoolDb -no_static -group=t_tests -import=Reflex -import=POOL -import=GaudiPoolDb ../$(tag)/dict/schemaGaudiPoolDb/*.cpp ../test/*.cpp
+library schemaGaudiPoolDb -no_static -group=t_tests -import=Reflex -import=POOL ../$(tag)/dict/schemaGaudiPoolDb/*.cpp ../test/*.cpp
 apply_pattern component_library library=schemaGaudiPoolDb group=t_tests
 macro_append schemaGaudiPoolDb_shlibflags ' $(GaudiPoolDb_linkopts) '
 
