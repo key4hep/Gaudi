@@ -1,6 +1,10 @@
 Package: GaudiPoolDb
 Package Manager: Markus Frank
 
+! 2011-02-21 - Marco Clemencic
+ - Modified patch #4622 to use the new ROOT version macro ROOT_FULL_VERSION,
+   which takes into account the patch letter.
+
 ! 2011-02-08 - Markus Frank
  - Patch #4662: Fix for ROOT bug #77747
 
