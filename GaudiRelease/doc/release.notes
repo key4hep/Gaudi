@@ -1,6 +1,7 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+============================= GaudiRelease v22r1 =============================
 ============================= GaudiRelease v22r0 =============================
 ! 2011-01-17 - Marco Clemencic
  - Removed a couple of obsolete LHCb-specific packages from the requirements.
