@@ -1,8 +1,7 @@
-# $Id: requirements,v 1.81 2008/11/10 18:54:02 marcocle Exp $
 package GaudiSys
 version v22r0
 
-branches doc cmt 
+branches doc cmt
 
 #---Gaudi libraries - generic
 

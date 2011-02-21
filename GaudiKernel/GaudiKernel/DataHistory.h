@@ -1,5 +1,3 @@
-// $Id: DataHistory.h,v 1.1 2006/11/09 10:24:05 mato Exp $
-
 #ifndef GAUDIKERNEL_DATAHISTORY_H
 #define GAUDIKERNEL_DATAHISTORY_H
 

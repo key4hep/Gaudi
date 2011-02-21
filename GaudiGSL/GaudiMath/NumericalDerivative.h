@@ -1,5 +1,3 @@
-// $Id: NumericalDerivative.h,v 1.2 2008/10/27 19:22:20 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIMATH_NUMERICALDERIVATIVE_H
 #define GAUDIMATH_NUMERICALDERIVATIVE_H 1
 // ============================================================================

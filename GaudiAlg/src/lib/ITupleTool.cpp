@@ -1,4 +1,3 @@
-// $Id: ITupleTool.cpp,v 1.1 2004/07/12 13:39:21 mato Exp $
 // ============================================================================
 // Include files
 #include "GaudiKernel/IInterface.h"

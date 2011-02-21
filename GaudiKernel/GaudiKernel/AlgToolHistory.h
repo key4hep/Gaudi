@@ -1,5 +1,3 @@
-// $Id: AlgToolHistory.h,v 1.1 2006/11/09 10:24:04 mato Exp $
-
 #ifndef GAUDIKERNEL_ALGTOOLHISTORY_H
 #define GAUDIKERNEL_ALGTOOLHISTORY_H
 

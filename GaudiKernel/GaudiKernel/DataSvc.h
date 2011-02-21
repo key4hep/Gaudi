@@ -1,4 +1,3 @@
-// $Id: DataSvc.h,v 1.14 2006/11/30 14:43:13 mato Exp $
 #ifndef GAUDIKERNEL_DATASVC_H
 #define GAUDIKERNEL_DATASVC_H
 

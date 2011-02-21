@@ -1,4 +1,3 @@
-// $Id: Grammars.h,v 1.10 2008/10/27 16:41:33 marcocle Exp $
 // ============================================================================
 #ifndef GAUDIKERNEL_GRAMMARS_H
 #define GAUDIKERNEL_GRAMMARS_H 1

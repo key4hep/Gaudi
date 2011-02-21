@@ -1,4 +1,3 @@
-// $Id: SequencerTimerTool.cpp,v 1.12 2007/01/10 16:33:32 hmd Exp $
 // Include files
 
 // from Gaudi
@@ -99,7 +98,7 @@ StatusCode SequencerTimerTool::finalize ( ) {
 int SequencerTimerTool::indexByName ( std::string name ) {
   std::string::size_type beg = name.find_first_not_of(" \t");
   std::string::size_type end = name.find_last_not_of(" \t");
-  std::string temp = name.substr( beg, end-beg+1 );  
+  std::string temp = name.substr( beg, end-beg+1 );
   for ( unsigned int kk=0 ; m_timerList.size() > kk ; kk++ ) {
     beg =  m_timerList[kk].name().find_first_not_of(" \t");
     end =  m_timerList[kk].name().find_last_not_of(" \t");

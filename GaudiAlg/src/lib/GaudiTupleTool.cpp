@@ -1,4 +1,3 @@
-// $Id: GaudiTupleTool.cpp,v 1.6 2005/09/23 16:14:20 hmd Exp $
 // ============================================================================
 // Include files
 // ============================================================================
@@ -12,7 +11,7 @@
  *
  *  Implementation file for class : GaudiTupleTool
  *
- *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru 
+ *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  *  @author Chris Jones   Christopher.Rob.Jones@cern.ch
  *  @date   2004-06-28
  */

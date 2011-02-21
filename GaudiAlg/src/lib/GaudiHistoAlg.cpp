@@ -1,4 +1,3 @@
-// $Id: GaudiHistoAlg.cpp,v 1.8 2008/01/17 15:06:06 marcocle Exp $
 // ============================================================================
 // Include files
 // ============================================================================
@@ -63,7 +62,7 @@ StatusCode GaudiHistoAlg::initialize()
 // standard finalization method
 // ============================================================================
 StatusCode GaudiHistoAlg::finalize()
-{ 
+{
   // finalize the base class and return
   return GaudiHistos<GaudiAlgorithm>::finalize();
 }

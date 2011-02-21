@@ -1,5 +1,3 @@
-// $Id: GaudiCommonConstructors.cpp,v 1.1 2005/09/23 16:14:20 hmd Exp $
-
 // ============================================================================
 /* @file GaudiCommonConstructors.cpp
  *
@@ -30,7 +28,7 @@ GaudiCommon<AlgTool>::GaudiCommon( const std::string & /* name */,
                                    ISvcLocator * /* pSvcLocator */ )
   : AlgTool ( "ERROR", "ERROR", 0 )
 {
-  throw GaudiException( "Invalid GaudiCommon<AlgTool> constructor", 
+  throw GaudiException( "Invalid GaudiCommon<AlgTool> constructor",
                         "GaudiCommon", StatusCode::FAILURE );
 }
 //=============================================================================
@@ -45,7 +43,7 @@ GaudiCommon<Algorithm>::GaudiCommon( const std::string& /* type */  ,
                                      const IInterface*  /* parent */ )
   : Algorithm ( "ERROR", 0 )
 {
-  throw GaudiException( "Invalid GaudiCommon<Algorithm> constructor", 
+  throw GaudiException( "Invalid GaudiCommon<Algorithm> constructor",
                         "GaudiCommon", StatusCode::FAILURE );
 }
 //=============================================================================

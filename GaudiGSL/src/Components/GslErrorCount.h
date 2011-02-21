@@ -1,5 +1,3 @@
-// $Id: GslErrorCount.h,v 1.2 2006/11/30 10:40:53 mato Exp $
-// ============================================================================
 #ifndef GAUDIGSL_GSLERRORCOUNT_H
 #define GAUDIGSL_GSLERRORCOUNT_H 1
 // Include files

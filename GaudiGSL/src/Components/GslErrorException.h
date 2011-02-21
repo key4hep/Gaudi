@@ -1,5 +1,3 @@
-// $Id: GslErrorException.h,v 1.2 2006/11/30 10:40:53 mato Exp $
-// ============================================================================
 #ifndef GAUDIGSL_GSLERRORException_H
 #define GAUDIGSL_GSLERRORException_H 1
 // Include files

@@ -1,4 +1,3 @@
-// $Id: IGenericTool.h,v 1.1 2008/07/17 13:35:06 marcocle Exp $
 #ifndef GAUDIALG_IGENERICTOOL_H
 #define GAUDIALG_IGENERICTOOL_H 1
 

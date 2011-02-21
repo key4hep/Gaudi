@@ -1,4 +1,3 @@
-// $Id: DataListenerAlg.h,v 1.1 2006/09/04 08:22:30 hmd Exp $
 #ifndef DATALISTENER_DATALISTENER_H 
 #define DATALISTENER_DATALISTENER_H 1
 

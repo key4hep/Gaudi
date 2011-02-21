@@ -1,4 +1,3 @@
-// $Id: GaudiSequencer.h,v 1.5 2008/01/10 13:11:11 marcocle Exp $
 #ifndef GAUDISEQUENCER_H
 #define GAUDISEQUENCER_H 1
 

@@ -1,6 +1,3 @@
-// $Id: Print.cpp,v 1.7 2008/04/03 22:13:13 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.7 $
 // ============================================================================
 // Include files
 // ============================================================================
@@ -65,7 +62,7 @@ const std::string& GaudiAlg::Print::location
   IRegistry*        registry = object->registry() ;
   if ( 0 == registry ) { return s_invalidLocation ; }
   return registry->identifier() ;
-} 
+}
 // ============================================================================
 void GaudiAlg::Print1D::print
 ( MsgStream & stream,
@@ -84,7 +81,7 @@ std::string GaudiAlg::Print1D::toString
   fmt % aida->mean()                              % aida->rms() ;
   //
   return fmt.str() ;
-} 
+}
 // ============================================================================
 void GaudiAlg::Print2D::print
 ( MsgStream & stream,
@@ -112,7 +109,7 @@ void GaudiAlg::Print3D::print
   const GaudiAlg::HistoID&  ID   )
 { stream << toString  ( aida , ID )  << endmsg ; }
 // ============================================================================
-std::string GaudiAlg::Print3D::toString 
+std::string GaudiAlg::Print3D::toString
 ( const AIDA::IHistogram3D* aida ,
   const GaudiAlg::HistoID&  ID   )
 {
@@ -125,7 +122,7 @@ std::string GaudiAlg::Print3D::toString
   fmt % aida->meanZ()                             % aida->rmsZ() ;
   //
   return fmt.str() ;
-} 
+}
 // ============================================================================
 void GaudiAlg::Print1DProf::print
 ( MsgStream & stream,
@@ -133,7 +130,7 @@ void GaudiAlg::Print1DProf::print
   const GaudiAlg::HistoID&  ID   )
 { stream << toString  ( aida , ID )  << endmsg ; }
 // ============================================================================
-std::string GaudiAlg::Print1DProf::toString 
+std::string GaudiAlg::Print1DProf::toString
 ( const AIDA::IProfile1D*   aida   ,
   const GaudiAlg::HistoID&  ID     )
 {
@@ -171,7 +168,7 @@ std::string GaudiAlg::PrintStat::print
   const std::string& tag  )
 {
   return Gaudi::Utils::formatAsTableRow ( tag , stat ) ;
-} 
+}
 // ============================================================================
 std::string GaudiAlg::PrintTuple::print
 (  const INTuple*            tuple ,
@@ -216,6 +213,6 @@ std::string GaudiAlg::PrintTuple::print
 
 
 // ============================================================================
-// The END 
+// The END
 // ============================================================================
 

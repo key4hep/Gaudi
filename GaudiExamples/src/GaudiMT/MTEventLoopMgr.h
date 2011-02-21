@@ -1,4 +1,3 @@
-// $Id: MTEventLoopMgr.h,v 1.4 2007/09/17 18:38:18 hmd Exp $
 #ifndef GAUDISVC_MTEVENTLOOPMGR_H
 #define GAUDISVC_MTEVENTLOOPMGR_H 1
 

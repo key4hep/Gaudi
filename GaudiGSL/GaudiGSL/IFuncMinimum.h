@@ -1,5 +1,3 @@
-// $Id: IFuncMinimum.h,v 1.4 2005/01/10 14:35:09 mato Exp $
-// =============================================================================
 #ifndef GAUDIGSL_IFUNCMINIMUM_H
 #define GAUDIGSL_IFUNCMINIMUM_H 1
 // Include files

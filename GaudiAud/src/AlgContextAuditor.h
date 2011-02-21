@@ -1,18 +1,3 @@
-// $Id: AlgContextAuditor.h,v 1.4 2007/05/24 13:49:20 hmd Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.4 $
-// ============================================================================
-// $Log: AlgContextAuditor.h,v $
-// Revision 1.4  2007/05/24 13:49:20  hmd
-// ( Vanya Belyaev) patch #1171. The enhancement of existing Algorithm Context Service
-//    is the primary goal of the proposed patch. The existing
-//    AlgContextSvc is not safe with respect to e.g. Data-On-Demand
-//    service or to operations with subalgorithms. The patched service
-//    essentially implements the queue of executing algorithms, thus the
-//    problems are eliminiated. In addition the enriched interface
-//    provides the access to the whole queue of executing algorithms.
-//
-// ============================================================================
 #ifndef GAUDIAUD_ALGCONTEXTAUDITOR_H
 #define GAUDIAUD_ALGCONTEXTAUDITOR_H
 // ============================================================================

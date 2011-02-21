@@ -1,5 +1,3 @@
-// $Id: HistoProperty.h,v 1.1 2007/09/26 16:13:41 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIKERNEL_HISTOPROPERTY_H 
 #define GAUDIKERNEL_HISTOPROPERTY_H 1
 // ============================================================================

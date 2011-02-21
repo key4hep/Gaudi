@@ -1,4 +1,3 @@
-// $Id: FastContainerConsumer.h,v 1.2 2006/11/29 18:47:33 hmd Exp $
 #ifndef FASTCONTAINERCONSUMER_H 
 #define FASTCONTAINERCONSUMER_H 1
 

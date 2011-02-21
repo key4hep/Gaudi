@@ -1,5 +1,3 @@
-// $Id: GslErrorPrint.h,v 1.2 2006/11/30 10:40:53 mato Exp $
-// ============================================================================
 #ifndef GAUDIGSL_GSLERRORPrint_H
 #define GAUDIGSL_GSLERRORPrint_H 1
 // Include files

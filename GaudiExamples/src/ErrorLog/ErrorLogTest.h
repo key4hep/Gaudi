@@ -1,4 +1,3 @@
-// $Id: ErrorLogTest.h,v 1.1 2006/09/14 12:34:15 hmd Exp $
 #ifndef GAUDIEXAMPLE_ERRORLOGTEST_H
 #define GAUDIEXAMPLE_ERRORLOGTEST_H 1
 

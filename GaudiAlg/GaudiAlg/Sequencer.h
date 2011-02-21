@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiAlg/GaudiAlg/Sequencer.h,v 1.4 2008/06/02 14:22:04 marcocle Exp $
 #ifndef ALGORITHM_SEQUENCER_H
 #define ALGORITHM_SEQUENCER_H
 

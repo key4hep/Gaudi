@@ -1,5 +1,4 @@
 ///////////////////////// -*- C++ -*- /////////////////////////////
-// $Id: QotdAlg.h,v 1.1 2007/05/08 09:16:25 hmd Exp $
 #ifndef MULTIPLELOGSTREAMS_QOTDALG_H
 #define MULTIPLELOGSTREAMS_QOTDALG_H 1
 

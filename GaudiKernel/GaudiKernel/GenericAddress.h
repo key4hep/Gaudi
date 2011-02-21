@@ -1,4 +1,3 @@
-// $Id: GenericAddress.h,v 1.7 2003/08/05 13:49:15 mato Exp $
 #ifndef GAUDIKERNEL_GENERICADDRESS_H
 #define GAUDIKERNEL_GENERICADDRESS_H
 

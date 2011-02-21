@@ -1,4 +1,3 @@
-// $Id: SequencerTimerTool.h,v 1.7 2005/07/29 16:49:43 hmd Exp $
 #ifndef SEQUENCERTIMERTOOL_H
 #define SEQUENCERTIMERTOOL_H 1
 

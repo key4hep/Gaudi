@@ -1,5 +1,3 @@
-// $Id: GaudiCommon.h,v 1.18 2008/10/27 19:22:20 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIALG_GAUDICOMMON_H
 #define GAUDIALG_GAUDICOMMON_H 1
 // ============================================================================
@@ -98,9 +96,9 @@ protected: // few actual data types
   /// a pointer to the CounterSummarySvc
   ICounterSummarySvc* m_counterSummarySvc;
   ///list of counters to declare. Set by property CounterList. This can be a regular expression.
-  std::vector<std::string> m_counterList; 
+  std::vector<std::string> m_counterList;
   //list of stat entities to write. Set by property StatEntityList. This can be a regular expression.
-  std::vector<std::string> m_statEntityList; 
+  std::vector<std::string> m_statEntityList;
 public:
   // ==========================================================================
   /** @brief Templated access to the data in Gaudi Transient Store
@@ -736,18 +734,18 @@ public:
   // ==========================================================================
 public:
   // ==========================================================================
-  /// get the list of aquired tools 
-  const AlgTools& tools    () const { return m_tools    ; }    // get all tools 
-  /// get the list of aquired services 
-  const Services& services () const { return m_services ; } // get all services 
+  /// get the list of aquired tools
+  const AlgTools& tools    () const { return m_tools    ; }    // get all tools
+  /// get the list of aquired services
+  const Services& services () const { return m_services ; } // get all services
   // ==========================================================================
 private:
   // ==========================================================================
-  /// handler for "ErrorPrint" property 
+  /// handler for "ErrorPrint" property
   void printErrorHandler ( Property& /* theProp */ ) ;     //      "ErrorPrint"
-  /// handler for "PropertiesPrint" property 
+  /// handler for "PropertiesPrint" property
   void printPropsHandler ( Property& /* theProp */ ) ;     // "PropertiesPrint"
-  /// handler for "StatPrint" property 
+  /// handler for "StatPrint" property
   void printStatHandler  ( Property& /* theProp */ ) ;     //       "StatPrint"
   // ==========================================================================
 public:

@@ -1,5 +1,3 @@
-// $Id: AlgorithmHistory.h,v 1.1 2006/11/09 10:24:04 mato Exp $
-
 #ifndef GAUDIKERNEL_ALGORITHMHISTORY_H
 #define GAUDIKERNEL_ALGORITHMHISTORY_H
 

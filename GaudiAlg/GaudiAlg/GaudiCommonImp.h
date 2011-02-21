@@ -1,5 +1,3 @@
-// $Id: GaudiCommonImp.h,v 1.11 2008/10/10 08:06:33 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIALG_GAUDICOMMONIMP_H
 #define GAUDIALG_GAUDICOMMONIMP_H 1
 // ============================================================================
@@ -242,7 +240,7 @@ GaudiCommon<PBASE>::getFastContainer( const std::string &location,
       Exception("getFastContainer(): No valid container at '" + location + "'");
     }
   }
-  
+
   return ptr;
 }
 // ============================================================================
@@ -307,6 +305,6 @@ inline void GaudiCommon<PBASE>::Assert( const bool        ok  ,
            std::string             (   __FILE__    ) + "']" , code ) )
 
 // ============================================================================
-// The END 
+// The END
 // ============================================================================
 #endif // GAUDIALG_GAUDICOMMONIMP_H

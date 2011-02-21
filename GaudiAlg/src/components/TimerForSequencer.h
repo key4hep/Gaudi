@@ -1,5 +1,4 @@
-// $Id: TimerForSequencer.h,v 1.5 2004/11/25 13:26:26 mato Exp $
-#ifndef TIMERFORSEQUENCER_H 
+#ifndef TIMERFORSEQUENCER_H
 
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Timing.h"
@@ -35,7 +34,7 @@ public:
     m_startClock = System::currentTime( System::microSec );
     m_startCpu   = System::cpuTime( System::microSec );
   }
-  
+
   /** Stop time measurement and return the last elapsed time.
       @return Measured time in ms
   */
@@ -46,12 +45,12 @@ public:
     //== Change to normalized millisecond
     cpuTime  *= m_factor;
     lastTime *= m_factor;
-    
+
     //== Update the counter
     m_num    += 1;
     m_sum    += lastTime;
     m_sumCpu += cpuTime;
-    
+
     if ( 1 == m_num ) {
       m_min = lastTime;
       m_max = lastTime;
@@ -77,13 +76,13 @@ public:
   MsgStream & fillStream(MsgStream & s) const {
     double ave = 0.;
     double cpu = 0.;
-    
+
     if ( 0 != m_num ) {
       ave = m_sum    / m_num;
       cpu = m_sumCpu / m_num;
     }
-    
-    return s << m_name 
+
+    return s << m_name
              << format( "| %9.3f | %9.3f | %8.3f %9.1f | %7d | %9.3f |",
                         cpu, ave, m_min, m_max, m_num, m_sum * 0.001 );
   }

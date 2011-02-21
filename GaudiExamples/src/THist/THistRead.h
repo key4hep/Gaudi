@@ -1,4 +1,3 @@
-// $Id: THistRead.h,v 1.1 2006/09/21 13:22:00 hmd Exp $
 #ifndef THIST_THISTREAD_H
 #define THIST_THISTREAD_H 1
 

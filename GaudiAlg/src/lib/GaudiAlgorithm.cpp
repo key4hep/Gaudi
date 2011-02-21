@@ -1,5 +1,3 @@
-// $Id: GaudiAlgorithm.cpp,v 1.12 2008/11/04 22:49:25 marcocle Exp $
-// ============================================================================
 #define  GAUDIALG_GAUDIALGORITHM_CPP 1
 // ============================================================================
 // include files
@@ -41,9 +39,9 @@ GaudiAlgorithm::GaudiAlgorithm ( const std::string&  name        ,
 {
   m_vetoObjs.clear();
   m_requireObjs.clear();
-  
+
   setProperty ( "RegisterForContextService" , true ).ignore() ;
-  
+
   declareProperty( "VetoObjects", m_vetoObjs,
                    "Skip execute if one or more of these TES objects exists" );
   declareProperty( "RequireObjects", m_requireObjs,
@@ -74,10 +72,10 @@ StatusCode GaudiAlgorithm::finalize()
 {
   if ( msgLevel(MSG::DEBUG) )
     debug() << "Finalize base class GaudiAlgorithm" << endmsg;
-  
+
   // reset pointers
   m_evtColSvc.reset() ;
-  
+
   // finalize the base class and return
   return GaudiCommon<Algorithm>::finalize() ;
 }

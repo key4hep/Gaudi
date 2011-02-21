@@ -1,5 +1,3 @@
-//$Id: Sequencer.cpp,v 1.7 2008/06/02 14:22:04 marcocle Exp $
-
 // Sequencer class
 // Implements:
 // 1) Common functionality of IInterface

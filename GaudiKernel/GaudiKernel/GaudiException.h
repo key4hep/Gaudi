@@ -1,4 +1,3 @@
-// $Id: GaudiException.h,v 1.6 2007/12/20 18:28:33 marcocle Exp $
 #ifndef GAUDIKERNEL_GAUDIEXCEPTION_H
 #define GAUDIKERNEL_GAUDIEXCEPTION_H
 

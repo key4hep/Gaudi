@@ -1,4 +1,3 @@
-// $Id: PPSLHCb.h,v 1.1 2008/05/29 18:12:56 marcocle Exp $
 #ifndef PARTPROP_PPSLHCB_H 
 #define PARTPROP_PPSLHCB_H 1
 

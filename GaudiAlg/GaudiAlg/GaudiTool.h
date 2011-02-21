@@ -1,5 +1,3 @@
-// $Id: GaudiTool.h,v 1.13 2008/10/10 13:38:28 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIALG_GAUDITOOL_H
 #define GAUDIALG_GAUDITOOL_H 1
 // ============================================================================
@@ -490,7 +488,7 @@ public:
    *  @return A valid pointer to the object
    */
   template < class TYPE , class TYPE2 >
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type 
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type
   getOrCreate ( IDataProviderSvc*  svc                 ,
                 const std::string& location            ,
                 const bool         useRootInTES = true ) const
@@ -524,7 +522,7 @@ public:
    *  @return A valid pointer to the object
    */
   template < class TYPE , class TYPE2 >
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type 
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type
   getOrCreate ( const std::string& location            ,
                 const bool         useRootInTES = true ) const
   {

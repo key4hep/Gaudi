@@ -1,4 +1,3 @@
-// $Id: HistoTool.h,v 1.4 2006/11/30 10:16:12 mato Exp $
 // ============================================================================
 #ifndef GAUDIALG_HISTOTOOL_H
 #define GAUDIALG_HISTOTOOL_H 1

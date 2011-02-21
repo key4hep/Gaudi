@@ -1,9 +1,7 @@
-// $Id: 
-// ============================================================================
 #ifndef GAUDIALG_GAUDIHISTOID_H
 #define GAUDIALG_GAUDIHISTOID_H 1
 // ============================================================================
-// Include files 
+// Include files
 // ============================================================================
 // STD&STL
 // ============================================================================
@@ -14,7 +12,7 @@
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/Hash.h"
 // ============================================================================
-/*  @file 
+/*  @file
  *
  *  Header file for class GaudiAlg::ID
  *
@@ -55,11 +53,11 @@ namespace GaudiAlg
   public:
     // ========================================================================
     /// Implicit constructor from a numeric ID
-    ID  ( const NumericID    id = -1 ) ; 
+    ID  ( const NumericID    id = -1 ) ;
     /// Implicit constructor from a literal ID
-    ID  ( const LiteralID&   id      ) ; 
+    ID  ( const LiteralID&   id      ) ;
     /// Implicit constructor from a literal ID
-    ID  ( const char*        id      ) ; 
+    ID  ( const char*        id      ) ;
     /// Destructor
     ~ID ( ) {} ;
     /// Is this ID numeric
@@ -82,11 +80,11 @@ namespace GaudiAlg
      */
     inline bool operator==( const ID& id ) const
     {
-      return 
-        hash    () != id.hash    () ? false                           :  
+      return
+        hash    () != id.hash    () ? false                           :
         numeric () && id.numeric () ? id.numericID () == numericID () :
         literal () && id.literal () ? id.literalID () == literalID () :
-        idAsString () == id.idAsString() ; 
+        idAsString () == id.idAsString() ;
     }
     /// Implement the != operator, using the == operator
     inline bool operator!=( const ID& id ) const { return ! ( *this == id ) ; }
@@ -98,7 +96,7 @@ namespace GaudiAlg
     {
       return
         //hash () < id.hash () ? true  :
-        //hash () > id.hash () ? false :      
+        //hash () > id.hash () ? false :
         numeric    () && id.numeric() ? numericID() < id.numericID() :
         literal    () && id.literal() ? literalID() < id.literalID() :
         idAsString () < id.idAsString() ;
@@ -136,19 +134,19 @@ namespace GaudiAlg
   inline std::ostream& operator << ( std::ostream& str , const GaudiAlg::ID& id )
   { return id.fillStream ( str ) ; }
   // ==========================================================================
-} //                                                  end of namespace GaudiAlg 
+} //                                                  end of namespace GaudiAlg
 // ============================================================================
 namespace GaudiUtils
 {
   // ==========================================================================
   /// Hash-function for class GaudiAlg::ID
   template <>
-  inline size_t Hash<GaudiAlg::ID>::operator() 
-    ( const GaudiAlg::ID& key ) const { return key.hash () ; }   
+  inline size_t Hash<GaudiAlg::ID>::operator()
+    ( const GaudiAlg::ID& key ) const { return key.hash () ; }
   // ==========================================================================
-} //                                                end of namespace GaudiUtils 
+} //                                                end of namespace GaudiUtils
 // ============================================================================
-// The END 
+// The END
 // ============================================================================
 #endif // GAUDIALG_GAUDIHISTOID_H
 // ============================================================================

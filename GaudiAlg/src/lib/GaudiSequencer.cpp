@@ -1,4 +1,3 @@
-// $Id: GaudiSequencer.cpp,v 1.18 2008/10/10 13:50:35 marcocle Exp $
 // Include files
 
 // from Gaudi
@@ -286,21 +285,21 @@ StatusCode GaudiSequencer::decodeNames( )  {
       addedGlobalTimeOffset = false;
     }
 
-    // propagate the sub-algorithm into own state. 
-    if ( result.isSuccess () && 
-         Gaudi::StateMachine::INITIALIZED <= FSMState() && 
-         myIAlg.isValid   () && 
-         Gaudi::StateMachine::INITIALIZED  > myIAlg->FSMState() ) 
+    // propagate the sub-algorithm into own state.
+    if ( result.isSuccess () &&
+         Gaudi::StateMachine::INITIALIZED <= FSMState() &&
+         myIAlg.isValid   () &&
+         Gaudi::StateMachine::INITIALIZED  > myIAlg->FSMState() )
     {
       StatusCode sc = myIAlg->sysInitialize() ;
       if  ( sc.isFailure() ) { result = sc ; }
     }
-    
-    // propagate the sub-algorithm into own state. 
-    if ( result.isSuccess () && 
-         Gaudi::StateMachine::RUNNING <= FSMState() && 
-         myIAlg.isValid   () && 
-         Gaudi::StateMachine::RUNNING  > myIAlg->FSMState() ) 
+
+    // propagate the sub-algorithm into own state.
+    if ( result.isSuccess () &&
+         Gaudi::StateMachine::RUNNING <= FSMState() &&
+         myIAlg.isValid   () &&
+         Gaudi::StateMachine::RUNNING  > myIAlg->FSMState() )
     {
       StatusCode sc = myIAlg->sysStart () ;
       if  ( sc.isFailure() ) { result = sc ; }
@@ -361,32 +360,32 @@ StatusCode GaudiSequencer::decodeNames( )  {
 //=========================================================================
 //  Interface for the Property manager
 //=========================================================================
-void GaudiSequencer::membershipHandler ( Property& /* p */ ) 
+void GaudiSequencer::membershipHandler ( Property& /* p */ )
 {
-  // no action for not-yet initialized sequencer 
-  if ( Gaudi::StateMachine::INITIALIZED > FSMState() ) { return ; } // RETURN 
-  
+  // no action for not-yet initialized sequencer
+  if ( Gaudi::StateMachine::INITIALIZED > FSMState() ) { return ; } // RETURN
+
   decodeNames().ignore();
-  
-  if  ( !m_measureTime ) { return ; }                                // RETURN 
-  
-  // add the entries into timer table: 
-  
-  if ( 0 == m_timerTool ) 
+
+  if  ( !m_measureTime ) { return ; }                                // RETURN
+
+  // add the entries into timer table:
+
+  if ( 0 == m_timerTool )
   { m_timerTool = tool<ISequencerTimerTool>( "SequencerTimerTool" ) ; }
-  
+
   if ( m_timerTool->globalTiming() ) m_measureTime = true;
-  
+
   m_timer = m_timerTool->addTimer( name() );
   m_timerTool->increaseIndent();
-  
-  for ( std::vector<AlgorithmEntry>::iterator itE = m_entries.begin() ; 
-        m_entries.end() != itE; ++itE ) 
+
+  for ( std::vector<AlgorithmEntry>::iterator itE = m_entries.begin() ;
+        m_entries.end() != itE; ++itE )
   {
     itE->setTimer( m_timerTool->addTimer( itE->algorithm()->name() ) );
   }
-  
+
   m_timerTool->decreaseIndent();
-  
+
 }
 //=============================================================================

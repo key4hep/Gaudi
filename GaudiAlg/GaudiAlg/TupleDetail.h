@@ -1,4 +1,3 @@
-// $Id: TupleDetail.h,v 1.2 2004/10/18 08:18:00 mato Exp $
 #ifndef GAUDIALG_TUPLEDETAIL_H
 #define GAUDIALG_TUPLEDETAIL_H 1
 // ============================================================================

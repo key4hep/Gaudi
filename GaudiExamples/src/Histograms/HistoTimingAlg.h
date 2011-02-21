@@ -1,4 +1,3 @@
-// $Id: HistoTimingAlg.h,v 1.1 2005/10/03 14:15:30 hmd Exp $
 #ifndef HISTOGRAMS_HistoTimingAlg_H 
 #define HISTOGRAMS_HistoTimingAlg_H 1
 

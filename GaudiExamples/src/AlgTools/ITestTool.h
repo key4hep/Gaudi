@@ -1,4 +1,3 @@
-// $Id: ITestTool.h,v 1.1 2004/03/09 09:25:32 mato Exp $
 #ifndef ITESTTOOL_H
 #define ITESTTOOL_H 1
 
