@@ -1,6 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v27r13 =============================
 ! 2011-02-21 - Charles Leggett
  - Fixed bug #77534: this-> needed in Property.h
 

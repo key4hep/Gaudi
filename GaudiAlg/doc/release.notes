@@ -1,6 +1,7 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+=============================== GaudiAlg v13r6 ===============================
 ! 2011-02-18 - Marco Clemencic
  - Fixed icc warnings.
 
