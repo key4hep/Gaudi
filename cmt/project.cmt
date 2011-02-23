@@ -1,6 +1,6 @@
 project GAUDI
 
-use LCGCMT LCGCMT_58f
+use LCGCMT LCGCMT_60
 
 build_strategy with_installarea
 setup_strategy root
