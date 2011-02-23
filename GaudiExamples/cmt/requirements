@@ -1,0 +1,114 @@
+package GaudiExamples
+version v22r1
+
+use ROOT         * LCG_Interfaces
+use Reflex       * LCG_Interfaces -no_auto_imports
+use AIDA         * LCG_Interfaces
+
+use Gaudi        *
+
+use PartPropSvc  * -no_auto_imports
+use GaudiPoolDb  * -no_auto_imports
+use GaudiPython  * -no_auto_imports
+use GaudiGSL     *
+use RootHistCnv  * -no_auto_imports
+
+use Boost * LCG_Interfaces
+use HepPDT * LCG_Interfaces
+
+include_dirs $(GAUDIEXAMPLESROOT)/src/Lib
+
+library GaudiExamplesLib -no_static Lib/*.cpp
+
+macro datalistener_use "DataListener/*.cpp" WIN32 " "
+
+library GaudiExamples    -no_static \
+                          AbortEvent/*.cpp \
+                          AlgSequencer/*.cpp \
+                          AlgTools/*.cpp \
+                          DataOnDemand/*.cpp \
+                          AlgErrAud/*.cpp \
+                          GSLTools/*.cpp \
+                          RandomNumber/*.cpp \
+                          Histograms/*.cpp \
+                          NTuples/*.cpp \
+                          TupleEx/*.cpp \
+                          CounterEx/*.cpp \
+                          PartProp/*.cpp \
+                          Properties/*.cpp \
+                          ExtendedProperties/*.cpp \
+                          $(datalistener_use) \
+                          POOLIO/*.cpp \
+                          ColorMsg/ColorMsgAlg.cpp \
+                          History/History.cpp \
+                          THist/*.cpp \
+                          ErrorLog/ErrorLogTest.cpp \
+                          EvtColsEx/EvtColAlg.cpp \
+                          FastContainers/*.cpp \
+                          Maps/*.cpp \
+                          MultipleLogStreams/*.cpp \
+                          GaudiCommonTests/*.cpp \
+                          IncidentSvc/*.cpp \
+                          bug_34121/*.cpp \
+                          Auditors/*.cpp \
+                          Timing/*.cpp \
+                          Selections/*.cpp \
+                          SvcInitLoop/*.cpp \
+                          StringKeys/*.cpp \
+                          StatusCodeSvc/*.cpp \
+                          testing/*.cpp \
+                          Dll/GaudiExamples*.cpp
+
+
+apply_pattern reflex_dictionary dictionary=GaudiExamples \
+				headerfiles=$(GAUDIEXAMPLESROOT)/src/POOLIO/dict.h \
+				selectionfile=$(GAUDIEXAMPLESROOT)/src/POOLIO/dict.xml \
+				options=" $(includes) "
+macro GaudiExamplesDict_use_linkopts $(use_linkopts)
+
+#==> Gaudi with multiple threads
+# commented out since it shall not link GaudiSvc
+# application GaudiMT       GaudiMT/GaudiMTMain.cpp \
+#                          GaudiMT/MTEventLoopMgr.cpp \
+#                          GaudiMT/MTMessageSvc.cpp \
+#                          GaudiMT/MTHelloWorld.cpp \
+#                          GaudiMT/GaudiMTExample_load.cpp \
+#                          GaudiMT/GaudiMTExample_entry.cpp
+#macro GaudiMT_cppflags " -I$(GAUDISVCROOT) "      # needs to have access to "internal" header files
+#macro_append GaudiMTlinkopts " -L$(GAUDISVCROOT)/$(tag) -lGaudiSvc -lpthread "
+#macro_remove constituents "" target-winxp "GaudiMT"      # not working on Windows
+
+application Allocator         Allocator/*.cpp
+macro_append Allocator_dependencies GaudiExamples
+#-------Options------------------------------------------------------------------
+apply_pattern  application_path
+set STDOPTS           ${GAUDIEXAMPLESROOT}/options
+path_append JOBOPTSEARCHPATH  "/NONEXISTINGDIR"
+path_append JOBOPTSEARCHPATH  ${GAUDIEXAMPLESROOT}/options
+
+private
+#apply_pattern component_library library=GaudiMTExample
+
+apply_pattern linker_library    library=GaudiExamplesLib
+apply_pattern component_library library=GaudiExamples
+
+macro_append ROOT_linkopts " -lHist " \
+              target-winxp " libHist.lib " \
+              target-mac104 " -lHist -lMatrix "
+macro_append ROOT_linkopts        "" \
+       ROOT_GE_5_15&target-mac104 " -lNet "
+
+#------------------------------------------------------------------------------
+# Create a python binary module
+# -----------------------------
+use Python * LCG_Interfaces -no_auto_imports
+apply_pattern pyd_boost_module module=PyExample files=PythonModule/*.cpp
+# we do not need/want to link the module against the package library
+macro_remove PyExample_use_linkopts '$(GaudiExamples_linkopts)'
+# otherwise we should have used
+# apply_pattern pyd_boost_module module=PyExample files=PythonModule/*.cpp deps=GaudiExamplesLib
+#------------------------------------------------------------------------------
+
+apply_pattern QMTest
+path_prepend PYTHONPATH "" \
+                 QMTest "${GAUDIEXAMPLESROOT}/tests/qmtest"

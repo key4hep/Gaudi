@@ -1,0 +1,36 @@
+//##############################################################
+// Job options file
+//==============================================================
+
+AuditorSvc.Auditors = { "ChronoAuditor" };
+//--------------------------------------------------------------
+
+
+//--------------------------------------------------------------
+// Private Application Configuration options
+//--------------------------------------------------------------
+ApplicationMgr.TopAlg   = { "THistWrite" };
+
+// Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
+MessageSvc.OutputLevel  = 3;
+MessageSvc.UseColors = true;
+THistSvc.OutputLevel = 2;
+ApplicationMgr.OutputLevel = 1;
+ServiceManager.OutputLevel = 2;
+StatusCodeSvc.OutputLevel = 1;
+
+
+
+// THistSvc.Output =  {"new DATAFILE='tuple1.rt' TYP='ROOT' OPT='NEW'"};
+THistSvc.Output += {"upd DATAFILE='tuple2.rt' TYP='ROOT' OPT='UPDATE'"};
+THistSvc.Output += {"rec DATAFILE='tuple3.rt' TYP='ROOT' OPT='RECREATE'"};
+
+THistSvc.PrintAll = true;
+
+//--------------------------------------------------------------
+// Event related parameters
+//--------------------------------------------------------------
+ApplicationMgr.EvtMax   = 20;
+ApplicationMgr.EvtSel  = "NONE";
+
+

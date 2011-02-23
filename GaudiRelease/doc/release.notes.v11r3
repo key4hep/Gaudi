@@ -1,0 +1,52 @@
+!================ GaudiPolicy v5r9============================================
+! 20021128 - Pere Mato
+  - Removed redefinitions of $(bin), $(src),....
+  - Corrected bugs in patterns library_Clinkopts and library_Llinkopts
+    for UnixStatic
+
+================GaudiKernel v13r3=====================================
+! 2002-11-21 - Sebastien Ponce
+ - fixes in Converter.cpp to avoid memory leaks
+
+! 2002-11-19 - Pere Mato
+ - Added setExecuted() after execute() in Algorithm::sysExecute(). Requested by
+   Vanya.
+   
+================ GaudiSvc v10r1p1 ============================================
+! 2002-11-29 - Pere Mato
+ - Corrections to support linking applications statically
+
+! 2002-11-21 - Sebastien Ponce
+ - memory leak fixes in DetDataSvc and PersistencySvc
+
+! 2002-11-19 - Sebastien Ponce
+ - memory leak fix in EventLoopMgr
+
+! 2002-11-06 - Sebastien Ponce
+ - fixes in order to remove deprecated warnings on gcc 3.2
+ - coding conventions applications
+ 
+ ================ GaudiAlg v6r3p1 =======================================
+! 2002-11-29 - Pere Mato
+ - Corrections to support linking applications statically
+ 
+================ GaudiDb v8r3p1======================================
+! 2002-11-29 - Pere Mato
+ - Corrections to support linking applications statically
+
+!==================== HbookCnv v13r2p1 ==========================
+! 2002-11-29 - Pere Mato
+ - Corrections to support linking applications statically
+ 
+================= RootHistCnv v8r1p2 =======================================
+! 2002-11-29 - Pere Mato
+ - Corrections to support linking applications statically
+
+================ GaudiRootDb v9r1p3 ================================
+! 2002-11-29 - Pere Mato
+ - Corrections to support linking applications statically
+
+!============================== ROOT v2r30309p1 ===========================
+! 2002-11-29 - Stefan Roiser
+  Improved requirements. Added specific fragments for nmake to correct
+  some of the problems

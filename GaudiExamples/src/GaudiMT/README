@@ -1,0 +1,8 @@
+
+To run the example, do 
+
+cd  .../GaudiExamples/v*/${CMTCONFIG}
+./GaudiMT.exe ../options/GaudiMT.opts [number of threads (default=4)] 
+
+e.g to run with 3 threads do 
+./GaudiMT.exe ../options/GaudiMT.opts 3

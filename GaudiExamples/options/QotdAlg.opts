@@ -1,0 +1,43 @@
+//##############################################################
+// Job options file
+//==============================================================
+
+AuditorSvc.Auditors = { "ChronoAuditor" };
+//--------------------------------------------------------------
+
+
+//--------------------------------------------------------------
+// Private Application Configuration options
+//--------------------------------------------------------------
+ApplicationMgr.TopAlg   = { 
+  "GaudiEx::QotdAlg/Qotd1",
+  "GaudiEx::QotdAlg/Qotd2",
+  "GaudiEx::QotdAlg/Qotd3"
+};
+
+// Configure the MessageSvc to (also) output MsgStreams from various
+// sources into additional sinks (than stdout)
+MessageSvc.loggedStreams = { 
+  'Qotd1' : 'my_qotd1.log',
+  'Qotd2' : 'my_qotd2.log',
+  // note we redirect the output of Qotd3 in the same file than Qotd1
+  // it works as expected (at least in a non multi-threaded env.
+  'Qotd3' : 'my_qotd1.log'
+};
+
+// Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
+MessageSvc.OutputLevel  = 3;
+// MessageSvc.UseColors = true;
+ApplicationMgr.OutputLevel = 1;
+ServiceManager.OutputLevel = 2;
+StatusCodeSvc.OutputLevel = 1;
+
+
+
+//--------------------------------------------------------------
+// Event related parameters
+//--------------------------------------------------------------
+ApplicationMgr.EvtMax   = 5;
+ApplicationMgr.EvtSel  = "NONE";
+
+

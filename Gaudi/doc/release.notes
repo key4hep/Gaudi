@@ -1,0 +1,282 @@
+Package : Gaudi
+Package manager : Marco Clemencic
+
+================================ Gaudi v22r1 =================================
+================================ Gaudi v22r0 =================================
+! 2010-12-17 - Eoin Smith
+ - Updated gaudirun.py and python/Gaudi/Main.py for multicore execution
+   Multicore Execution with flag : --ncpus=N ( N in {-1,0,...,Z} )
+     -1 : all available cores
+      0 : conventional serial execution
+      1 : parallel execution with 1 worker
+   parallel execution generates log file named by date and time of run
+
+================================ Gaudi v21r11 ================================
+! 2010-07-28 - Marco Clemencic
+ - Added dependency on pytools to be able to use Gaudi.Parallel.
+
+================================ Gaudi v21r10 ================================
+! 2010-06-23 - Marco Clemencic
+ - Minor fix in Configuration.getConfigurable.
+
+================================ Gaudi v21r9 =================================
+! 2010-04-22 - Marco Clemencic
+ - Use the property "ReturnCode" of the ApplicationMgr as return value of the
+   application (gaudirun.py).
+
+================================ Gaudi v21r8 =================================
+! 2010-03-02 - Marco Clemencic
+  - Modified the test gaudi.conf_user_autoapply to test the dependency between
+    named ConfigurableUser instances.
+
+================================ Gaudi v21r7 =================================
+! 2010-01-08 - Marco Clemencic
+ - Added test for bug #61144 (configuration problem for 'empty' tool handles)
+
+================================ Gaudi v21r6 =================================
+! 2009-11-09 - Marco Clemencic
+ - Extended the test gaudi.propagate_properties to expose a bug affecting
+   properties of type list and dict (fixed).
+
+================ Gaudi v21r5 ====================================
+! 2009-10-19 - Marco Clemencic
+ - Modified the python modules Gaudi, Gaudi.Main and the script guadirun.py
+   to avoid that an "import Gaudi" indirectly triggers a load of the configurables
+   database (it is necessary to import Gaudi.Configuration).
+
+! 2009-10-12 - Marco Clemencic
+ - Normalization of white-spaces in Python files.
+   (using http://svn.python.org/projects/python/tags/r254/Tools/scripts/reindent.py)
+
+! 2009-10-09 - Eoin Smith
+ - Patch #3297: Support for GaudiPython Parallel in gaudirun.py
+   Modified gaudirun.py to accept the command line option "--parallel" to
+   specify the number of workers to use.
+
+================ Gaudi v21r4 ====================================
+! 2009-07-22 - Marco Clemencic
+ - Modified the the code behind "from Configuables import MyConf" to match the
+   standard Python semantics: raise an exception if the configurable is not
+   found.
+   The meta-module "Configuables" should be deprecated in favor of
+   "Gaudi.Configurables", that can also be used as in:
+
+     import Gaudi.Configurables as cfgs
+     cfgs.MyConf
+
+   The exception for missing configurables can be disabled with
+
+     import Gaudi.Configurables
+     Gaudi.Configurables.ignoreMissingConfigurables = True
+
+   (done by default in genconfuser.py for backward compatibility).
+
+! 2009-07-20 - Marco Clemencic
+ - Moved the use of tcmalloc from Gaudi to GaudiPolicy to make it available
+   everywhere.
+
+================ Gaudi v21r3 ====================================
+================ Gaudi v21r2 ====================================
+! 2009-06-25 - Marco Clemencic
+ - Added support for tcmalloc (via LD_PRELOAD) in gaudirun.py (option -T/--tcmalloc).
+
+! 2009-06-15 - Hubert Degaudenzi
+ - use the new LCG tag convention.
+
+! 2009-05-25 - Marco Clemencic
+ - Fixed bug #45517: Units not taken into account in .opts files
+   Added the function importUnits() to populate from python the units used in a
+   .opts file.
+   Added a test for the new function.
+
+================ Gaudi v21r1 ====================================
+================ Gaudi v21r0 ====================================
+! 2009-04-08 - Wouter Hulsbergen
+ - Added '--printsequence' to gaudirun.py to print the sequence of algorithms
+   after the configuration.
+
+! 2009-01-29 - Marco Clemencic
+ - Symbol visibility
+   - Updated main.cpp to use the new GAUDI_IMPORT macro.
+
+================ Gaudi v20r4 ====================================
+! 2008-12-16 - Marco Clemencic
+ - Fixed bug #45392: gaudrun.py returns status code 0 even if the application
+                     manager fails
+   The return code of AppMgr.run is now correctly propagated.
+
+! 2008-12-15 - Marco Clemencic
+ - Added a test for the passive "depedency" of ConfigurableUser.
+
+! 2008-12-05 - Marco Clemencic
+ - Added a test for the new logic of ConfigurableUser.propagateProperty.
+
+================ Gaudi v20r3 ====================================
+! 2008-11-04 - Marco Clemencic
+ - Improvements in gaudirun.py:
+   - Added command line option --post-option to accept (single line) options to
+     be executed after the apply of ConfigurableUser.
+   - Modified --option to allow execution of the option in the actual position
+     on the command line with respect to the option files.
+   - Added --debug to enable some debugging print-out in gaudirun.py and in the
+     Configurables.
+
+! 2008-11-03 - Marco Clemencic
+ - Added the function Gaudi.Configuration.getConfigurable to simplify the
+   creation of configurable instances. If a configurable wit the give name
+   exists it is returned, otherwise it is created using the name as its type or
+   the specified type.
+
+! 2008-10-30 - Marco Clemencic
+ - Extended gaudirun.py to use the automatic apply of ConfigurableUser.
+ - Adde the options:
+   --output (to replace -p and allow dump to file in python or old options)
+   --no-conf-user-apply (to disable the automatic apply of ConfigurableUser)
+
+! 2008-10-23 - Marco Clemencic
+ - Added a test for bug #42428 (properties of clones are not cloned).
+ - Added the directory tests/python for modules needed for the tests
+   - added a fake configurable MyToolTest into the new directory
+ - Added a test for bug #43065 (Error when unpickling GaudiHandles) using the
+   fake configurable MyToolTest, within a more generic (in principle) test for
+   pickling (gaudi.pickle_write) and unpickling (gaudi.pickle_read).
+
+! 2008-10-21 - Marco Clemencic
+ - Minor changes in gaudirun.py to make use of the improvements in
+   GaudiKernel.ProcessJobOptions.
+
+! 2008-10-17 - Marco Clemencic
+ - Fixed bug #39846. gaudirun.py creates invalid entries in flattened options
+   - Use only the configurables that pass the filter "getNeededConfigurables"
+     (from GaudiKernel.Proxy.Configurable) to generate pickle file or dump.
+   - Added test (gaudi.bug_39846).
+
+! 2008-08-06 - Marco Clemencic
+ - Added a test for bug #39809 (wrong configuration of public tools).
+
+! 2008-08-05 - Marco Clemencic
+ - Fixed bug #39116. gaudirun.py export to old options prints '#' instead of '//'
+   The fix required a review of the way messages are printed across the whole
+   Configurables machinery. The Python standard logging module is now used and
+   the customization in GaudiKernel.Logging has been removed.
+   In printout in Python job option files should be done with the log instance
+   accessible from Gaudi.Configuration.
+ - Added a test for bug #39116 (gaudi.export_oldopts).
+
+================ Gaudi v20r2 ====================================
+================ Gaudi v20r1 ====================================
+! 2008-06-25 - Marco Clemencic
+ - Added tests for:
+   - bug #38206: gaudirun.py fails to set a list property from a property
+                 reference.
+   - bug #38194: gaudirun.py expands too many environment variables.
+
+================ Gaudi v20r0 ====================================
+! 2008-06-13 - Marco Clemencic
+ - Apply the pattern ProjectVersionHeader to generate the GAUDI_VERSION.h file.
+   Added the version.cmt file too, so that the pattern works without version
+   directory.
+
+! 2008-06-05 - Marco Clemencic
+ - Added tests for:
+   - Bug #36742: Cannot pickle options using "PropertyReference"
+   - Bug #37479: gaudirun.py fails parsing old option lines with comments
+                 and quotes.
+   - Bug #37488: importOptions does not expand environment variables.
+   - Bug #35347: Cannot import 2 Python option files with the same name.
+   - Bug #34769: Assigning a configurable to a list property does not fail.
+ - Added Windows batch wrapper for gaudirun.py (gaudirun.bat).
+ - Added to the command line option "--option" to gaudirun.py.
+   It allows to specify Python lines to be executed after the standard
+   configuration to modify it. E.g.:
+
+     gaudirun.py default.py --option "MessageSvc().OutputLevel = DEBUG"
+
+   A test has been added too (gaudi.cmdline_conf).
+
+================ Gaudi v19r9 ====================================
+! 2008-04-04 - Marco Clemencic
+ - Bug #35201. Python options parser '//' interpreted as comment in strings.
+   Added a test for the bug.
+
+! 2008-03-07 - Marco Clemencic
+ - Fixed Bug #34046. False warning when mixing Python options and old options.
+   Improved the test on case sensitivity to expose the bug (if present).
+
+! 2008-03-06 - Marco Clemencic
+ - Modified Gaudi.Main.gaudimain to use the environment variables GAUDIAPPNAME
+   and GAUDIAPPVERSION to set the default values for the ApplicationMgr
+   properties AppName and AppVersion.
+
+================ Gaudi v19r8 ====================================
+! 2008-02-11 - Marco Clemencic
+ - Added aliases for the configurables FileCatalog (Gaudi::MultiFileCatalog) and
+   IODataManager (Gaudi::IODataManager).
+
+! 2008-02-08 - Marco Clemencic
+ - Modified python/Gaudi/CommonGaudiConfigurables.py to ignore missing packages,
+   essentially to allow the import of Gaudi.Configuration when GaudiPoolDb is
+   missing.
+
+================ Gaudi v19r7 ====================================
+! 2008-01-11 - Marco Clemencic
+ - Added a test to check the late-bound references in old options
+   (e.g. "MyAlg.MyProp = @AnotherAlg.AProp;").
+ - Added a simple test for properties with wrong cases in (old) job options.
+
+! 2008-01-09 - Marco Clemencic
+ - Added a test to check the conversion between configurables and strings.
+
+================ Gaudi v19r6 ====================================
+! 2007-11-16 - Marco Clemencic
+ - Added a couple of tests for the correct overriding of mixed options (exposing
+   a bug fixed in GaudiKernel).
+
+! 2007-11-14 - Marco Clemencic
+ - Added a test for the function GaudiKernel.Configurable.purge.
+
+! 2007-11-12 - Marco Clemencic
+ - Moved the *.qmt files to the implicit suite (directory) "gaudi.qms".
+
+! 2007-11-01 - Marco Clemencic
+ - Added the function Gaudi.Configuration.configurationDict to produce the
+   dictionary of configurations.
+ - Minor changes in the command line options for gaudirun.py:
+   - short option for "--dry-run" in now "-n"
+   - the configuration is printed as dictionary by default and the old format is
+     activated with the option "--old-opts" (removed "--opts-dict")
+ - Added tests for the job option parser.
+ - Moved "importOptions" from Gaudi.Configuration to
+   GaudiKernel.ProcessJobOptions. The function is still accessible from
+   Gaudi.Configuration (from Gaudi.Configuration import importOptions).
+
+! 2007-10-29 - Marco Clemencic
+ - Moved the command line logic from the class Gaudi.Main.gaudimain to the
+   script gaudirun.py, using optparse instead of getopt.
+ - Added an option to format the dump of the computed properties as a Python
+   dictionary (formatted such that it can be evaluated in Python).
+ - Renamed some command line options.
+ - The different behaviors depending on the file name extension, are delegated
+   to Configuration.importOptions().
+
+! 2007-10-29 - Pere Mato
+ - Adapted to new GaudiPython structure
+
+==================== Gaudi v19r5 ======================================
+! 2007-10-10 - Pere Mato
+ - Added GaudiRun alias to "gaudirun.py"
+
+! 2007-10-02 - Pere Mato
+ Patch #1400:  Support for configuration in Python pickle files
+
+! 2007-09-28 - Pere Mato
+ - Renamed the meta module containing common configurables from ConfDb to
+   Configurables.
+
+! 2007-09-24 - Hubert Degaudenzi
+ - changed back Configurables.py into Configurable.py (it was
+   a mistake)
+
+! 2007-09-21 - Hubert Degaudenzi
+ - New package to contain the main part of the Gaudi application.
+   Moved the necessary parts from GaudiKernel.

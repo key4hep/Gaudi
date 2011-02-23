@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="program"><text>gaudirun.py</text></argument>
+<argument name="args"><set><text>Timing.py</text></set></argument>
+<argument name="validator"><text>
+import re
+expected = ( r"Timing\s+SUCCESS\s+The timing is \(in us\)\s*\n" + 
+             r"\|\s*\|\s*#\s*\|\s*Total\s*\|\s*Mean\+-RMS\s*\|\s*Min/Max\s*\|\s*\n" +
+             r"\|\s*\(1U\)\s*\|\s*\d*\s*\|(?:[-+.\deE /]+\|){3}\s*\n" +
+             r"\|\s*\(2U\)\s*\|\s*\d*\s*\|(?:[-+.\deE /]+\|){3}\s*\n" +
+             r"\|\s*\(3U\)\s*\|\s*\d*\s*\|(?:[-+.\deE /]+\|){3}\s*\n" )
+if not re.search(expected,stdout):
+    causes.append("missing regexp match")
+    result["GaudiTest.regexp"] = result.Quote(expected.replace("\\n","\n"))
+</text></argument>
+</extension>

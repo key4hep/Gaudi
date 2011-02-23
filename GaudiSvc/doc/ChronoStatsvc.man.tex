@@ -1,0 +1,478 @@
+\documentclass{lhcbnote}
+
+\usepackage{a4}
+\usepackage{times}
+\usepackage{listings}
+\usepackage{lscape}
+\usepackage{longtable}
+
+\newcommand{\bfsc}         {\scshape\bfseries}
+\newcommand{\bftt}         {\ttfamily\bfseries}
+\newcommand{\bfit}         {\itshape\bfseries}
+\newcommand{\scbf}         {\scshape\bfseries}
+\newcommand{\slbf}         {\slshape\bfseries}
+\newcommand{\itbf}         {\itshape\bfseries}
+\newcommand{\ttbf}         {\ttfamily\bfseries}
+
+\renewcommand{\sc  }       {\scshape}
+\renewcommand{\sl}         {\slshape}
+\renewcommand{\it}         {\itshape}
+\renewcommand{\tt}         {\ttfamily}
+
+
+\begin{document}
+
+\lstset{language=[ANSI]C++}
+%\lstset{language=[Visual]C++}
+\lstset{indent=15mm}
+\lstset{labelstep=1}
+\lstset{labelstyle=\tt\tiny}
+
+\doctyp{Internal Note}
+\dociss{1}
+\docrev{2}
+\docref{LHCb-COMP-Offline-2004-064}
+\doccre{December 1, 1999}
+\docmod{\today}
+
+
+                
+\title{Chrono \& Stat Service}
+\author{Vanya Belyaev\footnote{E-mail:{\tt Ivan.Belyaev@itep.ru}} \\ 
+  {\it LAPP/Annecy \& ITEP/Moscow}}
+\maketitle 
+
+\begin{abstract}
+The detailed description of standard Chrono \& Stat Service
+is presenetd. The Service is designed for simple code profiling 
+and statistical monitoring.
+\end{abstract}
+
+\tableofcontents 
+
+\chapter{Chrono \& Stat Service and {\bftt{IChronoStatSvc}}  Interface}  
+
+Chrono \& Stat Service is one of standard components directly 
+visible by Algorithm object. 
+This service is designed to fulfil two different task:
+
+\begin{itemize}
+ \item chrono profiling  of  the  codes  ("Chrono" part)  
+ \item simple statistical monitoring of useful quantities ("Stat" part)  
+\end{itemize} 
+
+\section{Access to the Chrono \& Stat Service}  
+Communication with Chrono \& Stat Service is performed via an 
+abstract  interface {\bftt{IChronoStatSvc}}.  
+Each Algorithm object\footnote{The method is also available 
+  through the base class {\tt{GaudiTool}} for Tool object}  has the 
+method for accessing to the pointer to an abstract interface of type 
+{\it IChronoStatSvc}:  
+
+\begin{lstlisting}{}
+  // The standard Chrono & Stat Service, 
+  // Return a pointer to the service if present 
+  IChronoStatSvc*   chronoSvc() const ; 
+\end{lstlisting} 
+
+For accessing the Chrono \& Stat Service outside the Algorithm 
+object, one should use standard method of service location, using 
+either the name of the service {\it "ChronoStatSvc"} or the unique
+service ID: {\bftt{ extern const InterfaceID\& IID\_IChronoStatSvc}}. 
+
+\section{{\bftt{IChronoStatSvc}} abstract interface}
+
+The most important methods from abstract
+{\bftt{IChronoStatSvc}} interface are listed here:
+ 
+\begin{lstlisting}{}
+ class IChronoStatSvc : virtual public IService  
+{  
+  ....
+public:
+  ...
+  // the actual type for Chrono Tag 
+  typedef    std::string     ChronoTag  ;
+  // the actual type for Stat   Tag 
+  typedef    std::string     StatTag    ;
+  // type of the Flag   variable for statistics
+  typedef    double          StatFlag   ; 
+  // type of the Weight variable for statistics 
+  typedef    double          StatWeight ;  
+  // Type of the delta-time
+  typedef    longlong        ChronoTime ;  
+  ... 
+  enum ChronoStatus
+    { UNKNOWN = 0 , RUNNING , STOPPED } ;
+  enum ChronoType 
+    { USER    = 0 , KERNEL  , ELAPSED } ;
+  ... 
+
+  virtual StatusCode   chronoStart  
+          ( const ChronoTag&  t ) = 0;
+  virtual StatusCode   chronoStop   
+          ( const ChronoTag&  t ) = 0;
+  virtual ChronoTime   chronoDelta  
+          ( const ChronoTag&  t , 
+            ChronoType        f ) = 0;
+  virtual StatusCode   chronoPrint  
+          ( const ChronoTag&  t ) = 0; 
+  virtual ChronoStatus chronoStatus 
+          ( const ChronoTag&  t ) = 0;
+  
+  virtual StatusCode   stat         
+          ( const StatTag&    t , 
+            const StatFlag&   f , 
+            const StatWeight& w ) = 0;
+  virtual StatusCode   statPrint    
+          ( const StatTag&    t ) = 0;
+
+
+  virtual const ChronoEntity* chrono 
+          ( const ChronoTag& t ) const = 0 ;
+  virtual const StatEntity*   stat   
+          ( const StatTag&   t ) const = 0 ;
+
+  ...
+};
+\end{lstlisting} 
+
+\section{Code profiling} 
+
+Profiling is performed by using {\bftt{chronoStart}} and 
+{\bftt{chronoStop}} methods inside the codes to be profiled, e.g:
+
+\begin{lstlisting}{}
+  /// ...
+  IChronoStatSvc* svc = ...  
+  ///  start 
+  svc->startChrono( "Some Tag" ); 
+  /// here some user code are placed:    
+  ... 
+  /// stop 
+  svc->stopChrono( "SomeTag" ); 
+\end{lstlisting} 
+
+The profiling informations accumulates 
+under the {\it{tag}} name, given as an argument for these method. 
+The Service performs the measurement of the 
+time between subsequent calls of {\bftt{startChrono}}
+ method and {\bftt{endChrono}} method with the same {\it{tag}}. 
+The later is important, since from the sequence of calls
+
+\begin{lstlisting}{} 
+svc->endChrono("Tag"); 
+svc->endChrono("Tag"); 
+svc->startChrono("Tag"); 
+svc->startChrono("Tag");
+svc->endChrono("Tag");
+svc->endChrono("Tag"); 
+svc->startChrono("Tag"); 
+svc->startChrono("Tag"); 
+svc->endChrono("Tag"); 
+\end{lstlisting} 
+
+ only the elapsed time between 3 and 5 lines and the 
+elapsed time between 7 and 9 lines would be accumulated.    
+
+The information could be printed either directly 
+using {\bftt{printChrono}} method of standard 
+Chrono \& Stat Service, or could be printed in the 
+final table of profiling information. 
+
+The detailed information is available through 
+the helper class {\bftt{ChronoEntity}}. 
+
+\begin{lstlisting}{} 
+// get the full information 
+const ChronoEntity* entity = svc->chrono("Tag");
+\end{lstlisting} 
+
+The class {\bftt{ChronoEntity}}, defined in the file 
+{\bftt{GaudiKernel/ChronoEntity.h}} is equipped with set 
+of methods which allow detailed run-time inspection 
+of profiling information. The major public methods
+are listed here:
+
+\begin{lstlisting}{}
+class ChronoEntity 
+{
+  ...
+  public:
+  /// return the status of chrono
+  IChronoStatSvc::ChronoStatus     status() const ;
+   /// number of chrono measurements
+  unsigned long        nOfMeasurements   () const ;
+
+  /// minimal measurement for ``user'' time
+  long double          uMinimalTime      () const ;
+  /// minimal measurement for ``kernel'' time
+  long double          kMinimalTime      () const ;
+  /// minimal measurement for ``ellapsed'' time
+  long double          eMinimalTime      () const ;
+
+  /// maximal measurement for ``user'' time
+  long double          uMaximalTime      () const ;
+  /// maximal measurement for ``kernel'' time
+  long double          kMaximalTime      () const ; 
+  /// maximal measurement for ``ellapsed'' time
+  long double          eMaximalTime      () const ;
+
+  /// total ``user'' time
+  long double          uTotalTime        () const ;
+  /// total ``Kernel'' time
+  long double          kTotalTime        () const ;
+  /// total ``Elapsed'' time
+  long double          eTotalTime        () const ;
+
+  /// total time (``user'' + ``kernel'') 
+  long double          totalTime         () const ;
+
+  /// sum of squared ``user''   time intervals
+  long double          uStatistics       () const ;
+  /// sum of squared ``Kernel'' time intervals
+  long double          kStatistics       () const ;
+  /// sum of squared ``Elapsed'' time intervals
+  long double          eStatistics       () const ;
+  
+  /// average ``User''   Time
+  long double          uMeanTime         () const ;
+  /// average ``Kernel'' Time
+  long double          kMeanTime         () const ;
+  /// average ``Elapsed''   Time
+  long double          eMeanTime         () const ;
+
+  /// r.m.s ``User'' Time
+  long double          uRMSTime          () const ;
+  /// r.m.s ``Kernel'' Time
+  long double          kRMSTime          () const ;
+  /// r.m.s ``Elapsed'' Time
+  long double          eRMSTime          () const ;
+
+  /// error in mean ``User''   time
+  long double          uMeanErrorTime    () const ;
+  /// error in mean ``Kernel'' time
+  long double          kMeanErrorTime    () const ;
+  /// error in mean ``Elapsed''   time
+  long double          eMeanErrorTime    () const ;
+  
+  /// print the chrono;
+  std::string          outputUserTime    () const ; 
+  /// print the chrono;
+  std::string          outputSystemTime  () const ; 
+  /// print the chrono;
+  std::string          outputElapsedTime () const ;
+
+  ...
+};
+\end{lstlisting} 
+
+This class allows to inspect the total, minimal, maximal, 
+mean, RMS and uncertainty in mean evaluation 
+for ``User'', ``Kernel'' and ``Elapsed'' time measurements. 
+Also the helper statistics of accumulated corresponding 
+squared time intervals  is available, which allow to evaluate
+other statictical quantities e.g. differents statistical 
+moments. 
+ 
+\section{Statistical monitoring} 
+
+Statistical monitoring is performed by using the {\bftt{stat}} method 
+inside user code:
+ 
+\begin{lstlisting}{}
+/// ... Flag and Weight to be accumulated:
+svc->stat( " Number of Tracks " , Flag , Weight ); 
+\end{lstlisting} 
+
+The statistical information contains the 
+"accumulated" {\it flag }, which is the sum of all 
+{\tt{Flag}}s for the given tag, and the 
+"accumulated" {\it weight}, which is the product of all 
+{\tt{Weight}}s for the given tag.   
+The information is printed in the final table of 
+statistics. 
+
+The detailed information is available through 
+the helper class {\bftt{StatEntity}}. 
+
+\begin{lstlisting}{} 
+// get the full information 
+const StatEntity* entity = svc->stat("Tag");
+\end{lstlisting} 
+
+The major pubulic methods of class {\bftt{StatEntity}}, defined
+in the file {\bftt{GaudiKernel/StatEntity.h}} are listed here:
+
+\begin{lstlisting}{}
+class StatEntity
+{
+  ...
+  public:
+  /// number of measurements  
+  const size_t        nEntries           () const ;
+
+  /// minimal flag
+  const StatFlag      flagMin            () const ;
+  /// maximal flag
+  const StatFlag      flagMax            () const ;
+  /// accumulated "flag"
+  const StatFlag      flag               () const ;
+  /// accumulated "flag squared"
+  const StatFlag      flag2              () const ;
+  /// mean value of flag 
+  const StatFlag      flagMean           () const ; 
+  /// r.m.s of flag 
+  const StatFlag      flagRMS            () const ;
+  /// error in mean value of flag 
+  const StatFlag      flagMeanErr        () const ;
+
+  /// minimal "weight"
+  const StatWeight    weightMin          () const ;
+  /// maximal "weight"
+  const StatWeight    weightMax          () const ;
+  /// accumulated "weight"
+  const StatWeight    weight             () const ;
+  /// "mean harmonic" weight 
+  const StatWeight    weightHarmonicMean () const ;
+  
+  /// output of StatEntity 
+  const std::string   stringOutPut       () const ;
+  ...
+};
+\end{lstlisting}
+
+This class allows to inspect the total, minimal, maximal, 
+mean, RMS and uncertainty in mean evaluation 
+for ``Flag'' variable. Also the helper statistics of 
+accumulated squared ``Flag'' is available.
+For ``Weight'' variable the accumulated ``Weight'', 
+minimal and maximal values and the harmonic mean is available. 
+
+
+In some sense the profiling could be considered as 
+statistical monitoring with variable {\tt{Flag}} equals 
+to elapsed time of the process.   
+ 
+\chapter{{\bftt{Chrono}} and {\bftt{Stat}} helper classes}
+
+ To simplify the usage  of Chrono \& Stat Service, 
+two helper classes were developed: {\bftt{Chrono}} 
+and {\bftt{Stat}}. 
+Using these utilities, one hides the communications with 
+Chrono \& Stat Service and provides more friendly environment. 
+
+\section{\bftt{Chrono}} 
+{\bftt{Chrono}} is a small helper class, which 
+invokes {\bftt{startChrono}} method of Chrono \& Stat Service 
+in the  constructor  and invokes {\bftt{endChrono}} 
+method in the  destructor. It must be used as 
+{\it automatic local object}.  It performs the profiling of the 
+codes since its own creation till the end of the current scope, e.g: 
+
+\begin{lstlisting}{}
+/// ... 
+{ // begin of the scope 
+   Chrono chrono( svc , "ChronoTag" ) ;
+   /// some codes:
+    ...
+   ///
+} // end of the scope
+/// ...  
+\end{lstlisting}   
+
+For usage of {\bftt{Chrono}} utility one must include the file 
+{\bftt{GaudiKernel/Chrono.h}}.
+
+If the Chrono \& Stat Service  is not accesible \verb+svc=0+,
+the {\bftt{Chrono}} object does nothing.
+ 
+\section{{\bftt{Stat}}}
+
+{\bftt{Stat}} is a small helper class, which 
+invokes {\bftt{stat}} method of Chrono \& Stat Service 
+in the  constructor:
+
+\begin{lstlisting}{}
+/// ... 
+Stat stat( svc , "StatTag" , Flag , Weight ) ;
+/// ...  
+\end{lstlisting} 
+
+For usage of {\bftt{Stat}} utility one must include the file 
+{\bftt{GaudiKernel/Stat.h}}
+
+If the Chrono \& Stat Service  is not accesible \verb+svc=0+,
+the {\bftt{Stat}} object does nothing.
+
+\chapter{Properties of standard {\bftt{ChronoStatSvc}} service }
+   
+\section{Properties for profiling  } 
+Profiling properties of the standard Chrono \& Stat Service 
+which are configurable via {\it job options file} and their 
+default values are:
+
+\begin{lstlisting}{} 
+// deside if the final printout should be performed;  
+ChronoStatSvc.ChronoPrintOutTable = true; 
+// if User   Time information to be printed?;
+ChronoStatSvc.PrintUserTime    = true       ; 
+// if System Time information to be printed?;
+ChronoStatSvc.PrintSystemTime  = false      ;
+// define the destination of the table to be printed;
+ChronoStatSvc.ChronoDestinationCout = false;
+// print level for profiling  ( according to MSG::Level)  
+ChronoStatSvc.ChronoPrintLevel      = 3 ; 
+// if printout is to be performed, 
+// should one take care about some ordering?  
+ChronoStatSvc.ChronoTableToBeOrdered = true ;
+\end{lstlisting}
+ 
+Tables are ordered according the total elapsed time. 
+
+\section{Properties for statistics } 
+Statistical properties of the standard Chrono \& Stat Service 
+which are configurable via{\it job options file} and their default values 
+are:
+
+\begin{lstlisting}{} 
+// deside if the final printout should be performed;  
+ChronoStatSvc.StatPrintOutTable = true; 
+// define the destination of the table to be printed;
+ChronoStatSvc.StatDestinationCout = false;
+// print level for profiling  ( according to MSG::Level)  
+ChronoStatSvc.StatPrintLevel      = 3 ; 
+// if printout is to be performed, 
+// should one take care about some ordering?  
+ChronoStatSvc.StatTableToBeOrdered = true ;
+\end{lstlisting}
+
+
+\chapter{Performance consideration  } 
+Implementation of Chrono \& Stat Service used two {\bftt{ std::map}} 
+containers. Therefore for very frequent calls it could cause the 
+performance penalty.  Usually this penalty  is negligible with respect to the 
+elapsed time of algorithms, but it is worth to avoid both the direct usage 
+of Chrono \& Stat Service as well as the  usage of it 
+through {\bftt{Chrono}} or {\bftt{Stat}} utilities inside the 
+internal loops:
+
+\begin{lstlisting}{}
+/// ...
+{  /// begin of the scope 
+Chrono chrono( svc , "Good Chrono");  /// OK
+long double a = 0 ; 
+for(  long i = 0 ; i < 1000000 ; ++i ) 
+ {
+ Chrono chrono( svc , "Bad Chrono");   /// not OK
+ /// some code :
+   a += sin( cos( sin( cos( (long double) i ) ) ) ); 
+ ///  end of codes
+Stat   stat  ( svc , "Bad Stat", a ); /// not OK 
+ }  
+Stat   stat  ( svc , "Good Stat", a); /// OK 
+} ///  end of the scope!
+/// ...  
+\end{lstlisting}  
+
+\end{document} 

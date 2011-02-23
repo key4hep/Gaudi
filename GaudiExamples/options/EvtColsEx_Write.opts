@@ -1,0 +1,50 @@
+// $Id: EvtColsEx_Write.opts,v 1.13 2008/01/30 17:06:49 marcocle Exp $
+// ============================================================================
+// CVS tag $Name:  $, version $Revision: 1.13 $
+// ============================================================================
+/** @file 
+ *
+ *  Job configuration ("options") file to run ExtColsEx example.
+ *
+ *  It reads the preparesd peudo-DST and WRITES
+ *  the Event Tag Collection 
+ *
+ *   @see EvtColAlg 
+ *   @see EvtColsEx_Prepare.opts 
+ *
+ *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr 
+ *  @date   2005-08-19  
+ */
+// ============================================================================
+
+// ============================================================================
+// POOL/persistency configuration 
+// ============================================================================
+#include "GaudiPoolDbRoot.opts"
+PoolDbCacheSvc.DLLs    += { "GaudiExamplesDict" } ;
+FileCatalog.Catalogs   = { "xmlcatalog_file:EvtColsEx.xml" } ;
+// ============================================================================
+
+// Define the other 'standard' DLLs and services
+ApplicationMgr.ExtSvc     += { "RndmGenSvc"                   ,
+                               "TagCollectionSvc/EvtTupleSvc" } ;
+
+
+ApplicationMgr.TopAlg   = { "Gaudi::Examples::EvtColAlg/Fill" } ;
+
+// Logical unit for Event Tag Collection 
+Fill.EvtColLUN   = "EVTCOLS" ;
+
+// input pseudo-DST
+EventSelector.Input = {"DATAFILE='PFN:EvtColsEx.dst' TYP='POOL_ROOT' OPT='READ'" };
+
+// output Event Tag Collection 
+//      map the 'logical unit' with the real file  
+EvtTupleSvc.Output  = { "EVTCOLS DATAFILE='PFN:EvtColsEx.tags' OPT='RECREATE' TYP='POOL_ROOTTREE'" };
+
+EventSelector.PrintFreq = 1000 ;
+ApplicationMgr.EvtMax   =   -1 ;
+
+// ============================================================================
+// The END 
+// ============================================================================

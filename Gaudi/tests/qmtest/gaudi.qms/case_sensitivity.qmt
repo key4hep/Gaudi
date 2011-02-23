@@ -1,0 +1,51 @@
+<?xml version="1.0" ?>
+<!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="program"><text>gaudirun.py</text></argument>
+<argument name="args"><set>
+<text>-v</text>
+<text>--dry-run</text>
+<text>case_sensitivity.py</text>
+</set></argument>
+<argument name="validator"><text>
+conf_dict = eval('\n'.join(stdout.splitlines()))
+expected = {'MyAlg1': {'AnotherTest': 'AValue', 'TestProperty': 'AValue'},
+            'MyAlg2': {'TestProperty': 'AValue'}}
+
+if conf_dict != expected:
+    causes.append("configuration result")
+    from pprint import PrettyPrinter
+    pp = PrettyPrinter()
+    result["GaudiTest.configuration.expected"] = result.Quote(pp.pformat(expected))
+    result["GaudiTest.configuration.found"] = result.Quote(pp.pformat(conf_dict))
+
+warnings = [ "WARNING: property 'testproperty' was requested for MyAlg1, but the correct spelling is 'TestProperty'",
+             "WARNING: Option 'testproperty' was used for MyAlg2, but the correct spelling is 'TestProperty'"]
+
+# extract all the warning messages 
+all_warnings = filter(lambda l: "warning" in l.lower(), stdout.splitlines())
+
+result["GaudiTest.configuration.missing_warnings"] = ""
+result["GaudiTest.configuration.unexpected_warnings"] = ""
+
+for ow in all_warnings:
+    found = None
+    for w in warnings:
+        if w in ow:
+            found = w
+            break
+    if found:
+    	warnings.remove(found)
+    else:
+        result["GaudiTest.configuration.unexpected_warnings"] += result.Quote("\n" + ow.strip())
+
+for w in warnings:
+    result["GaudiTest.configuration.missing_warnings"] += result.Quote("\n" + w)
+
+if result["GaudiTest.configuration.missing_warnings"]:
+    causes.append("missing warning")
+if result["GaudiTest.configuration.unexpected_warnings"]:
+    causes.append("warning")
+
+</text></argument>
+</extension>

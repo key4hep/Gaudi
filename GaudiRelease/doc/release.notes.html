@@ -1,0 +1,204 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+  <title>Gaudi Release Notes</title>
+  <script type="text/javascript" language="JavaScript">
+<!-- Work around for old browsers
+  function LinkToSavannah(){
+    // do nothing
+  }
+//-->
+  </script>
+  <script type="text/javascript" language="JavaScript1.2">
+<!-- This function requires JavaScript 1.2
+  // replaces the occurrences of (patch|task|bug)+number with the link to the savannah page
+  function LinkToSavannah()
+  {
+    patch = "<a href='https://savannah.cern.ch/patch/index.php?$2'>$1&nbsp;#$2</a>";
+    bug = "<a href='https://savannah.cern.ch/bug/index.php?$2'>$1&nbsp;#$2</a>";
+    task = "<a href='https://savannah.cern.ch/task/index.php?$2'>$1&nbsp;#$2</a>";
+    s = document.getElementsByTagName("body")[0].innerHTML;
+    s = s.replace(/([Pp]atch) #([0-9]*)/g,patch);
+    s = s.replace(/([Tt]ask) #([0-9]*)/g,task);
+    s = s.replace(/([Bb]ug) #([0-9]*)/g,bug);
+    document.getElementsByTagName("body")[0].innerHTML = s;
+  }
+// -->
+  </script>
+  <style type="text/css">
+span.author { color: #737373; }
+  </style>
+</head>
+<body onload="javascript:LinkToSavannah()">
+<pre>
+Package: GaudiRelease<br>
+Package Coordinator: Marco Clemencic, Charles Leggett<br>
+Purpose: Gaudi common set of packages<br><br>
+</pre>
+<!-- ====================================================================== -->
+<h2><a name="v22r1">Gaudi v22r1</a> (2011-02-21)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=60a">LCGCMT_60a</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Updated to pick up the patch release of ROOT (with a fixed memory leak)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v11r1):
+<ul>
+<li>Fixed bug #77806: createProjVersHeader breaks with Atlas style tags
+    allow Atlas style GaudiPKJ-XX-YY-ZZ tags<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v27r13):
+<ul>
+<li>Fixed bug #77534: this-&gt; needed in Property.h<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiSvc (v18r13):
+<ul>
+<li>Added another special case for the order of service finalization
+    (NTupleSvc after ToolSvc, because of GaudiTupleTool)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiPoolDb (v5r11):
+<ul>
+<li>Patch #4662: Fix for ROOT bug #77747<br/>
+    (<span class="author">Markus Frank, Marco Clemencic</span>)</li>
+<li>Fixed bug #78456: warning/error when building GaudiPoolDb<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiAlg (v13r6):
+<ul>
+<li>Fixes for ICC<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiGSL (v7r9):
+<ul>
+<li>Fixed bug #77948: GaudiGSL/requirements calls for lcg_dictionary<br/>
+    (<span class="author">Charles Leggett, Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v22r0">Gaudi v22r0</a> (2011-01-19)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=60">LCGCMT_60</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Starting from this release, ICC and VC9 are officially supported. SLC4 and VC71
+support is dropped.</li>
+<li>Modified the default installation in the InstallaArea: all the files are
+installed under the <tt>$CMTCONFIG</tt> sub-directory by default. Python binary
+modules are installed in the <tt>lib-dynload</tt> sub-directory of the
+<tt>python</tt> directory.<br/>
+The old behavior is still applied for the CMT tags <tt>ATLAS</tt> and
+<tt>use-shared-dir</tt>.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>DataObject base class modified: added an <tt>update</tt> method and removed
+    the <tt>serialize</tt> ones (patch #4613, fixes bug #77109).<br/>
+    (<span class="author">Markus Frank</span>)</li>
+<li>Fixed ICC warnings and remarks.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>New package GaudiProfiling.<br/>
+    (<span class="author">Karol Kruzelecki</span>)</li>
+<li>New package GaudiMP.<br/>
+    (<span class="author">Sebastien Binet</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v11r0):
+<ul>
+<li>Fixes and improvements in requirements, fragments and QMTest wrapper class
+    (see release.notes for details)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v27r12):
+<ul>
+<li>Patch #4607: Do not store process id.<br/>
+    (<span class="author">Markus Frank</span>)</li>
+</ul>
+</li>
+<li>GaudiSvc (v18r12):
+<ul>
+<li>Fixed bug #74981: failure in algorithm initialization doesn't stop DataOnDemandSvc<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed bug #75996: Support for CLHEP 2.0<br/>
+    (<span class="author">Brett Viren, Marco Clemencic</span>)</li>
+<li>Bug #76642: Strange behavior of InputCopyStream<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Patch #4588: moved code from HistorySvc::finalize to HistorySvc::stop<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiPoolDb (v5r10):
+<ul>
+<li>Fixed bug #76395: spurious count printouts in MyTrack and MyVertex classes<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Patch #4545: Fix to run with AgeLimit=1<br/>
+    (<span class="author">Markus Frank</span>)</li>
+<li>Patch #4541: Fixes to address coverity-detected errors (including bug #75702)<br/>
+    (<span class="author">Markus Frank</span>)</li>
+</ul>
+</li>
+<li>GaudiGSL (v7r8):
+<ul>
+<li>Fixed bug #75996: Support for CLHEP 2.0<br/>
+    (<span class="author">Brett Viren, Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiPython (v11r0):
+<ul>
+<li>Fixed bug #75996: Support for CLHEP 2.0<br/>
+    (<span class="author">Brett Viren, Marco Clemencic</span>)</li>
+<li>Patch #4074: migrate GaudiPython.Parallel to multiprocessing<br/>
+    (<span class="author">Sebastien Binet</span>)</li>
+<li>Added a reference to the Gaudi C++ namespace in AppMgr, so that it is still
+   available during "atexit". (included in fix to bug #75834)<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiMP (v1r0):
+<ul>
+<li>New package (patch #4074)<br/>
+    (<span class="author">Sebastien Binet</span>)</li>
+<li>Updates and improvements (see release.notes for details).<br/>
+    (<span class="author">Eoin Smith</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v22r0):
+<ul>
+<li>Updated gaudirun.py (see release.notes for details)<br/>
+    (<span class="author">Eoin Smith</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v22r0):
+<ul>
+<li>Fixed bug #76395: spurious count printouts in MyTrack and MyVertex classes<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added a test to validate the new behavior of InputCopyStream (bug #76642)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiRelease (v22r0):
+<ul>
+<li>New package GaudiProfiling<br/>
+    (<span class="author">Karol Kruzelecki</span>)</li>
+<li>New package GaudiMP<br/>
+    (<span class="author">Sebastien Binet</span>)</li>
+<li>Removed a couple of obsolete LHCb-specific packages from the requirements.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<hr/>
+<a href="release.notes.v21.html">Older versions</a>
+</body>
+</html>

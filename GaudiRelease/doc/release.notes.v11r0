@@ -1,0 +1,253 @@
+================ GaudiPolicy v5r6 ========================================
+! 20020913 - Pere Mato
+  - removed -Bsymbolic in the componentshr_linkopts macro. This is 
+    suspected of producing memory leaks.
+  - added more tags to take into account new version of redhat and gcc compiler
+
+================ GaudiKernel v13r0 =======================================
+! 2202-10-04 - Pere Mato
+ - Changed interface IJobOptionsSvc to add accessors to the JobOptions 
+   catalogue
+   
+! 2002-09-27 - Sebastien Ponce
+ - fixes in order to compile on gcc 3.2
+ - lots of coding conventions applications
+
+! 2002-09-25 - Markus Frank
+ - Add declarations for object factories to DeclareFactoryEntries.h
+ - Remove windows compiler warning in Bootstrap.cpp
+
+! 2002-09-25 - Sebastien Ponce
+ - Implementation of the reinitialize method for DataSvc
+
+! 20020916 Pere Mato
+ - Changes to clean the reference counting and memory deallocation
+   detected by the "valgrind" tool.
+
+! 20020703 Paolo Calafiura
+ - RegistryEntry.h: put DataSvc in the global ns when declaring as friend
+ - Service.h: add ISvcLocator include for service() inline implementation        
+
+! 20020628 Pere Mato, Sebastien Ponce
+ - Improved error reporting when loading dynamic libraries
+ - Changed INFO messages to DEBUG when initializing services
+ - Replaced forward class declarations by including the concerned header files.
+   This is to aliviate user confusion.
+ - Added function format(string fmt, ...) that can be used to format messages
+   within the MsgStream class.
+   Example: 
+   log << MSG::INFO << format("Evt: %8d Run: %8d", evt, run) << endmsg;
+	 Caveat: Since the unspecified argument list is used (...) the arguments can not
+	 be cheched for the correct type and possible conversions are not triggered. 
+
+! 20020529 Paolo Calafiura
+ - Auditor.h: service() needs IServiceLocator header file
+ - DeclareFactoryEntries.h: typo in AudFactory name
+ 
+! 20020506 Paolo Calafiura
+ - PropertyMgr: use interface hub (Massimo ApplicationMgr refactoring)
+
+! 20020506 Andrea Valassi
+ - Change in MsgStream.h to allow the use of std::hex on Windows
+ 
+================ GaudiSvc v10r0 ============================================
+! 2002-10-04 - Pere Mato
+ - Added accessors to the JobOptions Catalogue to allow to edit from any 
+   client: getClients(), getProperties(...), addProperyToCatalogue(...),
+   removePropertyFromcatalogue(...)
+   New version of IJobOptionsSvc.
+
+! 2002-09-27 - Sebastien Ponce
+ - fixes in order to compile on gcc 3.2
+ - lots of coding conventions applications
+
+! 2002-09-27 - Sebastien Ponce
+ - fixes in order to compile on gcc 3.2
+ - lots of coding conventions applications
+
+! 2002-09-27 - Pere Mato
+ - Added the following properties to MessageSvc to allow the control of output level
+   for objects that can not be controlled by job options (e.g. DetectorElement, etc.)
+   MessageSvc.setVerbose += {"name1", "name2"};
+   (or  setDebug, setInfo, setWarning, setError, setFatal, setAlways )
+   
+! 2002-09-25 - Sebastien Ponce
+ - implementation of reinitialize method for DetDataSvc
+ - implementation of histogram serialization and deserialization
+
+! 20020924 - Pere Mato
+ - Changes to clean the reference counting and memory deallocation
+   detected by the "valgrind" tool. 
+   Modified files: ApplicationMgr.cpp(h), 
+   AlgorithmFactory.cpp, AppMgrRunable.cpp(h),  ConverterFactory.cpp, 
+   DLLClassManager.cpp(h), EventLoopMgr.cpp(h), MinimalEventLoopMgr.cpp,
+   ObjectManager.cpp(h), ServiceManager.cpp, AuditorSvc.cpp, EvtDataSvc.cpp(h),
+   EventSelector.cpp, HistogramSvc.cpp, PropertyCompiler.cpp, MessageSvc.cpp,
+   RndmEngine.cpp, RndmGen.cpp, RndmGenSvc.cpp
+   
+============== GaudiAud v6r1==========================================================
+! 2002-09-24 - Pere Mato
+ - Changes to clean the reference counting and memory deallocation
+   detected by the "valgrind" tool. Changed failes: ChronoAuditor.cpp (.h)
+ - requirements: use v* 
+
+================ GaudiAlg v6r2 =======================================
+! 2002-09-27 - Pere Mato
+ - Added new base class GaudiAlgorithm developed originally in the context of 
+   the LHCb Calorimeter (Ivan Belyaev [Ivan.Belyaev@cern.ch])
+ 
+   The most essential features
+
+   1) 3 predefined properties: a) "Input", b) "Output", c) "Detector" 
+      for value of each property the special accessor is defined:
+      inputData(), outputData(), detData() 
+
+   2) initialize method prints the values of all used properties 
+      in MSG::DEBUG mode 
+
+   3) Simplified error/warning/exceptions/printing:
+
+      StatusCode sc = ... ;
+      if( sc.isFailure() ) { return Error("something wrong here!",sc);}
+      ...
+      if( sc.isFailure() ) { return Warning("something wrong here!",sc);}
+ 
+      Each errors and warning are counted internally and at the end 
+      one has the full printout of all errors, warnings and exceptions. 
+ 
+      The actual error message is extended with the name the actual
+      type (RTTI) of the algorithm 
+
+   4) Easy way to deal with exceptions (catch, throw, re-throw) 
+   
+     a) throw the exception:
+
+      if( sc.isFailure() ) { return Exception(" something wrong here!");}
+
+      "Return" here is artificial. Nothing is actually returned.
+      and exception is thrown 
+
+     b) catch and rethrow the exceptions
+      try { ... }
+      catch( const GaudiException& e1 )  {
+        /* do something here */ 
+        /// rethrow the exception (if needed) 
+        return Exception(" coudl not recove Gaudi exception, rethrow it ", e1 );
+      }
+      catch( const std::exception& e2 )  {
+        /* do something here */ 
+        /// rethrow the exception (if needed) 
+        return Exception(" could not recove the std::exception, rethrow it ", e2 );
+      }
+      catch( ... ) {
+        /* do something here */ 
+        /// rethrow the exception (if needed) 
+        return Exception(" could not recove the unknown  exception ");
+      }
+
+ 
+   5) easy ("1 line") access to the data, e.g. 
+ 
+     const MCParticles* particles = get( eventSvc() , inputData() , particles  );
+
+     In the case of errors, method throws an exception. 
+     Error message is printed. 
+     One does not need to check the value of pointer against null.  
+     For "DEBUG" output level the actual data type and location will be
+     printed.
+
+   6) easy ("one line) registration of object into GTES: 
+
+     MCParticles* particles = ... ;
+     StatusCode sc = put( particles , outputData() );
+
+     In the case of errors, method throws an exception. 
+     Error message is printed. 
+     One does not need to check the return value.  
+     For "DEBUG" output level the actual data type and 
+     location will be printed.
+ 
+
+   7) easy ("one line") access to tools:
+
+     IMyTool* mytool1 = tool( "some combination of type and name" , mytool1 , this ) ; 
+     IMyTool* mytool2 = tool( "some type", "some name" , mytool2 , this ) ; 
+ 
+     Both methods throw exception for unlocated tools. 
+     Type coudl be "Type" or "Type/Name" , Name could be "Name" or "", 
+     and any combination is possible and has sence.
+     It is useful if one specify Type, Name or  Type/Name from properties.
+     The methods are able to decoder properly all these cases. 
+     For "DEBUG" output level the actual tool type and name will be printed.
+  
+   8) Assertions
+
+     StatusCode sc = ... ;
+     Assert( sc.isSuccess() , " soem failure occurs! " ); 
+
+     Assertions are efficient (they are inlined), they do not 
+     result in significant performance degradation and could be 
+     used for all purposes.
+
+! 2002-09-24 - Pere Mato
+ - Changes to clean the reference counting and memory deallocation
+   detected by the "valgrind" tool. Changed files: Sequencer.cpp
+   
+================ GaudiGSL v2r0 =======================================
+! 2002-09-27 - Ivan Belyaev & Kirill Miklyaev 
+ - new minimization tool is added   
+  GaudiGSL/IFuncMinimum.h     the abstract interface 
+  src/FuncMinimum.h,.cpp      the concrete implementation 
+                              of minimization tool
+
+  Example of the configuration of minimization tool:
+
+// choice of underlying minimization algorithms: 
+//  (1) conjugate_fr  ( default )
+//  (2) conjugate_pr 
+//  (3) vector_bfgs 
+//  (4) steepest_descendent 
+ToolSvc.FuncMinimum.Algorithm = "conjugate_fr" ;  /// default value 
+ 
+/// declare maximum of iteration
+ToolSvc.FuncMinimum.Iteration = 1000           ; // default value is 200 
+ 
+/// declare the absolute tolerance for the Euclidean norm of the gradient
+ToolSvc.FuncMinimum.Gradient  = 1e-10          ; // defualt value 
+
+!==================== HbookCnv v13r1 ==========================
+! 2002-09-23 - Florence Ranjard
+  - requirements - use v*
+
+! 2002-07-16 - Florence Ranjard
+  - requirements - use CERNLIB v2r2002p* and AIDA v3r22p*
+
+! 2002-06-04 - Charles Leggett
+  - write/read CWNTuples with multiple blocks.
+
+    writing to block "LEPTON":
+        nt->addItem ("LEPTON/NELE", m_nele, 0, 100);
+        nt->addItem ("LEPTON/PXELE", m_pxele, m_nele);
+      if no block name is given, variables will be put in a block
+      called AUTO_BLK
+        nt->addItem ("Event", m_event);
+
+    reading:
+      use same format as for writing
+	nt->item("LEPTON/NELE", m_nele);
+	nt->item("LEPTON/PXELE", m_pxele);
+        nt->item("Event",m_event);
+
+    Block names must be at most 8 characters.
+	
+! 2002-05-15 - Paolo Calafiura
+  - changes to dinamically resize pawc. //Charles
+  
+=============== GaudiObjDesc v4r5 ======================================
+!20020925 - Stefan
+- new database of header-files generated
+- meta-information about constructors added to the dictionary-files
+
+================ GaudiODBCDb v8r1======================================
+! 20020927 - Markus Frank (v6r0)
+ - Fix compatibility on Linux. Should compile without warnings.

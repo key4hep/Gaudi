@@ -1,0 +1,44 @@
+//##############################################################
+// Job options file
+//==============================================================
+
+//AuditorSvc.Auditors = { "ChronoAuditor" };
+
+ApplicationMgr.EventLoop = "MTEventLoopMgr";
+ApplicationMgr.ExtSvc += { "NTupleSvc" };  
+ApplicationMgr.MultiThreadExtSvc += { "RndmGenSvc", "ParticlePropertySvc" };  
+
+ApplicationMgr.OutputLevel = 1;
+//--------------------------------------------------------------
+
+
+//--------------------------------------------------------------
+// Private Application Configuration options
+//--------------------------------------------------------------
+ApplicationMgr.TopAlg   = { "MTHelloWorld" };
+
+// Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
+MessageSvc.OutputLevel  = 1;
+
+//--------------------------------------------------------------
+// Event related parameters
+//--------------------------------------------------------------
+ApplicationMgr.EvtMax   = 2;
+ApplicationMgr.EvtSel  = "NONE";
+
+//--------------------------------------------------------------
+// Algorithms Private Options
+//--------------------------------------------------------------
+ 
+// For the genuine  HelloWorld algorithm
+MTHelloWorld.MyInt = 42;
+MTHelloWorld.MyBool = true;
+MTHelloWorld.MyDouble = 3.14159;
+MTHelloWorld.MyStringVec = { "Welcome", "to", "MT", "Gaudi" };
+
+// For a special  HelloWorld algorithm
+MTHelloWorld__1.MyInt = 21;
+MTHelloWorld__1.MyBool = false;
+MTHelloWorld__1.MyDouble = 6.28;
+MTHelloWorld__1.MyStringVec = { "Welcome", "to", "Thread", "1" };
+

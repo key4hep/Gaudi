@@ -1,0 +1,53 @@
+//##############################################################
+// Job options file
+//==============================================================
+
+AuditorSvc.Auditors = { "ChronoAuditor" };
+//--------------------------------------------------------------
+
+
+//--------------------------------------------------------------
+// Private Application Configuration options
+//--------------------------------------------------------------
+ApplicationMgr.TopAlg   = { "ErrorLogTest" };
+
+// Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
+MessageSvc.OutputLevel  = 3;
+MessageSvc.UseColors = true;
+THistSvc.OutputLevel = 2;
+ApplicationMgr.OutputLevel = 1;
+ServiceManager.OutputLevel = 2;
+// HistorySvc.Dump= true;
+StatusCodeSvc.OutputLevel = 1;
+
+// ApplicationMgr.CreateSvc = {"StatusCodeSvc", "THistSvc"};
+
+
+
+
+//THistSvc.Output = {"new DATAFILE='tuple1.rt' TYP='ROOT' OPT='NEW'"};
+
+IssueLogger.OutputLevel = 1;
+IssueLogger.ReportLevel = "VERBOSE";
+IssueLogger.TraceBackLevel = "FATAL";
+IssueLogger.ShowTime = true;
+
+IssueLogger.Output = {"DEBUG='MsgSvc'"};
+IssueLogger.Output += {"WARNING='test.out'"};
+IssueLogger.Output += {"ERROR='STDERR'"};
+
+
+//--------------------------------------------------------------
+// Event related parameters
+//--------------------------------------------------------------
+ApplicationMgr.EvtMax   = 20;
+ApplicationMgr.EvtSel  = "NONE";
+
+//--------------------------------------------------------------
+// Other Service Options
+//--------------------------------------------------------------
+//ApplicationMgr.HistogramPersistency = "HBOOK";
+//ApplicationMgr.HistogramPersistency = "ROOT";
+//RootHistSvc.OutputFile  = "histo.root";
+//HbookHistSvc.OutputFile = "histo.hbook";
+

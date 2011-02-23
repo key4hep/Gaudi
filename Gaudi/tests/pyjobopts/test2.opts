@@ -1,0 +1,5 @@
+mySvc.Bool = True;
+mySvc.List += { "a", "b", "c" };
+mySvc.List -= [ "b" ];
+
+MessageSvc.OutputLevel = 3;

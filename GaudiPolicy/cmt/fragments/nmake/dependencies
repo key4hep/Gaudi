@@ -1,0 +1,21 @@
+#-- start of dependency ------------------
+
+!if defined (QUICK)
+!else
+!if exist ("$(CMTROOT)/$(CMTBIN)/cmt.exe")
+!if [$(build_dependencies) ${CONSTITUENT} -all_sources] == 0
+!endif
+!else
+!if [echo no cmt $(CMTROOT)/$(CMTBIN)/cmt.exe] == 0
+!endif
+!endif
+!endif
+
+!if defined(QUICK)
+!if $(QUICK) != 2
+!include $(bin)${CONSTITUENT}_dependencies.nmake
+!endif
+!else
+!include $(bin)${CONSTITUENT}_dependencies.nmake
+!endif
+#-- end of dependency ------------------

@@ -1,0 +1,33 @@
+// $Id: FastContainers.opts,v 1.3 2007/05/07 15:56:50 hmd Exp $
+//--------------------------------------------------------------
+// Component libraries
+//--------------------------------------------------------------
+
+//--------------------------------------------------------------
+// Algorithms
+//--------------------------------------------------------------
+
+ApplicationMgr.TopAlg  = { "GaudiSequencer" };
+GaudiSequencer.Members = { "FastContainerProducer" };
+GaudiSequencer.Members += { "FastContainerConsumer" };
+
+GaudiSequencer.MeasureTime = true;
+
+//--------------------------------------------------------------
+// Input events
+//--------------------------------------------------------------
+
+// Input file
+ApplicationMgr.EvtSel = "NONE";
+
+// Number of events to be processed (default is 10)
+ApplicationMgr.EvtMax = 10;
+
+//--------------------------------------------------------------
+// Message service options
+//--------------------------------------------------------------
+
+// Set output level threshold
+// Levels: 1=VERBOSE, 2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL
+MessageSvc.OutputLevel = 1;
+

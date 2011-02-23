@@ -1,0 +1,9 @@
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.4/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.4/-//qm/2.4/extension//en.dtd'>
+<extension class="python.ExceptionTest" kind="test">
+  <argument name="source"><text>
+from Gaudi.Configuration import *
+ApplicationMgr().OutStream = OutputStream("Test")
+</text></argument>
+  <argument name="exception_class"><text>ValueError</text></argument>
+  <argument name="exception_argument"><text/></argument>
+</extension>

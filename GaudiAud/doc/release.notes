@@ -1,0 +1,207 @@
+Package: GaudiAud
+Package manager : David Quarrie, Marco Clemencic
+
+=============================== GaudiAud v9r3 ================================
+! 2010-04-20 - Marco Clemencic
+ - Removed ICC warnings and remarks.
+
+=============================== GaudiAud v9r2 ================================
+! 2010-01-28 - Marco Clemencic
+ - Fixed icc remark #424: extra ";" ignored
+
+================ GaudiAud v9r1 ====================================
+! 2009-07-30 - Marco Clemencic
+ - Fixed some doxygen warnings.
+
+! 2009-07-20 - Marco Clemencic
+ - Added '-no_static' to the declaration of the libraries (implemented since CMT
+   v1r20p20081118).
+
+================ GaudiAud v9r0 ====================================
+! 2009-04-07 - Marco Clemencic
+ - Moved back the namespace MSG to the global namespace.
+
+! 2009-04-06 - Marco Clemencic
+ - Renamed back the namespace Msg to MSG and moved it into the namespace Gaudi.
+ - Renamed back INamed to INamedInterface.
+
+! 2009-03-13 - Marco Clemencic
+ - Task #9061: Introduction of component managers
+   - Adapted to use the changes in the ISvcLocator, ISvcManager and IAlgManager
+     interfaces.
+
+! 2009-02-19 - Marco Clemencic
+ - Patch #2790: Rename the namespace MSG to Msg
+
+! 2009-01-30 - Marco Clemencic
+ - Replaced all the occurrences of endreq with endmsg. 
+
+! 2009-01-22 - Marco Clemencic
+ - Adapted to the new IInterface functionalities (see GaudiKernel release.notes)
+ - Renamed INamedInterface to INamed.
+
+================ GaudiAud v8r8 ====================================
+! 2008-12-16 - Frank Winklmeier
+ - Patch #2710: NameAuditor support of new FSM
+   Fully support new FSM to allow auditing of start/stop.
+
+================ GaudiAud v8r7 ====================================
+! 2008-11-10 - Charles Leggett
+ - Patch #2183. Link to Atlas error policy in AlgErrorAuditor
+
+! 2008-10-02 - Charles Leggett
+ - Patch #1939. Allow auditors to catch CustomEventTypes
+
+================ GaudiAud v8r6 ====================================
+! 2008-05-13 - Marco Clemencic
+ - Fixed compilation problem introduced with patch #1756.
+   Explicit include of IChronoStatSvc.h was needed in ChronoAuditor.cpp.
+
+================ GaudiAud v8r5 ====================================
+! 2007-03-11 - Charles Leggett
+ - Patch #1717. Audit memory at initialize time.
+   Uncommented the function to get the memory utilization after initialize (in
+   MemStatAuditor).
+
+================ GaudiAud v8r4 ====================================
+! 2007-11-13 - Charles Leggett
+ - bug #28570.
+   Modified AlgContextAuditor to avoid that it passes a null pointer to
+   AlgContextSvc. It happens if the AuditorSvc is auditing objects that inherit
+   from INamedInterface, but not from IAlgorithm (e.g. services).  
+
+! 2007-11-13 - Marco Clemencic
+ - Added a test to expose bug #28570.
+
+!==============v8r3==========================================================
+! 2007-08-06 - Vanya Belyaev
+ - patch #1231. Added explicit include IChronoStatSvc.h in MemStatAuditor.cpp
+   
+!==============v8r2==========================================================
+! 2007-05-24 - Vanya Belyaev
+ - patch #1171. The enhancement of existing Algorithm Context Service
+   is the primary goal of the proposed patch. The existing
+   AlgContextSvc is not safe with respect to e.g. Data-On-Demand
+   service or to operations with subalgorithms. The patched service
+   essentially implements the queue of executing algorithms, thus the
+   problems are eliminiated. In addition the enriched interface
+   provides the access to the whole queue of executing algorithms.
+
+! 2007-05-11 - Charles Leggett
+ - patch #1150. If the AlgErrAuditor detects that an illegal
+   StatusCode/MessageStream combination has been issued by an
+   Algorithm, an exception or an abort() can be thrown, configured by
+   a jobOpt. Also prints out summaries at the end of the job of
+   illegal combination.
+
+! 2007-04-27 - Sebatien Binet
+ - patch #25889. Fixed uninitialized private members of AlgErrorAuditor.
+
+!==============v8r1==========================================================
+! 2007-01-18 - Charles Leggett
+ patch #972. 
+ - add messageCount to IMessageSvc
+ - extend Auditor::(sys)afterExecute to pass a const StatusCode&,
+   which is the return code of the algorithm
+ - new auditor to monitor algorithms, issue message if algorithm
+   writes out an ERROR or FATAL, but returns SUCCESS
+	
+!==============v8r0==========================================================
+! 2007-01-12 - Hubert Degaudenzi
+ - bug #22799. changed the return value of chronoStart, chronoStop,
+   chronoPrint, stat and statPrint method of the IChronoStatSvc from
+   StatusCode to void.
+
+! 2006-12-13 - Charles Leggett
+ - instrumented auditors for reinitialize, beginRun, endRun
+
+! 2006-11-30 - Pere Mato
+  Adapted package to the new PluginSvc
+  - Removed protected from constructor/destructors and friendship of
+    Factory class
+
+!==============v7r2==========================================================
+! 2006-09-21 Hubert Degaudenzi
+ - use of the DECLARE macros for the auditor factories.
+
+! 2006-09-13 Charles Leggett and Hubert Degaudenzi
+ - added AlgContextAuditor (remove from GaudiSvc)
+
+!==============v7r1==========================================================
+! 2006-04-13 Charles Leggett and Hubert Degaudenzi
+ - inserted ATLAS feature INamedInterface.
+
+!==============v7r0==========================================================
+! 2006-03-15 - Hubert Degaudenzi
+ - replaced the returned StatusCode with void for before*/after*
+   methods of auditors. Interface changed.
+
+!==============v6r6==========================================================
+! 2006-01-27 - Pere Mato
+ - Use the compoment_library pattern
+
+!==============v6r5==========================================================
+! 2004-06-08 - Pere Mato
+- ProcStats.h(.cpp) Fixed [bugs #3667] bytes to Mbytes conversion in ProcStats.cpp
+
+!==============v6r4==========================================================
+! 2004-01-15 - Pere Mato
+- Added changes from ATLAS (Paolo et al.)
+
+
+!==============v6r3==========================================================
+! 2004-01-07 - David Rousseau
+- MemStatAuditor::printinfo: don't return when p->fetch(info) is false
+
+! 2003-11-06 - David Rousseau
+- radically change the philosophy of MemStatAuditor: MemStatAuditor
+    now accumulate the incremental change of memory usage during the job.
+  Only VSize is monitored (RSS is less reproducible).
+  This allows to spot in which algorithm memory leak happen
+
+! 2003-11-26 - Pere Mato
+ - Small changes for Mac OSX (Guy Barrand)
+!==============v6r2==========================================================
+! 2003-01-06 - Sebastien Ponce
+ - better support for gcc 3.2
+
+!==============v6r1==========================================================
+! 2002-09-24 - Pere Mato
+ - Changes to clean the reference counting and memory deallocation
+   detected by the "valgrind" tool. Changed failes: ChronoAuditor.cpp (.h)
+ - requirements: use v* 
+
+!==============v6r0p1=========================================================
+! 2002-09-23 - Flr
+ - requirements - use GaudiKernel v*
+
+!=============================================================================
+!20010508 - Pere Mato
+ - Using GaudiKernel v10
+
+!=============================================================================
+!20010206 - Pere Mato
+- New Auditor MemStatAuditor made by I. Belyaev added to the package
+
+
+!=============================================================================
+!20001025 - GaudiAud v1 -David Quarrie
+- This package contains concrete Auditors. An Auditor monitors some resource
+  on a per-Algorithm basis. It performs this monitoring by calls immediately
+  before and after the appropriate initialize, execute and finalize calls.
+
+  Initial implementations are:
+
+  NameAuditor   This is a diagnostic tool that just displays the name of
+                each Algorithm.
+
+  ChronoAuditor This displays at the end of job the total and per event
+                cpu time taken by each Algorithm.
+
+  MemoryAuditor This warns of possible memory leaks. However, Algorithms
+                that register objects with the transient event store will
+                cause this warning to be triggered. It is designed to
+                warn of memory leaks from Algorithms that retrieve objects
+                from the transient event store.
+
+

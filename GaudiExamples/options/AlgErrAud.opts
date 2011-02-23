@@ -1,0 +1,38 @@
+//##############################################################
+// Job options file
+//==============================================================
+#include "Common.opts"
+
+AuditorSvc.Auditors = { "AlgErrorAuditor" };
+
+ApplicationMgr.AuditAlgorithms = true;
+
+//--------------------------------------------------------------
+// Private Application Configuration options
+//--------------------------------------------------------------
+ApplicationMgr.TopAlg  = { "MyAudAlgorithm" };
+
+// Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
+MessageSvc.OutputLevel  = 3;
+//MessageSvc.showStats = true;
+MessageSvc.enableSuppression = true;
+MessageSvc.defaultLimit = 5;
+MessageSvc.infoLimit = 7;
+MessageSvc.alwaysLimit = 4;
+
+//--------------------------------------------------------------
+// Event related parameters
+//--------------------------------------------------------------
+ApplicationMgr.EvtMax    = 10;   // events to be processed (default is 10)
+ApplicationMgr.EvtSel   = "NONE"; // do not use any event input
+//ApplicationMgr.HistogramPersistency = "NONE";
+
+
+//--------------------------------------------------------------
+// Algorithms Private Options
+//--------------------------------------------------------------
+
+ToolSvc.MyAudTool.OutputLevel = 3;
+MyAudAlgorithm.OutputLevel = 2;
+
+

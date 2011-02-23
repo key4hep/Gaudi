@@ -1,0 +1,9 @@
+ApplicationMgr.ExtSvc         += { "MultiStoreSvc/EventDataSvc" };
+EventDataSvc.Partitions        = {"NAME='Buffer1' TYPE='EvtDataSvc/EvtBuff1'",
+                                 "NAME='Buffer2' TYPE='EvtDataSvc/EvtBuff2'"};
+EventDataSvc.DefaultPartition  = "Buffer1";
+ApplicationMgr.TopAlg         += { "PartitionSwitchAlg/Switcher", "StoreExplorerAlg/Exp" };
+Exp.Printfreq                  = 1.0;
+Switcher.Partition             = "Buffer2";
+Switcher.Tool                  = "PartitionSwitchTool";
+Switcher.PartitionSwitchTool.Actor = "EventDataSvc";

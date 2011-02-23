@@ -1,0 +1,39 @@
+====GaudiKernel v11r1 =======================================================
+
+! 20020128 - Markus Frank
+  - DataObejct.cpp: Fixed bug
+    Automatically create leaves on registerAddress if the
+    Option "ForceLeaves" is set to true
+  - SmartRefs.cpp:
+    Fixed Feature: For smart refs to ContainedObject(s), resolve
+    parent pointer only when needed.
+  - ConversionSvc.cpp:
+    Bug fix: Converters were never finalized. Done from now on, whenever the
+    converter gets disconnected from the conversion service.
+
+====GaudiSvc v7r2 ===========================================================
+
+! 20020205 - Pere Mato (v7r2)
+ - Fixed bug reported by O. Callot that failing to load a DLL
+   should fail the configuration phase of ApplicationMgr.
+   Changed ApplicationMgr.cpp
+   
+! 20020123 - Marco Cattaneo & Pere Mato
+ - Changed search list for the job options path.
+   It would take:
+     - argv[1] if it exists else
+     - JOBOPTPATH if it is set else
+     - default to ../options/job.opts
+
+! 20020123 - Sebastien Ponce
+ - Removed the use of variable DDDB in DetDataSvc
+
+====GaudiAlg v5r1 =========================================================
+ 
+! 20020205 - Pere Mato (v5r1)
+ - Fixed bug reported by O. Callot that a Sequence must return an 
+   error when it can not create one or more of the member Algorithms.
+   Changed Sequencer.cpp
+
+
+

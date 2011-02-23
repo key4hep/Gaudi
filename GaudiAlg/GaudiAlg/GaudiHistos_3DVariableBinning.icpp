@@ -1,0 +1,155 @@
+// ==================================== 3D ====================================
+// ============================= Variable Binning =============================
+// ============================================================================
+// book the 3D histogram (book on demand)
+// ============================================================================
+template <class PBASE>
+AIDA::IHistogram3D*  GaudiHistos<PBASE>::book3D
+( const std::string&  title        ,
+  const HistoBinEdges&        edgesX       ,
+  const HistoBinEdges&        edgesY       ,
+  const HistoBinEdges&        edgesZ       ) const
+{
+  //
+  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  //
+  // exist?
+  AIDA::IHistogram3D * hist = histo3D ( title ) ;
+  // histogram is already booked
+  if( NULL != hist      )                   { return hist ; } // RETURN !!
+
+  // propose the histogram ID
+  HistoID ID;
+  newHistoID( title, ID );
+
+  // Create a new histogram and return
+  return this -> book3D ( ID, title, edgesX, edgesY, edgesZ );
+}
+// ============================================================================
+// book the 2D histogram with forced ID (book on demand)
+// ============================================================================
+template <class PBASE>
+AIDA::IHistogram3D*  GaudiHistos<PBASE>::book3D
+( const HistoID&      ID           ,
+  const std::string&  title        ,
+  const HistoBinEdges&        edgesX       ,
+  const HistoBinEdges&        edgesY       ,
+  const HistoBinEdges&        edgesZ       ) const
+{
+  //
+  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  //
+  // Check ID
+  if (ID.undefined())
+  {
+    this->Error("Undefined Histogram ID : Title='"+title+"'");
+    return NULL;
+  }
+
+  // exist?
+  AIDA::IHistogram3D * hist = histo3D ( ID ) ;
+  // histogram is already booked
+  if ( NULL != hist       )                 { return hist ; } // RETURN !!
+
+  // Histogram title
+  const std::string & htitle =
+    ( title.empty() ? "Unnamed 3D Histogram ID="+ID.idAsString() : title ) ;
+
+  // book the histogram
+  if ( ID.numeric() )
+  {
+    hist = this->histoSvc() -> book ( histoPath()  ,
+                                      ID.numericID() ,
+                                      htitle       ,
+                                      edgesX       ,
+                                      edgesY       ,
+                                      edgesZ       ) ;
+  }
+  else if ( ID.literal() )
+  {
+    hist = this->histoSvc() -> book ( histoPath()+"/"+
+                                      ID.literalID() ,
+                                      htitle         ,
+                                      edgesX         ,
+                                      edgesY         ,
+                                      edgesZ         ) ;
+  }
+
+  // check OK
+  if( NULL == hist )
+  { this->Error( "IHistogram3D* points to NULL! ID='" + ID.idAsString() +
+                 "' title='"+htitle+"'" ) ; return NULL; } // RETURN !!
+
+  // add histogram into histogram storages
+  m_histo3DMapID    [ ID    ] = hist ;
+  m_histo3DMapTitle [ title ] = hist ;
+
+  // Declare to monitoring service
+  monitorHisto( Gaudi::Utils::Histos::toBase ( hist ) , ID );
+
+  // Printout and return
+  if ( this->msgLevel(MSG::DEBUG) )
+  { this->debug() << "Booked 3D Histogram : ID='" << ID
+                  << "' Path=" << histoPath()
+                  << " Title='"
+                  << Gaudi::Utils::Histos::htitle ( hist )
+                  << "'" << endmsg; }
+  return hist ;
+}
+// ============================================================================
+// fill the 3D histogram (book on demand)
+// ============================================================================
+template <class PBASE>
+AIDA::IHistogram3D*
+GaudiHistos<PBASE>::plot3D
+( const double        valueX ,
+  const double        valueY ,
+  const double        valueZ ,
+  const std::string&  title  ,
+  const HistoBinEdges&        edgesX ,
+  const HistoBinEdges&        edgesY ,
+  const HistoBinEdges&        edgesZ ,
+  const double        weight ) const
+{
+  AIDA::IHistogram3D * h(NULL);
+  if ( produceHistos() )
+  {
+    // retrieve or book the histogram
+    h = histo3D ( title ) ;
+    if ( NULL == h ) { h = book3D ( title , edgesX , edgesY , edgesZ ) ; }
+    // fill the histogram
+    h = fill ( h , valueX , valueY , valueZ , weight , title );
+  }
+  return h;
+}
+// ============================================================================
+// fill the 3D variable histogram with forced ID assignment (book on demand)
+// ============================================================================
+template <class PBASE>
+AIDA::IHistogram3D*
+GaudiHistos<PBASE>::plot3D
+( const double        valueX ,
+  const double        valueY ,
+  const double        valueZ ,
+  const HistoID&      ID     ,
+  const std::string&  title  ,
+  const HistoBinEdges&        edgesX ,
+  const HistoBinEdges&        edgesY ,
+  const HistoBinEdges&        edgesZ ,
+  const double        weight ) const
+{
+  AIDA::IHistogram3D * h(NULL);
+  if ( produceHistos() )
+  {
+    // retrieve or book the histogram
+    h = histo3D ( ID ) ;
+    if ( NULL == h ) {  h = book3D ( ID , title , edgesX , edgesY , edgesZ ) ; }
+    // fill
+    h = fill ( h , valueX , valueY , valueZ , weight , title ) ;
+  }
+  return h;
+}
+// ============================================================================
+// The END
+// ============================================================================
+

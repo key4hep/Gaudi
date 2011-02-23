@@ -1,0 +1,293 @@
+DirSearchPath::existsDir: WARNING not a directory: /NONEXISTINGDIR
+JobOptionsSvc        INFO 
+
+////////////////////////////////////////////////////////////////
+// Example options file.
+////////////////////////////////////////////////////////////////
+
+// Include standard option files
+// --> Including file $STDOPTS/Common.opts
+
+
+//**************************************************************
+//
+// standard job options file
+//
+//==============================================================
+
+// --> Including file $STDOPTS/Services.opts
+
+
+//**************************************************************
+//
+// Services needed by a standard job 
+//
+//==============================================================
+
+//--------------------------------------------------------------
+// General Application Configuration options
+//--------------------------------------------------------------
+
+ApplicationMgr.ExtSvc = { "EventSelector" };
+
+//--------------------------------------------------------------
+AuditorSvc.Auditors = { "ChronoAuditor" };
+
+//--------------------------------------------------------------
+// Persistency services
+//--------------------------------------------------------------
+
+
+//==============================================================
+//
+// End of standard Services options file
+//
+//**************************************************************
+
+// <-- End of including file $STDOPTS/Services.opts
+
+// --> Including file $STDOPTS/Dlls.opts
+
+
+//**************************************************************
+//
+// DLLs needed by a standard job. 
+// Must not be used for statically linked program
+//
+//==============================================================
+
+ApplicationMgr.DLLs = {"HbookCnv", "GaudiAlg", "GaudiAud"};
+
+//==============================================================
+//
+// End of standard DLLs options file
+//
+//**************************************************************
+
+// <-- End of including file $STDOPTS/Dlls.opts
+
+
+//==============================================================
+//
+// End of standard job options file
+//
+//**************************************************************
+
+// <-- End of including file $STDOPTS/Common.opts
+
+
+//--------------------------------------------------------------
+// Private Application Configuration options
+//--------------------------------------------------------------
+ApplicationMgr.DLLs       += { "GaudiDb", "GaudiRootDb" };
+ApplicationMgr.ExtSvc     += { "DbEventCnvSvc/RootEvtCnvSvc" };
+ApplicationMgr.OutStream   = { "RootDst" };
+ApplicationMgr.TopAlg      = { "WriteAlg" };
+
+// Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
+MessageSvc.OutputLevel     =  1;
+
+//--------------------------------------------------------------
+// Event related parameters
+//--------------------------------------------------------------
+ApplicationMgr.EvtMax    = 10;   // events to be processed (default is 10)
+ApplicationMgr.EvtSel   = "NONE"; // do not use any event input
+ApplicationMgr.HistogramPersistency = "NONE";
+
+//--------------------------------------------------------------
+// Persistency service setup: 
+//--------------------------------------------------------------
+EventPersistencySvc.CnvServices += { "RootEvtCnvSvc" };
+
+//--------------------------------------------------------------
+// Output Stream Options
+//--------------------------------------------------------------
+//
+//  Setup for ROOT I/O System
+//
+RootDst.ItemList      = { "/Event#999" };
+RootDst.Output        = "DATAFILE='RootDst.root' TYP='ROOT' OPT='RECREATE'";
+RootEvtCnvSvc.DbType  = "ROOT";
+
+
+Job options successfully read in from ../options/RootIOWrite.opts
+ApplicationMgr      DEBUG Getting my own properties
+DllClassManager     DEBUG Found factory Service HbookCnv::PersSvc
+DllClassManager     DEBUG Found factory HbookCnv::HRWNTupleCnv
+ConverterFactory    DEBUG Added converter for class:HbookCnv::HRWNTupleCnv Storage id:6 clID:42
+DllClassManager     DEBUG Found factory HbookCnv::HFileCnv
+ConverterFactory    DEBUG Added converter for class:HbookCnv::HFileCnv Storage id:6 clID:40
+DllClassManager     DEBUG Found factory HbookCnv::HDirectoryCnv
+ConverterFactory    DEBUG Added converter for class:HbookCnv::HDirectoryCnv Storage id:6 clID:41
+DllClassManager     DEBUG Found factory HbookCnv::HCWNTupleCnv
+ConverterFactory    DEBUG Added converter for class:HbookCnv::HCWNTupleCnv Storage id:6 clID:43
+DllClassManager     DEBUG Found factory HbookCnv::H2DCnv
+ConverterFactory    DEBUG Added converter for class:HbookCnv::H2DCnv Storage id:6 clID:36
+DllClassManager     DEBUG Found factory HbookCnv::H1DCnv
+ConverterFactory    DEBUG Added converter for class:HbookCnv::H1DCnv Storage id:6 clID:32
+DllClassManager     DEBUG Found factory HbookCnv::DirectoryCnv
+ConverterFactory    DEBUG Added converter for class:HbookCnv::DirectoryCnv Storage id:6 clID:1
+DllClassManager     DEBUG Found factory Service HbookCnv::ConvSvc
+DllClassManager     DEBUG Loaded 9 factories from module HbookCnv
+DllClassManager     DEBUG Found factory Algorithm EventCounter
+DllClassManager     DEBUG Found factory Algorithm Prescaler
+DllClassManager     DEBUG Found factory Algorithm Sequencer
+DllClassManager     DEBUG Found factory Algorithm GaudiAlgorithm
+DllClassManager     DEBUG Loaded 4 factories from module GaudiAlg
+DllClassManager     DEBUG Found factory NameAuditor
+ObjectManager       DEBUG Added object factory for class:NameAuditor
+DllClassManager     DEBUG Found factory MemoryAuditor
+ObjectManager       DEBUG Added object factory for class:MemoryAuditor
+DllClassManager     DEBUG Found factory MemStatAuditor
+ObjectManager       DEBUG Added object factory for class:MemStatAuditor
+DllClassManager     DEBUG Found factory ChronoAuditor
+ObjectManager       DEBUG Added object factory for class:ChronoAuditor
+DllClassManager     DEBUG Loaded 4 factories from module GaudiAud
+DllClassManager     DEBUG Found factory DbFactory<DbObject>
+ObjectManager       DEBUG Added object factory for class:DbFactory<DbObject>
+DllClassManager     DEBUG Found factory DbFactory<DbDefObject>
+ObjectManager       DEBUG Added object factory for class:DbFactory<DbDefObject>
+DllClassManager     DEBUG Found factory DataObjectFactory<DataObject>
+ObjectManager       DEBUG Added object factory for class:DataObjectFactory<DataObject>
+DllClassManager     DEBUG Found factory DbFactory<DbSequence>
+ObjectManager       DEBUG Added object factory for class:DbFactory<DbSequence>
+DllClassManager     DEBUG Found factory DbFactory<GenericDataBaseObj>
+ObjectManager       DEBUG Added object factory for class:DbFactory<GenericDataBaseObj>
+DllClassManager     DEBUG Found factory libGaudiKernel:DbRWNTupleCnv
+ConverterFactory    DEBUG Added converter for class:libGaudiKernel:DbRWNTupleCnv Storage id:8 clID:42
+DllClassManager     DEBUG Found factory libGaudiKernel:DbCWNTupleCnv
+ConverterFactory    DEBUG Added converter for class:libGaudiKernel:DbCWNTupleCnv Storage id:8 clID:43
+DllClassManager     DEBUG Found factory libGaudiKernel:DbKeyedContainerCnv<Containers::KeyedObjectManager<Containers::map> >
+ConverterFactory    DEBUG Added converter for class:libGaudiKernel:DbKeyedContainerCnv<Containers::KeyedObjectManager<Containers::map> > Storage id:8 clID:393215
+DllClassManager     DEBUG Found factory libGaudiKernel:DbKeyedContainerCnv<Containers::KeyedObjectManager<Containers::array> >
+ConverterFactory    DEBUG Added converter for class:libGaudiKernel:DbKeyedContainerCnv<Containers::KeyedObjectManager<Containers::array> > Storage id:8 clID:524287
+DllClassManager     DEBUG Found factory libGaudiKernel:DbKeyedContainerCnv<Containers::KeyedObjectManager<Containers::hashmap> >
+ConverterFactory    DEBUG Added converter for class:libGaudiKernel:DbKeyedContainerCnv<Containers::KeyedObjectManager<Containers::hashmap> > Storage id:8 clID:458751
+DllClassManager     DEBUG Found factory Service DbGenericDataBase
+DllClassManager     DEBUG Found factory libGaudiKernel:DbFactoryConverter
+ConverterFactory    DEBUG Added converter for class:libGaudiKernel:DbFactoryConverter Storage id:8 clID:65535
+DllClassManager     DEBUG Found factory Service DbEvtSelector
+DllClassManager     DEBUG Found factory Service DbEventCnvSvc
+DllClassManager     DEBUG Found factory libGaudiKernel:DbDirectoryCnv
+ConverterFactory    DEBUG Added converter for class:libGaudiKernel:DbDirectoryCnv Storage id:8 clID:41
+DllClassManager     DEBUG Found factory libGaudiKernel:DbDatabaseCnv
+ConverterFactory    DEBUG Added converter for class:libGaudiKernel:DbDatabaseCnv Storage id:8 clID:40
+DllClassManager     DEBUG Found factory Service DbCnvSvc
+DllClassManager     DEBUG Loaded 17 factories from module GaudiDb
+DllClassManager     DEBUG Found factory RootDb::OODataBase
+ObjectManager       DEBUG Added object factory for class:RootDb::OODataBase
+DllClassManager     DEBUG Found factory DbFactory<RootDbObject>
+ObjectManager       DEBUG Added object factory for class:DbFactory<RootDbObject>
+DllClassManager     DEBUG Found factory DbFactory<RootDbMinObject>
+ObjectManager       DEBUG Added object factory for class:DbFactory<RootDbMinObject>
+DllClassManager     DEBUG Found factory DbFactory<RootDbDefObject>
+ObjectManager       DEBUG Added object factory for class:DbFactory<RootDbDefObject>
+DllClassManager     DEBUG Loaded 4 factories from module GaudiRootDb
+ApplicationMgr       INFO Successfully loaded modules: HbookCnv, GaudiAlg, GaudiAud, GaudiDb, GaudiRootDb
+ApplicationMgr       INFO Application Manager Configured successfully
+ServiceManager      DEBUG Initializing service EventSelector
+EventSelector     VERBOSE service_i: found service JobOptionsSvc
+EventSelector       DEBUG Service base class initialized successfully
+EventSelector     VERBOSE service_i: found service JobOptionsSvc
+ServiceManager      DEBUG Initializing service RootEvtCnvSvc
+RootEvtCnvSvc     VERBOSE service_i: found service JobOptionsSvc
+RootEvtCnvSvc       DEBUG Service base class initialized successfully
+RootEvtCnvSvc     VERBOSE service_i: found service JobOptionsSvc
+ROOT                 INFO --> Open     DbSession     Mode:UPDATE   
+ROOT                 INFO --> Access   DbFederation 
+ServiceManager      DEBUG Initializing service AppMgrRunable
+AppMgrRunable     VERBOSE service_i: found service JobOptionsSvc
+AppMgrRunable       DEBUG Service base class initialized successfully
+ServiceManager      DEBUG Initializing service EventLoopMgr
+EventLoopMgr      VERBOSE service_i: found service JobOptionsSvc
+EventLoopMgr        DEBUG Service base class initialized successfully
+EventLoopMgr        DEBUG Creating OutputStreamRootDst
+EventLoopMgr        DEBUG Creating Output Stream RootDst
+EventLoopMgr        DEBUG Creating Top Algorithm WriteAlg with name WriteAlg
+EventDataSvc      VERBOSE service_i: found service JobOptionsSvc
+EventDataSvc        DEBUG Service base class initialized successfully
+EventPersistenc...VERBOSE service_i: found service JobOptionsSvc
+EventPersistenc...   INFO "CnvServices": ["RootEvtCnvSvc"]
+EventPersistenc...  DEBUG Service base class initialized successfully
+EventPersistenc...VERBOSE service_i: found service RootEvtCnvSvc
+EventPersistenc...   INFO Added successfully Conversion service:RootEvtCnvSvc
+RootDst             DEBUG Adding OutputStream item /Event with 999 level(s).
+RootDst              INFO Data source: EventDataSvc
+RootDst              INFO Data output: DATAFILE='RootDst.root' TYP='ROOT' OPT='RECREATE'
+IncidentSvc       VERBOSE service_i: found service JobOptionsSvc
+IncidentSvc         DEBUG Service base class initialized successfully
+IncidentSvc       VERBOSE service_i: found service JobOptionsSvc
+EventLoopMgr      WARNING Unable to locate service "EventSelector" 
+EventLoopMgr      WARNING No events will be processed from external input.
+HistogramDataSvc  VERBOSE service_i: found service JobOptionsSvc
+HistogramDataSvc    DEBUG Service base class initialized successfully
+HistogramPersis...   INFO "CnvServices": ["HbookHistSvc", "RootHistSvc"]
+HistogramPersis...VERBOSE service_i: found service JobOptionsSvc
+HistogramPersis...  DEBUG Service base class initialized successfully
+HistogramPersis...WARNING Histograms saving not required.
+ApplicationMgr       INFO Application Manager Initialized successfully
+AuditorSvc        VERBOSE service_i: found service JobOptionsSvc
+AuditorSvc          DEBUG Service base class initialized successfully
+AuditorSvc        VERBOSE service_i: found service JobOptionsSvc
+ChronoStatSvc     VERBOSE service_i: found service JobOptionsSvc
+ChronoStatSvc       DEBUG Service base class initialized successfully
+ChronoStatSvc     VERBOSE service_i: found service JobOptionsSvc
+ChronoStatSvc        INFO  Number of skipped events for MemStat20
+RndmGenSvc        VERBOSE service_i: found service JobOptionsSvc
+RndmGenSvc          DEBUG Service base class initialized successfully
+RndmGenSvc        VERBOSE service_i: found service JobOptionsSvc
+RndmGenSvc.Engine VERBOSE service_i: found service JobOptionsSvc
+RndmGenSvc.Engine   DEBUG Service base class initialized successfully
+RndmGenSvc.Engine VERBOSE service_i: found service JobOptionsSvc
+RndmGenSvc.Engine    INFO Generator engine type:RanluxEngine
+RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
+RndmGenSvc           INFO Using Random engine:HepRndm::Engine<RanluxEngine>
+WriteAlg          VERBOSE service_i: found service RndmGenSvc
+WriteAlg          VERBOSE service_i: found service EventDataSvc
+WriteAlg             INFO Generated event 1
+RootDst           VERBOSE service_i: found service AuditorSvc
+RootEvtCnvSvc        INFO The existing output dataset RootDst.root will be overwritten.
+ROOT                 INFO --> Access   DbDataBase    Mode:CREATE   RootDst.root
+RootDst.root        DEBUG --> Access   DbContainer  CREATE    ##Types
+RootDst.root        DEBUG --> Access   DbContainer  CREATE    ##Links
+RootDst.root        DEBUG --> Access   DbContainer  CREA/UPDA /Event
+RootDst.root      VERBOSE -->  Adding Assoc.Entry:<localDB>:/Event -> /Event
+RootDst.root      VERBOSE    ->Type:2 CL:110 ID: [0 /0]
+RootDst.root      VERBOSE -->  Adding Type.Entry:##Links:DbObject
+RootDst.root      VERBOSE      Desc:#Name=DbObject#Typ=2#TypeT=DbObject#SizeT=8#TypeP=RootDbObject#SizeP=40#Cols=4#{ID=8;24;0;3}{OBJSIZE=8;28;0;0}{NUMLINK=8;32;0;0}{BUFFER=16;4;0;0}#DescLen=8#Desc=DbObject#
+RootDst.root      VERBOSE -->  Adding Type.Entry:##Types:DbObject
+RootDst.root      VERBOSE      Desc:#Name=DbObject#Typ=2#TypeT=DbObject#SizeT=8#TypeP=RootDbObject#SizeP=40#Cols=4#{ID=8;24;0;3}{OBJSIZE=8;28;0;0}{NUMLINK=8;32;0;0}{BUFFER=16;4;0;0}#DescLen=8#Desc=DbObject#
+RootDst.root        DEBUG --> Access   DbContainer  CREA/UPDA /Event/MyTracks
+RootDst.root      VERBOSE -->  Adding Assoc.Entry:<localDB>:/Event/MyTracks -> /MyTracks
+RootDst.root      VERBOSE    ->Type:2 CL:209859 ID: [0 /0x1]
+RootDst.root      VERBOSE -->  Adding Type.Entry:/Event:DbDefObject
+RootDst.root      VERBOSE      Desc:#Name=DbDefObject#Typ=2#TypeT=DbDefObject#SizeT=12#TypeP=RootDbDefObject#SizeP=44#Cols=5#{ID=8;24;0;3}{OBJSIZE=8;28;0;0}{NUMLINK=8;32;0;0}{NUMSYMB=8;40;0;0}{BUFFER=16;4;0;0}#DescLen=11#Desc=DbDefObject#
+RootDst.root      VERBOSE -->  Adding Type.Entry:/Event/MyTracks:DbDefObject
+RootDst.root      VERBOSE      Desc:#Name=DbDefObject#Typ=2#TypeT=DbDefObject#SizeT=12#TypeP=RootDbDefObject#SizeP=44#Cols=5#{ID=8;24;0;3}{OBJSIZE=8;28;0;0}{NUMLINK=8;32;0;0}{NUMSYMB=8;40;0;0}{BUFFER=16;4;0;0}#DescLen=11#Desc=DbDefObject#
+WriteAlg             INFO Generated event 2
+WriteAlg             INFO Generated event 3
+WriteAlg             INFO Generated event 4
+WriteAlg             INFO Generated event 5
+WriteAlg             INFO Generated event 6
+WriteAlg             INFO Generated event 7
+WriteAlg             INFO Generated event 8
+WriteAlg             INFO Generated event 9
+WriteAlg             INFO Generated event 10
+RootDst              INFO Events output: 10
+EventLoopMgr         INFO Histograms converted successfully according to request.
+*****Chrono*****     INFO ****************************************************************************************************
+*****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)
+*****Chrono*****     INFO ****************************************************************************************************
+WriteAlg:execute     INFO Time User   : Tot=   10 [ms] Ave/Min/Max=    1(+-    3)/    0/   10 [ms] #= 10
+RootDst:execute      INFO Time User   : Tot=   30 [ms] Ave/Min/Max=    3(+-    9)/    0/   30 [ms] #= 10
+ChronoStatSvc        INFO Time User   : Tot=   40 [ms]                                             #=  1
+*****Chrono*****     INFO ****************************************************************************************************
+ChronoStatSvc.f...   INFO  Service finalized successfully 
+ROOT                 INFO --> Deaccess DbDataBase    Mode:CREATE   RootDst.root
+RootDst.root        DEBUG --> Deaccess DbContainer  CREATE    ##Links
+RootDst.root        DEBUG --> Deaccess DbContainer  CREATE    ##Types
+RootDst.root        DEBUG --> Deaccess DbContainer  CREA/UPDA /Event
+RootDst.root        DEBUG --> Deaccess DbContainer  CREA/UPDA /Event/MyTracks
+ROOT                 INFO --> Deaccess DbFederation  Mode:UPDATE   
+ROOT                 INFO --> Closed   DbSession     Mode:UPDATE   RootEvtCnvSvc.DataBase 
+ApplicationMgr       INFO Application Manager Finalized successfully

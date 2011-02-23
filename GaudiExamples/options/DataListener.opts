@@ -1,0 +1,29 @@
+
+
+ApplicationMgr.TopAlg = { "DataListenerAlg" };
+ApplicationMgr.ExtSvc += { "DataListenerSvc" };
+
+MessageSvc.OutputLevel     = 1;
+ApplicationMgr.EvtMax    = 10 ;
+ApplicationMgr.EvtSel   = "NONE" ;
+EventSelector.PrintFreq = 1;
+
+
+// Turn on/off monitoring services
+DataListenerSvc.MonALISAMonitoring = 1;
+DataListenerSvc.XMLMonitoring = 1;
+DataListenerSvc.FileMonitoring = 1;
+
+// Specify monitor service frequency
+DataListenerSvc.EventFrequency = 2;
+DataListenerSvc.MLEventFrequency = 2;
+
+// MonALISA publishing options
+DataListenerSvc.MLClusterName = "DataListenerSvcTesting";
+
+// Path to MonALISA configuration file
+//DataListenerSvc.MonaLisaMonitoring = "./destinations.conf";
+
+DataListenerSvc.MLjobID = 1;
+
+

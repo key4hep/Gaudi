@@ -1,0 +1,5 @@
+                ${CONSTITUENT_GUID}.Debug.ActiveCfg = Debug|Win32
+                ${CONSTITUENT_GUID}.Debug.Build.0 = Debug|Win32
+                ${CONSTITUENT_GUID}.Release.ActiveCfg = Release|Win32
+                ${CONSTITUENT_GUID}.Release.Build.0 = Release|Win32
+

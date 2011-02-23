@@ -1,0 +1,36 @@
+# File: cmt/fragments/merge_genconfDb_header
+# Author: Sebastien Binet (binet@cern.ch)
+
+# Makefile fragment to merge a <library>_confDb.py file into a single
+# <project>_merged_confDb.py file in the (python) install area
+# Note that <project> is massaged to get a valid python module name
+# (ie: remove dots and dashes)
+
+.PHONY: ${CONSTITUENT} ${CONSTITUENT}clean
+
+# default is already '#'
+#genconfDb_comment_char := "'#'"
+
+instdir      := ${CMTINSTALLAREA}$(shared_install_subdir)
+confDbRef    := $(inDir)/$(library)_confDb.py
+stampConfDb  := $(confDbRef).stamp
+mergedConfDb := $(instdir)/python/$(subst .,_,$(subst -,_,$(project)))_merged_confDb.py
+
+${CONSTITUENT} :: $(stampConfDb) $(mergedConfDb)
+	@:
+
+.NOTPARALLEL : $(stampConfDb) $(mergedConfDb)
+
+$(stampConfDb) $(mergedConfDb) :: $(confDbRef)
+	@echo "Running merge_genconfDb  ${CONSTITUENT}"
+	$(merge_genconfDb_cmd) \
+          $(merge_genconfDb_switch) \
+          --input-file $(confDbRef) \
+          --merged-file $(mergedConfDb)
+
+${CONSTITUENT}clean ::
+	$(cleanup_silent) $(merge_genconfDb_cmd) \
+          --un-merge \
+          --input-file $(confDbRef) \
+          --merged-file $(mergedConfDb)	;
+	$(cleanup_silent) $(remove_command) $(stampConfDb)

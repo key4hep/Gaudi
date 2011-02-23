@@ -1,0 +1,5 @@
+================ GaudiSvc v10r1p2 ============================================
+! 2002-12-11 - Markus Frank
+ - Corrected reference counting of ConversionSvc in OutputStream.cpp
+   This was producing a crash at the end of Brunel. Reported by Marco.
+

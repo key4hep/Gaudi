@@ -1,0 +1,561 @@
+// $Id: GaudiHistos.icpp,v 1.17 2008/10/10 12:39:04 marcocle Exp $
+// ============================================================================
+#ifndef GAUDIALG_GAUDIHISTOS_ICPP
+#define GAUDIALG_GAUDIHISTOS_ICPP 1
+// ============================================================================
+/* @file
+ *
+ *  Implementation file for class : GaudiHistos
+ *
+ *  @author Chris Jones   Christopher.Rob.Jones@cern.ch
+ *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
+ *  @date   2005-08-08
+ */
+// ============================================================================
+// STD & STL
+// ============================================================================
+#include <algorithm>
+#include <string>
+#include <vector>
+#include <set>
+// ============================================================================
+// GaudiKernel
+// ============================================================================
+#include "GaudiKernel/MsgStream.h"
+#include "GaudiKernel/IHistogramSvc.h"
+// ============================================================================
+// GaudiUtils
+// ============================================================================
+#include "GaudiUtils/HistoTableFormat.h"
+// ============================================================================
+// GaudiAlg
+// ============================================================================
+#include "GaudiAlg/GaudiHistos.h"
+#include "GaudiAlg/CheckForNaN.h"
+#include "GaudiAlg/Print.h"
+#include "GaudiAlg/Fill.h"
+// ============================================================================
+// forward declarations from AIDA
+// ============================================================================
+namespace AIDA
+{
+  class IBaseHistogram ;
+  class IHistogram     ;
+  class IHistogram1D   ;
+  class IHistogram2D   ;
+  class IHistogram3D   ;
+  class IProfile       ;
+  class IProfile1D     ;
+  class IProfile2D     ;
+}
+// =============================================================================
+// Constructor initialisation and job options
+// =============================================================================
+template <class PBASE>
+void GaudiHistos<PBASE>::initGaudiHistosConstructor()
+{
+  // SWITCH ON/OFF the histograms
+  this->declareProperty
+    ( "HistoProduce"          ,
+      m_produceHistos = true  ,
+      "Swith on/off the production of histograms "   ) ;
+  // print the histograms at finalization
+  this->declareProperty
+    ( "HistoPrint"            ,
+      m_histosPrint   = false ,
+      "Switch on/off the printout of histograms at finalization"    )
+    -> declareUpdateHandler ( &GaudiHistos<PBASE>::printHistoHandler, this ) ;
+  // check for NaN/Finite
+  this->declareProperty
+    ( "HistoCheckForNaN"      ,
+      m_checkForNaN   = true  ,
+      "Swicth on/off the checks for NaN and Infinity for histogram fill" ) ;
+  // for HBOOK persistency, 'true' can be useful
+  this->declareProperty
+    ( "HistoSplitDir"         ,
+      m_splitHistoDir = false ,
+      "Split long directory names into short pieces (suitable for HBOOK)" );
+  // general OffSet for histogram ID
+  this->declareProperty
+    ( "HistoOffSet"           ,
+      m_histoOffSet   =   0   ,
+      "OffSet for automatically assigned histogram numerical identifiers " ) ;
+  // top level histogram directory
+  this->declareProperty
+    ( "HistoTopDir"           ,
+      m_histoTopDir   =   ""  ,
+      "Top level histogram directory (take care that it ends with '/')" ) ;
+  // histogram directory
+  this->declareProperty
+    ( "HistoDir"             ,
+      m_histoDir      = this->name() ,
+      "Histogram Directory" ) ;
+  // control output level of histograms
+  this->declareProperty ( "FullDetail"            , m_fullDetail    = false ) ;
+  // monitor histograms
+  this->declareProperty ( "MonitorHistograms"     , m_declareMoniHists = true ) ;
+  // format for 1D-histograms printout
+  this->declareProperty
+    ( "FormatFor1DHistoTable" ,
+      m_histo1DTableFormat   = Gaudi::Utils::Histos::Formats::format () ,
+      "Format string for printout of 1D histograms"      ) ;
+  // "short" format for 1D-histograms printout
+  this->declareProperty
+    ( "ShortFormatFor1DHistoTable" ,
+      m_histo1DTableFormatShort   = " | %1$-25.25s %2%"  ,
+      "Format string for printout of 1D histograms"      ) ;
+  // the header for 1D-histogram tabkle
+  this->declareProperty
+    ( "HeaderFor1DHistoTable" ,
+      m_histo1DTableHeader   = Gaudi::Utils::Histos::Formats::header () ,
+      "The table header for printout of 1D histograms "  ) ;
+  this->declareProperty
+    ( "UseSequencialNumericAutoIDs", m_useNumericAutoIDs = false,
+      "Flag to allow users to switch back to the old style of creating numerical automatic IDs" );
+  m_idReplaceInfo.clear();
+  m_idReplaceInfo["/"] = "=SLASH=";
+  this->declareProperty
+    ( "AutoStringIDPurgeMap", m_idReplaceInfo,
+      "Map of strings to search and replace when using the title as the basis of automatically generated literal IDs" );
+}
+// ============================================================================
+// Initialise Histogramming
+// ============================================================================
+template <class PBASE>
+StatusCode GaudiHistos<PBASE>::
+#ifdef __ICC
+  i_ghInitialize
+#else
+  initialize
+#endif
+  ()
+{
+  // initialize base class
+  const StatusCode sc = PBASE::initialize();
+  if ( sc.isFailure() ) return sc;
+
+  // produce histograms?
+  if ( !produceHistos() )
+  {
+    this->debug() << "Histogram production is switched OFF" << endmsg;
+    return sc;
+  }
+
+  // check the validity of histogram service
+  if ( this->histoSvc() == NULL )
+  { return this->Error("initialize():: IHistogramSvc* is invalid"); }
+
+  // Warn if the user has decided to use numerical automatic IDs
+  if ( useNumericAutoIDs() )
+  {
+    this ->
+      Warning( "Using numerical automatic IDs. These are not guaranteed to be totally deterministic. Use with care...",
+               StatusCode::SUCCESS );
+  }
+
+  // Finally, print the location histogram will be written to
+  this->Print
+    ( "The histogram path is set to be '" + histoPath() + "'",
+      StatusCode( StatusCode::SUCCESS, true )  , MSG::DEBUG );
+
+  return sc;
+}
+// ============================================================================
+// Finalise Histogramming
+// ============================================================================
+template <class PBASE>
+StatusCode GaudiHistos<PBASE>::
+#ifdef __ICC
+  i_ghFinalize
+#else
+  finalize
+#endif
+  ()
+{
+
+  if ( produceHistos() )
+  {
+
+    // Count how many histos of each type
+    if ( !noHistos() )
+    {
+      const unsigned int n1D  = histo1DMapID   () . size () ;
+      const unsigned int n2D  = histo2DMapID   () . size () ;
+      const unsigned int n3D  = histo3DMapID   () . size () ;
+      const unsigned int n1DP = profile1DMapID () . size () ;
+      const unsigned int n2DP = profile2DMapID () . size () ;
+      const unsigned int total = n1D+n2D+n3D+n1DP+n2DP;
+      if ( total>0 )
+      {
+        this->always() << "Booked " << total << " Histogram(s) : ";
+        if ( n1D>0  ) this->always() << "1D=" << n1D << " ";
+        if ( n2D>0  ) this->always() << "2D=" << n2D << " ";
+        if ( n3D>0  ) this->always() << "3D=" << n3D << " ";
+        if ( n1DP>0 ) this->always() << "1DProf=" << n1DP << " ";
+        if ( n2DP>0 ) this->always() << "2DProf=" << n2DP << " ";
+        this->always() << endmsg;
+      }
+    }
+
+    // detailed printing
+    if ( histosPrint() ) { printHistos() ; }
+
+  }
+
+  // clear all maps
+  m_histo1DMapTitle   . clear () ;
+  m_histo2DMapTitle   . clear () ;
+  m_histo3DMapTitle   . clear () ;
+  m_histo1DMapID      . clear () ;
+  m_histo2DMapID      . clear () ;
+  m_histo3DMapID      . clear () ;
+  m_profile1DMapTitle . clear () ;
+  m_profile2DMapTitle . clear () ;
+  m_profile1DMapID    . clear () ;
+  m_profile2DMapID    . clear () ;
+
+  // finalize base class
+  return PBASE::finalize();
+}
+// ============================================================================
+// perform the actual detailed printout of histograms
+// ============================================================================
+template <class PBASE>
+int GaudiHistos<PBASE>::printHistos ( const MSG::Level level ) const
+{
+  using namespace Gaudi::Utils::Histos ;
+
+  if ( noHistos() )
+  {
+    if ( this->msgLevel(MSG::DEBUG) )
+    { this->msgStream(level) << "No histograms are booked" << endmsg ; }
+    return 0 ;                                                        // RETURN
+  }
+
+  MsgStream & msg = this->msgStream(level);
+
+  // Printout all histograms
+
+  Gaudi::Utils::Histos::Table table
+    ( m_histo1DTableFormat ,
+      m_histo1DTableHeader ) ;
+
+  if ( !histo1DMapID().empty() )
+  {
+    msg << "List of booked 1D histograms in directory         "
+        << "\"" << histoPath() << "\" :-"  ;
+
+    if ( !table.header().empty() )
+    {
+      msg << std::endl << Gaudi::Utils::Histos::format
+        ( "ID" , table.header() , m_histo1DTableFormatShort ) ;
+    }
+    // temporary map to keep ordered IDs
+    typedef std::map<HistoID,const AIDA::IHistogram1D*> OrderedMapType;
+    OrderedMapType OrderedMap ( histo1DMapID().begin() , histo1DMapID().end() );
+    //
+    for ( OrderedMapType::const_iterator entry = OrderedMap.begin() ;
+          OrderedMap.end() != entry ; ++entry )
+    {
+      const AIDA::IHistogram1D* aida = entry->second ;
+      if ( NULL == aida )
+      { this->error() << "IHistogram1D points to NULL" << endmsg ; continue ; }
+      // format and print the row
+      msg << std::endl << table.toString
+        ( aida                      ,
+          HistoID ( entry->first )  ,
+          m_histo1DTableFormatShort ) ;
+    }
+    msg << endmsg ;
+  }
+  // ==========================================================================
+  if ( !histo2DMapID().empty() )
+  {
+    msg << "List of booked 2D histograms in directory         "
+        << "\"" << histoPath() << "\" :-" ;
+
+    // temporary map to keep ordered IDs
+    typedef std::map<HistoID,const AIDA::IHistogram2D*> OrderedMapType;
+    OrderedMapType OrderedMap ( histo2DMapID().begin() , histo2DMapID().end() ) ;
+    //
+    for ( OrderedMapType::const_iterator entry = OrderedMap.begin() ;
+          OrderedMap.end() != entry ; ++entry )
+    {
+      const AIDA::IHistogram2D* aida = entry->second ;
+      if ( NULL == aida )
+      { this->error() << "IHistogram2D points to NULL" << endmsg ; continue ; }
+      msg << std::endl
+          << GaudiAlg::Print2D::toString ( aida , entry->first );
+    }
+    msg << endmsg ;
+  }
+  // ==========================================================================
+  if ( !histo3DMapID().empty() )
+  {
+    msg << "List of booked 3D histograms in directory         "
+        << "\"" << histoPath() << "\" :-" ;
+    // temporary map to keep ordered IDs
+    typedef std::map<HistoID,const AIDA::IHistogram3D*> OrderedMapType;
+    OrderedMapType OrderedMap ( histo3DMapID().begin() , histo3DMapID().end() ) ;
+    //
+    for ( OrderedMapType::const_iterator entry = OrderedMap.begin() ;
+          OrderedMap.end() != entry ; ++entry )
+    {
+      const AIDA::IHistogram3D* aida = entry->second ;
+      if ( NULL == aida )
+      { this->error() << "IHistogram3D points to NULL" << endmsg ; continue ; }
+      msg << std::endl << GaudiAlg::Print3D::toString ( aida , entry->first );
+    }
+    msg << endmsg ;
+  }
+  // ==========================================================================
+  if ( !profile1DMapID().empty() )
+  {
+    msg << "List of booked 1D profile histograms in directory "
+        << "\"" << histoPath() << "\" :-" ;
+    // temporary map to keep ordered IDs
+    typedef std::map<HistoID,const AIDA::IProfile1D*> OrderedMapType;
+    OrderedMapType OrderedMap ( profile1DMapID().begin() , profile1DMapID().end() ) ;
+    //
+    for ( OrderedMapType::const_iterator entry = OrderedMap.begin() ;
+          OrderedMap.end() != entry ; ++entry )
+    {
+      const AIDA::IProfile1D*   aida = entry->second ;
+      if ( NULL == aida )
+      { this->error() << "IProfile1D points to NULL" << endmsg ; continue ; }
+      msg << std::endl << GaudiAlg::Print1DProf::toString  ( aida , entry->first );
+    }
+    msg << endmsg ;
+  }
+  // ==========================================================================
+  if ( !profile2DMapID().empty() )
+  {
+    msg << "List of booked 2D profile histograms in directory "
+        << "\"" << histoPath() << "\" :-" ;
+    // temporary map to keep ordered IDs
+    typedef std::map<HistoID,const AIDA::IProfile2D*> OrderedMapType;
+    OrderedMapType OrderedMap ( profile2DMapID().begin() , profile2DMapID().end() ) ;
+    //
+    for ( OrderedMapType::const_iterator entry = OrderedMap.begin() ;
+          OrderedMap.end() != entry ; ++entry )
+    {
+      const AIDA::IProfile2D*   aida = entry->second ;
+      if ( NULL == aida )
+      { this->error() << "IProfile2D points to NULL" << endmsg ; continue ; }
+      msg << std::endl << GaudiAlg::Print2DProf::toString ( aida , entry->first );
+    }
+    msg << endmsg ;
+  }
+  //
+  return this->totalNumberOfHistos() ;
+}
+// ============================================================================
+// Check if all histogram maps are empty
+// ============================================================================
+template <class PBASE>
+bool GaudiHistos<PBASE>::noHistos() const
+{
+  return ( histo1DMapTitle   () . empty() &&
+           histo2DMapTitle   () . empty() &&
+           histo3DMapTitle   () . empty() &&
+           profile1DMapTitle () . empty() &&
+           profile2DMapTitle () . empty() &&
+           histo1DMapID      () . empty() &&
+           histo2DMapID      () . empty() &&
+           histo3DMapID      () . empty() &&
+           profile1DMapID    () . empty() &&
+           profile2DMapID    () . empty() );
+}
+// ============================================================================
+// Declare a histogram to the monitor service
+// ============================================================================
+template <class PBASE>
+void GaudiHistos<PBASE>::monitorHisto
+( const AIDA::IBaseHistogram* hist,
+  const HistoID& ID ) const
+{
+  if ( hist && m_declareMoniHists )
+  {
+    if ( this->msgLevel(MSG::DEBUG) )
+    {
+      this->debug() << "Monitoring histogram '"
+                    << ID.idAsString() << "' desc = '"
+                    << Gaudi::Utils::Histos::htitle(hist) << "'" << endmsg;
+    }
+    this->declareInfo ( histoPath()+"/"+ID.idAsString() ,
+                        hist            ,
+                        Gaudi::Utils::Histos::htitle(hist) ) ;
+  }
+}
+// ============================================================================
+// access the EXISTING 1D histogram by ID
+// ============================================================================
+template <class PBASE>
+AIDA::IHistogram1D* GaudiHistos<PBASE>::histo1D ( const HistoID& ID )  const
+{
+  AIDA::IHistogram1D * h(NULL);
+  //
+  Histo1DMapID::const_iterator found = histo1DMapID().find( ID ) ;
+  //
+  h = ( histo1DMapID().end() == found ? NULL : found->second );
+  //
+  return h ;
+}
+// ============================================================================
+// access the EXISTING 2D histogram by ID
+// ============================================================================
+template <class PBASE>
+AIDA::IHistogram2D* GaudiHistos<PBASE>::histo2D ( const HistoID& ID )  const
+{
+  AIDA::IHistogram2D * h(NULL);
+  //
+  Histo2DMapID::const_iterator found = histo2DMapID().find( ID ) ;
+  //
+  h = ( histo2DMapID().end() == found ? NULL : found->second );
+  //
+  return h;
+}
+// ============================================================================
+// access the EXISTING 3D histogram by ID
+// ============================================================================
+template <class PBASE>
+AIDA::IHistogram3D* GaudiHistos<PBASE>::histo3D ( const HistoID& ID )  const
+{
+  AIDA::IHistogram3D * h(NULL);
+  //
+  Histo3DMapID::const_iterator found = histo3DMapID().find( ID ) ;
+  h = ( histo3DMapID().end() == found ? NULL : found->second );
+  //
+  return h;
+}
+// ============================================================================
+// access the EXISTING 1D profile histogram by ID
+// ============================================================================
+template <class PBASE>
+AIDA::IProfile1D* GaudiHistos<PBASE>::profile1D ( const HistoID& ID )  const
+{
+  AIDA::IProfile1D * h(NULL);
+  //
+  Profile1DMapID::const_iterator found = profile1DMapID().find( ID ) ;
+  //
+  h = ( profile1DMapID().end() == found ? NULL : found->second );
+  //
+  return h;
+}
+// ============================================================================
+// access the EXISTING 2D profile histogram by ID
+// ============================================================================
+template <class PBASE>
+AIDA::IProfile2D* GaudiHistos<PBASE>::profile2D ( const HistoID& ID )  const
+{
+  AIDA::IProfile2D * h(NULL);
+  //
+  Profile2DMapID::const_iterator found = profile2DMapID().find( ID ) ;
+  //
+  h = ( profile2DMapID().end() == found ? NULL : found->second );
+  //
+  return h;
+}
+// ============================================================================
+// Returns the total number of histograms (of all types) currently booked
+// ============================================================================
+template <class PBASE>
+unsigned int GaudiHistos<PBASE>::totalNumberOfHistos() const
+{
+  return
+    histo1DMapID   () . size () +
+    histo2DMapID   () . size () +
+    histo3DMapID   () . size () +
+    profile1DMapID () . size () +
+    profile2DMapID () . size () ;
+}
+// ============================================================================
+// Create a new histogram ID using the given title
+// ============================================================================
+template <class PBASE>
+void GaudiHistos<PBASE>::newHistoID
+( const std::string & title ,
+  HistoID&            ID    ) const
+{
+  if ( useNumericAutoIDs() || title.empty() )
+  {
+    if ( !useNumericAutoIDs() )
+    {
+      this -> Warning( "Cannot generate automatic literal ID from an empty title ! Using numeric ID instead for histogram ID",
+                       StatusCode::SUCCESS );
+    }
+    // propose the histogram ID (always numeric)
+    ID = HistoID( totalNumberOfHistos() + 1 + histoOffSet() );
+    // adjust the proposed ID
+    while ( histoExists( ID ) ) { ID = HistoID ( ID.numeric() + 1 ) ; }
+  }
+  else
+  {
+    // use the title to create a unique literal ID
+    ID = HistoID( this->convertTitleToID(title) );
+    // Just in case ...
+    while ( histoExists( ID ) ) { ID = HistoID(ID.idAsString()+"_"); }
+  }
+}
+// ============================================================================
+// Create an ID string from a title string
+// ============================================================================
+template <class PBASE>
+std::string GaudiHistos<PBASE>::convertTitleToID( const std::string & title ) const
+{
+  // clean up the ID string for all unwanted characters
+  std::string tmp_id = title;
+  for ( std::map<std::string,std::string>::const_iterator i =
+          m_idReplaceInfo.begin() ; i != m_idReplaceInfo.end(); ++i )
+  {
+    stringSearchReplace( tmp_id, i->first, i->second );
+  }
+  return tmp_id;
+}
+// ============================================================================
+// Searches 'title' for all instancies of 'A' and replaces them with 'B'
+// ============================================================================
+template <class PBASE>
+void GaudiHistos<PBASE>::stringSearchReplace
+( std::string       & title ,
+  const std::string & A     ,
+  const std::string & B     ) const
+{
+  std::string::size_type slash = title.find_first_of ( A ) ;
+  while ( std::string::npos != slash )
+  {
+    title = title.substr(0,slash) + B + title.substr(slash+A.size());
+    slash = title.find_first_of( A );
+  }
+}
+// ============================================================================
+// the handler for "HistoPrint" property
+// ============================================================================
+template < class PBASE >
+void GaudiHistos<PBASE>::printHistoHandler( Property& )
+{
+  // no action if not yet initialized
+  if ( this -> FSMState() < Gaudi::StateMachine::INITIALIZED ) { return ; }
+  if ( this -> histosPrint() ) { this -> printHistos ( MSG::ALWAYS ) ; }
+}
+// ============================================================================
+// 1D
+#include "GaudiAlg/GaudiHistos_1DFixedBinning.icpp"
+#include "GaudiAlg/GaudiHistos_1DVariableBinning.icpp"
+// 2D
+#include "GaudiAlg/GaudiHistos_2DFixedBinning.icpp"
+#include "GaudiAlg/GaudiHistos_2DVariableBinning.icpp"
+// 3D
+#include "GaudiAlg/GaudiHistos_3DFixedBinning.icpp"
+#include "GaudiAlg/GaudiHistos_3DVariableBinning.icpp"
+// 1D Profile
+#include "GaudiAlg/GaudiHistos_1DProfFixedBinning.icpp"
+#include "GaudiAlg/GaudiHistos_1DProfVariableBinning.icpp"
+// 2D Profile
+#include "GaudiAlg/GaudiHistos_2DProfFixedBinning.icpp"
+#include "GaudiAlg/GaudiHistos_2DProfVariableBinning.icpp"
+// ============================================================================
+// The END
+// ============================================================================
+#endif // GAUDIALG_GAUDIHISTOS_ICPP
+// ============================================================================

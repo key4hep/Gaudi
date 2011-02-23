@@ -1,0 +1,202 @@
+// ============================================================================
+// book the 1D profile histogram (book on demand)
+// ============================================================================
+template <class PBASE>
+AIDA::IProfile1D*  GaudiHistos<PBASE>::bookProfile1D
+( const std::string&  title        ,
+  const double        low          ,
+  const double        high         ,
+  const unsigned long bins         ,
+  const std::string&  opt          ,
+  const double        lowY         ,
+  const double        highY        ) const
+{
+  //
+  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  //
+  // exist?
+  AIDA::IProfile1D* hist = profile1D ( title ) ;
+  // histogram is already booked
+  if( NULL != hist      )                       { return hist ; } // RETURN !!
+
+  // propose the histogram ID
+  HistoID ID;
+  newHistoID( title, ID );
+
+  // Book the histo and return
+  return this -> bookProfile1D ( ID, title, low, high, bins , opt , lowY , highY );
+}
+// ============================================================================
+// book the 1D profile histogram with forced ID (book on demand)
+// ============================================================================
+template <class PBASE>
+AIDA::IProfile1D*  GaudiHistos<PBASE>::bookProfile1D
+( const HistoID&      ID           ,
+  const std::string&  title        ,
+  const double        low          ,
+  const double        high         ,
+  const unsigned long bins         ,
+  const std::string&  opt          ,
+  const double        lowY         ,
+  const double        highY        ) const
+{
+  //
+  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  //
+  // Check ID
+  if (ID.undefined())
+  {
+    this->Error("Undefined Histogram ID : Title='"+title+"'");
+    return NULL;
+  }
+
+  // exist?
+  AIDA::IProfile1D* hist = profile1D ( ID ) ;
+  // histogram is already booked
+  if( NULL != hist       )                  { return hist ; } // RETURN !!
+
+  // Histogram title
+  const std::string & htitle =
+    ( title.empty() ?
+      "Unnamed 1D Profile Histogram ID="+ID.idAsString() : title ) ;
+
+  // book the histogram
+  if ( ID.numeric() )
+  {
+    hist = this->histoSvc() -> bookProf ( histoPath()  ,
+                                          ID.numericID() ,
+                                          htitle       ,
+                                          bins         ,
+                                          low          ,
+                                          high         ,
+                                          lowY         ,
+                                          highY        ,
+                                          opt          ) ;
+  }
+  else if ( ID.literal() )
+  {
+    hist = this->histoSvc() -> bookProf ( histoPath()+"/"+
+                                          ID.literalID() ,
+                                          htitle       ,
+                                          bins         ,
+                                          low          ,
+                                          high         ,
+                                          lowY         ,
+                                          highY        ,
+                                          opt          ) ;
+  }
+
+  // test ok
+  if( NULL == hist )
+  { this->Error( "IProfile1D* points to NULL! ID='" + ID.idAsString() +
+                 "' title='"+htitle+"'" ) ; return NULL; } // RETURN !!
+
+  // add histogram into histogram storages
+  m_profile1DMapID    [ ID    ] = hist ;
+  m_profile1DMapTitle [ title ] = hist ;
+
+  // Declare to monitoring service
+  monitorHisto( Gaudi::Utils::Histos::toBase ( hist ) , ID );
+
+  // printout and return
+  if ( this->msgLevel(MSG::DEBUG) )
+  { this->debug() << "Booked 1D Profile Histogram : ID='"
+                  << ID << "' Path=" << histoPath()
+                  << " Title='"
+                  << Gaudi::Utils::Histos::htitle ( hist )
+                  << "'" << endmsg; }
+  return hist ;
+}
+// ============================================================================
+// fill the 1D profile histogram with the value and weight
+// ============================================================================
+template <class PBASE>
+AIDA::IProfile1D* GaudiHistos<PBASE>::fill
+( AIDA::IProfile1D*    histo  ,
+  const double         valueX ,
+  const double         valueY ,
+  const double         weight ,
+  const std::string&   title  ) const
+{
+  //
+  if ( 0 == histo ) { return 0 ; }   // RETURN
+  //
+  if ( !checkForNaN() )
+  { Gaudi::Utils::Histos::fill ( histo , valueX , valueY , weight ); }
+  else if  ( lfin ( valueX ) && lfin ( valueY ) && lfin ( weight ) )
+  { Gaudi::Utils::Histos::fill ( histo , valueX , valueY , weight ); }
+  else if  ( lnan ( valueX ) || lnan ( valueY ) || lnan ( weight ) )
+  {
+    this -> Warning
+      ("fill():: 'NaN'      value is skipped from the histogram '"
+       + Gaudi::Utils::Histos::htitle ( histo , title  ) + "'" ) ;
+  }
+  else
+  {
+    this -> Warning
+      ("fill():: 'Infinite' value is skipped from the histogram '"
+       + Gaudi::Utils::Histos::htitle ( histo , title  ) + "'" ) ;
+  }
+  // return
+  return histo ;
+}
+// ============================================================================
+// fill the 1D profile histogram (book on demand)
+// ============================================================================
+template <class PBASE>
+AIDA::IProfile1D* GaudiHistos<PBASE>::profile1D
+( const double        valueX       ,
+  const double        valueY       ,
+  const std::string&  title        ,
+  const double        lowX         ,
+  const double        highX        ,
+  const unsigned long binsX        ,
+  const std::string&  opt          ,
+  const double        lowY         ,
+  const double        highY        ,
+  const double        weight       ) const
+{
+  AIDA::IProfile1D * h(NULL);
+  if ( produceHistos() )
+  {
+    // retrieve or book the histogram
+    h = profile1D ( title ) ;
+    if ( NULL == h )
+    { h = bookProfile1D ( title , lowX , highX , binsX , opt , lowY , highY ) ; }
+    // fill the histogram
+    h = fill ( h , valueX , valueY , weight , title ) ;
+  }
+  return h;
+}
+// ============================================================================
+// fill the 1D profile histogram with forced ID assignment (book on demand)
+// ============================================================================
+template <class PBASE>
+AIDA::IProfile1D* GaudiHistos<PBASE>::profile1D
+( const double        valueX       ,
+  const double        valueY       ,
+  const HistoID&      ID           ,
+  const std::string&  title        ,
+  const double        lowX         ,
+  const double        highX        ,
+  const unsigned long binsX        ,
+  const std::string&  opt          ,
+  const double        lowY         ,
+  const double        highY        ,
+  const double        weight       ) const
+{
+  AIDA::IProfile1D * h(NULL);
+  if ( produceHistos() )
+  {
+    // retrieve or book the histogram
+    h = profile1D ( ID ) ;
+    if ( NULL == h )
+    { h = bookProfile1D ( ID , title , lowX , highX , binsX , opt , lowY , highY ) ; }
+    // fill the histogram
+    h = fill ( h , valueX , valueY , weight , title ) ;
+  }
+  return h;
+}
+// ============================================================================
+// The END
+// ============================================================================

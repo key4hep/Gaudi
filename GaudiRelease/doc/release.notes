@@ -1,0 +1,60 @@
+Package: GaudiRelease
+Manatiner: Marco Clemencic
+
+============================= GaudiRelease v22r1 =============================
+============================= GaudiRelease v22r0 =============================
+! 2011-01-17 - Marco Clemencic
+ - Removed a couple of obsolete LHCb-specific packages from the requirements.
+
+! 2011-01-16 - Karol Kruzelecki
+ - Patch #4608: new Package GaudiProfiling
+
+! 2010-12-16 - Sebastien Binet
+ - Patch #4074: migrate GaudiPython.Parallel to multiprocessing
+   Added new package GaudiMP.
+
+============================ GaudiRelease v21r11p2 =============================
+! 2010-12-06 - Charles Leggett
+ - Updated GaudiKernel to v27r11p1
+
+! 2010-11-30 - Marco Clemencic
+ - Added graphviz to the list of external packages needed by LHCb.
+
+============================ GaudiRelease v21r11p1 =============================
+! 2010-12-03 - Charles Leggett
+ - Updated PartPropSvc to v4r1
+
+============================ GaudiRelease v21r11 =============================
+! 2010-09-22 - Marco Clemencic
+ - Added neurobayes to the list of external packages needed by LHCb.
+
+! 2010-08-23 - Marco Clemencic
+ - Added XQilla to the list of external packages needed by LHCb.
+
+! 2010-07-28 - Marco Clemencic
+ - Remove the dependencies on pyqt and pyqt_compat, and adde the dependency on
+   Qt (for the LHCb distribution).
+
+! 2010-07-14 - Marco Clemencic
+ - Small updates for the scripts to prepare the release.
+
+! 2010-04-27 - Marco Clemencic
+ - Added the new python modules packages to the list of LHCb extra packages:
+   - pytools
+   - pyanalysis
+   - pygraphics
+
+============================= GaudiRelease v21r7 =============================
+! 2010-01-20 - Marco Clemencic
+ - Added a small script to finalize the -pre tags into normal tags for all the
+   packages of the project. (cmt/finalize_tags.py)
+
+! 2010-01-11 - Marco Clemencic
+ - Added "fastjet" to the list of LHCb extra packages.
+
+! 2009-11-20 - Marco Clemencic
+ - Minor improvements to the doxygen configuration files (documentation is now
+   built in the InstallArea under the directory doc).
+
+! 2009-11-19 - Marco Clemencic
+ - Removed dependency on rx for Windows (which has been removed from LCGCMT).

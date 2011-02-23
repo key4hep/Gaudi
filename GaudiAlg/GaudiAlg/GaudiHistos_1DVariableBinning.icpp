@@ -1,0 +1,138 @@
+// ==================================== 1D ====================================
+// ============================= Variable Binning =============================
+// ============================================================================
+// book the 1D histogram (book on demand)
+// ============================================================================
+template <class PBASE>
+AIDA::IHistogram1D*  GaudiHistos<PBASE>::book1D
+( const std::string&   title        ,
+  const HistoBinEdges& edges        ) const
+{
+  //
+  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  //
+  // exist?
+  AIDA::IHistogram1D* hist = histo1D ( title ) ;
+  // histogram is already booked
+  if( NULL != hist      )                      { return hist ; } // RETURN !!
+
+  // propose the histogram ID
+  HistoID ID;
+  newHistoID( title, ID );
+
+  // Create a new histogram and return
+  return this -> book1D ( ID, title, edges );
+}
+// ============================================================================
+// book the 1D histogram with forced ID (book on demand)
+// ============================================================================
+template <class PBASE>
+AIDA::IHistogram1D*  GaudiHistos<PBASE>::book1D
+( const HistoID&       ID           ,
+  const std::string&   title        ,
+  const HistoBinEdges& edges        ) const
+{
+  //
+  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  //
+  // Check ID
+  if (ID.undefined())
+  {
+    this->Error("Undefined Histogram ID : Title='"+title+"'");
+    return NULL;
+  }
+
+  // exist?
+  AIDA::IHistogram1D* hist = histo1D ( ID ) ;
+  // histogram is already booked
+  if ( NULL != hist       )                    { return hist ; } // RETURN !!
+
+  // Histogram title
+  const std::string & htitle =
+    ( title.empty() ? "Unnamed 1D Histogram ID="+ID.idAsString() : title ) ;
+
+  // book the histogram
+  if ( ID.numeric() )
+  {
+    hist = this->histoSvc() -> book ( histoPath()  ,
+                                      ID.numericID() ,
+                                      htitle       ,
+                                      edges     ) ;
+  }
+  else if ( ID.literal() )
+  {
+    hist = this->histoSvc() -> book ( histoPath()+"/"+
+                                      ID.literalID() ,
+                                      htitle         ,
+                                      edges        ) ;
+  }
+
+  // check OK
+  if( NULL == hist )
+  { this->Error( "IHistogram1D* points to NULL! ID='" + ID.idAsString() +
+                 "' title='"+htitle+"'" ) ; return NULL; } // RETURN !!
+
+  // add histogram into histogram storages
+  m_histo1DMapID    [ ID    ] = hist ;
+  m_histo1DMapTitle [ title ] = hist ;
+
+  // Declare to monitoring service
+  monitorHisto( Gaudi::Utils::Histos::toBase ( hist ) , ID );
+
+  // Printout and return
+  if ( this->msgLevel(MSG::DEBUG) )
+  { this->debug() << "Booked 1D Histogram : ID='" << ID
+                  << "' Path=" << histoPath()
+                  << " Title='"
+                  << Gaudi::Utils::Histos::htitle ( hist )
+                  << "'" << endmsg; }
+  return hist ;
+}
+// ============================================================================
+// fill the 1D histogram (book on demand)
+// ============================================================================
+template <class PBASE>
+AIDA::IHistogram1D*
+GaudiHistos<PBASE>::plot1D
+( const double         value  ,
+  const std::string&   title  ,
+  const HistoBinEdges& edges  ,
+  const double         weight ) const
+{
+  AIDA::IHistogram1D * h(NULL);
+  if ( produceHistos() )
+  {
+    // retrieve or book the histogram
+    h = histo1D ( title ) ;
+    if ( NULL == h ) { h = book1D ( title , edges ) ; }
+    // fill the histogram
+    h = fill ( h , value , weight , title );
+  }
+  return h;
+}
+// ============================================================================
+// fill the 1D variable histogram with forced ID assignment (book on demand)
+// ============================================================================
+template <class PBASE>
+AIDA::IHistogram1D*
+GaudiHistos<PBASE>::plot1D
+( const double        value  ,
+  const HistoID&      ID     ,
+  const std::string&  title  ,
+  const HistoBinEdges&        edges  ,
+  const double        weight ) const
+{
+  AIDA::IHistogram1D* h(NULL);
+  if ( produceHistos() )
+  {
+    // retrieve or book the histogram
+    h = histo1D ( ID ) ;
+    if ( NULL == h ) {  h = book1D ( ID , title , edges ) ; }
+    // fill
+    h = fill ( h , value , weight , title ) ;
+  }
+  return h;
+}
+// ============================================================================
+// The END
+// ============================================================================

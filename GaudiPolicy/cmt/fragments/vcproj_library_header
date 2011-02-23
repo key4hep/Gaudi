@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding = "Windows-1252"?>
+<!-- GLAST fragment $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiPolicy/cmt/fragments/vcproj_library_header,v 1.2 2003/12/09 16:14:48 mato Exp $
+   Build by CMT for package/project: ${PACKAGE}/${CONSTITUENT}
+   Generated GUID:  ${GUID}
+  -->
+<VisualStudioProject
+        ProjectType="Visual C++"
+        Version="$(vsVersion)"
+        Name="${CONSTITUENT}"
+        ProjectGUID="${GUID}"
+        Keyword="Win32Proj">
+        <Platforms>
+                <Platform
+                        Name="Win32"/>
+        </Platforms>
+        <Configurations>
+                <Configuration
+                        Name="$(vsCONFIG)|Win32"
+                        OutputDirectory="..\$(${PACKAGE}_tag)"
+                        IntermediateDirectory="..\$(${PACKAGE}_tag)\${CONSTITUENT}"
+                        ConfigurationType="4"
+                        CharacterSet="2">
+                        <Tool
+                                Name="VCCLCompilerTool"
+                                AdditionalOptions='$(cppoptions) $(cppflags) $(pp_cppflags) $(use_pp_cppflags) $(${CONSTITUENT}_pp_cppflags) $(lib_${CONSTITUENT}_pp_cppflags)  $(use_cppflags) $(${CONSTITUENT}_cppflags) $(lib_${CONSTITUENT}_cppflags)'
+                                Optimization="$(vsOptimize)"
+                                PreprocessorDefinitions="_USRDLL;${PACKAGE}_EXPORTS"
+                                WarningLevel="3"
+				RuntimeLibrary="2"
+                                Detect64BitPortabilityProblems="FALSE"
+                                DebugInformationFormat="$(vsDebug)"/>
+                        <Tool
+                                Name="VCCustomBuildTool"
+                                CommandLine='type NUL > ..\$(tag)\${CONSTITUENT}.stamp
+   set CMTROOT=$(CMTROOT)
+   $(${CONSTITUENT}_customBuild)
+   call $(make_shlib) $(tag) ${CONSTITUENT} $(cpplinkflags) $(${CONSTITUENT}_shlibflags) 
+   if exist ..\$(tag)\${CONSTITUENT}.dll type NUL > ..\$(tag)\${CONSTITUENT}.shstamp
+   $(${CONSTITUENT}_customBuild1)
+   $(${CONSTITUENT}_customBuild2)
+   $(${CONSTITUENT}_customBuild3)
+   if  not "%CMTINSTALLAREA%" == "" if exist ..\$(tag)\${CONSTITUENT}.dll xcopy /Y /F ..\$(tag)\${CONSTITUENT}.dll %CMTINSTALLAREA%\$(tag)\lib\*
+   '
+                        Outputs="..\$(tag)\${CONSTITUENT}.stamp; ..\$(tag)\${CONSTITUENT}.shstamp; ..\$(tag)\${CONSTITUENT}.dll "/>
+                        <Tool
+                                Name="VCLibrarianTool"
+                                OutputFile="..\$(${PACKAGE}_tag)\${CONSTITUENT}.${LIBRARYSUFFIX}"/>
+                        <Tool
+                                Name="VCMIDLTool"/>
+                        <Tool
+                                Name="VCPostBuildEventTool"/>
+                        <Tool
+                                Name="VCPreBuildEventTool"/>
+                        <Tool
+                                Name="VCPreLinkEventTool"/>
+                        <Tool
+                                Name="VCResourceCompilerTool"/>
+                        <Tool
+                                Name="VCWebServiceProxyGeneratorTool"/>
+                </Configuration>
+        </Configurations>
+        <Files>
+

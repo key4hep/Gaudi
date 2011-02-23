@@ -1,0 +1,20 @@
+#-- start of install_scripts_header ------
+
+install_dir = $(CMTINSTALLAREA)$(shared_install_subdir)
+
+${CONSTITUENT} :: ${CONSTITUENT}install
+
+install :: ${CONSTITUENT}install
+
+${CONSTITUENT}install :: $(install_dir)
+	@if NOT "$(CMTINSTALLAREA)"=="" echo "installation done"
+
+$(install_dir) ::
+	@if NOT "$(CMTINSTALLAREA)"=="" if exist $(PACKAGE_ROOT)\$(source) $(install_command) "$(PACKAGE_ROOT)\$(source)" "$(install_dir)\$(offset)"
+
+${CONSTITUENT}clean :: ${CONSTITUENT}uninstall
+
+uninstall :: ${CONSTITUENT}uninstall
+
+${CONSTITUENT}uninstall ::
+	@if NOT "$(CMTINSTALLAREA)"=="" if exist $(PACKAGE_ROOT)\$(source) $(uninstall_command) "$(install_dir)\$(offset)"

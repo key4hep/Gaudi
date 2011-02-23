@@ -1,0 +1,86 @@
+Package: GaudiMonitor
+Package manager : Marco Clemencic
+
+============================= GaudiMonitor v2r7 ==============================
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+
+============================= GaudiMonitor v2r6 ==============================
+! 2010-08-27 - Marco Clemencic
+ - Fixed a problem breaking compilation on VC9.
+
+! 2010-08-18 - Marco Clemencic
+ - Fixed a bug spotted by Coverity (BAD_FREE).
+
+============================= GaudiMonitor v2r5 ==============================
+! 2010-01-28 - Marco Clemencic
+ - Removed a couple of leftovers from the removal of _dll.cpp and _load.cpp.
+ - Fixed icc remark #177: X declared but never referenced
+
+============================= GaudiMonitor v2r4 ==============================
+! 2009-10-29 - Marco Clemencic
+ - Fixed few minor problems (including a possible buffer overflow).
+
+================ GaudiMonitor v2r3 ====================================
+! 2009-07-20 - Marco Clemencic
+ - Added '-no_static' to the declaration of the libraries (implemented since CMT
+   v1r20p20081118).
+
+================ GaudiMonitor v2r2 ====================================
+! 2009-06-15 - Hubert Degaudenzi
+ - use the new LCG tag convention.
+
+! 2009-06-10 - Marco Clemencic
+ - Removed _dll.cpp and _load.cpp files (not needed anymore).
+
+================ GaudiMonitor v2r1 ====================================
+! 2009-05-13 - Eric Van Herwijnen
+ - Patch #2998: Extension of IMonitorSvc for StatEntity
+   Added a declareInfo method for StatEntity instances.
+
+================ GaudiMonitor v2r0 ====================================
+! 2009-04-07 - Marco Clemencic
+ - Moved back the namespace MSG to the global namespace.
+
+! 2009-04-06 - Marco Clemencic
+ - Renamed back the namespace Msg to MSG and moved it into the namespace Gaudi.
+
+! 2009-02-19 - Marco Clemencic
+ - Patch #2790: Rename the namespace MSG to Msg
+
+! 2009-01-30 - Marco Clemencic
+ - Replaced all the occurrences of endreq with endmsg.
+
+! 2009-01-22 - Marco Clemencic
+ - Adapted to the new IInterface functionalities (see GaudiKernel release.notes)
+
+================ GaudiMonitor v1r5 ====================================
+! 2008-10-27 - Marco Clemencic
+ - Fixed warnings reported by gcc 4.3:
+   - ‘<unnamed>::nIncidents’ defined but not used
+
+================ GaudiMonitor v1r4 ====================================
+! 2008-01-15 - Marco Clemencic
+ - Fixed bug #31950. Missing call to Service::finalize.
+   Added the call to:
+     - DataListenerSvc
+
+! 2007-11-20 - Marco Clemencic
+ - Fixed few compilation warnings on win32.
+
+================ GaudiMonitor v1r3 ==========================================
+! 2007-08-16 - Hubert Degaudenzi
+ - Added guards to delete statement
+
+================ GaudiMonitor v1r2 ==========================================
+! 2007-02-28 - Hubert Degaudenzi
+ - Fixed compilation on Windows.
+
+================ GaudiMonitor v1r1 ==========================================
+! 2007-02-22 - Hubert Degaudenzi
+ - Compilation fixes
+
+================ GaudiMonitor v1r0 ==========================================
+! 2007-01-15 - Hubert Degaudenzi
+ New package.
+!============================================================================

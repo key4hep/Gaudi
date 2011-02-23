@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding = "Windows-1252"?>
+<!-- GLAST fragment $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiPolicy/cmt/fragments/vcproj_all,v 1.1 2003/11/25 16:11:06 mato Exp $ -->
+<VisualStudioProject
+        ProjectType="Visual C++"
+        Version="$(vsVersion)"
+        Name="all"
+        ProjectGUID="$(GUID_all)"
+        Keyword="Win32Proj">
+        <Platforms>
+                <Platform
+                        Name="Win32"/>
+        </Platforms>
+        <Configurations>
+                <Configuration
+                        Name="$(vsCONFIG)|Win32"
+                        OutputDirectory="..\$(${PACKAGE}_tag)"
+                        IntermediateDirectory="..\$(${PACKAGE}_tag)\${CONSTITUENT}"
+                        ConfigurationType="2"
+                        CharacterSet="2">
+                        <Tool
+                                Name="VCCLCompilerTool"/>
+                        <Tool
+                                Name="VCMIDLTool"/>
+                        <Tool
+                                Name="VCPostBuildEventTool"/>
+                        <Tool
+                                Name="VCPreBuildEventTool"/>
+                        <Tool
+                                Name="VCPreLinkEventTool"/>
+                        <Tool
+                                Name="VCResourceCompilerTool"/>
+                        <Tool
+                                Name="VCWebServiceProxyGeneratorTool"/>
+                </Configuration>
+        </Configurations>
+        <Files>
+                <File
+                        RelativePath="..\doc\release.notes">
+                </File>
+                <File
+                        RelativePath="..\cmt\requirements">
+                </File>
+        </Files>
+        <Globals>
+        </Globals>
+</VisualStudioProject>
+

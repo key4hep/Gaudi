@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="program"><text>../scripts/test_configurable_users.py</text></argument>
+<argument name="validator"><text>
+findReferenceBlock("""
+Applying Application
+/***** User Application/Application ****************************************************************
+|-Property1 = 10
+\----- (End of User Application/Application) -------------------------------------------------------
+Applying TestInstance
+/***** User MultiInstance/TestInstance *************************************************************
+|-Property = 1  (default: 0)
+\----- (End of User MultiInstance/TestInstance) ----------------------------------------------------
+Applying Application_MultiInstance
+/***** User MultiInstance/Application_MultiInstance ************************************************
+|-Property = 0
+\----- (End of User MultiInstance/Application_MultiInstance) ---------------------------------------
+Applying SubModule1
+/***** User SubModule1/SubModule1 ******************************************************************
+|-Property1 = 10  (default: 0)
+\----- (End of User SubModule1/SubModule1) ---------------------------------------------------------
+Applying SubModule2
+/***** User SubModule2/SubModule2 ******************************************************************
+|-Property1 = 10  (default: 2)
+\----- (End of User SubModule2/SubModule2) ---------------------------------------------------------
+Applying TestInstance_SubModule1
+/***** User SubModule1/TestInstance_SubModule1 *****************************************************
+|-Property1 = 0
+\----- (End of User SubModule1/TestInstance_SubModule1) --------------------------------------------
+Applying Application_MultiInstance_SubModule1
+/***** User SubModule1/Application_MultiInstance_SubModule1 ****************************************
+|-Property1 = 0
+\----- (End of User SubModule1/Application_MultiInstance_SubModule1) -------------------------------
+Action Object One
+Action Function
+Action Object Two
+Done.
+""")
+</text></argument>
+</extension>

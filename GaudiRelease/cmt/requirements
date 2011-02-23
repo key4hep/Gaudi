@@ -1,0 +1,100 @@
+# Package used to manage the Gaudi project packages
+# No wildcards allowed
+
+package GaudiRelease
+
+version v22r1
+branches doc cmt
+
+# CMT and Gaudi policy
+use GaudiPolicy	   v11r1
+
+# Note for conditional use statements: only the tags which are defined
+# at the level of CMT (and CMTSITE) can be used. This means that
+# "Linux", "CERN" , "Darwin" etc are valid tags but not "slc3",
+# "slc4_amd64" etc.  If one needs to use those, this should be done at
+# the level of the package itself with a "macro_remove constituents"
+
+# Gaudi executable
+use Gaudi          v22r1
+
+# Gaudi libraries - generic
+use GaudiKernel    v27r13
+use GaudiSvc       v18r13
+use GaudiAud       v9r3
+use GaudiAlg       v13r6
+use GaudiGSL       v7r9
+use GaudiUtils     v3r11
+
+# Technology-specific Persistency packages
+#use HbookCnv       v15r0
+use RootHistCnv    v10r6
+use GaudiPoolDb    v5r11
+use GaudiPython    v11r0
+
+# Container package specifying the minimum set of core packages
+use GaudiSys       v22r1
+
+# Monitoring utility. Can use also MonaLisa
+use GaudiMonitor   v2r7
+
+# Profiling components and tools
+use GaudiProfiling v1r0
+
+# Multi Processing libraries
+use GaudiMP v1r0
+
+# Examples packages
+use GaudiExamples   v22r1
+
+
+# Atlas packages
+use PartPropSvc      v4r2
+
+### Mark the package as the container package of the project.
+apply_pattern container_package
+
+# Simple pattern for LHCb external packages
+pattern LHCb_external \
+    macro <pkg>_use "" LHCb<ext> "<pkg> * LCG_Interfaces" ; \
+    use $(<pkg>_use)
+
+pattern LHCb_external_cond \
+    macro <pkg>_use "" <except> "" LHCb<ext> "<pkg> * LCG_Interfaces" ; \
+    use $(<pkg>_use)
+
+# -- LHCb external packages --
+apply_pattern LHCb_external pkg=COOL
+apply_pattern LHCb_external pkg=CORAL
+apply_pattern LHCb_external pkg=RELAX
+apply_pattern LHCb_external pkg=sqlite
+apply_pattern LHCb_external pkg=HepMC
+apply_pattern LHCb_external pkg=oracle
+apply_pattern LHCb_external pkg=QMtest
+apply_pattern LHCb_external pkg=CppUnit
+apply_pattern LHCb_external pkg=cernlib
+apply_pattern LHCb_external pkg=fftw
+apply_pattern LHCb_external pkg=fastjet
+apply_pattern LHCb_external pkg=pytools
+apply_pattern LHCb_external pkg=pyanalysis
+apply_pattern LHCb_external pkg=pygraphics
+apply_pattern LHCb_external pkg=Qt
+apply_pattern LHCb_external pkg=xqilla
+apply_pattern LHCb_external pkg=neurobayes_expert
+apply_pattern LHCb_external pkg=graphviz
+#apply_pattern LHCb_external pkg=
+
+# -- LHCbGrid external packages --
+apply_pattern LHCb_external ext=Grid pkg=gfal
+apply_pattern LHCb_external ext=Grid pkg=CASTOR
+apply_pattern LHCb_external ext=Grid pkg=dcache_client
+#apply_pattern LHCb_external ext=Grid pkg=
+
+# Hack to avoid externals that do not exist on WinXP (in the LHCb distribution)
+macro tcmalloc_native_version "$(tcmalloc_native_version)" LHCb&target-winxp ""
+macro libunwind_native_version "$(libunwind_native_version)" LHCb&target-winxp ""
+macro sip_native_version "$(sip_native_version)" LHCb&target-winxp ""
+
+
+# Allow the generation of QMTest summary
+apply_pattern QMTestSummarize

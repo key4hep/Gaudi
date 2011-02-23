@@ -1,0 +1,315 @@
+DirSearchPath::existsDir: WARNING not a directory: /NONEXISTINGDIR
+JobOptionsSvc        INFO 
+
+////////////////////////////////////////////////////////////////
+// Example options file.
+////////////////////////////////////////////////////////////////
+
+// Include standard option files
+// --> Including file $STDOPTS/Common.opts
+
+
+//**************************************************************
+//
+// standard job options file
+//
+//==============================================================
+
+// --> Including file $STDOPTS/Services.opts
+
+
+//**************************************************************
+//
+// Services needed by a standard job 
+//
+//==============================================================
+
+//--------------------------------------------------------------
+// General Application Configuration options
+//--------------------------------------------------------------
+
+ApplicationMgr.ExtSvc = { "EventSelector" };
+
+//--------------------------------------------------------------
+AuditorSvc.Auditors = { "ChronoAuditor" };
+
+//--------------------------------------------------------------
+// Persistency services
+//--------------------------------------------------------------
+
+
+//==============================================================
+//
+// End of standard Services options file
+//
+//**************************************************************
+
+// <-- End of including file $STDOPTS/Services.opts
+
+// --> Including file $STDOPTS/Dlls.opts
+
+
+//**************************************************************
+//
+// DLLs needed by a standard job. 
+// Must not be used for statically linked program
+//
+//==============================================================
+
+ApplicationMgr.DLLs = {"HbookCnv", "GaudiAlg", "GaudiAud"};
+
+//==============================================================
+//
+// End of standard DLLs options file
+//
+//**************************************************************
+
+// <-- End of including file $STDOPTS/Dlls.opts
+
+
+//==============================================================
+//
+// End of standard job options file
+//
+//**************************************************************
+
+// <-- End of including file $STDOPTS/Common.opts
+
+
+//--------------------------------------------------------------
+// Private Application Configuration options
+//--------------------------------------------------------------
+ApplicationMgr.DLLs       += { "GaudiDb", "GaudiRootDb" };
+ApplicationMgr.ExtSvc     += { "DbEventCnvSvc/RootEvtCnvSvc" };
+ApplicationMgr.TopAlg      = { "ReadAlg" };
+ApplicationMgr.EvtMax      = 20;
+ApplicationMgr.HistogramPersistency = "HBOOK";
+
+// Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
+MessageSvc.OutputLevel     = 2;
+
+EventSelector.OutputLevel  = 2;
+EventSelector.PrintFreq    = 1;
+EventSelector.FirstEvent   = 1;
+
+//--------------------------------------------------------------
+// Input File
+//--------------------------------------------------------------
+EventSelector.Input = {"DATAFILE='RootDst.root' TYP='ROOT' OPT='READ'" };
+
+//--------------------------------------------------------------
+// Histogram output file
+//--------------------------------------------------------------
+HistogramPersistencySvc.OutputFile = "histo.hbook";
+
+//--------------------------------------------------------------
+// Persistency service setup: 
+//--------------------------------------------------------------
+EventPersistencySvc.CnvServices += { "RootEvtCnvSvc" };
+
+//--------------------------------------------------------------
+// Output Stream Options
+//--------------------------------------------------------------
+//
+//  Setup for ROOT I/O System
+//
+RootEvtCnvSvc.DbType  = "ROOT";
+
+
+Job options successfully read in from ../options/RootIORead.opts
+ApplicationMgr      DEBUG Getting my own properties
+DllClassManager     DEBUG Found factory Service HbookCnv::PersSvc
+DllClassManager     DEBUG Found factory HbookCnv::HRWNTupleCnv
+ConverterFactory    DEBUG Added converter for class:HbookCnv::HRWNTupleCnv Storage id:6 clID:42
+DllClassManager     DEBUG Found factory HbookCnv::HFileCnv
+ConverterFactory    DEBUG Added converter for class:HbookCnv::HFileCnv Storage id:6 clID:40
+DllClassManager     DEBUG Found factory HbookCnv::HDirectoryCnv
+ConverterFactory    DEBUG Added converter for class:HbookCnv::HDirectoryCnv Storage id:6 clID:41
+DllClassManager     DEBUG Found factory HbookCnv::HCWNTupleCnv
+ConverterFactory    DEBUG Added converter for class:HbookCnv::HCWNTupleCnv Storage id:6 clID:43
+DllClassManager     DEBUG Found factory HbookCnv::H2DCnv
+ConverterFactory    DEBUG Added converter for class:HbookCnv::H2DCnv Storage id:6 clID:36
+DllClassManager     DEBUG Found factory HbookCnv::H1DCnv
+ConverterFactory    DEBUG Added converter for class:HbookCnv::H1DCnv Storage id:6 clID:32
+DllClassManager     DEBUG Found factory HbookCnv::DirectoryCnv
+ConverterFactory    DEBUG Added converter for class:HbookCnv::DirectoryCnv Storage id:6 clID:1
+DllClassManager     DEBUG Found factory Service HbookCnv::ConvSvc
+DllClassManager     DEBUG Loaded 9 factories from module HbookCnv
+DllClassManager     DEBUG Found factory Algorithm EventCounter
+DllClassManager     DEBUG Found factory Algorithm Prescaler
+DllClassManager     DEBUG Found factory Algorithm Sequencer
+DllClassManager     DEBUG Found factory Algorithm GaudiAlgorithm
+DllClassManager     DEBUG Loaded 4 factories from module GaudiAlg
+DllClassManager     DEBUG Found factory NameAuditor
+ObjectManager       DEBUG Added object factory for class:NameAuditor
+DllClassManager     DEBUG Found factory MemoryAuditor
+ObjectManager       DEBUG Added object factory for class:MemoryAuditor
+DllClassManager     DEBUG Found factory MemStatAuditor
+ObjectManager       DEBUG Added object factory for class:MemStatAuditor
+DllClassManager     DEBUG Found factory ChronoAuditor
+ObjectManager       DEBUG Added object factory for class:ChronoAuditor
+DllClassManager     DEBUG Loaded 4 factories from module GaudiAud
+DllClassManager     DEBUG Found factory DbFactory<DbObject>
+ObjectManager       DEBUG Added object factory for class:DbFactory<DbObject>
+DllClassManager     DEBUG Found factory DbFactory<DbDefObject>
+ObjectManager       DEBUG Added object factory for class:DbFactory<DbDefObject>
+DllClassManager     DEBUG Found factory DataObjectFactory<DataObject>
+ObjectManager       DEBUG Added object factory for class:DataObjectFactory<DataObject>
+DllClassManager     DEBUG Found factory DbFactory<DbSequence>
+ObjectManager       DEBUG Added object factory for class:DbFactory<DbSequence>
+DllClassManager     DEBUG Found factory DbFactory<GenericDataBaseObj>
+ObjectManager       DEBUG Added object factory for class:DbFactory<GenericDataBaseObj>
+DllClassManager     DEBUG Found factory libGaudiKernel:DbRWNTupleCnv
+ConverterFactory    DEBUG Added converter for class:libGaudiKernel:DbRWNTupleCnv Storage id:8 clID:42
+DllClassManager     DEBUG Found factory libGaudiKernel:DbCWNTupleCnv
+ConverterFactory    DEBUG Added converter for class:libGaudiKernel:DbCWNTupleCnv Storage id:8 clID:43
+DllClassManager     DEBUG Found factory libGaudiKernel:DbKeyedContainerCnv<Containers::KeyedObjectManager<Containers::map> >
+ConverterFactory    DEBUG Added converter for class:libGaudiKernel:DbKeyedContainerCnv<Containers::KeyedObjectManager<Containers::map> > Storage id:8 clID:393215
+DllClassManager     DEBUG Found factory libGaudiKernel:DbKeyedContainerCnv<Containers::KeyedObjectManager<Containers::array> >
+ConverterFactory    DEBUG Added converter for class:libGaudiKernel:DbKeyedContainerCnv<Containers::KeyedObjectManager<Containers::array> > Storage id:8 clID:524287
+DllClassManager     DEBUG Found factory libGaudiKernel:DbKeyedContainerCnv<Containers::KeyedObjectManager<Containers::hashmap> >
+ConverterFactory    DEBUG Added converter for class:libGaudiKernel:DbKeyedContainerCnv<Containers::KeyedObjectManager<Containers::hashmap> > Storage id:8 clID:458751
+DllClassManager     DEBUG Found factory Service DbGenericDataBase
+DllClassManager     DEBUG Found factory libGaudiKernel:DbFactoryConverter
+ConverterFactory    DEBUG Added converter for class:libGaudiKernel:DbFactoryConverter Storage id:8 clID:65535
+DllClassManager     DEBUG Found factory Service DbEvtSelector
+DllClassManager     DEBUG Found factory Service DbEventCnvSvc
+DllClassManager     DEBUG Found factory libGaudiKernel:DbDirectoryCnv
+ConverterFactory    DEBUG Added converter for class:libGaudiKernel:DbDirectoryCnv Storage id:8 clID:41
+DllClassManager     DEBUG Found factory libGaudiKernel:DbDatabaseCnv
+ConverterFactory    DEBUG Added converter for class:libGaudiKernel:DbDatabaseCnv Storage id:8 clID:40
+DllClassManager     DEBUG Found factory Service DbCnvSvc
+DllClassManager     DEBUG Loaded 17 factories from module GaudiDb
+DllClassManager     DEBUG Found factory RootDb::OODataBase
+ObjectManager       DEBUG Added object factory for class:RootDb::OODataBase
+DllClassManager     DEBUG Found factory DbFactory<RootDbObject>
+ObjectManager       DEBUG Added object factory for class:DbFactory<RootDbObject>
+DllClassManager     DEBUG Found factory DbFactory<RootDbMinObject>
+ObjectManager       DEBUG Added object factory for class:DbFactory<RootDbMinObject>
+DllClassManager     DEBUG Found factory DbFactory<RootDbDefObject>
+ObjectManager       DEBUG Added object factory for class:DbFactory<RootDbDefObject>
+DllClassManager     DEBUG Loaded 4 factories from module GaudiRootDb
+ApplicationMgr       INFO Successfully loaded modules: HbookCnv, GaudiAlg, GaudiAud, GaudiDb, GaudiRootDb
+ApplicationMgr       INFO Application Manager Configured successfully
+ServiceManager      DEBUG Initializing service EventSelector
+EventSelector       DEBUG Service base class initialized successfully
+ServiceManager      DEBUG Initializing service RootEvtCnvSvc
+RootEvtCnvSvc       DEBUG Service base class initialized successfully
+ROOT                 INFO --> Open     DbSession     Mode:UPDATE   
+ROOT                 INFO --> Access   DbFederation 
+ServiceManager      DEBUG Initializing service AppMgrRunable
+AppMgrRunable       DEBUG Service base class initialized successfully
+ServiceManager      DEBUG Initializing service EventLoopMgr
+EventLoopMgr        DEBUG Service base class initialized successfully
+EventLoopMgr        DEBUG Creating Top Algorithm ReadAlg with name ReadAlg
+EventDataSvc        DEBUG Service base class initialized successfully
+EventPersistenc...   INFO "CnvServices": ["RootEvtCnvSvc"]
+EventPersistenc...  DEBUG Service base class initialized successfully
+IncidentSvc         DEBUG Service base class initialized successfully
+EventPersistenc...   INFO Added successfully Conversion service:RootEvtCnvSvc
+EventSelector_1     DEBUG Service base class initialized successfully
+EventSelector_1      INFO Selection root:/Event CLID:110
+ROOT                 INFO --> Access   DbDataBase    Mode:READ     RootDst.root
+RootDst.root        DEBUG --> Access   DbContainer  READ      ##Types
+RootDst.root        DEBUG --> Access   DbContainer  READ      ##Links
+RootDst.root        DEBUG --> Access   DbContainer  READ      /Event
+EventSelector        INFO Stream:EventSelector_1 Def:DATAFILE='RootDst.root' TYP='ROOT' OPT='READ'
+EventSelector     SUCCESS Reading Event record 1. Record number within stream 0: 1
+HistogramDataSvc    DEBUG Service base class initialized successfully
+HistogramPersis...   INFO "CnvServices": ["HbookHistSvc", "RootHistSvc"]
+HistogramPersis...  DEBUG Service base class initialized successfully
+HbookHistSvc        DEBUG Service base class initialized successfully
+HbookHistSvc         INFO Setting /PAWC/ common block size to 250000
+HistogramPersis...   INFO Added successfully Conversion service:HbookHistSvc
+ApplicationMgr       INFO Application Manager Initialized successfully
+AuditorSvc          DEBUG Service base class initialized successfully
+ChronoStatSvc       DEBUG Service base class initialized successfully
+ChronoStatSvc        INFO  Number of skipped events for MemStat20
+ReadAlg              INFO ========= EVENT:1 RUN:999 TIME:1.07694e+09 ===================
+RootDst.root        DEBUG --> Access   DbContainer  READ      /Event/MyTracks
+ReadAlg             DEBUG Evt:1 Track:     8.43243     9.50498      10.802
+ReadAlg             DEBUG Evt:1 Track:     10.4022     11.9423     8.77816
+ReadAlg             DEBUG Evt:1 Track:     10.0918     10.0773     9.95059
+ReadAlg             DEBUG Evt:1 Track:     9.72505     10.9492     10.4097
+ReadAlg             DEBUG Evt:1 Track:     11.4339     10.2842     8.61818
+EventSelector     SUCCESS Reading Event record 2. Record number within stream 0: 2
+ReadAlg              INFO ========= EVENT:2 RUN:999 TIME:1.07694e+09 ===================
+ReadAlg             DEBUG Evt:2 Track:     9.41809     10.1131      8.4013
+ReadAlg             DEBUG Evt:2 Track:     8.53403     11.3784     11.4713
+ReadAlg             DEBUG Evt:2 Track:     9.92247     10.7833      10.038
+ReadAlg             DEBUG Evt:2 Track:     10.2273     9.09401      10.628
+ReadAlg             DEBUG Evt:2 Track:     10.3949      10.165     9.12852
+EventSelector     SUCCESS Reading Event record 3. Record number within stream 0: 3
+ReadAlg              INFO ========= EVENT:3 RUN:999 TIME:1.07694e+09 ===================
+ReadAlg             DEBUG Evt:3 Track:     9.87883     11.3034     9.95044
+ReadAlg             DEBUG Evt:3 Track:     8.60847     9.55294     9.56635
+ReadAlg             DEBUG Evt:3 Track:     10.8295     11.1184     11.4859
+ReadAlg             DEBUG Evt:3 Track:       10.46     10.3837     10.6025
+ReadAlg             DEBUG Evt:3 Track:     9.84163     9.83289     8.64397
+EventSelector     SUCCESS Reading Event record 4. Record number within stream 0: 4
+ReadAlg              INFO ========= EVENT:4 RUN:999 TIME:1.07694e+09 ===================
+ReadAlg             DEBUG Evt:4 Track:     10.3877     10.6852     11.1833
+ReadAlg             DEBUG Evt:4 Track:      10.503     11.2745     8.64624
+ReadAlg             DEBUG Evt:4 Track:     8.57052     11.0386     8.40121
+ReadAlg             DEBUG Evt:4 Track:     8.47789     9.43767      10.236
+ReadAlg             DEBUG Evt:4 Track:     10.9487     8.48763     10.4425
+EventSelector     SUCCESS Reading Event record 5. Record number within stream 0: 5
+ReadAlg              INFO ========= EVENT:5 RUN:999 TIME:1.07694e+09 ===================
+ReadAlg             DEBUG Evt:5 Track:     11.6158       11.14     9.21654
+ReadAlg             DEBUG Evt:5 Track:     11.9073     10.7481     11.0287
+ReadAlg             DEBUG Evt:5 Track:     8.72099     9.32558     9.98019
+ReadAlg             DEBUG Evt:5 Track:     8.89034     8.49761     9.85275
+ReadAlg             DEBUG Evt:5 Track:     9.92056     10.0048      8.0706
+EventSelector     SUCCESS Reading Event record 6. Record number within stream 0: 6
+ReadAlg              INFO ========= EVENT:6 RUN:999 TIME:1.07694e+09 ===================
+ReadAlg             DEBUG Evt:6 Track:     8.35264     10.5416      10.484
+ReadAlg             DEBUG Evt:6 Track:     9.68544     10.5383     10.7446
+ReadAlg             DEBUG Evt:6 Track:     10.0824     10.1899     9.58157
+ReadAlg             DEBUG Evt:6 Track:     8.36079     9.18532     10.3093
+ReadAlg             DEBUG Evt:6 Track:      10.931     9.91684     10.7566
+EventSelector     SUCCESS Reading Event record 7. Record number within stream 0: 7
+ReadAlg              INFO ========= EVENT:7 RUN:999 TIME:1.07694e+09 ===================
+ReadAlg             DEBUG Evt:7 Track:     11.0611     10.3205     8.41098
+ReadAlg             DEBUG Evt:7 Track:     8.03563     11.8174     9.44701
+ReadAlg             DEBUG Evt:7 Track:     10.5898     9.74854     11.8593
+ReadAlg             DEBUG Evt:7 Track:     9.93051      11.265     9.27796
+ReadAlg             DEBUG Evt:7 Track:     9.19716     8.31933     9.89207
+EventSelector     SUCCESS Reading Event record 8. Record number within stream 0: 8
+ReadAlg              INFO ========= EVENT:8 RUN:999 TIME:1.07694e+09 ===================
+ReadAlg             DEBUG Evt:8 Track:     9.39565     9.80626     8.03983
+ReadAlg             DEBUG Evt:8 Track:     10.2112     9.73193     11.1411
+ReadAlg             DEBUG Evt:8 Track:     10.3981     8.48897      9.4854
+ReadAlg             DEBUG Evt:8 Track:     10.4745     8.67384     9.88597
+ReadAlg             DEBUG Evt:8 Track:     10.1051      10.173     9.94939
+EventSelector     SUCCESS Reading Event record 9. Record number within stream 0: 9
+ReadAlg              INFO ========= EVENT:9 RUN:999 TIME:1.07694e+09 ===================
+ReadAlg             DEBUG Evt:9 Track:     9.72838     10.2063     9.55186
+ReadAlg             DEBUG Evt:9 Track:     10.3869     9.18763     9.60059
+ReadAlg             DEBUG Evt:9 Track:     10.5711     11.1435     9.11996
+ReadAlg             DEBUG Evt:9 Track:     9.47005     11.0269     10.3792
+ReadAlg             DEBUG Evt:9 Track:     10.6923     10.8383     10.3724
+EventSelector     SUCCESS Reading Event record 10. Record number within stream 0: 10
+ReadAlg              INFO ========= EVENT:10 RUN:999 TIME:1.07694e+09 ===================
+ReadAlg             DEBUG Evt:10 Track:     9.40816     9.75093     9.26975
+ReadAlg             DEBUG Evt:10 Track:     11.6367     9.38672     11.5398
+ReadAlg             DEBUG Evt:10 Track:     11.2236     11.0707       12.93
+ReadAlg             DEBUG Evt:10 Track:     8.75389     11.8342     10.4339
+ReadAlg             DEBUG Evt:10 Track:     10.7678     11.5718     8.95276
+ROOT                 INFO --> Deaccess DbDataBase    Mode:READ     RootDst.root
+RootDst.root        DEBUG --> Deaccess DbContainer  READ      ##Links
+RootDst.root        DEBUG --> Deaccess DbContainer  READ      ##Types
+EventSelector        INFO End of event input reached.
+RootDst.root        DEBUG --> Deaccess DbContainer  READ      /Event/MyTracks
+RootDst.root        DEBUG --> Deaccess DbContainer  READ      /Event
+EventLoopMgr         INFO No more events in event selection 
+EventLoopMgr         INFO Histograms converted successfully according to request.
+*****Chrono*****     INFO ****************************************************************************************************
+*****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)
+*****Chrono*****     INFO ****************************************************************************************************
+ReadAlg:execute      INFO Time User   : Tot=   20 [ms] Ave/Min/Max=    2(+-    4)/    0/   10 [ms] #= 10
+ChronoStatSvc        INFO Time User   : Tot=   30 [ms]                                             #=  1
+*****Chrono*****     INFO ****************************************************************************************************
+ChronoStatSvc.f...   INFO  Service finalized successfully 
+ROOT                 INFO --> Deaccess DbFederation  Mode:READ     
+ROOT                 INFO --> Closed   DbSession     Mode:UPDATE   RootEvtCnvSvc.DataBase 
+ApplicationMgr       INFO Application Manager Finalized successfully

@@ -1,0 +1,28 @@
+//##############################################################
+// Job options file
+//==============================================================
+//#include "Common.opts"
+
+//--------------------------------------------------------------
+
+//--------------------------------------------------------------
+// Private Application Configuration options
+//--------------------------------------------------------------
+ApplicationMgr.TopAlg   = { "AIDATupleAlgorithmWrite" };
+
+// Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
+MessageSvc.OutputLevel  = 3;
+
+//--------------------------------------------------------------
+// Event related parameters
+//--------------------------------------------------------------
+ApplicationMgr.EvtMax   = 1;
+ApplicationMgr.EvtSel  = "NONE";
+
+//--------------------------------------------------------------
+// Other Service Options
+//--------------------------------------------------------------
+AIDATupleSvc.Output = { "MyTuples DATAFILE='ntuple_out.root' OPT='AUTO' TYP='POOL' CAT='xmlcatalog_file:exampleCatalog.xml' SUB='POOL_ROOTTREE'" };
+//AIDATupleSvc.Output = { "MyTuples DATAFILE='ntuple_out.root' OPT='AUTO' TYP='ROOT' CAT='xmlcatalog_file:exampleCatalog.xml' SUB='POOL_ROOTTREE'" };
+//RndmGenSvc.Engine.Seeds = { 70, 71, 0 };
+

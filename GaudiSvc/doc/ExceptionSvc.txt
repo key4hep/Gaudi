@@ -1,0 +1,105 @@
+Configuring the Exception Service
+=================================
+
+When an Algorithm throws an exception, or fails to return a
+StatusCode::SUCCESS (ie returns a FAILURE or RECOVERABLE), control of
+the execution is passed to the ExceptionSvc.
+
+The ExceptionSvc allows the user to configure the behavior of the
+event processing on a global and on a per-Algorithm basis, allowing
+exceptions to be translated into status codes, or rethrown, or
+allowing the value of the return code to be modified.
+
+
+There are three alternatives:
+   - SUCCESS
+   - FAILURE
+   - RECOVERABLE
+
+For exception handling, two more alternatives are available:
+
+   - RETHROW
+   - DEFAULT
+
+
+SUCCESS: Return code set to StatusCode::SUCCESS. Normal processing of
+  the event will continue.
+
+FAILURE: Return code set to StatusCode::FAILURE. This will cause the
+  EventLoopManager to terminate processing of the event, and end the job.
+
+RECOVERABLE: Return code set to StatusCode::RECOVERABLE. Processing of
+  the event will halt, and the EvenLoopManager will jump to the next
+  event. Processing of the job will continue.
+
+
+For exceptions:
+
+RETHROW: The exception will be rethrown. This will most likely cause
+  the termination of the job, and a seg fault to occur.
+
+DEFAULT: If the thrown exception is a GaudiException, then the
+  Exception Service will change the return code to whatever is given
+  in the GaudiException  (GaudiException.code()). If it is not a
+  GaudiException, then the return code is set to StatusCode::FAILURE
+
+
+jobOptions
+-----------
+
+for trapping exceptions:
+ string ExceptionSvc.Catch = "_DEFAULT-BEHAVIOUR_ [ALG1=MODE  ALG2=MODE...]"
+
+for changing return codes:
+ string ExceptionSvc.Errors = "_DEFAULT-BEHAVIOUR_ [ALG1=MODE  ALG2=MODE...]"
+
+
+ _DEFAULT-BEHAVIOUR_ must be one of "ALL" or "NONE". 
+
+  ALL: catch all exceptions/errors, and rethrow/process them
+  NONE: do not process any exceptions/errors, return StatusCode::FAILURE for
+        exceptions, otherwise don't modify the return code
+
+The optional list of [ALG=MODE] is a sequence of Algorithm Names, with
+their associated behavior, where MODE is one of
+SUCCESS/FAILURE/RECOVERABLE/RETHROW/DEFAULT. The behavior of
+Algorithms listed here will override the default behavior. Examples are:
+
+ExceptionSvc.Catch = "ALL Alg1=SUCCESS Alg2=DEFAULT"
+
+ -> all exceptions caught and rethrown, except for Alg1 which if it
+    throws and exception will be translated into a
+    StatusCode::SUCCESS, and Alg2 which will return the status code
+    held in the associated GaudiException.
+
+ExceptionSvc.Catch = "NONE Alg3=RETHROW"
+
+ -> exceptions caught and translated into StatusCode::FAILURES, except
+    for Alg3, which will be rethrown
+
+ExceptionSvc.Errors = "NONE Alg3=RECOVERABLE"
+
+ -> no errors processed, except for Alg3 where a FAILURE will be
+    translated into a RECOVERABLE
+
+ExceptionSvc.Errors = "ALL Alg4=SUCCESS Alg5=RECOVERABLE"
+
+ -> all RECOVERABLES (and FAILURES) caught and translated into
+    FAILURES, except for Alg4 which, if it produces a FAILURE or
+    RECOVERABLE, will translate into a SUCCESS, and Alg5 which will
+    return a RECOVERABLE 
+
+
+Default Behavior
+-----------------
+
+The default behavior is:
+
+  ExceptionSvc.Catch = "ALL"
+  ExceptionSvc.Errors = "NONE"
+
+This means that ALL exceptions are caught and rethrown. Return codes
+of Algorithms are not modified.
+
+
+

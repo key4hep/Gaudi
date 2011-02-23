@@ -1,0 +1,33 @@
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+  <argument name="program"><text>gaudirun.py</text></argument>
+  <argument name="options"><text>
+from Gaudi.Configuration import *
+
+from Configurables import GaudiTesting__SignallingAlg as SignallingAlg
+from Configurables import Gaudi__Utils__StopSignalHandler as StopSignalHandler 
+
+importOptions("Common.opts")
+alg = SignallingAlg(Signal = 2) # SIGINT
+#StopSignalHandler(Signals = ["SIGINT", "SIGXCPU"]) # this is the default
+
+app = ApplicationMgr(TopAlg = [alg],
+                     EvtSel = "NONE", EvtMax = 5,
+                     StopOnSignal = True)
+                     
+MessageSvc().setDebug.append("EventLoopMgr")
+</text></argument>
+<argument name="exit_code"><integer>130</integer></argument>
+<argument name="validator"><text>
+findReferenceBlock("""
+GaudiTesting::S...   INFO 3 events to go
+GaudiTesting::S...   INFO 2 events to go
+GaudiTesting::S...   INFO 1 events to go
+GaudiTesting::S...   INFO Raising signal now
+Gaudi::Utils::S...WARNING Received signal 'SIGINT' (2, Interrupt)
+Gaudi::Utils::S...WARNING Scheduling a stop
+EventLoopMgr      SUCCESS Terminating event processing loop due to a stop scheduled by an incident listener
+ApplicationMgr       INFO Application Manager Stopped successfully
+""")
+</text></argument>
+</extension>

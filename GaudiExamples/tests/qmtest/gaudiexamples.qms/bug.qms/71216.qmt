@@ -1,0 +1,21 @@
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="program"><text>gaudirun.py</text></argument>
+<argument name="options"><text>
+from Gaudi.Configuration import *
+from Configurables import NTupleAlgorithm
+
+# Try to write in a directory that doesn't exist
+NTupleSvc(Output = ["MyTuples DATAFILE='/random/path/ntest.root' TYP='ROOT' OPT='NEW'"])
+#HistogramPersistencySvc(OutputFile = "/random/path/htest.root")
+
+app = ApplicationMgr(TopAlg = [NTupleAlgorithm()],
+                     HistogramPersistency = "ROOT",
+                     EvtSel = "NONE", EvtMax = 5)
+</text></argument>
+<argument name="stderr">
+<text>SysError in &lt;TFile::TFile&gt;: file /random/path/ntest.root can not be opened (No such file or directory)
+SysError in &lt;TFile::TFile&gt;: file /random/path/ntest.root can not be opened (No such file or directory)
+</text></argument>
+<argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+</extension>

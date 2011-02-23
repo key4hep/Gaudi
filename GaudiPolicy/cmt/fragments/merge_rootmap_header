@@ -1,0 +1,39 @@
+# File: cmt/fragments/merge_rootmap_header
+# Author: Sebastien Binet (binet@cern.ch)
+
+# Makefile fragment to merge a <library>.rootmap file into a single
+# <project>.rootmap file in the (lib) install area
+# If no InstallArea is present the fragment is dummy
+
+
+.PHONY: ${CONSTITUENT} ${CONSTITUENT}clean
+
+# default is already '#'
+#genmap_comment_char := "'#'"
+
+rootMapRef    := ../$(tag)/$(library).rootmap
+
+ifdef CMTINSTALLAREA
+rootMapDir    := ${CMTINSTALLAREA}/$(tag)/lib
+mergedRootMap := $(rootMapDir)/$(project).rootmap
+stampRootMap  := $(rootMapRef).stamp
+else
+rootMapDir    := ../$(tag)
+mergedRootMap := 
+stampRootMap  :=
+endif
+
+${CONSTITUENT} :: $(stampRootMap) $(mergedRootMap)
+	@:
+
+.NOTPARALLEL : $(stampRootMap) $(mergedRootMap)
+
+$(stampRootMap) $(mergedRootMap) :: $(rootMapRef)
+	@echo "Running merge_rootmap  ${CONSTITUENT}" 
+	$(merge_rootmap_cmd) $(merge_rootmap_switch) \
+         --input-file $(rootMapRef) --merged-file $(mergedRootMap)
+
+${CONSTITUENT}clean ::
+	$(cleanup_silent) $(merge_rootmap_cmd) --un-merge \
+         --input-file $(rootMapRef) --merged-file $(mergedRootMap) ;
+	$(cleanup_silent) $(remove_command) $(stampRootMap)

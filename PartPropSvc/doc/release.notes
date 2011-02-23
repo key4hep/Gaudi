@@ -1,0 +1,115 @@
+Package : ParticleProp
+Package manager : Charles Leggett
+
+============================== PartPropSvc v4r2 ==============================
+! 2011-01-11 - Marco Clemencic
+ - Fixed some ICC remarks.
+
+============================== PartPropSvc v4r1 ==============================
+! 2010-12-03 - Charles Leggett
+ - Patch #76003: fix bug in initialize
+   - change default location of PDGTABLE to remove "share" dir. Should
+     really do this with a declare_runtime_extras to copy it to the Gaudi
+     InstallArea/share dir, but this seems to be broken.
+
+============================== PartPropSvc v4r0 ==============================
+! 2010-08-18 - Charles Leggett
+ - Patch #4323: allow user defined heavy ion handling in PartPropSvc
+   - change way jobOpts handled: now assign type with each file
+   - make log member var
+   - allow user to specify UnknownParticleHandler function
+   - instantiate PDT on first use, not before
+   - PartPropSvc.cpp: handle heavy ions
+
+============================= PartPropSvc v3r3 ===============================
+! 2010-04-20 - Marco Clemencic
+ - Removed ICC warnings and remarks.
+
+================ PartPropSvc v3r2 ====================================
+! 2009-07-21 - Hubert Degaudenzi
+ - Fixed typo in the -no_static usage.
+
+! 2009-07-20 - Marco Clemencic
+ - Added '-no_static' to the declaration of the libraries (implemented since CMT
+   v1r20p20081118).
+
+================ PartPropSvc v3r1 ====================================
+! 2009-06-10 - Marco Clemencic
+ - Removed _dll.cpp and _load.cpp files (not needed anymore).
+
+================ PartPropSvc v3r0 ====================================
+! 2009-04-07 - Marco Clemencic
+ - Moved back the namespace MSG to the global namespace.
+
+! 2009-04-06 - Marco Clemencic
+ - Renamed back the namespace Msg to MSG and moved it into the namespace Gaudi.
+
+! 2009-02-19 - Marco Clemencic
+ - Patch #2790: Rename the namespace MSG to Msg
+
+! 2009-01-30 - Marco Clemencic
+ - Replaced all the occurrences of endreq with endmsg.
+
+! 2009-01-22 - Marco Clemencic
+ - Adapted to the new IInterface functionalities (see GaudiKernel release.notes)
+
+================ PartPropSvc v2r7 ====================================
+! 20081028 Marco Clemencic
+ - Removed extra "-lHepPID" from link options (already included in the LCG
+   interface package).
+
+================ PartPropSvc v2r6 =========================================
+! 20070605 Paolo Calafiura
+ Patch #1186.
+ - added missing charged geantino.
+
+================ PartPropSvc v2r5 =========================================
+! 20070216 Charles Leggett
+ Patch #1076
+ - fix for default PDGTABLE.
+
+================ PartPropSvc v2r4 =========================================
+! 20070216 Charles Leggett
+ Patch #1019
+ - changed into a component lib
+ - moved IPartPropSvc to GaudiKernel
+ - moved PartPropSvc.h to src/
+
+! 20070202 Hubert Degaudenzi
+ - added missing library (CLHEP-HepPDT) in the CLHEP_linkopts macro
+   (in the private section for the moment).
+ - commented out the "apply_pattern install_runtime".
+
+================ PartPropSvc v2r3p1 =========================================
+! 20040910 Charles Leggett
+ - src/PartPropSvc.cpp: uses PathResolver to locate PDT files
+                        return FAILURE if can't find any files to open.
+
+================ PartPropSvc v2r3 ==========================================
+! 20040716 Charles Leggett
+ - changed IID to InterfaceID
+
+================ PartPropSvc v2r2 ==========================================
+! 20040507 Charles Leggett
+ - use standard macros in PartPropSvc_entries.cpp, PartPropSvc_load.cpp
+ - removed PartPropSvc_dll.cpp
+
+================ PartPropSvc v2r1 ==========================================
+! 20040129 Paolo Calafiura
+ - return an error if no PDT file was read
+! 20040126 Charles Leggett
+ - changed default data file to PDGTable.MeV. Obviously non-backward compatible
+
+================ PartPropSvc v2r0 ==========================================
+! 20040115 Paolo Calafiura
+ - importing package to cvs repository"
+
+! 20030624 Charles Leggett
+ - removed built in version of HepPDT, uses CLHEP version instead
+ - PartPropSvc.cpp: reads in Herwig and IsaJet as well
+                  : removed QQ input mode
+                  : added share directory, jobOptions and PDGTABLE file
+
+! 20020703 Paolo Calafiura
+ - TableBuilderT.icc: addQQParticles added return value (false) to
+                      dummy implementation

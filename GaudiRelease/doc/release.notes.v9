@@ -1,0 +1,160 @@
+package Gaudi
+package manager: Pere Mato
+
+! ============================================================================
+! 20011129 GaudiKernel v11
+
+  - Many Changes for the DataStore classes re-design. It affects many classes: DataObject, 
+    RegistryEntry, Converter, DataSvc and Interfaces: IRegistry, IDataProviderSvc, ...
+    More detailed instruction refer to:
+    http://lhcb-comp.web.cern.ch/lhcb-comp/Frameworks/Gaudi/Gaudi_v9/Changes_cookbook.pdf
+
+  - MsgStream.cpp
+    Any change of the printout level from the application program
+    using MsgStream::setLevel(...) is ignored by the message service. 
+    Update the local printout level on a by message bases and restore
+    the previous printout level.
+
+  - NTuple.h
+    the function entries addItem(...) are DEPRECATED for
+    Ntuple columns, which depend on an index column.
+    The replacement is: addIndexedItem(...).
+    This has repeatedly caused confusion for users.
+    Also added doxygen information for these entries.
+
+  - Added initialize() and finalize() methods in IAlgTool interface.
+  - The base class AlgTool implemements them as dummy but allows an implementation
+    of  them on specific Algorithm Tools
+  - Removed the need to implement a queryInterface() in specific Algorithm tools. Instead
+    use the expresion declareInterface<Ixxxx>(this) in the constructor.  
+  - Added releaseTool() method in IToolSvc.
+ 
+  - New versions of interfaces:
+    ISvcManager.h (incompatible) Added more functionality to offload ApplicationMgr
+    ISvsLocator.h (compatible) Changed getServices() to const
+  
+  - Added new methods in DataSvc to be able to set the root without clearing
+    the store
+
+  - Removed CLID_Event from ClassID.h to avoid clashes with Event.h generated from
+    GaudiObjDesc tools
+
+  - Changed IInterface.h Introduced a new constructor for InterfaceID that
+    uses a name (class name) instead of the interface number. A hash
+    function converts the name into a number.
+
+  - Changed SmartDataLocator.h reported by David Rousseau
+
+  - Modified ClassID.h to include CondDB stuff
+    Solved bug in DataSvc.cpp reported by Andrea Valassi
+
+  - Removed interfaces IGiGaSvc.h and IGiGaSetUpSvc.h
+
+  - Extend IChronoStatSvc to support retrieving the delta-time between
+    start/stop pairs.
+
+! ============================================================================
+! 20011129 GaudiSvc v7
+
+  - Removed default services being creted by ApplicationMgr
+  - Allow to switch on and of printing of job options
+    while reading the job options text file.
+    Usage:
+    #pragma print on
+    #pragma print off
+    off will switch printing off; on will switch it on.
+
+  - Changed ToolSvc to make use of the new methods initialize() and finalize() 
+    in the IAlgTool interface modified in GaudiKernel.
+  - Implement new method of IToolSvc::releaseTool()
+ 
+  - Many Changes  for the DataStore classes re-design. See details in separate note
+
+  - Removed functionality from ApplicationMgr and moved to ServiceManager
+    in what concerns dealing with Services.
+  - Interface ISvcManager improved and extended
+  - Removed the inheritance of ApplicationMgr to (ISvcManager, IAlgManager,
+    ICnvManager, IObjManager). Functionality recovered by queryInterface()
+  - Removed default services being creted by ApplicationMgr 
+
+  - Implementation of ClearStore for DetectorDataSvc
+
+! ============================================================================
+! 20011129 GaudiDb v5
+
+  - Changes to adapt to the new GaudiKernel that includes a re-design of
+    the data store classes
+
+  - Small improvements.
+
+! ============================================================================
+! 20011129 HbookCnv v11
+
+  - Changes to adapt to the new GaudiKernel that includes a re-design of
+    the data store classes
+
+  - New job option HistogramPersistencySvc.PrintHistos to steer 
+    printing to standard output. Defaults to false.
+  - Persistency service fails initialize if output file not defined.
+
+  - Allow RZ directory names up to 16 characters rather than 8.
+  - Delete histograms from PAW common after they were written to
+    disk; saves memory space, which was a problem.
+
+  - Fixed the bug that was eliminating the first character in the
+    histogram titles.
+
+! ============================================================================
+! 20011129 RootHistCnv v5
+
+  - Changes to adapt to the new GaudiKernel that includes a re-design of
+    the data store classes
+
+! ============================================================================
+! 20011129 GaudiRootDb v5
+
+  - Changes to adapt to the new GaudiKernel that includes a re-design of
+    the data store classes
+
+! ============================================================================
+! 20011129 GaudiODBCDb v5
+
+  - Changes to adapt to the new GaudiKernel that includes a re-design of
+    the data store classes
+
+! ============================================================================
+! 20011129 GaudiPython v2
+
+ - First version with somhow limited functionality but useful for testing
+ - New package for interfacing Python using boost/python libraries
+
+
+! ============================================================================
+! 20011129 GaudiIntrospection v2
+
+ - added map with ClassID-keys and corresponding MetaClass-values
+ - New package for object introspection
+
+! ============================================================================
+! 20011129 GaudiObjDesc v2
+
+ - changed serializing functions and operator overloading
+ - added serializing functions and operator overloading for serializing objects
+
+ - relation-attribute 'ratio' renamed to 'multiplicity', possible values '1', 'M', 'm', 'N', 'n'
+   fragment for cpp-file production for dictionaries changed, destination is now /dict
+   classID-information added to cpp-files for passing it to the dictionary
+
+ - many small changes: handling of arguments in selfdefined methods, concatenate class descriptions, produce
+   at least one empty constructor, handling and errorhandling of class-attribute 'argList'
+ 
+ - CppWriter generates an entry (classname - packagename/classname) to the 'Headerdatabase' before writing the cpp 
+
+ - Added production of non-standard constructors, destructors, warning at top of file
+
+ - Changed production of serializers in .h-files
+
+ - New package object description based on XML files
+
+
+

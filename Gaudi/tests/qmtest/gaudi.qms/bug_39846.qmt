@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="program"><text>gaudirun.py</text></argument>
+<argument name="args"><set><text>-v</text><text>-n</text></set></argument>
+<argument name="options"><text>
+from Gaudi.Configuration import *
+
+class Brunel(ConfigurableUser):
+    __slots__ = { "EvtMax": -1, # Maximum number of events to process
+                }
+
+Brunel().EvtMax = 10
+ApplicationMgr().EvtMax = 20
+</text></argument>
+<argument name="validator"><text>
+conf_dict = eval('\n'.join(stdout.splitlines()))
+expected = { 'ApplicationMgr': { 'EvtMax': 20 } }
+
+if conf_dict != expected:
+    causes.append("configuration result")
+    from pprint import PrettyPrinter
+    pp = PrettyPrinter()
+    result["GaudiTest.configuration.expected"] = result.Quote(pp.pformat(expected))
+    result["GaudiTest.configuration.found"] = result.Quote(pp.pformat(conf_dict))
+</text></argument>
+</extension>

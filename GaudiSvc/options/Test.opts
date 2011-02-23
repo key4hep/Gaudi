@@ -1,0 +1,9 @@
+ApplicationMgr.DLLs    = { "GaudiSvcTest" };
+// Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
+MessageSvc.OutputLevel     =  1;
+ApplicationMgr.HistogramPersistency = "NONE";
+ApplicationMgr.EvtSel      = "NONE"; // do not use any event input
+ApplicationMgr.EvtMax      = 100;
+#include "$GAUDISVCROOT/options/CounterAlg.opts"
+#include "$GAUDISVCROOT/options/StoreExplorer.opts"
+#include "$GAUDISVCROOT/options/MultiStore.opts"

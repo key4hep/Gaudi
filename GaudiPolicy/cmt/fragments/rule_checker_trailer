@@ -1,0 +1,5 @@
+${CONSTITUENT} :: $(${CONSTITUENT}_output)${CONSTITUENT}.html
+
+checker_table = ${IRST_DIR}/scripts/createViolationTable.sh
+$(${CONSTITUENT}_output)${CONSTITUENT}.html : ${OBJS}
+	cd $(${CONSTITUENT}_output); $(checker_table) . viol > ${CONSTITUENT}.html

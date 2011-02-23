@@ -1,0 +1,16 @@
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="options"><text>
+AuditorSvc.Auditors += { 'AlgContextAuditor' } ;
+ApplicationMgr.ExtSvc += { 'AuditorSvc','AlgContextSvc' } ;
+ApplicationMgr.AuditServices = true ;
+      
+ApplicationMgr.EvtMax    = 1;   // events to be processed (default is 10)
+ApplicationMgr.EvtSel   = 'NONE'; // do not use any event input
+</text></argument>
+<argument name="validator"><text>
+import re
+if re.search(r'AlgContextSvc.*WARNING.*NULL',stdout):
+    causes.append("warning in AlgContextSvc for NULL pointer")
+</text></argument>
+</extension>

@@ -1,0 +1,27 @@
+
+#
+#  We want to install all header files stored in $more and/or $offset
+#
+#    ../<package>
+#
+
+install_dir = $(CMTINSTALLAREA)$(shared_install_subdir)\include
+
+${CONSTITUENT} :: ${CONSTITUENT}install
+
+install :: ${CONSTITUENT}install
+
+${CONSTITUENT}install :: $(install_dir)
+	@if NOT "$(CMTINSTALLAREA)"=="" echo "installation done"
+
+$(install_dir) ::
+	@if NOT "$(CMTINSTALLAREA)"=="" if NOT "$(more)"=="" $(install_command) "$(PACKAGE_ROOT)\$(more)" "$(install_dir)"
+	@if NOT "$(CMTINSTALLAREA)"=="" if NOT "$(offset)"=="" $(install_command) "$(PACKAGE_ROOT)\$(offset)" "$(install_dir)"
+
+${CONSTITUENT}clean :: ${CONSTITUENT}uninstall
+
+uninstall :: ${CONSTITUENT}uninstall
+
+${CONSTITUENT}uninstall ::
+	@if NOT "$(CMTINSTALLAREA)"=="" if NOT "$(more)"=="" $(uninstall_command) "$(install_dir)/$(more)/*"
+	@if NOT "$(CMTINSTALLAREA)"=="" if NOT "$(offset)"=="" $(uninstall_command) "$(install_dir)/$(offset)/*"

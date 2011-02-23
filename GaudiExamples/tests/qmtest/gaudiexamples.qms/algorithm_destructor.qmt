@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="program"><text>gaudirun.py</text></argument>
+<argument name="args"><set>
+<text>-v</text>
+</set></argument>
+<argument name="options"><text>
+from Gaudi.Configuration import *
+from Configurables import GaudiTesting__DestructorCheckAlg as dca;
+
+ApplicationMgr(TopAlg = [ dca("TopAlg"),
+                          Sequencer(Members = [dca("SequencerAlg"), dca("SharedAlg")]),
+                          GaudiSequencer(Members = [dca("GaudiSequencerAlg"), dca("SharedAlg"), dca("SharedAlg2")]),
+                          Sequencer("Sequencer2", Members = [dca("SharedAlg2")]),
+                           ],
+               EvtSel = "NONE",
+               EvtMax = 2)
+
+</text></argument>
+<argument name="validator"><text>
+findReferenceBlock("Destructor of TopAlg", id = "TopAlgDestructor")
+findReferenceBlock("Destructor of SequencerAlg", id = "SequencerAlgDestructor")
+findReferenceBlock("Destructor of GaudiSequencerAlg", id = "GaudiSequencerAlgDestructor")
+findReferenceBlock("Destructor of SharedAlg", id = "SharedAlgDestructor")
+findReferenceBlock("Destructor of SharedAlg2", id = "SharedAlg2Destructor")
+</text></argument>
+</extension>

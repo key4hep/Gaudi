@@ -1,0 +1,77 @@
+================GaudiKernel v13r2=====================================
+! 2002-11-06 - Sebastien Ponce
+ - fixes in order to remove deprecated warnings on gcc 3.2
+ - coding conventions applications
+
+! 2002-11-11 - Markus Frank
+ - Timing.cpp: Use routine ::gettimeofday(...) to measure current time.
+   This improves the precision of several timing measurements 
+   (current time, elapsed time) to 1 micro second.
+   The change affects linux only.
+ 
+! 2002-11-08 - Markus Frank
+ - Move CLID for N-tuples into ClassID.h
+ - Fix bug in ISvcLocator.h: If service initialization failed, status was still OK.
+
+! 2002-11-06 - Markus Frank
+ - DeclareObjectFactory.h - add declarations for containedobject factories 
+   and dataobject factories.
+
+================ GaudiSvc v10r1 ============================================
+! 2002-11-06 - Sebastien Ponce
+ - fixes in order to remove deprecated warnings on gcc 3.2
+ - coding conventions applications
+
+! 2002-11-08 - M.Frank
+ - Add seperate service for histogram persistency. Allows to read
+   histogram input from several sources.
+   Required changes:
+     No necessity to check everywhere for "ApplicationMgr.HistogramPersistency".
+     It is only done in HistogramPersistencySvc, which is ALWAYS created,
+     but depending on the real value of "ApplicationMgr.HistogramPersistency"
+     invokes the proper histogram conversion service for HBOOK, ROOT etc.
+
+     End user implications: Normally None
+     However, if explicit properties for HBOOK/ROOT should be set
+     like the PAWC size, the service to talk to is 
+     - HbookHistSvc for HBOOK
+     - RootHistSvc  for ROOT
+
+     Required changes:
+     - ApplicationMgr
+     - EventLoopMgr
+     - HistogramSvc
+       New property "Input": vector<string> histogram input 
+       (format as for N-tuple Svc)
+     - PersistencySvc
+       Minor updates.
+       
+   New files:
+     - src/ApplicationMgr/HistogramAgent.h
+     - src/PersistencySvc/HistogramPersistencySvc.cpp
+     - src/PersistencySvc/HistogramPersistencySvc.h
+     
+================ GaudiRootDb v9r1p2 ================================
+! 2002-11-12 - Florence Ranjard
+ - requirements - add RFIO library in GaudiRootDb_shlibflags at CERN 
+                  and WIN32 to be able to read castor files
+
+!==================== HbookCnv v13r2 ==========================
+! 20021108 - Markus Frank
+  - Implement histogram reading for H1D, H1DVar, H2D
+    But be careful:
+    AIDA does NOT support to set bin contents/errors directly.
+    The best I could do is to set the content; the errors will
+    be sqrt(content). RMS, MEAN etc. are not correct.
+  - Change all factories to export only IFactory reference: 
+    Makes GaudiSvc_load much simpler. 
+    Specialized IXXXFactory reference is not necessary
+
+================ GaudiExamples v11r1 ================================
+! 20021112 - Pere Mato
+  - Changed Histograms.exe example to test reading histograms
+
+===============================GaudiObjDesc v4r5p1============================
+!20021112 - Stefan
+- bugfix: corrected the output for 'const' return-values of self-defined methods 
+

@@ -1,0 +1,24 @@
+# $Id: requirements,v 1.73 2008/11/10 18:48:45 marcocle Exp $
+# =============================================================================
+package GaudiAlg
+version v13r6
+
+# ============== structure ====================================================
+branches        GaudiAlg src cmt doc
+
+# ============== dependencies =================================================
+use             GaudiKernel *
+use             GaudiUtils  *
+use		ROOT	    * LCG_Interfaces
+use             AIDA        * LCG_Interfaces -no_auto_imports
+use             Boost       * LCG_Interfaces -no_auto_imports
+
+# ============== own includes =================================================
+apply_pattern install_more_includes more="GaudiAlg"
+# ============== constituents =================================================
+library         GaudiAlgLib lib/*.cpp -import=AIDA -import=Boost -no_static
+library         GaudiAlg    components/*.cpp -import=AIDA -no_static
+
+# ============== patterns =====================================================
+apply_pattern   linker_library    library="GaudiAlgLib"
+apply_pattern   component_library library="GaudiAlg"

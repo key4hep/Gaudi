@@ -1,0 +1,75 @@
+/*
+ * Short user manual for work with tool FuncMinimum from package GaudiGSL
+ * @see GaudiGSL/IFuncMinimum.h
+ * @author Kirill Miklyaev kirillm@iris1.itep.ru
+ * @date 2003-08-14
+ */
+
+FuncMinimum  is  the tool  for  finding  minimum  of arbitrary  multidimensional
+functions  and  for  computing  covariance  matrix.   In  the  method  "minimum"
+(GaudiGSL/IFuncMinimum.h)  type   of  the  function   is  defined  "GenFunction"
+(CLHEP/AbsFunction.h).   The  function and  its  dimension  are  defined in  the
+Algorithm file  (FuncMinimumGenAlg.h in  GaudiExample package). For  example for
+minimization f(x) = 10 + 4  * x0 * x0 + 27 * x1 * x1 +  25 * x1, the code in the
+algorithm file to be written so:
+ 
+class Func : public AbsFunction 
+{ 
+public:
+  FUNCTION_OBJECT_DEF(Func); public:
+  Func () {};
+  Func ( const Func& )
+    : AbsFunction() {};
+  virtual ~Func () {};
+  virtual double operator() (double /* argument */) const {return 0;};
+  virtual double operator() (const Argument& x) const
+  {
+    return 10 + 4 * x[0] * x[0] + 27 * x[1] * x[1]
+      + 25 * x[1];
+  }
+  virtual  unsigned  int  dimensionality   ()  const  {return  2;};
+};
+FUNCTION_OBJECT_IMP(Func);
+
+Arguments of the function are defined in following way:
+IFuncMinimum::Arg arg (func.dimensionality ());
+  
+  arg[0] = 5;
+  arg[1] = 10;
+
+To create the covariance matrix the following line should be written so:
+IFuncMinimum::Covariance matrix_error (arg.dimension(), 0);
+
+Method "minimum" is called by:
+ - for finding minimum of the function 
+ m_publicTool->minimum( func ,
+                        arg );
+
+ - for creating covariance matrix in the case the function minimum is 
+successfuly found 
+ m_publicTool->minimum( func ,
+                        arg ,
+                        matrix_error);
+
+Class Adapter (GaudiMath/Adapter.h) converts function types "pointer to function"
+and  "IFunction" (AIDA/IFunction)  to  "GenFunction".  The  new Algorithm  files
+(FuncMinimumPAlg.h,  FuncMinimumIAlg.h  from  GaudiExamples package)  should  be
+created for each function types.
+
+Types  of  the  algorithm   for  the  multidimension  minimization,  maximum  of
+iterations, the  ansolute tolerance  for the Euclide  norm of the  gradient, the
+size of the first trial step are changed in the options files:
+
+/// declare  type   of  the   algorithm  for   the  multidimensional 
+/// minimization
+ToolSvc.FuncMinimum.Algorithm   =  "vector_bfgs"  ;  
+/// declare maximum  of iteration 
+ToolSvc.FuncMinimum.Iteration  = 10000            ;
+/// declare the  absolute tolerance  for  the Euclidean  norm of  the gradient 
+ToolSvc.FuncMinimum.Gradient = 1e-3               ; 
+/// declare the size of the  first  trial  step  
+ToolSvc.FuncMinimum.Step_size =  0.01             ;  
+/// declare the accuracy  of the line minimization 
+ToolSvc.FuncMinimum.Tol = 1e-4                    ;
+
+

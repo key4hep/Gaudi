@@ -1,0 +1,1134 @@
+\documentclass{lhcbnote}
+
+\usepackage{times}
+\usepackage{listings}
+
+
+\newcommand{\bfsc}         {\scshape\bfseries}
+\newcommand{\bftt}         {\ttfamily\bfseries}
+\newcommand{\bfit}         {\itshape\bfseries}
+\newcommand{\scbf}         {\scshape\bfseries}
+\newcommand{\slbf}         {\slshape\bfseries}
+\newcommand{\itbf}         {\itshape\bfseries}
+\newcommand{\ttbf}         {\ttfamily\bfseries}
+
+\renewcommand{\sc  }       {\scshape}
+\renewcommand{\sl}         {\slshape}
+\renewcommand{\it}         {\itshape}
+\renewcommand{\tt}         {\ttfamily}
+
+
+\begin{document}
+
+\lstset{language=[ANSI]C++}
+%\lstset{language=[Visual]C++}
+\lstset{indent=15mm}
+\lstset{labelstep=1}
+\lstset{labelstyle=\tt\tiny}
+
+
+\doctyp{Internal Note}
+\dociss{1}
+\docrev{3}
+%\docref{}
+\doccre{January 15, 2004}
+\docmod{\today}
+
+\title{Proposal for extension of {\bftt{GaudiAlgorithm}} and {\bftt{GaudiTool}} classes}
+\author{Vanya Belyaev\footnote{\bftt{E-mail: Ivan.Belyaev\@itep.ru}}}
+\maketitle
+
+\chapter{Introduction}
+
+The existing classes {\bftt{GaudiAlgorithm}} from the  
+package {\scbf{GaudiAlg}} and 
+{\bftt{GaudiTool}} from the package 
+{\scbf{GaudiTools}} provide some extension of 
+the functionality of standard classes {\bftt{Algorithm}}
+and {\bftt{AlgTool}} from {\scbf{GaudiKernel}} package. 
+
+A large number of extension of 
+class {\bftt{Algorithm}} are widely used in 
+LHCb, e.g. {\bftt{CaloAlgorithm}} class from 
+{\scbf{Calo/CaloKernel}} package, {\bftt{LoKi::Algo}} 
+class from {\scbf{Tools/LoKi}}, {\bftt{TrAlgorithm}} 
+class from {\scbf{Tr/TrKernel}}, 
+{\bftt{RichAlgBase}} class from {\scbf{Rich/RichUtils}},
+{\bftt{ITCheckAlgorithm}} from 
+{\scbf{IT/ITCheckers}}, 
+{\bftt{OTMonitorAlgorithm}} from {\scbf{OT/OTAlgorithms}}.
+Also large number of extension for {\bftt{AlgTool}} class 
+are used in LHCb software: 
+{\bftt{CaloTool}} from {\scbf{Calo/CaloKernel}},
+{\bftt{GiGaTool}} from {\scbf{Sin/GiGa}}, 
+{\bftt{RichToolBase}} from 
+{\scbf{Rich/RichUtils}}. An activity of trigger 
+group in creation of {\scbf{Gaudies}} package and 
+{\bftt{TrgAlgorithm}} base class is also need to be mentioned here. 
+
+Existing {\bftt{GaudiAlgorithm}} and 
+{\bftt{GaudiTools}} classes were designed 
+just to enrich the base classes 
+{\bftt{Algorithm}} and {\bftt{AlgTool}} 
+with some additional and more user-friendly 
+functionality namely
+\begin{itemize}
+ \item error and warning printout with error count 
+   and full statistics of errors and warnings  
+ \item easy retrieve of objects from Gaudi Transient Store 
+ \item easy register of objects into Gaudi Transient Store 
+ \item easy and safe location of services and tool 
+       with user-friendly semantics 
+ \item easy access to ``standard'' services 
+\end{itemize} 
+
+In this document the existing functionality is reviewed 
+with possible extensions to 
+algorithms, specialized for dealing with histograms 
+{\bftt{GaudiHistoAlg}} and N-tuples 
+{\bftt{GaudiTupleAlg}}. The first extension class 
+could act as a good base class for monitoring algorithms, 
+and the second extension class is a good base class 
+e.g. for analysis algorithms.   
+
+\chapter{The extended functionality of {\bftt{GaudiAlgorithm}} } 
+
+\section{Error handling}
+
+{\bftt{GaudiAlgorithm}} class is equipped with 
+few methods for easy printout of errors and warnings:
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+  StatusCode 
+  Error     
+  ( const std::string& msg , 
+    const StatusCode   st  = StatusCode::FAILURE ,
+    const size_t       mx  = 10                  ) const ;
+  
+  StatusCode 
+  Warning   
+  ( const std::string& msg , 
+    const StatusCode   st  = StatusCode::FAILURE ,
+    const size_t       mx  = 10                  ) const ;
+
+ \end{lstlisting}
+\end{scriptsize}
+
+The error/warning messages are printed and counted.
+The overall statistics of errors and warnings are 
+printed at the end of the job. The last argument of 
+these commands defines the maximal number of identical 
+printouts.
+
+The usage of these methods is straightforward: 
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+    StatusCode MyAlg::execute() 
+    {
+      ....
+      if ( 0 >  a ) { return Error("value of 'a' is negative!") ; }
+      if ( 0 == a ) { return Warning("value of 'a' is zero!" )  ; }
+      if ( sc.isFailure() ) 
+          { return Error("something wrong here",sc) ; }
+      ....
+    };
+
+ \end{lstlisting}
+\end{scriptsize}
+
+The result table, printed at the end of the job looks like 
+
+\begin{scriptsize}
+  \begin{lstlisting}{}
+
+    MyAlgName SUCCESS Exceptions/Errors/Warnings statistics:  0/2/1
+    MyAlgName SUCCESS #ERRORS    = 118 Message='value of 'a' is negative!'
+    MyAlgName SUCCESS #ERRORS    = 400 Message='something wrong here'      
+    MyAlgName SUCCESS #WARNINGS  = 327 Message='value of 'a' is sero!'    
+
+  \end{lstlisting}
+\end{scriptsize}
+
+Here the first line contains an inforomation about number of different types 
+of exceptions, errors and warning, and each subsequent line corresponds to 
+certain exception/error/warning and provides the information about error 
+message and occurance number.
+
+
+The second argument allows to assign easily the 
+meaningful values for return error codes, e.g.
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+    StatusCode MyAlg::execute() 
+    {
+      ....
+      if( 0 >  a ) 
+        { return Error ( " 'a' is negative!", StatusCode( 300 ) ) ; }
+      if( 0 == a ) 
+        { return Error ( " 'a' is zero!"    , StatusCode( 301 ) ) ; }
+      StatusCode sc = someMethod() 
+      if( sc.isFailure() ) 
+        { return Error ( " The error from 'someMethod()'" , sc ) ; }
+      ....
+    };
+
+ \end{lstlisting}
+\end{scriptsize}
+
+The third argument allows to limit the number of 
+error printouts:
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+    StatusCode MyAlg::execute() 
+    {
+      for( int i = 0 ; i < 100000 ; ++i ) 
+      {
+      if( 0 == i%2  ) 
+        { Warning ( " the first  warning " , StatusCode( 300 ) , 20 ) ; }
+      if( 1 == i%2  ) 
+        { Warning ( " the second warning " , StatusCode( 301 ) , 30 ) ; }
+      ....
+    };
+
+ \end{lstlisting}
+\end{scriptsize}
+
+For this example the total number of printouts from the in log-file
+will be only 20 for the first warning message and only 30 for the second 
+warning message. Wihle at the end of the job, the overall 
+number of warnings of the first type and second type will 
+be evaluated correctly as 
+$20\times50000\times{\mathcal{N}}_{\mathrm{ev}}$ and 
+$30\times50000\times{\mathcal{N}}_{\mathrm{ev}}$ 
+correspondingly and printed as a table at the end of the job.
+
+
+Few additional methods are closely related to 
+{\bftt{GaudiAlgorithm::Error}} and 
+{\bftt{GaudiAlgorithm::Warnings}} methods:
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+  StatusCode Print     
+  ( const std::string& msg , 
+    const StatusCode   st  = StatusCode::SUCCESS ,
+    const MSG::Level   lev = MSG::INFO           ) const ;
+  
+  inline 
+  StatusCode
+  Assert 
+  ( const bool         ok                            , 
+    const std::string& message = ""                  , 
+    const StatusCode   sc      = StatusCode::FAILURE ) const;
+  
+  inline 
+  StatusCode 
+  Assert 
+  ( const bool         ok                            , 
+    const char*        message                       ,
+    const StatusCode   sc      = StatusCode::FAILURE ) const;
+  
+  StatusCode 
+  Exception 
+  ( const std::string    & msg                        ,  
+    const GaudiException & exc                        , 
+    const MSG::Level       lvl = MSG::FATAL           ,
+    const StatusCode       sc  = StatusCode::FAILURE ) const ;
+  
+  StatusCode 
+  Exception 
+  ( const std::string    & msg                        ,  
+    const std::exception & exc                        , 
+    const MSG::Level       lvl = MSG::FATAL           ,
+    const StatusCode       sc  = StatusCode::FAILURE ) const ;
+  
+  StatusCode 
+  Exception 
+  ( const std::string& msg = "no message"        ,  
+    const MSG::Level   lvl = MSG::FATAL          ,
+    const StatusCode   sc  = StatusCode::FAILURE ) const ;
+
+ \end{lstlisting}
+\end{scriptsize}
+
+The exceptions, thrown by these methods are also counted 
+and printed at the end of the job. The error message is 
+printed BEFORE exception is thrown. The usage of these 
+methods is straightforward: 
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+    StatusCode MyAlg::execute() 
+    {
+      // check the assertion 
+      Assert( a > 0 , " value of 'a' is not positive!" );
+      ....
+      try { ... } 
+      catch ( const GaudiException& exc ) 
+      { // catch the expected exception
+	Exception( " Exception is catched and re-thrown" , exc ) ;
+      }
+      // thrown exception (return is 'fictive' here)
+      if( a < 0 ) { return Exception(" 'a' is negative !" );}
+      ...
+    };
+
+ \end{lstlisting}
+\end{scriptsize}
+
+An easy macro {\bftt{ALG\_ERROR}} is defined 
+to supply the error message with file name and line number 
+(such trick often is very useful to locate the exact place where 
+the problem occurs)
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+    StatusCode MyAlg::execute() 
+    {
+      ...
+      StatusCode sc = StatusCode::FAILURE ;
+      if( a < 0 ) { return ALG_ERROR(" 'a' is negative !" , sc ) ; }
+    };
+
+ \end{lstlisting}
+\end{scriptsize}
+
+ Here the error message will be extended with information
+about the source file name and line number.
+The result table, printed at the end of events looks like 
+
+\begin{scriptsize}
+  \begin{lstlisting}{}
+
+    MyAlgName SUCCESS Exceptions/Errors/Warnings statistics:  0/1/0
+    MyAlgName SUCCESS #ERRORS = 118 Message='value of 'a' is negative! \ 
+                                   [ in file ../src/MyAlg.cpp line #115 ]'
+  \end{lstlisting}
+\end{scriptsize}
+
+
+\section{Predefined message streams}
+Markus Frank\footnote{\bftt{E-mail: Markus.Frank@cern.ch}} has kindly proposed to have few predefined message 
+streams with fixed verbosity levels to be always available:
+
+\begin{scriptsize}
+  \begin{lstlisting}{}
+
+    MsgStream& always  () const ;
+    MsgStream& fatal   () const ;
+    MsgStream& err     () const ;
+    MsgStream& warn    () const ;
+    MsgStream& info    () const ;
+    MsgStream& debug   () const ;
+    MsgStream& verbose () const ;
+
+  \end{lstlisting}
+\end{scriptsize}
+
+The usage of these predefined streams 
+allows to minimize the visible difference between 
+standard {\scbf{STL}} output streams 
+{\bftt{std::cout}}, {\bftt{std::cerr}},
+{\bftt{std::clog}}, and e.g. {\bftt{GaudiAlgorithm::err()}}
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+    StatusCode MyAlg::execute() 
+    {
+      ...
+      if( 0 >  a ) { err()     << " 'a' is negative !" << endreq    ; }
+      if( 0 == a ) { warn()    << " 'a' is zero !"     << endreq    ; }
+      // to be compared with 
+      if( 0 >  a ) { std::cerr << " 'a' is negative !" << std::endl ; }
+      if( 0 == a ) { std::cout << " 'a' is zero !"     << std::endl ; }
+
+    };
+
+ \end{lstlisting}
+\end{scriptsize}
+
+The certain care need to be taken since this approach have 
+few fragile features, but in general its simplicity and 
+transparency makes it to be very attractive. 
+
+\section{Control over the debug actions}
+Additional features are proposed to import from 
+{\bftt{RichAlgBase}} and {\bftt{RichToolBase}} classes
+({\scbf{RichUtils}} package): 
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+  /// Test the printout level
+  inline bool        msgLevel ( MSG::Level level ) const ;
+
+  /// Return message level setting
+  inline MSG::Level  msgLevel ()                  const ;
+
+ \end{lstlisting}
+\end{scriptsize}
+
+Such methods allows to have more control 
+over the printout levels and to write more efficient debug printout, e.g.
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+    StatusCode MyAlg::execute() 
+    {
+      ...
+      if( msgLevel( MSG::DEBUG ) ) 
+      {
+	// evaluate debug information,
+	// construct debug message and print it 
+      } 
+
+    };
+
+ \end{lstlisting}
+\end{scriptsize}
+
+
+\section{Data handling}
+
+To simplify the data retrieval from Gaudi Transient Store 
+{\bftt{GaudiAlgorithm}} provides 2 methods to retrieve 
+data and on method to register the data in Gaudi Stores :
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+  template<class TYPE>
+  TYPE*   get    ( IDataProviderSvc*  svc        , 
+                   const std::string& location   ) const ;
+
+  template<class TYPE>
+  TYPE*   get    ( const std::string& location   ) const ;
+
+  template<class TYPE>
+  TYPE*   getDet ( const std::string& location   ) const ;
+
+  StatusCode put ( DataObject*        object  , 
+                   const std::string& address ) const ;
+  
+ \end{lstlisting}
+\end{scriptsize}
+
+The second method is just a shortcut for the first 
+method for retrieval data from Gaudi Event Data Store, 
+which is probably is the most frequently use-case.
+The third method is the shortcut to retvieve objects form 
+Gaudi Detector Data Store.  
+If data are not available, or corrupted (e.g. have different type), 
+an exception is thrown. {\bf{The methods guarantees to 
+    return the valid data}}. One can register the data 
+only in the Gaudi Event Transient store.
+
+The usage is illustrated by following listing:
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+    StatusCode MyAlg::execute() 
+    {
+      ...
+      MCParticles* p = get<MCParticles>( eventSvc() , MCParticleLocation::Default ) ; 
+      MCVertices*  v = get<MCVertices>( MCVertexLocation::Default );
+      const IDetectorElement* det = getDet<IDetectorElement>( "/dd/Structure/LHCb");
+      Particles* ps = new Particles() ;
+      put( Particles , "Phys/MyParticles");
+    };
+
+ \end{lstlisting}
+\end{scriptsize}
+
+
+\section{Handling of tools and services}
+
+{\bftt{GaudiAlgorithm}} class is equipped with few method for 
+easy location of services and tools
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+  template<class TOOL>
+  TOOL*    tool ( const std::string& type           , 
+                  const std::string& name           , 
+                  const IInterface*  parent  = 0    , 
+                  bool               create  = true ) const ;
+
+  template<class TOOL>
+  TOOL*    tool ( const std::string& type          , 
+                  const IInterface*  parent = 0    , 
+                  bool               create = true ) const ;
+
+  template<class SERVICE>
+  SERVICE* svc  ( const std::string& name           , 
+                  const bool         create = false ) const ;
+
+ \end{lstlisting}
+\end{scriptsize}
+
+{\bf{Services and tools, located with these methods should not 
+be manually released}}. They will be released automatically 
+at algorithm finalization. The methods thrown exceptions if
+service or tool can not be retrieved, and guarantee to
+return a valid pointer to service/tool. 
+The semantics is very similar to semantics of 
+{\bftt{GaudiAlgorithm::get}} method:
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+    StatusCode MyAlg::initialize() 
+    {
+      ...
+      IMyTool* m1 =  tool<IMyTool>( "MyToolType" ,  "MyToolName" , this ) ;
+      IMyTool* m2 =  tool<IMyTool>( "MyToolType/MyToolName"      , this ) ;
+      IMyTool* m3 =  tool<IMyTool>( "MyToolType"                 , this ) ;
+      IMySvc*  s1 =  svc<IMySvc>  ( "MyService"                  , true ) ;
+    };
+
+ \end{lstlisting}
+\end{scriptsize}
+
+Two methods for forced manual release of tools/services, 
+acquired with {\bftt{GaudiAlgorithm::tool}} and 
+{\bftt{GaudiAlgorithm::svc}} methods, are provided just to 
+take into account the case when components are only needed 
+for a short period, such as during initialisation:
+
+\begin{scriptsize}
+  \begin{lstlisting}{}
+    
+    StatusCode release ( const IAlgTool* tool ) const ;
+    StatusCode release ( const IService* svc  ) const ;
+    
+  \end{lstlisting}
+\end{scriptsize}
+
+In this case the tool/service will be immediately released and 
+one can avoid the hanging of tool/service till the end of 
+the job.
+
+\begin{scriptsize}
+  \begin{lstlisting}{}
+
+    StatusCode MyAlg::initialize() 
+    {
+      const IMyTool* m3 = tool<IMyTool>( "MyToolType/MyToolName" , this ) ;
+      m3 -> doSomeJobWithTheGreatSuccess();
+      release ( m3 ) ;
+    };
+
+  \end{lstlisting}
+\end{scriptsize}
+
+If tool or service was not previously aquired by 
+{\bftt{GaudiAlgorthm::tool}} or {\bftt{GaudiAlgorthm::svc}}
+methods, the corresponding invokation of 
+{\bftt{GaudiAlgorithm::release}} has no effect.
+
+
+
+\section{Useful and convenient  shortcuts for some standard methods}
+
+For convenience and coherency it is proposed 
+to introduce few shortcuts for standard methods, provided by 
+base class {\bftt{Algorithm}}
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+   // synonym for Algorithm::eventSvc()   
+   IDataProviderSvc*  evtSvc() const ; 
+   // synonym for Algorithm::serviceLocator()
+   ISvcLocator*       svcLoc() const ; 
+   IIncidentSvc*      incSvc() const ;
+
+ \end{lstlisting}
+\end{scriptsize}
+
+Together with standard methods {\bftt{Algorithm::detSvc}} and 
+{\bftt{Algorithm::msgSvc}} they provide nice 6-symbol acronyms.
+
+
+\section{Other useful features}
+For the ouput level {\bftt{MSG::DEBUG}}
+{\bftt{GaudiAlgorithm::initialize}} method performs the 
+printout of all properties of algorithm:
+
+\begin{scriptsize}
+  \begin{lstlisting}{}
+
+    MyAlgName DEBUG  List of ALL properties of MyAlg/MyAlgName   #properties = 38
+    MyAlgName DEBUG Property ['Name': Value] = "HistoOffSet": 0
+    MyAlgName DEBUG Property ['Name': Value] = "CheckForNaN": 1
+    MyAlgName DEBUG Property ['Name': Value] = "ProduceHistos": 1
+    MyAlgName DEBUG Property ['Name': Value] = "Output": ""
+    MyAlgName DEBUG Property ['Name': Value] = "Input": ""
+    MyAlgName DEBUG Property ['Name': Value] = "AuditFinalize": 0
+    MyAlgName DEBUG Property ['Name': Value] = "AuditExecute": 1
+    MyAlgName DEBUG Property ['Name': Value] = "AuditInitialize": 0
+    MyAlgName DEBUG Property ['Name': Value] = "ErrorCount": 0
+
+  \end{lstlisting}
+\end{scriptsize}
+
+
+\section{Implementation policy for derived classes}
+If concrete algorithm requires the implementation of 
+the specific {\bftt{initialize}} or 
+{\bftt{finalize}} methods they {\bftt{must}} be implemented 
+in a following way:
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+   class MyAlg: public GaudiAlgorithm { ... } ;
+
+   // standard constructor 
+   MyAlg::MyAlg( const std::string& name , 
+                 ISvcLocator*       svc  ) 
+   : GaudiAlgorithm( name , svc ) 
+   , ....
+    
+   // initialization
+   StatusCode MyAlg::initialize() 
+   {
+     // initialize the base class 
+     StatusCode sc = GaudiAlgorithm::initialize() ;
+     if( sc.isFailure() ) 
+     { return Error("Base class is not initialized",sc);}
+     // put specific code here 
+     ...
+     return StatusCode::SUCCESS ;
+   };
+   
+   // initialization
+   StatusCode MyAlg::finalize() 
+   {
+     // put specific code here 
+     ...
+     return GaudiAlgorithm::finalize();
+   };
+
+ \end{lstlisting}
+\end{scriptsize}
+
+
+
+
+It is assumed that {\bftt{GaudiTool}} class is equipped with 
+all these methods (error handling, data handling, 
+tools/services handling and shortcuts).
+
+\chapter{The functionality, proposed for {\bftt{GaudiHistoAlg}}}
+The class {\bftt{GaudiHistoAlg}} inherits all features 
+from {\bftt{GaudiAlgorithm}} base class. In addition it gets
+the methods for easy handling of histograms:
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+ 
+  AIDA::IHistogram1D*  plot 
+  ( const double        value        ,
+    const std::string&  title        ,
+    const double        low          ,
+    const double        high         ,
+    const unsigned long bins   = 100 ,
+    const double        weight = 1.0 ) const ;
+
+  AIDA::IHistogram1D*  plot      
+  ( const double        value        ,
+    const HistoID&      ID           , 
+    const std::string&  title        ,
+    const double        low          ,
+    const double        high         ,
+    const unsigned long bins   = 100 ,
+    const double        weight = 1.0 ) const ;
+
+ \end{lstlisting}
+\end{scriptsize}
+
+{\bf{For usage of these method one do not need to book the histogram.}} 
+Booking is performed on demand. The unique integer histogram ID 
+for the first method is generated automatically. 
+For the the second method (which is more ``HBOOK''-oriented) 
+the assignment of integer ID is under the user control:
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+   
+   StatusCode MyAlg::execute() 
+   {
+     double pt = ... ;
+     plot( pt/GeV           , "Transverse momentum in GeV/c" , 0  , 10 ) ;
+     plot( sin(pt)/GeV , 15 , "Sine of PT"                   , -1 ,  1 ) ;
+   };
+   
+ \end{lstlisting}
+\end{scriptsize}
+
+As it was emphasized histogram will be booked automatically on-demand.
+But in addition one can use {\bftt{GaudiHistoAlg::book}} method explicitely to book 
+the histograms:
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+    StatusCode MyAlg::initialize() 
+    {
+      book ( "Transverse momentum in GeV/c" , 0 , 10 );
+      AIDA::IHistogram* h15 = 
+      book ( 15 , "Sine of PT" , -1 , 1 ) ;
+    };
+    
+ \end{lstlisting}
+\end{scriptsize}
+
+Both {\bftt{GaudiHistoAlg::book}}
+and {\bftt{GaudiHistoAlg::plot}} methods return 
+the pointer to  {\bftt{ AIDA::IHistogram1D}} 
+class which can be used for explicit manipulations 
+with histograms.
+
+In addition to simple methods of putting {\bftt{double}}
+value to the histogram, few sophisticated methods for 
+efficient filling of the  histograms with container-organized data are
+provided:
+
+\begin{scriptsize}
+  \begin{lstlisting}{}
+    
+    template <class OBJECT,class FUNCTION>
+    IHistogram1D*  plot 
+    ( FUNCTION            func         ,
+      OBJECT              first        , 
+      OBJECT              last         , 
+      const std::string&  title        ,
+      const double        low          ,
+      const double        high         ,
+      const unsigned long bins   = 100 ) const ;
+
+    template <class OBJECT,class FUNCTION>
+    IHistogram1D*  plot 
+    ( FUNCTION            func         ,
+      OBJECT              first        , 
+      OBJECT              last         , 
+      const HistoID&      ID           ,
+      const std::string&  title        ,
+      const double        low          ,
+      const double        high         ,
+      const unsigned long bins  = 100  ) const 
+
+    template <class OBJECT,class FUNCTION,class WEIGHT>
+    IHistogram1D*  plot 
+    ( FUNCTION            func         ,
+      OBJECT              first        , 
+      OBJECT              last         , 
+      const std::string&  title        ,
+      const double        low          ,
+      const double        high         ,
+      const unsigned long bins         , 
+      WEIGHT              weight       ) const ;
+
+    template <class OBJECT,class FUNCTION,class WEIGHT>
+    IHistogram1D*  plot 
+    ( FUNCTION            func         ,
+      OBJECT              first        , 
+      OBJECT              last         , 
+      const HistoID&      ID           ,
+      const std::string&  title        ,
+      const double        low          ,
+      const double        high         ,
+      const unsigned long bins         , 
+      WEIGHT              weight       ) const   
+
+ \end{lstlisting}
+\end{scriptsize}
+
+Again , each method has 2 variants: with and without explicit 
+assignment of integer identifier.
+The usage of these method is illustrated by following listing:
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+   StatusCode MyAlg::execute()
+   {
+     typedef std::vector<double> Container ; 
+     Container data = ... ;
+     plot( sin , data.begin() , data.end() , 
+           "Plot 1: sin(data) ", -1 , 1 ); 
+     plot( sin , data.begin() , data.end() , 
+           "Plot 2: sin(data) with exp-weight" , -1 , 1 , 100 , exp ); 
+   }; 
+
+ \end{lstlisting}
+\end{scriptsize}
+
+Here the type of {\bftt{OBJECT}}, {\bftt{FUNCTION}} and 
+{\bftt{WEIGHT}} can be arbitrary, there are only 2 limitations:
+\begin{itemize}
+\item {\bftt{OBJECT}} is an iterator, which supports the forward iterator protocol
+({\bftt{++first}} and {\bftt{*first}}).
+\item {\bftt{func(*first)}} and {\bftt{weight(*first)}} are semantically  
+  valid expressions, which can be evaluated to the type, implicitely 
+  convertible to {\bftt{double}}
+\end{itemize}  
+As an example one can consider the usage of 
+function {\bftt{PT}} from {\scbf{LoKi}} package:
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+   StatusCode MyAlg::execute()
+   {
+     Particles* p = get<Particles>( ParticleLocation::Default );
+     plot( PT/GeV , p->begin() , p->end() , "Transverse momentum " , 0  , 10 ); 
+   }; 
+
+ \end{lstlisting}
+\end{scriptsize}
+
+In this example, in 2 lines one performs the location of 
+container of particles
+in Gaudi Event Transient Store, booking and filling the histogram with 
+distribution of transverse momentum  for all particles.
+
+
+The histograms go into a subdirectory in Gaudi Histogram Transient 
+Store which name is configurable through properties of the algorithm, 
+and the default name corresponds to the name of algorithm instance. 
+The nesessary split of long names for HBOOK persistency is 
+optional and performed with the control over algorithm properties. 
+
+The method {\bftt{fullDetail}} is especially 
+convinient for monitoring algorithms and is imported from 
+{\bftt{ITCheckAlgorithm}} from {\scbf{ITCheckers}} package:
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+   
+   bool fullDetail() const ;
+
+ \end{lstlisting}
+\end{scriptsize}
+
+The full list of algorithm properties, 
+introduced for the class {\bftt{GaudiHistoAlg}}
+is presented in Table~\ref{Table:AlgHistoProperties}.
+
+\begin{table}[hbt]
+  \caption[Standard properties of class {\bftt{GaudiHistoAlg}}]
+          {The standard properties of class {\bftt{GaudiHistoAlg}} 
+and their default values.}
+\bigskip
+\label{Table:AlgHistoProperties}
+\begin{tabular*}{\linewidth}{@{\hspace{10mm}}l@{\extracolsep{\fill}}l@{\hspace{10mm}}}
+\hline 
+\hline 
+Property Name & Default Value  \\
+\hline
+{\bftt{"ProduceHistos"}}            &  {\bftt{true}}             \\ 
+{\bftt{"HistoOffSet"}}              &  {\bftt{0}}                \\
+{\bftt{"SplitHistoDir"}}            &  {\bftt{true}}             \\
+{\bftt{"HistoTopDir"}}              &  {\bftt{""}}               \\
+{\bftt{"HistoDir"}}                 &  Algorithm instance name \\
+{\bftt{"CheckForNaN"}}              &  {\bftt{true}}             \\
+\hline
+{\bftt{"FullDetail"}}               &  {\bftt{false}}            \\ 
+\hline 
+\end{tabular*} 
+\end{table}
+
+The producton of histograms can be switched on/off using the  
+property {\bftt{"ProduceHistos"}}.
+ For switched off production of histograms 
+all {\bftt{GaudiHistoAlg::plot}} and  {\bftt{GaudiHistoAlg::book}} \ methods have no effect.
+An algorithm-specific 
+control is performed using the property {\bftt{"FullDetail"}}.
+
+
+\section{Implementation policy for derived classes}
+If concrete algorithm requires the implementation of 
+the specific {\bftt{initialize}} or 
+{\bftt{finalize}} methods they {\bftt{must}} be implemented 
+in a following way:
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+   class MyAlg: public GaudiHistoAlg { ... } ;
+
+   // standard constructor 
+   MyAlg::MyAlg( const std::string& name , 
+                 ISvcLocator*       svc  ) 
+   : GaudiHistoAlg( name , svc ) 
+   , ....
+
+   // standard initialzation
+   StatusCode MyAlg::initialize() 
+   {
+     // initialize the base class 
+     StatusCode sc = GaudiHistoAlg::initialize() ;
+     if( sc.isFailure() ) 
+     { return Error("Base class is not initialized",sc);}
+     // put specific code here 
+     ...
+     return StatusCode::SUCCESS ;
+   };
+   
+   // standard finalization
+   StatusCode MyAlg::finalize() 
+   {
+     // put specific code here 
+     ...
+     return GaudiHistoAlg::finalize();
+   };
+
+ \end{lstlisting}
+\end{scriptsize}
+
+
+\chapter{The functionality, proposed for {\bftt{GaudiTupleAlg}}}
+It is proposed that  class {\bftt{GaudiTupleAlg}} inherits 
+all functionality of {\bftt{GaudiHistoAlg}} and gets functionality 
+for easy dealing with N-tuples, 
+imported from {\scbf{LoKi}} package. {\bf{One do not need to book tuple and its columns. 
+Tuple and columns are booked on-demand.}}. 
+
+
+For simple columns the proposed functionality is 
+illustrated by following listing
+
+\begin{scriptsize}
+  \begin{lstlisting}{}
+
+    StatusCode MyAlg::execute()
+    {
+      Tuple tuple = ntuple( "Unique N-tuple title-string identifier " );
+      tuple->column( "Mass" , mass / GeV  );
+      tuple->column( "PT"   , pt / GeV );
+      tuple->column( "chi2" , chi2 );
+      tuple->write() ;
+    }; 
+
+  \end{lstlisting}
+\end{scriptsize}
+Few columns can be filled simultaneously\footnote{For this case 
+all of them need to be of type {\bftt{double}}}
+
+\begin{scriptsize}
+  \begin{lstlisting}{}
+
+    StatusCode MyAlg::execute()
+    {
+      Tuple tuple = ntuple( "Unique N-tuple title-string identifier " );
+      tuple->fill( "Mass,PT,chi2" , mass / GeV  , PT/GeV, chi2 );
+      tuple->write() ;
+    }; 
+
+  \end{lstlisting}
+\end{scriptsize}
+Few methods allow to deal with N-tuples:
+
+\begin{scriptsize}
+  \begin{lstlisting}{}
+
+    Tuple ntuple( const std::string& title                       , 
+                  const CLID&        type = CLID_ColumnWiseTuple ) const ;
+
+    Tuple ntuple( const HbookID&     ID                          , 
+                  const std::string& title                       , 
+                  const CLID&        type = CLID_ColumnWiseTuple ) const ;
+
+  \end{lstlisting}
+\end{scriptsize}
+
+The basic type of column, which appears in PAW or ROOT 
+are {\bftt{float}} and {\bftt{long}}. Few shortcuts are exist 
+to put into N-tuple complex objects, like {\bftt{HepPoint3D}}, 
+{\bftt{HepLorenzVector}}, etc.
+
+The filling of array-like columns is also simple.
+
+The detailed description of usage of proposed N-tuple facility see
+{\scbf{LoKi}} User Guide, available as 
+{\bftt{LoKi.ps}} in 
+{\bftt{/afs/cern.ch/user/i/ibelyaev/doc/GaudiDoc}} directory\footnote{
+Alternatively one can use files {\bftt{LoKi.pdf}},{\bftt{LoKi\_2on1.ps}}
+or {\bftt{LoKi\_2on1.pfd}} files in the same directory}
+
+The list of available tuple fill methods  
+is presented in following listing\footnote{For 
+row-wise N-tuples only {\bftt{column}} and 
+{\bftt{fill}} methods have effect}
+
+\begin{scriptsize}
+  \begin{lstlisting}{}
+
+    // primitive columns 
+    StatusCode column ( const std::string&       name   , 
+                        const long               var    ) ;
+    StatusCode column ( const std::string&       name   , 
+                        const bool               var    ) ;
+    StatusCode column ( const std::string&       name   , 
+                        const double             var    ) ;
+    StatusCode column ( const std::string&       name   , 
+                        const long               var    , 
+                        const long               minv   , 
+                        const long               maxv   ) ;
+ 
+    // compound columns 
+    StatusCode column ( const std::string&       name   , 
+                        const Hep3Vector&        point  ) ;
+    StatusCode column ( const std::string&       name   , 
+                        const HepLorentzVector&  vect   ) ;
+
+    // fill few columns at once
+    StatusCode fill   ( const char*   format ...        ) ;
+
+    // fill array-like column
+    template <class DATA> 
+    StatusCode farray ( const std::string& name          , 
+                        DATA               first         , 
+                        DATA               last          ,
+                        const std::string& length        , 
+                        const size_t       maxv          ) ;
+
+    // fill array-like column
+    template <class DATA> 
+    StatusCode farray ( const std::string& name          , 
+                        const DATA&        data          , 
+                        const std::string& length        , 
+                        const size_t       maxv          ) ;
+  
+    // fill array-like column
+    template <class DATA, class FUNCTION> 
+    StatusCode farray ( const std::string& name          ,
+                        const FUNCTION&    function      ,
+                        DATA               first         , 
+                        DATA               last          ,
+                        const std::string& length        , 
+                        const size_t       maxv          ) ; 
+
+    // fill array-like column
+    template <class DATA, class FUNC1, class FUNC2> 
+    StatusCode farray ( const std::string& name1         ,
+                        const FUNC1&       func1         ,
+                        const std::string& name2         ,
+                        const FUNC2&       func2         ,
+                        DATA               first         , 
+                        DATA               last          ,
+                        const std::string& length        , 
+                        const size_t       maxv          ) ; 
+  
+ \end{lstlisting}
+\end{scriptsize}
+
+Few additional methods for filling of several array-like columns 
+at once are also exist. They are described in details 
+in {\scbf{LoKi}} User Guide and Doxygen documentation for {\scbf{LoKi}}
+package.
+
+The full list of algorithm properties, 
+introduced for the class {\bftt{GaudiTupleAlgorithm}}
+is presented in Table~\ref{Table:AlgTupleProperties}.
+
+\begin{table}[hbt]
+  \caption[Standard properties of class {\bftt{GaudiTupleAlg}}]
+          {The standard properties of class {\bftt{GaudiTupleAlg}} 
+and their default values.}
+\bigskip
+\label{Table:AlgTupleProperties}
+\begin{tabular*}{\linewidth}{@{\hspace{10mm}}l@{\extracolsep{\fill}}l@{\hspace{10mm}}}
+\hline 
+\hline 
+Property Name & Default Value  \\
+\hline
+{\bftt{"ProduceTuples"}}            &  {\bftt{true}}             \\ 
+{\bftt{"TupleOffSet"}}              &  {\bftt{1000}}             \\
+{\bftt{"SplitTupleDir"}}            &  {\bftt{true}}             \\
+{\bftt{"TupleTopDir"}}              &  {\bftt{""}}               \\
+{\bftt{"TupleDir"}}                 &  Algorithm instance name \\
+{\bftt{"TupleLUN"}}                 &  {\bftt{"FILE1"}}          \\
+\hline 
+\end{tabular*} 
+\end{table}
+
+The producton of N-tuples can be switched on/off using the  
+property {\bftt{"ProduceTuples"}}. 
+ For switched off production of tuples 
+all methods have no effect. It is especially useful
+to use N-tuples for e.g. debugging of 
+physics analysis algorithm for preselection   
+and to switch off all N-tuples for running of this preselection 
+algorithm for large event statistics.
+
+Since in Gaudi there is no principal difference\footnote{There exist only few minor 
+specific features, which can be easily taken into account} between 
+N-Tuples and Event Tag Collections, the same class 
+{\bftt{GaudiTupleAlg}} is used to produce Event Tag Collections, 
+which are of especial interest for physics analysis\footnote{The idea of 
+having a separate class {\bftt{GaudiTagsAlg}} is not attractive at all, if 
+only 1 method need to be modified.}.
+
+
+\section{Implementation policy for derived classes}
+If concrete algorithm requires the implementation of 
+the specific {\bftt{initialize}} or 
+{\bftt{finalize}} methods they {\bftt{must}} be implemented 
+in a following way:
+
+\begin{scriptsize}
+ \begin{lstlisting}{}
+
+   class MyAlg: public GaudiTupleAlg { ... } ;
+
+   // standard constructor 
+   MyAlg::MyAlg( const std::string& name , 
+                 ISvcLocator*       svc  ) 
+   : GaudiTupleAlg( name , svc ) 
+   , ....
+
+   // standard initialization
+   StatusCode MyAlg::initialize() 
+   {
+     // initialize the base class 
+     StatusCode sc = GaudiTupleAlg::initialize() ;
+     if( sc.isFailure() ) 
+     { return Error("Base class is not initialized",sc);}
+     // put specific code here 
+     ...
+     return StatusCode::SUCCESS ;
+   };
+   
+   // standard finalization
+   StatusCode MyAlg::finalization() 
+   {
+     // put specific code here 
+     ...
+     return GaudiTupleAlg::finalize();
+   };
+
+ \end{lstlisting}
+\end{scriptsize}
+
+
+
+
+\end{document}

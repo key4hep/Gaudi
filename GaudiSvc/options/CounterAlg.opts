@@ -1,0 +1,1 @@
+ApplicationMgr.TopAlg += { "GaudiSvcTest::CounterTestAlg" };
