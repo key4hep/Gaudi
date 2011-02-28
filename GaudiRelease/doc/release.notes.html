@@ -38,6 +38,56 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
+<h2><a name="v22r1">Gaudi v22r1</a> (2011-02-21)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=60a">LCGCMT_60a</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Updated to pick up the patch release of ROOT (with a fixed memory leak)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v11r1):
+<ul>
+<li>Fixed bug #77806: createProjVersHeader breaks with Atlas style tags
+    allow Atlas style GaudiPKJ-XX-YY-ZZ tags<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v27r13):
+<ul>
+<li>Fixed bug #77534: this-&gt; needed in Property.h<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiSvc (v18r13):
+<ul>
+<li>Added another special case for the order of service finalization
+    (NTupleSvc after ToolSvc, because of GaudiTupleTool)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiPoolDb (v5r11):
+<ul>
+<li>Patch #4662: Fix for ROOT bug #77747<br/>
+    (<span class="author">Markus Frank, Marco Clemencic</span>)</li>
+<li>Fixed bug #78456: warning/error when building GaudiPoolDb<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiAlg (v13r6):
+<ul>
+<li>Fixes for ICC<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiGSL (v7r9):
+<ul>
+<li>Fixed bug #77948: GaudiGSL/requirements calls for lcg_dictionary<br/>
+    (<span class="author">Charles Leggett, Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
 <h2><a name="v22r0">Gaudi v22r0</a> (2011-01-19)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=60">LCGCMT_60</a></h3>
 <h3>General Changes</h3>

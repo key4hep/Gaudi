@@ -202,24 +202,30 @@ void PoolDbIOHandler<ContainedObject>::put(TBuffer &b, void* obj) {
   m_root->WriteBuffer(b, obj);
 }
 
+// required for backward compatibility
+#ifndef ROOT_FULL_VERSION
+#define ROOT_FULL_VERSION(a,b,c,p) (((a)<<24)+((b)<<16)+((c)<<8)+(p))
+#define ROOT_FULL_VERSION_CODE (ROOT_VERSION_CODE << 8)
+#endif
+
 static void getOID_40000(TBuffer& b, TClass* cl, Token::OID_t& oid) {
   unsigned long loid[2];
   UInt_t start, count;
-#if ROOT_VERSION_CODE < ROOT_VERSION(5,28,0)
+#if (ROOT_FULL_VERSION_CODE < ROOT_FULL_VERSION(5,28,0,'a'))
   UInt_t tmp;
 #endif
   // read the class version from the buffer
   /* Version_t vsn = */ b.ReadVersion(&start, &count, 0);
   switch(count) {
   case 22:              // These tokens were written as pair<long,long>
-#if ROOT_VERSION_CODE < ROOT_VERSION(5,28,0)
+#if (ROOT_FULL_VERSION_CODE < ROOT_FULL_VERSION(5,28,0,'a'))
     b >> tmp;           //
 #endif
     b.ReadFastArray(loid,2); // There was a bug in POOL....
     oid.first = loid[0];
     oid.second = loid[1];
     break;              // see TBuffer::ReadFastArray(ulong*, int)
-#if ROOT_VERSION_CODE < ROOT_VERSION(5,28,0)
+#if (ROOT_FULL_VERSION_CODE < ROOT_FULL_VERSION(5,28,0,'a'))
   case 14:              // Normal case: version:checksum+8 Bytes
     b >> tmp;           //
   case 10:              // Normal case: version:checksum+8 Bytes

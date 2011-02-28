@@ -1,6 +1,12 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v11r1 ==============================
+! 2011-02-22 - Marco Clemencic
+ - Minor improvement in reference file name matching in QMTest.
+   It is possible to specify any part of the CMTCONFIG in the file name extension,
+   for example "myfile.ref.i686-opt".
+
 ! 2011-02-04 - Charles Leggett
  - Fixed bug #77806: createProjVersHeader breaks with Atlas style tags
    allow Atlas style GaudiPKJ-XX-YY-ZZ tags

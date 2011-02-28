@@ -1116,6 +1116,9 @@ class GaudiExeTest(ExecTestBase):
         if not reffile:
             return ""
 
+        # function to split an extension in constituents parts
+        platformSplit = lambda p: set(p.split('-' in p and '-' or '_'))
+
         reference = os.path.normpath(os.path.expandvars(reffile))
         # old-style platform-specific reference name
         spec_ref = reference[:-3] + self.GetPlatform()[0:3] + reference[-3:]
@@ -1127,12 +1130,16 @@ class GaudiExeTest(ExecTestBase):
             if not dirname: dirname = '.'
             head = basename + "."
             head_len = len(head)
-            platform = self.GetPlatform()
+            platform = platformSplit(self.GetPlatform())
             candidates = []
             for f in os.listdir(dirname):
-                if f.startswith(head) and platform.startswith(f[head_len:]):
-                    candidates.append( (len(f) - head_len, f) )
+                if f.startswith(head):
+                    req_plat = platformSplit(f[head_len:])
+                    if platform.issuperset(req_plat):
+                        candidates.append( (len(req_plat), f) )
             if candidates: # take the one with highest matching
+                # FIXME: it is not possible to say if x86_64-slc5-gcc43-dbg
+                #        has to use ref.x86_64-gcc43 or ref.slc5-dbg
                 candidates.sort()
                 reference = os.path.join(dirname, candidates[-1][1])
         return reference
