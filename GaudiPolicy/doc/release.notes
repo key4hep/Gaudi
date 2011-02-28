@@ -4,6 +4,16 @@ package manager: Marco Clemencic
 ! 2011-02-03 - Marco Clemencic
  - Removed redundant code in the requirements.
 
+============================= GaudiPolicy v11r1 ==============================
+! 2011-02-22 - Marco Clemencic
+ - Minor improvement in reference file name matching in QMTest.
+   It is possible to specify any part of the CMTCONFIG in the file name extension,
+   for example "myfile.ref.i686-opt".
+
+! 2011-02-04 - Charles Leggett
+ - Fixed bug #77806: createProjVersHeader breaks with Atlas style tags
+   allow Atlas style GaudiPKJ-XX-YY-ZZ tags
+
 ============================= GaudiPolicy v11r0 ==============================
 ! 2011-01-17 - Marco Clemencic
  - Fixed a small problem with the recent change in the nmake fragments

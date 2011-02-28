@@ -88,6 +88,7 @@ def main():
         if not svn_exists(ptagdir):
             svn("mkdir", ptagdir).wait()
             svn("cp", "%s/trunk/cmt" % proj, ptagdir + "/cmt").wait()
+            svn("cp", "%s/trunk/Makefile.cmt" % proj, ptagdir + "/Makefile.cmt").wait()
 
         # prepare package tags
         tag_re = re.compile(r"^v(\d+)r(\d+)(?:p(\d+))?$")

@@ -13,8 +13,6 @@
 #include <iostream>
 #include <cassert>
 
-DECLARE_OBJECT_FACTORY(ServiceManager)
-
 using ROOT::Reflex::PluginService;
 
 /// needed when no service is found or could be returned
@@ -402,6 +400,7 @@ StatusCode ServiceManager::finalize()
     setPriority("THistSvc",pri_tool-1).ignore();
     setPriority("ChronoStatSvc",pri_tool-2).ignore();
     setPriority("AuditorSvc",pri_tool-3).ignore();
+    setPriority("NTupleSvc",pri_tool-1).ignore();
     setPriority("HistogramDataSvc",pri_tool-1).ignore();
     // Preserve the relative ordering between HistogramDataSvc and HistogramPersistencySvc
     setPriority("HistogramPersistencySvc",pri_tool-2).ignore();
@@ -433,7 +432,7 @@ StatusCode ServiceManager::finalize()
   ListSvc::iterator it;
   while (!tmpList.empty()) {
     it = tmpList.begin();
-    const std::string& name = it->service->name(); 
+    const std::string& name = it->service->name();
     const unsigned long rc = it->service->refCount() - 1; // exclude the count due to the temporary list
     debug() << "---- " << name
             << " (refCount = " << rc << ")" << endmsg;
@@ -491,3 +490,5 @@ bool ServiceManager::loopCheckEnabled() const {
 void ServiceManager::setLoopCheckEnabled(bool en) {
   m_loopCheck = en;
 }
+
+DECLARE_OBJECT_FACTORY(ServiceManager)
