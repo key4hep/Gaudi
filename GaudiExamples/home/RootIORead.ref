@@ -312,6 +312,4 @@ ChronoStatSvc        INFO Time User   : Tot=   30 [ms]                          
 ChronoStatSvc.f...   INFO  Service finalized successfully 
 ROOT                 INFO --> Deaccess DbFederation  Mode:READ     
 ROOT                 INFO --> Closed   DbSession     Mode:UPDATE   RootEvtCnvSvc.DataBase 
-libGaudiKernel      DEBUG --> Session: Number of Helper instances:0
-RootEvtCnvSvc       DEBUG Number of remaining DbObject instances:0
 ApplicationMgr       INFO Application Manager Finalized successfully

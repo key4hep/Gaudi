@@ -1,12 +1,12 @@
 JobOptionsSvc        INFO
 //GP:================================================================================
-//GP: include "D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiExamples\options\History.opts" (0,0)
-//GP: include "D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiExamples\options\Common.opts" (5,10)
-//GP: include "D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiExamples\options\Services.opts" (7,10)
+//GP: include "D:\Profiles\clemenci\cmtuser\Gaudi\GaudiExamples\options\History.opts" (0,0)
+//GP: include "D:\Profiles\clemenci\cmtuser\Gaudi\GaudiExamples\options\Common.opts" (5,10)
+//GP: include "D:\Profiles\clemenci\cmtuser\Gaudi\GaudiExamples\options\Services.opts" (7,10)
 AuditorSvc.Auditors =  [ "ChronoAuditor" ] ;                            //GP: (1,1)
-//GP: end  "D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiExamples\options\Services.opts" (24,1)
+//GP: end  "D:\Profiles\clemenci\cmtuser\Gaudi\GaudiExamples\options\Services.opts" (24,1)
 ApplicationMgr.StatusCodeCheck = 1;                                     //GP: (7,10)
-//GP: end  "D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiExamples\options\Common.opts" (16,1)
+//GP: end  "D:\Profiles\clemenci\cmtuser\Gaudi\GaudiExamples\options\Common.opts" (16,1)
 ApplicationMgr.TopAlg =  [ "History" ] ;                                //GP: (5,10)
 ApplicationMgr.ActivateHistory = 1;                                     //GP: (5,10)
 MessageSvc.OutputLevel = 1;                                             //GP: (5,10)
@@ -21,15 +21,15 @@ FastHistorySvc.Dump = 1;                                                //GP: (5
 FastHistorySvc.OutputFile = "history.dat";                              //GP: (5,10)
 ApplicationMgr.EvtMax = 2;                                              //GP: (5,10)
 ApplicationMgr.EvtSel = "NONE";                                         //GP: (5,10)
-//GP: end  "D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiExamples\options\History.opts" (43,1)
+//GP: end  "D:\Profiles\clemenci\cmtuser\Gaudi\GaudiExamples\options\History.opts" (43,1)
 //GP:================================================================================
 
-JobOptionsSvc        INFO Job options successfully read in from D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiExamples\options\History.opts
+JobOptionsSvc        INFO Job options successfully read in from D:\Profiles\clemenci\cmtuser\Gaudi\GaudiExamples\options\History.opts
 ApplicationMgr      DEBUG Getting my own properties
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on CERNTSLHCB03 on Fri Apr 23 11:14:59 2010
+                                          running on CERNTSLHCB03 on Thu Jan 06 19:08:36 2011
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ServiceManager      DEBUG Initializing service StatusCodeSvc
@@ -65,7 +65,6 @@ IncidentSvc         DEBUG Adding [EndEvent] listener 'AlgContextSvc' with priori
 HistorySvc        VERBOSE ServiceLocatorHelper::service: found service AlgContextSvc
 HistorySvc        VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
 ToolSvc             DEBUG Service base class initialized successfully
-HistorySvc.Serv...VERBOSE ServiceLocatorHelper::service: found service ToolSvc/ToolSvc
 IncidentSvc         DEBUG Adding [BeginEvent] listener 'HistorySvc' with priority -2147483648
 ApplicationMgr       INFO Application Manager Initialized successfully
 ServiceManager      DEBUG Starting service StatusCodeSvc
@@ -153,5 +152,3 @@ ServiceManager      DEBUG ---- EventLoopMgr (refCount = 4)
 ServiceManager      DEBUG ---- HistorySvc (refCount = 4)
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyTrack instances:0
-Number of MyVertex instances:0

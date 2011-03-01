@@ -272,5 +272,3 @@ ChronoStatSvc.f...   INFO  Service finalized successfully
 HistogramDataSvc    DEBUG  Substituted histograms #1 :
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyVertex instances:0
-Number of MyTrack instances:0

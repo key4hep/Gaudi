@@ -1,5 +1,5 @@
 package GaudiPolicy
-version v10r9
+version v11r1
 
 branches cmt doc
 
@@ -14,7 +14,8 @@ use tcmalloc * LCG_Interfaces -no_auto_imports
 #       projects instead of the debug ones.
 macro  LCG_platform      "$(LCG_platform)" \
        target-winxp      "$(LCG_platform)" \
-       LOCAL&target-dbg  "$(LCG_system)"
+       LOCAL&target-dbg  "$(LCG_system)" \
+       LOCAL&target-cov  "$(LCG_system)"
 
 
 # project strategies ========================================================
@@ -251,8 +252,8 @@ make_fragment python_init -header=python_init_header
 #
 #-------------------------------------------------------------------
 # Macro used to define where Python binary modules have to be installed
-macro python_bin_module_dir '$(tag)/python-bin' \
-               target-winxp '$(tag)\python-bin' \
+macro python_bin_module_dir '$(tag)/python/lib-dynload' \
+               target-winxp '$(tag)\python\lib-dynload' \
  use-shared-dir&target-winxp '$(tag)\python' \
               use-shared-dir '$(tag)/python'
 

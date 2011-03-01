@@ -1,0 +1,33 @@
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="program"><text>gaudirun.py</text></argument>
+<argument name="options"><text>
+from Gaudi.Configuration import *
+
+from Configurables import GaudiTesting__GetDataObjectAlg as GetDataObjectAlg
+
+dod = DataOnDemandSvc(
+    UsePreceedingPath = True,
+    AlgMap  = { "MissingObject": "NoAlgorithm" },
+    PreInitialize = True
+    )
+
+alg = GetDataObjectAlg()
+alg.Paths = ["MissingObject"]
+
+ApplicationMgr(TopAlg = [alg],
+               ExtSvc = [dod],
+               EvtSel = "NONE",
+               EvtMax = 1)
+
+EventDataSvc().EnableFaultHandler = True
+
+</text></argument>
+<argument name="exit_code"><integer>1</integer></argument>
+<argument name="validator"><text>
+expected = "ERROR Unable to initialize Service: DataOnDemandSvc"
+if not expected in stdout:
+    causes.append("missing signature")
+    result["GaudiTest.expected_line"] = result.Quote(expected)
+</text></argument>
+</extension>

@@ -149,5 +149,3 @@ TH1.Print Name  = 1Dgauss, Entries= 20000, Total sum= 19984
           NbinsX= 100, xmin= -50, xmax=50
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
-Number of MyTrack instances:0
-Number of MyVertex instances:0

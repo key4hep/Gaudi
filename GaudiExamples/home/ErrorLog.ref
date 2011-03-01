@@ -76,5 +76,3 @@ EventLoopMgr         INFO Histograms converted successfully according to request
 IssueLogger         DEBUG IssueLogger::finalize[m
 ApplicationMgr       INFO Application Manager Finalized successfully[m
 ApplicationMgr       INFO Application Manager Terminated successfully[m
-Number of MyTrack instances:0
-Number of MyVertex instances:0

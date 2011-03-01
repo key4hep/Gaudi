@@ -46,8 +46,8 @@ public:
   virtual const LeavesList & leaves() const;
 
   /// Call-back function for the BeginEvent incident.
-  /// Clears the internal cache and, if the property \b ScanOnBeginEvent is set to true,
-  /// scans the data service.
+  /// Clears the internal cache, cache the file ID of the \b Root node and, if
+  /// the property \b ScanOnBeginEvent is set to true, scans the data service.
   virtual void handle(const Incident& incident);
 
 private:
@@ -73,6 +73,19 @@ private:
   void i_collectLeaves();
   /// Scan the data service starting from the specified node.
   void i_collectLeaves(IRegistry *reg);
+
+  /// Return the pointer to the IRegistry object associated to the node
+  /// specified as \b Root.
+  IRegistry* i_getRootNode();
+
+  /// File ID of the \b Root node.
+  /// It is cached every BeginEvent to be compared with the one seen during the
+  /// collection of the leaves, to avoid that the collection is altered by
+  /// previous calls to an OutputStream.
+  std::string m_initialBase;
+
+  /// Variable for the property \b ScanOnBeginEvent
+  bool m_ignoreOriginChange;
 };
 
 // ========== implementation
@@ -99,6 +112,9 @@ DataSvcFileEntriesTool::DataSvcFileEntriesTool(const std::string& type,
 
   declareProperty("ScanOnBeginEvent", m_scanOnBeginEvent = false,
       "If the scan has to be started during the BeginEvent incident (true) or on demand (false, default)");
+
+  declareProperty("IgnoreOriginChange", m_ignoreOriginChange = false,
+      "Disable the detection of the change in the origin of object between the BeginEvent and the scan");
 }
 
 DataSvcFileEntriesTool::~DataSvcFileEntriesTool() {}
@@ -150,6 +166,13 @@ StatusCode DataSvcFileEntriesTool::finalize(){
 }
 
 void DataSvcFileEntriesTool::handle(const Incident& incident) {
+  // Get the file id of the root node at every event
+  IOpaqueAddress *addr = i_getRootNode()->address();
+  if (addr)
+    m_initialBase = addr->par()[0];
+  else
+    m_initialBase.clear(); // use empty file id if there is no address
+
   m_leaves.clear();
   if (m_scanOnBeginEvent) {
     MsgStream log(msgSvc(), name());
@@ -165,17 +188,18 @@ const IDataStoreLeaves::LeavesList & DataSvcFileEntriesTool::leaves() const {
   return m_leaves;
 }
 
-void DataSvcFileEntriesTool::i_collectLeaves() {
+IRegistry* DataSvcFileEntriesTool::i_getRootNode() {
   DataObject * obj = 0;
   StatusCode sc = m_dataSvc->retrieveObject(m_rootNode, obj);
-  if (sc.isSuccess()) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::DEBUG << "::i_collectLeaves scanning " << m_dataSvcName
-        << " from " << m_rootNode << endmsg;
-    i_collectLeaves(obj->registry());
-  } else {
+  if (sc.isFailure()) {
     throw GaudiException("Cannot get " + m_rootNode + " from " + m_dataSvcName, name(), StatusCode::FAILURE);
   }
+  return obj->registry();
+}
+
+
+void DataSvcFileEntriesTool::i_collectLeaves() {
+  i_collectLeaves(i_getRootNode());
 }
 
 /// todo: implement the scanning as an IDataStoreAgent
@@ -189,6 +213,13 @@ void DataSvcFileEntriesTool::i_collectLeaves(IRegistry* reg) {
     m_leaves.push_back(reg->object()); // add this object
     // Origin of the current object
     const std::string& base = addr->par()[0];
+    // Compare with the origin seen during BeginEvent
+    if ( !m_ignoreOriginChange && (m_initialBase != base) )
+      throw GaudiException("Origin of data has changed ('"
+                           + m_initialBase + "' !=  '" + base
+                           + "'), probably OutputStream was called before "
+                               "InputCopyStream: check options",
+                           name(), StatusCode::FAILURE);
 
     std::vector<IRegistry*> lfs; // leaves of the current object
     StatusCode sc = m_dataMgrSvc->objectLeaves(reg, lfs);
