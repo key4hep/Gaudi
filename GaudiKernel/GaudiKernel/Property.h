@@ -437,7 +437,7 @@ PropertyWithVerifier<TYPE,VERIFIER>::set( const TYPE& value )
   /// use verifier!
   if ( !m_verifier.isValid( &value ) ) { return false ; }
   /// update the value
-  i_set( value ) ;
+  this->i_set( value ) ;
   /// invoke the update handler
   return this->useUpdateHandler() ;
 }
