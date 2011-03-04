@@ -4,7 +4,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.4.6)
 INCLUDE($ENV{CMAKEGAUDIPROJECT})
 #---------------------------------------------------------------
 
-GAUDI_PROJECT(GAUDI v21r10p1)
+GAUDI_PROJECT(GAUDI v22r1)
 
 #---Common includes---------------------------------------------
 INCLUDE(GaudiPolicy)
