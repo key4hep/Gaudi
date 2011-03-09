@@ -1345,16 +1345,6 @@ class GaudiExeTest(ExecTestBase):
         result['GaudiTest.environment'] = \
             result.Quote('\n'.join(["%s=%s"%(v,os.environ[v]) for v in vars]))
 
-    def _find_program(self,prog):
-        # check if it is an absolute path or the file can be found
-        # from the local directory, otherwise search for it in PATH
-        if not os.path.isabs(prog) and not os.path.isfile(prog):
-            for d in os.environ["PATH"].split(os.pathsep):
-                p = os.path.join(d,prog)
-                if os.path.isfile(p):
-                    return p
-        return prog
-
     def Run(self, context, result):
         """Run the test.
 
@@ -1384,7 +1374,7 @@ class GaudiExeTest(ExecTestBase):
             prog += ".exe"
             prog_ext = ".exe"
 
-        prog = self._find_program(prog)
+        prog = which(prog) or prog
 
         # Convert paths to absolute paths in arguments and reference files
         args = map(rationalizepath, self.args)
@@ -1408,9 +1398,9 @@ class GaudiExeTest(ExecTestBase):
         if prog_ext == ".py":
             args.insert(0,prog)
             if self.GetPlatform()[0:3] == "win":
-                prog = self._find_program("python.exe")
+                prog = which("python.exe") or "python.exe"
             else:
-                prog = self._find_program("python")
+                prog = which("python") or "python"
 
         # Change to the working directory if specified or to the default temporary
         origdir = os.getcwd()
@@ -1594,8 +1584,8 @@ class GaudiExeTest(ExecTestBase):
         data["environment"] = "\n".join(['<mapEntry key=%s value=%s/>' % (quoteattr(k), quoteattr(v))
                                          for k, v in os.environ.iteritems()])
 
-        data["exec"] = which(prog)
-        if data["exec"] and os.path.basename(data["exec"]).lower().startswith("python"):
+        data["exec"] = which(prog) or prog
+        if os.path.basename(data["exec"]).lower().startswith("python"):
             data["stopAtMain"] = "false" # do not stop at main when debugging Python scripts
         else:
             data["stopAtMain"] = "true"
