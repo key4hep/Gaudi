@@ -3,6 +3,7 @@ package manager: Marco Clemencic
 
 ! 2011-03-09 - Marco Clemencic
  - Avoid exception in QMTest if the test executable is not built.
+ - Minor improvements to GaudiTest.py
 
 ! 2011-02-03 - Marco Clemencic
  - Removed redundant code in the requirements.
