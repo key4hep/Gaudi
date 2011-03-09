@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-03-09 - Marco Clemencic
+ - Avoid exception in QMTest if the test executable is not built.
+
 ============================= GaudiPolicy v11r1 ==============================
 ! 2011-02-22 - Marco Clemencic
  - Minor improvement in reference file name matching in QMTest.

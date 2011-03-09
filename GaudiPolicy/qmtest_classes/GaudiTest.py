@@ -1595,7 +1595,7 @@ class GaudiExeTest(ExecTestBase):
                                          for k, v in os.environ.iteritems()])
 
         data["exec"] = which(prog)
-        if os.path.basename(data["exec"]).lower().startswith("python"):
+        if data["exec"] and os.path.basename(data["exec"]).lower().startswith("python"):
             data["stopAtMain"] = "false" # do not stop at main when debugging Python scripts
         else:
             data["stopAtMain"] = "true"
