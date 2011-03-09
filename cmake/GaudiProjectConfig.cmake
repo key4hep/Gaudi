@@ -1,14 +1,23 @@
+# - GaudiProject
+# Define the macros used by Gaudi-based projects, namely:
+#  GAUDI_PROJECT(project version) : declare a project with it's version number
+#  GAUDI_USE_PROJECT(project version) : declare the dependency on another project
+#
+# Authors: Pere Mato, Marco Clemencic
+
 cmake_minimum_required(VERSION 2.4.6)
 cmake_policy(SET CMP0003 NEW) # See "cmake --help-policy CMP0003" for more details
 cmake_policy(SET CMP0011 NEW) # See "cmake --help-policy CMP0011" for more details
 cmake_policy(SET CMP0009 NEW) # See "cmake --help-policy CMP0009" for more details
 
+# Add the directory containing this file to the modules search path
+set(CMAKE_MODULE_PATH ${GaudiProject_DIR} ${CMAKE_MODULE_PATH})
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_PROJECT( project version)
+#---GAUDI_PROJECT(project version)
 #---------------------------------------------------------------------------------------------------
-macro(GAUDI_PROJECT project version)  
-  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
+macro(GAUDI_PROJECT project version)
+  set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
   project(${project})
   set(CMAKE_PROJECT_NAME ${project}) #----For some reason this is not set by colling 'project()'
 
@@ -17,7 +26,7 @@ macro(GAUDI_PROJECT project version)
   if( ${version} MATCHES "[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)")
     string(REGEX REPLACE "[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)" "\\1"  major ${version})
     string(REGEX REPLACE "[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)" "\\2"  minor ${version})
-    string(REGEX REPLACE "[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)" "\\3"  patch ${version})  
+    string(REGEX REPLACE "[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)" "\\3"  patch ${version})
   elseif(${version} MATCHES "[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)")
     string(REGEX REPLACE "[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)" "\\1"  major ${version})
     string(REGEX REPLACE "[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)" "\\2"  minor ${version})
@@ -38,7 +47,7 @@ macro(GAUDI_PROJECT project version)
   set(dbg2buildtype Debug)
   set(Debug2type dbg)
   set(Release2type opt)
-  
+
   if(DEFINED ENV{CMAKECONFIG})
     set(tag $ENV{CMAKECONFIG})
   elseif(DEFINED ENV{CMTCONFIG})
@@ -51,36 +60,36 @@ macro(GAUDI_PROJECT project version)
   list(GET out 1 os)
   list(GET out 2 comp)
   list(GET out 3 type)
-  
+
   if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE ${${type}2buildtype} CACHE STRING
         "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
   endif()
 
   set(BINARY_TAG_PREFIX ${arch}-${os}-${comp} CACHE STRING "Installation binary tag prefix. The final tag will be made using the BUILD_TYPE" )
-  set(BINARY_TAG ${BINARY_TAG_PREFIX}-${${CMAKE_BUILD_TYPE}2type}) 
+  set(BINARY_TAG ${BINARY_TAG_PREFIX}-${${CMAKE_BUILD_TYPE}2type})
 
   if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/InstallArea/${BINARY_TAG} CACHE PATH 
+    set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/InstallArea/${BINARY_TAG} CACHE PATH
       "Install path prefix, prepended onto install directories." FORCE )
   endif()
-  
+
   if( NOT EXECUTABLE_OUTPUT_PATH)
-    set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE STRING 
+    set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE STRING
 	   "Single build output directory for all executables" FORCE)
   endif()
   if( NOT LIBRARY_OUTPUT_PATH)
-    set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib CACHE STRING 
+    set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib CACHE STRING
 	   "Single build output directory for all libraries" FORCE)
   endif()
-  
 
-  if(BUILD_TESTS) 
+
+  if(BUILD_TESTS)
     enable_testing()
   endif()
 
   #--- Project Installations------------------------------------------------------------------------
-  install(DIRECTORY cmake/ DESTINATION cmake 
+  install(DIRECTORY cmake/ DESTINATION cmake
                            FILES_MATCHING PATTERN "*.cmake"
                            PATTERN ".svn" EXCLUDE )
   install(PROGRAMS cmake/testwrap.sh cmake/testwrap.csh cmake/testwrap.bat cmake/genCMake.py cmake/cmdwrap.bat DESTINATION scripts)
@@ -145,7 +154,7 @@ endmacro()
 #---------------------------------------------------------------------------------------------------
 macro( GAUDI_USE_PROJECT project version )
   if( NOT ${project}_used )
-    GAUDI_FIND_PROJECT(${project} ${version})  
+    GAUDI_FIND_PROJECT(${project} ${version})
     if( ${project}_installation )
 	  if(WIN32)
         set(dllpath PATH)
@@ -156,10 +165,10 @@ macro( GAUDI_USE_PROJECT project version )
       get_property(projects GLOBAL PROPERTY PROJECTS_FOUND)
       set_property(GLOBAL PROPERTY PROJECTS_FOUND ${projects} ${project})
       get_property(projects GLOBAL PROPERTY PROJECTS_FOUND)
-      set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${${project}_binaryarea}/cmake)
+      set(CMAKE_MODULE_PATH ${${project}_binaryarea}/cmake ${CMAKE_MODULE_PATH})
       include_directories( ${${project}_binaryarea}/include )
       link_directories( ${${project}_binaryarea}/lib )
-      set(${project}_environment ${dllpath}+=${${project}_binaryarea}/lib 
+      set(${project}_environment ${dllpath}+=${${project}_binaryarea}/lib
                                  PATH+=${${project}_binaryarea}/bin
                                  PATH+=${${project}_binaryarea}/scripts
                                  PYTHONPATH+=${${project}_binaryarea}/python )
@@ -195,7 +204,7 @@ macro(__visit__ _p)
       endforeach()
       set(out_packages ${out_packages} ${_p})
     endif()
-  endif() 
+  endif()
 endmacro()
 
 function(GAUDI_SORT_PACKAGES var)
@@ -221,4 +230,4 @@ function( GAUDI_GET_PACKAGES var)
     endif()
   endforeach()
   set(${var} ${packages} PARENT_SCOPE)
-endfunction()  
+endfunction()

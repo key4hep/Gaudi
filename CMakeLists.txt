@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4.6)
 
 #---Do not know how to do this yet------------------------------
-INCLUDE($ENV{CMAKEGAUDIPROJECT})
+find_package(GaudiProject)
 #---------------------------------------------------------------
 
 GAUDI_PROJECT(GAUDI v22r1)
