@@ -12,12 +12,12 @@ GAUDI_USE_PACKAGE(Python)
 REFLEX_BUILD_DICTIONARY(GaudiPython dict/kernel.h  dict/selection_kernel.xml LIBRARIES GaudiPythonLib GaudiUtilsLib)
 
 #---Libraries---------------------------------------------------------------
-GAUDI_LINKER_LIBRARY(GaudiPythonLib Lib/*.cpp LIBRARIES GaudiAlgLib ${Python_LIBRARIES} ${CLHEP_LIBRARIES})
+GAUDI_LINKER_LIBRARY(GaudiPythonLib Lib/*.cpp LIBRARIES GaudiAlgLib ${PYTHON_LIBRARIES} ${CLHEP_LIBRARIES})
 GAUDI_COMPONENT_LIBRARY(GaudiPython Services/*.cpp LIBRARIES GaudiPythonLib GaudiUtilsLib)
 
 if(BUILD_TESTS)
-  GAUDI_LINKER_LIBRARY(GPyTest Test/*.cpp LIBRARIES GaudiKernel ${Python_LIBRARIES} ${CLHEP_LIBRARIES})
-  REFLEX_BUILD_DICTIONARY(GPyTest src/Test/test.h src/Test/test_selection.xml LIBRARIES GaudiKernel ${Python_LIBRARIES} ${CLHEP_LIBRARIES})
+  GAUDI_LINKER_LIBRARY(GPyTest Test/*.cpp LIBRARIES GaudiKernel ${PYTHON_LIBRARIES} ${CLHEP_LIBRARIES})
+  REFLEX_BUILD_DICTIONARY(GPyTest src/Test/test.h src/Test/test_selection.xml LIBRARIES GaudiKernel ${PYTHON_LIBRARIES} ${CLHEP_LIBRARIES})
   include_directories(src/Test)
 endif()
 

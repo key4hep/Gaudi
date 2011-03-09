@@ -1,14 +1,18 @@
 ############################################################################
 # CMakeLists.txt file for building GaudiMP
 ############################################################################
+if (CMAKE_SYSTEM_NAME MATCHES Linux)
+
 GAUDI_USE_PACKAGE(GaudiKernel)
 GAUDI_USE_PACKAGE(GaudiSvc)
-GAUDI_USE_PACKAGE(Python)
+#GAUDI_USE_PACKAGE(Python)
 GAUDI_USE_PACKAGE(Boost)
 #GAUDI_USE_PACKAGE(ROOT)
 GAUDI_USE_PACKAGE(libunwind)
 
-if (CMAKE_SYSTEM_NAME MATCHES Linux)
+find_package(PythonLibs)
+include_directories(${PYTHON_INCLUDE_DIR})
+
 #---Libraries---------------------------------------------------------------
 include_directories(src/component)
 GAUDI_COMPONENT_LIBRARY(GaudiProfiling component/*.cpp LIBRARIES GaudiKernel z)
