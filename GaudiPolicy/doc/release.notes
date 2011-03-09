@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-03-09 - Marco Clemencic
+ - Avoid exception in QMTest if the test executable is not built.
+
 ! 2011-02-03 - Marco Clemencic
  - Removed redundant code in the requirements.
 
