@@ -18,6 +18,9 @@ GAUDI_UNIT_TEST(PathResolver_test ../tests/src/PathResolver_test.cpp LIBRARIES G
 REFLEX_BUILD_DICTIONARY(GaudiKernel dict/dictionary.h  dict/dictionary.xml LIBRARIES GaudiKernel)
 
 #---Installation------------------------------------------------------------
+# Disable generation of ConfUserDB (must be done before GAUDI_INSTALL_PYTHON_MODULES)
+set_directory_properties(PROPERTIES CONFIGURABLE_USER_MODULES None)
+
 GAUDI_INSTALL_HEADERS(GaudiKernel)
 GAUDI_INSTALL_PYTHON_MODULES()
 GAUDI_INSTALL_SCRIPTS()

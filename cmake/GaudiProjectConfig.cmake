@@ -16,10 +16,11 @@ set(CMAKE_MODULE_PATH ${GaudiProject_DIR} ${CMAKE_MODULE_PATH})
 #---------------------------------------------------------------------------------------------------
 #---GAUDI_PROJECT(project version)
 #---------------------------------------------------------------------------------------------------
-macro(GAUDI_PROJECT project version)
+macro(GAUDI_PROJECT project_name version)
   set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+  string(TOUPPER ${project_name} project)
   project(${project})
-  set(CMAKE_PROJECT_NAME ${project}) #----For some reason this is not set by colling 'project()'
+  set(CMAKE_PROJECT_NAME ${project}) #----For some reason this is not set by calling 'project()'
 
   #--- Define the version of the project - can be used to generate sources,
   set(${project}_VERSION ${version})
@@ -101,6 +102,7 @@ macro(GAUDI_PROJECT project version)
   #SET( QMtest_environment ${QMtest_environment} QMTEST_CLASS_PATH=${CMAKE_SOURCE_DIR}/GaudiPolicy/qmtest_classes )
   #GAUDI_PROJECT_VERSION_HEADER()
   #GAUDI_BUILD_PROJECT_SETUP()
+
 endmacro()
 
 #---------------------------------------------------------------------------------------------------
@@ -230,4 +232,36 @@ function( GAUDI_GET_PACKAGES var)
     endif()
   endforeach()
   set(${var} ${packages} PARENT_SCOPE)
+endfunction()
+
+#---------------------------------------------------------------------------------------------------
+#---GAUDI_MERGE_CONF_USER_DB
+#---------------------------------------------------------------------------------------------------
+# Take care of the rules to build the merged database of ConfigurableUser
+# specializations.
+function(GAUDI_MERGE_CONF_USER_DB)
+  # Check if one of the packages produces ConfUserDB
+  get_property(needed GLOBAL PROPERTY MergedConfUserDB_SOURCES SET)
+  if(needed)
+    # prepare the high level dependencies
+    foreach(package ${packages})
+      if(TARGET ${package}ConfUserDB)
+        set(target_deps ${target_deps} ${package}ConfUserDB)
+      endif()
+    endforeach()
+    # get the list of parts to merge
+    get_property(parts GLOBAL PROPERTY MergedConfUserDB_SOURCES)
+    message("MergedConfUserDB_SOURCES ${parts}")
+    # prepare the output directory
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/python)
+    # create the targets
+    set(output ${CMAKE_BINARY_DIR}/python/${CMAKE_PROJECT_NAME}_merged_confDb.py)
+    add_custom_target(MergedConfUserDB ALL DEPENDS ${output})
+    add_dependencies(MergedConfUserDB ${target_deps})
+    add_custom_command(OUTPUT ${output}
+                       COMMAND cat ${parts} > ${output}
+                       DEPENDS ${parts})
+    # install rule for the merged DB
+    install(FILES ${output} DESTINATION ${CMAKE_INSTALL_PREFIX}/python)
+  endif()
 endfunction()

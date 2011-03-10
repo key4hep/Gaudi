@@ -144,6 +144,7 @@ if(CMAKE_PROJECT_NAME STREQUAL GAUDI)
   set(merge_rootmap_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/merge_files.py)
   set(merge_conf_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/merge_files.py)
   set(genconf_cmd ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genconf.exe)
+  set(genconfuser_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiKernel/scripts/genconfuser.py)
   set(genwindef_cmd ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genwindef.exe)
   set(versheader_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/createProjVersHeader.py)
   set(gaudirun ${CMAKE_SOURCE_DIR}/Gaudi/scripts/gaudirun.py)
@@ -153,6 +154,7 @@ else()
   set(merge_rootmap_cmd ${PYTHON_EXECUTABLE}  ${GAUDI_installation}/GaudiPolicy/scripts/merge_files.py)
   set(merge_conf_cmd ${PYTHON_EXECUTABLE}  ${GAUDI_installation}/GaudiPolicy/scripts/merge_files.py)
   set(genconf_cmd ${GAUDI_binaryarea}/bin/genconf.exe)
+  set(genconfuser_cmd ${PYTHON_EXECUTABLE} ${GAUDI_installation}/GaudiKernel/scripts/genconfuser.py)
   set(genwindef_cmd ${GAUDI_binaryarea}/bin/genwindef.exe)
   set(versheader_cmd ${PYTHON_EXECUTABLE} ${GAUDI_installation}/GaudiPolicy/scripts/createProjVersHeader.py)
   set(GAUDI_SOURCE_DIR ${GAUDI_installation})
@@ -319,9 +321,51 @@ function(GAUDI_GENERATE_CONFIGURATION library)
   #----Installation details-------------------------------------------------------
   set(mergedConf ${CMAKE_INSTALL_PREFIX}/python/${CMAKE_PROJECT_NAME}_merged_confDb.py)
   set(srcConf ${outdir}/${library}_confDb.py)
-  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/genConf/ DESTINATION python PATTERN "*.stamp" EXCLUDE PATTERN "*.pyc" EXCLUDE )
+  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/genConf/
+          DESTINATION python
+          FILES_MATCHING PATTERN "*.py")
   install(CODE "EXECUTE_PROCESS(COMMAND ${merge_conf_cmd} --do-merge --input-file ${srcConf} --merged-file ${mergedConf})")
   GAUDI_INSTALL_PYTHON_INIT()
+endfunction()
+
+#---------------------------------------------------------------------------------------------------
+#---GAUDI_GENERATE_CONFUSERDB([DEPENDS target1 target2])
+#---------------------------------------------------------------------------------------------------
+define_property(DIRECTORY
+                PROPERTY CONFIGURABLE_USER_MODULES
+                BRIEF_DOCS "ConfigurableUser modules"
+                FULL_DOCS "List of Python modules containing ConfigurableUser specializations (default <package>/Config, 'None' to disable)." )
+# Generate entries in the configurables database for ConfigurableUser specializations.
+# By default, the python module supposed to contain ConfigurableUser's is <package>.Config,
+# but different (or more) modules can be specified with the directory property
+# CONFIGURABLE_USER_MODULES. If that property is set to None, there will be no
+# search for ConfigurableUser's.
+function(GAUDI_GENERATE_CONFUSERDB)
+  # deduce the name of the package
+  get_filename_component(package ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+  get_directory_property(modules CONFIGURABLE_USER_MODULES)
+  message("MARCO: -------- ${package} ${modules}")
+  if( NOT (modules STREQUAL "None") ) # ConfUser enabled
+    set(outdir ${CMAKE_CURRENT_BINARY_DIR}/genConf/${package})
+    # get the optional dependencies from argument and properties
+    PARSE_ARGUMENTS(ARG "DEPENDS" "" ${arguments})
+    get_directory_property(PROPERTY_DEPENDS CONFIGURABLE_USER_DEPENDS)
+    if(WIN32)
+      SET_RUNTIME_PATH(path PYTHONPATH)
+      set(genconfuser_command ${cmdwrap_cmd} ${path} ${genconfuser_cmd} )
+    else()
+      SET_RUNTIME_PATH(path PYTHONPATH)
+      set(genconfuser_command PYTHONPATH=.:${CMAKE_SOURCE_DIR}/GaudiKernel/python ${genconfuser_cmd} )
+    endif()
+    # TODO: this re-runs the genconfuser every time, because we cannot define the right dependencies
+    add_custom_target(${package}ConfUserDB ALL
+		COMMAND ${genconfuser_command}
+		          -r ${CMAKE_CURRENT_SOURCE_DIR}/python
+		          -o ${outdir}/${package}_user_confDb.py
+		          ${package} ${modules}
+		DEPENDS ${ARG_DEPENDS} ${PROPERTY_DEPENDS})
+    set_property(GLOBAL APPEND PROPERTY MergedConfUserDB_SOURCES ${outdir}/${package}_user_confDb.py)
+  endif()
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -503,12 +547,6 @@ function(GAUDI_QMTEST_TEST name)
       LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:$ENV{LD_LIBRARY_PATH}
       QMTEST_CLASS_PATH=${CMAKE_SOURCE_DIR}/GaudiPolicy/qmtest_classes
       ${ARG_ENVIRONMENT})
-    install(CODE "if( NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest/QMTest)
-                    execute_process(COMMAND  ${CMAKE_INSTALL_PREFIX}/scripts/testwrap${ssuffix}
-                                             ${CMAKE_INSTALL_PREFIX}/setup${ssuffix}
-                                             ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
-                                             qmtest create-tdb )
-                  endif()")
   endif()
 endfunction()
 
@@ -522,7 +560,11 @@ function(GAUDI_INSTALL_HEADERS)
     get_filename_component(dirs ${CMAKE_CURRENT_SOURCE_DIR} NAME)
   endif()
   foreach( inc ${dirs})
-    install(DIRECTORY ${inc} DESTINATION include PATTERN ".svn" EXCLUDE )
+    install(DIRECTORY ${inc}
+            DESTINATION include
+            FILES_MATCHING
+              PATTERN "*.h"
+              PATTERN "*.icpp" )
   endforeach()
 endfunction()
 
@@ -531,9 +573,10 @@ endfunction()
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_INSTALL_PYTHON_MODULES)
   get_filename_component(package ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-  install(DIRECTORY python/ DESTINATION python
-          PATTERN ".svn" EXCLUDE
-          PATTERN "*.pyc" EXCLUDE )
+  install(DIRECTORY python/
+          DESTINATION python
+          FILES_MATCHING PATTERN "*.py")
+  GAUDI_GENERATE_CONFUSERDB() # if there are Python modules, there may be ConfigurableUser's
   GAUDI_INSTALL_PYTHON_INIT()
 endfunction()
 
@@ -566,6 +609,7 @@ function(GAUDI_INSTALL_SCRIPTS)
           FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
                            GROUP_EXECUTE GROUP_READ
           PATTERN ".svn" EXCLUDE
+          PATTERN "*~" EXCLUDE
           PATTERN "*.pyc" EXCLUDE )
 endfunction()
 
