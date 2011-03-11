@@ -283,9 +283,9 @@ function(GAUDI_GENERATE_ROOTMAP library)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_GENERATE_CONFIGURATION( library )
+#---GAUDI_GENERATE_CONFIGURABLES( library )
 #---------------------------------------------------------------------------------------------------
-function(GAUDI_GENERATE_CONFIGURATION library)
+function(GAUDI_GENERATE_CONFIGURABLES library)
   get_filename_component(package ${CMAKE_CURRENT_SOURCE_DIR} NAME)
   set(library_preload)  # TODO....
   set(outdir ${CMAKE_CURRENT_BINARY_DIR}/genConf/${package})
@@ -296,9 +296,6 @@ function(GAUDI_GENERATE_CONFIGURATION library)
   set(confAlgTool ConfigurableAlgTool)
   set(confAuditor ConfigurableAuditor)
   set(confService ConfigurableService)
-  if( TARGET GaudiSvc)
-	  set(GaudiSvc_dependency GaudiSvc genconf)
-  endif()
   if(WIN32)
     SET_RUNTIME_PATH(path PATH)
     set(genconf_command ${cmdwrap_cmd} ${path} ${genconf_cmd} )
@@ -316,8 +313,15 @@ function(GAUDI_GENERATE_CONFIGURATION library)
 				--configurable-auditor=${confAuditor}
 				--configurable-service=${confService}
 				-i lib${library}.so
-		DEPENDS ${library} ${GaudiSvc_dependency} )
+		DEPENDS ${library} )
   add_custom_target( ${library}Conf ALL DEPENDS  ${outdir}/${library}_confDb.py )
+  # Add dependencies on GaudiSvc and the genconf executable if they have to be built in the current project
+  if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/GaudiKernel)
+    add_dependencies(${library}Conf genconf)
+  endif()
+  if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/GaudiSvc)
+    add_dependencies(${library}Conf GaudiSvc)
+  endif()
   # Notify the project level target
   set_property(GLOBAL APPEND PROPERTY MergedConfDB_SOURCES ${outdir}/${library}_confDb.py)
   set_property(GLOBAL APPEND PROPERTY MergedConfDB_DEPENDS ${library}Conf)
@@ -344,7 +348,6 @@ function(GAUDI_GENERATE_CONFUSERDB)
   # deduce the name of the package
   get_filename_component(package ${CMAKE_CURRENT_SOURCE_DIR} NAME)
   get_directory_property(modules CONFIGURABLE_USER_MODULES)
-  message("MARCO: -------- ${package} ${modules}")
   if( NOT (modules STREQUAL "None") ) # ConfUser enabled
     set(outdir ${CMAKE_CURRENT_BINARY_DIR}/genConf/${package})
     # get the optional dependencies from argument and properties
@@ -424,7 +427,7 @@ function(GAUDI_COMPONENT_LIBRARY library)
   endforeach()
   add_library( ${library} MODULE ${lib_srcs})
   GAUDI_GENERATE_ROOTMAP(${library})
-  GAUDI_GENERATE_CONFIGURATION(${library})
+  GAUDI_GENERATE_CONFIGURABLES(${library})
   target_link_libraries(${library} ${ROOT_Reflex_LIBRARY} ${ARG_LIBRARIES})
   #----Installation details-------------------------------------------------------
   install(TARGETS ${library} LIBRARY DESTINATION ${lib})
