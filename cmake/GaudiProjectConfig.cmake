@@ -235,32 +235,27 @@ function( GAUDI_GET_PACKAGES var)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_MERGE_CONF_USER_DB
+#---GAUDI_MERGE_CONF_DB
 #---------------------------------------------------------------------------------------------------
 # Take care of the rules to build the merged database of ConfigurableUser
 # specializations.
-function(GAUDI_MERGE_CONF_USER_DB)
+function(GAUDI_MERGE_CONF_DB)
   # Check if one of the packages produces ConfUserDB
-  get_property(needed GLOBAL PROPERTY MergedConfUserDB_SOURCES SET)
+  get_property(needed GLOBAL PROPERTY MergedConfDB_SOURCES SET)
   if(needed)
-    # prepare the high level dependencies
-    foreach(package ${packages})
-      if(TARGET ${package}ConfUserDB)
-        set(target_deps ${target_deps} ${package}ConfUserDB)
-      endif()
-    endforeach()
     # get the list of parts to merge
-    get_property(parts GLOBAL PROPERTY MergedConfUserDB_SOURCES)
-    message("MergedConfUserDB_SOURCES ${parts}")
-    # prepare the output directory
-    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/python)
+    get_property(parts GLOBAL PROPERTY MergedConfDB_SOURCES)
     # create the targets
     set(output ${CMAKE_BINARY_DIR}/python/${CMAKE_PROJECT_NAME}_merged_confDb.py)
-    add_custom_target(MergedConfUserDB ALL DEPENDS ${output})
-    add_dependencies(MergedConfUserDB ${target_deps})
     add_custom_command(OUTPUT ${output}
                        COMMAND cat ${parts} > ${output}
                        DEPENDS ${parts})
+    add_custom_target(MergedConfDB ALL DEPENDS ${output})
+    # prepare the high level dependencies
+    get_property(deps GLOBAL PROPERTY MergedConfDB_DEPENDS)
+    add_dependencies(MergedConfDB ${deps})
+    # prepare the output directory
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/python)
     # install rule for the merged DB
     install(FILES ${output} DESTINATION ${CMAKE_INSTALL_PREFIX}/python)
   endif()

@@ -318,13 +318,13 @@ function(GAUDI_GENERATE_CONFIGURATION library)
 				-i lib${library}.so
 		DEPENDS ${library} ${GaudiSvc_dependency} )
   add_custom_target( ${library}Conf ALL DEPENDS  ${outdir}/${library}_confDb.py )
+  # Notify the project level target
+  set_property(GLOBAL APPEND PROPERTY MergedConfDB_SOURCES ${outdir}/${library}_confDb.py)
+  set_property(GLOBAL APPEND PROPERTY MergedConfDB_DEPENDS ${library}Conf)
   #----Installation details-------------------------------------------------------
-  set(mergedConf ${CMAKE_INSTALL_PREFIX}/python/${CMAKE_PROJECT_NAME}_merged_confDb.py)
-  set(srcConf ${outdir}/${library}_confDb.py)
   install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/genConf/
           DESTINATION python
           FILES_MATCHING PATTERN "*.py")
-  install(CODE "EXECUTE_PROCESS(COMMAND ${merge_conf_cmd} --do-merge --input-file ${srcConf} --merged-file ${mergedConf})")
   GAUDI_INSTALL_PYTHON_INIT()
 endfunction()
 
@@ -364,7 +364,8 @@ function(GAUDI_GENERATE_CONFUSERDB)
 		          -o ${outdir}/${package}_user_confDb.py
 		          ${package} ${modules}
 		DEPENDS ${ARG_DEPENDS} ${PROPERTY_DEPENDS})
-    set_property(GLOBAL APPEND PROPERTY MergedConfUserDB_SOURCES ${outdir}/${package}_user_confDb.py)
+    set_property(GLOBAL APPEND PROPERTY MergedConfDB_SOURCES ${outdir}/${package}_user_confDb.py)
+    set_property(GLOBAL APPEND PROPERTY MergedConfDB_DEPENDS ${package}ConfUserDB)
   endif()
 endfunction()
 
