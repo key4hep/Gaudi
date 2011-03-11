@@ -21,7 +21,7 @@ endforeach()
 #---Global actions for the project------------------------------
 GAUDI_PROJECT_VERSION_HEADER()
 GAUDI_BUILD_PROJECT_SETUP()
-GAUDI_MERGE_CONF_USER_DB()
+GAUDI_MERGE_CONF_DB()
 
 #---Tests environment-------------------------------------------
 if( BUILD_TESTS )
