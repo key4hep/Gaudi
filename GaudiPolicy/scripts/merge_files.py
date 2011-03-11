@@ -9,10 +9,17 @@ import sys
 from datetime import datetime
 import locker
 
-def mergeFiles( fragFileName, mergedFileName, commentChar, doMerge ):
+def mergeFiles( fragFileNames, mergedFileName, commentChar, doMerge ):
+
+    startMark = "%s --Beg " % commentChar
+    timeMark  = "%s --Date inserted: %s" % (commentChar, datetime.now())
+    endMark   = "%s --End " % commentChar
+    nameOffset = len(startMark)
+
+    basenames = map(os.path.basename, fragFileNames)
 
     isNewFile = not os.path.exists(mergedFileName)
-    
+
     # create an empty file if it does not exist
     # "append mode" ensures that, in case of two processes trying to
     # create the file, they do not truncate each other file
@@ -23,48 +30,42 @@ def mergeFiles( fragFileName, mergedFileName, commentChar, doMerge ):
             # if doesn't exist, create it
             os.makedirs(path_to_file)
         open(mergedFileName,'a')
-    
+
     mergedFile = open( mergedFileName, 'r+' )
 
     # locking file, gaining exclusive access to it
     lock = locker.lock( mergedFile )
     try:
-    
-
-        startMark = "%s --Beg %s" % ( commentChar,
-                                      os.path.basename(fragFileName) )
-        timeMark  = "%s --Date inserted: %s" % ( commentChar,
-                                                 str(datetime.now()) )
-        endMark   = "%s --End %s" % ( commentChar,
-                                      os.path.basename(fragFileName) )
 
         newLines = [ ]
-        skipBlock = False
+        skipBlock = ""
         for line in mergedFile.readlines():
-            if line.startswith(startMark):
-                skipBlock = True
+            if line.startswith(startMark) and line[nameOffset:].strip() in basenames:
+                skipBlock = endMark + line[nameOffset:].strip()
                 # remove all the empty lines occurring before the start mark
                 while (len(newLines) > 0) and (newLines[-1].strip() == ''):
                     newLines.pop()
             if not skipBlock:
                 newLines.append(line)
-            if line.startswith(endMark):
-                skipBlock = False
+            if line.startswith(skipBlock):
+                skipBlock = ""
         if skipBlock:
-            print "WARNING: missing end mark ('%s')"%endMark
-    
+            print "WARNING: missing end mark ('%s')" % skipBlock
+
         if doMerge:
-            # I do not want to add 2 empty lines at the beginning of a file
-            if not isNewFile:
-                newLines.append('\n\n')
-            newLines.append(startMark+'\n')
-            newLines.append(timeMark+'\n')
-    
-            for line in open( fragFileName, 'r' ).readlines():
-                newLines.append(line)
-        
-            newLines.append(endMark+'\n')
-    
+            for f in fragFileNames:
+                # I do not want to add 2 empty lines at the beginning of a file
+                if newLines:
+                    newLines.append('\n\n')
+                bf = os.path.basename(f)
+                newLines.append(startMark + bf + '\n')
+                newLines.append(timeMark + '\n')
+                fileData = open(f, 'r').read()
+                newLines.append(fileData)
+                if fileData and fileData[-1] != '\n':
+                    newLines.append('\n')
+                newLines.append(endMark + bf + '\n')
+
         mergedFile.seek(0)
         mergedFile.truncate(0)
         mergedFile.writelines(newLines)
@@ -72,7 +73,7 @@ def mergeFiles( fragFileName, mergedFileName, commentChar, doMerge ):
     finally:
         # unlock file
         locker.unlock( mergedFile )
-    
+
     return 0
 
 if __name__ == "__main__":
@@ -82,8 +83,9 @@ if __name__ == "__main__":
     parser.add_option(
         "-i",
         "--input-file",
-        dest = "fragFileName",
-        default = None,
+        action = "append",
+        dest = "fragFileNames",
+        default = [],
         help = "The path and name of the file one wants to merge into the 'master' one"
         )
     parser.add_option(
@@ -120,21 +122,27 @@ if __name__ == "__main__":
         action = "store",
         default = None,
         help = "Create the stamp file in the specified directory. If not specified"
-              +" the directory of the source file is used." 
+              +" the directory of the source file is used."
         )
-    
+    parser.add_option(
+        "--no-stamp",
+        action = "store_true",
+        help = "Do no create stamp files."
+        )
+
     (options, args) = parser.parse_args()
 
     # ensure consistency...
     options.doMerge = not options.unMerge
 
     # allow command line syntax as
-    #   merge_files.py [options] <fragment file> <merged file>
-    if len(args) > 0 and args[0][0] != "-": options.fragFileName   = args[0]
-    if len(args) > 1 and args[1][0] != "-": options.mergedFileName = args[1]
-    
+    #   merge_files.py [options] <fragment file1> [<fragment file2>...] <merged file>
+    if args:
+        options.mergedFileName = args[-1]
+        options.fragFileNames += args[:-1]
+
     sc = 1
-    if not options.fragFileName or \
+    if not options.fragFileNames or \
        not options.mergedFileName :
         str(parser.print_help() or "")
         print "*** ERROR ***",sys.argv
@@ -142,33 +150,34 @@ if __name__ == "__main__":
         pass
 
     if options.stampDir is None:
-        stampFileName = options.fragFileName + ".stamp"
+        stampFileName = lambda x: x + ".stamp"
     else:
-        stampFileName = os.path.join(options.stampDir,
-                                     os.path.basename(options.fragFileName)
-                                         + ".stamp")
+        stampFileName = lambda x: os.path.join(options.stampDir,
+                                               os.path.basename(x)
+                                               + ".stamp")
     # Configure Python logging
     import logging
     logging.basicConfig(level = logging.INFO)
-    
+
     if "GAUDI_BUILD_LOCK" in os.environ:
-        globalLock = locker.LockFile(os.environ["GAUDI_BUILD_LOCK"], temporary =  True) 
+        globalLock = locker.LockFile(os.environ["GAUDI_BUILD_LOCK"], temporary =  True)
     else:
         globalLock = None
-    
-    try:
-        sc = mergeFiles( options.fragFileName, options.mergedFileName,
+
+    if True: #try:
+        sc = mergeFiles( options.fragFileNames, options.mergedFileName,
                          options.commentChar,
                          doMerge = options.doMerge )
-        stamp = open( stampFileName, 'w' )
-        stamp.close()
-    except IOError, err:
-        print "ERROR:",err
-    except Exception, err:
-        print "ERROR:",err
-    except:
-        print "ERROR: unknown error !!"
-    
+        if not options.no_stamp:
+            for stamp in map(stampFileName, options.fragFileNames):
+                open(stamp, 'w')
+    #except IOError, err:
+    #    print "ERROR:",err
+    #except Exception, err:
+    #    print "ERROR:",err
+    #except:
+    #    print "ERROR: unknown error !!"
+
     del globalLock
-    
+
     sys.exit( sc )
