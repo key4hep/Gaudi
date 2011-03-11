@@ -115,6 +115,17 @@ macro(GAUDI_PROJECT project_name version)
   #GAUDI_PROJECT_VERSION_HEADER()
   #GAUDI_BUILD_PROJECT_SETUP()
 
+  #--- CPack configuration
+  set(CPACK_PACKAGE_NAME ${project_name})
+  foreach(t MAJOR MINOR PATCH)
+    set(CPACK_PACKAGE_VERSION_${t} ${${project}_VERSION_${t}})
+  endforeach()
+  set(CPACK_SYSTEM_NAME ${BINARY_TAG})
+
+  set(CPACK_GENERATOR TGZ)
+
+  include(CPack)
+
 endmacro()
 
 #---------------------------------------------------------------------------------------------------
@@ -270,6 +281,6 @@ function(GAUDI_MERGE_CONF_DB)
     # prepare the output directory
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/python)
     # install rule for the merged DB
-    install(FILES ${output} DESTINATION ${CMAKE_INSTALL_PREFIX}/python)
+    install(FILES ${output} DESTINATION python)
   endif()
 endfunction()
