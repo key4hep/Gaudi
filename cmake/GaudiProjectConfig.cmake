@@ -96,12 +96,35 @@ macro(GAUDI_PROJECT project_name version)
   install(PROGRAMS cmake/testwrap.sh cmake/testwrap.csh cmake/testwrap.bat cmake/genCMake.py cmake/cmdwrap.bat DESTINATION scripts)
 
   #--- Global actions for the project
+  INCLUDE(GaudiPolicy)
+  GAUDI_GET_PACKAGES(packages)
+  #GAUDI_SORT_PACKAGES(packages ${packages})
+  foreach(package ${packages})
+    message("-- Adding directory ${package}")
+    add_subdirectory(${package})
+  endforeach()
+
+  GAUDI_PROJECT_VERSION_HEADER()
+  GAUDI_BUILD_PROJECT_SETUP()
+  GAUDI_MERGE_CONF_DB()
+
   #GAUDI_USE_PACKAGE(QMtest)
   #GAUDI_USE_PACKAGE(pytools)
   #GAUDI_USE_PACKAGE(RELAX)
   #SET( QMtest_environment ${QMtest_environment} QMTEST_CLASS_PATH=${CMAKE_SOURCE_DIR}/GaudiPolicy/qmtest_classes )
   #GAUDI_PROJECT_VERSION_HEADER()
   #GAUDI_BUILD_PROJECT_SETUP()
+
+  #--- CPack configuration
+  set(CPACK_PACKAGE_NAME ${project_name})
+  foreach(t MAJOR MINOR PATCH)
+    set(CPACK_PACKAGE_VERSION_${t} ${${project}_VERSION_${t}})
+  endforeach()
+  set(CPACK_SYSTEM_NAME ${BINARY_TAG})
+
+  set(CPACK_GENERATOR TGZ)
+
+  include(CPack)
 
 endmacro()
 
@@ -247,8 +270,9 @@ function(GAUDI_MERGE_CONF_DB)
     get_property(parts GLOBAL PROPERTY MergedConfDB_SOURCES)
     # create the targets
     set(output ${CMAKE_BINARY_DIR}/python/${CMAKE_PROJECT_NAME}_merged_confDb.py)
+    set(merge_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/merge_files.py --no-stamp)
     add_custom_command(OUTPUT ${output}
-                       COMMAND cat ${parts} > ${output}
+                       COMMAND ${merge_cmd} ${parts} ${output}
                        DEPENDS ${parts})
     add_custom_target(MergedConfDB ALL DEPENDS ${output})
     # prepare the high level dependencies
@@ -257,6 +281,6 @@ function(GAUDI_MERGE_CONF_DB)
     # prepare the output directory
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/python)
     # install rule for the merged DB
-    install(FILES ${output} DESTINATION ${CMAKE_INSTALL_PREFIX}/python)
+    install(FILES ${output} DESTINATION python)
   endif()
 endfunction()
