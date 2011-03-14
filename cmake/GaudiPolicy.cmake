@@ -140,6 +140,11 @@ endif()
 
 find_package(PythonInterp)
 
+#--- commands required to build cached variable
+# (python scripts are located as such but run through python)
+find_program(env_cmd env.py)
+set(env_cmd ${PYTHON_EXECUTABLE} ${env_cmd})
+
 if(CMAKE_PROJECT_NAME STREQUAL GAUDI)
   set(merge_rootmap_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/merge_files.py)
   set(merge_conf_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/merge_files.py)
@@ -248,9 +253,9 @@ function( SET_RUNTIME_PATH var pathname)
          endif()
      endforeach()
   endforeach()
-  if(WIN32)
-    string(REPLACE ";" "[:]" dirs "${dirs}")
-  else()
+  if(NOT WIN32)
+#    string(REPLACE ";" "[:]" dirs "${dirs}")
+#  else()
     string(REPLACE ";" ":" dirs "${dirs}")
   endif()
   set(${var} "${dirs}" PARENT_SCOPE)
@@ -296,16 +301,12 @@ function(GAUDI_GENERATE_CONFIGURABLES library)
   set(confAlgTool ConfigurableAlgTool)
   set(confAuditor ConfigurableAuditor)
   set(confService ConfigurableService)
-  if(WIN32)
-    SET_RUNTIME_PATH(path PATH)
-    set(genconf_command ${cmdwrap_cmd} ${path} ${genconf_cmd} )
-  else()
-    SET_RUNTIME_PATH(path LD_LIBRARY_PATH)
-    set(genconf_command ${ld_library_path}=.:${path}:$ENV{${ld_library_path}} ${genconf_cmd} )
-  endif()
+  SET_RUNTIME_PATH(path ${ld_library_path})
   add_custom_command(
-    OUTPUT ${outdir}/${library}_confDb.py
-		COMMAND ${genconf_command} ${library_preload} -o ${outdir} -p ${package}
+    OUTPUT ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py ${outdir}/__init__.py
+		COMMAND ${env_cmd}
+		          ${ld_library_path}=.:${path}:$ENV{${ld_library_path}}
+		        ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
 				--configurable-module=${confModuleName}
 				--configurable-default-name=${confDefaultName}
 				--configurable-algorithm=${confAlgorithm}
@@ -316,12 +317,7 @@ function(GAUDI_GENERATE_CONFIGURABLES library)
 		DEPENDS ${library} )
   add_custom_target( ${library}Conf ALL DEPENDS  ${outdir}/${library}_confDb.py )
   # Add dependencies on GaudiSvc and the genconf executable if they have to be built in the current project
-  if(EXISTS ${CMAKE_SOURCE_DIR}/GaudiKernel)
-    add_dependencies(${library}Conf genconf)
-  endif()
-  if(EXISTS ${CMAKE_SOURCE_DIR}/GaudiSvc)
-    add_dependencies(${library}Conf GaudiSvc)
-  endif()
+  add_dependencies(${library}Conf genconf GaudiSvc)
   # Notify the project level target
   set_property(GLOBAL APPEND PROPERTY MergedConfDB_SOURCES ${outdir}/${library}_confDb.py)
   set_property(GLOBAL APPEND PROPERTY MergedConfDB_DEPENDS ${library}Conf)
