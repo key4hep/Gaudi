@@ -316,10 +316,10 @@ function(GAUDI_GENERATE_CONFIGURABLES library)
 		DEPENDS ${library} )
   add_custom_target( ${library}Conf ALL DEPENDS  ${outdir}/${library}_confDb.py )
   # Add dependencies on GaudiSvc and the genconf executable if they have to be built in the current project
-  if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/GaudiKernel)
+  if(EXISTS ${CMAKE_SOURCE_DIR}/GaudiKernel)
     add_dependencies(${library}Conf genconf)
   endif()
-  if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/GaudiSvc)
+  if(EXISTS ${CMAKE_SOURCE_DIR}/GaudiSvc)
     add_dependencies(${library}Conf GaudiSvc)
   endif()
   # Notify the project level target
