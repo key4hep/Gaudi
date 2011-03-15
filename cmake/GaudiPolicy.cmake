@@ -46,10 +46,6 @@ else()
   add_definitions(-D_GNU_SOURCE)
 endif()
 
-if(BUILD_DLLEXPORT_LIBS)
-  add_definitions(-DG21_HIDE_SYMBOLS)
-endif()
-
 if (CMAKE_SYSTEM_NAME MATCHES Linux)
   set(CMAKE_CXX_FLAGS "-Dlinux ${CMAKE_CXX_FLAGS}")
 endif()
@@ -343,24 +339,28 @@ function(GAUDI_GENERATE_CONFUSERDB)
     SET_RUNTIME_PATH(path PYTHONPATH)
     # TODO: this re-runs the genconfuser every time, because we cannot define the right dependencies
     add_custom_target(${package}ConfUserDB ALL
+                      DEPENDS ${outdir}/${package}_user_confDb.py)
+    if(${ARG_DEPENDS} ${PROPERTY_DEPENDS})
+      add_dependencies(${package}ConfUserDB ${ARG_DEPENDS} ${PROPERTY_DEPENDS})
+    endif()
+    add_custom_command(OUTPUT ${outdir}/${package}_user_confDb.py
 		COMMAND ${env_cmd}
                   -p PYTHONPATH=${path}
                   -p PYTHONPATH=${CMAKE_SOURCE_DIR}/GaudiKernel/python
                 ${genconfuser_cmd}
 		          -r ${CMAKE_CURRENT_SOURCE_DIR}/python
 		          -o ${outdir}/${package}_user_confDb.py
-		          ${package} ${modules}
-		DEPENDS ${ARG_DEPENDS} ${PROPERTY_DEPENDS})
+		          ${package} ${modules})
     set_property(GLOBAL APPEND PROPERTY MergedConfDB_SOURCES ${outdir}/${package}_user_confDb.py)
     set_property(GLOBAL APPEND PROPERTY MergedConfDB_DEPENDS ${package}ConfUserDB)
   endif()
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_LINKER_LIBRARY( <name> source1 source2 ... [DLLEXPORT] LIBRARIES library1 library2 ...)
+#---GAUDI_LINKER_LIBRARY( <name> source1 source2 ... LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_LINKER_LIBRARY library)
-  PARSE_ARGUMENTS(ARG "LIBRARIES" "DLLEXPORT" ${ARGN})
+  PARSE_ARGUMENTS(ARG "LIBRARIES" "" ${ARGN})
   set(lib_srcs)
   foreach( fp ${ARG_DEFAULT_ARGS})
     file(GLOB files src/${fp})
@@ -370,7 +370,7 @@ function(GAUDI_LINKER_LIBRARY library)
       set( lib_srcs ${lib_srcs} ${fp})
     endif()
   endforeach()
-  if(WIN32 AND NOT BUILD_DLLEXPORT_LIBS AND NOT ARG_DLLEXPORT)
+  if(WIN32)
 	add_library( ${library}-arc STATIC EXCLUDE_FROM_ALL ${lib_srcs})
     set_target_properties(${library}-arc PROPERTIES COMPILE_FLAGS -DGAUDI_LINKER_LIBRARY )
     add_custom_command(

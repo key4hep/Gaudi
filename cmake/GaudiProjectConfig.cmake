@@ -47,7 +47,6 @@ macro(GAUDI_PROJECT project_name version)
 
   #--- Project Options and Global settings----------------------------------------------------------
   option(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
-  option(BUILD_DLLEXPORT_LIBS "Set to ON to build 'linker' libraries exporting only declared dll_export symbols" OFF)
   option(BUILD_TESTS "Set to ON to build the tests (libraries and executables)" OFF)
   #-------------------------------------------------------------------------------------------------
   #--- Build type and tag strings-------------------------------------------------------------------
