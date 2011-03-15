@@ -113,14 +113,15 @@ macro(GAUDI_PROJECT project_name version)
 
   GAUDI_PROJECT_VERSION_HEADER()
   GAUDI_BUILD_PROJECT_SETUP()
-  GAUDI_MERGE_CONF_DB()
+  GAUDI_MERGE_TARGET(ConfDB python ${CMAKE_PROJECT_NAME}_merged_confDb.py)
+  GAUDI_MERGE_TARGET(Rootmap lib ${CMAKE_PROJECT_NAME}.rootmap)
+  GAUDI_MERGE_TARGET(DictRootmap lib ${CMAKE_PROJECT_NAME}Dict.rootmap)
+
 
   #GAUDI_USE_PACKAGE(QMtest)
   #GAUDI_USE_PACKAGE(pytools)
   #GAUDI_USE_PACKAGE(RELAX)
   #SET( QMtest_environment ${QMtest_environment} QMTEST_CLASS_PATH=${CMAKE_SOURCE_DIR}/GaudiPolicy/qmtest_classes )
-  #GAUDI_PROJECT_VERSION_HEADER()
-  #GAUDI_BUILD_PROJECT_SETUP()
 
   #--- CPack configuration
   set(CPACK_PACKAGE_NAME ${project_name})
@@ -260,29 +261,28 @@ function( GAUDI_GET_PACKAGES var)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_MERGE_CONF_DB
+#---GAUDI_MERGE_TARGET
 #---------------------------------------------------------------------------------------------------
-# Take care of the rules to build the merged database of ConfigurableUser
-# specializations.
-function(GAUDI_MERGE_CONF_DB)
-  # Check if one of the packages produces ConfUserDB
-  get_property(needed GLOBAL PROPERTY MergedConfDB_SOURCES SET)
+# Create a MergedXXX target that takes input files and dependencies from
+# properties of the packages
+function(GAUDI_MERGE_TARGET tgt dest filename)
+  # Check if one of the packages produces files for this merge target
+  get_property(needed GLOBAL PROPERTY Merged${tgt}_SOURCES SET)
   if(needed)
     # get the list of parts to merge
-    get_property(parts GLOBAL PROPERTY MergedConfDB_SOURCES)
+    get_property(parts GLOBAL PROPERTY Merged${tgt}_SOURCES)
+    # prepare the output directory
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${dest})
     # create the targets
-    set(output ${CMAKE_BINARY_DIR}/python/${CMAKE_PROJECT_NAME}_merged_confDb.py)
-    set(merge_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/merge_files.py --no-stamp)
+    set(output ${CMAKE_BINARY_DIR}/${dest}/${filename})
     add_custom_command(OUTPUT ${output}
                        COMMAND ${merge_cmd} ${parts} ${output}
                        DEPENDS ${parts})
-    add_custom_target(MergedConfDB ALL DEPENDS ${output})
+    add_custom_target(Merged${tgt} ALL DEPENDS ${output})
     # prepare the high level dependencies
-    get_property(deps GLOBAL PROPERTY MergedConfDB_DEPENDS)
-    add_dependencies(MergedConfDB ${deps})
-    # prepare the output directory
-    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/python)
+    get_property(deps GLOBAL PROPERTY Merged${tgt}_DEPENDS)
+    add_dependencies(Merged${tgt} ${deps})
     # install rule for the merged DB
-    install(FILES ${output} DESTINATION python)
+    install(FILES ${output} DESTINATION ${dest})
   endif()
 endfunction()

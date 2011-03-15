@@ -128,30 +128,36 @@ endif()
 
 find_package(PythonInterp)
 
+
 #--- commands required to build cached variable
 # (python scripts are located as such but run through python)
-find_program(env_cmd env.py)
+set(hints ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts ${CMAKE_SOURCE_DIR}/GaudiKernel/scripts)
+
+find_program(env_cmd env.py HINTS ${hints})
 set(env_cmd ${PYTHON_EXECUTABLE} ${env_cmd})
 
+find_program(merge_cmd merge_files.py HINTS ${hints})
+set(merge_cmd ${PYTHON_EXECUTABLE} ${merge_cmd} --no-stamp)
+
+find_program(versheader_cmd createProjVersHeader.py HINTS ${hints})
+set(versheader_cmd ${PYTHON_EXECUTABLE} ${versheader_cmd})
+
+find_program(genconfuser_cmd genconfuser.py HINTS ${hints})
+set(genconfuser_cmd ${PYTHON_EXECUTABLE} ${genconfuser_cmd})
+
+find_program(zippythondir_cmd ZipPythonDir.py HINTS ${hints})
+set(zippythondir_cmd ${PYTHON_EXECUTABLE} ${zippythondir_cmd})
+
+
 if(CMAKE_PROJECT_NAME STREQUAL GAUDI)
-  set(merge_rootmap_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/merge_files.py)
-  set(merge_conf_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/merge_files.py)
   set(genconf_cmd ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genconf.exe)
-  set(genconfuser_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiKernel/scripts/genconfuser.py)
   set(genwindef_cmd ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genwindef.exe)
-  set(versheader_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/createProjVersHeader.py)
   set(gaudirun ${CMAKE_SOURCE_DIR}/Gaudi/scripts/gaudirun.py)
-  set(zippythondir_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/ZipPythonDir.py)
 else()
-  set(merge_rootmap_cmd ${PYTHON_EXECUTABLE}  ${GAUDI_installation}/GaudiPolicy/scripts/merge_files.py)
-  set(merge_conf_cmd ${PYTHON_EXECUTABLE}  ${GAUDI_installation}/GaudiPolicy/scripts/merge_files.py)
   set(genconf_cmd ${GAUDI_binaryarea}/bin/genconf.exe)
-  set(genconfuser_cmd ${PYTHON_EXECUTABLE} ${GAUDI_installation}/GaudiKernel/scripts/genconfuser.py)
   set(genwindef_cmd ${GAUDI_binaryarea}/bin/genwindef.exe)
-  set(versheader_cmd ${PYTHON_EXECUTABLE} ${GAUDI_installation}/GaudiPolicy/scripts/createProjVersHeader.py)
   set(GAUDI_SOURCE_DIR ${GAUDI_installation})
   set(gaudirun ${GAUDI_installarea}/scripts/gaudirun.py)
-  set(zippythondir_cmd ${PYTHON_EXECUTABLE} ${GAUDI_installation}/GaudiPolicy/scripts/ZipPythonDir.py)
 endif()
 
 
@@ -205,7 +211,7 @@ macro(REFLEX_GENERATE_DICTIONARY dictionary _headerfiles _selectionfile)
 
   # Creating this target at ALL level enables the possibility to generate dictionaries (genreflex step)
   # well before the dependent libraries of the dictionary are build
-  add_custom_target(${dictionary}Gen ALL DEPENDS ${gensrcdict})
+  add_custom_target(${dictionary}Gen ALL DEPENDS ${gensrcdict} ${rootmapname})
 
 endmacro()
 
@@ -217,11 +223,11 @@ function(REFLEX_BUILD_DICTIONARY dictionary headerfiles selectionfile )
   REFLEX_GENERATE_DICTIONARY(${dictionary} ${headerfiles} ${selectionfile} OPTIONS ${ARG_OPTIONS})
   add_library(${dictionary}Dict MODULE ${gensrcdict})
   target_link_libraries(${dictionary}Dict ${ARG_LIBRARIES} ${ROOT_Reflex_LIBRARY})
+  # Notify the project level target
+  set_property(GLOBAL APPEND PROPERTY MergedDictRootmap_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/${rootmapname})
+  set_property(GLOBAL APPEND PROPERTY MergedDictRootmap_DEPENDS ${dictionary}Gen)
   #----Installation details-------------------------------------------------------
   install(TARGETS ${dictionary}Dict LIBRARY DESTINATION ${lib})
-  set(mergedRootMap ${CMAKE_INSTALL_PREFIX}/${lib}/${CMAKE_PROJECT_NAME}Dict.rootmap)
-  set(srcRootMap ${CMAKE_CURRENT_BINARY_DIR}/${rootmapname})
-  install(CODE "EXECUTE_PROCESS(COMMAND ${merge_rootmap_cmd} --do-merge --input-file ${srcRootMap} --merged-file ${mergedRootMap})")
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -267,10 +273,9 @@ function(GAUDI_GENERATE_ROOTMAP library)
 		              ${ROOT_genmap_cmd} -i ${fulllibname} -o ${rootmapfile}
                       DEPENDS ${library} )
   add_custom_target(${library}Rootmap ALL DEPENDS ${rootmapfile})
-  #----Installation details-------------------------------------------------------
-  set(mergedRootMap ${CMAKE_INSTALL_PREFIX}/${lib}/${CMAKE_PROJECT_NAME}.rootmap)
-  set(srcRootMap ${CMAKE_CURRENT_BINARY_DIR}/${library}.rootmap)
-  install(CODE "EXECUTE_PROCESS(COMMAND ${merge_rootmap_cmd} --do-merge --input-file ${srcRootMap} --merged-file ${mergedRootMap})")
+  # Notify the project level target
+  set_property(GLOBAL APPEND PROPERTY MergedRootmap_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/${library}.rootmap)
+  set_property(GLOBAL APPEND PROPERTY MergedRootmap_DEPENDS ${library}Rootmap)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -611,9 +616,12 @@ endfunction()
 function( GAUDI_PROJECT_VERSION_HEADER )
   set(project ${CMAKE_PROJECT_NAME})
   set(version ${${CMAKE_PROJECT_NAME}_VERSION})
-  set(ProjectVersionHeader_output  ${CMAKE_INSTALL_PREFIX}/include/${project}_VERSION.h)
-  add_custom_target( ${project}VersionHeader ALL
-                     ${versheader_cmd} ${project} ${version} ${ProjectVersionHeader_output} )
+  set(output  ${CMAKE_BINARY_DIR}/include/${project}_VERSION.h)
+  add_custom_command(OUTPUT ${output}
+                     COMMAND ${versheader_cmd} ${project} ${version} ${output})
+  add_custom_target(${project}VersionHeader ALL
+                    DEPENDS ${output})
+  install(FILES ${output} DESTINATION include)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
