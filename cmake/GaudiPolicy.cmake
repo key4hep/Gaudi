@@ -46,10 +46,6 @@ else()
   add_definitions(-D_GNU_SOURCE)
 endif()
 
-if(BUILD_DLLEXPORT_LIBS)
-  add_definitions(-DG21_HIDE_SYMBOLS)
-endif()
-
 if (CMAKE_SYSTEM_NAME MATCHES Linux)
   set(CMAKE_CXX_FLAGS "-Dlinux ${CMAKE_CXX_FLAGS}")
 endif()
@@ -130,37 +126,38 @@ if(APPLE)
    set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -flat_namespace -single_module -undefined dynamic_lookup")
 endif()
 
-if(WIN32)
-  set(ld_library_path PATH)
-elseif(APPLE)
-  set(ld_library_path DYLD_LIBRARY_PATH)
-else()
-  set(ld_library_path LD_LIBRARY_PATH)
-endif()
-
 find_package(PythonInterp)
 
+
+#--- commands required to build cached variable
+# (python scripts are located as such but run through python)
+set(hints ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts ${CMAKE_SOURCE_DIR}/GaudiKernel/scripts)
+
+find_program(env_cmd env.py HINTS ${hints})
+set(env_cmd ${PYTHON_EXECUTABLE} ${env_cmd})
+
+find_program(merge_cmd merge_files.py HINTS ${hints})
+set(merge_cmd ${PYTHON_EXECUTABLE} ${merge_cmd} --no-stamp)
+
+find_program(versheader_cmd createProjVersHeader.py HINTS ${hints})
+set(versheader_cmd ${PYTHON_EXECUTABLE} ${versheader_cmd})
+
+find_program(genconfuser_cmd genconfuser.py HINTS ${hints})
+set(genconfuser_cmd ${PYTHON_EXECUTABLE} ${genconfuser_cmd})
+
+find_program(zippythondir_cmd ZipPythonDir.py HINTS ${hints})
+set(zippythondir_cmd ${PYTHON_EXECUTABLE} ${zippythondir_cmd})
+
+
 if(CMAKE_PROJECT_NAME STREQUAL GAUDI)
-  set(merge_rootmap_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/merge_files.py)
-  set(merge_conf_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/merge_files.py)
   set(genconf_cmd ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genconf.exe)
-  set(genconfuser_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiKernel/scripts/genconfuser.py)
   set(genwindef_cmd ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genwindef.exe)
-  set(versheader_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/createProjVersHeader.py)
   set(gaudirun ${CMAKE_SOURCE_DIR}/Gaudi/scripts/gaudirun.py)
-  set(zippythondir_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/ZipPythonDir.py)
-  set(cmdwrap_cmd ${CMAKE_SOURCE_DIR}/cmake/cmdwrap.bat)
 else()
-  set(merge_rootmap_cmd ${PYTHON_EXECUTABLE}  ${GAUDI_installation}/GaudiPolicy/scripts/merge_files.py)
-  set(merge_conf_cmd ${PYTHON_EXECUTABLE}  ${GAUDI_installation}/GaudiPolicy/scripts/merge_files.py)
   set(genconf_cmd ${GAUDI_binaryarea}/bin/genconf.exe)
-  set(genconfuser_cmd ${PYTHON_EXECUTABLE} ${GAUDI_installation}/GaudiKernel/scripts/genconfuser.py)
   set(genwindef_cmd ${GAUDI_binaryarea}/bin/genwindef.exe)
-  set(versheader_cmd ${PYTHON_EXECUTABLE} ${GAUDI_installation}/GaudiPolicy/scripts/createProjVersHeader.py)
   set(GAUDI_SOURCE_DIR ${GAUDI_installation})
   set(gaudirun ${GAUDI_installarea}/scripts/gaudirun.py)
-  set(zippythondir_cmd ${PYTHON_EXECUTABLE} ${GAUDI_installation}/GaudiPolicy/scripts/ZipPythonDir.py)
-  set(cmdwrap_cmd ${GAUDI_binaryarea}/scripts/cmdwrap.bat)
 endif()
 
 
@@ -214,7 +211,7 @@ macro(REFLEX_GENERATE_DICTIONARY dictionary _headerfiles _selectionfile)
 
   # Creating this target at ALL level enables the possibility to generate dictionaries (genreflex step)
   # well before the dependent libraries of the dictionary are build
-  add_custom_target(${dictionary}Gen ALL DEPENDS ${gensrcdict})
+  add_custom_target(${dictionary}Gen ALL DEPENDS ${gensrcdict} ${rootmapname})
 
 endmacro()
 
@@ -226,11 +223,11 @@ function(REFLEX_BUILD_DICTIONARY dictionary headerfiles selectionfile )
   REFLEX_GENERATE_DICTIONARY(${dictionary} ${headerfiles} ${selectionfile} OPTIONS ${ARG_OPTIONS})
   add_library(${dictionary}Dict MODULE ${gensrcdict})
   target_link_libraries(${dictionary}Dict ${ARG_LIBRARIES} ${ROOT_Reflex_LIBRARY})
+  # Notify the project level target
+  set_property(GLOBAL APPEND PROPERTY MergedDictRootmap_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/${rootmapname})
+  set_property(GLOBAL APPEND PROPERTY MergedDictRootmap_DEPENDS ${dictionary}Gen)
   #----Installation details-------------------------------------------------------
   install(TARGETS ${dictionary}Dict LIBRARY DESTINATION ${lib})
-  set(mergedRootMap ${CMAKE_INSTALL_PREFIX}/${lib}/${CMAKE_PROJECT_NAME}Dict.rootmap)
-  set(srcRootMap ${CMAKE_CURRENT_BINARY_DIR}/${rootmapname})
-  install(CODE "EXECUTE_PROCESS(COMMAND ${merge_rootmap_cmd} --do-merge --input-file ${srcRootMap} --merged-file ${mergedRootMap})")
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -262,24 +259,23 @@ endfunction()
 function(GAUDI_GENERATE_ROOTMAP library)
   find_package(ROOT)
   set(rootmapfile ${library}.rootmap)
+
   if(WIN32)
     set(fulllibname ${library})
-    SET_RUNTIME_PATH(path PATH)
-    set(genmap_command ${cmdwrap_cmd} ${path} ${ROOT_genmap_cmd} )
   else()
     set(fulllibname lib${library}.so)
-    SET_RUNTIME_PATH(path LD_LIBRARY_PATH)
-    set(genmap_command ${ld_library_path}=.:${path}:$ENV{${ld_library_path}} ${ROOT_genmap_cmd} )
   endif()
-
+  SET_RUNTIME_PATH(path ${ld_library_path})
   add_custom_command( OUTPUT ${rootmapfile}
-                      COMMAND ${genmap_command} -i ${fulllibname} -o ${rootmapfile}
+                      COMMAND ${env_cmd}
+                        -p ${ld_library_path}=${path}
+                        -p ${ld_library_path}=.
+		              ${ROOT_genmap_cmd} -i ${fulllibname} -o ${rootmapfile}
                       DEPENDS ${library} )
-  add_custom_target( ${library}Rootmap ALL DEPENDS  ${rootmapfile})
-  #----Installation details-------------------------------------------------------
-  set(mergedRootMap ${CMAKE_INSTALL_PREFIX}/${lib}/${CMAKE_PROJECT_NAME}.rootmap)
-  set(srcRootMap ${CMAKE_CURRENT_BINARY_DIR}/${library}.rootmap)
-  install(CODE "EXECUTE_PROCESS(COMMAND ${merge_rootmap_cmd} --do-merge --input-file ${srcRootMap} --merged-file ${mergedRootMap})")
+  add_custom_target(${library}Rootmap ALL DEPENDS ${rootmapfile})
+  # Notify the project level target
+  set_property(GLOBAL APPEND PROPERTY MergedRootmap_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/${library}.rootmap)
+  set_property(GLOBAL APPEND PROPERTY MergedRootmap_DEPENDS ${library}Rootmap)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -296,16 +292,13 @@ function(GAUDI_GENERATE_CONFIGURABLES library)
   set(confAlgTool ConfigurableAlgTool)
   set(confAuditor ConfigurableAuditor)
   set(confService ConfigurableService)
-  if(WIN32)
-    SET_RUNTIME_PATH(path PATH)
-    set(genconf_command ${cmdwrap_cmd} ${path} ${genconf_cmd} )
-  else()
-    SET_RUNTIME_PATH(path LD_LIBRARY_PATH)
-    set(genconf_command ${ld_library_path}=.:${path}:$ENV{${ld_library_path}} ${genconf_cmd} )
-  endif()
+  SET_RUNTIME_PATH(path ${ld_library_path})
   add_custom_command(
-    OUTPUT ${outdir}/${library}_confDb.py
-		COMMAND ${genconf_command} ${library_preload} -o ${outdir} -p ${package}
+    OUTPUT ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py ${outdir}/__init__.py
+		COMMAND ${env_cmd}
+                  -p ${ld_library_path}=${path}
+                  -p ${ld_library_path}=.
+		        ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
 				--configurable-module=${confModuleName}
 				--configurable-default-name=${confDefaultName}
 				--configurable-algorithm=${confAlgorithm}
@@ -316,12 +309,7 @@ function(GAUDI_GENERATE_CONFIGURABLES library)
 		DEPENDS ${library} )
   add_custom_target( ${library}Conf ALL DEPENDS  ${outdir}/${library}_confDb.py )
   # Add dependencies on GaudiSvc and the genconf executable if they have to be built in the current project
-  if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/GaudiKernel)
-    add_dependencies(${library}Conf genconf)
-  endif()
-  if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/GaudiSvc)
-    add_dependencies(${library}Conf GaudiSvc)
-  endif()
+  add_dependencies(${library}Conf genconf GaudiSvc)
   # Notify the project level target
   set_property(GLOBAL APPEND PROPERTY MergedConfDB_SOURCES ${outdir}/${library}_confDb.py)
   set_property(GLOBAL APPEND PROPERTY MergedConfDB_DEPENDS ${library}Conf)
@@ -353,30 +341,31 @@ function(GAUDI_GENERATE_CONFUSERDB)
     # get the optional dependencies from argument and properties
     PARSE_ARGUMENTS(ARG "DEPENDS" "" ${arguments})
     get_directory_property(PROPERTY_DEPENDS CONFIGURABLE_USER_DEPENDS)
-    if(WIN32)
-      SET_RUNTIME_PATH(path PYTHONPATH)
-      set(genconfuser_command ${cmdwrap_cmd} ${path} ${genconfuser_cmd} )
-    else()
-      SET_RUNTIME_PATH(path PYTHONPATH)
-      set(genconfuser_command PYTHONPATH=.:${CMAKE_SOURCE_DIR}/GaudiKernel/python ${genconfuser_cmd} )
-    endif()
+    SET_RUNTIME_PATH(path PYTHONPATH)
     # TODO: this re-runs the genconfuser every time, because we cannot define the right dependencies
     add_custom_target(${package}ConfUserDB ALL
-		COMMAND ${genconfuser_command}
+                      DEPENDS ${outdir}/${package}_user_confDb.py)
+    if(${ARG_DEPENDS} ${PROPERTY_DEPENDS})
+      add_dependencies(${package}ConfUserDB ${ARG_DEPENDS} ${PROPERTY_DEPENDS})
+    endif()
+    add_custom_command(OUTPUT ${outdir}/${package}_user_confDb.py
+		COMMAND ${env_cmd}
+                  -p PYTHONPATH=${path}
+                  -p PYTHONPATH=${CMAKE_SOURCE_DIR}/GaudiKernel/python
+                ${genconfuser_cmd}
 		          -r ${CMAKE_CURRENT_SOURCE_DIR}/python
 		          -o ${outdir}/${package}_user_confDb.py
-		          ${package} ${modules}
-		DEPENDS ${ARG_DEPENDS} ${PROPERTY_DEPENDS})
+		          ${package} ${modules})
     set_property(GLOBAL APPEND PROPERTY MergedConfDB_SOURCES ${outdir}/${package}_user_confDb.py)
     set_property(GLOBAL APPEND PROPERTY MergedConfDB_DEPENDS ${package}ConfUserDB)
   endif()
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_LINKER_LIBRARY( <name> source1 source2 ... [DLLEXPORT] LIBRARIES library1 library2 ...)
+#---GAUDI_LINKER_LIBRARY( <name> source1 source2 ... LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_LINKER_LIBRARY library)
-  PARSE_ARGUMENTS(ARG "LIBRARIES" "DLLEXPORT" ${ARGN})
+  PARSE_ARGUMENTS(ARG "LIBRARIES" "" ${ARGN})
   set(lib_srcs)
   foreach( fp ${ARG_DEFAULT_ARGS})
     file(GLOB files src/${fp})
@@ -386,7 +375,7 @@ function(GAUDI_LINKER_LIBRARY library)
       set( lib_srcs ${lib_srcs} ${fp})
     endif()
   endforeach()
-  if(WIN32 AND NOT BUILD_DLLEXPORT_LIBS AND NOT ARG_DLLEXPORT)
+  if(WIN32)
 	add_library( ${library}-arc STATIC EXCLUDE_FROM_ALL ${lib_srcs})
     set_target_properties(${library}-arc PROPERTIES COMPILE_FLAGS -DGAUDI_LINKER_LIBRARY )
     add_custom_command(
@@ -499,12 +488,8 @@ function(GAUDI_UNIT_TEST executable)
   if(BUILD_TESTS)
     add_executable( ${executable} ${exe_srcs})
     target_link_libraries(${executable} ${ARG_LIBRARIES} )
-	if(WIN32)
-	  SET_RUNTIME_PATH(path PATH)
-      add_test(${executable} ${cmdwrap_cmd} ${path} ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/${executable}.exe )
-    else()
-      add_test(${executable} ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/${executable}.exe)
-	endif()
+	SET_RUNTIME_PATH(path ${ld_library_path})
+    add_test(${executable} ${env_cmd} -p ${ld_library_path}=${path} ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/${executable}.exe )
     #----Installation details-------------------------------------------------------
     set_target_properties(${executable} PROPERTIES SUFFIX .exe)
     install(TARGETS ${executable} RUNTIME DESTINATION ${bin})
@@ -631,9 +616,12 @@ endfunction()
 function( GAUDI_PROJECT_VERSION_HEADER )
   set(project ${CMAKE_PROJECT_NAME})
   set(version ${${CMAKE_PROJECT_NAME}_VERSION})
-  set(ProjectVersionHeader_output  ${CMAKE_INSTALL_PREFIX}/include/${project}_VERSION.h)
-  add_custom_target( ${project}VersionHeader ALL
-                     ${versheader_cmd} ${project} ${version} ${ProjectVersionHeader_output} )
+  set(output  ${CMAKE_BINARY_DIR}/include/${project}_VERSION.h)
+  add_custom_command(OUTPUT ${output}
+                     COMMAND ${versheader_cmd} ${project} ${version} ${output})
+  add_custom_target(${project}VersionHeader ALL
+                    DEPENDS ${output})
+  install(FILES ${output} DESTINATION include)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------

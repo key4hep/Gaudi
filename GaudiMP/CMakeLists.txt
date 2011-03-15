@@ -6,7 +6,7 @@ GAUDI_USE_PACKAGE(GaudiPython)
 GAUDI_USE_PACKAGE(ROOT)
 
 #---Libraries---------------------------------------------------------------
-GAUDI_LINKER_LIBRARY(GaudiMP Lib/*.cpp LIBRARIES GaudiKernel ${ROOT_LIBRARIES})
+GAUDI_LINKER_LIBRARY(GaudiMP Lib/*.cpp LIBRARIES GaudiKernel ${PYTHON_LIBRARIES} ${ROOT_LIBRARIES})
 
 #---Dictionaries------------------------------------------------------------
 REFLEX_BUILD_DICTIONARY(GaudiMP dict/gaudimp_dict.h dict/selection.xml LIBRARIES GaudiMP)

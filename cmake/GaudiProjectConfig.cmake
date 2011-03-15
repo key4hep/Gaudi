@@ -13,6 +13,14 @@ cmake_policy(SET CMP0009 NEW) # See "cmake --help-policy CMP0009" for more detai
 # Add the directory containing this file to the modules search path
 set(CMAKE_MODULE_PATH ${GaudiProject_DIR} ${CMAKE_MODULE_PATH})
 
+if(WIN32)
+  set(ld_library_path PATH)
+elseif(APPLE)
+  set(ld_library_path DYLD_LIBRARY_PATH)
+else()
+  set(ld_library_path LD_LIBRARY_PATH)
+endif()
+
 #---------------------------------------------------------------------------------------------------
 #---GAUDI_PROJECT(project version)
 #---------------------------------------------------------------------------------------------------
@@ -39,7 +47,6 @@ macro(GAUDI_PROJECT project_name version)
 
   #--- Project Options and Global settings----------------------------------------------------------
   option(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
-  option(BUILD_DLLEXPORT_LIBS "Set to ON to build 'linker' libraries exporting only declared dll_export symbols" OFF)
   option(BUILD_TESTS "Set to ON to build the tests (libraries and executables)" OFF)
   #-------------------------------------------------------------------------------------------------
   #--- Build type and tag strings-------------------------------------------------------------------
@@ -93,7 +100,7 @@ macro(GAUDI_PROJECT project_name version)
   install(DIRECTORY cmake/ DESTINATION cmake
                            FILES_MATCHING PATTERN "*.cmake"
                            PATTERN ".svn" EXCLUDE )
-  install(PROGRAMS cmake/testwrap.sh cmake/testwrap.csh cmake/testwrap.bat cmake/genCMake.py cmake/cmdwrap.bat DESTINATION scripts)
+  install(PROGRAMS cmake/testwrap.sh cmake/testwrap.csh cmake/testwrap.bat cmake/genCMake.py cmake/env.py DESTINATION scripts)
 
   #--- Global actions for the project
   INCLUDE(GaudiPolicy)
@@ -106,14 +113,15 @@ macro(GAUDI_PROJECT project_name version)
 
   GAUDI_PROJECT_VERSION_HEADER()
   GAUDI_BUILD_PROJECT_SETUP()
-  GAUDI_MERGE_CONF_DB()
+  GAUDI_MERGE_TARGET(ConfDB python ${CMAKE_PROJECT_NAME}_merged_confDb.py)
+  GAUDI_MERGE_TARGET(Rootmap lib ${CMAKE_PROJECT_NAME}.rootmap)
+  GAUDI_MERGE_TARGET(DictRootmap lib ${CMAKE_PROJECT_NAME}Dict.rootmap)
+
 
   #GAUDI_USE_PACKAGE(QMtest)
   #GAUDI_USE_PACKAGE(pytools)
   #GAUDI_USE_PACKAGE(RELAX)
   #SET( QMtest_environment ${QMtest_environment} QMTEST_CLASS_PATH=${CMAKE_SOURCE_DIR}/GaudiPolicy/qmtest_classes )
-  #GAUDI_PROJECT_VERSION_HEADER()
-  #GAUDI_BUILD_PROJECT_SETUP()
 
   #--- CPack configuration
   set(CPACK_PACKAGE_NAME ${project_name})
@@ -181,11 +189,6 @@ macro( GAUDI_USE_PROJECT project version )
   if( NOT ${project}_used )
     GAUDI_FIND_PROJECT(${project} ${version})
     if( ${project}_installation )
-	  if(WIN32)
-        set(dllpath PATH)
-      else()
-        set(dllpath LD_LIBRARY_PATH)
-      endif()
       #------Set the list of variables to make a effective 'use' of the project-----
       get_property(projects GLOBAL PROPERTY PROJECTS_FOUND)
       set_property(GLOBAL PROPERTY PROJECTS_FOUND ${projects} ${project})
@@ -193,7 +196,7 @@ macro( GAUDI_USE_PROJECT project version )
       set(CMAKE_MODULE_PATH ${${project}_binaryarea}/cmake ${CMAKE_MODULE_PATH})
       include_directories( ${${project}_binaryarea}/include )
       link_directories( ${${project}_binaryarea}/lib )
-      set(${project}_environment ${dllpath}+=${${project}_binaryarea}/lib
+      set(${project}_environment ${ld_library_path}+=${${project}_binaryarea}/lib
                                  PATH+=${${project}_binaryarea}/bin
                                  PATH+=${${project}_binaryarea}/scripts
                                  PYTHONPATH+=${${project}_binaryarea}/python )
@@ -258,29 +261,28 @@ function( GAUDI_GET_PACKAGES var)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_MERGE_CONF_DB
+#---GAUDI_MERGE_TARGET
 #---------------------------------------------------------------------------------------------------
-# Take care of the rules to build the merged database of ConfigurableUser
-# specializations.
-function(GAUDI_MERGE_CONF_DB)
-  # Check if one of the packages produces ConfUserDB
-  get_property(needed GLOBAL PROPERTY MergedConfDB_SOURCES SET)
+# Create a MergedXXX target that takes input files and dependencies from
+# properties of the packages
+function(GAUDI_MERGE_TARGET tgt dest filename)
+  # Check if one of the packages produces files for this merge target
+  get_property(needed GLOBAL PROPERTY Merged${tgt}_SOURCES SET)
   if(needed)
     # get the list of parts to merge
-    get_property(parts GLOBAL PROPERTY MergedConfDB_SOURCES)
+    get_property(parts GLOBAL PROPERTY Merged${tgt}_SOURCES)
+    # prepare the output directory
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${dest})
     # create the targets
-    set(output ${CMAKE_BINARY_DIR}/python/${CMAKE_PROJECT_NAME}_merged_confDb.py)
-    set(merge_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/merge_files.py --no-stamp)
+    set(output ${CMAKE_BINARY_DIR}/${dest}/${filename})
     add_custom_command(OUTPUT ${output}
                        COMMAND ${merge_cmd} ${parts} ${output}
                        DEPENDS ${parts})
-    add_custom_target(MergedConfDB ALL DEPENDS ${output})
+    add_custom_target(Merged${tgt} ALL DEPENDS ${output})
     # prepare the high level dependencies
-    get_property(deps GLOBAL PROPERTY MergedConfDB_DEPENDS)
-    add_dependencies(MergedConfDB ${deps})
-    # prepare the output directory
-    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/python)
+    get_property(deps GLOBAL PROPERTY Merged${tgt}_DEPENDS)
+    add_dependencies(Merged${tgt} ${deps})
     # install rule for the merged DB
-    install(FILES ${output} DESTINATION python)
+    install(FILES ${output} DESTINATION ${dest})
   endif()
 endfunction()
