@@ -146,7 +146,6 @@ if(CMAKE_PROJECT_NAME STREQUAL GAUDI)
   set(versheader_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/createProjVersHeader.py)
   set(gaudirun ${CMAKE_SOURCE_DIR}/Gaudi/scripts/gaudirun.py)
   set(zippythondir_cmd ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/ZipPythonDir.py)
-  set(cmdwrap_cmd ${CMAKE_SOURCE_DIR}/cmake/cmdwrap.bat)
 else()
   set(merge_rootmap_cmd ${PYTHON_EXECUTABLE}  ${GAUDI_installation}/GaudiPolicy/scripts/merge_files.py)
   set(merge_conf_cmd ${PYTHON_EXECUTABLE}  ${GAUDI_installation}/GaudiPolicy/scripts/merge_files.py)
@@ -157,7 +156,6 @@ else()
   set(GAUDI_SOURCE_DIR ${GAUDI_installation})
   set(gaudirun ${GAUDI_installarea}/scripts/gaudirun.py)
   set(zippythondir_cmd ${PYTHON_EXECUTABLE} ${GAUDI_installation}/GaudiPolicy/scripts/ZipPythonDir.py)
-  set(cmdwrap_cmd ${GAUDI_binaryarea}/scripts/cmdwrap.bat)
 endif()
 
 
@@ -259,20 +257,20 @@ endfunction()
 function(GAUDI_GENERATE_ROOTMAP library)
   find_package(ROOT)
   set(rootmapfile ${library}.rootmap)
+
   if(WIN32)
     set(fulllibname ${library})
-    SET_RUNTIME_PATH(path PATH)
-    set(genmap_command ${cmdwrap_cmd} ${path} ${ROOT_genmap_cmd} )
   else()
     set(fulllibname lib${library}.so)
-    SET_RUNTIME_PATH(path LD_LIBRARY_PATH)
-    set(genmap_command ${ld_library_path}=.:${path}:$ENV{${ld_library_path}} ${ROOT_genmap_cmd} )
   endif()
-
+  SET_RUNTIME_PATH(path ${ld_library_path})
   add_custom_command( OUTPUT ${rootmapfile}
-                      COMMAND ${genmap_command} -i ${fulllibname} -o ${rootmapfile}
+                      COMMAND ${env_cmd}
+                        -p ${ld_library_path}=${path}
+                        -p ${ld_library_path}=.
+		              ${ROOT_genmap_cmd} -i ${fulllibname} -o ${rootmapfile}
                       DEPENDS ${library} )
-  add_custom_target( ${library}Rootmap ALL DEPENDS  ${rootmapfile})
+  add_custom_target(${library}Rootmap ALL DEPENDS ${rootmapfile})
   #----Installation details-------------------------------------------------------
   set(mergedRootMap ${CMAKE_INSTALL_PREFIX}/${lib}/${CMAKE_PROJECT_NAME}.rootmap)
   set(srcRootMap ${CMAKE_CURRENT_BINARY_DIR}/${library}.rootmap)
@@ -298,7 +296,7 @@ function(GAUDI_GENERATE_CONFIGURABLES library)
     OUTPUT ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py ${outdir}/__init__.py
 		COMMAND ${env_cmd}
                   -p ${ld_library_path}=${path}
-                  -a ${ld_library_path}=.
+                  -p ${ld_library_path}=.
 		        ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
 				--configurable-module=${confModuleName}
 				--configurable-default-name=${confDefaultName}
@@ -485,12 +483,8 @@ function(GAUDI_UNIT_TEST executable)
   if(BUILD_TESTS)
     add_executable( ${executable} ${exe_srcs})
     target_link_libraries(${executable} ${ARG_LIBRARIES} )
-	if(WIN32)
-	  SET_RUNTIME_PATH(path PATH)
-      add_test(${executable} ${cmdwrap_cmd} ${path} ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/${executable}.exe )
-    else()
-      add_test(${executable} ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/${executable}.exe)
-	endif()
+	SET_RUNTIME_PATH(path ${ld_library_path})
+    add_test(${executable} ${env_cmd} -p ${ld_library_path}=${path} ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/${executable}.exe )
     #----Installation details-------------------------------------------------------
     set_target_properties(${executable} PROPERTIES SUFFIX .exe)
     install(TARGETS ${executable} RUNTIME DESTINATION ${bin})
