@@ -13,6 +13,14 @@ cmake_policy(SET CMP0009 NEW) # See "cmake --help-policy CMP0009" for more detai
 # Add the directory containing this file to the modules search path
 set(CMAKE_MODULE_PATH ${GaudiProject_DIR} ${CMAKE_MODULE_PATH})
 
+if(WIN32)
+  set(ld_library_path PATH)
+elseif(APPLE)
+  set(ld_library_path DYLD_LIBRARY_PATH)
+else()
+  set(ld_library_path LD_LIBRARY_PATH)
+endif()
+
 #---------------------------------------------------------------------------------------------------
 #---GAUDI_PROJECT(project version)
 #---------------------------------------------------------------------------------------------------
@@ -181,11 +189,6 @@ macro( GAUDI_USE_PROJECT project version )
   if( NOT ${project}_used )
     GAUDI_FIND_PROJECT(${project} ${version})
     if( ${project}_installation )
-	  if(WIN32)
-        set(dllpath PATH)
-      else()
-        set(dllpath LD_LIBRARY_PATH)
-      endif()
       #------Set the list of variables to make a effective 'use' of the project-----
       get_property(projects GLOBAL PROPERTY PROJECTS_FOUND)
       set_property(GLOBAL PROPERTY PROJECTS_FOUND ${projects} ${project})
@@ -193,7 +196,7 @@ macro( GAUDI_USE_PROJECT project version )
       set(CMAKE_MODULE_PATH ${${project}_binaryarea}/cmake ${CMAKE_MODULE_PATH})
       include_directories( ${${project}_binaryarea}/include )
       link_directories( ${${project}_binaryarea}/lib )
-      set(${project}_environment ${dllpath}+=${${project}_binaryarea}/lib
+      set(${project}_environment ${ld_library_path}+=${${project}_binaryarea}/lib
                                  PATH+=${${project}_binaryarea}/bin
                                  PATH+=${${project}_binaryarea}/scripts
                                  PYTHONPATH+=${${project}_binaryarea}/python )

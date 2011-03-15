@@ -130,14 +130,6 @@ if(APPLE)
    set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -flat_namespace -single_module -undefined dynamic_lookup")
 endif()
 
-if(WIN32)
-  set(ld_library_path PATH)
-elseif(APPLE)
-  set(ld_library_path DYLD_LIBRARY_PATH)
-else()
-  set(ld_library_path LD_LIBRARY_PATH)
-endif()
-
 find_package(PythonInterp)
 
 #--- commands required to build cached variable
@@ -305,7 +297,8 @@ function(GAUDI_GENERATE_CONFIGURABLES library)
   add_custom_command(
     OUTPUT ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py ${outdir}/__init__.py
 		COMMAND ${env_cmd}
-                          ${ld_library_path}<=${path} ${ld_library_path}<=.
+                  -p ${ld_library_path}=${path}
+                  -a ${ld_library_path}=.
 		        ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
 				--configurable-module=${confModuleName}
 				--configurable-default-name=${confDefaultName}
@@ -353,9 +346,9 @@ function(GAUDI_GENERATE_CONFUSERDB)
     # TODO: this re-runs the genconfuser every time, because we cannot define the right dependencies
     add_custom_target(${package}ConfUserDB ALL
 		COMMAND ${env_cmd}
-                          PYTHONPATH<=${CMAKE_SOURCE_DIR}/GaudiKernel/python
-                          PYTHONPATH<=${path}
-                        ${genconfuser_cmd}
+                  -p PYTHONPATH=${path}
+                  -p PYTHONPATH=${CMAKE_SOURCE_DIR}/GaudiKernel/python
+                ${genconfuser_cmd}
 		          -r ${CMAKE_CURRENT_SOURCE_DIR}/python
 		          -o ${outdir}/${package}_user_confDb.py
 		          ${package} ${modules}
