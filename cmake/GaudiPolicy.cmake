@@ -253,9 +253,9 @@ function( SET_RUNTIME_PATH var pathname)
          endif()
      endforeach()
   endforeach()
-  if(NOT WIN32)
-#    string(REPLACE ";" "[:]" dirs "${dirs}")
-#  else()
+  if(WIN32)
+    string(REPLACE ";" "[:]" dirs "${dirs}")
+  else()
     string(REPLACE ";" ":" dirs "${dirs}")
   endif()
   set(${var} "${dirs}" PARENT_SCOPE)
@@ -305,7 +305,7 @@ function(GAUDI_GENERATE_CONFIGURABLES library)
   add_custom_command(
     OUTPUT ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py ${outdir}/__init__.py
 		COMMAND ${env_cmd}
-		          ${ld_library_path}=.:${path}:$ENV{${ld_library_path}}
+                          ${ld_library_path}<=${path} ${ld_library_path}<=.
 		        ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
 				--configurable-module=${confModuleName}
 				--configurable-default-name=${confDefaultName}
@@ -349,16 +349,13 @@ function(GAUDI_GENERATE_CONFUSERDB)
     # get the optional dependencies from argument and properties
     PARSE_ARGUMENTS(ARG "DEPENDS" "" ${arguments})
     get_directory_property(PROPERTY_DEPENDS CONFIGURABLE_USER_DEPENDS)
-    if(WIN32)
-      SET_RUNTIME_PATH(path PYTHONPATH)
-      set(genconfuser_command ${cmdwrap_cmd} ${path} ${genconfuser_cmd} )
-    else()
-      SET_RUNTIME_PATH(path PYTHONPATH)
-      set(genconfuser_command PYTHONPATH=.:${CMAKE_SOURCE_DIR}/GaudiKernel/python ${genconfuser_cmd} )
-    endif()
+    SET_RUNTIME_PATH(path PYTHONPATH)
     # TODO: this re-runs the genconfuser every time, because we cannot define the right dependencies
     add_custom_target(${package}ConfUserDB ALL
-		COMMAND ${genconfuser_command}
+		COMMAND ${env_cmd}
+                          PYTHONPATH<=${CMAKE_SOURCE_DIR}/GaudiKernel/python
+                          PYTHONPATH<=${path}
+                        ${genconfuser_cmd}
 		          -r ${CMAKE_CURRENT_SOURCE_DIR}/python
 		          -o ${outdir}/${package}_user_confDb.py
 		          ${package} ${modules}

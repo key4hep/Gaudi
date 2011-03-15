@@ -34,6 +34,15 @@ for n in opts.unset:
 
 while args and "=" in args[0]:
     n, v = args.pop(0).split("=", 1)
+    v = v.replace('[:]', os.pathsep) # needed as a hack on CMake + win
+    if n[-1] in ['>', '<']:
+        action = n[-1]
+        n = n[:-1]
+    if n in env:
+        if action == '<': # prepend
+            v = v + os.pathsep + env[n]
+        elif action == '>': # append
+            v = env[n] + os.pathsep + v
     print "set %s=%s" % (n,v)
     env[n] = v
 
