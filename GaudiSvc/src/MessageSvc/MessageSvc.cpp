@@ -1,4 +1,3 @@
-// $Id: MessageSvc.cpp,v 1.27 2008/10/21 16:25:55 marcocle Exp $
 #ifdef _WIN32
 // Avoid conflicts between windows and the message service.
 #define NOMSG
@@ -67,6 +66,10 @@ MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc )
 
   declareProperty( "enableSuppression", m_suppress = false );
   declareProperty( "countInactive", m_inactCount = false )->declareUpdateHandler( &MessageSvc::setupInactCount, this );
+#ifndef NDEBUG
+  // initialize the MsgStream static flag.
+  MsgStream::enableCountInactive(m_inactCount);
+#endif
 
   declareProperty( "loggedStreams",
                    m_loggedStreamsName,
@@ -313,14 +316,13 @@ void MessageSvc::setupThreshold(Property& prop) {
 //#############################################################################
 
 void MessageSvc::setupInactCount(Property& prop) {
+#ifndef NDEBUG
   if (prop.name() == "countInactive") {
     BooleanProperty *p = dynamic_cast<BooleanProperty*>(&prop);
-    if (p && p->value() == 1) {      
-#ifndef NDEBUG
-      MsgStream::m_countInactive = true;
-#endif
-    }
+    if (p)
+      MsgStream::enableCountInactive(p->value());
   }
+#endif
 }
 
 
@@ -378,14 +380,14 @@ StatusCode MessageSvc::finalize() {
     cout << os.str();
   }
 
-
+#ifndef NDEBUG
   if (m_inactCount.value()) {
 
     std::ostringstream os2;
     os2 << "Listing sources of Unprotected and Unseen messages\n";
 
     bool found2(false);
-    
+
     unsigned int ml(0);
     std::map<std::string,MsgAry>::const_iterator itr;
     for (itr=m_inactiveMap.begin(); itr!=m_inactiveMap.end(); ++itr) {
@@ -420,20 +422,20 @@ StatusCode MessageSvc::finalize() {
 	  os2.width(ml+2);
 	  os2.setf(ios_base::left,ios_base::adjustfield);
 	  os2 << itr->first;
-	  
+
 	  os2 << "|";
-	  
+
 	  os2.width(8);
 	  os2.setf(ios_base::right,ios_base::adjustfield);
 	  os2 << levelNames[ic];
-	  
+
 	  os2 << " |";
-	  
+
 	  os2.width(9);
 	  os2 << itr->second.msg[ic];
-	  
+
 	  os2 << endl;
-	  
+
 	  found2 = true;
 	}
       }
@@ -447,6 +449,7 @@ StatusCode MessageSvc::finalize() {
       cout << os2.str();
     }
   }
+#endif
 
   return StatusCode::SUCCESS;
 }
@@ -837,13 +840,11 @@ int MessageSvc::messageCount( MSG::Level level) const   {
 
 // ---------------------------------------------------------------------------
 void
-MessageSvc::incrInactiveCount( MSG::Level level, const std::string& source) {
- 
+MessageSvc::incrInactiveCount(MSG::Level level, const std::string& source) {
+
   ++(m_inactiveMap[source].msg[level]);
 
 }
-
-
 
 // ---------------------------------------------------------------------------
 void MessageSvc::setupLogStreams()
