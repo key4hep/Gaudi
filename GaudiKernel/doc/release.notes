@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-03-16 - Charles Leggett, Marco Clemencic
+ - Patch #4722: detect unprotected DEBUG and VERBOSE messages
+
 ============================= GaudiKernel v27r13 =============================
 ! 2011-02-21 - Charles Leggett
  - Fixed bug #77534: this-> needed in Property.h
