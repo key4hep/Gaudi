@@ -69,7 +69,16 @@ public:
   MsgStream& report(int lvl)   {
     lvl = (lvl >= MSG::NUM_LEVELS) ?
       MSG::ALWAYS : (lvl<MSG::NIL) ? MSG::NIL : lvl;
-    ((m_currLevel=MSG::Level(lvl)) >= level()) ? activate() : deactivate();
+    if  ((m_currLevel=MSG::Level(lvl)) >= level()) {
+      activate();
+    } else {
+      deactivate();
+#ifndef NDEBUG
+      if (m_countInactive && m_service != 0) {
+	m_service->incrInactiveCount(MSG::Level(lvl),m_source);
+      }
+#endif
+    }
     return *this;
   }
   /// Output method
@@ -222,6 +231,8 @@ public:
 
   /// Reset the colors to defaults
   GAUDI_API void resetColor();
+
+  static bool m_countInactive;
 
 };
 

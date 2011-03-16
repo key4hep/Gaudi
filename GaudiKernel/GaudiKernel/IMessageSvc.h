@@ -185,6 +185,10 @@ public:
    */
   virtual int messageCount( MSG::Level level ) const = 0;
 
+  /** Increment deactivated message count
+   */
+  virtual void incrInactiveCount( MSG::Level level, 
+				  const std::string& src ) = 0;
 
 };
 

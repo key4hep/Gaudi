@@ -66,6 +66,7 @@ MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc )
   declareProperty( "defaultLimit",  m_msgLimit[MSG::NIL]     = defaultLimit );
 
   declareProperty( "enableSuppression", m_suppress = false );
+  declareProperty( "countInactive", m_inactCount = false )->declareUpdateHandler( &MessageSvc::setupInactCount, this );
 
   declareProperty( "loggedStreams",
                    m_loggedStreamsName,
@@ -308,6 +309,21 @@ void MessageSvc::setupThreshold(Property& prop) {
   }
 
 }
+
+//#############################################################################
+
+void MessageSvc::setupInactCount(Property& prop) {
+  if (prop.name() == "countInactive") {
+    BooleanProperty *p = dynamic_cast<BooleanProperty*>(&prop);
+    if (p && p->value() == 1) {      
+#ifndef NDEBUG
+      MsgStream::m_countInactive = true;
+#endif
+    }
+  }
+}
+
+
 //#############################################################################
 /// Finalize Service
 StatusCode MessageSvc::finalize() {
@@ -360,6 +376,76 @@ StatusCode MessageSvc::finalize() {
 
   if (found || m_stats) {
     cout << os.str();
+  }
+
+
+  if (m_inactCount.value()) {
+
+    std::ostringstream os2;
+    os2 << "Listing sources of Unprotected and Unseen messages\n";
+
+    bool found2(false);
+    
+    unsigned int ml(0);
+    std::map<std::string,MsgAry>::const_iterator itr;
+    for (itr=m_inactiveMap.begin(); itr!=m_inactiveMap.end(); ++itr) {
+      for (unsigned int ic = 0; ic < MSG::NUM_LEVELS; ++ic) {
+	if (itr->second.msg[ic] != 0) {
+	  if (itr->first.length() > ml) { ml = itr->first.length(); }
+	}
+      }
+    }
+
+    for (unsigned int i=0; i<ml+25; ++i) {
+      os2 << "=";
+    }
+
+    os2 << endl << " ";
+    os2.width(ml+2);
+    os2.setf(ios_base::left,ios_base::adjustfield);
+    os2 << "Message Source";
+    os2.width(1);
+    os2 << "|   Level |    Count" << endl;
+
+    for (unsigned int i=0; i<ml+3; ++i) {
+      os2 << "-";
+    }
+    os2 << "+---------+-----------" << endl;
+
+
+    for (itr=m_inactiveMap.begin(); itr!=m_inactiveMap.end(); ++itr) {
+      for (unsigned int ic = 0; ic < MSG::NUM_LEVELS; ++ic) {
+	if (itr->second.msg[ic] != 0) {
+	  os2 << " ";
+	  os2.width(ml+2);
+	  os2.setf(ios_base::left,ios_base::adjustfield);
+	  os2 << itr->first;
+	  
+	  os2 << "|";
+	  
+	  os2.width(8);
+	  os2.setf(ios_base::right,ios_base::adjustfield);
+	  os2 << levelNames[ic];
+	  
+	  os2 << " |";
+	  
+	  os2.width(9);
+	  os2 << itr->second.msg[ic];
+	  
+	  os2 << endl;
+	  
+	  found2 = true;
+	}
+      }
+    }
+    for (unsigned int i=0; i<ml+25; ++i) {
+      os2 << "=";
+    }
+    os2 << endl;
+
+    if (found2) {
+      cout << os2.str();
+    }
   }
 
   return StatusCode::SUCCESS;
@@ -748,6 +834,16 @@ int MessageSvc::messageCount( MSG::Level level) const   {
   return m_msgCount[level];
 
 }
+
+// ---------------------------------------------------------------------------
+void
+MessageSvc::incrInactiveCount( MSG::Level level, const std::string& source) {
+ 
+  ++(m_inactiveMap[source].msg[level]);
+
+}
+
+
 
 // ---------------------------------------------------------------------------
 void MessageSvc::setupLogStreams()

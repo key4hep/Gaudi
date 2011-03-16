@@ -28,6 +28,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+bool MsgStream::m_countInactive = false;
+
 MsgStream::MsgStream(IMessageSvc* svc, int)
 : m_service(svc),
   m_source(""),

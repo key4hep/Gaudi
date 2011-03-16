@@ -122,6 +122,11 @@ public:
   // Implementation of IMessageSvc::messageCount()
   virtual int messageCount( MSG::Level logLevel ) const;
 
+  // Implementation of IMessageSvc::incrInactiveCount()
+  virtual void incrInactiveCount( MSG::Level level, 
+				  const std::string& src );
+
+
 private:
   std::ostream* m_defaultStream;      ///< Pointer to the output stream.
   Message m_defaultMessage;           ///< Default Message
@@ -155,8 +160,8 @@ private:
     }
   };
 
-  std::map<std::string,MsgAry> m_sourceMap;
-  BooleanProperty m_suppress;
+  std::map<std::string,MsgAry> m_sourceMap, m_inactiveMap;
+  BooleanProperty m_suppress, m_inactCount;
 
   std::string colTrans(std::string, int);
   typedef std::map<std::string, MSG::Color> ColorMap;
@@ -172,6 +177,7 @@ private:
   void setupColors(Property& prop);
   void setupLimits(Property& prop);
   void setupThreshold(Property& prop);
+  void setupInactCount(Property& prop);
 
   void setupLogStreams();
 
