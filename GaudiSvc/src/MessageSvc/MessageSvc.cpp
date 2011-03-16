@@ -332,61 +332,63 @@ StatusCode MessageSvc::finalize() {
 
   m_suppress = false;
 
-  std::ostringstream os;
+  {
+    std::ostringstream os;
 
-  if (m_stats) {
-    os << "Summarizing all message counts" << endl;
-  } else {
-    os << "Listing sources of suppressed message: " << endl;
-  }
+    if (m_stats) {
+      os << "Summarizing all message counts" << endl;
+    } else {
+      os << "Listing sources of suppressed message: " << endl;
+    }
 
-  os << "=====================================================" << endl;
-  os << " Message Source              |   Level |    Count" << endl;
-  os << "-----------------------------+---------+-------------" << endl;
+    os << "=====================================================" << endl;
+    os << " Message Source              |   Level |    Count" << endl;
+    os << "-----------------------------+---------+-------------" << endl;
 
 
-  bool found(false);
+    bool found(false);
 
-  std::map<std::string,MsgAry>::const_iterator itr;
-  for (itr=m_sourceMap.begin(); itr!=m_sourceMap.end(); ++itr) {
-    for (unsigned int ic = 0; ic < MSG::NUM_LEVELS; ++ic) {
-      if ( (itr->second.msg[ic] >= m_msgLimit[ic] && m_msgLimit[ic] != 0 ) ||
-           (m_stats && itr->second.msg[ic] > 0 && ic >= m_statLevel.value()) ) {
-        os << " ";
-        os.width(28);
-        os.setf(ios_base::left,ios_base::adjustfield);
-        os << itr->first;
+    std::map<std::string,MsgAry>::const_iterator itr;
+    for (itr=m_sourceMap.begin(); itr!=m_sourceMap.end(); ++itr) {
+      for (unsigned int ic = 0; ic < MSG::NUM_LEVELS; ++ic) {
+        if ( (itr->second.msg[ic] >= m_msgLimit[ic] && m_msgLimit[ic] != 0 ) ||
+            (m_stats && itr->second.msg[ic] > 0 && ic >= m_statLevel.value()) ) {
+          os << " ";
+          os.width(28);
+          os.setf(ios_base::left,ios_base::adjustfield);
+          os << itr->first;
 
-        os << "|";
+          os << "|";
 
-        os.width(8);
-        os.setf(ios_base::right,ios_base::adjustfield);
-        os << levelNames[ic];
+          os.width(8);
+          os.setf(ios_base::right,ios_base::adjustfield);
+          os << levelNames[ic];
 
-        os << " |";
+          os << " |";
 
-        os.width(9);
-        os << itr->second.msg[ic];
+          os.width(9);
+          os << itr->second.msg[ic];
 
-        os << endl;
+          os << endl;
 
-        found = true;
+          found = true;
+        }
       }
     }
-  }
-  os << "=====================================================" << endl;
+    os << "=====================================================" << endl;
 
-  if (found || m_stats) {
-    cout << os.str();
+    if (found || m_stats) {
+      cout << os.str();
+    }
   }
 
 #ifndef NDEBUG
   if (m_inactCount.value()) {
 
-    std::ostringstream os2;
-    os2 << "Listing sources of Unprotected and Unseen messages\n";
+    std::ostringstream os;
+    os << "Listing sources of Unprotected and Unseen messages\n";
 
-    bool found2(false);
+    bool found(false);
 
     unsigned int ml(0);
     std::map<std::string,MsgAry>::const_iterator itr;
@@ -399,54 +401,54 @@ StatusCode MessageSvc::finalize() {
     }
 
     for (unsigned int i=0; i<ml+25; ++i) {
-      os2 << "=";
+      os << "=";
     }
 
-    os2 << endl << " ";
-    os2.width(ml+2);
-    os2.setf(ios_base::left,ios_base::adjustfield);
-    os2 << "Message Source";
-    os2.width(1);
-    os2 << "|   Level |    Count" << endl;
+    os << endl << " ";
+    os.width(ml+2);
+    os.setf(ios_base::left,ios_base::adjustfield);
+    os << "Message Source";
+    os.width(1);
+    os << "|   Level |    Count" << endl;
 
     for (unsigned int i=0; i<ml+3; ++i) {
-      os2 << "-";
+      os << "-";
     }
-    os2 << "+---------+-----------" << endl;
+    os << "+---------+-----------" << endl;
 
 
     for (itr=m_inactiveMap.begin(); itr!=m_inactiveMap.end(); ++itr) {
       for (unsigned int ic = 0; ic < MSG::NUM_LEVELS; ++ic) {
 	if (itr->second.msg[ic] != 0) {
-	  os2 << " ";
-	  os2.width(ml+2);
-	  os2.setf(ios_base::left,ios_base::adjustfield);
-	  os2 << itr->first;
+	  os << " ";
+	  os.width(ml+2);
+	  os.setf(ios_base::left,ios_base::adjustfield);
+	  os << itr->first;
 
-	  os2 << "|";
+	  os << "|";
 
-	  os2.width(8);
-	  os2.setf(ios_base::right,ios_base::adjustfield);
-	  os2 << levelNames[ic];
+	  os.width(8);
+	  os.setf(ios_base::right,ios_base::adjustfield);
+	  os << levelNames[ic];
 
-	  os2 << " |";
+	  os << " |";
 
-	  os2.width(9);
-	  os2 << itr->second.msg[ic];
+	  os.width(9);
+	  os << itr->second.msg[ic];
 
-	  os2 << endl;
+	  os << endl;
 
-	  found2 = true;
+	  found = true;
 	}
       }
     }
     for (unsigned int i=0; i<ml+25; ++i) {
-      os2 << "=";
+      os << "=";
     }
-    os2 << endl;
+    os << endl;
 
-    if (found2) {
-      cout << os2.str();
+    if (found) {
+      cout << os.str();
     }
   }
 #endif
