@@ -1,6 +1,12 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-03-17 - Marco Clemencic
+ - Modified DirSearchPath to remove boost::filesystem::no_check. It is not
+   needed and breaks on MacOSX in debug mode (at least with Boost 1.44).
+   See patch #4735.
+ - Fixed PathResolver_test to work on MacOSX.
+
 ! 2011-03-16 - Charles Leggett, Marco Clemencic
  - Patch #4722: detect unprotected DEBUG and VERBOSE messages
 
