@@ -806,6 +806,9 @@ macro cpplinkflags "" \
 macro_append cpplinkflags "" \
       target-linux               "-Wl,--no-undefined "
 
+macro_remove shlibflags "" \
+      target-mac "-undefined suppress"
+
 macro_append cpplinkflags  "" \
       host-x86_64&target-i686 " -m32" \
       host-x86_64&target-i386 " -m32" \
