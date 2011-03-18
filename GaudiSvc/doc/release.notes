@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-03-16 - Charles Leggett, Marco Clemencic
+ - Patch #4722: detect unprotected DEBUG and VERBOSE messages
+
 ============================== GaudiSvc v18r13 ===============================
 ! 2011-02-18 - Marco Clemencic
  - Added another special case for the order of service finalization

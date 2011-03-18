@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2011-03-16 - Marco Clemencic
+ - Updated reference files after patch #4727
+
 ! 2011-03-09 - Marco Clemencic
  - Modified the ErrorLog QMTest description to work with builds both from CMT
    and CMake.

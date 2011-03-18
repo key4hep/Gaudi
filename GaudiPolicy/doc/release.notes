@@ -1,6 +1,13 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-03-17 - Marco Clemencic
+ - Removed the option "-undefined suppress" from the link statement on MacOSX
+   (added by CMT) to have the same behavior as on Linux (-Wl,--no-undefined).
+
+! 2011-03-16 - Charles Leggett, Marco Clemencic
+ - Patch #4727: Add NDEBUG macro for opt builds
+
 ! 2011-03-09 - Marco Clemencic
  - Avoid exception in QMTest if the test executable is not built.
  - Minor improvements to GaudiTest.py
