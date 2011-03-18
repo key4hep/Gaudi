@@ -82,13 +82,21 @@ macro(GAUDI_PROJECT project_name version)
       "Install path prefix, prepended onto install directories." FORCE )
   endif()
 
-  if( NOT EXECUTABLE_OUTPUT_PATH)
-    set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE STRING
+  if(NOT BUILD_OUTPUT_PREFIX)
+    set(BUILD_OUTPUT_PREFIX ${CMAKE_BINARY_DIR}/.build CACHE STRING
+           "Base directory for generated files" FORCE)
+  endif()
+  if(NOT EXECUTABLE_OUTPUT_PATH)
+    set(EXECUTABLE_OUTPUT_PATH ${BUILD_OUTPUT_PREFIX}/bin CACHE STRING
 	   "Single build output directory for all executables" FORCE)
   endif()
-  if( NOT LIBRARY_OUTPUT_PATH)
-    set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib CACHE STRING
+  if(NOT LIBRARY_OUTPUT_PATH)
+    set(LIBRARY_OUTPUT_PATH ${BUILD_OUTPUT_PREFIX}/lib CACHE STRING
 	   "Single build output directory for all libraries" FORCE)
+  endif()
+  if(NOT PYTHON_OUTPUT_PATH)
+    set(PYTHON_OUTPUT_PATH ${BUILD_OUTPUT_PREFIX}/python CACHE STRING
+	   "Single build output directory for all python files" FORCE)
   endif()
 
 
@@ -271,10 +279,8 @@ function(GAUDI_MERGE_TARGET tgt dest filename)
   if(needed)
     # get the list of parts to merge
     get_property(parts GLOBAL PROPERTY Merged${tgt}_SOURCES)
-    # prepare the output directory
-    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${dest})
     # create the targets
-    set(output ${CMAKE_BINARY_DIR}/${dest}/${filename})
+    set(output ${BUILD_OUTPUT_PREFIX}/${dest}/${filename})
     add_custom_command(OUTPUT ${output}
                        COMMAND ${merge_cmd} ${parts} ${output}
                        DEPENDS ${parts})
