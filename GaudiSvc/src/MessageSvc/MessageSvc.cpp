@@ -1,4 +1,3 @@
-// $Id: MessageSvc.cpp,v 1.27 2008/10/21 16:25:55 marcocle Exp $
 #ifdef _WIN32
 // Avoid conflicts between windows and the message service.
 #define NOMSG
@@ -66,6 +65,11 @@ MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc )
   declareProperty( "defaultLimit",  m_msgLimit[MSG::NIL]     = defaultLimit );
 
   declareProperty( "enableSuppression", m_suppress = false );
+  declareProperty( "countInactive", m_inactCount = false )->declareUpdateHandler( &MessageSvc::setupInactCount, this );
+#ifndef NDEBUG
+  // initialize the MsgStream static flag.
+  MsgStream::enableCountInactive(m_inactCount);
+#endif
 
   declareProperty( "loggedStreams",
                    m_loggedStreamsName,
@@ -308,59 +312,146 @@ void MessageSvc::setupThreshold(Property& prop) {
   }
 
 }
+
+//#############################################################################
+
+void MessageSvc::setupInactCount(Property& prop) {
+#ifndef NDEBUG
+  if (prop.name() == "countInactive") {
+    BooleanProperty *p = dynamic_cast<BooleanProperty*>(&prop);
+    if (p)
+      MsgStream::enableCountInactive(p->value());
+  }
+#endif
+}
+
+
 //#############################################################################
 /// Finalize Service
 StatusCode MessageSvc::finalize() {
 
   m_suppress = false;
 
-  std::ostringstream os;
+  {
+    std::ostringstream os;
 
-  if (m_stats) {
-    os << "Summarizing all message counts" << endl;
-  } else {
-    os << "Listing sources of suppressed message: " << endl;
-  }
+    if (m_stats) {
+      os << "Summarizing all message counts" << endl;
+    } else {
+      os << "Listing sources of suppressed message: " << endl;
+    }
 
-  os << "=====================================================" << endl;
-  os << " Message Source              |   Level |    Count" << endl;
-  os << "-----------------------------+---------+-------------" << endl;
+    os << "=====================================================" << endl;
+    os << " Message Source              |   Level |    Count" << endl;
+    os << "-----------------------------+---------+-------------" << endl;
 
 
-  bool found(false);
+    bool found(false);
 
-  std::map<std::string,MsgAry>::const_iterator itr;
-  for (itr=m_sourceMap.begin(); itr!=m_sourceMap.end(); ++itr) {
-    for (unsigned int ic = 0; ic < MSG::NUM_LEVELS; ++ic) {
-      if ( (itr->second.msg[ic] >= m_msgLimit[ic] && m_msgLimit[ic] != 0 ) ||
-           (m_stats && itr->second.msg[ic] > 0 && ic >= m_statLevel.value()) ) {
-        os << " ";
-        os.width(28);
-        os.setf(ios_base::left,ios_base::adjustfield);
-        os << itr->first;
+    std::map<std::string,MsgAry>::const_iterator itr;
+    for (itr=m_sourceMap.begin(); itr!=m_sourceMap.end(); ++itr) {
+      for (unsigned int ic = 0; ic < MSG::NUM_LEVELS; ++ic) {
+        if ( (itr->second.msg[ic] >= m_msgLimit[ic] && m_msgLimit[ic] != 0 ) ||
+            (m_stats && itr->second.msg[ic] > 0 && ic >= m_statLevel.value()) ) {
+          os << " ";
+          os.width(28);
+          os.setf(ios_base::left,ios_base::adjustfield);
+          os << itr->first;
 
-        os << "|";
+          os << "|";
 
-        os.width(8);
-        os.setf(ios_base::right,ios_base::adjustfield);
-        os << levelNames[ic];
+          os.width(8);
+          os.setf(ios_base::right,ios_base::adjustfield);
+          os << levelNames[ic];
 
-        os << " |";
+          os << " |";
 
-        os.width(9);
-        os << itr->second.msg[ic];
+          os.width(9);
+          os << itr->second.msg[ic];
 
-        os << endl;
+          os << endl;
 
-        found = true;
+          found = true;
+        }
       }
     }
-  }
-  os << "=====================================================" << endl;
+    os << "=====================================================" << endl;
 
-  if (found || m_stats) {
-    cout << os.str();
+    if (found || m_stats) {
+      cout << os.str();
+    }
   }
+
+#ifndef NDEBUG
+  if (m_inactCount.value()) {
+
+    std::ostringstream os;
+    os << "Listing sources of Unprotected and Unseen messages\n";
+
+    bool found(false);
+
+    unsigned int ml(0);
+    std::map<std::string,MsgAry>::const_iterator itr;
+    for (itr=m_inactiveMap.begin(); itr!=m_inactiveMap.end(); ++itr) {
+      for (unsigned int ic = 0; ic < MSG::NUM_LEVELS; ++ic) {
+	if (itr->second.msg[ic] != 0) {
+	  if (itr->first.length() > ml) { ml = itr->first.length(); }
+	}
+      }
+    }
+
+    for (unsigned int i=0; i<ml+25; ++i) {
+      os << "=";
+    }
+
+    os << endl << " ";
+    os.width(ml+2);
+    os.setf(ios_base::left,ios_base::adjustfield);
+    os << "Message Source";
+    os.width(1);
+    os << "|   Level |    Count" << endl;
+
+    for (unsigned int i=0; i<ml+3; ++i) {
+      os << "-";
+    }
+    os << "+---------+-----------" << endl;
+
+
+    for (itr=m_inactiveMap.begin(); itr!=m_inactiveMap.end(); ++itr) {
+      for (unsigned int ic = 0; ic < MSG::NUM_LEVELS; ++ic) {
+	if (itr->second.msg[ic] != 0) {
+	  os << " ";
+	  os.width(ml+2);
+	  os.setf(ios_base::left,ios_base::adjustfield);
+	  os << itr->first;
+
+	  os << "|";
+
+	  os.width(8);
+	  os.setf(ios_base::right,ios_base::adjustfield);
+	  os << levelNames[ic];
+
+	  os << " |";
+
+	  os.width(9);
+	  os << itr->second.msg[ic];
+
+	  os << endl;
+
+	  found = true;
+	}
+      }
+    }
+    for (unsigned int i=0; i<ml+25; ++i) {
+      os << "=";
+    }
+    os << endl;
+
+    if (found) {
+      cout << os.str();
+    }
+  }
+#endif
 
   return StatusCode::SUCCESS;
 }
@@ -746,6 +837,14 @@ std::string MessageSvc::getLogColor(int logLevel) const   {
 int MessageSvc::messageCount( MSG::Level level) const   {
 
   return m_msgCount[level];
+
+}
+
+// ---------------------------------------------------------------------------
+void
+MessageSvc::incrInactiveCount(MSG::Level level, const std::string& source) {
+
+  ++(m_inactiveMap[source].msg[level]);
 
 }
 

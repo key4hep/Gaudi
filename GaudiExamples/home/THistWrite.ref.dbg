@@ -21,7 +21,7 @@ JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/use
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on lxplus416.cern.ch on Wed Mar 16 14:08:49 2011
+                                          running on pclhcb55 on Fri Jun 25 09:23:43 2010
 ====================================================================================================================================[m
 ApplicationMgr    VERBOSE declareMultiSvcType: declared service EvtDataSvc/EventDataSvc[m
 ApplicationMgr    VERBOSE declareMultiSvcType: declared service DetDataSvc/DetectorDataSvc[m
@@ -58,14 +58,63 @@ ApplicationMgr       INFO Application Manager Started successfully[m
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine[m
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3[m
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 438[m
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 325[m
 ApplicationMgr       INFO Application Manager Stopped successfully[m
 THistWrite           INFO Finalizing...[m
 EventLoopMgr         INFO Histograms converted successfully according to request.[m
 THistSvc            DEBUG THistSvc::finalize[m
+THistSvc            DEBUG uid: "/new/Tree2"  temp: 1  dir: root:/[m
+THistSvc            DEBUG uid: "/rec/gauss2d"  temp: 0  dir: tuple3.rt:/[m
+THistSvc            DEBUG uid: "/rec/gauss3d"  temp: 0  dir: tuple3.rt:/[m
+THistSvc            DEBUG uid: "/rec/prof"  temp: 0  dir: tuple3.rt:/[m
+THistSvc            DEBUG uid: "/rec/trees/stuff/tree1"  temp: 0  dir: tuple3.rt:/trees/stuff[m
+THistSvc            DEBUG uid: "/temp/TempHist1"  temp: 1  dir: root:/[m
+THistSvc            DEBUG uid: "/temp/other/TempHist1a"  temp: 1  dir: root:/other[m
+THistSvc            DEBUG uid: "/upd/xxx/gauss1d"  temp: 0  dir: tuple2.rt:/xxx[m
 THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT [m
 THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT: "tuple2.rt"[m
 THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT: "tuple3.rt"[m
 THistSvc             INFO Listing contents of ROOT files: [m
+THistSvc            DEBUG finalizing stream/file rec:tuple3.rt[m
 THistSvc             INFO ==> File: tuple3.rt  stream: rec[m
 TFile: name=tuple3.rt, title=rec, option=CREATE
 TH1.Print Name  = 2Dgauss, Entries= 20000, Total sum= 19978
@@ -94,6 +143,7 @@ TH1.Print Name  = profile, Entries= 0, Total sum= 0
 *Entries :     1000 : Total  Size=       4565 bytes  File Size  =        160 *
 *Baskets :        1 : Basket Size=      32000 bytes  Compression=  25.49     *
 *............................................................................*
+THistSvc            DEBUG finalizing stream/file upd:tuple2.rt[m
 THistSvc             INFO ==> File: tuple2.rt  stream: upd[m
 TFile: name=tuple2.rt, title=upd, option=UPDATE
 TH1.Print Name  = 1Dgauss, Entries= 20000, Total sum= 19984
