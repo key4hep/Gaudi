@@ -616,7 +616,7 @@ endfunction()
 function( GAUDI_PROJECT_VERSION_HEADER )
   set(project ${CMAKE_PROJECT_NAME})
   set(version ${${CMAKE_PROJECT_NAME}_VERSION})
-  set(output  ${CMAKE_BINARY_DIR}/include/${project}_VERSION.h)
+  set(output  ${BUILD_OUTPUT_PREFIX}/include/${project}_VERSION.h)
   add_custom_command(OUTPUT ${output}
                      COMMAND ${versheader_cmd} ${project} ${version} ${output})
   add_custom_target(${project}VersionHeader ALL
