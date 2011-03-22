@@ -38,31 +38,6 @@ public:
 
 private:
 
-  /// \name i_doAudit
-  /// internal functions to simplify the implementation of the handler methods.
-  //@{
-  /// Handle the special case of INamedInterface.
-  template <Action WHEN, class EVT>
-  inline void i_doAudit(EVT evt, INamedInterface* caller) {
-    if (caller) i_doAudit<WHEN>(evt, caller->name());
-  }
-  /// Check if we need to audit the event and call the IChronoStatSvc.
-  template <Action WHEN, class EVT>
-  inline void i_doAudit(EVT evt, const std::string& caller) {
-    std::string s(i_toStr(evt));
-    if (i_auditEventType(s))
-      i_doAudit<WHEN>(s + ":" + caller);
-  }
-  //@}
-
-  /// Call the IChronoStatSvc.
-  template <Action WHEN>
-  inline void i_doAudit(const std::string& id);
-
-  /// Convert the event to a string.
-  template <class T>
-  inline std::string i_toStr(T evt) const { return evt; }
-
   /// Check if we are requested to audit the passed event type.
   inline bool i_auditEventType(const std::string& evt) {
     // Note: there is no way to extract from a Property type the type returned by
@@ -73,6 +48,31 @@ private:
              (find(v.begin(), v.end(), evt) != v.end())
            );
   }
+
+  /// \name i_doAudit
+  /// internal functions to simplify the implementation of the handler methods.
+  //@{
+  /// Handle the special case of INamedInterface.
+  template <Action WHEN, class EVT>
+  inline void i_doAudit(EVT evt, INamedInterface* caller) {
+    if (caller) i_doAudit<WHEN>(evt, caller->name());
+  }
+  /// Handle standard event types (convert to string and pass over).
+  template <Action WHEN>
+  inline void i_doAudit(StandardEventType evt, const std::string& caller) {
+    i_doAudit<WHEN>(toStr(evt), caller);
+  }
+  /// Check if we need to audit the event and call the IChronoStatSvc.
+  template <Action WHEN>
+  inline void i_doAudit(const std::string& evt, const std::string& caller) {
+    if (i_auditEventType(evt))
+      i_doAudit<WHEN>(caller + ":" + evt);
+  }
+  //@}
+
+  /// Call the IChronoStatSvc.
+  template <Action WHEN>
+  inline void i_doAudit(const std::string& id);
 
   IChronoStatSvc* m_chronoSvc;
   StringArrayProperty m_types;
@@ -86,10 +86,6 @@ void ChronoAuditor::i_doAudit<ChronoAuditor::BEFORE>(const std::string& id) {
 template <>
 void ChronoAuditor::i_doAudit<ChronoAuditor::AFTER>(const std::string& id) {
   chronoSvc()->chronoStop(id);
-}
-template <>
-std::string ChronoAuditor::i_toStr(StandardEventType evt) const {
-  return toStr(evt);
 }
 
 #endif
