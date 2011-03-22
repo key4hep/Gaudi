@@ -8,10 +8,7 @@
 #endif
 
 #include "ChronoAuditor.h"
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/AudFactory.h"
-#include "GaudiKernel/IChronoStatSvc.h"
-#include "GaudiKernel/Chrono.h"
 
 DECLARE_AUDITOR_FACTORY(ChronoAuditor)
 
@@ -27,36 +24,35 @@ ChronoAuditor::~ChronoAuditor(){
 
 void ChronoAuditor::before(StandardEventType evt, const std::string& caller)
 {
-  m_oss.str("");  
-  m_oss << evt;
-  before(m_oss.str(), caller);
+  i_doAudit<BEFORE>(evt, caller);
 }
-
-
-void ChronoAuditor::after(StandardEventType evt, const std::string& caller, const StatusCode& sc)
+void ChronoAuditor::before(StandardEventType evt, INamedInterface* caller)
 {
-  m_oss.str("");
-  m_oss << evt;
-  after(m_oss.str(), caller, sc);
+  i_doAudit<BEFORE>(evt, caller);
 }
-
-void ChronoAuditor::i_doAudit(const std::string& evt, const std::string& caller, Action action)
+void ChronoAuditor::before(CustomEventTypeRef evt, const std::string& caller)
 {
-  if (m_types.value().size() != 0) {
-    if ( (m_types.value())[0] == "none") {
-      return;
-    }
-    
-    if ( find(m_types.value().begin(), m_types.value().end(), evt) ==
-	 m_types.value().end() ) {
-      return;
-    }
-  }
-
-  if (action==BEFORE) {
-    chronoSvc( )->chronoStart( caller + ":" + evt ) ;
-  }
-  else {
-    chronoSvc( )->chronoStop( caller + ":" + evt ) ;
-  }
+  i_doAudit<BEFORE>(evt, caller);
 }
+void ChronoAuditor::before(CustomEventTypeRef evt, INamedInterface* caller)
+{
+  i_doAudit<BEFORE>(evt, caller);
+}
+
+void ChronoAuditor::after(StandardEventType evt, const std::string& caller, const StatusCode&)
+{
+  i_doAudit<AFTER>(evt, caller);
+}
+void ChronoAuditor::after(StandardEventType evt, INamedInterface* caller, const StatusCode&)
+{
+  i_doAudit<AFTER>(evt, caller);
+}
+void ChronoAuditor::after(CustomEventTypeRef evt, const std::string& caller, const StatusCode&)
+{
+  i_doAudit<AFTER>(evt, caller);
+}
+void ChronoAuditor::after(CustomEventTypeRef evt, INamedInterface* caller, const StatusCode&)
+{
+  i_doAudit<AFTER>(evt, caller);
+}
+
