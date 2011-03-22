@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiSvc/src/MessageSvc/MessageSvc.h,v 1.15 2008/10/21 16:25:55 marcocle Exp $
 #ifndef GAUDI_MESSAGESVC_H
 #define GAUDI_MESSAGESVC_H
 
@@ -29,7 +28,7 @@ class ISvcLocator;
 //
 // Author:      Iain Last
 //
-class MessageSvc : public extends1<Service, IMessageSvc> {
+class MessageSvc : public extends2<Service, IMessageSvc, IInactiveMessageCounter> {
 public:
   typedef std::pair< std::string, std::ostream* > NamedStream;
   typedef std::multimap< int, NamedStream > StreamMap;
@@ -122,6 +121,11 @@ public:
   // Implementation of IMessageSvc::messageCount()
   virtual int messageCount( MSG::Level logLevel ) const;
 
+  // Implementation of IInactiveMessageCounter::incrInactiveCount()
+  virtual void incrInactiveCount( MSG::Level level,
+				  const std::string& src );
+
+
 private:
   std::ostream* m_defaultStream;      ///< Pointer to the output stream.
   Message m_defaultMessage;           ///< Default Message
@@ -130,7 +134,7 @@ private:
   ThresholdMap m_thresholdMap;        ///< Output level threshold map
   std::string m_defaultFormat;        ///< Default format for the messages
   std::string m_defaultTimeFormat;    ///< Default format for timestamps in the messages
-  StringArrayProperty m_thresholdProp[MSG::NUM_LEVELS]; ///< Properties controling
+  StringArrayProperty m_thresholdProp[MSG::NUM_LEVELS]; ///< Properties controlling
   BooleanProperty m_color;
   BooleanProperty m_stats;
   UnsignedIntegerProperty m_statLevel;
@@ -155,8 +159,8 @@ private:
     }
   };
 
-  std::map<std::string,MsgAry> m_sourceMap;
-  BooleanProperty m_suppress;
+  std::map<std::string,MsgAry> m_sourceMap, m_inactiveMap;
+  BooleanProperty m_suppress, m_inactCount;
 
   std::string colTrans(std::string, int);
   typedef std::map<std::string, MSG::Color> ColorMap;
@@ -172,6 +176,7 @@ private:
   void setupColors(Property& prop);
   void setupLimits(Property& prop);
   void setupThreshold(Property& prop);
+  void setupInactCount(Property& prop);
 
   void setupLogStreams();
 

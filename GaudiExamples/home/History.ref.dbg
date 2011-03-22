@@ -29,7 +29,7 @@ ApplicationMgr      DEBUG Getting my own properties[m
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on lxplus416.cern.ch on Wed Mar 16 14:08:11 2011
+                                          running on lxplus258.cern.ch on Thu Jan  6 13:00:56 2011
 ====================================================================================================================================[m
 ApplicationMgr       INFO Application Manager Configured successfully[m
 ServiceManager      DEBUG Initializing service StatusCodeSvc[m
@@ -57,6 +57,7 @@ HistogramPersis...  DEBUG Service base class initialized successfully[m
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc[m
 ServiceManager      DEBUG Initializing service HistorySvc[m
 HistorySvc          DEBUG Service base class initialized successfully[m
+HistorySvc          DEBUG Initializing HistorySvc[m
 AlgContextSvc       DEBUG Service base class initialized successfully[m
 AlgContextSvc     VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
 IncidentSvc         DEBUG Adding [BeginEvent] listener 'AlgContextSvc' with priority 0[m
@@ -82,9 +83,23 @@ ApplicationMgr       INFO Application Manager Started successfully[m
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [BeginEvent][m
 IncidentSvc       VERBOSE Calling 'HistorySvc' for incident [BeginEvent][m
 HistorySvc        VERBOSE ServiceLocatorHelper::service: found service JobOptionsSvc[m
-HistorySvc           INFO Registered 1 Algorithms[m
+HistorySvc          DEBUG Registering algorithm: [96;1mHistory[m
+HistorySvc           INFO [mRegistered 1 Algorithms[m
 HistorySvc           INFO Registered 0 AlgTools[m
-HistorySvc           INFO [m[m[m[m[m[m[m[m[m[m[m[m[mRegistered 13 Services[m
+HistorySvc          DEBUG Registering Service: [96;1mStatusCodeSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mMessageSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mJobOptionsSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mAppMgrRunable[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mIncidentSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mEventPersistencySvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mEventDataSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mHistogramPersistencySvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mHistogramDataSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mAlgContextSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mToolSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mEventLoopMgr[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mHistorySvc[m
+HistorySvc           INFO [mRegistered 13 Services[m
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [EndEvent][m
 IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [BeginEvent][m
 ServiceManager      DEBUG Stopping service HistorySvc[m

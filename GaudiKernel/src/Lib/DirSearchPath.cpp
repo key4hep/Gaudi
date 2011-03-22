@@ -1,6 +1,3 @@
-// $Id: DirSearchPath.cpp,v 1.2 2007/10/16 15:37:25 marcocle Exp $
-
-//<<<<<< INCLUDES                                                       >>>>>>
 #ifdef WIN32
 // Disable warning
 //    C4996: '...': Function call with parameters that may be unsafe
@@ -28,7 +25,7 @@ using boost::filesystem::is_directory;
 using boost::tokenizer;
 using boost::char_separator;
 
-//structors
+//constructors
 DirSearchPath::DirSearchPath(const std::string& stringifiedPath, const char* separator) {
   addCWD(); //FIXME is this a good idea?
 
@@ -36,37 +33,20 @@ DirSearchPath::DirSearchPath(const std::string& stringifiedPath, const char* sep
 
   Tokenizer tok(stringifiedPath, char_separator<char>(separator));
 
-
   //add names to dir container, filtering dir names to remove invalid ones
   //notice how we iterate over all tokens even if there is an illegal one
   Tokenizer::iterator it = tok.begin();
   while(it != tok.end()) {
     try {
-      //path p( *(it++), boost::filesystem::native);
-      // For some reason native() does not work with boost 1.31. Changed to no_check and cross the fingers....
-      path p( *(it++), boost::filesystem::no_check);
+      path p(*(it++));
       add(p);
     }
-    catch (boost::filesystem::filesystem_error /*err*/) {
+    catch (boost::filesystem::filesystem_error &/*err*/) {
     }
   }
 }
 
 //modifiers
-// bool DirSearchPath::add(const std::string& dirName) {
-//   bool rc(false);
-//   try {
-//     rc=add(path(dirName));
-//   } catch (const filesystem_error& err) {
-// #ifndef NDEBUG
-//     cerr << "DirSearchPath::DirSearchPath: ERROR adding dir "
-// 	 << err.what() << endl;
-//     throw err;
-// #endif
-//   }
-//   return rc;
-// }
-
 bool DirSearchPath::addCWD() {
   return add(boost::filesystem::current_path());
 }
