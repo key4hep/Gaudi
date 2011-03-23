@@ -14,11 +14,7 @@ DECLARE_AUDITOR_FACTORY(ChronoAuditor)
 
 ChronoAuditor::ChronoAuditor(const std::string& name, ISvcLocator* pSvcLocator)
 : CommonAuditor(name, pSvcLocator) {
-  service( "ChronoStatSvc", m_chronoSvc, true).ignore();
-}
-
-ChronoAuditor::~ChronoAuditor(){
-  m_chronoSvc->release();
+  m_chronoSvc = serviceLocator()->service("ChronoStatSvc");
 }
 
 void ChronoAuditor::i_before(CustomEventTypeRef evt, const std::string& caller)

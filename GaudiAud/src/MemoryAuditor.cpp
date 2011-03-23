@@ -8,7 +8,6 @@
 #endif
 
 #include "MemoryAuditor.h"
-#include "ProcStats.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/AudFactory.h"
 
@@ -26,20 +25,14 @@ void MemoryAuditor::i_after(CustomEventTypeRef evt, const std::string& caller, c
   i_printinfo("Memory usage has changed after", evt, caller);
 }
 
-bool MemoryAuditor::i_printinfo(const std::string& msg, CustomEventTypeRef evt, const std::string& caller)
+void MemoryAuditor::i_printinfo(const std::string& msg, CustomEventTypeRef evt, const std::string& caller)
 {
-   ProcStats* p = ProcStats::instance();
    procInfo info;
-
    // The fetch method returns true if memory usage has changed...
-   if( p->fetch(info) == true) {
+   if(getProcInfo(info)) {
      MsgStream log(msgSvc(), name());
      log << MSG::INFO << msg << " " << caller << " " << evt <<
        " virtual size = " << info.vsize << " MB"  <<
        " resident set size = " << info.rss << " MB" << endmsg;
-     return true;
-   }
-   else {
-      return false;
    }
 }

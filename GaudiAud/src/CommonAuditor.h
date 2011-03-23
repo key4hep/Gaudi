@@ -1,5 +1,7 @@
 #include "GaudiKernel/Auditor.h"
 
+/// Base class with common functionalities shared by few auditor implementations.
+/// @author Marco Clemencic
 class CommonAuditor: public Auditor {
 public:
   /** Constructor

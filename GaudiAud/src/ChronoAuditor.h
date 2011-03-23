@@ -9,13 +9,11 @@
     Monitors the cpu time usage of each algorithm
 
     @author David Quarrie
+    @author Marco Clemencic
 */
 class ChronoAuditor : virtual public CommonAuditor {
 public:
   ChronoAuditor(const std::string& name, ISvcLocator* pSvcLocator);
-  virtual ~ChronoAuditor();
-
-  IChronoStatSvc* chronoSvc( ) { return m_chronoSvc; }
 
 private:
   /// Default (catch-all) "before" Auditor hook
@@ -29,7 +27,8 @@ private:
     return caller + ":" + evt;
   }
 
-  IChronoStatSvc* m_chronoSvc;
+  SmartIF<IChronoStatSvc>& chronoSvc() { return m_chronoSvc; }
+  SmartIF<IChronoStatSvc> m_chronoSvc;
 };
 
 #endif
