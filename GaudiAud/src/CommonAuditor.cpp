@@ -1,7 +1,10 @@
 #include "CommonAuditor.h"
 
 CommonAuditor::CommonAuditor(const std::string& name, ISvcLocator *svcloc): Auditor(name, svcloc) {
-  declareProperty("CustomEventTypes",m_types);
+  declareProperty("EventTypes", m_types,
+                  "List of event types to audit ([]=all, ['none']=none)");
+  declareProperty("CustomEventTypes", m_types,
+                  "OBSOLETE, use EventTypes instead");
 }
 
 CommonAuditor::~CommonAuditor() {}
