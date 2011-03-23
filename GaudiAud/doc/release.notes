@@ -1,8 +1,10 @@
 Package: GaudiAud
 Package manager : David Quarrie, Marco Clemencic
 
-! 2011-03-22 - Frank Winklmeier
- - Fixed bug #79627: ChronoAuditor broken for custom event types
+! 2011-03-23 - Marco Clemencic
+ - Fixed bug #79627: ChronoAuditor broken for start/stop event types
+   Moved common code to a common base class CommonAuditor, sharing as much as
+   possible the code among auditor implementations.
 
 =============================== GaudiAud v9r3 ================================
 ! 2010-04-20 - Marco Clemencic
