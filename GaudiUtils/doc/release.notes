@@ -1,6 +1,12 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2011-03-23 - Marco Clemencic
+ - Fixed VC9 warnings.
+   - Replaced C-style string manipulation and formatting with C++ (and Boost)
+     implementations.
+   - Disabled some warnings.
+
 ============================== GaudiUtils v3r11 ==============================
 ! 2011-01-11 - Marco Clemencic
  - Fixed some ICC remarks.

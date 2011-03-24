@@ -284,8 +284,8 @@ namespace Gaudi {
 
     ValueType  ns (void) const;
 
-    std::string  format (bool local, const std::string &spec) const;
-    std::string  nanoformat (int minwidth = 1, int maxwidth = 9) const;
+    std::string  format (bool local, std::string spec = "%c") const;
+    std::string  nanoformat (size_t minwidth = 1, size_t maxwidth = 9) const;
 
     static bool  isLeap (int year);
 

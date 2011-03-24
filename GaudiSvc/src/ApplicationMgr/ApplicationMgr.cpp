@@ -21,17 +21,20 @@
 #include "GaudiKernel/ThreadGaudi.h"
 
 #include "GaudiKernel/StatusCode.h"
+#include "GaudiKernel/Time.h"
+#include "GaudiKernel/System.h"
+using System::getEnv;
+using System::isEnvSet;
 
 #include <algorithm>
 #include <cassert>
 #include <ctime>
 #include <limits>
 
-DECLARE_OBJECT_FACTORY(ApplicationMgr)
-
 static const char* s_eventloop = "EventLoop";
 static const char* s_runable   = "Runable";
 
+DECLARE_OBJECT_FACTORY(ApplicationMgr)
 
 // Implementation class for the Application Manager. In this way the
 // ApplicationMgr class is a fully insulated concrete class. Clients
@@ -233,9 +236,9 @@ StatusCode ApplicationMgr::i_startup() {
       return sc;
     }
   }
-  else if ( 0 != getenv("JOBOPTPATH") ) {// Otherwise the Environment JOBOPTPATH
+  else if ( isEnvSet("JOBOPTPATH") ) {// Otherwise the Environment JOBOPTPATH
     sc = jobOptsIProp->setProperty (StringProperty("PATH",
-                                                   getenv("JOBOPTPATH")));
+                                                   getEnv("JOBOPTPATH")));
     if( !sc.isSuccess() )   {
       fatal()
            << "Error setting PATH option in JobOptionsSvc from env"
@@ -342,15 +345,11 @@ StatusCode ApplicationMgr::configure() {
     }
 
     // Add the host name and current time to the message
-    time_t t;
-    std::time( &t );
-    tm* localt = std::localtime( &t );
-
     log << MSG::ALWAYS
         << std::endl
         << "                                "
         << "          running on " << System::hostName()
-        << " on " << std::asctime( localt )
+        << " on " << Gaudi::Time::current().format(true) << std::endl
         << "=================================================================="
         << "=================================================================="
         << endmsg;

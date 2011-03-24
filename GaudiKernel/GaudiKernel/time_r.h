@@ -13,12 +13,12 @@
 #ifdef _WIN32
 
 extern "C" {
-  inline struct tm *localtime_r ( const time_t *sec, struct tm *result) {
-    *result = *localtime(sec);
+  inline struct tm * localtime_r(const time_t *sec, struct tm *result) {
+    localtime_s(result, sec);
     return result;
   }
-  inline struct tm *gmtime_r ( const time_t *sec, struct tm *result) {
-    *result = *gmtime(sec);
+  inline struct tm * gmtime_r(const time_t *sec, struct tm *result) {
+    gmtime_s(result, sec);
     return result;
   }
 }

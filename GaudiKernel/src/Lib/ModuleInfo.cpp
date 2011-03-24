@@ -84,13 +84,18 @@ const std::string& System::moduleNameFull()   {
 #ifdef _WIN32
       if ( _psApi.isValid() )   {
         _psApi.GetModuleFileNameExA( processHandle(), (HINSTANCE)moduleHandle(), name,sizeof(name) );
+        module = name;
       }
-#elif defined(linux) || defined(__APPLE__)
-      ::realpath(((Dl_info*)moduleHandle())->dli_fname, name);
-#elif __hpux
-      ::realpath(((HMODULE*)moduleHandle())->dsc.filename, name);
+#else
+      const char *path =
+#  if defined(linux) || defined(__APPLE__)
+          ((Dl_info*)moduleHandle())->dli_fname;
+#  elif __hpux
+          ((HMODULE*)moduleHandle())->dsc.filename;
+#  endif
+      if (::realpath(path, name))
+        module = name;
 #endif
-      module = name;
     }
   }
   return module;
@@ -208,16 +213,18 @@ const std::string& System::exeName()    {
 #ifdef _WIN32
     if ( _psApi.isValid() && processHandle() )   {
       _psApi.GetModuleFileNameExA( processHandle(), (HINSTANCE)exeHandle(), name,sizeof(name) );
+      module = name;
     }
 #elif defined(linux) || defined(__APPLE__)
     char cmd[512];
     ::sprintf(cmd, "/proc/%d/exe", ::getpid());
     module = "Unknown";
-    ::readlink(cmd, name, sizeof(name));
+    if (::readlink(cmd, name, sizeof(name)) >= 0)
+      module = name;
 #elif __hpux
-    ::realpath(((HMODULE*)exeHandle())->dsc.filename, name);
+    if (::realpath(((HMODULE*)exeHandle())->dsc.filename, name))
+      module = name;
 #endif
-    module = name;
   }
   return module;
 }

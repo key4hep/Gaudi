@@ -32,6 +32,12 @@
 //   The comparison are meant
 #pragma warning(disable:1572)
 #endif
+#ifdef WIN32
+// Disable the warning
+//    C4996: 'std::copy': Function call with parameters that may be unsafe
+// The parameters are checked
+#pragma warning(disable:4996)
+#endif
 
 namespace Genfun
 {
