@@ -25,7 +25,11 @@
 // Local
 // ============================================================================
 #include "ParticlePropertySvc.h"
-
+// ============================================================================
+/** Instantiation of a static factory class used by clients to create
+ *  instances of this service
+ */
+DECLARE_SERVICE_FACTORY(ParticlePropertySvc)
 // ============================================================================
 /** @file
  *
@@ -617,12 +621,6 @@ bool ParticlePropertySvc::diff
 // re-enable icc remark #1572
 #pragma warning(pop)
 #endif
-
-// ============================================================================
-/** Instantiation of a static factory class used by clients to create
- *  instances of this service
- */
-DECLARE_SERVICE_FACTORY(ParticlePropertySvc)
 // ============================================================================
 // The END
 // ============================================================================

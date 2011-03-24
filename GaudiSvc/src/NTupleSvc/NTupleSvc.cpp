@@ -43,6 +43,13 @@
 
 #include "NTupleSvc.h"
 
+// Instantiation of a static factory class used by clients to create
+// instances of this service
+DECLARE_SERVICE_FACTORY(NTupleSvc)
+
+/// Selector factory instantiation
+DECLARE_NAMESPACE_OBJECT_FACTORY(NTuple,Selector)
+
 #include <sstream>
 
 namespace {
@@ -697,10 +704,3 @@ StatusCode NTupleSvc::readRecord(DataObject* pParent, const std::string& relPath
   }
   return INVALID_OBJ_PATH;
 }
-
-// Instantiation of a static factory class used by clients to create
-// instances of this service
-DECLARE_SERVICE_FACTORY(NTupleSvc)
-
-/// Selector factory instantiation
-DECLARE_NAMESPACE_OBJECT_FACTORY(NTuple,Selector)

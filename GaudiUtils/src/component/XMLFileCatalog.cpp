@@ -35,6 +35,8 @@ using namespace std;
 #define setIdAttribute(a, b) setIdAttribute(a)
 #endif
 
+PLUGINSVC_FACTORY(XMLFileCatalog,IInterface*(std::string, IMessageSvc*))
+
 namespace {
 
   typedef const string& CSTR;
@@ -536,5 +538,3 @@ string XMLFileCatalog::getfile(bool create)   {
   }
   return path;
 }
-
-PLUGINSVC_FACTORY(XMLFileCatalog,IInterface*(std::string, IMessageSvc*))

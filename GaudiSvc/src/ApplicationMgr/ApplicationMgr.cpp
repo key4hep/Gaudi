@@ -34,6 +34,7 @@ using System::isEnvSet;
 static const char* s_eventloop = "EventLoop";
 static const char* s_runable   = "Runable";
 
+DECLARE_OBJECT_FACTORY(ApplicationMgr)
 
 // Implementation class for the Application Manager. In this way the
 // ApplicationMgr class is a fully insulated concrete class. Clients
@@ -1266,5 +1267,3 @@ void ApplicationMgr::reflexDebugPropertyHandler( Property& )
 void ApplicationMgr::initLoopCheckHndlr(Property&) {
   svcManager()->setLoopCheckEnabled(m_loopCheck);
 }
-
-DECLARE_OBJECT_FACTORY(ApplicationMgr)

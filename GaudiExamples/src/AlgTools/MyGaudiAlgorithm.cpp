@@ -10,6 +10,8 @@
 #include "IMyTool.h"
 #include "MyGaudiAlgorithm.h"
 
+// Static Factory declaration
+DECLARE_ALGORITHM_FACTORY(MyGaudiAlgorithm)
 
 // Constructor
 //------------------------------------------------------------------------------
@@ -77,6 +79,3 @@ StatusCode MyGaudiAlgorithm::finalize() {
 
   return GaudiAlgorithm::finalize();
 }
-
-// Static Factory declaration
-DECLARE_ALGORITHM_FACTORY(MyGaudiAlgorithm)

@@ -3,6 +3,12 @@
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! =============================================================================
 
+! 2011-03-23 - Marco Clemencic
+ - Fixed VC9 warnings.
+   - Replaced C-style string manipulation and formatting with C++ (and Boost)
+     implementations.
+   - Disabled some warnings.
+
 ! 2011-02-28 - Marco Clemencic
  - Excluded few classes that are causing troubles on Windows.
    (see ROOT bug #78837)

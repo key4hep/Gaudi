@@ -15,6 +15,10 @@
 using System::isEnvSet;
 using System::getEnv;
 
+// Instantiation of a static factory class used by clients to create
+// instances of this service
+DECLARE_SERVICE_FACTORY(DetDataSvc)
+
 // Service initialization
 StatusCode DetDataSvc::initialize()   {
   MsgStream log(msgSvc(), name());
@@ -304,7 +308,3 @@ StatusCode DetDataSvc::updateObject( DataObject* toUpdate ) {
   return StatusCode::SUCCESS;
 
 }
-
-// Instantiation of a static factory class used by clients to create
-// instances of this service
-DECLARE_SERVICE_FACTORY(DetDataSvc)
