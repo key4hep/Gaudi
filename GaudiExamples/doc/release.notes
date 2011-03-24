@@ -1,6 +1,12 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2011-03-23 - Marco Clemencic
+ - Fixed VC9 warnings.
+   - Replaced C-style string manipulation and formatting with C++ (and Boost)
+     implementations.
+   - Disabled some warnings.
+
 ! 2011-03-16 - Marco Clemencic
  - Updated reference files after patch #4727
 

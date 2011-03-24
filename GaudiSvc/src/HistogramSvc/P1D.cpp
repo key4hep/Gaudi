@@ -3,17 +3,21 @@
 //   TODO: To be removed, since it comes from ROOT TMathBase.h
 #pragma warning(disable:2259)
 #endif
+#ifdef WIN32
+// Disable warning
+//   warning C4996: 'sprintf': This function or variable may be unsafe.
+// coming from TString.h
+#pragma warning(disable:4996)
+#endif
 
 #include <cmath>
 #include "P1D.h"
 #include "GaudiKernel/ObjectFactory.h"
-typedef Gaudi::Profile1D P1D;
-DECLARE_DATAOBJECT_FACTORY(P1D)
 
 std::pair<DataObject*,AIDA::IProfile1D*> Gaudi::createProf1D
-( const std::string& title , 
-  int nBins  , double xlow, double xup, 
-  double ylow, double yup, const std::string& opt )  
+( const std::string& title ,
+  int nBins  , double xlow, double xup,
+  double ylow, double yup, const std::string& opt )
 {
   TProfile* _p = new TProfile(title.c_str(),title.c_str(),nBins,xlow,xup,ylow,yup,opt.c_str() ) ;
   Profile1D* p = new Profile1D(_p);
@@ -21,10 +25,10 @@ std::pair<DataObject*,AIDA::IProfile1D*> Gaudi::createProf1D
 }
 
 std::pair<DataObject*,AIDA::IProfile1D*> Gaudi::createProf1D
-( const std::string& title, 
-  const Edges& e, double ylow, double yup , 
-  const std::string& opt )  
-{  
+( const std::string& title,
+  const Edges& e, double ylow, double yup ,
+  const std::string& opt )
+{
   Profile1D* p = new Profile1D(new TProfile(title.c_str(),title.c_str(),e.size()-1,&e.front(),ylow,yup,opt.c_str()));
   return std::pair<DataObject*,AIDA::IProfile1D*>(p,p);
 }
@@ -36,22 +40,22 @@ std::pair<DataObject*,AIDA::IProfile1D*> Gaudi::createProf1D(const AIDA::IProfil
 }
 
 namespace Gaudi {
-  template <> 
-  int Generic1D<AIDA::IProfile1D,TProfile>::binEntries (int index) const  { 
+  template <>
+  int Generic1D<AIDA::IProfile1D,TProfile>::binEntries (int index) const  {
     return int(m_rep->GetBinEntries( rIndex(index) )+0.5);
   }
 
-  template <> void* Generic1D<AIDA::IProfile1D,TProfile>::cast(const std::string& className) const {  
-    if (className == "AIDA::IProfile1D") 
-      return const_cast<AIDA::IProfile1D*>((AIDA::IProfile1D*)this); 
-    else if (className == "AIDA::IProfile") 
-      return const_cast<AIDA::IProfile*>((AIDA::IProfile*)this); 
-    else if (className == "AIDA::IBaseHistogram") 
-      return const_cast<AIDA::IBaseHistogram*>((AIDA::IBaseHistogram*)this); 
+  template <> void* Generic1D<AIDA::IProfile1D,TProfile>::cast(const std::string& className) const {
+    if (className == "AIDA::IProfile1D")
+      return const_cast<AIDA::IProfile1D*>((AIDA::IProfile1D*)this);
+    else if (className == "AIDA::IProfile")
+      return const_cast<AIDA::IProfile*>((AIDA::IProfile*)this);
+    else if (className == "AIDA::IBaseHistogram")
+      return const_cast<AIDA::IBaseHistogram*>((AIDA::IBaseHistogram*)this);
     return 0;
   }
 
-  template <> 
+  template <>
   void Generic1D<AIDA::IProfile1D,TProfile>::adoptRepresentation(TObject* rep)  {
     TProfile* imp = dynamic_cast<TProfile*>(rep);
     if ( imp )  {
@@ -84,18 +88,18 @@ void Gaudi::Profile1D::init(const std::string& title, bool initialize_axis) {
   if ( initialize_axis )  {
     axis().initialize(m_rep->GetXaxis(),false);
   }
-  //m_rep->SetErrorOption("s"); 
+  //m_rep->SetErrorOption("s");
   m_rep->SetDirectory(0);
   m_sumEntries = 0;
 }
 
-bool Gaudi::Profile1D::setBinContents(int i, int entries,double height,double /*error*/, double spread, double /* centre */ ) { 
-  m_rep->SetBinEntries(rIndex(i), entries ); 
-  // set content takes in root height * entries 
+bool Gaudi::Profile1D::setBinContents(int i, int entries,double height,double /*error*/, double spread, double /* centre */ ) {
+  m_rep->SetBinEntries(rIndex(i), entries );
+  // set content takes in root height * entries
   m_rep->SetBinContent(rIndex(i), height*entries );
-  // set error takes sqrt of bin sum(w*y**2) 
-  double sumwy2Bin = ( spread*spread + height*height )*entries; 
-  m_rep->SetBinError(rIndex(i), sqrt(sumwy2Bin) ); 
+  // set error takes sqrt of bin sum(w*y**2)
+  double sumwy2Bin = ( spread*spread + height*height )*entries;
+  m_rep->SetBinError(rIndex(i), sqrt(sumwy2Bin) );
   m_sumEntries += entries;
   // not very efficient (but do evey bin since root cannot figure out by himself)
   m_rep->SetEntries(m_sumEntries);
@@ -111,3 +115,6 @@ bool Gaudi::Profile1D::fill ( double x, double y, double weight )  {
   (weight == 1.) ? m_rep->Fill(x,y) : m_rep->Fill(x,y,weight);
   return true;
 }
+
+typedef Gaudi::Profile1D P1D;
+DECLARE_DATAOBJECT_FACTORY(P1D)

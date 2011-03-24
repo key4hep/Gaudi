@@ -10,7 +10,7 @@
 //	Author     : M.Frank
 //  History    :
 // +---------+----------------------------------------------+---------
-// |    Date |                 Comment                      | Who     
+// |    Date |                 Comment                      | Who
 // +---------+----------------------------------------------+---------
 // | 29/10/98| Initial version                              | MF
 // | 03/02/99| Protect dynamic_cast with try-catch clauses  | MF
@@ -43,12 +43,12 @@ enum Seperator { SEPARATOR='/' };
 
 /// Standard Constructor
 DataSvcHelpers::RegistryEntry::RegistryEntry(const std::string& path, RegistryEntry* parent)
-: m_refCount(0), 
-  m_isSoft(false), 
+: m_refCount(0),
+  m_isSoft(false),
   m_path(path),
   m_pParent(parent),
   m_pAddress(0),
-  m_pObject(0), 
+  m_pObject(0),
   m_pDataProviderSvc(0)
 {
   std::string::size_type sep = m_path.rfind(SEPARATOR);
@@ -259,37 +259,36 @@ DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find(const std::
     std::string::size_type len  = path.length();
     std::string::size_type loc1 = path.find(SEPARATOR,1);
     std::string::size_type len2 = loc1 != std::string::npos ? loc1 : len;
-    const char* data = path.data();
     for (Store::const_iterator i = m_store.begin(); i != m_store.end(); i++ )   {
       RegistryEntry* regEnt = CAST_REGENTRY(RegistryEntry*, *i);
       const std::string& nam = regEnt->name();
-      if ( nam.length() == len2 )   {
-        if ( std::equal(nam.begin(), nam.begin()+len2, data)  )    {
-          try   {
-            if ( loc1 != std::string::npos )   {
-              std::string search_path(path, loc1, len);
-              IRegistry* pDir = regEnt->find(search_path);
-              if ( 0 != pDir )    {
-                return CAST_REGENTRY(RegistryEntry*, pDir);
-              }
-              return 0;
+      // check that the first len2 chars of path are the same as nam
+      // (i.e. match {len2:3 nam:"/Ab" path:"/Ab/C"}
+      // but not {len2:3 nam:"/Abc" path:"/Ab/C"})
+      if ( path.compare(0, len2, nam) == 0 ) {
+        try {
+          if ( loc1 != std::string::npos ) {
+            std::string search_path(path, loc1, len);
+            IRegistry* pDir = regEnt->find(search_path);
+            if ( 0 != pDir )    {
+              return CAST_REGENTRY(RegistryEntry*, pDir);
             }
-            else  {
-              return CAST_REGENTRY(RegistryEntry*, *i);
-            }
+            return 0;
           }
-          catch (...)   {
+          else  {
+            return CAST_REGENTRY(RegistryEntry*, *i);
           }
+        }
+        catch (...)   {
         }
       }
     }
-    if ( m_path.length() == len2 )    {
-      if ( std::equal(m_path.begin(), m_path.begin()+len2, data)  )    {
-        if (len2 < len)   {
-          std::string search_path(path, loc1, len);
-          return i_find(search_path);
-        }
-        //return this;
+    // If this node is "/NodeA", this part allows to find "/NodeA/NodeB" as
+    // our "/NodeB" child.
+    if ( path.compare(0, len2, m_path) == 0 ) {
+      if (len2 < len)   {
+        std::string search_path(path, loc1, len);
+        return i_find(search_path);
       }
     }
   }
@@ -309,7 +308,7 @@ DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find(const DataO
     for (Store::const_iterator i = m_store.begin(); i != m_store.end(); i++ )   {
       try   {
         const RegistryEntry *entry = CAST_REGENTRY(RegistryEntry*, *i);
-        if( 0 != (result = entry->i_find(key)) ) 
+        if( 0 != (result = entry->i_find(key)) )
           return result;
       }
       catch ( ... )   {    }

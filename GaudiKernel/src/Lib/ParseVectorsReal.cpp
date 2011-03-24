@@ -1,21 +1,26 @@
 // $Id: ParseVectorsReal.cpp,v 1.2 2007/05/24 14:39:11 hmd Exp $
 // ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.2 $ 
+// CVS tag $Name:  $, version $Revision: 1.2 $
 // ============================================================================
 // Include files
 // ============================================================================
 // Local
 // ============================================================================
+#ifdef WIN32
+// Disable warning
+//   C4244: '=' : conversion from 'int' to 'float', possible loss of data
+// Coming from the parsers(?).
+#pragma warning(disable:4244)
+#endif
 #include "GaudiKernel/Parsers.icpp"
 // ============================================================================
-
 // ============================================================================
-/** @file 
+/** @file
  *
- *  Implementation of the parsing functions for std::vetctor<TYPE>
- *  
- *  For adding new type you should have only grammar class which recognize 
- *  this type. Then by combining this grammar with such already implemented 
+ *  Implementation of the parsing functions for std::vector<TYPE>
+ *
+ *  For adding new type you should have only grammar class which recognize
+ *  this type. Then by combining this grammar with such already implemented
  *  grammars  like VectorGrammar, MapGrammar, PairGrammar you can very simply
  *  implement container types which will work with your type.
  *
@@ -24,23 +29,23 @@
  *
  *  @author Alexander MAZUROV  Alexander.Mazurov@gmail.com
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
- *  @date   2006-05-12 
+ *  @date   2006-05-12
  */
 // ============================================================================
 namespace Gaudi
-{ 
+{
   namespace Parsers
   {
     // ========================================================================
-    StatusCode parse ( vector<float>&              result , 
+    StatusCode parse ( vector<float>&              result ,
                        const string&               input  )
     { return parse_real_vector    ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( vector<double>&             result , 
+    StatusCode parse ( vector<double>&             result ,
                        const string&               input  )
-    { return parse_real_vector    ( result , input ) ; } 
+    { return parse_real_vector    ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( vector<long double>&        result , 
+    StatusCode parse ( vector<long double>&        result ,
                        const string&               input  )
     { return parse_real_vector    ( result , input ) ; }
     // ========================================================================
@@ -49,7 +54,7 @@ namespace Gaudi
 } // end of namespace Gaudi
 
 // ============================================================================
-// The END 
+// The END
 // ============================================================================
 
 

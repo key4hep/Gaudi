@@ -11,6 +11,9 @@
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/SvcFactory.h"
+#include "GaudiKernel/System.h"
+using System::isEnvSet;
+using System::getEnv;
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
@@ -61,10 +64,11 @@ StatusCode DetDataSvc::setupDetectorDescription() {
     if( m_detDbLocation.empty() || "empty" == m_detDbLocation ) {
 
       // if the name of DBlocation is not given - construct it!
-	    // by retrieving the value of XMLDDBROOT
+	  // by retrieving the value of XMLDDBROOT
 
-      if ( 0 != getenv("XMLDDDBROOT") ) {
-        m_detDbLocation  = getenv("XMLDDDBROOT");
+      /// @todo: remove references to obsolete package XMLDDDBROOT
+      if ( isEnvSet("XMLDDDBROOT") ) {
+        m_detDbLocation  = getEnv("XMLDDDBROOT");
         m_detDbLocation += "/DDDB/lhcb.xml";
       }
     }
@@ -304,4 +308,3 @@ StatusCode DetDataSvc::updateObject( DataObject* toUpdate ) {
   return StatusCode::SUCCESS;
 
 }
-

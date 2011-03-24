@@ -5,11 +5,11 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Tokenizer.h"
 #include "GaudiKernel/System.h"
+#include "GaudiKernel/Time.h"
 
 #include <sstream>
 #include <streambuf>
 #include <algorithm>
-#include <time.h>
 
 #include "boost/bind.hpp"
 
@@ -20,7 +20,7 @@ DECLARE_SERVICE_FACTORY(IssueLogger)
 //*************************************************************************//
 inline void toupper(std::string &s)
 {
-  std::transform(s.begin(), s.end(), s.begin(), 
+  std::transform(s.begin(), s.end(), s.begin(),
                  (int(*)(int)) toupper);
 }
 
@@ -252,24 +252,7 @@ IssueLogger::report(IssueSeverity::Level lev, const std::string& str,
   std::string msg = m_levelTrans[lev] + "  " + org + "  \"" + str + "\"";
 
   if (m_showTime) {
-    const time_t t = time( 0 );
-    tm *tt = localtime( &t );
-
-    ostringstream os;
-    os << (tt->tm_hour < 10 ? "0" : "" ) << tt->tm_hour << ":"
-       << (tt->tm_min < 10 ? "0" : "" )  << tt->tm_min << ":"
-       << (tt->tm_sec < 10 ? "0" : "" )  << tt->tm_sec << " "
-       << tt->tm_year + 1900 << "/"
-       << (tt->tm_mon < 9 ? "0" : "" )   << tt->tm_mon+1 << "/"
-       << (tt->tm_mday < 10 ? "0" : "" ) << tt->tm_mday << " "
-#ifdef __linux
-       << tt->tm_zone;
-#else
-       << " " ;
-#endif
-
-    msg += " [" + os.str() +"]";
-
+    msg += " [" + Gaudi::Time::current().format(true, "%H:%M:%S %Y/%m/%d %Z") +"]";
   }
 
   if (lev >= m_traceLevel) {
