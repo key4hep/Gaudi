@@ -1,3 +1,10 @@
+#ifdef WIN32
+// Disable warning
+//    C4996: '...': Function call with parameters that may be unsafe
+// Noise probably coming from the use of Boost tokenizer
+#pragma warning(disable:4996)
+#endif
+
 #include <algorithm>  /* find */
 #include <iostream>
 #ifdef __ICC

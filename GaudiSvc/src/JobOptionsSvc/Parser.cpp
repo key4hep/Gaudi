@@ -1,8 +1,15 @@
 // $Id: Parser.cpp,v 1.11 2007/12/06 15:14:21 marcocle Exp $
 // ============================================================================
+#ifdef WIN32
+// Disable warning
+//   C4996: 'std::copy': Function call with parameters that may be unsafe
+// Probably coming from Boost classification.
+#pragma warning(disable:4996)
+#endif
+// ============================================================================
 // Include files
 // ============================================================================
-// STD & STL 
+// STD & STL
 // ============================================================================
 #include <iostream>
 // ============================================================================
@@ -16,7 +23,7 @@
 // ============================================================================
 #include <GaudiKernel/SystemOfUnits.h>
 // ============================================================================
-// local 
+// local
 // ============================================================================
 #include "ParserUtils.h"
 #include "ParserGrammar.h"
@@ -26,14 +33,14 @@
 namespace fs = boost::filesystem;
 namespace ba = boost::algorithm;
 // ============================================================================
-namespace 
+namespace
 {
   const std::string GPP_COMMENT = "//GP:" ;
 }
 // ============================================================================
 Gaudi::Parsers::Parser::Parser
-( Catalogue&                catalogue , 
-  std::vector<std::string>& included  , 
+( Catalogue&                catalogue ,
+  std::vector<std::string>& included  ,
   std::ostream&             m         )
   : m_isPrint(true)
   , m_isPrintOptions(false)
@@ -46,9 +53,9 @@ Gaudi::Parsers::Parser::Parser
 }
 // ============================================================================
 Gaudi::Parsers::Parser::Parser
-( Catalogue&                      catalogue  , 
-  std::vector<std::string>&       included   ,  
-  const std::vector<std::string>& searchPath , 
+( Catalogue&                      catalogue  ,
+  std::vector<std::string>&       included   ,
+  const std::vector<std::string>& searchPath ,
   std::ostream&                   m          )
   : m_isPrint(true)
   , m_isPrintOptions(false)
@@ -60,10 +67,10 @@ Gaudi::Parsers::Parser::Parser
   initUnits();
 }
 // ============================================================================
-Gaudi::Parsers::Parser::Parser 
-( Catalogue&                catalogue  ,  
-  std::vector<std::string>& included   ,  
-  const std::string&        searchPath , 
+Gaudi::Parsers::Parser::Parser
+( Catalogue&                catalogue  ,
+  std::vector<std::string>& included   ,
+  const std::string&        searchPath ,
   std::ostream&             m          )
   : m_isPrint(true)
   , m_isPrintOptions(false)
@@ -104,7 +111,7 @@ void Gaudi::Parsers::Parser::matchUnits
 
 // ============================================================================
 long double Gaudi::Parsers::Parser::matchUnit
-( const std::string& unit, 
+( const std::string& unit,
   const Position& pos)
 {
   UnitsStoreT::const_iterator u = m_units.find(unit);
@@ -114,24 +121,24 @@ long double Gaudi::Parsers::Parser::matchUnit
       ( Message::E_ERROR ,
         Message::C_UNITNOTFOUND,
         boost::str(boost::format("Cann't find unit \"%1%\"")%unit),pos);
-    return 1;      
+    return 1;
   }
   return u->second;
 }
 // ============================================================================
 void Gaudi::Parsers::Parser::matchUnitEntry
-( const std::string& newUnit , 
+( const std::string& newUnit ,
   double value,
   const Position& pos)
 {
   if(isPrint())
   {
-    m_stream 
-      << boost::format("%4% %2%  = %3%; %|78t|%1%") 
-      % posString(pos.line(), pos.column()) 
-      % newUnit 
-      % value 
-      % GPP_COMMENT 
+    m_stream
+      << boost::format("%4% %2%  = %3%; %|78t|%1%")
+      % posString(pos.line(), pos.column())
+      % newUnit
+      % value
+      % GPP_COMMENT
       << std::endl ;
   }
   m_units[newUnit] = value ;
@@ -139,7 +146,7 @@ void Gaudi::Parsers::Parser::matchUnitEntry
 // ============================================================================
 void Gaudi::Parsers::Parser::matchAssign
 ( const std::string& objName  ,
-  const std::string& propName , 
+  const std::string& propName ,
   const Sign& oper,
   const std::vector<std::string>& vectorValue,
   const Position& pos,bool isVector)
@@ -147,13 +154,13 @@ void Gaudi::Parsers::Parser::matchAssign
   // --------------------------------------------------------------------------
   if(isPrint())
   {
-    m_stream 
-      << boost::format("%2% %3% %4%;%|72t|%5% %1%") 
-      % posString(pos.line(),pos.column()) 
-      % (objName+"."+propName) 
-      % sign(oper) 
-      % valueToString(vectorValue , isVector) 
-      % GPP_COMMENT 
+    m_stream
+      << boost::format("%2% %3% %4%;%|72t|%5% %1%")
+      % posString(pos.line(),pos.column())
+      % (objName+"."+propName)
+      % sign(oper)
+      % valueToString(vectorValue , isVector)
+      % GPP_COMMENT
       << std::endl ;
   }
   // --------------------------------------------------------------------------
@@ -187,7 +194,7 @@ void Gaudi::Parsers::Parser::matchAssign
       ok = foundProp.addValues(vectorValue);
       if(ok.isFailure()){
         addMessage
-          ( Message::E_ERROR, 
+          ( Message::E_ERROR,
             Message::C_CANNOTADDTONOTVECTOR,
             boost::str
             ( boost::format
@@ -204,11 +211,11 @@ void Gaudi::Parsers::Parser::matchAssign
       ok = foundProp.removeValues(vectorValue,count);
       if(ok.isFailure()){
         addMessage
-          ( Message::E_ERROR, 
+          ( Message::E_ERROR,
             Message::C_CANNOTREMOVEFROMNOTVECTOR,
             boost::str
             ( boost::format
-              ( "Cannot remove values from not vector property \"%1%.%2%\"" ) 
+              ( "Cannot remove values from not vector property \"%1%.%2%\"" )
               %  objName % propName),pos);
         return;
       }
@@ -216,19 +223,19 @@ void Gaudi::Parsers::Parser::matchAssign
       if (count == 0)
       {
         addMessage
-          ( Message::E_WARNING, 
+          ( Message::E_WARNING,
             Message::C_ZEROREMOVED,
             boost::str
             ( boost::format
-              ( "Nothing removed from property \"%1%.%2%\"" ) 
-              %  objName % propName),pos);   
+              ( "Nothing removed from property \"%1%.%2%\"" )
+              %  objName % propName),pos);
       }
       else
       {
         m_catalogue.addProperty(objName,foundProp);
       }
-      
-    } 
+
+    }
     // ------------------------------------------------------------------------
   }
 }
@@ -236,14 +243,14 @@ void Gaudi::Parsers::Parser::matchAssign
 void Gaudi::Parsers::Parser::setIsPrint
 ( bool on , const Gaudi::Parsers::Position& pos)
 {
-  // ignore the printout if the full print is activated  
+  // ignore the printout if the full print is activated
   if ( on && m_isPrintOptions ) { return ; }
   m_isPrint = on;
-  m_stream 
-    << boost::format("%3% printing is %2% %|78t|%1%") 
-    % posString(pos.line(),pos.column()) 
-    % (on?"ON":"OFF") 
-    % GPP_COMMENT 
+  m_stream
+    << boost::format("%3% printing is %2% %|78t|%1%")
+    % posString(pos.line(),pos.column())
+    % (on?"ON":"OFF")
+    % GPP_COMMENT
     << std::endl ;
 }
 // ============================================================================
@@ -251,13 +258,13 @@ void Gaudi::Parsers::Parser::setIsPrintOptions
 ( bool on , const Position& pos)
 {
   m_isPrintOptions = on;
-  m_stream 
-    << boost::format ("%3% printing options is %2% %|78t|%1%") 
-    % posString(pos.line(),pos.column()) 
-    % (on?"ON":"OFF") 
-    % GPP_COMMENT 
+  m_stream
+    << boost::format ("%3% printing options is %2% %|78t|%1%")
+    % posString(pos.line(),pos.column())
+    % (on?"ON":"OFF")
+    % GPP_COMMENT
     << std::endl ;
-  // deactivate the printout if the print of all options is activated 
+  // deactivate the printout if the print of all options is activated
   if ( m_isPrintOptions && m_isPrint ) { setIsPrint ( false , pos ) ; }
 }
 // ============================================================================
@@ -283,7 +290,7 @@ StatusCode Gaudi::Parsers::Parser::parseFile
   const Position& pos,
   bool isUnitsFile)
 {
-  StatusCode  ok;  
+  StatusCode  ok;
   std::vector<std::string> sp = m_searchPath;
   if(pos.fileName().length()>0){
     // Add current file directory to search path
@@ -298,21 +305,21 @@ StatusCode Gaudi::Parsers::Parser::parseFile
                boost::str(boost::format("Couldn't find file \"%1%\"") % fileName),pos);
     return StatusCode::FAILURE;
   }
-  
+
   ok = isIncluded(fileToParse);
   if(ok.isSuccess())
   {
-    const std::string _msg = 
+    const std::string _msg =
       ( boost::format("Skip already included file  \"%1%\"") % fileToParse ).str() ;
     addMessage ( Message::E_WARNING , Message::C_OK , _msg , pos ) ;
-    if ( isPrint() ) 
-    { 
-      m_stream 
-        << boost::format("%3% skip already included file  \"%2%\" %|78t|%1%") 
-        % posString(pos.line(), pos.column()) 
-        % fileToParse 
+    if ( isPrint() )
+    {
+      m_stream
+        << boost::format("%3% skip already included file  \"%2%\" %|78t|%1%")
+        % posString(pos.line(), pos.column())
+        % fileToParse
         % GPP_COMMENT
-        << std::endl ; 
+        << std::endl ;
     }
     return StatusCode::SUCCESS;
   }
@@ -325,61 +332,61 @@ StatusCode Gaudi::Parsers::Parser::parseFile
        boost::str
        (boost::format("Couldn't open file \"%1%\"") % fileToParse),pos);
     return StatusCode::FAILURE;
-  }  
+  }
   m_included.push_back(fileToParse);
-  
-  
+
+
   IteratorT beginpos(input.begin(), input.end(), fileToParse);
   IteratorT endpos;
-  
-  boost::spirit::parse_info<IteratorT> info; 
-  SkipperGrammar grSkipper;      
-  
+
+  boost::spirit::parse_info<IteratorT> info;
+  SkipperGrammar grSkipper;
+
   if(!isUnitsFile){
-    m_stream 
-      << boost::format("%3% include \"%2%\" %|78t|%1%") 
-      % posString(pos.line(), pos.column()) 
-      % fileToParse 
-      % GPP_COMMENT 
+    m_stream
+      << boost::format("%3% include \"%2%\" %|78t|%1%")
+      % posString(pos.line(), pos.column())
+      % fileToParse
+      % GPP_COMMENT
       << std::endl ;
     ParserGrammar grParser(this);
     info = boost::spirit::parse(beginpos, endpos, grParser >> end_p,grSkipper);
   }else{
-    m_stream 
-      << boost::format("#units \"%3%\" %|72t|%2% %1%") 
-      % posString(pos.line(), pos.column()) 
-      % GPP_COMMENT 
-      % fileToParse 
+    m_stream
+      << boost::format("#units \"%3%\" %|72t|%2% %1%")
+      % posString(pos.line(), pos.column())
+      % GPP_COMMENT
+      % fileToParse
       << std::endl ;
     UnitsFileGrammar grParser(this);
-    info = boost::spirit::parse(beginpos, endpos, grParser >> end_p,grSkipper);    
+    info = boost::spirit::parse(beginpos, endpos, grParser >> end_p,grSkipper);
   }
   boost::spirit::file_position stoppos = info.stop.get_position();
   if (!info.full) {
     addMessage(Message::E_ERROR, Message::C_SYNTAXERROR,
                "Syntax error",Position(stoppos.file,stoppos.line,stoppos.column));
-    return StatusCode::FAILURE;      
+    return StatusCode::FAILURE;
   }
   {
     std::string _msg =
-      ( boost::format("Parsed file \"%2%\" %|78t|%1%")  
-        % posString(stoppos.line, stoppos.column) 
+      ( boost::format("Parsed file \"%2%\" %|78t|%1%")
+        % posString(stoppos.line, stoppos.column)
         % fileToParse ) .str() ;
-    addMessage ( Message::E_VERBOSE , 
-                 Message::C_OK , 
+    addMessage ( Message::E_VERBOSE ,
+                 Message::C_OK ,
                  _msg ,
                  Position(stoppos.file,stoppos.line,stoppos.column) ) ;
     if ( isPrint() )
-    { 
-      m_stream 
+    {
+      m_stream
         << boost::format("%3% end  \"%2%\" %|78t|%1%")
-        % posString(stoppos.line, stoppos.column) 
-        % fileToParse 
-        % GPP_COMMENT 
-        << std::endl ; 
+        % posString(stoppos.line, stoppos.column)
+        % fileToParse
+        % GPP_COMMENT
+        << std::endl ;
     }
   }
-  return StatusCode::SUCCESS;  
+  return StatusCode::SUCCESS;
 }
 // ============================================================================
 std::string Gaudi::Parsers::Parser::severityName
@@ -395,20 +402,20 @@ std::string Gaudi::Parsers::Parser::severityName
   case Message::E_VERBOSE :
     return "VERBOSE"   ;
   default:
-    return "UNDEFINED" ; 
+    return "UNDEFINED" ;
   }
 }
 // ============================================================================
 void Gaudi::Parsers::Parser::addMessage
 ( const Message::Severity& severity ,
-  const Message::Code&     code     , 
-  const std::string&       message  , 
+  const Message::Code&     code     ,
+  const std::string&       message  ,
   const Position&          pos      )
 {
   Message result
     ( severity , code,
       boost::str(boost::format("%1%(%2%,%3%) : %4% #%5% : %6%") % pos.fileName()
-                 % pos.line() % pos.column() % severityName(severity) % code 
+                 % pos.line() % pos.column() % severityName(severity) % code
                  % message));
   m_messages.push_back(result);
 }
@@ -435,12 +442,12 @@ void Gaudi::Parsers::Parser::resolveReferences()
 {
   Catalogue::CatalogueT cat = m_catalogue.catalogue();
   // ----------------------------------------------------------------------------
-  for( Catalogue::CatalogueT::const_iterator curObj = cat.begin();  
+  for( Catalogue::CatalogueT::const_iterator curObj = cat.begin();
        curObj!=cat.end();curObj++)
   {
     std::string objName = curObj->first;
     // ------------------------------------------------------------------------
-    for( std::vector<PropertyEntry>::const_iterator curProp = 
+    for( std::vector<PropertyEntry>::const_iterator curProp =
            curObj->second.begin();curProp != curObj->second.end(); curProp++)
     {
       std::string value = curProp->value();
@@ -451,7 +458,7 @@ void Gaudi::Parsers::Parser::resolveReferences()
         std::string refprop(value.begin()+1,value.end());
         ba::split(objAndProp,
                   refprop,
-                  ba::is_any_of("."));            
+                  ba::is_any_of("."));
         PropertyEntry foundProperty;
         StatusCode ok;
         ok = m_catalogue.findProperty(objAndProp[0],objAndProp[1],
@@ -468,8 +475,8 @@ void Gaudi::Parsers::Parser::resolveReferences()
         {
           // -------------------------------------------------------------------
           if((ba::to_lower_copy(objAndProp[0]) == objName)
-             && 
-             (ba::to_lower_copy(objAndProp[1]) 
+             &&
+             (ba::to_lower_copy(objAndProp[1])
               == curProp->name()))
           {
             // ----------------------------------------------------------------
@@ -547,5 +554,5 @@ std::string Gaudi::Parsers::Parser::posString(int line, int column)
 // ============================================================================
 
 // ============================================================================
-// The END 
+// The END
 // ============================================================================

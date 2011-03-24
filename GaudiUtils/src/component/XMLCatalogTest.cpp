@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdio>
 #include <ctime>
+#include <sstream>
 
 using namespace Gaudi;
 
@@ -16,23 +17,28 @@ extern "C" int testXMLFileCatalogWrite(int argc, char** argv)   {
   c.getFID(fids);
   time_t start = time(0);
   for(size_t n=fids.size(), i=n; i<n+nwrite; ++i)  {
-    char txt[64];
+    std::ostringstream txt;
     if ( 0 == ((i-n)%10000) ) std::cout << i-n << std::endl;
     std::string fid = c.createFID();
     c.registerFID(fid);
-    sprintf(txt,"PFN1_Test_%lud.dat",static_cast<long unsigned int>(i));
-    c.registerPFN(fid,txt,"ROOT");
-    c.registerPFN(fid,txt,"ROOT");
-    sprintf(txt,"PFN2_Test_%lud.dat",static_cast<long unsigned int>(i));
-    c.registerPFN(fid,txt,"ROOT");
-    sprintf(txt,"PFN3_Test_%lud.dat",static_cast<long unsigned int>(i));
-    c.registerPFN(fid,txt,"ROOT");
-    sprintf(txt,"lfn1_Test_%lud.dat",static_cast<long unsigned int>(i));
-    c.registerLFN(fid,txt);
-    sprintf(txt,"lfn2_Test_%lud.dat",static_cast<long unsigned int>(i));
-    c.registerLFN(fid,txt);
-    sprintf(txt,"lfn3_Test_%lud.dat",static_cast<long unsigned int>(i));
-    c.registerLFN(fid,txt);
+    txt << "PFN1_Test_" << i << ".dat";
+    c.registerPFN(fid,txt.str(),"ROOT");
+    c.registerPFN(fid,txt.str(),"ROOT");
+    txt.str("");
+    txt << "PFN2_Test_" << i << ".dat";
+    c.registerPFN(fid,txt.str(),"ROOT");
+    txt.str("");
+    txt << "PFN3_Test_" << i << ".dat";
+    c.registerPFN(fid,txt.str(),"ROOT");
+    txt.str("");
+    txt << "lfn1_Test_" << i << ".dat";
+    c.registerLFN(fid,txt.str());
+    txt.str("");
+    txt << "lfn2_Test_" << i << ".dat";
+    c.registerLFN(fid,txt.str());
+    txt.str("");
+    txt << "lfn3_Test_" << i << ".dat";
+    c.registerLFN(fid,txt.str());
     c.setMetaData(fid,"Name1","Value1");
     c.setMetaData(fid,"Name1","Value111");
     c.setMetaData(fid,"Name2","Value2");
