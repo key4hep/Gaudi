@@ -48,6 +48,7 @@ macro(GAUDI_PROJECT project_name version)
   #--- Project Options and Global settings----------------------------------------------------------
   option(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
   option(BUILD_TESTS "Set to ON to build the tests (libraries and executables)" OFF)
+  option(HIDE_WARNINGS "Turn on or off options that are used to hide warning messages" ON)
   #-------------------------------------------------------------------------------------------------
   #--- Build type and tag strings-------------------------------------------------------------------
 
