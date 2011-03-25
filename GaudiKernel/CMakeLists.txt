@@ -39,7 +39,7 @@ if(HIDE_WARNINGS)
     # This hides warnings from a broken header file in CppUnit, but may
     # hide problems in the actual test source
     set_property(SOURCE tests/src/test_SerializeSTL.cpp tests/src/test_GaudiTime.cpp
-                 COMPILE_FLAGS -Wno-unused-parameter)
+                 PROPERTY COMPILE_FLAGS -Wno-unused-parameter)
     set_property(TARGET GaudiKernelDict PROPERTY COMPILE_FLAGS -Wno-overloaded-virtual)
   endif()
   if(WIN32)
