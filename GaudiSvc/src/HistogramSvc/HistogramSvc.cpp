@@ -4,6 +4,12 @@
 //   TODO: To be removed, since it comes from ROOT TMathBase.h
 #pragma warning(disable:2259)
 #endif
+#ifdef WIN32
+// Disable warning
+//   warning C4996: 'sprintf': This function or variable may be unsafe.
+// coming from TString.h
+#pragma warning(disable:4996)
+#endif
 // ============================================================================
 // Include files
 // ============================================================================
@@ -11,6 +17,7 @@
 // ============================================================================
 #include <cstdlib>
 #include <stdexcept>
+#include <sstream>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -60,8 +67,8 @@ namespace
 }
 //------------------------------------------------------------------------------
 std::string HistogramSvc::_STR(int i)  {
-  char txt[32];
-  return _itoa(i, txt, 10);
+  std::ostringstream txt; txt << i;
+  return txt.str();
 }
 //------------------------------------------------------------------------------
 StatusCode HistogramSvc::registerObject(CSTR full, IBaseHistogram* obj)  {
@@ -71,7 +78,7 @@ StatusCode HistogramSvc::registerObject(CSTR full, IBaseHistogram* obj)  {
 //------------------------------------------------------------------------------
 StatusCode HistogramSvc::registerObject
 (DataObject* pPar,CSTR obj,IBaseHistogram* hObj) {
-  // Set the hstogram id
+  // Set the histogram id
   if (obj[0] == SEPARATOR)    {
     // hObj->setTitle(obj.substr(1) + "|" + hObj->title());
     if (!hObj->annotation().addItem("id", obj.substr(1)))
@@ -82,7 +89,7 @@ StatusCode HistogramSvc::registerObject
     if (!hObj->annotation().addItem("id", obj))
       hObj->annotation().setValue("id", obj);
   }
-  // Register the hstogram in the hstogram data store
+  // Register the histogram in the histogram data store
   return DataSvc::registerObject(pPar,obj,__cast(hObj));
 }
 
@@ -450,8 +457,6 @@ StatusCode HistogramSvc::finalize     ()
   }
   return DataSvc::finalize () ;
 }
-// ============================================================================
-
 // ============================================================================
 // The END
 // ============================================================================

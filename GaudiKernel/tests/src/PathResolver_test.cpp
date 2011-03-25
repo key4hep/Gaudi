@@ -26,7 +26,11 @@ int main ()
   std::string ref4("C:/WINNT/explorer.exe");
   setEnv("DATAPATH","..\\tests\\PathResolver;..\\tests\\PathResolver\\A;..\\tests\\PathResolver\\B",1);
 #else
+#if defined(__APPLE__)
+  std::string ref4("/usr/bin/true");
+#else
   std::string ref4("/bin/true");
+#endif
   setEnv("DATAPATH","../tests/PathResolver:../tests/PathResolver/A:../tests/PathResolver/B",1);
 #endif
 

@@ -3,6 +3,12 @@
 //   TODO: To be removed, since it comes from ROOT TMathBase.h
 #pragma warning(disable:2259)
 #endif
+#ifdef WIN32
+// Disable warning
+//   warning C4996: 'sprintf': This function or variable may be unsafe.
+// coming from TString.h
+#pragma warning(disable:4996)
+#endif
 
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/ObjectFactory.h"
@@ -49,8 +55,6 @@ namespace Gaudi {
     double m_sumwz;
   };
 }
-typedef Gaudi::Histogram3D H3D;
-DECLARE_DATAOBJECT_FACTORY(H3D)
 
 namespace Gaudi {
   template <>
@@ -273,3 +277,6 @@ void Gaudi::Histogram3D::copyFromAida(const AIDA::IHistogram3D & h) {
 // re-enable icc remark #1572
 #pragma warning(pop)
 #endif
+
+typedef Gaudi::Histogram3D H3D;
+DECLARE_DATAOBJECT_FACTORY(H3D)

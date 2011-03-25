@@ -1,6 +1,11 @@
 Package: GaudiAud
 Package manager : David Quarrie, Marco Clemencic
 
+! 2011-03-23 - Marco Clemencic
+ - Fixed bug #79627: ChronoAuditor broken for start/stop event types
+   Moved common code to a common base class CommonAuditor, sharing as much as
+   possible the code among auditor implementations.
+
 =============================== GaudiAud v9r3 ================================
 ! 2010-04-20 - Marco Clemencic
  - Removed ICC warnings and remarks.
@@ -34,7 +39,7 @@ Package manager : David Quarrie, Marco Clemencic
  - Patch #2790: Rename the namespace MSG to Msg
 
 ! 2009-01-30 - Marco Clemencic
- - Replaced all the occurrences of endreq with endmsg. 
+ - Replaced all the occurrences of endreq with endmsg.
 
 ! 2009-01-22 - Marco Clemencic
  - Adapted to the new IInterface functionalities (see GaudiKernel release.notes)
@@ -68,7 +73,7 @@ Package manager : David Quarrie, Marco Clemencic
  - bug #28570.
    Modified AlgContextAuditor to avoid that it passes a null pointer to
    AlgContextSvc. It happens if the AuditorSvc is auditing objects that inherit
-   from INamedInterface, but not from IAlgorithm (e.g. services).  
+   from INamedInterface, but not from IAlgorithm (e.g. services).
 
 ! 2007-11-13 - Marco Clemencic
  - Added a test to expose bug #28570.
@@ -76,7 +81,7 @@ Package manager : David Quarrie, Marco Clemencic
 !==============v8r3==========================================================
 ! 2007-08-06 - Vanya Belyaev
  - patch #1231. Added explicit include IChronoStatSvc.h in MemStatAuditor.cpp
-   
+
 !==============v8r2==========================================================
 ! 2007-05-24 - Vanya Belyaev
  - patch #1171. The enhancement of existing Algorithm Context Service
@@ -99,13 +104,13 @@ Package manager : David Quarrie, Marco Clemencic
 
 !==============v8r1==========================================================
 ! 2007-01-18 - Charles Leggett
- patch #972. 
+ patch #972.
  - add messageCount to IMessageSvc
  - extend Auditor::(sys)afterExecute to pass a const StatusCode&,
    which is the return code of the algorithm
  - new auditor to monitor algorithms, issue message if algorithm
    writes out an ERROR or FATAL, but returns SUCCESS
-	
+
 !==============v8r0==========================================================
 ! 2007-01-12 - Hubert Degaudenzi
  - bug #22799. changed the return value of chronoStart, chronoStop,
@@ -169,7 +174,7 @@ Package manager : David Quarrie, Marco Clemencic
 ! 2002-09-24 - Pere Mato
  - Changes to clean the reference counting and memory deallocation
    detected by the "valgrind" tool. Changed failes: ChronoAuditor.cpp (.h)
- - requirements: use v* 
+ - requirements: use v*
 
 !==============v6r0p1=========================================================
 ! 2002-09-23 - Flr

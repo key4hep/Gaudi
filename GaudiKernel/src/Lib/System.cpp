@@ -128,9 +128,8 @@ unsigned long System::loadDynamicLib(const std::string& name, ImageHandle* handl
   } else {
     // If the name is a logical name (environment variable), the try
     // to load the corresponding library from there.
-    std::string env = name;
-    if ( 0 != ::getenv(env.c_str()) )    {
-      std::string imgName = ::getenv(env.c_str());
+    std::string imgName;
+    if ( getEnv(name, imgName) )    {
       res = loadWithoutEnvironment(imgName, handle);
     } else {
       // build the dll name
@@ -289,78 +288,10 @@ const std::string System::getErrorString(unsigned long error)    {
   return errString;
 }
 
-// This is a little bit complicated....but at least it gives
-// usable results:
-// Native class template:
-//  Spac::templa<Spac::templa<Spac::templ<Spac::templa<AAA::a,Spac::templa<double,unsigned char>>>,B::bbb>,float>
-// is translated under egcs to the unreadable string:
-//  Q24Spact6templa2ZQ24Spact6templa2ZQ24Spact5templ1ZQ24Spact6templa2ZQ23AAA1aZQ24Spact6templa2ZdZUcZQ21B3bbbZf
-
-std::string __typeName(char*&  name);
-std::string __className(char*& name) {
-  std::string result;
-  int j = 0, k, i;
-  if ( 't' == *name ) {
-    goto Template;
-  }
-  for ( i = ::strtol(name, &name, 10);  i > 0; i = ::strtol(name, &name, 10) ) {
-    if ( j++ != 0 ) result.append("::",2);
-    result.append(name, i);
-    if ( *(name+=i) == 't' ) {
-      result.append("::",2);
-    Template:
-      result.append(name, (i=::strtol(++name, &name, 10)));
-      result.append("<");
-      for (k = 0, i=::strtol(name+i, &name, 10); k < i; k++ ) {
-	result += __typeName( ++name );
-	if ( k+1 < i ) result += ",";
-      }
-      result.append(">");
-    }
-  }
-  return result;
-}
-
-std::string __typeName(char*&  name) {
-  if ( *name == 'Q' ) {              // Handle name spaces
-    if ( *(++name) == '_' )          // >= 10 nested name spaces
-      ::strtol(++name, &name, 10);   // type Q_##_...
-    return __className(++name);
-  }
-  else if ( 't' == *name )  {
-    return __className(name);
-  }
-  else  {
-    std::string result;
-    char* ptr;
-    long i = ::strtol(name, &ptr, 10);
-    if ( i <= 0 )  {
-      name = ptr;
-      while ( *name != 0 && *name != 'Z' )  {
-	if ( *name == 'U' )  {
-	  result += "unsigned ";
-	  name++;
-	}
-	switch( *name++ )  {
-	case 'c': result += "char"; break;
-	case 's': result += "short"; break;
-	case 'i': result += "int"; break;
-	case 'l': result += "long"; break;
-	case 'f': result += "float"; break;
-	case 'd': result += "double"; break;
-	default:  result += *(name-1);
-	}
-      }
-      return result;
-    }
-    else {
-      return __className(name);
-    }
-  }
-}
 const std::string System::typeinfoName( const std::type_info& tinfo) {
   return typeinfoName(tinfo.name());
 }
+
 const std::string System::typeinfoName( const char* class_name) {
   std::string result;
 #ifdef _WIN32
@@ -526,9 +457,9 @@ const std::string& System::osVersion() {
   OSVERSIONINFO ut;
   ut.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
   ::GetVersionEx(&ut);
-  char ver[64];
-  sprintf(ver,"%d.%d",ut.dwMajorVersion,ut.dwMinorVersion);
-  osver = ver;
+  std::ostringstream ver;
+  ver << ut.dwMajorVersion << '.' << ut.dwMinorVersion;
+  osver = ver.str();
 #else
   struct utsname ut;
   if (uname(&ut) == 0) {
@@ -546,9 +477,9 @@ const std::string& System::machineType() {
 #ifdef _WIN32
   SYSTEM_INFO ut;
   ::GetSystemInfo(&ut);
-  char arch[64];
-  sprintf(arch,"%d",ut.wProcessorArchitecture);
-  mach =  arch;
+  std::ostringstream arch;
+  arch << ut.wProcessorArchitecture;
+  mach = arch.str();
 #else
   struct utsname ut;
   if (uname(&ut) == 0) {
@@ -594,6 +525,10 @@ const std::vector<std::string> System::cmdLineArgs()    {
   if ( s_argvChars.size() == 0 )    {
     char exe[1024];
 #ifdef _WIN32
+    /// @todo: rewrite the tokenizer to avoid strncpy, etc
+    // Disable warning C4996 triggered by C standard library calls
+#pragma warning(push)
+#pragma warning(disable:4996)
     // For compatibility with UNIX we CANNOT use strtok!
     // If we would use strtok, options like -g="My world" at
     // the command line level would result on NT in TWO options
@@ -624,6 +559,7 @@ const std::vector<std::string> System::cmdLineArgs()    {
       s_argvStrings.push_back(exe);
       s_argvChars.push_back( s_argvStrings.back().c_str());
     }
+#pragma warning(pop)
 #elif defined(linux) || defined(__APPLE__)
     sprintf(exe, "/proc/%d/cmdline", ::getpid());
     FILE *cmdLine = ::fopen(exe,"r");
@@ -655,8 +591,14 @@ char** System::argv()    {
   return (char**)&s_argvChars[0];
 }
 
+#ifdef WIN32
+// disable warning
+//   C4996: 'getenv': This function or variable may be unsafe.
+#pragma warning(disable:4996)
+#endif
+
 /// get a particular env var, return "UNKNOWN" if not defined
-const std::string System::getEnv(const char* var) {
+std::string System::getEnv(const char* var) {
   char* env;
   if  ( (env = getenv(var)) != 0 ) {
     return env;
@@ -665,12 +607,27 @@ const std::string System::getEnv(const char* var) {
   }
 }
 
+/// get a particular env var, storing the value in the passed string (if set)
+bool System::getEnv(const char* var, std::string &value) {
+  char* env;
+  if  ( (env = getenv(var)) != 0 ) {
+    value = env;
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool System::isEnvSet(const char* var) {
+  return getenv(var) != 0;
+}
+
 /// get all defined environment vars
 #if defined(__APPLE__)
 // Needed for _NSGetEnviron(void)
 #include "crt_externs.h"
 #endif
-const std::vector<std::string> System::getEnv() {
+std::vector<std::string> System::getEnv() {
 #if defined(_WIN32)
 #  define environ _environ
 #elif defined(__APPLE__)

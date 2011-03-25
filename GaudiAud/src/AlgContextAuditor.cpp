@@ -1,42 +1,13 @@
-// $Id: AlgContextAuditor.cpp,v 1.4 2007/11/13 12:53:54 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.4 $
-// ============================================================================
-// $Log: AlgContextAuditor.cpp,v $
-// Revision 1.4  2007/11/13 12:53:54  marcocle
-// Charles Leggett
-//  - bug #28570.
-//    Modified AlgContextAuditor to avoid that it passes a null pointer to
-//    AlgContextSvc. It happens if the AuditorSvc is auditing objects that inherit
-//    from INamedInterface, but not from IAlgorithm (e.g. services).
-//
-// Revision 1.3  2007/05/24 13:49:20  hmd
-// ( Vanya Belyaev) patch #1171. The enhancement of existing Algorithm Context Service
-//    is the primary goal of the proposed patch. The existing
-//    AlgContextSvc is not safe with respect to e.g. Data-On-Demand
-//    service or to operations with subalgorithms. The patched service
-//    essentially implements the queue of executing algorithms, thus the
-//    problems are eliminiated. In addition the enriched interface
-//    provides the access to the whole queue of executing algorithms.
-//
-// ============================================================================
-// Incldue files
-// ============================================================================
-// STD & STL
-// ============================================================================
 #include <cassert>
-// ============================================================================
-// GaudiKernel
-// ============================================================================
+
 #include "GaudiKernel/IAlgContextSvc.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/AudFactory.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/MsgStream.h"
-// ============================================================================
-// local
-// ============================================================================
+
 #include "AlgContextAuditor.h"
+
 // ============================================================================
 /** @file
  *  Implementation file for class AlgContexAuditor
@@ -49,9 +20,9 @@ namespace
   /** make a safe cast using "smart interface"
    *  @see  INamedInterface
    *  @see  IAlgorithm
-   *  @see   SmartIF
-   *  @see   IInterface::queryInterface
-   *  @param  i pointer to INamedInterface
+   *  @see  SmartIF
+   *  @see  IInterface::queryInterface
+   *  @param  ni pointer to INamedInterface
    *  @return pointer to IAlgorithm
    */
   inline IAlgorithm* toAlg ( IInterface* ni )
@@ -62,7 +33,7 @@ namespace
   }
 }
 // ============================================================================
-// mandatory auditor fatcory, needed for instantiation
+// mandatory auditor factory, needed for instantiation
 // ============================================================================
 DECLARE_AUDITOR_FACTORY(AlgContextAuditor)
 // ============================================================================

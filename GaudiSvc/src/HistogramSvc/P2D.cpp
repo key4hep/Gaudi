@@ -3,6 +3,12 @@
 //   TODO: To be removed, since it comes from ROOT TMathBase.h
 #pragma warning(disable:2259)
 #endif
+#ifdef WIN32
+// Disable warning
+//   warning C4996: 'sprintf': This function or variable may be unsafe.
+// coming from TString.h
+#pragma warning(disable:4996)
+#endif
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/ObjectFactory.h"
 #include "GaudiPI.h"
@@ -42,8 +48,6 @@ namespace Gaudi {
     static const CLID& classID()     { return CLID_ProfileH2; }
   };
 }
-typedef Gaudi::Profile2D P2D;
-DECLARE_DATAOBJECT_FACTORY(P2D)
 
 namespace Gaudi {
   template <>
@@ -103,3 +107,6 @@ Gaudi::Profile2D::Profile2D(TProfile2D* rep)    {
   adoptRepresentation(rep);
   m_sumEntries = 0;
 }
+
+typedef Gaudi::Profile2D P2D;
+DECLARE_DATAOBJECT_FACTORY(P2D)

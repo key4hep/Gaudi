@@ -17,8 +17,8 @@
  *  The width of the timing table column printing the algorithm name
  *  is 30 by default. That can be changed via
  *  \verbatim
-TimingAuditor().addTool(SequencerTimerTool("TIMER"))
-TimingAuditor().TIMER.ColumnWidth = 50 \endverbatim
+TimingAuditor().addTool(SequencerTimerTool, name = "TIMER")
+TimingAuditor().TIMER.NameSize = 50 \endverbatim
  *
  *  @author Olivier Callot
  *  @date   2004-05-19

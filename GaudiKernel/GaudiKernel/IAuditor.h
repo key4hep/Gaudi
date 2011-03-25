@@ -102,19 +102,26 @@ public:
 
 };
 
-inline std::ostream & operator << (std::ostream & s, IAuditor::StandardEventType e) {
+/// Simple mapping function from IAuditor::StandardEventType to string.
+inline const char* toStr(IAuditor::StandardEventType e) {
   switch (e) {
-    case IAuditor::Initialize   : return s << "Initialize";
-    case IAuditor::ReInitialize : return s << "ReInitialize";
-    case IAuditor::Execute      : return s << "Execute";
-    case IAuditor::BeginRun     : return s << "BeginRun";
-    case IAuditor::EndRun       : return s << "EndRun";
-    case IAuditor::Finalize     : return s << "Finalize";
-    case IAuditor::Start        : return s << "Start";
-    case IAuditor::Stop         : return s << "Stop";
-    case IAuditor::ReStart      : return s << "ReStart";
+    case IAuditor::Initialize   : return "Initialize";
+    case IAuditor::ReInitialize : return "ReInitialize";
+    case IAuditor::Execute      : return "Execute";
+    case IAuditor::BeginRun     : return "BeginRun";
+    case IAuditor::EndRun       : return "EndRun";
+    case IAuditor::Finalize     : return "Finalize";
+    case IAuditor::Start        : return "Start";
+    case IAuditor::Stop         : return "Stop";
+    case IAuditor::ReStart      : return "ReStart";
   }
-  return s; // cannot be reached, but make the compiler happy
+  return NULL; // cannot be reached, but make the compiler happy
 }
+
+inline std::ostream & operator << (std::ostream & s, IAuditor::StandardEventType e) {
+  return s << toStr(e);
+}
+
+
 #endif // GAUDIKERNEL_IAUDITOR_H
 

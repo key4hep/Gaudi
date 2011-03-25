@@ -222,9 +222,8 @@ StatusCode RootHistCnv::RConverter::createAddress(const std::string& rzdir,
 						  IOpaqueAddress*& refpAddress)
 //--------------------------------------------------------------------------
 {
-  char obj[32];
-  StatusCode status = createAddress(rzdir, clid,
-				    ::_itoa(id, obj, 10), pTobj, refpAddress);
+  std::ostringstream obj; obj << id;
+  StatusCode status = createAddress(rzdir, clid, obj.str(), pTobj, refpAddress);
   if ( status.isSuccess() )   {
     unsigned long* ipar = (unsigned long*)refpAddress->ipar();
     ipar[0] = id;

@@ -48,10 +48,10 @@ template <class T> void analyzeItem(std::string typ,
   long item_size = (sizeof(T) < 4) ? 4 : sizeof(T);
   long dimension = it->length();
   long ndim = it->ndim()-1;
-  char text[132];
-  desc += var_name;
+  std::ostringstream text;
+  text << var_name;
   if ( it->hasIndex() || it->length() > 1 )   {
-    desc += "[";
+    text << '[';
   }
   if ( it->hasIndex() )   {
     std::string ind_blk, ind_var;
@@ -61,18 +61,17 @@ template <class T> void analyzeItem(std::string typ,
       std::cerr << "ERROR: Index for CWNT variable " << ind_var
 		<< " is in a different block: " << ind_blk << std::endl;
     }
-    desc += ind_var;
+    text << ind_var;
   }
   else if ( it->dim(ndim) > 1 )   {
-    desc += ::_itoa(it->dim(ndim), text, 10);
+    text << it->dim(ndim);
   }
 
   for ( int i = ndim-1; i>=0; i-- ){
-    desc += "][";
-    desc += ::_itoa(it->dim(i), text, 10);
+    text << "][" << it->dim(i);
   }
   if ( it->hasIndex() || it->length() > 1 )   {
-    desc += "]";
+    text << ']';
   }
 
   if (it->range().lower() != it->range().min() &&
@@ -83,7 +82,9 @@ template <class T> void analyzeItem(std::string typ,
     lowerRange = 0;
     upperRange = -1;
   }
-  desc += typ;
+  text << typ;
+
+  desc += text.str();
   size += item_size * dimension;
 }
 

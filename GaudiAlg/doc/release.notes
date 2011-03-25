@@ -1,6 +1,17 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2011-03-02 - Patrick Koppenburg
+ - Patch #4711: fixed doxygen comment
+
+=============================== GaudiAlg v13r6 ===============================
+! 2011-02-18 - Marco Clemencic
+ - Fixed icc warnings.
+
+! 2011-02-01 - Marco Clemencic
+ - Fixed a configuration problem with icc on i686.
+
+=============================== GaudiAlg v13r5 ===============================
 ! 2011-01-11 - Marco Clemencic
  - Fixed some ICC remarks.
 

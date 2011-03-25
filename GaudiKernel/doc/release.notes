@@ -1,6 +1,48 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-03-23 - Marco Clemencic
+ - Fixed VC9 warnings.
+   - Replaced C-style string manipulation and formatting with C++ (and Boost)
+     implementations.
+   - Disabled some warnings.
+   - Removed some "empty" files (files producing empty objects files),
+     replacing them with a test .cpp file to ensure that the headers do not
+     contain syntax errors.
+
+! 2011-03-22 - Marco Clemencic
+ - Added a function to convert IAuditor::StandardEventType to const char*,
+   (toStr) needed to simplify the implementation of some auditors.
+
+! 2011-03-17 - Marco Clemencic
+ - Modified DirSearchPath to remove boost::filesystem::no_check. It is not
+   needed and breaks on MacOSX in debug mode (at least with Boost 1.44).
+   See patch #4735.
+ - Fixed PathResolver_test to work on MacOSX.
+
+! 2011-03-16 - Charles Leggett, Marco Clemencic
+ - Patch #4722: detect unprotected DEBUG and VERBOSE messages
+
+============================= GaudiKernel v27r13 =============================
+! 2011-02-21 - Charles Leggett
+ - Fixed bug #77534: this-> needed in Property.h
+
+============================= GaudiKernel v27r12 =============================
+! 2011-01-19 - Markus Frank
+ - Fixes for bug #77109.
+   Add a virtual "update()" method to the DataObject.
+   This method should then be called unconditionally by converters.
+   Remove the obsolete "serialize()" methods.
+   Apply this method to the keyed containers and replace the
+   existing "configureDirectAccess()" method with "update()".
+   (patch #4613)
+
+! 2011-01-14 - Markus Frank
+ - Patch #4607: Do not store process id.
+   ProcessDescriptor.cpp Do not locally store the process id (pid).
+   This causes problems e.g. after a call to fork(), because the data
+   accessed are those of the parent process, not the newly created process.
+
 ! 2011-01-11 - Marco Clemencic
  - Fixed some ICC remarks.
 

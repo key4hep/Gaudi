@@ -1,11 +1,43 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-03-17 - Marco Clemencic
+ - Removed the option "-undefined suppress" from the link statement on MacOSX
+   (added by CMT) to have the same behavior as on Linux (-Wl,--no-undefined).
+
+! 2011-03-16 - Charles Leggett, Marco Clemencic
+ - Patch #4727: Add NDEBUG macro for opt builds
+
+! 2011-03-09 - Marco Clemencic
+ - Avoid exception in QMTest if the test executable is not built.
+ - Minor improvements to GaudiTest.py
+
+============================= GaudiPolicy v11r1 ==============================
+! 2011-02-22 - Marco Clemencic
+ - Minor improvement in reference file name matching in QMTest.
+   It is possible to specify any part of the CMTCONFIG in the file name extension,
+   for example "myfile.ref.i686-opt".
+
+! 2011-02-04 - Charles Leggett
+ - Fixed bug #77806: createProjVersHeader breaks with Atlas style tags
+   allow Atlas style GaudiPKJ-XX-YY-ZZ tags
+
+============================= GaudiPolicy v11r0 ==============================
+! 2011-01-17 - Marco Clemencic
+ - Fixed a small problem with the recent change in the nmake fragments
+
+! 2011-01-12 - Marco Clemencic
+ - Modified the directory where Python binary modules are installed to me
+   more standard (python/lib-dynload)
+ - Fixed a problem in a regular expression used in the exclusion of lines
+   from the references of the tests
+
 ! 2011-01-11 - Hubert Degaudenzi
  - Initial commit for gcc native dependency calculations.
 
 ! 2011-01-07 - Marco Clemencic
  - Fixes to run_qmtest.py to allow creation of HTML output on Windows.
+ - Fixed nmake fragments to honor the shlibsuffix macro.
 
 ! 2010-11-16 - Charles Leggett
  - Fixed 32bit compilation with ICC on 64bit host.

@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IMessageSvc.h,v 1.8 2008/10/01 14:39:27 marcocle Exp $
 #ifndef GAUDIKERNEL_IMESSAGESVC_H
 #define GAUDIKERNEL_IMESSAGESVC_H
 
@@ -185,7 +184,19 @@ public:
    */
   virtual int messageCount( MSG::Level level ) const = 0;
 
+};
 
+class GAUDI_API IInactiveMessageCounter: virtual public IInterface {
+public:
+  /// InterfaceID
+  DeclareInterfaceID(IInactiveMessageCounter,1,0);
+
+  /** Increment deactivated message count.
+   *  Used by MsgStream to record the sources of messages that are prepared, but
+   *  not printed (because if insufficient level).
+   */
+  virtual void incrInactiveCount( MSG::Level level,
+                                  const std::string& src ) = 0;
 };
 
 #endif // GAUDIKERNEL_IMESSAGESVC_H
