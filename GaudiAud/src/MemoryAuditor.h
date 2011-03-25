@@ -1,41 +1,32 @@
 #ifndef ATLASAUDITOR_MEMORYAUDITOR_H
 #define ATLASAUDITOR_MEMORYAUDITOR_H
 
-// ClassName: MemoryAuditor
-//
-// Description:  Monitors the memory use of each algorithm
-//
-// Author: M. Shapiro, LBNL
-//
-#include "GaudiKernel/Auditor.h"
+#include "CommonAuditor.h"
+#include "ProcStats.h"
 
-class MemoryAuditor:public  Auditor {
-
+/// Monitors the memory use of each algorithm
+///
+/// @author M. Shapiro, LBNL
+/// @author Marco Clemencic
+class MemoryAuditor:public CommonAuditor {
 public:
   MemoryAuditor(const std::string& name, ISvcLocator* pSvcLocator);
-  virtual ~MemoryAuditor();
-  virtual void beforeInitialize(INamedInterface* alg);
-  virtual void afterInitialize(INamedInterface* alg);
-  virtual void beforeReinitialize(INamedInterface* alg);
-  virtual void afterReinitialize(INamedInterface* alg);
-  virtual void beforeExecute(INamedInterface* alg);
-  virtual void afterExecute(INamedInterface* alg, const StatusCode& );
-  virtual void beforeBeginRun(INamedInterface* alg);
-  virtual void afterBeginRun(INamedInterface *alg);
-  virtual void beforeEndRun(INamedInterface* alg);
-  virtual void afterEndRun(INamedInterface *alg);
-  virtual void beforeFinalize(INamedInterface* alg);
-  virtual void afterFinalize(INamedInterface* alg);
 
-  virtual void before(CustomEventTypeRef evt, const std::string& caller);
-  virtual void after(CustomEventTypeRef evt, const std::string& caller, const StatusCode& );
+protected:
+  /// Default (catch-all) "before" Auditor hook
+  virtual void i_before(CustomEventTypeRef evt, const std::string& caller);
 
+  /// Default (catch-all) "after" Auditor hook
+  virtual void i_after(CustomEventTypeRef evt, const std::string& caller, const StatusCode& sc);
 
-  virtual StatusCode sysFinalize( );
+  /// Report the memory usage.
+  virtual void i_printinfo(const std::string& msg, CustomEventTypeRef evt, const std::string& caller);
 
-private:
-  StringArrayProperty m_types;
-  bool printinfo(std::string theString);
+  /// Get the process informations.
+  /// Returns true if it was possible to retrieve the informations.
+  inline static bool getProcInfo(procInfo &info) {
+    return ProcStats::instance()->fetch(info);
+  }
 };
 
 #endif

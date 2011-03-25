@@ -8,8 +8,7 @@
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/Message.h"
 #include "GaudiKernel/Timing.h"
-
-#include "GaudiKernel/time_r.h"
+#include "GaudiKernel/Time.h"
 
 using namespace MSG;
 
@@ -30,9 +29,11 @@ const char* Message::DEFAULT_FORMAT = "% F%18W%S%7W%R%T %0W%M";
 const char* Message::DEFAULT_TIME_FORMAT = "%Y-%m-%d %H:%M:%S,%f";
 
 namespace {
-
-  std::string formattedTime ( std::string fmt, bool universal = false );
-
+  // get the current time from the system and format it according to the format
+  inline std::string formattedTime (const std::string &fmt, bool universal = false )
+  {
+    return Gaudi::Time::current().format(!universal, fmt);
+  }
 }
 
 //#############################################################################
@@ -449,40 +450,3 @@ void Message::sizeField( const std::string& text ) const
 
   m_formatted_msg += newText;
 }
-
-namespace {
-
-  // get the current time from the system and format it according to the format
-  std::string formattedTime ( std::string fmt, bool universal )
-  {
-    // get current time in milliseconds
-    longlong t = System::currentTime( System::milliSec );
-    int msec = static_cast<int>(t % 1000);
-    time_t sec = static_cast<time_t>(t / 1000);
-
-    // convert to break-down time
-    struct tm tms ;
-    if (universal) {
-      gmtime_r( &sec, &tms );
-    } else {
-      localtime_r( &sec, &tms );
-    }
-
-    // replace %f in the format string with miliseconds
-    std::string::size_type n = fmt.find("%f") ;
-    if ( n != std::string::npos ) {
-      char subs[4] ;
-      std::sprintf ( subs, "%03d", msec ) ;
-      while ( n != std::string::npos ) {
-        fmt.replace ( n, 2, subs ) ;
-        n = fmt.find("%f") ;
-      }
-    }
-
-    char buf[128] ;
-    strftime(buf, 128, fmt.c_str(), &tms );
-    return std::string( buf );
-  }
-
-}
-

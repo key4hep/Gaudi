@@ -19,7 +19,12 @@
 #ifdef __ICC
 // disable icc remark #2259: non-pointer conversion from "double" to "float" may lose significant bits
 #pragma warning(disable:2259)
+#elif defined(WIN32)
+// disable warning
+//   C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+#pragma warning(disable:4244)
 #endif
+
 namespace Gaudi
 {
   namespace Examples

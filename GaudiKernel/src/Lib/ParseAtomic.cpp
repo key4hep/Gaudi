@@ -1,21 +1,26 @@
 // $Id: ParseAtomic.cpp,v 1.4 2008/10/28 14:02:18 marcocle Exp $
 // ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.4 $ 
+// CVS tag $Name:  $, version $Revision: 1.4 $
 // ============================================================================
 // Include files
 // ============================================================================
 // Local
 // ============================================================================
+#ifdef WIN32
+// Disable warning
+//   C4146: unary minus operator applied to unsigned type, result still unsigned
+// Coming from the parsers of unsigned integers.
+#pragma warning(disable:4146)
+#endif
 #include "GaudiKernel/Parsers.icpp"
 // ============================================================================
-
 // ============================================================================
-/** @file 
+/** @file
  *
- *  Implementation of the parsing function for atomic primitive types 
- *  
- *  For adding new type you should have only grammar class which recognize 
- *  this type. Then by combining this grammar with such already implemented 
+ *  Implementation of the parsing function for atomic primitive types
+ *
+ *  For adding new type you should have only grammar class which recognize
+ *  this type. Then by combining this grammar with such already implemented
  *  grammars  like VectorGrammar, MapGrammar, PairGrammar you can very simply
  *  implement container types which will work with your type.
  *
@@ -24,31 +29,31 @@
  *
  *  @author Alexander MAZUROV  Alexander.Mazurov@gmail.com
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
- *  @date   2006-05-12 
+ *  @date   2006-05-12
  */
 // ============================================================================
 namespace Gaudi
-{ 
+{
   namespace Parsers
   {
     // ========================================================================
-    StatusCode parse ( char&               result  , 
+    StatusCode parse ( char&               result  ,
                        const string&       input   )
     { return parse_char    ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( unsigned char&      result  , 
+    StatusCode parse ( unsigned char&      result  ,
                        const string&       input   )
     { return parse_char    ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( signed char&        result  , 
+    StatusCode parse ( signed char&        result  ,
                        const string&       input   )
     { return parse_char    ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( short&              result , 
+    StatusCode parse ( short&              result ,
                        const string&       input  )
     { return parse_integer ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( unsigned short&     result , 
+    StatusCode parse ( unsigned short&     result ,
                        const string&       input  )
     { return parse_integer ( result , input ) ; }
     // ========================================================================
@@ -56,54 +61,54 @@ namespace Gaudi
                        const string&       input  )
     { return parse_integer ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( unsigned int&       result , 
+    StatusCode parse ( unsigned int&       result ,
                        const string&       input  )
     { return parse_integer ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( long&               result , 
+    StatusCode parse ( long&               result ,
                        const string&       input  )
     { return parse_integer ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( unsigned long&      result , 
+    StatusCode parse ( unsigned long&      result ,
                        const string&       input  )
     { return parse_integer ( result , input ) ; }
     // ========================================================================
     StatusCode parse ( long long&          result ,
-                       const string&       input  ) 
+                       const string&       input  )
     { return parse_integer ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( unsigned long long& result , 
+    StatusCode parse ( unsigned long long& result ,
                        const string&       input  )
-    { return parse_integer ( result , input ) ; }    
+    { return parse_integer ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( bool&               result , 
+    StatusCode parse ( bool&               result ,
                        const string&       input  )
     {
       BoolGrammar g;
-      return parse( 
-          createIterator(input), 
+      return parse(
+          createIterator(input),
           IteratorT(),
           g[var(result)=arg1]).full;
     }
     // ========================================================================
-    StatusCode parse ( float&              result , 
-                       const string&       input  ) 
+    StatusCode parse ( float&              result ,
+                       const string&       input  )
     { return parse_real ( result , input ) ; }
     // ========================================================================
     StatusCode parse ( double&             result ,
                        const string&       input  )
     { return parse_real ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( long double&        result , 
+    StatusCode parse ( long double&        result ,
                        const string&       input  )
     { return parse_real ( result , input ) ; }
     // ========================================================================
-    StatusCode parse ( string&             result , 
+    StatusCode parse ( string&             result ,
                        const string&       input  )
     {
       StringGrammar g;
       if ( !parse(
-              createIterator(input), 
+              createIterator(input),
               IteratorT(),
               g[var(result)=arg1]).full ){ result = input ; }
       /// @attention always!!!
@@ -113,7 +118,7 @@ namespace Gaudi
 } // end of namespace Gaudi
 
 // ============================================================================
-// The END 
+// The END
 // ============================================================================
 
 

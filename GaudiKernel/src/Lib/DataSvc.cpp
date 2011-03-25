@@ -39,6 +39,17 @@
 #include <cstdlib>
 #include <vector>
 #include <algorithm>
+#include <sstream>
+
+namespace {
+  /// Helper function to convert item numbers to path strings
+  /// i.e. int -> "/" + int
+  inline std::string itemToPath(int item) {
+    std::ostringstream path;
+    path << '/' << item;
+    return path.str();
+  }
+}
 
 // If you absolutely need optimization: switch off dynamic_cast.
 // This improves access to the data store roughly by 10 %
@@ -423,18 +434,14 @@ StatusCode DataSvc::registerObject (const std::string& parentPath,
 StatusCode DataSvc::registerObject(const std::string& parentPath,
                                    int item,
                                    DataObject* pObject)   {
-  char buffer[32] = "/";
-  ::_itoa( item, &buffer[1] , 10 );
-  return registerObject(parentPath, buffer, pObject);
+  return registerObject(parentPath, itemToPath(item), pObject);
 }
 
 /// Register object with the data store.
 StatusCode DataSvc::registerObject(DataObject* parentObj,
                                    int item,
                                    DataObject* pObject)   {
-  char buffer[32] = "/";
-  ::_itoa( item, &buffer[1] , 10 );
-  return registerObject(parentObj, buffer, pObject);
+  return registerObject(parentObj, itemToPath(item), pObject);
 }
 
 /// Register object with the data store.
@@ -566,9 +573,7 @@ StatusCode DataSvc::unregisterObject(const std::string& parentPath,
 
 /// Unregister object from the data store.
 StatusCode DataSvc::unregisterObject(const std::string& parentPath, int item) {
-  char objPath[32] = "/";
-  ::_itoa( item, &objPath[1] , 10 );
-  return unregisterObject(parentPath, objPath);
+  return unregisterObject(parentPath, itemToPath(item));
 }
 
 /// Unregister object from the data store.
@@ -626,9 +631,7 @@ StatusCode DataSvc::unregisterObject (DataObject* pParentObj,
 
 /// Unregister object from the data store.
 StatusCode DataSvc::unregisterObject(DataObject* pParentObj, int item)    {
-  char objPath[32] = "/";
-  ::_itoa( item, &objPath[1] , 10 );
-  return unregisterObject(pParentObj, objPath);
+  return unregisterObject(pParentObj, itemToPath(item));
 }
 
 /** Invoke data fault handling if enabled
@@ -892,9 +895,7 @@ StatusCode DataSvc::retrieveObject(const std::string& parentPath,
 StatusCode DataSvc::retrieveObject(const std::string& parentPath,
                                    int item,
                                    DataObject*& pObject)   {
-  char buffer[32] = "/";
-  ::_itoa(item,&buffer[1],10);
-  return retrieveObject(parentPath, buffer, pObject);
+  return retrieveObject(parentPath, itemToPath(item), pObject);
 }
 
 /// Retrieve object from data store.
@@ -909,9 +910,7 @@ StatusCode DataSvc::retrieveObject(DataObject* parentObj,
 StatusCode DataSvc::retrieveObject(DataObject* parentObj,
                                    int item,
                                    DataObject*& pObject)  {
-  char buffer[32] = "/";
-  ::_itoa(item,&buffer[1],10);
-  return retrieveObject(parentObj, buffer, pObject);
+  return retrieveObject(parentObj, itemToPath(item), pObject);
 }
 
 /// Retrieve object identified by its directory from the data store.
@@ -965,18 +964,14 @@ StatusCode DataSvc::findObject(const std::string& parentPath,
 /// Retrieve object identified by its full path from the data store.
 StatusCode DataSvc::findObject(const std::string& parentPath,
                                int item, DataObject*& pObject)   {
-  char buffer[32] = "/";
-  ::_itoa(item,&buffer[1],10);
-  return findObject(parentPath, buffer, pObject);
+  return findObject(parentPath, itemToPath(item), pObject);
 }
 
 /// Find object identified by its full path in the data store.
 StatusCode DataSvc::findObject(DataObject* parentObj,
                                int item,
                                DataObject*& pObject)    {
-  char buffer[32] = "/";
-  ::_itoa(item,&buffer[1],10);
-  return findObject(parentObj, buffer, pObject);
+  return findObject(parentObj, itemToPath(item), pObject);
 }
 
 /// Find object identified by its full path in the data store.

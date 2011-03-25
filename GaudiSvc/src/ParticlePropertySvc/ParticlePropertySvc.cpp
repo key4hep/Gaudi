@@ -18,16 +18,16 @@
 #include "GaudiKernel/ParticleProperty.h"
 #include "GaudiKernel/PhysicalConstants.h"
 #include "GaudiKernel/IFileAccess.h"
+#include "GaudiKernel/System.h"
 // ============================================================================
 //#include "GaudiKernel/ToStream.h"
 // ============================================================================
 // Local
 // ============================================================================
 #include "ParticlePropertySvc.h"
-
 // ============================================================================
 /** Instantiation of a static factory class used by clients to create
- *  instances of this serviceq
+ *  instances of this service
  */
 DECLARE_SERVICE_FACTORY(ParticlePropertySvc)
 // ============================================================================
@@ -62,11 +62,11 @@ ParticlePropertySvc::ParticlePropertySvc
   , m_replaced ()
   , m_fileAccess (0)
 {
+  /// @todo: remove reference to LHCb-specific environment variable
   // Redefine the default name:
-  if( NULL != getenv("PARAMFILESROOT") )
+  if( System::getEnv("PARAMFILESROOT", m_filename) )
   {
-    m_filename  = getenv( "PARAMFILESROOT" ) ;
-    m_filename += "/data/ParticleTable.txt"  ;
+    m_filename += "/data/ParticleTable.txt";
   }
   //
   declareProperty ( "ParticlePropertiesFile" , m_filename  ) ;
@@ -358,6 +358,12 @@ StatusCode ParticlePropertySvc::parse( const std::string& file )
 
     if ( line[0] == '#' ) continue;
 
+    /// @todo: This PPS should be removed from Gaudi, if not, the parser must be improved
+#ifdef WIN32
+// Disable warning
+//   C4996: 'strtok': This function or variable may be unsafe.
+#pragma warning(disable:4996)
+#endif
     std::string par, gid, jid, chg, mas, lif, evt, pyt, mwi ;
     char* token = strtok( line, " " );
     if ( token ) { par = token; token = strtok( NULL, " " );} else continue;
@@ -380,7 +386,7 @@ StatusCode ParticlePropertySvc::parse( const std::string& file )
     long   lpyt = atoi( pyt.c_str() ) ;
     double mW = atof( mwi.c_str() ) * Gaudi::Units::GeV ;
 
-    // Change the particles that do not corresopond to a pdg number
+    // Change the particles that do not correspond to a pdg number
     if ( ljid == 0 ) {
       ljid = 10000000*lgid;
     }
@@ -426,7 +432,7 @@ ParticlePropertySvc::anti ( const ParticleProperty* pp ) const
 // ============================================================================
 /** helper (protected) function to set the valid
  *  particle<-->antiparticle relations
- *  @retutrn status code
+ *  @return status code
  */
 // ============================================================================
 StatusCode ParticlePropertySvc::setAntiParticles()
@@ -615,7 +621,6 @@ bool ParticlePropertySvc::diff
 // re-enable icc remark #1572
 #pragma warning(pop)
 #endif
-
 // ============================================================================
 // The END
 // ============================================================================

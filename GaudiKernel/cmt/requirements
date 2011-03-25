@@ -32,7 +32,7 @@ macro GaudiKernelDict_use_linkopts $(use_linkopts)
 # MCl: ensure that the headers are installed before the build of the dictionary (should not be needed)
 macro_append GaudiKernelGen_dependencies "install_more_includes"
 
-#-----Generate Configurables 
+#-----Generate Configurables
 macro genconfig_cmd           $(GAUDIKERNELROOT)/$(tag)/genconf.exe \
      GAUDI_with_installarea  genconf.exe \
      GAUDIATLAS_with_installarea  genconf.exe
@@ -53,7 +53,7 @@ macro_append cppflags "" \
          target-winxp ""
 
 ## For Gaudi::Sleep and Gaudi::NanoSleep
-macro_append Boost_linkopts ' $(Boost_linkopts_thread) $(Boost_linkopts_date_time)' 
+macro_append Boost_linkopts ' $(Boost_linkopts_thread) $(Boost_linkopts_date_time)'
 
 ## For DirSearchPath
 macro_append Boost_linkopts ' $(Boost_linkopts_system) $(Boost_linkopts_filesystem) '
@@ -73,9 +73,21 @@ macro_append app_test_SerializeSTL_cppflags ' -Wno-unused-parameter ' \
                                target-winxp '' \
                                  target-icc ''
 
+application test_GaudiTime -group=tests -import=CppUnit \
+                       ../tests/src/test_GaudiTime.cpp
+# FIXME: (MCl) this hides warnings from a broken header file in CppUnit, but may
+#              hide problems in the actual test source.
+macro_append app_test_GaudiTime_cppflags ' -Wno-unused-parameter ' \
+                        no-hide-warnings '' \
+                            target-winxp '' \
+                              target-icc ''
+
+application test_headers_build -group=tests ../tests/src/test_headers_build.cpp
+
 # FIXME: (MCl) hides the warning due to hidden virtual functions in the __shadow__ classes
 #              generated in the dictionaries.
-macro_append dictionary_dict_cpp_cppflags ' -Wno-overloaded-virtual ' no-hide-warnings '' target-winxp ''
+# On Windows hides warning C4996 (security-related warning)
+macro_append dictionary_dict_cpp_cppflags ' -Wno-overloaded-virtual ' no-hide-warnings '' target-winxp ' -D_SCL_SECURE_NO_WARNINGS'
 
 apply_pattern QMTest
 
