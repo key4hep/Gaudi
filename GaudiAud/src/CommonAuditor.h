@@ -43,11 +43,17 @@ protected:
     // Note: there is no way to extract from a Property type the type returned by
     // value().
     const std::vector<std::string> &v = m_types.value();
-    return (v.size() != 0) && (
+    // we need to return true is the list is empty or when the list does't
+    // start by "none" and the list contain the event we got.
+    return (v.size() == 0) || (
              (v[0] != "none") &&
              (find(v.begin(), v.end(), evt) != v.end())
            );
   }
 
   StringArrayProperty m_types;
+
+  /// Update handler for the obsolete property CustomEventTypes
+  void i_updateCustomTypes(Property &);
+  StringArrayProperty m_customTypes;
 };
