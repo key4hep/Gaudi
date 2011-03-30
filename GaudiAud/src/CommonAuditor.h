@@ -52,4 +52,8 @@ protected:
   }
 
   StringArrayProperty m_types;
+
+  /// Update handler for the obsolete property CustomEventTypes
+  void i_updateCustomTypes(Property &);
+  StringArrayProperty m_customTypes;
 };
