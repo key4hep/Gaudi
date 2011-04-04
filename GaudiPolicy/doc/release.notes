@@ -36,6 +36,9 @@ package manager: Marco Clemencic
  - Fixed a problem in a regular expression used in the exclusion of lines
    from the references of the tests
 
+! 2011-01-11 - Hubert Degaudenzi
+ - Initial commit for gcc native dependency calculations.
+
 ! 2011-01-07 - Marco Clemencic
  - Fixes to run_qmtest.py to allow creation of HTML output on Windows.
  - Fixed nmake fragments to honor the shlibsuffix macro.
@@ -59,7 +62,7 @@ package manager: Marco Clemencic
 ! 2010-09-09 - Marco Clemencic
  - Changed the default behavior about shared directories: by default shared
    directories are not used. The old behavior can be restored with the tag
-   'use-shared-dir' (the tag ATLAS implies it).
+   'user-shared-dir' (the tag ATLAS implies it).
 
 ! 2010-09-02 - Marco Clemencic
  - Improved and documented the 'pyd_module' and 'pyd_boost_module' (new) patterns.

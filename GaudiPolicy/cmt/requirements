@@ -517,6 +517,15 @@ make_fragment sln_dependency_project
 make_fragment sln_dependency_header
 make_fragment sln_dependency_trailer
 
+
+# C++
+make_fragment cpp
+make_fragment cpp_library
+
+macro cppcomp         "$(cpp) -c $(cppdebugflags) $(cppflags) $(pp_cppflags) $(includes)" \
+      VisualC         "cl.exe $(cppdebugflags) $(cppflags) $(pp_cppflags)"
+
+
 # Local copy of the dependencies fragment to allow a "QUICK" option that
 # completely ignores dependencies (useful to speed up builds from scratch).
 macro dep_fragment "" CMTp20070208 "dependencies"

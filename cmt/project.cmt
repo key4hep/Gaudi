@@ -7,3 +7,4 @@ setup_strategy root
 structure_strategy without_version_directory
 
 container GaudiRelease
+
