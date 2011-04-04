@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-04-01 - Charles Leggett
+ - get the lib_no_static_fragment macro to work with CMT > v20
+ M cmt/requirements
+
 ! 2011-03-17 - Marco Clemencic
  - Removed the option "-undefined suppress" from the link statement on MacOSX
    (added by CMT) to have the same behavior as on Linux (-Wl,--no-undefined).

@@ -88,6 +88,6 @@ std::string System::tempDirectory()   {
        System::getEnv("TMP_DIR", dir)
      )
     return dir;
-  else;
+  else
     return homeDirectory();
 }
