@@ -1,6 +1,15 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+! 2011-04-04 - Pere Mato
+ - Fixes to work with LHCb Brunel
+   1) Namespace changed from GaudiPython to GaudiMP for TESSerializer class
+   2) Firing "EndEvent" incidents in Worker event loop. This was needed to
+      eliminate crashes in Brunel when invalid pointer to collection of
+      cluster was used in fitting algorithms.
+   3) Call update() method after having de-serialize a KeyedContainer<>. This
+      is needed to re-build the internal direct access container.
+
 ============================== GaudiMP v1r0 ==================================
 ! 2011-01-11 - Marco Clemencic
  - Fixed some ICC remarks.
