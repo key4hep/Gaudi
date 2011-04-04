@@ -304,10 +304,11 @@ class FileRecordsAgent( ) :
         for sourceNode, path, serialob in self.objectsIn :
             self.log.debug('Working with %s'%(path))
             ob = pickle.loads(serialob)
-            if hasattr( ob, "configureDirectAccess" ) :
-                ob.configureDirectAccess()
+            if hasattr( ob, 'update' ) :
+                ob.update()
+            if hasattr( ob, 'numberOfObjects' ) :
                 nCont = ob.numberOfObjects()
-                self.log.debug( '\tcontainedObjects : %i'%(nCont) )
+                self.log.debug( '\t %s has containedObjects : %i'%(type(ob).__name__,  nCont) )
             if sourceNode == 0 :
                 self.log.debug('Registering Object to : %s'%(path))
                 self.fsr.registerObject( path, ob )

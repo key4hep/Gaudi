@@ -485,8 +485,9 @@ class GMPComponent( object ) :
         self.evt = self.a.evtsvc()
         self.hvt = self.a.histsvc()
         self.fsr = self.a.filerecordsvc()
+        self.inc = self.a.service('IncidentSvc','IIncidentSvc')
         self.pers = self.a.service( 'EventPersistencySvc', 'IAddressCreator' )
-        self.ts  = gbl.GaudiPython.TESSerializer( self.evt._idp, self.pers )
+        self.ts  = gbl.GaudiMP.TESSerializer( self.evt._idp, self.pers )
         self.TS  = TESSerializer( self.ts, self.evt,
                                   self.nodeType, self.nodeID, self.log )
         return SUCCESS
@@ -829,6 +830,7 @@ class Worker( GMPComponent ) :
                 tb = self.TS.Dump( )
                 self.evcom.send( (self.currentEvent, tb) )
                 self.nOut += 1
+            self.inc.fireIncident(gbl.Incident('Worker','EndEvent'))
             self.eventLoopSyncer.set()
             self.evt.clearStore( )
         self.log.info('Setting <Last> Event')
