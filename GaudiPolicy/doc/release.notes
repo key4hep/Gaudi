@@ -1,6 +1,16 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-04-05 - Hubert Degaudenzi
+ - modified the cmt_compiler_version macro to avoid repeated calls to
+   "gcc --version".
+ - added 2 fragments (cpp and cpp_library) for the native calculation of
+   dependencies by gcc. For each ".o" file a makefile fragment ".d" is
+   created. It contains the include dependencies of the file. The ".d" is then
+   included in the cpp and cpp_library fragment. This reduces the time to
+   calculate the dependencies because only one call to gcc is made to compile
+   the ".ccp" and calculate its dependencies.
+
 ! 2011-04-01 - Charles Leggett
  - get the lib_no_static_fragment macro to work with CMT > v20
  M cmt/requirements
