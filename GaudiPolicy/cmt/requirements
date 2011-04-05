@@ -522,6 +522,9 @@ make_fragment sln_dependency_trailer
 make_fragment cpp
 make_fragment cpp_library
 
+macro cmt_compiler_version "${cmt_compiler_version}" \
+              target-gcc43 "gcc43"
+
 macro cppcomp         "$(cpp) -c $(cppdebugflags) $(cppflags) $(pp_cppflags) $(includes)" \
       VisualC         "cl.exe $(cppdebugflags) $(cppflags) $(pp_cppflags)"
 
