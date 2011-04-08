@@ -1,6 +1,11 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-04-08 - Marco Clemencic
+ - Introduced two new incidents: BeginProcessing and EndProcessing.
+   They are needed to reintroduce the signals around the processing loop as
+   it was the case for BeginEvent and EndEvent before GaudiSvc v17r0.
+
 ! 2011-03-28 - Marco Clemencic
  - Fixed a typo.
 
