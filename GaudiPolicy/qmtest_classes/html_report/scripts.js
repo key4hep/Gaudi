@@ -96,77 +96,107 @@ function renderSummary(element) {
 	var tbody = $("<tbody/>");
 	// row with the total
 	tbody.append($("<tr/>")
-		 .append($("<td/>").attr("align", "right").text(counter.total))
-		 .append($("<td/>").attr("colspan", "3"))
-		 .append($("<td/>").text("tests total")));
+		 .append($("<td align='right'/>").text(counter.total))
+		 .append($("<td colspan='3'/>"))
+		 .append($("<td>tests total</td>")));
 	var result_types = ["FAIL", "ERROR", "UNTESTED", "PASS"];
 	for (var i in result_types) {
 		var result_type = result_types[i];
 		if (counter[result_type]) {
 			tbody.append($("<tr/>")
-				 .append($("<td/>").attr("align", "right").text(counter[result_type]))
-				 .append("<td>(</td>")
-				 .append($("<td/>").attr("align", "right").text(Math.round(counter[result_type] / counter.total * 100)))
-				 .append("<td>%)</td>")
-				 .append($("<td/>").text("tests " + result_type)).addClass(result_type));
+				     .append($("<td align='right'/>")
+					     .text(counter[result_type]))
+				     .append("<td>(</td>")
+				     .append($("<td align='right'/>")
+					     .text(Math.round(counter[result_type]
+							      / counter.total * 100)))
+				     .append("<td>%)</td>")
+				     .append($("<td/>")
+					     .text("tests " + result_type))
+				     .addClass(result_type));
 		}
 	}
 	element.html($("<table/>").html(tbody));
 }
 
+/** Generate foldable lists.
+ */
+jQuery.fn.foldable = function() {
+    this.each(function() {
+	    var me = $(this);
+	    me.addClass("folded")
+	    // wrap the content of the element with a clickable span
+	    // (includes the ul)
+	    .wrapInner($("<span class='clickable'/>")
+		       .click(function(){
+			       var me = $(this);
+			       me.next().toggle();
+			       me.parent().toggleClass("folded expanded");
+			       return false; // avoid bubbling of the event
+			   }));
+	    // this moves the ul after the span (and hides it in the meanwhile)
+	    me.append($("span > ul",me).hide());
+	});
+};
+
+/** Modify the items that have the "url" data, making them clickable
+ *  and followed by a hidden block with the content of the link specified.
+ */
+jQuery.fn.loader = function() {
+    this.each(function() { // loop over all the selected elements
+      var me = $(this);
+      if (me.data("url")) { // modify the element only if it does have a data "url"
+	  me.addClass("folded")
+	      // wrap the "text" of the element with a clickable span that loads the url
+	      .wrapInner($("<span class='clickable'/>")
+			 .click(function(){ // trigger the loading on click
+				 var me = $(this);
+				 me.after($("<div/>").load(me.parent().data("url")));
+				 me.unbind("click"); // replace the click handler
+				 me.click(function(){ // this handler just toggle the visibility
+					 var me = $(this);
+					 me.next().toggle();
+					 me.parent().toggleClass("folded expanded");
+					 return false; // avoid bubbling of the event
+				     });
+				 me.parent().toggleClass("folded expanded");
+				 return false; // avoid bubbling of the event
+			     }));
+      }
+    });
+};
+
 /// Display the list of results
 function renderResults(element, tests) {
-	var ul = $("<ul/>");
-	if (!tests) {
-		tests = test_results.not_passed;
+    if (!tests) {
+	tests = test_results.not_passed;
+    }
+    var ul = $("<ul/>");
+    for (var i in tests) {
+	var test = test_results.tests[tests[i]];
+	
+	var entry = $("<li/>")
+	    .append($("<span class='testid'/>").text(test.id))
+	    .append(": ")
+	    .append($("<span/>").addClass(test.outcome).text(test.outcome));
+	if (test.cause) {
+	    entry.append(" ")
+		.append($("<span class='cause'/>")
+			.text(test.cause));
 	}
-	for (var i in tests) {
-		var test = test_results.tests[tests[i]];
+	var fields = $("<ul class='fieldid'/>");
+	for (var j in test.fields) {
+	    fields.append($("<li/>").data("url", test.id + "/" + test.fields[j])
+			  .text(test.fields[j]));
+	}
+	entry.append(fields);
+	ul.append(entry);
+    }
 
-		var entry = $("<li/>").addClass("folded")
-		  .append($("<span/>").addClass("clickable")
-	        .append($("<span/>").addClass("testid").text(test.id)).append(": ")
-	        .append($("<span/>").addClass(test.outcome).text(test.outcome))
-	        .click(function(){
-		      var me = $(this);
-			  me.next().toggle();
-			  me.parent().toggleClass("folded expanded");
-			  return false; // avoid bubbling of the event
-		    })
-	      );
-		if (test.cause) {
-			entry.children("span")
-			     .append(" ")
-			     .append($("<span/>").addClass("cause")
-				         .text(test.cause));
-		}
-		var fields = $("<ul/>").hide();
-		for (var j in test.fields) {
-			fields.append($("<li/>")
-					.addClass("folded")
-					.append($("<span/>").addClass("clickable")
-					  .data("url", test.id + "/" + test.fields[j])
-					  .append($("<span/>").addClass("fieldid")
-					    .text(test.fields[j]))
-					  .click(function(){
-						var me = $(this);
-						me.after($("<div/>").load(me.data("url")));
-						me.unbind("click");
-						me.click(function(){
-							var me = $(this);
-							me.next().toggle();
-							me.parent().toggleClass("folded expanded");
-							return false; // avoid bubbling of the event
-						});
-						me.parent().toggleClass("folded expanded");
-						return false; // avoid bubbling of the event
-					  })
-					));
-		}
-		entry.append(fields);
-		ul.append(entry);
-	}
-	element.append(ul);
+    $("li", ul).loader();
+    $("li:has(ul)", ul).foldable();
+
+    element.append(ul);
 }
 
 /// Code executed when the page is ready.
