@@ -117,7 +117,7 @@ jQuery.fn.foldable = function() {
 			       return false; // avoid bubbling of the event
 			   }));
 	    // this moves the ul after the span (and hides it in the meanwhile)
-	    me.append($("span > ul",me).hide());
+	    me.append($("span > ul", me).hide());
 	});
 };
 
@@ -174,7 +174,7 @@ jQuery.fn.toggleNextButton = function(data) {
  */
 jQuery.fn.makeToggleable = function(data) {
 	this.each(function() {
-		var btn = $("<span class='togglelink clickable'/>");
+		var btn = $("<span class='clickable'/>");
 		$(this).before(btn);
 		btn.toggleNextButton(data);
 	});
@@ -190,8 +190,7 @@ jQuery.fn.results = function(tests) {
 	var test = test_results.tests[tests[i]];
 
 	var entry = $("<li/>")
-	    .append($("<span class='testid'/>").text(test.id))
-	    .append(": ")
+	    .append($("<span class='testid'/>").text(test.id + ": "))
 	    .append($("<span/>").addClass(test.outcome).text(test.outcome));
 	if (test.cause) {
 	    entry.append(" ")
@@ -210,7 +209,12 @@ jQuery.fn.results = function(tests) {
     $("li", ul).loader();
     $("li:has(ul)", ul).foldable();
 
-    return this.html(ul);
+    return this.html(ul)
+    	.append($('<div class="clickable">Collapse all</div>').click(function(){
+    		$(this).prev().find(".expanded > .clickable")
+    			.next().hide()
+    			.parent().toggleClass("folded expanded");
+    	}));
 }
 
 /// Code executed when the page is ready.
@@ -221,7 +225,7 @@ $(function () {
 	.success(function(){
 		$("#summary").summary();
 		$("#results").results();
-		$("#all_results").html($('<span class="togglelink clickable">(show)</span>')
+		$("#all_results").html($('<span class="clickable">(show)</span>')
 				.click(function(){
 					var parent = $(this).parent();
 					parent.loadingIcon();
