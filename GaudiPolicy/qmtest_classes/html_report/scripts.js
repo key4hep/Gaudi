@@ -30,19 +30,6 @@ function parseSummary(summary) {
  * the DOM.
  */
 function loadAnnotations() {
-	// prepare the toggling button
-	$("#annotations").hide()
-	  .before($("<span>(show)</span>")
-			  .addClass("togglelink clickable")
-			  .click(function(){
-				  var me = $(this);
-				  me.next().toggle();
-				  if (me.html() == "(show)") {
-				    me.html("(hide)");
-				  } else {
-					me.html("(show)");
-				  }
-			  }));
 	// Asynchronous retrieval
 	$.get('annotations.json', function(data) {
 		// Prepare a table with the annotations
@@ -84,8 +71,8 @@ function loadAnnotations() {
 				.append($('<td/>').addClass("key").text(key))
 				.append($('<td/>').addClass("value").html(value)));
 		}
-		// Insert the code in the annotations block
-		$('#annotations').html($('<table/>').append(tbody));
+		// Insert the code in the annotations block and enable the toggle button
+		$('#annotations').html($('<table/>').append(tbody)).makeToggleable();
 	}, "json");
 }
 
@@ -97,8 +84,7 @@ function renderSummary(element) {
 	// row with the total
 	tbody.append($("<tr/>")
 		 .append($("<td align='right'/>").text(counter.total))
-		 .append($("<td colspan='3'/>"))
-		 .append($("<td>tests total</td>")));
+		 .append($("<td colspan='3'/><td>tests total</td>")));
 	var result_types = ["FAIL", "ERROR", "UNTESTED", "PASS"];
 	for (var i in result_types) {
 		var result_type = result_types[i];
@@ -166,15 +152,46 @@ jQuery.fn.loader = function() {
     });
 };
 
+/**
+ * Helper function to re-use the code for the toggle button callback
+ */
+jQuery.fn.toggleNextButton = function(data) {
+	if (data === undefined) data = {};
+	if (data.hide === undefined) data.hide = "(hide)";
+	if (data.show === undefined) data.show = "(show)";
+	if (data.start_visible === undefined) data.start_visible = false;
+	this.click(function() {
+		var me = $(this);
+		me.next().toggle();
+		if (me.next().is(":visible")) {
+			me.text(data.hide);
+		} else {
+			me.text(data.show);
+		}
+	}).text(data.start_visible ? data.hide : data.show)
+	  .next().toggle(data.start_visible);
+	return this;
+}
+
+/** Make a given element toggleable using a show/hide button inserted just before
+ *  it.
+ */
+jQuery.fn.makeToggleable = function() {
+	this.each(function() {
+		var btn = $("<span class='togglelink clickable'/>");
+		$(this).before(btn);
+		btn.toggleNextButton();
+	});
+}
+
 /// Display the list of results
 function renderResults(element, tests) {
-    if (!tests) {
-	tests = test_results.not_passed;
-    }
+    if (!tests) tests = test_results.not_passed;
+
     var ul = $("<ul/>");
     for (var i in tests) {
 	var test = test_results.tests[tests[i]];
-	
+
 	var entry = $("<li/>")
 	    .append($("<span class='testid'/>").text(test.id))
 	    .append(": ")
@@ -207,23 +224,12 @@ $(function () {
 		renderResults($("#results"));
 
 		$("#all_results").hide()
-		  .before($("<span>(show)</span>").addClass("togglelink clickable")
+		  .before($("<span class='togglelink clickable'>(show)</span>")
 				  .click(function(){
 					  var me = $(this);
 					  me.unbind("click");
-					  var nxt = me.next();
-					  renderResults(nxt, test_results.all_tests);
-					  nxt.show();
-					  me.html("(hide)")
-		  			  	.click(function(){
-		  			  		var me = $(this);
-		  			  		me.next().toggle();
-		  			  		if (me.html() == "(show)") {
-		  			  			me.html("(hide)");
-		  			  		} else {
-		  			  			me.html("(show)");
-		  			  		}
-		  			  	});
+					  renderResults(me.next(), test_results.all_tests);
+					  me.toggleNextButton({start_visible: true});
 				  }));
 	}, "json");
 
