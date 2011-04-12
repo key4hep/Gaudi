@@ -181,50 +181,68 @@ jQuery.fn.makeToggleable = function(data) {
 	return this;
 }
 
-/// Display the list of results
-jQuery.fn.results = function(tests) {
-    if (tests === undefined) tests = test_results.not_passed;
+/** Display the list of results
+ * @param tests list of test ids to be displayed, if not specified, default to the
+ * not passed ones
+ * @param ignore_fields fields not to be shown
+ * @param field_order list of fields to be specified before the others in the specified order
+ */
+jQuery.fn.results = function(tests, ignore_fields, fields_order) {
+	tests = tests || test_results.not_passed;
+	ignore_fields = ignore_fields || [];
+	fields_order = fields_order || [];
 
-    var ul = $("<ul/>");
-    for (var i in tests) {
-	var test = test_results.tests[tests[i]];
+	var ul = $("<ul/>");
+	$.each(tests, function(i, test) {
+		test = test_results.tests[test];
 
-	var entry = $("<li/>")
-	    .append($("<span class='testid'/>").text(test.id + ": "))
-	    .append($("<span/>").addClass(test.outcome).text(test.outcome));
-	if (test.cause) {
-	    entry.append(" ")
-		.append($("<span class='cause'/>")
-			.text(test.cause));
-	}
-	var fields = $("<ul class='fieldid'/>");
-	for (var j in test.fields) {
-	    fields.append($("<li/>").data("url", test.id + "/" + test.fields[j])
-			  .text(test.fields[j]));
-	}
-	entry.append(fields);
-	ul.append(entry);
-    }
+		var entry = $("<li/>")
+		.append($("<span class='testid'/>").text(test.id + ": "))
+		.append($("<span/>").addClass(test.outcome).text(test.outcome));
+		if (test.cause) {
+			entry.append(" ")
+			.append($("<span class='cause'/>")
+					.text(test.cause));
+		}
 
-    $("li", ul).loader();
-    $("li:has(ul)", ul).foldable();
+		// Prepare the list of field ids to display
+		var field_ids = $.makeArray(fields_order);
+		$.each(test.fields, function(i,f){
+			if ($.inArray(f, ignore_fields) < 0 && $.inArray(f, field_ids) < 0){
+				field_ids.push(f);
+			}
+		});
 
-    return this.html(ul)
-    	.append($('<div class="clickable">Collapse all</div>').click(function(){
-    		$(this).prev().find(".expanded > .clickable")
-    			.next().hide()
-    			.parent().toggleClass("folded expanded");
-    	}));
+		var fields = $("<ul class='fieldid'/>");
+		$.each(field_ids, function(index, field) {
+			fields.append($("<li/>").data("url", test.id + "/" + field)
+					.text(field));
+		});
+		entry.append(fields);
+		ul.append(entry);
+	});
+
+	$("li", ul).loader();
+	$("li:has(ul)", ul).foldable();
+
+	return this.html(ul)
+	.append($('<div class="clickable">Collapse all</div>').click(function(){
+		$(this).prev().find(".expanded > .clickable")
+		.next().hide()
+		.parent().toggleClass("folded expanded");
+	}));
 }
 
 /// Code executed when the page is ready.
 $(function () {
 	$(".loading").loadingIcon().removeClass("loading");
+	var ignore_fields = ["qmtest.cause", "qmtest.target"];
+	var fields_order = ["qmtest.start_time", "qmtest.end_time"];
 	// load the summary
 	$.get("summary.json", parseSummary, 'json')
 	.success(function(){
 		$("#summary").summary();
-		$("#results").results();
+		$("#results").results(null, ignore_fields, fields_order);
 		$("#all_results").html($('<span class="clickable">(show)</span>')
 				.click(function(){
 					var parent = $(this).parent();
@@ -233,7 +251,7 @@ $(function () {
 					// background execution.
 					$.getJSON("summary.json")
 					.success(function() {
-						parent.results(test_results.all_tests)
+						parent.results(test_results.all_tests, ignore_fields, fields_order)
 							  .makeToggleable({start_visible: true});
 					});
 				})).removeClass("loading");
