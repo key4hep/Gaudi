@@ -205,23 +205,22 @@ jQuery.fn.results = function(tests) {
 /// Code executed when the page is ready.
 $(function () {
 	// load the summary
-	$.get("summary.json", function(summary) {
-		parseSummary(summary);
+	$.get("summary.json", parseSummary, 'json')
+	.success(function(){
 		$("#summary").summary();
 		$("#results").results();
-
 		$("#all_results").hide()
-		  .before($("<span class='togglelink clickable'>(show)</span>")
-				  .click(function(){
-					  var me = $(this);
-					  me.unbind("click");
-					  me.next().results(test_results.all_tests);
-					  me.toggleNextButton({start_visible: true});
-				  }));
-	}, "json");
+		.before($("<span class='togglelink clickable'>(show)</span>")
+				.click(function(){
+					var me = $(this);
+					me.unbind("click");
+					me.next().results(test_results.all_tests);
+					me.toggleNextButton({start_visible: true});
+				}))});
 
 	// load annotations
-	$.get('annotations.json', function(data) {
+	$.getJSON('annotations.json')
+	.success(function(data) {
 		$('#annotations').annotations(data).makeToggleable();
-	}, "json");
+	});
 });
