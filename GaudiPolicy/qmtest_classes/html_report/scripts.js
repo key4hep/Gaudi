@@ -29,55 +29,40 @@ function parseSummary(summary) {
  * Load the annotations file (annotations.json) and fill the annotations block of
  * the DOM.
  */
-function loadAnnotations() {
-	// Asynchronous retrieval
-	$.get('annotations.json', function(data) {
-		// Prepare a table with the annotations
-		var tbody = $("<tbody/>");
-		// This keys are special and must appear first in the table
-		var keys = ["qmtest.run.start_time", "qmtest.run.end_time"];
-		// Add all the other keys to the list of keys
-		for (var key in data) {
-			if ($.inArray(key, keys) == -1) {
-				keys.push(key);
-			}
+jQuery.fn.annotations = function(data) {
+	// Collect the list of keys.
+	// These keys are special and must appear first in the list.
+	var keys = ["qmtest.run.start_time", "qmtest.run.end_time"];
+	// Add all the other keys to the list of keys.
+	for (var key in data) {
+		if ($.inArray(key, keys) == -1) {
+			keys.push(key);
 		}
-		// Add the rows of the table
-		var running = false;
-		for (var i in keys) {
-			var key = keys[i];
-			var value = data[key];
-			if (!value) { // In case of empty value for a key...
-				if (key == "qmtest.run.end_time") {
-					// ... if the key is "end_time", it means the tests are running
-					value = "RUNNING".italics() +
-					        " (the page will be updated every 5s)".small();
-					running = polling;
-				} else {
-					// ... otherwise print a meaningful "None"
-					value = "None".italics();
-				}
-			} else {
-				if ($.isArray(value)) {
-					// In case the value is an Array, let's format it as a list
-					var tmp = $('<ul/>');
-					for (i in value) {
-						tmp.append($('<li/>').text(value[i]))
-					}
-					value = tmp;
-				}
+	}
+	// Prepare a table for the annotations
+	var tbody = $("<tbody/>");
+	// Add the rows of the table
+	for (var i in keys) {
+		var key = keys[i];
+		var value = data[key];
+		if ($.isArray(value)) {
+			// In case the value is an Array, let's format it as a list
+			var tmp = $('<ul/>');
+			for (i in value) {
+				tmp.append($('<li/>').text(value[i]))
 			}
-			tbody.append($("<tr/>")
-				.append($('<td/>').addClass("key").text(key))
-				.append($('<td/>').addClass("value").html(value)));
+			value = tmp;
 		}
-		// Insert the code in the annotations block and enable the toggle button
-		$('#annotations').html($('<table/>').append(tbody)).makeToggleable();
-	}, "json");
+		tbody.append($("<tr/>")
+				.append($('<td class="key"/>').text(key))
+				.append($('<td class="value"/>').html(value)));
+	}
+	// Insert the code in the annotations block and enable the toggle button
+	return this.html($('<table/>').append(tbody));
 }
 
 /// Display the summary table
-function renderSummary(element) {
+jQuery.fn.summary = function() {
 	var counter = test_results.counter;
 	// Prepare a table layout (like the one produced usually by QMTest).
 	var tbody = $("<tbody/>");
@@ -102,7 +87,7 @@ function renderSummary(element) {
 				     .addClass(result_type));
 		}
 	}
-	element.html($("<table/>").html(tbody));
+	return this.html($("<table/>").html(tbody));
 }
 
 /** Generate foldable lists.
@@ -182,11 +167,12 @@ jQuery.fn.makeToggleable = function() {
 		$(this).before(btn);
 		btn.toggleNextButton();
 	});
+	return this;
 }
 
 /// Display the list of results
-function renderResults(element, tests) {
-    if (!tests) tests = test_results.not_passed;
+jQuery.fn.results = function(tests) {
+    if (tests === undefined) tests = test_results.not_passed;
 
     var ul = $("<ul/>");
     for (var i in tests) {
@@ -213,25 +199,29 @@ function renderResults(element, tests) {
     $("li", ul).loader();
     $("li:has(ul)", ul).foldable();
 
-    element.append(ul);
+    return this.append(ul);
 }
 
 /// Code executed when the page is ready.
 $(function () {
+	// load the summary
 	$.get("summary.json", function(summary) {
 		parseSummary(summary);
-		renderSummary($("#summary"));
-		renderResults($("#results"));
+		$("#summary").summary();
+		$("#results").results();
 
 		$("#all_results").hide()
 		  .before($("<span class='togglelink clickable'>(show)</span>")
 				  .click(function(){
 					  var me = $(this);
 					  me.unbind("click");
-					  renderResults(me.next(), test_results.all_tests);
+					  me.next().results(test_results.all_tests);
 					  me.toggleNextButton({start_visible: true});
 				  }));
 	}, "json");
 
-	loadAnnotations();
+	// load annotations
+	$.get('annotations.json', function(data) {
+		$('#annotations').annotations(data).makeToggleable();
+	}, "json");
 });
