@@ -1,7 +1,10 @@
 /// Global variable for the summary content.
 var test_results = {};
 
-/// Digest the summary JSON object, filling the test_results variable.
+/**
+ * Digest the summary JSON object, filling the test_results variable.
+ * @param summary object containing the summary data (response of AJAJ request).
+ */
 function parseSummary(summary) {
 	// Prepare the counters
 	test_results.counter = {"PASS":     0,
@@ -23,6 +26,14 @@ function parseSummary(summary) {
 			test_results.not_passed.push(test.id);
 		}
 	}
+}
+
+/**
+ * Set the html of the selected elements to a spinning icon (for visual feed back).
+ * Note: the image has been downloaded from http://www.ajaxload.info
+ */
+jQuery.fn.loadingIcon = function() {
+	return this.html('<img src="ajax-loader.gif"/>');
 }
 
 /**
@@ -122,7 +133,7 @@ jQuery.fn.loader = function() {
 	      .wrapInner($("<span class='clickable'/>")
 			 .click(function(){ // trigger the loading on click
 				 var me = $(this);
-				 me.after($("<div/>").load(me.parent().data("url")));
+				 me.after($("<div/>").loadingIcon().load(me.parent().data("url")));
 				 me.unbind("click"); // replace the click handler
 				 me.click(function(){ // this handler just toggle the visibility
 					 var me = $(this);
@@ -161,11 +172,11 @@ jQuery.fn.toggleNextButton = function(data) {
 /** Make a given element toggleable using a show/hide button inserted just before
  *  it.
  */
-jQuery.fn.makeToggleable = function() {
+jQuery.fn.makeToggleable = function(data) {
 	this.each(function() {
 		var btn = $("<span class='togglelink clickable'/>");
 		$(this).before(btn);
-		btn.toggleNextButton();
+		btn.toggleNextButton(data);
 	});
 	return this;
 }
@@ -199,28 +210,33 @@ jQuery.fn.results = function(tests) {
     $("li", ul).loader();
     $("li:has(ul)", ul).foldable();
 
-    return this.append(ul);
+    return this.html(ul);
 }
 
 /// Code executed when the page is ready.
 $(function () {
+	$(".loading").loadingIcon().removeClass("loading");
 	// load the summary
 	$.get("summary.json", parseSummary, 'json')
 	.success(function(){
 		$("#summary").summary();
 		$("#results").results();
-		$("#all_results").hide()
-		.before($("<span class='togglelink clickable'>(show)</span>")
+		$("#all_results").html($('<span class="togglelink clickable">(show)</span>')
 				.click(function(){
-					var me = $(this);
-					me.unbind("click");
-					me.next().results(test_results.all_tests);
-					me.toggleNextButton({start_visible: true});
-				}))});
-
+					var parent = $(this).parent();
+					parent.loadingIcon();
+					// actually we already got the JSON data, but this allows to trigger a
+					// background execution.
+					$.getJSON("summary.json")
+					.success(function() {
+						parent.results(test_results.all_tests)
+							  .makeToggleable({start_visible: true});
+					});
+				})).removeClass("loading");
+	});
 	// load annotations
 	$.getJSON('annotations.json')
 	.success(function(data) {
-		$('#annotations').annotations(data).makeToggleable();
+		$('#annotations').annotations(data).makeToggleable().removeClass("loading");
 	});
 });

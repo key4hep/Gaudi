@@ -31,7 +31,6 @@ span.togglelink {
 .clickable {
 	cursor: pointer;
 }
-
 .clickable:hover {
 	color: red;
 }
