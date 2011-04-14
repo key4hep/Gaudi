@@ -82,6 +82,7 @@ apply_pattern LHCb_external pkg=Qt
 apply_pattern LHCb_external pkg=xqilla
 apply_pattern LHCb_external pkg=neurobayes_expert
 apply_pattern LHCb_external pkg=graphviz
+apply_pattern LHCb_external pkg=Frontier_Client
 #apply_pattern LHCb_external pkg=
 
 # -- LHCbGrid external packages --
