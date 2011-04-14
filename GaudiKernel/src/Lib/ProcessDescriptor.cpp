@@ -5,12 +5,12 @@
 //
 //	Package    : System (The LHCb System service)
 //
-//  Description: Invoke interactively the ProcStat from a 
+//  Description: Invoke interactively the ProcStat from a
 //               running application
 //
 //	Author     : M.Frank
 //      Created    : 13/11/00
-//	Changes    : 
+//	Changes    :
 //
 //====================================================================
 #define GAUDIKERNEL_PROCSTAT_CPP
@@ -60,7 +60,7 @@ namespace NtApi {
 //  extern "C" long __cdecl NtQueryInformationProcess(
 
     typedef long (WINAPI *__NtQueryInformationProcess)(
-  
+
     void* ProcessHandle,
     long ProcessInformationClass,
     void* ProcessInformation,
@@ -92,41 +92,41 @@ namespace NtApi {
 #include <cstdio>
 
 struct linux_proc {
-	int pid; // %d
-	char comm[400]; // %s
-	char state; // %c
-	int ppid; // %d
-	int pgrp; // %d
-	int session; // %d
-	int tty; // %d
-	int tpgid; // %d
-	unsigned int flags; // %u
-	unsigned int minflt; // %u
-	unsigned int cminflt; // %u
-	unsigned int majflt; // %u
-	unsigned int cmajflt; // %u
-	int utime; // %d
-	int stime; // %d
-	int cutime; // %d
-	int cstime; // %d
-	int counter; // %d
-	int priority; // %d
-	unsigned int timeout; // %u
-	unsigned int itrealvalue; // %u
-	int starttime; // %d
-	unsigned int vsize; // %u
-	unsigned int rss; // %u
-	unsigned int rlim; // %u
-	unsigned long startcode; // %u
-	unsigned long endcode; // %u
-	unsigned int startstack; // %u
-	unsigned int kstkesp; // %u
-	unsigned int kstkeip; // %u
-	int signal; // %d
-	int blocked; // %d
-	int sigignore; // %d
-	int sigcatch; // %d
-	unsigned int wchan; // %u
+	int pid;
+	char comm[400];
+	char state;
+	int ppid;
+	int pgrp;
+	int session;
+	int tty;
+	int tpgid;
+	unsigned long flags;
+	unsigned long minflt;
+	unsigned long cminflt;
+	unsigned long majflt;
+	unsigned long cmajflt;
+	long utime;
+	long stime;
+	long cutime;
+	long cstime;
+	long counter;
+	long priority;
+	unsigned long timeout;
+	unsigned long itrealvalue;
+	long starttime;
+	unsigned long vsize;
+	unsigned long rss;
+	unsigned long rlim;
+	unsigned long startcode;
+	unsigned long endcode;
+	unsigned long startstack;
+	unsigned long kstkesp;
+	unsigned long kstkeip;
+	long signal;
+	long blocked;
+	long sigignore;
+	long sigcatch;
+	unsigned long wchan;
 };
 
 #ifdef __APPLE__
@@ -139,7 +139,7 @@ void readProcStat(long pid, linux_proc& pinfo) {
   int cnt, fd;
   char buf[512];
 
-  std::ostringstream ost; 
+  std::ostringstream ost;
 
   ost << "/proc/" << pid << "/stat";
   std::string fname = ost.str();
@@ -153,46 +153,47 @@ void readProcStat(long pid, linux_proc& pinfo) {
     std::cout << "LINUX Read of Proc file failed:" << std::endl;
     return;
   }
-  
+
   if(cnt>0)	{
     buf[cnt]='\0';
     sscanf(buf,
-           "%d %s %c %d %d %d %d %d %u %u %u %u %u %d %d %d %d %d %d %u %u %d %u %u %u %lu %lu %u %u %u %d %d %d %d %u",
-	   &pinfo.pid, // %d
-	   pinfo.comm, // %s
-	   &pinfo.state, // %c
-	   &pinfo.ppid, // %d
-	   &pinfo.pgrp, // %d
-	   &pinfo.session, // %d
-	   &pinfo.tty, // %d
-	   &pinfo.tpgid, // %d
-	   &pinfo.flags, // %u
-	   &pinfo.minflt, // %u
-	   &pinfo.cminflt, // %u
-	   &pinfo.majflt, // %u
-	   &pinfo.cmajflt, // %u
-	   &pinfo.utime, // %d
-	   &pinfo.stime, // %d
-	   &pinfo.cutime, // %d
-	   &pinfo.cstime, // %d
-	   &pinfo.counter, // %d
-	   &pinfo.priority, // %d
-	   &pinfo.timeout, // %u
-	   &pinfo.itrealvalue, // %u
-	   &pinfo.starttime, // %d
-	   &pinfo.vsize, // %u
-	   &pinfo.rss, // %u
-	   &pinfo.rlim, // %u
-	   &pinfo.startcode, // %l
-	   &pinfo.endcode, // %l
-	   &pinfo.startstack, // %u
-	   &pinfo.kstkesp, // %u
-	   &pinfo.kstkeip, // %u
-	   &pinfo.signal, // %d
-	   &pinfo.blocked, // %d
-	   &pinfo.sigignore, // %d
-	   &pinfo.sigcatch, // %d
-	   &pinfo.wchan // %u
+	 //1  2  3  4  5  6  7  8  9   10  1   2   3   4   5   6   7   8   9   20  1   2   3   4   5   6   7   8   9   30  1   2   3   4   5
+	   "%d %s %c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu %lu %lu %ld %ld %ld %lu %lu %lu %ld %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu",
+	   &pinfo.pid,
+	   pinfo.comm,
+	   &pinfo.state,
+	   &pinfo.ppid,
+	   &pinfo.pgrp,
+	   &pinfo.session,
+	   &pinfo.tty,
+	   &pinfo.tpgid,
+	   &pinfo.flags,
+	   &pinfo.minflt,
+	   &pinfo.cminflt,
+	   &pinfo.majflt,
+	   &pinfo.cmajflt,
+	   &pinfo.utime,
+	   &pinfo.stime,
+	   &pinfo.cutime,
+	   &pinfo.cstime,
+	   &pinfo.counter,
+	   &pinfo.priority,
+	   &pinfo.timeout,
+	   &pinfo.itrealvalue,
+	   &pinfo.starttime,
+	   &pinfo.vsize,
+	   &pinfo.rss,
+	   &pinfo.rlim,
+	   &pinfo.startcode,
+	   &pinfo.endcode,
+	   &pinfo.startstack,
+	   &pinfo.kstkesp,
+	   &pinfo.kstkeip,
+	   &pinfo.signal,
+	   &pinfo.blocked,
+	   &pinfo.sigignore,
+	   &pinfo.sigcatch,
+	   &pinfo.wchan
 	   );
   }
   close(fd);
@@ -554,7 +555,7 @@ long System::ProcessDescriptor::query(long pid,
 
 #elif defined(__APPLE__)
     // FIXME (MCl): Make an alternative function get timing on OSX
-    // times() seems to cause a segmentation fault 
+    // times() seems to cause a segmentation fault
 #else  // no /proc file system: assume sys_start for the first call
     tms tmsb;
     static clock_t sys_start = times(0);

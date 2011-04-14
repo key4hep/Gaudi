@@ -62,6 +62,8 @@ application DirSearchPath_test -group=tests ../tests/src/DirSearchPath_test.cpp
 
 application PathResolver_test -group=tests ../tests/src/PathResolver_test.cpp
 
+application Memory_test -group=tests ../tests/src/Memory_test.cpp
+
 use CppUnit * LCG_Interfaces -no_auto_imports
 
 application test_SerializeSTL -group=tests -import=CppUnit \
