@@ -1,16 +1,15 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/ProcessDescriptor.cpp,v 1.16 2007/11/21 13:04:53 marcocle Exp $
 //====================================================================
-//	ProcStat.cpp
+//  ProcStat.cpp
 //--------------------------------------------------------------------
 //
-//	Package    : System (The LHCb System service)
+//  Package    : System (The LHCb System service)
 //
 //  Description: Invoke interactively the ProcStat from a
 //               running application
 //
-//	Author     : M.Frank
-//      Created    : 13/11/00
-//	Changes    :
+//  Author     : M.Frank
+//  Created    : 13/11/00
+//  Changes    :
 //
 //====================================================================
 #define GAUDIKERNEL_PROCSTAT_CPP
@@ -259,41 +258,41 @@ namespace NtApi {
              (divide by sysconf(_SC_CLK_TCK).
 */
 struct linux_proc {
-	int pid;
-	char comm[400];
-	char state;
-	int ppid;
-	int pgrp;
-	int session;
-	int tty;
-	int tpgid;
-	unsigned long flags;
-	unsigned long minflt;
-	unsigned long cminflt;
-	unsigned long majflt;
-	unsigned long cmajflt;
-	unsigned long utime;
-	unsigned long stime;
-	long cutime;
-	long cstime;
-	long priority;
-        long nice;
-	long num_threads;
-	long itrealvalue;
-	unsigned long long starttime;
-	unsigned long vsize;
-	long rss;
-	unsigned long rlim;
-	unsigned long startcode;
-	unsigned long endcode;
-	unsigned long startstack;
-	unsigned long kstkesp;
-	unsigned long kstkeip;
-	unsigned long signal;
-	unsigned long blocked;
-	unsigned long sigignore;
-	unsigned long sigcatch;
-	unsigned long wchan;
+  int pid;
+  char comm[400];
+  char state;
+  int ppid;
+  int pgrp;
+  int session;
+  int tty;
+  int tpgid;
+  unsigned long flags;
+  unsigned long minflt;
+  unsigned long cminflt;
+  unsigned long majflt;
+  unsigned long cmajflt;
+  unsigned long utime;
+  unsigned long stime;
+  long cutime;
+  long cstime;
+  long priority;
+  long nice;
+  long num_threads;
+  long itrealvalue;
+  unsigned long long starttime;
+  unsigned long vsize;
+  long rss;
+  unsigned long rlim;
+  unsigned long startcode;
+  unsigned long endcode;
+  unsigned long startstack;
+  unsigned long kstkesp;
+  unsigned long kstkeip;
+  unsigned long signal;
+  unsigned long blocked;
+  unsigned long sigignore;
+  unsigned long sigcatch;
+  unsigned long wchan;
 };
 
 #ifdef __APPLE__
@@ -316,53 +315,53 @@ void readProcStat(long pid, linux_proc& pinfo) {
   }
 
   lseek(fd,0,SEEK_SET);
-  if((cnt=read(fd,buf,sizeof(buf)))<0)	{
+  if((cnt=read(fd,buf,sizeof(buf)))<0) {
     std::cout << "LINUX Read of Proc file failed:" << std::endl;
     return;
   }
 
   // Format
-  if(cnt>0)	{
+  if(cnt>0) {
     buf[cnt]='\0';
     sscanf(buf,
            //1  2  3  4  5  6  7  8  9  10  1   2   3   4   5   6   7   8   9   20  1   2   3   4   5   6   7   8   9   30  1   2   3   4   5
-	   "%d %s %c %d %d %d %d %d %u %lu %lu %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu",
-	   &pinfo.pid,
-	   pinfo.comm,
-	   &pinfo.state,
-	   &pinfo.ppid,
-	   &pinfo.pgrp,
-	   &pinfo.session,
-	   &pinfo.tty,
-	   &pinfo.tpgid,
-	   &pinfo.flags,
-	   &pinfo.minflt,
-	   &pinfo.cminflt,
-	   &pinfo.majflt,
-	   &pinfo.cmajflt,
-	   &pinfo.utime,
-	   &pinfo.stime,
-	   &pinfo.cutime,
-	   &pinfo.cstime,
-	   &pinfo.priority,
-	   &pinfo.nice,
-	   &pinfo.num_threads,
-	   &pinfo.itrealvalue,
-	   &pinfo.starttime,
-	   &pinfo.vsize,
-	   &pinfo.rss,
-	   &pinfo.rlim,
-	   &pinfo.startcode,
-	   &pinfo.endcode,
-	   &pinfo.startstack,
-	   &pinfo.kstkesp,
-	   &pinfo.kstkeip,
-	   &pinfo.signal,
-	   &pinfo.blocked,
-	   &pinfo.sigignore,
-	   &pinfo.sigcatch,
-	   &pinfo.wchan
-	   );
+           "%d %s %c %d %d %d %d %d %lu %lu %lu %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu",
+           &pinfo.pid,
+           pinfo.comm,
+           &pinfo.state,
+           &pinfo.ppid,
+           &pinfo.pgrp,
+           &pinfo.session,
+           &pinfo.tty,
+           &pinfo.tpgid,
+           &pinfo.flags,
+           &pinfo.minflt,
+           &pinfo.cminflt,
+           &pinfo.majflt,
+           &pinfo.cmajflt,
+           &pinfo.utime,
+           &pinfo.stime,
+           &pinfo.cutime,
+           &pinfo.cstime,
+           &pinfo.priority,
+           &pinfo.nice,
+           &pinfo.num_threads,
+           &pinfo.itrealvalue,
+           &pinfo.starttime,
+           &pinfo.vsize,
+           &pinfo.rss,
+           &pinfo.rlim,
+           &pinfo.startcode,
+           &pinfo.endcode,
+           &pinfo.startstack,
+           &pinfo.kstkesp,
+           &pinfo.kstkeip,
+           &pinfo.signal,
+           &pinfo.blocked,
+           &pinfo.sigignore,
+           &pinfo.sigcatch,
+           &pinfo.wchan
+           );
   }
   close(fd);
 }
