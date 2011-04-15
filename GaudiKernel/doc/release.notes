@@ -2,6 +2,7 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 
 ! 2011-04-15 - Marco Clemencic
+ - Fixed a warning triggered by the macro NDEBUG.
  - Fixes to patch #4820.
 
 ! 2011-04-14 - Markus Frank
