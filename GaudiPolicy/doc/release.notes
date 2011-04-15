@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-04-15 - Marco Clemencic
+ - Fixed the usage of cpp fragments on Windows.
+
 ! 2011-04-12 - Marco Clemencic
  - Improved Javascript code to present QMTest results.
    - lots of clean-up
