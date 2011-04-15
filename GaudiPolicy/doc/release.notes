@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-04-15 - Marco Clemencic
+ - Fixed the usage of cpp fragments on Windows.
+
 ! 2011-04-05 - Hubert Degaudenzi
  - modified the cmt_compiler_version macro to avoid repeated calls to
    "gcc --version".
