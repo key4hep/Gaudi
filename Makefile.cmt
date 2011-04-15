@@ -210,11 +210,8 @@ purge: clean $(foreach dep,$(wildcard $(dependency_dir)/*.pack.d),$(dep)_do_purg
 #purge: clean
 #	$(RM) $(dependency_dir)/*.pack.d $(packages:=/cmt/$(Makefile))
 
-build_flags = $(wildcard $(dependency_dir)/*.pack.build)
 remove_build_flags:
-ifneq ($(build_flags),)
-	@$(RM) -r $(build_flags)
-endif
+	@$(RM) -r $(dependency_dir)/*.pack.build
 
 # --- Add rules to build packages (e.g. "make MyHat/MyPackage")
 $(foreach pack,$(packages),$(eval $(pack): $(pack)_build))

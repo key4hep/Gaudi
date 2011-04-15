@@ -1,13 +1,16 @@
 #-- start of dependency ------------------
+ifneq ($(MAKECMDGOALS),${CONSTITUENT}clean)
+ifneq ($(MAKECMDGOALS),uninstall)
 
-$(bin)${CONSTITUENT}_dependencies.make :: dirs
+#$(bin)${CONSTITUENT}_dependencies.make :: dirs
 
 ifndef QUICK
-$(bin)${CONSTITUENT}_dependencies.make :: ${LINE} requirements $(use_requirements) $(cmt_final_setup_${CONSTITUENT})
-	@echo "------> (${CONSTITUENT}.make) Rebuilding $@"; \
-	  args=`echo $? | sed -e "s#requirements.*##"`; \
-	  $(build_dependencies) ${CONSTITUENT} -all_sources $${args}
+$(bin)${CONSTITUENT}_dependencies.make : ${LINE} $(use_requirements) $(cmt_final_setup_${CONSTITUENT})
+else
+$(bin)${CONSTITUENT}_dependencies.make :
 endif
+	$(echo) "(${CONSTITUENT}.make) Rebuilding $@"; \
+	  $(build_dependencies) ${CONSTITUENT} -all_sources -out=$@ ${LINE}
 
 #$(${CONSTITUENT}_dependencies)
 
@@ -16,6 +19,9 @@ ifndef QUICK
 else
 ifneq ($(QUICK),2)
 -include $(bin)${CONSTITUENT}_dependencies.make
+endif
+endif
+
 endif
 endif
 #-- end of dependency -------------------
