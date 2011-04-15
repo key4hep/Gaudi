@@ -979,8 +979,7 @@ THistSvc::regTree(const std::string& id, TTree* hist) {
   if (hist != 0 && sc.isSuccess()) {
     if (m_autoSave != 0) 
       hist->SetAutoSave(m_autoSave);
-    if (m_autoFlush != 0)
-      hist->SetAutoFlush(m_autoFlush);
+    hist->SetAutoFlush(m_autoFlush);
   }
   return sc;
 }
