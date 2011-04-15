@@ -415,8 +415,8 @@ StatusCode PersistencySvc::createAddress( long /* svc_type */,
                                          const std::string& refAddress,
                                          IOpaqueAddress*& refpAddress)
 {
-  // Assumuption is that the Persistency service decodes that header
-  // and requests the conversion service refered to by the service
+  // Assumption is that the Persistency service decodes that header
+  // and requests the conversion service referred to by the service
   // type to decode the rest
   long new_svc_type = 0;
   CLID new_clid = 0;
@@ -450,40 +450,35 @@ void PersistencySvc::decodeAddrHdr( const std::string& address,
                                     std::string& address_trailer) const
 {
   // For address header, use xml-style format of
-  // <addrhdr service_type="xxx" clid="yyy" />
+  // <address_header service_type="xxx" clid="yyy" />
   service_type = 0;
   clid = 0;
   address_trailer = "";
 
-  // Check for addrhdr tag
+  // Check for address_header tag
   size_t pos = address.find("<address_header");
   if (std::string::npos != pos) {
     // Get service_type
     pos = address.find("service_type=\"");
     if (std::string::npos != pos) {
       pos += 14;
-      size_t end = address.find('\"', pos);
-        if (std::string::npos != end) {
-          std::string str;
-          str.insert(0, address, pos, end-pos);
-          int temp;
-          sscanf(str.c_str(),"%d",&temp);
-          service_type = temp;
-          // Get clid
-          pos = address.find("clid=\"");
+      size_t end = address.find('"', pos);
+      if (std::string::npos != end) {
+        std::istringstream str(address.substr(pos, end-pos));
+        str >> service_type;
+        // Get clid
+        pos = address.find("clid=\"");
         if (std::string::npos != pos) {
           pos += 6;
-          size_t end1 = address.find('\"', pos);
-          if (std::string::npos != end1) {
-            std::string str1;
-            str1.insert(0, address, pos, end1-pos);
-            sscanf(str1.c_str(),"%d",&temp);
-            clid = temp;
+          end = address.find('\"', pos);
+          if (std::string::npos != end) {
+            str.str(address.substr(pos, end-pos)); // reuse the istringstream
+            str >> clid;
             // Get trailer_address
-            pos = address.find(">");
-            if (std::string::npos != pos) {
-              pos += 1;
-              address_trailer.insert(0, address, pos, address.size() - pos);
+            pos = address.find('>');
+            if (pos < (address.size()-2)) { // this means that '>' was found (pos != npos)
+                                            // it is before the last char
+              address_trailer = address.substr(pos+1);
             }
           }
         }

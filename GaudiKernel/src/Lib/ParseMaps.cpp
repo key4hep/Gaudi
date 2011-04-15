@@ -4,6 +4,12 @@
 // ============================================================================
 // Local
 // ============================================================================
+#ifdef WIN32
+// Disable warning
+//   C4146: unary minus operator applied to unsigned type, result still unsigned
+// Coming from the parsers of unsigned integers.
+#pragma warning(disable:4146)
+#endif
 #include "GaudiKernel/Parsers.icpp"
 // ============================================================================
 /** @file
