@@ -13,6 +13,10 @@ Package manager : Marco Clemencic
      replacing them with a test .cpp file to ensure that the headers do not
      contain syntax errors.
 
+! 2011-03-22 - Marco Clemencic
+ - Added a function to convert IAuditor::StandardEventType to const char*,
+   (toStr) needed to simplify the implementation of some auditors.
+
 ! 2011-03-17 - Marco Clemencic
  - Modified DirSearchPath to remove boost::filesystem::no_check. It is not
    needed and breaks on MacOSX in debug mode (at least with Boost 1.44).
