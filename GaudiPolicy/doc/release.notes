@@ -1,6 +1,12 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-04-12 - Marco Clemencic
+ - Improved Javascript code to present QMTest results.
+   - lots of clean-up
+   - switch to jQuery 1.5.2
+   - improved responsiveness
+
 ! 2011-04-05 - Hubert Degaudenzi
  - modified the cmt_compiler_version macro to avoid repeated calls to
    "gcc --version".
