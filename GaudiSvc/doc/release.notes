@@ -1,6 +1,12 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-04-15 - Charles Leggett
+ - Patch #4819: THistSvc: protect DEBUG messages, add AutoFlush property
+   This patch adds a new integer property AutoFlush to the THistSvc to set the
+   ROOT AutoFlush value for TTrees, and protects DEBUG messages so that they
+   only get created if the logging level is sufficiently low.
+
 ! 2011-04-15 - Marco Clemencic
  - Fixed a warning triggered by the macro NDEBUG.
 
