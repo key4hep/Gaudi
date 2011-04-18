@@ -315,15 +315,18 @@ void MessageSvc::setupThreshold(Property& prop) {
 
 //#############################################################################
 
-void MessageSvc::setupInactCount(Property& prop) {
-#ifndef NDEBUG
+#ifdef NDEBUG
+void MessageSvc::setupInactCount(Property&) {}
+#else
+void MessageSvc::setupInactCount(Property&prop) {
+  void MessageSvc::setupInactCount(Property& prop) {
   if (prop.name() == "countInactive") {
     BooleanProperty *p = dynamic_cast<BooleanProperty*>(&prop);
     if (p)
       MsgStream::enableCountInactive(p->value());
   }
-#endif
 }
+#endif
 
 
 //#############################################################################
