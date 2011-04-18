@@ -1,6 +1,13 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2011-04-15 - Marco Clemencic
+ - Patch #4814: Move EventNodeKiller algorithm from LHCb to Gaudi.
+   Imported EventNodeKiller.{h,cpp} from
+     svn+ssh://svn.cern.ch/reps/lhcb/LHCb/trunk/Kernel/LHCbAlgs/src
+   Modified the imported files to avoid generating debug messages if they are
+   not going to be printed.
+
 ! 2011-03-02 - Patrick Koppenburg
  - Patch #4711: fixed doxygen comment
 
