@@ -116,4 +116,16 @@
 #endif // GAUDI_V20_COMPAT
 // ---------------------------------- Symbol visibility macros (end)
 
+
+// -------------- LIKELY/UNLIKELY macros (begin)
+// Use compiler hinting to improve branch prediction for linux
+#ifdef __GNUC__
+#  define LIKELY(x)       __builtin_expect((x),1)
+#  define UNLIKELY(x)     __builtin_expect((x),0)
+#else
+#  define LIKELY(x)       x
+#  define UNLIKELY(x)     x
+#endif
+// -------------- LIKELY/UNLIKELY macros (end)
+
 #endif  // GAUDIKERNEL_KERNEL_H
