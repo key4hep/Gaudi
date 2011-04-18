@@ -1,6 +1,13 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-04-15 - Marco Clemencic
+ - Fixes to patch #4820.
+
+! 2011-04-14 - Markus Frank
+ - Patch #4820: fix bug #80947
+   Fix bug accessing system-memory information, if process memory is > 4GB.
+
 ! 2011-04-08 - Marco Clemencic
  - Introduced two new incidents: BeginProcessing and EndProcessing.
    They are needed to reintroduce the signals around the processing loop as

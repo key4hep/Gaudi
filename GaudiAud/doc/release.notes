@@ -1,6 +1,9 @@
 Package: GaudiAud
 Package manager : David Quarrie, Marco Clemencic
 
+! 2011-04-15 - Marco Clemencic
+ - Synchronized with patch #4820.
+
 ! 2011-03-30 - Marco Clemencic
  - Fixed a bug in the properties of CommonAuditor.
 
