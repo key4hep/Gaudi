@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-04-19 - Marco Clemencic
+ - Fixed a defect spotted by Coverity in KeyedObject (UNINIT_CTOR).
+
 ! 2011-04-18 - Marco Clemencic
  - Moved the LIKELY and UNLIKELY macros to GaudiKernel/Kernel.h
 
