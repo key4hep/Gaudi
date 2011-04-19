@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-04-19 - Marco Clemencic
+ - Fixed a defect spotted by Coverity in KeyedObject (UNINIT_CTOR).
+
 ! 2011-04-15 - Marco Clemencic
  - Fixed a warning triggered by the macro NDEBUG.
  - Fixes to patch #4820.
