@@ -6,7 +6,7 @@
 # Maintainer : Vanya Belyaev Ivan.Belyaev@itep.ru
 # =============================================================================
 package           GaudiGSL
-version           v7r8
+version           v7r10
 
 # =============== package structure ===========================================
 branches          cmt doc src dict GaudiGSL GaudiMath
@@ -27,7 +27,7 @@ apply_pattern     linker_library    library=GaudiGSLLib
 library           GaudiGSL    -import=AIDA -no_static ../src/Components/*.cpp
 apply_pattern     component_library library=GaudiGSL
 # =============== constitutuents: 3) LCG dictonary ============================
-apply_pattern     lcg_dictionary dictionary=GaudiGSLMath              \
+apply_pattern     reflex_dictionary dictionary=GaudiGSLMath           \
                   headerfiles=$(GAUDIGSLROOT)/dict/GaudiGSLMath.h     \
                   selectionfile=$(GAUDIGSLROOT)/dict/GaudiGSLMath.xml \
                   options="--split --reflex"

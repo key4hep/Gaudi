@@ -1,5 +1,5 @@
 package GaudiMonitor
-version v2r7
+version v2r8
 
 branches src cmt doc
 use GaudiKernel *
@@ -21,3 +21,5 @@ macro_append cppflags "" \
    target-darwin "" \
    target-winxp  ""
 
+# Hide warnings triggered on VC9 by the C standard library
+macro_append cppflags '' no-hide-warnings '' target-winxp ' /wd4996'

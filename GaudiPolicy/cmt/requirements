@@ -1,5 +1,5 @@
 package GaudiPolicy
-version v11r0
+version v11r2
 
 branches cmt doc
 
@@ -517,6 +517,21 @@ make_fragment sln_dependency_project
 make_fragment sln_dependency_header
 make_fragment sln_dependency_trailer
 
+
+# C++
+# The cpp fragments for enhanced computation of dependencies are not available on Windows
+macro cpp_fragment "cpp" target-winxp ""
+make_fragment $(cpp_fragment)
+macro cpp_library_fragment "cpp_library" target-winxp ""
+make_fragment $(cpp_library_fragment)
+
+macro cmt_compiler_version "${cmt_compiler_version}" \
+              target-gcc43 "gcc43"
+
+macro cppcomp         "$(cpp) -c $(cppdebugflags) $(cppflags) $(pp_cppflags) $(includes)" \
+      VisualC         "cl.exe $(cppdebugflags) $(cppflags) $(pp_cppflags)"
+
+
 # Local copy of the dependencies fragment to allow a "QUICK" option that
 # completely ignores dependencies (useful to speed up builds from scratch).
 macro dep_fragment "" CMTp20070208 "dependencies"
@@ -560,7 +575,8 @@ make_fragment $(lib_fragment)
 macro lib_no_static_fragment "" \
        CMTp20070208&target-winxp "library_no_static" \
        CMTp20090520&target-winxp "library_no_static" \
-       CMTr21&target-unix "library_no_static"
+       CMTr20&target-unix "" \
+       target-unix "library_no_static"
 make_fragment $(lib_no_static_fragment)
 
 # Compilation and Linking flags==============================================
@@ -602,7 +618,7 @@ macro cppdebugflags    "" \
       target-opt        "$(cppoptimized_s)"
 macro cppdebugflags_s  "-g" \
       target-winxp            "/Od /Z7"
-macro cppoptimized_s   "-O2" \
+macro cppoptimized_s   "-O2 -DNDEBUG" \
       target-winxp            ""
 macro cppprofiled_s   "-pg" \
       target-winxp            ""
@@ -611,16 +627,19 @@ macro_append cppdebugflags "" \
 
 # C debug, optimized and profiled options
 macro cdebugflags     "" \
-      target-dbg           "$(cdebugflags_s)"
+      target-dbg           "$(cdebugflags_s)" \
+      target-dbg           "$(coptimized_s)"
 macro cdebugflags_s   "-g" \
       target-winxp           "/Od /Z7"
+macro coptimized_s    "-O2 -DNDEBUG" \
+      target-winxp    ""
 
 # Fortran debug, optimized and profiled options
 macro fdebugflags      "" \
       target-dbg            "$(fdebugflags_s)"
 macro fdebugflags_s    "-g"\
       target-winxp            "/nopdbfile /debug:full /optimize:0"
-macro foptimized_s     "-O2" \
+macro foptimized_s     "-O2 -DNDEBUG" \
       target-winxp            ""
 macro_append fdebugflags "" \
       target-opt        " $(foptimized_s)"
@@ -802,6 +821,9 @@ macro cpplinkflags "" \
 
 macro_append cpplinkflags "" \
       target-linux               "-Wl,--no-undefined "
+
+macro_remove shlibflags "" \
+      target-mac "-undefined suppress"
 
 macro_append cpplinkflags  "" \
       host-x86_64&target-i686 " -m32" \
@@ -1316,3 +1338,4 @@ tag ATLAS no-pyzip
 
 macro_append pp_cppflags "" \
       ATLAS " -DATLAS_GAUDI_V21 "
+

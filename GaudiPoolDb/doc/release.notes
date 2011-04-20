@@ -1,5 +1,22 @@
 Package: GaudiPoolDb
-Package Manager: Markus Frank, Marco Clemencic
+Package Manager: Markus Frank
+
+============================= GaudiPoolDb v5r12 ==============================
+! 2011-03-23 - Marco Clemencic
+ - Fixed VC9 warnings.
+   - Replaced C-style string manipulation and formatting with C++ (and Boost)
+     implementations.
+   - Disabled some warnings.
+
+============================= GaudiPoolDb v5r11 ==============================
+! 2011-02-21 - Marco Clemencic
+ - Fixed bug #78456: warning/error when building GaudiPoolDb
+   Removed the (unneeded) '-import=GaudiPoolDb'
+ - Modified patch #4622 to use the new ROOT version macro ROOT_FULL_VERSION,
+   which takes into account the patch letter.
+
+! 2011-02-08 - Markus Frank
+ - Patch #4662: Fix for ROOT bug #77747
 
 ============================= GaudiPoolDb v5r10 ==============================
 ! 2011-01-19 - Markus Frank

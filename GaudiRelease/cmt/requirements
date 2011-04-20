@@ -3,11 +3,11 @@
 
 package GaudiRelease
 
-version v22r0
+version v22r2
 branches doc cmt
 
 # CMT and Gaudi policy
-use GaudiPolicy	   v11r0
+use GaudiPolicy	   v11r2
 
 # Note for conditional use statements: only the tags which are defined
 # at the level of CMT (and CMTSITE) can be used. This means that
@@ -16,36 +16,36 @@ use GaudiPolicy	   v11r0
 # the level of the package itself with a "macro_remove constituents"
 
 # Gaudi executable
-use Gaudi          v22r0
+use Gaudi          v22r2
 
 # Gaudi libraries - generic
-use GaudiKernel    v27r12
-use GaudiSvc       v18r12
-use GaudiAud       v9r3
-use GaudiAlg       v13r5
-use GaudiGSL       v7r8
-use GaudiUtils     v3r11
+use GaudiKernel    v27r14
+use GaudiSvc       v18r14
+use GaudiAud       v9r4
+use GaudiAlg       v13r7
+use GaudiGSL       v7r10
+use GaudiUtils     v3r12
 
 # Technology-specific Persistency packages
 #use HbookCnv       v15r0
-use RootHistCnv    v10r6
-use GaudiPoolDb    v5r10
+use RootHistCnv    v10r7
+use GaudiPoolDb    v5r12
 use GaudiPython    v11r0
 
 # Container package specifying the minimum set of core packages
-use GaudiSys       v22r0
+use GaudiSys       v22r2
 
 # Monitoring utility. Can use also MonaLisa
-use GaudiMonitor   v2r7
+use GaudiMonitor   v2r8
 
 # Profiling components and tools
 use GaudiProfiling v1r0
 
 # Multi Processing libraries
-use GaudiMP v1r0
+use GaudiMP v1r1
 
 # Examples packages
-use GaudiExamples   v22r0
+use GaudiExamples   v22r2
 
 
 # Atlas packages
@@ -82,6 +82,7 @@ apply_pattern LHCb_external pkg=Qt
 apply_pattern LHCb_external pkg=xqilla
 apply_pattern LHCb_external pkg=neurobayes_expert
 apply_pattern LHCb_external pkg=graphviz
+apply_pattern LHCb_external pkg=Frontier_Client
 #apply_pattern LHCb_external pkg=
 
 # -- LHCbGrid external packages --

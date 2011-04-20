@@ -18,6 +18,8 @@
 #include "GaudiKernel/ToolFactory.h"
 #include "GaudiKernel/SvcFactory.h"
 
+#include <sstream>
+
 //-----------------------------------------------------------------------------
 // Implementation file for class : DataStreamTool
 //
@@ -80,13 +82,12 @@ StatusCode DataStreamTool::addStream(const std::string & input) {
 
   m_streamSpecs.push_back(input);
 
-  char txt[32];
-
-  std::string strname = name() + "_" + ::_itoa(++m_streamCount, txt, 10);
+  std::ostringstream strname;
+  strname << name() << '_' << ++m_streamCount;
 
   EventSelectorDataStream* s = 0;
 
-  StatusCode status = createStream(strname, input , s );
+  StatusCode status = createStream(strname.str(), input , s );
 
   if( status.isSuccess() && 0 != s ) {
     s->addRef();
@@ -297,10 +298,10 @@ StatusCode DataStreamTool::connectStream( const std::string & info )
     MsgStream log(msgSvc(), name());
     log << MSG::WARNING << "Input stream " << info << "already in use" << endmsg;
   }
-  char txt[32];
-  std::string nam = name() + "_" + ::_itoa(++m_streamCount, txt, 10);
+  std::ostringstream nam;
+  nam << name() << '_' << ++m_streamCount;
   EventSelectorDataStream* s = 0;
-  StatusCode status = createStream(nam, info, s);
+  StatusCode status = createStream(nam.str(), info, s);
   if ( status.isSuccess() )   {
     return connectStream(s);
   }

@@ -1,4 +1,3 @@
-// $Id: MsgStream.h,v 1.43 2008/10/30 23:38:46 marcocle Exp $
 #ifndef GAUDIKERNEL_MSGSTREAM_H
 #define GAUDIKERNEL_MSGSTREAM_H
 
@@ -46,6 +45,12 @@ protected:
   MSG::Level      m_currLevel;
   /// use colors
   bool m_useColors;
+  /// Pointer to service counting messages prepared but not printed because of
+  /// wrong level.
+  IInactiveMessageCounter*    m_inactCounter;
+  /// Flag to state if the inactive messages has to be counted.
+  static bool m_countInactive;
+
 public:
   /// Standard constructor: Connect to message service for output
   GAUDI_API MsgStream(IMessageSvc* svc, int buffer_length=128);
@@ -56,7 +61,8 @@ public:
     : m_service(msg.m_service),
       m_active(msg.m_active),
       m_level(msg.m_level),
-      m_useColors(msg.m_useColors)
+      m_useColors(msg.m_useColors),
+      m_inactCounter(msg.m_inactCounter)
   {
     try { // ignore exception if we cannot copy the string
       m_source = msg.m_source;
@@ -69,7 +75,16 @@ public:
   MsgStream& report(int lvl)   {
     lvl = (lvl >= MSG::NUM_LEVELS) ?
       MSG::ALWAYS : (lvl<MSG::NIL) ? MSG::NIL : lvl;
-    ((m_currLevel=MSG::Level(lvl)) >= level()) ? activate() : deactivate();
+    if  ((m_currLevel=MSG::Level(lvl)) >= level()) {
+      activate();
+    } else {
+      deactivate();
+#ifndef NDEBUG
+      if (MsgStream::countInactive() && m_inactCounter) {
+        m_inactCounter->incrInactiveCount(MSG::Level(lvl),m_source);
+      }
+#endif
+    }
     return *this;
   }
   /// Output method
@@ -145,15 +160,7 @@ public:
     try {
       // this may throw, and we cannot afford it if the stream is used in a catch block
       if(isActive()) {
-#ifdef _WIN32
-        int flg = m_stream.flags();
-        char buf[128];
-        (flg & std::ios::hex) ?
-          ::sprintf(buf,"%I64x",arg) : ::sprintf(buf,"%I64d",arg);
-        m_stream << buf;
-#else
         m_stream << arg;
-#endif
       }
     } catch (...) {}
     return *this;
@@ -222,6 +229,13 @@ public:
 
   /// Reset the colors to defaults
   GAUDI_API void resetColor();
+
+  /// Enable/disable the count of inactive messages.
+  /// Returns the previous state.
+  static GAUDI_API bool enableCountInactive(bool value = true);
+
+  /// Returns the state of the counting of inactive messages (enabled/disabled).
+  static GAUDI_API bool countInactive();
 
 };
 

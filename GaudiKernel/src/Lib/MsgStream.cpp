@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/MsgStream.cpp,v 1.13 2008/10/01 14:39:28 marcocle Exp $
 //====================================================================
 //	MsgStream.cpp
 //--------------------------------------------------------------------
@@ -28,22 +27,43 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+bool MsgStream::m_countInactive = false;
+
+bool MsgStream::enableCountInactive(bool value) {
+  bool old = m_countInactive;
+  m_countInactive = value;
+  return old;
+}
+
+bool MsgStream::countInactive() {
+  return m_countInactive;
+}
+
+
 MsgStream::MsgStream(IMessageSvc* svc, int)
 : m_service(svc),
   m_source(""),
-  m_active(false)
+  m_active(false),
+  m_inactCounter(0)
 {
   setLevel((0==svc) ? MSG::INFO : svc->outputLevel());
   m_useColors = (0==svc) ? false : svc->useColor();
+#ifndef NDEBUG
+  m_inactCounter = svc ? Gaudi::Cast<IInactiveMessageCounter>(svc) : 0;
+#endif
 }
 
 MsgStream::MsgStream(IMessageSvc* svc, const std::string& source, int)
 : m_service(svc),
   m_source(source),
-  m_active(false)
+  m_active(false),
+  m_inactCounter(0)
 {
   setLevel((0==svc) ? MSG::INFO : svc->outputLevel(source));
   m_useColors = (0==svc) ? false : svc->useColor();
+#ifndef NDEBUG
+  m_inactCounter = svc ? Gaudi::Cast<IInactiveMessageCounter>(svc) : 0;
+#endif
 }
 
 MsgStream::~MsgStream()    {
@@ -105,6 +125,11 @@ void MsgStream::resetColor() {
 #endif
 }
 
+#ifdef WIN32
+// Disable warning
+//   C4996: 'vsprintf': This function or variable may be unsafe.
+#pragma warning(disable:4996)
+#endif
 std::string format( const char* fmt, ... )
 {
   const int buffsize = 2048;

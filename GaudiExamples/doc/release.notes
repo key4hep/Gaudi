@@ -1,6 +1,21 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v22r2 =============================
+! 2011-04-08 - Marco Clemencic
+ - Updated IncidentSvc test after the introduction of the new incidents
+   BeginProcessing and EndProcessing.
+
+! 2011-03-23 - Marco Clemencic
+ - Fixed VC9 warnings.
+   - Replaced C-style string manipulation and formatting with C++ (and Boost)
+     implementations.
+   - Disabled some warnings.
+
+! 2011-03-16 - Marco Clemencic
+ - Updated reference files after patch #4727
+
+============================ GaudiExamples v22r1 =============================
 ============================ GaudiExamples v22r0 =============================
 ! 2011-01-20 - Marco Clemencic
  - Added a test for bug #74981.

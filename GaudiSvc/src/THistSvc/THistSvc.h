@@ -167,7 +167,7 @@ private:
 
   StringArrayProperty m_inputfile, m_outputfile;
   std::vector<std::string> m_Rstream, m_Wstream;
-  IntegerProperty m_autoSave, m_compressionLevel, m_maxFileSize;
+  IntegerProperty m_autoSave, m_autoFlush, m_compressionLevel, m_maxFileSize;
   BooleanProperty m_print;
 
   /// list of already connected files. This is to keep track of files

@@ -1116,6 +1116,9 @@ class GaudiExeTest(ExecTestBase):
         if not reffile:
             return ""
 
+        # function to split an extension in constituents parts
+        platformSplit = lambda p: set(p.split('-' in p and '-' or '_'))
+
         reference = os.path.normpath(os.path.expandvars(reffile))
         # old-style platform-specific reference name
         spec_ref = reference[:-3] + self.GetPlatform()[0:3] + reference[-3:]
@@ -1127,12 +1130,16 @@ class GaudiExeTest(ExecTestBase):
             if not dirname: dirname = '.'
             head = basename + "."
             head_len = len(head)
-            platform = self.GetPlatform()
+            platform = platformSplit(self.GetPlatform())
             candidates = []
             for f in os.listdir(dirname):
-                if f.startswith(head) and platform.startswith(f[head_len:]):
-                    candidates.append( (len(f) - head_len, f) )
+                if f.startswith(head):
+                    req_plat = platformSplit(f[head_len:])
+                    if platform.issuperset(req_plat):
+                        candidates.append( (len(req_plat), f) )
             if candidates: # take the one with highest matching
+                # FIXME: it is not possible to say if x86_64-slc5-gcc43-dbg
+                #        has to use ref.x86_64-gcc43 or ref.slc5-dbg
                 candidates.sort()
                 reference = os.path.join(dirname, candidates[-1][1])
         return reference
@@ -1338,16 +1345,6 @@ class GaudiExeTest(ExecTestBase):
         result['GaudiTest.environment'] = \
             result.Quote('\n'.join(["%s=%s"%(v,os.environ[v]) for v in vars]))
 
-    def _find_program(self,prog):
-        # check if it is an absolute path or the file can be found
-        # from the local directory, otherwise search for it in PATH
-        if not os.path.isabs(prog) and not os.path.isfile(prog):
-            for d in os.environ["PATH"].split(os.pathsep):
-                p = os.path.join(d,prog)
-                if os.path.isfile(p):
-                    return p
-        return prog
-
     def Run(self, context, result):
         """Run the test.
 
@@ -1377,7 +1374,7 @@ class GaudiExeTest(ExecTestBase):
             prog += ".exe"
             prog_ext = ".exe"
 
-        prog = self._find_program(prog)
+        prog = which(prog) or prog
 
         # Convert paths to absolute paths in arguments and reference files
         args = map(rationalizepath, self.args)
@@ -1401,9 +1398,9 @@ class GaudiExeTest(ExecTestBase):
         if prog_ext == ".py":
             args.insert(0,prog)
             if self.GetPlatform()[0:3] == "win":
-                prog = self._find_program("python.exe")
+                prog = which("python.exe") or "python.exe"
             else:
-                prog = self._find_program("python")
+                prog = which("python") or "python"
 
         # Change to the working directory if specified or to the default temporary
         origdir = os.getcwd()
@@ -1587,7 +1584,7 @@ class GaudiExeTest(ExecTestBase):
         data["environment"] = "\n".join(['<mapEntry key=%s value=%s/>' % (quoteattr(k), quoteattr(v))
                                          for k, v in os.environ.iteritems()])
 
-        data["exec"] = which(prog)
+        data["exec"] = which(prog) or prog
         if os.path.basename(data["exec"]).lower().startswith("python"):
             data["stopAtMain"] = "false" # do not stop at main when debugging Python scripts
         else:

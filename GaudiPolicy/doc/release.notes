@@ -1,6 +1,51 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v11r2 ==============================
+! 2011-04-15 - Marco Clemencic
+ - Fixed the usage of cpp fragments on Windows.
+
+! 2011-04-12 - Marco Clemencic
+ - Improved Javascript code to present QMTest results.
+   - lots of clean-up
+   - switch to jQuery 1.5.2
+   - improved responsiveness
+
+! 2011-04-05 - Hubert Degaudenzi
+ - modified the cmt_compiler_version macro to avoid repeated calls to
+   "gcc --version".
+ - added 2 fragments (cpp and cpp_library) for the native calculation of
+   dependencies by gcc. For each ".o" file a makefile fragment ".d" is
+   created. It contains the include dependencies of the file. The ".d" is then
+   included in the cpp and cpp_library fragment. This reduces the time to
+   calculate the dependencies because only one call to gcc is made to compile
+   the ".ccp" and calculate its dependencies.
+
+! 2011-04-01 - Charles Leggett
+ - get the lib_no_static_fragment macro to work with CMT > v20
+ M cmt/requirements
+
+! 2011-03-17 - Marco Clemencic
+ - Removed the option "-undefined suppress" from the link statement on MacOSX
+   (added by CMT) to have the same behavior as on Linux (-Wl,--no-undefined).
+
+! 2011-03-16 - Charles Leggett, Marco Clemencic
+ - Patch #4727: Add NDEBUG macro for opt builds
+
+! 2011-03-09 - Marco Clemencic
+ - Avoid exception in QMTest if the test executable is not built.
+ - Minor improvements to GaudiTest.py
+
+============================= GaudiPolicy v11r1 ==============================
+! 2011-02-22 - Marco Clemencic
+ - Minor improvement in reference file name matching in QMTest.
+   It is possible to specify any part of the CMTCONFIG in the file name extension,
+   for example "myfile.ref.i686-opt".
+
+! 2011-02-04 - Charles Leggett
+ - Fixed bug #77806: createProjVersHeader breaks with Atlas style tags
+   allow Atlas style GaudiPKJ-XX-YY-ZZ tags
+
 ============================= GaudiPolicy v11r0 ==============================
 ! 2011-01-17 - Marco Clemencic
  - Fixed a small problem with the recent change in the nmake fragments
@@ -10,6 +55,9 @@ package manager: Marco Clemencic
    more standard (python/lib-dynload)
  - Fixed a problem in a regular expression used in the exclusion of lines
    from the references of the tests
+
+! 2011-01-11 - Hubert Degaudenzi
+ - Initial commit for gcc native dependency calculations.
 
 ! 2011-01-07 - Marco Clemencic
  - Fixes to run_qmtest.py to allow creation of HTML output on Windows.
@@ -34,7 +82,7 @@ package manager: Marco Clemencic
 ! 2010-09-09 - Marco Clemencic
  - Changed the default behavior about shared directories: by default shared
    directories are not used. The old behavior can be restored with the tag
-   'use-shared-dir' (the tag ATLAS implies it).
+   'user-shared-dir' (the tag ATLAS implies it).
 
 ! 2010-09-02 - Marco Clemencic
  - Improved and documented the 'pyd_module' and 'pyd_boost_module' (new) patterns.

@@ -1,254 +1,264 @@
-// Global variables
-var title = "QMTest Report";
+/// Global variable for the summary content.
+var test_results = {};
 
-// If set to false, the automatic polling of new data is interrupted.
-var polling = true;
+/**
+ * Digest the summary JSON object, filling the test_results variable.
+ * @param summary object containing the summary data (response of AJAJ request).
+ */
+function parseSummary(summary) {
+	// Prepare the counters
+	test_results.counter = {"PASS":     0,
+			                "FAIL":     0,
+			                "UNTESTED": 0,
+			                "ERROR":    0,
+			                "total":    summary.length};
+	test_results.tests = {};
+	test_results.not_passed = [];
+	test_results.all_tests = [];
+	for (var i in summary) {
+		var test = summary[i];
+		// Update the counter of the outcome.
+		++test_results.counter[test.outcome];
+		//var test_path = split(".", test.id);
+		test_results.tests[test.id] = test;
+		test_results.all_tests.push(test.id);
+		if (test.outcome != "PASS") {
+			test_results.not_passed.push(test.id);
+		}
+	}
+}
+
+/**
+ * Set the html of the selected elements to a spinning icon (for visual feed back).
+ * Note: the image has been downloaded from http://www.ajaxload.info
+ */
+jQuery.fn.loadingIcon = function() {
+	return this.html('<img src="ajax-loader.gif"/>');
+}
 
 /**
  * Load the annotations file (annotations.json) and fill the annotations block of
  * the DOM.
- *
- * If the key "qmtest.run.end_time" is not present, the test is considered to be
- * running, so a new call to getData() is scheduled and the title of the page
- * is modified to show that it is running.
- *
- * Once the test is completed, the data are not polled anymore.
  */
-function loadAnnotations() {
-	// Asynchronous retrieval
-	$.get('annotations.json', function(data) {
-		// Prepare a table with the annotations
-		var tbody = $("<tbody/>");
-		// This keys are special and must appear first in the table
-		var keys = ["qmtest.run.start_time", "qmtest.run.end_time"];
-		// Add all the other keys to the list of keys
-		for (var key in data) {
-			if ($.inArray(key, keys) == -1) {
-				keys.push(key);
+jQuery.fn.annotations = function(data) {
+	// Collect the list of keys.
+	// These keys are special and must appear first in the list.
+	var keys = ["qmtest.run.start_time", "qmtest.run.end_time"];
+	// Add all the other keys to the list of keys.
+	for (var key in data) {
+		if ($.inArray(key, keys) == -1) {
+			keys.push(key);
+		}
+	}
+	// Prepare a table for the annotations
+	var tbody = $("<tbody/>");
+	// Add the rows of the table
+	for (var i in keys) {
+		var key = keys[i];
+		var value = data[key];
+		if ($.isArray(value)) {
+			// In case the value is an Array, let's format it as a list
+			var tmp = $('<ul/>');
+			for (i in value) {
+				tmp.append($('<li/>').text(value[i]))
 			}
+			value = tmp;
 		}
-		// Add the rows of the table
-		var running = false;
-		for (var i in keys) {
-			var key = keys[i];
-			var value = data[key];
-			if (!value) { // In case of empty value for a key...
-				if (key == "qmtest.run.end_time") {
-					// ... if the key is "end_time", it means the tests are running
-					value = "RUNNING".italics() +
-					        " (the page will be updated every 5s)".small();
-					running = polling;
-				} else {
-					// ... otherwise print a meaningful "None"
-					value = "None".italics();
-				}
-			} else {
-				if ($.isArray(value)) {
-					// In case the value is an Array, let's format it as a list
-					var tmp = $('<ul/>');
-					for (i in value) {
-						tmp.append($('<li/>').text(value[i]))
-					}
-					value = tmp;
-				}
-			}
-			tbody.append($("<tr/>")
-				.append($('<td/>').addClass("key").text(key))
-				.append($('<td/>').addClass("value").html(value)));
-		}
-		// Insert the code in the annotations block
-		$('.annotations').html($('<table/>').append(tbody));
-
-		if (running) {
-			// modify the title
-			$("title").html(title + " (running)");
-			$("#title").html(title + " (running)");
-			$("#stop_polling").show();
-			// schedule an upload
-			setTimeout(getData, 5000);
-		} else {
-			// set the title to the actual value
-			$("title").html(title);
-			$("#title").html(title);
-			$("#stop_polling").hide();
-		}
-	}, "json");
+		tbody.append($("<tr/>")
+				.append($('<td class="key"/>').text(key))
+				.append($('<td class="value"/>').html(value)));
+	}
+	// Insert the code in the annotations block and enable the toggle button
+	return this.html($('<table/>').append(tbody));
 }
 
-/**
- * Update the summary block from a list of objects.
- *
- * The minimal requirement for the objects is that they have the field "outcome",
- * which value must be one of ["FAIL", "ERROR", "UNTESTED", "PASS"].
- *
- * @param summary
- */
-function updateSummary(summary) {
-	var counter = {"PASS":0,
-			"FAIL":0,
-			"UNTESTED":0,
-			"ERROR":0};
-	var total = summary.length;
-	// Count the outcomes in the summary.
-	for (var i in summary) {
-		++counter[summary[i]["outcome"]];
-	}
+/// Display the summary table
+jQuery.fn.summary = function() {
+	var counter = test_results.counter;
 	// Prepare a table layout (like the one produced usually by QMTest).
 	var tbody = $("<tbody/>");
 	// row with the total
-	tbody.append($("<tr>")
-		.append($("<td/>").attr("align", "right").text(total))
-		.append($("<td/>").attr("colspan", "3"))
-		.append($("<td/>").text("tests total")));
+	tbody.append($("<tr/>")
+		 .append($("<td align='right'/>").text(counter.total))
+		 .append($("<td colspan='3'/><td>tests total</td>")));
 	var result_types = ["FAIL", "ERROR", "UNTESTED", "PASS"];
 	for (var i in result_types) {
 		var result_type = result_types[i];
 		if (counter[result_type]) {
-			tbody.append($("<tr>")
-				.append($("<td/>").attr("align", "right").text(counter[result_type]))
-				.append("<td>(</td>")
-				.append($("<td/>").attr("align", "right").text(Math.round(counter[result_type] / total * 100)))
-				.append("<td>%)</td>")
-				.append($("<td/>").text("tests " + result_type)).addClass(result_type)
-				);
+			tbody.append($("<tr/>")
+				     .append($("<td align='right'/>")
+					     .text(counter[result_type]))
+				     .append("<td>(</td>")
+				     .append($("<td align='right'/>")
+					     .text(Math.round(counter[result_type]
+							      / counter.total * 100)))
+				     .append("<td>%)</td>")
+				     .append($("<td/>")
+					     .text("tests " + result_type))
+				     .addClass(result_type));
 		}
 	}
-	// Put the table in the summary block.
-	$('.summary').html($("<table/>").append(tbody));
+	return this.html($("<table/>").html(tbody));
 }
 
-/**
- * Update the results from a list of objects.
- *
- * The format of the objects in the list must be:
- *
- * {"id": "...", "outcome": "...", "cause": "...", "fields": [...]}
- *
- * @param summary
+/** Generate foldable lists.
  */
-function updateResults(summary) {
-	// Loop over each block with class "results" to fill it
-	$(".results").each(function(){
-		// Allow a custom regexp to select which outcomes to include.
-		// The regexp must be included in the attribute "filter".
-		var pattern = null;
-		if ($(this).attr("filter"))
-			pattern = new RegExp($(this).attr("filter"));
-		// Top-level list
-		var html = $("<ul/>");
-		var any_match = false; // to store if we put anything in the list
-		for (var i in summary) { // one item per test
-			var test_data = summary[i];
-			var outcome = test_data["outcome"];
-			// operate only on the outcomes matching the pattern (if specified)
-			if ( !pattern || outcome.match(pattern) ) {
-				any_match = true;
-				var it_res = $("<li/>").css("list-style-image", "url(plus.png)")
-					.append($("<span/>").addClass("testid clickable")
-						.append(test_data["id"]))
-					.append(": ");
-				var outcome_el = $("<span/>").addClass(outcome)
-						.text(outcome);
-				it_res.append(outcome_el);
-				if (test_data["cause"]) {
-					it_res.append(" ")
-					      .append($("<span/>").addClass("cause")
-							      .text(test_data["cause"]));
-				}
-				var fields_el = $("<div/>").addClass("fields").hide();
-				// Add the list of available fields for the test.
-				var fields = summary[i]["fields"];
-				var sublist = $("<ul/>");
-				for (var j in fields) {
-					sublist.append($("<li/>").css("list-style-image", "url(plus.png)")
-						.append($("<span/>").addClass("fieldid clickable")
-							.append(fields[j]))
-						.append($("<div/>")
-							.attr("href",test_data["id"] + "/" + fields[j])
-							.attr("loaded", "false").hide()
-							));
-				}
-				it_res.append(fields_el.append(sublist));
-				html.append(it_res);
-			}
-		}
-		if (any_match) {
-			$(this).html(html)
-			// add also a small link to collapse the tree
-			.append($("<span>Collapse all</span>").addClass("clickable")
-					.click(function(){
-						$('.results div.fields').hide();
-						$('.results div[href]').hide();
-						$('.results span.testid').parent().css('list-style-image', 'url(plus.png)');
-						$('.results span.fieldid').parent().css('list-style-image', 'url(plus.png)');
-					}));
-		} else {
-			$(this).html("None.");
-		}
+jQuery.fn.foldable = function() {
+    this.each(function() {
+	    var me = $(this);
+	    me.addClass("folded")
+	    // wrap the content of the element with a clickable span
+	    // (includes the ul)
+	    .wrapInner($("<span class='clickable'/>")
+		       .click(function(){
+			       var me = $(this);
+			       me.next().toggle();
+			       me.parent().toggleClass("folded expanded");
+			       return false; // avoid bubbling of the event
+			   }));
+	    // this moves the ul after the span (and hides it in the meanwhile)
+	    me.append($("span > ul", me).hide());
 	});
-	// Instrument nodes
-	$('.results span.testid').click(function(){
-		var parent = $(this).parent();
-		var child = parent.find('div.fields');
-		if (child.is(':hidden')) {
-			child.show();
-			parent.css('list-style-image', 'url(minus.png)');
-		} else {
-			child.hide();
-			parent.css('list-style-image', 'url(plus.png)');
-		}
-	});
-	$('.results span.fieldid').click(function(){
-		var parent = $(this).parent();
-		var div = parent.find('div');
-		if (div.attr("loaded") == "false") {
-			div.load(div.attr("href"), function(){
-				$(this).attr("loaded", "true");
-			});
-		}
-		if (div.is(':hidden')) {
-			div.show();
-			parent.css('list-style-image', 'url(minus.png)');
-		} else {
-			div.hide();
-			parent.css('list-style-image', 'url(plus.png)');
-		}
-	});
-}
-/**
- * Load the summary file "summary.json" and update the summary and result blocks.
+};
+
+/** Modify the items that have the "url" data, making them clickable
+ *  and followed by a hidden block with the content of the link specified.
  */
-function loadSummary() {
-	$.get("summary.json", function(summary) {
-		updateSummary(summary);
-		updateResults(summary);
-	}, "json");
-}
+jQuery.fn.loader = function() {
+    this.each(function() { // loop over all the selected elements
+      var me = $(this);
+      if (me.data("url")) { // modify the element only if it does have a data "url"
+	  me.addClass("folded")
+	      // wrap the "text" of the element with a clickable span that loads the url
+	      .wrapInner($("<span class='clickable'/>")
+			 .click(function(){ // trigger the loading on click
+				 var me = $(this);
+				 me.after($("<div/>").loadingIcon().load(me.parent().data("url")));
+				 me.unbind("click"); // replace the click handler
+				 me.click(function(){ // this handler just toggle the visibility
+					 var me = $(this);
+					 me.next().toggle();
+					 me.parent().toggleClass("folded expanded");
+					 return false; // avoid bubbling of the event
+				     });
+				 me.parent().toggleClass("folded expanded");
+				 return false; // avoid bubbling of the event
+			     }));
+      }
+    });
+};
 
 /**
- * Load all the data (both annotations and summary).
+ * Helper function to re-use the code for the toggle button callback
  */
-function getData() {
-	loadAnnotations();
-	loadSummary();
-}
-
-// Function to be executed on load.
-$('body').ready(function(){
-	$(".hidable").hide();
-	$(".hidable").before($("<span>(show)</span>").addClass("togglelink clickable"));
-	$("span.togglelink").click(function(){
+jQuery.fn.toggleNextButton = function(data) {
+	if (data === undefined) data = {};
+	if (data.hide === undefined) data.hide = "(hide)";
+	if (data.show === undefined) data.show = "(show)";
+	if (data.start_visible === undefined) data.start_visible = false;
+	this.click(function() {
 		var me = $(this);
 		me.next().toggle();
-		if (me.html() == "(show)") {
-			me.html("(hide)");
+		if (me.next().is(":visible")) {
+			me.text(data.hide);
 		} else {
-			me.html("(show)");
+			me.text(data.show);
 		}
+	}).text(data.start_visible ? data.hide : data.show)
+	  .next().toggle(data.start_visible);
+	return this;
+}
+
+/** Make a given element toggleable using a show/hide button inserted just before
+ *  it.
+ */
+jQuery.fn.makeToggleable = function(data) {
+	this.each(function() {
+		var btn = $("<span class='clickable'/>");
+		$(this).before(btn);
+		btn.toggleNextButton(data);
 	});
-	$("#stop_polling").addClass("clickable").click(function(){
-		polling = false;
-		getData();
+	return this;
+}
+
+/** Display the list of results
+ * @param tests list of test ids to be displayed, if not specified, default to the
+ * not passed ones
+ * @param ignore_fields fields not to be shown
+ * @param field_order list of fields to be specified before the others in the specified order
+ */
+jQuery.fn.results = function(tests, ignore_fields, fields_order) {
+	tests = tests || test_results.not_passed;
+	ignore_fields = ignore_fields || [];
+	fields_order = fields_order || [];
+
+	var ul = $("<ul/>");
+	$.each(tests, function(i, test) {
+		test = test_results.tests[test];
+
+		var entry = $("<li/>")
+		.append($("<span class='testid'/>").text(test.id + ": "))
+		.append($("<span/>").addClass(test.outcome).text(test.outcome));
+		if (test.cause) {
+			entry.append(" ")
+			.append($("<span class='cause'/>")
+					.text(test.cause));
+		}
+
+		// Prepare the list of field ids to display
+		var field_ids = $.makeArray(fields_order);
+		$.each(test.fields, function(i,f){
+			if ($.inArray(f, ignore_fields) < 0 && $.inArray(f, field_ids) < 0){
+				field_ids.push(f);
+			}
+		});
+
+		var fields = $("<ul class='fieldid'/>");
+		$.each(field_ids, function(index, field) {
+			fields.append($("<li/>").data("url", test.id + "/" + field)
+					.text(field));
+		});
+		entry.append(fields);
+		ul.append(entry);
 	});
-	getData();
+
+	$("li", ul).loader();
+	$("li:has(ul)", ul).foldable();
+
+	return this.html(ul)
+	.append($('<div class="clickable">Collapse all</div>').click(function(){
+		$(this).prev().find(".expanded > .clickable")
+		.next().hide()
+		.parent().toggleClass("folded expanded");
+	}));
+}
+
+/// Code executed when the page is ready.
+$(function () {
+	$(".loading").loadingIcon().removeClass("loading");
+	var ignore_fields = ["qmtest.cause", "qmtest.target"];
+	var fields_order = ["qmtest.start_time", "qmtest.end_time"];
+	// load the summary
+	$.get("summary.json", parseSummary, 'json')
+	.success(function(){
+		$("#summary").summary();
+		$("#results").results(null, ignore_fields, fields_order);
+		$("#all_results").html($('<span class="clickable">(show)</span>')
+				.click(function(){
+					var parent = $(this).parent();
+					parent.loadingIcon();
+					// actually we already got the JSON data, but this allows to trigger a
+					// background execution.
+					$.getJSON("summary.json")
+					.success(function() {
+						parent.results(test_results.all_tests, ignore_fields, fields_order)
+							  .makeToggleable({start_visible: true});
+					});
+				})).removeClass("loading");
+	});
+	// load annotations
+	$.getJSON('annotations.json')
+	.success(function(data) {
+		$('#annotations').annotations(data).makeToggleable().removeClass("loading");
+	});
 });

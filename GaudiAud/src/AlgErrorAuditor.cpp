@@ -1,6 +1,3 @@
-// AlgErrorAuditor:
-//  An auditor that monitors memory usage
-
 #include "AlgErrorAuditor.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IMessageSvc.h"

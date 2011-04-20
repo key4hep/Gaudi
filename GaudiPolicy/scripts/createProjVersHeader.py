@@ -7,8 +7,9 @@ def main():
     project, version, outputfile = sys.argv[1:]
     print "Creating %s for %s %s"%(outputfile, project, version) 
     
-    m = re.match("v([0-9]+)r([0-9]+)(?:p[0-9])?",version)
-    majver, minver = [ int(x) for x in m.groups() ]
+    m = re.match("(v|([A-Za-z]+\-))(?P<maj_ver>[0-9]+)(r|\-)(?P<min_ver>[0-9]+)(?:(p|\-)(?P<pat_ver>[0-9]+))?",version)
+    majver = int(m.groupdict()['maj_ver'])
+    minver = int(m.groupdict()['min_ver'])
     
     outdir = os.path.dirname(outputfile)
     if not os.path.exists(outdir):

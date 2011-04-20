@@ -1,6 +1,8 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+================================ Gaudi v22r2 =================================
+================================ Gaudi v22r1 =================================
 ================================ Gaudi v22r0 =================================
 ! 2010-12-17 - Eoin Smith
  - Updated gaudirun.py and python/Gaudi/Main.py for multicore execution

@@ -50,7 +50,7 @@ def svn_exists(url):
     l = [x.rstrip("/") for x in svn_ls(d)]
     return b in l
 
-def checkout_structure(url, proj):
+def checkout_structure(url, proj, branch):
     def checkout_level(base):
         dirs = ["%s/%s" % (base, d) for d in svn_ls(base) if d.endswith("/")]
         apply(svn, ["up", "-N"] + dirs).wait()
@@ -61,14 +61,26 @@ def checkout_structure(url, proj):
     old_dir = os.getcwd()
     os.chdir(root)
     svn("up", "-N", proj).wait()
-    for base in [proj, proj + "/trunk"]:
+    br = [proj] + branch.split("/")
+    for base in [ "/".join(br[:n+1]) for n in range(len(br))]:
         checkout_level(base)
     checkout_level(proj + "/tags")
     os.chdir(old_dir)
     return root
 
 def main():
-    use_pre = len(sys.argv) > 1 and 'pre' in  sys.argv
+    from optparse import OptionParser
+    parser = OptionParser()
+    parser.add_option("--pre", action = "store_true",
+                      help = "Create -pre tags instead of final tags.")
+    parser.add_option("-b", "--branch",
+                      help = "Use the given (global) branch as source for the tags instead of the trunk")
+    opts, args = parser.parse_args()
+    if opts.branch:
+        opts.branch = "/".join(["branches", "GAUDI", opts.branch])
+    else:
+        opts.branch = "trunk"
+
     url = "svn+ssh://svn.cern.ch/reps/gaudi"
     proj = "Gaudi"
     container = "GaudiRelease"
@@ -78,7 +90,7 @@ def main():
     try:
         os.chdir(tempdir)
         # prepare repository structure (and move to its top level)
-        os.chdir(checkout_structure(url, proj))
+        os.chdir(checkout_structure(url, proj, opts.branch))
 
         # note that the project does not have "-pre"
         pvers = "%s_%s" % (proj.upper(), packages[container])
@@ -87,7 +99,8 @@ def main():
         ptagdir = "%s/tags/%s/%s" % (proj, proj.upper(), pvers)
         if not svn_exists(ptagdir):
             svn("mkdir", ptagdir).wait()
-            svn("cp", "%s/trunk/cmt" % proj, ptagdir + "/cmt").wait()
+            svn("cp", "/".join([proj, opts.branch, "cmt"]), ptagdir + "/cmt").wait()
+            svn("cp", "/".join([proj, opts.branch, "Makefile.cmt"]), ptagdir + "/Makefile.cmt").wait()
 
         # prepare package tags
         tag_re = re.compile(r"^v(\d+)r(\d+)(?:p(\d+))?$")
@@ -97,22 +110,22 @@ def main():
             # I have to make the tag if it doesn't exist and (if we use -pre tags)
             # neither the -pre tag exists.
             no_tag = not svn_exists(pktagdir)
-            make_tag = no_tag or (use_pre and no_tag and not svn_exists(pktagdir + "-pre"))
+            make_tag = no_tag or (opts.pre and no_tag and not svn_exists(pktagdir + "-pre"))
             if make_tag:
-                if use_pre:
+                if opts.pre:
                     pktagdir += "-pre"
-                svn("cp", "%s/trunk/%s" % (proj, p), pktagdir).wait()
+                svn("cp", "/".join([proj, opts.branch, p]), pktagdir).wait()
                 # Atlas type of tag
                 tagElements = tag_re.match(tag)
                 if tagElements:
                     tagElements = "-".join([ "%02d" % int(el or "0") for el in tagElements.groups() ])
                     pktagdir = "%s/tags/%s/%s-%s" % (proj, p, p, tagElements)
-                    svn("cp", "%s/trunk/%s" % (proj, p), pktagdir).wait()
+                    svn("cp", "/".join([proj, opts.branch, p]), pktagdir).wait()
             else:
                 if not no_tag:
                     svn("up", "-N", pktagdir).wait() # needed for the copy in the global tag
 
-        if not use_pre:
+        if not opts.pre:
             # prepare the full global tag too
             for p in packages:
                 tag = packages[p]
