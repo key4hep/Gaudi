@@ -8,23 +8,26 @@ color: red;
 .UNTESTED {
 color: orange;
 }
+
+.testid {
+color: black;
+}
+.testid:hover {
+color: red;
+}
+
+.fieldid .clickable {
+color: black;
+}
+.fieldid .clickable:hover {
+color: red;
+}
+
 .results .cause {
 color: gray;
 font-size: small;
 }
-.results span.testid:hover {
-	color: red;
-}
-.results span.fieldid:hover {
-	color: red;
-}
-/* "Collapse all" */
-.results ul + span:hover  {
-	color: blue;
-}
-span.togglelink:hover {
-	color: red;
-}
+
 /* ** Cursor feedback ** */
 /* Tooltip feedback */
 .with_tooltip {
@@ -33,4 +36,16 @@ span.togglelink:hover {
 /* clickable feedback */
 .clickable {
 	cursor: pointer;
+	color: blue;
+}
+.clickable:hover {
+	color: red;
+}
+
+/* foldable list bullets */
+li.folded {
+  list-style-image: url(plus.png);
+}
+li.expanded {
+  list-style-image: url(minus.png);
 }

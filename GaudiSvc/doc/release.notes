@@ -1,6 +1,21 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+============================== GaudiSvc v18r14 ===============================
+! 2011-04-15 - Charles Leggett
+ - Patch #4819: THistSvc: protect DEBUG messages, add AutoFlush property
+   This patch adds a new integer property AutoFlush to the THistSvc to set the
+   ROOT AutoFlush value for TTrees, and protects DEBUG messages so that they
+   only get created if the logging level is sufficiently low.
+
+! 2011-04-15 - Marco Clemencic
+ - Fixed a warning triggered by the macro NDEBUG.
+
+! 2011-04-08 - Marco Clemencic
+ - Introduced two new incidents: BeginProcessing and EndProcessing.
+   They are needed to reintroduce the signals around the processing loop as
+   it was the case for BeginEvent and EndEvent before GaudiSvc v17r0.
+
 ! 2011-03-23 - Marco Clemencic
  - Fixed VC9 warnings.
    - Replaced C-style string manipulation and formatting with C++ (and Boost)

@@ -281,7 +281,6 @@ StatusCode EventLoopMgr::finalize()    {
   return StatusCode::SUCCESS;
 }
 
-
 //--------------------------------------------------------------------------------------------
 // executeEvent(void* par)
 //--------------------------------------------------------------------------------------------
@@ -297,7 +296,9 @@ StatusCode EventLoopMgr::executeEvent(void* par)    {
   }
 
   // Execute Algorithms
+  m_incidentSvc->fireIncident(Incident(name(), IncidentType::BeginProcessing));
   StatusCode sc = MinimalEventLoopMgr::executeEvent(par);
+  m_incidentSvc->fireIncident(Incident(name(), IncidentType::EndProcessing));
 
   // Check if there was an error processing current event
   if( !sc.isSuccess() ){

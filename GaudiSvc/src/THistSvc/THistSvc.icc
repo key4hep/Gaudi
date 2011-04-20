@@ -52,8 +52,9 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
   if (f == 0) {
     temp = true;
     MsgStream log( msgSvc(), name() );
-    log << MSG::DEBUG << "Historgram with id \"" << idr << "\" is temporary"
-        << endmsg;
+    if (log.level() <= MSG::DEBUG)
+      log << MSG::DEBUG << "Historgram with id \"" << idr << "\" is temporary"
+	  << endmsg;
   }
 
 
@@ -128,13 +129,14 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
   }
 
   MsgStream log( msgSvc(), name() );
-  log << MSG::DEBUG << "Registering " << System::typeinfoName(typeid(*hist))
-      << " title: \"" << hist->GetTitle()
-      << "\"  id: \"" << uid << "\"  dir: "
-    //      << hist->GetDirectory()->GetPath() << "  "
-      << changeDir(hid)->GetPath()
-      << "  file: " << fname
-      << endmsg;
+  if (log.level() <= MSG::DEBUG) 
+    log << MSG::DEBUG << "Registering " << System::typeinfoName(typeid(*hist))
+	<< " title: \"" << hist->GetTitle()
+	<< "\"  id: \"" << uid << "\"  dir: "
+      //      << hist->GetDirectory()->GetPath() << "  "
+	<< changeDir(hid)->GetPath()
+	<< "  file: " << fname
+	<< endmsg;
 
   m_ids.insert(std::pair<std::string,THistID>(rem, hid));
   m_uids[uid] = hid;
@@ -308,10 +310,10 @@ THistSvc::readHist_i(const std::string& id, T*& hist) const {
 
 
   MsgStream log( msgSvc(), name() );
-  log << MSG::DEBUG << "Read in " << hist->IsA()->GetName() << "  \""
-      << hist->GetName() << "\" from file "
-      << file->GetName() << endmsg;
   if (log.level() <= MSG::DEBUG) {
+    log << MSG::DEBUG << "Read in " << hist->IsA()->GetName() << "  \""
+	<< hist->GetName() << "\" from file "
+	<< file->GetName() << endmsg;
     hist->Print();
   }
 

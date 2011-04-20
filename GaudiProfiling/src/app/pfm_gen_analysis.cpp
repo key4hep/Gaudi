@@ -109,13 +109,13 @@ class PipeReader
    }
    iss = new std::istringstream(result, std::istringstream::in);
   }
-  
+
   ~PipeReader(void)
   {
    pclose(pipe);
    delete iss;
   }
-  
+
   std::istringstream &output(void)
   {
    return *iss;
@@ -186,7 +186,7 @@ class FileInfo
    {
     return i->NAME.c_str();
    }
-    
+
    if(i == m_symbolCache.begin())
    {
     return m_symbolCache.begin()->NAME.c_str();
@@ -194,7 +194,7 @@ class FileInfo
 
    --i;
 
-   return i->NAME.c_str(); 
+   return i->NAME.c_str();
   }
 
   Offset next(Offset offset)
@@ -204,7 +204,7 @@ class FileInfo
    {
     return 0;
    }
-   return i->OFFSET;      
+   return i->OFFSET;
   }
 
  private:
@@ -217,7 +217,7 @@ class FileInfo
 
   typedef std::vector<CacheItem> SymbolCache;
   SymbolCache m_symbolCache;
-  
+
   struct CacheItemComparator
   {
    bool operator()(const CacheItem& a, const int &b) const
@@ -241,16 +241,16 @@ class FileInfo
    while(objdump.output())
    {
     // Checks the following regexp
-    //    
+    //
     //    LOAD\\s+off\\s+(0x[0-9A-Fa-f]+)\\s+vaddr\\s+(0x[0-9A-Fa-f]+)
-    // 
+    //
     // and sets vmbase to be $2 - $1 of the first matched entry.
-      
+
     std::string line;
     std::getline(objdump.output(), line);
-    
+
     if(!objdump.output()) break;
-    if(line.empty()) continue;      
+    if(line.empty()) continue;
     const char *lineptr = line.c_str();
     if(!skipWhitespaces(lineptr, &lineptr)) continue;
     if(!skipString("LOAD", lineptr, &lineptr)) continue;
@@ -268,13 +268,13 @@ class FileInfo
     vmbase=finalBase - initialBase;
     matched = true;
     break;
-   }    
+   }
    if(!matched)
    {
     fprintf(stderr, "Cannot determine VM base address for %s\n", NAME.c_str());
     fprintf(stderr, "Error while running `objdump -p %s`\n", NAME.c_str());
     exit(1);
-   }    
+   }
    std::string commandLine2 = "nm -t d -n " + NAME;
    PipeReader nm(commandLine2.c_str());
    while(nm.output())
@@ -287,10 +287,10 @@ class FileInfo
     const char *begin = line.c_str();
     char *endptr = 0;
     int address = strtol(begin, &endptr, 10);
-    if(endptr == begin) continue; 
-    if(*endptr++ != ' ') continue; 
-    if(isspace(*endptr++)) continue; 
-    if(*endptr++ != ' ') continue; 
+    if(endptr == begin) continue;
+    if(*endptr++ != ' ') continue;
+    if(isspace(*endptr++)) continue;
+    if(*endptr++ != ' ') continue;
     char *symbolName = endptr;
     while(*endptr && !isspace(*endptr)) endptr++;
     if(*endptr != 0) continue;
@@ -298,7 +298,7 @@ class FileInfo
     if(symbolName[0] == '.') continue;
     // Create a new symbol with the given fileoffset.
     // The symbol is automatically saved in the FileInfo cache by offset.
-    // If a symbol with the same offset is already there, the new one 
+    // If a symbol with the same offset is already there, the new one
     // replaces the old one.
     int offset = address-vmbase;
     if(m_symbolCache.size() && (m_symbolCache.back().OFFSET == offset)) m_symbolCache.back().NAME = symbolName;
@@ -471,15 +471,15 @@ void calc_core_deriv_values(double totalCycles)
  for(std::map<std::string, std::map<std::string, double> >::iterator it = C_modules.begin(); it != C_modules.end(); ++it)
  {
   (it->second)["Total Cycles"] = (it->second)["UNHALTED_CORE_CYCLES"];
-  (it->second)["Stalled Cycles"] = (it->second)["RS_UOPS_DISPATCHED CMASK=1 INV=1"]; 
+  (it->second)["Stalled Cycles"] = (it->second)["RS_UOPS_DISPATCHED CMASK=1 INV=1"];
   (it->second)["L2 Miss Impact"] = (it->second)["MEM_LOAD_RETIRED:L2_LINE_MISS"] * CORE_L2_MISS_CYCLES;
-  (it->second)["L2 Hit Impact"] = ((it->second)["MEM_LOAD_RETIRED:L1D_LINE_MISS"] - (it->second)["MEM_LOAD_RETIRED:L2_LINE_MISS"]) * CORE_L2_HIT_CYCLES; 
+  (it->second)["L2 Hit Impact"] = ((it->second)["MEM_LOAD_RETIRED:L1D_LINE_MISS"] - (it->second)["MEM_LOAD_RETIRED:L2_LINE_MISS"]) * CORE_L2_HIT_CYCLES;
   (it->second)["L1 DTLB Miss Impact"] = (it->second)["MEM_LOAD_RETIRED:DTLB_MISS"] * CORE_L1_DTLB_MISS_CYCLES;
-  (it->second)["LCP Stalls Impact"] = (it->second)["ILD_STALL"] * CORE_LCP_STALL_CYCLES;  
+  (it->second)["LCP Stalls Impact"] = (it->second)["ILD_STALL"] * CORE_LCP_STALL_CYCLES;
   (it->second)["Loads Blocked by Unknown Address Store Impact"] = (it->second)["LOAD_BLOCK:STA"] * CORE_UNKNOWN_ADDR_STORE_CYCLES;
   (it->second)["Loads Overlapped with Stores Impact"] = (it->second)["LOAD_BLOCK:OVERLAP_STORE"] * CORE_OVERLAPPING_CYCLES;
   (it->second)["Loads Spanning across Cache Lines Impact"] = (it->second)["LOAD_BLOCK:UNTIL_RETIRE"] * CORE_SPAN_ACROSS_CACHE_LINE_CYCLES;
-  (it->second)["Store-Fwd Stalls Impact"] = (it->second)["Loads Blocked by Unknown Address Store Impact"] + (it->second)["Loads Overlapped with Stores Impact"] + (it->second)["Loads Spanning across Cache Lines Impact"];  
+  (it->second)["Store-Fwd Stalls Impact"] = (it->second)["Loads Blocked by Unknown Address Store Impact"] + (it->second)["Loads Overlapped with Stores Impact"] + (it->second)["Loads Spanning across Cache Lines Impact"];
   (it->second)["Counted Stalled Cycles"] = (it->second)["L2 Miss Impact"] + (it->second)["L2 Hit Impact"] + (it->second)["LCP Stalls Impact"] + (it->second)["L1 DTLB Miss Impact"] + (it->second)["Store-Fwd Stalls Impact"];
   (it->second)["Instructions Retired"] = (it->second)["INSTRUCTIONS_RETIRED"];
   (it->second)["ITLB Miss Rate in %"] = ((it->second)["ITLB_MISS_RETIRED"]/(it->second)["INSTRUCTIONS_RETIRED"])*100;
@@ -488,14 +488,14 @@ void calc_core_deriv_values(double totalCycles)
   (it->second)["Store Instructions"] = (it->second)["INST_RETIRED:STORES"];
   (it->second)["Other Instructions"] = (it->second)["INST_RETIRED:OTHER"] - (it->second)["SIMD_COMP_INST_RETIRED:PACKED_SINGLE:PACKED_DOUBLE"] - (it->second)["BRANCH_INSTRUCTIONS_RETIRED"];
   (it->second)["% of Mispredicted Branches"] = ((it->second)["MISPREDICTED_BRANCH_RETIRED"]/(it->second)["BRANCH_INSTRUCTIONS_RETIRED"])*100;
-  (it->second)["Packed SIMD Computational Instructions"] = (it->second)["SIMD_COMP_INST_RETIRED:PACKED_SINGLE:PACKED_DOUBLE"]; 
-  (it->second)["Counted Instructions Retired"] = (it->second)["Branch Instructions"] + (it->second)["Load Instructions"] + (it->second)["Store Instructions"] + (it->second)["Other Instructions"] + (it->second)["Packed SIMD Computational Instructions"]; 
+  (it->second)["Packed SIMD Computational Instructions"] = (it->second)["SIMD_COMP_INST_RETIRED:PACKED_SINGLE:PACKED_DOUBLE"];
+  (it->second)["Counted Instructions Retired"] = (it->second)["Branch Instructions"] + (it->second)["Load Instructions"] + (it->second)["Store Instructions"] + (it->second)["Other Instructions"] + (it->second)["Packed SIMD Computational Instructions"];
   (it->second)["CPI"] = (it->second)["UNHALTED_CORE_CYCLES"]/(it->second)["INSTRUCTIONS_RETIRED"];
 
   double localPerformanceImprovement = (it->second)["CPI"]/EXPECTED_CPI;
   double cyclesAfterImprovement = (it->second)["UNHALTED_CORE_CYCLES"]/localPerformanceImprovement;
   double totalCyclesAfterImprovement = totalCycles-(it->second)["UNHALTED_CORE_CYCLES"]+cyclesAfterImprovement;
-  (it->second)["iMargin"] = 100-(totalCyclesAfterImprovement/totalCycles)*100; 
+  (it->second)["iMargin"] = 100-(totalCyclesAfterImprovement/totalCycles)*100;
 
   (it->second)["% of Total Cycles"] = (it->second)["RS_UOPS_DISPATCHED CMASK=1 INV=1"]*100/(it->second)["UNHALTED_CORE_CYCLES"];
   (it->second)["L2 Miss % of counted Stalled Cycles"] =(it->second)["L2 Miss Impact"]*100/(it->second)["Counted Stalled Cycles"];
@@ -587,7 +587,7 @@ void init_nhm_caa_events_displ()
  nhm_caa_events_displ.push_back("");
  nhm_caa_events_displ.push_back("Cycles IFETCH served by L3 (No Snoop)");
  nhm_caa_events_displ.push_back("L3 (No Snoop) IFECTHes % Impact");
- nhm_caa_events_displ.push_back("");  
+ nhm_caa_events_displ.push_back("");
  nhm_caa_events_displ.push_back("Total Branch Instructions Executed");
  nhm_caa_events_displ.push_back("% of Mispredicted Branches");
  nhm_caa_events_displ.push_back("");
@@ -642,12 +642,12 @@ void calc_nhm_deriv_values(double totalCycles)
   (it->second)["L3 Miss -> Remote DRAM Hit Impact"] = (it->second)["MEM_UNCORE_RETIRED:REMOTE_DRAM"] * I7_L3_MISS_REMOTE_DRAM_HIT_CYCLES;
   (it->second)["L3 Miss -> Remote Cache Hit Impact"] = (it->second)["MEM_UNCORE_RETIRED:REMOTE_CACHE_LOCAL_HOME_HIT"] * I7_L3_MISS_REMOTE_CACHE_HIT_CYCLES;
   (it->second)["L3 Miss -> Total Impact"] = (it->second)["L3 Miss -> Local DRAM Hit Impact"] + (it->second)["L3 Miss -> Remote DRAM Hit Impact"] + (it->second)["L3 Miss -> Remote Cache Hit Impact"];
-  (it->second)["L1 DTLB Miss Impact"] = (it->second)["DTLB_LOAD_MISSES:WALK_COMPLETED"] * I7_L1_DTLB_WALK_COMPLETED_CYCLES;  
+  (it->second)["L1 DTLB Miss Impact"] = (it->second)["DTLB_LOAD_MISSES:WALK_COMPLETED"] * I7_L1_DTLB_WALK_COMPLETED_CYCLES;
   (it->second)["Counted Stalled Cycles due to Load Ops"] = (it->second)["L3 Miss -> Total Impact"] + (it->second)["L2 Hit Impact"] + (it->second)["L1 DTLB Miss Impact"] + (it->second)["L3 Unshared Hit Impact"] + (it->second)["L2 Other Core Hit Modified Impact"] + (it->second)["L2 Other Core Hit Impact"];
   (it->second)["Cycles spent during DIV & SQRT Ops"] = (it->second)["ARITH:CYCLES_DIV_BUSY"];
   (it->second)["Total Counted Stalled Cycles"] = (it->second)["Counted Stalled Cycles due to Load Ops"] + (it->second)["Cycles spent during DIV & SQRT Ops"];
   (it->second)["Stalled Cycles"] = (it->second)["Total Counted Stalled Cycles"]; //TO BE FIXED when UOPS_EXECUTED:0x3f is fixed!!
-  (it->second)["% of Total Cycles"] = (it->second)["Stalled Cycles"] * 100 / (it->second)["CPU_CLK_UNHALTED:THREAD_P"]; //TO BE FIXED!! see above 
+  (it->second)["% of Total Cycles"] = (it->second)["Stalled Cycles"] * 100 / (it->second)["CPU_CLK_UNHALTED:THREAD_P"]; //TO BE FIXED!! see above
   (it->second)["L3 Miss % of Load Stalls"] = (it->second)["L3 Miss -> Total Impact"] * 100 / (it->second)["Counted Stalled Cycles due to Load Ops"];
   (it->second)["L2 Hit % of Load Stalls"] = (it->second)["L2 Hit Impact"] * 100 / (it->second)["Counted Stalled Cycles due to Load Ops"];
   (it->second)["L1 DTLB Miss % of Load Stalls"] = (it->second)["L1 DTLB Miss Impact"] * 100 / (it->second)["Counted Stalled Cycles due to Load Ops"];
@@ -678,7 +678,7 @@ void calc_nhm_deriv_values(double totalCycles)
   (it->second)["% of IFETCHes served by L3 (No Snoop)"] = (it->second)["OFFCORE_RESPONSE_0:DMND_IFETCH:UNCORE_HIT"] * 100 / (it->second)["L2_RQSTS:IFETCH_MISS"];
   (it->second)["% of L2 IFETCH misses"] = (it->second)["L2_RQSTS:IFETCH_MISS"] * 100 / ((it->second)["L2_RQSTS:IFETCH_MISS"] + (it->second)["L2_RQSTS:IFETCH_HIT"]);
   (it->second)["L1 ITLB Miss Impact"] = (it->second)["ITLB_MISSES:WALK_COMPLETED"] * I7_L1_ITLB_WALK_COMPLETED_CYCLES;
-  
+
   (it->second)["Total Branch Instructions Executed"] = (it->second)["BR_INST_EXEC:ANY"];
   (it->second)["% of Mispredicted Branches"] = (it->second)["BR_MISP_EXEC:ANY"] * 100 / (it->second)["BR_INST_EXEC:ANY"];
   (it->second)["Direct Near Calls % of Total Branches Executed"] = (it->second)["BR_INST_EXEC:DIRECT_NEAR_CALL"] * 100 / (it->second)["Total Branch Instructions Executed"];
@@ -690,7 +690,7 @@ void calc_nhm_deriv_values(double totalCycles)
   (it->second)["Total Branch Instructions Retired"] = (it->second)["BR_INST_RETIRED:ALL_BRANCHES"];
   (it->second)["Conditionals % of Total Branches Retired"] = (it->second)["BR_INST_RETIRED:CONDITIONAL"] * 100 / (it->second)["Total Branch Instructions Retired"];
   (it->second)["Near Calls % of Total Branches Retired"] = (it->second)["BR_INST_RETIRED:NEAR_CALL"] * 100 / (it->second)["Total Branch Instructions Retired"];
-  
+
   (it->second)["Instruction Starvation % of Total Cycles"] = ((it->second)["UOPS_ISSUED:ANY CMASK=1 INV=1"] - (it->second)["RESOURCE_STALLS:ANY"])* 100 / (it->second)["CPU_CLK_UNHALTED:THREAD_P"];
   (it->second)["% of Total Cycles spent handling FP exceptions"] = (it->second)["UOPS_DECODED:MS CMASK=1"]* 100 / (it->second)["CPU_CLK_UNHALTED:THREAD_P"];
   (it->second)["# of Instructions per Call"] = (it->second)["INST_RETIRED:ANY_P"] / (it->second)["BR_INST_EXEC:NEAR_CALLS"];
@@ -709,7 +709,7 @@ void calc_nhm_deriv_values(double totalCycles)
   double cyclesAfterImprovement = (it->second)["CPU_CLK_UNHALTED:THREAD_P"]/localPerformanceImprovement;
   double totalCyclesAfterImprovement = totalCycles-(it->second)["CPU_CLK_UNHALTED:THREAD_P"]+cyclesAfterImprovement;
   (it->second)["iMargin"] = 100-(totalCyclesAfterImprovement/totalCycles)*100;
- 
+
   (it->second)["Load % of all Instructions"] = (it->second)["MEM_INST_RETIRED:LOADS"] * 100 / (it->second)["INST_RETIRED:ANY_P"];
   (it->second)["Store % of all Instructions"] = (it->second)["MEM_INST_RETIRED:STORES"] * 100 / (it->second)["INST_RETIRED:ANY_P"];
   (it->second)["Branch % of all Instructions"] = (it->second)["BR_INST_RETIRED:ALL_BRANCHES"] * 100 / (it->second)["INST_RETIRED:ANY_P"];
@@ -854,7 +854,7 @@ void html_special_chars(const char *s, char *s_mod)
 // parses the argument and returns just the function name without arguments or return types
 const char *func_name(const char *demangled_symbol)
 {
- char *operator_string_begin = strstr(demangled_symbol, "operator");
+ char *operator_string_begin = const_cast<char *>(strstr(demangled_symbol, "operator"));
  if(operator_string_begin != NULL)
  {
   char *operator_string_end = operator_string_begin+8;
@@ -868,17 +868,17 @@ const char *func_name(const char *demangled_symbol)
   {
    operator_string_end+=6;
    *operator_string_end='\0';
-  } 
+  }
   else if(strstr(operator_string_end, "new[]")==operator_string_end)
   {
    operator_string_end+=5;
    *operator_string_end='\0';
-  } 
+  }
   else if(strstr(operator_string_end, "new")==operator_string_end)
   {
    operator_string_end+=3;
    *operator_string_end='\0';
-  } 
+  }
   else if(strstr(operator_string_end, ">>=")==operator_string_end)
   {
    operator_string_end+=3;
@@ -1018,7 +1018,7 @@ const char *func_name(const char *demangled_symbol)
   {
    operator_string_end+=1;
    *operator_string_end='\0';
-  }   
+  }
   else if(strstr(operator_string_end, "+")==operator_string_end)
   {
    operator_string_end+=1;
@@ -1071,7 +1071,7 @@ const char *func_name(const char *demangled_symbol)
   }
   return operator_string_begin;
  }
- char *end_of_demangled_name = strrchr(demangled_symbol, ')');
+ char *end_of_demangled_name = const_cast<char *>(strrchr(demangled_symbol, ')'));
  if(end_of_demangled_name != NULL)
  {
   int pars = 1;
@@ -1121,7 +1121,7 @@ const char *func_name(const char *demangled_symbol)
    c = *(--end_of_func_name);
   }
   return ++end_of_func_name;
- } 
+ }
  return demangled_symbol;
 }
 
@@ -1174,7 +1174,7 @@ void put_S_module(S_module *cur_module, const char *dir)
   fprintf(module_file, "<ul>\n");
   for(std::vector<std::string>::const_iterator it = S_events.begin(); it != S_events.end(); ++it)
   {
-   fprintf(module_file, "<li><a href=\"#%s\">%s</a></li>\n", it->c_str(), it->c_str());  
+   fprintf(module_file, "<li><a href=\"#%s\">%s</a></li>\n", it->c_str(), it->c_str());
   }
   fprintf(module_file, "</ul>\n");
  }// if(result == modules_tot_samples.end()) //not found
@@ -1246,7 +1246,7 @@ void put_S_module(S_module *cur_module, const char *dir)
   char temp[MAX_SYM_LENGTH];
   bzero(temp, MAX_SYM_LENGTH);
   strcpy(temp, sym);
-  strcpy(simple_sym, (func_name(temp)));      
+  strcpy(simple_sym, (func_name(temp)));
   if(strrchr(lib, '/')!=NULL && *(strrchr(lib, '/')+1)!='\0')
   {
    strcpy(simple_lib, strrchr(lib, '/')+1);
@@ -1304,7 +1304,7 @@ int read_S_file(const char *dir, const char *filename)
  bzero(event, MAX_EVENT_NAME_LENGTH);
  bzero(cur_module_name, MAX_MODULE_NAME_LENGTH);
  bzero(arch, MAX_ARCH_NAME_LENGTH);
- 
+
  S_module *cur_module = new S_module();
  unsigned int module_num = 0;
 
@@ -1341,7 +1341,7 @@ int read_S_file(const char *dir, const char *filename)
      fprintf(stderr, "ERROR: Invalid module name. \nLINE: %s\naborting...\n", line);
      exit(1);
     }
-    bzero(cur_module_name, MAX_MODULE_NAME_LENGTH);    
+    bzero(cur_module_name, MAX_MODULE_NAME_LENGTH);
     strncpy(cur_module_name, line, strlen(line)-strlen(end_sym));
     cur_module->init(cur_module_name, arch, event, cmask, inv, sp);
     cur_module->set_total(atoi(end_sym+1));
@@ -1384,7 +1384,7 @@ int read_S_file(const char *dir, const char *filename)
       {
        strcpy(final_sym, temp_sym);
       }
-     } 
+     }
      else
      {
       strcpy(final_sym, "???");
@@ -1414,7 +1414,7 @@ int read_S_file(const char *dir, const char *filename)
   fprintf(stderr, "ERROR: Unable to open input file: %s\naborting...\n", filename);
   exit(1);
  }
- delete cur_module; //delete it! 
+ delete cur_module; //delete it!
  return 0;
 }
 
@@ -1581,7 +1581,7 @@ void put_C_header(FILE *fp, std::vector<std::string> &columns)
  for(std::vector<std::string>::const_iterator it = columns.begin(); it != columns.end(); ++it)
  {
   if(strlen(it->c_str())==0) fprintf(fp, "<th bgcolor=\"#FFFFFF\">&nbsp;</th>\n");
-  else fprintf(fp, "<th>%s</th>\n", (*it).c_str());  
+  else fprintf(fp, "<th>%s</th>\n", (*it).c_str());
  }
  fprintf(fp, "</tr>\n");
  return;
@@ -1604,7 +1604,7 @@ void put_C_modules(FILE *fp, std::vector<std::string> &columns)
    else
    {
     if((it->second).find(*jt) == (it->second).end())
-    {    
+    {
      fprintf(stderr, "ERROR: Cannot find derivate value \"%s\"!!!\naborting...\n", (*jt).c_str());
      exit(1);
     }
@@ -1628,7 +1628,7 @@ void put_C_header_csv(FILE *fp, std::vector<std::string> &columns)
  for(std::vector<std::string>::const_iterator it = columns.begin(); it != columns.end(); ++it)
  {
   if(strlen(it->c_str())==0);
-  else fprintf(fp, ",%s", (*it).c_str());  
+  else fprintf(fp, ",%s", (*it).c_str());
  }
  fprintf(fp, "\n");
  return;
@@ -1645,7 +1645,7 @@ void put_C_modules_csv(FILE *fp, std::vector<std::string> &columns)
    else
    {
     if((it->second).find(*jt) == (it->second).end())
-    {    
+    {
      fprintf(stderr, "ERROR: Cannot find derivate value \"%s\"!!!\naborting...\n", (*jt).c_str());
      exit(1);
     }
@@ -1733,7 +1733,7 @@ double getTotalCycles()
 }
 
 // main()
-// takes as argument the directory containing results 
+// takes as argument the directory containing results
 // and produces the HTML directory inside of it containing browsable statistics
 int main(int argc, char *argv[])
 {
@@ -1755,7 +1755,7 @@ int main(int argc, char *argv[])
  strcpy(dir, argv[1]);
  if(!csv)
  {
-  strcat(dir, "/HTML"); 
+  strcat(dir, "/HTML");
   int res = mkdir(dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
   if(res!=0)
   {
@@ -1883,7 +1883,7 @@ int main(int argc, char *argv[])
   if(!csv) put_C_footer(fp);
   fclose(fp);
  }
- else 
+ else
  {
   if(!csv)
   {

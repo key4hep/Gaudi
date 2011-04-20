@@ -1,4 +1,3 @@
-// $Id $
 #ifndef GAUDIKERNEL_KEYEDOBJECT_H
 #define GAUDIKERNEL_KEYEDOBJECT_H
 
@@ -59,7 +58,7 @@ protected:
   void setKey(const key_type& key);
 public:
   /// Standard Constructor. The object key is preset to the invalid value.
-  KeyedObject() : m_refCount(0), m_hasKey(false) {                             }
+  KeyedObject(): m_key(), m_refCount(0), m_hasKey(false) {                     }
   /** Standard Constructor accepting the object's key.
       The key must be valid and cannot be changed later.
   */

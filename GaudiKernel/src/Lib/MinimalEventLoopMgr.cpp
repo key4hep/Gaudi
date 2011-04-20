@@ -341,7 +341,7 @@ StatusCode MinimalEventLoopMgr::executeRun( int maxevt ) {
   // Call the beginRun() method of all top algorithms
   for (ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
     sc = (*ita)->sysBeginRun();
-    if( !sc.isSuccess() ) {
+    if (!sc.isSuccess()) {
       log << MSG::WARNING << "beginRun() of algorithm " << (*ita)->name() << " failed" << endmsg;
       eventfailed = true;
     }
@@ -349,20 +349,20 @@ StatusCode MinimalEventLoopMgr::executeRun( int maxevt ) {
 
   // Call now the nextEvent(...)
   sc = nextEvent(maxevt);
-  if( !sc.isSuccess() ) {
+  if (!sc.isSuccess()) {
     eventfailed = true;
   }
 
   // Call the endRun() method of all top algorithms
   for (ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
     sc = (*ita)->sysEndRun();
-    if( !sc.isSuccess() ) {
+    if (!sc.isSuccess()) {
       log << MSG::WARNING << "endRun() of algorithm " << (*ita)->name() << " failed" << endmsg;
       eventfailed = true;
     }
   }
 
-  if( eventfailed ){
+  if (eventfailed) {
     return StatusCode::FAILURE;
   }
   else {
@@ -381,7 +381,7 @@ namespace {
       m_retcode = Gaudi::ReturnCode::Success;
     }
     inline ~RetCodeGuard() {
-      if (Gaudi::ReturnCode::Success != m_retcode) {
+      if (UNLIKELY(Gaudi::ReturnCode::Success != m_retcode)) {
         Gaudi::setAppReturnCode(m_appmgr, m_retcode);
       }
     }
@@ -399,10 +399,10 @@ StatusCode MinimalEventLoopMgr::executeEvent(void* /* par */)    {
   // Call the resetExecuted() method of ALL "known" algorithms
   // (before we were reseting only the topalgs)
   SmartIF<IAlgManager> algMan(serviceLocator());
-  if ( algMan.isValid() ) {
+  if (LIKELY(algMan.isValid())) {
     const ListAlgPtrs& allAlgs = algMan->getAlgorithms() ;
     for( ListAlgPtrs::const_iterator ialg = allAlgs.begin() ; allAlgs.end() != ialg ; ++ialg ) {
-      if ( 0 != *ialg ) (*ialg)->resetExecuted();
+      if (LIKELY(0 != *ialg)) (*ialg)->resetExecuted();
     }
   }
 
@@ -412,7 +412,7 @@ StatusCode MinimalEventLoopMgr::executeEvent(void* /* par */)    {
   for (ListAlg::iterator ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
     StatusCode sc(StatusCode::FAILURE);
     try {
-      if (m_abortEvent){
+      if (UNLIKELY(m_abortEvent)) {
         MsgStream log ( msgSvc() , name() );
         log << MSG::DEBUG << "AbortEvent incident fired by "
                           << m_abortEventSource << endmsg;
@@ -439,7 +439,7 @@ StatusCode MinimalEventLoopMgr::executeEvent(void* /* par */)    {
           << (*ita)->name() << endmsg;
     }
 
-    if( !sc.isSuccess() )  {
+    if (UNLIKELY(!sc.isSuccess()))  {
       MsgStream log( msgSvc(), name() );
       log << MSG::WARNING << "Execution of algorithm " << (*ita)->name() << " failed" << endmsg;
       eventfailed = true;
@@ -447,8 +447,8 @@ StatusCode MinimalEventLoopMgr::executeEvent(void* /* par */)    {
   }
 
   // ensure that the abortEvent flag is cleared before the next event
-  if (m_abortEvent){
-    if (outputLevel() <= MSG::DEBUG) {
+  if (UNLIKELY(m_abortEvent)) {
+    if (UNLIKELY(outputLevel() <= MSG::DEBUG)) {
       MsgStream log ( msgSvc() , name() );
       log << MSG::DEBUG << "AbortEvent incident fired by "
                         << m_abortEventSource << endmsg;
@@ -461,7 +461,7 @@ StatusCode MinimalEventLoopMgr::executeEvent(void* /* par */)    {
     (*ito)->resetExecuted();
       StatusCode sc;
       sc = (*ito)->sysExecute();
-    if( !sc.isSuccess() )  {
+    if (UNLIKELY(!sc.isSuccess()))  {
       MsgStream log( msgSvc(), name() );
       log << MSG::WARNING << "Execution of output stream " << (*ito)->name() << " failed" << endmsg;
       eventfailed = true;
@@ -469,7 +469,7 @@ StatusCode MinimalEventLoopMgr::executeEvent(void* /* par */)    {
   }
 
   // Check if there was an error processing current event
-  if( eventfailed ){
+  if (UNLIKELY(eventfailed)){
     MsgStream log( msgSvc(), name() );
     log << MSG::ERROR << "Error processing event loop." << endmsg;
     return StatusCode(StatusCode::FAILURE,true);
