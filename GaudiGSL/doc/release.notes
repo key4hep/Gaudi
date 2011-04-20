@@ -3,6 +3,7 @@
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! =============================================================================
 
+=============================== GaudiGSL v7r10 ===============================
 ! 2011-03-23 - Marco Clemencic
  - Fixed VC9 warnings.
    - Replaced C-style string manipulation and formatting with C++ (and Boost)

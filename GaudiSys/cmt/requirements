@@ -1,6 +1,6 @@
 # $Id: requirements,v 1.81 2008/11/10 18:54:02 marcocle Exp $
 package GaudiSys
-version v22r1
+version v22r2
 
 branches doc cmt 
 

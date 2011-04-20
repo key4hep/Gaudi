@@ -1,6 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v27r14 =============================
 ! 2011-04-19 - Marco Clemencic
  - Fixed a defect spotted by Coverity in KeyedObject (UNINIT_CTOR).
 

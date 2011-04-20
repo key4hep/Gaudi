@@ -1,6 +1,7 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+============================= GaudiRelease v22r2 =============================
 ! 2011-04-14 - Marco Clemencic
  - Switched to LCGCMT 60b and added Frontier_Client to the LHCb externals.
 

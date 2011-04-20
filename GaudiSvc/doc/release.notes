@@ -1,6 +1,7 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+============================== GaudiSvc v18r14 ===============================
 ! 2011-04-15 - Charles Leggett
  - Patch #4819: THistSvc: protect DEBUG messages, add AutoFlush property
    This patch adds a new integer property AutoFlush to the THistSvc to set the
