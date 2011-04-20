@@ -15,13 +15,13 @@ set(LCG_system ${LCG_basesystem}-opt)
 # please keep alphabetic order and the structure (tabbing).
 # it makes it much easier to edit/read this file !
 
-SET(LCG_config_version  60a)
+SET(LCG_config_version  60b)
 
-SET(COOL_config_version   COOL_2_8_9)
-SET(CORAL_config_version  CORAL_2_3_14b)
-SET(POOL_config_version   POOL_2_9_12)
-SET(RELAX_config_version  RELAX_1_2_2a)
-SET(ROOT_config_version   5.28.00a)
+SET(COOL_config_version   COOL_2_8_9a)
+SET(CORAL_config_version  CORAL_2_3_15)
+SET(POOL_config_version   POOL_2_9_13)
+SET(RELAX_config_version  RELAX_1_2_2b)
+SET(ROOT_config_version   5.28.00b)
 
 # externals:
 
@@ -105,7 +105,7 @@ SET(pyqt_config_version             4.7)
 SET(pyparsing_config_version        1.5.1)
 SET(pyxml_config_version            0.8.4p1)
 SET(QMtest_config_version           2.4.1)
-SET(Qt_config_version               4.6.3.p1)
+SET(Qt_config_version               4.6.3p2)
 SET(qwt_config_version              5.2.1)
 SET(readline_config_version         2.5.1p1)
 SET(roofit_config_version           3.10p1)
@@ -133,4 +133,3 @@ SET(vomsclients_config_version      1.9.17-1)
 SET(XercesC_config_version          3.1.1p1)
 SET(xqilla_config_version           2.2.4)
 SET(zlib_config_version             1.2.3p1)
-
