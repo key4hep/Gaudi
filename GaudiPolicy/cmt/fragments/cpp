@@ -1,0 +1,16 @@
+#-- start of cpp ------
+
+ifneq ($(MAKECMDGOALS),${CONSTITUENT}clean)
+ifneq ($(MAKECMDGOALS),uninstall)
+-include $(bin)$(binobj)${NAME}${CONSTITUENTSUFFIX}.d
+endif
+endif
+
+
+$(bin)$(binobj)${NAME}${CONSTITUENTSUFFIX}.o $(bin)$(binobj)${NAME}${CONSTITUENTSUFFIX}.d : ${FULLNAME}  $(use_requirements) $(cmt_final_setup_${CONSTITUENT})
+	$(cpp_echo) ${FULLNAME}
+	@mkdir -p $(@D)
+	$(cpp_silent) $(cppcomp) $(use_pp_cppflags) $(${CONSTITUENT}_pp_cppflags) $(app_${CONSTITUENT}_pp_cppflags) $(${NAME}_pp_cppflags) $(use_cppflags) $(${CONSTITUENT}_cppflags) $(lib_${CONSTITUENT}_cppflags) $(app_${CONSTITUENT}_cppflags) $(${NAME}_cppflags) $(${NAME}_${FILESUFFIX}_cppflags) ${ADDINCLUDE} -MP -MMD -MT $(bin)$(binobj)${NAME}${CONSTITUENTSUFFIX}.o -MT $(bin)$(binobj)${NAME}${CONSTITUENTSUFFIX}.d -MF $(bin)$(binobj)${NAME}${CONSTITUENTSUFFIX}.d -o $(bin)$(binobj)${NAME}${CONSTITUENTSUFFIX}.o ${FULLNAME}
+
+
+#-- end of cpp ------

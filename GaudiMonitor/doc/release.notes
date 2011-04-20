@@ -1,6 +1,7 @@
 Package: GaudiMonitor
 Package manager : Marco Clemencic
 
+============================= GaudiMonitor v2r8 ==============================
 ! 2011-03-23 - Marco Clemencic
  - Fixed VC9 warnings.
    - Warnings disabled.

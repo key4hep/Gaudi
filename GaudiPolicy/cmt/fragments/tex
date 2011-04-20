@@ -1,6 +1,16 @@
+#-- start of tex ------
+
+${CONSTITUENT} :: ${FILEPATH}${NAME}.ps
 
 ${FILEPATH}${NAME}.dvi : ${FULLNAME}
-	cd ${doc}; latex ${FULLNAME}
+	$(silent) cd ${FILEPATH}; latex ${NAME}${FILESUFFIX}
 
 ${FILEPATH}${NAME}.ps : ${FILEPATH}${NAME}.dvi
-	cd ${doc}; dvips ${FILEPATH}${NAME}.dvi
+	$(silent) cd ${FILEPATH}; dvips -o ${NAME}.ps ${NAME}.dvi
+
+${CONSTITUENT}clean ::
+	$(cleanup_echo) ${FILEPATH}${NAME}.ps
+	$(cleanup_silent) cd ${FILEPATH}; /bin/rm -f ${NAME}.ps ${NAME}.dvi
+	$(cleanup_silent) cd ${FILEPATH}; /bin/rm -f ${NAME}.aux ${NAME}.log ${NAME}.toc
+
+#-- end of tex ------

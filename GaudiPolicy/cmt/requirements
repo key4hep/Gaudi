@@ -1,5 +1,5 @@
 package GaudiPolicy
-version v11r1
+version v11r2
 
 branches cmt doc
 
@@ -516,6 +516,21 @@ make_fragment sln_dependency_project
 
 make_fragment sln_dependency_header
 make_fragment sln_dependency_trailer
+
+
+# C++
+# The cpp fragments for enhanced computation of dependencies are not available on Windows
+macro cpp_fragment "cpp" target-winxp ""
+make_fragment $(cpp_fragment)
+macro cpp_library_fragment "cpp_library" target-winxp ""
+make_fragment $(cpp_library_fragment)
+
+macro cmt_compiler_version "${cmt_compiler_version}" \
+              target-gcc43 "gcc43"
+
+macro cppcomp         "$(cpp) -c $(cppdebugflags) $(cppflags) $(pp_cppflags) $(includes)" \
+      VisualC         "cl.exe $(cppdebugflags) $(cppflags) $(pp_cppflags)"
+
 
 # Local copy of the dependencies fragment to allow a "QUICK" option that
 # completely ignores dependencies (useful to speed up builds from scratch).

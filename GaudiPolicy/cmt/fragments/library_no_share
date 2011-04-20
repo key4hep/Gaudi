@@ -3,13 +3,67 @@ ${CONSTITUENT}LIB :: $(${CONSTITUENT}lib)
 	@/bin/echo ${CONSTITUENT} : library ok
 
 $(${CONSTITUENT}lib) :: ${OBJS}
-	$(lib_echo) library
-	$(lib_silent) cd $(bin); $(ar) $(${CONSTITUENT}lib) $?; \
-                      /bin/rm -f $?;touch $? 
-	$(lib_silent)  $(ranlib) $(${CONSTITUENT}lib); \
-	  cat /dev/null >$(${CONSTITUENT}stamp)
+	$(lib_echo) "static library $@"
+	$(lib_silent) $(ar) $(${CONSTITUENT}lib) $?
+	$(lib_silent) $(ranlib) $(${CONSTITUENT}lib)
+	$(lib_silent) cat /dev/null >$(${CONSTITUENT}stamp)
+
+#------------------------------------------------------------------
+#  Future improvement? to empty the object files after
+#  storing in the library
+#
+##	  for f in $?; do \
+##	    rm $${f}; touch $${f}; \
+##	  done
+#------------------------------------------------------------------
+
+#-----------------------------------------------------------------
+#
+#  New section for automatic installation
+#
+#-----------------------------------------------------------------
+
+install_dir = ${CMTINSTALLAREA}/$(tag)/lib
+${CONSTITUENT}installname = $(library_prefix)${CONSTITUENT}$(library_suffix).a
+
+${CONSTITUENT} :: ${CONSTITUENT}install
+
+install :: ${CONSTITUENT}install
+
+${CONSTITUENT}install :: $(install_dir)/$(${CONSTITUENT}installname)
+ifdef CMTINSTALLAREA
+	$(echo) "installation done"
+endif
+
+$(install_dir)/$(${CONSTITUENT}installname) :: $(bin)$(${CONSTITUENT}installname)
+ifdef CMTINSTALLAREA
+	$(install_silent) $(cmt_install_action) \
+	    -source "`(cd $(bin); pwd)`" \
+	    -name "$(${CONSTITUENT}installname)" \
+	    -out "$(install_dir)" \
+	    -cmd "$(cmt_installarea_command)" \
+	    -cmtpath "$($(package)_cmtpath)"
+endif
+
+##${CONSTITUENT}clean :: ${CONSTITUENT}uninstall
+
+uninstall :: ${CONSTITUENT}uninstall
+
+${CONSTITUENT}uninstall ::
+ifdef CMTINSTALLAREA
+	$(cleanup_silent) $(cmt_uninstall_action) \
+	    -source "`(cd $(bin); pwd)`" \
+	    -name "$(${CONSTITUENT}installname)" \
+	    -out "$(install_dir)" \
+	    -cmtpath "$($(package)_cmtpath)"
+endif
 
 ${CONSTITUENT}clean ::
-	$(cleanup_echo) ${OBJS}
-	$(cleanup_silent) cd $(bin); /bin/rm -f ${OBJS}
+	$(cleanup_echo) objects ${CONSTITUENT}
+	$(cleanup_silent) /bin/rm -f ${OBJS}
+	$(cleanup_silent) /bin/rm -f $(patsubst %.o,%.d,${OBJS}) $(patsubst %.o,%.dep,${OBJS}) $(patsubst %.o,%.d.stamp,${OBJS})
+	$(cleanup_silent) cd $(bin); /bin/rm -rf ${CONSTITUENT}_deps ${CONSTITUENT}_dependencies.make
+#	$(cleanup_echo) ${OBJS}
+#	$(cleanup_silent) /bin/rm -f ${OBJS}
 
+#-- end of library_no_share ------

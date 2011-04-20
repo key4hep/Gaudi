@@ -22,17 +22,16 @@ using namespace boost::filesystem;
 
 int main() {
   cout << "*** DirSearchPath_test Starts ***" << endl;
-  const bool SHOULDNEVERGETHERE(false);
   DirSearchPath bad("foo:fo:  : *");
   try {
     //make sure tmp is there
     path tmp("tmp");
-    if (!exists(tmp)) create_directory(tmp); 
+    if (!exists(tmp)) create_directory(tmp);
 
     //create a test dir tree under tmp
     path testRoot("tmp/DirSearchPath_test");
     if (exists(testRoot) && !testRoot.empty()) remove_all(testRoot);
-    if (!exists(testRoot)) create_directory(testRoot); 
+    if (!exists(testRoot)) create_directory(testRoot);
     path testSub1(testRoot / path("sub1"));
     create_directory(testSub1);
     path testSub2(testRoot / path("sub2"));
@@ -45,7 +44,7 @@ int main() {
     DirSearchPath searchPath(" :tmp: bla");
 #else
     DirSearchPath searchPath(" ;tmp; bla");
-#endif    
+#endif
     //now look for something
     string fullFileName;
     assert(searchPath.find("DirSearchPath_test", fullFileName));
@@ -59,8 +58,11 @@ int main() {
     if (!testRoot.empty()) remove_all(testRoot);
   } catch (const filesystem_error& err) {
     cerr << err.what() << endl;
+#ifndef NDEBUG
+    const bool SHOULDNEVERGETHERE(false);
     assert(SHOULDNEVERGETHERE);
-  }  
+#endif
+  }
   cout << "*** DirSearchPath_test OK ***" << endl;
-  return 0;  
+  return 0;
 }

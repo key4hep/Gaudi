@@ -1,6 +1,7 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+================================ GaudiMP v1r1 ================================
 ! 2011-04-04 - Pere Mato
  - Fixes to work with LHCb Brunel
    1) Namespace changed from GaudiPython to GaudiMP for TESSerializer class
