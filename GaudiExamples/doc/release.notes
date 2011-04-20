@@ -1,6 +1,7 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v22r2 =============================
 ! 2011-04-08 - Marco Clemencic
  - Updated IncidentSvc test after the introduction of the new incidents
    BeginProcessing and EndProcessing.

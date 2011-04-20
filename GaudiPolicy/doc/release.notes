@@ -1,6 +1,7 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v11r2 ==============================
 ! 2011-04-15 - Marco Clemencic
  - Fixed the usage of cpp fragments on Windows.
 
