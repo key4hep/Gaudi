@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-05-03 - Marco Clemencic
+ - Fixed a problem with Python script tests on Windows (including gaudirun.py).
+
 ============================= GaudiPolicy v11r2 ==============================
 ! 2011-04-15 - Marco Clemencic
  - Fixed the usage of cpp fragments on Windows.
