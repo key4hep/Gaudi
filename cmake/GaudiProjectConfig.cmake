@@ -13,6 +13,10 @@ cmake_policy(SET CMP0009 NEW) # See "cmake --help-policy CMP0009" for more detai
 # Add the directory containing this file to the modules search path
 set(CMAKE_MODULE_PATH ${GaudiProject_DIR} ${CMAKE_MODULE_PATH})
 
+if((DEFINED ENV{CMTCONFIG} OR DEFINED ENV{CMAKECONFIG}) AND NOT DEFINED LCG_system)
+  message(FATAL_ERROR "You must use CMAKE_TOOLCHAIN_FILE if you have CMTCONFIG or CMAKECONFIG set.")
+endif()
+
 #-------------------------------------------------------------------------------
 # Basic configuration
 #-------------------------------------------------------------------------------
@@ -20,6 +24,18 @@ set(CMAKE_VERBOSE_MAKEFILES OFF)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 #set(CMAKE_SKIP_BUILD_RPATH TRUE)
 #set(CMAKE_CXX_COMPILER g++)
+
+#-------------------------------------------------------------------------------
+# Platform handling
+#-------------------------------------------------------------------------------
+#function(GET_LCG_TAG sysvar platfvar)
+#  if(CMAKE_SYSTEM_PROCESSOR
+#  if(CMAKE_BUILD_TYPE STREQUAL Debug)
+#
+#  else()
+#  endif(statement)
+#
+#endfunction()
 
 #-------------------------------------------------------------------------------
 # Platform transparency
@@ -114,33 +130,6 @@ macro(GAUDI_PROJECT project_name version)
   option(BUILD_TESTS "Set to ON to build the tests (libraries and executables)" OFF)
   option(HIDE_WARNINGS "Turn on or off options that are used to hide warning messages" ON)
   #-------------------------------------------------------------------------------------------------
-  #--- Build type and tag strings-------------------------------------------------------------------
-
-  set(opt2buildtype Release)
-  set(dbg2buildtype Debug)
-  set(Debug2type dbg)
-  set(Release2type opt)
-
-  if(DEFINED ENV{CMAKECONFIG})
-    set(tag $ENV{CMAKECONFIG})
-  elseif(DEFINED ENV{CMTCONFIG})
-    set(tag $ENV{CMTCONFIG})
-  else()
-    GAUDI_BINARY_TAG(tag)
-  endif()
-  string(REGEX MATCHALL "[^-]+" out ${tag})
-  list(GET out 0 arch)
-  list(GET out 1 os)
-  list(GET out 2 comp)
-  list(GET out 3 type)
-
-  if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE ${${type}2buildtype} CACHE STRING
-        "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
-  endif()
-
-  set(BINARY_TAG_PREFIX ${arch}-${os}-${comp} CACHE STRING "Installation binary tag prefix. The final tag will be made using the BUILD_TYPE" )
-  set(BINARY_TAG ${BINARY_TAG_PREFIX}-${${CMAKE_BUILD_TYPE}2type})
 
   if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/InstallArea/${BINARY_TAG} CACHE PATH
@@ -163,7 +152,6 @@ macro(GAUDI_PROJECT project_name version)
     set(PYTHON_OUTPUT_PATH ${BUILD_OUTPUT_PREFIX}/python CACHE STRING
 	   "Single build output directory for all python files" FORCE)
   endif()
-
 
   if(BUILD_TESTS)
     enable_testing()

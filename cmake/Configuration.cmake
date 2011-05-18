@@ -8,10 +8,6 @@ else()
 endif()
 set(LCG_external ${LCG_home}/external)
 
-set(LCG_platform ${BINARY_TAG})
-set(LCG_basesystem ${BINARY_TAG_PREFIX})
-set(LCG_system ${LCG_basesystem}-opt)
-
 # please keep alphabetic order and the structure (tabbing).
 # it makes it much easier to edit/read this file !
 
