@@ -112,19 +112,6 @@ macro(GAUDI_PROJECT project_name version)
   set(${project}_VERSION_MINOR ${minor})
   set(${project}_VERSION_PATCH ${patch})
 
-  # FIXME: external tools need to be found independently of the project
-  if(CMAKE_PROJECT_NAME STREQUAL GAUDI)
-    set(genconf_cmd ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genconf.exe)
-    set(genwindef_cmd ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genwindef.exe)
-    set(gaudirun ${CMAKE_SOURCE_DIR}/Gaudi/scripts/gaudirun.py)
-  else()
-    set(genconf_cmd ${GAUDI_binaryarea}/bin/genconf.exe)
-    set(genwindef_cmd ${GAUDI_binaryarea}/bin/genwindef.exe)
-    set(GAUDI_SOURCE_DIR ${GAUDI_installation})
-    set(gaudirun ${GAUDI_installarea}/scripts/gaudirun.py)
-  endif()
-
-
   #--- Project Options and Global settings----------------------------------------------------------
   option(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
   option(BUILD_TESTS "Set to ON to build the tests (libraries and executables)" OFF)
@@ -155,6 +142,18 @@ macro(GAUDI_PROJECT project_name version)
 
   if(BUILD_TESTS)
     enable_testing()
+  endif()
+
+  # FIXME: external tools need to be found independently of the project
+  if(CMAKE_PROJECT_NAME STREQUAL GAUDI)
+    set(genconf_cmd ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genconf.exe)
+    set(genwindef_cmd ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genwindef.exe)
+    set(gaudirun ${CMAKE_SOURCE_DIR}/Gaudi/scripts/gaudirun.py)
+  else()
+    set(genconf_cmd ${GAUDI_binaryarea}/bin/genconf.exe)
+    set(genwindef_cmd ${GAUDI_binaryarea}/bin/genwindef.exe)
+    set(GAUDI_SOURCE_DIR ${GAUDI_installation})
+    set(gaudirun ${GAUDI_installarea}/scripts/gaudirun.py)
   endif()
 
   #--- Project Installations------------------------------------------------------------------------
