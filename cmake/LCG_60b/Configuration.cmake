@@ -163,6 +163,8 @@ set(pytools_native_version ${pytools_config_version}_python${Python_config_versi
 
 set(QMtest_native_version ${QMtest_config_version}_python${Python_config_version_twodigit})
 
+set(CMAKE_USE_PYTHON_VERSION ${Python_config_version_twodigit})
+
 # This is not really needed because Xerces has its own version macro, but it was
 # added at some point, so it is kept for backward compatibility.
 #add_definitions(-DXERCESC_GE_31)
@@ -182,6 +184,10 @@ if(NOT DEFINED LCG_PREFIX_PATH)
     set(${name}_home ${LCG_external}/${${name}_directory_name}/${${name}_native_version}/${LCG_system})
     list(APPEND LCG_PREFIX_PATH ${${name}_home})
   endforeach()
+
+  # AIDA is special
+  list(APPEND LCG_INCLUDE_PATH ${LCG_external}/${AIDA_directory_name}/${AIDA_native_version}/share/src/cpp)
+
   set(LCG_PREFIX_PATH ${LCG_PREFIX_PATH} CACHE INTERNAL "Search path for external libraries")
   set(LCG_INCLUDE_PATH ${LCG_INCLUDE_PATH} CACHE INTERNAL "Search path for files")
 endif()
