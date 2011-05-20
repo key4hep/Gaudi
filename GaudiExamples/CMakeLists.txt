@@ -2,61 +2,80 @@
 # CMakeLists.txt file for building GaudiExamples
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-GAUDI_USE_PACKAGE(ROOT)
-GAUDI_USE_PACKAGE(AIDA)
-GAUDI_USE_PACKAGE(PartPropSvc)
-GAUDI_USE_PACKAGE(GaudiPoolDb)
-GAUDI_USE_PACKAGE(GaudiPython)
-GAUDI_USE_PACKAGE(GaudiGSL)
-GAUDI_USE_PACKAGE(RootHistCnv)
-GAUDI_USE_PACKAGE(Boost)
-GAUDI_USE_PACKAGE(HepPDT)
+#G AUDI_USE_PACKAGE(ROOT)
+#G AUDI_USE_PACKAGE(AIDA)
+#G AUDI_USE_PACKAGE(PartPropSvc)
+#G AUDI_USE_PACKAGE(GaudiPoolDb)
+#G AUDI_USE_PACKAGE(GaudiPython)
+#G AUDI_USE_PACKAGE(GaudiGSL)
+#G AUDI_USE_PACKAGE(RootHistCnv)
+#G AUDI_USE_PACKAGE(Boost)
+#G AUDI_USE_PACKAGE(HepPDT)
+
+find_package(Boost)
+include_directories(${Boost_INCLUDE_DIRS})
+
+find_package(ROOT)
+include_directories(${ROOT_INCLUDE_DIRS})
+link_directories(${ROOT_LIBRARY_DIRS})
+
+find_package(AIDA)
+include_directories(${AIDA_INCLUDE_DIRS})
+
+find_package(CLHEP)
+include_directories(${CLHEP_INCLUDE_DIRS})
+
+find_package(HepPDT)
+include_directories(${HepPDT_INCLUDE_DIRS})
+
+find_package(PythonLibs)
+include_directories(${PYTHON_INCLUDE_PATH})
 
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/src/Lib )
 
 #---Libraries---------------------------------------------------------------
-set( GaudiExamples_srcs AbortEvent/*.cpp 
-AlgSequencer/*.cpp 
-AlgTools/*.cpp 
-DataOnDemand/*.cpp 
-AlgErrAud/*.cpp 
-GSLTools/*.cpp 
-RandomNumber/*.cpp 
-Histograms/*.cpp 
-NTuples/*.cpp 
-TupleEx/*.cpp 
-CounterEx/*.cpp 
-PartProp/*.cpp 
-Properties/*.cpp 
-ExtendedProperties/*.cpp 
-DataListener/*.cpp 
-POOLIO/*.cpp 
-ColorMsg/ColorMsgAlg.cpp 
-History/History.cpp 
-THist/*.cpp 
-ErrorLog/ErrorLogTest.cpp 
-EvtColsEx/EvtColAlg.cpp 
-FastContainers/*.cpp 
-Maps/*.cpp 
-MultipleLogStreams/*.cpp 
-GaudiCommonTests/*.cpp 
-IncidentSvc/*.cpp 
-bug_34121/*.cpp 
-Auditors/*.cpp 
-Timing/*.cpp 
-Selections/*.cpp 
-SvcInitLoop/*.cpp 
-StringKeys/*.cpp 
-StatusCodeSvc/*.cpp 
+set( GaudiExamples_srcs AbortEvent/*.cpp
+AlgSequencer/*.cpp
+AlgTools/*.cpp
+DataOnDemand/*.cpp
+AlgErrAud/*.cpp
+GSLTools/*.cpp
+RandomNumber/*.cpp
+Histograms/*.cpp
+NTuples/*.cpp
+TupleEx/*.cpp
+CounterEx/*.cpp
+PartProp/*.cpp
+Properties/*.cpp
+ExtendedProperties/*.cpp
+DataListener/*.cpp
+POOLIO/*.cpp
+ColorMsg/ColorMsgAlg.cpp
+History/History.cpp
+THist/*.cpp
+ErrorLog/ErrorLogTest.cpp
+EvtColsEx/EvtColAlg.cpp
+FastContainers/*.cpp
+Maps/*.cpp
+MultipleLogStreams/*.cpp
+GaudiCommonTests/*.cpp
+IncidentSvc/*.cpp
+bug_34121/*.cpp
+Auditors/*.cpp
+Timing/*.cpp
+Selections/*.cpp
+SvcInitLoop/*.cpp
+StringKeys/*.cpp
+StatusCodeSvc/*.cpp
 testing/*.cpp )
 
 GAUDI_COMPONENT_LIBRARY(GaudiExamples ${GaudiExamples_srcs} LIBRARIES GaudiExamplesLib)
-GAUDI_LINKER_LIBRARY(GaudiExamplesLib Lib/*.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib HepPDT HepPID ${ROOT_Tree_LIBRARY})
-GAUDI_PYTHON_MODULE(PyExample PythonModule/*.cpp LIBRARIES ${Boost_python_LIBRARY} )
+GAUDI_LINKER_LIBRARY(GaudiExamplesLib Lib/*.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib ${HepPDT_LIBRARIES} ${ROOT_Tree_LIBRARY})
+GAUDI_PYTHON_MODULE(PyExample PythonModule/*.cpp LIBRARIES ${Boost_PYTHON_LIBRARY} )
 
 #---Executables-------------------------------------------------------------
-GAUDI_EXECUTABLE(Allocator Allocator/*.cpp LIBRARIES GaudiExamplesLib GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES} 
+GAUDI_EXECUTABLE(Allocator Allocator/*.cpp LIBRARIES GaudiExamplesLib GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES}
                  ${ROOT_RIO_LIBRARY} ${ROOT_Hist_LIBRARY} ${CLHEP_LIBRARIES} ${GSL_LIBRARIES})
 
 
@@ -68,7 +87,7 @@ REFLEX_BUILD_DICTIONARY(GaudiExamples src/POOLIO/dict.h  src/POOLIO/dict.xml  LI
 GAUDI_FRAMEWORK_TEST(Properties options/Properties.opts )
 GAUDI_FRAMEWORK_TEST(AlgTools options/AlgTools.opts )
 
-set(QMTests 
+set(QMTests
 abort_event
 aida2root
 aida2rootex
@@ -142,17 +161,17 @@ foreach( test ${QMTests})
 endforeach()
 
 #---Groups of QMtests-------------------------------------------------------------------------------
-GAUDI_QMTEST_TEST(gaudiexamples.poolio TESTS gaudiexamples.pooliowrite gaudiexamples.poolioread 
-                                             gaudiexamples.pooliocollwrite gaudiexamples.pooliocollread 
-                                             gaudiexamples.poolioextcollwrite gaudiexamples.poolioextcollread ) 
-GAUDI_QMTEST_TEST(gaudiexamples.evtcol TESTS gaudiexamples.evtcolwrite gaudiexamples.evtcolread 
+GAUDI_QMTEST_TEST(gaudiexamples.poolio TESTS gaudiexamples.pooliowrite gaudiexamples.poolioread
+                                             gaudiexamples.pooliocollwrite gaudiexamples.pooliocollread
+                                             gaudiexamples.poolioextcollwrite gaudiexamples.poolioextcollread )
+GAUDI_QMTEST_TEST(gaudiexamples.evtcol TESTS gaudiexamples.evtcolwrite gaudiexamples.evtcolread
                                              gaudiexamples.evtcolsex_prepare gaudiexamples.evtcolsex_write  gaudiexamples.evtcolsex_read)
-GAUDI_QMTEST_TEST(gaudiexamples.thist  TESTS gaudiexamples.thistwrite gaudiexamples.thistread) 
-GAUDI_QMTEST_TEST(gaudiexamples.return_codes) 
-GAUDI_QMTEST_TEST(gaudiexamples.bug) 
+GAUDI_QMTEST_TEST(gaudiexamples.thist  TESTS gaudiexamples.thistwrite gaudiexamples.thistread)
+GAUDI_QMTEST_TEST(gaudiexamples.return_codes)
+GAUDI_QMTEST_TEST(gaudiexamples.bug)
 
 
 SET(GaudiExamples_environment STDOPTS=${CMAKE_SOURCE_DIR}/GaudiExamples/options
                               JOBOPTSEARCHPATH+=${CMAKE_SOURCE_DIR}/GaudiExamples/options
-                              PYTHONPATH+=${CMAKE_SOURCE_DIR}/GaudiExamples/tests/qmtest 
+                              PYTHONPATH+=${CMAKE_SOURCE_DIR}/GaudiExamples/tests/qmtest
                               PARENT_SCOPE)

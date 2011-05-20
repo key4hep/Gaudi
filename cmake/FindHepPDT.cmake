@@ -1,15 +1,24 @@
-include(Configuration)
+# - Locate HepPDT library
+# Defines:
+#
+#  HepPDT_FOUND
+#  HepPDT_INCLUDE_DIR
+#  HepPDT_INCLUDE_DIRS (not cached)
+#  HepPDT_PDT_LIBRARY
+#  HepPDT_PID_LIBRARY
+#  HepPDT_LIBRARIES (not cached)
 
-set(HepPDT_native_version ${HepPDT_config_version})
-set(HepPDT_home ${LCG_external}/HepPDT/${HepPDT_native_version}/${LCG_system})
+find_path(HepPDT_INCLUDE_DIR HepPDT/ParticleData.hh)
+find_library(HepPDT_PDT_LIBRARY NAMES HepPDT)
+find_library(HepPDT_PID_LIBRARY NAMES HepPID)
 
-set(HepPDT_FOUND 1)
-set(HepPDT_INCLUDE_DIRS ${HepPDT_home}/include)
-set(HepPDT_LIBRARY_DIRS ${HepPDT_home}/lib)
-set(HepPDT_LIBRARIES HepPDT HepPID)
- 
-if(WIN32)
-  set(HepPDT_environment PATH+=${HepPDT_home}/lib)
-else()
-  set(HepPDT_environment LD_LIBRARY_PATH+=${HepPDT_home}/lib)
-endif()
+set(HepPDT_LIBRARIES ${HepPDT_PDT_LIBRARY} ${HepPDT_PID_LIBRARY})
+
+set(HepPDT_INCLUDE_DIRS ${HepPDT_INCLUDE_DIR})
+
+# handle the QUIETLY and REQUIRED arguments and set HepPDT_FOUND to TRUE if
+# all listed variables are TRUE
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(HepPDT DEFAULT_MSG HepPDT_INCLUDE_DIR HepPDT_LIBRARIES)
+
+mark_as_advanced(HepPDT_FOUND HepPDT_INCLUDE_DIR HepPDT_LIBRARIES)

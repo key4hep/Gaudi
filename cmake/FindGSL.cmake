@@ -1,16 +1,24 @@
-include(Configuration)
+# - Locate GSL library
+# Defines:
+#
+#  GSL_FOUND
+#  GSL_INCLUDE_DIR
+#  GSL_INCLUDE_DIRS (not cached)
+#  GSL_LIBRARY
+#  GSL_CBLAS_LIBRARY
+#  GSL_LIBRARIES (not cached)
 
-set(GSL_native_version ${GSL_config_version})
-set(GSL_home ${LCG_external}/GSL/${GSL_native_version}/${LCG_system})
+find_path(GSL_INCLUDE_DIR /gsl/gsl_version.h)
+find_library(GSL_LIBRARY NAMES gsl)
+find_library(GSL_CBLAS_LIBRARY NAMES gslcblas)
 
-set(GSL_FOUND 1)
-set(GSL_INCLUDE_DIRS ${GSL_home}/include)
-set(GSL_LIBRARY_DIRS ${GSL_home}/lib)
-set(GSL_LIBRARIES gsl gslcblas)
+set(GSL_LIBRARIES ${GSL_LIBRARY} ${GSL_CBLAS_LIBRARY})
 
-if(WIN32)
-  add_definitions(-DGSL_DLL)
-  set(GSL_environment PATH+=${GSL_home}/lib)
-else()
-  set(GSL_environment LD_LIBRARY_PATH+=${GSL_home}/lib)
-endif()
+set(GSL_INCLUDE_DIRS ${GSL_INCLUDE_DIR})
+
+# handle the QUIETLY and REQUIRED arguments and set GSL_FOUND to TRUE if
+# all listed variables are TRUE
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(GSL DEFAULT_MSG GSL_INCLUDE_DIR GSL_LIBRARIES)
+
+mark_as_advanced(GSL_FOUND GSL_INCLUDE_DIR GSL_LIBRARY GSL_CBLAS_LIBRARY)

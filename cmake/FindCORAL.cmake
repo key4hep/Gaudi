@@ -1,18 +1,31 @@
-include(Configuration)
+# - Try to find CORAL
+# Defines:
+#
+#  CORAL_FOUND
+#  CORAL_INCLUDE_DIR
+#  CORAL_INCLUDE_DIRS (not cached)
+#  CORAL_<component>_LIBRARY
+#  CORAL_<component>_FOUND
+#  CORAL_LIBRARIES (not cached)
 
+set(_CORAL_COMPONENTS CoralBase CoralKernel)
+foreach(component ${_CORAL_COMPONENTS})
+  find_library(CORAL_${component}_LIBRARY NAMES lcg_${component})
+  if (CORAL_${component}_LIBRARY)
+    set(CORAL_${component}_FOUND 1)
+    list(APPEND CORAL_LIBRARIES ${CORAL_${component}_LIBRARY})
+  else()
+    set(CORAL_${component}_FOUND 0)
+  endif()
+endforeach()
 
-set(CORAL_native_version ${CORAL_config_version})
-set(CORAL_base ${LCG_releases}/CORAL/${CORAL_native_version})
-set(CORAL_home ${CORAL_base}/${LCG_platform})
+find_path(CORAL_INCLUDE_DIR RelationalAccess/ConnectionService.h)
 
-set(CORAL_FOUND 1)
-set(CORAL_INCLUDE_DIRS ${CORAL_base}/include)
-set(CORAL_LIBRARY_DIRS ${CORAL_home}/lib)
-set(CORAL_LIBRARIES lcg_CoralBase )
+set(CORAL_INCLUDE_DIRS ${CORAL_INCLUDE_DIR})
 
-if(WIN32)
-  SET(CORAL_environment PATH+=${CORAL_home}/lib)
-else()
-  SET(CORAL_environment LD_LIBRARY_PATH+=${CORAL_home}/lib)
-endif()
+# handle the QUIETLY and REQUIRED arguments and set CORAL_FOUND to TRUE if
+# all listed variables are TRUE
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(CORAL DEFAULT_MSG CORAL_INCLUDE_DIR CORAL_LIBRARIES)
 
+mark_as_advanced(CORAL_FOUND CORAL_INCLUDE_DIR)

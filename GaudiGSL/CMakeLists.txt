@@ -2,12 +2,27 @@
 # CMakeLists.txt file for building GaudiGSL
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-GAUDI_USE_PACKAGE(GaudiKernel)
-GAUDI_USE_PACKAGE(GaudiAlg)
-GAUDI_USE_PACKAGE(GSL)
-GAUDI_USE_PACKAGE(CLHEP)
-GAUDI_USE_PACKAGE(AIDA)
+#G AUDI_USE_PACKAGE(GaudiKernel)
+#G AUDI_USE_PACKAGE(GaudiAlg)
+#G AUDI_USE_PACKAGE(GSL)
+#G AUDI_USE_PACKAGE(CLHEP)
+#G AUDI_USE_PACKAGE(AIDA)
 
+find_package(AIDA)
+include_directories(${AIDA_INCLUDE_DIRS})
+
+find_package(ROOT)
+include_directories(${ROOT_INCLUDE_DIRS})
+link_directories(${ROOT_LIBRARY_DIRS})
+
+find_package(CLHEP)
+include_directories(${CLHEP_INCLUDE_DIRS})
+
+find_package(Boost)
+include_directories(${Boost_INCLUDE_DIRS})
+
+find_package(GSL)
+include_directories(${GSL_INCLUDE_DIRS})
 
 if(NOT APPLE AND NOT WIN32)
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-as-needed")

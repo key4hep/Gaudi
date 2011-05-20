@@ -1,27 +1,42 @@
-include(Configuration)
+# - Try to find CLHEP
+# Defines:
+#
+#  CLHEP_FOUND
+#  CLHEP_VERSION
+#  CLHEP_INCLUDE_DIR
+#  CLHEP_INCLUDE_DIRS (not cached)
+#  CLHEP_<component>_LIBRARY
+#  CLHEP_<component>_FOUND
+#  CLHEP_LIBRARIES (not cached)
+#
+# Note: version detection inspired by FindBoost.cmake
 
-set(CLHEP_native_version ${CLHEP_config_version})
-set(CLHEP_home ${LCG_external}/clhep/${CLHEP_native_version}/${LCG_system})
-
-set(CLHEP_FOUND 1)
-set(CLHEP_INCLUDE_DIRS ${CLHEP_home}/include)
-set(CLHEP_LIBRARY_DIRS ${CLHEP_home}/lib)
-set(CLHEP_LIBRARIES  
-        CLHEP-Cast-${CLHEP_native_version}
-        CLHEP-Evaluator-${CLHEP_native_version}
-        CLHEP-Exceptions-${CLHEP_native_version}
-        CLHEP-GenericFunctions-${CLHEP_native_version}
-        CLHEP-Geometry-${CLHEP_native_version}
-        CLHEP-Random-${CLHEP_native_version}
-        CLHEP-RandomObjects-${CLHEP_native_version}
-        CLHEP-RefCount-${CLHEP_native_version}
-        CLHEP-Vector-${CLHEP_native_version}
-        CLHEP-Matrix-${CLHEP_native_version} )
-
-if(WIN32)
-  set(CLHEP_environment PATH+=${CLHEP_home}/lib)
-else()
-  set(CLHEP_environment LD_LIBRARY_PATH+=${CLHEP_home}/lib )
+find_path(CLHEP_INCLUDE_DIR CLHEP/ClhepVersion.h)
+if(CLHEP_INCLUDE_DIR)
+  if(NOT DEFINED CLHEP_VERSION)
+    file(READ "${CLHEP_INCLUDE_DIR}/CLHEP/ClhepVersion.h" _CLHEP_VERSION_H_CONTENTS)
+    string(REGEX REPLACE ".*static std::string String\\(\\)[^\"]*return \"([^\"]*)\".*" "\\1" CLHEP_VERSION "${_CLHEP_VERSION_H_CONTENTS}")
+    set(CLHEP_VERSION ${CLHEP_VERSION} CACHE INTERNAL "Detected version of CLHEP")
+    message(STATUS "CLHEP version: ${CLHEP_VERSION}")
+  endif()
 endif()
- 
 
+set(_CLHEP_COMPONENTS Cast Evaluator Exceptions GenericFunctions Geometry Random RandomObjects RefCount Vector Matrix)
+foreach(component ${_CLHEP_COMPONENTS})
+  find_library(CLHEP_${component}_LIBRARY NAMES CLHEP-${component}-${CLHEP_VERSION})
+  if (CLHEP_${component}_LIBRARY)
+    set(CLHEP_${component}_FOUND 1)
+    list(APPEND CLHEP_LIBRARIES ${CLHEP_${component}_LIBRARY})
+  else()
+    set(CLHEP_${component}_FOUND 0)
+  endif()
+endforeach()
+
+set(CLHEP_INCLUDE_DIRS ${CLHEP_INCLUDE_DIR})
+
+# handle the QUIETLY and REQUIRED arguments and set CLHEP_FOUND to TRUE if
+# all listed variables are TRUE
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(CLHEP DEFAULT_MSG CLHEP_INCLUDE_DIR CLHEP_LIBRARIES)
+
+mark_as_advanced(CLHEP_FOUND CLHEP_INCLUDE_DIR)

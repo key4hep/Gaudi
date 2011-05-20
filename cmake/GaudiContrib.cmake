@@ -3,6 +3,9 @@
 #---------------------------------------------------------------------------------------------------
 macro(REFLEX_GENERATE_DICTIONARY dictionary _headerfiles _selectionfile)
   find_package(GCCXML)
+  if(NOT GCCXML)
+    message(FATAL_ERROR "GCCXML not found, cannot generate Reflex dictionaries.")
+  endif()
   find_package(ROOT)
   PARSE_ARGUMENTS(ARG "OPTIONS" "" ${ARGN})
   if( IS_ABSOLUTE ${_selectionfile})
@@ -39,11 +42,12 @@ macro(REFLEX_GENERATE_DICTIONARY dictionary _headerfiles _selectionfile)
    set(definitions ${definitions} -D${d})
   endforeach()
 
+  get_filename_component(GCCXML_home ${GCCXML} PATH)
   add_custom_command(
     OUTPUT ${gensrcdict} ${rootmapname}
     COMMAND ${ROOT_genreflex_cmd}
     ARGS ${headerfiles} -o ${gensrcdict} ${gccxmlopts} ${rootmapopts} --select=${selectionfile}
-         --gccxmlpath=${GCCXML_home}/bin ${ARG_OPTIONS} ${include_dirs} ${definitions}
+         --gccxmlpath=${GCCXML_home} ${ARG_OPTIONS} ${include_dirs} ${definitions}
     DEPENDS ${headerfiles} ${selectionfile})
 
   # Creating this target at ALL level enables the possibility to generate dictionaries (genreflex step)

@@ -3,11 +3,25 @@
 # @author Pere Mato, CERN
 ###############################################
 
-GAUDI_USE_PACKAGE(ROOT)
-GAUDI_USE_PACKAGE(POOL)
-GAUDI_USE_PACKAGE(CORAL)
-GAUDI_USE_PACKAGE(GaudiKernel)
-GAUDI_USE_PACKAGE(GaudiUtils)
+#G AUDI_USE_PACKAGE(ROOT)
+#G AUDI_USE_PACKAGE(POOL)
+#G AUDI_USE_PACKAGE(CORAL)
+#G AUDI_USE_PACKAGE(GaudiKernel)
+#G AUDI_USE_PACKAGE(GaudiUtils)
+
+
+find_package(Boost)
+include_directories(${Boost_INCLUDE_DIRS})
+
+find_package(ROOT)
+include_directories(${ROOT_INCLUDE_DIRS})
+link_directories(${ROOT_LIBRARY_DIRS})
+
+find_package(POOL)
+include_directories(${POOL_INCLUDE_DIRS})
+
+find_package(CORAL)
+include_directories(${CORAL_INCLUDE_DIRS})
 
 
 #---Dictionary Generation -------------------------------------------------------------------
@@ -22,7 +36,7 @@ endif()
 GAUDI_GENERATE_ROOTMAP(GaudiPoolDb)
 GAUDI_GENERATE_CONFIGURABLES(GaudiPoolDb)
 
-set(GaudiPoolDb_environment JOBOPTSEARCHPATH+=${CMAKE_SOURCE_DIR}/GaudiPoolDb/options 
+set(GaudiPoolDb_environment JOBOPTSEARCHPATH+=${CMAKE_SOURCE_DIR}/GaudiPoolDb/options
                             PARENT_SCOPE)
 
 #---Installation-----------------------------------------------------------------------------

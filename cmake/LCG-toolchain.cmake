@@ -48,7 +48,22 @@ else()
   message(FATAL_ERROR "Build flavour ${type} not supported.")
 endif()
 SET(CMAKE_BUILD_TYPE ${type} CACHE STRING
-    "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
+    "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel.")
 
-SET(LCG_platform ${BINARY_TAG})
-SET(LCG_system ${arch}-${os}-${comp}-opt)
+# Platform IDs
+SET(LCG_platform ${BINARY_TAG} CACHE STRING "Platform ID for the AA project binaries.")
+SET(LCG_system ${arch}-${os}-${comp}-opt CACHE STRING "Platform ID for the external libraries.")
+
+# LCG location
+if(WIN32)
+  set(LCG_home E:/local/lib/lcg)
+  set(LCG_releases ${LCG_home}/external)
+else()
+  set(LCG_home /afs/cern.ch/sw/lcg)
+  set(LCG_releases ${LCG_home}/app/releases)
+endif()
+set(LCG_home ${LCG_home} CACHE PATH "Root of the LCG installation.")
+set(LCG_external ${LCG_home}/external)
+
+# Flag the LCG internal cached variables as "advanced".
+mark_as_advanced(LCG_platform LCG_system LCG_home)

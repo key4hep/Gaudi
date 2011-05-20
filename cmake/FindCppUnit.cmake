@@ -1,17 +1,19 @@
-include(Configuration)
+# - Locate CppUnit library
+# Defines:
+#
+#  CppUnit_FOUND
+#  CppUnit_INCLUDE_DIR
+#  CppUnit_INCLUDE_DIRS (not cached)
+#  CppUnit_LIBRARIES
 
-set(CppUnit_native_version ${CppUnit_config_version})
-set(CppUnit_home ${LCG_external}/CppUnit/${CppUnit_native_version}/${LCG_system})
-set(Boost_compiler_version gcc43)
+find_path(CppUnit_INCLUDE_DIR cppunit/Test.h)
+find_library(CppUnit_LIBRARIES NAMES cppunit)
 
+set(CppUnit_INCLUDE_DIRS ${CppUnit_INCLUDE_DIR})
 
-set(CppUnit_FOUND 1)
-set(CppUnit_INCLUDE_DIRS ${CppUnit_home}/include)
-set(CppUnit_LIBRARY_DIRS ${CppUnit_home}/lib)
-set(CppUnit_LIBRARIES cppunit )
+# handle the QUIETLY and REQUIRED arguments and set CppUnit_FOUND to TRUE if
+# all listed variables are TRUE
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(CppUnit DEFAULT_MSG CppUnit_INCLUDE_DIR CppUnit_LIBRARIES)
 
-if(WIN32)
-  set(CppUnit_environment PATH+=${CppUnit_home}/lib)
-else()
-  set(CppUnit_environment LD_LIBRARY_PATH+=${CppUnit_home}/lib)
-endif()
+mark_as_advanced(CppUnit_FOUND CppUnit_INCLUDE_DIR CppUnit_LIBRARIES)

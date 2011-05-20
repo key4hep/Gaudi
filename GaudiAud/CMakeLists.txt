@@ -2,7 +2,15 @@
 # CMakeLists.txt file for building GaudiAud
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-GAUDI_USE_PACKAGE(GaudiKernel)
+#G AUDI_USE_PACKAGE(GaudiKernel)
+
+# FIXME: In principle these should not be needed because they should be implicit
+#        in the usage of the GaudiKernel library
+find_package(Boost)
+include_directories(${Boost_INCLUDE_DIRS})
+find_package(ROOT)
+include_directories(${ROOT_INCLUDE_DIRS})
+link_directories(${ROOT_LIBRARY_DIRS})
 
 #---Libraries---------------------------------------------------------------
 GAUDI_COMPONENT_LIBRARY(GaudiAud *.cpp LIBRARIES GaudiKernel)

@@ -1,9 +1,5 @@
 include(Configuration)
 
-set(ROOT_native_version ${ROOT_config_version})
-set(ROOT_base ${LCG_releases}/ROOT/${ROOT_native_version})
-set(ROOT_home ${ROOT_base}/${LCG_platform}/root)
-
 set(ROOT_FOUND 1)
 set(ROOT_INCLUDE_DIRS ${ROOT_home}/include)
 set(ROOT_LIBRARY_DIRS ${ROOT_home}/lib)

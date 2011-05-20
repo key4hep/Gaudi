@@ -13,8 +13,21 @@ cmake_policy(SET CMP0009 NEW) # See "cmake --help-policy CMP0009" for more detai
 # Add the directory containing this file to the modules search path
 set(CMAKE_MODULE_PATH ${GaudiProject_DIR} ${CMAKE_MODULE_PATH})
 
-if((DEFINED ENV{CMTCONFIG} OR DEFINED ENV{CMAKECONFIG}) AND NOT DEFINED LCG_system)
-  message(FATAL_ERROR "You must use CMAKE_TOOLCHAIN_FILE if you have CMTCONFIG or CMAKECONFIG set.")
+if(DEFINED LCG_system)
+  # We are using the LCG toolchain, so enable special configuration
+  get_filename_component(LCG_TOOLCHAIN_PATH ${CMAKE_TOOLCHAIN_FILE} PATH)
+  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${LCG_TOOLCHAIN_PATH})
+  # Define the versions and search paths
+  if(DEFINED LCG_version)
+    include(LCG_${LCG_version}/Configuration)
+    # FIXME: temporary
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${LCG_TOOLCHAIN_PATH}/LCG_${LCG_version})
+    #include(Configuration)
+  else()
+    message(FATAL_ERROR "LCG required but LCG_version is not defined")
+  endif()
+elseif(DEFINED ENV{CMTCONFIG} OR DEFINED ENV{CMAKECONFIG})
+  message(FATAL_ERROR "You must use the LCG CMAKE_TOOLCHAIN_FILE if you have CMTCONFIG or CMAKECONFIG set.")
 endif()
 
 #-------------------------------------------------------------------------------
@@ -166,10 +179,19 @@ macro(GAUDI_PROJECT project_name version)
   INCLUDE(GaudiContrib)
   INCLUDE(GaudiBuildFlags)
 
+  message(STATUS "Looking for local directories...")
   GAUDI_GET_PACKAGES(packages)
+  message(STATUS "Found:")
+  foreach(package ${packages})
+    message(STATUS "  ${package}")
+    # FIXME: this ensures that all the packages directories are added to the include paths,
+    #        but it doesn't enforce that only the actually exported headers are visible.
+    include_directories(${package})
+  endforeach()
+
   #GAUDI_SORT_PACKAGES(packages ${packages})
   foreach(package ${packages})
-    message("-- Adding directory ${package}")
+    message(STATUS "Adding directory ${package}")
     add_subdirectory(${package})
   endforeach()
 
@@ -624,6 +646,7 @@ function(GAUDI_INSTALL_HEADERS)
               PATTERN "*.h"
               PATTERN "*.icpp" )
   endforeach()
+  set_directory_properties(PROPERTIES INSTALL_HEADERS ON)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -698,12 +721,12 @@ endfunction()
 #---------------------------------------------------------------------------------------------------
 macro( GAUDI_USE_PACKAGE package )
   if( EXISTS ${CMAKE_SOURCE_DIR}/${package}/CMakeLists.txt)
-    include_directories( ${CMAKE_SOURCE_DIR}/${package} )
+    #include_directories( ${CMAKE_SOURCE_DIR}/${package} )
     file(READ ${CMAKE_SOURCE_DIR}/${package}/CMakeLists.txt file_contents)
     string( REGEX MATCHALL "GAUDI_USE_PACKAGE[ ]*[(][ ]*([^ )])+" vars ${file_contents})
     foreach( var ${vars})
       string(REGEX REPLACE "GAUDI_USE_PACKAGE[ ]*[(][ ]*([^ )])" "\\1" p ${var})
-      GAUDI_USE_PACKAGE(${p})
+      #GAUDI_USE_PACKAGE(${p})
     endforeach()
   else()
     find_package(${package})

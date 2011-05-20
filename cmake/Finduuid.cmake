@@ -1,17 +1,19 @@
-include(Configuration)
+# - Locate uuid library
+# Defines:
+#
+#  uuid_FOUND
+#  uuid_INCLUDE_DIR
+#  uuid_INCLUDE_DIRS (not cached)
+#  uuid_LIBRARIES
 
-set(uuid_native_version ${uuid_config_version})
-set(uuid_home ${LCG_external}/uuid/${uuid_native_version}/${LCG_system})
-set(Boost_compiler_version gcc43)
+find_path(uuid_INCLUDE_DIR uuid/uuid.h)
+find_library(uuid_LIBRARIES NAMES uuid)
 
+set(uuid_INCLUDE_DIRS ${uuid_INCLUDE_DIR})
 
-set(uuid_FOUND 1)
-set(uuid_INCLUDE_DIRS ${uuid_home}/include)
-set(uuid_LIBRARY_DIRS ${uuid_home}/lib)
-set(uuid_LIBRARIES uuid )
+# handle the QUIETLY and REQUIRED arguments and set uuid_FOUND to TRUE if
+# all listed variables are TRUE
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(uuid DEFAULT_MSG uuid_INCLUDE_DIR uuid_LIBRARIES)
 
-if(WIN32)
-  set(uuid_environment PATH+=${uuid_home}/lib)
-else()
-  SET(uuid_environment LD_LIBRARY_PATH+=${uuid_home}/lib)
-endif()
+mark_as_advanced(uuid_FOUND uuid_INCLUDE_DIR uuid_LIBRARIES)

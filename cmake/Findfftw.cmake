@@ -1,10 +1,5 @@
 include(Configuration)
 
-set(fftw_native_version ${fftw_config_version})
-set(fftw_home ${LCG_external}/fftw3/${fftw_native_version}/${LCG_system})
-set(Boost_compiler_version gcc43)
-
-
 set(fftw_FOUND 1)
 set(fftw_INCLUDE_DIRS ${fftw_home}/include)
 set(fftw_LIBRARY_DIRS ${fftw_home}/lib)

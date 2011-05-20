@@ -1,9 +1,19 @@
 ############################################################################
 # CMakeLists.txt file for building GaudiMP
 ############################################################################
-GAUDI_USE_PACKAGE(GaudiKernel)
-GAUDI_USE_PACKAGE(GaudiPython)
-GAUDI_USE_PACKAGE(ROOT)
+#G AUDI_USE_PACKAGE(GaudiKernel)
+#G AUDI_USE_PACKAGE(GaudiPython)
+#G AUDI_USE_PACKAGE(ROOT)
+
+find_package(ROOT)
+include_directories(${ROOT_INCLUDE_DIRS})
+link_directories(${ROOT_LIBRARY_DIRS})
+
+find_package(Boost)
+include_directories(${Boost_INCLUDE_DIRS})
+
+find_package(PythonLibs)
+include_directories(${PYTHON_INCLUDE_PATH})
 
 #---Libraries---------------------------------------------------------------
 GAUDI_LINKER_LIBRARY(GaudiMP Lib/*.cpp LIBRARIES GaudiKernel ${PYTHON_LIBRARIES} ${ROOT_LIBRARIES})

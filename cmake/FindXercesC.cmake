@@ -1,22 +1,19 @@
-include(Configuration)
+# - Locate XercesC library
+# Defines:
+#
+#  XercesC_FOUND
+#  XercesC_INCLUDE_DIR
+#  XercesC_INCLUDE_DIRS (not cached)
+#  XercesC_LIBRARIES
 
-set(XercesC_native_version ${XercesC_config_version})
-set(XercesC_home ${LCG_external}/XercesC/${XercesC_native_version}/${LCG_system})
+find_path(XercesC_INCLUDE_DIR xercesc/util/XercesVersion.hpp)
+find_library(XercesC_LIBRARIES NAMES xerces-c)
 
-set(XercesC_FOUND 1)
-set(XercesC_INCLUDE_DIRS ${XercesC_home}/include)
-set(XercesC_LIBRARY_DIRS ${XercesC_home}/lib)
-if(WIN32)
-  set(XercesC_LIBRARIES xerces-c_3.lib)
-else()
-  set(XercesC_LIBRARIES xerces-c pthread)
-endif()
+set(XercesC_INCLUDE_DIRS ${XercesC_INCLUDE_DIR})
 
-add_definitions(-DXERCESC_GE_31)
+# handle the QUIETLY and REQUIRED arguments and set XercesC_FOUND to TRUE if
+# all listed variables are TRUE
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(XercesC DEFAULT_MSG XercesC_INCLUDE_DIR XercesC_LIBRARIES)
 
-if(WIN32)
-  set(XercesC_environment PATH+=${XercesC_home}/bin)
-else()
-  SET(XercesC_environment LD_LIBRARY_PATH+=${XercesC_home}/lib)
-endif()
-
+mark_as_advanced(XercesC_FOUND XercesC_INCLUDE_DIR XercesC_LIBRARIES)

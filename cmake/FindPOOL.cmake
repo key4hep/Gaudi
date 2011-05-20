@@ -1,27 +1,46 @@
-include(Configuration)
+# - Try to find POOL
+# Defines:
+#
+#  POOL_FOUND
+#  POOL_INCLUDE_DIR
+#  POOL_INCLUDE_DIRS (not cached)
+#  POOL_<component>_LIBRARY
+#  POOL_<component>_FOUND
+#  POOL_LIBRARIES (not cached)
+#  POOL_Collections_LIBRARIES (not cached)
+#  POOL_Relational_LIBRARIES (not cached)
 
-
-set(POOL_native_version ${POOL_config_version})
-set(POOL_base ${LCG_releases}/POOL/${POOL_native_version})
-set(POOL_home ${POOL_base}/${LCG_platform})
-
-set(POOL_FOUND 1)
-set(POOL_INCLUDE_DIRS ${POOL_base}/include)
-set(POOL_LIBRARY_DIRS ${POOL_home}/lib)
-
-set(POOL_COMPONENTS POOLCore DataSvc PersistencySvc StorageSvc FileCatalog CollectionBase Collection RelationalAccess)
-foreach(component ${POOL_COMPONENTS})
-  set(POOL_${component}_LIBRARY lcg_${component})
+set(_POOL_COMPONENTS POOLCore DataSvc PersistencySvc StorageSvc FileCatalog CollectionBase Collection RelationalAccess)
+foreach(component ${_POOL_COMPONENTS})
+  find_library(POOL_${component}_LIBRARY NAMES lcg_${component})
+  if (POOL_${component}_LIBRARY)
+    set(POOL_${component}_FOUND 1)
+  else()
+    set(POOL_${component}_FOUND 0)
+  endif()
 endforeach()
 
-set(POOL_LIBRARIES ${POOL_POOLCore_LIBRARY} ${POOL_DataSvc_LIBRARY} ${POOL_PersistencySvc_LIBRARY} ${POOL_StorageSvc_LIBRARY})
-set(POOL_Collections_LIBRARIES ${POOL_CollectionBase_LIBRARY} ${POOL_Collection_LIBRARY} )
-set(POOL_Relational_LIBRARIES ${POOL_RelationalAccess_LIBRARY} )
+foreach(component POOLCore DataSvc PersistencySvc StorageSvc)
+  if(POOL_${component}_LIBRARY)
+    list(APPEND POOL_LIBRARIES ${POOL_${component}_LIBRARY})
+  endif()
+endforeach()
 
+foreach(component CollectionBase Collection)
+  if(POOL_${component}_LIBRARY)
+    list(APPEND POOL_Collections_LIBRARIES ${POOL_${component}_LIBRARY})
+  endif()
+endforeach()
 
-if(WIN32)
-  SET(POOL_environment PATH+=${POOL_home}/lib)
-else()
-  SET(POOL_environment LD_LIBRARY_PATH+=${POOL_home}/lib)
-endif()
+set(POOL_Relational_LIBRARIES ${POOL_RelationalAccess_LIBRARY})
 
+find_path(POOL_INCLUDE_DIR POOLCore/PContainer.h)
+
+set(POOL_INCLUDE_DIRS ${POOL_INCLUDE_DIR})
+
+# handle the QUIETLY and REQUIRED arguments and set POOL_FOUND to TRUE if
+# all listed variables are TRUE
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(POOL DEFAULT_MSG POOL_INCLUDE_DIR POOL_LIBRARIES POOL_Collections_LIBRARIES POOL_Relational_LIBRARIES)
+
+mark_as_advanced(POOL_FOUND POOL_INCLUDE_DIR)

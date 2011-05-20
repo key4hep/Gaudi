@@ -1,9 +1,5 @@
 include(Configuration)
 
-set(RELAX_native_version ${RELAX_config_version})
-set(RELAX_base ${LCG_releases}/RELAX/${RELAX_native_version})
-set(RELAX_home ${RELAX_base}/${LCG_platform})
-
 set(RELAX_FOUND 1)
 
 if(WIN32)

@@ -3,20 +3,30 @@
 ############################################################################
 if (CMAKE_SYSTEM_NAME MATCHES Linux)
 
-GAUDI_USE_PACKAGE(GaudiKernel)
-GAUDI_USE_PACKAGE(GaudiSvc)
-#GAUDI_USE_PACKAGE(Python)
-GAUDI_USE_PACKAGE(Boost)
-#GAUDI_USE_PACKAGE(ROOT)
-GAUDI_USE_PACKAGE(libunwind)
+#G AUDI_USE_PACKAGE(GaudiKernel)
+#G AUDI_USE_PACKAGE(GaudiSvc)
+##G AUDI_USE_PACKAGE(Python)
+#G AUDI_USE_PACKAGE(Boost)
+##G AUDI_USE_PACKAGE(ROOT)
+#G AUDI_USE_PACKAGE(libunwind)
+
+find_package(ROOT)
+include_directories(${ROOT_INCLUDE_DIRS})
+link_directories(${ROOT_LIBRARY_DIRS})
+
+find_package(Boost COMPONENTS python)
+include_directories(${Boost_INCLUDE_DIRS})
 
 find_package(PythonLibs)
-include_directories(${PYTHON_INCLUDE_DIR})
+include_directories(${PYTHON_INCLUDE_PATH})
+
+find_package(unwind)
+include_directories(${unwind_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 include_directories(src/component)
 GAUDI_COMPONENT_LIBRARY(GaudiProfiling component/*.cpp LIBRARIES GaudiKernel z)
-GAUDI_PYTHON_MODULE(PyCPUFamily python/CPUFamily.cpp LIBRARIES ${Boost_python_LIBRARY} )
+GAUDI_PYTHON_MODULE(PyCPUFamily python/CPUFamily.cpp LIBRARIES ${Boost_PYTHON_LIBRARY} )
 
 #---Executables-------------------------------------------------------------
 GAUDI_EXECUTABLE(GaudiGenProfilingHtml app/pfm_gen_analysis.cpp LIBRARIES z GaudiKernel )
