@@ -12,7 +12,7 @@
 #G AUDI_USE_PACKAGE(Boost)
 #G AUDI_USE_PACKAGE(HepPDT)
 
-find_package(Boost)
+find_package(Boost COMPONENTS python)
 include_directories(${Boost_INCLUDE_DIRS})
 
 find_package(ROOT)
@@ -31,6 +31,8 @@ include_directories(${HepPDT_INCLUDE_DIRS})
 find_package(PythonLibs)
 include_directories(${PYTHON_INCLUDE_PATH})
 
+find_package(GSL)
+include_directories(${GSL_INCLUDE_DIRS})
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/src/Lib )
 

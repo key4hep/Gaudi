@@ -23,6 +23,7 @@ find_package(XercesC)
 include_directories(${XercesC_INCLUDE_DIRS})
 
 find_package(uuid)
+include_directories(${uuid_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 GAUDI_COMPONENT_LIBRARY(GaudiUtils component/*.cpp LIBRARIES GaudiUtilsLib ${uuid_LIBRARIES} ${XercesC_LIBRARIES})
