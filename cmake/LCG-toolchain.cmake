@@ -58,10 +58,14 @@ SET(LCG_system ${arch}-${os}-${comp}-opt CACHE STRING "Platform ID for the exter
 if(WIN32)
   set(LCG_home E:/local/lib/lcg)
   set(LCG_releases ${LCG_home}/external)
+elseif(DEFINED ENV{MYSITEROOT})
+  set(LCG_home $ENV{MYSITEROOT}/lcg)
+  set(LCG_releases ${LCG_home}/external)
 else()
   set(LCG_home /afs/cern.ch/sw/lcg)
   set(LCG_releases ${LCG_home}/app/releases)
 endif()
+
 set(LCG_home ${LCG_home} CACHE PATH "Root of the LCG installation.")
 set(LCG_external ${LCG_home}/external)
 
