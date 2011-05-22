@@ -49,7 +49,6 @@ LCG_external_package(4suite           1.0.2p1)
 LCG_external_package(bjam             3.1.13)
 LCG_external_package(blas             20070405)
 LCG_external_package(Boost            1.44.0)
-set(Boost_file_version              1_44)
 LCG_external_package(bz2lib           1.0.2)
 LCG_external_package(CASTOR           2.1.8-10)
 LCG_external_package(cernlib          2006a)
@@ -117,7 +116,6 @@ LCG_external_package(pygraphics       1.1p1)
 LCG_external_package(pyminuit         0.0.1)
 LCG_external_package(pytools          1.4)
 LCG_external_package(Python           2.6.5)
-set(Python_config_version_twodigit  2.6)
 LCG_external_package(pyqt             4.7)
 LCG_external_package(pyparsing        1.5.1)
 LCG_external_package(pyxml            0.8.4p1)
@@ -152,14 +150,21 @@ LCG_external_package(xqilla           2.2.4)
 LCG_external_package(zlib             1.2.3p1)
 
 #===============================================================================
+# Derived variables
+#===============================================================================
+string(REGEX MATCH "[0-9]+\\.[0-9]+" Python_config_version_twodigit ${Python_config_version})
+set(Python_ADDITIONAL_VERSIONS ${Python_config_version_twodigit})
+
+# Note: this is needed because FindBoost.cmake requires both if the patch version is 0.
+string(REGEX MATCH "[0-9]+\\.[0-9]+" Boost_config_version_twodigit ${Boost_config_version})
+set(Boost_ADDITIONAL_VERSIONS ${Boost_config_version} ${Boost_config_version_twodigit})
+
+#===============================================================================
 # Special cases that require a special treatment
 #===============================================================================
 set(Boost_native_version ${Boost_config_version}_python${Python_config_version_twodigit})
-# FIXME: these should be automatic... see FindBoost.cmake documentation
-set(Boost_ADDITIONAL_VERSIONS 1.44 ${Boost_config_version})
+# FIXME: this should be automatic... see FindBoost.cmake documentation
 set(Boost_COMPILER -gcc43)
-
-set(Python_ADDITIONAL_VERSIONS ${Python_config_version_twodigit})
 
 set(pytools_native_version ${pytools_config_version}_python${Python_config_version_twodigit})
 
