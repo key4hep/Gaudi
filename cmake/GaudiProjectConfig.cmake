@@ -35,8 +35,13 @@ endif()
 #-------------------------------------------------------------------------------
 set(CMAKE_VERBOSE_MAKEFILES OFF)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+# Ensure that the include directories added are always taken first.
+set(CMAKE_include_directories_BEFORE ON)
 #set(CMAKE_SKIP_BUILD_RPATH TRUE)
 #set(CMAKE_CXX_COMPILER g++)
+
+# Enable usage of ccacheto speed up the compilation
+#set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
 
 #-------------------------------------------------------------------------------
 # Platform handling
