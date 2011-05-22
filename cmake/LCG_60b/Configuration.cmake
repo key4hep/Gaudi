@@ -159,11 +159,12 @@ set(Boost_native_version ${Boost_config_version}_python${Python_config_version_t
 set(Boost_ADDITIONAL_VERSIONS 1.44 ${Boost_config_version})
 set(Boost_COMPILER -gcc43)
 
+set(Python_ADDITIONAL_VERSIONS ${Python_config_version_twodigit})
+
 set(pytools_native_version ${pytools_config_version}_python${Python_config_version_twodigit})
 
 set(QMtest_native_version ${QMtest_config_version}_python${Python_config_version_twodigit})
 
-set(CMAKE_USE_PYTHON_VERSION ${Python_config_version_twodigit})
 
 # This is not really needed because Xerces has its own version macro, but it was
 # added at some point, so it is kept for backward compatibility.
