@@ -1,29 +1,31 @@
-include(Configuration)
+# - Locate the ROOT headers and libraries
 
-set(ROOT_FOUND 1)
-set(ROOT_INCLUDE_DIRS ${ROOT_home}/include)
-set(ROOT_LIBRARY_DIRS ${ROOT_home}/lib)
+find_path(ROOT_INCLUDE_DIR TROOT.h)
+
+get_filename_component(ROOTSYS ${ROOT_INCLUDE_DIR} PATH)
+set(ROOTSYS ${ROOTSYS} CACHE PATH "Location of the installation of ROOT")
+
+set(ROOT_INCLUDE_DIRS ${ROOTSYS}/include)
+set(ROOT_LIBRARY_DIRS ${ROOTSYS}/lib)
 
 set(ROOT_COMPONENTS Core Cint Reflex RIO Hist Tree Cintex Matrix GenVector MathCore MathMore XMLIO)
 
 foreach(component ${ROOT_COMPONENTS})
-  if(WIN32)
-    set(ROOT_${component}_LIBRARY lib${component} )
-  else()
-    set(ROOT_${component}_LIBRARY ${component} )
-  endif()
+  find_library(ROOT_${component}_LIBRARY NAMES ${component}
+               PATH ${ROOT_LIBRARY_DIRS})
+  mark_as_advanced(ROOT_${component}_LIBRARY)
 endforeach()
 
-if(WIN32)
-  set(ROOT_LIBRARIES ${ROOT_Core_LIBRARY} ${ROOT_Cint_LIBRARY} ${ROOT_Reflex_LIBRARY})
-else()
-  set(ROOT_LIBRARIES ${ROOT_Core_LIBRARY} ${ROOT_Cint_LIBRARY} ${ROOT_Reflex_LIBRARY} dl)
-endif()
+set(ROOT_LIBRARIES ${ROOT_Core_LIBRARY} ${ROOT_Cint_LIBRARY} ${ROOT_Reflex_LIBRARY})
 
+set(ROOT_genreflex_cmd ${ROOTSYS}/bin/genreflex)
+set(ROOT_genmap_cmd ${ROOTSYS}/bin/genmap)
 
-set(ROOT_genreflex_cmd ${ROOT_home}/bin/genreflex)
-set(ROOT_genmap_cmd ${ROOT_home}/bin/genmap)
-
+# handle the QUIETLY and REQUIRED arguments and set COOL_FOUND to TRUE if
+# all listed variables are TRUE
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(ROOT DEFAULT_MSG ROOTSYS ROOT_INCLUDE_DIR)
+mark_as_advanced(ROOT_FOUND ROOT_INCLUDE_DIR)
 
 macro (ROOT_GENERATE_DICTIONARY INFILES LINKDEF_FILE OUTFILE INCLUDE_DIRS_IN)
   set(INCLUDE_DIRS)
