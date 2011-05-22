@@ -10,10 +10,9 @@ include_directories(${CppUnit_INCLUDE_DIRS})
 
 find_package(ROOT)
 include_directories(${ROOT_INCLUDE_DIRS})
-link_directories(${ROOT_LIBRARY_DIRS})
 
 #---Libraries---------------------------------------------------------------
-GAUDI_LINKER_LIBRARY(GaudiKernel Lib/*.cpp LIBRARIES ${ROOT_LIBRARIES} ${Boost_LIBRARIES})
+GAUDI_LINKER_LIBRARY(GaudiKernel Lib/*.cpp LIBRARIES dl ${ROOT_LIBRARIES} ${Boost_LIBRARIES})
 
 #---Tests-------------------------------------------------------------------
 GAUDI_UNIT_TEST(DirSearchPath_test ../tests/src/DirSearchPath_test.cpp LIBRARIES GaudiKernel)

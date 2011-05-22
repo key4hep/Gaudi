@@ -3,9 +3,9 @@
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
 #G AUDI_USE_PACKAGE(GaudiKernel)
+
 find_package(ROOT)
 #include_directories(${ROOT_INCLUDE_DIRS})
-link_directories(${ROOT_LIBRARY_DIRS})
 
 #---Executables-------------------------------------------------------------
 GAUDI_EXECUTABLE(Gaudi main.cpp LIBRARIES GaudiKernel)

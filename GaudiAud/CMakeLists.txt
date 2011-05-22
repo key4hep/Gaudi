@@ -8,9 +8,9 @@
 #        in the usage of the GaudiKernel library
 find_package(Boost)
 include_directories(${Boost_INCLUDE_DIRS})
+
 find_package(ROOT)
 include_directories(${ROOT_INCLUDE_DIRS})
-link_directories(${ROOT_LIBRARY_DIRS})
 
 #---Libraries---------------------------------------------------------------
 GAUDI_COMPONENT_LIBRARY(GaudiAud *.cpp LIBRARIES GaudiKernel)

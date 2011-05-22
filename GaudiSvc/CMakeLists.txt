@@ -13,7 +13,6 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 find_package(ROOT)
 include_directories(${ROOT_INCLUDE_DIRS})
-link_directories(${ROOT_LIBRARY_DIRS})
 
 find_package(ROOT)
 include_directories(${ROOT_INCLUDE_DIRS})

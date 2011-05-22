@@ -15,7 +15,6 @@ include_directories(${AIDA_INCLUDE_DIRS})
 
 find_package(ROOT)
 include_directories(${ROOT_INCLUDE_DIRS})
-link_directories(${ROOT_LIBRARY_DIRS})
 
 find_package(CLHEP)
 include_directories(${CLHEP_INCLUDE_DIRS})

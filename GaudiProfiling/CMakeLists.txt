@@ -12,7 +12,6 @@ if (CMAKE_SYSTEM_NAME MATCHES Linux)
 
 find_package(ROOT)
 include_directories(${ROOT_INCLUDE_DIRS})
-link_directories(${ROOT_LIBRARY_DIRS})
 
 find_package(Boost COMPONENTS python)
 include_directories(${Boost_INCLUDE_DIRS})
