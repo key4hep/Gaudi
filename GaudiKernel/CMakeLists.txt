@@ -12,7 +12,7 @@ find_package(ROOT)
 include_directories(${ROOT_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
-GAUDI_LINKER_LIBRARY(GaudiKernel Lib/*.cpp LIBRARIES dl ${ROOT_LIBRARIES} ${Boost_LIBRARIES})
+GAUDI_LINKER_LIBRARY(GaudiKernel Lib/*.cpp LIBRARIES ${CMAKE_DL_LIBS} ${ROOT_LIBRARIES} ${Boost_LIBRARIES})
 
 #---Tests-------------------------------------------------------------------
 GAUDI_UNIT_TEST(DirSearchPath_test ../tests/src/DirSearchPath_test.cpp LIBRARIES GaudiKernel)
