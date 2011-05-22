@@ -17,6 +17,7 @@ foreach(component ${_CORAL_COMPONENTS})
   else()
     set(CORAL_${component}_FOUND 0)
   endif()
+  mark_as_advanced(CORAL_${component}_LIBRARY)
 endforeach()
 
 find_path(CORAL_INCLUDE_DIR RelationalAccess/ConnectionService.h)

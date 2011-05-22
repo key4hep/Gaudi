@@ -18,6 +18,7 @@ foreach(component ${_POOL_COMPONENTS})
   else()
     set(POOL_${component}_FOUND 0)
   endif()
+  mark_as_advanced(POOL_${component}_LIBRARY)
 endforeach()
 
 foreach(component POOLCore DataSvc PersistencySvc StorageSvc)

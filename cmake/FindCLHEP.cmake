@@ -30,6 +30,7 @@ foreach(component ${_CLHEP_COMPONENTS})
   else()
     set(CLHEP_${component}_FOUND 0)
   endif()
+  mark_as_advanced(CLHEP_${component}_LIBRARY)
 endforeach()
 
 set(CLHEP_INCLUDE_DIRS ${CLHEP_INCLUDE_DIR})
