@@ -1,12 +1,19 @@
-include(Configuration)
+# - Locate fftw library
+# Defines:
+#
+#  fftw_FOUND
+#  fftw_INCLUDE_DIR
+#  fftw_INCLUDE_DIRS (not cached)
+#  fftw_LIBRARIES
 
-set(fftw_FOUND 1)
-set(fftw_INCLUDE_DIRS ${fftw_home}/include)
-set(fftw_LIBRARY_DIRS ${fftw_home}/lib)
-set(fftw_LIBRARIES fftw3 )
+find_path(fftw_INCLUDE_DIR fftw3.h)
+find_library(fftw_LIBRARIES NAMES fftw3)
 
-if(WIN32)
-  set(fftw_environment PATH+=${fftw_home}/lib)
-else()
-  set(fftw_environment LD_LIBRARY_PATH+=${fftw_home}/lib)
-endif()
+set(fftw_INCLUDE_DIRS ${fftw_INCLUDE_DIR})
+
+# handle the QUIETLY and REQUIRED arguments and set fftw_FOUND to TRUE if
+# all listed variables are TRUE
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(fftw DEFAULT_MSG fftw_INCLUDE_DIR fftw_LIBRARIES)
+
+mark_as_advanced(fftw_FOUND fftw_INCLUDE_DIR fftw_LIBRARIES)
