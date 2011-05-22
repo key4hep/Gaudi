@@ -12,8 +12,8 @@ find_package(GaudiProject)
 GAUDI_PROJECT(Gaudi v22r2)
 
 #---Tests environment-------------------------------------------
-if( BUILD_TESTS )
-  GAUDI_USE_PACKAGE(QMtest)
-  GAUDI_USE_PACKAGE(pytools)
-  GAUDI_USE_PACKAGE(RELAX)
-endif()
+#if( BUILD_TESTS )
+#  GAUDI_USE_PACKAGE(QMtest)
+#  GAUDI_USE_PACKAGE(pytools)
+#  GAUDI_USE_PACKAGE(RELAX)
+#endif()
