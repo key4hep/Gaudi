@@ -1,19 +1,19 @@
 # - Locate CppUnit library
 # Defines:
 #
-#  CppUnit_FOUND
-#  CppUnit_INCLUDE_DIR
-#  CppUnit_INCLUDE_DIRS (not cached)
-#  CppUnit_LIBRARIES
+#  CPPUNIT_FOUND
+#  CPPUNIT_INCLUDE_DIR
+#  CPPUNIT_INCLUDE_DIRS (not cached)
+#  CPPUNIT_LIBRARIES
 
-find_path(CppUnit_INCLUDE_DIR cppunit/Test.h)
-find_library(CppUnit_LIBRARIES NAMES cppunit)
+find_path(CPPUNIT_INCLUDE_DIR cppunit/Test.h)
+find_library(CPPUNIT_LIBRARIES NAMES cppunit)
 
-set(CppUnit_INCLUDE_DIRS ${CppUnit_INCLUDE_DIR})
+set(CPPUNIT_INCLUDE_DIRS ${CPPUNIT_INCLUDE_DIR})
 
-# handle the QUIETLY and REQUIRED arguments and set CppUnit_FOUND to TRUE if
+# handle the QUIETLY and REQUIRED arguments and set CPPUNIT_FOUND to TRUE if
 # all listed variables are TRUE
 INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(CppUnit DEFAULT_MSG CppUnit_INCLUDE_DIR CppUnit_LIBRARIES)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(CppUnit DEFAULT_MSG CPPUNIT_INCLUDE_DIR CPPUNIT_LIBRARIES)
 
-mark_as_advanced(CppUnit_FOUND CppUnit_INCLUDE_DIR CppUnit_LIBRARIES)
+mark_as_advanced(CPPUNIT_FOUND CPPUNIT_INCLUDE_DIR CPPUNIT_LIBRARIES)

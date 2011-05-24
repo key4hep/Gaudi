@@ -6,7 +6,7 @@ find_package(Boost REQUIRED COMPONENTS filesystem thread system)
 include_directories(${Boost_INCLUDE_DIRS})
 
 find_package(CppUnit)
-include_directories(${CppUnit_INCLUDE_DIRS})
+include_directories(${CPPUNIT_INCLUDE_DIRS})
 
 find_package(ROOT)
 include_directories(${ROOT_INCLUDE_DIRS})
@@ -16,9 +16,9 @@ GAUDI_LINKER_LIBRARY(GaudiKernel Lib/*.cpp LIBRARIES ${CMAKE_DL_LIBS} ${ROOT_LIB
 
 #---Tests-------------------------------------------------------------------
 GAUDI_UNIT_TEST(DirSearchPath_test ../tests/src/DirSearchPath_test.cpp LIBRARIES GaudiKernel)
-GAUDI_UNIT_TEST(test_SerializeSTL ../tests/src/test_SerializeSTL.cpp LIBRARIES GaudiKernel ${CppUnit_LIBRARIES})
+GAUDI_UNIT_TEST(test_SerializeSTL ../tests/src/test_SerializeSTL.cpp LIBRARIES GaudiKernel ${CPPUNIT_LIBRARIES})
 GAUDI_UNIT_TEST(PathResolver_test ../tests/src/PathResolver_test.cpp LIBRARIES GaudiKernel)
-GAUDI_UNIT_TEST(test_GaudiTime ../tests/src/test_GaudiTime.cpp LIBRARIES GaudiKernel ${CppUnit_LIBRARIES})
+GAUDI_UNIT_TEST(test_GaudiTime ../tests/src/test_GaudiTime.cpp LIBRARIES GaudiKernel ${CPPUNIT_LIBRARIES})
 # This is just a compile-time tests.
 GAUDI_UNIT_TEST(test_headers_build ../tests/src/test_headers_build.cpp LIBRARIES GaudiKernel)
 

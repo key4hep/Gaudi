@@ -1,19 +1,19 @@
 # - Locate fftw library
 # Defines:
 #
-#  fftw_FOUND
-#  fftw_INCLUDE_DIR
-#  fftw_INCLUDE_DIRS (not cached)
-#  fftw_LIBRARIES
+#  FFTW_FOUND
+#  FFTW_INCLUDE_DIR
+#  FFTW_INCLUDE_DIRS (not cached)
+#  FFTW_LIBRARIES
 
-find_path(fftw_INCLUDE_DIR fftw3.h)
-find_library(fftw_LIBRARIES NAMES fftw3)
+find_path(FFTW_INCLUDE_DIR fftw3.h)
+find_library(FFTW_LIBRARIES NAMES fftw3)
 
-set(fftw_INCLUDE_DIRS ${fftw_INCLUDE_DIR})
+set(FFTW_INCLUDE_DIRS ${FFTW_INCLUDE_DIR})
 
-# handle the QUIETLY and REQUIRED arguments and set fftw_FOUND to TRUE if
+# handle the QUIETLY and REQUIRED arguments and set FFTW_FOUND to TRUE if
 # all listed variables are TRUE
 INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(fftw DEFAULT_MSG fftw_INCLUDE_DIR fftw_LIBRARIES)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(fftw DEFAULT_MSG FFTW_INCLUDE_DIR FFTW_LIBRARIES)
 
-mark_as_advanced(fftw_FOUND fftw_INCLUDE_DIR fftw_LIBRARIES)
+mark_as_advanced(FFTW_FOUND FFTW_INCLUDE_DIR FFTW_LIBRARIES)

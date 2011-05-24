@@ -1,19 +1,19 @@
 # - Locate unwind library
 # Defines:
 #
-#  unwind_FOUND
-#  unwind_INCLUDE_DIR
-#  unwind_INCLUDE_DIRS (not cached)
-#  unwind_LIBRARIES
+#  UNWIND_FOUND
+#  UNWIND_INCLUDE_DIR
+#  UNWIND_INCLUDE_DIRS (not cached)
+#  UNWIND_LIBRARIES
 
-find_path(unwind_INCLUDE_DIR unwind.h)
-find_library(unwind_LIBRARIES NAMES unwind)
+find_path(UNWIND_INCLUDE_DIR unwind.h)
+find_library(UNWIND_LIBRARIES NAMES unwind)
 
-set(unwind_INCLUDE_DIRS ${unwind_INCLUDE_DIR})
+set(UNWIND_INCLUDE_DIRS ${UNWIND_INCLUDE_DIR})
 
-# handle the QUIETLY and REQUIRED arguments and set unwind_FOUND to TRUE if
+# handle the QUIETLY and REQUIRED arguments and set UNWIND_FOUND to TRUE if
 # all listed variables are TRUE
 INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(unwind DEFAULT_MSG unwind_INCLUDE_DIR unwind_LIBRARIES)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(unwind DEFAULT_MSG UNWIND_INCLUDE_DIR UNWIND_LIBRARIES)
 
-mark_as_advanced(unwind_FOUND unwind_INCLUDE_DIR unwind_LIBRARIES)
+mark_as_advanced(UNWIND_FOUND UNWIND_INCLUDE_DIR UNWIND_LIBRARIES)

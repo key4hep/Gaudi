@@ -14,10 +14,10 @@ find_package(ROOT)
 include_directories(${ROOT_INCLUDE_DIRS})
 
 find_package(HepPDT)
-include_directories(${HepPDT_INCLUDE_DIRS})
+include_directories(${HEPPDT_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
-GAUDI_COMPONENT_LIBRARY(PartPropSvc *.cpp LIBRARIES GaudiKernel ${ROOT_Reflex_LIBRARY} ${Boost_LIBRARIES} ${HepPDT_LIBRARIES})
+GAUDI_COMPONENT_LIBRARY(PartPropSvc *.cpp LIBRARIES GaudiKernel ${ROOT_Reflex_LIBRARY} ${Boost_LIBRARIES} ${HEPPDT_LIBRARIES})
 
 #---Installation------------------------------------------------------------
 GAUDI_INSTALL_JOBOPTIONS(share/PartPropSvc.py)

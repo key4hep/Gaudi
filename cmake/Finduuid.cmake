@@ -1,19 +1,19 @@
 # - Locate uuid library
 # Defines:
 #
-#  uuid_FOUND
-#  uuid_INCLUDE_DIR
-#  uuid_INCLUDE_DIRS (not cached)
-#  uuid_LIBRARIES
+#  UUID_FOUND
+#  UUID_INCLUDE_DIR
+#  UUID_INCLUDE_DIRS (not cached)
+#  UUID_LIBRARIES
 
-find_path(uuid_INCLUDE_DIR uuid/uuid.h)
-find_library(uuid_LIBRARIES NAMES uuid)
+find_path(UUID_INCLUDE_DIR uuid/uuid.h)
+find_library(UUID_LIBRARIES NAMES uuid)
 
-set(uuid_INCLUDE_DIRS ${uuid_INCLUDE_DIR})
+set(UUID_INCLUDE_DIRS ${UUID_INCLUDE_DIR})
 
-# handle the QUIETLY and REQUIRED arguments and set uuid_FOUND to TRUE if
+# handle the QUIETLY and REQUIRED arguments and set UUID_FOUND to TRUE if
 # all listed variables are TRUE
 INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(uuid DEFAULT_MSG uuid_INCLUDE_DIR uuid_LIBRARIES)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(uuid DEFAULT_MSG UUID_INCLUDE_DIR UUID_LIBRARIES)
 
-mark_as_advanced(uuid_FOUND uuid_INCLUDE_DIR uuid_LIBRARIES)
+mark_as_advanced(UUID_FOUND UUID_INCLUDE_DIR UUID_LIBRARIES)

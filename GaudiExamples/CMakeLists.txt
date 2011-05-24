@@ -25,7 +25,7 @@ find_package(CLHEP)
 include_directories(${CLHEP_INCLUDE_DIRS})
 
 find_package(HepPDT)
-include_directories(${HepPDT_INCLUDE_DIRS})
+include_directories(${HEPPDT_INCLUDE_DIRS})
 
 find_package(PythonLibs)
 include_directories(${PYTHON_INCLUDE_PATH})
@@ -72,7 +72,7 @@ StatusCodeSvc/*.cpp
 testing/*.cpp )
 
 GAUDI_COMPONENT_LIBRARY(GaudiExamples ${GaudiExamples_srcs} LIBRARIES GaudiExamplesLib)
-GAUDI_LINKER_LIBRARY(GaudiExamplesLib Lib/*.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib ${HepPDT_LIBRARIES} ${ROOT_Tree_LIBRARY})
+GAUDI_LINKER_LIBRARY(GaudiExamplesLib Lib/*.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib ${HEPPDT_LIBRARIES} ${ROOT_Tree_LIBRARY})
 GAUDI_PYTHON_MODULE(PyExample PythonModule/*.cpp LIBRARIES ${Boost_PYTHON_LIBRARY} )
 
 #---Executables-------------------------------------------------------------

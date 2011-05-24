@@ -13,7 +13,7 @@ find_package(ROOT)
 include_directories(${ROOT_INCLUDE_DIRS})
 
 #find_package(uuid)
-#include_directories(${uuid_INCLUDE_DIRS})
+#include_directories(${UUID_INCLUDE_DIRS})
 
 find_package(Boost COMPONENTS regex)
 include_directories(${Boost_INCLUDE_DIRS})

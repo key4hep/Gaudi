@@ -20,7 +20,7 @@ find_package(PythonLibs)
 include_directories(${PYTHON_INCLUDE_PATH})
 
 find_package(unwind)
-include_directories(${unwind_INCLUDE_DIRS})
+include_directories(${UNWIND_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 include_directories(src/component)

@@ -19,13 +19,13 @@ find_package(ROOT)
 include_directories(${ROOT_INCLUDE_DIRS})
 
 find_package(XercesC)
-include_directories(${XercesC_INCLUDE_DIRS})
+include_directories(${XERCESC_INCLUDE_DIRS})
 
 find_package(uuid)
-include_directories(${uuid_INCLUDE_DIRS})
+include_directories(${UUID_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
-GAUDI_COMPONENT_LIBRARY(GaudiUtils component/*.cpp LIBRARIES GaudiUtilsLib ${uuid_LIBRARIES} ${XercesC_LIBRARIES})
+GAUDI_COMPONENT_LIBRARY(GaudiUtils component/*.cpp LIBRARIES GaudiUtilsLib ${UUID_LIBRARIES} ${XERCESC_LIBRARIES})
 GAUDI_LINKER_LIBRARY(GaudiUtilsLib Lib/*.cpp LIBRARIES GaudiKernel ${ROOT_LIBRARIES}
                      ${ROOT_RIO_LIBRARY} ${ROOT_Hist_LIBRARY})
 
