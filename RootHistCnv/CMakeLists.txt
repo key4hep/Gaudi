@@ -2,10 +2,6 @@
 # CMakeLists.txt file for building RootHistCnv
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-#G AUDI_USE_PACKAGE(GaudiKernel)
-#G AUDI_USE_PACKAGE(AIDA)
-#G AUDI_USE_PACKAGE(ROOT)
-
 find_package(AIDA)
 include_directories(${AIDA_INCLUDE_DIRS})
 

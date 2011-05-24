@@ -2,13 +2,6 @@
 # CMakeLists.txt file for building GaudiUtils
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-#G AUDI_USE_PACKAGE(GaudiKernel)
-#G AUDI_USE_PACKAGE(GaudiSvc)
-#G AUDI_USE_PACKAGE(ROOT)
-#G AUDI_USE_PACKAGE(AIDA)
-#G AUDI_USE_PACKAGE(uuid)
-#G AUDI_USE_PACKAGE(XercesC)
-
 find_package(Boost)
 include_directories(${Boost_INCLUDE_DIRS})
 

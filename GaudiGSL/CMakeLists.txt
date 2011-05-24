@@ -2,12 +2,6 @@
 # CMakeLists.txt file for building GaudiGSL
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-#G AUDI_USE_PACKAGE(GaudiKernel)
-#G AUDI_USE_PACKAGE(GaudiAlg)
-#G AUDI_USE_PACKAGE(GSL)
-#G AUDI_USE_PACKAGE(CLHEP)
-#G AUDI_USE_PACKAGE(AIDA)
-
 find_package(AIDA)
 include_directories(${AIDA_INCLUDE_DIRS})
 

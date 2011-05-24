@@ -2,8 +2,6 @@
 # CMakeLists.txt file for building Gaudi
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-#G AUDI_USE_PACKAGE(GaudiKernel)
-
 find_package(ROOT)
 #include_directories(${ROOT_INCLUDE_DIRS})
 

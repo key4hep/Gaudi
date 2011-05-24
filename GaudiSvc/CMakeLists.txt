@@ -2,9 +2,6 @@
 # CMakeLists.txt file for building GaudiSvc
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-#G AUDI_USE_PACKAGE(GaudiKernel)
-#G AUDI_USE_PACKAGE(CLHEP)
-
 find_package(AIDA)
 include_directories(${AIDA_INCLUDE_DIRS})
 

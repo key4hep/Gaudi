@@ -2,14 +2,6 @@
 # CMakeLists.txt file for building GaudiPoolDb
 # @author Pere Mato, CERN
 ###############################################
-
-#G AUDI_USE_PACKAGE(ROOT)
-#G AUDI_USE_PACKAGE(POOL)
-#G AUDI_USE_PACKAGE(CORAL)
-#G AUDI_USE_PACKAGE(GaudiKernel)
-#G AUDI_USE_PACKAGE(GaudiUtils)
-
-
 find_package(Boost)
 include_directories(${Boost_INCLUDE_DIRS})
 

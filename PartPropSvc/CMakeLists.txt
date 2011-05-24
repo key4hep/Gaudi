@@ -2,11 +2,6 @@
 # CMakeLists.txt file for building PartPropSvc
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-#G AUDI_USE_PACKAGE(HepPDT)
-#G AUDI_USE_PACKAGE(Boost)
-#G AUDI_USE_PACKAGE(GaudiKernel)
-#G AUDI_USE_PACKAGE(GaudiSvc)
-
 find_package(Boost COMPONENTS regex)
 include_directories(${Boost_INCLUDE_DIRS})
 

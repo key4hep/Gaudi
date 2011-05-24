@@ -2,16 +2,6 @@
 # CMakeLists.txt file for building GaudiExamples
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-#G AUDI_USE_PACKAGE(ROOT)
-#G AUDI_USE_PACKAGE(AIDA)
-#G AUDI_USE_PACKAGE(PartPropSvc)
-#G AUDI_USE_PACKAGE(GaudiPoolDb)
-#G AUDI_USE_PACKAGE(GaudiPython)
-#G AUDI_USE_PACKAGE(GaudiGSL)
-#G AUDI_USE_PACKAGE(RootHistCnv)
-#G AUDI_USE_PACKAGE(Boost)
-#G AUDI_USE_PACKAGE(HepPDT)
-
 find_package(Boost COMPONENTS python)
 include_directories(${Boost_INCLUDE_DIRS})
 

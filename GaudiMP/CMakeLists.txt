@@ -1,10 +1,6 @@
 ############################################################################
 # CMakeLists.txt file for building GaudiMP
 ############################################################################
-#G AUDI_USE_PACKAGE(GaudiKernel)
-#G AUDI_USE_PACKAGE(GaudiPython)
-#G AUDI_USE_PACKAGE(ROOT)
-
 find_package(ROOT)
 include_directories(${ROOT_INCLUDE_DIRS})
 

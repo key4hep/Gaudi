@@ -3,13 +3,6 @@
 ############################################################################
 if (CMAKE_SYSTEM_NAME MATCHES Linux)
 
-#G AUDI_USE_PACKAGE(GaudiKernel)
-#G AUDI_USE_PACKAGE(GaudiSvc)
-##G AUDI_USE_PACKAGE(Python)
-#G AUDI_USE_PACKAGE(Boost)
-##G AUDI_USE_PACKAGE(ROOT)
-#G AUDI_USE_PACKAGE(libunwind)
-
 find_package(ROOT)
 include_directories(${ROOT_INCLUDE_DIRS})
 

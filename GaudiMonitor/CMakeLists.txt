@@ -2,8 +2,6 @@
 # CMakeLists.txt file for building GaudiMonitor
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-#G AUDI_USE_PACKAGE(GaudiKernel)
-
 find_package(Boost)
 include_directories(${Boost_INCLUDE_DIRS})
 
