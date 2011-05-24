@@ -2,6 +2,8 @@
 # CMakeLists.txt file for building GaudiAud
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
+require(GaudiKernel)
+
 # FIXME: In principle these should not be needed because they should be implicit
 #        in the usage of the GaudiKernel library
 find_package(Boost)

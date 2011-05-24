@@ -2,6 +2,8 @@
 # CMakeLists.txt file for building PartPropSvc
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
+require(GaudiKernel)
+
 find_package(Boost COMPONENTS regex)
 find_package(ROOT)
 find_package(HepPDT)

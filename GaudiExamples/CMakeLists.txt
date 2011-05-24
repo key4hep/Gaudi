@@ -2,6 +2,8 @@
 # CMakeLists.txt file for building GaudiExamples
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
+require(GaudiKernel GaudiUtils GaudiGSL GaudiAlg)
+
 find_package(Boost COMPONENTS python)
 include_directories(${Boost_INCLUDE_DIRS})
 

@@ -1,6 +1,8 @@
 ############################################################################
 # CMakeLists.txt file for building GaudiMP
 ############################################################################
+require(GaudiKernel)
+
 find_package(ROOT)
 find_package(Boost)
 find_package(PythonLibs)

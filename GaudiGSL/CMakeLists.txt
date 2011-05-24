@@ -2,6 +2,8 @@
 # CMakeLists.txt file for building GaudiGSL
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
+require(GaudiAlg)
+
 find_package(AIDA)
 include_directories(${AIDA_INCLUDE_DIRS})
 

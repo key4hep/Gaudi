@@ -2,6 +2,8 @@
 # CMakeLists.txt file for building GaudiPoolDb
 # @author Pere Mato, CERN
 ###############################################
+require(GaudiKernel)
+
 find_package(Boost)
 find_package(ROOT)
 find_package(POOL)

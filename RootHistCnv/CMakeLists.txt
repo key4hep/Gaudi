@@ -2,6 +2,8 @@
 # CMakeLists.txt file for building RootHistCnv
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
+require(GaudiKernel)
+
 find_package(AIDA)
 find_package(ROOT)
 find_package(Boost)
