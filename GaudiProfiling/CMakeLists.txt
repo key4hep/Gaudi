@@ -1,27 +1,25 @@
 ############################################################################
-# CMakeLists.txt file for building GaudiMP
+# CMakeLists.txt file for building GaudiProfiling
 ############################################################################
 if (CMAKE_SYSTEM_NAME MATCHES Linux)
 
 find_package(ROOT)
-include_directories(${ROOT_INCLUDE_DIRS})
-
 find_package(Boost COMPONENTS python)
-include_directories(${Boost_INCLUDE_DIRS})
-
 find_package(PythonLibs)
-include_directories(${PYTHON_INCLUDE_PATH})
-
 find_package(unwind)
-include_directories(${UNWIND_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 include_directories(src/component)
-GAUDI_COMPONENT_LIBRARY(GaudiProfiling component/*.cpp LIBRARIES GaudiKernel z)
-GAUDI_PYTHON_MODULE(PyCPUFamily python/CPUFamily.cpp LIBRARIES ${Boost_PYTHON_LIBRARY} )
+GAUDI_COMPONENT_LIBRARY(GaudiProfiling component/*.cpp
+                        LIBRARIES GaudiKernel z
+                        USE_HEADERS Boost ROOT unwind)
+GAUDI_PYTHON_MODULE(PyCPUFamily python/CPUFamily.cpp
+                    LIBRARIES ${Boost_PYTHON_LIBRARY}
+                    USE_HEADERS PythonLibs)
 
 #---Executables-------------------------------------------------------------
-GAUDI_EXECUTABLE(GaudiGenProfilingHtml app/pfm_gen_analysis.cpp LIBRARIES z GaudiKernel )
+GAUDI_EXECUTABLE(GaudiGenProfilingHtml app/pfm_gen_analysis.cpp
+                 LIBRARIES z GaudiKernel)
 
 #---Installation------------------------------------------------------------
 GAUDI_INSTALL_HEADERS(GaudiProfiling)

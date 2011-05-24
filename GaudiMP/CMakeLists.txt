@@ -2,16 +2,13 @@
 # CMakeLists.txt file for building GaudiMP
 ############################################################################
 find_package(ROOT)
-include_directories(${ROOT_INCLUDE_DIRS})
-
 find_package(Boost)
-include_directories(${Boost_INCLUDE_DIRS})
-
 find_package(PythonLibs)
-include_directories(${PYTHON_INCLUDE_PATH})
 
 #---Libraries---------------------------------------------------------------
-GAUDI_LINKER_LIBRARY(GaudiMP Lib/*.cpp LIBRARIES GaudiKernel ${PYTHON_LIBRARIES} ${ROOT_LIBRARIES})
+gaudi_linker_library(GaudiMP Lib/*.cpp
+                     LIBRARIES GaudiKernel ${PYTHON_LIBRARIES} ${ROOT_LIBRARIES}
+                     USE_HEADERS Boost ROOT PythonLibs)
 
 #---Dictionaries------------------------------------------------------------
 REFLEX_BUILD_DICTIONARY(GaudiMP dict/gaudimp_dict.h dict/selection.xml LIBRARIES GaudiMP)

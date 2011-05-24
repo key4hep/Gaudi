@@ -3,16 +3,13 @@
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
 find_package(Boost COMPONENTS regex)
-include_directories(${Boost_INCLUDE_DIRS})
-
 find_package(ROOT)
-include_directories(${ROOT_INCLUDE_DIRS})
-
 find_package(HepPDT)
-include_directories(${HEPPDT_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
-GAUDI_COMPONENT_LIBRARY(PartPropSvc *.cpp LIBRARIES GaudiKernel ${ROOT_Reflex_LIBRARY} ${Boost_LIBRARIES} ${HEPPDT_LIBRARIES})
+GAUDI_COMPONENT_LIBRARY(PartPropSvc *.cpp
+                        LIBRARIES GaudiKernel ${ROOT_Reflex_LIBRARY} ${Boost_LIBRARIES} ${HEPPDT_LIBRARIES}
+                        USE_HEADERS Boost ROOT HepPDT)
 
 #---Installation------------------------------------------------------------
 GAUDI_INSTALL_JOBOPTIONS(share/PartPropSvc.py)

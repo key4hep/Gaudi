@@ -225,6 +225,36 @@ macro(GAUDI_PROJECT project_name version)
 
 endmacro()
 
+#-------------------------------------------------------------------------------
+# include_package_directories(Package1 [Package2 ...])
+#
+# Adde the include directories of each package to the include directories.
+#-------------------------------------------------------------------------------
+function(include_package_directories)
+  foreach(package ${ARGN})
+    set(to_incl)
+    string(TOUPPER ${package} _pack_upper)
+    if(${_pack_upper}_FOUND OR ${package}_FOUND)
+      # Handle some special cases first, then try for package uppercase (DIRS and DIR)
+      # If the package is found, add INCLUDE_DIRS or (if not defined) INCLUDE_DIR.
+      # If none of the two is defined, do not add anything.
+      if(${package} STREQUAL Boost)
+        set(to_incl Boost_INCLUDE_DIRS)
+      elseif(${package} STREQUAL PythonLibs)
+        set(to_incl PYTHON_INCLUDE_DIRS)
+      elseif(${_pack_upper}_INCLUDE_DIRS)
+        set(to_incl ${_pack_upper}_INCLUDE_DIRS)
+      elseif(${_pack_upper}_INCLUDE_DIR)
+        set(to_incl ${_pack_upper}_INCLUDE_DIR)
+      elseif(${package}_INCLUDE_DIRS)
+        set(to_incl ${package}_INCLUDE_DIRS)
+      endif()
+      # Include the directories
+      include_directories(${${to_incl}})
+    endif()
+  endforeach()
+endfunction()
+
 #---------------------------------------------------------------------------------------------------
 #---GAUDI_BINARY_TAG()
 #---------------------------------------------------------------------------------------------------
@@ -458,22 +488,28 @@ function(GAUDI_GENERATE_CONFUSERDB)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_LINKER_LIBRARY( <name> source1 source2 ... LIBRARIES library1 library2 ...)
+#---GAUDI_LINKER_LIBRARY( <name> source1 source2 ... LIBRARIES library1 library2 ... INCLUDE_DIRECTORIES)
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_LINKER_LIBRARY library)
-  PARSE_ARGUMENTS(ARG "LIBRARIES" "" ${ARGN})
+  PARSE_ARGUMENTS(ARG "LIBRARIES;USE_HEADERS" "" ${ARGN})
+
+  # add the package includes to the current list
+  include_package_directories(${ARG_USE_HEADERS})
+
+  # find the sources
   set(lib_srcs)
-  foreach( fp ${ARG_DEFAULT_ARGS})
+  foreach(fp ${ARG_DEFAULT_ARGS})
     file(GLOB files src/${fp})
     if(files)
-      set( lib_srcs ${lib_srcs} ${files})
+      set(lib_srcs ${lib_srcs} ${files})
     else()
-      set( lib_srcs ${lib_srcs} ${fp})
+      set(lib_srcs ${lib_srcs} ${fp})
     endif()
   endforeach()
+
   if(WIN32)
 	add_library( ${library}-arc STATIC EXCLUDE_FROM_ALL ${lib_srcs})
-    set_target_properties(${library}-arc PROPERTIES COMPILE_FLAGS -DGAUDI_LINKER_LIBRARY )
+    set_target_properties(${library}-arc PROPERTIES COMPILE_DEFINITIONS GAUDI_LINKER_LIBRARY)
     add_custom_command(
       OUTPUT ${library}.def
 	  COMMAND ${genwindef_cmd} -o ${library}.def -l ${library} ${LIBRARY_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/${library}-arc.lib
@@ -484,10 +520,14 @@ function(GAUDI_LINKER_LIBRARY library)
     target_link_libraries(${library} ${library}-arc ${ARG_LIBRARIES})
     set_target_properties(${library} PROPERTIES LINK_INTERFACE_LIBRARIES "${ARG_LIBRARIES}" )
   else()
-    add_library( ${library} ${lib_srcs})
-    set_target_properties(${library} PROPERTIES COMPILE_FLAGS -DGAUDI_LINKER_LIBRARY )
+    add_library(${library} ${lib_srcs})
+    set_target_properties(${library} PROPERTIES COMPILE_DEFINITIONS GAUDI_LINKER_LIBRARY)
     target_link_libraries(${library} ${ARG_LIBRARIES})
   endif()
+
+  # Declare that the used headers are needed by the libraries linked against this one
+  set_property(TARGET ${library} PROPERTY REQUIRED_PACKAGE_INCLUDES ${ARG_USE_HEADERS})
+
   if(TARGET ${library}Obj2doth)
     add_dependencies( ${library} ${library}Obj2doth)
   endif()
@@ -500,7 +540,12 @@ endfunction()
 #---GAUDI_COMPONENT_LIBRARY( <name> source1 source2 ... LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_COMPONENT_LIBRARY library)
-  PARSE_ARGUMENTS(ARG "LIBRARIES" "" ${ARGN})
+  PARSE_ARGUMENTS(ARG "LIBRARIES;USE_HEADERS" "" ${ARGN})
+
+  # add the package includes to the current list
+  include_package_directories(${ARG_USE_HEADERS})
+
+  # find the sources
   set(lib_srcs)
   foreach( fp ${ARG_DEFAULT_ARGS})
     file(GLOB files src/${fp})
@@ -510,10 +555,14 @@ function(GAUDI_COMPONENT_LIBRARY library)
       set( lib_srcs ${lib_srcs} ${fp})
     endif()
   endforeach()
+
   add_library( ${library} MODULE ${lib_srcs})
+
   GAUDI_GENERATE_ROOTMAP(${library})
   GAUDI_GENERATE_CONFIGURABLES(${library})
+
   target_link_libraries(${library} ${ROOT_Reflex_LIBRARY} ${ARG_LIBRARIES})
+
   #----Installation details-------------------------------------------------------
   install(TARGETS ${library} LIBRARY DESTINATION ${lib})
 endfunction()
@@ -523,7 +572,12 @@ endfunction()
 #---GAUDI_PYTHON_MODULE( <name> source1 source2 ... LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_PYTHON_MODULE module)
-  PARSE_ARGUMENTS(ARG "LIBRARIES" "" ${ARGN})
+  PARSE_ARGUMENTS(ARG "LIBRARIES;USE_HEADERS" "" ${ARGN})
+
+  # add the package includes to the current list
+  include_package_directories(${ARG_USE_HEADERS})
+
+  # find the sources
   set(lib_srcs)
   foreach( fp ${ARG_DEFAULT_ARGS})
     file(GLOB files src/${fp})
@@ -533,6 +587,7 @@ function(GAUDI_PYTHON_MODULE module)
       set( lib_srcs ${lib_srcs} ${fp})
     endif()
   endforeach()
+
   add_library( ${module} MODULE ${lib_srcs})
   if(win32)
     set_target_properties( ${module} PROPERTIES SUFFIX .pyd PREFIX "")
@@ -548,7 +603,12 @@ endfunction()
 #---GAUDI_EXECUTABLE( <name> source1 source2 ... LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_EXECUTABLE executable)
-  PARSE_ARGUMENTS(ARG "LIBRARIES" "" ${ARGN})
+  PARSE_ARGUMENTS(ARG "LIBRARIES;USE_HEADERS" "" ${ARGN})
+
+  # add the package includes to the current list
+  include_package_directories(${ARG_USE_HEADERS})
+
+  # find the sources
   set(exe_srcs)
   foreach( fp ${ARG_DEFAULT_ARGS})
     file(GLOB files src/${fp})
@@ -558,9 +618,13 @@ function(GAUDI_EXECUTABLE executable)
       set( exe_srcs ${exe_srcs} ${fp})
     endif()
   endforeach()
+
   add_executable( ${executable} ${exe_srcs})
+
   target_link_libraries(${executable} ${ARG_LIBRARIES} )
+
   set_target_properties(${executable} PROPERTIES SUFFIX .exe)
+
   #----Installation details-------------------------------------------------------
   install(TARGETS ${executable} EXPORT ${CMAKE_PROJECT_NAME}Exports RUNTIME DESTINATION ${bin})
   install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake)
@@ -571,7 +635,12 @@ endfunction()
 #---GAUDI_UNIT_TEST( <name> source1 source2 ... LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_UNIT_TEST executable)
-  PARSE_ARGUMENTS(ARG "LIBRARIES" "" ${ARGN})
+  PARSE_ARGUMENTS(ARG "LIBRARIES;USE_HEADERS" "" ${ARGN})
+
+  # add the package includes to the current list
+  include_package_directories(${ARG_USE_HEADERS})
+
+  # find the sources
   set(exe_srcs)
   foreach( fp ${ARG_DEFAULT_ARGS})
     file(GLOB files src/${fp})
@@ -581,6 +650,7 @@ function(GAUDI_UNIT_TEST executable)
       set( exe_srcs ${exe_srcs} ${fp})
     endif()
   endforeach()
+
   if(BUILD_TESTS)
     add_executable( ${executable} ${exe_srcs})
     target_link_libraries(${executable} ${ARG_LIBRARIES} )

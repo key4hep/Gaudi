@@ -3,16 +3,15 @@
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
 find_package(Boost)
-include_directories(${Boost_INCLUDE_DIRS})
-
 find_package(ROOT)
-include_directories(${ROOT_INCLUDE_DIRS})
 
 if(WIN32)
   set(winsocklib ws2_32.lib)
 endif()
 #---Libraries---------------------------------------------------------------
-GAUDI_COMPONENT_LIBRARY(GaudiMonitor DataListenerSvc/*.cpp LIBRARIES GaudiKernel ${winsocklib})
+GAUDI_COMPONENT_LIBRARY(GaudiMonitor DataListenerSvc/*.cpp
+                        LIBRARIES GaudiKernel ${winsocklib}
+                        USE_HEADERS Boost ROOT)
 
 if(WIN32 AND HIDE_WARNINGS)
   # These are needed because Windows compiler doesn't like standard C and POSIX functions,
