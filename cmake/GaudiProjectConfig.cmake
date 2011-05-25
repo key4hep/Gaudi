@@ -191,11 +191,20 @@ macro(GAUDI_PROJECT project_name version)
     message(STATUS "  ${package}")
   endforeach()
 
+  set(library_path)
   gaudi_sort_subdirectories(packages)
   foreach(package ${packages})
     message(STATUS "Adding directory ${package}")
     add_subdirectory(${package})
+    set(local_lib_path)
+    get_property(local_lib_path DIRECTORY ${package} PROPERTY LIBRARY_PATH ${lib_path})
+    list(APPEND library_path ${local_lib_path})
   endforeach()
+
+  if(library_path)
+    list(REMOVE_DUPLICATES library_path)
+  endif()
+  message("LD_LIBRARY_PATH=${library_path}")
 
   GAUDI_PROJECT_VERSION_HEADER()
   GAUDI_BUILD_PROJECT_SETUP()
@@ -518,6 +527,31 @@ function(gaudi_get_required_include_dirs output)
   endif()
 endfunction()
 
+#-------------------------------------------------------------------------------
+# gaudi_get_required_library_dirs(<libraries> <output>)
+#
+# Get the library directories required by the linker libraries specified
+# and prepend them to the output variable.
+#-------------------------------------------------------------------------------
+function(gaudi_get_required_library_dirs output)
+  set(collected)
+  foreach(lib ${ARGN})
+    set(req)
+    if(EXISTS ${lib})
+      get_filename_component(req ${lib} PATH)
+      if(req)
+        list(APPEND collected ${req})
+      endif()
+      # FIXME: we should handle the inherited targets
+      # (but it's not mandatory because they where already handled)
+    endif()
+  endforeach()
+  if(collected)
+    set(${output} ${collected} ${${output}} PARENT_SCOPE)
+  endif()
+endfunction()
+
+
 #---------------------------------------------------------------------------------------------------
 #---GAUDI_LINKER_LIBRARY( <name> source1 source2 ... LIBRARIES library1 library2 ... INCLUDE_DIRECTORIES)
 #---------------------------------------------------------------------------------------------------
@@ -540,6 +574,10 @@ function(GAUDI_LINKER_LIBRARY library)
 
   # add the package includes to the current list
   include_package_directories(${ARG_USE_HEADERS})
+
+  # get the library dirs required to get the libraries we use
+  gaudi_get_required_library_dirs(lib_path ${ARG_LIBRARIES})
+  set_property(DIRECTORY APPEND PROPERTY LIBRARY_PATH ${lib_path})
 
   if(WIN32)
 	add_library( ${library}-arc STATIC EXCLUDE_FROM_ALL ${lib_srcs})
@@ -582,6 +620,10 @@ function(GAUDI_COMPONENT_LIBRARY library)
   # add the package includes to the current list
   include_package_directories(${ARG_USE_HEADERS})
 
+  # get the library dirs required to get the libraries we use
+  gaudi_get_required_library_dirs(lib_path ${ARG_LIBRARIES})
+  set_property(DIRECTORY APPEND PROPERTY LIBRARY_PATH ${lib_path})
+
   # find the sources
   set(lib_srcs)
   foreach( fp ${ARG_DEFAULT_ARGS})
@@ -617,6 +659,10 @@ function(GAUDI_PYTHON_MODULE module)
   # add the package includes to the current list
   include_package_directories(${ARG_USE_HEADERS})
 
+  # get the library dirs required to get the libraries we use
+  gaudi_get_required_library_dirs(lib_path ${ARG_LIBRARIES})
+  set_property(DIRECTORY APPEND PROPERTY LIBRARY_PATH ${lib_path})
+
   # find the sources
   set(lib_srcs)
   foreach( fp ${ARG_DEFAULT_ARGS})
@@ -650,6 +696,10 @@ function(GAUDI_EXECUTABLE executable)
 
   # add the package includes to the current list
   include_package_directories(${ARG_USE_HEADERS})
+
+  # get the library dirs required to get the libraries we use
+  gaudi_get_required_library_dirs(lib_path ${ARG_LIBRARIES})
+  set_property(DIRECTORY APPEND PROPERTY LIBRARY_PATH ${lib_path})
 
   # find the sources
   set(exe_srcs)
@@ -685,6 +735,10 @@ function(GAUDI_UNIT_TEST executable)
 
   # add the package includes to the current list
   include_package_directories(${ARG_USE_HEADERS})
+
+  # get the library dirs required to get the libraries we use
+  gaudi_get_required_library_dirs(lib_path ${ARG_LIBRARIES})
+  set_property(DIRECTORY APPEND PROPERTY LIBRARY_PATH ${lib_path})
 
   # find the sources
   set(exe_srcs)
