@@ -4,16 +4,12 @@
 ############################################################################
 require(GaudiKernel)
 
-find_package(Boost)
-find_package(ROOT)
-
 if(WIN32)
   set(winsocklib ws2_32.lib)
 endif()
 #---Libraries---------------------------------------------------------------
 GAUDI_COMPONENT_LIBRARY(GaudiMonitor DataListenerSvc/*.cpp
-                        LIBRARIES GaudiKernel ${winsocklib}
-                        USE_HEADERS Boost ROOT)
+                        LIBRARIES GaudiKernel ${winsocklib})
 
 if(WIN32 AND HIDE_WARNINGS)
   # These are needed because Windows compiler doesn't like standard C and POSIX functions,

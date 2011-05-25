@@ -4,28 +4,18 @@
 ############################################################################
 require(GaudiAlg)
 
-find_package(AIDA)
-include_directories(${AIDA_INCLUDE_DIRS})
-
-find_package(ROOT)
-include_directories(${ROOT_INCLUDE_DIRS})
-
 find_package(CLHEP)
-include_directories(${CLHEP_INCLUDE_DIRS})
-
-find_package(Boost)
-include_directories(${Boost_INCLUDE_DIRS})
-
 find_package(GSL)
-include_directories(${GSL_INCLUDE_DIRS})
 
 if(NOT APPLE AND NOT WIN32)
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-as-needed")
 endif()
 
 #---Libraries---------------------------------------------------------------
+GAUDI_LINKER_LIBRARY(GaudiGSLLib Lib/*.cpp
+                     LIBRARIES GaudiAlgLib ${GSL_LIBRARIES} ${CLHEP_LIBRARIES}
+                     USE_HEADERS GSL CLHEP)
 GAUDI_COMPONENT_LIBRARY(GaudiGSL Components/*.cpp LIBRARIES GaudiGSLLib)
-GAUDI_LINKER_LIBRARY(GaudiGSLLib Lib/*.cpp LIBRARIES GaudiAlgLib ${GSL_LIBRARIES} ${CLHEP_LIBRARIES})
 
 #---Dictionaries------------------------------------------------------------
 REFLEX_GENERATE_DICTIONARY( GaudiGSLMath dict/GaudiGSLMath.h dict/GaudiGSLMath.xml LIBRARIES GaudiGSLLib )

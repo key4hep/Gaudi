@@ -4,13 +4,12 @@
 require(GaudiKernel)
 
 find_package(ROOT)
-find_package(Boost)
 find_package(PythonLibs)
 
 #---Libraries---------------------------------------------------------------
 gaudi_linker_library(GaudiMP Lib/*.cpp
                      LIBRARIES GaudiKernel ${PYTHON_LIBRARIES} ${ROOT_LIBRARIES}
-                     USE_HEADERS Boost ROOT PythonLibs)
+                     USE_HEADERS ROOT PythonLibs)
 
 #---Dictionaries------------------------------------------------------------
 REFLEX_BUILD_DICTIONARY(GaudiMP dict/gaudimp_dict.h dict/selection.xml LIBRARIES GaudiMP)

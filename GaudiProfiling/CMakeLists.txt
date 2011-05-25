@@ -5,7 +5,6 @@ require(GaudiKernel)
 
 if (CMAKE_SYSTEM_NAME MATCHES Linux)
 
-find_package(ROOT)
 find_package(Boost COMPONENTS python)
 find_package(PythonLibs)
 find_package(unwind)
@@ -14,7 +13,7 @@ find_package(unwind)
 include_directories(src/component)
 GAUDI_COMPONENT_LIBRARY(GaudiProfiling component/*.cpp
                         LIBRARIES GaudiKernel z
-                        USE_HEADERS Boost ROOT unwind)
+                        USE_HEADERS unwind)
 GAUDI_PYTHON_MODULE(PyCPUFamily python/CPUFamily.cpp
                     LIBRARIES ${Boost_PYTHON_LIBRARY}
                     USE_HEADERS PythonLibs)

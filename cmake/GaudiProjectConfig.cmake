@@ -189,9 +189,6 @@ macro(GAUDI_PROJECT project_name version)
   message(STATUS "Found:")
   foreach(package ${packages})
     message(STATUS "  ${package}")
-    # FIXME: this ensures that all the packages directories are added to the include paths,
-    #        but it doesn't enforce that only the actually exported headers are visible.
-    include_directories(${package})
   endforeach()
 
   gaudi_sort_subdirectories(packages)
@@ -232,25 +229,30 @@ endmacro()
 #-------------------------------------------------------------------------------
 function(include_package_directories)
   foreach(package ${ARGN})
-    set(to_incl)
-    string(TOUPPER ${package} _pack_upper)
-    if(${_pack_upper}_FOUND OR ${package}_FOUND)
-      # Handle some special cases first, then try for package uppercase (DIRS and DIR)
-      # If the package is found, add INCLUDE_DIRS or (if not defined) INCLUDE_DIR.
-      # If none of the two is defined, do not add anything.
-      if(${package} STREQUAL Boost)
-        set(to_incl Boost_INCLUDE_DIRS)
-      elseif(${package} STREQUAL PythonLibs)
-        set(to_incl PYTHON_INCLUDE_DIRS)
-      elseif(${_pack_upper}_INCLUDE_DIRS)
-        set(to_incl ${_pack_upper}_INCLUDE_DIRS)
-      elseif(${_pack_upper}_INCLUDE_DIR)
-        set(to_incl ${_pack_upper}_INCLUDE_DIR)
-      elseif(${package}_INCLUDE_DIRS)
-        set(to_incl ${package}_INCLUDE_DIRS)
+    # we need to ensure that the user can call this function also for directories
+    if(IS_DIRECTORY ${package})
+      include_directories(${package})
+    else()
+      # ensure that the current directory knows about the package
+      find_package(${package} QUIET)
+      set(to_incl)
+      string(TOUPPER ${package} _pack_upper)
+      if(${_pack_upper}_FOUND OR ${package}_FOUND)
+        # Handle some special cases first, then try for package uppercase (DIRS and DIR)
+        # If the package is found, add INCLUDE_DIRS or (if not defined) INCLUDE_DIR.
+        # If none of the two is defined, do not add anything.
+        if(${package} STREQUAL PythonLibs)
+          set(to_incl PYTHON_INCLUDE_DIRS)
+        elseif(${_pack_upper}_INCLUDE_DIRS)
+          set(to_incl ${_pack_upper}_INCLUDE_DIRS)
+        elseif(${_pack_upper}_INCLUDE_DIR)
+          set(to_incl ${_pack_upper}_INCLUDE_DIR)
+        elseif(${package}_INCLUDE_DIRS)
+          set(to_incl ${package}_INCLUDE_DIRS)
+        endif()
+        # Include the directories
+        include_directories(${${to_incl}})
       endif()
-      # Include the directories
-      include_directories(${${to_incl}})
     endif()
   endforeach()
 endfunction()
@@ -494,14 +496,33 @@ function(GAUDI_GENERATE_CONFUSERDB)
   endif()
 endfunction()
 
+#-------------------------------------------------------------------------------
+# gaudi_get_required_include_dirs(<libraries> <output>)
+#
+# Get the include directories required by the linker libraries specified
+# and prepend them to the output variable.
+#-------------------------------------------------------------------------------
+function(gaudi_get_required_include_dirs output)
+  set(collected)
+  foreach(lib ${ARGN})
+    set(req)
+    if(TARGET ${lib})
+      get_property(req TARGET ${lib} PROPERTY REQUIRED_INCLUDE_DIRS)
+      if(req)
+        list(APPEND collected ${req})
+      endif()
+    endif()
+  endforeach()
+  if(collected)
+    set(${output} ${collected} ${${output}} PARENT_SCOPE)
+  endif()
+endfunction()
+
 #---------------------------------------------------------------------------------------------------
 #---GAUDI_LINKER_LIBRARY( <name> source1 source2 ... LIBRARIES library1 library2 ... INCLUDE_DIRECTORIES)
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_LINKER_LIBRARY library)
   PARSE_ARGUMENTS(ARG "LIBRARIES;USE_HEADERS" "" ${ARGN})
-
-  # add the package includes to the current list
-  include_package_directories(${ARG_USE_HEADERS})
 
   # find the sources
   set(lib_srcs)
@@ -513,6 +534,12 @@ function(GAUDI_LINKER_LIBRARY library)
       set(lib_srcs ${lib_srcs} ${fp})
     endif()
   endforeach()
+
+  # get the inherited include directories
+  gaudi_get_required_include_dirs(ARG_USE_HEADERS ${ARG_LIBRARIES})
+
+  # add the package includes to the current list
+  include_package_directories(${ARG_USE_HEADERS})
 
   if(WIN32)
 	add_library( ${library}-arc STATIC EXCLUDE_FROM_ALL ${lib_srcs})
@@ -533,7 +560,7 @@ function(GAUDI_LINKER_LIBRARY library)
   endif()
 
   # Declare that the used headers are needed by the libraries linked against this one
-  set_property(TARGET ${library} PROPERTY REQUIRED_PACKAGE_INCLUDES ${ARG_USE_HEADERS})
+  set_property(TARGET ${library} PROPERTY REQUIRED_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${ARG_USE_HEADERS})
 
   if(TARGET ${library}Obj2doth)
     add_dependencies( ${library} ${library}Obj2doth)
@@ -548,6 +575,9 @@ endfunction()
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_COMPONENT_LIBRARY library)
   PARSE_ARGUMENTS(ARG "LIBRARIES;USE_HEADERS" "" ${ARGN})
+
+  # get the inherited include directories
+  gaudi_get_required_include_dirs(ARG_USE_HEADERS ${ARG_LIBRARIES})
 
   # add the package includes to the current list
   include_package_directories(${ARG_USE_HEADERS})
@@ -581,6 +611,9 @@ endfunction()
 function(GAUDI_PYTHON_MODULE module)
   PARSE_ARGUMENTS(ARG "LIBRARIES;USE_HEADERS" "" ${ARGN})
 
+  # get the inherited include directories
+  gaudi_get_required_include_dirs(ARG_USE_HEADERS ${ARG_LIBRARIES})
+
   # add the package includes to the current list
   include_package_directories(${ARG_USE_HEADERS})
 
@@ -611,6 +644,9 @@ endfunction()
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_EXECUTABLE executable)
   PARSE_ARGUMENTS(ARG "LIBRARIES;USE_HEADERS" "" ${ARGN})
+
+  # get the inherited include directories
+  gaudi_get_required_include_dirs(ARG_USE_HEADERS ${ARG_LIBRARIES})
 
   # add the package includes to the current list
   include_package_directories(${ARG_USE_HEADERS})
@@ -643,6 +679,9 @@ endfunction()
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_UNIT_TEST executable)
   PARSE_ARGUMENTS(ARG "LIBRARIES;USE_HEADERS" "" ${ARGN})
+
+  # get the inherited include directories
+  gaudi_get_required_include_dirs(ARG_USE_HEADERS ${ARG_LIBRARIES})
 
   # add the package includes to the current list
   include_package_directories(${ARG_USE_HEADERS})
@@ -701,7 +740,7 @@ function(GAUDI_QMTEST_TEST name)
     if( NOT tests )
       set(tests ${name})
     endif()
-    GAUDI_USE_PACKAGE(QMtest)
+    find_package(QMtest QUIET)
     add_test(${name} ${CMAKE_INSTALL_PREFIX}/scripts/testwrap${ssuffix} ${CMAKE_INSTALL_PREFIX}/setup${ssuffix}
                      ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
                      qmtest run ${tests})

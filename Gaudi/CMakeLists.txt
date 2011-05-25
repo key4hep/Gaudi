@@ -4,9 +4,6 @@
 ############################################################################
 require(GaudiKernel)
 
-find_package(ROOT)
-#include_directories(${ROOT_INCLUDE_DIRS})
-
 #---Executables-------------------------------------------------------------
 GAUDI_EXECUTABLE(Gaudi main.cpp LIBRARIES GaudiKernel)
 

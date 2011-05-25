@@ -4,16 +4,13 @@
 ############################################################################
 require(GaudiAlg GaudiUtils GaudiKernel)
 
-find_package(AIDA)
-find_package(ROOT)
 find_package(CLHEP)
-find_package(Boost)
 find_package(PythonLibs)
 
 #---Libraries---------------------------------------------------------------
 GAUDI_LINKER_LIBRARY(GaudiPythonLib Lib/*.cpp
                      LIBRARIES GaudiAlgLib ${PYTHON_LIBRARIES} ${CLHEP_LIBRARIES}
-                     USE_HEADERS Boost ROOT AIDA CLHEP PythonLibs)
+                     USE_HEADERS CLHEP PythonLibs)
 GAUDI_COMPONENT_LIBRARY(GaudiPython Services/*.cpp LIBRARIES GaudiPythonLib GaudiUtilsLib)
 
 REFLEX_BUILD_DICTIONARY(GaudiPython dict/kernel.h  dict/selection_kernel.xml LIBRARIES GaudiPythonLib GaudiUtilsLib)

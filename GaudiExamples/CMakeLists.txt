@@ -4,28 +4,12 @@
 ############################################################################
 require(GaudiKernel GaudiUtils GaudiGSL GaudiAlg)
 
-find_package(Boost COMPONENTS python)
-include_directories(${Boost_INCLUDE_DIRS})
-
-find_package(ROOT)
-include_directories(${ROOT_INCLUDE_DIRS})
-
-find_package(AIDA)
-include_directories(${AIDA_INCLUDE_DIRS})
-
-find_package(CLHEP)
-include_directories(${CLHEP_INCLUDE_DIRS})
-
 find_package(HepPDT)
-include_directories(${HEPPDT_INCLUDE_DIRS})
-
-find_package(PythonLibs)
-include_directories(${PYTHON_INCLUDE_PATH})
-
+find_package(ROOT)
+find_package(Boost COMPONENTS python)
+find_package(CLHEP)
 find_package(GSL)
-include_directories(${GSL_INCLUDE_DIRS})
-
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/src/Lib )
+find_package(PythonLibs)
 
 #---Libraries---------------------------------------------------------------
 set( GaudiExamples_srcs AbortEvent/*.cpp
@@ -63,13 +47,18 @@ StringKeys/*.cpp
 StatusCodeSvc/*.cpp
 testing/*.cpp )
 
+GAUDI_LINKER_LIBRARY(GaudiExamplesLib Lib/*.cpp
+                     LIBRARIES GaudiGSLLib GaudiUtilsLib ${HEPPDT_LIBRARIES} ${ROOT_Tree_LIBRARY}
+                     USE_HEADERS HepPDT ROOT ${CMAKE_CURRENT_SOURCE_DIR}/src/Lib)
 GAUDI_COMPONENT_LIBRARY(GaudiExamples ${GaudiExamples_srcs} LIBRARIES GaudiExamplesLib)
-GAUDI_LINKER_LIBRARY(GaudiExamplesLib Lib/*.cpp LIBRARIES GaudiGSLLib GaudiUtilsLib ${HEPPDT_LIBRARIES} ${ROOT_Tree_LIBRARY})
-GAUDI_PYTHON_MODULE(PyExample PythonModule/*.cpp LIBRARIES ${Boost_PYTHON_LIBRARY} )
+GAUDI_PYTHON_MODULE(PyExample PythonModule/*.cpp
+                    LIBRARIES ${Boost_PYTHON_LIBRARY}
+                    USE_HEADERS Boost PythonLibs)
 
 #---Executables-------------------------------------------------------------
 GAUDI_EXECUTABLE(Allocator Allocator/*.cpp LIBRARIES GaudiExamplesLib GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES}
-                 ${ROOT_RIO_LIBRARY} ${ROOT_Hist_LIBRARY} ${CLHEP_LIBRARIES} ${GSL_LIBRARIES})
+                 ${ROOT_RIO_LIBRARY} ${ROOT_Hist_LIBRARY} ${CLHEP_LIBRARIES} ${GSL_LIBRARIES}
+                 USE_HEADERS CLHEP GSL)
 
 
 #---Dictionaries------------------------------------------------------------
