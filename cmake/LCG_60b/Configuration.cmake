@@ -178,6 +178,11 @@ set(QMtest_native_version ${QMtest_config_version}_python${Python_config_version
 #===============================================================================
 # Construct the actual PREFIX and INCLUDE PATHs
 #===============================================================================
+# Define the _home variables (not cached)
+foreach(name ${LCG_externals})
+  set(${name}_home ${LCG_external}/${${name}_directory_name}/${${name}_native_version}/${LCG_system})
+endforeach()
+
 if(NOT DEFINED LCG_PREFIX_PATH)
   foreach(name ${LCG_projects})
     list(APPEND LCG_PREFIX_PATH ${${name}_home})
@@ -187,7 +192,6 @@ if(NOT DEFINED LCG_PREFIX_PATH)
   endforeach()
   # Add the LCG externals dirs to the search paths.
   foreach(name ${LCG_externals})
-    set(${name}_home ${LCG_external}/${${name}_directory_name}/${${name}_native_version}/${LCG_system})
     list(APPEND LCG_PREFIX_PATH ${${name}_home})
   endforeach()
 
