@@ -50,13 +50,11 @@ macro (ROOT_GENERATE_DICTIONARY INFILES LINKDEF_FILE OUTFILE INCLUDE_DIRS_IN)
   endif (CMAKE_SYSTEM_NAME MATCHES Linux)
 endmacro (ROOT_GENERATE_DICTIONARY)
 
+set(ROOT_ENVIRONMENT ROOTSYS=${ROOT_home})
+set(ROOT_BINARY_PATH ${ROOT_home}/bin)
+
 if(WIN32)
-  set(ROOT_environment ROOTSYS=${ROOT_home}
-					   PATH+=${ROOT_home}/bin
-                       PYTHONPATH+=${ROOT_home}/bin )
+  set(ROOT_PYTHON_PATH ${ROOT_home}/bin)
 else()
-  set(ROOT_environment ROOTSYS=${ROOT_home}
-					   PATH+=${ROOT_home}/bin
-                       LD_LIBRARY_PATH+=${ROOT_home}/lib
-                       PYTHONPATH+=${ROOT_home}/lib )
+  set(ROOT_PYTHON_PATH ${ROOT_home}/lib)
 endif()

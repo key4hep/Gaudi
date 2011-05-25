@@ -24,7 +24,7 @@ GAUDI_GENERATE_ROOTMAP(GaudiPoolDb)
 GAUDI_GENERATE_CONFIGURABLES(GaudiPoolDb)
 
 
-set(GaudiPoolDb_environment JOBOPTSEARCHPATH+=${CMAKE_SOURCE_DIR}/GaudiPoolDb/options
+set(GAUDIPOOLDB_ENVIRONMENT JOBOPTSEARCHPATH+=${CMAKE_SOURCE_DIR}/GaudiPoolDb/options
                             PARENT_SCOPE)
 
 #---Installation-----------------------------------------------------------------------------

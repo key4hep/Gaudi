@@ -8,6 +8,7 @@
 #  COOL_<component>_FOUND
 #  COOL_LIBRARIES (not cached)
 #  COOL_PYTHON_PATH
+#  COOL_BINARY_PATH (not cached)
 
 set(_COOL_COMPONENTS CoolKernel CoolApplication)
 foreach(component ${_COOL_COMPONENTS})
@@ -21,9 +22,15 @@ foreach(component ${_COOL_COMPONENTS})
 endforeach()
 
 find_path(COOL_INCLUDE_DIR CoolKernel/IDatabase.h)
+set(COOL_INCLUDE_DIRS ${COOL_INCLUDE_DIR})
+
 find_path(COOL_PYTHON_PATH PyCool/__init__.py)
 
-set(COOL_INCLUDE_DIRS ${COOL_INCLUDE_DIR})
+find_program(COOL_ReplicateDB_EXECUTABLE coolReplicateDB)
+mark_as_advanced(COOL_ReplicateDB_EXECUTABLE)
+if(COOL_ReplicateDB_EXECUTABLE)
+  get_filename_component(COOL_BINARY_PATH ${COOL_ReplicateDB_EXECUTABLE} PATH)
+endif()
 
 # handle the QUIETLY and REQUIRED arguments and set COOL_FOUND to TRUE if
 # all listed variables are TRUE

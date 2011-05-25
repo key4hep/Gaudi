@@ -27,13 +27,8 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(QMTest DEFAULT_MSG QMTEST_EXECUTABLE QMTEST_PY
 mark_as_advanced(QMTEST_EXECUTABLE QMTEST_PYTHON_PATH)
 
 
-set(QMtest_environment QM_home=${QMTEST_PREFIX_PATH}
-                       PATH+=${QMTEST_BINARY_PATH}
-                       PYTHONPATH+=${QMTEST_PYTHON_PATH}
-   )
+set(QMTEST_ENVIRONMENT QM_home=${QMTEST_PREFIX_PATH})
 
 if(WIN32)
-  set(QMtest_environment ${QMtest_environment}
-                         PATH+=${QMTEST_PREFIX_PATH}/Lib/site-packages/pywin32_system32
-     )
+  set(QMTEST_LIBRARY_PATH ${QMTEST_PREFIX_PATH}/Lib/site-packages/pywin32_system32)
 endif()

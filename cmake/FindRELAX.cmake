@@ -24,9 +24,3 @@ INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(RELAX DEFAULT_MSG RELAX_LIBRARY_DIRS)
 
 mark_as_advanced(RELAX_FOUND)
-
-if(WIN32)
-  set(RELAX_environment PATH+=${RELAX_LIBRARY_DIRS})
-else()
-  set(RELAX_environment LD_LIBRARY_PATH+=${RELAX_LIBRARY_DIRS})
-endif()

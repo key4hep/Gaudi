@@ -7,6 +7,8 @@
 #  CORAL_<component>_LIBRARY
 #  CORAL_<component>_FOUND
 #  CORAL_LIBRARIES (not cached)
+#  CORAL_PYTHON_PATH
+#  CORAL_BINARY_PATH (not cached)
 
 set(_CORAL_COMPONENTS CoralBase CoralKernel)
 foreach(component ${_CORAL_COMPONENTS})
@@ -21,12 +23,19 @@ foreach(component ${_CORAL_COMPONENTS})
 endforeach()
 
 find_path(CORAL_INCLUDE_DIR RelationalAccess/ConnectionService.h)
+find_path(CORAL_PYTHON_PATH coral.py)
 
 set(CORAL_INCLUDE_DIRS ${CORAL_INCLUDE_DIR})
+
+find_program(CORAL_replica_manager_EXECUTABLE coral_replica_manager)
+mark_as_advanced(CORAL_replica_manager_EXECUTABLE)
+if(CORAL_replica_manager_EXECUTABLE)
+  get_filename_component(CORAL_BINARY_PATH ${CORAL_replica_manager_EXECUTABLE} PATH)
+endif()
 
 # handle the QUIETLY and REQUIRED arguments and set CORAL_FOUND to TRUE if
 # all listed variables are TRUE
 INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(CORAL DEFAULT_MSG CORAL_INCLUDE_DIR CORAL_LIBRARIES)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(CORAL DEFAULT_MSG CORAL_INCLUDE_DIR CORAL_LIBRARIES CORAL_PYTHON_PATH)
 
-mark_as_advanced(CORAL_FOUND CORAL_INCLUDE_DIR)
+mark_as_advanced(CORAL_FOUND CORAL_INCLUDE_DIR CORAL_PYTHON_PATH)

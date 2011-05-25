@@ -6,6 +6,7 @@ require(GaudiAlg GaudiUtils GaudiKernel)
 
 find_package(CLHEP)
 find_package(PythonLibs)
+find_package(pytools)
 
 #---Libraries---------------------------------------------------------------
 GAUDI_LINKER_LIBRARY(GaudiPythonLib Lib/*.cpp

@@ -153,7 +153,7 @@ GAUDI_QMTEST_TEST(gaudiexamples.return_codes)
 GAUDI_QMTEST_TEST(gaudiexamples.bug)
 
 
-SET(GaudiExamples_environment STDOPTS=${CMAKE_SOURCE_DIR}/GaudiExamples/options
+SET(GAUDIEXAMPLES_ENVIRONMENT STDOPTS=${CMAKE_SOURCE_DIR}/GaudiExamples/options
                               JOBOPTSEARCHPATH+=${CMAKE_SOURCE_DIR}/GaudiExamples/options
-                              PYTHONPATH+=${CMAKE_SOURCE_DIR}/GaudiExamples/tests/qmtest
                               PARENT_SCOPE)
+SET(GAUDIEXAMPLES_PYTHON_PATH ${CMAKE_SOURCE_DIR}/GaudiExamples/tests/qmtest PARENT_SCOPE)

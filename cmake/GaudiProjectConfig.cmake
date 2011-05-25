@@ -218,15 +218,50 @@ macro(GAUDI_PROJECT project_name version)
   foreach(package ${packages})
     message(STATUS "Adding directory ${package}")
     add_subdirectory(${package})
-    set(local_lib_path)
-    get_property(local_lib_path DIRECTORY ${package} PROPERTY LIBRARY_PATH ${lib_path})
-    list(APPEND library_path ${local_lib_path})
   endforeach()
 
-  if(library_path)
-    list(REMOVE_DUPLICATES library_path)
-  endif()
-  message("LD_LIBRARY_PATH=${library_path}")
+  set(python_path)
+  set(binary_path)
+  set(environment)
+  set(library_path2)
+
+  get_property(packages_found GLOBAL PROPERTY PACKAGES_FOUND)
+  message("${packages_found}")
+  foreach(pack ${packages_found} ${packages})
+    # this is needed to get the non-cache variables for the packages
+    find_package(${pack} QUIET)
+    string(TOUPPER ${pack} _pack_upper)
+    if(${_pack_upper}_PYTHON_PATH)
+      list(APPEND python_path ${${_pack_upper}_PYTHON_PATH})
+    endif()
+    if(${_pack_upper}_BINARY_PATH)
+      list(APPEND binary_path ${${_pack_upper}_BINARY_PATH})
+    endif()
+    if(${_pack_upper}_ENVIRONMENT)
+      list(APPEND environment ${${_pack_upper}_ENVIRONMENT})
+    endif()
+    if(${_pack_upper}_LIBRARY_DIRS)
+      list(APPEND library_path2 ${${_pack_upper}_LIBRARY_DIRS})
+    endif()
+    # FIXME: this is too special
+    if(pack STREQUAL PythonInterp)
+      get_filename_component(bin_path ${PYTHON_EXECUTABLE} PATH)
+      list(APPEND binary_path ${bin_path})
+    endif()
+  endforeach()
+
+  get_property(library_path GLOBAL PROPERTY LIBRARY_PATH)
+  foreach(var library_path python_path binary_path environment library_path2)
+    if(${var})
+      list(REMOVE_DUPLICATES ${var})
+    endif()
+  endforeach()
+
+  message("BINARY_PATH: ${binary_path}")
+  message("PYTHON_PATH: ${python_path}")
+  message("LIBRARY_PATH: ${library_path}")
+  message("LIBRARY_PATH2: ${library_path2}")
+  message("ENVIRONMENT: ${environment}")
 
   GAUDI_PROJECT_VERSION_HEADER()
   GAUDI_BUILD_PROJECT_SETUP()
@@ -599,7 +634,7 @@ function(GAUDI_LINKER_LIBRARY library)
 
   # get the library dirs required to get the libraries we use
   gaudi_get_required_library_dirs(lib_path ${ARG_LIBRARIES})
-  set_property(DIRECTORY APPEND PROPERTY LIBRARY_PATH ${lib_path})
+  set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
 
   if(WIN32)
 	add_library( ${library}-arc STATIC EXCLUDE_FROM_ALL ${lib_srcs})
@@ -644,7 +679,7 @@ function(GAUDI_COMPONENT_LIBRARY library)
 
   # get the library dirs required to get the libraries we use
   gaudi_get_required_library_dirs(lib_path ${ARG_LIBRARIES})
-  set_property(DIRECTORY APPEND PROPERTY LIBRARY_PATH ${lib_path})
+  set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
 
   # find the sources
   set(lib_srcs)
@@ -683,7 +718,7 @@ function(GAUDI_PYTHON_MODULE module)
 
   # get the library dirs required to get the libraries we use
   gaudi_get_required_library_dirs(lib_path ${ARG_LIBRARIES})
-  set_property(DIRECTORY APPEND PROPERTY LIBRARY_PATH ${lib_path})
+  set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
 
   # find the sources
   set(lib_srcs)
@@ -721,7 +756,7 @@ function(GAUDI_EXECUTABLE executable)
 
   # get the library dirs required to get the libraries we use
   gaudi_get_required_library_dirs(lib_path ${ARG_LIBRARIES})
-  set_property(DIRECTORY APPEND PROPERTY LIBRARY_PATH ${lib_path})
+  set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
 
   # find the sources
   set(exe_srcs)
@@ -760,7 +795,7 @@ function(GAUDI_UNIT_TEST executable)
 
   # get the library dirs required to get the libraries we use
   gaudi_get_required_library_dirs(lib_path ${ARG_LIBRARIES})
-  set_property(DIRECTORY APPEND PROPERTY LIBRARY_PATH ${lib_path})
+  set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
 
   # find the sources
   set(exe_srcs)
