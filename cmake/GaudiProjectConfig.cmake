@@ -40,8 +40,30 @@ set(CMAKE_include_directories_BEFORE ON)
 #set(CMAKE_SKIP_BUILD_RPATH TRUE)
 #set(CMAKE_CXX_COMPILER g++)
 
-# Enable usage of ccacheto speed up the compilation
-#set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+# The global property RULE_LAUNCH_COMPILE (needed to enable distcc and ccache)
+# has been introduced in CMake 2.8.
+if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.7)
+  find_program(ccache_cmd ccache)
+  if(ccache_cmd)
+    option(CMAKE_USE_CCACHE "Use ccache to speed up compilation." OFF)
+    if(CMAKE_USE_CCACHE)
+      set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${ccache_cmd})
+      message(STATUS "Using ccache for building")
+    endif()
+  endif()
+  find_program(distcc_cmd distcc)
+  if(distcc_cmd)
+    option(CMAKE_USE_DISTCC "Use distcc to speed up compilation." OFF)
+    if(CMAKE_USE_DISTCC)
+      set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${distcc_cmd})
+      message(STATUS "Using distcc for building")
+      if(CMAKE_USE_CCACHE)
+        message(WARNING "Cannot use distcc and ccache at the same time: using distcc")
+      endif()
+    endif()
+  endif()
+  mark_as_advanced(ccache_cmd distcc_cmd)
+endif()
 
 #-------------------------------------------------------------------------------
 # Platform handling
