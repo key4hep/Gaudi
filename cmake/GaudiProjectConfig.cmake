@@ -220,49 +220,6 @@ macro(GAUDI_PROJECT project_name version)
     add_subdirectory(${package})
   endforeach()
 
-  set(python_path)
-  set(binary_path)
-  set(environment)
-  set(library_path2)
-
-  get_property(packages_found GLOBAL PROPERTY PACKAGES_FOUND)
-  message("${packages_found}")
-  foreach(pack ${packages_found} ${packages})
-    # this is needed to get the non-cache variables for the packages
-    find_package(${pack} QUIET)
-    string(TOUPPER ${pack} _pack_upper)
-    if(${_pack_upper}_PYTHON_PATH)
-      list(APPEND python_path ${${_pack_upper}_PYTHON_PATH})
-    endif()
-    if(${_pack_upper}_BINARY_PATH)
-      list(APPEND binary_path ${${_pack_upper}_BINARY_PATH})
-    endif()
-    if(${_pack_upper}_ENVIRONMENT)
-      list(APPEND environment ${${_pack_upper}_ENVIRONMENT})
-    endif()
-    if(${_pack_upper}_LIBRARY_DIRS)
-      list(APPEND library_path2 ${${_pack_upper}_LIBRARY_DIRS})
-    endif()
-    # FIXME: this is too special
-    if(pack STREQUAL PythonInterp)
-      get_filename_component(bin_path ${PYTHON_EXECUTABLE} PATH)
-      list(APPEND binary_path ${bin_path})
-    endif()
-  endforeach()
-
-  get_property(library_path GLOBAL PROPERTY LIBRARY_PATH)
-  foreach(var library_path python_path binary_path environment library_path2)
-    if(${var})
-      list(REMOVE_DUPLICATES ${var})
-    endif()
-  endforeach()
-
-  message("BINARY_PATH: ${binary_path}")
-  message("PYTHON_PATH: ${python_path}")
-  message("LIBRARY_PATH: ${library_path}")
-  message("LIBRARY_PATH2: ${library_path2}")
-  message("ENVIRONMENT: ${environment}")
-
   GAUDI_PROJECT_VERSION_HEADER()
   GAUDI_BUILD_PROJECT_SETUP()
   GAUDI_MERGE_TARGET(ConfDB python ${CMAKE_PROJECT_NAME}_merged_confDb.py)
@@ -274,6 +231,19 @@ macro(GAUDI_PROJECT project_name version)
   #GAUDI_USE_PACKAGE(pytools)
   #GAUDI_USE_PACKAGE(RELAX)
   #SET( QMtest_environment ${QMtest_environment} QMTEST_CLASS_PATH=${CMAKE_SOURCE_DIR}/GaudiPolicy/qmtest_classes )
+
+  if(${version} MATCHES "^v[0-9]+r[0-9]+p[0-9]+$")
+    string(REGEX REPLACE "v([0-9]+)r([0-9]+)p([0-9]+)" "\\1.\\2.\\3" vers_id ${version})
+  elseif(${version} MATCHES "^v[0-9]+r[0-9]+$")
+    string(REGEX REPLACE "v([0-9]+)r([0-9]+)" "\\1.\\2" vers_id ${version})
+  else()
+    set(vers_id ${version})
+  endif()
+  gaudi_generate_project_config_version_file(${project_name} ${vers_id})
+
+  gaudi_generate_project_config_file(${project_name})
+
+  gaudi_generate_project_environment_file(${project_name})
 
   #--- CPack configuration
   set(CPACK_PACKAGE_NAME ${project_name})
@@ -692,7 +662,7 @@ function(GAUDI_COMPONENT_LIBRARY library)
     endif()
   endforeach()
 
-  add_library( ${library} MODULE ${lib_srcs})
+  add_library(${library} MODULE ${lib_srcs})
 
   GAUDI_GENERATE_ROOTMAP(${library})
   GAUDI_GENERATE_CONFIGURABLES(${library})
@@ -1060,3 +1030,116 @@ function( GAUDI_BUILD_PACKAGE_SETUP setup package envlist )
    endif()
   endforeach()
 endfunction()
+
+#-------------------------------------------------------------------------------
+# gaudi_generate_project_config_version_file(project version)
+#
+# Create the file used by CMake to check if the found version of a package
+# matches the requested one.
+#-------------------------------------------------------------------------------
+macro(gaudi_generate_project_config_version_file project version)
+  message(STATUS "Generating ${project}ConfigVersion.cmake")
+  file(WRITE ${BUILD_OUTPUT_PREFIX}/${project}ConfigVersion.cmake
+"set(PACKAGE_NAME ${project})
+set(PACKAGE_VERSION ${version})
+if((PACKAGE_NAME STREQUAL PACKAGE_FIND_NAME)
+   AND (PACKAGE_VERSION STREQUAL PACKAGE_FIND_VERSION))
+  set(PACKAGE_VERSION_EXACT 1)
+  set(PACKAGE_VERSION_COMPATIBLE 1)
+  set(PACKAGE_VERSION_UNSUITABLE 0)
+else()
+  set(PACKAGE_VERSION_EXACT 0)
+  set(PACKAGE_VERSION_COMPATIBLE 0)
+  set(PACKAGE_VERSION_UNSUITABLE 1)
+endif()
+")
+  install(FILES ${BUILD_OUTPUT_PREFIX}/${project}ConfigVersion.cmake DESTINATION ${CMAKE_SOURCE_DIR})
+endmacro()
+
+#-------------------------------------------------------------------------------
+# gaudi_generate_project_config_file(project)
+#
+# Generate the config file used by the other projects using this one.
+#-------------------------------------------------------------------------------
+macro(gaudi_generate_project_config_file project)
+  message(STATUS "Generating ${project}Config.cmake")
+  file(WRITE ${BUILD_OUTPUT_PREFIX}/${project}Config.cmake
+"
+set(LCG_version ${LCG_version})
+if(EXISTS \"${CMAKE_INSTALL_PREFIX}/cmake/${project}Environment.cmake\")
+  message(\"include ${CMAKE_INSTALL_PREFIX}/cmake/${project}Environment.cmake\")
+else()
+  message(\"cannot find ${CMAKE_INSTALL_PREFIX}/cmake/${project}Environment.cmake\")
+endif()
+file(GLOB exports RELATIVE InstallArea/\${LCG_platform}/cmake *Exports.cmake)
+foreach(exp in \${exports})
+message(\${exp})
+endforeach()
+")
+  install(FILES ${BUILD_OUTPUT_PREFIX}/${project}Config.cmake DESTINATION ${CMAKE_SOURCE_DIR})
+endmacro()
+
+#-------------------------------------------------------------------------------
+# gaudi_generate_project_environment_file(project)
+#
+# Generate the config file used by the other projects using this one.
+#-------------------------------------------------------------------------------
+macro(gaudi_generate_project_environment_file project)
+  message(STATUS "Generating ${project}Environment.cmake")
+
+  # collecting environment infos
+  set(python_path)
+  set(binary_path)
+  set(environment)
+  set(library_path2)
+
+  get_property(packages_found GLOBAL PROPERTY PACKAGES_FOUND)
+  message("${packages_found}")
+  foreach(pack ${packages_found} ${packages})
+    # this is needed to get the non-cache variables for the packages
+    if(NOT pack STREQUAL GaudiProject)
+      find_package(${pack} QUIET)
+    endif()
+    string(TOUPPER ${pack} _pack_upper)
+    if(${_pack_upper}_PYTHON_PATH)
+      list(APPEND python_path ${${_pack_upper}_PYTHON_PATH})
+    endif()
+    if(${_pack_upper}_BINARY_PATH)
+      list(APPEND binary_path ${${_pack_upper}_BINARY_PATH})
+    endif()
+    if(${_pack_upper}_ENVIRONMENT)
+      list(APPEND environment ${${_pack_upper}_ENVIRONMENT})
+    endif()
+    if(${_pack_upper}_LIBRARY_DIRS)
+      list(APPEND library_path2 ${${_pack_upper}_LIBRARY_DIRS})
+    endif()
+    # FIXME: this is too special
+    if(pack STREQUAL PythonInterp)
+      get_filename_component(bin_path ${PYTHON_EXECUTABLE} PATH)
+      list(APPEND binary_path ${bin_path})
+    endif()
+  endforeach()
+
+  get_property(library_path GLOBAL PROPERTY LIBRARY_PATH)
+  foreach(var library_path python_path binary_path environment library_path2)
+    if(${var})
+      list(REMOVE_DUPLICATES ${var})
+    endif()
+  endforeach()
+
+  message("BINARY_PATH: ${binary_path}")
+  message("PYTHON_PATH: ${python_path}")
+  message("LIBRARY_PATH: ${library_path}")
+  message("LIBRARY_PATH2: ${library_path2}")
+  message("ENVIRONMENT: ${environment}")
+
+  string(TOUPPER ${project} _proj_upper)
+
+  file(WRITE ${BUILD_OUTPUT_PREFIX}/${project}Environment.cmake
+"set(${_proj_upper}_BINARY_PATH ${binary_path} CACHE INTERNAL \"\")
+set(${_proj_upper}_PYTHON_PATH ${python_path} CACHE INTERNAL \"\")
+set(${_proj_upper}_LIBRARY_PATH ${library_path} CACHE INTERNAL \"\")
+set(${_proj_upper}_ENVIRONMENT ${environment} CACHE INTERNAL \"\")
+")
+  install(FILES ${BUILD_OUTPUT_PREFIX}/${project}Environment.cmake DESTINATION cmake)
+endmacro()
