@@ -245,6 +245,8 @@ macro(GAUDI_PROJECT project_name version)
 
   gaudi_generate_project_environment_file(${project_name})
 
+  gaudi_generate_project_platform_config_file(${project_name})
+
   #--- CPack configuration
   set(CPACK_PACKAGE_NAME ${project_name})
   foreach(t MAJOR MINOR PATCH)
@@ -626,6 +628,7 @@ function(GAUDI_LINKER_LIBRARY library)
 
   # Declare that the used headers are needed by the libraries linked against this one
   set_property(TARGET ${library} PROPERTY REQUIRED_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${ARG_USE_HEADERS})
+  set_property(GLOBAL APPEND PROPERTY LINKER_LIBRARIES ${library})
 
   if(TARGET ${library}Obj2doth)
     add_dependencies( ${library} ${library}Obj2doth)
@@ -668,6 +671,8 @@ function(GAUDI_COMPONENT_LIBRARY library)
   GAUDI_GENERATE_CONFIGURABLES(${library})
 
   target_link_libraries(${library} ${ROOT_Reflex_LIBRARY} ${ARG_LIBRARIES})
+
+  set_property(GLOBAL APPEND PROPERTY COMPONENT_LIBRARIES ${library})
 
   #----Installation details-------------------------------------------------------
   install(TARGETS ${library} LIBRARY DESTINATION ${lib})
@@ -1064,19 +1069,48 @@ endmacro()
 macro(gaudi_generate_project_config_file project)
   message(STATUS "Generating ${project}Config.cmake")
   file(WRITE ${BUILD_OUTPUT_PREFIX}/${project}Config.cmake
-"
+"# File automatically generated: DO NOT EDIT.
 set(LCG_version ${LCG_version})
-if(EXISTS \"${CMAKE_INSTALL_PREFIX}/cmake/${project}Environment.cmake\")
-  message(\"include ${CMAKE_INSTALL_PREFIX}/cmake/${project}Environment.cmake\")
+
+if(IS_DIRECTORY \${${project}_DIR}/InstallArea/\${LCG_platform}/cmake)
+  list(INSERT CMAKE_MODULE_PATH 0 \${${project}_DIR}/InstallArea/\${LCG_platform}/cmake)
 else()
-  message(\"cannot find ${CMAKE_INSTALL_PREFIX}/cmake/${project}Environment.cmake\")
+  message(FATAL_ERROR \"Cannot find \${${project}_DIR}/InstallArea/\${LCG_platform}/cmake: platform not supported\")
 endif()
-file(GLOB exports RELATIVE InstallArea/\${LCG_platform}/cmake *Exports.cmake)
-foreach(exp in \${exports})
-message(\${exp})
-endforeach()
+
+include(${project}PlatformConfig)
+include(${project}Environment)
 ")
   install(FILES ${BUILD_OUTPUT_PREFIX}/${project}Config.cmake DESTINATION ${CMAKE_SOURCE_DIR})
+endmacro()
+
+#-------------------------------------------------------------------------------
+# gaudi_generate_project_platform_config_file(project)
+#
+# Generate the platform(build)-specific config file included by the other
+# projects using this one.
+#-------------------------------------------------------------------------------
+macro(gaudi_generate_project_platform_config_file project)
+  message(STATUS "Generating ${project}PlatformConfig.cmake")
+
+  # collecting infos
+  get_property(linker_libraries GLOBAL PROPERTY LINKER_LIBRARIES)
+  get_property(component_libraries GLOBAL PROPERTY COMPONENT_LIBRARIES)
+
+  string(TOUPPER ${project} _proj_upper)
+
+  file(WRITE ${BUILD_OUTPUT_PREFIX}/${project}PlatformConfig.cmake
+"# File automatically generated: DO NOT EDIT.
+
+set(${_proj_upper}_LIBRARY_DIR \${${project}_DIR}/InstallArea/${BINARY_TAG}/lib)
+
+foreach(l ${linker_libraries})
+  find_library(${_proj_upper}_\${l}_LIBRARY ${l} PATHS \${${_proj_upper}_LIBRARY_DIR} NO_DEFAULT_PATH)
+endforeach()
+
+set(${_proj_upper}_COMPONENT_LIBRARIES ${component_libraries})
+")
+  install(FILES ${BUILD_OUTPUT_PREFIX}/${project}PlatformConfig.cmake DESTINATION cmake)
 endmacro()
 
 #-------------------------------------------------------------------------------
