@@ -233,20 +233,13 @@ macro(GAUDI_PROJECT project version)
   #GAUDI_USE_PACKAGE(RELAX)
   #SET( QMtest_environment ${QMtest_environment} QMTEST_CLASS_PATH=${CMAKE_SOURCE_DIR}/GaudiPolicy/qmtest_classes )
 
-  if(${version} MATCHES "^v[0-9]+r[0-9]+p[0-9]+$")
-    string(REGEX REPLACE "v([0-9]+)r([0-9]+)p([0-9]+)" "\\1.\\2.\\3" vers_id ${version})
-  elseif(${version} MATCHES "^v[0-9]+r[0-9]+$")
-    string(REGEX REPLACE "v([0-9]+)r([0-9]+)" "\\1.\\2" vers_id ${version})
-  else()
-    set(vers_id ${version})
-  endif()
-  gaudi_generate_project_config_version_file(${project} ${vers_id})
+  gaudi_generate_project_config_version_file()
 
-  gaudi_generate_project_config_file(${project})
+  gaudi_generate_project_config_file()
 
-  gaudi_generate_project_environment_file(${project})
+  gaudi_generate_project_environment_file()
 
-  gaudi_generate_project_platform_config_file(${project})
+  gaudi_generate_project_platform_config_file()
 
   #--- CPack configuration
   set(CPACK_PACKAGE_NAME ${project})
@@ -1045,9 +1038,16 @@ endfunction()
 #-------------------------------------------------------------------------------
 macro(gaudi_generate_project_config_version_file)
   message(STATUS "Generating ${CMAKE_PROJECT_NAME}ConfigVersion.cmake")
+
+  if(CMAKE_PROJECT_VERSION_PATCH)
+    set(vers_id ${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}.${CMAKE_PROJECT_VERSION_PATCH})
+  else()
+    set(vers_id ${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR})
+  endif()
+
   file(WRITE ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}ConfigVersion.cmake
 "set(PACKAGE_NAME ${CMAKE_PROJECT_NAME})
-set(PACKAGE_VERSION ${CMAKE_PROJECT_VERSION})
+set(PACKAGE_VERSION ${vers_id})
 if((PACKAGE_NAME STREQUAL PACKAGE_FIND_NAME)
    AND (PACKAGE_VERSION STREQUAL PACKAGE_FIND_VERSION))
   set(PACKAGE_VERSION_EXACT 1)
@@ -1080,9 +1080,9 @@ else()
 endif()
 
 set(${CMAKE_PROJECT_NAME}_VERSION ${CMAKE_PROJECT_VERSION})
-set(${CMAKE_PROJECT_NAME}_VERSION_MAJOR ${CMAKE_PROJECT_VERSION}_MAJOR)
-set(${CMAKE_PROJECT_NAME}_VERSION_MINOR ${CMAKE_PROJECT_VERSION}_MINOR)
-set(${CMAKE_PROJECT_NAME}_VERSION_PATCH ${CMAKE_PROJECT_VERSION}_PATCH)
+set(${CMAKE_PROJECT_NAME}_VERSION_MAJOR ${CMAKE_PROJECT_VERSION_MAJOR})
+set(${CMAKE_PROJECT_NAME}_VERSION_MINOR ${CMAKE_PROJECT_VERSION_MINOR})
+set(${CMAKE_PROJECT_NAME}_VERSION_PATCH ${CMAKE_PROJECT_VERSION_PATCH})
 
 include(${CMAKE_PROJECT_NAME}PlatformConfig)
 include(${CMAKE_PROJECT_NAME}Environment)
@@ -1105,17 +1105,45 @@ macro(gaudi_generate_project_platform_config_file)
 
   string(TOUPPER ${CMAKE_PROJECT_NAME} _proj_upper)
 
-  file(WRITE ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}PlatformConfig.cmake
+  set(filename ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}PlatformConfig.cmake)
+  file(WRITE ${filename}
 "# File automatically generated: DO NOT EDIT.
 
-set(${_proj_upper}_LIBRARY_DIR \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/${BINARY_TAG}/lib)
+# Get the exported informations about the targets
+get_filename_component(_dir "\${CMAKE_CURRENT_LIST_FILE}" PATH)
+include(\${_dir}/${CMAKE_PROJECT_NAME}Exports.cmake)
 
-foreach(l ${linker_libraries})
-  find_library(${_proj_upper}_\${l}_LIBRARY ${l} PATHS \${${_proj_upper}_LIBRARY_DIR} NO_DEFAULT_PATH)
-endforeach()
+# Set useful properties
+get_filename_component(_dir "\${_dir}" PATH)
+set(${_proj_upper}_INCLUDE_DIRS \${_dir}/include)
+set(${_proj_upper}_LIBRARY_DIRS \${_dir}/lib)
+
+set(${_proj_upper}_BINARY_PATH \${_dir}/bin)
+if(EXISTS \${_dir}/python.zip)
+  set(${_proj_upper}_PYTHON_PATH \${_dir}/python.zip)
+else()
+  set(${_proj_upper}_PYTHON_PATH \${_dir}/python)
+endif()
 
 set(${_proj_upper}_COMPONENT_LIBRARIES ${component_libraries})
+set(${_proj_upper}_LINKER_LIBRARIES ${linker_libraries})
+
+# Add special properties to the targets
 ")
+
+  foreach(library ${linker_libraries})
+    get_property(use_headers TARGET ${library} PROPERTY REQUIRED_INCLUDE_DIRS)
+    file(APPEND ${filename}
+      "set_property(TARGET ${library} PROPERTY REQUIRED_INCLUDE_DIRS ${use_headers})\n")
+  endforeach()
+
+  file(APPEND ${filename} "\n# These are not really needed because we import the targets\n")
+  foreach(library ${linker_libraries})
+    get_property(use_headers TARGET ${library} PROPERTY REQUIRED_INCLUDE_DIRS)
+    file(APPEND ${filename}
+      "find_library(${_proj_upper}_${library}_LIBRARY ${library} PATHS \${${_proj_upper}_LIBRARY_DIR} NO_DEFAULT_PATH)\n")
+  endforeach()
+
   install(FILES ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}PlatformConfig.cmake DESTINATION cmake)
 endmacro()
 
