@@ -131,14 +131,15 @@ set(zippythondir_cmd ${PYTHON_EXECUTABLE} ${zippythondir_cmd})
 #---------------------------------------------------------------------------------------------------
 #---GAUDI_PROJECT(project version)
 #---------------------------------------------------------------------------------------------------
-macro(GAUDI_PROJECT project_name version)
+macro(GAUDI_PROJECT project version)
   set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
-  string(TOUPPER ${project_name} project)
   project(${project})
-  set(CMAKE_PROJECT_NAME ${project}) #----For some reason this is not set by calling 'project()'
+  #----For some reason this is not set by calling 'project()'
+  set(CMAKE_PROJECT_NAME ${project})
 
   #--- Define the version of the project - can be used to generate sources,
-  set(${project}_VERSION ${version})
+  set(CMAKE_PROJECT_VERSION ${version} CACHE STRING "Version of the project")
+
   if( ${version} MATCHES "[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)")
     string(REGEX REPLACE "[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)" "\\1"  major ${version})
     string(REGEX REPLACE "[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)" "\\2"  minor ${version})
@@ -148,9 +149,9 @@ macro(GAUDI_PROJECT project_name version)
     string(REGEX REPLACE "[a-zA-Z]+([0-9]+)[a-zA-Z]+([0-9]+)" "\\2"  minor ${version})
     set( patch 0)
   endif()
-  set(${project}_VERSION_MAJOR ${major})
-  set(${project}_VERSION_MINOR ${minor})
-  set(${project}_VERSION_PATCH ${patch})
+  set(CMAKE_PROJECT_VERSION_MAJOR ${major})
+  set(CMAKE_PROJECT_VERSION_MINOR ${minor})
+  set(CMAKE_PROJECT_VERSION_PATCH ${patch})
 
   #--- Project Options and Global settings----------------------------------------------------------
   option(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
@@ -185,7 +186,7 @@ macro(GAUDI_PROJECT project_name version)
   endif()
 
   # FIXME: external tools need to be found independently of the project
-  if(CMAKE_PROJECT_NAME STREQUAL GAUDI)
+  if(CMAKE_PROJECT_NAME STREQUAL Gaudi)
     set(genconf_cmd ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genconf.exe)
     set(genwindef_cmd ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genwindef.exe)
     set(gaudirun ${CMAKE_SOURCE_DIR}/Gaudi/scripts/gaudirun.py)
@@ -239,18 +240,18 @@ macro(GAUDI_PROJECT project_name version)
   else()
     set(vers_id ${version})
   endif()
-  gaudi_generate_project_config_version_file(${project_name} ${vers_id})
+  gaudi_generate_project_config_version_file(${project} ${vers_id})
 
-  gaudi_generate_project_config_file(${project_name})
+  gaudi_generate_project_config_file(${project})
 
-  gaudi_generate_project_environment_file(${project_name})
+  gaudi_generate_project_environment_file(${project})
 
-  gaudi_generate_project_platform_config_file(${project_name})
+  gaudi_generate_project_platform_config_file(${project})
 
   #--- CPack configuration
-  set(CPACK_PACKAGE_NAME ${project_name})
+  set(CPACK_PACKAGE_NAME ${project})
   foreach(t MAJOR MINOR PATCH)
-    set(CPACK_PACKAGE_VERSION_${t} ${${project}_VERSION_${t}})
+    set(CPACK_PACKAGE_VERSION_${t} ${CMAKE_PROJECT_VERSION_${t}})
   endforeach()
   set(CPACK_SYSTEM_NAME ${BINARY_TAG})
 
@@ -913,8 +914,8 @@ endfunction()
 #---GAUDI_PROJECT_VERSION_HEADER( )
 #---------------------------------------------------------------------------------------------------
 function( GAUDI_PROJECT_VERSION_HEADER )
-  set(project ${CMAKE_PROJECT_NAME})
-  set(version ${${CMAKE_PROJECT_NAME}_VERSION})
+  string(TOUPPER ${CMAKE_PROJECT_NAME} project)
+  set(version ${CMAKE_PROJECT_VERSION})
   set(output  ${BUILD_OUTPUT_PREFIX}/include/${project}_VERSION.h)
   add_custom_command(OUTPUT ${output}
                      COMMAND ${versheader_cmd} ${project} ${version} ${output})
@@ -1037,16 +1038,16 @@ function( GAUDI_BUILD_PACKAGE_SETUP setup package envlist )
 endfunction()
 
 #-------------------------------------------------------------------------------
-# gaudi_generate_project_config_version_file(project version)
+# gaudi_generate_project_config_version_file()
 #
 # Create the file used by CMake to check if the found version of a package
 # matches the requested one.
 #-------------------------------------------------------------------------------
-macro(gaudi_generate_project_config_version_file project version)
-  message(STATUS "Generating ${project}ConfigVersion.cmake")
-  file(WRITE ${BUILD_OUTPUT_PREFIX}/${project}ConfigVersion.cmake
-"set(PACKAGE_NAME ${project})
-set(PACKAGE_VERSION ${version})
+macro(gaudi_generate_project_config_version_file)
+  message(STATUS "Generating ${CMAKE_PROJECT_NAME}ConfigVersion.cmake")
+  file(WRITE ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}ConfigVersion.cmake
+"set(PACKAGE_NAME ${CMAKE_PROJECT_NAME})
+set(PACKAGE_VERSION ${CMAKE_PROJECT_VERSION})
 if((PACKAGE_NAME STREQUAL PACKAGE_FIND_NAME)
    AND (PACKAGE_VERSION STREQUAL PACKAGE_FIND_VERSION))
   set(PACKAGE_VERSION_EXACT 1)
@@ -1058,51 +1059,56 @@ else()
   set(PACKAGE_VERSION_UNSUITABLE 1)
 endif()
 ")
-  install(FILES ${BUILD_OUTPUT_PREFIX}/${project}ConfigVersion.cmake DESTINATION ${CMAKE_SOURCE_DIR})
+  install(FILES ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}ConfigVersion.cmake DESTINATION ${CMAKE_SOURCE_DIR})
 endmacro()
 
 #-------------------------------------------------------------------------------
-# gaudi_generate_project_config_file(project)
+# gaudi_generate_project_config_file()
 #
 # Generate the config file used by the other projects using this one.
 #-------------------------------------------------------------------------------
-macro(gaudi_generate_project_config_file project)
-  message(STATUS "Generating ${project}Config.cmake")
-  file(WRITE ${BUILD_OUTPUT_PREFIX}/${project}Config.cmake
+macro(gaudi_generate_project_config_file)
+  message(STATUS "Generating ${CMAKE_PROJECT_NAME}Config.cmake")
+  file(WRITE ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}Config.cmake
 "# File automatically generated: DO NOT EDIT.
 set(LCG_version ${LCG_version})
 
-if(IS_DIRECTORY \${${project}_DIR}/InstallArea/\${LCG_platform}/cmake)
-  list(INSERT CMAKE_MODULE_PATH 0 \${${project}_DIR}/InstallArea/\${LCG_platform}/cmake)
+if(IS_DIRECTORY \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/\${LCG_platform}/cmake)
+  list(INSERT CMAKE_MODULE_PATH 0 \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/\${LCG_platform}/cmake)
 else()
-  message(FATAL_ERROR \"Cannot find \${${project}_DIR}/InstallArea/\${LCG_platform}/cmake: platform not supported\")
+  message(FATAL_ERROR \"Cannot find \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/\${LCG_platform}/cmake: platform not supported\")
 endif()
 
-include(${project}PlatformConfig)
-include(${project}Environment)
+set(${CMAKE_PROJECT_NAME}_VERSION ${CMAKE_PROJECT_VERSION})
+set(${CMAKE_PROJECT_NAME}_VERSION_MAJOR ${CMAKE_PROJECT_VERSION}_MAJOR)
+set(${CMAKE_PROJECT_NAME}_VERSION_MINOR ${CMAKE_PROJECT_VERSION}_MINOR)
+set(${CMAKE_PROJECT_NAME}_VERSION_PATCH ${CMAKE_PROJECT_VERSION}_PATCH)
+
+include(${CMAKE_PROJECT_NAME}PlatformConfig)
+include(${CMAKE_PROJECT_NAME}Environment)
 ")
-  install(FILES ${BUILD_OUTPUT_PREFIX}/${project}Config.cmake DESTINATION ${CMAKE_SOURCE_DIR})
+  install(FILES ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}Config.cmake DESTINATION ${CMAKE_SOURCE_DIR})
 endmacro()
 
 #-------------------------------------------------------------------------------
-# gaudi_generate_project_platform_config_file(project)
+# gaudi_generate_project_platform_config_file()
 #
 # Generate the platform(build)-specific config file included by the other
 # projects using this one.
 #-------------------------------------------------------------------------------
-macro(gaudi_generate_project_platform_config_file project)
-  message(STATUS "Generating ${project}PlatformConfig.cmake")
+macro(gaudi_generate_project_platform_config_file)
+  message(STATUS "Generating ${CMAKE_PROJECT_NAME}PlatformConfig.cmake")
 
   # collecting infos
   get_property(linker_libraries GLOBAL PROPERTY LINKER_LIBRARIES)
   get_property(component_libraries GLOBAL PROPERTY COMPONENT_LIBRARIES)
 
-  string(TOUPPER ${project} _proj_upper)
+  string(TOUPPER ${CMAKE_PROJECT_NAME} _proj_upper)
 
-  file(WRITE ${BUILD_OUTPUT_PREFIX}/${project}PlatformConfig.cmake
+  file(WRITE ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}PlatformConfig.cmake
 "# File automatically generated: DO NOT EDIT.
 
-set(${_proj_upper}_LIBRARY_DIR \${${project}_DIR}/InstallArea/${BINARY_TAG}/lib)
+set(${_proj_upper}_LIBRARY_DIR \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/${BINARY_TAG}/lib)
 
 foreach(l ${linker_libraries})
   find_library(${_proj_upper}_\${l}_LIBRARY ${l} PATHS \${${_proj_upper}_LIBRARY_DIR} NO_DEFAULT_PATH)
@@ -1110,16 +1116,16 @@ endforeach()
 
 set(${_proj_upper}_COMPONENT_LIBRARIES ${component_libraries})
 ")
-  install(FILES ${BUILD_OUTPUT_PREFIX}/${project}PlatformConfig.cmake DESTINATION cmake)
+  install(FILES ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}PlatformConfig.cmake DESTINATION cmake)
 endmacro()
 
 #-------------------------------------------------------------------------------
-# gaudi_generate_project_environment_file(project)
+# gaudi_generate_project_environment_file()
 #
 # Generate the config file used by the other projects using this one.
 #-------------------------------------------------------------------------------
-macro(gaudi_generate_project_environment_file project)
-  message(STATUS "Generating ${project}Environment.cmake")
+macro(gaudi_generate_project_environment_file)
+  message(STATUS "Generating ${CMAKE_PROJECT_NAME}Environment.cmake")
 
   # collecting environment infos
   set(python_path)
@@ -1167,13 +1173,13 @@ macro(gaudi_generate_project_environment_file project)
   message("LIBRARY_PATH2: ${library_path2}")
   message("ENVIRONMENT: ${environment}")
 
-  string(TOUPPER ${project} _proj_upper)
+  string(TOUPPER ${CMAKE_PROJECT_NAME} _proj_upper)
 
-  file(WRITE ${BUILD_OUTPUT_PREFIX}/${project}Environment.cmake
+  file(WRITE ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}Environment.cmake
 "set(${_proj_upper}_BINARY_PATH ${binary_path} CACHE INTERNAL \"\")
 set(${_proj_upper}_PYTHON_PATH ${python_path} CACHE INTERNAL \"\")
 set(${_proj_upper}_LIBRARY_PATH ${library_path} CACHE INTERNAL \"\")
 set(${_proj_upper}_ENVIRONMENT ${environment} CACHE INTERNAL \"\")
 ")
-  install(FILES ${BUILD_OUTPUT_PREFIX}/${project}Environment.cmake DESTINATION cmake)
+  install(FILES ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}Environment.cmake DESTINATION cmake)
 endmacro()
