@@ -1298,8 +1298,6 @@ pattern -global zip_python_modules_container_fallback \
 # Doxygen business
 #-------------------------------------------------------------------
 
-make_fragment doxygen -header=doxygen_header -dependencies
-
 pattern doxy_vers_set \
 	set <external>VERS "$(<external>_config_version)"
 

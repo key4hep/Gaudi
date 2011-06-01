@@ -1,6 +1,10 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2011-04-27 - Charles Leggett
+ - added "-import Boost" to requirements for new CMT
+ M     cmt/requirements
+
 =============================== GaudiAlg v13r7 ===============================
 ! 2011-04-15 - Marco Clemencic
  - Patch #4814: Move EventNodeKiller algorithm from LHCb to Gaudi.
