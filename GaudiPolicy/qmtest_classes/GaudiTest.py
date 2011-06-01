@@ -1111,6 +1111,16 @@ class GaudiExeTest(ExecTestBase):
             arch = os.environ["SCRAM_ARCH"]
         return arch
 
+    def isWinPlatform(self):
+        """
+        Return True if the current platform is Windows.
+
+        This function was needed because of the change in the CMTCONFIG format,
+        from win32_vc71_dbg to i686-winxp-vc9-dbg.
+        """
+        platform = self.GetPlatform()
+        return "winxp" in platform or platform.startswith("win")
+
     def _expandReferenceFileName(self, reffile):
         # if no file is passed, do nothing
         if not reffile:
@@ -1370,7 +1380,7 @@ class GaudiExeTest(ExecTestBase):
         self.program = prog
 
         dummy, prog_ext = os.path.splitext(prog)
-        if prog_ext not in [ ".exe", ".py", ".bat" ] and self.GetPlatform()[0:3] == "win":
+        if prog_ext not in [ ".exe", ".py", ".bat" ] and self.isWinPlatform():
             prog += ".exe"
             prog_ext = ".exe"
 
@@ -1397,7 +1407,7 @@ class GaudiExeTest(ExecTestBase):
         # if the program is a python file, execute it through python
         if prog_ext == ".py":
             args.insert(0,prog)
-            if self.GetPlatform()[0:3] == "win":
+            if self.isWinPlatform():
                 prog = which("python.exe") or "python.exe"
             else:
                 prog = which("python") or "python"
