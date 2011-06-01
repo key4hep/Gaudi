@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-05-03 - Charles Leggett
+ - remove doxygen make_fragment declaration
+ M       cmt/requirements
+
 ! 2011-05-03 - Marco Clemencic
  - Fixed a problem with Python script tests on Windows (including gaudirun.py).
 
