@@ -86,7 +86,7 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorMax':1
 SimpleHistos        DEBUG Property ['Name': Value] =  'Enable':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'OutputLevel':2
 HistogramDataSvc    DEBUG Service base class initialized successfully
-HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
+HistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ]
 RootHistSvc          INFO Writing ROOT histograms to: histo.root
 HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
 HistogramDataSvc     INFO Added stream file:../home/input.hbook as InFile

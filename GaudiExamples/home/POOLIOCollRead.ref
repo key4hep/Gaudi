@@ -41,13 +41,10 @@ ApplicationMgr    SUCCESS
                                           running on pclhcb55 on Fri Jun 25 09:04:46 2010
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
-FileRecordPersi...   INFO  'CnvServices':[ 'FileRecordCnvSvc' ]
-EventPersistenc...   INFO  'CnvServices':[ 'PoolRootEvtCnvSvc' , 'PoolRootTreeEvtCnvSvc' , 'PoolRootKeyEvtCnvSvc' ]
 EvtTupleSvc          INFO Added stream file:PFN:POOLIO.tags as EventSelector.DataStreamTool_1
 PoolDbDatabaseCnv    INFO Connect to existing Database file:PFN:POOLIO.tags as /EventSelector.DataStreamTool_1 for READ
 RootDBase.open    SUCCESS POOLIO.tags File version:52600
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:COLLECTION='Dir1/Dir2/Dir3/Collection' DATAFILE='PFN:POOLIO.tags' TYP='POOL_ROOT' SEL='(Ntrack>15)' FUN='Gaudi::Examples::EvtCollectionSelector'
-HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
 HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully

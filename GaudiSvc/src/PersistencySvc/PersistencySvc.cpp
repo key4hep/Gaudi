@@ -607,8 +607,10 @@ StatusCode PersistencySvc::finalize()      {
 }
 
 void PersistencySvc::svcNamesHandler( Property& p )     {
-  MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << p << endmsg ;
+  if (outputLevel() <= MSG::DEBUG) {
+    MsgStream log( msgSvc(), name() );
+    log << MSG::DEBUG << p << endmsg ;
+  }
 }
 
 /// Set enabled flag

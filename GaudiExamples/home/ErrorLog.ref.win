@@ -52,7 +52,6 @@ IssueLogger         FATAL FATAL  ..\src\ErrorLog\ErrorLogTest.cpp:38  "this is a
 IssueLogger          INFO INFO  ..\src\ErrorLog\ErrorLogTest.cpp:44  "info ErrObj" [11:53:43 2009/10/13  ]
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
-HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
 HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully

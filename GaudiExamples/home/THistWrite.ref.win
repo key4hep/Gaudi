@@ -49,7 +49,6 @@ THistSvc            DEBUG Registering TProfile title: "profile"  id: "/rec/prof"
 THistSvc            DEBUG Registering TTree title: "tree title"  id: "/rec/trees/stuff/tree1"  dir: tuple3.rt:/trees/stuff  file: tuple3.rt
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
-HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
 HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
