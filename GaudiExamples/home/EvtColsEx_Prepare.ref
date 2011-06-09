@@ -40,13 +40,11 @@ ApplicationMgr    SUCCESS
                                           running on pclhcb55 on Wed Jan  6 17:05:13 2010
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
-EventPersistenc...   INFO  'CnvServices':[ 'PoolRootEvtCnvSvc' , 'PoolRootTreeEvtCnvSvc' , 'PoolRootKeyEvtCnvSvc' ]
 EventPersistenc...   INFO Added successfully Conversion service:PoolRootEvtCnvSvc
 EventPersistenc...   INFO Added successfully Conversion service:PoolRootTreeEvtCnvSvc
 PoolDst              INFO Data source: EventDataSvc output: DATAFILE='PFN:EvtColsEx.dst' TYP='POOL_ROOTTREE' OPT='RECREATE'
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
-HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
 HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully

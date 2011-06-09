@@ -66,7 +66,6 @@ IssueLogger         DEBUG Writing ALWAYS issues to MsgStream[m
 IssueLogger          INFO INFO  ../src/ErrorLog/ErrorLogTest.cpp:44  "info ErrObj" [16:31:47 2009/03/13 CET][m
 [93;1mEventLoopMgr      WARNING Unable to locate service "EventSelector" [m
 [93;1mEventLoopMgr      WARNING No events will be processed from external input.[m
-HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ][m
 [93;1mHistogramPersis...WARNING Histograms saving not required.[m
 ApplicationMgr       INFO Application Manager Initialized successfully[m
 ApplicationMgr       INFO Application Manager Started successfully[m

@@ -107,7 +107,6 @@ Test2               DEBUG Property ['Name': Value] =  'Enable':True
 Test2               DEBUG Property ['Name': Value] =  'OutputLevel':2
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
-HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
 HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully

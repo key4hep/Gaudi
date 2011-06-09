@@ -18,15 +18,12 @@ RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
 EvtTupleSvc         DEBUG Service base class initialized successfully
 EvtTupleSvc          INFO Added stream file:PFN:EvtTags1.root as EVTTAGS
-EventPersistenc...   INFO  'CnvServices':[ 'PoolRootEvtCnvSvc' , 'PoolRootTreeEvtCnvSvc' , 'PoolRootKeyEvtCnvSvc' ]
 DetectorDataSvc      INFO Detector description not requested to be loaded
-HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
 RootHistSvc          INFO Writing ROOT histograms to: UndefinedROOTOutputFileName
 HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
 TagsWriter           INFO Adding OutputStream item /NTUPLES/EVTTAGS/Fill/COL1 with 0 level(s).
 TagsWriter           INFO Data source:             EvtTupleSvc
 ApplicationMgr       INFO Application Manager Initialized successfully
-EventPersistenc...   INFO  'CnvServices':[ 'PoolRootEvtCnvSvc' , 'PoolRootTreeEvtCnvSvc' , 'PoolRootKeyEvtCnvSvc' ]
 ApplicationMgr       INFO Application Manager Started successfully
 EventPersistenc...   INFO Added successfully Conversion service:PoolRootEvtCnvSvc
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='EvtColsEx.dst' TYP='POOL_ROOT' OPT='READ'

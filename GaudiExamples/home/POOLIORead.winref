@@ -54,7 +54,6 @@ ApplicationMgr    SUCCESS
                                           running on CERNTSLHCB01 on Tue Apr 21 13:52:53 2009
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
-FileRecordPersi...   INFO  'CnvServices':[ 'FileRecordCnvSvc' ]
 EventAlgs            INFO Member list: ReadAlg
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
@@ -62,13 +61,11 @@ RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngin
 ReadAlg           VERBOSE ServiceLocatorHelper::service: found service FileRecordDataSvc
 ReadAlg           VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
 FSRAlgs              INFO Member list: ReadTES
-EventPersistenc...   INFO  'CnvServices':[ 'PoolRootEvtCnvSvc' , 'PoolRootTreeEvtCnvSvc' , 'PoolRootKeyEvtCnvSvc' ]
 EventSelector       DEBUG Service base class initialized successfully
 EventPersistenc...   INFO Added successfully Conversion service:PoolRootEvtCnvSvc
 EventSelector.D...  DEBUG Service base class initialized successfully
 EventSelector.D...  DEBUG Selection root:/Event CLID:110
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='PFN:POOLIO.dst'  TYP='POOL_ROOT' OPT='READ'
-HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
 HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
