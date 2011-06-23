@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2011-06-23 - Hubert Degaudenzi
+ - fixed warnings from the eclipse code analysis engine.
+
 ! 2011-04-27 - Charles Leggett
  - added explicit -import=Reflex to requirements
  M     cmt/requirements

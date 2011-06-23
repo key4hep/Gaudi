@@ -27,7 +27,7 @@ namespace Gaudi {
       virtual ~Collision() { }
 
       /// Retrieve reference to class definition structure
-      virtual const CLID& clID() const  { return Collision::classID(); }
+      virtual const CLID& clID() const  { return classID(); }
       static const CLID& classID() { return CLID_Collision; }
 
       void setCollision(int num) {
