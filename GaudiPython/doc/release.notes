@@ -1,6 +1,9 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2011-06-23 - Hubert Degaudenzi
+ - fixed warnings from the eclipse code analysis engine.
+
 ! 2011-04-27 - Charles Leggett
  - add explicit import=Reflex statements to requirements for new CMT
  M       cmt/requirements
