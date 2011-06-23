@@ -1,6 +1,9 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+! 2011-06-23 - Hubert Degaudenzi
+ - fixed warnings from the eclipse code analysis engine.
+
 ================================ GaudiMP v1r1 ================================
 ! 2011-04-04 - Pere Mato
  - Fixes to work with LHCb Brunel
