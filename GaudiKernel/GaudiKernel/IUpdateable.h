@@ -38,6 +38,7 @@ class GAUDI_API IUpdateableIF : virtual public IInterface, virtual public IUpdat
 public:
   /// InterfaceID
   DeclareInterfaceID(IUpdateableIF,1,0);
+  virtual ~IUpdateableIF();
 };
 
 #endif // GAUDIKERNEL_IUPDATEABLE_H

@@ -57,7 +57,7 @@ public:
 
   ~DataHistory(){};
 
-  virtual const CLID& clID() const { return DataHistory::classID(); }
+  virtual const CLID& clID() const { return classID(); }
   static const CLID& classID();
 
 

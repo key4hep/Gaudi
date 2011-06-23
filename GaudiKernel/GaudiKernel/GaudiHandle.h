@@ -377,7 +377,7 @@ protected:
 		    const std::string& myComponentType, const std::string& myParentName  )
     : GaudiHandleArrayBase(myComponentType,myParentName)
   {
-    GaudiHandleArray::setTypesAndNames( myTypesAndNamesList );
+    setTypesAndNames( myTypesAndNamesList );
   }
 
   /** Constructor creating an empty array.

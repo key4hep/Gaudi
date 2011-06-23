@@ -20,7 +20,7 @@ public:
   HistoryObj();
   virtual ~HistoryObj(){};
 
-  virtual const CLID& clID() const { return HistoryObj::classID(); }
+  virtual const CLID& clID() const { return classID(); }
   static const CLID& classID();
 
 
