@@ -920,6 +920,7 @@ long *apmon_mon_utils::getChildren(long pid, int& nChildren)
       unlink(children_f); unlink(np_f);
       throw runtime_error(msg);
     }
+    break ;
   }
 
   /* find the number of processes */
@@ -1075,6 +1076,7 @@ void apmon_mon_utils::readJobInfo(long pid, PsInfo& info) throw(runtime_error) {
       sprintf(msg, "[ readJobInfo() ] The job information for %ld could not be determined", pid);
       throw runtime_error(msg);
     }
+    break ;
   }
 
   free(cmd);
@@ -1245,6 +1247,7 @@ void apmon_mon_utils::readJobDiskUsage(MonitoredJob job,
       unlink(du_f); unlink(df_f);
       throw runtime_error(msg);
     }
+    break ;
   }
 
   strcpy(cmd, "PRT=`df -m ");
@@ -1271,6 +1274,7 @@ void apmon_mon_utils::readJobDiskUsage(MonitoredJob job,
       unlink(du_f); unlink(df_f);
       throw runtime_error(msg);
     }
+    break ;
   }
 
   free(cmd);
