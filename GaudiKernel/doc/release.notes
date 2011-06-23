@@ -2,6 +2,7 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 
 ! 2011-06-23 - Marco Clemencic
+ - Fixed bug #83524: Unprotected debug message in Service::initialize
  - Fixed bug #83525: Usage of THIS in GaudiKernel/implements.h
    Replaced THIS with T, as suggested.
 

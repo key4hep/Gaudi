@@ -69,8 +69,8 @@ StatusCode Service::sysInitialize() {
 StatusCode Service::initialize() {
   // Set the Algorithm's properties
   StatusCode sc = setProperties();
-
-  debug() <<  "Service base class initialized successfully" << endmsg;
+  if (outputLevel() <= MSG::DEBUG)
+    debug() <<  "Service base class initialized successfully" << endmsg;
   m_state = Gaudi::StateMachine::ChangeState(Gaudi::StateMachine::CONFIGURE,m_state);
   return sc ;
 }
