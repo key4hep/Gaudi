@@ -4,6 +4,9 @@
 ! Purpose     : Profiling and performance monitoring of Gaudi/LHCb software
 !-----------------------------------------------------------------------------
 
+! 2011-06-23 - Hubert Degaudenzi
+ - fixed warnings from the eclipse code analysis engine.
+
 ! 2011-05-05 - Marco Clemencic
  - Disabled on i386, for 32 bits MacOSX.
 
