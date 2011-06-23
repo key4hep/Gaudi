@@ -179,6 +179,7 @@ public:
           break;
         case 'F':
           fun = val;
+          break ;
         default:
           break;
         }

@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-06-23 - Hubert Degaudenzi
+ - fixed warnings from the eclipse code analysis engine.
+
 ! 2011-06-09 - Marco Clemencic
  - Fixed bug #82945: Untested StatusCode in OutputStream::writeObjects
  - Follow up on task #20172: changed the verbosity of the print out of the

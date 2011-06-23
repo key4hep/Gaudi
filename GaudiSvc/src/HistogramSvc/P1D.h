@@ -32,7 +32,7 @@ namespace Gaudi {
     virtual bool fill(double x, double y, double weight = 1.);
     virtual bool setBinContents(int i, int entries,double height,double error, double spread, double centre);
     /// Retrieve reference to class defininition identifier
-    virtual const CLID& clID() const { return Gaudi::Profile1D::classID(); }
+    virtual const CLID& clID() const { return classID(); }
     static const CLID& classID()     { return CLID_ProfileH; }
   }; // end class IProfile1D
 } // end namespace Gaudi

@@ -45,7 +45,7 @@ namespace Gaudi {
     /// Create new histogram from any AIDA based histogram
     void  copyFromAida(const AIDA::IHistogram3D & h);
     /// Retrieve reference to class defininition identifier
-    virtual const CLID& clID() const { return Gaudi::Histogram3D::classID(); }
+    virtual const CLID& clID() const { return classID(); }
     static const CLID& classID()     { return CLID_H3D; }
 
   protected:
