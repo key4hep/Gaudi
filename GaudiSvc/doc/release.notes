@@ -2,6 +2,7 @@ Package: GaudiSvc
 Package manager : Marco Clemencic
 
 ! 2011-06-09 - Marco Clemencic
+ - Fixed bug #82945: Untested StatusCode in OutputStream::writeObjects
  - Follow up on task #20172: changed the verbosity of the print out of the
    property CnvServices of PersistencySvc from INFO to DEBUG and updated
    the reference files.
