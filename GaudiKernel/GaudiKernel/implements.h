@@ -6,15 +6,15 @@
 #ifndef __GCCXML__
 /// Helper class for the cast used in the MPL for_each algorithm in the implementation of i_cast.
 /// @author Marco Clemencic
-template <typename THIS>
+template <typename T>
 struct GAUDI_LOCAL check_cast {
   /// type_info for the requested interface.
   const std::type_info &target;
   /// Pointer to be filled.
   void *&ptr;
   /// Value of this.
-  const THIS *instance;
-  check_cast(const THIS *_instance, const std::type_info &_tid, void * &_ptr):
+  const T *instance;
+  check_cast(const T *_instance, const std::type_info &_tid, void * &_ptr):
     target(_tid),
     ptr(_ptr),
     instance(_instance){}
@@ -30,15 +30,15 @@ struct GAUDI_LOCAL check_cast {
 
 /// Helper class for the cast used in the MPL for_each algorithm in the implementation of queryInterface.
 /// @author Marco Clemencic
-template <typename THIS>
+template <typename T>
 struct GAUDI_LOCAL interfaceMatch {
   /// InterfaceID for the requested interface.
   const InterfaceID &target;
   /// Pointer to be filled.
   void *&ptr;
   /// Value of this.
-  THIS *instance;
-  interfaceMatch(THIS *_instance, const InterfaceID &_tid, void * &_ptr):
+  T *instance;
+  interfaceMatch(T *_instance, const InterfaceID &_tid, void * &_ptr):
     target(_tid),
     ptr(_ptr),
     instance(_instance){}
