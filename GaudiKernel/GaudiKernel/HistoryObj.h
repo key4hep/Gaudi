@@ -18,7 +18,7 @@
 class GAUDI_API HistoryObj: public DataObject {
 public:
   HistoryObj();
-  virtual ~HistoryObj(){};
+  virtual ~HistoryObj(){}
 
   virtual const CLID& clID() const { return classID(); }
   static const CLID& classID();

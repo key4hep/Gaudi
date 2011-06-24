@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-06-24 - Hubert Degaudenzi
+ - removed useless ";".
+
 ! 2011-06-23 - Marco Clemencic
  - Fixed bug #83433: reject invalid properties in genconf
    Modified genconf to use a regular expression to validate property names.
