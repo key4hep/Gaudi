@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-06-23 - Marco Clemencic
+ - Fixed bug #83433: reject invalid properties in genconf
+   Modified genconf to use a regular expression to validate property names.
+
 ! 2011-06-23 - Hubert Degaudenzi
  - fixed warnings from the eclipse code analysis engine.
 
