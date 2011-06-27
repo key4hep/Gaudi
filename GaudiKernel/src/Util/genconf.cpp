@@ -18,8 +18,13 @@
 #endif
 #endif
 
-// Include files----------------------------------------------------------------
 #include "boost/program_options.hpp"
+// the hack for remark #193 is needed only for program_options and breaks regex.
+#if defined(__ICC) && !defined(_WIN32) && (_MSC_VER == 0)
+#undef _MSC_VER
+#endif
+
+// Include files----------------------------------------------------------------
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/exception.hpp"
 #include "boost/filesystem/convenience.hpp"
