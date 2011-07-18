@@ -16,9 +16,10 @@ apply_pattern install_scripts
 
 
 #-------Applications and Libraries-----------------------------------------------
-library GaudiMP   Lib/*.cpp      -import=Python -import=Reflex -import=ROOT -no_static
-apply_pattern  linker_library    library=GaudiMP
+library GaudiMPLib   Lib/*.cpp      -import=Python -import=Reflex -import=ROOT -no_static
+apply_pattern  linker_library    library=GaudiMPLib
 
+library GaudiMP   component/*.cpp      -import=Python -import=Reflex -import=ROOT -no_static
 apply_pattern  component_library library=GaudiMP
 
 

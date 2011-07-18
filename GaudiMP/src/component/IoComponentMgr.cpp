@@ -1,14 +1,14 @@
 ///////////////////////// -*- C++ -*- /////////////////////////////
-// IoComponentMgr.cxx 
+// IoComponentMgr.cxx
 // Implementation file for class IoComponentMgr
 // Author: S.Binet<binet@cern.ch>
-/////////////////////////////////////////////////////////////////// 
+///////////////////////////////////////////////////////////////////
 
 // python includes
 #include <Python.h>
 
 // GaudiMP includes
-#include "GaudiMP/IoComponentMgr.h"
+#include "IoComponentMgr.h"
 
 
 // STL includes
@@ -20,23 +20,23 @@
 DECLARE_SERVICE_FACTORY(IoComponentMgr)
 
 
-/////////////////////////////////////////////////////////////////// 
-// Public methods: 
-/////////////////////////////////////////////////////////////////// 
+///////////////////////////////////////////////////////////////////
+// Public methods:
+///////////////////////////////////////////////////////////////////
 
 // Constructors
 ////////////////
-IoComponentMgr::IoComponentMgr( const std::string& name, 
+IoComponentMgr::IoComponentMgr( const std::string& name,
 				ISvcLocator* svc )
 : base_class(name,svc), m_log(msgSvc(), name ),
     m_dict   ( 0 )
 {
   //
   // Property declaration
-  // 
+  //
   //declareProperty( "Property", m_nProperty );
 
-//   declareProperty ("Registry", 
+//   declareProperty ("Registry",
 // 		   m_dict_location = "GaudiMP.IoRegistry.registry",
 // 		   "Location of the python dictionary holding the "
 // 		   "associations: \n"
@@ -49,7 +49,7 @@ IoComponentMgr::IoComponentMgr( const std::string& name,
 // Destructor
 ///////////////
 IoComponentMgr::~IoComponentMgr()
-{ 
+{
   Py_XDECREF (m_dict);
 }
 
@@ -69,9 +69,9 @@ StatusCode IoComponentMgr::initialize()
     if (m_log.level() <= MSG::DEBUG) {
       m_log << MSG::DEBUG << "Initializing Python" << endmsg;
     }
-    PyEval_InitThreads();    
+    PyEval_InitThreads();
     Py_Initialize();
-    
+
     if ( ! Py_IsInitialized() ) {
       m_log << MSG::ERROR << "Unable to initialize Python" << endmsg;
       return StatusCode::FAILURE;
@@ -97,7 +97,7 @@ StatusCode IoComponentMgr::initialize()
   // borrowed ref.
   Py_XINCREF (pyclass);
   if ( !pyclass ) {
-    m_log << MSG::ERROR << "Could not import [" 
+    m_log << MSG::ERROR << "Could not import ["
 	  << py_class_name << "] from module ["
 	  << py_module_name << "] !"
 	  << endmsg ;
@@ -108,7 +108,7 @@ StatusCode IoComponentMgr::initialize()
 
   m_dict = PyObject_GetAttrString (pyclass, (char*)"instances");
   if ( !m_dict || !PyDict_Check (m_dict) ) {
-    m_log << MSG::ERROR 
+    m_log << MSG::ERROR
 	  << "could not retrieve attribute [instances] from class ["
 	  << py_module_name << "." << py_class_name << "] !" << endmsg;
     Py_DECREF (pyclass);
@@ -152,8 +152,8 @@ StatusCode IoComponentMgr::finalize()
   return StatusCode::SUCCESS;
 }
 
-/////////////////////////////////////////////////////////////////// 
-// Const methods: 
+///////////////////////////////////////////////////////////////////
+// Const methods:
 ///////////////////////////////////////////////////////////////////
 
   /** @brief: check if the registry contains a given @c IIoComponent
@@ -215,9 +215,9 @@ IoComponentMgr::io_contains (IIoComponent* iocomponent,
   return contains;
 }
 
-/////////////////////////////////////////////////////////////////// 
-// Non-const methods: 
-/////////////////////////////////////////////////////////////////// 
+///////////////////////////////////////////////////////////////////
+// Non-const methods:
+///////////////////////////////////////////////////////////////////
 
 /** @brief: allow a @c IIoComponent to register itself with this
  *          manager so appropriate actions can be taken when e.g.
@@ -229,7 +229,7 @@ StatusCode
 IoComponentMgr::io_register (IIoComponent* iocomponent)
 {
   if ( 0 == iocomponent ) {
-    m_log << MSG::ERROR 
+    m_log << MSG::ERROR
 	  << "io_register (component) received a NULL pointer !" << endmsg;
     return StatusCode::FAILURE;
   }
@@ -240,7 +240,7 @@ IoComponentMgr::io_register (IIoComponent* iocomponent)
     m_ioregistry[ioname] = iocomponent;
     m_iostack.push_back (iocomponent);
   } else {
-    m_log << MSG::INFO << "IoComponent[" << iocomponent->name() 
+    m_log << MSG::INFO << "IoComponent[" << iocomponent->name()
 	  <<"] already registered @" << (void*)itr->second << endmsg;
   }
   return StatusCode::SUCCESS;
@@ -264,14 +264,14 @@ IoComponentMgr::io_register (IIoComponent* iocomponent,
 
   if ( !io_hasitem (iocomponent) ) {
     if ( !io_register (iocomponent).isSuccess() ) {
-      m_log << MSG::ERROR 
+      m_log << MSG::ERROR
 	    << "could not register component [" << iocomponent->name() << "] "
 	    << "with the I/O component manager !"
 	    << endmsg;
       return StatusCode::FAILURE;
     }
   }
-  
+
   // m_dict is a python dictionary like so:
   //  { 'iocomp-name' : { 'oldfname' : [ 'iomode', 'newfname' ] } }
 
@@ -283,19 +283,19 @@ IoComponentMgr::io_register (IIoComponent* iocomponent,
   if ( NULL==o ) {
     o = PyDict_New();
     if (NULL == o) {
-      m_log << MSG::ERROR << "could not create an I/O entry for [" 
+      m_log << MSG::ERROR << "could not create an I/O entry for ["
 	    << ioname << "] "
 	    << "in the I/O registry !" << endmsg;
       return StatusCode::FAILURE;
     }
     if ( 0 != PyDict_SetItemString (m_dict, (char*)ioname.c_str(), o) ) {
       Py_DECREF (o);
-      m_log << MSG::ERROR << "could not create an I/O entry for [" 
+      m_log << MSG::ERROR << "could not create an I/O entry for ["
 	    << ioname << "] " << "in the I/O registry !" << endmsg;
       return StatusCode::FAILURE;
-    }      
+    }
   } else if ( !PyDict_Check (o) ) {
-    m_log << MSG::ERROR 
+    m_log << MSG::ERROR
 	  << "internal consistency error (expected a dictionary !)"
 	  << endmsg;
     return StatusCode::FAILURE;
@@ -309,7 +309,7 @@ IoComponentMgr::io_register (IIoComponent* iocomponent,
   switch (iomode) {
   case IIoComponentMgr::IoMode::Input: mode ="<input>"; break;
   case IIoComponentMgr::IoMode::Output:mode ="<output>";break;
-  default: 
+  default:
     m_log << MSG::ERROR << "unknown value for iomode: [" << iomode << "] !"
 	  << endmsg;
     Py_DECREF (o);
@@ -328,8 +328,8 @@ IoComponentMgr::io_register (IIoComponent* iocomponent,
     Py_DECREF (o);
     return StatusCode::FAILURE;
   }
-  
-  int err = PyList_SetItem (val, 
+
+  int err = PyList_SetItem (val,
 			    0, PyString_FromString ((char*)mode.c_str()));
   if (err) {
     Py_DECREF (val);
@@ -394,7 +394,7 @@ IoComponentMgr::io_retrieve (IIoComponent* iocomponent,
     Py_DECREF (o);
     return StatusCode::FAILURE;
   }
-  
+
   const std::size_t sz = PyList_Size (pylist);
   if ( 2 != sz ) {
     m_log << MSG::ERROR << "[" << ioname << "][" << fname << "] list has size ["
@@ -423,23 +423,23 @@ IoComponentMgr::io_reinitialize ()
   for ( IoStack_t::iterator io = m_iostack.begin(), ioEnd = m_iostack.end();
 	io != ioEnd;
 	++io ) {
-    m_log << MSG::DEBUG << " [" << (*io)->name() << "]->io_reinit()..." 
+    m_log << MSG::DEBUG << " [" << (*io)->name() << "]->io_reinit()..."
 	  << endmsg;
     if ( !(*io)->io_reinit().isSuccess() ) {
       allgood = false;
-      m_log << MSG::ERROR << "problem in [" << (*io)->name() 
+      m_log << MSG::ERROR << "problem in [" << (*io)->name()
 	    << "]->io_reinit() !" << endmsg;
     }
     // we are done with this guy... release it
     (*io)->release();
   }
-  
-  // we are done. 
+
+  // we are done.
   // FIXME: shall we allow for multiple io_reinitialize ?
   m_iostack.clear();
   m_ioregistry.clear();
 
-  return allgood 
+  return allgood
     ? StatusCode::SUCCESS
     : StatusCode::FAILURE;
 }
@@ -448,22 +448,22 @@ IoComponentMgr::io_reinitialize ()
  *  Hook to allow to e.g. give a chance to I/O subsystems to merge output
  *  files. Not sure how to do this correctly though...
  */
-StatusCode 
+StatusCode
 IoComponentMgr::io_finalize ()
 {
   return StatusCode::SUCCESS;
 }
 
-/////////////////////////////////////////////////////////////////// 
-// Protected methods: 
-/////////////////////////////////////////////////////////////////// 
-
-/////////////////////////////////////////////////////////////////// 
-// Const methods: 
+///////////////////////////////////////////////////////////////////
+// Protected methods:
 ///////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////// 
-// Non-const methods: 
-/////////////////////////////////////////////////////////////////// 
+///////////////////////////////////////////////////////////////////
+// Const methods:
+///////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////
+// Non-const methods:
+///////////////////////////////////////////////////////////////////
 
 
