@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-07-18 - Charles Leggett
+ - Patch #4941: Added interfaces IIoComponent and IIoComponentMgr
+
 ! 2011-06-27 - Marco Clemencic
  - Fixed a problem with the compilation of genconf on ICC after the fix to
    bug #83433.
