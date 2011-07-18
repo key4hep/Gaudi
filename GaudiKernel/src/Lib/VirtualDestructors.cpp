@@ -17,3 +17,9 @@ namespace Gaudi {
 
 #include "GaudiKernel/IComponentManager.h"
 IComponentManager::~IComponentManager(){}
+
+#include "GaudiKernel/IIoComponent.h"
+IIoComponent::~IIoComponent(){}
+
+#include "GaudiKernel/IIoComponentMgr.h"
+IIoComponentMgr::~IIoComponentMgr(){}
