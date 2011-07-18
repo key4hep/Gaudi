@@ -1,6 +1,13 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-07-18 - Charles Leggett
+ - Patch #4942: THistSvc: consolidated patches to bring trunk to GaudiSvc-18-13-09
+   - interoperability with GaudiMP
+   - added AutoFlush option for TTrees, explicitly set to 0 for default
+   - added lots of log.level() checks for DEBUG/VERBOSE output
+  Requires patch #4941 (GaudiKernel > v27r14, GaudiMP > v1r1)
+
 ! 2011-06-23 - Hubert Degaudenzi
  - fixed warnings from the eclipse code analysis engine.
 
