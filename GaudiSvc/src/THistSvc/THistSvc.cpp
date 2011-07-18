@@ -15,6 +15,7 @@
 #include "GaudiKernel/FileIncident.h"
 #include "GaudiKernel/IEventProcessor.h"
 #include "GaudiKernel/IJobOptionsSvc.h"
+#include "GaudiKernel/IIoComponentMgr.h"
 
 
 #include "TROOT.h"
@@ -136,6 +137,51 @@ THistSvc::initialize() {
     st = StatusCode::FAILURE;
   } else {
     p_incSvc->addListener( this, "EndEvent", 100, true);
+  }
+
+  IIoComponentMgr* iomgr(0);
+
+  if (service("IoComponentMgr", iomgr, true).isFailure()) {
+    m_log << MSG::ERROR << "unable to get the IoComponentMgr" << endmsg;
+    st = StatusCode::FAILURE;
+  } else {
+
+    if ( !iomgr->io_register (this).isSuccess() ) {
+      m_log << MSG::ERROR 
+	    << "could not register with the I/O component manager !"
+	    << endmsg;
+      st = StatusCode::FAILURE;
+    } else {
+      bool all_good = true;
+      typedef std::map<std::string, std::pair<TFile*,Mode> > Registry_t;
+      // register input/output files...
+      for ( Registry_t::const_iterator 
+	      ireg = m_files.begin(),
+	      iend = m_files.end();
+	    ireg != iend;
+	    ++ireg ) {
+	const std::string fname = ireg->second.first->GetName();
+	const IIoComponentMgr::IoMode::Type iomode = 
+	  ( ireg->second.second==THistSvc::READ 
+	    ? IIoComponentMgr::IoMode::Input
+	    : IIoComponentMgr::IoMode::Output );
+	if ( !iomgr->io_register (this, iomode, fname).isSuccess () ) {
+	  m_log << MSG::WARNING << "could not register file ["
+		<< fname << "] with the I/O component manager..." << endmsg;
+	  all_good = false;
+	} else {
+	  m_log << MSG::INFO << "registered file [" << fname << "]... [ok]" 
+	      << endmsg;
+	}
+      }
+      if (!all_good) {
+	m_log << MSG::ERROR 
+	      << "problem while registering input/output files with "
+	      << "the I/O component manager !" << endmsg;
+	st = StatusCode::FAILURE;
+      }
+    }
+
   }
 
   if (st.isFailure()) {
@@ -1906,3 +1952,145 @@ THistSvc::handle( const Incident& /* inc */ ) {
     }
   }
 }
+
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+/** helper function to recursively copy the layout of a TFile into a new TFile
+ */
+namespace {
+  void copyFileLayout (TDirectory *dst, TDirectory *src, MsgStream &msg)
+  {
+    msg << MSG::DEBUG
+	<< " dst path: " << dst->GetPath () << endreq;
+  
+    // strip out URLs
+    TString path ((char*)strstr (dst->GetPath(), ":"));
+    path.Remove (0, 2);
+
+    src->cd (path);
+    TDirectory *cur_src_dir = gDirectory;
+  
+    // loop over all keys in this directory
+    TList *key_list = cur_src_dir->GetListOfKeys ();
+    int n = key_list->GetEntries ();
+    for ( int j = 0; j < n; ++j ) {
+      TKey *k = (TKey*)key_list->At (j);
+      const std::string src_pathname = cur_src_dir->GetPath() 
+	                             + std::string("/")
+	                             + k->GetName();
+      TObject *o=src->Get (src_pathname.c_str());
+    
+      if (o->IsA()->InheritsFrom ("TDirectory")) {
+	msg << MSG::DEBUG << " subdir [" << o->GetName() << "]..." << endreq;
+	dst->cd ();
+	TDirectory * dst_dir = dst->mkdir (o->GetName(), o->GetTitle());
+	copyFileLayout (dst_dir, src, msg);
+      }
+    } // loop over keys
+    return;
+  }
+} // anon-namespace
+
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+/** @brief callback method to reinitialize the internal state of
+ *         the component for I/O purposes (e.g. upon @c fork(2))
+ */
+StatusCode 
+THistSvc::io_reinit ()
+{
+  bool all_good = true;
+  m_log << MSG::INFO << "reinitializing I/O..." << endmsg;
+
+  // retrieve the I/O component manager...
+
+  IIoComponentMgr* iomgr(0);
+
+  if (service("IoComponentMgr", iomgr, true).isFailure()) {
+    m_log << MSG::ERROR << "could not retrieve I/O component manager !"
+	  << endmsg;
+    return StatusCode::FAILURE;
+  }
+
+  GlobalDirectoryRestore restore;
+  // to hide the expected errors upon closing the files whose
+  // file descriptors have been swept under the rug...
+  gErrorIgnoreLevel = kFatal; 
+  
+  typedef std::map<std::string, std::pair<TFile*,Mode> > FileReg_t;
+
+  for (FileReg_t::iterator ifile = m_files.begin(), iend=m_files.end();
+       ifile != iend; ++ifile) {
+    TFile *f = ifile->second.first;
+    std::string fname = f->GetName();
+    m_log << MSG::INFO << "file [" << fname << "] mode: ["
+	  << f->GetOption() << "] r:"
+	  << f->GetFileBytesRead()
+	  << " w:" << f->GetFileBytesWritten()
+	  << " cnt:" << f->GetFileCounter()
+	  << endmsg;
+
+    if ( ifile->second.second == READ ) {
+      m_log << MSG::INFO 
+	    << "  TFile opened in READ mode: not reassigning names" << endmsg;
+      continue;
+    }
+
+    if ( !iomgr->io_retrieve (this, fname).isSuccess () ) {
+      m_log << MSG::ERROR << "could not retrieve new name for [" << fname 
+	    << "] !!" << endmsg;
+      all_good = false;
+      continue;
+    } else {
+      m_log << MSG::INFO << "got a new name [" << fname << "]..." << endmsg;
+    }
+    // create a new TFile
+    TFile *newfile = TFile::Open (fname.c_str(), f->GetOption());
+    if (ifile->second.second != THistSvc::READ) {
+      ::copyFileLayout (newfile, f, msg());
+    }
+
+    // loop over all uids and migrate them to the new file
+    // XXX FIXME: this double loop sucks...
+    for ( uidMap::iterator uid = m_uids.begin(), uid_end = m_uids.end();
+	  uid != uid_end;
+	  ++uid ) {
+      THistID& hid = uid->second;
+      if ( hid.file != f ) {
+	continue;
+      }
+      hid.file = newfile;
+      ifile->second.first = newfile;
+      // side-effect: create needed directories...
+      TDirectory *newdir = this->changeDir (hid);
+      TClass *cl = hid.obj->IsA();
+
+      // migrate the objects to the new file.
+      // thanks to the object model of ROOT, it is super easy.
+      if (cl->InheritsFrom ("TTree")) {
+	dynamic_cast<TTree*> (hid.obj)->SetDirectory (newdir);
+      } 
+      else if (cl->InheritsFrom ("TH1")) {
+	dynamic_cast<TH1*> (hid.obj)->SetDirectory (newdir);
+      }
+      else if (cl->InheritsFrom ("TGraph")) {
+	newdir->Append (hid.obj);
+      } else {
+	m_log << MSG::ERROR 
+	      << "id: \"" << hid.id << "\" is not a inheriting from a class "
+	      << "we know how to handle (received [" << cl->GetName() 
+	      << "], " << "expected [TTree, TH1 or TGraph]) !"
+	      << endmsg
+	      << "attaching to current dir [" << newdir->GetPath() << "] "
+	      << "nonetheless..." << endmsg;
+	newdir->Append (hid.obj);
+      }
+    }
+    f->ReOpen ("READ");
+    f->Close();
+    f = newfile;
+  }
+
+  return all_good ? StatusCode::SUCCESS : StatusCode::FAILURE;
+}
+
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
