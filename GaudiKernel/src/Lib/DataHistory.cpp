@@ -26,7 +26,7 @@ using std::endl;
 
 DataHistory::DataHistory(const CLID& id, const std::string& key,
 			 AlgorithmHistory* alg):
-  m_dataClassID(id), m_dataKey(key), m_algHist(alg)
+  m_dataClassID(id), m_dataKey(key), m_algHist(alg), m_dummy("none")
 {
 
 
@@ -41,13 +41,21 @@ DataHistory::classID() {
   return CLID_DataHistory;
 }
   
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void
+DataHistory::dump(std::ostream& ost, const bool /*isXML*/, int /*ind*/) const {
+  ost << "ClassID: " << dataClassID() << endl
+      << "Key: " << dataKey() << endl
+      << "AlgorithmHistory: " << (void*) algorithmHistory() << endl;
+}
+  
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
   
 ostream& operator<<(ostream& lhs, const DataHistory& rhs) {
 
-  lhs << "ClassID: " << rhs.dataClassID() << endl
-      << "Key: " << rhs.dataKey() << endl
-      << "AlgorithHistory: " << (void*) rhs.algorithmHistory() << endl;
+  rhs.dump(lhs,false);
 
   return lhs;
 

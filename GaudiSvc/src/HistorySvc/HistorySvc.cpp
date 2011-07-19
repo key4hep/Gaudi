@@ -406,7 +406,7 @@ HistorySvc::dumpProperties(const Algorithm &alg, std::ofstream& ofs) const {
     return;
   }
 
-  AlgorithmHistory::PropertyList::const_iterator itr;
+  PropertyList::const_iterator itr;
   for (itr=hist->properties().begin(); itr!=hist->properties().end(); ++itr) {
     ofs << alg.name() << "  " << dumpProp(*itr) << std::endl;
   }
@@ -522,8 +522,8 @@ HistorySvc::dumpProperties(std::ofstream& ofs) const {
 
 
   ofs << "GLOBAL" << std::endl;
-  const JobHistory::PropertyList props = m_jobHistory->properties();
-  JobHistory::PropertyList::const_iterator itrj;
+  const JobHistory::PropertyPairList props = m_jobHistory->propertyPairs();
+  JobHistory::PropertyPairList::const_iterator itrj;
   for (itrj=props.begin(); itrj != props.end(); ++itrj) {
     std::string client = itrj->first;
     const Property* prp = itrj->second;
@@ -809,7 +809,7 @@ HistorySvc::dumpProperties(const IService &svc, std::ofstream &ofs) const {
     return;
   }
 
-  ServiceHistory::PropertyList::const_iterator itr;
+  PropertyList::const_iterator itr;
   for (itr=hist->properties().begin(); itr != hist->properties().end();++itr) {
     ofs << svc.name() << "  " << dumpProp(*itr) << std::endl;
   }
@@ -898,7 +898,7 @@ HistorySvc::dumpProperties(const IAlgTool& alg, std::ofstream &ofs) const {
     return;
   }
 
-  AlgToolHistory::PropertyList::const_iterator itr;
+  PropertyList::const_iterator itr;
   for (itr=hist->properties().begin(); itr!=hist->properties().end(); ++itr) {
     ofs << alg.name() << "  " << dumpProp(*itr) << std::endl;
   }
@@ -957,9 +957,20 @@ HistorySvc::handle(const Incident& incident) {
 
 
 std::string
-HistorySvc::dumpProp(const Property* prop) const {
+HistorySvc::dumpProp(const Property* prop, bool isXML, int ind) const {
   std::ostringstream ost;
-  prop->fillStream(ost);
+  if (isXML) {
+    while (ind > 0) {
+      ost << " ";
+      ind --;
+    }
+    ost << "<PROPERTY name=\"" << prop->name()
+	<< "\" value=\"" << HistoryObj::convert_string(prop->toString())
+	<< "\" documentation=\"" << HistoryObj::convert_string(prop->documentation())
+	<< "\">";
+  } else {
+    prop->fillStream(ost);
+  }
   return ost.str();
 }
 
@@ -969,42 +980,87 @@ void
 HistorySvc::dumpState(std::ofstream& ofs) const {
 
 
-  ofs << "GLOBAL" << std::endl;
-  const JobHistory::PropertyList props = m_jobHistory->properties();
-  JobHistory::PropertyList::const_iterator itrj;
-  for (itrj=props.begin(); itrj != props.end(); ++itrj) {
-    std::string client = itrj->first;
-    const Property* prp = itrj->second;
-    ofs << client << "  " << dumpProp(prp) << std::endl;
+  if(m_outputFileTypeXML) {
+    //xml header
+    ofs << "<?xml version=\"1.0\" ?> " << std::endl;
+    ofs << "<!--Test-xml-->" << std::endl;
+    ofs << "<SETUP>" << std::endl;
+    ofs << "  <GLOBAL>" << std::endl;
+  } else {
+    ofs << "GLOBAL" << std::endl;
   }
 
+  const JobHistory::PropertyPairList props = m_jobHistory->propertyPairs();
+  JobHistory::PropertyPairList::const_iterator itrj;
+  std::string client_currently_open = "start";
+  for (itrj=props.begin(); itrj != props.end(); ++itrj) {
+    // client is the name of the component of the current property
+    std::string client = itrj->first;
+    const Property* prp = itrj->second; 
+    
+    if (m_outputFileTypeXML) {
 
-  ofs << "SERVICES" << std::endl;
+      if (client != client_currently_open) {
+	if(client_currently_open!="start") ofs << "    </COMPONENT>" << endl;
+	ofs << "    <COMPONENT name=\"" 
+	    << client << "\" class=\"undefined\">" << std::endl;
+      }
+    } else {
+      ofs << client << "  ";
+    }
+
+    ofs << dumpProp(prp,m_outputFileTypeXML,6) << endl;
+    
+    client_currently_open = client;
+  }
+  ofs << "    </COMPONENT>" << endl;
+   
+
+  if(m_outputFileTypeXML) {
+    ofs << "</GLOBAL>" << endl << "<SERVICES>" << endl;
+  } else {
+    ofs << "SERVICES" << std::endl;
+  }
+
   std::map<const IService*, ServiceHistory*>::const_iterator itr_s;
   for (itr_s=m_svcmap.begin(); itr_s != m_svcmap.end(); ++itr_s) {
     const IService* svc = itr_s->first;
 
-    dumpState( *svc, ofs );
+    dumpState(svc,ofs);
 
   }
 
-  ofs << "ALGORITHMS" << std::endl;
+  if(m_outputFileTypeXML) {
+    ofs << "</SERVICES>" << endl << "<ALGORITHMS> " << endl;
+  } else {
+    ofs << "ALGORITHMS" << std::endl;
+  }
+
   std::map<const Algorithm*, AlgorithmHistory*>::const_iterator itr;
   for (itr=m_algmap.begin(); itr != m_algmap.end(); ++itr) {
     const Algorithm* alg = itr->first;
-
-    dumpState( *alg, ofs );
+    
+    dumpState(alg,ofs);
 
   }
 
 
-  ofs << "ALGTOOLS" << std::endl;
+  if(m_outputFileTypeXML) {
+    ofs << "</ALGORITHMS>" << endl << "<ALGTOOLS> " << endl;
+  } else {
+    ofs << "ALGTOOLS" << std::endl;
+  }
+
   std::map<const AlgTool*, AlgToolHistory*>::const_iterator itr_a;
   for (itr_a=m_algtoolmap.begin(); itr_a != m_algtoolmap.end(); ++itr_a) {
     const AlgTool* alg = itr_a->first;
 
-    dumpState( *alg, ofs );
+    dumpState( alg, ofs);
 
+  }
+
+  if(m_outputFileTypeXML) {
+    ofs << "</ALGTOOLS>" << endl << "</SETUP>" << endl;
   }
 
 }
@@ -1012,44 +1068,44 @@ HistorySvc::dumpState(std::ofstream& ofs) const {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void
-HistorySvc::dumpState(const Algorithm &alg, std::ofstream& ofs) const {
+HistorySvc::dumpState(const INamedInterface *in, std::ofstream& ofs) const {
 
-  AlgorithmHistory *hist = getAlgHistory( alg );
+  HistoryObj *hist(0);
+  IVersHistoryObj *vhist(0);
 
-  if (hist == 0) {
+  const IService* is(0);
+  const Algorithm* ia(0);
+  const IAlgTool* it(0);
+  if ( (is=dynamic_cast<const IService*>(in)) != 0) {
+//    m_log << MSG::DEBUG << in->name() << " is Service" << endreq;
+    hist = getServiceHistory( *is );
+  } else if ( (ia = dynamic_cast<const Algorithm*>(in)) != 0 ) {
+//    m_log << MSG::DEBUG << in->name() << " is Alg" << endreq;
+    hist = getAlgHistory( *ia );
+  } else if ( (it = dynamic_cast<const IAlgTool*>(in)) != 0 ) {
+//    m_log << MSG::DEBUG << in->name() << " is AlgTool" << endreq;
+    hist = getAlgToolHistory( *it );
+  } else {
+    m_log << MSG::ERROR 
+	  << "Could not dcast interface to accepted History Obj type for " 
+	  << in->name() << endreq;
     return;
   }
 
-  ofs << ">> " << alg.name() << endl << *hist << endl;
+  if (hist == 0) { return; }
 
-}
+  vhist = dynamic_cast<IVersHistoryObj*>(hist);
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void
-HistorySvc::dumpState(const IService &svc, std::ofstream& ofs) const {
-
-  ServiceHistory *hist = getServiceHistory( svc );
-
-  if (hist == 0) {
-    return;
+  if (m_outputFileTypeXML) {
+    hist->dump(ofs,true);
+  } else {
+    ofs << ">> " << vhist->name() << endl << *hist << endl;
   }
 
-  ofs << ">> " << svc.name() << endl << *hist << endl;
-
 }
+  
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void
-HistorySvc::dumpState(const IAlgTool &alg, std::ofstream& ofs) const {
 
-  AlgToolHistory *hist = getAlgToolHistory( alg );
-
-  if (hist == 0) {
-    return;
-  }
-
-  ofs << ">> " << alg.name() << endl << *hist << endl;
-
-}
+    
+    
