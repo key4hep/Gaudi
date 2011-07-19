@@ -12,6 +12,7 @@
 #include <iostream>
 #include <sstream>
 #include <stdlib.h>
+#include <exception>
 
 bool StatusCode::s_checking(false);
 
@@ -32,7 +33,7 @@ const IssueSeverity& StatusCode::severity() const {
 StatusCode::~StatusCode() {
   if(s_checking) {
 
-    if (!m_checked && !GaudiException::s_proc) {
+    if (!m_checked && !GaudiException::s_proc && !std::uncaught_exception() ) {
 
       SmartIF<IMessageSvc> msg(Gaudi::svcLocator());
 
