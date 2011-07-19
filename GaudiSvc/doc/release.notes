@@ -1,6 +1,11 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-07-19 - Charles Leggett
+ - Patch #4943: Consolidate GaudiSvc and GaudiKernel patches in Atlas tags
+   Update HistorySvc to use new HistoryObj base classes, and provide XML output
+   (Requires GaudiKernel > v27r14)
+
 ! 2011-06-23 - Hubert Degaudenzi
  - fixed warnings from the eclipse code analysis engine.
 
