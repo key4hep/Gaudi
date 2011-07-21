@@ -1,6 +1,18 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-07-21 - Marco Clemencic
+ - Added use of 'UNLIKELY' in the destructor of StatusCode.
+
+! 2011-07-21 - Charles Leggett
+ - Patch #4975: check for uncaught exceptions in StatusCode destructor
+   If a StatusCode is created in some alg, and an exception is thrown before
+   it's checked, when the stack is unwound it will trigger an unchecked status
+   code error from the StatusCodeSvc, which can mislead people as to the true
+   cause of the problem.
+   This patch checks for std::uncaught_exception() in the StatusCode destructor
+   before calling the StatusCodeSvc.
+
 ! 2011-06-27 - Marco Clemencic
  - Fixed a problem with the compilation of genconf on ICC after the fix to
    bug #83433.
