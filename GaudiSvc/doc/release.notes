@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-07-21 - Charles Leggett
+ - Patch #4976: Fixed a couple of unchecked StatusCodes in ApplicationMgr
+
 ! 2011-06-23 - Hubert Degaudenzi
  - fixed warnings from the eclipse code analysis engine.
 

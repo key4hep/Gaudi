@@ -713,13 +713,13 @@ StatusCode ApplicationMgr::terminate() {
   { // Force a disable the auditing of finalize for MessageSvc
     SmartIF<IProperty> prop(m_messageSvc);
     if (prop.isValid()) {
-      prop->setProperty(BooleanProperty("AuditFinalize", false));
+      prop->setProperty(BooleanProperty("AuditFinalize", false)).ignore();
     }
   }
   { // Force a disable the auditing of finalize for JobOptionsSvc
     SmartIF<IProperty> prop(m_jobOptionsSvc);
     if (prop.isValid()) {
-      prop->setProperty(BooleanProperty("AuditFinalize", false));
+      prop->setProperty(BooleanProperty("AuditFinalize", false)).ignore();
     }
   }
 
