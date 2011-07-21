@@ -4,6 +4,7 @@
 #define GAUDIKERNEL_JOBHISTORY_H
 
 #include "GaudiKernel/HistoryObj.h"
+#include "GaudiKernel/IVersHistoryObj.h"
 
 #include <string>
 #include <vector>
@@ -21,11 +22,11 @@
 
 class Property;
 
-class GAUDI_API JobHistory: public HistoryObj {
+class GAUDI_API JobHistory: public HistoryObj, IVersHistoryObj {
 
 public:
 
-  typedef std::vector< std::pair<std::string,const Property*> > PropertyList;
+  typedef std::vector< std::pair<std::string,const Property*> > PropertyPairList;
 
 private:  // data
 
@@ -41,6 +42,7 @@ private:  // data
   std::vector<std::string> m_environ;
 
   PropertyList m_props;
+  PropertyPairList m_ppl;
 
   std::vector<std::string> m_CVSid;
   time_t m_start_time;
@@ -75,7 +77,14 @@ public:  // functions
   std::string cmtconfig() const { return m_cmtconfig; }
   std::vector<std::string> environment() const { return m_environ; }
   const PropertyList& properties() const { return m_props; }
+  const PropertyPairList& propertyPairs() const { return m_ppl; }
   time_t start_time() const { return m_start_time; }
+
+  void dump(std::ostream &, const bool isXML=false, int indent=0) const;
+
+  const std::string& name() const { return m_machine; }
+  const std::string& version() const { return m_release_version;}
+  const std::string& type() const { return m_osname; }
 
 private:
 

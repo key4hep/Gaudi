@@ -75,7 +75,8 @@ JobHistory::JobHistory(const std::string& rel, const std::string& os,
 JobHistory::~JobHistory() {
 }
 
-const CLID& JobHistory::classID() {
+const CLID& 
+JobHistory::classID() {
 
   static CLID CLID_JobHistory = 247994533;
   return CLID_JobHistory;
@@ -85,9 +86,46 @@ const CLID& JobHistory::classID() {
 void
 JobHistory::addProperty(const std::string& client, const Property* prop) {
 //  if (m_props.find(prop) == m_props.end()) {
-    m_props.push_back( std::pair<std::string, const Property*>(client,prop) );
+    m_ppl.push_back( std::pair<std::string, const Property*>(client,prop) );
 //  }
 }
+
+
+void 
+JobHistory::dump(std::ostream& ost, const bool isXML, int /*ind*/) const {
+
+  if (!isXML) {
+    ost << "Release: " << release_version() << endl;
+    ost << "OS:      " << os() << endl;
+    ost << "OS ver:  " << os_version() << endl;
+    ost << "Host:    " << hostname() << endl;
+    ost << "Machine: " << machine() << endl;
+    ost << "Run dir: " << dir() << endl;
+    ost << "CMTCONFIG: " << cmtconfig() << endl;
+    ost << "Job start time: " << start_time() << endl << endl;
+    ost << "Properties: [" << endl;;
+    for ( JobHistory::PropertyPairList::const_iterator
+	    ipprop=propertyPairs().begin();
+	  ipprop!=propertyPairs().end(); ++ipprop ) {
+      std::string client = ipprop->first;
+      const Property* prop = ipprop->second;
+      ost << client << ":  ";
+      prop->fillStream(ost);
+      ost << endl;
+    }
+    ost << "]" << endl;
+    vector<string> env = environment();
+    for (vector<string>::const_iterator itr=env.begin();  itr != env.end(); 
+	 ++itr) {
+      ost << *itr << endl;
+    }
+  } else {
+
+  }
+
+}
+
+
 
 //**********************************************************************
 // Free functions.
@@ -96,30 +134,9 @@ JobHistory::addProperty(const std::string& client, const Property* prop) {
 // Output stream.
 
 ostream& operator<<(ostream& lhs, const JobHistory& rhs) {
-  lhs << "Release: " << rhs.release_version() << endl;
-  lhs << "OS:      " << rhs.os() << endl;
-  lhs << "OS ver:  " << rhs.os_version() << endl;
-  lhs << "Host:    " << rhs.hostname() << endl;
-  lhs << "Machine: " << rhs.machine() << endl;
-  lhs << "Run dir: " << rhs.dir() << endl;
-  lhs << "CMTCONFIG: " << rhs.cmtconfig() << endl;
-  lhs << "Job start time: " << rhs.start_time() << endl << endl;
-  lhs << "Properties: [" << endl;;
-  for ( JobHistory::PropertyList::const_iterator
-        ipprop=rhs.properties().begin();
-        ipprop!=rhs.properties().end(); ++ipprop ) {
-     std::string client = ipprop->first;
-     const Property* prop = ipprop->second;
-     lhs << client << ":  ";
-     prop->fillStream(lhs);
-     lhs << endl;
-  }
-  lhs << "]" << endl;
-  vector<string> env = rhs.environment();
-  for (vector<string>::const_iterator itr=env.begin();  itr != env.end(); 
-       ++itr) {
-    lhs << *itr << endl;
-  }
+
+  rhs.dump(lhs,false);
+
   return lhs;
 }
 

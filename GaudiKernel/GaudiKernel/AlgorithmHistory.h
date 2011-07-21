@@ -7,6 +7,7 @@
 // which is specific to a Gaudi algorithm.
 
 #include "GaudiKernel/HistoryObj.h"
+#include "GaudiKernel/IVersHistoryObj.h"
 
 #include <iosfwd>
 #include <string>
@@ -25,12 +26,9 @@ class JobHistory;
  *
  */
 
-class GAUDI_API AlgorithmHistory: public HistoryObj {
+class GAUDI_API AlgorithmHistory: public HistoryObj, IVersHistoryObj {
 
 public:  // typedefs
-
-  // List of properties. This may change.
-  typedef std::vector<Property*> PropertyList;
 
   // List of subalgorithm histories. This may change.
   typedef std::vector<const AlgorithmHistory*> HistoryList;
@@ -97,6 +95,13 @@ public:  // functions
 
   // Return the jobHistory
   const JobHistory* jobHistory() const { return m_jobHistory; }
+
+
+  void dump(std::ostream &, const bool isXML=false, int indent=0) const;
+
+  const std::string& name() const { return algorithm_name(); }
+  const std::string& type() const { return algorithm_type(); }
+  const std::string& version() const { return algorithm_version(); }
 
 };
 
