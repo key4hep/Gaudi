@@ -18,6 +18,10 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/MapBase.h"
+
+// For parsers
+#include "GaudiKernel/StatusCode.h"
+#include "GaudiKernel/StringKey.h"
 // ============================================================================
 namespace GaudiUtils
 {
@@ -42,57 +46,57 @@ namespace GaudiUtils
    *  for std::map associative container, in the case of
    *  relatively rare insertion and frequent look-up.
    *
-   *  Due to helper base class Gaudi::Utils::MapBase, this class 
-   *  is "python-friendly", and one can perform all python 
-   *  manipulaitons 
+   *  Due to helper base class Gaudi::Utils::MapBase, this class
+   *  is "python-friendly", and one can perform all python
+   *  manipulaitons
    *  in intuitive way:
-   *  @code 
-   *  
-   *    >>> m = ...        ## get the map 
-   *    >>> print m        ## print the map a'la python class dict 
-   *    ...   
+   *  @code
+   *
+   *    >>> m = ...        ## get the map
+   *    >>> print m        ## print the map a'la python class dict
+   *    ...
    *    >>> for key in m :  print key, m[key]   ## iteration over the map
    *    ...
-   *    >>> for key,value in m.iteritems() : print key, value 
+   *    >>> for key,value in m.iteritems() : print key, value
    *    ...
-   *    >>> keys   = m.keys()                     ## get the list of keys 
-   *    >>> values = m.values ()                  ## get the list of values 
-   *    >>  items  = m.items  ()                  ## get the list of items 
+   *    >>> keys   = m.keys()                     ## get the list of keys
+   *    >>> values = m.values ()                  ## get the list of values
+   *    >>  items  = m.items  ()                  ## get the list of items
    *
    *    >>> if 'one' in m           ## check the presence of the key in map
-   * 
+   *
    *    >>>  v = m.get(key', None) ## return m[key] for existing key, else None
    *
-   *    >>>  del m[key]      ## erase the key form the map 
+   *    >>>  del m[key]      ## erase the key form the map
    *
    *    >>> value m[key]     ## unchecked access through the key
    *    ...
-   *    >>> m.update( key, value ) ## update/insert key/value pair 
-   *    
-   *   @endcode 
-   *  
-   *   @attention The syntax can be drastically simplified, if one 
-   *              redefines the __setitem__ attribute:  
+   *    >>> m.update( key, value ) ## update/insert key/value pair
    *
-   *   @code 
-   *   
-   *    >>> type(m).__setitem__ = Gaudi.Utils.MapBase.__setitem__ 
+   *   @endcode
+   *
+   *   @attention The syntax can be drastically simplified, if one
+   *              redefines the __setitem__ attribute:
+   *
+   *   @code
+   *
+   *    >>> type(m).__setitem__ = Gaudi.Utils.MapBase.__setitem__
    *
    *    >>> m[key] = value  ## much more intuitive semantics for key insertion
-   *   
-   *   @endcode 
-   *   In a similar way <c>__getitem__</c> and <c>__delitem__</c> methods 
-   *   can be redefind 
+   *
+   *   @endcode
+   *   In a similar way <c>__getitem__</c> and <c>__delitem__</c> methods
+   *   can be redefind
    *
    *   To avoid the unnesessary expansion of dictionaries
    *   it is highly recommended to exclude from dictionary the following methods:
-   *     - lower_bound 
-   *     - upper_bound 
-   *     - equal_range 
-   *     - insert 
+   *     - lower_bound
+   *     - upper_bound
+   *     - equal_range
+   *     - insert
    *
-   *   @see Gaudi::Utils::MapBase 
-   *   
+   *   @see Gaudi::Utils::MapBase
+   *
    *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
    *  @date   2005-07-23
    */
@@ -525,7 +529,7 @@ namespace GaudiUtils
     friend bool operator<= ( const VectorMap& left  ,
                              const VectorMap& right )
     { return !( right <  left  ) ; }
-    // ========================================================================    
+    // ========================================================================
     /** forced insertion of the key/mapped pair
      *  The method acts like "insert" but it *DOES*
      *  overwrite the existing mapped value.
@@ -553,7 +557,7 @@ namespace GaudiUtils
      *
      *  @param key key value
      *  @param mapped mapped value
-     *  @return true if the existing value has been replaced 
+     *  @return true if the existing value has been replaced
      */
     bool update
     ( const key_type&    key    ,
@@ -561,8 +565,8 @@ namespace GaudiUtils
     {
       _iterator result = lower_bound ( key ) ;
       if ( end() == result || compare ( key , result -> first ) )
-      { 
-        result = m_vct.insert ( result , value_type(key,mapped) ) ; 
+      {
+        result = m_vct.insert ( result , value_type(key,mapped) ) ;
         return false ;
       }
       else { result->second = mapped ; }
@@ -596,7 +600,7 @@ namespace GaudiUtils
      *  @endcode
      *
      *  @param  val a pair of (key,value)
-     *  @return true if the existing value has been replaced 
+     *  @return true if the existing value has been replaced
      */
     bool update ( const value_type& val )
     { return update ( val.first , val.second ) ; }
@@ -761,20 +765,20 @@ namespace GaudiUtils
     // ========================================================================
   public:
     // ========================================================================
-    /// merge two maps 
-    inline VectorMap& merge ( const VectorMap& right ) 
+    /// merge two maps
+    inline VectorMap& merge ( const VectorMap& right )
     {
-      for ( const_iterator it = right.begin() ; right.end() != it ; ++it ) 
+      for ( const_iterator it = right.begin() ; right.end() != it ; ++it )
       { update ( it->first , it->second ) ; }
       //
       return *this ;
     }
-    /// merge two maps 
+    /// merge two maps
     template <class K1,class K2, class K3,class K4>
-    inline VectorMap& merge ( const VectorMap<K1,K2,K3,K4>& right ) 
+    inline VectorMap& merge ( const VectorMap<K1,K2,K3,K4>& right )
     {
-      for ( typename VectorMap<K1,K2,K3,K4>::const_iterator it = 
-              right.begin() ; right.end() != it ; ++it ) 
+      for ( typename VectorMap<K1,K2,K3,K4>::const_iterator it =
+              right.begin() ; right.end() != it ; ++it )
       { update ( it->first , it->second ) ; }
       //
       return *this ;
@@ -782,27 +786,27 @@ namespace GaudiUtils
     // ========================================================================
   public:
     // ========================================================================
-    /** useful method for python decoration: 
-     *  @param index (INPUT) the index 
-     *  @return the key at given index 
-     *  @exception std::out_of_range for invalid index 
+    /** useful method for python decoration:
+     *  @param index (INPUT) the index
+     *  @return the key at given index
+     *  @exception std::out_of_range for invalid index
      */
-    const key_type&    key_at   ( const size_t index ) const 
+    const key_type&    key_at   ( const size_t index ) const
     {
-      if ( index  >= size() ) 
+      if ( index  >= size() )
       { this->throw_out_of_range_exception () ; }
       const_iterator it = this->begin() ;
       std::advance ( it , index ) ;
       return it -> first ;
     }
-    /** useful method for python decoration: 
-     *  @param index (INPUT) the index 
-     *  @return the value at given index 
-     *  @exception std::out_of_range for invalid index 
+    /** useful method for python decoration:
+     *  @param index (INPUT) the index
+     *  @return the value at given index
+     *  @exception std::out_of_range for invalid index
      */
-    const mapped_type& value_at ( const size_t index ) const 
+    const mapped_type& value_at ( const size_t index ) const
     {
-      if ( index  >= size() ) 
+      if ( index  >= size() )
       { this->throw_out_of_range_exception () ; }
       const_iterator it = this->begin() ;
       std::advance ( it , index ) ;
@@ -830,7 +834,7 @@ namespace GaudiUtils
     {
       return std::lower_bound
       ( m_vct.begin() , m_vct.end() , key , compare() ) ;
-    } 
+    }
     // ========================================================================
     /// the conversion from 'const' to 'non-const' iterator
     _iterator iter (  iterator p )
@@ -855,7 +859,7 @@ namespace GaudiUtils
     // ========================================================================
   };
   // ==========================================================================
-} //                                               end of namespace GaudiUtils 
+} //                                               end of namespace GaudiUtils
 // ============================================================================
 namespace std
 {
@@ -874,8 +878,46 @@ namespace std
     GaudiUtils::VectorMap<KEY,VALUE,KEYCOMPARE,ALLOCATOR>& right )
   { left.swap( right ) ; }
  // ===========================================================================
-} //                                                       end of namespace std 
+} //                                                       end of namespace std
 // ============================================================================
+// ============================================================================
+namespace Gaudi
+{
+  // ==========================================================================
+  namespace Parsers
+  {
+    // ========================================================================
+    /** parse the key from the string
+     *  @see Gaudi::Parsers
+     *  @see Gaudi::Parsers::parse
+     *  @see Gaudi::VectorMap
+     *  @attention: this function is needed to use it as property
+     *  @param result (OUTPUT) the parsing result
+     *  @param input the input string
+     *  @return status code
+     */
+    GAUDI_API StatusCode parse
+    ( GaudiUtils::VectorMap<std::string, double>&  result ,
+      const std::string& input  ) ;
+    // ========================================================================
+    /** parse the vector of keys from the string
+     *  @see Gaudi::Parsers
+     *  @see Gaudi::Parsers::parse
+     *  @see Gaudi::VectorMap
+     *  @see Gaudi::StringKey
+     *  @attention: this function is needed to use it as property
+     *  @param result (OUTPUT) the parsing result
+     *  @param input the input string
+     *  @return status code
+     */
+    GAUDI_API StatusCode parse
+    ( GaudiUtils::VectorMap<Gaudi::StringKey, double>&  result ,
+      const std::string&              input  ) ;
+    // ========================================================================
+  } //                                          end of namespace Gaudi::Parsers
+  // ==========================================================================
+} //                                                     end of namespace Gaudi
+
 
 // ============================================================================
 // The END
