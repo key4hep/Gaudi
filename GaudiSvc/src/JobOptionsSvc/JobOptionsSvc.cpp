@@ -1,4 +1,3 @@
-// $Id:$
 // ============================================================================
 // Boost:
 // ============================================================================
@@ -174,11 +173,10 @@ StatusCode JobOptionsSvc::readOptions ( const std::string& file,
     { search_path =  m_dir_search_path ; }
     //
     MsgStream my_log( this->msgSvc(), this->name() );
-    my_log << MSG::DEBUG                             // debug
-           << "Job-options read from the file "
-           << "'" << file << "'"
-           << MSG::INFO                              // switch
-           << std::endl ;
+    if (UNLIKELY(outputLevel() <= MSG::DEBUG))
+      my_log << MSG::DEBUG                             // debug
+             << "Reading options from the file "
+             << "'" << file << "'" << endmsg;
     gp::Messages messages(my_log);
     gp::Catalog catalog;
     gp::Units units;

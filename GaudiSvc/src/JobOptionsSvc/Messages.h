@@ -1,4 +1,3 @@
-// $Id:$
 #ifndef JOBOPTIONSVC_MESSAGES_H_
 #define JOBOPTIONSVC_MESSAGES_H_
 // ============================================================================
@@ -20,7 +19,7 @@
 namespace Gaudi { namespace Parsers {
 class Messages {
  public:
-   Messages(MsgStream& stream): stream_(stream){}
+   Messages(MsgStream& stream): stream_(stream), m_currentFilename() {}
    //Messages(const MsgStream& stream):stream_(stream){}
    void AddInfo(const std::string& info) {
      AddMessage(MSG::INFO, info);
@@ -53,6 +52,8 @@ class Messages {
            const std::string& message);
  private:
    MsgStream& stream_;
+   /// Name of last printed filename.
+   std::string m_currentFilename;
 };
 
 // ============================================================================

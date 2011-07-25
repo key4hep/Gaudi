@@ -1,4 +1,3 @@
-// $Id:$
 // ============================================================================
 // INCLUDE
 // ============================================================================
@@ -21,8 +20,12 @@ void gp::Messages::AddMessage(MSG::Level level,
 // ============================================================================
 void gp::Messages::AddMessage(MSG::Level level,
         const Position& pos, const std::string& message) {
-  std::string str_msg = str(boost::format("%1%: (%2%,%3%): %4%")
-                % pos.filename() % pos.line() % pos.column() % message);
-  stream_ << level << str_msg << endmsg;
+  if (pos.filename() != m_currentFilename) {
+    stream_ << level << "# =======> " << pos.filename() << ')' << endmsg;
+    m_currentFilename = pos.filename();
+  }
+  std::string str_msg = str(boost::format("(%1%,%2%): %3%")
+                % pos.line() % pos.column() % message);
+  stream_ << level << "# " << str_msg << endmsg;
 }
 // ============================================================================
