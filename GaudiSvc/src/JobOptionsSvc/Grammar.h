@@ -47,7 +47,7 @@ struct SkipperGrammar: qi::grammar<Iterator> {
   SkipperGrammar() : SkipperGrammar::base_type(comments) {
       comments = enc::space
               | rep::confix("/*", "*/")[*(qi::char_ - "*/")]
-              | rep::confix("//", sp::eol)[*(qi::char_ - sp::eol)];
+              | rep::confix("//", (sp::eol | sp::eoi))[*(qi::char_ - (sp::eol | sp::eoi))];
   }
   qi::rule<Iterator> comments;
 };
