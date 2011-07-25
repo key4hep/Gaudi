@@ -1,6 +1,17 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-07-25 - Marco Clemencic
+ - Modifed the new output of the JobOptionsSvc to be more readable (and easier
+   to ignore in the tests).
+
+! 2011-07-22 - Sasha Mazurov
+ - Patch #4891: New parsers for Gaudi Configuration
+   - Fully rewritten parsers (less amount of code, more readable and more robust)
+   - Based on Boost.Spirit 2
+   - New parsers for std::set and std::list
+   - Job options files: variables introduced
+
 ============================== GaudiSvc v18r14 ===============================
 ! 2011-04-15 - Charles Leggett
  - Patch #4819: THistSvc: protect DEBUG messages, add AutoFlush property

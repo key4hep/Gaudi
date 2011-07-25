@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-07-25 - Marco Clemencic
+ - Changed the default exclusion list to take into account the new output of
+   the JobOptionsSvc.
+
 ! 2011-05-03 - Marco Clemencic
  - Fixed a problem with Python script tests on Windows (including gaudirun.py).
 

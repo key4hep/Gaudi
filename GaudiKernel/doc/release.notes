@@ -1,6 +1,20 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-07-25 - Marco Clemencic
+ - Fixed a compilation problem triggered by the changes in some header files.
+
+! 2011-07-22 - Marco Clemencic
+ - Divided the bulk of parsers in several small files to speed up the
+   (parallel) compilation.
+
+! 2011-07-22 - Sasha Mazurov
+ - Patch #4891: New parsers for Gaudi Configuration
+   - Fully rewritten parsers (less amount of code, more readable and more robust)
+   - Based on Boost.Spirit 2
+   - New parsers for std::set and std::list
+   - Job options files: variables introduced
+
 ============================= GaudiKernel v27r14 =============================
 ! 2011-04-19 - Marco Clemencic
  - Fixed a defect spotted by Coverity in KeyedObject (UNINIT_CTOR).
