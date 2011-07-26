@@ -448,6 +448,7 @@ for w,o,r in [
     normalizeExamples += RegexpReplacer(o,r,w)
 normalizeExamples = LineSkipper(["//GP:",
                                  "JobOptionsSvc        INFO # ",
+                                 "JobOptionsSvc     WARNING # ",
                                  "Time User",
                                  "Welcome to",
                                  "This machine has a speed",
