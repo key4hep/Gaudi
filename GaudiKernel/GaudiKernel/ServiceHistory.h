@@ -21,7 +21,7 @@ class JobHistory;
  *
  */
 
-class GAUDI_API ServiceHistory: public HistoryObj, IVersHistoryObj {
+class GAUDI_API ServiceHistory: public HistoryObj, virtual public IVersHistoryObj {
 
 public:
   ServiceHistory();

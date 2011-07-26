@@ -21,7 +21,7 @@ class JobHistory;
  *
  */
 
-class GAUDI_API AlgToolHistory: public HistoryObj, IVersHistoryObj {
+class GAUDI_API AlgToolHistory: public HistoryObj, virtual public IVersHistoryObj {
 
 private:  // data
 
@@ -75,8 +75,6 @@ public:
 
   // Return the algorithm properties.
   const PropertyList& properties() const { return m_properties; }
-
-  void dump(std::ostream &, const bool isXML=false, int indent=0) const;
 
   const std::string& name() const { return algtool_name(); }
   const std::string& type() const { return algtool_type(); }

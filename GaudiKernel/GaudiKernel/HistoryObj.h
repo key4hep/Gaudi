@@ -10,6 +10,7 @@
 #include <vector>
 
 class Property;
+class IVersHistoryObj;
 
 /** @class HistoryObj HistoryObj.h GaudiKernel/HistoryObj.h
 
@@ -23,13 +24,13 @@ class Property;
 class GAUDI_API HistoryObj: public DataObject {
 public:
   HistoryObj();
-  virtual ~HistoryObj(){}
+  virtual ~HistoryObj();
 
   virtual const CLID& clID() const { return classID(); }
   static const CLID& classID();
   static std::string convert_string(const std::string&);
 
-  virtual void dump(std::ostream&, const bool isXML=false, 
+  virtual void dump(std::ostream&, const bool isXML=false,
 		    int indent=0) const = 0;
 
  protected:

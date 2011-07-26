@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-07-26 - Marco Clemencic
+ - Improved the stability of HistoryObj and IVersHistoryObj in dynamic_cast.
+
 ! 2011-07-26 - Markus Frank
  - Patch #4999: Added virtual destructor implementation for IUpdateableIF
 

@@ -17,3 +17,9 @@ namespace Gaudi {
 
 #include "GaudiKernel/IComponentManager.h"
 IComponentManager::~IComponentManager(){}
+
+#include "GaudiKernel/HistoryObj.h"
+HistoryObj::~HistoryObj(){}
+
+#include "GaudiKernel/IVersHistoryObj.h"
+IVersHistoryObj::~IVersHistoryObj(){}
