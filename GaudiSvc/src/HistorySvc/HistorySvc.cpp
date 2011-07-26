@@ -1011,8 +1011,9 @@ HistorySvc::dumpState(std::ofstream& ofs) const {
 
     client_currently_open = client;
   }
-  ofs << "    </COMPONENT>" << endl;
 
+  if (m_outputFileTypeXML)
+    ofs << "    </COMPONENT>" << endl;
 
   if(m_outputFileTypeXML) {
     ofs << "</GLOBAL>" << endl << "<SERVICES>" << endl;
@@ -1093,6 +1094,11 @@ HistorySvc::dumpState(const INamedInterface *in, std::ofstream& ofs) const {
   if (hist == 0) { return; }
 
   vhist = dynamic_cast<IVersHistoryObj*>(hist);
+
+  if (!vhist) {
+    warning() << "Failed to dynamic cast IVersHistoryObj for " << in->name() << endmsg;
+    return;
+  }
 
   if (m_outputFileTypeXML) {
     hist->dump(ofs,true);

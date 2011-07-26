@@ -1,6 +1,11 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-07-26 - Marco Clemencic
+ - Fixed HistorySvc::dumpState to prevent segmentation faults in case of
+   failure in the dynamic_cast.
+ - Fixed a small inconsistency in the non-XML output of HistorySvc.
+
 ! 2011-07-26 - Sasha Mazurov
  - Fixed a problem in the new parser (patch #4891): add support for references
    (@Other.Prop).
