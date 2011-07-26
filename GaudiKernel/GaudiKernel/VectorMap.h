@@ -18,6 +18,10 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/MapBase.h"
+
+// For parsers
+#include "GaudiKernel/StatusCode.h"
+#include "GaudiKernel/StringKey.h"
 // ============================================================================
 namespace GaudiUtils
 {
@@ -876,6 +880,44 @@ namespace std
  // ===========================================================================
 } //                                                       end of namespace std
 // ============================================================================
+// ============================================================================
+namespace Gaudi
+{
+  // ==========================================================================
+  namespace Parsers
+  {
+    // ========================================================================
+    /** parse the key from the string
+     *  @see Gaudi::Parsers
+     *  @see Gaudi::Parsers::parse
+     *  @see Gaudi::VectorMap
+     *  @attention: this function is needed to use it as property
+     *  @param result (OUTPUT) the parsing result
+     *  @param input the input string
+     *  @return status code
+     */
+    GAUDI_API StatusCode parse
+    ( GaudiUtils::VectorMap<std::string, double>&  result ,
+      const std::string& input  ) ;
+    // ========================================================================
+    /** parse the vector of keys from the string
+     *  @see Gaudi::Parsers
+     *  @see Gaudi::Parsers::parse
+     *  @see Gaudi::VectorMap
+     *  @see Gaudi::StringKey
+     *  @attention: this function is needed to use it as property
+     *  @param result (OUTPUT) the parsing result
+     *  @param input the input string
+     *  @return status code
+     */
+    GAUDI_API StatusCode parse
+    ( GaudiUtils::VectorMap<Gaudi::StringKey, double>&  result ,
+      const std::string&              input  ) ;
+    // ========================================================================
+  } //                                          end of namespace Gaudi::Parsers
+  // ==========================================================================
+} //                                                     end of namespace Gaudi
+
 
 // ============================================================================
 // The END

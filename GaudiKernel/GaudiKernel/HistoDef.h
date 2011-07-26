@@ -114,6 +114,10 @@ namespace Gaudi
     // ========================================================================
   };
   // ==========================================================================
+  /// the streamer operator for class Gaudi::Histo1DDef
+  GAUDI_API std::ostream& 
+  operator<<( std::ostream& o , const Gaudi::Histo1DDef& histo ) ;
+  // ==========================================================================
   /** @namespace Gaudi::Histos
    *  collection of simple utilities to deal with histograms
    *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
@@ -157,10 +161,8 @@ namespace Gaudi
       const Gaudi::Histo1DDef& hist ) ;
     // ========================================================================
   } // end of namespace Gaudi::Histos
+  // ==========================================================================
 } // end of namespace Gaudi
-// ============================================================================
-/// the streamer operator for class Gaudi::Histo1DDef
-GAUDI_API std::ostream& operator<<( std::ostream& o , const Gaudi::Histo1DDef& histo ) ;
 // ============================================================================
 // The END
 // ============================================================================

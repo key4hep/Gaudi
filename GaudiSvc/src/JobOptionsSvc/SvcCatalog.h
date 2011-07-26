@@ -1,13 +1,13 @@
-// $Id: JobOptionsCatalogue.h,v 1.7 2007/05/24 14:41:22 hmd Exp $
+// $Id:$
 // ============================================================================
-// CVS tag $Name:  $ 
+// CVS tag $Name:  $
 // ============================================================================
-#ifndef JOBOPTIONSSVC_JOBOPTIONSCATALOGUE_H 
-#define JOBOPTIONSSVC_JOBOPTIONSCATALOGUE_H 1
+#ifndef JOBOPTIONSSVC_SVCCATALOG_H
+#define JOBOPTIONSSVC_SVCCATALOG_H 1
 // ============================================================================
 // Include files
 // ============================================================================
-// STD & STL 
+// STD & STL
 // ============================================================================
 #include <map>
 #include <vector>
@@ -19,44 +19,44 @@
 #include "GaudiKernel/Property.h"
 // ===========================================================================
 
-/** @class JobOptionsCatalogue
+/** @class SvcCatalog
  *
  *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date   2006-05-13
  */
-class JobOptionsCatalogue
+class SvcCatalog
 {
 public:
   typedef std::vector<const Property*> PropertiesT;
   typedef std::map<std::string, PropertiesT > ObjectsT;
-  JobOptionsCatalogue();
-  virtual ~JobOptionsCatalogue();  
-  
-  StatusCode addProperty( const std::string& client, 
+  SvcCatalog();
+  virtual ~SvcCatalog();
+
+  StatusCode addProperty( const std::string& client,
                                              const Property* property );
-  
-  StatusCode removeProperty( const std::string& client, 
+
+  StatusCode removeProperty( const std::string& client,
                                                   const std::string& name );
   const PropertiesT* getProperties( const std::string& client) const;
   std::vector<std::string> getClients() const;
 public:
-  /// dump the content of catalogue to std::ostream 
+  /// dump the content of catalog to std::ostream
   std::ostream& fillStream ( std::ostream& o ) const ;
 private:
   PropertiesT* findProperties(const std::string& client) const;
   bool findProperty(PropertiesT* props,
                     const std::string& name,PropertiesT::iterator& result);
-  ObjectsT* m_catalogue;
+  ObjectsT* m_catalog;
 };
 // ============================================================================
-/// printoput operator 
+/// printoput operator
 // ============================================================================
-std::ostream& operator<<( std::ostream& o , const JobOptionsCatalogue& c ) ;
+std::ostream& operator<<( std::ostream& o , const SvcCatalog& c ) ;
 // ============================================================================
 
 // ============================================================================
-// The END 
+// The END
 // ============================================================================
-#endif // JOBOPTIONSSVC_JOBOTIONSCATALOGUE_H
-// ============================================================================
+#endif // JOBOPTIONSSVC_SVCCATALOG_H
+// ===========================================================================
