@@ -150,7 +150,7 @@ PropertyAlg          INFO  Properties of AuditorSvc: Auditors
 PropertyAlg          INFO  Properties of Dummy1: Property
 PropertyAlg          INFO  Properties of Dummy2: Property
 PropertyAlg          INFO  Properties of MessageSvc: OutputLevel, setDebug, setVerbose, setWarning
-PropertyAlg          INFO  Properties of PropertyAlg: Bool, BoolArray, Double, DoubleArray, DoubleArrayWithoutUnits, DoubleArrayWithUnits, DoublePairArray, EmptyArray, Int, IntArray, IntPairArray, OutputLevel, PBool, PBoolArray, PDouble, PDoubleArray, PInt, PIntArray, PString, PStringArray, String, StringArray
+PropertyAlg          INFO  Properties of PropertyAlg: Bool, BoolArray, Double, DoubleArray, DoubleArrayWithUnits, DoubleArrayWithoutUnits, DoublePairArray, EmptyArray, Int, IntArray, IntPairArray, OutputLevel, PBool, PBoolArray, PDouble, PDoubleArray, PInt, PIntArray, PString, PStringArray, String, StringArray
 PropertyAlg          INFO  Properties of PropertyProxy: String
 PropertyAlg          INFO =================================================
 PropertyAlg          INFO Changed property DoubleArray in catalogue

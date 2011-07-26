@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2011-07-26 - Marco Clemencic
+ - Update of a reference file (patch #4891).
+
 ============================ GaudiExamples v22r2 =============================
 ! 2011-04-08 - Marco Clemencic
  - Updated IncidentSvc test after the introduction of the new incidents
