@@ -1,4 +1,3 @@
-// $Id:$
 #ifndef JOBOPTIONSVC_GRAMMAR_H_
 #define JOBOPTIONSVC_GRAMMAR_H_
 // ============================================================================
@@ -189,6 +188,7 @@ struct FileGrammar: qi::grammar<Iterator, Node(), Skipper> {
                          >> (gidentifier[op(qi::_val, qi::_1)]
                          >> -(gidentifier[op(qi::_val, qi::_1)]) % '.')
                     [op(qi::_val, Node::kProperty)];
+      property_ref = -qi::lit('@') >> property;
       oper = rep::qi::iter_pos[op(qi::_val, qi::_1)]
                    >> (qi::lit("=")[op(qi::_val, Node::kEqual)]
                         |
@@ -197,7 +197,7 @@ struct FileGrammar: qi::grammar<Iterator, Node(), Skipper> {
                         qi::lit("-=")[op(qi::_val, Node::kMinusEqual)]);
       value = rep::qi::iter_pos[qi::_a =  qi::_1]
                      >>
-                     (map_value | vector_value |  simple_value | property)
+                     (map_value | vector_value |  simple_value | property_ref)
                      [qi::_val = qi::_1][op(qi::_val, qi::_a)]
                      ;
       begin_vector = enc::char_('(')[qi::_val=')']
@@ -225,7 +225,7 @@ struct FileGrammar: qi::grammar<Iterator, Node(), Skipper> {
                     (greal[qi::_val = qi::_1]);
   }
   qi::rule<Iterator, Node(), Skipper> file, include, assign, property,
-          oper, map_value, pair_value, simple_value, pair, units,
+          property_ref, oper, map_value, pair_value, simple_value, pair, units,
           print_options, pragma, pragma_print, pragma_tree, pragma_dump_file;
   qi::rule<Iterator, Node(),qi::locals<std::string> > shell;
   qi::rule<Iterator, Node(), qi::locals<Iterator>, Skipper> statement, value;
