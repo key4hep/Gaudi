@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-07-26 - Markus Frank
+ - Patch #4999: Added virtual destructor implementation for IUpdateableIF
+
 ! 2011-07-25 - Marco Clemencic
  - Fixed a compilation problem triggered by the changes in some header files.
 
