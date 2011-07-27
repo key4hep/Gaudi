@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-07-27 - Marco Clemencic
+ - Hidden compilation warnings in Grammars.h using the pragma "system_header".
+
 ! 2011-07-25 - Marco Clemencic
  - Fixed a compilation problem triggered by the changes in some header files.
 
