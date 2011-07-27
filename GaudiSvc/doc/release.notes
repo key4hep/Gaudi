@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-07-27 - Marco Clemencic
+ - Fixed compilation waring in PropertyValue.cpp.
+
 ! 2011-07-26 - Sasha Mazurov
  - Fixed a problem in the new parser (patch #4891): add support for references
    (@Other.Prop).
