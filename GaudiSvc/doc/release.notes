@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-07-27 - Marco Clemencic
+ - Fixed compilation waring in PropertyValue.cpp.
+
 ! 2011-07-26 - Marco Clemencic
  - Fixed HistorySvc::dumpState to prevent segmentation faults in case of
    failure in the dynamic_cast.

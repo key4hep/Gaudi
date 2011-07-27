@@ -15,19 +15,19 @@
 namespace gp = Gaudi::Parsers;
 // ============================================================================
 bool gp::PropertyValue::IsSimple() const {
-    return boost::get<std::string>(&value_) != NULL;
+  return boost::get<std::string>(&value_) != NULL;
 }
 // ============================================================================
 bool gp::PropertyValue::IsVector() const {
-    return boost::get<std::vector<std::string> >(&value_) != NULL;
+  return boost::get<std::vector<std::string> >(&value_) != NULL;
 }
 // ============================================================================
 bool gp::PropertyValue::IsMap() const {
-    return boost::get<std::map<std::string, std::string> >(&value_) != NULL;
+  return boost::get<std::map<std::string, std::string> >(&value_) != NULL;
 }
 // ============================================================================
 gp::PropertyValue&
- gp::PropertyValue::operator += (const PropertyValue& right) {
+gp::PropertyValue::operator += (const PropertyValue& right) {
 
   if (IsSimple()) {
     throw PropertyValueException::WrongLValue();
@@ -65,13 +65,13 @@ gp::PropertyValue&
 }
 
 const gp::PropertyValue
- gp::PropertyValue::operator+(const PropertyValue& right) {
-	return PropertyValue(*this) += right;
+gp::PropertyValue::operator+(const PropertyValue& right) {
+  return PropertyValue(*this) += right;
 
 }
 
 gp::PropertyValue&
- gp::PropertyValue::operator-=(const PropertyValue& right) {
+gp::PropertyValue::operator-=(const PropertyValue& right) {
   if (IsSimple()) {
     throw PropertyValueException::WrongLValue();
   }
@@ -79,8 +79,8 @@ gp::PropertyValue&
   if (IsVector()) {
     VectorOfStrings& vec = Vector();
     if (right.IsSimple()) {
-         vec.erase(std::find(vec.begin(), vec.end(), right.String()));
-         return *this;
+      vec.erase(std::find(vec.begin(), vec.end(), right.String()));
+      return *this;
     }
 
     if (right.IsVector()) {
@@ -113,33 +113,35 @@ gp::PropertyValue&
 }
 
 const gp::PropertyValue
- gp::PropertyValue::operator-(const PropertyValue& right) {
+gp::PropertyValue::operator-(const PropertyValue& right) {
   return PropertyValue(*this) -= right;
 }
 // ============================================================================
 std::string gp::PropertyValue::ToString() const {
-    if (const std::string* value = boost::get<std::string>(&value_)) {
-        return *value;
-    } else if (const std::vector<std::string>*
-            value = boost::get<std::vector<std::string> >(&value_)) {
-        std::string result = "[";
-        std::string delim = "";
-        BOOST_FOREACH(const std::string& in, *value) {
-            result += delim + in;
-            delim = ", ";
-        }
-        return result+"]";
-    } else if (const std::map<std::string, std::string>*
-            value = boost::get<std::map<std::string, std::string> >(&value_)) {
-        std::string result = "{";
-        std::string delim = "";
-        typedef std::pair<std::string, std::string> pair_t;
-        BOOST_FOREACH(const pair_t& in, *value) {
-            result += delim + in.first + ":" + in.second;
-            delim = ", ";
-        }
-        return result+"}";
+  if (const std::string* value = boost::get<std::string>(&value_)) {
+    return *value;
+  } else if (const std::vector<std::string>*
+      value = boost::get<std::vector<std::string> >(&value_)) {
+    std::string result = "[";
+    std::string delim = "";
+    BOOST_FOREACH(const std::string& in, *value) {
+      result += delim + in;
+      delim = ", ";
     }
-    assert(false);
+    return result+"]";
+  } else if (const std::map<std::string, std::string>*
+      value = boost::get<std::map<std::string, std::string> >(&value_)) {
+    std::string result = "{";
+    std::string delim = "";
+    typedef std::pair<std::string, std::string> pair_t;
+    BOOST_FOREACH(const pair_t& in, *value) {
+      result += delim + in.first + ":" + in.second;
+      delim = ", ";
+    }
+    return result+"}";
+  }
+  assert(false);
+  // @todo Check the validity of this logic
+  return std::string(); // avoid compilation warning
 }
 
