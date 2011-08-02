@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-08-02 - Marco Clemencic
+ - Fixed a compilation error on ICC (patch #4891)
+
 ! 2011-07-27 - Marco Clemencic
  - Hidden compilation warnings in Grammars.h using the pragma "system_header".
 
