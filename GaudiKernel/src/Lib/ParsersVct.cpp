@@ -32,97 +32,98 @@ namespace
   // ==========================================================================
 }
 // ============================================================================
-template<typename T1, typename T2>
-inline StatusCode
-    Gaudi::Parsers::parse_(ROOT::Math::PositionVector3D<T1,T2>& result,
-    		const std::string& input){
-	Skipper skipper;
+namespace Gaudi { namespace Parsers {
+  template<typename T1, typename T2>
+  inline StatusCode
+  parse_(ROOT::Math::PositionVector3D<T1,T2>& result, const std::string& input){
+    Skipper skipper;
     typename Grammar_<IteratorT, ROOT::Math::PositionVector3D<T1,T2>, Skipper >::Grammar g;
     IteratorT iter = input.begin(), end = input.end();
     if (qi::phrase_parse( iter, end, g, skipper, result)){
-        return StatusCode::SUCCESS;
+      return StatusCode::SUCCESS;
     }
     //@attention always
     return true;
-}
-// ============================================================================
+  }
+  // ==========================================================================
 
-StatusCode Gaudi::Parsers::parse(Gaudi::XYZPoint& result,
-		const std::string& input  ) {
-    return Gaudi::Parsers::parse_(result, input);
-}
+  StatusCode parse(Gaudi::XYZPoint& result,
+                   const std::string& input  ) {
+    return parse_(result, input);
+  }
 
-// ============================================================================
-/*  parse 3D-vector
- *  @param result (output) the parsed vector
- *  @param input  (input)  the input string
- *  @return status code
- *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
- *  @date 2009-09-05
- */
-StatusCode Gaudi::Parsers::parse
-( Gaudi::XYZVector&  result  ,
-  const std::string& input   )
-{
+  // ==========================================================================
+  /*  parse 3D-vector
+   *  @param result (output) the parsed vector
+   *  @param input  (input)  the input string
+   *  @return status code
+   *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
+   *  @date 2009-09-05
+   */
+  StatusCode parse
+  ( Gaudi::XYZVector&  result  ,
+    const std::string& input   )
+  {
 
-  Gaudi::XYZPoint point ;
-  StatusCode sc = parse ( point , input ) ;
-  if ( sc.isFailure() ){ return sc ; }                               // RETURN
-  result = point ;
-  return StatusCode::SUCCESS ;                                       // RETURN
-}
+    Gaudi::XYZPoint point ;
+    StatusCode sc = parse ( point , input ) ;
+    if ( sc.isFailure() ){ return sc ; }                               // RETURN
+    result = point ;
+    return StatusCode::SUCCESS ;                                       // RETURN
+  }
 
-StatusCode Gaudi::Parsers::parse(Gaudi::LorentzVector& result, const std::string& input) {
-    return Gaudi::Parsers::parse_(result, input);
-}
+  StatusCode parse(Gaudi::LorentzVector& result, const std::string& input) {
+    return parse_(result, input);
+  }
 
-// ============================================================================
-/*  parse the vector of points
- *  @param resut (OUTPUT) the parser vector
- *  @param input (INPIUT) the string to be parsed
- *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
- *  @date 2009-09-05
- */
-// ============================================================================
-StatusCode Gaudi::Parsers::parse
-( std::vector<Gaudi::XYZPoint>&  result  ,
-  const std::string&             input   )
-{
-  result.clear() ;
-  return Gaudi::Parsers::parse_(result, input);
-}
-// ============================================================================
-/*  parse the vector of vectors
- *  @param resut (OUTPUT) the parser vector
- *  @param input (INPIUT) the string to be parsed
- *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
- *  @date 2009-09-05
- */
-// ============================================================================
-StatusCode Gaudi::Parsers::parse
-( std::vector<Gaudi::XYZVector>&  result  ,
-  const std::string&              input   )
-{
-  result.clear() ;
-  return Gaudi::Parsers::parse_(result, input);
-}
+  // ==========================================================================
+  /*  parse the vector of points
+   *  @param resut (OUTPUT) the parser vector
+   *  @param input (INPIUT) the string to be parsed
+   *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
+   *  @date 2009-09-05
+   */
+  // ==========================================================================
+  StatusCode parse
+  ( std::vector<Gaudi::XYZPoint>&  result  ,
+    const std::string&             input   )
+  {
+    result.clear() ;
+    return parse_(result, input);
+  }
+  // ==========================================================================
+  /*  parse the vector of vectors
+   *  @param resut (OUTPUT) the parser vector
+   *  @param input (INPIUT) the string to be parsed
+   *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
+   *  @date 2009-09-05
+   */
+  // ==========================================================================
+  StatusCode parse
+  ( std::vector<Gaudi::XYZVector>&  result  ,
+    const std::string&              input   )
+  {
+    result.clear() ;
+    return parse_(result, input);
+  }
 
 #ifndef _WIN32
-// ============================================================================
-/*  parse the vector of vectors
- *  @param resut (OUTPUT) the parser vector
- *  @param input (INPIUT) the string to be parsed
- *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
- *  @date 2009-09-05
- */
-// ============================================================================
-StatusCode Gaudi::Parsers::parse
-( std::vector<Gaudi::LorentzVector>&  result  ,
-  const std::string&              input   )
-{
-	return Gaudi::Parsers::parse_(result, input);
-}
+  // ==========================================================================
+  /*  parse the vector of vectors
+   *  @param resut (OUTPUT) the parser vector
+   *  @param input (INPIUT) the string to be parsed
+   *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
+   *  @date 2009-09-05
+   */
+  // ==========================================================================
+  StatusCode parse
+  ( std::vector<Gaudi::LorentzVector>&  result  ,
+    const std::string&              input   )
+  {
+    return parse_(result, input);
+  }
 #endif
+} } // namespace Gaudi::Parsers
 // ============================================================================
 // print XYZ-point
 // ============================================================================
