@@ -1,6 +1,6 @@
 // ============================================================================
-#ifndef GAUDIKERNEL_GRAMMARS_H
-#define GAUDIKERNEL_GRAMMARS_H 1
+#ifndef GAUDIKERNEL_GRAMMARSV2_H
+#define GAUDIKERNEL_GRAMMARSV2_H 1
 #ifdef __GNUC__
 #pragma GCC system_header
 #endif

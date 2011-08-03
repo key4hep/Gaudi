@@ -1,4 +1,3 @@
-// $Id:$
 // ============================================================================
 #ifndef GAUDIPROPERTYPARSERS_PARSERSGENERATOR_H
 #define GAUDIPROPERTYPARSERS_PARSERSGENERATOR_H 1
@@ -19,7 +18,7 @@
 // Gaudi
 // ============================================================================
 #include "GaudiKernel/StatusCode.h"
-#include "GaudiKernel/Grammars.h"
+#include "GaudiKernel/GrammarsV2.h"
 // ============================================================================
 namespace Gaudi {
   namespace Parsers {

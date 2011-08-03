@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-08-03 - Sasha Mazurov
+ - Renamed GaudiKernel/Grammars.h to GrammarsV2.h to allow easier backward
+   compatibility.
+
 ! 2011-08-02 - Marco Clemencic
  - Fixed a compilation error on ICC (patch #4891)
 
