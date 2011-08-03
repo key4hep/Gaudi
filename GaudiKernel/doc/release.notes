@@ -1,6 +1,12 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-08-03 - Sasha Mazurov
+ - Renamed GaudiKernel/Grammars.h to GrammarsV2.h to allow easier backward
+   compatibility.
+ - Reintroduced the old (Spirit 1) headers Grammars.h and Parsers.icpp for
+   backward compatibility (with the introduction of a deprecation warning).
+
 ! 2011-08-02 - Marco Clemencic
  - Fixed a compilation error on ICC (patch #4891)
 

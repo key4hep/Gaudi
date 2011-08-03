@@ -2,560 +2,529 @@
 #ifndef GAUDIKERNEL_GRAMMARS_H
 #define GAUDIKERNEL_GRAMMARS_H 1
 #ifdef __GNUC__
-#pragma GCC system_header
+#warning \
+  The headers GaudiKernel/Grammars.h and GaudiKernel/Parsers.icpp are deprecated \
+  and will be removed from the next release of Gaudi. You should migrate your \
+  code the new pasers based on Boost.Spirit 2.
 #endif
 // ============================================================================
 // Include files
 // ============================================================================
-// STD:
-//==============================================================================
-#include <string>
-#include <vector>
-#include <list>
-#include <set>
-#include <map>
-//==============================================================================
-// Boost:
-//==============================================================================
-#include <boost/spirit/include/qi.hpp>
-#include <boost/fusion/include/unused.hpp>
-#include <boost/fusion/include/std_pair.hpp>
-
-#include <boost/spirit/include/phoenix_core.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
-
-#include <boost/utility/enable_if.hpp>
-#include <boost/type_traits.hpp>
-
-#include <boost/spirit/repository/include/qi_confix.hpp>
-//==============================================================================
-// Gaudi:
-//==============================================================================
-#include "GaudiKernel/VectorMap.h"
-#include "GaudiKernel/HashMap.h"
-#include "GaudiKernel/StringKey.h"
-#include "GaudiKernel/Point3DTypes.h"
-#include "GaudiKernel/Point4DTypes.h"
-#include "GaudiKernel/HistoDef.h"
-//==============================================================================
-namespace Gaudi {  namespace Parsers {
-//==============================================================================
-// Namespace aliases:
-//==============================================================================
-namespace sp    = boost::spirit;
-namespace ph    = boost::phoenix;
-namespace qi    = sp::qi;
-namespace enc   = sp::ascii;
-namespace rep  = sp::repository;
-//==============================================================================
-// Grammars
-//==============================================================================
-typedef std::string::const_iterator DefaultIterator;
-typedef enc::space_type DefaultSkipper;
-//==============================================================================
-template <typename Iterator, typename T,  typename Skipper,
-	class Enable = void>
-struct Grammar_ {
-  /* READ THIS IF YOUR COMPILE BREAKS ON THE FOLLOWING LINE
-   *
-   * To users: You have to ask developers to implement parser for your type T
-   * To developer: You have to implement and register Grammar for type T
-   *
-   */
-  BOOST_MPL_ASSERT_MSG(false, GRAMMAR_FOR_TYPE_DOES_NOT_EXISTS, (T));
-};
-
-#define REGISTER_GRAMMAR(ResultType, GrammarName) \
-    template <typename Iterator, typename Skipper>\
-    struct Grammar_<Iterator, ResultType, Skipper> \
-    { \
-        typedef GrammarName<Iterator, Skipper> Grammar;\
-    }
-//==============================================================================
-template< typename Iterator>
-struct SkipperGrammar  : qi::grammar<Iterator>
-{
-	SkipperGrammar() : SkipperGrammar::base_type(comments) {
-		comments = enc::space | rep::confix("/*", "*/")[*(qi::char_ - "*/")]
-		      |
-		      rep::confix("//", sp::eol)[*(qi::char_ - sp::eol)];
-	}
-	qi::rule<Iterator> comments;
-};
-//==============================================================================
-template< typename Iterator, typename Skipper>
-struct StringGrammar : qi::grammar<Iterator, std::string(), qi::locals<char>,
-                                                             Skipper>
-{
-//------------------------------------------------------------------------------
-    typedef std::string ResultT;
-//------------------------------------------------------------------------------
-    StringGrammar() : StringGrammar::base_type( str ) {
-        begin_quote   = enc::char_("\"'");
-        quote     = enc::char_(qi::_r1);
-
-        str = qi::lexeme[begin_quote[qi::_a = qi::_1]
-                > *( (enc::char_('\\') >> quote(qi::_a))[qi::_val += qi::_a]
-                    | (enc::char_[qi::_val += qi::_1] - quote(qi::_a))) >
-               quote(qi::_a)]
-              ;
-    }
-//------------------------------------------------------------------------------
-    qi::rule<Iterator, std::string(), qi::locals<char>, Skipper> str;
-    qi::rule<Iterator, char()> begin_quote;
-    qi::rule<Iterator, void(char)> quote;
-//------------------------------------------------------------------------------
-};
-REGISTER_GRAMMAR(std::string, StringGrammar);
-REGISTER_GRAMMAR(Gaudi::StringKey, StringGrammar);
-//==============================================================================
-template< typename Iterator, typename Skipper>
-struct CharGrammar : qi::grammar<Iterator, char(), Skipper>
-{
-    typedef char ResultT;
-    CharGrammar() : CharGrammar::base_type( ch ) {
-        ch = qi::int_parser<char>()
-            |
-            '\'' >> (qi::char_-'\'') >> '\'';
-    }
-    qi::rule<Iterator, char(), Skipper> ch;
-};
-REGISTER_GRAMMAR(char, CharGrammar);
-//==============================================================================
-template< typename Iterator, typename Skipper>
-struct BoolGrammar : qi::grammar<Iterator, bool(), Skipper>
-{
-    typedef bool ResultT;
-    BoolGrammar() : BoolGrammar::base_type( boolean_literal ) {
-        boolean_literal =
-            (qi::lit("true") | "True" | "TRUE" | "1")[qi::_val=true]
-            |
-            (qi::lit("false") | "False" | "FALSE" | "0")[qi::_val=false];
-    }
-    qi::rule<Iterator, bool(), Skipper> boolean_literal;
-};
-REGISTER_GRAMMAR(bool, BoolGrammar);
-//==============================================================================
-template< typename Iterator, typename RT , typename Skipper>
-struct IntGrammar : qi::grammar<Iterator, RT(), Skipper>
-{
-    typedef RT ResultT;
-    IntGrammar() : IntGrammar::base_type( integer ) {
-        integer = qi::int_parser<RT>();
-    }
-    qi::rule<Iterator, RT(), Skipper> integer;
-};
-// ----------------------------------------------------------------------------
-// Register IntGrammar:
-// ----------------------------------------------------------------------------
-template <typename Iterator, typename T, typename Skipper>
-struct Grammar_<Iterator, T,  Skipper,
-    typename boost::enable_if<boost::is_integral<T> >::type>
-{
-    typedef IntGrammar<Iterator, T, Skipper> Grammar;
-};
-//==============================================================================
-template< typename Iterator, typename RT, typename Skipper>
-struct RealGrammar : qi::grammar<Iterator, RT(), Skipper>
-{
-    typedef RT ResultT;
-    RealGrammar() : RealGrammar::base_type(real) {
-        real = qi::real_parser<RT>();
-    }
-    qi::rule<Iterator, RT(), Skipper> real;
-};
-// ----------------------------------------------------------------------------
-// Register RealGrammar:
-// ----------------------------------------------------------------------------
-template <typename Iterator, typename T, typename Skipper >
-struct Grammar_<Iterator, T, Skipper,
-               typename boost::enable_if<boost::is_floating_point<T> >::type >
-{
-    typedef RealGrammar<Iterator, T, Skipper> Grammar;
-};
-//==============================================================================
-template< typename Iterator, typename VectorT, typename Skipper>
-struct VectorGrammar : qi::grammar<Iterator,
-             VectorT(), qi::locals<char>,Skipper>
-{
-//------------------------------------------------------------------------------
-    typedef VectorT ResultT;
-//------------------------------------------------------------------------------
-    VectorGrammar() : VectorGrammar::base_type(vec) {
-      begin = enc::char_('[')[qi::_val=']'] | enc::char_('{')[qi::_val='}']
-              | enc::char_('(')[qi::_val=')'];
-      end = enc::char_(qi::_r1);
-      list = elementGrammar % ',';
-      vec = begin[qi::_a = qi::_1] >> -list[qi::_val=qi::_1] >> end(qi::_a);
-    }
-// ----------------------------------------------------------------------------
-    typename
-      Grammar_<Iterator, typename VectorT::value_type, Skipper>::Grammar
-      	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 elementGrammar;
-    qi::rule<Iterator, char()> begin;
-    qi::rule<Iterator, void(char)> end;
-
-    qi::rule<Iterator, ResultT(), qi::locals<char>,Skipper> vec;
-    qi::rule<Iterator, ResultT(), Skipper> list;
-// ----------------------------------------------------------------------------
-};
-// ----------------------------------------------------------------------------
-// Register VectorGrammar for std::vector:
-// ----------------------------------------------------------------------------
-template <typename Iterator, typename InnerT, typename AllocatorT,
-	typename Skipper>
-struct Grammar_<Iterator, std::vector<InnerT, AllocatorT>, Skipper >
-{
-    typedef
-     VectorGrammar<Iterator, std::vector<InnerT, AllocatorT>,Skipper>
-    																	Grammar;
-};
-// ----------------------------------------------------------------------------
-// Register VectorGrammar for std::list:
-// ----------------------------------------------------------------------------
-template <typename Iterator, typename InnerT, typename AllocatorT,
-  typename Skipper>
-struct Grammar_<Iterator, std::list<InnerT, AllocatorT>, Skipper >
-{
-    typedef
-     VectorGrammar<Iterator, std::list<InnerT, AllocatorT>,Skipper>
-                                      Grammar;
-};
-// ----------------------------------------------------------------------------
-// Register VectorGrammar for std::set:
-// ----------------------------------------------------------------------------
-template <typename Iterator, typename InnerT, typename CompareT,
-  typename AllocatorT, typename Skipper>
-struct Grammar_<Iterator, std::set<InnerT, CompareT, AllocatorT>, Skipper >
-{
-    typedef
-     VectorGrammar<Iterator, std::set<InnerT, CompareT, AllocatorT>,Skipper>
-                                      Grammar;
-};
-
-//==============================================================================
-template< typename Iterator, typename PairT, typename Skipper>
-struct PairGrammar :
-  qi::grammar<Iterator,PairT(), qi::locals<char>, Skipper> {
-//------------------------------------------------------------------------------
-    typedef PairT ResultT;
-    typedef typename PairT::first_type first_type;
-    typedef typename PairT::second_type second_type;
-//------------------------------------------------------------------------------
-    PairGrammar() : PairGrammar::base_type(pair) {
-        init(",");
-    }
-
-    PairGrammar(const std::string& delimeter) : PairGrammar::base_type(pair) {
-        init(delimeter);
-    }
-//------------------------------------------------------------------------------
-    struct first {};
-    struct second {};
-    void init(const std::string& delimeter) {
-      begin = enc::char_('(')[qi::_val=')']
-              |
-              enc::char_('[')[qi::_val=']'];
-      end =  qi::char_(qi::_r1);
-      pair = begin[qi::_a = qi::_1] >> pair_in[qi::_val = qi::_1] >> end(qi::_a);
-      pair_in =  key >> qi::lit(delimeter) >> value;
-    }
-// ----------------------------------------------------------------------------
-    typename
-       Grammar_<Iterator, typename PairT::first_type, Skipper>::Grammar key;
-    typename
-       Grammar_<Iterator, typename PairT::second_type, Skipper>::Grammar
-         value;
-    qi::rule<Iterator, char()> begin;
-    qi::rule<Iterator, void(char)> end;
-    qi::rule<Iterator, ResultT(), qi::locals<char>, Skipper> pair;
-    qi::rule<Iterator, ResultT(), Skipper> pair_in;
-    //ph::function<Operations> op;
-// ----------------------------------------------------------------------------
-}; // END PairGrammar
-// ----------------------------------------------------------------------------
-// Register PairGrammar:
-// ----------------------------------------------------------------------------
-template <typename Iterator, typename KeyT, typename ValueT,
-	typename Skipper>
-struct Grammar_<Iterator, std::pair<KeyT, ValueT>, Skipper >
-{
-    typedef PairGrammar<Iterator, std::pair<KeyT, ValueT>, Skipper> Grammar;
-};
+// STD & STL
 // ============================================================================
-template< typename Iterator, typename MapT, typename Skipper>
-struct MapGrammar : qi::grammar<Iterator,MapT(), Skipper>
-{
-//------------------------------------------------------------------------------
-    typedef MapT ResultT;
-    typedef typename MapT::key_type KeyT;
-    typedef typename MapT::mapped_type MappedT;
-    typedef std::pair<KeyT, MappedT> PairT;
-
-    typedef std::vector<PairT> VectorPairT;
-//------------------------------------------------------------------------------
-    struct tag_key{};
-    struct tag_mapped{};
-    struct Operations
-    {
-        template <typename A, typename B = boost::fusion::unused_type,
-            typename C = boost::fusion::unused_type,
-            typename D = boost::fusion::unused_type>
-        struct result { typedef void type; };
-        //----------------------------------------------------------------------
-        void operator()(ResultT& res, const VectorPairT& vec) const{
-            for(typename VectorPairT::const_iterator cur = vec.begin();
-                cur != vec.end(); cur++){
-                res.insert(*cur);
-            }
-        }
-        void operator()(PairT& res, const KeyT& key, tag_key) const{
-          res.first = key;
-        }
-        void operator()(PairT& res, const MappedT& value, tag_mapped) const{
-          res.second = value;
-        }
-        //----------------------------------------------------------------------
-    };
-//------------------------------------------------------------------------------
-    MapGrammar() : MapGrammar::base_type(map) {
-        pair = key[op(qi::_val,qi::_1, tag_key())] > (qi::lit(':') | '=')  >
-        value[op(qi::_val,qi::_1, tag_mapped())];
-        list = pair % enc::char_(',');
-        map = (('['  > list > ']')
-              | ('{'  > list > '}'))[op(qi::_val,qi::_1)];
-    }
-// ----------------------------------------------------------------------------
-    typename
-      Grammar_<Iterator, typename MapT::key_type, Skipper>::Grammar key;
-    typename
-      Grammar_<Iterator, typename MapT::mapped_type, Skipper>::Grammar value;
-    qi::rule<Iterator, PairT(), Skipper> pair;
-    qi::rule<Iterator, VectorPairT(), Skipper> list;
-    qi::rule<Iterator, ResultT(), Skipper> map;
-    ph::function<Operations> op;
-// ----------------------------------------------------------------------------
-};
-// ----------------------------------------------------------------------------
-// Register MapGrammar for std::map:
-// ----------------------------------------------------------------------------
-template <typename Iterator, typename KeyT, typename ValueT,
-    typename KeyCompareT, typename AllocatorT, typename Skipper>
-struct Grammar_<Iterator, std::map<KeyT, ValueT, KeyCompareT, AllocatorT>,
-  Skipper > {
-    typedef MapGrammar<Iterator,
-        std::map<KeyT, ValueT, KeyCompareT, AllocatorT>, Skipper> Grammar;
-};
-// ----------------------------------------------------------------------------
-// Register MapGrammar for GaudiUtils::VectorMap:
-// ----------------------------------------------------------------------------
-template <typename Iterator, typename KeyT, typename ValueT,
-    typename KeyCompareT, typename AllocatorT, typename Skipper>
-struct Grammar_<Iterator, GaudiUtils::VectorMap<KeyT, ValueT,
-    KeyCompareT, AllocatorT>, Skipper>
-{
-    typedef MapGrammar<Iterator,
-        GaudiUtils::VectorMap<KeyT, ValueT, KeyCompareT, AllocatorT>,
-        Skipper> Grammar;
-};
+#include <cctype>
 // ============================================================================
-template< typename Iterator, typename PointT, typename Skipper>
-struct Pnt3DGrammar : qi::grammar<Iterator, PointT(), Skipper> {
-    typedef PointT ResultT;
-    typedef typename PointT::Scalar Scalar;
-// ----------------------------------------------------------------------------
-    struct Operations {
-        template <typename A, typename B = boost::fusion::unused_type,
-            typename C = boost::fusion::unused_type,
-            typename D = boost::fusion::unused_type>
-        struct result { typedef void type; };
-        void operator()(ResultT& res, const Scalar& scalar,
-                            const char xyz) const{
-            switch(xyz){
-                case 'x': res.SetX(scalar); break;
-                case 'y': res.SetY(scalar); break;
-                case 'z': res.SetZ(scalar); break;
-                default: break;
-            }
-        }
-    }; //  Operations
-// ----------------------------------------------------------------------------
-    Pnt3DGrammar() : Pnt3DGrammar::base_type(point) {
-        point = list | ('(' >> list >> ')') | ('[' >> list >> ']');
-        list = -(enc::no_case[qi::lit("x") | qi::lit("px")]  >> ':')
-             >> scalar[op(qi::_val,qi::_1,'x')] >>
-         ',' >> -(enc::no_case[qi::lit("y") | qi::lit("py")] >> ':')
-             >> scalar[op(qi::_val,qi::_1,'y')] >>
-         ',' >> -(enc::no_case[qi::lit("z") | qi::lit("pz")] >> ':')
-             >> scalar[op(qi::_val,qi::_1,'z')];
-    }
-// ----------------------------------------------------------------------------
-    qi::rule<Iterator, ResultT(), Skipper> point, list;
-    typename Grammar_<Iterator, Scalar, Skipper>::Grammar scalar;
-    ph::function<Operations> op;
-// ----------------------------------------------------------------------------
-}; //   Pnt3DGrammar
-// ----------------------------------------------------------------------------
-// Register Pnt3DGrammar for ROOT::Math::PositionVector3D:
-// ----------------------------------------------------------------------------
-template <typename Iterator, typename T1, typename T2, typename Skipper>
-struct Grammar_<Iterator, ROOT::Math::PositionVector3D<T1,T2>, Skipper>{
-    typedef
-        Pnt3DGrammar<Iterator, ROOT::Math::PositionVector3D<T1,T2>, Skipper>
-        Grammar;
-};
-// ----------------------------------------------------------------------------
-// Register Pnt3DGrammar for ROOT::Math::DisplacementVector3D:
-// ----------------------------------------------------------------------------
-template <typename Iterator, typename T1, typename T2, typename Skipper>
-struct Grammar_<Iterator, ROOT::Math::DisplacementVector3D<T1,T2>, Skipper>{
-  typedef
-      Pnt3DGrammar<Iterator,
-              ROOT::Math::DisplacementVector3D<T1,T2>, Skipper> Grammar;
-};
+// Boost.Spirit
 // ============================================================================
-template< typename Iterator, typename PointT, typename Skipper>
-struct Pnt4DGrammar : qi::grammar<Iterator, PointT(), Skipper>
-{
-    typedef PointT ResultT;
-    typedef typename PointT::Scalar ScalarT;
-//-----------------------------------------------------------------------------
-    struct Operations {
-        template <typename A, typename B = boost::fusion::unused_type,
-            typename C = boost::fusion::unused_type,
-            typename D = boost::fusion::unused_type>
-        struct result { typedef void type; };
-
-        void operator()(ResultT& res, const ScalarT& scalar,
-                                                        const char xyz) const{
-            switch(xyz){
-                case 'x': res.SetPx(scalar); break;
-                case 'y': res.SetPy(scalar); break;
-                case 'z': res.SetPz(scalar); break;
-                case 'e': res.SetE(scalar);  break;
-                default: break;
-            }
-        }
-        void operator()(ResultT& res, const ResultT& xyz) const{
-                res.SetPx(xyz.Px());
-                res.SetPy(xyz.Py());
-                res.SetPz(xyz.Pz());
-        }
-    }; //   Operations
-// ----------------------------------------------------------------------------
-    Pnt4DGrammar() : Pnt4DGrammar::base_type(point4d) {
-        point4d = list4d | ('(' >> list4d >> ')') | ('[' >> list4d >> ']');
-        list4d = (point3d[op(qi::_val,qi::_1)] >> enc::char_(";,")
-            >> e[op(qi::_val, qi::_1, 'e')])
-            |
-            (e[op(qi::_val,qi::_1, 'e')] >> enc::char_(";,")
-                >> point3d[op(qi::_val, qi::_1)]);
-        e =  -(enc::no_case[enc::char_("te")]  >> ':')
-            >> scalar[qi::_val = qi::_1];
-
-        point3d = list3d | ('(' >> list3d >> ')') | ('[' >> list3d >> ']');
-        list3d = -(enc::no_case[qi::lit("x") | qi::lit("px")]  >> ':')
-             >> scalar[op(qi::_val, qi::_1,'x')] >>
-         ',' >> -(enc::no_case[qi::lit("y") | qi::lit("py")] >> ':')
-             >> scalar[op(qi::_val, qi::_1,'y')] >>
-         ',' >> -(enc::no_case[qi::lit("z") | qi::lit("pz")] >> ':')
-             >> scalar[op(qi::_val, qi::_1,'z')];
-    }
-// ----------------------------------------------------------------------------
-    qi::rule<Iterator, ResultT(), Skipper> point3d, point4d, list3d,
-        list4d;
-    qi::rule<Iterator, ScalarT(), Skipper> e;
-    typename Grammar_<Iterator, ScalarT, Skipper>::Grammar scalar;
-    ph::function<Operations> op;
-// ----------------------------------------------------------------------------
-}; //   Pnt4DGrammar
-// ----------------------------------------------------------------------------
-// Register Pnt4DGrammar for ROOT::Math::LorentzVector:
-// ----------------------------------------------------------------------------
-template <typename Iterator, typename T1, typename Skipper>
-struct Grammar_<Iterator, ROOT::Math::LorentzVector<T1>, Skipper >
-{
-    typedef Pnt4DGrammar<Iterator, ROOT::Math::LorentzVector<T1>, Skipper>
-      Grammar;
-};
-// ============================================================================
-template< typename Iterator, typename Skipper>
-struct Histo1DGrammar : qi::grammar<Iterator, Gaudi::Histo1DDef(),
-  qi::locals<char>, Skipper>
-{
-    typedef Gaudi::Histo1DDef ResultT;
-// ----------------------------------------------------------------------------
-    struct Operations {
-        template <typename A, typename B = boost::fusion::unused_type,
-            typename C = boost::fusion::unused_type,
-            typename D = boost::fusion::unused_type>
-        struct result { typedef void type; };
-        void operator()(ResultT& res, const std::string& title) const{
-            res.setTitle(title);
-        }
-        void operator()(ResultT& res, const double& val, const char lh) const{
-            switch (lh) {
-                case 'l': res.setLowEdge(val); break;
-                case 'h': res.setHighEdge(val); break;
-                default: break;
-            }
-        }
-        void operator()(ResultT& res, int val) const{
-            res.setBins(val);
-        }
-        void operator()(ResultT& res) const{}
-    }; //   Operations
-// ----------------------------------------------------------------------------
-    Histo1DGrammar() : Histo1DGrammar::base_type(hist) {
-        val1 = title[op(qi::_val, qi::_1)] >> ','
-            >> qi::double_[op(qi::_val, qi::_1, 'l')] >> ','
-            >> qi::double_[op(qi::_val, qi::_1, 'h')]
-            >> -(',' >> qi::int_[op(qi::_val, qi::_1)]);
-        val2 = qi::double_[op(qi::_val, qi::_1, 'l')] >> ','
-            >> qi::double_[op(qi::_val, qi::_1, 'h')] >> ','
-            >> title[op(qi::_val, qi::_1)] >> -(','
-            >> qi::int_[op(qi::_val, qi::_1)]);
-        val3 = qi::double_[op(qi::_val, qi::_1, 'l')] >> ','
-            >> qi::double_[op(qi::_val, qi::_1, 'h')]
-           >> -(','  >> title[op(qi::_val, qi::_1)])
-           >> -(','  >> qi::int_[op(qi::_val, qi::_1)]);
-        begin = enc::char_('[')[qi::_val=']'] | enc::char_('(')[qi::_val=')'];
-        end = enc::char_(qi::_r1);
-        hist = begin[qi::_a = qi::_1] >> (val1 | val2 | val3)[qi::_val=qi::_1]
-                                                       >> end(qi::_a);
-    }
-// ----------------------------------------------------------------------------
-    qi::rule<Iterator, ResultT(), qi::locals<char>, Skipper> hist;
-    qi::rule<Iterator, ResultT(), Skipper> val1, val2, val3;
-    qi::rule<Iterator, char()> begin;
-    qi::rule<Iterator, void(char)> end;
-    StringGrammar<Iterator, Skipper> title;
-    ph::function<Operations> op;
-// ----------------------------------------------------------------------------
-}; //   Histo1DGrammar
-// ----------------------------------------------------------------------------
-REGISTER_GRAMMAR(Gaudi::Histo1DDef, Histo1DGrammar);
-// ============================================================================
-template< typename Iterator, typename Skipper>
-struct KeyValueGrammar :
-  qi::grammar<Iterator, std::pair<std::string, std::string>(), Skipper> {
-//------------------------------------------------------------------------------
-    typedef std::pair<std::string, std::string> ResultT;
-//------------------------------------------------------------------------------
-    struct first {};
-    struct second {};
-
-    KeyValueGrammar() : KeyValueGrammar::base_type(pair) {
-//------------------------------------------------------------------------------
-      pair =  gstring >> ":" >> +enc::char_;
-    }
-// ----------------------------------------------------------------------------
-    StringGrammar<Iterator, Skipper> gstring;
-    qi::rule<Iterator, ResultT(), Skipper> pair;
-// ----------------------------------------------------------------------------
-}; // END KeyValueGrammar
-// We don't register KeyalueGrammar because it's a special parser
-// ============================================================================
-}} //   Gaudi::Parsers
-//============================================================================
+#include <boost/version.hpp>
+#if BOOST_VERSION >= 103800
+// FIXME: Move to the new boost::spirit::classic namespace
+#if !defined(BOOST_SPIRIT_USE_OLD_NAMESPACE)
+#define BOOST_SPIRIT_USE_OLD_NAMESPACE
 #endif
+#include <boost/spirit/include/classic.hpp>
+#include <boost/spirit/include/phoenix1.hpp>
+#else
+#include <boost/spirit.hpp>
+#include <boost/spirit/phoenix.hpp>
+#endif
+#include <boost/bind.hpp>
+
+// ============================================================================
+/** @file
+ *  Collection of grammars for property types
+ *
+ *  @see Gaudi::Parsers::parse
+ *  @see Property
+ *
+ *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+ *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+ *  @date 2006-05-12
+ */
+// ============================================================================
+namespace Gaudi
+{
+  namespace Parsers
+  {
+    // ========================================================================
+    using namespace boost::spirit ;
+    // ========================================================================
+    using namespace phoenix ;
+    // ========================================================================
+    /** @struct ClosureGrammar
+     *  Grammar or grammar rule which derive from this struct will have
+     *  attribute of type <c>T</c> and name <c>val</c>
+     *
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+     *  @date 2006-05-14
+     */
+   template <typename T>
+    struct ClosureGrammar : public boost::spirit::closure < ClosureGrammar<T>,T >
+    {
+      typedef  boost::spirit::closure<ClosureGrammar, T> closure;
+      typename closure::member1 val;
+    };
+    // ========================================================================
+    /** @struct AttributesClosureGrammar
+     *
+     *  Grammar or grammar rule which derive from this struct will have
+     *  two attributes: type <c>T1</c> and name <c>val</c>, type <c>T2</c>
+     *  and name <c>attrs</c>
+     *
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+     *  @date 2006-05-14
+     */
+    template <typename T1,typename T2>
+    struct AttributesClosureGrammar
+      : public boost::spirit::closure<AttributesClosureGrammar<T1,T2>,T1,T2>
+    {
+      typedef boost::spirit::closure<AttributesClosureGrammar, T1,T2> closure;
+      typename closure::member1 val;
+      typename closure::member2 attrs;
+    };
+    // ========================================================================
+    /** @class BoolGrammar
+     *
+     *  The valid represenation of boolean values are:
+     *
+     *   - true  , True  , TRUE  or 1
+     *   - false , False , FALSE or 0
+     *
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+     *  @date 2006-05-14
+     */
+    class BoolGrammar : public grammar
+    <
+      BoolGrammar,
+      ClosureGrammar<bool>::context_t
+    >
+    {
+    public:
+      typedef bool ResultT;
+    public:
+      template <typename ScannerT>
+      struct definition
+      {
+        definition( BoolGrammar const &self)
+        {
+          boolean_literal
+            = true_literal[self.val = true] | false_literal[self.val = false];
+          true_literal
+            = str_p("true" ) | str_p("True" ) | str_p("TRUE" ) | str_p("1");
+          false_literal
+            = str_p("false") | str_p("False") | str_p("FALSE") | str_p("0");
+        }
+        rule<ScannerT> const& start() const
+        { return boolean_literal;}
+        rule<ScannerT> boolean_literal,true_literal,false_literal;
+      };
+    };
+    // ========================================================================
+    /** @class CharGrammar
+     *
+     *  The valid represenation of char values are:
+     *
+     *   - 'a', 'b','\''
+     *
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+     *  @date 2006-05-14
+     */
+    template<typename RT=char>
+    class CharGrammar : public grammar
+    <
+      CharGrammar<RT> , typename ClosureGrammar<RT>::context_t
+    >
+    {
+    public:
+      typedef RT ResultT;
+    public:
+      template <typename ScannerT>
+      struct definition
+      {
+        definition( CharGrammar<RT> const &self)
+        {
+          char_literal
+            = int_parser<RT>()[self.val=arg1]
+            | ('\''
+               >> ( str_p("\\'")[self.val='\'']
+                    | (anychar_p[self.val=arg1]-'\'') )>>'\'');
+        }
+        rule<ScannerT> const& start() const
+        { return char_literal; }
+        rule<ScannerT> char_literal;
+      };
+    };
+    // ========================================================================
+    /** @class IntGrammar
+     *
+     *  The valid representation of integers values are:
+     *
+     *   - 1, 100, 123
+     *
+     *  @todo implement suffixes u U l L
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+     *  @date 2006-05-14
+     */
+    template<typename RT=int>
+    class IntGrammar : public grammar
+    <
+      IntGrammar<RT>,
+      typename ClosureGrammar<RT>::context_t
+    >
+    {
+    public:
+      typedef RT ResultT;
+    public:
+      template <typename ScannerT>
+      struct definition
+      {
+        definition( IntGrammar<RT> const &self)
+        {
+          int_literal = lexeme_d[int_parser<RT>()[self.val=arg1]
+            >> !(ch_p('u') | ch_p('U') | ch_p('l') | ch_p('L'))];
+        }
+        rule<ScannerT> const& start() const { return int_literal; }
+        rule<ScannerT> int_literal;
+      };
+    };
+    // ========================================================================
+    /** @class RealGrammar
+     *
+     *  The valid represenation of real values are:
+     *
+     *   - 1, 1.0 ,1.123, 1E+2, 0.5e-2
+     *
+     *  @todo implement suffixes f l F L
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+     *  @date 2006-05-14
+     */
+    template<typename RT=double>
+    class RealGrammar : public grammar
+    <
+      RealGrammar<RT>,typename ClosureGrammar<RT>::context_t
+    >
+    {
+    public:
+      typedef RT ResultT;
+    public:
+      template <typename ScannerT>
+      struct definition
+      {
+        definition( RealGrammar const &self)
+        {
+          real_literal
+            = lexeme_d[real_parser<RT,
+            real_parser_policies<RT> >()[self.val = arg1]
+            >> !(ch_p('f') | ch_p('F') | ch_p('l') | ch_p('L'))];
+        }
+        rule<ScannerT> const& start() const
+        { return real_literal; }
+        rule<ScannerT> real_literal;
+      };
+    };
+    // ========================================================================
+    /** @class StringGrammar
+     *
+     *  The valid represenation of string values are:
+     *
+     *   - "abc" , "\"abc\""
+     *   - 'abs' , '\'abc\''
+     *
+     *  @todo implement not ASCII chars in strings
+     *
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+     *  @date 2006-05-14
+     */
+
+    class StringGrammar : public grammar
+    <
+      StringGrammar, ClosureGrammar<std::string>::context_t
+    >
+    {
+    public:
+      typedef std::string ResultT;
+      /** remove CR/LF symbols form the parsed strings
+       *  @attention it is a bit dangerous operation
+       *  The operation allows to write "very long" input strings
+       *  for opts-files (it is actual e.g. for DataOnDemandSvc configuration)
+       *  by splitting the strings into few lines
+       *  All new-line symbols (as well as '\n', '\t', CR/LF etc
+       *  are substituted by ordinary blanks.
+       */
+      void matchString() const
+      {
+        for ( std::string::iterator cur=this->val().begin();
+              cur!=this->val().end();cur++)
+        { if(std::isspace(*cur) ) { *cur = ' '; } }
+      }
+    public:
+        template <typename ScannerT>
+        struct definition
+        {
+          definition( StringGrammar const &self )
+          {
+            string_literal = (lexeme_d
+              [
+               ('"' >> (*( str_p("\\\"")
+                           |
+                           (anychar_p-'"') ))
+                [self.val = construct_<std::string>
+                 (arg1,arg2)] >>
+                '"')
+               |
+               ('\'' >> (*( str_p("\\'")
+                            |
+                            (anychar_p-'\'') ))
+                [self.val = construct_<std::string>
+                 (arg1,arg2)]>>
+                '\'')])[boost::bind(&StringGrammar::matchString,&self)];
+          }
+          rule<ScannerT> const& start() const { return string_literal; }
+          rule<ScannerT> string_literal;
+        };
+      };
+    // ========================================================================
+    /** @class SkipperGrammar
+     *
+     *  Skipping spaces and comments. Comments can be
+     *
+     *   - // ... - one line
+     *   - \/\* ... \*\/ - multiline
+     *
+     *
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+     *  @date 2006-05-14
+     */
+    class SkipperGrammar : public grammar<SkipperGrammar>
+    {
+    public:
+      /** Constructor
+       *  @param skipnewline Skip new line symbols or not
+       */
+      SkipperGrammar ( const bool skipnewline = true )
+        : m_skipnewline(skipnewline){}
+    public:
+      /// @return true - skip new line symbols, false - not skip
+      bool skipnewline() const{return m_skipnewline;}
+    public:
+      template <typename ScannerT>
+      struct definition
+      {
+        definition( SkipperGrammar const& self)
+        {
+          if ( self.skipnewline() )
+          {
+            skip
+              =   space_p
+              |   comment_p("//")     // C++ comment
+              |   comment_p("/*", "*/")     // C comment
+              ;
+          }
+          else
+          {
+            skip
+              =   (space_p-eol_p)
+              |   comment_p("//")     // C++ comment
+              |   comment_p("/*", "*/")     // C comment
+              ;
+          }
+        }
+        rule<ScannerT>  skip;
+        rule<ScannerT> const& start() const { return skip; }
+      };
+    private:
+      bool m_skipnewline;
+    };
+    // ========================================================================
+    /** @class PairGrammar
+     *
+     *  The valid represenation of pairs are:
+     *  ("abc",123) or ("abc","def")
+     *  Inner types of pair depends on KeyGrammarT and ValueGrammarT grammars
+     *
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+     *  @date 2006-05-14
+     */
+    template <typename KeyGrammarT, typename ValueGrammarT>
+    class PairGrammar : public grammar
+    <
+      PairGrammar<KeyGrammarT,ValueGrammarT>,
+      typename ClosureGrammar<
+      std::pair<typename KeyGrammarT::ResultT,
+                typename ValueGrammarT::ResultT> >::context_t
+    >
+    {
+    public:
+      typedef typename KeyGrammarT::ResultT KeyT;
+      typedef typename ValueGrammarT::ResultT ValueT;
+      typedef std::pair<KeyT,ValueT> ResultT;
+    public:
+      /** Constructor
+       *  @param delim Delimiter for pair values
+       */
+      PairGrammar ( const std::string&  delim = "," )
+        : m_delim(delim) {}
+    public:
+      /// callback. Action when we match first value
+      void matchFirst  ( const KeyT&   first  ) const { this->val().first = first; }
+      /// callback. Action when we match second value
+      void matchSecond ( const ValueT& second ) const { this->val().second = second; }
+    public:
+      template <typename ScannerT>
+      struct definition
+      {
+        definition( PairGrammar const &self)
+        {
+          para
+            = (
+               str_p("(")
+               >> (grkey[boost::bind(&PairGrammar::matchFirst,&self,_1)])
+               >> self.delim().c_str()
+               >> (grvalue[boost::bind(&PairGrammar::matchSecond,&self,_1)])
+               >> str_p(")")
+               ) ;
+        }
+        rule<ScannerT> const& start() const { return para; }
+        rule<ScannerT> para;
+        KeyGrammarT grkey;
+        ValueGrammarT grvalue;
+      };
+    public:
+      /// @return Delimiter for pair values
+      const std::string& delim() const { return m_delim ; }
+      /** Set delimiters for pair values
+       *  @param delim Delimiter
+       */
+      void setDelim ( const std::string& delim ) { m_delim = delim;}
+    private:
+      std::string m_delim;
+    };
+    // ========================================================================
+    /** @class VectorGrammar
+     *
+     *  The valid represenation of vector are:
+     *   - {"abc","defj","i"} or {1,2,3,4,5}
+     *   - ["abc","defj","i"] or [1,2,3,4,5]
+     *  Inner type depends on GrammarT grammar
+     *
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+     *  @date 2006-05-14
+     */
+    template <typename GrammarT>
+    class VectorGrammar : public grammar
+    <
+      VectorGrammar<GrammarT> ,
+      typename ClosureGrammar<std::vector<typename GrammarT::ResultT> >::context_t
+    >
+    {
+    public:
+      typedef typename GrammarT::ResultT ValueT;
+      typedef std::vector<ValueT> ResultT;
+      typedef VectorGrammar<GrammarT> SelfT;
+    public:
+      /// callback. Action when we match inner value
+      void matchItem(const ValueT& value) const { this->val().push_back(value); }
+    public:
+      template <typename ScannerT>
+      struct definition
+      {
+        definition(SelfT const &self)
+        {
+          inner =
+            !(gr[boost::bind(&VectorGrammar::matchItem,&self,_1)]
+              >> *(','>>gr[boost::bind(&VectorGrammar::matchItem,&self,_1)]));
+          vec =
+            '[' >> inner >> ']' |  // a'la python list
+            '(' >> inner >> ')' |  // a'la python tuple
+            '{' >> inner >> '}' ;  // like obsolete list from opts-grammar
+        }
+        rule<ScannerT> const& start() const { return vec; }
+        rule<ScannerT> vec,inner;
+        GrammarT gr;
+      };
+    };
+    // ========================================================================
+    /** @class MapGrammar
+     *
+     *  The valid represenation of map are:
+     *   - {"file1":"path1","something":"nothing"}
+     *   - {"file1"="path1","something"="nothing"}
+     *   - ["file1":10,"something":20]
+     *   - ["file1"=30,"something"=40]
+     *  Inner key type depends on KeyGrammarT grammar
+     *  Inner value type depends on ValueGrammarT grammar
+     *
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+     *  @date 2006-05-14
+     */
+    template <typename KeyGrammarT, typename ValueGrammarT>
+    class MapGrammar : public grammar
+    <
+      MapGrammar<KeyGrammarT,ValueGrammarT>,
+      typename AttributesClosureGrammar
+      < std::map<typename KeyGrammarT::ResultT,
+                 typename ValueGrammarT::ResultT>,
+        std::pair<typename KeyGrammarT::ResultT,
+                  typename ValueGrammarT::ResultT> >::context_t
+    >
+    {
+    public:
+      typedef typename KeyGrammarT::ResultT KeyT;
+      typedef typename ValueGrammarT::ResultT ValueT;
+      typedef std::map<KeyT,ValueT> ResultT;
+    public:
+      /// call backs. Action when we match pair in map
+      void matchItem  () const
+      {
+        //this->val().insert(this->attrs());
+        this->val()[this->attrs().first] = this->attrs().second ;
+      }
+      /// call backs. Action when we match key of pair
+      void matchFirst ( const KeyT&   value ) const {  this->attrs().first = value ; }
+      /// call backs. Action when we match value pf pair
+      void matchSecond( const ValueT& value ) const { this->attrs().second = value ; }
+    public:
+      template <typename ScannerT>
+      struct definition
+      {
+        definition( MapGrammar const &self)
+        {
+          vec
+            = ('{'>> inner_list >> '}') | ('['>>inner_list>>']');
+          inner_list
+            =
+            !( inner[boost::bind(&MapGrammar::matchItem,&self)]
+               >> *( ch_p(',') >>
+                     inner[boost::bind(&MapGrammar::matchItem,&self)] )
+               );
+          inner
+            =
+            grKey[boost ::bind(&MapGrammar::matchFirst,&self,_1)]
+              >> ( ch_p('=') | ch_p(':'))
+              >> grValue[boost::bind(&MapGrammar::matchSecond,&self,_1)] ;
+        }
+        KeyGrammarT grKey;
+        ValueGrammarT grValue;
+        rule<ScannerT> const& start() const { return vec; }
+        rule<ScannerT> vec,inner, inner_list ;
+      };
+    };
+    // ========================================================================
+  } // end of namespace Gaudi::Parsers
+} // end of namespace Gaudi
+// ============================================================================
+// The END
+// ============================================================================
+#endif // GAUDIKERNEL_GRAMMARS_H
+// ============================================================================
