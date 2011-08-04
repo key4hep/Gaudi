@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-08-04 - Marco Clemencic
+ - Removed implementation of parsers that are not needed to reduce compilation
+   time and size (patch #4891)
+
 ! 2011-08-03 - Sasha Mazurov
  - Renamed GaudiKernel/Grammars.h to GrammarsV2.h to allow easier backward
    compatibility.

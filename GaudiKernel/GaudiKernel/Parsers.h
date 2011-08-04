@@ -1,4 +1,3 @@
-// $Id: Parsers.h,v 1.5 2008/01/14 19:42:56 marcocle Exp $
 // ============================================================================
 #ifndef GAUDIPROPERTYPARSERS_PARSERS_H
 #define GAUDIPROPERTYPARSERS_PARSERS_H 1
@@ -18,19 +17,15 @@
 #include "GaudiKernel/HistoDef.h"
 
 #define PARSERS_DECL_FOR_SINGLE(Type)\
-  GAUDI_API StatusCode parse(Type& result, const std::string& input);
+    GAUDI_API StatusCode parse(Type& result, const std::string& input);
 
 #define PARSERS_DECL_FOR_PAIR(FirstType, SecondType)\
-  GAUDI_API StatusCode parse(std::pair<FirstType, SecondType >& result,\
-    const std::string& input);
+    GAUDI_API StatusCode parse(std::pair<FirstType, SecondType >& result,\
+                               const std::string& input);
 
 #define PARSERS_DECL_FOR_LIST(InnerType)\
-  GAUDI_API StatusCode parse(std::vector<InnerType>& result,\
-      const std::string& input) ;\
-  GAUDI_API StatusCode parse(std::list<InnerType>& result,\
-        const std::string& input) ;\
-  GAUDI_API StatusCode parse(std::set<InnerType>& result,\
-        const std::string& input);
+    GAUDI_API StatusCode parse(std::vector<InnerType>& result,\
+                               const std::string& input);
 // ============================================================================
 /** @file
  *  The declaration of major parsing functions used e.g
