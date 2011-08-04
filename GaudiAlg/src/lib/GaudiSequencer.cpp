@@ -42,7 +42,7 @@ GaudiSequencer::~GaudiSequencer() {}
 StatusCode GaudiSequencer::initialize() {
   GaudiAlgorithm::initialize();
 
-  debug() << "==> Initialise" << endmsg;
+  if (msgLevel(MSG::DEBUG)) debug() << "==> Initialise" << endmsg;
 
   StatusCode status = decodeNames();
   if ( !status.isSuccess() ) return status;
@@ -83,7 +83,7 @@ StatusCode GaudiSequencer::execute() {
 
   if ( m_measureTime ) m_timerTool->start( m_timer );
 
-  debug() << "==> Execute" << endmsg;
+  if (msgLevel(MSG::DEBUG)) debug() << "==> Execute" << endmsg;
 
   StatusCode result = StatusCode::SUCCESS;
 
@@ -95,22 +95,25 @@ StatusCode GaudiSequencer::execute() {
   for ( itE = m_entries.begin(); m_entries.end() != itE; ++itE ) {
     Algorithm* myAlg = itE->algorithm();
     if ( ! myAlg->isEnabled() ) continue;
-      if ( ! myAlg->isExecuted() ) {
+    if ( ! myAlg->isExecuted() ) {
       if ( m_measureTime ) m_timerTool->start( itE->timer() );
-        result = myAlg->sysExecute();
+      result = myAlg->sysExecute();
       if ( m_measureTime ) m_timerTool->stop( itE->timer() );
-        myAlg->setExecuted( true );
-        if ( ! result.isSuccess() ) break;  //== Abort and return bad status
-
-      }
-      //== Check the returned status
-      if ( !m_ignoreFilter ) {
-        bool passed = myAlg->filterPassed();
+      myAlg->setExecuted( true );
+      if ( ! result.isSuccess() ) break;  //== Abort and return bad status
+    }
+    //== Check the returned status
+    if ( !m_ignoreFilter ) {
+      bool passed = myAlg->filterPassed();
+      if (msgLevel(MSG::VERBOSE))
+        verbose() << "Algorithm " << myAlg->name() << " returned filter passed "
+                  << (passed ? "true" : "false") << endmsg;
       if ( itE->reverse() ) passed = !passed;
 
-        //== indicate our own result. For OR, exit as soon as true.
-        //        If no more, will exit with false.
-        //== for AND, exit as soon as false. Else, will be true (default)
+
+      //== indicate our own result. For OR, exit as soon as true.
+      //        If no more, will exit with false.
+      //== for AND, exit as soon as false. Else, will be true (default)
 
       // if not short-circuiting, make sure we latch iPass to 'true' in
       // OR mode (i.e. it is sufficient for one item to be true in order
@@ -125,11 +128,15 @@ StatusCode GaudiSequencer::execute() {
       // state until someone returns 'false' (provided we started as 'true')
       if ( m_modeOR ? passed : !passed ) {
         seqPass = passed;
+        if (msgLevel(MSG::VERBOSE))
+          verbose() << "SeqPass is now " << (seqPass ? "true" : "false") << endmsg;
         if (m_shortCircuit) break;
       }
     }
 
   }
+  if (msgLevel(MSG::VERBOSE))
+      verbose() << "SeqPass is " << (seqPass ? "true" : "false") << endmsg;
   if ( !m_ignoreFilter && !m_entries.empty() ) setFilterPassed( seqPass );
   setExecuted( true );
 
@@ -143,7 +150,7 @@ StatusCode GaudiSequencer::execute() {
 //=============================================================================
 StatusCode GaudiSequencer::finalize() {
 
-  debug() << "==> Finalize" << endmsg;
+  if (msgLevel(MSG::DEBUG)) debug() << "==> Finalize" << endmsg;
   return  GaudiAlgorithm::finalize();
 }
 
@@ -154,7 +161,7 @@ StatusCode GaudiSequencer::beginRun ( ) {
 
   if ( !isEnabled() ) return StatusCode::SUCCESS;
 
-  debug() << "==> beginRun" << endmsg;
+  if (msgLevel(MSG::DEBUG)) debug() << "==> beginRun" << endmsg;
   return StatusCode::SUCCESS;
 }
 
@@ -165,7 +172,7 @@ StatusCode GaudiSequencer::endRun ( ) {
 
   if ( !isEnabled() ) return StatusCode::SUCCESS;
 
-  debug() << "==> endRun" << endmsg;
+  if (msgLevel(MSG::DEBUG)) debug() << "==> endRun" << endmsg;
   return StatusCode::SUCCESS;
 }
 
@@ -286,21 +293,21 @@ StatusCode GaudiSequencer::decodeNames( )  {
       addedGlobalTimeOffset = false;
     }
 
-    // propagate the sub-algorithm into own state. 
-    if ( result.isSuccess () && 
-         Gaudi::StateMachine::INITIALIZED <= FSMState() && 
-         myIAlg.isValid   () && 
-         Gaudi::StateMachine::INITIALIZED  > myIAlg->FSMState() ) 
+    // propagate the sub-algorithm into own state.
+    if ( result.isSuccess () &&
+         Gaudi::StateMachine::INITIALIZED <= FSMState() &&
+         myIAlg.isValid   () &&
+         Gaudi::StateMachine::INITIALIZED  > myIAlg->FSMState() )
     {
       StatusCode sc = myIAlg->sysInitialize() ;
       if  ( sc.isFailure() ) { result = sc ; }
     }
-    
-    // propagate the sub-algorithm into own state. 
-    if ( result.isSuccess () && 
-         Gaudi::StateMachine::RUNNING <= FSMState() && 
-         myIAlg.isValid   () && 
-         Gaudi::StateMachine::RUNNING  > myIAlg->FSMState() ) 
+
+    // propagate the sub-algorithm into own state.
+    if ( result.isSuccess () &&
+         Gaudi::StateMachine::RUNNING <= FSMState() &&
+         myIAlg.isValid   () &&
+         Gaudi::StateMachine::RUNNING  > myIAlg->FSMState() )
     {
       StatusCode sc = myIAlg->sysStart () ;
       if  ( sc.isFailure() ) { result = sc ; }
@@ -314,7 +321,7 @@ StatusCode GaudiSequencer::decodeNames( )  {
       if (myAlg!=0) {
         // Note: The reference counting is kept by the system of sub-algorithms
         m_entries.push_back( AlgorithmEntry( myAlg ) );
-        debug () << "Added algorithm " << theName << endmsg;
+        if (msgLevel(MSG::DEBUG)) debug () << "Added algorithm " << theName << endmsg;
       } else {
         warning() << theName << " is not an Algorithm - failed dynamic_cast"
                   << endmsg;
@@ -361,32 +368,32 @@ StatusCode GaudiSequencer::decodeNames( )  {
 //=========================================================================
 //  Interface for the Property manager
 //=========================================================================
-void GaudiSequencer::membershipHandler ( Property& /* p */ ) 
+void GaudiSequencer::membershipHandler ( Property& /* p */ )
 {
-  // no action for not-yet initialized sequencer 
-  if ( Gaudi::StateMachine::INITIALIZED > FSMState() ) { return ; } // RETURN 
-  
+  // no action for not-yet initialized sequencer
+  if ( Gaudi::StateMachine::INITIALIZED > FSMState() ) { return ; } // RETURN
+
   decodeNames().ignore();
-  
-  if  ( !m_measureTime ) { return ; }                                // RETURN 
-  
-  // add the entries into timer table: 
-  
-  if ( 0 == m_timerTool ) 
+
+  if  ( !m_measureTime ) { return ; }                                // RETURN
+
+  // add the entries into timer table:
+
+  if ( 0 == m_timerTool )
   { m_timerTool = tool<ISequencerTimerTool>( "SequencerTimerTool" ) ; }
-  
+
   if ( m_timerTool->globalTiming() ) m_measureTime = true;
-  
+
   m_timer = m_timerTool->addTimer( name() );
   m_timerTool->increaseIndent();
-  
-  for ( std::vector<AlgorithmEntry>::iterator itE = m_entries.begin() ; 
-        m_entries.end() != itE; ++itE ) 
+
+  for ( std::vector<AlgorithmEntry>::iterator itE = m_entries.begin() ;
+        m_entries.end() != itE; ++itE )
   {
     itE->setTimer( m_timerTool->addTimer( itE->algorithm()->name() ) );
   }
-  
+
   m_timerTool->decreaseIndent();
-  
+
 }
 //=============================================================================
