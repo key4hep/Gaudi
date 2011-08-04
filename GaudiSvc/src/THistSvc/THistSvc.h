@@ -4,6 +4,7 @@
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/ITHistSvc.h"
 #include "GaudiKernel/IIncidentListener.h"
+#include "GaudiKernel/IIoComponent.h"
 #include "GaudiKernel/MsgStream.h"
 
 #include "TObject.h"
@@ -23,7 +24,8 @@
 // Forward declarations
 template <class TYPE> class SvcFactory;
 
-class THistSvc: public extends2<Service, ITHistSvc, IIncidentListener> {
+class THistSvc: public extends3<Service, ITHistSvc, IIncidentListener, 
+				IIoComponent> {
 
 public:
 
@@ -80,6 +82,10 @@ public:
   THistSvc(const std::string& name, ISvcLocator *svc );
 
   void handle(const Incident&);
+
+  // From IIoComponent
+  virtual StatusCode io_reinit ();
+
 
 protected:
 
