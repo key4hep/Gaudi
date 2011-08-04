@@ -23,3 +23,9 @@ HistoryObj::~HistoryObj(){}
 
 #include "GaudiKernel/IVersHistoryObj.h"
 IVersHistoryObj::~IVersHistoryObj(){}
+
+#include "GaudiKernel/IIoComponent.h"
+IIoComponent::~IIoComponent(){}
+
+#include "GaudiKernel/IIoComponentMgr.h"
+IIoComponentMgr::~IIoComponentMgr(){}

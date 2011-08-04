@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-08-04 - Charles Leggett
+ - Patch #4941: Added interfaces IIoComponent and IIoComponentMgr
+
 ! 2011-08-04 - Marco Clemencic
  - Removed implementation of parsers that are not needed to reduce compilation
    time and size (patch #4891)
