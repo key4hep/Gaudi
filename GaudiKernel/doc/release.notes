@@ -1,6 +1,11 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-08-04 - Marco Clemencic
+ - Fixed bug #84663: allow access to addresses of private members of StatEntity
+   Changed the signature of the methods returning the internal data members
+   to return a const& instead of a copy.
+
 ! 2011-08-04 - Charles Leggett
  - Patch #4941: Added interfaces IIoComponent and IIoComponentMgr
 
