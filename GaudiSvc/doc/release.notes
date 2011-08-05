@@ -3,7 +3,7 @@ Package manager : Marco Clemencic
 
 ! 2011-08-05 - Marco Clemencic
  - Fixing bug #83775: unprotected MSG::DEBUG
-   Fixed ToolSvc.
+   Fixed ToolSvc, DetectorDataSvc, IncidentSvc, PersistencySvc
 
 ! 2011-08-04 - Charles Leggett
  - Patch #4942: THistSvc: consolidated patches to bring trunk to GaudiSvc-18-13-09

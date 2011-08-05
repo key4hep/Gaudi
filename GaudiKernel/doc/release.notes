@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 
 ! 2011-08-05 - Marco Clemencic
+ - Fixing bug #83775: unprotected MSG::DEBUG/VERBOSE
+   Fixed Algorithm, Service, DataSvc
+
  - Modified CommonMessaging (and Service) to correctly take into account
    changes to the output level happening after the cached MsgStream is created.
 

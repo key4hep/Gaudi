@@ -16,6 +16,9 @@
 
 using std::string;
 
+#define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
+#define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
+
 //--- IInterface::release
 // Specialized implementation because the default one is not enough.
 unsigned long Service::release()   {
@@ -69,8 +72,7 @@ StatusCode Service::sysInitialize() {
 StatusCode Service::initialize() {
   // Set the Algorithm's properties
   StatusCode sc = setProperties();
-  if (outputLevel() <= MSG::DEBUG)
-    debug() <<  "Service base class initialized successfully" << endmsg;
+  ON_DEBUG debug() <<  "Service base class initialized successfully" << endmsg;
   m_state = Gaudi::StateMachine::ChangeState(Gaudi::StateMachine::CONFIGURE,m_state);
   return sc ;
 }
