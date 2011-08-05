@@ -123,6 +123,12 @@ protected:
   /// Flag to create a new MsgStream if it was created without the message service
   mutable bool m_streamWithService;
 
+  /// Update the output level of the cached MsgStream.
+  /// This function is meant to be called by the update handler of the OutputLevel property.
+  void updateMsgStreamOutputLevel(int level) {
+    if (m_msgStream.get()) m_msgStream->setLevel(level);
+  }
+
 };
 
 

@@ -429,6 +429,7 @@ void Service::initOutputLevel(Property& /*prop*/) {
   if ( (name() != "MessageSvc") && msgSvc().isValid() ) {
     msgSvc()->setOutputLevel( name(), m_outputLevel );
   }
+  updateMsgStreamOutputLevel(m_outputLevel);
 }
 
 // Standard Destructor

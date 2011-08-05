@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-08-05 - Marco Clemencic
+ - Modified CommonMessaging (and Service) to correctly take into account
+   changes to the output level happening after the cached MsgStream is created.
+
 ! 2011-08-04 - Marco Clemencic
  - Fixed bug #84663: allow access to addresses of private members of StatEntity
    Changed the signature of the methods returning the internal data members
