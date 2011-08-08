@@ -4,6 +4,7 @@ Package manager : Marco Clemencic
 ! 2011-08-08 - Marco Clemencic
  - Fixing bug #83775: unprotected MSG::DEBUG/VERBOSE
    - Sequencer
+   - GaudiCommon
 
 ! 2011-08-04 - Patrick Koppenburg
  - Patch #4923: GaudiSequencer

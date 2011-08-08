@@ -1,8 +1,3 @@
-// $Id: GaudiCommon.icpp,v 1.22 2008/10/10 15:18:56 marcocle Exp $
-
-// ============================================================================
-// CVS tag $Name:  $ version $Revision: 1.22 $
-// ============================================================================
 // ============================================================================
 // include files
 // ============================================================================
@@ -178,7 +173,8 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
   }
 
   // Get the job option service
-  IJobOptionsSvc* jos = svc<IJobOptionsSvc>( "JobOptionsSvc" );
+  SmartIF<IJobOptionsSvc> jos(PBASE::service("JobOptionsSvc"));
+  if (!jos.isValid()) Exception("Cannot get JobOptionsSvc");
 
   // Get the "Context" option if in the file...
   const std::vector<const Property*>* myList = jos->getProperties( this->name() );
@@ -203,9 +199,6 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
       }
     }
   }
-
-  // release tool
-  release( jos ).ignore();
 
 }
 //=============================================================================
