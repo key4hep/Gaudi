@@ -7,6 +7,8 @@ Package manager : Marco Clemencic
      code in GaudiCommon.
  - Fixing bug #83775: unprotected MSG::DEBUG/VERBOSE
    - ServiceLocatorHelper
+ - Fixed a bug in Service that was causing an inconsistency between the output
+   level of the service and the table in MessageSvc.
 
 ! 2011-08-07 - Marco Clemencic
  - Modified Gaudi::Cast to use InterfaceID instead of type_info.

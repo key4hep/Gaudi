@@ -43,6 +43,8 @@ StatusCode Service::sysInitialize() {
                                       // check if we want to audit the initialize
                                       (m_auditorInitialize) ? auditorSvc().get() : 0,
                                       IAuditor::Initialize);
+    if ((name() != "MessageSvc") && msgSvc().isValid()) // pre-set the outputLevel from the MessageSvc value
+      m_outputLevel = msgSvc()->outputLevel(name());
     sc = initialize(); // This should change the state to Gaudi::StateMachine::CONFIGURED
     if (sc.isSuccess())
       m_state = m_targetState;
@@ -400,11 +402,11 @@ Service::Service(const std::string& name, ISvcLocator* svcloc) {
     // In genconf a service is instantiated without the ApplicationMgr
     m_outputLevel = msgSvc()->outputLevel();
   }
-  declareProperty( "OutputLevel", m_outputLevel);
+  declareProperty("OutputLevel", m_outputLevel);
   m_outputLevel.declareUpdateHandler(&Service::initOutputLevel, this);
 
   // Get the default setting for service auditing from the AppMgr
-  declareProperty( "AuditServices", m_auditInit=true );
+  declareProperty("AuditServices", m_auditInit = true);
 
   bool audit(false);
   SmartIF<IProperty> appMgr(serviceLocator()->service("ApplicationMgr"));
