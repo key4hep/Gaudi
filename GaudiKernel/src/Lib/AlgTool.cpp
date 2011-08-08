@@ -1,5 +1,3 @@
-// $Id: AlgTool.cpp,v 1.25 2008/10/23 15:57:37 marcocle Exp $
-
 // Include files
 #include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/IMessageSvc.h"
@@ -596,6 +594,11 @@ AlgTool::service_i(const std::string& svcType,
                    void** ppSvc) const {
   const ServiceLocatorHelper helper(*serviceLocator(), *this);
   return  helper.createService(svcType, svcName, iid, ppSvc);
+}
+
+SmartIF<IService> AlgTool::service(const std::string& name, const bool createIf, const bool quiet) const {
+  const ServiceLocatorHelper helper(*serviceLocator(), *this);
+  return helper.service(name, quiet, createIf);
 }
 
 //-----------------------------------------------------------------------------

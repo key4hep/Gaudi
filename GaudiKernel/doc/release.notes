@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 
 ! 2011-08-08 - Marco Clemencic
+ - Added the non-tempalted method AlgTool::service
+   - This makes AlgTool more similar to Algorithm, in order to simplify some
+     code in GaudiCommon.
  - Fixing bug #83775: unprotected MSG::DEBUG/VERBOSE
    - ServiceLocatorHelper
 

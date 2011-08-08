@@ -1,5 +1,3 @@
-// $Id: AlgTool.h,v 1.23 2008/06/02 14:20:38 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIKERNEL_ALGTOOL_H
 #define GAUDIKERNEL_ALGTOOL_H
 // ============================================================================
@@ -181,6 +179,9 @@ public:
   StatusCode service( const std::string& type, const std::string& name, T*& svc) const {
     return service_i(type, name, T::interfaceID(), (void**)&svc);
   }
+
+  /// Return a pointer to the service identified by name (or "type/name")
+  SmartIF<IService> service(const std::string& name, const bool createIf = true, const bool quiet = false) const;
 
   /// declare interface
   void declInterface( const InterfaceID&, void*);
