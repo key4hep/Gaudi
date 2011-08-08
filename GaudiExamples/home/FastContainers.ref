@@ -21,7 +21,7 @@ EventLoopMgr        DEBUG Service base class initialized successfully
 IncidentSvc         DEBUG Service base class initialized successfully
 IncidentSvc         DEBUG Adding [AbortEvent] listener '<unknown>' with priority 0
 EventLoopMgr        DEBUG Creating Top Algorithm GaudiSequencer with name GaudiSequencer
-GaudiSequencer      DEBUG Releasing service 'JobOptionsSvc'
+GaudiSequencer    VERBOSE ServiceLocatorHelper::service: found service JobOptionsSvc
 GaudiSequencer      DEBUG Property update for OutputLevel : new value = 1
 AlgContextSvc       DEBUG Service base class initialized successfully
 AlgContextSvc     VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
@@ -70,16 +70,16 @@ GaudiSequencer      DEBUG Property ['Name': Value] =  'ErrorMax':1
 GaudiSequencer      DEBUG Property ['Name': Value] =  'Enable':True
 GaudiSequencer      DEBUG Property ['Name': Value] =  'OutputLevel':1
 GaudiSequencer      DEBUG ==> Initialise
-FastContainerPr...  DEBUG Releasing service 'JobOptionsSvc'
+FastContainerPr...VERBOSE ServiceLocatorHelper::service: found service JobOptionsSvc
 GaudiSequencer      DEBUG Added algorithm FastContainerProducer
-FastContainerCo...  DEBUG Releasing service 'JobOptionsSvc'
+FastContainerCo...VERBOSE ServiceLocatorHelper::service: found service JobOptionsSvc
 GaudiSequencer      DEBUG Added algorithm FastContainerConsumer
 GaudiSequencer      DEBUG Releasing service 'ApplicationMgr'
 GaudiSequencer      DEBUG Releasing service 'JobOptionsSvc'
 GaudiSequencer       INFO Member list: FastContainerProducer, FastContainerConsumer
 ToolSvc             DEBUG Service base class initialized successfully
 GaudiSequencer    VERBOSE ServiceLocatorHelper::service: found service ToolSvc
-ToolSvc.Sequenc...  DEBUG Releasing service 'JobOptionsSvc'
+ToolSvc.Sequenc...VERBOSE ServiceLocatorHelper::service: found service JobOptionsSvc
 ToolSvc           VERBOSE Created tool SequencerTimerTool/ToolSvc.SequencerTimerTool
 ToolSvc.Sequenc...  DEBUG Property update for OutputLevel : new value = 1
 ToolSvc.Sequenc...  DEBUG Initialize base class GaudiCommon<AlgTool>
