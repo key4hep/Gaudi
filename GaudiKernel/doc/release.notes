@@ -3,6 +3,8 @@ Package manager : Marco Clemencic
 
 ! 2011-08-07 - Marco Clemencic
  - Modified Gaudi::Cast to use InterfaceID instead of type_info.
+ - Modified CommonMessaging to be able to get the current output level from the
+   embedded MsgStream.
 
 ! 2011-08-05 - Marco Clemencic
  - Fixing bug #83775: unprotected MSG::DEBUG/VERBOSE
