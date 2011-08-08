@@ -27,11 +27,11 @@ struct GAUDI_API extends1: public BASE, virtual public extend_interfaces1<I1> {
   extends1(): BASE(){}
 
   /// Implementation of IInterface::i_cast.
-  virtual void *i_cast(const std::type_info &tid) const {
+  virtual void *i_cast(const InterfaceID &tid) const {
     void *ptr = 0;
 #ifndef __GCCXML__
-    check_cast<base_class> caster(this,tid,ptr);
-    mpl::for_each<interfaces>(caster);
+    interfaceMatch<base_class> matcher(this,tid,ptr);
+    mpl::for_each<interfaces>(matcher);
 #endif
     if (!ptr) {
       ptr = BASE::i_cast(tid);
@@ -92,11 +92,11 @@ struct GAUDI_API extends2: public BASE, virtual public extend_interfaces2<I1,I2>
   extends2(): BASE(){}
 
   /// Implementation of IInterface::i_cast.
-  virtual void *i_cast(const std::type_info &tid) const {
+  virtual void *i_cast(const InterfaceID &tid) const {
     void *ptr = 0;
 #ifndef __GCCXML__
-    check_cast<base_class> caster(this,tid,ptr);
-    mpl::for_each<interfaces>(caster);
+    interfaceMatch<base_class> matcher(this,tid,ptr);
+    mpl::for_each<interfaces>(matcher);
 #endif
     if (!ptr) {
       ptr = BASE::i_cast(tid);
@@ -157,11 +157,11 @@ struct GAUDI_API extends3: public BASE, virtual public extend_interfaces3<I1,I2,
   extends3(): BASE(){}
 
   /// Implementation of IInterface::i_cast.
-  virtual void *i_cast(const std::type_info &tid) const {
+  virtual void *i_cast(const InterfaceID &tid) const {
     void *ptr = 0;
 #ifndef __GCCXML__
-    check_cast<base_class> caster(this,tid,ptr);
-    mpl::for_each<interfaces>(caster);
+    interfaceMatch<base_class> matcher(this,tid,ptr);
+    mpl::for_each<interfaces>(matcher);
 #endif
     if (!ptr) {
       ptr = BASE::i_cast(tid);
