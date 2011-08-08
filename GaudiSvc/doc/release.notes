@@ -1,6 +1,11 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-08-08 - Marco Clemencic
+ - Fixing bug #83775: unprotected MSG::DEBUG/VERBOSE
+   - ApplicationMgr
+   - ServiceManager
+
 ! 2011-08-05 - Marco Clemencic
  - Fixing bug #83775: unprotected MSG::DEBUG
    Fixed ToolSvc, DetectorDataSvc, IncidentSvc, PersistencySvc

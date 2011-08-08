@@ -1,5 +1,3 @@
-// $Id: ApplicationMgr.cpp,v 1.77 2008/11/10 15:29:09 marcocle Exp $
-
 // Include files
 #include "ApplicationMgr.h"
 #include "ServiceManager.h"
@@ -33,6 +31,9 @@ using System::isEnvSet;
 
 static const char* s_eventloop = "EventLoop";
 static const char* s_runable   = "Runable";
+
+#define ON_DEBUG if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+#define ON_VERBOSE if (UNLIKELY(m_outputLevel <= MSG::VERBOSE))
 
 DECLARE_OBJECT_FACTORY(ApplicationMgr)
 
@@ -316,7 +317,8 @@ StatusCode ApplicationMgr::configure() {
   MsgStream log( m_messageSvc, name() );
 
   // Get my own options using the Job options service
-  log << MSG::DEBUG << "Getting my own properties" << endmsg;
+  if (log.level() <= MSG::DEBUG)
+    log << MSG::DEBUG << "Getting my own properties" << endmsg;
   sc = m_jobOptionsSvc->setMyProperties( name(), m_propertyMgr );
   if( !sc.isSuccess() ) {
     log << MSG::WARNING << "Problems getting my properties from JobOptionsSvc"
@@ -387,13 +389,11 @@ StatusCode ApplicationMgr::configure() {
     const std::string &name  = var->first;
     const std::string &value = var->second;
     std::string old = System::getEnv(name.c_str());
-    if ( !old.empty() && (old != "UNKNOWN" )) {
-      log << MSG::WARNING;
-    }
-    else {
-      log << MSG::DEBUG;
-    }
-    log << "Setting " << name << " = " << value << endmsg;
+    const MSG::Level lvl = (!old.empty() && (old != "UNKNOWN" ))
+        ? MSG::WARNING
+        : MSG::DEBUG;
+    if (UNLIKELY(m_outputLevel <= lvl))
+      log << lvl << "Setting " << name << " = " << value << endmsg;
     System::setEnv(name,value);
   }
 
@@ -1003,9 +1003,11 @@ StatusCode ApplicationMgr::decodeCreateSvcNameList() {
       log << MSG::ERROR << "decodeCreateSvcNameList: Cannot create service "
           << item.type() << "/" << item.name() << endmsg;
     } else {
-      MsgStream log( m_messageSvc, m_name );
-      log << MSG::DEBUG << "decodeCreateSvcNameList: Created service "
-          << item.type() << "/" << item.name() << endmsg;
+      ON_DEBUG {
+        MsgStream log( m_messageSvc, m_name );
+        log << MSG::DEBUG << "decodeCreateSvcNameList: Created service "
+            << item.type() << "/" << item.name() << endmsg;
+      }
     }
   }
   return result;
@@ -1083,10 +1085,12 @@ StatusCode ApplicationMgr::decodeMultiThreadSvcNameList( ) {
             << "decodeMultiThreadSvcNameList: Cannot create service "
             << item.type() << "/" << item.name() << endmsg;
       } else {
-        MsgStream log( m_messageSvc, m_name );
-        log << MSG::VERBOSE
-            << "decodeMultiThreadSvcNameList: created service "
-            << item.type() << "/" << item.name() << endmsg;
+        ON_VERBOSE {
+          MsgStream log( m_messageSvc, m_name );
+          log << MSG::VERBOSE
+              << "decodeMultiThreadSvcNameList: created service "
+              << item.type() << "/" << item.name() << endmsg;
+        }
       }
     }
   }
@@ -1105,8 +1109,9 @@ StatusCode ApplicationMgr::declareMultiSvcType(const std::string& name,
       log << MSG::ERROR << "declareMultiSvcType: Cannot declare service "
           << type << "/" << name << endmsg;
     } else {
-      log << MSG::VERBOSE << "declareMultiSvcType: declared service "
-          << type << "/" << name << endmsg;
+      ON_VERBOSE
+        log << MSG::VERBOSE << "declareMultiSvcType: declared service "
+            << type << "/" << name << endmsg;
     }
   } else {
     for(int iCopy=0; iCopy<m_noOfEvtThreads; ++iCopy) {
@@ -1116,8 +1121,9 @@ StatusCode ApplicationMgr::declareMultiSvcType(const std::string& name,
         log << MSG::ERROR << "declareMultiSvcType: Cannot declare service "
             << type << "/" << thrName << endmsg;
       } else {
-        log << MSG::VERBOSE << "declareMultiSvcType: declared service "
-            << type << "/" << thrName << endmsg;
+        ON_VERBOSE
+          log << MSG::VERBOSE << "declareMultiSvcType: declared service "
+              << type << "/" << thrName << endmsg;
       }
     }
   }
@@ -1138,8 +1144,9 @@ StatusCode ApplicationMgr::addMultiSvc(const Gaudi::Utils::TypeNameString &typeN
       log << MSG::ERROR << "addMultiSvc: Cannot add service "
           << typeName.type() << "/" << typeName.name() << endmsg;
     } else {
-      log << MSG::VERBOSE << "addMultiSvc: added service "
-          << typeName.type() << "/" << typeName.name() << endmsg;
+      ON_VERBOSE
+        log << MSG::VERBOSE << "addMultiSvc: added service "
+            << typeName.type() << "/" << typeName.name() << endmsg;
     }
   } else {
     for(int iCopy=0; iCopy<m_noOfEvtThreads; ++iCopy) {
@@ -1150,8 +1157,9 @@ StatusCode ApplicationMgr::addMultiSvc(const Gaudi::Utils::TypeNameString &typeN
         log << MSG::ERROR << "addMultiSvc: Cannot add service "
             << type << "/" << thrName << endmsg;
       } else {
-        log << MSG::VERBOSE << "addMultiSvc: added service "
-            << type << "/" << thrName << endmsg;
+        ON_VERBOSE
+          log << MSG::VERBOSE << "addMultiSvc: added service "
+              << type << "/" << thrName << endmsg;
       }
     }
   }
@@ -1191,7 +1199,7 @@ StatusCode ApplicationMgr::decodeDllNameList() {
   //m_dllNameList = newList; // update primary list to new, filtered list (do not use the
                              // property itself otherwise we get called again infinitely)
   // List modules that were in there twice..
-  if ( !duplicateList.empty() ) {
+  ON_DEBUG if ( !duplicateList.empty() ) {
     log << MSG::DEBUG << "Removed duplicate entries for modules : ";
     for ( std::map<std::string,unsigned int>::const_iterator it = duplicateList.begin();
           it != duplicateList.end(); ++it ) {
@@ -1205,7 +1213,7 @@ StatusCode ApplicationMgr::decodeDllNameList() {
   const std::vector<std::string>& theNames = newList;
 
   // only load the new dlls or previously failed dlls
-  log << MSG::DEBUG << "Loading declared DLL's" << endmsg;
+  ON_DEBUG log << MSG::DEBUG << "Loading declared DLL's" << endmsg;
 
   std::vector<std::string> successNames, failNames;
   std::vector<std::string>::const_iterator it;
