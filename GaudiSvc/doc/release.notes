@@ -5,6 +5,7 @@ Package manager : Marco Clemencic
  - Fixing bug #83775: unprotected MSG::DEBUG/VERBOSE
    - ApplicationMgr
    - ServiceManager
+   - EventLoopMgr
 
 ! 2011-08-05 - Marco Clemencic
  - Fixing bug #83775: unprotected MSG::DEBUG

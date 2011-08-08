@@ -1,4 +1,3 @@
-// $Id: EventLoopMgr.cpp,v 1.26 2008/10/09 13:40:18 marcocle Exp $
 #define  GAUDISVC_EVENTLOOPMGR_CPP
 
 #include "GaudiKernel/SmartIF.h"
@@ -19,6 +18,13 @@
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY(EventLoopMgr)
+
+
+#define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
+#define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
+
+#define DEBMSG ON_DEBUG debug()
+#define VERMSG ON_VERBOSE verbose()
 
 //--------------------------------------------------------------------------------------------
 // Standard Constructor
@@ -59,28 +65,27 @@ EventLoopMgr::~EventLoopMgr()   {
 StatusCode EventLoopMgr::initialize()    {
   // Initialize the base class
   StatusCode sc = MinimalEventLoopMgr::initialize();
-  MsgStream log(msgSvc(), name());
   if( !sc.isSuccess() ) {
-    log << MSG::DEBUG << "Error Initializing base class MinimalEventLoopMgr." << endmsg;
+    DEBMSG << "Error Initializing base class MinimalEventLoopMgr." << endmsg;
     return sc;
   }
 
   // Setup access to event data services
   m_evtDataMgrSvc = serviceLocator()->service("EventDataSvc");
   if( !m_evtDataMgrSvc.isValid() )  {
-    log << MSG::FATAL << "Error retrieving EventDataSvc interface IDataManagerSvc." << endmsg;
+    fatal() << "Error retrieving EventDataSvc interface IDataManagerSvc." << endmsg;
     return StatusCode::FAILURE;
   }
   m_evtDataSvc = serviceLocator()->service("EventDataSvc");
   if( !m_evtDataSvc.isValid() )  {
-    log << MSG::FATAL << "Error retrieving EventDataSvc interface IDataProviderSvc." << endmsg;
+    fatal() << "Error retrieving EventDataSvc interface IDataProviderSvc." << endmsg;
     return StatusCode::FAILURE;
   }
 
   // Obtain the IProperty of the ApplicationMgr
   m_appMgrProperty = serviceLocator();
   if ( ! m_appMgrProperty.isValid() )   {
-    log << MSG::FATAL << "IProperty interface not found in ApplicationMgr." << endmsg;
+    fatal() << "IProperty interface not found in ApplicationMgr." << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -93,12 +98,12 @@ StatusCode EventLoopMgr::initialize()    {
       // Setup Event Selector
       sc=m_evtSelector->createContext(m_evtContext);
       if( !sc.isSuccess() )   {
-        log << MSG::FATAL << "Can not create the event selector Context." << endmsg;
+        fatal() << "Can not create the event selector Context." << endmsg;
         return sc;
       }
     }
     else {
-      log << MSG::FATAL << "EventSelector not found." << endmsg;
+      fatal() << "EventSelector not found." << endmsg;
       return sc;
     }
   }
@@ -106,21 +111,21 @@ StatusCode EventLoopMgr::initialize()    {
     m_evtSelector = 0;
     m_evtContext = 0;
     if ( m_warnings ) {
-      log << MSG::WARNING << "Unable to locate service \"EventSelector\" " << endmsg;
-      log << MSG::WARNING << "No events will be processed from external input." << endmsg;
+      warning() << "Unable to locate service \"EventSelector\" " << endmsg;
+      warning() << "No events will be processed from external input." << endmsg;
     }
   }
 
   // Setup access to histogramming services
   m_histoDataMgrSvc = serviceLocator()->service("HistogramDataSvc");
   if( !m_histoDataMgrSvc.isValid() )  {
-    log << MSG::FATAL << "Error retrieving HistogramDataSvc." << endmsg;
+    fatal() << "Error retrieving HistogramDataSvc." << endmsg;
     return sc;
   }
   // Setup histogram persistency
   m_histoPersSvc = serviceLocator()->service("HistogramPersistencySvc");
   if( !m_histoPersSvc.isValid() ) {
-    log << MSG::WARNING << "Histograms cannot not be saved - though required." << endmsg;
+    warning() << "Histograms cannot not be saved - though required." << endmsg;
     return sc;
   }
 
@@ -130,12 +135,11 @@ StatusCode EventLoopMgr::initialize()    {
 // implementation of IService::reinitialize
 //--------------------------------------------------------------------------------------------
 StatusCode EventLoopMgr::reinitialize() {
-  MsgStream log(msgSvc(), name());
 
   // Initialize the base class
   StatusCode sc = MinimalEventLoopMgr::reinitialize();
   if( !sc.isSuccess() ) {
-    log << MSG::DEBUG << "Error Initializing base class MinimalEventLoopMgr." << endmsg;
+    DEBMSG << "Error Initializing base class MinimalEventLoopMgr." << endmsg;
     return sc;
   }
 
@@ -155,27 +159,26 @@ StatusCode EventLoopMgr::reinitialize() {
       if (theSvc->FSMState() == Gaudi::StateMachine::INITIALIZED) {
         sc = theSvc->reinitialize();
         if( !sc.isSuccess() ) {
-          log << MSG::ERROR << "Failure Reinitializing EventSelector "
-              << theSvc->name( ) << endmsg;
+          error() << "Failure Reinitializing EventSelector "
+                  << theSvc->name( ) << endmsg;
           return sc;
         }
       }
       else {
         sc = theSvc->sysInitialize();
         if( !sc.isSuccess() ) {
-          log << MSG::ERROR << "Failure Initializing EventSelector "
-              << theSvc->name( ) << endmsg;
+          error() << "Failure Initializing EventSelector "
+                  << theSvc->name( ) << endmsg;
           return sc;
         }
       }
       sc = m_evtSelector->createContext(m_evtContext);
       if( !sc.isSuccess() ) {
-        log << MSG::ERROR << "Can not create Context "
-            << theSvc->name( ) << endmsg;
+        error() << "Can not create Context " << theSvc->name( ) << endmsg;
         return sc;
       }
-      log << MSG::INFO << "EventSelector service changed to "
-          << theSvc->name( ) << endmsg;
+      info() << "EventSelector service changed to "
+             << theSvc->name( ) << endmsg;
     }
     else if ( m_evtSelector.isValid() ) {
       if ( m_evtContext ) {
@@ -184,8 +187,7 @@ StatusCode EventLoopMgr::reinitialize() {
       }
       sc = m_evtSelector->createContext(m_evtContext);
       if( !sc.isSuccess() ) {
-        log << MSG::ERROR << "Can not create Context "
-            << theSvc->name( ) << endmsg;
+        error() << "Can not create Context " << theSvc->name( ) << endmsg;
         return sc;
       }
     }
@@ -216,12 +218,11 @@ StatusCode EventLoopMgr::stop()    {
 //--------------------------------------------------------------------------------------------
 StatusCode EventLoopMgr::finalize()    {
   StatusCode sc;
-  MsgStream log(msgSvc(), name());
 
   // Finalize base class
   sc = MinimalEventLoopMgr::finalize();
   if (! sc.isSuccess()) {
-    log << MSG::ERROR << "Error finalizing base class" << endmsg;
+    error() << "Error finalizing base class" << endmsg;
     return sc;
   }
 
@@ -253,14 +254,14 @@ StatusCode EventLoopMgr::finalize()    {
         }
       }
       if ( sc.isSuccess() )    {
-        log << MSG::INFO << "Histograms converted successfully according to request." << endmsg;
+        info() << "Histograms converted successfully according to request." << endmsg;
       }
       else  {
-        log << MSG::ERROR << "Error while saving Histograms." << endmsg;
+        error() << "Error while saving Histograms." << endmsg;
       }
     }
     else {
-      log << MSG::ERROR << "Error while traversing Histogram data store" << endmsg;
+      error() << "Error while traversing Histogram data store" << endmsg;
     }
   }
 
@@ -290,8 +291,7 @@ StatusCode EventLoopMgr::executeEvent(void* par)    {
   m_incidentSvc->fireIncident(Incident(name(),IncidentType::BeginEvent));
   // An incident may schedule a stop, in which case is better to exit before the actual execution.
   if ( m_scheduledStop ) {
-    MsgStream  log( msgSvc(), name() );
-    log << MSG::ALWAYS << "Terminating event processing loop due to a stop scheduled by an incident listener" << endmsg;
+    always() << "Terminating event processing loop due to a stop scheduled by an incident listener" << endmsg;
     return StatusCode::SUCCESS;
   }
 
@@ -301,9 +301,8 @@ StatusCode EventLoopMgr::executeEvent(void* par)    {
   m_incidentSvc->fireIncident(Incident(name(), IncidentType::EndProcessing));
 
   // Check if there was an error processing current event
-  if( !sc.isSuccess() ){
-    MsgStream log( msgSvc(), name() );
-    log << MSG::ERROR << "Terminating event processing loop due to errors" << endmsg;
+  if( UNLIKELY(!sc.isSuccess()) ){
+    error() << "Terminating event processing loop due to errors" << endmsg;
   }
   return sc;
 }
@@ -325,7 +324,6 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
   static int        total_nevt = 0;
   DataObject*       pObject = 0;
   StatusCode        sc(StatusCode::SUCCESS, true);
-  MsgStream         log( msgSvc(), name() );
 
   // Reset the application return code.
   Gaudi::setAppReturnCode(m_appMgrProperty, Gaudi::ReturnCode::Success, true).ignore();
@@ -337,7 +335,7 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
     // Check if there is a scheduled stop issued by some algorithm/service
     if ( m_scheduledStop ) {
       m_scheduledStop = false;
-      log << MSG::ALWAYS << "Terminating event processing loop due to scheduled stop" << endmsg;
+      always() << "Terminating event processing loop due to scheduled stop" << endmsg;
       break;
     }
     // Clear the event store, if used in the event loop
@@ -350,7 +348,7 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
       }
       sc = m_evtDataMgrSvc->clearStore();
       if( !sc.isSuccess() )  {
-        log << MSG::DEBUG << "Clear of Event data store failed" << endmsg;
+        DEBMSG << "Clear of Event data store failed" << endmsg;
       }
     }
 
@@ -360,32 +358,32 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
       // Only if there is a EventSelector
       sc = getEventRoot(addr);
       if( !sc.isSuccess() )  {
-        log << MSG::INFO << "No more events in event selection " << endmsg;
+        info() << "No more events in event selection " << endmsg;
         break;
       }
       // Set root clears the event data store first
       sc = m_evtDataMgrSvc->setRoot ("/Event", addr);
       if( !sc.isSuccess() )  {
-        log << MSG::WARNING << "Error declaring event root address." << endmsg;
+        warning() << "Error declaring event root address." << endmsg;
         continue;
       }
       sc = m_evtDataSvc->retrieveObject("/Event", pObject);
       if( !sc.isSuccess() ) {
-        log << MSG::WARNING << "Unable to retrieve Event root object" << endmsg;
+        warning() << "Unable to retrieve Event root object" << endmsg;
         break;
       }
     }
     else {
       sc = m_evtDataMgrSvc->setRoot ("/Event", new DataObject());
       if( !sc.isSuccess() )  {
-        log << MSG::WARNING << "Error declaring event root DataObject" << endmsg;
+        warning() << "Error declaring event root DataObject" << endmsg;
       }
     }
     // Execute event for all required algorithms
     sc = executeEvent(NULL);
     m_endEventFired = false;
     if( !sc.isSuccess() ){
-      log << MSG::ERROR << "Terminating event processing loop due to errors" << endmsg;
+      error() << "Terminating event processing loop due to errors" << endmsg;
       Gaudi::setAppReturnCode(m_appMgrProperty, Gaudi::ReturnCode::AlgorithmFailure).ignore();
       return sc;
     }
@@ -407,8 +405,7 @@ StatusCode EventLoopMgr::getEventRoot(IOpaqueAddress*& refpAddr)  {
     if ( sc.isSuccess() )  {
       sc = m_evtSelector->createAddress(*m_evtContext,refpAddr);
       if ( !sc.isSuccess() )  {
-        MsgStream log( msgSvc(), name() );
-        log << MSG::WARNING << "Error creating IOpaqueAddress." << endmsg;
+        warning() << "Error creating IOpaqueAddress." << endmsg;
       }
     }
   }

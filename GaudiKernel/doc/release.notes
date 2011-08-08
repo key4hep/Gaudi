@@ -7,6 +7,7 @@ Package manager : Marco Clemencic
      code in GaudiCommon.
  - Fixing bug #83775: unprotected MSG::DEBUG/VERBOSE
    - ServiceLocatorHelper
+   - MinimalEventLoopMgr
  - Fixed a bug in Service that was causing an inconsistency between the output
    level of the service and the table in MessageSvc.
 
