@@ -72,6 +72,7 @@ class Property {
   bool IsSimple() const;
   bool IsVector() const;
   bool IsMap() const;
+  bool IsReference() const { return  property_value_.IsReference();}
 // ----------------------------------------------------------------------------
  private:
 // ----------------------------------------------------------------------------

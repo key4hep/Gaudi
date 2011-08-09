@@ -1,6 +1,10 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-08-08 - Sasha Mazurov
+ - Patch #5012: Fixed handling of property references in the new JobOptionsSvc
+   References to properties (@Other.Prop) have to be resolved at the end.
+
 ! 2011-08-08 - Marco Clemencic
  - Fixing bug #83775: unprotected MSG::DEBUG/VERBOSE
    - ApplicationMgr

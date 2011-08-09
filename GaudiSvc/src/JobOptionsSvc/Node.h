@@ -26,7 +26,8 @@ struct Node {
  enum NodeType {kRoot,kInclude, kIdentifier, kProperty, kOperation,
   kValue, kAssign, kEqual, kPlusEqual, kMinusEqual, kVector, kMap, kPair,
   kSimple, kString, kReal, kBool, kUnits, kUnit, kCondition, kIfdef, kIfndef,
-  kElse, kPrintOptions, kPrintOn, kPrintOff, kShell, kPrintTree, kDumpFile};
+  kElse, kPrintOptions, kPrintOn, kPrintOff, kShell, kPrintTree, kDumpFile,
+  kPropertyRef};
   NodeType type;
   std::string value;
   std::vector<Node> children;

@@ -29,7 +29,7 @@ bool gp::PropertyValue::IsMap() const {
 gp::PropertyValue&
 gp::PropertyValue::operator += (const PropertyValue& right) {
 
-  if (IsSimple()) {
+  if (IsSimple() || IsReference()) {
     throw PropertyValueException::WrongLValue();
   }
 
@@ -72,7 +72,7 @@ gp::PropertyValue::operator+(const PropertyValue& right) {
 
 gp::PropertyValue&
 gp::PropertyValue::operator-=(const PropertyValue& right) {
-  if (IsSimple()) {
+  if (IsSimple() || IsReference()) {
     throw PropertyValueException::WrongLValue();
   }
 
@@ -118,6 +118,16 @@ gp::PropertyValue::operator-(const PropertyValue& right) {
 }
 // ============================================================================
 std::string gp::PropertyValue::ToString() const {
+  if  (IsReference()) {
+    const std::vector<std::string>*
+       value = boost::get<std::vector<std::string> >(&value_);
+    assert(value != NULL);
+    if (value->at(0) != "") {
+      return "@"+value->at(0)+"."+value->at(1);
+    } else {
+      return "@"+value->at(0);
+    }
+  }
   if (const std::string* value = boost::get<std::string>(&value_)) {
     return *value;
   } else if (const std::vector<std::string>*

@@ -41,7 +41,7 @@ class PropertyName {
   const Position& position() const { return position_;}
   std::string FullName() const;
   std::string ToString() const;
-  bool HasClient() const { return client_.length()>0;}
+  bool HasClient() const { return client_.length() > 0;}
   bool HasPosition() const { return position_.Exists();}
  private:
   std::string client_;

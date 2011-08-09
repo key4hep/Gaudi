@@ -188,7 +188,8 @@ struct FileGrammar: qi::grammar<Iterator, Node(), Skipper> {
                          >> (gidentifier[op(qi::_val, qi::_1)]
                          >> -(gidentifier[op(qi::_val, qi::_1)]) % '.')
                     [op(qi::_val, Node::kProperty)];
-      property_ref = -qi::lit('@') >> property;
+      property_ref %= -qi::lit('@') >>
+          property[op(qi::_val, Node::kPropertyRef)];
       oper = rep::qi::iter_pos[op(qi::_val, qi::_1)]
                    >> (qi::lit("=")[op(qi::_val, Node::kEqual)]
                         |
@@ -197,7 +198,8 @@ struct FileGrammar: qi::grammar<Iterator, Node(), Skipper> {
                         qi::lit("-=")[op(qi::_val, Node::kMinusEqual)]);
       value = rep::qi::iter_pos[qi::_a =  qi::_1]
                      >>
-                     (map_value | vector_value |  simple_value | property_ref)
+                     (map_value | vector_value |  simple_value | property |
+                         property_ref)
                      [qi::_val = qi::_1][op(qi::_val, qi::_a)]
                      ;
       begin_vector = enc::char_('(')[qi::_val=')']

@@ -50,6 +50,7 @@ std::string gp::Node::name() const {
       names[kShell]       = "shell";
       names[kPrintTree]   = "print_tree";
       names[kDumpFile]    = "dump_file";
+      names[kPropertyRef] = "property_ref";
   }
   return names[type];
 }

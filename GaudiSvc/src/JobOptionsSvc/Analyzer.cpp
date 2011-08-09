@@ -161,6 +161,18 @@ static void GetPropertyValue(const gp::Node* node,
       }
       break;
     }
+    case gp::Node::kPropertyRef: {
+      gp::PropertyName::ScopedPtr property;
+      GetPropertyName(node, property);
+      // Save a property reference as vector [clientname, property]
+      std::vector<std::string> reference;
+      reference.push_back(property->client());
+      reference.push_back(property->property());
+
+      value.reset(new gp::PropertyValue(reference,property->position(),
+          true));
+      break;
+    }
     // ------------------------------------------------------------------------
     default: {
       assert(false);
@@ -206,6 +218,7 @@ static bool AssignNode(const gp::Node* node,
       messages->AddError(ex.position(), ex.what());
       return false;
     }
+    // ------------------------------------------------------------------------
     gp::Property* exists = NULL;
     bool reassign = false;
 // ----------------------------------------------------------------------------
@@ -397,6 +410,31 @@ static bool Analyze(gp::Node* node,
     }
     return result;
 }
+
+bool Unreference(gp::Catalog& catalog, gp::Messages* messages) {
+  bool unreference_result = true;
+  BOOST_FOREACH(const gp::Catalog::value_type& client, catalog) {
+    for (gp::Catalog::CatalogSet::mapped_type::iterator current
+        = client.second.begin(); current != client.second.end();
+        ++current) {
+      if (current->IsReference()) {
+        gp::PropertyValue& value = current->property_value();
+        std::vector<std::string> names = value.Vector();
+
+        gp::Property* property = catalog.Find(names[0], names[1]);
+        if (NULL == property) {
+          messages->AddError(value.position(),
+              "Could not unreference " + current->ValueAsString());
+          unreference_result = false;
+        }else{
+          value = property->property_value();
+        }
+      }
+    }
+  }
+  return unreference_result;
+}
+
 // ============================================================================
 bool gp::ReadOptions(const std::string& filename,
         const std::string& search_path, Messages* messages, Catalog* catalog,
@@ -406,8 +444,10 @@ bool gp::ReadOptions(const std::string& filename,
   bool result = Parse(filename, search_path, &included, messages, root);
   if (!result) return false;
 
-  return Analyze(root, search_path, &included, messages, catalog, units,
+  bool result1 = Analyze(root, search_path, &included, messages, catalog, units,
       pragma);
+  bool result2 = Unreference(*catalog, messages);
+  return result1 && result2;
 }
 
 // ============================================================================

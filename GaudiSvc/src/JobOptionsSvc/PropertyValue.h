@@ -33,9 +33,11 @@ class PropertyValue {
   typedef std::map<std::string, std::string> MapOfStrings;
 
 // ----------------------------------------------------------------------------
-  explicit PropertyValue(const Value& value): value_(value) {}
-  PropertyValue(const Value& value, const Position& position): value_(value),
-           position_(position) {}
+  explicit PropertyValue(const Value& value,
+      bool is_reference=false): value_(value), is_reference_(is_reference) {}
+  PropertyValue(const Value& value, const Position& position,
+      bool is_reference=false): value_(value), position_(position),
+      is_reference_(is_reference) {}
 // ----------------------------------------------------------------------------
   const Position& position() const { return position_;}
 // ----------------------------------------------------------------------------
@@ -43,7 +45,8 @@ class PropertyValue {
   const std::string& String() const { return boost::get<std::string>(value_);}
 
   VectorOfStrings& Vector() { return boost::get<VectorOfStrings>(value_);}
-  const VectorOfStrings& Vector() const { return boost::get<VectorOfStrings>(value_);}
+  const VectorOfStrings& Vector() const {
+    return boost::get<VectorOfStrings>(value_);}
 
   MapOfStrings& Map() { return boost::get<MapOfStrings>(value_);}
   const MapOfStrings& Map() const { return boost::get<MapOfStrings>(value_);}
@@ -53,6 +56,7 @@ class PropertyValue {
   bool IsSimple() const;
   bool IsVector() const;
   bool IsMap() const;
+  bool IsReference() const { return is_reference_;};
   // ----------------------------------------------------------------------------
   // Operators:
   // ----------------------------------------------------------------------------
@@ -65,6 +69,7 @@ class PropertyValue {
  private:
   Value value_;
   Position position_;
+  bool is_reference_;
 // ----------------------------------------------------------------------------
 };  //  class PropertyValue
 // ============================================================================
