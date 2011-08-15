@@ -1,27 +1,22 @@
-JobOptionsSvc        INFO
-//GP:================================================================================
-//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/THistWrite.opts" (0,0)
-AuditorSvc.Auditors =  [ "ChronoAuditor" ] ;                            //GP: (1,1)
-ApplicationMgr.TopAlg =  [ "THistWrite" ] ;                             //GP: (1,1)
-MessageSvc.OutputLevel = 3;                                             //GP: (1,1)
-MessageSvc.UseColors = 1;                                               //GP: (1,1)
-THistSvc.OutputLevel = 2;                                               //GP: (1,1)
-ApplicationMgr.OutputLevel = 1;                                         //GP: (1,1)
-ServiceManager.OutputLevel = 2;                                         //GP: (1,1)
-StatusCodeSvc.OutputLevel = 1;                                          //GP: (1,1)
-THistSvc.Output +=  [ "upd DATAFILE='tuple2.rt' TYP='ROOT' OPT='UPDATE'" ] ;//GP: (1,1)
-THistSvc.Output +=  [ "rec DATAFILE='tuple3.rt' TYP='ROOT' OPT='RECREATE'" ] ;//GP: (1,1)
-THistSvc.PrintAll = 1;                                                  //GP: (1,1)
-ApplicationMgr.EvtMax = 20;                                             //GP: (1,1)
-ApplicationMgr.EvtSel = "NONE";                                         //GP: (1,1)
-//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/THistWrite.opts" (37,1)
-//GP:================================================================================
-
+JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/THistWrite.opts)
+JobOptionsSvc        INFO # (5,1): AuditorSvc.Auditors = ["ChronoAuditor"]
+JobOptionsSvc        INFO # (12,1): ApplicationMgr.TopAlg = ["THistWrite"]
+JobOptionsSvc        INFO # (15,1): MessageSvc.OutputLevel = 3
+JobOptionsSvc        INFO # (16,1): MessageSvc.UseColors = 1
+JobOptionsSvc        INFO # (17,1): THistSvc.OutputLevel = 2
+JobOptionsSvc        INFO # (18,1): ApplicationMgr.OutputLevel = 1
+JobOptionsSvc        INFO # (19,1): ServiceManager.OutputLevel = 2
+JobOptionsSvc        INFO # (20,1): StatusCodeSvc.OutputLevel = 1
+JobOptionsSvc        INFO # (25,1): THistSvc.Output += ["upd DATAFILE='tuple2.rt' TYP='ROOT' OPT='UPDATE'"]
+JobOptionsSvc        INFO # (26,1): THistSvc.Output += ["rec DATAFILE='tuple3.rt' TYP='ROOT' OPT='RECREATE'"]
+JobOptionsSvc        INFO # (28,1): THistSvc.PrintAll = 1
+JobOptionsSvc        INFO # (33,1): ApplicationMgr.EvtMax = 20
+JobOptionsSvc        INFO # (34,1): ApplicationMgr.EvtSel = "NONE"
 JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/THistWrite.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on lxplus416.cern.ch on Wed Mar 16 14:08:49 2011
+                                          running on lxplus435.cern.ch on Mon Aug 15 16:29:44 2011
 ====================================================================================================================================[m
 ApplicationMgr    VERBOSE declareMultiSvcType: declared service EvtDataSvc/EventDataSvc[m
 ApplicationMgr    VERBOSE declareMultiSvcType: declared service DetDataSvc/DetectorDataSvc[m
@@ -61,10 +56,31 @@ ApplicationMgr       INFO Application Manager Started successfully[m
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine[m
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3[m
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
 ApplicationMgr       INFO Application Manager Stopped successfully[m
 THistWrite           INFO Finalizing...[m
 EventLoopMgr         INFO Histograms converted successfully according to request.[m
 THistSvc            DEBUG THistSvc::finalize[m
+THistSvc            DEBUG updateFiles()[m
 THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT [m
 THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT: "tuple2.rt"[m
 THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT: "tuple3.rt"[m
@@ -82,7 +98,7 @@ TH1.Print Name  = profile, Entries= 0, Total sum= 0
           NbinsX= 100, xmin= -50, xmax=-50
 ******************************************************************************
 *Tree    :treename  : tree title                                             *
-*Entries :     1000 : Total =           14045 bytes  File  Size =       2333 *
+*Entries :     1000 : Total =           14045 bytes  File  Size =       2330 *
 *        :          : Tree compression factor =   6.63                       *
 ******************************************************************************
 *Br    0 :branch1   : point1/I                                               *

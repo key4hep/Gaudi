@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2011-08-15 - Marco Clemencic
+ - Updated reference files (patch #5014)
+
 ! 2011-08-04 - Marco Clemencic
  - Updated a reference file (patch #4923)
 
