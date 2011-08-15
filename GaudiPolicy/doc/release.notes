@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-08-15 - Marco Clemencic
+ - Small change in test exclusion list for portability.
+
 ! 2011-07-25 - Marco Clemencic
  - Changed the default exclusion list to take into account the new output of
    the JobOptionsSvc.
