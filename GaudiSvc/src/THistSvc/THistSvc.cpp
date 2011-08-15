@@ -216,18 +216,20 @@ THistSvc::finalize() {
   if (m_log.level() <= MSG::DEBUG)
     m_log << MSG::DEBUG << "THistSvc::finalize" << endmsg;
 
+#ifndef NDEBUG
+  if (m_log.level() <= MSG::DEBUG) {
   uidMap::const_iterator uitr;
   for (uitr=m_uids.begin(); uitr != m_uids.end(); ++uitr) {
 
     TObject* to = uitr->second.obj;
 
     string dirname("none");
-    if (to->IsA()->InheritsFrom("TTree")) {
+      if (to && to->IsA()->InheritsFrom("TTree")) {
       TTree* tr = dynamic_cast<TTree*>(to);
       if (tr->GetDirectory() != 0) {
         dirname = tr->GetDirectory()->GetPath();
       }
-    } else if (to->IsA()->InheritsFrom("TGraph")) {
+      } else if (to && to->IsA()->InheritsFrom("TGraph")) {
       if (!uitr->second.temp) {
         dirname = uitr->second.file->GetPath();
         string id2(uitr->second.id);
@@ -240,7 +242,7 @@ THistSvc::finalize() {
       } else {
         dirname = "/tmp";
       }
-    } else if (to->IsA()->InheritsFrom("TH1")) {
+      } else if (to && to->IsA()->InheritsFrom("TH1")) {
       TH1* th = dynamic_cast<TH1*>(to);
       if (th == 0) {
         m_log << MSG::ERROR << "Couldn't dcast: " << uitr->first << endmsg;
@@ -249,21 +251,17 @@ THistSvc::finalize() {
           dirname = th->GetDirectory()->GetPath();
         }
       }
+      } else if (! to ) {
+	m_log << MSG::WARNING << uitr->first << " has NULL TObject ptr"
+	      << endmsg;
     }
 
-#ifndef NDEBUG
-    if (m_log.level() <= MSG::DEBUG)
       m_log << MSG::DEBUG << "uid: \"" << uitr->first << "\"  temp: "
             << uitr->second.temp << "  dir: " << dirname
             << endmsg;
-#endif
-
-
-//     if (uitr->second.temp == true) {
-//       log << MSG::INFO << "Deleting \"" << uitr->first << "\"" << endmsg;
-//       delete uitr->second.obj;
-//     }
   }
+  }
+#endif
 
   StatusCode sc = write();
   if (sc.isFailure()) {
@@ -320,7 +318,8 @@ THistSvc::finalize() {
       //Merge File
       try {
         if (m_log.level() <= MSG::DEBUG)
-          m_log << MSG::DEBUG << "Opening Final Output File: " <<m_sharedFiles[itr->first].c_str()<<endmsg;
+          m_log << MSG::DEBUG << "Opening Final Output File: "
+                << m_sharedFiles[itr->first].c_str() << endmsg;
         outputfile = new TFile(m_sharedFiles[itr->first].c_str(), "UPDATE");
       } catch (const std::exception& Exception) {
         m_log << MSG::ERROR << "exception caught while trying to open root"
@@ -346,7 +345,8 @@ THistSvc::finalize() {
       TFile *inputfile;
       try {
         if (m_log.level() <= MSG::DEBUG)
-          m_log << MSG::DEBUG << "Openning again Temporary File: " <<tmpfn.c_str()<<endmsg;
+          m_log << MSG::DEBUG << "Openning again Temporary File: "
+                << tmpfn.c_str() << endmsg;
         inputfile=new TFile(tmpfn.c_str(),"READ");
       } catch (const std::exception& Exception) {
         m_log << MSG::ERROR << "exception caught while trying to open root"
@@ -1335,11 +1335,22 @@ THistSvc::updateFiles() {
   // need to migrate all the UIDs over to show the correct file
   // pointer. This is ugly.
 
+  if (m_log.level() <= MSG::DEBUG)
+    m_log << MSG::DEBUG << "updateFiles()" << endmsg;
+
+
   uidMap::iterator uitr, uitr2;
   for (uitr=m_uids.begin(); uitr != m_uids.end(); ++uitr) {
+#ifndef NDEBUG
+    if (m_log.level() <= MSG::VERBOSE)
+      m_log << MSG::VERBOSE << " update: " << uitr->first << " "
+	    << uitr->second.id << endmsg;
+#endif
     TObject* to = uitr->second.obj;
     TFile* oldFile = uitr->second.file;
-    if (to->IsA()->InheritsFrom("TTree")) {
+    if (!to) {
+      m_log << MSG::WARNING << uitr->first << ": TObject == 0" << endmsg;
+    } else if (to->IsA()->InheritsFrom("TTree")) {
       TTree* tr = dynamic_cast<TTree*>(to);
       TFile* newFile = tr->GetCurrentFile();
 
@@ -1957,11 +1968,12 @@ THistSvc::handle( const Incident& /* inc */ ) {
 
 /** helper function to recursively copy the layout of a TFile into a new TFile
  */
-namespace {
-  void copyFileLayout (TDirectory *dst, TDirectory *src, MsgStream &msg)
-  {
-    msg << MSG::DEBUG
-        << " dst path: " << dst->GetPath () << endmsg;
+void
+THistSvc::copyFileLayout (TDirectory *dst, TDirectory *src) {
+
+  if (m_log.level() <= MSG::DEBUG)
+    m_log << MSG::DEBUG
+	  << "copyFileLayout() to dst path: " << dst->GetPath () << endmsg;
 
     // strip out URLs
     TString path ((char*)strstr (dst->GetPath(), ":"));
@@ -1980,16 +1992,17 @@ namespace {
                                      + k->GetName();
       TObject *o=src->Get (src_pathname.c_str());
 
-      if (o->IsA()->InheritsFrom ("TDirectory")) {
-        msg << MSG::DEBUG << " subdir [" << o->GetName() << "]..." << endmsg;
+    if (o != NULL && o->IsA()->InheritsFrom ("TDirectory")) {
+      if (m_log.level() <= MSG::VERBOSE)
+	m_log << MSG::VERBOSE << " subdir [" << o->GetName() << "]..."
+	      << endmsg;
         dst->cd ();
         TDirectory * dst_dir = dst->mkdir (o->GetName(), o->GetTitle());
-        copyFileLayout (dst_dir, src, msg);
+      copyFileLayout (dst_dir, src);
       }
     } // loop over keys
     return;
-  }
-} // anon-namespace
+}
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 /** @brief callback method to reinitialize the internal state of
@@ -1999,7 +2012,8 @@ StatusCode
 THistSvc::io_reinit ()
 {
   bool all_good = true;
-  m_log << MSG::INFO << "reinitializing I/O..." << endmsg;
+  if (m_log.level() <= MSG::DEBUG)
+    m_log << MSG::DEBUG << "reinitializing I/O..." << endmsg;
 
   // retrieve the I/O component manager...
 
@@ -2022,7 +2036,8 @@ THistSvc::io_reinit ()
        ifile != iend; ++ifile) {
     TFile *f = ifile->second.first;
     std::string fname = f->GetName();
-    m_log << MSG::INFO << "file [" << fname << "] mode: ["
+    if (m_log.level() <= MSG::DEBUG)
+      m_log << MSG::DEBUG << "file [" << fname << "] mode: ["
           << f->GetOption() << "] r:"
           << f->GetFileBytesRead()
           << " w:" << f->GetFileBytesWritten()
@@ -2030,7 +2045,8 @@ THistSvc::io_reinit ()
           << endmsg;
 
     if ( ifile->second.second == READ ) {
-      m_log << MSG::INFO
+      if (m_log.level() <= MSG::DEBUG)
+	m_log << MSG::DEBUG
             << "  TFile opened in READ mode: not reassigning names" << endmsg;
       continue;
     }
@@ -2041,12 +2057,13 @@ THistSvc::io_reinit ()
       all_good = false;
       continue;
     } else {
-      m_log << MSG::INFO << "got a new name [" << fname << "]..." << endmsg;
+      if (m_log.level() <= MSG::DEBUG)
+	m_log << MSG::DEBUG << "got a new name [" << fname << "]..." << endmsg;
     }
     // create a new TFile
     TFile *newfile = TFile::Open (fname.c_str(), f->GetOption());
     if (ifile->second.second != THistSvc::READ) {
-      ::copyFileLayout (newfile, f, msg());
+      copyFileLayout (newfile, f);
     }
 
     // loop over all uids and migrate them to the new file
@@ -2058,6 +2075,7 @@ THistSvc::io_reinit ()
       if ( hid.file != f ) {
         continue;
       }
+      TDirectory *olddir = this->changeDir (hid);
       hid.file = newfile;
       ifile->second.first = newfile;
       // side-effect: create needed directories...
@@ -2073,6 +2091,7 @@ THistSvc::io_reinit ()
         dynamic_cast<TH1*> (hid.obj)->SetDirectory (newdir);
       }
       else if (cl->InheritsFrom ("TGraph")) {
+        olddir->Remove (hid.obj);
         newdir->Append (hid.obj);
       } else {
         m_log << MSG::ERROR
@@ -2082,6 +2101,7 @@ THistSvc::io_reinit ()
               << endmsg
               << "attaching to current dir [" << newdir->GetPath() << "] "
               << "nonetheless..." << endmsg;
+        olddir->Remove (hid.obj);
         newdir->Append (hid.obj);
       }
     }

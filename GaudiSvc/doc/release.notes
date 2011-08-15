@@ -1,6 +1,12 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-08-15 - Charles Leggett
+ - Patch #5014: GaudiMP fixes and MSG::DEBUG protection
+   - Remove TGraphs from "mother" files before migrating them to the "worker"
+     ones during io_reinit when running in multiprocess mode.
+   - Clean up some DEBUG output, and protect against dereferencing NULL pointers.
+
 ! 2011-08-08 - Sasha Mazurov
  - Patch #5012: Fixed handling of property references in the new JobOptionsSvc
    References to properties (@Other.Prop) have to be resolved at the end.

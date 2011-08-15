@@ -171,6 +171,8 @@ private:
 
   void setupCompressionLevel( Property& cmp );
 
+  void copyFileLayout(TDirectory*, TDirectory*);
+
   StringArrayProperty m_inputfile, m_outputfile;
   std::vector<std::string> m_Rstream, m_Wstream;
   IntegerProperty m_autoSave, m_autoFlush, m_compressionLevel, m_maxFileSize;
