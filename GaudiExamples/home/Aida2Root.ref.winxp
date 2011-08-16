@@ -1,37 +1,37 @@
-JobOptionsSvc        INFO
-//GP:================================================================================
-//GP: include "..\options\Aida2Root.opts"                                     (0,0)
-//GP: include "..\options\Histograms.opts"                                    (1,10)
-AuditorSvc.Auditors =  [ "ChronoAuditor" ] ;                            //GP: (1,1)
-MessageSvc.OutputLevel = 3;                                             //GP: (1,1)
-ApplicationMgr.TopAlg +=  [ "GaudiHistoAlgorithm/SimpleHistos" ] ;      //GP: (1,1)
-ApplicationMgr.TopAlg +=  [ "Gaudi::Examples::HistoProps/Histos2" ] ;   //GP: (1,1)
-SimpleHistos.HistoPrint = 1;                                            //GP: (1,1)
-SimpleHistos.OutputLevel = 2;                                           //GP: (1,1)
-Histos2.Histo2 = ("Title",-5,5,200);                                    //GP: (1,1)
-Histos2.Histo2 = ("Title",-5,5);                                        //GP: (1,1)
-Histos2.Histo2 = (-5,5);                                                //GP: (1,1)
-Histos2.Histo2 = (-5,5,"Title");                                        //GP: (1,1)
-Histos2.Histo2 = (-5,5,"Title",200);                                    //GP: (1,1)
-Histos2.Histo2 = (-5,5,200,"Title");                                    //GP: (1,1)
-Histos2.Histo2 = (-5,5,200);                                            //GP: (1,1)
-ApplicationMgr.EvtMax = 50000;                                          //GP: (1,1)
-ApplicationMgr.EvtSel = "NONE";                                         //GP: (1,1)
-ApplicationMgr.HistogramPersistency = "ROOT";                           //GP: (1,1)
-RootHistSvc.OutputFile = "histo.root";                                  //GP: (1,1)
-HistogramDataSvc.Input =  [ "InFile DATAFILE='../home/input.hbook' TYP='HBOOK'" ] ;//GP: (1,1)
-HistogramDataSvc.Predefined1DHistos =  [ "/stat/Histos2/2":("TEST2",-100,200) ] ;//GP: (1,1)
-HistogramDataSvc.OutputLevel = 2;                                       //GP: (1,1)
-//GP: end  "..\options\Histograms.opts"                                       (64,1)
-ApplicationMgr.TopAlg +=  [ "Aida2Root" ] ;                             //GP: (1,10)
-//GP: end  "..\options\Aida2Root.opts"                                        (4,1)
-//GP:================================================================================
-
-JobOptionsSvc        INFO Job options successfully read in from ..\options\Aida2Root.opts
+JobOptionsSvc        INFO # =======> D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Histograms.opts)
+JobOptionsSvc        INFO # (5,1): AuditorSvc.Auditors = ["ChronoAuditor"]
+JobOptionsSvc        INFO # (9,1): MessageSvc.OutputLevel = 3
+JobOptionsSvc        INFO # (20,1): ApplicationMgr.TopAlg += ["GaudiHistoAlgorithm/SimpleHistos"]
+JobOptionsSvc        INFO # (22,1): ApplicationMgr.TopAlg += ["Gaudi::Examples::HistoProps/Histos2"]
+JobOptionsSvc        INFO # (23,1): SimpleHistos.HistoPrint = 1
+JobOptionsSvc        INFO # (24,1): SimpleHistos.OutputLevel = 2
+JobOptionsSvc        INFO # (27,1): Histos2.Histo2 = ["Title", -5, 5, 200]
+JobOptionsSvc     WARNING # (28,1): Reassignment of option 'Histos2.Histo2' . Previously defined at D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Histograms.opts: (27, 1).
+JobOptionsSvc        INFO # (28,1): Histos2.Histo2 = ["Title", -5, 5]
+JobOptionsSvc     WARNING # (29,1): Reassignment of option 'Histos2.Histo2' . Previously defined at D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Histograms.opts: (28, 1).
+JobOptionsSvc        INFO # (29,1): Histos2.Histo2 = [-5, 5]
+JobOptionsSvc     WARNING # (30,1): Reassignment of option 'Histos2.Histo2' . Previously defined at D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Histograms.opts: (29, 1).
+JobOptionsSvc        INFO # (30,1): Histos2.Histo2 = [-5, 5, "Title"]
+JobOptionsSvc     WARNING # (31,1): Reassignment of option 'Histos2.Histo2' . Previously defined at D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Histograms.opts: (30, 1).
+JobOptionsSvc        INFO # (31,1): Histos2.Histo2 = [-5, 5, "Title", 200]
+JobOptionsSvc     WARNING # (32,1): Reassignment of option 'Histos2.Histo2' . Previously defined at D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Histograms.opts: (31, 1).
+JobOptionsSvc        INFO # (32,1): Histos2.Histo2 = [-5, 5, 200, "Title"]
+JobOptionsSvc     WARNING # (33,1): Reassignment of option 'Histos2.Histo2' . Previously defined at D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Histograms.opts: (32, 1).
+JobOptionsSvc        INFO # (33,1): Histos2.Histo2 = [-5, 5, 200]
+JobOptionsSvc        INFO # (39,1): ApplicationMgr.EvtMax = 50000
+JobOptionsSvc        INFO # (40,1): ApplicationMgr.EvtSel = "NONE"
+JobOptionsSvc        INFO # (47,1): ApplicationMgr.HistogramPersistency = "ROOT"
+JobOptionsSvc        INFO # (48,1): RootHistSvc.OutputFile = "histo.root"
+JobOptionsSvc        INFO # (57,1): HistogramDataSvc.Input = ["InFile DATAFILE='../home/input.hbook' TYP='HBOOK'"]
+JobOptionsSvc        INFO # (59,1): HistogramDataSvc.Predefined1DHistos = {"/stat/Histos2/2":["TEST2", -100, 200]}
+JobOptionsSvc        INFO # (63,1): HistogramDataSvc.OutputLevel = 2
+JobOptionsSvc        INFO # =======> D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Aida2Root.opts)
+JobOptionsSvc        INFO # (3,1): ApplicationMgr.TopAlg += ["Aida2Root"]
+JobOptionsSvc        INFO Job options successfully read in from D:\Profiles\clemenci\cmtuser\Gaudi\GaudiExamples\options\Aida2Root.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on CERNTSLHCB01 on Tue Oct 13 11:52:56 2009
+                                          running on CERNTSLHCB05 on 08/16/11 12:53:04
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 SimpleHistos        DEBUG Property update for OutputLevel : new value = 2
@@ -86,7 +86,6 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorMax':1
 SimpleHistos        DEBUG Property ['Name': Value] =  'Enable':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'OutputLevel':2
 HistogramDataSvc    DEBUG Service base class initialized successfully
-HistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ]
 RootHistSvc          INFO Writing ROOT histograms to: histo.root
 HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
 HistogramDataSvc     INFO Added stream file:../home/input.hbook as InFile
@@ -317,13 +316,13 @@ Aida2Root         SUCCESS Get the native ROOT representation of histograms!
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/Gaussian mean=0, sigma=1':
 TH1.Print Name  = Gaussian mean=0, sigma=1, Entries= 50000, Total sum= 50000
 Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
-Aida2Root            INFO  | 'mean'         |   -0.0098319665 | -0.0098319665   |         0       |
+Aida2Root            INFO  | 'mean'         |   -0.0098319667 | -0.0098319667   |         0       |
 Aida2Root            INFO  | 'meanErr'      |    0.0044725853 |  0.0044725853   |         0       |
 Aida2Root            INFO  | 'rms'          |       1.0001005 |  1.0001005      |         0       |
-Aida2Root            INFO  | 'rmsErr'       |    0.0031550521 |  0.0031625954   |  -7.543258e-006 |
-Aida2Root            INFO  | 'skewness'     |    0.0095032071 |  0.0095032071   |  4.0766002e-016 |
+Aida2Root            INFO  | 'rmsErr'       |    0.0031550521 |  0.0031625954   | -7.5432549e-006 |
+Aida2Root            INFO  | 'skewness'     |    0.0095032078 |  0.0095032078   | -1.9602375e-016 |
 Aida2Root            INFO  | 'skewnessErr'  |     0.010953794 |  0.010954451    | -6.5724078e-007 |
-Aida2Root            INFO  | 'kurtosis'     |   -0.0095692148 | -0.0095692148   | -1.7763568e-015 |
+Aida2Root            INFO  | 'kurtosis'     |   -0.0095692109 | -0.0095692109   | -4.4408921e-016 |
 Aida2Root            INFO  | 'kurtosisErr'  |     0.021905616 |  0.021908902    | -3.2860385e-006 |
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/101':
 TH1.Print Name  = Exponential, Entries= 50000, Total sum= 49656
@@ -350,24 +349,24 @@ Aida2Root            INFO  | 'kurtosisErr'  |     0.022614876 |  0.022618492    
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/1111':
 TH1.Print Name  = Forced Numeric ID time test, Entries= 50000, Total sum= 50000
 Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
-Aida2Root            INFO  | 'mean'         |   -0.0098319665 | -0.0098319665   |         0       |
+Aida2Root            INFO  | 'mean'         |   -0.0098319667 | -0.0098319667   |         0       |
 Aida2Root            INFO  | 'meanErr'      |    0.0044725853 |  0.0044725853   |         0       |
 Aida2Root            INFO  | 'rms'          |       1.0001005 |  1.0001005      |         0       |
-Aida2Root            INFO  | 'rmsErr'       |    0.0031550521 |  0.0031625954   |  -7.543258e-006 |
-Aida2Root            INFO  | 'skewness'     |    0.0095032071 |  0.0095032071   |  4.0766002e-016 |
+Aida2Root            INFO  | 'rmsErr'       |    0.0031550521 |  0.0031625954   | -7.5432549e-006 |
+Aida2Root            INFO  | 'skewness'     |    0.0095032078 |  0.0095032078   | -1.9602375e-016 |
 Aida2Root            INFO  | 'skewnessErr'  |     0.010953794 |  0.010954451    | -6.5724078e-007 |
-Aida2Root            INFO  | 'kurtosis'     |   -0.0095692148 | -0.0095692148   | -1.7763568e-015 |
+Aida2Root            INFO  | 'kurtosis'     |   -0.0095692109 | -0.0095692109   | -4.4408921e-016 |
 Aida2Root            INFO  | 'kurtosisErr'  |     0.021905616 |  0.021908902    | -3.2860385e-006 |
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/test1':
 TH1.Print Name  = Forced Alpha ID time test, Entries= 50000, Total sum= 50000
 Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
-Aida2Root            INFO  | 'mean'         |   -0.0098319665 | -0.0098319665   |         0       |
+Aida2Root            INFO  | 'mean'         |   -0.0098319667 | -0.0098319667   |         0       |
 Aida2Root            INFO  | 'meanErr'      |    0.0044725853 |  0.0044725853   |         0       |
 Aida2Root            INFO  | 'rms'          |       1.0001005 |  1.0001005      |         0       |
-Aida2Root            INFO  | 'rmsErr'       |    0.0031550521 |  0.0031625954   |  -7.543258e-006 |
-Aida2Root            INFO  | 'skewness'     |    0.0095032071 |  0.0095032071   |  4.0766002e-016 |
+Aida2Root            INFO  | 'rmsErr'       |    0.0031550521 |  0.0031625954   | -7.5432549e-006 |
+Aida2Root            INFO  | 'skewness'     |    0.0095032078 |  0.0095032078   | -1.9602375e-016 |
 Aida2Root            INFO  | 'skewnessErr'  |     0.010953794 |  0.010954451    | -6.5724078e-007 |
-Aida2Root            INFO  | 'kurtosis'     |   -0.0095692148 | -0.0095692148   | -1.7763568e-015 |
+Aida2Root            INFO  | 'kurtosis'     |   -0.0095692109 | -0.0095692109   | -4.4408921e-016 |
 Aida2Root            INFO  | 'kurtosisErr'  |     0.021905616 |  0.021908902    | -3.2860385e-006 |
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/subdir2/bino':
 TH1.Print Name  = Binominal, Entries= 50000, Total sum= 48615
@@ -424,11 +423,11 @@ EventLoopMgr         INFO Histograms converted successfully according to request
 *****Chrono*****     INFO ****************************************************************************************************
 *****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)
 *****Chrono*****     INFO ****************************************************************************************************
-1DOldStyle           INFO Time User   : Tot= 78.1 [ms] Ave/Min/Max= 1.56(+-  156)/    0/1.56e+004 [us] #=49999
-1DAutoID             INFO Time User   : Tot= 93.8 [ms] Ave/Min/Max= 1.88(+-  171)/    0/1.56e+004 [us] #=49999
-1DForcedAlphaID      INFO Time User   : Tot=  125 [ms] Ave/Min/Max=  2.5(+-  198)/    0/1.56e+004 [us] #=49999
-1DForcedNumericID    INFO Time User   : Tot=0.594  [s] Ave/Min/Max= 11.9(+-  431)/    0/1.56e+004 [us] #=49999
-ChronoStatSvc        INFO Time User   : Tot= 10.3  [s]                                             #=  1
+1DOldStyle           INFO Time User   : Tot=  141 [ms] Ave/Min/Max= 2.81(+-  210)/    0/1.56e+004 [us] #=49999
+1DAutoID             INFO Time User   : Tot=  125 [ms] Ave/Min/Max=  2.5(+-  198)/    0/1.56e+004 [us] #=49999
+1DForcedAlphaID      INFO Time User   : Tot=  172 [ms] Ave/Min/Max= 3.44(+-  232)/    0/1.56e+004 [us] #=49999
+1DForcedNumericID    INFO Time User   : Tot=  438 [ms] Ave/Min/Max= 8.75(+-  370)/    0/1.56e+004 [us] #=49999
+ChronoStatSvc        INFO Time User   : Tot= 13.8  [s]                                             #=  1
 *****Chrono*****     INFO ****************************************************************************************************
 ChronoStatSvc.f...   INFO  Service finalized successfully
 HistogramDataSvc    DEBUG  Substituted histograms #1 :

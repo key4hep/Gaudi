@@ -1,0 +1,112 @@
+JobOptionsSvc        INFO # =======> D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Services.opts)
+JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
+JobOptionsSvc        INFO # =======> D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Common.opts)
+JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
+JobOptionsSvc        INFO # =======> D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/ColorMsg.opts)
+JobOptionsSvc        INFO # (10,1): ApplicationMgr.TopAlg = ["ColorMsgAlg"]
+JobOptionsSvc        INFO # (16,1): MessageSvc.OutputLevel = 1
+JobOptionsSvc        INFO # (17,1): MessageSvc.useColors = 1
+JobOptionsSvc        INFO # (18,1): MessageSvc.fatalColorCode = ["blue", "red"]
+JobOptionsSvc        INFO # (19,1): MessageSvc.errorColorCode = ["[97;101;1m"]
+JobOptionsSvc        INFO # (20,1): MessageSvc.warningColorCode = ["yellow"]
+JobOptionsSvc        INFO # (21,1): MessageSvc.infoColorCode = ["[96;1m"]
+JobOptionsSvc        INFO # (22,1): MessageSvc.debugColorCode = ["[92;1m"]
+JobOptionsSvc        INFO # (23,1): MessageSvc.verboseColorCode = ["[95;4m"]
+JobOptionsSvc        INFO # (31,1): ApplicationMgr.EvtMax = 2
+JobOptionsSvc        INFO # (32,1): ApplicationMgr.EvtSel = "NONE"
+JobOptionsSvc        INFO Job options successfully read in from D:\Profiles\clemenci\cmtuser\Gaudi\GaudiExamples\options\ColorMsg.opts
+ApplicationMgr      DEBUG Getting my own properties
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.77 $
+                                          running on CERNTSLHCB05 on 08/16/11 11:49:59
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+ServiceManager      DEBUG Initializing service StatusCodeSvc
+StatusCodeSvc       DEBUG Service base class initialized successfully
+StatusCodeSvc        INFO initialize
+ServiceManager      DEBUG Initializing service AppMgrRunable
+AppMgrRunable       DEBUG Service base class initialized successfully
+ServiceManager      DEBUG Initializing service EventLoopMgr
+EventLoopMgr        DEBUG Service base class initialized successfully
+IncidentSvc         DEBUG Service base class initialized successfully
+IncidentSvc         DEBUG Adding [AbortEvent] listener '<unknown>' with priority 0
+EventLoopMgr        DEBUG Creating Top Algorithm ColorMsgAlg with name ColorMsgAlg
+EventDataSvc        DEBUG Service base class initialized successfully
+EventDataSvc      VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
+EventPersistenc...  DEBUG Service base class initialized successfully
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+HistogramDataSvc    DEBUG Service base class initialized successfully
+HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
+HistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ]
+HistogramPersis...  DEBUG Service base class initialized successfully
+HistogramPersis...WARNING Histograms saving not required.
+HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc
+ApplicationMgr       INFO Application Manager Initialized successfully
+ServiceManager      DEBUG Starting service StatusCodeSvc
+ServiceManager      DEBUG Starting service AppMgrRunable
+ServiceManager      DEBUG Starting service IncidentSvc
+ServiceManager      DEBUG Starting service EventPersistencySvc
+ServiceManager      DEBUG Starting service EventDataSvc
+ServiceManager      DEBUG Starting service HistogramPersistencySvc
+ServiceManager      DEBUG Starting service HistogramDataSvc
+ServiceManager      DEBUG Starting service EventLoopMgr
+ApplicationMgr       INFO Application Manager Started successfully
+ColorMsgAlg         FATAL THIS IS A FATAL MESSAGE
+ColorMsgAlg         ERROR THIS IS AN ERROR MESSAGE
+ColorMsgAlg       WARNING THIS IS A WARNING MESSAGE
+ColorMsgAlg          INFO THIS IS A INFO MESSAGE
+ColorMsgAlg         DEBUG THIS IS A DEBUG MESSAGE
+ColorMsgAlg       VERBOSE THIS IS A VERBOSE MESSAGE
+ColorMsgAlg         ERROR this is another error message
+ColorMsgAlg       WARNING This is another warning message
+ColorMsgAlg          INFO testing colour
+ColorMsgAlg          INFO setting....this should be in yellow and red
+ColorMsgAlg          INFO multicolor: this is blue on green and purple on white
+ColorMsgAlg          INFO This is green. This is in yellow on blue. This is back to normal
+ColorMsgAlg         FATAL THIS IS A FATAL MESSAGE
+ColorMsgAlg         ERROR THIS IS AN ERROR MESSAGE
+ColorMsgAlg       WARNING THIS IS A WARNING MESSAGE
+ColorMsgAlg          INFO THIS IS A INFO MESSAGE
+ColorMsgAlg         DEBUG THIS IS A DEBUG MESSAGE
+ColorMsgAlg       VERBOSE THIS IS A VERBOSE MESSAGE
+ColorMsgAlg         ERROR this is another error message
+ColorMsgAlg       WARNING This is another warning message
+ColorMsgAlg          INFO testing colour
+ColorMsgAlg          INFO setting....this should be in yellow and red
+ColorMsgAlg          INFO multicolor: this is blue on green and purple on white
+ColorMsgAlg          INFO This is green. This is in yellow on blue. This is back to normal
+ServiceManager      DEBUG Stopping service EventLoopMgr
+ServiceManager      DEBUG Stopping service HistogramDataSvc
+ServiceManager      DEBUG Stopping service HistogramPersistencySvc
+ServiceManager      DEBUG Stopping service EventDataSvc
+ServiceManager      DEBUG Stopping service EventPersistencySvc
+ServiceManager      DEBUG Stopping service IncidentSvc
+ServiceManager      DEBUG Stopping service AppMgrRunable
+ServiceManager      DEBUG Stopping service StatusCodeSvc
+ApplicationMgr       INFO Application Manager Stopped successfully
+ServiceManager      DEBUG Finalizing service EventLoopMgr
+IncidentSvc         DEBUG Removing [AbortEvent] listener '<unknown>'
+EventLoopMgr         INFO Histograms converted successfully according to request.
+ServiceManager      DEBUG Finalizing service HistogramDataSvc
+ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
+ServiceManager      DEBUG Finalizing service EventDataSvc
+ServiceManager      DEBUG Finalizing service EventPersistencySvc
+ServiceManager      DEBUG Finalizing service IncidentSvc
+IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0(+-0)/0/0[ms] Total:0[s]
+ServiceManager      DEBUG Finalizing service AppMgrRunable
+ServiceManager      DEBUG Finalizing service StatusCodeSvc
+ServiceManager      DEBUG Service reference count check:
+ServiceManager      DEBUG ---- StatusCodeSvc (refCount = 2)
+ServiceManager      DEBUG ---- MessageSvc (refCount = 11)
+ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)
+ServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)
+ServiceManager      DEBUG ---- IncidentSvc (refCount = 2)
+ServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)
+ServiceManager      DEBUG ---- EventDataSvc (refCount = 3)
+ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 2)
+ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 3)
+ServiceManager      DEBUG ---- EventLoopMgr (refCount = 3)
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

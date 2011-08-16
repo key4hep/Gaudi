@@ -1,0 +1,548 @@
+JobOptionsSvc        INFO # =======> D:/Profiles/clemenci/cmtuser/Gaudi/GaudiSvc/options/Test.opts)
+JobOptionsSvc        INFO # (1,1): ApplicationMgr.DLLs = ["GaudiSvcTest"]
+JobOptionsSvc        INFO # (3,1): MessageSvc.OutputLevel = 1
+JobOptionsSvc        INFO # (4,1): ApplicationMgr.HistogramPersistency = "NONE"
+JobOptionsSvc        INFO # (5,1): ApplicationMgr.EvtSel = "NONE"
+JobOptionsSvc        INFO # (6,1): ApplicationMgr.EvtMax = 100
+JobOptionsSvc        INFO # =======> D:/Profiles/clemenci/cmtuser/Gaudi/GaudiSvc/options/CounterAlg.opts)
+JobOptionsSvc        INFO # (1,1): ApplicationMgr.TopAlg += ["GaudiSvcTest::CounterTestAlg"]
+JobOptionsSvc        INFO # =======> D:/Profiles/clemenci/cmtuser/Gaudi/GaudiSvc/options/StoreExplorer.opts)
+JobOptionsSvc        INFO # (1,1): ApplicationMgr.TopAlg += ["StoreExplorerAlg/Explorer"]
+JobOptionsSvc        INFO # (2,1): Explorer.Printfreq = 1.0
+JobOptionsSvc        INFO # (3,1): Explorer.Load = 1
+JobOptionsSvc        INFO # =======> D:/Profiles/clemenci/cmtuser/Gaudi/GaudiSvc/options/MultiStore.opts)
+JobOptionsSvc        INFO # (1,1): ApplicationMgr.ExtSvc += ["MultiStoreSvc/EventDataSvc"]
+JobOptionsSvc        INFO # (2,1): EventDataSvc.Partitions = ["NAME='Buffer1' TYPE='EvtDataSvc/EvtBuff1'", "NAME='Buffer2' TYPE='EvtDataSvc/EvtBuff2'"]
+JobOptionsSvc        INFO # (4,1): EventDataSvc.DefaultPartition = "Buffer1"
+JobOptionsSvc        INFO # (5,1): ApplicationMgr.TopAlg += ["PartitionSwitchAlg/Switcher", "StoreExplorerAlg/Exp"]
+JobOptionsSvc        INFO # (6,1): Exp.Printfreq = 1.0
+JobOptionsSvc        INFO # (7,1): Switcher.Partition = "Buffer2"
+JobOptionsSvc        INFO # (8,1): Switcher.Tool = "PartitionSwitchTool"
+JobOptionsSvc        INFO # (9,1): Switcher.PartitionSwitchTool.Actor = "EventDataSvc"
+JobOptionsSvc        INFO Job options successfully read in from D:\Profiles\clemenci\cmtuser\Gaudi\GaudiSvc\options\Test.opts
+ApplicationMgr      DEBUG Getting my own properties
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.77 $
+                                          running on CERNTSLHCB05 on 08/16/11 11:48:19
+====================================================================================================================================
+ApplicationMgr       INFO Successfully loaded modules : GaudiSvcTest
+ApplicationMgr       INFO Application Manager Configured successfully
+ServiceManager      DEBUG Initializing service IncidentSvc
+IncidentSvc         DEBUG Service base class initialized successfully
+ServiceManager      DEBUG Initializing service EventDataSvc
+EventDataSvc        DEBUG Service base class initialized successfully
+EvtBuff1            DEBUG Service base class initialized successfully
+EvtBuff1          VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
+EventPersistenc...  DEBUG Service base class initialized successfully
+EvtBuff2            DEBUG Service base class initialized successfully
+EvtBuff2          VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
+EventDataSvc      VERBOSE ServiceLocatorHelper::service: found service EventPersistencySvc
+EventDataSvc      VERBOSE ServiceLocatorHelper::service: found service EventPersistencySvc
+ServiceManager      DEBUG Initializing service AppMgrRunable
+AppMgrRunable       DEBUG Service base class initialized successfully
+ServiceManager      DEBUG Initializing service EventLoopMgr
+EventLoopMgr        DEBUG Service base class initialized successfully
+IncidentSvc         DEBUG Adding [AbortEvent] listener '<unknown>' with priority 0
+EventLoopMgr        DEBUG Creating Top Algorithm GaudiSvcTest::CounterTestAlg with name GaudiSvcTest::CounterTestAlg
+EventLoopMgr        DEBUG Creating Top Algorithm StoreExplorerAlg with name Explorer
+EventLoopMgr        DEBUG Creating Top Algorithm PartitionSwitchAlg with name Switcher
+EventLoopMgr        DEBUG Creating Top Algorithm StoreExplorerAlg with name Exp
+CounterSvc          DEBUG Service base class initialized successfully
+GaudiSvcTest::C...VERBOSE ServiceLocatorHelper::service: found service CounterSvc
+GaudiSvcTest::C...SUCCESS Exception: CounterSvc::Counter('CounterTest::TotalCount') exists already!
+CounterSvc        SUCCESS      "EventCount::CounterTest"    #=1       Sum=1000        Mean=     1000. +- 0.00000    Min/Max=     1000./1000.
+CounterSvc        SUCCESS      "EventCount::CounterTest"    #=1       Sum=1000        Mean=     1000. +- 0.00000    Min/Max=     1000./1000.
+CounterSvc        SUCCESS      "TotalCount::CounterTest"    #=0       Sum=0           Mean=    0.0000 +- 0.00000    Min/Max=1.798e+308/-1.798e+308
+Explorer          VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
+ToolSvc             DEBUG Service base class initialized successfully
+Switcher          VERBOSE ServiceLocatorHelper::service: found service ToolSvc
+ToolSvc           VERBOSE Created tool PartitionSwitchTool/Switcher.PartitionSwitchTool
+Switcher.Partit...VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
+Exp               VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+HistogramDataSvc    DEBUG Service base class initialized successfully
+HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
+HistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ]
+HistogramPersis...  DEBUG Service base class initialized successfully
+HistogramPersis...WARNING Histograms saving not required.
+HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc
+ApplicationMgr       INFO Application Manager Initialized successfully
+ServiceManager      DEBUG Starting service IncidentSvc
+ServiceManager      DEBUG Starting service EventDataSvc
+ServiceManager      DEBUG Starting service AppMgrRunable
+ServiceManager      DEBUG Starting service EventPersistencySvc
+ServiceManager      DEBUG Starting service EvtBuff1
+ServiceManager      DEBUG Starting service EvtBuff2
+ServiceManager      DEBUG Starting service CounterSvc
+ServiceManager      DEBUG Starting service ToolSvc
+ToolSvc             DEBUG START transition for AlgTools
+ToolSvc           VERBOSE Switcher.PartitionSwitchTool::start()
+ServiceManager      DEBUG Starting service HistogramPersistencySvc
+ServiceManager      DEBUG Starting service HistogramDataSvc
+ServiceManager      DEBUG Starting service EventLoopMgr
+ApplicationMgr       INFO Application Manager Started successfully
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Explorer          VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
+Exp                  INFO ========= /Event[0x3475320@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Exp               VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34752f0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34752d0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3473930@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3467898@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3467258@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3467928@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3467d18@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3468b60@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3460d40@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475380@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34753b0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34753e0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475410@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475460@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475490@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34754c0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34754f0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475520@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475550@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475580@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34755b0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34755e0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475918@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475970@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34759c8@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475a20@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475a78@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475ad0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475b28@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475b80@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475bd8@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475c30@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475c88@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475ce0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475d38@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475d90@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475de8@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475e40@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475e98@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475ef0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475f48@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475fa0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3475ff8@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476050@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34760a8@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476100@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476158@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34761b0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476208@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476260@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34762b8@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476310@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476368@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34763c0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476418@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476470@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34764c8@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476520@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476578@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34765d0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476628@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476680@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34766d8@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476730@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476788@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34767e0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476838@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476890@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34768e8@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476940@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476998@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34769f0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476a48@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476aa0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476af8@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476b50@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476ba8@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476c00@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476c58@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476cb0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476d08@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476d60@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476db8@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476e10@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476e68@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476ec0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476f18@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476f70@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3476fc8@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3477020@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3477078@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34770d0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3477128@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3477180@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34771d8@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3477230@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3477288@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x34772e0@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+Explorer             INFO ========= /Event[0x3475350@EvtBuff1]:
+Explorer             INFO +--> /Event [No Address]  DataObject
+Exp                  INFO ========= /Event[0x3477338@EvtBuff2]:
+Exp                  INFO +--> /Event [No Address]  DataObject
+ServiceManager      DEBUG Stopping service EventLoopMgr
+ServiceManager      DEBUG Stopping service HistogramDataSvc
+ServiceManager      DEBUG Stopping service HistogramPersistencySvc
+ServiceManager      DEBUG Stopping service ToolSvc
+ToolSvc             DEBUG STOP transition for AlgTools
+ToolSvc           VERBOSE Switcher.PartitionSwitchTool::stop()
+ServiceManager      DEBUG Stopping service CounterSvc
+ServiceManager      DEBUG Stopping service EvtBuff2
+ServiceManager      DEBUG Stopping service EvtBuff1
+ServiceManager      DEBUG Stopping service EventPersistencySvc
+ServiceManager      DEBUG Stopping service AppMgrRunable
+ServiceManager      DEBUG Stopping service EventDataSvc
+ServiceManager      DEBUG Stopping service IncidentSvc
+ApplicationMgr       INFO Application Manager Stopped successfully
+ServiceManager      DEBUG Finalizing service EventLoopMgr
+GaudiSvcTest::C...   INFO Single counter:CounterTest::EventCount
+CounterSvc        SUCCESS      "EventCount::CounterTest"    #=101     Sum=1100        Mean=     10.89 +- 98.911     Min/Max=     1.000/1000.
+GaudiSvcTest::C...   INFO Counter group: CounterTest
+CounterSvc        SUCCESS      "EventCount::CounterTest"    #=101     Sum=1100        Mean=     10.89 +- 98.911     Min/Max=     1.000/1000.
+CounterSvc        SUCCESS      "TotalCount::CounterTest"    #=100     Sum=100         Mean=     1.000 +- 0.00000    Min/Max=     1.000/1.000
+GaudiSvcTest::C...   INFO After removal CounterTest::EventCount:
+CounterSvc        SUCCESS      "TotalCount::CounterTest"    #=100     Sum=100         Mean=     1.000 +- 0.00000    Min/Max=     1.000/1.000
+IncidentSvc         DEBUG Removing [AbortEvent] listener '<unknown>'
+EventLoopMgr         INFO Histograms converted successfully according to request.
+ServiceManager      DEBUG Finalizing service ToolSvc
+ToolSvc              INFO Removing all tools created by ToolSvc
+ToolSvc             DEBUG   Tool List : Switcher.PartitionSwitchTool:1
+ToolSvc             DEBUG 1 tools left to finalize. Summed refCounts: 1
+ToolSvc             DEBUG Will finalize tools with refCount <= 1
+ToolSvc             DEBUG   Performing finalization of Switcher.PartitionSwitchTool (refCount 1)
+ToolSvc             DEBUG Deleting 1 finalized tools
+ToolSvc             DEBUG   Performing deletion of Switcher.PartitionSwitchTool
+ServiceManager      DEBUG Finalizing service CounterSvc
+CounterSvc        SUCCESS Number of counters : 1
+CounterSvc        SUCCESS        Counter :: Group         |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+CounterSvc        SUCCESS     "TotalCount::CounterTest"   |       100 |        100 |     1.0000 |    0.00000 |      1.0000 |      1.0000 |
+ServiceManager      DEBUG Finalizing service EvtBuff2
+ServiceManager      DEBUG Finalizing service EvtBuff1
+ServiceManager      DEBUG Finalizing service EventPersistencySvc
+ServiceManager      DEBUG Finalizing service AppMgrRunable
+ServiceManager      DEBUG Finalizing service EventDataSvc
+ServiceManager      DEBUG Finalizing service IncidentSvc
+IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0(+-0)/0/0[ms] Total:0[s]
+ServiceManager      DEBUG Finalizing service HistogramDataSvc
+ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
+ServiceManager      DEBUG Service reference count check:
+ServiceManager      DEBUG ---- MessageSvc (refCount = 15)
+ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)
+ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 2)
+ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 3)
+ServiceManager      DEBUG ---- IncidentSvc (refCount = 2)
+ServiceManager      DEBUG ---- EventDataSvc (refCount = 3)
+ServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)
+ServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)
+ServiceManager      DEBUG ---- EvtBuff1 (refCount = 2)
+ServiceManager      DEBUG ---- EvtBuff2 (refCount = 3)
+ServiceManager      DEBUG ---- CounterSvc (refCount = 2)
+ServiceManager      DEBUG ---- ToolSvc (refCount = 2)
+ServiceManager      DEBUG ---- EventLoopMgr (refCount = 3)
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

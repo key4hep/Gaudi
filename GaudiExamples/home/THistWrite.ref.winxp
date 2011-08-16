@@ -1,0 +1,173 @@
+JobOptionsSvc        INFO # =======> D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/THistWrite.opts)
+JobOptionsSvc        INFO # (5,1): AuditorSvc.Auditors = ["ChronoAuditor"]
+JobOptionsSvc        INFO # (12,1): ApplicationMgr.TopAlg = ["THistWrite"]
+JobOptionsSvc        INFO # (15,1): MessageSvc.OutputLevel = 3
+JobOptionsSvc        INFO # (16,1): MessageSvc.UseColors = 1
+JobOptionsSvc        INFO # (17,1): THistSvc.OutputLevel = 2
+JobOptionsSvc        INFO # (18,1): ApplicationMgr.OutputLevel = 1
+JobOptionsSvc        INFO # (19,1): ServiceManager.OutputLevel = 2
+JobOptionsSvc        INFO # (20,1): StatusCodeSvc.OutputLevel = 1
+JobOptionsSvc        INFO # (25,1): THistSvc.Output += ["upd DATAFILE='tuple2.rt' TYP='ROOT' OPT='UPDATE'"]
+JobOptionsSvc        INFO # (26,1): THistSvc.Output += ["rec DATAFILE='tuple3.rt' TYP='ROOT' OPT='RECREATE'"]
+JobOptionsSvc        INFO # (28,1): THistSvc.PrintAll = 1
+JobOptionsSvc        INFO # (33,1): ApplicationMgr.EvtMax = 20
+JobOptionsSvc        INFO # (34,1): ApplicationMgr.EvtSel = "NONE"
+JobOptionsSvc        INFO Job options successfully read in from D:\Profiles\clemenci\cmtuser\Gaudi\GaudiExamples\options\THistWrite.opts
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.77 $
+                                          running on CERNTSLHCB05 on 08/16/11 12:55:25
+====================================================================================================================================
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service EvtDataSvc/EventDataSvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service DetDataSvc/DetectorDataSvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service HistogramSvc/HistogramDataSvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service HbookCnv::PersSvc/HbookHistSvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service RootHistCnv::PersSvc/RootHistSvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service EvtPersistencySvc/EventPersistencySvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service DetPersistencySvc/DetectorPersistencySvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service HistogramPersistencySvc/HistogramPersistencySvc
+ApplicationMgr      DEBUG Loading declared DLL's
+ApplicationMgr    VERBOSE addMultiSvc: added service EventLoopMgr/EventLoopMgr
+ApplicationMgr       INFO Application Manager Configured successfully
+THistSvc            DEBUG Opening TFile "tuple2.rt"  stream: "upd"  mode: "A" comp level: 1
+THistSvc            DEBUG Opening TFile "tuple3.rt"  stream: "rec"  mode: "R" comp level: 1
+THistSvc            DEBUG Service base class initialized successfully
+IoComponentMgr       INFO Initializing IoComponentMgr...
+IoComponentMgr       INFO python I/O registry retrieved [ok]
+THistSvc             INFO registered file [tuple3.rt]... [ok]
+THistSvc             INFO registered file [tuple2.rt]... [ok]
+THistSvc            DEBUG Historgram with id "TempHist1" is temporary
+THistSvc            DEBUG Registering TH1F title: "Temporary Tree 1"  id: "/temp/TempHist1"  dir: root:/  file: none
+THistSvc            DEBUG Historgram with id "other/TempHist1a" is temporary
+THistSvc            DEBUG Registering TH1F title: "Temporary Tree 1a"  id: "/temp/other/TempHist1a"  dir: root:/other  file: none
+THistSvc          WARNING no stream "new" associated with id: "/new/Tree2"
+THistSvc            DEBUG Historgram with id "/new/Tree2" is temporary
+THistSvc            DEBUG Registering TH1F title: "Tree 2"  id: "/new/Tree2"  dir: root:/  file: none
+THistSvc            DEBUG Registering TH1F title: "1D Gaussian"  id: "/upd/xxx/gauss1d"  dir: tuple2.rt:/xxx  file: tuple2.rt
+THistSvc            DEBUG Registering TH2F title: "2D Gaussian"  id: "/rec/gauss2d"  dir: tuple3.rt:/  file: tuple3.rt
+THistSvc            DEBUG Registering TH3F title: "3D Gaussian"  id: "/rec/gauss3d"  dir: tuple3.rt:/  file: tuple3.rt
+THistSvc            DEBUG Registering TProfile title: "profile"  id: "/rec/prof"  dir: tuple3.rt:/  file: tuple3.rt
+THistSvc            DEBUG Registering TTree title: "tree title"  id: "/rec/trees/stuff/tree1"  dir: tuple3.rt:/trees/stuff  file: tuple3.rt
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+HistogramPersis...WARNING Histograms saving not required.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
+RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
+RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG stream: rec  name: tuple3.rt  size: 63
+THistSvc            DEBUG stream: upd  name: tuple2.rt  size: 63
+ApplicationMgr       INFO Application Manager Stopped successfully
+THistWrite           INFO Finalizing...
+EventLoopMgr         INFO Histograms converted successfully according to request.
+THistSvc            DEBUG THistSvc::finalize
+THistSvc            DEBUG uid: "/new/Tree2"  temp: 1  dir: root:/
+THistSvc            DEBUG uid: "/rec/gauss2d"  temp: 0  dir: tuple3.rt:/
+THistSvc            DEBUG uid: "/rec/gauss3d"  temp: 0  dir: tuple3.rt:/
+THistSvc            DEBUG uid: "/rec/prof"  temp: 0  dir: tuple3.rt:/
+THistSvc            DEBUG uid: "/rec/trees/stuff/tree1"  temp: 0  dir: tuple3.rt:/trees/stuff
+THistSvc            DEBUG uid: "/temp/TempHist1"  temp: 1  dir: root:/
+THistSvc            DEBUG uid: "/temp/other/TempHist1a"  temp: 1  dir: root:/other
+THistSvc            DEBUG uid: "/upd/xxx/gauss1d"  temp: 0  dir: tuple2.rt:/xxx
+THistSvc            DEBUG updateFiles()
+THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT
+THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT: "tuple2.rt"
+THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT: "tuple3.rt"
+THistSvc             INFO Listing contents of ROOT files:
+THistSvc            DEBUG finalizing stream/file rec:tuple3.rt
+THistSvc             INFO ==> File: tuple3.rt  stream: rec
+TFile: name=tuple3.rt, title=rec, option=CREATE
+TH1.Print Name  = 2Dgauss, Entries= 20000, Total sum= 19978
+          Title = 2D Gaussian
+          NbinsX= 100, xmin= -50, xmax=50, NbinsY= 100, ymin= -50, ymax=50
+TH1.Print Name  = 3Dgauss, Entries= 20000, Total sum= 19944
+          Title = 3D Gaussian
+          NbinsX= 100, xmin= -50, xmax=50, NbinsY= 100, ymin= -50, ymax=50, NbinsZ= 100, zmin= -50, zmax=50
+TH1.Print Name  = profile, Entries= 0, Total sum= 0
+          Title = profile
+          NbinsX= 100, xmin= -50, xmax=-50
+******************************************************************************
+*Tree    :treename  : tree title                                             *
+*Entries :     1000 : Total =           14045 bytes  File  Size =       2330 *
+*        :          : Tree compression factor =   6.63                       *
+******************************************************************************
+*Br    0 :branch1   : point1/I                                               *
+*Entries :     1000 : Total  Size=       4565 bytes  File Size  =       1521 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   2.68     *
+*............................................................................*
+*Br    1 :branch2   : point2/I                                               *
+*Entries :     1000 : Total  Size=       4565 bytes  File Size  =        164 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=  24.87     *
+*............................................................................*
+*Br    2 :branch3   : point3/I                                               *
+*Entries :     1000 : Total  Size=       4565 bytes  File Size  =        160 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=  25.49     *
+*............................................................................*
+THistSvc            DEBUG finalizing stream/file upd:tuple2.rt
+THistSvc             INFO ==> File: tuple2.rt  stream: upd
+TFile: name=tuple2.rt, title=upd, option=UPDATE
+TH1.Print Name  = 1Dgauss, Entries= 20000, Total sum= 19984
+          Title = 1D Gaussian
+          NbinsX= 100, xmin= -50, xmax=50
+IoComponentMgr       INFO Finalizing IoComponentMgr...
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

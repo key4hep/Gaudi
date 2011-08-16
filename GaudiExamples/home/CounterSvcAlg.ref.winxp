@@ -1,0 +1,49 @@
+JobOptionsSvc        INFO # =======> D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Services.opts)
+JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
+JobOptionsSvc        INFO # =======> D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Common.opts)
+JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
+JobOptionsSvc        INFO # =======> D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/CounterSvcAlg.opts)
+JobOptionsSvc        INFO # (18,1): ApplicationMgr.ExtSvc += ["CounterSvc"]
+JobOptionsSvc        INFO # (20,1): ApplicationMgr.TopAlg += ["GaudiExamples::CounterSvcAlg/CounterAlg"]
+JobOptionsSvc        INFO # (22,1): ApplicationMgr.EvtMax = 10000
+JobOptionsSvc        INFO # (23,1): ApplicationMgr.EvtSel = "NONE"
+JobOptionsSvc        INFO Job options successfully read in from D:\Profiles\clemenci\cmtuser\Gaudi\GaudiExamples\options\CounterSvcAlg.opts
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.77 $
+                                          running on CERNTSLHCB05 on 08/16/11 11:50:06
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+StatusCodeSvc        INFO initialize
+CounterAlg        SUCCESS Exception: CounterSvc::Counter('CounterTest::TotalCount') exists already!
+CounterSvc        SUCCESS      "EventCount::CounterTest"    #=1       Sum=1000        Mean=     1000. +- 0.00000    Min/Max=     1000./1000.
+CounterSvc        SUCCESS      "EventCount::CounterTest"    #=1       Sum=1000        Mean=     1000. +- 0.00000    Min/Max=     1000./1000.
+CounterSvc        SUCCESS      "TotalCount::CounterTest"    #=0       Sum=0           Mean=    0.0000 +- 0.00000    Min/Max=1.798e+308/-1.798e+308
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+HistogramPersis...WARNING Histograms saving not required.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+ApplicationMgr       INFO Application Manager Stopped successfully
+CounterAlg           INFO Single counter:CounterTest::EventCount
+CounterSvc        SUCCESS      "EventCount::CounterTest"    #=10001   Sum=11000       Mean=     1.100 +- 9.9890     Min/Max=     1.000/1000.
+CounterAlg           INFO Counter group: CounterTest
+CounterSvc        SUCCESS            "Eff1::CounterTest"    #=10000   Sum=5000        Mean=    0.5000 +- 0.50000    Min/Max=    0.0000/1.000
+CounterSvc        SUCCESS            "Eff2::CounterTest"    #=10000   Sum=3333        Mean=    0.3333 +- 0.47139    Min/Max=    0.0000/1.000
+CounterSvc        SUCCESS      "EventCount::CounterTest"    #=10001   Sum=11000       Mean=     1.100 +- 9.9890     Min/Max=     1.000/1000.
+CounterSvc        SUCCESS             "Sum::CounterTest"    #=10000   Sum=5.0005e+007 Mean=     5001. +- 2886.8     Min/Max=     1.000/1.000e+004
+CounterSvc        SUCCESS      "TotalCount::CounterTest"    #=10000   Sum=10000       Mean=     1.000 +- 0.00000    Min/Max=     1.000/1.000
+CounterAlg           INFO After removal CounterTest::EventCount:
+CounterSvc        SUCCESS            "Eff1::CounterTest"    #=10000   Sum=5000        Mean=    0.5000 +- 0.50000    Min/Max=    0.0000/1.000
+CounterSvc        SUCCESS            "Eff2::CounterTest"    #=10000   Sum=3333        Mean=    0.3333 +- 0.47139    Min/Max=    0.0000/1.000
+CounterSvc        SUCCESS             "Sum::CounterTest"    #=10000   Sum=5.0005e+007 Mean=     5001. +- 2886.8     Min/Max=     1.000/1.000e+004
+CounterSvc        SUCCESS      "TotalCount::CounterTest"    #=10000   Sum=10000       Mean=     1.000 +- 0.00000    Min/Max=     1.000/1.000
+EventLoopMgr         INFO Histograms converted successfully according to request.
+CounterSvc        SUCCESS Number of counters : 4
+CounterSvc        SUCCESS        Counter :: Group         |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+CounterSvc        SUCCESS *         "Eff1::CounterTest"   |     10000 |       5000 |( 50.00000 +- 0.5000000)%|   -------   |   -------   |
+CounterSvc        SUCCESS *         "Eff2::CounterTest"   |     10000 |       3333 |( 33.33000 +- 0.4713927)%|   -------   |   -------   |
+CounterSvc        SUCCESS            "Sum::CounterTest"   |     10000 |5.0005e+007 |     5000.5 |     2886.8 |      1.0000 |      10000. |
+CounterSvc        SUCCESS     "TotalCount::CounterTest"   |     10000 |      10000 |     1.0000 |    0.00000 |      1.0000 |      1.0000 |
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

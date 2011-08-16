@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2011-08-16 - Marco Clemencic
+ - Fixed some tests (checks) on Windows.
+
 ! 2011-08-15 - Marco Clemencic
  - Updated reference files (patch #5014)
 

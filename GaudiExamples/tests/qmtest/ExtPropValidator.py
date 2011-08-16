@@ -38,40 +38,40 @@ def validate(stdout,stderr,result,causes):
            'vector<vector<double> >': [[0, 1, 2], [0, -0.5, -0.25]],
            'vector<vector<string> >': [['a', 'b', 'c'], ['A', 'B', 'C']]
                }
-    
+
     # Hack for win32: 'string' become 'basic_string...', so I have to
     #                 modify the keys of the dictionary
     import os
-    if os.environ['CMTCONFIG'][0:3] == 'win':
+    if "winxp" in os.environ['CMTCONFIG'].split("-"):
         for k in expected.keys():
             if 'string' in k:
                 expected[k.replace('string','basic_string<char,char_traits<char> >').replace('>>','> >')] = expected[k]
-                del expected[k] 
-    
+                del expected[k]
+
     import re
     signature = re.compile(r'xProps\s*SUCCESS\s*My Properties :')
     prop_sign = re.compile(r'''xProps\s*SUCCESS\s*'([^']*)':(.*)''')
-    
+
     output = map(lambda l: l.rstrip(), stdout.splitlines())
     i = output.__iter__()
     try:
         while not signature.match(i.next()):
             pass
-    
+
         properties = {}
         for l in i:
             m = prop_sign.match(l)
             if m:
-                properties[m.group(1)] = eval(m.group(2)) 
+                properties[m.group(1)] = eval(m.group(2))
             else:
                break
-        
+
         if properties != expected:
             causes.append('properties')
             from pprint import PrettyPrinter
             pp = PrettyPrinter()
             result['GaudiTest.properties.expected'] = result.Quote(pp.pformat(expected))
             result['GaudiTest.properties.found'] = result.Quote(pp.pformat(properties))
-    
+
     except StopIteration:
         causes.append('missing signature')
