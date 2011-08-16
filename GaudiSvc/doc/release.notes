@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-08-15 - Marco Clemencic
+ - Fixed compilation on WinXP (patch #4891).
+
 ! 2011-08-15 - Charles Leggett
  - Patch #5014: GaudiMP fixes and MSG::DEBUG protection
    - Remove TGraphs from "mother" files before migrating them to the "worker"

@@ -1,4 +1,3 @@
-// $Id:$
 // ============================================================================
 #include "Catalog.h"
 // ============================================================================
@@ -49,7 +48,7 @@ gp::Property* gp::Catalog::Find(const std::string& client,
 std::string gp::Catalog::ToString() const {
   std::string result;
   BOOST_FOREACH(const CatalogSet::value_type& client, catalog_) {
-    for (CatalogSet::mapped_type::iterator current = client.second.begin();
+    for (CatalogSet::mapped_type::const_iterator current = client.second.begin();
         current != client.second.end(); ++current) {
       result += current->ToString()+"\n";
     }
@@ -73,7 +72,7 @@ std::ostream& Gaudi::Parsers::Catalog::fillStream ( std::ostream& o ) const
         % client.first % client.second.size() << std::endl ;
         ++nComponents ;
         nProperties += client.second.size() ;
-   for (CatalogSet::mapped_type::iterator current = client.second.begin();
+   for (CatalogSet::mapped_type::const_iterator current = client.second.begin();
        current != client.second.end(); ++current) {
      o << boost::format("%1%   %|44t| = %2% ; ")
            % current->FullName()

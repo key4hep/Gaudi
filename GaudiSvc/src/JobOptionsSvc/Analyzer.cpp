@@ -1,4 +1,3 @@
-// $Id:$
 // ============================================================================
 // STD:
 // ============================================================================
@@ -413,7 +412,7 @@ static bool Analyze(gp::Node* node,
 
 bool Unreference(gp::Catalog& catalog, gp::Messages* messages) {
   bool unreference_result = true;
-  BOOST_FOREACH(const gp::Catalog::value_type& client, catalog) {
+  BOOST_FOREACH(gp::Catalog::value_type& client, catalog) {
     for (gp::Catalog::CatalogSet::mapped_type::iterator current
         = client.second.begin(); current != client.second.end();
         ++current) {

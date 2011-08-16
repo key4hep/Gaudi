@@ -22,7 +22,8 @@
 // ============================================================================
 namespace Gaudi { namespace Parsers {
 // ============================================================================
-struct Node {
+class Node {
+public:
  enum NodeType {kRoot,kInclude, kIdentifier, kProperty, kOperation,
   kValue, kAssign, kEqual, kPlusEqual, kMinusEqual, kVector, kMap, kPair,
   kSimple, kString, kReal, kBool, kUnits, kUnit, kCondition, kIfdef, kIfndef,
@@ -39,7 +40,8 @@ struct Node {
   std::string ToString(int indent) const;
 };
 // ============================================================================
-struct NodeOperations {
+class NodeOperations {
+public:
   struct value {};
   template<typename A, typename B = boost::fusion::unused_type,
     typename C = boost::fusion::unused_type,

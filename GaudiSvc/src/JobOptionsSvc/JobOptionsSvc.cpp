@@ -157,7 +157,7 @@ void JobOptionsSvc::dump (const std::string& file,
 
 void JobOptionsSvc::fillServiceCatalog(const gp::Catalog& catalog) {
   BOOST_FOREACH(const gp::Catalog::value_type& client, catalog) {
-    for (gp::Catalog::CatalogSet::mapped_type::iterator current
+    for (gp::Catalog::CatalogSet::mapped_type::const_iterator current
           = client.second.begin(); current != client.second.end();
                                                                   ++current) {
       StringProperty tmp (current->NameInClient(), current->ValueAsString()) ;
