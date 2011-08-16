@@ -1,6 +1,25 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2011-08-08 - Marco Clemencic
+ - Fixing bug #83775: unprotected MSG::DEBUG/VERBOSE
+   - Sequencer
+   - GaudiCommon
+
+! 2011-08-04 - Patrick Koppenburg
+ - Patch #4923: GaudiSequencer
+   - Correct indentation
+   - Protect all debug() with if msgLevel()
+   - Add some more verbose() printout
+   - Improve doxygen documentation
+
+! 2011-06-23 - Hubert Degaudenzi
+ - fixed warnings from the eclipse code analysis engine.
+
+! 2011-04-27 - Charles Leggett
+ - added "-import Boost" to requirements for new CMT
+ M     cmt/requirements
+
 =============================== GaudiAlg v13r7 ===============================
 ! 2011-04-15 - Marco Clemencic
  - Patch #4814: Move EventNodeKiller algorithm from LHCb to Gaudi.

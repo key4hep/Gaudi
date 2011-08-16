@@ -15,6 +15,7 @@
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/IIncidentListener.h"
+#include "GaudiKernel/IVersHistoryObj.h"
 
 #include <vector>
 #include <string>
@@ -95,6 +96,8 @@ private:
 //   typedef std::map<const CLID, std::map<const std::string, DataHistory*> >
 //           DataHistMap;
 
+  typedef IVersHistoryObj::PropertyList PropertyList;
+
   typedef std::multimap<DHH,DataHistory*> DataHistMap;
   typedef DataHistMap::iterator DHMitr;
   typedef DataHistMap::const_iterator DHMCitr;
@@ -134,11 +137,10 @@ private:
   void dumpProperties(const IAlgTool&,  std::ofstream&) const;
 
   void dumpState(std::ofstream&) const;
-  void dumpState(const IService&,  std::ofstream&) const;
-  void dumpState(const Algorithm&, std::ofstream&) const;
-  void dumpState(const IAlgTool&,  std::ofstream&) const;
+  void dumpState(const INamedInterface*, std::ofstream&) const;
 
-  std::string dumpProp(const Property*) const;
+  std::string dumpProp(const Property*, const bool isXML=false, 
+		       int indent=0) const;
 
   IAlgorithm* getCurrentIAlg() const;
 
@@ -146,6 +148,7 @@ private:
   SmartIF<IToolSvc> m_toolSvc;
 
   mutable MsgStream m_log;
+  bool m_outputFileTypeXML;
 
 };
 

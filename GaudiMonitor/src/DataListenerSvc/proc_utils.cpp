@@ -230,6 +230,7 @@ void ProcUtils::getProcesses(double& processes, double states[])
       sprintf(buf, "[ getProcesses() ] The number of processes could not be determined");
       throw runtime_error(buf);
     }
+    break ;
   }
 
   pf = fopen(psstat_f, "rt");
@@ -706,6 +707,7 @@ void ProcUtils::getNetstatInfo(ApMon& apm, double nsockets[],
       sprintf(msg, "[ getNetstatInfo() ] The netstat information could not be collected");
       throw runtime_error(msg);
     }
+    break ;
   }
 
   pf = fopen(netstat_f, "rt");

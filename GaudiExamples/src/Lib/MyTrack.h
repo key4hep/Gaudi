@@ -78,7 +78,7 @@ namespace Gaudi
       /// Standard Destructor
       virtual ~MyTrack();
       /// Retrieve pointer to class definition structure
-      virtual const CLID& clID() const    { return MyTrack::classID(); }
+      virtual const CLID& clID() const    { return classID(); }
       static const CLID& classID()        { return CLID_MyTrack; }
       /// Accessors: Retrieve x-component of the track momentum
       float px()  const         { return m_px;  }

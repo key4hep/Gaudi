@@ -56,22 +56,64 @@ const CLID& AlgToolHistory::classID() {
 
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void
+AlgToolHistory::dump(std::ostream& ost, const bool isXML, int ind) const {
+
+  if (!isXML) {
+
+    ost << "Name: " << algtool_name() << endl;
+    ost << "Type: " << algtool_type() << endl;
+    ost << "Version: " << algtool_version() << endl;
+    ost << "Parent: " << algtool_instance()->name() << endl;
+    
+    //Properties
+    ost << "Properties: [" << endl;
+    
+    for ( AlgToolHistory::PropertyList::const_iterator
+	    ipprop=properties().begin();
+	  ipprop!=properties().end(); ++ipprop ) {
+      const Property& prop = **ipprop;
+      prop.fillStream(ost);
+      ost << endl;
+    }
+    ost << "]" << endl;
+
+  } else {
+
+    ind += 2;
+    indent(ost,ind);
+    ost << "<COMPONENT name=\"" << algtool_name()
+	<< "\" class=\"" << convert_string(algtool_type()) 
+	<< "\" version=\"" << convert_string(algtool_version())
+	<< "\" parent=\"" << convert_string(algtool_instance()->name())
+	<< "\">" << endl;
+      
+    for ( AlgToolHistory::PropertyList::const_iterator
+	    ipprop=properties().begin();
+	  ipprop!=properties().end(); ++ipprop ) {
+      const Property& prop = **ipprop;
+
+      indent(ost,ind+2);
+      ost << "<PROPERTY name=\"" << prop.name() 
+	  << "\" value=\"" << convert_string(prop.toString()) 
+	  << "\" documentation=\"" << convert_string(prop.documentation())
+	  << "\">" << endl;
+    }
+
+    indent(ost,ind);
+    ost << "</COMPONENT>" << endl;
+
+  }
+
+}
+
 //**********************************************************************
 
 ostream& operator<<(ostream& lhs, const AlgToolHistory& rhs) {
-  lhs << "Type: " << rhs.algtool_type() << endl;
-  lhs << "Name: " << rhs.algtool_name() << endl;
-  lhs << "Version: " << rhs.algtool_version() << endl;
-  lhs << "Parent: " << rhs.algtool_instance()->name() << endl;
-  // Properties.
-  lhs << "Properties: [" << endl;;
-  for ( AlgToolHistory::PropertyList::const_iterator
-        ipprop=rhs.properties().begin();
-        ipprop!=rhs.properties().end(); ++ipprop ) {
-    const Property& prop = **ipprop;
-    prop.fillStream(lhs);
-    lhs << endl;
-  }
-  lhs << "]" << endl;
+  
+  rhs.dump(lhs,false);
+
   return lhs;
 }

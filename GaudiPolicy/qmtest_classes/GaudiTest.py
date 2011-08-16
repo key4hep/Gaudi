@@ -447,6 +447,8 @@ for w,o,r in [
               ]: #[ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
     normalizeExamples += RegexpReplacer(o,r,w)
 normalizeExamples = LineSkipper(["//GP:",
+                                 "JobOptionsSvc        INFO # ",
+                                 "JobOptionsSvc     WARNING # ",
                                  "Time User",
                                  "Welcome to",
                                  "This machine has a speed",
@@ -459,11 +461,13 @@ normalizeExamples = LineSkipper(["//GP:",
                                  "0 local", # hack for ErrorLogExample
                                  "DEBUG Service base class initialized successfully", # changed between v20 and v21
                                  "DEBUG Incident  timing:", # introduced with patch #3487
+                                 "INFO  'CnvServices':[", # changed the level of the message from INFO to DEBUG
                                  # This comes from ROOT, when using GaudiPython
                                  'Note: (file "(tmpfile)", line 2) File "set" already loaded',
                                  # The signal handler complains about SIGXCPU not defined on some platforms
                                  'SIGXCPU',
                                  ],regexps = [
+                                 r"^JobOptionsSvc        INFO *$",
                                  r"^#", # Ignore python comments
                                  r"(Always|SUCCESS)\s*(Root f|[^ ]* F)ile version:", # skip the message reporting the version of the root file
                                  r"0x[0-9a-fA-F#]+ *Algorithm::sysInitialize\(\) *\[", # hack for ErrorLogExample

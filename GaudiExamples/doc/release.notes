@@ -1,6 +1,25 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2011-08-16 - Marco Clemencic
+ - Fixed some tests (checks) on Windows.
+
+! 2011-08-15 - Marco Clemencic
+ - Updated reference files (patch #5014)
+
+! 2011-08-04 - Marco Clemencic
+ - Updated a reference file (patch #4923)
+
+! 2011-07-26 - Marco Clemencic
+ - Update of a reference file (patch #4891).
+
+! 2011-06-23 - Hubert Degaudenzi
+ - fixed warnings from the eclipse code analysis engine.
+
+! 2011-04-27 - Charles Leggett
+ - added explicit -import=Reflex to requirements
+ M     cmt/requirements
+
 ============================ GaudiExamples v22r2 =============================
 ! 2011-04-08 - Marco Clemencic
  - Updated IncidentSvc test after the introduction of the new incidents

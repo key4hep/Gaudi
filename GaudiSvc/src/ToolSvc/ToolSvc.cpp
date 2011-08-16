@@ -1,5 +1,3 @@
-// $Id: ToolSvc.cpp,v 1.39 2008/11/02 14:17:13 marcocle Exp $
-
 // Include Files
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Service.h"
@@ -21,6 +19,9 @@
 #pragma warning(disable:177)
 #endif
 #include "boost/lambda/bind.hpp"
+
+#define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
+#define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
 
 // Instantiation of a static factory class used by clients to create
 //  instances of this service
@@ -50,17 +51,15 @@ StatusCode ToolSvc::initialize()
 
   // initialize the Service Base class
   StatusCode status = Service::initialize();
-  if ( status.isFailure() )
+  if (UNLIKELY(status.isFailure()))
   {
-    MsgStream log( msgSvc(), name() );
-    log << MSG::ERROR << "Unable to initialize the Service" << endmsg;
+    error() << "Unable to initialize the Service" << endmsg;
     return status;
   }
 
   // set my own (ToolSvc) properties via the jobOptionService
-  if (setProperties().isFailure()) {
-    MsgStream log( msgSvc(), name() );
-    log << MSG::ERROR << "Unable to set base properties" << endmsg;
+  if (UNLIKELY(setProperties().isFailure())) {
+    error() << "Unable to set base properties" << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -95,17 +94,19 @@ StatusCode ToolSvc::finalize()
         - explicitly release all tools, one release() on all tools per loop.
         -> tools are deleted in the order of increasing number of refCounts.
   */
-  MsgStream log( msgSvc(), name() );
   ListTools finalizedTools; // list of tools that have been finalized
-  log << MSG::INFO  << "Removing all tools created by ToolSvc" << endmsg;
+  info()  << "Removing all tools created by ToolSvc" << endmsg;
 
   // Print out list of tools
-  log << MSG::DEBUG << "  Tool List : ";
-  for ( ListTools::const_iterator iTool = m_instancesTools.begin();
+  ON_DEBUG {
+    MsgStream &log = debug();
+    log << "  Tool List : ";
+    for ( ListTools::const_iterator iTool = m_instancesTools.begin();
         iTool != m_instancesTools.end(); ++iTool ) {
-    log << (*iTool)->name() << ":" << refCountTool( *iTool ) << " ";
+      log << (*iTool)->name() << ":" << refCountTool( *iTool ) << " ";
+    }
+    log << endmsg;
   }
-  log << endmsg;
 
   //
   // first pass: Finalize all tools (but don't delete them)
@@ -131,11 +132,11 @@ StatusCode ToolSvc::finalize()
   while ( toolCount > 0 &&
 	  endRefCount > 0 &&
 	  (endRefCount != startRefCount || endMinRefCount != startMinRefCount) ) {
-    if ( endMinRefCount != startMinRefCount ) {
-      log << MSG::DEBUG << toolCount << " tools left to finalize. Summed refCounts: "
-	  << endRefCount << endmsg;
-      log << MSG::DEBUG << "Will finalize tools with refCount <= "
-	  << endMinRefCount << endmsg;
+    ON_DEBUG if ( endMinRefCount != startMinRefCount ) {
+      debug() << toolCount << " tools left to finalize. Summed refCounts: "
+	      << endRefCount << endmsg;
+      debug() << "Will finalize tools with refCount <= "
+	      << endMinRefCount << endmsg;
     }
     startMinRefCount = endMinRefCount;
     startRefCount = endRefCount;
@@ -148,8 +149,8 @@ StatusCode ToolSvc::finalize()
       // cache tool name
       std::string toolName = pTool->name();
       if ( count <= startMinRefCount ) {
-	log << MSG::DEBUG << "  Performing finalization of " << toolName
-	    << " (refCount " << count << ")" << endmsg;
+	ON_DEBUG debug() << "  Performing finalization of " << toolName
+	                 << " (refCount " << count << ")" << endmsg;
 	// finalize of one tool may trigger a release of another tool
 	//	pTool->sysFinalize().ignore();
 	if (!finalizeTool(pTool).isSuccess()) fail = true;
@@ -158,8 +159,8 @@ StatusCode ToolSvc::finalize()
       } else {
 	// Place back in list to try again later
 	// ToolSvc::releaseTool( IAlgTool* ) remains active for this tool
-	log << MSG::DEBUG << "  Delaying   finalization of " << toolName
-	    << " (refCount " << count << ")" << endmsg;
+	ON_DEBUG debug() << "  Delaying   finalization of " << toolName
+	                 << " (refCount " << count << ")" << endmsg;
 	m_instancesTools.push_front(pTool);
       }
     } // end of inner loop
@@ -180,17 +181,17 @@ StatusCode ToolSvc::finalize()
   // (in releaseTool()), deletion and removal from the instancesTools list.
   // Therefore, the check on non-finalised tools should happen *after* the deletion
   // of the finalized tools.
-  log << MSG::DEBUG << "Deleting " << finalizedTools.size() << " finalized tools" << endmsg;
+  ON_DEBUG debug() << "Deleting " << finalizedTools.size() << " finalized tools" << endmsg;
   unsigned long maxLoop = totalToolRefCount( finalizedTools ) + 1;
   while ( --maxLoop > 0 && finalizedTools.size() > 0 ) {
     IAlgTool* pTool = finalizedTools.front();
     finalizedTools.pop_front();
     unsigned long count = refCountTool( pTool );
     if ( count == 1 ) {
-      log << MSG::DEBUG << "  Performing deletion of " << pTool->name() << endmsg;
+      ON_DEBUG debug() << "  Performing deletion of " << pTool->name() << endmsg;
     } else {
-      log << MSG::VERBOSE << "  Delaying   deletion of " << pTool->name()
-	  << " (refCount " << count << ")" << endmsg;
+      ON_VERBOSE verbose() << "  Delaying   deletion of " << pTool->name()
+          << " (refCount " << count << ")" << endmsg;
       // Put it back at the end of the list if refCount still not zero
       finalizedTools.push_back(pTool);
     }
@@ -200,23 +201,23 @@ StatusCode ToolSvc::finalize()
 
   // Error if by now not all tools are properly finalised
   if ( !m_instancesTools.empty() ) {
-    log << MSG::ERROR << "Unable to finalize and delete the following tools : ";
+    error() << "Unable to finalize and delete the following tools : ";
     for ( ListTools::const_iterator iTool = m_instancesTools.begin();
           iTool != m_instancesTools.end(); ++iTool ) {
-      log << (*iTool)->name() << ": " << refCountTool( *iTool ) << " ";
+      error() << (*iTool)->name() << ": " << refCountTool( *iTool ) << " ";
     }
-    log << endmsg;
+    error() << endmsg;
   }
 
   // by now, all tools should be deleted and removed.
   if ( finalizedTools.size() > 0 ) {
-    log << MSG::ERROR << "Failed to delete the following " <<  finalizedTools.size()
-	<< " finalized tools. Bug in ToolSvc::finalize()?: ";
+    error() << "Failed to delete the following " <<  finalizedTools.size()
+	    << " finalized tools. Bug in ToolSvc::finalize()?: ";
     for ( ListTools::const_iterator iTool = finalizedTools.begin();
           iTool != finalizedTools.end(); ++iTool ) {
-      log << (*iTool)->name() << ": " << refCountTool( *iTool ) << " ";
+      error() << (*iTool)->name() << ": " << refCountTool( *iTool ) << " ";
     }
-    log << endmsg;
+    error() << endmsg;
   }
 
   if ( 0 != m_pHistorySvc ) {
@@ -254,8 +255,7 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
 
   // protect against empty type
   if ( tooltype.empty() ) {
-    MsgStream log( msgSvc(), name() );
-    log << MSG::ERROR << "retrieve(): No Tool Type/Name given" << endmsg;
+    error() << "retrieve(): No Tool Type/Name given" << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -272,8 +272,9 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
   }
 
   const std::string::size_type pos = tooltype.find('/');
-  if( std::string::npos == pos )
-  { return retrieve ( tooltype , tooltype , iid , tool , parent , createIf );}
+  if( std::string::npos == pos ) {
+    return retrieve ( tooltype , tooltype , iid , tool , parent , createIf );
+  }
   const std::string newtype ( tooltype ,       0 , pos               ) ;
   const std::string newname ( tooltype , pos + 1 , std::string::npos ) ;
   return retrieve ( newtype , newname , iid , tool , parent , createIf ) ;
@@ -290,8 +291,6 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
                                bool               createIf )
   //------------------------------------------------------------------------------
 {
-  MsgStream log( msgSvc(), name() );
-
   // check the applicability of another method:
   // ignore the provided name if it is empty or the type contains a name
   if( toolname.empty() || (std::string::npos != tooltype.find('/')) )
@@ -325,7 +324,7 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
   ListTools::const_iterator it;
   for( it = m_instancesTools.begin(); it != m_instancesTools.end(); ++it ) {
     if( (*it)->name() == fullname ) {
-      log << MSG::DEBUG << "Retrieved tool " << toolname << endmsg;
+      ON_DEBUG debug() << "Retrieved tool " << toolname << endmsg;
       itool = *it;
       break;
     }
@@ -334,9 +333,9 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
   if ( 0 == itool ) {
     // Instances of this tool do not exist, create an instance if desired
     // otherwise return failure
-    if( !createIf ) {
-      log << MSG::WARNING << "Tool " << toolname
-          << " not found and creation not requested" << endmsg;
+    if( UNLIKELY(!createIf) ) {
+      warning() << "Tool " << toolname
+                << " not found and creation not requested" << endmsg;
       return sc;
     }
     else {
@@ -347,8 +346,8 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
 
   // Get the right interface of it
   sc = itool->queryInterface( iid, (void**)&tool);
-  if( sc.isFailure() ) {
-    log << MSG::ERROR << "Tool " << toolname
+  if( UNLIKELY(sc.isFailure()) ) {
+    error() << "Tool " << toolname
         << " either does not implement the correct interface, or its version is incompatible"
         << endmsg;
     return sc;
@@ -483,10 +482,9 @@ StatusCode ToolSvc::create(const std::string& tooltype,
                            IAlgTool*& tool)
   //------------------------------------------------------------------------------
 {
-  MsgStream log( msgSvc(), name() );
   // protect against empty type
-  if ( tooltype.empty() ) {
-    log << MSG::ERROR << "create(): No Tool Type given" << endmsg;
+  if ( UNLIKELY(tooltype.empty()) ) {
+    error() << "create(): No Tool Type given" << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -500,45 +498,43 @@ StatusCode ToolSvc::create(const std::string& tooltype,
 
   // Check if the tool already exist : this should never happen
   const std::string fullname = nameTool(toolname, parent);
-  if( existsTool( fullname ) ) {
-    log << MSG::ERROR << "Tool " << fullname << " already exists" << endmsg;
+  if( UNLIKELY(existsTool(fullname)) ) {
+    error() << "Tool " << fullname << " already exists" << endmsg;
     return StatusCode::FAILURE;
   }
   // instantiate the tool using the factory
   try {
     toolguard = PluginService::Create<IAlgTool*>(tooltype, tooltype, fullname, parent);
-    if ( ! toolguard.get() ){
-       log << MSG::ERROR
-           << "Cannot create tool " << tooltype << " (No factory found)" << endmsg;
+    if ( UNLIKELY(! toolguard.get()) ){
+       error() << "Cannot create tool " << tooltype << " (No factory found)" << endmsg;
        return StatusCode::FAILURE;
     }
   }
   catch ( const GaudiException& Exception )  {
     // (1) perform the printout of message
-    log << MSG::FATAL << "Exception with tag=" << Exception.tag()
-	<< " is caught whilst instantiating tool '" << tooltype << "'" << endmsg;
+    fatal() << "Exception with tag=" << Exception.tag()
+            << " is caught whilst instantiating tool '" << tooltype << "'" << endmsg;
     // (2) print  the exception itself
     // (NB!  - GaudiException is a linked list of all "previous exceptions")
-    log << MSG::FATAL << Exception  << endmsg;
+    fatal() << Exception  << endmsg;
     return StatusCode::FAILURE;
   }
   catch( const std::exception& Exception ) {
     // (1) perform the printout of message
-    log << MSG::FATAL
-	<< "Standard std::exception is caught whilst instantiating tool '"
-          << tooltype << "'" << endmsg;
+    fatal() << "Standard std::exception is caught whilst instantiating tool '"
+            << tooltype << "'" << endmsg;
     // (2) print  the exception itself
     // (NB!  - GaudiException is a linked list of all "previous exceptions")
-    log << MSG::FATAL << Exception.what()  << endmsg;
+    fatal() << Exception.what()  << endmsg;
     return StatusCode::FAILURE;
   }
   catch(...) {
     // (1) perform the printout
-    log << MSG::FATAL << "UNKNOWN Exception is caught whilst instantiating tool '"
-	<< tooltype << "'" << endmsg;
+    fatal() << "UNKNOWN Exception is caught whilst instantiating tool '"
+            << tooltype << "'" << endmsg;
     return StatusCode::FAILURE;
   }
-  log << MSG::VERBOSE << "Created tool " << tooltype << "/" << fullname << endmsg;
+  ON_VERBOSE verbose() << "Created tool " << tooltype << "/" << fullname << endmsg;
 
   // Since only AlgTool has the setProperties() method it is necessary to cast
   // to downcast IAlgTool to AlgTool in order to set the properties via the JobOptions
@@ -546,21 +542,22 @@ StatusCode ToolSvc::create(const std::string& tooltype,
   AlgTool* mytool = dynamic_cast<AlgTool*> (toolguard.get());
   if ( mytool != 0 ) {
     StatusCode sc = mytool->setProperties();
-    if ( sc.isFailure() ) {
-      log << MSG::ERROR << "Error setting properties for tool '"
-	  << fullname << "'" << endmsg;
+    if ( UNLIKELY(sc.isFailure()) ) {
+      error() << "Error setting properties for tool '"
+	      << fullname << "'" << endmsg;
       return sc;
     }
   }
 
   // Initialize the Tool
   StatusCode sc (StatusCode::FAILURE,true);
-  try { sc = toolguard->sysInitialize(); }
-
+  try {
+    sc = toolguard->sysInitialize();
+  }
   // Catch any exceptions
   catch ( const GaudiException & Exception )
     {
-      log << MSG::ERROR
+      error()
           << "GaudiException with tag=" << Exception.tag()
           << " caught whilst initializing tool '" << fullname << "'" << endmsg
           << Exception << endmsg;
@@ -568,22 +565,22 @@ StatusCode ToolSvc::create(const std::string& tooltype,
     }
   catch( const std::exception & Exception )
     {
-      log << MSG::ERROR
+      error()
           << "Standard std::exception caught whilst initializing tool '"
           << fullname << "'" << endmsg << Exception.what() << endmsg;
       return StatusCode::FAILURE;
     }
   catch (...)
     {
-      log << MSG::ERROR
+      error()
           << "UNKNOWN Exception caught whilst initializing tool '"
           << fullname << "'" << endmsg;
       return StatusCode::FAILURE;
     }
 
   // Status of tool initialization
-  if ( sc.isFailure() ) {
-    log << MSG::ERROR << "Error initializing tool '" << fullname << "'" << endmsg;
+  if ( UNLIKELY(sc.isFailure()) ) {
+    error() << "Error initializing tool '" << fullname << "'" << endmsg;
     return sc;
   }
 
@@ -591,8 +588,8 @@ StatusCode ToolSvc::create(const std::string& tooltype,
   if (m_state == Gaudi::StateMachine::RUNNING) {
     sc = toolguard->sysStart();
 
-    if (sc.isFailure()) {
-      log << MSG::ERROR << "Error starting tool '" << fullname << "'" << endmsg;
+    if (UNLIKELY(sc.isFailure())) {
+      error() << "Error starting tool '" << fullname << "'" << endmsg;
       return sc;
     }
   }
@@ -673,13 +670,13 @@ StatusCode ToolSvc::finalizeTool( IAlgTool* itool ) const
   StatusCode sc;
 
   // Finalise the tool inside a try block
-  try { sc = itool->sysFinalize(); }
-
+  try {
+    sc = itool->sysFinalize();
+  }
   // Catch any exceptions
   catch ( const GaudiException & Exception )
   {
-    MsgStream msg ( msgSvc(), name() );
-    msg << MSG::ERROR
+    error()
         << "GaudiException with tag=" << Exception.tag()
         << " caught whilst finalizing tool '" << toolName << "'" << endmsg
         << Exception << endmsg;
@@ -687,16 +684,14 @@ StatusCode ToolSvc::finalizeTool( IAlgTool* itool ) const
   }
   catch( const std::exception & Exception )
   {
-    MsgStream msg ( msgSvc(), name() );
-    msg << MSG::ERROR
+    error()
         << "Standard std::exception caught whilst finalizing tool '"
         << toolName << "'" << endmsg << Exception.what() << endmsg;
     sc = StatusCode::FAILURE;
   }
   catch (...)
   {
-    MsgStream msg ( msgSvc(), name() );
-    msg << MSG::ERROR
+    error()
         << "UNKNOWN Exception caught whilst finalizing tool '"
         << toolName << "'" << endmsg;
     sc = StatusCode::FAILURE;
@@ -759,23 +754,22 @@ ToolSvc::start()
 //------------------------------------------------------------------------------
 {
 
-  MsgStream log( msgSvc(), name() );
-  log << MSG::DEBUG << "START transition for AlgTools" << endmsg;
+  ON_DEBUG debug() << "START transition for AlgTools" << endmsg;
 
   bool fail(false);
   for ( ListTools::const_iterator iTool = m_instancesTools.begin();
 	iTool != m_instancesTools.end(); ++iTool ) {
-    log << MSG::VERBOSE << (*iTool)->name() << "::start()" << endmsg;
+    ON_VERBOSE verbose() << (*iTool)->name() << "::start()" << endmsg;
 
-    if (!(*iTool)->sysStart().isSuccess()) {
+    if (UNLIKELY(!(*iTool)->sysStart().isSuccess())) {
       fail = true;
-      log << MSG::ERROR << (*iTool)->name() << " failed to start()" << endmsg;
+      error() << (*iTool)->name() << " failed to start()" << endmsg;
     }
 
   }
 
-  if (fail) {
-    log << MSG::ERROR << "One or more AlgTools failed to start()" << endmsg;
+  if (UNLIKELY(fail)) {
+    error() << "One or more AlgTools failed to start()" << endmsg;
     return StatusCode::FAILURE;
   } else {
     return StatusCode::SUCCESS;
@@ -789,23 +783,22 @@ ToolSvc::stop()
 //------------------------------------------------------------------------------
 {
 
-  MsgStream log( msgSvc(), name() );
-  log << MSG::DEBUG << "STOP transition for AlgTools" << endmsg;
+  ON_DEBUG debug() << "STOP transition for AlgTools" << endmsg;
 
   bool fail(false);
   for ( ListTools::const_iterator iTool = m_instancesTools.begin();
 	iTool != m_instancesTools.end(); ++iTool ) {
-    log << MSG::VERBOSE << (*iTool)->name() << "::stop()" << endmsg;
+    ON_VERBOSE verbose() << (*iTool)->name() << "::stop()" << endmsg;
 
-    if (!(*iTool)->sysStop().isSuccess()) {
+    if (UNLIKELY(!(*iTool)->sysStop().isSuccess())) {
       fail = true;
-      log << MSG::ERROR << (*iTool)->name() << " failed to stop()" << endmsg;
+      error() << (*iTool)->name() << " failed to stop()" << endmsg;
     }
 
   }
 
-  if (fail) {
-    log << MSG::ERROR << "One or more AlgTools failed to stop()" << endmsg;
+  if (UNLIKELY(fail)) {
+    error() << "One or more AlgTools failed to stop()" << endmsg;
     return StatusCode::FAILURE;
   } else {
     return StatusCode::SUCCESS;

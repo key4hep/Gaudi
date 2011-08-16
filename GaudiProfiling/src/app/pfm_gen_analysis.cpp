@@ -1627,7 +1627,7 @@ void put_C_header_csv(FILE *fp, std::vector<std::string> &columns)
  fprintf(fp, "MODULE NAME");
  for(std::vector<std::string>::const_iterator it = columns.begin(); it != columns.end(); ++it)
  {
-  if(strlen(it->c_str())==0);
+  if(strlen(it->c_str())==0) {}
   else fprintf(fp, ",%s", (*it).c_str());
  }
  fprintf(fp, "\n");
@@ -1638,10 +1638,10 @@ void put_C_modules_csv(FILE *fp, std::vector<std::string> &columns)
 {
  for(std::map<std::string, std::map<std::string, double> >::iterator it = C_modules.begin(); it != C_modules.end(); ++it)
  {
-  fprintf(fp, "%s", (it->first).c_str());
+  fprintf(fp, "%s", (it->first).c_str()) ;
   for(std::vector<std::string>::const_iterator jt = columns.begin(); jt != columns.end(); ++jt)
   {
-   if(strlen(jt->c_str())==0);
+   if(strlen(jt->c_str())==0) {}
    else
    {
     if((it->second).find(*jt) == (it->second).end())

@@ -96,7 +96,6 @@ static std::vector<std::map<std::string, std::map<unsigned long, unsigned int> >
 static std::vector<std::map<std::string, std::vector<unsigned long int> > > results(MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS); //a map of modules and their result values across multiple events
 static uint64_t last_overflow;
 static uint64_t last_count;
-static std::string current_module;
 static int sp[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
 
 static std::stack<std::pair<INamedInterface *, std::vector<unsigned long int> > > alg_stack;

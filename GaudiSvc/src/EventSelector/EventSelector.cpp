@@ -236,7 +236,7 @@ StatusCode EventSelector::next(Context& refCtxt, int /* jump */ ) const  {
       if ( it && sel )    { // First exploit the current stream
         StatusCode sc = sel->next(*it);  // This stream is empty: advance to the next stream
         if ( !sc.isSuccess() )   {
-          if(s!=NULL) m_incidentSvc->fireIncident(Incident(s->dbName(),IncidentType::EndInputFile));
+          m_incidentSvc->fireIncident(Incident(s->dbName(),IncidentType::EndInputFile));
           sc = firstOfNextStream(true, *pIt);
           if (sc.isSuccess() ) sc = next(*pIt);
         }

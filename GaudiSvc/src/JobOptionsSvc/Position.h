@@ -1,58 +1,32 @@
-// $Id: Position.h,v 1.2 2007/05/24 14:41:21 hmd Exp $
+// $Id:$
+#ifndef JOBOPTIONSVC_POSITION_H_
+#define JOBOPTIONSVC_POSITION_H_
 // ============================================================================
-// CVS tag $Name:  $ 
+// Includes:
 // ============================================================================
-#ifndef JOBOPTIONSSVC_POSITION_H 
-#define JOBOPTIONSSVC_POSITION_H 1
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL 
+// STD & STL:
 // ============================================================================
 #include <string>
 // ============================================================================
-namespace Gaudi{
-  namespace Parsers {
-    /** @class Position Position.h
-     *
-     *  Parser position entity
-     *
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
-     *  @date   2006-05-14
-     */
-    class Position
-    {
-    public:
-      /** Constructor
-       * @param fileName Name of file
-       * @param line Line number
-       * @param column Column number
-       **/
-      Position
-      ( const std::string& fileName = "" ,
-        const int          line     = 0  ,
-        const int          column   = 0  )
-        : m_fileName  ( fileName )
-        , m_line      ( line     )
-        , m_column    ( column   )
-      {}
-      /// Name of file
-      std::string fileName() const{return m_fileName;}
-      /// Line number
-      int line() const{return m_line;}
-      /// Column number
-      int column() const{return m_column;}
-    private:
-      std::string m_fileName;
-      int m_line;
-      int m_column;
-    };
-  } // end of namespace Parsers
-} // end of namespace Gaudi
-
+namespace Gaudi { namespace Parsers {
 // ============================================================================
-// The END 
+class Position {
+ public:
+     Position():filename_(""), line_(0), column_(0) {}
+     Position(const std::string& filename, unsigned line, unsigned column)
+       :filename_(filename), line_(line), column_(column) {}
+     const std::string& filename() const { return filename_; }
+     unsigned line() const { return line_; }
+     unsigned column() const { return column_; }
+     void set_filename(const std::string& filename)  { filename_ = filename;}
+     std::string ToString() const;
+     bool Exists() const { return line_ !=0;}
+ private:
+     std::string filename_;
+     unsigned line_;
+     unsigned column_;
+};
 // ============================================================================
-#endif // JOBOPTIONSSVC_POSITION_H
+}  /* Gaudi */ }  /* Parsers */
 // ============================================================================
+#endif  // JOBOPTIONSVC_POSITION_H_

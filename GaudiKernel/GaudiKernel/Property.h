@@ -44,13 +44,13 @@ class GAUDI_API Property
 {
 public:
   /// property name
-  const std::string&    name      () const { return m_name             ; } ;
+  const std::string&    name      () const { return m_name             ; }
   /// property documentation
-  const   std::string&    documentation() const { return m_documentation; };
+  const   std::string&    documentation() const { return m_documentation; }
   /// property type-info
-  const std::type_info* type_info () const { return m_typeinfo         ; } ;
+  const std::type_info* type_info () const { return m_typeinfo         ; }
   /// property type
-  std::string           type      () const { return m_typeinfo->name() ; } ;
+  std::string           type      () const { return m_typeinfo->name() ; }
   ///  export the property value to the destination
   virtual bool load   (       Property& dest   ) const = 0 ;
   /// import the property value form the source
@@ -88,7 +88,7 @@ public:
   void setName ( const std::string& value ) { m_name = value ; }
   /// set the documentation string
   void setDocumentation( const std::string& documentation ) {
-    m_documentation = documentation; };
+    m_documentation = documentation; }
   /// the printout of the property value
   virtual std::ostream& fillStream ( std::ostream& ) const ;
 protected:
@@ -148,7 +148,7 @@ public:
   // ==========================================================================
   /// the type-traits for properties
   typedef Gaudi::Utils::PropertyTypeTraits<TYPE>         Traits ;
-  /// the actual storage type 
+  /// the actual storage type
   typedef typename Traits::PVal                          PVal   ;
   // ==========================================================================
 protected:
@@ -175,9 +175,9 @@ protected:
   // ==========================================================================
 public:
   // ==========================================================================
-  /// implicit conversion to the type 
+  /// implicit conversion to the type
   operator const TYPE&      () const { return value() ;}
-  /// explicit conversion 
+  /// explicit conversion
   inline const TYPE& value() const ;
   // ==========================================================================
 public:
@@ -195,21 +195,21 @@ public:
   // ==========================================================================
 protected:
   // ==========================================================================
-  /// set the value 
+  /// set the value
   inline void  i_set ( const TYPE& value ) {
     Traits::assign(*m_value, value);
   }
-  /// get the value 
+  /// get the value
   inline PVal  i_get () const {
     return m_value;
   }
   // ==========================================================================
 private:
   // ==========================================================================
-  /// the actual property value 
-  PVal m_value ;                                   // the actual property value 
-  /// owner of the storage 
-  bool  m_own  ;                                   //      owner of the storage 
+  /// the actual property value
+  PVal m_value ;                                   // the actual property value
+  /// owner of the storage
+  bool  m_own  ;                                   //      owner of the storage
   // ==========================================================================
 };
 
@@ -217,7 +217,7 @@ private:
 /// the constructor with property name and value
 // ============================================================================
 template <class TYPE>
-inline 
+inline
 PropertyWithValue<TYPE>::PropertyWithValue
 ( const std::string& name  ,
   PVal               value ,
@@ -235,7 +235,7 @@ inline PropertyWithValue<TYPE>::PropertyWithValue
   : Property( right         )
   , m_value ( right.m_value )
   , m_own   ( right.m_own   )
-{ 
+{
   m_value = Traits::copy ( right.value() , m_own ) ;
 }
 // ============================================================================
@@ -248,7 +248,7 @@ inline PropertyWithValue<TYPE>::PropertyWithValue
   : Property( right         )
   , m_value ( right.m_value )
   , m_own   ( right.m_own   )
-{ 
+{
   m_value = Traits::copy ( right.value() , m_own ) ;
 }
 // ============================================================================
@@ -323,9 +323,9 @@ PropertyWithValue<TYPE>::fromString ( const std::string& source )
 template <>
 inline std::string
 PropertyWithValue<std::string>::toString () const
-{ 
+{
   useReadHandler();
-  return this->value() ; 
+  return this->value() ;
 }
 // ============================================================================
 template <>
@@ -394,7 +394,7 @@ protected:
     , m_verifier ( verifier )
   {}
   /// virtual destructor
-  virtual ~PropertyWithVerifier() {};
+  virtual ~PropertyWithVerifier() {}
   // ==========================================================================
 public:
   // ==========================================================================
@@ -423,8 +423,8 @@ private:
   // ==========================================================================
 private:
   // ==========================================================================
-  /// the verifier itself 
-  VERIFIER m_verifier ;                                  // the verifier itself 
+  /// the verifier itself
+  VERIFIER m_verifier ;                                  // the verifier itself
   // ==========================================================================
 } ;
 // ============================================================================

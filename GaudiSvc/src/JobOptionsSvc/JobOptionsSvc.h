@@ -1,99 +1,84 @@
-//$Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiSvc/src/JobOptionsSvc/JobOptionsSvc.h,v 1.12 2007/05/15 16:46:25 marcocle Exp $
-// ===========================================================================
-#ifndef GAUDISVC_JOBOPTIONSSVC_H
-#define GAUDISVC_JOBOPTIONSSVC_H 1
-// ===========================================================================
-// Include files
-// ===========================================================================
-// STD & STL
-// ===========================================================================
-#include <string>
-// ===========================================================================
+// $Id:$
+#ifndef JOBOPTIONSSVC_H_
+#define JOBOPTIONSSVC_H_
+
 #include "GaudiKernel/StatusCode.h"
-#include "GaudiKernel/Service.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/IJobOptionsSvc.h"
+#include "GaudiKernel/Property.h"
 #include "GaudiKernel/PropertyMgr.h"
+#include "GaudiKernel/Service.h"
 
-#include "Catalogue.h"
-#include "JobOptionsCatalogue.h"
+#include "SvcCatalog.h"
 
-// ===========================================================================
+#include <vector>
+
+namespace Gaudi { namespace Parsers {
+  class Catalog;
+}}
+
+
 class JobOptionsSvc : public extends2<Service, IProperty, IJobOptionsSvc> {
-public:
-
+ public:
+    typedef std::vector<const Property*> PropertiesT;
   // unhides some of Service's methods
-  using Service::setProperty;
-  using Service::getProperty;
-  using Service::getProperties;
-
-  typedef std::vector<const Property*> PropertiesT;
-  /// Constructor
-	JobOptionsSvc(const std::string& name,ISvcLocator* svc);
-	/// destructor
-  virtual ~JobOptionsSvc() ;
-  /// Service initialization method
-	virtual StatusCode initialize ();
+   using Service::setProperty;
+   using Service::getProperty;
+   using Service::getProperties;
+  // Constructor
+  JobOptionsSvc(const std::string& name,ISvcLocator* svc);
+  /// destructor
+  virtual ~JobOptionsSvc() {};
+  virtual StatusCode initialize ();
   /// Service finalization   method
-	virtual StatusCode finalize   ();
+  virtual StatusCode finalize   ();
 
-  /// IJobOptionsSvc::setMyProperties
-  virtual StatusCode setMyProperties( const std::string& client,
-		                                IProperty* myInt );
+  /** Override default properties of the calling client
+         @param client Name of the client algorithm or service
+         @param me Address of the interface IProperty of the client
+   */
+  virtual StatusCode setMyProperties(const std::string& client,
+      IProperty* me ) ;
 
-  /// implementation of IJobOptionsSvc::addPropertyToCatalogue
+  /// Add a property into the JobOptions catalog
   virtual StatusCode addPropertyToCatalogue( const std::string& client,
-                                             const Property& property );
+      const Property& property ) ;
 
-  /// implementation of IJobOptionsSvc::removePropertyFromCatalogue
+  /// Remove a property from the JobOptions catalog
   virtual StatusCode removePropertyFromCatalogue( const std::string& client,
-                                                  const std::string& name );
+      const std::string& name );
+  /// Get the properties associated to a given client
+  virtual const std::vector<const Property*>*
+  getProperties( const std::string& client) const;
 
-  /// inmplementation of IJobOptionsSvc::getProperties
-  virtual const PropertiesT* getProperties( const std::string& client) const;
-
-  /// inmplementation of IJobOptionsSvc::getClients
+  /// Get the list of clients
   virtual std::vector<std::string> getClients() const;
 
-  /** look for file 'File' into search path 'Path'
+  /** look for file 'file' into search path 'path'
    *  and read it to update existing JobOptionsCatalogue
-   *  @param  File file   name
-   *  @param  Path search path
+   *  @param file file   name
+   *  @param path search path
    *  @return status code
    */
-  virtual StatusCode readOptions
-  ( const std::string& file      ,
-    const std::string& path = "" ) ;
+  virtual StatusCode readOptions ( const std::string& file,
+      const std::string& path = "" );
 
   /// IProperty implementation (needed for initialisation)
   StatusCode setProperty(const Property& p);
   StatusCode getProperty(Property *p) const;
+ private:
+  void fillServiceCatalog(const Gaudi::Parsers::Catalog& catalog);
+  void dump (const std::string& file,
+      const Gaudi::Parsers::Catalog& catalog) const ;
+  /// dump the content of Properties catalog to the predefined file
 
-public:
-  /// dump the content of Properties catalogue to std::ostream
-  std::ostream& fillStream ( std::ostream& o ) const ;
-  /// dump the content of Properties catalogue to the file
-  void dump ( const std::string& file ) const ;
-  /// dump the content of Properties catalogue to the predefined file
-  void dump () ;
-private:
-  /// Fill parser catalogue before parse
-  void fillParserCatalogue();
-  /// Fill service catalogue after parse
-  void fillServiceCatalogue();
-  /// convert the severity
-  MSG::Level convertSeverity(const Gaudi::Parsers::Message::Severity& severity);
-private:
-  std::string         m_source_path;
-  std::string         m_source_type;
-  std::string         m_dirSearchPath;
-  // optional output file to dump all properties
-  std::string         m_dump   ; ///< optional output file to dump all properties
-  bool                m_dumped ;
-  PropertyMgr         m_pmgr;
-  Gaudi::Parsers::Catalogue m_pcatalogue;
-  std::vector<std::string> m_included;
-  JobOptionsCatalogue m_catalogue;
-} ;
-
-#endif
+ private:
+  PropertyMgr m_pmgr;
+  std::string m_source_path;
+  std::string m_source_type;
+  std::string m_dir_search_path;
+  std::string m_dump;
+  SvcCatalog  m_svc_catalog;
+  bool m_dumped;
+};
+#endif /* JOBOPTIONSSVC_H_ */

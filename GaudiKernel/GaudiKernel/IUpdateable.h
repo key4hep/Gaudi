@@ -16,7 +16,7 @@
 class GAUDI_API IUpdateable {
 public:
 
-  /// destructor
+  /// Default destructor
   virtual ~IUpdateable() { }
 
   /** Output serialization to stream buffer. Saves the status of the object.
@@ -38,6 +38,9 @@ class GAUDI_API IUpdateableIF : virtual public IInterface, virtual public IUpdat
 public:
   /// InterfaceID
   DeclareInterfaceID(IUpdateableIF,1,0);
+
+  /// Default destructor
+  virtual ~IUpdateableIF() {}
 };
 
 #endif // GAUDIKERNEL_IUPDATEABLE_H

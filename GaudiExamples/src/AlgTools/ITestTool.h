@@ -22,7 +22,7 @@ class ITestTool : public virtual IAlgTool {
 public:
   /// InterfaceID
   DeclareInterfaceID(ITestTool,2,0);
-
+  virtual ~ITestTool() {}
 protected:
 
 private:

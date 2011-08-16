@@ -180,7 +180,7 @@ public:
   }
 
   /// main cast function
-  virtual void *i_cast(const std::type_info &) const
+  virtual void *i_cast(const InterfaceID &) const
 #if defined(GAUDI_V20_COMPAT) && !defined(G21_NEW_INTERFACES)
   {return 0;}
 #else
@@ -234,13 +234,13 @@ namespace Gaudi {
   /// Cast a IInterface pointer to an IInterface specialization (TARGET).
   template <typename TARGET>
   TARGET* Cast(IInterface *i){
-    return reinterpret_cast<TARGET*>(i->i_cast(typeid(typename TARGET::iid::iids::type)));
+    return reinterpret_cast<TARGET*>(i->i_cast(TARGET::interfaceID()));
   }
   /// Cast a IInterface pointer to an IInterface specialization (TARGET).
   /// const version
   template <typename TARGET>
   const TARGET* Cast(const IInterface *i){
-    return reinterpret_cast<const TARGET*>(i->i_cast(typeid(typename TARGET::iid::iids::type)));
+    return reinterpret_cast<const TARGET*>(i->i_cast(TARGET::interfaceID()));
   }
 }
 

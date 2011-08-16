@@ -1,6 +1,106 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-08-08 - Marco Clemencic
+ - Added the non-tempalted method AlgTool::service
+   - This makes AlgTool more similar to Algorithm, in order to simplify some
+     code in GaudiCommon.
+ - Fixing bug #83775: unprotected MSG::DEBUG/VERBOSE
+   - ServiceLocatorHelper
+   - MinimalEventLoopMgr
+ - Fixed a bug in Service that was causing an inconsistency between the output
+   level of the service and the table in MessageSvc.
+
+! 2011-08-07 - Marco Clemencic
+ - Modified Gaudi::Cast to use InterfaceID instead of type_info.
+ - Modified CommonMessaging to be able to get the current output level from the
+   embedded MsgStream.
+
+! 2011-08-05 - Marco Clemencic
+ - Fixing bug #83775: unprotected MSG::DEBUG/VERBOSE
+   Fixed Algorithm, Service, DataSvc
+ - Modified CommonMessaging (and Service) to correctly take into account
+   changes to the output level happening after the cached MsgStream is created.
+
+! 2011-08-04 - Marco Clemencic
+ - Fixed bug #84663: allow access to addresses of private members of StatEntity
+   Changed the signature of the methods returning the internal data members
+   to return a const& instead of a copy.
+
+! 2011-08-04 - Charles Leggett
+ - Patch #4941: Added interfaces IIoComponent and IIoComponentMgr
+
+! 2011-08-04 - Marco Clemencic
+ - Removed implementation of parsers that are not needed to reduce compilation
+   time and size (patch #4891)
+
+! 2011-08-03 - Sasha Mazurov
+ - Renamed GaudiKernel/Grammars.h to GrammarsV2.h to allow easier backward
+   compatibility.
+ - Reintroduced the old (Spirit 1) headers Grammars.h and Parsers.icpp for
+   backward compatibility (with the introduction of a deprecation warning).
+
+! 2011-08-02 - Marco Clemencic
+ - Fixed a compilation error on ICC (patch #4891)
+
+! 2011-07-27 - Marco Clemencic
+ - Hidden compilation warnings in Grammars.h using the pragma "system_header".
+
+! 2011-07-26 - Marco Clemencic
+ - Improved the stability of HistoryObj and IVersHistoryObj in dynamic_cast.
+
+! 2011-07-26 - Markus Frank
+ - Patch #4999: Added virtual destructor implementation for IUpdateableIF
+
+! 2011-07-25 - Marco Clemencic
+ - Fixed a compilation problem triggered by the changes in some header files.
+
+! 2011-07-22 - Marco Clemencic
+ - Divided the bulk of parsers in several small files to speed up the
+   (parallel) compilation.
+
+! 2011-07-22 - Sasha Mazurov
+ - Patch #4891: New parsers for Gaudi Configuration
+   - Fully rewritten parsers (less amount of code, more readable and more robust)
+   - Based on Boost.Spirit 2
+   - New parsers for std::set and std::list
+   - Job options files: variables introduced
+
+! 2011-07-21 - Charles Leggett
+ - Patch #4943: Consolidate GaudiSvc and GaudiKernel patches in Atlas tags
+   Update HistorySvc to use new HistoryObj base classes, and provide XML output
+
+! 2011-07-21 - Marco Clemencic
+ - Added use of 'UNLIKELY' in the destructor of StatusCode.
+
+! 2011-07-21 - Charles Leggett
+ - Patch #4975: check for uncaught exceptions in StatusCode destructor
+   If a StatusCode is created in some alg, and an exception is thrown before
+   it's checked, when the stack is unwound it will trigger an unchecked status
+   code error from the StatusCodeSvc, which can mislead people as to the true
+   cause of the problem.
+   This patch checks for std::uncaught_exception() in the StatusCode destructor
+   before calling the StatusCodeSvc.
+
+! 2011-06-27 - Marco Clemencic
+ - Fixed a problem with the compilation of genconf on ICC after the fix to
+   bug #83433.
+
+! 2011-06-24 - Hubert Degaudenzi
+ - removed useless ";".
+
+! 2011-06-23 - Marco Clemencic
+ - Fixed bug #83433: reject invalid properties in genconf
+   Modified genconf to use a regular expression to validate property names.
+
+! 2011-06-23 - Hubert Degaudenzi
+ - fixed warnings from the eclipse code analysis engine.
+
+! 2011-06-23 - Marco Clemencic
+ - Fixed bug #83524: Unprotected debug message in Service::initialize
+ - Fixed bug #83525: Usage of THIS in GaudiKernel/implements.h
+   Replaced THIS with T, as suggested.
+
 ============================= GaudiKernel v27r14 =============================
 ! 2011-04-19 - Marco Clemencic
  - Fixed a defect spotted by Coverity in KeyedObject (UNINIT_CTOR).

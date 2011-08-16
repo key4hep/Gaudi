@@ -1,6 +1,33 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+! 2011-07-18 - Charles Leggett
+ - Patch 4941: bring up to date with GaudiMP-01-01-04
+ - check StatusCode of Service::initialize
+M       src/Lib/IoComponentMgr.cpp
+ - check for python initialization, add IoRegistry.py and FdsRegistry.py
+
+   modules
+A       python/GaudiMP/IoRegistry.py
+A       python/GaudiMP/FdsRegistry.py
+M       cmt/requirements
+M       src/Lib/IoComponentMgr.cpp
+
+ - made GaudiMP a component library too, added some debug output to
+   IoComponentMgr
+M       cmt/requirements
+M       GaudiMP/IoComponentMgr.h
+M       src/Lib/IoComponentMgr.cpp
+
+ - Add IIoComponentMgr
+M       cmt/requirements
+A       GaudiMP/IoComponentMgr.h
+A       src/Lib/IoComponentMgr.cpp
+
+
+! 2011-06-23 - Hubert Degaudenzi
+ - fixed warnings from the eclipse code analysis engine.
+
 ================================ GaudiMP v1r1 ================================
 ! 2011-04-04 - Pere Mato
  - Fixes to work with LHCb Brunel

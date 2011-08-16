@@ -1,4 +1,3 @@
-// $Id: Parsers.h,v 1.5 2008/01/14 19:42:56 marcocle Exp $
 // ============================================================================
 #ifndef GAUDIPROPERTYPARSERS_PARSERS_H
 #define GAUDIPROPERTYPARSERS_PARSERS_H 1
@@ -9,10 +8,24 @@
 // ============================================================================
 #include <string>
 #include <vector>
+#include <list>
+#include <set>
 #include <map>
+
 // ============================================================================
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/HistoDef.h"
+
+#define PARSERS_DECL_FOR_SINGLE(Type)\
+    GAUDI_API StatusCode parse(Type& result, const std::string& input);
+
+#define PARSERS_DECL_FOR_PAIR(FirstType, SecondType)\
+    GAUDI_API StatusCode parse(std::pair<FirstType, SecondType >& result,\
+                               const std::string& input);
+
+#define PARSERS_DECL_FOR_LIST(InnerType)\
+    GAUDI_API StatusCode parse(std::vector<InnerType>& result,\
+                               const std::string& input);
 // ============================================================================
 /** @file
  *  The declaration of major parsing functions used e.g
@@ -64,8 +77,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-12
      */
-    GAUDI_API StatusCode parse
-    ( bool& result , const std::string& input ) ;
+    PARSERS_DECL_FOR_SINGLE(bool)
     // ========================================================================
     /** parse the <c>char</c> value
      *
@@ -78,17 +90,11 @@ namespace Gaudi
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-12
      */
-    GAUDI_API StatusCode parse
-    ( char&              result ,
-      const std::string& input  ) ;
+    PARSERS_DECL_FOR_SINGLE(char)
     /// @see Gaudi::Parsers::parser(char&,std::string&)
-    GAUDI_API StatusCode parse
-    ( unsigned char&     result ,
-      const std::string& input  ) ;
+    PARSERS_DECL_FOR_SINGLE(unsigned char)
     /// @see Gaudi::Parsers::parser(char&,std::string&)
-    GAUDI_API StatusCode parse
-    ( signed char&       result ,
-      const std::string& input  ) ;
+    PARSERS_DECL_FOR_SINGLE(signed char)
     // ========================================================================
     /** parse the <c>int</c> value
      *
@@ -101,37 +107,21 @@ namespace Gaudi
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    GAUDI_API StatusCode parse
-    ( int&               result ,
-      const std::string& input  ) ;
+    PARSERS_DECL_FOR_SINGLE(int)
     /// @see Gaudi::Parsers::parser( int&, const std::string& )
-    GAUDI_API StatusCode parse
-    ( short&             result ,
-      const std::string& input  ) ;
+    PARSERS_DECL_FOR_SINGLE(short)
     /// @see Gaudi::Parsers::parser( int&, const std::string& )
-    GAUDI_API StatusCode parse
-    ( unsigned short&    result ,
-      const std::string& input  ) ;
+    PARSERS_DECL_FOR_SINGLE(unsigned short)
     /// @see Gaudi::Parsers::parser( int&, const std::string& )
-    GAUDI_API StatusCode parse
-    ( unsigned int&      result ,
-      const std::string& input  ) ;
+    PARSERS_DECL_FOR_SINGLE(unsigned int)
     /// @see Gaudi::Parsers::parser( int&, const std::string& )
-    GAUDI_API StatusCode parse
-    ( long&              result ,
-      const std::string& input  ) ;
+    PARSERS_DECL_FOR_SINGLE(long)
     /// @see Gaudi::Parsers::parser( int&, const std::string& )
-    GAUDI_API StatusCode parse
-    ( unsigned long&     result ,
-      const std::string& input  ) ;
+    PARSERS_DECL_FOR_SINGLE(unsigned long)
     /// @see Gaudi::Parsers::parser( int&, const std::string& )
-    GAUDI_API StatusCode parse
-    ( long long&         result ,
-      const std::string& input  ) ;
+    PARSERS_DECL_FOR_SINGLE(long long)
     /// @see Gaudi::Parsers::parser( int&, const std::string& )
-    GAUDI_API StatusCode parse
-    ( unsigned long long& result,
-      const std::string& input  ) ;
+    PARSERS_DECL_FOR_SINGLE(unsigned long long)
     // ========================================================================
     /** parse the <c>double</c> value
      *
@@ -144,17 +134,11 @@ namespace Gaudi
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    GAUDI_API StatusCode parse
-    ( double&            result ,
-      const std::string& input  ) ;
+    PARSERS_DECL_FOR_SINGLE(double)
     /// @see Gaudi::Parsers::parser( double&, const std::string& )
-    GAUDI_API StatusCode parse
-    ( float&             result ,
-      const std::string& input  ) ;
+    PARSERS_DECL_FOR_SINGLE(float)
     /// @see Gaudi::Parsers::parser( double&, const std::string& )
-    GAUDI_API StatusCode parse
-    ( long double&       result ,
-      const std::string& input  ) ;
+    PARSERS_DECL_FOR_SINGLE(long double)
     // ========================================================================
     /** parse the <c>std::string</c> value
      *
@@ -167,133 +151,28 @@ namespace Gaudi
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    GAUDI_API StatusCode parse
-    ( std::string&       result ,
-      const std::string& input  ) ;
+    PARSERS_DECL_FOR_SINGLE(std::string)
     // ========================================================================
-    /** parse the <c>std::vector\<bool\></c> value
-     *
-     *  @see Gaudi::Parsers::VectorGrammar
-     *  @see Gaudi::Parsers::BoolGrammar
-     *  @param result (output) vector with boolean elements
-     *  @param input  (input) the string to be parsed
-     *  @return status code
-     *
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-     *  @date 2006-05-14
-     */
-    GAUDI_API StatusCode parse
-    ( std::vector<bool>& result ,
-      const std::string& input  ) ;
-    // ========================================================================
-    /** parse the <c>std::vector\<char\></c> value
-     *
-     *  @see Gaudi::Parsers::VectorGrammar
-     *  @see Gaudi::Parsers::CharGrammar
-     *  @param result (output) vector with char elements
-     *  @param input  (input) the string to be parsed
-     *  @return status code
-     *
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-     *  @date 2006-05-14
-     */
-    GAUDI_API StatusCode parse
-    ( std::vector<char>&          result ,
-      const std::string&          input  ) ;
-    /// @see parse( std::vector<char>& ,const std::string& );
-    GAUDI_API StatusCode parse
-    ( std::vector<unsigned char>& result ,
-      const std::string&          input  ) ;
-    /// @see parse( std::vector<char>& ,const std::string& );
-    GAUDI_API StatusCode parse
-    ( std::vector<signed char>&   result ,
-      const std::string&          input  ) ;
-    // ========================================================================
-    /** parse the <c>std::vector\<int\></c> value
-     *
-     *  @see Gaudi::Parsers::VectorGrammar
-     *  @see Gaudi::Parsers::IntGrammar
-     *  @param result (output) vector with integer elements
-     *  @param input  (input) the string to be parsed
-     *  @return status code
-     *
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-     *  @date 2006-05-14
-     */
-    GAUDI_API StatusCode parse
-    ( std::vector<int>&            result ,
-      const std::string&           input  ) ;
-    /// @see parse( std::vector<int>& ,const std::string& );
-    GAUDI_API StatusCode parse
-    ( std::vector<short>&          result ,
-      const std::string&           input  ) ;
-    /// @see parse( std::vector<int>& ,const std::string& );
-    GAUDI_API StatusCode parse
-    ( std::vector<unsigned short>& result ,
-      const std::string&           input  ) ;
-    /// @see parse( std::vector<int>& ,const std::string& );
-    GAUDI_API StatusCode parse
-    ( std::vector<unsigned int>&   result ,
-      const std::string&           input  ) ;
-    /// @see parse( std::vector<int>& ,const std::string& );
-    GAUDI_API StatusCode parse
-    ( std::vector<long>&           result ,
-      const std::string&           input  ) ;
-    /// @see parse( std::vector<int>& ,const std::string& );
-    GAUDI_API StatusCode parse
-    ( std::vector<unsigned long>&  result ,
-      const std::string&           input  ) ;
-    /// @see parse( std::vector<int>& ,const std::string& );
-    GAUDI_API StatusCode parse
-    ( std::vector<long long>&      result ,
-      const std::string&           input  ) ;
-    /// @see parse( std::vector<int>& ,const std::string& );
-    GAUDI_API StatusCode parse
-    ( std::vector<unsigned long long>& result,
-      const std::string&           input  ) ;
-    // ========================================================================
-    /** parse the <c>std::vector\<double\></c> value
-     *
-     *  @see Gaudi::Parsers::VectorGrammar
-     *  @see Gaudi::Parsers::RealGrammar
-     *  @param result (output) vector with double elements
-     *  @param input  (input) the string to be parsed
-     *  @return status code
-     *
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-     *  @date 2006-05-14
-     */
-    GAUDI_API StatusCode parse
-    ( std::vector<double>&      result ,
-      const std::string&        input  ) ;
-    /// @see parse( std::vector<double>& ,const std::string& );
-    GAUDI_API StatusCode parse
-    ( std::vector<float>&       result ,
-      const std::string&        input  ) ;
-    /// @see parse( std::vector<double>& ,const std::string& );
-    GAUDI_API StatusCode parse
-    ( std::vector<long double>& result ,
-      const std::string&        input  ) ;
-    // ========================================================================
-    /** parse the <c>std::vector\<std::string\></c> value
-     *
-     *  @see Gaudi::Parsers::VectorGrammar
-     *  @see Gaudi::Parsers::StringGrammar
-     *  @param result (output) vector with string elements
-     *  @param input  (input) the string to be parsed
-     *  @return status code
-     *
-     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-     *  @date 2006-05-14
-     */
-    GAUDI_API StatusCode parse
-    ( std::vector<std::string>& result ,
-      const std::string&        input  ) ;
+
+    PARSERS_DECL_FOR_LIST(bool)
+    PARSERS_DECL_FOR_LIST(char)
+    PARSERS_DECL_FOR_LIST(unsigned char)
+    PARSERS_DECL_FOR_LIST(signed char)
+
+    PARSERS_DECL_FOR_LIST(int)
+    PARSERS_DECL_FOR_LIST(short)
+    PARSERS_DECL_FOR_LIST(unsigned short)
+    PARSERS_DECL_FOR_LIST(unsigned int)
+    PARSERS_DECL_FOR_LIST(long)
+    PARSERS_DECL_FOR_LIST(unsigned long)
+    PARSERS_DECL_FOR_LIST(long long)
+    PARSERS_DECL_FOR_LIST(unsigned long long)
+
+    PARSERS_DECL_FOR_LIST(double)
+    PARSERS_DECL_FOR_LIST(float)
+    PARSERS_DECL_FOR_LIST(long double)
+
+    PARSERS_DECL_FOR_LIST(std::string)
     // ========================================================================
     // Advanced parses
     // ========================================================================
@@ -309,9 +188,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    GAUDI_API StatusCode parse
-    ( std::pair<double,double>& result ,
-      const std::string&        input  ) ;
+    PARSERS_DECL_FOR_PAIR(double,double)
     // ========================================================================
     /** parse the <c>std::pair\<int,int\></c> value
      *
@@ -325,9 +202,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    GAUDI_API StatusCode parse
-    ( std::pair<int,int>& result ,
-      const std::string&  input  ) ;
+    PARSERS_DECL_FOR_PAIR(int, int)
     // ========================================================================
     /** parse the <c>std::vector\<std::pair\<double,double\> \></c> value
      *

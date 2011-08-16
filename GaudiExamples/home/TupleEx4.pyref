@@ -12,7 +12,6 @@ RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
-HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
 RootHistSvc          INFO Writing ROOT histograms to: UndefinedROOTOutputFileName
 HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
 ApplicationMgr       INFO Application Manager Initialized successfully

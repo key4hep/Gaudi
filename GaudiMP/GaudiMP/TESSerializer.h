@@ -55,6 +55,8 @@ namespace GaudiMP {
     /// print out the contents of m_itemList and m_optItemList (std::cout)
     void checkItems( );
 
+    virtual ~TESSerializer() {}
+
   protected:
     /// Add item to the list of items to be serialized (#notation)
     void addItem(Items& itms, const std::string& descriptor);

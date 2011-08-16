@@ -22,7 +22,7 @@ library GaudiExamplesLib -no_static Lib/*.cpp
 
 macro datalistener_use "DataListener/*.cpp" WIN32 " "
 
-library GaudiExamples    -no_static \
+library GaudiExamples    -import=Reflex -no_static \
                           AbortEvent/*.cpp \
                           AlgSequencer/*.cpp \
                           AlgTools/*.cpp \

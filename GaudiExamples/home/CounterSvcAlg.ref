@@ -28,7 +28,6 @@ CounterSvc        SUCCESS      "EventCount::CounterTest"    #=1       Sum=1000  
 CounterSvc        SUCCESS      "TotalCount::CounterTest"    #=0       Sum=0           Mean=     0.000 +- 0.0000     Min/Max=1.798e+308/-1.798e+308
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
-HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
 HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully

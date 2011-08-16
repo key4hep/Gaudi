@@ -398,6 +398,7 @@ int apmon_utils::xdrSize(int type, char *value) {
 	size += (4 - size % 4);
       return size;
     }
+    break ;
   }
 
   return RET_ERROR;

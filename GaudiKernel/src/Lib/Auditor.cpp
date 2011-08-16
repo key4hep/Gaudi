@@ -110,7 +110,7 @@ void Auditor::before(StandardEventType evt, INamedInterface* obj){
   case Start:        break;
   case Stop:         break;
   case ReStart:      break;
-  default: ;// do nothing
+  default: break ;// do nothing
   }
 }
 void Auditor::before(StandardEventType, const std::string&) {}
@@ -130,7 +130,7 @@ void Auditor::after(StandardEventType evt, INamedInterface* obj, const StatusCod
   case Start:        break;
   case Stop:         break;
   case ReStart:      break;
-  default: ;// do nothing
+  default: break ;// do nothing
   }
 }
 void Auditor::after(StandardEventType, const std::string&, const StatusCode&) {}
