@@ -3,6 +3,7 @@
 
 build.*.log
 Makefile
+NMake
 install.*.history
 setup.*
 cleanup.*
@@ -11,6 +12,13 @@ genConf/
 QMTest/
 InstallArea/
 patches/
+test_results/
+
+*-slc5-*/
+i686-winxp-vc9-dbg/
+
+.*-slc5-*.d/
+.i686-winxp-vc9-dbg.d/
 
 DoxyWarnings.log
 .gdb_history
