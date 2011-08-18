@@ -3,6 +3,7 @@ package manager: Marco Clemencic
 
 ! 2011-08-18 - Marco Clemencic
  - Hack in GaudiTest.py to be able to start Visual Studio to debug on WinXP.
+ - Improvements to the QMTest HTML output (new jQuery, nicer foldable lists).
 
 ! 2011-08-15 - Marco Clemencic
  - Small change in test exclusion list for portability.
