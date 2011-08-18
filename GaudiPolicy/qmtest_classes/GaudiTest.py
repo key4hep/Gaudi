@@ -1605,6 +1605,9 @@ class GaudiExeTest(ExecTestBase):
             data["stopAtMain"] = "true"
 
         data["args"] = "&#10;".join(map(rationalizepath, args))
+        if self.isWinPlatform():
+            data["args"] = "&#10;".join(["/debugexe"] + map(rationalizepath, [data["exec"]] + args))
+            data["exec"] = which("vcexpress.exe")
 
         if not self.use_temp_dir:
             data["workdir"] = os.getcwd()

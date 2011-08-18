@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-08-18 - Marco Clemencic
+ - Hack in GaudiTest.py to be able to start Visual Studio to debug on WinXP.
+
 ! 2011-08-15 - Marco Clemencic
  - Small change in test exclusion list for portability.
  - Bad hack in fragments/nmake/library to allow very big libraries on VC9,
