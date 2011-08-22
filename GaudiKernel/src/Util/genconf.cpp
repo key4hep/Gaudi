@@ -1,5 +1,3 @@
-//$Id: genconf.cpp,v 1.35 2008/10/15 21:51:24 marcocle Exp $	//
-
 #ifdef _WIN32
 // Disable a warning in Boost program_options headers:
 // inconsistent linkage in program_options/variables_map.hpp
@@ -20,8 +18,13 @@
 #endif
 #endif
 
-// Include files----------------------------------------------------------------
 #include "boost/program_options.hpp"
+// the hack for remark #193 is needed only for program_options and breaks regex.
+#if defined(__ICC) && !defined(_WIN32) && (_MSC_VER == 0)
+#undef _MSC_VER
+#endif
+
+// Include files----------------------------------------------------------------
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/exception.hpp"
 #include "boost/filesystem/convenience.hpp"
@@ -30,6 +33,7 @@
 #include "boost/algorithm/string/trim.hpp"
 #include "boost/algorithm/string/case_conv.hpp"
 #include "boost/format.hpp"
+#include "boost/regex.hpp"
 
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/ISvcLocator.h"
@@ -78,6 +82,10 @@ typedef std::vector<fs::path>    LibPathNames_t;
 
 namespace {
   const std::string py_tab = "    ";
+
+  /// Regular expression to validate the property names.
+  /// @see http://docs.python.org/reference/lexical_analysis.html#identifiers
+  const boost::regex pythonIdentifier("^[a-zA-Z_][a-zA-Z0-9_]*$");
 }
 
 class configGenerator
@@ -164,10 +172,10 @@ public:
   }
 
 private:
-  void genComponent( const std::string& libName,
-		     const std::string& componentName,
-		     const std::string& componentType,
-		     const vector<Property*>& properties );
+  int genComponent( const std::string& libName,
+                    const std::string& componentName,
+                    const std::string& componentType,
+                    const vector<Property*>& properties );
   void genImport( std::ostream& s, const boost::format& frmt,std::string indent);
   void genHeader( std::ostream& pyOut, std::ostream& dbOut );
   void genBody( std::ostream& pyOut,
@@ -367,7 +375,7 @@ int main ( int argc, char** argv )
     try {
       fs::create_directory(out);
     }
-    catch ( fs::filesystem_error err ) {
+    catch ( fs::filesystem_error &err ) {
       cout << "ERR0R: error creating directory: "<< err.what() << endl;
       return EXIT_FAILURE;
     }
@@ -613,7 +621,9 @@ int configGenerator::genConfig( const Strings_t& libs )
         continue;
       }
       if( prop ) {
-        genComponent( *iLib, name, type, prop->getProperties() );
+        if (genComponent( *iLib, name, type, prop->getProperties() )) {
+          allGood = false;
+        }
         prop->release();
       } else {
         cout << "ERROR: could not cast IInterface* object to an IProperty* !\n"
@@ -739,10 +749,11 @@ void configGenerator::genTrailer( std::ostream& /*py*/,
 }
 
 //-----------------------------------------------------------------------------
-void configGenerator::genComponent( const std::string& libName,
-                                    const std::string& componentName,
-                                    const std::string& componentType,
-                                    const vector<Property*>& properties )
+int
+configGenerator::genComponent( const std::string& libName,
+                               const std::string& componentName,
+                               const std::string& componentType,
+                               const vector<Property*>& properties )
 //-----------------------------------------------------------------------------
 {
   string cname = componentName;
@@ -758,7 +769,19 @@ void configGenerator::genComponent( const std::string& libName,
   m_pyBuf << "  __slots__ = { \n";
   for ( vector<Property*>::const_iterator it = properties.begin() ;
         it != properties.end(); ++it ) {
+
     const string pname  = (*it)->name();
+    // Validate property name (it must be a valid Python identifier)
+    if (!boost::regex_match(pname, pythonIdentifier)) {
+      std::cout << "ERROR: invalid property name \"" << pname
+                << "\" in component " << cname
+                << " (invalid Python identifier)" << std::endl;
+      // try to make the buffer at least more or less valid python code.
+      m_pyBuf << " #ERROR-invalid identifier'" << pname << "'\n"
+              << "  }\n";
+      return 1;
+    }
+
     string pvalue, ptype;
     pythonizeValue( (*it), pvalue, ptype );
     m_pyBuf << "    '" << pname << "' : " << pvalue <<", # " << ptype << "\n";
@@ -805,6 +828,7 @@ void configGenerator::genComponent( const std::string& libName,
     << py_tab << "           lib     = '" << libName << "' )\n"
     << flush;
 
+  return 0;
 }
 //-----------------------------------------------------------------------------
 void configGenerator::pythonizeName( string& name )

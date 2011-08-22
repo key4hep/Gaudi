@@ -67,6 +67,16 @@ public:
   }
 #endif
 
+  /// Return an uninitialized MsgStream.
+  inline MsgStream& msgStream() const {
+    if (UNLIKELY((!m_msgStream.get()) || (!m_streamWithService))) {
+      SmartIF<IMessageSvc>& ms = msgSvc();
+      m_msgStream.reset(new MsgStream(ms, this->name()));
+      m_streamWithService = ms.get() != 0;
+    }
+    return *m_msgStream;
+  }
+
   /** Predefined configurable message stream for the efficient printouts
    *
    *  @code
@@ -77,13 +87,8 @@ public:
    *
    *  @return Reference to the predefined stream
    */
-  inline MsgStream& msgStream(const MSG::Level level = MSG::INFO) const {
-    if ((!m_msgStream.get()) || (!m_streamWithService)) {
-      SmartIF<IMessageSvc>& ms = msgSvc();
-      m_msgStream.reset(new MsgStream(ms, this->name()));
-      m_streamWithService = ms.get() != 0;
-    }
-    return *m_msgStream << level;
+  inline MsgStream& msgStream(const MSG::Level level) const {
+    return msgStream() << level;
   }
 
   /// shortcut for the method msgStream(MSG::ALWAYS)
@@ -110,8 +115,18 @@ public:
   /// shortcut for the method msgStream(MSG::VERBOSE)
   inline MsgStream& verbose() const { return msgStream(MSG::VERBOSE); }
 
-  /// shortcut for the method msgStream()
-  inline MsgStream&     msg() const { return msgStream(); }
+  /// shortcut for the method msgStream(MSG::INFO)
+  inline MsgStream&     msg() const { return msgStream(MSG::INFO); }
+
+  /// get the output level from the embedded MsgStream
+  inline MSG::Level msgLevel() {
+    return msgStream().level();
+  }
+
+  /// get the output level from the embedded MsgStream
+  inline bool msgLevel(MSG::Level lvl) {
+    return UNLIKELY(msgLevel() <= lvl);
+  }
 
 protected:
   /// Pointer to the message service;
@@ -122,6 +137,12 @@ protected:
 
   /// Flag to create a new MsgStream if it was created without the message service
   mutable bool m_streamWithService;
+
+  /// Update the output level of the cached MsgStream.
+  /// This function is meant to be called by the update handler of the OutputLevel property.
+  void updateMsgStreamOutputLevel(int level) {
+    if (m_msgStream.get()) m_msgStream->setLevel(level);
+  }
 
 };
 

@@ -38,7 +38,7 @@ namespace Gaudi {
     /// Create new histogram from any AIDA based histogram
     void copyFromAida(const IHistogram2D& h);
     /// Retrieve reference to class defininition identifier
-    virtual const CLID& clID() const { return Gaudi::Histogram2D::classID(); }
+    virtual const CLID& clID() const { return classID(); }
     static const CLID& classID()     { return CLID_H2D; }
   protected:
     // cache sumwx and sumwy  when setting contents since I don't have bin mean

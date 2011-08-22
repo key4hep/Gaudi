@@ -16,8 +16,12 @@ apply_pattern install_scripts
 
 
 #-------Applications and Libraries-----------------------------------------------
-library GaudiMP   Lib/*.cpp      -import=Python -import=Reflex -import=ROOT -no_static
-apply_pattern  linker_library    library=GaudiMP
+library GaudiMPLib   Lib/*.cpp      -import=Python -import=Reflex -import=ROOT -no_static
+apply_pattern  linker_library    library=GaudiMPLib
+
+library GaudiMP   component/*.cpp      -import=Python -import=Reflex -import=ROOT -no_static
+apply_pattern  component_library library=GaudiMP
+
 
 #-------LCG Dictionaries---------------------------------------------------------
 apply_pattern reflex_dictionary dictionary=GaudiMP \
@@ -28,7 +32,9 @@ apply_pattern reflex_dictionary dictionary=GaudiMP \
 
 #--------------------------------------------------------------------------------
 private
-#apply_pattern  component_library library=GaudiMP
+
+macro GaudiMP_PyROOT_linkopts " -L$(ROOT_home)/lib -lPyROOT"
+macro_append GaudiMP_linkopts " $(GaudiMP_PyROOT_linkopts)"
 
 #--------------------------------------------------------------------------------
 

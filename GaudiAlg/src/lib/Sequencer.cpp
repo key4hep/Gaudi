@@ -1,5 +1,3 @@
-//$Id: Sequencer.cpp,v 1.7 2008/06/02 14:22:04 marcocle Exp $
-
 // Sequencer class
 // Implements:
 // 1) Common functionality of IInterface
@@ -14,6 +12,9 @@
 #include "GaudiKernel/Chrono.h"
 #include "GaudiKernel/Stat.h"
 #include "GaudiKernel/GaudiException.h"
+
+#define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
+#define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
 
 /**
  ** Constructor(s)
@@ -131,7 +132,7 @@ Sequencer::execute()
   StatusCode result = StatusCode::SUCCESS;
   MsgStream log( msgSvc( ), name( ) );
 
-  log << MSG::DEBUG << name( ) << " Sequencer::execute( )" << endmsg;
+  ON_DEBUG log << MSG::DEBUG << name( ) << " Sequencer::execute( )" << endmsg;
 
   // Bypass the loop if this sequencer is disabled or has already been executed
   if ( isEnabled( ) && ! isExecuted( ) ) {
@@ -637,7 +638,7 @@ Sequencer::decodeNames( StringArrayProperty& theNames,
         // The specified Algorithm already exists - just append it to the membership list.
         status = append( theAlgorithm, theAlgs );
         if ( status.isSuccess( ) ) {
-          log << MSG::DEBUG << theName << " already exists - appended to member list" << endmsg;
+          ON_DEBUG log << MSG::DEBUG << theName << " already exists - appended to member list" << endmsg;
         } else {
           log << MSG::WARNING << theName << " already exists - append failed!!!" << endmsg;
           result = StatusCode::FAILURE;
@@ -648,7 +649,7 @@ Sequencer::decodeNames( StringArrayProperty& theNames,
         // and append it to the membership list.
         status = createAndAppend( theType, theName, theAlgorithm, theAlgs );
         if ( status.isSuccess( ) ) {
-          log << MSG::DEBUG << theName << " doesn't exist - created and appended to member list" << endmsg;
+          ON_DEBUG log << MSG::DEBUG << theName << " doesn't exist - created and appended to member list" << endmsg;
         } else {
           log << MSG::WARNING << theName << " doesn't exist - creation failed!!!" << endmsg;
           result = StatusCode::FAILURE;

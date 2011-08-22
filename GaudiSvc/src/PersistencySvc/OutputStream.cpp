@@ -218,12 +218,12 @@ StatusCode OutputStream::writeObjects()  {
             status = iret;
           }
         }
-	      // Commit the data if there was no error; otherwise possibly discard
+        // Commit the data if there was no error; otherwise possibly discard
         if ( status.isSuccess() )  {
           status = m_pConversionSvc->commitOutput(m_outputName, true);
         }
         else   {
-          m_pConversionSvc->commitOutput(m_outputName, false);
+          m_pConversionSvc->commitOutput(m_outputName, false).ignore();
         }
       }
     }

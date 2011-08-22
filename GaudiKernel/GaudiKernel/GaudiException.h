@@ -150,7 +150,7 @@ public:
       default                  : os << "\t StatusCode=" << code() ;  break ;
     }
     return ( 0 != previous() ) ? previous()->printOut( os << std::endl ) : os ;
-  };
+  }
 
   /// Output the exception to the Gaudi MsgStream
   virtual MsgStream& printOut ( MsgStream& os ) const {
@@ -164,7 +164,7 @@ public:
   }
 
   /// clone operation
-  virtual GaudiException* clone() const { return new GaudiException(*this); };
+  virtual GaudiException* clone() const { return new GaudiException(*this); }
 
   /// method from std::exception
   virtual const char* what () const throw() { return message().c_str() ; }

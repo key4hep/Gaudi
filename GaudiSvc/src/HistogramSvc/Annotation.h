@@ -22,7 +22,7 @@ public:
   Annotation(){ /* nop */ }
 
   /// Destructor
-  ~Annotation(){ /* nop */ }
+  virtual ~Annotation(){ /* nop */ }
 
   /// Add a key/value pair with a given sticky.
   bool addItem( const std::string & key,

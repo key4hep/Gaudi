@@ -66,12 +66,14 @@ public:
 
   AlgorithmHistory* algorithmHistory() const { return m_algHist; }
 
+  void dump(std::ostream &, const bool isXML=false, int indent=0) const;
 
 private:
 
   CLID m_dataClassID;
   std::string m_dataKey;
   AlgorithmHistory* m_algHist;
+  std::string m_dummy;
 
 
 };

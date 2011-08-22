@@ -257,7 +257,6 @@ HistogramPersistencySvc::HistogramPersistencySvc
   //
 {
   std::vector<std::string> defServices;
-  defServices.push_back("HbookHistSvc");
   defServices.push_back("RootHistSvc");
   m_svcNames.set(defServices);
   declareProperty ("HistogramPersistency", m_histPersName = "");

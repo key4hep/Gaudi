@@ -1,6 +1,81 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-08-16 - Marco Clemencic
+ - Fixed some tests (checks) on Windows.
+
+! 2011-08-15 - Marco Clemencic
+ - Fixed compilation on WinXP (patch #4891).
+
+! 2011-08-15 - Charles Leggett
+ - Patch #5014: GaudiMP fixes and MSG::DEBUG protection
+   - Remove TGraphs from "mother" files before migrating them to the "worker"
+     ones during io_reinit when running in multiprocess mode.
+   - Clean up some DEBUG output, and protect against dereferencing NULL pointers.
+
+! 2011-08-08 - Sasha Mazurov
+ - Patch #5012: Fixed handling of property references in the new JobOptionsSvc
+   References to properties (@Other.Prop) have to be resolved at the end.
+
+! 2011-08-08 - Marco Clemencic
+ - Fixing bug #83775: unprotected MSG::DEBUG/VERBOSE
+   - ApplicationMgr
+   - ServiceManager
+   - EventLoopMgr
+
+! 2011-08-05 - Marco Clemencic
+ - Fixing bug #83775: unprotected MSG::DEBUG
+   Fixed ToolSvc, DetectorDataSvc, IncidentSvc, PersistencySvc
+
+! 2011-08-04 - Charles Leggett
+ - Patch #4942: THistSvc: consolidated patches to bring trunk to GaudiSvc-18-13-09
+   - interoperability with GaudiMP
+   - added AutoFlush option for TTrees, explicitly set to 0 for default
+   - added lots of log.level() checks for DEBUG/VERBOSE output
+  Requires patch #4941 (GaudiKernel > v27r14, GaudiMP > v1r1)
+
+! 2011-07-27 - Marco Clemencic
+ - Fixed compilation waring in PropertyValue.cpp.
+
+! 2011-07-26 - Marco Clemencic
+ - Fixed HistorySvc::dumpState to prevent segmentation faults in case of
+   failure in the dynamic_cast.
+ - Fixed a small inconsistency in the non-XML output of HistorySvc.
+
+! 2011-07-26 - Sasha Mazurov
+ - Fixed a problem in the new parser (patch #4891): add support for references
+   (@Other.Prop).
+
+! 2011-07-25 - Marco Clemencic
+ - Modifed the new output of the JobOptionsSvc to be more readable (and easier
+   to ignore in the tests).
+
+! 2011-07-22 - Sasha Mazurov
+ - Patch #4891: New parsers for Gaudi Configuration
+   - Fully rewritten parsers (less amount of code, more readable and more robust)
+   - Based on Boost.Spirit 2
+   - New parsers for std::set and std::list
+   - Job options files: variables introduced
+
+! 2011-07-21 - Charles Leggett
+ - Patch #4943: Consolidate GaudiSvc and GaudiKernel patches in Atlas tags
+   Update HistorySvc to use new HistoryObj base classes, and provide XML output
+   (Requires GaudiKernel > v27r14)
+ - Patch #4976: Fixed a couple of unchecked StatusCodes in ApplicationMgr
+
+! 2011-06-23 - Hubert Degaudenzi
+ - fixed warnings from the eclipse code analysis engine.
+
+! 2011-06-09 - Marco Clemencic
+ - Fixed bug #82945: Untested StatusCode in OutputStream::writeObjects
+ - Follow up on task #20172: changed the verbosity of the print out of the
+   property CnvServices of PersistencySvc from INFO to DEBUG and updated
+   the reference files.
+
+! 2011-06-07 - Marco Clemencic
+ - Task #20172: Change default for HistogramPersistencySvc::m_SvcNames
+   Removed HbookHistSvc from the list of known services.
+
 ============================== GaudiSvc v18r14 ===============================
 ! 2011-04-15 - Charles Leggett
  - Patch #4819: THistSvc: protect DEBUG messages, add AutoFlush property

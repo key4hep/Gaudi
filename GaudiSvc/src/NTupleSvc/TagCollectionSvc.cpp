@@ -114,6 +114,7 @@ StatusCode TagCollectionSvc::connect(const std::string& ident, std::string& logn
             switch(::toupper((*i).value()[0]))  {
               case 'Y':
                props.push_back( Prop("ShareFiles", (*i).value()));
+               break ;
             }
             break;
           }

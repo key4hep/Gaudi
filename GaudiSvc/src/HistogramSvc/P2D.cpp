@@ -44,7 +44,7 @@ namespace Gaudi {
       return true;
     }
     /// Retrieve reference to class defininition identifier
-    virtual const CLID& clID() const { return Gaudi::Profile2D::classID(); }
+    virtual const CLID& clID() const { return classID(); }
     static const CLID& classID()     { return CLID_ProfileH2; }
   };
 }

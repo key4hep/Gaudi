@@ -18,7 +18,7 @@ apply_pattern install_scripts
 
 #-------Applications and Libraries-----------------------------------------------
 library GaudiPythonLib   Lib/*.cpp      -import=Python -import=CLHEP -no_static
-library GaudiPython      Services/*.cpp -import=Python -import=CLHEP -no_static
+library GaudiPython      Services/*.cpp -import=Python -import=CLHEP -import=Reflex -no_static
 apply_pattern  linker_library    library=GaudiPythonLib
 
 #-------LCG Dictionaries---------------------------------------------------------
@@ -38,7 +38,7 @@ use GaudiSvc * -no_auto_imports
 #apply_pattern package_Cshlibflags
 
 ###--- Test library
-library GPyTest  -group=tests   Test/*.cpp -import=Python -import=CLHEP -no_static
+library GPyTest  -group=tests   Test/*.cpp -import=Python -import=CLHEP -import=Reflex -no_static
 apply_pattern library_Cshlibflags library="GPyTest"
 
 ###--- Test dictionary

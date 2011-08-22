@@ -1,5 +1,3 @@
-// $Id: ServiceManager.cpp,v 1.27 2008/11/10 15:29:09 marcocle Exp $
-
 // Include files
 #include "ServiceManager.h"
 #include "GaudiKernel/IService.h"
@@ -12,6 +10,12 @@
 
 #include <iostream>
 #include <cassert>
+
+#define ON_DEBUG if (msgLevel(MSG::DEBUG))
+#define ON_VERBOSE if (msgLevel(MSG::VERBOSE))
+
+#define DEBMSG ON_DEBUG debug()
+#define VERMSG ON_VERBOSE verbose()
 
 using ROOT::Reflex::PluginService;
 
@@ -251,10 +255,10 @@ StatusCode ServiceManager::initialize()
     const std::string& name = it->service->name();
     switch (it->service->FSMState()) {
     case Gaudi::StateMachine::INITIALIZED:
-      debug() << "Service " << name << " already initialized" << endmsg;
+      DEBMSG << "Service " << name << " already initialized" << endmsg;
       break;
     case Gaudi::StateMachine::OFFLINE:
-      debug() << "Initializing service " << name << endmsg;
+      DEBMSG << "Initializing service " << name << endmsg;
       sc = it->service->sysInitialize();
       if( !sc.isSuccess() ) {
         error() << "Unable to initialize Service: " << name << endmsg;
@@ -286,11 +290,11 @@ StatusCode ServiceManager::start()
     const std::string& name = it->service->name();
     switch (it->service->FSMState()) {
     case Gaudi::StateMachine::RUNNING:
-      debug() << "Service " << name
+      DEBMSG << "Service " << name
           << " already started" << endmsg;
       break;
     case Gaudi::StateMachine::INITIALIZED:
-      debug() << "Starting service " << name << endmsg;
+      DEBMSG << "Starting service " << name << endmsg;
       sc = it->service->sysStart();
       if( !sc.isSuccess() ) {
         error() << "Unable to start Service: " << name << endmsg;
@@ -324,17 +328,17 @@ StatusCode ServiceManager::stop()
     const std::string& name = it->service->name();
     switch (it->service->FSMState()) {
     case Gaudi::StateMachine::INITIALIZED:
-      debug() << "Service " << name << " already stopped" << endmsg;
+      DEBMSG << "Service " << name << " already stopped" << endmsg;
       break;
     case Gaudi::StateMachine::RUNNING:
-      debug() << "Stopping service " << name << endmsg;
+      DEBMSG << "Stopping service " << name << endmsg;
       sc = it->service->sysStop();
       if( !sc.isSuccess() ) {
         error() << "Unable to stop Service: " << name << endmsg;
         return sc;
       } break;
     default:
-      debug() << "Service " << name
+      DEBMSG << "Service " << name
           << " not in the correct state to be stopped ("
           << it->service->FSMState() << ")" << endmsg;
       return StatusCode::FAILURE;
@@ -422,20 +426,20 @@ StatusCode ServiceManager::finalize()
     const std::string& name = rit->service->name();
     // ignore the current state for the moment
     // if( Gaudi::StateMachine::INITIALIZED == rit->service->state() ) {
-    debug() << "Finalizing service " << name << endmsg;
+    DEBMSG << "Finalizing service " << name << endmsg;
     if ( !(rit->service->sysFinalize()).isSuccess() ) {
       warning() << "Finalization of service " << name << " failed" << endmsg;
       sc = StatusCode::FAILURE;
     }
   }
-  debug() << "Service reference count check:" << endmsg;
+  DEBMSG << "Service reference count check:" << endmsg;
   ListSvc::iterator it;
   while (!tmpList.empty()) {
     it = tmpList.begin();
     const std::string& name = it->service->name();
     const unsigned long rc = it->service->refCount() - 1; // exclude the count due to the temporary list
-    debug() << "---- " << name
-            << " (refCount = " << rc << ")" << endmsg;
+    DEBMSG << "---- " << name
+           << " (refCount = " << rc << ")" << endmsg;
     if (rc < 1) {
       warning() << "Too low reference count for " << name
                 << " (should not go below 1 at this point)" << endmsg;

@@ -1,0 +1,58 @@
+JobOptionsSvc        INFO # =======> D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/ErrorLog.opts)
+JobOptionsSvc        INFO # (5,1): AuditorSvc.Auditors = ["ChronoAuditor"]
+JobOptionsSvc        INFO # (12,1): ApplicationMgr.TopAlg = ["ErrorLogTest"]
+JobOptionsSvc        INFO # (15,1): MessageSvc.OutputLevel = 3
+JobOptionsSvc        INFO # (16,1): MessageSvc.UseColors = 1
+JobOptionsSvc        INFO # (17,1): THistSvc.OutputLevel = 2
+JobOptionsSvc        INFO # (18,1): ApplicationMgr.OutputLevel = 1
+JobOptionsSvc        INFO # (19,1): ServiceManager.OutputLevel = 2
+JobOptionsSvc        INFO # (21,1): StatusCodeSvc.OutputLevel = 1
+JobOptionsSvc        INFO # (30,1): IssueLogger.OutputLevel = 1
+JobOptionsSvc        INFO # (31,1): IssueLogger.ReportLevel = "VERBOSE"
+JobOptionsSvc        INFO # (32,1): IssueLogger.TraceBackLevel = "FATAL"
+JobOptionsSvc        INFO # (33,1): IssueLogger.ShowTime = 1
+JobOptionsSvc        INFO # (35,1): IssueLogger.Output = ["DEBUG='MsgSvc'"]
+JobOptionsSvc        INFO # (36,1): IssueLogger.Output += ["WARNING='test.out'"]
+JobOptionsSvc        INFO # (37,1): IssueLogger.Output += ["ERROR='STDERR'"]
+JobOptionsSvc        INFO # (43,1): ApplicationMgr.EvtMax = 20
+JobOptionsSvc        INFO # (44,1): ApplicationMgr.EvtSel = "NONE"
+JobOptionsSvc        INFO Job options successfully read in from D:\Profiles\clemenci\cmtuser\Gaudi\GaudiExamples\options\ErrorLog.opts
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.77 $
+                                          running on CERNTSLHCB05 on 08/16/11 13:57:26
+====================================================================================================================================
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service EvtDataSvc/EventDataSvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service DetDataSvc/DetectorDataSvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service HistogramSvc/HistogramDataSvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service HbookCnv::PersSvc/HbookHistSvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service RootHistCnv::PersSvc/RootHistSvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service EvtPersistencySvc/EventPersistencySvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service DetPersistencySvc/DetectorPersistencySvc
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service HistogramPersistencySvc/HistogramPersistencySvc
+ApplicationMgr      DEBUG Loading declared DLL's
+ApplicationMgr    VERBOSE addMultiSvc: added service EventLoopMgr/EventLoopMgr
+ApplicationMgr       INFO Application Manager Configured successfully
+IssueLogger         DEBUG Service base class initialized successfully
+IssueLogger         DEBUG Writing VERBOSE issues to MsgStream
+IssueLogger         DEBUG Writing DEBUG1 issues to MsgStream
+IssueLogger         DEBUG Writing DEBUG2 issues to MsgStream
+IssueLogger         DEBUG Writing DEBUG3 issues to MsgStream
+IssueLogger         DEBUG Writing INFO issues to MsgStream
+IssueLogger         DEBUG Writing RECOVERABLE issues to MsgStream
+IssueLogger         DEBUG Writing FATAL issues to MsgStream
+IssueLogger         DEBUG Writing ALWAYS issues to MsgStream
+IssueLogger         FATAL FATAL  ..\src\ErrorLog\ErrorLogTest.cpp:38  "this is a fatal" [13:57:26 2011/08/16 W. Europe Daylight Time]
+
+IssueLogger          INFO INFO  ..\src\ErrorLog\ErrorLogTest.cpp:44  "info ErrObj" [13:57:26 2011/08/16 W. Europe Daylight Time]
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+HistogramPersis...WARNING Histograms saving not required.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+ApplicationMgr       INFO Application Manager Stopped successfully
+ErrorLogTest      WARNING Finalizing...
+EventLoopMgr         INFO Histograms converted successfully according to request.
+IssueLogger         DEBUG IssueLogger::finalize
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

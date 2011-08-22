@@ -1,7 +1,12 @@
-// $Id: Grammars.h,v 1.10 2008/10/27 16:41:33 marcocle Exp $
 // ============================================================================
 #ifndef GAUDIKERNEL_GRAMMARS_H
 #define GAUDIKERNEL_GRAMMARS_H 1
+#ifdef __GNUC__
+#warning \
+  The headers GaudiKernel/Grammars.h and GaudiKernel/Parsers.icpp are deprecated \
+  and will be removed from the next release of Gaudi. You should migrate your \
+  code the new pasers based on Boost.Spirit 2.
+#endif
 // ============================================================================
 // Include files
 // ============================================================================
@@ -439,9 +444,9 @@ namespace Gaudi
             !(gr[boost::bind(&VectorGrammar::matchItem,&self,_1)]
               >> *(','>>gr[boost::bind(&VectorGrammar::matchItem,&self,_1)]));
           vec =
-            '[' >> inner >> ']' |  // a'la python list 
-            '(' >> inner >> ')' |  // a'la python tuple 
-            '{' >> inner >> '}' ;  // like obsolete list from opts-grammar  
+            '[' >> inner >> ']' |  // a'la python list
+            '(' >> inner >> ')' |  // a'la python tuple
+            '{' >> inner >> '}' ;  // like obsolete list from opts-grammar
         }
         rule<ScannerT> const& start() const { return vec; }
         rule<ScannerT> vec,inner;

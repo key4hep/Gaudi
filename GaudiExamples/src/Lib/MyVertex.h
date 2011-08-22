@@ -46,7 +46,7 @@ namespace Gaudi {
       /// Standard Destructor
       virtual ~MyVertex();
       /// Retrieve pointer to class definition structure
-      virtual const CLID& clID() const    { return MyVertex::classID(); }
+      virtual const CLID& clID() const    { return classID(); }
       static const CLID& classID()        { return CLID_MyVertex; }
       /// Accessors: Retrieve x-component of the track momentum
       float x()  const         { return m_x;  }
