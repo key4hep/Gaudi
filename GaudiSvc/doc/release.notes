@@ -1,6 +1,7 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+============================== GaudiSvc v18r15 ===============================
 ! 2011-08-16 - Marco Clemencic
  - Fixed some tests (checks) on Windows.
 

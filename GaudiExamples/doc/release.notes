@@ -1,6 +1,7 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v22r3 =============================
 ! 2011-08-16 - Marco Clemencic
  - Fixed some tests (checks) on Windows.
 

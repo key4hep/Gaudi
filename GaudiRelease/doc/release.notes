@@ -1,6 +1,7 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+============================= GaudiRelease v22r3 =============================
 ! 2011-04-20 - Marco Clemencic
  - Updated tag_release.py script to allow tagging from a (global) branch.
 
