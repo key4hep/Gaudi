@@ -1,8 +1,9 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+================================ GaudiMP v1r2 ================================
 ! 2011-07-18 - Charles Leggett
- - Patch 4941: bring up to date with GaudiMP-01-01-04
+ - Patch #4941: bring up to date with GaudiMP-01-01-04
  - check StatusCode of Service::initialize
 M       src/Lib/IoComponentMgr.cpp
  - check for python initialization, add IoRegistry.py and FdsRegistry.py

@@ -1,6 +1,7 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v11r3 ==============================
 ! 2011-08-18 - Marco Clemencic
  - Hack in GaudiTest.py to be able to start Visual Studio to debug on WinXP.
  - Improvements to the QMTest HTML output (new jQuery, nicer foldable lists).
