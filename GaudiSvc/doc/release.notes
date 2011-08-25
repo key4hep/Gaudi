@@ -1,10 +1,10 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+============================== GaudiSvc v18r15 ===============================
 ! 2011-08-25 - Charles Leggett
  - Fixed bug #85983: PersistencySvc::decodeAddrHdr() always returns CLID=0
 
-============================== GaudiSvc v18r15 ===============================
 ! 2011-08-16 - Marco Clemencic
  - Fixed some tests (checks) on Windows.
 
