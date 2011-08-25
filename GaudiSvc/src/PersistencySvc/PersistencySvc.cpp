@@ -476,7 +476,8 @@ void PersistencySvc::decodeAddrHdr( const std::string& address,
           pos += 6;
           end = address.find('\"', pos);
           if (std::string::npos != end) {
-            str.str(address.substr(pos, end-pos)); // reuse the istringstream
+            str.clear(); // reuse the istringstream (the error flags must be explicitly cleared)
+            str.str(address.substr(pos, end-pos));
             str >> clid;
             // Get trailer_address
             pos = address.find('>');
