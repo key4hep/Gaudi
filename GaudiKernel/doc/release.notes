@@ -2,6 +2,10 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 
 ============================= GaudiKernel v27r15 =============================
+! 2011-08-26 - Sebastien Binet
+ - Fixed bug #82435: Possible genConf bug in dealing with vector<double> filled
+                     with zeros by default.
+
 ! 2011-08-08 - Marco Clemencic
  - Added the non-templated method AlgTool::service
    - This makes AlgTool more similar to Algorithm, in order to simplify some

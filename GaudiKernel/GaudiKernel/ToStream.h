@@ -367,7 +367,10 @@ namespace Gaudi
     inline std::string   toString ( const TYPE& obj ) 
     {
       std::ostringstream s;
+      std::ios::fmtflags orig_flags = s.flags();
+      s.setf(std::ios::fixed); // to display correctly floats
       toStream ( obj , s);
+      s.flags(orig_flags);
       return s.str();
     }
     // ========================================================================

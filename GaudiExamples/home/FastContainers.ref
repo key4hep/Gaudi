@@ -11,7 +11,7 @@ ApplicationMgr      DEBUG Getting my own properties
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on lxplus245.cern.ch on Thu Aug  4 15:38:10 2011
+                                          running on lxplus435.cern.ch on Fri Aug 26 11:31:30 2011
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ServiceManager      DEBUG Initializing service AppMgrRunable
@@ -45,7 +45,7 @@ GaudiSequencer      DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 GaudiSequencer      DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 GaudiSequencer      DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 GaudiSequencer      DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-GaudiSequencer      DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0
+GaudiSequencer      DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.00000000
 GaudiSequencer      DEBUG Property ['Name': Value] =  'RootOnTES':
 GaudiSequencer      DEBUG Property ['Name': Value] =  'RootInTES':
 GaudiSequencer      DEBUG Property ['Name': Value] =  'Context':
@@ -96,7 +96,7 @@ ToolSvc.Sequenc...  DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 ToolSvc.Sequenc...  DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 ToolSvc.Sequenc...  DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 ToolSvc.Sequenc...  DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-ToolSvc.Sequenc...  DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0
+ToolSvc.Sequenc...  DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.00000000
 ToolSvc.Sequenc...  DEBUG Property ['Name': Value] =  'RootOnTES':
 ToolSvc.Sequenc...  DEBUG Property ['Name': Value] =  'RootInTES':
 ToolSvc.Sequenc...  DEBUG Property ['Name': Value] =  'Context':
@@ -116,7 +116,7 @@ RndmGenSvc.Engine   DEBUG Service base class initialized successfully
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
-ToolSvc.Sequenc...   INFO This machine has a speed about   0.82 times the speed of a 2.8 GHz Xeon.
+ToolSvc.Sequenc...   INFO This machine has a speed about   1.87 times the speed of a 2.8 GHz Xeon.
 GaudiSequencer      DEBUG The tool of type 'SequencerTimerTool' has been added with the name 'ToolSvc.SequencerTimerTool'
 FastContainerPr...  DEBUG Property update for OutputLevel : new value = 1
 FastContainerPr...VERBOSE ServiceLocatorHelper::service: found service AlgContextSvc
@@ -132,7 +132,7 @@ FastContainerPr...  DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 FastContainerPr...  DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 FastContainerPr...  DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 FastContainerPr...  DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-FastContainerPr...  DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0
+FastContainerPr...  DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.00000000
 FastContainerPr...  DEBUG Property ['Name': Value] =  'RootOnTES':
 FastContainerPr...  DEBUG Property ['Name': Value] =  'RootInTES':
 FastContainerPr...  DEBUG Property ['Name': Value] =  'Context':
@@ -176,7 +176,7 @@ FastContainerCo...  DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 FastContainerCo...  DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 FastContainerCo...  DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 FastContainerCo...  DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-FastContainerCo...  DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0
+FastContainerCo...  DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.00000000
 FastContainerCo...  DEBUG Property ['Name': Value] =  'RootOnTES':
 FastContainerCo...  DEBUG Property ['Name': Value] =  'RootInTES':
 FastContainerCo...  DEBUG Property ['Name': Value] =  'Context':
@@ -413,12 +413,12 @@ ToolSvc             DEBUG 1 tools left to finalize. Summed refCounts: 1
 ToolSvc             DEBUG Will finalize tools with refCount <= 1
 ToolSvc             DEBUG   Performing finalization of ToolSvc.SequencerTimerTool (refCount 1)
 ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
-ToolSvc.Sequenc...   INFO This machine has a speed about   0.82 times the speed of a 2.8 GHz Xeon.
+ToolSvc.Sequenc...   INFO This machine has a speed about   1.87 times the speed of a 2.8 GHz Xeon.
 ToolSvc.Sequenc...   INFO Algorithm          (millisec) |    <user> |   <clock> |      min       max | entries | total (s) |
 ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
-ToolSvc.Sequenc...   INFO GaudiSequencer                |     0.100 |     0.106 |    0.098       0.1 |      10 |     0.001 |
-ToolSvc.Sequenc...   INFO   FastContainerProducer       |     0.000 |     0.019 |    0.018       0.0 |      10 |     0.000 |
-ToolSvc.Sequenc...   INFO   FastContainerConsumer       |     0.000 |     0.048 |    0.044       0.1 |      10 |     0.000 |
+ToolSvc.Sequenc...   INFO GaudiSequencer                |     0.000 |     0.084 |    0.065       0.1 |      10 |     0.001 |
+ToolSvc.Sequenc...   INFO   FastContainerProducer       |     0.000 |     0.017 |    0.012       0.0 |      10 |     0.000 |
+ToolSvc.Sequenc...   INFO   FastContainerConsumer       |     0.000 |     0.040 |    0.030       0.1 |      10 |     0.000 |
 ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
 ToolSvc.Sequenc...  DEBUG  ==> Finalize the base class GaudiTool
 ToolSvc.Sequenc...  DEBUG Tools to release :
@@ -430,7 +430,7 @@ ServiceManager      DEBUG Finalizing service AlgContextSvc
 IncidentSvc         DEBUG Removing [BeginEvent] listener 'AlgContextSvc'
 IncidentSvc         DEBUG Removing [EndEvent] listener 'AlgContextSvc'
 ServiceManager      DEBUG Finalizing service IncidentSvc
-IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0.05(+-0.217945)/0/1[ms] Total:0.002[s]
+IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0.025(+-0.156125)/0/1[ms] Total:0.001[s]
 ServiceManager      DEBUG Finalizing service AppMgrRunable
 ServiceManager      DEBUG Finalizing service HistogramDataSvc
 ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
