@@ -777,7 +777,7 @@ configGenerator::genComponent( const std::string& libName,
                 << "\" in component " << cname
                 << " (invalid Python identifier)" << std::endl;
       // try to make the buffer at least more or less valid python code.
-      m_pyBuf << " #ERROR-invalid identifier'" << pname << "'\n"
+      m_pyBuf << " #ERROR-invalid identifier '" << pname << "'\n"
               << "  }\n";
       return 1;
     }
@@ -904,7 +904,10 @@ void configGenerator::pythonizeValue( const Property* p,
     ptype  = "GaudiHandleArray";
   }
   else {
-    pvalue = cvalue;
+    std::ostringstream v_str;
+    v_str.setf(std::ios::fixed); // to correctly display floats
+    p->toStream(v_str);
+    pvalue = v_str.str();
     ptype  = "list";
   }
 }

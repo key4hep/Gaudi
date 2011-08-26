@@ -38,7 +38,7 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
-<h2><a name="v22r3">Gaudi v22r3</a> (2011-08-19)</h2>
+<h2><a name="v22r3">Gaudi v22r3</a> (2011-08-25)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=61">LCGCMT_61</a></h3>
 <h3>General Changes</h3>
 <ul>
@@ -58,6 +58,9 @@ Purpose: Gaudi common set of packages<br><br>
 </li>
 <li>GaudiKernel (v27r15):
 <ul>
+<li>Fixed bug #82435: Possible genConf bug in dealing with vector<double> filled
+                     with zeros by default<br/>
+    (<span class="author">Sebastien Binet</span>)</li>
 <li>Added the non-templated method AlgTool::service (simplify some code in
     GaudiCommon)<br/>
     (<span class="author">Marco Clemencic</span>)</li>
@@ -85,6 +88,8 @@ Purpose: Gaudi common set of packages<br><br>
 </li>
 <li>GaudiSvc (v18r15):
 <ul>
+<li>Fixed bug #85983: PersistencySvc::decodeAddrHdr() always returns CLID=0<br/>
+    (<span class="author">Charles Leggett</span>)</li>
 <li>Patch #5014: GaudiMP fixes and MSG::DEBUG protection<br/>
     (<span class="author">Charles Leggett</span>)</li>
 <li>Patch #4891, patch #5012: New parsers for Gaudi Configuration<br/>

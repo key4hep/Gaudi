@@ -58,6 +58,8 @@ public:
 public:
   /// value  -> string
   virtual std::string  toString   ()  const = 0 ;
+  /// value  -> stream
+  virtual void toStream(std::ostream& out) const = 0;
   /// string -> value
   virtual StatusCode   fromString ( const std::string& value ) = 0 ;
 public:
@@ -192,6 +194,8 @@ public:
   virtual StatusCode fromString ( const std::string& s )  ;
   /// value  -> string
   virtual std::string  toString   () const  ;
+  /// value  -> stream
+  virtual void  toStream (std::ostream& out) const  ;
   // ==========================================================================
 protected:
   // ==========================================================================
@@ -303,6 +307,16 @@ PropertyWithValue<TYPE>::toString () const
 {
   useReadHandler();
   return Gaudi::Utils::toString( *m_value ) ;
+}
+// ============================================================================
+/// Implementation of PropertyWithValue::toStream
+// ============================================================================
+template <class TYPE>
+inline void
+PropertyWithValue<TYPE>::toStream (std::ostream& out) const
+{
+  useReadHandler();
+  Gaudi::Utils::toStream( *m_value, out ) ;
 }
 // ============================================================================
 /// Implementation of PropertyWithValue::fromString
@@ -804,6 +818,8 @@ public:
 
   virtual std::string toString() const;
 
+  virtual void toStream(std::ostream& out) const;
+
   virtual StatusCode fromString(const std::string& s);
 
   const GaudiHandleBase& value() const;
@@ -860,6 +876,8 @@ public:
   virtual bool assign( const Property& source );
 
   virtual std::string toString() const;
+
+  virtual void toStream(std::ostream& out) const;
 
   virtual StatusCode fromString(const std::string& s);
 
