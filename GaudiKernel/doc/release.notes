@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-09-01 - Sasha Mazurov
+ - Patch #5027: fixed a problem in the parsing of map representations
+
 ============================= GaudiKernel v27r15 =============================
 ! 2011-08-26 - Sebastien Binet
  - Fixed bug #82435: Possible genConf bug in dealing with vector<double> filled
