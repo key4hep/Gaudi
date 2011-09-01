@@ -412,28 +412,21 @@ StatusCode OutputStream::connectConversionSvc()   {
   // The default service is the same for input as for output.
   // If this is not desired, then a specialized OutputStream must overwrite
   // this value.
-  if ( dbType.length() > 0 && svc.length()==0 )   {
+  if ( dbType.length() > 0 || svc.length() > 0 )   {
+    std::string typ = dbType.length()>0 ? dbType : svc;
     SmartIF<IPersistencySvc> ipers(serviceLocator()->service(m_persName));
     if( !ipers.isValid() )   {
       log << MSG::FATAL << "Unable to locate IPersistencySvc interface of " << m_persName << endmsg;
       return StatusCode::FAILURE;
     }
     IConversionSvc *cnvSvc = 0;
-    status = ipers->getService(dbType, cnvSvc);
+    status = ipers->getService(typ, cnvSvc);
     if( !status.isSuccess() )   {
-      log << MSG::FATAL << "Unable to locate IConversionSvc interface of database type " << dbType << endmsg;
+      log << MSG::FATAL << "Unable to locate IConversionSvc interface of database type " << typ << endmsg;
       return status;
     }
     // Increase reference count and keep service.
     m_pConversionSvc = cnvSvc;
-  }
-  else if ( svc.length() > 0 )    {
-    // On success reference count is automatically increased.
-    m_pConversionSvc = serviceLocator()->service(svc);
-    if( !m_pConversionSvc.isValid() )   {
-      log << MSG::FATAL << "Unable to locate IConversionSvc interface of " << svc << endmsg;
-      return StatusCode::FAILURE;
-    }
   }
   else    {
     log << MSG::FATAL
