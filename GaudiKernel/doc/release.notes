@@ -1,6 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v27r16 =============================
 ! 2011-09-02 - Marco Clemencic
  - Fixed bug #86303: new parses not allowing empty maps
 

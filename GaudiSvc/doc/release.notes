@@ -1,6 +1,7 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+============================== GaudiSvc v18r16 ===============================
 ! 2011-09-01 - Markus Frank
  - Fix in OutputStream to correctly support the SVC keyword.
 

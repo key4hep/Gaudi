@@ -1,6 +1,7 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v11r4 ==============================
 ! 2011-09-01 - Charles Leggett
  - Patch #5025: add -Werror=return-type to cpp flags
    Prevent that a function returning non-void reaches the end without returning
