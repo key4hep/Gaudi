@@ -1,6 +1,7 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v22r4 =============================
 ! 2011-09-02 - Marco Clemencic
  - Extended ExtendedProperties test to expose bug #86303
 
