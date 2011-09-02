@@ -1,6 +1,11 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-09-01 - Charles Leggett
+ - Patch #5025: add -Werror=return-type to cpp flags
+   Prevent that a function returning non-void reaches the end without returning
+   a value (by default it is just a warning, not enabled).
+
 ============================= GaudiPolicy v11r3 ==============================
 ! 2011-08-18 - Marco Clemencic
  - Hack in GaudiTest.py to be able to start Visual Studio to debug on WinXP.

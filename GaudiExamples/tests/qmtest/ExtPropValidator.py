@@ -34,7 +34,9 @@ def validate(stdout,stderr,result,causes):
                                             (7.0, 8.0)],
            'vector<pair<int,int> >': [(1, 1), (2, 1), (3, 2), (4, 3), (5, 5)],
            'vector<vector<double> >': [[0.0, 1.0, 2.0], [0.0, -0.5, -0.25]],
-           'vector<vector<string> >': [['a', 'b', 'c'], ['A', 'B', 'C']]
+           'vector<vector<string> >': [['a', 'b', 'c'], ['A', 'B', 'C']],
+           'EmptyMap' : {},
+           'EmptyVector' : []
                }
 
     # Hack for win32: 'string' become 'basic_string...', so I have to
