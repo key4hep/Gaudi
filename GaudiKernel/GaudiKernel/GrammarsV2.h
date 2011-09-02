@@ -321,7 +321,7 @@ struct MapGrammar : qi::grammar<Iterator,MapT(), Skipper>
     MapGrammar() : MapGrammar::base_type(map) {
         pair = key[op(qi::_val,qi::_1, tag_key())] > (qi::lit(':') | '=')  >
         value[op(qi::_val,qi::_1, tag_mapped())];
-        list = pair % enc::char_(',');
+        list = -(pair % enc::char_(','));
         map = (('['  >> list >> ']')
               | ('{'  >> list >> '}'))[op(qi::_val,qi::_1)];
     }
