@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-09-06 - Marco Clemencic
+ - Fixed bug #86424: Problem with patch #5025
+   Remove the added option for ICC (produces a warning).
+
 ============================= GaudiPolicy v11r4 ==============================
 ! 2011-09-01 - Charles Leggett
  - Patch #5025: add -Werror=return-type to cpp flags

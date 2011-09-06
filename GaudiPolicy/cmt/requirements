@@ -676,6 +676,7 @@ macro cppflags         " -fmessage-length=0 -Df2cFortran -fPIC -shared -D_GNU_SO
 macro_remove cppflags "" target-icc "-pedantic"
 macro_remove cppflags "" target-icc "-Wextra"
 macro_remove cppflags "" target-icc "-Wno-long-long"
+macro_remove cppflags "" target-icc "-Werror=return-type"
 ### Disable some non interesting "remarks" (inspired by CoolKernel)
 # Permanently disabled
 #  - remark #383:  valued copied to temporary, reference to temporary
