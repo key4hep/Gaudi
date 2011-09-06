@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-09-06 - Hubert Degaudenzi
+ - added the -we1011 and -we117 for the icc compiler. This is to mimic the
+   behaviour of gcc's -Werror=return-type
+
 ! 2011-09-06 - Marco Clemencic
  - Fixed bug #86424: Problem with patch #5025
    Remove the added option for ICC (produces a warning).

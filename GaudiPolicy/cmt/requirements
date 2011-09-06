@@ -688,6 +688,10 @@ macro_append cppflags '' target-icc '-wd1418 '
 #  - remark #1419: external declaration in primary source file
 #                  (triggers on forward declarations in a .cpp)
 macro_append cppflags '' target-icc '-wd1419 '
+# simulate -Werror=return-type from gcc:
+#       -we1011 : missing return statement in a non-void function
+#       -we117  : no value returned in a non-void function
+macro_append cppflags '' target-icc '-we1011 -we117 '
 # Non permanent
 #  - remark #82:     storage class is not first
 #                    (appears only once in ROOT)
