@@ -1,4 +1,3 @@
-//$Id: Algorithm.cpp,v 1.42 2008/10/23 15:57:37 marcocle Exp $
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IMessageSvc.h"
@@ -107,7 +106,7 @@ StatusCode Algorithm::sysInitialize() {
 
   m_targetState = Gaudi::StateMachine::ChangeState(Gaudi::StateMachine::INITIALIZE,m_state);
 
-  // Check current outputLevel to evetually inform the MessagsSvc
+  // Check current outputLevel to eventually inform the MessagsSvc
   //if( m_outputLevel != MSG::NIL ) {
   setOutputLevel( m_outputLevel );
   //}
@@ -578,8 +577,10 @@ StatusCode Algorithm::endRun() {
 
 StatusCode Algorithm::sysExecute() {
   if (!isEnabled()) {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::VERBOSE << ".sysExecute(): is not enabled. Skip execution" <<endmsg;
+    if (UNLIKELY(m_outputLevel <= MSG::VERBOSE)) {
+      MsgStream log ( msgSvc() , name() );
+      log << MSG::VERBOSE << ".sysExecute(): is not enabled. Skip execution" << endmsg;
+    }
     return StatusCode::SUCCESS;
   }
 

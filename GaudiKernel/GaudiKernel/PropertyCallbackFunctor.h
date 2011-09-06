@@ -97,7 +97,7 @@ public:
   { m_pCF( prop ); }
 
   virtual PropertyCallbackPointerFunctor* clone() const
-  { return new PropertyCallbackPointerFunctor(*this); } ;
+  { return new PropertyCallbackPointerFunctor(*this); }
 
 private:
 // Data and Function Members for This Class Implementation.

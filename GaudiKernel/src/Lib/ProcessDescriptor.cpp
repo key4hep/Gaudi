@@ -317,6 +317,7 @@ void readProcStat(long pid, linux_proc& pinfo) {
   lseek(fd,0,SEEK_SET);
   if((cnt=read(fd,buf,sizeof(buf)))<0) {
     std::cout << "LINUX Read of Proc file failed:" << std::endl;
+    close(fd);
     return;
   }
 

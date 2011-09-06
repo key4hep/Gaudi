@@ -123,7 +123,7 @@ namespace NTuple   {
     }
     /// Retrieve Reference to class defininition structure
     virtual const CLID& clID() const   {
-      return ColumnWiseTuple::classID();
+      return classID();
     }
     /// Static access to class defininition structure
     static const CLID& classID()      {
@@ -142,7 +142,7 @@ namespace NTuple   {
     }
     /// Retrieve Reference to class defininition structure
     virtual const CLID& clID() const   {
-      return RowWiseTuple::classID();
+      return classID();
     }
     /// Static access to class defininition structure
     static const CLID& classID()      {

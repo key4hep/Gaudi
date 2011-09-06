@@ -4,6 +4,7 @@
 #define GAUDIKERNEL_SERVICEHISTORY_H
 
 #include "GaudiKernel/HistoryObj.h"
+#include "GaudiKernel/IVersHistoryObj.h"
 
 #include <string>
 #include <vector>
@@ -20,12 +21,7 @@ class JobHistory;
  *
  */
 
-class GAUDI_API ServiceHistory: public HistoryObj {
-
-public:  // typedefs
-
-  // List of properties. This may change.
-  typedef std::vector<Property*> PropertyList;
+class GAUDI_API ServiceHistory: public HistoryObj, virtual public IVersHistoryObj {
 
 public:
   ServiceHistory();
@@ -41,17 +37,22 @@ public:
   // Return the service properties.
   const PropertyList& properties() const { return m_properties; }
 
-  std::string name() const { return m_name; }
-  std::string type() const { return m_type; }
   const IService* service() const { return m_pService; }
 
   const JobHistory* jobHistory() const { return m_jobHistory; }
+
+  void dump(std::ostream &, const bool isXML=false, int indent=0) const;
+
+  const std::string& name() const { return m_name; }
+  const std::string& type() const { return m_type; }
+  const std::string& version() const { return m_version; }
+
 
 private:
 
   const IService* m_pService;
   const JobHistory* m_jobHistory;
-  std::string m_name,m_type;
+  std::string m_name,m_type,m_version;
   PropertyList m_properties;
 
 };

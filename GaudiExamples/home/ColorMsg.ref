@@ -46,7 +46,7 @@ ApplicationMgr    SUCCESS
 [98;1mEventLoopMgr      WARNING No events will be processed from external input.[m
 [92;1mHistogramDataSvc    DEBUG Service base class initialized successfully[m
 [95;4mHistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
-[96;1mHistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ][m
+[92;1mHistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ][m
 [92;1mHistogramPersis...  DEBUG Service base class initialized successfully[m
 [98;1mHistogramPersis...WARNING Histograms saving not required.[m
 [95;4mHistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc[m

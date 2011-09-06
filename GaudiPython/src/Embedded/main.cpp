@@ -22,7 +22,7 @@ int main ( int argc, char** argv ) {
 
   // Startup commands
   PyRun_SimpleString( "print dir()" );
-  
+
   std::cout << "Running now: " << argv[1] << std::endl;
   std::ifstream file(argv[1]);
   std::stringstream str;
@@ -36,5 +36,7 @@ int main ( int argc, char** argv ) {
     std::cout << "ERROR: could not open file " << argv[1] << std::endl;
   }
   std::cout << "Exiting now " << std::endl;
-} 
+
+  return 0 ;
+}
 

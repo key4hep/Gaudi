@@ -1,6 +1,6 @@
 package Gaudi
 
-version v22r2
+version v22r4
 branches doc cmt
 
 use GaudiSys *

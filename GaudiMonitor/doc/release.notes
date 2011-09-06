@@ -1,6 +1,10 @@
 Package: GaudiMonitor
 Package manager : Marco Clemencic
 
+============================= GaudiMonitor v2r9 ==============================
+! 2011-06-23 - Hubert Degaudenzi
+ - fixed warnings from the eclipse code analysis engine.
+
 ============================= GaudiMonitor v2r8 ==============================
 ! 2011-03-23 - Marco Clemencic
  - Fixed VC9 warnings.

@@ -447,6 +447,8 @@ for w,o,r in [
               ]: #[ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
     normalizeExamples += RegexpReplacer(o,r,w)
 normalizeExamples = LineSkipper(["//GP:",
+                                 "JobOptionsSvc        INFO # ",
+                                 "JobOptionsSvc     WARNING # ",
                                  "Time User",
                                  "Welcome to",
                                  "This machine has a speed",
@@ -459,11 +461,13 @@ normalizeExamples = LineSkipper(["//GP:",
                                  "0 local", # hack for ErrorLogExample
                                  "DEBUG Service base class initialized successfully", # changed between v20 and v21
                                  "DEBUG Incident  timing:", # introduced with patch #3487
+                                 "INFO  'CnvServices':[", # changed the level of the message from INFO to DEBUG
                                  # This comes from ROOT, when using GaudiPython
                                  'Note: (file "(tmpfile)", line 2) File "set" already loaded',
                                  # The signal handler complains about SIGXCPU not defined on some platforms
                                  'SIGXCPU',
                                  ],regexps = [
+                                 r"^JobOptionsSvc        INFO *$",
                                  r"^#", # Ignore python comments
                                  r"(Always|SUCCESS)\s*(Root f|[^ ]* F)ile version:", # skip the message reporting the version of the root file
                                  r"0x[0-9a-fA-F#]+ *Algorithm::sysInitialize\(\) *\[", # hack for ErrorLogExample
@@ -1111,6 +1115,16 @@ class GaudiExeTest(ExecTestBase):
             arch = os.environ["SCRAM_ARCH"]
         return arch
 
+    def isWinPlatform(self):
+        """
+        Return True if the current platform is Windows.
+
+        This function was needed because of the change in the CMTCONFIG format,
+        from win32_vc71_dbg to i686-winxp-vc9-dbg.
+        """
+        platform = self.GetPlatform()
+        return "winxp" in platform or platform.startswith("win")
+
     def _expandReferenceFileName(self, reffile):
         # if no file is passed, do nothing
         if not reffile:
@@ -1370,7 +1384,7 @@ class GaudiExeTest(ExecTestBase):
         self.program = prog
 
         dummy, prog_ext = os.path.splitext(prog)
-        if prog_ext not in [ ".exe", ".py", ".bat" ] and self.GetPlatform()[0:3] == "win":
+        if prog_ext not in [ ".exe", ".py", ".bat" ] and self.isWinPlatform():
             prog += ".exe"
             prog_ext = ".exe"
 
@@ -1397,7 +1411,7 @@ class GaudiExeTest(ExecTestBase):
         # if the program is a python file, execute it through python
         if prog_ext == ".py":
             args.insert(0,prog)
-            if self.GetPlatform()[0:3] == "win":
+            if self.isWinPlatform():
                 prog = which("python.exe") or "python.exe"
             else:
                 prog = which("python") or "python"
@@ -1591,6 +1605,9 @@ class GaudiExeTest(ExecTestBase):
             data["stopAtMain"] = "true"
 
         data["args"] = "&#10;".join(map(rationalizepath, args))
+        if self.isWinPlatform():
+            data["args"] = "&#10;".join(["/debugexe"] + map(rationalizepath, [data["exec"]] + args))
+            data["exec"] = which("vcexpress.exe")
 
         if not self.use_temp_dir:
             data["workdir"] = os.getcwd()

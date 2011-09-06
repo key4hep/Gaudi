@@ -110,6 +110,7 @@ namespace {
     void error(const SAXParseException& e);
     /// Fatal error handler
     void fatalError(const SAXParseException& e);
+    virtual ~ErrHandler() {}
   };
   struct DTDRedirect : public EntityResolver  {
     InputSource* resolveEntity(const XMLCh* const /* pubId */, const XMLCh* const /* sysId */)  {
@@ -136,6 +137,7 @@ namespace {
       static const size_t len = strlen(dtd);
       return new MemBufInputSource((const XMLByte*)dtd,len,dtdID,false);
     }
+    virtual ~DTDRedirect() {}
   };
 
   void ErrHandler::error(const SAXParseException& e)  {

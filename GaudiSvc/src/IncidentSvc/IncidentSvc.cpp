@@ -1,4 +1,3 @@
-// $Id: $
 // ============================================================================
 #ifdef _WIN32
 // ============================================================================
@@ -39,13 +38,19 @@ namespace
   }
   // ==========================================================================
 }
+
+#define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
+#define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
+
+#define DEBMSG ON_DEBUG debug()
+#define VERMSG ON_VERBOSE verbose()
+
 // ============================================================================
-// Constructors and Desctructors
+// Constructors and Destructors
 // ============================================================================
 IncidentSvc::IncidentSvc( const std::string& name, ISvcLocator* svc )
   : base_class(name, svc)
   , m_currentIncidentType(0)
-  , m_log(msgSvc(), name)
   , m_timer()
   , m_timerLock ( false )
 {}
@@ -71,14 +76,13 @@ StatusCode IncidentSvc::initialize()
     return sc;
   }
 
-  m_log.setLevel(outputLevel());
   m_currentIncidentType = 0;
 
   // set my own (IncidentSvc) properties via the jobOptionService
   sc = setProperties();
-  if ( sc.isFailure() )
+  if ( UNLIKELY(sc.isFailure()) )
   {
-    m_log << MSG::ERROR << "Could not set my properties" << endmsg;
+    error() << "Could not set my properties" << endmsg;
     return sc;
   }
 
@@ -87,15 +91,12 @@ StatusCode IncidentSvc::initialize()
 // ============================================================================
 StatusCode IncidentSvc::finalize()
 {
-  m_log
-    << MSG::DEBUG
-    << m_timer.outputUserTime
-    ( "Incident  timing: Mean(+-rms)/Min/Max:%3%(+-%4%)/%6%/%7%[ms] " , System::milliSec )
-    << m_timer.outputUserTime ( "Total:%2%[s]" , System::Sec ) << endmsg ;
+  DEBMSG << m_timer.outputUserTime( "Incident  timing: Mean(+-rms)/Min/Max:%3%(+-%4%)/%6%/%7%[ms] " , System::milliSec )
+         << m_timer.outputUserTime ( "Total:%2%[s]" , System::Sec ) << endmsg ;
 
   // Finalize this specific service
   StatusCode sc = Service::finalize();
-  if ( sc.isFailure() ) { return sc; }
+  if ( UNLIKELY(sc.isFailure()) ) { return sc; }
 
   return StatusCode::SUCCESS;
 }
@@ -132,8 +133,8 @@ void IncidentSvc::addListener
     }
   }
 
-  m_log << MSG::DEBUG << "Adding [" << type << "] listener '" << getListenerName(lis)
-        << "' with priority " << prio << endmsg;
+  DEBMSG << "Adding [" << type << "] listener '" << getListenerName(lis)
+         << "' with priority " << prio << endmsg;
 
   llist->insert(itlist, Listener(lis, prio, rethrow, singleShot));
 }
@@ -180,8 +181,8 @@ void IncidentSvc::removeListener
             (itlist++)->singleShot = true; // remove it as soon as it is safe
           }
           else {
-            m_log << MSG::DEBUG << "Removing [" << type << "] listener '"
-                << getListenerName(lis) << "'" << endmsg;
+            DEBMSG << "Removing [" << type << "] listener '"
+                   << getListenerName(lis) << "'" << endmsg;
             itlist = llist->erase(itlist); // remove from the list now
           }
         }
@@ -233,37 +234,30 @@ void IncidentSvc::i_fireIncident
   bool weHaveToCleanUp = false;
   // loop over all registered Listeners
 
-  const bool verbose =  MSG::VERBOSE >= outputLevel() ;
-
-  for( itlist = llist->begin(); itlist != llist->end(); itlist++ )
+    for( itlist = llist->begin(); itlist != llist->end(); itlist++ )
   {
 
-    if ( verbose )
-    {
-      m_log
-        << MSG::VERBOSE
-        << "Calling '" << getListenerName((*itlist).iListener)
-        << "' for incident [" << incident.type() << "]" << endmsg;
-    }
+    VERMSG << "Calling '" << getListenerName((*itlist).iListener)
+           << "' for incident [" << incident.type() << "]" << endmsg;
 
     // handle exceptions if they occur
     try {
       (*itlist).iListener->handle(incident);
     }
     catch( const GaudiException& exc ) {
-      m_log << MSG::ERROR << "Exception with tag=" << exc.tag() << " is caught"
-          " handling incident" << m_currentIncidentType << endmsg;
-      m_log << MSG::ERROR <<  exc  << endmsg;
+      error() << "Exception with tag=" << exc.tag() << " is caught"
+                 " handling incident" << m_currentIncidentType << endmsg;
+      error() <<  exc  << endmsg;
       if ( (*itlist).rethrow ) { throw (exc); }
     }
     catch( const std::exception& exc ) {
-      m_log << MSG::ERROR << "Standard std::exception is caught"
+     error() << "Standard std::exception is caught"
           " handling incident" << m_currentIncidentType << endmsg;
-      m_log << MSG::ERROR << exc.what()  << endmsg;
+      error() << exc.what()  << endmsg;
       if ( (*itlist).rethrow ) { throw (exc); }
     }
     catch(...) {
-      m_log << MSG::ERROR << "UNKNOWN Exception is caught"
+      error() << "UNKNOWN Exception is caught"
           " handling incident" << m_currentIncidentType << endmsg;
       if ( (*itlist).rethrow ) { throw; }
     }

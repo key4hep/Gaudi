@@ -1074,7 +1074,7 @@ namespace NTuple
     }
     /// class ID of the object
     virtual const CLID& clID()    const   {
-      return Directory::classID();
+      return classID();
     }
   };
 
@@ -1106,7 +1106,7 @@ namespace NTuple
     }
     /// class ID of the object
     virtual const CLID& clID()    const   {
-      return File::classID();
+      return classID();
     }
     /// Set access type
     void setType(const long typ)   {

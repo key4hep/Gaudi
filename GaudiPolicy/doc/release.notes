@@ -1,6 +1,41 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-09-06 - Hubert Degaudenzi
+ - added the -we1011 and -we117 for the icc compiler. This is to mimic the
+   behaviour of gcc's -Werror=return-type
+
+! 2011-09-06 - Marco Clemencic
+ - Fixed bug #86424: Problem with patch #5025
+   Remove the added option for ICC (produces a warning).
+
+============================= GaudiPolicy v11r4 ==============================
+! 2011-09-01 - Charles Leggett
+ - Patch #5025: add -Werror=return-type to cpp flags
+   Prevent that a function returning non-void reaches the end without returning
+   a value (by default it is just a warning, not enabled).
+
+============================= GaudiPolicy v11r3 ==============================
+! 2011-08-18 - Marco Clemencic
+ - Hack in GaudiTest.py to be able to start Visual Studio to debug on WinXP.
+ - Improvements to the QMTest HTML output (new jQuery, nicer foldable lists).
+
+! 2011-08-15 - Marco Clemencic
+ - Small change in test exclusion list for portability.
+ - Bad hack in fragments/nmake/library to allow very big libraries on VC9,
+   needed by GaudiKernel after the introduction of the new parser.
+
+! 2011-07-25 - Marco Clemencic
+ - Changed the default exclusion list to take into account the new output of
+   the JobOptionsSvc.
+
+! 2011-05-03 - Charles Leggett
+ - remove doxygen make_fragment declaration
+ M       cmt/requirements
+
+! 2011-05-03 - Marco Clemencic
+ - Fixed a problem with Python script tests on Windows (including gaudirun.py).
+
 ============================= GaudiPolicy v11r2 ==============================
 ! 2011-04-15 - Marco Clemencic
  - Fixed the usage of cpp fragments on Windows.

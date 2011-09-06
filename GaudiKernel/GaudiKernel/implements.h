@@ -4,41 +4,18 @@
 #include "GaudiKernel/IInterface.h"
 
 #ifndef __GCCXML__
-/// Helper class for the cast used in the MPL for_each algorithm in the implementation of i_cast.
+/// Helper class for the cast used in the MPL for_each algorithm in the
+/// implementation of queryInterface.
 /// @author Marco Clemencic
-template <typename THIS>
-struct GAUDI_LOCAL check_cast {
-  /// type_info for the requested interface.
-  const std::type_info &target;
-  /// Pointer to be filled.
-  void *&ptr;
-  /// Value of this.
-  const THIS *instance;
-  check_cast(const THIS *_instance, const std::type_info &_tid, void * &_ptr):
-    target(_tid),
-    ptr(_ptr),
-    instance(_instance){}
-
-  template <typename IID>
-  inline void operator() (IID) {
-    if ((!ptr) && (typeid(typename IID::iids::type) == target)) {
-      ptr = const_cast<void*>(reinterpret_cast<const void*>(static_cast<const typename IID::iface_type*>(instance)));
-    }
-  }
-
-};
-
-/// Helper class for the cast used in the MPL for_each algorithm in the implementation of queryInterface.
-/// @author Marco Clemencic
-template <typename THIS>
+template <typename T>
 struct GAUDI_LOCAL interfaceMatch {
   /// InterfaceID for the requested interface.
   const InterfaceID &target;
   /// Pointer to be filled.
   void *&ptr;
   /// Value of this.
-  THIS *instance;
-  interfaceMatch(THIS *_instance, const InterfaceID &_tid, void * &_ptr):
+  const T *instance;
+  interfaceMatch(const T *_instance, const InterfaceID &_tid, void * &_ptr):
     target(_tid),
     ptr(_ptr),
     instance(_instance){}
@@ -46,7 +23,7 @@ struct GAUDI_LOCAL interfaceMatch {
   template <typename IID>
   inline void operator() (IID) {
     if ((!ptr) && target.versionMatch(IID::interfaceID())) {
-      ptr = reinterpret_cast<void*>(static_cast<typename IID::iface_type*>(instance));
+      ptr = const_cast<void*>(reinterpret_cast<const void*>(static_cast<const typename IID::iface_type*>(instance)));
     }
   }
 };
@@ -86,10 +63,10 @@ private:
 #define _helper_common_implementation_(N) \
   public: \
   /**Implementation of IInterface::i_cast. */ \
-  virtual void *i_cast(const std::type_info &tid) const { \
+  virtual void *i_cast(const InterfaceID &tid) const { \
     void *ptr = 0; \
-    check_cast<implements##N> caster(this,tid,ptr); \
-    mpl::for_each<interfaces>(caster); \
+    interfaceMatch<implements##N> matcher(this,tid,ptr); \
+    mpl::for_each<interfaces>(matcher); \
     return ptr; \
   } \
   /** Implementation of IInterface::queryInterface. */ \
@@ -120,7 +97,7 @@ private:
 #define _helper_common_implementation_(N) \
   public: \
   /**Implementation of IInterface::i_cast. */ \
-  virtual void *i_cast(const std::type_info &tid) const { \
+  virtual void *i_cast(const InterfaceID &tid) const { \
     return 0; \
   } \
   /** Implementation of IInterface::queryInterface. */ \

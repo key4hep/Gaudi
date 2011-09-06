@@ -1,5 +1,5 @@
 package GaudiExamples
-version v22r2
+version v22r4
 
 use ROOT         * LCG_Interfaces
 use Reflex       * LCG_Interfaces -no_auto_imports
@@ -22,7 +22,7 @@ library GaudiExamplesLib -no_static Lib/*.cpp
 
 macro datalistener_use "DataListener/*.cpp" WIN32 " "
 
-library GaudiExamples    -no_static \
+library GaudiExamples    -import=Reflex -no_static \
                           AbortEvent/*.cpp \
                           AlgSequencer/*.cpp \
                           AlgTools/*.cpp \

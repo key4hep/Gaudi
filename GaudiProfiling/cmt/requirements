@@ -1,6 +1,6 @@
 # =============================================================================
 package GaudiProfiling
-version v1r0
+version v1r1
 
 # ============== structure ====================================================
 branches        GaudiProfiling src cmt doc data python scripts
@@ -32,6 +32,7 @@ macro_append GaudiProfiling_use_linkopts " -lz " target-winxp ""
 macro_append GaudiGenProfilingHtml_use_linkopts " -lz " target-winxp ""
 
 apply_pattern disable_package_on platform=target-winxp
+apply_pattern disable_package_on platform=target-i386
 apply_pattern disable_package_on platform=target-i686
 apply_pattern disable_package_on platform=target-slc4
 

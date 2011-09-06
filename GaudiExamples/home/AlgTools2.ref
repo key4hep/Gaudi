@@ -1,40 +1,33 @@
-JobOptionsSvc        INFO
-//GP:================================================================================
-//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/AlgTools2.opts" (0,0)
-//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Common.opts" (4,10)
-//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Services.opts" (7,10)
-AuditorSvc.Auditors =  [ "ChronoAuditor" ] ;                            //GP: (1,1)
-//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Services.opts" (24,1)
-ApplicationMgr.StatusCodeCheck = 1;                                     //GP: (7,10)
-//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Common.opts" (16,1)
-ApplicationMgr.TopAlg =  [ "MyGaudiAlgorithm/MyAlg" ] ;                 //GP: (4,10)
-MessageSvc.OutputLevel = 3;                                             //GP: (4,10)
-ApplicationMgr.EvtMax = 10;                                             //GP: (4,10)
-ApplicationMgr.EvtSel = "NONE";                                         //GP: (4,10)
-MyAlg.MyTool.Int = 101;                                                 //GP: (4,10)
-MyAlg.MyTool.Double = 1.011e+12;                                        //GP: (4,10)
-MyAlg.MyTool.String = "hundred one";                                    //GP: (4,10)
-MyAlg.MyTool.Bool = 0;                                                  //GP: (4,10)
-ToolSvc.MyTool.Int = 201;                                               //GP: (4,10)
-ToolSvc.MyTool.Double = 2.011e+12;                                      //GP: (4,10)
-ToolSvc.MyTool.String = "two hundred and one";                          //GP: (4,10)
-ToolSvc.MyTool.Bool = 1;                                                //GP: (4,10)
-ToolSvc.MyTool.OutputLevel = 3;                                         //GP: (4,10)
-MyAlg.OutputLevel = 2;                                                  //GP: (4,10)
-ApplicationMgr.TopAlg +=  [ "TestToolAlg" ] ;                           //GP: (4,10)
-TestToolAlg.Tools +=  [ "TestTool/ToolA" ] ;                            //GP: (4,10)
-ToolSvc.ToolA.Tools =  [ "TestTool/ToolB" ] ;                           //GP: (4,10)
-ToolSvc.ToolB.Tools =  [ "TestTool/ToolA" ] ;                           //GP: (4,10)
-ToolSvc.ToolA.OutputLevel = 2;                                          //GP: (4,10)
-ToolSvc.ToolB.OutputLevel = 2;                                          //GP: (4,10)
-//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/AlgTools2.opts" (49,1)
-//GP:================================================================================
-
+JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Services.opts)
+JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
+JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Common.opts)
+JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
+JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/AlgTools2.opts)
+JobOptionsSvc        INFO # (10,1): ApplicationMgr.TopAlg = ["MyGaudiAlgorithm/MyAlg"]
+JobOptionsSvc        INFO # (13,1): MessageSvc.OutputLevel = 3
+JobOptionsSvc        INFO # (18,1): ApplicationMgr.EvtMax = 10
+JobOptionsSvc        INFO # (19,1): ApplicationMgr.EvtSel = "NONE"
+JobOptionsSvc        INFO # (26,1): MyAlg.MyTool.Int = 101
+JobOptionsSvc        INFO # (27,1): MyAlg.MyTool.Double = 101.1e+10
+JobOptionsSvc        INFO # (28,1): MyAlg.MyTool.String = "hundred one"
+JobOptionsSvc        INFO # (29,1): MyAlg.MyTool.Bool = 0
+JobOptionsSvc        INFO # (31,1): ToolSvc.MyTool.Int = 201
+JobOptionsSvc        INFO # (32,1): ToolSvc.MyTool.Double = 201.1e+10
+JobOptionsSvc        INFO # (33,1): ToolSvc.MyTool.String = "two hundred and one"
+JobOptionsSvc        INFO # (34,1): ToolSvc.MyTool.Bool = 1
+JobOptionsSvc        INFO # (36,1): ToolSvc.MyTool.OutputLevel = 3
+JobOptionsSvc        INFO # (37,1): MyAlg.OutputLevel = 2
+JobOptionsSvc        INFO # (42,1): ApplicationMgr.TopAlg += ["TestToolAlg"]
+JobOptionsSvc        INFO # (43,1): TestToolAlg.Tools += ["TestTool/ToolA"]
+JobOptionsSvc        INFO # (44,1): ToolSvc.ToolA.Tools = ["TestTool/ToolB"]
+JobOptionsSvc        INFO # (45,1): ToolSvc.ToolB.Tools = ["TestTool/ToolA"]
+JobOptionsSvc        INFO # (46,1): ToolSvc.ToolA.OutputLevel = 2
+JobOptionsSvc        INFO # (47,1): ToolSvc.ToolB.OutputLevel = 2
 JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/AlgTools2.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on pclhcb55 on Tue Mar  9 15:59:00 2010
+                                          running on lxplus435.cern.ch on Fri Aug 26 11:30:14 2011
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -54,7 +47,7 @@ MyAlg               DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 MyAlg               DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 MyAlg               DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 MyAlg               DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-MyAlg               DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0
+MyAlg               DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.00000000
 MyAlg               DEBUG Property ['Name': Value] =  'RootOnTES':
 MyAlg               DEBUG Property ['Name': Value] =  'RootInTES':
 MyAlg               DEBUG Property ['Name': Value] =  'Context':
@@ -136,7 +129,7 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.00000000
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RootOnTES':
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RootInTES':
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Context':
@@ -166,7 +159,7 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.00000000
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RootOnTES':
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RootInTES':
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Context':
@@ -186,7 +179,6 @@ ToolSvc.ToolB       DEBUG The tool of type 'TestTool' has been added with the na
 ToolSvc.ToolA       DEBUG The tool of type 'TestTool' has been added with the name 'ToolSvc.ToolB'
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
-HistogramPersis...   INFO  'CnvServices':[ 'HbookHistSvc' , 'RootHistSvc' ]
 HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully

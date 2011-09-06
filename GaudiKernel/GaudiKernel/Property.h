@@ -44,13 +44,13 @@ class GAUDI_API Property
 {
 public:
   /// property name
-  const std::string&    name      () const { return m_name             ; } ;
+  const std::string&    name      () const { return m_name             ; }
   /// property documentation
-  const   std::string&    documentation() const { return m_documentation; };
+  const   std::string&    documentation() const { return m_documentation; }
   /// property type-info
-  const std::type_info* type_info () const { return m_typeinfo         ; } ;
+  const std::type_info* type_info () const { return m_typeinfo         ; }
   /// property type
-  std::string           type      () const { return m_typeinfo->name() ; } ;
+  std::string           type      () const { return m_typeinfo->name() ; }
   ///  export the property value to the destination
   virtual bool load   (       Property& dest   ) const = 0 ;
   /// import the property value form the source
@@ -58,6 +58,8 @@ public:
 public:
   /// value  -> string
   virtual std::string  toString   ()  const = 0 ;
+  /// value  -> stream
+  virtual void toStream(std::ostream& out) const = 0;
   /// string -> value
   virtual StatusCode   fromString ( const std::string& value ) = 0 ;
 public:
@@ -88,7 +90,7 @@ public:
   void setName ( const std::string& value ) { m_name = value ; }
   /// set the documentation string
   void setDocumentation( const std::string& documentation ) {
-    m_documentation = documentation; };
+    m_documentation = documentation; }
   /// the printout of the property value
   virtual std::ostream& fillStream ( std::ostream& ) const ;
 protected:
@@ -195,6 +197,8 @@ public:
   virtual StatusCode fromString ( const std::string& s )  ;
   /// value  -> string
   virtual std::string  toString   () const  ;
+  /// value  -> stream
+  virtual void  toStream (std::ostream& out) const  ;
   // ==========================================================================
 protected:
   // ==========================================================================
@@ -308,6 +312,16 @@ PropertyWithValue<TYPE>::toString () const
   return Gaudi::Utils::toString( *m_value ) ;
 }
 // ============================================================================
+/// Implementation of PropertyWithValue::toStream
+// ============================================================================
+template <class TYPE>
+inline void
+PropertyWithValue<TYPE>::toStream (std::ostream& out) const
+{
+  useReadHandler();
+  Gaudi::Utils::toStream( *m_value, out ) ;
+}
+// ============================================================================
 /// Implementation of PropertyWithValue::fromString
 // ============================================================================
 template <class TYPE>
@@ -396,7 +410,7 @@ protected:
     , m_verifier ( verifier )
   {}
   /// virtual destructor
-  virtual ~PropertyWithVerifier() {};
+  virtual ~PropertyWithVerifier() {}
   // ==========================================================================
 public:
   // ==========================================================================
@@ -807,6 +821,8 @@ public:
 
   virtual std::string toString() const;
 
+  virtual void toStream(std::ostream& out) const;
+
   virtual StatusCode fromString(const std::string& s);
 
   const GaudiHandleBase& value() const;
@@ -863,6 +879,8 @@ public:
   virtual bool assign( const Property& source );
 
   virtual std::string toString() const;
+
+  virtual void toStream(std::ostream& out) const;
 
   virtual StatusCode fromString(const std::string& s);
 

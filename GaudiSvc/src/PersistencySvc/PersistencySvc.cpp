@@ -34,6 +34,12 @@
 // Implementation specific definitions
 #include "PersistencySvc.h"
 
+#define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
+#define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
+
+#define DEBMSG ON_DEBUG debug()
+#define VERMSG ON_VERBOSE verbose()
+
 // Instantiation of a static factory class used by clients to create
 // instances of this service
 DECLARE_SERVICE_FACTORY(PersistencySvc)
@@ -247,8 +253,7 @@ SmartIF<IConversionSvc>& PersistencySvc::service(const std::string& nam)     {
       return service(nam); // now it is in the list
     }
   }
-  MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << "Cannot access Conversion service:" << nam << endmsg;
+  info() << "Cannot access Conversion service:" << nam << endmsg;
   static SmartIF<IConversionSvc> no_svc;
   return no_svc;
 }
@@ -290,7 +295,6 @@ StatusCode PersistencySvc::addCnvService(IConversionSvc* servc)    {
       m_cnvDefault = servc;
     }
     if ( cnv_svc != servc )   {
-      MsgStream log( msgSvc(), name() );
       IAddressCreator* icr = 0;
       StatusCode status  = servc->queryInterface(IAddressCreator::interfaceID(), pp_cast<void>(&icr));
       if ( status.isSuccess() )   {
@@ -303,20 +307,20 @@ StatusCode PersistencySvc::addCnvService(IConversionSvc* servc)    {
           std::pair<Services::iterator, bool> p =
             m_cnvServices.insert( Services::value_type( type, ServiceEntry(type, isvc, servc, icr)));
           if( p.second )    {
-            log << MSG::INFO << "Added successfully Conversion service:" << isvc->name() << endmsg;
+            info() << "Added successfully Conversion service:" << isvc->name() << endmsg;
             servc->addRef();
             servc->setAddressCreator(this).ignore();
             servc->setDataProvider(m_dataSvc).ignore();
             return StatusCode::SUCCESS;
           }
-          log << MSG::INFO << "Cannot add Conversion service of type " << isvc->name() << endmsg;
+          info() << "Cannot add Conversion service of type " << isvc->name() << endmsg;
           isvc->release();
           icr->release();
           return StatusCode::FAILURE;
         }
         icr->release();
       }
-      log << MSG::INFO << "Cannot add Conversion service of type " << type << endmsg;
+      info() << "Cannot add Conversion service of type " << type << endmsg;
       return StatusCode::FAILURE;
     }
     else    {
@@ -472,7 +476,8 @@ void PersistencySvc::decodeAddrHdr( const std::string& address,
           pos += 6;
           end = address.find('\"', pos);
           if (std::string::npos != end) {
-            str.str(address.substr(pos, end-pos)); // reuse the istringstream
+            str.clear(); // reuse the istringstream (the error flags must be explicitly cleared)
+            str.str(address.substr(pos, end-pos));
             str >> clid;
             // Get trailer_address
             pos = address.find('>');
@@ -590,9 +595,8 @@ StatusCode PersistencySvc::initialize()     {
   m_addrCreator = this; // initialize internal pointer to IAddressCreator interface
   // Initialize basic service
   StatusCode status = Service::initialize();
-  if ( !status.isSuccess() )   {
-    MsgStream log( msgSvc(), name() ); // Service MUST be initialized BEFORE!
-    log << MSG::ERROR << "Error initializing Service base class." << endmsg;
+  if ( UNLIKELY(!status.isSuccess()) )   {
+    error() << "Error initializing Service base class." << endmsg;
   }
   return status;
 }
@@ -607,8 +611,7 @@ StatusCode PersistencySvc::finalize()      {
 }
 
 void PersistencySvc::svcNamesHandler( Property& p )     {
-  MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << p << endmsg ;
+  DEBMSG << p << endmsg;
 }
 
 /// Set enabled flag

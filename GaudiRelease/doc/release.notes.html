@@ -38,6 +38,156 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
+<h2><a name="v22r4">Gaudi v22r4</a> (2011-09-02)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=61">LCGCMT_61</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Bug-fix release.</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v11r4):
+<ul>
+<li>Patch #5025: add -Werror=return-type to cpp flags<br/>
+    Prevent that a function returning non-void reaches the end without returning
+    a value (by default it is just a warning, not enabled).<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v27r16):
+<ul>
+<li>Fixed bug #86303: new parses not allowing empty maps<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Patch #5027: fixed a problem in the parsing of map representations<br/>
+    (<span class="author">Sasha Mazurov</span>)</li>
+</ul>
+</li>
+<li>GaudiSvc (v18r16):
+<ul>
+<li>Fix in OutputStream to correctly support the SVC keyword.<br/>
+    (<span class="author">Markus Frank</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v22r4):
+<ul>
+<li>Extended ExtendedProperties test to expose bug #86303.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v22r3">Gaudi v22r3</a> (2011-08-25)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=61">LCGCMT_61</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Clean up and fixes of warnings<br/>
+    (<span class="author">Marco Clemencic, Hubert Degaudenzi</span>)</li>
+<li>Fixing bug #83775: unprotected MSG::DEBUG/VERBOSE (not completed yet)<br/>
+    With several minor fixes related to the task.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v11r3):
+<ul>
+<li>Minor fixes<br/>
+    (<span class="author">Marco Clemencic, Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v27r15):
+<ul>
+<li>Fixed bug #82435: Possible genConf bug in dealing with vector<double> filled
+                     with zeros by default<br/>
+    (<span class="author">Sebastien Binet</span>)</li>
+<li>Added the non-templated method AlgTool::service (simplify some code in
+    GaudiCommon)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Modified Gaudi::Cast to use InterfaceID instead of type_info.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed bug #84663: allow access to addresses of private members of StatEntity<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Patch #4941: Added interfaces IIoComponent and IIoComponentMgr<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Patch #4891: New parsers for Gaudi Configuration<br/>
+    (<span class="author">Sasha Mazurov</span>)</li>
+<li>Patch #4999: Added virtual destructor implementation for IUpdateableIF<br/>
+    (<span class="author">Markus Frank</span>)</li>
+<li>Patch #4943: Consolidate GaudiSvc and GaudiKernel patches in Atlas tags<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Patch #4975: check for uncaught exceptions in StatusCode destructor<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Fixed bug #83433: reject invalid properties in genconf<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed bug #83524: Unprotected debug message in Service::initialize<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed bug #83525: Usage of THIS in GaudiKernel/implements.h<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiSvc (v18r15):
+<ul>
+<li>Fixed bug #85983: PersistencySvc::decodeAddrHdr() always returns CLID=0<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Patch #5014: GaudiMP fixes and MSG::DEBUG protection<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Patch #4891, patch #5012: New parsers for Gaudi Configuration<br/>
+    (<span class="author">Sasha Mazurov</span>)</li>
+<li>Patch #4942: THistSvc: consolidated patches to bring trunk to GaudiSvc-18-13-09<br/>
+    <i>(requires patch #4941: GaudiKernel &gt; v27r14, GaudiMP &gt; v1r1)</i><br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Patch #4943: Consolidate GaudiSvc and GaudiKernel patches in Atlas tags<br/>
+    <i>(requires GaudiKernel &gt; v27r14)</i><br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Patch #4976: Fixed a couple of unchecked StatusCodes in ApplicationMgr<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Fixed bug #82945: Untested StatusCode in OutputStream::writeObjects<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Task #20172: Change default for HistogramPersistencySvc::m_SvcNames (removed HbookHistSvc)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiProfiling (v1r1):
+<ul>
+<li>Disabled on i386, for 32 bits MacOSX<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiAlg (v13r8):
+<ul>
+<li>Patch #4923: fixes in GaudiSequencer<br/>
+    (<span class="author">Patrick Koppenburg</span>)</li>
+<li>Added "-import Boost" to requirements for new CMT<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiPython (v11r1):
+<ul>
+<li>Add explicit import=Reflex statements to requirements for new CMT<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiMP (v1r2):
+<ul>
+<li>Patch #4941: bring up to date with GaudiMP-01-01-04<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v22r3):
+<ul>
+<li>Fixes to test reference files after various patches.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added explicit -import=Reflex to requirements<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiRelease (v22r3):
+<ul>
+<li>Updated tag_release.py script to allow tagging from a (global) branch.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
 <h2><a name="v22r2">Gaudi v22r2</a> (2011-04-20)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=60b">LCGCMT_60b</a></h3>
 <h3>General Changes</h3>

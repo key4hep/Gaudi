@@ -30,7 +30,7 @@ public:
   virtual ~Event() { }
 
   /// Retrieve reference to class definition structure
-  virtual const CLID& clID() const  { return Event::classID(); }
+  virtual const CLID& clID() const  { return classID(); }
   static const CLID& classID() { return CLID_Event; }
 
   /// Retrieve event number
