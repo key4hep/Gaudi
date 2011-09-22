@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-09-22 - Marco Clemencic
+ - Modified Windows library fragment to be able to pass arguments to the link
+   command from the requirements.
+
 ! 2011-09-08 - Marco Clemencic
  - Fixed a problem in the parsing of TTree summaries when multiple top branches
    are present (new LHCb ROOT-based persistency).

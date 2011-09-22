@@ -8,7 +8,7 @@ ${CONSTITUENT}LIB :: $(${CONSTITUENT}shstamp)
 
 $(${CONSTITUENT}arc) :: ${OBJS}
 	$(lib_echo) library
-	$(lib_silent) $(ar) /expectedoutputsize:1000000000 /out:$(bin)${CONSTITUENT}.arc @<<
+	$(lib_silent) $(ar) $(${CONSTITUENT}_arflags) /out:$(bin)${CONSTITUENT}.arc @<<
 ${OBJS}
 <<
 	$(lib_silent) echo "" >$(${CONSTITUENT}stamp)
@@ -99,7 +99,7 @@ ${CONSTITUENT}LIB :: $(${CONSTITUENT}shstamp)
 
 $(${CONSTITUENT}arc) :: ${OBJS}
 	$(lib_echo) library
-	$(lib_silent) $(ar) /expectedoutputsize:1000000000 /out:$(bin)${CONSTITUENT}.arc @<<
+	$(lib_silent) $(ar) $(${CONSTITUENT}_arflags) /out:$(bin)${CONSTITUENT}.arc @<<
 ${OBJS}
 <<
 	echo "" >$(${CONSTITUENT}stamp)

@@ -91,6 +91,8 @@ application test_headers_build -group=tests ../tests/src/test_headers_build.cpp
 # On Windows hides warning C4996 (security-related warning)
 macro_append dictionary_dict_cpp_cppflags ' -Wno-overloaded-virtual ' no-hide-warnings '' target-winxp ' -D_SCL_SECURE_NO_WARNINGS'
 
+macro_append GaudiKernel_arflags " /expectedoutputsize:1000000000 "
+
 apply_pattern QMTest
 
 end_private
