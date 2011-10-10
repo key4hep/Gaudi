@@ -4,7 +4,7 @@
 ############################################################################
 require(GaudiKernel)
 
-find_package(Boost COMPONENTS program_options)
+find_package(Boost COMPONENTS program_options regex)
 find_package(ROOT)
 
 #---Util Executables--------------------------------------------------------
