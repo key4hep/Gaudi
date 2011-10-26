@@ -4,6 +4,7 @@ Package manager : Marco Clemencic
 ! 2011-10-26 - Marco Clemencic
  - Introduced a hook to override the default gaudirun main loop:
      Gaudi.Configuration.setCustomMainLoop
+ - Added tests for the custom main loop
 
 ================================ Gaudi v22r4 =================================
 ================================ Gaudi v22r3 =================================
