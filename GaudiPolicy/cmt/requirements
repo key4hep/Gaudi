@@ -745,6 +745,14 @@ macro_append cppflags       "" \
       host-i686&target-x86_64 " -m64" \
       host-i386&target-x86_64 " -m64"
 
+# Enable C++11 (C++0x) support on gcc 4.5 and 4.6
+macro_append cppflags "" \
+  target-gcc45 " -std=c++0x " \
+  target-gcc46 " -std=c++0x "
+macro_append gccxmloptsval "" \
+  target-gcc45 " --gccxml-cxxflags -std=c++0x " \
+  target-gcc46 " --gccxml-cxxflags -std=c++0x "
+
 # ---- Disable warnings coming from external libraries
 #      the hacks can be disabled with the tag "no-hide-warnings".
 # FIXME: (MCl) Temporary work-around until gccxml understands unordered_map
