@@ -1,6 +1,11 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+! 2011-10-27 - Marco Clemencic
+ - Fixed bug #86980: gaudirun.py should prevent the import of GaudiPython
+   Install a fake GaudiPython module that prevents the use of any attribute, and
+   uninstall it just before calling the run function.
+
 ! 2011-10-26 - Marco Clemencic
  - Introduced a hook to override the default gaudirun main loop:
      Gaudi.Configuration.setCustomMainLoop

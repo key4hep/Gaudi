@@ -142,6 +142,14 @@ if __name__ == "__main__":
     for pos, l in optlines:
         options.insert(pos,l)
 
+    # prevent the usage of GaudiPython
+    class FakeModule(object):
+        def __init__(self, exception):
+            self.exception = exception
+        def __getattr__(self, *args, **kwargs):
+            raise self.exception
+    sys.modules["GaudiPython"] = FakeModule(RuntimeError("GaudiPython cannot be used in option files"))
+
     # "execute" the configuration script generated (if any)
     if options:
         g = {}
@@ -176,6 +184,9 @@ if __name__ == "__main__":
         c.writeconfig(opts.output, opts.all_opts)
     if opts.printsequence:
         c.printsequence()
+
+    # re-enable the GaudiPython module
+    del sys.modules["GaudiPython"]
 
     if not opts.dry_run:
         # Do the real processing
