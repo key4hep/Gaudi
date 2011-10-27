@@ -8,6 +8,11 @@ Package manager : Marco Clemencic
  - Added unit test for getProcessTime and ProcessTime.
  - Fixed bug #87341: performance problem in ChronoEntity
    Modified ChronoEntity to use getProcessTime and ProcessTime.
+ - Added test to detect bug #87340
+   (code bloat because of MessageStream operator<<)
+ - Fixed bug #87340: code bloat because of MessageStream operator<<
+   Added (as suggested) an explicit implementation of operator<< for
+   "const char *".
 
 ! 2011-09-22 - Marco Clemencic
  - Set the Windows link-time option /expectedoutputsize explicitly only for
