@@ -6,6 +6,8 @@ Package manager : Marco Clemencic
    ProcessTime and a templated version of adjustTime in GaudiKernel/Timing.h
    (bug #87341).
  - Added unit test for getProcessTime and ProcessTime.
+ - Fixed bug #87341: performance problem in ChronoEntity
+   Modified ChronoEntity to use getProcessTime and ProcessTime.
 
 ! 2011-09-22 - Marco Clemencic
  - Set the Windows link-time option /expectedoutputsize explicitly only for

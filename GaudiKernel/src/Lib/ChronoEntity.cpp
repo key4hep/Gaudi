@@ -1,8 +1,6 @@
-// $Id: ChronoEntity.cpp,v 1.4 2008/06/06 13:20:13 marcocle Exp $
-// ============================================================================
 #define GAUDIKERNEL_CHRONOENTITY_CPP 1
 // ============================================================================
-// incldue files
+// include files
 // ============================================================================
 // STD & STL
 // ============================================================================
@@ -23,16 +21,14 @@
 #include "boost/format.hpp"
 // ============================================================================
 /** @file
- *  implementation fiel for class ChronoEntity
+ *  implementation file for class ChronoEntity
  *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  *  @date:   December 1, 1999
  */
 // ============================================================================
 namespace
 {
-  /// unit here is microsecond
-  const System::TimeType MyUnit = System::microSec ; // unit here is microsecond
-  /// unit here is microsecond
+  /// the unit used by ChronoEntity is microsecond
   const double microsecond  =    1                 ; // unit here is microsecond
   const double millisecond  = 1000  * microsecond ;
   const double second       = 1000  * millisecond ;
@@ -48,29 +44,12 @@ namespace
 // Constructor
 // ============================================================================
 ChronoEntity::ChronoEntity()
-  /// current status of this chrono object;
-  : m_status        ( IChronoSvc::UNKNOWN )  // current status
-  /// delta user time
-  , m_delta_user    ( -1 ) // delta user time
-  /// delta kernel time
-  , m_delta_kernel  ( -1 ) // delta kernel time
-  /// delta elapsed time
-  , m_delta_elapsed ( -1 ) // delta elapsed time
-  /// start stamp for current measurement of user time
-  , m_start_user    (  0 ) // start for user
-  /// start stamp for  current measurement of Kernel time
-  , m_start_kernel  (  0 ) // start for kernel
-  /// start stamp for current measurement of Elapsed time
-  , m_start_elapsed (  0 ) // start for elapsed
+  // current status of this chrono object;
+  : m_status( IChronoSvc::UNKNOWN )  // current status
 {}
 // ============================================================================
 // start the chrono
 // ============================================================================
-#ifdef __ICC
-// disable icc remark #2259: non-pointer conversion from "long double" to "double" may lose significant bits
-#pragma warning(push)
-#pragma warning(disable:2259)
-#endif
 IChronoSvc::ChronoStatus  ChronoEntity::start()
 {
   if ( IChronoSvc::RUNNING == m_status ) { return m_status ; }
@@ -78,18 +57,12 @@ IChronoSvc::ChronoStatus  ChronoEntity::start()
   // following lines could be platform dependent!
   //
   // Store in object the measured times
-  m_start_user    = static_cast<IChronoSvc::ChronoTime>(System::userTime     ( MyUnit ));
-  m_start_kernel  = static_cast<IChronoSvc::ChronoTime>(System::kernelTime   ( MyUnit ));
-  m_start_elapsed = static_cast<IChronoSvc::ChronoTime>(System::ellapsedTime ( MyUnit ));
-  ///
+  m_start = System::getProcessTime();
+
   m_status = IChronoSvc::RUNNING;
-  ///
+
   return m_status ;
 }
-#ifdef __ICC
-// re-enable icc remark #2259
-#pragma warning(pop)
-#endif
 // ============================================================================
 // stop the chrono
 // ============================================================================
@@ -98,16 +71,13 @@ IChronoSvc::ChronoStatus  ChronoEntity::stop()
   if ( IChronoSvc::RUNNING != m_status ) { return m_status ; }
 
   // following lines could be platform dependent!
-
-  m_delta_user    = System::userTime     ( MyUnit ) - m_start_user    ;
-  m_delta_kernel  = System::kernelTime   ( MyUnit ) - m_start_kernel  ;
-  m_delta_elapsed = System::ellapsedTime ( MyUnit ) - m_start_elapsed ;
+  m_delta = System::getProcessTime() - m_start;
 
   // update the counters:
 
-  m_user     += m_delta_user    ;
-  m_kernel   += m_delta_kernel  ;
-  m_elapsed  += m_delta_elapsed ;
+  m_user     += m_delta.userTime<TimeUnit>();
+  m_kernel   += m_delta.kernelTime<TimeUnit>();
+  m_elapsed  += m_delta.elapsedTime<TimeUnit>();
 
   // set new status
 
@@ -138,10 +108,10 @@ std::string ChronoEntity::outputSystemTime      () const
   return res += format
     ( kTotalTime     () ,
       kMinimalTime   () ,
-			kMeanTime      () ,
-			kRMSTime       () ,
-			kMaximalTime   () ,
-			nOfMeasurements() );
+      kMeanTime      () ,
+      kRMSTime       () ,
+      kMaximalTime   () ,
+      nOfMeasurements() );
 }
 // ============================================================================
 // print time
