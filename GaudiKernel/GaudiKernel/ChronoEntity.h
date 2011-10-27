@@ -1,5 +1,3 @@
-// $Id: ChronoEntity.h,v 1.2 2008/05/13 12:36:54 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIKERNEL_CHRONOENTITY_H
 #define GAUDIKERNEL_CHRONOENTITY_H 1
 // ============================================================================
@@ -26,7 +24,7 @@ public:
   /// default constructor
   ChronoEntity();
   /// destructor
-  ~ChronoEntity(){};
+  ~ChronoEntity(){}
   ///
 public:
   // ==========================================================================
@@ -53,13 +51,13 @@ public:
   inline double uMinimalTime   () const ;
   /// minimal measurement for kernel time
   inline double kMinimalTime   () const ;
-  /// minimal measurement for ellapsed time
+  /// minimal measurement for elapsed time
   inline double eMinimalTime   () const ;
   /// maximal measurement for user time
   inline double uMaximalTime   () const ;
   /// maximal measurement for kernel time
   inline double kMaximalTime   () const ;
-  /// maximal measurement for ellapsed time
+  /// maximal measurement for elapsed time
   inline double eMaximalTime   () const ;
   /// total user time
   inline double uTotalTime     () const ;
@@ -170,28 +168,22 @@ private:
   // ==========================================================================
   /// current status of this chrono object;
   IChronoSvc::ChronoStatus m_status ;
-  /// delta user time
-  IChronoSvc::ChronoTime   m_delta_user    ; // delta user time
-  /// delta Kernel time
-  IChronoSvc::ChronoTime   m_delta_kernel  ; // delta Kernel time
-  /// delta Elapsed time
-  IChronoSvc::ChronoTime   m_delta_elapsed ; // delta Elapsed time
-  /// start stamp for current measurement of user time
-  IChronoSvc::ChronoTime   m_start_user    ;
-  /// start stamp for current measurement of Kernel time
-  IChronoSvc::ChronoTime   m_start_kernel  ;
-  /// start stamp for current measurement of Elapsed time
-  IChronoSvc::ChronoTime   m_start_elapsed ;
+  /// delta process times
+  System::ProcessTime      m_delta;
+  /// start stamp for current measurement of process times
+  System::ProcessTime      m_start;
   /// the actual storage of "user" time
   StatEntity m_user    ; // the actual storage of "user" time
   /// the actual storage of "kernel" time
   StatEntity m_kernel  ; // the actual storage of "kernel" time
   /// the actual storage of "elapsed" time
   StatEntity m_elapsed ; // the actual storage of "elapsed" time
+  /// internal unit used for the system time conversion (microseconds)
+  static const System::TimeType TimeUnit = System::microSec;
   // ==========================================================================
 };
 // ============================================================================
-// return the status of chronoi
+// return the status of chrono
 // ============================================================================
 inline IChronoSvc::ChronoStatus
 ChronoEntity::status() const { return m_status; }
@@ -211,7 +203,7 @@ inline double ChronoEntity::uMinimalTime      () const
 inline double
 ChronoEntity::kMinimalTime      () const { return m_kernel . flagMin () ; }
 // ============================================================================
-// minimal measurement for ellapsed time
+// minimal measurement for elapsed time
 // ============================================================================
 inline double
 ChronoEntity::eMinimalTime      () const { return m_elapsed. flagMin () ; }
@@ -305,10 +297,10 @@ ChronoEntity::delta ( IChronoSvc::ChronoType type ) const
   const IChronoSvc::ChronoTime result = -1 ;
   switch ( type )
   {
-  case IChronoSvc::USER    : return m_delta_user    ;
-  case IChronoSvc::KERNEL  : return m_delta_kernel  ;
-  case IChronoSvc::ELAPSED : return m_delta_elapsed ;
-  default                  : return result          ;
+  case IChronoSvc::USER    : return m_delta.userTime<TimeUnit>();
+  case IChronoSvc::KERNEL  : return m_delta.kernelTime<TimeUnit>();
+  case IChronoSvc::ELAPSED : return m_delta.elapsedTime<TimeUnit>();
+  default                  : return result;
   }
   // cannot reach this point
 }
