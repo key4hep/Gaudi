@@ -1,6 +1,13 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-10-12 - Charles Leggett
+ - THistSvc: call Reset() on all TTrees and THNs in io_reinit when copying to
+   worker directory. This prevents the data recorded in the first (n) events
+   during a multi-process job from appearing in all the worker outputs, as the
+   first (n) events get rerun.
+ M       src/THistSvc/THistSvc.cpp
+
 ! 2011-09-29 - Charles Leggett
  - Fixed bug #87253:  Don't override exception type when re-throwing
  M       src/ExceptionSvc/ExceptionSvc.cpp
