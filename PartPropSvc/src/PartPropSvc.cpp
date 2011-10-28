@@ -110,7 +110,7 @@ PartPropSvc::initialize() {
     m_log << MSG::DEBUG << "Adding PDT file \"" << rfile << "\" type "
 	  << VAL << endmsg;
 
-    m_inputs.push_back( make_pair<std::string, bool(*) (std::istream&,HepPDT::TableBuilder&)>( rfile, pF ) );
+    m_inputs.push_back( make_pair( rfile, pF ) );
 
   }
 

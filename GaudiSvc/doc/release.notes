@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-10-28 - Marco Clemencic
+ - Changed the usage of make_pair to support C++0x.
+
 ============================== GaudiSvc v18r16 ===============================
 ! 2011-09-01 - Markus Frank
  - Fix in OutputStream to correctly support the SVC keyword.

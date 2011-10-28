@@ -498,7 +498,7 @@ namespace Gaudi {
           }
           verbose() << ")" << endmsg;
         }
-        return std::make_pair<int, bool>(signum, propagate);
+        return std::make_pair(signum, propagate);
       }
     };
 
