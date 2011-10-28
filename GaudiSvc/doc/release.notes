@@ -1,6 +1,11 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-09-29 - Charles Leggett
+ - Fixed bug #87253:  Don't override exception type when re-throwing
+ M       src/ExceptionSvc/ExceptionSvc.cpp
+ M       src/ExceptionSvc/ExceptionSvc.h
+
 ! 2011-08-24 - Charles Leggett
  - Fixed bug #86086: print warning message when an AlgTool fails to finalize
 

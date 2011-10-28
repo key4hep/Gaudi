@@ -1,7 +1,3 @@
-// $Id: ExceptionSvc.h,v 1.4 2007/05/24 14:41:22 hmd Exp $
-// ============================================================================
-// CvS tag $Name:  $, version $Revision: 1.4 $
-// ============================================================================
 #ifndef GAUDISVC_EXCEPTIONSVC_H
 #define GAUDISVC_EXCEPTIONSVC_H
 // ============================================================================
@@ -61,6 +57,8 @@ private:
   ExceptionSvc ( const ExceptionSvc& ) ; ///< no copy constructor
   // assignment operator is disabled
   ExceptionSvc& operator=( const ExceptionSvc& ) ; ///< no assignement
+  // process exceptions
+  virtual StatusCode process  ( const INamedInterface& o ) const ;
 private:
 
   enum Policy { ALL, NONE };
