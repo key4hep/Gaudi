@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-08-24 - Charles Leggett
+ - Fixed bug #86086: print warning message when an AlgTool fails to finalize
+
 ! 2011-10-28 - Marco Clemencic
  - Changed the usage of make_pair to support C++0x.
 

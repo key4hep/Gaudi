@@ -130,13 +130,13 @@ StatusCode ToolSvc::finalize()
   unsigned long startMinRefCount = 0;
   unsigned long endMinRefCount = minimumToolRefCount();
   while ( toolCount > 0 &&
-	  endRefCount > 0 &&
-	  (endRefCount != startRefCount || endMinRefCount != startMinRefCount) ) {
+          endRefCount > 0 &&
+          (endRefCount != startRefCount || endMinRefCount != startMinRefCount) ) {
     ON_DEBUG if ( endMinRefCount != startMinRefCount ) {
       debug() << toolCount << " tools left to finalize. Summed refCounts: "
-	      << endRefCount << endmsg;
+              << endRefCount << endmsg;
       debug() << "Will finalize tools with refCount <= "
-	      << endMinRefCount << endmsg;
+              << endMinRefCount << endmsg;
     }
     startMinRefCount = endMinRefCount;
     startRefCount = endRefCount;
@@ -149,19 +149,22 @@ StatusCode ToolSvc::finalize()
       // cache tool name
       std::string toolName = pTool->name();
       if ( count <= startMinRefCount ) {
-	ON_DEBUG debug() << "  Performing finalization of " << toolName
-	                 << " (refCount " << count << ")" << endmsg;
-	// finalize of one tool may trigger a release of another tool
-	//	pTool->sysFinalize().ignore();
-	if (!finalizeTool(pTool).isSuccess()) fail = true;
-	// postpone deletion
-	finalizedTools.push_back(pTool);
+        ON_DEBUG debug() << "  Performing finalization of " << toolName
+                         << " (refCount " << count << ")" << endmsg;
+        // finalize of one tool may trigger a release of another tool
+        //   pTool->sysFinalize().ignore();
+        if (!finalizeTool(pTool).isSuccess()) {
+          warning() << "    FAILURE finalizing " << toolName << endmsg;
+          fail = true;
+        }
+        // postpone deletion
+        finalizedTools.push_back(pTool);
       } else {
-	// Place back in list to try again later
-	// ToolSvc::releaseTool( IAlgTool* ) remains active for this tool
-	ON_DEBUG debug() << "  Delaying   finalization of " << toolName
-	                 << " (refCount " << count << ")" << endmsg;
-	m_instancesTools.push_front(pTool);
+        // Place back in list to try again later
+        // ToolSvc::releaseTool( IAlgTool* ) remains active for this tool
+        ON_DEBUG debug() << "  Delaying   finalization of " << toolName
+                         << " (refCount " << count << ")" << endmsg;
+        m_instancesTools.push_front(pTool);
       }
     } // end of inner loop
     toolCount = m_instancesTools.size();
@@ -212,7 +215,7 @@ StatusCode ToolSvc::finalize()
   // by now, all tools should be deleted and removed.
   if ( finalizedTools.size() > 0 ) {
     error() << "Failed to delete the following " <<  finalizedTools.size()
-	    << " finalized tools. Bug in ToolSvc::finalize()?: ";
+            << " finalized tools. Bug in ToolSvc::finalize()?: ";
     for ( ListTools::const_iterator iTool = finalizedTools.begin();
           iTool != finalizedTools.end(); ++iTool ) {
       error() << (*iTool)->name() << ": " << refCountTool( *iTool ) << " ";
@@ -397,14 +400,14 @@ StatusCode ToolSvc::releaseTool( IAlgTool* tool )
       // finalize the tool
 
       if ( Gaudi::StateMachine::OFFLINE == m_targetState ) {
-	// We are being called during ToolSvc::finalize()
-	// message format matches the one in ToolSvc::finalize()
-	log << MSG::DEBUG << "  Performing finalization of " << tool->name()
-	    << " (refCount " << count << ")" << endmsg;
-	// message format matches the one in ToolSvc::finalize()
-	log << MSG::DEBUG << "  Performing     deletion of " << tool->name() << endmsg;
+        // We are being called during ToolSvc::finalize()
+        // message format matches the one in ToolSvc::finalize()
+        log << MSG::DEBUG << "  Performing finalization of " << tool->name()
+            << " (refCount " << count << ")" << endmsg;
+        // message format matches the one in ToolSvc::finalize()
+        log << MSG::DEBUG << "  Performing     deletion of " << tool->name() << endmsg;
       } else {
-	log << MSG::DEBUG << "Performing finalization and deletion of " << tool->name() << endmsg;
+        log << MSG::DEBUG << "Performing finalization and deletion of " << tool->name() << endmsg;
       }
       sc = finalizeTool(tool);
       // remove from known tools...
@@ -544,7 +547,7 @@ StatusCode ToolSvc::create(const std::string& tooltype,
     StatusCode sc = mytool->setProperties();
     if ( UNLIKELY(sc.isFailure()) ) {
       error() << "Error setting properties for tool '"
-	      << fullname << "'" << endmsg;
+              << fullname << "'" << endmsg;
       return sc;
     }
   }
@@ -707,7 +710,7 @@ unsigned long ToolSvc::totalToolRefCount( const ToolSvc::ListTools& toolList ) c
 {
   unsigned long count = 0;
   for ( ListTools::const_iterator iTool = toolList.begin();
-	iTool != toolList.end(); ++iTool ) {
+        iTool != toolList.end(); ++iTool ) {
     count += refCountTool( *iTool );
   }
   return count;
@@ -758,7 +761,7 @@ ToolSvc::start()
 
   bool fail(false);
   for ( ListTools::const_iterator iTool = m_instancesTools.begin();
-	iTool != m_instancesTools.end(); ++iTool ) {
+        iTool != m_instancesTools.end(); ++iTool ) {
     ON_VERBOSE verbose() << (*iTool)->name() << "::start()" << endmsg;
 
     if (UNLIKELY(!(*iTool)->sysStart().isSuccess())) {
@@ -787,7 +790,7 @@ ToolSvc::stop()
 
   bool fail(false);
   for ( ListTools::const_iterator iTool = m_instancesTools.begin();
-	iTool != m_instancesTools.end(); ++iTool ) {
+        iTool != m_instancesTools.end(); ++iTool ) {
     ON_VERBOSE verbose() << (*iTool)->name() << "::stop()" << endmsg;
 
     if (UNLIKELY(!(*iTool)->sysStop().isSuccess())) {
