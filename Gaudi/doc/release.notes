@@ -8,6 +8,8 @@ Package manager : Marco Clemencic
    Gaudi.Configuration.
  - Added minimalistic tests to verify that all the required services are
    available.
+ - Minor fix to the test gaudi.bug_39809: it was implicitly requiring the build
+   of GaudiAlg to work.
 
 ! 2011-10-27 - Marco Clemencic
  - Fixed bug #86980: gaudirun.py should prevent the import of GaudiPython
