@@ -15,7 +15,9 @@
 class MemStatAuditor:public  MemoryAuditor {
 public:
   MemStatAuditor(const std::string& name, ISvcLocator* pSvcLocator);
+  virtual ~MemStatAuditor();
 
+  virtual StatusCode initialize();
 private:
   /// Re-implement i_before to avoid monitoring the memory usage before a function.
   virtual void i_before(CustomEventTypeRef evt, const std::string& caller);

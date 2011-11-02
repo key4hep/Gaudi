@@ -19,7 +19,21 @@ DECLARE_AUDITOR_FACTORY(MemStatAuditor)
 MemStatAuditor::MemStatAuditor(const std::string& name, ISvcLocator* pSvcLocator) :
   MemoryAuditor(name, pSvcLocator), m_vSize(-1.)
 {
+}
+
+MemStatAuditor::~MemStatAuditor() {}
+
+StatusCode MemStatAuditor::initialize() {
+  StatusCode sc = CommonAuditor::initialize();
+  if (UNLIKELY(sc.isFailure())) return sc;
+
   m_stat = serviceLocator()->service("ChronoStatSvc");
+  if (UNLIKELY(!m_stat.get())) {
+    MsgStream log(msgSvc(), name());
+    log << MSG::ERROR << "Cannot get ChronoStatSvc" << endmsg;
+    return StatusCode::FAILURE;
+  }
+  return StatusCode::SUCCESS;
 }
 
 void MemStatAuditor::i_before(CustomEventTypeRef /*evt*/, const std::string& /*caller*/) {
