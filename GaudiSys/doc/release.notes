@@ -1,6 +1,11 @@
 package GaudiSys
 package manager: Pere Mato
 
+! 2011-11-01 - Marco Clemencic
+ - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc
+   and GaudiCommonSvc. (patch #1816)
+   Using GaudiCoreSvc and GaudiCommonSvc instead of GaudiSvc.
+
 =============================== GaudiSys v22r4 ===============================
 =============================== GaudiSys v22r3 ===============================
 =============================== GaudiSys v22r2 ===============================
@@ -20,7 +25,7 @@ package manager: Pere Mato
 ================ GaudiSys v21r0 ====================================
 ! 2009-03-13 - Marco Clemencic
  - Added -no_auto_imports for GaudiSvc, GaudiAlg and GaudiAud (needed only as
-   components). 
+   components).
 
 ================ GaudiSys v20r4 ====================================
 ================ GaudiSys v20r3 ====================================
@@ -117,7 +122,7 @@ package manager: Pere Mato
                  HbookCnv    v7
                  RootHistCnv v1
                  DbCnv       v3
-                
+
                  It uses the following External libraries
                  CERNLIB     v2000
                  CLHEP       v1r6
@@ -128,8 +133,8 @@ package manager: Pere Mato
                  ROOT        v2r25
                  library paths are set in
                  ExternalLibs v3
-  
-                 Gaudi policy is set in 
+
+                 Gaudi policy is set in
                  GaudiPolicy v4
 
 ! =======================================================================

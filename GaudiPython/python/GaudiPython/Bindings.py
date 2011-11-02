@@ -746,8 +746,8 @@ class AppMgr(iService) :
                 self._optsvc.addPropertyToCatalogue(n, StringProperty(p,str(v)))
         if hasattr(Configurable,"_configurationLocked"):
             Configurable._configurationLocked = True
-        
-        # Ensure that the exit method is called when exiting from Python 
+
+        # Ensure that the exit method is called when exiting from Python
         import atexit
         atexit.register(self.exit)
 
@@ -759,10 +759,10 @@ class AppMgr(iService) :
             if hasattr(func, "__module__") and func.__module__ == "ROOT":
                 root_handler_installed = True
                 break
-        
+
         # If the handler is not yet installed, let's install our private version
         # that detects that the ROOT exit handler is installed and add our own
-        # after it to ensure it is called before. 
+        # after it to ensure it is called before.
         if not root_handler_installed:
             orig_register = atexit.register
             def register(func, *targs, **kargs):
@@ -1035,7 +1035,7 @@ def getComponentProperties( name ):
         The component is instantiated using the component library
     """
     properties = {}
-    if name == 'GaudiSvc' :
+    if name == 'GaudiCoreSvc' :
         if Helper.loadDynamicLib(name) != 1 :
             raise ImportError,  'Error loading component library '+ name
         factorylist = gbl.FactoryTable.instance().getEntries()

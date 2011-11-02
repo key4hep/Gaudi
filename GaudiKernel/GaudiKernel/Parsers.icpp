@@ -46,7 +46,7 @@
  *  implement container types which will work with your type.
  *
  *  If you want your type can be handled in property file - see ValueGrammar
- *  in JobOptionsSvc which lays in GaudiSvc.
+ *  in JobOptionsSvc which lays in GaudiCoreSvc.
  *
  *  @author Alexander MAZUROV  Alexander.Mazurov@gmail.com
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu

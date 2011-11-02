@@ -11,8 +11,8 @@ from GaudiKernel.Configurable import Configurable
 from GaudiKernel.ConfigurableMeta import ConfigurableMeta
 __all__ = []
 
-packages = ['GaudiSvc', 'GaudiAlg', 'GaudiAud', 'GaudiPoolDb', 'RootHistCnv',
-            'GaudiUtils' ]
+packages = ['GaudiCoreSvc', 'GaudiCommonSvc', 'GaudiSvc', 'GaudiAlg',
+            'GaudiAud', 'GaudiPoolDb', 'RootHistCnv', 'GaudiUtils']
 
 #--Loop open all listed packages and populate __all__ with the names and
 #  the local scope with the Configurable classes

@@ -20,6 +20,8 @@ use Gaudi          v22r4
 
 # Gaudi libraries - generic
 use GaudiKernel    v27r16
+use GaudiCoreSvc   v1r0
+use GaudiCommonSvc v1r0
 use GaudiSvc       v18r16
 use GaudiAud       v9r4
 use GaudiAlg       v13r8

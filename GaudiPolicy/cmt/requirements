@@ -986,20 +986,20 @@ pattern use_genconf_helper_lib \
 
 
 # this use statement is here only to get the building order right
-# ie: tell CMT that genconf needs (at runtime) the GaudiSvc component
+# ie: tell CMT that genconf needs (at runtime) the GaudiCoreSvc component
 #     library to be available for loading.
-macro use_GaudiSvc "GaudiSvc * -no_auto_imports" \
+macro use_GaudiCoreSvc "GaudiCoreSvc * -no_auto_imports" \
         no_genconf "" \
-        do_genconf "GaudiSvc * -no_auto_imports" \
-        ATLAS "GaudiSvc * -no_auto_imports"
+        do_genconf "GaudiCoreSvc * -no_auto_imports" \
+        ATLAS "GaudiCoreSvc * -no_auto_imports"
 
 # if one wants to modify this pattern, the correction has to be made also
-# in the GaudiSvc requirements file since it is using directly
+# in the GaudiCoreSvc requirements file since it is using directly
 # generate_configurables_internal to avoid infinite recursion
-# with "use GaudiSvc"
+# with "use GaudiCoreSvc"
 pattern generate_configurables \
   private ; \
-   use $(use_GaudiSvc) ;\
+   use $(use_GaudiCoreSvc) ;\
    apply_pattern generate_configurables_internal library=<library> group=<group> ; \
   end_private
 

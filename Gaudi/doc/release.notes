@@ -1,6 +1,12 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+! 2011-11-01 - Marco Clemencic
+ - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc
+   and GaudiCommonSvc. (patch #1816)
+   Added GaudiCoreSvc and GaudiCommonSvc to the list of known modules in
+   Gaudi.Configuration.
+
 ! 2011-10-27 - Marco Clemencic
  - Fixed bug #86980: gaudirun.py should prevent the import of GaudiPython
    Install a fake GaudiPython module that prevents the use of any attribute, and
