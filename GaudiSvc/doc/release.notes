@@ -4,6 +4,7 @@ Package manager : Marco Clemencic
 ! 2011-11-01 - Marco Clemencic
  - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc
    and GaudiCommonSvc. (patch #1816)
+ - Removed AIDATupleSvc.
 
 ! 2011-10-12 - Charles Leggett
  - THistSvc: call Reset() on all TTrees and THNs in io_reinit when copying to
