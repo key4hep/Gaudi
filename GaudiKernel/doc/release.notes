@@ -1,6 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v27r17 =============================
 ! 2011-10-27 - Marco Clemencic
  - Introduced the function System::getProcessTime(pid), the helper class
    ProcessTime and a templated version of adjustTime in GaudiKernel/Timing.h

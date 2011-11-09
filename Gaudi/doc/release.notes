@@ -1,6 +1,7 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+================================ Gaudi v22r5 =================================
 ! 2011-10-27 - Marco Clemencic
  - Fixed bug #86980: gaudirun.py should prevent the import of GaudiPython
    Install a fake GaudiPython module that prevents the use of any attribute, and

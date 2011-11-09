@@ -1,6 +1,7 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v11r5 ==============================
 ! 2011-09-22 - Marco Clemencic
  - Modified Windows library fragment to be able to pass arguments to the link
    command from the requirements.

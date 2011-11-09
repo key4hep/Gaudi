@@ -3,11 +3,11 @@
 
 package GaudiRelease
 
-version v22r4
+version v22r5
 branches doc cmt
 
 # CMT and Gaudi policy
-use GaudiPolicy	   v11r4
+use GaudiPolicy	   v11r5
 
 # Note for conditional use statements: only the tags which are defined
 # at the level of CMT (and CMTSITE) can be used. This means that
@@ -16,15 +16,15 @@ use GaudiPolicy	   v11r4
 # the level of the package itself with a "macro_remove constituents"
 
 # Gaudi executable
-use Gaudi          v22r4
+use Gaudi          v22r5
 
 # Gaudi libraries - generic
-use GaudiKernel    v27r16
-use GaudiSvc       v18r16
+use GaudiKernel    v27r17
+use GaudiSvc       v18r17
 use GaudiAud       v9r4
 use GaudiAlg       v13r8
 use GaudiGSL       v7r10
-use GaudiUtils     v3r13
+use GaudiUtils     v3r14
 
 # Technology-specific Persistency packages
 #use HbookCnv       v15r0
@@ -33,23 +33,23 @@ use GaudiPoolDb    v5r12
 use GaudiPython    v11r1
 
 # Container package specifying the minimum set of core packages
-use GaudiSys       v22r4
+use GaudiSys       v22r5
 
 # Monitoring utility. Can use also MonaLisa
 use GaudiMonitor   v2r9
 
 # Profiling components and tools
-use GaudiProfiling v1r1
+use GaudiProfiling v1r2
 
 # Multi Processing libraries
 use GaudiMP v1r2
 
 # Examples packages
-use GaudiExamples   v22r4
+use GaudiExamples   v22r5
 
 
 # Atlas packages
-use PartPropSvc      v4r2
+use PartPropSvc      v4r3
 
 ### Mark the package as the container package of the project.
 apply_pattern container_package
