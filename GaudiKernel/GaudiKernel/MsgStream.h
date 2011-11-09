@@ -337,6 +337,16 @@ MsgStream& operator << (MsgStream& s, const std::smanip<_Tm>& manip)  {
 }
 #endif    // WIN32 or (__GNUC__)
 
+/// Specialization to avoid the generation of implementations for char[].
+/// \see {<a href="https://savannah.cern.ch/bugs/?87340">bug #87340</a>}
+inline MsgStream& operator<< (MsgStream& s, const char *arg){
+  try {
+    // this may throw, and we cannot afford it if the stream is used in a catch block
+    if ( s.isActive() ) s.stream() << arg;
+  } catch (...) {}
+  return s;
+}
+
 /// General templated stream operator
 template <typename T>
 MsgStream& operator<< (MsgStream& lhs, const T& arg)  {

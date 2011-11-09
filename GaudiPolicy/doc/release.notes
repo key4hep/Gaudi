@@ -1,6 +1,22 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-09-22 - Marco Clemencic
+ - Modified Windows library fragment to be able to pass arguments to the link
+   command from the requirements.
+
+! 2011-09-08 - Marco Clemencic
+ - Fixed a problem in the parsing of TTree summaries when multiple top branches
+   are present (new LHCb ROOT-based persistency).
+
+! 2011-09-06 - Hubert Degaudenzi
+ - added the -we1011 and -we117 for the icc compiler. This is to mimic the
+   behaviour of gcc's -Werror=return-type
+
+! 2011-09-06 - Marco Clemencic
+ - Fixed bug #86424: Problem with patch #5025
+   Remove the added option for ICC (produces a warning).
+
 ============================= GaudiPolicy v11r4 ==============================
 ! 2011-09-01 - Charles Leggett
  - Patch #5025: add -Werror=return-type to cpp flags

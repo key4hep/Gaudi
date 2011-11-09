@@ -656,6 +656,10 @@ def _parseTTreeSummary(lines, pos):
         result["Branches"] = {}
         i += 4
         while i < (count - 3) and lines[i].startswith("*Br"):
+            if i < (count - 2) and lines[i].startswith("*Branch "):
+                # skip branch header
+                i += 3
+                continue
             branch = parseblock(lines[i:i+3])
             result["Branches"][branch["Name"]] = branch
             i += 4

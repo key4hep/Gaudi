@@ -84,12 +84,23 @@ macro_append app_test_GaudiTime_cppflags ' -Wno-unused-parameter ' \
                             target-winxp '' \
                               target-icc ''
 
+application test_GaudiTiming -group=tests -import=CppUnit \
+                       ../tests/src/test_GaudiTiming.cpp
+# FIXME: (MCl) this hides warnings from a broken header file in CppUnit, but may
+#              hide problems in the actual test source.
+macro_append app_test_GaudiTiming_cppflags ' -Wno-unused-parameter ' \
+                          no-hide-warnings '' \
+                              target-winxp '' \
+                                target-icc ''
+
 application test_headers_build -group=tests ../tests/src/test_headers_build.cpp
 
 # FIXME: (MCl) hides the warning due to hidden virtual functions in the __shadow__ classes
 #              generated in the dictionaries.
 # On Windows hides warning C4996 (security-related warning)
 macro_append dictionary_dict_cpp_cppflags ' -Wno-overloaded-virtual ' no-hide-warnings '' target-winxp ' -D_SCL_SECURE_NO_WARNINGS'
+
+macro_append GaudiKernel_arflags " /expectedoutputsize:1000000000 "
 
 apply_pattern QMTest
 

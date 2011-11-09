@@ -1,6 +1,23 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-10-27 - Marco Clemencic
+ - Introduced the function System::getProcessTime(pid), the helper class
+   ProcessTime and a templated version of adjustTime in GaudiKernel/Timing.h
+   (bug #87341).
+ - Added unit test for getProcessTime and ProcessTime.
+ - Fixed bug #87341: performance problem in ChronoEntity
+   Modified ChronoEntity to use getProcessTime and ProcessTime.
+ - Added test to detect bug #87340
+   (code bloat because of MessageStream operator<<)
+ - Fixed bug #87340: code bloat because of MessageStream operator<<
+   Added (as suggested) an explicit implementation of operator<< for
+   "const char *".
+
+! 2011-09-22 - Marco Clemencic
+ - Set the Windows link-time option /expectedoutputsize explicitly only for
+   GaudiKernel.
+
 ============================= GaudiKernel v27r16 =============================
 ! 2011-09-02 - Marco Clemencic
  - Fixed bug #86303: new parses not allowing empty maps
