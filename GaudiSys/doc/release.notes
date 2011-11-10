@@ -6,6 +6,7 @@ package manager: Pere Mato
    and GaudiCommonSvc. (patch #1816)
    Using GaudiCoreSvc and GaudiCommonSvc instead of GaudiSvc.
 
+=============================== GaudiSys v22r5 ===============================
 =============================== GaudiSys v22r4 ===============================
 =============================== GaudiSys v22r3 ===============================
 =============================== GaudiSys v22r2 ===============================

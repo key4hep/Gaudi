@@ -6,6 +6,7 @@ Package manager : Marco Clemencic
    and GaudiCommonSvc. (patch #1816)
  - Removed AIDATupleSvc.
 
+============================== GaudiSvc v18r17 ===============================
 ! 2011-10-12 - Charles Leggett
  - THistSvc: call Reset() on all TTrees and THNs in io_reinit when copying to
    worker directory. This prevents the data recorded in the first (n) events

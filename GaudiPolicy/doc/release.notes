@@ -6,6 +6,7 @@ package manager: Marco Clemencic
    and GaudiCommonSvc. (patch #1816)
    Use GaudiCoreSvc as a pre-requisite for the call to genConf.
 
+============================= GaudiPolicy v11r5 ==============================
 ! 2011-09-22 - Marco Clemencic
  - Modified Windows library fragment to be able to pass arguments to the link
    command from the requirements.
