@@ -38,6 +38,63 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
+<h2><a name="v22r5">Gaudi v22r5</a> (2011-11-09)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=61b">LCGCMT_61b</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Minor changes to support C++0x/11.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v11r5):
+<ul>
+<li>Fixed bug #86424: Problem with patch #5025<br/>
+    Remove the added option for ICC (produces a warning).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>added the -we1011 and -we117 for the icc compiler. This is to mimic the
+    behavior of gcc's -Werror=return-type<br/>
+    (<span class="author">Hubert Degaudenzi</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v27r17):
+<ul>
+<li>Fixed bug #87340: code bloat because of MessageStream operator&lt;&lt;<br/>
+   Added (as suggested) an explicit implementation of operator&lt;&lt; for
+   "const char *"<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed bug #87341: performance problem in ChronoEntity<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiSvc (v18r17):
+<ul>
+<li>THistSvc: call Reset() on all TTrees and THNs in io_reinit when copying to
+   worker directory.<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Fixed bug #87253: Don't override exception type when re-throwing<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Fixed bug #86086: print warning message when an AlgTool fails to finalize<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiProfiling (v1r2):
+<ul>
+<li>added cstddef include for the size_t type definition which apparently has been
+   moved in Gcc 4.6<br/>
+    (<span class="author">Hubert Degaudenzi</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v22r5):
+<ul>
+<li>Fixed bug #86980: gaudirun.py should prevent the import of GaudiPython<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Introduced a hook to override the default gaudirun main loop<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
 <h2><a name="v22r4">Gaudi v22r4</a> (2011-09-02)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=61">LCGCMT_61</a></h3>
 <h3>General Changes</h3>
