@@ -8,6 +8,10 @@ package manager: Marco Clemencic
 ! 2011-12-13 - Marco Clemencic
  - Removed POOL from the list of *VERS variables (old Doxygen settings).
  - Moved the genConf directories of the packages inside the binary directory.
+ - Added the possibility of flagging some fields in the HTML test result to be
+   automatically expanded if the test is expanded. Currently it happens only
+   for "output_diff", but should be enabled for other cases depending on the
+   causes.
 
 ! 2011-12-07 - Marco Clemencic
  - Enforce the use of Boost Filesystem Version 3 also with Boost 1.44, for

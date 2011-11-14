@@ -109,6 +109,8 @@ function foldingAction() {
     if (me.hasClass('folded')) {
  	   me.next().slideDown();
  	   me.find('img').attr('src', 'minus.png');
+ 	   // show all the sub elements that are folded and flagged as auto_show
+ 	   $(".auto_show > span.folded", me.next()).click();
     } else {
  	   me.next().slideUp();
  	   me.find('img').attr('src', 'plus.png');
@@ -141,7 +143,7 @@ jQuery.fn.loader = function() {
       if (me.data("url")) { // modify the element only if it does have a data "url"
 	  me.addClass("foldable").prepend('<img src="plus.png"/>&nbsp;')
 	      // wrap the "text" of the element with a clickable span that loads the url
-	      .wrapInner($("<span class='clickable'/>")
+	      .wrapInner($("<span class='clickable folded'/>")
 			 .click(function(){ // trigger the loading on click
 				 var me = $(this);
 				 me.after($("<div/>").hide().load(me.parent().data("url"),
@@ -151,6 +153,7 @@ jQuery.fn.loader = function() {
 					   .prev()
 					   .unbind("click") // replace the click handler
 					   .click(foldingAction)
+					   .toggleClass("folded") // flag it as unfolded
 					   .find('img').attr('src', 'minus.png');
 				 	}));
 				 return false; // avoid bubbling of the event
@@ -226,8 +229,12 @@ jQuery.fn.results = function(tests, ignore_fields, fields_order) {
 
 		var fields = $("<ul class='fieldid'/>");
 		$.each(field_ids, function(index, field) {
-			fields.append($("<li/>").data("url", test.id + "/" + field)
-					.text(field));
+			var f = $("<li/>").data("url", test.id + "/" + field)
+				.text(field);
+			if (field == "GaudiTest.output_diff") {
+				f.addClass("auto_show");
+			}
+			fields.append(f);
 		});
 		entry.append(fields);
 		ul.append(entry);
