@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-11-16 - Marco Clemencic
+ - Disable deprecation warnings on gcc 4.6.
+   We need an alternative to the current gccxml to properly fix them.
+
 ============================= GaudiPolicy v11r5 ==============================
 ! 2011-09-22 - Marco Clemencic
  - Modified Windows library fragment to be able to pass arguments to the link
