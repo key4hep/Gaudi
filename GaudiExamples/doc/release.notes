@@ -1,6 +1,10 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2011-11-22 - Marco Clemencic
+ - Fixed gcc 4.6 warning (-Wunused-but-set-variable).
+   It was already present with ICC, but disabled.
+
 ============================ GaudiExamples v22r5 =============================
 ============================ GaudiExamples v22r4 =============================
 ! 2011-09-02 - Marco Clemencic
