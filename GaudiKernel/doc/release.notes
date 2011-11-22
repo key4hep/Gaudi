@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-11-22 - Marco Clemencic
+ - Fixed gcc 4.6 warning: cast to pointer from integer of different size
+   (-Wint-to-pointer-cast)
+
 ! 2011-11-16 - Marco Clemencic
  - Fixed the problem with undefined size_t in GaudiKernel/Map.h
 
