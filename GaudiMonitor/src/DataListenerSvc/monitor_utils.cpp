@@ -226,7 +226,7 @@ void ApMon::updateSysInfo() {
       logger(WARNING, perr.what());
       sysRetResults[SYS_CPU_USAGE] = sysRetResults[SYS_CPU_SYS] =
 	sysRetResults[SYS_CPU_USR] = sysRetResults[SYS_CPU_NICE] =
-	sysRetResults[SYS_CPU_IDLE] = sysRetResults[SYS_CPU_USAGE] = PROCUTILS_ERROR;
+	sysRetResults[SYS_CPU_IDLE] = PROCUTILS_ERROR;
     } catch (runtime_error &err) {
       /* temporary error (next time we might be able to get the paramerers) */
       logger(WARNING, err.what());
@@ -234,7 +234,6 @@ void ApMon::updateSysInfo() {
 	= sysRetResults[SYS_CPU_USR]
 	= sysRetResults[SYS_CPU_NICE]
 	= sysRetResults[SYS_CPU_IDLE]
-	= sysRetResults[SYS_CPU_USAGE]
 	= RET_ERROR;
     }
   }
