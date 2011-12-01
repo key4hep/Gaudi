@@ -143,7 +143,7 @@ namespace Tuples
     /// check the validity of the tuple object
     bool      valid       ()  const  { return 0 != tuple () ; }
 
-  protected:
+  public:
 
     /// Return the underlying tuple object
     TupleObj*  tuple() const { return m_tuple ; }
@@ -268,9 +268,7 @@ namespace Tuples
    *    const MCParticle* mcp = ... ;
    *    tuple << Tuples::Column( "MCP" , mcp ) ;
    *
-   *
    *  @endcode
-   *
    *
    *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
    */

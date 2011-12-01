@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-12-01 - Chris Jones
+ - Fixed bug #85377: GaudiTuple tuple does not undestand ulonglong
+   Add support for long long and unsigned long long data types
+
 ! 2011-11-22 - Marco Clemencic
  - Fixed gcc 4.6 warning: cast to pointer from integer of different size
    (-Wint-to-pointer-cast)

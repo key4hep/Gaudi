@@ -1171,7 +1171,9 @@ namespace NTuple
   typedef Item<short>             ShortItem;
   typedef Item<unsigned short>    UShortItem;
   typedef Item<long>              LongItem;
+  typedef Item<long long>         LongLongItem;
   typedef Item<unsigned long>     ULongItem;
+  typedef Item<unsigned long long> ULongLongItem;
   typedef Item<int>               IntItem;
   typedef Item<unsigned int>      UIntItem;
   typedef Item<float>             FloatItem;

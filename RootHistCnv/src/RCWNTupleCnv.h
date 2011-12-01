@@ -15,15 +15,13 @@
 // Forward declarations
 template <class TYPE> class CnvFactory;
 
-
-
 namespace RootHistCnv {
 
-/** @class RootHistCnv::RCWNTupleCnv RCWNTupleCnv.h
-
-    Converter of Column-wise NTuple into ROOT format
-    @author Charles Leggett
-*/
+  /** @class RootHistCnv::RCWNTupleCnv RCWNTupleCnv.h
+   *
+   * Converter of Column-wise NTuple into ROOT format
+   * @author Charles Leggett
+   */
 
   class RCWNTupleCnv : public RNTupleCnv {
 
@@ -50,7 +48,7 @@ namespace RootHistCnv {
     /// Read N tuple data
     virtual StatusCode readData(TTree* rtree, INTuple* pObject, long ievt);
 
-    template <class T> 
+    template <class T>
     size_t saveItem(char* target, const T* src, size_t len)   {
       long* tar = (long*)target;
       for ( size_t i = 0; i < len; i++ )   {
@@ -64,7 +62,7 @@ namespace RootHistCnv {
       return sizeof(T)*len;
     }
 
-    template <class T> 
+    template <class T>
     size_t loadItem(char* src, T* tar, size_t len)   {
       long* s = (long*)src;
       for ( size_t i = 0; i < len; i++ )   {
@@ -99,5 +97,5 @@ namespace RootHistCnv {
   };
 }    // namespace RootHistCnv
 
- 
+
 #endif    // ROOTHISTCNV_RCWNTCNV_H

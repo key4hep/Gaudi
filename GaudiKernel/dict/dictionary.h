@@ -129,7 +129,9 @@ namespace {
       NTuple::Item<short>             ShortItem;
       NTuple::Item<unsigned short>    UShortItem;
       NTuple::Item<long>              LongItem;
+      NTuple::Item<long long>         LongLongItem;
       NTuple::Item<unsigned long>     ULongItem;
+      NTuple::Item<unsigned long long> ULongLongItem;
       NTuple::Item<int>               IntItem;
       NTuple::Item<unsigned int>      UIntItem;
       NTuple::Item<float>             FloatItem;
