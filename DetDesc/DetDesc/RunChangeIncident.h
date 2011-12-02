@@ -2,7 +2,7 @@
 #define RUNCHANGEINCIDENT_H_
 
 #include "GaudiKernel/Incident.h"
- 
+
 namespace IncidentType
 {
   const std::string RunChange = "RunChange"; ///< Change of run number
@@ -13,15 +13,15 @@ namespace IncidentType
  *  Specialized incident class for run number change incidents.
  *
  */
-class RunChangeIncident: public Incident {
+class GAUDI_API RunChangeIncident: public Incident {
 public:
   /// Constructor
   RunChangeIncident(const std::string& source, // Source(service or alg) name)
                     unsigned long run          // New run number
                     ): Incident(source, IncidentType::RunChange), m_run(run) { }
-  
+
   /// Get the new run number
-  inline unsigned long runNumber() const 
+  inline unsigned long runNumber() const
   {
     return m_run;
   }

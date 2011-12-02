@@ -94,34 +94,6 @@ IDetectorElement*  DetectorElement::parentIDetectorElement() const {
   return 0;
 }
 
-unsigned long DetectorElement::addRef  () {
-  return ParamValidDataObject::addRef();
-}
-
-unsigned long DetectorElement::release () {
-  return ParamValidDataObject::release();
-}
-
-StatusCode
-DetectorElement::queryInterface( const InterfaceID& ID , void** ppI )
-{
-  if (0 == ppI) {
-    return StatusCode::FAILURE;
-  }
-  *ppI = 0 ;
-  if (IDetectorElement::interfaceID() == ID) {
-    *ppI = static_cast<IDetectorElement*> (this);
-  } else if (IInterface::interfaceID() == ID) {
-    *ppI = static_cast<IInterface*> (this);
-  } else {
-    return StatusCode::FAILURE;
-  }
-  /// add the reference
-  addRef();
-  ///
-  return StatusCode::SUCCESS;
-}
-
 std::ostream& DetectorElement::printOut( std::ostream& os ) const
 {
   os << "DetectorElement::"  << name();

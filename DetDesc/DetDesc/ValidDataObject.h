@@ -20,43 +20,40 @@ class StatusCode;
 
     A simple DataObject implementing the IValidity interface.
 
-    @author Andrea Valassi 
+    @author Andrea Valassi
     @date February 2001
-    @author Marco Clemencic 
+    @author Marco Clemencic
     @date February 2005
 *///--------------------------------------------------------------------------
 
-class ValidDataObject : public DataObject, 
-			virtual public IValidity
+class GAUDI_API ValidDataObject : public DataObject,
+                                  virtual public IValidity {
+public:
 
-{
-
- public: 
-  
   /// Default constructor
   ValidDataObject();
-  
-  /// Copy constructor 
+
+  /// Copy constructor
   ValidDataObject( const ValidDataObject& obj );
-  
+
   /*
   /// Overloaded copy operator: deep copy all contents (virtual!)
   virtual ValidDataObject& operator= ( ValidDataObject& obj );
   */
 
-  /// Update using another instance of this class: deep copy all 
+  /// Update using another instance of this class: deep copy all
   /// contents, except for the properties of a generic DataObject
   virtual void update ( ValidDataObject& obj );
 
-  /// Destructor 
+  /// Destructor
   virtual ~ValidDataObject();
-  
+
  public:
 
   // Re-implemented from DataObject
 
   /// Class ID of this instance
-  inline virtual const CLID& clID() const { return classID(); } 
+  inline virtual const CLID& clID() const { return classID(); }
 
   /// Class ID of this class
   inline static  const CLID& classID() { return CLID_ValidDataObject; }
@@ -81,19 +78,19 @@ class ValidDataObject : public DataObject,
   virtual const Gaudi::Time& validTill() const;
 
   /// Set validity range
-  virtual void setValidity( const Gaudi::Time& since, const Gaudi::Time& till );  
+  virtual void setValidity( const Gaudi::Time& since, const Gaudi::Time& till );
 
   /// Set start of validity
-  virtual void setValiditySince( const Gaudi::Time& since );  
+  virtual void setValiditySince( const Gaudi::Time& since );
 
   /// Set end of validity
-  virtual void setValidityTill( const Gaudi::Time& till );   
-  
+  virtual void setValidityTill( const Gaudi::Time& till );
+
 // ================================================
 // ValidDataObject methods
 // ================================================
 
-  /// Update the current object and all the useds one (children, 
+  /// Update the current object and all the useds one (children,
   /// references, etc) only if needed, of course.
   /// This method must be reimplemented for more complex objects.
   virtual StatusCode update();
@@ -120,7 +117,7 @@ class ValidDataObject : public DataObject,
   virtual void defaultUpdateMode();
   virtual void forceUpdateMode();
   virtual void neverUpdateMode();
- 
+
  private:
 
   // IValidity data
@@ -128,10 +125,10 @@ class ValidDataObject : public DataObject,
   Gaudi::Time m_validSince;
   /// End of validity
   Gaudi::Time m_validUntil;
-  
+
   /// Flag to force/inhibit the update regardless of the validity
   UpdateModeFlag   m_updateMode;
-  
+
 };
 
 #endif // DETDESC_VALIDDATAOBJECT_H

@@ -1,5 +1,5 @@
 // $Id: DataStoreLoadAgent.h,v 1.1 2005-03-18 15:47:08 cattanem Exp $
-#ifndef DATASTORELOADAGENT_H 
+#ifndef DATASTORELOADAGENT_H
 #define DATASTORELOADAGENT_H 1
 
 // Include files
@@ -7,15 +7,17 @@
 
 /** @class DataStoreLoadAgent DataStoreLoadAgent.h
  *
- *  Simple class that load all the objects od a transient store.  
+ *  Simple class that load all the objects of a transient store.
+ *
+ *  @fixme: to be removed
  *
  *  @author Marco CLEMENCIC
  *  @date   2005-02-24
  */
-class DataStoreLoadAgent: public IDataStoreAgent {
-public: 
+class GAUDI_API DataStoreLoadAgent: public IDataStoreAgent {
+public:
   /// Standard constructor
-  DataStoreLoadAgent( ); 
+  DataStoreLoadAgent( );
 
   virtual ~DataStoreLoadAgent( ); ///< Destructor
 
@@ -30,13 +32,13 @@ public:
    * Give the maximum depth reached navigating the tree.
    */
   inline int maxDepth () const { return m_maxDepth; }
-  
+
   /**
    * Reset the counters. Useful when using the same instance many times.
    */
-  
+
   inline void resetCounters() { m_loadedObjects = m_maxDepth = 0; }
-  
+
 
 protected:
 

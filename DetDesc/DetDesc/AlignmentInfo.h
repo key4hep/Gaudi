@@ -14,23 +14,23 @@
     The simplest implementation of the IAlignment abstract interface,
     derived from the generic class ConditionInfo.
 
-    @author Andrea Valassi 
+    @author Andrea Valassi
     @date December 2001
 *///--------------------------------------------------------------------------
 
-class AlignmentInfo : public ConditionInfo,
-                      virtual public IAlignment
+class GAUDI_API AlignmentInfo: public ConditionInfo,
+                               virtual public IAlignment
 {
 
- public: 
-  
+ public:
+
   /// Constructor
   AlignmentInfo( IDetectorElement* de,
 		 const std::string& condition );
 
-  /// Destructor 
+  /// Destructor
   virtual ~AlignmentInfo();
-  
+
 };
 
 #endif // DETDESC_ALIGNMENTINFO_H

@@ -1,5 +1,5 @@
 // $Id: ParamList.h,v 1.5 2006-10-25 13:45:01 marcocle Exp $
-#ifndef DETDESC_PARAMLIST_H 
+#ifndef DETDESC_PARAMLIST_H
 #define DETDESC_PARAMLIST_H 1
 
 // Include files
@@ -9,18 +9,18 @@
 #include "GaudiKernel/Map.h"
 
 /** @class ParamList ParamList.h DetDesc/ParamList.h
- *  
+ *
  *  Simple implementation of a polimorfic list of parameters idetified by
  *  a std::string.
  *
  *  @author Marco CLEMENCIC
  *  @date   2005-02-22
  */
-class ParamList: public GaudiUtils::Map<std::string,BasicParam *> {
+class GAUDI_API ParamList: public GaudiUtils::Map<std::string,BasicParam *> {
 private:
   typedef GaudiUtils::Map<std::string,BasicParam *> base_type;
 
-public: 
+public:
   /// Standard constructor
   ParamList();
 
@@ -59,10 +59,10 @@ public:
 
   /// Copy a list into this one (deleting this one)
   ParamList& operator= (const ParamList &pl);
-  
+
   /// Merge two lists (overwriting objects with the same name)
   ParamList& operator+= (const ParamList &pl);
-  
+
   /// Remove all elements from the list, deleting the objects
   void clear();
 

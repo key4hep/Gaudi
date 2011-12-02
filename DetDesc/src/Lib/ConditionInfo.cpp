@@ -5,14 +5,14 @@
 #include "DetDesc/Condition.h"
 #include "DetDesc/DetDesc.h"
 
-#include "GaudiKernel/SmartDataPtr.h" 
-#include "GaudiKernel/IDataProviderSvc.h" 
+#include "GaudiKernel/SmartDataPtr.h"
+#include "GaudiKernel/IDataProviderSvc.h"
 
 //---------------------------------------------------------------------------
 
 /// Constructor
 ConditionInfo::ConditionInfo( IDetectorElement* de,
-			      const std::string& condition ) 
+			      const std::string& condition )
 {
   m_detElem = de;
   m_conditionName = condition;
@@ -24,7 +24,7 @@ ConditionInfo::ConditionInfo( IDetectorElement* de,
 //---------------------------------------------------------------------------
 
 /// Destructor
-ConditionInfo::~ConditionInfo() 
+ConditionInfo::~ConditionInfo()
 {
   m_services->release();
 }
@@ -32,7 +32,7 @@ ConditionInfo::~ConditionInfo()
 //----------------------------------------------------------------------------
 
 /// Get a pointer to the data service responsible for condition data
-IDataProviderSvc* ConditionInfo::dataSvc() const { 
+IDataProviderSvc* ConditionInfo::dataSvc() const {
   return m_services->detSvc();
 }
 
@@ -60,26 +60,3 @@ Condition* ConditionInfo::condition() {
   }
   return m_condition;
 }
-
-//----------------------------------------------------------------------------
-
-StatusCode ConditionInfo::queryInterface( const InterfaceID& ID , void** ppI ) 
-{
-  if ( 0 == ppI ) { return StatusCode::FAILURE; }
-  *ppI = 0 ;
-  if      ( IConditionInfo::interfaceID()  == ID ) 
-    { *ppI = static_cast<IConditionInfo*> ( this ) ; } 
-  else if ( IInterface:: interfaceID()    == ID ) 
-    { *ppI = static_cast<IInterface*>    ( this ) ; } 
-  else                                                  
-    { return StatusCode::FAILURE                  ; }
-  /// add the reference 
-  addRef();
-  ///
-  return StatusCode::SUCCESS; 
-}
-
-/// add reference
-unsigned long ConditionInfo::addRef () { return ++m_count ; }
-/// release 
-unsigned long ConditionInfo::release() { return  0 < m_count ? --m_count : 0 ;}

@@ -1,4 +1,3 @@
-//$Id: ISlowControl.h,v 1.1 2001-12-13 19:20:29 andreav Exp $
 #ifndef DETDESC_ISLOWCONTROL_H
 #define DETDESC_ISLOWCONTROL_H 1
 
@@ -11,13 +10,14 @@
     An abstract interface to get the slow control information of
     a detector element.
 
-    @author Andrea Valassi 
+    @author Andrea Valassi
     @date December 2001
 *///--------------------------------------------------------------------------
 
-class ISlowControl : virtual public IConditionInfo
-{
-
+class GAUDI_API ISlowControl: virtual public IConditionInfo {
+public:
+  /// InterfaceID
+  DeclareInterfaceID(ISlowControl, 1, 0);
 };
 
 #endif // DETDESC_ISLOWCONTROL_H

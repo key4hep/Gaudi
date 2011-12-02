@@ -11,13 +11,14 @@
     An abstract interface to get the slow control information of
     a detector element.
 
-    @author Andrea Valassi 
+    @author Andrea Valassi
     @date December 2001
 *///--------------------------------------------------------------------------
 
-class IFastControl : virtual public IConditionInfo
-{
-
+class GAUDI_API IFastControl: virtual public IConditionInfo {
+public:
+  /// InterfaceID
+  DeclareInterfaceID(IFastControl, 1, 0);
 };
 
 #endif // DETDESC_IFASTCONTROL_H

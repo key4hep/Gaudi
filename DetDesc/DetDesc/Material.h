@@ -7,7 +7,7 @@
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/SmartRefVector.h"
 #include "GaudiKernel/PhysicalConstants.h"
-#include "GaudiKernel/MsgStream.h"       
+#include "GaudiKernel/MsgStream.h"
 ///
 class TabulatedProperty;
 
@@ -30,13 +30,13 @@ the Material class.
 
 @author Radovan Chytracek
 */
-class Material : public DataObject
+class GAUDI_API Material: public DataObject
 {
 public:
 
   /// Vector of Tabulated Properties
   typedef SmartRefVector<TabulatedProperty>   Tables;
-  
+
 public:
 
   /// Fill the output stream (ASCII)
@@ -71,7 +71,7 @@ public:
 
   /// Material state, by default is stateUndefined
   virtual eState  state() const;
-  /// Set the material state 
+  /// Set the material state
   virtual void setState(  const eState value );
 
   /// Material radiation length [cm]
@@ -91,7 +91,7 @@ public:
 
   /// Atomic number
   virtual double  Z() const = 0;
-  /// Set the atmoic number 
+  /// Set the atmoic number
   virtual void setZ(  const double value ) = 0;
 
   /// Mean excitiation energy
@@ -169,16 +169,16 @@ private:
 #include "GaudiKernel/IRegistry.h"
 
 /////////////////////////////////////////////////////////////////////////////////
-inline std::ostream& operator<<( std::ostream& os , const Material& mat )        
+inline std::ostream& operator<<( std::ostream& os , const Material& mat )
 { return mat.fillStream( os ); }
 /////////////////////////////////////////////////////////////////////////////////
-inline MsgStream&    operator<<( MsgStream&    os , const Material& mat )          
+inline MsgStream&    operator<<( MsgStream&    os , const Material& mat )
 { return mat.fillStream( os ); }
 /////////////////////////////////////////////////////////////////////////////////
-inline std::ostream& operator<<( std::ostream& os , const Material* mat )          
+inline std::ostream& operator<<( std::ostream& os , const Material* mat )
 { return mat ? (os<<*mat) : (os<<" Material* points to NULL!") ; }
 /////////////////////////////////////////////////////////////////////////////////
-inline MsgStream&    operator<<( MsgStream&    os , const Material* mat )           
+inline MsgStream&    operator<<( MsgStream&    os , const Material* mat )
 { return mat ? (os<<*mat) : (os<<" Material* points to NULL!") ; }
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -187,7 +187,7 @@ inline bool Material::operator==( const Material* right ) const { return right =
 /////////////////////////////////////////////////////////////////////////////////
 inline bool Material::operator!=( const Material* right ) const { return right != this ; }
 /////////////////////////////////////////////////////////////////////////////////
-inline const std::string& Material::name      () const 
+inline const std::string& Material::name      () const
 {
   return ( !m_name.empty() ? m_name                     :
            0 != registry() ? registry()->identifier()   :
@@ -221,9 +221,9 @@ inline double       Material::absorptionLength() const { return m_absorptionLeng
 /////////////////////////////////////////////////////////////////////////////////
 inline void         Material::setAbsorptionLength( const double value ) { m_absorptionLength = value; }
 /////////////////////////////////////////////////////////////////////////////////
-inline       Material::Tables& Material::tabulatedProperties()       { return m_props; } 
+inline       Material::Tables& Material::tabulatedProperties()       { return m_props; }
 /////////////////////////////////////////////////////////////////////////////////
-inline const Material::Tables& Material::tabulatedProperties() const { return m_props; } 
+inline const Material::Tables& Material::tabulatedProperties() const { return m_props; }
 /////////////////////////////////////////////////////////////////////////////////
 
 #endif // DETDESC_MATERIAL_MATERIAL_H

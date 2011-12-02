@@ -6,15 +6,15 @@
 
 /// Constructor
 SlowControlInfo::SlowControlInfo( IDetectorElement* de,
-				  const std::string& condition ) 
-  : ConditionInfo( de, condition )
+				  const std::string& condition )
+  : base_class( de, condition )
 {
 }
 
 //---------------------------------------------------------------------------
 
 /// Destructor
-SlowControlInfo::~SlowControlInfo() 
+SlowControlInfo::~SlowControlInfo()
 {
 }
 

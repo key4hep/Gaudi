@@ -22,11 +22,6 @@ class IFastControl;
 class Condition;
 class ParamValidDataObject;
 
-/** the unique interface identifier
- * ( unique interface identifier , major & minor versions)
- */
-static const InterfaceID IID_IDetectorElement( 156 , 2 , 2 );
-
 /** @interface IDetectorElement IDetectorElement.h "DetDesc/IDetectorElement.h"
  *
  *  An abstract Interface accees
@@ -38,19 +33,12 @@ static const InterfaceID IID_IDetectorElement( 156 , 2 , 2 );
  *  @author Marco Clemencic <marco.clemencic@cern.ch>
  */
 
-class IDetectorElement : virtual public IInterface
-{
-  ///
- public:
-  ///
-  typedef std::vector<IDetectorElement*>   IDEContainer;
-  ///
- public:
+class GAUDI_API IDetectorElement: virtual public IInterface {
+public:
+  /// InterfaceID
+  DeclareInterfaceID(IDetectorElement, 2, 2);
 
-  /** retrieve the unique interface identifier
-   *  @return the unique interface identifier
-   */
-  static const InterfaceID& interfaceID() { return IID_IDetectorElement; }
+  typedef std::vector<IDetectorElement*>   IDEContainer;
 
   /// "accessor":  name/identifier of the Detector Element
   virtual          const std::string&   name       ()   const = 0;
@@ -180,17 +168,14 @@ class IDetectorElement : virtual public IInterface
    */
   virtual StatusCode initialize() = 0;
 
-  /// destructor
-  virtual ~IDetectorElement() ;
-
 };
-///
+
 inline std::ostream& operator<<( std::ostream&           os ,
                                  const IDetectorElement& de )
 {
   return de.printOut(os);
 }
-///
+
 inline std::ostream& operator<<( std::ostream&           os ,
 				 const IDetectorElement* de )
 {

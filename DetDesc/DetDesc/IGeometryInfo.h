@@ -1,4 +1,4 @@
-// $Id: IGeometryInfo.h,v 1.30 2009-02-02 12:20:22 marcocle Exp $ 
+// $Id: IGeometryInfo.h,v 1.30 2009-02-02 12:20:22 marcocle Exp $
 // ===========================================================================
 #ifndef  DETDESC_IGEOMETRYINFO_H
 #define  DETDESC_IGEOMETRYINFO_H 1
@@ -8,21 +8,15 @@
 #include "GaudiKernel/Transform3DTypes.h"
 /** STD & STL includes */
 #include <functional>
-/// DetDesc include 
+/// DetDesc include
 #include "DetDesc/ILVolume.h"
 #include "DetDesc/AlignmentCondition.h"
 /** forward declarations */
 class StatusCode;
 
-
-/** the unique interface identifier 
- * ( unique interface identifier , major & minor versions)
- */
-static const InterfaceID IID_IGeometryInfo( 155 , 3 , 1 );
-
 /** @interface IGeometryInfo IGeometryInfo.h "DetDesc/IGeometryInfo.h"
  *
- *  An abstract interface to get all geometry information for 
+ *  An abstract interface to get all geometry information for
  *          detector element
  *
  *  @version 3
@@ -31,22 +25,16 @@ static const InterfaceID IID_IGeometryInfo( 155 , 3 , 1 );
  *  @date xx/xx/xxxx
  */
 
-class IGeometryInfo : virtual public IInterface
-{
+class GAUDI_API IGeometryInfo {
 public:
 
   /// type of vector of daughter elements
   typedef  std::vector<IGeometryInfo*>  IGIChildrens;
   typedef IGeometryInfo::IGIChildrens::iterator IGIChildrenIterator;
   typedef IGeometryInfo::IGIChildrens::const_iterator IGIChildrenConstIterator;
-  /** retrieve the uniqie interface identifier 
-   *  @return the unique interface identifier 
-   */
-  static const InterfaceID& interfaceID() { return IID_IGeometryInfo; }
-  
 
   virtual StatusCode cache()=0;
-  
+
   virtual StatusCode updateChildren()=0;
 
   /** Is the GeometryInfo object associated with Logical Volume?
@@ -86,7 +74,7 @@ public:
 
   /** @defgroup PureGeometricalInfo IGeometryInfo pure geometrical information
    *
-   *  @author Vanya Belyaev Ivan.Belyaev@itep.ru 
+   *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
    *  @{
    */
 
@@ -104,28 +92,28 @@ public:
    *   to the local reference system of this Geometry Info object,
    *   excluding misalignments.
    *   @see toGlobalMatrixNominal()
-   *   @return the 3D transformation from the "Global" reference system 
-   *           in the nominal frame. 
+   *   @return the 3D transformation from the "Global" reference system
+   *           in the nominal frame.
    */
-  virtual const Gaudi::Transform3D&  toLocalMatrixNominal() const = 0;  
+  virtual const Gaudi::Transform3D&  toLocalMatrixNominal() const = 0;
 
   /**  Ideal transformation matrix from local Reference System
    *   to the global reference system of this Geometry Info object,
    *   excluding misalignments.
    *   @see toLocalMatrixNominal()
-   *   @return the 3D transformation from "Local" system in the 
-   *           nominal frame. 
+   *   @return the 3D transformation from "Local" system in the
+   *           nominal frame.
    */
-  virtual const Gaudi::Transform3D&  toGlobalMatrixNominal() const = 0;  
+  virtual const Gaudi::Transform3D&  toGlobalMatrixNominal() const = 0;
 
   /**  Ideal transformation matrix from parent Reference System
    *   to the local reference system of this Geometry Info object,
    *   excluding misalignment.
    *   @see ownToGlobalMatrixNominal()
-   *   @return the transformation from parent's reference system 
-   *           in the nominal frame. 
+   *   @return the transformation from parent's reference system
+   *           in the nominal frame.
    */
-  virtual const Gaudi::Transform3D&  ownToLocalMatrixNominal() const = 0;  
+  virtual const Gaudi::Transform3D&  ownToLocalMatrixNominal() const = 0;
 
   /**
    * Transformation that takes this IGeometryInfoPlus from an off-nominal
@@ -146,7 +134,7 @@ public:
   virtual Gaudi::Transform3D  ownToOffNominalMatrix() const = 0;
 
   /**
-   * Transformation from this reference frame to the 
+   * Transformation from this reference frame to the
    * reference frame of the parent.
    * Includes local misalignment.
    * @return the 3D transrmation taking this frame to the frame of
@@ -168,7 +156,7 @@ public:
                                            const std::vector<double>& pivot =
                                            std::vector<double>(3)) =0;
 
-  /**  
+  /**
    *   transformation matrix from Local Reference System
    *   to the Global Reference System of this IGeometryInfo.
    *   @see toLocalMatrix()
@@ -179,7 +167,7 @@ public:
    */
   virtual const Gaudi::Transform3D&  toGlobalMatrix() const = 0;
 
-  /** 
+  /**
    *  Perform transformation of point from the Global Reference System
    *  to Local Reference System of Geometry Info object
    *  @see toLocalMatrix()
@@ -200,7 +188,7 @@ public:
    */
   virtual Gaudi::XYZPoint toGlobal ( const Gaudi::XYZPoint& localPoint  ) const = 0;
 
-  /** 
+  /**
    *  Perform transformation a vector from the Global Reference System
    *  to Local Reference System of Geometry Info object
    *  @see toLocalMatrix()
@@ -211,7 +199,7 @@ public:
    */
   virtual Gaudi::XYZVector toLocal ( const Gaudi::XYZVector& globalDirection ) const = 0;
 
-  /** 
+  /**
    *  Perform transformation of a vector from the Local Reference System
    *  to the Global Reference System
    *  @see toLocalMatrix()
@@ -246,7 +234,7 @@ public:
   /** @} */ // end of group PureGeometricalInfo
 
   /** @defgroup BelongsTo  IGeometryInfo "Find daughter by point" family
-   *  @author Vanya Belyaev Ivan.Belyaev@itep.ru 
+   *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
    *  @{
    */
 
@@ -269,7 +257,7 @@ public:
    */
   virtual std::string belongsToPath
   ( const Gaudi::XYZPoint& globalPoint ) = 0;
-  
+
   /** To which daughter the given global point belongs to? @n
    *  "Find daughter by point" family @n
    *  If we are clever enough to define *isInside(...)* method
@@ -287,9 +275,9 @@ public:
    * @param globalPoint the point in global Reference System
    * @return pointer to daughter geometry info element
    */
-  virtual IGeometryInfo* belongsTo 
+  virtual IGeometryInfo* belongsTo
   ( const Gaudi::XYZPoint& globalPoint ) = 0;
-  
+
   /** To which daughter the given global point belongs to? @n
    *  "Find daughter by point" family @n
    *  If we are clever enough to define *isInside(...)* method
@@ -317,7 +305,7 @@ public:
    */
   virtual std::string belongsToPath
   ( const Gaudi::XYZPoint& globalPoint , const int         level ) = 0;
-  
+
   /** To which daughter the given global point belongs to? @n
    *  "Find daughter by point" family @n
    *  If we are clever enough to define *isInside(...)* method
@@ -342,7 +330,7 @@ public:
    * @param level       depth
    * @return pointer to daughter geometry info element
    */
-  virtual IGeometryInfo* belongsTo 
+  virtual IGeometryInfo* belongsTo
   ( const Gaudi::XYZPoint& globalPoint , const int         level ) = 0;
   /** @} */ // end of group BelongsTo
 
@@ -362,7 +350,7 @@ public:
    *  @see belongsToPath( const Gaudi::XYZPoint& , const int )
    *
    *  @{
-   *  @author Vanya Belyaev Ivan.Belyaev@itep.ru 
+   *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
    */
 
   /** find full geometry information for given point
@@ -378,7 +366,7 @@ public:
     const int                level       ,
     IGeometryInfo*&          start       ,
     ILVolume::PVolumePath&   volumePath  ) = 0;
-  
+
   /** find full geometry information for given point
    * @param point input 3D point
    * @param level number of levels to nagigate down the hierarchy
@@ -392,7 +380,7 @@ public:
     const int                level       ,
     IGeometryInfo*&          start       ,
     ILVolume::ReplicaPath&   replicaPath ) = 0;
-  
+
   /** find full geometry information for given point
    * @param point input 3D point
    * @param level number of levels to nagigate down the hierarchy
@@ -406,7 +394,7 @@ public:
     const int                level       ,
     std::string&             start       ,
     ILVolume::PVolumePath&   volumePath  ) = 0;
-  
+
   /** find full geometry information for given point
    * @param point input 3D point
    * @param level number of levels to nagigate down the hierarchy
@@ -456,7 +444,7 @@ public:
    *  @return the pointer to associated Logical Volume
    */
   virtual const ILVolume* lvolume () const = 0 ;
-  
+
   /**  the information about the support
    *  @param start  "start" geometry info
    *  @param replicaPath replica path
@@ -465,7 +453,7 @@ public:
   virtual StatusCode location
   ( IGeometryInfo*&        start ,
     ILVolume::ReplicaPath& replicaPath ) const = 0;
-  
+
   /**  the information about the support
    *  @param start  "start" geometry info
    *  @param replicaPath replica path
@@ -474,7 +462,7 @@ public:
   virtual StatusCode location
   ( std::string&           start ,
     ILVolume::ReplicaPath& replicaPath ) const = 0;
-  
+
   /** @defgroup LogVol IGeometryInfo get Logical Volume by its full address
    *  "start" point in DetectorDescription Tree  and the replica path in the
    *  Actual Geometry Tree, starting with the logical volume
@@ -490,16 +478,16 @@ public:
   virtual std::string lvolumePath
   ( const std::string&           start       ,
     const ILVolume::ReplicaPath& replicaPath ) = 0;
-  
+
   /** the Logical Volume, addressed by  start and Replica Path
    *  @param start start
    *  @param replicaPath replicaPath
    *  @return pointer to Logical Volume
    */
-  virtual const ILVolume* lvolume 
+  virtual const ILVolume* lvolume
   ( const std::string&           start       ,
     const ILVolume::ReplicaPath& replicaPath ) = 0;
-  
+
   /** the name of Logical Volume, addressed by  start and Replica Path
    *  @param start start
    *  @param replicaPath replicaPath
@@ -508,21 +496,21 @@ public:
   virtual std::string lvolumePath
   ( IGeometryInfo*               start       ,
     const ILVolume::ReplicaPath& replicaPath ) = 0;
-  
+
   /** the Logical Volume, addressed by  start and Replica Path
    *  @param start start
    *  @param replicaPath replicaPath
    *  @return pointer to Logical Volume
    */
-  virtual const ILVolume* lvolume 
+  virtual const ILVolume* lvolume
   ( IGeometryInfo*               start       ,
     const ILVolume::ReplicaPath& replicaPath ) = 0;
-  
+
   /// retrive reference to replica path (mistrerious "rpath" or "npath")
   virtual const ILVolume::ReplicaPath& supportPath() const = 0;
 
   /** @} */ // end of group LogVol
-  
+
   /** @defgroup Navigation IGeometryInfo navigation functions
    * (according to feedback from users to release v3)
    *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
@@ -578,31 +566,29 @@ public:
    *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
    *  @{
    */
-  
+
   /** printOut to STD/STL stream
    *  @param os reference to STD/STL stream
    *  @return reference to STD/STL stream
    */
   virtual std::ostream& printOut ( std::ostream& os = std::cout ) const = 0;
-  
+
   /** printOut to Message stream
    *  return reference to Message stream
    */
   virtual MsgStream&    printOut ( MsgStream&                   ) const = 0;
   /** @} */ // end of group IGeometryInfoPrintOut
-  
+
   /** reset to the initial state, clear cache
    *  @return self-reference
    */
   virtual IGeometryInfo* reset () = 0;
-  
-  virtual   ~IGeometryInfo() ;  ///< The virtual destructor
-  
+
 };
 
 // ============================================================================
 /** @defgroup IGeometryInfoOperators IGeometryInfo inline operators
- * 
+ *
  * @{
  */
 // ============================================================================
@@ -659,8 +645,8 @@ inline MsgStream&    operator<<( MsgStream&    os        ,
 // ============================================================================
 /** @defgroup IGeometryInfoPredficates IGeometryInfo useful predicates
  *
- *  @author Vanya Belyaev Ivan.Belyaev@itep.ru 
- *  @{ 
+ *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
+ *  @{
  */
 // ============================================================================
 
@@ -673,28 +659,28 @@ class IGeometryInfo_isInside : std::unary_function<const IGeometryInfo*,bool>
 {
 public:
   /** explicit constructor
-   *  @author Vanya Belyaev Ivan.Belyaev@itep.ru 
-   *  @param Point point in the Global Referency System 
-   */ 
+   *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
+   *  @param Point point in the Global Referency System
+   */
   explicit IGeometryInfo_isInside( const Gaudi::XYZPoint& Point )
     : m_point( Point ) {};
-  
+
   /** check for 3D-point
-   *  @author Vanya Belyaev Ivan.Belyaev@itep.ru 
+   *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
    *  @see IGeometryInfo::isInside( const Gaudi::XYZPoint&)
    *  @param gi poiner to IGeometryInfo object
    *  @return true if the point is inside the Geoemtry Info element
    */
   inline bool operator () ( const IGeometryInfo* gi )  const
   { return ( ( 0 == gi ) ? false : gi->isInside( m_point ) ); };
-  
+
 private:
-  
-  Gaudi::XYZPoint  m_point; ///< point in Global Reference System 
-  
+
+  Gaudi::XYZPoint  m_point; ///< point in Global Reference System
+
 };
 // ============================================================================
-/** @} */ // end of group IGeometryInfoPredicates 
+/** @} */ // end of group IGeometryInfoPredicates
 // ============================================================================
 
 /// ===========================================================================

@@ -11,13 +11,14 @@
     An abstract interface to get the calibration information of
     a detector element.
 
-    @author Andrea Valassi 
+    @author Andrea Valassi
     @date December 2001
 *///--------------------------------------------------------------------------
 
-class ICalibration : virtual public IConditionInfo
-{
-
+class GAUDI_API ICalibration : virtual public IConditionInfo {
+public:
+  /// InterfaceID
+  DeclareInterfaceID(ICalibration, 1, 0);
 };
 
 #endif // DETDESC_ICALIBRATION_H

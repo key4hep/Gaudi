@@ -1,5 +1,5 @@
 // $Id: MagneticFieldGrid.cpp,v 1.1 2009-09-01 14:50:30 wouter Exp $
-// Include files 
+// Include files
 
 // local
 #include "DetDesc/MagneticFieldGrid.h"
@@ -15,11 +15,11 @@
 // Return the field vector fvec at the point xyz
 //=============================================================================
 
-namespace LHCb 
+namespace Gaudi
 {
-  
+
   MagneticFieldGrid::MagneticFieldGrid()
-    : m_scaleFactor(1) 
+    : m_scaleFactor(1)
   {
     m_Dxyz[0] = 0.0;
     m_Dxyz[1] = 0.0;
@@ -32,9 +32,9 @@ namespace LHCb
     m_min_FL[2] = 0.0;
   }
 
-  
+
   MagneticFieldGrid::FieldVector
-  MagneticFieldGrid::fieldVectorClosestPoint( const Gaudi::XYZPoint& r ) const 
+  MagneticFieldGrid::fieldVectorClosestPoint( const Gaudi::XYZPoint& r ) const
   {
     // round of till the nearest bin
     size_t i = int( (r.x() - m_min_FL[0])/m_Dxyz[0] + 0.5 ) ;
@@ -52,11 +52,11 @@ namespace LHCb
   }
 
   MagneticFieldGrid::FieldGradient
-  MagneticFieldGrid::fieldGradient( const Gaudi::XYZPoint& r ) const 
+  MagneticFieldGrid::fieldGradient( const Gaudi::XYZPoint& r ) const
   {
     FieldGradient rc ;
 
-    double x = r.x() - m_min_FL[0] ;  
+    double x = r.x() - m_min_FL[0] ;
     double y = r.y() - m_min_FL[1] ;
     double z = r.z() - m_min_FL[2] ;
     size_t i = int( x/m_Dxyz[0] ) ;
@@ -82,20 +82,20 @@ namespace LHCb
   }
 
   MagneticFieldGrid::FieldVector
-  MagneticFieldGrid::fieldVector( const Gaudi::XYZPoint& r ) const 
+  MagneticFieldGrid::fieldVector( const Gaudi::XYZPoint& r ) const
   {
     //  Interpolate the field on a cube
     FieldVector bf(0,0,0) ;
 
-    double x = r.x() - m_min_FL[0] ;  
+    double x = r.x() - m_min_FL[0] ;
     double y = r.y() - m_min_FL[1] ;
     double z = r.z() - m_min_FL[2] ;
     size_t i = int( x/m_Dxyz[0] ) ;
     size_t j = int( y/m_Dxyz[1] ) ;
     size_t k = int( z/m_Dxyz[2] ) ;
-    
+
     if( i < m_Nxyz[0]-1 && j < m_Nxyz[1]-1 && k < m_Nxyz[2]-1 ) {
-      
+
       int ijk000 = ( m_Nxyz[0]*( m_Nxyz[1]*k     + j )     + i );
       int ijk001 = ( m_Nxyz[0]*( m_Nxyz[1]*(k+1) + j )     + i );
       int ijk010 = ( m_Nxyz[0]*( m_Nxyz[1]*k     + j + 1 ) + i );
@@ -104,13 +104,13 @@ namespace LHCb
       int ijk101 = ( m_Nxyz[0]*( m_Nxyz[1]*(k+1) + j)      + i + 1 );
       int ijk110 = ( m_Nxyz[0]*( m_Nxyz[1]*k     + j + 1)  + i + 1 );
       int ijk111 = ( m_Nxyz[0]*( m_Nxyz[1]*(k+1) + j + 1 ) + i + 1 );
-      
+
       // auxiliary variables defined at the vertices of the cube that
       // contains the (x, y, z) point where the field is interpolated
       double cx000,cx001,cx010,cx011,cx100,cx101,cx110,cx111,
 	cy000,cy001,cy010,cy011,cy100,cy101,cy110,cy111,
 	cz000,cz001,cz010,cz011,cz100,cz101,cz110,cz111;
-      
+
       cx000 = (m_Q)[ ijk000 ].x();
       cy000 = (m_Q)[ ijk000 ].y();
       cz000 = (m_Q)[ ijk000 ].z();
@@ -135,14 +135,14 @@ namespace LHCb
       cx111 = (m_Q)[ ijk111 ].x();
       cy111 = (m_Q)[ ijk111 ].y();
       cz111 = (m_Q)[ ijk111 ].z();
-      
+
       double hx1 = ( x-i*m_Dxyz[0] )/m_Dxyz[0];
       double hy1 = ( y-j*m_Dxyz[1] )/m_Dxyz[1];
       double hz1 = ( z-k*m_Dxyz[2] )/m_Dxyz[2];
       double hx0 = 1.0-hx1;
       double hy0 = 1.0-hy1;
       double hz0 = 1.0-hz1;
-      
+
       double h000 = hx0*hy0*hz0;
       double h001 = hx0*hy0*hz1;
       double h010 = hx0*hy1*hz0;
@@ -151,7 +151,7 @@ namespace LHCb
       double h101 = hx1*hy0*hz1;
       double h110 = hx1*hy1*hz0;
       double h111 = hx1*hy1*hz1;
-      
+
       bf.SetX ( cx000*h000 + cx001*h001 + cx010*h010 + cx011*h011 +
 		cx100*h100 + cx101*h101 + cx110*h110 + cx111*h111) ;
       bf.SetY ( cy000*h000 + cy001*h001 + cy010*h010 + cy011*h011 +

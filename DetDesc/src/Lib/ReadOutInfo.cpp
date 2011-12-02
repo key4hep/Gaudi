@@ -6,15 +6,15 @@
 
 /// Constructor
 ReadOutInfo::ReadOutInfo( IDetectorElement* de,
-			  const std::string& condition ) 
-  : ConditionInfo( de, condition )
+			  const std::string& condition )
+  : base_class( de, condition )
 {
 }
 
 //---------------------------------------------------------------------------
 
 /// Destructor
-ReadOutInfo::~ReadOutInfo() 
+ReadOutInfo::~ReadOutInfo()
 {
 }
 

@@ -12,16 +12,16 @@ class MSgStream;
 ///
 
 ///
-class MaterialException: public GaudiException
+class GAUDI_API MaterialException: public GaudiException
 {
   ///
 public:
   ///
-  MaterialException( const std::string    & message     , 
+  MaterialException( const std::string    & message     ,
                      const Material       * mat     = 0 );
   ///
   MaterialException( const std::string    &  message    ,
-                     const GaudiException &  Exception  ,  
+                     const GaudiException &  Exception  ,
                      const Material       *  mat    = 0 );
   ///
   MaterialException( const MaterialException& );
@@ -33,13 +33,13 @@ public:
   ///
   virtual inline GaudiException* clone() const {
     return new MaterialException( *this );
-  } 
+  }
   ///
 private:
   ///
   const Material* m_me_mat;
   ///
-}; 
+};
 ///
 
 #endif  // DETDESC_MATERIALEXCEPTION_H

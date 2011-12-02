@@ -13,23 +13,23 @@
    The simplest implementation of the ICalibration abstract interface,
     derived from the generic class ConditionInfo.
 
-    @author Andrea Valassi 
+    @author Andrea Valassi
     @date December 2001
 *///--------------------------------------------------------------------------
 
-class CalibrationInfo: public ConditionInfo,
-                       virtual public ICalibration
+class GAUDI_API CalibrationInfo: public ConditionInfo,
+                                 virtual public ICalibration
 {
 
- public: 
-  
+ public:
+
   /// Constructor
   CalibrationInfo( IDetectorElement* de,
 		   const std::string& condition );
 
-  /// Destructor 
+  /// Destructor
   virtual ~CalibrationInfo();
-  
+
 };
 
 #endif // DETDESC_CALIBRATIONINFO_H

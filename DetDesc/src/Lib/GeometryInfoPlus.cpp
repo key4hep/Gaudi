@@ -205,7 +205,7 @@ StatusCode GeometryInfoPlus::initialize()
     log() << MSG::VERBOSE << "initialize" << endmsg;
     log() << MSG::VERBOSE << "alignment path " << m_alignmentPath << endmsg;
   }
-  
+
   if ( m_hasAlignmentPath ) {
     this->hasAlignmentCondition(true);
     if( log().level() <= MSG::VERBOSE )
@@ -415,7 +415,7 @@ StatusCode GeometryInfoPlus::calculateFullMatrices(matrix_iterator deltaFirst,
   if( fabs(zz) < 1.e-15 ) zz = 0.;
   if( fabs(dz) < 1.e-12 ) dz = 0.;
   m_matrix->SetComponents( xx, xy, xz, dx, yx, yy, yz, dy, zx, zy, zz, dz );
-  
+
   m_matrixInv=new Gaudi::Transform3D( toLocalMatrix().Inverse() );
 
   // Recover precision
@@ -679,7 +679,7 @@ IGeometryInfo* GeometryInfoPlus::supportIGeometryInfo() const
              << m_gi_supportName << endmsg;
     }
   }
-  
+
   return  m_gi_support;
 
 }
@@ -1193,23 +1193,7 @@ ILVolume* GeometryInfoPlus::findLogical() const
   ///
   return lv;
 }
-//=============================================================================
-StatusCode GeometryInfoPlus::queryInterface( const InterfaceID& ID,
-                                             void** ppI )
-{
-  if ( 0 == ppI ) { return StatusCode::FAILURE; }
-  *ppI = 0 ;
-  if      ( IGeometryInfo::interfaceID()  == ID )
-    { *ppI = static_cast<IGeometryInfo*> ( this ) ; }
-  else if ( IInterface:: interfaceID()    == ID )
-    { *ppI = static_cast<IInterface*>    ( this ) ; }
-  else
-    { return StatusCode::FAILURE                  ; }
-  /// add the reference
-  addRef();
-  ///
-  return StatusCode::SUCCESS;
-}
+
 //=============================================================================
 // Destructor
 //=============================================================================

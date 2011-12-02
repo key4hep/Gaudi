@@ -7,32 +7,21 @@
 class IDetectorElement;
 class Condition;
 
-/** the unique interface identifier 
- * ( unique interface identifier , major & minor versions)
- */
-static const InterfaceID IID_IConditionInfo( "IConditionInfo" , 2 , 0 );
-
 ///---------------------------------------------------------------------------
 /** @class IConditionInfo IConditionInfo.h Det/DetDesc/IConditionInfo.h
 
     An abstract interface to get the condition information of
     a detector element.
 
-    @author Andrea Valassi 
+    @author Andrea Valassi
     @date December 2001
 *///--------------------------------------------------------------------------
 
-class IConditionInfo : virtual public  IInterface
-{
+class GAUDI_API IConditionInfo: virtual public IInterface {
+public:
+  /// InterfaceID
+  DeclareInterfaceID(IConditionInfo, 2, 0);
 
- public:
-  virtual ~IConditionInfo() { }
-  
-  /** retrieve the uniqie interface identifier 
-   *  @return the unique interface identifier 
-   */
-  static const InterfaceID& interfaceID() { return IID_IConditionInfo; }
-  
   /// Get a pointer to the detector element to which the ConditionInfo belongs
   virtual IDetectorElement* detElem() const = 0 ;
 

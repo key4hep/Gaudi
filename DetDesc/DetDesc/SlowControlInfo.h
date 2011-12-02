@@ -14,23 +14,21 @@
     The simplest implementation of the ISlowControl abstract interface,
     derived from the generic class ConditionInfo.
 
-    @author Andrea Valassi 
+    @author Andrea Valassi
     @date December 2001
 *///--------------------------------------------------------------------------
 
-class SlowControlInfo: virtual public ConditionInfo,
-                       virtual public ISlowControl
+class GAUDI_API SlowControlInfo: public extends1<ConditionInfo, ISlowControl>
 {
+public:
 
- public: 
-  
   /// Constructor
   SlowControlInfo( IDetectorElement* de,
 		   const std::string& condition );
 
-  /// Destructor 
+  /// Destructor
   virtual ~SlowControlInfo();
-  
+
 };
 
 #endif // DETDESC_SLOWCONTROLINFO_H

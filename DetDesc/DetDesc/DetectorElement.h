@@ -43,8 +43,8 @@ class IRegistry;
  *  @author Juan Palacios
 */
 
-class DetectorElement: public ParamValidDataObject,
-                       virtual public IDetectorElement {
+class GAUDI_API DetectorElement: public ParamValidDataObject,
+                                 virtual public implements1<IDetectorElement> {
 
   friend class DataObjectFactory<DetectorElement> ;
 
@@ -303,14 +303,6 @@ public:
 
   const IFastControl* createFastControl (const std::string& condition);
 
-public:
-
-  // Implementation of IInterface
-  virtual unsigned long addRef();
-  virtual unsigned long release();
-  virtual StatusCode queryInterface( const InterfaceID& riid,
-                                     void** ppvInterface );
-
 protected:
 
   /// specific
@@ -443,97 +435,97 @@ inline DetectorElement::operator IFastControl* () {
   return m_de_iFastControl ;
 }
 //////////////////////////////////////////////////////////////////////////////
-inline DetectorElement::operator const IGeometryInfo&()    const 
+inline DetectorElement::operator const IGeometryInfo&()    const
 {
   Assert (0 != m_de_iGeometry, "DetectorElement::geometry is not available!");
-  return *m_de_iGeometry    ; 
+  return *m_de_iGeometry    ;
 }
 //////////////////////////////////////////////////////////////////////////////
 inline DetectorElement::operator       IGeometryInfo&()
-{ 
+{
   Assert (0 != m_de_iGeometry, "DetectorElement::geometry is not available!");
-  return *m_de_iGeometry    ; 
+  return *m_de_iGeometry    ;
 }
 //////////////////////////////////////////////////////////////////////////////
-inline DetectorElement::operator const IAlignment&   ()    const 
-{ 
+inline DetectorElement::operator const IAlignment&   ()    const
+{
   Assert (0 != m_de_iAlignment,
           "DetectorElement::alignment is not available!");
-  return *m_de_iAlignment   ; 
+  return *m_de_iAlignment   ;
 }
 //////////////////////////////////////////////////////////////////////////////
-inline DetectorElement::operator       IAlignment&   ()          
-{ 
+inline DetectorElement::operator       IAlignment&   ()
+{
   Assert (0 != m_de_iAlignment,
           "DetectorElement::alignment is not available!");
-  return *m_de_iAlignment   ; 
+  return *m_de_iAlignment   ;
 }
 //////////////////////////////////////////////////////////////////////////////
-inline DetectorElement::operator const ICalibration& ()    const 
-{ 
+inline DetectorElement::operator const ICalibration& ()    const
+{
   Assert (0 != m_de_iCalibration,
           "DetectorElement::calibration is not available!");
-  return *m_de_iCalibration ; 
+  return *m_de_iCalibration ;
 }
 ///////////////////////////////////////////////////////////////////////////////
-inline DetectorElement::operator       ICalibration& ()          
-{ 
+inline DetectorElement::operator       ICalibration& ()
+{
   Assert (0 != m_de_iCalibration,
           "DetectorElement::calibration is not available!");
-  return *m_de_iCalibration ; 
+  return *m_de_iCalibration ;
 }
 ///////////////////////////////////////////////////////////////////////////////
-inline DetectorElement::operator const IReadOut&     ()    const 
-{ 
+inline DetectorElement::operator const IReadOut&     ()    const
+{
   Assert (0 != m_de_iReadOut, "DetectorElement::readout is not available!");
-  return *m_de_iReadOut     ; 
+  return *m_de_iReadOut     ;
 }
 ///////////////////////////////////////////////////////////////////////////////
-inline DetectorElement::operator       IReadOut&     ()          
-{ 
+inline DetectorElement::operator       IReadOut&     ()
+{
   Assert (0 != m_de_iReadOut, "DetectorElement::readout is not available!");
-  return *m_de_iReadOut     ; 
+  return *m_de_iReadOut     ;
 }
 ///////////////////////////////////////////////////////////////////////////////
-inline DetectorElement::operator const ISlowControl& ()    const 
-{ 
+inline DetectorElement::operator const ISlowControl& ()    const
+{
   Assert (0 != m_de_iSlowControl,
           "DetectorElement::slowcontrol is not available!");
-  return *m_de_iSlowControl ; 
+  return *m_de_iSlowControl ;
 }
 ////////////////////////////////////////////////////////////////////////////////
-inline DetectorElement::operator       ISlowControl& ()          
-{ 
+inline DetectorElement::operator       ISlowControl& ()
+{
   Assert (0 != m_de_iSlowControl,
           "DetectorElement::slowcontrol is not available!");
-  return *m_de_iSlowControl ; 
+  return *m_de_iSlowControl ;
 }
 ////////////////////////////////////////////////////////////////////////////////
-inline DetectorElement::operator const IFastControl& ()    const 
-{ 
+inline DetectorElement::operator const IFastControl& ()    const
+{
   Assert (0 != m_de_iFastControl,
           "DetectorElement::fastcontrol is not available!");
-  return *m_de_iFastControl ; 
+  return *m_de_iFastControl ;
 }
 ///////////////////////////////////////////////////////////////////////////////
-inline DetectorElement::operator       IFastControl& ()          
-{ 
+inline DetectorElement::operator       IFastControl& ()
+{
   Assert (0 != m_de_iFastControl,
           "DetectorElement::fastcontrol is not available!");
-  return *m_de_iFastControl ; 
+  return *m_de_iFastControl ;
 }
 /// assertion /////////////////////////////////////////////////////////////////
-inline void DetectorElement::Assert 
+inline void DetectorElement::Assert
 (bool assertion,
- const std::string& assertionName) const 
+ const std::string& assertionName) const
 {
-  if (!assertion) 
+  if (!assertion)
   { throw DetectorElementException (assertionName, this); }
 }
-inline void DetectorElement::Assert 
-(bool assertion,  const char* assertionName) const 
+inline void DetectorElement::Assert
+(bool assertion,  const char* assertionName) const
 {
-  if (!assertion) 
+  if (!assertion)
   { throw DetectorElementException (assertionName, this); }
 }
 ///////////////////////////////////////////////////////////////////////////////

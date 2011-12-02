@@ -19,7 +19,7 @@
  *
  *  @author Radovan Chytracek
  */
-class Mixture : public  Material
+class GAUDI_API Mixture : public  Material
 {
 
 public:
@@ -108,7 +108,7 @@ public:
 
   ///        Number of nucleons
   virtual inline double    N() const;
-  
+
   virtual inline const CLID& clID    () const { return Mixture::classID(); }
   static         const CLID& classID ()       { return CLID_Mixture      ; }
 
@@ -142,7 +142,7 @@ private:
   /// own element (if needed)
   Element*       m_own      ;
 
-  
+
   double         m_A ;
   double         m_Z ;
   double         m_I ;
@@ -151,7 +151,7 @@ private:
   double         m_C ;
   double         m_X0;
   double         m_X1;
-  
+
 };
 
 #include "GaudiKernel/SystemOfUnits.h"
@@ -165,11 +165,11 @@ inline void   Mixture::setA( const double /*value*/ ){}
 /// Effective Z is returned /////////////////////////////////////////////////////
 inline double Mixture::Z()        const { return m_Z    ; }
 /// Effective Z is computed, can't be set explicitly ////////////////////////////
-inline void   Mixture::setZ( const double /*value*/ ){} 
+inline void   Mixture::setZ( const double /*value*/ ){}
 /// Effective I is returned                          ////////////////////////////
-inline double Mixture::I()        const { return m_I    ; }  
+inline double Mixture::I()        const { return m_I    ; }
 // Effective I is computed, can't be set explicitly ////////////////////////////
-inline void   Mixture::setI( const double /*value*/ ){} 
+inline void   Mixture::setI( const double /*value*/ ){}
 
 /// Parameters for density effect correction are set and returned ////////////////
 inline double Mixture::C()        const { return m_C    ; }
@@ -185,7 +185,7 @@ inline void   Mixture::setX1( const double /*value*/ ){}
 
 
 /// Effective N is returned
-inline double Mixture::N()        const { return m_A*Gaudi::Units::mole/Gaudi::Units::g; }  
+inline double Mixture::N()        const { return m_A*Gaudi::Units::mole/Gaudi::Units::g; }
 /////////////////////////////////////////////////////////////////////////////////
 inline const Mixture::Elements& Mixture::elements() const { return m_elements ; }
 inline       Mixture::Elements& Mixture::elements()       { return m_elements ; }

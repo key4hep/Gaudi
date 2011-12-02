@@ -17,20 +17,20 @@
  *  This is the basic type of condition data in the transient data store
  *  (alignment, slow control, etc.).
  *
- *  @author Sebastien Ponce 
- *  @author Andrea Valassi 
+ *  @author Sebastien Ponce
+ *  @author Andrea Valassi
  */
-class Condition : public ParamValidDataObject {
+class GAUDI_API Condition : public ParamValidDataObject {
 
- public: 
-  
+ public:
+
   /// Default constructor
   Condition();
 
-  /// Copy constructor 
+  /// Copy constructor
   Condition (const Condition& obj);
-  
-  /// Update using another ValidDataObject: deep copy all contents, 
+
+  /// Update using another ValidDataObject: deep copy all contents,
   /// except for the properties of a generic DataObject
   using ParamValidDataObject::update;
   virtual void update ( ValidDataObject& obj);
@@ -38,9 +38,9 @@ class Condition : public ParamValidDataObject {
   /// Prepare an XML string representing the condition.
   virtual std::string toXml(std::string name = "", bool header = false, int precision = 16) const;
 
-  /// Destructor 
+  /// Destructor
   virtual ~Condition();
-  
+
  public:
 
   /**
@@ -55,7 +55,7 @@ class Condition : public ParamValidDataObject {
   // Re-implemented from DataObject
 
   /// Class ID of this instance
-  inline virtual const CLID& clID() const { return classID(); } 
+  inline virtual const CLID& clID() const { return classID(); }
 
   /// Class ID of this class
   inline static  const CLID& classID() { return CLID_Condition; }

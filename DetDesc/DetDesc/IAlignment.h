@@ -11,13 +11,14 @@
     An abstract interface to get the alignment information of
     a detector element.
 
-    @author Andrea Valassi 
+    @author Andrea Valassi
     @date December 2001
 *///--------------------------------------------------------------------------
 
-class IAlignment : virtual public IConditionInfo
-{
-
+class GAUDI_API IAlignment: virtual public IConditionInfo {
+public:
+  /// InterfaceID
+  DeclareInterfaceID(IAlignment, 1, 0);
 };
 
 #endif // DETDESC_IALIGNMENT_H

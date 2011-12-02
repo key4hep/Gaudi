@@ -16,25 +16,25 @@ class IDataProviderSvc;
  *
  *  The simplest implementation of the IConditionInfo abstract interface.
  *
- *  @author Andrea Valassi 
+ *  @author Andrea Valassi
  *  @author Sebastien Ponce
  *
  */
 
-class ConditionInfo : virtual public IConditionInfo
+class GAUDI_API ConditionInfo: virtual public implements1<IConditionInfo>
 {
 
- public: 
-  
+ public:
+
   /// Constructor
   ConditionInfo( IDetectorElement* de,
 		 const std::string& condition );
 
-  /// Destructor 
+  /// Destructor
   virtual ~ConditionInfo();
-  
+
  private:
-  
+
   /// Get a pointer to the data service responsible for condition data
   IDataProviderSvc* dataSvc() const;
 
@@ -50,16 +50,6 @@ class ConditionInfo : virtual public IConditionInfo
 
   /// Get a pointer to the associated condition
   virtual Condition* condition();
-
-  // Implementation of the IInterface interface
-
-  /// query interface
-    StatusCode queryInterface( const InterfaceID& ID , void** ppI ) ;
-  /// add reference
-  unsigned long addRef();
-  /// release 
-  unsigned long release();
-
 
  private:
 
