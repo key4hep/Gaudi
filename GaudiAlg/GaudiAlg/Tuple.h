@@ -1,4 +1,3 @@
-// $Id: Tuple.h,v 1.9 2008/10/27 19:22:20 marcocle Exp $
 #ifndef GAUDIALG_TUPLE_H
 #define GAUDIALG_TUPLE_H 1
 // ============================================================================
@@ -143,7 +142,7 @@ namespace Tuples
     /// check the validity of the tuple object
     bool      valid       ()  const  { return 0 != tuple () ; }
 
-  public:
+  protected:
 
     /// Return the underlying tuple object
     TupleObj*  tuple() const { return m_tuple ; }
