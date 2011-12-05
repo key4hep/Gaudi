@@ -1,0 +1,218 @@
+// $Id: UpdateManagerSvc_Item.icpp,v 1.10 2009-01-10 23:01:00 marcocle Exp $
+#ifndef UPDATEMANAGERSVC_ITEM_ICPP
+#define UPDATEMANAGERSVC_ITEM_ICPP 1
+
+/// \class Item
+/// Used internally by UpdateManagerSvc to handle the dependency network.
+/// @author Marco Clemencic
+/// @date   2005-04-26
+struct Item {
+  /// Type for the list of user's pointers for the condition.
+  typedef std::pair<BasePtrSetter*,void*> UserPtrType;
+
+  // ------ Item Cons & Dest
+
+  /// Constructor for an item representing an object in the data store.
+  Item(const std::string &objPath, ValidDataObject *overrideObj = NULL):
+    since(1),until(0),path(objPath),db_path(),
+    vdo(NULL),ptr(NULL),override(overrideObj),
+    updateLock(false),user_dest_ptrs() {}
+
+  /// Constructor for an item representing an object in the data store.
+  Item(const std::string &objPath, UserPtrType dest, ValidDataObject *overrideObj = NULL):
+    since(1),until(0),path(objPath),db_path(),
+    vdo(NULL),ptr(NULL),override(overrideObj),
+    updateLock(false),user_dest_ptrs()
+  {
+    if (dest.first) user_dest_ptrs.push_back(dest);
+  }
+
+  /// Constructor for an item representing a generic object.
+  Item(BaseObjectMemberFunction *mf, const std::string tsRoot):
+    since(1),until(0),vdo(mf->castToValidDataObject()),
+    ptr(mf->castToVoid()),override(NULL),
+    updateLock(false),user_dest_ptrs()
+  {
+    if (vdo && vdo->registry()){
+      path = vdo->registry()->identifier();
+      // remove the root name if present
+      if ( path[0] == '/'
+           && path.compare(0,tsRoot.size(),tsRoot) == 0 ){
+        path.erase(0,tsRoot.size());
+      }
+    }
+    memFuncs.push_back(MembFunc(mf));
+  }
+
+  /// Destructor
+  ~Item();
+
+  // ------ Item types
+
+  /// Type used for the collections of items.
+  typedef std::vector<Item*> ItemList;
+  /// Type used as pointer to an item that is using this one, a \e parent.
+  typedef std::pair<Item*,BaseObjectMemberFunction*> ParentItem;
+  /// Type for the list of \e parents.
+  typedef std::vector<ParentItem> ParentList;
+  /// Type for the list of user's pointers for the condition.
+  typedef std::list<UserPtrType> UserPtrList;
+  /// Used inside Item to identify a registered member function.
+  struct MembFunc {
+    /// Simple constructor.
+    MembFunc(BaseObjectMemberFunction *mf_p): mf(mf_p),since(1),until(0) { items = new ItemList; }
+    /// Simple destructor. The pointers are not deleted because \e owned by the item.
+    ~MembFunc() { }
+    /// Pointer to the registered member function.
+    BaseObjectMemberFunction *mf;
+    /// List of the items used by this member function
+    ItemList                 *items;
+    /// Time points delimiting the interval of validity of the member function
+    /// (intersection of the intervals of validity of the used items).
+    Gaudi::Time              since,until;
+    /// Tells if the member function is valid or not at the given time (if not it has to be called).
+    inline bool isValid(const Gaudi::Time &when) {return since <= when && until > when;}
+    /// Used to reset the interval of validity to (-inf;+inf)
+    inline void resetIOV() { since = Gaudi::Time::epoch(); until = Gaudi::Time::max(); }
+    /// Set the interval of validity to an empty range (so it is invalid regardless of the time used)
+    inline void invalidate() { since = 1; until = 0; }
+    /// Restrict the current validity range
+    inline void changeValidity(const Gaudi::Time &new_since, const Gaudi::Time &new_until) {
+      if ( new_since > since ) {
+        since = new_since;
+      }
+      if ( new_until < until ) {
+        until = new_until;
+      }
+    }
+  };
+  /// Type for the list of the registered member functions.
+  typedef std::vector<MembFunc> MembFuncList;
+
+  inline bool isValid(const Gaudi::Time &when) {
+    return since <= when && until > when;
+  }
+  inline void resetIOV() { since = Gaudi::Time::epoch(); until = Gaudi::Time::max(); }
+
+  inline void invalidate() {
+    since = 1; until = 0;
+    for (ParentList::iterator p = parents.begin(); p != parents.end(); ++p) {
+      p->first->find(p->second)->invalidate(); // invalidate m.f. (I'm not checking... let's trust the consitency)
+      p->first->invalidate();
+    }
+  }
+
+  inline void changeValidity(const Gaudi::Time &new_since, const Gaudi::Time &new_until) {
+    // set the new limits only if within the current IOV
+    bool changed = false;
+    if ( new_since > since ) {
+      since = new_since;
+      changed = true;
+    }
+    if ( new_until < until ) {
+      until = new_until;
+      changed = true;
+    }
+    if (changed) { // propagate to parents only if changed
+      for (ParentList::iterator p = parents.begin(); p != parents.end(); ++p) {
+        p->first->find(p->second)->changeValidity(new_since,new_until);
+                                // change m.f. (I'm not checking... let's trust the consitency)
+        p->first->changeValidity(new_since,new_until);
+      }
+    }
+  }
+
+  void purge(MsgStream *log = NULL);
+
+  // ------ Item data members
+
+  /// Time points delimiting the interval of validity of the item
+  /// (intersection of the intervals of validity of the member functions).
+  Gaudi::Time since,until;
+
+  /// Item parents: the (item,member_function) pairs that depend on this item
+  ParentList parents;
+
+  /// List of all the children: the items on which this item depend (used for fast accessing).
+  ItemList children;
+
+  /// Path to the object, inside the data store, represented by the item.
+  std::string      path;
+  /// Path of the persistent version of the object inside the Conditions DataBase.
+  std::string      db_path;
+  /// Pointer to the ValidDataObject interface of the represented object.
+  ValidDataObject  *vdo;
+  /// Void pointer to the represented object, obtained via dynamic_cast (used to unically identify the item)
+  void             *ptr;
+  /// Pointer to the object used to override the object retrieved from the data provider.
+  ValidDataObject  *override;
+  /// List of the registered member functions.
+  MembFuncList     memFuncs;
+
+  /// Flag used to prevent infinite loops when updating.
+  bool updateLock;
+
+  /// List op setters for user's pointers.
+  UserPtrList user_dest_ptrs;
+
+  inline StatusCode setUserPointers(DataObject  *pObj, bool force = false)
+  {
+    for (UserPtrList::iterator pi = user_dest_ptrs.begin(); pi != user_dest_ptrs.end(); ++pi){
+      if (!force){
+        if ( pi->first->isNull() ){
+          pi->first->set(pObj);
+          if ( pi->first->isNull() ) return StatusCode::FAILURE; // cannot dynamic_cast
+        }
+      } else {
+        pi->first->set(pObj);
+      }
+    }
+    return StatusCode::SUCCESS;
+  }
+
+  inline StatusCode setPointers(DataObject  *pObj, bool force = false)
+  {
+    vdo = dynamic_cast<ValidDataObject*>(pObj);
+    ptr = dynamic_cast<void*>(pObj);
+    // This is the first time I get the DataObject, so I set the pointer the user asked me to set
+    return setUserPointers(pObj,force);
+  }
+
+  /// Main method. Used to update the object and all the used ones.
+  StatusCode update(IDataProviderSvc *dp,const Gaudi::Time &when, MsgStream &log, bool inInit = false);
+
+  /// Tells if this item represents the given pointer.
+  inline bool match(void *p) const {return p == ptr;}
+
+  /// Tells if this item represents object identified by the given pointer.
+  inline bool match(const std::string &p, bool is_path_to_db=false) const {
+    return is_path_to_db ? (p == db_path) : (p == path);
+  }
+
+  /// Tells if the item does not have parents.
+  inline bool isHead() const { return parents.empty(); }
+  /// Tells if the item does not have parents.
+  inline bool isTail() const { return children.empty(); }
+  /// Finds the MembFunc object containing the given member function.
+  MembFuncList::iterator find(BaseObjectMemberFunction *mf) {
+    for (MembFuncList::iterator mi = memFuncs.begin(); mi != memFuncs.end(); ++mi){
+      if ( mi->mf->match(mf) ) return mi;
+    }
+    return memFuncs.end();
+  }
+
+  /// Adds a (item,member_function) pair to the list of parents.
+  inline void addParent(Item* parent, BaseObjectMemberFunction *parentMF) {
+    // avoid duplicates in the list
+    const ParentItem pi(parent,parentMF);
+    if (std::find(parents.begin(),parents.end(),pi) == parents.end()){
+      parents.push_back(pi);
+    }
+  }
+
+  /// Adds a child item to the given member function.
+  /// Return a pointer to the actual member function if an equivalent one was already registered.
+  BaseObjectMemberFunction * addChild(BaseObjectMemberFunction *thisMF, Item *child);
+
+};
+#endif // UPDATEMANAGERSVC_ITEM_ICPP

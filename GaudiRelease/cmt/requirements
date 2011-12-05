@@ -39,6 +39,7 @@ use GaudiSys       v22r5
 
 # Detector Description
 use DetDesc        *
+use DetDescSvc     *
 
 # Monitoring utilities.
 use GaudiMonitor   v2r9

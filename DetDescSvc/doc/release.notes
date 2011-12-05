@@ -1,0 +1,296 @@
+! =============================================================================
+! package DetDescSvc
+! package manager : Marco Clemencic, Juan Palacios ?
+! purpose:          Component library for Detector Description Services
+! =============================================================================
+
+!========================= DetDescSvc v3r4 2011-11-07 =========================
+! 2011-10-03 - Marco Clemencic
+ - Fixed bug #87392: Event time not set correctly on first event
+
+!========================= DetDescSvc v3r3 2011-08-30 =========================
+! 2011-08-02 - Marco Cattaneo
+ - FakeEventTime: remove unused EventDataSvc property
+
+!========================= DetDescSvc v3r2 2011-07-25 =========================
+! 2011-06-22 - Marco Cattaneo
+ - Protect unprotected debug and verbose printout
+
+!========================= DetDescSvc v3r1 2011-04-04 =========================
+! 2010-10-26 - Marco Clemencic
+ - Fixed bug #80076 (wrong condition used on first event).
+   Force a check of the validity even for conditions just retrieved from the
+   transient store.
+
+!========================= DetDescSvc v3r0 2010-10-26 =========================
+! 2010-10-26 - Marco Clemencic
+ - Improved fix to bug #74255 (it was exposing again bug #66497).
+
+! 2010-10-25 - Marco Clemencic
+ - Fixed bug #74255: UpdateMgrSvc fails to query CondDB at requested timeStamp
+                     (during finalize)
+   Problem introduced with the fix to bug #66497.
+   Logic fixed.
+
+!========================= DetDescSvc v2r6 2010-09-27 =========================
+! 2010-09-27 - Marco Clemencic
+ - Fixed an untested SatusCode in UpdateManagerSvc::Item::update().
+
+! 2010-09-24 - Marco Clemencic
+ - Modified UpdateManagerSvc to print an error message with the problematic
+   condition when the update fails.
+
+!========================= DetDescSvc v2r5 2010-08-25 =========================
+! 2010-08-06 - Marco Clemencic
+ - Fixes and improvements in UpdateManagerSvc
+   - removed 'queryInterface', adapted to the new interfaces system of Gaudi v21
+   - replaced the 'dia' debug output with the 'dot' (graphviz) one, and moved
+     the call to the 'dump' method to the 'stop' transition
+   - fixed bug #66497 (velo motor positions updated several times)
+     the problem was that the heart-beat condition induces a modified validity
+     that triggered repeated updates; now these updates are not called if the
+     application is in the initialization phase
+   - minor aesthetic fixes
+
+!========================= DetDescSvc v2r4 2009-11-27 =========================
+! 2009-11-16 - Marco Cattaneo
+ - remove obsolete file DetDescSvc_dll.cpp
+
+! 2009-11-15 - Vanya Belyaev
+ - remove "use" of GSL
+ - cmt/requirements: version increment to v2r4
+
+!========================= DetDescSvc v2r3p1 2009-05-06 =======================
+! 2009-04-17 - Marco Cattaneo
+ - Replace endreq by endmsg
+ - Fix doxygen warnings
+
+!========================= DetDescSvc v2r3 2009-02-18 =========================
+! 2009-02-16 - Marco Cattaneo
+ - Fix untested StatusCode in UpdateManagerSvc_item.cpp
+
+! 2009-02-04 - Marco Clemencic
+ - Using the extended RunChangeIncident in RunChangeHandlerSvc to get the run
+   number (avoid dependency on ODIN).
+ - Added usage of GSL (with -no_auto_imports). Not inherited anymore from
+   DetDesc.
+
+! 2009-02-03 - Marco Clemencic
+ - Added RunChangeHandlesSvc. It listens for a RunChangeIncident and change the
+   source of a set of Condition objects in the Detector Transient Store
+   notifying the UpdateManagerSvc.
+   (was in Event/DAQEvent)
+
+! 2009-01-29 - Marco Cattaneo
+ - Fix a compilation warning from Boost 1.38
+
+! 2009-01-23 - Marco Cattaneo
+ - Backwards compatible fixes for Gaudi v21
+
+! 2009-01-16 - Olivier Callot
+ - Removed the pointer map in UpdateManagerSvc: The pointer value was updated
+   on the objects in too many locations. Speed-up decreased a little.
+
+! 2009-01-16 - Marco Clemencic
+ - Fixed a memory leak occurring when registering without condition but passing
+   the pointer to be filled (happens in GeometryInfoPlus after some recent
+   changes).
+
+! 2009-01-15 - Olivier Callot
+ - Fix the case of modification of the pointer in UpdateManagerSvc.
+
+! 2009-01-13 - Olivier Callot
+ - Added hash maps in UpdateMgrSvc to speed-up registration of conditions.
+
+!========================= DetDescSvc v2r2 2009-01-12 =========================
+! 2009-01-10 - Marco Clemencic
+ - Fixed a couple of minor bugs in UpdateManagerSvc connected with the
+   de-registration of objects (causing a segmentation fault in a new test).
+
+!========================= DetDescSvc v2r1p1 2008-11-17 =======================
+! 2008-10-29 - Marco Cattaneo
+ - Add missing include for gcc 4.3
+
+!========================= DetDescSvc v2r1 2008-07-29 =========================
+! 2008-07-29 - Marco Clemencic
+ - Modified the EventClockSvc to use the current time as initial guess for the
+   event time.
+
+! 2008-07-21 - Marco Cattaneo
+ - Pick up interfaces previously in LHCbKernel from their new locations in
+   GaudiKernel, GaudiAlg, DetDesc (needs Gaudi v20r2)
+ - Remove LHCbKernel dependency
+
+!========================= DetDescSvc v2r0 2008-06-09 =========================
+! 2008-06-09 - Marco Cattaneo
+ - Adapt to new state machine in Gaudi v20r0
+
+!========================= DetDescSvc v1r17 2008-06-02 ========================
+! 2008-06-02 - Marco Cattaneo
+ - Fix doxygen warnings
+
+! 2008-06-02 - Malcolm John / Marco Clemencic
+ - Added '-' and ':' to the list of allowed characters that the ConditionParser
+   of the UpdateManagerSvc allows in the name of a condition (option
+   UpdateManagerSvc.ConditionsOverride).
+
+!========================= DetDescSvc v1r16 2008-01-22 ========================
+! 2008-01-22 - Marco Cattaneo
+ - Fix MsgStream created in TransportSvc initialization
+
+! 2007-12-21 - Marco Cattaneo
+ - Change format of overlaps summary table to avoid MSG::ERROR printout
+
+! 2007-12-19 - Vanya BELYAEV
+ - New treatment of geometry overlaps/errors
+
+   src/TransportSvc.h, src/TransportSvc.cpp
+    1) implement new interface DetDesc::IGeometryErrorSvc
+    2) add new properties
+       "Recover"  (boolean) -> to activate/deactivate the recovery of the
+                          errors          (default  is true)
+       "Protocol" (boolean) - to activate/deactivate the protocol of the
+                          geometry errors (default is "true")
+
+   cmt/requirements
+     version increment to v1r16
+
+!========================= DetDescSvc v1r15 2007-12-07 ========================
+! 2007-12-07 - Marco Clemencic
+ - Minor improvement in UpdateManagerSvc debug output: print demangled name of
+   registered classes.
+
+!========================= DetDescSvc v1r14 2007-10-04 ========================
+! 2007-10-01 - Marco Clemencic
+ - Change UpdateManagerSvc: check the state of the service (OFFLINE/INITIALIZED)
+   before any operation. If OFFLINE, the call to "unregister" results in a
+   no-operation, while all other calls throw an exception.
+   Fixes the bug causing segfault during DetDataSvc finalization.
+
+!========================= DetDescSvc v1r13 2007-09-17 ========================
+! 2007-09-13 - Wouter Hulsbergen
+ - fixed bug in caching in TransportSvc
+
+! 2007-09-12 - Juan Palacios
+ - cmt/requirements
+   . Increase version to v1r13
+ - src/TransportSvcGoodLocalGI.h, TransportSvcIntersections.h
+   . Adapt to new IGeometryInfo interface: IGeometryInfo::matrix() is now
+     IGeometryInfo::toLocalMatrix.
+
+! 2007-08-02 - Marco Clemencic
+ - Added an option to dump the network of dependencies as a DIA file (see
+   http://live.gnome.org/Dia). The format is very preliminary (e.g. the boxes
+   are all collapsed in one point), but it can be useful.
+ - Fixed a couple of flows for the "purge" feature. The reload was not working
+   correctly.
+
+! 2007-07-31 - Marco Clemencic
+ - Added to the UpdateManagerSvc the possibility to "purge" the dependencies,
+   i.e. reset all the pointers of objects that can be reloaded, so that one can
+   clean the detector transient store.
+   The added method is not yet in the abstract interface, so cannot be used yet.
+   Note: to make the feature work, the objects registered to the U.M.S. that
+         cannot be "reloaded" must be unregistered on deletion.
+ - Improvements in the unregister method of UpdateManagerSvc to make it more
+   robust.
+
+!========================= DetDescSvc v1r12 2007-05-31 ========================
+! 2007-05-29 - Marco Clemencic
+ - Fixed a bug in UpdateManagerSvc. Check if the setting of the user provided
+   pointers is successful or not. (Avoid segmentation fault if the object
+   cannot be dynamic casted to what the user wants)
+ - Improvement in conditions override. Now it respects the actual type of the
+   object in the transient store (was not working with AlignmentCondition), if
+   possible. It is also possible to specify only few parameters of the
+   condition, and the other are taken from the database.
+
+!========================= DetDescSvc v1r11 2007-03-19 ========================
+! 2007-03-19 - Marco Cattaneo
+ - Fix unchecked StatusCodes
+ - Fix a doxygen warning
+
+!========================= DetDescSvc v1r10p1 2007-03-05 ======================
+! 2007-03-05 - Marco Cattaneo
+ - Remove obsolete DetDescSvc_load.cpp file
+
+! 2007-02-28 - Marco Clemencic
+ - Minor bugfix in DEBUG output of UpdateManagerSvc
+
+! 2007-02-15 - Marco Clemencic
+ - Added a couple of useful warnings in UpdateManagerSvc
+
+!========================= DetDescSvc v1r10 2007-02-09 ========================
+! 2007-02-09 - Marco Clemencic
+ - Fixed a bug in UpdateManagerSvc (in some special cases, registerCondition
+   did not invalidate the user item)
+
+!========================= DetDescSvc v1r9 2007-01-23 =========================
+! 2007-01-23 - Marco Cattaneo
+ - use DECLARE_SERVICE_FACTORY macro
+
+!========================= DetDescSvc v1r8 2006-11-03 =========================
+ ### requires DetDesc >= v16r9 ###
+! 2006-10-23 - Marco Clemencic
+ - Add the possiblility to define a condition in the job options via an option
+   of the UpdateManagerSvc (use boost::spirit).
+ - Move part of UpdateManagerSvc_Item.icpp into UpdateManagerSvc_Item.cpp
+   (It does not make sense to have them in a header file)
+
+!========================= DetDescSvc v1r7 2006-10-12 =========================
+! 2006-10-11 - Marco Clemencic
+ - Add implementation of interface IDetElemFinder. It is a service that allows
+   to find the DetectorElement associated to a path in the physical volumes
+   hierarchy.
+
+!========================= DetDescSvc v1r6 2006-09-28 =========================
+! 2006-09-26 - Marco Clemencic
+ - Modify EventClockSvc to use a tool implementing IEventTimeDecoder for the
+   actual decoding of the event time.
+ - Add FakeEventTime as an example of implementation of IEventTimeDecoder and
+   to provide the same functionality already present in EventClockSvc.
+
+! 2006-09-21 - Marco Clemencic
+ - Fixed minor "feature" of UpdateManagerSvc: it was compulsory to specify the
+   root name in the path of a condition. Now it can be avoided and it is
+   removed if present.
+
+!========================= DetDescSvc v1r5 2006-07-26 =========================
+! 2006-07-26 - Marco Cattaneo
+ - Add PreloadGeometryTool
+ - Minor code cleanups
+
+!========================= DetDescSvc v1r4 2006-04-27 =========================
+! 2006-04-13 - Marco Clemencic
+ - Added a couple of methods using a mutex_lock to avoid different threads to
+  step on each other toes. (the update loop inside newEvent() must not be
+  disturbed by another thread)
+
+!========================= DetDescSvc v1r3 2006-02-01 =========================
+! 2006-02-01 - Marco Clemencic
+ - Updated to Gaudi v18r2 (use Gaudi::Time instead of ITime+TimePoint)
+
+!========================= DetDescSvc v1r2 2006-01-20 =========================
+! 2006-01-12 - Marco Clemencic
+ ### requires GaudiKernel >= v20r2 ###
+ - UpdateManagerSvc improved: now it can set a user provided pointer to the
+   condition object
+ - IUpdateManagerSvc.h moved to GaudiKernel
+ - New exception UpdateManagerException introduced. It is thrown when the
+   registration fails. As a consequence, IUpdateManagerSvc::registerCondition
+   methods do not return anymore a StatusCode.
+
+!========================= DetDescSvc v1r1 2005-12-13 =========================
+! 2005-12-13 - Marco Clemencic
+ - Improved debug messages of the UpdateMgrSvc.
+
+! 2005-12-07 - Marco Cattaneo
+ - Migrate TransportSvc to MathCore
+ - Add UpdateMgrSvc, EventClockSvc (moved from DetDesc)
+
+!========================= DetDescSvc v1r0 2005-12-07 =========================
+! 2005-12-07 - M. Needham
+ - This is a new package for the LHCb detector description services.
+ - Moved transportSvc from DetDesc
+   - Removed calls to MsgStream in event loop
+   - Changed std::copy to vector insert
