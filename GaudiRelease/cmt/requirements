@@ -40,6 +40,7 @@ use GaudiSys       v22r5
 # Detector Description
 use DetDesc        *
 use DetDescSvc     *
+use XmlTools       *
 
 # Monitoring utilities.
 use GaudiMonitor   v2r9
