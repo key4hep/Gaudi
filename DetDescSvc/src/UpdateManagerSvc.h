@@ -1,4 +1,3 @@
-// $Id: UpdateManagerSvc.h,v 1.13 2009-01-16 12:03:46 ocallot Exp $
 #ifndef UPDATEMANAGERSVC_H
 #define UPDATEMANAGERSVC_H 1
 
@@ -39,8 +38,8 @@ class Condition;
  *  @date   2005-03-30
  */
 class UpdateManagerSvc: public virtual extends2<Service,
-                        						IUpdateManagerSvc,
-                        						IIncidentListener> {
+                                                IUpdateManagerSvc,
+                                                IIncidentListener> {
 public:
   /// Standard constructor
   UpdateManagerSvc(const std::string& name, ISvcLocator* svcloc);

@@ -23,9 +23,9 @@ DECLARE_SERVICE_FACTORY( RunChangeHandlerSvc )
 // Standard constructor, initializes variables
 //=============================================================================
 RunChangeHandlerSvc::RunChangeHandlerSvc(const std::string &name, ISvcLocator *svcLoc):
-  Service(name,svcLoc),
+  base_class(name, svcLoc),
   m_currentRun(0),
-  m_evtSvc(0),m_detSvc(0),m_incSvc(0),m_ums(0),m_evtProc(0)
+  m_evtSvc(0), m_detSvc(0), m_incSvc(0), m_ums(0), m_evtProc(0)
 {
   declareProperty("Conditions", m_condDesc,
    "Map defining what to use to replace the location of the source XML files.");
@@ -35,18 +35,6 @@ RunChangeHandlerSvc::RunChangeHandlerSvc(const std::string &name, ISvcLocator *s
 // Destructor
 //=============================================================================
 RunChangeHandlerSvc::~RunChangeHandlerSvc() {}
-
-//=============================================================================
-// IInterface implementation
-//=============================================================================
-StatusCode RunChangeHandlerSvc::queryInterface(const InterfaceID& riid, void** ppvUnknown){
-  if ( IIncidentListener::interfaceID().versionMatch(riid) ) {
-    *ppvUnknown = (IIncidentListener*)this;
-    addRef();
-    return StatusCode::SUCCESS;
-  }
-  return Service::queryInterface(riid,ppvUnknown);
-}
 
 //=============================================================================
 // Initialize
@@ -113,7 +101,7 @@ void RunChangeHandlerSvc::handle(const Incident &inc) {
                          " run change ignored" << endmsg;
     return;
   }
-  
+
   if (m_currentRun != rci->runNumber()) {
     if( log.level() <= MSG::DEBUG )
       log << MSG::DEBUG << "Change of run number detected " << m_currentRun;

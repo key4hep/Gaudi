@@ -1,9 +1,9 @@
 // $Id: PreloadGeometryTool.cpp,v 1.1 2006-07-27 20:39:15 cattanem Exp $
-// Include files 
+// Include files
 
 // from Gaudi
-#include "GaudiKernel/ToolFactory.h" 
-#include "GaudiKernel/IDataManagerSvc.h" 
+#include "GaudiKernel/ToolFactory.h"
+#include "GaudiKernel/IDataManagerSvc.h"
 
 // from DetDesc
 #include "DetDesc/DataStoreLoadAgent.h"
@@ -27,20 +27,19 @@ DECLARE_TOOL_FACTORY( PreloadGeometryTool );
 PreloadGeometryTool::PreloadGeometryTool( const std::string& type,
                                           const std::string& name,
                                           const IInterface* parent )
-  : GaudiTool ( type, name , parent )
+  : base_class ( type, name , parent )
 {
   declareInterface<IGenericTool>(this);
-
 }
 //=============================================================================
 // Destructor
 //=============================================================================
-PreloadGeometryTool::~PreloadGeometryTool() {} 
+PreloadGeometryTool::~PreloadGeometryTool() {}
 
 //=============================================================================
 // Excution method
 //=============================================================================
-void PreloadGeometryTool::execute() 
+void PreloadGeometryTool::execute()
 {
   DataStoreLoadAgent *loadAgent = new DataStoreLoadAgent();
   IDataManagerSvc *dataMgr = svc<IDataManagerSvc>("DetectorDataSvc", true);

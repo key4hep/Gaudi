@@ -1,4 +1,4 @@
-// Include files 
+// Include files
 
 #include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/MsgStream.h"
@@ -23,7 +23,7 @@ DECLARE_SERVICE_FACTORY( DetElemFinder )
 // Standard constructor, initializes variables
 //=============================================================================
 DetElemFinder::DetElemFinder( const std::string& name, ISvcLocator* svcloc ):
-  Service(name,svcloc)
+  base_class(name,svcloc)
 {
   declareProperty( "DetectorDataSvc", m_detDataSvcName = "DetectorDataSvc" );
   declareProperty( "RootElement",     m_rootElement    = "/dd/Structure/LHCb" );
@@ -32,19 +32,7 @@ DetElemFinder::DetElemFinder( const std::string& name, ISvcLocator* svcloc ):
 //=============================================================================
 // Destructor
 //=============================================================================
-DetElemFinder::~DetElemFinder() {} 
-
-//=============================================================================
-// IInterface implementation
-//=============================================================================
-StatusCode DetElemFinder::queryInterface(const InterfaceID& riid, void** ppvUnknown){
-  if ( IID_IDetElemFinder.versionMatch(riid) ) {
-    *ppvUnknown = (IDetElemFinder*)this;
-    addRef();
-    return StatusCode::SUCCESS;
-  }
-  return Service::queryInterface(riid,ppvUnknown);
-}
+DetElemFinder::~DetElemFinder() {}
 
 //=============================================================================
 // Find the detector element
@@ -73,20 +61,20 @@ StatusCode DetElemFinder::initialize ( )
   sc = service(m_detDataSvcName,detSvc,true);
   if (!sc.isSuccess()) {
 		log << MSG::ERROR << "Unable to get a handle to the detector data service ("
-        << m_detDataSvcName << ")" << endmsg; 
+        << m_detDataSvcName << ")" << endmsg;
     return sc;
 	}
-  
+
   DataObject *obj;
   sc = detSvc->retrieveObject(m_rootElement,obj);
   if (!sc.isSuccess()) {
-		log << MSG::ERROR << "Unable to retrieve object '" << m_rootElement << "'" << endmsg; 
+		log << MSG::ERROR << "Unable to retrieve object '" << m_rootElement << "'" << endmsg;
     detSvc->release();
     return sc;
 	}
   IDetectorElement *de = dynamic_cast<IDetectorElement *>(obj);
   if (!de) {
-		log << MSG::ERROR << "Object '" << m_rootElement << "' is not a DetectorElement" << endmsg; 
+		log << MSG::ERROR << "Object '" << m_rootElement << "' is not a DetectorElement" << endmsg;
     detSvc->release();
     return sc;
 	}
@@ -110,7 +98,7 @@ StatusCode DetElemFinder::finalize ( )
   if ( m_dumpMap ) {
     for ( map_type::iterator i = m_map.begin(); i != m_map.end(); ++i ){
       log << MSG::ALWAYS << i->first << " -> " << i->second->name() << endmsg;
-    } 
+    }
   }
 
 	// base class finalization
@@ -120,20 +108,20 @@ StatusCode DetElemFinder::finalize ( )
 //=========================================================================
 //  get the PV path of the given DE
 //=========================================================================
-StatusCode DetElemFinder::detector_element_path(const IDetectorElement *de, std::string &path, const std::string &parent_path) 
+StatusCode DetElemFinder::detector_element_path(const IDetectorElement *de, std::string &path, const std::string &parent_path)
 {
   StatusCode sc = StatusCode::SUCCESS;
 
   // initialize the output variable
   path = parent_path;
-  
+
   // get the parent geometryInfo (supportIGeometryInfo() is public)
   IGeometryInfo* sgi = de->geometry()->supportIGeometryInfo();
 
   if (NULL == sgi) {
     return sc;
   }
-  
+
   // If the parent path was not specified, I have to find it recursively
   if (parent_path.empty()){
     if (de->parentIDetectorElement()) {
@@ -145,14 +133,14 @@ StatusCode DetElemFinder::detector_element_path(const IDetectorElement *de, std:
       return sc;
     }
   }
-  
+
   // get support LVolume
   const ILVolume* lv = sgi->lvolume();
-  
+
   // define a PVolumePath (this is simply std::vector<const IPVolume*> )
-  
+
   ILVolume::PVolumePath volumePath;
-  
+
   // Fill it with PVolume* corresponding to the supportPath().
   sc = lv->traverse( de->geometry()->supportPath().begin(),
                      de->geometry()->supportPath().end(),
@@ -162,7 +150,7 @@ StatusCode DetElemFinder::detector_element_path(const IDetectorElement *de, std:
     log << MSG::ERROR << "Cannot traverse the support path" << endmsg;
     return sc;
   }
-  
+
   // build the string
   for ( ILVolume::PVolumePath::iterator pv = volumePath.begin(); pv != volumePath.end(); ++pv ) {
     path += "/" + (*pv)->name();
@@ -172,7 +160,7 @@ StatusCode DetElemFinder::detector_element_path(const IDetectorElement *de, std:
 
 
 //=========================================================================
-//  
+//
 //=========================================================================
 StatusCode DetElemFinder::insert ( const IDetectorElement *de, const std::string &parent_path) {
 
@@ -189,7 +177,7 @@ StatusCode DetElemFinder::insert ( const IDetectorElement *de, const std::string
   if ( ! sc.isSuccess() ) {
     return sc;
   }
-  
+
   map_type::iterator x = m_map.find(path);
   if ( x != m_map.end() ) {
     log << MSG::ERROR << "Cannot insert duplicated path \"" << path << "\" for \"" << de->name() << "\"" << endmsg;

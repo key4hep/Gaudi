@@ -1,5 +1,5 @@
 // $Id: DetElemFinder.h,v 1.2 2008-07-21 14:52:40 cattanem Exp $
-#ifndef DETELEMFINDER_H 
+#ifndef DETELEMFINDER_H
 #define DETELEMFINDER_H 1
 
 // Include files
@@ -8,25 +8,19 @@
 #include "DetDesc/IDetElemFinder.h"
 
 /** @class DetElemFinder DetElemFinder.h
- *  
+ *
  *  Implementation of IDetElemFinder.
  *
  *  @author Marco Clemencic
  *  @date   2006-09-01
  */
-class DetElemFinder: public virtual Service, public virtual IDetElemFinder {
-public: 
+class DetElemFinder: public extends1<Service,IDetElemFinder> {
+public:
 
   /// Standard constructor
-  DetElemFinder( const std::string& name, ISvcLocator* svcloc ); 
+  DetElemFinder( const std::string& name, ISvcLocator* svcloc );
 
   virtual ~DetElemFinder( ); ///< Destructor
-
-  /** Query interfaces (\see{IInterface})
-      @param riid       ID of Interface to be retrieved
-      @param ppvUnknown Pointer to Location for interface pointer
-  */
-  virtual StatusCode queryInterface(const InterfaceID& riid, void** ppvUnknown);
 
   /// Find the detector element instance associated to a given physical volume path.
   /// Returns 0 if there is no suitable detector element.
@@ -34,7 +28,7 @@ public:
 
   /// Initialize Service
   virtual StatusCode initialize();
-  
+
   /// Finalize Service
   virtual StatusCode finalize();
 

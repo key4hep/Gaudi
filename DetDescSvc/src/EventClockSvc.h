@@ -1,5 +1,4 @@
-// $Id: EventClockSvc.h,v 1.3 2006-09-26 10:45:48 marcocle Exp $
-#ifndef EVENTCLOCKSVC_H 
+#ifndef EVENTCLOCKSVC_H
 #define EVENTCLOCKSVC_H 1
 
 // Include files
@@ -10,36 +9,28 @@ class IEventTimeDecoder;
 class IToolSvc;
 
 /** @class EventClockSvc EventClockSvc.h
- *  
+ *
  *  Small IncidentListener to set the event time.
  *
  *  @author Marco Clemencic
  *  @date   2005-07-08
  */
-class EventClockSvc: public virtual Service, public virtual IIncidentListener {
-public: 
+class EventClockSvc: public extends1<Service,IIncidentListener> {
+public:
   /// Standard constructor
-  EventClockSvc(const std::string& name, ISvcLocator* svcloc); 
+  EventClockSvc(const std::string& name, ISvcLocator* svcloc);
 
   virtual ~EventClockSvc( ); ///< Destructor
 
-  /** Query interfaces (\see{IInterface})
-      @param riid       ID of Interface to be retrieved
-      @param ppvUnknown Pointer to Location for interface pointer
-  */
-  virtual StatusCode queryInterface(const InterfaceID& riid, void** ppvUnknown);
-
   /// Initialize Service
   virtual StatusCode initialize();
-  
+
   /// Finalize Service
   virtual StatusCode finalize();
 
   // ---- Implement IIncidentListener interface ----
   /// Handle BeginEvent incident.
   virtual void handle(const Incident &inc);
-
-protected:
 
 private:
 
@@ -52,7 +43,7 @@ private:
   std::string m_detDataSvcName;
   /// Name of the Event Time Decoder (set by the option EventTimeDecoder, by default "FakeEventTime").
   std::string m_eventTimeDecoderName;
-  
+
   // --- services ---
   /// Pointer to the incident service;
   IIncidentSvc     *m_incidentSvc;
@@ -69,6 +60,6 @@ private:
   // --- misc ---
   /// Time to use before reading the first event  (set by the option InitialTime, by default 0).
   long long m_initialTime;
-  
+
 };
 #endif // EVENTCLOCKSVC_H

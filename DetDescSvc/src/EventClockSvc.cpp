@@ -22,8 +22,8 @@ DECLARE_SERVICE_FACTORY( EventClockSvc )
 // Standard constructor, initializes variables
 //=============================================================================
 EventClockSvc::EventClockSvc(const std::string& name, ISvcLocator* svcloc):
-  Service(name,svcloc),m_incidentSvc(NULL),m_detDataSvc(NULL),m_toolSvc(NULL),
-  m_eventTimeDecoder(NULL)
+  base_class(name,svcloc), m_incidentSvc(NULL), m_detDataSvc(NULL),
+  m_toolSvc(NULL), m_eventTimeDecoder(NULL)
 {
   // service name
   declareProperty("DetectorDataSvc",  m_detDataSvcName       = "DetectorDataSvc" );
@@ -39,17 +39,6 @@ EventClockSvc::EventClockSvc(const std::string& name, ISvcLocator* svcloc):
 //=============================================================================
 EventClockSvc::~EventClockSvc() {}
 
-//=============================================================================
-// IInterface implementation
-//=============================================================================
-StatusCode EventClockSvc::queryInterface(const InterfaceID& riid, void** ppvUnknown){
-  if ( IIncidentListener::interfaceID().versionMatch(riid) ) {
-    *ppvUnknown = (IIncidentListener*)this;
-    addRef();
-    return StatusCode::SUCCESS;
-  }
-  return Service::queryInterface(riid,ppvUnknown);
-}
 //=========================================================================
 //
 //=========================================================================

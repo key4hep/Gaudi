@@ -1,8 +1,11 @@
 ! =============================================================================
 ! package DetDescSvc
-! package manager : Marco Clemencic, Juan Palacios ?
+! package manager : Marco Clemencic
 ! purpose:          Component library for Detector Description Services
 ! =============================================================================
+
+! 2011-12-05 - Marco Clemencic
+ - Modified to compile within Gaudi.
 
 !========================= DetDescSvc v3r4 2011-11-07 =========================
 ! 2011-10-03 - Marco Clemencic

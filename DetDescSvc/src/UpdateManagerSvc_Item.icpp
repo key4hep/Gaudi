@@ -1,4 +1,3 @@
-// $Id: UpdateManagerSvc_Item.icpp,v 1.10 2009-01-10 23:01:00 marcocle Exp $
 #ifndef UPDATEMANAGERSVC_ITEM_ICPP
 #define UPDATEMANAGERSVC_ITEM_ICPP 1
 

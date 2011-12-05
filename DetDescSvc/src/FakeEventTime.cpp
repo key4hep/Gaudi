@@ -24,7 +24,7 @@ DECLARE_TOOL_FACTORY( FakeEventTime )
 FakeEventTime::FakeEventTime( const std::string& type,
                               const std::string& name,
                               const IInterface* parent )
-  : AlgTool ( type, name , parent )
+  : base_class ( type, name , parent )
 {
   declareInterface<IEventTimeDecoder>(this);
 
