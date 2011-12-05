@@ -1,7 +1,4 @@
 // -*- C++ -*-
-// $Id: hash_map.src,v 1.1 2005-12-07 15:08:51 jpalac Exp $
-// ---------------------------------------------------------------------------
-
 #ifdef DEBUG_MODE
 #include <iostream>
 #endif
@@ -11,7 +8,7 @@
 
 #include <string.h>
 #include <utility>
-#include "string.src"
+#include "string.icpp"
 
 /*
  * Simplified hash_map class.
@@ -28,7 +25,7 @@
 template<class K, class T>
 class hash_map {
 public:
-  struct Entry {            // Hash_map entry   
+  struct Entry {            // Hash_map entry
     std::pair<const K,T> data;
     Entry* next;
     Entry(K k, T v, Entry* n) : data(k,v), next(n) {}
@@ -36,9 +33,9 @@ public:
 
   class hash_map_iterator { // Hash_map iterator
     Entry* entry;
-  public: 
+  public:
     hash_map_iterator() : entry(0) {}
-    hash_map_iterator(Entry & e) : entry(&e) {} 
+    hash_map_iterator(Entry & e) : entry(&e) {}
     std::pair<const K,T> & operator * () const { return entry->data; }
     std::pair<const K,T> * operator ->() const { return &(operator*()); }
     bool operator==(hash_map_iterator i) const {
@@ -98,10 +95,10 @@ public:
       while(n) { Entry* p = n; n = p->next; delete p; }
     }
     delete [] table;
-  }    
+  }
 
   // Sets load and grow parameters.
-  void set_load(float m = 0.7, float g = 1.7) { max_load = m; grow = g; } 
+  void set_load(float m = 0.7, float g = 1.7) { max_load = m; grow = g; }
 
   // Returns number of elements.
   size_type size() const { return cur_size; }
@@ -143,7 +140,7 @@ public:
     return table[i]->data.second;
   }
 
-  // Finds element with given key.  
+  // Finds element with given key.
   iterator find(const K & key) const {
     size_type i = hash(key) % max_size;
     for (Entry* p=table[i]; p; p=p->next) {

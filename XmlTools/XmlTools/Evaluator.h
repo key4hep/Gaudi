@@ -1,14 +1,13 @@
 // -*- C++ -*-
-// $Id: Evaluator.h,v 1.1 2005-12-07 15:08:51 jpalac Exp $
-// ---------------------------------------------------------------------------
-
 #ifndef XMLTOOLS_EVALUATOR_H
 #define XMLTOOLS_EVALUATOR_H
+
+#include "GaudiKernel/Kernel.h"
 
 namespace XmlTools {
 
 /**
- * Evaluator of arithmetic expressions with an extendable dictionary.
+ * Evaluator of arithmetic expressions with an extendible dictionary.
  *
  * Taken from CLHEP 1.9.2.1
  *
@@ -24,15 +23,15 @@ namespace XmlTools {
  * @author Evgeni Chernyaev <Evgueni.Tcherniaev@cern.ch>
  * @ingroup evaluator
  */
-class Evaluator {
- public: 
+class GAUDI_API Evaluator {
+public:
 
   /**
    * List of possible statuses.
    * Status of the last operation can be obtained with status().
    * In case if status() is an ERROR the corresponding error message
    * can be printed with print_error().
-   * 
+   *
    * @see status
    * @see error_position
    * @see print_error
@@ -42,10 +41,10 @@ class Evaluator {
     WARNING_EXISTING_VARIABLE,  /**< Redefinition of existing variable */
     WARNING_EXISTING_FUNCTION,  /**< Redefinition of existing function */
     WARNING_BLANK_STRING,       /**< Empty input string */
-    ERROR_NOT_A_NAME,           /**< Not allowed sysmbol in the name of variable or function */
-    ERROR_SYNTAX_ERROR,         /**< Systax error */
+    ERROR_NOT_A_NAME,           /**< Not allowed symbol in the name of variable or function */
+    ERROR_SYNTAX_ERROR,         /**< Syntax error */
     ERROR_UNPAIRED_PARENTHESIS, /**< Unpaired parenthesis */
-    ERROR_UNEXPECTED_SYMBOL,    /**< Unexpected sysbol */
+    ERROR_UNEXPECTED_SYMBOL,    /**< Unexpected symbol */
     ERROR_UNKNOWN_VARIABLE,     /**< Non-existing variable */
     ERROR_UNKNOWN_FUNCTION,     /**< Non-existing function */
     ERROR_EMPTY_PARAMETER,      /**< Function call has empty parameter */
@@ -60,10 +59,10 @@ class Evaluator {
   /**
    * Destructor.
    */
-  ~Evaluator(); 
+  ~Evaluator();
 
   /**
-   * Evaluates the arithmetic expression given as character string. 
+   * Evaluates the arithmetic expression given as character string.
    * The expression may consist of numbers, variables and functions
    * separated by arithmetic (+, - , /, *, ^, **) and logical
    * operators (==, !=, >, >=, <, <=, &&, ||).
@@ -82,9 +81,9 @@ class Evaluator {
   int status() const;
 
   /**
-   * Returns position in the input string where the problem occured.
+   * Returns position in the input string where the problem occurred.
    */
-  int error_position() const; 
+  int error_position() const;
 
   /**
    * Prints error message if status() is an ERROR.
@@ -92,7 +91,7 @@ class Evaluator {
   void print_error() const;
 
   /**
-   * Adds to the dictionary a variable with given value. 
+   * Adds to the dictionary a variable with given value.
    * If a variable with such a name already exist in the dictionary,
    * then status will be set to WARNING_EXISTING_VARIABLE.
    *
@@ -118,7 +117,7 @@ class Evaluator {
    * then status will be set to WARNING_EXISTING_FUNCTION.
    *
    * @param name function name.
-   * @param fun pointer to the real function in the user code. 
+   * @param fun pointer to the real function in the user code.
    */
   void setFunction(const char * name, double (*fun)());
 
@@ -128,7 +127,7 @@ class Evaluator {
    * then status will be set to WARNING_EXISTING_FUNCTION.
    *
    * @param name function name.
-   * @param fun pointer to the real function in the user code. 
+   * @param fun pointer to the real function in the user code.
    */
   void setFunction(const char * name, double (*fun)(double));
 
@@ -138,7 +137,7 @@ class Evaluator {
    * then status will be set to WARNING_EXISTING_FUNCTION.
    *
    * @param name function name.
-   * @param fun pointer to the real function in the user code. 
+   * @param fun pointer to the real function in the user code.
    */
   void setFunction(const char * name, double (*fun)(double,double));
 
@@ -148,7 +147,7 @@ class Evaluator {
    * then status will be set to WARNING_EXISTING_FUNCTION.
    *
    * @param name function name.
-   * @param fun pointer to the real function in the user code. 
+   * @param fun pointer to the real function in the user code.
    */
   void setFunction(const char * name, double (*fun)(double,double,double));
 
@@ -158,7 +157,7 @@ class Evaluator {
    * then status will be set to WARNING_EXISTING_FUNCTION.
    *
    * @param name function name.
-   * @param fun pointer to the real function in the user code. 
+   * @param fun pointer to the real function in the user code.
    */
   void setFunction(const char * name,
 		   double (*fun)(double,double,double,double));
@@ -169,14 +168,14 @@ class Evaluator {
    * then status will be set to WARNING_EXISTING_FUNCTION.
    *
    * @param name function name.
-   * @param fun pointer to the real function in the user code. 
+   * @param fun pointer to the real function in the user code.
    */
   void setFunction(const char * name,
                    double (*fun)(double,double,double,double,double));
 
   /**
    * Finds the variable in the dictionary.
-   * 
+   *
    * @param  name name of the variable.
    * @return true if such a variable exists, false otherwise.
    */
@@ -184,25 +183,25 @@ class Evaluator {
 
   /**
    * Finds the function in the dictionary.
-   * 
+   *
    * @param  name name of the function to be unset.
-   * @param  npar number of parameters of the function.  
+   * @param  npar number of parameters of the function.
    * @return true if such a function exists, false otherwise.
    */
   bool findFunction(const char * name, int npar) const;
 
   /**
    * Removes the variable from the dictionary.
-   * 
+   *
    * @param name name of the variable.
    */
   void removeVariable(const char * name);
 
   /**
    * Removes the function from the dictionary.
-   * 
+   *
    * @param name name of the function to be unset.
-   * @param npar number of parameters of the function.  
+   * @param npar number of parameters of the function.
    */
   void removeFunction(const char * name, int npar);
 
@@ -250,8 +249,8 @@ class Evaluator {
                         double mole     = 1.0,
                         double candela  = 1.0);
 
-private: 
-  void * p;                                 // private data 
+private:
+  void * p;                                 // private data
   Evaluator(const Evaluator &);             // copy constructor is not allowed
   Evaluator & operator=(const Evaluator &); // assignment is not allowed
 };

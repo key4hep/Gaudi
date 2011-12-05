@@ -1,4 +1,3 @@
-// $Id: ValidInputSource.h,v 1.1 2007-02-02 08:10:49 marcocle Exp $
 #ifndef VALIDINPUTSOURCE_H_
 #define VALIDINPUTSOURCE_H_
 
@@ -14,14 +13,13 @@
 
 
 /** @class ValidInputSource XmlTools/ValidInputSource.h
- *  
+ *
  *  Extend xercesc::InputSource adding a validity (IValidity interface).
  *
  *  @author Marco Clemencic
  *  @date   2006-02-01
  */
-class ValidInputSource: public xercesc::MemBufInputSource, virtual public IValidity {
-
+class GAUDI_API ValidInputSource: public xercesc::MemBufInputSource, virtual public IValidity {
 public:
 
   /// Constructor
@@ -35,36 +33,36 @@ public:
   virtual ~ValidInputSource();
 
   // -------- Implementation of IValidity --------
-   
+
   /// is the Object valid? (it can be always invalid)
-  virtual bool isValid() const; 
+  virtual bool isValid() const;
 
   /// is the Object valid for a given time?
-  virtual bool isValid( const Gaudi::Time& time) const; 
+  virtual bool isValid( const Gaudi::Time& time) const;
 
   /// since what time the Objest is valid?
-  virtual const Gaudi::Time& validSince() const; 
+  virtual const Gaudi::Time& validSince() const;
 
   /// till  what time the Object is Valid?
   virtual const Gaudi::Time& validTill() const;
 
   /// set the validity range of the Object
-  virtual void setValidity( const Gaudi::Time& since, const Gaudi::Time& until); 
+  virtual void setValidity( const Gaudi::Time& since, const Gaudi::Time& until);
 
-  /// set the validity time of the Object 
-  virtual void setValiditySince( const Gaudi::Time& since); 
+  /// set the validity time of the Object
+  virtual void setValiditySince( const Gaudi::Time& since);
 
-  /// set the validity time of the Object 
+  /// set the validity time of the Object
   virtual void setValidityTill( const Gaudi::Time& until);
 
 private:
-  
+
   /// Time of the start of validity
   Gaudi::Time m_since;
-  
+
   /// Time of end of validity
   Gaudi::Time m_until;
-  
+
 };
 
 #endif /*VALIDINPUTSOURCE_H_*/

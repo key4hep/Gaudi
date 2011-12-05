@@ -1,5 +1,3 @@
-// $Id: XmlCnvSvc.h,v 1.13 2009-05-05 09:26:45 ocallot Exp $
-
 #ifndef DETDESCCNV_XMLCNVSVC_H
 #define DETDESCCNV_XMLCNVSVC_H
 
@@ -24,46 +22,36 @@ template <class TYPE> class SvcFactory;
  *  @author Pere Mato
  *  @author Marco Clemencic
  */
-class XmlCnvSvc : public ConversionSvc,
-                  virtual public IXmlSvc {
+class XmlCnvSvc : public extends1<ConversionSvc, IXmlSvc> {
 
   /// Friend needed
   friend class SvcFactory<XmlCnvSvc>;
-  
+
 public:
-  
+
   /**
    * Initializes the service
    * @return status depending on the completion of the call
    */
   virtual StatusCode initialize();
-  
+
   /**
    * Reinitializes the service
    * @return status depending on the completion of the call
    */
   virtual StatusCode reinitialize();
-  
+
   /**
    * Finalizes the service
    * @return status depending on the completion of the call
    */
   virtual StatusCode finalize();
-  
-  /**
-   * Queries interfaces of Interface.
-   * @param riid ID of Interface to be retrieved
-   * @param ppvInterface Pointer to Location for interface pointer
-   * @return status depending on the completion of the call
-   */
-  virtual StatusCode queryInterface ( const InterfaceID& riid, 
-                                      void** ppvInterface );
 
   /**
    * Create an XML address using explicit arguments to identify a single object
    * @param svc_type the service type
    * @param clid the CLID of the XML Element for which an address is created
-   * @param par an array of two strings containing the dbname and objectname 
+   * @param par an array of two strings containing the dbname and objectname
    * in this order
    * @param refpAddress the new address created
    * @return a StatusCode giving the status of the address creation
@@ -72,10 +60,10 @@ public:
   using ConversionSvc::createAddress;
   virtual StatusCode createAddress(long  svc_type,
                                    const CLID& clid,
-                                   const std::string* par, 
+                                   const std::string* par,
                                    const unsigned long* /*ip*/,
                                    IOpaqueAddress*& refpAddress);
-  
+
 
   ///////////////////////////////////////////////////
   // implementation of the IXmlParserSvc interface //
@@ -110,7 +98,7 @@ public:
   // implementation of the IXmlSvc interface //
   /////////////////////////////////////////////
 
-  /** 
+  /**
    * Evaluates a numerical expresion
    * @param expr expresion to evaluate. It may include units and parameters
    * @param check boolean to control if the value needs to be check for being a
@@ -119,7 +107,7 @@ public:
    */
   virtual double eval( const char* expr, bool check = true );
 
-  /** 
+  /**
    * Evaluates a numerical expresion
    * @param expr expresion to evaluate. It may include units and parameters
    * @param check boolean to control if the value needs to be check for being a
@@ -133,7 +121,7 @@ public:
    * expression with units and other parameters.
    * @param name parameter name
    * @param value string which defines the value of the parameter.
-   * @return true if success 
+   * @return true if success
    */
   virtual bool addParameter (const std::string& name,
                              const std::string& value);
@@ -143,7 +131,7 @@ public:
    * expression with units and other parameters.
    * @param name parameter name
    * @param value string which defines the value of the parameter.
-   * @return true if success 
+   * @return true if success
    */
   virtual bool addParameter( const char* name, const char* value );
 
@@ -152,21 +140,21 @@ public:
    * expression with units and other parameters.
    * @param name parameter name
    * @param value string which defines the value of the parameter.
-   * @return true if success 
+   * @return true if success
    */
   virtual bool addParameter( const char* name, double value );
 
   /**
    * Removes a parameter from the list of known parameters
    * @param name parameter name
-   * @return true if success 
+   * @return true if success
    */
   virtual bool removeParameter( const std::string& name );
 
   /**
    * Removes a parameter from the list of known parameters
    * @param name parameter name
-   * @return true if success 
+   * @return true if success
    */
   virtual bool removeParameter( const char* name );
 
@@ -178,9 +166,9 @@ public:
    */
   bool allowGenericCnv() { return m_genericConversion; }
 
-  
+
 protected:
-  
+
   /**
    * Standard Constructor
    * @param name String with service name
@@ -188,7 +176,7 @@ protected:
    * @return Reference to CdfPersCnvSvc
    */
   XmlCnvSvc (const std::string& name, ISvcLocator* svc);
-  
+
   /**
    * Default destructor
    */
@@ -246,7 +234,7 @@ private:
   std::string::size_type skipExpr (std::string s,
                          std::string::size_type start,
                          std::string::size_type end);
-  
+
   bool sumHasUnit (std::string s,
                    std::string::size_type baseIndex,
                    std::string::size_type lastIndex);
@@ -256,7 +244,7 @@ private:
   bool exprHasUnit (std::string s,
                     std::string::size_type baseIndex,
                     std::string::size_type lastIndex);
-  
+
 
 private:
 
@@ -288,22 +276,22 @@ private:
   bool m_checkUnits;
   /// The message stream
   MsgStream* m_msg;
-  
+
   /// Methods to print as in GaudiAlgorithms
   MsgStream& verbose() const { return *m_msg << MSG::VERBOSE; }
-  
+
   MsgStream& debug()   const { return *m_msg << MSG::DEBUG; }
 
   MsgStream& info()    const { return *m_msg << MSG::INFO; }
-  
+
   MsgStream& warning() const { return *m_msg << MSG::WARNING; }
 
-  MsgStream& error()   const { return *m_msg << MSG::ERROR; }  
- 
+  MsgStream& error()   const { return *m_msg << MSG::ERROR; }
+
   MsgStream& fatal()   const { return *m_msg << MSG::FATAL; }
 
   inline bool msgLevel( const MSG::Level level ) const { return m_msg->level() <= level; }
-  
+
 };
 
 #endif    // DETDESCCNV_XMLCNVSVC_H

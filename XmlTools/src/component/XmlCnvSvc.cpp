@@ -21,8 +21,8 @@ DECLARE_SERVICE_FACTORY(XmlCnvSvc)
 // Standard Constructor
 // -----------------------------------------------------------------------
 XmlCnvSvc::XmlCnvSvc (const std::string& name, ISvcLocator* svc) :
-  ConversionSvc(name, svc, XML_StorageType), m_parserSvc(0), m_msg(0) {
-  
+  base_class(name, svc, XML_StorageType), m_parserSvc(0), m_msg(0) {
+
   // gets the AllowGenericConversion property value
   declareProperty ("AllowGenericConversion", m_genericConversion = false);
 
@@ -55,15 +55,15 @@ StatusCode XmlCnvSvc::initialize() {
   m_msg = new MsgStream(msgSvc(), name() );
 
   if (!status.isSuccess()) {
-    return status;  
+    return status;
   }
-  
+
   // creation of a parser service
   status = serviceLocator()->service(m_parserSvcName, m_parserSvc, true);
   if (status.isFailure()) {
     return status;
   }
-  
+
   //setProperties();
 
   // Initialize numerical expressions parser with the standard math functions
@@ -98,23 +98,6 @@ StatusCode XmlCnvSvc::finalize() {
   return ConversionSvc::finalize();
 }
 
-
-// -----------------------------------------------------------------------
-// Query interface
-// -----------------------------------------------------------------------
-StatusCode XmlCnvSvc::queryInterface( const InterfaceID& riid, 
-                                      void** ppvInterface     ) {
-  if (IID_IXmlSvc.versionMatch(riid))  {
-    *ppvInterface = (IXmlSvc*)this;
-  } else {
-    // Interface is not directly availible: try out a base class
-    return ConversionSvc::queryInterface(riid, ppvInterface);
-  }
-  addRef();
-  return StatusCode::SUCCESS;
-}
-
-
 // -----------------------------------------------------------------------
 // Create an XML address.
 // Converters interpret XML addresses according to the following rules:
@@ -124,16 +107,16 @@ StatusCode XmlCnvSvc::queryInterface( const InterfaceID& riid,
 // -----------------------------------------------------------------------
 StatusCode XmlCnvSvc::createAddress(long  svc_type,
                                     const CLID& clid,
-                                    const std::string* par, 
+                                    const std::string* par,
                                     const unsigned long* ipar,
-                                    IOpaqueAddress*& refpAddress) 
+                                    IOpaqueAddress*& refpAddress)
 {
   // First check that requested address is of type XML_StorageType
   if( msgLevel(MSG::VERBOSE) ) verbose() << "Create an XML address" << endmsg;
   if( XML_StorageType != svc_type ) {
-    error() 
-	<< "Cannot create addresses of type " << (int)svc_type 
-	<< " which is different from " << (int)XML_StorageType 
+    error()
+	<< "Cannot create addresses of type " << (int)svc_type
+	<< " which is different from " << (int)XML_StorageType
 	<< endmsg;
     return StatusCode::FAILURE;
   }
@@ -148,29 +131,29 @@ StatusCode XmlCnvSvc::createAddress(long  svc_type,
   unsigned long isString;
 
   // To avoid the need of two separate address creators with two different
-  // storage types for files and strings, this method also creates XML string 
+  // storage types for files and strings, this method also creates XML string
   // addresses when par[0] begins by "<?xml": in this case ipar[0] is ignored.
   std::string::size_type pos = source.find_first_not_of(" ");
   if( 0 < pos && pos < source.length() ) source.erase( 0, pos );
   if( source.find("<?xml") == 0 ) {
     isString = 1;
-    if( msgLevel(MSG::VERBOSE) ) verbose() 
+    if( msgLevel(MSG::VERBOSE) ) verbose()
 	<< "XML source beginning by \"<?xml\" is interpreted"
 	<< " as an XML string" << endmsg;
   } else {
     isString = ipar[0];
     if( isString == 0 ) {
       if( msgLevel(MSG::VERBOSE) ) verbose() << "XML source is an XML file name" << endmsg;
-    } else if( isString == 1 ) { 
+    } else if( isString == 1 ) {
       if( msgLevel(MSG::VERBOSE) ) verbose() << "XML source is an XML string" << endmsg;
     } else {
-      error() 
+      error()
 	  << "Cannot create address: invalid ipar[0] value = "
 	  << ipar[0] << endmsg;
       return StatusCode::FAILURE;
     }
   }
-  
+
   // Now create the address
   refpAddress = new GenericAddress( XML_StorageType,
 				    clid,
@@ -210,24 +193,24 @@ IOVDOMDocument* XmlCnvSvc::parseString (std::string source) {
   if( m_dtdLocation != "" ) {
     std::string::size_type dtdPos = source.find( ".dtd" );
     if( dtdPos < source.length() ) {
-      if( msgLevel(MSG::VERBOSE) ) verbose() 
+      if( msgLevel(MSG::VERBOSE) ) verbose()
           << "Set correct DTD location in the string to be parsed" << endmsg;
       std::string::size_type quotePos;
       if( source[dtdPos+4] == '\'' ) {
         quotePos = source.substr(0,dtdPos).rfind("\'");
         source.insert( quotePos+1, m_dtdLocation+"/" );
-        if( msgLevel(MSG::VERBOSE) ) verbose() << "DTD literal is now: " 
+        if( msgLevel(MSG::VERBOSE) ) verbose() << "DTD literal is now: "
             << source.substr(quotePos,dtdPos+6-quotePos+m_dtdLocation.length())
             << endmsg;
       } else if ( source[dtdPos+4] == '\"' ) {
         quotePos = source.substr(0,dtdPos).rfind("\"");
         source.insert( quotePos+1, m_dtdLocation+"/" );
-        if( msgLevel(MSG::VERBOSE) ) verbose() << "DTD literal is now: " 
+        if( msgLevel(MSG::VERBOSE) ) verbose() << "DTD literal is now: "
             << source.substr(quotePos,dtdPos+6-quotePos+m_dtdLocation.length())
             << endmsg;
       } else {
         if( msgLevel(MSG::VERBOSE) ) verbose()
-            << "Bad DTD literal in the string to be parsed: do nothing" 
+            << "Bad DTD literal in the string to be parsed: do nothing"
             << endmsg;
       }
     }
@@ -288,7 +271,7 @@ double XmlCnvSvc::eval (const char* expr, bool check) {
       }
     }
   }
-  
+
   // Call the CLHEP Evaluator
   double value = m_xp.evaluate( expr );
   std::string errtxt;
@@ -473,7 +456,7 @@ std::string::size_type XmlCnvSvc::skipExpr (std::string s,
     }
     // else test the closing parenthesis
     if (s[endIndex] != ')') {
-      error() 
+      error()
           << "Invalid expression (missing ')' at column "
           << endIndex - realStart << ") : \""
           << s.substr (realStart, end - realStart) << "\""

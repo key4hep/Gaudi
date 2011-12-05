@@ -1,5 +1,3 @@
-// $Id: IXmlSvc.h,v 1.5 2007-02-05 18:51:19 marcocle Exp $
-
 #ifndef DETDESCCNV_IXMLSVC_H
 #define DETDESCCNV_IXMLSVC_H
 
@@ -7,10 +5,6 @@
 #include "GaudiKernel/IInterface.h"
 #include "xercesc/dom/DOMDocument.hpp"
 #include "XmlTools/IXmlParserSvc.h"
-
-/// Declaration of the interface ID (interface id, major version, minor version)
-static const InterfaceID IID_IXmlSvc(130, 3 , 0);
-
 
 /** @class IXmlSvc IXmlSvc.h DetDescCnv/IXmlSvc.h
 
@@ -23,13 +17,10 @@ static const InterfaceID IID_IXmlSvc(130, 3 , 0);
     @author Sebastien Ponce
 
 */
-class IXmlSvc : virtual public IInterface,
-                virtual public IXmlParserSvc {
-
+class GAUDI_API IXmlSvc: virtual public IXmlParserSvc {
 public:
-
-  /// Retrieve interface ID
-  static const InterfaceID& interfaceID() { return IID_IXmlSvc; }
+  /// InterfaceID
+  DeclareInterfaceID(IXmlSvc, 3, 0);
 
   /**
    * Tells whether generic conversion of user defined detector elements should
@@ -38,7 +29,7 @@ public:
    */
   virtual bool allowGenericCnv() = 0;
 
-  /** 
+  /**
    * Evaluates a numerical expresion
    * @param expr expresion to evaluate. It may include units and parameters
    * @param check boolean to control if the value needs to be check for being a
@@ -48,7 +39,7 @@ public:
   virtual double eval (const char* expr,
                        bool check = true)  = 0;
 
-  /** 
+  /**
    * Evaluates a numerical expresion
    * @param expr expresion to evaluate. It may include units and parameters
    * @param check boolean to control if the value needs to be check for being a
@@ -63,7 +54,7 @@ public:
    * expression with units and other parameters.
    * @param name parameter name
    * @param value string which defines the value of the parameter.
-   * @return true if success 
+   * @return true if success
    */
   virtual bool addParameter (const std::string& name,
                              const std::string& value) = 0;
@@ -73,7 +64,7 @@ public:
    * expression with units and other parameters.
    * @param name parameter name
    * @param value string which defines the value of the parameter.
-   * @return true if success 
+   * @return true if success
    */
   virtual bool addParameter (const char* name,
                              const char* value) = 0;
@@ -83,7 +74,7 @@ public:
    * expression with units and other parameters.
    * @param name parameter name
    * @param value string which defines the value of the parameter.
-   * @return true if success 
+   * @return true if success
    */
   virtual bool addParameter (const char* name,
                              double value) = 0;
@@ -91,14 +82,14 @@ public:
   /**
    * Removes a parameter from the list of known parameters
    * @param name parameter name
-   * @return true if success 
+   * @return true if success
    */
   virtual bool removeParameter (const std::string& name) = 0;
 
   /**
    * Removes a parameter from the list of known parameters
    * @param name parameter name
-   * @return true if success 
+   * @return true if success
    */
   virtual bool removeParameter (const char* name) = 0;
 

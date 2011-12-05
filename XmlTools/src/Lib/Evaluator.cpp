@@ -1,14 +1,11 @@
 // -*- C++ -*-
-// $Id: Evaluator.cpp,v 1.3 2008-10-29 15:09:34 truf Exp $
-// ---------------------------------------------------------------------------
-
 #include "XmlTools/Evaluator.h"
 
 #include <iostream>
 #include <cmath>	// for pow()
-#include "stack.src"
-#include "string.src"
-#include "hash_map.src"
+#include "stack.icpp"
+#include "string.icpp"
+#include "hash_map.icpp"
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
@@ -68,7 +65,7 @@ static int variable(const string & name, double & result,
  * Name: variable                                    Date:    03.10.00 *
  * Author: Evgeni Chernyaev                          Revised:          *
  *                                                                     *
- * Function: Finds value of the variable.                              * 
+ * Function: Finds value of the variable.                              *
  *           This function is used by operand().                       *
  *                                                                     *
  * Parameters:                                                         *
@@ -92,19 +89,20 @@ static int variable(const string & name, double & result,
     if (engine(exp_begin, exp_end, result, exp_end, dictionary) == EVAL::OK)
       return EVAL::OK;
   }
+  // no break
   default:
     return EVAL::ERROR_CALCULATION_ERROR;
   }
 }
 
 static int function(const string & name, stack<double> & par,
-		    double & result, const dic_type & dictionary) 
+		    double & result, const dic_type & dictionary)
 /***********************************************************************
  *                                                                     *
  * Name: function                                    Date:    03.10.00 *
  * Author: Evgeni Chernyaev                          Revised:          *
  *                                                                     *
- * Function: Finds value of the function.                              * 
+ * Function: Finds value of the function.                              *
  *           This function is used by operand().                       *
  *                                                                     *
  * Parameters:                                                         *
@@ -129,39 +127,39 @@ static int function(const string & name, stack<double> & par,
   switch (npar) {
   case 0:
     result = ((double (*)())item.function)();
-    break;  
+    break;
   case 1:
     result = ((double (*)(double))item.function)(pp[0]);
-    break;  
+    break;
   case 2:
     result = ((double (*)(double,double))item.function)(pp[1], pp[0]);
-    break;  
+    break;
   case 3:
     result = ((double (*)(double,double,double))item.function)
       (pp[2],pp[1],pp[0]);
-    break;  
+    break;
   case 4:
     result = ((double (*)(double,double,double,double))item.function)
       (pp[3],pp[2],pp[1],pp[0]);
-    break;  
+    break;
   case 5:
     result = ((double (*)(double,double,double,double,double))item.function)
       (pp[4],pp[3],pp[2],pp[1],pp[0]);
-    break;  
+    break;
   }
   return (errno == 0) ? EVAL::OK : EVAL::ERROR_CALCULATION_ERROR;
 }
 
 static int operand(pchar begin, pchar end, double & result,
-		   pchar & endp, const dic_type & dictionary) 
+		   pchar & endp, const dic_type & dictionary)
 /***********************************************************************
  *                                                                     *
  * Name: operand                                     Date:    03.10.00 *
  * Author: Evgeni Chernyaev                          Revised:          *
  *                                                                     *
- * Function: Finds value of the operand. The operand can be either     * 
- *           a number or a variable or a function.                     *  
- *           This function is used by engine().                        * 
+ * Function: Finds value of the operand. The operand can be either     *
+ *           a number or a variable or a function.                     *
+ *           This function is used by engine().                        *
  *                                                                     *
  * Parameters:                                                         *
  *   begin  - pointer to the first character of the operand.           *
@@ -216,7 +214,7 @@ static int operand(pchar begin, pchar end, double & result,
 
   //   G E T   F U N C T I O N
 
-  stack<pchar>  pos;                // position stack 
+  stack<pchar>  pos;                // position stack
   stack<double> par;                // parameter stack
   double        value;
   pchar         par_begin = pointer+1, par_end;
@@ -224,8 +222,8 @@ static int operand(pchar begin, pchar end, double & result,
   for(;;pointer++) {
     c = (pointer > end) ? '\0' : *pointer;
     switch (c) {
-    case '\0':  
-      EVAL_EXIT( EVAL::ERROR_UNPAIRED_PARENTHESIS, pos.top() ); 
+    case '\0':
+      EVAL_EXIT( EVAL::ERROR_UNPAIRED_PARENTHESIS, pos.top() );
     case '(':
       pos.push(pointer); break;
     case ',':
@@ -272,7 +270,7 @@ static int operand(pchar begin, pchar end, double & result,
  *                                                                     *
  * Function: Executes basic arithmetic operations on values in the top *
  *           of the stack. Result is placed back into the stack.       *
- *           This function is used by engine().                        * 
+ *           This function is used by engine().                        *
  *                                                                     *
  * Parameters:                                                         *
  *   op  - code of the operation.                                      *
@@ -326,6 +324,7 @@ static int maker(int op, stack<double> & val)
     errno = 0;
     val.top() = pow(val1,val2);
     if (errno == 0) return EVAL::OK;
+    // no break
   default:
     return EVAL::ERROR_CALCULATION_ERROR;
   }
@@ -469,7 +468,10 @@ static int engine(pchar begin, pchar end, double & result,
       continue;
     case 2:                             // unary + or unary -
       val.push(0.0);
-    case 3: default:                    // next operator
+      break;
+    case 3:
+      break;
+    default:                    // next operator
       break;
     }
 
@@ -479,7 +481,7 @@ static int engine(pchar begin, pchar end, double & result,
       if (op.size() == 0) { EVAL_EXIT( EVAL::ERROR_SYNTAX_ERROR, pointer ); }
       iTop = op.top();
       switch (ActionTable[iTop][iCur]) {
-      case -1:                           // syntax error 
+      case -1:                           // syntax error
 	if (op.size() > 1) pointer = pos.top();
 	EVAL_EXIT( EVAL::ERROR_UNPAIRED_PARENTHESIS, pointer );
       case 0:                            // last operation (assignment)
@@ -502,9 +504,9 @@ static int engine(pchar begin, pchar end, double & result,
       case 3:                           // delete '(' from stack
         op.pop(); pos.pop();
 	break;
-      case 4: default:                  // execute top operator and 
+      case 4: default:                  // execute top operator and
         EVAL_STATUS = maker(iTop, val); // delete it from stack
-        if (EVAL_STATUS != EVAL::OK) {  // repete with the same iCur 
+        if (EVAL_STATUS != EVAL::OK) {  // repete with the same iCur
 	  EVAL_EXIT( EVAL_STATUS, pos.top() );
 	}
 	op.pop(); pos.pop();
@@ -528,8 +530,8 @@ static void setItem(const char * prefix, const char * name,
 
   const char * pointer; int n; REMOVE_BLANKS;
 
-  //   C H E C K   N A M E 
- 
+  //   C H E C K   N A M E
+
   if (n == 0) {
     s->theStatus = EVAL::ERROR_NOT_A_NAME;
     return;
@@ -557,8 +559,8 @@ static void setItem(const char * prefix, const char * name,
     (s->theDictionary)[item_name] = item;
     s->theStatus = EVAL::OK;
   }
-} 
-		    
+}
+
 //---------------------------------------------------------------------------
 namespace XmlTools {
 
@@ -635,7 +637,7 @@ void Evaluator::print_error() const {
   case ERROR_UNKNOWN_FUNCTION:
     std::cerr << prefix << "unknown function"     << std::endl;
     return;
-  case ERROR_EMPTY_PARAMETER: 
+  case ERROR_EMPTY_PARAMETER:
     std::cerr << prefix << "empty parameter in function call"
 		 << std::endl;
     return;

@@ -8,18 +8,18 @@ branches      XmlTools doc cmt src
 
 # =========== dependencies ====================================================
 use           GaudiKernel       v*
-use           XercesC           v*	LCG_Interfaces 
+use           XercesC           v*	LCG_Interfaces
 
 # =========== own includes ====================================================
 apply_pattern install_more_includes more=XmlTools
 
 # =========== constituents =====================================================
-library       XmlToolsLib        Lib/*.cpp
-library       XmlTools           component/*.cpp
+library       XmlToolsLib        Lib/*.cpp -no_static
+library       XmlTools           component/*.cpp -no_static
 
-# =========== standard patterns (the order is essential!) ====================== 
-apply_pattern component_library library=XmlTools 
-apply_pattern linker_library    library=XmlToolsLib 
+# =========== standard patterns (the order is essential!) ======================
+apply_pattern component_library library=XmlTools
+apply_pattern linker_library    library=XmlToolsLib
 
 # =============== LCG Dictionaries ============================================
 apply_pattern     reflex_dictionary                                   \

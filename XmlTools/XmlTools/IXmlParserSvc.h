@@ -1,5 +1,3 @@
-// $Id: IXmlParserSvc.h,v 1.6 2007-02-05 18:51:19 marcocle Exp $
-
 #ifndef DETDESCCNV_IXMLPARSERSVC_H
 #define DETDESCCNV_IXMLPARSERSVC_H
 
@@ -7,10 +5,6 @@
 #include "GaudiKernel/IInterface.h"
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include "XmlTools/IOVDOMDocument.h"
-
-/// Declaration of the interface ID (interface id, major version, minor version)
-static const InterfaceID IID_IXmlParserSvc(131, 1 , 0);
-
 
 /** @class IXmlParserSvc IXmlParserSvc.h DetDescCnv/IXmlParserSvc.h
  *
@@ -20,12 +14,10 @@ static const InterfaceID IID_IXmlParserSvc(131, 1 , 0);
  *  @author Marco Clemencic
  */
 
-class IXmlParserSvc : virtual public IInterface {
-
- public:
-
-  /// Retrieve interface ID
-  static const InterfaceID& interfaceID() { return IID_IXmlParserSvc; }
+class GAUDI_API IXmlParserSvc : virtual public IInterface {
+public:
+  /// InterfaceID
+  DeclareInterfaceID(IXmlParserSvc, 1, 0);
 
   /**
    * This method parses an xml file and produces the corresponding DOM

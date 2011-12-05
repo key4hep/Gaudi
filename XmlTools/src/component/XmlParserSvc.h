@@ -1,4 +1,3 @@
-// $Id: XmlParserSvc.h,v 1.12 2009-05-04 15:03:48 ocallot Exp $
 #ifndef DETDESCCNV_XMLPARSERSVC_H
 #define DETDESCCNV_XMLPARSERSVC_H
 
@@ -8,7 +7,7 @@
 #include <xercesc/sax/ErrorHandler.hpp>
 #include <xercesc/sax/SAXParseException.hpp>
 
-#include <GaudiKernel/Service.h> 
+#include <GaudiKernel/Service.h>
 #include "GaudiKernel/MsgStream.h"
 
 #include "XmlTools/IXmlParserSvc.h"
@@ -30,13 +29,12 @@ template <class TYPE> class SvcFactory;
  * @author Sebastien Ponce
  * @author Marco Clemencic
  */
-class XmlParserSvc : public Service,
-                     virtual public IXmlParserSvc,
+class XmlParserSvc : public extends1<Service, IXmlParserSvc>,
                      virtual public xercesc::ErrorHandler {
-  
+
   /// Friend needed
   friend class SvcFactory<XmlParserSvc>;
-  
+
 public:
 
   /**
@@ -50,15 +48,6 @@ public:
    * default destructor
    */
   virtual ~XmlParserSvc();
-
-  /**
-   * Queries interfaces of Interface.
-   * @param riid ID of Interface to be retrieved
-   * @param ppvInterface Pointer to Location for interface pointer
-   * @return status depending on the completion of the call
-   */
-  virtual StatusCode queryInterface ( const InterfaceID& riid,
-                                      void** ppvInterface );
 
   /// Initialize the service
   virtual StatusCode initialize();
@@ -102,7 +91,7 @@ public:
   //////////////////////////////////////////////////////
 
   /**
-   * Receives notification of a warning. 
+   * Receives notification of a warning.
    * The parser will use this method to report conditions that are not errors
    * or fatal errors as defined by the XML 1.0 recommendation. The default
    * behaviour is to display the warning via the Message service.
@@ -112,7 +101,7 @@ public:
   virtual void warning( const xercesc::SAXParseException& exception );
 
   /**
-   * Receives notification of a recoverable error. 
+   * Receives notification of a recoverable error.
    * This corresponds to the definition of "error" in section 1.2 of the W3C
    * XML 1.0 Recommendation. For example, a validating parser would use
    * this callback to report the violation of a validity constraint. The default
@@ -123,18 +112,18 @@ public:
   virtual void error( const xercesc::SAXParseException& exception );
 
   /**
-   * Receives notification of a non-recoverable error. 
+   * Receives notification of a non-recoverable error.
    * This corresponds to the definition of "fatal error" in section 1.2 of the
    * W3C XML 1.0 Recommendation. For example, a parser would use this callback
    * to report the violation of a well-formedness constraint. The default
    * behaviour is to display the error via the Message service.
    * @param exception the error information encapsulated in a SAX parse
-   * exception. 
+   * exception.
    */
   virtual void fatalError( const xercesc::SAXParseException& exception );
 
   /**
-   * Resets the Error handler object on its reuse. 
+   * Resets the Error handler object on its reuse.
    * This method helps in reseting the Error handler object implementational
    * defaults each time the Error handler is begun.
    * The default implementation does nothing
@@ -143,7 +132,7 @@ public:
 
 
 private:
-  
+
   /**
    * Caches the new document, parsed from the given file
    * Since this adds an item into the cache, this may remove another
@@ -165,13 +154,13 @@ private:
 
   /// Utilities to print...
   MsgStream& info()    { return *m_msg << MSG::INFO; }
-  
+
   MsgStream& debug()   { return *m_msg << MSG::DEBUG; }
-  
+
   MsgStream& warning() { return *m_msg << MSG::WARNING; }
 
-  MsgStream& error()   { return *m_msg << MSG::ERROR; }  
-  
+  MsgStream& error()   { return *m_msg << MSG::ERROR; }
+
   inline bool msgLevel( const MSG::Level level ) const { return m_msg->level() <= level; }
 
 private:
@@ -218,7 +207,7 @@ private:
    * not taken into account
    */
   unsigned int m_cacheAge;
-  
+
   /// The maximum number of cached documents
   unsigned int m_maxDocNbInCache;
 
@@ -227,16 +216,16 @@ private:
 
   /// Pointer to the IXmlEntityResolver tool interface (for bookkeeping).
   IAlgTool *m_resolverTool;
-  
+
   /// Pointer to the IXmlEntityResolver.
   IXmlEntityResolver *m_resolver;
 
   /// Name of the service which will provide the event time (option "DetectorDataSvc", default = "DetectorDataSvc").
   std::string m_detDataSvcName;
-  
+
   /// Pointer to the detector data service
   IDetDataSvc *m_detDataSvc;
-  
+
   /// Pointer to the ToolSvc.
   IToolSvc *m_toolSvc;
 
