@@ -3,6 +3,9 @@ package DetDesc
 package manager : Marco Clemencic
 ============================================================================
 
+! 2011-12-05 - Marco Clemencic
+ - Removed the unneeded Lib directory.
+
 ! 2011-12-02 - Marco Clemencic
  - Modified to compile within Gaudi.
 
