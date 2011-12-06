@@ -41,6 +41,7 @@ use GaudiSys       v22r5
 use DetDesc        *
 use DetDescSvc     *
 use DetDescCnv     *
+use DetDescChecks  *
 use XmlTools       *
 
 # Monitoring utilities.
