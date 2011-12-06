@@ -1,5 +1,3 @@
-///  $Id: XmlBaseDetElemCnv.h,v 1.6 2009-05-04 14:57:08 ocallot Exp $
-
 #ifndef DETDESCCNV_XMLDETELEMCNV_H
 #define DETDESCCNV_XMLDETELEMCNV_H
 
@@ -24,24 +22,24 @@ template <class TYPE> class CnvFactory;
  * @author Radovan Chytracek
  * @author Pere Mato
  */
-class XmlBaseDetElemCnv : public XmlGenericCnv {
+class GAUDI_API XmlBaseDetElemCnv : public XmlGenericCnv {
 
 public:
-  
+
   /**
    * Initializes the converter - Overrides the default method in XmlGenericCnv
    * @return status depending on the completion of the call
    */
   virtual StatusCode initialize();
-  
+
   /**
    * accessor to the type of elements that this converter converts
    * @return the classID for this type
    */
   static const CLID& classID();
-  
+
 protected:
-  
+
   /**
    * Constructor for this converter
    * @param svcs a ISvcLocator interface to find services
@@ -102,7 +100,7 @@ protected:
 
 
 private:
-  
+
   /// Whether to use the generic converter in case a specific one does not exist
   bool m_doGenericCnv;
 

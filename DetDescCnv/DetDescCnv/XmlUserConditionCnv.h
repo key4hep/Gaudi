@@ -15,7 +15,7 @@
 /** @class XmlUserConditionCnv XmlLVolumeCnv.h DetDescCnv/XmlUserConditionCnv.h
  *
  * This is an empty, abstract, user specific, converter for Conditions.
- * Every actual specific convertor for Condition should inherit from this
+ * Every actual specific converter for Condition should inherit from this
  * one. It basically provides the i_createObj, classID methods plus a
  * constructor and a destructor. The only thing to do in order to implement
  * an actual specific converter is thus to implement the second
@@ -24,12 +24,12 @@
  * @author Sebastien Ponce
  */
 template <class DeType> class XmlUserConditionCnv : public XmlBaseConditionCnv {
-  
+
   /// The type of this object
   typedef XmlUserConditionCnv<DeType> MyType;
   /// Friend needed for instantiation
   friend class CnvFactory<MyType>;
-  
+
 
  public:
 
@@ -38,12 +38,12 @@ template <class DeType> class XmlUserConditionCnv : public XmlBaseConditionCnv {
    * @param svc a ISvcLocator interface to find services
    */
   XmlUserConditionCnv (ISvcLocator* svc);
-  
+
   /**
    * Default destructor
    */
   virtual ~XmlUserConditionCnv() {};
-  
+
   /**
    * accessor to the type of elements that this converter converts
    * @return the classID for this type
@@ -60,7 +60,7 @@ template <class DeType> class XmlUserConditionCnv : public XmlBaseConditionCnv {
    * @return status depending on the completion of the call
    */
   virtual StatusCode i_createObj (xercesc::DOMElement* element,
-                                  DataObject*& refpObject);  
+                                  DataObject*& refpObject);
 
   /** This fills the current object for specific child.
    * This is a very general method reimplemented from XmlBaseConditionCnv.
@@ -119,10 +119,10 @@ XmlUserConditionCnv<DeType>::i_createObj(xercesc::DOMElement* /*element*/,
                                          DataObject*& refpObject) {
   MsgStream log(msgSvc(), "XmlUserConditionCnv" );
   if( log.level() <= MSG::DEBUG ) log << MSG::DEBUG << "entering i_createObj" << endmsg;
-  
+
   // creates an object for the node found
   refpObject = new DeType();
-  
+
   // returns
   return StatusCode::SUCCESS;
 } // end i_createObj

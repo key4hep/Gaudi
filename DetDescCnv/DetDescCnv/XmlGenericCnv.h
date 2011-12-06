@@ -32,7 +32,7 @@ template <class TYPE> class CnvFactory;
  *  @author Radovan Chytracek
  *  @author Pere Mato
  */
-class XmlGenericCnv : public Converter {
+class GAUDI_API XmlGenericCnv : public Converter {
 
  public:
 
@@ -234,22 +234,22 @@ protected:
 
   /// The message stream
   MsgStream* m_msg;
-  
+
   /// Methods to print as in GaudiAlgorithms
   MsgStream& verbose() const { return *m_msg << MSG::VERBOSE; }
-  
+
   MsgStream& debug()   const { return *m_msg << MSG::DEBUG; }
 
   MsgStream& info()    const { return *m_msg << MSG::INFO; }
-  
+
   MsgStream& warning() const { return *m_msg << MSG::WARNING; }
 
-  MsgStream& error()   const { return *m_msg << MSG::ERROR; }  
- 
-  MsgStream& fatal()   const { return *m_msg << MSG::FATAL; }  
- 
+  MsgStream& error()   const { return *m_msg << MSG::ERROR; }
+
+  MsgStream& fatal()   const { return *m_msg << MSG::FATAL; }
+
   inline bool msgLevel( const MSG::Level level ) const { return m_msg->level() <= level; }
-  
+
 private:
 
   // Constant strings for element and parameter names
@@ -265,7 +265,7 @@ private:
   const XMLCh* conditionString;
   const XMLCh* classIDString;
   const XMLCh* serialNumberString;
-  
+
   /// Flag that says if the storage type CONDDB_StorageType is accessible.
   bool m_have_CONDDB_StorageType;
 

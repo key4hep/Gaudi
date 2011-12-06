@@ -15,7 +15,7 @@
 /** @class XmlUserDetElemCnv XmlUserDetElemCnv.h DetDescCnv/XmlUserDetElemCnv.h
  *
  * This is an empty, abstract, user specific, converter for DetectorElements.
- * Every actual specific convertor for DetectorElement should inherit from this
+ * Every actual specific converter for DetectorElement should inherit from this
  * one. It basically provides the i_createObj, classID methods plus a
  * constructor and a destructor. The only thing to do in order to implement
  * an actual specific converter is thus to implement the second
@@ -24,12 +24,12 @@
  * @author Sebastien Ponce
  */
 template <class DeType> class XmlUserDetElemCnv : public XmlBaseDetElemCnv {
-  
+
   /// The type of this object
   typedef XmlUserDetElemCnv<DeType> MyType;
   /// Friend needed for instantiation
   friend class CnvFactory<MyType>;
-  
+
 
  public:
 
@@ -38,12 +38,12 @@ template <class DeType> class XmlUserDetElemCnv : public XmlBaseDetElemCnv {
    * @param svc a ISvcLocator interface to find services
    */
   XmlUserDetElemCnv (ISvcLocator* svc);
-  
+
   /**
    * Default destructor
    */
   virtual ~XmlUserDetElemCnv() {};
-  
+
   /**
    * accessor to the type of elements that this converter converts
    * @return the classID for this type
@@ -60,7 +60,7 @@ template <class DeType> class XmlUserDetElemCnv : public XmlBaseDetElemCnv {
    * @return status depending on the completion of the call
    */
   virtual StatusCode i_createObj (xercesc::DOMElement* element,
-                                  DataObject*& refpObject);  
+                                  DataObject*& refpObject);
 
   /** This fills the current object for specific child.
    * This is a very general method reimplemented from XmlBaseDetElemCnv.

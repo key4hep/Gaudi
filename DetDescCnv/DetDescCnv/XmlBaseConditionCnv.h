@@ -1,5 +1,3 @@
-///  $Id: XmlBaseConditionCnv.h,v 1.7 2008-01-07 18:25:33 marcocle Exp $
-
 #ifndef DETDESCCNV_XMLCONDITIONCNV_H
 #define DETDESCCNV_XMLCONDITIONCNV_H
 
@@ -22,24 +20,24 @@ template <class TYPE> class CnvFactory;
  *
  * @author Sebastien Ponce
  */
-class XmlBaseConditionCnv : public XmlGenericCnv {
+class GAUDI_API XmlBaseConditionCnv : public XmlGenericCnv {
 
 public:
-  
+
   /**
    * Initializes the converter - Overrides the default method in XmlGenericCnv
    * @return status depending on the completion of the call
    */
   virtual StatusCode initialize();
-  
+
   /**
    * accessor to the type of elements that this converter converts
    * @return the classID for this type
    */
   static const CLID& classID();
-  
+
 protected:
-  
+
   /**
    * Constructor for this converter
    * @param svcs a ISvcLocator interface to find services
@@ -61,7 +59,7 @@ protected:
   /**
    * Resolves the references of the created transient object.
    */
-  virtual StatusCode fillObjRefs(IOpaqueAddress* pAddress, 
+  virtual StatusCode fillObjRefs(IOpaqueAddress* pAddress,
                                  DataObject* pObject);
 
   /**
@@ -106,10 +104,10 @@ protected:
                                         IOpaqueAddress* address) = 0;
 
 private:
-  
+
   /// Whether to use the generic converter in case a specific one does not exist
   bool m_doGenericCnv;
-  
+
   // Constant strings for element names
   const XMLCh* specificString;
   const XMLCh* paramString;
@@ -131,7 +129,7 @@ private:
   inline T i_convert(const XMLCh *value){
     return (T)xmlSvc()->eval(i_convert<std::string>(value), false);
   }
-  
+
   template <class T>
   inline T i_convert(const std::string &value){
     return (T)xmlSvc()->eval(value, false);
@@ -147,7 +145,7 @@ private:
     }
     return v;
   }
-    
+
   template <class K, class V>
   std::map<K,V> i_makeMap(xercesc::DOMNodeList* entries){
     std::map<K,V> map;
