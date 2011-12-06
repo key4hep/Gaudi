@@ -9,34 +9,34 @@ version           v5r6
 branches          cmt doc src python
 
 # =============== dependencies ================================================
-use               DetDesc    v* Det
-use               DetDescSvc v* Det
-use               GaudiAlg   v*   	
-use               Boost      v* LCG_Interfaces 
+use               DetDesc    *
+use               DetDescSvc *
+use               GaudiAlg   *
+use               Boost      * LCG_Interfaces
 
 # =============== constituents ================================================
-library           DetDescChecks   *.cpp -import=AIDA
+library           DetDescChecks   *.cpp -import=AIDA  -no_static
 
 # =============== patterns ====================================================
-apply_pattern     component_library      library=DetDescChecks 
-apply_pattern     install_python_modules 
+apply_pattern     component_library      library=DetDescChecks
+apply_pattern     install_python_modules
 
 private
 
 ## XML files based detector description
-# use               XmlDDDB       v* Det
-# use               XmlConditions v* Det
+# use               XmlDDDB       * Det
+# use               XmlConditions * Det
 ## SQL based detector description (CondDB)
-use               DDDB       v* Det -no_auto_imports
+#use               DDDB       * Det -no_auto_imports
 
-use               RootHistCnv v*
-use               GaudiConf   v*
-use               GaudiSvc    v*
-use               GaudiPython v* -no_auto_imports
-use               DetDescCnv  v* Det
-use               Magnet      v* Det
+#use               RootHistCnv *
+#use               GaudiConf   *
+use               GaudiSvc    *
+use               GaudiPython * -no_auto_imports
+use               DetDescCnv  *
+#use               Magnet      * Det
 
 apply_pattern QMTest
 # =============================================================================
-# The END 
+# The END
 # =============================================================================

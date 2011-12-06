@@ -1,9 +1,12 @@
 ! ------------------------------------------------------------------------------
-! Package     : Det/DetDescChecks
+! Package     : DetDescChecks
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! Purpose     : Collection of useful components for checking of
 !               Detector Description, Material Budget etc
 ! ------------------------------------------------------------------------------
+
+! 2011-12-06 - Marco Clemencic
+ - Modified to compile within Gaudi.
 
 ! 2011-11-21 - Marco Cattaneo
  - Remove obsolete HepMCBack dependency
