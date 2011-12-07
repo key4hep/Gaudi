@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-12-07 - Marco Clemencic
+ - Enforce the use of Boost Filesystem Version 3 also with Boost 1.44, for
+   backward compatibility (bug #89653)
+
 ! 2011-11-16 - Marco Clemencic
  - Disable deprecation warnings on gcc 4.6.
    We need an alternative to the current gccxml to properly fix them.
