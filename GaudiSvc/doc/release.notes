@@ -1,6 +1,10 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-12-07 - Marco Clemencic
+ - Fixed bug #89653: Gaudi is not ready for Boost 1.48 (filesystem V3)
+ - Problem with Boost (1.48) Spirit: disabled to -pedantic option (temporarily)
+
 ============================== GaudiSvc v18r17 ===============================
 ! 2011-10-12 - Charles Leggett
  - THistSvc: call Reset() on all TTrees and THNs in io_reinit when copying to
