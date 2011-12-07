@@ -1,6 +1,9 @@
 Package: GaudiPoolDb
 Package Manager: Markus Frank
 
+! 2011-12-07 - Marco Clemencic
+ - Temporarily disabled (to be removed).
+
 ============================= GaudiPoolDb v5r12 ==============================
 ! 2011-03-23 - Marco Clemencic
  - Fixed VC9 warnings.
