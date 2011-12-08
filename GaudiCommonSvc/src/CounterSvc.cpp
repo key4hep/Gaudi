@@ -19,7 +19,7 @@
 #include "GaudiKernel/HashMap.h"
 // ============================================================================
 /** @class CounterSvc
- *  Simple imeplementation of the abstract interface ICounterSvc
+ *  Simple implementation of the abstract interface ICounterSvc
  *  @author Markus FRANK
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date 2007-05-25
