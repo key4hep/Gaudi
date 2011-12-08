@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-12-08 - Marco Clemencic
+ - Fixed bug #89628: Missing const methods in CommonMessaging.
+
 ! 2011-12-07 - Marco Clemencic
  - Fixed bug #89653: Gaudi is not ready for Boost 1.48 (filesystem V3)
 
