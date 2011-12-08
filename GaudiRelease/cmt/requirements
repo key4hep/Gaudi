@@ -30,6 +30,7 @@ use GaudiUtils     v3r14
 use GaudiPartProp  v1r0
 
 # Technology-specific Persistency packages
+use RootCnv        *
 use RootHistCnv    v10r7
 use GaudiPython    v11r1
 
