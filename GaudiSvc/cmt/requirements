@@ -11,7 +11,6 @@ use ROOT        * LCG_Interfaces -no_auto_imports
 # build the component library
 library GaudiSvc -import=Boost -import=CLHEP -import=ROOT -no_static \
                  DetectorDataSvc/*.cpp \
-                 FastContainersSvc/*.cpp \
                  NTupleSvc/*.cpp \
                  ParticlePropertySvc/*.cpp \
                  RndmGenSvc/*.cpp \
