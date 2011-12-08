@@ -1,6 +1,9 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2011-12-02 - Marco Clemencic
+ - Moved VFSSvc from GaudiSvc to GaudiUtils.
+
 ============================== GaudiUtils v3r14 ==============================
 ! 2011-10-28 - Marco Clemencic
  - Changed the usage of make_pair to support C++0x.

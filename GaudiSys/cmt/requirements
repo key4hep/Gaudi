@@ -1,12 +1,13 @@
 package GaudiSys
 version v22r5
 
-branches doc cmt 
+branches doc cmt
 
 #---Gaudi libraries - generic
 
 use GaudiKernel    *
-use GaudiSvc       * -no_auto_imports
+use GaudiCoreSvc   * -no_auto_imports
+use GaudiCommonSvc * -no_auto_imports
 use GaudiAud       * -no_auto_imports
 use GaudiAlg       * -no_auto_imports
 # Needed by gaudirun.py

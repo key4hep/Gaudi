@@ -7,6 +7,9 @@ Package manager : Marco Clemencic
 ! 2011-12-07 - Marco Clemencic
  - Fixed bug #89653: Gaudi is not ready for Boost 1.48 (filesystem V3)
 
+! 2011-12-05 - Marco Clemencic
+ - Removed the unused FastContainerSvc.
+
 ! 2011-12-01 - Chris Jones
  - Fixed bug #85377: GaudiTuple tuple does not undestand ulonglong
    Add support for long long and unsigned long long data types
@@ -18,6 +21,11 @@ Package manager : Marco Clemencic
 
 ! 2011-11-16 - Marco Clemencic
  - Fixed the problem with undefined size_t in GaudiKernel/Map.h
+
+! 2011-11-01 - Marco Clemencic
+ - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc
+   and GaudiCommonSvc. (patch #1816)
+   Use GaudiCoreSvc for bootstrap and genconf.
 
 ============================= GaudiKernel v27r17 =============================
 ! 2011-10-27 - Marco Clemencic

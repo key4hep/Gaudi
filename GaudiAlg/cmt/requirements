@@ -21,3 +21,7 @@ library         GaudiAlg    components/*.cpp -import=AIDA -import=Boost -no_stat
 # ============== patterns =====================================================
 apply_pattern   linker_library    library="GaudiAlgLib"
 apply_pattern   component_library library="GaudiAlg"
+
+private
+macro_append Boost_linkopts " $(Boost_linkopts_regex) "
+end_private

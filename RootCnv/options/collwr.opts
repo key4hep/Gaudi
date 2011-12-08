@@ -1,0 +1,25 @@
+#include "$ROOTCNVROOT/options/Setup.opts"
+ApplicationMgr.TopAlg = { "EvtCollectionWrite/Writer" };
+ApplicationMgr.ExtSvc += { "TagCollectionSvc/EvtTupleSvc" };
+ReadAlg.OutputLevel        = 4;
+Writer.OutputLevel         = 2;
+Writer.NumMcTracks         = 1;
+EventSelector.Input        = {"DATAFILE='PFN:castor:/castor/cern.ch/user/f/frankb/data/ROOTIO2.dst' SVC='Gaudi::RootEvtSelector'"};
+EventSelector.Input        = {"DATAFILE='PFN:castor:/castor/cern.ch/user/f/frankb/data/ROOTIO.dst' SVC='Gaudi::RootEvtSelector'"};
+
+EvtTupleSvc.Output = {"EvtColl DATAFILE='PFN:data/ROOTIO.merge.2.tags' OPT='RECREATE' SVC='Gaudi::RootCnvSvc'" };
+
+EventSelector.Input=         {"DATAFILE='PFN:data/ROOTIO.4.dst' SVC='Gaudi::RootEvtSelector'"};
+EvtTupleSvc.Output = {"EvtColl DATAFILE='PFN:data/ROOTIO.4.tags' OPT='RECREATE' SVC='Gaudi::RootCnvSvc'" };
+
+EventSelector.Input=         {"DATAFILE='PFN:data/ROOTIO.merge.dst' SVC='Gaudi::RootEvtSelector'"};
+EvtTupleSvc.Output = {"EvtColl DATAFILE='PFN:data/ROOTIO.merge.2.tags' OPT='RECREATE' SVC='Gaudi::RootCnvSvc'" };
+
+//EventSelector.Input= {"DATAFILE='PFN:data/ROOTIO.1.dst' SVC='Gaudi::RootEvtSelector'"};
+//EvtTupleSvc.Output = {"EvtColl DATAFILE='PFN:data/ROOTIO.1.tags' OPT='RECREATE' SVC='Gaudi::RootCnvSvc'" };
+
+//EventSelector.Input= {"DATAFILE='PFN:data/ROOTIO.2.dst' SVC='Gaudi::RootEvtSelector'"};
+//EvtTupleSvc.Output = {"EvtColl DATAFILE='PFN:data/ROOTIO.2.tags' OPT='RECREATE' SVC='Gaudi::RootCnvSvc'" };
+
+//EventSelector.Input= {"DATAFILE='PFN:data/ROOTIO.3.dst' SVC='Gaudi::RootEvtSelector'"};
+//EvtTupleSvc.Output = {"EvtColl DATAFILE='PFN:data/ROOTIO.3.tags' OPT='RECREATE' SVC='Gaudi::RootCnvSvc'" };

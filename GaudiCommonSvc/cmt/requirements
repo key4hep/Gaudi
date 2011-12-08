@@ -1,0 +1,44 @@
+# ============================================================================
+# Created : 2011-10-31
+# Maintainer : Marco Clemencic
+# ============================================================================
+package    GaudiCommonSvc
+version    v1r0
+
+# ============================================================================
+# Structure, i.e. directories to process.
+# ============================================================================
+branches doc src cmt
+# ============================================================================
+# Used packages. Specify the version, * at the end specifies 'any revision'
+#   Put as many lines as needed, with all packages, without the '#'
+# ============================================================================
+use GaudiKernel *
+use AIDA        * LCG_Interfaces -no_auto_imports
+use Boost       * LCG_Interfaces -no_auto_imports
+use ROOT        * LCG_Interfaces -no_auto_imports
+
+include_path    none
+# ============================================================================
+# Component library building rule
+# ============================================================================
+library GaudiCommonSvc -no_static -import=AIDA -import=Boost -import=ROOT \
+    DataSvc/*.cpp \
+    HistogramSvc/*.cpp \
+    PersistencySvc/*.cpp \
+    *.cpp
+
+# ============================================================================
+# define component library link options
+# ============================================================================
+apply_pattern component_library library=GaudiCommonSvc
+
+private
+macro_append Boost_linkopts " $(Boost_linkopts_system) $(Boost_linkopts_filesystem) "
+#macro_append ROOT_linkopts " -lHist -lReflex -lMatrix -lGraf" \
+#              target-winxp " libHist.lib libReflex.lib libMatrix.lib libGraf.lib" \
+#             target-mac104 " -lHist -lReflex -lMatrix -lGraf"
+macro_append ROOT_linkopts " -lHist" \
+              target-winxp " libHist.lib" \
+             target-mac104 " -lHist"
+end_private

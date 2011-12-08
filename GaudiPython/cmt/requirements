@@ -33,7 +33,8 @@ private
 apply_pattern  component_library library=GaudiPython
 
 #--------------------------------------------------------------------------------
-use GaudiSvc * -no_auto_imports
+use GaudiCoreSvc * -no_auto_imports
+use GaudiCommonSvc * -no_auto_imports
 #include_dirs "$(GAUDIPYTHONROOT)"
 #apply_pattern package_Cshlibflags
 

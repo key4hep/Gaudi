@@ -1,6 +1,11 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+! 2011-11-01 - Marco Clemencic
+ - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc
+   and GaudiCommonSvc. (patch #1816)
+   Added the two new packages to the project requirements.
+
 ============================= GaudiRelease v22r5 =============================
 ============================= GaudiRelease v22r4 =============================
 ============================= GaudiRelease v22r3 =============================

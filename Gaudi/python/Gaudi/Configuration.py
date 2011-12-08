@@ -116,3 +116,26 @@ def setCustomMainLoop(runner):
     # change the mainLoop function
     from Gaudi.Main import gaudimain
     gaudimain.mainLoop = lambda _self, app, nevt: runner(app, nevt)
+
+
+class GaudiPersistency(ConfigurableUser):
+    """Configurable to enable ROOT-based persistency.
+
+    Note: it requires Gaudi::RootCnvSvc (package RootCnv).
+    """
+    __slots__ = {}
+    def __apply_configuration__(self):
+        """Apply low-level configuration"""
+        from Configurables import (PersistencySvc,
+                                   Gaudi__RootCnvSvc as RootCnvSvc,
+                                   ApplicationMgr,
+                                   FileRecordDataSvc,
+                                   EventPersistencySvc,
+                                   IODataManager,
+                                   FileCatalog)
+        cnvSvcs = [ RootCnvSvc() ]
+        EventPersistencySvc().CnvServices += cnvSvcs
+        PersistencySvc("FileRecordPersistencySvc").CnvServices += cnvSvcs
+        app = ApplicationMgr()
+        app.SvcOptMapping += [ FileCatalog(), IODataManager() ]
+        app.ExtSvc += [ FileRecordDataSvc() ]

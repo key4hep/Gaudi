@@ -1,6 +1,24 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-12-05 - Marco Clemencic
+ - Removed the unused FastContainerSvc.
+ - Moved ParticlePropertySvc to a dedicated package and wrapped it in the
+   namespace Gaudi.
+
+! 2011-12-02 - Marco Clemencic
+ - Moved VFSSvc from GaudiSvc to GaudiUtils.
+ - Moved to GaudiMonitor:
+   - AlgContextSvc
+   - ExceptionSvc
+   - HistorySvc
+   - IssueLogger
+
+! 2011-11-01 - Marco Clemencic
+ - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc
+   and GaudiCommonSvc. (patch #1816)
+ - Removed AIDATupleSvc.
+
 ! 2011-12-07 - Marco Clemencic
  - Fixed bug #89653: Gaudi is not ready for Boost 1.48 (filesystem V3)
  - Problem with Boost (1.48) Spirit: disabled to -pedantic option (temporarily)

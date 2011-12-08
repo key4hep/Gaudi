@@ -2,11 +2,11 @@
 package GaudiUtils
 version v3r14
 
-# ============== structure ====================================================	
+# ============== structure ====================================================
 branches        GaudiUtils src cmt doc
 
 # ============== dependencies =================================================
-use             GaudiKernel * 
+use             GaudiKernel *
 
 use             ROOT        * LCG_Interfaces
 use             AIDA        * LCG_Interfaces -no_auto_imports
@@ -26,7 +26,7 @@ apply_pattern component_library library=GaudiUtils
 # ============== patterns =====================================================
 
 
-private 
+private
 
 macro_append ROOT_linkopts " -lHist " \
               target-winxp " libHist.lib " \
@@ -34,3 +34,4 @@ macro_append ROOT_linkopts " -lHist " \
 
 macro_append Boost_linkopts " $(Boost_linkopts_date_time) "
 
+end_private

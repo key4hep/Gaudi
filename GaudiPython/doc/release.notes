@@ -1,6 +1,11 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2011-11-01 - Marco Clemencic
+ - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc
+   and GaudiCommonSvc. (patch #1816)
+   Replace GaudiSvc with GaudiCoreSvc in GaudiPython.Bindings.
+
 ============================= GaudiPython v11r1 ==============================
 ! 2011-06-23 - Hubert Degaudenzi
  - fixed warnings from the eclipse code analysis engine.

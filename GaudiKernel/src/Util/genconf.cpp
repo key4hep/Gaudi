@@ -444,7 +444,7 @@ int configGenerator::genConfig( const Strings_t& libs )
 
   const Strings_t::const_iterator endLib = libs.end();
 
-  const std::string gaudiSvc = "GaudiSvc";
+  const std::string gaudiSvc = "GaudiCoreSvc";
   const bool isGaudiSvc = ( std::find( libs.begin(), endLib, gaudiSvc ) != endLib );
 
   //--- Instantiate ApplicationMgr --------------------------------------------

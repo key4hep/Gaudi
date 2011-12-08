@@ -202,50 +202,6 @@ GaudiCommon<PBASE>::updMgrSvc() const
   return m_updMgrSvc ;
 }
 // ============================================================================
-// Short-cut  to get a pointer to the
-// ============================================================================
-template <class PBASE>
-inline IDataProviderSvc *
-GaudiCommon<PBASE>::fastContainersSvc() const
-{
-  if ( !m_fastContainersSvc )
-  { m_fastContainersSvc = svc<IDataProviderSvc>("FastContainersSvc",true); }
-  return m_fastContainersSvc ;
-}
-// ============================================================================
-// Get a fast container
-// ============================================================================
-template < class PBASE   >
-template < class T >
-inline TransientFastContainer<T> *
-GaudiCommon<PBASE>::getFastContainer( const std::string &location,
-                                      typename TransientFastContainer<T>::size_type initial )
-{
-  typedef TransientFastContainer<T> container_type;
-
-  IDataProviderSvc* svc = fastContainersSvc();
-  Assert( 0 != svc , "getFastContainer(): cannot get FastContainersSvc" );
-
-  container_type *ptr = NULL;
-  SmartDataPtr<container_type> obj( svc, location );
-  if (!obj){
-    ptr = new container_type(initial);
-    StatusCode status = svc->registerObject(location,ptr);
-    if ( !status.isSuccess() ){
-      Exception("getFastContainer(): cannot register '" +
-                System::typeinfoName( typeid( *ptr ) ) +
-                "' at address '" + location + "'"  , status );
-    }
-  } else {
-    ptr = obj;
-    if ( !ptr ){
-      Exception("getFastContainer(): No valid container at '" + location + "'");
-    }
-  }
-  
-  return ptr;
-}
-// ============================================================================
 // predefined configurable message stream for the effective printouts
 // ============================================================================
 template <class PBASE>
@@ -307,6 +263,6 @@ inline void GaudiCommon<PBASE>::Assert( const bool        ok  ,
            std::string             (   __FILE__    ) + "']" , code ) )
 
 // ============================================================================
-// The END 
+// The END
 // ============================================================================
 #endif // GAUDIALG_GAUDICOMMONIMP_H

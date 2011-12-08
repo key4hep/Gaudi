@@ -7,11 +7,13 @@ use AIDA         * LCG_Interfaces
 
 use Gaudi        *
 
+use GaudiPartProp  * -no_auto_imports
 use PartPropSvc  * -no_auto_imports
-use GaudiPoolDb  * -no_auto_imports
 use GaudiPython  * -no_auto_imports
 use GaudiGSL     *
 use RootHistCnv  * -no_auto_imports
+
+use RootCnv * -no_auto_imports
 
 use Boost * LCG_Interfaces
 use HepPDT * LCG_Interfaces
@@ -19,8 +21,6 @@ use HepPDT * LCG_Interfaces
 include_dirs $(GAUDIEXAMPLESROOT)/src/Lib
 
 library GaudiExamplesLib -no_static Lib/*.cpp
-
-macro datalistener_use "DataListener/*.cpp" WIN32 " "
 
 library GaudiExamples    -import=Reflex -no_static \
                           AbortEvent/*.cpp \
@@ -37,14 +37,12 @@ library GaudiExamples    -import=Reflex -no_static \
                           PartProp/*.cpp \
                           Properties/*.cpp \
                           ExtendedProperties/*.cpp \
-                          $(datalistener_use) \
                           POOLIO/*.cpp \
                           ColorMsg/ColorMsgAlg.cpp \
                           History/History.cpp \
                           THist/*.cpp \
                           ErrorLog/ErrorLogTest.cpp \
                           EvtColsEx/EvtColAlg.cpp \
-                          FastContainers/*.cpp \
                           Maps/*.cpp \
                           MultipleLogStreams/*.cpp \
                           GaudiCommonTests/*.cpp \

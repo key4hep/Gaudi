@@ -1,6 +1,17 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2011-12-08 - Marco Clemencic
+ - Ported POOLIO Write and Read tests to ROOT.
+
+! 2011-12-05 - Marco Clemencic
+ - Removed the unused FastContainerSvc.
+ - Moved ParticlePropertySvc to a dedicated package and wrapped it in the
+   namespace Gaudi.
+
+! 2011-12-02 - Marco Clemencic
+ - Removed DataListenerSvc test.
+
 ! 2011-12-01 - Chris Jones
  - Fixed bug #85377: GaudiTuple tuple does not undestand ulonglong
    Add some addition Tuple checks, for various data types.

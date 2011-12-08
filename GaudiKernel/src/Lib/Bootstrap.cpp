@@ -221,7 +221,7 @@ IAppMgrUI* Gaudi::createApplicationMgr(const std::string& dllname )    {
 //------------------------------------------------------------------------------
 IAppMgrUI* Gaudi::createApplicationMgr()    {
 //------------------------------------------------------------------------------
-  return createApplicationMgr("GaudiSvc", "ApplicationMgr");
+  return createApplicationMgr("GaudiCoreSvc", "ApplicationMgr");
 }
 
 //=======================================================================

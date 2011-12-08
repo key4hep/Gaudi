@@ -77,7 +77,7 @@ private:
   TupleAlg() ;
   // copy constructor is disabled
   TupleAlg( const TupleAlg& ) ;
-  // assignement op[erator is disabled
+  // assignment operator is disabled
   TupleAlg& operator=( const TupleAlg& ) ;
   // Make a random generator for a type
   template< class T >
@@ -85,7 +85,7 @@ private:
   {
     const T min = std::numeric_limits<T>::min();
     const T max = std::numeric_limits<T>::max();
-    return min + (T)( (max-min) * 
+    return min + (T)( (max-min) *
                       (double)(Rndm::Numbers( randSvc(), Rndm::Flat(0,1) )()) );
   }
 
