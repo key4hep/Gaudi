@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2011-12-02 - Marco Clemencic
+ - Moved VFSSvc from GaudiSvc to GaudiUtils.
+
 ! 2011-11-01 - Marco Clemencic
  - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc
    and GaudiCommonSvc. (patch #1816)

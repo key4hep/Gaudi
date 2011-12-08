@@ -19,8 +19,7 @@ library GaudiSvc -import=Boost -import=CLHEP -import=ROOT -no_static \
                  NTupleSvc/*.cpp \
                  ParticlePropertySvc/*.cpp \
                  RndmGenSvc/*.cpp \
-                 THistSvc/*.cpp \
-                 VFSSvc/*.cpp
+                 THistSvc/*.cpp
 
 
 library GaudiSvcTest -group=tests ../tests/src/component/*.cpp -no_static
