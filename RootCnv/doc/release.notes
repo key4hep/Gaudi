@@ -4,6 +4,9 @@
 ! Purpose     : Root based persistency
 !-----------------------------------------------------------------------------
 
+! 2011-12-06 - Marco Clemencic
+ - Modified to compile within Gaudi.
+
 ! 2011-11-11 - Markus Frank
  - Remove RootOutputStream component. It's not used.
 
