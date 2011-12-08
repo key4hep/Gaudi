@@ -1,7 +1,3 @@
-// $Id: ParticlePropertySvc.h,v 1.9 2008/05/09 12:43:29 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.9 $
-// ============================================================================
 #ifndef PARTICLEPROPERTYSVC_PARTICLEPROPERTYSVC_H
 #define PARTICLEPROPERTYSVC_PARTICLEPROPERTYSVC_H
 // ============================================================================
@@ -20,6 +16,7 @@
 
 class IFileAccess;
 
+namespace Gaudi {
 // ============================================================================
 /** @class ParticlePropertySvc ParticlePropertySvc.h
  *
@@ -42,8 +39,8 @@ class IFileAccess;
  *  @author Vanya BELYAEV
  *  @date 2006-09-22
  *  1) Modified to add possibility to redefine properties of existing
- *  particles and to read addiitonal files.
- *  New propeety "OtherFiles" (default is empty vector) is introduces.
+ *  particles and to read additional files.
+ *  New property "OtherFiles" (default is empty vector) is introduces.
  *  Service parsed additional files after the main one.
  *
  *    @code
@@ -56,8 +53,8 @@ class IFileAccess;
  *
  *    @endcode
  *
- *  2) Add possibility to modify only certain partiles through the
- *  new property "Particles"  (default is enpty list),
+ *  2) Add possibility to modify only certain particles through the
+ *  new property "Particles"  (default is empty list),
  *  Each line is interpreted as a line in particle data table, e.g.
  *
  *   @code
@@ -119,7 +116,7 @@ public:
    *  @return StatusCode - SUCCESS if the particle property was added.
    */
   virtual StatusCode push_back( ParticleProperty* pp );
-  /// Get a const reference to the begining of the container.
+  /// Get a const reference to the beginning of the container.
   virtual const_iterator begin() const { return m_vectpp.begin() ; }
   /// Get a const reference to the end of the container.
   virtual const_iterator end  () const { return m_vectpp.end() ; }
@@ -188,7 +185,7 @@ private:
 
   std::string m_filename; ///< Filename of the particle properties file
   Files m_other ; ///< additional file names
-  // properties to be redefined  explicitely
+  // properties to be redefined explicitly
   Particles m_particles ;
 
   VectPP      m_vectpp;          ///< Vector of all particle properties
@@ -203,7 +200,7 @@ private:
 
   IFileAccess *m_fileAccess;
 };
-
+} // namespace Gaudi
 // =============================================================================
 // The END
 // =============================================================================

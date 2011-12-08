@@ -1,8 +1,5 @@
-// $Id: ParticlePropertySvc.cpp,v 1.17 2008/10/27 16:41:33 marcocle Exp $
 // ============================================================================
-// CVS tag $Name:  $ , version $Revision: 1.17 $
-// ============================================================================
-//Include files
+// Include files
 // ============================================================================
 // STD&STL
 // ============================================================================
@@ -26,6 +23,7 @@
 // ============================================================================
 #include "ParticlePropertySvc.h"
 // ============================================================================
+namespace Gaudi {
 /** Instantiation of a static factory class used by clients to create
  *  instances of this service
  */
@@ -39,7 +37,7 @@ DECLARE_SERVICE_FACTORY(ParticlePropertySvc)
  *  @author     : I. Last
  * Modify by  : G.Corti 09/11/1999 to read file from LHCBDBASE and
  *             introduce find/eraseByStdHepID methods
- * Modified by Vanya BELYAEV to allow readig of additional files
+ * Modified by Vanya BELYAEV to allow reading of additional files
  * to add/replace/modify the existing particle properties
  */
 // ============================================================================
@@ -616,6 +614,8 @@ bool ParticlePropertySvc::diff
   if ( result ) { log << endmsg ; }
   //
   return result ;
+}
+
 }
 #ifdef __ICC
 // re-enable icc remark #1572

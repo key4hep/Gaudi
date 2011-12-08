@@ -27,6 +27,7 @@ use GaudiAud       v9r4
 use GaudiAlg       v13r8
 use GaudiGSL       v7r10
 use GaudiUtils     v3r14
+use GaudiPartProp  v1r0
 
 # Technology-specific Persistency packages
 use RootHistCnv    v10r7

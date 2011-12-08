@@ -1,27 +1,25 @@
-// $Id: PPSLHCb.cpp,v 1.1 2008/05/29 18:12:56 marcocle Exp $
 // Include files
-
 // from Gaudi
 #include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IParticlePropertySvc.h"
 
 // local
-#include "PPSLHCb.h"
+#include "GaudiPPS.h"
 
 //-----------------------------------------------------------------------------
-// Implementation file for class : PPSLHCb
+// Implementation file for class : GaudiPPS
 //
 // 2008-05-23 : Marco CLEMENCIC
 //-----------------------------------------------------------------------------
-
+namespace GaudiExamples {
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY( PPSLHCb )
+DECLARE_ALGORITHM_FACTORY( GaudiPPS )
 
 
 //=============================================================================
 // Standard constructor, initializes variables
 //=============================================================================
-PPSLHCb::PPSLHCb( const std::string& name,
+GaudiPPS::GaudiPPS( const std::string& name,
                   ISvcLocator* pSvcLocator)
   : GaudiAlgorithm ( name , pSvcLocator )
 {
@@ -30,18 +28,18 @@ PPSLHCb::PPSLHCb( const std::string& name,
 //=============================================================================
 // Destructor
 //=============================================================================
-PPSLHCb::~PPSLHCb() {}
+GaudiPPS::~GaudiPPS() {}
 
 //=============================================================================
 // Initialization
 //=============================================================================
-StatusCode PPSLHCb::initialize() {
+StatusCode GaudiPPS::initialize() {
   StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
   if ( sc.isFailure() ) return sc;  // error printed already by GaudiAlgorithm
 
   if ( msgLevel(MSG::DEBUG) ) debug() << "==> Initialize" << endmsg;
 
-  svc<IParticlePropertySvc>("ParticlePropertySvc",true);
+  svc<IParticlePropertySvc>("Gaudi::ParticlePropertySvc",true);
 
   return StatusCode::SUCCESS;
 }
@@ -49,7 +47,7 @@ StatusCode PPSLHCb::initialize() {
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode PPSLHCb::execute() {
+StatusCode GaudiPPS::execute() {
 
   if ( msgLevel(MSG::DEBUG) ) debug() << "==> Execute" << endmsg;
 
@@ -59,11 +57,12 @@ StatusCode PPSLHCb::execute() {
 //=============================================================================
 //  Finalize
 //=============================================================================
-StatusCode PPSLHCb::finalize() {
+StatusCode GaudiPPS::finalize() {
 
   if ( msgLevel(MSG::DEBUG) ) debug() << "==> Finalize" << endmsg;
 
   return GaudiAlgorithm::finalize();  // must be called after all other actions
 }
 
+} // namespace GaudiExamples
 //=============================================================================
