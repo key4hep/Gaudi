@@ -8,7 +8,6 @@ use AIDA         * LCG_Interfaces
 use Gaudi        *
 
 use PartPropSvc  * -no_auto_imports
-use GaudiPoolDb  * -no_auto_imports
 use GaudiPython  * -no_auto_imports
 use GaudiGSL     *
 use RootHistCnv  * -no_auto_imports

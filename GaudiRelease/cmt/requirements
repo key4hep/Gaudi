@@ -29,9 +29,7 @@ use GaudiGSL       v7r10
 use GaudiUtils     v3r14
 
 # Technology-specific Persistency packages
-#use HbookCnv       v15r0
 use RootHistCnv    v10r7
-use GaudiPoolDb    v5r12
 use GaudiPython    v11r1
 
 # Container package specifying the minimum set of core packages
