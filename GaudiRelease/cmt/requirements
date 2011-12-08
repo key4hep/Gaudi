@@ -35,7 +35,7 @@ use GaudiPython    v11r1
 # Container package specifying the minimum set of core packages
 use GaudiSys       v22r5
 
-# Monitoring utility. Can use also MonaLisa
+# Monitoring utilities.
 use GaudiMonitor   v2r9
 
 # Profiling components and tools

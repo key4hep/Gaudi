@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2011-12-02 - Marco Clemencic
+ - Removed DataListenerSvc test.
+
 ! 2011-12-01 - Chris Jones
  - Fixed bug #85377: GaudiTuple tuple does not undestand ulonglong
    Add some addition Tuple checks, for various data types.

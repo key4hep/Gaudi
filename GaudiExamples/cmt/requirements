@@ -19,8 +19,6 @@ include_dirs $(GAUDIEXAMPLESROOT)/src/Lib
 
 library GaudiExamplesLib -no_static Lib/*.cpp
 
-macro datalistener_use "DataListener/*.cpp" WIN32 " "
-
 library GaudiExamples    -import=Reflex -no_static \
                           AbortEvent/*.cpp \
                           AlgSequencer/*.cpp \
@@ -36,7 +34,6 @@ library GaudiExamples    -import=Reflex -no_static \
                           PartProp/*.cpp \
                           Properties/*.cpp \
                           ExtendedProperties/*.cpp \
-                          $(datalistener_use) \
                           POOLIO/*.cpp \
                           ColorMsg/ColorMsgAlg.cpp \
                           History/History.cpp \

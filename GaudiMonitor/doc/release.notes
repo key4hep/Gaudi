@@ -1,6 +1,14 @@
 Package: GaudiMonitor
 Package manager : Marco Clemencic
 
+! 2011-12-02 - Marco Clemencic
+ - Removed DataListenerSvc.
+ - Moved from GaudiSvc:
+   - AlgContextSvc
+   - ExceptionSvc
+   - HistorySvc
+   - IssueLogger
+
 ! 2011-11-22 - Marco Clemencic
  - Fixed gcc 4.6 warning: operation XYZ may be undefined
    (-Wsequence-point)

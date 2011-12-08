@@ -10,12 +10,8 @@ use ROOT        * LCG_Interfaces -no_auto_imports
 
 # build the component library
 library GaudiSvc -import=Boost -import=CLHEP -import=ROOT -no_static \
-                 AlgContextSvc/*.cpp \
                  DetectorDataSvc/*.cpp \
-                 ExceptionSvc/*.cpp \
                  FastContainersSvc/*.cpp \
-                 HistorySvc/*.cpp \
-                 IssueLogger/*.cpp \
                  NTupleSvc/*.cpp \
                  ParticlePropertySvc/*.cpp \
                  RndmGenSvc/*.cpp \

@@ -1,25 +1,27 @@
-package GaudiMonitor
-version v2r9
+# ============================================================================
+# Created : 2011-12-02
+# Maintainer : Marco Clemencic
+# ============================================================================
+package    GaudiMonitor
+version    v2r9
 
-branches src cmt doc
+# ============================================================================
+# Structure, i.e. directories to process.
+# ============================================================================
+branches doc src cmt
+# ============================================================================
+# Used packages. Specify the version, * at the end specifies 'any revision'
+#   Put as many lines as needed, with all packages, without the '#'
+# ============================================================================
 use GaudiKernel *
 
-# build the component library
-library GaudiMonitor  -no_static \
-                 DataListenerSvc/*.cpp
+include_path    none
+# ============================================================================
+# Component library building rule
+# ============================================================================
+library GaudiMonitor -no_static *.cpp
 
+# ============================================================================
 # define component library link options
+# ============================================================================
 apply_pattern component_library library=GaudiMonitor
-
-
-macro_append GaudiMonitor_use_linkopts " -pthread " \
-             target-winxp ""
-
-private
-macro_append cppflags "" \
-   target-linux  " -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long " \
-   target-darwin "" \
-   target-winxp  ""
-
-# Hide warnings triggered on VC9 by the C standard library
-macro_append cppflags '' no-hide-warnings '' target-winxp ' /wd4996'
