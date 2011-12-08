@@ -29,21 +29,32 @@ for package in packages :
         pass
 
 #--Fix some of the name idiosyncrasies in Gaudi
-def addConfigurableAs(ori, new) :
-    gbl = globals()
-    if ori in gbl: # do the aliasing only if the original is available
-        gbl[new] = gbl[ori]
-        __all__.append(new)
-        gbl[new].DefaultedName = new
+aliases = {
+           'EventDataSvc':             'EvtDataSvc',
+           'DetectorDataSvc':          'DetDataSvc',
+           'HistogramDataSvc':         'HistogramSvc',
+           'HbookHistSvc':             'HbookCnv__PersSvc',
+           'RootHistSvc':              'RootHistCnv__PersSvc',
+           'EventPersistencySvc':      'EvtPersistencySvc',
+           'DetectorPersistencySvc':   'DetPersistencySvc',
+           'HistogramPersistencySvc':  'HistogramPersistencySvc',
+           'FileRecordPersistencySvc': 'PersistencySvc',
 
-addConfigurableAs('EvtDataSvc','EventDataSvc')
-addConfigurableAs('DetDataSvc','DetectorDataSvc')
-addConfigurableAs('HistogramSvc','HistogramDataSvc')
-addConfigurableAs('HbookCnv__PersSvc','HbookHistSvc')
-addConfigurableAs('RootHistCnv__PersSvc','RootHistSvc')
-addConfigurableAs('EvtPersistencySvc','EventPersistencySvc')
-addConfigurableAs('DetPersistencySvc','DetectorPersistencySvc')
-addConfigurableAs('HistogramPersistencySvc','HistogramPersistencySvc')
+           'FileCatalog':              'Gaudi__MultiFileCatalog',
+           'IODataManager':            'Gaudi__IODataManager',
+           }
 
-addConfigurableAs('Gaudi__MultiFileCatalog','FileCatalog')
-addConfigurableAs('Gaudi__IODataManager','IODataManager')
+_gbl = globals() # optimization
+# This would be nicer with dict comprehension (http://www.python.org/dev/peps/pep-0274)
+# but it is available only in Python 2.7
+aliases = dict([(new, _gbl[old])
+                for new, old in aliases.items()
+                if old in _gbl]) # do the aliasing only if the original is available
+# change the default name
+for new in aliases:
+    aliases[new].DefaultedName = new
+# update globals and __all__
+_gbl.update(aliases)
+__all__.extend(aliases)
+# remove temporaries
+del _gbl, new

@@ -1,6 +1,9 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+! 2011-12-08 - Marco Clemencic
+ - Added support for class aliases in the meta-module "Configurables".
+
 ! 2011-11-01 - Marco Clemencic
  - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc
    and GaudiCommonSvc. (patch #1816)
