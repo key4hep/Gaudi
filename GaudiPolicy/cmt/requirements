@@ -750,7 +750,8 @@ macro_append cppflags       "" \
 # FIXME: (MCl) Temporary work-around until gccxml understands unordered_map
 macro_append cppflags "" \
          no-hide-warnings "" \
-         target-gcc43 " -Wno-deprecated"
+         target-gcc43 " -Wno-deprecated" \
+         target-gcc46 " -Wno-deprecated"
 # FIXME: (MCl)
 macro_append cppflags "" \
          no-hide-warnings "" \

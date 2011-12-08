@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-11-16 - Marco Clemencic
+ - Disable deprecation warnings on gcc 4.6.
+   We need an alternative to the current gccxml to properly fix them.
+
 ! 2011-11-01 - Marco Clemencic
  - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc
    and GaudiCommonSvc. (patch #1816)

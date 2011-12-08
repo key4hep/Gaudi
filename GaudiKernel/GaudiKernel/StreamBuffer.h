@@ -610,6 +610,7 @@ inline void StreamBuffer::swapToBuffer(const void* source, int siz)   {
     ::_swab (src, buff, siz);
 #endif
     src = buff;
+    /* no break */
   case NOSWAP:
     memcpy(tar, src, siz);
     break;

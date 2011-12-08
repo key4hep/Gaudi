@@ -1,14 +1,8 @@
-// $Id: TestToolAlg.cpp,v 1.2 2006/01/10 19:58:26 hmd Exp $
 // Include files
 
 // from Gaudi
 #include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/MsgStream.h"
-
-#ifdef __ICC
-//  disable icc remark #593: variable "X" was set but never used
-#pragma warning(disable:593)
-#endif
 
 // local
 #include "TestToolAlg.h"
@@ -48,7 +42,7 @@ StatusCode TestToolAlg::initialize() {
   if ( !GaudiAlgorithm::initialize() ) return StatusCode::FAILURE;
 
   // setup tool registry
-  IAlgTool * mytool;
+  //IAlgTool * mytool;
   for ( ToolList::iterator it = m_tools.begin();
         it != m_tools.end(); ++it ) {
     std::string name = (*it);
@@ -59,7 +53,7 @@ StatusCode TestToolAlg::initialize() {
       name = (*it).substr( slash+1 );
     }
     debug() << "Loading tool " << name << " of type " << type << endmsg;
-    mytool = tool<IAlgTool>( type, name );
+    /*mytool = */tool<IAlgTool>( type, name );
   }
 
   return StatusCode::SUCCESS;
