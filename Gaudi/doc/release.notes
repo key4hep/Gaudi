@@ -3,6 +3,9 @@ Package manager : Marco Clemencic
 
 ! 2011-12-08 - Marco Clemencic
  - Added support for class aliases in the meta-module "Configurables".
+ - Added a ConfigurableUser to setup the persistency via RootCnv:
+     from Configurables import GaudiPersistency
+     GaudiPersistency()
 
 ! 2011-11-01 - Marco Clemencic
  - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc
