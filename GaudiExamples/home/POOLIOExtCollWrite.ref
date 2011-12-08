@@ -37,7 +37,7 @@ JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/use
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on lxplus435.cern.ch on Fri Aug 26 11:32:07 2011
+                                          running on lxplus405.cern.ch on Fri Dec  2 09:34:16 2011
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EvtTupleSvc          INFO Added stream file:PFN:POOLIO.etags as EXTEVT
@@ -112,12 +112,12 @@ EventPersistenc...   INFO Added successfully Conversion service:PoolRootEvtCnvSv
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='PFN:POOLIO.dst'   TYP='POOL_ROOT' OPT='READ'
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
-RootDBase.open    SUCCESS POOLIO.dst File version:53000
-PoolRootEvtCnvSvc    INFO Records token:[DB=E6B20340-C6CF-E011-81AD-003048F0E7C4][CNT=/FileRecords][CLID=00000001-0000-0000-0000-000000000000][TECH=00000202][OID=0000000A-00000000]
+RootDBase.open    SUCCESS POOLIO.dst File version:53004
+PoolRootEvtCnvSvc    INFO Records token:[DB=D0388A66-C01C-E111-BBB8-003048F0E7D6][CNT=/FileRecords][CLID=00000001-0000-0000-0000-000000000000][TECH=00000202][OID=0000000A-00000000]
 EventSelector     SUCCESS Reading Event record 1. Record number within stream 1: 1
 EventPersistenc...   INFO Added successfully Conversion service:PoolRootTreeEvtCnvSvc
-IODataManager        INFO Referring to dataset POOLIO.etags by its file ID:DA654345-C6CF-E011-83ED-003048F0E7C4
-RootDBase.open    SUCCESS POOLIO.etags File version:53000
+IODataManager        INFO Referring to dataset POOLIO.etags by its file ID:64A7D66C-C01C-E111-B908-003048F0E7D6
+RootDBase.open    SUCCESS POOLIO.etags File version:53004
 PoolDbDatabaseCnv    INFO Recreate Database file:PFN:POOLIO.etags as /EXTEVT
 EventSelector     SUCCESS Reading Event record 101. Record number within stream 1: 101
 EventSelector     SUCCESS Reading Event record 201. Record number within stream 1: 201
@@ -129,8 +129,8 @@ EventSelector     SUCCESS Reading Event record 701. Record number within stream 
 EventSelector     SUCCESS Reading Event record 801. Record number within stream 1: 801
 EventSelector     SUCCESS Reading Event record 901. Record number within stream 1: 901
 EventSelector        INFO Stream:EventSelector.DataStreamTool_2 Def:DATAFILE='PFN:POOLIO.mdst'  TYP='POOL_ROOT' OPT='READ'
-RootDBase.open    SUCCESS POOLIO.mdst File version:53000
-PoolRootEvtCnvSvc    INFO No Records /FileRecords present in:18A41C40-C6CF-E011-81AD-003048F0E7C4
+RootDBase.open    SUCCESS POOLIO.mdst File version:53004
+PoolRootEvtCnvSvc    INFO No Records /FileRecords present in:B0DBCF66-C01C-E111-BBB8-003048F0E7D6
 EventSelector     SUCCESS Reading Event record 1001. Record number within stream 2: 1
 EventSelector     SUCCESS Reading Event record 1101. Record number within stream 2: 101
 EventSelector     SUCCESS Reading Event record 1201. Record number within stream 2: 201
@@ -145,14 +145,14 @@ EventLoopMgr         INFO No more events in event selection
 ApplicationMgr       INFO Application Manager Stopped successfully
 Fill              SUCCESS Booked 0 N-Tuples and 1 Event Tag Collections
 Fill              SUCCESS List of booked Event Tag Collections in directory "EXTEVT/Fill"
-Fill              SUCCESS  ID=MyCOL1        Title="Trivial Event Tag Collection"            #items=8  {Address,Ntrack,TrkMom[1]/V,px[1]/V,py[1]/V,pz[1]/V,Energy,Track} Items:{ 'Address' : 'IOpaqueAddress*' , 'Energy' : 'F' , 'Ntrack' : 'L' , 'Track' : 'Gaudi::Examples::MyTrack*' , 'TrkMom' : 'FArray' , 'px' : 'FArray' , 'py' : 'FArray' , 'pz' : 'FArray' }
+Fill              SUCCESS  ID=MyCOL1        Title="Trivial Event Tag Collection"            #items=8  {Address,Ntrack,TrkMom[1]/V,px[1]/V,py[1]/V,pz[1]/V,Energy,Track} Items:{ 'Address' : 'IOpaqueAddress*' , 'Energy' : 'D' , 'Ntrack' : 'I' , 'Track' : 'Gaudi::Examples::MyTrack*' , 'TrkMom' : 'FArray' , 'px' : 'FArray' , 'py' : 'FArray' , 'pz' : 'FArray' }
 EventLoopMgr         INFO Histograms converted successfully according to request.
 ToolSvc              INFO Removing all tools created by ToolSvc
 EvtTupleSvc          INFO NTuples saved successfully
-EvtTupleSvc.EXTEVT   INFO Disconnected data IO:DA654345-C6CF-E011-83ED-003048F0E7C4[POOLIO.etags]
+EvtTupleSvc.EXTEVT   INFO Disconnected data IO:64A7D66C-C01C-E111-B908-003048F0E7D6[POOLIO.etags]
 FileRecordCnvSvc     INFO File sharing enabled. Do not retire files.
-PoolRootEvtCnvSvc    INFO Disconnected data IO:18A41C40-C6CF-E011-81AD-003048F0E7C4[POOLIO.mdst]
-PoolRootEvtCnvSvc    INFO Disconnected data IO:E6B20340-C6CF-E011-81AD-003048F0E7C4[POOLIO.dst]
+PoolRootEvtCnvSvc    INFO Disconnected data IO:B0DBCF66-C01C-E111-BBB8-003048F0E7D6[POOLIO.mdst]
+PoolRootEvtCnvSvc    INFO Disconnected data IO:D0388A66-C01C-E111-BBB8-003048F0E7D6[POOLIO.dst]
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
 Number of MyTrack instances:18

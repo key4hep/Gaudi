@@ -1,4 +1,3 @@
-// $Id: Tuple.h,v 1.9 2008/10/27 19:22:20 marcocle Exp $
 #ifndef GAUDIALG_TUPLE_H
 #define GAUDIALG_TUPLE_H 1
 // ============================================================================
@@ -268,9 +267,7 @@ namespace Tuples
    *    const MCParticle* mcp = ... ;
    *    tuple << Tuples::Column( "MCP" , mcp ) ;
    *
-   *
    *  @endcode
-   *
    *
    *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
    */

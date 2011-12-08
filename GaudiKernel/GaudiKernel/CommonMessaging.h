@@ -119,12 +119,12 @@ public:
   inline MsgStream&     msg() const { return msgStream(MSG::INFO); }
 
   /// get the output level from the embedded MsgStream
-  inline MSG::Level msgLevel() {
+  inline MSG::Level msgLevel() const {
     return msgStream().level();
   }
 
   /// get the output level from the embedded MsgStream
-  inline bool msgLevel(MSG::Level lvl) {
+  inline bool msgLevel(MSG::Level lvl) const {
     return UNLIKELY(msgLevel() <= lvl);
   }
 

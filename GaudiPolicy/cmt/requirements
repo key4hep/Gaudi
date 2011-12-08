@@ -745,6 +745,9 @@ macro_append cppflags       "" \
       host-i686&target-x86_64 " -m64" \
       host-i386&target-x86_64 " -m64"
 
+# FIXME: enforce the use of Boost Filesystem V3 to be compatible between 1.44 and 1.48
+macro_append pp_cppflags " -DBOOST_FILESYSTEM_VERSION=3 "
+
 # ---- Disable warnings coming from external libraries
 #      the hacks can be disabled with the tag "no-hide-warnings".
 # FIXME: (MCl) Temporary work-around until gccxml understands unordered_map

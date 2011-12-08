@@ -1,6 +1,10 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2011-12-01 - Chris Jones
+ - Fixed bug #85377: GaudiTuple tuple does not undestand ulonglong
+   Add some addition Tuple checks, for various data types.
+
 ! 2011-11-22 - Marco Clemencic
  - Fixed gcc 4.6 warning (-Wunused-but-set-variable).
    It was already present with ICC, but disabled.

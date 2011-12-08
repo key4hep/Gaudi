@@ -67,3 +67,5 @@ macro_remove_regexp t_tests_constituents ".*" GaudiPoolDbTests ""
 #                 (due to conversion from enum constants to unsigned int in POOL)
 macro_append cppflags '' no-hide-warnings '' target-icc '-wd68 '
 end_private
+
+apply_pattern disable_package_on platform=target-unix

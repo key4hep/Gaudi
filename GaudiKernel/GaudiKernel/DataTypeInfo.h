@@ -27,7 +27,7 @@ public:
         BOOL,         FLOAT,         DOUBLE,
         STRING,       NTCHAR,
         OBJECT_REF, CONTAINED_REF, POINTER, OBJECT_ADDR,
-        LONG_STRING,  LONG_NTCHAR
+        LONG_STRING,  LONG_NTCHAR, LONGLONG,  ULONGLONG
   };
   /// Access to type information: bool
   static Type ID( const bool)             { return BOOL;          }
@@ -39,6 +39,8 @@ public:
   static Type ID( const int)              { return INT;           }
   /// Access to type information: long
   static Type ID( const long)             { return LONG;          }
+  /// Access to type information: long long
+  static Type ID( const long long)        { return LONGLONG;      }
   /// Access to type information: unsigned char
   static Type ID( const unsigned char)    { return UCHAR;         }
   /// Access to type information: unsigned short
@@ -47,6 +49,8 @@ public:
   static Type ID( const unsigned int)     { return UINT;          }
   /// Access to type information: unsigned long
   static Type ID( const unsigned long)    { return ULONG;         }
+  /// Access to type information: unsigned long long
+  static Type ID( const unsigned long long) { return ULONGLONG;   }
   /// Access to type information: float
   static Type ID( const float)            { return FLOAT;         }
   /// Access to type information: float
@@ -74,6 +78,8 @@ public:
       return UINT;
     else if ( typ == typeid(unsigned long) )
       return ULONG;
+    else if ( typ == typeid(unsigned long long) )
+      return ULONGLONG;
     else if ( typ == typeid(char) )
       return CHAR;
     else if ( typ == typeid(short) )
@@ -82,6 +88,8 @@ public:
       return INT;
     else if ( typ == typeid(long) )
       return LONG;
+    else if ( typ == typeid(long long) )
+      return LONGLONG;
     else if ( typ == typeid(bool) )
       return BOOL;
     else if ( typ == typeid(float) )
@@ -115,6 +123,8 @@ public:
       return typeid(unsigned int);
     case ULONG:
       return typeid(unsigned long);
+    case ULONGLONG:
+      return typeid(unsigned long long);
     case CHAR:
       return typeid(char);
     case SHORT:
@@ -123,6 +133,8 @@ public:
       return typeid(int);
     case LONG:
       return typeid(long);
+    case LONGLONG:
+      return typeid(long long);
     case BOOL:
       return typeid(bool);
     case FLOAT:
@@ -161,6 +173,8 @@ public:
       return sizeof(unsigned int);
     case ULONG:
       return sizeof(unsigned long);
+    case ULONGLONG:
+      return sizeof(unsigned long long);
     case CHAR:
       return sizeof(char);
     case SHORT:
@@ -169,6 +183,8 @@ public:
       return sizeof(int);
     case LONG:
       return sizeof(long);
+    case LONGLONG:
+      return sizeof(long long);
     case BOOL:
       return sizeof(bool);
     case FLOAT:
@@ -205,10 +221,12 @@ public:
     case USHORT:     numObj *= sizeof(unsigned short);      break;
     case UINT:       numObj *= sizeof(unsigned int);        break;
     case ULONG:      numObj *= sizeof(unsigned long);       break;
+    case ULONGLONG:  numObj *= sizeof(unsigned long long);  break;
     case CHAR:       numObj *= sizeof(char);                break;
     case SHORT:      numObj *= sizeof(short);               break;
     case INT:        numObj *= sizeof(int);                 break;
     case LONG:       numObj *= sizeof(long);                break;
+    case LONGLONG:   numObj *= sizeof(long long);           break;
     case BOOL:       numObj *= sizeof(bool);                break;
     case FLOAT:      numObj *= sizeof(float);               break;
     case DOUBLE:     numObj *= sizeof(double);              break;

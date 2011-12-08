@@ -35,17 +35,18 @@ template <class T> void analyzeItem(std::string typ,
                                     const NTuple::_Data<T>* it,
                                     std::string& desc,
                                     std::string& block_name,
-				    std::string& var_name,
-				    long& lowerRange, long& upperRange,
+                                    std::string& var_name,
+                                    long& lowerRange, 
+                                    long& upperRange,
                                     long& size)
 //-----------------------------------------------------------------------------
 {
 
-  std::string full_name;
-  full_name = it->name();
+  std::string full_name = it->name();
   RootHistCnv::parseName(full_name,block_name,var_name);
 
-  long item_size = (sizeof(T) < 4) ? 4 : sizeof(T);
+  //long item_size = (sizeof(T) < 4) ? 4 : sizeof(T);
+  long item_size =  sizeof(T);
   long dimension = it->length();
   long ndim = it->ndim()-1;
   std::ostringstream text;
@@ -53,27 +54,28 @@ template <class T> void analyzeItem(std::string typ,
   if ( it->hasIndex() || it->length() > 1 )   {
     text << '[';
   }
-  if ( it->hasIndex() )   {
+  if ( it->hasIndex() )  
+  {
     std::string ind_blk, ind_var;
     std::string ind = it->index();
     RootHistCnv::parseName(ind,ind_blk,ind_var);
     if (ind_blk != block_name) {
       std::cerr << "ERROR: Index for CWNT variable " << ind_var
-		<< " is in a different block: " << ind_blk << std::endl;
+                << " is in a different block: " << ind_blk << std::endl;
     }
     text << ind_var;
   }
   else if ( it->dim(ndim) > 1 )   {
     text << it->dim(ndim);
   }
-
+  
   for ( int i = ndim-1; i>=0; i-- ){
     text << "][" << it->dim(i);
   }
   if ( it->hasIndex() || it->length() > 1 )   {
     text << ']';
   }
-
+  
   if (it->range().lower() != it->range().min() &&
       it->range().upper() != it->range().max() ) {
     lowerRange = (long) it->range().lower();
@@ -111,10 +113,9 @@ StatusCode RootHistCnv::RCWNTupleCnv::book(const std::string& desc,
   std::vector<long> item_range_lower, item_range_upper;
   std::vector<std::pair<std::string,std::string> > item_name;
 
-
   const INTuple::ItemContainer& cols = nt->items();
   for (INTuple::ItemContainer::const_iterator i = cols.begin();
-       i != cols.end(); ++i )   {
+       i != cols.end(); ++i ) {
     std::string item = "";
 
     switch( (*i)->type() )   {
@@ -122,6 +123,11 @@ StatusCode RootHistCnv::RCWNTupleCnv::book(const std::string& desc,
       analyzeItem(rootVarType( (*i)->type() ),
 		  dynamic_cast<const NTuple::_Data<int>*>(*i),item,
 		  block_name,var_name,lowerRange,upperRange,size);
+      break;
+    case DataTypeInfo::CHAR:              // char
+      analyzeItem(rootVarType( (*i)->type() ),
+		  dynamic_cast<const NTuple::_Data<char>*>(*i),
+		  item, block_name,var_name,lowerRange,upperRange,size);
       break;
     case DataTypeInfo::SHORT:             // short
       analyzeItem(rootVarType( (*i)->type() ),
@@ -131,6 +137,11 @@ StatusCode RootHistCnv::RCWNTupleCnv::book(const std::string& desc,
     case DataTypeInfo::LONG:              // long
       analyzeItem(rootVarType( (*i)->type() ),
 		  dynamic_cast<const NTuple::_Data<long>*>(*i),item,
+		  block_name,var_name,lowerRange,upperRange,size);
+      break;
+    case DataTypeInfo::LONGLONG:          // long long
+      analyzeItem(rootVarType( (*i)->type() ),
+		  dynamic_cast<const NTuple::_Data<long long>*>(*i),item,
 		  block_name,var_name,lowerRange,upperRange,size);
       break;
     case DataTypeInfo::UCHAR:             // unsigned char
@@ -153,6 +164,11 @@ StatusCode RootHistCnv::RCWNTupleCnv::book(const std::string& desc,
 		  dynamic_cast<const NTuple::_Data<unsigned long>*>(*i),
 		  item, block_name,var_name,lowerRange,upperRange,size);
       break;
+    case DataTypeInfo::ULONGLONG:         // unsigned long long
+      analyzeItem(rootVarType( (*i)->type() ),
+		  dynamic_cast<const NTuple::_Data<unsigned long long>*>(*i),
+		  item, block_name,var_name,lowerRange,upperRange,size);
+      break;
     case DataTypeInfo::DOUBLE:            // double
       analyzeItem(rootVarType( (*i)->type() ),
 		  dynamic_cast<const NTuple::_Data<double>*>(*i),item,
@@ -163,6 +179,11 @@ StatusCode RootHistCnv::RCWNTupleCnv::book(const std::string& desc,
 		  dynamic_cast<const NTuple::_Data<float>*>(*i),item,
 		  block_name,var_name,lowerRange,upperRange,size);
       break;
+    case DataTypeInfo::BOOL:               // bool
+      analyzeItem(rootVarType( (*i)->type() ),
+		  dynamic_cast<const NTuple::_Data<bool>*>(*i),item,
+		  block_name,var_name,lowerRange,upperRange,size);
+      break;
     default:
       break;
     }
@@ -170,11 +191,12 @@ StatusCode RootHistCnv::RCWNTupleCnv::book(const std::string& desc,
     item_name.push_back(std::pair<std::string,std::string>(block_name,item));
     cursize = size - oldsize;
 
-//      log << MSG::WARNING << "item: " << item << " blk: " << block_name
-//    	<< " var: " << var_name << " rng: " << lowerRange << " "
-//    	<< upperRange << " sz: " << size << " " << cursize
-//    	<< " buf_pos: " << size-cursize << endmsg;
-
+    log << MSG::VERBOSE << "item: " << item << " type " << (*i)->type()
+        << " blk: " << block_name
+        << " var: " << var_name << " rng: " << lowerRange << " "
+        << upperRange << " sz: " << size << " " << cursize
+        << " buf_pos: " << size-cursize << endmsg;
+    
     item_fullname.push_back(var_name);
     item_buf_pos.push_back(size-cursize);
     item_buf_len.push_back(cursize);
@@ -230,7 +252,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::book(const std::string& desc,
     }
 
     log << MSG::DEBUG << "adding TBranch  " << br->GetTitle() << "  at "
-	<< (void*) buf_pos << endmsg;
+        << (void*) buf_pos << endmsg;
 
 
     // for index items with a limited range. Must be a TLeafI!
@@ -241,19 +263,19 @@ StatusCode RootHistCnv::RCWNTupleCnv::book(const std::string& desc,
       TLeafI *index = 0;
       TObject *tobj = br->GetListOfLeaves()->FindObject( item_fullname[i_item].c_str() );
       if (tobj->IsA()->InheritsFrom("TLeafI")) {
-	index = dynamic_cast<TLeafI*>(tobj);
+        index = dynamic_cast<TLeafI*>(tobj);
 
-	if (index != 0) {
-	  index->SetMaximum( item_range_upper[i_item] );
-	  // FIXME -- add for next version of ROOT
-	  // index->SetMinimum( item_range_lower[i_item] );
-	} else {
-	  log << MSG::ERROR << "Could dynamic cast to TLeafI: "
-	      << item_fullname[i_item] << endmsg;
-	}
+        if (index != 0) {
+          index->SetMaximum( item_range_upper[i_item] );
+          // FIXME -- add for next version of ROOT
+          // index->SetMinimum( item_range_lower[i_item] );
+        } else {
+          log << MSG::ERROR << "Could dynamic cast to TLeafI: "
+              << item_fullname[i_item] << endmsg;
+        }
       }
     }
-
+                              
     rtree->GetListOfBranches()->Add(br);
 
   }
@@ -293,6 +315,9 @@ StatusCode RootHistCnv::RCWNTupleCnv::writeData(TTree* rtree, INTuple* nt)
     case DataTypeInfo::LONG:             // long
       tar += saveItem(tar, (long*)(*i)->buffer(),   (*i)->length());
       break;
+    case DataTypeInfo::LONGLONG:         // long long
+      tar += saveItem(tar, (long long*)(*i)->buffer(),   (*i)->length());
+      break;
     case DataTypeInfo::UCHAR:             // unsigned char
       tar += saveItem(tar, (unsigned char*)(*i)->buffer(),  (*i)->length());
       break;
@@ -304,6 +329,9 @@ StatusCode RootHistCnv::RCWNTupleCnv::writeData(TTree* rtree, INTuple* nt)
       break;
     case DataTypeInfo::ULONG:            // unsigned long
       tar += saveItem(tar, (unsigned long*)(*i)->buffer(),  (*i)->length());
+      break;
+    case DataTypeInfo::ULONGLONG:        // unsigned long
+      tar += saveItem(tar, (unsigned long long*)(*i)->buffer(),  (*i)->length());
       break;
     case DataTypeInfo::FLOAT:            // float
       tar += saveItem(tar, (float*)(*i)->buffer(), (*i)->length());
@@ -348,13 +376,6 @@ StatusCode RootHistCnv::RCWNTupleCnv::readData(TTree* rtree,
 
   for (INTuple::ItemContainer::iterator i = cols.begin(); i != cols.end(); i++ )   {
 
-//      log << MSG::WARNING << "  " << (*i)->name() << ": " << (void*) src
-//  	<< "   " << (*i)->length() << "  ";
-
-//      int *idat;
-//      float *fdat;
-//      long *ldat;
-
 
     switch( (*i)->type() )   {
     case DataTypeInfo::BOOL:              // bool
@@ -367,14 +388,13 @@ StatusCode RootHistCnv::RCWNTupleCnv::readData(TTree* rtree,
       src += loadItem(src, (short*)(*i)->buffer(), (*i)->length());
       break;
     case DataTypeInfo::INT:             // short
-//        idat = (int*) src;
-//        log << *idat << endmsg;
       src += loadItem(src, (int*)(*i)->buffer(), (*i)->length());
       break;
-    case DataTypeInfo::LONG:             // short
-//        ldat = (long*) src;
-//        log << *ldat << endmsg;
+    case DataTypeInfo::LONG:             // long
       src += loadItem(src, (long*)(*i)->buffer(), (*i)->length());
+      break;
+    case DataTypeInfo::LONGLONG:         // long long
+      src += loadItem(src, (long long*)(*i)->buffer(), (*i)->length());
       break;
     case DataTypeInfo::UCHAR:             // unsigned char
       src += loadItem(src, (unsigned char*)(*i)->buffer(), (*i)->length());
@@ -385,12 +405,13 @@ StatusCode RootHistCnv::RCWNTupleCnv::readData(TTree* rtree,
     case DataTypeInfo::UINT:            // unsigned short
       src += loadItem(src, (unsigned int*)(*i)->buffer(), (*i)->length());
       break;
-    case DataTypeInfo::ULONG:            // unsigned short
+    case DataTypeInfo::ULONG:            // unsigned long
       src += loadItem(src, (unsigned long*)(*i)->buffer(), (*i)->length());
       break;
-    case DataTypeInfo::FLOAT:            // unsigned short
-//        fdat = (float*) src;
-//        log << (*fdat) << endmsg;
+    case DataTypeInfo::ULONGLONG:        // unsigned long long
+      src += loadItem(src, (unsigned long long*)(*i)->buffer(), (*i)->length());
+      break;
+    case DataTypeInfo::FLOAT:            // float
       src += loadItem(src, (float*)(*i)->buffer(), (*i)->length());
       break;
     case DataTypeInfo::DOUBLE:            // unsigned short
@@ -483,14 +504,14 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
       }
 
       if (indexLeaf != 0) {
-	//index Arrays and Matrices
-
+        //index Arrays and Matrices
+        
         indexName = indexLeaf->GetName();
         //	  indexRange = tl->GetNdata();
         indexRange = indexLeaf->GetMaximum();
         itemSize = indexRange * tl->GetLenType() * arraySize;
 
-	log << "[" << indexName;
+        log << "[" << indexName;
 
 	// Just for Matrices
 	if (arraySize != 1) {
@@ -608,12 +629,12 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
   for (; iitr!= itemList.end(); ++iitr) {
     TLeaf* leaf = (*iitr).first;
     int isize   = (*iitr).second;
-
+    
     log << MSG::VERBOSE << "setting TBranch " << leaf->GetBranch()->GetName()
-	<< " buffer at " << (void*) bufpos << endmsg;
-
+        << " buffer at " << (void*) bufpos << endmsg;
+    
     leaf->GetBranch()->SetAddress((void*)bufpos);
-
+    
 //        //testing
 //        if (leaf->IsA()->InheritsFrom("TLeafI")) {
 //  	for (int ievt=0; ievt<5; ievt++) {
@@ -632,9 +653,9 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
 
   if (totsize != ts ) {
     log << MSG::ERROR << "buffer size mismatch: " << ts << "  " << totsize
-	<< endmsg;
+        << endmsg;
   }
-
+  
   refpObject = ntup;
 
   return StatusCode::SUCCESS;

@@ -102,12 +102,12 @@ namespace Tuples
       virtual StatusCode Error
       ( const std::string& msg ,
         const StatusCode   sc  = StatusCode::FAILURE ) const
-      { m_handler1 ( name() + msg , sc  ) ; return sc ; }
+      { m_handler1 ( name() + " " + msg , sc  ) ; return sc ; }
 
       virtual StatusCode Warning
       ( const std::string& msg ,
         const StatusCode   sc  = StatusCode::FAILURE ) const
-      { m_handler2 ( name() + msg , sc  ) ; return sc ; }
+      { m_handler2 ( name() + " " + msg , sc  ) ; return sc ; }
 
     protected:
       /// empty protected  destructor

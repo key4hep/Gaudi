@@ -1,6 +1,10 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2011-12-01 - Chris Jones
+ - Fixed bug #85377: GaudiTuple tuple does not undestand ulonglong
+   Update TupleObj to properly support different data types. 
+
 =============================== GaudiAlg v13r8 ===============================
 ! 2011-08-08 - Marco Clemencic
  - Fixing bug #83775: unprotected MSG::DEBUG/VERBOSE

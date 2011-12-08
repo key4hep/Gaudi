@@ -201,7 +201,6 @@ int createAppMgr();
 int main ( int argc, char** argv )
 //-----------------------------------------------------------------------------
 {
-  fs::path::default_name_check(fs::native);
   fs::path pwd = fs::initial_path();
   fs::path out;
   Strings_t libs;
@@ -278,8 +277,7 @@ int main ( int argc, char** argv )
     // try to read configuration from the optionally given configuration file
     if( vm.count("input-cfg") ) {
       string cfgFileName = vm["input-cfg"].as<string>();
-      cfgFileName = fs::complete( fs::path( cfgFileName,
-					    fs::native ) ).string();
+      cfgFileName = fs::system_complete( fs::path( cfgFileName ) ).string();
       std::ifstream ifs( cfgFileName.c_str() );
       po::store( parse_config_file( ifs, config_file_options ), vm );
     }
@@ -324,8 +322,7 @@ int main ( int argc, char** argv )
     for ( Strings_t::const_iterator iLib = inputLibs.begin();
 	  iLib != inputLibs.end();
 	  ++iLib ) {
-      fs::path libPath = fs::path( *iLib, fs::native );
-      std::string lib = libPath.leaf().substr(0, libPath.leaf().find('.') );
+      std::string lib = fs::path(*iLib).stem().string();
       if ( 0 == lib.find("lib") ) {
         lib = lib.substr(3); // For *NIX remove "lib"
       }
@@ -351,8 +348,7 @@ int main ( int argc, char** argv )
   }
 
   if( vm.count("output-dir") ) {
-    out = fs::complete( fs::path( vm["output-dir"].as<string>(),
-                                  fs::native ) );
+    out = fs::system_complete( fs::path( vm["output-dir"].as<string>() ) );
   }
 
   if ( vm.count("debug-level") ) {

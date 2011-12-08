@@ -68,10 +68,10 @@ void SequentialOutputStream::makeFilename()
    if ( m_events % m_eventsPerFile != 0 ) return;
 
    bf::path outputPath( m_outputName );
-   string filename = outputPath.filename();
+   string filename = outputPath.filename().string();
    bf::path dir = outputPath.parent_path();
-   string stem = outputPath.stem();
-   string extension = outputPath.extension();
+   string stem = outputPath.stem().string();
+   string extension = outputPath.extension().string();
 
    if ( !dir.empty() ) {
       if ( !bf::exists( dir ) ) {
@@ -80,14 +80,14 @@ void SequentialOutputStream::makeFilename()
          throw GaudiException( stream.str(), "error", StatusCode::FAILURE );
       }
    }
-   
+
    if ( m_numericFilename ) {
       if ( m_events == 0 ) {
          try {
             m_iFile = lexical_cast< unsigned int >( stem );
          } catch( const bad_lexical_cast& /* cast */ ) {
             stringstream stream;
-            stream << "Filename " << filename 
+            stream << "Filename " << filename
                    << " is not a number, which was needed.";
             throw GaudiException( stream.str(), "error", StatusCode::FAILURE );
          }

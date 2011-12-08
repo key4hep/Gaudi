@@ -9,7 +9,7 @@
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on pclhcb55 on Wed Jan  6 17:20:11 2010
+                                          running on lxplus405.cern.ch on Fri Dec  2 09:33:17 2011
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ApplicationMgr       INFO Successfully loaded modules : GaudiAlg, RootHistCnv
@@ -27,13 +27,13 @@ ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 EventPersistenc...   INFO Added successfully Conversion service:PoolRootEvtCnvSvc
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='EvtColsEx.dst' TYP='POOL_ROOT' OPT='READ'
-RootDBase.open    SUCCESS EvtColsEx.dst File version:52600
-RootDBase.open    SUCCESS EvtColsEx.dst File version:52600
-PoolRootEvtCnvSvc    INFO No Records /FileRecords present in:3A00DD55-DFFA-DE11-B9B8-001320A397BC
+RootDBase.open    SUCCESS EvtColsEx.dst File version:53004
+RootDBase.open    SUCCESS EvtColsEx.dst File version:53004
+PoolRootEvtCnvSvc    INFO No Records /FileRecords present in:A04B4546-C01C-E111-9BE8-003048F0E7D6
 EventSelector     SUCCESS Reading Event record 1. Record number within stream 1: 1
 EventPersistenc...   INFO Added successfully Conversion service:PoolRootTreeEvtCnvSvc
-IODataManager        INFO Referring to dataset EvtTags1.root by its file ID:F0595F5F-DFFA-DE11-8D5C-001320A397BC
-RootDBase.open    SUCCESS EvtTags1.root File version:52600
+IODataManager        INFO Referring to dataset EvtTags1.root by its file ID:9820A749-C01C-E111-A94A-003048F0E7D6
+RootDBase.open    SUCCESS EvtTags1.root File version:53004
 PoolDbDatabaseCnv    INFO Recreate Database file:PFN:EvtTags1.root as /EVTTAGS
 EventSelector     SUCCESS Reading Event record 1001. Record number within stream 1: 1001
 EventSelector     SUCCESS Reading Event record 2001. Record number within stream 1: 2001
@@ -47,14 +47,13 @@ EventSelector     SUCCESS Reading Event record 9001. Record number within stream
 ApplicationMgr       INFO Application Manager Stopped successfully
 Fill              SUCCESS Booked 0 N-Tuples and 1 Event Tag Collections
 Fill              SUCCESS List of booked Event Tag Collections in directory "EVTTAGS/Fill"
-Fill              SUCCESS  ID=COL1          Title="My trivial N-tuple"                      #items=9  {Address,evtNum,runNum,gauss,flat,expo,poisson,binom,flag} Items:{ 'Address' : 'IOpaqueAddress*' , 'binom' : 'L' , 'evtNum' : 'L' , 'expo' : 'F' , 'flag' : 'L' , 'flat' : 'F' , 'gauss' : 'F' , 'poisson' : 'L' , 'runNum' : 'L' }
+Fill              SUCCESS  ID=COL1          Title="My trivial N-tuple"                      #items=9  {Address,evtNum,runNum,gauss,flat,expo,poisson,binom,flag} Items:{ 'Address' : 'IOpaqueAddress*' , 'binom' : 'I' , 'evtNum' : 'I' , 'expo' : 'D' , 'flag' : 'I' , 'flat' : 'D' , 'gauss' : 'D' , 'poisson' : 'I' , 'runNum' : 'I' }
 RootHistSvc       WARNING no ROOT output file name, Histograms cannot be persistified
 EventLoopMgr         INFO Histograms converted successfully according to request.
 ToolSvc              INFO Removing all tools created by ToolSvc
 EvtTupleSvc          INFO NTuples saved successfully
-EvtTupleSvc.EVT...   INFO Disconnected data IO:F0595F5F-DFFA-DE11-8D5C-001320A397BC[EvtTags1.root]
+EvtTupleSvc.EVT...   INFO Disconnected data IO:9820A749-C01C-E111-A94A-003048F0E7D6[EvtTags1.root]
 FileRecordCnvSvc     INFO File sharing enabled. Do not retire files.
-PoolRootEvtCnvSvc    INFO Disconnected data IO:3A00DD55-DFFA-DE11-B9B8-001320A397BC[EvtColsEx.dst]
-XMLCatalog           INFO File 'test_catalog.xml' does not exist. New file created.
+PoolRootEvtCnvSvc    INFO Disconnected data IO:A04B4546-C01C-E111-9BE8-003048F0E7D6[EvtColsEx.dst]
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
