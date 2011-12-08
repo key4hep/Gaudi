@@ -4,6 +4,9 @@
 # Description: standard and commonly used components
 ################################################################################
 
+! 2011-12-06 - Marco Clemencic
+ - Moved AlgContextSvc from GaudiMonitor to GaudiCommonSvc.
+
 ! 2011-11-01 - Marco Clemencic
  - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc
    and GaudiCommonSvc. (patch #1816)

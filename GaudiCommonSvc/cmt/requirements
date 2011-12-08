@@ -29,7 +29,8 @@ library GaudiCommonSvc -no_static -import=AIDA -import=Boost -import=ROOT \
     HistogramSvc/*.cpp \
     PersistencySvc/*.cpp \
     StatusCodeSvc/*.cpp \
-    ToolSvc/*.cpp
+    ToolSvc/*.cpp \
+    *.cpp
 
 # ============================================================================
 # define component library link options

@@ -1,6 +1,9 @@
 Package: GaudiMonitor
 Package manager : Marco Clemencic
 
+! 2011-12-06 - Marco Clemencic
+ - Moved AlgContextSvc from GaudiMonitor to GaudiCommonSvc.
+
 ! 2011-12-02 - Marco Clemencic
  - Removed DataListenerSvc.
  - Moved from GaudiSvc:
