@@ -13,6 +13,8 @@ use GaudiPython  * -no_auto_imports
 use GaudiGSL     *
 use RootHistCnv  * -no_auto_imports
 
+use RootCnv * -no_auto_imports
+
 use Boost * LCG_Interfaces
 use HepPDT * LCG_Interfaces
 

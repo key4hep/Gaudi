@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2011-12-08 - Marco Clemencic
+ - Ported POOLIO Write and Read tests to ROOT.
+
 ! 2011-12-05 - Marco Clemencic
  - Removed the unused FastContainerSvc.
  - Moved ParticlePropertySvc to a dedicated package and wrapped it in the

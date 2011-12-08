@@ -1,92 +1,49 @@
-JobOptionsSvc        INFO
-//GP:================================================================================
-//GP: include "D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiExamples\options\POOLIOWrite.opts" (0,0)
-ApplicationMgr.OutStream +=  [ "OutputStream/RootDst" ] ;               //GP: (1,1)
-ApplicationMgr.OutStream +=  [ "OutputStream/RootMini" ] ;              //GP: (1,1)
-ApplicationMgr.TopAlg =  [ "WriteAlg" , "ReadAlg" ] ;                   //GP: (1,1)
-MessageSvc.OutputLevel = 1;                                             //GP: (1,1)
-IncidentSvc.OutputLevel = 2;                                            //GP: (1,1)
-ApplicationMgr.EvtMax = 1000;                                           //GP: (1,1)
-ApplicationMgr.EvtSel = "NONE";                                         //GP: (1,1)
-ApplicationMgr.HistogramPersistency = "NONE";                           //GP: (1,1)
-//GP: include "D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiPoolDb\options\GaudiPoolDbRoot.opts" (27,10)
-ApplicationMgr.ExtSvc +=  [ "Gaudi::MultiFileCatalog/FileCatalog" , "Gaudi::IODataManager/IODataManager" , "PoolDbCacheSvc/PoolDbCacheSvc" , "PoolDbCnvSvc/PoolRootEvtCnvSvc" , "PoolDbCnvSvc/PoolRootKeyEvtCnvSvc" , "PoolDbCnvSvc/PoolRootTreeEvtCnvSvc" ] ;//GP: (1,1)
-EventPersistencySvc.CnvServices +=  [ "PoolRootEvtCnvSvc" ] ;           //GP: (1,1)
-EventPersistencySvc.CnvServices +=  [ "PoolRootTreeEvtCnvSvc" ] ;       //GP: (1,1)
-EventPersistencySvc.CnvServices +=  [ "PoolRootKeyEvtCnvSvc" ] ;        //GP: (1,1)
-PoolRootEvtCnvSvc.DbType = "POOL_ROOT";                                 //GP: (1,1)
-PoolRootKeyEvtCnvSvc.DbType = "POOL_ROOTKEY";                           //GP: (1,1)
-PoolRootTreeEvtCnvSvc.DbType = "POOL_ROOTTREE";                         //GP: (1,1)
-PoolDbCacheSvc.Dlls =  [ "lcg_RootStorageSvc" , "GaudiKernelDict" ] ;   //GP: (1,1)
-PoolDbCacheSvc.OutputLevel = 4;                                         //GP: (1,1)
-PoolDbCacheSvc.DomainOpts =  [ "Domain[ROOT_All].TREE_MAX_SIZE=500000000000 TYP=longlong" ] ;//GP: (1,1)
-ApplicationMgr.ExtSvc +=  [ "PoolDbCnvSvc/FileRecordCnvSvc" ] ;         //GP: (1,1)
-FileRecordPersistencySvc.CnvServices +=  [ "FileRecordCnvSvc" ] ;       //GP: (1,1)
-FileRecordCnvSvc.DbType = "POOL_ROOTTREE";                              //GP: (1,1)
-FileRecordCnvSvc.ShareFiles = "YES";                                    //GP: (1,1)
-FileRecordDataSvc.ForceLeaves = 1;                                      //GP: (1,1)
-FileRecordDataSvc.EnableFaultHandler = 1;                               //GP: (1,1)
-FileRecordDataSvc.RootCLID = 1;                                         //GP: (1,1)
-PoolRootEvtCnvSvc.EnableIncident = 1;                                   //GP: (1,1)
-PoolRootKeyEvtCnvSvc.EnableIncident = 1;                                //GP: (1,1)
-PoolRootTreeEvtCnvSvc.EnableIncident = 1;                               //GP: (1,1)
-//GP: end  "D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiPoolDb\options\GaudiPoolDbRoot.opts" (36,1)
-RootDst.ItemList =  [ "/Event#1" , "/Event/Collision_0#999" , "/Event/Collision_2#1" , "/Event/MyTracks#1" ] ;//GP: (27,10)
-RootDst.ItemList =  [ "/Event#999" ] ;                                  //GP: (27,10)
-RootDst.Output = "DATAFILE='PFN:POOLIO.dst'  TYP='POOL_ROOTTREE' OPT='RECREATE'";//GP: (27,10)
-RootMini.ItemList =  [ "/Event#1" ] ;                                   //GP: (27,10)
-RootMini.Output = "DATAFILE='PFN:POOLIO.mdst' TYP='POOL_ROOTTREE' OPT='RECREATE'";//GP: (27,10)
-FileCatalog.Catalogs =  [ "xmlcatalog_file:POOLIO.xml" ] ;              //GP: (27,10)
-ApplicationMgr.OutStream +=  [ "RecordStream/FileRecords" ] ;           //GP: (27,10)
-FileRecords.ItemList =  [ "/FileRecords#999" ] ;                        //GP: (27,10)
-FileRecords.Output = @RootDst.Output;                                   //GP: (27,10)
-FileRecords.EvtDataSvc = "FileRecordDataSvc";                           //GP: (27,10)
-FileRecords.EvtConversionSvc = "FileRecordPersistencySvc";              //GP: (27,10)
-//GP: end  "D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiExamples\options\POOLIOWrite.opts" (50,1)
-//GP:================================================================================
-
-JobOptionsSvc        INFO Job options successfully read in from D:\Profiles\clemenci\GAUDI\GAUDI_HEAD\GaudiExamples\options\POOLIOWrite.opts
-ApplicationMgr      DEBUG Getting my own properties
+# --> Including file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/ROOT_IO/Write.py'
+# <-- End of file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/ROOT_IO/Write.py'
+# applying configuration of GaudiPersistency
+# /***** User GaudiPersistency/GaudiPersistency ******************************************************
+# |-<no properties>
+# \----- (End of User GaudiPersistency/GaudiPersistency) ---------------------------------------------
+# Dumping all configurables and properties (different from default)
+{'ApplicationMgr': {'EvtMax': 1000,
+                    'EvtSel': 'NONE',
+                    'ExtSvc': ['FileRecordDataSvc/FileRecordDataSvc'],
+                    'HistogramPersistency': 'NONE',
+                    'OutStream': ['OutputStream/RootDst',
+                                  'OutputStream/RootMini',
+                                  'RecordStream/FileRecords'],
+                    'SvcOptMapping': ['Gaudi::MultiFileCatalog/FileCatalog',
+                                      'Gaudi::IODataManager/IODataManager'],
+                    'TopAlg': ['WriteAlg', 'ReadAlg']},
+ 'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/Gaudi::RootCnvSvc']},
+ 'FileCatalog': {'Catalogs': ['xmlcatalog_file:ROOTIO.xml']},
+ 'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/Gaudi::RootCnvSvc']},
+ 'FileRecords': {'EvtConversionSvc': 'PersistencySvc/FileRecordPersistencySvc',
+                 'EvtDataSvc': 'FileRecordDataSvc/FileRecordDataSvc',
+                 'ItemList': ['/FileRecords#999'],
+                 'Output': "DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"},
+ 'Gaudi::RootCnvSvc': {'OutputLevel': 3},
+ 'IncidentSvc': {'OutputLevel': 2},
+ 'MessageSvc': {'OutputLevel': 1},
+ 'RootDst': {'ItemList': ['/Event#999'],
+             'Output': "DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"},
+ 'RootMini': {'ItemList': ['/Event#1'],
+              'Output': "DATAFILE='PFN:ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on CERNTSLHCB03 on Fri Apr 23 11:15:09 2010
+                                          running on pcphlbc16 on Thu Dec  8 19:49:49 2011
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
-ServiceManager      DEBUG Initializing service FileCatalog
-FileCatalog         DEBUG Service base class initialized successfully
-ServiceManager      DEBUG Initializing service IODataManager
-IODataManager       DEBUG Service base class initialized successfully
+ServiceManager      DEBUG Initializing service FileRecordDataSvc
+FileRecordDataSvc   DEBUG Service base class initialized successfully
 IncidentSvc         DEBUG Service base class initialized successfully
-ServiceManager      DEBUG Initializing service PoolDbCacheSvc
-ServiceManager      DEBUG Initializing service PoolRootEvtCnvSvc
-PoolRootEvtCnvSvc   DEBUG Service base class initialized successfully
-PoolRootEvtCnvSvc VERBOSE ServiceLocatorHelper::service: found service PoolDbCacheSvc
-PoolRootEvtCnvSvc VERBOSE ServiceLocatorHelper::service: found service IODataManager
-PoolRootEvtCnvSvc VERBOSE ServiceLocatorHelper::service: found service FileCatalog
-PoolRootEvtCnvSvc VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
-PoolRootEvtCnvSvc   DEBUG POOL agelimit is set to 2
-ServiceManager      DEBUG Initializing service PoolRootKeyEvtCnvSvc
-PoolRootKeyEvtC...  DEBUG Service base class initialized successfully
-PoolRootKeyEvtC...VERBOSE ServiceLocatorHelper::service: found service PoolDbCacheSvc
-PoolRootKeyEvtC...VERBOSE ServiceLocatorHelper::service: found service IODataManager
-PoolRootKeyEvtC...VERBOSE ServiceLocatorHelper::service: found service FileCatalog
-PoolRootKeyEvtC...VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
-PoolRootKeyEvtC...  DEBUG POOL agelimit is set to 2
-ServiceManager      DEBUG Initializing service PoolRootTreeEvtCnvSvc
-PoolRootTreeEvt...  DEBUG Service base class initialized successfully
-PoolRootTreeEvt...VERBOSE ServiceLocatorHelper::service: found service PoolDbCacheSvc
-PoolRootTreeEvt...VERBOSE ServiceLocatorHelper::service: found service IODataManager
-PoolRootTreeEvt...VERBOSE ServiceLocatorHelper::service: found service FileCatalog
-PoolRootTreeEvt...VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
-PoolRootTreeEvt...  DEBUG POOL agelimit is set to 2
-ServiceManager      DEBUG Initializing service FileRecordCnvSvc
-FileRecordCnvSvc    DEBUG Service base class initialized successfully
-FileRecordCnvSvc  VERBOSE ServiceLocatorHelper::service: found service PoolDbCacheSvc
-FileRecordCnvSvc  VERBOSE ServiceLocatorHelper::service: found service IODataManager
-FileRecordCnvSvc  VERBOSE ServiceLocatorHelper::service: found service FileCatalog
-FileRecordCnvSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
-FileRecordCnvSvc    DEBUG POOL agelimit is set to 2
+FileRecordDataSvc VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
+FileRecordPersi...  DEBUG  'CnvServices':[ 'Gaudi::RootCnvSvc/Gaudi::RootCnvSvc' ]
+FileRecordPersi...  DEBUG Service base class initialized successfully
+FileRecordDataSvc VERBOSE ServiceLocatorHelper::service: found service PersistencySvc/FileRecordPersistencySvc
+IncidentSvc         DEBUG Adding [FILE_OPEN_READ] listener 'FileRecordDataSvc' with priority 0
+IncidentSvc         DEBUG Adding [SAVE_FILE_RECORD] listener 'FileRecordDataSvc' with priority 0
 ServiceManager      DEBUG Initializing service AppMgrRunable
 AppMgrRunable       DEBUG Service base class initialized successfully
 ServiceManager      DEBUG Initializing service EventLoopMgr
@@ -100,31 +57,24 @@ EventLoopMgr        DEBUG Creating OutputStreamRecordStream/FileRecords
 EventLoopMgr        DEBUG Creating Output Stream RecordStream/FileRecords
 EventLoopMgr        DEBUG Creating Top Algorithm WriteAlg with name WriteAlg
 EventLoopMgr        DEBUG Creating Top Algorithm ReadAlg with name ReadAlg
-FileRecordDataSvc   DEBUG Service base class initialized successfully
-FileRecordDataSvc VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
-FileRecordPersi...  DEBUG  'CnvServices':[ 'FileRecordCnvSvc' ]
-FileRecordPersi...  DEBUG Service base class initialized successfully
-FileRecordDataSvc VERBOSE ServiceLocatorHelper::service: found service PersistencySvc/FileRecordPersistencySvc
-IncidentSvc         DEBUG Adding [FILE_OPEN_READ] listener 'FileRecordDataSvc' with priority 0
-IncidentSvc         DEBUG Adding [SAVE_FILE_RECORD] listener 'FileRecordDataSvc' with priority 0
 WriteAlg          VERBOSE ServiceLocatorHelper::service: found service FileRecordDataSvc
 ReadAlg           VERBOSE ServiceLocatorHelper::service: found service FileRecordDataSvc
 EventDataSvc        DEBUG Service base class initialized successfully
 EventDataSvc      VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
-EventPersistenc...  DEBUG  'CnvServices':[ 'PoolRootEvtCnvSvc' , 'PoolRootTreeEvtCnvSvc' , 'PoolRootKeyEvtCnvSvc' ]
+EventPersistenc...  DEBUG  'CnvServices':[ 'Gaudi::RootCnvSvc/Gaudi::RootCnvSvc' ]
 EventPersistenc...  DEBUG Service base class initialized successfully
-EventPersistenc...VERBOSE ServiceLocatorHelper::service: found service PoolRootEvtCnvSvc
-EventPersistenc...   INFO Added successfully Conversion service:PoolRootEvtCnvSvc
-EventPersistenc...VERBOSE ServiceLocatorHelper::service: found service PoolRootTreeEvtCnvSvc
-EventPersistenc...   INFO Added successfully Conversion service:PoolRootTreeEvtCnvSvc
+IODataManager       DEBUG Service base class initialized successfully
+FileCatalog         DEBUG Service base class initialized successfully
+EventPersistenc...VERBOSE ServiceLocatorHelper::service: found service Gaudi::RootCnvSvc/Gaudi::RootCnvSvc
+EventPersistenc...   INFO Added successfully Conversion service:Gaudi::RootCnvSvc
 RootDst             DEBUG Adding OutputStream item /Event with 999 level(s).
-RootDst              INFO Data source: EventDataSvc output: DATAFILE='PFN:POOLIO.dst'  TYP='POOL_ROOTTREE' OPT='RECREATE'
+RootDst              INFO Data source: EventDataSvc output: DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
 RootMini            DEBUG Adding OutputStream item /Event with 1 level(s).
-RootMini             INFO Data source: EventDataSvc output: DATAFILE='PFN:POOLIO.mdst' TYP='POOL_ROOTTREE' OPT='RECREATE'
-FileRecordPersi...VERBOSE ServiceLocatorHelper::service: found service FileRecordCnvSvc
-FileRecordPersi...   INFO Added successfully Conversion service:FileRecordCnvSvc
+RootMini             INFO Data source: EventDataSvc output: DATAFILE='PFN:ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
+FileRecordPersi...VERBOSE ServiceLocatorHelper::service: found service Gaudi::RootCnvSvc/Gaudi::RootCnvSvc
+FileRecordPersi...   INFO Added successfully Conversion service:Gaudi::RootCnvSvc
 FileRecords         DEBUG Adding OutputStream item /FileRecords with 999 level(s).
-FileRecords          INFO Data source: FileRecordDataSvc output: DATAFILE='PFN:POOLIO.dst'  TYP='POOL_ROOTTREE' OPT='RECREATE'
+FileRecords          INFO Data source: FileRecordDataSvc/FileRecordDataSvc output: DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramDataSvc    DEBUG Service base class initialized successfully
@@ -134,19 +84,15 @@ HistogramPersis...  DEBUG Service base class initialized successfully
 HistogramPersis...WARNING Histograms saving not required.
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc
 ApplicationMgr       INFO Application Manager Initialized successfully
-ServiceManager      DEBUG Starting service FileCatalog
-ServiceManager      DEBUG Starting service IODataManager
-ServiceManager      DEBUG Starting service PoolDbCacheSvc
-ServiceManager      DEBUG Starting service PoolRootEvtCnvSvc
-ServiceManager      DEBUG Starting service PoolRootKeyEvtCnvSvc
-ServiceManager      DEBUG Starting service PoolRootTreeEvtCnvSvc
-ServiceManager      DEBUG Starting service FileRecordCnvSvc
+ServiceManager      DEBUG Starting service FileRecordDataSvc
 ServiceManager      DEBUG Starting service AppMgrRunable
 ServiceManager      DEBUG Starting service IncidentSvc
 ServiceManager      DEBUG Starting service FileRecordPersistencySvc
-ServiceManager      DEBUG Starting service FileRecordDataSvc
 ServiceManager      DEBUG Starting service EventPersistencySvc
 ServiceManager      DEBUG Starting service EventDataSvc
+ServiceManager      DEBUG Starting service FileCatalog
+ServiceManager      DEBUG Starting service IODataManager
+ServiceManager      DEBUG Starting service Gaudi::RootCnvSvc
 ServiceManager      DEBUG Starting service HistogramPersistencySvc
 ServiceManager      DEBUG Starting service HistogramDataSvc
 ServiceManager      DEBUG Starting service EventLoopMgr
@@ -159,8 +105,8 @@ RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngin
 WriteAlg          VERBOSE ServiceLocatorHelper::service: found service RndmGenSvc
 WriteAlg          VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 ReadAlg           VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
-ReadAlg              INFO ========= EVENT:1 RUN:999 TIME:1272014110.1403806 0 (-1) 1 (-1) 2 (-1)
-ReadAlg             DEBUG Evt:1 Track:      10.802     9.50498     8.43243 Org:  31 0.0948131 0.0882023 0.0890405
+ReadAlg              INFO ========= EVENT:1 RUN:999 TIME:1323370189.846308 0 (-1) 1 (-1) 2 (-1)
+ReadAlg             DEBUG Evt:1 Track:      10.802     9.50498     8.43243 Org:  31 0.0948131 0.0882022 0.0890405
 ReadAlg             DEBUG    Decays:  16
 ReadAlg             DEBUG      0.0955367 0.0974241 0.0982723 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.110336  0.098101 0.0929623 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -175,7 +121,7 @@ ReadAlg             DEBUG      0.0873963 0.0929576  0.102044 Collisions:  0 (-1)
 ReadAlg             DEBUG      0.0992706  0.101752  0.110905 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0873313 0.0828289  0.107358 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.121204 0.0933645  0.108755 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG       0.106626  0.102393 0.0923874 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG       0.106626  0.102393 0.0923873 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0975337 0.0890622  0.107548 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.114853 0.0927442 0.0921961 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG Evt:1 Track:     8.77816     11.9423     10.4022 Org:  21  0.105636 0.0965541   0.09253
@@ -189,7 +135,7 @@ ReadAlg             DEBUG Evt:1 Track:     9.95059     10.0773     10.0918 Org: 
 ReadAlg             DEBUG    Decays:   2
 ReadAlg             DEBUG       0.102972 0.0932683 0.0943318 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.115312   0.11284  0.101346 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG Evt:1 Track:     10.4097     10.9492     9.72505 Org:  47 0.0854783 0.0897832  0.110166
+ReadAlg             DEBUG Evt:1 Track:     10.4097     10.9492     9.72505 Org:  47 0.0854783 0.0897833  0.110166
 ReadAlg             DEBUG    Decays:   0
 ReadAlg             DEBUG Evt:1 Track:     8.61818     10.2842     11.4339 Org:   5 0.0955367 0.0974241 0.0982723
 ReadAlg             DEBUG    Decays:  14
@@ -201,31 +147,17 @@ ReadAlg             DEBUG      0.0873963 0.0929576  0.102044 Collisions:  0 (-1)
 ReadAlg             DEBUG      0.0992706  0.101752  0.110905 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0873313 0.0828289  0.107358 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.121204 0.0933645  0.108755 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG       0.106626  0.102393 0.0923874 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG       0.106626  0.102393 0.0923873 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0975337 0.0890622  0.107548 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.114853 0.0927442 0.0921961 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.105636 0.0965541   0.09253 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.118701 0.0819518  0.107732 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.106563 0.0702038  0.101916 Collisions:  0 (-1)  1 (-1)  2 (-1)
-FileCatalog         DEBUG No writable file catalog found which contains FID:98CE58B7-B84E-DF11-A094-95A0392ACC0D
-IODataManager        INFO Referring to dataset POOLIO.dst by its file ID:98CE58B7-B84E-DF11-A094-95A0392ACC0D
-RootDBase.open    SUCCESS POOLIO.dst File version:52600
-PoolDbBaseCnv       DEBUG Created object shape for class:DataObject
-PoolDbBaseCnv       DEBUG {ID=00000001-0000-0000-0000-000000000000}{CL=DataObject}{NCOL=3}{CNT=0}{COL={{NAME=DataObject}{CLASS=DataObject}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}{COL={{NAME=Links}{CLASS=LinkManager}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}{COL={{NAME=Refs}{CLASS=PoolDbLinkManager}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}
-PoolDbBaseCnv       DEBUG Dictionary for class with GUID:0000006E-0000-0000-0000-000000000000 missing.
-PoolRootTreeEvt...  DEBUG Trying to 'Autoload' dictionary for class Gaudi::Examples::Event
-PoolDbBaseCnv       DEBUG Created object shape for class:Gaudi::Examples::Event
-PoolDbBaseCnv       DEBUG {ID=0000006E-0000-0000-0000-000000000000}{CL=Gaudi::Examples::Event}{NCOL=3}{CNT=0}{COL={{NAME=Event}{CLASS=Gaudi::Examples::Event}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}{COL={{NAME=Links}{CLASS=LinkManager}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}{COL={{NAME=Refs}{CLASS=PoolDbLinkManager}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}
-PoolDbBaseCnv       DEBUG Created object shape for class:Gaudi::Examples::Collision
-PoolDbBaseCnv       DEBUG {ID=0000006F-0000-0000-0000-000000000000}{CL=Gaudi::Examples::Collision}{NCOL=3}{CNT=0}{COL={{NAME=Collision}{CLASS=Gaudi::Examples::Collision}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}{COL={{NAME=Links}{CLASS=LinkManager}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}{COL={{NAME=Refs}{CLASS=PoolDbLinkManager}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}
-PoolDbBaseCnv       DEBUG Created object shape for class:KeyedContainer<Gaudi::Examples::MyVertex,Containers::KeyedObjectManager<Containers::hashmap> >
-PoolDbBaseCnv       DEBUG {ID=00060164-0000-0000-0000-000000000000}{CL=KeyedContainer<Gaudi::Examples::MyVertex,Containers::KeyedObjectManager<Containers::hashmap> >}{NCOL=3}{CNT=0}{COL={{NAME=KeyedContainer<Gaudi::Examples::MyVertex,Containers::KeyedObjectManager<Containers::hashmap> >}{CLASS=KeyedContainer<Gaudi::Examples::MyVertex,Containers::KeyedObjectManager<Containers::hashmap> >}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}{COL={{NAME=Links}{CLASS=LinkManager}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}{COL={{NAME=Refs}{CLASS=PoolDbLinkManager}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}
-PoolDbBaseCnv       DEBUG Created object shape for class:KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >
-PoolDbBaseCnv       DEBUG {ID=00060163-0000-0000-0000-000000000000}{CL=KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >}{NCOL=3}{CNT=0}{COL={{NAME=KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >}{CLASS=KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}{COL={{NAME=Links}{CLASS=LinkManager}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}{COL={{NAME=Refs}{CLASS=PoolDbLinkManager}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}
-FileCatalog         DEBUG No writable file catalog found which contains FID:5E0692B7-B84E-DF11-A094-95A0392ACC0D
-IODataManager        INFO Referring to dataset POOLIO.mdst by its file ID:5E0692B7-B84E-DF11-A094-95A0392ACC0D
-RootDBase.open    SUCCESS POOLIO.mdst File version:52600
-ReadAlg              INFO ========= EVENT:2 RUN:999 TIME:1272014110.5309881 0 (-1) 1 (-1) 2 (-1)
+FileCatalog         DEBUG No writable file catalog found which contains FID:A4133B68-CD21-E111-A101-B499BAF088DC
+IODataManager        INFO Referring to dataset ROOTIO.dst by its file ID:A4133B68-CD21-E111-A101-B499BAF088DC
+FileCatalog         DEBUG No writable file catalog found which contains FID:3EF84D68-CD21-E111-A101-B499BAF088DC
+IODataManager        INFO Referring to dataset ROOTIO.mdst by its file ID:3EF84D68-CD21-E111-A101-B499BAF088DC
+ReadAlg              INFO ========= EVENT:2 RUN:999 TIME:1323370190.047133 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:2 Track:     10.1578     9.51566     9.19358 Org:  12   0.10708  0.109034  0.096556
 ReadAlg             DEBUG    Decays:  54
 ReadAlg             DEBUG       0.097666 0.0945251 0.0900927 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -236,7 +168,7 @@ ReadAlg             DEBUG      0.0870813  0.121608  0.107138 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.106638  0.109897  0.090842 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0996429  0.111814  0.121548 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.105913    0.1062  0.103678 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0975182  0.103904 0.0981719 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0975181  0.103904 0.0981719 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG        0.10448  0.106007 0.0972974 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0970382 0.0941951 0.0895092 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG        0.10685  0.102052 0.0911832 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -248,7 +180,7 @@ ReadAlg             DEBUG       0.102491  0.102296 0.0898967 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.101117 0.0966305 0.0903379 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0945676  0.100253  0.091624 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.100959 0.0894981  0.109439 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG        0.11059 0.0948918 0.0941784 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG        0.11059 0.0948918 0.0941783 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0985697 0.0928461  0.091828 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.115508  0.112132 0.0819703 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.112825  0.089238 0.0991629 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -256,7 +188,7 @@ ReadAlg             DEBUG      0.0941044 0.0964093    0.1047 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.106354  0.104222 0.0967957 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.100675 0.0887908 0.0964475 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG        0.10432  0.111781  0.104624 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0918394 0.0974882  0.108724 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0918394 0.0974881  0.108724 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0815648 0.0984427  0.109819 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.102076  0.112558 0.0996443 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0819209  0.103236 0.0812119 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -327,7 +259,7 @@ ReadAlg             DEBUG      0.0941044 0.0964093    0.1047 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.106354  0.104222 0.0967957 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.100675 0.0887908 0.0964475 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG        0.10432  0.111781  0.104624 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0918394 0.0974882  0.108724 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0918394 0.0974881  0.108724 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0815648 0.0984427  0.109819 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.102076  0.112558 0.0996443 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0819209  0.103236 0.0812119 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -367,7 +299,7 @@ ReadAlg             DEBUG      0.0870813  0.121608  0.107138 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.106638  0.109897  0.090842 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0996429  0.111814  0.121548 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.105913    0.1062  0.103678 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0975182  0.103904 0.0981719 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0975181  0.103904 0.0981719 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG        0.10448  0.106007 0.0972974 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0970382 0.0941951 0.0895092 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG        0.10685  0.102052 0.0911832 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -379,7 +311,7 @@ ReadAlg             DEBUG       0.102491  0.102296 0.0898967 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.101117 0.0966305 0.0903379 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0945676  0.100253  0.091624 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.100959 0.0894981  0.109439 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG        0.11059 0.0948918 0.0941784 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG        0.11059 0.0948918 0.0941783 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0985697 0.0928461  0.091828 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.115508  0.112132 0.0819703 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.112825  0.089238 0.0991629 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -387,9 +319,9 @@ ReadAlg             DEBUG      0.0941044 0.0964093    0.1047 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.106354  0.104222 0.0967957 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.100675 0.0887908 0.0964475 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG        0.10432  0.111781  0.104624 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0918394 0.0974882  0.108724 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0918394 0.0974881  0.108724 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0815648 0.0984427  0.109819 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg              INFO ========= EVENT:3 RUN:999 TIME:1272014110.5466124 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:3 RUN:999 TIME:1323370190.056889 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:3 Track:     10.4989     10.4342     9.78193 Org:  16 0.0883089 0.0980969 0.0989754
 ReadAlg             DEBUG    Decays:   4
 ReadAlg             DEBUG      0.0803759 0.0962499 0.0993645 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -419,7 +351,7 @@ ReadAlg             DEBUG      0.0859127 0.0910988  0.106649 Collisions:  0 (-1)
 ReadAlg             DEBUG      0.0880905 0.0966223  0.107268 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.115101  0.105363  0.121094 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0916673 0.0943157  0.114352 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0881009 0.0970698 0.0943468 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0881009 0.0970698 0.0943469 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.100743 0.0989096  0.105264 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.110774  0.088491  0.119464 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0999599 0.0909445   0.10432 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -460,7 +392,7 @@ ReadAlg             DEBUG      0.0859127 0.0910988  0.106649 Collisions:  0 (-1)
 ReadAlg             DEBUG      0.0880905 0.0966223  0.107268 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.115101  0.105363  0.121094 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0916673 0.0943157  0.114352 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0881009 0.0970698 0.0943468 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0881009 0.0970698 0.0943469 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.100743 0.0989096  0.105264 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.110774  0.088491  0.119464 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0999599 0.0909445   0.10432 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -487,7 +419,7 @@ ReadAlg             DEBUG      0.0859127 0.0910988  0.106649 Collisions:  0 (-1)
 ReadAlg             DEBUG      0.0880905 0.0966223  0.107268 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.115101  0.105363  0.121094 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0916673 0.0943157  0.114352 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0881009 0.0970698 0.0943468 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0881009 0.0970698 0.0943469 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.100743 0.0989096  0.105264 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.110774  0.088491  0.119464 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0999599 0.0909445   0.10432 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -505,7 +437,7 @@ ReadAlg             DEBUG       0.106024  0.095753  0.112037 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.115886  0.089338 0.0764793 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0803759 0.0962499 0.0993645 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.103776 0.0928696  0.091886 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg              INFO ========= EVENT:4 RUN:999 TIME:1272014110.5466124 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:4 RUN:999 TIME:1323370190.063203 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:4 Track:     8.95659     9.22111     10.7468 Org:  35    0.1082 0.0979698 0.0960275
 ReadAlg             DEBUG    Decays:   3
 ReadAlg             DEBUG       0.110419  0.089749 0.0925822 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -532,7 +464,7 @@ ReadAlg             DEBUG         0.1034   0.09279 0.0851446 Collisions:  0 (-1)
 ReadAlg             DEBUG      0.0991496  0.111281  0.105025 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0971706  0.117891  0.109691 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.108389 0.0894832 0.0911477 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG       0.100912  0.103671 0.0989728 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG       0.100912  0.103671 0.0989729 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.105094 0.0936744  0.116785 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0882685  0.119865  0.093591 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0954098  0.104368  0.107192 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -543,7 +475,7 @@ ReadAlg             DEBUG Evt:4 Track:     10.7405     10.4946      8.8374 Org: 
 ReadAlg             DEBUG    Decays:  52
 ReadAlg             DEBUG      0.0922891 0.0999764 0.0965847 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0942017  0.107152 0.0950898 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG       0.102031  0.097757 0.0997234 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG       0.102031  0.097757 0.0997233 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.100916  0.088108  0.112291 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.103642 0.0922853  0.101574 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0980702  0.103228  0.114439 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -584,7 +516,7 @@ ReadAlg             DEBUG         0.1034   0.09279 0.0851446 Collisions:  0 (-1)
 ReadAlg             DEBUG      0.0991496  0.111281  0.105025 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0971706  0.117891  0.109691 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.108389 0.0894832 0.0911477 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG       0.100912  0.103671 0.0989728 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG       0.100912  0.103671 0.0989729 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.105094 0.0936744  0.116785 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0882685  0.119865  0.093591 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0954098  0.104368  0.107192 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -658,7 +590,7 @@ ReadAlg             DEBUG         0.1034   0.09279 0.0851446 Collisions:  0 (-1)
 ReadAlg             DEBUG      0.0991496  0.111281  0.105025 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0971706  0.117891  0.109691 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.108389 0.0894832 0.0911477 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG       0.100912  0.103671 0.0989728 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG       0.100912  0.103671 0.0989729 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.105094 0.0936744  0.116785 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0882685  0.119865  0.093591 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0954098  0.104368  0.107192 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -666,14 +598,14 @@ ReadAlg             DEBUG       0.100286 0.0804912 0.0973343 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.104589  0.112811 0.0884065 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0922139  0.102432  0.120081 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0937731 0.0932409  0.108906 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg              INFO ========= EVENT:5 RUN:999 TIME:1272014110.5622367 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:5 RUN:999 TIME:1323370190.071625 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:5 Track:     11.1213     8.18301     7.64467 Org:  39 0.0963519   0.10652 0.0938699
 ReadAlg             DEBUG    Decays:  38
 ReadAlg             DEBUG      0.0990801 0.0982084  0.113384 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.100704  0.102944  0.103149 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0960623  0.112353  0.105479 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0979156  0.109128  0.092957 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0885795 0.0967034 0.0892106 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0885795 0.0967034 0.0892105 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0898939 0.0931272  0.100064 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.116346  0.092857  0.109717 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0934937  0.100452 0.0983436 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -691,7 +623,7 @@ ReadAlg             DEBUG       0.083196  0.100572 0.0849244 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.102386  0.102008  0.108067 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.118127   0.10453  0.101397 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0892825  0.109572 0.0892172 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG       0.118167 0.0993963  0.106465 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG       0.118167 0.0993964  0.106465 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0966403 0.0735833  0.114281 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.107293   0.10359  0.106495 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.118054  0.111566  0.103555 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -714,7 +646,7 @@ ReadAlg             DEBUG        0.11071 0.0698965   0.11055 Collisions:  0 (-1)
 ReadAlg             DEBUG Evt:5 Track:     9.13516     9.42063     9.54246 Org:  92 0.0877871 0.0875319 0.0998727
 ReadAlg             DEBUG    Decays:   2
 ReadAlg             DEBUG      0.0892825  0.109572 0.0892172 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG       0.118167 0.0993963  0.106465 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG       0.118167 0.0993964  0.106465 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG Evt:5 Track:      11.375     9.66959     12.7847 Org:  33  0.123534 0.0950527 0.0717883
 ReadAlg             DEBUG    Decays:  11
 ReadAlg             DEBUG      0.0966403 0.0735833  0.114281 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -728,7 +660,7 @@ ReadAlg             DEBUG       0.109127  0.104738 0.0983583 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.108677 0.0962482 0.0913227 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0848865 0.0908803  0.105893 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0970337  0.112413  0.110682 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg              INFO ========= EVENT:6 RUN:999 TIME:1272014110.5622367 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:6 RUN:999 TIME:1323370190.076122 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:6 Track:     10.7592     9.68162     11.3563 Org:  18 0.0941401  0.107751  0.104851
 ReadAlg             DEBUG    Decays:  13
 ReadAlg             DEBUG       0.105539 0.0980193  0.108179 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -771,7 +703,7 @@ ReadAlg             DEBUG      0.0859672 0.0977685 0.0958356 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.103417  0.108553 0.0949077 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0992199  0.116928  0.105401 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0997772 0.0864951  0.096967 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0791165  0.107304  0.116134 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0791165  0.107304  0.116133 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG Evt:6 Track:     9.99647     9.82945     10.6632 Org:   1  0.101398  0.106449 0.0964367
 ReadAlg             DEBUG    Decays:   6
 ReadAlg             DEBUG       0.105539 0.0980193  0.108179 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -786,7 +718,7 @@ ReadAlg             DEBUG      0.0944417 0.0948405  0.117754 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.101398  0.106449 0.0964367 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0963533 0.0964479 0.0917974 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0859672 0.0977685 0.0958356 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg              INFO ========= EVENT:7 RUN:999 TIME:1272014110.577861 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:7 RUN:999 TIME:1323370190.079691 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:7 Track:     9.57394     9.64294      9.8672 Org:  41  0.104371  0.107245  0.100854
 ReadAlg             DEBUG    Decays:  30
 ReadAlg             DEBUG       0.093229 0.0949693  0.103098 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -931,7 +863,7 @@ ReadAlg             DEBUG      0.0982539  0.092417 0.0971565 Collisions:  0 (-1)
 ReadAlg             DEBUG        0.11164 0.0984174  0.107819 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG        0.10548 0.0675091 0.0905533 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.100201  0.103858  0.124267 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg              INFO ========= EVENT:8 RUN:999 TIME:1272014110.577861 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:8 RUN:999 TIME:1323370190.086505 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:8 Track:      10.978     9.54438     10.9297 Org:   0  0.109247 0.0814294 0.0902878
 ReadAlg             DEBUG    Decays:   5
 ReadAlg             DEBUG       0.121196  0.106986  0.101088 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -961,13 +893,13 @@ ReadAlg             DEBUG       0.121196  0.106986  0.101088 Collisions:  0 (-1)
 ReadAlg             DEBUG      0.0870579 0.0975836 0.0906306 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.104343 0.0731387  0.110088 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.108551  0.103457  0.104904 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG Evt:8 Track:     9.00834     11.1496     8.99867 Org:   1 0.0982567 0.0796269   0.10203
+ReadAlg             DEBUG Evt:8 Track:     9.00834     11.1496     8.99866 Org:   1 0.0982567 0.0796269   0.10203
 ReadAlg             DEBUG    Decays:   4
 ReadAlg             DEBUG       0.109247 0.0814294 0.0902878 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0982567 0.0796269   0.10203 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.121357  0.106839  0.093799 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.104233  0.113049 0.0996277 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg              INFO ========= EVENT:9 RUN:999 TIME:1272014110.577861 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:9 RUN:999 TIME:1323370190.089185 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:9 Track:     10.6032     10.0631     9.13475 Org:  74 0.0837793  0.115122  0.107758
 ReadAlg             DEBUG    Decays:  18
 ReadAlg             DEBUG       0.108493  0.110989   0.10767 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1005,8 +937,8 @@ ReadAlg             DEBUG        0.10345 0.0963315   0.10014 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.104723  0.115693  0.104834 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0967476 0.0942289  0.105307 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0964015  0.105159 0.0945961 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0980793  0.107177  0.107921 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG       0.101558  0.107907 0.0933493 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0980792  0.107177  0.107921 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG       0.101559  0.107907 0.0933493 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.108493  0.110989   0.10767 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0891228 0.0988304 0.0977403 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.092284 0.0948522 0.0914129 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1017,7 +949,7 @@ ReadAlg             DEBUG       0.083573 0.0777397  0.106414 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.099451 0.0997457   0.11602 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0838257  0.109277  0.104056 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.101866  0.101113 0.0988664 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0937919 0.0869032 0.0919071 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG       0.093792 0.0869032 0.0919071 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.116346  0.113877  0.124781 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.110303  0.121356  0.112744 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.097849  0.104252 0.0959403 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1059,8 +991,8 @@ ReadAlg             DEBUG        0.10345 0.0963315   0.10014 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.104723  0.115693  0.104834 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0967476 0.0942289  0.105307 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0964015  0.105159 0.0945961 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0980793  0.107177  0.107921 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG       0.101558  0.107907 0.0933493 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0980792  0.107177  0.107921 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG       0.101559  0.107907 0.0933493 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.108493  0.110989   0.10767 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0891228 0.0988304 0.0977403 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.092284 0.0948522 0.0914129 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1080,7 +1012,7 @@ ReadAlg             DEBUG       0.083573 0.0777397  0.106414 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.099451 0.0997457   0.11602 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0838257  0.109277  0.104056 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.101866  0.101113 0.0988664 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0937919 0.0869032 0.0919071 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG       0.093792 0.0869032 0.0919071 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG Evt:9 Track:     10.4714     10.5947     8.85771 Org:  76  0.101825 0.0874953  0.123536
 ReadAlg             DEBUG    Decays:  10
 ReadAlg             DEBUG      0.0947813 0.0867964 0.0947587 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1089,17 +1021,17 @@ ReadAlg             DEBUG        0.10345 0.0963315   0.10014 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.104723  0.115693  0.104834 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0967476 0.0942289  0.105307 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0964015  0.105159 0.0945961 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0980793  0.107177  0.107921 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG       0.101558  0.107907 0.0933493 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0980792  0.107177  0.107921 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG       0.101559  0.107907 0.0933493 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.108493  0.110989   0.10767 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0891228 0.0988304 0.0977403 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg              INFO ========= EVENT:10 RUN:999 TIME:1272014110.5934853 0 (-1) 1 (-1) 2 (-1)
-ReadAlg              INFO ========= EVENT:100 RUN:999 TIME:1272014110.9528442 0 (-1) 1 (-1) 2 (-1)
-ReadAlg              INFO ========= EVENT:200 RUN:999 TIME:1272014111.3747003 0 (-1) 1 (-1) 2 (-1)
-ReadAlg              INFO ========= EVENT:300 RUN:999 TIME:1272014112.0152966 0 (-1) 1 (-1) 2 (-1)
-ReadAlg              INFO ========= EVENT:400 RUN:999 TIME:1272014112.60902 0 (-1) 1 (-1) 2 (-1)
-ReadAlg              INFO ========= EVENT:500 RUN:999 TIME:1272014113.233992 0 (-1) 1 (-1) 2 (-1)
-ReadAlg             DEBUG Evt:500 Track:     9.79151     8.83918     10.2866 Org:  41 0.0956371  0.080424  0.106273
+ReadAlg              INFO ========= EVENT:10 RUN:999 TIME:1323370190.093946 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:100 RUN:999 TIME:1323370190.28042 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:200 RUN:999 TIME:1323370190.613985 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:300 RUN:999 TIME:1323370190.850908 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:400 RUN:999 TIME:1323370191.10102 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:500 RUN:999 TIME:1323370191.374528 0 (-1) 1 (-1) 2 (-1)
+ReadAlg             DEBUG Evt:500 Track:     9.79151     8.83918     10.2866 Org:  41 0.0956371 0.0804239  0.106273
 ReadAlg             DEBUG    Decays:  44
 ReadAlg             DEBUG       0.094814 0.0955636 0.0770906 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0856614 0.0930069   0.10846 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1108,13 +1040,13 @@ ReadAlg             DEBUG      0.0878256  0.112514 0.0966346 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.102437 0.0997323  0.104693 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.108358 0.0947713 0.0966175 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.117897 0.0987294 0.0938558 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0980564  0.112762 0.0895245 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0980564  0.112762 0.0895244 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0971057  0.111309 0.0902023 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0967937 0.0871674  0.100885 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0967937 0.0871675  0.100885 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.105897   0.10313  0.106499 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0827878   0.10088  0.099259 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.105131 0.0863001  0.102292 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG       0.109071 0.0868027 0.0850831 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG       0.109071 0.0868028 0.0850831 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.106483   0.09653  0.106938 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.106131 0.0925506 0.0949521 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0931678  0.103301 0.0938597 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1126,7 +1058,7 @@ ReadAlg             DEBUG       0.101784  0.103322  0.102982 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.087853  0.102285  0.111765 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG        0.10602  0.105082  0.102456 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0887486 0.0803109   0.12478 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0899617 0.0998418  0.094415 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0899617 0.0998417  0.094415 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0987449  0.110801 0.0978124 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.100702 0.0853356  0.101259 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0790819 0.0962791  0.108304 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1138,7 +1070,7 @@ ReadAlg             DEBUG      0.0903908 0.0856583  0.103615 Collisions:  0 (-1)
 ReadAlg             DEBUG      0.0947733 0.0965073 0.0904019 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.106867 0.0903092 0.0974192 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0821853  0.103663  0.117896 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0956371  0.080424  0.106273 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0956371 0.0804239  0.106273 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0959186 0.0944657 0.0973793 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0980872  0.118081 0.0897199 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0901528  0.101351 0.0891003 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1156,7 +1088,7 @@ ReadAlg             DEBUG       0.101784  0.103322  0.102982 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.087853  0.102285  0.111765 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG        0.10602  0.105082  0.102456 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0887486 0.0803109   0.12478 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0899617 0.0998418  0.094415 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0899617 0.0998417  0.094415 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0987449  0.110801 0.0978124 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.100702 0.0853356  0.101259 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0790819 0.0962791  0.108304 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1166,13 +1098,13 @@ ReadAlg             DEBUG      0.0904786  0.109667   0.10802 Collisions:  0 (-1)
 ReadAlg             DEBUG Evt:500 Track:     9.66969     10.4578     9.75809 Org:  24 0.0925258 0.0969625  0.101123
 ReadAlg             DEBUG    Decays:  37
 ReadAlg             DEBUG       0.117897 0.0987294 0.0938558 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0980564  0.112762 0.0895245 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0980564  0.112762 0.0895244 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0971057  0.111309 0.0902023 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0967937 0.0871674  0.100885 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0967937 0.0871675  0.100885 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.105897   0.10313  0.106499 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0827878   0.10088  0.099259 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.105131 0.0863001  0.102292 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG       0.109071 0.0868027 0.0850831 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG       0.109071 0.0868028 0.0850831 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.106483   0.09653  0.106938 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.106131 0.0925506 0.0949521 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0931678  0.103301 0.0938597 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1184,7 +1116,7 @@ ReadAlg             DEBUG       0.101784  0.103322  0.102982 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.087853  0.102285  0.111765 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG        0.10602  0.105082  0.102456 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0887486 0.0803109   0.12478 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0899617 0.0998418  0.094415 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0899617 0.0998417  0.094415 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0987449  0.110801 0.0978124 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.100702 0.0853356  0.101259 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0790819 0.0962791  0.108304 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1196,20 +1128,20 @@ ReadAlg             DEBUG      0.0903908 0.0856583  0.103615 Collisions:  0 (-1)
 ReadAlg             DEBUG      0.0947733 0.0965073 0.0904019 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.106867 0.0903092 0.0974192 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0821853  0.103663  0.117896 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0956371  0.080424  0.106273 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0956371 0.0804239  0.106273 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0959186 0.0944657 0.0973793 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0980872  0.118081 0.0897199 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0901528  0.101351 0.0891003 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0930446  0.112418  0.117806 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.117211 0.0961891 0.0912695 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG Evt:500 Track:     11.0583     9.71745     10.2489 Org:  17  0.109071 0.0868027 0.0850831
+ReadAlg             DEBUG Evt:500 Track:     11.0583     9.71745     10.2489 Org:  17  0.109071 0.0868028 0.0850831
 ReadAlg             DEBUG    Decays:  38
 ReadAlg             DEBUG      0.0971057  0.111309 0.0902023 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0967937 0.0871674  0.100885 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0967937 0.0871675  0.100885 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.105897   0.10313  0.106499 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0827878   0.10088  0.099259 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.105131 0.0863001  0.102292 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG       0.109071 0.0868027 0.0850831 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG       0.109071 0.0868028 0.0850831 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.106483   0.09653  0.106938 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.106131 0.0925506 0.0949521 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0931678  0.103301 0.0938597 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1221,7 +1153,7 @@ ReadAlg             DEBUG       0.101784  0.103322  0.102982 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.087853  0.102285  0.111765 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG        0.10602  0.105082  0.102456 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0887486 0.0803109   0.12478 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0899617 0.0998418  0.094415 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0899617 0.0998417  0.094415 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0987449  0.110801 0.0978124 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.100702 0.0853356  0.101259 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0790819 0.0962791  0.108304 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1233,7 +1165,7 @@ ReadAlg             DEBUG      0.0903908 0.0856583  0.103615 Collisions:  0 (-1)
 ReadAlg             DEBUG      0.0947733 0.0965073 0.0904019 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.106867 0.0903092 0.0974192 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0821853  0.103663  0.117896 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0956371  0.080424  0.106273 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0956371 0.0804239  0.106273 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0959186 0.0944657 0.0973793 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0980872  0.118081 0.0897199 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0901528  0.101351 0.0891003 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1244,16 +1176,16 @@ ReadAlg             DEBUG      0.0919719 0.0945986  0.108574 Collisions:  0 (-1)
 ReadAlg             DEBUG      0.0897552  0.107827 0.0942248 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG Evt:500 Track:     11.6727      8.8244     10.4901 Org:  55  0.108853  0.104981  0.119752
 ReadAlg             DEBUG    Decays:   5
-ReadAlg             DEBUG      0.0980564  0.112762 0.0895245 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0980564  0.112762 0.0895244 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0971057  0.111309 0.0902023 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0967937 0.0871674  0.100885 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0967937 0.0871675  0.100885 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.105897   0.10313  0.106499 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0827878   0.10088  0.099259 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg              INFO ========= EVENT:600 RUN:999 TIME:1272014113.8277154 0 (-1) 1 (-1) 2 (-1)
-ReadAlg              INFO ========= EVENT:700 RUN:999 TIME:1272014114.4370631 0 (-1) 1 (-1) 2 (-1)
-ReadAlg              INFO ========= EVENT:800 RUN:999 TIME:1272014114.8589192 0 (-1) 1 (-1) 2 (-1)
-ReadAlg              INFO ========= EVENT:900 RUN:999 TIME:1272014115.3276482 0 (-1) 1 (-1) 2 (-1)
-ReadAlg              INFO ========= EVENT:1000 RUN:999 TIME:1272014115.7963772 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:600 RUN:999 TIME:1323370191.630053 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:700 RUN:999 TIME:1323370191.902266 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:800 RUN:999 TIME:1323370192.202396 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:900 RUN:999 TIME:1323370192.490221 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:1000 RUN:999 TIME:1323370192.776275 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:1000 Track:     10.7646     8.89134     10.2737 Org:  27   0.10403 0.0979908 0.0944402
 ReadAlg             DEBUG    Decays:  30
 ReadAlg             DEBUG      0.0980182 0.0904302  0.126932 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1265,8 +1197,8 @@ ReadAlg             DEBUG       0.107129  0.102113 0.0941613 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.102096  0.087863  0.115054 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0942987 0.0940204 0.0941739 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.111205 0.0860145 0.0973774 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0982766 0.0954677  0.092598 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0836537 0.0873027  0.112639 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0982766 0.0954677 0.0925981 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0836538 0.0873027  0.112639 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0960607 0.0832225  0.088794 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.112334  0.102661  0.112106 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0979849 0.0951013 0.0983578 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1284,7 +1216,7 @@ ReadAlg             DEBUG       0.102008  0.100355  0.104814 Collisions:  0 (-1)
 ReadAlg             DEBUG      0.0960608 0.0922689 0.0999463 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.100509 0.0883049  0.119423 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0988653 0.0944893  0.089365 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0936122  0.103547  0.112711 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0936123  0.103547  0.112711 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.107238 0.0951519  0.105621 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG Evt:1000 Track:     10.9513     9.40353     8.72069 Org:  59  0.100207 0.0896755 0.0980518
 ReadAlg             DEBUG    Decays:  10
@@ -1301,7 +1233,7 @@ ReadAlg             DEBUG      0.0986145 0.0970433 0.0944499 Collisions:  0 (-1)
 ReadAlg             DEBUG Evt:1000 Track:      9.4236     9.60373     10.6546 Org:  21 0.0960607 0.0832225  0.088794
 ReadAlg             DEBUG    Decays:  15
 ReadAlg             DEBUG      0.0988653 0.0944893  0.089365 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg             DEBUG      0.0936122  0.103547  0.112711 Collisions:  0 (-1)  1 (-1)  2 (-1)
+ReadAlg             DEBUG      0.0936123  0.103547  0.112711 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.107238 0.0951519  0.105621 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0790457  0.113095  0.105436 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0883735  0.114195  0.117201 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1332,76 +1264,55 @@ ServiceManager      DEBUG Stopping service EventLoopMgr
 ServiceManager      DEBUG Stopping service RndmGenSvc
 ServiceManager      DEBUG Stopping service HistogramDataSvc
 ServiceManager      DEBUG Stopping service HistogramPersistencySvc
+ServiceManager      DEBUG Stopping service Gaudi::RootCnvSvc
+ServiceManager      DEBUG Stopping service IODataManager
+ServiceManager      DEBUG Stopping service FileCatalog
 ServiceManager      DEBUG Stopping service EventDataSvc
 ServiceManager      DEBUG Stopping service EventPersistencySvc
-ServiceManager      DEBUG Stopping service FileRecordDataSvc
 ServiceManager      DEBUG Stopping service FileRecordPersistencySvc
 ServiceManager      DEBUG Stopping service IncidentSvc
 ServiceManager      DEBUG Stopping service AppMgrRunable
-ServiceManager      DEBUG Stopping service FileRecordCnvSvc
-ServiceManager      DEBUG Stopping service PoolRootTreeEvtCnvSvc
-ServiceManager      DEBUG Stopping service PoolRootKeyEvtCnvSvc
-ServiceManager      DEBUG Stopping service PoolRootEvtCnvSvc
-ServiceManager      DEBUG Stopping service PoolDbCacheSvc
-ServiceManager      DEBUG Stopping service IODataManager
-ServiceManager      DEBUG Stopping service FileCatalog
+ServiceManager      DEBUG Stopping service FileRecordDataSvc
 ApplicationMgr       INFO Application Manager Stopped successfully
 ServiceManager      DEBUG Finalizing service EventLoopMgr
 RootDst              INFO Events output: 1000
 RootMini             INFO Events output: 1000
 FileRecords          INFO Set up File Summary Record
 FileRecords       VERBOSE will not fire incidents
-PoolDbBaseCnv       DEBUG Created object shape for class:DataObject
-PoolDbBaseCnv       DEBUG {ID=00000001-0000-0000-0000-000000000000}{CL=DataObject}{NCOL=3}{CNT=0}{COL={{NAME=DataObject}{CLASS=DataObject}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}{COL={{NAME=Links}{CLASS=LinkManager}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}{COL={{NAME=Refs}{CLASS=PoolDbLinkManager}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}
-PoolDbBaseCnv       DEBUG Created object shape for class:Gaudi::Examples::Counter
-PoolDbBaseCnv       DEBUG {ID=0000006D-0000-0000-0000-000000000000}{CL=Gaudi::Examples::Counter}{NCOL=3}{CNT=0}{COL={{NAME=Counter}{CLASS=Gaudi::Examples::Counter}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}{COL={{NAME=Links}{CLASS=LinkManager}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}{COL={{NAME=Refs}{CLASS=PoolDbLinkManager}{TYP=21}{OPT=0}{OFF=0}{SIZ=0}{CNT=1}}}
 FileRecords          INFO Events output: 1
 IncidentSvc         DEBUG Removing [AbortEvent] listener '<unknown>'
 EventLoopMgr         INFO Histograms converted successfully according to request.
 ServiceManager      DEBUG Finalizing service RndmGenSvc
 ServiceManager      DEBUG Finalizing service HistogramDataSvc
 ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
-ServiceManager      DEBUG Finalizing service EventDataSvc
-ServiceManager      DEBUG Finalizing service EventPersistencySvc
-ServiceManager      DEBUG Finalizing service FileRecordDataSvc
-IncidentSvc         DEBUG Removing [FILE_OPEN_READ] listener 'FileRecordDataSvc'
-IncidentSvc         DEBUG Removing [SAVE_FILE_RECORD] listener 'FileRecordDataSvc'
-ServiceManager      DEBUG Finalizing service FileRecordPersistencySvc
-ServiceManager      DEBUG Finalizing service IncidentSvc
-IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0.0039043(+-0.24696)/0/15.625[ms] Total:0.015625[s]
-ServiceManager      DEBUG Finalizing service AppMgrRunable
-ServiceManager      DEBUG Finalizing service FileRecordCnvSvc
-FileRecordCnvSvc     INFO File sharing enabled. Do not retire files.
-FileRecordCnvSvc    DEBUG POOL conversion service finalized FileRecordCnvSvc successfully
-ServiceManager      DEBUG Finalizing service PoolRootTreeEvtCnvSvc
-PoolRootTreeEvt...   INFO Disconnected data IO:5E0692B7-B84E-DF11-A094-95A0392ACC0D[POOLIO.mdst]
-PoolRootTreeEvt...   INFO Disconnected data IO:98CE58B7-B84E-DF11-A094-95A0392ACC0D[POOLIO.dst]
-PoolRootTreeEvt...  DEBUG POOL conversion service finalized PoolRootTreeEvtCnvSvc successfully
-ServiceManager      DEBUG Finalizing service PoolRootKeyEvtCnvSvc
-PoolRootKeyEvtC...  DEBUG POOL conversion service finalized PoolRootKeyEvtCnvSvc successfully
-ServiceManager      DEBUG Finalizing service PoolRootEvtCnvSvc
-PoolRootEvtCnvSvc   DEBUG POOL conversion service finalized PoolRootEvtCnvSvc successfully
-ServiceManager      DEBUG Finalizing service PoolDbCacheSvc
+ServiceManager      DEBUG Finalizing service Gaudi::RootCnvSvc
+Gaudi::RootCnvSvc    INFO Disconnected data IO:3EF84D68-CD21-E111-A101-B499BAF088DC [ROOTIO.mdst]
+Gaudi::RootCnvSvc    INFO Disconnected data IO:A4133B68-CD21-E111-A101-B499BAF088DC [ROOTIO.dst]
 ServiceManager      DEBUG Finalizing service IODataManager
 ServiceManager      DEBUG Finalizing service FileCatalog
-XMLCatalog           INFO File 'POOLIO.xml' does not exist. New file created.
+XMLCatalog           INFO File 'ROOTIO.xml' does not exist. New file created.
+ServiceManager      DEBUG Finalizing service EventDataSvc
+ServiceManager      DEBUG Finalizing service EventPersistencySvc
+ServiceManager      DEBUG Finalizing service FileRecordPersistencySvc
+ServiceManager      DEBUG Finalizing service IncidentSvc
+IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0.00333272(+-0.11542)/0/4.001[ms] Total:0.020003[s]
+ServiceManager      DEBUG Finalizing service AppMgrRunable
+ServiceManager      DEBUG Finalizing service FileRecordDataSvc
+IncidentSvc         DEBUG Removing [SAVE_FILE_RECORD] listener 'FileRecordDataSvc'
+IncidentSvc         DEBUG Removing [FILE_OPEN_READ] listener 'FileRecordDataSvc'
 ServiceManager      DEBUG Service reference count check:
 ServiceManager      DEBUG ---- MessageSvc (refCount = 21)
-ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)
+ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 5)
 ServiceManager      DEBUG ---- RndmGenSvc.Engine (refCount = 2)
-ServiceManager      DEBUG ---- FileCatalog (refCount = 2)
-ServiceManager      DEBUG ---- IODataManager (refCount = 2)
-ServiceManager      DEBUG ---- PoolDbCacheSvc (refCount = 2)
-ServiceManager      DEBUG ---- PoolRootEvtCnvSvc (refCount = 5)
-ServiceManager      DEBUG ---- PoolRootKeyEvtCnvSvc (refCount = 2)
-ServiceManager      DEBUG ---- PoolRootTreeEvtCnvSvc (refCount = 5)
-ServiceManager      DEBUG ---- FileRecordCnvSvc (refCount = 5)
+ServiceManager      DEBUG ---- FileRecordDataSvc (refCount = 4)
 ServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)
 ServiceManager      DEBUG ---- IncidentSvc (refCount = 3)
 ServiceManager      DEBUG ---- FileRecordPersistencySvc (refCount = 2)
-ServiceManager      DEBUG ---- FileRecordDataSvc (refCount = 4)
 ServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)
-ServiceManager      DEBUG ---- EventDataSvc (refCount = 6)
+ServiceManager      DEBUG ---- EventDataSvc (refCount = 3)
+ServiceManager      DEBUG ---- FileCatalog (refCount = 2)
+ServiceManager      DEBUG ---- IODataManager (refCount = 2)
+ServiceManager      DEBUG ---- Gaudi::RootCnvSvc (refCount = 8)
 ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 2)
 ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 3)
 ServiceManager      DEBUG ---- RndmGenSvc (refCount = 2)
