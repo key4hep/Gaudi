@@ -4,6 +4,9 @@
 ! Purpose     : Root based persistency
 !-----------------------------------------------------------------------------
 
+! 2011-12-09 - Marco Clemencic
+ - Added missing dependency on GaudiUtils.
+
 ! 2011-12-08 - Marco Clemencic
  - Modified Gaudi::RootEvtSelector to use the fully qualified name of RootCnvSvc
 

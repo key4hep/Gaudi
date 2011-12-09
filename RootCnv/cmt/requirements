@@ -6,6 +6,7 @@ author Markus Frank
 branches  cmt dict src
 
 use GaudiKernel *
+use GaudiUtils *
 use ROOT        * LCG_Interfaces
 ##use GenEvent v* Event
 
