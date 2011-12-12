@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-12-10 - Marco Clemencic
+ - Print an error message if the input data stream cannot be initialized.
+
 ! 2011-12-08 - Marco Clemencic
  - Fixed bug #89628: Missing const methods in CommonMessaging.
 
