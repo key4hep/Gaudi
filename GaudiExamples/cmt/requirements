@@ -64,6 +64,8 @@ apply_pattern reflex_dictionary dictionary=GaudiExamples \
 				options=" $(includes) "
 macro GaudiExamplesDict_use_linkopts $(use_linkopts)
 
+apply_pattern install_python_modules
+
 #==> Gaudi with multiple threads
 # commented out since it shall not link GaudiSvc
 # application GaudiMT       GaudiMT/GaudiMTMain.cpp \
