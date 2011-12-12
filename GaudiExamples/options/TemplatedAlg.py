@@ -3,11 +3,10 @@
 #==============================================================
 
 from Gaudi.Configuration import *
-from Configurables import TAlgIS, TAlgDB, TemplatedAlg_int_std__vector_std__string_std__allocator_std__string_s_s_,TemplatedAlg_double_bool_ 
+from Configurables import TAlgIS, TAlgDB, TemplatedAlg_int_std__vector_std__string_std__allocator_std__string_s_s_,TemplatedAlg_double_bool_
 
-importOptions('Common.opts')
-MessageSvc().OutputLevel = INFO
-
+from Configurables import GaudiExamplesCommonConf
+GaudiExamplesCommonConf()
 
 is1   = TemplatedAlg_int_std__vector_std__string_std__allocator_std__string_s_s_( 'TAlgIS1', TProperty = 100, RProperty = ['string1', 'string2'] )
 is2   = TAlgIS( 'TAlgIS2', TProperty = 100, RProperty = ['string1', 'string2'] )

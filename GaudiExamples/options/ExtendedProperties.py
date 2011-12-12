@@ -5,7 +5,9 @@
 from Gaudi.Configuration import *
 from Configurables import ExtendedProperties
 
-importOptions("Common.opts")
+from Configurables import GaudiExamplesCommonConf
+GaudiExamplesCommonConf()
+
 from GaudiKernel.SystemOfUnits import *
 
 ######### BEGIN of xProp configuration

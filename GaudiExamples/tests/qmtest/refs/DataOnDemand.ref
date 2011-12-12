@@ -1,20 +1,16 @@
-# --> Including file '/build/marcocle/GAUDI/GAUDI_HEAD/GaudiExamples/options/DataOnDemand.py'
-# --> Including file '/build/marcocle/GAUDI/GAUDI_HEAD/GaudiExamples/options/Common.opts'
-# --> Including file '/build/marcocle/GAUDI/GAUDI_HEAD/GaudiExamples/options/Services.opts'
-# AuditorSvc.Auditors = { "ChronoAuditor" };
-# <-- End of file '/build/marcocle/GAUDI/GAUDI_HEAD/GaudiExamples/options/Services.opts'
-# ApplicationMgr.StatusCodeCheck = true;
-# <-- End of file '/build/marcocle/GAUDI/GAUDI_HEAD/GaudiExamples/options/Common.opts'
-# <-- End of file '/build/marcocle/GAUDI/GAUDI_HEAD/GaudiExamples/options/DataOnDemand.py'
+# --> Including file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/DataOnDemand.py'
+# <-- End of file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/DataOnDemand.py'
+# applying configuration of GaudiExamplesCommonConf
+# /***** User GaudiExamplesCommonConf/GaudiExamplesCommonConf ****************************************
+# |-OutputLevel = 3
+# \----- (End of User GaudiExamplesCommonConf/GaudiExamplesCommonConf) -------------------------------
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on lxbuild120.cern.ch on Wed Dec 17 16:08:15 2008
+                                          running on lxplus413.cern.ch on Fri Dec  9 16:04:08 2011
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
-PoolDbCacheSvc       INFO POOL output threshold: 'OutputLevel':3
-DbSession            INFO     Open     DbSession
 DataOnDemandSvc   WARNING The property 'Algorithms' is obsolete, switch to map-like 'AlgMap'   = { 'data' : 'algorithm' }
 DataOnDemandSvc   WARNING The property 'Nodes'      is obsolete, switch to map-like 'NodeMap'  = { 'data' : 'type'      }
 MyDataAlgorithm      INFO initializing....
@@ -72,6 +68,5 @@ MuonFoos             INFO finalizing....
 MyDataAlgorithm      INFO finalizing....
 EventLoopMgr         INFO Histograms converted successfully according to request.
 DataOnDemandSvc      INFO Handled "DataFault" incidents: 20/20/40(Alg/Node/Total).
-DbSession            INFO     Closed   DbSession
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully

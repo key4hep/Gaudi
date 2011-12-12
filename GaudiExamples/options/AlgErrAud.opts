@@ -1,11 +1,10 @@
 //##############################################################
 // Job options file
 //==============================================================
-#include "Common.opts"
-
 AuditorSvc.Auditors = { "AlgErrorAuditor" };
 
 ApplicationMgr.AuditAlgorithms = true;
+ApplicationMgr.StatusCodeCheck = true;
 
 //--------------------------------------------------------------
 // Private Application Configuration options

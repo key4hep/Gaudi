@@ -1,6 +1,12 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2011-12-12 - Marco Clemencic
+ - Fixed tests for new dependencies:
+   - updated configuration
+   - translated options
+   - fixed dependencies
+
 ! 2011-12-09 - Marco Clemencic
  - Rationalized structure:
    - removed obsolete test runner scripts
