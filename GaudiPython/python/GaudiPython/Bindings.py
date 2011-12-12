@@ -521,16 +521,17 @@ class iNTupleSvc(iDataSvc) :
         iDataSvc.__init__(self, name, ints)
     def book(self, *args) :
         return apply(self._ints.book, args)
-    def defineOutput(self, files, typ='ROOT') :
-        """ Defines dthe mapping between logical names and the output file
+    def defineOutput(self, files, typ="Gaudi::RootCnvSvc"):
+        """ Defines the mapping between logical names and the output file
             Usage:
-              defineOutput({'LUN1':'MyFile1.root', 'LUN2':'Myfile2.root'}, typ='ROOT')
+              defineOutput({'LUN1':'MyFile1.root', 'LUN2':'Myfile2.root'}, svc='Gaudi::RootCnvSvc')
         """
-        out = []
-        for o in files :
-            out.append( "%s DATAFILE='%s' OPT='RECREATE' TYP='%s'" % ( o, files[o], typ ) )
-        self.Output = out
-        if AppMgr().HistogramPersistency == 'NONE' : AppMgr().HistogramPersistency = typ
+        import Persistency as prs
+        helper = prs.get(typ)
+        helper.configure(AppMgr())
+        self.Output = [helper.formatOutput(files[lun], lun=lun) for lun in files]
+        if AppMgr().HistogramPersistency == 'NONE':
+            AppMgr().HistogramPersistency = "ROOT"
     def __getitem__ ( self, path ) :
         return iDataSvc.__getitem__( self , path )
 
@@ -612,41 +613,11 @@ class iEventSelector(iService):
     def __init__(self):
         iService.__init__(self, 'EventSelector', Helper.service(gbl.Gaudi.svcLocator(),'EventSelector'))
         self.__dict__['g'] = AppMgr()
-    def open(self, stream, typ = 'POOL_ROOT', opt = 'READ', sel = None, fun = None, collection = None ):
-        if typ == 'ROOT' :
-            self.g.declSvcType('RootEvtCnvSvc','DbEventCnvSvc')
-            self.g.service('RootEvtCnvSvc').DbType  = 'ROOT'
-            self.g.createSvc('RootEvtCnvSvc')
-            self.g.service('EventPersistencySvc').CnvServices = ['RootEvtCnvSvc']
-        elif typ == 'POOL_ROOT':
-            cacsvc = self.g.service('PoolDbCacheSvc')
-            if hasattr(cacsvc, 'Dlls') : cacsvc.Dlls += ['lcg_RootStorageSvc', 'lcg_XMLCatalog']
-            else :                       cacsvc.Dlls = ['lcg_RootStorageSvc', 'lcg_XMLCatalog']
-            cacsvc.OutputLevel = 4
-            cacsvc.DomainOpts    = [ 'Domain[ROOT_All].CLASS_VERSION=2 TYP=int',
-                                     'Domain[ROOT_Key].CLASS_VERSION=2 TYP=int',
-                                     'Domain[ROOT_Tree].CLASS_VERSION=2 TYP=int' ]
-            cacsvc.DatabaseOpts  = ['']
-            cacsvc.ContainerOpts = ['']
-            self.g.createSvc('PoolDbCacheSvc')
-            cnvSvcs = [('PoolRootEvtCnvSvc',     'POOL_ROOT'),
-                       ('PoolRootTreeEvtCnvSvc', 'POOL_ROOTTREE'),
-                       ('PoolRootKeyEvtCnvSvc',  'POOL_ROOTKEY')]
-            for svc in cnvSvcs :
-                self.g.declSvcType(svc[0], 'PoolDbCnvSvc')
-                cnvsvc = self.g.service(svc[0])
-                cnvsvc.DbType = svc[1]
-            self.g.service('EventPersistencySvc').CnvServices = [ svc[0] for svc in cnvSvcs ]
-            for svc in cnvSvcs :
-                self.g.createSvc(svc[0])
-        self.g.service('EventDataSvc').RootCLID = 1
-        if type(stream) != list : stream = [stream]
-        fixpart = "TYP=\'%s\' OPT=\'%s\'" % ( typ, opt )
-        if sel        : fixpart += " SEL=\'%s\'" % sel
-        if fun        : fixpart += " FUN=\'%s\'" % fun
-        if collection : fixpart += " COLLECTION=\'%s\'" % collection
-        cstream = ["DATAFILE=\'%s\' %s" % ( s, fixpart) for s in stream]
-        self.Input = cstream
+    def open(self, stream, typ = 'Gaudi::RootCnvSvc', **kwargs):
+        import Persistency as prs
+        helper = prs.get(typ)
+        helper.configure(self.g)
+        self.Input = helper.formatInput(stream, **kwargs)
         self.reinitialize()
     def rewind(self):
         # It is not possible to reinitialize EventSelector only
