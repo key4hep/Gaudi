@@ -98,7 +98,7 @@ using namespace std;
 RootEvtSelector::RootEvtSelector(const string& name,ISvcLocator* svcloc )
 : base_class(name, svcloc), m_rootCLID(CLID_NULL)
 {
-  m_cnvSvcName = "Gaudi::RootCnvSvc";
+  m_cnvSvcName = "Gaudi::RootCnvSvc/RootCnvSvc";
   declareProperty("DbType",  m_dummy);
 }
 

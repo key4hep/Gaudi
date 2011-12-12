@@ -1,5 +1,5 @@
-# --> Including file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/ROOT_IO/Write.py'
-# <-- End of file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/ROOT_IO/Write.py'
+# --> Including file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/ROOT_IO/Write.py'
+# <-- End of file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/ROOT_IO/Write.py'
 # applying configuration of GaudiPersistency
 # /***** User GaudiPersistency/GaudiPersistency ******************************************************
 # |-<no properties>
@@ -13,18 +13,20 @@
                                   'OutputStream/RootMini',
                                   'RecordStream/FileRecords'],
                     'SvcOptMapping': ['Gaudi::MultiFileCatalog/FileCatalog',
-                                      'Gaudi::IODataManager/IODataManager'],
+                                      'Gaudi::IODataManager/IODataManager',
+                                      'Gaudi::RootCnvSvc/RootCnvSvc',
+                                      'Gaudi::RootEvtSelector/RootEvtSelector'],
                     'TopAlg': ['WriteAlg', 'ReadAlg']},
- 'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/Gaudi::RootCnvSvc']},
+ 'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
  'FileCatalog': {'Catalogs': ['xmlcatalog_file:ROOTIO.xml']},
- 'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/Gaudi::RootCnvSvc']},
+ 'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
  'FileRecords': {'EvtConversionSvc': 'PersistencySvc/FileRecordPersistencySvc',
                  'EvtDataSvc': 'FileRecordDataSvc/FileRecordDataSvc',
                  'ItemList': ['/FileRecords#999'],
                  'Output': "DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"},
- 'Gaudi::RootCnvSvc': {'OutputLevel': 3},
  'IncidentSvc': {'OutputLevel': 2},
  'MessageSvc': {'OutputLevel': 1},
+ 'RootCnvSvc': {'OutputLevel': 3},
  'RootDst': {'ItemList': ['/Event#999'],
              'Output': "DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"},
  'RootMini': {'ItemList': ['/Event#1'],
@@ -32,14 +34,14 @@
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on pcphlbc16 on Thu Dec  8 19:49:49 2011
+                                          running on lxplus413.cern.ch on Fri Dec  9 15:09:00 2011
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ServiceManager      DEBUG Initializing service FileRecordDataSvc
 FileRecordDataSvc   DEBUG Service base class initialized successfully
 IncidentSvc         DEBUG Service base class initialized successfully
 FileRecordDataSvc VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
-FileRecordPersi...  DEBUG  'CnvServices':[ 'Gaudi::RootCnvSvc/Gaudi::RootCnvSvc' ]
+FileRecordPersi...  DEBUG  'CnvServices':[ 'Gaudi::RootCnvSvc/RootCnvSvc' ]
 FileRecordPersi...  DEBUG Service base class initialized successfully
 FileRecordDataSvc VERBOSE ServiceLocatorHelper::service: found service PersistencySvc/FileRecordPersistencySvc
 IncidentSvc         DEBUG Adding [FILE_OPEN_READ] listener 'FileRecordDataSvc' with priority 0
@@ -61,18 +63,18 @@ WriteAlg          VERBOSE ServiceLocatorHelper::service: found service FileRecor
 ReadAlg           VERBOSE ServiceLocatorHelper::service: found service FileRecordDataSvc
 EventDataSvc        DEBUG Service base class initialized successfully
 EventDataSvc      VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
-EventPersistenc...  DEBUG  'CnvServices':[ 'Gaudi::RootCnvSvc/Gaudi::RootCnvSvc' ]
+EventPersistenc...  DEBUG  'CnvServices':[ 'Gaudi::RootCnvSvc/RootCnvSvc' ]
 EventPersistenc...  DEBUG Service base class initialized successfully
 IODataManager       DEBUG Service base class initialized successfully
 FileCatalog         DEBUG Service base class initialized successfully
-EventPersistenc...VERBOSE ServiceLocatorHelper::service: found service Gaudi::RootCnvSvc/Gaudi::RootCnvSvc
-EventPersistenc...   INFO Added successfully Conversion service:Gaudi::RootCnvSvc
+EventPersistenc...VERBOSE ServiceLocatorHelper::service: found service Gaudi::RootCnvSvc/RootCnvSvc
+EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
 RootDst             DEBUG Adding OutputStream item /Event with 999 level(s).
 RootDst              INFO Data source: EventDataSvc output: DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
 RootMini            DEBUG Adding OutputStream item /Event with 1 level(s).
 RootMini             INFO Data source: EventDataSvc output: DATAFILE='PFN:ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
-FileRecordPersi...VERBOSE ServiceLocatorHelper::service: found service Gaudi::RootCnvSvc/Gaudi::RootCnvSvc
-FileRecordPersi...   INFO Added successfully Conversion service:Gaudi::RootCnvSvc
+FileRecordPersi...VERBOSE ServiceLocatorHelper::service: found service Gaudi::RootCnvSvc/RootCnvSvc
+FileRecordPersi...   INFO Added successfully Conversion service:RootCnvSvc
 FileRecords         DEBUG Adding OutputStream item /FileRecords with 999 level(s).
 FileRecords          INFO Data source: FileRecordDataSvc/FileRecordDataSvc output: DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
@@ -92,7 +94,7 @@ ServiceManager      DEBUG Starting service EventPersistencySvc
 ServiceManager      DEBUG Starting service EventDataSvc
 ServiceManager      DEBUG Starting service FileCatalog
 ServiceManager      DEBUG Starting service IODataManager
-ServiceManager      DEBUG Starting service Gaudi::RootCnvSvc
+ServiceManager      DEBUG Starting service RootCnvSvc
 ServiceManager      DEBUG Starting service HistogramPersistencySvc
 ServiceManager      DEBUG Starting service HistogramDataSvc
 ServiceManager      DEBUG Starting service EventLoopMgr
@@ -105,7 +107,7 @@ RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngin
 WriteAlg          VERBOSE ServiceLocatorHelper::service: found service RndmGenSvc
 WriteAlg          VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 ReadAlg           VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
-ReadAlg              INFO ========= EVENT:1 RUN:999 TIME:1323370189.846308 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:1 RUN:999 TIME:1323439741.162888 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:1 Track:      10.802     9.50498     8.43243 Org:  31 0.0948131 0.0882022 0.0890405
 ReadAlg             DEBUG    Decays:  16
 ReadAlg             DEBUG      0.0955367 0.0974241 0.0982723 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -153,11 +155,11 @@ ReadAlg             DEBUG       0.114853 0.0927442 0.0921961 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.105636 0.0965541   0.09253 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.118701 0.0819518  0.107732 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.106563 0.0702038  0.101916 Collisions:  0 (-1)  1 (-1)  2 (-1)
-FileCatalog         DEBUG No writable file catalog found which contains FID:A4133B68-CD21-E111-A101-B499BAF088DC
-IODataManager        INFO Referring to dataset ROOTIO.dst by its file ID:A4133B68-CD21-E111-A101-B499BAF088DC
-FileCatalog         DEBUG No writable file catalog found which contains FID:3EF84D68-CD21-E111-A101-B499BAF088DC
-IODataManager        INFO Referring to dataset ROOTIO.mdst by its file ID:3EF84D68-CD21-E111-A101-B499BAF088DC
-ReadAlg              INFO ========= EVENT:2 RUN:999 TIME:1323370190.047133 0 (-1) 1 (-1) 2 (-1)
+FileCatalog         DEBUG No writable file catalog found which contains FID:B8C50A58-6F22-E111-802D-003048F0DFCC
+IODataManager        INFO Referring to dataset ROOTIO.dst by its file ID:B8C50A58-6F22-E111-802D-003048F0DFCC
+FileCatalog         DEBUG No writable file catalog found which contains FID:88F21758-6F22-E111-802D-003048F0DFCC
+IODataManager        INFO Referring to dataset ROOTIO.mdst by its file ID:88F21758-6F22-E111-802D-003048F0DFCC
+ReadAlg              INFO ========= EVENT:2 RUN:999 TIME:1323439741.266904 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:2 Track:     10.1578     9.51566     9.19358 Org:  12   0.10708  0.109034  0.096556
 ReadAlg             DEBUG    Decays:  54
 ReadAlg             DEBUG       0.097666 0.0945251 0.0900927 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -321,7 +323,7 @@ ReadAlg             DEBUG       0.100675 0.0887908 0.0964475 Collisions:  0 (-1)
 ReadAlg             DEBUG        0.10432  0.111781  0.104624 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0918394 0.0974881  0.108724 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0815648 0.0984427  0.109819 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg              INFO ========= EVENT:3 RUN:999 TIME:1323370190.056889 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:3 RUN:999 TIME:1323439741.271124 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:3 Track:     10.4989     10.4342     9.78193 Org:  16 0.0883089 0.0980969 0.0989754
 ReadAlg             DEBUG    Decays:   4
 ReadAlg             DEBUG      0.0803759 0.0962499 0.0993645 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -437,7 +439,7 @@ ReadAlg             DEBUG       0.106024  0.095753  0.112037 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.115886  0.089338 0.0764793 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0803759 0.0962499 0.0993645 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.103776 0.0928696  0.091886 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg              INFO ========= EVENT:4 RUN:999 TIME:1323370190.063203 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:4 RUN:999 TIME:1323439741.273933 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:4 Track:     8.95659     9.22111     10.7468 Org:  35    0.1082 0.0979698 0.0960275
 ReadAlg             DEBUG    Decays:   3
 ReadAlg             DEBUG       0.110419  0.089749 0.0925822 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -598,7 +600,7 @@ ReadAlg             DEBUG       0.100286 0.0804912 0.0973343 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.104589  0.112811 0.0884065 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0922139  0.102432  0.120081 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0937731 0.0932409  0.108906 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg              INFO ========= EVENT:5 RUN:999 TIME:1323370190.071625 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:5 RUN:999 TIME:1323439741.277578 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:5 Track:     11.1213     8.18301     7.64467 Org:  39 0.0963519   0.10652 0.0938699
 ReadAlg             DEBUG    Decays:  38
 ReadAlg             DEBUG      0.0990801 0.0982084  0.113384 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -660,7 +662,7 @@ ReadAlg             DEBUG       0.109127  0.104738 0.0983583 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.108677 0.0962482 0.0913227 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0848865 0.0908803  0.105893 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0970337  0.112413  0.110682 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg              INFO ========= EVENT:6 RUN:999 TIME:1323370190.076122 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:6 RUN:999 TIME:1323439741.279778 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:6 Track:     10.7592     9.68162     11.3563 Org:  18 0.0941401  0.107751  0.104851
 ReadAlg             DEBUG    Decays:  13
 ReadAlg             DEBUG       0.105539 0.0980193  0.108179 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -718,7 +720,7 @@ ReadAlg             DEBUG      0.0944417 0.0948405  0.117754 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.101398  0.106449 0.0964367 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0963533 0.0964479 0.0917974 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0859672 0.0977685 0.0958356 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg              INFO ========= EVENT:7 RUN:999 TIME:1323370190.079691 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:7 RUN:999 TIME:1323439741.28152 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:7 Track:     9.57394     9.64294      9.8672 Org:  41  0.104371  0.107245  0.100854
 ReadAlg             DEBUG    Decays:  30
 ReadAlg             DEBUG       0.093229 0.0949693  0.103098 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -863,7 +865,7 @@ ReadAlg             DEBUG      0.0982539  0.092417 0.0971565 Collisions:  0 (-1)
 ReadAlg             DEBUG        0.11164 0.0984174  0.107819 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG        0.10548 0.0675091 0.0905533 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.100201  0.103858  0.124267 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg              INFO ========= EVENT:8 RUN:999 TIME:1323370190.086505 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:8 RUN:999 TIME:1323439741.284532 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:8 Track:      10.978     9.54438     10.9297 Org:   0  0.109247 0.0814294 0.0902878
 ReadAlg             DEBUG    Decays:   5
 ReadAlg             DEBUG       0.121196  0.106986  0.101088 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -899,7 +901,7 @@ ReadAlg             DEBUG       0.109247 0.0814294 0.0902878 Collisions:  0 (-1)
 ReadAlg             DEBUG      0.0982567 0.0796269   0.10203 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.121357  0.106839  0.093799 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.104233  0.113049 0.0996277 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg              INFO ========= EVENT:9 RUN:999 TIME:1323370190.089185 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:9 RUN:999 TIME:1323439741.285593 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:9 Track:     10.6032     10.0631     9.13475 Org:  74 0.0837793  0.115122  0.107758
 ReadAlg             DEBUG    Decays:  18
 ReadAlg             DEBUG       0.108493  0.110989   0.10767 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1025,12 +1027,12 @@ ReadAlg             DEBUG      0.0980792  0.107177  0.107921 Collisions:  0 (-1)
 ReadAlg             DEBUG       0.101559  0.107907 0.0933493 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.108493  0.110989   0.10767 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0891228 0.0988304 0.0977403 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg              INFO ========= EVENT:10 RUN:999 TIME:1323370190.093946 0 (-1) 1 (-1) 2 (-1)
-ReadAlg              INFO ========= EVENT:100 RUN:999 TIME:1323370190.28042 0 (-1) 1 (-1) 2 (-1)
-ReadAlg              INFO ========= EVENT:200 RUN:999 TIME:1323370190.613985 0 (-1) 1 (-1) 2 (-1)
-ReadAlg              INFO ========= EVENT:300 RUN:999 TIME:1323370190.850908 0 (-1) 1 (-1) 2 (-1)
-ReadAlg              INFO ========= EVENT:400 RUN:999 TIME:1323370191.10102 0 (-1) 1 (-1) 2 (-1)
-ReadAlg              INFO ========= EVENT:500 RUN:999 TIME:1323370191.374528 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:10 RUN:999 TIME:1323439741.288756 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:100 RUN:999 TIME:1323439741.424433 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:200 RUN:999 TIME:1323439741.664918 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:300 RUN:999 TIME:1323439741.866191 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:400 RUN:999 TIME:1323439742.066338 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:500 RUN:999 TIME:1323439742.273513 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:500 Track:     9.79151     8.83918     10.2866 Org:  41 0.0956371 0.0804239  0.106273
 ReadAlg             DEBUG    Decays:  44
 ReadAlg             DEBUG       0.094814 0.0955636 0.0770906 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1181,11 +1183,11 @@ ReadAlg             DEBUG      0.0971057  0.111309 0.0902023 Collisions:  0 (-1)
 ReadAlg             DEBUG      0.0967937 0.0871675  0.100885 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG       0.105897   0.10313  0.106499 Collisions:  0 (-1)  1 (-1)  2 (-1)
 ReadAlg             DEBUG      0.0827878   0.10088  0.099259 Collisions:  0 (-1)  1 (-1)  2 (-1)
-ReadAlg              INFO ========= EVENT:600 RUN:999 TIME:1323370191.630053 0 (-1) 1 (-1) 2 (-1)
-ReadAlg              INFO ========= EVENT:700 RUN:999 TIME:1323370191.902266 0 (-1) 1 (-1) 2 (-1)
-ReadAlg              INFO ========= EVENT:800 RUN:999 TIME:1323370192.202396 0 (-1) 1 (-1) 2 (-1)
-ReadAlg              INFO ========= EVENT:900 RUN:999 TIME:1323370192.490221 0 (-1) 1 (-1) 2 (-1)
-ReadAlg              INFO ========= EVENT:1000 RUN:999 TIME:1323370192.776275 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:600 RUN:999 TIME:1323439742.477292 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:700 RUN:999 TIME:1323439742.680317 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:800 RUN:999 TIME:1323439742.879715 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:900 RUN:999 TIME:1323439743.091253 0 (-1) 1 (-1) 2 (-1)
+ReadAlg              INFO ========= EVENT:1000 RUN:999 TIME:1323439743.30961 0 (-1) 1 (-1) 2 (-1)
 ReadAlg             DEBUG Evt:1000 Track:     10.7646     8.89134     10.2737 Org:  27   0.10403 0.0979908 0.0944402
 ReadAlg             DEBUG    Decays:  30
 ReadAlg             DEBUG      0.0980182 0.0904302  0.126932 Collisions:  0 (-1)  1 (-1)  2 (-1)
@@ -1264,7 +1266,7 @@ ServiceManager      DEBUG Stopping service EventLoopMgr
 ServiceManager      DEBUG Stopping service RndmGenSvc
 ServiceManager      DEBUG Stopping service HistogramDataSvc
 ServiceManager      DEBUG Stopping service HistogramPersistencySvc
-ServiceManager      DEBUG Stopping service Gaudi::RootCnvSvc
+ServiceManager      DEBUG Stopping service RootCnvSvc
 ServiceManager      DEBUG Stopping service IODataManager
 ServiceManager      DEBUG Stopping service FileCatalog
 ServiceManager      DEBUG Stopping service EventDataSvc
@@ -1285,9 +1287,9 @@ EventLoopMgr         INFO Histograms converted successfully according to request
 ServiceManager      DEBUG Finalizing service RndmGenSvc
 ServiceManager      DEBUG Finalizing service HistogramDataSvc
 ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
-ServiceManager      DEBUG Finalizing service Gaudi::RootCnvSvc
-Gaudi::RootCnvSvc    INFO Disconnected data IO:3EF84D68-CD21-E111-A101-B499BAF088DC [ROOTIO.mdst]
-Gaudi::RootCnvSvc    INFO Disconnected data IO:A4133B68-CD21-E111-A101-B499BAF088DC [ROOTIO.dst]
+ServiceManager      DEBUG Finalizing service RootCnvSvc
+RootCnvSvc           INFO Disconnected data IO:88F21758-6F22-E111-802D-003048F0DFCC [ROOTIO.mdst]
+RootCnvSvc           INFO Disconnected data IO:B8C50A58-6F22-E111-802D-003048F0DFCC [ROOTIO.dst]
 ServiceManager      DEBUG Finalizing service IODataManager
 ServiceManager      DEBUG Finalizing service FileCatalog
 XMLCatalog           INFO File 'ROOTIO.xml' does not exist. New file created.
@@ -1295,7 +1297,7 @@ ServiceManager      DEBUG Finalizing service EventDataSvc
 ServiceManager      DEBUG Finalizing service EventPersistencySvc
 ServiceManager      DEBUG Finalizing service FileRecordPersistencySvc
 ServiceManager      DEBUG Finalizing service IncidentSvc
-IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0.00333272(+-0.11542)/0/4.001[ms] Total:0.020003[s]
+IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0.000499833(+-0.0223514)/0/1[ms] Total:0.003[s]
 ServiceManager      DEBUG Finalizing service AppMgrRunable
 ServiceManager      DEBUG Finalizing service FileRecordDataSvc
 IncidentSvc         DEBUG Removing [SAVE_FILE_RECORD] listener 'FileRecordDataSvc'
@@ -1312,7 +1314,7 @@ ServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)
 ServiceManager      DEBUG ---- EventDataSvc (refCount = 3)
 ServiceManager      DEBUG ---- FileCatalog (refCount = 2)
 ServiceManager      DEBUG ---- IODataManager (refCount = 2)
-ServiceManager      DEBUG ---- Gaudi::RootCnvSvc (refCount = 8)
+ServiceManager      DEBUG ---- RootCnvSvc (refCount = 8)
 ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 2)
 ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 3)
 ServiceManager      DEBUG ---- RndmGenSvc (refCount = 2)
