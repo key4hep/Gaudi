@@ -6,6 +6,8 @@
 
 ! 2011-12-09 - Marco Clemencic
  - Added missing dependency on GaudiUtils.
+ - Removed the namespace from the instance name of RootCnvSvc
+   (compatibility with LHCb).
 
 ! 2011-12-08 - Marco Clemencic
  - Modified Gaudi::RootEvtSelector to use the fully qualified name of RootCnvSvc

@@ -3,5 +3,5 @@
   <argument name="program"><text>gaudirun.py</text></argument>
   <argument name="args"><set><text>-v</text><text>Selections.py</text></set></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-  <argument name="reference"><text>../../home/Selections.ref</text></argument>
+  <argument name="reference"><text>refs/Selections.ref</text></argument>
 </extension>

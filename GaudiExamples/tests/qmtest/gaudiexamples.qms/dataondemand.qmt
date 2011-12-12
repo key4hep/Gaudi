@@ -3,5 +3,5 @@
   <argument name="program"><text>gaudirun.py</text></argument>
   <argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/DataOnDemand.py</text></set></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-  <argument name="reference"><text>../../home/DataOnDemand.ref</text></argument>
+  <argument name="reference"><text>refs/DataOnDemand.ref</text></argument>
 </extension>

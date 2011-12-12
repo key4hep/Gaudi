@@ -1,5 +1,5 @@
 # File: Gaudi/CommonGaudiConfigurables.py
-# Author: Pere Mato (per.mato@cern.ch)
+# Author: Pere Mato (pere.mato@cern.ch)
 
 """
   This module would scan all known Gaudi configurable modules for
@@ -12,7 +12,8 @@ from GaudiKernel.ConfigurableMeta import ConfigurableMeta
 __all__ = []
 
 packages = ['GaudiCoreSvc', 'GaudiCommonSvc', 'GaudiSvc', 'GaudiAlg',
-            'GaudiAud', 'GaudiPoolDb', 'RootHistCnv', 'GaudiUtils']
+            'GaudiAud', 'GaudiPoolDb', 'RootHistCnv', 'GaudiUtils',
+            'RootCnv']
 
 #--Loop open all listed packages and populate __all__ with the names and
 #  the local scope with the Configurable classes
@@ -42,6 +43,9 @@ aliases = {
 
            'FileCatalog':              'Gaudi__MultiFileCatalog',
            'IODataManager':            'Gaudi__IODataManager',
+
+           'RootCnvSvc':               'Gaudi__RootCnvSvc',
+           'RootEvtSelector':          'Gaudi__RootEvtSelector',
            }
 
 _gbl = globals() # optimization

@@ -3,6 +3,7 @@ version v22r5
 
 use ROOT         * LCG_Interfaces
 use Reflex       * LCG_Interfaces -no_auto_imports
+use RELAX        * LCG_Interfaces -no_auto_imports
 use AIDA         * LCG_Interfaces
 
 use Gaudi        *
@@ -63,6 +64,8 @@ apply_pattern reflex_dictionary dictionary=GaudiExamples \
 				selectionfile=$(GAUDIEXAMPLESROOT)/src/POOLIO/dict.xml \
 				options=" $(includes) "
 macro GaudiExamplesDict_use_linkopts $(use_linkopts)
+
+apply_pattern install_python_modules
 
 #==> Gaudi with multiple threads
 # commented out since it shall not link GaudiSvc

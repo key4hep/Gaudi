@@ -1,0 +1,435 @@
+JobOptionsSvc        INFO # =======> D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Histograms.opts)
+JobOptionsSvc        INFO # (5,1): AuditorSvc.Auditors = ["ChronoAuditor"]
+JobOptionsSvc        INFO # (9,1): MessageSvc.OutputLevel = 3
+JobOptionsSvc        INFO # (20,1): ApplicationMgr.TopAlg += ["GaudiHistoAlgorithm/SimpleHistos"]
+JobOptionsSvc        INFO # (22,1): ApplicationMgr.TopAlg += ["Gaudi::Examples::HistoProps/Histos2"]
+JobOptionsSvc        INFO # (23,1): SimpleHistos.HistoPrint = 1
+JobOptionsSvc        INFO # (24,1): SimpleHistos.OutputLevel = 2
+JobOptionsSvc        INFO # (27,1): Histos2.Histo2 = ["Title", -5, 5, 200]
+JobOptionsSvc     WARNING # (28,1): Reassignment of option 'Histos2.Histo2' . Previously defined at D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Histograms.opts: (27, 1).
+JobOptionsSvc        INFO # (28,1): Histos2.Histo2 = ["Title", -5, 5]
+JobOptionsSvc     WARNING # (29,1): Reassignment of option 'Histos2.Histo2' . Previously defined at D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Histograms.opts: (28, 1).
+JobOptionsSvc        INFO # (29,1): Histos2.Histo2 = [-5, 5]
+JobOptionsSvc     WARNING # (30,1): Reassignment of option 'Histos2.Histo2' . Previously defined at D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Histograms.opts: (29, 1).
+JobOptionsSvc        INFO # (30,1): Histos2.Histo2 = [-5, 5, "Title"]
+JobOptionsSvc     WARNING # (31,1): Reassignment of option 'Histos2.Histo2' . Previously defined at D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Histograms.opts: (30, 1).
+JobOptionsSvc        INFO # (31,1): Histos2.Histo2 = [-5, 5, "Title", 200]
+JobOptionsSvc     WARNING # (32,1): Reassignment of option 'Histos2.Histo2' . Previously defined at D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Histograms.opts: (31, 1).
+JobOptionsSvc        INFO # (32,1): Histos2.Histo2 = [-5, 5, 200, "Title"]
+JobOptionsSvc     WARNING # (33,1): Reassignment of option 'Histos2.Histo2' . Previously defined at D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Histograms.opts: (32, 1).
+JobOptionsSvc        INFO # (33,1): Histos2.Histo2 = [-5, 5, 200]
+JobOptionsSvc        INFO # (39,1): ApplicationMgr.EvtMax = 50000
+JobOptionsSvc        INFO # (40,1): ApplicationMgr.EvtSel = "NONE"
+JobOptionsSvc        INFO # (47,1): ApplicationMgr.HistogramPersistency = "ROOT"
+JobOptionsSvc        INFO # (48,1): RootHistSvc.OutputFile = "histo.root"
+JobOptionsSvc        INFO # (57,1): HistogramDataSvc.Input = ["InFile DATAFILE='../data/input.hbook' TYP='HBOOK'"]
+JobOptionsSvc        INFO # (59,1): HistogramDataSvc.Predefined1DHistos = {"/stat/Histos2/2":["TEST2", -100, 200]}
+JobOptionsSvc        INFO # (63,1): HistogramDataSvc.OutputLevel = 2
+JobOptionsSvc        INFO # =======> D:/Profiles/clemenci/cmtuser/Gaudi/GaudiExamples/options/Aida2Root.opts)
+JobOptionsSvc        INFO # (3,1): ApplicationMgr.TopAlg += ["Aida2Root"]
+JobOptionsSvc        INFO Job options successfully read in from D:\Profiles\clemenci\cmtuser\Gaudi\GaudiExamples\options\Aida2Root.opts
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.77 $
+                                          running on CERNTSLHCB05 on 08/16/11 12:53:04
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+SimpleHistos        DEBUG Property update for OutputLevel : new value = 2
+SimpleHistos        DEBUG Property update for OutputLevel : new value = 2
+SimpleHistos        DEBUG Initialize base class GaudiCommon<Algorithm>
+SimpleHistos        DEBUG could not locate CounterSummarySvc, no counter summary will be made
+SimpleHistos        DEBUG List of ALL properties of GaudiHistoAlgorithm/SimpleHistos  #properties = 46
+SimpleHistos        DEBUG Property ['Name': Value] =  'AutoStringIDPurgeMap':{ '/' : '=SLASH=' }
+SimpleHistos        DEBUG Property ['Name': Value] =  'UseSequencialNumericAutoIDs':False
+SimpleHistos        DEBUG Property ['Name': Value] =  'HeaderFor1DHistoTable':|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
+SimpleHistos        DEBUG Property ['Name': Value] =  'ShortFormatFor1DHistoTable': | %1$-25.25s %2%
+SimpleHistos        DEBUG Property ['Name': Value] =  'FormatFor1DHistoTable':| %2$-45.45s | %3$=7d |%8$11.5g | %10$-11.5g|%12$11.5g |%14$11.5g |
+SimpleHistos        DEBUG Property ['Name': Value] =  'MonitorHistograms':True
+SimpleHistos        DEBUG Property ['Name': Value] =  'FullDetail':False
+SimpleHistos        DEBUG Property ['Name': Value] =  'HistoDir':SimpleHistos
+SimpleHistos        DEBUG Property ['Name': Value] =  'HistoTopDir':
+SimpleHistos        DEBUG Property ['Name': Value] =  'HistoOffSet':0
+SimpleHistos        DEBUG Property ['Name': Value] =  'HistoSplitDir':False
+SimpleHistos        DEBUG Property ['Name': Value] =  'HistoCheckForNaN':True
+SimpleHistos        DEBUG Property ['Name': Value] =  'HistoPrint':True
+SimpleHistos        DEBUG Property ['Name': Value] =  'HistoProduce':True
+SimpleHistos        DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
+SimpleHistos        DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
+SimpleHistos        DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
+SimpleHistos        DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
+SimpleHistos        DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
+SimpleHistos        DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
+SimpleHistos        DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
+SimpleHistos        DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+SimpleHistos        DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.00000000
+SimpleHistos        DEBUG Property ['Name': Value] =  'RootOnTES':
+SimpleHistos        DEBUG Property ['Name': Value] =  'RootInTES':
+SimpleHistos        DEBUG Property ['Name': Value] =  'Context':
+SimpleHistos        DEBUG Property ['Name': Value] =  'TypePrint':True
+SimpleHistos        DEBUG Property ['Name': Value] =  'StatPrint':True
+SimpleHistos        DEBUG Property ['Name': Value] =  'PropertiesPrint':False
+SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+SimpleHistos        DEBUG Property ['Name': Value] =  'RegisterForContextService':True
+SimpleHistos        DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+SimpleHistos        DEBUG Property ['Name': Value] =  'AuditStop':False
+SimpleHistos        DEBUG Property ['Name': Value] =  'AuditStart':False
+SimpleHistos        DEBUG Property ['Name': Value] =  'AuditEndRun':False
+SimpleHistos        DEBUG Property ['Name': Value] =  'AuditBeginRun':False
+SimpleHistos        DEBUG Property ['Name': Value] =  'AuditFinalize':False
+SimpleHistos        DEBUG Property ['Name': Value] =  'AuditExecute':False
+SimpleHistos        DEBUG Property ['Name': Value] =  'AuditRestart':False
+SimpleHistos        DEBUG Property ['Name': Value] =  'AuditReinitialize':False
+SimpleHistos        DEBUG Property ['Name': Value] =  'AuditInitialize':False
+SimpleHistos        DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
+SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorCount':0
+SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorMax':1
+SimpleHistos        DEBUG Property ['Name': Value] =  'Enable':True
+SimpleHistos        DEBUG Property ['Name': Value] =  'OutputLevel':2
+HistogramDataSvc    DEBUG Service base class initialized successfully
+RootHistSvc          INFO Writing ROOT histograms to: histo.root
+HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
+HistogramDataSvc     INFO Added stream file:../data/input.hbook as InFile
+HistogramDataSvc     INFO  Predefined 1D-Histograms:
+HistogramDataSvc     INFO  Path='Histos2/2' Description ('TEST2',-100,200,100)
+SimpleHistos        DEBUG GaudiHistoAlgorithm:: The histogram path is set to be 'SimpleHistos'
+Histos2           SUCCESS List of ALL properties of Gaudi::Examples::HistoProps/Histos2  #properties = 48
+Histos2           SUCCESS Property ['Name': Value] =  'Histo2':('',-5.000000,5.000000,200)
+Histos2           SUCCESS Property ['Name': Value] =  'Histo1':('Histogram1',-3.000000,3.000000,200)
+Histos2           SUCCESS Property ['Name': Value] =  'AutoStringIDPurgeMap':{ '/' : '=SLASH=' }
+Histos2           SUCCESS Property ['Name': Value] =  'UseSequencialNumericAutoIDs':False
+Histos2           SUCCESS Property ['Name': Value] =  'HeaderFor1DHistoTable':|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
+Histos2           SUCCESS Property ['Name': Value] =  'ShortFormatFor1DHistoTable': | %1$-25.25s %2%
+Histos2           SUCCESS Property ['Name': Value] =  'FormatFor1DHistoTable':| %2$-45.45s | %3$=7d |%8$11.5g | %10$-11.5g|%12$11.5g |%14$11.5g |
+Histos2           SUCCESS Property ['Name': Value] =  'MonitorHistograms':True
+Histos2           SUCCESS Property ['Name': Value] =  'FullDetail':False
+Histos2           SUCCESS Property ['Name': Value] =  'HistoDir':Histos2
+Histos2           SUCCESS Property ['Name': Value] =  'HistoTopDir':
+Histos2           SUCCESS Property ['Name': Value] =  'HistoOffSet':0
+Histos2           SUCCESS Property ['Name': Value] =  'HistoSplitDir':False
+Histos2           SUCCESS Property ['Name': Value] =  'HistoCheckForNaN':True
+Histos2           SUCCESS Property ['Name': Value] =  'HistoPrint':True
+Histos2           SUCCESS Property ['Name': Value] =  'HistoProduce':True
+Histos2           SUCCESS Property ['Name': Value] =  'RequireObjects':[  ]
+Histos2           SUCCESS Property ['Name': Value] =  'VetoObjects':[  ]
+Histos2           SUCCESS Property ['Name': Value] =  'StatEntityList':[  ]
+Histos2           SUCCESS Property ['Name': Value] =  'CounterList':[ '.*' ]
+Histos2           SUCCESS Property ['Name': Value] =  'UseEfficiencyRowFormat':True
+Histos2           SUCCESS Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
+Histos2           SUCCESS Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
+Histos2           SUCCESS Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+Histos2           SUCCESS Property ['Name': Value] =  'GlobalTimeOffset':0.00000000
+Histos2           SUCCESS Property ['Name': Value] =  'RootOnTES':
+Histos2           SUCCESS Property ['Name': Value] =  'RootInTES':
+Histos2           SUCCESS Property ['Name': Value] =  'Context':
+Histos2           SUCCESS Property ['Name': Value] =  'TypePrint':True
+Histos2           SUCCESS Property ['Name': Value] =  'StatPrint':True
+Histos2           SUCCESS Property ['Name': Value] =  'PropertiesPrint':True
+Histos2           SUCCESS Property ['Name': Value] =  'ErrorsPrint':True
+Histos2           SUCCESS Property ['Name': Value] =  'RegisterForContextService':True
+Histos2           SUCCESS Property ['Name': Value] =  'MonitorService':MonitorSvc
+Histos2           SUCCESS Property ['Name': Value] =  'AuditStop':False
+Histos2           SUCCESS Property ['Name': Value] =  'AuditStart':False
+Histos2           SUCCESS Property ['Name': Value] =  'AuditEndRun':False
+Histos2           SUCCESS Property ['Name': Value] =  'AuditBeginRun':False
+Histos2           SUCCESS Property ['Name': Value] =  'AuditFinalize':False
+Histos2           SUCCESS Property ['Name': Value] =  'AuditExecute':False
+Histos2           SUCCESS Property ['Name': Value] =  'AuditRestart':False
+Histos2           SUCCESS Property ['Name': Value] =  'AuditReinitialize':False
+Histos2           SUCCESS Property ['Name': Value] =  'AuditInitialize':False
+Histos2           SUCCESS Property ['Name': Value] =  'AuditAlgorithms':False
+Histos2           SUCCESS Property ['Name': Value] =  'ErrorCount':0
+Histos2           SUCCESS Property ['Name': Value] =  'ErrorMax':1
+Histos2           SUCCESS Property ['Name': Value] =  'Enable':True
+Histos2           SUCCESS Property ['Name': Value] =  'OutputLevel':3
+Aida2Root         SUCCESS List of ALL properties of Aida2Root/Aida2Root  #properties = 51
+Aida2Root         SUCCESS Property ['Name': Value] =  'Profs2D':[ 'SimpleHistos/321' , 'SimpleHistos/2dprof' ]
+Aida2Root         SUCCESS Property ['Name': Value] =  'Profs1D':[ 'SimpleHistos/Expo V Gauss 1DProf' ]
+Aida2Root         SUCCESS Property ['Name': Value] =  'Histos3D':[ 'SimpleHistos/3D plot AutoID' , 'SimpleHistos/3d' ]
+Aida2Root         SUCCESS Property ['Name': Value] =  'Histos2D':[ 'SimpleHistos/Gaussian V Flat' , 'SimpleHistos/Exponential V Flat' , 'SimpleHistos/binVpois' , 'SimpleHistos/expoVpois' ]
+Aida2Root         SUCCESS Property ['Name': Value] =  'Histos1D':[ 'SimpleHistos/Gaussian mean=0, sigma=1' , 'SimpleHistos/101' , 'SimpleHistos/102' , 'SimpleHistos/1111' , 'SimpleHistos/test1' , 'SimpleHistos/subdir2/bino' , 'SimpleHistos/subdir1/bino' , 'SimpleHistos/poisson' ]
+Aida2Root         SUCCESS Property ['Name': Value] =  'AutoStringIDPurgeMap':{ '/' : '=SLASH=' }
+Aida2Root         SUCCESS Property ['Name': Value] =  'UseSequencialNumericAutoIDs':False
+Aida2Root         SUCCESS Property ['Name': Value] =  'HeaderFor1DHistoTable':|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
+Aida2Root         SUCCESS Property ['Name': Value] =  'ShortFormatFor1DHistoTable': | %1$-25.25s %2%
+Aida2Root         SUCCESS Property ['Name': Value] =  'FormatFor1DHistoTable':| %2$-45.45s | %3$=7d |%8$11.5g | %10$-11.5g|%12$11.5g |%14$11.5g |
+Aida2Root         SUCCESS Property ['Name': Value] =  'MonitorHistograms':True
+Aida2Root         SUCCESS Property ['Name': Value] =  'FullDetail':False
+Aida2Root         SUCCESS Property ['Name': Value] =  'HistoDir':Aida2Root
+Aida2Root         SUCCESS Property ['Name': Value] =  'HistoTopDir':
+Aida2Root         SUCCESS Property ['Name': Value] =  'HistoOffSet':0
+Aida2Root         SUCCESS Property ['Name': Value] =  'HistoSplitDir':False
+Aida2Root         SUCCESS Property ['Name': Value] =  'HistoCheckForNaN':True
+Aida2Root         SUCCESS Property ['Name': Value] =  'HistoPrint':False
+Aida2Root         SUCCESS Property ['Name': Value] =  'HistoProduce':True
+Aida2Root         SUCCESS Property ['Name': Value] =  'RequireObjects':[  ]
+Aida2Root         SUCCESS Property ['Name': Value] =  'VetoObjects':[  ]
+Aida2Root         SUCCESS Property ['Name': Value] =  'StatEntityList':[  ]
+Aida2Root         SUCCESS Property ['Name': Value] =  'CounterList':[ '.*' ]
+Aida2Root         SUCCESS Property ['Name': Value] =  'UseEfficiencyRowFormat':True
+Aida2Root         SUCCESS Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
+Aida2Root         SUCCESS Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
+Aida2Root         SUCCESS Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+Aida2Root         SUCCESS Property ['Name': Value] =  'GlobalTimeOffset':0.00000000
+Aida2Root         SUCCESS Property ['Name': Value] =  'RootOnTES':
+Aida2Root         SUCCESS Property ['Name': Value] =  'RootInTES':
+Aida2Root         SUCCESS Property ['Name': Value] =  'Context':
+Aida2Root         SUCCESS Property ['Name': Value] =  'TypePrint':True
+Aida2Root         SUCCESS Property ['Name': Value] =  'StatPrint':True
+Aida2Root         SUCCESS Property ['Name': Value] =  'PropertiesPrint':True
+Aida2Root         SUCCESS Property ['Name': Value] =  'ErrorsPrint':True
+Aida2Root         SUCCESS Property ['Name': Value] =  'RegisterForContextService':True
+Aida2Root         SUCCESS Property ['Name': Value] =  'MonitorService':MonitorSvc
+Aida2Root         SUCCESS Property ['Name': Value] =  'AuditStop':False
+Aida2Root         SUCCESS Property ['Name': Value] =  'AuditStart':False
+Aida2Root         SUCCESS Property ['Name': Value] =  'AuditEndRun':False
+Aida2Root         SUCCESS Property ['Name': Value] =  'AuditBeginRun':False
+Aida2Root         SUCCESS Property ['Name': Value] =  'AuditFinalize':False
+Aida2Root         SUCCESS Property ['Name': Value] =  'AuditExecute':False
+Aida2Root         SUCCESS Property ['Name': Value] =  'AuditRestart':False
+Aida2Root         SUCCESS Property ['Name': Value] =  'AuditReinitialize':False
+Aida2Root         SUCCESS Property ['Name': Value] =  'AuditInitialize':False
+Aida2Root         SUCCESS Property ['Name': Value] =  'AuditAlgorithms':False
+Aida2Root         SUCCESS Property ['Name': Value] =  'ErrorCount':0
+Aida2Root         SUCCESS Property ['Name': Value] =  'ErrorMax':1
+Aida2Root         SUCCESS Property ['Name': Value] =  'Enable':True
+Aida2Root         SUCCESS Property ['Name': Value] =  'OutputLevel':3
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
+RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
+RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+SimpleHistos        DEBUG Monitoring histogram 'Gaussian mean=0, sigma=1' desc = 'Gaussian mean=0, sigma=1'
+SimpleHistos        DEBUG Booked 1D Histogram : ID='Gaussian mean=0, sigma=1' Path=SimpleHistos Title='Gaussian mean=0, sigma=1'
+SimpleHistos        DEBUG Monitoring histogram '101' desc = 'Exponential'
+SimpleHistos        DEBUG Booked 1D Histogram : ID='101' Path=SimpleHistos Title='Exponential'
+SimpleHistos        DEBUG Monitoring histogram '102' desc = 'Breit'
+SimpleHistos        DEBUG Booked 1D Histogram : ID='102' Path=SimpleHistos Title='Breit'
+SimpleHistos        DEBUG Monitoring histogram 'poisson' desc = 'Poisson'
+SimpleHistos        DEBUG Booked 1D Histogram : ID='poisson' Path=SimpleHistos Title='Poisson'
+SimpleHistos        DEBUG Monitoring histogram 'subdir1/bino' desc = 'Binominal'
+SimpleHistos        DEBUG Booked 1D Histogram : ID='subdir1/bino' Path=SimpleHistos Title='Binominal'
+SimpleHistos        DEBUG Monitoring histogram 'subdir2/bino' desc = 'Binominal'
+SimpleHistos        DEBUG Booked 1D Histogram : ID='subdir2/bino' Path=SimpleHistos Title='Binominal'
+SimpleHistos        DEBUG Monitoring histogram 'Gaussian V Flat' desc = 'Gaussian V Flat'
+SimpleHistos        DEBUG Booked 2D Histogram : ID='Gaussian V Flat' Path=SimpleHistos Title='Gaussian V Flat'
+SimpleHistos        DEBUG Monitoring histogram 'Exponential V Flat' desc = 'Exponential V Flat'
+SimpleHistos        DEBUG Booked 2D Histogram : ID='Exponential V Flat' Path=SimpleHistos Title='Exponential V Flat'
+SimpleHistos        DEBUG Monitoring histogram 'binVpois' desc = 'Binom V poisson'
+SimpleHistos        DEBUG Booked 2D Histogram : ID='binVpois' Path=SimpleHistos Title='Binom V poisson'
+SimpleHistos        DEBUG Monitoring histogram 'expoVpois' desc = 'Expo V poisson'
+SimpleHistos        DEBUG Booked 2D Histogram : ID='expoVpois' Path=SimpleHistos Title='Expo V poisson'
+SimpleHistos        DEBUG Monitoring histogram '3D plot AutoID' desc = '3D plot AutoID'
+SimpleHistos        DEBUG Booked 3D Histogram : ID='3D plot AutoID' Path=SimpleHistos Title='3D plot AutoID'
+SimpleHistos        DEBUG Monitoring histogram '3d' desc = '3D plot ForcedID'
+SimpleHistos        DEBUG Booked 3D Histogram : ID='3d' Path=SimpleHistos Title='3D plot ForcedID'
+SimpleHistos        DEBUG Monitoring histogram 'Expo V Gauss 1DProf' desc = 'Expo V Gauss 1DProf'
+SimpleHistos        DEBUG Booked 1D Profile Histogram : ID='Expo V Gauss 1DProf' Path=SimpleHistos Title='Expo V Gauss 1DProf'
+SimpleHistos        DEBUG Monitoring histogram 'Expo V Gauss 1DProf s' desc = 'Expo V Gauss 1DProf s'
+SimpleHistos        DEBUG Booked 1D Profile Histogram : ID='Expo V Gauss 1DProf s' Path=SimpleHistos Title='Expo V Gauss 1DProf s'
+SimpleHistos        DEBUG Monitoring histogram 'Gauss V Flat 1DProf' desc = 'Gauss V Flat 1DProf'
+SimpleHistos        DEBUG Booked 1D Profile Histogram : ID='Gauss V Flat 1DProf' Path=SimpleHistos Title='Gauss V Flat 1DProf'
+SimpleHistos        DEBUG Monitoring histogram 'Gauss V Flat 1DProf S' desc = 'Gauss V Flat 1DProf S'
+SimpleHistos        DEBUG Booked 1D Profile Histogram : ID='Gauss V Flat 1DProf S' Path=SimpleHistos Title='Gauss V Flat 1DProf S'
+SimpleHistos        DEBUG Monitoring histogram 'Gauss V Flat 1DProf, with limits-I' desc = 'Gauss V Flat 1DProf, with limits-I'
+SimpleHistos        DEBUG Booked 1D Profile Histogram : ID='Gauss V Flat 1DProf, with limits-I' Path=SimpleHistos Title='Gauss V Flat 1DProf, with limits-I'
+SimpleHistos        DEBUG Monitoring histogram 'Gauss V Flat 1DProf, with limits-I  s' desc = 'Gauss V Flat 1DProf, with limits-I  s'
+SimpleHistos        DEBUG Booked 1D Profile Histogram : ID='Gauss V Flat 1DProf, with limits-I  s' Path=SimpleHistos Title='Gauss V Flat 1DProf, with limits-I  s'
+SimpleHistos        DEBUG Monitoring histogram 'Gauss V Flat 1DProf, with limits-II' desc = 'Gauss V Flat 1DProf, with limits-II'
+SimpleHistos        DEBUG Booked 1D Profile Histogram : ID='Gauss V Flat 1DProf, with limits-II' Path=SimpleHistos Title='Gauss V Flat 1DProf, with limits-II'
+SimpleHistos        DEBUG Monitoring histogram 'Gauss V Flat 1DProf, with limits-II s' desc = 'Gauss V Flat 1DProf, with limits-II s'
+SimpleHistos        DEBUG Booked 1D Profile Histogram : ID='Gauss V Flat 1DProf, with limits-II s' Path=SimpleHistos Title='Gauss V Flat 1DProf, with limits-II s'
+SimpleHistos        DEBUG Monitoring histogram '2dprof' desc = '2D profile1'
+SimpleHistos        DEBUG Booked 2D Profile Histogram : ID='2dprof' Path=SimpleHistos Title='2D profile1'
+SimpleHistos        DEBUG Monitoring histogram '321' desc = '2D profile2'
+SimpleHistos        DEBUG Booked 2D Profile Histogram : ID='321' Path=SimpleHistos Title='2D profile2'
+SimpleHistos        DEBUG Monitoring histogram 'varBinning/x' desc = '1D Variable Binning'
+SimpleHistos        DEBUG Booked 1D Histogram : ID='varBinning/x' Path=SimpleHistos Title='1D Variable Binning'
+SimpleHistos        DEBUG Monitoring histogram 'varBinning/y' desc = '2D Variable Binning'
+SimpleHistos        DEBUG Booked 2D Histogram : ID='varBinning/y' Path=SimpleHistos Title='2D Variable Binning'
+SimpleHistos        DEBUG Monitoring histogram 'varBinning/z' desc = '3D Variable Binning'
+SimpleHistos        DEBUG Booked 3D Histogram : ID='varBinning/z' Path=SimpleHistos Title='3D Variable Binning'
+SimpleHistos        DEBUG Monitoring histogram 'varBinning/a' desc = '1D Profile Variable Binning'
+SimpleHistos        DEBUG Booked 1D Profile Histogram : ID='varBinning/a' Path=SimpleHistos Title='1D Profile Variable Binning'
+SimpleHistos        DEBUG Monitoring histogram 'varBinning/b' desc = '2D Profile Variable Binning'
+SimpleHistos        DEBUG Booked 2D Profile Histogram : ID='varBinning/b' Path=SimpleHistos Title='2D Profile Variable Binning'
+SimpleHistos        DEBUG Monitoring histogram 'AutoID time test' desc = 'AutoID time test'
+SimpleHistos        DEBUG Booked 1D Histogram : ID='AutoID time test' Path=SimpleHistos Title='AutoID time test'
+SimpleHistos        DEBUG Monitoring histogram '1111' desc = 'Forced Numeric ID time test'
+SimpleHistos        DEBUG Booked 1D Histogram : ID='1111' Path=SimpleHistos Title='Forced Numeric ID time test'
+SimpleHistos        DEBUG Monitoring histogram 'test1' desc = 'Forced Alpha ID time test'
+SimpleHistos        DEBUG Booked 1D Histogram : ID='test1' Path=SimpleHistos Title='Forced Alpha ID time test'
+SimpleHistos         INFO GaudiHistoAlgorithm:: Filling Histograms...... Please be patient !
+Histos2           WARNING Gaudi::Examples::HistoProps:: Cannot generate automatic literal ID from an empty title ! Using numeric ID instead for histogram ID
+HistogramDataSvc    DEBUG  Redefine the parameters for the histogram 'Histos2/2' to be ('TEST2',-100,200,100)
+ChronoStatSvc        INFO  Number of skipped events for MemStat-1
+ApplicationMgr       INFO Application Manager Stopped successfully
+SimpleHistos      SUCCESS Booked 30 Histogram(s) : 1D=10 2D=5 3D=3 1DProf=9 2DProf=3
+SimpleHistos      SUCCESS List of booked 1D histograms in directory         "SimpleHistos" :-
+ | ID                        |   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
+ | 101                       | "Exponential"                                 |  50000  |    0.96914 | 0.90535    |     1.4869 |     2.2322 |
+ | 102                       | "Breit"                                       |  50000  |  0.0068835 | 1.1951     |   -0.01431 |     3.6439 |
+ | 1111                      | "Forced Numeric ID time test"                 |  50000  |  -0.009832 | 1.0001     |  0.0095032 | -0.0095692 |
+ | AutoID time test          | "AutoID time test"                            |  50000  |  -0.009832 | 1.0001     |  0.0095032 | -0.0095692 |
+ | Gaussian mean=0, sigma=1  | "Gaussian mean=0, sigma=1"                    |  50000  |  -0.009832 | 1.0001     |  0.0095032 | -0.0095692 |
+ | poisson                   | "Poisson"                                     |  50000  |     1.8073 | 1.1765     |    0.32643 |   -0.75799 |
+ | subdir1/bino              | "Binominal"                                   |  50000  |     1.9061 | 1.1128     |    0.25726 |   -0.66968 |
+ | subdir2/bino              | "Binominal"                                   |  50000  |     1.9061 | 1.1128     |    0.25726 |   -0.66968 |
+ | test1                     | "Forced Alpha ID time test"                   |  50000  |  -0.009832 | 1.0001     |  0.0095032 | -0.0095692 |
+ | varBinning/x              | "1D Variable Binning"                         |  50000  |  -0.028452 | 2.8834     |   0.015929 |    -1.3136 |
+SimpleHistos      SUCCESS List of booked 2D histograms in directory         "SimpleHistos" :-
+ ID=Exponential V Flat         "Exponential V Flat"                             Ents/All=49848/50000<X>/sX=-0.025596/2.8825,<Y>/sY=0.97604/0.91269
+ ID=Gaussian V Flat            "Gaussian V Flat"                                Ents/All=50000/50000<X>/sX=-0.028452/2.8834,<Y>/sY=-0.0081283/1.0011
+ ID=binVpois                   "Binom V poisson"                                Ents/All=49920/50000<X>/sX=1.8072/1.1764,<Y>/sY=1.9048/1.1125
+ ID=expoVpois                  "Expo V poisson"                                 Ents/All=49978/50000<X>/sX=1.807/1.176,<Y>/sY=0.96904/0.9045
+ ID=varBinning/y               "2D Variable Binning"                            Ents/All=50000/50000<X>/sX=-0.028452/2.8834,<Y>/sY=-0.0081283/1.0011
+SimpleHistos      SUCCESS List of booked 3D histograms in directory         "SimpleHistos" :-
+ ID=3D plot AutoID             "3D plot AutoID"                                 Ents/All=50000/50000<X>/sX=-0.0096715/1.0012,<Y>/sY=0.97036/0.90558,<Z>/sZ=0.0071234/1.1942
+ ID=3d                         "3D plot ForcedID"                               Ents/All=50000/50000<X>/sX=-0.0096715/1.0012,<Y>/sY=0.97036/0.90558,<Z>/sZ=0.0071234/1.1942
+ ID=varBinning/z               "3D Variable Binning"                            Ents/All=50000/50000<X>/sX=-0.025596/2.8825,<Y>/sY=-0.0086423/1.0004,<Z>/sZ=0.97604/0.91269
+SimpleHistos      SUCCESS List of booked 1D profile histograms in directory "SimpleHistos" :-
+ ID=Expo V Gauss 1DProf        "Expo V Gauss 1DProf"                            Ents/All=50000/50000<X>/sX=-0.009832/1.0001
+ ID=Expo V Gauss 1DProf s      "Expo V Gauss 1DProf s"                          Ents/All=50000/50000<X>/sX=-0.009832/1.0001
+ ID=Gauss V Flat 1DProf        "Gauss V Flat 1DProf"                            Ents/All=50000/50000<X>/sX=-0.013795/5.7724
+ ID=Gauss V Flat 1DProf S      "Gauss V Flat 1DProf S"                          Ents/All=50000/50000<X>/sX=-0.013795/5.7724
+ ID=Gauss V Flat 1DProf, with limits-I "Gauss V Flat 1DProf, with limits-I"     Ents/All=24807/24807<X>/sX=0.026854/5.7561
+ ID=Gauss V Flat 1DProf, with limits-I  s "Gauss V Flat 1DProf, with limits-I  s"  Ents/All=24807/24807<X>/sX=0.026854/5.7561
+ ID=Gauss V Flat 1DProf, with limits-II "Gauss V Flat 1DProf, with limits-II"   Ents/All=25193/25193<X>/sX=-0.053822/5.7881
+ ID=Gauss V Flat 1DProf, with limits-II s "Gauss V Flat 1DProf, with limits-II s"  Ents/All=25193/25193<X>/sX=-0.053822/5.7881
+ ID=varBinning/a               "1D Profile Variable Binning"                    Ents/All=24949/50000<X>/sX=-0.028452/2.8834
+SimpleHistos      SUCCESS List of booked 2D profile histograms in directory "SimpleHistos" :-
+ ID=2dprof                     "2D profile1"                                    Ents/All=50000/50000<X>/sX=-0.0098803/0.9999,<Y>/sY=0.96914/0.90535
+ ID=321                        "2D profile2"                                    Ents/All=50000/50000<X>/sX=-0.0098803/0.9999,<Y>/sY=0.96914/0.90535
+ ID=varBinning/b               "2D Profile Variable Binning"                    Ents/All=50000/50000<X>/sX=-0.028452/2.8834,<Y>/sY=-0.0081283/1.0011
+SimpleHistos        DEBUG Finalize base class GaudiAlgorithm
+SimpleHistos        DEBUG Tools to release :
+SimpleHistos        DEBUG Services to release :
+Histos2           SUCCESS Booked 2 Histogram(s) : 1D=2
+Histos2           SUCCESS List of booked 1D histograms in directory         "Histos2" :-
+ | ID                        |   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
+ | 2                         | "TEST2"                                       |  50000  | -0.0023399 | 1.0037     |  0.0098579 |  -0.038565 |
+ | Histogram1                | "Histogram1"                                  |  50000  | -0.0011467 | 0.98662    |  0.0022561 |   -0.15642 |
+Histos2           SUCCESS Exceptions/Errors/Warnings/Infos Statistics : 0/0/1/0
+Histos2           SUCCESS  #WARNINGS   = 1        Message = 'Cannot generate automatic literal ID from an empty title ! Using numeric ID instead for histogram ID'
+Aida2Root         SUCCESS Get the native ROOT representation of histograms!
+Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/Gaussian mean=0, sigma=1':
+TH1.Print Name  = Gaussian mean=0, sigma=1, Entries= 50000, Total sum= 50000
+Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
+Aida2Root            INFO  | 'mean'         |   -0.0098319667 | -0.0098319667   |         0       |
+Aida2Root            INFO  | 'meanErr'      |    0.0044725853 |  0.0044725853   |         0       |
+Aida2Root            INFO  | 'rms'          |       1.0001005 |  1.0001005      |         0       |
+Aida2Root            INFO  | 'rmsErr'       |    0.0031550521 |  0.0031625954   | -7.5432549e-006 |
+Aida2Root            INFO  | 'skewness'     |    0.0095032078 |  0.0095032078   | -1.9602375e-016 |
+Aida2Root            INFO  | 'skewnessErr'  |     0.010953794 |  0.010954451    | -6.5724078e-007 |
+Aida2Root            INFO  | 'kurtosis'     |   -0.0095692109 | -0.0095692109   | -4.4408921e-016 |
+Aida2Root            INFO  | 'kurtosisErr'  |     0.021905616 |  0.021908902    | -3.2860385e-006 |
+Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/101':
+TH1.Print Name  = Exponential, Entries= 50000, Total sum= 49656
+Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
+Aida2Root            INFO  | 'mean'         |       0.9691422 |  0.9691422      |         0       |
+Aida2Root            INFO  | 'meanErr'      |    0.0040628269 |  0.0040628269   |         0       |
+Aida2Root            INFO  | 'rms'          |      0.90534515 |  0.90534515     |         0       |
+Aida2Root            INFO  | 'rmsErr'       |    0.0041791285 |  0.0028728524   |   0.0013062761  |
+Aida2Root            INFO  | 'skewness'     |       1.4868621 |  1.4868621      |         0       |
+Aida2Root            INFO  | 'skewnessErr'  |     0.010991666 |  0.01099233     | -6.6408212e-007 |
+Aida2Root            INFO  | 'kurtosis'     |       2.2322439 |  2.2322439      |         0       |
+Aida2Root            INFO  | 'kurtosisErr'  |      0.02198134 |  0.02198466     | -3.3202423e-006 |
+Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/102':
+TH1.Print Name  = Breit, Entries= 50000, Total sum= 46912
+Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
+Aida2Root            INFO  | 'mean'         |    0.0068835323 |  0.0068835323   |         0       |
+Aida2Root            INFO  | 'meanErr'      |    0.0055176857 |  0.0055176857   |         0       |
+Aida2Root            INFO  | 'rms'          |       1.1950854 |  1.1950854      |         0       |
+Aida2Root            INFO  | 'rmsErr'       |     0.006554158 |  0.003901593    |    0.002652565  |
+Aida2Root            INFO  | 'skewness'     |     -0.01430972 | -0.01430972     |  2.4980018e-016 |
+Aida2Root            INFO  | 'skewnessErr'  |     0.011308523 |  0.011309246    | -7.2319005e-007 |
+Aida2Root            INFO  | 'kurtosis'     |       3.6438647 |  3.6438647      |         0       |
+Aida2Root            INFO  | 'kurtosisErr'  |     0.022614876 |  0.022618492    | -3.6157563e-006 |
+Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/1111':
+TH1.Print Name  = Forced Numeric ID time test, Entries= 50000, Total sum= 50000
+Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
+Aida2Root            INFO  | 'mean'         |   -0.0098319667 | -0.0098319667   |         0       |
+Aida2Root            INFO  | 'meanErr'      |    0.0044725853 |  0.0044725853   |         0       |
+Aida2Root            INFO  | 'rms'          |       1.0001005 |  1.0001005      |         0       |
+Aida2Root            INFO  | 'rmsErr'       |    0.0031550521 |  0.0031625954   | -7.5432549e-006 |
+Aida2Root            INFO  | 'skewness'     |    0.0095032078 |  0.0095032078   | -1.9602375e-016 |
+Aida2Root            INFO  | 'skewnessErr'  |     0.010953794 |  0.010954451    | -6.5724078e-007 |
+Aida2Root            INFO  | 'kurtosis'     |   -0.0095692109 | -0.0095692109   | -4.4408921e-016 |
+Aida2Root            INFO  | 'kurtosisErr'  |     0.021905616 |  0.021908902    | -3.2860385e-006 |
+Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/test1':
+TH1.Print Name  = Forced Alpha ID time test, Entries= 50000, Total sum= 50000
+Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
+Aida2Root            INFO  | 'mean'         |   -0.0098319667 | -0.0098319667   |         0       |
+Aida2Root            INFO  | 'meanErr'      |    0.0044725853 |  0.0044725853   |         0       |
+Aida2Root            INFO  | 'rms'          |       1.0001005 |  1.0001005      |         0       |
+Aida2Root            INFO  | 'rmsErr'       |    0.0031550521 |  0.0031625954   | -7.5432549e-006 |
+Aida2Root            INFO  | 'skewness'     |    0.0095032078 |  0.0095032078   | -1.9602375e-016 |
+Aida2Root            INFO  | 'skewnessErr'  |     0.010953794 |  0.010954451    | -6.5724078e-007 |
+Aida2Root            INFO  | 'kurtosis'     |   -0.0095692109 | -0.0095692109   | -4.4408921e-016 |
+Aida2Root            INFO  | 'kurtosisErr'  |     0.021905616 |  0.021908902    | -3.2860385e-006 |
+Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/subdir2/bino':
+TH1.Print Name  = Binominal, Entries= 50000, Total sum= 48615
+Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
+Aida2Root            INFO  | 'mean'         |       1.9060989 |  1.9060989      |         0       |
+Aida2Root            INFO  | 'meanErr'      |     0.005047036 |  0.005047036    |         0       |
+Aida2Root            INFO  | 'rms'          |       1.1128114 |  1.1128114      |         0       |
+Aida2Root            INFO  | 'rmsErr'       |    0.0029106545 |  0.0035687934   |  -0.00065813892 |
+Aida2Root            INFO  | 'skewness'     |      0.25726049 |  0.25726049     |  2.7755576e-016 |
+Aida2Root            INFO  | 'skewnessErr'  |     0.011108711 |  0.011109397    | -6.8552544e-007 |
+Aida2Root            INFO  | 'kurtosis'     |     -0.66968326 | -0.66968326     | -8.8817842e-016 |
+Aida2Root            INFO  | 'kurtosisErr'  |     0.022215366 |  0.022218794    | -3.4274498e-006 |
+Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/subdir1/bino':
+TH1.Print Name  = Binominal, Entries= 50000, Total sum= 48615
+Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
+Aida2Root            INFO  | 'mean'         |       1.9060989 |  1.9060989      |         0       |
+Aida2Root            INFO  | 'meanErr'      |     0.005047036 |  0.005047036    |         0       |
+Aida2Root            INFO  | 'rms'          |       1.1128114 |  1.1128114      |         0       |
+Aida2Root            INFO  | 'rmsErr'       |    0.0029106545 |  0.0035687934   |  -0.00065813892 |
+Aida2Root            INFO  | 'skewness'     |      0.25726049 |  0.25726049     |  2.7755576e-016 |
+Aida2Root            INFO  | 'skewnessErr'  |     0.011108711 |  0.011109397    | -6.8552544e-007 |
+Aida2Root            INFO  | 'kurtosis'     |     -0.66968326 | -0.66968326     | -8.8817842e-016 |
+Aida2Root            INFO  | 'kurtosisErr'  |     0.022215366 |  0.022218794    | -3.4274498e-006 |
+Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/poisson':
+TH1.Print Name  = Poisson, Entries= 50000, Total sum= 47512
+Aida2Root            INFO  |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      |
+Aida2Root            INFO  | 'mean'         |       1.8073329 |  1.8073329      |         0       |
+Aida2Root            INFO  | 'meanErr'      |    0.0053975724 |  0.0053975724   |         0       |
+Aida2Root            INFO  | 'rms'          |       1.1765222 |  1.1765222      |         0       |
+Aida2Root            INFO  | 'rmsErr'       |    0.0030077251 |  0.00381666     |  -0.00080893493 |
+Aida2Root            INFO  | 'skewness'     |      0.32643021 |  0.32643021     |  3.3306691e-016 |
+Aida2Root            INFO  | 'skewnessErr'  |     0.011236901 |  0.01123761     | -7.0953469e-007 |
+Aida2Root            INFO  | 'kurtosis'     |      -0.7579914 | -0.7579914      |         0       |
+Aida2Root            INFO  | 'kurtosisErr'  |     0.022471673 |  0.022475221    | -3.5474855e-006 |
+Aida2Root            INFO The native ROOT printout for 2D-histogram 'SimpleHistos/Gaussian V Flat':
+TH1.Print Name  = Gaussian V Flat, Entries= 50000, Total sum= 24949
+Aida2Root            INFO The native ROOT printout for 2D-histogram 'SimpleHistos/Exponential V Flat':
+TH1.Print Name  = Exponential V Flat, Entries= 50000, Total sum= 24757
+Aida2Root            INFO The native ROOT printout for 2D-histogram 'SimpleHistos/binVpois':
+TH1.Print Name  = Binom V poisson, Entries= 50000, Total sum= 46207
+Aida2Root            INFO The native ROOT printout for 2D-histogram 'SimpleHistos/expoVpois':
+TH1.Print Name  = Expo V poisson, Entries= 50000, Total sum= 47190
+Aida2Root            INFO The native ROOT printout for 3D-histogram 'SimpleHistos/3D plot AutoID':
+TH1.Print Name  = 3D plot AutoID, Entries= 50000, Total sum= 46587
+Aida2Root            INFO The native ROOT printout for 3D-histogram 'SimpleHistos/3d':
+TH1.Print Name  = 3D plot ForcedID, Entries= 50000, Total sum= 46587
+Aida2Root            INFO The native ROOT printout for 1D-profile 'SimpleHistos/Expo V Gauss 1DProf':
+TH1.Print Name  = Expo V Gauss 1DProf, Entries= 50000, Total sum= 42.9343
+Aida2Root            INFO The native ROOT printout for 2D-profile 'SimpleHistos/321':
+TH1.Print Name  = 2D profile2, Entries= 50000, Total sum= 2732.42
+Aida2Root            INFO The native ROOT printout for 2D-profile 'SimpleHistos/2dprof':
+TH1.Print Name  = 2D profile1, Entries= 50000, Total sum= 2732.42
+EventLoopMgr         INFO Histograms converted successfully according to request.
+*****Chrono*****     INFO ****************************************************************************************************
+*****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)
+*****Chrono*****     INFO ****************************************************************************************************
+1DOldStyle           INFO Time User   : Tot=  141 [ms] Ave/Min/Max= 2.81(+-  210)/    0/1.56e+004 [us] #=49999
+1DAutoID             INFO Time User   : Tot=  125 [ms] Ave/Min/Max=  2.5(+-  198)/    0/1.56e+004 [us] #=49999
+1DForcedAlphaID      INFO Time User   : Tot=  172 [ms] Ave/Min/Max= 3.44(+-  232)/    0/1.56e+004 [us] #=49999
+1DForcedNumericID    INFO Time User   : Tot=  438 [ms] Ave/Min/Max= 8.75(+-  370)/    0/1.56e+004 [us] #=49999
+ChronoStatSvc        INFO Time User   : Tot= 13.8  [s]                                             #=  1
+*****Chrono*****     INFO ****************************************************************************************************
+ChronoStatSvc.f...   INFO  Service finalized successfully
+HistogramDataSvc    DEBUG  Substituted histograms #1 :
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully
