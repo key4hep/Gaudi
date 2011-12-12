@@ -1,6 +1,13 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2011-12-09 - Marco Clemencic
+ - Rationalized structure:
+   - removed obsolete test runner scripts
+   - moved python scripts 'scripts'
+   - moved reference files to 'tests/qmtest/refs'
+   - moved input.hbook to 'tests/data'
+
 ! 2011-12-08 - Marco Clemencic
  - Ported POOLIO Write and Read tests to ROOT.
 

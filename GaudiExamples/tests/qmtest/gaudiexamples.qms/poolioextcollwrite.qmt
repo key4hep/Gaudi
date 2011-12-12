@@ -2,7 +2,7 @@
 <extension class="GaudiTest.GaudiExeTest" kind="test">
   <argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/POOLIOExtCollWrite.opts</text></set></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-  <argument name="reference"><text>../../home/POOLIOExtCollWrite.ref</text></argument>
+  <argument name="reference"><text>refs/POOLIOExtCollWrite.ref</text></argument>
   <argument name="prerequisites"><set>
     <tuple><text>gaudiexamples.pooliowrite</text><enumeral>PASS</enumeral></tuple>
   </set></argument>

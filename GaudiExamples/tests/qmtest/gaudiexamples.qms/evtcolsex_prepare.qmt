@@ -2,5 +2,5 @@
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/EvtColsEx_Prepare.opts</text></set></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-  <argument name="reference"><text>../../home/EvtColsEx_Prepare.ref</text></argument>
+  <argument name="reference"><text>refs/EvtColsEx_Prepare.ref</text></argument>
 </extension>

@@ -2,5 +2,5 @@
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/CounterEx.opts</text></set></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-  <argument name="reference"><text>../../home/CounterEx.ref</text></argument>
+  <argument name="reference"><text>refs/CounterEx.ref</text></argument>
 </extension>

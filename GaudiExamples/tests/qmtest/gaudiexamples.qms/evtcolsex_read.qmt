@@ -2,7 +2,7 @@
 <extension class="GaudiTest.GaudiExeTest" kind="test">
   <argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/EvtColsEx_Read.opts</text></set></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-  <argument name="reference"><text>../../home/EvtColsEx_Read.ref</text></argument>
+  <argument name="reference"><text>refs/EvtColsEx_Read.ref</text></argument>
   <argument name="prerequisites"><set>
     <tuple><text>gaudiexamples.evtcolsex_write</text><enumeral>PASS</enumeral></tuple>
   </set></argument>

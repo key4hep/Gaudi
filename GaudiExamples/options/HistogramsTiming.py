@@ -4,7 +4,7 @@ AuditorSvc().Auditors = ['ChronoAuditor']
 MessageSvc().OutputLevel = INFO
 RootHistSvc('RootHistSvc').OutputFile = 'histo.root'
 
-#HistogramSvc('HistogramDataSvc').Input = [ "InFile DATAFILE='../home/input.hbook' TYP='HBOOK'" ]
+#HistogramSvc('HistogramDataSvc').Input = [ "InFile DATAFILE='../data/input.hbook' TYP='HBOOK'" ]
 
 from Configurables import HistoTimingAlg
 

@@ -16,21 +16,21 @@ MessageSvc.OutputLevel  = 3;
 //ApplicationMgr.TopAlg   += { "HistoAlgorithm" };
 //HistoAlgorithm.OutputLevel = 2;
 
-// Example of Histogramming using GaudiHistoAlg base class from GaudiAlg 
+// Example of Histogramming using GaudiHistoAlg base class from GaudiAlg
 ApplicationMgr.TopAlg   += { "GaudiHistoAlgorithm/SimpleHistos" };
-// Exampel of Histograming using "histogram proeprties" 
+// Exampel of Histograming using "histogram proeprties"
 ApplicationMgr.TopAlg   += { "Gaudi::Examples::HistoProps/Histos2" };
 SimpleHistos.HistoPrint = true;
 SimpleHistos.OutputLevel = 2;
 //MessageSvc.setDebug += { "SimpleHistos" };
 
 Histos2.Histo2 = ('Title',-5,5,200) ; ///< (title,lowEdge,highEdge,#bins)
-Histos2.Histo2 = ('Title',-5,5)     ; ///< (title,lowEdge,highEdge)  
+Histos2.Histo2 = ('Title',-5,5)     ; ///< (title,lowEdge,highEdge)
 Histos2.Histo2 = (-5,5)             ; ///< (lowEdge,highEdge)
-Histos2.Histo2 = (-5,5,'Title')     ; ///< (lowEdge,highEdge,title)  
+Histos2.Histo2 = (-5,5,'Title')     ; ///< (lowEdge,highEdge,title)
 Histos2.Histo2 = (-5,5,'Title',200) ; ///< (lowEdge,highEdge,title,#bins)
 Histos2.Histo2 = (-5,5,200,'Title') ; ///< (lowEdge,highEdge,#bins,title)
-Histos2.Histo2 = (-5,5,200)         ; ///< (lowEdge,highEdge,#bins) 
+Histos2.Histo2 = (-5,5,200)         ; ///< (lowEdge,highEdge,#bins)
 
 
 //--------------------------------------------------------------
@@ -54,10 +54,10 @@ RootHistSvc.OutputFile  = "histo.root";
 //RndmGenSvc.Engine.Seeds = { 70, 71, 0 };
 
 //Input Histogram
-HistogramDataSvc.Input = { "InFile DATAFILE='../home/input.hbook' TYP='HBOOK'" };
+HistogramDataSvc.Input = { "InFile DATAFILE='../data/input.hbook' TYP='HBOOK'" };
 
-HistogramDataSvc.Predefined1DHistos  = 
+HistogramDataSvc.Predefined1DHistos  =
   {
-    "/stat/Histos2/2" : ("TEST2",-100,200) 
+    "/stat/Histos2/2" : ("TEST2",-100,200)
   };
 HistogramDataSvc.OutputLevel = 2 ;

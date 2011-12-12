@@ -2,6 +2,6 @@
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/ErrorLog.opts</text></set></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-  <argument name="reference"><text>../../home/ErrorLog.ref</text></argument>
-  <argument name="error_reference"><text>../../home/ErrorLog_err.ref</text></argument>
+  <argument name="reference"><text>refs/ErrorLog.ref</text></argument>
+  <argument name="error_reference"><text>refs/ErrorLog_err.ref</text></argument>
 </extension>
