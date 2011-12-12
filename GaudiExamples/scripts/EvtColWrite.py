@@ -107,7 +107,7 @@ def configure( gaudi = None  ) :
     tagsWriter.EvtDataSvc  =   "EvtTupleSvc" ;
 
     evtColSvc = gaudi.evtcolsvc()
-    evtColSvc.defineOutput( {'EVTTAGS' : 'PFN:EvtTags1.root'} , typ='POOL_ROOT' )
+    evtColSvc.defineOutput( {'EVTTAGS' : 'PFN:EvtTags1.root'} , typ='Gaudi::RootCnvSvc' )
     evtColSvc.OutputLevel = 2
 
     evtSel = gaudi.evtSel()
@@ -122,7 +122,12 @@ def configure( gaudi = None  ) :
 # =============================================================================
 if '__main__' == __name__ :
     print __doc__
-    gaudi = GaudiPython.AppMgr( joboptions = 'GaudiPoolDbRoot.opts' )
+    # configuration (options)
+    from Configurables import GaudiPersistency, FileCatalog, ApplicationMgr
+    GaudiPersistency()
+    ApplicationMgr().ExtSvc.append(FileCatalog(Catalogs=['xmlcatalog_file:EvtColsEx.xml']))
+    # execution
+    gaudi = GaudiPython.AppMgr()
     configure( gaudi )
     gaudi.run(10000)
     gaudi.exit()

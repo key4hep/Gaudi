@@ -6,6 +6,7 @@ Package manager : Marco Clemencic
    - updated configuration
    - translated options
    - fixed dependencies
+ - Fixed EvtCol{Write,Read}.py scripts.
 
 ! 2011-12-09 - Marco Clemencic
  - Rationalized structure:

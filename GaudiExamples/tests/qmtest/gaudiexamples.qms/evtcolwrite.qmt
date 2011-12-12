@@ -4,6 +4,6 @@
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
   <argument name="reference"><text>refs/EvtColWrite.pyref</text></argument>
   <argument name="prerequisites"><set>
-    <tuple><text>gaudiexamples.evtcolsex_prepare</text><enumeral>PASS</enumeral></tuple>
+    <tuple><text>gaudiexamples.evtcolsex.prepare</text><enumeral>PASS</enumeral></tuple>
   </set></argument>
 </extension>

@@ -29,8 +29,6 @@ def configure( gaudi = None  ) :
     gaudi.DLLs   += [ 'GaudiAlg'  , 'RootHistCnv', ]
     gaudi.ExtSvc += [ 'TagCollectionSvc/EvtTupleSvc' ]
 
-    gaudi.service('FileCatalog').Catalogs += ['xmlcatalog_file:EvtColsEx.xml']
-
     evtSel = gaudi.evtSel()
     evtSel.open( 'PFN:EvtTags1.root'      ,
                  collection = 'Fill/COL1' ,
@@ -46,7 +44,12 @@ def configure( gaudi = None  ) :
 # =============================================================================
 if '__main__' == __name__ :
     print __doc__
-    gaudi = GaudiPython.AppMgr( joboptions = 'GaudiPoolDbRoot.opts' )
+    # configuration (options)
+    from Configurables import GaudiPersistency, FileCatalog, ApplicationMgr
+    GaudiPersistency()
+    ApplicationMgr().ExtSvc.append(FileCatalog(Catalogs=['xmlcatalog_file:EvtColsEx.xml']))
+    # execution
+    gaudi = GaudiPython.AppMgr()
     configure( gaudi )
     gaudi.run(-1)
     gaudi.exit()
