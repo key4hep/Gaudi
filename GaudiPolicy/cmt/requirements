@@ -619,6 +619,7 @@ macro cppdebugflags    "" \
 macro cppdebugflags_s  "-g" \
       target-winxp            "/Od /Z7"
 macro cppoptimized_s   "-O2 -DNDEBUG" \
+      use-O3&target-gcc "-O3 -DNDEBUG" \
       target-winxp            ""
 macro cppprofiled_s   "-pg" \
       target-winxp            ""
@@ -628,10 +629,11 @@ macro_append cppdebugflags "" \
 # C debug, optimized and profiled options
 macro cdebugflags     "" \
       target-dbg           "$(cdebugflags_s)" \
-      target-dbg           "$(coptimized_s)"
+      target-opt           "$(coptimized_s)"
 macro cdebugflags_s   "-g" \
       target-winxp           "/Od /Z7"
 macro coptimized_s    "-O2 -DNDEBUG" \
+      use-O3&target-gcc "-O3 -DNDEBUG" \
       target-winxp    ""
 
 # Fortran debug, optimized and profiled options
@@ -640,6 +642,7 @@ macro fdebugflags      "" \
 macro fdebugflags_s    "-g"\
       target-winxp            "/nopdbfile /debug:full /optimize:0"
 macro foptimized_s     "-O2 -DNDEBUG" \
+      use-O3&target-gcc  "-O3 -DNDEBUG" \
       target-winxp            ""
 macro_append fdebugflags "" \
       target-opt        " $(foptimized_s)"

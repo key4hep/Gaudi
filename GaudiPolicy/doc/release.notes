@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-12-13 - Ben Couturier
+ - Patch #5165: Change GaudiPolicy requirements to allow compilation with -O3
+   (CMT tag "use-O3")
+
 ! 2011-12-13 - Marco Clemencic
  - Removed POOL from the list of *VERS variables (old Doxygen settings).
 
