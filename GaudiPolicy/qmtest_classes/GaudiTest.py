@@ -1794,11 +1794,19 @@ class HTMLResultStream(ResultStream):
         summary["cause"] = result.GetCause()
         summary["fields"] = result.keys()
         summary["fields"].sort()
+        # add inlined data
+        summary["data"] = {}
+        for f in summary["fields"]:
+            d = result[f]
+            if d == "<pre></pre>":
+                summary["data"][f] = "<i>empty</i>"
+            elif len(d) < 40:
+                summary["data"][f] = d
 
         # Since we miss proper JSON support, I hack a bit
-        for f in ["id", "outcome", "cause"]:
-            summary[f] = str(summary[f])
-        summary["fields"] = map(str, summary["fields"])
+        #for f in ["id", "outcome", "cause"]:
+        #    summary[f] = str(summary[f])
+        #summary["fields"] = map(str, summary["fields"])
 
         self._summary.append(summary)
 
@@ -1812,7 +1820,8 @@ class HTMLResultStream(ResultStream):
         json.dump(summary, open(os.path.join(testOutDir, "summary.json"), "w"),
                   sort_keys = True)
         for f in summary["fields"]:
-            open(os.path.join(testOutDir, f), "w").write(result[f])
+            if f not in summary["data"]:
+                open(os.path.join(testOutDir, f), "w").write(result[f])
 
         self._updateSummary()
 

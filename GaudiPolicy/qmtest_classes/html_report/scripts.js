@@ -229,10 +229,16 @@ jQuery.fn.results = function(tests, ignore_fields, fields_order) {
 
 		var fields = $("<ul class='fieldid'/>");
 		$.each(field_ids, function(index, field) {
-			var f = $("<li/>").data("url", test.id + "/" + field)
-				.text(field);
-			if (field == "GaudiTest.output_diff") {
-				f.addClass("auto_show");
+			var f = $("<li class='foldable'/>")
+			if (test.data[field]) {
+				f.text(field + ": ")
+				 .append(test.data[field])
+				 .prepend('<img src="minus.png"/>&nbsp;');
+			} else {
+				f.data("url", test.id + "/" + field).text(field);
+				if (field == "GaudiTest.output_diff") {
+					f.addClass("auto_show");
+				}
 			}
 			fields.append(f);
 		});

@@ -12,6 +12,8 @@ package manager: Marco Clemencic
    automatically expanded if the test is expanded. Currently it happens only
    for "output_diff", but should be enabled for other cases depending on the
    causes.
+ - Modified the test HTML output to inline small contents (e.g. exit code,
+   times, etc.)
 
 ! 2011-12-07 - Marco Clemencic
  - Enforce the use of Boost Filesystem Version 3 also with Boost 1.44, for
