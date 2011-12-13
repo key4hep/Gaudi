@@ -1,6 +1,11 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2011-12-13 - Marco Clemencic
+ - Added tests using namespace qualifiers in instance names in .opts (Gaudi.exe
+   and gaudirun.py).
+ - Reordering of tests.
+
 ! 2011-12-12 - Marco Clemencic
  - Fixed tests for new dependencies:
    - updated configuration
