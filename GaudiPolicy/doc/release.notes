@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-12-13 - Marco Clemencic
+ - Removed POOL from the list of *VERS variables (old Doxygen settings).
+
 ! 2011-12-07 - Marco Clemencic
  - Enforce the use of Boost Filesystem Version 3 also with Boost 1.44, for
    backward compatibility (bug #89653)

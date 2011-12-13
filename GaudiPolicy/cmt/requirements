@@ -1310,7 +1310,6 @@ pattern -global zip_python_modules_container_fallback \
 pattern doxy_vers_set \
 	set <external>VERS "$(<external>_config_version)"
 
-apply_pattern doxy_vers_set external=POOL
 apply_pattern doxy_vers_set external=COOL
 apply_pattern doxy_vers_set external=CORAL
 apply_pattern doxy_vers_set external=ROOT
