@@ -941,8 +941,8 @@ public
 # end_private
 #
 
-macro genconfDir    "/genConf/" \
-      target-winxp         "\genConf\"
+macro genconfDir    "$(shared_install_subdir)/genConf/" \
+      target-winxp         "$(shared_install_subdir)\genConf\"
 
 cmtpath_pattern \
     macro genconfInstallDir "" \
