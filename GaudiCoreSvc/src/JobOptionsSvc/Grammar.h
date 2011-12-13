@@ -80,11 +80,14 @@ struct IdentifierGrammar: qi::grammar<Iterator, Node(), Skipper> {
 //-----------------------------------------------------------------------------
   IdentifierGrammar() : IdentifierGrammar::base_type(ident) {
       ident = rep::qi::iter_pos[op(qi::_val, qi::_1)] >> str[op(qi::_val, qi::_1)][op(qi::_val, Node::kIdentifier)];
-      str = qi::lexeme[qi::alpha >> *(qi::alnum | '_')];
+      str = -qi::lit("::")[qi::_val += "::"] >> inner[qi::_val += qi::_1] 
+        >> *(qi::lit("::") >> inner[qi::_val += ("::"+qi::_1)]);
+      inner = qi::alpha >> *(qi::alnum | '_');
   }
 // ----------------------------------------------------------------------------
   qi::rule<Iterator, Node(), Skipper> ident;
   qi::rule<Iterator, std::string(), Skipper> str;
+  qi::rule<Iterator, std::string()> inner;
   ph::function<NodeOperations> op;
 };
 // ============================================================================
@@ -185,9 +188,8 @@ struct FileGrammar: qi::grammar<Iterator, Node(), Skipper> {
                       >> value[op(qi::_val, qi::_1)]
                       >> ';';
       property = rep::qi::iter_pos[op(qi::_val, qi::_1)]
-                         >> (gidentifier[op(qi::_val, qi::_1)]
-                         >> -(gidentifier[op(qi::_val, qi::_1)]) % '.')
-                    [op(qi::_val, Node::kProperty)];
+                         >> (gidentifier[op(qi::_val, qi::_1)] % '.')
+                        [op(qi::_val, Node::kProperty)];
       property_ref %= -qi::lit('@') >>
           property[op(qi::_val, Node::kPropertyRef)];
       oper = rep::qi::iter_pos[op(qi::_val, qi::_1)]
