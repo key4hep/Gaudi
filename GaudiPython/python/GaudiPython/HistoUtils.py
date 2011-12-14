@@ -829,7 +829,8 @@ class HistoFile :
     __author__ = "Juan Palacios juan.palacios@nikhef.nl"
 
     def __init__(self, fileName) :
-        self.file = TFile(fileName, "RECREATE")
+        self.file = ROOT.TFile(fileName, "RECREATE")
+        from GaudiPython import gbl
         self.aida2root = gbl.Gaudi.Utils.Aida2ROOT.aida2root
         self.aidaTypes = [ gbl.AIDA.IHistogram1D,
                            gbl.AIDA.IHistogram2D,
