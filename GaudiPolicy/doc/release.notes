@@ -1,6 +1,11 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2011-12-15 - Marco Clemencic
+ - Added the pattern PackageVersionHeader, similar to ProjectVersionHeader, but
+   dedicated to packages and with the possibility of specifying the destination
+   directory of the generated header.
+
 ! 2011-12-13 - Ben Couturier
  - Patch #5165: Change GaudiPolicy requirements to allow compilation with -O3
    (CMT tag "use-O3")

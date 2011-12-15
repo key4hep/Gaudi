@@ -1199,10 +1199,10 @@ pattern NullCommand \
     end_private
 
 #-------------------------------------------------------------------
-# Pattern to create a <package>Version.h header file in the InstallArea/include.
+# Pattern to create a <project>_VERSION.h header file in the InstallArea/include.
 # Usage:
 #
-#   apply_pattern ProjectVersionHeader proj=Gaudi
+#   apply_pattern ProjectVersionHeader
 #
 # (Marco Clemencic)
 #-------------------------------------------------------------------
@@ -1215,6 +1215,23 @@ pattern ProjectVersionHeader \
 	apply_pattern CallCommand target=ProjectVersionHeader ; \
 	end_private ; \
 	set <project>VERS "<version>"
+
+#-------------------------------------------------------------------
+# Pattern to create a <package>Version.h header file in the InstallArea/include.
+# Usage:
+#
+#   apply_pattern PackageVersionHeader where="../path/..."
+#
+# (Marco Clemencic)
+#-------------------------------------------------------------------
+pattern PackageVersionHeader \
+	private ; \
+	macro PackageVersionHeader_output "<where>/<package>Version.h" ; \
+	macro PackageVersionHeader_deps "../cmt/requirements" ; \
+	macro PackageVersionHeader_command "python $(GaudiPolicy_root)/scripts/createProjVersHeader.py <package> <version> $(PackageVersionHeader_output)" \
+	     <project>_without_installarea "" ; \
+	apply_pattern CallCommand target=PackageVersionHeader ; \
+	end_private
 
 #-------------------------------------------------------------------
 # Generic cmt template processing
