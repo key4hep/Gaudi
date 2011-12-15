@@ -4,6 +4,9 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2011-12-15 - Sasha Mazurov
+ - Patch #5176: fix problem with underscore in property names (Boost 1.48)
+
 ! 2011-12-15 - Marco Clemencic
  - Make ApplicationMgr print the version of the package if no version is
    specified in the options.
