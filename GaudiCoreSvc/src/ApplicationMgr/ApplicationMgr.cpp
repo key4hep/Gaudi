@@ -21,6 +21,10 @@
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/Time.h"
 #include "GaudiKernel/System.h"
+
+#include "GaudiCoreSvcVersion.h"
+
+
 using System::getEnv;
 using System::isEnvSet;
 
@@ -276,7 +280,7 @@ StatusCode ApplicationMgr::i_startup() {
     return sc;
   }
 
-  // Get the useful interface from Message anf JobOptions services
+  // Get the useful interface from Message and JobOptions services
   m_messageSvc = m_svcLocator->service("MessageSvc");
   if( !m_messageSvc.isValid() )  {
     fatal() << "Error retrieving MessageSvc." << endmsg;
@@ -343,7 +347,14 @@ StatusCode ApplicationMgr::configure() {
       log << MSG::ALWAYS << " version " << m_appVersion;
     }
     else {
-      log << MSG::ALWAYS << " $Revision: 1.77 $";
+      log << MSG::ALWAYS
+          << "(GaudiCoreSvc "
+          << "v" << GAUDICORESVC_MAJOR_VERSION
+          << "r" << GAUDICORESVC_MINOR_VERSION
+#if GAUDICORESVC_PATCH_VERSION
+          << "p" << GAUDICORESVC_PATCH_VERSION
+#endif
+          << ")";
     }
 
     // Add the host name and current time to the message
