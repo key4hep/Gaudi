@@ -10,29 +10,11 @@ find_package(ROOT)
 find_package(CLHEP)
 
 #---Libraries---------------------------------------------------------------
-SET( GaudiSvc_srcs AlgContextSvc/*.cpp
-ApplicationMgr/*.cpp
-AuditorSvc/*.cpp
-ChronoStatSvc/*.cpp
-EventSelector/*.cpp
-ExceptionSvc/*.cpp
-DataSvc/*.cpp
+SET(GaudiSvc_srcs
 DetectorDataSvc/*.cpp
-HistogramSvc/*.cpp
-HistorySvc/*.cpp
-IncidentSvc/*.cpp
-IssueLogger/*.cpp
-JobOptionsSvc/*.cpp
-MessageSvc/*.cpp
 NTupleSvc/*.cpp
-ParticlePropertySvc/*.cpp
-PersistencySvc/*.cpp
 RndmGenSvc/*.cpp
-StatusCodeSvc/*.cpp
-ToolSvc/*.cpp
-THistSvc/*.cpp
-FastContainersSvc/*.cpp
-VFSSvc/*.cpp )
+THistSvc/*.cpp)
 
 GAUDI_COMPONENT_LIBRARY(GaudiSvc ${GaudiSvc_srcs}
                         LIBRARIES GaudiKernel ${ROOT_LIBRARIES} ${ROOT_Hist_LIBRARY}

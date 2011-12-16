@@ -26,14 +26,12 @@ CounterEx/*.cpp
 PartProp/*.cpp
 Properties/*.cpp
 ExtendedProperties/*.cpp
-DataListener/*.cpp
 POOLIO/*.cpp
 ColorMsg/ColorMsgAlg.cpp
 History/History.cpp
 THist/*.cpp
 ErrorLog/ErrorLogTest.cpp
 EvtColsEx/EvtColAlg.cpp
-FastContainers/*.cpp
 Maps/*.cpp
 MultipleLogStreams/*.cpp
 GaudiCommonTests/*.cpp

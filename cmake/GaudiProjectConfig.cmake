@@ -476,7 +476,7 @@ function(GAUDI_GENERATE_CONFIGURABLES library)
 		DEPENDS ${library} )
   add_custom_target( ${library}Conf ALL DEPENDS  ${outdir}/${library}_confDb.py )
   # Add dependencies on GaudiSvc and the genconf executable if they have to be built in the current project
-  add_dependencies(${library}Conf genconf GaudiSvc)
+  add_dependencies(${library}Conf genconf GaudiCoreSvc)
   # Notify the project level target
   set_property(GLOBAL APPEND PROPERTY MergedConfDB_SOURCES ${outdir}/${library}_confDb.py)
   set_property(GLOBAL APPEND PROPERTY MergedConfDB_DEPENDS ${library}Conf)

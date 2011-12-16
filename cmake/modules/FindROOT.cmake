@@ -8,7 +8,7 @@ set(ROOTSYS ${ROOTSYS} CACHE PATH "Location of the installation of ROOT")
 set(ROOT_INCLUDE_DIRS ${ROOTSYS}/include)
 set(ROOT_LIBRARY_DIRS ${ROOTSYS}/lib)
 
-set(ROOT_COMPONENTS Core Cint Reflex RIO Hist Tree Cintex Matrix GenVector MathCore MathMore XMLIO)
+set(ROOT_COMPONENTS Core Cint Reflex RIO Hist Tree TreePlayer Cintex Matrix GenVector MathCore MathMore XMLIO)
 
 foreach(component ${ROOT_COMPONENTS})
   find_library(ROOT_${component}_LIBRARY NAMES ${component}

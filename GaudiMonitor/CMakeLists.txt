@@ -8,7 +8,7 @@ if(WIN32)
   set(winsocklib ws2_32.lib)
 endif()
 #---Libraries---------------------------------------------------------------
-GAUDI_COMPONENT_LIBRARY(GaudiMonitor DataListenerSvc/*.cpp
+GAUDI_COMPONENT_LIBRARY(GaudiMonitor *.cpp
                         LIBRARIES GaudiKernel ${winsocklib})
 
 if(WIN32 AND HIDE_WARNINGS)
@@ -18,7 +18,4 @@ if(WIN32 AND HIDE_WARNINGS)
                PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS)
   set_property(TARGET GaudiMonitor
                PROPERTY COMPILE_FLAGS /wd4996)
-  # Disable precision warnings
-  set_property(SOURCE src/DataListenerSvc/ApMon.cpp
-               PROPERTY COMPILE_FLAGS /wd4244)
 endif()
