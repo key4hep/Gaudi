@@ -7,7 +7,7 @@ import os, sys, time, logging
 from pprint import pformat
 from GaudiKernel.ConfigurableDb import loadConfigurableDb, cfgDb
 
-logging.VERBOSE = (logging.INFO + logging.DEBUG) / 2 
+logging.VERBOSE = (logging.INFO + logging.DEBUG) / 2
 logging.addLevelName(logging.VERBOSE, "VERBOSE")
 logging.verbose = lambda msg, *args, **kwargs: \
     apply(logging.log, (logging.VERBOSE, msg) + args, kwargs)
@@ -16,7 +16,7 @@ def _inheritsfrom(derived, basename):
     """
     Check if the class name 'basename' is anywhere in the base classes of the
     class 'derived'.
-    If 'derived' _is_ 'basename', returns False.  
+    If 'derived' _is_ 'basename', returns False.
     """
     for b in derived.__bases__:
         if b.__name__ == basename:
@@ -55,7 +55,7 @@ def getConfigurableUsers(modulename, root, mayNotExist = False):
     # prepend moddir to the path
     sys.path.insert(0, moddir)
     logging.verbose("sys.path prepended with %r", sys.path[0])
-    
+
     logging.info("Looking for ConfigurableUser in %r", modulename)
     g, l = {}, {}
     try:
@@ -97,9 +97,9 @@ def main():
                       metavar = "DIRNAME",
                       help="directory where to find the module 'locker'")
     parser.set_defaults(root = os.path.join("..","python"))
-    
+
     opts, args = parser.parse_args()
-    
+
     if opts.verbose:
         log_level = logging.VERBOSE
     else:
@@ -110,7 +110,7 @@ def main():
 
     if len(args) < 1:
         parser.error("PackageName is required")
-    
+
     package_name = args.pop(0)
 
     usingConvention = False
@@ -118,12 +118,17 @@ def main():
         # use the conventional module name <package>.Configuration
         args = [package_name + ".Configuration"]
         usingConvention = True
-    
+
+    genConfDir = os.path.join("..", os.environ.get("CMTCONFIG", ""), "genConf")
+    if not os.path.exists(genConfDir):
+        genConfDir = os.path.join("..", "genConf")
+
     if not opts.output:
-        outputfile = os.path.join("..", "genConf", package_name + '_user_confDb.py')
+        outputfile = os.path.join(genConfDir, package_name + '_user_confDb.py')
     else:
         outputfile = opts.output
-    
+
+
     # The locking ensures that nobody tries to modify the python.zip file while
     # we read it.
     dbLock = None
@@ -138,8 +143,8 @@ def main():
             def LockFile(*args, **kwargs):
                 return None
         # obtain the lock
-        dbLock = LockFile(os.environ["GAUDI_BUILD_LOCK"], temporary =  True) 
-    
+        dbLock = LockFile(os.environ["GAUDI_BUILD_LOCK"], temporary =  True)
+
     # We can disable the error on missing configurables only if we can import Gaudi.Configurables
     # It must be done at this point because it may conflict with logging.basicConfig
     try:
@@ -153,15 +158,15 @@ def main():
     try:
         # Add the local python directories to the python path to be able to import the local
         # configurables
-        sys.path.insert(0, os.path.join("..", "genConf"))
+        sys.path.insert(0, genConfDir)
         sys.path.insert(0, os.path.join("..", "python"))
-        localConfDb = os.path.join("..", "genConf", package_name, package_name + '_confDb.py')
+        localConfDb = os.path.join(genConfDir, package_name, package_name + '_confDb.py')
         if os.path.exists(localConfDb):
             execfile(localConfDb, {}, {})
     except:
         pass # ignore failures (not important)
     del dbLock # Now we can let the others operate on the install area python directory
-    
+
     # Collecting ConfigurableUser specializations
     cus = {}
     for mod in args:
@@ -183,7 +188,7 @@ def main():
                           lib     = 'None')
         elif not usingConvention:
             logging.warning("Specified module %r does not contain ConfigurableUser specializations", mod)
-    
+
     if cus:
         logging.info("ConfigurableUser found:\n%s", pformat(cus))
         # header
@@ -197,9 +202,9 @@ def _fillCfgDb():
     # get a handle on the repository of Configurables
     cfgDb = CfgDb()
 
-    # populate the repository with informations on Configurables 
+    # populate the repository with informations on Configurables
 """ % (parser.prog, time.asctime())
-        
+
         for mod in cus:
             for cu in cus[mod]:
                 output += """
@@ -235,7 +240,7 @@ except Exception,err:
     if not os.path.exists(output_dir):
         logging.info("Creating directory %r", output_dir)
         os.makedirs(output_dir, 0755)
-    
+
     # write output to file
     logging.verbose("Writing confDb data to %r", outputfile)
     open(outputfile, "w").write(output)

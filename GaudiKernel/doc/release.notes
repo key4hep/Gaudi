@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2011-12-16 - Marco Clemencic
+ - Fixed genconfuser.py to take into account the new location of the genConf
+   directory during the build.
+
 ! 2011-12-10 - Marco Clemencic
  - Print an error message if the input data stream cannot be initialized.
 
@@ -14,7 +18,7 @@ Package manager : Marco Clemencic
  - Removed the unused FastContainerSvc.
 
 ! 2011-12-01 - Chris Jones
- - Fixed bug #85377: GaudiTuple tuple does not undestand ulonglong
+ - Fixed bug #85377: GaudiTuple tuple does not understand ulonglong
    Add support for long long and unsigned long long data types
 
 ! 2011-11-22 - Marco Clemencic
