@@ -36,7 +36,7 @@ use               GaudiPython * -no_auto_imports
 use               DetDescCnv  *
 #use               Magnet      * Det
 
-apply_pattern QMTest
+#apply_pattern QMTest
 # =============================================================================
 # The END
 # =============================================================================

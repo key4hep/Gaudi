@@ -5,6 +5,9 @@
 !               Detector Description, Material Budget etc
 ! ------------------------------------------------------------------------------
 
+! 2012-01-12 - Marco Clemencic
+ - Removed the tests since they depend on LHCb-specific data.
+
 ! 2011-12-06 - Marco Clemencic
  - Modified to compile within Gaudi.
 
