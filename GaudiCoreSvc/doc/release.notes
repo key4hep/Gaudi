@@ -4,6 +4,15 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2012-01-16 - Marco Clemencic
+ - Modified DataOnDemandSvc to accept tools to map paths to node types
+   (IDODNodeMapper) and to algorithms (IDODAlgMapper).
+   Note: the mapping is cached in the usual internal structures so the
+         implementation of the tools must always return the same answer for the
+         same path.
+ - Added a basic IDODNodeMapper and IDODAlgMapper (DODBasicMapper) implementing
+   the minimal DataOnDemandSvc static mapping.
+
 ! 2011-12-15 - Sasha Mazurov
  - Patch #5176: fix problem with underscore in property names (Boost 1.48)
 

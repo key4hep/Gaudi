@@ -1,5 +1,3 @@
-// $Id: DataOnDemandSvc.h,v 1.10 2008/10/01 14:33:07 marcocle Exp $
-// ============================================================================
 #ifndef GAUDISVC_DATAONDEMANDSVC_H
 #define GAUDISVC_DATAONDEMANDSVC_H
 // ============================================================================
@@ -18,6 +16,8 @@
 #include "GaudiKernel/ChronoEntity.h"
 #include "GaudiKernel/StatEntity.h"
 #include "GaudiKernel/StringKey.h"
+#include "GaudiKernel/IDODAlgMapper.h"
+#include "GaudiKernel/IDODNodeMapper.h"
 // ============================================================================
 // Reflex
 // ============================================================================
@@ -30,6 +30,7 @@ class IAlgorithm;
 class IAlgManager;
 class IIncidentSvc;
 class IDataProviderSvc;
+class IToolSvc;
 // ============================================================================
 /** @class DataOnDemandSvc DataOnDemandSvc.h
  *
@@ -54,10 +55,10 @@ class IDataProviderSvc;
  *   If the algorithm name is omitted the class name will be the
  *   instance name.
  *
- * The handlers only get called if the exact path mathes.
+ * The handlers only get called if the exact path matches.
  * In the event already the partial path to any handler is
  * missing a leaf handler may be triggered, which includes
- * the partal pathes ( DataOnDemandSvc.UsePreceedingPath = true )
+ * the partial paths ( DataOnDemandSvc.UsePreceedingPath = true )
  *
  *
  *  2006-10-15: New options  (using map-like semantics:)
@@ -74,14 +75,14 @@ class IDataProviderSvc;
  *
  *  @endcode
  *
- *    New treatment of preceeding paths. for each registered leaf or node
+ *    New treatment of preceding paths. for each registered leaf or node
  *    the all parent nodes are added into the node-map with default
  *    directory type 'DataObject'
  *
  *    The major properties are equipped with handlers
  *    (more or less mandatory for interactive work in python)
  *
- *    From now the default prefix ( "/Event/" ) coudl be omitted from
+ *    From now the default prefix ( "/Event/" ) could be omitted from
  *    any data-item. It will be added automatically.
  *
  * @author  M.Frank
@@ -219,6 +220,10 @@ protected:
   // ==========================================================================
   /// Setup routine (called by (re-) initialize
   StatusCode setup();
+  /// Internal method to initialize a node handler.
+  void i_setNodeHandler(const std::string &name, const std::string &type);
+  /// Internal method to initialize an algorithm handler.
+  StatusCode i_setAlgHandler(const std::string &name, const Gaudi::Utils::TypeNameString &alg);
   // ==========================================================================
 public:
   // ==========================================================================
@@ -247,11 +252,13 @@ protected:
 private:
   // ==========================================================================
   /// Incident service
-  IIncidentSvc*     m_incSvc;
+  SmartIF<IIncidentSvc>     m_incSvc;
   /// Algorithm manager
-  IAlgManager*      m_algMgr;
+  SmartIF<IAlgManager>      m_algMgr;
   /// Data provider reference
-  IDataProviderSvc* m_dataSvc;
+  SmartIF<IDataProviderSvc> m_dataSvc;
+  /// Data provider reference
+  SmartIF<IToolSvc>         m_toolSvc;
   /// Trap name
   std::string       m_trapType;
   /// Data service name
@@ -295,7 +302,11 @@ private:
   bool               m_locked_algs     ;
   bool               m_locked_all      ;
   // ==========================================================================
-} ;
+  std::vector<std::string> m_nodeMapTools;
+  std::list<IDODNodeMapper *> m_nodeMappers;
+  std::vector<std::string> m_algMapTools;
+  std::list<IDODAlgMapper *> m_algMappers;
+};
 // ============================================================================
 
 // ============================================================================

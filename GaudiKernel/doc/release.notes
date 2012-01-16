@@ -1,6 +1,11 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2012-01-16 - Marco Clemencic
+ - Added interfaces for tools used to add dynamic mapping to DataOnDemandSvc:
+   IDODNodeMapper, IDODAlgMapper
+ - Added output stream operator to Gaudi::Utils::TypeNameString.
+
 ! 2011-12-16 - Marco Clemencic
  - Fixed genconfuser.py to take into account the new location of the genConf
    directory during the build.

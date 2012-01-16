@@ -1,8 +1,5 @@
-// $Id: DataOnDemandSvc.cpp,v 1.16 2008/10/01 14:33:07 marcocle Exp $
 // ============================================================================
-// CVS tag $Name:  $
-// ============================================================================
-// Incldue files
+// Include files
 // ============================================================================
 // STD & STL
 // ============================================================================
@@ -22,6 +19,7 @@
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/DataIncident.h"
 #include "GaudiKernel/IDataProviderSvc.h"
+#include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/TypeNameString.h"
 #include "GaudiKernel/ToStream.h"
 #include "GaudiKernel/Chrono.h"
@@ -40,6 +38,7 @@
 #endif
 #include "boost/format.hpp"
 #include "boost/lexical_cast.hpp"
+#include "GaudiKernel/Property.h"
 // ============================================================================
 // Constructors and Destructor
 // ============================================================================
@@ -112,8 +111,13 @@ DataOnDemandSvc::DataOnDemandSvc
     declareUpdateHandler ( &DataOnDemandSvc::update_1 , this ) ;
   declareProperty ( "NodeMap" , m_nodeMap ) ->
     declareUpdateHandler ( &DataOnDemandSvc::update_1 , this ) ;
-  //
+
   declareProperty ( "Prefix"             , m_prefix      ) ;
+
+  declareProperty("NodeMappingTools", m_nodeMapTools,
+                  "List of tools of type IDODNodeMapper");
+  declareProperty("AlgMappingTools", m_algMapTools,
+                  "List of tools of type IDODAlgMapper");
   // ==========================================================================
 }
 // ============================================================================
@@ -166,7 +170,7 @@ namespace
 {
   // ==========================================================================
   /** remove the prefix from the string
-   *  @param value input tring
+   *  @param value input string
    *  @param prefix prefix to be removed
    *  @return input string without prefix
    */
@@ -180,7 +184,7 @@ namespace
   }
   // ==========================================================================
   /** add a prefix (if needed) to all keys of the map
-   *  the previus key is removed
+   *  the previous key is removed
    *  @param _map map to be modified
    *  @param prefix prefix to be added
    *  @return number of modified keys
@@ -208,8 +212,8 @@ namespace
   // ==========================================================================
   /** get the list of directories for a certain TES location
    *  @param object to be inspected
-   *  @param _set (output) the set with directoiry list
-   *  @return incrment of the output set size
+   *  @param _set (output) the set with directory list
+   *  @return increment of the output set size
    */
   template <class SET>
   inline size_t get_dir ( const std::string& object , SET& _set )
@@ -239,6 +243,36 @@ namespace
   }
   // ==========================================================================
 } // end of anonymous namespace
+
+void DataOnDemandSvc::i_setNodeHandler(const std::string &name, const std::string &type){
+  ClassH cl = ROOT::Reflex::Type::ByName(type) ;
+  if (!cl) {
+    warning()
+        << "Failed to access dictionary class for "
+        << name << " of type:" << type << endmsg;
+  }
+  m_nodes[name] = Node(cl, false, type);
+}
+
+StatusCode DataOnDemandSvc::i_setAlgHandler(const std::string &name, const Gaudi::Utils::TypeNameString &alg){
+  Leaf leaf(alg.type(), alg.name());
+  if (m_init)
+  {
+    StatusCode sc = configureHandler(leaf);
+    if (sc.isFailure()) {
+      if (m_allowInitFailure) {
+        // re-store the content of the leaf object to try again to initialize
+        // the algorithm later (on demand)
+        leaf = Leaf(alg.type(), alg.name());
+      }
+      else
+        return sc;
+    }
+  }
+  m_algs[name] = leaf;
+  return StatusCode::SUCCESS;
+}
+
 // ============================================================================
 // update the content of Data-On-Demand actions
 // ============================================================================
@@ -287,35 +321,14 @@ StatusCode DataOnDemandSvc::update ()
   for ( Map::const_iterator ialg = m_algMap.begin() ;
         m_algMap.end() != ialg ; ++ialg )
   {
-    Gaudi::Utils::TypeNameString alg ( ialg->second ) ;
-    Leaf leaf ( alg.type() , alg.name() ) ;
-    if  ( m_init )
-    {
-      sc = configureHandler(leaf);
-      if (sc.isFailure()) {
-        if (m_allowInitFailure) {
-          // re-store the content of the leaf object to try again to initialize
-          // the algorithm later (on demand)
-          leaf = Leaf(alg.type(), alg.name());
-        }
-        else
-          return sc;
-      }
-    }
-    m_algs[ialg->first] =  leaf ;
+    if (i_setAlgHandler(ialg->first, ialg->second).isFailure())
+      return StatusCode::FAILURE;
   }
   /// setup nodes
   for ( Map::const_iterator inode = m_nodeMap.begin() ;
         m_nodeMap.end() != inode ; ++inode )
   {
-    ClassH cl = ROOT::Reflex::Type::ByName( inode->second ) ;
-    if ( !cl )
-    {
-      stream() << MSG::WARNING
-               << "Failed to access dictionary class for "
-               << inode->first << " of type:" << inode->second << endmsg;
-    }
-    m_nodes[inode->first] = Node ( cl , false , inode->second ) ;
+    i_setNodeHandler(inode->first, inode->second);
   }
   ///
   m_updateRequired = false ;
@@ -386,11 +399,17 @@ StatusCode DataOnDemandSvc::finalize()
   if ( m_incSvc )
   {
     m_incSvc->removeListener(this, m_trapType);
-    m_incSvc->release();
-    m_incSvc = 0;
+    m_incSvc.reset();
   }
-  if ( 0 != m_algMgr  ) { m_algMgr   -> release () ; m_algMgr  = 0 ; }
-  if ( 0 != m_dataSvc ) { m_dataSvc  -> release () ; m_dataSvc = 0 ; }
+  m_algMgr.reset();
+  m_dataSvc.reset();
+  for(std::list<IDODNodeMapper*>::iterator i = m_nodeMappers.begin(); i != m_nodeMappers.end(); ++i)
+    m_toolSvc->releaseTool(*i).ignore();
+  m_nodeMappers.clear();
+  for(std::list<IDODAlgMapper*>::iterator i = m_algMappers.begin(); i != m_algMappers.end(); ++i)
+    m_toolSvc->releaseTool(*i).ignore();
+  m_algMappers.clear();
+  m_toolSvc.reset();
   //
   return Service::finalize();
 }
@@ -403,11 +422,17 @@ StatusCode DataOnDemandSvc::reinitialize()
   if ( 0 != m_incSvc )
   {
     m_incSvc -> removeListener ( this , m_trapType );
-    m_incSvc -> release ();
-    m_incSvc = 0;
+    m_incSvc.reset();
   }
-  if ( 0 != m_algMgr  ) { m_algMgr   -> release() ; m_algMgr  = 0 ; }
-  if ( 0 != m_dataSvc ) { m_dataSvc  -> release() ; m_dataSvc = 0 ; }
+  m_algMgr.reset();
+  m_dataSvc.reset();
+  for(std::list<IDODNodeMapper*>::iterator i = m_nodeMappers.begin(); i != m_nodeMappers.end(); ++i)
+      m_toolSvc->releaseTool(*i).ignore();
+  m_nodeMappers.clear();
+  for(std::list<IDODAlgMapper*>::iterator i = m_algMappers.begin(); i != m_algMappers.end(); ++i)
+    m_toolSvc->releaseTool(*i).ignore();
+  m_algMappers.clear();
+  m_toolSvc.reset();
   if ( 0 != m_log     ) { delete m_log ; m_log = 0 ; }
   //
   StatusCode sc = Service::reinitialize();
@@ -426,34 +451,48 @@ StatusCode DataOnDemandSvc::reinitialize()
 // ============================================================================
 StatusCode DataOnDemandSvc::setup()
 {
-  m_algMgr = 0;
-  StatusCode sc =
-    serviceLocator()->queryInterface(IAlgManager::interfaceID(), pp_cast<void>(&m_algMgr));
-  if ( sc.isFailure () )
+  if ( !(m_algMgr = serviceLocator()) ) // assignment meant
   {
-    stream()
-      << MSG::ERROR
-      << "Failed to retrieve the IAlgManager interface." << endmsg;
-    return sc;
+    error() << "Failed to retrieve the IAlgManager interface." << endmsg;
+    return StatusCode::FAILURE;
   }
-  sc = service("IncidentSvc", m_incSvc, true);
-  if ( sc.isFailure () )
+
+  if ( !(m_incSvc = serviceLocator()->service("IncidentSvc")) ) // assignment meant
   {
-    stream()
-      << MSG::ERROR << "Failed to retrieve Incident service." << endmsg;
-    return sc;
+    error() << "Failed to retrieve Incident service." << endmsg;
+    return StatusCode::FAILURE;
   }
   m_incSvc->addListener(this, m_trapType);
-  sc = service(m_dataSvcName, m_dataSvc, true);
-  if ( sc.isFailure () )
+
+  if ( !(m_dataSvc = serviceLocator()->service(m_dataSvcName)) ) // assignment meant
   {
-    stream()
-      << MSG::ERROR
+    error()
       << "Failed to retrieve the data provider interface of "
       << m_dataSvcName << endmsg;
-    return sc;
+    return StatusCode::FAILURE;
   }
-  return update() ;
+
+  if ( !(m_toolSvc = serviceLocator()->service("ToolSvc")) ) // assignment meant
+  {
+    error() << "Failed to retrieve ToolSvc" << endmsg;
+    return StatusCode::FAILURE;
+  }
+
+  // load the node mapping tools
+  std::vector<std::string>::iterator i;
+  IDODNodeMapper *nodetool = 0;
+  for(i = m_nodeMapTools.begin(); i != m_nodeMapTools.end(); ++i) {
+    const StatusCode sc = m_toolSvc->retrieveTool(*i, nodetool);
+    if (sc.isFailure()) return sc;
+    m_nodeMappers.push_back(nodetool);
+  }
+  IDODAlgMapper *algtool = 0;
+  for(i = m_algMapTools.begin(); i != m_algMapTools.end(); ++i) {
+    const StatusCode sc = m_toolSvc->retrieveTool(*i, algtool);
+    if (sc.isFailure()) return sc;
+    m_algMappers.push_back(algtool);
+  }
+  return update();
 }
 // ============================================================================
 // setup node handlers
@@ -583,6 +622,66 @@ StatusCode DataOnDemandSvc::configureHandler(Leaf& l)
   }
   return StatusCode::SUCCESS  ;
 }
+
+// local algorithms
+namespace {
+  /// Helper class to uniform the access to the main method of IDODNodeMapper
+  /// and IDODAlgMapper.
+  struct ToolGetter {
+    /// local copy of the path to look for in the tool
+    std::string path;
+    /// constructor
+    ToolGetter(const std::string &_path): path(_path) {}
+    /// find the node from a node mapper tool
+    inline std::string operator() (IDODNodeMapper *t) const {
+      return t->nodeTypeForPath(path);
+    }
+    /// find the algorithm from an algorithm mapper tool
+    inline Gaudi::Utils::TypeNameString operator() (IDODAlgMapper *t) const {
+      return t->algorithmForPath(path);
+    }
+  };
+
+  /// Helper function to uniform the check on std::string and Gaudi::Utils::TypeNameString.
+  inline bool isGood(const std::string& r) {return !r.empty();}
+  /// Helper function to uniform the check on std::string and Gaudi::Utils::TypeNameString.
+  inline bool isGood(const Gaudi::Utils::TypeNameString& r) {return !r.name().empty();}
+
+  /// Simple algorithmic class to get the first non-empty node type or algorithm
+  /// type/name given a path and a list of mapping tools.
+  class Finder {
+    const ToolGetter getter;
+    const std::list<IDODNodeMapper*> &nodes;
+    const std::list<IDODAlgMapper*> &algs;
+    /// Looping algorithm.
+    template <class R, class T>
+    R find(const std::list<T*> &l) const {
+      typename std::list<T*>::const_iterator i;
+      for(i = l.begin(); i != l.end(); ++i) {
+        R result = getter(*i);
+        if (isGood(result)) return result;
+      }
+      return R("");
+    }
+  public:
+    /// Constructor.
+    Finder(const std::string &_path,
+           const std::list<IDODNodeMapper*> &_nodes,
+           const std::list<IDODAlgMapper*> &_algs): getter(_path), nodes(_nodes), algs(_algs) {
+    }
+    /// Find the node type for the requested path.
+    inline std::string node() const {
+      return find<std::string>(nodes);
+    }
+    /// Find the algorithm for the requested path.
+    inline Gaudi::Utils::TypeNameString alg() const {
+      return find<Gaudi::Utils::TypeNameString>(algs);
+    }
+
+  };
+
+}
+
 // ===========================================================================
 // IIncidentListener interfaces overrides: incident handling
 // ===========================================================================
@@ -626,9 +725,30 @@ void DataOnDemandSvc::handle ( const Incident& incident )
     if ( sc.isSuccess() ) { ++m_statAlg ; }
     return ;                                                        // RETURN
   }
+  // ==========================================================================
+  // Fall back on the tools
+  Finder finder(no_prefix(inc->tag(), m_prefix), m_nodeMappers, m_algMappers);
+  //  - try the node mappers
+  std::string node = finder.node();
+  if (isGood(node)) {
+    // if one is found update the internal node mapping and try again.
+    i_setNodeHandler(inc->tag(), node);
+    handle(incident);
+    --m_stat; // avoid double counting because of recursion
+    return;
+  }
+  //  - try alg mappings
+  Gaudi::Utils::TypeNameString alg = finder.alg();
+  if (isGood(alg)) {
+    // we got an algorithm, update alg map and try to handle again
+    i_setAlgHandler(inc->tag(), alg).ignore();
+    handle(incident);
+    --m_stat; // avoid double counting because of recursion
+    return;
+  }
 }
 // ===========================================================================
-// ecxecute the handler
+// execute the handler
 // ===========================================================================
 StatusCode
 DataOnDemandSvc::execHandler ( const std::string& tag, Node& n)
