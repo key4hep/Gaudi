@@ -625,22 +625,22 @@ StatusCode DataOnDemandSvc::configureHandler(Leaf& l)
 
 // local algorithms
 namespace {
-  /// Templated class to uniform the access to the main method of IDODNodeMapper
+  /// Helper class to uniform the access to the main method of IDODNodeMapper
   /// and IDODAlgMapper.
-  template <class R, class T>
   struct ToolGetter {
-    const std::string &path;
+    /// local copy of the path to look for in the tool
+    std::string path;
+    /// constructor
     ToolGetter(const std::string &_path): path(_path) {}
-    inline R operator() (T*);
+    /// find the node from a node mapper tool
+    inline std::string operator() (IDODNodeMapper *t) const {
+      return t->nodeTypeForPath(path);
+    }
+    /// find the algorithm from an algorithm mapper tool
+    inline Gaudi::Utils::TypeNameString operator() (IDODAlgMapper *t) const {
+      return t->algorithmForPath(path);
+    }
   };
-  template <>
-  std::string ToolGetter<std::string, IDODNodeMapper>::operator() (IDODNodeMapper *t) {
-    return t->nodeTypeForPath(path);
-  }
-  template <>
-  Gaudi::Utils::TypeNameString ToolGetter<Gaudi::Utils::TypeNameString, IDODAlgMapper>::operator() (IDODAlgMapper *t) {
-    return t->algorithmForPath(path);
-  }
 
   /// Helper function to uniform the check on std::string and Gaudi::Utils::TypeNameString.
   inline bool isGood(const std::string& r) {return !r.empty();}
@@ -649,22 +649,37 @@ namespace {
 
   /// Simple algorithmic class to get the first non-empty node type or algorithm
   /// type/name given a path and a list of mapping tools.
-  template <class R, class T>
-  struct Finder {
-    ToolGetter<R, T> getter;
-    Finder(const std::string &_path): getter(_path) {}
-    R operator() (const std::list<T*> &nm) {
+  class Finder {
+    const ToolGetter getter;
+    const std::list<IDODNodeMapper*> &nodes;
+    const std::list<IDODAlgMapper*> &algs;
+    /// Looping algorithm.
+    template <class R, class T>
+    R find(const std::list<T*> &l) const {
       typename std::list<T*>::const_iterator i;
-      for(i = nm.begin(); i != nm.end(); ++i) {
+      for(i = l.begin(); i != l.end(); ++i) {
         R result = getter(*i);
         if (isGood(result)) return result;
       }
       return R("");
     }
+  public:
+    /// Constructor.
+    Finder(const std::string &_path,
+           const std::list<IDODNodeMapper*> &_nodes,
+           const std::list<IDODAlgMapper*> &_algs): getter(_path), nodes(_nodes), algs(_algs) {
+    }
+    /// Find the node type for the requested path.
+    inline std::string node() const {
+      return find<std::string>(nodes);
+    }
+    /// Find the algorithm for the requested path.
+    inline Gaudi::Utils::TypeNameString alg() const {
+      return find<Gaudi::Utils::TypeNameString>(algs);
+    }
+
   };
 
-  typedef Finder<std::string, IDODNodeMapper> NodeFinder;
-  typedef Finder<Gaudi::Utils::TypeNameString, IDODAlgMapper> AlgFinder;
 }
 
 // ===========================================================================
@@ -712,8 +727,9 @@ void DataOnDemandSvc::handle ( const Incident& incident )
   }
   // ==========================================================================
   // Fall back on the tools
+  Finder finder(no_prefix(inc->tag(), m_prefix), m_nodeMappers, m_algMappers);
   //  - try the node mappers
-  std::string node = NodeFinder(no_prefix(inc->tag(), m_prefix))(m_nodeMappers);
+  std::string node = finder.node();
   if (isGood(node)) {
     // if one is found update the internal node mapping and try again.
     i_setNodeHandler(inc->tag(), node);
@@ -722,7 +738,7 @@ void DataOnDemandSvc::handle ( const Incident& incident )
     return;
   }
   //  - try alg mappings
-  Gaudi::Utils::TypeNameString alg = AlgFinder(no_prefix(inc->tag(), m_prefix))(m_algMappers);
+  Gaudi::Utils::TypeNameString alg = finder.alg();
   if (isGood(alg)) {
     // we got an algorithm, update alg map and try to handle again
     i_setAlgHandler(inc->tag(), alg).ignore();
