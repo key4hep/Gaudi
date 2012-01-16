@@ -1,6 +1,10 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2012-01-16 - Marco Clemencic
+ - Added a test for the new dynamic mapping of DataOnDemandSvc (based on the
+   already existing test).
+
 ! 2011-12-13 - Marco Clemencic
  - Added tests using namespace qualifiers in instance names in .opts (Gaudi.exe
    and gaudirun.py).
