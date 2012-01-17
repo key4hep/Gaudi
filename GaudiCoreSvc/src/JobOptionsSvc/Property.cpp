@@ -7,6 +7,7 @@
 
 #include "PropertyName.h"
 #include "PropertyValue.h"
+#include "Utils.h"
 // ============================================================================
 // STD & STL:
 // ============================================================================
@@ -17,6 +18,7 @@
 // ============================================================================
 // Namespace aliases:
 namespace gp = Gaudi::Parsers;
+namespace gpu = Gaudi::Parsers::Utils;
 // ============================================================================
 const gp::Position& gp::Property::DefinedPosition() const {
     return property_name_.position();
@@ -39,7 +41,7 @@ std::string gp::Property::FullName() const {
 }
 // ============================================================================
 std::string gp::Property::ValueAsString() const {
-    return property_value_.ToString();
+    return gpu::replaceEnvironments(property_value_.ToString());
 }
 // ============================================================================
 std::string gp::Property::ToString() const {

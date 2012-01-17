@@ -4,6 +4,12 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2012-01-17 - Sasha Mazurov
+ - Patch #5183: JobOptionsSvc: warnings and environment variables
+   - Disable the warning "Reassignment of option".
+   - Fix a bug: Environment variables aren't replaced by their values in a
+     property's value.
+
 ! 2012-01-17 - Marco Clemencic
  - Improvements to DataOnDemandSvc:
    - do not load the ToolSvc if not needed

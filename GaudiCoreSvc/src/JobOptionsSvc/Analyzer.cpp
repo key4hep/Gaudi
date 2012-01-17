@@ -235,7 +235,8 @@ static bool AssignNode(const gp::Node* node,
                 exists->DefinedPosition().ToString() + ".";
           }
           reassign = true;
-          messages->AddWarning(node->position, message);
+          // INFO: we don't need this warning
+          // messages->AddWarning(node->position, message);
         }else if (node->children[1].type == gp::Node::kPlusEqual) {
           *exists += *value;
         }else if (node->children[1].type == gp::Node::kMinusEqual) {
