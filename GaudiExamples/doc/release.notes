@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2012-01-17 - Marco Clemencic
+ - Minor changes in DataOnDemandSvc after improvements in the code.
+
 ! 2012-01-16 - Marco Clemencic
  - Added a test for the new dynamic mapping of DataOnDemandSvc (based on the
    already existing test).

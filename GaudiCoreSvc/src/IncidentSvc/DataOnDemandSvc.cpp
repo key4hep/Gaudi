@@ -403,14 +403,20 @@ StatusCode DataOnDemandSvc::finalize()
   }
   m_algMgr.reset();
   m_dataSvc.reset();
-  for(std::list<IDODNodeMapper*>::iterator i = m_nodeMappers.begin(); i != m_nodeMappers.end(); ++i)
-    m_toolSvc->releaseTool(*i).ignore();
-  m_nodeMappers.clear();
-  for(std::list<IDODAlgMapper*>::iterator i = m_algMappers.begin(); i != m_algMappers.end(); ++i)
-    m_toolSvc->releaseTool(*i).ignore();
-  m_algMappers.clear();
-  m_toolSvc.reset();
-  //
+  if (m_toolSvc) { // we may not have retrieved the ToolSvc
+    // Do not call releaseTool if the ToolSvc was already finalized.
+    if (SmartIF<IStateful>(m_toolSvc)->FSMState() > Gaudi::StateMachine::CONFIGURED) {
+      for(std::list<IDODNodeMapper*>::iterator i = m_nodeMappers.begin(); i != m_nodeMappers.end(); ++i)
+        m_toolSvc->releaseTool(*i).ignore();
+      for(std::list<IDODAlgMapper*>::iterator i = m_algMappers.begin(); i != m_algMappers.end(); ++i)
+        m_toolSvc->releaseTool(*i).ignore();
+    } else {
+      warning() << "ToolSvc already finalized: cannot release tools. Check options." << endmsg;
+    }
+    m_nodeMappers.clear();
+    m_algMappers.clear();
+    m_toolSvc.reset();
+  }
   return Service::finalize();
 }
 // ============================================================================
@@ -472,25 +478,28 @@ StatusCode DataOnDemandSvc::setup()
     return StatusCode::FAILURE;
   }
 
-  if ( !(m_toolSvc = serviceLocator()->service("ToolSvc")) ) // assignment meant
-  {
-    error() << "Failed to retrieve ToolSvc" << endmsg;
-    return StatusCode::FAILURE;
-  }
+  // No need to get the ToolSvc if we are not using tools
+  if (!(m_nodeMapTools.empty() && m_algMapTools.empty())) {
+    if ( !(m_toolSvc = serviceLocator()->service("ToolSvc")) ) // assignment meant
+    {
+      error() << "Failed to retrieve ToolSvc" << endmsg;
+      return StatusCode::FAILURE;
+    }
 
-  // load the node mapping tools
-  std::vector<std::string>::iterator i;
-  IDODNodeMapper *nodetool = 0;
-  for(i = m_nodeMapTools.begin(); i != m_nodeMapTools.end(); ++i) {
-    const StatusCode sc = m_toolSvc->retrieveTool(*i, nodetool);
-    if (sc.isFailure()) return sc;
-    m_nodeMappers.push_back(nodetool);
-  }
-  IDODAlgMapper *algtool = 0;
-  for(i = m_algMapTools.begin(); i != m_algMapTools.end(); ++i) {
-    const StatusCode sc = m_toolSvc->retrieveTool(*i, algtool);
-    if (sc.isFailure()) return sc;
-    m_algMappers.push_back(algtool);
+    // load the node mapping tools
+    std::vector<std::string>::iterator i;
+    IDODNodeMapper *nodetool = 0;
+    for(i = m_nodeMapTools.begin(); i != m_nodeMapTools.end(); ++i) {
+      const StatusCode sc = m_toolSvc->retrieveTool(*i, nodetool);
+      if (sc.isFailure()) return sc;
+      m_nodeMappers.push_back(nodetool);
+    }
+    IDODAlgMapper *algtool = 0;
+    for(i = m_algMapTools.begin(); i != m_algMapTools.end(); ++i) {
+      const StatusCode sc = m_toolSvc->retrieveTool(*i, algtool);
+      if (sc.isFailure()) return sc;
+      m_algMappers.push_back(algtool);
+    }
   }
   return update();
 }

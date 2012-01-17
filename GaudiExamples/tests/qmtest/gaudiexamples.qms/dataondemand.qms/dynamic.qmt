@@ -29,6 +29,9 @@ dod.Nodes = []
 
 dod.NodeMappingTools = [mapper]
 dod.AlgMappingTools = [mapper]
+
+# Ensure that the ToolSvc is finalized after the DOD
+ApplicationMgr().ExtSvc.insert(0, ToolSvc()) # equivalent to '= [ToolSvc(), dod]'
   </text></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
   <argument name="reference"><text>refs/DataOnDemandDyn.ref</text></argument>

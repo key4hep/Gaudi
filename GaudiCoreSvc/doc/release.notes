@@ -4,6 +4,11 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2012-01-17 - Marco Clemencic
+ - Improvements to DataOnDemandSvc:
+   - do not load the ToolSvc if not needed
+   - ensure that the tools are not released if the ToolSvc is already finalized
+
 ! 2012-01-16 - Marco Clemencic
  - Modified DataOnDemandSvc to accept tools to map paths to node types
    (IDODNodeMapper) and to algorithms (IDODAlgMapper).
