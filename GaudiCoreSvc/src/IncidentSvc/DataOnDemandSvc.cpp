@@ -651,10 +651,11 @@ namespace {
     }
   };
 
+  ///@{
   /// Helper function to uniform the check on std::string and Gaudi::Utils::TypeNameString.
   inline bool isGood(const std::string& r) {return !r.empty();}
-  /// Helper function to uniform the check on std::string and Gaudi::Utils::TypeNameString.
   inline bool isGood(const Gaudi::Utils::TypeNameString& r) {return !r.name().empty();}
+  ///@}
 
   /// Simple algorithmic class to get the first non-empty node type or algorithm
   /// type/name given a path and a list of mapping tools.
@@ -709,8 +710,7 @@ void DataOnDemandSvc::handle ( const Incident& incident )
 
   if ( MSG::VERBOSE >= outputLevel() )
   {
-    stream()
-      << MSG::VERBOSE
+    verbose()
       << "Incident: [" << incident.type   () << "] "
       << " = "         << incident.source ()
       << " Location:"  << inc->tag()         << endmsg;
@@ -736,24 +736,32 @@ void DataOnDemandSvc::handle ( const Incident& incident )
   }
   // ==========================================================================
   // Fall back on the tools
-  Finder finder(no_prefix(inc->tag(), m_prefix), m_nodeMappers, m_algMappers);
-  //  - try the node mappers
-  std::string node = finder.node();
-  if (isGood(node)) {
-    // if one is found update the internal node mapping and try again.
-    i_setNodeHandler(inc->tag(), node);
-    handle(incident);
-    --m_stat; // avoid double counting because of recursion
-    return;
-  }
-  //  - try alg mappings
-  Gaudi::Utils::TypeNameString alg = finder.alg();
-  if (isGood(alg)) {
-    // we got an algorithm, update alg map and try to handle again
-    i_setAlgHandler(inc->tag(), alg).ignore();
-    handle(incident);
-    --m_stat; // avoid double counting because of recursion
-    return;
+  if (m_toolSvc) {
+    if (MSG::VERBOSE >= outputLevel())
+      verbose() << "Try to find mapping with mapping tools" << endmsg;
+    Finder finder(no_prefix(inc->tag(), m_prefix), m_nodeMappers, m_algMappers);
+    //  - try the node mappers
+    std::string node = finder.node();
+    if (isGood(node)) {
+      // if one is found update the internal node mapping and try again.
+      if (MSG::VERBOSE >= outputLevel())
+        verbose() << "Found Node handler: " << node << endmsg;
+      i_setNodeHandler(inc->tag(), node);
+      handle(incident);
+      --m_stat; // avoid double counting because of recursion
+      return;
+    }
+    //  - try alg mappings
+    Gaudi::Utils::TypeNameString alg = finder.alg();
+    if (isGood(alg)) {
+      // we got an algorithm, update alg map and try to handle again
+      if (MSG::VERBOSE >= outputLevel())
+        verbose() << "Found Algorithm handler: " << alg << endmsg;
+      i_setAlgHandler(inc->tag(), alg).ignore();
+      handle(incident);
+      --m_stat; // avoid double counting because of recursion
+      return;
+    }
   }
 }
 // ===========================================================================

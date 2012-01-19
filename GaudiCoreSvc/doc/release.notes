@@ -4,6 +4,9 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2012-01-19 - Marco Clemencic
+ - Improved debug (VERBOSE) messages in DataOnDemandSvc.
+
 ! 2012-01-17 - Sasha Mazurov
  - Patch #5183: JobOptionsSvc: warnings and environment variables
    - Disable the warning "Reassignment of option".
