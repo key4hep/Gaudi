@@ -94,20 +94,42 @@ class FdsDict(dict):
         procfd = '/proc/self/fd'
         fds = os.listdir(procfd)
         for i in fds:
-            fd = int(i)
+            fd = int(i)       # spurious entries should raise at this point
             if (fd==1 or fd==2):
                 #leave stdout and stderr to redirect_log
                 continue
-            realname = os.path.realpath(os.path.join(procfd,i))
+            elif (fd==0):
+                #with only a single controlling terminal, leave stdin alone
+                continue
+
+            try:
+                realname = os.path.realpath(os.path.join(procfd,i))
+            except (OSError, IOError, TypeError):
+                # can fail because the symlink resolution (why is that needed
+                # anyway?) may follow while a temp file disappears
+                msg.debug( "failed to resolve: %s ... skipping", os.path.join(procfd,i) )
+                continue
+
             if os.path.exists(realname):
-                flags = fcntl.fcntl(fd, fcntl.F_GETFL)
-                if (flags & _O_ACCMODE) == 0: #read-only --> <INPUT>
-                    iomode = "<INPUT>"
-                else:
-                    iomode = "<OUTPUT>"
+                try:
+                    flags = fcntl.fcntl(fd, fcntl.F_GETFL)
+                    if (flags & _O_ACCMODE) == 0: #read-only --> <INPUT>
+                        iomode = "<INPUT>"
+                    else:
+                        iomode = "<OUTPUT>"
                 
-                self.add(fd, realname, iomode, flags)
-                   
+                    self.add(fd, realname, iomode, flags)
+                except (OSError, IOError):
+                    # likely saw a temoorary file; for now log a debug
+                    # message, but this is fine if silently ignored
+                    msg.debug( "failed access to: %s ... skipping", realname )
+                    continue
+
+                # at this point the list of fds may still include temp files
+                # TODO: figure out if they can be identified (seeing /tmp is
+                # not enough as folks like to run with data from /tmp b/c of
+                # space constraints on /afs
+
         msg.debug( "extract_fds.fds_dict=%s" % self)
         return
         
