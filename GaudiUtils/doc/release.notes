@@ -1,6 +1,10 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2012-01-20 - Marco Clemencic
+ - Imported HistoStrings functions from (LHCb) Kernel/HistoStrings
+   (required to build DetDesc).
+
 ! 2011-12-02 - Marco Clemencic
  - Moved VFSSvc from GaudiSvc to GaudiUtils.
 

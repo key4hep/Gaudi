@@ -28,9 +28,9 @@ apply_pattern component_library library=GaudiUtils
 
 private
 
-macro_append ROOT_linkopts " -lHist " \
-              target-winxp " libHist.lib " \
-             target-mac104 " -lHist -lMatrix "
+macro_append ROOT_linkopts " -lHist -lXMLIO " \
+             target-winxp  " libHist.lib libXMLIO.lib " \
+             target-mac104 " -lHist -lXMLIO -lMatrix "
 
 macro_append Boost_linkopts " $(Boost_linkopts_date_time) "
 
