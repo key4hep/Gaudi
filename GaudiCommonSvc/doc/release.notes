@@ -4,6 +4,9 @@
 # Description: standard and commonly used components
 ################################################################################
 
+! 2012-01-20 - Marco Clemencic
+ - Moved ToolSvc to GaudiCoreSvc because it's used by some other core services.
+
 ! 2011-12-06 - Marco Clemencic
  - Moved AlgContextSvc from GaudiMonitor to GaudiCommonSvc.
  - Removed unnecessary grouping in src directory.
