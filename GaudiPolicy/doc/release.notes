@@ -1,6 +1,12 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2012-01-20 - Marco Clemencic
+ - Added the CMTCONFIGs *-test (only few of them), implying the tag target-test,
+   which should be used for tunable (by experiments) tests.
+   At the moment is not possible to tune the tests (yet), so the tag enable the
+   use of '-O3'.
+
 ! 2011-12-15 - Marco Clemencic
  - Added the pattern PackageVersionHeader, similar to ProjectVersionHeader, but
    dedicated to packages and with the possibility of specifying the destination

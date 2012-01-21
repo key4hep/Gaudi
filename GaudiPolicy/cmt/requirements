@@ -7,6 +7,17 @@ branches cmt doc
 use LCG_Settings *
 use Python * LCG_Interfaces -no_auto_imports
 
+# Define test platforms
+# These special platforms are equivalent to the corresponding -opt versions, but
+# allow customization of the configuration via the special tags target-test,
+# e.g. to enable different optimization options.
+# FIXME: Ideally the target-test tags should trigger settings that can be tuned
+# by the experiments, but it is not yet possible, the only enable "-O3" (see
+# the bottom of this file)
+tag x86_64-slc5-gcc43-test   x86_64-slc5-gcc43-opt target-test
+tag x86_64-slc5-gcc46-test   x86_64-slc5-gcc46-opt target-test
+tag x86_64-slc6-gcc46-test   x86_64-slc6-gcc46-opt target-test
+
 # Add Google malloc replacement to the LD_LIBRARY_PATH
 use tcmalloc * LCG_Interfaces -no_auto_imports
 
@@ -1361,3 +1372,10 @@ tag ATLAS no-pyzip
 macro_append pp_cppflags "" \
       ATLAS " -DATLAS_GAUDI_V21 "
 
+# FIXME: This should be the kind of pattern to enable custom test settings, but
+# an environment variable is not so safe to use.
+#
+# macro gaudi_test_policy_use "" target-test "$(GAUDI_TEST_POLICY)"
+# use $(gaudi_test_policy_use)
+
+tag target-test use-O3
