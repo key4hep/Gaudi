@@ -1,6 +1,10 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+! 2012-01-20 - Marco Clemencic
+ - Minor change to the test custom_main_loop_parallel to work on single core
+   machines, like CERNVM.
+
 ! 2011-12-09 - Marco Clemencic
  - Added RootCnvSvc and RootEvtSelector to the list of aliased services
    (enforcing the default name to preserve compatibility with LHCb).

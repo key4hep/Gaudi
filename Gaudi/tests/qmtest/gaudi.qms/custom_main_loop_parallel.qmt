@@ -4,7 +4,7 @@
 <argument name="args"><set>
   <text>-v</text>
   <text>--ncpus</text>
-  <text>2</text>
+  <text>1</text>
 </set></argument>
 <argument name="options"><text>
 # Options of the test job
