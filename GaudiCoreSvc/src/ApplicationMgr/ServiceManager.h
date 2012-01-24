@@ -14,6 +14,7 @@
 #include <list>
 #include <map>
 #include <algorithm>
+#include "boost/thread.hpp"
 
 // Forward declarations
 class IService;
@@ -153,6 +154,9 @@ private:
   mutable std::list<IService*> m_listOfPtrs;
 
   GaudiUtils::Map<InterfaceID, SmartIF<IInterface> > m_defaultImplementations;
+
+  /// Mutex to synchronize shared service initialization between threads
+  boost::recursive_mutex  m_svcinitmutex;
 };
 #endif  // GAUDISVC_ServiceManager_H
 

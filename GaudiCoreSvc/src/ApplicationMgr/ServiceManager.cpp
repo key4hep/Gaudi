@@ -154,6 +154,10 @@ StatusCode ServiceManager::addService(const Gaudi::Utils::TypeNameString& typeNa
 // Returns a smart pointer to a service.
 SmartIF<IService> &ServiceManager::service(const Gaudi::Utils::TypeNameString &typeName, const bool createIf) {
   const std::string &name = typeName.name();
+
+  // Acquire the RAII lock to avoid simultaneous attempts from different threads to initialize a service
+  boost::lock_guard<boost::recursive_mutex> lck(m_svcinitmutex);
+
   ListSvc::iterator it = find(name);
 
   if (it !=  m_listsvc.end()) {

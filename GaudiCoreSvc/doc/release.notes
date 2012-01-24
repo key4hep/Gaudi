@@ -4,6 +4,10 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2012-01-24 - Illya Shapoval
+ - Modified ServiceManager to avoid race conditions on concurrent requests of
+   services from different threads.
+
 ! 2012-01-20 - Marco Clemencic
  - Moved ToolSvc to GaudiCoreSvc because it's used by some other core services.
 
