@@ -4,6 +4,9 @@
 ! Purpose     : Root based persistency
 !-----------------------------------------------------------------------------
 
+! 2012-01-24 - Marco Clemencic
+ - Synchronized with version v1r11 in LHCb repository.
+
 ! 2011-12-09 - Marco Clemencic
  - Added missing dependency on GaudiUtils.
  - Removed the namespace from the instance name of RootCnvSvc

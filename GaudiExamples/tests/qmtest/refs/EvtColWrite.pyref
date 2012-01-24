@@ -25,9 +25,9 @@ TagsWriter           INFO Adding OutputStream item /NTUPLES/EVTTAGS/Fill/COL1 wi
 TagsWriter           INFO Data source:             EvtTupleSvc
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
+EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='EvtColsEx.dst' OPT='READ' SVC='Gaudi::RootEvtSelector'
 EventSelector     SUCCESS Reading Event record 1. Record number within stream 1: 1
-EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
 IODataManager        INFO Referring to dataset EvtTags1.root by its file ID:34A61DA7-DB24-E111-ACE0-B499BAF088DC
 Gaudi::RootData...   INFO Recreate Database file:PFN:EvtTags1.root as /EVTTAGS
 EventSelector     SUCCESS Reading Event record 1001. Record number within stream 1: 1001

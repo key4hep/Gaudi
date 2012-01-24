@@ -92,11 +92,11 @@ Fill              SUCCESS Property ['Name': Value] =  'ErrorMax':1
 Fill              SUCCESS Property ['Name': Value] =  'Enable':True
 Fill              SUCCESS Property ['Name': Value] =  'OutputLevel':3
 HistogramPersis...WARNING Histograms saving not required.
+EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='PFN:EvtColsEx.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 EventSelector     SUCCESS Reading Event record 1. Record number within stream 1: 1
-EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
 IODataManager        INFO Referring to dataset EvtColsEx.tags by its file ID:98256EDD-C624-E111-89DE-B499BAF088DC
 Gaudi::RootData...   INFO Recreate Database file:PFN:EvtColsEx.tags as /EVTCOLS
 EventSelector     SUCCESS Reading Event record 1001. Record number within stream 1: 1001
