@@ -3,6 +3,7 @@ Package manager : Marco Clemencic
 
 ! 2012-01-24 - Marco Clemencic
  - Updated few reference files after the update of RootCnv.
+ - Removed obsolete script create_qmt_files.py
 
 ! 2012-01-17 - Marco Clemencic
  - Minor changes in DataOnDemandSvc after improvements in the code.
