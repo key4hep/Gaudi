@@ -1,6 +1,7 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+============================= GaudiPython v12r0 ==============================
 ! 2011-12-14 - Marco Clemencic
  - Fixed bug #88448: HistoFile does not know TFile
    Fixed as suggested in the bug report.

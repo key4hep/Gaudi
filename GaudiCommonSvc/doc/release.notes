@@ -4,6 +4,7 @@
 # Description: standard and commonly used components
 ################################################################################
 
+============================ GaudiCommonSvc v1r0 =============================
 ! 2012-01-20 - Marco Clemencic
  - Moved ToolSvc to GaudiCoreSvc because it's used by some other core services.
 

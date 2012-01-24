@@ -1,6 +1,7 @@
 Package: GaudiMonitor
 Package manager : Marco Clemencic
 
+============================= GaudiMonitor v3r0 ==============================
 ! 2011-12-06 - Marco Clemencic
  - Moved AlgContextSvc from GaudiMonitor to GaudiCommonSvc.
 

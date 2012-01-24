@@ -1,6 +1,7 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v23r0 =============================
 ! 2012-01-24 - Marco Clemencic
  - Updated few reference files after the update of RootCnv.
  - Removed obsolete script create_qmt_files.py

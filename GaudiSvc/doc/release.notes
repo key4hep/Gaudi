@@ -1,6 +1,7 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+=============================== GaudiSvc v19r0 ===============================
 ! 2011-12-05 - Marco Clemencic
  - Removed the unused FastContainerSvc.
  - Moved ParticlePropertySvc to a dedicated package and wrapped it in the

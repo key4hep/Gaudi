@@ -1,6 +1,7 @@
 Package: GaudiAud
 Package manager : David Quarrie, Marco Clemencic
 
+=============================== GaudiAud v9r5 ================================
 ! 2011-11-01 - Marco Clemencic
  - Backward compatible changes to prevent a segfault when generating the
    Configurables.

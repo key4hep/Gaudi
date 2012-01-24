@@ -1,6 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v28r0 ==============================
 ! 2012-01-16 - Marco Clemencic
  - Added interfaces for tools used to add dynamic mapping to DataOnDemandSvc:
    IDODNodeMapper, IDODAlgMapper

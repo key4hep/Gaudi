@@ -1,6 +1,7 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+================================ GaudiMP v1r3 ================================
 ! 2012-01-18 - Wim Lavrijsen
  - address failures due to missing temp files
 M       python/GaudiMP/FdsRegistry.py

@@ -4,6 +4,7 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+============================= GaudiCoreSvc v1r0 ==============================
 ! 2012-01-24 - Illya Shapoval
  - Modified ServiceManager to avoid race conditions on concurrent requests of
    services from different threads.

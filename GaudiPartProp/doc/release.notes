@@ -4,6 +4,7 @@
 ! Purpose     : Gaudi Particle Property Service
 !-----------------------------------------------------------------------------
 
+============================= GaudiPartProp v1r0 =============================
 ! 2011-12-05 - Marco Clemencic
  - Moved ParticlePropertySvc to a dedicated package and wrapped it in the
    namespace Gaudi.

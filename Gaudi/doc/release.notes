@@ -1,6 +1,7 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+================================ Gaudi v23r0 =================================
 ! 2012-01-20 - Marco Clemencic
  - Minor change to the test custom_main_loop_parallel to work on single core
    machines, like CERNVM.

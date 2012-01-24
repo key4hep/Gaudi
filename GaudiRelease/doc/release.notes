@@ -1,6 +1,7 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+============================= GaudiRelease v23r0 =============================
 ! 2011-12-13 - Marco Clemencic
  - Removed POOL from the Doxygen configuration
 

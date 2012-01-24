@@ -1,9 +1,10 @@
 Package: RootHistCnv
 Package manager : David Quarrie
 
+========================== RootHistCnv v11r0 ===========================
 ! 2011-12-01 - Chris Jones
- - Fixed bug #85377: GaudiTuple tuple does not undestand ulonglong
-   Add support for additional data types long long and unsigned long long 
+ - Fixed bug #85377: GaudiTuple tuple does not understand ulonglong
+   Add support for additional data types long long and unsigned long long
 
 ============================= RootHistCnv v10r7 ==============================
 ! 2011-03-23 - Marco Clemencic

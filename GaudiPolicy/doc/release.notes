@@ -1,6 +1,7 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v12r0 ==============================
 ! 2012-01-20 - Marco Clemencic
  - Added the CMTCONFIGs *-test (only few of them), implying the tag target-test,
    which should be used for tunable (by experiments) tests.
