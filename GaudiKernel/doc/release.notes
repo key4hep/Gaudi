@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 
 ============================= GaudiKernel v28r0 ==============================
+! 2012-01-25 - Marco Clemencic
+ - Added a specific application return code for failure during finalization.
+
 ! 2012-01-16 - Marco Clemencic
  - Added interfaces for tools used to add dynamic mapping to DataOnDemandSvc:
    IDODNodeMapper, IDODAlgMapper

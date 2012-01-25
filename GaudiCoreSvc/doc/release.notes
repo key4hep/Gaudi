@@ -5,6 +5,11 @@
 ################################################################################
 
 ============================= GaudiCoreSvc v1r0 ==============================
+! 2012-01-25 - Marco Clemencic
+ - Set non-zero return code in case of failure during finalization.
+ - Modified the last messages (finalization and termination) of ApplicationMgr
+   in case of failures.
+
 ! 2012-01-24 - Illya Shapoval
  - Modified ServiceManager to avoid race conditions on concurrent requests of
    services from different threads.

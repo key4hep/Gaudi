@@ -22,6 +22,8 @@
 #include "GaudiKernel/Time.h"
 #include "GaudiKernel/System.h"
 
+#include "GaudiKernel/AppReturnCode.h"
+
 #include "GaudiCoreSvcVersion.h"
 
 
@@ -682,10 +684,17 @@ StatusCode ApplicationMgr::finalize() {
 
   // Finalize independently managed Algorithms
   StatusCode sc = algManager()->finalize();
-
+  if (sc.isFailure()) {
+    log << MSG::WARNING << "Failed to finalize an algorithm." << endmsg;
+    m_returnCode = Gaudi::ReturnCode::FinalizationFailure;
+  }
 
   // Finalize all Services
   sc = svcManager()->finalize();
+  if (sc.isFailure()) {
+    log << MSG::WARNING << "Failed to finalize a service." << endmsg;
+    m_returnCode = Gaudi::ReturnCode::FinalizationFailure;
+  }
 
   //svcManager()->removeService( (IService*) m_processingMgr.get() );
   //svcManager()->removeService( (IService*) m_runable.get() );
@@ -694,7 +703,11 @@ StatusCode ApplicationMgr::finalize() {
     StatusCode::disableChecking();
   }
 
-  log << MSG::INFO << "Application Manager Finalized successfully" << endmsg;
+  if (sc.isSuccess()) {
+    log << MSG::INFO << "Application Manager Finalized successfully" << endmsg;
+  } else {
+    log << MSG::ERROR << "Application Manager failed to finalize" << endmsg;
+  }
 
   m_state = m_targetState;
   return sc;
@@ -718,8 +731,11 @@ StatusCode ApplicationMgr::terminate() {
   // release all Services
   m_targetState = Gaudi::StateMachine::OFFLINE;
 
-
-  log << MSG::INFO << "Application Manager Terminated successfully" << endmsg;
+  if (m_returnCode.value() == Gaudi::ReturnCode::Success) {
+    log << MSG::INFO << "Application Manager Terminated successfully" << endmsg;
+  } else {
+    log << MSG::ERROR << "Application Manager Terminated with error code " << m_returnCode.value() << endmsg;
+  }
 
   { // Force a disable the auditing of finalize for MessageSvc
     SmartIF<IProperty> prop(m_messageSvc);
