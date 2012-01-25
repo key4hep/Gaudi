@@ -1,6 +1,9 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+! 2011-12-25 - Marco Clemencic
+ - Added script to tag packages in GIT.
+
 ============================= GaudiRelease v23r0 =============================
 ! 2011-12-13 - Marco Clemencic
  - Removed POOL from the Doxygen configuration
