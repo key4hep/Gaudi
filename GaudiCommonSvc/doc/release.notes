@@ -4,6 +4,9 @@
 # Description: standard and commonly used components
 ################################################################################
 
+! 2012-01-26 - Marco Clemencic
+ - Added protection to debug messages (reported by Marco Cattaneo).
+
 ============================ GaudiCommonSvc v1r0 =============================
 ! 2012-01-20 - Marco Clemencic
  - Moved ToolSvc to GaudiCoreSvc because it's used by some other core services.

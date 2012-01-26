@@ -4,6 +4,9 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2012-01-26 - Marco Clemencic
+ - Added protection to debug messages (reported by Marco Cattaneo).
+
 ============================= GaudiCoreSvc v1r0 ==============================
 ! 2012-01-25 - Marco Clemencic
  - Set non-zero return code in case of failure during finalization.

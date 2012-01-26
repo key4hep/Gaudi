@@ -376,11 +376,13 @@ AIDA::IHistogram1D* HistogramSvc::book
   Histo1DMap::const_iterator ifound = m_defs1D.find( hn ) ;
   if ( m_defs1D.end() == ifound )
   { return i_book(pPar,rel,title,Gaudi::createH1D(title, BINS(x))); }
-  MsgStream log ( msgSvc() , name() ) ;
-  log << MSG::DEBUG
-      << " Redefine the parameters for the histogram '" + hn +"' to be "
-      << ifound->second
-      << endmsg ;
+  if (msgLevel(MSG::DEBUG)) {
+    MsgStream log ( msgSvc() , name() ) ;
+    log << MSG::DEBUG
+        << " Redefine the parameters for the histogram '" + hn + "' to be "
+        << ifound->second
+        << endmsg;
+  }
   m_mods1D.insert ( hn ) ;
   return i_book ( pPar , rel , ifound -> second.title   () ,
                   Gaudi::createH1D
@@ -444,12 +446,14 @@ StatusCode HistogramSvc::finalize     ()
   if ( !m_mods1D.empty() )
   {
     MsgStream log ( msgSvc () , name () ) ;
-    log << MSG::DEBUG
-        << " Substituted histograms #" << m_mods1D.size() << " : " << endmsg ;
+    if (msgLevel(MSG::DEBUG))
+      log << MSG::DEBUG
+          << " Substituted histograms #" << m_mods1D.size() << " : " << endmsg;
     for ( std::set<std::string>::const_iterator ih = m_mods1D.begin() ;
           m_mods1D.end() != ih ; ++ih )
     {
-      log << MSG::DEBUG << " Path='" << (*ih) << "'" ;
+      if (msgLevel(MSG::DEBUG))
+        log << MSG::DEBUG << " Path='" << (*ih) << "'" ;
       Histo1DMap::const_iterator im = m_defs1D.find( *ih ) ;
       if ( m_defs1D.end() != im ) { log << "  " << im->second ; }
     }

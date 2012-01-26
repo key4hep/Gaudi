@@ -59,27 +59,26 @@ StatusCode HistogramPersistencySvc::finalize()
     log << MSG::INFO  << "Histograms Converted/Excluded: "
         << m_converted.size() << "/" << m_excluded.size() << endmsg ;
   }
-  //
-  if ( !m_excluded.empty() )
-  {
-    log << MSG::DEBUG << "Excluded  Histos : #" << m_excluded.size() ;
-    for ( Set::const_iterator item = m_excluded.begin() ;
+  if (msgLevel(MSG::DEBUG)) {
+    if ( !m_excluded.empty() )
+    {
+      log << MSG::DEBUG << "Excluded  Histos : #" << m_excluded.size() ;
+      for ( Set::const_iterator item = m_excluded.begin() ;
           m_excluded.end() != item ; ++item )
-    { log << std::endl << "  '" << (*item) << "'" ; }
-    log << endmsg ;
-  }
-  //
-  if ( !m_converted.empty() )
-  {
-    log << MSG::DEBUG << "Converted Histos : #" << m_converted.size() ;
-    for ( Set::const_iterator item = m_converted.begin() ;
+      { log << std::endl << "  '" << (*item) << "'" ; }
+      log << endmsg ;
+    }
+    //
+    if ( !m_converted.empty() )
+    {
+      log << MSG::DEBUG << "Converted Histos : #" << m_converted.size() ;
+      for ( Set::const_iterator item = m_converted.begin() ;
           m_converted.end() != item ; ++item )
-    { log << std::endl << "  '" << (*item) << "'" ; }
-    log << endmsg ;
+      { log << std::endl << "  '" << (*item) << "'" ; }
+      log << endmsg ;
+    }
   }
-  //
-  StatusCode status = PersistencySvc::finalize();
-  return status;
+  return PersistencySvc::finalize();
 }
 // ============================================================================
 // Initialize the service.

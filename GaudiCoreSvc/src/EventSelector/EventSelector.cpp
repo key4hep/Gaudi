@@ -451,9 +451,10 @@ StatusCode EventSelector::reinitialize() {
 //
 StatusCode EventSelector::finalize()    {
 
-  MsgStream log(msgSvc(), name());
-
-  log << MSG::DEBUG << "finalize()" << endmsg;
+  if (msgLevel(MSG::DEBUG)) {
+    MsgStream log(msgSvc(), name());
+    log << MSG::DEBUG << "finalize()" << endmsg;
+  }
 
   m_incidentSvc = 0;
 
