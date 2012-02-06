@@ -350,7 +350,7 @@ StatusCode ApplicationMgr::configure() {
     }
     else {
       log << MSG::ALWAYS
-          << "(GaudiCoreSvc "
+          << " (GaudiCoreSvc "
           << "v" << GAUDICORESVC_MAJOR_VERSION
           << "r" << GAUDICORESVC_MINOR_VERSION
 #if GAUDICORESVC_PATCH_VERSION
