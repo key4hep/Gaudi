@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2012-02-06 - Marco Clemencic
+ - Extended property tests to use 64 bit integers (patch #5204).
+
 ============================ GaudiExamples v23r0 =============================
 ! 2012-01-25 - Marco Clemencic
  - Added a test service to trigger failures in various stages.

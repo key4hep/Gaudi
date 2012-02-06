@@ -42,11 +42,15 @@ PropertyAlg::PropertyAlg(const std::string& name, ISvcLocator* ploc)
   // Declare the algorithm's properties
 
   declareProperty( "Int",    m_int    = 100);
+  declareProperty( "Int64",  m_int64  = 100);
+  declareProperty( "UInt64", m_uint64 = 100);
   declareProperty( "Double", m_double = 100.);
   declareProperty( "String", m_string = "hundred");
   declareProperty( "Bool",   m_bool   = true);
 
   declareProperty( "IntArray",    m_intarray );
+  declareProperty( "Int64Array",  m_int64array );
+  declareProperty( "UInt64Array", m_uint64array );
   declareProperty( "DoubleArray", m_doublearray);
   declareProperty( "StringArray", m_stringarray);
   declareProperty( "BoolArray",   m_boolarray);
@@ -81,10 +85,14 @@ PropertyAlg::PropertyAlg(const std::string& name, ISvcLocator* ploc)
   log << MSG::INFO << "Before Initialization......" << endmsg;
 
   log << MSG::INFO << "Int    = " << m_int << endmsg;
+  log << MSG::INFO << "Int64  = " << m_int64 << endmsg;
+  log << MSG::INFO << "UInt64 = " << m_uint64 << endmsg;
   log << MSG::INFO << "Double = " << m_double << endmsg;
   log << MSG::INFO << "String = " << m_string << endmsg;
   log << MSG::INFO << "Bool   = " << m_bool << endmsg;
   log << MSG::INFO << "IntArray    = " << m_intarray << endmsg;
+  log << MSG::INFO << "Int64Array  = " << m_int64array << endmsg;
+  log << MSG::INFO << "UInt64Array = " << m_uint64array << endmsg;
   log << MSG::INFO << "DoubleArray = " << m_doublearray << endmsg;
   log << MSG::INFO << "StringArray = " << m_stringarray << endmsg;
   log << MSG::INFO << "BoolArray   = " << m_boolarray << endmsg;
@@ -116,10 +124,14 @@ StatusCode PropertyAlg::initialize() {
       << endmsg;
 
   log << MSG::INFO << "Int    = " << m_int << endmsg;
+  log << MSG::INFO << "Int64  = " << m_int64 << endmsg;
+  log << MSG::INFO << "UInt64 = " << m_uint64 << endmsg;
   log << MSG::INFO << "Double = " << m_double << endmsg;
   log << MSG::INFO << "String = " << m_string << endmsg;
   log << MSG::INFO << "Bool   = " << m_bool << endmsg;
   log << MSG::INFO << "IntArray    = " << m_intarray << endmsg;
+  log << MSG::INFO << "Int64Array  = " << m_int64array << endmsg;
+  log << MSG::INFO << "UInt64Array = " << m_uint64array << endmsg;
   log << MSG::INFO << "DoubleArray = " << m_doublearray << endmsg;
   log << MSG::INFO << "StringArray = " << m_stringarray << endmsg;
   log << MSG::INFO << "BoolArray   = " << m_boolarray << endmsg;

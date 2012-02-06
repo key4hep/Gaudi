@@ -1,59 +1,19 @@
-JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Services.opts)
-JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Common.opts)
-JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
-JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/units.opts)
-JobOptionsSvc        INFO # (1,1): 1 m = 1000
-JobOptionsSvc        INFO # (2,1): 1 cm = 10
-JobOptionsSvc        INFO # (3,1): 1 mm = 1
-JobOptionsSvc        INFO # (4,1): 1 m2 = 1e+06
-JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/optsub1/dummy1.opts)
-JobOptionsSvc        INFO # (2,1): Dummy1.Property = 1
-JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/optsub2/dummy2.opts)
-JobOptionsSvc        INFO # (2,1): Dummy2.Property = 1
-JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Properties.opts)
-JobOptionsSvc        INFO # (14,1): ApplicationMgr.TopAlg = ["PropertyAlg"]
-JobOptionsSvc        INFO # (16,1): ApplicationMgr.TopAlg += ["PropertyAlg", "PropertyProxy"]
-JobOptionsSvc        INFO # (18,1): ApplicationMgr.TopAlg -= ["PropertyAlg"]
-JobOptionsSvc        INFO # (21,1): MessageSvc.OutputLevel = 3
-JobOptionsSvc        INFO # (26,1): ApplicationMgr.EvtMax = 1
-JobOptionsSvc        INFO # (27,1): ApplicationMgr.EvtSel = "NONE"
-JobOptionsSvc        INFO # (28,1): ApplicationMgr.HistogramPersistency = "NONE"
-JobOptionsSvc        INFO # (33,1): PropertyAlg.OutputLevel = 3
-JobOptionsSvc        INFO # (35,1): PropertyAlg.Int = 101
-JobOptionsSvc        INFO # (36,1): PropertyAlg.Int64 = 4294967296
-JobOptionsSvc        INFO # (37,1): PropertyAlg.UInt64 = 4294967296
-JobOptionsSvc        INFO # (38,1): PropertyAlg.Double = 101.1e+10
-JobOptionsSvc        INFO # (39,1): PropertyAlg.String = "hundred one"
-JobOptionsSvc        INFO # (40,1): PropertyAlg.Bool = 0
-JobOptionsSvc        INFO # (43,1): PropertyAlg.IntArray = [1, 2, 3, 5]
-JobOptionsSvc        INFO # (44,1): PropertyAlg.Int64Array = [4294967296]
-JobOptionsSvc        INFO # (45,1): PropertyAlg.UInt64Array = [4294967296]
-JobOptionsSvc        INFO # (46,1): PropertyAlg.DoubleArray = [-11.0, 2., 3.3, 0.4e-03]
-JobOptionsSvc        INFO # (47,1): PropertyAlg.StringArray = ["one", "two", "four"]
-JobOptionsSvc        INFO # (48,1): PropertyAlg.BoolArray = [0, 1, 0]
-JobOptionsSvc        INFO # (49,1): PropertyAlg.EmptyArray = {}
-JobOptionsSvc        INFO # (52,1): PropertyAlg.DoubleArrayWithUnits = [1100000, -20, 33, 0.40000000000000002]
-JobOptionsSvc        INFO # (53,1): PropertyAlg.DoubleArrayWithoutUnits = [1100000.0, -20., 33.0, 0.4]
-JobOptionsSvc        INFO # (55,1): PropertyAlg.PInt = 101
-JobOptionsSvc        INFO # (56,1): PropertyAlg.PDouble = 101.E5
-JobOptionsSvc        INFO # (57,1): PropertyAlg.PString = "hundred one"
-JobOptionsSvc        INFO # (58,1): PropertyAlg.PBool = 1
-JobOptionsSvc        INFO # (61,1): PropertyAlg.PIntArray = [1, 2, 3, 5]
-JobOptionsSvc        INFO # (62,1): PropertyAlg.PDoubleArray = [1.1, 2., 3.3]
-JobOptionsSvc        INFO # (63,1): PropertyAlg.PStringArray = ["one", "two", "four"]
-JobOptionsSvc        INFO # (64,1): PropertyAlg.PBoolArray = [1, 0, 1, 0]
-JobOptionsSvc        INFO # (67,1): PropertyAlg.IntPairArray = [[1, 2], [3, 4], [5, 6]]
-JobOptionsSvc        INFO # (68,1): PropertyAlg.DoublePairArray = [[1.1, 2.1], [2.3, 4.5], [5.6, 6.7]]
-JobOptionsSvc        INFO # (71,1): PropertyProxy.String = "This is set by the proxy"
-JobOptionsSvc        INFO # (74,1): MessageSvc.setDebug += ["EventLoopMgr"]
-JobOptionsSvc        INFO # (75,1): MessageSvc.setVerbose += ["MsgTest"]
-JobOptionsSvc        INFO # (79,1): MessageSvc.setWarning += ["MsgTest"]
-JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Properties.opts
+# --> Including file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Properties.py'
+# --> Including file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/optsub1/dummy1.opts'
+# Dummy1.Property=true;
+# --> Including file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/optsub2/dummy2.opts'
+# Dummy2.Property=true;
+# <-- End of file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/optsub2/dummy2.opts'
+# <-- End of file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/optsub1/dummy1.opts'
+# <-- End of file '/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Properties.py'
+# applying configuration of GaudiExamplesCommonConf
+# /***** User GaudiExamplesCommonConf/GaudiExamplesCommonConf ****************************************
+# |-OutputLevel = 3  (default: 3)
+# \----- (End of User GaudiExamplesCommonConf/GaudiExamplesCommonConf) -------------------------------
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr(GaudiCoreSvc v1r0)
-                                          running on lxplus437.cern.ch on Mon Feb  6 18:36:58 2012
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r0)
+                                          running on lxplus437.cern.ch on Mon Feb  6 19:16:35 2012
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -147,13 +107,10 @@ MsgTest             FATAL This should be printed if threshold is FATAL
 MsgTest           SUCCESS This should be printed ALWAYS
 PropertyAlg          INFO =================================================
 PropertyAlg          INFO Dump of the property catalogue....
-PropertyAlg          INFO  Properties of ApplicationMgr: EvtMax, EvtSel, HistogramPersistency, StatusCodeCheck, TopAlg
 PropertyAlg          INFO  Properties of AuditorSvc: Auditors
 PropertyAlg          INFO  Properties of Dummy1: Property
 PropertyAlg          INFO  Properties of Dummy2: Property
-PropertyAlg          INFO  Properties of MessageSvc: OutputLevel, setDebug, setVerbose, setWarning
-PropertyAlg          INFO  Properties of PropertyAlg: Bool, BoolArray, Double, DoubleArray, DoubleArrayWithUnits, DoubleArrayWithoutUnits, DoublePairArray, EmptyArray, Int, Int64, Int64Array, IntArray, IntPairArray, OutputLevel, PBool, PBoolArray, PDouble, PDoubleArray, PInt, PIntArray, PString, PStringArray, String, StringArray, UInt64, UInt64Array
-PropertyAlg          INFO  Properties of PropertyProxy: String
+PropertyAlg          INFO  Properties of PropertyAlg: DoubleArray, Int64Array, Bool, UInt64Array, StringArray, PBool, DoublePairArray, PDoubleArray, PDouble, PInt, BoolArray, Double, PStringArray, OutputLevel, Int64, PBoolArray, IntArray, String, UInt64, IntPairArray, PIntArray, Int, DoubleArrayWithUnits, PString, DoubleArrayWithoutUnits
 PropertyAlg          INFO =================================================
 PropertyAlg          INFO Changed property DoubleArray in catalogue
 PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.00000000
@@ -164,7 +121,7 @@ PropertyAlg          INFO =================================================
 PropertyProxy        INFO  Got property this.RInt = 101;
 PropertyProxy        INFO  Set property this.RInt = 1001;
 PropertyProxy        INFO  Got property this.RInt = 101;
-PropertyProxy        INFO  Got property this.String = This is set by the proxy;
+PropertyProxy        INFO  Got property this.String = hundred one;
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramPersis...WARNING Histograms saving not required.
