@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2012-02-06 - Sasha Mazurov
+ - Patch #5204: GaudiKernel parsers: allow 'L' suffix in integer literals
+
 ============================= GaudiKernel v28r0 ==============================
 ! 2012-01-25 - Marco Clemencic
  - Added a specific application return code for failure during finalization.

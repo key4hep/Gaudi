@@ -78,7 +78,7 @@ struct SkipperGrammar  : qi::grammar<Iterator>
 	SkipperGrammar() : SkipperGrammar::base_type(comments) {
 		comments = enc::space | rep::confix("/*", "*/")[*(qi::char_ - "*/")]
 		      |
-		      rep::confix("//", sp::eol)[*(qi::char_ - sp::eol)];
+		      rep::confix("//", (sp::eol | sp::eoi))[*(qi::char_ - (sp::eol|sp::eoi))];
 	}
 	qi::rule<Iterator> comments;
 };
@@ -141,7 +141,8 @@ struct IntGrammar : qi::grammar<Iterator, RT(), Skipper>
 {
     typedef RT ResultT;
     IntGrammar() : IntGrammar::base_type( integer ) {
-        integer = qi::int_parser<RT>();
+        integer = qi::int_parser<RT>()[qi::_val = qi::_1] 
+            >> -qi::no_case[qi::char_('L')];
     }
     qi::rule<Iterator, RT(), Skipper> integer;
 };
