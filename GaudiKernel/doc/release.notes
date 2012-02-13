@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2012-02-13 - Marco Clemencic
+ - Fixed compatibility problem with Python 2.7.
+
 ! 2012-02-06 - Sasha Mazurov
  - Patch #5204: GaudiKernel parsers: allow 'L' suffix in integer literals
 
