@@ -1,6 +1,67 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v12r0 ==============================
+! 2012-01-20 - Marco Clemencic
+ - Added the CMTCONFIGs *-test (only few of them), implying the tag target-test,
+   which should be used for tunable (by experiments) tests.
+   At the moment is not possible to tune the tests (yet), so the tag enable the
+   use of '-O3'.
+
+! 2011-12-15 - Marco Clemencic
+ - Added the pattern PackageVersionHeader, similar to ProjectVersionHeader, but
+   dedicated to packages and with the possibility of specifying the destination
+   directory of the generated header.
+
+! 2011-12-13 - Ben Couturier
+ - Patch #5165: Change GaudiPolicy requirements to allow compilation with -O3
+   (CMT tag "use-O3")
+
+! 2011-12-13 - Marco Clemencic
+ - Removed POOL from the list of *VERS variables (old Doxygen settings).
+ - Moved the genConf directories of the packages inside the binary directory.
+
+! 2011-12-07 - Marco Clemencic
+ - Enforce the use of Boost Filesystem Version 3 also with Boost 1.44, for
+   backward compatibility (bug #89653)
+
+! 2011-11-16 - Marco Clemencic
+ - Disable deprecation warnings on gcc 4.6.
+   We need an alternative to the current gccxml to properly fix them.
+
+! 2011-11-01 - Marco Clemencic
+ - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc
+   and GaudiCommonSvc. (patch #1816)
+   Use GaudiCoreSvc as a pre-requisite for the call to genConf.
+
+============================= GaudiPolicy v11r5 ==============================
+! 2011-09-22 - Marco Clemencic
+ - Modified Windows library fragment to be able to pass arguments to the link
+   command from the requirements.
+
+! 2011-09-08 - Marco Clemencic
+ - Fixed a problem in the parsing of TTree summaries when multiple top branches
+   are present (new LHCb ROOT-based persistency).
+
+! 2011-09-06 - Hubert Degaudenzi
+ - added the -we1011 and -we117 for the icc compiler. This is to mimic the
+   behaviour of gcc's -Werror=return-type
+
+! 2011-09-06 - Marco Clemencic
+ - Fixed bug #86424: Problem with patch #5025
+   Remove the added option for ICC (produces a warning).
+
+============================= GaudiPolicy v11r4 ==============================
+! 2011-09-01 - Charles Leggett
+ - Patch #5025: add -Werror=return-type to cpp flags
+   Prevent that a function returning non-void reaches the end without returning
+   a value (by default it is just a warning, not enabled).
+
+============================= GaudiPolicy v11r3 ==============================
+! 2011-08-18 - Marco Clemencic
+ - Hack in GaudiTest.py to be able to start Visual Studio to debug on WinXP.
+ - Improvements to the QMTest HTML output (new jQuery, nicer foldable lists).
+
 ! 2011-08-15 - Marco Clemencic
  - Small change in test exclusion list for portability.
  - Bad hack in fragments/nmake/library to allow very big libraries on VC9,

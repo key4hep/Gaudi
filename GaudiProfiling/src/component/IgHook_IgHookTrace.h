@@ -4,6 +4,7 @@
 //<<<<<< INCLUDES                                                       >>>>>>
 
 # include <new>
+# include <cstddef>
 
 //<<<<<< PUBLIC DEFINES                                                 >>>>>>
 //<<<<<< PUBLIC CONSTANTS                                               >>>>>>
@@ -63,7 +64,7 @@ public:
 	unsigned long long	m_value;
 	unsigned long long	m_count;
     };
-    
+
     // General utilities
     static int		stacktrace (void **addresses, int nmax);
     static void *	tosymbol (void *address);

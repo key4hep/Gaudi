@@ -1,7 +1,6 @@
-# $Id: requirements,v 1.73 2008/11/10 18:48:45 marcocle Exp $
 # =============================================================================
 package GaudiAlg
-version v13r7
+version v14r0
 
 # ============== structure ====================================================
 branches        GaudiAlg src cmt doc
@@ -22,3 +21,7 @@ library         GaudiAlg    components/*.cpp -import=AIDA -import=Boost -no_stat
 # ============== patterns =====================================================
 apply_pattern   linker_library    library="GaudiAlgLib"
 apply_pattern   component_library library="GaudiAlg"
+
+private
+macro_append Boost_linkopts " $(Boost_linkopts_regex) "
+end_private

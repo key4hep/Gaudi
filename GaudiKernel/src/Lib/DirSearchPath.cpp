@@ -66,7 +66,7 @@ bool DirSearchPath::find(const string& fileName, string& fullFileName) const {
   try {
     path fileFound;
     if ( (rc = find(path(fileName), fileFound)) )
-      fullFileName = fileFound.native_directory_string();
+      fullFileName = fileFound.string();
   } catch (...) {}
   return rc;
 }

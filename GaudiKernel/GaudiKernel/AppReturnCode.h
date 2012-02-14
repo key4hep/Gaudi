@@ -26,6 +26,10 @@ namespace Gaudi {
     const int IncidentFailure          = 0x05; //< Fatal error in Incident handling
     const int UnhandledException       = 0x06; //<
     /// @}
+    /// @{
+    /// Error codes for operation failures.
+    const int FinalizationFailure      = 0x0b;
+    /// @}
     const int SignalOffset             = 0x80; //< Offset for signal-related return codes
 
   }

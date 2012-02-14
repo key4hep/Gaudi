@@ -34,11 +34,15 @@ private:
   /// They are set in the initialization phase by the job options service
 
   int         m_int;
+  long long   m_int64;
+  unsigned long long   m_uint64;
   double      m_double;
   std::string m_string;
   bool        m_bool;
 
   std::vector<int>         m_intarray;
+  std::vector<long long>   m_int64array;
+  std::vector<unsigned long long>   m_uint64array;
   std::vector<double>      m_doublearray;
   std::vector<std::string> m_stringarray;
   std::vector<bool>        m_boolarray;

@@ -1,65 +1,33 @@
 package GaudiSvc
-version v18r14
+version v19r0
 
 branches src cmt doc
 use GaudiKernel *
 use CLHEP       * LCG_Interfaces -no_auto_imports
-use AIDA        * LCG_Interfaces -no_auto_imports
 use Boost       * LCG_Interfaces -no_auto_imports
 use ROOT        * LCG_Interfaces -no_auto_imports
 
 
 # build the component library
-library GaudiSvc -import=AIDA -import=Boost -import=CLHEP -import=ROOT -no_static \
-#                 AIDATupleSvc/*.cpp\
-                 AlgContextSvc/*.cpp \
-                 ApplicationMgr/*.cpp \
-                 AuditorSvc/*.cpp \
-                 ChronoStatSvc/*.cpp \
-                 EventSelector/*.cpp \
-                 ExceptionSvc/*.cpp \
-                 DataSvc/*.cpp \
+library GaudiSvc -import=Boost -import=CLHEP -import=ROOT -no_static \
                  DetectorDataSvc/*.cpp \
-                 HistogramSvc/*.cpp \
-                 HistorySvc/*.cpp \
-                 IncidentSvc/*.cpp \
-                 IssueLogger/*.cpp \
-                 JobOptionsSvc/*.cpp \
-                 MessageSvc/*.cpp \
                  NTupleSvc/*.cpp \
-                 ParticlePropertySvc/*.cpp \
-                 PersistencySvc/*.cpp \
                  RndmGenSvc/*.cpp \
-                 StatusCodeSvc/*.cpp \
-                 ToolSvc/*.cpp \
-                 THistSvc/*.cpp \
-                 FastContainersSvc/*.cpp \
-                 VFSSvc/*.cpp \
-                 Dll/GaudiSvc*.cpp
+                 THistSvc/*.cpp
 
 
 library GaudiSvcTest -group=tests ../tests/src/component/*.cpp -no_static
 
 # define component library link options
-apply_pattern libraryShr        library=GaudiSvc
+apply_pattern component_library library=GaudiSvc
+apply_pattern component_library library=GaudiSvcTest
 
-# this pattern is applied instead of "generate_configurables" to
-# avoid infinite recursion.
-apply_pattern generate_configurables_internal library=GaudiSvc
-apply_pattern generate_configurables_internal library=GaudiSvcTest group=tests
-
-apply_pattern libraryShr        library=GaudiSvcTest
-
-macro_append Boost_linkopts " $(Boost_linkopts_system) $(Boost_linkopts_filesystem) $(Boost_linkopts_regex) $(Boost_linkopts_thread) "
+macro_append Boost_linkopts " $(Boost_linkopts_system) $(Boost_linkopts_filesystem) $(Boost_linkopts_thread) "
 
 apply_pattern ld_library_path
 
 #===============================================================
 private
-
-apply_pattern library_Cshlibflags library=GaudiSvc
-apply_pattern library_Cshlibflags library=GaudiSvcTest
-
 
 macro_append ROOT_linkopts " -lHist -lReflex -lMatrix -lGraf" \
               target-winxp " libHist.lib libReflex.lib libMatrix.lib libGraf.lib" \
@@ -73,12 +41,16 @@ macro_append Boost_linkopts "" target-winxp " $(Boost_linkopts_date_time) "
 #macro_append fileparse_testlinkopts     " -L../$(tag) -lGaudiSvc" \
 #  target-winxp                          " /libpath:$(GAUDISVCROOT)/$(tag) GaudiSvc.lib"
 
-apply_pattern generate_rootmap library=GaudiSvc
 apply_pattern generate_rootmap library=GaudiSvcTest group=tests
 
 macro_append cppflags "" \
          target-linux " -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long " \
         target-darwin "" \
          target-winxp ""
+
+# Boost Spirit (1.48) gives a compilation error (extra ';') when -pedantic is used
+macro_remove cppflags "" \
+     no-hide-warnings "" \
+         target-linux "-pedantic"
 
 apply_pattern QMTest

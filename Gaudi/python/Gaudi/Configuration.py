@@ -1,5 +1,5 @@
 # File: Gaudi/python/Gaudi/Configuration.py
-# Author: Pere Mato (per.mato@cern.ch)
+# Author: Pere Mato (pere.mato@cern.ch)
 
 from GaudiKernel.Constants import *
 from GaudiKernel.Configurable import *
@@ -55,7 +55,7 @@ def configurationDict(all=False):
     """Return a dictionary representing the configuration.
     The dictionary contains one entry per configurable which is a dictionary
     with one entry per property.
-    The optional argument "all" is used to decide if to inluce only values
+    The optional argument "all" is used to decide if to include only values
     different from the default or all of them.
     """
     from GaudiKernel.Proxy.Configurable import getNeededConfigurables
@@ -104,3 +104,43 @@ def getConfigurable(name, defaultType = None):
                 import Configurables
                 defaultType = getattr(Configurables, defaultType)
         return defaultType(name)
+
+def setCustomMainLoop(runner):
+    '''
+    Replace the default main execution loop with the specified callable object.
+
+    @param runner: a callable that accepts an initialized instance of GaudiPython.AppMgr
+                   and the number of events to process and returns a StatusCode or a boolean
+                   (True means success)
+    '''
+    # change the mainLoop function
+    from Gaudi.Main import gaudimain
+    gaudimain.mainLoop = lambda _self, app, nevt: runner(app, nevt)
+
+
+class GaudiPersistency(ConfigurableUser):
+    """Configurable to enable ROOT-based persistency.
+
+    Note: it requires Gaudi::RootCnvSvc (package RootCnv).
+    """
+    __slots__ = {}
+    def __apply_configuration__(self):
+        """Apply low-level configuration"""
+        from Configurables import (ApplicationMgr,
+                                   PersistencySvc,
+                                   FileRecordDataSvc,
+                                   EventPersistencySvc,
+                                   )
+        # aliased names
+        from Configurables import (RootCnvSvc,
+                                   RootEvtSelector,
+                                   IODataManager,
+                                   FileCatalog,
+                                   )
+        cnvSvcs = [ RootCnvSvc() ]
+        EventPersistencySvc().CnvServices += cnvSvcs
+        PersistencySvc("FileRecordPersistencySvc").CnvServices += cnvSvcs
+        app = ApplicationMgr()
+        app.SvcOptMapping += [ FileCatalog(), IODataManager(),
+                               RootCnvSvc() ]
+        app.ExtSvc += [ FileRecordDataSvc() ]

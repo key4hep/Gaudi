@@ -1,17 +1,20 @@
 package GaudiExamples
-version v22r2
+version v23r0
 
 use ROOT         * LCG_Interfaces
 use Reflex       * LCG_Interfaces -no_auto_imports
+use RELAX        * LCG_Interfaces -no_auto_imports
 use AIDA         * LCG_Interfaces
 
 use Gaudi        *
 
+use GaudiPartProp  * -no_auto_imports
 use PartPropSvc  * -no_auto_imports
-use GaudiPoolDb  * -no_auto_imports
 use GaudiPython  * -no_auto_imports
 use GaudiGSL     *
 use RootHistCnv  * -no_auto_imports
+
+use RootCnv * -no_auto_imports
 
 use Boost * LCG_Interfaces
 use HepPDT * LCG_Interfaces
@@ -19,8 +22,6 @@ use HepPDT * LCG_Interfaces
 include_dirs $(GAUDIEXAMPLESROOT)/src/Lib
 
 library GaudiExamplesLib -no_static Lib/*.cpp
-
-macro datalistener_use "DataListener/*.cpp" WIN32 " "
 
 library GaudiExamples    -import=Reflex -no_static \
                           AbortEvent/*.cpp \
@@ -37,14 +38,12 @@ library GaudiExamples    -import=Reflex -no_static \
                           PartProp/*.cpp \
                           Properties/*.cpp \
                           ExtendedProperties/*.cpp \
-                          $(datalistener_use) \
                           POOLIO/*.cpp \
                           ColorMsg/ColorMsgAlg.cpp \
                           History/History.cpp \
                           THist/*.cpp \
                           ErrorLog/ErrorLogTest.cpp \
                           EvtColsEx/EvtColAlg.cpp \
-                          FastContainers/*.cpp \
                           Maps/*.cpp \
                           MultipleLogStreams/*.cpp \
                           GaudiCommonTests/*.cpp \
@@ -65,6 +64,8 @@ apply_pattern reflex_dictionary dictionary=GaudiExamples \
 				selectionfile=$(GAUDIEXAMPLESROOT)/src/POOLIO/dict.xml \
 				options=" $(includes) "
 macro GaudiExamplesDict_use_linkopts $(use_linkopts)
+
+apply_pattern install_python_modules
 
 #==> Gaudi with multiple threads
 # commented out since it shall not link GaudiSvc

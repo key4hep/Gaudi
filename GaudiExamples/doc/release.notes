@@ -1,6 +1,69 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2012-02-06 - Marco Clemencic
+ - Extended property tests to use 64 bit integers (patch #5204).
+
+============================ GaudiExamples v23r0 =============================
+! 2012-01-25 - Marco Clemencic
+ - Added a test service to trigger failures in various stages.
+
+! 2012-01-24 - Marco Clemencic
+ - Updated few reference files after the update of RootCnv.
+ - Removed obsolete script create_qmt_files.py
+
+! 2012-01-17 - Marco Clemencic
+ - Minor changes in DataOnDemandSvc after improvements in the code.
+
+! 2012-01-16 - Marco Clemencic
+ - Added a test for the new dynamic mapping of DataOnDemandSvc (based on the
+   already existing test).
+
+! 2011-12-13 - Marco Clemencic
+ - Added tests using namespace qualifiers in instance names in .opts (Gaudi.exe
+   and gaudirun.py).
+ - Reordering of tests.
+
+! 2011-12-12 - Marco Clemencic
+ - Fixed tests for new dependencies:
+   - updated configuration
+   - translated options
+   - fixed dependencies
+ - Fixed EvtCol{Write,Read}.py scripts.
+
+! 2011-12-09 - Marco Clemencic
+ - Rationalized structure:
+   - removed obsolete test runner scripts
+   - moved python scripts 'scripts'
+   - moved reference files to 'tests/qmtest/refs'
+   - moved input.hbook to 'tests/data'
+ - Added a ConfigurableUser to simplify the configuration (replaces Common.opts)
+
+! 2011-12-08 - Marco Clemencic
+ - Ported POOLIO Write and Read tests to ROOT.
+
+! 2011-12-05 - Marco Clemencic
+ - Removed the unused FastContainerSvc.
+ - Moved ParticlePropertySvc to a dedicated package and wrapped it in the
+   namespace Gaudi.
+
+! 2011-12-02 - Marco Clemencic
+ - Removed DataListenerSvc test.
+
+! 2011-12-01 - Chris Jones
+ - Fixed bug #85377: GaudiTuple tuple does not undestand ulonglong
+   Add some addition Tuple checks, for various data types.
+
+! 2011-11-22 - Marco Clemencic
+ - Fixed gcc 4.6 warning (-Wunused-but-set-variable).
+   It was already present with ICC, but disabled.
+
+============================ GaudiExamples v22r5 =============================
+============================ GaudiExamples v22r4 =============================
+! 2011-09-02 - Marco Clemencic
+ - Extended ExtendedProperties test to expose bug #86303
+
+============================ GaudiExamples v22r3 =============================
 ! 2011-08-16 - Marco Clemencic
  - Fixed some tests (checks) on Windows.
 

@@ -1,5 +1,5 @@
 package GaudiMP
-version v1r1
+version v1r3
 
 branches      GaudiMP cmt doc src dict python scripts
 

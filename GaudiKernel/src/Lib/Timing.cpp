@@ -9,7 +9,7 @@
 //
 //	Author     : M.Frank
 //  Created    : 13/1/99
-//	Changes    : 
+//	Changes    :
 //====================================================================
 #define GAUDIKERNEL_TIMING_CPP
 
@@ -34,30 +34,29 @@ static const longlong UNIX_BASE_TIME = 0;
 
 // convert time from internal representation to the appropriate type
 // Internal representation for WIN32: 100 nanosecond intervals
-//                             Unix:    1 clock tick (usually 10 mille seconds)
+//                             Unix:    1 clock tick (usually 10 milliseconds)
 longlong System::adjustTime(TimeType typ, longlong t)   {
   if ( t != -1 )   {
 #ifndef _WIN32
     /////////    t *= 10000000;           // in 100 nanosecond intervals
     //  t /= CLK_TCK ;     // needs division by clock tick unit
-    /// unfortunately "-ansi" flag turn off teh correct definition of CLK_TCK 
-    /// and forces it to be equal CLOCKS_PER_SEC, it is wrong! 
-    ///////// t /= 100 ; 
+    /// unfortunately "-ansi" flag turn off the correct definition of CLK_TCK
+    /// and forces it to be equal CLOCKS_PER_SEC, it is wrong!
+    ///////// t /= 100 ;
 
     ///  t /= CLOCKS_PER_SEC;     // needs division by clock tick unit
 #endif
     switch( typ )   {
-    case Year:      t /= 365;
-    case Day:       t /= 24;
-    case Hour:      t /= 60;
-    case Min:       t /= 60;
-    case Sec:       t /= 1000;
-    case milliSec:  t /= 1000;
-    case microSec:  t /= 10;                    break;
-    case nanoSec:   t *= 100;                   break;
-    case Month:     t /= (12*24*3600);
-                    t /= 10000000;              break;
-    default:                                    break;
+    case Year    :  return adjustTime<Year    >(t);
+    case Month   :  return adjustTime<Month   >(t);
+    case Day     :  return adjustTime<Day     >(t);
+    case Hour    :  return adjustTime<Hour    >(t);
+    case Min     :  return adjustTime<Min     >(t);
+    case Sec     :  return adjustTime<Sec     >(t);
+    case milliSec:  return adjustTime<milliSec>(t);
+    case microSec:  return adjustTime<microSec>(t);
+    case nanoSec :  return adjustTime<nanoSec >(t);
+    case Native  :  return adjustTime<Native  >(t);
     }
   }
   return t;
@@ -137,7 +136,7 @@ longlong System::remainingTime(TimeType typ, InfoType fetch, long pid)   {
   return left;
 }
 
-/// Ellapsed time since start of process in milli seconds
+/// Ellapsed time since start of process in milliseconds
 longlong System::ellapsedTime(TimeType typ, InfoType fetch, long pid) {
   KERNEL_USER_TIMES info;
   longlong ellapsed = currentTime(microSec)*10;
@@ -146,7 +145,7 @@ longlong System::ellapsedTime(TimeType typ, InfoType fetch, long pid) {
   return ellapsed;
 }
 
-/// CPU kernel time of process in milli seconds
+/// CPU kernel time of process in milliseconds
 longlong System::kernelTime(TimeType typ, InfoType fetch, long pid) {
   KERNEL_USER_TIMES info;
   longlong kerneltime = 0;
@@ -156,7 +155,7 @@ longlong System::kernelTime(TimeType typ, InfoType fetch, long pid) {
   return kerneltime;
 }
 
-/// CPU kernel time of process in milli seconds
+/// CPU kernel time of process in milliseconds
 longlong System::userTime(TimeType typ, InfoType fetch, long pid) {
   longlong usertime = 0;
   KERNEL_USER_TIMES info;
@@ -166,7 +165,7 @@ longlong System::userTime(TimeType typ, InfoType fetch, long pid) {
   return usertime;
 }
 
-/// CPU kernel time of process in milli seconds
+/// CPU kernel time of process in milliseconds
 longlong System::cpuTime(TimeType typ, InfoType fetch, long pid) {
   longlong cputime = 0;
   KERNEL_USER_TIMES info;
@@ -174,4 +173,16 @@ longlong System::cpuTime(TimeType typ, InfoType fetch, long pid) {
     cputime = adjustTime(typ, info.KernelTime+info.UserTime );
   }
   return cputime;
+}
+
+namespace System {
+  ProcessTime getProcessTime(long pid) {
+    KERNEL_USER_TIMES info;
+    if (getProcess()->query(pid, Times, &info)) {
+      return ProcessTime(info.KernelTime,
+                         info.UserTime,
+                         currentTime(Native) - info.CreateTime);
+    }
+    return ProcessTime(); // return 0s in case of problems
+  }
 }

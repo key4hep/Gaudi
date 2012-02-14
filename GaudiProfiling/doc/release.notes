@@ -4,6 +4,12 @@
 ! Purpose     : Profiling and performance monitoring of Gaudi/LHCb software
 !-----------------------------------------------------------------------------
 
+============================ GaudiProfiling v1r2 =============================
+! 2011-10-12 - Hubert Degaudenzi
+ - added cstddef include for the size_t type definition which apparently has been
+   moved in Gcc 4.6.
+
+============================ GaudiProfiling v1r1 =============================
 ! 2011-06-23 - Hubert Degaudenzi
  - fixed warnings from the eclipse code analysis engine.
 

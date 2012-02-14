@@ -36,7 +36,7 @@
 //-----------------------------------------------------------------------------
 /// Standard constructor
 RootHistCnv::RNTupleCnv::RNTupleCnv( ISvcLocator* svc, const CLID& clid )
-: RConverter(clid, svc) {
+  : RConverter(clid, svc) {
 }
 //-----------------------------------------------------------------------------
 
@@ -50,7 +50,7 @@ RootHistCnv::RNTupleCnv::~RNTupleCnv()             {
 //-----------------------------------------------------------------------------
 /// Initialize the converter
 StatusCode RootHistCnv::RNTupleCnv::initialize()   {
-//-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
   StatusCode status = Converter::initialize();
   if ( status.isSuccess() ) {
     m_ntupleSvc = serviceLocator()->service("NTupleSvc");
@@ -63,7 +63,7 @@ StatusCode RootHistCnv::RNTupleCnv::initialize()   {
 //-----------------------------------------------------------------------------
 /// Finalize the converter
 StatusCode RootHistCnv::RNTupleCnv::finalize()     {
-//-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
   /// @FIXME: the release at this point may brake (?)
   m_ntupleSvc = 0; // release
   return Converter::finalize();
@@ -108,10 +108,10 @@ StatusCode RootHistCnv::RNTupleCnv::createObj(IOpaqueAddress* pAddress,
 
   IRegistry* pReg = pAddress->registry();
 
-//    log << MSG::WARNING << "adr: " << pAddress->par()[0] << " <> "
-//        << pAddress->par()[1] << " <> " << pAddress->ipar()[0] << " <> "
-//        << pAddress->ipar()[1] << " <> " << hex << rAddr->tObj()
-//        << dec << " <> " << pReg->identifier() << endmsg;
+  //    log << MSG::WARNING << "adr: " << pAddress->par()[0] << " <> "
+  //        << pAddress->par()[1] << " <> " << pAddress->ipar()[0] << " <> "
+  //        << pAddress->ipar()[1] << " <> " << hex << rAddr->tObj()
+  //        << dec << " <> " << pReg->identifier() << endmsg;
 
   std::string ident = pReg->identifier();
 
@@ -129,7 +129,7 @@ StatusCode RootHistCnv::RNTupleCnv::createObj(IOpaqueAddress* pAddress,
       refpObject = dynamic_cast<DataObject*>(nt);
     } else {
       log << MSG::ERROR << "Problems loading ntuple id: " << pReg->identifier()
-	  << endmsg;
+          << endmsg;
     }
   }
   return status;
@@ -176,13 +176,13 @@ StatusCode RootHistCnv::RNTupleCnv::createRep(DataObject* pObject,
       }
       else  {
         TDirectory* pDir  = (TDirectory*)pAddr->ipar()[0];
-	RootObjAddress *rAddr = dynamic_cast<RootObjAddress*>( pAddr );
-	if (rAddr == 0) {
-	  MsgStream log (msgSvc(), "RNTupleCnv");
-	  log << MSG::ERROR << "Could not cast to RootObjAddress" << endmsg;
-	  return StatusCode::FAILURE;
-	}
-	TTree*      pTree = (TTree*) rAddr->tObj();
+        RootObjAddress *rAddr = dynamic_cast<RootObjAddress*>( pAddr );
+        if (rAddr == 0) {
+          MsgStream log (msgSvc(), "RNTupleCnv");
+          log << MSG::ERROR << "Could not cast to RootObjAddress" << endmsg;
+          return StatusCode::FAILURE;
+        }
+        TTree*      pTree = (TTree*) rAddr->tObj();
         gDirectory = pDir;
         return writeData(pTree, dynamic_cast<INTuple*>(pObject));
       }
@@ -219,7 +219,7 @@ StatusCode RootHistCnv::RNTupleCnv::updateRep(IOpaqueAddress* pAddr,
   }
   else {
     log << MSG::WARNING << "empty ntuple: " << pObj->registry()->identifier()
-	<< endmsg;
+        << endmsg;
     return ( createRep(pObj,pAddr) );
   }
   return StatusCode::FAILURE;
@@ -230,24 +230,29 @@ StatusCode RootHistCnv::RNTupleCnv::updateRep(IOpaqueAddress* pAddr,
 
 //-----------------------------------------------------------------------------
 std::string RootHistCnv::RNTupleCnv::rootVarType(int type) {
-//-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
   switch( type ) {
-  case DataTypeInfo::SHORT:   return "/S";           // short
-  case DataTypeInfo::INT:     return "/I";           // int
-  case DataTypeInfo::LONG:    return "/I";           // long
-  case DataTypeInfo::USHORT:  return "/s";           // ushort
-  case DataTypeInfo::UINT:    return "/i";           // uint
-  case DataTypeInfo::ULONG:   return "/i";           // ulong
-  case DataTypeInfo::FLOAT:   return "/F";           // float
-  case DataTypeInfo::DOUBLE:  return "/D";           // double
-  default:                    return "";
+  case DataTypeInfo::BOOL:      return "/O";           // bool
+  case DataTypeInfo::SHORT:     return "/S";           // short
+  case DataTypeInfo::INT:       return "/I";           // int
+  case DataTypeInfo::LONG:      return "/I";           // long
+  case DataTypeInfo::LONGLONG:  return "/L";           // longlong
+  case DataTypeInfo::USHORT:    return "/s";           // ushort
+  case DataTypeInfo::UINT:      return "/i";           // uint
+  case DataTypeInfo::ULONG:     return "/i";           // ulong
+  case DataTypeInfo::ULONGLONG: return "/l";           // ulonglong
+  case DataTypeInfo::FLOAT:     return "/F";           // float
+  case DataTypeInfo::DOUBLE:    return "/D";           // double
+  case DataTypeInfo::CHAR:      return "/B";           // char
+  case DataTypeInfo::UCHAR:     return "/b";           // char
+  default:                      return "";
   }
   // cannot reach this point
 }
 
 //-----------------------------------------------------------------------------
 bool RootHistCnv::parseName(std::string full, std::string &blk, std::string &var) {
-//-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
   int sp;
   if ( (sp=full.find("/")) != -1 ) {
     blk = full.substr(0,sp);
@@ -264,17 +269,17 @@ bool RootHistCnv::parseName(std::string full, std::string &blk, std::string &var
 //-----------------------------------------------------------------------------
 /// Make the compiler instantiate the code...
 
-#define INSTANTIATE(TYP)  \
-template INTupleItem* createNTupleItem<TYP>(std::string itemName, std::string blockName, std::string index_name, int indexRange, int arraySize, TYP minimum, TYP maximum, INTuple* tuple);
+#define INSTANTIATE(TYP)                                                \
+  template INTupleItem* createNTupleItem<TYP>(std::string itemName, std::string blockName, std::string index_name, int indexRange, int arraySize, TYP minimum, TYP maximum, INTuple* tuple);
 
 namespace RootHistCnv  {
 
   template<class TYP>
   INTupleItem* createNTupleItem (std::string itemName, std::string blockName,
-				 std::string indexName,
-				 int indexRange, int arraySize,
-				 TYP min, TYP max,
-				 INTuple* ntup) {
+                                 std::string indexName,
+                                 int indexRange, int arraySize,
+                                 TYP min, TYP max,
+                                 INTuple* ntup) {
 
     std::string varName;
     if (blockName != "") {
@@ -295,34 +300,34 @@ namespace RootHistCnv  {
     if (indexName == "") {
 
       if (arraySize == 1) {
-	// simple items
-	col = NTuple::_Item<TYP>::create(ntup, varName,
-					 typeid(TYP),
-					 min, max, null);
+        // simple items
+        col = NTuple::_Item<TYP>::create(ntup, varName,
+                                         typeid(TYP),
+                                         min, max, null);
 
       } else {
-	// Arrays of fixed size
-	col = NTuple::_Array<TYP>::create(ntup, varName,
-					   typeid(TYP),
-					  "", arraySize,
-					  min, max, null);
+        // Arrays of fixed size
+        col = NTuple::_Array<TYP>::create(ntup, varName,
+                                          typeid(TYP),
+                                          "", arraySize,
+                                          min, max, null);
       }
 
     } else {
 
       if (arraySize == 1) {
-	// Arrays of variable size
-	col = NTuple::_Array<TYP>::create(ntup, varName,
-					   typeid(TYP),
-					  indexName, indexRange,
-					  min, max, null);
+        // Arrays of variable size
+        col = NTuple::_Array<TYP>::create(ntup, varName,
+                                          typeid(TYP),
+                                          indexName, indexRange,
+                                          min, max, null);
       } else {
-	// Matrices
-	col = NTuple::_Matrix<TYP>::create(ntup, varName,
-					   typeid(TYP),
+        // Matrices
+        col = NTuple::_Matrix<TYP>::create(ntup, varName,
+                                           typeid(TYP),
                                            indexName,
-					   indexRange, arraySize,
-					   min, max, null);
+                                           indexRange, arraySize,
+                                           min, max, null);
       }
 
     }
@@ -331,15 +336,18 @@ namespace RootHistCnv  {
 
   }
 
-  INSTANTIATE(float)
-  INSTANTIATE(double)
-  INSTANTIATE(bool)
-  INSTANTIATE(char)
-  INSTANTIATE(int)
-  INSTANTIATE(short)
-  INSTANTIATE(long)
-  INSTANTIATE(unsigned char)
-  INSTANTIATE(unsigned int)
-  INSTANTIATE(unsigned short)
-  INSTANTIATE(unsigned long)
+  INSTANTIATE(float);
+  INSTANTIATE(double);
+  INSTANTIATE(bool);
+  INSTANTIATE(char);
+  INSTANTIATE(int);
+  INSTANTIATE(short);
+  INSTANTIATE(long);
+  INSTANTIATE(long long);
+  INSTANTIATE(unsigned char);
+  INSTANTIATE(unsigned int);
+  INSTANTIATE(unsigned short);
+  INSTANTIATE(unsigned long);
+  INSTANTIATE(unsigned long long);
+
 }

@@ -27,7 +27,6 @@
 #include "GaudiKernel/StatEntity.h"
 #include "GaudiKernel/ICounterSummarySvc.h"
 #include "GaudiKernel/IUpdateManagerSvc.h"
-#include "GaudiKernel/TransientFastContainer.h"
 #include "GaudiKernel/HashMap.h"
 // ============================================================================
 // forward declarations
@@ -98,9 +97,9 @@ protected: // few actual data types
   /// a pointer to the CounterSummarySvc
   ICounterSummarySvc* m_counterSummarySvc;
   ///list of counters to declare. Set by property CounterList. This can be a regular expression.
-  std::vector<std::string> m_counterList; 
+  std::vector<std::string> m_counterList;
   //list of stat entities to write. Set by property StatEntityList. This can be a regular expression.
-  std::vector<std::string> m_statEntityList; 
+  std::vector<std::string> m_statEntityList;
 public:
   // ==========================================================================
   /** @brief Templated access to the data in Gaudi Transient Store
@@ -315,8 +314,6 @@ public:
                          const bool         create = true ) const ;
   /// Short-cut to locate the Update Manager Service.
   inline IUpdateManagerSvc * updMgrSvc() const;
-  /// Short-cut to locate the Fast Containers Service.
-  inline IDataProviderSvc * fastContainersSvc() const;
 public:
   /** Print the error message and return with the given StatusCode.
    *
@@ -661,13 +658,6 @@ public:
    *  @endcode
    */
   inline StatusCode runUpdate() { return updMgrSvc()->update(this); }
-  /// Return a new TransientFastContainer for objects of type T.
-  /// The container is created if it is not in the transient store.
-  /// If a container with the same name but a different type
-  template <class T>
-  TransientFastContainer<T> * getFastContainer
-  ( const std::string &location,
-    typename TransientFastContainer<T>::size_type initial=0);
 public:
   /// Algorithm constructor
   GaudiCommon ( const std::string & name,
@@ -736,18 +726,18 @@ public:
   // ==========================================================================
 public:
   // ==========================================================================
-  /// get the list of aquired tools 
-  const AlgTools& tools    () const { return m_tools    ; }    // get all tools 
-  /// get the list of aquired services 
-  const Services& services () const { return m_services ; } // get all services 
+  /// get the list of aquired tools
+  const AlgTools& tools    () const { return m_tools    ; }    // get all tools
+  /// get the list of aquired services
+  const Services& services () const { return m_services ; } // get all services
   // ==========================================================================
 private:
   // ==========================================================================
-  /// handler for "ErrorPrint" property 
+  /// handler for "ErrorPrint" property
   void printErrorHandler ( Property& /* theProp */ ) ;     //      "ErrorPrint"
-  /// handler for "PropertiesPrint" property 
+  /// handler for "PropertiesPrint" property
   void printPropsHandler ( Property& /* theProp */ ) ;     // "PropertiesPrint"
-  /// handler for "StatPrint" property 
+  /// handler for "StatPrint" property
   void printStatHandler  ( Property& /* theProp */ ) ;     //       "StatPrint"
   // ==========================================================================
 public:
@@ -794,8 +784,6 @@ private:
   // ==========================================================================
   /// Pointer to the Update Manager Service instance
   mutable IUpdateManagerSvc* m_updMgrSvc;
-  /// Pointer to the service providing transient fast containers
-  mutable IDataProviderSvc* m_fastContainersSvc;
   // ==========================================================================
   /// insert  the actual C++ type of the algorithm in the messages?
   bool        m_typePrint     ;

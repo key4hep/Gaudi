@@ -156,7 +156,6 @@ StatusCode DataStreamTool::initializeStream(EventSelectorDataStream* s)   {
 
 // Create (sub-) Event selector service
 StatusCode DataStreamTool::createSelector(const std::string& nam, const std::string& typ, IEvtSelector*& sel) {
-  MsgStream log(msgSvc(), name());
   IService* isvc = ROOT::Reflex::PluginService::Create<IService*>(typ, nam, serviceLocator());
   if ( isvc ) {
     StatusCode status = isvc->queryInterface(IEvtSelector::interfaceID(), (void**)&sel);
@@ -166,6 +165,8 @@ StatusCode DataStreamTool::createSelector(const std::string& nam, const std::str
     sel = 0;
     isvc->release();
   }
+  MsgStream log(msgSvc(), name());
+  log << MSG::ERROR << "Failed to create IEvtSelector " << typ << "/" << nam << endmsg;
   return StatusCode::FAILURE;
 }
 

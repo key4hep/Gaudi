@@ -119,10 +119,15 @@ def main():
         args = [package_name + ".Configuration"]
         usingConvention = True
 
+    genConfDir = os.path.join("..", os.environ.get("CMTCONFIG", ""), "genConf")
+    if not os.path.exists(genConfDir):
+        genConfDir = os.path.join("..", "genConf")
+
     if not opts.output:
-        outputfile = os.path.join("..", "genConf", package_name + '_user_confDb.py')
+        outputfile = os.path.join(genConfDir, package_name + '_user_confDb.py')
     else:
         outputfile = opts.output
+
 
     # The locking ensures that nobody tries to modify the python.zip file while
     # we read it.
@@ -153,9 +158,9 @@ def main():
     try:
         # Add the local python directories to the python path to be able to import the local
         # configurables
-        sys.path.insert(0, os.path.join("..", "genConf"))
+        sys.path.insert(0, genConfDir)
         sys.path.insert(0, os.path.join("..", "python"))
-        localConfDb = os.path.join("..", "genConf", package_name, package_name + '_confDb.py')
+        localConfDb = os.path.join(genConfDir, package_name, package_name + '_confDb.py')
         if os.path.exists(localConfDb):
             execfile(localConfDb, {}, {})
     except:

@@ -35,6 +35,18 @@ int test_main(int /*argc*/, char** /*argv*/)             // note the name!
         BOOST_CHECK(parse(result, "1000"));
         BOOST_CHECK(result==1000);
     }
+
+    {
+        long result;
+        BOOST_CHECK(parse(result, "1L"));
+        BOOST_CHECK(result==1);
+    }
+
+    {
+        long result;
+        BOOST_CHECK(parse(result, "100L"));
+        BOOST_CHECK(result==100);
+    }
 //==============================================================================
 // CharGrammar
 //==============================================================================
@@ -96,7 +108,7 @@ int test_main(int /*argc*/, char** /*argv*/)             // note the name!
         BOOST_CHECK(result[1]==2.2);
     }
 
-    {
+    /*{
         std::set<double> result;
         BOOST_CHECK(parse(result, "[1.1, 2.2 ]"));
         BOOST_CHECK(result.size()==2);
@@ -110,7 +122,7 @@ int test_main(int /*argc*/, char** /*argv*/)             // note the name!
       BOOST_CHECK(result.size()==2);
       BOOST_CHECK(result.front()==1.1);
       BOOST_CHECK(result.back()==2.2);
-    }
+    }*/
 //==============================================================================
 // PairGramar
 //==============================================================================

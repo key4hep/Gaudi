@@ -15,6 +15,10 @@ class ChronoAuditor : virtual public CommonAuditor {
 public:
   ChronoAuditor(const std::string& name, ISvcLocator* pSvcLocator);
 
+  virtual ~ChronoAuditor();
+
+  virtual StatusCode initialize();
+
 private:
   /// Default (catch-all) "before" Auditor hook
   virtual void i_before(CustomEventTypeRef evt, const std::string& caller);

@@ -1,0 +1,49 @@
+# ============================================================================
+# Created : 2011-10-31
+# Maintainer : Marco Clemencic
+# ============================================================================
+package    GaudiCoreSvc
+version    v1r0
+
+# ============================================================================
+# Structure, i.e. directories to process.
+# ============================================================================
+branches doc src cmt
+# ============================================================================
+# Used packages. Specify the version, * at the end specifies 'any revision'
+#   Put as many lines as needed, with all packages, without the '#'
+# ============================================================================
+use GaudiKernel *
+use Boost * LCG_Interfaces -no_auto_imports
+
+include_path    none
+# ============================================================================
+# Component library building rule
+# ============================================================================
+library GaudiCoreSvc -no_static -import=Boost \
+    ApplicationMgr/*.cpp \
+    EventSelector/*.cpp \
+    IncidentSvc/*.cpp \
+    JobOptionsSvc/*.cpp \
+    MessageSvc/*.cpp
+
+# ============================================================================
+# define component library link options
+# ============================================================================
+# equivalent to apply_pattern component_library, except for the genconf part
+apply_pattern libraryShr          library=GaudiCoreSvc
+apply_pattern library_Cshlibflags library=GaudiCoreSvc
+apply_pattern generate_rootmap    library=GaudiCoreSvc
+
+# this pattern is applied instead of "generate_configurables" to
+# avoid infinite recursion.
+apply_pattern generate_configurables_internal library=GaudiCoreSvc
+
+private
+# Select the specific Boost libraries
+macro_append Boost_linkopts " $(Boost_linkopts_system) $(Boost_linkopts_filesystem) $(Boost_linkopts_regex) $(Boost_linkopts_thread) "
+
+apply_pattern PackageVersionHeader where="../$(tag)"
+include_dirs "../$(tag)"
+macro_append GaudiCoreSvc_dependencies " PackageVersionHeader "
+end_private

@@ -78,7 +78,7 @@ struct SkipperGrammar  : qi::grammar<Iterator>
 	SkipperGrammar() : SkipperGrammar::base_type(comments) {
 		comments = enc::space | rep::confix("/*", "*/")[*(qi::char_ - "*/")]
 		      |
-		      rep::confix("//", sp::eol)[*(qi::char_ - sp::eol)];
+		      rep::confix("//", (sp::eol | sp::eoi))[*(qi::char_ - (sp::eol|sp::eoi))];
 	}
 	qi::rule<Iterator> comments;
 };
@@ -141,7 +141,8 @@ struct IntGrammar : qi::grammar<Iterator, RT(), Skipper>
 {
     typedef RT ResultT;
     IntGrammar() : IntGrammar::base_type( integer ) {
-        integer = qi::int_parser<RT>();
+        integer = qi::int_parser<RT>()[qi::_val = qi::_1] 
+            >> -qi::no_case[qi::char_('L')];
     }
     qi::rule<Iterator, RT(), Skipper> integer;
 };
@@ -321,9 +322,9 @@ struct MapGrammar : qi::grammar<Iterator,MapT(), Skipper>
     MapGrammar() : MapGrammar::base_type(map) {
         pair = key[op(qi::_val,qi::_1, tag_key())] > (qi::lit(':') | '=')  >
         value[op(qi::_val,qi::_1, tag_mapped())];
-        list = pair % enc::char_(',');
-        map = (('['  > list > ']')
-              | ('{'  > list > '}'))[op(qi::_val,qi::_1)];
+        list = -(pair % enc::char_(','));
+        map = (('['  >> list >> ']')
+              | ('{'  >> list >> '}'))[op(qi::_val,qi::_1)];
     }
 // ----------------------------------------------------------------------------
     typename

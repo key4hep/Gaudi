@@ -1,0 +1,54 @@
+
+*******************************************************************************
+*                                                                             *
+* Simple example which illustrate the usage of useful                         *
+* algorithm  base class for writing of EventTag Collections                   *
+*                                                                             *
+*******************************************************************************
+
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.77 $
+                                          running on pcphlbc16 on Mon Dec 12 17:09:21 2011
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+ApplicationMgr       INFO Successfully loaded modules : GaudiAlg, RootHistCnv
+RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
+RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
+RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+EvtTupleSvc         DEBUG Service base class initialized successfully
+EvtTupleSvc          INFO Added stream file:PFN:EvtTags1.root as EVTTAGS
+DetectorDataSvc      INFO Detector description not requested to be loaded
+RootHistSvc          INFO Writing ROOT histograms to: UndefinedROOTOutputFileName
+HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
+TagsWriter           INFO Adding OutputStream item /NTUPLES/EVTTAGS/Fill/COL1 with 0 level(s).
+TagsWriter           INFO Data source:             EvtTupleSvc
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
+EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='EvtColsEx.dst' OPT='READ' SVC='Gaudi::RootEvtSelector'
+EventSelector     SUCCESS Reading Event record 1. Record number within stream 1: 1
+IODataManager        INFO Referring to dataset EvtTags1.root by its file ID:34A61DA7-DB24-E111-ACE0-B499BAF088DC
+Gaudi::RootData...   INFO Recreate Database file:PFN:EvtTags1.root as /EVTTAGS
+EventSelector     SUCCESS Reading Event record 1001. Record number within stream 1: 1001
+EventSelector     SUCCESS Reading Event record 2001. Record number within stream 1: 2001
+EventSelector     SUCCESS Reading Event record 3001. Record number within stream 1: 3001
+EventSelector     SUCCESS Reading Event record 4001. Record number within stream 1: 4001
+EventSelector     SUCCESS Reading Event record 5001. Record number within stream 1: 5001
+EventSelector     SUCCESS Reading Event record 6001. Record number within stream 1: 6001
+EventSelector     SUCCESS Reading Event record 7001. Record number within stream 1: 7001
+EventSelector     SUCCESS Reading Event record 8001. Record number within stream 1: 8001
+EventSelector     SUCCESS Reading Event record 9001. Record number within stream 1: 9001
+ApplicationMgr       INFO Application Manager Stopped successfully
+Fill              SUCCESS Booked 0 N-Tuples and 1 Event Tag Collections
+Fill              SUCCESS List of booked Event Tag Collections in directory "EVTTAGS/Fill"
+Fill              SUCCESS  ID=COL1          Title="My trivial N-tuple"                      #items=9  {Address,evtNum,runNum,gauss,flat,expo,poisson,binom,flag} Items:{ 'Address' : 'IOpaqueAddress*' , 'binom' : 'I' , 'evtNum' : 'I' , 'expo' : 'D' , 'flag' : 'I' , 'flat' : 'D' , 'gauss' : 'D' , 'poisson' : 'I' , 'runNum' : 'I' }
+RootHistSvc       WARNING no ROOT output file name, Histograms cannot be persistified
+EventLoopMgr         INFO Histograms converted successfully according to request.
+RootCnvSvc           INFO Disconnected data IO:1CD11BA5-DB24-E111-9D07-B499BAF088DC [EvtColsEx.dst]
+ToolSvc              INFO Removing all tools created by ToolSvc
+XMLCatalog           INFO File 'test_catalog.xml' does not exist. New file created.
+EvtTupleSvc          INFO NTuples saved successfully
+EvtTupleSvc.EVT...   INFO Disconnected data IO:34A61DA7-DB24-E111-ACE0-B499BAF088DC [EvtTags1.root]
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

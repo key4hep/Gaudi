@@ -3,12 +3,12 @@
 <argument name="program"><text>gaudirun.py</text></argument>
 <argument name="options"><text>
 from Gaudi.Configuration import *
+from Configurables import GaudiPersistency
+GaudiPersistency()
 
-importOptions("$GAUDIPOOLDBROOT/options/GaudiPoolDbRoot.opts")
-
-out = OutputStream(Output = "DATAFILE='PFN:76642_a.dst'  TYP='POOL_ROOTTREE' OPT='RECREATE'")
+out = OutputStream(Output = "DATAFILE='PFN:76642_a.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'")
 out.ItemList = [ "/Event#999" ]
-copy = InputCopyStream(Output = "DATAFILE='PFN:76642_b.dst'  TYP='POOL_ROOTTREE' OPT='RECREATE'")
+copy = InputCopyStream(Output = "DATAFILE='PFN:76642_b.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'")
 
 app = ApplicationMgr(OutStream = [out, copy],
                      EvtSel = "NONE", EvtMax = 5)

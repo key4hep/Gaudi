@@ -56,7 +56,7 @@ PR_find( const bf::path& file, const string& search_list,
   try {
     if ( ( file_type == PR_regular_file && is_regular_file( file ) ) ||
          ( file_type == PR_directory && is_directory( file ) ) ) {
-      result = bf::complete(file).string();
+      result = bf::system_complete(file).string();
       return true;
     }
   } catch (bf::filesystem_error /*err*/) {
@@ -68,7 +68,7 @@ PR_find( const bf::path& file, const string& search_list,
     bf::path local = bf::initial_path() / file;
     if ( ( file_type == PR_regular_file && is_regular_file( local ) ) ||
          ( file_type == PR_directory && is_directory( local ) ) ) {
-      result = bf::complete(file).string();
+      result = bf::system_complete(file).string();
       return true;
     }
   } catch (bf::filesystem_error /*err*/) {
@@ -86,7 +86,7 @@ PR_find( const bf::path& file, const string& search_list,
     try {
       if ( ( file_type == PR_regular_file && is_regular_file( fp ) ) ||
            ( file_type == PR_directory && is_directory( fp ) ) ) {
-        result = bf::complete(fp).string();
+        result = bf::system_complete(fp).string();
         return true;
       }
     } catch (bf::filesystem_error /*err*/) {
@@ -108,7 +108,7 @@ PR_find( const bf::path& file, const string& search_list,
           bf::path fp2 = bf::path(*ritr) / file;
           if ( ( file_type == PR_regular_file && is_regular_file( fp2 ) ) ||
                ( file_type == PR_directory && is_directory( fp2 ) ) ) {
-            result = bf::complete( fp2 ).string();
+            result = bf::system_complete( fp2 ).string();
             return true;
           }
         }

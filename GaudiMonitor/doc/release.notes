@@ -1,6 +1,23 @@
 Package: GaudiMonitor
 Package manager : Marco Clemencic
 
+============================= GaudiMonitor v3r0 ==============================
+! 2011-12-06 - Marco Clemencic
+ - Moved AlgContextSvc from GaudiMonitor to GaudiCommonSvc.
+
+! 2011-12-02 - Marco Clemencic
+ - Removed DataListenerSvc.
+ - Moved from GaudiSvc:
+   - AlgContextSvc
+   - ExceptionSvc
+   - HistorySvc
+   - IssueLogger
+
+! 2011-11-22 - Marco Clemencic
+ - Fixed gcc 4.6 warning: operation XYZ may be undefined
+   (-Wsequence-point)
+
+============================= GaudiMonitor v2r9 ==============================
 ! 2011-06-23 - Hubert Degaudenzi
  - fixed warnings from the eclipse code analysis engine.
 

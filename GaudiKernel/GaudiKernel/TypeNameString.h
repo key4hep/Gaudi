@@ -1,4 +1,3 @@
-// $Id: ListItem.h,v 1.2 2007/01/17 14:17:08 hmd Exp $
 #ifndef GAUDIKERNEL_TYPENAMESTRING_H
 #define GAUDIKERNEL_TYPENAMESTRING_H
 #include <string>
@@ -23,7 +22,13 @@ namespace Gaudi {
       const std::string& name() const { return m_name; }
       bool haveType() const { return m_haveType; }
     };
+
+    /// Output stream operator for TypeNameString instances.
+    inline std::ostream& operator<< (std::ostream& s, const TypeNameString& tn) {
+      return s << tn.type() << '/' << tn.name();
+    }
   }
 }
+
 
 #endif // GAUDIKERNEL_TYPENAMESTRING_H

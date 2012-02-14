@@ -181,29 +181,52 @@ namespace Tuples
   {
   public:
     // ========================================================================
-    /** basic type for 'integer' items
-     *  It has the fixed bit-length (32) for all platforms (?)
-     */
+    /// basic type for int items
+    typedef NTuple::Item<bool>                  Bool      ;
+    // ========================================================================
+    /// basic type for int items
+    typedef NTuple::Item<char>                  Char      ;
+    // ========================================================================
+    /// basic type for unsigned int items
+    typedef NTuple::Item<unsigned char>         UChar     ;
+    // ========================================================================
+    /// basic type for int items
+    typedef NTuple::Item<short>                 Short     ;
+    // ========================================================================
+    /// basic type for unsigned int items
+    typedef NTuple::Item<unsigned short>        UShort    ;
+    // ========================================================================
+    /// basic type for int items
     typedef NTuple::Item<int>                   Int       ;
     // ========================================================================
-    /** basic type for 'float/double' items
-     *  It has the fixed bit-length (32) for all platforms (?)
-     */
+    /// basic type for unsigned int items
+    typedef NTuple::Item<unsigned int>          UInt      ;
+    // ========================================================================
+    /// basic type for unsigned long long items
+    typedef NTuple::Item<long long>             LongLong  ;
+    // ========================================================================
+    /// basic type for unsigned long long items
+    typedef NTuple::Item<unsigned long long>    ULongLong ;
+    // ========================================================================
+    /// basic type for float items
     typedef NTuple::Item<float>                 Float     ;
     // ========================================================================
-    /// basic type for  address items
+    /// basic type for double items
+    typedef NTuple::Item<double>                Double    ;
+    // ========================================================================
+    /// basic type for address items
     typedef NTuple::Item<IOpaqueAddress*>       Address   ;
     // ========================================================================
-    /// basic type for  array of floats
+    /// basic type for array of floats
     typedef NTuple::Array<float>                FArray    ;
     // ========================================================================
-    /// basic type for  matrix of floats
+    /// basic type for matrix of floats
     typedef NTuple::Matrix<float>               FMatrix   ;
     // ========================================================================
     // the actual type for variable size matrix indices
     typedef unsigned short                      MIndex    ;
     // ========================================================================
-    // the map of items
+    // the map of all items
     typedef std::map<std::string,std::string>   ItemMap   ;
     // ========================================================================
   protected:
@@ -229,6 +252,215 @@ namespace Tuples
   public:
     // ========================================================================
     /** Set the value for selected tuple column.
+     *  If column does not exist, it will be automatically created
+     *  and appended to the tuple
+     *
+     *  @code
+     *  //
+     *  const float mass = ... ;
+     *  tuple->column( "m", mass );
+     *  //
+     *  @endcode
+     *
+     *  @param  name  the name of the column
+     *  @param  value the value of the variable
+     *  @return status code
+     */
+    StatusCode column ( const std::string& name   ,
+                        const float        value  );
+    // ========================================================================
+  public:
+    // ========================================================================
+    /** Set the value for the selected tuple column
+     *  If the column does not exist, it will be automatically created
+     *  and appended to the tuple
+     *
+     *  @code
+     *  //
+     *  const double mass = ... ;
+     *  tuple->column( "m", mass );
+     *  //
+     *  @endcode
+     *  @warning the value is truncated to float
+     *
+     *  @param  name     the name of the column
+     *  @param  value    the value of the variable
+     *  @return status code
+     */
+    StatusCode column ( const std::string& name   ,
+                        const double       value  );
+    // ========================================================================
+  public:
+    // ========================================================================
+    /** Set the value for selected tuple column.
+     *  If the column does not exist yet, it will be
+     *  automatically created and appended to the tuple
+     *
+     *  @code
+     *
+     *  short number = ... ;
+     *  tuple -> column ( "num" , number );
+     *
+     *  @endcode
+     *
+     *  @param name   the name of the column
+     *  @param value  the value of the variable
+     *  @return status code
+     */
+    StatusCode column ( const std::string&   name  ,
+                        const short          value );
+    // ========================================================================
+    /** Set the value for selected tuple column.
+     *  If the column does not exist yet, it will be
+     *  automatically created and appended to the tuple
+     *
+     *  @code
+     *
+     *  short number = ... ;
+     *  tuple->column( "num", number );
+     *
+     *  @endcode
+     *
+     *  @param name   name of the column
+     *  @param value  value of the variable
+     *  @param minv   minimum value of the variable
+     *  @param maxv   maximum value of the variable
+     *  @return status code
+     */
+    StatusCode column ( const std::string&  name  ,
+                        const short         value ,
+                        const short         minv  ,
+                        const short         maxv  );
+    // ========================================================================
+  public:
+    // ========================================================================
+    /** Set the value for selected tuple column.
+     *  If the column does not exist yet, it will be
+     *  automatically created and appended to the tuple
+     *
+     *  @code
+     *
+     *  unsigned short number = ... ;
+     *  tuple -> column ( "num" , number );
+     *
+     *  @endcode
+     *
+     *  @param name   the name of the column
+     *  @param value  the value of the variable
+     *  @return status code
+     */
+    StatusCode column ( const std::string&   name  ,
+                        const unsigned short value );
+    // ========================================================================
+    /** Set the value for selected tuple column.
+     *  If the column does not exist yet, it will be
+     *  automatically created and appended to the tuple
+     *
+     *  @code
+     *
+     *  unsigned short number = ... ;
+     *  tuple->column( "num", number );
+     *
+     *  @endcode
+     *
+     *  @param name   name of the column
+     *  @param value  value of the variable
+     *  @param minv   minimum value of the variable
+     *  @param maxv   maximum value of the variable
+     *  @return status code
+     */
+    StatusCode column ( const std::string&   name  ,
+                        const unsigned short value ,
+                        const unsigned short minv  ,
+                        const unsigned short maxv  );
+    // ========================================================================
+  public:
+    // ========================================================================
+    /** Set the value for selected tuple column.
+     *  If the column does not exist yet, it will be
+     *  automatically created and appended to the tuple
+     *
+     *  @code
+     *
+     *  char number = ... ;
+     *  tuple -> column ( "num" , number );
+     *
+     *  @endcode
+     *
+     *  @param name   the name of the column
+     *  @param value  the value of the variable
+     *  @return status code
+     */
+    StatusCode column ( const std::string&   name  ,
+                        const char           value );
+    // ========================================================================
+    /** Set the value for selected tuple column.
+     *  If the column does not exist yet, it will be
+     *  automatically created and appended to the tuple
+     *
+     *  @code
+     *
+     *  char number = ... ;
+     *  tuple->column( "num", number );
+     *
+     *  @endcode
+     *
+     *  @param name   name of the column
+     *  @param value  value of the variable
+     *  @param minv   minimum value of the variable
+     *  @param maxv   maximum value of the variable
+     *  @return status code
+     */
+    StatusCode column ( const std::string&  name  ,
+                        const char          value ,
+                        const char          minv  ,
+                        const char          maxv  );
+    // ========================================================================
+  public:
+    // ========================================================================
+    /** Set the value for selected tuple column.
+     *  If the column does not exist yet, it will be
+     *  automatically created and appended to the tuple
+     *
+     *  @code
+     *
+     *  unsigned char number = ... ;
+     *  tuple -> column ( "num" , number );
+     *
+     *  @endcode
+     *
+     *  @param name   the name of the column
+     *  @param value  the value of the variable
+     *  @return status code
+     */
+    StatusCode column ( const std::string&   name  ,
+                        const unsigned char  value );
+    // ========================================================================
+    /** Set the value for selected tuple column.
+     *  If the column does not exist yet, it will be
+     *  automatically created and appended to the tuple
+     *
+     *  @code
+     *
+     *  unsigned char number = ... ;
+     *  tuple->column( "num", number );
+     *
+     *  @endcode
+     *
+     *  @param name   name of the column
+     *  @param value  value of the variable
+     *  @param minv   minimum value of the variable
+     *  @param maxv   maximum value of the variable
+     *  @return status code
+     */
+    StatusCode column ( const std::string&  name  ,
+                        const unsigned char value ,
+                        const unsigned char minv  ,
+                        const unsigned char maxv  );
+    // ========================================================================
+  public:
+    // ========================================================================
+    /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
      *  automatically created and appended to the tuple
      *
@@ -244,14 +476,92 @@ namespace Tuples
      *  @return status code
      */
     StatusCode column ( const std::string&   name  ,
-                        const int            value )
-    {
-      if ( invalid() ) { return InvalidTuple  ; }
-      Int* item = ints( name ) ;
-      if ( 0 == item ) { return InvalidColumn ; }
-      *item = value ;
-      return StatusCode::SUCCESS ;
-    }
+                        const int            value );
+    // ========================================================================
+    /** Set the value for selected tuple column.
+     *  If the column does not exist yet, it will be
+     *  automatically created and appended to the tuple
+     *
+     *  @code
+     *
+     *  int number = ... ;
+     *  tuple->column( "num", number );
+     *
+     *  @endcode
+     *
+     *  @param name   name of the column
+     *  @param value  value of the variable
+     *  @param minv   minimum value of the variable
+     *  @param maxv   maximum value of the variable
+     *  @return status code
+     */
+    StatusCode column ( const std::string&   name  ,
+                        const int            value ,
+                        const int            minv  ,
+                        const int            maxv  );
+    // ========================================================================
+  public:
+    // ========================================================================
+    /** Set the value for selected tuple column.
+     *  If the column does not exist yet, it will be
+     *  automatically created and appended to the tuple
+     *
+     *  @code
+     *
+     *  unsigned int number = ... ;
+     *  tuple->column("num", number );
+     *
+     *  @endcode
+     *
+     *  @param name   name of the column
+     *  @param value  value of the variable
+     *  @return status code
+     */
+    StatusCode column ( const std::string&   name  ,
+                        const unsigned int   value );
+    // ========================================================================
+    /** Set the value for selected tuple column.
+     *  If the column does not exist yet, it will be
+     *  automatically created and appended to the tuple
+     *
+     *  @code
+     *
+     *  unsigned int number = ... ;
+     *  tuple->column("num", number );
+     *
+     *  @endcode
+     *
+     *  @param name   name of the column
+     *  @param value  value of the variable
+     *  @param minv   minimum value of the variable
+     *  @param maxv   maximum value of the variable
+     *  @return status code
+     */
+    StatusCode column ( const std::string&   name  ,
+                        const unsigned int   value ,
+                        const unsigned int   minv  ,
+                        const unsigned int   maxv  );
+    // ========================================================================
+  public:
+    // ========================================================================
+    /** Set the value for the selected tuple column.
+     *  If the column does not exist yet, it will be
+     *  automatically created and appended to the tuple
+     *
+     *  @code
+     *
+     *  long number = ... ;
+     *  tuple -> column ( "num", number );
+     *
+     *  @endcode
+     *  @warning the value could be truncated to int
+     *
+     *  @param name    the name of the column
+     *  @param value   the value of the variable
+     *  @return status code
+     */
+    StatusCode column ( const std::string&   name  ,
+                        const long           value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -271,16 +581,9 @@ namespace Tuples
      *  @return status code
      */
     StatusCode column ( const std::string&   name  ,
-                        const int            value ,
-                        const int            minv  ,
-                        const int            maxv  )
-    {
-      if ( invalid() ) { return InvalidTuple  ; }
-      Int* item = ints ( name , minv , maxv ) ;
-      if ( 0 == item ) { return InvalidColumn ; }
-      *item = value ;
-      return StatusCode::SUCCESS ;
-    }
+                        const long           value ,
+                        const long           minv  ,
+                        const long           maxv  );
     // ========================================================================
   public:
     // ========================================================================
@@ -290,8 +593,51 @@ namespace Tuples
      *
      *  @code
      *
-     *  int number = ... ;
-     *  tuple->column("num", number );
+     *  unsigned long number = ... ;
+     *  tuple -> column ( "num" , number );
+     *
+     *  @endcode
+     *  @warning the value could be truncated to int
+     *
+     *  @param name   the name of the column
+     *  @param value  the value of the variable
+     *  @return status code
+     */
+    StatusCode column ( const std::string&   name  ,
+                        const unsigned long  value );
+    // ========================================================================
+    /** Set the value for selected tuple column.
+     *  If the column does not exist yet, it will be
+     *  automatically created and appended to the tuple
+     *
+     *  @code
+     *
+     *  unsigned long number = ... ;
+     *  tuple->column( "num", number );
+     *
+     *  @endcode
+     *
+     *  @param name   name of the column
+     *  @param value  value of the variable
+     *  @param minv   minimum value of the variable
+     *  @param maxv   maximum value of the variable
+     *  @return status code
+     */
+    StatusCode column ( const std::string&   name  ,
+                        const unsigned long  value ,
+                        const unsigned long  minv  ,
+                        const unsigned long  maxv  );
+    // ========================================================================
+  public:
+    // ========================================================================
+    /** Set the value for selected tuple column.
+     *  If the column does not exist yet, it will be
+     *  automatically created and appended to the tuple
+     *
+     *  @code
+     *
+     *  long long number = ... ;
+     *  tuple->column( "num", number );
      *
      *  @endcode
      *
@@ -300,47 +646,7 @@ namespace Tuples
      *  @return status code
      */
     StatusCode column ( const std::string&   name  ,
-                        const unsigned int   value )
-    {
-      StatusCode sc1 = StatusCode::SUCCESS ;
-      static const unsigned int s_max = std::numeric_limits<int>::max() ;
-      if ( s_max < value )
-      { sc1 = Warning
-          (" column('" + name + "'): truncate unsigned int" , TruncateValue ) ; }
-      const int val = (int) value ;
-      StatusCode sc2 = column ( name , val ) ;
-      return sc2.isFailure() ? sc2 : sc1 ;
-    }
-    // ========================================================================
-    /** Set the value for the selected tuple column.
-     *  If the column does not exist yet, it will be
-     *  automatically created and appended to the tuple
-     *
-     *  @code
-     *
-     *  int number = ... ;
-     *  tuple -> column ( "num", number );
-     *
-     *  @endcode
-     *  @warning the value could be truncated to int
-     *
-     *  @param name    the name of the column
-     *  @param value   the value of the variable
-     *  @return status code
-     */
-    StatusCode column ( const std::string&   name  ,
-                        const long           value )
-    {
-      StatusCode sc1 = StatusCode::SUCCESS ;
-      if ( sizeof(int) != sizeof(long)
-           && ( std::numeric_limits<int>::max() < value ||
-                std::numeric_limits<int>::min() > value ) )
-      { sc1 = Warning (" column('" + name + "'): truncate long value" ,
-                       TruncateValue ) ; }
-      const int val = (int) value ;
-      StatusCode sc2 = column ( name , val ) ;
-      return sc2.isFailure() ? sc2 : sc1 ;
-    }
+                        const long long      value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -348,28 +654,23 @@ namespace Tuples
      *
      *  @code
      *
-     *  int number = ... ;
-     *  tuple -> column ( "num" , number );
+     *  long long number = ... ;
+     *  tuple->column( "num", number );
      *
      *  @endcode
-     *  @warning the value could be truncated to int
      *
-     *  @param name   the name of the column
-     *  @param value  the value of the variable
+     *  @param name   name of the column
+     *  @param value  value of the variable
+     *  @param minv   minimum value of the variable
+     *  @param maxv   maximum value of the variable
      *  @return status code
      */
     StatusCode column ( const std::string&   name  ,
-                        const unsigned long  value )
-    {
-      StatusCode sc1 = StatusCode::SUCCESS ;
-      static const unsigned long s_max = std::numeric_limits<int>::max()  ;
-      if ( sizeof (int) != sizeof (unsigned long) && s_max < value )
-      { sc1 = Warning (" column('" + name + "'): truncate unsigned long value" ,
-                       TruncateValue ) ; }
-      const int val = (int) value ;
-      StatusCode sc2 = column ( name , val ) ;
-      return sc2.isFailure() ? sc2 : sc1 ;
-    }
+                        const long long      value ,
+                        const long long      minv  ,
+                        const long long      maxv  );
+    // ========================================================================
+  public:
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -377,24 +678,17 @@ namespace Tuples
      *
      *  @code
      *
-     *  short number = ... ;
-     *  tuple -> column ( "num" , number );
+     *  unsigned long long number = ... ;
+     *  tuple->column( "num", number );
      *
      *  @endcode
      *
-     *  @param name   the name of the column
-     *  @param value  the value of the variable
+     *  @param name   name of the column
+     *  @param value  value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string&   name  ,
-                        const short          value )
-    {
-      return column
-        ( name  ,
-          value ,
-          std::numeric_limits<short>::min() ,
-          std::numeric_limits<short>::max() ) ;
-    }
+    StatusCode column ( const std::string&       name  ,
+                        const unsigned long long value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -402,74 +696,23 @@ namespace Tuples
      *
      *  @code
      *
-     *  unsigned short number = ... ;
-     *  tuple -> column ( "num" , number );
+     *  unsigned long long number = ... ;
+     *  tuple->column( "num", number );
      *
      *  @endcode
      *
-     *  @param name   the name of the column
-     *  @param value  the value of the variable
+     *  @param name   name of the column
+     *  @param value  value of the variable
+     *  @param minv   minimum value of the variable
+     *  @param maxv   maximum value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string&   name  ,
-                        const unsigned short value )
-    {
-      return column
-        ( name  ,
-          value ,
-          std::numeric_limits<unsigned short>::min() ,
-          std::numeric_limits<unsigned short>::max() ) ;
-    }
+    StatusCode column ( const std::string&       name  ,
+                        const int                value ,
+                        const unsigned long long minv  ,
+                        const unsigned long long maxv  );
     // ========================================================================
-    /** Set the value for selected tuple column.
-     *  If the column does not exist yet, it will be
-     *  automatically created and appended to the tuple
-     *
-     *  @code
-     *
-     *  char number = ... ;
-     *  tuple -> column ( "num" , number );
-     *
-     *  @endcode
-     *
-     *  @param name    the name of the column
-     *  @param value   the value of tve variable
-     *  @return status code
-     */
-    StatusCode column ( const std::string&   name  ,
-                        const char           value )
-    {
-      return column
-        ( name  ,
-          value ,
-          std::numeric_limits<char>::min() ,
-          std::numeric_limits<char>::max() ) ;
-    }
-    // ========================================================================
-    /** Set the value for the selected tuple column.
-     *  If the column does not exist yet, it will be
-     *  automatically created and appended to the tuple
-     *
-     *  @code
-     *
-     *  unsigned char number = ... ;
-     *  tuple->column("num", number );
-     *
-     *  @endcode
-     *
-     *  @param name   the name of the column
-     *  @param value  the value of tve variable
-     *  @return status code
-     */
-    StatusCode column ( const std::string&   name  ,
-                        const unsigned char  value )
-    {
-      return column
-        ( name  ,
-          value ,
-          std::numeric_limits<unsigned char>::min() ,
-          std::numeric_limits<unsigned char>::max() ) ;
-    }
+  public:
     // ========================================================================
     /** Set the value for the selected tuple column.
      *  If the column does not exist yet, it will be
@@ -486,8 +729,8 @@ namespace Tuples
      *  @param value  the value of tve variable
      *  @return status code
      */
-    StatusCode column ( const std::string&   name  ,
-                        const signed char    value )
+    StatusCode column ( const std::string& name  ,
+                        const signed char  value )
     {
       return column
         ( name  ,
@@ -497,61 +740,6 @@ namespace Tuples
     }
     // ========================================================================
   public:
-    // ========================================================================
-    /** Set the value for selected tuple column.
-     *  If column does not exist, it will be automatically created
-     *  and appended to the tuple
-     *
-     *  @code
-     *  //
-     *  const float mass = ... ;
-     *  tuple->column("m", mass );
-     *  //
-     *  @endcode
-     *
-     *  @param  name  the name of the column
-     *  @param  value the value of the variable
-     *  @return status code
-     */
-    StatusCode column ( const std::string& name   ,
-                        const float        value  )
-    {
-      if ( invalid() ) { return InvalidTuple  ; }
-      Float* item = floats ( name ) ;
-      if ( 0 == item ) { return InvalidColumn ; }
-      *item = value ;
-      return StatusCode::SUCCESS ;
-    }
-    // ========================================================================
-    /** Set the value for the selected tuple column
-     *  If the column does not exist, it will be automatically created
-     *  and appended to the tuple
-     *
-     *  @code
-     *  //
-     *  const double mass = ... ;
-     *  tuple->column("m", mass );
-     *  //
-     *  @endcode
-     *  @warning the value is truncated to float
-     *
-     *  @param  name     the name of the column
-     *  @param  value    the value of the variable
-     *  @return status code
-     */
-    StatusCode column ( const std::string& name   ,
-                        const double       value  )
-    {
-      StatusCode sc1 = StatusCode::SUCCESS ;
-      static const double s_max =      std::numeric_limits<float>::max() ;
-      static const double s_min = -1 * std::numeric_limits<float>::max() ;
-      if ( s_max < value || s_min > value  )
-      { sc1 = Warning (" column('" + name + "'): truncate double value " ,
-                       TruncateValue ) ; }
-      const float val = (float) value ;
-      StatusCode sc2 = column ( name , val ) ;
-      return sc2.isFailure() ? sc2 : sc1 ;
-    }
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -568,11 +756,7 @@ namespace Tuples
      *  @return status code
      */
     StatusCode column ( const std::string& name  ,
-                        const bool         value )
-    {
-      const int val = value ;
-      return column ( name , val , 0 , 1 ) ;
-    }
+                        const bool         value );
     // ========================================================================
   public:
     // ========================================================================
@@ -640,7 +824,7 @@ namespace Tuples
      *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
      *  @date 2002-10-30
      */
-    StatusCode fill( const char*   format ... ) ;
+    StatusCode fill( const char* format ... ) ;
     // =======================================================================
   public:
     // =======================================================================
@@ -705,9 +889,9 @@ namespace Tuples
       // adjust the length
       if( first + maxv < last )
       {
-        Warning(" farray('"+name+"'): array is overflow, skip extra items") ;
+        Warning( "farray('"+name+"'): array is overflow, skip extra items") ;
         last = first + maxv ;
-      };
+      }
 
       // get the length item
       Int* len  = ints( length , 0 , maxv ) ;
@@ -781,7 +965,7 @@ namespace Tuples
      *
      *  @code
      *
-     *  std::vector<double>   data = ... ;
+     *  std::vector<double> data = ... ;
      *
      *  Tuple tuple = ntuple( "My Ntuple" );
      *
@@ -853,10 +1037,10 @@ namespace Tuples
       // adjust the length
       if( first + maxv < last )
       {
-        Warning(" farray('"
+        Warning("farray('"
                 + name  + "'): array is overflow, skip extra entries") ;
         last = first + maxv ;
-      };
+      }
 
       // get the length item
       Int* len  = ints( length , 0 , maxv ) ;
@@ -882,7 +1066,7 @@ namespace Tuples
      *
      *  @code
      *
-     *  std::vector<double>   data = ... ;
+     *  std::vector<double> data = ... ;
      *
      *  Tuple tuple = ntuple( "My Ntuple" );
      *
@@ -924,12 +1108,12 @@ namespace Tuples
       // adjust the lenfth
       if( first + maxv < last )
       {
-        Warning(" farray('"
+        Warning("farray('"
                 + name1 + ","
-                + name2 + "'): array is overflow, skip extra entries") ;
-        Warning(" farray('"+name1+"'): array is overflow, skip extra items") ;
+                + name2 + "'): array is overflow, skip extra entries").ignore() ;
+        Warning("farray('"+name1+"'): array is overflow, skip extra items").ignore() ;
         last = first + maxv ;
-      };
+      }
 
       // get the length item
       Int* len  = ints ( length , 0 , maxv ) ;
@@ -964,7 +1148,7 @@ namespace Tuples
      *
      *  @code
      *
-     *  std::vector<double>   data = ... ;
+     *  std::vector<double> data = ... ;
      *
      *  Tuple tuple = ntuple( "My Ntuple" );
      *
@@ -1012,12 +1196,12 @@ namespace Tuples
       // adjust the length
       if( first + maxv < last )
       {
-        Warning(" farray('"
+        Warning("farray('"
                 + name1 + ","
                 + name2 + ","
-                + name3 + "'): array is overflow, skip extra entries") ;
+                + name3 + "'): array is overflow, skip extra entries").ignore() ;
         last = first + maxv ;
-      };
+      }
 
       // get the length item
       Int* len  = ints ( length , 0 , maxv ) ;
@@ -1109,13 +1293,13 @@ namespace Tuples
       // adjust the length
       if( first + maxv < last )
       {
-        Warning(" farray('"
+        Warning("farray('"
                 + name1 + ","
                 + name2 + ","
                 + name3 + ","
-                + name4 + "'): array is overflow, skip extra entries") ;
+                + name4 + "'): array is overflow, skip extra entries").ignore() ;
         last = first + maxv ;
-      };
+      }
 
       // get the length item
       Int* len  = ints ( length , 0 , maxv ) ;
@@ -1220,9 +1404,9 @@ namespace Tuples
       // adjust the length
       if ( rows >= maxv )
       {
-        Warning ( " fmatrix('"+name+"'): matrix is overflow, skip extra items") ;
+        Warning ( "fmatrix('"+name+"'): matrix is overflow, skip extra items").ignore() ;
         rows = ( 0 < maxv ) ? ( maxv - 1 ) : 0 ;
-      };
+      }
 
       // get the length item
       Int* len  = ints( length , 0 , maxv ) ;
@@ -1240,7 +1424,7 @@ namespace Tuples
       {
         for ( MIndex iRow = 0 ; iRow < rows ; ++iRow )
         { (*var)[ iRow ] [ iCol ] = (float)(data[ iRow ][ iCol ]) ; }
-      };
+      }
 
       return StatusCode::SUCCESS ;
     }
@@ -1295,9 +1479,9 @@ namespace Tuples
       // adjust the length
       if ( first + maxv < last )
       {
-        Warning(" fmatrix('"+name+"'): matrix is overflow, skip extra items") ;
+        Warning("fmatrix('"+name+"'): matrix is overflow, skip extra items").ignore() ;
         last = first + maxv ;
-      };
+      }
 
       // get the length item
       Int* len  = ints( length , 0 , maxv ) ;
@@ -1319,7 +1503,7 @@ namespace Tuples
         { (*var)[ iRow ] [ iCol ] = (float)((*first)[ iCol ]) ; }
         //
         ++iRow ;
-      };
+      }
 
       return StatusCode::SUCCESS ;
     }
@@ -1417,9 +1601,9 @@ namespace Tuples
       // adjust the length
       if ( first + maxv < last )
       {
-        Warning(" fmatrix('"+name+"'): matrix is overflow, skip extra items") ;
+        Warning("fmatrix('"+name+"'): matrix is overflow, skip extra items").ignore() ;
         last = first + maxv ;
-      };
+      }
 
       // get the length item
       Int* len  = ints( length , 0 , maxv ) ;
@@ -1442,7 +1626,7 @@ namespace Tuples
         { (*var)[ iRow ] [ fun - funF ] = (float)((*fun) ( *first )) ; }
         //
         ++iRow;
-      };
+      }
 
       return StatusCode::SUCCESS ;
     }
@@ -1846,7 +2030,7 @@ namespace Tuples
       // adjust the length
       if ( maxv < info.size() )
       {
-        Warning(" fmatrix('"+name+"'): matrix is overflow, skip extra items") ;
+        Warning("fmatrix('"+name+"'): matrix is overflow, skip extra items") ;
         end = begin + maxv ;
       } ;
 
@@ -1901,7 +2085,7 @@ namespace Tuples
     /** provide the access to underlying Gaudi N-tuple
      *  @return pointer to Gaudi N-tuple object
      */
-    NTuple::Tuple*       tuple() const  { return m_tuple ; }
+    NTuple::Tuple* tuple() const  { return m_tuple ; }
     // =======================================================================
     /** return the reference counter
      *  @return current reference counter
@@ -1938,7 +2122,7 @@ namespace Tuples
     bool valid     () const { return 0 != tuple() ; }
     // =======================================================================
     /// invalid pointer to tuple ?
-    bool invalid   () const { return 0 == tuple() ; }
+    bool invalid   () const { return ! valid()    ; }
     // =======================================================================
   public:
     // =======================================================================
@@ -1974,15 +2158,77 @@ namespace Tuples
   private:
     // =======================================================================
     /// get the column
-    Float*   floats     ( const std::string& name );
+    Bool*    bools      ( const std::string& name ) ;
     // =======================================================================
     /// get the column
-    Int*     ints       ( const std::string& name );
+    Float*   floats     ( const std::string& name ) ;
+    // =======================================================================
+    /// get the column
+    Double*  doubles    ( const std::string& name ) ;
+    // =======================================================================
+    /// get the column
+    Char*   chars     ( const std::string& name ) ;
+    // =======================================================================
+    /// get the column
+    Char*   chars     ( const std::string& name ,
+                        const char         minv ,
+                        const char         maxv ) ;
+    // =======================================================================
+    /// get the column
+    UChar*  uchars    ( const std::string& name ) ;
+    // =======================================================================
+    /// get the column
+    UChar*  uchars    ( const std::string&  name ,
+                        const unsigned char minv ,
+                        const unsigned char maxv ) ;
+    // =======================================================================
+    /// get the column
+    Short*   shorts     ( const std::string& name ) ;
+    // =======================================================================
+    /// get the column
+    Short*   shorts     ( const std::string& name ,
+                          const short        minv ,
+                          const short        maxv ) ;
+    // =======================================================================
+    /// get the column
+    UShort*   ushorts   ( const std::string& name ) ;
+    // =======================================================================
+    /// get the column
+    UShort*   ushorts   ( const std::string& name ,
+                          const unsigned short minv ,
+                          const unsigned short maxv ) ;
+    // =======================================================================
+    /// get the column
+    Int*     ints       ( const std::string& name ) ;
     // =======================================================================
     /// get the column
     Int*     ints       ( const std::string& name ,
                           const int          minv ,
                           const int          maxv ) ;
+    // =======================================================================
+    /// get the column
+    UInt*     uints     ( const std::string& name ) ;
+    // =======================================================================
+    /// get the column
+    UInt*     uints     ( const std::string& name ,
+                          const unsigned int minv ,
+                          const unsigned int maxv ) ;
+    // =======================================================================
+    /// get the column
+    LongLong* longlongs ( const std::string& name );
+    // =======================================================================
+    /// get the column
+    LongLong* longlongs ( const std::string& name ,
+                          const long long    minv ,
+                          const long long    maxv ) ;
+    // =======================================================================
+    /// get the column
+    ULongLong* ulonglongs ( const std::string& name ) ;
+    // =======================================================================
+    /// get the column
+    ULongLong* ulonglongs ( const std::string&       name ,
+                            const unsigned long long minv ,
+                            const unsigned long long maxv ) ;
     // =======================================================================
     /// get the column
     FArray*  fArray     ( const std::string& name ,
@@ -2018,11 +2264,38 @@ namespace Tuples
     // =======================================================================
   private:
     // =======================================================================
+    /// the actual storage type for short columns
+    typedef GaudiUtils::HashMap<std::string,Bool*>   Bools;
+    // =======================================================================
+    /// the actual storage type for short columns
+    typedef GaudiUtils::HashMap<std::string,Char*>   Chars;
+    // =======================================================================
+    /// the actual storage type for unsigned short columns
+    typedef GaudiUtils::HashMap<std::string,UChar*>  UChars;
+    // =======================================================================
+    /// the actual storage type for short columns
+    typedef GaudiUtils::HashMap<std::string,Short*>  Shorts;
+    // =======================================================================
+    /// the actual storage type for unsigned short columns
+    typedef GaudiUtils::HashMap<std::string,UShort*> UShorts;
+    // =======================================================================
     /// the actual storage type for integer columns
     typedef GaudiUtils::HashMap<std::string,Int*>    Ints;
     // =======================================================================
+    /// the actual storage type for unsigned integer columns
+    typedef GaudiUtils::HashMap<std::string,UInt*>   UInts;
+    // =======================================================================
+    /// the actual storage type for longlong columns
+    typedef GaudiUtils::HashMap<std::string,LongLong*> LongLongs;
+    // =======================================================================
+    /// the actual storage type for ulonglong columns
+    typedef GaudiUtils::HashMap<std::string,ULongLong*> ULongLongs;
+    // =======================================================================
     /// the actual storage type for float columns
     typedef GaudiUtils::HashMap<std::string,Float*>   Floats;
+    // =======================================================================
+    /// the actual storage type for float columns
+    typedef GaudiUtils::HashMap<std::string,Double*>  Doubles;
     // =======================================================================
     /// the actual storage type for address columns
     typedef GaudiUtils::HashMap<std::string,Address*> Addresses;
@@ -2035,44 +2308,71 @@ namespace Tuples
     // =======================================================================
   private:
     // =======================================================================
-    // name
-    std::string            m_name       ;  ///< the name
+    /// name
+    std::string            m_name       ;
     // =======================================================================
-    // tuple itself
-    NTuple::Tuple*         m_tuple      ; ///< tuple itself
+    /// tuple itself
+    NTuple::Tuple*         m_tuple      ;
     // =======================================================================
-    // tuple CLID
-    CLID                   m_clid       ; ///< tuple CLID
+    /// tuple CLID
+    CLID                   m_clid       ;
     // =======================================================================
-    // tuple 'type'
-    Tuples::Type           m_type       ; ///< tuple 'type'
+    /// tuple 'type'
+    Tuples::Type           m_type       ;
     // =======================================================================
-    // reference counter
-    size_t                 m_refCount   ; ///< reference counter
+    /// reference counter
+    size_t                 m_refCount   ;
     // =======================================================================
-    // the actual storage of all 'Int'    columns
-    mutable Ints           m_ints      ; ///< the actual storage of columns
+    /// the actual storage of all 'bool' columns
+    mutable Bools          m_bools      ;
     // =======================================================================
-    // the actual storage of all 'Float'   columns
-    mutable Floats         m_floats     ; ///< the actual storage of columns
+    /// the actual storage of all 'Int' columns
+    mutable Chars          m_chars      ;
     // =======================================================================
-    // the actual storage of all 'Address' columns
-    mutable Addresses      m_addresses  ; ///< the actual storage of columns
+    /// the actual storage of all 'unsigned int' columns
+    mutable UChars         m_uchars     ;
     // =======================================================================
-    // the actual storage of all 'FArray'  columns
-    mutable FArrays        m_farrays    ; ///< the actual storage of columns
+    /// the actual storage of all 'Int' columns
+    mutable Shorts         m_shorts     ;
     // =======================================================================
-    // the actual storage of all 'FArray'  columns (fixed)
-    mutable FArrays        m_arraysf    ; ///< the actual storage of columns
+    /// the actual storage of all 'unsigned int' columns
+    mutable UShorts        m_ushorts    ;
     // =======================================================================
-    // the actual storage of all 'FArray'  columns
-    mutable FMatrices      m_fmatrices  ; ///< the actual storage of columns
+    /// the actual storage of all 'Int' columns
+    mutable Ints           m_ints       ;
     // =======================================================================
-    // the actual storage of all 'FMatrix' columns (fixed)
-    mutable FMatrices      m_matricesf  ; ///< the actual storage of columns
+    /// the actual storage of all 'unsigned int' columns
+    mutable UInts          m_uints      ;
     // =======================================================================
-    // all booked types:
-    ItemMap                m_items      ; ///< all booked types:
+    /// the actual storage of all 'longlong' columns
+    mutable LongLongs      m_longlongs  ;
+    // =======================================================================
+    /// the actual storage of all 'ulonglong' columns
+    mutable ULongLongs     m_ulonglongs ;
+    // =======================================================================
+    /// the actual storage of all 'Float'   columns
+    mutable Floats         m_floats     ;
+    // =======================================================================
+    /// the actual storage of all 'Double'   columns
+    mutable Doubles        m_doubles    ;
+    // =======================================================================
+    /// the actual storage of all 'Address' columns
+    mutable Addresses      m_addresses  ;
+    // =======================================================================
+    /// the actual storage of all 'FArray'  columns
+    mutable FArrays        m_farrays    ;
+    // =======================================================================
+    /// the actual storage of all 'FArray'  columns (fixed)
+    mutable FArrays        m_arraysf    ;
+    // =======================================================================
+    /// the actual storage of all 'FArray'  columns
+    mutable FMatrices      m_fmatrices  ;
+    // =======================================================================
+    /// the actual storage of all 'FMatrix' columns (fixed)
+    mutable FMatrices      m_matricesf  ;
+    // =======================================================================
+    /// all booked types:
+    ItemMap                m_items      ;
     // =======================================================================
   } ;
   // ==========================================================================

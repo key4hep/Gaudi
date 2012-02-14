@@ -1,0 +1,97 @@
+# --> Including file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/ROOT_IO/CollWrite.py'
+# <-- End of file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/ROOT_IO/CollWrite.py'
+# applying configuration of GaudiPersistency
+# /***** User GaudiPersistency/GaudiPersistency ******************************************************
+# |-<no properties>
+# \----- (End of User GaudiPersistency/GaudiPersistency) ---------------------------------------------
+# Dumping all configurables and properties (different from default)
+{'ApplicationMgr': {'EvtMax': -1,
+                    'ExtSvc': ['TagCollectionSvc/EvtTupleSvc',
+                               'FileRecordDataSvc/FileRecordDataSvc'],
+                    'HistogramPersistency': 'NONE',
+                    'SvcOptMapping': ['Gaudi::MultiFileCatalog/FileCatalog',
+                                      'Gaudi::IODataManager/IODataManager',
+                                      'Gaudi::RootCnvSvc/RootCnvSvc'],
+                    'TopAlg': ['GaudiSequencer/EventAlgs']},
+ 'EventAlgs': {'Members': ['EvtCollectionWrite/Writer'],
+               'VetoObjects': ['FSR']},
+ 'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
+ 'EventSelector': {'Input': ["DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'",
+                             "DATAFILE='PFN:ROOTIO.mdst' SVC='Gaudi::RootEvtSelector' OPT='READ'"],
+                   'PrintFreq': 100},
+ 'EvtTupleSvc': {'Output': ["EvtColl DATAFILE='PFN:ROOT_IO.tags' OPT='RECREATE' SVC='Gaudi::RootCnvSvc'"]},
+ 'FileCatalog': {'Catalogs': ['xmlcatalog_file:ROOTIO.xml']},
+ 'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
+ 'ToolSvc.SequencerTimerTool': {'OutputLevel': 4}}
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.77 $
+                                          running on pcphlbc16 on Sun Dec 11 18:42:37 2011
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+EvtTupleSvc          INFO Added stream file:PFN:ROOT_IO.tags as EvtColl
+EventAlgs            INFO Member list: EvtCollectionWrite/Writer
+RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
+RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
+RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+IODataManager        INFO Referring to dataset ROOT_IO.tags by its file ID:72964C84-1F24-E111-9782-0024D7D15FF8
+Gaudi::RootData...   INFO Recreate Database file:PFN:ROOT_IO.tags as /EvtColl
+EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
+EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'
+HistogramPersis...WARNING Histograms saving not required.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+FileRecordPersi...   INFO Added successfully Conversion service:RootCnvSvc
+EventSelector     SUCCESS Reading Event record 1. Record number within stream 1: 1
+Writer               INFO ================ EVENT:1 RUN:999 ====== N(Track)=39 FAILED selection (<50) ============
+Writer               INFO ================ EVENT:2 RUN:999 ====== N(Track)=93 PASSED selection (>=50) ============
+Writer               INFO ================ EVENT:3 RUN:999 ====== N(Track)=76 PASSED selection (>=50) ============
+Writer               INFO ================ EVENT:4 RUN:999 ====== N(Track)=93 PASSED selection (>=50) ============
+Writer               INFO ================ EVENT:5 RUN:999 ====== N(Track)=4 FAILED selection (<50) ============
+Writer               INFO ================ EVENT:6 RUN:999 ====== N(Track)=54 PASSED selection (>=50) ============
+Writer               INFO ================ EVENT:7 RUN:999 ====== N(Track)=20 FAILED selection (<50) ============
+Writer               INFO ================ EVENT:8 RUN:999 ====== N(Track)=30 FAILED selection (<50) ============
+Writer               INFO ================ EVENT:9 RUN:999 ====== N(Track)=43 FAILED selection (<50) ============
+EventSelector     SUCCESS Reading Event record 101. Record number within stream 1: 101
+EventSelector     SUCCESS Reading Event record 201. Record number within stream 1: 201
+EventSelector     SUCCESS Reading Event record 301. Record number within stream 1: 301
+EventSelector     SUCCESS Reading Event record 401. Record number within stream 1: 401
+Writer               INFO ================ EVENT:500 RUN:999 ====== N(Track)=52 PASSED selection (>=50) ============
+EventSelector     SUCCESS Reading Event record 501. Record number within stream 1: 501
+EventSelector     SUCCESS Reading Event record 601. Record number within stream 1: 601
+EventSelector     SUCCESS Reading Event record 701. Record number within stream 1: 701
+EventSelector     SUCCESS Reading Event record 801. Record number within stream 1: 801
+EventSelector     SUCCESS Reading Event record 901. Record number within stream 1: 901
+Writer               INFO ================ EVENT:1000 RUN:999 ====== N(Track)=55 PASSED selection (>=50) ============
+EventSelector        INFO Stream:EventSelector.DataStreamTool_2 Def:DATAFILE='PFN:ROOTIO.mdst' SVC='Gaudi::RootEvtSelector' OPT='READ'
+EventSelector     SUCCESS Reading Event record 1001. Record number within stream 2: 1
+Writer               INFO ================ EVENT:1 RUN:999 ====== N(Track)=39 FAILED selection (<50) ============
+Writer               INFO ================ EVENT:2 RUN:999 ====== N(Track)=93 PASSED selection (>=50) ============
+Writer               INFO ================ EVENT:3 RUN:999 ====== N(Track)=76 PASSED selection (>=50) ============
+Writer               INFO ================ EVENT:4 RUN:999 ====== N(Track)=93 PASSED selection (>=50) ============
+Writer               INFO ================ EVENT:5 RUN:999 ====== N(Track)=4 FAILED selection (<50) ============
+Writer               INFO ================ EVENT:6 RUN:999 ====== N(Track)=54 PASSED selection (>=50) ============
+Writer               INFO ================ EVENT:7 RUN:999 ====== N(Track)=20 FAILED selection (<50) ============
+Writer               INFO ================ EVENT:8 RUN:999 ====== N(Track)=30 FAILED selection (<50) ============
+Writer               INFO ================ EVENT:9 RUN:999 ====== N(Track)=43 FAILED selection (<50) ============
+EventSelector     SUCCESS Reading Event record 1101. Record number within stream 2: 101
+EventSelector     SUCCESS Reading Event record 1201. Record number within stream 2: 201
+EventSelector     SUCCESS Reading Event record 1301. Record number within stream 2: 301
+EventSelector     SUCCESS Reading Event record 1401. Record number within stream 2: 401
+Writer               INFO ================ EVENT:500 RUN:999 ====== N(Track)=52 PASSED selection (>=50) ============
+EventSelector     SUCCESS Reading Event record 1501. Record number within stream 2: 501
+EventSelector     SUCCESS Reading Event record 1601. Record number within stream 2: 601
+EventSelector     SUCCESS Reading Event record 1701. Record number within stream 2: 701
+EventSelector     SUCCESS Reading Event record 1801. Record number within stream 2: 801
+EventSelector     SUCCESS Reading Event record 1901. Record number within stream 2: 901
+Writer               INFO ================ EVENT:1000 RUN:999 ====== N(Track)=55 PASSED selection (>=50) ============
+EventLoopMgr         INFO No more events in event selection
+ApplicationMgr       INFO Application Manager Stopped successfully
+EventLoopMgr         INFO Histograms converted successfully according to request.
+RootCnvSvc           INFO Disconnected data IO:C2149581-1F24-E111-A073-0024D7D15FF8 [ROOTIO.dst]
+RootCnvSvc           INFO Disconnected data IO:DA49A781-1F24-E111-A073-0024D7D15FF8 [ROOTIO.mdst]
+ToolSvc              INFO Removing all tools created by ToolSvc
+EvtTupleSvc          INFO NTuples saved successfully
+EvtTupleSvc.Evt...   INFO Disconnected data IO:72964C84-1F24-E111-9782-0024D7D15FF8 [ROOT_IO.tags]
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

@@ -1,8 +1,86 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2012-02-13 - Marco Clemencic
+ - Fixed compatibility problem with Python 2.7.
+
+! 2012-02-06 - Sasha Mazurov
+ - Patch #5204: GaudiKernel parsers: allow 'L' suffix in integer literals
+
+============================= GaudiKernel v28r0 ==============================
+! 2012-01-25 - Marco Clemencic
+ - Added a specific application return code for failure during finalization.
+
+! 2012-01-16 - Marco Clemencic
+ - Added interfaces for tools used to add dynamic mapping to DataOnDemandSvc:
+   IDODNodeMapper, IDODAlgMapper
+ - Added output stream operator to Gaudi::Utils::TypeNameString.
+
+! 2011-12-16 - Marco Clemencic
+ - Fixed genconfuser.py to take into account the new location of the genConf
+   directory during the build.
+
+! 2011-12-10 - Marco Clemencic
+ - Print an error message if the input data stream cannot be initialized.
+
+! 2011-12-08 - Marco Clemencic
+ - Fixed bug #89628: Missing const methods in CommonMessaging.
+
+! 2011-12-07 - Marco Clemencic
+ - Fixed bug #89653: Gaudi is not ready for Boost 1.48 (filesystem V3)
+
+! 2011-12-05 - Marco Clemencic
+ - Removed the unused FastContainerSvc.
+
+! 2011-12-01 - Chris Jones
+ - Fixed bug #85377: GaudiTuple tuple does not understand ulonglong
+   Add support for long long and unsigned long long data types
+
+! 2011-11-22 - Marco Clemencic
+ - Fixed gcc 4.6 warning: cast to pointer from integer of different size
+   (-Wint-to-pointer-cast)
+ - Fixed Eclipse CDT Analyzer warning.
+
+! 2011-11-16 - Marco Clemencic
+ - Fixed the problem with undefined size_t in GaudiKernel/Map.h
+
+! 2011-11-01 - Marco Clemencic
+ - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc
+   and GaudiCommonSvc. (patch #1816)
+   Use GaudiCoreSvc for bootstrap and genconf.
+
+============================= GaudiKernel v27r17 =============================
+! 2011-10-27 - Marco Clemencic
+ - Introduced the function System::getProcessTime(pid), the helper class
+   ProcessTime and a templated version of adjustTime in GaudiKernel/Timing.h
+   (bug #87341).
+ - Added unit test for getProcessTime and ProcessTime.
+ - Fixed bug #87341: performance problem in ChronoEntity
+   Modified ChronoEntity to use getProcessTime and ProcessTime.
+ - Added test to detect bug #87340
+   (code bloat because of MessageStream operator<<)
+ - Fixed bug #87340: code bloat because of MessageStream operator<<
+   Added (as suggested) an explicit implementation of operator<< for
+   "const char *".
+
+! 2011-09-22 - Marco Clemencic
+ - Set the Windows link-time option /expectedoutputsize explicitly only for
+   GaudiKernel.
+
+============================= GaudiKernel v27r16 =============================
+! 2011-09-02 - Marco Clemencic
+ - Fixed bug #86303: new parses not allowing empty maps
+
+! 2011-09-01 - Sasha Mazurov
+ - Patch #5027: fixed a problem in the parsing of map representations
+
+============================= GaudiKernel v27r15 =============================
+! 2011-08-26 - Sebastien Binet
+ - Fixed bug #82435: Possible genConf bug in dealing with vector<double> filled
+                     with zeros by default.
+
 ! 2011-08-08 - Marco Clemencic
- - Added the non-tempalted method AlgTool::service
+ - Added the non-templated method AlgTool::service
    - This makes AlgTool more similar to Algorithm, in order to simplify some
      code in GaudiCommon.
  - Fixing bug #83775: unprotected MSG::DEBUG/VERBOSE

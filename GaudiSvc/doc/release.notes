@@ -1,6 +1,56 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+=============================== GaudiSvc v19r0 ===============================
+! 2011-12-05 - Marco Clemencic
+ - Removed the unused FastContainerSvc.
+ - Moved ParticlePropertySvc to a dedicated package and wrapped it in the
+   namespace Gaudi.
+
+! 2011-12-02 - Marco Clemencic
+ - Moved VFSSvc from GaudiSvc to GaudiUtils.
+ - Moved to GaudiMonitor:
+   - AlgContextSvc
+   - ExceptionSvc
+   - HistorySvc
+   - IssueLogger
+
+! 2011-11-01 - Marco Clemencic
+ - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc
+   and GaudiCommonSvc. (patch #1816)
+ - Removed AIDATupleSvc.
+
+! 2011-12-07 - Marco Clemencic
+ - Fixed bug #89653: Gaudi is not ready for Boost 1.48 (filesystem V3)
+ - Problem with Boost (1.48) Spirit: disabled to -pedantic option (temporarily)
+
+============================== GaudiSvc v18r17 ===============================
+! 2011-10-12 - Charles Leggett
+ - THistSvc: call Reset() on all TTrees and THNs in io_reinit when copying to
+   worker directory. This prevents the data recorded in the first (n) events
+   during a multi-process job from appearing in all the worker outputs, as the
+   first (n) events get rerun.
+ M       src/THistSvc/THistSvc.cpp
+
+! 2011-09-29 - Charles Leggett
+ - Fixed bug #87253:  Don't override exception type when re-throwing
+ M       src/ExceptionSvc/ExceptionSvc.cpp
+ M       src/ExceptionSvc/ExceptionSvc.h
+
+! 2011-08-24 - Charles Leggett
+ - Fixed bug #86086: print warning message when an AlgTool fails to finalize
+
+! 2011-10-28 - Marco Clemencic
+ - Changed the usage of make_pair to support C++0x.
+
+============================== GaudiSvc v18r16 ===============================
+! 2011-09-01 - Markus Frank
+ - Fix in OutputStream to correctly support the SVC keyword.
+
+============================== GaudiSvc v18r15 ===============================
+! 2011-08-25 - Charles Leggett
+ - Fixed bug #85983: PersistencySvc::decodeAddrHdr() always returns CLID=0
+
 ! 2011-08-16 - Marco Clemencic
  - Fixed some tests (checks) on Windows.
 

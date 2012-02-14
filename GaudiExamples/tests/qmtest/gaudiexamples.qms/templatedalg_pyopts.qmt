@@ -3,5 +3,5 @@
   <argument name="program"><text>gaudirun.py</text></argument>
   <argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/TemplatedAlg.py</text></set></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-  <argument name="reference"><text>../../home/TemplatedAlg_pyopts.ref</text></argument>
+  <argument name="reference"><text>refs/TemplatedAlg_pyopts.ref</text></argument>
 </extension>

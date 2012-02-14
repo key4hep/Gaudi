@@ -1,11 +1,22 @@
 package GaudiPolicy
-version v11r2
+version v12r0
 
 branches cmt doc
 
 # LCG debug libraries are not distributed (LOCAL) ===========================
 use LCG_Settings *
 use Python * LCG_Interfaces -no_auto_imports
+
+# Define test platforms
+# These special platforms are equivalent to the corresponding -opt versions, but
+# allow customization of the configuration via the special tags target-test,
+# e.g. to enable different optimization options.
+# FIXME: Ideally the target-test tags should trigger settings that can be tuned
+# by the experiments, but it is not yet possible, the only enable "-O3" (see
+# the bottom of this file)
+tag x86_64-slc5-gcc43-test   x86_64-slc5-gcc43-opt target-test
+tag x86_64-slc5-gcc46-test   x86_64-slc5-gcc46-opt target-test
+tag x86_64-slc6-gcc46-test   x86_64-slc6-gcc46-opt target-test
 
 # Add Google malloc replacement to the LD_LIBRARY_PATH
 use tcmalloc * LCG_Interfaces -no_auto_imports
@@ -619,6 +630,7 @@ macro cppdebugflags    "" \
 macro cppdebugflags_s  "-g" \
       target-winxp            "/Od /Z7"
 macro cppoptimized_s   "-O2 -DNDEBUG" \
+      use-O3&target-gcc "-O3 -DNDEBUG" \
       target-winxp            ""
 macro cppprofiled_s   "-pg" \
       target-winxp            ""
@@ -628,10 +640,11 @@ macro_append cppdebugflags "" \
 # C debug, optimized and profiled options
 macro cdebugflags     "" \
       target-dbg           "$(cdebugflags_s)" \
-      target-dbg           "$(coptimized_s)"
+      target-opt           "$(coptimized_s)"
 macro cdebugflags_s   "-g" \
       target-winxp           "/Od /Z7"
 macro coptimized_s    "-O2 -DNDEBUG" \
+      use-O3&target-gcc "-O3 -DNDEBUG" \
       target-winxp    ""
 
 # Fortran debug, optimized and profiled options
@@ -640,6 +653,7 @@ macro fdebugflags      "" \
 macro fdebugflags_s    "-g"\
       target-winxp            "/nopdbfile /debug:full /optimize:0"
 macro foptimized_s     "-O2 -DNDEBUG" \
+      use-O3&target-gcc  "-O3 -DNDEBUG" \
       target-winxp            ""
 macro_append fdebugflags "" \
       target-opt        " $(foptimized_s)"
@@ -665,9 +679,9 @@ macro_append LCG_Platforms_cflags "" \
 macro_append LCG_Platforms_fflags "" \
                        target-cov " --coverage"
 
-macro cppflags         " -fmessage-length=0 -Df2cFortran -fPIC -shared -D_GNU_SOURCE -Dlinux -Dunix -pipe -ansi -Wall -Wextra -pthread " \
-      target-mac105    " -Df2cFortran -fPIC -D_GNU_SOURCE -Dunix -pipe -ansi -Wall -Wextra -Wno-long-double " \
-      target-mac106    " -Df2cFortran -fPIC -D_GNU_SOURCE -Dunix -pipe -ansi -Wall -Wextra " \
+macro cppflags         " -fmessage-length=0 -Df2cFortran -fPIC -shared -D_GNU_SOURCE -Dlinux -Dunix -pipe -ansi -Wall -Wextra -Werror=return-type -pthread " \
+      target-mac105    " -Df2cFortran -fPIC -D_GNU_SOURCE -Dunix -pipe -ansi -Wall -Wextra -Werror=return-type -Wno-long-double " \
+      target-mac106    " -Df2cFortran -fPIC -D_GNU_SOURCE -Dunix -pipe -ansi -Wall -Wextra -Werror=return-type " \
       target-vc9       '$(includes) /D "WIN32" /D "_MBCS"  /D "_WINDOWS" /FD /c /nologo /W3 /EHsc /MD /GR /Zm500' \
       target-vc7       '$(includes) /D "WIN32" /D "_MBCS"  /D "_WINDOWS" /FD /c /nologo /W3 /GX /MD /GR /Zm500'
 
@@ -676,6 +690,7 @@ macro cppflags         " -fmessage-length=0 -Df2cFortran -fPIC -shared -D_GNU_SO
 macro_remove cppflags "" target-icc "-pedantic"
 macro_remove cppflags "" target-icc "-Wextra"
 macro_remove cppflags "" target-icc "-Wno-long-long"
+macro_remove cppflags "" target-icc "-Werror=return-type"
 ### Disable some non interesting "remarks" (inspired by CoolKernel)
 # Permanently disabled
 #  - remark #383:  valued copied to temporary, reference to temporary
@@ -687,6 +702,10 @@ macro_append cppflags '' target-icc '-wd1418 '
 #  - remark #1419: external declaration in primary source file
 #                  (triggers on forward declarations in a .cpp)
 macro_append cppflags '' target-icc '-wd1419 '
+# simulate -Werror=return-type from gcc:
+#       -we1011 : missing return statement in a non-void function
+#       -we117  : no value returned in a non-void function
+macro_append cppflags '' target-icc '-we1011 -we117 '
 # Non permanent
 #  - remark #82:     storage class is not first
 #                    (appears only once in ROOT)
@@ -738,12 +757,16 @@ macro_append cppflags       "" \
       host-i686&target-x86_64 " -m64" \
       host-i386&target-x86_64 " -m64"
 
+# FIXME: enforce the use of Boost Filesystem V3 to be compatible between 1.44 and 1.48
+macro_append pp_cppflags " -DBOOST_FILESYSTEM_VERSION=3 "
+
 # ---- Disable warnings coming from external libraries
 #      the hacks can be disabled with the tag "no-hide-warnings".
 # FIXME: (MCl) Temporary work-around until gccxml understands unordered_map
 macro_append cppflags "" \
          no-hide-warnings "" \
-         target-gcc43 " -Wno-deprecated"
+         target-gcc43 " -Wno-deprecated" \
+         target-gcc46 " -Wno-deprecated"
 # FIXME: (MCl)
 macro_append cppflags "" \
          no-hide-warnings "" \
@@ -927,8 +950,8 @@ public
 # end_private
 #
 
-macro genconfDir    "/genConf/" \
-      target-winxp         "\genConf\"
+macro genconfDir    "$(shared_install_subdir)/genConf/" \
+      target-winxp         "$(shared_install_subdir)\genConf\"
 
 cmtpath_pattern \
     macro genconfInstallDir "" \
@@ -979,20 +1002,20 @@ pattern use_genconf_helper_lib \
 
 
 # this use statement is here only to get the building order right
-# ie: tell CMT that genconf needs (at runtime) the GaudiSvc component
+# ie: tell CMT that genconf needs (at runtime) the GaudiCoreSvc component
 #     library to be available for loading.
-macro use_GaudiSvc "GaudiSvc * -no_auto_imports" \
+macro use_GaudiCoreSvc "GaudiCoreSvc * -no_auto_imports" \
         no_genconf "" \
-        do_genconf "GaudiSvc * -no_auto_imports" \
-        ATLAS "GaudiSvc * -no_auto_imports"
+        do_genconf "GaudiCoreSvc * -no_auto_imports" \
+        ATLAS "GaudiCoreSvc * -no_auto_imports"
 
 # if one wants to modify this pattern, the correction has to be made also
-# in the GaudiSvc requirements file since it is using directly
+# in the GaudiCoreSvc requirements file since it is using directly
 # generate_configurables_internal to avoid infinite recursion
-# with "use GaudiSvc"
+# with "use GaudiCoreSvc"
 pattern generate_configurables \
   private ; \
-   use $(use_GaudiSvc) ;\
+   use $(use_GaudiCoreSvc) ;\
    apply_pattern generate_configurables_internal library=<library> group=<group> ; \
   end_private
 
@@ -1185,10 +1208,10 @@ pattern NullCommand \
     end_private
 
 #-------------------------------------------------------------------
-# Pattern to create a <package>Version.h header file in the InstallArea/include.
+# Pattern to create a <project>_VERSION.h header file in the InstallArea/include.
 # Usage:
 #
-#   apply_pattern ProjectVersionHeader proj=Gaudi
+#   apply_pattern ProjectVersionHeader
 #
 # (Marco Clemencic)
 #-------------------------------------------------------------------
@@ -1201,6 +1224,23 @@ pattern ProjectVersionHeader \
 	apply_pattern CallCommand target=ProjectVersionHeader ; \
 	end_private ; \
 	set <project>VERS "<version>"
+
+#-------------------------------------------------------------------
+# Pattern to create a <package>Version.h header file in the InstallArea/include.
+# Usage:
+#
+#   apply_pattern PackageVersionHeader where="../path/..."
+#
+# (Marco Clemencic)
+#-------------------------------------------------------------------
+pattern PackageVersionHeader \
+	private ; \
+	macro PackageVersionHeader_output "<where>/<package>Version.h" ; \
+	macro PackageVersionHeader_deps "../cmt/requirements" ; \
+	macro PackageVersionHeader_command "python $(GaudiPolicy_root)/scripts/createProjVersHeader.py <package> <version> $(PackageVersionHeader_output)" \
+	     <project>_without_installarea "" ; \
+	apply_pattern CallCommand target=PackageVersionHeader ; \
+	end_private
 
 #-------------------------------------------------------------------
 # Generic cmt template processing
@@ -1299,7 +1339,6 @@ pattern -global zip_python_modules_container_fallback \
 pattern doxy_vers_set \
 	set <external>VERS "$(<external>_config_version)"
 
-apply_pattern doxy_vers_set external=POOL
 apply_pattern doxy_vers_set external=COOL
 apply_pattern doxy_vers_set external=CORAL
 apply_pattern doxy_vers_set external=ROOT
@@ -1331,3 +1370,10 @@ tag ATLAS no-pyzip
 macro_append pp_cppflags "" \
       ATLAS " -DATLAS_GAUDI_V21 "
 
+# FIXME: This should be the kind of pattern to enable custom test settings, but
+# an environment variable is not so safe to use.
+#
+# macro gaudi_test_policy_use "" target-test "$(GAUDI_TEST_POLICY)"
+# use $(gaudi_test_policy_use)
+
+tag target-test use-O3

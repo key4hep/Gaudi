@@ -8,6 +8,7 @@
 // ============================================================================
 #include <algorithm>
 #include <numeric>
+#include <limits>
 // ============================================================================
 // CLHEP
 // ============================================================================
@@ -55,7 +56,7 @@ public:
     Assert ( randSvc() != 0, "Random Service is not available!");
     //
     return StatusCode::SUCCESS ;
-  };
+  }
   /** the only one essential method
    *  @see IAlgoruthm
    */
@@ -68,7 +69,7 @@ public:
   TupleAlg
   ( const std::string& name ,
     ISvcLocator*       pSvc )
-    : GaudiTupleAlg ( name , pSvc ) {};
+    : GaudiTupleAlg ( name , pSvc ) { }
   // destructor
   virtual ~TupleAlg() {} ;
 private:
@@ -76,8 +77,18 @@ private:
   TupleAlg() ;
   // copy constructor is disabled
   TupleAlg( const TupleAlg& ) ;
-  // assignement op[erator is disabled
+  // assignment operator is disabled
   TupleAlg& operator=( const TupleAlg& ) ;
+  // Make a random generator for a type
+  template< class T >
+  T randomRange()
+  {
+    const T min = std::numeric_limits<T>::min();
+    const T max = std::numeric_limits<T>::max();
+    return min + (T)( (max-min) *
+                      (double)(Rndm::Numbers( randSvc(), Rndm::Flat(0,1) )()) );
+  }
+
 };
 
 
@@ -426,9 +437,53 @@ StatusCode TupleAlg::execute()
 
   };
 
-
   tuple6 -> write() ;
 
+  // ============================================================================
+
+  static unsigned long long evtID ( 1e14 );
+  ++evtID;
+
+  // Test for unsupported data types
+  Tuple tuple7 = nTuple ( "typesCW" , "Types Test Column Wise" ) ;
+  {
+    tuple7 -> column ( "bool"      , (bool)               0<flat() ) ;
+    tuple7 -> column ( "float"     , (float)               gauss() ) ;
+    tuple7 -> column ( "double"    , (double)              gauss() ) ;
+    tuple7 -> column ( "short"     , (short)               randomRange<char>() ) ;
+    tuple7 -> column ( "ushort"    , (unsigned short)      randomRange<unsigned char>() ) ;
+    tuple7 -> column ( "int"       , (int)                 randomRange<char>() ) ;
+    tuple7 -> column ( "uint"      , (unsigned int)        randomRange<unsigned char>() ) ;
+    tuple7 -> column ( "long"      , (long)                randomRange<char>() ) ;
+    tuple7 -> column ( "ulong"     , (unsigned long)       randomRange<unsigned char>() ) ;
+    tuple7 -> column ( "longlong"  , (long long)           randomRange<char>() ) ;
+    tuple7 -> column ( "ulonglong" , (unsigned long long)  randomRange<unsigned char>() ) ;
+    tuple7 -> column ( "char"      , (char)                randomRange<char>() ) ;
+    tuple7 -> column ( "uchar"     , (unsigned char)       randomRange<unsigned char>() ) ;
+    tuple7 -> column ( "EventID"   , evtID );
+  }
+  tuple7 -> write() ;
+
+
+  // Test for unsupported data types
+  Tuple tuple8 = nTuple ( "typesRW" , "Types Test Row Wise", CLID_RowWiseTuple ) ;
+  {
+    tuple8 -> column ( "bool"      , (bool)               0<flat() ) ;
+    tuple8 -> column ( "float"     , (float)               gauss() ) ;
+    tuple8 -> column ( "double"    , (double)              gauss() ) ;
+    tuple8 -> column ( "short"     , (short)               randomRange<char>() ) ;
+    tuple8 -> column ( "ushort"    , (unsigned short)      randomRange<unsigned char>() ) ;
+    tuple8 -> column ( "int"       , (int)                 randomRange<char>() ) ;
+    tuple8 -> column ( "uint"      , (unsigned int)        randomRange<unsigned char>() ) ;
+    tuple8 -> column ( "long"      , (long)                randomRange<char>() ) ;
+    tuple8 -> column ( "ulong"     , (unsigned long)       randomRange<unsigned char>() ) ;
+    tuple8 -> column ( "longlong"  , (long long)           randomRange<char>() ) ;
+    tuple8 -> column ( "ulonglong" , (unsigned long long)  randomRange<unsigned char>() ) ;
+    tuple8 -> column ( "char"      , (char)                randomRange<char>() ) ;
+    tuple8 -> column ( "uchar"     , (unsigned char)       randomRange<unsigned char>() ) ;
+    tuple8 -> column ( "EventID"   , evtID );
+  }
+  tuple8 -> write() ;
 
   return StatusCode::SUCCESS ;
 }
