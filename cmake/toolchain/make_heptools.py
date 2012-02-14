@@ -28,6 +28,8 @@ LCG_prepare_paths()"""
                         "GCCXML":  "gccxml",
                         }
 
+    __special_names__ = {"qt": "Qt"}
+
     def __init__(self, lcgcmt_root):
         """
         Prepare the instance.
@@ -49,14 +51,61 @@ LCG_prepare_paths()"""
 
         @return: dictionary mapping external names to versions
         """
-        # We efxtract the lines defining the macros .*_config_version ...
-        macro_re = re.compile(r'^\s*macro\s*(?P<name>\w*)_config_version\s*"(?P<version>[^"]*)"')
-        # ... from the requirements file of the LCG_Configuration package
-        req = open(os.path.join(self.lcgcmt_root, "LCG_Configuration", "cmt", "requirements"))
+        from itertools import imap
+        def statements(lines):
+            """
+            Generator of CMT statements from a list of lines.
+            """
+            statement = "" # we start with an empty statement
+            for l in imap(lambda l: l.rstrip(), lines): # CMT ignores spaces at the end of line when checking for '\'
+                # append the current line to the statement so far
+                statement += l
+                if statement.endswith("\\"):
+                    # in this case we need  to strip the '\' and continue the concatenation
+                    statement = statement[:-1]
+                else:
+                    # we can stop concatenating, but we return only non-trivial statements
+                    statement = statement.strip()
+                    if statement:
+                        yield statement
+                        statement = "" # we start collecting a new statement
 
-        return dict([(macro.group('name'), macro.group('version'))
-                     for macro in map(macro_re.match, req)
-                     if macro])
+        def tokens(statement):
+            """
+            Split a statement in tokens.
+
+            Trivial implementation assuming the tokens do not contain spaces.
+            """
+            return statement.split()
+
+        def macro(args):
+            """
+            Analyze the arguments of a macro command.
+
+            @return: tuple (name, value, exceptionsDict)
+            """
+            unquote = lambda s: s.strip('"')
+            name = args[0]
+            value = unquote(args[1])
+            # make a dictionary of the even to odd remaining args (unquoting the values)
+            exceptions = dict(zip(args[2::2],
+                                  map(unquote, args[3::2])))
+            return name, value, exceptions
+
+        # prepare the dictionary for the results
+        versions = {}
+        # We extract the statements from the requirements file of the LCG_Configuration package
+        req = open(os.path.join(self.lcgcmt_root, "LCG_Configuration", "cmt", "requirements"))
+        for toks in imap(tokens, statements(req)):
+            if toks.pop(0) == "macro": # get only the macros ...
+                name, value, exceptions = macro(toks)
+                if name.endswith("_config_version"): # that end with _config_version
+                    name = name[:-len("_config_version")]
+                    name = self.__special_names__.get(name, name)
+                    for tag in ["target-slc"]: # we use the alternative for 'target-slc' if present
+                        value = exceptions.get(tag, value)
+                    versions[name] = value.replace('(', '{').replace(')', '}')
+        return versions
 
     def _content(self):
         """
@@ -86,7 +135,14 @@ LCG_prepare_paths()"""
                    max(map(len, self.__special_dirs__.values()))
                    )
         template = "LCG_external_package(%%-%ds %%-%ds %%-%ds)" % lengths
-        for name in sorted(versions.keys()):
+
+        def packageSorting(pkg):
+            "special package sorting keys"
+            key = pkg.lower()
+            if key == "javajni":
+                key = "javasdk_javajni"
+            return key
+        for name in sorted(versions.keys(), key=packageSorting):
             # LCG_external_package(CLHEP            1.9.4.7             clhep)
             yield template % (name, versions[name], self.__special_dirs__.get(name, ""))
 
