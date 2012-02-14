@@ -15,8 +15,8 @@ LCG_compiler(gcc43 gcc 4.3.5)
 LCG_compiler(gcc46 gcc 4.6.2)
 
 # externals:
-LCG_external_package(AIDA             3.2.1)
 LCG_external_package(4suite           1.0.2p1)
+LCG_external_package(AIDA             3.2.1)
 LCG_external_package(bjam             3.1.13)
 LCG_external_package(blas             20070405)
 LCG_external_package(Boost            1.44.0)
