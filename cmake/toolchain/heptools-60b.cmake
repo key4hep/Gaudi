@@ -1,31 +1,4 @@
-include(CMakeMacroParseArguments)
-
-# Define the variables and search paths for AA projects
-macro(LCG_AA_project name version)
-  set(${name}_config_version ${version})
-  set(${name}_native_version ${version})
-  set(${name}_base ${LCG_releases}/${name}/${${name}_native_version})
-  set(${name}_home ${${name}_base}/${LCG_platform})
-  list(APPEND LCG_projects ${name})
-endmacro()
-
-# Define the variables for external projects
-# Usage:
-#   LCG_external_package(<Package> <version> [<directory name>])
-# Examples:
-#   LCG_external_package(Boost 1.44.0)
-#   LCG_external_package(CLHEP 1.9.4.7 clhep)
-macro(LCG_external_package name version)
-  set(${name}_config_version ${version})
-  set(${name}_native_version ${version})
-  if(${ARGC} GREATER 2)
-    set(${name}_directory_name ${ARGV2})
-  else()
-    set(${name}_directory_name ${name})
-  endif()
-  list(APPEND LCG_externals ${name})
-endmacro()
-
+include(${CMAKE_CURRENT_LIST_DIR}/heptools-common.cmake)
 
 # please keep alphabetic order and the structure (tabbing).
 # it makes it much easier to edit/read this file !
@@ -37,11 +10,10 @@ LCG_AA_project(CORAL  CORAL_2_3_15)
 LCG_AA_project(POOL   POOL_2_9_13)
 LCG_AA_project(RELAX  RELAX_1_2_2b)
 LCG_AA_project(ROOT   5.28.00b)
-# ROOT is special
-set(ROOT_home ${ROOT_home}/root)
+
+LCG_compiler(gcc43 gcc 4.3.2)
 
 # externals:
-
 LCG_external_package(AIDA             3.2.1)
 
 # keep the follwing two in sync !
@@ -71,7 +43,7 @@ LCG_external_package(dpm              1.7.4-7sec)
 LCG_external_package(EDGRLS           2.3.3)
 LCG_external_package(Expat            1.95.8)
 LCG_external_package(fftw             3.1.2               fftw3)
-LCG_external_package(Frontier_Client  2.8.0)
+LCG_external_package(Frontier_Client  2.8.0               frontier_client)
 LCG_external_package(fastjet          2.4.2p5)
 LCG_external_package(GCCXML           0.9.0_20100114      gccxml)
 LCG_external_package(genshi           0.6)
@@ -149,58 +121,5 @@ LCG_external_package(XercesC          3.1.1p1)
 LCG_external_package(xqilla           2.2.4)
 LCG_external_package(zlib             1.2.3p1)
 
-#===============================================================================
-# Derived variables
-#===============================================================================
-string(REGEX MATCH "[0-9]+\\.[0-9]+" Python_config_version_twodigit ${Python_config_version})
-set(Python_ADDITIONAL_VERSIONS ${Python_config_version_twodigit})
-
-# Note: this is needed because FindBoost.cmake requires both if the patch version is 0.
-string(REGEX MATCH "[0-9]+\\.[0-9]+" Boost_config_version_twodigit ${Boost_config_version})
-set(Boost_ADDITIONAL_VERSIONS ${Boost_config_version} ${Boost_config_version_twodigit})
-
-#===============================================================================
-# Special cases that require a special treatment
-#===============================================================================
-set(Boost_native_version ${Boost_config_version}_python${Python_config_version_twodigit})
-# FIXME: this should be automatic... see FindBoost.cmake documentation
-set(Boost_COMPILER -gcc43)
-
-set(pytools_native_version ${pytools_config_version}_python${Python_config_version_twodigit})
-
-set(QMtest_native_version ${QMtest_config_version}_python${Python_config_version_twodigit})
-
-
-# This is not really needed because Xerces has its own version macro, but it was
-# added at some point, so it is kept for backward compatibility.
-#add_definitions(-DXERCESC_GE_31)
-
-#===============================================================================
-# Construct the actual PREFIX and INCLUDE PATHs
-#===============================================================================
-# Define the _home variables (not cached)
-foreach(name ${LCG_externals})
-  set(${name}_home ${LCG_external}/${${name}_directory_name}/${${name}_native_version}/${LCG_system})
-endforeach()
-
-if(NOT DEFINED LCG_PREFIX_PATH)
-  foreach(name ${LCG_projects})
-    list(APPEND LCG_PREFIX_PATH ${${name}_home})
-    # We need to add python to the include path because it's the only
-    # way to search for a (generic) file.
-    list(APPEND LCG_INCLUDE_PATH ${${name}_base}/include ${${name}_home}/python)
-  endforeach()
-  # Add the LCG externals dirs to the search paths.
-  foreach(name ${LCG_externals})
-    list(APPEND LCG_PREFIX_PATH ${${name}_home})
-  endforeach()
-
-  # AIDA is special
-  list(APPEND LCG_INCLUDE_PATH ${LCG_external}/${AIDA_directory_name}/${AIDA_native_version}/share/src/cpp)
-
-  set(LCG_PREFIX_PATH ${LCG_PREFIX_PATH} CACHE INTERNAL "Search path for external libraries")
-  set(LCG_INCLUDE_PATH ${LCG_INCLUDE_PATH} CACHE INTERNAL "Search path for files")
-endif()
-
-set(CMAKE_PREFIX_PATH ${LCG_PREFIX_PATH} ${CMAKE_PREFIX_PATH})
-set(CMAKE_INCLUDE_PATH ${LCG_INCLUDE_PATH} ${CMAKE_INCLUDE_PATH})
+# Prepare the search paths according to the versions above
+LCG_prepare_paths()

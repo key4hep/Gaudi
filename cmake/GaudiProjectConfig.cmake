@@ -13,22 +13,22 @@ cmake_policy(SET CMP0009 NEW) # See "cmake --help-policy CMP0009" for more detai
 # Add the directory containing this file to the modules search path
 set(CMAKE_MODULE_PATH ${GaudiProject_DIR} ${CMAKE_MODULE_PATH})
 
-if(DEFINED LCG_system)
-  # We are using the LCG toolchain, so enable special configuration
-  get_filename_component(LCG_TOOLCHAIN_PATH ${CMAKE_TOOLCHAIN_FILE} PATH)
-  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${LCG_TOOLCHAIN_PATH})
-  # Define the versions and search paths
-  if(DEFINED LCG_version)
-    include(LCG_${LCG_version}/Configuration)
-    # FIXME: temporary
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${LCG_TOOLCHAIN_PATH}/LCG_${LCG_version})
-    #include(Configuration)
-  else()
-    message(FATAL_ERROR "LCG required but LCG_version is not defined")
-  endif()
-elseif(DEFINED ENV{CMTCONFIG} OR DEFINED ENV{CMAKECONFIG})
-  message(FATAL_ERROR "You must use the LCG CMAKE_TOOLCHAIN_FILE if you have CMTCONFIG or CMAKECONFIG set.")
-endif()
+#if(DEFINED LCG_system)
+#  # We are using the LCG toolchain, so enable special configuration
+#  get_filename_component(LCG_TOOLCHAIN_PATH ${CMAKE_TOOLCHAIN_FILE} PATH)
+#  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${LCG_TOOLCHAIN_PATH})
+#  # Define the versions and search paths
+#  if(DEFINED LCG_version)
+#    include(LCG_${LCG_version}/Configuration)
+#    # FIXME: temporary
+#    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${LCG_TOOLCHAIN_PATH}/LCG_${LCG_version})
+#    #include(Configuration)
+#  else()
+#    message(FATAL_ERROR "LCG required but LCG_version is not defined")
+#  endif()
+#elseif(DEFINED ENV{CMTCONFIG} OR DEFINED ENV{CMAKECONFIG})
+#  message(FATAL_ERROR "You must use the LCG CMAKE_TOOLCHAIN_FILE if you have CMTCONFIG or CMAKECONFIG set.")
+#endif()
 
 #-------------------------------------------------------------------------------
 # Basic configuration
@@ -105,7 +105,7 @@ endif()
 #---------------------------------------------------------------------------------------------------
 # Programs and utilities needed for the build
 #---------------------------------------------------------------------------------------------------
-include(CMakeMacroParseArguments)
+include(CMakeParseArguments)
 
 find_package(PythonInterp)
 
@@ -506,7 +506,7 @@ function(GAUDI_GENERATE_CONFUSERDB)
   if( NOT (modules STREQUAL "None") ) # ConfUser enabled
     set(outdir ${CMAKE_CURRENT_BINARY_DIR}/genConf/${package})
     # get the optional dependencies from argument and properties
-    PARSE_ARGUMENTS(ARG "DEPENDS" "" ${arguments})
+    CMAKE_PARSE_ARGUMENTS(ARG "" "" "DEPENDS" ${arguments})
     get_directory_property(PROPERTY_DEPENDS CONFIGURABLE_USER_DEPENDS)
     SET_RUNTIME_PATH(path PYTHONPATH)
     # TODO: this re-runs the genconfuser every time, because we cannot define the right dependencies
@@ -579,11 +579,11 @@ endfunction()
 #---GAUDI_LINKER_LIBRARY( <name> source1 source2 ... LIBRARIES library1 library2 ... INCLUDE_DIRECTORIES)
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_LINKER_LIBRARY library)
-  PARSE_ARGUMENTS(ARG "LIBRARIES;USE_HEADERS" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;USE_HEADERS" ${ARGN})
 
   # find the sources
   set(lib_srcs)
-  foreach(fp ${ARG_DEFAULT_ARGS})
+  foreach(fp ${ARG_UNPARSED_ARGUMENTS})
     file(GLOB files src/${fp})
     if(files)
       set(lib_srcs ${lib_srcs} ${files})
@@ -636,7 +636,7 @@ endfunction()
 #---GAUDI_COMPONENT_LIBRARY( <name> source1 source2 ... LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_COMPONENT_LIBRARY library)
-  PARSE_ARGUMENTS(ARG "LIBRARIES;USE_HEADERS" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;USE_HEADERS" ${ARGN})
 
   # get the inherited include directories
   gaudi_get_required_include_dirs(ARG_USE_HEADERS ${ARG_LIBRARIES})
@@ -650,7 +650,7 @@ function(GAUDI_COMPONENT_LIBRARY library)
 
   # find the sources
   set(lib_srcs)
-  foreach( fp ${ARG_DEFAULT_ARGS})
+  foreach( fp ${ARG_UNPARSED_ARGUMENTS})
     file(GLOB files src/${fp})
     if(files)
       set( lib_srcs ${lib_srcs} ${files})
@@ -677,7 +677,7 @@ endfunction()
 #---GAUDI_PYTHON_MODULE( <name> source1 source2 ... LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_PYTHON_MODULE module)
-  PARSE_ARGUMENTS(ARG "LIBRARIES;USE_HEADERS" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;USE_HEADERS" ${ARGN})
 
   # get the inherited include directories
   gaudi_get_required_include_dirs(ARG_USE_HEADERS ${ARG_LIBRARIES})
@@ -691,7 +691,7 @@ function(GAUDI_PYTHON_MODULE module)
 
   # find the sources
   set(lib_srcs)
-  foreach( fp ${ARG_DEFAULT_ARGS})
+  foreach( fp ${ARG_UNPARSED_ARGUMENTS})
     file(GLOB files src/${fp})
     if(files)
       set( lib_srcs ${lib_srcs} ${files})
@@ -715,7 +715,7 @@ endfunction()
 #---GAUDI_EXECUTABLE( <name> source1 source2 ... LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_EXECUTABLE executable)
-  PARSE_ARGUMENTS(ARG "LIBRARIES;USE_HEADERS" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;USE_HEADERS" ${ARGN})
 
   # get the inherited include directories
   gaudi_get_required_include_dirs(ARG_USE_HEADERS ${ARG_LIBRARIES})
@@ -729,7 +729,7 @@ function(GAUDI_EXECUTABLE executable)
 
   # find the sources
   set(exe_srcs)
-  foreach( fp ${ARG_DEFAULT_ARGS})
+  foreach( fp ${ARG_UNPARSED_ARGUMENTS})
     file(GLOB files src/${fp})
     if(files)
       set( exe_srcs ${exe_srcs} ${files})
@@ -754,7 +754,7 @@ endfunction()
 #---GAUDI_UNIT_TEST( <name> source1 source2 ... LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_UNIT_TEST executable)
-  PARSE_ARGUMENTS(ARG "LIBRARIES;USE_HEADERS" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;USE_HEADERS" ${ARGN})
 
   # get the inherited include directories
   gaudi_get_required_include_dirs(ARG_USE_HEADERS ${ARG_LIBRARIES})
@@ -768,7 +768,7 @@ function(GAUDI_UNIT_TEST executable)
 
   # find the sources
   set(exe_srcs)
-  foreach( fp ${ARG_DEFAULT_ARGS})
+  foreach( fp ${ARG_UNPARSED_ARGUMENTS})
     file(GLOB files src/${fp})
     if(files)
       set( exe_srcs ${exe_srcs} ${files})
@@ -793,8 +793,8 @@ endfunction()
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_FRAMEWORK_TEST name)
   if(BUILD_TESTS)
-    PARSE_ARGUMENTS(ARG "ENVIRONMENT" "" ${ARGN})
-    foreach( optfile  ${ARG_DEFAULT_ARGS} )
+    CMAKE_PARSE_ARGUMENTS(ARG "" "" "ENVIRONMENT" ${ARGN})
+    foreach( optfile  ${ARG_UNPARSED_ARGUMENTS} )
       if( IS_ABSOLUTE ${optfile})
         set( optfiles ${optfiles} ${optfile})
       else()
@@ -813,7 +813,7 @@ endfunction()
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_QMTEST_TEST name)
   if(BUILD_TESTS)
-    PARSE_ARGUMENTS(ARG "TESTS;ENVIRONMENT" "" ${ARGN})
+    CMAKE_PARSE_ARGUMENTS(ARG "" "" "TESTS;ENVIRONMENT" ${ARGN})
     foreach(arg ${ARG_TESTS})
 	  set(tests ${tests} ${arg})
     endforeach()
