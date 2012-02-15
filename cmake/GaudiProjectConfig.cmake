@@ -519,6 +519,7 @@ function(GAUDI_GENERATE_CONFUSERDB)
 		COMMAND ${env_cmd}
                   -p PYTHONPATH=${path}
                   -p PYTHONPATH=${CMAKE_SOURCE_DIR}/GaudiKernel/python
+                  -p PYTHONPATH=${CMAKE_SOURCE_DIR}/Gaudi/python
                 ${genconfuser_cmd}
 		          -r ${CMAKE_CURRENT_SOURCE_DIR}/python
 		          -o ${outdir}/${package}_user_confDb.py
