@@ -53,6 +53,8 @@ GAUDI_PYTHON_MODULE(PyExample PythonModule/*.cpp
                     LIBRARIES ${Boost_PYTHON_LIBRARY}
                     USE_HEADERS Boost PythonLibs)
 
+GAUDI_INSTALL_PYTHON_MODULES()
+
 #---Executables-------------------------------------------------------------
 GAUDI_EXECUTABLE(Allocator Allocator/*.cpp LIBRARIES GaudiExamplesLib GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES}
                  ${ROOT_RIO_LIBRARY} ${ROOT_Hist_LIBRARY} ${CLHEP_LIBRARIES} ${GSL_LIBRARIES}
