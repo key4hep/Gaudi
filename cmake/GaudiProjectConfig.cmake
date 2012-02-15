@@ -918,6 +918,18 @@ function( GAUDI_PROJECT_VERSION_HEADER )
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
+#---GAUDI_PACKAGE_VERSION_HEADER( )
+#---------------------------------------------------------------------------------------------------
+function(GAUDI_PACKAGE_VERSION_HEADER package version outdir)
+  set(output  ${outdir}/${package}Version.h)
+  add_custom_command(OUTPUT ${output}
+                     COMMAND ${versheader_cmd} ${package} ${version} ${output})
+  add_custom_target(${package}VersionHeader ALL
+                    DEPENDS ${output})
+  #install(FILES ${output} DESTINATION include)
+endfunction()
+
+#---------------------------------------------------------------------------------------------------
 #---GAUDI_USE_PACKAGE( package )
 #---------------------------------------------------------------------------------------------------
 macro( GAUDI_USE_PACKAGE package )
