@@ -10,4 +10,3 @@ preproc = normalizeExamples + RegexpReplacer(r"(?&lt;=\s)\S+ErrorLogTest\.cpp:",
 validateWithReference(preproc = preproc)
 </text></argument>
 </extension>
-</extension>
