@@ -4,6 +4,12 @@
 # Description: standard and commonly used components
 ################################################################################
 
+! 2012-02-14 - Chris Jones
+ - Add a "TESVetoList" property to InputCopyStream, to allow certain locations
+   in the TES to be excluded from being copied to the OutputStream.
+   Default is empty.
+   (see task #25591)
+
 ! 2012-01-26 - Marco Clemencic
  - Added protection to debug messages (reported by Marco Cattaneo).
 
