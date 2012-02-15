@@ -11,7 +11,7 @@ find_package(GaudiProject)
 #---------------------------------------------------------------
 
 # Declare project name and version
-GAUDI_PROJECT(Gaudi v22r5)
+GAUDI_PROJECT(Gaudi v23r0)
 
 #---Tests environment-------------------------------------------
 #if( BUILD_TESTS )
