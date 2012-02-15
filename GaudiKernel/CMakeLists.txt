@@ -22,6 +22,9 @@ GAUDI_UNIT_TEST(PathResolver_test ../tests/src/PathResolver_test.cpp
 GAUDI_UNIT_TEST(test_GaudiTime ../tests/src/test_GaudiTime.cpp
                 LIBRARIES GaudiKernel ${CPPUNIT_LIBRARIES}
                 USE_HEADERS CppUnit)
+GAUDI_UNIT_TEST(test_GaudiTiming ../tests/src/test_GaudiTiming.cpp
+                LIBRARIES GaudiKernel ${CPPUNIT_LIBRARIES}
+                USE_HEADERS CppUnit)
 # This is just a compile-time tests.
 GAUDI_UNIT_TEST(test_headers_build ../tests/src/test_headers_build.cpp LIBRARIES GaudiKernel)
 
