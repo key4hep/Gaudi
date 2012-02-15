@@ -101,7 +101,9 @@ LCG_external_package(stomppy           3.0.4                                    
 LCG_external_package(storm             0.18                                     )
 LCG_external_package(sympy             0.6.7                                    )
 LCG_external_package(tcmalloc          1.7p1                                    )
-LCG_external_package(uuid              1.38p1                                   )
+if(NOT ${os} STREQUAL slc6) # uuid is not distributed with SLC6
+  LCG_external_package(uuid              1.38p1                                   )
+endif()
 LCG_external_package(valgrind          3.6.0                                    )
 LCG_external_package(vomsapi_noglobus  1.9.17-1                                 )
 LCG_external_package(vomsapic          1.9.17-1                                 )
