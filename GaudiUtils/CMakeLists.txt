@@ -12,7 +12,7 @@ find_package(uuid)
 
 #---Libraries---------------------------------------------------------------
 GAUDI_LINKER_LIBRARY(GaudiUtilsLib Lib/*.cpp
-                     LIBRARIES GaudiKernel ${ROOT_LIBRARIES} ${ROOT_RIO_LIBRARY} ${ROOT_Hist_LIBRARY}
+                     LIBRARIES GaudiKernel ${ROOT_LIBRARIES} ${ROOT_RIO_LIBRARY} ${ROOT_Hist_LIBRARY} ${ROOT_XMLIO_LIBRARY}
                      USE_HEADERS ROOT AIDA)
 GAUDI_COMPONENT_LIBRARY(GaudiUtils component/*.cpp
                         LIBRARIES GaudiUtilsLib ${UUID_LIBRARIES} ${XERCESC_LIBRARIES}
