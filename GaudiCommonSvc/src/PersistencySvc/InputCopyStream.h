@@ -18,10 +18,14 @@ class IDataStoreLeaves;
  *  @author:  P. Koppenburg
  *  @author:  M. Clemencic
 */
-class InputCopyStream : public OutputStream {
+class InputCopyStream : public OutputStream 
+{
+
 public:
+
   /// Standard algorithm Constructor
   InputCopyStream(const std::string& name, ISvcLocator* pSvcLocator);
+
   /// Standard Destructor
   virtual ~InputCopyStream();
 
@@ -35,11 +39,15 @@ public:
   virtual StatusCode collectObjects();
 
 private:
+
   /// Allow optional items to be on TES instead of input file
   bool m_takeOptionalFromTES;
 
   /// Pointer to the (public) tool used to retrieve the objects in a file.
   IDataStoreLeaves *m_leavesTool;
+
+  /// Names of TES locations to Veto
+  std::vector<std::string> m_tesVetoList;
 
 protected:
 
