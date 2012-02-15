@@ -3,7 +3,7 @@
 <argument name="program"><text>nm</text></argument>
 <argument name="args"><set>
   <text>-C</text>
-  <text>$GAUDIKERNELROOT/$CMTCONFIG/libGaudiKernel.so</text>
+  <text>$GAUDIKERNELROOT/../InstallArea/$CMTCONFIG/lib/libGaudiKernel.so</text>
 </set></argument>
 <argument name="validator"><text>
 import re
