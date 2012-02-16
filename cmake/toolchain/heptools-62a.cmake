@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 2.8.5)
 include(${CMAKE_CURRENT_LIST_DIR}/heptools-common.cmake)
 
 # please keep alphabetic order and the structure (tabbing).
