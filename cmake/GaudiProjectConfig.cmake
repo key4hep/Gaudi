@@ -821,7 +821,7 @@ function(GAUDI_QMTEST_TEST name)
     if( NOT tests )
       set(tests ${name})
     endif()
-    find_package(QMtest QUIET)
+    find_package(QMTest QUIET)
     add_test(${name} ${CMAKE_INSTALL_PREFIX}/scripts/testwrap${ssuffix} ${CMAKE_INSTALL_PREFIX}/setup${ssuffix}
                      ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
                      qmtest run ${tests})
