@@ -64,6 +64,8 @@ function(REFLEX_BUILD_DICTIONARY dictionary headerfiles selectionfile )
   REFLEX_GENERATE_DICTIONARY(${dictionary} ${headerfiles} ${selectionfile} OPTIONS ${ARG_OPTIONS})
   add_library(${dictionary}Dict MODULE ${gensrcdict})
   target_link_libraries(${dictionary}Dict ${ARG_LIBRARIES} ${ROOT_Reflex_LIBRARY})
+  # ensure that *Gen and *Dict are not built at the same time
+  add_dependencies(${dictionary}Dict ${dictionary}Gen)
   # Notify the project level target
   set_property(GLOBAL APPEND PROPERTY MergedDictRootmap_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/${rootmapname})
   set_property(GLOBAL APPEND PROPERTY MergedDictRootmap_DEPENDS ${dictionary}Gen)
