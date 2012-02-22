@@ -28,23 +28,21 @@ namespace Google
    *  @author Chris Jones
    *  @date   18/04/2011
    */
-  class AuditorBase : public Auditor,
-                      virtual public IIncidentListener
+  class AuditorBase : public extends1<Auditor, IIncidentListener>
   {
 
   public:
 
     AuditorBase( const std::string& name, ISvcLocator* pSvcLocator);
 
-    ~AuditorBase() {  }
+    virtual ~AuditorBase() {  }
 
     StatusCode initialize()
     {
       m_log << MSG::INFO << "Initialised" << endmsg;
 
-      IIncidentSvc * inSvc = NULL;
-      const StatusCode sc = serviceLocator()->service("IncidentSvc",inSvc);
-      if ( sc.isFailure() ) return sc;
+      SmartIF<IIncidentSvc> inSvc(serviceLocator()->service("IncidentSvc"));
+      if ( ! inSvc.isValid() ) return StatusCode::FAILURE;
 
       inSvc->addListener( this, IncidentType::BeginEvent );
 
@@ -99,7 +97,7 @@ namespace Google
           {
             startAudit();
           }
-          else if ( m_inFullAudit && 
+          else if ( m_inFullAudit &&
                     m_sampleEventCount >= m_nSampleEvents &&
                     alreadyRunning() )
           {
@@ -183,27 +181,20 @@ namespace Google
       }
     }
 
+    // Obsolete methods
     void beforeInitialize  (INamedInterface *i) { return before(IAuditor::Initialize,i);   }
-    void beforeReInitialize(INamedInterface *i) { return before(IAuditor::ReInitialize,i); }
+    void beforeReinitialize(INamedInterface *i) { return before(IAuditor::ReInitialize,i); }
     void beforeExecute     (INamedInterface *i) { return before(IAuditor::Execute,i);      }
     void beforeBeginRun    (INamedInterface *i) { return before(IAuditor::BeginRun,i);     }
     void beforeEndRun      (INamedInterface *i) { return before(IAuditor::EndRun,i);       }
     void beforeFinalize    (INamedInterface *i) { return before(IAuditor::Finalize,i);     }
 
-#ifdef __INTEL_COMPILER         // Disable ICC warning
-#pragma warning(disable:1125) // IAuditor::* function is hidden, virtual function override intended?
-#pragma warning(push)
-#endif
-    void afterInitialize(INamedInterface *i, const StatusCode& s) { return after(IAuditor::Initialize,i,s); }
-    void afterBeginRun  (INamedInterface *i, const StatusCode& s) { return after(IAuditor::BeginRun,i,s); }
-    void afterEndRun    (INamedInterface *i, const StatusCode& s) { return after(IAuditor::EndRun,i,s); }
-    void afterFinalize  (INamedInterface *i, const StatusCode& s) { return after(IAuditor::Finalize,i,s); }
-#ifdef __INTEL_COMPILER         // Re-enable ICC warning 1125
-#pragma warning(push)
-#endif
-
-    void afterReInitialize(INamedInterface *i, const StatusCode& s) { return after(IAuditor::ReInitialize,i,s); }
-    void afterExecute     (INamedInterface *i, const StatusCode& s) { return after(IAuditor::Execute,i,s); }
+    void afterInitialize   (INamedInterface *i) { return after(IAuditor::Initialize,i,StatusCode::SUCCESS); }
+    void afterReinitialize (INamedInterface *i) { return after(IAuditor::ReInitialize,i,StatusCode::SUCCESS); }
+    void afterExecute      (INamedInterface *i, const StatusCode& s) { return after(IAuditor::Execute,i,s); }
+    void afterBeginRun     (INamedInterface *i) { return after(IAuditor::BeginRun,i,StatusCode::SUCCESS); }
+    void afterEndRun       (INamedInterface *i) { return after(IAuditor::EndRun,i,StatusCode::SUCCESS); }
+    void afterFinalize     (INamedInterface *i) { return after(IAuditor::Finalize,i,StatusCode::SUCCESS); }
 
   protected:
 
@@ -212,7 +203,7 @@ namespace Google
 
     /// stop the google tool
     virtual void google_after(const std::string& s) = 0;
-    
+
     // check if we are already running the tool
     virtual bool alreadyRunning() = 0;
 
@@ -244,7 +235,7 @@ namespace Google
   };
 
   AuditorBase::AuditorBase( const std::string& name, ISvcLocator* pSvcLocator)
-    : Auditor ( name , pSvcLocator )
+    : base_class ( name , pSvcLocator )
     , m_log   ( msgSvc() , name )
     , m_freq  (-1 )
     , m_audit ( false )
@@ -346,7 +337,7 @@ namespace Google
         m_checker   ( NULL )
     { }
 
-    ~HeapChecker() { delete m_checker; }
+    virtual ~HeapChecker() { delete m_checker; }
 
   public:
 
