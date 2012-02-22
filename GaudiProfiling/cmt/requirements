@@ -7,15 +7,18 @@ branches        GaudiProfiling src cmt doc data python scripts
 
 # ============== dependencies =================================================
 use             GaudiKernel v*
+use             GaudiAlg    v* -no_auto_imports
 # Replacement for libz
 use             ROOT        v* LCG_Interfaces
 use             Boost       v* LCG_Interfaces # Boost also used to bind cpp to python
 # ============== constituents =================================================
 library         GaudiProfiling    component/*.cpp -no_static
+library         GaudiGoogleProfiling    component/google/*.cpp -import=GaudiAlg -import=tcmalloc -no_static
 application     GaudiGenProfilingHtml app/pfm_gen_analysis.cpp
 
 # ============== patterns =====================================================
 apply_pattern   component_library library="GaudiProfiling"
+apply_pattern   component_library library="GaudiGoogleProfiling"
 apply_pattern   install_python_modules
 apply_pattern   install_scripts
 
@@ -28,7 +31,15 @@ use             libunwind   v* LCG_Interfaces
 # Not using the libunwind library, only the headers
 macro libunwind_linkopts ''
 
-macro_append GaudiProfiling_use_linkopts " -lz " target-winxp ""
+use tcmalloc v* LCG_Interfaces -no_auto_imports
+
+# We do not want to link GaudiGoogleProfiling to tcmalloc (it must be preloaded),
+# so we need to remove the "--no-undefined" flag.
+macro_remove componentshr_linkopts "-Wl,--no-undefined"
+
+# On the other hand, we want to keep the --no-undefined for the other library.
+macro_append GaudiProfiling_use_linkopts " -Wl,--no-undefined -lz " target-winxp ""
+
 macro_append GaudiGenProfilingHtml_use_linkopts " -lz " target-winxp ""
 
 apply_pattern disable_package_on platform=target-winxp
