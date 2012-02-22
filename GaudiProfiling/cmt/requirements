@@ -7,12 +7,13 @@ branches        GaudiProfiling src cmt doc data python scripts
 
 # ============== dependencies =================================================
 use             GaudiKernel v*
+use             GaudiAlg    v* -no_auto_imports
 # Replacement for libz
 use             ROOT        v* LCG_Interfaces
 use             Boost       v* LCG_Interfaces # Boost also used to bind cpp to python
 # ============== constituents =================================================
 library         GaudiProfiling    component/*.cpp -no_static
-library         GaudiGoogleProfiling    component/google/*.cpp -no_static
+library         GaudiGoogleProfiling    component/google/*.cpp -import=GaudiAlg -import=tcmalloc -no_static
 application     GaudiGenProfilingHtml app/pfm_gen_analysis.cpp
 
 # ============== patterns =====================================================
@@ -30,7 +31,7 @@ use             libunwind   v* LCG_Interfaces
 # Not using the libunwind library, only the headers
 macro libunwind_linkopts ''
 
-use tcmalloc v* LCG_Interfaces
+use tcmalloc v* LCG_Interfaces -no_auto_imports
 
 # We do not want to link GaudiGoogleProfiling to tcmalloc (it must be preloaded),
 # so we need to remove the "--no-undefined" flag.

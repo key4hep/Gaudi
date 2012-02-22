@@ -3,6 +3,7 @@
 #include <string>
 #include <utility>
 #include <memory>
+#include <algorithm>
 
 #include "GaudiKernel/AudFactory.h"
 #include "GaudiKernel/Auditor.h"
@@ -11,6 +12,8 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/IIncidentSvc.h"
+
+#include "GaudiAlg/GaudiSequencer.h"
 
 #include "boost/assign/list_of.hpp"
 
@@ -77,6 +80,11 @@ namespace Google
       m_inFullAudit = false;
     }
 
+    bool isSequencer( INamedInterface* i ) const
+    { 
+      return dynamic_cast<GaudiSequencer*>(i) != NULL;
+    }
+
   public:
 
     /** Implement the handle method for the Incident service.
@@ -90,7 +98,10 @@ namespace Google
       {
         ++m_nEvts;
         m_log << MSG::DEBUG << "Event " << m_nEvts << endmsg;
-        m_audit = ( m_freq < 0 || m_nEvts == 1 || m_nEvts % m_freq == 0 );
+        m_audit = ( m_nEvts > m_eventsToSkip &&
+                    ( m_freq < 0            || 
+                      m_nEvts == 1          || 
+                      m_nEvts % m_freq == 0  ) );
         if ( m_fullEventAudit )
         {
           if ( m_audit && !m_inFullAudit && !alreadyRunning() )
@@ -113,9 +124,21 @@ namespace Google
 
   public:
 
-    void before(StandardEventType type, INamedInterface* i) { before(type,i->name()); }
+    void before(StandardEventType type, INamedInterface* i) 
+    {
+      if ( !m_skipSequencers || !isSequencer(i) )
+      {
+        before(type,i->name());
+      }
+    }
 
-    void before(CustomEventTypeRef type, INamedInterface* i) { before(type,i->name()); }
+    void before(CustomEventTypeRef type, INamedInterface* i)
+    { 
+      if ( !m_skipSequencers || !isSequencer(i) )
+      {
+        before(type,i->name()); 
+      }
+    }
 
     void before(StandardEventType type, const std::string& s)
     {
@@ -148,15 +171,21 @@ namespace Google
     }
 
     void after(StandardEventType type, INamedInterface* i, const StatusCode& sc)
-    {
-      std::ostringstream t;
-      t << type;
-      after(t.str(),i,sc);
+    { 
+      if ( !m_skipSequencers || !isSequencer(i) )
+      {
+        std::ostringstream t;
+        t << type;
+        after(t.str(),i,sc);
+      }
     }
 
     void after(CustomEventTypeRef type, INamedInterface* i, const StatusCode& sc)
-    {
-      after(type,i->name(),sc);
+    { 
+      if ( !m_skipSequencers || !isSequencer(i) )
+      {
+        after(type,i->name(),sc);
+      }
     }
 
     void after(StandardEventType type, const std::string& s, const StatusCode& sc)
@@ -217,6 +246,10 @@ namespace Google
     std::vector<std::string>  m_veto;  ///< Veto list. Any component in this list will not be audited
     std::vector<std::string>  m_list;  ///< Any component in this list will be audited. If empty, all will be done.
 
+    unsigned long long m_eventsToSkip; ///< Number of events to skip before auditing
+
+    bool m_skipSequencers;
+
     long int m_freq;
 
     bool m_audit;
@@ -234,7 +267,8 @@ namespace Google
 
   };
 
-  AuditorBase::AuditorBase( const std::string& name, ISvcLocator* pSvcLocator)
+  AuditorBase::AuditorBase( const std::string& name,
+                            ISvcLocator* pSvcLocator )
     : base_class ( name , pSvcLocator )
     , m_log   ( msgSvc() , name )
     , m_freq  (-1 )
@@ -255,6 +289,8 @@ namespace Google
     declareProperty("ProfileFreq", m_freq );
     declareProperty("DoFullEventProfile", m_fullEventAudit = false );
     declareProperty("FullEventNSampleEvents", m_nSampleEvents = 1 );
+    declareProperty("SkipEvents", m_eventsToSkip = 0 );
+    declareProperty("SkipSequencers", m_skipSequencers = true );
   }
 
   /** @class HeapProfiler GoogleAuditor.cpp

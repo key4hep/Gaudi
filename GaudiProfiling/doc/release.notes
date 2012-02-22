@@ -4,8 +4,10 @@
 ! Purpose     : Profiling and performance monitoring of Gaudi/LHCb software
 !-----------------------------------------------------------------------------
 
-! 2011-06-14 - Chris Jones
+! 2012-02-22 - Chris Jones
  - Patch #4852: Auditors based on the Google Perf Tools
+   Note: Google auditors can be instantiated only if the library tcmalloc is
+         preloaded (e.g. with gaudirun.py -T).
 
 ============================ GaudiProfiling v1r2 =============================
 ! 2011-10-12 - Hubert Degaudenzi
