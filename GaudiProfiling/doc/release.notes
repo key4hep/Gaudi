@@ -1,8 +1,11 @@
 !-----------------------------------------------------------------------------
 ! Package     : GaudiProfiling
-! Responsible : Karol Kruzelecki
+! Responsible : Chris Jones, Karol Kruzelecki
 ! Purpose     : Profiling and performance monitoring of Gaudi/LHCb software
 !-----------------------------------------------------------------------------
+
+! 2011-06-14 - Chris Jones
+ - Patch #4852: Auditors based on the Google Perf Tools
 
 ============================ GaudiProfiling v1r2 =============================
 ! 2011-10-12 - Hubert Degaudenzi
