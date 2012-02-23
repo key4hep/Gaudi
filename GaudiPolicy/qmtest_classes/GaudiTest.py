@@ -261,12 +261,23 @@ class CMT:
 #  path to it.
 #  If the executable cannot be found, None is returned
 def which(executable):
+    """
+    Locates an executable in the executables path ($PATH) and returns the full
+    path to it.  An application is looked for with or without the '.exe' suffix.
+    If the executable cannot be found, None is returned
+    """
     if os.path.isabs(executable):
+        if not os.path.exists(executable):
+            if executable.endswith('.exe'):
+                if os.path.exists(executable[:-4]):
+                    return executable[:-4]
         return executable
     for d in os.environ.get("PATH").split(os.pathsep):
-        fullpath = os.path.join(d,executable)
+        fullpath = os.path.join(d, executable)
         if os.path.exists(fullpath):
             return fullpath
+    if executable.endswith('.exe'):
+        return which(executable[:-4])
     return None
 
 def rationalizepath(p):

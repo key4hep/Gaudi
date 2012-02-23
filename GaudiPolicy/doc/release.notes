@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2012-02-23 - Marco Clemencic
+ - Modified GaudiTest.GaudiExeTest to be able to run executables with or without
+   the .exe extension.
+
 ============================= GaudiPolicy v12r0 ==============================
 ! 2012-01-20 - Marco Clemencic
  - Added the CMTCONFIGs *-test (only few of them), implying the tag target-test,
