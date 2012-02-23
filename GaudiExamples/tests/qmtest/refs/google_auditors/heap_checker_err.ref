@@ -1,0 +1,17 @@
+WARNING: Perftools heap leak checker is active -- Performance may suffer
+Turning perftools heap leak checking off
+Turning perftools heap leak checking off
+WARNING: Perftools heap leak checker is active -- Performance may suffer
+No leaks found for check "HelloWorld-Event1" (but no 100% guarantee that there aren't any): found 331573 reachable heap objects of 40608628 bytes
+No leaks found for check "HelloWorld-Event2" (but no 100% guarantee that there aren't any): found 331573 reachable heap objects of 40608628 bytes
+No leaks found for check "HelloWorld-Event3" (but no 100% guarantee that there aren't any): found 331573 reachable heap objects of 40608628 bytes
+No leaks found for check "HelloWorld-Event4" (but no 100% guarantee that there aren't any): found 331573 reachable heap objects of 40608628 bytes
+No leaks found for check "HelloWorld-Event5" (but no 100% guarantee that there aren't any): found 331573 reachable heap objects of 40608628 bytes
+No leaks found for check "HelloWorld-Event6" (but no 100% guarantee that there aren't any): found 331573 reachable heap objects of 40608628 bytes
+No leaks found for check "HelloWorld-Event7" (but no 100% guarantee that there aren't any): found 331573 reachable heap objects of 40608628 bytes
+No leaks found for check "HelloWorld-Event8" (but no 100% guarantee that there aren't any): found 331573 reachable heap objects of 40608628 bytes
+No leaks found for check "HelloWorld-Event9" (but no 100% guarantee that there aren't any): found 331573 reachable heap objects of 40608628 bytes
+No leaks found for check "HelloWorld-Event10" (but no 100% guarantee that there aren't any): found 331573 reachable heap objects of 40608630 bytes
+No leaks found for check "HelloWorld-Event10" (but no 100% guarantee that there aren't any): found 331575 reachable heap objects of 40608911 bytes
+No leaks found for check "HelloWorld-Event10" (but no 100% guarantee that there aren't any): found 331594 reachable heap objects of 40776843 bytes
+No leaks found for check "HelloWorld-Event10" (but no 100% guarantee that there aren't any): found 331603 reachable heap objects of 41110491 bytes
