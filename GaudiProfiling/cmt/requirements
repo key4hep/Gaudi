@@ -13,12 +13,16 @@ use             ROOT        v* LCG_Interfaces
 use             Boost       v* LCG_Interfaces # Boost also used to bind cpp to python
 # ============== constituents =================================================
 library         GaudiProfiling    component/*.cpp -no_static
-library         GaudiGoogleProfiling    component/google/*.cpp -import=GaudiAlg -import=tcmalloc -no_static
 application     GaudiGenProfilingHtml app/pfm_gen_analysis.cpp
+
+library         GaudiGoogleProfiling    component/google/*.cpp -import=GaudiAlg -import=tcmalloc -no_static
+
+library         IntelProfiler    component/intel/*.cpp -no_static
 
 # ============== patterns =====================================================
 apply_pattern   component_library library="GaudiProfiling"
 apply_pattern   component_library library="GaudiGoogleProfiling"
+apply_pattern   component_library library="IntelProfiler"
 apply_pattern   install_python_modules
 apply_pattern   install_scripts
 
@@ -26,6 +30,9 @@ macro_append GaudiProfiling_linkopts " -ldl " target-winxp ""
 
 # ============== private ======================================================
 private
+
+macro_append use_includes " -I/afs/cern.ch/sw/IntelSoftware/linux/x86_64/xe2011/vtune_amplifier_xe_2011/include "
+macro_append IntelProfiler_use_linkopts " -pthread /afs/cern.ch/sw/IntelSoftware/linux/x86_64/xe2011/vtune_amplifier_xe_2011/lib64/libittnotify.a"
 
 use             libunwind   v* LCG_Interfaces
 # Not using the libunwind library, only the headers
