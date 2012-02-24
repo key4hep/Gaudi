@@ -96,10 +96,6 @@ for i in xrange(0,1000) :
     lv1 = Math.PxPyPzEVector   ( gauss() , gauss() , gauss() , gauss() )
     tup2.column ( "lv1" , lv1 )                              ## Lorentz Vector
    
-    ## Lorentz Vector
-    lv2 = Math.PtEtaPhiEVector ( gauss() , gauss() , gauss() , gauss() )
-    tup2.column ( "lv2" , lv2 )                              ## Lorentz Vector
-
     tup2.write  () 
 
 
@@ -116,18 +112,6 @@ for i in xrange(0,1000) :
     v1 = Math.XYZVector( gauss() , gauss() , gauss() )
     tup3.column ( "v1" , v1 )                                ## 3D-Vector
 
-    ## 3D-Vector
-    v2 = Math.Polar3DVector( gauss() , gauss() , gauss() )
-    tup3.column ( "v2" , v2 )                                ## 3D-Vector
-    
-    ## 3D-Vector
-    v3 = Math.RhoEtaPhiVector( gauss() , gauss() , gauss() )
-    tup3.column ( "v3" , v3 )                                ## 3D-Vector
-    
-    ## 3D-Vector
-    v4 = Math.RhoZPhiVector( gauss() , gauss() , gauss() )
-    tup3.column ( "v4" , v4 )                                ## 3D-Vector
-
     tup3.write  () 
 
 
@@ -143,18 +127,6 @@ for i in xrange(0,1000) :
     ## 3D-Point
     p1 = Math.XYZPoint( gauss() , gauss() , gauss() )
     tup4.column ( "p1" , p1 )                                ## 3D-Point
-    
-    ## 3D-Point
-    p2 = Math.Polar3DPoint( gauss() , gauss() , gauss() )
-    tup4.column ( "p2" , p2 )                                ## 3D-Point
-
-    ## 3D-Point
-    p3 = Math.RhoEtaPhiPoint( gauss() , gauss() , gauss() )
-    tup4.column ( "p3" , p3 )                               ## 3D-Point
-
-    ## 3D-Point
-    p4 = Math.RhoZPhiPoint( gauss() , gauss() , gauss() )
-    tup4.column ( "p4" , p4 )                               ## 3D-Point
     
     tup4.write  ()
 
@@ -287,6 +259,21 @@ for i in xrange(0,100) :
     tup8.write () 
 
 
+## get the 8th N-tuple
+tup9 = TupleUtils.nTuple( "another/path2"                 , ## the path
+                          "Time"                          , ## literal ID 
+                          "N-tuple: Gaudi::Time"          , ## the title
+                          LUN = 'MYLUN2'                  ) ## logical unit
+
+
+for i in xrange(0,100) :
+
+    t = cpp.Gaudi.Time()
+
+    tup9.column ( t )
+    tup9.write  (   )
+    
+    
 ## release all tuples at the end 
 TupleUtils.releaseTuples ()
 
