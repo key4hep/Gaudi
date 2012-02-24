@@ -708,7 +708,7 @@ namespace Tuples
      *  @return status code
      */
     StatusCode column ( const std::string&       name  ,
-                        const int                value ,
+                        const unsigned long long value ,
                         const unsigned long long minv  ,
                         const unsigned long long maxv  );
     // ========================================================================
