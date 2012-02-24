@@ -5,7 +5,7 @@
 #
 # Authors: Pere Mato, Marco Clemencic
 
-cmake_minimum_required(VERSION 2.4.6)
+cmake_minimum_required(VERSION 2.8.5)
 cmake_policy(SET CMP0003 NEW) # See "cmake --help-policy CMP0003" for more details
 cmake_policy(SET CMP0011 NEW) # See "cmake --help-policy CMP0011" for more details
 cmake_policy(SET CMP0009 NEW) # See "cmake --help-policy CMP0009" for more details
@@ -40,30 +40,26 @@ set(CMAKE_include_directories_BEFORE ON)
 #set(CMAKE_SKIP_BUILD_RPATH TRUE)
 #set(CMAKE_CXX_COMPILER g++)
 
-# The global property RULE_LAUNCH_COMPILE (needed to enable distcc and ccache)
-# has been introduced in CMake 2.8.
-if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.7)
-  find_program(ccache_cmd ccache)
-  if(ccache_cmd)
-    option(CMAKE_USE_CCACHE "Use ccache to speed up compilation." OFF)
-    if(CMAKE_USE_CCACHE)
-      set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${ccache_cmd})
-      message(STATUS "Using ccache for building")
-    endif()
+find_program(ccache_cmd ccache)
+if(ccache_cmd)
+  option(CMAKE_USE_CCACHE "Use ccache to speed up compilation." OFF)
+  if(CMAKE_USE_CCACHE)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${ccache_cmd})
+    message(STATUS "Using ccache for building")
   endif()
-  find_program(distcc_cmd distcc)
-  if(distcc_cmd)
-    option(CMAKE_USE_DISTCC "Use distcc to speed up compilation." OFF)
-    if(CMAKE_USE_DISTCC)
-      set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${distcc_cmd})
-      message(STATUS "Using distcc for building")
-      if(CMAKE_USE_CCACHE)
-        message(WARNING "Cannot use distcc and ccache at the same time: using distcc")
-      endif()
-    endif()
-  endif()
-  mark_as_advanced(ccache_cmd distcc_cmd)
 endif()
+find_program(distcc_cmd distcc)
+if(distcc_cmd)
+  option(CMAKE_USE_DISTCC "Use distcc to speed up compilation." OFF)
+  if(CMAKE_USE_DISTCC)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${distcc_cmd})
+    message(STATUS "Using distcc for building")
+    if(CMAKE_USE_CCACHE)
+      message(WARNING "Cannot use distcc and ccache at the same time: using distcc")
+    endif()
+  endif()
+endif()
+mark_as_advanced(ccache_cmd distcc_cmd)
 
 #-------------------------------------------------------------------------------
 # Platform handling
@@ -111,7 +107,7 @@ find_package(PythonInterp)
 
 #--- commands required to build cached variable
 # (python scripts are located as such but run through python)
-set(hints ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts ${CMAKE_SOURCE_DIR}/GaudiKernel/scripts)
+set(hints ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts ${CMAKE_SOURCE_DIR}/GaudiKernel/scripts ${CMAKE_SOURCE_DIR}/Gaudi/scripts)
 
 find_program(env_cmd env.py HINTS ${hints})
 set(env_cmd ${PYTHON_EXECUTABLE} ${env_cmd})
@@ -127,6 +123,9 @@ set(genconfuser_cmd ${PYTHON_EXECUTABLE} ${genconfuser_cmd})
 
 find_program(zippythondir_cmd ZipPythonDir.py HINTS ${hints})
 set(zippythondir_cmd ${PYTHON_EXECUTABLE} ${zippythondir_cmd})
+
+find_program(gaudirun_cmd gaudirun.py HINTS ${hints})
+set(gaudirun_cmd ${PYTHON_EXECUTABLE} ${gaudirun_cmd})
 
 #---------------------------------------------------------------------------------------------------
 #---GAUDI_PROJECT(project version)
@@ -164,21 +163,13 @@ macro(GAUDI_PROJECT project version)
       "Install path prefix, prepended onto install directories." FORCE )
   endif()
 
-  if(NOT BUILD_OUTPUT_PREFIX)
-    set(BUILD_OUTPUT_PREFIX ${CMAKE_BINARY_DIR}/.build CACHE STRING
-           "Base directory for generated files" FORCE)
-  endif()
-  if(NOT EXECUTABLE_OUTPUT_PATH)
-    set(EXECUTABLE_OUTPUT_PATH ${BUILD_OUTPUT_PREFIX}/bin CACHE STRING
+  if(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin CACHE STRING
 	   "Single build output directory for all executables" FORCE)
   endif()
-  if(NOT LIBRARY_OUTPUT_PATH)
-    set(LIBRARY_OUTPUT_PATH ${BUILD_OUTPUT_PREFIX}/lib CACHE STRING
+  if(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE STRING
 	   "Single build output directory for all libraries" FORCE)
-  endif()
-  if(NOT PYTHON_OUTPUT_PATH)
-    set(PYTHON_OUTPUT_PATH ${BUILD_OUTPUT_PREFIX}/python CACHE STRING
-	   "Single build output directory for all python files" FORCE)
   endif()
 
   if(BUILD_TESTS)
@@ -187,14 +178,12 @@ macro(GAUDI_PROJECT project version)
 
   # FIXME: external tools need to be found independently of the project
   if(CMAKE_PROJECT_NAME STREQUAL Gaudi)
-    set(genconf_cmd ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genconf.exe)
-    set(genwindef_cmd ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/genwindef.exe)
-    set(gaudirun ${CMAKE_SOURCE_DIR}/Gaudi/scripts/gaudirun.py)
+    set(genconf_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genconf.exe)
+    set(genwindef_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genwindef.exe)
   else()
     set(genconf_cmd ${GAUDI_binaryarea}/bin/genconf.exe)
     set(genwindef_cmd ${GAUDI_binaryarea}/bin/genwindef.exe)
     set(GAUDI_SOURCE_DIR ${GAUDI_installation})
-    set(gaudirun ${GAUDI_installarea}/scripts/gaudirun.py)
   endif()
 
   #--- Project Installations------------------------------------------------------------------------
@@ -432,7 +421,7 @@ function(GAUDI_MERGE_TARGET tgt dest filename)
     # get the list of parts to merge
     get_property(parts GLOBAL PROPERTY Merged${tgt}_SOURCES)
     # create the targets
-    set(output ${BUILD_OUTPUT_PREFIX}/${dest}/${filename})
+    set(output ${CMAKE_BINARY_DIR}/${dest}/${filename})
     add_custom_command(OUTPUT ${output}
                        COMMAND ${merge_cmd} ${parts} ${output}
                        DEPENDS ${parts})
@@ -465,6 +454,7 @@ function(GAUDI_GENERATE_CONFIGURABLES library)
 		COMMAND ${env_cmd}
                   -p ${ld_library_path}=${path}
                   -p ${ld_library_path}=.
+                  -p ${ld_library_path}=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
 		        ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
 				--configurable-module=${confModuleName}
 				--configurable-default-name=${confDefaultName}
@@ -608,7 +598,7 @@ function(GAUDI_LINKER_LIBRARY library)
     set_target_properties(${library}-arc PROPERTIES COMPILE_DEFINITIONS GAUDI_LINKER_LIBRARY)
     add_custom_command(
       OUTPUT ${library}.def
-	  COMMAND ${genwindef_cmd} -o ${library}.def -l ${library} ${LIBRARY_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/${library}-arc.lib
+	  COMMAND ${genwindef_cmd} -o ${library}.def -l ${library} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/${library}-arc.lib
 	  DEPENDS ${library}-arc genwindef)
 	#---Needed to create a dummy source file to please Windows IDE builds with the manifest
 	file( WRITE ${CMAKE_CURRENT_BINARY_DIR}/${library}.cpp "// empty file\n" )
@@ -782,7 +772,7 @@ function(GAUDI_UNIT_TEST executable)
     add_executable( ${executable} ${exe_srcs})
     target_link_libraries(${executable} ${ARG_LIBRARIES} )
 	SET_RUNTIME_PATH(path ${ld_library_path})
-    add_test(${executable} ${env_cmd} -p ${ld_library_path}=${path} ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/${executable}.exe )
+    add_test(${executable} ${env_cmd} -p ${ld_library_path}=${path} ${CMAKE_BINARY_DIR}/${executable}.exe)
     #----Installation details-------------------------------------------------------
     set_target_properties(${executable} PROPERTIES SUFFIX .exe)
     install(TARGETS ${executable} RUNTIME DESTINATION ${bin})
@@ -802,7 +792,7 @@ function(GAUDI_FRAMEWORK_TEST name)
         set( optfiles ${optfiles} ${CMAKE_CURRENT_SOURCE_DIR}/${optfile})
       endif()
     endforeach()
-    add_test(${name} ${CMAKE_INSTALL_PREFIX}/scripts/testwrap${ssuffix} ${CMAKE_INSTALL_PREFIX}/setup${ssuffix} "." ${gaudirun} ${optfiles})
+    add_test(${name} ${CMAKE_INSTALL_PREFIX}/scripts/testwrap${ssuffix} ${CMAKE_INSTALL_PREFIX}/setup${ssuffix} "." ${gaudirun_cmd} ${optfiles})
     set_property(TEST ${name} PROPERTY ENVIRONMENT
       LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:$ENV{LD_LIBRARY_PATH}
       ${ARG_ENVIRONMENT})
@@ -910,7 +900,7 @@ endfunction()
 function( GAUDI_PROJECT_VERSION_HEADER )
   string(TOUPPER ${CMAKE_PROJECT_NAME} project)
   set(version ${CMAKE_PROJECT_VERSION})
-  set(output  ${BUILD_OUTPUT_PREFIX}/include/${project}_VERSION.h)
+  set(output  ${CMAKE_BINARY_DIR}/include/${project}_VERSION.h)
   add_custom_command(OUTPUT ${output}
                      COMMAND ${versheader_cmd} ${project} ${version} ${output})
   add_custom_target(${project}VersionHeader ALL
@@ -1058,7 +1048,7 @@ macro(gaudi_generate_project_config_version_file)
     set(vers_id ${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR})
   endif()
 
-  file(WRITE ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}ConfigVersion.cmake
+  file(WRITE ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}ConfigVersion.cmake
 "set(PACKAGE_NAME ${CMAKE_PROJECT_NAME})
 set(PACKAGE_VERSION ${vers_id})
 if((PACKAGE_NAME STREQUAL PACKAGE_FIND_NAME)
@@ -1072,7 +1062,7 @@ else()
   set(PACKAGE_VERSION_UNSUITABLE 1)
 endif()
 ")
-  install(FILES ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}ConfigVersion.cmake DESTINATION ${CMAKE_SOURCE_DIR})
+  install(FILES ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}ConfigVersion.cmake DESTINATION ${CMAKE_SOURCE_DIR})
 endmacro()
 
 #-------------------------------------------------------------------------------
@@ -1082,7 +1072,7 @@ endmacro()
 #-------------------------------------------------------------------------------
 macro(gaudi_generate_project_config_file)
   message(STATUS "Generating ${CMAKE_PROJECT_NAME}Config.cmake")
-  file(WRITE ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}Config.cmake
+  file(WRITE ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake
 "# File automatically generated: DO NOT EDIT.
 set(LCG_version ${LCG_version})
 
@@ -1100,7 +1090,7 @@ set(${CMAKE_PROJECT_NAME}_VERSION_PATCH ${CMAKE_PROJECT_VERSION_PATCH})
 include(${CMAKE_PROJECT_NAME}PlatformConfig)
 include(${CMAKE_PROJECT_NAME}Environment)
 ")
-  install(FILES ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}Config.cmake DESTINATION ${CMAKE_SOURCE_DIR})
+  install(FILES ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake DESTINATION ${CMAKE_SOURCE_DIR})
 endmacro()
 
 #-------------------------------------------------------------------------------
@@ -1118,7 +1108,7 @@ macro(gaudi_generate_project_platform_config_file)
 
   string(TOUPPER ${CMAKE_PROJECT_NAME} _proj_upper)
 
-  set(filename ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}PlatformConfig.cmake)
+  set(filename ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}PlatformConfig.cmake)
   file(WRITE ${filename}
 "# File automatically generated: DO NOT EDIT.
 
@@ -1157,7 +1147,7 @@ set(${_proj_upper}_LINKER_LIBRARIES ${linker_libraries})
       "find_library(${_proj_upper}_${library}_LIBRARY ${library} PATHS \${${_proj_upper}_LIBRARY_DIR} NO_DEFAULT_PATH)\n")
   endforeach()
 
-  install(FILES ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}PlatformConfig.cmake DESTINATION cmake)
+  install(FILES ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}PlatformConfig.cmake DESTINATION cmake)
 endmacro()
 
 #-------------------------------------------------------------------------------
@@ -1216,11 +1206,11 @@ macro(gaudi_generate_project_environment_file)
 
   string(TOUPPER ${CMAKE_PROJECT_NAME} _proj_upper)
 
-  file(WRITE ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}Environment.cmake
+  file(WRITE ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Environment.cmake
 "set(${_proj_upper}_BINARY_PATH ${binary_path} CACHE INTERNAL \"\")
 set(${_proj_upper}_PYTHON_PATH ${python_path} CACHE INTERNAL \"\")
 set(${_proj_upper}_LIBRARY_PATH ${library_path} CACHE INTERNAL \"\")
 set(${_proj_upper}_ENVIRONMENT ${environment} CACHE INTERNAL \"\")
 ")
-  install(FILES ${BUILD_OUTPUT_PREFIX}/${CMAKE_PROJECT_NAME}Environment.cmake DESTINATION cmake)
+  install(FILES ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Environment.cmake DESTINATION cmake)
 endmacro()
