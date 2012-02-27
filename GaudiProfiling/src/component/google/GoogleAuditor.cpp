@@ -14,6 +14,7 @@
 #include "GaudiKernel/IIncidentSvc.h"
 
 #include "GaudiAlg/GaudiSequencer.h"
+#include "GaudiAlg/Sequencer.h"
 
 #include "boost/assign/list_of.hpp"
 
@@ -36,10 +37,13 @@ namespace Google
 
   public:
 
+    /// Constructor
     AuditorBase( const std::string& name, ISvcLocator* pSvcLocator);
 
+    /// Destructor
     virtual ~AuditorBase() {  }
 
+    /// Initialize the auditor base
     StatusCode initialize()
     {
       m_log << MSG::INFO << "Initialised" << endmsg;
@@ -52,6 +56,7 @@ namespace Google
       return StatusCode::SUCCESS;
     }
 
+    /// Finalize the auditor base
     StatusCode finalize()
     {
       if ( alreadyRunning() ) stopAudit();
@@ -60,6 +65,7 @@ namespace Google
 
   private:
 
+    /// Start a full event audit
     void startAudit()
     {
       m_log << MSG::INFO << " -> Starting full audit from event " << m_nEvts << " to "
@@ -71,6 +77,7 @@ namespace Google
       google_before(t.str());
     }
 
+    /// stop a full event audit
     void stopAudit()
     {
       m_log << MSG::INFO << " -> Stopping full audit" << endmsg;
@@ -78,11 +85,15 @@ namespace Google
       t << "FULL-Events" << m_nEvts << "To" << m_nEvts+m_nSampleEvents ;
       google_after(t.str());
       m_inFullAudit = false;
+      m_sampleEventCount = 0;
     }
 
+    /** Check if the component in question is a GaudiSequencer or
+     *  a Sequencer */
     bool isSequencer( INamedInterface* i ) const
     { 
-      return dynamic_cast<GaudiSequencer*>(i) != NULL;
+      return ( dynamic_cast<GaudiSequencer*>(i) != NULL ||
+               dynamic_cast<Sequencer*>(i)      != NULL );
     }
 
   public:
@@ -97,26 +108,29 @@ namespace Google
       if ( IncidentType::BeginEvent == incident.type() )
       {
         ++m_nEvts;
-        m_log << MSG::DEBUG << "Event " << m_nEvts << endmsg;
         m_audit = ( m_nEvts > m_eventsToSkip &&
                     ( m_freq < 0            || 
                       m_nEvts == 1          || 
                       m_nEvts % m_freq == 0  ) );
+        m_log << MSG::DEBUG << "Event " << m_nEvts 
+              << " Audit=" << m_audit << endmsg;
         if ( m_fullEventAudit )
         {
+          if ( m_inFullAudit )
+          {
+            if ( m_sampleEventCount >= m_nSampleEvents &&
+                 alreadyRunning() )
+            {
+              stopAudit();
+            }
+            else
+            {
+              ++m_sampleEventCount;
+            }
+          }
           if ( m_audit && !m_inFullAudit && !alreadyRunning() )
           {
             startAudit();
-          }
-          else if ( m_inFullAudit &&
-                    m_sampleEventCount >= m_nSampleEvents &&
-                    alreadyRunning() )
-          {
-            stopAudit();
-          }
-          else if ( m_inFullAudit )
-          {
-            ++m_sampleEventCount;
           }
         }
       }
@@ -233,7 +247,7 @@ namespace Google
     /// stop the google tool
     virtual void google_after(const std::string& s) = 0;
 
-    // check if we are already running the tool
+    /// check if we are already running the tool
     virtual bool alreadyRunning() = 0;
 
   protected:
@@ -248,32 +262,32 @@ namespace Google
 
     unsigned long long m_eventsToSkip; ///< Number of events to skip before auditing
 
-    bool m_skipSequencers;
+    bool m_skipSequencers; ///< Boolean indicating if sequencers should be skipped or not
 
-    long int m_freq;
+    int m_freq;   ///< The frequency to audit events. -1 means all events.
 
-    bool m_audit;
+    bool m_audit; ///< Internal flag to say if auditing is enabled or not for the current event
 
-    long unsigned int m_nEvts;
+    unsigned long long m_nEvts; ///< Number of events processed.
 
-    bool m_fullEventAudit;
+    bool m_fullEventAudit; ///< Flag to indicate if full event auditing is enabled or not.
 
-    unsigned int m_nSampleEvents;
-    unsigned int m_sampleEventCount;
+    unsigned long long m_nSampleEvents; ///< Number of events to include in a full event audit
 
-    bool m_inFullAudit;
+    unsigned long long m_sampleEventCount; ///< Internal count of the number of events currently processed during an audit
 
-    std::string m_startedBy;
+    bool m_inFullAudit; ///< Internal flag to indicate if we are current in a full event audit
+
+    std::string m_startedBy; ///< Name of the component we are currently auditing
 
   };
 
   AuditorBase::AuditorBase( const std::string& name,
                             ISvcLocator* pSvcLocator )
     : base_class ( name , pSvcLocator )
-    , m_log   ( msgSvc() , name )
-    , m_freq  (-1 )
-    , m_audit ( false )
-    , m_nEvts ( 0 )
+    , m_log      ( msgSvc() , name )
+    , m_audit    ( false )
+    , m_nEvts    ( 0 )
     , m_sampleEventCount( 0 )
     , m_inFullAudit ( false )
   {
@@ -283,14 +297,21 @@ namespace Google
                     ("Execute")
                     ("BeginRun")
                     ("EndRun")
-                    ("Finalize") );
-    declareProperty("DisableFor", m_veto );
+                    ("Finalize"),
+                    "List of phases to activate the Auditoring during" );
+    declareProperty("DisableFor", m_veto,
+                    "List of component names to disable the auditing for" );
     declareProperty("EnableFor", m_list );
-    declareProperty("ProfileFreq", m_freq );
-    declareProperty("DoFullEventProfile", m_fullEventAudit = false );
-    declareProperty("FullEventNSampleEvents", m_nSampleEvents = 1 );
-    declareProperty("SkipEvents", m_eventsToSkip = 0 );
-    declareProperty("SkipSequencers", m_skipSequencers = true );
+    declareProperty("ProfileFreq", m_freq = -1,
+                    "The frequence to audit events. -1 means all events" );
+    declareProperty("DoFullEventProfile", m_fullEventAudit = false,
+                    "If true, instead of individually auditing components, the full event (or events) will be audited in one go" );
+    declareProperty("FullEventNSampleEvents", m_nSampleEvents = 1,
+                    "The number of events to include in a full event audit, if enabled" );
+    declareProperty("SkipEvents", m_eventsToSkip = 0,
+                    "Number of events to skip before activating the auditing" );
+    declareProperty("SkipSequencers", m_skipSequencers = true,
+                    "If true, auditing will be skipped for Sequencer objects." );
   }
 
   /** @class HeapProfiler GoogleAuditor.cpp
@@ -311,6 +332,7 @@ namespace Google
 
   public:
 
+    /// Constructor
     HeapProfiler( const std::string& name, ISvcLocator* pSvcLocator)
       : AuditorBase( name, pSvcLocator )
     {
@@ -367,6 +389,7 @@ namespace Google
 
   public:
 
+    /// Constructor
     HeapChecker( const std::string& name, ISvcLocator* pSvcLocator)
       : AuditorBase ( name, pSvcLocator ),
         m_enabled   ( true ),
