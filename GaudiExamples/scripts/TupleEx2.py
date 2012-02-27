@@ -67,15 +67,7 @@ class TupleEx2(TupleAlgo) :
             lv1.SetPz ( gauss () )
             lv1.SetE  ( gauss () )
 
-            lv2 = Math.PtEtaPhiEVector()
-            x = flat()
-            y = flat()
-            z = flat()
-            e = flat()
-            lv2.SetPxPyPzE(x, y, z, e)
-
             tup.column( 'lv1' , lv1 )
-            tup.column( 'lv2' , lv2 )
 
             tup.write()
 
@@ -88,28 +80,7 @@ class TupleEx2(TupleAlgo) :
             v1.SetY ( gauss () )
             v1.SetZ ( gauss () )
 
-            v2 = Math.Polar3DVector()
-            x = flat()
-            y = flat()
-            z = flat()
-            v2.SetXYZ(x, y, z)
-
-            v3 = Math.RhoEtaPhiVector()
-            x = breit()
-            y = breit()
-            z = breit()
-            v3.SetXYZ(x, y, z)
-
-            v4 = Math.RhoZPhiVector()
-            x = gauss()
-            y = flat()
-            z = breit()
-            v4.SetXYZ(x, y, z)
-
             tup.column ( "v1" , v1 )
-            tup.column ( "v2" , v2 )
-            tup.column ( "v3" , v3 )
-            tup.column ( "v4" , v4 )
 
             tup.write()
 
@@ -122,28 +93,7 @@ class TupleEx2(TupleAlgo) :
             p1.SetY ( gauss () )
             p1.SetZ ( gauss () )
 
-            p2 = Math.Polar3DPoint()
-            x = flat()
-            y = flat()
-            z = flat()
-            p2.SetXYZ(x, y, z)
-
-            p3 = Math.RhoEtaPhiPoint()
-            x = breit()
-            y = breit()
-            z = breit()
-            p3.SetXYZ(x, y, z)
-
-            p4 = Math.RhoZPhiPoint()
-            x = gauss()
-            y = flat()
-            z = breit()
-            p4.SetXYZ(x, y, z)
-
             tup.column ( "p1" , p1 )
-            tup.column ( "p2" , p2 )
-            tup.column ( "p3" , p3 )
-            tup.column ( "p4" , p4 )
 
             tup.write()
 
