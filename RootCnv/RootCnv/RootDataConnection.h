@@ -72,6 +72,12 @@ namespace Gaudi  {
     void addRef();
     /// Decrease reference count
     void release();
+
+    /// Set the global compression level
+    static long setCompression(const std::string& compression);
+    /// Access to global compression level
+    static int compression();
+
     /// Set message service reference
     void setMessageSvc(MsgStream* m);
     /// Retrieve message service
