@@ -1,6 +1,7 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+============================= GaudiPython v12r1 ==============================
 ! 2012-02-24 - Vanya Belyaev
  - Patch #5235: ntuples in (Gaudi)Python
    - TupleDecorators:

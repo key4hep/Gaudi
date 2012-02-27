@@ -4,6 +4,7 @@
 # Description: standard and commonly used components
 ################################################################################
 
+============================ GaudiCommonSvc v1r1 =============================
 ! 2012-02-14 - Chris Jones
  - Add a "TESVetoList" property to InputCopyStream, to allow certain locations
    in the TES to be excluded from being copied to the OutputStream.

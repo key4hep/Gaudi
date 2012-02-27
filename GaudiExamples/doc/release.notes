@@ -1,6 +1,7 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v23r1 =============================
 ! 2012-02-27 - Marco Clemencic
  - Fixed glitches in the Google Profiling tests
    - normalized CPU profiler output

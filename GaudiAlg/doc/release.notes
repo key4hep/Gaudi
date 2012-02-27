@@ -1,6 +1,7 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+=============================== GaudiAlg v14r1 ===============================
 ! 2012-02-24 - Chris Jones
  - Patch #5234: Fix incorrect type in GaudiAlg tuples
 
