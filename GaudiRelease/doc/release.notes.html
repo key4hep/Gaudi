@@ -38,6 +38,61 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
+<h2><a name="v23r1">Gaudi v23r1</a> (2012-02-27)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=62a">LCGCMT_62a</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Minor changes.</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiKernel (v28r1):
+<ul>
+<li>Patch #5204: GaudiKernel parsers: allow 'L' suffix in integer literals<br/>
+    (<span class="author">Sasha Mazurov</span>)</li>
+<li>Fixed compatibility problem with Python 2.7.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>RootCnv (v1r13):
+<ul>
+<li>Add option to RootCnvSvc to change compression factor<br/>
+    (<span class="author">Markus Frank</span>)</li>
+</ul>
+</li>
+<li>GaudiAlg (v14r1):
+<ul>
+<li>Patch #5234: Fix incorrect type in GaudiAlg tuples<br/>
+    (<span class="author">Chris Jones</span>)</li>
+</ul>
+</li>
+<li>GaudiProfiling (v1r3):
+<ul>
+<li>Patch #4852: Auditors based on the Google Perf Tools<br/>
+    Note: the Google auditors require preloaded libraries: tcmalloc or profiler.<br/>
+    (<span class="author">Chris Jones</span>)</li>
+</ul>
+</li>
+<li>GaudiCommonSvc (v1r1):
+<ul>
+<li>Add a "TESVetoList" property to InputCopyStream<br/>
+    (<span class="author">Chris Jones</span>)</li>
+</ul>
+</li>
+<li>GaudiPython (v12r1):
+<ul>
+<li>Patch #5235: ntuples in (Gaudi)Python<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v23r1):
+<ul>
+<li>Modified gaudirun.py to be able to preload arbitrary libraries<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
 <h2><a name="v23r0">Gaudi v23r0</a> (2012-01-24)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=62a">LCGCMT_62a</a></h3>
 <h3>General Changes</h3>

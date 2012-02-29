@@ -61,7 +61,7 @@ def gather_new_versions(f):
 
 def extract_recent_rel_notes(filename):
     changelog_entry = re.compile(r'^(! [0-9]{4}-[0-9]{2}-[0-9]{2} -)|============')
-    separator_entry = re.compile(r'^============')
+    separator_entry = re.compile(r'^!?============')
     notes = []
     state = "searching"
     for l in open(filename):

@@ -12,6 +12,7 @@
 #include "RootUtils.h"
 #include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/LinkManager.h"
+#include "GaudiKernel/strcasecmp.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/MsgStream.h"
@@ -22,7 +23,11 @@
 #include "TLeaf.h"
 #include "TClass.h"
 #include "TBranch.h"
+#include "Compression.h"
 #include "TTreePerfStats.h"
+
+// C/C++ include files
+#include <stdexcept>
 
 using namespace Gaudi;
 using namespace std;
@@ -36,6 +41,7 @@ static string s_local = "<localDB>";
 #endif
 #include "RootTool.h"
 
+static int s_compressionLevel = ROOT::CompressionSettings(ROOT::kLZMA,6);
 
 static bool match_wild(const char *str, const char *pat)    {
   //
@@ -76,17 +82,49 @@ starCheck:
   goto loopStart;
 }
 
-// Standard constructor
+/// Standard constructor
 RootConnectionSetup::RootConnectionSetup() : refCount(1), m_msgSvc(0)
 {
 }
 
-// Standard destructor      
+/// Standard destructor      
 RootConnectionSetup::~RootConnectionSetup() {
   deletePtr(m_msgSvc);
 }
 
-// Increase reference count
+/// Set the global compression level
+long RootConnectionSetup::setCompression(const std::string& compression) {
+  int res = 0, level = ROOT::CompressionSettings(ROOT::kLZMA,6);
+  size_t idx = compression.find(':');
+  if ( idx != string::npos ) {
+    string alg = compression.substr(0,idx);
+    ROOT::ECompressionAlgorithm alg_code = ROOT::kUseGlobalSetting;
+    if ( strcasecmp(alg.c_str(),"ZLIB") == 0 ) 
+      alg_code = ROOT::kZLIB;
+    else if ( strcasecmp(alg.c_str(),"LZMA") == 0 ) 
+      alg_code = ROOT::kLZMA;
+    else
+      throw runtime_error("ERROR: request to set unknown ROOT compression algorithm:"+alg);
+    res = ::sscanf(compression.c_str()+idx+1,"%d",&level);
+    if ( res == 1 ) {
+      s_compressionLevel = ROOT::CompressionSettings(alg_code,level);
+      return StatusCode::SUCCESS;
+    }
+    throw runtime_error("ERROR: request to set unknown ROOT compression level:"+compression.substr(idx+1));
+  }
+  else if ( 1==::sscanf(compression.c_str(),"%d",&level) ) {
+    s_compressionLevel = level;
+    return StatusCode::SUCCESS;
+  }
+  throw runtime_error("ERROR: request to set unknown ROOT compression mechanism:"+compression);
+}
+
+/// Global compression level
+int RootConnectionSetup::compression() {
+  return s_compressionLevel;
+}
+
+/// Increase reference count
 void RootConnectionSetup::addRef() {
   ++refCount;
 }
@@ -225,11 +263,12 @@ StatusCode RootDataConnection::connectRead()  {
 
 // Open data stream in write mode
 StatusCode RootDataConnection::connectWrite(IoType typ)  {
+  int compress = RootConnectionSetup::compression();
   msgSvc() << MSG::DEBUG;
   switch(typ)  {
   case CREATE:
     resetAge();
-    m_file = TFile::Open(m_pfn.c_str(),"CREATE","Root event data");
+    m_file = TFile::Open(m_pfn.c_str(),"CREATE","Root event data",compress);
     m_refs = new TTree("Refs","Root reference data");
     msgSvc() << "Opened file " << m_pfn << " in mode CREATE. [" << m_fid << "]" << endmsg;
     m_params.push_back(make_pair("PFN",m_pfn));
@@ -240,7 +279,7 @@ StatusCode RootDataConnection::connectWrite(IoType typ)  {
     break;
   case RECREATE:
     resetAge();
-    m_file = TFile::Open(m_pfn.c_str(),"RECREATE","Root event data");
+    m_file = TFile::Open(m_pfn.c_str(),"RECREATE","Root event data",compress);
     msgSvc() << "Opened file " << m_pfn << " in mode RECREATE. [" << m_fid << "]" << endmsg;
     m_refs = new TTree("Refs","Root reference data");
     m_params.push_back(make_pair("PFN",m_pfn));
@@ -251,7 +290,7 @@ StatusCode RootDataConnection::connectWrite(IoType typ)  {
     break;
   case UPDATE:
     resetAge();
-    m_file = TFile::Open(m_pfn.c_str(),"UPDATE","Root event data");
+    m_file = TFile::Open(m_pfn.c_str(),"UPDATE","Root event data",compress);
     msgSvc() << "Opened file " << m_pfn << " in mode UPDATE. [" << m_fid << "]" << endmsg;
     if ( m_file && !m_file->IsZombie() )  {
       if ( makeTool() ) return m_tool->readRefs();

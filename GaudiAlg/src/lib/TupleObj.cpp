@@ -386,7 +386,7 @@ StatusCode Tuples::TupleObj::column ( const std::string&   name  ,
   return StatusCode::SUCCESS ;
 }
 // ============================================================================
-StatusCode Tuples::TupleObj::column ( const std::string&   name  ,
+StatusCode Tuples::TupleObj::column ( const std::string&   name ,
                                       const unsigned char value ,
                                       const unsigned char minv  ,
                                       const unsigned char maxv  )
@@ -561,7 +561,7 @@ StatusCode Tuples::TupleObj::column ( const std::string&       name  ,
 }
 // ============================================================================
 StatusCode Tuples::TupleObj::column ( const std::string&       name  ,
-                                      const int                value ,
+                                      const unsigned long long value ,
                                       const unsigned long long minv  ,
                                       const unsigned long long maxv  )
 {

@@ -1,6 +1,7 @@
 package GaudiSys
 package manager: Pere Mato
 
+=============================== GaudiSys v23r1 ===============================
 =============================== GaudiSys v23r0 ===============================
 ! 2011-11-01 - Marco Clemencic
  - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc

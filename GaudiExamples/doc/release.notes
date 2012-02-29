@@ -1,6 +1,17 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v23r1 =============================
+! 2012-02-27 - Marco Clemencic
+ - Fixed glitches in the Google Profiling tests
+   - normalized CPU profiler output
+   - disabled tests on i686 (the package is not built on that platform)
+
+! 2012-02-24 - Vanya Belyaev
+ - Patch #5235: ntuples in (Gaudi)Python
+   - TupleEx4.py:
+       remove esoteric vectors and add n-tuple with Time
+
 ! 2012-02-22 - Marco Clemencic
  - Added tests for Google Profiling Auditors (patch #4852).
 
