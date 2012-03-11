@@ -1,6 +1,6 @@
 require(GaudiKernel GaudiUtils)
 
-find_package(ROOT)
+find_package(ROOT COMPONENTS RIO Tree TreePlayer MathCore)
 
 gaudi_install_headers(RootCnv)
 
@@ -8,9 +8,7 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS __POOL_COMPATIBILITY)
 
 gaudi_add_library(RootCnvLib
                      *.cpp
-                     LINK_LIBRARIES GaudiKernel GaudiUtilsLib
-                               ${ROOT_RIO_LIBRARY} ${ROOT_Tree_LIBRARY}
-                               ${ROOT_TreePlayer_LIBRARY} ${ROOT_MathCore_LIBRARY}
+                     LINK_LIBRARIES GaudiKernel GaudiUtilsLib ${ROOT_LIBRARIES}
                      INCLUDE_DIRS GaudiKernel GaudiUtilsLib)
 
 gaudi_add_module(RootCnv

@@ -5,7 +5,7 @@
 require(GaudiKernel GaudiUtils GaudiGSL GaudiAlg)
 
 find_package(HepPDT)
-find_package(ROOT)
+find_package(ROOT COMPONENTS Tree RIO Hist)
 find_package(Boost COMPONENTS python)
 find_package(CLHEP)
 find_package(GSL)
@@ -46,7 +46,7 @@ StatusCodeSvc/*.cpp
 testing/*.cpp )
 
 gaudi_add_library(GaudiExamplesLib Lib/*.cpp
-                     LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib ${HEPPDT_LIBRARIES} ${ROOT_Tree_LIBRARY}
+                     LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib ${HEPPDT_LIBRARIES} ${ROOT_LIBRARIES}
                      INCLUDE_DIRS HepPDT ROOT ${CMAKE_CURRENT_SOURCE_DIR}/src/Lib)
 gaudi_add_module(GaudiExamples ${GaudiExamples_srcs} LINK_LIBRARIES GaudiExamplesLib)
 GAUDI_PYTHON_MODULE(PyExample PythonModule/*.cpp
@@ -57,7 +57,7 @@ GAUDI_INSTALL_PYTHON_MODULES()
 
 #---Executables-------------------------------------------------------------
 GAUDI_EXECUTABLE(Allocator Allocator/*.cpp LINK_LIBRARIES GaudiExamplesLib GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES}
-                 ${ROOT_RIO_LIBRARY} ${ROOT_Hist_LIBRARY} ${CLHEP_LIBRARIES} ${GSL_LIBRARIES}
+                 ${CLHEP_LIBRARIES} ${GSL_LIBRARIES}
                  INCLUDE_DIRS CLHEP GSL)
 
 

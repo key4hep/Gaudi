@@ -5,11 +5,10 @@
 require(GaudiKernel)
 
 find_package(AIDA)
-find_package(ROOT)
+find_package(ROOT COMPONENTS RIO Hist Matrix Tree)
 find_package(Boost)
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(RootHistCnv *.cpp
-                        LINK_LIBRARIES GaudiKernel ${ROOT_LIBRARIES} ${ROOT_RIO_LIBRARY}
-                                  ${ROOT_Hist_LIBRARY} ${ROOT_Matrix_LIBRARY} ${ROOT_Tree_LIBRARY}
+                        LINK_LIBRARIES GaudiKernel ${ROOT_LIBRARIES}
                         INCLUDE_DIRS Boost ROOT AIDA)

@@ -1,4 +1,6 @@
-# - Locate the ROOT headers and libraries
+# - Find the ROOT libraries, headers and tools.
+# Components:
+#   Core Cint Reflex RIO Hist Tree TreePlayer Cintex Matrix GenVector MathCore MathMore XMLIO
 
 find_path(ROOT_INCLUDE_DIR TROOT.h)
 
@@ -8,15 +10,14 @@ set(ROOTSYS ${ROOTSYS} CACHE PATH "Location of the installation of ROOT")
 set(ROOT_INCLUDE_DIRS ${ROOTSYS}/include)
 set(ROOT_LIBRARY_DIRS ${ROOTSYS}/lib)
 
-set(ROOT_COMPONENTS Core Cint Reflex RIO Hist Tree TreePlayer Cintex Matrix GenVector MathCore MathMore XMLIO)
+set(ROOT_ALL_COMPONENTS Core Cint Reflex RIO Hist Tree TreePlayer Cintex Matrix GenVector MathCore MathMore XMLIO)
 
-foreach(component ${ROOT_COMPONENTS})
+foreach(component ${ROOT_FIND_COMPONENTS} Core Cint Reflex)
   find_library(ROOT_${component}_LIBRARY NAMES ${component}
                PATH ${ROOT_LIBRARY_DIRS})
   mark_as_advanced(ROOT_${component}_LIBRARY)
+  set(ROOT_LIBRARIES ${ROOT_LIBRARIES} ${ROOT_${component}_LIBRARY})
 endforeach()
-
-set(ROOT_LIBRARIES ${ROOT_Core_LIBRARY} ${ROOT_Cint_LIBRARY} ${ROOT_Reflex_LIBRARY})
 
 set(ROOT_genreflex_cmd ${ROOTSYS}/bin/genreflex)
 set(ROOT_genmap_cmd ${ROOTSYS}/bin/genmap)

@@ -6,7 +6,7 @@ require(GaudiKernel)
 
 find_package(AIDA)
 find_package(Boost REQUIRED COMPONENTS regex)
-find_package(ROOT)
+find_package(ROOT COMPONENTS Hist RIO Tree)
 find_package(CLHEP)
 
 #---Libraries---------------------------------------------------------------
@@ -17,8 +17,7 @@ RndmGenSvc/*.cpp
 THistSvc/*.cpp)
 
 gaudi_add_module(GaudiSvc ${GaudiSvc_srcs}
-                        LINK_LIBRARIES GaudiKernel ${ROOT_LIBRARIES} ${ROOT_Hist_LIBRARY}
-                                  ${ROOT_RIO_LIBRARY} ${ROOT_Tree_LIBRARY} ${CLHEP_LIBRARIES}
+                        LINK_LIBRARIES GaudiKernel ${ROOT_LIBRARIES} ${CLHEP_LIBRARIES}
                                   ${Boost_LIBRARIES}
                         INCLUDE_DIRS Boost ROOT AIDA CLHEP)
 

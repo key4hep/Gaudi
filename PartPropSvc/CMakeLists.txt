@@ -5,12 +5,12 @@
 require(GaudiKernel)
 
 find_package(Boost COMPONENTS regex)
-find_package(ROOT)
+find_package(ROOT COMPONENTS Reflex)
 find_package(HepPDT)
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(PartPropSvc *.cpp
-                        LINK_LIBRARIES GaudiKernel ${ROOT_Reflex_LIBRARY} ${Boost_LIBRARIES} ${HEPPDT_LIBRARIES}
+                        LINK_LIBRARIES GaudiKernel ${ROOT_LIBRARIES} ${Boost_LIBRARIES} ${HEPPDT_LIBRARIES}
                         INCLUDE_DIRS Boost ROOT HepPDT)
 
 #---Installation------------------------------------------------------------
