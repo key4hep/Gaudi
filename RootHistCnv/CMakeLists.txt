@@ -9,7 +9,7 @@ find_package(ROOT)
 find_package(Boost)
 
 #---Libraries---------------------------------------------------------------
-GAUDI_COMPONENT_LIBRARY(RootHistCnv *.cpp
-                        LIBRARIES GaudiKernel ${ROOT_LIBRARIES} ${ROOT_RIO_LIBRARY}
+gaudi_add_module(RootHistCnv *.cpp
+                        LINK_LIBRARIES GaudiKernel ${ROOT_LIBRARIES} ${ROOT_RIO_LIBRARY}
                                   ${ROOT_Hist_LIBRARY} ${ROOT_Matrix_LIBRARY} ${ROOT_Tree_LIBRARY}
-                        USE_HEADERS Boost ROOT AIDA)
+                        INCLUDE_DIRS Boost ROOT AIDA)

@@ -29,6 +29,11 @@ macro(REFLEX_GENERATE_DICTIONARY dictionary _headerfiles _selectionfile)
   endif()
 
   set(rootmapname ${dictionary}Dict.rootmap)
+  if (NOT WIN32)
+    set(libprefix lib)
+  else()
+    set(libprefix)
+  endif()
   set(rootmapopts --rootmap=${rootmapname} --rootmap-lib=${libprefix}${dictionary}Dict)
 
   set(include_dirs -I${CMAKE_CURRENT_SOURCE_DIR})

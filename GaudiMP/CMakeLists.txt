@@ -7,11 +7,11 @@ find_package(ROOT)
 find_package(PythonLibs)
 
 #---Libraries---------------------------------------------------------------
-gaudi_linker_library(GaudiMPLib Lib/*.cpp
-                     LIBRARIES GaudiKernel ${PYTHON_LIBRARIES} ${ROOT_LIBRARIES}
-                     USE_HEADERS ROOT PythonLibs)
-gaudi_component_library(GaudiMP component/*.cpp
-                        LIBRARIES GaudiMPLib ${PYTHON_LIBRARIES} ${ROOT_LIBRARIES})
+gaudi_add_library(GaudiMPLib Lib/*.cpp
+                     LINK_LIBRARIES GaudiKernel ${PYTHON_LIBRARIES} ${ROOT_LIBRARIES}
+                     INCLUDE_DIRS ROOT PythonLibs)
+gaudi_add_module(GaudiMP component/*.cpp
+                        LINK_LIBRARIES GaudiMPLib ${PYTHON_LIBRARIES} ${ROOT_LIBRARIES})
 
 #---Dictionaries------------------------------------------------------------
 REFLEX_BUILD_DICTIONARY(GaudiMPLib dict/gaudimp_dict.h dict/selection.xml LIBRARIES GaudiMPLib)

@@ -12,12 +12,12 @@ find_package(tcmalloc)
 
 #---Libraries---------------------------------------------------------------
 include_directories(src/component)
-GAUDI_COMPONENT_LIBRARY(GaudiProfiling component/*.cpp
-                        LIBRARIES GaudiKernel z
-                        USE_HEADERS unwind)
-GAUDI_COMPONENT_LIBRARY(GaudiGoogleProfiling component/google/*.cpp
-                        LIBRARIES GaudiKernel GaudiAlgLib z
-                        USE_HEADERS tcmalloc)
+gaudi_add_module(GaudiProfiling component/*.cpp
+                        LINK_LIBRARIES GaudiKernel z
+                        INCLUDE_DIRS unwind)
+gaudi_add_module(GaudiGoogleProfiling component/google/*.cpp
+                        LINK_LIBRARIES GaudiKernel GaudiAlgLib z
+                        INCLUDE_DIRS tcmalloc)
 # Special handling of unresorlved symbols in GaudiGoogleProfiling.
 # The profilers need to have libtcmalloc.so or libprofiler.so pre-loaded to
 # work, so it's better if the symbols stay undefined in case somebody tries to
@@ -35,12 +35,12 @@ endforeach()
 set_target_properties(GaudiGoogleProfiling PROPERTIES LINK_FLAGS "${gprof_linker_flags}")
 
 GAUDI_PYTHON_MODULE(PyCPUFamily python/CPUFamily.cpp
-                    LIBRARIES ${Boost_PYTHON_LIBRARY}
-                    USE_HEADERS PythonLibs)
+                    LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}
+                    INCLUDE_DIRS PythonLibs)
 
 #---Executables-------------------------------------------------------------
 GAUDI_EXECUTABLE(GaudiGenProfilingHtml app/pfm_gen_analysis.cpp
-                 LIBRARIES z GaudiKernel)
+                 LINK_LIBRARIES z GaudiKernel)
 
 #---Installation------------------------------------------------------------
 GAUDI_INSTALL_HEADERS(GaudiProfiling)

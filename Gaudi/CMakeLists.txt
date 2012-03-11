@@ -5,7 +5,7 @@
 require(GaudiKernel)
 
 #---Executables-------------------------------------------------------------
-GAUDI_EXECUTABLE(Gaudi main.cpp LIBRARIES GaudiKernel)
+GAUDI_EXECUTABLE(Gaudi main.cpp LINK_LIBRARIES GaudiKernel)
 
 #---Installation------------------------------------------------------------
 GAUDI_INSTALL_PYTHON_MODULES()

@@ -45,20 +45,20 @@ StringKeys/*.cpp
 StatusCodeSvc/*.cpp
 testing/*.cpp )
 
-GAUDI_LINKER_LIBRARY(GaudiExamplesLib Lib/*.cpp
-                     LIBRARIES GaudiGSLLib GaudiUtilsLib ${HEPPDT_LIBRARIES} ${ROOT_Tree_LIBRARY}
-                     USE_HEADERS HepPDT ROOT ${CMAKE_CURRENT_SOURCE_DIR}/src/Lib)
-GAUDI_COMPONENT_LIBRARY(GaudiExamples ${GaudiExamples_srcs} LIBRARIES GaudiExamplesLib)
+gaudi_add_library(GaudiExamplesLib Lib/*.cpp
+                     LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib ${HEPPDT_LIBRARIES} ${ROOT_Tree_LIBRARY}
+                     INCLUDE_DIRS HepPDT ROOT ${CMAKE_CURRENT_SOURCE_DIR}/src/Lib)
+gaudi_add_module(GaudiExamples ${GaudiExamples_srcs} LINK_LIBRARIES GaudiExamplesLib)
 GAUDI_PYTHON_MODULE(PyExample PythonModule/*.cpp
-                    LIBRARIES ${Boost_PYTHON_LIBRARY}
-                    USE_HEADERS Boost PythonLibs)
+                    LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}
+                    INCLUDE_DIRS Boost PythonLibs)
 
 GAUDI_INSTALL_PYTHON_MODULES()
 
 #---Executables-------------------------------------------------------------
-GAUDI_EXECUTABLE(Allocator Allocator/*.cpp LIBRARIES GaudiExamplesLib GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES}
+GAUDI_EXECUTABLE(Allocator Allocator/*.cpp LINK_LIBRARIES GaudiExamplesLib GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES}
                  ${ROOT_RIO_LIBRARY} ${ROOT_Hist_LIBRARY} ${CLHEP_LIBRARIES} ${GSL_LIBRARIES}
-                 USE_HEADERS CLHEP GSL)
+                 INCLUDE_DIRS CLHEP GSL)
 
 
 #---Dictionaries------------------------------------------------------------

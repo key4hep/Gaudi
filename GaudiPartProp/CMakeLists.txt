@@ -1,4 +1,4 @@
 require(GaudiKernel)
 
-gaudi_component_library(GaudiPartProp src/ParticlePropertySvc.cpp
-                        LIBRARIES GaudiKernel)
+gaudi_add_module(GaudiPartProp src/ParticlePropertySvc.cpp
+                        LINK_LIBRARIES GaudiKernel)

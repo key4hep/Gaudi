@@ -7,28 +7,28 @@ find_package(CppUnit)
 find_package(ROOT)
 
 #---Libraries---------------------------------------------------------------
-GAUDI_LINKER_LIBRARY(GaudiKernel Lib/*.cpp
-                     LIBRARIES ${CMAKE_DL_LIBS} ${ROOT_LIBRARIES} ${Boost_LIBRARIES}
-                     USE_HEADERS Boost ROOT)
+gaudi_add_library(GaudiKernel Lib/*.cpp
+                     LINK_LIBRARIES ${CMAKE_DL_LIBS} ${ROOT_LIBRARIES} ${Boost_LIBRARIES}
+                     INCLUDE_DIRS Boost ROOT)
 
 #---Tests-------------------------------------------------------------------
 GAUDI_UNIT_TEST(DirSearchPath_test ../tests/src/DirSearchPath_test.cpp
-                LIBRARIES GaudiKernel)
+                LINK_LIBRARIES GaudiKernel)
 GAUDI_UNIT_TEST(test_SerializeSTL ../tests/src/test_SerializeSTL.cpp
-                LIBRARIES GaudiKernel ${CPPUNIT_LIBRARIES}
-                USE_HEADERS CppUnit)
+                LINK_LIBRARIES GaudiKernel ${CPPUNIT_LIBRARIES}
+                INCLUDE_DIRS CppUnit)
 GAUDI_UNIT_TEST(PathResolver_test ../tests/src/PathResolver_test.cpp
-                LIBRARIES GaudiKernel)
+                LINK_LIBRARIES GaudiKernel)
 GAUDI_UNIT_TEST(test_GaudiTime ../tests/src/test_GaudiTime.cpp
-                LIBRARIES GaudiKernel ${CPPUNIT_LIBRARIES}
-                USE_HEADERS CppUnit)
+                LINK_LIBRARIES GaudiKernel ${CPPUNIT_LIBRARIES}
+                INCLUDE_DIRS CppUnit)
 GAUDI_UNIT_TEST(test_GaudiTiming ../tests/src/test_GaudiTiming.cpp
-                LIBRARIES GaudiKernel ${CPPUNIT_LIBRARIES}
-                USE_HEADERS CppUnit)
+                LINK_LIBRARIES GaudiKernel ${CPPUNIT_LIBRARIES}
+                INCLUDE_DIRS CppUnit)
 GAUDI_UNIT_TEST(Parsers_test ../tests/src/parsers.cpp
-                LIBRARIES GaudiKernel)
+                LINK_LIBRARIES GaudiKernel)
 # This is just a compile-time tests.
-GAUDI_UNIT_TEST(test_headers_build ../tests/src/test_headers_build.cpp LIBRARIES GaudiKernel)
+GAUDI_UNIT_TEST(test_headers_build ../tests/src/test_headers_build.cpp LINK_LIBRARIES GaudiKernel)
 
 #---Dictionaries------------------------------------------------------------
 REFLEX_BUILD_DICTIONARY(GaudiKernel dict/dictionary.h  dict/dictionary.xml LIBRARIES GaudiKernel)

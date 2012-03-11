@@ -6,16 +6,16 @@ gaudi_install_headers(RootCnv)
 
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS __POOL_COMPATIBILITY)
 
-gaudi_linker_library(RootCnvLib
+gaudi_add_library(RootCnvLib
                      *.cpp
-                     LIBRARIES GaudiKernel GaudiUtilsLib
+                     LINK_LIBRARIES GaudiKernel GaudiUtilsLib
                                ${ROOT_RIO_LIBRARY} ${ROOT_Tree_LIBRARY}
                                ${ROOT_TreePlayer_LIBRARY} ${ROOT_MathCore_LIBRARY}
-                     USE_HEADERS GaudiKernel GaudiUtilsLib)
+                     INCLUDE_DIRS GaudiKernel GaudiUtilsLib)
 
-gaudi_component_library(RootCnv
+gaudi_add_module(RootCnv
                         components/Components.cpp
-                        LIBRARIES RootCnvLib)
+                        LINK_LIBRARIES RootCnvLib)
 
 # Note: the set_property above is needed because that's the way REFLEX_BUILD_LIBRARIES
 #       takes the "-D" flags, and it make the following lines unneeded.

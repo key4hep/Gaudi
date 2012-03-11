@@ -1,7 +1,7 @@
 # - GaudiProject
 # Define the macros used by Gaudi-based projects, namely:
-#  GAUDI_PROJECT(project version) : declare a project with it's version number
-#  GAUDI_USE_PROJECT(project version) : declare the dependency on another project
+#  gaudi_project(project version) : declare a project with it's version number
+#  gaudi_use_project(project version) : declare the dependency on another project
 #
 # Authors: Pere Mato, Marco Clemencic
 
@@ -13,23 +13,6 @@ cmake_policy(SET CMP0009 NEW) # See "cmake --help-policy CMP0009" for more detai
 # Add the directory containing this file to the modules search path
 set(CMAKE_MODULE_PATH ${GaudiProject_DIR} ${CMAKE_MODULE_PATH})
 
-#if(DEFINED LCG_system)
-#  # We are using the LCG toolchain, so enable special configuration
-#  get_filename_component(LCG_TOOLCHAIN_PATH ${CMAKE_TOOLCHAIN_FILE} PATH)
-#  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${LCG_TOOLCHAIN_PATH})
-#  # Define the versions and search paths
-#  if(DEFINED LCG_version)
-#    include(LCG_${LCG_version}/Configuration)
-#    # FIXME: temporary
-#    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${LCG_TOOLCHAIN_PATH}/LCG_${LCG_version})
-#    #include(Configuration)
-#  else()
-#    message(FATAL_ERROR "LCG required but LCG_version is not defined")
-#  endif()
-#elseif(DEFINED ENV{CMTCONFIG} OR DEFINED ENV{CMAKECONFIG})
-#  message(FATAL_ERROR "You must use the LCG CMAKE_TOOLCHAIN_FILE if you have CMTCONFIG or CMAKECONFIG set.")
-#endif()
-
 #-------------------------------------------------------------------------------
 # Basic configuration
 #-------------------------------------------------------------------------------
@@ -38,7 +21,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Ensure that the include directories added are always taken first.
 set(CMAKE_include_directories_BEFORE ON)
 #set(CMAKE_SKIP_BUILD_RPATH TRUE)
-#set(CMAKE_CXX_COMPILER g++)
 
 find_program(ccache_cmd ccache)
 if(ccache_cmd)
@@ -62,18 +44,6 @@ endif()
 mark_as_advanced(ccache_cmd distcc_cmd)
 
 #-------------------------------------------------------------------------------
-# Platform handling
-#-------------------------------------------------------------------------------
-#function(GET_LCG_TAG sysvar platfvar)
-#  if(CMAKE_SYSTEM_PROCESSOR
-#  if(CMAKE_BUILD_TYPE STREQUAL Debug)
-#
-#  else()
-#  endif(statement)
-#
-#endfunction()
-
-#-------------------------------------------------------------------------------
 # Platform transparency
 #-------------------------------------------------------------------------------
 if(WIN32)
@@ -90,11 +60,9 @@ set(bin bin)
 if(WIN32)
   set(ssuffix .bat)
   set(scomment rem)
-  set(libprefix "")
 else()
   set(ssuffix .csh)
   set(scomment \#)
-  set(libprefix lib)
 endif()
 
 
@@ -128,9 +96,9 @@ find_program(gaudirun_cmd gaudirun.py HINTS ${hints})
 set(gaudirun_cmd ${PYTHON_EXECUTABLE} ${gaudirun_cmd})
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_PROJECT(project version)
+#---gaudi_project(project version)
 #---------------------------------------------------------------------------------------------------
-macro(GAUDI_PROJECT project version)
+macro(gaudi_project project version)
   set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
   project(${project})
   #----For some reason this is not set by calling 'project()'
@@ -204,11 +172,11 @@ macro(GAUDI_PROJECT project version)
   install(PROGRAMS cmake/testwrap.sh cmake/testwrap.csh cmake/testwrap.bat cmake/genCMake.py cmake/env.py DESTINATION scripts)
 
   #--- Global actions for the project
-  INCLUDE(GaudiContrib)
-  INCLUDE(GaudiBuildFlags)
+  include(GaudiContrib)
+  include(GaudiBuildFlags)
 
   message(STATUS "Looking for local directories...")
-  GAUDI_GET_PACKAGES(packages)
+  gaudi_get_packages(packages)
   message(STATUS "Found:")
   foreach(package ${packages})
     message(STATUS "  ${package}")
@@ -289,86 +257,6 @@ function(include_package_directories)
   endforeach()
 endfunction()
 
-#---------------------------------------------------------------------------------------------------
-#---GAUDI_BINARY_TAG()
-#---------------------------------------------------------------------------------------------------
-function(GAUDI_BINARY_TAG)
-  message("CMAKE_SYSTEM --> ${CMAKE_SYSTEM}")
-  execute_process(COMMAND uname -i OUTPUT_VARIABLE arch)
-  message("arch --> ${arch}")
-endfunction()
-
-#---------------------------------------------------------------------------------------------------
-#---GAUDI_FIND_PROJECT(project version)
-#---------------------------------------------------------------------------------------------------
-macro( GAUDI_FIND_PROJECT project version)
-  file(TO_CMAKE_PATH "$ENV{CMAKEPROJECTPATH}" projectpath)
-  foreach( path ${projectpath})
-    if(EXISTS ${path}/${project})
-      if(${version} STREQUAL "*")
-        file(GLOB installations ${path}/${project}/${project}_* )
-        foreach( installation ${installations})
-          if(EXISTS ${installation}/InstallArea/${BINARY_TAG}/cmake )
-            set(${project}_installation ${installation})
-            break()
-          endif()
-        endforeach()
-      else()
-        if(EXISTS  ${path}/${project}/${project}_${version}/InstallArea/${BINARY_TAG}/cmake)
-          set(${project}_installation ${path}/${project}/${project}_${version})
-          break()
-        endif()
-      endif()
-    endif()
-    if(${project}_found)
-      break()
-    endif()
-  endforeach()
-
-  if( ${project}_installation )
-    message("Found project ${project} with version ${version} at ${${project}_installation}")
-    set(${project}_found 1)
-    set(${project}_installarea ${${project}_installation}/InstallArea)
-    set(${project}_binaryarea  ${${project}_installation}/InstallArea/${BINARY_TAG})
-  else()
-    message(ERROR " Project ${project} with version ${version} not found!!")
-  endif()
-endmacro()
-
-#---------------------------------------------------------------------------------------------------
-#---GAUDI_USE_PROJECT(project version)
-#---------------------------------------------------------------------------------------------------
-macro( GAUDI_USE_PROJECT project version )
-  if( NOT ${project}_used )
-    GAUDI_FIND_PROJECT(${project} ${version})
-    if( ${project}_installation )
-      #------Set the list of variables to make a effective 'use' of the project-----
-      get_property(projects GLOBAL PROPERTY PROJECTS_FOUND)
-      set_property(GLOBAL PROPERTY PROJECTS_FOUND ${projects} ${project})
-      get_property(projects GLOBAL PROPERTY PROJECTS_FOUND)
-      set(CMAKE_MODULE_PATH ${${project}_binaryarea}/cmake ${CMAKE_MODULE_PATH})
-      include_directories( ${${project}_binaryarea}/include )
-      link_directories( ${${project}_binaryarea}/lib )
-      set(${project}_environment ${ld_library_path}+=${${project}_binaryarea}/lib
-                                 PATH+=${${project}_binaryarea}/bin
-                                 PATH+=${${project}_binaryarea}/scripts
-                                 PYTHONPATH+=${${project}_binaryarea}/python )
-      include(${project}Exports)
-      set(${project}_used 1)
-      #------------------------------------------------------------------------------
-      if( EXISTS ${${project}_installation}/CMakeLists.txt)
-        file(READ ${${project}_installation}/CMakeLists.txt file_contents)
-        string( REGEX MATCHALL "GAUDI_USE_PROJECT[ ]*[(][ ]*([^)])+" vars ${file_contents})
-        foreach( var ${vars})
-          string(REGEX REPLACE "GAUDI_USE_PROJECT[ ]*[(][ ]*([^)])" "\\1" p ${var})
-          separate_arguments(p)
-          GAUDI_USE_PROJECT(${p})
-        endforeach()
-      endif()
-    endif()
-  endif()
-endmacro()
-
 #-------------------------------------------------------------------------------
 # gaudi_sort_subdirectories
 #-------------------------------------------------------------------------------
@@ -405,12 +293,15 @@ function(gaudi_sort_subdirectories var)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_GET_PACKAGES
+# gaudi_get_packages
+#
+# Find all the CMakeLists.txt files in the sub-directories and add their
+# directories to the variable.
 #---------------------------------------------------------------------------------------------------
-function( GAUDI_GET_PACKAGES var)
-  set( packages )
+function(gaudi_get_packages var)
+  set(packages)
   file(GLOB_RECURSE cmakelist_files  ${CMAKE_SOURCE_DIR} CMakeLists.txt)
-  foreach( file ${cmakelist_files} )
+  foreach(file ${cmakelist_files})
     get_filename_component(path ${file} PATH)
     if( NOT path STREQUAL ${CMAKE_SOURCE_DIR})
       string(REPLACE ${CMAKE_SOURCE_DIR}/ "" package ${path})
@@ -576,32 +467,57 @@ function(gaudi_get_required_library_dirs output)
   endif()
 endfunction()
 
-
-#---------------------------------------------------------------------------------------------------
-#---GAUDI_LINKER_LIBRARY( <name> source1 source2 ... LIBRARIES library1 library2 ... INCLUDE_DIRECTORIES)
-#---------------------------------------------------------------------------------------------------
-function(GAUDI_LINKER_LIBRARY library)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;USE_HEADERS" ${ARGN})
-
-  # find the sources
-  set(lib_srcs)
-  foreach(fp ${ARG_UNPARSED_ARGUMENTS})
+#-------------------------------------------------------------------------------
+# gaudi_expand_sources(<variable> source_pattern1 source_pattern2 ...)
+#
+# Get the library directories required by the linker libraries specified
+# and prepend them to the output variable.
+#-------------------------------------------------------------------------------
+macro(gaudi_expand_sources VAR)
+  #message(STATUS "Expand ${ARGN} in ${VAR}")
+  set(${VAR})
+  foreach(fp ${ARGN})
     file(GLOB files src/${fp})
     if(files)
-      set(lib_srcs ${lib_srcs} ${files})
+      set(${VAR} ${${VAR}} ${files})
     else()
-      set(lib_srcs ${lib_srcs} ${fp})
+      set(${VAR} ${${VAR}} ${fp})
     endif()
   endforeach()
+  #message(STATUS "  result: ${${VAR}}")
+endmacro()
+
+#---------------------------------------------------------------------------------------------------
+# gaudi_add_library(<name>
+#                   source1 source2 ...
+#                   LINK_LIBRARIES library1 library2 ...
+#                   INCLUDE_DIRS dir1 package2 ...)
+#
+# Extension of standard CMake 'add_library' command.
+# Create a library from the specified sources (glob patterns are allowed), linking
+# it with the libraries specified and adding the include directories to the search path.
+#
+# If a package name (as in find_package) is used in
+#---------------------------------------------------------------------------------------------------
+function(gaudi_add_library library)
+  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS" ${ARGN})
+
+  if(ARG_LIBRARIES)
+    message(WARNING "Deprecated option 'LIBRARY', use 'LINK_LIBRARIES' instead")
+    set(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${ARG_LIBRARIES})
+  endif()
+
+  # find the sources
+  gaudi_expand_sources(lib_srcs ${ARG_UNPARSED_ARGUMENTS})
 
   # get the inherited include directories
-  gaudi_get_required_include_dirs(ARG_USE_HEADERS ${ARG_LIBRARIES})
+  gaudi_get_required_include_dirs(ARG_INCLUDE_DIRS ${ARG_LINK_LIBRARIES})
 
   # add the package includes to the current list
-  include_package_directories(${ARG_USE_HEADERS})
+  include_package_directories(${ARG_INCLUDE_DIRS})
 
   # get the library dirs required to get the libraries we use
-  gaudi_get_required_library_dirs(lib_path ${ARG_LIBRARIES})
+  gaudi_get_required_library_dirs(lib_path ${ARG_LINK_LIBRARIES})
   set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
 
   if(WIN32)
@@ -614,16 +530,16 @@ function(GAUDI_LINKER_LIBRARY library)
 	#---Needed to create a dummy source file to please Windows IDE builds with the manifest
 	file( WRITE ${CMAKE_CURRENT_BINARY_DIR}/${library}.cpp "// empty file\n" )
     add_library( ${library} SHARED ${library}.cpp ${library}.def)
-    target_link_libraries(${library} ${library}-arc ${ARG_LIBRARIES})
-    set_target_properties(${library} PROPERTIES LINK_INTERFACE_LIBRARIES "${ARG_LIBRARIES}" )
+    target_link_libraries(${library} ${library}-arc ${ARG_LINK_LIBRARIES})
+    set_target_properties(${library} PROPERTIES LINK_INTERFACE_LIBRARIES "${ARG_LINK_LIBRARIES}" )
   else()
     add_library(${library} ${lib_srcs})
     set_target_properties(${library} PROPERTIES COMPILE_DEFINITIONS GAUDI_LINKER_LIBRARY)
-    target_link_libraries(${library} ${ARG_LIBRARIES})
+    target_link_libraries(${library} ${ARG_LINK_LIBRARIES})
   endif()
 
   # Declare that the used headers are needed by the libraries linked against this one
-  set_property(TARGET ${library} PROPERTY REQUIRED_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${ARG_USE_HEADERS})
+  set_property(TARGET ${library} PROPERTY REQUIRED_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${ARG_INCLUDE_DIRS})
   set_property(GLOBAL APPEND PROPERTY LINKER_LIBRARIES ${library})
 
   if(TARGET ${library}Obj2doth)
@@ -634,39 +550,42 @@ function(GAUDI_LINKER_LIBRARY library)
   install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake)
 endfunction()
 
+# Backward compatibility macro
+macro(gaudi_linker_library)
+  message(WARNING "Deprecated function 'gaudi_linker_library', use 'gaudi_add_library' instead")
+  gaudi_add_library(${ARGN})
+endmacro()
+
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_COMPONENT_LIBRARY( <name> source1 source2 ... LIBRARIES library1 library2 ...)
+#---gaudi_add_module(<name> source1 source2 ... LINK_LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
-function(GAUDI_COMPONENT_LIBRARY library)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;USE_HEADERS" ${ARGN})
+function(gaudi_add_module library)
+  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS" ${ARGN})
 
-  # get the inherited include directories
-  gaudi_get_required_include_dirs(ARG_USE_HEADERS ${ARG_LIBRARIES})
-
-  # add the package includes to the current list
-  include_package_directories(${ARG_USE_HEADERS})
-
-  # get the library dirs required to get the libraries we use
-  gaudi_get_required_library_dirs(lib_path ${ARG_LIBRARIES})
-  set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
+  if(ARG_LIBRARIES)
+    message(WARNING "Deprecated option 'LIBRARY', use 'LINK_LIBRARIES' instead")
+    set(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${ARG_LIBRARIES})
+  endif()
 
   # find the sources
-  set(lib_srcs)
-  foreach( fp ${ARG_UNPARSED_ARGUMENTS})
-    file(GLOB files src/${fp})
-    if(files)
-      set( lib_srcs ${lib_srcs} ${files})
-    else()
-      set( lib_srcs ${lib_srcs} ${fp})
-    endif()
-  endforeach()
+  gaudi_expand_sources(lib_srcs ${ARG_UNPARSED_ARGUMENTS})
+
+  # get the inherited include directories
+  gaudi_get_required_include_dirs(ARG_INCLUDE_DIRS ${ARG_LINK_LIBRARIES})
+
+  # add the package includes to the current list
+  include_package_directories(${ARG_INCLUDE_DIRS})
+
+  # get the library dirs required to get the libraries we use
+  gaudi_get_required_library_dirs(lib_path ${ARG_LINK_LIBRARIES})
+  set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
 
   add_library(${library} MODULE ${lib_srcs})
 
   GAUDI_GENERATE_ROOTMAP(${library})
   GAUDI_GENERATE_CONFIGURABLES(${library})
 
-  target_link_libraries(${library} ${ROOT_Reflex_LIBRARY} ${ARG_LIBRARIES})
+  target_link_libraries(${library} ${ROOT_Reflex_LIBRARY} ${ARG_LINK_LIBRARIES})
 
   set_property(GLOBAL APPEND PROPERTY COMPONENT_LIBRARIES ${library})
 
@@ -674,33 +593,35 @@ function(GAUDI_COMPONENT_LIBRARY library)
   install(TARGETS ${library} LIBRARY DESTINATION ${lib})
 endfunction()
 
+# Backward compatibility macro
+macro(gaudi_component_library)
+  message(WARNING "Deprecated function 'gaudi_component_library', use 'gaudi_add_module' instead")
+  gaudi_add_module(${ARGN})
+endmacro()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_PYTHON_MODULE( <name> source1 source2 ... LIBRARIES library1 library2 ...)
+#---GAUDI_PYTHON_MODULE( <name> source1 source2 ... LINK_LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_PYTHON_MODULE module)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;USE_HEADERS" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS" ${ARGN})
+
+  if(ARG_LIBRARIES)
+    message(WARNING "Deprecated option 'LIBRARY', use 'LINK_LIBRARIES' instead")
+    set(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${ARG_LIBRARIES})
+  endif()
 
   # get the inherited include directories
-  gaudi_get_required_include_dirs(ARG_USE_HEADERS ${ARG_LIBRARIES})
+  gaudi_get_required_include_dirs(ARG_INCLUDE_DIRS ${ARG_LINK_LIBRARIES})
 
   # add the package includes to the current list
-  include_package_directories(${ARG_USE_HEADERS})
+  include_package_directories(${ARG_INCLUDE_DIRS})
 
   # get the library dirs required to get the libraries we use
-  gaudi_get_required_library_dirs(lib_path ${ARG_LIBRARIES})
+  gaudi_get_required_library_dirs(lib_path ${ARG_LINK_LIBRARIES})
   set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
 
   # find the sources
-  set(lib_srcs)
-  foreach( fp ${ARG_UNPARSED_ARGUMENTS})
-    file(GLOB files src/${fp})
-    if(files)
-      set( lib_srcs ${lib_srcs} ${files})
-    else()
-      set( lib_srcs ${lib_srcs} ${fp})
-    endif()
-  endforeach()
+  gaudi_expand_sources(lib_srcs ${ARG_UNPARSED_ARGUMENTS})
 
   add_library( ${module} MODULE ${lib_srcs})
   if(win32)
@@ -708,41 +629,38 @@ function(GAUDI_PYTHON_MODULE module)
   else()
     set_target_properties( ${module} PROPERTIES SUFFIX .so PREFIX "")
   endif()
-  target_link_libraries(${module} ${PYTHON_LIBRARIES} ${ARG_LIBRARIES})
+  target_link_libraries(${module} ${PYTHON_LIBRARIES} ${ARG_LINK_LIBRARIES})
   #----Installation details-------------------------------------------------------
   install(TARGETS ${module} LIBRARY DESTINATION python/lib-dynload)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_EXECUTABLE( <name> source1 source2 ... LIBRARIES library1 library2 ...)
+#---GAUDI_EXECUTABLE( <name> source1 source2 ... LINK_LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_EXECUTABLE executable)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;USE_HEADERS" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS" ${ARGN})
+
+  if(ARG_LIBRARIES)
+    message(WARNING "Deprecated option 'LIBRARY', use 'LINK_LIBRARIES' instead")
+    set(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${ARG_LIBRARIES})
+  endif()
 
   # get the inherited include directories
-  gaudi_get_required_include_dirs(ARG_USE_HEADERS ${ARG_LIBRARIES})
+  gaudi_get_required_include_dirs(ARG_INCLUDE_DIRS ${ARG_LINK_LIBRARIES})
 
   # add the package includes to the current list
-  include_package_directories(${ARG_USE_HEADERS})
+  include_package_directories(${ARG_INCLUDE_DIRS})
 
   # get the library dirs required to get the libraries we use
-  gaudi_get_required_library_dirs(lib_path ${ARG_LIBRARIES})
+  gaudi_get_required_library_dirs(lib_path ${ARG_LINK_LIBRARIES})
   set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
 
   # find the sources
-  set(exe_srcs)
-  foreach( fp ${ARG_UNPARSED_ARGUMENTS})
-    file(GLOB files src/${fp})
-    if(files)
-      set( exe_srcs ${exe_srcs} ${files})
-    else()
-      set( exe_srcs ${exe_srcs} ${fp})
-    endif()
-  endforeach()
+  gaudi_expand_sources(exe_srcs ${ARG_UNPARSED_ARGUMENTS})
 
   add_executable( ${executable} ${exe_srcs})
 
-  target_link_libraries(${executable} ${ARG_LIBRARIES} )
+  target_link_libraries(${executable} ${ARG_LINK_LIBRARIES} )
 
   if (USE_EXE_SUFFIX)
     set_target_properties(${executable} PROPERTIES SUFFIX .exe)
@@ -755,35 +673,32 @@ function(GAUDI_EXECUTABLE executable)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_UNIT_TEST( <name> source1 source2 ... LIBRARIES library1 library2 ...)
+#---GAUDI_UNIT_TEST( <name> source1 source2 ... LINK_LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_UNIT_TEST executable)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;USE_HEADERS" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS" ${ARGN})
+
+  if(ARG_LIBRARIES)
+    message(WARNING "Deprecated option 'LIBRARY', use 'LINK_LIBRARIES' instead")
+    set(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${ARG_LIBRARIES})
+  endif()
 
   # get the inherited include directories
-  gaudi_get_required_include_dirs(ARG_USE_HEADERS ${ARG_LIBRARIES})
+  gaudi_get_required_include_dirs(ARG_INCLUDE_DIRS ${ARG_LINK_LIBRARIES})
 
   # add the package includes to the current list
-  include_package_directories(${ARG_USE_HEADERS})
+  include_package_directories(${ARG_INCLUDE_DIRS})
 
   # get the library dirs required to get the libraries we use
-  gaudi_get_required_library_dirs(lib_path ${ARG_LIBRARIES})
+  gaudi_get_required_library_dirs(lib_path ${ARG_LINK_LIBRARIES})
   set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
 
   # find the sources
-  set(exe_srcs)
-  foreach( fp ${ARG_UNPARSED_ARGUMENTS})
-    file(GLOB files src/${fp})
-    if(files)
-      set( exe_srcs ${exe_srcs} ${files})
-    else()
-      set( exe_srcs ${exe_srcs} ${fp})
-    endif()
-  endforeach()
+  gaudi_expand_sources(exe_srcs ${ARG_UNPARSED_ARGUMENTS})
 
   if(BUILD_TESTS)
     add_executable( ${executable} ${exe_srcs})
-    target_link_libraries(${executable} ${ARG_LIBRARIES} )
+    target_link_libraries(${executable} ${ARG_LINK_LIBRARIES} )
 	SET_RUNTIME_PATH(path ${ld_library_path})
     if (USE_EXE_SUFFIX)
       set_target_properties(${executable} PROPERTIES SUFFIX .exe)

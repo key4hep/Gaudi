@@ -16,14 +16,14 @@ NTupleSvc/*.cpp
 RndmGenSvc/*.cpp
 THistSvc/*.cpp)
 
-GAUDI_COMPONENT_LIBRARY(GaudiSvc ${GaudiSvc_srcs}
-                        LIBRARIES GaudiKernel ${ROOT_LIBRARIES} ${ROOT_Hist_LIBRARY}
+gaudi_add_module(GaudiSvc ${GaudiSvc_srcs}
+                        LINK_LIBRARIES GaudiKernel ${ROOT_LIBRARIES} ${ROOT_Hist_LIBRARY}
                                   ${ROOT_RIO_LIBRARY} ${ROOT_Tree_LIBRARY} ${CLHEP_LIBRARIES}
                                   ${Boost_LIBRARIES}
-                        USE_HEADERS Boost ROOT AIDA CLHEP)
+                        INCLUDE_DIRS Boost ROOT AIDA CLHEP)
 
 if(BUILD_TESTS)
-  GAUDI_COMPONENT_LIBRARY(GaudiSvcTest ../tests/src/component/*.cpp LIBRARIES GaudiKernel ${Boost_REGEX_LIBRARY})
+  gaudi_add_module(GaudiSvcTest ../tests/src/component/*.cpp LINK_LIBRARIES GaudiKernel ${Boost_REGEX_LIBRARY})
 endif()
 
 #---Test-----------------------------------------------------------------------

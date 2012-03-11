@@ -5,4 +5,4 @@
 require(GaudiKernel)
 
 #---Libraries---------------------------------------------------------------
-GAUDI_COMPONENT_LIBRARY(GaudiAud *.cpp LIBRARIES GaudiKernel)
+gaudi_add_module(GaudiAud *.cpp LINK_LIBRARIES GaudiKernel)

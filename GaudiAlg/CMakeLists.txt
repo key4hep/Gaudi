@@ -8,12 +8,12 @@ find_package(AIDA)
 find_package(Boost COMPONENTS regex)
 
 #---Libraries---------------------------------------------------------------
-GAUDI_LINKER_LIBRARY(GaudiAlgLib lib/*.cpp
-                     LIBRARIES GaudiUtilsLib ${Boost_LIBRARIES}
-                     USE_HEADERS Boost AIDA)
-GAUDI_COMPONENT_LIBRARY(GaudiAlg components/*.cpp
-                        LIBRARIES GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES} ${ROOT_RIO_LIBRARY}
-                        USE_HEADERS Boost AIDA)
+gaudi_add_library(GaudiAlgLib lib/*.cpp
+                     LINK_LIBRARIES GaudiUtilsLib ${Boost_LIBRARIES}
+                     INCLUDE_DIRS Boost AIDA)
+gaudi_add_module(GaudiAlg components/*.cpp
+                        LINK_LIBRARIES GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES} ${ROOT_RIO_LIBRARY}
+                        INCLUDE_DIRS Boost AIDA)
 
 #---Installation------------------------------------------------------------
 GAUDI_INSTALL_HEADERS(GaudiAlg)
