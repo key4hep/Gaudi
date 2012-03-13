@@ -31,6 +31,21 @@ macro_append GaudiProfiling_linkopts " -ldl " target-winxp ""
 # ============== private ======================================================
 private
 
+# Check if the VTune directory is present and set the tag have-vtune accordingly
+# Note: we do not have VTune for i686.
+macro have_vtune "not-have-vtune" target-x86_64&target-linux `$(GaudiProfiling_root)/cmt/check_vtune`
+apply_tag $(have_vtune)
+# Keep the IntelProfiler targets only if we do have VTune.
+macro_remove constituents "IntelProfilerConfDbMerge" have-vtune ""
+macro_remove constituents "IntelProfilerConf"        have-vtune ""
+macro_remove constituents "IntelProfilerMergeMap"    have-vtune ""
+macro_remove constituents "IntelProfilerRootMap"     have-vtune ""
+macro_remove constituents "IntelProfiler"            have-vtune ""
+macro_remove GaudiProfiling_python_init_dependencies "IntelProfilerConf" \
+                                                     have-vtune ""
+macro_remove zip_GaudiProfiling_python_modules_dependencies "IntelProfilerConfDbMerge" \
+                                                     have-vtune ""
+
 macro_append use_includes " -I/afs/cern.ch/sw/IntelSoftware/linux/x86_64/xe2011/vtune_amplifier_xe_2011/include "
 macro_append IntelProfiler_use_linkopts " -pthread /afs/cern.ch/sw/IntelSoftware/linux/x86_64/xe2011/vtune_amplifier_xe_2011/lib64/libittnotify.a"
 

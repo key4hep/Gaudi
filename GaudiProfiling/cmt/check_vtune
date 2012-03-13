@@ -1,0 +1,6 @@
+#!/bin/sh
+if [ -d /afs/cern.ch/sw/IntelSoftware/linux/x86_64/xe2011/vtune_amplifier_xe_2011/include ] ; then
+    echo have-vtune
+else
+    echo not-have-vtune
+fi
