@@ -1,6 +1,10 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2012-02-24 - Sasha Mazurov
+ - Patch #5210: add example for IntelProfiler
+   (see doc/intelprofiler.md)
+
 ============================ GaudiExamples v23r1 =============================
 ! 2012-02-27 - Marco Clemencic
  - Fixed glitches in the Google Profiling tests
