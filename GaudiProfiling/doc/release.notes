@@ -7,6 +7,7 @@
 ! 2012-03-13 - Marco Clemencic
  - Modified to compile IntelProfiler only on x86_64 and if the VTune library is
    available (from AFS).
+ - Minor clean up and hidden a warning in IntelProfiler.
 
 ! 2012-02-24 - Sasha Mazurov
  - Patch #5209: add IntelProfiler component
