@@ -6,10 +6,10 @@
 #  SQLITE_INCLUDE_DIRS (not cached)
 #  SQLITE_LIBRARIES
 
-find_path(SQLITE_INCLUDE_DIR mysql.h)
+find_path(SQLITE_INCLUDE_DIR sqlite3.h)
 find_library(SQLITE_LIBRARIES NAMES sqlite3)
 
-set(SQLITE_INCLUDE_DIRS ${SQLITE_INCLUDE_DIR} ${SQLITE_INCLUDE_DIR}/mysql)
+set(SQLITE_INCLUDE_DIRS ${SQLITE_INCLUDE_DIR})
 
 # handle the QUIETLY and REQUIRED arguments and set SQLITE_FOUND to TRUE if
 # all listed variables are TRUE
