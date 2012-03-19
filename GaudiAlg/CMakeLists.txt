@@ -10,10 +10,10 @@ find_package(ROOT COMPONENTS RIO)
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiAlgLib lib/*.cpp
-                     LINK_LIBRARIES GaudiUtilsLib ${Boost_LIBRARIES}
+                     LINK_LIBRARIES GaudiUtilsLib Boost
                      INCLUDE_DIRS Boost AIDA)
 gaudi_add_module(GaudiAlg components/*.cpp
-                        LINK_LIBRARIES GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES}
+                        LINK_LIBRARIES GaudiAlgLib GaudiKernel ROOT
                         INCLUDE_DIRS Boost AIDA)
 
 #---Installation------------------------------------------------------------

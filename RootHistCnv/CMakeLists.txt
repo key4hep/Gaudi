@@ -10,5 +10,5 @@ find_package(Boost)
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(RootHistCnv *.cpp
-                        LINK_LIBRARIES GaudiKernel ${ROOT_LIBRARIES}
+                        LINK_LIBRARIES GaudiKernel ROOT
                         INCLUDE_DIRS Boost ROOT AIDA)

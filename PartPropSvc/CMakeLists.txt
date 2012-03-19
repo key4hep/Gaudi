@@ -10,7 +10,7 @@ find_package(HepPDT)
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(PartPropSvc *.cpp
-                        LINK_LIBRARIES GaudiKernel ${ROOT_LIBRARIES} ${Boost_LIBRARIES} ${HEPPDT_LIBRARIES}
+                        LINK_LIBRARIES GaudiKernel Boost ROOT HepPDT
                         INCLUDE_DIRS Boost ROOT HepPDT)
 
 #---Installation------------------------------------------------------------

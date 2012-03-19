@@ -12,10 +12,10 @@ find_package(uuid)
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiUtilsLib Lib/*.cpp
-                     LINK_LIBRARIES GaudiKernel ${ROOT_LIBRARIES}
+                     LINK_LIBRARIES GaudiKernel ROOT
                      INCLUDE_DIRS ROOT AIDA)
 gaudi_add_module(GaudiUtils component/*.cpp
-                        LINK_LIBRARIES GaudiUtilsLib ${UUID_LIBRARIES} ${XERCESC_LIBRARIES}
+                        LINK_LIBRARIES GaudiUtilsLib XercesC uuid
                         INCLUDE_DIRS XercesC uuid)
 
 #---Installation------------------------------------------------------------

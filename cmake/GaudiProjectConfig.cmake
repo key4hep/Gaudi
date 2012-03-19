@@ -303,9 +303,54 @@ function(gaudi_get_packages var)
   set(${var} ${packages} PARENT_SCOPE)
 endfunction()
 
-#---------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# gaudi_resolve_link_libraries(variable lib_or_package1 lib_or_package2 ...)
+#
+# Translate the package names in a list of link library options into the
+# corresponding library options.
+# Example:
+#
+#  find_package(Boost COMPONENTS filesystem regex)
+#  find_package(ROOT COMPONENTS RIO)
+#  gaudi_resolve_link_libraries(LIBS Boost ROOT)
+#  ...
+#  target_link_libraries(XYZ ${LIBS})
+#
+# Note: this function is more useful in wrappers to add_library etc, like
+#       gaudi_add_library
+#-------------------------------------------------------------------------------
+function(gaudi_resolve_link_libraries variable)
+  set(collected)
+  foreach(package ${ARGN})
+    # check if it is an actual library or a target first
+    if(TARGET ${package} OR EXISTS ${package})
+      set(collected ${collected} ${package})
+    else()
+      # it must be an available package
+      string(TOUPPER ${package} _pack_upper)
+      # The case of CMAKE_DL_LIBS is more special than others
+      if(${_pack_upper}_FOUND OR ${package}_FOUND)
+        # Handle some special cases first, then try for PACKAGE_LIBRARIES
+        # otherwise fall back on Package_LIBRARIES.
+        if(${package} STREQUAL PythonLibs)
+          set(collected ${collected} ${PYTHON_LIBRARIES})
+        elseif(${_pack_upper}_LIBRARIES)
+          set(collected ${collected} ${${_pack_upper}_LIBRARIES})
+        else()
+          set(collected ${collected} ${${package}_LIBRARIES})
+        endif()
+      else()
+        # if it's not a package, we just add it as it is... there are a lot of special cases
+        set(collected ${collected} ${package})
+      endif()
+    endif()
+  endforeach()
+  set(${variable} ${collected} PARENT_SCOPE)
+endfunction()
+
+#-------------------------------------------------------------------------------
 #---GAUDI_MERGE_TARGET
-#---------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # Create a MergedXXX target that takes input files and dependencies from
 # properties of the packages
 function(GAUDI_MERGE_TARGET tgt dest filename)
@@ -508,6 +553,8 @@ function(gaudi_add_library library)
   # add the package includes to the current list
   include_package_directories(${ARG_INCLUDE_DIRS})
 
+  gaudi_resolve_link_libraries(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES})
+
   # get the library dirs required to get the libraries we use
   gaudi_get_required_library_dirs(lib_path ${ARG_LINK_LIBRARIES})
   set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
@@ -559,6 +606,8 @@ function(gaudi_add_module library)
     set(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${ARG_LIBRARIES})
   endif()
 
+  gaudi_resolve_link_libraries(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES})
+
   # find the sources
   gaudi_expand_sources(lib_srcs ${ARG_UNPARSED_ARGUMENTS})
 
@@ -600,6 +649,8 @@ endmacro()
 function(gaudi_add_dictionary dictionary header selection)
   CMAKE_PARSE_ARGUMENTS(ARG "" "" "LINK_LIBRARIES;INCLUDE_DIRS;OPTIONS" ${ARGN})
 
+  gaudi_resolve_link_libraries(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES})
+
   # find the sources
   gaudi_expand_sources(lib_srcs ${ARG_UNPARSED_ARGUMENTS})
 
@@ -635,6 +686,8 @@ function(GAUDI_PYTHON_MODULE module)
     set(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${ARG_LIBRARIES})
   endif()
 
+  gaudi_resolve_link_libraries(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES})
+
   # get the inherited include directories
   gaudi_get_required_include_dirs(ARG_INCLUDE_DIRS ${ARG_LINK_LIBRARIES})
 
@@ -669,6 +722,8 @@ function(GAUDI_EXECUTABLE executable)
     message(WARNING "Deprecated option 'LIBRARY', use 'LINK_LIBRARIES' instead")
     set(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${ARG_LIBRARIES})
   endif()
+
+  gaudi_resolve_link_libraries(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES})
 
   # get the inherited include directories
   gaudi_get_required_include_dirs(ARG_INCLUDE_DIRS ${ARG_LINK_LIBRARIES})
@@ -707,6 +762,8 @@ function(GAUDI_UNIT_TEST executable)
     message(WARNING "Deprecated option 'LIBRARY', use 'LINK_LIBRARIES' instead")
     set(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${ARG_LIBRARIES})
   endif()
+
+  gaudi_resolve_link_libraries(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES})
 
   # get the inherited include directories
   gaudi_get_required_include_dirs(ARG_INCLUDE_DIRS ${ARG_LINK_LIBRARIES})

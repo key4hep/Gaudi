@@ -13,7 +13,7 @@ endif()
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiGSLLib Lib/*.cpp
-                     LINK_LIBRARIES GaudiAlgLib ${GSL_LIBRARIES} ${CLHEP_LIBRARIES}
+                     LINK_LIBRARIES GaudiAlgLib GSL CLHEP
                      INCLUDE_DIRS GSL CLHEP)
 gaudi_add_module(GaudiGSL Components/*.cpp LINK_LIBRARIES GaudiGSLLib)
 

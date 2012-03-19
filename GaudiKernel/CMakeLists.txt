@@ -8,22 +8,22 @@ find_package(ROOT)
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiKernel Lib/*.cpp
-                     LINK_LIBRARIES ${CMAKE_DL_LIBS} ${ROOT_LIBRARIES} ${Boost_LIBRARIES}
+                     LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost Root
                      INCLUDE_DIRS Boost ROOT)
 
 #---Tests-------------------------------------------------------------------
 GAUDI_UNIT_TEST(DirSearchPath_test ../tests/src/DirSearchPath_test.cpp
                 LINK_LIBRARIES GaudiKernel)
 GAUDI_UNIT_TEST(test_SerializeSTL ../tests/src/test_SerializeSTL.cpp
-                LINK_LIBRARIES GaudiKernel ${CPPUNIT_LIBRARIES}
+                LINK_LIBRARIES GaudiKernel CppUnit
                 INCLUDE_DIRS CppUnit)
 GAUDI_UNIT_TEST(PathResolver_test ../tests/src/PathResolver_test.cpp
                 LINK_LIBRARIES GaudiKernel)
 GAUDI_UNIT_TEST(test_GaudiTime ../tests/src/test_GaudiTime.cpp
-                LINK_LIBRARIES GaudiKernel ${CPPUNIT_LIBRARIES}
+                LINK_LIBRARIES GaudiKernel CppUnit
                 INCLUDE_DIRS CppUnit)
 GAUDI_UNIT_TEST(test_GaudiTiming ../tests/src/test_GaudiTiming.cpp
-                LINK_LIBRARIES GaudiKernel ${CPPUNIT_LIBRARIES}
+                LINK_LIBRARIES GaudiKernel CppUnit
                 INCLUDE_DIRS CppUnit)
 GAUDI_UNIT_TEST(Parsers_test ../tests/src/parsers.cpp
                 LINK_LIBRARIES GaudiKernel)

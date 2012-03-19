@@ -46,7 +46,7 @@ StatusCodeSvc/*.cpp
 testing/*.cpp )
 
 gaudi_add_library(GaudiExamplesLib Lib/*.cpp
-                     LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib ${HEPPDT_LIBRARIES} ${ROOT_LIBRARIES}
+                     LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib HepPDT ROOT
                      INCLUDE_DIRS HepPDT ROOT ${CMAKE_CURRENT_SOURCE_DIR}/src/Lib)
 gaudi_add_module(GaudiExamples ${GaudiExamples_srcs} LINK_LIBRARIES GaudiExamplesLib)
 GAUDI_PYTHON_MODULE(PyExample PythonModule/*.cpp
@@ -56,8 +56,8 @@ GAUDI_PYTHON_MODULE(PyExample PythonModule/*.cpp
 GAUDI_INSTALL_PYTHON_MODULES()
 
 #---Executables-------------------------------------------------------------
-GAUDI_EXECUTABLE(Allocator Allocator/*.cpp LINK_LIBRARIES GaudiExamplesLib GaudiAlgLib GaudiKernel ${ROOT_LIBRARIES}
-                 ${CLHEP_LIBRARIES} ${GSL_LIBRARIES}
+GAUDI_EXECUTABLE(Allocator Allocator/*.cpp
+                 LINK_LIBRARIES GaudiExamplesLib GaudiAlgLib GaudiKernel ROOT CLHEP GSL
                  INCLUDE_DIRS CLHEP GSL)
 
 

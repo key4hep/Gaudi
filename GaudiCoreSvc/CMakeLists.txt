@@ -11,5 +11,5 @@ gaudi_add_module(GaudiCoreSvc
                         IncidentSvc/*.cpp
                         JobOptionsSvc/*.cpp
                         MessageSvc/*.cpp
-                        LINK_LIBRARIES GaudiKernel ${Boost_LIBRARIES})
+                        LINK_LIBRARIES GaudiKernel Boost)
 add_dependencies(GaudiCoreSvc GaudiCoreSvcVersionHeader)

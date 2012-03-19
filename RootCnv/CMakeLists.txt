@@ -8,7 +8,7 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS __POOL_COMPATIBILITY)
 
 gaudi_add_library(RootCnvLib
                      *.cpp
-                     LINK_LIBRARIES GaudiKernel GaudiUtilsLib ${ROOT_LIBRARIES}
+                     LINK_LIBRARIES GaudiKernel GaudiUtilsLib ROOT
                      INCLUDE_DIRS GaudiKernel GaudiUtilsLib)
 
 gaudi_add_module(RootCnv

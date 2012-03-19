@@ -8,10 +8,10 @@ find_package(PythonLibs)
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiMPLib Lib/*.cpp
-                     LINK_LIBRARIES GaudiKernel ${PYTHON_LIBRARIES} ${ROOT_LIBRARIES}
+                     LINK_LIBRARIES GaudiKernel PythonLibs ROOT
                      INCLUDE_DIRS ROOT PythonLibs)
 gaudi_add_module(GaudiMP component/*.cpp
-                        LINK_LIBRARIES GaudiMPLib ${PYTHON_LIBRARIES} ${ROOT_LIBRARIES})
+                        LINK_LIBRARIES GaudiMPLib PythonLibs ROOT)
 
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiMPLib dict/gaudimp_dict.h dict/selection.xml LINK_LIBRARIES GaudiMPLib)

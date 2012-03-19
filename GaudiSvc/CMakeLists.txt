@@ -17,8 +17,7 @@ RndmGenSvc/*.cpp
 THistSvc/*.cpp)
 
 gaudi_add_module(GaudiSvc ${GaudiSvc_srcs}
-                        LINK_LIBRARIES GaudiKernel ${ROOT_LIBRARIES} ${CLHEP_LIBRARIES}
-                                  ${Boost_LIBRARIES}
+                        LINK_LIBRARIES GaudiKernel Boost ROOT CLHEP
                         INCLUDE_DIRS Boost ROOT AIDA CLHEP)
 
 if(BUILD_TESTS)
