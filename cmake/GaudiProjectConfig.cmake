@@ -6,9 +6,6 @@
 # Authors: Pere Mato, Marco Clemencic
 
 cmake_minimum_required(VERSION 2.8.5)
-cmake_policy(SET CMP0003 NEW) # See "cmake --help-policy CMP0003" for more details
-cmake_policy(SET CMP0011 NEW) # See "cmake --help-policy CMP0011" for more details
-cmake_policy(SET CMP0009 NEW) # See "cmake --help-policy CMP0009" for more details
 
 # Add the directory containing this file to the modules search path
 set(CMAKE_MODULE_PATH ${GaudiProject_DIR} ${CMAKE_MODULE_PATH})
