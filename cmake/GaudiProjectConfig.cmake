@@ -544,6 +544,38 @@ macro(gaudi_expand_sources VAR)
   #message(STATUS "  result: ${${VAR}}")
 endmacro()
 
+#-------------------------------------------------------------------------------
+# gaudi_common_add_build(sources...
+#                 LINK_LIBRARIES library1 package2 ...
+#                 INCLUDE_DIRS dir1 package2 ...)
+#
+# Internal. Helper macro to factor out the common code to configure a buildable
+# target (library, module, dictionary...)
+#-------------------------------------------------------------------------------
+macro(gaudi_common_add_build)
+  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS" ${ARGN})
+  # obsolete option
+  if(ARG_LIBRARIES)
+    message(WARNING "Deprecated option 'LIBRARY', use 'LINK_LIBRARIES' instead")
+    set(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${ARG_LIBRARIES})
+  endif()
+
+  gaudi_resolve_link_libraries(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES})
+
+  # find the sources
+  gaudi_expand_sources(srcs ${ARG_UNPARSED_ARGUMENTS})
+
+  # get the inherited include directories
+  gaudi_get_required_include_dirs(ARG_INCLUDE_DIRS ${ARG_LINK_LIBRARIES})
+
+  # add the package includes to the current list
+  include_package_directories(${ARG_INCLUDE_DIRS})
+
+  # get the library dirs required to get the libraries we use
+  gaudi_get_required_library_dirs(lib_path ${ARG_LINK_LIBRARIES})
+  set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
+endmacro()
+
 #---------------------------------------------------------------------------------------------------
 # gaudi_add_library(<name>
 #                   source1 source2 ...
@@ -557,30 +589,10 @@ endmacro()
 # If a package name (as in find_package) is used in
 #---------------------------------------------------------------------------------------------------
 function(gaudi_add_library library)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS" ${ARGN})
-
-  if(ARG_LIBRARIES)
-    message(WARNING "Deprecated option 'LIBRARY', use 'LINK_LIBRARIES' instead")
-    set(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${ARG_LIBRARIES})
-  endif()
-
-  # find the sources
-  gaudi_expand_sources(lib_srcs ${ARG_UNPARSED_ARGUMENTS})
-
-  # get the inherited include directories
-  gaudi_get_required_include_dirs(ARG_INCLUDE_DIRS ${ARG_LINK_LIBRARIES})
-
-  # add the package includes to the current list
-  include_package_directories(${ARG_INCLUDE_DIRS})
-
-  gaudi_resolve_link_libraries(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES})
-
-  # get the library dirs required to get the libraries we use
-  gaudi_get_required_library_dirs(lib_path ${ARG_LINK_LIBRARIES})
-  set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
+  gaudi_common_add_build(${ARGN})
 
   if(WIN32)
-	add_library( ${library}-arc STATIC EXCLUDE_FROM_ALL ${lib_srcs})
+	add_library( ${library}-arc STATIC EXCLUDE_FROM_ALL ${srcs})
     set_target_properties(${library}-arc PROPERTIES COMPILE_DEFINITIONS GAUDI_LINKER_LIBRARY)
     add_custom_command(
       OUTPUT ${library}.def
@@ -592,7 +604,7 @@ function(gaudi_add_library library)
     target_link_libraries(${library} ${library}-arc ${ARG_LINK_LIBRARIES})
     set_target_properties(${library} PROPERTIES LINK_INTERFACE_LIBRARIES "${ARG_LINK_LIBRARIES}" )
   else()
-    add_library(${library} ${lib_srcs})
+    add_library(${library} ${srcs})
     set_target_properties(${library} PROPERTIES COMPILE_DEFINITIONS GAUDI_LINKER_LIBRARY)
     target_link_libraries(${library} ${ARG_LINK_LIBRARIES})
   endif()
@@ -619,29 +631,9 @@ endmacro()
 #---gaudi_add_module(<name> source1 source2 ... LINK_LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
 function(gaudi_add_module library)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS" ${ARGN})
+  gaudi_common_add_build(${ARGN})
 
-  if(ARG_LIBRARIES)
-    message(WARNING "Deprecated option 'LIBRARY', use 'LINK_LIBRARIES' instead")
-    set(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${ARG_LIBRARIES})
-  endif()
-
-  gaudi_resolve_link_libraries(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES})
-
-  # find the sources
-  gaudi_expand_sources(lib_srcs ${ARG_UNPARSED_ARGUMENTS})
-
-  # get the inherited include directories
-  gaudi_get_required_include_dirs(ARG_INCLUDE_DIRS ${ARG_LINK_LIBRARIES})
-
-  # add the package includes to the current list
-  include_package_directories(${ARG_INCLUDE_DIRS})
-
-  # get the library dirs required to get the libraries we use
-  gaudi_get_required_library_dirs(lib_path ${ARG_LINK_LIBRARIES})
-  set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
-
-  add_library(${library} MODULE ${lib_srcs})
+  add_library(${library} MODULE ${srcs})
   target_link_libraries(${library} ${ROOT_Reflex_LIBRARY} ${ARG_LINK_LIBRARIES})
 
   GAUDI_GENERATE_ROOTMAP(${library})
@@ -666,22 +658,9 @@ endmacro()
 # directories to the variable.
 #-------------------------------------------------------------------------------
 function(gaudi_add_dictionary dictionary header selection)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LINK_LIBRARIES;INCLUDE_DIRS;OPTIONS" ${ARGN})
-
-  gaudi_resolve_link_libraries(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES})
-
-  # find the sources
-  gaudi_expand_sources(lib_srcs ${ARG_UNPARSED_ARGUMENTS})
-
-  # get the inherited include directories
-  gaudi_get_required_include_dirs(ARG_INCLUDE_DIRS ${ARG_LINK_LIBRARIES})
-
-  # add the package includes to the current list
-  include_package_directories(${ARG_INCLUDE_DIRS})
-
-  # get the library dirs required to get the libraries we use
-  gaudi_get_required_library_dirs(lib_path ${ARG_LINK_LIBRARIES})
-  set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
+  # this function uses an extra option: 'OPTIONS'
+  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS;OPTIONS" ${ARGN})
+  gaudi_common_add_build(${ARG_UNPARSED_ARGUMENTS} LIBRARIES ${ARG_LIBRARIES} LINK_LIBRARIES ${ARG_LINK_LIBRARIES} INCLUDE_DIRS ${ARG_INCLUDE_DIRS})
 
   reflex_dictionary(${dictionary} ${header} ${selection} LINK_LIBRARIES ${ARG_LINK_LIBRARIES} OPTIONS ${ARG_OPTIONS})
 
@@ -698,29 +677,9 @@ endfunction()
 #---GAUDI_PYTHON_MODULE( <name> source1 source2 ... LINK_LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_PYTHON_MODULE module)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS" ${ARGN})
+  gaudi_common_add_build(${ARGN})
 
-  if(ARG_LIBRARIES)
-    message(WARNING "Deprecated option 'LIBRARY', use 'LINK_LIBRARIES' instead")
-    set(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${ARG_LIBRARIES})
-  endif()
-
-  gaudi_resolve_link_libraries(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES})
-
-  # get the inherited include directories
-  gaudi_get_required_include_dirs(ARG_INCLUDE_DIRS ${ARG_LINK_LIBRARIES})
-
-  # add the package includes to the current list
-  include_package_directories(${ARG_INCLUDE_DIRS})
-
-  # get the library dirs required to get the libraries we use
-  gaudi_get_required_library_dirs(lib_path ${ARG_LINK_LIBRARIES})
-  set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
-
-  # find the sources
-  gaudi_expand_sources(lib_srcs ${ARG_UNPARSED_ARGUMENTS})
-
-  add_library( ${module} MODULE ${lib_srcs})
+  add_library( ${module} MODULE ${srcs})
   if(win32)
     set_target_properties( ${module} PROPERTIES SUFFIX .pyd PREFIX "")
   else()
@@ -735,31 +694,11 @@ endfunction()
 #---GAUDI_EXECUTABLE( <name> source1 source2 ... LINK_LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_EXECUTABLE executable)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS" ${ARGN})
+  gaudi_common_add_build(${ARGN})
 
-  if(ARG_LIBRARIES)
-    message(WARNING "Deprecated option 'LIBRARY', use 'LINK_LIBRARIES' instead")
-    set(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${ARG_LIBRARIES})
-  endif()
+  add_executable( ${executable} ${srcs})
 
-  gaudi_resolve_link_libraries(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES})
-
-  # get the inherited include directories
-  gaudi_get_required_include_dirs(ARG_INCLUDE_DIRS ${ARG_LINK_LIBRARIES})
-
-  # add the package includes to the current list
-  include_package_directories(${ARG_INCLUDE_DIRS})
-
-  # get the library dirs required to get the libraries we use
-  gaudi_get_required_library_dirs(lib_path ${ARG_LINK_LIBRARIES})
-  set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
-
-  # find the sources
-  gaudi_expand_sources(exe_srcs ${ARG_UNPARSED_ARGUMENTS})
-
-  add_executable( ${executable} ${exe_srcs})
-
-  target_link_libraries(${executable} ${ARG_LINK_LIBRARIES} )
+  target_link_libraries(${executable} ${ARG_LINK_LIBRARIES})
 
   if (USE_EXE_SUFFIX)
     set_target_properties(${executable} PROPERTIES SUFFIX .exe)
@@ -775,30 +714,10 @@ endfunction()
 #---GAUDI_UNIT_TEST( <name> source1 source2 ... LINK_LIBRARIES library1 library2 ...)
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_UNIT_TEST executable)
-  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS" ${ARGN})
-
-  if(ARG_LIBRARIES)
-    message(WARNING "Deprecated option 'LIBRARY', use 'LINK_LIBRARIES' instead")
-    set(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${ARG_LIBRARIES})
-  endif()
-
-  gaudi_resolve_link_libraries(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES})
-
-  # get the inherited include directories
-  gaudi_get_required_include_dirs(ARG_INCLUDE_DIRS ${ARG_LINK_LIBRARIES})
-
-  # add the package includes to the current list
-  include_package_directories(${ARG_INCLUDE_DIRS})
-
-  # get the library dirs required to get the libraries we use
-  gaudi_get_required_library_dirs(lib_path ${ARG_LINK_LIBRARIES})
-  set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
-
-  # find the sources
-  gaudi_expand_sources(exe_srcs ${ARG_UNPARSED_ARGUMENTS})
+  gaudi_common_add_build(${ARGN})
 
   if(BUILD_TESTS)
-    add_executable( ${executable} ${exe_srcs})
+    add_executable( ${executable} ${srcs})
     target_link_libraries(${executable} ${ARG_LINK_LIBRARIES} )
 	SET_RUNTIME_PATH(path ${ld_library_path})
     if (USE_EXE_SUFFIX)
