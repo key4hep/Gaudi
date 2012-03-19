@@ -34,12 +34,12 @@ foreach(undef_symbol IsHeapProfilerRunning
 endforeach()
 set_target_properties(GaudiGoogleProfiling PROPERTIES LINK_FLAGS "${gprof_linker_flags}")
 
-GAUDI_PYTHON_MODULE(PyCPUFamily python/CPUFamily.cpp
+gaudi_add_python_module(PyCPUFamily python/CPUFamily.cpp
                     LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}
                     INCLUDE_DIRS PythonLibs)
 
 #---Executables-------------------------------------------------------------
-GAUDI_EXECUTABLE(GaudiGenProfilingHtml app/pfm_gen_analysis.cpp
+gaudi_add_executable(GaudiGenProfilingHtml app/pfm_gen_analysis.cpp
                  LINK_LIBRARIES z GaudiKernel)
 
 #---Installation------------------------------------------------------------

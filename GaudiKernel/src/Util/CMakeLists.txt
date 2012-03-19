@@ -9,9 +9,9 @@ find_package(ROOT)
 
 #---Util Executables--------------------------------------------------------
 #set(CMAKE_BUILD_TYPE Release)
-GAUDI_EXECUTABLE(genconf genconf.cpp
+gaudi_add_executable(genconf genconf.cpp
                  LINK_LIBRARIES GaudiKernel ${Boost_LIBRARIES} ${ROOT_LIBRARIES}
                  INCLUDE_DIRS Boost ROOT)
 if(WIN32)
-  GAUDI_EXECUTABLE(genwindef genwindef.cpp LibSymbolInfo.cpp)
+  gaudi_add_executable(genwindef genwindef.cpp LibSymbolInfo.cpp)
 endif()

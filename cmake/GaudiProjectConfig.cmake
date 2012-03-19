@@ -292,11 +292,11 @@ endfunction()
 #-------------------------------------------------------------------------------
 function(gaudi_get_packages var)
   set(packages)
-  file(GLOB_RECURSE cmakelist_files  ${CMAKE_SOURCE_DIR} CMakeLists.txt)
+  file(GLOB_RECURSE cmakelist_files RELATIVE ${CMAKE_SOURCE_DIR} CMakeLists.txt)
   foreach(file ${cmakelist_files})
-    get_filename_component(path ${file} PATH)
-    if( NOT path STREQUAL ${CMAKE_SOURCE_DIR})
-      string(REPLACE ${CMAKE_SOURCE_DIR}/ "" package ${path})
+    # ignore the source directory itself
+    if(NOT path STREQUAL CMakeLists.txt)
+      get_filename_component(package ${file} PATH)
       SET(packages ${packages} ${package})
     endif()
   endforeach()
@@ -585,8 +585,6 @@ endmacro()
 # Extension of standard CMake 'add_library' command.
 # Create a library from the specified sources (glob patterns are allowed), linking
 # it with the libraries specified and adding the include directories to the search path.
-#
-# If a package name (as in find_package) is used in
 #---------------------------------------------------------------------------------------------------
 function(gaudi_add_library library)
   gaudi_common_add_build(${ARGN})
@@ -652,7 +650,10 @@ macro(gaudi_component_library)
 endmacro()
 
 #-------------------------------------------------------------------------------
-# gaudi_add_dictionary(dictionary header selection LINK_LIBRARIES ... OPTIONS ...)
+# gaudi_add_dictionary(dictionary header selection
+#                      LINK_LIBRARIES ...
+#                      INCLUDE_DIRS ...
+#                      OPTIONS ...)
 #
 # Find all the CMakeLists.txt files in the sub-directories and add their
 # directories to the variable.
@@ -674,30 +675,45 @@ function(gaudi_add_dictionary dictionary header selection)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_PYTHON_MODULE( <name> source1 source2 ... LINK_LIBRARIES library1 library2 ...)
+# gaudi_add_python_module(name
+#                         sources ...
+#                         LINK_LIBRARIES ...
+#                         INCLUDE_DIRS ...)
+#
+# Build a binary python module from the given sources.
 #---------------------------------------------------------------------------------------------------
-function(GAUDI_PYTHON_MODULE module)
+function(gaudi_add_python_module module)
   gaudi_common_add_build(${ARGN})
 
-  add_library( ${module} MODULE ${srcs})
+  # require Python libraries
+  find_package(PythonLibs QUIET REQUIRED)
+
+  add_library(${module} MODULE ${srcs})
   if(win32)
-    set_target_properties( ${module} PROPERTIES SUFFIX .pyd PREFIX "")
+    set_target_properties(${module} PROPERTIES SUFFIX .pyd PREFIX "")
   else()
-    set_target_properties( ${module} PROPERTIES SUFFIX .so PREFIX "")
+    set_target_properties(${module} PROPERTIES SUFFIX .so PREFIX "")
   endif()
   target_link_libraries(${module} ${PYTHON_LIBRARIES} ${ARG_LINK_LIBRARIES})
+
   #----Installation details-------------------------------------------------------
   install(TARGETS ${module} LIBRARY DESTINATION python/lib-dynload)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_EXECUTABLE( <name> source1 source2 ... LINK_LIBRARIES library1 library2 ...)
+# gaudi_add_executable(<name>
+#                      source1 source2 ...
+#                      LINK_LIBRARIES library1 library2 ...
+#                      INCLUDE_DIRS dir1 package2 ...)
+#
+# Extension of standard CMake 'add_executable' command.
+# Create a library from the specified sources (glob patterns are allowed), linking
+# it with the libraries specified and adding the include directories to the search path.
 #---------------------------------------------------------------------------------------------------
-function(GAUDI_EXECUTABLE executable)
+function(gaudi_add_executable executable)
   gaudi_common_add_build(${ARGN})
 
-  add_executable( ${executable} ${srcs})
-
+  add_executable(${executable} ${srcs})
   target_link_libraries(${executable} ${ARG_LINK_LIBRARIES})
 
   if (USE_EXE_SUFFIX)
@@ -711,20 +727,26 @@ function(GAUDI_EXECUTABLE executable)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_UNIT_TEST( <name> source1 source2 ... LINK_LIBRARIES library1 library2 ...)
+# gaudi_add_unit_test(<name>
+#                     source1 source2 ...
+#                     LINK_LIBRARIES library1 library2 ...
+#                     INCLUDE_DIRS dir1 package2 ...)
+#
+# Special version of gaudi_add_executable which automatically adds the dependency
+# on CppUnit.
 #---------------------------------------------------------------------------------------------------
-function(GAUDI_UNIT_TEST executable)
-  gaudi_common_add_build(${ARGN})
-
+function(gaudi_add_unit_test executable)
   if(BUILD_TESTS)
-    add_executable( ${executable} ${srcs})
-    target_link_libraries(${executable} ${ARG_LINK_LIBRARIES} )
-	SET_RUNTIME_PATH(path ${ld_library_path})
-    if (USE_EXE_SUFFIX)
-      set_target_properties(${executable} PROPERTIES SUFFIX .exe)
-    endif()
+    gaudi_common_add_build(${ARGN})
+
+    find_package(CppUnit QUIET REQUIRED)
+
+    gaudi_add_executable(${executable} ${srcs}
+                         LINK_LIBRARIES ${ARG_LINK_LIBRARIES} CppUnit
+                         INCLUDE_DIRS ${ARG_INCLUDE_DIRS} CppUnit)
+
     get_target_property(exec_suffix ${executable} SUFFIX)
-    add_test(${executable} ${env_cmd} -p ${ld_library_path}=${path} ${CMAKE_BINARY_DIR}/${executable}${exec_suffix})
+    add_test(${executable} ${env_cmd} -p ${ld_library_path}=. ${CMAKE_BINARY_DIR}/${executable}${exec_suffix})
     #----Installation details-------------------------------------------------------
     install(TARGETS ${executable} RUNTIME DESTINATION ${bin})
   endif()

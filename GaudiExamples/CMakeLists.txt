@@ -49,14 +49,14 @@ gaudi_add_library(GaudiExamplesLib Lib/*.cpp
                      LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib HepPDT ROOT
                      INCLUDE_DIRS HepPDT ROOT ${CMAKE_CURRENT_SOURCE_DIR}/src/Lib)
 gaudi_add_module(GaudiExamples ${GaudiExamples_srcs} LINK_LIBRARIES GaudiExamplesLib)
-GAUDI_PYTHON_MODULE(PyExample PythonModule/*.cpp
+gaudi_add_python_module(PyExample PythonModule/*.cpp
                     LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}
                     INCLUDE_DIRS Boost PythonLibs)
 
 GAUDI_INSTALL_PYTHON_MODULES()
 
 #---Executables-------------------------------------------------------------
-GAUDI_EXECUTABLE(Allocator Allocator/*.cpp
+gaudi_add_executable(Allocator Allocator/*.cpp
                  LINK_LIBRARIES GaudiExamplesLib GaudiAlgLib GaudiKernel ROOT CLHEP GSL
                  INCLUDE_DIRS CLHEP GSL)
 

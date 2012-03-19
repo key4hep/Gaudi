@@ -3,7 +3,6 @@
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
 find_package(Boost REQUIRED COMPONENTS filesystem thread system)
-find_package(CppUnit)
 find_package(ROOT)
 
 #---Libraries---------------------------------------------------------------
@@ -12,23 +11,21 @@ gaudi_add_library(GaudiKernel Lib/*.cpp
                      INCLUDE_DIRS Boost ROOT)
 
 #---Tests-------------------------------------------------------------------
-GAUDI_UNIT_TEST(DirSearchPath_test ../tests/src/DirSearchPath_test.cpp
-                LINK_LIBRARIES GaudiKernel)
-GAUDI_UNIT_TEST(test_SerializeSTL ../tests/src/test_SerializeSTL.cpp
-                LINK_LIBRARIES GaudiKernel CppUnit
-                INCLUDE_DIRS CppUnit)
-GAUDI_UNIT_TEST(PathResolver_test ../tests/src/PathResolver_test.cpp
-                LINK_LIBRARIES GaudiKernel)
-GAUDI_UNIT_TEST(test_GaudiTime ../tests/src/test_GaudiTime.cpp
-                LINK_LIBRARIES GaudiKernel CppUnit
-                INCLUDE_DIRS CppUnit)
-GAUDI_UNIT_TEST(test_GaudiTiming ../tests/src/test_GaudiTiming.cpp
-                LINK_LIBRARIES GaudiKernel CppUnit
-                INCLUDE_DIRS CppUnit)
-GAUDI_UNIT_TEST(Parsers_test ../tests/src/parsers.cpp
-                LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(DirSearchPath_test ../tests/src/DirSearchPath_test.cpp
+                    LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(test_SerializeSTL ../tests/src/test_SerializeSTL.cpp
+                    LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(PathResolver_test ../tests/src/PathResolver_test.cpp
+                    LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(test_GaudiTime ../tests/src/test_GaudiTime.cpp
+                    LINK_LIBRARIES GaudiKernel )
+gaudi_add_unit_test(test_GaudiTiming ../tests/src/test_GaudiTiming.cpp
+                    LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(Parsers_test ../tests/src/parsers.cpp
+                    LINK_LIBRARIES GaudiKernel)
 # This is just a compile-time tests.
-GAUDI_UNIT_TEST(test_headers_build ../tests/src/test_headers_build.cpp LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(test_headers_build ../tests/src/test_headers_build.cpp
+                    LINK_LIBRARIES GaudiKernel)
 
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIBRARIES GaudiKernel)
