@@ -433,42 +433,46 @@ function(gaudi_generate_configurables library)
   GAUDI_INSTALL_PYTHON_INIT()
 endfunction()
 
-#---------------------------------------------------------------------------------------------------
-#---GAUDI_GENERATE_CONFUSERDB([DEPENDS target1 target2])
-#---------------------------------------------------------------------------------------------------
 define_property(DIRECTORY
                 PROPERTY CONFIGURABLE_USER_MODULES
                 BRIEF_DOCS "ConfigurableUser modules"
                 FULL_DOCS "List of Python modules containing ConfigurableUser specializations (default <package>/Config, 'None' to disable)." )
+#---------------------------------------------------------------------------------------------------
+# gaudi_generate_confuserdb([DEPENDS target1 target2])
+#
 # Generate entries in the configurables database for ConfigurableUser specializations.
 # By default, the python module supposed to contain ConfigurableUser's is <package>.Config,
 # but different (or more) modules can be specified with the directory property
 # CONFIGURABLE_USER_MODULES. If that property is set to None, there will be no
 # search for ConfigurableUser's.
-function(GAUDI_GENERATE_CONFUSERDB)
+#---------------------------------------------------------------------------------------------------
+function(gaudi_generate_confuserdb)
   gaudi_get_package_name(package)
   get_directory_property(modules CONFIGURABLE_USER_MODULES)
   if( NOT (modules STREQUAL "None") ) # ConfUser enabled
     set(outdir ${CMAKE_CURRENT_BINARY_DIR}/genConf/${package})
+
     # get the optional dependencies from argument and properties
     CMAKE_PARSE_ARGUMENTS(ARG "" "" "DEPENDS" ${arguments})
     get_directory_property(PROPERTY_DEPENDS CONFIGURABLE_USER_DEPENDS)
-    SET_RUNTIME_PATH(path PYTHONPATH)
-    # TODO: this re-runs the genconfuser every time, because we cannot define the right dependencies
+
+    # TODO: this re-runs the genconfuser every time
+    #       we have to force it because we cannot define the dependencies
+    #       correctly (on the Python files)
     add_custom_target(${package}ConfUserDB ALL
                       DEPENDS ${outdir}/${package}_user_confDb.py)
     if(${ARG_DEPENDS} ${PROPERTY_DEPENDS})
       add_dependencies(${package}ConfUserDB ${ARG_DEPENDS} ${PROPERTY_DEPENDS})
     endif()
-    add_custom_command(OUTPUT ${outdir}/${package}_user_confDb.py
-		COMMAND ${env_cmd}
-                  -p PYTHONPATH=${path}
-                  -p PYTHONPATH=${CMAKE_SOURCE_DIR}/GaudiKernel/python
-                  -p PYTHONPATH=${CMAKE_SOURCE_DIR}/Gaudi/python
+    add_custom_command(
+      OUTPUT ${outdir}/${package}_user_confDb.py
+      COMMAND ${env_cmd}
+                    -p PYTHONPATH=${CMAKE_SOURCE_DIR}/GaudiKernel/python
+                    -p PYTHONPATH=${CMAKE_SOURCE_DIR}/Gaudi/python
                 ${genconfuser_cmd}
-		          -r ${CMAKE_CURRENT_SOURCE_DIR}/python
-		          -o ${outdir}/${package}_user_confDb.py
-		          ${package} ${modules})
+                  -r ${CMAKE_CURRENT_SOURCE_DIR}/python
+                  -o ${outdir}/${package}_user_confDb.py
+                  ${package} ${modules})
     set_property(GLOBAL APPEND PROPERTY MergedConfDB_SOURCES ${outdir}/${package}_user_confDb.py)
     set_property(GLOBAL APPEND PROPERTY MergedConfDB_DEPENDS ${package}ConfUserDB)
   endif()
@@ -877,7 +881,7 @@ function(GAUDI_INSTALL_PYTHON_MODULES)
   install(DIRECTORY python/
           DESTINATION python
           FILES_MATCHING PATTERN "*.py")
-  GAUDI_GENERATE_CONFUSERDB() # if there are Python modules, there may be ConfigurableUser's
+  gaudi_generate_confuserdb() # if there are Python modules, there may be ConfigurableUser's
   GAUDI_INSTALL_PYTHON_INIT()
 endfunction()
 
