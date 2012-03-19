@@ -284,12 +284,12 @@ function(gaudi_sort_subdirectories var)
   set(${var} ${out_packages} PARENT_SCOPE)
 endfunction()
 
-#---------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # gaudi_get_packages
 #
 # Find all the CMakeLists.txt files in the sub-directories and add their
 # directories to the variable.
-#---------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 function(gaudi_get_packages var)
   set(packages)
   file(GLOB_RECURSE cmakelist_files  ${CMAKE_SOURCE_DIR} CMakeLists.txt)
@@ -302,6 +302,16 @@ function(gaudi_get_packages var)
   endforeach()
   set(${var} ${packages} PARENT_SCOPE)
 endfunction()
+
+#-------------------------------------------------------------------------------
+# gaudi_get_package_name(VAR)
+#
+# Set the variable VAR to the current "package" (subdirectory) name.
+#-------------------------------------------------------------------------------
+macro(gaudi_get_package_name VAR)
+  # By convention, the package is the name of the source directory.
+  get_filename_component(${VAR} ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+endmacro()
 
 #-------------------------------------------------------------------------------
 # gaudi_resolve_link_libraries(variable lib_or_package1 lib_or_package2 ...)
@@ -374,36 +384,43 @@ function(GAUDI_MERGE_TARGET tgt dest filename)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_GENERATE_CONFIGURABLES( library )
+# gaudi_generate_configurables(library)
+#
+# Internal function. Add the targets needed to produce the configurables for a
+# module (component library).
 #---------------------------------------------------------------------------------------------------
-function(GAUDI_GENERATE_CONFIGURABLES library)
-  get_filename_component(package ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-  set(library_preload)  # TODO....
+function(gaudi_generate_configurables library)
+  gaudi_get_package_name(package)
+
+  # set(library_preload)  # TODO....
+
+  # Prepare the build directory
   set(outdir ${CMAKE_CURRENT_BINARY_DIR}/genConf/${package})
   file(MAKE_DIRECTORY ${outdir})
+
+  # Python classes used for the various component types.
   set(confModuleName GaudiKernel.Proxy)
   set(confDefaultName Configurable.DefaultName)
   set(confAlgorithm ConfigurableAlgorithm)
   set(confAlgTool ConfigurableAlgTool)
   set(confAuditor ConfigurableAuditor)
   set(confService ConfigurableService)
-  SET_RUNTIME_PATH(path ${ld_library_path})
+
   add_custom_command(
     OUTPUT ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py ${outdir}/__init__.py
-		COMMAND ${env_cmd}
-                  -p ${ld_library_path}=${path}
+    COMMAND ${env_cmd}
                   -p ${ld_library_path}=.
                   -p ${ld_library_path}=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-		        ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
-				--configurable-module=${confModuleName}
-				--configurable-default-name=${confDefaultName}
-				--configurable-algorithm=${confAlgorithm}
-				--configurable-algtool=${confAlgTool}
-				--configurable-auditor=${confAuditor}
-				--configurable-service=${confService}
-				-i lib${library}.so
-		DEPENDS ${library} )
-  add_custom_target( ${library}Conf ALL DEPENDS  ${outdir}/${library}_confDb.py )
+              ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
+                --configurable-module=${confModuleName}
+                --configurable-default-name=${confDefaultName}
+                --configurable-algorithm=${confAlgorithm}
+                --configurable-algtool=${confAlgTool}
+                --configurable-auditor=${confAuditor}
+                --configurable-service=${confService}
+                -i ${library}
+    DEPENDS ${library})
+  add_custom_target(${library}Conf ALL DEPENDS ${outdir}/${library}_confDb.py)
   # Add dependencies on GaudiSvc and the genconf executable if they have to be built in the current project
   add_dependencies(${library}Conf genconf GaudiCoreSvc)
   # Notify the project level target
@@ -429,8 +446,7 @@ define_property(DIRECTORY
 # CONFIGURABLE_USER_MODULES. If that property is set to None, there will be no
 # search for ConfigurableUser's.
 function(GAUDI_GENERATE_CONFUSERDB)
-  # deduce the name of the package
-  get_filename_component(package ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+  gaudi_get_package_name(package)
   get_directory_property(modules CONFIGURABLE_USER_MODULES)
   if( NOT (modules STREQUAL "None") ) # ConfUser enabled
     set(outdir ${CMAKE_CURRENT_BINARY_DIR}/genConf/${package})
@@ -622,11 +638,10 @@ function(gaudi_add_module library)
   set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
 
   add_library(${library} MODULE ${lib_srcs})
+  target_link_libraries(${library} ${ROOT_Reflex_LIBRARY} ${ARG_LINK_LIBRARIES})
 
   GAUDI_GENERATE_ROOTMAP(${library})
-  GAUDI_GENERATE_CONFIGURABLES(${library})
-
-  target_link_libraries(${library} ${ROOT_Reflex_LIBRARY} ${ARG_LINK_LIBRARIES})
+  gaudi_generate_configurables(${library})
 
   set_property(GLOBAL APPEND PROPERTY COMPONENT_LIBRARIES ${library})
 
@@ -858,7 +873,7 @@ endfunction()
 #---GAUDI_INSTALL_PYTHON_MODULES( )
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_INSTALL_PYTHON_MODULES)
-  get_filename_component(package ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+  gaudi_get_package_name(package)
   install(DIRECTORY python/
           DESTINATION python
           FILES_MATCHING PATTERN "*.py")
@@ -871,7 +886,7 @@ endfunction()
 #---GAUDI_INSTALL_PYTHON_INIT( )
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_INSTALL_PYTHON_INIT)
-  get_filename_component(package ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+  gaudi_get_package_name(package)
   install(CODE "if (NOT EXISTS \"${CMAKE_INSTALL_PREFIX}/python/${package}/__init__.py\")
                   file(INSTALL DESTINATION \"${CMAKE_INSTALL_PREFIX}/python/${package}\"
                                TYPE FILE
@@ -903,7 +918,7 @@ endfunction()
 #---GAUDI_INSTALL_JOBOPTIONS( )
 #---------------------------------------------------------------------------------------------------
 function(GAUDI_INSTALL_JOBOPTIONS)
-  get_filename_component(package ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+  gaudi_get_package_name(package)
   install(FILES ${ARGN} DESTINATION jobOptions/${package})
 endfunction()
 
