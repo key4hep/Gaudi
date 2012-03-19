@@ -14,12 +14,12 @@ gaudi_add_library(GaudiPythonLib Lib/*.cpp
                      INCLUDE_DIRS CLHEP PythonLibs)
 gaudi_add_module(GaudiPython Services/*.cpp LINK_LIBRARIES GaudiPythonLib GaudiUtilsLib)
 
-REFLEX_BUILD_DICTIONARY(GaudiPython dict/kernel.h  dict/selection_kernel.xml LIBRARIES GaudiPythonLib GaudiUtilsLib)
+gaudi_add_dictionary(GaudiPython dict/kernel.h  dict/selection_kernel.xml LINK_LIBRARIES GaudiPythonLib GaudiUtilsLib)
 
 if(BUILD_TESTS)
   gaudi_add_library(GPyTest Test/*.cpp
                        LINK_LIBRARIES GaudiKernel ${PYTHON_LIBRARIES} ${CLHEP_LIBRARIES})
-  REFLEX_BUILD_DICTIONARY(GPyTest src/Test/test.h src/Test/test_selection.xml LIBRARIES GaudiKernel ${PYTHON_LIBRARIES} ${CLHEP_LIBRARIES})
+  gaudi_add_dictionary(GPyTest src/Test/test.h src/Test/test_selection.xml LINK_LIBRARIES GaudiKernel ${PYTHON_LIBRARIES} ${CLHEP_LIBRARIES})
   include_directories(src/Test)
 endif()
 

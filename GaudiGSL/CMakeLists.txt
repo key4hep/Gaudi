@@ -18,7 +18,7 @@ gaudi_add_library(GaudiGSLLib Lib/*.cpp
 gaudi_add_module(GaudiGSL Components/*.cpp LINK_LIBRARIES GaudiGSLLib)
 
 #---Dictionaries------------------------------------------------------------
-REFLEX_GENERATE_DICTIONARY( GaudiGSLMath dict/GaudiGSLMath.h dict/GaudiGSLMath.xml LIBRARIES GaudiGSLLib )
+gaudi_add_dictionary(GaudiGSLMath dict/GaudiGSLMath.h dict/GaudiGSLMath.xml LINK_LIBRARIES GaudiGSLLib)
 
 #---Executables-------------------------------------------------------------
 GAUDI_UNIT_TEST(IntegralInTest Tests/IntegralInTest.cpp LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib)

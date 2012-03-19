@@ -31,7 +31,7 @@ GAUDI_UNIT_TEST(Parsers_test ../tests/src/parsers.cpp
 GAUDI_UNIT_TEST(test_headers_build ../tests/src/test_headers_build.cpp LINK_LIBRARIES GaudiKernel)
 
 #---Dictionaries------------------------------------------------------------
-REFLEX_BUILD_DICTIONARY(GaudiKernel dict/dictionary.h  dict/dictionary.xml LIBRARIES GaudiKernel)
+gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIBRARIES GaudiKernel)
 
 #---Installation------------------------------------------------------------
 # Disable generation of ConfUserDB (must be done before GAUDI_INSTALL_PYTHON_MODULES)

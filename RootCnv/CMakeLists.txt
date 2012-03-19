@@ -21,7 +21,7 @@ gaudi_add_module(RootCnv
 #             APPEND PROPERTY COMPILE_DEFINITIONS __POOL_COMPATIBILITY)
 
 #---Dictionaries------------------------------------------------------------
-REFLEX_BUILD_DICTIONARY(RootCnv dict/RootCnv_dict.h  dict/RootCnv_dict.xml LIBRARIES RootCnvLib)
+gaudi_add_dictionary(RootCnv dict/RootCnv_dict.h  dict/RootCnv_dict.xml LINK_LIBRARIES RootCnvLib)
 
 add_executable(gaudi_merge merge/merge.cpp)
 target_link_libraries(gaudi_merge RootCnvLib)

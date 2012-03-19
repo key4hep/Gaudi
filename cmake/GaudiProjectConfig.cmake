@@ -422,7 +422,7 @@ function(GAUDI_GENERATE_CONFUSERDB)
 endfunction()
 
 #-------------------------------------------------------------------------------
-# gaudi_get_required_include_dirs(<libraries> <output>)
+# gaudi_get_required_include_dirs(<output> <libraries>)
 #
 # Get the include directories required by the linker libraries specified
 # and prepend them to the output variable.
@@ -444,7 +444,7 @@ function(gaudi_get_required_include_dirs output)
 endfunction()
 
 #-------------------------------------------------------------------------------
-# gaudi_get_required_library_dirs(<libraries> <output>)
+# gaudi_get_required_library_dirs(<output> <libraries>)
 #
 # Get the library directories required by the linker libraries specified
 # and prepend them to the output variable.
@@ -598,6 +598,39 @@ macro(gaudi_component_library)
   message(WARNING "Deprecated function 'gaudi_component_library', use 'gaudi_add_module' instead")
   gaudi_add_module(${ARGN})
 endmacro()
+
+#-------------------------------------------------------------------------------
+# gaudi_add_dictionary(dictionary header selection LINK_LIBRARIES ... OPTIONS ...)
+#
+# Find all the CMakeLists.txt files in the sub-directories and add their
+# directories to the variable.
+#-------------------------------------------------------------------------------
+function(gaudi_add_dictionary dictionary header selection)
+  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LINK_LIBRARIES;INCLUDE_DIRS;OPTIONS" ${ARGN})
+
+  # find the sources
+  gaudi_expand_sources(lib_srcs ${ARG_UNPARSED_ARGUMENTS})
+
+  # get the inherited include directories
+  gaudi_get_required_include_dirs(ARG_INCLUDE_DIRS ${ARG_LINK_LIBRARIES})
+
+  # add the package includes to the current list
+  include_package_directories(${ARG_INCLUDE_DIRS})
+
+  # get the library dirs required to get the libraries we use
+  gaudi_get_required_library_dirs(lib_path ${ARG_LINK_LIBRARIES})
+  set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
+
+  reflex_dictionary(${dictionary} ${header} ${selection} LINK_LIBRARIES ${ARG_LINK_LIBRARIES} OPTIONS ${ARG_OPTIONS})
+
+  # Notify the project level target
+  get_property(rootmapname TARGET ${dictionary}Gen PROPERTY ROOTMAPFILE)
+  set_property(GLOBAL APPEND PROPERTY MergedDictRootmap_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/${rootmapname})
+  set_property(GLOBAL APPEND PROPERTY MergedDictRootmap_DEPENDS ${dictionary}Gen)
+
+  #----Installation details-------------------------------------------------------
+  install(TARGETS ${dictionary}Dict LIBRARY DESTINATION ${lib})
+endfunction()
 
 #---------------------------------------------------------------------------------------------------
 #---GAUDI_PYTHON_MODULE( <name> source1 source2 ... LINK_LIBRARIES library1 library2 ...)

@@ -62,7 +62,7 @@ GAUDI_EXECUTABLE(Allocator Allocator/*.cpp LINK_LIBRARIES GaudiExamplesLib Gaudi
 
 
 #---Dictionaries------------------------------------------------------------
-REFLEX_BUILD_DICTIONARY(GaudiExamples src/POOLIO/dict.h  src/POOLIO/dict.xml  LIBRARIES GaudiExamplesLib)
+gaudi_add_dictionary(GaudiExamples src/POOLIO/dict.h  src/POOLIO/dict.xml LINK_LIBRARIES GaudiExamplesLib)
 
 
 #---Tests-------------------------------------------------------------------

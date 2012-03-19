@@ -14,7 +14,7 @@ gaudi_add_module(GaudiMP component/*.cpp
                         LINK_LIBRARIES GaudiMPLib ${PYTHON_LIBRARIES} ${ROOT_LIBRARIES})
 
 #---Dictionaries------------------------------------------------------------
-REFLEX_BUILD_DICTIONARY(GaudiMPLib dict/gaudimp_dict.h dict/selection.xml LIBRARIES GaudiMPLib)
+gaudi_add_dictionary(GaudiMPLib dict/gaudimp_dict.h dict/selection.xml LINK_LIBRARIES GaudiMPLib)
 
 #---Installation------------------------------------------------------------
 GAUDI_INSTALL_HEADERS(GaudiMP)
