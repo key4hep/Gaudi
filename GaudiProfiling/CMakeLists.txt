@@ -13,11 +13,11 @@ find_package(tcmalloc)
 #---Libraries---------------------------------------------------------------
 include_directories(src/component)
 gaudi_add_module(GaudiProfiling component/*.cpp
-                        LINK_LIBRARIES GaudiKernel z
-                        INCLUDE_DIRS unwind)
+                 LINK_LIBRARIES GaudiKernel z
+                 INCLUDE_DIRS unwind)
 gaudi_add_module(GaudiGoogleProfiling component/google/*.cpp
-                        LINK_LIBRARIES GaudiKernel GaudiAlgLib z
-                        INCLUDE_DIRS tcmalloc)
+                 LINK_LIBRARIES GaudiKernel GaudiAlgLib z
+                 INCLUDE_DIRS tcmalloc)
 # Special handling of unresorlved symbols in GaudiGoogleProfiling.
 # The profilers need to have libtcmalloc.so or libprofiler.so pre-loaded to
 # work, so it's better if the symbols stay undefined in case somebody tries to
@@ -40,10 +40,9 @@ gaudi_add_python_module(PyCPUFamily python/CPUFamily.cpp
 
 #---Executables-------------------------------------------------------------
 gaudi_add_executable(GaudiGenProfilingHtml app/pfm_gen_analysis.cpp
-                 LINK_LIBRARIES z GaudiKernel)
+                     LINK_LIBRARIES z GaudiKernel)
 
 #---Installation------------------------------------------------------------
-GAUDI_INSTALL_HEADERS(GaudiProfiling)
 GAUDI_INSTALL_PYTHON_MODULES()
 GAUDI_INSTALL_SCRIPTS()
 endif()

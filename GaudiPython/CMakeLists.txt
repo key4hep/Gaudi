@@ -11,7 +11,8 @@ find_package(pytools)
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiPythonLib Lib/*.cpp
                   LINK_LIBRARIES GaudiAlgLib PythonLibs CLHEP
-                  INCLUDE_DIRS CLHEP PythonLibs)
+                  INCLUDE_DIRS CLHEP PythonLibs
+                  PUBLIC_HEADERS GaudiPython)
 gaudi_add_module(GaudiPython Services/*.cpp
                  LINK_LIBRARIES GaudiPythonLib GaudiUtilsLib)
 
@@ -21,13 +22,13 @@ gaudi_add_dictionary(GaudiPython dict/kernel.h dict/selection_kernel.xml
 
 if(BUILD_TESTS)
   gaudi_add_library(GPyTest Test/*.cpp
-                    LINK_LIBRARIES GaudiKernel PythonLibs CLHEP)
+                    LINK_LIBRARIES GaudiKernel PythonLibs CLHEP
+                    NO_PUBLIC_HEADERS)
   gaudi_add_dictionary(GPyTest src/Test/test.h src/Test/test_selection.xml
                        LINK_LIBRARIES GaudiKernel PythonLibs CLHEP)
   include_directories(src/Test)
 endif()
 
 #---Installation------------------------------------------------------------
-GAUDI_INSTALL_HEADERS(GaudiPython)
 GAUDI_INSTALL_PYTHON_MODULES()
 

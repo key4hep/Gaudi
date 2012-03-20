@@ -12,11 +12,9 @@ find_package(uuid)
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiUtilsLib Lib/*.cpp
-                     LINK_LIBRARIES GaudiKernel ROOT
-                     INCLUDE_DIRS ROOT AIDA)
+                  LINK_LIBRARIES GaudiKernel ROOT
+                  INCLUDE_DIRS ROOT AIDA
+                  PUBLIC_HEADERS GaudiUtils)
 gaudi_add_module(GaudiUtils component/*.cpp
-                        LINK_LIBRARIES GaudiUtilsLib XercesC uuid
-                        INCLUDE_DIRS XercesC uuid)
-
-#---Installation------------------------------------------------------------
-GAUDI_INSTALL_HEADERS(GaudiUtils)
+                 LINK_LIBRARIES GaudiUtilsLib XercesC uuid
+                 INCLUDE_DIRS XercesC uuid)

@@ -7,8 +7,9 @@ find_package(ROOT)
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiKernel Lib/*.cpp
-                     LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost Root
-                     INCLUDE_DIRS Boost ROOT)
+                  LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost Root
+                  INCLUDE_DIRS Boost ROOT
+                  PUBLIC_HEADERS GaudiKernel)
 
 #---Tests-------------------------------------------------------------------
 gaudi_add_unit_test(DirSearchPath_test ../tests/src/DirSearchPath_test.cpp
@@ -34,7 +35,6 @@ gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIB
 # Disable generation of ConfUserDB (must be done before GAUDI_INSTALL_PYTHON_MODULES)
 set_directory_properties(PROPERTIES CONFIGURABLE_USER_MODULES None)
 
-GAUDI_INSTALL_HEADERS(GaudiKernel)
 GAUDI_INSTALL_PYTHON_MODULES()
 GAUDI_INSTALL_SCRIPTS()
 

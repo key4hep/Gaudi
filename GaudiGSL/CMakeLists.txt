@@ -13,9 +13,11 @@ endif()
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiGSLLib Lib/*.cpp
-                     LINK_LIBRARIES GaudiAlgLib GSL CLHEP
-                     INCLUDE_DIRS GSL CLHEP)
-gaudi_add_module(GaudiGSL Components/*.cpp LINK_LIBRARIES GaudiGSLLib)
+                  LINK_LIBRARIES GaudiAlgLib GSL CLHEP
+                  INCLUDE_DIRS GSL CLHEP
+                  PUBLIC_HEADERS GaudiGSL GaudiMath)
+gaudi_add_module(GaudiGSL Components/*.cpp
+                 LINK_LIBRARIES GaudiGSLLib)
 
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiGSLMath dict/GaudiGSLMath.h dict/GaudiGSLMath.xml LINK_LIBRARIES GaudiGSLLib)
@@ -31,7 +33,3 @@ gaudi_add_unit_test(SimpleFuncTest Tests/SimpleFuncTest.cpp LINK_LIBRARIES Gaudi
 gaudi_add_unit_test(3DoubleFuncTest Tests/3DoubleFuncTest.cpp LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib)
 gaudi_add_unit_test(InterpTest Tests/Interp.cpp LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib)
 gaudi_add_unit_test(Integral1Test Tests/Integral1Test.cpp LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib)
-
-#---Installation------------------------------------------------------------
-GAUDI_INSTALL_HEADERS(GaudiGSL GaudiMath)
-

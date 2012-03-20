@@ -16,7 +16,7 @@ set(CMAKE_MODULE_PATH ${GaudiProject_DIR} ${CMAKE_MODULE_PATH})
 set(CMAKE_VERBOSE_MAKEFILES OFF)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Ensure that the include directories added are always taken first.
-set(CMAKE_include_directories_BEFORE ON)
+set(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON)
 #set(CMAKE_SKIP_BUILD_RPATH TRUE)
 
 find_program(ccache_cmd ccache)
@@ -577,14 +577,22 @@ endmacro()
 # gaudi_add_library(<name>
 #                   source1 source2 ...
 #                   LINK_LIBRARIES library1 library2 ...
-#                   INCLUDE_DIRS dir1 package2 ...)
+#                   INCLUDE_DIRS dir1 package2 ...
+#                   [NO_PUBLIC_HEADERS | PUBLIC_HEADERS dir1 dir2 ...])
 #
 # Extension of standard CMake 'add_library' command.
 # Create a library from the specified sources (glob patterns are allowed), linking
 # it with the libraries specified and adding the include directories to the search path.
 #---------------------------------------------------------------------------------------------------
 function(gaudi_add_library library)
-  gaudi_common_add_build(${ARGN})
+  # this function uses an extra option: 'PUBLIC_HEADERS'
+  CMAKE_PARSE_ARGUMENTS(ARG "NO_PUBLIC_HEADERS" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS;PUBLIC_HEADERS" ${ARGN})
+  gaudi_common_add_build(${ARG_UNPARSED_ARGUMENTS} LIBRARIES ${ARG_LIBRARIES} LINK_LIBRARIES ${ARG_LINK_LIBRARIES} INCLUDE_DIRS ${ARG_INCLUDE_DIRS})
+
+  if(NOT ARG_NO_PUBLIC_HEADERS AND NOT ARG_PUBLIC_HEADERS)
+    gaudi_get_package_name(package)
+    message(WARNING "Library ${library} (in ${package}) does not declare PUBLIC_HEADERS")
+  endif()
 
   if(WIN32)
 	add_library( ${library}-arc STATIC EXCLUDE_FROM_ALL ${srcs})
@@ -613,6 +621,7 @@ function(gaudi_add_library library)
   endif()
   #----Installation details-------------------------------------------------------
   install(TARGETS ${library} EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION  ${lib})
+  gaudi_install_headers(${ARG_PUBLIC_HEADERS})
   install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake)
 endfunction()
 
@@ -792,23 +801,21 @@ function(GAUDI_QMTEST_TEST name)
   endif()
 endfunction()
 
+
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_INSTALL_HEADERS([dir1 dir2 ...])
+# gaudi_install_headers(dir1 dir2 ...)
+#
+# Install the declared directories in the 'include' directory.
+# To be used in case the header files do not have a library.
 #---------------------------------------------------------------------------------------------------
-function(GAUDI_INSTALL_HEADERS)
-  if( ARGN )
-    set( dirs ${ARGN} )
-  else()
-    get_filename_component(dirs ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-  endif()
-  foreach( inc ${dirs})
-    install(DIRECTORY ${inc}
+function(gaudi_install_headers)
+  foreach(hdr_dir ${ARGN})
+    install(DIRECTORY ${hdr_dir}
             DESTINATION include
             FILES_MATCHING
               PATTERN "*.h"
-              PATTERN "*.icpp" )
+              PATTERN "*.icpp")
   endforeach()
-  set_directory_properties(PROPERTIES INSTALL_HEADERS ON)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
