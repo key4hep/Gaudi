@@ -10,6 +10,7 @@ find_package(Boost COMPONENTS python)
 find_package(CLHEP)
 find_package(GSL)
 find_package(PythonLibs)
+find_package(RELAX)
 
 #---Libraries---------------------------------------------------------------
 set( GaudiExamples_srcs AbortEvent/*.cpp
@@ -67,92 +68,15 @@ gaudi_add_dictionary(GaudiExamples src/POOLIO/dict.h  src/POOLIO/dict.xml LINK_L
 
 
 #---Tests-------------------------------------------------------------------
-GAUDI_FRAMEWORK_TEST(Properties options/Properties.opts )
-GAUDI_FRAMEWORK_TEST(AlgTools options/AlgTools.opts )
+gaudi_add_test(Properties FRAMEWORK options/Properties.opts ENVIRONMENT JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options)
+gaudi_add_test(AlgTools FRAMEWORK options/AlgTools.opts ENVIRONMENT JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options)
 
-set(QMTests
-abort_event
-aida2root
-aida2rootex
-algerraud
-algorithm_destructor
-algsequencer
-algsequencer_pyopts
-algtools
-algtools2
-algtools_pyopts
-array_properties
-auditors_user_timing
-boost_array_properties
-bug_30209_namespace_in_sequencer
-bug_34121_tool_properties_in_python
-bug_35913
-bug_38882
-bug_41136
-colormsg
-configurableuser
-counterex
-counterex_py
-countersvcalg
-dataondemand
-errorlog
-event_timeout
-ext_props_opts
-ext_props_pyopts
-extended_properties2
-fastcontainers
-gaudicommontests
-gaudipython_mix
-gsltools
-histo_ascii_dump
-histoex
-histoex1
-histoex2
-histograms
-history
-histoutilsex
-incidentsvc
-init_loop_check_off
-init_loop_check_on
-maps
-ntuples
-particlepropsvc
-properties
-qotdalg
-randomnumber
-selections
-signal_handler
-statsvcalg
-statuscodesvc
-stringkey
-templatedalg
-templatedalg_pyopts
-timing
-tupleex
-tupleex1
-tupleex2
-tupleex3
-tupleex4
-tupleex_py )
-
-#----Not supported tests on this platform-----------------------------------------------------------
-# datalistener (MonALISA...)
-# gaudimt
-
-foreach( test ${QMTests})
-  GAUDI_QMTEST_TEST(gaudiexamples.${test} )
-endforeach()
-
-#---Groups of QMtests-------------------------------------------------------------------------------
-GAUDI_QMTEST_TEST(gaudiexamples.poolio TESTS gaudiexamples.pooliowrite gaudiexamples.poolioread
-                                             gaudiexamples.pooliocollwrite gaudiexamples.pooliocollread
-                                             gaudiexamples.poolioextcollwrite gaudiexamples.poolioextcollread )
-GAUDI_QMTEST_TEST(gaudiexamples.evtcol TESTS gaudiexamples.evtcolwrite gaudiexamples.evtcolread
-                                             gaudiexamples.evtcolsex_prepare gaudiexamples.evtcolsex_write  gaudiexamples.evtcolsex_read)
-GAUDI_QMTEST_TEST(gaudiexamples.thist  TESTS gaudiexamples.thistwrite gaudiexamples.thistread)
-GAUDI_QMTEST_TEST(gaudiexamples.return_codes)
-GAUDI_QMTEST_TEST(gaudiexamples.bug)
-
+gaudi_add_test(QMTest QMTEST
+               ENVIRONMENT
+                 STDOPTS=${CMAKE_CURRENT_SOURCE_DIR}/options
+                 JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options
+                 GAUDIEXAMPLESROOT=${CMAKE_CURRENT_SOURCE_DIR}
+                 PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
 
 SET(GAUDIEXAMPLES_ENVIRONMENT STDOPTS=${CMAKE_SOURCE_DIR}/GaudiExamples/options
                               JOBOPTSEARCHPATH+=${CMAKE_SOURCE_DIR}/GaudiExamples/options

@@ -28,6 +28,8 @@ gaudi_add_unit_test(Parsers_test ../tests/src/parsers.cpp
 gaudi_add_unit_test(test_headers_build ../tests/src/test_headers_build.cpp
                     LINK_LIBRARIES GaudiKernel)
 
+set_property(TEST GaudiKernel.PathResolver_test PROPERTY WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIBRARIES GaudiKernel)
 
@@ -39,9 +41,7 @@ GAUDI_INSTALL_PYTHON_MODULES()
 GAUDI_INSTALL_SCRIPTS()
 
 #---Test-----------------------------------------------------------------------
-foreach(test dirsearchpath pathresolver serializestl gaudi_time)
-  GAUDI_QMTEST_TEST(gaudikernel.${test})
-endforeach()
+gaudi_add_test(QMTest QMTEST ENVIRONMENT GAUDIKERNELROOT=${CMAKE_CURRENT_SOURCE_DIR})
 
 #---Special options
 if(HIDE_WARNINGS)

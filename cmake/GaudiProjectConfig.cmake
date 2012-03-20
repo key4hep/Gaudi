@@ -751,56 +751,88 @@ function(gaudi_add_unit_test executable)
                          LINK_LIBRARIES ${ARG_LINK_LIBRARIES} CppUnit
                          INCLUDE_DIRS ${ARG_INCLUDE_DIRS} CppUnit)
 
+    gaudi_get_package_name(package)
+
     get_target_property(exec_suffix ${executable} SUFFIX)
-    add_test(${executable} ${env_cmd} -p ${ld_library_path}=. ${CMAKE_BINARY_DIR}/${executable}${exec_suffix})
+    if(NOT exec_suffix)
+      set(exec_suffix)
+    endif()
+    add_test(${package}.${executable}
+             ${env_cmd}
+                 -p ${ld_library_path}=.
+                 -p ${ld_library_path}=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+                 -p PATH=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+               ${executable}${exec_suffix})
     #----Installation details-------------------------------------------------------
     install(TARGETS ${executable} RUNTIME DESTINATION ${bin})
   endif()
 endfunction()
 
-#---------------------------------------------------------------------------------------------------
-#---GAUDI_FRAMEWORK_TEST( <name> conf1 conf2 ... ENVIRONMENT env=val ...)
-#---------------------------------------------------------------------------------------------------
-function(GAUDI_FRAMEWORK_TEST name)
-  if(BUILD_TESTS)
-    CMAKE_PARSE_ARGUMENTS(ARG "" "" "ENVIRONMENT" ${ARGN})
-    foreach( optfile  ${ARG_UNPARSED_ARGUMENTS} )
-      if( IS_ABSOLUTE ${optfile})
-        set( optfiles ${optfiles} ${optfile})
+#-------------------------------------------------------------------------------
+# gaudi_add_test(<name>
+#                [FRAMEWORK options1 options2 ...|QMTEST|COMMAND cmd args ...]
+#                [ENVIRONMENT variable=value ...])
+#
+#-------------------------------------------------------------------------------
+function(gaudi_add_test name)
+  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST" "" "ENVIRONMENT;FRAMEWORK;COMMAND" ${ARGN})
+
+  gaudi_get_package_name(package)
+
+  if(ARG_QMTEST)
+    set(ARG_ENVIRONMENT ${ARG_ENVIRONMENT}
+                        QMTESTLOCALDIR=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
+                        QMTESTRESULTS=${CMAKE_CURRENT_BINARY_DIR}/tests/qmtest/results.qmr
+                        QMTESTRESULTSDIR=${CMAKE_CURRENT_BINARY_DIR}/tests/qmtest)
+    set(cmdline run_qmtest.py ${package})
+
+  elseif(ARG_FRAMEWORK)
+    foreach(optfile  ${ARG_FRAMEWORK})
+      if(IS_ABSOLUTE ${optfile})
+        set(optfiles ${optfiles} ${optfile})
       else()
-        set( optfiles ${optfiles} ${CMAKE_CURRENT_SOURCE_DIR}/${optfile})
+        set(optfiles ${optfiles} ${CMAKE_CURRENT_SOURCE_DIR}/${optfile})
       endif()
     endforeach()
-    add_test(${name} ${CMAKE_INSTALL_PREFIX}/scripts/testwrap${ssuffix} ${CMAKE_INSTALL_PREFIX}/setup${ssuffix} "." ${gaudirun_cmd} ${optfiles})
-    set_property(TEST ${name} PROPERTY ENVIRONMENT
-      LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:$ENV{LD_LIBRARY_PATH}
-      ${ARG_ENVIRONMENT})
-  endif()
-endfunction()
+    set(cmdline ${gaudirun_cmd} ${optfiles})
 
-#---------------------------------------------------------------------------------------------------
-#---GAUDI_QMTEST_TEST( <name> TESTS qmtest1 qmtest2 ... ENVIRONMENT env=val ...)
-#---------------------------------------------------------------------------------------------------
-function(GAUDI_QMTEST_TEST name)
-  if(BUILD_TESTS)
-    CMAKE_PARSE_ARGUMENTS(ARG "" "" "TESTS;ENVIRONMENT" ${ARGN})
-    foreach(arg ${ARG_TESTS})
-	  set(tests ${tests} ${arg})
-    endforeach()
-    if( NOT tests )
-      set(tests ${name})
-    endif()
-    find_package(QMTest QUIET)
-    add_test(${name} ${CMAKE_INSTALL_PREFIX}/scripts/testwrap${ssuffix} ${CMAKE_INSTALL_PREFIX}/setup${ssuffix}
-                     ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
-                     qmtest run ${tests})
-    set_property(TEST ${name} PROPERTY ENVIRONMENT
-      LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:$ENV{LD_LIBRARY_PATH}
-      QMTEST_CLASS_PATH=${CMAKE_SOURCE_DIR}/GaudiPolicy/qmtest_classes
-      ${ARG_ENVIRONMENT})
-  endif()
-endfunction()
+  elseif(ARG_COMMAND)
+    set(cmdline ${ARG_COMMAND})
 
+  else()
+    message(FATAL_ERROR "Type of test '${name}' not declared")
+  endif()
+
+  foreach(var ${ARG_ENVIRONMENT})
+    set(extra_env ${extra_env} -s ${var})
+  endforeach()
+
+  # FIXME: the runtime environment is hacked
+  find_package(RELAX QUIET)
+  # Boost_LIBRARY_DIR contains 2 entries: optimized and debug
+  list(GET Boost_LIBRARY_DIRS 0 bld)
+  list(GET RELAX_LIBRARY_DIRS 0 rld)
+
+  add_test(${package}.${name}
+           ${env_cmd}
+               ${extra_env}
+               -p ${ld_library_path}=.
+               -p ${ld_library_path}=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+               -p PATH=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+
+               -p QMTEST_CLASS_PATH=${CMAKE_SOURCE_DIR}/GaudiPolicy/qmtest_classes
+               -s GAUDI_QMTEST_HTML_OUTPUT=${CMAKE_BINARY_DIR}/test_results
+
+               -p PATH=${CMAKE_INSTALL_PREFIX}/scripts
+               -p PYTHONPATH=${CMAKE_INSTALL_PREFIX}/python
+               -p PYTHONPATH=${CMAKE_INSTALL_PREFIX}/python/lib-dynload
+
+               -p ${ld_library_path}=${ROOTSYS}/lib
+               -p ${ld_library_path}=${rld}
+               -p ${ld_library_path}=${bld}
+               -p PYTHONPATH=${ROOTSYS}/lib
+               ${cmdline})
+endfunction()
 
 #---------------------------------------------------------------------------------------------------
 # gaudi_install_headers(dir1 dir2 ...)
