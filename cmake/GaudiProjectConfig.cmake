@@ -184,12 +184,6 @@ macro(gaudi_project project version)
   GAUDI_MERGE_TARGET(Rootmap lib ${CMAKE_PROJECT_NAME}.rootmap)
   GAUDI_MERGE_TARGET(DictRootmap lib ${CMAKE_PROJECT_NAME}Dict.rootmap)
 
-
-  #GAUDI_USE_PACKAGE(QMtest)
-  #GAUDI_USE_PACKAGE(pytools)
-  #GAUDI_USE_PACKAGE(RELAX)
-  #SET( QMtest_environment ${QMtest_environment} QMTEST_CLASS_PATH=${CMAKE_SOURCE_DIR}/GaudiPolicy/qmtest_classes )
-
   gaudi_generate_project_config_version_file()
 
   gaudi_generate_project_config_file()
@@ -928,30 +922,6 @@ function(GAUDI_PACKAGE_VERSION_HEADER package version outdir)
                     DEPENDS ${output})
   #install(FILES ${output} DESTINATION include)
 endfunction()
-
-#---------------------------------------------------------------------------------------------------
-#---GAUDI_USE_PACKAGE( package )
-#---------------------------------------------------------------------------------------------------
-macro( GAUDI_USE_PACKAGE package )
-  if(EXISTS ${CMAKE_SOURCE_DIR}/${package}/CMakeLists.txt)
-    include_directories( ${CMAKE_SOURCE_DIR}/${package} )
-    file(READ ${CMAKE_SOURCE_DIR}/${package}/CMakeLists.txt file_contents)
-    string( REGEX MATCHALL "GAUDI_USE_PACKAGE[ ]*[(][ ]*([^ )])+" vars ${file_contents})
-    foreach( var ${vars})
-      string(REGEX REPLACE "GAUDI_USE_PACKAGE[ ]*[(][ ]*([^ )])" "\\1" p ${var})
-      GAUDI_USE_PACKAGE(${p})
-    endforeach()
-  else()
-    find_package(${package})
-    GET_PROPERTY(parent DIRECTORY PROPERTY PARENT_DIRECTORY)
-    if(parent)
-      set(${package}_environment  ${${package}_environment} PARENT_SCOPE)
-    else()
-      set(${package}_environment  ${${package}_environment} )
-    endif()
-    include_package_directories(${package})
-  endif()
-endmacro()
 
 #---------------------------------------------------------------------------------------------------
 #---GAUDI_BUILD_SETUP( )
