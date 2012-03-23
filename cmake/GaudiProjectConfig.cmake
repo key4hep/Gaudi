@@ -179,7 +179,6 @@ macro(gaudi_project project version)
   endforeach()
 
   GAUDI_PROJECT_VERSION_HEADER()
-  GAUDI_BUILD_PROJECT_SETUP()
   GAUDI_MERGE_TARGET(ConfDB python ${CMAKE_PROJECT_NAME}_merged_confDb.py)
   GAUDI_MERGE_TARGET(Rootmap lib ${CMAKE_PROJECT_NAME}.rootmap)
   GAUDI_MERGE_TARGET(DictRootmap lib ${CMAKE_PROJECT_NAME}Dict.rootmap)
@@ -953,95 +952,6 @@ function(GAUDI_PACKAGE_VERSION_HEADER package version outdir)
   add_custom_target(${package}VersionHeader ALL
                     DEPENDS ${output})
   #install(FILES ${output} DESTINATION include)
-endfunction()
-
-#---------------------------------------------------------------------------------------------------
-#---GAUDI_BUILD_SETUP( )
-#---------------------------------------------------------------------------------------------------
-function( GAUDI_BUILD_SETUP )
-  GAUDI_BUILD_PROJECT_SETUP()
-  get_property(found_packages GLOBAL PROPERTY PACKAGES_FOUND)
-  message("Found packages = ${found_packages}")
-  foreach( package ${found_packages} )
-    GAUDI_BUILD_PACKAGE_SETUP( "" ${package} "${${package}_environment}")
-  endforeach()
-endfunction()
-
-#---------------------------------------------------------------------------------------------------
-#---GAUDI_BUILD_PROJECT_SETUP( )
-#---------------------------------------------------------------------------------------------------
-function( GAUDI_BUILD_PROJECT_SETUP )
-  set( setup  ${CMAKE_BINARY_DIR}/setup${ssuffix} )
-  file(WRITE  ${setup} "${scomment} ${CMAKE_PROJECT_NAME} Setup file\n")
-  if(WIN32)
-	file(APPEND ${setup} "@echo off\n")
-    file(APPEND ${setup} "set PATH=${CMAKE_INSTALL_PREFIX}/${bin};${CMAKE_INSTALL_PREFIX}/${lib};${CMAKE_INSTALL_PREFIX}/scripts;%PATH%\n")
-    file(APPEND ${setup} "set PYTHONPATH=${CMAKE_INSTALL_PREFIX}/python;%PYTHONPATH%\n")
-  else()
-    file(APPEND ${setup} "setenv PATH  ${CMAKE_INSTALL_PREFIX}/${bin}:${CMAKE_INSTALL_PREFIX}/scripts:\${PATH}\n")
-    file(APPEND ${setup} "setenv LD_LIBRARY_PATH  ${CMAKE_INSTALL_PREFIX}/${lib}:\${LD_LIBRARY_PATH}\n")
-    file(APPEND ${setup} "setenv PYTHONPATH  ${CMAKE_INSTALL_PREFIX}/python:\${PYTHONPATH}\n")
-  endif()
-
-  #----Get the setup fro each external package
-  get_property(found_packages GLOBAL PROPERTY PACKAGES_FOUND)
-  get_property(found_projects GLOBAL PROPERTY PROJECTS_FOUND)
-  foreach( package ${found_projects} ${found_packages} )
-    GAUDI_BUILD_PACKAGE_SETUP( ${setup} ${package} "${${package}_environment}")
-  endforeach()
-
-  #---Get the setup for each package (directory)
-  file(APPEND  ${setup} "\n${scomment} Standard variables for each package\n")
-  file(GLOB_RECURSE cmakelist_files  ${CMAKE_SOURCE_DIR} CMakeLists.txt)
-  foreach( file ${cmakelist_files} )
-    GET_FILENAME_COMPONENT(path ${file} PATH)
-    if (NOT path STREQUAL ${CMAKE_SOURCE_DIR})
-      GET_FILENAME_COMPONENT(directory ${path} NAME)
-      string(TOUPPER ${directory} DIRECTORY)
-      set( ${directory}_environment ${${directory}_environment} ${DIRECTORY}ROOT=${path})
-      GAUDI_BUILD_PACKAGE_SETUP( ${setup} ${directory} "${${directory}_environment}")
-    endif()
-  endforeach()
-  #---Installation---------------------------------------------------------------------------------
-  install(FILES ${setup}  DESTINATION .
-                          PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
-                                      GROUP_EXECUTE GROUP_READ
-                                      WORLD_EXECUTE WORLD_READ )
-endfunction()
-
-#---------------------------------------------------------------------------------------------------
-#---GAUDI_BUILD_PACKAGE_SETUP( setupfile package envlist )
-#---------------------------------------------------------------------------------------------------
-function( GAUDI_BUILD_PACKAGE_SETUP setup package envlist )
-  if ( NOT setup )
-    set( setup ${CMAKE_INSTALL_PREFIX}/${package}_setup.csh )
-    file(WRITE  ${setup} "${scomment} Package ${package} setup file\n")
-  else()
-    file(APPEND  ${setup} "\n${scomment} Package ${package} setup file\n")
-  endif()
-  foreach( env ${envlist} )
-    if(env MATCHES ".*[+]=.*")
-      string(REGEX REPLACE "([^=+]+)[+]=.*" "\\1" var ${env})
-      string(REGEX REPLACE ".*[+]=(.+)" "\\1"  val ${env})
-	  if(WIN32)
-        file(APPEND ${setup} "set ${var}=${val};%${var}%\n")
-	  else()
-        file(APPEND ${setup} "if \$?${var} then\n")
-        file(APPEND ${setup} "  setenv ${var} ${val}:\${${var}}\n")
-        file(APPEND ${setup} "else\n")
-        file(APPEND ${setup} "  setenv ${var} ${val}\n")
-        file(APPEND ${setup} "endif\n")
-	  endif()
-    elseif ( env MATCHES ".*=.*")
-      string(REGEX REPLACE "([^=+]+)=.*" "\\1" var ${env})
-      string(REGEX REPLACE ".*=(.+)" "\\1"  val ${env})
-	  if(WIN32)
-        file(APPEND ${setup} "set ${var}=${val}\n")
-	  else()
-        file(APPEND ${setup} "setenv ${var} ${val}\n")
-	  endif()
-   endif()
-  endforeach()
 endfunction()
 
 #-------------------------------------------------------------------------------
