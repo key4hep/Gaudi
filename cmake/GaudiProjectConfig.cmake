@@ -379,6 +379,9 @@ endfunction()
 #
 # Internal function. Add the targets needed to produce the configurables for a
 # module (component library).
+#
+# Note: see gaudi_install_python_modules for a description of how conflicts
+#       between the installations of __init__.py are solved.
 #---------------------------------------------------------------------------------------------------
 function(gaudi_generate_configurables library)
   gaudi_get_package_name(package)
@@ -418,9 +421,25 @@ function(gaudi_generate_configurables library)
   set_property(GLOBAL APPEND PROPERTY MergedConfDB_SOURCES ${outdir}/${library}_confDb.py)
   set_property(GLOBAL APPEND PROPERTY MergedConfDB_DEPENDS ${library}Conf)
   #----Installation details-------------------------------------------------------
-  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/genConf/
-          DESTINATION python
-          FILES_MATCHING PATTERN "*.py")
+  install(FILES ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py
+          DESTINATION python/${package})
+
+  # Check if we need to install our __init__.py (i.e. it is not already installed
+  # with the python modules).
+  # Note: no need to do anything if we already have configurables
+  get_property(has_configurables DIRECTORY PROPERTY has_configurables)
+  if(NOT has_configurables)
+    get_property(python_modules DIRECTORY PROPERTY has_python_modules)
+    list(FIND python_modules ${package} got_pkg_module)
+    if(got_pkg_module LESS 0)
+      # we need to install our __init__.py
+      install(FILES ${outdir}/__init__.py DESTINATION python/${package})
+    endif()
+  endif()
+
+  # Property used to synchronize the installation of Python modules between
+  # gaudi_generate_configurables and gaudi_install_python_modules.
+  set_property(DIRECTORY APPEND PROPERTY has_configurables ${library})
 endfunction()
 
 define_property(DIRECTORY
@@ -463,6 +482,8 @@ function(gaudi_generate_confuserdb)
                   -r ${CMAKE_CURRENT_SOURCE_DIR}/python
                   -o ${outdir}/${package}_user_confDb.py
                   ${package} ${modules})
+    install(FILES ${outdir}/${package}_user_confDb.py
+            DESTINATION python/${package})
     set_property(GLOBAL APPEND PROPERTY MergedConfDB_SOURCES ${outdir}/${package}_user_confDb.py)
     set_property(GLOBAL APPEND PROPERTY MergedConfDB_DEPENDS ${package}ConfUserDB)
   endif()
@@ -756,8 +777,6 @@ function(gaudi_add_unit_test executable)
                  -p ${ld_library_path}=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
                  -p PATH=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
                ${executable}${exec_suffix})
-    #----Installation details-------------------------------------------------------
-    install(TARGETS ${executable} RUNTIME DESTINATION ${bin})
   endif()
 endfunction()
 
@@ -850,6 +869,16 @@ endfunction()
 # The hierarchy of directories and  files in the python directory will be
 # installed.  If the first level of directories do not contain __init__.py, a
 # warning is issued and an empty one will be installed.
+#
+# Note: We need to avoid conflicts with the automatic generated __init__.py for
+#       configurables (gaudi_generate_configurables)
+#       There are 2 cases:
+#       * install_python called before genconf
+#         we fill the list of modules to communicate tell genconf not to install
+#         its dummy version
+#       * genconf called before install_python
+#         we install on top of the one installed by genconf
+# FIXME: it should be cleaner
 #-------------------------------------------------------------------------------
 function(gaudi_install_python_modules)
   install(DIRECTORY python/
@@ -861,11 +890,14 @@ function(gaudi_install_python_modules)
     if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${dir} AND NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${dir}/__init__.py)
       message(WARNING "The file ${dir}/__ini__.py is missing. I shall install an empty one.")
       if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/__init__.py)
-        file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/__init__.py "# Empty file generated automatically")
+        file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/__init__.py "# Empty file generated automatically\n")
       endif()
       install(FILES ${CMAKE_CURRENT_BINARY_DIR}/__init__.py
               DESTINATION ${CMAKE_INSTALL_PREFIX}/${dir})
     endif()
+    # Add the Python module name to the list of provided ones.
+    get_filename_component(modname ${dir} NAME)
+    set_property(DIRECTORY APPEND PROPERTY has_python_modules ${modname})
   endforeach()
   gaudi_generate_confuserdb() # if there are Python modules, there may be ConfigurableUser's
 endfunction()
