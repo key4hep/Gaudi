@@ -192,6 +192,13 @@ macro(gaudi_project project version)
 
   gaudi_generate_project_platform_config_file()
 
+  # FIXME: it is not possible to produce the file python.zip at installation time
+  # because of http://public.kitware.com/Bug/view.php?id=8438
+  # install(CODE "execute_process(COMMAND  ${zippythondir_cmd} ${CMAKE_INSTALL_PREFIX}/python)")
+  add_custom_target(python.zip
+                    COMMAND ${zippythondir_cmd} ${CMAKE_INSTALL_PREFIX}/python
+                    COMMENT "Zipping Python modules")
+
   #--- CPack configuration
   set(CPACK_PACKAGE_NAME ${project})
   foreach(t MAJOR MINOR PATCH)
@@ -900,13 +907,6 @@ function(gaudi_install_python_modules)
     set_property(DIRECTORY APPEND PROPERTY has_python_modules ${modname})
   endforeach()
   gaudi_generate_confuserdb() # if there are Python modules, there may be ConfigurableUser's
-endfunction()
-
-#---------------------------------------------------------------------------------------------------
-#---GAUDI_ZIP_PYTHON_MODULES( )
-#---------------------------------------------------------------------------------------------------
-function(GAUDI_ZIP_PYTHON_MODULES)
-  install(CODE "execute_process(COMMAND  ${zippythondir_cmd} --quiet ${CMAKE_INSTALL_PREFIX}/python)")
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
