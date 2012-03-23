@@ -43,6 +43,6 @@ gaudi_add_executable(GaudiGenProfilingHtml app/pfm_gen_analysis.cpp
                      LINK_LIBRARIES z GaudiKernel)
 
 #---Installation------------------------------------------------------------
-GAUDI_INSTALL_PYTHON_MODULES()
+gaudi_install_python_modules()
 GAUDI_INSTALL_SCRIPTS()
 endif()

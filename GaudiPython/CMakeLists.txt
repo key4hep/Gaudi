@@ -30,5 +30,5 @@ if(BUILD_TESTS)
 endif()
 
 #---Installation------------------------------------------------------------
-GAUDI_INSTALL_PYTHON_MODULES()
+gaudi_install_python_modules()
 

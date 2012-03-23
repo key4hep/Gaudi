@@ -421,7 +421,6 @@ function(gaudi_generate_configurables library)
   install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/genConf/
           DESTINATION python
           FILES_MATCHING PATTERN "*.py")
-  GAUDI_INSTALL_PYTHON_INIT()
 endfunction()
 
 define_property(DIRECTORY
@@ -844,30 +843,31 @@ function(gaudi_install_headers)
   endforeach()
 endfunction()
 
-#---------------------------------------------------------------------------------------------------
-#---GAUDI_INSTALL_PYTHON_MODULES( )
-#---------------------------------------------------------------------------------------------------
-function(GAUDI_INSTALL_PYTHON_MODULES)
-  gaudi_get_package_name(package)
+#-------------------------------------------------------------------------------
+# gaudi_install_python_modules()
+#
+# Declare that the subdirectory needs to install python modules.
+# The hierarchy of directories and  files in the python directory will be
+# installed.  If the first level of directories do not contain __init__.py, a
+# warning is issued and an empty one will be installed.
+#-------------------------------------------------------------------------------
+function(gaudi_install_python_modules)
   install(DIRECTORY python/
           DESTINATION python
           FILES_MATCHING PATTERN "*.py")
+  # check for the presence of the __init__.py's and install them if needed
+  file(GLOB sub-dir RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} python/*)
+  foreach(dir ${sub-dir})
+    if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${dir} AND NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${dir}/__init__.py)
+      message(WARNING "The file ${dir}/__ini__.py is missing. I shall install an empty one.")
+      if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/__init__.py)
+        file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/__init__.py "# Empty file generated automatically")
+      endif()
+      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/__init__.py
+              DESTINATION ${CMAKE_INSTALL_PREFIX}/${dir})
+    endif()
+  endforeach()
   gaudi_generate_confuserdb() # if there are Python modules, there may be ConfigurableUser's
-  GAUDI_INSTALL_PYTHON_INIT()
-endfunction()
-
-
-#---------------------------------------------------------------------------------------------------
-#---GAUDI_INSTALL_PYTHON_INIT( )
-#---------------------------------------------------------------------------------------------------
-function(GAUDI_INSTALL_PYTHON_INIT)
-  gaudi_get_package_name(package)
-  install(CODE "if (NOT EXISTS \"${CMAKE_INSTALL_PREFIX}/python/${package}/__init__.py\")
-                  file(INSTALL DESTINATION \"${CMAKE_INSTALL_PREFIX}/python/${package}\"
-                               TYPE FILE
-                               FILES \"${GAUDI_SOURCE_DIR}/GaudiPolicy/cmt/fragments/__init__.py\"  )
-                endif()" )
-  GAUDI_ZIP_PYTHON_MODULES()
 endfunction()
 
 #---------------------------------------------------------------------------------------------------

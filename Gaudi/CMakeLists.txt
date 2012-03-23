@@ -8,7 +8,7 @@ require(GaudiKernel)
 gaudi_add_executable(Gaudi main.cpp LINK_LIBRARIES GaudiKernel)
 
 #---Installation------------------------------------------------------------
-GAUDI_INSTALL_PYTHON_MODULES()
+gaudi_install_python_modules()
 GAUDI_INSTALL_SCRIPTS()
 INSTALL(CODE "EXECUTE_PROCESS(COMMAND ${python_cmd} -m compileall  ${CMAKE_INSTALL_PREFIX}/python)")
 INSTALL(CODE "EXECUTE_PROCESS(COMMAND ${python_cmd} -m compileall  ${CMAKE_INSTALL_PREFIX}/scripts)")

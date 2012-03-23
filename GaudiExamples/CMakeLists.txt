@@ -55,7 +55,7 @@ gaudi_add_python_module(PyExample PythonModule/*.cpp
                         LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}
                         INCLUDE_DIRS Boost PythonLibs)
 
-GAUDI_INSTALL_PYTHON_MODULES()
+gaudi_install_python_modules()
 
 #---Executables-------------------------------------------------------------
 gaudi_add_executable(Allocator Allocator/*.cpp

@@ -34,10 +34,10 @@ set_property(TEST GaudiKernel.PathResolver_test PROPERTY WORKING_DIRECTORY ${CMA
 gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIBRARIES GaudiKernel)
 
 #---Installation------------------------------------------------------------
-# Disable generation of ConfUserDB (must be done before GAUDI_INSTALL_PYTHON_MODULES)
+# Disable generation of ConfUserDB (must be done before gaudi_install_python_modules)
 set_directory_properties(PROPERTIES CONFIGURABLE_USER_MODULES None)
 
-GAUDI_INSTALL_PYTHON_MODULES()
+gaudi_install_python_modules()
 GAUDI_INSTALL_SCRIPTS()
 
 #---Test-----------------------------------------------------------------------
