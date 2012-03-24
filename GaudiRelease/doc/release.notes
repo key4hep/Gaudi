@@ -1,6 +1,7 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+============================= GaudiRelease v23r2 =============================
 ============================= GaudiRelease v23r1 =============================
 ! 2012-02-27 - Marco Clemencic
  - Minor change in update_versions.py to understand separators in RootCnv.

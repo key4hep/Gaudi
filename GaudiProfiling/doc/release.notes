@@ -4,6 +4,7 @@
 ! Purpose     : Profiling and performance monitoring of Gaudi/LHCb software
 !-----------------------------------------------------------------------------
 
+============================ GaudiProfiling v1r4 =============================
 ! 2012-03-13 - Marco Clemencic
  - Modified to compile IntelProfiler only on x86_64 and if the VTune library is
    available (from AFS).

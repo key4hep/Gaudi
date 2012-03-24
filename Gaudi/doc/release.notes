@@ -1,6 +1,7 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+================================ Gaudi v23r2 =================================
 ! 2012-03-15 - Marco Clemencic
  - Fixed bug #92122: option '--printsequence' of gaudirun.py no longer works
    Moved the call to the printsequence function from gaudirun.py to
