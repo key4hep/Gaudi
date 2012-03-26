@@ -38,7 +38,7 @@ gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIB
 set_directory_properties(PROPERTIES CONFIGURABLE_USER_MODULES None)
 
 gaudi_install_python_modules()
-GAUDI_INSTALL_SCRIPTS()
+gaudi_install_scripts()
 
 #---Test-----------------------------------------------------------------------
 gaudi_add_test(QMTest QMTEST ENVIRONMENT GAUDIKERNELROOT=${CMAKE_CURRENT_SOURCE_DIR})

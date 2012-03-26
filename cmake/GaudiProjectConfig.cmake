@@ -178,7 +178,7 @@ macro(gaudi_project project version)
     add_subdirectory(${package})
   endforeach()
 
-  GAUDI_PROJECT_VERSION_HEADER()
+  gaudi_project_version_header()
   GAUDI_MERGE_TARGET(ConfDB python ${CMAKE_PROJECT_NAME}_merged_confDb.py)
   GAUDI_MERGE_TARGET(Rootmap lib ${CMAKE_PROJECT_NAME}.rootmap)
   GAUDI_MERGE_TARGET(DictRootmap lib ${CMAKE_PROJECT_NAME}Dict.rootmap)
@@ -909,9 +909,11 @@ function(gaudi_install_python_modules)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_INSTALL_SCRIPTS( )
+# gaudi_install_scripts()
+#
+# Declare that the package needs to install the content of the 'scripts' directory.
 #---------------------------------------------------------------------------------------------------
-function(GAUDI_INSTALL_SCRIPTS)
+function(gaudi_install_scripts)
   install(DIRECTORY scripts/ DESTINATION scripts
           FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
                            GROUP_EXECUTE GROUP_READ
@@ -921,17 +923,21 @@ function(GAUDI_INSTALL_SCRIPTS)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_INSTALL_JOBOPTIONS( )
+# gaudi_install_joboptions()
+#
+# Install the specified options files in the directory 'jobOptions/<package>'.
 #---------------------------------------------------------------------------------------------------
-function(GAUDI_INSTALL_JOBOPTIONS)
+function(gaudi_install_joboptions)
   gaudi_get_package_name(package)
   install(FILES ${ARGN} DESTINATION jobOptions/${package})
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-#---GAUDI_PROJECT_VERSION_HEADER( )
+# gaudi_project_version_header()
+#
+# Creates a header file with the version macros of the project.
 #---------------------------------------------------------------------------------------------------
-function( GAUDI_PROJECT_VERSION_HEADER )
+function(gaudi_project_version_header)
   string(TOUPPER ${CMAKE_PROJECT_NAME} project)
   set(version ${CMAKE_PROJECT_VERSION})
   set(output  ${CMAKE_BINARY_DIR}/include/${project}_VERSION.h)
@@ -940,18 +946,6 @@ function( GAUDI_PROJECT_VERSION_HEADER )
   add_custom_target(${project}VersionHeader ALL
                     DEPENDS ${output})
   install(FILES ${output} DESTINATION include)
-endfunction()
-
-#---------------------------------------------------------------------------------------------------
-#---GAUDI_PACKAGE_VERSION_HEADER( )
-#---------------------------------------------------------------------------------------------------
-function(GAUDI_PACKAGE_VERSION_HEADER package version outdir)
-  set(output  ${outdir}/${package}Version.h)
-  add_custom_command(OUTPUT ${output}
-                     COMMAND ${versheader_cmd} ${package} ${version} ${output})
-  add_custom_target(${package}VersionHeader ALL
-                    DEPENDS ${output})
-  #install(FILES ${output} DESTINATION include)
 endfunction()
 
 #-------------------------------------------------------------------------------

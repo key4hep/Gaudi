@@ -2,14 +2,16 @@ require(GaudiKernel)
 
 find_package(Boost COMPONENTS system filesystem regex thread)
 
-GAUDI_PACKAGE_VERSION_HEADER(GaudiCoreSvc v1r0 ${CMAKE_CURRENT_BINARY_DIR})
-
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(GaudiCoreSvc
-                        ApplicationMgr/*.cpp
-                        EventSelector/*.cpp
-                        IncidentSvc/*.cpp
-                        JobOptionsSvc/*.cpp
-                        MessageSvc/*.cpp
-                        LINK_LIBRARIES GaudiKernel Boost)
-add_dependencies(GaudiCoreSvc GaudiCoreSvcVersionHeader)
+                 ApplicationMgr/*.cpp
+                 EventSelector/*.cpp
+                 IncidentSvc/*.cpp
+                 JobOptionsSvc/*.cpp
+                 MessageSvc/*.cpp
+                 LINK_LIBRARIES GaudiKernel Boost)
+
+# Generate the version header for the package.
+execute_process(COMMAND
+                  ${versheader_cmd}
+                    GaudiCoreSvc v1r0 ${CMAKE_CURRENT_BINARY_DIR}/GaudiCoreSvcVersion.h)

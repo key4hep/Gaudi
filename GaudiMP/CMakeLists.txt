@@ -19,4 +19,4 @@ gaudi_add_dictionary(GaudiMPLib dict/gaudimp_dict.h dict/selection.xml LINK_LIBR
 
 #---Installation------------------------------------------------------------
 gaudi_install_python_modules()
-GAUDI_INSTALL_SCRIPTS()
+gaudi_install_scripts()

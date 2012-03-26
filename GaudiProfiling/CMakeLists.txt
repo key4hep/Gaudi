@@ -44,5 +44,5 @@ gaudi_add_executable(GaudiGenProfilingHtml app/pfm_gen_analysis.cpp
 
 #---Installation------------------------------------------------------------
 gaudi_install_python_modules()
-GAUDI_INSTALL_SCRIPTS()
+gaudi_install_scripts()
 endif()

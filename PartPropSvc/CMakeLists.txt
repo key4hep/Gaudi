@@ -14,4 +14,4 @@ gaudi_add_module(PartPropSvc *.cpp
                         INCLUDE_DIRS Boost ROOT HepPDT)
 
 #---Installation------------------------------------------------------------
-GAUDI_INSTALL_JOBOPTIONS(share/PartPropSvc.py)
+gaudi_install_joboptions(share/PartPropSvc.py)

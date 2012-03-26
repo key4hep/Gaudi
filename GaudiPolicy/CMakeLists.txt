@@ -3,5 +3,5 @@
 # @author Pere Mato, CERN
 ###############################################
 #---Installation-----------------------------------------------------------------------------
-GAUDI_INSTALL_SCRIPTS()
+gaudi_install_scripts()
 
