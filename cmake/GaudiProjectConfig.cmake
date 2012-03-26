@@ -161,7 +161,6 @@ macro(gaudi_project project version)
   install(PROGRAMS cmake/testwrap.sh cmake/testwrap.csh cmake/testwrap.bat cmake/genCMake.py cmake/env.py DESTINATION scripts)
 
   #--- Global actions for the project
-  include(GaudiContrib)
   include(GaudiBuildFlags)
 
   message(STATUS "Looking for local directories...")
@@ -179,9 +178,9 @@ macro(gaudi_project project version)
   endforeach()
 
   gaudi_project_version_header()
-  GAUDI_MERGE_TARGET(ConfDB python ${CMAKE_PROJECT_NAME}_merged_confDb.py)
-  GAUDI_MERGE_TARGET(Rootmap lib ${CMAKE_PROJECT_NAME}.rootmap)
-  GAUDI_MERGE_TARGET(DictRootmap lib ${CMAKE_PROJECT_NAME}Dict.rootmap)
+  gaudi_merge_files(ConfDB python ${CMAKE_PROJECT_NAME}_merged_confDb.py)
+  gaudi_merge_files(Rootmap lib ${CMAKE_PROJECT_NAME}.rootmap)
+  gaudi_merge_files(DictRootmap lib ${CMAKE_PROJECT_NAME}Dict.rootmap)
 
   gaudi_generate_project_config_version_file()
 
@@ -356,25 +355,57 @@ function(gaudi_resolve_link_libraries variable)
 endfunction()
 
 #-------------------------------------------------------------------------------
-#---GAUDI_MERGE_TARGET
+# gaudi_global_target_append(global_target local_target file1 [file2 ...])
+# (macro)
+#
+# Adds local files as sources for the global target 'global_target' making it
+# depend on the local target 'local_target'.
 #-------------------------------------------------------------------------------
-# Create a MergedXXX target that takes input files and dependencies from
-# properties of the packages
-function(GAUDI_MERGE_TARGET tgt dest filename)
-  # Check if one of the packages produces files for this merge target
-  get_property(needed GLOBAL PROPERTY Merged${tgt}_SOURCES SET)
-  if(needed)
-    # get the list of parts to merge
-    get_property(parts GLOBAL PROPERTY Merged${tgt}_SOURCES)
+macro(gaudi_global_target_append global_target local_target)
+  set_property(GLOBAL APPEND PROPERTY ${global_target}_SOURCES ${ARGN})
+  set_property(GLOBAL APPEND PROPERTY ${global_target}_DEPENDS ${local_target})
+endmacro()
+
+#-------------------------------------------------------------------------------
+# gaudi_global_target_get_info(global_target local_targets_var files_var)
+# (macro)
+#
+# Put the information to configure the global target 'global_target' in the
+# two variables local_targets_var and files_var.
+#-------------------------------------------------------------------------------
+macro(gaudi_global_target_get_info global_target local_targets_var files_var)
+  get_property(${files_var} GLOBAL PROPERTY ${global_target}_SOURCES)
+  get_property(${local_targets_var} GLOBAL PROPERTY ${global_target}_DEPENDS)
+endmacro()
+
+
+#-------------------------------------------------------------------------------
+# gaudi_merge_files_append(merge_tgt local_target file1 [file2 ...])
+#
+# Add files to be included in the merge target 'merge_tgt', using 'local_target'
+# as dependency trigger.
+#-------------------------------------------------------------------------------
+function(gaudi_merge_files_append merge_tgt local_target)
+  gaudi_global_target_append(Merged${merge_tgt} ${local_target} ${ARGN})
+endfunction()
+
+#-------------------------------------------------------------------------------
+# gaudi_merge_files(merge_tgt dest filename)
+#
+# Create a global target Merged${merge_tgt} that takes input files and dependencies
+# from the packages (declared with gaudi_merge_files_append).
+#-------------------------------------------------------------------------------
+function(gaudi_merge_files merge_tgt dest filename)
+  gaudi_global_target_get_info(Merged${merge_tgt} deps parts)
+  if(parts)
     # create the targets
     set(output ${CMAKE_BINARY_DIR}/${dest}/${filename})
     add_custom_command(OUTPUT ${output}
                        COMMAND ${merge_cmd} ${parts} ${output}
                        DEPENDS ${parts})
-    add_custom_target(Merged${tgt} ALL DEPENDS ${output})
+    add_custom_target(Merged${merge_tgt} ALL DEPENDS ${output})
     # prepare the high level dependencies
-    get_property(deps GLOBAL PROPERTY Merged${tgt}_DEPENDS)
-    add_dependencies(Merged${tgt} ${deps})
+    add_dependencies(Merged${merge_tgt} ${deps})
     # install rule for the merged DB
     install(FILES ${output} DESTINATION ${dest})
   endif()
@@ -424,8 +455,7 @@ function(gaudi_generate_configurables library)
   # Add dependencies on GaudiSvc and the genconf executable if they have to be built in the current project
   add_dependencies(${library}Conf genconf GaudiCoreSvc)
   # Notify the project level target
-  set_property(GLOBAL APPEND PROPERTY MergedConfDB_SOURCES ${outdir}/${library}_confDb.py)
-  set_property(GLOBAL APPEND PROPERTY MergedConfDB_DEPENDS ${library}Conf)
+  gaudi_merge_files_append(ConfDB ${library}Conf ${outdir}/${library}_confDb.py)
   #----Installation details-------------------------------------------------------
   install(FILES ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py
           DESTINATION python/${package})
@@ -490,8 +520,7 @@ function(gaudi_generate_confuserdb)
                   ${package} ${modules})
     install(FILES ${outdir}/${package}_user_confDb.py
             DESTINATION python/${package})
-    set_property(GLOBAL APPEND PROPERTY MergedConfDB_SOURCES ${outdir}/${package}_user_confDb.py)
-    set_property(GLOBAL APPEND PROPERTY MergedConfDB_DEPENDS ${package}ConfUserDB)
+    gaudi_merge_files_append(ConfDB ${package}ConfUserDB ${outdir}/${package}_user_confDb.py)
   endif()
 endfunction()
 
@@ -660,7 +689,7 @@ function(gaudi_add_module library)
   add_library(${library} MODULE ${srcs})
   target_link_libraries(${library} ${ROOT_Reflex_LIBRARY} ${ARG_LINK_LIBRARIES})
 
-  GAUDI_GENERATE_ROOTMAP(${library})
+  gaudi_generate_rootmap(${library})
   gaudi_generate_configurables(${library})
 
   set_property(GLOBAL APPEND PROPERTY COMPONENT_LIBRARIES ${library})
@@ -693,8 +722,7 @@ function(gaudi_add_dictionary dictionary header selection)
 
   # Notify the project level target
   get_property(rootmapname TARGET ${dictionary}Gen PROPERTY ROOTMAPFILE)
-  set_property(GLOBAL APPEND PROPERTY MergedDictRootmap_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/${rootmapname})
-  set_property(GLOBAL APPEND PROPERTY MergedDictRootmap_DEPENDS ${dictionary}Gen)
+  gaudi_merge_files_append(DictRootmap ${dictionary}Gen ${CMAKE_CURRENT_BINARY_DIR}/${rootmapname})
 
   #----Installation details-------------------------------------------------------
   install(TARGETS ${dictionary}Dict LIBRARY DESTINATION ${lib})
@@ -946,6 +974,30 @@ function(gaudi_project_version_header)
   add_custom_target(${project}VersionHeader ALL
                     DEPENDS ${output})
   install(FILES ${output} DESTINATION include)
+endfunction()
+
+#---------------------------------------------------------------------------------------------------
+# gaudi_generate_rootmap(library)
+#
+# Create the .rootmap file needed by the plug-in system.
+#---------------------------------------------------------------------------------------------------
+function(gaudi_generate_rootmap library)
+  find_package(ROOT QUIET)
+  set(rootmapfile ${library}.rootmap)
+
+  if(TARGET ${library})
+    get_property(libname TARGET ${library} PROPERTY LOCATION)
+  else()
+    set(libname ${library})
+  endif()
+  add_custom_command(OUTPUT ${rootmapfile}
+                     COMMAND ${env_cmd}
+                       -p ${ld_library_path}=${ROOT_LIBRARY_DIRS}
+		             ${ROOT_genmap_CMD} -i ${libname} -o ${rootmapfile}
+                     DEPENDS ${library})
+  add_custom_target(${library}Rootmap ALL DEPENDS ${rootmapfile})
+  # Notify the project level target
+  gaudi_merge_files_append(Rootmap ${library}Rootmap ${CMAKE_CURRENT_BINARY_DIR}/${library}.rootmap)
 endfunction()
 
 #-------------------------------------------------------------------------------
