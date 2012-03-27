@@ -72,11 +72,15 @@ def main():
                       metavar = "NAME=VALUE",
                       action = "append",
                       help = "prepend VALUE to the variable NAME (with a '%s' as separator)" % os.pathsep)
+    parser.add_option("-x", "--xml",
+                      action = "append",
+                      help = "XML file describing the changes to the environment")
     parser.disable_interspersed_args()
     parser.set_defaults(unset = [],
                         set = [],
                         append = [],
                         prepend = [],
+                        xml = [],
                         ignore_environment = False)
 
     opts, args = parser.parse_args()
@@ -98,6 +102,20 @@ def main():
     env = set_env(env,
                   set = opts.set, unset = opts.unset,
                   append = opts.append, prepend = opts.prepend)
+
+    if opts.xml:
+        from EnvConfig import Control
+        control = Control.Environment()
+        # declare few known scalar variables
+        for v in filter(lambda x: x in env, ["DISPLAY", "LS_COLORS", "GPG_AGENT_INFO",
+                                             "KONSOLE_DBUS_SERVICE", "SESSION_MANAGER", "DBUS_SESSION_BUS_ADDRESS"]):
+            control.declare(v, "scalar", False)
+        for k in env:
+            control.set(k, env[k])
+
+        for f in opts.xml:
+            control.loadXML(f)
+        env = control.vars()
 
     if not cmd:
         for nv in env.items():

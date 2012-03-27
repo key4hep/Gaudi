@@ -163,6 +163,10 @@ macro(gaudi_project project version)
   #--- Global actions for the project
   include(GaudiBuildFlags)
 
+  set(env_xml ${CMAKE_BINARY_DIR}/${project}Environment.xml
+      CACHE STRING "path to the XML file for the environment")
+  mark_as_advanced(env_xml)
+
   message(STATUS "Looking for local directories...")
   gaudi_get_packages(packages)
   message(STATUS "Found:")
@@ -177,18 +181,21 @@ macro(gaudi_project project version)
     add_subdirectory(${package})
   endforeach()
 
+  message(STATUS "Preparing environment configuration:")
   # Prepare environment configuration
   set(project_environment)
 
   # - collect environment from externals
   gaudi_external_project_environment()
 
+  message(STATUS "  environment for local subdirectories")
   # - collect internal environment
   #   - project root (for relocatability)
   string(TOUPPER ${project} _proj)
   set(project_environment ${project_environment} SET ${_proj}_PROJECT_ROOT ${CMAKE_SOURCE_DIR})
   #   - 'packages' roots (backward compatibility)
   foreach(package ${packages})
+    message(STATUS "    ${package}")
     get_filename_component(_pack ${package} NAME)
     string(TOUPPER ${_pack} _pack)
     set(project_environment ${project_environment} SET ${_pack}ROOT \${${_proj}_PROJECT_ROOT}/${package})
@@ -199,16 +206,18 @@ macro(gaudi_project project version)
     set(project_environment ${project_environment} ${_pack_env})
   endforeach()
 
+  message(STATUS "  environment for the project")
   #   - installation dirs
   set(project_environment ${project_environment}
+        PREPEND PATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/scripts
         PREPEND PATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/bin
         PREPEND LD_LIBRARY_PATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/lib
         PREPEND PYTHONPATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/python
         PREPEND PYTHONPATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/python/lib-dynload)
 
   # - produce environment XML description
-  gaudi_generate_env_conf(${CMAKE_BINARY_DIR}/${project}Environment.xml ${project_environment})
-  install(FILES ${CMAKE_BINARY_DIR}/${project}Environment.xml DESTINATION .)
+  gaudi_generate_env_conf(${env_xml} ${project_environment})
+  install(FILES ${env_xml} DESTINATION .)
 
   gaudi_project_version_header()
   gaudi_merge_files(ConfDB python ${CMAKE_PROJECT_NAME}_merged_confDb.py)
@@ -473,6 +482,7 @@ function(gaudi_generate_configurables library)
     COMMAND ${env_cmd}
                   -p ${ld_library_path}=.
                   -p ${ld_library_path}=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+                  --xml ${env_xml}
               ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
                 --configurable-module=${confModuleName}
                 --configurable-default-name=${confDefaultName}
@@ -545,6 +555,7 @@ function(gaudi_generate_confuserdb)
       COMMAND ${env_cmd}
                     -p PYTHONPATH=${CMAKE_SOURCE_DIR}/GaudiKernel/python
                     -p PYTHONPATH=${CMAKE_SOURCE_DIR}/Gaudi/python
+                    --xml ${env_xml}
                 ${genconfuser_cmd}
                   -r ${CMAKE_CURRENT_SOURCE_DIR}/python
                   -o ${outdir}/${package}_user_confDb.py
@@ -841,6 +852,7 @@ function(gaudi_add_unit_test executable)
                  -p ${ld_library_path}=.
                  -p ${ld_library_path}=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
                  -p PATH=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+                 --xml ${env_xml}
                ${executable}${exec_suffix})
   endif()
 endfunction()
@@ -857,6 +869,7 @@ function(gaudi_add_test name)
   gaudi_get_package_name(package)
 
   if(ARG_QMTEST)
+    find_package(QMTest QUIET)
     set(ARG_ENVIRONMENT ${ARG_ENVIRONMENT}
                         QMTESTLOCALDIR=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
                         QMTESTRESULTS=${CMAKE_CURRENT_BINARY_DIR}/tests/qmtest/results.qmr
@@ -884,12 +897,6 @@ function(gaudi_add_test name)
     set(extra_env ${extra_env} -s ${var})
   endforeach()
 
-  # FIXME: the runtime environment is hacked
-  find_package(RELAX QUIET)
-  # Boost_LIBRARY_DIR contains 2 entries: optimized and debug
-  list(GET Boost_LIBRARY_DIRS 0 bld)
-  list(GET RELAX_LIBRARY_DIRS 0 rld)
-
   add_test(${package}.${name}
            ${env_cmd}
                ${extra_env}
@@ -900,14 +907,7 @@ function(gaudi_add_test name)
                -p QMTEST_CLASS_PATH=${CMAKE_SOURCE_DIR}/GaudiPolicy/qmtest_classes
                -s GAUDI_QMTEST_HTML_OUTPUT=${CMAKE_BINARY_DIR}/test_results
 
-               -p PATH=${CMAKE_INSTALL_PREFIX}/scripts
-               -p PYTHONPATH=${CMAKE_INSTALL_PREFIX}/python
-               -p PYTHONPATH=${CMAKE_INSTALL_PREFIX}/python/lib-dynload
-
-               -p ${ld_library_path}=${ROOTSYS}/lib
-               -p ${ld_library_path}=${rld}
-               -p ${ld_library_path}=${bld}
-               -p PYTHONPATH=${ROOTSYS}/lib
+               --xml ${env_xml}
                ${cmdline})
 endfunction()
 
@@ -1023,7 +1023,7 @@ function(gaudi_generate_rootmap library)
   endif()
   add_custom_command(OUTPUT ${rootmapfile}
                      COMMAND ${env_cmd}
-                       -p ${ld_library_path}=${ROOT_LIBRARY_DIRS}
+                       --xml ${env_xml}
 		             ${ROOT_genmap_CMD} -i ${libname} -o ${rootmapfile}
                      DEPENDS ${library})
   add_custom_target(${library}Rootmap ALL DEPENDS ${rootmapfile})
@@ -1217,7 +1217,7 @@ function(gaudi_generate_env_conf filename)
     set(data "${data}  ${ln}\n")
   endwhile()
   set(data "${data}</env:config>\n")
-  message(STATUS "Creating file ${filename}")
+  message(STATUS "Generating ${filename}")
   file(WRITE ${filename} "${data}")
 endfunction()
 
@@ -1228,6 +1228,7 @@ endfunction()
 # variable project_environment.
 #-------------------------------------------------------------------------------
 macro(gaudi_external_project_environment)
+  message(STATUS "  environment for external packages")
   # collecting environment infos
   set(python_path)
   set(binary_path)
@@ -1236,25 +1237,34 @@ macro(gaudi_external_project_environment)
 
   get_property(packages_found GLOBAL PROPERTY PACKAGES_FOUND)
   #message("${packages_found}")
-  foreach(pack ${packages_found} ${packages})
-    # this is needed to get the non-cache variables for the packages
+  foreach(pack ${packages_found})
     if(NOT pack STREQUAL GaudiProject)
+      message(STATUS "    ${pack}")
+      # this is needed to get the non-cache variables for the packages
       find_package(${pack} QUIET)
+
+      if(pack STREQUAL PythonInterp OR pack STREQUAL PythonLibs)
+        set(pack Python)
+      endif()
       string(TOUPPER ${pack} _pack_upper)
-      list(APPEND python_path   ${${pack}_PYTHON_PATH} ${${_pack_upper}_PYTHON_PATH})
+
+      if(${_pack_upper}_EXECUTABLE)
+        get_filename_component(bin_path ${${_pack_upper}_EXECUTABLE} PATH)
+        list(APPEND binary_path ${bin_path})
+      endif()
+
       list(APPEND binary_path   ${${pack}_BINARY_PATH} ${${_pack_upper}_BINARY_PATH})
+      list(APPEND python_path   ${${pack}_PYTHON_PATH} ${${_pack_upper}_PYTHON_PATH})
       list(APPEND environment   ${${pack}_ENVIRONMENT} ${${_pack_upper}_ENVIRONMENT})
       list(APPEND library_path2 ${${pack}_LIBRARY_DIR} ${${pack}_LIBRARY_DIRS} ${${_pack_upper}_LIBRARY_DIR} ${${_pack_upper}_LIBRARY_DIRS})
-    endif()
-    # FIXME: this is too special
-    if(pack STREQUAL PythonInterp)
-      get_filename_component(bin_path ${PYTHON_EXECUTABLE} PATH)
-      list(APPEND binary_path ${bin_path})
     endif()
   endforeach()
 
   get_property(library_path GLOBAL PROPERTY LIBRARY_PATH)
   set(library_path ${library_path} ${library_path2})
+  # Remove system libraries from the library_path
+  list(REMOVE_ITEM library_path /usr/lib /lib /usr/lib64 /lib64 /usr/lib32 /lib32)
+
   foreach(var library_path python_path binary_path environment)
     if(${var})
       list(REMOVE_DUPLICATES ${var})
