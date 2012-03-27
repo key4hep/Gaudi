@@ -177,6 +177,39 @@ macro(gaudi_project project version)
     add_subdirectory(${package})
   endforeach()
 
+  # Prepare environment configuration
+  set(project_environment)
+
+  # - collect environment from externals
+  gaudi_external_project_environment()
+
+  # - collect internal environment
+  #   - project root (for relocatability)
+  string(TOUPPER ${project} _proj)
+  set(project_environment ${project_environment} SET ${_proj}_PROJECT_ROOT ${CMAKE_SOURCE_DIR})
+  #   - 'packages' roots (backward compatibility)
+  foreach(package ${packages})
+    get_filename_component(_pack ${package} NAME)
+    string(TOUPPER ${_pack} _pack)
+    set(project_environment ${project_environment} SET ${_pack}ROOT \${${_proj}_PROJECT_ROOT}/${package})
+  endforeach()
+  #   - 'packages' environments
+  foreach(package ${packages})
+    get_property(_pack_env DIRECTORY ${package} PROPERTY ENVIRONMENT)
+    set(project_environment ${project_environment} ${_pack_env})
+  endforeach()
+
+  #   - installation dirs
+  set(project_environment ${project_environment}
+        PREPEND PATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/bin
+        PREPEND LD_LIBRARY_PATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/lib
+        PREPEND PYTHONPATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/python
+        PREPEND PYTHONPATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/python/lib-dynload)
+
+  # - produce environment XML description
+  gaudi_generate_env_conf(${CMAKE_BINARY_DIR}/${project}Environment.xml ${project_environment})
+  install(FILES ${CMAKE_BINARY_DIR}/${project}Environment.xml DESTINATION .)
+
   gaudi_project_version_header()
   gaudi_merge_files(ConfDB python ${CMAKE_PROJECT_NAME}_merged_confDb.py)
   gaudi_merge_files(Rootmap lib ${CMAKE_PROJECT_NAME}.rootmap)
@@ -185,8 +218,6 @@ macro(gaudi_project project version)
   gaudi_generate_project_config_version_file()
 
   gaudi_generate_project_config_file()
-
-  gaudi_generate_project_environment_file()
 
   gaudi_generate_project_platform_config_file()
 
@@ -1118,13 +1149,85 @@ set(${_proj_upper}_LINKER_LIBRARIES ${linker_libraries})
 endmacro()
 
 #-------------------------------------------------------------------------------
-# gaudi_generate_project_environment_file()
+# gaudi_env(<SET|PREPEND|APPEND|REMOVE> <var> <value> [...repeat...])
 #
-# Generate the config file used by the other projects using this one.
+# Declare environment variables to be modified.
+# Note: this is just a wrapper around set_property, the actual logic is in ...
 #-------------------------------------------------------------------------------
-macro(gaudi_generate_project_environment_file)
-  message(STATUS "Generating ${CMAKE_PROJECT_NAME}Environment.cmake")
+function(gaudi_env)
+  #message(STATUS "ARGN -> ${ARGN}")
+  # ensure that the variables in the value are not expanded when passing the arguments
+  #string(REPLACE "\$" "\\\$" _argn "${ARGN}")
+  #message(STATUS "_argn -> ${_argn}")
+  set_property(DIRECTORY APPEND PROPERTY ENVIRONMENT ${ARGN})
+endfunction()
 
+
+#-------------------------------------------------------------------------------
+# _env_conf_pop_instruction(...)
+#
+# helper macro used by gaudi_generate_env_conf.
+#-------------------------------------------------------------------------------
+macro(_env_conf_pop_instruction instr lst)
+  #message(STATUS "_env_conf_pop_instruction ${lst} => ${${lst}}")
+  list(GET ${lst} 0 1 2 ${instr})
+  #message(STATUS "_env_conf_pop_instruction ${instr} => ${${instr}}")
+  #message(STATUS "_env_conf_pop_instruction ${lst} => ${${lst}}")
+  list(REMOVE_AT ${lst} 0 1 2)
+  #message(STATUS "_env_conf_pop_instruction ${lst} => ${${lst}}")
+endmacro()
+
+#-------------------------------------------------------------------------------
+# _env_line(...)
+#
+# helper macro used by gaudi_generate_env_conf.
+#-------------------------------------------------------------------------------
+macro(_env_line cmd var val output)
+  set(${output} "variable=\"${var}\">${val}</env:")
+  if(${cmd} STREQUAL "SET")
+    set(${output} "<env:set ${${output}}set>")
+  elseif(${cmd} STREQUAL "PREPEND")
+    set(${output} "<env:prepend ${${output}}prepend>")
+  elseif(${cmd} STREQUAL "APPEND")
+    set(${output} "<env:append ${${output}}append>")
+  elseif(${cmd} STREQUAL "REMOVE")
+    set(${output} "<env:remove ${${output}}remove>")
+  else()
+    message(FATAL_ERROR "Unknown environment command ${cmd}")
+  endif()
+endmacro()
+
+#-------------------------------------------------------------------------------
+# gaudi_generate_env_conf(filename <env description>)
+#
+# Generate the XML file describing the changes to the environment required by
+# this project.
+#-------------------------------------------------------------------------------
+function(gaudi_generate_env_conf filename)
+  set(data "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<env:config xmlns:env=\"EnvSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"EnvSchema EnvSchema.xsd \">\n")
+  set(commands ${ARGN})
+#  message(STATUS "start - ${commands}")
+  while(commands)
+#    message(STATUS "iter - ${commands}")
+    _env_conf_pop_instruction(instr commands)
+    # ensure that the variables in the value are not expanded when passing the arguments
+    string(REPLACE "\$" "\\\$" instr "${instr}")
+    _env_line(${instr} ln)
+    set(data "${data}  ${ln}\n")
+  endwhile()
+  set(data "${data}</env:config>\n")
+  message(STATUS "Creating file ${filename}")
+  file(WRITE ${filename} "${data}")
+endfunction()
+
+#-------------------------------------------------------------------------------
+# gaudi_external_project_environment()
+#
+# Collect the environment details from the found packages and add them to the
+# variable project_environment.
+#-------------------------------------------------------------------------------
+macro(gaudi_external_project_environment)
   # collecting environment infos
   set(python_path)
   set(binary_path)
@@ -1132,24 +1235,16 @@ macro(gaudi_generate_project_environment_file)
   set(library_path2)
 
   get_property(packages_found GLOBAL PROPERTY PACKAGES_FOUND)
-  message("${packages_found}")
+  #message("${packages_found}")
   foreach(pack ${packages_found} ${packages})
     # this is needed to get the non-cache variables for the packages
     if(NOT pack STREQUAL GaudiProject)
       find_package(${pack} QUIET)
-    endif()
-    string(TOUPPER ${pack} _pack_upper)
-    if(${_pack_upper}_PYTHON_PATH)
-      list(APPEND python_path ${${_pack_upper}_PYTHON_PATH})
-    endif()
-    if(${_pack_upper}_BINARY_PATH)
-      list(APPEND binary_path ${${_pack_upper}_BINARY_PATH})
-    endif()
-    if(${_pack_upper}_ENVIRONMENT)
-      list(APPEND environment ${${_pack_upper}_ENVIRONMENT})
-    endif()
-    if(${_pack_upper}_LIBRARY_DIRS)
-      list(APPEND library_path2 ${${_pack_upper}_LIBRARY_DIRS})
+      string(TOUPPER ${pack} _pack_upper)
+      list(APPEND python_path   ${${pack}_PYTHON_PATH} ${${_pack_upper}_PYTHON_PATH})
+      list(APPEND binary_path   ${${pack}_BINARY_PATH} ${${_pack_upper}_BINARY_PATH})
+      list(APPEND environment   ${${pack}_ENVIRONMENT} ${${_pack_upper}_ENVIRONMENT})
+      list(APPEND library_path2 ${${pack}_LIBRARY_DIR} ${${pack}_LIBRARY_DIRS} ${${_pack_upper}_LIBRARY_DIR} ${${_pack_upper}_LIBRARY_DIRS})
     endif()
     # FIXME: this is too special
     if(pack STREQUAL PythonInterp)
@@ -1159,25 +1254,23 @@ macro(gaudi_generate_project_environment_file)
   endforeach()
 
   get_property(library_path GLOBAL PROPERTY LIBRARY_PATH)
-  foreach(var library_path python_path binary_path environment library_path2)
+  set(library_path ${library_path} ${library_path2})
+  foreach(var library_path python_path binary_path environment)
     if(${var})
       list(REMOVE_DUPLICATES ${var})
     endif()
   endforeach()
 
-  message("BINARY_PATH: ${binary_path}")
-  message("PYTHON_PATH: ${python_path}")
-  message("LIBRARY_PATH: ${library_path}")
-  message("LIBRARY_PATH2: ${library_path2}")
-  message("ENVIRONMENT: ${environment}")
+  foreach(val ${python_path})
+    set(project_environment ${project_environment} PREPEND PYTHONPATH ${val})
+  endforeach()
 
-  string(TOUPPER ${CMAKE_PROJECT_NAME} _proj_upper)
+  foreach(val ${binary_path})
+    set(project_environment ${project_environment} PREPEND PATH ${val})
+  endforeach()
 
-  file(WRITE ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Environment.cmake
-"set(${_proj_upper}_BINARY_PATH ${binary_path} CACHE INTERNAL \"\")
-set(${_proj_upper}_PYTHON_PATH ${python_path} CACHE INTERNAL \"\")
-set(${_proj_upper}_LIBRARY_PATH ${library_path} CACHE INTERNAL \"\")
-set(${_proj_upper}_ENVIRONMENT ${environment} CACHE INTERNAL \"\")
-")
-  install(FILES ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Environment.cmake DESTINATION cmake)
+  foreach(val ${library_path})
+    set(project_environment ${project_environment} PREPEND LD_LIBRARY_PATH ${val})
+  endforeach()
+
 endmacro()

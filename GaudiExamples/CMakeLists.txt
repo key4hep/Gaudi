@@ -78,7 +78,6 @@ gaudi_add_test(QMTest QMTEST
                  GAUDIEXAMPLESROOT=${CMAKE_CURRENT_SOURCE_DIR}
                  PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
 
-SET(GAUDIEXAMPLES_ENVIRONMENT STDOPTS=${CMAKE_SOURCE_DIR}/GaudiExamples/options
-                              JOBOPTSEARCHPATH+=${CMAKE_SOURCE_DIR}/GaudiExamples/options
-                              PARENT_SCOPE)
-SET(GAUDIEXAMPLES_PYTHON_PATH ${CMAKE_SOURCE_DIR}/GaudiExamples/tests/qmtest PARENT_SCOPE)
+gaudi_env(SET     STDOPTS \${GAUDIEXAMPLESROOT}/options
+          PREPEND JOBOPTSEARCHPATH \${STDOPTS}
+          PREPEND PYTHONPATH \${GAUDIEXAMPLESROOT}/tests/qmtest)
