@@ -7,6 +7,7 @@
 #  TCMALLOC_tcmalloc_LIBRARY
 #  TCMALLOC_profiler_LIBRARY
 #  TCMALLOC_LIBRARIES (not cached)
+#  TCMALLOC_LIBRARY_DIRS (not cached)
 
 find_path(TCMALLOC_INCLUDE_DIR google/tcmalloc.h)
 foreach(component tcmalloc profiler)
@@ -22,3 +23,9 @@ INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(tcmalloc DEFAULT_MSG TCMALLOC_INCLUDE_DIR TCMALLOC_LIBRARIES)
 
 mark_as_advanced(TCMALLOC_FOUND TCMALLOC_INCLUDE_DIR TCMALLOC_LIBRARIES)
+
+if(TCMALLOC_tcmalloc_LIBRARY)
+  get_filename_component(TCMALLOC_LIBRARY_DIRS ${TCMALLOC_tcmalloc_LIBRARY} PATH)
+elseif(TCMALLOC_profiler_LIBRARY)
+  get_filename_component(TCMALLOC_LIBRARY_DIRS ${TCMALLOC_profiler_LIBRARY} PATH)
+endif()
