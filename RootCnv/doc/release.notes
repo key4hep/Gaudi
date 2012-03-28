@@ -4,6 +4,10 @@
 ! Purpose     : Root based persistency
 !-----------------------------------------------------------------------------
 
+!========================= RootCnv v1r14 2012-02-22 ========================
+! 2010-03-22 - Markus Frank
+ - Removed duplicated warning message.
+
 !========================= RootCnv v1r13 2012-02-23 ========================
 ! 2012-02-23 - Markus Frank
  - Add option to RootCnvSvc to change compression factor in the following form:
@@ -15,9 +19,9 @@
    RootCnvSvc.GlobalCompression     = "0";
 
    Please note:
-   Since setting individual options for all different conversion services 
+   Since setting individual options for all different conversion services
    (Event, FSR,...) is a major pain and in general only leads to confusion,
-   this is a GLOBAL option. You set it once and it will be valid for any 
+   this is a GLOBAL option. You set it once and it will be valid for any
    subsequent call to TFile::Open in ANY RootDataConnection objects.
 
 
@@ -26,7 +30,7 @@
  - Synchronized with version v1r12 in LHCb repository.
 
 ! 2012-01-20 - Markus Frank
- - Fix gcc46 compile warning in merge.C 
+ - Fix gcc46 compile warning in merge.C
 
 ! 2012-01-24 - Marco Clemencic
  - Synchronized with version v1r11 in LHCb repository.
