@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2012-03-26 - Marco Clemencic
+ - Added missing __init__.py in python/GaudiKernel
+
 ============================= GaudiKernel v28r1 ==============================
 ! 2012-02-13 - Marco Clemencic
  - Fixed compatibility problem with Python 2.7.
