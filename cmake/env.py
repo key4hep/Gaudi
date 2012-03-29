@@ -106,10 +106,9 @@ def main():
     if opts.xml:
         from EnvConfig import Control
         control = Control.Environment()
-        # declare few known scalar variables
-        for v in filter(lambda x: x in env, ["DISPLAY", "LS_COLORS", "GPG_AGENT_INFO",
-                                             "KONSOLE_DBUS_SERVICE", "SESSION_MANAGER", "DBUS_SESSION_BUS_ADDRESS"]):
-            control.declare(v, "scalar", False)
+        # declare scalar and list variables ("*PATH*" and "*DIRS*" are lists)
+        for v in env:
+            control.declare(v, ("PATH" in v or "DIRS" in v) and "list" or "scalar", False)
         for k in env:
             control.set(k, env[k])
 
