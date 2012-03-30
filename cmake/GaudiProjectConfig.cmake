@@ -1235,6 +1235,16 @@ macro(gaudi_external_project_environment)
   set(environment)
   set(library_path2)
 
+  if(CMAKE_HOST_UNIX)
+    # Guess the LD_LIBRARY_PATH required by the compiler we use (only Unix).
+    execute_process(COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libstdc++.so OUTPUT_VARIABLE cpplib)
+    get_filename_component(cpplib ${cpplib} REALPATH)
+    get_filename_component(cpplib ${cpplib} PATH)
+    # Special hack for the way gcc is installed onf AFS at CERN.
+    string(REPLACE "contrib/gcc" "external/gcc" cpplib ${cpplib})
+    set(library_path2 ${cpplib})
+  endif()
+
   get_property(packages_found GLOBAL PROPERTY PACKAGES_FOUND)
   #message("${packages_found}")
   foreach(pack ${packages_found})
