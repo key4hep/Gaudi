@@ -4,6 +4,11 @@
 # Description: standard and commonly used components
 ################################################################################
 
+! 2012-04-19 - Marco Clemencic
+ - Added new signatures to HistogramSvc::Helper::act to absorb the change in the
+   return type of TH1::Add, TH1::Divide and TH1::Multiply.
+   See http://root.cern.ch/viewvc/trunk/hist/hist/inc/TH1D.h?r1=43732&r2=43802
+
 ============================ GaudiCommonSvc v1r1 =============================
 ! 2012-02-14 - Chris Jones
  - Add a "TESVetoList" property to InputCopyStream, to allow certain locations
