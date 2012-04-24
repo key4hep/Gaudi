@@ -721,9 +721,9 @@ function(gaudi_add_library library)
     add_dependencies( ${library} ${library}Obj2doth)
   endif()
   #----Installation details-------------------------------------------------------
-  install(TARGETS ${library} EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION  ${lib})
+  install(TARGETS ${library} EXPORT Subdir${package}Exports DESTINATION ${lib})
   gaudi_install_headers(${ARG_PUBLIC_HEADERS})
-  install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake)
+  install(EXPORT Subdir${package}Exports DESTINATION cmake)
 endfunction()
 
 # Backward compatibility macro
@@ -819,6 +819,8 @@ endfunction()
 function(gaudi_add_executable executable)
   gaudi_common_add_build(${ARGN})
 
+  gaudi_get_package_name(package)
+
   add_executable(${executable} ${srcs})
   target_link_libraries(${executable} ${ARG_LINK_LIBRARIES})
 
@@ -827,9 +829,8 @@ function(gaudi_add_executable executable)
   endif()
 
   #----Installation details-------------------------------------------------------
-  install(TARGETS ${executable} EXPORT ${CMAKE_PROJECT_NAME}Exports RUNTIME DESTINATION ${bin})
-  install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake)
-
+  install(TARGETS ${executable} EXPORT Subdir${package}Exports RUNTIME DESTINATION ${bin})
+  install(EXPORT Subdir${package}Exports DESTINATION cmake)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -949,8 +950,8 @@ endfunction()
 #       configurables (gaudi_generate_configurables)
 #       There are 2 cases:
 #       * install_python called before genconf
-#         we fill the list of modules to communicate tell genconf not to install
-#         its dummy version
+#         we fill the list of modules to tell genconf not to install its dummy
+#         version
 #       * genconf called before install_python
 #         we install on top of the one installed by genconf
 # FIXME: it should be cleaner
@@ -992,13 +993,25 @@ function(gaudi_install_scripts)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-# gaudi_install_joboptions()
+# gaudi_install_joboptions(<files...>)
 #
 # Install the specified options files in the directory 'jobOptions/<package>'.
 #---------------------------------------------------------------------------------------------------
 function(gaudi_install_joboptions)
   gaudi_get_package_name(package)
   install(FILES ${ARGN} DESTINATION jobOptions/${package})
+endfunction()
+
+#---------------------------------------------------------------------------------------------------
+# gaudi_install_resources(<data files...> [DESTINATION subdir])
+#
+# Install the specified options files in the directory 'data/<package>[/subdir]'.
+#---------------------------------------------------------------------------------------------------
+function(gaudi_install_resources)
+  CMAKE_PARSE_ARGUMENTS(ARG "" "DESTINATION" "" ${ARGN})
+
+  gaudi_get_package_name(package)
+  install(FILES ${ARG_UNPARSED_ARGUMENTS} DESTINATION data/${package}/${ARG_DESTINATION})
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
