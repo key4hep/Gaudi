@@ -92,9 +92,13 @@ set(zippythondir_cmd ${PYTHON_EXECUTABLE} ${zippythondir_cmd})
 find_program(gaudirun_cmd gaudirun.py HINTS ${hints})
 set(gaudirun_cmd ${PYTHON_EXECUTABLE} ${gaudirun_cmd})
 
-#---------------------------------------------------------------------------------------------------
-#---gaudi_project(project version)
-#---------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# gaudi_project(project version)
+#
+# Main macro for a Gaudi-based project.
+# Each project must call this macro once in the top-level CMakeLists.txt,
+# stating the project name and the version in the LHCb format (vXrY[pZ]).
+#-------------------------------------------------------------------------------
 macro(gaudi_project project version)
   set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
   project(${project})
@@ -130,6 +134,10 @@ macro(gaudi_project project version)
 	   "Single build output directory for all libraries" FORCE)
   endif()
 
+  set(env_xml ${CMAKE_BINARY_DIR}/${project}Environment.xml
+      CACHE STRING "path to the XML file for the environment")
+  mark_as_advanced(env_xml)
+
   if(BUILD_TESTS)
     enable_testing()
   endif()
@@ -162,12 +170,11 @@ macro(gaudi_project project version)
 
   #--- Global actions for the project
   include(GaudiBuildFlags)
+  gaudi_project_version_header()
 
-  set(env_xml ${CMAKE_BINARY_DIR}/${project}Environment.xml
-      CACHE STRING "path to the XML file for the environment")
-  mark_as_advanced(env_xml)
-
+  #--- Find and collect settings for subdirectories
   message(STATUS "Looking for local directories...")
+  # Locate packages
   gaudi_get_packages(packages)
   message(STATUS "Found:")
   foreach(package ${packages})
@@ -175,14 +182,29 @@ macro(gaudi_project project version)
   endforeach()
 
   set(library_path)
+  # Take into account the dependencies between local subdirectories before
+  # adding them to the build.
   gaudi_sort_subdirectories(packages)
+  # Add all subdirectories to the project build.
   foreach(package ${packages})
     message(STATUS "Adding directory ${package}")
     add_subdirectory(${package})
   endforeach()
 
+  #--- Special global targets for merging files.
+  gaudi_merge_files(ConfDB python ${CMAKE_PROJECT_NAME}_merged_confDb.py)
+  gaudi_merge_files(Rootmap lib ${CMAKE_PROJECT_NAME}.rootmap)
+  gaudi_merge_files(DictRootmap lib ${CMAKE_PROJECT_NAME}Dict.rootmap)
+
+  # FIXME: it is not possible to produce the file python.zip at installation time
+  # because of http://public.kitware.com/Bug/view.php?id=8438
+  # install(CODE "execute_process(COMMAND  ${zippythondir_cmd} ${CMAKE_INSTALL_PREFIX}/python)")
+  add_custom_target(python.zip
+                    COMMAND ${zippythondir_cmd} ${CMAKE_INSTALL_PREFIX}/python
+                    COMMENT "Zipping Python modules")
+
+  #--- Prepare environment configuration
   message(STATUS "Preparing environment configuration:")
-  # Prepare environment configuration
   set(project_environment)
 
   # - collect environment from externals
@@ -219,23 +241,11 @@ macro(gaudi_project project version)
   gaudi_generate_env_conf(${env_xml} ${project_environment})
   install(FILES ${env_xml} DESTINATION .)
 
-  gaudi_project_version_header()
-  gaudi_merge_files(ConfDB python ${CMAKE_PROJECT_NAME}_merged_confDb.py)
-  gaudi_merge_files(Rootmap lib ${CMAKE_PROJECT_NAME}.rootmap)
-  gaudi_merge_files(DictRootmap lib ${CMAKE_PROJECT_NAME}Dict.rootmap)
-
+  #--- Generate config files to be imported by other projects.
   gaudi_generate_project_config_version_file()
-
   gaudi_generate_project_config_file()
-
   gaudi_generate_project_platform_config_file()
 
-  # FIXME: it is not possible to produce the file python.zip at installation time
-  # because of http://public.kitware.com/Bug/view.php?id=8438
-  # install(CODE "execute_process(COMMAND  ${zippythondir_cmd} ${CMAKE_INSTALL_PREFIX}/python)")
-  add_custom_target(python.zip
-                    COMMAND ${zippythondir_cmd} ${CMAKE_INSTALL_PREFIX}/python
-                    COMMENT "Zipping Python modules")
 
   #--- CPack configuration
   set(CPACK_PACKAGE_NAME ${project})
@@ -680,9 +690,9 @@ function(gaudi_add_library library)
   CMAKE_PARSE_ARGUMENTS(ARG "NO_PUBLIC_HEADERS" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS;PUBLIC_HEADERS" ${ARGN})
   gaudi_common_add_build(${ARG_UNPARSED_ARGUMENTS} LIBRARIES ${ARG_LIBRARIES} LINK_LIBRARIES ${ARG_LINK_LIBRARIES} INCLUDE_DIRS ${ARG_INCLUDE_DIRS})
 
+  gaudi_get_package_name(package)
   if(NOT ARG_NO_PUBLIC_HEADERS AND NOT ARG_PUBLIC_HEADERS)
-    gaudi_get_package_name(package)
-    message(WARNING "Library ${library} (in ${package}) does not declare PUBLIC_HEADERS")
+    message(WARNING "Library ${library} (in ${package}) does not declare PUBLIC_HEADERS. Use the option NO_PUBLIC_HEADERS if it is intended.")
   endif()
 
   if(WIN32)
@@ -978,7 +988,7 @@ function(gaudi_install_scripts)
                            GROUP_EXECUTE GROUP_READ
           PATTERN ".svn" EXCLUDE
           PATTERN "*~" EXCLUDE
-          PATTERN "*.pyc" EXCLUDE )
+          PATTERN "*.pyc" EXCLUDE)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
