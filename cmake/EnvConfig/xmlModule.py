@@ -15,8 +15,9 @@ class XMLFile():
     def __init__(self):
         self.xmlResult = '<?xml version="1.0" encoding="UTF-8"?><env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">\n'
         self.declaredVars = []
-        if len(logging.getLogger('envLogger').handlers) < 1:
-            logging.config.fileConfig(os.path.normpath(os.path.dirname(os.path.realpath(__file__)) + '/log.conf'))
+        logConf = os.path.normpath(os.path.dirname(os.path.realpath(__file__)) + '/log.conf')
+        if not logging.getLogger('envLogger').handlers and os.path.exists(logConf):
+            logging.config.fileConfig(logConf)
         self.logger = logging.getLogger('envLogger')
 
 
@@ -103,8 +104,9 @@ class Report():
         else:
             self.reportOutput = open(reportOutput, 'w')
 
-        if len(logging.getLogger('envLogger').handlers) < 1:
-            logging.config.fileConfig(os.path.normpath(os.path.dirname(os.path.realpath(__file__)) + '/log.conf'))
+        logConf = os.path.normpath(os.path.dirname(os.path.realpath(__file__)) + '/log.conf')
+        if not logging.getLogger('envLogger').handlers and os.path.exists(logConf):
+            logging.config.fileConfig(logConf)
         self.logger = logging.getLogger('envLogger')
 
     def addError(self, message, varName = '', action = '', varValue = '', procedure = ''):
