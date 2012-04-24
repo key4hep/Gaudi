@@ -721,9 +721,9 @@ function(gaudi_add_library library)
     add_dependencies( ${library} ${library}Obj2doth)
   endif()
   #----Installation details-------------------------------------------------------
-  install(TARGETS ${library} EXPORT Subdir${package}Exports DESTINATION ${lib})
+  install(TARGETS ${library} EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION  ${lib})
   gaudi_install_headers(${ARG_PUBLIC_HEADERS})
-  install(EXPORT Subdir${package}Exports DESTINATION cmake)
+  install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake)
 endfunction()
 
 # Backward compatibility macro
@@ -819,8 +819,6 @@ endfunction()
 function(gaudi_add_executable executable)
   gaudi_common_add_build(${ARGN})
 
-  gaudi_get_package_name(package)
-
   add_executable(${executable} ${srcs})
   target_link_libraries(${executable} ${ARG_LINK_LIBRARIES})
 
@@ -829,8 +827,9 @@ function(gaudi_add_executable executable)
   endif()
 
   #----Installation details-------------------------------------------------------
-  install(TARGETS ${executable} EXPORT Subdir${package}Exports RUNTIME DESTINATION ${bin})
-  install(EXPORT Subdir${package}Exports DESTINATION cmake)
+  install(TARGETS ${executable} EXPORT ${CMAKE_PROJECT_NAME}Exports RUNTIME DESTINATION ${bin})
+  install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake)
+
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
