@@ -70,28 +70,6 @@ include(CMakeParseArguments)
 
 find_package(PythonInterp)
 
-#--- commands required to build cached variable
-# (python scripts are located as such but run through python)
-set(hints ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts ${CMAKE_SOURCE_DIR}/GaudiKernel/scripts ${CMAKE_SOURCE_DIR}/Gaudi/scripts)
-
-find_program(env_cmd env.py HINTS ${hints})
-set(env_cmd ${PYTHON_EXECUTABLE} ${env_cmd})
-
-find_program(merge_cmd merge_files.py HINTS ${hints})
-set(merge_cmd ${PYTHON_EXECUTABLE} ${merge_cmd} --no-stamp)
-
-find_program(versheader_cmd createProjVersHeader.py HINTS ${hints})
-set(versheader_cmd ${PYTHON_EXECUTABLE} ${versheader_cmd})
-
-find_program(genconfuser_cmd genconfuser.py HINTS ${hints})
-set(genconfuser_cmd ${PYTHON_EXECUTABLE} ${genconfuser_cmd})
-
-find_program(zippythondir_cmd ZipPythonDir.py HINTS ${hints})
-set(zippythondir_cmd ${PYTHON_EXECUTABLE} ${zippythondir_cmd})
-
-find_program(gaudirun_cmd gaudirun.py HINTS ${hints})
-set(gaudirun_cmd ${PYTHON_EXECUTABLE} ${gaudirun_cmd})
-
 #-------------------------------------------------------------------------------
 # gaudi_project(project version)
 #
@@ -142,37 +120,7 @@ macro(gaudi_project project version)
     enable_testing()
   endif()
 
-  # FIXME: external tools need to be found independently of the project
-  if(CMAKE_PROJECT_NAME STREQUAL Gaudi)
-    if (NOT USE_EXE_SUFFIX)
-      set(genconf_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genconf)
-      set(genwindef_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genwindef)
-    else()
-      set(genconf_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genconf.exe)
-      set(genwindef_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genwindef.exe)
-    endif()
-  else()
-    if (NOT USE_EXE_SUFFIX)
-      set(genconf_cmd ${GAUDI_binaryarea}/bin/genconf.exe)
-      set(genwindef_cmd ${GAUDI_binaryarea}/bin/genwindef.exe)
-    else()
-      set(genconf_cmd ${GAUDI_binaryarea}/bin/genconf.exe)
-      set(genwindef_cmd ${GAUDI_binaryarea}/bin/genwindef.exe)
-    endif()
-    set(GAUDI_SOURCE_DIR ${GAUDI_installation})
-  endif()
-
-  #--- Project Installations------------------------------------------------------------------------
-  install(DIRECTORY cmake/ DESTINATION cmake
-                           FILES_MATCHING PATTERN "*.cmake"
-                           PATTERN ".svn" EXCLUDE )
-  install(PROGRAMS cmake/testwrap.sh cmake/testwrap.csh cmake/testwrap.bat cmake/genCMake.py cmake/env.py DESTINATION scripts)
-
-  #--- Global actions for the project
-  include(GaudiBuildFlags)
-  gaudi_project_version_header()
-
-  #--- Find and collect settings for subdirectories
+  #--- Find subdirectories
   message(STATUS "Looking for local directories...")
   # Locate packages
   gaudi_get_packages(packages)
@@ -181,6 +129,84 @@ macro(gaudi_project project version)
     message(STATUS "  ${package}")
   endforeach()
 
+  if(NOT CMAKE_PROJECT_NAME STREQUAL Gaudi)
+    message(STATUS "Looking for projects:")
+    set(other_project Gaudi)
+    set(other_project_version v23r1)
+    set(other_project_cmake_version 23.1)
+
+    if(NOT ${other_project}_FOUND)
+      find_package(${other_project} ${other_project_cmake_version} HINTS ..)
+      if(${other_project}_FOUND)
+        message(STATUS "  found ${other_project} ${${other_project}_VERSION} ${${other_project}_DIR}")
+        include_directories(${${other_project}_INCLUDE_DIRS})
+        set(hints ${${other_project}_BINARY_PATH})
+        foreach(exported ${${other_project}_EXPORTED_SUBDIRS})
+          list(FIND packages ${exported} is_needed)
+          if(is_needed LESS 0)
+            message(STATUS "    importing ${exported}")
+            get_filename_component(exported ${exported} NAME)
+            include(${exported}Export)
+          endif()
+        endforeach()
+      endif()
+    endif()
+
+  endif()
+
+  #--- commands required to build cached variable
+  # (python scripts are located as such but run through python)
+  set(hints ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts ${CMAKE_SOURCE_DIR}/GaudiKernel/scripts ${CMAKE_SOURCE_DIR}/Gaudi/scripts ${hints})
+
+  find_program(env_cmd env.py HINTS ${hints})
+  set(env_cmd ${PYTHON_EXECUTABLE} ${env_cmd})
+
+  find_program(merge_cmd merge_files.py HINTS ${hints})
+  set(merge_cmd ${PYTHON_EXECUTABLE} ${merge_cmd} --no-stamp)
+
+  find_program(versheader_cmd createProjVersHeader.py HINTS ${hints})
+  set(versheader_cmd ${PYTHON_EXECUTABLE} ${versheader_cmd})
+
+  find_program(genconfuser_cmd genconfuser.py HINTS ${hints})
+  set(genconfuser_cmd ${PYTHON_EXECUTABLE} ${genconfuser_cmd})
+
+  find_program(zippythondir_cmd ZipPythonDir.py HINTS ${hints})
+  set(zippythondir_cmd ${PYTHON_EXECUTABLE} ${zippythondir_cmd})
+
+  find_program(gaudirun_cmd gaudirun.py HINTS ${hints})
+  set(gaudirun_cmd ${PYTHON_EXECUTABLE} ${gaudirun_cmd})
+
+  # FIXME: external tools need to be found independently of the project
+  if(TARGET genconf)
+    get_target_property(genconf_cmd genconf IMPORTED_LOCATION)
+  else()
+    if (NOT USE_EXE_SUFFIX)
+      set(genconf_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genconf)
+    else()
+      set(genconf_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genconf.exe)
+    endif()
+  endif()
+  if(TARGET genwindef)
+    get_target_property(genwindef_cmd genwindef IMPORTED_LOCATION)
+  else()
+    if (NOT USE_EXE_SUFFIX)
+      set(genwindef_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genwindef)
+    else()
+      set(genwindef_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genwindef.exe)
+    endif()
+  endif()
+
+  #--- Project Installations------------------------------------------------------------------------
+  install(DIRECTORY cmake/ DESTINATION cmake
+                           FILES_MATCHING PATTERN "*.cmake"
+                           PATTERN ".svn" EXCLUDE )
+  install(PROGRAMS cmake/testwrap.sh cmake/testwrap.csh cmake/testwrap.bat cmake/genCMake.py cmake/env.py DESTINATION scripts OPTIONAL)
+
+  #--- Global actions for the project
+  include(GaudiBuildFlags)
+  gaudi_project_version_header()
+
+  #--- Collect settings for subdirectories
   set(library_path)
   # Take into account the dependencies between local subdirectories before
   # adding them to the build.
@@ -245,7 +271,7 @@ macro(gaudi_project project version)
   gaudi_generate_project_config_version_file()
   gaudi_generate_project_config_file()
   gaudi_generate_project_platform_config_file()
-
+  gaudi_generate_exports(${packages})
 
   #--- CPack configuration
   set(CPACK_PACKAGE_NAME ${project})
@@ -266,9 +292,17 @@ endmacro()
 # Adde the include directories of each package to the include directories.
 #-------------------------------------------------------------------------------
 function(include_package_directories)
+  #message(STATUS "include_package_directories(${ARGN})")
   foreach(package ${ARGN})
     # we need to ensure that the user can call this function also for directories
-    if(IS_DIRECTORY ${package})
+    if(TARGET ${package})
+      get_target_property(to_incl ${package} SOURCE_DIR)
+      if(to_incl)
+        #message(STATUS "include_package_directories2 include_directories(${to_incl})")
+        include_directories(${to_incl})
+      endif()
+    elseif(IS_DIRECTORY ${package})
+      #message(STATUS "include_package_directories1 include_directories(${package})")
       include_directories(${package})
     else()
       # ensure that the current directory knows about the package
@@ -289,6 +323,7 @@ function(include_package_directories)
           set(to_incl ${package}_INCLUDE_DIRS)
         endif()
         # Include the directories
+        #message(STATUS "include_package_directories3 include_directories(${${to_incl}})")
         include_directories(${${to_incl}})
       endif()
     endif()
@@ -379,7 +414,14 @@ function(gaudi_resolve_link_libraries variable)
   set(collected)
   foreach(package ${ARGN})
     # check if it is an actual library or a target first
-    if(TARGET ${package} OR EXISTS ${package})
+    if(TARGET ${package})
+      set(collected ${collected} ${package})
+      get_target_property(libs ${package} REQUIRED_LIBRARIES)
+      if(libs)
+        gaudi_resolve_link_libraries(libs ${libs})
+        set(collected ${collected} ${libs})
+      endif()
+    elseif(EXISTS ${package})
       set(collected ${collected} ${package})
     else()
       # it must be an available package
@@ -401,6 +443,7 @@ function(gaudi_resolve_link_libraries variable)
       endif()
     endif()
   endforeach()
+  list(REMOVE_DUPLICATES collected)
   set(${variable} ${collected} PARENT_SCOPE)
 endfunction()
 
@@ -587,6 +630,7 @@ function(gaudi_get_required_include_dirs output)
   foreach(lib ${ARGN})
     set(req)
     if(TARGET ${lib})
+      list(APPEND collected ${lib})
       get_property(req TARGET ${lib} PROPERTY REQUIRED_INCLUDE_DIRS)
       if(req)
         list(APPEND collected ${req})
@@ -594,7 +638,9 @@ function(gaudi_get_required_include_dirs output)
     endif()
   endforeach()
   if(collected)
-    set(${output} ${collected} ${${output}} PARENT_SCOPE)
+    set(collected ${collected} ${${output}})
+    list(REMOVE_DUPLICATES collected)
+    set(${output} ${collected} PARENT_SCOPE)
   endif()
 endfunction()
 
@@ -663,12 +709,15 @@ macro(gaudi_common_add_build)
   # find the sources
   gaudi_expand_sources(srcs ${ARG_UNPARSED_ARGUMENTS})
 
+  #message(STATUS "gaudi_common_add_build ${ARG_LINK_LIBRARIES}")
   # get the inherited include directories
   gaudi_get_required_include_dirs(ARG_INCLUDE_DIRS ${ARG_LINK_LIBRARIES})
 
+  #message(STATUS "gaudi_common_add_build ${ARG_INCLUDE_DIRS}")
   # add the package includes to the current list
   include_package_directories(${ARG_INCLUDE_DIRS})
 
+  #message(STATUS "gaudi_common_add_build ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES}")
   # get the library dirs required to get the libraries we use
   gaudi_get_required_library_dirs(lib_path ${ARG_LINK_LIBRARIES})
   set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
@@ -714,7 +763,10 @@ function(gaudi_add_library library)
   endif()
 
   # Declare that the used headers are needed by the libraries linked against this one
-  set_property(TARGET ${library} PROPERTY REQUIRED_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${ARG_INCLUDE_DIRS})
+  set_target_properties(${library} PROPERTIES
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
+    REQUIRED_INCLUDE_DIRS "${ARG_INCLUDE_DIRS}"
+    REQUIRED_LIBRARIES "${ARG_LINK_LIBRARIES}")
   set_property(GLOBAL APPEND PROPERTY LINKER_LIBRARIES ${library})
 
   if(TARGET ${library}Obj2doth)
@@ -722,6 +774,7 @@ function(gaudi_add_library library)
   endif()
   #----Installation details-------------------------------------------------------
   install(TARGETS ${library} EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION  ${lib})
+  gaudi_export(LIBRARY ${library})
   gaudi_install_headers(${ARG_PUBLIC_HEADERS})
   install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake)
 endfunction()
@@ -829,6 +882,7 @@ function(gaudi_add_executable executable)
   #----Installation details-------------------------------------------------------
   install(TARGETS ${executable} EXPORT ${CMAKE_PROJECT_NAME}Exports RUNTIME DESTINATION ${bin})
   install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake)
+  gaudi_export(EXECUTABLE ${executable})
 
 endfunction()
 
@@ -1108,7 +1162,6 @@ set(${CMAKE_PROJECT_NAME}_VERSION_MINOR ${CMAKE_PROJECT_VERSION_MINOR})
 set(${CMAKE_PROJECT_NAME}_VERSION_PATCH ${CMAKE_PROJECT_VERSION_PATCH})
 
 include(${CMAKE_PROJECT_NAME}PlatformConfig)
-include(${CMAKE_PROJECT_NAME}Environment)
 ")
   install(FILES ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake DESTINATION ${CMAKE_SOURCE_DIR})
 endmacro()
@@ -1126,46 +1179,37 @@ macro(gaudi_generate_project_platform_config_file)
   get_property(linker_libraries GLOBAL PROPERTY LINKER_LIBRARIES)
   get_property(component_libraries GLOBAL PROPERTY COMPONENT_LIBRARIES)
 
-  string(TOUPPER ${CMAKE_PROJECT_NAME} _proj_upper)
-
   set(filename ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}PlatformConfig.cmake)
   file(WRITE ${filename}
 "# File automatically generated: DO NOT EDIT.
 
 # Get the exported informations about the targets
 get_filename_component(_dir "\${CMAKE_CURRENT_LIST_FILE}" PATH)
-include(\${_dir}/${CMAKE_PROJECT_NAME}Exports.cmake)
+#include(\${_dir}/${CMAKE_PROJECT_NAME}Exports.cmake)
 
 # Set useful properties
 get_filename_component(_dir "\${_dir}" PATH)
-set(${_proj_upper}_INCLUDE_DIRS \${_dir}/include)
-set(${_proj_upper}_LIBRARY_DIRS \${_dir}/lib)
+set(${CMAKE_PROJECT_NAME}_INCLUDE_DIRS \${_dir}/include)
+set(${CMAKE_PROJECT_NAME}_LIBRARY_DIRS \${_dir}/lib)
 
-set(${_proj_upper}_BINARY_PATH \${_dir}/bin)
+set(${CMAKE_PROJECT_NAME}_BINARY_PATH \${_dir}/bin \${_dir}/scripts)
 if(EXISTS \${_dir}/python.zip)
-  set(${_proj_upper}_PYTHON_PATH \${_dir}/python.zip)
+  set(${CMAKE_PROJECT_NAME}_PYTHON_PATH \${_dir}/python.zip)
 else()
-  set(${_proj_upper}_PYTHON_PATH \${_dir}/python)
+  set(${CMAKE_PROJECT_NAME}_PYTHON_PATH \${_dir}/python)
 endif()
 
-set(${_proj_upper}_COMPONENT_LIBRARIES ${component_libraries})
-set(${_proj_upper}_LINKER_LIBRARIES ${linker_libraries})
+set(${CMAKE_PROJECT_NAME}_COMPONENT_LIBRARIES ${component_libraries})
+set(${CMAKE_PROJECT_NAME}_LINKER_LIBRARIES ${linker_libraries})
 
-# Add special properties to the targets
+set(${CMAKE_PROJECT_NAME}_EXPORTED_SUBDIRS)
+foreach(p ${packages})
+  get_filename_component(pn \${p} NAME)
+  if(EXISTS \${_dir}/cmake/\${pn}Export.cmake)
+    set(${CMAKE_PROJECT_NAME}_EXPORTED_SUBDIRS \${${CMAKE_PROJECT_NAME}_EXPORTED_SUBDIRS} \${p})
+  endif()
+endforeach()
 ")
-
-  foreach(library ${linker_libraries})
-    get_property(use_headers TARGET ${library} PROPERTY REQUIRED_INCLUDE_DIRS)
-    file(APPEND ${filename}
-      "set_property(TARGET ${library} PROPERTY REQUIRED_INCLUDE_DIRS ${use_headers})\n")
-  endforeach()
-
-  file(APPEND ${filename} "\n# These are not really needed because we import the targets\n")
-  foreach(library ${linker_libraries})
-    get_property(use_headers TARGET ${library} PROPERTY REQUIRED_INCLUDE_DIRS)
-    file(APPEND ${filename}
-      "find_library(${_proj_upper}_${library}_LIBRARY ${library} PATHS \${${_proj_upper}_LIBRARY_DIR} NO_DEFAULT_PATH)\n")
-  endforeach()
 
   install(FILES ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}PlatformConfig.cmake DESTINATION cmake)
 endmacro()
@@ -1315,4 +1359,77 @@ macro(gaudi_external_project_environment)
     set(project_environment ${project_environment} PREPEND LD_LIBRARY_PATH ${val})
   endforeach()
 
+endmacro()
+
+#-------------------------------------------------------------------------------
+# gaudi_export( (LIBRARY | EXECUTABLE)
+#               <name> )
+#
+# Internal function used to export targets.
+#-------------------------------------------------------------------------------
+function(gaudi_export type name)
+  set_property(DIRECTORY APPEND PROPERTY GAUDI_EXPORTED_${type} ${name})
+endfunction()
+
+#-------------------------------------------------------------------------------
+# gaudi_generate_exports(subdirs...)
+#
+# Internal function that generate the export data.
+#-------------------------------------------------------------------------------
+macro(gaudi_generate_exports)
+  foreach(package ${ARGN})
+    # we do not use the "Hat" for the export names
+    get_filename_component(pkgname ${package} NAME)
+    get_property(exported_libs  DIRECTORY ${package} PROPERTY GAUDI_EXPORTED_LIBRARY)
+    get_property(exported_execs DIRECTORY ${package} PROPERTY GAUDI_EXPORTED_EXECUTABLE)
+
+    if (exported_libs OR exported_execs)
+      set(pkg_exp_file ${pkgname}Export.cmake)
+
+      message(STATUS "Generating ${pkg_exp_file}")
+      set(pkg_exp_file ${CMAKE_CURRENT_BINARY_DIR}/${pkg_exp_file})
+
+      file(WRITE ${pkg_exp_file}
+"# File automatically generated: DO NOT EDIT.
+
+# Compute the installation prefix relative to this file.
+get_filename_component(_IMPORT_PREFIX \"\${CMAKE_CURRENT_LIST_FILE}\" PATH)
+get_filename_component(_IMPORT_PREFIX \"\${_IMPORT_PREFIX}\" PATH)
+
+")
+
+      foreach(library ${exported_libs})
+        file(APPEND ${pkg_exp_file} "add_library(${library} SHARED IMPORTED)\n")
+        file(APPEND ${pkg_exp_file} "set_target_properties(${library} PROPERTIES\n")
+
+        foreach(pn REQUIRED_INCLUDE_DIRS REQUIRED_LIBRARIES)
+          get_property(prop TARGET ${library} PROPERTY ${pn})
+          if (prop)
+            file(APPEND ${pkg_exp_file} "  ${pn} \"${prop}\"\n")
+          endif()
+        endforeach()
+
+        get_property(prop TARGET ${library} PROPERTY LOCATION)
+        get_filename_component(prop ${prop} NAME)
+        file(APPEND ${pkg_exp_file} "  IMPORTED_SONAME \"${prop}\"\n")
+        file(APPEND ${pkg_exp_file} "  IMPORTED_LOCATION \"\${_IMPORT_PREFIX}/lib/${prop}\"\n")
+
+        file(APPEND ${pkg_exp_file} "  )\n")
+      endforeach()
+
+      foreach(executable ${exported_execs})
+
+        file(APPEND ${pkg_exp_file} "add_executable(${executable} IMPORTED)\n")
+        file(APPEND ${pkg_exp_file} "set_target_properties(${executable} PROPERTIES\n")
+
+        get_property(prop TARGET ${executable} PROPERTY LOCATION)
+        get_filename_component(prop ${prop} NAME)
+        file(APPEND ${pkg_exp_file} "  IMPORTED_LOCATION \"\${_IMPORT_PREFIX}/bin/${prop}\"\n")
+
+        file(APPEND ${pkg_exp_file} "  )\n")
+      endforeach()
+
+    endif()
+    install(FILES ${pkg_exp_file} DESTINATION cmake)
+  endforeach()
 endmacro()
