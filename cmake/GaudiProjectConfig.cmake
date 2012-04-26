@@ -867,6 +867,7 @@ function(gaudi_add_module library)
 
   #----Installation details-------------------------------------------------------
   install(TARGETS ${library} LIBRARY DESTINATION ${lib})
+  gaudi_export(MODULE ${library})
 endfunction()
 
 # Backward compatibility macro
@@ -1435,7 +1436,7 @@ macro(gaudi_external_project_environment)
 endmacro()
 
 #-------------------------------------------------------------------------------
-# gaudi_export( (LIBRARY | EXECUTABLE)
+# gaudi_export( (LIBRARY | EXECUTABLE | MODULE)
 #               <name> )
 #
 # Internal function used to export targets.
@@ -1455,8 +1456,9 @@ macro(gaudi_generate_exports)
     get_filename_component(pkgname ${package} NAME)
     get_property(exported_libs  DIRECTORY ${package} PROPERTY GAUDI_EXPORTED_LIBRARY)
     get_property(exported_execs DIRECTORY ${package} PROPERTY GAUDI_EXPORTED_EXECUTABLE)
+    get_property(exported_mods  DIRECTORY ${package} PROPERTY GAUDI_EXPORTED_MODULE)
 
-    if (exported_libs OR exported_execs)
+    if (exported_libs OR exported_execs OR exported_mods)
       set(pkg_exp_file ${pkgname}Export.cmake)
 
       message(STATUS "Generating ${pkg_exp_file}")
@@ -1500,6 +1502,10 @@ get_filename_component(_IMPORT_PREFIX \"\${_IMPORT_PREFIX}\" PATH)
         file(APPEND ${pkg_exp_file} "  IMPORTED_LOCATION \"\${_IMPORT_PREFIX}/bin/${prop}\"\n")
 
         file(APPEND ${pkg_exp_file} "  )\n")
+      endforeach()
+
+      foreach(module ${exported_mods})
+        file(APPEND ${pkg_exp_file} "add_library(${module} MODULE IMPORTED)\n")
       endforeach()
 
     endif()
