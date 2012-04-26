@@ -2,7 +2,7 @@
 # CMakeLists.txt file for building RootHistCnv
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-require(GaudiKernel)
+depends_on_subdirs(GaudiKernel)
 
 find_package(AIDA)
 find_package(ROOT COMPONENTS RIO Hist Matrix Tree)

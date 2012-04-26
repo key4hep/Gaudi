@@ -211,7 +211,21 @@ macro(gaudi_project project version)
   set(library_path)
   # Take into account the dependencies between local subdirectories before
   # adding them to the build.
-  gaudi_sort_subdirectories(packages)
+  gaudi_collect_subdir_deps(${packages})
+  # sort all known packages
+  gaudi_sort_subdirectories(known_packages)
+  # extract the local packages from the sorted list
+  set(sorted_packages)
+  foreach(var ${known_packages})
+    list(FIND packages ${var} idx)
+    if(NOT idx LESS 0)
+      list(APPEND sorted_packages ${var})
+    endif()
+  endforeach()
+  #message(STATUS "${known_packages}")
+  #message(STATUS "${packages}")
+  set(packages ${sorted_packages})
+  #message(STATUS "${packages}")
   # Add all subdirectories to the project build.
   foreach(package ${packages})
     message(STATUS "Adding directory ${package}")
@@ -396,32 +410,57 @@ function(include_package_directories)
   endforeach()
 endfunction()
 
-#-------------------------------------------------------------------------------
-# gaudi_sort_subdirectories
-#-------------------------------------------------------------------------------
-# NO-OP function used by gaudi_sort_subdirectories
-function(require)
+# NO-OP function used by gaudi_sort_subdirectories to get the dependencies
+# from the subdirectories before actually add them
+function(depends_on_subdirs)
 endfunction()
-# helper macros to collect the required subdirs
+#-------------------------------------------------------------------------------
+# gaudi_collect_subdir_deps(subdirectories)
+#
+# look for dependencies declared in the subdirectories
+#-------------------------------------------------------------------------------
+macro(gaudi_collect_subdir_deps)
+  foreach(_p ${ARGN})
+    # initialize dependencies variable
+    set(${_p}_DEPENDENCIES)
+    # parse the CMakeLists.txt
+    file(READ ${CMAKE_SOURCE_DIR}/${_p}/CMakeLists.txt file_contents)
+    string(REGEX MATCHALL "depends_on_subdirs *\\(([^)]+)\\)" vars ${file_contents})
+    foreach(var ${vars})
+      # extract the individual subdir names
+      string(REGEX REPLACE "depends_on_subdirs *\\(([^)]+)\\)" "\\1" __p ${var})
+      separate_arguments(__p)
+      foreach(___p ${__p})
+        # remove newlines in the matched subdir name
+        string(REGEX REPLACE "(\r?\n)+$" "" ___p "${___p}")
+        # check that the declared dependency refers to an existing (known) package
+        list(FIND known_packages ${___p} idx)
+        if(idx LESS 0)
+          message(WARNING "Subdirectory '${_p}' declare dependency on unknown subdirectory '${___p}'")
+        endif()
+        list(APPEND ${_p}_DEPENDENCIES ${___p})
+      endforeach()
+    endforeach()
+  endforeach()
+endmacro()
+# helper function used by gaudi_sort_subdirectories
 macro(__visit__ _p)
   if(NOT __${_p}_visited__)
-    set(__${_p}_visited__ 1)
-    #---list all dependent packages-----
-    if( EXISTS ${CMAKE_SOURCE_DIR}/${_p}/CMakeLists.txt)
-      file(READ ${CMAKE_SOURCE_DIR}/${_p}/CMakeLists.txt file_contents)
-      string(REGEX MATCHALL "require *\\(([^)]+)\\)" vars ${file_contents})
-      foreach(var ${vars})
-        string(REGEX REPLACE "require *\\(([^)]+)\\)" "\\1" __p ${var})
-        separate_arguments(__p)
-        foreach(___p ${__p})
-           __visit__(${___p})
-        endforeach()
+    set(__${_p}_visited__ TRUE)
+    if(${_p}_DEPENDENCIES)
+      foreach(___p ${${_p}_DEPENDENCIES})
+        __visit__(${___p})
       endforeach()
-      set(out_packages ${out_packages} ${_p})
     endif()
+    list(APPEND out_packages ${_p})
   endif()
 endmacro()
-# Actual function
+#-------------------------------------------------------------------------------
+# gaudi_sort_subdirectories(var)
+#
+# Sort the list of subdirectories in the variable `var` according to the
+# declared dependencies.
+#-------------------------------------------------------------------------------
 function(gaudi_sort_subdirectories var)
   set(out_packages)
   set(in_packages ${${var}})
@@ -444,9 +483,10 @@ function(gaudi_get_packages var)
     # ignore the source directory itself
     if(NOT path STREQUAL CMakeLists.txt)
       get_filename_component(package ${file} PATH)
-      SET(packages ${packages} ${package})
+      list(APPEND packages ${package})
     endif()
   endforeach()
+  list(SORT var)
   set(${var} ${packages} PARENT_SCOPE)
 endfunction()
 
@@ -1508,6 +1548,9 @@ get_filename_component(_IMPORT_PREFIX \"\${_IMPORT_PREFIX}\" PATH)
         file(APPEND ${pkg_exp_file} "add_library(${module} MODULE IMPORTED)\n")
       endforeach()
 
+      if(${package}_DEPENDENCIES)
+        file(APPEND ${pkg_exp_file} "set(${package}_DEPENDENCIES ${${package}_DEPENDENCIES})\n")
+      endif()
     endif()
     install(FILES ${pkg_exp_file} DESTINATION cmake)
   endforeach()

@@ -2,7 +2,7 @@
 # CMakeLists.txt file for building GaudiUtils
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-require(GaudiKernel)
+depends_on_subdirs(GaudiKernel)
 
 find_package(Boost)
 find_package(AIDA)

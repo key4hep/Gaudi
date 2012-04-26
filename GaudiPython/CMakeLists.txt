@@ -2,7 +2,7 @@
 # CMakeLists.txt file for building GaudiPython
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-require(GaudiAlg GaudiUtils GaudiKernel)
+depends_on_subdirs(GaudiAlg GaudiUtils GaudiKernel)
 
 find_package(CLHEP)
 find_package(PythonLibs)

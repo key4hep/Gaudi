@@ -1,7 +1,7 @@
 ############################################################################
 # CMakeLists.txt file for building GaudiProfiling
 ############################################################################
-require(GaudiKernel GaudiAlg)
+depends_on_subdirs(GaudiKernel GaudiAlg)
 
 if (CMAKE_SYSTEM_NAME MATCHES Linux)
 

@@ -1,4 +1,4 @@
-require(GaudiKernel GaudiUtils)
+depends_on_subdirs(GaudiKernel GaudiUtils)
 
 find_package(ROOT COMPONENTS RIO Tree TreePlayer MathCore)
 
