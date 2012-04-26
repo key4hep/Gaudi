@@ -1179,6 +1179,7 @@ macro(gaudi_generate_project_platform_config_file)
   get_property(linker_libraries GLOBAL PROPERTY LINKER_LIBRARIES)
   get_property(component_libraries GLOBAL PROPERTY COMPONENT_LIBRARIES)
 
+  string(REPLACE "\$" "\\\$" project_environment_string "${project_environment}")
   set(filename ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}PlatformConfig.cmake)
   file(WRITE ${filename}
 "# File automatically generated: DO NOT EDIT.
@@ -1201,6 +1202,8 @@ endif()
 
 set(${CMAKE_PROJECT_NAME}_COMPONENT_LIBRARIES ${component_libraries})
 set(${CMAKE_PROJECT_NAME}_LINKER_LIBRARIES ${linker_libraries})
+
+set(${CMAKE_PROJECT_NAME}_ENVIRONMENT ${project_environment_string})
 
 set(${CMAKE_PROJECT_NAME}_EXPORTED_SUBDIRS)
 foreach(p ${packages})
@@ -1273,9 +1276,9 @@ function(gaudi_generate_env_conf filename)
   set(data "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <env:config xmlns:env=\"EnvSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"EnvSchema EnvSchema.xsd \">\n")
   set(commands ${ARGN})
-#  message(STATUS "start - ${commands}")
+  #message(STATUS "start - ${commands}")
   while(commands)
-#    message(STATUS "iter - ${commands}")
+    #message(STATUS "iter - ${commands}")
     _env_conf_pop_instruction(instr commands)
     # ensure that the variables in the value are not expanded when passing the arguments
     string(REPLACE "\$" "\\\$" instr "${instr}")
@@ -1341,7 +1344,7 @@ macro(gaudi_external_project_environment)
   # Remove system libraries from the library_path
   list(REMOVE_ITEM library_path /usr/lib /lib /usr/lib64 /lib64 /usr/lib32 /lib32)
 
-  foreach(var library_path python_path binary_path environment)
+  foreach(var library_path python_path binary_path)
     if(${var})
       list(REMOVE_DUPLICATES ${var})
     endif()
@@ -1358,6 +1361,8 @@ macro(gaudi_external_project_environment)
   foreach(val ${library_path})
     set(project_environment ${project_environment} PREPEND LD_LIBRARY_PATH ${val})
   endforeach()
+
+  set(project_environment ${project_environment} ${environment})
 
 endmacro()
 
