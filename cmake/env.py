@@ -99,10 +99,6 @@ def main():
     else:
         env = dict(os.environ)
 
-    env = set_env(env,
-                  set = opts.set, unset = opts.unset,
-                  append = opts.append, prepend = opts.prepend)
-
     if opts.xml:
         from EnvConfig import Control
         control = Control.Environment()
@@ -115,6 +111,10 @@ def main():
         for f in opts.xml:
             control.loadXML(f)
         env = control.vars()
+
+    env = set_env(env,
+                  set = opts.set, unset = opts.unset,
+                  append = opts.append, prepend = opts.prepend)
 
     if not cmd:
         for nv in env.items():
