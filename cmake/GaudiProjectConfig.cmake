@@ -129,54 +129,54 @@ macro(gaudi_project project version)
     message(STATUS "  ${package}")
   endforeach()
 
-  if(NOT CMAKE_PROJECT_NAME STREQUAL Gaudi)
-    message(STATUS "Looking for projects:")
-    set(other_project Gaudi)
-    set(other_project_version v23r1)
-    set(other_project_cmake_version 23.1)
+  # List of all known packages, including those exported by other projects
+  set(known_packages ${packages})
+  #message(STATUS "known_packages (initial) ${known_packages}")
 
-    if(NOT ${other_project}_FOUND)
-      find_package(${other_project} ${other_project_cmake_version} HINTS ..)
-      if(${other_project}_FOUND)
-        message(STATUS "  found ${other_project} ${${other_project}_VERSION} ${${other_project}_DIR}")
-        include_directories(${${other_project}_INCLUDE_DIRS})
-        set(hints ${${other_project}_BINARY_PATH})
-        foreach(exported ${${other_project}_EXPORTED_SUBDIRS})
-          list(FIND packages ${exported} is_needed)
-          if(is_needed LESS 0)
-            message(STATUS "    importing ${exported}")
-            get_filename_component(exported ${exported} NAME)
-            include(${exported}Export)
-          endif()
-        endforeach()
-      endif()
+  # paths where to locate scripts and executables
+  # Note: it's a bit a duplicate of the one used in gaudi_external_project_environment
+  #       but we need it here because the other one is meant to include also
+  #       the external libraries requyired by the subdirectories.
+  set(binary_paths)
+
+  # Note: the indirection is needed because we are in a macro and not in a function
+  #       but the variable 'PROJECT_USES' is propagated in the exports.
+  set(PROJECT_USES ${ARGN})
+  # we proceed only if we do have extra arguments
+  if(PROJECT_USES)
+    list(GET PROJECT_USES 0 el)
+    if(NOT el STREQUAL "USE")
+      message(FATAL_ERROR "Wrong argument ${el}: expected 'USE'")
+    else()
+      list(REMOVE_AT PROJECT_USES 0)
+      _gaudi_use_other_projects(${PROJECT_USES})
     endif()
-
   endif()
 
   #--- commands required to build cached variable
   # (python scripts are located as such but run through python)
-  set(hints ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts ${CMAKE_SOURCE_DIR}/GaudiKernel/scripts ${CMAKE_SOURCE_DIR}/Gaudi/scripts ${hints})
+  set(binary_paths ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts ${CMAKE_SOURCE_DIR}/GaudiKernel/scripts ${CMAKE_SOURCE_DIR}/Gaudi/scripts ${binary_paths})
 
-  find_program(env_cmd env.py HINTS ${hints})
+  find_program(env_cmd env.py PATHS ${binary_paths})
   set(env_cmd ${PYTHON_EXECUTABLE} ${env_cmd})
 
-  find_program(merge_cmd merge_files.py HINTS ${hints})
+  find_program(merge_cmd merge_files.py PATHS ${binary_paths})
   set(merge_cmd ${PYTHON_EXECUTABLE} ${merge_cmd} --no-stamp)
 
-  find_program(versheader_cmd createProjVersHeader.py HINTS ${hints})
+  find_program(versheader_cmd createProjVersHeader.py PATHS ${binary_paths})
   set(versheader_cmd ${PYTHON_EXECUTABLE} ${versheader_cmd})
 
-  find_program(genconfuser_cmd genconfuser.py HINTS ${hints})
+  find_program(genconfuser_cmd genconfuser.py PATHS ${binary_paths})
   set(genconfuser_cmd ${PYTHON_EXECUTABLE} ${genconfuser_cmd})
 
-  find_program(zippythondir_cmd ZipPythonDir.py HINTS ${hints})
+  find_program(zippythondir_cmd ZipPythonDir.py PATHS ${binary_paths})
   set(zippythondir_cmd ${PYTHON_EXECUTABLE} ${zippythondir_cmd})
 
-  find_program(gaudirun_cmd gaudirun.py HINTS ${hints})
+  find_program(gaudirun_cmd gaudirun.py PATHS ${binary_paths})
   set(gaudirun_cmd ${PYTHON_EXECUTABLE} ${gaudirun_cmd})
 
-  # FIXME: external tools need to be found independently of the project
+  # genconf is special because it must be known before we actually declare the
+  # target in GaudiKernel/src/Util (because we need to be dynamic and agnostic).
   if(TARGET genconf)
     get_target_property(genconf_cmd genconf IMPORTED_LOCATION)
   else()
@@ -186,6 +186,7 @@ macro(gaudi_project project version)
       set(genconf_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genconf.exe)
     endif()
   endif()
+  # same as genconf (but it might never be built because it's needed only on WIN32)
   if(TARGET genwindef)
     get_target_property(genwindef_cmd genwindef IMPORTED_LOCATION)
   else()
@@ -284,6 +285,58 @@ macro(gaudi_project project version)
 
   include(CPack)
 
+endmacro()
+
+#-------------------------------------------------------------------------------
+# _gaudi_use_other_projects([project version [project version]...])
+#
+# Internal macro implementing the handline of the "USE" option.
+# (improve readability)
+#-------------------------------------------------------------------------------
+macro(_gaudi_use_other_projects)
+  message(STATUS "Looking for projects:")
+
+  # this is neede because of the way variable expansion works in macros
+  set(ARGN_ ${ARGN})
+  while(ARGN_)
+    list(LENGTH ARGN_ len)
+    if(len LESS 2)
+      message(FATAL_ERROR "Wrong number of arguments to USE option")
+    endif()
+    list(GET ARGN_ 0 other_project)
+    list(GET ARGN_ 1 other_project_version)
+    list(REMOVE_AT ARGN_ 0 1)
+
+    string(REGEX MATCH "v?([0-9]+)[r.]([0-9]+)([p.]([0-9]+))?" _version ${other_project_version})
+
+    set(other_project_cmake_version ${CMAKE_MATCH_1}.${CMAKE_MATCH_2})
+    if(NOT CMAKE_MATCH_4 STREQUAL "")
+      set(other_project_cmake_version ${other_project_cmake_version}.${CMAKE_MATCH_4})
+    endif()
+
+    if(NOT ${other_project}_FOUND)
+      find_package(${other_project} ${other_project_cmake_version} HINTS ..)
+      if(${other_project}_FOUND)
+        message(STATUS "  found ${other_project} ${${other_project}_VERSION} ${${other_project}_DIR}")
+        include_directories(${${other_project}_INCLUDE_DIRS})
+        set(binary_paths ${${other_project}_BINARY_PATH})
+        foreach(exported ${${other_project}_EXPORTED_SUBDIRS})
+          list(FIND known_packages ${exported} is_needed)
+          if(is_needed LESS 0)
+            list(APPEND known_packages ${exported})
+            message(STATUS "    importing ${exported}")
+            get_filename_component(exported ${exported} NAME)
+            include(${exported}Export)
+          endif()
+        endforeach()
+        if(${other_project}_USES)
+          list(INSERT ARGN_ 0 ${${other_project}_USES})
+        endif()
+      endif()
+      message(STATUS "know_packages (after ${other_project}) ${known_packages}")
+    endif()
+
+  endwhile()
 endmacro()
 
 #-------------------------------------------------------------------------------
@@ -1160,6 +1213,8 @@ set(${CMAKE_PROJECT_NAME}_VERSION ${CMAKE_PROJECT_VERSION})
 set(${CMAKE_PROJECT_NAME}_VERSION_MAJOR ${CMAKE_PROJECT_VERSION_MAJOR})
 set(${CMAKE_PROJECT_NAME}_VERSION_MINOR ${CMAKE_PROJECT_VERSION_MINOR})
 set(${CMAKE_PROJECT_NAME}_VERSION_PATCH ${CMAKE_PROJECT_VERSION_PATCH})
+
+set(${CMAKE_PROJECT_NAME}_USES ${PROJECT_USES})
 
 include(${CMAKE_PROJECT_NAME}PlatformConfig)
 ")
