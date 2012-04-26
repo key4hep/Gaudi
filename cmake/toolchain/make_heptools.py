@@ -117,7 +117,7 @@ LCG_prepare_paths()"""
         yield self.__header__
 
         # first let's get rid of the special ones
-        yield "set(LCG_config_version  %s)" % versions.pop("LCG")
+        yield "set(heptools_version  %s)" % versions.pop("LCG")
 
         yield "\n# Application Area Projects"
         for name in self.__AA_projects__:

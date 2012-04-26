@@ -4,7 +4,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/heptools-common.cmake)
 # please keep alphabetic order and the structure (tabbing).
 # it makes it much easier to edit/read this file !
 
-set(LCG_config_version  60b)
+set(heptools_version  60b)
 
 LCG_AA_project(COOL   COOL_2_8_9a)
 LCG_AA_project(CORAL  CORAL_2_3_15)

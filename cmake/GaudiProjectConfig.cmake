@@ -318,6 +318,19 @@ macro(_gaudi_use_other_projects)
       find_package(${other_project} ${other_project_cmake_version} HINTS ..)
       if(${other_project}_FOUND)
         message(STATUS "  found ${other_project} ${${other_project}_VERSION} ${${other_project}_DIR}")
+        if(NOT heptools_version STREQUAL ${other_project}_heptools_version)
+          if(${other_project}_heptools_version)
+            set(hint_message "with the option '-DCMAKE_TOOLCHAIN_FILE=.../heptools-${${other_project}_heptools_version}.cmake'")
+          else()
+            set(hint_message "without the option '-DCMAKE_TOOLCHAIN_FILE=...'")
+          endif()
+          message(FATAL_ERROR "Incompatible versions of heptools toolchains:
+  ${CMAKE_PROJECT_NAME} -> ${heptools_version}
+  ${other_project} ${${other_project}_VERSION} -> ${${other_project}_heptools_version}
+
+  You need to call cmake ${hint_message}
+")
+        endif()
         include_directories(${${other_project}_INCLUDE_DIRS})
         set(binary_paths ${${other_project}_BINARY_PATH})
         foreach(exported ${${other_project}_EXPORTED_SUBDIRS})
@@ -1201,7 +1214,7 @@ macro(gaudi_generate_project_config_file)
   message(STATUS "Generating ${CMAKE_PROJECT_NAME}Config.cmake")
   file(WRITE ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake
 "# File automatically generated: DO NOT EDIT.
-set(LCG_version ${LCG_version})
+set(${CMAKE_PROJECT_NAME}_heptools_version ${heptools_version})
 
 if(IS_DIRECTORY \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/\${LCG_platform}/cmake)
   list(INSERT CMAKE_MODULE_PATH 0 \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/\${LCG_platform}/cmake)
