@@ -333,7 +333,7 @@ macro(_gaudi_use_other_projects)
           list(INSERT ARGN_ 0 ${${other_project}_USES})
         endif()
       endif()
-      message(STATUS "know_packages (after ${other_project}) ${known_packages}")
+      #message(STATUS "know_packages (after ${other_project}) ${known_packages}")
     endif()
 
   endwhile()
