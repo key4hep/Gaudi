@@ -188,6 +188,7 @@ macro(LCG_prepare_paths)
   # FIXME: this should be automatic... see FindBoost.cmake documentation
   set(Boost_COMPILER -${comp})
   set(Boost_NO_BOOST_CMAKE ON)
+  set(Boost_NO_SYSTEM_PATHS ON)
 
   set(pytools_native_version ${pytools_config_version}_python${Python_config_version_twodigit})
 
