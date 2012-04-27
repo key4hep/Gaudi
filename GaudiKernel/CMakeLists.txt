@@ -28,7 +28,9 @@ gaudi_add_unit_test(Parsers_test ../tests/src/parsers.cpp
 gaudi_add_unit_test(test_headers_build ../tests/src/test_headers_build.cpp
                     LINK_LIBRARIES GaudiKernel)
 
-set_property(TEST GaudiKernel.PathResolver_test PROPERTY WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+if(BUILD_TESTS)
+  set_property(TEST GaudiKernel.PathResolver_test PROPERTY WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+endif()
 
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIBRARIES GaudiKernel)
