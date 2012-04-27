@@ -17,5 +17,5 @@ INSTALL(CODE "EXECUTE_PROCESS(COMMAND ${python_cmd} -m compileall  ${CMAKE_INSTA
 gaudi_add_test(QMTest QMTEST
                ENVIRONMENT
                  JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/tests/pyjobopts:${CMAKE_CURRENT_SOURCE_DIR}/tests
-                 PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/tests/python)
+                 PYTHONPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/python)
 

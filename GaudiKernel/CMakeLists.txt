@@ -43,7 +43,7 @@ gaudi_install_python_modules()
 gaudi_install_scripts()
 
 #---Test-----------------------------------------------------------------------
-gaudi_add_test(QMTest QMTEST ENVIRONMENT GAUDIKERNELROOT=${CMAKE_CURRENT_SOURCE_DIR})
+gaudi_add_test(QMTest QMTEST)
 
 #---Special options
 if(HIDE_WARNINGS)

@@ -1030,8 +1030,16 @@ endfunction()
 #-------------------------------------------------------------------------------
 # gaudi_add_test(<name>
 #                [FRAMEWORK options1 options2 ...|QMTEST|COMMAND cmd args ...]
-#                [ENVIRONMENT variable=value ...])
+#                [ENVIRONMENT variable[+]=value ...])
 #
+# Declare a run-time test in the subdirectory.
+# The test can be of the types:
+#  FRAMEWORK - run a job with the specified options
+#  QMTEST - run the QMTest tests in the standard directory
+#  COMMAND - execute a command
+# If special environment settings are needed, they can be specified in the
+# section ENVIRONMENT as <var>=<value> or <var>+=<value>, where the secon format
+# prepends the value to the PATH-like variable.
 #-------------------------------------------------------------------------------
 function(gaudi_add_test name)
   CMAKE_PARSE_ARGUMENTS(ARG "QMTEST" "" "ENVIRONMENT;FRAMEWORK;COMMAND" ${ARGN})
@@ -1043,7 +1051,9 @@ function(gaudi_add_test name)
     set(ARG_ENVIRONMENT ${ARG_ENVIRONMENT}
                         QMTESTLOCALDIR=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
                         QMTESTRESULTS=${CMAKE_CURRENT_BINARY_DIR}/tests/qmtest/results.qmr
-                        QMTESTRESULTSDIR=${CMAKE_CURRENT_BINARY_DIR}/tests/qmtest)
+                        QMTESTRESULTSDIR=${CMAKE_CURRENT_BINARY_DIR}/tests/qmtest
+                        QMTEST_CLASS_PATH+=${CMAKE_SOURCE_DIR}/GaudiPolicy/qmtest_classes
+                        GAUDI_QMTEST_HTML_OUTPUT=${CMAKE_BINARY_DIR}/test_results)
     set(cmdline run_qmtest.py ${package})
 
   elseif(ARG_FRAMEWORK)
@@ -1064,7 +1074,14 @@ function(gaudi_add_test name)
   endif()
 
   foreach(var ${ARG_ENVIRONMENT})
-    set(extra_env ${extra_env} -s ${var})
+    string(FIND ${var} "+=" is_prepend)
+    if(NOT is_prepend LESS 0)
+      # the argument contains +=
+      string(REPLACE "+=" "=" var ${var})
+      set(extra_env ${extra_env} -p ${var})
+    else()
+      set(extra_env ${extra_env} -s ${var})
+    endif()
   endforeach()
 
   add_test(${package}.${name}
@@ -1073,9 +1090,6 @@ function(gaudi_add_test name)
                -p ${ld_library_path}=.
                -p ${ld_library_path}=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
                -p PATH=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-
-               -p QMTEST_CLASS_PATH=${CMAKE_SOURCE_DIR}/GaudiPolicy/qmtest_classes
-               -s GAUDI_QMTEST_HTML_OUTPUT=${CMAKE_BINARY_DIR}/test_results
 
                --xml ${env_xml}
                ${cmdline})

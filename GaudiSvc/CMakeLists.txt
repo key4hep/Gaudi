@@ -25,4 +25,4 @@ if(BUILD_TESTS)
 endif()
 
 #---Test-----------------------------------------------------------------------
-gaudi_add_test(QMTest QMTEST ENVIRONMENT GAUDISVCROOT=${CMAKE_CURRENT_SOURCE_DIR})
+gaudi_add_test(QMTest QMTEST)

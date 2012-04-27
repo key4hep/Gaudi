@@ -76,9 +76,4 @@ gaudi_add_test(QMTest QMTEST
                ENVIRONMENT
                  STDOPTS=${CMAKE_CURRENT_SOURCE_DIR}/options
                  JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options
-                 GAUDIEXAMPLESROOT=${CMAKE_CURRENT_SOURCE_DIR}
-                 PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
-
-gaudi_env(SET     STDOPTS \${GAUDIEXAMPLESROOT}/options
-          PREPEND JOBOPTSEARCHPATH \${STDOPTS}
-          PREPEND PYTHONPATH \${GAUDIEXAMPLESROOT}/tests/qmtest)
+                 PYTHONPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
