@@ -44,7 +44,8 @@ Selections/*.cpp
 SvcInitLoop/*.cpp
 StringKeys/*.cpp
 StatusCodeSvc/*.cpp
-testing/*.cpp )
+testing/*.cpp
+IntelProfiler/*.cpp )
 
 gaudi_add_library(GaudiExamplesLib Lib/*.cpp
                   LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib HepPDT ROOT

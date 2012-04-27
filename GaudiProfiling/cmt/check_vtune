@@ -1,0 +1,6 @@
+#!/bin/sh
+if [ -d "$VTUNE_HOME" ] ; then
+    echo have-vtune
+else
+    echo not-have-vtune
+fi

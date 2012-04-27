@@ -195,9 +195,14 @@ if __name__ == "__main__":
         c.printconfig(opts.old_opts, opts.all_opts)
     if opts.output:
         c.writeconfig(opts.output, opts.all_opts)
-    if opts.printsequence:
-        c.printsequence()
 
+    c.printsequence = opts.printsequence
+    if opts.printsequence:
+        if opts.ncpus:
+            logging.warning("--printsequence not supported with --ncpus: ignored")
+        elif opts.dry_run:
+            logging.warning("--printsequence not supported with --dry-run: ignored")            
+    
     # re-enable the GaudiPython module
     del sys.modules["GaudiPython"]
 
