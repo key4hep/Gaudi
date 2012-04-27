@@ -549,7 +549,6 @@ function(gaudi_resolve_link_libraries variable)
       endif()
     endif()
   endforeach()
-  list(REMOVE_DUPLICATES collected)
   set(${variable} ${collected} PARENT_SCOPE)
 endfunction()
 
