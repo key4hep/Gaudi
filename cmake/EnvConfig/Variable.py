@@ -71,50 +71,42 @@ class List():
                 self.val.remove(val)
 
 
-    def append(self,value, separator = ':', environment={}, warningOn=True):
+    def append(self, value, separator = ':', environment={}, warningOn=True):
         '''Adds value(s) at the end of the list.'''
 
         value = self.resolveReferences(value, environment, separator)
 
-        i = 0
-        while i <  len(value):
-            if value[i] == '' :
-                value.remove(value[i])
-                continue
-            if value[i] in self.val:
-                if warningOn:
-                    self.report.addWarn('Var: "'+self.varName+'" value: "' + value[i] + '". Addition canceled because of duplicate entry.')
-                value.remove(value[i])
-            else:
-                i += 1
+        if type(value) is str:
+            value = value.split(separator)
 
-        self.val.extend(value)
+        if warningOn:
+            notPresent = lambda v: v not in self.val
+        else:
+            def notPresent(v):
+                '''helper function to report duplicated entries'''
+                if v not in self.val:
+                    return True
+                else:
+                    self.report.addWarn('Var: "'+self.varName+'" value: "' + v + '". Addition canceled because of duplicate entry.')
+                    return False
+        # add to the end of self.val the values not already there
+        self.val += filter(notPresent, value)
 
-
-    def prepend(self,value, separator = ':', environment={}):
+    def prepend(self, value, separator = ':', environment={}):
         '''Adds value(s) at the beginning of the list.'''
         '''resolve references and duplications'''
         value = self.resolveReferences(value, environment, separator)
 
-        i = 0
-        while i <  len(value):
-            if value[i] == '' :
-                value.remove(value[i])
-                continue
-            if value[i] in self.val:
-                self.report.addWarn('Var: "' + self.varName + '" value: "' + value[i] + '". Addition canceled because of duplicate entry.')
-                value.remove(value[i])
+        if type(value) is str:
+            value = value.split(separator)
+
+        new_value = []
+        for v in value + self.val:
+            if v not in new_value:
+                new_value.append(v)
             else:
-                i += 1
-
-        if isinstance(value,str):
-            self.val.insert(0, value)
-        else:
-            i = 0
-            for it in value:
-                self.val.insert(0+i, it)
-                i=i+1
-
+                self.report.addWarn('Var: "' + self.varName + '" value: "' + v + '". Addition canceled because of duplicate entry.')
+        self.val = new_value
 
     def search(self, expr, regExp):
         '''Searches in List`s values for a match
