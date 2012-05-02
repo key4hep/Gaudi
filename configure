@@ -9,10 +9,10 @@ if [ ! -e build-dir/CMakeCache.txt ] ; then
 
     if which distcc &> /dev/null ; then
 	distcc_opt="-DCMAKE_USE_DISTCC=ON"
-    fi
-    
-    if which ccache &> /dev/null ; then
-	ccache_opt="-DCMAKE_USE_CCACHE=ON"
+    else
+        if which ccache &> /dev/null ; then
+            ccache_opt="-DCMAKE_USE_CCACHE=ON"
+        fi
     fi
 
     mkdir -p build-dir
