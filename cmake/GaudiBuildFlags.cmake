@@ -1,37 +1,3 @@
-#---Compilation Flags--------------------------------------------------------------------------------
-if(MSVC90)
-  add_definitions(/wd4275 /wd4251 /wd4351)
-  add_definitions(-DBOOST_ALL_DYN_LINK -DBOOST_ALL_NO_LIB)
-  add_definitions(/nologo)
-  set(CMAKE_CXX_FLAGS_DEBUG "/D_NDEBUG /MD /Zi /Ob0 /Od /RTC1")
-  if(GAUDI_CMT_RELEASE)
-    set(CMAKE_CXX_FLAGS_RELEASE "/O2")
-    set(CMAKE_C_FLAGS_RELEASE "/O2")
-  endif()
-else()
-  set(CMAKE_CXX_FLAGS "-Dunix -pipe -ansi -Wall -Wextra -pthread  -Wno-deprecated -Wwrite-strings -Wpointer-arith -Wno-long-long")
-  if(GAUDI_CMT_RELEASE)
-    set(CMAKE_CXX_FLAGS_RELEASE "-O2")
-    set(CMAKE_C_FLAGS_RELEASE "-O2")
-  endif()
-  add_definitions(-D_GNU_SOURCE)
-endif()
-
-if (CMAKE_SYSTEM_NAME MATCHES Linux)
-  set(CMAKE_CXX_FLAGS "-Dlinux ${CMAKE_CXX_FLAGS}")
-endif()
-
-#---Link shared flags--------------------------------------------------------------------------------
-if (CMAKE_SYSTEM_NAME MATCHES Linux)
-  set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000")
-  set(CMAKE_MODULE_LINKER_FLAGS "-Wl,--as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000")
-endif()
-
-if(APPLE)
-   set(CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS} -flat_namespace -single_module -undefined dynamic_lookup")
-   set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -flat_namespace -single_module -undefined dynamic_lookup")
-endif()
-
 #---Gaudi Build Options---------------------------------------------------------
 # Build options that map to compile time features
 #
@@ -59,9 +25,43 @@ option(GAUDI_V22
 
 option(GAUDI_CMT_RELEASE
        "use CMT deafult release flags instead of the CMake ones"
-       OFF)
+       ON)
 
-# Use the options
+#---Compilation Flags-----------------------------------------------------------
+if(MSVC90)
+  add_definitions(/wd4275 /wd4251 /wd4351)
+  add_definitions(-DBOOST_ALL_DYN_LINK -DBOOST_ALL_NO_LIB)
+  add_definitions(/nologo)
+  set(CMAKE_CXX_FLAGS_DEBUG "/D_NDEBUG /MD /Zi /Ob0 /Od /RTC1")
+  if(GAUDI_CMT_RELEASE)
+    set(CMAKE_CXX_FLAGS_RELEASE "/O2")
+    set(CMAKE_C_FLAGS_RELEASE "/O2")
+  endif()
+else()
+  set(CMAKE_CXX_FLAGS "-Dunix -pipe -ansi -Wall -Wextra -Werror=return-type -pthread -Wno-deprecated -Wno-empty-body -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long")
+  if(GAUDI_CMT_RELEASE)
+    set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+    set(CMAKE_C_FLAGS_RELEASE "-O2")
+  endif()
+  add_definitions(-D_GNU_SOURCE)
+endif()
+
+if (CMAKE_SYSTEM_NAME MATCHES Linux)
+  set(CMAKE_CXX_FLAGS "-Dlinux ${CMAKE_CXX_FLAGS}")
+endif()
+
+#---Link shared flags-----------------------------------------------------------
+if (CMAKE_SYSTEM_NAME MATCHES Linux)
+  set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000")
+  set(CMAKE_MODULE_LINKER_FLAGS "-Wl,--as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000")
+endif()
+
+if(APPLE)
+   set(CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS} -flat_namespace -single_module -undefined dynamic_lookup")
+   set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -flat_namespace -single_module -undefined dynamic_lookup")
+endif()
+
+#---Special build flags---------------------------------------------------------
 if ((GAUDI_V21 OR G21_HIDE_SYMBOLS) AND (comp MATCHES gcc4))
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden")
 endif()
@@ -82,16 +82,6 @@ if(NOT GAUDI_V21)
       add_definitions(-D${feature})
     endif()
   endforeach()
-endif()
-
-if(GAUDI_CMT_RELEASE)
-  if(MSVC90)
-    set(CMAKE_CXX_FLAGS_RELEASE "/O2")
-    set(CMAKE_C_FLAGS_RELEASE "/O2")
-  else()
-    set(CMAKE_CXX_FLAGS_RELEASE "-O2")
-    set(CMAKE_C_FLAGS_RELEASE "-O2")
-  endif()
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_FILESYSTEM_VERSION=3")
