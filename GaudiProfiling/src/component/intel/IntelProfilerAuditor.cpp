@@ -39,7 +39,9 @@ public:
   StatusCode initialize();
   // Overridden functions.
   void handle(const Incident& incident);
+  using Auditor::before; // avoid hiding base-class methods
   void before(StandardEventType type, INamedInterface* i);
+  using Auditor::after; // avoid hiding base-class methods
   void after(StandardEventType type, INamedInterface* i, const StatusCode& sc);
 // ## Private attributes.
 private:
@@ -440,4 +442,4 @@ void IntelProfilerAuditor::after(StandardEventType type,
 }
 
 // Register the auditor
-DECLARE_AUDITOR_FACTORY( IntelProfilerAuditor);
+DECLARE_AUDITOR_FACTORY(IntelProfilerAuditor)

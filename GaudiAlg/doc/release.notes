@@ -1,6 +1,9 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2012-05-03 - Marco Clemencic
+ - Fixed some "pedantic" warnings.
+
 =============================== GaudiAlg v14r1 ===============================
 ! 2012-02-24 - Chris Jones
  - Patch #5234: Fix incorrect type in GaudiAlg tuples
