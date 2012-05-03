@@ -270,7 +270,7 @@ bool RootHistCnv::parseName(std::string full, std::string &blk, std::string &var
 /// Make the compiler instantiate the code...
 
 #define INSTANTIATE(TYP)                                                \
-  template INTupleItem* createNTupleItem<TYP>(std::string itemName, std::string blockName, std::string index_name, int indexRange, int arraySize, TYP minimum, TYP maximum, INTuple* tuple);
+  template INTupleItem* createNTupleItem<TYP>(std::string itemName, std::string blockName, std::string index_name, int indexRange, int arraySize, TYP minimum, TYP maximum, INTuple* tuple)
 
 namespace RootHistCnv  {
 

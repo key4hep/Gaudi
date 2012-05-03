@@ -36,7 +36,9 @@ public:
   virtual void before(StandardEventType evt, INamedInterface* alg);
   virtual void after(StandardEventType evt, INamedInterface* alg, const StatusCode &sc);
 
+  using Auditor::before; // avoid hiding base-class methods
   virtual void before(CustomEventTypeRef evt, const std::string& name);
+  using Auditor::after; // avoid hiding base-class methods
   virtual void after(CustomEventTypeRef evt, const std::string& name, const StatusCode &sc);
 
 private:

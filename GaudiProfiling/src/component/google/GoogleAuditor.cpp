@@ -91,7 +91,7 @@ namespace Google
     /** Check if the component in question is a GaudiSequencer or
      *  a Sequencer */
     bool isSequencer( INamedInterface* i ) const
-    { 
+    {
       return ( dynamic_cast<GaudiSequencer*>(i) != NULL ||
                dynamic_cast<Sequencer*>(i)      != NULL );
     }
@@ -109,10 +109,10 @@ namespace Google
       {
         ++m_nEvts;
         m_audit = ( m_nEvts > m_eventsToSkip &&
-                    ( m_freq < 0            || 
-                      m_nEvts == 1          || 
+                    ( m_freq < 0            ||
+                      m_nEvts == 1          ||
                       m_nEvts % m_freq == 0  ) );
-        m_log << MSG::DEBUG << "Event " << m_nEvts 
+        m_log << MSG::DEBUG << "Event " << m_nEvts
               << " Audit=" << m_audit << endmsg;
         if ( m_fullEventAudit )
         {
@@ -138,7 +138,7 @@ namespace Google
 
   public:
 
-    void before(StandardEventType type, INamedInterface* i) 
+    void before(StandardEventType type, INamedInterface* i)
     {
       if ( !m_skipSequencers || !isSequencer(i) )
       {
@@ -147,10 +147,10 @@ namespace Google
     }
 
     void before(CustomEventTypeRef type, INamedInterface* i)
-    { 
+    {
       if ( !m_skipSequencers || !isSequencer(i) )
       {
-        before(type,i->name()); 
+        before(type,i->name());
       }
     }
 
@@ -185,7 +185,7 @@ namespace Google
     }
 
     void after(StandardEventType type, INamedInterface* i, const StatusCode& sc)
-    { 
+    {
       if ( !m_skipSequencers || !isSequencer(i) )
       {
         std::ostringstream t;
@@ -195,7 +195,7 @@ namespace Google
     }
 
     void after(CustomEventTypeRef type, INamedInterface* i, const StatusCode& sc)
-    { 
+    {
       if ( !m_skipSequencers || !isSequencer(i) )
       {
         after(type,i->name(),sc);
@@ -508,8 +508,8 @@ namespace Google
 
   };
 
-  DECLARE_AUDITOR_FACTORY( HeapProfiler );
-  DECLARE_AUDITOR_FACTORY( HeapChecker  );
-  DECLARE_AUDITOR_FACTORY( CPUProfiler  );
+  DECLARE_AUDITOR_FACTORY( HeapProfiler )
+  DECLARE_AUDITOR_FACTORY( HeapChecker  )
+  DECLARE_AUDITOR_FACTORY( CPUProfiler  )
 
 }

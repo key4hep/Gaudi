@@ -1,6 +1,9 @@
 Package: RootHistCnv
 Package manager : David Quarrie
 
+! 2012-05-03 - Marco Clemencic
+ - Fixed some "pedantic" warnings.
+
 ========================== RootHistCnv v11r0 ===========================
 ! 2011-12-01 - Chris Jones
  - Fixed bug #85377: GaudiTuple tuple does not understand ulonglong
