@@ -47,6 +47,7 @@ if(VTune_FOUND)
 else()
   message(WARNING "VTune libraries not found, the module IntelProfiler is disabled")
 endif()
+
 # Special handling of unresorlved symbols in GaudiGoogleProfiling.
 # The profilers need to have libtcmalloc.so or libprofiler.so pre-loaded to
 # work, so it's better if the symbols stay undefined in case somebody tries to

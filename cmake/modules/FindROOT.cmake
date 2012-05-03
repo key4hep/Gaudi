@@ -109,11 +109,11 @@ macro(reflex_generate_dictionary dictionary _headerfile _selectionfile)
 
   set(gensrcdict ${dictionary}_dict.cpp)
 
+  set(gccxmlopts "--gccxml-compiler ${CMAKE_CXX_COMPILER}")
   if(MSVC)
-    set(gccxmlopts "--gccxmlopt=\"--gccxml-compiler cl\"")
+    set(gccxmlopts "--gccxml-compiler cl")
   else()
-    #set(gccxmlopts "--gccxmlopt=\'--gccxml-cxxflags -m64 \'")
-    set(gccxmlopts)
+    #set(gccxmlopts "${gccxmlopts} -gccxml-cxxflags -m64")
   endif()
 
   set(rootmapname ${dictionary}Dict.rootmap)
@@ -135,6 +135,9 @@ macro(reflex_generate_dictionary dictionary _headerfile _selectionfile)
    set(definitions ${definitions} -D${d})
   endforeach()
 
+  if(gccxmlopts)
+    set(gccxmlopts "--gccxmlopt=${gccxmlopts}")
+  endif()
   get_filename_component(GCCXML_home ${GCCXML} PATH)
   add_custom_command(
     OUTPUT ${gensrcdict} ${rootmapname}
@@ -145,7 +148,6 @@ macro(reflex_generate_dictionary dictionary _headerfile _selectionfile)
 
   # Creating this target at ALL level enables the possibility to generate dictionaries (genreflex step)
   # well before the dependent libraries of the dictionary are build
-  #add_custom_target(${dictionary}Gen ALL DEPENDS ${gensrcdict} ${rootmapname})
   add_custom_target(${dictionary}Gen ALL DEPENDS ${gensrcdict} ${rootmapname})
 
   set_property(TARGET ${dictionary}Gen PROPERTY ROOTMAPFILE ${rootmapname})
