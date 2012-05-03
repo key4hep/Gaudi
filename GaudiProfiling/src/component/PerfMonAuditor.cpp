@@ -96,7 +96,6 @@ static std::vector<std::map<std::string, std::map<unsigned long, unsigned int> >
 static std::vector<std::map<std::string, std::vector<unsigned long int> > > results(MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS); //a map of modules and their result values across multiple events
 static uint64_t last_overflow;
 static uint64_t last_count;
-static std::string current_module;
 static int sp[MAX_NUMBER_OF_PROGRAMMABLE_COUNTERS];
 
 static std::stack<std::pair<INamedInterface *, std::vector<unsigned long int> > > alg_stack;
@@ -105,6 +104,16 @@ static std::stack<std::pair<INamedInterface *, std::vector<unsigned long int> > 
 
 
 namespace {
+  /// Hack to avoid the warning about casting between pointer to object and function [-pedantic]
+  template <typename T>
+  inline T function_cast(void *p) {
+    union {
+      void* object;
+      T function;
+    } caster;
+    caster.object = p;
+    return caster.function;
+  }
   class PFMon {
   public:
     bool loaded;
@@ -150,21 +159,21 @@ namespace {
       handle = dlopen("libpfm.so", RTLD_NOW);
       if (handle) { loaded = true; } else { loaded = false; }
       if (loaded) {
-        pfm_start = (pfm_start_t) dlsym(handle, "pfm_start");
-        pfm_stop = (pfm_stop_t) dlsym(handle, "pfm_stop");
-        pfm_self_stop = (pfm_self_stop_t) dlsym(handle, "pfm_stop"); //it's the same
-        pfm_restart = (pfm_restart_t) dlsym(handle, "pfm_restart");
-        pfm_read_pmds = (pfm_read_pmds_t) dlsym(handle, "pfm_read_pmds");
-        pfm_initialize = (pfm_initialize_t) dlsym(handle, "pfm_initialize");
-        pfm_find_full_event = (pfm_find_full_event_t) dlsym(handle, "pfm_find_full_event");
-        pfm_dispatch_events = (pfm_dispatch_events_t) dlsym(handle, "pfm_dispatch_events");
-        pfm_create_context = (pfm_create_context_t) dlsym(handle, "pfm_create_context");
-        pfm_write_pmcs = (pfm_write_pmcs_t) dlsym(handle, "pfm_write_pmcs");
-        pfm_write_pmds = (pfm_write_pmds_t) dlsym(handle, "pfm_write_pmds");
-        pfm_load_context = (pfm_load_context_t) dlsym(handle, "pfm_load_context");
-        pfm_strerror = (pfm_strerror_t) dlsym(handle, "pfm_strerror");
-        pfm_set_options = (pfm_set_options_t) dlsym(handle, "pfm_set_options");
-        pfm_get_num_counters = (pfm_get_num_counters_t) dlsym(handle, "pfm_get_num_counters");
+        pfm_start = function_cast<pfm_start_t>(dlsym(handle, "pfm_start"));
+        pfm_stop = function_cast<pfm_stop_t>(dlsym(handle, "pfm_stop"));
+        pfm_self_stop = function_cast<pfm_self_stop_t>(dlsym(handle, "pfm_stop")); //it's the same
+        pfm_restart = function_cast<pfm_restart_t>(dlsym(handle, "pfm_restart"));
+        pfm_read_pmds = function_cast<pfm_read_pmds_t>(dlsym(handle, "pfm_read_pmds"));
+        pfm_initialize = function_cast<pfm_initialize_t>(dlsym(handle, "pfm_initialize"));
+        pfm_find_full_event = function_cast<pfm_find_full_event_t>(dlsym(handle, "pfm_find_full_event"));
+        pfm_dispatch_events = function_cast<pfm_dispatch_events_t>(dlsym(handle, "pfm_dispatch_events"));
+        pfm_create_context = function_cast<pfm_create_context_t>(dlsym(handle, "pfm_create_context"));
+        pfm_write_pmcs = function_cast<pfm_write_pmcs_t>(dlsym(handle, "pfm_write_pmcs"));
+        pfm_write_pmds = function_cast<pfm_write_pmds_t>(dlsym(handle, "pfm_write_pmds"));
+        pfm_load_context = function_cast<pfm_load_context_t>(dlsym(handle, "pfm_load_context"));
+        pfm_strerror = function_cast<pfm_strerror_t>(dlsym(handle, "pfm_strerror"));
+        pfm_set_options = function_cast<pfm_set_options_t>(dlsym(handle, "pfm_set_options"));
+        pfm_get_num_counters = function_cast<pfm_get_num_counters_t>(dlsym(handle, "pfm_get_num_counters"));
       } else {
         // pfm_start = pfm_stop = pfm_self_stop = pfm_restart = pfm_read_pmds = pfm_initialize = pfm_find_full_event = pfm_dispatch_events = pfm_create_context = pfm_write_pmcs = pfm_write_pmds = pfm_load_context = pfm_strerror = pfm_set_options = pfm_get_num_counters = failure;
       }

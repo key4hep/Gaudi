@@ -91,6 +91,8 @@ namespace Gaudi
 
         return sc ;
       }
+
+      using NTuple::Selector::operator(); // avoid hiding base-class methods
       /// Specialized callback for NTuples
       virtual bool operator() ( NTuple::Tuple* /* nt */ )
       {

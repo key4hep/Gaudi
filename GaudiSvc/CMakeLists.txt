@@ -2,43 +2,27 @@
 # CMakeLists.txt file for building GaudiSvc
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-GAUDI_USE_PACKAGE(GaudiKernel)
-GAUDI_USE_PACKAGE(CLHEP)
-GAUDI_USE_PACKAGE(AIDA)
-GAUDI_USE_PACKAGE(Boost)
-GAUDI_USE_PACKAGE(ROOT)
+depends_on_subdirs(GaudiKernel)
+
+find_package(AIDA)
+find_package(Boost REQUIRED COMPONENTS regex)
+find_package(ROOT COMPONENTS Hist RIO Tree)
+find_package(CLHEP)
 
 #---Libraries---------------------------------------------------------------
-SET( GaudiSvc_srcs AlgContextSvc/*.cpp
-ApplicationMgr/*.cpp
-AuditorSvc/*.cpp
-ChronoStatSvc/*.cpp
-EventSelector/*.cpp
-ExceptionSvc/*.cpp
-DataSvc/*.cpp
+SET(GaudiSvc_srcs
 DetectorDataSvc/*.cpp
-HistogramSvc/*.cpp
-HistorySvc/*.cpp
-IncidentSvc/*.cpp
-IssueLogger/*.cpp
-JobOptionsSvc/*.cpp
-MessageSvc/*.cpp
 NTupleSvc/*.cpp
-ParticlePropertySvc/*.cpp
-PersistencySvc/*.cpp
 RndmGenSvc/*.cpp
-StatusCodeSvc/*.cpp
-ToolSvc/*.cpp
-THistSvc/*.cpp
-FastContainersSvc/*.cpp
-VFSSvc/*.cpp )
+THistSvc/*.cpp)
 
-GAUDI_COMPONENT_LIBRARY(GaudiSvc ${GaudiSvc_srcs} LIBRARIES GaudiKernel ${ROOT_LIBRARIES}
-                        ${ROOT_Hist_LIBRARY} ${ROOT_RIO_LIBRARY} ${ROOT_Tree_LIBRARY} ${CLHEP_LIBRARIES})
+gaudi_add_module(GaudiSvc ${GaudiSvc_srcs}
+                        LINK_LIBRARIES GaudiKernel Boost ROOT CLHEP
+                        INCLUDE_DIRS Boost ROOT AIDA CLHEP)
 
 if(BUILD_TESTS)
-  GAUDI_COMPONENT_LIBRARY(GaudiSvcTest ../tests/src/component/*.cpp LIBRARIES GaudiKernel ${Boost_regex})
+  gaudi_add_module(GaudiSvcTest ../tests/src/component/*.cpp LINK_LIBRARIES GaudiKernel ${Boost_REGEX_LIBRARY})
 endif()
 
 #---Test-----------------------------------------------------------------------
-GAUDI_QMTEST_TEST(gaudisvc.gaudisvctest)
+gaudi_add_test(QMTest QMTEST)

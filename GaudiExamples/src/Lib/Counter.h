@@ -29,7 +29,7 @@ namespace Gaudi {
       virtual ~Counter() { }
 
       /// Retrieve reference to class definition structure
-      virtual const CLID& clID() const  { return Counter::classID(); }
+      virtual const CLID& clID() const  { return classID(); }
       static const CLID& classID() { return CLID_Counter; }
 
       /// Retrieve counter value

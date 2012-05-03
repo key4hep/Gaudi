@@ -98,26 +98,26 @@ namespace Gaudi
   public:
     // ========================================================================
     /// default constructor
-    Range_() : m_base( iterator() , iterator() ) {};
+    Range_() : m_base( iterator() , iterator() ) {}
     /** Constructor
      *  @param ibegin  iterator to begin of the sequence
      *  @param iend    iterator to end   of the sequence
      */
-    Range_( iterator ibegin , iterator iend ) : m_base ( ibegin , iend ) {} ;
+    Range_( iterator ibegin , iterator iend ) : m_base ( ibegin , iend ) {}
     /** constructor from the pair of iterators
      *  @param base pair of the iterators
      */
-    Range_( const Base&      base ) : m_base( base ) {};
+    Range_( const Base&      base ) : m_base( base ) {}
     /** constructor from the container
      *  @param cont  reference to the container
      */
-    Range_( const Container& cont ) : m_base( cont.begin() , cont.end() ) {} ;
+    Range_( const Container& cont ) : m_base( cont.begin() , cont.end() ) {}
     /* constructor of empty range/sequence
      * @param ibegin  iterator to begin of empty sequence
      */
-    Range_( iterator ibegin       ) : m_base( ibegin , ibegin ) {};
+    Range_( iterator ibegin       ) : m_base( ibegin , ibegin ) {}
     /// destructor
-    ~Range_(){};
+    ~Range_(){}
     // ========================================================================
     /// empty sequence ?
     inline bool   empty () const { return m_base.second == m_base.first  ; }

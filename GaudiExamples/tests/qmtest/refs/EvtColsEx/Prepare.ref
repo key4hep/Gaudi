@@ -1,0 +1,40 @@
+# --> Including file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/EvtColsEx/Prepare.py'
+# <-- End of file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/EvtColsEx/Prepare.py'
+# applying configuration of GaudiPersistency
+# /***** User GaudiPersistency/GaudiPersistency ******************************************************
+# |-<no properties>
+# \----- (End of User GaudiPersistency/GaudiPersistency) ---------------------------------------------
+# Dumping all configurables and properties (different from default)
+{'ApplicationMgr': {'EvtMax': 50000,
+                    'EvtSel': 'NONE',
+                    'ExtSvc': ['FileRecordDataSvc/FileRecordDataSvc'],
+                    'OutStream': ['OutputStream/RootDst'],
+                    'SvcOptMapping': ['Gaudi::MultiFileCatalog/FileCatalog',
+                                      'Gaudi::IODataManager/IODataManager',
+                                      'Gaudi::RootCnvSvc/RootCnvSvc']},
+ 'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
+ 'FileCatalog': {'Catalogs': ['xmlcatalog_file:EvtColsEx.xml']},
+ 'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
+ 'RootDst': {'ItemList': ['/Event#1'],
+             'Output': "DATAFILE='PFN:EvtColsEx.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"}}
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.77 $
+                                          running on pcphlbc16 on Mon Dec 12 14:37:17 2011
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
+RootDst              INFO Data source: EventDataSvc output: DATAFILE='PFN:EvtColsEx.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+HistogramPersis...WARNING Histograms saving not required.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+IODataManager        INFO Referring to dataset EvtColsEx.dst by its file ID:F48CD468-C624-E111-B80B-B499BAF088DC
+ApplicationMgr       INFO Application Manager Stopped successfully
+RootDst              INFO Events output: 50000
+EventLoopMgr         INFO Histograms converted successfully according to request.
+RootCnvSvc           INFO Disconnected data IO:F48CD468-C624-E111-B80B-B499BAF088DC [EvtColsEx.dst]
+XMLCatalog           INFO File 'EvtColsEx.xml' does not exist. New file created.
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

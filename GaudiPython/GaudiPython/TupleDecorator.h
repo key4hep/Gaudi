@@ -12,6 +12,7 @@
 #include "GaudiKernel/SymmetricMatrixTypes.h"
 #include "GaudiKernel/GenericMatrixTypes.h"
 #include "GaudiKernel/GenericVectorTypes.h"
+#include "GaudiKernel/Time.h"
 // ============================================================================
 // GaudiAlg
 // ============================================================================
@@ -60,6 +61,8 @@ namespace GaudiPython
     /// commit the row
     static StatusCode       write  ( const Tuples::Tuple&  tuple ) ;
     // ========================================================================
+  public: // primitives  
+    // ========================================================================
     /// more or less simple columns:    int
     static StatusCode column
     ( const Tuples::Tuple& tuple ,
@@ -86,6 +89,8 @@ namespace GaudiPython
       const std::string&   name  ,
       const bool           value ) ;
     // ========================================================================
+  public:  // event tag collections 
+    // ========================================================================
     /// more or less simple columns:    IOpaqueAddress
     static StatusCode column
     ( const Tuples::Tuple&  tuple ,
@@ -95,8 +100,9 @@ namespace GaudiPython
     /// more or less simple columns:    IOpaqueAddress
     static StatusCode column
     ( const Tuples::Tuple&  tuple ,
-      IOpaqueAddress*       value )
-    { return column ( tuple , "Address" , value ) ; }
+      IOpaqueAddress*       value ) ;
+    // ========================================================================
+  public: // 4D kinematics
     // ========================================================================
     /// Advanced columns: LorentzVector
     static StatusCode column
@@ -104,11 +110,7 @@ namespace GaudiPython
       const std::string&               name  ,
       const Gaudi::LorentzVector&      value ) ;
     // ========================================================================
-    /// Advanced columns: LorentzVector
-    static StatusCode column
-    ( const Tuples::Tuple&             tuple ,
-      const std::string&               name  ,
-      const Gaudi::PtEtaPhiEVector&    value ) ;
+  public: // 3D geometry 
     // ========================================================================
     /// Advanced columns: 3D-vector
     static StatusCode column
@@ -116,47 +118,13 @@ namespace GaudiPython
       const std::string&               name  ,
       const Gaudi::XYZVector&          value ) ;
     // ========================================================================
-    /// Advanced columns: 3D-vector
-    static StatusCode column
-    ( const Tuples::Tuple&             tuple ,
-      const std::string&               name  ,
-      const Gaudi::Polar3DVector&      value ) ;
-    // ========================================================================
-    /// Advanced columns: 3D-vector
-    static StatusCode column
-    ( const Tuples::Tuple&             tuple ,
-      const std::string&               name  ,
-      const Gaudi::RhoEtaPhiVector&    value ) ;
-    // ========================================================================
-    /// Advanced columns: 3D-vector
-    static StatusCode column
-    ( const Tuples::Tuple&             tuple ,
-      const std::string&               name  ,
-      const Gaudi::RhoZPhiVector&      value ) ;
-    // ========================================================================
     /// Advanced columns: 3D-points
     static StatusCode column
     ( const Tuples::Tuple&            tuple ,
       const std::string&              name  ,
       const Gaudi::XYZPoint&          value ) ;
     // ========================================================================
-    /// Advanced columns: 3D-points
-    static StatusCode column
-    ( const Tuples::Tuple&            tuple ,
-      const std::string&              name  ,
-      const Gaudi::Polar3DPoint&      value ) ;
-    // ========================================================================
-    /// Advanced columns: 3D-points
-    static StatusCode column
-    ( const Tuples::Tuple&            tuple ,
-      const std::string&              name  ,
-      const Gaudi::RhoEtaPhiPoint&    value ) ;
-    // ========================================================================
-    /// Advanced columns: 3D-points
-    static StatusCode column
-    ( const Tuples::Tuple&            tuple ,
-      const std::string&              name  ,
-      const Gaudi::RhoZPhiPoint&      value ) ;
+  public:   // floating size arrays 
     // ========================================================================
     /// Advanced columns: floating-size arrays
     static StatusCode farray
@@ -166,13 +134,7 @@ namespace GaudiPython
       const std::string&              length ,
       const size_t                    maxv   ) ;
     // ========================================================================
-    /// Advanced columns: floating-size arrays
-    static StatusCode farray
-    ( const Tuples::Tuple&            tuple  ,
-      const std::string&              name   ,
-      const CLHEP::HepVector&         data   ,
-      const std::string&              length ,
-      const size_t                    maxv   ) ;
+  public:   // floating-size matrices 
     // ========================================================================
     /// Advanced columns: floating-size matrices
     static StatusCode fmatrix
@@ -187,18 +149,11 @@ namespace GaudiPython
     static StatusCode fmatrix
     ( const Tuples::Tuple&            tuple  ,
       const std::string&              name   ,
-      const CLHEP::HepGenMatrix&      data   ,
-      const Tuples::TupleObj::MIndex  cols   , // fixed !!!
-      const std::string&              length ,
-      const size_t                    maxv   ) ;
-    // ========================================================================
-    /// Advanced columns: floating-size matrices
-    static StatusCode fmatrix
-    ( const Tuples::Tuple&            tuple  ,
-      const std::string&              name   ,
       const GaudiUtils::VectorMap<int,double>& info   ,
       const std::string&              length ,
       const size_t                    maxv   ) ;
+    // ========================================================================
+  public:   // fixed size arrays 
     // ========================================================================
     /// Advanced columns: fixed size arrays
     static StatusCode array
@@ -210,7 +165,7 @@ namespace GaudiPython
     static StatusCode array
     ( const Tuples::Tuple&            tuple  ,
       const std::string&              name   ,
-      const CLHEP::HepVector&         data   ) ;
+      const Gaudi::Vector1&           data   ) ;
     // ========================================================================
     /// Advanced columns: fixed size arrays
     static StatusCode array
@@ -236,6 +191,8 @@ namespace GaudiPython
       const std::string&              name   ,
       const Gaudi::Vector5&           data   ) ;
     // ========================================================================
+  public:   // fixed size matrices 
+    // ========================================================================
     /// Advanced columns: fixed size arrays
     static StatusCode array
     ( const Tuples::Tuple&            tuple  ,
@@ -260,24 +217,12 @@ namespace GaudiPython
       const std::string&              name   ,
       const Gaudi::Vector9&           data   ) ;
     // ========================================================================
-    /// Advanced columns: fixed size arrays
-    static StatusCode array
-    ( const Tuples::Tuple&            tuple  ,
-      const std::string&              name   ,
-      const Gaudi::Vector1&           data   ) ;
-    // ========================================================================
     /// Advanced columns: fixed size matrices
     static StatusCode matrix
     ( const Tuples::Tuple&            tuple ,
       const std::string&              name  ,
       const GaudiPython::Matrix&      data  ,
       const Tuples::TupleObj::MIndex  cols  ) ; // fixed !!!
-    // ========================================================================
-    /// Advanced columns: fixed size matrices
-    static StatusCode matrix
-    ( const Tuples::Tuple&            tuple ,
-      const std::string&              name  ,
-      const CLHEP::HepGenMatrix&      data  ) ;
     // ========================================================================
     /// Advanced columns: fixed size matrices: square matrices
     static StatusCode matrix
@@ -397,6 +342,12 @@ namespace GaudiPython
     static StatusCode matrix
     ( const Tuples::Tuple&            tuple ,
       const std::string&              name  ,
+      const Gaudi::SymMatrix2x2&      value ) ;
+    // ========================================================================
+    /// Advanced columns: fixed size matrices: symmetric matrices
+    static StatusCode matrix
+    ( const Tuples::Tuple&            tuple ,
+      const std::string&              name  ,
       const Gaudi::SymMatrix3x3&      value ) ;
     // ========================================================================
     /// Advanced columns: fixed size matrices: symmetric matrices
@@ -435,11 +386,46 @@ namespace GaudiPython
       const std::string&              name  ,
       const Gaudi::SymMatrix9x9&      value ) ;
     // ========================================================================
-    /// Advanced columns: fixed size matrices: symmetric matrices
-    static StatusCode matrix
+  public:   // some auxillary  objects 
+    // ========================================================================
+    /// advanced column: time 
+    static StatusCode column
     ( const Tuples::Tuple&            tuple ,
       const std::string&              name  ,
-      const Gaudi::SymMatrix2x2&      value ) ;
+      const Gaudi::Time&              value ) ;
+    /// advanced column: time 
+    static StatusCode column 
+    ( const Tuples::Tuple&            tuple ,
+      const Gaudi::Time&              value ) ;
+    // ========================================================================
+  public:   // CLHEP: should we keep it ?
+    // ========================================================================
+    /// Advanced columns: fixed size arrays
+    static StatusCode array
+    ( const Tuples::Tuple&            tuple  ,
+      const std::string&              name   ,
+      const CLHEP::HepVector&         data   ) ;
+    /// Advanced columns: floating-size arrays
+    static StatusCode farray
+    ( const Tuples::Tuple&            tuple  ,
+      const std::string&              name   ,
+      const CLHEP::HepVector&         data   ,
+      const std::string&              length ,
+      const size_t                    maxv   ) ;
+    /// Advanced columns: fixed size matrices
+    static StatusCode matrix
+    ( const Tuples::Tuple&            tuple  ,
+      const std::string&              name   ,
+      const CLHEP::HepGenMatrix&      data   ) ;
+    /// Advanced columns: floating-size matrices
+    static StatusCode fmatrix
+    ( const Tuples::Tuple&            tuple  ,
+      const std::string&              name   ,
+      const CLHEP::HepGenMatrix&      data   ,
+      const Tuples::TupleObj::MIndex  cols   , // fixed !!!
+      const std::string&              length ,
+      const size_t                    maxv   ) ;
+    // ========================================================================
   } ;
   // ==========================================================================
   /** @class TupleAlgDecorator TupleDecorator.h GaudiPython/TupleDecorator.h

@@ -1,12 +1,13 @@
 # =============================================================================
 package GaudiProfiling
-version v1r0
+version v1r4
 
 # ============== structure ====================================================
 branches        GaudiProfiling src cmt doc data python scripts
 
 # ============== dependencies =================================================
 use             GaudiKernel v*
+use             GaudiAlg    v* -no_auto_imports
 # Replacement for libz
 use             ROOT        v* LCG_Interfaces
 use             Boost       v* LCG_Interfaces # Boost also used to bind cpp to python
@@ -14,8 +15,14 @@ use             Boost       v* LCG_Interfaces # Boost also used to bind cpp to p
 library         GaudiProfiling    component/*.cpp -no_static
 application     GaudiGenProfilingHtml app/pfm_gen_analysis.cpp
 
+library         GaudiGoogleProfiling    component/google/*.cpp -import=GaudiAlg -import=tcmalloc -no_static
+
+library         IntelProfiler    component/intel/*.cpp -no_static
+
 # ============== patterns =====================================================
 apply_pattern   component_library library="GaudiProfiling"
+apply_pattern   component_library library="GaudiGoogleProfiling"
+apply_pattern   component_library library="IntelProfiler"
 apply_pattern   install_python_modules
 apply_pattern   install_scripts
 
@@ -24,14 +31,59 @@ macro_append GaudiProfiling_linkopts " -ldl " target-winxp ""
 # ============== private ======================================================
 private
 
+#==== LCG_Interfaces/VTune - Begin
+# This part should be moved to a VTune LCG_Interfaces package
+macro VTune_config_version "2011"
+
+macro VTune_native_version "$(VTune_config_version)"
+macro Intel_base "/afs/cern.ch/sw/IntelSoftware/linux/x86_64" \
+     target-i686 "/afs/cern.ch/sw/IntelSoftware/linux/ia32"
+macro VTune_home "$(Intel_base)/xe$(VTune_native_version)/vtune_amplifier_xe_$(VTune_config_version)"
+set VTUNE_HOME "$(VTune_home)"
+
+#include_path none
+#include_dirs $(VTune_home)/include
+
+macro VTune_linkopts "$(VTune_home)/$(unixdirname)/libittnotify.a"
+macro VTune_cppflags "-I$(VTune_home)/include"
+
+# Check if the VTune directory is present and set the tag have-vtune accordingly
+# Note: we do not have VTune for i686.
+macro have_vtune "not-have-vtune" target-x86_64&target-linux `$(GaudiProfiling_root)/cmt/check_vtune`
+apply_tag $(have_vtune)
+#==== LCG_Interfaces/VTune - End
+
+# Keep the IntelProfiler targets only if we do have VTune.
+macro_remove constituents "IntelProfilerConfDbMerge" have-vtune ""
+macro_remove constituents "IntelProfilerConf"        have-vtune ""
+macro_remove constituents "IntelProfilerMergeMap"    have-vtune ""
+macro_remove constituents "IntelProfilerRootMap"     have-vtune ""
+macro_remove constituents "IntelProfiler"            have-vtune ""
+macro_remove GaudiProfiling_python_init_dependencies "IntelProfilerConf" \
+                                                     have-vtune ""
+macro_remove zip_GaudiProfiling_python_modules_dependencies "IntelProfilerConfDbMerge" \
+                                                     have-vtune ""
+
+macro_append use_includes " $(VTune_cppflags) "
+macro_append IntelProfiler_use_linkopts " $(VTune_linkopts) "
+
 use             libunwind   v* LCG_Interfaces
 # Not using the libunwind library, only the headers
 macro libunwind_linkopts ''
 
-macro_append GaudiProfiling_use_linkopts " -lz " target-winxp ""
+use tcmalloc v* LCG_Interfaces -no_auto_imports
+
+# We do not want to link GaudiGoogleProfiling to tcmalloc (it must be preloaded),
+# so we need to remove the "--no-undefined" flag.
+macro_remove componentshr_linkopts "-Wl,--no-undefined"
+
+# On the other hand, we want to keep the --no-undefined for the other library.
+macro_append GaudiProfiling_use_linkopts " -Wl,--no-undefined -lz " target-winxp ""
+
 macro_append GaudiGenProfilingHtml_use_linkopts " -lz " target-winxp ""
 
 apply_pattern disable_package_on platform=target-winxp
+apply_pattern disable_package_on platform=target-i386
 apply_pattern disable_package_on platform=target-i686
 apply_pattern disable_package_on platform=target-slc4
 

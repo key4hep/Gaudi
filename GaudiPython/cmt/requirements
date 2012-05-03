@@ -1,5 +1,5 @@
 package GaudiPython
-version v11r0
+version v12r1
 
 branches      GaudiPython cmt doc src
 
@@ -18,7 +18,7 @@ apply_pattern install_scripts
 
 #-------Applications and Libraries-----------------------------------------------
 library GaudiPythonLib   Lib/*.cpp      -import=Python -import=CLHEP -no_static
-library GaudiPython      Services/*.cpp -import=Python -import=CLHEP -no_static
+library GaudiPython      Services/*.cpp -import=Python -import=CLHEP -import=Reflex -no_static
 apply_pattern  linker_library    library=GaudiPythonLib
 
 #-------LCG Dictionaries---------------------------------------------------------
@@ -33,12 +33,13 @@ private
 apply_pattern  component_library library=GaudiPython
 
 #--------------------------------------------------------------------------------
-use GaudiSvc * -no_auto_imports
+use GaudiCoreSvc * -no_auto_imports
+use GaudiCommonSvc * -no_auto_imports
 #include_dirs "$(GAUDIPYTHONROOT)"
 #apply_pattern package_Cshlibflags
 
 ###--- Test library
-library GPyTest  -group=tests   Test/*.cpp -import=Python -import=CLHEP -no_static
+library GPyTest  -group=tests   Test/*.cpp -import=Python -import=CLHEP -import=Reflex -no_static
 apply_pattern library_Cshlibflags library="GPyTest"
 
 ###--- Test dictionary

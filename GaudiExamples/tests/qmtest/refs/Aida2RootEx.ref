@@ -1,0 +1,299 @@
+ Simple example to illustrate the usage of aida2root converter  Vanya BELYAEV ibelyaev@phys.syr.edu
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.77 $
+                                          running on pclhcb55 on Tue May 19 12:47:59 2009
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+ApplicationMgr       INFO Successfully loaded modules : GaudiAlg, RootHistCnv
+RootHistSvc          INFO Writing ROOT histograms to: histo1.root
+HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
+DetectorDataSvc      INFO Detector description not requested to be loaded
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
+RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
+RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+Aida2RootEx1         INFO AIDA object: 'HistoEx/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 10, Total sum= 10
+Aida2RootEx1         INFO AIDA object: 'HistoEx/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 100, Total sum= 100
+Aida2RootEx1         INFO AIDA object: 'HistoEx/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 1000, Total sum= 1000
+Aida2RootEx1         INFO AIDA object: 'HistoEx1/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 10, Total sum= 1.66
+Aida2RootEx1         INFO AIDA object: 'HistoEx1/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 100, Total sum= 100
+Aida2RootEx1         INFO AIDA object: 'HistoEx1/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 1000, Total sum= 1000
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y    '
+TH1.Print Name  =  x vs y    , Entries= 10000, Total sum= 9565
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y+3x '
+TH1.Print Name  =  x vs y+3x , Entries= 10000, Total sum= 7995
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y-3x '
+TH1.Print Name  =  x vs y-3x , Entries= 10000, Total sum= 7975
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y    (profile)'
+TH1.Print Name  =  x vs y    (profile), Entries= 10000, Total sum= -3.7196
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y+3x (profile)'
+TH1.Print Name  =  x vs y+3x (profile), Entries= 10000, Total sum= -3.77285
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y-3x (profile)'
+TH1.Print Name  =  x vs y-3x (profile), Entries= 10000, Total sum= -3.66636
+Aida2RootEx2         INFO AIDA object: 'HistoEx/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 10, Total sum= 10
+Aida2RootEx2         INFO AIDA object: 'HistoEx/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 100, Total sum= 100
+Aida2RootEx2         INFO AIDA object: 'HistoEx/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 1000, Total sum= 1000
+Aida2RootEx2         INFO AIDA object: 'HistoEx1/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 10, Total sum= 1.66
+Aida2RootEx2         INFO AIDA object: 'HistoEx1/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 100, Total sum= 100
+Aida2RootEx2         INFO AIDA object: 'HistoEx1/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 1000, Total sum= 1000
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y    '
+TH1.Print Name  =  x vs y    , Entries= 10000, Total sum= 9565
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y+3x '
+TH1.Print Name  =  x vs y+3x , Entries= 10000, Total sum= 7995
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y-3x '
+TH1.Print Name  =  x vs y-3x , Entries= 10000, Total sum= 7975
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y    (profile)'
+TH1.Print Name  =  x vs y    (profile), Entries= 10000, Total sum= -3.7196
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y+3x (profile)'
+TH1.Print Name  =  x vs y+3x (profile), Entries= 10000, Total sum= -3.77285
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y-3x (profile)'
+TH1.Print Name  =  x vs y-3x (profile), Entries= 10000, Total sum= -3.66636
+Aida2RootEx1         INFO AIDA object: 'HistoEx/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 20, Total sum= 20
+Aida2RootEx1         INFO AIDA object: 'HistoEx/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 200, Total sum= 200
+Aida2RootEx1         INFO AIDA object: 'HistoEx/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 2000, Total sum= 2000
+Aida2RootEx1         INFO AIDA object: 'HistoEx1/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 20, Total sum= 3.32
+Aida2RootEx1         INFO AIDA object: 'HistoEx1/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 200, Total sum= 200
+Aida2RootEx1         INFO AIDA object: 'HistoEx1/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 2000, Total sum= 2000
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y    '
+TH1.Print Name  =  x vs y    , Entries= 20000, Total sum= 19090
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y+3x '
+TH1.Print Name  =  x vs y+3x , Entries= 20000, Total sum= 15937
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y-3x '
+TH1.Print Name  =  x vs y-3x , Entries= 20000, Total sum= 15863
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y    (profile)'
+TH1.Print Name  =  x vs y    (profile), Entries= 20000, Total sum= -2.86141
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y+3x (profile)'
+TH1.Print Name  =  x vs y+3x (profile), Entries= 20000, Total sum= -2.90608
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y-3x (profile)'
+TH1.Print Name  =  x vs y-3x (profile), Entries= 20000, Total sum= -2.81674
+Aida2RootEx2         INFO AIDA object: 'HistoEx/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 20, Total sum= 20
+Aida2RootEx2         INFO AIDA object: 'HistoEx/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 200, Total sum= 200
+Aida2RootEx2         INFO AIDA object: 'HistoEx/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 2000, Total sum= 2000
+Aida2RootEx2         INFO AIDA object: 'HistoEx1/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 20, Total sum= 3.32
+Aida2RootEx2         INFO AIDA object: 'HistoEx1/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 200, Total sum= 200
+Aida2RootEx2         INFO AIDA object: 'HistoEx1/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 2000, Total sum= 2000
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y    '
+TH1.Print Name  =  x vs y    , Entries= 20000, Total sum= 19090
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y+3x '
+TH1.Print Name  =  x vs y+3x , Entries= 20000, Total sum= 15937
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y-3x '
+TH1.Print Name  =  x vs y-3x , Entries= 20000, Total sum= 15863
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y    (profile)'
+TH1.Print Name  =  x vs y    (profile), Entries= 20000, Total sum= -2.86141
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y+3x (profile)'
+TH1.Print Name  =  x vs y+3x (profile), Entries= 20000, Total sum= -2.90608
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y-3x (profile)'
+TH1.Print Name  =  x vs y-3x (profile), Entries= 20000, Total sum= -2.81674
+Aida2RootEx1         INFO AIDA object: 'HistoEx/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 30, Total sum= 30
+Aida2RootEx1         INFO AIDA object: 'HistoEx/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 300, Total sum= 300
+Aida2RootEx1         INFO AIDA object: 'HistoEx/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 3000, Total sum= 3000
+Aida2RootEx1         INFO AIDA object: 'HistoEx1/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 30, Total sum= 4.98
+Aida2RootEx1         INFO AIDA object: 'HistoEx1/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 300, Total sum= 300
+Aida2RootEx1         INFO AIDA object: 'HistoEx1/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 3000, Total sum= 3000
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y    '
+TH1.Print Name  =  x vs y    , Entries= 30000, Total sum= 28646
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y+3x '
+TH1.Print Name  =  x vs y+3x , Entries= 30000, Total sum= 23851
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y-3x '
+TH1.Print Name  =  x vs y-3x , Entries= 30000, Total sum= 23819
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y    (profile)'
+TH1.Print Name  =  x vs y    (profile), Entries= 30000, Total sum= -2.31361
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y+3x (profile)'
+TH1.Print Name  =  x vs y+3x (profile), Entries= 30000, Total sum= -2.32762
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y-3x (profile)'
+TH1.Print Name  =  x vs y-3x (profile), Entries= 30000, Total sum= -2.2996
+Aida2RootEx2         INFO AIDA object: 'HistoEx/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 30, Total sum= 30
+Aida2RootEx2         INFO AIDA object: 'HistoEx/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 300, Total sum= 300
+Aida2RootEx2         INFO AIDA object: 'HistoEx/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 3000, Total sum= 3000
+Aida2RootEx2         INFO AIDA object: 'HistoEx1/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 30, Total sum= 4.98
+Aida2RootEx2         INFO AIDA object: 'HistoEx1/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 300, Total sum= 300
+Aida2RootEx2         INFO AIDA object: 'HistoEx1/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 3000, Total sum= 3000
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y    '
+TH1.Print Name  =  x vs y    , Entries= 30000, Total sum= 28646
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y+3x '
+TH1.Print Name  =  x vs y+3x , Entries= 30000, Total sum= 23851
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y-3x '
+TH1.Print Name  =  x vs y-3x , Entries= 30000, Total sum= 23819
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y    (profile)'
+TH1.Print Name  =  x vs y    (profile), Entries= 30000, Total sum= -2.31361
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y+3x (profile)'
+TH1.Print Name  =  x vs y+3x (profile), Entries= 30000, Total sum= -2.32762
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y-3x (profile)'
+TH1.Print Name  =  x vs y-3x (profile), Entries= 30000, Total sum= -2.2996
+Aida2RootEx1         INFO AIDA object: 'HistoEx/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 40, Total sum= 40
+Aida2RootEx1         INFO AIDA object: 'HistoEx/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 400, Total sum= 400
+Aida2RootEx1         INFO AIDA object: 'HistoEx/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 4000, Total sum= 4000
+Aida2RootEx1         INFO AIDA object: 'HistoEx1/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 40, Total sum= 6.64
+Aida2RootEx1         INFO AIDA object: 'HistoEx1/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 400, Total sum= 400
+Aida2RootEx1         INFO AIDA object: 'HistoEx1/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 4000, Total sum= 4000
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y    '
+TH1.Print Name  =  x vs y    , Entries= 40000, Total sum= 38204
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y+3x '
+TH1.Print Name  =  x vs y+3x , Entries= 40000, Total sum= 31810
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y-3x '
+TH1.Print Name  =  x vs y-3x , Entries= 40000, Total sum= 31753
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y    (profile)'
+TH1.Print Name  =  x vs y    (profile), Entries= 40000, Total sum= -1.70762
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y+3x (profile)'
+TH1.Print Name  =  x vs y+3x (profile), Entries= 40000, Total sum= -1.73798
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y-3x (profile)'
+TH1.Print Name  =  x vs y-3x (profile), Entries= 40000, Total sum= -1.67727
+Aida2RootEx2         INFO AIDA object: 'HistoEx/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 40, Total sum= 40
+Aida2RootEx2         INFO AIDA object: 'HistoEx/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 400, Total sum= 400
+Aida2RootEx2         INFO AIDA object: 'HistoEx/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 4000, Total sum= 4000
+Aida2RootEx2         INFO AIDA object: 'HistoEx1/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 40, Total sum= 6.64
+Aida2RootEx2         INFO AIDA object: 'HistoEx1/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 400, Total sum= 400
+Aida2RootEx2         INFO AIDA object: 'HistoEx1/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 4000, Total sum= 4000
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y    '
+TH1.Print Name  =  x vs y    , Entries= 40000, Total sum= 38204
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y+3x '
+TH1.Print Name  =  x vs y+3x , Entries= 40000, Total sum= 31810
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y-3x '
+TH1.Print Name  =  x vs y-3x , Entries= 40000, Total sum= 31753
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y    (profile)'
+TH1.Print Name  =  x vs y    (profile), Entries= 40000, Total sum= -1.70762
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y+3x (profile)'
+TH1.Print Name  =  x vs y+3x (profile), Entries= 40000, Total sum= -1.73798
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y-3x (profile)'
+TH1.Print Name  =  x vs y-3x (profile), Entries= 40000, Total sum= -1.67727
+Aida2RootEx1         INFO AIDA object: 'HistoEx/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 50, Total sum= 50
+Aida2RootEx1         INFO AIDA object: 'HistoEx/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 500, Total sum= 500
+Aida2RootEx1         INFO AIDA object: 'HistoEx/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 5000, Total sum= 5000
+Aida2RootEx1         INFO AIDA object: 'HistoEx1/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 50, Total sum= 8.3
+Aida2RootEx1         INFO AIDA object: 'HistoEx1/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 500, Total sum= 500
+Aida2RootEx1         INFO AIDA object: 'HistoEx1/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 5000, Total sum= 5000
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y    '
+TH1.Print Name  =  x vs y    , Entries= 50000, Total sum= 47791
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y+3x '
+TH1.Print Name  =  x vs y+3x , Entries= 50000, Total sum= 39784
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y-3x '
+TH1.Print Name  =  x vs y-3x , Entries= 50000, Total sum= 39763
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y    (profile)'
+TH1.Print Name  =  x vs y    (profile), Entries= 50000, Total sum= -1.41162
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y+3x (profile)'
+TH1.Print Name  =  x vs y+3x (profile), Entries= 50000, Total sum= -1.43885
+Aida2RootEx1         INFO AIDA object: 'HistoEx2/ x vs y-3x (profile)'
+TH1.Print Name  =  x vs y-3x (profile), Entries= 50000, Total sum= -1.38438
+Aida2RootEx2         INFO AIDA object: 'HistoEx/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 50, Total sum= 50
+Aida2RootEx2         INFO AIDA object: 'HistoEx/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 500, Total sum= 500
+Aida2RootEx2         INFO AIDA object: 'HistoEx/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 5000, Total sum= 5000
+Aida2RootEx2         INFO AIDA object: 'HistoEx1/ 1D histo '
+TH1.Print Name  =  1D histo , Entries= 50, Total sum= 8.3
+Aida2RootEx2         INFO AIDA object: 'HistoEx1/ 2D histo '
+TH1.Print Name  =  2D histo , Entries= 500, Total sum= 500
+Aida2RootEx2         INFO AIDA object: 'HistoEx1/ 3D histo '
+TH1.Print Name  =  3D histo , Entries= 5000, Total sum= 5000
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y    '
+TH1.Print Name  =  x vs y    , Entries= 50000, Total sum= 47791
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y+3x '
+TH1.Print Name  =  x vs y+3x , Entries= 50000, Total sum= 39784
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y-3x '
+TH1.Print Name  =  x vs y-3x , Entries= 50000, Total sum= 39763
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y    (profile)'
+TH1.Print Name  =  x vs y    (profile), Entries= 50000, Total sum= -1.41162
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y+3x (profile)'
+TH1.Print Name  =  x vs y+3x (profile), Entries= 50000, Total sum= -1.43885
+Aida2RootEx2         INFO AIDA object: 'HistoEx2/ x vs y-3x (profile)'
+TH1.Print Name  =  x vs y-3x (profile), Entries= 50000, Total sum= -1.38438
+The file name is 'HistoEx__1D_histo_.png'
+The file name is 'HistoEx__2D_histo_.png'
+The file name is 'HistoEx__3D_histo_.png'
+The file name is 'HistoEx1__1D_histo_.png'
+The file name is 'HistoEx1__2D_histo_.png'
+The file name is 'HistoEx1__3D_histo_.png'
+The file name is 'HistoEx2__x_vs_y____.png'
+The file name is 'HistoEx2__x_vs_y+3x_.png'
+The file name is 'HistoEx2__x_vs_y-3x_.png'
+The file name is 'HistoEx2__x_vs_y____(profile).png'
+The file name is 'HistoEx2__x_vs_y+3x_(profile).png'
+The file name is 'HistoEx2__x_vs_y-3x_(profile).png'
+ApplicationMgr       INFO Application Manager Stopped successfully
+HistoEx           SUCCESS Booked 3 Histogram(s) : 1D=1 2D=1 3D=1
+HistoEx           SUCCESS List of booked 1D histograms in directory         "HistoEx" :-
+ | ID                        |   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
+ |  1D histo                 | " 1D histo "                                  |    50   |        4.5 | 2.8723     |    0.52751 |    -1.0415 |
+HistoEx           SUCCESS List of booked 2D histograms in directory         "HistoEx" :-
+ ID= 2D histo                  " 2D histo "                                     Ents/All=  500/500  <X>/sX=4.5/2.8723,<Y>/sY=4.5/2.8723
+HistoEx           SUCCESS List of booked 3D histograms in directory         "HistoEx" :-
+ ID= 3D histo                  " 3D histo "                                     Ents/All= 5000/5000 <X>/sX=4.5/2.8723,<Y>/sY=4.5/2.8723,<Z>/sZ=4.5/2.8723
+HistoEx1          SUCCESS Booked 3 Histogram(s) : 1D=1 2D=1 3D=1
+HistoEx1          SUCCESS List of booked 1D histograms in directory         "HistoEx1" :-
+ | ID                        |   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
+ |  1D histo                 | " 1D histo "                                  |    50   |        4.5 | 2.8723     |    0.52751 |    -1.0415 |
+HistoEx1          SUCCESS List of booked 2D histograms in directory         "HistoEx1" :-
+ ID= 2D histo                  " 2D histo "                                     Ents/All=  500/500  <X>/sX=4.5/2.8723,<Y>/sY=4.5/2.8723
+HistoEx1          SUCCESS List of booked 3D histograms in directory         "HistoEx1" :-
+ ID= 3D histo                  " 3D histo "                                     Ents/All= 5000/5000 <X>/sX=4.5/2.8723,<Y>/sY=4.5/2.8723,<Z>/sZ=4.5/2.8723
+HistoEx2          SUCCESS Booked 6 Histogram(s) : 2D=3 1DProf=3
+HistoEx2          SUCCESS List of booked 2D histograms in directory         "HistoEx2" :-
+ ID= x vs y                    " x vs y    "                                    Ents/All=50000/50000<X>/sX=-0.0087048/0.87747,<Y>/sY=-0.013991/1.0035
+ ID= x vs y+3x                 " x vs y+3x "                                    Ents/All=47804/50000<X>/sX=0.0020222/0.69612,<Y>/sY=-0.0072879/2.0754
+ ID= x vs y-3x                 " x vs y-3x "                                    Ents/All=47806/50000<X>/sX=-0.0030373/0.6946,<Y>/sY=-0.0065218/2.0649
+HistoEx2          SUCCESS List of booked 1D profile histograms in directory "HistoEx2" :-
+ ID= x vs y-3x (profile)       " x vs y-3x (profile)"                           Ents/All=47792/50000<X>/sX=-0.0087048/0.87747
+ ID= x vs y    (profile)       " x vs y    (profile)"                           Ents/All=47792/50000<X>/sX=-0.0087048/0.87747
+ ID= x vs y+3x (profile)       " x vs y+3x (profile)"                           Ents/All=47792/50000<X>/sX=-0.0087048/0.87747
+EventLoopMgr         INFO Histograms converted successfully according to request.
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

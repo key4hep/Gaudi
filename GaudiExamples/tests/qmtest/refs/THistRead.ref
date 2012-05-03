@@ -1,0 +1,143 @@
+JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/THistRead.opts)
+JobOptionsSvc        INFO # (5,1): AuditorSvc.Auditors = ["ChronoAuditor"]
+JobOptionsSvc        INFO # (12,1): ApplicationMgr.TopAlg = ["THistRead"]
+JobOptionsSvc        INFO # (15,1): MessageSvc.OutputLevel = 3
+JobOptionsSvc        INFO # (16,1): MessageSvc.UseColors = 1
+JobOptionsSvc        INFO # (17,1): THistSvc.OutputLevel = 2
+JobOptionsSvc        INFO # (18,1): ApplicationMgr.OutputLevel = 1
+JobOptionsSvc        INFO # (19,1): ServiceManager.OutputLevel = 2
+JobOptionsSvc        INFO # (20,1): StatusCodeSvc.OutputLevel = 1
+JobOptionsSvc        INFO # (24,1): THistSvc.Input = ["read1 DATAFILE='tuple2.rt' TYP='ROOT' OPT='READ'"]
+JobOptionsSvc        INFO # (25,1): THistSvc.Input += ["read2 DATAFILE='tuple3.rt' TYP='ROOT' OPT='READ'"]
+JobOptionsSvc        INFO # (27,1): THistSvc.PrintAll = 1
+JobOptionsSvc        INFO # (32,1): ApplicationMgr.EvtMax = 20
+JobOptionsSvc        INFO # (33,1): ApplicationMgr.EvtSel = "NONE"
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/THistRead.opts
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.77 $
+                                          running on lxplus435.cern.ch on Mon Aug 15 16:35:27 2011
+====================================================================================================================================[m
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service EvtDataSvc/EventDataSvc[m
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service DetDataSvc/DetectorDataSvc[m
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service HistogramSvc/HistogramDataSvc[m
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service HbookCnv::PersSvc/HbookHistSvc[m
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service RootHistCnv::PersSvc/RootHistSvc[m
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service EvtPersistencySvc/EventPersistencySvc[m
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service DetPersistencySvc/DetectorPersistencySvc[m
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service HistogramPersistencySvc/HistogramPersistencySvc[m
+ApplicationMgr      DEBUG Loading declared DLL's[m
+ApplicationMgr    VERBOSE addMultiSvc: added service EventLoopMgr/EventLoopMgr[m
+ApplicationMgr       INFO Application Manager Configured successfully[m
+THistSvc            DEBUG Opening TFile "tuple2.rt"  stream: "read1"  mode: "O" comp level: 1[m
+THistSvc            DEBUG Opening TFile "tuple3.rt"  stream: "read2"  mode: "O" comp level: 1[m
+THistSvc            DEBUG Service base class initialized successfully[m
+IoComponentMgr       INFO Initializing IoComponentMgr...[m
+IoComponentMgr       INFO python I/O registry retrieved [ok][m
+THistSvc             INFO registered file [tuple2.rt]... [ok][m
+THistSvc             INFO registered file [tuple3.rt]... [ok][m
+THistSvc            DEBUG Read in TH1F  "1Dgauss" from file tuple2.rt[m
+TH1.Print Name  = 1Dgauss, Entries= 20000, Total sum= 19984
+THistSvc            DEBUG Registering TH1F title: "1D Gaussian"  id: "/read1/xxx/1Dgauss"  dir: tuple2.rt:/xxx  file: tuple2.rt[m
+THistRead            INFO 1Dgauss: 20000[m
+THistSvc            DEBUG Read in TH2F  "2Dgauss" from file tuple3.rt[m
+TH1.Print Name  = 2Dgauss, Entries= 20000, Total sum= 19978
+THistSvc            DEBUG Registering TH2F title: "2D Gaussian"  id: "/read2/2Dgauss"  dir: tuple3.rt:/  file: tuple3.rt[m
+THistRead            INFO 2Dgauss: 20000[m
+THistSvc            DEBUG Read in TH3F  "3Dgauss" from file tuple3.rt[m
+TH1.Print Name  = 3Dgauss, Entries= 20000, Total sum= 19944
+THistSvc            DEBUG Registering TH3F title: "3D Gaussian"  id: "/read2/3Dgauss"  dir: tuple3.rt:/  file: tuple3.rt[m
+THistRead            INFO 3Dgauss: 20000[m
+THistSvc            DEBUG Read in TProfile  "profile" from file tuple3.rt[m
+TH1.Print Name  = profile, Entries= 0, Total sum= 0
+THistSvc            DEBUG Registering TProfile title: "profile"  id: "/read2/profile"  dir: tuple3.rt:/  file: tuple3.rt[m
+THistRead            INFO profile: 0[m
+THistSvc            DEBUG Read in TTree  "treename" from file tuple3.rt[m
+******************************************************************************
+*Tree    :treename  : tree title                                             *
+*Entries :     1000 : Total =           14021 bytes  File  Size =       2330 *
+*        :          : Tree compression factor =   6.63                       *
+******************************************************************************
+*Br    0 :branch1   : point1/I                                               *
+*Entries :     1000 : Total  Size=       4557 bytes  File Size  =       1521 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   2.68     *
+*............................................................................*
+*Br    1 :branch2   : point2/I                                               *
+*Entries :     1000 : Total  Size=       4557 bytes  File Size  =        164 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=  24.87     *
+*............................................................................*
+*Br    2 :branch3   : point3/I                                               *
+*Entries :     1000 : Total  Size=       4557 bytes  File Size  =        160 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=  25.49     *
+*............................................................................*
+THistSvc            DEBUG Registering TTree title: "tree title"  id: "/read2/trees/stuff/treename"  dir: tuple3.rt:/trees/stuff  file: tuple3.rt[m
+THistRead            INFO treename: 1000[m
+[93;1mEventLoopMgr      WARNING Unable to locate service "EventSelector" [m
+[93;1mEventLoopMgr      WARNING No events will be processed from external input.[m
+[93;1mHistogramPersis...WARNING Histograms saving not required.[m
+ApplicationMgr       INFO Application Manager Initialized successfully[m
+ApplicationMgr       INFO Application Manager Started successfully[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG updateFiles()[m
+ApplicationMgr       INFO Application Manager Stopped successfully[m
+EventLoopMgr         INFO Histograms converted successfully according to request.[m
+THistSvc            DEBUG THistSvc::finalize[m
+THistSvc            DEBUG updateFiles()[m
+THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT [m
+THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT: "tuple2.rt"[m
+THistSvc            DEBUG THistSvc::write()::List of Files connected in ROOT: "tuple3.rt"[m
+THistSvc             INFO Listing contents of ROOT files: [m
+THistSvc             INFO ==> File: tuple2.rt  stream: read1[m
+TFile: name=tuple2.rt, title=upd, option=READ
+TH1.Print Name  = 1Dgauss, Entries= 20000, Total sum= 19984
+          Title = 1D Gaussian
+          NbinsX= 100, xmin= -50, xmax=50
+THistSvc             INFO ==> File: tuple3.rt  stream: read2[m
+TFile: name=tuple3.rt, title=rec, option=READ
+TH1.Print Name  = 2Dgauss, Entries= 20000, Total sum= 19978
+          Title = 2D Gaussian
+          NbinsX= 100, xmin= -50, xmax=50, NbinsY= 100, ymin= -50, ymax=50
+TH1.Print Name  = 3Dgauss, Entries= 20000, Total sum= 19944
+          Title = 3D Gaussian
+          NbinsX= 100, xmin= -50, xmax=50, NbinsY= 100, ymin= -50, ymax=50, NbinsZ= 100, zmin= -50, zmax=50
+TH1.Print Name  = profile, Entries= 0, Total sum= 0
+          Title = profile
+          NbinsX= 100, xmin= -50, xmax=-50
+******************************************************************************
+*Tree    :treename  : tree title                                             *
+*Entries :     1000 : Total =           14021 bytes  File  Size =       2330 *
+*        :          : Tree compression factor =   6.63                       *
+******************************************************************************
+*Br    0 :branch1   : point1/I                                               *
+*Entries :     1000 : Total  Size=       4557 bytes  File Size  =       1521 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   2.68     *
+*............................................................................*
+*Br    1 :branch2   : point2/I                                               *
+*Entries :     1000 : Total  Size=       4557 bytes  File Size  =        164 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=  24.87     *
+*............................................................................*
+*Br    2 :branch3   : point3/I                                               *
+*Entries :     1000 : Total  Size=       4557 bytes  File Size  =        160 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=  25.49     *
+*............................................................................*
+IoComponentMgr       INFO Finalizing IoComponentMgr...[m
+ApplicationMgr       INFO Application Manager Finalized successfully[m
+ApplicationMgr       INFO Application Manager Terminated successfully[m

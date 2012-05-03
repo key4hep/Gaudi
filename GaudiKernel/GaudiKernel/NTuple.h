@@ -1074,7 +1074,7 @@ namespace NTuple
     }
     /// class ID of the object
     virtual const CLID& clID()    const   {
-      return Directory::classID();
+      return classID();
     }
   };
 
@@ -1106,7 +1106,7 @@ namespace NTuple
     }
     /// class ID of the object
     virtual const CLID& clID()    const   {
-      return File::classID();
+      return classID();
     }
     /// Set access type
     void setType(const long typ)   {
@@ -1171,7 +1171,9 @@ namespace NTuple
   typedef Item<short>             ShortItem;
   typedef Item<unsigned short>    UShortItem;
   typedef Item<long>              LongItem;
+  typedef Item<long long>         LongLongItem;
   typedef Item<unsigned long>     ULongItem;
+  typedef Item<unsigned long long> ULongLongItem;
   typedef Item<int>               IntItem;
   typedef Item<unsigned int>      UIntItem;
   typedef Item<float>             FloatItem;

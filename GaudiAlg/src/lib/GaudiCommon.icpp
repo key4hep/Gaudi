@@ -1,8 +1,3 @@
-// $Id: GaudiCommon.icpp,v 1.22 2008/10/10 15:18:56 marcocle Exp $
-
-// ============================================================================
-// CVS tag $Name:  $ version $Revision: 1.22 $
-// ============================================================================
 // ============================================================================
 // include files
 // ============================================================================
@@ -71,7 +66,6 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
   m_msgLevel    = MSG::NIL;
   m_msgStream   = 0;
   m_updMgrSvc   = 0;
-  m_fastContainersSvc   = 0;
   m_typePrint   = true;
   m_propsPrint  = false;
   m_statPrint   = true;
@@ -97,26 +91,26 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
 
   // job options
   // print error counters at finalization ?
-  this->declareProperty 
-    ( "ErrorsPrint"     , m_errorsPrint     , 
-      "Print the statistics of errors/warnings/exceptions") 
+  this->declareProperty
+    ( "ErrorsPrint"     , m_errorsPrint     ,
+      "Print the statistics of errors/warnings/exceptions")
     -> declareUpdateHandler
     ( &GaudiCommon<PBASE>::printErrorHandler, this  ) ;
   // print properties at initialization?
-  this->declareProperty 
+  this->declareProperty
     ( "PropertiesPrint" , m_propsPrint  ,
-      "Print the properties of the component ") 
+      "Print the properties of the component ")
     -> declareUpdateHandler
     ( &GaudiCommon<PBASE>::printPropsHandler, this  ) ;
   // print statistical counters at finalization ?
-  this->declareProperty 
-    ( "StatPrint"       , m_statPrint   , 
-      "Print the table of counters"  ) 
+  this->declareProperty
+    ( "StatPrint"       , m_statPrint   ,
+      "Print the table of counters"  )
     -> declareUpdateHandler
-    ( &GaudiCommon<PBASE>::printStatHandler, this  ) ;    
+    ( &GaudiCommon<PBASE>::printStatHandler, this  ) ;
   // insert  the actual C++ type of the algorithm or tool in the messages?
-  this->declareProperty 
-    ( "TypePrint"       , m_typePrint   , 
+  this->declareProperty
+    ( "TypePrint"       , m_typePrint   ,
       "Add the actal C++ component type into the messages" ) ;
   // context
   this->declareProperty ( "Context"         , m_context     ) ;
@@ -144,7 +138,7 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
   this->declareProperty
     ( "UseEfficiencyRowFormat" , m_useEffFormat                    ,
       "Use the special format for printout of efficiency counters" ) ;
-	
+
 
   //declare the list of simple counters to write.
   this->declareProperty(
@@ -156,7 +150,7 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
 	"StatEntityList",
 	m_statEntityList=std::vector<std::string>(0),
 	"RegEx list, of StatEntity counters for CounterSummary.");
-  
+
   // add handler for message level changes
   this->outputLevelProperty().declareUpdateHandler( &GaudiCommon<PBASE>::msgLevelHandler, this );
 
@@ -178,7 +172,8 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
   }
 
   // Get the job option service
-  IJobOptionsSvc* jos = svc<IJobOptionsSvc>( "JobOptionsSvc" );
+  SmartIF<IJobOptionsSvc> jos(PBASE::service("JobOptionsSvc"));
+  if (!jos.isValid()) Exception("Cannot get JobOptionsSvc");
 
   // Get the "Context" option if in the file...
   const std::vector<const Property*>* myList = jos->getProperties( this->name() );
@@ -203,9 +198,6 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
       }
     }
   }
-
-  // release tool
-  release( jos ).ignore();
 
 }
 //=============================================================================
@@ -254,12 +246,12 @@ StatusCode GaudiCommon<PBASE>::
   // Check rootInTES ends with a /
   if ( !m_rootInTES.empty() &&
        m_rootInTES.substr(m_rootInTES.size()-1) != "/" ) m_rootInTES += "/";
-  
+
   //Set up the CounterSummarySvc May need to be changed
   this->svcLoc()->service("CounterSummarySvc",m_counterSummarySvc,false).ignore() ;
   if (msgLevel(MSG::DEBUG))
   {
-    if (m_counterSummarySvc==NULL )  
+    if (m_counterSummarySvc==NULL )
 	debug() <<  "could not locate CounterSummarySvc, no counter summary will be made" << endmsg;
     else debug() <<  "found CounterSummarySvc OK" << endmsg;
   }
@@ -332,14 +324,14 @@ StatusCode GaudiCommon<PBASE>::
     debug() << endmsg;
   }
   while ( !m_services.empty() ) { sc = sc && releaseSvc( m_services.begin()->second ) ; }
-  
+
   //release the CounterSummarySvc manually
-  if(m_counterSummarySvc) 
+  if(m_counterSummarySvc)
   {
     m_counterSummarySvc->release();
     m_counterSummarySvc=NULL;
   }
-  
+
   // format printout
   if ( !m_errors.empty() || !m_warnings.empty() || !m_exceptions.empty() )
   {
@@ -805,7 +797,7 @@ DataObject* GaudiCommon<PBASE>::put ( IDataProviderSvc*  svc     ,
 template < class PBASE >
 void GaudiCommon<PBASE>::printErrorHandler ( Property& /* theProp */ )
 {
-  // no action if not yet initialized 
+  // no action if not yet initialized
   if ( this -> FSMState() < Gaudi::StateMachine::INITIALIZED ) { return ; }
   if ( this -> errorsPrint() ) { this -> printErrors () ; }
 }
@@ -815,7 +807,7 @@ void GaudiCommon<PBASE>::printErrorHandler ( Property& /* theProp */ )
 template < class PBASE >
 void GaudiCommon<PBASE>::printPropsHandler ( Property& /* theProp */ )
 {
-  // no action if not yet initialized 
+  // no action if not yet initialized
   if ( this -> FSMState() < Gaudi::StateMachine::INITIALIZED ) { return ; }
   if ( this -> propsPrint() ) { this -> printProps ( MSG::ALWAYS ) ; }
 }
@@ -825,7 +817,7 @@ void GaudiCommon<PBASE>::printPropsHandler ( Property& /* theProp */ )
 template < class PBASE >
 void GaudiCommon<PBASE>::printStatHandler ( Property& /* theProp */ )
 {
-  // no action if not yet initialized 
+  // no action if not yet initialized
   if ( this -> FSMState() < Gaudi::StateMachine::INITIALIZED ) { return ; }
   if ( this -> statPrint() ) { this -> printStat ( MSG::ALWAYS ) ; }
 }
@@ -833,7 +825,7 @@ void GaudiCommon<PBASE>::printStatHandler ( Property& /* theProp */ )
 
 
 // ============================================================================
-// The END 
+// The END
 // ============================================================================
 
 

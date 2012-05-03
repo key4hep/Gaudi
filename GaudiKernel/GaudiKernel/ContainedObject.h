@@ -43,7 +43,7 @@ protected:
 
 public:
   /// Retrieve pointer to class identifier
-  virtual const CLID& clID() const { return ContainedObject::classID(); }
+  virtual const CLID& clID() const { return classID(); }
   static const CLID& classID()     { return CLID_ContainedObject; }
 
   /// Access to parent object

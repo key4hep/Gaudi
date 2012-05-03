@@ -3,10 +3,10 @@
 #==============================================================
 
 from Gaudi.Configuration import *
-from Configurables import ParentAlg, StopperAlg, Prescaler, HelloWorld
+from Configurables import ParentAlg, StopperAlg, Prescaler, HelloWorld, TimingAuditor
 
-importOptions('Common.opts')
-MessageSvc().OutputLevel = INFO
+from Configurables import GaudiExamplesCommonConf
+GaudiExamplesCommonConf()
 
 #--------------------------------------------------------------
 # Testing Sequencers
@@ -21,12 +21,12 @@ s2  = Sequencer('Sequence2', Members = [p2, h, c2] )
 top = Sequencer('TopSequence', Members = [s1, s2], StopOverride = True )
 
 #-----------------------------------------------------------------
-# Testing the new GaudiSequencer 
+# Testing the new GaudiSequencer
 #-----------------------------------------------------------------
-sand = GaudiSequencer( 'ANDSequence', 
+sand = GaudiSequencer( 'ANDSequence',
                        Members = [ HelloWorld('AND'), EventCounter('ANDCounter') ],
                        MeasureTime = 1 )
-sor =  GaudiSequencer( 'ORSequence', 
+sor =  GaudiSequencer( 'ORSequence',
                        Members = [ HelloWorld('OR'), EventCounter('ORCounter') ],
                        MeasureTime = 1,
                        ModeOR = 1 )
@@ -39,4 +39,4 @@ ApplicationMgr( TopAlg = [ParentAlg(), StopperAlg( StopCount=20 ),
                 ExtSvc = ['ToolSvc', 'AuditorSvc' ],
                 AuditAlgorithms = True )
 
-AuditorSvc().Auditors += [ "TimingAuditor/TIMER" ] 
+AuditorSvc().Auditors += [ TimingAuditor("TIMER") ]

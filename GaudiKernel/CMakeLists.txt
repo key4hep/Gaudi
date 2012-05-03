@@ -2,36 +2,48 @@
 # CMakeLists.txt file for building GaudiKernel
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-GAUDI_USE_PACKAGE(Boost)
-GAUDI_USE_PACKAGE(CppUnit)
-GAUDI_USE_PACKAGE(ROOT)
+find_package(Boost REQUIRED COMPONENTS filesystem thread system)
+find_package(ROOT)
 
 #---Libraries---------------------------------------------------------------
-GAUDI_LINKER_LIBRARY(GaudiKernel Lib/*.cpp LIBRARIES ${ROOT_LIBRARIES} ${Boost_LIBRARIES})
+gaudi_add_library(GaudiKernel Lib/*.cpp
+                  LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost Root
+                  INCLUDE_DIRS Boost ROOT
+                  PUBLIC_HEADERS GaudiKernel)
 
 #---Tests-------------------------------------------------------------------
-GAUDI_UNIT_TEST(DirSearchPath_test ../tests/src/DirSearchPath_test.cpp LIBRARIES GaudiKernel)
-GAUDI_UNIT_TEST(test_SerializeSTL ../tests/src/test_SerializeSTL.cpp LIBRARIES GaudiKernel cppunit)
-GAUDI_UNIT_TEST(PathResolver_test ../tests/src/PathResolver_test.cpp LIBRARIES GaudiKernel)
-GAUDI_UNIT_TEST(test_GaudiTime ../tests/src/test_GaudiTime.cpp LIBRARIES GaudiKernel cppunit)
+gaudi_add_unit_test(DirSearchPath_test ../tests/src/DirSearchPath_test.cpp
+                    LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(test_SerializeSTL ../tests/src/test_SerializeSTL.cpp
+                    LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(PathResolver_test ../tests/src/PathResolver_test.cpp
+                    LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(test_GaudiTime ../tests/src/test_GaudiTime.cpp
+                    LINK_LIBRARIES GaudiKernel )
+gaudi_add_unit_test(test_GaudiTiming ../tests/src/test_GaudiTiming.cpp
+                    LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(Parsers_test ../tests/src/parsers.cpp
+                    LINK_LIBRARIES GaudiKernel)
 # This is just a compile-time tests.
-GAUDI_UNIT_TEST(test_headers_build ../tests/src/test_headers_build.cpp LIBRARIES GaudiKernel)
+gaudi_add_unit_test(test_headers_build ../tests/src/test_headers_build.cpp
+                    LINK_LIBRARIES GaudiKernel)
+
+if(BUILD_TESTS)
+  set_property(TEST GaudiKernel.PathResolver_test PROPERTY WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+endif()
 
 #---Dictionaries------------------------------------------------------------
-REFLEX_BUILD_DICTIONARY(GaudiKernel dict/dictionary.h  dict/dictionary.xml LIBRARIES GaudiKernel)
+gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIBRARIES GaudiKernel)
 
 #---Installation------------------------------------------------------------
-# Disable generation of ConfUserDB (must be done before GAUDI_INSTALL_PYTHON_MODULES)
+# Disable generation of ConfUserDB (must be done before gaudi_install_python_modules)
 set_directory_properties(PROPERTIES CONFIGURABLE_USER_MODULES None)
 
-GAUDI_INSTALL_HEADERS(GaudiKernel)
-GAUDI_INSTALL_PYTHON_MODULES()
-GAUDI_INSTALL_SCRIPTS()
+gaudi_install_python_modules()
+gaudi_install_scripts()
 
 #---Test-----------------------------------------------------------------------
-foreach(test dirsearchpath pathresolver serializestl gaudi_time)
-  GAUDI_QMTEST_TEST(gaudikernel.${test})
-endforeach()
+gaudi_add_test(QMTest QMTEST)
 
 #---Special options
 if(HIDE_WARNINGS)

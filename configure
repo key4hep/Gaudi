@@ -1,0 +1,40 @@
+#!/bin/sh
+
+LCG_version=62b
+
+cd $(dirname $0)
+rootdir=`pwd`
+
+if [ ! -e build-dir/CMakeCache.txt ] ; then
+
+    if which distcc &> /dev/null ; then
+	distcc_opt="-DCMAKE_USE_DISTCC=ON"
+    else
+        if which ccache &> /dev/null ; then
+            ccache_opt="-DCMAKE_USE_CCACHE=ON"
+        fi
+    fi
+
+    mkdir -p build-dir
+    cd build-dir
+    
+    export CMAKE_PREFIX_PATH=../cmake
+    time cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain/heptools-${LCG_version}.cmake -DBUILD_TESTS=ON $distcc_opt $ccache_opt .. || (cd $rootdir ; rm -rf build-dir)
+    cd $rootdir
+fi
+
+if [ -e build-dir/CMakeCache.txt ] ; then
+    cat <<EOF
+
+Now you can build with:
+
+  cd `pwd`/build-dir
+  make
+  make install
+
+and test with
+
+  ctest
+
+EOF
+fi

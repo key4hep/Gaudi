@@ -5,7 +5,7 @@
 <argument name="args"><set><text>-v</text><text>-n</text></set></argument>
 <argument name="options"><text>
 from Gaudi.Configuration import *
-from Configurables import MyTool
+from Configurables import DataStreamTool as MyTool
 
 pub = MyTool("Public")
 pub.addTool(MyTool,"Private")

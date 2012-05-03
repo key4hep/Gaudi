@@ -19,6 +19,7 @@ class _ConfigurablesModule(object):
     def __getattr__(self, name):
         # trigger the load of the configurables database
         from Gaudi.Configuration import confDbGetConfigurable, cfgDb
+        from Gaudi.CommonGaudiConfigurables import aliases
         # return value
         retval = None
         # handle the special cases (needed for modules): __all__, __path__
@@ -28,6 +29,8 @@ class _ConfigurablesModule(object):
             retval == None
         elif name in cfgDb.keys(): # ignore private names
             retval = confDbGetConfigurable(name)
+        elif name in aliases: # special case of aliases
+            retval = aliases[name]
         elif self.ignoreMissingConfigurables:
             import logging
             logging.getLogger(__configurables_module_fullname__).warning('Configurable class %s not in database', name)

@@ -96,7 +96,7 @@ public:
     insert ( first , last , cut ) ;
   }
   /// destructor
-  ~SharedObjectsContainer() { m_data.clear() ; }
+  virtual ~SharedObjectsContainer() { m_data.clear() ; }
   // ==========================================================================
 public:
   // ==========================================================================

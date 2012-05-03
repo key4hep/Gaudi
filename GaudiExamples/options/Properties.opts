@@ -5,7 +5,7 @@
 #units   "units.opts"
 
 // test the job opts search path mechanism
-// The environment variable JOBOPTSEARCHPATH controls it 
+// The environment variable JOBOPTSEARCHPATH controls it
 #include "optsub1/dummy1.opts"
 
 //--------------------------------------------------------------
@@ -14,7 +14,7 @@
 ApplicationMgr.TopAlg  = {   "PropertyAlg" };
 // test for the multiple inclusion of the same alg
 ApplicationMgr.TopAlg  += {   "PropertyAlg", "PropertyProxy" };
-// test for the removal of an algorithm 
+// test for the removal of an algorithm
 ApplicationMgr.TopAlg  -=  {  "PropertyAlg" };
 
 // Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
@@ -33,12 +33,16 @@ ApplicationMgr.HistogramPersistency = "NONE";
 PropertyAlg.OutputLevel = 3;
 
 PropertyAlg.Int    = 101 ;
+PropertyAlg.Int64  = 4294967296; // 1 << 32
+PropertyAlg.UInt64 = 4294967296; // 1 << 32
 PropertyAlg.Double = 101.1e+10;
 PropertyAlg.String = "hundred one";
 PropertyAlg.Bool   = false;
 
 
 PropertyAlg.IntArray    = { 1, 2, 3, 5};
+PropertyAlg.Int64Array  = {4294967296}; // 1 << 32
+PropertyAlg.UInt64Array = {4294967296}; // 1 << 32
 PropertyAlg.DoubleArray = { -11.0 , 2., 3.3, 0.4e-03 };
 PropertyAlg.StringArray = {"one", "two", "four" };
 PropertyAlg.BoolArray   = {false, true, false };

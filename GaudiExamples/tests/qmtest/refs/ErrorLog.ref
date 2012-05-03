@@ -1,0 +1,77 @@
+JobOptionsSvc        INFO
+//GP:================================================================================
+//GP: include "../options/ErrorLog.opts"                                      (0,0)
+AuditorSvc.Auditors =  [ "ChronoAuditor" ] ;                            //GP: (1,1)
+ApplicationMgr.TopAlg =  [ "ErrorLogTest" ] ;                           //GP: (1,1)
+MessageSvc.OutputLevel = 3;                                             //GP: (1,1)
+MessageSvc.UseColors = 1;                                               //GP: (1,1)
+THistSvc.OutputLevel = 2;                                               //GP: (1,1)
+ApplicationMgr.OutputLevel = 1;                                         //GP: (1,1)
+ServiceManager.OutputLevel = 2;                                         //GP: (1,1)
+StatusCodeSvc.OutputLevel = 1;                                          //GP: (1,1)
+IssueLogger.OutputLevel = 1;                                            //GP: (1,1)
+IssueLogger.ReportLevel = "VERBOSE";                                    //GP: (1,1)
+IssueLogger.TraceBackLevel = "FATAL";                                   //GP: (1,1)
+IssueLogger.ShowTime = 1;                                               //GP: (1,1)
+IssueLogger.Output =  [ "DEBUG='MsgSvc'" ] ;                            //GP: (1,1)
+IssueLogger.Output +=  [ "WARNING='test.out'" ] ;                       //GP: (1,1)
+IssueLogger.Output +=  [ "ERROR='STDERR'" ] ;                           //GP: (1,1)
+ApplicationMgr.EvtMax = 20;                                             //GP: (1,1)
+ApplicationMgr.EvtSel = "NONE";                                         //GP: (1,1)
+//GP: end  "../options/ErrorLog.opts"                                         (54,1)
+//GP:================================================================================
+
+JobOptionsSvc        INFO Job options successfully read in from ../options/ErrorLog.opts
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.77 $
+                                          running on lxbuild120.cern.ch on Fri Mar 13 16:31:47 2009
+====================================================================================================================================[m
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service EvtDataSvc/EventDataSvc[m
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service DetDataSvc/DetectorDataSvc[m
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service HistogramSvc/HistogramDataSvc[m
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service HbookCnv::PersSvc/HbookHistSvc[m
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service RootHistCnv::PersSvc/RootHistSvc[m
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service EvtPersistencySvc/EventPersistencySvc[m
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service DetPersistencySvc/DetectorPersistencySvc[m
+ApplicationMgr    VERBOSE declareMultiSvcType: declared service HistogramPersistencySvc/HistogramPersistencySvc[m
+ApplicationMgr      DEBUG Loading declared DLL's[m
+ApplicationMgr    VERBOSE addMultiSvc: added service EventLoopMgr/EventLoopMgr[m
+ApplicationMgr       INFO Application Manager Configured successfully[m
+IssueLogger         DEBUG Service base class initialized successfully[m
+IssueLogger         DEBUG Writing VERBOSE issues to MsgStream[m
+IssueLogger         DEBUG Writing DEBUG1 issues to MsgStream[m
+IssueLogger         DEBUG Writing DEBUG2 issues to MsgStream[m
+IssueLogger         DEBUG Writing DEBUG3 issues to MsgStream[m
+IssueLogger         DEBUG Writing INFO issues to MsgStream[m
+IssueLogger         DEBUG Writing RECOVERABLE issues to MsgStream[m
+IssueLogger         DEBUG Writing FATAL issues to MsgStream[m
+IssueLogger         DEBUG Writing ALWAYS issues to MsgStream[m
+[94;101;1mIssueLogger         FATAL FATAL  ../src/ErrorLog/ErrorLogTest.cpp:38  "this is a fatal" [16:31:47 2009/03/13 CET]
+#1  0x2a9a7c0180 ErrorLogTest::initialize()  [/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/InstallArea/slc4_amd64_gcc34_dbg/lib/libGaudiExamples.so]
+#2  0x2a95f762d8 Algorithm::sysInitialize()  [/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/InstallArea/slc4_amd64_gcc34_dbg/lib/libGaudiKernel.so]
+#3  0x2a96013d34 MinimalEventLoopMgr::initialize()  [/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/InstallArea/slc4_amd64_gcc34_dbg/lib/libGaudiKernel.so]
+#4  0x2a97225722 EventLoopMgr::initialize()  [/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/InstallArea/slc4_amd64_gcc34_dbg/lib/libGaudiSvc.so]
+#5  0x2a961d647c Service::sysInitialize()  [/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/InstallArea/slc4_amd64_gcc34_dbg/lib/libGaudiKernel.so]
+#6  0x2a973e7c0a ServiceManager::initialize()  [/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/InstallArea/slc4_amd64_gcc34_dbg/lib/libGaudiSvc.so]
+#7  0x2a97186320 ApplicationMgr::initialize()  [/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/InstallArea/slc4_amd64_gcc34_dbg/lib/libGaudiSvc.so]
+#8  0x2a97187c6a ApplicationMgr::GoToState(Gaudi::StateMachine::State, bool)  [/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/InstallArea/slc4_amd64_gcc34_dbg/lib/libGaudiSvc.so]
+#9  0x2a97187c6a ApplicationMgr::GoToState(Gaudi::StateMachine::State, bool)  [/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/InstallArea/slc4_amd64_gcc34_dbg/lib/libGaudiSvc.so]
+#10 0x2a97188142 ApplicationMgr::run()  [/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/InstallArea/slc4_amd64_gcc34_dbg/lib/libGaudiSvc.so]
+#11 0x2a95ffb314 GaudiMain  [/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/InstallArea/slc4_amd64_gcc34_dbg/lib/libGaudiKernel.so]
+#12 0x4005a8 __gxx_personality_v0  [/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/InstallArea/slc4_amd64_gcc34_dbg/bin/Gaudi.exe]
+#13 0x3a0301c330 __libc_start_main  [/lib64/tls/libc.so.6]
+#14 0x4005a8 __gxx_personality_v0  [/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/InstallArea/slc4_amd64_gcc34_dbg/bin/Gaudi.exe]
+[m
+IssueLogger          INFO INFO  ../src/ErrorLog/ErrorLogTest.cpp:44  "info ErrObj" [16:31:47 2009/03/13 CET][m
+[93;1mEventLoopMgr      WARNING Unable to locate service "EventSelector" [m
+[93;1mEventLoopMgr      WARNING No events will be processed from external input.[m
+[93;1mHistogramPersis...WARNING Histograms saving not required.[m
+ApplicationMgr       INFO Application Manager Initialized successfully[m
+ApplicationMgr       INFO Application Manager Started successfully[m
+ApplicationMgr       INFO Application Manager Stopped successfully[m
+[93;1mErrorLogTest      WARNING Finalizing...[m
+EventLoopMgr         INFO Histograms converted successfully according to request.[m
+IssueLogger         DEBUG IssueLogger::finalize[m
+ApplicationMgr       INFO Application Manager Finalized successfully[m
+ApplicationMgr       INFO Application Manager Terminated successfully[m

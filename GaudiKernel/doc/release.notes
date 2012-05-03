@@ -1,6 +1,188 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2012-03-26 - Marco Clemencic
+ - Added missing __init__.py in python/GaudiKernel
+
+============================= GaudiKernel v28r1 ==============================
+! 2012-02-13 - Marco Clemencic
+ - Fixed compatibility problem with Python 2.7.
+
+! 2012-02-06 - Sasha Mazurov
+ - Patch #5204: GaudiKernel parsers: allow 'L' suffix in integer literals
+
+============================= GaudiKernel v28r0 ==============================
+! 2012-01-25 - Marco Clemencic
+ - Added a specific application return code for failure during finalization.
+
+! 2012-01-16 - Marco Clemencic
+ - Added interfaces for tools used to add dynamic mapping to DataOnDemandSvc:
+   IDODNodeMapper, IDODAlgMapper
+ - Added output stream operator to Gaudi::Utils::TypeNameString.
+
+! 2011-12-16 - Marco Clemencic
+ - Fixed genconfuser.py to take into account the new location of the genConf
+   directory during the build.
+
+! 2011-12-10 - Marco Clemencic
+ - Print an error message if the input data stream cannot be initialized.
+
+! 2011-12-08 - Marco Clemencic
+ - Fixed bug #89628: Missing const methods in CommonMessaging.
+
+! 2011-12-07 - Marco Clemencic
+ - Fixed bug #89653: Gaudi is not ready for Boost 1.48 (filesystem V3)
+
+! 2011-12-05 - Marco Clemencic
+ - Removed the unused FastContainerSvc.
+
+! 2011-12-01 - Chris Jones
+ - Fixed bug #85377: GaudiTuple tuple does not understand ulonglong
+   Add support for long long and unsigned long long data types
+
+! 2011-11-22 - Marco Clemencic
+ - Fixed gcc 4.6 warning: cast to pointer from integer of different size
+   (-Wint-to-pointer-cast)
+ - Fixed Eclipse CDT Analyzer warning.
+
+! 2011-11-16 - Marco Clemencic
+ - Fixed the problem with undefined size_t in GaudiKernel/Map.h
+
+! 2011-11-01 - Marco Clemencic
+ - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc
+   and GaudiCommonSvc. (patch #1816)
+   Use GaudiCoreSvc for bootstrap and genconf.
+
+============================= GaudiKernel v27r17 =============================
+! 2011-10-27 - Marco Clemencic
+ - Introduced the function System::getProcessTime(pid), the helper class
+   ProcessTime and a templated version of adjustTime in GaudiKernel/Timing.h
+   (bug #87341).
+ - Added unit test for getProcessTime and ProcessTime.
+ - Fixed bug #87341: performance problem in ChronoEntity
+   Modified ChronoEntity to use getProcessTime and ProcessTime.
+ - Added test to detect bug #87340
+   (code bloat because of MessageStream operator<<)
+ - Fixed bug #87340: code bloat because of MessageStream operator<<
+   Added (as suggested) an explicit implementation of operator<< for
+   "const char *".
+
+! 2011-09-22 - Marco Clemencic
+ - Set the Windows link-time option /expectedoutputsize explicitly only for
+   GaudiKernel.
+
+============================= GaudiKernel v27r16 =============================
+! 2011-09-02 - Marco Clemencic
+ - Fixed bug #86303: new parses not allowing empty maps
+
+! 2011-09-01 - Sasha Mazurov
+ - Patch #5027: fixed a problem in the parsing of map representations
+
+============================= GaudiKernel v27r15 =============================
+! 2011-08-26 - Sebastien Binet
+ - Fixed bug #82435: Possible genConf bug in dealing with vector<double> filled
+                     with zeros by default.
+
+! 2011-08-08 - Marco Clemencic
+ - Added the non-templated method AlgTool::service
+   - This makes AlgTool more similar to Algorithm, in order to simplify some
+     code in GaudiCommon.
+ - Fixing bug #83775: unprotected MSG::DEBUG/VERBOSE
+   - ServiceLocatorHelper
+   - MinimalEventLoopMgr
+ - Fixed a bug in Service that was causing an inconsistency between the output
+   level of the service and the table in MessageSvc.
+
+! 2011-08-07 - Marco Clemencic
+ - Modified Gaudi::Cast to use InterfaceID instead of type_info.
+ - Modified CommonMessaging to be able to get the current output level from the
+   embedded MsgStream.
+
+! 2011-08-05 - Marco Clemencic
+ - Fixing bug #83775: unprotected MSG::DEBUG/VERBOSE
+   Fixed Algorithm, Service, DataSvc
+ - Modified CommonMessaging (and Service) to correctly take into account
+   changes to the output level happening after the cached MsgStream is created.
+
+! 2011-08-04 - Marco Clemencic
+ - Fixed bug #84663: allow access to addresses of private members of StatEntity
+   Changed the signature of the methods returning the internal data members
+   to return a const& instead of a copy.
+
+! 2011-08-04 - Charles Leggett
+ - Patch #4941: Added interfaces IIoComponent and IIoComponentMgr
+
+! 2011-08-04 - Marco Clemencic
+ - Removed implementation of parsers that are not needed to reduce compilation
+   time and size (patch #4891)
+
+! 2011-08-03 - Sasha Mazurov
+ - Renamed GaudiKernel/Grammars.h to GrammarsV2.h to allow easier backward
+   compatibility.
+ - Reintroduced the old (Spirit 1) headers Grammars.h and Parsers.icpp for
+   backward compatibility (with the introduction of a deprecation warning).
+
+! 2011-08-02 - Marco Clemencic
+ - Fixed a compilation error on ICC (patch #4891)
+
+! 2011-07-27 - Marco Clemencic
+ - Hidden compilation warnings in Grammars.h using the pragma "system_header".
+
+! 2011-07-26 - Marco Clemencic
+ - Improved the stability of HistoryObj and IVersHistoryObj in dynamic_cast.
+
+! 2011-07-26 - Markus Frank
+ - Patch #4999: Added virtual destructor implementation for IUpdateableIF
+
+! 2011-07-25 - Marco Clemencic
+ - Fixed a compilation problem triggered by the changes in some header files.
+
+! 2011-07-22 - Marco Clemencic
+ - Divided the bulk of parsers in several small files to speed up the
+   (parallel) compilation.
+
+! 2011-07-22 - Sasha Mazurov
+ - Patch #4891: New parsers for Gaudi Configuration
+   - Fully rewritten parsers (less amount of code, more readable and more robust)
+   - Based on Boost.Spirit 2
+   - New parsers for std::set and std::list
+   - Job options files: variables introduced
+
+! 2011-07-21 - Charles Leggett
+ - Patch #4943: Consolidate GaudiSvc and GaudiKernel patches in Atlas tags
+   Update HistorySvc to use new HistoryObj base classes, and provide XML output
+
+! 2011-07-21 - Marco Clemencic
+ - Added use of 'UNLIKELY' in the destructor of StatusCode.
+
+! 2011-07-21 - Charles Leggett
+ - Patch #4975: check for uncaught exceptions in StatusCode destructor
+   If a StatusCode is created in some alg, and an exception is thrown before
+   it's checked, when the stack is unwound it will trigger an unchecked status
+   code error from the StatusCodeSvc, which can mislead people as to the true
+   cause of the problem.
+   This patch checks for std::uncaught_exception() in the StatusCode destructor
+   before calling the StatusCodeSvc.
+
+! 2011-06-27 - Marco Clemencic
+ - Fixed a problem with the compilation of genconf on ICC after the fix to
+   bug #83433.
+
+! 2011-06-24 - Hubert Degaudenzi
+ - removed useless ";".
+
+! 2011-06-23 - Marco Clemencic
+ - Fixed bug #83433: reject invalid properties in genconf
+   Modified genconf to use a regular expression to validate property names.
+
+! 2011-06-23 - Hubert Degaudenzi
+ - fixed warnings from the eclipse code analysis engine.
+
+! 2011-06-23 - Marco Clemencic
+ - Fixed bug #83524: Unprotected debug message in Service::initialize
+ - Fixed bug #83525: Usage of THIS in GaudiKernel/implements.h
+   Replaced THIS with T, as suggested.
+
 ============================= GaudiKernel v27r14 =============================
 ! 2011-04-19 - Marco Clemencic
  - Fixed a defect spotted by Coverity in KeyedObject (UNINIT_CTOR).

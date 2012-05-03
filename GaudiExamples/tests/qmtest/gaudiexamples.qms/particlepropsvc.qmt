@@ -3,7 +3,8 @@
   <argument name="program"><text>gaudirun.py</text></argument>
   <argument name="options"><text>
 from Gaudi.Configuration import *
-from Configurables import PPSLHCb
+from Configurables import Gaudi__ParticlePropertySvc as ParticlePropertySvc
+from Configurables import GaudiExamples__GaudiPPS as GaudiPPS
 
 importOptions("Common.opts")
 
@@ -11,7 +12,7 @@ ParticlePropertySvc( ParticlePropertiesFile = "../data/ParticleTable.txt" )
 
 ApplicationMgr( EvtMax = 1,
                 EvtSel = 'NONE',
-                TopAlg = [PPSLHCb()] )
+                TopAlg = [GaudiPPS()] )
 
 </text></argument>
 <argument name="validator"><text>

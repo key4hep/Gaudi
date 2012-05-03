@@ -73,12 +73,90 @@ AlgorithmHistory::~AlgorithmHistory() {
   }
 }
 
-const CLID& AlgorithmHistory::classID() {
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+const CLID& 
+AlgorithmHistory::classID() {
 
   static CLID CLID_AlgorithmHistory = 56809101;  //from `clid AlgorithmHistory`
   return CLID_AlgorithmHistory;
 
 }
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void
+AlgorithmHistory::dump(std::ostream& ost, const bool isXML, int ind) const {
+
+  if (!isXML) {
+    ost << "Type: " << algorithm_type() << endl;
+    ost << "Name: " << algorithm_name() << endl;
+    ost << "Version: " << algorithm_version() << endl;
+    // Properties.
+    ost << "Properties: [" << endl;;
+    for ( AlgorithmHistory::PropertyList::const_iterator
+	    ipprop=properties().begin();
+	  ipprop!=properties().end(); ++ipprop ) {
+      const Property& prop = **ipprop;
+      prop.fillStream(ost);
+      ost << endl;
+    }
+    ost << "]" << endl;
+    // Subalgorithms.
+    if ( subalgorithm_histories().size() == 0 ) {
+      ost << "No subalgorithms.";
+    } else {
+      ost << "Subalgorithms: {" << endl;
+      for ( AlgorithmHistory::HistoryList::const_iterator
+	      iphist=subalgorithm_histories().begin();
+	    iphist!=subalgorithm_histories().end(); ++iphist ) {
+	if ( iphist==subalgorithm_histories().begin() ) {
+	  ost << "----------" << endl;
+	}
+	ost << **iphist << endl;
+	ost << "----------" << endl;
+      }
+      ost << "}";
+    }
+  } else {
+    ind += 2;
+    indent(ost,ind);
+    ost << "<COMPONENT name=\"" << algorithm_name() 
+	<< "\" class=\"" << convert_string(algorithm_type()) 
+	<< "\" version=\"" << algorithm_version() 
+	<< "\">" << std::endl;
+
+    for ( AlgorithmHistory::PropertyList::const_iterator
+	    ipprop=properties().begin();
+	  ipprop!=properties().end(); ++ipprop ) {
+      const Property& prop = **ipprop;
+      indent(ost,ind+2);
+      ost << "<PROPERTY name=\"" << prop.name() 
+	  << "\" value=\"" << convert_string(prop.toString()) 
+	  << "\" documentation=\"" << convert_string(prop.documentation())
+	  << "\">" << std::endl;
+    }
+
+    // Subalgs
+    if ( subalgorithm_histories().size() != 0 ) {
+      for ( AlgorithmHistory::HistoryList::const_iterator
+	      iphist=subalgorithm_histories().begin();
+	    iphist!=subalgorithm_histories().end(); ++iphist ) {
+	(*iphist)->dump(ost,isXML,ind+2);
+      }
+
+    }
+
+    indent(ost,ind);
+    ost << "</COMPONENT>" << std::endl;
+ 
+    
+    
+
+
+  }
+}
+
 
 //**********************************************************************
 // Free functions.
@@ -87,38 +165,9 @@ const CLID& AlgorithmHistory::classID() {
 // Output stream.
 
 ostream& operator<<(ostream& lhs, const AlgorithmHistory& rhs) {
-  lhs << "Type: " << rhs.algorithm_type() << endl;
-  lhs << "Name: " << rhs.algorithm_name() << endl;
-  lhs << "Version: " << rhs.algorithm_version() << endl;
-  // Properties.
-  lhs << "Properties: [" << endl;;
-  for ( AlgorithmHistory::PropertyList::const_iterator
-        ipprop=rhs.properties().begin();
-        ipprop!=rhs.properties().end(); ++ipprop ) {
-    const Property& prop = **ipprop;
-    prop.fillStream(lhs);
-    lhs << endl;
-    //    lhs << "  " << prop.type() << " " << prop.name() << endl;
-//  	<< " == " 
-//      	<< prop.fillStream(lhs) << endl;
-  }
-  lhs << "]" << endl;
-  // Subalgorithms.
-  if ( rhs.subalgorithm_histories().size() == 0 ) {
-    lhs << "No subalgorithms.";
-  } else {
-    lhs << "Subalgorithms: {" << endl;
-    for ( AlgorithmHistory::HistoryList::const_iterator
-          iphist=rhs.subalgorithm_histories().begin();
-          iphist!=rhs.subalgorithm_histories().end(); ++iphist ) {
-      if ( iphist==rhs.subalgorithm_histories().begin() ) {
-        lhs << "----------" << endl;
-      }
-      lhs << **iphist << endl;
-      lhs << "----------" << endl;
-    }
-    lhs << "}";
-  }
+
+  rhs.dump(lhs,false);
+
   return lhs;
 }
 

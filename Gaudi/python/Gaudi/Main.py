@@ -6,6 +6,9 @@ import logging
 log = logging.getLogger(__name__)
 
 class gaudimain(object) :
+    # main loop implementation, None stands for the default
+    mainLoop = None
+
     def __init__(self) :
         from Configurables import ApplicationMgr
         appMgr = ApplicationMgr()
@@ -14,6 +17,7 @@ class gaudimain(object) :
         if "GAUDIAPPVERSION" in os.environ:
             appMgr.AppVersion = str(os.environ["GAUDIAPPVERSION"])
         self.log = logging.getLogger(__name__)
+        self.printsequence = False
 
     def setupParallelLogging( self ) :
         # ---------------------------------------------------
@@ -103,7 +107,11 @@ class gaudimain(object) :
             log.error("Unknown file type '%s'. Must be any of %r.", ext, write.keys())
             sys.exit(1)
 
-    def printsequence(self):
+    def _printsequence(self):
+        if not self.printsequence:
+            # No printing requested
+            return
+        
         def printAlgo( algName, appMgr, prefix = ' ') :
             print prefix + algName
             alg = appMgr.algorithm( algName.split( "/" )[ -1 ] )
@@ -114,8 +122,7 @@ class gaudimain(object) :
             elif prop.has_key( "DetectorList" ) :
                 subs = prop[ "DetectorList" ].value()
                 for i in subs : printAlgo( algName.split( "/" )[ -1 ] + i.strip( '"' ) + "Seq", appMgr, prefix + "     ")
-        import GaudiPython
-        self.g = GaudiPython.AppMgr()
+        
         mp = self.g.properties()
         print "\n ****************************** Algorithm Sequence **************************** \n"
         for i in mp["TopAlg"].value(): printAlgo( i, self.g )
@@ -141,7 +148,13 @@ class gaudimain(object) :
         self.log.debug('-'*80)
         sysStart = time()
         self.g = GaudiPython.AppMgr()
-        success = self.g.run(self.g.EvtMax).isSuccess()
+        self._printsequence()
+        runner = self.mainLoop or (lambda app, nevt: app.run(nevt))
+        statuscode = runner(self.g, self.g.EvtMax)
+        if hasattr(statuscode, "isSuccess"):
+            success = statuscode.isSuccess()
+        else:
+            success = statuscode
         success = self.g.exit().isSuccess() and success
         if not success and self.g.ReturnCode == 0:
             # ensure that the return code is correctly set
@@ -153,6 +166,9 @@ class gaudimain(object) :
         return self.g.ReturnCode
 
     def runParallel(self, ncpus) :
+        if self.mainLoop:
+            self.log.fatal("Cannot use custom main loop in multi-process mode, check your options")
+            return 1
         self.setupParallelLogging( )
         from Gaudi.Configuration import Configurable
         import GaudiMP.GMPBase as gpp

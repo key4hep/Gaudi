@@ -72,11 +72,15 @@ def main():
                       metavar = "NAME=VALUE",
                       action = "append",
                       help = "prepend VALUE to the variable NAME (with a '%s' as separator)" % os.pathsep)
+    parser.add_option("-x", "--xml",
+                      action = "append",
+                      help = "XML file describing the changes to the environment")
     parser.disable_interspersed_args()
     parser.set_defaults(unset = [],
                         set = [],
                         append = [],
                         prepend = [],
+                        xml = [],
                         ignore_environment = False)
 
     opts, args = parser.parse_args()
@@ -94,6 +98,19 @@ def main():
         env = {}
     else:
         env = dict(os.environ)
+
+    if opts.xml:
+        from EnvConfig import Control
+        control = Control.Environment()
+        # declare scalar and list variables ("*PATH*" and "*DIRS*" are lists)
+        for v in env:
+            control.declare(v, ("PATH" in v or "DIRS" in v) and "list" or "scalar", False)
+        for k in env:
+            control.set(k, env[k])
+
+        for f in opts.xml:
+            control.loadXML(f)
+        env = control.vars()
 
     env = set_env(env,
                   set = opts.set, unset = opts.unset,

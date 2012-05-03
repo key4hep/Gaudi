@@ -261,12 +261,23 @@ class CMT:
 #  path to it.
 #  If the executable cannot be found, None is returned
 def which(executable):
+    """
+    Locates an executable in the executables path ($PATH) and returns the full
+    path to it.  An application is looked for with or without the '.exe' suffix.
+    If the executable cannot be found, None is returned
+    """
     if os.path.isabs(executable):
+        if not os.path.exists(executable):
+            if executable.endswith('.exe'):
+                if os.path.exists(executable[:-4]):
+                    return executable[:-4]
         return executable
     for d in os.environ.get("PATH").split(os.pathsep):
-        fullpath = os.path.join(d,executable)
+        fullpath = os.path.join(d, executable)
         if os.path.exists(fullpath):
             return fullpath
+    if executable.endswith('.exe'):
+        return which(executable[:-4])
     return None
 
 def rationalizepath(p):
@@ -447,6 +458,8 @@ for w,o,r in [
               ]: #[ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
     normalizeExamples += RegexpReplacer(o,r,w)
 normalizeExamples = LineSkipper(["//GP:",
+                                 "JobOptionsSvc        INFO # ",
+                                 "JobOptionsSvc     WARNING # ",
                                  "Time User",
                                  "Welcome to",
                                  "This machine has a speed",
@@ -459,11 +472,13 @@ normalizeExamples = LineSkipper(["//GP:",
                                  "0 local", # hack for ErrorLogExample
                                  "DEBUG Service base class initialized successfully", # changed between v20 and v21
                                  "DEBUG Incident  timing:", # introduced with patch #3487
+                                 "INFO  'CnvServices':[", # changed the level of the message from INFO to DEBUG
                                  # This comes from ROOT, when using GaudiPython
                                  'Note: (file "(tmpfile)", line 2) File "set" already loaded',
                                  # The signal handler complains about SIGXCPU not defined on some platforms
                                  'SIGXCPU',
                                  ],regexps = [
+                                 r"^JobOptionsSvc        INFO *$",
                                  r"^#", # Ignore python comments
                                  r"(Always|SUCCESS)\s*(Root f|[^ ]* F)ile version:", # skip the message reporting the version of the root file
                                  r"0x[0-9a-fA-F#]+ *Algorithm::sysInitialize\(\) *\[", # hack for ErrorLogExample
@@ -652,6 +667,10 @@ def _parseTTreeSummary(lines, pos):
         result["Branches"] = {}
         i += 4
         while i < (count - 3) and lines[i].startswith("*Br"):
+            if i < (count - 2) and lines[i].startswith("*Branch "):
+                # skip branch header
+                i += 3
+                continue
             branch = parseblock(lines[i:i+3])
             result["Branches"][branch["Name"]] = branch
             i += 4
@@ -1111,6 +1130,16 @@ class GaudiExeTest(ExecTestBase):
             arch = os.environ["SCRAM_ARCH"]
         return arch
 
+    def isWinPlatform(self):
+        """
+        Return True if the current platform is Windows.
+
+        This function was needed because of the change in the CMTCONFIG format,
+        from win32_vc71_dbg to i686-winxp-vc9-dbg.
+        """
+        platform = self.GetPlatform()
+        return "winxp" in platform or platform.startswith("win")
+
     def _expandReferenceFileName(self, reffile):
         # if no file is passed, do nothing
         if not reffile:
@@ -1370,7 +1399,7 @@ class GaudiExeTest(ExecTestBase):
         self.program = prog
 
         dummy, prog_ext = os.path.splitext(prog)
-        if prog_ext not in [ ".exe", ".py", ".bat" ] and self.GetPlatform()[0:3] == "win":
+        if prog_ext not in [ ".exe", ".py", ".bat" ] and self.isWinPlatform():
             prog += ".exe"
             prog_ext = ".exe"
 
@@ -1397,7 +1426,7 @@ class GaudiExeTest(ExecTestBase):
         # if the program is a python file, execute it through python
         if prog_ext == ".py":
             args.insert(0,prog)
-            if self.GetPlatform()[0:3] == "win":
+            if self.isWinPlatform():
                 prog = which("python.exe") or "python.exe"
             else:
                 prog = which("python") or "python"
@@ -1591,6 +1620,9 @@ class GaudiExeTest(ExecTestBase):
             data["stopAtMain"] = "true"
 
         data["args"] = "&#10;".join(map(rationalizepath, args))
+        if self.isWinPlatform():
+            data["args"] = "&#10;".join(["/debugexe"] + map(rationalizepath, [data["exec"]] + args))
+            data["exec"] = which("vcexpress.exe")
 
         if not self.use_temp_dir:
             data["workdir"] = os.getcwd()

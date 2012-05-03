@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/DataSvc.cpp,v 1.38 2008/10/23 15:57:37 marcocle Exp $
 //====================================================================
 //	DataSvc.cpp
 //--------------------------------------------------------------------
@@ -59,6 +58,12 @@ namespace {
 #define CAST_REGENTRY(x,y) dynamic_cast<x>(y)
 //#define CAST_REGENTRY(x,y) (x)(y)
 typedef DataSvcHelpers::RegistryEntry RegEntry;
+
+#define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
+#define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
+
+#define DEBMSG ON_DEBUG debug()
+#define VERMSG ON_VERBOSE verbose()
 
 /** IDataManagerSvc: Remove all data objects below the sub tree
  *  identified by its full path name.
@@ -511,9 +516,7 @@ StatusCode DataSvc::registerObject(DataObject* parentObj,
           DataObject* obj = leaf->object();
           if ( 0 == obj )    {
             if (0 == pObject) {
-              MsgStream log(msgSvc(), name());
-              log << MSG::ERROR
-                  << "registerObject: trying to register null DataObject" << endmsg;
+              error() << "registerObject: trying to register null DataObject" << endmsg;
               return StatusCode::FAILURE;
             }
             else  {
@@ -691,8 +694,7 @@ StatusCode DataSvc::loadObject(IConversionSvc* pLoader, IRegistry* pRegistry) {
     else                                 return  INVALID_OBJ_ADDR;
   }
 
-  MsgStream log( msgSvc(), name() );
-  log << MSG::VERBOSE << "Requested object " << pRegistry->identifier() << endmsg;
+  VERMSG << "Requested object " << pRegistry->identifier() << endmsg;
 
   if ( m_enableAccessHdlr )  {
     // Fire data access incident
@@ -715,12 +717,12 @@ StatusCode DataSvc::loadObject(IConversionSvc* pLoader, IRegistry* pRegistry) {
     status = pLoader->createObj(pAddress, pObject);  // Call data loader
     if ( status.isSuccess() )    {
 
-      log << MSG::VERBOSE << "Object " << pRegistry->identifier() << " created" << endmsg;
+      VERMSG << "Object " << pRegistry->identifier() << " created" << endmsg;
 
       RegEntry *pEntry = CAST_REGENTRY(RegEntry*,pRegistry);
       pEntry->setObject(pObject);
 
-      log << MSG::VERBOSE << "Filling object " << pRegistry->identifier() << endmsg;
+      VERMSG << "Filling object " << pRegistry->identifier() << endmsg;
       status = pLoader->fillObjRefs(pAddress, pObject);
     }
   }
@@ -751,8 +753,8 @@ StatusCode DataSvc::loadObject(IConversionSvc* pLoader, IRegistry* pRegistry) {
       return StatusCode::SUCCESS;
     }
   }
-  if ( status.isSuccess() ) {
-    log << MSG::VERBOSE << "Object " << pRegistry->identifier() << " successfully loaded" << endmsg;
+  ON_VERBOSE if ( status.isSuccess() ) {
+    verbose() << "Object " << pRegistry->identifier() << " successfully loaded" << endmsg;
   }
   return status;
 }
@@ -1298,9 +1300,8 @@ StatusCode DataSvc::initialize()    {
     return sc;
   }
   sc = service("IncidentSvc", m_incidentSvc, true);
-  if ( !sc.isSuccess() )  {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << "Failed to access incident service." << endmsg;
+  if ( UNLIKELY(!sc.isSuccess()) )  {
+    error() << "Failed to access incident service." << endmsg;
   }
   return sc;
 }
@@ -1318,16 +1319,14 @@ StatusCode DataSvc::reinitialize()    {
   }
   // re-initialize the base class
   sc = Service::reinitialize();
-  if (!sc.isSuccess()) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << "Unable to reinitialize base class" << endmsg;
+  if ( UNLIKELY(!sc.isSuccess()) ) {
+    error() << "Unable to reinitialize base class" << endmsg;
     return sc;
   }
   // the initialize part is copied here
   sc = service("IncidentSvc", m_incidentSvc, true);
-  if ( !sc.isSuccess() )  {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << "Failed to access incident service." << endmsg;
+  if ( UNLIKELY(!sc.isSuccess()) )  {
+    error() << "Failed to access incident service." << endmsg;
     return sc;
   }
   // return

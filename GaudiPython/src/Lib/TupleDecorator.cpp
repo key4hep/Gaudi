@@ -42,6 +42,7 @@ namespace
   {
     return tuple.valid() ? tuple->column(name,value) : StatusCode::FAILURE ;
   }
+  // ==========================================================================
 }
 // ============================================================================
 INTuple* GaudiPython::TupleDecorator::nTuple
@@ -107,15 +108,14 @@ StatusCode GaudiPython::TupleDecorator::column
 }
 // ============================================================================
 StatusCode GaudiPython::TupleDecorator::column
+( const Tuples::Tuple&  tuple ,
+  IOpaqueAddress*       value )    
+{ return column ( tuple , "Address" , value ) ; }
+// ============================================================================
+StatusCode GaudiPython::TupleDecorator::column
 ( const Tuples::Tuple&        tuple ,
   const std::string&          name  ,
   const Gaudi::LorentzVector& value )
-{ return _fill ( tuple , name , value ) ; }
-// ============================================================================
-StatusCode GaudiPython::TupleDecorator::column
-( const Tuples::Tuple&               tuple ,
-  const std::string&                 name  ,
-  const Gaudi::PtEtaPhiEVector&      value )
 { return _fill ( tuple , name , value ) ; }
 // ============================================================================
 StatusCode GaudiPython::TupleDecorator::column
@@ -127,43 +127,7 @@ StatusCode GaudiPython::TupleDecorator::column
 StatusCode GaudiPython::TupleDecorator::column
 ( const Tuples::Tuple&               tuple ,
   const std::string&                 name  ,
-  const Gaudi::Polar3DVector&        value )
-{ return _fill ( tuple , name , value ) ; }
-// ============================================================================
-StatusCode GaudiPython::TupleDecorator::column
-( const Tuples::Tuple&               tuple ,
-  const std::string&                 name  ,
-  const Gaudi::RhoEtaPhiVector&      value )
-{ return _fill ( tuple , name , value ) ; }
-// ============================================================================
-StatusCode GaudiPython::TupleDecorator::column
-( const Tuples::Tuple&               tuple ,
-  const std::string&                 name  ,
-  const Gaudi::RhoZPhiVector&        value )
-{ return _fill ( tuple , name , value ) ; }
-// ============================================================================
-StatusCode GaudiPython::TupleDecorator::column
-( const Tuples::Tuple&               tuple ,
-  const std::string&                 name  ,
   const Gaudi::XYZPoint&             value )
-{ return _fill ( tuple , name , value ) ; }
-// ============================================================================
-StatusCode GaudiPython::TupleDecorator::column
-( const Tuples::Tuple&               tuple ,
-  const std::string&                 name  ,
-  const Gaudi::Polar3DPoint&         value )
-{ return _fill ( tuple , name , value ) ; }
-// ============================================================================
-StatusCode GaudiPython::TupleDecorator::column
-( const Tuples::Tuple&               tuple ,
-  const std::string&                 name  ,
-  const Gaudi::RhoEtaPhiPoint&       value )
-{ return _fill ( tuple , name , value ) ; }
-// ============================================================================
-StatusCode GaudiPython::TupleDecorator::column
-( const Tuples::Tuple&               tuple ,
-  const std::string&                 name  ,
-  const Gaudi::RhoZPhiPoint&         value )
 { return _fill ( tuple , name , value ) ; }
 // ============================================================================
 StatusCode GaudiPython::TupleDecorator::farray
@@ -175,20 +139,6 @@ StatusCode GaudiPython::TupleDecorator::farray
 {
   if ( !tuple.valid() ) { return StatusCode::FAILURE ; }
   return tuple->farray( name , data.begin() , data.end() , length , maxv ) ;
-}
-// ============================================================================
-StatusCode GaudiPython::TupleDecorator::farray
-( const Tuples::Tuple&       tuple  ,
-  const std::string&         name   ,
-  const CLHEP::HepVector&    data   ,
-  const std::string&         length ,
-  const size_t               maxv   )
-{
-  if ( !tuple.valid() ) { return StatusCode::FAILURE ; }
-  // use the trick!
-  const double* begin = &(data[0]);
-  const double* end   =   begin + data.num_row() ;
-  return tuple->farray ( name , begin , end , length , maxv ) ;
 }
 // ============================================================================
 StatusCode GaudiPython::TupleDecorator::fmatrix
@@ -204,21 +154,6 @@ StatusCode GaudiPython::TupleDecorator::fmatrix
   { return tuple ->
       Error  ("GP:fmatrix(1): mismatch in matrix dimensions!" ) ; }
   return tuple->fmatrix( name , data , data.size() , cols , length , maxv ) ;
-}
-// ============================================================================
-StatusCode GaudiPython::TupleDecorator::fmatrix
-( const Tuples::Tuple&           tuple  ,
-  const std::string&             name   ,
-  const CLHEP::HepGenMatrix&     data   ,
-  const Tuples::TupleObj::MIndex cols   , // fixed !!!
-  const std::string&             length ,
-  const size_t                   maxv   )
-{
-  if ( !tuple.valid() ) { return StatusCode::FAILURE ; }
-  if ( cols != data.num_col() )
-  { return tuple ->
-      Error  ("GP:fmatrix(2): mismatch in matrix dimensions!" ) ; }
-  return tuple->fmatrix( name , data , data.num_row() , cols , length , maxv ) ;
 }
 // ============================================================================
 StatusCode GaudiPython::TupleDecorator::fmatrix
@@ -239,15 +174,6 @@ StatusCode GaudiPython::TupleDecorator::array
 {
   if ( !tuple.valid() ) { return StatusCode::FAILURE ; }
   return tuple->array ( name , data.begin() , data.end() ) ;
-}
-// ============================================================================
-StatusCode GaudiPython::TupleDecorator::array
-( const Tuples::Tuple&       tuple  ,
-  const std::string&         name   ,
-  const CLHEP::HepVector&    data   )
-{
-  if ( !tuple.valid() ) { return StatusCode::FAILURE ; }
-  return tuple->array( name , data , data.num_row() ) ;
 }
 // ============================================================================
 StatusCode GaudiPython::TupleDecorator::array
@@ -346,21 +272,6 @@ StatusCode GaudiPython::TupleDecorator::matrix
   { return tuple ->
       Error  ("GP:matrix(1): mismatch in fixed matrix dimensions!" ) ; }
   return tuple -> matrix ( name , data , data.size() , cols  ) ;
-}
-// ============================================================================
-StatusCode GaudiPython::TupleDecorator::matrix
-( const Tuples::Tuple&            tuple ,
-  const std::string&              name   ,
-  const CLHEP::HepGenMatrix&      data  )
-{
-  if ( !tuple.valid() ) { return StatusCode::FAILURE ; }
-  if ( 1 > data.num_col()   )
-  { return tuple ->
-      Error  ("GP:matrix(2): illegal fixed matrix num_col" ) ; }
-  if ( 1 > data.num_row()   )
-  { return tuple ->
-      Error  ("GP:matrix(2): illegal fixed matrix num_row" ) ; }
-  return tuple->matrix( name , data , data.num_row() , data.num_col() ) ;
 }
 // ============================================================================
 StatusCode GaudiPython::TupleDecorator::matrix
@@ -605,6 +516,105 @@ StatusCode GaudiPython::TupleDecorator::matrix
   if ( !tuple.valid() ) { return StatusCode::FAILURE ; }
   return tuple->matrix ( name , data ) ;
 }
+// ============================================================================
+// advanced column: time 
+// ============================================================================
+StatusCode GaudiPython::TupleDecorator::column
+( const Tuples::Tuple&            tuple ,
+  const Gaudi::Time&              value ) 
+{ return column ( tuple , "" , value ) ; }
+// ============================================================================
+// advanced column: time 
+// ============================================================================
+StatusCode GaudiPython::TupleDecorator::column
+( const Tuples::Tuple&            tuple ,
+  const std::string&              name  ,
+  const Gaudi::Time&              value ) 
+{ 
+  if ( !tuple.valid() ) { return StatusCode::FAILURE ; }
+  StatusCode sc = StatusCode::SUCCESS ;
+  //
+  sc = tuple->column ( name + "year"    , value.year    ( true )     , 1970 , 2070 ) ;
+  if ( sc.isFailure() ) { return sc ; }
+  sc = tuple->column ( name + "month"   , value.month   ( true ) + 1 , 1    ,   16 ) ;
+  if ( sc.isFailure() ) { return sc ; }
+  sc = tuple->column ( name + "day"     , value.day     ( true )     , 0    ,   32 ) ;
+  if ( sc.isFailure() ) { return sc ; }
+  sc = tuple->column ( name + "hour"    , value.hour    ( true )     , 0    ,   25 ) ;
+  if ( sc.isFailure() ) { return sc ; }
+  sc = tuple->column ( name + "minute"  , value.minute  ( true )     , 0    ,   61 ) ;
+  if ( sc.isFailure() ) { return sc ; }
+  sc = tuple->column ( name + "second"  , value.second  ( true )     , 0    ,   61 ) ;
+  if ( sc.isFailure() ) { return sc ; }
+  sc = tuple->column ( name + "nsecond" , value.nsecond () ) ;
+  //
+  return sc ;
+}
+// ============================================================================
+
+
+// ============================================================================
+// Legacy:
+// ============================================================================
+StatusCode GaudiPython::TupleDecorator::array
+( const Tuples::Tuple&       tuple  ,
+  const std::string&         name   ,
+  const CLHEP::HepVector&    data   )
+{
+  if ( !tuple.valid() ) { return StatusCode::FAILURE ; }
+  return tuple->array( name , data , data.num_row() ) ;
+}
+// ============================================================================
+StatusCode GaudiPython::TupleDecorator::farray
+( const Tuples::Tuple&       tuple  ,
+  const std::string&         name   ,
+  const CLHEP::HepVector&    data   ,
+  const std::string&         length ,
+  const size_t               maxv   )
+{
+  if ( !tuple.valid() ) { return StatusCode::FAILURE ; }
+  // use the trick!
+  const double* begin = &(data[0]);
+  const double* end   =   begin + data.num_row() ;
+  return tuple->farray ( name , begin , end , length , maxv ) ;
+}
+// ============================================================================
+StatusCode GaudiPython::TupleDecorator::matrix
+( const Tuples::Tuple&            tuple ,
+  const std::string&              name   ,
+  const CLHEP::HepGenMatrix&      data  )
+{
+  if ( !tuple.valid() ) { return StatusCode::FAILURE ; }
+  if ( 1 > data.num_col()   )
+  { return tuple ->
+      Error  ("GP:matrix(2): illegal fixed matrix num_col" ) ; }
+  if ( 1 > data.num_row()   )
+  { return tuple ->
+      Error  ("GP:matrix(2): illegal fixed matrix num_row" ) ; }
+  return tuple->matrix( name , data , data.num_row() , data.num_col() ) ;
+}
+// ============================================================================
+StatusCode GaudiPython::TupleDecorator::fmatrix
+( const Tuples::Tuple&           tuple  ,
+  const std::string&             name   ,
+  const CLHEP::HepGenMatrix&     data   ,
+  const Tuples::TupleObj::MIndex cols   , // fixed !!!
+  const std::string&             length ,
+  const size_t                   maxv   )
+{
+  if ( !tuple.valid() ) { return StatusCode::FAILURE ; }
+  if ( cols != data.num_col() )
+  { return tuple ->
+      Error  ("GP:fmatrix(2): mismatch in matrix dimensions!" ) ; }
+  return tuple->fmatrix( name , data , data.num_row() , cols , length , maxv ) ;
+}
+// ============================================================================
+
+
+
+
+// ============================================================================
+// Tuple-Alg-decorator
 // ============================================================================
 Tuples::Tuple GaudiPython::TupleAlgDecorator::nTuple
 ( const GaudiTupleAlg&     algo  ,

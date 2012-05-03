@@ -5,7 +5,9 @@
 from Gaudi.Configuration import *
 from Configurables import ExtendedProperties
 
-importOptions("Common.opts")
+from Configurables import GaudiExamplesCommonConf
+GaudiExamplesCommonConf()
+
 from GaudiKernel.SystemOfUnits import *
 
 ######### BEGIN of xProp configuration
@@ -20,20 +22,20 @@ xProps.VectorOfPairsDD += [ (4,5), (5,6), (6,7), (7,8) ]
 
 # std::vector<std::vector<std::string> >
 xProps.VectorOfVectorsString = [
-                                [ "a", "b" , "c" ], 
+                                [ "a", "b" , "c" ],
                                 [ "A", "B" , "C" ]
                                 ]
 
 # std::vector<std::vector<double> >
 xProps.VectorOfVectorsDouble = [
-                                [ 0 , 1 , 2 ] , 
-                                [ 0 , -0.5 , -0.25 ]  
+                                [ 0 , 1 , 2 ] ,
+                                [ 0 , -0.5 , -0.25 ]
                                 ];
 
 # std::map<int,double>
-xProps.MapIntDouble = { 
-                       1 : 0.1, 
-                       2 : 0.2, 
+xProps.MapIntDouble = {
+                       1 : 0.1,
+                       2 : 0.2,
                        3 : 0.3
                        }
 
@@ -91,18 +93,21 @@ xProps.VectorOfPairsII = [ (1,1), (2,1), (3,2), (4,3), (5,5) ]
 
 
 # std::map<int,std::string>
-xProps.MapIntString = { 
+xProps.MapIntString = {
                        0 : "zero" ,
                        2 : "two"  ,
                        -1 : "minus one"
                        }
 
 # std::map<unsigned int,std::string>
-xProps.MapUIntString = { 
+xProps.MapUIntString = {
                         0 : "UZero" ,
                         2 : "UTwo"  ,
                         1 : "UOne"
                         }
+
+xProps.EmptyMap = {}
+xProps.EmptyVector = []
 
 ######### END of xProp configuration
 

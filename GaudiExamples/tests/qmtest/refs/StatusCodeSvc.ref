@@ -1,0 +1,36 @@
+JobOptionsSvc        INFO
+//GP:================================================================================
+//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/StatusCodeSvc.opts" (0,0)
+//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Common.opts" (5,10)
+//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Services.opts" (7,10)
+AuditorSvc.Auditors =  [ "ChronoAuditor" ] ;                            //GP: (1,1)
+//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Services.opts" (24,1)
+ApplicationMgr.StatusCodeCheck = 1;                                     //GP: (7,10)
+//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Common.opts" (16,1)
+ApplicationMgr.TopAlg =  [ "SCSAlg" ] ;                                 //GP: (5,10)
+StatusCodeSvc.OutputLevel = 1;                                          //GP: (5,10)
+StatusCodeSvc.SuppressCheck = 0;                                        //GP: (5,10)
+StatusCodeSvc.Filter =  [ "LIB=libGaudiExamples.so" ] ;                 //GP: (5,10)
+ApplicationMgr.EvtMax = 5;                                              //GP: (5,10)
+ApplicationMgr.EvtSel = "NONE";                                         //GP: (5,10)
+//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/StatusCodeSvc.opts" (36,1)
+//GP:================================================================================
+
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/StatusCodeSvc.opts
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.77 $
+                                          running on pclhcb55 on Thu May 27 11:01:32 2010
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+StatusCodeSvc       DEBUG Service base class initialized successfully
+StatusCodeSvc        INFO initialize
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+HistogramPersis...WARNING Histograms saving not required.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+ApplicationMgr       INFO Application Manager Stopped successfully
+EventLoopMgr         INFO Histograms converted successfully according to request.
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

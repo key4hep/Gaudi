@@ -1,0 +1,32 @@
+################################################################################
+# Package: GaudiCommonSvc
+# Maintainer: Marco Clemencic
+# Description: standard and commonly used components
+################################################################################
+
+! 2012-04-19 - Marco Clemencic
+ - Added new signatures to HistogramSvc::Helper::act to absorb the change in the
+   return type of TH1::Add, TH1::Divide and TH1::Multiply.
+   See http://root.cern.ch/viewvc/trunk/hist/hist/inc/TH1D.h?r1=43732&r2=43802
+
+============================ GaudiCommonSvc v1r1 =============================
+! 2012-02-14 - Chris Jones
+ - Add a "TESVetoList" property to InputCopyStream, to allow certain locations
+   in the TES to be excluded from being copied to the OutputStream.
+   Default is empty.
+   (see task #25591)
+
+! 2012-01-26 - Marco Clemencic
+ - Added protection to debug messages (reported by Marco Cattaneo).
+
+============================ GaudiCommonSvc v1r0 =============================
+! 2012-01-20 - Marco Clemencic
+ - Moved ToolSvc to GaudiCoreSvc because it's used by some other core services.
+
+! 2011-12-06 - Marco Clemencic
+ - Moved AlgContextSvc from GaudiMonitor to GaudiCommonSvc.
+ - Removed unnecessary grouping in src directory.
+
+! 2011-11-01 - Marco Clemencic
+ - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc
+   and GaudiCommonSvc. (patch #1816)

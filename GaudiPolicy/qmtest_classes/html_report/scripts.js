@@ -101,21 +101,32 @@ jQuery.fn.summary = function() {
 	return this.html($("<table/>").html(tbody));
 }
 
+/** Callback function for clicks on foldable li elements.
+ * @returns {Boolean}
+ */
+function foldingAction() {
+	var me = $(this);
+    if (me.hasClass('folded')) {
+ 	   me.next().slideDown();
+ 	   me.find('img').attr('src', 'minus.png');
+    } else {
+ 	   me.next().slideUp();
+ 	   me.find('img').attr('src', 'plus.png');
+    }
+    me.toggleClass("folded");
+    return false; // avoid bubbling of the event
+}
+
 /** Generate foldable lists.
  */
 jQuery.fn.foldable = function() {
     this.each(function() {
-	    var me = $(this);
-	    me.addClass("folded")
+    	var me = $(this);
+	    me.addClass("foldable").prepend('<img src="plus.png"/>&nbsp;')
 	    // wrap the content of the element with a clickable span
 	    // (includes the ul)
-	    .wrapInner($("<span class='clickable'/>")
-		       .click(function(){
-			       var me = $(this);
-			       me.next().toggle();
-			       me.parent().toggleClass("folded expanded");
-			       return false; // avoid bubbling of the event
-			   }));
+	    .wrapInner($("<span class='clickable folded'/>")
+		       .click(foldingAction));
 	    // this moves the ul after the span (and hides it in the meanwhile)
 	    me.append($("span > ul", me).hide());
 	});
@@ -128,20 +139,20 @@ jQuery.fn.loader = function() {
     this.each(function() { // loop over all the selected elements
       var me = $(this);
       if (me.data("url")) { // modify the element only if it does have a data "url"
-	  me.addClass("folded")
+	  me.addClass("foldable").prepend('<img src="plus.png"/>&nbsp;')
 	      // wrap the "text" of the element with a clickable span that loads the url
 	      .wrapInner($("<span class='clickable'/>")
 			 .click(function(){ // trigger the loading on click
 				 var me = $(this);
-				 me.after($("<div/>").loadingIcon().load(me.parent().data("url")));
-				 me.unbind("click"); // replace the click handler
-				 me.click(function(){ // this handler just toggle the visibility
+				 me.after($("<div/>").hide().load(me.parent().data("url"),
+						 function() {
 					 var me = $(this);
-					 me.next().toggle();
-					 me.parent().toggleClass("folded expanded");
-					 return false; // avoid bubbling of the event
-				     });
-				 me.parent().toggleClass("folded expanded");
+					 me.slideDown()
+					   .prev()
+					   .unbind("click") // replace the click handler
+					   .click(foldingAction)
+					   .find('img').attr('src', 'minus.png');
+				 	}));
 				 return false; // avoid bubbling of the event
 			     }));
       }

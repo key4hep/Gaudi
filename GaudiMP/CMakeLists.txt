@@ -1,17 +1,22 @@
 ############################################################################
 # CMakeLists.txt file for building GaudiMP
 ############################################################################
-GAUDI_USE_PACKAGE(GaudiKernel)
-GAUDI_USE_PACKAGE(GaudiPython)
-GAUDI_USE_PACKAGE(ROOT)
+depends_on_subdirs(GaudiKernel)
+
+find_package(ROOT)
+find_package(PythonLibs)
 
 #---Libraries---------------------------------------------------------------
-GAUDI_LINKER_LIBRARY(GaudiMP Lib/*.cpp LIBRARIES GaudiKernel ${PYTHON_LIBRARIES} ${ROOT_LIBRARIES})
+gaudi_add_library(GaudiMPLib Lib/*.cpp
+                  LINK_LIBRARIES GaudiKernel PythonLibs ROOT
+                  INCLUDE_DIRS ROOT PythonLibs
+                  PUBLIC_HEADERS GaudiMP)
+gaudi_add_module(GaudiMP component/*.cpp
+                 LINK_LIBRARIES GaudiMPLib PythonLibs ROOT)
 
 #---Dictionaries------------------------------------------------------------
-REFLEX_BUILD_DICTIONARY(GaudiMP dict/gaudimp_dict.h dict/selection.xml LIBRARIES GaudiMP)
+gaudi_add_dictionary(GaudiMPLib dict/gaudimp_dict.h dict/selection.xml LINK_LIBRARIES GaudiMPLib)
 
 #---Installation------------------------------------------------------------
-GAUDI_INSTALL_HEADERS(GaudiMP)
-GAUDI_INSTALL_PYTHON_MODULES()
-GAUDI_INSTALL_SCRIPTS()
+gaudi_install_python_modules()
+gaudi_install_scripts()

@@ -151,7 +151,7 @@ std::string Gaudi::Utils::Histos::Formats::format ( const int ID )
   case LineTitle : return s_histoFormatLineTitle ;
   case LineOnly  : return s_histoFormatLineOnly  ;
   case PathTitle : return s_histoFormatPathTitle ;
-  default        : ;
+  default        : break ;
   }
   /// default:
   return s_histoFormatStat ;

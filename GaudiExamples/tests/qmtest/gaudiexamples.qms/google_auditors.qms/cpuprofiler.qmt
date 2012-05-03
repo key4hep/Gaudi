@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="program"><text>gaudirun.py</text></argument>
+<argument name="args"><set>
+  <text>--preload=libprofiler.so</text>
+  <text>-v</text>
+</set></argument>
+<argument name="options"><text>
+# Options of the test job
+from Gaudi.Configuration import *
+from Configurables import GaudiExamplesCommonConf, HelloWorld
+from Configurables import Google__CPUProfiler as GoogleAuditor
+
+GaudiExamplesCommonConf()
+AuditorSvc().Auditors.append(GoogleAuditor(OutputLevel=INFO))
+ApplicationMgr(EvtMax=10,
+               EvtSel="NONE",
+               TopAlg=[HelloWorld()],
+               AuditAlgorithms=True)
+
+</text></argument>
+<argument name="reference"><text>refs/google_auditors/cpu_profiler.ref</text></argument>
+<argument name="error_reference"><text>refs/google_auditors/cpu_profiler_err.ref</text></argument>
+<argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+<argument name="unsupported_platforms"><set><text>i686</text></set></argument>
+<argument name="validator"><text>
+# hide a difference between JobOptionsSvc and Configurables
+preprocessor = normalizeExamples + \
+    RegexpReplacer(r"PROFILE: interrupts/evictions/bytes = \d+/\d+/\d+",
+                    "PROFILE: interrupts/evictions/bytes = X/Y/Z")
+validateWithReference(preproc = preprocessor)
+</text></argument>
+</extension>

@@ -1,0 +1,119 @@
+JobOptionsSvc        INFO
+//GP:================================================================================
+//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/ColorMsg.opts" (0,0)
+//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Common.opts" (5,10)
+//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Services.opts" (7,10)
+AuditorSvc.Auditors =  [ "ChronoAuditor" ] ;                            //GP: (1,1)
+//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Services.opts" (24,1)
+ApplicationMgr.StatusCodeCheck = 1;                                     //GP: (7,10)
+//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Common.opts" (16,1)
+ApplicationMgr.TopAlg =  [ "ColorMsgAlg" ] ;                            //GP: (5,10)
+MessageSvc.OutputLevel = 1;                                             //GP: (5,10)
+MessageSvc.useColors = 1;                                               //GP: (5,10)
+MessageSvc.fatalColorCode =  [ "blue" , "red" ] ;                       //GP: (5,10)
+MessageSvc.errorColorCode =  [ "[97;101;1m" ] ;                         //GP: (5,10)
+MessageSvc.warningColorCode =  [ "yellow" ] ;                           //GP: (5,10)
+MessageSvc.infoColorCode =  [ "[96;1m" ] ;                              //GP: (5,10)
+MessageSvc.debugColorCode =  [ "[92;1m" ] ;                             //GP: (5,10)
+MessageSvc.verboseColorCode =  [ "[95;4m" ] ;                           //GP: (5,10)
+ApplicationMgr.EvtMax = 2;                                              //GP: (5,10)
+ApplicationMgr.EvtSel = "NONE";                                         //GP: (5,10)
+//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/ColorMsg.opts" (39,1)
+//GP:================================================================================
+
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/ColorMsg.opts
+[92;1mApplicationMgr      DEBUG Getting my own properties[m
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.77 $
+                                          running on pclhcb55 on Fri Apr 23 10:04:51 2010
+====================================================================================================================================[m
+[96;1mApplicationMgr       INFO Application Manager Configured successfully[m
+[92;1mServiceManager      DEBUG Initializing service StatusCodeSvc[m
+[92;1mStatusCodeSvc       DEBUG Service base class initialized successfully[m
+[96;1mStatusCodeSvc        INFO initialize[m
+[92;1mServiceManager      DEBUG Initializing service AppMgrRunable[m
+[92;1mAppMgrRunable       DEBUG Service base class initialized successfully[m
+[92;1mServiceManager      DEBUG Initializing service EventLoopMgr[m
+[92;1mEventLoopMgr        DEBUG Service base class initialized successfully[m
+[92;1mIncidentSvc         DEBUG Service base class initialized successfully[m
+[92;1mIncidentSvc         DEBUG Adding [AbortEvent] listener '<unknown>' with priority 0[m
+[92;1mEventLoopMgr        DEBUG Creating Top Algorithm ColorMsgAlg with name ColorMsgAlg[m
+[92;1mEventDataSvc        DEBUG Service base class initialized successfully[m
+[95;4mEventDataSvc      VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
+[92;1mEventPersistenc...  DEBUG Service base class initialized successfully[m
+[98;1mEventLoopMgr      WARNING Unable to locate service "EventSelector" [m
+[98;1mEventLoopMgr      WARNING No events will be processed from external input.[m
+[92;1mHistogramDataSvc    DEBUG Service base class initialized successfully[m
+[95;4mHistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
+[92;1mHistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ][m
+[92;1mHistogramPersis...  DEBUG Service base class initialized successfully[m
+[98;1mHistogramPersis...WARNING Histograms saving not required.[m
+[95;4mHistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc[m
+[96;1mApplicationMgr       INFO Application Manager Initialized successfully[m
+[92;1mServiceManager      DEBUG Starting service StatusCodeSvc[m
+[92;1mServiceManager      DEBUG Starting service AppMgrRunable[m
+[92;1mServiceManager      DEBUG Starting service IncidentSvc[m
+[92;1mServiceManager      DEBUG Starting service EventPersistencySvc[m
+[92;1mServiceManager      DEBUG Starting service EventDataSvc[m
+[92;1mServiceManager      DEBUG Starting service HistogramPersistencySvc[m
+[92;1mServiceManager      DEBUG Starting service HistogramDataSvc[m
+[92;1mServiceManager      DEBUG Starting service EventLoopMgr[m
+[96;1mApplicationMgr       INFO Application Manager Started successfully[m
+[98;108;1mColorMsgAlg         FATAL THIS IS A FATAL MESSAGE[m
+[97;101;1mColorMsgAlg         ERROR THIS IS AN ERROR MESSAGE[m
+[98;1mColorMsgAlg       WARNING THIS IS A WARNING MESSAGE[m
+[96;1mColorMsgAlg          INFO THIS IS A INFO MESSAGE[m
+[92;1mColorMsgAlg         DEBUG THIS IS A DEBUG MESSAGE[m
+[95;4mColorMsgAlg       VERBOSE THIS IS A VERBOSE MESSAGE[m
+[97;101;1mColorMsgAlg         ERROR this is another[92;1m error [m[97;101;1mmessage[m
+[98;1mColorMsgAlg       WARNING This is another[95;1m warning [m[98;1mmessage[m
+[96;1mColorMsgAlg          INFO testing colour[m
+[96;1mColorMsgAlg          INFO setting....[93;1mthis should be in yellow[91;1m and red[m
+[96;1mColorMsgAlg          INFO multicolor: [94;102;1mthis is blue on green[95;107;1m and purple on white[m
+[96;1mColorMsgAlg          INFO [92;1mThis is green. [93;104;1mThis is in yellow on blue. [m[96;1mThis is back to normal[m
+[98;108;1mColorMsgAlg         FATAL THIS IS A FATAL MESSAGE[m
+[97;101;1mColorMsgAlg         ERROR THIS IS AN ERROR MESSAGE[m
+[98;1mColorMsgAlg       WARNING THIS IS A WARNING MESSAGE[m
+[96;1mColorMsgAlg          INFO THIS IS A INFO MESSAGE[m
+[92;1mColorMsgAlg         DEBUG THIS IS A DEBUG MESSAGE[m
+[95;4mColorMsgAlg       VERBOSE THIS IS A VERBOSE MESSAGE[m
+[97;101;1mColorMsgAlg         ERROR this is another[92;1m error [m[97;101;1mmessage[m
+[98;1mColorMsgAlg       WARNING This is another[95;1m warning [m[98;1mmessage[m
+[96;1mColorMsgAlg          INFO testing colour[m
+[96;1mColorMsgAlg          INFO setting....[93;1mthis should be in yellow[91;1m and red[m
+[96;1mColorMsgAlg          INFO multicolor: [94;102;1mthis is blue on green[95;107;1m and purple on white[m
+[96;1mColorMsgAlg          INFO [92;1mThis is green. [93;104;1mThis is in yellow on blue. [m[96;1mThis is back to normal[m
+[92;1mServiceManager      DEBUG Stopping service EventLoopMgr[m
+[92;1mServiceManager      DEBUG Stopping service HistogramDataSvc[m
+[92;1mServiceManager      DEBUG Stopping service HistogramPersistencySvc[m
+[92;1mServiceManager      DEBUG Stopping service EventDataSvc[m
+[92;1mServiceManager      DEBUG Stopping service EventPersistencySvc[m
+[92;1mServiceManager      DEBUG Stopping service IncidentSvc[m
+[92;1mServiceManager      DEBUG Stopping service AppMgrRunable[m
+[92;1mServiceManager      DEBUG Stopping service StatusCodeSvc[m
+[96;1mApplicationMgr       INFO Application Manager Stopped successfully[m
+[92;1mServiceManager      DEBUG Finalizing service EventLoopMgr[m
+[92;1mIncidentSvc         DEBUG Removing [AbortEvent] listener '<unknown>'[m
+[96;1mEventLoopMgr         INFO Histograms converted successfully according to request.[m
+[92;1mServiceManager      DEBUG Finalizing service HistogramDataSvc[m
+[92;1mServiceManager      DEBUG Finalizing service HistogramPersistencySvc[m
+[92;1mServiceManager      DEBUG Finalizing service EventDataSvc[m
+[92;1mServiceManager      DEBUG Finalizing service EventPersistencySvc[m
+[92;1mServiceManager      DEBUG Finalizing service IncidentSvc[m
+[92;1mIncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0(+-0)/0/0[ms] Total:0[s][m
+[92;1mServiceManager      DEBUG Finalizing service AppMgrRunable[m
+[92;1mServiceManager      DEBUG Finalizing service StatusCodeSvc[m
+[92;1mServiceManager      DEBUG Service reference count check:[m
+[92;1mServiceManager      DEBUG ---- StatusCodeSvc (refCount = 2)[m
+[92;1mServiceManager      DEBUG ---- MessageSvc (refCount = 11)[m
+[92;1mServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)[m
+[92;1mServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)[m
+[92;1mServiceManager      DEBUG ---- IncidentSvc (refCount = 2)[m
+[92;1mServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)[m
+[92;1mServiceManager      DEBUG ---- EventDataSvc (refCount = 3)[m
+[92;1mServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 2)[m
+[92;1mServiceManager      DEBUG ---- HistogramDataSvc (refCount = 3)[m
+[92;1mServiceManager      DEBUG ---- EventLoopMgr (refCount = 3)[m
+[96;1mApplicationMgr       INFO Application Manager Finalized successfully[m
+[96;1mApplicationMgr       INFO Application Manager Terminated successfully[m

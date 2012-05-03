@@ -1,0 +1,62 @@
+################################################################################
+# Package: GaudiCoreSvc
+# Maintainer: Marco Clemencic
+# Description: basic and mandatory components for a Gaudi application
+################################################################################
+
+============================= GaudiCoreSvc v1r1 ==============================
+! 2012-02-06 - Marco Clemencic
+ - minor esthetic fix
+
+! 2012-01-26 - Marco Clemencic
+ - Added protection to debug messages (reported by Marco Cattaneo).
+
+============================= GaudiCoreSvc v1r0 ==============================
+! 2012-01-25 - Marco Clemencic
+ - Set non-zero return code in case of failure during finalization.
+ - Modified the last messages (finalization and termination) of ApplicationMgr
+   in case of failures.
+
+! 2012-01-24 - Illya Shapoval
+ - Modified ServiceManager to avoid race conditions on concurrent requests of
+   services from different threads.
+
+! 2012-01-20 - Marco Clemencic
+ - Moved ToolSvc to GaudiCoreSvc because it's used by some other core services.
+
+! 2012-01-19 - Marco Clemencic
+ - Improved debug (VERBOSE) messages in DataOnDemandSvc.
+
+! 2012-01-17 - Sasha Mazurov
+ - Patch #5183: JobOptionsSvc: warnings and environment variables
+   - Disable the warning "Reassignment of option".
+   - Fix a bug: Environment variables aren't replaced by their values in a
+     property's value.
+
+! 2012-01-17 - Marco Clemencic
+ - Improvements to DataOnDemandSvc:
+   - do not load the ToolSvc if not needed
+   - ensure that the tools are not released if the ToolSvc is already finalized
+
+! 2012-01-16 - Marco Clemencic
+ - Modified DataOnDemandSvc to accept tools to map paths to node types
+   (IDODNodeMapper) and to algorithms (IDODAlgMapper).
+   Note: the mapping is cached in the usual internal structures so the
+         implementation of the tools must always return the same answer for the
+         same path.
+ - Added a basic IDODNodeMapper and IDODAlgMapper (DODBasicMapper) implementing
+   the minimal DataOnDemandSvc static mapping.
+
+! 2011-12-15 - Sasha Mazurov
+ - Patch #5176: fix problem with underscore in property names (Boost 1.48)
+
+! 2011-12-15 - Marco Clemencic
+ - Make ApplicationMgr print the version of the package if no version is
+   specified in the options.
+
+! 2011-12-13 - Sasha Mazurov
+ - Patch #5166: Allow "::" in property and component names.
+
+! 2011-11-01 - Marco Clemencic
+ - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc
+   and GaudiCommonSvc. (patch #1816)

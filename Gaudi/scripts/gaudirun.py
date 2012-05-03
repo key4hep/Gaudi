@@ -58,13 +58,17 @@ if __name__ == "__main__":
     parser.add_option("--printsequence", action="store_true",
                       help="print the sequence")
     if not sys.platform.startswith("win"):
-        # This option can be used only on unix platforms
+        # These options can be used only on unix platforms
         parser.add_option("-T", "--tcmalloc", action="store_true",
                           help="Use the Google malloc replacement. The environment "
                                "variable TCMALLOCLIB can be used to specify a different "
                                "name for the library (the default is libtcmalloc.so)")
+        parser.add_option("--preload", action="append",
+                          help="Allow pre-loading of special libraries (e.g. Google "
+                               "profiling libraries).")
     parser.set_defaults(options = [],
                         tcmalloc = False,
+                        preload = [],
                         ncpus = None)
 
     opts, args = parser.parse_args()
@@ -105,20 +109,29 @@ if __name__ == "__main__":
 
     # tcmalloc support
     if opts.tcmalloc:
-        libname = os.environ.get("TCMALLOCLIB", "libtcmalloc.so")
+        opts.preload.insert(0, os.environ.get("TCMALLOCLIB", "libtcmalloc.so"))
+    # allow preloading of libraries
+    if opts.preload:
         preload = os.environ.get("LD_PRELOAD", "")
-        if libname not in preload:
-            if preload:
-                preload += " "
-            preload += libname
+        if preload:
+            preload = preload.replace(" ", ":").split(":")
+        else:
+            preload = []
+        for libname in set(preload).intersection(opts.preload):
+            logging.warning("Ignoring preload of library %s because it is "
+                            "already in LD_PRELOAD.", libname)
+        to_load = [libname
+                   for libname in opts.preload
+                   if libname not in set(preload)]
+        if to_load:
+            preload += to_load
+            preload = ":".join(preload)
             os.environ["LD_PRELOAD"] = preload
             logging.info("Restarting with LD_PRELOAD='%s'", preload)
             # remove the --tcmalloc option from the arguments
+            # FIXME: the --preload arguments will issue a warning but it's tricky to remove them
             args = [ a for a in sys.argv if a != '-T' and not '--tcmalloc'.startswith(a) ]
             os.execv(sys.executable, [sys.executable] + args)
-        else:
-            logging.warning("Option --tcmalloc ignored because the library %s is "
-                            " already in LD_PRELOAD.", libname)
 
     if opts.pickle_output:
         if opts.output:
@@ -141,6 +154,14 @@ if __name__ == "__main__":
     optlines.reverse() # this allows to avoid to have to care about corrections of the positions
     for pos, l in optlines:
         options.insert(pos,l)
+
+    # prevent the usage of GaudiPython
+    class FakeModule(object):
+        def __init__(self, exception):
+            self.exception = exception
+        def __getattr__(self, *args, **kwargs):
+            raise self.exception
+    sys.modules["GaudiPython"] = FakeModule(RuntimeError("GaudiPython cannot be used in option files"))
 
     # "execute" the configuration script generated (if any)
     if options:
@@ -174,8 +195,16 @@ if __name__ == "__main__":
         c.printconfig(opts.old_opts, opts.all_opts)
     if opts.output:
         c.writeconfig(opts.output, opts.all_opts)
+
+    c.printsequence = opts.printsequence
     if opts.printsequence:
-        c.printsequence()
+        if opts.ncpus:
+            logging.warning("--printsequence not supported with --ncpus: ignored")
+        elif opts.dry_run:
+            logging.warning("--printsequence not supported with --dry-run: ignored")            
+    
+    # re-enable the GaudiPython module
+    del sys.modules["GaudiPython"]
 
     if not opts.dry_run:
         # Do the real processing

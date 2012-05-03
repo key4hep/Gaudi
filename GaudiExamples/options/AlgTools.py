@@ -4,18 +4,17 @@
 from Gaudi.Configuration import *
 from Configurables import MyAlgorithm, MyTool, MyGaudiAlgorithm
 
-importOptions('Common.opts')
-
-MessageSvc().OutputLevel = INFO
+from Configurables import GaudiExamplesCommonConf
+GaudiExamplesCommonConf()
 
 myalg = MyAlgorithm( 'MyAlg' )
 
 myalg.addTool( MyTool( Int = 101,
                        Double = 101.1e+10,
                        String = "hundred one",
-                       Bool = False ) ) 
+                       Bool = False ) )
 
-gtool = MyTool( 'MyTool', 
+gtool = MyTool( 'MyTool',
                 Int = 201,
                 Double = 201.1e+10,
                 String = "two hundred and one",

@@ -1,11 +1,11 @@
 // $Id: Time.icpp,v 1.1 2006/01/25 16:02:48 hmd Exp $
-#ifndef GAUDIKERNEL_TIME_ICPP 
+#ifndef GAUDIKERNEL_TIME_ICPP
 #define GAUDIKERNEL_TIME_ICPP 1
 
 // Implementation of inline function for classes Gaudi::Time and Gaudi::TimeSpan
 
 namespace Gaudi {
-  
+
   /** Initialize an empty (zero) time value.  */
   inline Time::Time (void): m_nsecs(0) {}
 
@@ -181,18 +181,19 @@ namespace Gaudi {
   inline TimeSpan & TimeSpan::operator%= (const TimeSpan &x) {
     m_nsecs %= x.m_nsecs; return *this;
   }
+
+  /// Output operator.
+  inline std::ostream& operator<< (std::ostream &out, const Gaudi::Time &time) {
+    return out << Gaudi::TimeSpan(time).seconds() << '.' << time.nanoformat();
+  }
+
+  /// Output operator.
+  inline std::ostream& operator<< (std::ostream &out, const Gaudi::TimeSpan &time) {
+    return out << time.seconds() << '.' << Gaudi::Time(time).nanoformat();
+  }
 }
 
 //<<<<<< INLINE PUBLIC FUNCTIONS                                        >>>>>>
-
-inline std::ostream& operator<< (std::ostream &out, const Gaudi::Time &time) {
-  return out << Gaudi::TimeSpan(time).seconds() << '.' << time.nanoformat();
-}
-
-inline std::ostream& operator<< (std::ostream &out, const Gaudi::TimeSpan &time) {
-  return out << time.seconds() << '.' << Gaudi::Time(time).nanoformat();
-}
-
 inline Gaudi::Time operator+ (const Gaudi::Time &t, const Gaudi::TimeSpan &ts) {
   return Gaudi::Time (t.ns() + ts.ns());
 }
@@ -224,7 +225,7 @@ inline Gaudi::Time operator- (const Gaudi::Time &t, const Gaudi::TimeSpan &ts) {
 inline bool operator== (const Gaudi::Time &t1, const Gaudi::Time &t2) {
   return t1.ns() == t2.ns();
 }
- 
+
 inline bool operator!= (const Gaudi::Time &t1, const Gaudi::Time &t2) {
   return t1.ns() != t2.ns();
 }
@@ -310,7 +311,7 @@ inline bool operator! (const Gaudi::TimeSpan &ts) {
 }
 
 // --- operators for serialization ---
-  
+
 // Output serialization
 inline StreamBuffer& operator<<(StreamBuffer &s, const Gaudi::Time &t)  {
   return s << t.ns();

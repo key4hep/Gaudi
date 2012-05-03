@@ -1,11 +1,12 @@
-#!/usr/bin/env gaudirun.py 
+#!/usr/bin/env gaudirun.py
 
 from Gaudi.Configuration import *
 # ============================================================================
-importOptions("Common.opts")
+from Configurables import GaudiExamplesCommonConf
+GaudiExamplesCommonConf()
 # ============================================================================
 # @file
-#  Simple file to run GaudiExamples::TimingAlg example 
+#  Simple file to run GaudiExamples::TimingAlg example
 #  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
 #  @author Marco CLEMENCIC Marco.Clemencic@cern.ch
 #  @date 2008-05-13
@@ -16,5 +17,5 @@ app.TopAlg = [ "GaudiExamples::TimingAlg/Timing" ]
 app.EvtSel = "NONE" # do not use any event input
 app.EvtMax = 400
 # ============================================================================
-# The END 
+# The END
 # ============================================================================

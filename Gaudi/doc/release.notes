@@ -1,6 +1,56 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+================================ Gaudi v23r2 =================================
+! 2012-03-15 - Marco Clemencic
+ - Fixed bug #92122: option '--printsequence' of gaudirun.py no longer works
+   Moved the call to the printsequence function from gaudirun.py to
+   gaudimain.run(), thus also fixing the possible configuration corruption due
+   to the use of the option.
+
+================================ Gaudi v23r1 =================================
+! 2012-02-22 - Marco Clemencic
+ - Modified gaudirun.py to be able to preload arbitrary libraries (option
+   --preload) and not just tcmalloc.
+
+================================ Gaudi v23r0 =================================
+! 2012-01-20 - Marco Clemencic
+ - Minor change to the test custom_main_loop_parallel to work on single core
+   machines, like CERNVM.
+
+! 2011-12-09 - Marco Clemencic
+ - Added RootCnvSvc and RootEvtSelector to the list of aliased services
+   (enforcing the default name to preserve compatibility with LHCb).
+
+! 2011-12-08 - Marco Clemencic
+ - Added support for class aliases in the meta-module "Configurables".
+ - Added a ConfigurableUser to setup the persistency via RootCnv:
+     from Configurables import GaudiPersistency
+     GaudiPersistency()
+
+! 2011-11-01 - Marco Clemencic
+ - Moved core services out of GaudiSvc and into the new packages GaudiCoreSvc
+   and GaudiCommonSvc. (patch #1816)
+   Added GaudiCoreSvc and GaudiCommonSvc to the list of known modules in
+   Gaudi.Configuration.
+ - Added minimalistic tests to verify that all the required services are
+   available.
+ - Minor fix to the test gaudi.bug_39809: it was implicitly requiring the build
+   of GaudiAlg to work.
+
+================================ Gaudi v22r5 =================================
+! 2011-10-27 - Marco Clemencic
+ - Fixed bug #86980: gaudirun.py should prevent the import of GaudiPython
+   Install a fake GaudiPython module that prevents the use of any attribute, and
+   uninstall it just before calling the run function.
+
+! 2011-10-26 - Marco Clemencic
+ - Introduced a hook to override the default gaudirun main loop:
+     Gaudi.Configuration.setCustomMainLoop
+ - Added tests for the custom main loop
+
+================================ Gaudi v22r4 =================================
+================================ Gaudi v22r3 =================================
 ================================ Gaudi v22r2 =================================
 ================================ Gaudi v22r1 =================================
 ================================ Gaudi v22r0 =================================

@@ -317,6 +317,7 @@ void readProcStat(long pid, linux_proc& pinfo) {
   lseek(fd,0,SEEK_SET);
   if((cnt=read(fd,buf,sizeof(buf)))<0) {
     std::cout << "LINUX Read of Proc file failed:" << std::endl;
+    close(fd);
     return;
   }
 
@@ -403,7 +404,8 @@ System::ProcessDescriptor::ProcessHandle::ProcessHandle(long pid)   {
       m_handle = ::OpenProcess(PROCESS_QUERY_INFORMATION|PROCESS_VM_READ,FALSE,
                                pid);
 #else
-      m_handle = (void*)s_myPid;
+      // Note: the return type of getpid is pid_t, which is int on 64bit machines too
+      m_handle = reinterpret_cast<void*>(static_cast<long>(s_myPid));
 #endif
       m_needRelease = true;
       return;

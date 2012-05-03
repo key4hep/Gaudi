@@ -1,0 +1,234 @@
+# --> Including file '/build/marcocle/test_patches/p2073.patch/GAUDI/GaudiExamples/options/Selections.py'
+# <-- End of file '/build/marcocle/test_patches/p2073.patch/GAUDI/GaudiExamples/options/Selections.py'
+# Dumping all configurables and properties (different from default)
+{'ApplicationMgr': {'EvtMax': 20,
+                    'EvtSel': 'NONE',
+                    'TopAlg': ['Gaudi::Examples::SelCreate/Create1',
+                               'Gaudi::Examples::SelFilter/Filter1',
+                               'Gaudi::Examples::SelFilter/Filter2',
+                               'Gaudi::Examples::SelFilter/Filter3',
+                               'Gaudi::Examples::SelFilter/Filter4',
+                               'Gaudi::Examples::SelFilter/Filter5']},
+ 'Filter1': {'Input': 'Create1'},
+ 'Filter2': {'Input': 'Filter1'},
+ 'Filter3': {'Input': 'Filter2'},
+ 'Filter4': {'Input': 'Filter3'},
+ 'Filter5': {'Input': 'Filter4'}}
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.76 $
+                                          running on lxbuild120.cern.ch on Thu Oct  9 18:16:09 2008
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+HistogramPersis...WARNING Histograms saving not required.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
+RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
+RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/34/8
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 8/8/8
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 8/5/5
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 5/5/5
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 5/5/5
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/72/21
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 21/21/21
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 21/21/21
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 21/15/15
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 15/15/15
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/59/20
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 20/15/12
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 12/7/7
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 7/2/2
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 2/2/2
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/83/45
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 45/9/9
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 9/9/5
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 5/5/5
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 5/5/5
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/83/32
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 32/7/7
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 7/7/4
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 4/4/4
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 4/4/4
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/49/20
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 20/20/20
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 20/12/12
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 12/12/12
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 12/12/12
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/50/42
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 42/23/10
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 10/10/10
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 10/9/9
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 9/9/9
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/66/18
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 18/16/16
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 16/16/16
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 16/12/12
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 12/4/4
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/23/11
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 11/11/4
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 4/4/4
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 4/4/4
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 4/4/4
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/74/23
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 23/10/10
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 10/10/10
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 10/10/6
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 6/6/6
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/38/26
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 26/17/17
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 17/12/12
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 12/12/12
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 12/12/12
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/48/9
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 9/9/9
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 9/9/9
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 9/9/9
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 9/5/5
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/50/18
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 18/18/18
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 18/6/6
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 6/6/6
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 6/6/3
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/93/56
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 56/8/1
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 1/1/1
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 1/1/1
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 1/1/1
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/18/6
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 6/6/6
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 6/6/6
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 6/6/5
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 5/5/5
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/72/34
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 34/34/34
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 34/23/23
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 23/23/23
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 23/23/23
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/14/11
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 11/11/4
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 4/4/4
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 4/4/4
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 4/4/4
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/64/19
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 19/8/8
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 8/8/8
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 8/8/8
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 8/8/8
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/14/8
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 8/8/8
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 8/8/8
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 8/8/5
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 5/5/5
+Filter1              INFO Container at 'Create1'
+Filter1              INFO Sample size is 100/70/44
+Filter2              INFO Selection at 'Filter1'
+Filter2              INFO Sample size is 44/20/19
+Filter3              INFO Selection at 'Filter2'
+Filter3              INFO Sample size is 19/19/19
+Filter4              INFO Selection at 'Filter3'
+Filter4              INFO Sample size is 19/19/15
+Filter5              INFO Selection at 'Filter4'
+Filter5              INFO Sample size is 15/4/4
+ApplicationMgr       INFO Application Manager Stopped successfully
+EventLoopMgr         INFO Histograms converted successfully according to request.
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

@@ -20,7 +20,7 @@
   </tr>
   <tr>
     <td><b>Description</b></td>
-    <td> Details of the constituent package versions are available in the 
+    <td> Details of the constituent package versions are available in the
       <a href="https://svnweb.cern.ch/world/wsvn/gaudi/packages/GaudiRelease/tags/$(GAUDIVERS)/cmt/requirements">requirements file</a>.<br>
       The <a href="../release.notes.html">release notes</a> contain the details of changes since the previous release.</td>
   </tr>
@@ -53,7 +53,6 @@
   <ul>
     <LI> <a href="http://lcgapp.cern.ch/doxygen/CORAL/$(CORALVERS)/doxygen/html/" target="_blank">$(CORALVERS)</A> (relational access)
     <LI> <a href="http://lcgapp.cern.ch/doxygen/COOL/$(COOLVERS)/doxygen/html/" target="_blank">$(COOLVERS)</A> (conditions database)
-    <LI> <a href="http://lcgapp.cern.ch/doxygen/POOL/$(POOLVERS)/doxygen/html/" target="_blank">$(POOLVERS)</A> (persistency)
     <LI> <a href="http://lcgapp.cern.ch/doxygen/ROOT/$(ROOTVERS)/doxygen/html/" target="_blank">ROOT $(ROOTVERS)</A> (persistency)
   </ul></li>
   <li>Externals:

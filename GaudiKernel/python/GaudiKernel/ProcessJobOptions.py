@@ -50,10 +50,10 @@ class LogFilter(logging.Filter):
         self.threshold = allowed
 
 class ConsoleHandler(logging.StreamHandler):
-    def __init__(self, strm = None, prefix = None):
-        if strm is None:
-            strm = sys.stdout
-        logging.StreamHandler.__init__(self, strm = strm)
+    def __init__(self, stream = None, prefix = None):
+        if stream is None:
+            stream = sys.stdout
+        logging.StreamHandler.__init__(self, stream)
         if prefix is None:
             prefix = "# "
         self._filter = LogFilter(_log.name)
@@ -80,18 +80,18 @@ class ConsoleHandler(logging.StreamHandler):
         self._filter.enable(allowed)
 
 _consoleHandler = None
-def GetConsoleHandler(prefix = None, strm = None):
+def GetConsoleHandler(prefix = None, stream = None):
     global _consoleHandler
     if _consoleHandler is None:
-        _consoleHandler = ConsoleHandler(prefix = prefix, strm = strm)
+        _consoleHandler = ConsoleHandler(prefix = prefix, stream = stream)
     elif prefix is not None:
         _consoleHandler.setPrefix(prefix)
     return _consoleHandler
 
-def InstallRootLoggingHandler(prefix = None, level = None, strm = None):
+def InstallRootLoggingHandler(prefix = None, level = None, stream = None):
     root_logger = logging.getLogger()
     if not root_logger.handlers:
-        root_logger.addHandler(GetConsoleHandler(prefix, strm))
+        root_logger.addHandler(GetConsoleHandler(prefix, stream))
         root_logger.setLevel(logging.WARNING)
     if level is not None:
         root_logger.setLevel(level)

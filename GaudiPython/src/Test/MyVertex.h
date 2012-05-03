@@ -39,7 +39,7 @@ public:
   virtual ~MyVertex()  {
   }
 	/// Retrieve pointer to class definition structure
-	virtual const CLID& clID() const    { return MyVertex::classID(); }
+	virtual const CLID& clID() const    { return classID(); }
 	static const CLID& classID()        { return CLID_MyVertex; }
   /// Accessors: Retrieve x-position
   double x()  const         { return m_x;  }

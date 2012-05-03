@@ -1,0 +1,98 @@
+
+*******************************************************************************
+*                                                                             *
+* Simple example which illustrate the usage of useful                         *
+* algorithm  base class for N-Tuple manipulations                             *
+*                                                                             *
+*******************************************************************************
+
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r0)
+                                          running on lxplus437.cern.ch on Mon Feb 27 15:32:28 2012
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+ApplicationMgr       INFO Successfully loaded modules : GaudiAlg, RootHistCnv
+NTupleSvc            INFO Added stream file:TupleEx2.root as MYLUN
+RootHistSvc          INFO Writing ROOT histograms to: UndefinedROOTOutputFileName
+HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
+DetectorDataSvc      INFO Detector description not requested to be loaded
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
+RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
+RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+RFileCnv             INFO opening Root file "TupleEx2.root" for writing
+RCWNTupleCnv         INFO Booked TTree with ID: Vectors-4D "N-tuple with 4D-vectors" in directory TupleEx2.root:/TupleEx2
+RCWNTupleCnv         INFO Booked TTree with ID: Vectors-3D "N-tuple with 3D-vectors" in directory TupleEx2.root:/TupleEx2
+RCWNTupleCnv         INFO Booked TTree with ID: Points-3D "N-tuple with 3D-points" in directory TupleEx2.root:/TupleEx2
+ApplicationMgr       INFO Application Manager Stopped successfully
+TupleEx2          SUCCESS Booked 3 N-Tuples and 0 Event Tag Collections
+TupleEx2          SUCCESS List of booked N-Tuples in directory "MYLUN/TupleEx2"
+TupleEx2          SUCCESS  ID=Points-3D     Title="N-tuple with 3D-points"                  #items=3  {p1X,p1Y,p1Z}
+TupleEx2          SUCCESS  ID=Vectors-3D    Title="N-tuple with 3D-vectors"                 #items=3  {v1X,v1Y,v1Z}
+TupleEx2          SUCCESS  ID=Vectors-4D    Title="N-tuple with 4D-vectors"                 #items=4  {lv1E,lv1X,lv1Y,lv1Z}
+RootHistSvc       WARNING no ROOT output file name, Histograms cannot be persistified
+EventLoopMgr         INFO Histograms converted successfully according to request.
+RFileCnv             INFO dumping contents of /NTUPLES/MYLUN
+TFile: name=TupleEx2.root, title=Gaudi Trees, option=CREATE
+******************************************************************************
+*Tree    :Vectors-4D: N-tuple with 4D-vectors                                *
+*Entries :     2000 : Total =           66643 bytes  File  Size =      39820 *
+*        :          : Tree compression factor =   1.64                       *
+******************************************************************************
+*Br    0 :lv1E      : lv1E/D                                                 *
+*Entries :     2000 : Total  Size=      16563 bytes  File Size  =       9833 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.64     *
+*............................................................................*
+*Br    1 :lv1X      : lv1X/D                                                 *
+*Entries :     2000 : Total  Size=      16563 bytes  File Size  =       9813 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.64     *
+*............................................................................*
+*Br    2 :lv1Y      : lv1Y/D                                                 *
+*Entries :     2000 : Total  Size=      16563 bytes  File Size  =       9804 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.64     *
+*............................................................................*
+*Br    3 :lv1Z      : lv1Z/D                                                 *
+*Entries :     2000 : Total  Size=      16563 bytes  File Size  =       9815 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.64     *
+*............................................................................*
+******************************************************************************
+*Tree    :Vectors-3D: N-tuple with 3D-vectors                                *
+*Entries :     2000 : Total =           50060 bytes  File  Size =      29944 *
+*        :          : Tree compression factor =   1.64                       *
+******************************************************************************
+*Br    0 :v1X       : v1X/D                                                  *
+*Entries :     2000 : Total  Size=      16558 bytes  File Size  =       9807 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.64     *
+*............................................................................*
+*Br    1 :v1Y       : v1Y/D                                                  *
+*Entries :     2000 : Total  Size=      16558 bytes  File Size  =       9801 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.64     *
+*............................................................................*
+*Br    2 :v1Z       : v1Z/D                                                  *
+*Entries :     2000 : Total  Size=      16558 bytes  File Size  =       9819 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.64     *
+*............................................................................*
+******************************************************************************
+*Tree    :Points-3D : N-tuple with 3D-points                                 *
+*Entries :     2000 : Total =           50053 bytes  File  Size =      29945 *
+*        :          : Tree compression factor =   1.64                       *
+******************************************************************************
+*Br    0 :p1X       : p1X/D                                                  *
+*Entries :     2000 : Total  Size=      16557 bytes  File Size  =       9792 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.64     *
+*............................................................................*
+*Br    1 :p1Y       : p1Y/D                                                  *
+*Entries :     2000 : Total  Size=      16557 bytes  File Size  =       9822 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.64     *
+*............................................................................*
+*Br    2 :p1Z       : p1Z/D                                                  *
+*Entries :     2000 : Total  Size=      16557 bytes  File Size  =       9823 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.64     *
+*............................................................................*
+NTupleSvc            INFO NTuples saved successfully
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

@@ -2,9 +2,7 @@
 # CMakeLists.txt file for building GaudiAud
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-GAUDI_USE_PACKAGE(GaudiKernel)
+depends_on_subdirs(GaudiKernel)
 
 #---Libraries---------------------------------------------------------------
-GAUDI_COMPONENT_LIBRARY(GaudiAud *.cpp LIBRARIES GaudiKernel)
-
-
+gaudi_add_module(GaudiAud *.cpp LINK_LIBRARIES GaudiKernel)

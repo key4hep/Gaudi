@@ -1,4 +1,3 @@
-// $Id: TestTool.cpp,v 1.2 2006/01/10 19:58:26 hmd Exp $
 // Include files
 
 // from Gaudi
@@ -7,11 +6,6 @@
 
 // local
 #include "TestTool.h"
-
-#ifdef __ICC
-//  disable icc remark #593: variable "X" was set but never used
-#pragma warning(disable:593)
-#endif
 
 //-----------------------------------------------------------------------------
 // Implementation file for class : TestTool
@@ -43,7 +37,7 @@ StatusCode TestTool::initialize()
   if ( !GaudiTool::initialize() ) return StatusCode::FAILURE;
 
   // setup tool registry
-  IAlgTool * mytool;
+  //IAlgTool * mytool;
   for ( ToolList::iterator it = m_tools.begin();
         it != m_tools.end(); ++it ) {
     std::string name = (*it);
@@ -54,7 +48,7 @@ StatusCode TestTool::initialize()
       name = (*it).substr( slash+1 );
     }
     debug() << "Loading tool " << name << " of type " << type << endmsg;
-    mytool = tool<IAlgTool>( type, name );
+    /* mytool = */ tool<IAlgTool>( type, name );
   }
 
   return StatusCode::SUCCESS;

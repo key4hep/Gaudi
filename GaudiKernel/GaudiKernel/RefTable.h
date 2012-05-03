@@ -11,7 +11,7 @@
 #include "GaudiKernel/SmartRef.h"
 #include "GaudiKernel/HashMap.h" // Cannot use maps through sharable images....
 
-// Externals 
+// Externals
 static const CLID CLID_RefTable1to1 = 300;
 static const CLID CLID_RefTable1toN = 301;
 
@@ -25,9 +25,9 @@ static const CLID CLID_RefTable1toN = 301;
 //
 //------------------------------------------------------------------------------
 /** template <class FROM, class TO, class MAPENTRY> class RefTable
-  
+
    ClassName:   RefTableBase
-  
+
    Description: Essential information of the RefTable
                 References can be of several kinds:
                 multiplicity:  FROM       TO
@@ -51,8 +51,8 @@ public:
   typedef MAPENTRY                                  EntryType;
   // My own type
   typedef RefTableBase<FROM, EntryType>             BaseType;
-  /** Define Reference map. Need to use index into vector, 
-      because location of vector entries is not fixed 
+  /** Define Reference map. Need to use index into vector,
+      because location of vector entries is not fixed
   */
   typedef GaudiUtils::HashMap< const void* , EntryType >      TableType;
   /// Definition of map iterator
@@ -81,7 +81,7 @@ protected:
     if ( i != 0 )    {
       return &((*i).second);
     }
-    return 0; 
+    return 0;
   }
   /// Find Reference from it's source entry (CONST)
   const EntryType* i_reference(const KeyType* from)  const  {
@@ -89,7 +89,7 @@ protected:
     if ( i != m_table.end() )    {
       return &((*i).second);
     }
-    return 0; 
+    return 0;
   }
 
 public:
@@ -97,7 +97,7 @@ public:
   RefTableBase(const CLID& clid, int len) : m_clid(clid), m_table(len)   {
   }
   /// Destructor
-  virtual ~RefTableBase()  { 
+  virtual ~RefTableBase()  {
     clear();
   }
   /// Clear Reference map
@@ -159,7 +159,7 @@ template <class FROM, class TO> class RefTable1to1
 : public RefTableBase< FROM , SmartRef<TO> >    {
 public:
   /// Standard Constructor
-  RefTable1to1 (const CLID& clid, int len=16) 
+  RefTable1to1 (const CLID& clid, int len=16)
   : RefTableBase< FROM , SmartRef<TO> >(clid, len)
   {
   }
@@ -193,7 +193,7 @@ public:
     const EntryType* e = i_reference(from);
     return (0 == e) ? 0 : (*e);
   }
-  
+
   /// Check if two entries are associated to each other
   bool isReferenced(const FROM* from, const TO* to )   {
     const EntryType* e = i_reference(from);
@@ -202,7 +202,7 @@ public:
   /// Check if two entries are Referenced to each other
   bool isReferenced(const FROM* from, const EntryType& to )   {
     const EntryType* e = i_reference(from);
-    return (assoc!=0) ? ((*e)=!to) ? (e->target()==to.target()) : false : false;
+    return (assoc!=0) ? ((*e)!=to) ? (e->target()==to.target()) : false : false;
   }
 };
 
@@ -210,15 +210,15 @@ template <class FROM, class TO> class RefTable1toN
 : public RefTableBase< FROM , SmartRefVector<TO> >    {
 public:
   /// Standard Constructor
-  RefTable1toN (const CLID& clid, int len=16) 
+  RefTable1toN (const CLID& clid, int len=16)
   : RefTableBase< FROM , SmartRefVector<TO> >(clid, len)    {
   }
   /// Standard Destructor
   virtual ~RefTable1toN()   {
   }
 	/// Retrieve reference to class definition structure
-	virtual const CLID& clID() const  { 
-    return m_clid; 
+	virtual const CLID& clID() const  {
+    return m_clid;
   }
   /// Insert new Entry into Reference container
   bool insert ( const FROM* from, TO* to)    {

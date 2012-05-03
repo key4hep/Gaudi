@@ -9,7 +9,7 @@
 //
 //	Author     : M.Frank
 //  Created    : 13/11/00
-//	Changes    : 
+//	Changes    :
 //
 //====================================================================
 #define GAUDIKERNEL_MEMORY_CPP
@@ -35,7 +35,7 @@
 long System::adjustMemory( MemoryUnit unit, long value )    {
   if ( value != -1 )    {
     switch ( unit )   {
-    case Byte:      value =       value;    break;
+    case Byte:   break;
     case kByte:     value =       value/1024;    break;
     case MByte:     value =      (value/1024)/1024;    break;
     case GByte:     value =     ((value/1024)/1024)/1024;    break;

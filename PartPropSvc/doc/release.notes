@@ -1,6 +1,10 @@
 Package : ParticleProp
 Package manager : Charles Leggett
 
+============================== PartPropSvc v4r3 ==============================
+! 2011-10-28 - Marco Clemencic
+ - Changed the usage of make_pair to support C++0x.
+
 ============================== PartPropSvc v4r2 ==============================
 ! 2011-01-11 - Marco Clemencic
  - Fixed some ICC remarks.

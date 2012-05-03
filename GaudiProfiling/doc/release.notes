@@ -1,8 +1,43 @@
 !-----------------------------------------------------------------------------
 ! Package     : GaudiProfiling
-! Responsible : Karol Kruzelecki
+! Responsible : Chris Jones, Karol Kruzelecki
 ! Purpose     : Profiling and performance monitoring of Gaudi/LHCb software
 !-----------------------------------------------------------------------------
+
+! 2012-05-03 - Marco Clemencic
+ - Fixed some "pedantic" warnings.
+
+============================ GaudiProfiling v1r4 =============================
+! 2012-03-13 - Marco Clemencic
+ - Modified to compile IntelProfiler only on x86_64 and if the VTune library is
+   available (from AFS).
+ - Minor clean up and hidden a warning in IntelProfiler.
+
+! 2012-02-24 - Sasha Mazurov
+ - Patch #5209: add IntelProfiler component
+   (see doc/intelprofiler.md)
+
+============================ GaudiProfiling v1r3 =============================
+! 2012-02-25 - Chris Jones
+ - Fix a bug in the Google auditors that prevented consecutive events from
+   being audited.
+
+! 2012-02-22 - Chris Jones
+ - Patch #4852: Auditors based on the Google Perf Tools
+   Note: Google auditors can be instantiated only if the libraries tcmalloc or
+         profiler are preloaded (e.g. with gaudirun.py --preload).
+
+============================ GaudiProfiling v1r2 =============================
+! 2011-10-12 - Hubert Degaudenzi
+ - added cstddef include for the size_t type definition which apparently has been
+   moved in Gcc 4.6.
+
+============================ GaudiProfiling v1r1 =============================
+! 2011-06-23 - Hubert Degaudenzi
+ - fixed warnings from the eclipse code analysis engine.
+
+! 2011-05-05 - Marco Clemencic
+ - Disabled on i386, for 32 bits MacOSX.
 
 ============================== GaudiProfiling v1r0 ===========================
 ! 2011-01-19 - Marco Clemencic

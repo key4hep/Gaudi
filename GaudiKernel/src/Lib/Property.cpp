@@ -257,6 +257,11 @@ std::string GaudiHandleProperty::toString( ) const {
   return m_pValue->typeAndName();
 }
 
+void GaudiHandleProperty::toStream(std::ostream& out) const {
+  useReadHandler();
+  out << m_pValue->typeAndName();
+}
+
 StatusCode GaudiHandleProperty::fromString( const std::string& s) { 
   m_pValue->setTypeAndName( s );
   return useUpdateHandler()?StatusCode::SUCCESS:StatusCode::FAILURE;
@@ -281,6 +286,12 @@ std::string GaudiHandleArrayProperty::toString() const {
   // treat as if a StringArrayProperty
   useReadHandler();
   return Gaudi::Utils::toString( m_pValue->typesAndNames() );
+}
+
+void GaudiHandleArrayProperty::toStream(std::ostream &out) const {
+  // treat as if a StringArrayProperty
+  useReadHandler();
+  Gaudi::Utils::toStream( m_pValue->typesAndNames(), out );
 }
 
 StatusCode GaudiHandleArrayProperty::fromString( const std::string& source ) {

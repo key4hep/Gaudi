@@ -12,6 +12,15 @@ class ISequencerTimerTool;
 /** @class GaudiSequencer GaudiSequencer.h
  *  Sequencer for executing several algorithms, stopping when one is faulty.
  *
+ *  Default behaviour (ModeOR=False) is to execute all algorithms until one returns 
+ *  filterPassed() = False. If ShortCircuit is set to False, then all algorithms 
+ *  will be executed.
+ *
+ *  In OR mode, the logic is opposite. All algorithms until one returns 
+ *  filterPassed() = True. To then exit one must onter-intuitively set 
+ *  ShortCircuit to False. If the default value ShortCircuit=True is left
+ *  then all algorithms will be executed.
+ *
  *  @author Olivier Callot
  *  @date   2004-05-13
  */
@@ -73,7 +82,8 @@ private:
   std::vector<AlgorithmEntry> m_entries; ///< List of algorithms to process.
   bool m_modeOR;                         ///< Indicates that the OR is wanted instead of AND
   bool m_shortCircuit;                   ///< Indicates whether to stop processing as soon as possible,
-                                         ///     or to always execute _all_ subalgorithms
+                                         ///     or to always execute _all_ subalgorithms.
+                                         ///     In MOdeOR=True the behaviour is the exact opposite.
   bool m_ignoreFilter;                   ///< True if one continues always.
   bool m_isInitialized;                  ///< Indicate that we are ready
   bool m_measureTime;                    ///< Flag to measure time

@@ -1,4 +1,4 @@
-#-- start of library ----------------------
+#-- start of library_no_static ----------------------
 
 !IF "$(CMTVERSION)" == "v1r20p20090520"
 # --- CMT v1r20p20090520 version
@@ -8,7 +8,7 @@ ${CONSTITUENT}LIB :: $(${CONSTITUENT}shstamp)
 
 $(${CONSTITUENT}arc) :: ${OBJS}
 	$(lib_echo) library
-	$(lib_silent) $(ar) /out:$(bin)${CONSTITUENT}.arc @<<
+	$(lib_silent) $(ar) $(${CONSTITUENT}_arflags) /out:$(bin)${CONSTITUENT}.arc @<<
 ${OBJS}
 <<
 	$(lib_silent) echo "" >$(${CONSTITUENT}stamp)
@@ -99,7 +99,7 @@ ${CONSTITUENT}LIB :: $(${CONSTITUENT}shstamp)
 
 $(${CONSTITUENT}arc) :: ${OBJS}
 	$(lib_echo) library
-	$(lib_silent) $(ar) /out:$(bin)${CONSTITUENT}.arc @<<
+	$(lib_silent) $(ar) $(${CONSTITUENT}_arflags) /out:$(bin)${CONSTITUENT}.arc @<<
 ${OBJS}
 <<
 	echo "" >$(${CONSTITUENT}stamp)
@@ -167,4 +167,4 @@ ${CONSTITUENT}uninstall ::
 
 !ENDIF
 
-#-- end of library -----------------------
+#-- end of library_no_static -----------------------

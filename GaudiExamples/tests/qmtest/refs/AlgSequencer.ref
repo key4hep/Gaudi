@@ -1,0 +1,249 @@
+JobOptionsSvc        INFO
+//GP:================================================================================
+//GP: include "/tmp/marcocle/Gaudi/GaudiExamples/options/AlgSequencer.opts"   (0,0)
+//GP: include "/tmp/marcocle/Gaudi/GaudiExamples/options/Common.opts"         (4,10)
+//GP: include "/tmp/marcocle/Gaudi/GaudiExamples/options/Services.opts"       (7,10)
+AuditorSvc.Auditors =  [ "ChronoAuditor" ] ;                            //GP: (1,1)
+//GP: end  "/tmp/marcocle/Gaudi/GaudiExamples/options/Services.opts"          (24,1)
+ApplicationMgr.StatusCodeCheck = 1;                                     //GP: (7,10)
+//GP: end  "/tmp/marcocle/Gaudi/GaudiExamples/options/Common.opts"            (16,1)
+ApplicationMgr.TopAlg =  [ "ParentAlg" ] ;                              //GP: (4,10)
+MessageSvc.OutputLevel = 3;                                             //GP: (4,10)
+ApplicationMgr.EvtMax = 10;                                             //GP: (4,10)
+ApplicationMgr.EvtSel = "NONE";                                         //GP: (4,10)
+ApplicationMgr.TopAlg +=  [ "StopperAlg" ] ;                            //GP: (4,10)
+StopperAlg.StopCount = 20;                                              //GP: (4,10)
+ApplicationMgr.TopAlg +=  [ "Sequencer/TopSequence" ] ;                 //GP: (4,10)
+TopSequence.Members =  [ "Sequencer/Sequence1" , "Sequencer/Sequence2" ] ;//GP: (4,10)
+TopSequence.StopOverride = 1;                                           //GP: (4,10)
+Sequence1.Members =  [ "Prescaler/Prescaler1" , "HelloWorld" , "EventCounter/Counter1" ] ;//GP: (4,10)
+Sequence2.Members =  [ "Prescaler/Prescaler2" , "HelloWorld" , "EventCounter/Counter2" ] ;//GP: (4,10)
+HelloWorld.OutputLevel = 2;                                             //GP: (4,10)
+Prescaler1.PercentPass = 50;                                            //GP: (4,10)
+Prescaler2.PercentPass = 10;                                            //GP: (4,10)
+Prescaler1.OutputLevel = 4;                                             //GP: (4,10)
+Prescaler2.OutputLevel = 4;                                             //GP: (4,10)
+ApplicationMgr.TopAlg +=  [ "GaudiSequencer/ANDSequence" , "GaudiSequencer/ORSequence" ] ;//GP: (4,10)
+ANDSequence.Members =  [ "HelloWorld/AND" , "EventCounter/ANDCounter" ] ;//GP: (4,10)
+ORSequence.Members =  [ "HelloWorld/OR" , "EventCounter/ORCounter" ] ;  //GP: (4,10)
+ORSequence.ModeOR = 1;                                                  //GP: (4,10)
+ORSequence.MeasureTime = 1;                                             //GP: (4,10)
+ANDSequence.MeasureTime = 1;                                            //GP: (4,10)
+ApplicationMgr.ExtSvc =  [ "ToolSvc" , "AuditorSvc" ] ;                 //GP: (4,10)
+ApplicationMgr.AuditAlgorithms = 1;                                     //GP: (4,10)
+AuditorSvc.Auditors +=  [ "TimingAuditor/TIMER" ] ;                     //GP: (4,10)
+//GP: end  "/tmp/marcocle/Gaudi/GaudiExamples/options/AlgSequencer.opts"      (56,1)
+//GP:================================================================================
+
+JobOptionsSvc        INFO Job options successfully read in from /tmp/marcocle/Gaudi/GaudiExamples/options/AlgSequencer.opts
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.77 $
+                                          running on lxplus255.cern.ch on Mon Sep 13 21:34:27 2010
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+StatusCodeSvc        INFO initialize
+ChronoStatSvc        INFO  Number of skipped events for MemStat-1
+RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
+RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
+RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+TIMER.TIMER          INFO This machine has a speed about   1.89 times the speed of a 2.8 GHz Xeon.
+ParentAlg            INFO creating sub-algorithms....
+SubAlg1              INFO initializing....
+SubAlg2              INFO initializing....
+TopSequence          INFO Member list: Sequencer/Sequence1, Sequencer/Sequence2
+Sequence1            INFO Member list: Prescaler/Prescaler1, HelloWorld, EventCounter/Counter1
+HelloWorld           INFO initializing....
+Counter1             INFO Counter1:EventCounter::initialize - Frequency:  'Frequency':1
+Sequence2            INFO Member list: Prescaler/Prescaler2, HelloWorld, EventCounter/Counter2
+Counter2             INFO Counter2:EventCounter::initialize - Frequency:  'Frequency':1
+ANDSequence          INFO Member list: HelloWorld/AND, EventCounter/ANDCounter
+ToolSvc.Sequenc...   INFO This machine has a speed about   1.71 times the speed of a 2.8 GHz Xeon.
+AND                  INFO initializing....
+ANDCounter           INFO ANDCounter:EventCounter::initialize - Frequency:  'Frequency':1
+ORSequence           INFO OR Member list: HelloWorld/OR, EventCounter/ORCounter
+OR                   INFO initializing....
+ORCounter            INFO ORCounter:EventCounter::initialize - Frequency:  'Frequency':1
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+HistogramPersis...WARNING Histograms saving not required.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+ParentAlg            INFO executing....
+SubAlg1              INFO executing....
+SubAlg2              INFO executing....
+AND                  INFO executing....
+ANDCounter           INFO ANDCounter:EventCounter::execute - seen events: 1
+OR                   INFO executing....
+ParentAlg            INFO executing....
+SubAlg1              INFO executing....
+SubAlg2              INFO executing....
+HelloWorld           INFO executing....
+Counter1             INFO Counter1:EventCounter::execute - seen events: 1
+AND                  INFO executing....
+ANDCounter           INFO ANDCounter:EventCounter::execute - seen events: 2
+OR                   INFO executing....
+ParentAlg            INFO executing....
+SubAlg1              INFO executing....
+SubAlg2              INFO executing....
+AND                  INFO executing....
+ANDCounter           INFO ANDCounter:EventCounter::execute - seen events: 3
+OR                   INFO executing....
+ParentAlg            INFO executing....
+SubAlg1              INFO executing....
+SubAlg2              INFO executing....
+HelloWorld           INFO executing....
+Counter1             INFO Counter1:EventCounter::execute - seen events: 2
+AND                  INFO executing....
+ANDCounter           INFO ANDCounter:EventCounter::execute - seen events: 4
+OR                   INFO executing....
+ParentAlg            INFO executing....
+SubAlg1              INFO executing....
+SubAlg2              INFO executing....
+AND                  INFO executing....
+ANDCounter           INFO ANDCounter:EventCounter::execute - seen events: 5
+OR                   INFO executing....
+ParentAlg            INFO executing....
+SubAlg1              INFO executing....
+SubAlg2              INFO executing....
+HelloWorld           INFO executing....
+Counter1             INFO Counter1:EventCounter::execute - seen events: 3
+AND                  INFO executing....
+ANDCounter           INFO ANDCounter:EventCounter::execute - seen events: 6
+OR                   INFO executing....
+ParentAlg            INFO executing....
+SubAlg1              INFO executing....
+SubAlg2              INFO executing....
+AND                  INFO executing....
+ANDCounter           INFO ANDCounter:EventCounter::execute - seen events: 7
+OR                   INFO executing....
+ParentAlg            INFO executing....
+SubAlg1              INFO executing....
+SubAlg2              INFO executing....
+HelloWorld           INFO executing....
+Counter1             INFO Counter1:EventCounter::execute - seen events: 4
+AND                  INFO executing....
+ANDCounter           INFO ANDCounter:EventCounter::execute - seen events: 8
+OR                   INFO executing....
+ParentAlg            INFO executing....
+SubAlg1              INFO executing....
+SubAlg2              INFO executing....
+AND                  INFO executing....
+ANDCounter           INFO ANDCounter:EventCounter::execute - seen events: 9
+OR                   INFO executing....
+ParentAlg            INFO executing....
+SubAlg1              INFO executing....
+SubAlg2              INFO executing....
+HelloWorld           INFO executing....
+Counter1             INFO Counter1:EventCounter::execute - seen events: 5
+Counter2             INFO Counter2:EventCounter::execute - seen events: 1
+AND                  INFO executing....
+ANDCounter           INFO ANDCounter:EventCounter::execute - seen events: 10
+OR                   INFO executing....
+ApplicationMgr       INFO Application Manager Stopped successfully
+SubAlg1              INFO finalizing....
+SubAlg2              INFO finalizing....
+ParentAlg            INFO finalizing....
+HelloWorld           INFO finalizing....
+Counter1             INFO Counter1:EventCounter::finalize - total events: 5
+Counter2             INFO Counter2:EventCounter::finalize - total events: 1
+AND                  INFO finalizing....
+ANDCounter           INFO ANDCounter:EventCounter::finalize - total events: 10
+OR                   INFO finalizing....
+ORCounter            INFO ORCounter:EventCounter::finalize - total events: 0
+EventLoopMgr         INFO Histograms converted successfully according to request.
+ToolSvc              INFO Removing all tools created by ToolSvc
+ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
+ToolSvc.Sequenc...   INFO This machine has a speed about   1.71 times the speed of a 2.8 GHz Xeon.
+ToolSvc.Sequenc...   INFO Algorithm          (millisec) |    <user> |   <clock> |      min       max | entries | total (s) |
+ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
+ToolSvc.Sequenc...   INFO ANDSequence                   |     0.000 |     0.093 |    0.087       0.1 |      10 |     0.001 |
+ToolSvc.Sequenc...   INFO   AND                         |     0.000 |     0.046 |    0.041       0.1 |      10 |     0.000 |
+ToolSvc.Sequenc...   INFO   ANDCounter                  |     0.000 |     0.044 |    0.043       0.1 |      10 |     0.000 |
+ToolSvc.Sequenc...   INFO ORSequence                    |     0.100 |     0.044 |    0.044       0.0 |      10 |     0.000 |
+ToolSvc.Sequenc...   INFO   OR                          |     0.000 |     0.042 |    0.042       0.0 |      10 |     0.000 |
+ToolSvc.Sequenc...   INFO   ORCounter                   |     0.000 |     0.000 |    0.000       0.0 |       0 |     0.000 |
+ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
+TIMER.TIMER          INFO --------------------------------------------------------------------------------------------------
+TIMER.TIMER          INFO This machine has a speed about   1.89 times the speed of a 2.8 GHz Xeon.
+TIMER.TIMER          INFO Algorithm          (millisec) |    <user> |   <clock> |      min       max | entries | total (s) |
+TIMER.TIMER          INFO --------------------------------------------------------------------------------------------------
+TIMER.TIMER          INFO EVENT LOOP                    |     0.200 |     0.383 |    0.317       0.5 |      10 |     0.004 |
+TIMER.TIMER          INFO  ParentAlg                    |     0.000 |     0.105 |    0.097       0.1 |      10 |     0.001 |
+TIMER.TIMER          INFO  SubAlg1                      |     0.000 |     0.000 |    0.000       0.0 |       0 |     0.000 |
+TIMER.TIMER          INFO  SubAlg2                      |     0.000 |     0.000 |    0.000       0.0 |       0 |     0.000 |
+TIMER.TIMER          INFO  StopperAlg                   |     0.000 |     0.006 |    0.006       0.0 |      10 |     0.000 |
+TIMER.TIMER          INFO  TopSequence                  |     0.100 |     0.090 |    0.039       0.2 |      10 |     0.001 |
+TIMER.TIMER          INFO   Sequence1                   |     0.100 |     0.057 |    0.013       0.1 |      10 |     0.001 |
+TIMER.TIMER          INFO    Prescaler1                 |     0.000 |     0.005 |    0.004       0.0 |      10 |     0.000 |
+TIMER.TIMER          INFO    HelloWorld                 |     0.000 |     0.037 |    0.036       0.0 |       5 |     0.000 |
+TIMER.TIMER          INFO    Counter1                   |     0.000 |     0.040 |    0.037       0.0 |       5 |     0.000 |
+TIMER.TIMER          INFO   Sequence2                   |     0.000 |     0.018 |    0.013       0.1 |      10 |     0.000 |
+TIMER.TIMER          INFO    Prescaler2                 |     0.000 |     0.004 |    0.004       0.0 |      10 |     0.000 |
+TIMER.TIMER          INFO    Counter2                   |     0.000 |     0.037 |    0.037       0.0 |       1 |     0.000 |
+TIMER.TIMER          INFO  ANDSequence                  |     0.000 |     0.098 |    0.092       0.1 |      10 |     0.001 |
+TIMER.TIMER          INFO   AND                         |     0.000 |     0.041 |    0.036       0.1 |      10 |     0.000 |
+TIMER.TIMER          INFO   ANDCounter                  |     0.000 |     0.039 |    0.037       0.0 |      10 |     0.000 |
+TIMER.TIMER          INFO  ORSequence                   |     0.100 |     0.050 |    0.049       0.1 |      10 |     0.000 |
+TIMER.TIMER          INFO   OR                          |     0.000 |     0.037 |    0.037       0.0 |      10 |     0.000 |
+TIMER.TIMER          INFO   ORCounter                   |     0.000 |     0.000 |    0.000       0.0 |       0 |     0.000 |
+TIMER.TIMER          INFO --------------------------------------------------------------------------------------------------
+*****Chrono*****     INFO ****************************************************************************************************
+*****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)
+*****Chrono*****     INFO ****************************************************************************************************
+Sequence2:finalize   INFO Time User   : Tot=    0 [us]                                             #=  1
+Sequence1:finalize   INFO Time User   : Tot=    0 [us]                                             #=  1
+TopSequence:fin...   INFO Time User   : Tot=    0 [us]                                             #=  1
+StopperAlg:fina...   INFO Time User   : Tot=    0 [us]                                             #=  1
+ORSequence:fina...   INFO Time User   : Tot=    0 [us]                                             #=  1
+Prescaler2:fina...   INFO Time User   : Tot=    0 [us]                                             #=  1
+StopperAlg:init...   INFO Time User   : Tot=    0 [us]                                             #=  1
+Prescaler2:init...   INFO Time User   : Tot=    0 [us]                                             #=  1
+ANDSequence:fin...   INFO Time User   : Tot=    0 [us]                                             #=  1
+Prescaler1:fina...   INFO Time User   : Tot=    0 [us]                                             #=  1
+Prescaler1:init...   INFO Time User   : Tot=    0 [us]                                             #=  1
+ANDCounter:fina...   INFO Time User   : Tot=    0 [us]                                             #=  1
+SubAlg2:finalize     INFO Time User   : Tot=    0 [us]                                             #=  1
+Counter2:execute     INFO Time User   : Tot=    0 [us]                                             #=  1
+ORCounter:finalize   INFO Time User   : Tot=    0 [us]                                             #=  1
+SubAlg1:finalize     INFO Time User   : Tot=    0 [us]                                             #=  1
+Counter1:finalize    INFO Time User   : Tot=    0 [us]                                             #=  1
+SubAlg2:initialize   INFO Time User   : Tot=    0 [us]                                             #=  1
+Counter2:finalize    INFO Time User   : Tot=    0 [us]                                             #=  1
+HelloWorld:fina...   INFO Time User   : Tot=    0 [us]                                             #=  1
+ParentAlg:finalize   INFO Time User   : Tot=    0 [us]                                             #=  1
+ANDCounter:init...   INFO Time User   : Tot=    0 [us]                                             #=  1
+AND:finalize         INFO Time User   : Tot=    0 [us]                                             #=  1
+OR:finalize          INFO Time User   : Tot=    0 [us]                                             #=  1
+SubAlg1:initialize   INFO Time User   : Tot=    0 [us]                                             #=  1
+ORCounter:initi...   INFO Time User   : Tot=    0 [us]                                             #=  1
+OR:initialize        INFO Time User   : Tot=    0 [us]                                             #=  1
+Counter2:initia...   INFO Time User   : Tot=    0 [us]                                             #=  1
+AND:initialize       INFO Time User   : Tot=    0 [us]                                             #=  1
+HelloWorld:init...   INFO Time User   : Tot=    0 [us]                                             #=  1
+ORSequence:init...   INFO Time User   : Tot=    0 [us]                                             #=  1
+Sequence2:initi...   INFO Time User   : Tot=    0 [us]                                             #=  1
+HelloWorld:execute   INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #=  5
+Counter1:execute     INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #=  5
+Prescaler2:execute   INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #= 10
+Prescaler1:execute   INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #= 10
+StopperAlg:execute   INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #= 10
+Sequence2:execute    INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #= 10
+OR:execute           INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #= 10
+ANDCounter:execute   INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #= 10
+AND:execute          INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #= 10
+ANDSequence:exe...   INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #= 10
+ParentAlg:execute    INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #= 10
+Sequence1:execute    INFO Time User   : Tot=0.999 [ms] Ave/Min/Max= 99.9(+-  300)/    0/  999 [us] #= 10
+TopSequence:exe...   INFO Time User   : Tot=0.999 [ms] Ave/Min/Max= 99.9(+-  300)/    0/  999 [us] #= 10
+Counter1:initia...   INFO Time User   : Tot=    1 [ms]                                             #=  1
+ParentAlg:initi...   INFO Time User   : Tot=    1 [ms]                                             #=  1
+Sequence1:initi...   INFO Time User   : Tot=    1 [ms]                                             #=  1
+TopSequence:ini...   INFO Time User   : Tot=    1 [ms]                                             #=  1
+ORSequence:execute   INFO Time User   : Tot=    0 [us] Ave/Min/Max=    0(+-    0)/    0/    0 [us] #= 10
+ANDSequence:ini...   INFO Time User   : Tot=0.584  [s]                                             #=  1
+ChronoStatSvc        INFO Time User   : Tot= 1.16  [s]                                             #=  1
+*****Chrono*****     INFO ****************************************************************************************************
+ChronoStatSvc.f...   INFO  Service finalized successfully
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

@@ -90,24 +90,24 @@ public:
   /// destructor
   ~StatEntity () {}
   // ==========================================================================
-public: // the basic quantities 
+public: // the basic quantities
   // ==========================================================================
   /// getters
-  unsigned long nEntries      () const { return m_se_nEntries         ; }
-  /// accumulated value 
-  double   sum                () const { return m_se_accumulatedFlag  ; }  
-  /// accumulated valeu**2 
-  double   sum2               () const { return m_se_accumulatedFlag2 ; }
-  /// mean value of counter 
-  double   mean               () const ;
-  /// r.m.s of value 
-  double   rms                () const ;
-  /// error in mean value of counter 
-  double   meanErr            () const ;
-  /// minimal value 
-  double   min                () const { return m_se_minimalFlag ; }
-  /// maximal value 
-  double   max                () const { return m_se_maximalFlag ; }
+  const unsigned long& nEntries () const { return m_se_nEntries         ; }
+  /// accumulated value
+  const double&        sum      () const { return m_se_accumulatedFlag  ; }
+  /// accumulated value**2
+  const double&        sum2     () const { return m_se_accumulatedFlag2 ; }
+  /// mean value of counter
+  double               mean     () const ;
+  /// r.m.s of value
+  double               rms      () const ;
+  /// error in mean value of counter
+  double               meanErr  () const ;
+  /// minimal value
+  const double&        min      () const { return m_se_minimalFlag ; }
+  /// maximal value
+  const double&        max      () const { return m_se_maximalFlag ; }
   // ==========================================================================
 public:
   // ==========================================================================
@@ -186,7 +186,7 @@ public:
   /// shortcut, @see StatEntity::efficiencyErr
   double effErr        () const { return efficiencyErr () ; }
   // ==========================================================================
-public: // operators 
+public: // operators
   // ==========================================================================
   /** General increment operator for the flag
    *  Could be used for easy manipulation with StatEntity object:
@@ -330,8 +330,8 @@ public: // operators
   {
     // reset the statistics
     reset() ;            ///< reset the statistics
-    // use the regular inrement
-    return ((*this)+=f); ///< use the regular inrement
+    // use the regular increment
+    return ((*this)+=f); ///< use the regular increment
   }
   /** increment with other counter (useful for Monitoring/Adder )
    *
@@ -354,7 +354,7 @@ public:
   // ==========================================================================
   /// comparison
   bool operator<( const StatEntity& se ) const ;
-  /** add a value 
+  /** add a value
    *  @param Flag value to be added
    *  @return number of entries
    */
@@ -382,18 +382,18 @@ public: // aliases (a'la ROOT)
   inline double Mean    () const { return mean    () ; } // get mean
   /// get error in mean
   inline double MeanErr () const { return meanErr () ; } // get error in mean
-  /// get rms 
-  inline double Rms     () const { return rms     () ; } // get rms 
-  /// get rms 
-  inline double RMS     () const { return rms     () ; } // get rms 
+  /// get rms
+  inline double Rms     () const { return rms     () ; } // get rms
+  /// get rms
+  inline double RMS     () const { return rms     () ; } // get rms
   /// get efficiency
   inline double Eff     () const { return eff     () ; } // get efficiency
-  /// get minimal value 
-  inline double Min     () const { return min     () ; } // get minimal value 
-  /// get maximal value 
-  inline double Max     () const { return max     () ; } // get maximal value 
+  /// get minimal value
+  inline double Min     () const { return min     () ; } // get minimal value
+  /// get maximal value
+  inline double Max     () const { return max     () ; } // get maximal value
   // ==========================================================================
-public: // some legacy methods, to be removed ... 
+public: // some legacy methods, to be removed ...
   // ==========================================================================
   /// accumulated "flag"
   inline double   flag               () const { return sum     () ; }

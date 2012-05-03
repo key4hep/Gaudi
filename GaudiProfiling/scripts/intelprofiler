@@ -1,0 +1,125 @@
+#!/bin/sh
+VERSION=1.0
+AUTHORS="alexander.mazurov@cern.ch"
+AMPLXECMD=$(which amplxe-cl 2>/dev/null)
+DEFAULT_AMPLXEENV="/afs/cern.ch/sw/IntelSoftware/linux/all-setup.sh"
+
+# Program name from it's filename
+basedir=$(dirname $0)
+prog=${0##*/}
+
+. $basedir/bsfl
+LOG_ENABLED=n
+LOG_FILE=intelprofiler.log
+
+# How to use script
+function help_usage()
+{
+  echo -n "Usage: "
+  echo "$prog -o <outputdir> [-m <email>] [-n <note>] <optionfile>"
+}
+
+function usage()
+{
+  help_usage
+  exit 1
+}
+
+function version()
+{
+  echo "Intel profiler version \"$VERSION\""
+  echo "Author(s): $AUTHORS"
+  exit 0
+}
+
+function help()
+{
+  help_usage
+  exit 0
+}
+
+# Parse arguments
+while getopts ‘o:m:n:hv?’ argv
+  do
+    case $argv in
+      o) 
+        OUTPUTDIR=$OPTARG
+        ;;  
+      h) 
+        help
+        ;;
+      v) 
+        version
+        ;;
+      m) 
+        MAILTO=$OPTARG
+        ;;
+      n)
+        NOTE=$OPTARG
+        ;;
+      *)
+        usage
+        ;;
+    esac
+  done
+
+# Shift arguments to mass-arguments (not options).
+for i in `seq 2 ${OPTIND}`
+  do
+    shift
+  done
+
+# We don't set Gaudi's option file
+if [ -z "$1" ]; then usage; fi
+# We don't set output directory
+if [ -z "$OUTPUTDIR" ]; then usage; fi
+
+# Create directory if doesn't exists
+if [ ! -d $OUTPUTDIR ]
+  then
+    msg_info "Creating directory $OUTPUTDIR"
+    mkdir $OUTPUTDIR
+    display_status OK
+  fi
+
+# If we cann't find amplifier tool...
+if [ ! -x "$AMPLXECMD" ]
+  then
+    msg_warning "Couldn'find Intel Amplifier command tool."
+    if [ -f "$DEFAULT_AMPLXEENV" ]
+      then
+        msg_info "Setup Intel environment..." 
+        . $DEFAULT_AMPLXEENV
+        AMPLXECMD=$(which amplxe-cl 2>/dev/null)
+        if [ -z $AMPLXECMD ]
+          then
+            msg_fail "$...error."
+            exit 1
+          fi
+      else
+        exit 1
+      fi
+  fi
+msg_info "Use profiler tool ${AMPLXECMD}."
+# Write all output to logfile
+LOGFILE=$OUTPUTDIR/log`date +"%Y%m%d%H%M"`.log
+
+# Place some note to the first line
+if [ -n "$NOTE" ]; then printf "$NOTE\n\n" > $LOGFILE; fi
+
+# Main command: run profiling
+(time $AMPLXECMD --collect hotspots -start-paused -follow-child \
+  -target-duration-type=medium -no-allow-multiple-runs -no-analyze-system \
+  -data-limit=300 -slow-frames-threshold=40 -fast-frames-threshold=100 \
+  -r=$OUTPUTDIR/r@@@{at} -- gaudirun.py $1) 2>&1 | \
+   awk '!/Executing actions/ { print; fflush();}' |\
+   tee -a $LOGFILE
+
+msg_info "Log was written to $LOGFILE" 
+
+# Send mail
+if [ -n "$MAILTO" ]
+  then
+    msg_info "Send mail to $MAILTO"
+    mail -s "Finish $LOGFILE" $MAILTO < $LOGFILE
+  fi;  

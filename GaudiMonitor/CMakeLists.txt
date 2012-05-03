@@ -2,13 +2,14 @@
 # CMakeLists.txt file for building GaudiMonitor
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-GAUDI_USE_PACKAGE(GaudiKernel)
+depends_on_subdirs(GaudiKernel)
 
 if(WIN32)
   set(winsocklib ws2_32.lib)
 endif()
 #---Libraries---------------------------------------------------------------
-GAUDI_COMPONENT_LIBRARY(GaudiMonitor DataListenerSvc/*.cpp LIBRARIES GaudiKernel ${winsocklib})
+gaudi_add_module(GaudiMonitor *.cpp
+                        LINK_LIBRARIES GaudiKernel ${winsocklib})
 
 if(WIN32 AND HIDE_WARNINGS)
   # These are needed because Windows compiler doesn't like standard C and POSIX functions,
@@ -17,7 +18,4 @@ if(WIN32 AND HIDE_WARNINGS)
                PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS)
   set_property(TARGET GaudiMonitor
                PROPERTY COMPILE_FLAGS /wd4996)
-  # Disable precision warnings
-  set_property(SOURCE src/DataListenerSvc/ApMon.cpp
-               PROPERTY COMPILE_FLAGS /wd4244)
 endif()

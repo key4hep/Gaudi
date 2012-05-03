@@ -1,0 +1,48 @@
+JobOptionsSvc        INFO
+//GP:================================================================================
+//GP: include "../options/StatSvcAlg.opts"                                    (0,0)
+//GP: include "../options/Common.opts"                                        (7,10)
+//GP: include "../options/Services.opts"                                      (7,10)
+AuditorSvc.Auditors =  [ "ChronoAuditor" ] ;                            //GP: (1,1)
+//GP: end  "../options/Services.opts"                                         (24,1)
+ApplicationMgr.StatusCodeCheck = 1;                                     //GP: (7,10)
+//GP: end  "../options/Common.opts"                                           (16,1)
+ApplicationMgr.TopAlg +=  [ "GaudiExamples::StatSvcAlg/StatAlg" ] ;     //GP: (7,10)
+ApplicationMgr.EvtMax = 10000;                                          //GP: (7,10)
+ApplicationMgr.EvtSel = "NONE";                                         //GP: (7,10)
+//GP: end  "../options/StatSvcAlg.opts"                                       (26,1)
+//GP:================================================================================
+
+JobOptionsSvc        INFO Job options successfully read in from ../options/StatSvcAlg.opts
+ApplicationMgr    SUCCESS
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr $Revision: 1.5 $
+                                          running on pclhcb55.cern.ch on Fri May 30 20:38:38 2008
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+StatusCodeSvc        INFO initialize
+ChronoStatSvc        INFO  Number of skipped events for MemStat-1
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
+EventLoopMgr      WARNING No events will be processed from external input.
+HistogramPersis...WARNING Histograms saving not required.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+ApplicationMgr       INFO Application Manager Stopped successfully
+EventLoopMgr         INFO Histograms converted successfully according to request.
+*****Chrono*****     INFO ****************************************************************************************************
+*****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)
+*****Chrono*****     INFO ****************************************************************************************************
+ChronoStatSvc        INFO Time User   : Tot=0.527  [s]                                             #=  1
+*****Chrono*****     INFO ****************************************************************************************************
+******Stat******     INFO ****************************************************************************************************
+******Stat******     INFO  The Final stat Table (ordered)
+******Stat******     INFO ****************************************************************************************************
+******Stat******     INFO      Counter     |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+******Stat******     INFO  "counter1"      |     20000 |     -0.452 |-2.2600e-05 |    0.10002 |    -0.10005 |     0.10000 |
+******Stat******     INFO *"eff"           |     20000 |       7991 |( 39.95500 +- 0.3463451)%|   -------   |   -------   |
+******Stat******     INFO  "counter3"      |     20000 |      13000 |    0.65000 |    0.35000 |     0.30000 |      1.0000 |
+******Stat******     INFO  "counter2"      | 100020000 |  -12260.23 |-0.00012258 |    0.10052 |     -1.0000 |     0.10000 |
+******Stat******     INFO ****************************************************************************************************
+ChronoStatSvc.f...   INFO  Service finalized successfully
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully

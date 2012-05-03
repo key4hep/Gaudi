@@ -1,0 +1,38 @@
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+  <argument name="program"><text>gaudirun.py</text></argument>
+  <argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/DataOnDemand.py</text></set></argument>
+  <argument name="options"><text>
+from Gaudi.Configuration import *
+# modify the DataOnDemandSvc configuration to use the dynamic mapping.
+from Configurables import DataOnDemandSvc, DODBasicMapper
+
+dod = DataOnDemandSvc()
+mapper = DODBasicMapper()
+
+mapper.Algorithms = dod.AlgMap
+dod.AlgMap = {}
+
+mapper.Nodes = dod.NodeMap
+dod.NodeMap = {}
+
+import re
+obsolete = re.compile(r"DATA='([^']*)'\s*TYPE='([^']*)'")
+
+for m in filter(None, map(obsolete.match, dod.Algorithms)):
+    mapper.Algorithms[m.group(1)] = m.group(2)
+dod.Algorithms = []
+
+for m in filter(None, map(obsolete.match, dod.Nodes)):
+    mapper.Nodes[m.group(1)] = m.group(2)
+dod.Nodes = []
+
+dod.NodeMappingTools = [mapper]
+dod.AlgMappingTools = [mapper]
+
+# Ensure that the ToolSvc is finalized after the DOD
+ApplicationMgr().ExtSvc.insert(0, ToolSvc()) # equivalent to '= [ToolSvc(), dod]'
+  </text></argument>
+  <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+  <argument name="reference"><text>refs/DataOnDemandDyn.ref</text></argument>
+</extension>

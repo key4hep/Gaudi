@@ -1,5 +1,5 @@
 package GaudiKernel
-version v27r14
+version v28r1
 author "LHCb Gaudi Team"
 
 branches GaudiKernel cmt doc src
@@ -40,7 +40,7 @@ macro genconfig_cmd           $(GAUDIKERNELROOT)/$(tag)/genconf.exe \
 private
 
 application genconf -import=Boost Util/genconf.cpp
-macro_append genconflinkopts "$(GaudiKernel_linkopts) $(Boost_linkopts) $(Boost_linkopts_filesystem) $(Boost_linkopts_program_options)"
+macro_append genconflinkopts "$(GaudiKernel_linkopts) $(Boost_linkopts) $(Boost_linkopts_filesystem) $(Boost_linkopts_regex) $(Boost_linkopts_program_options)"
 macro genconf_dependencies GaudiKernel
 
 # FIXME: (MCl) I do not understand why genconf gets the CppUnit link options,
@@ -64,6 +64,8 @@ application PathResolver_test -group=tests ../tests/src/PathResolver_test.cpp
 
 application Memory_test -group=tests ../tests/src/Memory_test.cpp
 
+application Parsers_test -group=tests ../tests/src/parsers.cpp
+
 use CppUnit * LCG_Interfaces -no_auto_imports
 
 application test_SerializeSTL -group=tests -import=CppUnit \
@@ -84,12 +86,23 @@ macro_append app_test_GaudiTime_cppflags ' -Wno-unused-parameter ' \
                             target-winxp '' \
                               target-icc ''
 
+application test_GaudiTiming -group=tests -import=CppUnit \
+                       ../tests/src/test_GaudiTiming.cpp
+# FIXME: (MCl) this hides warnings from a broken header file in CppUnit, but may
+#              hide problems in the actual test source.
+macro_append app_test_GaudiTiming_cppflags ' -Wno-unused-parameter ' \
+                          no-hide-warnings '' \
+                              target-winxp '' \
+                                target-icc ''
+
 application test_headers_build -group=tests ../tests/src/test_headers_build.cpp
 
 # FIXME: (MCl) hides the warning due to hidden virtual functions in the __shadow__ classes
 #              generated in the dictionaries.
 # On Windows hides warning C4996 (security-related warning)
 macro_append dictionary_dict_cpp_cppflags ' -Wno-overloaded-virtual ' no-hide-warnings '' target-winxp ' -D_SCL_SECURE_NO_WARNINGS'
+
+macro_append GaudiKernel_arflags " /expectedoutputsize:1000000000 "
 
 apply_pattern QMTest
 

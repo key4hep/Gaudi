@@ -2,5 +2,5 @@
 <extension class="GaudiTest.GaudiExeTest" kind="test">
 <argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/CounterSvcAlg.opts</text></set></argument>
   <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-  <argument name="reference"><text>../../home/CounterSvcAlg.ref</text></argument>
+  <argument name="reference"><text>refs/CounterSvcAlg.ref</text></argument>
 </extension>
