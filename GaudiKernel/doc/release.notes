@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2012-05-05 - Marco Clemencic
+ - Fixed some doxygen comments.
+
 ! 2012-03-26 - Marco Clemencic
  - Added missing __init__.py in python/GaudiKernel
 
