@@ -202,6 +202,7 @@ macro(gaudi_project project version)
                            FILES_MATCHING PATTERN "*.cmake"
                            PATTERN ".svn" EXCLUDE )
   install(PROGRAMS cmake/testwrap.sh cmake/testwrap.csh cmake/testwrap.bat cmake/genCMake.py cmake/env.py DESTINATION scripts OPTIONAL)
+  install(DIRECTORY cmake/EnvConfig DESTINATION scripts FILES_MATCHING PATTERN "*.py" PATTERN "*.conf")
 
   #--- Global actions for the project
   include(GaudiBuildFlags)
