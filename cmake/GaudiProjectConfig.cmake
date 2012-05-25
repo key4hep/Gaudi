@@ -491,14 +491,42 @@ function(gaudi_get_packages var)
   set(${var} ${packages} PARENT_SCOPE)
 endfunction()
 
+
+#-------------------------------------------------------------------------------
+# gaudi_subdir(name version)
+#
+# Declare name and version of the subdirectory.
+#-------------------------------------------------------------------------------
+macro(gaudi_subdir name version)
+  gaudi_get_package_name(_guessed_name)
+  if (NOT _guessed_name STREQUAL "${name}")
+    message(WARNING "Declared subdir name (${name}) does not match the name of the directory (${_guessed_name})")
+  endif()
+
+  # Set useful variables and properties
+  set(subdir_name ${name})
+  set(subdir_version ${version})
+  set_directory_properties(PROPERTIES name ${name})
+  set_directory_properties(PROPERTIES version ${version})
+
+  # Generate the version header for the package.
+  execute_process(COMMAND
+                  ${versheader_cmd} --quiet
+                     ${name} ${version} ${CMAKE_CURRENT_BINARY_DIR}/${name}Version.h)
+endmacro()
+
 #-------------------------------------------------------------------------------
 # gaudi_get_package_name(VAR)
 #
 # Set the variable VAR to the current "package" (subdirectory) name.
 #-------------------------------------------------------------------------------
 macro(gaudi_get_package_name VAR)
-  # By convention, the package is the name of the source directory.
-  get_filename_component(${VAR} ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+  if (subdir_name)
+    set(${VAR} ${subdir_name})
+  else()
+    # By convention, the package is the name of the source directory.
+    get_filename_component(${VAR} ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+  endif()
 endmacro()
 
 #-------------------------------------------------------------------------------
