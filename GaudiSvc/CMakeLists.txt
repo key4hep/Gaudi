@@ -2,7 +2,7 @@
 # CMakeLists.txt file for building GaudiSvc
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-depends_on_subdirs(GaudiKernel)
+gaudi_depends_on_subdirs(GaudiKernel)
 
 find_package(AIDA)
 find_package(Boost REQUIRED COMPONENTS regex)

@@ -2,7 +2,7 @@
 # CMakeLists.txt file for building GaudiMonitor
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-depends_on_subdirs(GaudiKernel)
+gaudi_depends_on_subdirs(GaudiKernel)
 
 if(WIN32)
   set(winsocklib ws2_32.lib)

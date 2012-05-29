@@ -1,6 +1,6 @@
 gaudi_subdir(GaudiCoreSvc v1r0)
 
-depends_on_subdirs(GaudiKernel)
+gaudi_depends_on_subdirs(GaudiKernel)
 
 find_package(Boost COMPONENTS system filesystem regex thread)
 

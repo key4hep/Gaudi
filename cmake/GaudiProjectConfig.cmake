@@ -413,7 +413,7 @@ endfunction()
 
 # NO-OP function used by gaudi_sort_subdirectories to get the dependencies
 # from the subdirectories before actually add them
-function(depends_on_subdirs)
+function(gaudi_depends_on_subdirs)
 endfunction()
 #-------------------------------------------------------------------------------
 # gaudi_collect_subdir_deps(subdirectories)
@@ -426,10 +426,10 @@ macro(gaudi_collect_subdir_deps)
     set(${_p}_DEPENDENCIES)
     # parse the CMakeLists.txt
     file(READ ${CMAKE_SOURCE_DIR}/${_p}/CMakeLists.txt file_contents)
-    string(REGEX MATCHALL "depends_on_subdirs *\\(([^)]+)\\)" vars ${file_contents})
+    string(REGEX MATCHALL "gaudi_depends_on_subdirs *\\(([^)]+)\\)" vars ${file_contents})
     foreach(var ${vars})
       # extract the individual subdir names
-      string(REGEX REPLACE "depends_on_subdirs *\\(([^)]+)\\)" "\\1" __p ${var})
+      string(REGEX REPLACE "gaudi_depends_on_subdirs *\\(([^)]+)\\)" "\\1" __p ${var})
       separate_arguments(__p)
       foreach(___p ${__p})
         # remove newlines in the matched subdir name

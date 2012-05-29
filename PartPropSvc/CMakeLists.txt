@@ -2,7 +2,7 @@
 # CMakeLists.txt file for building PartPropSvc
 # @author Pere Mato, CERN (semi-automaticaly generated)
 ############################################################################
-depends_on_subdirs(GaudiKernel)
+gaudi_depends_on_subdirs(GaudiKernel)
 
 find_package(Boost COMPONENTS regex)
 find_package(ROOT COMPONENTS Reflex)
