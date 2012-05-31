@@ -4,6 +4,11 @@
 # Description: standard and commonly used components
 ################################################################################
 
+! 2012-05-29 - Marco Cattaneo
+ - Patch #5390: fix unprotected VERBOSE and DEBUG messages
+   Add missing protection to VERBOSE and DEBUG messages in OutputStream.cpp and
+   RecordStream.cpp
+
 ! 2012-04-19 - Marco Clemencic
  - Added new signatures to HistogramSvc::Helper::act to absorb the change in the
    return type of TH1::Add, TH1::Divide and TH1::Multiply.
