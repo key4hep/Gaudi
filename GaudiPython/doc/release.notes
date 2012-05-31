@@ -2,7 +2,7 @@ Package: GaudiPython
 Package manager : Marco Clemencic
 
 ! 2012-05-30 - Vanya Belyaev
- - Patch #5397: Improvements for GaudiAlgs.py
+ - Patch #5379: Improvements for GaudiAlgs.py
    - equip python-algorithms with  "get" and "exist" that are
      coherent with C++ (respect RootInTES flag)
       - AlgDecorator: add get_ and exist_ methods
