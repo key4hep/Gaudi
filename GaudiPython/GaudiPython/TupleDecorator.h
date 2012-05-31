@@ -63,13 +63,13 @@ namespace GaudiPython
     // ========================================================================
   public: // primitives  
     // ========================================================================
-    /// more or less simple columns:    int
+    /// more or less simple columns:    long
     static StatusCode column
     ( const Tuples::Tuple& tuple ,
       const std::string&   name  ,
       const int            value ) ;
     // ========================================================================
-    /// more or less simple columns:    int
+    /// more or less simple columns:    long
     static StatusCode column
     ( const Tuples::Tuple& tuple ,
       const std::string&   name  ,
@@ -88,6 +88,18 @@ namespace GaudiPython
     ( const Tuples::Tuple& tuple ,
       const std::string&   name  ,
       const bool           value ) ;
+    // ========================================================================
+    /// more or less simple columns:    long long 
+    static StatusCode column_ll 
+    ( const Tuples::Tuple&     tuple ,
+      const std::string&       name  ,
+      const long long          value ) ;
+    // ========================================================================
+    /// more or less simple columns:    unsigned long long 
+    static StatusCode column_ull 
+    ( const Tuples::Tuple&     tuple ,
+      const std::string&       name  ,
+      const unsigned long long value ) ;
     // ========================================================================
   public:  // event tag collections 
     // ========================================================================

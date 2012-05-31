@@ -92,6 +92,18 @@ StatusCode GaudiPython::TupleDecorator::column
   const double         value )
 { return _fill ( tuple , name , value ) ; }
 // ============================================================================
+StatusCode GaudiPython::TupleDecorator::column_ll
+( const Tuples::Tuple& tuple ,
+  const std::string&   name  ,
+  const long long      value )
+{ return _fill ( tuple , name , value ) ; }
+// ============================================================================
+StatusCode GaudiPython::TupleDecorator::column_ull
+( const Tuples::Tuple&     tuple ,
+  const std::string&       name  ,
+  const unsigned long long value )
+{ return _fill ( tuple , name , value ) ; }
+// ============================================================================
 StatusCode GaudiPython::TupleDecorator::column
 ( const Tuples::Tuple& tuple ,
   const std::string&   name  ,

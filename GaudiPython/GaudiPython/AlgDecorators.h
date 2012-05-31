@@ -25,6 +25,7 @@ class IAlgTool       ;
 class IAlgorithm     ;
 class GaudiAlgorithm ;
 class GaudiTool      ;
+class DataObject     ;
 // ============================================================================
 /** @file
  *
@@ -90,6 +91,32 @@ namespace GaudiPython
     ( const GaudiAlgorithm* alg            ,
       const std::string&    name           ,
       const bool            create = false ) ;
+    // ========================================================================
+  public: // get the data from TES 
+    // ========================================================================
+    /** get the data from TES 
+     *  @param alg          GaudiAlgorithm
+     *  @param location     data location in TES 
+     *  @param useRoonInTes flag to respect RootInTes 
+     *  @return the data 
+     */
+    static DataObject* get_
+    ( const GaudiAlgorithm*   alg          ,
+      const std::string&      location     ,
+      const bool              useRootInTes ) ;
+    // ========================================================================
+  public:
+    // ========================================================================
+    /** get the data from TES 
+     *  @param alg          GaudiAlgorithm
+     *  @param location     data location in TES 
+     *  @param useRoonInTes flag to respect RootInTes 
+     *  @return the data 
+     */
+    static bool exist
+    ( const GaudiAlgorithm*   alg          ,
+      const std::string&      location     ,
+      const bool              useRootInTes ) ;
     // ========================================================================
   public: // inspection: get all counters:
     // ========================================================================

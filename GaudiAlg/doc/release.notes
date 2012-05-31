@@ -1,6 +1,12 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2012-05-30 - Vanya Belyaev
+ - Patch #5397: Improvements for GaudiAlgs.py
+   - GaudiCommon.h
+     move fullTESLocation from private to public interface
+     (useful for interactive inspections and debug in python)
+
 ! 2012-05-03 - Marco Clemencic
  - Fixed some "pedantic" warnings.
 

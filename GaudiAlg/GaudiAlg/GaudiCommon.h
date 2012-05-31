@@ -750,16 +750,23 @@ public:
   inline const std::string & rootInTES() const { return m_rootInTES; }
   /// Returns the "globalTimeOffset" double.
   inline double globalTimeOffset() const { return m_globalTimeOffset; }
+  // ==========================================================================
+public:
+  // ==========================================================================
+  /// Returns the full correct event location given the rootInTes settings
+  const std::string     fullTESLocation
+  ( const std::string & location     ,
+    const bool          useRootInTES ) const ;
+  // ==========================================================================
 private:
+  // ==========================================================================
   /// Add the given tool to the list of acquired tools
   void addToToolList    ( IAlgTool * tool ) const;
   /// Add the given service to the list of acquired services
   void addToServiceList ( const SmartIF<IService>& svc ) const;
   /// Constructor initializations
   void initGaudiCommonConstructor( const IInterface * parent = 0 );
-  /// Returns the full correct event location given the rootInTes settings
-  const std::string fullTESLocation( const std::string & location,
-                                     const bool useRootInTES ) const;
+  // ==========================================================================
 private:
   /// The message level
   MSG::Level  m_msgLevel    ;
