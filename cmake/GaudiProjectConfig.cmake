@@ -206,13 +206,14 @@ macro(gaudi_project project version)
 
   #--- Global actions for the project
   include(GaudiBuildFlags)
-
   # Generate the version header for the project.
   string(TOUPPER ${project} _proj)
   execute_process(COMMAND
                   ${versheader_cmd} --quiet
                      ${project} ${version} ${CMAKE_BINARY_DIR}/include/${_proj}_VERSION.h)
   install(FILES ${CMAKE_BINARY_DIR}/include/${_proj}_VERSION.h DESTINATION include)
+  # Add generated headers to the include path.
+  include_directories(${CMAKE_BINARY_DIR}/include)
 
   #--- Collect settings for subdirectories
   set(library_path)
