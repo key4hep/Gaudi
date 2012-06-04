@@ -1333,6 +1333,22 @@ pattern -global zip_python_modules_container_fallback \
 	end_private
 
 #-------------------------------------------------------------------
+# Allow installation of resources
+#
+# Usage:
+#  - install in InstallArea/$CMTCONFIG/data/<package>
+#
+#    document install_resources name files...
+#
+#  - install in InstallArea/$CMTCONFIG/data/<package>/xyz
+#
+#    macro name_offset 'xyz'
+#    document install_resources name files...
+#
+#-------------------------------------------------------------------
+make_fragment install_resources -header=install_resources_header
+
+#-------------------------------------------------------------------
 # Doxygen business
 #-------------------------------------------------------------------
 

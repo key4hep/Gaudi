@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2012-06-04 - Marco Clemencic
+ - Added fragment to install generic resources (install_resources).
+
 ! 2012-02-23 - Marco Clemencic
  - Modified GaudiTest.GaudiExeTest to be able to run executables with or without
    the .exe extension.
