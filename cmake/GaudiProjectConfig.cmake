@@ -206,7 +206,13 @@ macro(gaudi_project project version)
 
   #--- Global actions for the project
   include(GaudiBuildFlags)
-  gaudi_project_version_header()
+
+  # Generate the version header for the project.
+  string(TOUPPER ${project} _proj)
+  execute_process(COMMAND
+                  ${versheader_cmd} --quiet
+                     ${project} ${version} ${CMAKE_BINARY_DIR}/include/${_proj}_VERSION.h)
+  install(FILES ${CMAKE_BINARY_DIR}/include/${_proj}_VERSION.h DESTINATION include)
 
   #--- Collect settings for subdirectories
   set(library_path)
@@ -1215,22 +1221,6 @@ function(gaudi_install_resources)
 
   gaudi_get_package_name(package)
   install(FILES ${ARG_UNPARSED_ARGUMENTS} DESTINATION data/${package}/${ARG_DESTINATION})
-endfunction()
-
-#---------------------------------------------------------------------------------------------------
-# gaudi_project_version_header()
-#
-# Creates a header file with the version macros of the project.
-#---------------------------------------------------------------------------------------------------
-function(gaudi_project_version_header)
-  string(TOUPPER ${CMAKE_PROJECT_NAME} project)
-  set(version ${CMAKE_PROJECT_VERSION})
-  set(output  ${CMAKE_BINARY_DIR}/include/${project}_VERSION.h)
-  add_custom_command(OUTPUT ${output}
-                     COMMAND ${versheader_cmd} ${project} ${version} ${output})
-  add_custom_target(${project}VersionHeader ALL
-                    DEPENDS ${output})
-  install(FILES ${output} DESTINATION include)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
