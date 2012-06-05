@@ -1,6 +1,5 @@
-############################################################################
-# CMakeLists.txt file for building GaudiMP
-############################################################################
+gaudi_subdir(GaudiMP v1r3)
+
 gaudi_depends_on_subdirs(GaudiKernel)
 
 find_package(ROOT)

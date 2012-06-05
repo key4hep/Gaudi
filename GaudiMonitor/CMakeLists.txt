@@ -1,7 +1,5 @@
-############################################################################
-# CMakeLists.txt file for building GaudiMonitor
-# @author Pere Mato, CERN (semi-automaticaly generated)
-############################################################################
+gaudi_subdir(GaudiMonitor v3r0)
+
 gaudi_depends_on_subdirs(GaudiKernel)
 
 if(WIN32)

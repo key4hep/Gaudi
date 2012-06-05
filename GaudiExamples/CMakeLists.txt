@@ -1,7 +1,5 @@
-############################################################################
-# CMakeLists.txt file for building GaudiExamples
-# @author Pere Mato, CERN (semi-automaticaly generated)
-############################################################################
+gaudi_subdir(GaudiExamples v23r2)
+
 gaudi_depends_on_subdirs(GaudiKernel GaudiUtils GaudiGSL GaudiAlg)
 
 find_package(HepPDT)

@@ -1,3 +1,5 @@
+gaudi_subdir(RootCnv v1r14)
+
 gaudi_depends_on_subdirs(GaudiKernel GaudiUtils)
 
 find_package(ROOT COMPONENTS RIO Tree TreePlayer MathCore)

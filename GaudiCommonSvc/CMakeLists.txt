@@ -1,3 +1,5 @@
+gaudi_subdir(GaudiCommonSvc v1r1)
+
 gaudi_depends_on_subdirs(GaudiKernel)
 
 find_package(AIDA)

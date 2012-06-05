@@ -1,7 +1,5 @@
-############################################################################
-# CMakeLists.txt file for building GaudiGSL
-# @author Pere Mato, CERN (semi-automaticaly generated)
-############################################################################
+gaudi_subdir(GaudiGSL v7r10)
+
 gaudi_depends_on_subdirs(GaudiAlg)
 
 find_package(CLHEP)
