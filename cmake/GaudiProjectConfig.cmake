@@ -1224,6 +1224,20 @@ function(gaudi_install_resources)
   install(FILES ${ARG_UNPARSED_ARGUMENTS} DESTINATION data/${package}/${ARG_DESTINATION})
 endfunction()
 
+#-------------------------------------------------------------------------------
+# gaudi_install_cmake_modules()
+#
+# Install the content of the cmake directory.
+#-------------------------------------------------------------------------------
+macro(gaudi_install_cmake_modules)
+  install(DIRECTORY cmake/
+          DESTINATION cmake
+          FILES_MATCHING
+            PATTERN "*.cmake")
+  set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} PARENT_SCOPE)
+  set_property(DIRECTORY PROPERTY GAUDI_EXPORTED_CMAKE ON)
+endmacro()
+
 #---------------------------------------------------------------------------------------------------
 # gaudi_generate_rootmap(library)
 #
@@ -1532,8 +1546,10 @@ macro(gaudi_generate_exports)
     get_property(exported_libs  DIRECTORY ${package} PROPERTY GAUDI_EXPORTED_LIBRARY)
     get_property(exported_execs DIRECTORY ${package} PROPERTY GAUDI_EXPORTED_EXECUTABLE)
     get_property(exported_mods  DIRECTORY ${package} PROPERTY GAUDI_EXPORTED_MODULE)
+    get_property(exported_cmake DIRECTORY ${package} PROPERTY GAUDI_EXPORTED_CMAKE SET)
 
-    if (exported_libs OR exported_execs OR exported_mods)
+    if (exported_libs OR exported_execs OR exported_mods
+        OR exported_cmake OR ${package}_DEPENDENCIES)
       set(pkg_exp_file ${pkgname}Export.cmake)
 
       message(STATUS "Generating ${pkg_exp_file}")
