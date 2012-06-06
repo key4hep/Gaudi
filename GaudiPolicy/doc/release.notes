@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2012-06-06 - Marco Clemencic
+ - Use the compiler native dependencies from CMT when using CMT v1r25.
+
 ============================= GaudiPolicy v12r0 ==============================
 ! 2012-01-20 - Marco Clemencic
  - Added the CMTCONFIGs *-test (only few of them), implying the tag target-test,
