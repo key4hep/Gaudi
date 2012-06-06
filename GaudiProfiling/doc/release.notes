@@ -4,6 +4,9 @@
 ! Purpose     : Profiling and performance monitoring of Gaudi/LHCb software
 !-----------------------------------------------------------------------------
 
+! 2012-06-06 - Marco Clemencic
+ - Disable on MacOSX.
+
 ! 2012-05-03 - Marco Clemencic
  - Fixed some "pedantic" warnings.
 
