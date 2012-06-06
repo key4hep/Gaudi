@@ -65,6 +65,25 @@ GaudiCommon<PBASE>::get( IDataProviderSvc*  service ,
                   fullTESLocation ( location , useRootInTES ) ) ;
 }
 // ============================================================================
+// Templated access to the data in Gaudi Transient Store, no check on the content
+// ============================================================================
+template < class PBASE >
+template < class TYPE  >
+inline typename Gaudi::Utils::GetData<TYPE>::return_type
+GaudiCommon<PBASE>::getIfExists( IDataProviderSvc*  service ,
+                                 const std::string& location,
+                                 const bool useRootInTES ) const
+{
+  // check the environment
+  Assert( 0 != service ,    "get():: IDataProvider* points to NULL!"      ) ;
+  // get the helper object:
+  Gaudi::Utils::GetData<TYPE> getter ;
+  return getter ( *this    ,
+                  service  ,
+                  fullTESLocation ( location , useRootInTES ),
+                  false) ;
+}
+// ============================================================================
 // check the existence of objects in Gaudi Transient Store
 // ============================================================================
 template < class PBASE >

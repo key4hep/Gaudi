@@ -253,6 +253,18 @@ public:
     return GaudiCommon<Algorithm>::get<TYPE> ( svc , location , useRootInTES ) ;
   }
 
+  /** Version of "get" without check on the data.
+   *
+   */
+  template < class TYPE  >
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type
+  getIfExists ( IDataProviderSvc*  svc       ,
+                const std::string& location  ,
+                const bool useRootInTES = true ) const
+  {
+    return GaudiCommon<Algorithm>::getIfExists<TYPE> ( svc , location , useRootInTES ) ;
+  }
+
   /** @brief Templated access to the data from Gaudi Event Transient Store
    *
    *  Quick and safe access to the data in Gaudi transient store.
@@ -287,6 +299,17 @@ public:
     return GaudiCommon<Algorithm>::get<TYPE> ( evtSvc() , location , useRootInTES ) ;
   }
 
+  /** Version of "get" without check on the data.
+   *
+   */
+  template < class TYPE  >
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type
+  getIfExists ( const std::string& location  ,
+                const bool useRootInTES = true ) const
+  {
+    return GaudiCommon<Algorithm>::getIfExists<TYPE> ( evtSvc() , location , useRootInTES ) ;
+  }
+
   /** @brief Templated access to the detector data from the
    *         Gaudi Detector Transient Store
    *
@@ -312,6 +335,17 @@ public:
     return GaudiCommon<Algorithm>::get<TYPE> ( svc , location , false ) ;
   }
 
+  /** Version of "getDet" without check on the data.
+   *
+   */
+  template < class TYPE  >
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type
+  getDetIfExists ( IDataProviderSvc*  svc       ,
+                   const std::string& location  ) const
+  {
+    return GaudiCommon<Algorithm>::getIfExists<TYPE> ( svc , location , false ) ;
+  }
+
   /** @brief Templated access to the detector data from the
    *         Gaudi Detector Transient Store
    *
@@ -333,6 +367,16 @@ public:
   inline TYPE* getDet ( const std::string& location   ) const
   {
     return GaudiCommon<Algorithm>::get<TYPE> ( detSvc() , location , false ) ;
+  }
+
+  /** Version of "getDet" without check on the data.
+   *
+   */
+  template < class TYPE  >
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type
+  getDetIfExists ( const std::string& location  ) const
+  {
+    return GaudiCommon<Algorithm>::getIfExists<TYPE> ( detSvc() , location , false ) ;
   }
 
   /** @brief Check the existence of a data object or container

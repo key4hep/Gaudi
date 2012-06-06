@@ -1,6 +1,12 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2012-06-06 - Marco Clemencic
+ - Task #22742: Optimize the GaudiAlgorithm get() functions
+   - avoid use of SmartDataPtr (only when returning pointers)
+   - added an argument to the GetData class to bypass the check
+   - implemented getIfExists variants
+
 ! 2012-05-30 - Vanya Belyaev
  - Patch #5379: Improvements for GaudiAlgs.py
    - GaudiCommon.h

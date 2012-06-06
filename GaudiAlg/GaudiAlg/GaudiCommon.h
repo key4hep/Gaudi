@@ -140,7 +140,15 @@ public:
   get ( IDataProviderSvc*  svc         ,
         const std::string& location    ,
         const bool useRootInTES = true ) const ;
-  /** @brief Check the existence of a data object or container
+  /** Quicker version of the get function which bypasses the check on the
+   *  retrieved data.
+   */
+  template < class TYPE >
+  typename Gaudi::Utils::GetData<TYPE>::return_type
+  getIfExists ( IDataProviderSvc*  svc         ,
+                const std::string& location    ,
+                const bool useRootInTES = true ) const ;
+    /** @brief Check the existence of a data object or container
    *         in the Gaudi Transient Event Store
    *
    *  @code
