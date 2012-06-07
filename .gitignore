@@ -14,10 +14,10 @@ InstallArea/
 patches/
 test_results/
 
-*-slc5-*/
+*-slc[56]-*/
 i686-winxp-vc9-dbg/
 
-.*-slc5-*.d/
+.*-slc[56]-*.d/
 .i686-winxp-vc9-dbg.d/
 
 DoxyWarnings.log
