@@ -86,6 +86,7 @@ apply_pattern disable_package_on platform=target-winxp
 apply_pattern disable_package_on platform=target-i386
 apply_pattern disable_package_on platform=target-i686
 apply_pattern disable_package_on platform=target-slc4
+apply_pattern disable_package_on platform=target-mac
 
 apply_pattern install_more_includes more=GaudiProfiling
 

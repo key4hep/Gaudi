@@ -86,12 +86,20 @@ class TupleEx1(TupleAlgo) :
         tuple1 . column ( 'breit' , breit () )
 
         # fill N-Tuple with integer numbers:
-        tuple1 . column ( 'poiss' , int( poisson () ) )
-        tuple1 . column ( 'binom' , int( binom   () ) )
+        tuple1 . column ( 'poiss1' , int( poisson () ) )
+        tuple1 . column ( 'binom1' , int( binom   () ) )
+
+        # fill N-Tuple with long long numbers:
+        tuple1 . column_ll  ( 'poiss2' , int( poisson () ) )
+        tuple1 . column_ll  ( 'binom2' , int( binom   () ) )
+        
+        # fill N-Tuple with unsigned long long numbers:
+        tuple1 . column_ull ( 'poiss3' , int( poisson () ) )
+        tuple1 . column_ull ( 'binom3' , int( binom   () ) )
 
         # fill N-Tuple with "reduced" integer numbers:
-        tuple1 . column ( 'poiss' , int( poisson () ) , 0 , 14 )
-        tuple1 . column ( 'binom' , int( binom   () ) , 0 , 14 )
+        tuple1 . column ( 'poiss4' , int( poisson () ) , 0 , 14 )
+        tuple1 . column ( 'binom4' , int( binom   () ) , 0 , 14 )
 
         # fill N-Tuple with "boolean" numbers:
         tuple1 . column ( "poisb" ,  poisson () > 1.0 )

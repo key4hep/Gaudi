@@ -182,20 +182,20 @@ protected:
   /// Check for byte swapping
   SwapAction swapBuffer(int siz)  const;
 
-  /** Helper to distinguis between identified pointers and contained pointers.
+  /** Helper to distinguish between identified pointers and contained pointers.
       This entry resolves identified pointers (= Pointers to DataObject instances.)
   */
-  template <class TYPE> StreamBuffer& getObjectPointer(const DataObject* pObject, TYPE*& refpObject) {
+  template <class TYPE> StreamBuffer& getObjectPointer(const DataObject* /*pObject*/, TYPE*& refpObject) {
     IdentifiedLink& link = m_identifiedLinks.back();
     DataObject* pObj = link.first;
     m_identifiedLinks.pop_back();
     refpObject = dynamic_cast<TYPE*>(pObj);
     return *this;
   }
-  /** Helper to distinguis between identified pointers and contained pointers.
+  /** Helper to distinguish between identified pointers and contained pointers.
       This entry resolves contained pointers (= Pointers to ContainedObject instances.)
   */
-  template <class TYPE> StreamBuffer& getObjectPointer(const ContainedObject* pObject, TYPE*& refpObject) {
+  template <class TYPE> StreamBuffer& getObjectPointer(const ContainedObject* /*pObject*/, TYPE*& refpObject) {
     ContainedLink& link = m_containedLinks.back();
     ContainedObject* pObj = link.first;
     m_containedLinks.pop_back();

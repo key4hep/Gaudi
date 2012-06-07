@@ -372,7 +372,7 @@ def _histoSvc  ( self , address = None ) :
 ## Trivial function to access the data in TES
 def _get      ( self , location ) :
     """
-    Trivial function to access the data in TES
+    Trivial function to access the data in TES using the data service
     """
     return self._evtSvc_[location]
 
@@ -380,9 +380,26 @@ def _get      ( self , location ) :
 ## Trivial function to access the data in TDS
 def _getDet   ( self , location ) :
     """
-    Trivial function to access the data in TDS
+    Trivial function to access the data in TDS using data service
     """
     return self._detSvc_[location]
+
+# =============================================================================
+##  get the data from TES using GaudiCommon methods, respecting RootInTES 
+def _get_  ( self , location , rootInTES = True ) :
+    """
+    Get the object from Transient Event Store using GaudiCommon machinery,
+    respecting RootInTES behaviour 
+    """
+    return AlgDecorator.get_ ( self , location  , rootInTES )
+# =============================================================================
+##  check the data from TES using GaudiCommon methods, respecting RootInTES 
+def _exist_ ( self , location , rootInTES = True ) :
+    """
+    Check  the object in Transient Event Store using GaudiCommon machinery,
+    respecting RootInTES behaviour 
+    """
+    return AlgDecorator.exist_ ( self , location  , rootInTES )
 
 # =============================================================================
 ## Trivial helper function to access NTuple Service
@@ -963,11 +980,11 @@ def _profile2D_ ( s, *a ) :
     return HistoDecorator.profile2D (s,*a)
 # =============================================================================
 
-_plot1D_    .__doc__ += HistoDecorator.plot1D    .__doc__
-_plot2D_    .__doc__ += HistoDecorator.plot2D    .__doc__
-_plot3D_    .__doc__ += HistoDecorator.plot3D    .__doc__
-_profile1D_ .__doc__ += HistoDecorator.profile1D .__doc__
-_profile2D_ .__doc__ += HistoDecorator.profile2D .__doc__
+_plot1D_    .__doc__ += '\n' + HistoDecorator.plot1D    .__doc__
+_plot2D_    .__doc__ += '\n' + HistoDecorator.plot2D    .__doc__
+_plot3D_    .__doc__ += '\n' + HistoDecorator.plot3D    .__doc__
+_profile1D_ .__doc__ += '\n' + HistoDecorator.profile1D .__doc__
+_profile2D_ .__doc__ += '\n' + HistoDecorator.profile2D .__doc__
 
 def _decorate_plots_ ( klasses ) :
     t = type( klasses )
@@ -998,8 +1015,8 @@ def _evtCol_ ( s , *a )  :
     """
     return TupleAlgDecorator.evtCol ( s , *a )
 
-_nTuple_.__doc__  += TupleAlgDecorator.nTuple.__doc__
-_evtCol_.__doc__  += TupleAlgDecorator.evtCol.__doc__
+_nTuple_.__doc__  += '\n' + TupleAlgDecorator.nTuple.__doc__
+_evtCol_.__doc__  += '\n' + TupleAlgDecorator.evtCol.__doc__
 
 def _decorate_tuples_ ( klasses ) :
     t = type( klasses )
@@ -1022,35 +1039,85 @@ _decorate_tuples_ ( TupleAlgo )
 # "decorate N-Tuple object
 Tuple = cpp.Tuples.Tuple
 _Dec  = TupleDecorator
-def _t_nTuple_  (s,*a) : return _Dec.nTuple (s,*a)
-def _t_ntuple_  (s,*a) : return _Dec.ntuple (s,*a)
-def _t_valid_   (s,*a) : return _Dec.valid  (s,*a)
-def _t_write_   (s,*a) : return _Dec.write  (s,*a)
-def _t_column_  (s,*a) : return _Dec.column (s,*a)
-def _t_array_   (s,*a) : return _Dec.array  (s,*a)
-def _t_matrix_  (s,*a) : return _Dec.matrix (s,*a)
-def _t_farray_  (s,*a) : return _Dec.farray (s,*a)
-def _t_fmatrix_ (s,*a) : return _Dec.fmatrix (s,*a)
+def _t_nTuple_      ( s , *a ) :
+    """
+    Access to underlying INTuple object
+    """
+    return _Dec.nTuple     ( s , *a )
+def _t_ntuple_      ( s , *a ) :
+    """
+    Access to underlying NTuple::Tuple object
+    """    
+    return _Dec.ntuple     ( s , *a )
+def _t_valid_       ( s , *a ) :
+    """
+    Valid NTuple::Tuple object?
+    """
+    return _Dec.valid      ( s , *a )
+def _t_write_       ( s , *a ) :
+    """
+    Commit the row/record to n-tuple 
+    """
+    return _Dec.write      ( s , *a )
+def _t_column_      ( s , *a ) :
+    """
+    Fill the certain column to n-tuple 
+    """
+    return _Dec.column     ( s , *a )
+def _t_column_ll_   ( s , *a ) :
+    """
+    Fill the 'long long' column 
+    """
+    return _Dec.column_ll  ( s , *a )
+def _t_column_ull_  ( s , *a ) :
+    """
+    Fill the 'unsigned long long' column 
+    """
+    return _Dec.column_ull ( s , *a )
+def _t_array_       ( s , *a ) :
+    """
+    Fill the fixed-size array column 
+    """
+    return _Dec.array      ( s , *a )
+def _t_matrix_      ( s , *a ) :
+    """
+    Fill the fixed-size matrix column 
+    """
+    return _Dec.matrix     ( s , *a )
+def _t_farray_      ( s , *a ) :
+    """
+    Fill the floating-size array column 
+    """
+    return _Dec.farray     ( s , *a )
+def _t_fmatrix_     ( s , *a ) :
+    """
+    Fill the floating-size matrix column 
+    """
+    return _Dec.fmatrix    ( s , *a )
 
-_t_nTuple_ .__doc__ = _Dec.nTuple  .__doc__
-_t_ntuple_ .__doc__ = _Dec.ntuple  .__doc__
-_t_valid_  .__doc__ = _Dec.valid   .__doc__
-_t_write_  .__doc__ = _Dec.write   .__doc__
-_t_column_ .__doc__ = _Dec.column  .__doc__
-_t_array_  .__doc__ = _Dec.array   .__doc__
-_t_matrix_ .__doc__ = _Dec.matrix  .__doc__
-_t_farray_ .__doc__ = _Dec.farray  .__doc__
-_t_fmatrix_.__doc__ = _Dec.fmatrix .__doc__
+_t_nTuple_     . __doc__ += '\n' + _Dec.nTuple     . __doc__
+_t_ntuple_     . __doc__ += '\n' + _Dec.ntuple     . __doc__
+_t_valid_      . __doc__ += '\n' + _Dec.valid      . __doc__
+_t_write_      . __doc__ += '\n' + _Dec.write      . __doc__
+_t_column_     . __doc__ += '\n' + _Dec.column     . __doc__
+_t_column_ll_  . __doc__ += '\n' + _Dec.column_ll  . __doc__
+_t_column_ull_ . __doc__ += '\n' + _Dec.column_ull . __doc__
+_t_array_      . __doc__ += '\n' + _Dec.array      . __doc__
+_t_matrix_     . __doc__ += '\n' + _Dec.matrix     . __doc__
+_t_farray_     . __doc__ += '\n' + _Dec.farray     . __doc__
+_t_fmatrix_    . __doc__ += '\n' + _Dec.fmatrix    . __doc__
 
-Tuple.nTuple  = _t_nTuple_
-Tuple.ntuple  = _t_ntuple_
-Tuple.valid   = _t_valid_
-Tuple.write   = _t_write_
-Tuple.column  = _t_column_
-Tuple.array   = _t_array_
-Tuple.matrix  = _t_matrix_
-Tuple.farray  = _t_farray_
-Tuple.fmatrix = _t_fmatrix_
+Tuple.nTuple      = _t_nTuple_
+Tuple.ntuple      = _t_ntuple_
+Tuple.valid       = _t_valid_
+Tuple.write       = _t_write_
+Tuple.column      = _t_column_
+Tuple.column_ll   = _t_column_ll_
+Tuple.column_ull  = _t_column_ull_ 
+Tuple.array       = _t_array_
+Tuple.matrix      = _t_matrix_
+Tuple.farray      = _t_farray_
+Tuple.fmatrix     = _t_fmatrix_
 
 _alg_map_ = {
     '__init__'    : _init_        , # constructor
@@ -1061,7 +1128,9 @@ _alg_map_ = {
     'detSvc'      : _detSvc       , # detector data service
     'histoSvc'    : _histoSvc     , # histogram data service
     'histSvc'     : _histoSvc     , # histogram data service
-    'get'         : _get          , # access to event data
+    'get'         : _get          , # access to  event data
+    'get_'        : _get_         , # access to  event data
+    'exist_'      : _exist_       , # check  the event data
     'getDet'      : _getDet       , # access to detector data
     'finalize'    : _finalize_    , # algorithm finalization
     'beginRun'    : _success_     , # dummy function returning success
@@ -1349,15 +1418,14 @@ def _Histos_t_ ( self , name = None ) :
 # =============================================================================
 
 
-_Tools_a_    . __doc__ += AlgDecorator   . _tools_a_    . __doc__
-_Tools_t_    . __doc__ += AlgDecorator   . _tools_t_    . __doc__
-_Counters_a_ . __doc__ += AlgDecorator   . _counters_a_ . __doc__
-_Counters_t_ . __doc__ += AlgDecorator   . _counters_t_ . __doc__
-_Counter_a_  . __doc__ += AlgDecorator   . _counter_a_  . __doc__
-_Counter_t_  . __doc__ += AlgDecorator   . _counter_t_  . __doc__
-_Histos_a_   . __doc__ += HistoDecorator . _histos_a_ . __doc__
-_Histos_t_   . __doc__ += HistoDecorator . _histos_t_ . __doc__
-
+_Tools_a_    . __doc__ += '\n' + AlgDecorator   . _tools_a_    . __doc__
+_Tools_t_    . __doc__ += '\n' + AlgDecorator   . _tools_t_    . __doc__
+_Counters_a_ . __doc__ += '\n' + AlgDecorator   . _counters_a_ . __doc__
+_Counters_t_ . __doc__ += '\n' + AlgDecorator   . _counters_t_ . __doc__
+_Counter_a_  . __doc__ += '\n' + AlgDecorator   . _counter_a_  . __doc__
+_Counter_t_  . __doc__ += '\n' + AlgDecorator   . _counter_t_  . __doc__
+_Histos_a_   . __doc__ += '\n' + HistoDecorator . _histos_a_   . __doc__
+_Histos_t_   . __doc__ += '\n' + HistoDecorator . _histos_t_   . __doc__
 
 iAlgorithm   . Tools    = _Tools_a_
 iAlgTool     . Tools    = _Tools_t_

@@ -280,8 +280,9 @@ StatusCode OutputStream::collectObjects()   {
       iret = m_pDataManager->traverseSubTree(obj, m_agent);
     }
     if ( !iret.isSuccess() )    {
-      log << MSG::DEBUG << "Ignore request to write non-mandatory object(s) "
-          << m_currentItem->path() << endmsg;
+      if(log.level() <= MSG::DEBUG )
+        log << MSG::DEBUG << "Ignore request to write non-mandatory object(s) "
+            << m_currentItem->path() << endmsg;
     }
   }
 
@@ -352,9 +353,10 @@ void OutputStream::addItem(Items& itms, const std::string& descriptor)   {
     }
   }
   DataStoreItem* item = new DataStoreItem(obj_path, level);
-  log << MSG::DEBUG << "Adding OutputStream item " << item->path()
-      << " with " << item->depth()
-      << " level(s)." << endmsg;
+  if(log.level() <= MSG::DEBUG )
+    log << MSG::DEBUG << "Adding OutputStream item " << item->path()
+        << " with " << item->depth()
+        << " level(s)." << endmsg;
   itms.push_back( item );
 }
 

@@ -9,6 +9,7 @@
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IAlgTool.h"
 #include "GaudiKernel/SmartIF.h"
+#include "GaudiKernel/DataObject.h"
 // ============================================================================
 // GaudiAlg 
 // ============================================================================
@@ -228,6 +229,41 @@ size_t GaudiPython::AlgDecorator::_tools_t_
   if ( 0 == cmp ) { return 0 ; }                                      // RETURN 
   return _tools_t_ ( dynamic_cast<const GaudiTool*> ( cmp ) , tools ) ;  
 }
+// ============================================================================
+/*  check the data in Transient Event Store 
+ *  @param alg          GaudiAlgorithm
+ *  @param location     data location in TES 
+ *  @param useRoonInTes flag to respect RootInTes 
+ *  @return the data 
+ */
+// ============================================================================
+bool GaudiPython::AlgDecorator::exist
+( const GaudiAlgorithm*   alg          ,
+  const std::string&      location     ,
+  const bool              useRootInTes ) 
+{
+  if ( 0 == alg ) { return false ; } // RETURN
+  return alg -> exist<DataObject> ( alg->evtSvc() , location , useRootInTes ) ;
+}
+// ============================================================================
+/*  get the data from Transient Event Store 
+ *  @param alg          GaudiAlgorithm
+ *  @param location     data location in TES 
+ *  @param useRoonInTes flag to respect RootInTes 
+ *  @return the data 
+ */
+// ============================================================================
+DataObject* GaudiPython::AlgDecorator::get_
+( const GaudiAlgorithm*   alg          ,
+  const std::string&      location     ,
+  const bool              useRootInTes ) 
+{
+  if ( 0 == alg ) { return 0 ; } // RETURN 
+  return alg->get<DataObject> ( alg->evtSvc() , location , useRootInTes ) ;
+}
+
+
+
 // ============================================================================
 // The END 
 // ============================================================================

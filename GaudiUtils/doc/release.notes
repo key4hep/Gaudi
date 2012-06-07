@@ -1,6 +1,9 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2012-06-07 - Marco Clemencic
+ - Fixed Clang warnings.
+
 ============================== GaudiUtils v4r0 ===============================
 ! 2012-01-20 - Marco Clemencic
  - Imported HistoStrings functions from (LHCb) Kernel/HistoStrings

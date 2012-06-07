@@ -86,9 +86,3 @@ std::ostream& Gaudi::Parsers::Catalog::fillStream ( std::ostream& o ) const
   << "// " << std::string(82,'=') << std::endl ;
   return o ;
 }
-// ============================================================================
-// printout operator
-// ============================================================================
-std::ostream& operator<<( std::ostream& o , const Gaudi::Parsers::Catalog& c )
-{
-  return c.fillStream ( o ) ; }

@@ -59,7 +59,7 @@ StatusCode GaudiCommonTests::execute()
   const std::string loc2 = "/Event/"+name()+"/Tracks2";
   const std::string loc3 = name()+"/Tracks3";
   const std::string loc4 = name()+"/Tracks4";
-  
+
   const std::string loc5 = "/Event";
   const std::string loc6 = "";
 
@@ -70,7 +70,7 @@ StatusCode GaudiCommonTests::execute()
     MyTrackVector* Tracks2 = new MyTrackVector();
     MyTrackVector* Tracks3 = new MyTrackVector();
     MyTrackVector* Tracks4 = new MyTrackVector();
-        
+
     // With /Event, with RootInTES
     put( Tracks1, loc1, UseRootInTES );
     // With /Event, without RootInTES
@@ -94,11 +94,11 @@ StatusCode GaudiCommonTests::execute()
     DataObject*    Root3   = get<DataObject   >(loc6,UseRootInTES);
     DataObject*    Root4   = get<DataObject   >(loc6,IgnoreRootInTES);
     // should never happen ... Errors should be caught above
-    if ( !Tracks1 || !Tracks2 || 
+    if ( !Tracks1 || !Tracks2 ||
          !Tracks3 || !Tracks4 ||
          !Root1   || !Root2 || !Root3 || !Root4
          ) return Error( "Problem getting data" );
-    
+
     info() << "Loaded Objects:" << endmsg;
     info() << Tracks1->registry()->identifier() << endmsg;
     info() << Tracks2->registry()->identifier() << endmsg;
@@ -110,6 +110,16 @@ StatusCode GaudiCommonTests::execute()
     info() << Root4->registry()->identifier() << endmsg;
   }
 
+  // Test get without checks
+  {
+    MyTrackVector* Tracks = NULL;
+
+    Tracks = getIfExists<MyTrackVector>(loc1);
+    if (!Tracks) return Error( "Problem getting data" );
+
+    Tracks = getIfExists<MyTrackVector>("Nowhere/To/Be/Found");
+    if (Tracks) return Error( "Expected null pointer" );
+  }
   return StatusCode::SUCCESS;
 }
 

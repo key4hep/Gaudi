@@ -22,16 +22,6 @@
 #pragma warning(disable:177)
 #endif
 
-// needed to compile on gcc4.x
-namespace
-{
-  inline std::ostream &operator <<
-    (std::ostream &s,const std::pair<double,double> &p)
-  {
-    return s << '(' << p.first << ',' << p.second << ')';
-  }
-}
-
 /** @file
  *  simple DEMO-file for "extended properties",
  *  implementation file for class ExtendedProperties

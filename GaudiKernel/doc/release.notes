@@ -1,6 +1,11 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2012-06-07 - Marco Clemencic
+ - Fixed inconsistency in SharedObjectContainer (found by Clang).
+ - Fixed compilation with Clang (lookup of operator<<).
+ - Fixed Clang warnings.
+
 ! 2012-05-05 - Marco Clemencic
  - Fixed some doxygen comments.
 
