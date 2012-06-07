@@ -286,7 +286,7 @@ StatusCode CounterSvc::create
   if (  m_counts.end() == i )
   { i = m_counts.insert ( std::make_pair ( grp , NameMap() ) ).first ; }
   // insert new counter with proper name into proper group:
-  i->second.insert( std::make_pair( nam , newc ) ).first ;
+  i->second.insert( std::make_pair( nam , newc ) );
   return StatusCode::SUCCESS ;                                     // RETURN
 }
 #ifdef __ICC

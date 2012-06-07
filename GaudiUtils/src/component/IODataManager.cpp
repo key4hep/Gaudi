@@ -50,7 +50,7 @@ StatusCode IODataManager::initialize()  {
     log << MSG::ERROR << "Error initializing IncidentSvc Service!" << endmsg;
     return status;
   }
-  
+
   return status;
 }
 
@@ -214,7 +214,7 @@ StatusCode IODataManager::establishConnection(Connection* con)  {
       ConnectionMap::const_iterator i=m_connectionMap.find(con->name());
       if ( i != m_connectionMap.end() )  {
         Connection* c = (*i).second->connection;
-        if ( c != con )  { 
+        if ( c != con )  {
           m_incSvc->fireIncident(Incident(con->name(),IncidentType::FailInputFile));
           return error("Severe logic bug: Twice identical connection object for DSN:"+con->name(),true);
         }
@@ -281,7 +281,7 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
           m_incSvc->fireIncident(Incident(pfn,IncidentType::FailInputFile));
           return IDataConnection::BAD_DATA_CONNECTION;
         }
-        
+
         return sc;
       }
       return S_ERROR;
@@ -349,7 +349,7 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
                 << " -- processing continues" << endmsg;
           }
         }
-        m_connectionMap.insert(std::make_pair(fid,e)).first;
+        m_connectionMap.insert(std::make_pair(fid,e));
         return S_OK;
       }
       // Here we open the file!

@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2012-06-07 - Marco Clemencic
+ - Fixed Clang warnings.
+
 ! 2012-06-06 - Marco Clemencic
  - Task #22742: Optimize the GaudiAlgorithm get() functions
    - added call to getIfExists in GaudiCommonTest algorithm

@@ -126,6 +126,8 @@ namespace NTuple
    */
   template <class TYP> class GAUDI_API _Item : virtual public _Data<TYP>  {
   public:
+    /// Destructor.
+    virtual ~_Item() {}
     /// Create instance
     static _Item* create(INTuple* tup,
                          const std::string& name,
@@ -222,7 +224,7 @@ namespace NTuple
   template <class TYP> class _Accessor  {
     friend class Tuple;
   private:
-    _Accessor<TYP>& operator=(const _Accessor<TYP>& copy)   {
+    _Accessor<TYP>& operator=(const _Accessor<TYP>&)   {
       return *this;
     }
   protected:
