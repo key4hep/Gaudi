@@ -3,6 +3,7 @@ package manager: Marco Clemencic
 
 ! 2012-06-07 - Marco Clemencic
  - Hide some warnings on gcc 4.7 and Clang.
+ - Fixed bad interaction between gccxml and gcc 4.7.
 
 ! 2012-06-06 - Marco Clemencic
  - Use the compiler native dependencies from CMT when using CMT v1r25.
