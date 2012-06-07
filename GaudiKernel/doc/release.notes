@@ -3,6 +3,7 @@ Package manager : Marco Clemencic
 
 ! 2012-06-07 - Marco Clemencic
  - Fixed inconsistency in SharedObjectContainer (found by Clang).
+ - Fixed compilation with Clang (lookup of operator<<).
 
 ! 2012-03-26 - Marco Clemencic
  - Added missing __init__.py in python/GaudiKernel

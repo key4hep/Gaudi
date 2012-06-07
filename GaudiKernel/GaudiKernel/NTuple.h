@@ -1201,17 +1201,17 @@ namespace NTuple
   typedef Matrix<float>           FloatMatrix;
   typedef Matrix<double>          DoubleMatrix;
 #endif
+
+  template <class T>
+  inline std::ostream& operator<<(std::ostream& s, const Item<T>& obj)
+  {
+    return s << T(obj);
+  }
 } // end of namespace NTuple
 
 // Useful:
 typedef SmartDataPtr<NTuple::Tuple>     NTuplePtr;
 typedef SmartDataPtr<NTuple::Directory> NTupleDirPtr;
 typedef SmartDataPtr<NTuple::File>      NTupleFilePtr;
-
-template <class T>
-std::ostream& operator<<(std::ostream& s, const NTuple::Item<T>& obj)
-{
-  return s << T(obj);
-}
 
 #endif // GAUDIKERNEL_NTUPLE_H

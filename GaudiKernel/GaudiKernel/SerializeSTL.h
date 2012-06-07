@@ -21,6 +21,8 @@
 #include "GaudiKernel/Map.h"
 #include "GaudiKernel/HashMap.h"
 
+#include "GaudiKernel/SerializeSTLFwd.h"
+
 namespace GaudiUtils {
   //static const int NUMBERS_PER_LINE = 6;
 
