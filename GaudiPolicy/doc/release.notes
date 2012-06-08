@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2012-06-08 - Marco Clemencic
+ - Fixed configuration problem for the special platform *-g11max-*.
+
 ! 2012-06-07 - Marco Clemencic
  - Hide some warnings on gcc 4.7 and Clang.
  - Fixed bad interaction between gccxml and gcc 4.7.
