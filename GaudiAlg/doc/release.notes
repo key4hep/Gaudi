@@ -1,6 +1,9 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2012-06-08 - Marco Clemencic
+ - Added CMake configuration files.
+
 ! 2012-06-08 - Vanya Belyaev
  - Patch #5410: Enable the suppression of misbalance summary from GaudiTool
    Added a couple of static methods to GaudiTool to enable/disable the summary.

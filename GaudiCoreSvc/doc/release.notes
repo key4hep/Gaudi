@@ -4,6 +4,9 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2012-06-08 - Marco Clemencic
+ - Added CMake configuration files.
+
 ! 2012-06-07 - Marco Clemencic
  - Fixed compilation with Clang (lookup of operator<<).
 

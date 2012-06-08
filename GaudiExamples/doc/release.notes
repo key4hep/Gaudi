@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2012-06-08 - Marco Clemencic
+ - Added CMake configuration files.
+
 ! 2012-06-07 - Marco Clemencic
  - Fixed Clang warnings.
 

@@ -1,6 +1,9 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+! 2012-06-08 - Marco Clemencic
+ - Added CMake configuration files.
+
 ! 2012-06-06 - Marco Clemencic
  - Modified update_versions.py to update CMakeLists.txt too.
 

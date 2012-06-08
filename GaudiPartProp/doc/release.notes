@@ -4,6 +4,9 @@
 ! Purpose     : Gaudi Particle Property Service
 !-----------------------------------------------------------------------------
 
+! 2012-06-08 - Marco Clemencic
+ - Added CMake configuration files.
+
 ============================= GaudiPartProp v1r0 =============================
 ! 2011-12-05 - Marco Clemencic
  - Moved ParticlePropertySvc to a dedicated package and wrapped it in the

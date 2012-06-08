@@ -1,6 +1,9 @@
 Package: GaudiAud
 Package manager : David Quarrie, Marco Clemencic
 
+! 2012-06-08 - Marco Clemencic
+ - Added CMake configuration files.
+
 =============================== GaudiAud v9r5 ================================
 ! 2011-11-01 - Marco Clemencic
  - Backward compatible changes to prevent a segfault when generating the

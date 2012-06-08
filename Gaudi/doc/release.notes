@@ -1,6 +1,9 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+! 2012-06-08 - Marco Clemencic
+ - Added CMake configuration files.
+
 ================================ Gaudi v23r2 =================================
 ! 2012-03-15 - Marco Clemencic
  - Fixed bug #92122: option '--printsequence' of gaudirun.py no longer works
