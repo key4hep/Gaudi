@@ -41,7 +41,7 @@ namespace std { class exception ; }
  * The base class allows "easy" (=="1 line") access to data in
  * Gaudi Transient Stores. The functionality includes the checking
  * of the presence of the data at the given location, checking the
- * validity of the data, retrieval of valid data and "forced" retrive
+ * validity of the data, retrieval of valid data and "forced" retrieve
  * of valid data (create if there is no data).
  *
  * The base class allows to perform an easy error, warning and exception
@@ -51,7 +51,7 @@ namespace std { class exception ; }
  * The base class included also utilities for general statistical counters.
  *
  * It has been reported that usage of this base class results in
- * significant shrinkage of existing code lines.
+ * significant reduction of existing code lines.
  *
  *  @attention
  *  See also the class GaudiCommon, which implements some of the common
@@ -75,7 +75,7 @@ namespace std { class exception ; }
  *  The base class allows "easy" (=="1 line") access to data in
  *  Gaudi Transient Stores. The functionality includes the checking
  *  of the presence of the data at the given location, checking the
- *  validity of the data, retrieval of valid data and "forced" retrive
+ *  validity of the data, retrieval of valid data and "forced" retrieve
  *  of valid data (create if there is no data).
  *
  *  The base class allows to perform an easy error, warning and exception
@@ -85,7 +85,7 @@ namespace std { class exception ; }
  *  The base class also includes utilities for general statistical counters.
  *
  *  It has been reported that usage of this base class results in
- *  significant shrinkage of existing code lines.
+ *  significant reduction of existing code lines.
  *
  *  @attention
  *  See the class GaudiCommon, which implements some of the common functionality
@@ -99,70 +99,62 @@ namespace std { class exception ; }
 class GAUDI_API GaudiTool: public GaudiCommon<AlgTool>
 {
 public:
-
+  // ==========================================================================
   /** standard initialization method
    *  @see  AlgTool
    *  @see IAlgTool
    *  @return status code
    */
   virtual StatusCode    initialize ();
-
   /** standard finalization method
    *  @see  AlgTool
    *  @see IAlgTool
    *  @return status code
    */
   virtual StatusCode    finalize   ();
-
+  // ==========================================================================
 public: // accessors
-
+  // ==========================================================================
   /** Access the standard N-Tuple
    *  @return pointer to N-Tuple service .
    */
   INTupleSvc*          ntupleSvc () const;
-
   /** Access the standard event collection service
    *  @return pointer to the event collection service
    */
   INTupleSvc*          evtColSvc () const;
-
   /** accessor to detector service
    *  @return pointer to detector service
    */
   IDataProviderSvc*    detSvc    () const ;
-
   /** accessor to event service  service
    *  @return pointer to detector service
    */
   IDataProviderSvc*    evtSvc    () const ;
-
   /** accessor to Incident Service
    *  @return pointer to the Incident Service
    */
   IIncidentSvc*        incSvc    () const ;
-
   /** accessor to Chrono & Stat Service
    *  @return pointer to the Chrono & Stat Service
    */
   IChronoStatSvc*      chronoSvc () const ;
-
   /** acessor to the histogram service
    *  @return pointer to the histogram service
    */
   IHistogramSvc*       histoSvc  () const ;
-
   /** acessor to the Algorithm Context Service
-   *  @return pointer to the Algorithm Contetx Service
+   *  @return pointer to the Algorithm Context Service
    */
   IAlgContextSvc*     contextSvc () const ;
-
+  // ==========================================================================
 public:
-
+  // ==========================================================================
   // following methods cannot go in GaudiCommon since they use methods ( evtSvc()
   // and detDvc() ) that are not members of AlgTool.
   // Also some methods seem which are members of the base class do not seem
   // to be found unless forwarding methods are put here ??
-
+  // ==========================================================================
   /** @brief Register a data object or container into Gaudi Event Transient Store
    *
    *  @code
@@ -176,7 +168,7 @@ public:
    *             RootInTES by prepending the value of this to the
    *             data location that is passed.
    *             The default setting for RootInTES is "" so has no effect.
-   *             This behaviour can be suppressed by passing the arguement
+   *             This behavior can be suppressed by passing the argument
    *             useRootInTES = false
    *
    *  @see IDataProviderSvc
@@ -200,7 +192,6 @@ public:
   {
     return GaudiCommon<AlgTool>::put ( svc , object , address , useRootInTES ) ;
   }
-
   /** @brief Register a data object or container into Gaudi Event Transient Store
    *
    *  @see IDataProviderSvc
@@ -215,7 +206,7 @@ public:
    *             RootInTES by prepending the value of this to the
    *             data location that is passed.
    *             The default setting for RootInTES is "" so has no effect.
-   *             This behaviour can be suppressed by passing the arguement
+   *             This behavior can be suppressed by passing the argument
    *             useRootInTES = false
    *
    *  @param object     Data object or container to be registered
@@ -235,7 +226,6 @@ public:
   {
     return GaudiCommon<AlgTool>::put ( evtSvc() , object , address , useRootInTES ) ;
   }
-
   /** @brief Templated access to the data in Gaudi Transient Store
    *
    *  Quick and safe access to the data in Gaudi transient store.
@@ -252,7 +242,7 @@ public:
    *             RootInTES by prepending the value of this to the
    *             data location that is passed.
    *             The default setting for RootInTES is "" so has no effect.
-   *             This behaviour can be suppressed by passing the arguement
+   *             This behavior can be suppressed by passing the argument
    *             useRootInTES = false
    *
    *  @see IDataProviderSvc
@@ -275,7 +265,6 @@ public:
   {
     return GaudiCommon<AlgTool>::get<TYPE> ( svc , location , useRootInTES ) ;
   }
-
   /** @brief Templated access to the data from Gaudi Event Transient Store
    *
    *  Quick and safe access to the data in Gaudi transient store.
@@ -293,7 +282,7 @@ public:
    *             RootInTES by prepending the value of this to the
    *             data location that is passed.
    *             The default setting for RootInTES is "" so has no effect.
-   *             This behaviour can be suppressed by passing the arguement
+   *             This behavior can be suppressed by passing the argument
    *             useRootInTES = false
    *
    *  @param location Data location/address in Gaudi Transient Store
@@ -308,7 +297,6 @@ public:
   {
     return GaudiCommon<AlgTool>::get<TYPE> ( evtSvc() , location , useRootInTES ) ;
   }
-
   /** @brief Templated access to the detector data from the
    *         Gaudi Detector Transient Store
    *
@@ -333,7 +321,6 @@ public:
   {
     return GaudiCommon<AlgTool>::get<TYPE> ( svc , location , false ) ;
   }
-
   /** @brief Templated access to the detector data from the
    *         Gaudi Detector Transient Store
    *
@@ -356,7 +343,6 @@ public:
   {
     return GaudiCommon<AlgTool>::get<TYPE> ( detSvc() , location , false ) ;
   }
-
   /** @brief Check the existence of a data object or container
    *         in the Gaudi Transient Event Store
    *
@@ -371,7 +357,7 @@ public:
    *             RootInTES by prepending the value of this to the
    *             data location that is passed.
    *             The default setting for RootInTES is "" so has no effect.
-   *             This behaviour can be suppressed by passing the arguement
+   *             This behavior can be suppressed by passing the argument
    *             useRootInTES = false
    *
    *  @param svc       Pointer to data service (data provider)
@@ -389,7 +375,6 @@ public:
   {
     return GaudiCommon<AlgTool>::exist<TYPE> ( svc , location , useRootInTES ) ;
   }
-
   /** @brief Check the existence of a data object or container
    *         in the Gaudi Transient Event Store
    *
@@ -404,7 +389,7 @@ public:
    *             RootInTES by prepending the value of this to the
    *             data location that is passed.
    *             The default setting for RootInTES is "" so has no effect.
-   *             This behaviour can be suppressed by passing the arguement
+   *             This behavior can be suppressed by passing the argument
    *             useRootInTES = false
    *
    *  @param  location Address in Gaudi Transient Event Store
@@ -418,7 +403,6 @@ public:
   {
     return GaudiCommon<AlgTool>::exist<TYPE> ( evtSvc() , location , useRootInTES ) ;
   }
-
   /** @brief Check the existence of detector objects in the Gaudi
    *         Transient Detector Store
    *
@@ -441,7 +425,6 @@ public:
   {
     return GaudiCommon<AlgTool>::exist<TYPE> ( svc , location , false ) ;
   }
-
   /** @brief Check the existence of detector objects in the Gaudi
    *         Transient Detector Store
    *
@@ -462,7 +445,6 @@ public:
   {
     return GaudiCommon<AlgTool>::exist<TYPE> ( detSvc() , location , false ) ;
   }
-
   /** @brief Get the existing data object from Gaudi Event Transient store.
    *         Alternatively, create new object and register it in TES
    *         and return if object does not exist.
@@ -477,7 +459,7 @@ public:
    *             RootInTES by prepending the value of this to the
    *             data location that is passed.
    *             The default setting for RootInTES is "" so has no effect.
-   *             This behaviour can be suppressed by passing the arguement
+   *             This behavior can be suppressed by passing the argument
    *             useRootInTES = false
    *
    *  @exception GaudiException for Invalid Data Provider Service
@@ -490,14 +472,13 @@ public:
    *  @return A valid pointer to the object
    */
   template < class TYPE , class TYPE2 >
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type 
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type
   getOrCreate ( IDataProviderSvc*  svc                 ,
                 const std::string& location            ,
                 const bool         useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::getOrCreate<TYPE,TYPE2> ( svc , location , useRootInTES ) ;
   }
-
   /** @brief Get the existing data object from Gaudi Event Transient store.
    *         Alternatively, create new object and register it in TES
    *         and return if object does not exist.
@@ -512,7 +493,7 @@ public:
    *             RootInTES by prepending the value of this to the
    *             data location that is passed.
    *             The default setting for RootInTES is "" so has no effect.
-   *             This behaviour can be suppressed by passing the arguement
+   *             This behavior can be suppressed by passing the argument
    *             useRootInTES = false
    *
    *  @exception GaudiException for Invalid Data Provider Service
@@ -524,15 +505,22 @@ public:
    *  @return A valid pointer to the object
    */
   template < class TYPE , class TYPE2 >
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type 
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type
   getOrCreate ( const std::string& location            ,
                 const bool         useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::getOrCreate<TYPE,TYPE2> ( evtSvc() , location , useRootInTES ) ;
   }
-
+  // ==========================================================================
+public:
+  // ==========================================================================
+  /// enable/disable summary
+  static bool enableSummary  ( bool ) ;               // enable/disable summary
+  /// is summary enabled?
+  static bool summaryEnabled (      ) ;               // is summary enabled?
+  // ==========================================================================
 protected:
-
+  // ==========================================================================
   /** Standard constructor
    *  @see AlgTool
    *  @param type tool type (useless)
@@ -545,20 +533,18 @@ protected:
 
   /// destructor, virtual and protected
   virtual ~GaudiTool();
-
+  // ==========================================================================
 private:
-
+  // ==========================================================================
   /// no public default constructor
   GaudiTool();
-
   /// no public copy constructor
   GaudiTool             ( const GaudiTool& );
-
   /// no public assignment operator
   GaudiTool& operator = ( const GaudiTool& );
-
+  // ==========================================================================
 private:
-
+  // ==========================================================================
   /// pointer to the N-Tuple service
   mutable INTupleSvc*    m_ntupleSvc          ;
   /// pointer to the event tag collection service
@@ -577,12 +563,17 @@ private:
   mutable IAlgContextSvc* m_contextSvc     ; ///< Algorithm Context Service
   // The name of the Algorithm Context Service
   std::string             m_contextSvcName ; ///< Algorithm Context Service
-
+  // ==========================================================================
 private:
-
+  // ==========================================================================
   /// full tool name "type/name"
   const std::string m_local ;
-
+  // ==========================================================================
+private:
+  // ==========================================================================
+  /// enable printout of summary?
+  static bool s_enableSummary ;  // enable printout of summary?
+  // ==========================================================================
 };
 // ============================================================================
 
