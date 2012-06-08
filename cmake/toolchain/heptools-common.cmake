@@ -117,7 +117,11 @@ elseif(DEFINED ENV{MYSITEROOT})
   set(LCG_releases ${LCG_home}/external)
 else()
   set(LCG_home /afs/cern.ch/sw/lcg)
-  set(LCG_releases ${LCG_home}/app/releases)
+  if(NOT DEFINED ENV{LCGNIGHTLY})
+    set(LCG_releases ${LCG_home}/app/releases)
+  else()
+    set(LCG_releases $ENV{LCGNIGHTLY})
+  endif()
 endif()
 
 set(LCG_home ${LCG_home} CACHE PATH "Root of the LCG installation.")
@@ -145,6 +149,10 @@ macro(LCG_compiler id flavor version)
       set(compiler_root ${LCG_external}/${flavor}/${version}/${arch}-${os})
       set(CMAKE_C_COMPILER   ${compiler_root}/bin/lcg-gcc-${version})
       set(CMAKE_CXX_COMPILER ${compiler_root}/bin/lcg-g++-${version})
+    elseif(${flavor} STREQUAL "clang")
+      set(compiler_root ${LCG_external}/llvm/${version}/${arch}-${os})
+      set(CMAKE_C_COMPILER   ${compiler_root}/bin/clang)
+      set(CMAKE_CXX_COMPILER ${compiler_root}/bin/clang++)
     else()
       message(FATAL_ERROR "Uknown compiler flavor ${flavor}.")
     endif()
@@ -186,7 +194,10 @@ macro(LCG_prepare_paths)
   #===============================================================================
   set(Boost_native_version ${Boost_config_version}_python${Python_config_version_twodigit})
   # FIXME: this should be automatic... see FindBoost.cmake documentation
-  set(Boost_COMPILER -${comp})
+  # Get Boost compiler id from LCG_system
+  string(REGEX MATCHALL "[^-]+" out ${LCG_system})
+  list(GET out 2 syscomp)
+  set(Boost_COMPILER -${syscomp})
   set(Boost_NO_BOOST_CMAKE ON)
   set(Boost_NO_SYSTEM_PATHS ON)
 
@@ -194,6 +205,9 @@ macro(LCG_prepare_paths)
 
   set(QMtest_native_version ${QMtest_config_version}_python${Python_config_version_twodigit})
 
+  if(comp STREQUAL clang30)
+    set(GCCXML_CXX_COMPILER gcc CACHE STRING "Compiler that GCCXML must use.")
+  endif()
 
   # This is not really needed because Xerces has its own version macro, but it was
   # added at some point, so it is kept for backward compatibility.
