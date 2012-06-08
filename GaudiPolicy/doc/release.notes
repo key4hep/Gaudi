@@ -3,6 +3,7 @@ package manager: Marco Clemencic
 
 ! 2012-06-08 - Marco Clemencic
  - Fixed configuration problem for the special platform *-g11max-*.
+ - Added CMake configuration files.
 
 ! 2012-06-07 - Marco Clemencic
  - Hide some warnings on gcc 4.7 and Clang.
@@ -10,6 +11,13 @@ package manager: Marco Clemencic
 
 ! 2012-06-06 - Marco Clemencic
  - Use the compiler native dependencies from CMT when using CMT v1r25.
+
+! 2012-06-04 - Marco Clemencic
+ - Added fragment to install generic resources (install_resources).
+
+! 2012-02-23 - Marco Clemencic
+ - Modified GaudiTest.GaudiExeTest to be able to run executables with or without
+   the .exe extension.
 
 ============================= GaudiPolicy v12r0 ==============================
 ! 2012-01-20 - Marco Clemencic
@@ -122,6 +130,9 @@ package manager: Marco Clemencic
 ! 2011-03-09 - Marco Clemencic
  - Avoid exception in QMTest if the test executable is not built.
  - Minor improvements to GaudiTest.py
+
+! 2011-02-03 - Marco Clemencic
+ - Removed redundant code in the requirements.
 
 ============================= GaudiPolicy v11r1 ==============================
 ! 2011-02-22 - Marco Clemencic

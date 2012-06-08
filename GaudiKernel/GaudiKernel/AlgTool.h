@@ -205,11 +205,11 @@ public:
    *     , m_property2   ( ... )
    *   {
    *     // declare the property
-   *     declareProperty( "Property1" , m_property1 , "Doc fro property #1" ) ;
+   *     declareProperty( "Property1" , m_property1 , "Doc for property #1" ) ;
    *
-   *     // declare the property and attach the handler  to it
+   *     // declare the property and attach the handler to it
    *     declareProperty( "Property2" , m_property2 , "Doc for property #2" )
-   *        -> declareUpdateHandler( &MyAlg::handler_2 ) ;
+   *        -> declareUpdateHandler( &MyTool::handler_2 ) ;
    *
    *   }
    *  @endcode

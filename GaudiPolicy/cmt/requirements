@@ -758,8 +758,6 @@ macro_append pp_cppflags "" \
        G21_NO_DEPRECATED " -DG21_NO_DEPRECATED "
 macro_append pp_cppflags "" \
       G22_NEW_SVCLOCATOR " -DG22_NEW_SVCLOCATOR "
-macro_append pp_cppflags "" \
-       G22_NO_DEPRECATED " -DG22_NO_DEPRECATED "
 
 macro_append cppflags       "" \
       host-x86_64&target-i386 " -m32" \
@@ -1354,6 +1352,22 @@ pattern -global zip_python_modules_container_fallback \
 		no-pyzip&container-package "zip_python_modules" ; \
 	apply_pattern $(zip_python_modules_container_fallback_pattern) ; \
 	end_private
+
+#-------------------------------------------------------------------
+# Allow installation of resources
+#
+# Usage:
+#  - install in InstallArea/$CMTCONFIG/data/<package>
+#
+#    document install_resources name files...
+#
+#  - install in InstallArea/$CMTCONFIG/data/<package>/xyz
+#
+#    macro name_offset 'xyz'
+#    document install_resources name files...
+#
+#-------------------------------------------------------------------
+make_fragment install_resources -header=install_resources_header
 
 #-------------------------------------------------------------------
 # Doxygen business

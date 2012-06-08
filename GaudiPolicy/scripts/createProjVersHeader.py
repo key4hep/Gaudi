@@ -1,23 +1,33 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import re
+from optparse import OptionParser
 def main():
-    import os, sys, re
-    if len(sys.argv) != 4:
-        print "ERROR: Usage %s <project> <version> <outputfile>"%sys.argv[0]
-        exit(1)
+    parser = OptionParser(usage="ERROR: Usage %prog <project> <version> <outputfile>")
+    parser.add_option("-q", "--quiet", action="store_true",
+                      help="Do not print messages.")
+    opts, args = parser.parse_args()
+    if len(args) != 3:
+        parser.error("wrong number of arguments")
 
-    project, version, outputfile = sys.argv[1:]
-    print "Creating %s for %s %s"%(outputfile, project, version)
+    project, version, outputfile = args
+    if not opts.quiet:
+        print "Creating %s for %s %s" % (outputfile, project, version)
 
-    m = re.match("(v|([A-Za-z]+\-))(?P<maj_ver>[0-9]+)(r|\-)(?P<min_ver>[0-9]+)(?:(p|\-)(?P<pat_ver>[0-9]+))?",version)
+    m = re.match("(v|([A-Za-z]+\-))(?P<maj_ver>[0-9]+)(r|\-)(?P<min_ver>[0-9]+)(?:(p|\-)(?P<pat_ver>[0-9]+))?", version)
     majver = int(m.groupdict()['maj_ver'])
     minver = int(m.groupdict()['min_ver'])
     patver = int(m.groupdict()['pat_ver'] or 0)
 
     outdir = os.path.dirname(outputfile)
     if not os.path.exists(outdir):
-        print "Creating directory", outdir
+        if not opts.quiet:
+            print "Creating directory", outdir
         os.makedirs(outdir)
 
-    open(outputfile,"w").write(
+    open(outputfile, "w").write(
     """#ifndef %(proj)s_VERSION
 /* Automatically generated file: do not modify! */
 #ifndef CALC_GAUDI_VERSION

@@ -3,6 +3,9 @@
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! =============================================================================
 
+! 2012-06-08 - Marco Clemencic
+ - Added CMake configuration files.
+
 =============================== GaudiGSL v7r10 ===============================
 ! 2011-03-23 - Marco Clemencic
  - Fixed VC9 warnings.

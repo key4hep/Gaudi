@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2012-06-08 - Marco Clemencic
+ - Added CMake configuration files.
+
 ! 2012-06-07 - Marco Clemencic
  - Fixed Clang warnings.
 
@@ -130,6 +133,10 @@ Package manager : Marco Clemencic
 
 ! 2011-03-16 - Marco Clemencic
  - Updated reference files after patch #4727
+
+! 2011-03-09 - Marco Clemencic
+ - Modified the ErrorLog QMTest description to work with builds both from CMT
+   and CMake.
 
 ============================ GaudiExamples v22r1 =============================
 ============================ GaudiExamples v22r0 =============================

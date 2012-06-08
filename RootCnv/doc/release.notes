@@ -4,6 +4,9 @@
 ! Purpose     : Root based persistency
 !-----------------------------------------------------------------------------
 
+! 2012-06-08 - Marco Clemencic
+ - Added CMake configuration files.
+
 !========================= RootCnv v1r14 2012-02-22 ========================
 ! 2010-03-22 - Markus Frank
  - Removed duplicated warning message.

@@ -1,6 +1,9 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2012-06-08 - Marco Clemencic
+ - Added CMake configuration files.
+
 ! 2012-05-30 - Vanya Belyaev
  - Patch #5379: Improvements for GaudiAlgs.py
    - equip python-algorithms with  "get" and "exist" that are

@@ -26,9 +26,10 @@ ApplicationMgr(EvtMax=10,
 <argument name="unsupported_platforms"><set><text>i686</text></set></argument>
 <argument name="validator"><text>
 # hide a difference between JobOptionsSvc and Configurables
-preprocessor = normalizeExamples + \
+preprocessor = (normalizeExamples +
+    LineSkipper(["Turning perftools heap leak checking off", "Perftools heap leak checker is active"]) +
     RegexpReplacer(r"found \d+ reachable heap objects of \d+ bytes",
-                    "found XXX reachable heap objects of YYY bytes")
+                    "found XXX reachable heap objects of YYY bytes"))
 validateWithReference(preproc = preprocessor)
 </text></argument>
 </extension>
