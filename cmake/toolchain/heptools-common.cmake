@@ -98,11 +98,13 @@ if(type STREQUAL "opt")
   set(type Release)
 elseif(type STREQUAL "dbg")
   set(type Debug)
+elseif(type STREQUAL "cov")
+  set(type Coverage)
 else()
   message(FATAL_ERROR "Build flavour ${type} not supported.")
 endif()
 set(CMAKE_BUILD_TYPE ${type} CACHE STRING
-    "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel.")
+    "Choose the type of build, options are: None Debug Release Coverage Profile RelWithDebInfo MinSizeRel.")
 
 # Platform IDs
 set(LCG_platform ${BINARY_TAG} CACHE STRING "Platform ID for the AA project binaries.")
