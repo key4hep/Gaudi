@@ -1,8 +1,6 @@
-############################################################################
-# CMakeLists.txt file for building GaudiAlg
-# @author Pere Mato, CERN (semi-automaticaly generated)
-############################################################################
-depends_on_subdirs(GaudiUtils GaudiKernel)
+gaudi_subdir(GaudiAlg v14r1)
+
+gaudi_depends_on_subdirs(GaudiUtils GaudiKernel)
 
 find_package(AIDA)
 find_package(Boost COMPONENTS regex)

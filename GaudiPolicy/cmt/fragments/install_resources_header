@@ -1,0 +1,17 @@
+#-- start of install_resources_header ------
+
+installarea = ${CMTINSTALLAREA}$(shared_install_subdir)
+
+ifeq ($(strip "$(${CONSTITUENT}_base)"),"")
+  ${CONSTITUENT}_base=data
+endif
+
+destdir = $(installarea)/$(${CONSTITUENT}_base)/${package}/$(${CONSTITUENT}_offset)
+
+${CONSTITUENT} ::
+	@echo "Installation of ${CONSTITUENT} done."
+
+${CONSTITUENT}clean ::
+	@echo "Uninstallation of ${CONSTITUENT} done."
+
+#-- end of install_resources_header ------

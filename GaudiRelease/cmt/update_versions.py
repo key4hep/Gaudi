@@ -9,6 +9,7 @@ import os, re, sys, time
 
 # guess current version
 _req_version_pattern = re.compile(r"^\s*version\s*(v[0-9]+r[0-9]+(?:p[0-9]+)?)\s*$")
+_cml_version_pattern = re.compile(r"^\s*gaudi_subdir\s*\(\s*\S+\s+(v[0-9]+r[0-9]+(?:p[0-9]+)?)\)\s*$")
 def extract_version(f):
     """
     Find the version number in a requirements file.
@@ -19,6 +20,20 @@ def extract_version(f):
         if m:
             return m.group(1)
     return None
+
+def change_cml_version(cml, newversion):
+    if os.path.exists(cml):
+        out = []
+        changed = False
+        for l in open(cml):
+            m = _cml_version_pattern.match(l)
+            if m and m.group(1) != newversion:
+                print "%s: %s -> %s"%(cml, m.group(1), newversion)
+                l = l.replace(m.group(1), newversion)
+                changed = True
+            out.append(l)
+        if changed:
+            open(cml, "w").writelines(out)
 
 def change_version(packagedir, newversion):
     """
@@ -47,6 +62,12 @@ def change_version(packagedir, newversion):
         current = open(ver).read().strip()
         if current != newversion:
             open(ver,"w").write(newversion + "\n")
+    # update CMakeLists.txt
+    cml = os.path.normpath(os.path.join(packagedir, "..", "CMakeLists.txt"))
+    change_cml_version(cml, newversion)
+    if "GaudiKernel" in packagedir:
+        cml = os.path.normpath(os.path.join(packagedir, "..", "src", "Util", "CMakeLists.txt"))
+        change_cml_version(cml, newversion)
     return changed
 
 _use_pattern = re.compile(r"^\s*use\s*(\w+)\s*(v[0-9]+r[0-9]+(?:p[0-9]+)?)\s*(\w+)?\s*$")

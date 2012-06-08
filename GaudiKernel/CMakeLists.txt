@@ -1,7 +1,5 @@
-############################################################################
-# CMakeLists.txt file for building GaudiKernel
-# @author Pere Mato, CERN (semi-automaticaly generated)
-############################################################################
+gaudi_subdir(GaudiKernel v28r1)
+
 find_package(Boost REQUIRED COMPONENTS filesystem thread system)
 find_package(ROOT)
 

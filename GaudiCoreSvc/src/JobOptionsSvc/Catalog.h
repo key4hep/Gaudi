@@ -52,6 +52,12 @@ class Catalog {
   CatalogSet catalog_;
 };
 // ============================================================================
+/// printout operator
+// ============================================================================
+ inline std::ostream& operator<< (std::ostream& o, const Catalog& c){
+   return c.fillStream(o);
+ }
+// ============================================================================
 }  /* Gaudi */ }  /* Parsers */
 
 template<typename Value> inline bool Gaudi::Parsers::Catalog::Add(
@@ -60,10 +66,5 @@ template<typename Value> inline bool Gaudi::Parsers::Catalog::Add(
   return Add(new Property(PropertyName(client, property), PropertyValue(value)));
 }
 
-// ============================================================================
-/// printout operator
-// ============================================================================
-std::ostream& operator << ( std::ostream& o ,
-                          const Gaudi::Parsers::Catalog& c ) ;
 // ============================================================================
 #endif  // JOBOPTIONSVC_CATALOG_H_

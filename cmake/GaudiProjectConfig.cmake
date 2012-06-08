@@ -202,10 +202,18 @@ macro(gaudi_project project version)
                            FILES_MATCHING PATTERN "*.cmake"
                            PATTERN ".svn" EXCLUDE )
   install(PROGRAMS cmake/testwrap.sh cmake/testwrap.csh cmake/testwrap.bat cmake/genCMake.py cmake/env.py DESTINATION scripts OPTIONAL)
+  install(DIRECTORY cmake/EnvConfig DESTINATION scripts FILES_MATCHING PATTERN "*.py" PATTERN "*.conf")
 
   #--- Global actions for the project
   include(GaudiBuildFlags)
-  gaudi_project_version_header()
+  # Generate the version header for the project.
+  string(TOUPPER ${project} _proj)
+  execute_process(COMMAND
+                  ${versheader_cmd} --quiet
+                     ${project} ${version} ${CMAKE_BINARY_DIR}/include/${_proj}_VERSION.h)
+  install(FILES ${CMAKE_BINARY_DIR}/include/${_proj}_VERSION.h DESTINATION include)
+  # Add generated headers to the include path.
+  include_directories(${CMAKE_BINARY_DIR}/include)
 
   #--- Collect settings for subdirectories
   set(library_path)
@@ -351,9 +359,9 @@ macro(_gaudi_use_other_projects)
           list(FIND known_packages ${exported} is_needed)
           if(is_needed LESS 0)
             list(APPEND known_packages ${exported})
-            message(STATUS "    importing ${exported}")
             get_filename_component(exported ${exported} NAME)
             include(${exported}Export)
+            message(STATUS "    imported ${exported} ${${exported}_VERSION}")
           endif()
         endforeach()
         if(${other_project}_USES)
@@ -412,7 +420,7 @@ endfunction()
 
 # NO-OP function used by gaudi_sort_subdirectories to get the dependencies
 # from the subdirectories before actually add them
-function(depends_on_subdirs)
+function(gaudi_depends_on_subdirs)
 endfunction()
 #-------------------------------------------------------------------------------
 # gaudi_collect_subdir_deps(subdirectories)
@@ -425,10 +433,10 @@ macro(gaudi_collect_subdir_deps)
     set(${_p}_DEPENDENCIES)
     # parse the CMakeLists.txt
     file(READ ${CMAKE_SOURCE_DIR}/${_p}/CMakeLists.txt file_contents)
-    string(REGEX MATCHALL "depends_on_subdirs *\\(([^)]+)\\)" vars ${file_contents})
+    string(REGEX MATCHALL "gaudi_depends_on_subdirs *\\(([^)]+)\\)" vars ${file_contents})
     foreach(var ${vars})
       # extract the individual subdir names
-      string(REGEX REPLACE "depends_on_subdirs *\\(([^)]+)\\)" "\\1" __p ${var})
+      string(REGEX REPLACE "gaudi_depends_on_subdirs *\\(([^)]+)\\)" "\\1" __p ${var})
       separate_arguments(__p)
       foreach(___p ${__p})
         # remove newlines in the matched subdir name
@@ -490,14 +498,42 @@ function(gaudi_get_packages var)
   set(${var} ${packages} PARENT_SCOPE)
 endfunction()
 
+
+#-------------------------------------------------------------------------------
+# gaudi_subdir(name version)
+#
+# Declare name and version of the subdirectory.
+#-------------------------------------------------------------------------------
+macro(gaudi_subdir name version)
+  gaudi_get_package_name(_guessed_name)
+  if (NOT _guessed_name STREQUAL "${name}")
+    message(WARNING "Declared subdir name (${name}) does not match the name of the directory (${_guessed_name})")
+  endif()
+
+  # Set useful variables and properties
+  set(subdir_name ${name})
+  set(subdir_version ${version})
+  set_directory_properties(PROPERTIES name ${name})
+  set_directory_properties(PROPERTIES version ${version})
+
+  # Generate the version header for the package.
+  execute_process(COMMAND
+                  ${versheader_cmd} --quiet
+                     ${name} ${version} ${CMAKE_CURRENT_BINARY_DIR}/${name}Version.h)
+endmacro()
+
 #-------------------------------------------------------------------------------
 # gaudi_get_package_name(VAR)
 #
 # Set the variable VAR to the current "package" (subdirectory) name.
 #-------------------------------------------------------------------------------
 macro(gaudi_get_package_name VAR)
-  # By convention, the package is the name of the source directory.
-  get_filename_component(${VAR} ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+  if (subdir_name)
+    set(${VAR} ${subdir_name})
+  else()
+    # By convention, the package is the name of the source directory.
+    get_filename_component(${VAR} ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+  endif()
 endmacro()
 
 #-------------------------------------------------------------------------------
@@ -1188,21 +1224,19 @@ function(gaudi_install_resources)
   install(FILES ${ARG_UNPARSED_ARGUMENTS} DESTINATION data/${package}/${ARG_DESTINATION})
 endfunction()
 
-#---------------------------------------------------------------------------------------------------
-# gaudi_project_version_header()
+#-------------------------------------------------------------------------------
+# gaudi_install_cmake_modules()
 #
-# Creates a header file with the version macros of the project.
-#---------------------------------------------------------------------------------------------------
-function(gaudi_project_version_header)
-  string(TOUPPER ${CMAKE_PROJECT_NAME} project)
-  set(version ${CMAKE_PROJECT_VERSION})
-  set(output  ${CMAKE_BINARY_DIR}/include/${project}_VERSION.h)
-  add_custom_command(OUTPUT ${output}
-                     COMMAND ${versheader_cmd} ${project} ${version} ${output})
-  add_custom_target(${project}VersionHeader ALL
-                    DEPENDS ${output})
-  install(FILES ${output} DESTINATION include)
-endfunction()
+# Install the content of the cmake directory.
+#-------------------------------------------------------------------------------
+macro(gaudi_install_cmake_modules)
+  install(DIRECTORY cmake/
+          DESTINATION cmake
+          FILES_MATCHING
+            PATTERN "*.cmake")
+  set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} PARENT_SCOPE)
+  set_property(DIRECTORY PROPERTY GAUDI_EXPORTED_CMAKE ON)
+endmacro()
 
 #---------------------------------------------------------------------------------------------------
 # gaudi_generate_rootmap(library)
@@ -1512,8 +1546,11 @@ macro(gaudi_generate_exports)
     get_property(exported_libs  DIRECTORY ${package} PROPERTY GAUDI_EXPORTED_LIBRARY)
     get_property(exported_execs DIRECTORY ${package} PROPERTY GAUDI_EXPORTED_EXECUTABLE)
     get_property(exported_mods  DIRECTORY ${package} PROPERTY GAUDI_EXPORTED_MODULE)
+    get_property(exported_cmake DIRECTORY ${package} PROPERTY GAUDI_EXPORTED_CMAKE SET)
+    get_property(subdir_version DIRECTORY ${package} PROPERTY version)
 
-    if (exported_libs OR exported_execs OR exported_mods)
+    if (exported_libs OR exported_execs OR exported_mods
+        OR exported_cmake OR ${package}_DEPENDENCIES OR subdir_version)
       set(pkg_exp_file ${pkgname}Export.cmake)
 
       message(STATUS "Generating ${pkg_exp_file}")
@@ -1565,6 +1602,10 @@ get_filename_component(_IMPORT_PREFIX \"\${_IMPORT_PREFIX}\" PATH)
 
       if(${package}_DEPENDENCIES)
         file(APPEND ${pkg_exp_file} "set(${package}_DEPENDENCIES ${${package}_DEPENDENCIES})\n")
+      endif()
+
+      if(subdir_version)
+        file(APPEND ${pkg_exp_file} "set(${package}_VERSION ${subdir_version})\n")
       endif()
     endif()
     install(FILES ${pkg_exp_file} DESTINATION cmake)

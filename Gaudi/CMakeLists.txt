@@ -1,8 +1,6 @@
-############################################################################
-# CMakeLists.txt file for building Gaudi
-# @author Pere Mato, CERN (semi-automaticaly generated)
-############################################################################
-depends_on_subdirs(GaudiKernel)
+gaudi_subdir(Gaudi v23r2)
+
+gaudi_depends_on_subdirs(GaudiKernel)
 
 #---Executables-------------------------------------------------------------
 gaudi_add_executable(Gaudi main.cpp LINK_LIBRARIES GaudiKernel)

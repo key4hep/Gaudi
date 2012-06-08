@@ -48,7 +48,7 @@ public:
     Token& operator=(const Token& copy);
     // Equality operator
     bool operator==(const Token& copy)    const   {
-      return m_tag == copy.m_tag, m_value == copy.m_value && m_length == copy.m_length;
+      return m_tag == copy.m_tag && m_value == copy.m_value && m_length == copy.m_length;
     }
     /// Total token length
     long length()   const   {

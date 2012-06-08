@@ -1,6 +1,9 @@
 Package : ParticleProp
 Package manager : Charles Leggett
 
+! 2012-06-08 - Marco Clemencic
+ - Added CMake configuration files.
+
 ============================== PartPropSvc v4r3 ==============================
 ! 2011-10-28 - Marco Clemencic
  - Changed the usage of make_pair to support C++0x.

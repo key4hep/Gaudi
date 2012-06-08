@@ -1,4 +1,4 @@
-#---Gaudi Build Options---------------------------------------------------------
+#--- Gaudi Build Options -------------------------------------------------------
 # Build options that map to compile time features
 #
 option(GAUDI_V21
@@ -27,7 +27,7 @@ option(GAUDI_CMT_RELEASE
        "use CMT deafult release flags instead of the CMake ones"
        ON)
 
-#---Compilation Flags-----------------------------------------------------------
+#--- Compilation Flags ---------------------------------------------------------
 if(MSVC90)
   add_definitions(/wd4275 /wd4251 /wd4351)
   add_definitions(-DBOOST_ALL_DYN_LINK -DBOOST_ALL_NO_LIB)
@@ -38,19 +38,22 @@ if(MSVC90)
     set(CMAKE_C_FLAGS_RELEASE "/O2")
   endif()
 else()
-  set(CMAKE_CXX_FLAGS "-Dunix -pipe -ansi -Wall -Wextra -Werror=return-type -pthread -Wno-deprecated -Wno-empty-body -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long")
+  #
+  set(CMAKE_CXX_FLAGS "-fmessage-length=0 -pipe -ansi -Wall -Wextra -Werror=return-type -pthread")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long")
   if(GAUDI_CMT_RELEASE)
     set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
     set(CMAKE_C_FLAGS_RELEASE "-O2 -DNDEBUG")
   endif()
-  add_definitions(-D_GNU_SOURCE)
+  set(CMAKE_CXX_FLAGS_COVERAGE "--coverage")
+  set(CMAKE_C_FLAGS_COVERAGE "--coverage")
+  add_definitions(-D_GNU_SOURCE -Dunix -Df2cFortran)
+  if (CMAKE_SYSTEM_NAME MATCHES Linux)
+    add_definitions(-Dlinux)
+  endif()
 endif()
 
-if (CMAKE_SYSTEM_NAME MATCHES Linux)
-  set(CMAKE_CXX_FLAGS "-Dlinux ${CMAKE_CXX_FLAGS}")
-endif()
-
-#---Link shared flags-----------------------------------------------------------
+#--- Link shared flags ---------------------------------------------------------
 if (CMAKE_SYSTEM_NAME MATCHES Linux)
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000")
   set(CMAKE_MODULE_LINKER_FLAGS "-Wl,--as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000")
@@ -61,7 +64,7 @@ if(APPLE)
    set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -flat_namespace -single_module -undefined dynamic_lookup")
 endif()
 
-#---Special build flags---------------------------------------------------------
+#--- Special build flags -------------------------------------------------------
 if ((GAUDI_V21 OR G21_HIDE_SYMBOLS) AND (comp MATCHES gcc4))
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden")
 endif()
@@ -84,4 +87,18 @@ if(NOT GAUDI_V21)
   endforeach()
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_FILESYSTEM_VERSION=3")
+#--- Tuning of warnings --------------------------------------------------------
+if(HIDE_WARNINGS)
+  if(comp MATCHES clang)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-overloaded-virtual -Wno-char-subscripts -Wno-unused-parameter")
+  elseif(comp MATCHES gcc4[367] OR comp MATCHES gccmax)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-empty-body")
+  endif()
+endif()
+
+#--- Special flags -------------------------------------------------------------
+add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
+
+if(comp MATCHES gcc47 OR comp MATCHES gccmax)
+  set(GCCXML_CXX_FLAGS "-D__STRICT_ANSI__")
+endif()

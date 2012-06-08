@@ -1,6 +1,6 @@
 #!/bin/sh
 
-LCG_version=62b
+LCG_version=63
 
 cd $(dirname $0)
 rootdir=`pwd`
@@ -15,11 +15,21 @@ if [ ! -e build-dir/CMakeCache.txt ] ; then
         fi
     fi
 
+    # Special LCG_System for some compilers
+    case $CMTCONFIG in
+       *-clang30-* | *-gccmax-* | *-g11max-* )
+         lcg_system_opt=$(echo $CMTCONFIG | sed 's/-\(gccmax\|clang[0-9]*\)-\(opt\|dbg\)/-gcc46-opt/')
+         lcg_system_opt="-DLCG_system=$lcg_system_opt"
+         # The special compilers cannot use distcc
+	 distcc_opt="-DCMAKE_USE_DISTCC=OFF"
+         ;;
+    esac
+
     mkdir -p build-dir
     cd build-dir
-    
+
     export CMAKE_PREFIX_PATH=../cmake
-    time cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain/heptools-${LCG_version}.cmake -DBUILD_TESTS=ON $distcc_opt $ccache_opt .. || (cd $rootdir ; rm -rf build-dir)
+    time cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain/heptools-${LCG_version}.cmake -DBUILD_TESTS=ON $distcc_opt $ccache_opt $lcg_system_opt .. || (cd $rootdir ; rm -rf build-dir)
     cd $rootdir
 fi
 

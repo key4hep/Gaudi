@@ -46,21 +46,22 @@ namespace GaudiToolServices
   const std::string s_DetectorDataSvc = "DetectorDataSvc" ;
   /// the default name for Chrono & Stat Service
   const std::string s_ChronoStatSvc   = "ChronoStatSvc"   ;
-  /// the defaut name for Incident Service
+  /// the default name for Incident Service
   const std::string s_IncidentSvc     = "IncidentSvc"     ;
-  /// the defaut name for Histogram Service
+  /// the default name for Histogram Service
   const std::string s_HistoSvc        = "HistogramDataSvc" ;
 }
 // ============================================================================
 namespace GaudiToolLocal
 {
   // ==========================================================================
-  /** @class GaudiToolLocal::Counter
+  /** @class Counter
    *  simple local counter
    */
   class Counter
   {
   public:
+    // ========================================================================
     // constructor
     Counter ( const std::string& msg = " Misbalance ")
       : m_map     ()
@@ -68,15 +69,21 @@ namespace GaudiToolLocal
     {};
     // destructor
     ~Counter() { report() ; m_map.clear() ;}
-    // make the increment
+    // ========================================================================
+  public:
+    // ========================================================================
+    /// make the increment
     long increment ( const std::string& object ) { return ++m_map[object] ; }
-    // make the decrement
+    /// make the decrement
     long decrement ( const std::string& object ) { return --m_map[object] ; }
-    // current count
+    /// current count
     long counts    ( const std::string& object ) { return   m_map[object] ; }
-    // make a report
+    /// make a report
     void report() const
     {
+      /// keep the silence?
+      if ( !GaudiTool::summaryEnabled() ) { return ; } // RETURN
+      //
       for ( Map::const_iterator entry = m_map.begin() ;
             m_map.end() != entry ; ++entry )
       {
@@ -85,12 +92,14 @@ namespace GaudiToolLocal
                   << "'" << entry->first << "' Counts = " << entry->second
                   << std::endl ;
       }
-    };
-
+    }
+    // ========================================================================
   private:
+    // ========================================================================
     typedef std::map<std::string,long> Map;
     Map         m_map     ;
     std::string m_message ;
+    // ========================================================================
   };
   // ==========================================================================
   /** @var s_InstanceCounter
@@ -108,6 +117,23 @@ namespace GaudiToolLocal
   static Counter s_FinalizeCounter ( " Initialize/Finalize (mis)balance " ) ;
   // ==========================================================================
 }
+// ============================================================================
+/// summary is enabled
+// ============================================================================
+bool GaudiTool::s_enableSummary = true ;                  // summary is enabled
+// ============================================================================
+// enable/disable summary
+// ============================================================================
+bool GaudiTool::enableSummary  ( bool value )         // enable/disable summary
+{
+  s_enableSummary = value ;
+  return summaryEnabled () ;
+}
+// ============================================================================
+// is summary enabled?
+// ============================================================================
+bool GaudiTool::summaryEnabled ()                     // is summary enabled?
+{ return s_enableSummary ; }
 // ============================================================================
 // Standard constructor
 // ============================================================================

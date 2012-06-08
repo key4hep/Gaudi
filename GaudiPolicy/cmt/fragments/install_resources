@@ -1,0 +1,11 @@
+#-- start of install_resources ------
+
+${CONSTITUENT} :: $(destdir)/$(FILENAME)
+
+$(destdir)/$(FILENAME): $(FULLNAME)
+	$(install_command) $< $(destdir)
+
+${CONSTITUENT}clean ::
+	$(uninstall_command) $(destdir)/$(FILENAME)
+
+#-- end of install_resources ------

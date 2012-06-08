@@ -109,12 +109,12 @@ macro(reflex_generate_dictionary dictionary _headerfile _selectionfile)
 
   set(gensrcdict ${dictionary}_dict.cpp)
 
-  set(gccxmlopts "--gccxml-compiler ${CMAKE_CXX_COMPILER}")
-  if(MSVC)
-    set(gccxmlopts "--gccxml-compiler cl")
+  if(NOT MSVC)
+    set(GCCXML_CXX_COMPILER ${CMAKE_CXX_COMPILER} CACHE STRING "Compiler that GCCXML must use.")
   else()
-    #set(gccxmlopts "${gccxmlopts} -gccxml-cxxflags -m64")
+    set(GCCXML_CXX_COMPILER cl CACHE STRING "Compiler that GCCXML must use.")
   endif()
+  set(gccxmlopts "--gccxml-compiler ${GCCXML_CXX_COMPILER}")
 
   set(rootmapname ${dictionary}Dict.rootmap)
   set(rootmapopts --rootmap=${rootmapname})
@@ -143,7 +143,7 @@ macro(reflex_generate_dictionary dictionary _headerfile _selectionfile)
     OUTPUT ${gensrcdict} ${rootmapname}
     COMMAND ${ROOT_genreflex_CMD}
     ARGS ${headerfiles} -o ${gensrcdict} ${gccxmlopts} ${rootmapopts} --select=${selectionfile}
-         --gccxmlpath=${GCCXML_home} ${ARG_OPTIONS} ${include_dirs} ${definitions}
+         --gccxmlpath=${GCCXML_home} ${ARG_OPTIONS} ${include_dirs} ${definitions} ${GCCXML_CXX_FLAGS}
     DEPENDS ${headerfiles} ${selectionfile})
 
   # Creating this target at ALL level enables the possibility to generate dictionaries (genreflex step)

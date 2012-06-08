@@ -1,6 +1,9 @@
 Package: GaudiMonitor
 Package manager : Marco Clemencic
 
+! 2012-06-08 - Marco Clemencic
+ - Added CMake configuration files.
+
 ============================= GaudiMonitor v3r0 ==============================
 ! 2011-12-06 - Marco Clemencic
  - Moved AlgContextSvc from GaudiMonitor to GaudiCommonSvc.

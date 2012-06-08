@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2012-06-08 - Marco Clemencic
+ - Added CMake configuration files.
+
 =============================== GaudiSvc v19r0 ===============================
 ! 2011-12-05 - Marco Clemencic
  - Removed the unused FastContainerSvc.

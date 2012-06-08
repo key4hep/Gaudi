@@ -1,6 +1,21 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2012-06-08 - Marco Clemencic
+ - Added CMake configuration files.
+
+! 2012-06-07 - Marco Clemencic
+ - Fixed Clang warnings.
+
+! 2012-06-06 - Marco Clemencic
+ - Task #22742: Optimize the GaudiAlgorithm get() functions
+   - added call to getIfExists in GaudiCommonTest algorithm
+
+! 2012-05-30 - Vanya Belyaev
+ - Patch #5379: Improvements for GaudiAlgs.py
+   - TupleEx1.py
+     add long long and unsigned long long columns
+
 ! 2012-05-03 - Marco Clemencic
  - Fixed some "pedantic" warnings.
 

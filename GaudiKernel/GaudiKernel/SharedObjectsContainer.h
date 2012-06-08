@@ -47,21 +47,17 @@ public:
   // ==========================================================================
   // the default constructor (creates the empty vector)
   SharedObjectsContainer ()
-    : ObjectContainerBase  () , m_data() {} ;
+    : ObjectContainerBase(), m_data() {} ;
   // the constructor from the data
   SharedObjectsContainer ( const ConstVector& data )
-    : ObjectContainerBase  () , m_data ( data ) {}
+    : ObjectContainerBase(), m_data(data) {}
   /** the templated constructor from the pair of iterators
    *  @param first 'begin'-iterator of the input sequence
    *  @param last  'last'-iterator of the input sequence
    */
   template <class DATA>
-  SharedObjectsContainer
-  ( DATA first ,
-    DATA last  )
-    : DataObject ()
-    , m_data ( first , last )
-  {}
+  SharedObjectsContainer(DATA first, DATA last)
+    : ObjectContainerBase(), m_data(first, last) {}
   /** the templated constructor from the pair of iterators and the predicate.
    *
    *  Only the elements which satisfy the criteria goes into the container
@@ -86,12 +82,8 @@ public:
    *  @param cut   pre predicate
    */
   template <class DATA, class PREDICATE>
-  SharedObjectsContainer
-  ( DATA             first ,
-    DATA             last  ,
-    const PREDICATE& cut   )
-    : DataObject ()
-    , m_data     ()
+  SharedObjectsContainer(DATA first, DATA last, const PREDICATE& cut)
+    : ObjectContainerBase(), m_data()
   {
     insert ( first , last , cut ) ;
   }

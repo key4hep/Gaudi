@@ -127,7 +127,11 @@ LCG_prepare_paths()"""
 
         yield "\n# Compilers"
         # @FIXME: to be made cleaner and more flexible
-        for compiler in [("gcc43", "gcc", "4.3.5"), ("gcc46", "gcc", "4.6.2")]:
+        for compiler in [("gcc43", "gcc", "4.3.5"),
+                         ("gcc46", "gcc", "4.6.2"),
+                         ("gcc47", "gcc", "4.7.0"),
+                         ("clang30", "clang", "3.0"),
+                         ("gccmax", "gcc", "4.7.0")]:
             yield "LCG_compiler(%s %s %s)" % compiler
 
         yield "\n# Externals"
@@ -144,13 +148,8 @@ LCG_prepare_paths()"""
                 key = "javasdk_javajni"
             return key
         for name in sorted(versions.keys(), key=packageSorting):
-            # special case
-            if name == "uuid":
-                yield "if(NOT ${os} STREQUAL slc6) # uuid is not distributed with SLC6"
             # LCG_external_package(CLHEP            1.9.4.7             clhep)
             yield template % (name, versions[name], self.__special_dirs__.get(name, ""))
-            if name == "uuid":
-                yield "endif()"
 
         yield self.__trailer__
 

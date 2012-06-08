@@ -126,6 +126,8 @@ namespace NTuple
    */
   template <class TYP> class GAUDI_API _Item : virtual public _Data<TYP>  {
   public:
+    /// Destructor.
+    virtual ~_Item() {}
     /// Create instance
     static _Item* create(INTuple* tup,
                          const std::string& name,
@@ -222,7 +224,7 @@ namespace NTuple
   template <class TYP> class _Accessor  {
     friend class Tuple;
   private:
-    _Accessor<TYP>& operator=(const _Accessor<TYP>& copy)   {
+    _Accessor<TYP>& operator=(const _Accessor<TYP>&)   {
       return *this;
     }
   protected:
@@ -1201,17 +1203,17 @@ namespace NTuple
   typedef Matrix<float>           FloatMatrix;
   typedef Matrix<double>          DoubleMatrix;
 #endif
+
+  template <class T>
+  inline std::ostream& operator<<(std::ostream& s, const Item<T>& obj)
+  {
+    return s << T(obj);
+  }
 } // end of namespace NTuple
 
 // Useful:
 typedef SmartDataPtr<NTuple::Tuple>     NTuplePtr;
 typedef SmartDataPtr<NTuple::Directory> NTupleDirPtr;
 typedef SmartDataPtr<NTuple::File>      NTupleFilePtr;
-
-template <class T>
-std::ostream& operator<<(std::ostream& s, const NTuple::Item<T>& obj)
-{
-  return s << T(obj);
-}
 
 #endif // GAUDIKERNEL_NTUPLE_H

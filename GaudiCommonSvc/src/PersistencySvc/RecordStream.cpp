@@ -28,7 +28,8 @@ RecordStream::RecordStream(const std::string& name, ISvcLocator* pSvcLocator)
 StatusCode RecordStream::finalize() {
   MsgStream log(msgSvc(), name());
   log << MSG::INFO << "Set up File Summary Record" << endmsg;
-  if(!m_fireIncidents) log << MSG::VERBOSE << "will not fire incidents" << endmsg;
+  if( !m_fireIncidents && log.level() <= MSG::VERBOSE )
+    log << MSG::VERBOSE << "will not fire incidents" << endmsg;
   StatusCode sc = OutputStream::execute();
   if( !sc.isSuccess() )  {
     log << MSG::WARNING << "Error writing run summary record....." << endmsg;
