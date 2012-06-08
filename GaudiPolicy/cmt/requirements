@@ -758,6 +758,8 @@ macro_append pp_cppflags "" \
        G21_NO_DEPRECATED " -DG21_NO_DEPRECATED "
 macro_append pp_cppflags "" \
       G22_NEW_SVCLOCATOR " -DG22_NEW_SVCLOCATOR "
+macro_append pp_cppflags "" \
+       G22_NO_DEPRECATED " -DG22_NO_DEPRECATED "
 
 macro_append cppflags       "" \
       host-x86_64&target-i386 " -m32" \
