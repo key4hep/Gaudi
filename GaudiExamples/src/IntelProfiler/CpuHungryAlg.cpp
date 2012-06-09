@@ -96,6 +96,10 @@ StatusCode CpuHungryAlg::execute() {
   }else {
     result = mytan();
   }
+  // This part is pointless, but prevent a warning about a
+  // set, but unused, variable (result).
+  if ( msgLevel(MSG::DEBUG) )
+    debug() << "Result = " << result << endmsg;
   return StatusCode::SUCCESS;
 }
 
