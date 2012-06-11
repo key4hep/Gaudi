@@ -1,6 +1,7 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+================================ GaudiMP v1r4 ================================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.
 

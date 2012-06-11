@@ -1,6 +1,7 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v12r1 ==============================
 ! 2012-06-08 - Marco Clemencic
  - Fixed configuration problem for the special platform *-g11max-*.
  - Added CMake configuration files.

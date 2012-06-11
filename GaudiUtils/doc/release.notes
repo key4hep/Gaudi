@@ -1,6 +1,7 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+============================== GaudiUtils v4r1 ===============================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.
 

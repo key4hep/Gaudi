@@ -1,6 +1,7 @@
 Package: GaudiAud
 Package manager : David Quarrie, Marco Clemencic
 
+=============================== GaudiAud v9r6 ================================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.
 

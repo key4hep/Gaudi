@@ -1,6 +1,7 @@
 Package: RootHistCnv
 Package manager : David Quarrie
 
+============================= RootHistCnv v11r1 ==============================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.
 

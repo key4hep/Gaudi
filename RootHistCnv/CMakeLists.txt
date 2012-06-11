@@ -1,4 +1,4 @@
-gaudi_subdir(RootHistCnv v11r0)
+gaudi_subdir(RootHistCnv v11r1)
 
 gaudi_depends_on_subdirs(GaudiKernel)
 

@@ -1,6 +1,7 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+============================= GaudiRelease v23r3 =============================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.
 

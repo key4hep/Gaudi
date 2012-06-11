@@ -1,6 +1,7 @@
 Package : ParticleProp
 Package manager : Charles Leggett
 
+============================== PartPropSvc v4r4 ==============================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.
 

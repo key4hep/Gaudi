@@ -38,6 +38,70 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
+<h2><a name="v23r3">Gaudi v23r3</a> (2012-06-11)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=63">LCGCMT_63</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Fixed compilation warnings and errors on various platforms (Clang 3.0, gcc 4.7, gcc with c++11 enabled)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added configuration files to build Gaudi with CMake (all the versions numbers of the packages had to be increased).<br/>
+    They are in an alpha state, so not ready for production and the API is not stable, but the builds are equivalent to the CMT ones.<br/>
+    To test, run the script <code>configure</code> in the top level directory and follow the instructions.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v12r1):
+<ul>
+<li>Use the compiler native dependencies from CMT when using CMT v1r25.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added fragment to install generic resources (install_resources).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Modified GaudiTest.GaudiExeTest to be able to run executables with or without
+   the <code>.exe</code> extension.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiAlg (v14r2):
+<ul>
+<li>Patch #5410: Enable the suppression of misbalance summary from GaudiTool<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+<li>Task #22742: Optimize the GaudiAlgorithm get() functions<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Patch #5379: Improvements for GaudiAlgs.py<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+</ul>
+</li>
+<li>GaudiProfiling (v1r5):
+<ul>
+<li>Disable on MacOSX (cannot compile).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiCommonSvc (v1r2):
+<ul>
+<li>Patch #5390: fix unprotected VERBOSE and DEBUG messages<br/>
+    (<span class="author">Marco Cattaneo</span>)</li>
+</ul>
+</li>
+<li>GaudiPython (v12r2):
+<ul>
+<li>Patch #5379: Improvements for GaudiAlgs.py<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v23r3):
+<ul>
+<li>Task #22742: Optimize the GaudiAlgorithm get() functions<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Patch #5379: Improvements for GaudiAlgs.py<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
 <h2><a name="v23r2">Gaudi v23r2</a> (2012-03-24)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=62b">LCGCMT_62b</a></h3>
 <h3>General Changes</h3>

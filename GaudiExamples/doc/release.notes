@@ -1,6 +1,7 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v23r3 =============================
 ! 2012-06-09 - Marco Clemencic
  - Fixed a compilation warning in the IntelProfiler examples.
 

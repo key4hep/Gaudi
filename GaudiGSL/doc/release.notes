@@ -3,6 +3,7 @@
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! =============================================================================
 
+=============================== GaudiGSL v7r11 ===============================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.
 

@@ -4,6 +4,7 @@
 ! Purpose     : Profiling and performance monitoring of Gaudi/LHCb software
 !-----------------------------------------------------------------------------
 
+============================ GaudiProfiling v1r5 =============================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.
 

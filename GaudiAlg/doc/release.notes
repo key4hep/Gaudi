@@ -1,6 +1,7 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+=============================== GaudiAlg v14r2 ===============================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.
 

@@ -1,6 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v28r2 ==============================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.
 

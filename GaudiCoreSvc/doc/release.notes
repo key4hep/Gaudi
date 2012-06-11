@@ -4,6 +4,7 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+============================= GaudiCoreSvc v1r2 ==============================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.
 

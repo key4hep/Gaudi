@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiKernel v28r1)
+gaudi_subdir(GaudiKernel v28r2)
 
 find_package(Boost REQUIRED COMPONENTS filesystem thread system)
 find_package(ROOT)

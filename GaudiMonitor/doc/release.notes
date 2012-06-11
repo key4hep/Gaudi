@@ -1,6 +1,7 @@
 Package: GaudiMonitor
 Package manager : Marco Clemencic
 
+============================= GaudiMonitor v3r1 ==============================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.
 
