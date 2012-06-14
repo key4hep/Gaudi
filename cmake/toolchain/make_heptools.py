@@ -148,8 +148,13 @@ LCG_prepare_paths()"""
                 key = "javasdk_javajni"
             return key
         for name in sorted(versions.keys(), key=packageSorting):
+            # special case
+            if name == "uuid":
+                yield "if(NOT ${os} STREQUAL slc6) # uuid is not distributed with SLC6"
             # LCG_external_package(CLHEP            1.9.4.7             clhep)
             yield template % (name, versions[name], self.__special_dirs__.get(name, ""))
+            if name == "uuid":
+                yield "endif()"
 
         yield self.__trailer__
 
