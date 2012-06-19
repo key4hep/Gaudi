@@ -1,10 +1,14 @@
 cmake_minimum_required(VERSION 2.8.5)
+
+# Declare the version of HEP Tools we use
+# (must be done before including heptools-common to allow evolution of the
+# structure)
+set(heptools_version  62a)
+
 include(${CMAKE_CURRENT_LIST_DIR}/heptools-common.cmake)
 
 # please keep alphabetic order and the structure (tabbing).
 # it makes it much easier to edit/read this file!
-
-set(heptools_version  62a)
 
 # Application Area Projects
 LCG_AA_project(COOL  COOL_2_8_12)

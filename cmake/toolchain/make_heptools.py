@@ -12,6 +12,12 @@ class HepToolsGenerator(object):
     Class wrapping the details needed to generate the toolchain file from LCGCMT.
     """
     __header__ = """cmake_minimum_required(VERSION 2.8.5)
+
+# Declare the version of HEP Tools we use
+# (must be done before including heptools-common to allow evolution of the
+# structure)
+set(heptools_version  %s)
+
 include(${CMAKE_CURRENT_LIST_DIR}/heptools-common.cmake)
 
 # please keep alphabetic order and the structure (tabbing).
@@ -114,10 +120,7 @@ LCG_prepare_paths()"""
         """
         versions = self.versions
 
-        yield self.__header__
-
-        # first let's get rid of the special ones
-        yield "set(heptools_version  %s)" % versions.pop("LCG")
+        yield self.__header__ % versions.pop("LCG")
 
         yield "\n# Application Area Projects"
         for name in self.__AA_projects__:

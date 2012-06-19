@@ -111,26 +111,24 @@ set(LCG_platform ${BINARY_TAG} CACHE STRING "Platform ID for the AA project bina
 set(LCG_system ${arch}-${os}-${comp}-opt CACHE STRING "Platform ID for the external libraries.")
 
 # LCG location
-if(WIN32)
-  set(LCG_home E:/local/lib/lcg)
-  set(LCG_releases ${LCG_home}/external)
-elseif(DEFINED ENV{MYSITEROOT})
-  set(LCG_home $ENV{MYSITEROOT}/lcg)
-  set(LCG_releases ${LCG_home}/external)
-else()
-  set(LCG_home /afs/cern.ch/sw/lcg)
-  if(NOT DEFINED ENV{LCGNIGHTLY})
-    set(LCG_releases ${LCG_home}/app/releases)
-  else()
-    set(LCG_releases $ENV{LCGNIGHTLY})
-  endif()
+if(NOT heptools_version)
+  message(FATAL_ERROR "Variable heptools_version not defined. It must be defined before including heptools-common.cmake")
 endif()
 
-set(LCG_home ${LCG_home} CACHE PATH "Root of the LCG installation.")
-set(LCG_external ${LCG_home}/external)
+find_path(LCG_releases LCGCMT/LCGCMT_${heptools_version} ENV CMTPROJECTPATH)
+if(NOT LCG_releases)
+  message(FATAL_ERROR "Cannot find location of LCGCMT ${heptools_version}")
+endif()
+# define location of externals
+get_filename_component(_lcg_rel_type ${LCG_releases} NAME)
+if(_lcg_rel_type STREQUAL "external")
+  set(LCG_external ${LCG_releases})
+else()
+  get_filename_component(LCG_external ${LCG_releases}/../../external ABSOLUTE)
+endif()
 
 # Flag the LCG internal cached variables as "advanced".
-mark_as_advanced(LCG_platform LCG_system LCG_home)
+mark_as_advanced(LCG_platform LCG_system)
 
 # Define the variables and search paths for AA projects
 macro(LCG_AA_project name version)
