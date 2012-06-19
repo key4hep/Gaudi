@@ -1484,6 +1484,9 @@ class GaudiExeTest(ExecTestBase):
 
         # Construct the environment.
         environment = self.MakeEnvironment(context)
+        # FIXME: whithout this, we get some spurious '\x1b[?1034' in the std out on SLC6
+        if "slc6" in environment.get('CMTCONFIG', ''):
+            environment['TERM'] = 'dumb'
         # Create the executable.
         if self.timeout >= 0:
             timeout = self.timeout
