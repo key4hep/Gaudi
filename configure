@@ -1,6 +1,6 @@
 #!/bin/sh
 
-LCG_version=63
+LCG_version=64
 
 cd $(dirname $0)
 rootdir=`pwd`
