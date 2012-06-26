@@ -1,6 +1,10 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+! 2012-06-20 - Marco Clemencic
+ - Updated tag_release.py script to also tag the CMake configuration at the top
+   level.
+
 ============================= GaudiRelease v23r3 =============================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.
