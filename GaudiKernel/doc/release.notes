@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2012-06-28 - Marco Clemencic
+ - Fixed bug #95733: GaudiKernel::ToStream truncates numbers < 1e-8
+   Use ios::showpoint instead of ios::fixed.
+
 ============================= GaudiKernel v28r1 ==============================
 ! 2012-02-13 - Marco Clemencic
  - Fixed compatibility problem with Python 2.7.

@@ -1,8 +1,8 @@
-JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Services.opts)
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/Services.opts)
 JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Common.opts)
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/Common.opts)
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
-JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/AlgTools.opts)
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/AlgTools.opts)
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.TopAlg = ["MyAlgorithm/MyAlg"]
 JobOptionsSvc        INFO # (12,1): MessageSvc.OutputLevel = 3
 JobOptionsSvc        INFO # (17,1): ApplicationMgr.EvtMax = 10
@@ -23,11 +23,11 @@ JobOptionsSvc        INFO # (43,1): ToolSvc.ToolA.Tools = ["TestTool/ToolB"]
 JobOptionsSvc        INFO # (44,1): ToolSvc.ToolB.Tools = ["TestTool/ToolA"]
 JobOptionsSvc        INFO # (45,1): ToolSvc.ToolA.OutputLevel = 2
 JobOptionsSvc        INFO # (46,1): ToolSvc.ToolB.OutputLevel = 2
-JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/AlgTools.opts
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/AlgTools.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on lxplus435.cern.ch on Fri Aug 26 11:30:14 2011
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r1)
+                                          running on lxplus445.cern.ch on Thu Jun 28 15:28:31 2012
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -72,7 +72,7 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.00000000
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.0000000
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RootOnTES':
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RootInTES':
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Context':
@@ -102,7 +102,7 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.00000000
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.0000000
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RootOnTES':
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RootInTES':
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Context':

@@ -1,6 +1,10 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2012-06-28 - Marco Clemencic
+ - Modified a property test to expose bug #95733 and updated reference files
+   after the fix.
+
 ============================ GaudiExamples v23r2 =============================
 ! 2012-02-24 - Sasha Mazurov
  - Patch #5210: add example for IntelProfiler

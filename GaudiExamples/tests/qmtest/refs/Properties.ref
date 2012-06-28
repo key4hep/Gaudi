@@ -1,17 +1,17 @@
-JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Services.opts)
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/Services.opts)
 JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Common.opts)
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/Common.opts)
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
-JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/units.opts)
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/units.opts)
 JobOptionsSvc        INFO # (1,1): 1 m = 1000
 JobOptionsSvc        INFO # (2,1): 1 cm = 10
 JobOptionsSvc        INFO # (3,1): 1 mm = 1
 JobOptionsSvc        INFO # (4,1): 1 m2 = 1e+06
-JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/optsub1/dummy1.opts)
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/optsub1/dummy1.opts)
 JobOptionsSvc        INFO # (2,1): Dummy1.Property = 1
-JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/optsub2/dummy2.opts)
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/optsub2/dummy2.opts)
 JobOptionsSvc        INFO # (2,1): Dummy2.Property = 1
-JobOptionsSvc        INFO # =======> /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Properties.opts)
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/Properties.opts)
 JobOptionsSvc        INFO # (14,1): ApplicationMgr.TopAlg = ["PropertyAlg"]
 JobOptionsSvc        INFO # (16,1): ApplicationMgr.TopAlg += ["PropertyAlg", "PropertyProxy"]
 JobOptionsSvc        INFO # (18,1): ApplicationMgr.TopAlg -= ["PropertyAlg"]
@@ -49,11 +49,11 @@ JobOptionsSvc        INFO # (71,1): PropertyProxy.String = "This is set by the p
 JobOptionsSvc        INFO # (74,1): MessageSvc.setDebug += ["EventLoopMgr"]
 JobOptionsSvc        INFO # (75,1): MessageSvc.setVerbose += ["MsgTest"]
 JobOptionsSvc        INFO # (79,1): MessageSvc.setWarning += ["MsgTest"]
-JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Properties.opts
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/Properties.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr(GaudiCoreSvc v1r0)
-                                          running on lxplus437.cern.ch on Mon Feb  6 18:36:58 2012
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r1)
+                                          running on lxplus445.cern.ch on Thu Jun 28 15:31:05 2012
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -76,8 +76,8 @@ PropertyAlg          INFO EmptyArray  = []
 PropertyAlg          INFO IntPairArray  = []
 PropertyAlg          INFO DoublePairArray  = []
 PropertyAlg          INFO PInt    =  'PInt':100
-PropertyAlg          INFO Read handler called for property:  'PDouble':100.00000000
-PropertyAlg          INFO PDouble =  'PDouble':100.00000000
+PropertyAlg          INFO Read handler called for property:  'PDouble':100.00000
+PropertyAlg          INFO PDouble =  'PDouble':100.00000
 PropertyAlg          INFO PString =  'PString':hundred
 PropertyAlg          INFO PBool   =  'PBool':False
 PropertyAlg          INFO PIntArray    =  'PIntArray':[  ]
@@ -85,8 +85,8 @@ PropertyAlg          INFO PDoubleArray =  'PDoubleArray':[  ]
 PropertyAlg          INFO PStringArray =  'PStringArray':[  ]
 PropertyAlg          INFO PBoolArray   =  'PBoolArray':[  ]
 EventLoopMgr        DEBUG Creating Top Algorithm PropertyProxy with name PropertyProxy
-PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.00000000
-PropertyAlg          INFO Update handler called for property:  'PDouble':10100000.00000000
+PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.
+PropertyAlg          INFO Update handler called for property:  'PDouble':10100000.
 PropertyAlg          INFO After Initialization having read the JobOptions file...
 PropertyAlg          INFO Int    = 101
 PropertyAlg          INFO Int64  = 4294967296
@@ -104,8 +104,8 @@ PropertyAlg          INFO EmptyArray  = []
 PropertyAlg          INFO IntPairArray  = [(1, 2), (3, 4), (5, 6)]
 PropertyAlg          INFO DoublePairArray  = [(1.1, 2.1), (2.3, 4.5), (5.6, 6.7)]
 PropertyAlg          INFO PInt    =  'PInt':101
-PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.00000000
-PropertyAlg          INFO PDouble =  'PDouble':10100000.00000000
+PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.
+PropertyAlg          INFO PDouble =  'PDouble':10100000.
 PropertyAlg          INFO PString =  'PString':hundred one
 PropertyAlg          INFO PBool   =  'PBool':True
 PropertyAlg          INFO PIntArray    =  'PIntArray':[ 1 , 2 , 3 , 5 ]
@@ -123,11 +123,11 @@ PropertyAlg          INFO Got an exception when setting a value outside bounds
 PropertyAlg          INFO PInt=  'PInt':155 [should be 155]
 PropertyAlg          INFO ===============Checking Property CallBaks ===============
 PropertyAlg          INFO Accessing PDouble ...
-PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.00000000
+PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.
 PropertyAlg          INFO Value obtained is: 1.01e+07
 PropertyAlg          INFO Updating PDouble ...
-PropertyAlg          INFO Read handler called for property:  'PDouble':999.00000000
-PropertyAlg          INFO Update handler called for property:  'PDouble':999.00000000
+PropertyAlg          INFO Read handler called for property:  'PDouble':999.00000
+PropertyAlg          INFO Update handler called for property:  'PDouble':999.00000
 PropertyAlg          INFO ==========Checking Accesing Properties by string=========
 PropertyAlg          INFO  Got property ApplicationMgr.ExtSvc = [  ];
 DetectorDataSvc      INFO Detector description not requested to be loaded
@@ -156,8 +156,8 @@ PropertyAlg          INFO  Properties of PropertyAlg: Bool, BoolArray, Double, D
 PropertyAlg          INFO  Properties of PropertyProxy: String
 PropertyAlg          INFO =================================================
 PropertyAlg          INFO Changed property DoubleArray in catalogue
-PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.00000000
-PropertyAlg          INFO Update handler called for property:  'PDouble':10100000.00000000
+PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.
+PropertyAlg          INFO Update handler called for property:  'PDouble':10100000.
 JobOptionsSvc       ERROR Unable to set the property 'DoubleArray' of 'PropertyAlg'. Check option and algorithm names, type and bounds.
 PropertyAlg          INFO DoubleArray = [-11, 2, 3.3, 0.0004]
 PropertyAlg          INFO =================================================
