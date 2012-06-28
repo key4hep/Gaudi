@@ -1,6 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================ GaudiKernel v28r1p1 =============================
 ! 2012-06-28 - Marco Clemencic
  - Fixed bug #95733: GaudiKernel::ToStream truncates numbers < 1e-8
    Use ios::showpoint instead of ios::fixed.
