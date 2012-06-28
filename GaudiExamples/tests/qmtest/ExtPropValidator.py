@@ -22,7 +22,7 @@ def validate(stdout,stderr,result,causes):
                                            'bbb': ['a', 'b', 'c'],
                                            'ccc': ['a', 'b', 'c']},
            'map<unsignedint,string>': {0: 'UZero', 1: 'UOne', 2: 'UTwo'},
-           'pair<double,double>': (3141.592, 2.18281828),
+           'pair<double,double>': (3141.592, 2.1828183),
            'pair<int,int>': (3, 2),
            'vector<pair<double,double> >': [(0.0, 1.0),
                                             (1.0, 2.0),
@@ -72,6 +72,17 @@ def validate(stdout,stderr,result,causes):
             pp = PrettyPrinter()
             result['GaudiTest.properties.expected'] = result.Quote(pp.pformat(expected))
             result['GaudiTest.properties.found'] = result.Quote(pp.pformat(properties))
+            pkeys = set(properties)
+            ekeys = set(expected)
+            missing = sorted(ekeys - pkeys)
+            if missing:
+                result['GaudiTest.properties.missing_keys'] = result.Quote(pp.pformat(missing))
+            extra = sorted(pkeys - ekeys)
+            if extra:
+                result['GaudiTest.properties.extra_keys'] = result.Quote(pp.pformat(extra))
+            mismatch = sorted([k for k in ekeys.intersection(pkeys) if expected[k] != properties[k]])
+            if mismatch:
+                result['GaudiTest.properties.mismatch_keys'] = result.Quote(pp.pformat(mismatch))
 
     except StopIteration:
         causes.append('missing signature')
