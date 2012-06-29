@@ -893,6 +893,9 @@ macro_append componentshr_linkopts "" \
       target-linux                 "-Wl,--no-undefined "
 
 macro_append componentshr_linkopts "" \
+      target-linux                 "-pthread "
+
+macro_append componentshr_linkopts "" \
       target-linux&target-opt&strip-symbols "-Wl,-s "
 
 macro_append componentshr_linkopts "" \
@@ -911,6 +914,9 @@ macro libraryshr_linkopts   "" \
 
 macro_append libraryshr_linkopts "" \
       target-linux               "-Wl,--no-undefined "
+
+macro_append libraryshr_linkopts "" \
+      target-linux                 "-pthread "
 
 macro_append libraryshr_linkopts   "" \
 	  target-cov  " $(linkdebugflags) "
