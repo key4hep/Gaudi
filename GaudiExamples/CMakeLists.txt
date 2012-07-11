@@ -3,7 +3,7 @@ gaudi_subdir(GaudiExamples v23r3)
 gaudi_depends_on_subdirs(GaudiKernel GaudiUtils GaudiGSL GaudiAlg)
 
 find_package(HepPDT)
-find_package(ROOT COMPONENTS Tree RIO Hist)
+find_package(ROOT COMPONENTS Tree RIO Hist Net)
 find_package(Boost COMPONENTS python)
 find_package(CLHEP)
 find_package(GSL)
