@@ -118,7 +118,10 @@ def main():
     if sys.platform.startswith("win"):
         env["PATH"] = env["PATH"] + os.pathsep + env["LD_LIBRARY_PATH"]
     elif sys.platform.startswith("darwin"):
-        env["DYLD_LIBRARY_PATH"] = env["DYLD_LIBRARY_PATH"] + os.pathsep + env["LD_LIBRARY_PATH"]
+        if "DYLD_LIBRARY_PATH" in env:
+            env["DYLD_LIBRARY_PATH"] = env["DYLD_LIBRARY_PATH"] + os.pathsep + env["LD_LIBRARY_PATH"]
+        else:
+            env["DYLD_LIBRARY_PATH"] = env["LD_LIBRARY_PATH"]
 
 
     if not cmd:
