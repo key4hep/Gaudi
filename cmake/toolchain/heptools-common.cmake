@@ -193,11 +193,13 @@ macro(LCG_prepare_paths)
   # Special cases that require a special treatment
   #===============================================================================
   set(Boost_native_version ${Boost_config_version}_python${Python_config_version_twodigit})
-  # FIXME: this should be automatic... see FindBoost.cmake documentation
-  # Get Boost compiler id from LCG_system
-  string(REGEX MATCHALL "[^-]+" out ${LCG_system})
-  list(GET out 2 syscomp)
-  set(Boost_COMPILER -${syscomp})
+  if(NOT APPLE)
+    # FIXME: this should be automatic... see FindBoost.cmake documentation
+    # Get Boost compiler id from LCG_system
+    string(REGEX MATCHALL "[^-]+" out ${LCG_system})
+    list(GET out 2 syscomp)
+    set(Boost_COMPILER -${syscomp})
+  endif()
   set(Boost_NO_BOOST_CMAKE ON)
   set(Boost_NO_SYSTEM_PATHS ON)
 
