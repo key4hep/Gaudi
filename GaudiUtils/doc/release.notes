@@ -3,6 +3,7 @@ Package manager : Marco Clemencic
 
 ! 2012-07-13 - Marco Clemencic
  - Fixed configuration for Boost 1.50.
+ - Fixed a problem with symbols visibility.
 
 ============================== GaudiUtils v4r1 ===============================
 ! 2012-06-08 - Marco Clemencic

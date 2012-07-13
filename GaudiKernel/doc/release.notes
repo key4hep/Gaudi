@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2012-07-13 - Marco Clemencic
+ - Fixed a problem with symbols visibility.
+
 ! 2012-07-12 - Marco Clemencic
  - Modified Gaudi::Sleep and Gaudi::NanoSleep to compile with Boost 1.50.
 
