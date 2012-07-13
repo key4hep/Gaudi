@@ -32,6 +32,6 @@ macro_append ROOT_linkopts " -lHist -lXMLIO " \
              target-winxp  " libHist.lib libXMLIO.lib " \
              target-mac104 " -lHist -lXMLIO -lMatrix "
 
-macro_append Boost_linkopts " $(Boost_linkopts_date_time) "
+macro_append Boost_linkopts " $(Boost_linkopts_date_time) $(Boost_linkopts_system) "
 
 end_private
