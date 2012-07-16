@@ -15,4 +15,5 @@ gaudi_add_module(GaudiCoreSvc
                  IncidentSvc/*.cpp
                  JobOptionsSvc/*.cpp
                  MessageSvc/*.cpp
-                 LINK_LIBRARIES GaudiKernel Boost TBB)
+                 LINK_LIBRARIES GaudiKernel Boost TBB
+                 INCLUDE_DIRS TBB)

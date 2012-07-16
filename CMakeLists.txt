@@ -1,6 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_SOURCE_DIR}/cmake/modules  ${CMAKE_MODULE_PATH})
+set(GaudiProject_DIR ${CMAKE_SOURCE_DIR}/cmake)
 
 #---------------------------------------------------------------
 # Load macros and functions for Gaudi-based projects
