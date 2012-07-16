@@ -8,9 +8,12 @@
 #  GSL_CBLAS_LIBRARY
 #  GSL_LIBRARIES (not cached)
 
-find_path(GSL_INCLUDE_DIR /gsl/gsl_version.h)
-find_library(GSL_LIBRARY NAMES gsl)
-find_library(GSL_CBLAS_LIBRARY NAMES gslcblas)
+find_path(GSL_INCLUDE_DIR /gsl/gsl_version.h
+          HINTS $ENV{GSL_ROOT_DIR}/include ${GSL_ROOT_DIR}/include)
+find_library(GSL_LIBRARY NAMES gsl
+             HINTS $ENV{GSL_ROOT_DIR}/lib ${GSL_ROOT_DIR}/lib)
+find_library(GSL_CBLAS_LIBRARY NAMES gslcblas
+             HINTS $ENV{GSL_ROOT_DIR}/lib ${GSL_ROOT_DIR}/lib)
 
 set(GSL_LIBRARIES ${GSL_LIBRARY} ${GSL_CBLAS_LIBRARY})
 

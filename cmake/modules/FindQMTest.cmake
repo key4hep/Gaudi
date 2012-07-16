@@ -8,6 +8,8 @@ find_program(QMTEST_EXECUTABLE
   NAMES qmtest
   PATHS ${QMtest_home}/bin
         ${QMtest_home}/Scripts
+  HINTS ${QMTEST_ROOT_DIR}/bin
+        $ENV{QMTEST_ROOT_DIR}/bin
 )
 
 get_filename_component(QMTEST_BINARY_PATH ${QMTEST_EXECUTABLE} PATH)

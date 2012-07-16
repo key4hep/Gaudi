@@ -11,7 +11,8 @@
 #
 # Note: version detection inspired by FindBoost.cmake
 
-find_path(CLHEP_INCLUDE_DIR CLHEP/ClhepVersion.h)
+find_path(CLHEP_INCLUDE_DIR CLHEP/ClhepVersion.h
+          HINTS $ENV{CLHEP_ROOT_DIR}/include ${CLHEP_ROOT_DIR}/include)
 if(CLHEP_INCLUDE_DIR)
   if(NOT DEFINED CLHEP_VERSION)
     file(READ "${CLHEP_INCLUDE_DIR}/CLHEP/ClhepVersion.h" _CLHEP_VERSION_H_CONTENTS)
@@ -23,7 +24,8 @@ endif()
 
 set(_CLHEP_COMPONENTS Cast Evaluator Exceptions GenericFunctions Geometry Random RandomObjects RefCount Vector Matrix)
 foreach(component ${_CLHEP_COMPONENTS})
-  find_library(CLHEP_${component}_LIBRARY NAMES CLHEP-${component}-${CLHEP_VERSION})
+  find_library(CLHEP_${component}_LIBRARY NAMES CLHEP-${component}-${CLHEP_VERSION}
+               HINTS $ENV{CLHEP_ROOT_DIR}/lib ${CLHEP_ROOT_DIR}/lib)
   if (CLHEP_${component}_LIBRARY)
     set(CLHEP_${component}_FOUND 1)
     list(APPEND CLHEP_LIBRARIES ${CLHEP_${component}_LIBRARY})

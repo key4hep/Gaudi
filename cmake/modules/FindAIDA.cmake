@@ -4,7 +4,8 @@
 #  AIDA_FOUND
 #  AIDA_INCLUDE_DIRS
 
-find_path(AIDA_INCLUDE_DIRS AIDA/AIDA.h)
+find_path(AIDA_INCLUDE_DIRS AIDA/AIDA.h
+          HINTS ${AIDA_ROOT_DIR}/src/cpp $ENV{AIDA_ROOT_DIR}/src/cpp)
 
 # handle the QUIETLY and REQUIRED arguments and set AIDA_FOUND to TRUE if
 # all listed variables are TRUE

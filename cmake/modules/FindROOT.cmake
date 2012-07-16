@@ -4,7 +4,8 @@
 
 # Find ROOTSYS
 #  We assume TROOT.h is in $ROOTSYS/include
-find_path(ROOT_INCLUDE_DIR TROOT.h)
+find_path(ROOT_INCLUDE_DIR TROOT.h 
+          HINTS $ENV{ROOTSYS}/include)
 get_filename_component(ROOTSYS ${ROOT_INCLUDE_DIR} PATH)
 set(ROOTSYS ${ROOTSYS} CACHE PATH "Location of the installation of ROOT")
 
@@ -21,7 +22,7 @@ foreach(component ${ROOT_FIND_COMPONENTS} Core Cint Reflex)
   # look for the library if not found yet
   if(NOT ROOT_${component}_LIBRARY)
     find_library(ROOT_${component}_LIBRARY NAMES ${component}
-                 PATH ${ROOT_LIBRARY_DIRS})
+                 PATHS ${ROOT_LIBRARY_DIRS})
     if(ROOT_${component}_LIBRARY)
       mark_as_advanced(ROOT_${component}_LIBRARY)
       set(_found_components ${_found_components} ${component})
