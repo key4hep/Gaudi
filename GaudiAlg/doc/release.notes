@@ -1,6 +1,9 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2012-07-15 - Chris Jones
+ - Patch #5464: Implement the 'getIfExists' for GaudiTool as well as GaudiAlgorithm
+
 =============================== GaudiAlg v14r2 ===============================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.
