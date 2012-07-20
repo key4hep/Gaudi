@@ -6,8 +6,10 @@
 #  XERCESC_INCLUDE_DIRS (not cached)
 #  XERCESC_LIBRARIES
 
-find_path(XERCESC_INCLUDE_DIR xercesc/util/XercesVersion.hpp)
-find_library(XERCESC_LIBRARIES NAMES xerces-c)
+find_path(XERCESC_INCLUDE_DIR xercesc/util/XercesVersion.hpp
+          HINTS $ENV{XERCESC_ROOT_DIR}/include  ${XERCESC_ROOT_DIR}/include )
+find_library(XERCESC_LIBRARIES NAMES xerces-c
+             HINTS $ENV{XERCESC_ROOT_DIR}/lib ${XERCESC_ROOT_DIR}/lib )
 
 set(XERCESC_INCLUDE_DIRS ${XERCESC_INCLUDE_DIR})
 

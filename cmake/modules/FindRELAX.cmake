@@ -8,7 +8,8 @@
 set(_RELAX_COMPONENTS
     CLHEP HepMC HepPDT MathAdd Math Reflex STLAdd STL)
 foreach(component ${_RELAX_COMPONENTS})
-  find_library(RELAX_${component}_LIBRARY NAMES ${component}Rflx)
+  find_library(RELAX_${component}_LIBRARY NAMES ${component}Rflx
+               HINTS $ENV{RELAX_ROOT_DIR}/lib ${RELAX_ROOT_DIR}/lib )
   mark_as_advanced(RELAX_${component}_LIBRARY)
   if(RELAX_${component}_LIBRARY)
     list(APPEND RELAX_FOUND_COMPONENTS ${component})
