@@ -1,7 +1,7 @@
 gaudi_subdir(GaudiKernel v28r2)
 
 find_package(Boost REQUIRED COMPONENTS filesystem thread system)
-find_package(ROOT)
+find_package(ROOT REQUIRED COMPONENTS Core Reflex)
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiKernel Lib/*.cpp
