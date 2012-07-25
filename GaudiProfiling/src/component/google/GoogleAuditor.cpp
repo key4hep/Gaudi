@@ -291,13 +291,13 @@ namespace Google
     , m_sampleEventCount( 0 )
     , m_inFullAudit ( false )
   {
-    declareProperty("ActivateAt", m_when = boost::assign::list_of
-                    ("Initialize")
-                    ("ReInitialize")
-                    ("Execute")
-                    ("BeginRun")
-                    ("EndRun")
-                    ("Finalize"),
+    declareProperty("ActivateAt", m_when = {
+		        "Initialize",
+			"ReInitialize",
+			"Execute",
+			"BeginRun",
+			"EndRun",
+		        "Finalize"},
                     "List of phases to activate the Auditoring during" );
     declareProperty("DisableFor", m_veto,
                     "List of component names to disable the auditing for" );

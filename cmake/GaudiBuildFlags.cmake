@@ -27,6 +27,10 @@ option(GAUDI_CMT_RELEASE
        "use CMT deafult release flags instead of the CMake ones"
        ON)
 
+option(GAUDI_CPP11 
+       "enable C++11 compilation" 
+       ON)
+
 #--- Compilation Flags ---------------------------------------------------------
 if(MSVC90)
   add_definitions(/wd4275 /wd4251 /wd4351)
@@ -38,6 +42,7 @@ if(MSVC90)
     set(CMAKE_C_FLAGS_RELEASE "/O2")
   endif()
 else()
+
   #
   set(CMAKE_CXX_FLAGS "-fmessage-length=0 -pipe -ansi -Wall -Wextra -Werror=return-type -pthread")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long")
@@ -71,6 +76,10 @@ endif()
 #--- Special build flags -------------------------------------------------------
 if ((GAUDI_V21 OR G21_HIDE_SYMBOLS) AND (comp MATCHES gcc4))
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden")
+endif()
+
+if ( GAUDI_CPP11 )
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 endif()
 
 if(NOT GAUDI_V21)
