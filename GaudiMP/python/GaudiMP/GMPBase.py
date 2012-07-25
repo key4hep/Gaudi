@@ -1,6 +1,8 @@
 from Gaudi.Configuration import *
-from GaudiPython import AppMgr, gbl, setOwnership, PyAlgorithm, SUCCESS,FAILURE
+from Configurables import EvtCounter
+from GaudiPython import AppMgr, gbl, setOwnership, PyAlgorithm, SUCCESS,FAILURE, InterfaceCast
 from ROOT import TBufferFile, TBuffer
+import multiprocessing
 from multiprocessing import Process, Queue, JoinableQueue, Event
 from multiprocessing import cpu_count, current_process
 from multiprocessing.queues import Empty
@@ -37,7 +39,7 @@ MB  = 1024.0*1024.0
 # waits to guard against hanging, in seconds
 WAIT_INITIALISE   = 60*5
 WAIT_FIRST_EVENT  = 60*3
-WAIT_SINGLE_EVENT = 60*3
+WAIT_SINGLE_EVENT = 60*6
 WAIT_FINALISE     = 60*2
 STEP_INITIALISE   = 10
 STEP_EVENT        = 2
@@ -459,6 +461,14 @@ class GMPComponent( object ) :
 
         # define the separate process
         self.proc = Process( target=self.Engine )
+	
+	self.num = 0	
+
+	ks = self.config.keys()
+        self.app = None
+        list = ["Brunel", "DaVinci", "Boole", "Gauss"]
+        for k in list:
+           if k in ks: self.app = k
 
     def Start( self ) :
         # Fork and start the separate process
@@ -504,6 +514,7 @@ class GMPComponent( object ) :
         self.ts.loadBuffer(tbufferfile)
 
     def getEventNumber( self ) :
+      if self.app != 'Gauss':
         # Using getList or getHistoNames can result in the EventSelector
         # re-initialising connection to RootDBase, which costs a lot of
         # time... try to build a set of Header paths??
@@ -534,6 +545,11 @@ class GMPComponent( object ) :
         else :
             self.log.warning('Could not determine Event Number')
         return -1
+      else:
+           if self.nodeID == -1:
+             self.num = self.num + 1
+             self.log.info( 'Evt Number %d' % self.num )
+             return self.num
 
     def IdentifyWriters( self ) :
         #
@@ -585,9 +601,17 @@ class GMPComponent( object ) :
         start = time.time()
         self.processConfiguration( )
         self.SetupGaudiPython( )
-        # Set the initialisation flag!
         self.initEvent.set()
         self.StartGaudiPython( )
+
+        if self.app == 'Gauss':
+            
+            tool = self.a.tool( "ToolSvc.EvtCounter" )
+            self.cntr = InterfaceCast( gbl.IEventCounter )( tool.getInterface() )
+            self.log.info("interface %s" %self.cntr)
+        else:
+            self.cntr = None
+
         self.iTime = time.time() - start
 
     def Finalize( self ) :
@@ -628,7 +652,7 @@ class Reader( GMPComponent )  :
         if "HistogramPersistencySvc" in self.config.keys() :
             self.config[ 'HistogramPersistencySvc' ].OutputFile = ''
         self.config['MessageSvc'].Format    = '[Reader]% F%18W%S%7W%R%T %0W%M'
-        self.evtMax = self.config[ 'ApplicationMgr' ].EvtMax
+        self.evtMax = self.config[ 'ApplicationMgr' ].EvtMax   	
 
     def DumpEvent( self ) :
         tb = TBufferFile( TBuffer.kWrite )
@@ -655,9 +679,16 @@ class Reader( GMPComponent )  :
                 return SUCCESS
             else :
                 # Popluate TESSerializer list and send Event
-                try :
+                if self.app == "Gauss":
+                   lst = self.evt.getHistoNames()
+                else:
+                  try :
                     lst = self.evt.getList()
-                except :
+                    if self.app == "DaVinci":
+                      daqnode = self.evt.retrieveObject( '/Event/DAQ' ).registry()
+                      setOwnership( daqnode, False )
+                      self.evt.getList( daqnode, lst, daqnode.address().par() )
+                  except :
                     self.log.critical('Reader could not acquire TES List!')
                     self.lastEvent.set()
                     return FAILURE
@@ -761,10 +792,21 @@ class Worker( GMPComponent ) :
             self.config[ m.key ].Output = newName
 
         # Suppress INFO Output for all but Worker-0
-        if self.nodeID == 0 :
-            pass
-        else                :
-            self.config[ 'MessageSvc' ].OutputLevel = ERROR
+        #if self.nodeID == 0 :
+        #    pass
+        #else                :
+        #    self.config[ 'MessageSvc' ].OutputLevel = ERROR
+        
+        try:
+            if "ToolSvc.EvtCounter" not in self.config:
+                from Configurables import EvtCounter
+                counter = EvtCounter()
+            else:
+                counter = self.config["ToolSvc.EvtCounter"]
+            counter.UseIncident = False
+        except:
+            # ignore errors when trying to change the configuration of the EvtCounter
+            self.log.warning('Cannot configure EvtCounter')
 
     def Engine( self ) :
         startEngine = time.time()
@@ -779,20 +821,34 @@ class Worker( GMPComponent ) :
 
         nEventWriters = len( self.writerDict[ "events" ] )
         if nEventWriters :
+            itemList = set()
+            optItemList = set()
             for m in self.writerDict[ "events" ] :
                 for item in m.ItemList :
-                    self.log.debug(' adding ItemList Item to ts : %s'%(item))
-                    self.ts.addItem( item )
+                    hsh = item.find( '#' )
+                    if hsh != -1:
+                      item = item[:hsh]
+                    itemList.add( item )
                 for item in m.OptItemList :
-                    self.log.debug(' adding Optional Item to ts : %s'%(item))
-                    self.ts.addOptItem( item )
+                    hsh = item.find( '#' )
+                    if hsh != -1:
+                      item = item[:hsh]
+                    optItemList.add( item )
+            # If an item is mandatory and optional, keep it only in the optional list
+            itemList -= optItemList
+            for item in sorted( itemList ):
+                self.log.info( ' adding ItemList Item to ts : %s' % ( item ) )
+                self.ts.addItem( item )
+            for item in sorted( optItemList ):
+                self.log.info( ' adding Optional Item to ts : %s' % ( item ) )
+                self.ts.addOptItem( item )
         else :
             self.log.info( 'There is no Event Output for this app' )
             self.eventOutput = False
 
         # add the Histogram Collection Algorithm
         self.a.addAlgorithm( CollectHistograms(self) )
-
+	
         # Begin processing
         self.log.name = "Worker-%i"%(self.nodeID)
         Go = True
@@ -802,6 +858,10 @@ class Worker( GMPComponent ) :
             else      : continue
             if packet == 'FINISHED' : break
             evtNumber, tbin = packet    # unpack
+            if self.cntr != None: 
+		
+                self.cntr.setEventCounter( evtNumber )
+            
             self.nIn += 1
             self.TS.Load( tbin )
             # print 'Worker-%i : Event %i'%(self.nodeID, evtNumber)
@@ -957,7 +1017,7 @@ class Writer( GMPComponent ) :
             newName=self.config[hs].OutputFile.replace('.',\
                                                        '.p%i.'%(self.nWorkers))
             self.config[ hs ].OutputFile = newName
-
+    
     def Engine( self ) :
         startEngine = time.time()
         self.Initialize()
@@ -1006,7 +1066,7 @@ class Writer( GMPComponent ) :
         sc = self.filerecordsAgent.Receive()
         self.filerecordsAgent.Rebuild()
         self.Finalize()
-        self.rTime = time.time()-startEngine
+        #self.rTime = time.time()-startEngine
         self.Report()
 
 # =============================================================================
@@ -1086,21 +1146,21 @@ class Coord( object ) :
         for p in self.system :
             p.Start()
         sc = self.sInit.syncAll(step="Initialise")
-        if sc : pass
+        if sc == SUCCESS: pass
         else  : self.Terminate() ; return FAILURE
 
         # Run
         self.log.name = 'GaudiPython-Parallel-Logger'
         self.log.info( 'RUNNING SYSTEM' )
         sc = self.sRun.syncAll(step="Run")
-        if sc : pass
+        if sc == SUCCESS: pass
         else  : self.Terminate() ; return FAILURE
 
         # Finalise
         self.log.name = 'GaudiPython-Parallel-Logger'
         self.log.info( 'FINALISING SYSTEM' )
         sc = self.sFin.syncAll(step="Finalise")
-        if sc : pass
+        if sc == SUCCESS: pass
         else  : self.Terminate() ; return FAILURE
 
         # if we've got this far, finally report SUCCESS
@@ -1111,9 +1171,13 @@ class Coord( object ) :
 
     def Terminate( self ) :
         # Brutally kill sub-processes
-        self.writer.proc.terminate()
-        [ w.proc.terminate() for w in self.workers]
-        self.reader.proc.terminate()
+        children = multiprocessing.active_children()
+        for i in children:
+            i.terminate()
+
+        #self.writer.proc.terminate()
+        #[ w.proc.terminate() for w in self.workers]
+        #self.reader.proc.terminate()
 
     def Stop( self ) :
         # procs should be joined in reverse order to launch

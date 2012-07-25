@@ -1,15 +1,3 @@
-// $Id: TESSerializer.cpp,v 1.2 2008/11/12 23:39:47 marcocle Exp $
-
-// 23 May 2009 : changes to dumpBuffer, loadBuffer.
-//
-// TESSerializer.loadBuffer : Instead of accepting a const buffer, then copying to a new local buffer
-// and then rebuilding the TES, the argument is now non-const, and the TES is reconstructed directly
-// from the incoming buffer.
-//
-// TESSerializer.dumpBuffer : dumpBuffer now accepts an argument; a TBufferFile created externally
-// in python.  Sometimes, creating the buffer internally was causing errors when using TMessages and
-// TSockets.  Creating the empty buffer in python and passing as an argument fixes this.
-
 #include "GaudiMP/TESSerializer.h"
 
 // Framework include files
@@ -125,14 +113,14 @@ void GaudiMP::TESSerializer::dumpBuffer(TBufferFile& buffer) {
   buffer.WriteInt(m_objects.size());
 
   for(Objects::iterator i = m_objects.begin(); i != m_objects.end(); ++i) {
-    DataObject* pObj = (*i);	/* define pointer !pObj! to a data object */
-    DataObjectPush p(pObj);		/* add the data object to the list... */
+    DataObject* pObj = (*i);    /* define pointer !pObj! to a data object */
+    DataObjectPush p(pObj);             /* add the data object to the list... */
 
     // We build a map so gROOT has to access the whole class database as little as possible
-    TClass* cl;						        /* announce a TClass */
-    const type_info& objClass = typeid(*pObj);		        /* get the type of the data object */
+    TClass* cl;                                                 /* announce a TClass */
+    const type_info& objClass = typeid(*pObj);                  /* get the type of the data object */
     // cout << "TES Object : " << pObj->registry()->identifier() << endl;
-    string objClassName = System::typeinfoName(objClass);	/* and then get the descriptive string from System */
+    string objClassName = System::typeinfoName(objClass);       /* and then get the descriptive string from System */
 
     /* First go   : populate the class map
        Subsequent : refer to class map     */
@@ -265,23 +253,31 @@ void GaudiMP::TESSerializer::loadBuffer(TBufferFile& buffer) {
     // Re-register...
     registerStat = m_TES->registerObject(location, obj);
     if (registerStat.isFailure()) {
+      DataObject* dummy = NULL;
       if ( location == "/Event" ) {
-        sc = m_TESMgr->setRoot(location, obj);
-        if(sc.isFailure()) {
-          throw GaudiException("Cannot set root at location " + location, "", sc);
-        }
-      }
+          sc = m_TESMgr->setRoot(location, obj);
+          if(sc.isFailure())
+             throw GaudiException("Cannot set root at location " + location, "", sc);
+          }
       else {
-        const char* msg = "Cannot register object at location ";
-        if ( m_strict ) {
-          throw GaudiException(msg + location, "", registerStat);
-        } else {
-          cout << "WARNING : " << msg << location << endl;
-          continue;
+          m_TES->findObject(location, dummy);
+          if(!dummy)
+            m_TES->registerObject(location, obj);
+          else {
+            int flag(0);
+            buffer.ReadInt(flag);
+            if (flag) {
+              long svcType;
+              buffer.ReadLong(svcType);
+              long clid;
+              buffer.ReadLong(clid);
+              char * cp;
+              cp = buffer.ReadString(text, sizeof(text));
+            }
+            continue;
+          }
         }
-      }
     }
-
     // next is the opaque address information
     // create Generic Address using the info from the TBufferFile,
     // then create an IOpaqueAddress object using the Persistency Svc
@@ -407,3 +403,4 @@ GaudiMP::TESSerializer::findItem(const std::string& path)  {
   }
   return 0;
 }
+

@@ -1,9 +1,10 @@
+
 from Gaudi.Configuration import *
 from GaudiPython import AppMgr, gbl
 from ROOT import TFile, TBufferFile, TBuffer
 from multiprocessing import Process, Queue
-
-import sys, sets
+from Configurables import LHCbApp
+import sys
 
 #
 # loadFile.py

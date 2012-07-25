@@ -616,9 +616,9 @@ class Syncer( object ) :
             # check the status of each sync object
             for k in active :
                 sMini = self.d[k]
-                # print sMini
-                if sMini.check() :
-                    if sMini.checkLast() :
+                
+                if sMini.check() or sMini.checkLast():
+                    if sMini.checkLast() and sMini.check() :
                         # if last Event set,then event loop finished
                         active.remove( k )
                         alive = time.time()-begin
