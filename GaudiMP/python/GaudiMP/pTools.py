@@ -362,17 +362,26 @@ class FileRecordsAgent( ) :
                               %(ob.__class__.__name__,path))
 
     def ProcessTimeSpanFSR( self, path, ob ) :
+        ob2 = self.fsr.retrieveObject( path )
         if ob.containedObjects().size() :
             sz = ob.containedObjects().size()
-            for j in xrange(sz) :
+            cob = ob2.containedObjects()[0]
+            min = cob.earliest()
+            max = cob.latest()
+            for j in xrange( sz ) :
                 cob = ob.containedObjects()[j]
-                self.log.debug('Adding TimeSpanFSR')
+                self.log.debug( 'Adding TimeSpanFSR' )
+                if cob.earliest() < min:
+                  min = cob.earliest()
+                if cob.latest() > max:
+                  max = cob.latest()
                 # this is annoying: it has to be rebuilt, without a key & added
-                tsfsr = gbl.LHCb.TimeSpanFSR()
-                tsfsr.setEarliest( cob.earliest() )
-                tsfsr.setLatest(   cob.latest(  ) )
-                self.fsr[path].add(tsfsr)
                 continue
+            tsfsr = gbl.LHCb.TimeSpanFSR()
+            tsfsr.setEarliest( min )
+            tsfsr.setLatest( max )
+            self.fsr[path].clear()
+            self.fsr[path].add( tsfsr )
 
     def ProcessEventCountFSR( self, path, ob ) :
         self.log.debug('Event Count Input Addition')
@@ -616,7 +625,7 @@ class Syncer( object ) :
             # check the status of each sync object
             for k in active :
                 sMini = self.d[k]
-                
+
                 if sMini.check() or sMini.checkLast():
                     if sMini.checkLast() and sMini.check() :
                         # if last Event set,then event loop finished
