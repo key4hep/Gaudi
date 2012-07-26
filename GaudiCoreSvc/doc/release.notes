@@ -4,6 +4,9 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2012-07-26 - Benedikt Hegner
+ - Fixed compilation with -std=c++0x.
+
 ! 2012-07-02 - Marco Clemencic
  - Added specialization of MessageSvc (TBBMessageSvc) that uses TBB (Intel
    Threading Building Blocks) tasks to print the messages asynchronously.

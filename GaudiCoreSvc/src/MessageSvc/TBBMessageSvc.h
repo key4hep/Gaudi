@@ -9,6 +9,10 @@
 // just needed for the thread id
 #include <tbb/compat/thread>
 
+#if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
+#include <thread>
+#endif
+
 /** @class TBMessageSvc TBMessageSvc.h MessageSvc/TBMessageSvc.h
   *
   * Extension to the standard MessageSvc that
