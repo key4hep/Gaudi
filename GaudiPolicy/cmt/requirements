@@ -768,6 +768,10 @@ macro_append cppflags       "" \
       host-i686&target-x86_64 " -m64" \
       host-i386&target-x86_64 " -m64"
 
+# Add the c++0x options when using the g11max special platform (gcc latest with C++11)
+macro_append cppflags "" \
+        target-g11max " -std=c++0x"
+
 # FIXME: enforce the use of Boost Filesystem V3 to be compatible between 1.44 and 1.48
 macro_append pp_cppflags " -DBOOST_FILESYSTEM_VERSION=3 "
 
