@@ -104,22 +104,16 @@ def loadConfigurableDb():
         log.debug( "walking in [%s]..." % path )
         if not os.path.exists(path):
             continue
-        # speed-up: <project>_merged_confDb.py files are installed as :
-        # "/some/path/InstallArea/[<CMTCONFIG>/]python/<project>_merged_confDb.py"
-        # so why bother wandering in other directories ?
-        if "InstallArea" in path:
-            if is_zipfile(path):
-                # turn filename syntax into module syntax: remove path+extension and replace / with . (dot)
-                confDbModules = [ os.path.splitext(f)[0].replace('/','.')
-                                  for f in ZipFile(path).namelist()
-                                  if f.endswith("_merged_confDb.py") or f.endswith("_merged_confDb.pyc") ]
-            else:
-                # turn filename syntax into module syntax: remove path+extension and replace / with . (dot)
-                confDbModules = [ os.path.splitext( f[len(path)+1:] )[0].replace(os.sep,'.')
-                                  for f in glob(path_join(path, "*_merged_confDb.py"))
-                                  if os.path.isfile(f) ]
+        if is_zipfile(path):
+            # turn filename syntax into module syntax: remove path+extension and replace / with . (dot)
+            confDbModules = [ os.path.splitext(f)[0].replace('/','.')
+                              for f in ZipFile(path).namelist()
+                              if f.endswith("_merged_confDb.py") or f.endswith("_merged_confDb.pyc") ]
         else:
-            continue
+            # turn filename syntax into module syntax: remove path+extension and replace / with . (dot)
+            confDbModules = [ os.path.splitext( f[len(path)+1:] )[0].replace(os.sep,'.')
+                              for f in glob(path_join(path, "*_merged_confDb.py"))
+                              if os.path.isfile(f) ]
         for confDbModule in confDbModules:
             nFiles += 1
             log.debug( "\t-importing [%s]..." % confDbModule )
