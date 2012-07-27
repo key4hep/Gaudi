@@ -5,6 +5,8 @@ Package manager : Marco Clemencic
  - Modified ConfigurableDb.py to search for *_merged_confDb.py in all the dirs
    of PYTHONPATH and not only in the InstallArea.
    It is needed to be able to run the tests from the build directory (CMake).
+ - Modified the test for bug #87340 to work without the installation of
+   libGaudiKernel.so (CMake).
 
 ============================= GaudiKernel v28r2 ==============================
 ! 2012-06-08 - Marco Clemencic
