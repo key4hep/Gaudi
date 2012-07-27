@@ -112,9 +112,13 @@ macro(gaudi_project project version)
 	   "Single build output directory for all libraries" FORCE)
   endif()
 
-  set(env_xml ${CMAKE_BINARY_DIR}/${project}Environment.xml
-      CACHE STRING "path to the XML file for the environment")
+  set(env_xml ${CMAKE_BINARY_DIR}/${project}BuildEnvironment.xml
+      CACHE STRING "path to the XML file for the environment to be used in building and testing")
   mark_as_advanced(env_xml)
+
+  set(env_release_xml ${CMAKE_BINARY_DIR}/${project}Environment.xml
+      CACHE STRING "path to the XML file for the environment to be used once the project is installed")
+  mark_as_advanced(env_release_xml)
 
   if(BUILD_TESTS)
     enable_testing()
@@ -271,10 +275,46 @@ macro(gaudi_project project version)
     string(TOUPPER ${_pack} _pack)
     set(project_environment ${project_environment} SET ${_pack}ROOT \${${_proj}_PROJECT_ROOT}/${package})
   endforeach()
+  # (so far, the build and the release envirnoments are identical)
+  set(project_build_environment ${project_environment})
   #   - 'packages' environments
   foreach(package ${packages})
     get_property(_pack_env DIRECTORY ${package} PROPERTY ENVIRONMENT)
     set(project_environment ${project_environment} ${_pack_env})
+    set(project_build_environment ${project_build_environment} ${_pack_env})
+
+    # we need special handling of PYTHONPATH and PATH for the build-time environment
+    set(_has_config NO)
+    set(_has_python NO)
+    if(EXISTS ${CMAKE_BINARY_DIR}/${package}/genConf OR TARGET ${package}ConfUserDB)
+      set(project_build_environment ${project_build_environment}
+          PREPEND PYTHONPATH ${CMAKE_BINARY_DIR}/${package}/genConf)
+      set(_has_config YES)
+    endif()
+
+    if(EXISTS ${CMAKE_SOURCE_DIR}/${package}/python)
+      set(project_build_environment ${project_build_environment}
+          PREPEND PYTHONPATH \${${_proj}_PROJECT_ROOT}/${package}/python)
+      set(_has_python YES)
+    endif()
+
+    if(_has_config AND _has_python)
+      # we need to add a special fake __init__.py that allow import of modules
+      # from different copies of the package
+      file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/python/${package})
+      file(WRITE ${CMAKE_BINARY_DIR}/python/${package}/__init__.py
+           "\nimport os,sys\n__path__ = filter(os.path.exists, [os.path.join(d, '${package}') for d in sys.path if d])\n")
+      if(EXISTS ${CMAKE_SOURCE_DIR}/${package}/python/${package}/__init__.py)
+        file(READ ${CMAKE_SOURCE_DIR}/${package}/python/${package}/__init__.py _py_init_content)
+        file(APPEND ${CMAKE_BINARY_DIR}/python/${package}/__init__.py
+             "${_py_init_content}")
+      endif()
+    endif()
+
+    if(EXISTS ${CMAKE_SOURCE_DIR}/${package}/scripts)
+      set(project_build_environment ${project_build_environment}
+          PREPEND PATH \${${_proj}_PROJECT_ROOT}/${package}/scripts)
+    endif()
   endforeach()
 
   message(STATUS "  environment for the project")
@@ -285,10 +325,18 @@ macro(gaudi_project project version)
         PREPEND LD_LIBRARY_PATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/lib
         PREPEND PYTHONPATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/python
         PREPEND PYTHONPATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/python/lib-dynload)
-
+  #   - build dirs
+  set(project_build_environment ${project_build_environment}
+      PREPEND PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+      PREPEND LD_LIBRARY_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+      PREPEND PYTHONPATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+      PREPEND PYTHONPATH ${CMAKE_BINARY_DIR}/python)
   # - produce environment XML description
-  gaudi_generate_env_conf(${env_xml} ${project_environment})
-  install(FILES ${env_xml} DESTINATION .)
+  #   release version
+  gaudi_generate_env_conf(${env_release_xml} ${project_environment})
+  install(FILES ${env_release_xml} DESTINATION .)
+  #   build-time version
+  gaudi_generate_env_conf(${env_xml} ${project_build_environment})
 
   #--- Generate config files to be imported by other projects.
   gaudi_generate_project_config_version_file()
@@ -1443,6 +1491,7 @@ function(gaudi_generate_env_conf filename)
     set(data "${data}  ${ln}\n")
   endwhile()
   set(data "${data}</env:config>\n")
+
   get_filename_component(fn ${filename} NAME)
   message(STATUS "Generating ${fn}")
   file(WRITE ${filename} "${data}")
