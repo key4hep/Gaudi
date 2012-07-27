@@ -7,6 +7,7 @@ Package manager : Marco Clemencic
    It is needed to be able to run the tests from the build directory (CMake).
  - Modified the test for bug #87340 to work without the installation of
    libGaudiKernel.so (CMake).
+ - Rationalized the permissions of files in the repository.
 
 ============================= GaudiKernel v28r2 ==============================
 ! 2012-06-08 - Marco Clemencic
