@@ -1,6 +1,9 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2012-07-27 - Marco Clemencic
+ - Rationalized the permissions of files in the repository.
+
 ! 2012-07-15 - Chris Jones
  - Patch #5464: Implement the 'getIfExists' for GaudiTool as well as GaudiAlgorithm
 

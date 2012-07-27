@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2012-07-27 - Marco Clemencic
+ - Rationalized the permissions of files in the repository.
+
 ! 2012-07-26 - Marco Clemencic
  - Added the possibility to compile with the option -std=c+=0x, for example in
    the LCG nightly platform *-g11max-*.
