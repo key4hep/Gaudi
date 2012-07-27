@@ -1,6 +1,11 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2012-07-27 - Marco Clemencic
+ - Modified ConfigurableDb.py to search for *_merged_confDb.py in all the dirs
+   of PYTHONPATH and not only in the InstallArea.
+   It is needed to be able to run the tests from the build directory (CMake).
+
 ! 2012-07-13 - Marco Clemencic
  - Fixed a problem with symbols visibility.
 
