@@ -1,6 +1,11 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2012-07-30 - Marco Clemencic
+ - Override LCG_releases and LCG_external to avoid stress on AFS when using
+   LCGCMT >= 64.
+   *** The hack must be removed ASAP ***
+
 ! 2012-07-27 - Marco Clemencic
  - Rationalized the permissions of files in the repository.
 
