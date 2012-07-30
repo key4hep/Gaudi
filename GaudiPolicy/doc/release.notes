@@ -1,6 +1,14 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2012-07-26 - Marco Clemencic
+ - Added the possibility to compile with the option -std=c+=0x, for example in
+   the LCG nightly platform *-g11max-*.
+
+! 2012-07-20 - Marco Clemencic
+ - Modified the script createProjVersHeader.py to modify the destination file
+   only if there are changes (prevents useless recompilation).
+
 ============================= GaudiPolicy v12r1 ==============================
 ! 2012-06-19 - Marco Clemencic
  - Small hack in GaudiTest.py to prevent spurious escape sequences in teh output

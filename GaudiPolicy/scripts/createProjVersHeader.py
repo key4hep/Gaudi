@@ -27,8 +27,8 @@ def main():
             print "Creating directory", outdir
         os.makedirs(outdir)
 
-    open(outputfile, "w").write(
-    """#ifndef %(proj)s_VERSION
+    # Prepare data to be written
+    outputdata = """#ifndef %(proj)s_VERSION
 /* Automatically generated file: do not modify! */
 #ifndef CALC_GAUDI_VERSION
 #define CALC_GAUDI_VERSION(maj,min) (((maj) << 16) + (min))
@@ -38,7 +38,19 @@ def main():
 #define %(proj)s_PATCH_VERSION %(pat)d
 #define %(proj)s_VERSION CALC_GAUDI_VERSION(%(proj)s_MAJOR_VERSION,%(proj)s_MINOR_VERSION)
 #endif
-"""%{ 'proj': project.upper(), 'min': minver, 'maj': majver, 'pat': patver })
+""" % { 'proj': project.upper(), 'min': minver, 'maj': majver, 'pat': patver }
+
+    # Get the current content of the destination file (if any)
+    try:
+        f = open(outputfile, "r")
+        olddata = f.read()
+        f.close()
+    except IOError:
+        olddata = None
+
+    # Overwrite the file only if there are changes
+    if outputdata != olddata:
+        open(outputfile, "w").write(outputdata)
 
 if __name__ == "__main__":
     main()

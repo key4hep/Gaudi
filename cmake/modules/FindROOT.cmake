@@ -17,8 +17,39 @@ set(ROOT_ALL_COMPONENTS Core Cint Reflex RIO Hist Tree TreePlayer Cintex Matrix 
 # and build tools
 set(ROOT_ALL_TOOLS genreflex genmap root)
 
+# Helper macro to discover the dependencies between components needed on Mac)
+macro(_root_get_deps libpath var)
+  # reset output var
+  set(${var})
+  if(APPLE)
+    get_filename_component(_libname ${libpath} NAME)
+    # get all required libraries
+    execute_process(COMMAND otool -L ${libpath}
+                    OUTPUT_VARIABLE _otool_out)
+    # find all the libs taken from @rpath (they come from ROOT)
+    string(REGEX MATCHALL "@rpath/lib[^ ]*\\.so" _otool_out "${_otool_out}")
+    # remove the current library (if present)
+    list(REMOVE_ITEM _otool_out "@rpath/${_libname}")
+    # translate to a list of component names
+    set(${var})
+    foreach(_c ${_otool_out})
+      string(REPLACE "@rpath/lib" "" _c ${_c})
+      string(REPLACE ".so" "" _c ${_c})
+      list(APPEND ${var} ${_c})
+    endforeach()
+  endif()
+endmacro()
+
+# Enforce a minimal list if none is explicitly requested
+if(NOT ROOT_FIND_COMPONENTS)
+  set(ROOT_FIND_COMPONENTS Core)
+endif()
+
 # Locate the libraries (forcing few default ones)
-foreach(component ${ROOT_FIND_COMPONENTS} Core Cint Reflex)
+while(ROOT_FIND_COMPONENTS)
+  # pop the first element from the list
+  list(GET ROOT_FIND_COMPONENTS 0 component)
+  list(REMOVE_AT ROOT_FIND_COMPONENTS 0)
   # look for the library if not found yet
   if(NOT ROOT_${component}_LIBRARY)
     find_library(ROOT_${component}_LIBRARY NAMES ${component}
@@ -28,8 +59,19 @@ foreach(component ${ROOT_FIND_COMPONENTS} Core Cint Reflex)
       set(_found_components ${_found_components} ${component})
     endif()
   endif()
+  if(APPLE)
+    if(ROOT_${component}_LIBRARY AND NOT DEFINED ROOT_${component}_DEPS)
+      #message(STATUS "scanning dependencies of ${component} (${ROOT_${component}_LIBRARY})")
+      _root_get_deps(${ROOT_${component}_LIBRARY} ROOT_${component}_DEPS)
+      #message(STATUS "found: ${ROOT_${component}_DEPS}")
+      set(ROOT_${component}_DEPS ${ROOT_${component}_DEPS} CACHE INTERNAL "Components ${component} depends on.")
+    endif()
+    list(APPEND ROOT_FIND_COMPONENTS ${ROOT_${component}_DEPS})
+    list(REMOVE_DUPLICATES ROOT_FIND_COMPONENTS)
+  endif()
+  #message(STATUS "ROOT_FIND_COMPONENTS=${ROOT_FIND_COMPONENTS}")
   set(ROOT_LIBRARIES ${ROOT_LIBRARIES} ${ROOT_${component}_LIBRARY})
-endforeach()
+endwhile()
 
 # Locate the tools
 foreach(component ${ROOT_ALL_TOOLS})
