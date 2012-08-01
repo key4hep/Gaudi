@@ -4,6 +4,9 @@
 # Description: standard and commonly used components
 ################################################################################
 
+! 2012-07-27 - Marco Clemencic
+ - Rationalized the permissions of files in the repository.
+
 ============================ GaudiCommonSvc v1r2 =============================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.
