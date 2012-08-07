@@ -1221,8 +1221,12 @@ function(gaudi_install_python_modules)
   # check for the presence of the __init__.py's and install them if needed
   file(GLOB sub-dir RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} python/*)
   foreach(dir ${sub-dir})
-    if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${dir} AND NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${dir}/__init__.py)
-      message(WARNING "The file ${dir}/__ini__.py is missing. I shall install an empty one.")
+    if(NOT dir STREQUAL python/.svn
+       AND IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${dir}
+       AND NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${dir}/__init__.py)
+      set(pyfile ${CMAKE_CURRENT_SOURCE_DIR}/${dir}/__init__.py)
+      file(RELATIVE_PATH pyfile ${CMAKE_BINARY_DIR} ${pyfile})
+      message(WARNING "The file  ${pyfile} is missing. I shall install an empty one.")
       if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/__init__.py)
         file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/__init__.py "# Empty file generated automatically\n")
       endif()
