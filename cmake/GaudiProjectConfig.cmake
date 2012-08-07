@@ -601,6 +601,7 @@ endmacro()
 #       gaudi_add_library
 #-------------------------------------------------------------------------------
 function(gaudi_resolve_link_libraries variable)
+  #message(STATUS "gaudi_resolve_link_libraries input: ${ARGN}")
   set(collected)
   foreach(package ${ARGN})
     # check if it is an actual library or a target first
@@ -627,12 +628,26 @@ function(gaudi_resolve_link_libraries variable)
         else()
           set(collected ${collected} ${${package}_LIBRARIES})
         endif()
+      elseif(package STREQUAL debug OR package STREQUAL optimized OR package STREQUAL general)
+        # pop the next element
+        list(GET packages 0 lib)
+        list(REMOVE_AT packages 0)
+        if((package STREQUAL general) OR
+           (BUILD_TYPE STREQUAL Debug AND package STREQUAL debug) OR
+           (BUILD_TYPE STREQUAL Release AND package STREQUAL optimized))
+          # we keep it only if corresponds to the build type
+          set(collected ${collected} ${lib})
+        endif()
       else()
         # if it's not a package, we just add it as it is... there are a lot of special cases
         set(collected ${collected} ${package})
       endif()
     endif()
   endforeach()
+  if(collected)
+    list(REMOVE_DUPLICATES collected)
+  endif()
+  #message(STATUS "gaudi_resolve_link_libraries output: ${collected}")
   set(${variable} ${collected} PARENT_SCOPE)
 endfunction()
 
