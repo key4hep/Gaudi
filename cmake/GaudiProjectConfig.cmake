@@ -492,7 +492,7 @@ macro(gaudi_collect_subdir_deps)
         # check that the declared dependency refers to an existing (known) package
         list(FIND known_packages ${___p} idx)
         if(idx LESS 0)
-          message(WARNING "Subdirectory '${_p}' declare dependency on unknown subdirectory '${___p}'")
+          message(WARNING "Subdirectory '${_p}' declares dependency on unknown subdirectory '${___p}'")
         endif()
         list(APPEND ${_p}_DEPENDENCIES ${___p})
       endforeach()
@@ -525,6 +525,25 @@ function(gaudi_sort_subdirectories var)
   endforeach()
   set(${var} ${out_packages} PARENT_SCOPE)
 endfunction()
+
+#-------------------------------------------------------------------------------
+# gaudi_list_dependencies(<variable> subdir)
+#
+# Add the subdirectories we depend on, (directly and indirectly) to the variable
+# passed.
+#-------------------------------------------------------------------------------
+macro(gaudi_list_dependencies variable subdir)
+  #message(STATUS "gaudi_list_dependencies(${subdir})")
+  # recurse for the direct dependencies
+  foreach(other ${${subdir}_DEPENDENCIES})
+    list(FIND ${variable} ${other} other_idx)
+    if(other_idx LESS 0) # recurse only if the entry is not yet in the list
+      gaudi_list_dependencies(${variable} ${other})
+      list(APPEND ${variable} ${other})
+    endif()
+  endforeach()
+  #message(STATUS " --> ${${variable}}")
+endmacro()
 
 #-------------------------------------------------------------------------------
 # gaudi_get_packages
@@ -893,6 +912,30 @@ macro(gaudi_expand_sources VAR)
 endmacro()
 
 #-------------------------------------------------------------------------------
+# gaudi_get_genheader_targets(<variable>)
+#
+# Collect the targets that are used to generate the headers in the
+# subdirectories we depend on and store the list in the variable.
+#-------------------------------------------------------------------------------
+function(gaudi_get_genheader_targets variable)
+  # get direct and indirect dependencies
+  file(RELATIVE_PATH subdir_name ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+  set(deps)
+  set(targets)
+  gaudi_list_dependencies(deps ${subdir_name})
+  foreach(subdir ${deps})
+    if(EXISTS ${CMAKE_SOURCE_DIR}/${subdir})
+      get_property(tmp DIRECTORY ${CMAKE_SOURCE_DIR}/${subdir} PROPERTY GENERATED_HEADERS_TARGETS)
+      set(targets ${targets} ${tmp})
+    endif()
+  endforeach()
+  if(targets)
+    list(REMOVE_DUPLICATES targets)
+  endif()
+  set(${variable} ${targets} PARENT_SCOPE)
+endfunction()
+
+#-------------------------------------------------------------------------------
 # gaudi_common_add_build(sources...
 #                 LINK_LIBRARIES library1 package2 ...
 #                 INCLUDE_DIRS dir1 package2 ...)
@@ -925,6 +968,35 @@ macro(gaudi_common_add_build)
   # get the library dirs required to get the libraries we use
   gaudi_get_required_library_dirs(lib_path ${ARG_LINK_LIBRARIES})
   set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
+
+  # if not computed yet for the package, find the list of targets that generate
+  # headers in the packages we depend on.
+  if(NOT required_genheader_targets)
+    gaudi_get_genheader_targets(required_genheader_targets)
+    #message(STATUS "required_genheader_targets: ${required_genheader_targets}")
+    set(required_genheader_targets ${required_genheader_targets} PARENT_SCOPE)
+  endif()
+endmacro()
+
+#-------------------------------------------------------------------------------
+# gaudi_add_genheader_dependencies(target)
+#
+# Add the dependencies declared in the variables required_genheader_targets and
+# required_local_genheader_targets to the specified target.
+#
+# The special variable required_genheader_targets is filled from the property
+# GENERATED_HEADERS_TARGETS of the subdirectories we depend on.
+#
+# The variable required_local_genheader_targets should be used within a
+# subdirectory if the generated headers are needed locally.
+#-------------------------------------------------------------------------------
+macro(gaudi_add_genheader_dependencies target)
+  if(required_genheader_targets)
+    add_dependencies(${target} ${required_genheader_targets})
+  endif()
+  if(required_local_genheader_targets)
+    add_dependencies(${target} ${required_local_genheader_targets})
+  endif()
 endmacro()
 
 #---------------------------------------------------------------------------------------------------
@@ -973,9 +1045,8 @@ function(gaudi_add_library library)
     REQUIRED_LIBRARIES "${ARG_LINK_LIBRARIES}")
   set_property(GLOBAL APPEND PROPERTY LINKER_LIBRARIES ${library})
 
-  if(TARGET ${library}Obj2doth)
-    add_dependencies( ${library} ${library}Obj2doth)
-  endif()
+  gaudi_add_genheader_dependencies(${library})
+
   #----Installation details-------------------------------------------------------
   install(TARGETS ${library} EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION  ${lib})
   gaudi_export(LIBRARY ${library})
@@ -1002,6 +1073,8 @@ function(gaudi_add_module library)
   gaudi_generate_configurables(${library})
 
   set_property(GLOBAL APPEND PROPERTY COMPONENT_LIBRARIES ${library})
+
+  gaudi_add_genheader_dependencies(${library})
 
   #----Installation details-------------------------------------------------------
   install(TARGETS ${library} LIBRARY DESTINATION ${lib})
@@ -1030,6 +1103,8 @@ function(gaudi_add_dictionary dictionary header selection)
 
   reflex_dictionary(${dictionary} ${header} ${selection} LINK_LIBRARIES ${ARG_LINK_LIBRARIES} OPTIONS ${ARG_OPTIONS})
   set_target_properties(${dictionary}Dict PROPERTIES COMPILE_FLAGS "-Wno-overloaded-virtual")
+
+  gaudi_add_genheader_dependencies(${dictionary}Dict)
 
   # Notify the project level target
   get_property(rootmapname TARGET ${dictionary}Gen PROPERTY ROOTMAPFILE)
@@ -1061,6 +1136,8 @@ function(gaudi_add_python_module module)
   endif()
   target_link_libraries(${module} ${PYTHON_LIBRARIES} ${ARG_LINK_LIBRARIES})
 
+  gaudi_add_genheader_dependencies(${module})
+
   #----Installation details-------------------------------------------------------
   install(TARGETS ${module} LIBRARY DESTINATION python/lib-dynload)
 endfunction()
@@ -1084,6 +1161,8 @@ function(gaudi_add_executable executable)
   if (USE_EXE_SUFFIX)
     set_target_properties(${executable} PROPERTIES SUFFIX .exe)
   endif()
+
+  gaudi_add_genheader_dependencies(${executable})
 
   #----Installation details-------------------------------------------------------
   install(TARGETS ${executable} EXPORT ${CMAKE_PROJECT_NAME}Exports RUNTIME DESTINATION ${bin})
