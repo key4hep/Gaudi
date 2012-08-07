@@ -434,12 +434,15 @@ function(include_package_directories)
     if(TARGET ${package})
       get_target_property(to_incl ${package} SOURCE_DIR)
       if(to_incl)
-        #message(STATUS "include_package_directories2 include_directories(${to_incl})")
+        #message(STATUS "include_package_directories1 include_directories(${to_incl})")
         include_directories(${to_incl})
       endif()
     elseif(IS_DIRECTORY ${package})
-      #message(STATUS "include_package_directories1 include_directories(${package})")
+      #message(STATUS "include_package_directories2 include_directories(${package})")
       include_directories(${package})
+    elseif(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/${package}) # package can be the name of a subdir
+      #message(STATUS "include_package_directories3 include_directories(${package})")
+      include_directories(${CMAKE_SOURCE_DIR}/${package})
     else()
       # ensure that the current directory knows about the package
       find_package(${package} QUIET)
@@ -459,17 +462,52 @@ function(include_package_directories)
           set(to_incl ${package}_INCLUDE_DIRS)
         endif()
         # Include the directories
-        #message(STATUS "include_package_directories3 include_directories(${${to_incl}})")
+        #message(STATUS "include_package_directories4 include_directories(${${to_incl}})")
         include_directories(${${to_incl}})
       endif()
     endif()
   endforeach()
 endfunction()
 
-# NO-OP function used by gaudi_sort_subdirectories to get the dependencies
-# from the subdirectories before actually add them
+#-------------------------------------------------------------------------------
+# gaudi_depends_on_subdirs(subdir1 [subdir2 ...])
+#
+# The presence of this function in a CMakeLists.txt is used by gaudi_sort_subdirectories
+# to get the dependencies from the subdirectories before actually adding them.
+#
+# The fuction performs those operations that are not needed if there is no
+# dependency declared.
+#
+# The arguments are actually ignored, so there is a check to execute it only once.
+#-------------------------------------------------------------------------------
 function(gaudi_depends_on_subdirs)
+  # avoid multiple calls (note that the
+  if(NOT gaudi_depends_on_subdirs_called)
+    # get direct and indirect dependencies
+    file(RELATIVE_PATH subdir_name ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+    set(deps)
+    gaudi_list_dependencies(deps ${subdir_name})
+
+    # find the list of targets that generate headers in the packages we depend on.
+    gaudi_get_genheader_targets(required_genheader_targets ${deps})
+    #message(STATUS "required_genheader_targets: ${required_genheader_targets}")
+    set(required_genheader_targets ${required_genheader_targets} PARENT_SCOPE)
+
+    # add the the directories that provide headers to the include_directories
+    foreach(subdir ${deps})
+      if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/${subdir})
+        get_property(has_local_headers DIRECTORY ${CMAKE_SOURCE_DIR}/${subdir} PROPERTY INSTALLS_LOCAL_HEADERS SET)
+        if(has_local_headers)
+          include_directories(${CMAKE_SOURCE_DIR}/${subdir})
+        endif()
+      endif()
+    endforeach()
+
+    # prevent multiple executions
+    set(gaudi_depends_on_subdirs_called TRUE PARENT_SCOPE)
+  endif()
 endfunction()
+
 #-------------------------------------------------------------------------------
 # gaudi_collect_subdir_deps(subdirectories)
 #
@@ -912,18 +950,14 @@ macro(gaudi_expand_sources VAR)
 endmacro()
 
 #-------------------------------------------------------------------------------
-# gaudi_get_genheader_targets(<variable>)
+# gaudi_get_genheader_targets(<variable> [subdir1 ...])
 #
 # Collect the targets that are used to generate the headers in the
-# subdirectories we depend on and store the list in the variable.
+# subdirectories specified in the arguments and store the list in the variable.
 #-------------------------------------------------------------------------------
 function(gaudi_get_genheader_targets variable)
-  # get direct and indirect dependencies
-  file(RELATIVE_PATH subdir_name ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
-  set(deps)
   set(targets)
-  gaudi_list_dependencies(deps ${subdir_name})
-  foreach(subdir ${deps})
+  foreach(subdir ${ARGN})
     if(EXISTS ${CMAKE_SOURCE_DIR}/${subdir})
       get_property(tmp DIRECTORY ${CMAKE_SOURCE_DIR}/${subdir} PROPERTY GENERATED_HEADERS_TARGETS)
       set(targets ${targets} ${tmp})
@@ -969,13 +1003,6 @@ macro(gaudi_common_add_build)
   gaudi_get_required_library_dirs(lib_path ${ARG_LINK_LIBRARIES})
   set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
 
-  # if not computed yet for the package, find the list of targets that generate
-  # headers in the packages we depend on.
-  if(NOT required_genheader_targets)
-    gaudi_get_genheader_targets(required_genheader_targets)
-    #message(STATUS "required_genheader_targets: ${required_genheader_targets}")
-    set(required_genheader_targets ${required_genheader_targets} PARENT_SCOPE)
-  endif()
 endmacro()
 
 #-------------------------------------------------------------------------------
@@ -1281,13 +1308,23 @@ endfunction()
 # To be used in case the header files do not have a library.
 #---------------------------------------------------------------------------------------------------
 function(gaudi_install_headers)
+  set(has_local_headers FALSE)
   foreach(hdr_dir ${ARGN})
     install(DIRECTORY ${hdr_dir}
             DESTINATION include
             FILES_MATCHING
               PATTERN "*.h"
               PATTERN "*.icpp")
+    if(NOT IS_ABSOLUTE ${hdr_dir})
+      set(has_local_headers TRUE)
+    endif()
   endforeach()
+  # flag the current directory as one that installs headers
+  #   the property is used when collecting the include directories for the
+  #   dependent subdirs
+  if(has_local_headers)
+    set_property(DIRECTORY PROPERTY INSTALLS_LOCAL_HEADERS TRUE)
+  endif()
 endfunction()
 
 #-------------------------------------------------------------------------------
