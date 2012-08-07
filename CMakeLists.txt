@@ -8,4 +8,4 @@ find_package(GaudiProject)
 #---------------------------------------------------------------
 
 # Declare project name and version
-gaudi_project(Gaudi v23r1)
+gaudi_project(Gaudi v23r3)
