@@ -161,22 +161,22 @@ macro(gaudi_project project version)
   # (python scripts are located as such but run through python)
   set(binary_paths ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts ${CMAKE_SOURCE_DIR}/GaudiKernel/scripts ${CMAKE_SOURCE_DIR}/Gaudi/scripts ${binary_paths})
 
-  find_program(env_cmd env.py PATHS ${binary_paths})
+  find_program(env_cmd env.py HINTS ${binary_paths})
   set(env_cmd ${PYTHON_EXECUTABLE} ${env_cmd})
 
-  find_program(merge_cmd merge_files.py PATHS ${binary_paths})
+  find_program(merge_cmd merge_files.py HINTS ${binary_paths})
   set(merge_cmd ${PYTHON_EXECUTABLE} ${merge_cmd} --no-stamp)
 
-  find_program(versheader_cmd createProjVersHeader.py PATHS ${binary_paths})
+  find_program(versheader_cmd createProjVersHeader.py HINTS ${binary_paths})
   set(versheader_cmd ${PYTHON_EXECUTABLE} ${versheader_cmd})
 
-  find_program(genconfuser_cmd genconfuser.py PATHS ${binary_paths})
+  find_program(genconfuser_cmd genconfuser.py HINTS ${binary_paths})
   set(genconfuser_cmd ${PYTHON_EXECUTABLE} ${genconfuser_cmd})
 
-  find_program(zippythondir_cmd ZipPythonDir.py PATHS ${binary_paths})
+  find_program(zippythondir_cmd ZipPythonDir.py HINTS ${binary_paths})
   set(zippythondir_cmd ${PYTHON_EXECUTABLE} ${zippythondir_cmd})
 
-  find_program(gaudirun_cmd gaudirun.py PATHS ${binary_paths})
+  find_program(gaudirun_cmd gaudirun.py HINTS ${binary_paths})
   set(gaudirun_cmd ${PYTHON_EXECUTABLE} ${gaudirun_cmd})
 
   # genconf is special because it must be known before we actually declare the
@@ -402,7 +402,7 @@ macro(_gaudi_use_other_projects)
 ")
         endif()
         include_directories(${${other_project}_INCLUDE_DIRS})
-        set(binary_paths ${${other_project}_BINARY_PATH})
+        set(binary_paths ${${other_project}_BINARY_PATH} ${binary_paths})
         foreach(exported ${${other_project}_EXPORTED_SUBDIRS})
           list(FIND known_packages ${exported} is_needed)
           if(is_needed LESS 0)
