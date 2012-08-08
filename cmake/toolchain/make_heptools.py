@@ -33,6 +33,7 @@ LCG_prepare_paths()"""
                         "fftw": "fftw3",
                         "Frontier_Client": "frontier_client",
                         "GCCXML":  "gccxml",
+                        "Qt":  "qt",
                         }
 
     __special_names__ = {"qt": "Qt"}
