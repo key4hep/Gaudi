@@ -6,7 +6,7 @@
 #  HEPMC_INCLUDE_DIRS (not cached)
 #  HEPMC_LIBRARIES
 
-find_path(HEPMC_INCLUDE_DIR HepMC/ParticleData.hh)
+find_path(HEPMC_INCLUDE_DIR HepMC/GenEvent.h)
 find_library(HEPMC_LIBRARIES NAMES HepMC)
 
 set(HEPMC_INCLUDE_DIRS ${HEPMC_INCLUDE_DIR})
