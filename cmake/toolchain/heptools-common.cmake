@@ -115,8 +115,10 @@ if(NOT heptools_version)
   message(FATAL_ERROR "Variable heptools_version not defined. It must be defined before including heptools-common.cmake")
 endif()
 
-find_path(LCG_releases LCGCMT/LCGCMT_${heptools_version} ENV CMTPROJECTPATH)
-if(NOT LCG_releases)
+find_path(LCG_releases NAMES LCGCMT/LCGCMT_${heptools_version} LCGCMT/LCGCMT-${heptools_version} PATHS ENV CMTPROJECTPATH)
+if(LCG_releases)
+  message(STATUS "Found LCGCMT ${heptools_version} in ${LCG_releases}")
+else()
   message(FATAL_ERROR "Cannot find location of LCGCMT ${heptools_version}")
 endif()
 # define location of externals

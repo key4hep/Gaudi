@@ -28,7 +28,7 @@ alg = PropertyAlg(OutputLevel = 3,
                   IntArray    = [1, 2, 3, 5],
                   Int64Array  = [1 << 32],
                   UInt64Array = [long(1 << 32)], # 'long' is used for testing
-                  DoubleArray = [ -11.0 , 2., 3.3, 0.4e-03],
+                  DoubleArray = [ -11.0 , 2., 3.3, 0.4e-03, 1.e-20, 1.e20],
                   StringArray = ["one", "two", "four"],
                   BoolArray   = [False, True, False],
                   EmptyArray  = [],
@@ -44,7 +44,7 @@ alg = PropertyAlg(OutputLevel = 3,
 
 
                   PIntArray    = [1, 2, 3, 5],
-                  PDoubleArray = [1.1 , 2., 3.3],
+                  PDoubleArray = [1.1 , 2., 3.3, 1.e-20, 1.e20],
                   PStringArray = ["one", "two", "four"],
                   PBoolArray   = [True, False, True, False],
 

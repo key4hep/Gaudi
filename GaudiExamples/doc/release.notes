@@ -7,6 +7,10 @@ Package manager : Marco Clemencic
 ! 2012-07-02 - Marco Clemencic
  - Added a test for the new TBBMessageSvc.
 
+! 2012-06-28 - Marco Clemencic
+ - Modified a property test to expose bug #95733 and updated reference files
+   after the fix.
+
 ============================ GaudiExamples v23r3 =============================
 ! 2012-06-09 - Marco Clemencic
  - Fixed a compilation warning in the IntelProfiler examples.

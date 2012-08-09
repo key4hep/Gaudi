@@ -5,7 +5,7 @@ find_package(ROOT REQUIRED COMPONENTS Core Reflex)
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiKernel Lib/*.cpp
-                  LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost Root
+                  LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT
                   INCLUDE_DIRS Boost ROOT
                   PUBLIC_HEADERS GaudiKernel)
 

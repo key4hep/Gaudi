@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 #include <algorithm>
+#include "GaudiKernel/Kernel.h"
 // ============================================================================
 /** @file
  *
@@ -20,7 +21,7 @@
  *
  *  The package has been designed with the kind help from
  *  Galina PAKHLOVA and Sergey BARSUK.  Many bright ideas,
- *  contributions and advices from G.Raven, J.van Tilburg,
+ *  contributions and advises from G.Raven, J.van Tilburg,
  *  A.Golutvin, P.Koppenburg have been used in the design.
  *
  *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
@@ -37,7 +38,7 @@ namespace Gaudi
      *  @param index invalid index
      *  @param size  range size
      */
-    void rangeException
+    GAUDI_API void rangeException
     ( const long   index ,
       const size_t size  ) ;
     // ========================================================================

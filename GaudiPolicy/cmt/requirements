@@ -897,6 +897,9 @@ macro_append componentshr_linkopts "" \
       target-linux                 "-Wl,--no-undefined "
 
 macro_append componentshr_linkopts "" \
+      target-linux                 "-pthread "
+
+macro_append componentshr_linkopts "" \
       target-linux&target-opt&strip-symbols "-Wl,-s "
 
 macro_append componentshr_linkopts "" \
@@ -915,6 +918,9 @@ macro libraryshr_linkopts   "" \
 
 macro_append libraryshr_linkopts "" \
       target-linux               "-Wl,--no-undefined "
+
+macro_append libraryshr_linkopts "" \
+      target-linux                 "-pthread "
 
 macro_append libraryshr_linkopts   "" \
 	  target-cov  " $(linkdebugflags) "
@@ -1420,3 +1426,7 @@ macro_append pp_cppflags "" \
 # use $(gaudi_test_policy_use)
 
 tag target-test use-O3
+
+# FIXME: hack to prevent excessive stress on AFS when using LCGCMT 64
+macro LCG_releases $(LCG_Settings_root)/../../..
+macro LCG_external $(LCG_Settings_root)/../../../../../external

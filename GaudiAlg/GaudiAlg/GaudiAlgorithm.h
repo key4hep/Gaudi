@@ -253,8 +253,38 @@ public:
     return GaudiCommon<Algorithm>::get<TYPE> ( svc , location , useRootInTES ) ;
   }
 
-  /** Version of "get" without check on the data.
+  /** @brief Templated access to the data in Gaudi Transient Store
    *
+   *  Quick and safe access to the data in Gaudi transient store.
+   *  The method located the data at given address and perform the
+   *  debug printout about located data.
+   * 
+   *  Skips the check on the data as performed by 'get'. No exception
+   *  is thrown if the data is missing.
+   *
+   *  @code
+   *
+   *  MCHits* hits = getIfExists<MCHits>( evtSvc() , "/Event/MC/Hits" );
+   *
+   *  @endcode
+   *
+   *  @attention The method respects the setting of the job option
+   *             RootInTES by prepending the value of this to the
+   *             data location that is passed.
+   *             The default setting for RootInTES is "" so has no effect.
+   *             This behavior can be suppressed by passing the argument
+   *             useRootInTES = false
+   *
+   *  @see IDataProviderSvc
+   *  @see SmartDataPtr
+   *
+   *  @param svc      Pointer to data service (data provider)
+   *  @param location data location/address in Gaudi Transient Store
+   *  @param useRootInTES Flag to turn on(TRUE) off(FALSE) the use of
+   *                      the RootInTES location property
+   *
+   *  @return pointer to the data object. 
+   *  @retval NULL If data does not exist.
    */
   template < class TYPE  >
   inline typename Gaudi::Utils::GetData<TYPE>::return_type
@@ -299,8 +329,37 @@ public:
     return GaudiCommon<Algorithm>::get<TYPE> ( evtSvc() , location , useRootInTES ) ;
   }
 
-  /** Version of "get" without check on the data.
+  /** @brief Templated access to the data in Gaudi Transient Store
    *
+   *  Quick and safe access to the data in Gaudi transient store.
+   *  The method located the data at given address and perform the
+   *  debug printout about located data. 
+   *
+   *  Skips the check on the data as performed by 'get'. No exception
+   *  is thrown if the data is missing.
+   *
+   *  @code
+   *
+   *  MCHits* hits = getIfExists<MCHits>( "/Event/MC/Hits" );
+   *
+   *  @endcode
+   *
+   *  @attention The method respects the setting of the job option
+   *             RootInTES by prepending the value of this to the
+   *             data location that is passed.
+   *             The default setting for RootInTES is "" so has no effect.
+   *             This behavior can be suppressed by passing the argument
+   *             useRootInTES = false
+   *
+   *  @see IDataProviderSvc
+   *  @see SmartDataPtr
+   *
+   *  @param location data location/address in Gaudi Transient Store
+   *  @param useRootInTES Flag to turn on(TRUE) off(FALSE) the use of
+   *                      the RootInTES location property
+   *
+   *  @return pointer to the data object. 
+   *  @retval NULL If data does not exist.
    */
   template < class TYPE  >
   inline typename Gaudi::Utils::GetData<TYPE>::return_type
@@ -335,8 +394,27 @@ public:
     return GaudiCommon<Algorithm>::get<TYPE> ( svc , location , false ) ;
   }
 
-  /** Version of "getDet" without check on the data.
+  /** @brief Templated access to the detector data from the
+   *         Gaudi Detector Transient Store
    *
+   *  Quick and safe access to the detector data in Gaudi transient store.
+   *
+   *  The method located the detector at the given address and perform the
+   *  debug printout about located detector.
+   * 
+   *  Skips the check on the data as performed by 'get'. No exception
+   *  is thrown if the data is missing.
+   *
+   *  @code
+   *
+   *  MyDet* mdet = getDetIfExists<MyDet>( detSvc() , "/dd/Structure/LHCb/MyDet" );
+   *
+   *  @endcode
+   *
+   *  @param svc       Pointer to data service (data provider)
+   *  @param location  Detector location/address in Gaudi Transient Store
+   *  @return          Pointer to the detector object
+   *  @retval NULL If the detector object does not exist.
    */
   template < class TYPE  >
   inline typename Gaudi::Utils::GetData<TYPE>::return_type
@@ -364,17 +442,35 @@ public:
    *  @return          Pointer to the detector object
    */
   template < class TYPE  >
-  inline TYPE* getDet ( const std::string& location   ) const
+  inline TYPE* getDet ( const std::string& location ) const
   {
     return GaudiCommon<Algorithm>::get<TYPE> ( detSvc() , location , false ) ;
   }
 
-  /** Version of "getDet" without check on the data.
+  /** @brief Templated access to the detector data from the
+   *         Gaudi Detector Transient Store
    *
+   *  Quick and safe access to the detector data in Gaudi transient store.
+   *
+   *  The method located the detector at the given address and perform the
+   *  debug printout about located detector.
+   * 
+   *  Skips the check on the data as performed by 'get'. No exception
+   *  is thrown if the data is missing.
+   *
+   *  @code
+   *
+   *  MyDet* mdet = getDetIfExists<MyDet>( "/dd/Structure/LHCb/MyDet" );
+   *
+   *  @endcode
+   *
+   *  @param location  Detector location/address in Gaudi Transient Store
+   *  @return          Pointer to the detector object
+   *  @retval NULL If the detector object does not exist.
    */
   template < class TYPE  >
   inline typename Gaudi::Utils::GetData<TYPE>::return_type
-  getDetIfExists ( const std::string& location  ) const
+  getDetIfExists ( const std::string& location ) const
   {
     return GaudiCommon<Algorithm>::getIfExists<TYPE> ( detSvc() , location , false ) ;
   }

@@ -10,8 +10,12 @@
 #  COOL_PYTHON_PATH
 #  COOL_BINARY_PATH (not cached)
 
-set(_COOL_COMPONENTS CoolKernel CoolApplication)
-foreach(component ${_COOL_COMPONENTS})
+# Enforce a minimal list if none is explicitly requested
+if(NOT COOL_FIND_COMPONENTS)
+  set(COOL_FIND_COMPONENTS CoolKernel CoolApplication)
+endif()
+
+foreach(component ${COOL_FIND_COMPONENTS})
   find_library(COOL_${component}_LIBRARY NAMES lcg_${component})
   if (COOL_${component}_LIBRARY)
     set(COOL_${component}_FOUND 1)

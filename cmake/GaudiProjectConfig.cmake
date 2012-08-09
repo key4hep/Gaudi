@@ -161,22 +161,22 @@ macro(gaudi_project project version)
   # (python scripts are located as such but run through python)
   set(binary_paths ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts ${CMAKE_SOURCE_DIR}/GaudiKernel/scripts ${CMAKE_SOURCE_DIR}/Gaudi/scripts ${binary_paths})
 
-  find_program(env_cmd env.py PATHS ${binary_paths})
+  find_program(env_cmd env.py HINTS ${binary_paths})
   set(env_cmd ${PYTHON_EXECUTABLE} ${env_cmd})
 
-  find_program(merge_cmd merge_files.py PATHS ${binary_paths})
+  find_program(merge_cmd merge_files.py HINTS ${binary_paths})
   set(merge_cmd ${PYTHON_EXECUTABLE} ${merge_cmd} --no-stamp)
 
-  find_program(versheader_cmd createProjVersHeader.py PATHS ${binary_paths})
+  find_program(versheader_cmd createProjVersHeader.py HINTS ${binary_paths})
   set(versheader_cmd ${PYTHON_EXECUTABLE} ${versheader_cmd})
 
-  find_program(genconfuser_cmd genconfuser.py PATHS ${binary_paths})
+  find_program(genconfuser_cmd genconfuser.py HINTS ${binary_paths})
   set(genconfuser_cmd ${PYTHON_EXECUTABLE} ${genconfuser_cmd})
 
-  find_program(zippythondir_cmd ZipPythonDir.py PATHS ${binary_paths})
+  find_program(zippythondir_cmd ZipPythonDir.py HINTS ${binary_paths})
   set(zippythondir_cmd ${PYTHON_EXECUTABLE} ${zippythondir_cmd})
 
-  find_program(gaudirun_cmd gaudirun.py PATHS ${binary_paths})
+  find_program(gaudirun_cmd gaudirun.py HINTS ${binary_paths})
   set(gaudirun_cmd ${PYTHON_EXECUTABLE} ${gaudirun_cmd})
 
   # genconf is special because it must be known before we actually declare the
@@ -402,7 +402,7 @@ macro(_gaudi_use_other_projects)
 ")
         endif()
         include_directories(${${other_project}_INCLUDE_DIRS})
-        set(binary_paths ${${other_project}_BINARY_PATH})
+        set(binary_paths ${${other_project}_BINARY_PATH} ${binary_paths})
         foreach(exported ${${other_project}_EXPORTED_SUBDIRS})
           list(FIND known_packages ${exported} is_needed)
           if(is_needed LESS 0)
@@ -434,12 +434,18 @@ function(include_package_directories)
     if(TARGET ${package})
       get_target_property(to_incl ${package} SOURCE_DIR)
       if(to_incl)
-        #message(STATUS "include_package_directories2 include_directories(${to_incl})")
+        #message(STATUS "include_package_directories1 include_directories(${to_incl})")
         include_directories(${to_incl})
       endif()
-    elseif(IS_DIRECTORY ${package})
-      #message(STATUS "include_package_directories1 include_directories(${package})")
+    elseif(IS_ABSOLUTE ${package} AND IS_DIRECTORY ${package})
+      #message(STATUS "include_package_directories2 include_directories(${package})")
       include_directories(${package})
+    elseif(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${package})
+      #message(STATUS "include_package_directories3 include_directories(${package})")
+      include_directories(${CMAKE_CURRENT_SOURCE_DIR}/${package})
+    elseif(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/${package}) # package can be the name of a subdir
+      #message(STATUS "include_package_directories4 include_directories(${package})")
+      include_directories(${CMAKE_SOURCE_DIR}/${package})
     else()
       # ensure that the current directory knows about the package
       find_package(${package} QUIET)
@@ -459,17 +465,52 @@ function(include_package_directories)
           set(to_incl ${package}_INCLUDE_DIRS)
         endif()
         # Include the directories
-        #message(STATUS "include_package_directories3 include_directories(${${to_incl}})")
+        #message(STATUS "include_package_directories5 include_directories(${${to_incl}})")
         include_directories(${${to_incl}})
       endif()
     endif()
   endforeach()
 endfunction()
 
-# NO-OP function used by gaudi_sort_subdirectories to get the dependencies
-# from the subdirectories before actually add them
+#-------------------------------------------------------------------------------
+# gaudi_depends_on_subdirs(subdir1 [subdir2 ...])
+#
+# The presence of this function in a CMakeLists.txt is used by gaudi_sort_subdirectories
+# to get the dependencies from the subdirectories before actually adding them.
+#
+# The fuction performs those operations that are not needed if there is no
+# dependency declared.
+#
+# The arguments are actually ignored, so there is a check to execute it only once.
+#-------------------------------------------------------------------------------
 function(gaudi_depends_on_subdirs)
+  # avoid multiple calls (note that the
+  if(NOT gaudi_depends_on_subdirs_called)
+    # get direct and indirect dependencies
+    file(RELATIVE_PATH subdir_name ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+    set(deps)
+    gaudi_list_dependencies(deps ${subdir_name})
+
+    # find the list of targets that generate headers in the packages we depend on.
+    gaudi_get_genheader_targets(required_genheader_targets ${deps})
+    #message(STATUS "required_genheader_targets: ${required_genheader_targets}")
+    set(required_genheader_targets ${required_genheader_targets} PARENT_SCOPE)
+
+    # add the the directories that provide headers to the include_directories
+    foreach(subdir ${deps})
+      if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/${subdir})
+        get_property(has_local_headers DIRECTORY ${CMAKE_SOURCE_DIR}/${subdir} PROPERTY INSTALLS_LOCAL_HEADERS SET)
+        if(has_local_headers)
+          include_directories(${CMAKE_SOURCE_DIR}/${subdir})
+        endif()
+      endif()
+    endforeach()
+
+    # prevent multiple executions
+    set(gaudi_depends_on_subdirs_called TRUE PARENT_SCOPE)
+  endif()
 endfunction()
+
 #-------------------------------------------------------------------------------
 # gaudi_collect_subdir_deps(subdirectories)
 #
@@ -492,7 +533,7 @@ macro(gaudi_collect_subdir_deps)
         # check that the declared dependency refers to an existing (known) package
         list(FIND known_packages ${___p} idx)
         if(idx LESS 0)
-          message(WARNING "Subdirectory '${_p}' declare dependency on unknown subdirectory '${___p}'")
+          message(WARNING "Subdirectory '${_p}' declares dependency on unknown subdirectory '${___p}'")
         endif()
         list(APPEND ${_p}_DEPENDENCIES ${___p})
       endforeach()
@@ -525,6 +566,25 @@ function(gaudi_sort_subdirectories var)
   endforeach()
   set(${var} ${out_packages} PARENT_SCOPE)
 endfunction()
+
+#-------------------------------------------------------------------------------
+# gaudi_list_dependencies(<variable> subdir)
+#
+# Add the subdirectories we depend on, (directly and indirectly) to the variable
+# passed.
+#-------------------------------------------------------------------------------
+macro(gaudi_list_dependencies variable subdir)
+  #message(STATUS "gaudi_list_dependencies(${subdir})")
+  # recurse for the direct dependencies
+  foreach(other ${${subdir}_DEPENDENCIES})
+    list(FIND ${variable} ${other} other_idx)
+    if(other_idx LESS 0) # recurse only if the entry is not yet in the list
+      gaudi_list_dependencies(${variable} ${other})
+      list(APPEND ${variable} ${other})
+    endif()
+  endforeach()
+  #message(STATUS " --> ${${variable}}")
+endmacro()
 
 #-------------------------------------------------------------------------------
 # gaudi_get_packages
@@ -601,6 +661,7 @@ endmacro()
 #       gaudi_add_library
 #-------------------------------------------------------------------------------
 function(gaudi_resolve_link_libraries variable)
+  #message(STATUS "gaudi_resolve_link_libraries input: ${ARGN}")
   set(collected)
   foreach(package ${ARGN})
     # check if it is an actual library or a target first
@@ -627,12 +688,26 @@ function(gaudi_resolve_link_libraries variable)
         else()
           set(collected ${collected} ${${package}_LIBRARIES})
         endif()
+      elseif(package STREQUAL debug OR package STREQUAL optimized OR package STREQUAL general)
+        # pop the next element
+        list(GET packages 0 lib)
+        list(REMOVE_AT packages 0)
+        if((package STREQUAL general) OR
+           (BUILD_TYPE STREQUAL Debug AND package STREQUAL debug) OR
+           (BUILD_TYPE STREQUAL Release AND package STREQUAL optimized))
+          # we keep it only if corresponds to the build type
+          set(collected ${collected} ${lib})
+        endif()
       else()
         # if it's not a package, we just add it as it is... there are a lot of special cases
         set(collected ${collected} ${package})
       endif()
     endif()
   endforeach()
+  if(collected)
+    list(REMOVE_DUPLICATES collected)
+  endif()
+  #message(STATUS "gaudi_resolve_link_libraries output: ${collected}")
   set(${variable} ${collected} PARENT_SCOPE)
 endfunction()
 
@@ -878,6 +953,26 @@ macro(gaudi_expand_sources VAR)
 endmacro()
 
 #-------------------------------------------------------------------------------
+# gaudi_get_genheader_targets(<variable> [subdir1 ...])
+#
+# Collect the targets that are used to generate the headers in the
+# subdirectories specified in the arguments and store the list in the variable.
+#-------------------------------------------------------------------------------
+function(gaudi_get_genheader_targets variable)
+  set(targets)
+  foreach(subdir ${ARGN})
+    if(EXISTS ${CMAKE_SOURCE_DIR}/${subdir})
+      get_property(tmp DIRECTORY ${CMAKE_SOURCE_DIR}/${subdir} PROPERTY GENERATED_HEADERS_TARGETS)
+      set(targets ${targets} ${tmp})
+    endif()
+  endforeach()
+  if(targets)
+    list(REMOVE_DUPLICATES targets)
+  endif()
+  set(${variable} ${targets} PARENT_SCOPE)
+endfunction()
+
+#-------------------------------------------------------------------------------
 # gaudi_common_add_build(sources...
 #                 LINK_LIBRARIES library1 package2 ...
 #                 INCLUDE_DIRS dir1 package2 ...)
@@ -910,6 +1005,28 @@ macro(gaudi_common_add_build)
   # get the library dirs required to get the libraries we use
   gaudi_get_required_library_dirs(lib_path ${ARG_LINK_LIBRARIES})
   set_property(GLOBAL APPEND PROPERTY LIBRARY_PATH ${lib_path})
+
+endmacro()
+
+#-------------------------------------------------------------------------------
+# gaudi_add_genheader_dependencies(target)
+#
+# Add the dependencies declared in the variables required_genheader_targets and
+# required_local_genheader_targets to the specified target.
+#
+# The special variable required_genheader_targets is filled from the property
+# GENERATED_HEADERS_TARGETS of the subdirectories we depend on.
+#
+# The variable required_local_genheader_targets should be used within a
+# subdirectory if the generated headers are needed locally.
+#-------------------------------------------------------------------------------
+macro(gaudi_add_genheader_dependencies target)
+  if(required_genheader_targets)
+    add_dependencies(${target} ${required_genheader_targets})
+  endif()
+  if(required_local_genheader_targets)
+    add_dependencies(${target} ${required_local_genheader_targets})
+  endif()
 endmacro()
 
 #---------------------------------------------------------------------------------------------------
@@ -958,9 +1075,8 @@ function(gaudi_add_library library)
     REQUIRED_LIBRARIES "${ARG_LINK_LIBRARIES}")
   set_property(GLOBAL APPEND PROPERTY LINKER_LIBRARIES ${library})
 
-  if(TARGET ${library}Obj2doth)
-    add_dependencies( ${library} ${library}Obj2doth)
-  endif()
+  gaudi_add_genheader_dependencies(${library})
+
   #----Installation details-------------------------------------------------------
   install(TARGETS ${library} EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION  ${lib})
   gaudi_export(LIBRARY ${library})
@@ -988,6 +1104,8 @@ function(gaudi_add_module library)
 
   set_property(GLOBAL APPEND PROPERTY COMPONENT_LIBRARIES ${library})
 
+  gaudi_add_genheader_dependencies(${library})
+
   #----Installation details-------------------------------------------------------
   install(TARGETS ${library} LIBRARY DESTINATION ${lib})
   gaudi_export(MODULE ${library})
@@ -1009,12 +1127,21 @@ endmacro()
 # directories to the variable.
 #-------------------------------------------------------------------------------
 function(gaudi_add_dictionary dictionary header selection)
+  # ensure that we have Reflex
+  if(NOT ROOT_Reflex_LIBRARY)
+    find_package(ROOT QUIET COMPONENTS Reflex)
+    if(NOT ROOT_Reflex_LIBRARY)
+      message(FATAL_ERROR "Reflex not found! Cannot produce dictionaries.")
+    endif()
+  endif()
   # this function uses an extra option: 'OPTIONS'
   CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS;OPTIONS" ${ARGN})
   gaudi_common_add_build(${ARG_UNPARSED_ARGUMENTS} LIBRARIES ${ARG_LIBRARIES} LINK_LIBRARIES ${ARG_LINK_LIBRARIES} INCLUDE_DIRS ${ARG_INCLUDE_DIRS})
 
   reflex_dictionary(${dictionary} ${header} ${selection} LINK_LIBRARIES ${ARG_LINK_LIBRARIES} OPTIONS ${ARG_OPTIONS})
   set_target_properties(${dictionary}Dict PROPERTIES COMPILE_FLAGS "-Wno-overloaded-virtual")
+
+  gaudi_add_genheader_dependencies(${dictionary}Gen)
 
   # Notify the project level target
   get_property(rootmapname TARGET ${dictionary}Gen PROPERTY ROOTMAPFILE)
@@ -1046,6 +1173,8 @@ function(gaudi_add_python_module module)
   endif()
   target_link_libraries(${module} ${PYTHON_LIBRARIES} ${ARG_LINK_LIBRARIES})
 
+  gaudi_add_genheader_dependencies(${module})
+
   #----Installation details-------------------------------------------------------
   install(TARGETS ${module} LIBRARY DESTINATION python/lib-dynload)
 endfunction()
@@ -1069,6 +1198,8 @@ function(gaudi_add_executable executable)
   if (USE_EXE_SUFFIX)
     set_target_properties(${executable} PROPERTIES SUFFIX .exe)
   endif()
+
+  gaudi_add_genheader_dependencies(${executable})
 
   #----Installation details-------------------------------------------------------
   install(TARGETS ${executable} EXPORT ${CMAKE_PROJECT_NAME}Exports RUNTIME DESTINATION ${bin})
@@ -1187,13 +1318,25 @@ endfunction()
 # To be used in case the header files do not have a library.
 #---------------------------------------------------------------------------------------------------
 function(gaudi_install_headers)
+  set(has_local_headers FALSE)
   foreach(hdr_dir ${ARGN})
     install(DIRECTORY ${hdr_dir}
             DESTINATION include
             FILES_MATCHING
               PATTERN "*.h"
-              PATTERN "*.icpp")
+              PATTERN "*.icpp"
+              PATTERN "CVS" EXCLUDE
+              PATTERN ".svn" EXCLUDE)
+    if(NOT IS_ABSOLUTE ${hdr_dir})
+      set(has_local_headers TRUE)
+    endif()
   endforeach()
+  # flag the current directory as one that installs headers
+  #   the property is used when collecting the include directories for the
+  #   dependent subdirs
+  if(has_local_headers)
+    set_property(DIRECTORY PROPERTY INSTALLS_LOCAL_HEADERS TRUE)
+  endif()
 endfunction()
 
 #-------------------------------------------------------------------------------
@@ -1217,12 +1360,19 @@ endfunction()
 function(gaudi_install_python_modules)
   install(DIRECTORY python/
           DESTINATION python
-          FILES_MATCHING PATTERN "*.py")
+          FILES_MATCHING
+            PATTERN "*.py"
+            PATTERN "CVS" EXCLUDE
+            PATTERN ".svn" EXCLUDE)
   # check for the presence of the __init__.py's and install them if needed
   file(GLOB sub-dir RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} python/*)
   foreach(dir ${sub-dir})
-    if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${dir} AND NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${dir}/__init__.py)
-      message(WARNING "The file ${dir}/__ini__.py is missing. I shall install an empty one.")
+    if(NOT dir STREQUAL python/.svn
+       AND IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${dir}
+       AND NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${dir}/__init__.py)
+      set(pyfile ${CMAKE_CURRENT_SOURCE_DIR}/${dir}/__init__.py)
+      file(RELATIVE_PATH pyfile ${CMAKE_BINARY_DIR} ${pyfile})
+      message(WARNING "The file  ${pyfile} is missing. I shall install an empty one.")
       if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/__init__.py)
         file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/__init__.py "# Empty file generated automatically\n")
       endif()
@@ -1245,6 +1395,7 @@ function(gaudi_install_scripts)
   install(DIRECTORY scripts/ DESTINATION scripts
           FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
                            GROUP_EXECUTE GROUP_READ
+          PATTERN "CVS" EXCLUDE
           PATTERN ".svn" EXCLUDE
           PATTERN "*~" EXCLUDE
           PATTERN "*.pyc" EXCLUDE)
@@ -1281,7 +1432,9 @@ macro(gaudi_install_cmake_modules)
   install(DIRECTORY cmake/
           DESTINATION cmake
           FILES_MATCHING
-            PATTERN "*.cmake")
+            PATTERN "*.cmake"
+            PATTERN "CVS" EXCLUDE
+            PATTERN ".svn" EXCLUDE)
   set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} PARENT_SCOPE)
   set_property(DIRECTORY PROPERTY GAUDI_EXPORTED_CMAKE ON)
 endmacro()
@@ -1295,11 +1448,7 @@ function(gaudi_generate_rootmap library)
   find_package(ROOT QUIET)
   set(rootmapfile ${library}.rootmap)
 
-  if(TARGET ${library})
-    get_property(libname TARGET ${library} PROPERTY LOCATION)
-  else()
-    set(libname ${library})
-  endif()
+  set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_MODULE_SUFFIX})
   add_custom_command(OUTPUT ${rootmapfile}
                      COMMAND ${env_cmd}
                        --xml ${env_xml}

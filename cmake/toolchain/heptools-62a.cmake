@@ -92,7 +92,7 @@ LCG_external_package(Python            2.6.5p1                                  
 LCG_external_package(pytools           1.6                                      )
 LCG_external_package(pyxml             0.8.4p1                                  )
 LCG_external_package(QMtest            2.4.1                                    )
-LCG_external_package(Qt                4.6.3p2                                  )
+LCG_external_package(Qt                4.6.3p2                   qt             )
 LCG_external_package(qwt               5.2.1                                    )
 LCG_external_package(readline          2.5.1p1                                  )
 LCG_external_package(roofit            3.10p1                                   )
