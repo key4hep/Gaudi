@@ -3,11 +3,17 @@
 #
 #  RELAX_FOUND
 #  RELAX_<component>_LIBRARY
+#  RELAX_<component>_ROOTMAP
 #  RELAX_LIBRARY_DIRS (not cached)
 
-set(_RELAX_COMPONENTS
-    CLHEP HepMC HepPDT MathAdd Math Reflex STLAdd STL)
-foreach(component ${_RELAX_COMPONENTS})
+# Enforce a minimal list if none is explicitly requested
+if(NOT RELAX_FIND_COMPONENTS)
+  set(RELAX_FIND_COMPONENTS STL)
+endif()
+
+set(RELAX_ROOTMAP_SUFFIX .pamtoor)
+
+foreach(component ${RELAX_FIND_COMPONENTS})
   find_library(RELAX_${component}_LIBRARY NAMES ${component}Rflx
                HINTS $ENV{RELAX_ROOT_DIR}/lib ${RELAX_ROOT_DIR}/lib )
   mark_as_advanced(RELAX_${component}_LIBRARY)
@@ -15,6 +21,8 @@ foreach(component ${_RELAX_COMPONENTS})
     list(APPEND RELAX_FOUND_COMPONENTS ${component})
     get_filename_component(libdir ${RELAX_${component}_LIBRARY} PATH)
     list(APPEND RELAX_LIBRARY_DIRS ${libdir})
+    # deduce the name of the rootmap file for the library
+    string(REPLACE "${CMAKE_SHARED_MODULE_SUFFIX}" "${RELAX_ROOTMAP_SUFFIX}" RELAX_${component}_ROOTMAP "${RELAX_${component}_LIBRARY}")
   endif()
 endforeach()
 list(REMOVE_DUPLICATES RELAX_LIBRARY_DIRS)
