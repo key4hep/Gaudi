@@ -1448,11 +1448,7 @@ function(gaudi_generate_rootmap library)
   find_package(ROOT QUIET)
   set(rootmapfile ${library}.rootmap)
 
-  if(TARGET ${library})
-    get_property(libname TARGET ${library} PROPERTY LOCATION)
-  else()
-    set(libname ${library})
-  endif()
+  set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_MODULE_SUFFIX})
   add_custom_command(OUTPUT ${rootmapfile}
                      COMMAND ${env_cmd}
                        --xml ${env_xml}
