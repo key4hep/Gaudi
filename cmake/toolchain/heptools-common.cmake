@@ -194,7 +194,6 @@ macro(LCG_prepare_paths)
   #===============================================================================
   # Special cases that require a special treatment
   #===============================================================================
-  set(Boost_native_version ${Boost_config_version}_python${Python_config_version_twodigit})
   if(NOT APPLE)
     # FIXME: this should be automatic... see FindBoost.cmake documentation
     # Get Boost compiler id from LCG_system
@@ -205,9 +204,12 @@ macro(LCG_prepare_paths)
   set(Boost_NO_BOOST_CMAKE ON)
   set(Boost_NO_SYSTEM_PATHS ON)
 
-  set(pytools_native_version ${pytools_config_version}_python${Python_config_version_twodigit})
-
-  set(QMtest_native_version ${QMtest_config_version}_python${Python_config_version_twodigit})
+  # These externals require the version of python appended to their version.
+  foreach(external Boost pytools pygraphics pyanalysis QMtest)
+    if(${external}_config_version)
+      set(${external}_native_version ${${external}_config_version}_python${Python_config_version_twodigit})
+    endif()
+  endforeach()
 
   if(comp STREQUAL clang30)
     set(GCCXML_CXX_COMPILER gcc CACHE STRING "Compiler that GCCXML must use.")
