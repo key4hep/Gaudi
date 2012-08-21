@@ -808,6 +808,31 @@ macro TestObj2Doth_GODflags " -s ../Test/ "
     assert 'DESTINATION' in l
     assert l[l.index('DESTINATION')+1] == 'Test'
 
+def test_god_6():
+    requirements = '''
+package Test
+version v1r0
+
+document customdict TestCustomDict ../dict/TestCustomDict.h
+
+apply_pattern god_dictionary files=../xml/*.xml
+    '''
+    pkg = PackWrap("Test", requirements, files={})
+
+    cmakelists = pkg.generate()
+    print cmakelists
+
+    calls = getCalls("include", cmakelists)
+    assert calls
+    l = calls[0].strip()
+    assert l == 'GaudiObjDesc'
+
+    calls = getCalls("god_build_dictionary", cmakelists)
+    assert len(calls) == 1, "god_build_dictionary wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l == ['xml/*.xml', 'EXTEND', 'dict/TestCustomDict.h']
+
 def test_reflex():
     requirements = '''
 package Test

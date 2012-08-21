@@ -122,6 +122,7 @@ class Package(object):
         self.version = None
         self.libraries = []
         self.applications = []
+        self.documents = []
         self.macros = {}
 
         self.singleton_patterns = set(["QMTest", "install_python_modules", "install_scripts",
@@ -310,8 +311,15 @@ class Package(object):
                     args.append('PUBLIC_HEADERS ' + ' '.join(headers))
                 else:
                     args.append('NO_PUBLIC_HEADERS')
-            elif isGODDict and god_headers_dest:
-                args.append('HEADERS_DESTINATION ' + god_headers_dest)
+            elif isGODDict:
+                if god_headers_dest:
+                    args.append('HEADERS_DESTINATION ' + god_headers_dest)
+                # check if we have a customdict in the documents
+                for docname, _, docsources in self.documents:
+                    if docname == 'customdict':
+                        args.append('EXTEND ' + docsources[0].replace('../', ''))
+                        break
+
 
             # # collection of link libraries. #
             # Externals and subdirs are treated differently:
@@ -482,6 +490,12 @@ class Package(object):
                     # usually, developers do not put tests in the right group
                     group = 'tests'
                 self.applications.append((name, sources, group, imports))
+
+            elif cmd == 'document':
+                name = args.pop(0)
+                constituent = args.pop(0)
+                sources = args
+                self.documents.append((name, constituent, sources))
 
             elif cmd == 'macro':
                 # FIXME: should handle macro tags
