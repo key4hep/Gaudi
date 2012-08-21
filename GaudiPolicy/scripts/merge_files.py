@@ -26,7 +26,7 @@ def mergeFiles( fragFileNames, mergedFileName, commentChar, doMerge ):
     if isNewFile:
         # check if the destination directory exists
         path_to_file = os.path.split(mergedFileName)[0]
-        if not os.path.isdir(path_to_file):
+        if path_to_file and not os.path.isdir(path_to_file):
             # if doesn't exist, create it
             os.makedirs(path_to_file)
         open(mergedFileName,'a')
