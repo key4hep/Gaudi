@@ -990,8 +990,8 @@ cmtpath_pattern \
     macro genconfInstallDir "" \
        <project>_without_installarea&target-unix "$(<package>_root)/python" \
        <project>_without_installarea&target-winxp "$(<package>_root)\python" \
-       <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)$(shared_install_subdir)/python"\
-       <project>_with_installarea&target-winxp '"<path>\$(<project>_installarea_prefix)$(shared_install_subdir)\python"'
+       <project>_with_installarea&target-unix "$(CMTINSTALLAREA)$(shared_install_subdir)/python"\
+       <project>_with_installarea&target-winxp '"$(CMTINSTALLAREA)$(shared_install_subdir)\python"'
 
 make_fragment genconfig -header=genconfig_header
 
