@@ -382,6 +382,11 @@ class Package(object):
         if headers and not self.linker_libraries: # not installed yet
             installs.append("gaudi_install_headers(%s)" % (" ".join(headers)))
         if self.install_python_modules:
+            # if we install Python modules, we need to check if we have special
+            # names for the ConfUser modules
+            if (self.name + 'ConfUserModules') in self.macros:
+                installs.append('set_property(DIRECTORY PROPERTY CONFIGURABLE_USER_MODULES %s)'
+                                % self.macros[self.name + 'ConfUserModules'])
             installs.append("gaudi_install_python_modules()")
         if self.install_scripts:
             installs.append("gaudi_install_scripts()")

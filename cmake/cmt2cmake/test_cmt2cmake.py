@@ -232,6 +232,28 @@ apply_pattern install_python_modules
     calls = getCalls("gaudi_install_python_modules", cmakelists)
     assert calls
 
+def test_install_python2():
+    requirements = '''
+package Test
+version v1r0
+
+macro TestConfUserModules "Test.CustomModule1 Test.CustomModule2"
+
+apply_pattern install_python_modules
+    '''
+    pkg = PackWrap("Test", requirements, files={"python/Test/__init__.py": None})
+
+    cmakelists = pkg.generate()
+    print cmakelists
+
+    calls = getCalls("gaudi_install_python_modules", cmakelists)
+    assert calls
+
+    calls = getCalls("set_property", cmakelists)
+    assert calls
+    args = calls[0].strip().split()
+    assert args == ['DIRECTORY', 'PROPERTY', 'CONFIGURABLE_USER_MODULES', 'Test.CustomModule1', 'Test.CustomModule2'], args
+
 def test_install_scripts():
     requirements = '''
 package Test
