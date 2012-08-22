@@ -301,12 +301,13 @@ macro(gaudi_project project version)
     if(_has_config AND _has_python)
       # we need to add a special fake __init__.py that allow import of modules
       # from different copies of the package
-      file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/python/${package})
-      file(WRITE ${CMAKE_BINARY_DIR}/python/${package}/__init__.py
-           "\nimport os,sys\n__path__ = filter(os.path.exists, [os.path.join(d, '${package}') for d in sys.path if d])\n")
-      if(EXISTS ${CMAKE_SOURCE_DIR}/${package}/python/${package}/__init__.py)
-        file(READ ${CMAKE_SOURCE_DIR}/${package}/python/${package}/__init__.py _py_init_content)
-        file(APPEND ${CMAKE_BINARY_DIR}/python/${package}/__init__.py
+      get_filename_component(packname ${package} NAME)
+      file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/python/${packname})
+      file(WRITE ${CMAKE_BINARY_DIR}/python/${packname}/__init__.py
+           "\nimport os, sys\n__path__ = filter(os.path.exists, [os.path.join(d, '${packname}') for d in sys.path if d])\n")
+      if(EXISTS ${CMAKE_SOURCE_DIR}/${package}/python/${packname}/__init__.py)
+        file(READ ${CMAKE_SOURCE_DIR}/${package}/python/${packname}/__init__.py _py_init_content)
+        file(APPEND ${CMAKE_BINARY_DIR}/python/${packname}/__init__.py
              "${_py_init_content}")
       endif()
     endif()
