@@ -93,6 +93,8 @@ def main():
                       help="root directory of the python modules [default = '../python'].")
     parser.add_option("-v", "--verbose", action="store_true",
                       help="print some debugging information")
+    parser.add_option("--debug", action="store_true",
+                      help="print more debugging information")
     parser.add_option("--lockerpath", action="store",
                       metavar = "DIRNAME",
                       help="directory where to find the module 'locker'")
@@ -100,7 +102,9 @@ def main():
 
     opts, args = parser.parse_args()
 
-    if opts.verbose:
+    if opts.debug:
+        log_level = logging.DEBUG
+    elif opts.verbose:
         log_level = logging.VERBOSE
     else:
         log_level = logging.INFO
