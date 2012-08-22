@@ -34,6 +34,7 @@ LCG_prepare_paths()"""
                         "Frontier_Client": "frontier_client",
                         "GCCXML":  "gccxml",
                         "Qt":  "qt",
+                        "CASTOR":  "castor",
                         }
 
     __special_names__ = {"qt": "Qt"}
