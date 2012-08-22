@@ -797,10 +797,7 @@ function(gaudi_generate_configurables library)
 
   add_custom_command(
     OUTPUT ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py ${outdir}/__init__.py
-    COMMAND ${env_cmd}
-                  -p ${ld_library_path}=.
-                  -p ${ld_library_path}=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-                  --xml ${env_xml}
+    COMMAND ${env_cmd} --xml ${env_xml}
               ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
                 --configurable-module=${confModuleName}
                 --configurable-default-name=${confDefaultName}
@@ -870,10 +867,7 @@ function(gaudi_generate_confuserdb)
     endif()
     add_custom_command(
       OUTPUT ${outdir}/${package}_user_confDb.py
-      COMMAND ${env_cmd}
-                    -p PYTHONPATH=${CMAKE_SOURCE_DIR}/GaudiKernel/python
-                    -p PYTHONPATH=${CMAKE_SOURCE_DIR}/Gaudi/python
-                    --xml ${env_xml}
+      COMMAND ${env_cmd} --xml ${env_xml}
                 ${genconfuser_cmd}
                   -r ${CMAKE_CURRENT_SOURCE_DIR}/python
                   -o ${outdir}/${package}_user_confDb.py
@@ -1235,11 +1229,7 @@ function(gaudi_add_unit_test executable)
       set(exec_suffix)
     endif()
     add_test(${package}.${executable}
-             ${env_cmd}
-                 -p ${ld_library_path}=.
-                 -p ${ld_library_path}=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-                 -p PATH=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-                 --xml ${env_xml}
+             ${env_cmd} --xml ${env_xml}
                ${executable}${exec_suffix})
   endif()
 endfunction()
@@ -1302,12 +1292,7 @@ function(gaudi_add_test name)
 
   add_test(${package}.${name}
            ${env_cmd}
-               ${extra_env}
-               -p ${ld_library_path}=.
-               -p ${ld_library_path}=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-               -p PATH=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-
-               --xml ${env_xml}
+               ${extra_env} --xml ${env_xml}
                ${cmdline})
 endfunction()
 
