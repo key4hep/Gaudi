@@ -808,6 +808,11 @@ function(gaudi_generate_configurables library)
                 -i ${library}
     DEPENDS ${library})
   add_custom_target(${library}Conf ALL DEPENDS ${outdir}/${library}_confDb.py)
+  # Add the target to the target that groups all of them for the package.
+  if(NOT TARGET ${package}ConfAll)
+    add_custom_target(${package}ConfAll ALL)
+  endif()
+  add_dependencies(${package}ConfAll ${library}Conf)
   # Add dependencies on GaudiSvc and the genconf executable if they have to be built in the current project
   add_dependencies(${library}Conf genconf GaudiCoreSvc)
   # Notify the project level target
@@ -875,6 +880,38 @@ function(gaudi_generate_confuserdb)
     install(FILES ${outdir}/${package}_user_confDb.py
             DESTINATION python/${package})
     gaudi_merge_files_append(ConfDB ${package}ConfUserDB ${outdir}/${package}_user_confDb.py)
+
+    # FIXME: dependency on others ConfUserDB
+    # Historically we have been relying on the ConfUserDB built in the dependency
+    # order.
+    set(deps)
+    gaudi_list_dependencies(deps ${subdir_name})
+    # get the plain package-names of the dependencies
+    set(deps_names)
+    foreach(dep ${deps})
+      get_filename_component(dep ${dep} NAME)
+      set(deps_names ${deps_names} ${dep})
+    endforeach()
+    # find the targets we need to depend on
+    set(targets)
+    # - first the regular configurables (for the current package too)
+    foreach(dep ${deps_names} ${package})
+      if(TARGET ${dep}ConfAll)
+        set(targets ${targets} ${dep}ConfAll)
+      endif()
+    endforeach()
+    # - then the 'conf-user's
+    foreach(dep ${deps_names})
+      get_filename_component(dep ${dep} NAME)
+      if(TARGET ${dep}ConfUserDB)
+        set(targets ${targets} ${dep}ConfUserDB)
+      endif()
+    endforeach()
+    #message(STATUS "${outdir}/${package}_user_confDb.py <- ${targets}")
+    if(targets) # FIXME: is this an optimization or it is better to add deps one by one?
+      add_custom_command(OUTPUT ${outdir}/${package}_user_confDb.py DEPENDS ${targets} APPEND)
+    endif()
+
   endif()
 endfunction()
 
