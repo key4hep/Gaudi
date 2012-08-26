@@ -29,7 +29,23 @@ class Environment():
             self.sysSeparator = ':'
         self.separator = ':'
 
-        self.posActions = ['append','prepend','set','unset','remove', 'remove-regexp', 'declare']
+        # Methods mapped to actions in theXML file
+        # Note: we need to have a uniform API (number of arguments)
+        self.actions = {}
+#        for action in ['append', 'prepend', 'set', 'unset', 'remove', 'remove-regexp']:
+#            # Note: something like
+#            #  lambda n, v, _: getattr(self, action)(n, v)
+#            # does not work because the lambda will be closed on the value of 'action'
+#            # from this function, which means always the last value assigned to it
+#            self.actions[action] = eval('lambda n, v, _: self.{0}(n, v)'.format(action.replace('-', '_')), {'self': self})
+        self.actions['append'] = lambda n, v, _: self.append(n, v)
+        self.actions['prepend'] = lambda n, v, _: self.prepend(n, v)
+        self.actions['set'] = lambda n, v, _: self.set(n, v)
+        self.actions['unset'] = lambda n, v, _: self.unset(n, v)
+        self.actions['remove'] = lambda n, v, _: self.remove(n, v)
+        self.actions['remove-regexp'] = lambda n, v, _: self.remove_regexp(n, v)
+        self.actions['declare'] = self.declare
+
         self.variables = {}
         self.loadFromSystem = loadFromSystem
         self.asWriter = useAsWriter
@@ -130,14 +146,6 @@ class Environment():
                 self.declare(name, 'list', False)
                 self.set(name, value)
 
-
-    def searchFile(self, file, varName):
-        '''Searches for appearance of variable in a file.'''
-        XMLFile = xmlModule.XMLFile()
-        variable = XMLFile.variable(file, name=varName)
-        return variable
-
-
     def unset(self, name, value=None):
         '''Unsets a single variable to an empty value - overrides any previous value!'''
         if self.asWriter:
@@ -164,21 +172,22 @@ class Environment():
     def remove_regexp(self, name, value):
         self.remove(name, value, True)
 
+
+    def searchFile(self, file, varName):
+        '''Searches for appearance of variable in a file.'''
+        XMLFile = xmlModule.XMLFile()
+        variable = XMLFile.variable(file, name=varName)
+        return variable
+
     def loadXML(self, fileName = None, namespace = 'EnvSchema'):
         '''Loads XML file for input variables.'''
         XMLfile = xmlModule.XMLFile()
         variables = XMLfile.variable(fileName, namespace = namespace)
-        i = 0
-        for variable in variables:
-            i += 1
-            if variable[1] not in self.posActions:
-                self.report.addError('Node '+str(i)+': No action taken with var "' + variable[0] + '". Probably wrong action argument: "'+variable[1]+'".')
-            elif variable[1] == 'declare':
-                self.declare(str(variable[0]), str(variable[2]), variable[3])
+        for i, (action, args) in enumerate(variables):
+            if action not in self.actions:
+                self.report.addError('Node {0}: No action taken with var "{1}". Probably wrong action argument: "{2}".'.format(i, args[0], action))
             else:
-                if variable[1] == 'remove-regexp':
-                    variable[1] = 'remove_regexp'
-                eval('self.'+variable[1]+'(str(variable[0]), str(variable[2]))')
+                self.actions[action](*args)
 
 
     def startXMLinput(self):
