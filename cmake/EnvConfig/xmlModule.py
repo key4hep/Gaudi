@@ -8,6 +8,8 @@ from xml.dom import minidom
 import Variable
 import logging.config
 import os
+from cPickle import load, dump
+from hashlib import md5
 
 class XMLFile():
     '''Takes care of XML file operations such as reading and writing.'''
@@ -20,7 +22,6 @@ class XMLFile():
             logging.config.fileConfig(logConf)
         self.logger = logging.getLogger('envLogger')
 
-
     def variable(self, path, namespace='EnvSchema', name=None):
         '''Returns list containing name of variable, action and value
 
@@ -28,6 +29,19 @@ class XMLFile():
         '''
         if not os.path.isfile(path):
             raise IOError('No such file.')
+        sum = md5()
+        sum.update(open(path, 'rb').read())
+        sum = sum.digest()
+
+        cpath = path + "c" # preparsed file
+        try:
+            f = open(cpath, 'rb')
+            oldsum, data = load(f)
+            if oldsum == sum:
+                return data
+        except:
+            pass
+
         # Get file
         self.doc = minidom.parse(path)
         if namespace == '':
@@ -53,6 +67,12 @@ class XMLFile():
                         value = ''
                     variables.append((action, (varname, value, None)))
 
+        try:
+            f = open(cpath, 'wb')
+            dump((sum, variables), f, protocol=2)
+            f.close()
+        except:
+            pass
         return variables
 
 
