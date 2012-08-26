@@ -39,16 +39,16 @@ class XMLFile():
         for node in nodes:
             # if it is an element node
             if node.nodeType == 1:
-                varname = node.getAttribute('variable')
+                varname = str(node.getAttribute('variable'))
                 if name and varname != name:
                         continue
 
-                action = node.localName
+                action = str(node.localName)
                 if action == 'declare':
-                    variables.append((action, (varname, node.getAttribute('type'), node.getAttribute('local'))))
+                    variables.append((action, (varname, str(node.getAttribute('type')), str(node.getAttribute('local')))))
                 else:
                     if node.childNodes:
-                        value = node.childNodes[0].data
+                        value = str(node.childNodes[0].data)
                     else:
                         value = ''
                     variables.append((action, (varname, value, None)))

@@ -29,15 +29,7 @@ class Environment():
             self.sysSeparator = ':'
         self.separator = ':'
 
-        # Methods mapped to actions in theXML file
-        # Note: we need to have a uniform API (number of arguments)
         self.actions = {}
-#        for action in ['append', 'prepend', 'set', 'unset', 'remove', 'remove-regexp']:
-#            # Note: something like
-#            #  lambda n, v, _: getattr(self, action)(n, v)
-#            # does not work because the lambda will be closed on the value of 'action'
-#            # from this function, which means always the last value assigned to it
-#            self.actions[action] = eval('lambda n, v, _: self.{0}(n, v)'.format(action.replace('-', '_')), {'self': self})
         self.actions['append'] = lambda n, v, _: self.append(n, v)
         self.actions['prepend'] = lambda n, v, _: self.prepend(n, v)
         self.actions['set'] = lambda n, v, _: self.set(n, v)
