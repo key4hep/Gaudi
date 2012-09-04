@@ -232,6 +232,28 @@ apply_pattern install_python_modules
     calls = getCalls("gaudi_install_python_modules", cmakelists)
     assert calls
 
+def test_install_python2():
+    requirements = '''
+package Test
+version v1r0
+
+macro TestConfUserModules "Test.CustomModule1 Test.CustomModule2"
+
+apply_pattern install_python_modules
+    '''
+    pkg = PackWrap("Test", requirements, files={"python/Test/__init__.py": None})
+
+    cmakelists = pkg.generate()
+    print cmakelists
+
+    calls = getCalls("gaudi_install_python_modules", cmakelists)
+    assert calls
+
+    calls = getCalls("set_property", cmakelists)
+    assert calls
+    args = calls[0].strip().split()
+    assert args == ['DIRECTORY', 'PROPERTY', 'CONFIGURABLE_USER_MODULES', 'Test.CustomModule1', 'Test.CustomModule2'], args
+
 def test_install_scripts():
     requirements = '''
 package Test
@@ -808,6 +830,31 @@ macro TestObj2Doth_GODflags " -s ../Test/ "
     assert 'DESTINATION' in l
     assert l[l.index('DESTINATION')+1] == 'Test'
 
+def test_god_6():
+    requirements = '''
+package Test
+version v1r0
+
+document customdict TestCustomDict ../dict/TestCustomDict.h
+
+apply_pattern god_dictionary files=../xml/*.xml
+    '''
+    pkg = PackWrap("Test", requirements, files={})
+
+    cmakelists = pkg.generate()
+    print cmakelists
+
+    calls = getCalls("include", cmakelists)
+    assert calls
+    l = calls[0].strip()
+    assert l == 'GaudiObjDesc'
+
+    calls = getCalls("god_build_dictionary", cmakelists)
+    assert len(calls) == 1, "god_build_dictionary wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l == ['xml/*.xml', 'EXTEND', 'dict/TestCustomDict.h']
+
 def test_reflex():
     requirements = '''
 package Test
@@ -883,6 +930,48 @@ apply_pattern reflex_dictionary \\
     l = calls[0].strip().split()
     assert l[0:3] == ['Test', 'dict/TestDict.h', 'dict/TestDict.xml']
 
+def test_reflex_3():
+    requirements = '''
+package Test
+version v1r0
+
+use ROOT v* LCG_Interfaces
+use COOL v* LCG_Interfaces -no_auto_imports
+use CORAL v* LCG_Interfaces -no_auto_imports
+use Boost v* LCG_Interfaces -no_auto_imports
+
+library Test *.ccp
+apply_pattern component_library library=Test
+
+apply_pattern reflex_dictionary \\
+              dictionary=Test \\
+              headerfiles=$(TESTROOT)/dict/TestDict.h \\
+              selectionfile=$(TESTROOT)/dict/TestDict.xml \\
+              imports="COOL -import=CORAL -import=Boost"
+    '''
+    pkg = PackWrap("Test", requirements, files={})
+
+    cmakelists = pkg.generate()
+    print cmakelists
+
+    calls = getCalls("gaudi_add_module", cmakelists)
+    assert len(calls) == 1, "gaudi_add_module wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l[0] == 'Test'
+
+    calls = getCalls("gaudi_add_dictionary", cmakelists)
+    assert len(calls) == 1, "gaudi_add_dictionary wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l[0:3] == ['Test', 'dict/TestDict.h', 'dict/TestDict.xml']
+    assert 'INCLUDE_DIRS' in l
+    i = l.index('INCLUDE_DIRS')
+    assert 'LINK_LIBRARIES' in l
+    j = l.index('LINK_LIBRARIES')
+    assert set(l[i+1:j]) == set(['ROOT', 'COOL', 'CORAL', 'Boost'])
+    assert set(l[j+1:]) == set(['ROOT', 'COOL', 'CORAL', 'Boost'])
+
 def test_linkopts():
     requirements = '''
 package Test
@@ -954,6 +1043,35 @@ application MyTestApp app5a.cpp app5b.cpp
 
     calls = getCalls("if", cmakelists)
     assert calls == ['BUILD_TESTS'] * 4
+
+def test_pyqt_patterns():
+    requirements = '''
+package Test
+version v1r0
+
+use pygraphics v* LCG_Interfaces -no_auto_imports
+use Qt v* LCG_Interfaces -no_auto_imports
+
+apply_pattern install_python_modules
+
+apply_pattern PyQtResource qrc_files=../qt_resources/*.qrc outputdir=../python/Test/QtApp
+apply_pattern PyQtUIC ui_files=../qt_resources/*.ui outputdir=../python/Test/QtApp
+macro_append Test_python_dependencies " PyQtResource PyQtUIC "
+    '''
+    pkg = PackWrap("Test", requirements, files={})
+
+    cmakelists = pkg.generate()
+    print cmakelists
+
+    calls = getCalls("gen_pyqt_resource", cmakelists)
+    assert len(calls) == 1, "gen_pyqt_resource wrong count %d" % len(calls)
+    l = calls[0].strip().split()
+    assert l == ['Test.QtApp.Resources', 'Test/QtApp', 'qt_resources/*.qrc']
+
+    calls = getCalls("gen_pyqt_uic", cmakelists)
+    assert len(calls) == 1, "gen_pyqt_uic wrong count %d" % len(calls)
+    l = calls[0].strip().split()
+    assert l == ['Test.QtApp.UI', 'Test/QtApp', 'qt_resources/*.ui']
 
 from nose.core import main
 main()

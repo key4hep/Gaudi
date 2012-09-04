@@ -3,9 +3,15 @@
 Generate _confDb.py files for ConfigurableUser classes.
 """
 
-import os, sys, time, logging
+import os
+import sys
+import time
+import logging
+import GaudiKernel.ConfigurableDb
+
 from pprint import pformat
-from GaudiKernel.ConfigurableDb import loadConfigurableDb, cfgDb
+from glob import glob
+from GaudiKernel.ConfigurableDb import cfgDb
 
 logging.VERBOSE = (logging.INFO + logging.DEBUG) / 2
 logging.addLevelName(logging.VERBOSE, "VERBOSE")
@@ -25,6 +31,25 @@ def _inheritsfrom(derived, basename):
             if _inheritsfrom(b, basename):
                 return True
     return False
+
+def loadConfigurableDb():
+    '''
+    Equivalent to GaudiKernel.ConfigurableDb.loadConfigurableDb(), but does a
+    deep search and executes the '*_confDb.py' files instead of importing them.
+    '''
+    # find the '*_confDb.py' files that are not merged ones
+    for p in sys.path:
+        for f in [f for f in glob(os.path.join(p, '*', '*_confDb.py'))
+                  if 'merged' not in f and os.path.isfile(f)]:
+            logging.verbose('Loading %s', f)
+            try:
+                execfile(f, {}, {})
+            except:
+                # It may happen that the file is found but not completely
+                # written, usually during parallel builds, but we do not care.
+                pass
+    # top up with the regular merged confDb (for the used projects)
+    GaudiKernel.ConfigurableDb.loadConfigurableDb()
 
 def getConfigurableUsers(modulename, root, mayNotExist = False):
     """
@@ -93,6 +118,8 @@ def main():
                       help="root directory of the python modules [default = '../python'].")
     parser.add_option("-v", "--verbose", action="store_true",
                       help="print some debugging information")
+    parser.add_option("--debug", action="store_true",
+                      help="print more debugging information")
     parser.add_option("--lockerpath", action="store",
                       metavar = "DIRNAME",
                       help="directory where to find the module 'locker'")
@@ -100,7 +127,9 @@ def main():
 
     opts, args = parser.parse_args()
 
-    if opts.verbose:
+    if opts.debug:
+        log_level = logging.DEBUG
+    elif opts.verbose:
         log_level = logging.VERBOSE
     else:
         log_level = logging.INFO

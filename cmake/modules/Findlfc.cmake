@@ -7,7 +7,7 @@
 #  LFC_LIBRARIES
 
 find_path(LFC_INCLUDE_DIR lfc/lfc_api.h)
-find_library(LFC_LIBRARIES NAMES lfc)
+find_library(LFC_LIBRARIES NAMES lfc PATH_SUFFIXES lib64)
 
 set(LFC_INCLUDE_DIRS ${LFC_INCLUDE_DIR})
 

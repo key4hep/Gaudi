@@ -194,7 +194,6 @@ macro(LCG_prepare_paths)
   #===============================================================================
   # Special cases that require a special treatment
   #===============================================================================
-  set(Boost_native_version ${Boost_config_version}_python${Python_config_version_twodigit})
   if(NOT APPLE)
     # FIXME: this should be automatic... see FindBoost.cmake documentation
     # Get Boost compiler id from LCG_system
@@ -205,9 +204,12 @@ macro(LCG_prepare_paths)
   set(Boost_NO_BOOST_CMAKE ON)
   set(Boost_NO_SYSTEM_PATHS ON)
 
-  set(pytools_native_version ${pytools_config_version}_python${Python_config_version_twodigit})
-
-  set(QMtest_native_version ${QMtest_config_version}_python${Python_config_version_twodigit})
+  # These externals require the version of python appended to their version.
+  foreach(external Boost pytools pygraphics pyanalysis QMtest)
+    if(${external}_config_version)
+      set(${external}_native_version ${${external}_config_version}_python${Python_config_version_twodigit})
+    endif()
+  endforeach()
 
   if(comp STREQUAL clang30)
     set(GCCXML_CXX_COMPILER gcc CACHE STRING "Compiler that GCCXML must use.")
@@ -225,24 +227,19 @@ macro(LCG_prepare_paths)
     set(${name}_home ${LCG_external}/${${name}_directory_name}/${${name}_native_version}/${LCG_system})
   endforeach()
 
-  if(NOT DEFINED LCG_PREFIX_PATH)
-    foreach(name ${LCG_projects})
-      list(APPEND LCG_PREFIX_PATH ${${name}_home})
-      # We need to add python to the include path because it's the only
-      # way to search for a (generic) file.
-      list(APPEND LCG_INCLUDE_PATH ${${name}_base}/include ${${name}_home}/python)
-    endforeach()
-    # Add the LCG externals dirs to the search paths.
-    foreach(name ${LCG_externals})
-      list(APPEND LCG_PREFIX_PATH ${${name}_home})
-    endforeach()
+  foreach(name ${LCG_projects})
+    list(APPEND LCG_PREFIX_PATH ${${name}_home})
+    # We need to add python to the include path because it's the only
+    # way to search for a (generic) file.
+    list(APPEND LCG_INCLUDE_PATH ${${name}_base}/include ${${name}_home}/python)
+  endforeach()
+  # Add the LCG externals dirs to the search paths.
+  foreach(name ${LCG_externals})
+    list(APPEND LCG_PREFIX_PATH ${${name}_home})
+  endforeach()
 
-    # AIDA is special
-    list(APPEND LCG_INCLUDE_PATH ${LCG_external}/${AIDA_directory_name}/${AIDA_native_version}/share/src/cpp)
-
-    set(LCG_PREFIX_PATH ${LCG_PREFIX_PATH} CACHE INTERNAL "Search path for external libraries")
-    set(LCG_INCLUDE_PATH ${LCG_INCLUDE_PATH} CACHE INTERNAL "Search path for files")
-  endif()
+  # AIDA is special
+  list(APPEND LCG_INCLUDE_PATH ${LCG_external}/${AIDA_directory_name}/${AIDA_native_version}/share/src/cpp)
 
   set(CMAKE_PREFIX_PATH ${LCG_PREFIX_PATH} ${CMAKE_PREFIX_PATH})
   set(CMAKE_INCLUDE_PATH ${LCG_INCLUDE_PATH} ${CMAKE_INCLUDE_PATH})

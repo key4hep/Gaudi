@@ -62,9 +62,12 @@ CMTParser = makeParser()
 
 # mappings
 ignored_packages = set(["GaudiSys", "GaudiRelease", "GaudiPolicy"])
-ignore_dep_on_subdirs = set(ignored_packages)
-ignore_dep_on_subdirs.update(['Det/SQLDDDB', 'FieldMap'])
+data_packages = set(['Det/SQLDDDB', 'FieldMap', 'TCK/HltTCK'])
 
+ignore_dep_on_subdirs = set(ignored_packages)
+ignore_dep_on_subdirs.update(data_packages)
+
+# List of packages known to actually need Python to build
 needing_python = ('LoKiCore', 'XMLSummaryKernel', 'CondDBUI')
 
 # packages that must have the pedantic option disabled
@@ -122,14 +125,18 @@ class Package(object):
         self.version = None
         self.libraries = []
         self.applications = []
+        self.documents = []
         self.macros = {}
 
         self.singleton_patterns = set(["QMTest", "install_python_modules", "install_scripts",
-                                       "install_more_includes", "god_headers", "god_dictionary"])
+                                       "install_more_includes", "god_headers", "god_dictionary",
+                                       "PyQtResource", "PyQtUIC"])
         self.install_more_includes = {}
         self.install_python_modules = self.install_scripts = self.QMTest = False
         self.god_headers = {}
         self.god_dictionary = {}
+        self.PyQtResource = {}
+        self.PyQtUIC = {}
 
         self.multi_patterns = set(["reflex_dictionary", 'component_library', 'linker_library'])
         self.reflex_dictionary = []
@@ -255,11 +262,11 @@ class Package(object):
                 v = v.replace("$(%sROOT)/" % self.name.upper(), "")
                 v = v.replace("../", "")
                 d[k] = v
-
+            imports = [i.strip('"').replace('-import=', '') for i in d.get('imports', '').strip().split()]
             rflx_dict.append((d['dictionary'] + 'Dict',
                               [d['headerfiles'], d['selectionfile']],
                               None,
-                              []))
+                              imports))
 
         # libraries
         global_imports = [extName(name[15:])
@@ -310,8 +317,15 @@ class Package(object):
                     args.append('PUBLIC_HEADERS ' + ' '.join(headers))
                 else:
                     args.append('NO_PUBLIC_HEADERS')
-            elif isGODDict and god_headers_dest:
-                args.append('HEADERS_DESTINATION ' + god_headers_dest)
+            elif isGODDict:
+                if god_headers_dest:
+                    args.append('HEADERS_DESTINATION ' + god_headers_dest)
+                # check if we have a customdict in the documents
+                for docname, _, docsources in self.documents:
+                    if docname == 'customdict':
+                        args.append('EXTEND ' + docsources[0].replace('../', ''))
+                        break
+
 
             # # collection of link libraries. #
             # Externals and subdirs are treated differently:
@@ -369,11 +383,32 @@ class Package(object):
             data.append(libdata)
             data.append('') # empty line
 
+        # PyQt resources and UIs
+        if self.PyQtResource or self.PyQtUIC:
+            data.append("# gen_pyqt_* functions are provided by 'pygraphics'")
+        if self.PyQtResource:
+            qrc_files = self.PyQtResource["qrc_files"].replace("../", "")
+            qrc_dest = self.PyQtResource["outputdir"].replace("../python/", "")
+            qrc_target = qrc_dest.replace('/', '.') + '.Resources'
+            data.append('gen_pyqt_resource(%s %s %s)' % (qrc_target, qrc_dest, qrc_files))
+        if self.PyQtUIC:
+            ui_files = self.PyQtUIC["ui_files"].replace("../", "")
+            ui_dest = self.PyQtUIC["outputdir"].replace("../python/", "")
+            ui_target = qrc_dest.replace('/', '.') + '.UI'
+            data.append('gen_pyqt_uic(%s %s %s)' % (ui_target, ui_dest, ui_files))
+        if self.PyQtResource or self.PyQtUIC:
+            data.append('') # empty line
+
         # installation
         installs = []
         if headers and not self.linker_libraries: # not installed yet
             installs.append("gaudi_install_headers(%s)" % (" ".join(headers)))
         if self.install_python_modules:
+            # if we install Python modules, we need to check if we have special
+            # names for the ConfUser modules
+            if (self.name + 'ConfUserModules') in self.macros:
+                installs.append('set_property(DIRECTORY PROPERTY CONFIGURABLE_USER_MODULES %s)'
+                                % self.macros[self.name + 'ConfUserModules'])
             installs.append("gaudi_install_python_modules()")
         if self.install_scripts:
             installs.append("gaudi_install_scripts()")
@@ -482,6 +517,12 @@ class Package(object):
                     # usually, developers do not put tests in the right group
                     group = 'tests'
                 self.applications.append((name, sources, group, imports))
+
+            elif cmd == 'document':
+                name = args.pop(0)
+                constituent = args.pop(0)
+                sources = args
+                self.documents.append((name, constituent, sources))
 
             elif cmd == 'macro':
                 # FIXME: should handle macro tags

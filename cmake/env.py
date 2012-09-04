@@ -45,8 +45,7 @@ def set_env(env, set = [], unset = [], append = [], prepend = []):
 
     return env
 
-
-def main():
+def parse_args():
     from optparse import OptionParser
     parser = OptionParser(prog = "env",
                           usage = "Usage: %prog [OPTION]... [NAME=VALUE]... [COMMAND [ARG]...]",
@@ -83,7 +82,31 @@ def main():
                         xml = [],
                         ignore_environment = False)
 
-    opts, args = parser.parse_args()
+    return parser.parse_args()
+
+def envFromXML(env, xmlfiles):
+    '''
+    Extend the environment declared in the dictionary env with the actions
+    in the XML files specified in the list 'xmlfiles'.
+    '''
+    from EnvConfig import Control
+    control = Control.Environment()
+    # declare scalar and list variables ("*PATH*" and "*DIRS*" are lists)
+    for k, v in env.items():
+        if 'PATH' in k or 'DIRS' in k:
+            t = 'list'
+        else:
+            t = 'scalar'
+        control.declare(k, t, False)
+        control.set(k, v)
+
+    for f in xmlfiles:
+        control.loadXML(f)
+
+    return control.vars()
+
+def main():
+    opts, args = parse_args()
 
     # find the 'set' arguments in the list of arguments
     i = 0
@@ -100,17 +123,7 @@ def main():
         env = dict(os.environ)
 
     if opts.xml:
-        from EnvConfig import Control
-        control = Control.Environment()
-        # declare scalar and list variables ("*PATH*" and "*DIRS*" are lists)
-        for v in env:
-            control.declare(v, ("PATH" in v or "DIRS" in v) and "list" or "scalar", False)
-        for k in env:
-            control.set(k, env[k])
-
-        for f in opts.xml:
-            control.loadXML(f)
-        env = control.vars()
+        env = envFromXML(env, opts.xml)
 
     env = set_env(env,
                   set = opts.set, unset = opts.unset,
@@ -130,7 +143,7 @@ def main():
         return 0
     else:
         from subprocess import Popen
-        return Popen(cmd, env = env).wait()
+        return Popen(cmd, env=env).wait()
 
 if __name__ == "__main__":
     import sys

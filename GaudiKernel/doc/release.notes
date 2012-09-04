@@ -1,6 +1,13 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2012-08-25 - Marco Clemencic
+ - Modified genconfuser.py to better discover the existing configurables in the
+   CMake-based build.
+
+! 2012-08-22 - Marco Clemencic
+ - Added option --debug to 'genconfuser.py'.
+
 ! 2012-07-27 - Marco Clemencic
  - Modified ConfigurableDb.py to search for *_merged_confDb.py in all the dirs
    of PYTHONPATH and not only in the InstallArea.

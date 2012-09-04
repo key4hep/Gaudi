@@ -1,9 +1,11 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
-! 2012-08-21 - Marco Clemencic
+! 2012-09-04 - Marco Clemencic
  - Fixed a problem with the installation of configurables modules when using the
    CMTUSERCONTEXT.
+ - Fixed a bug in merge_files.py that caused a failure when the output file name
+   did not have the directory part (i.e. plain filename).
 
 ! 2012-07-30 - Marco Clemencic
  - Override LCG_releases and LCG_external to avoid stress on AFS when using
