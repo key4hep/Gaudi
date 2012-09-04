@@ -62,9 +62,12 @@ CMTParser = makeParser()
 
 # mappings
 ignored_packages = set(["GaudiSys", "GaudiRelease", "GaudiPolicy"])
-ignore_dep_on_subdirs = set(ignored_packages)
-ignore_dep_on_subdirs.update(['Det/SQLDDDB', 'FieldMap'])
+data_packages = set(['Det/SQLDDDB', 'FieldMap', 'TCK/HltTCK'])
 
+ignore_dep_on_subdirs = set(ignored_packages)
+ignore_dep_on_subdirs.update(data_packages)
+
+# List of packages known to actually need Python to build
 needing_python = ('LoKiCore', 'XMLSummaryKernel', 'CondDBUI')
 
 # packages that must have the pedantic option disabled
