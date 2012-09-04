@@ -24,7 +24,11 @@
     virtual StatusCode execute  () ; // the execution of the algorithm 
     /// the finalization of the algorithm 
     virtual StatusCode finalize () ; // the finalization of the algorithm 
-
+    /// Get the inputs
+    virtual const std::vector<std::string> get_inputs();
+    /// Get the outputs
+    virtual const std::vector<std::string> get_outputs();
+    
   protected:
 
     CPUCruncher 
@@ -47,4 +51,9 @@
 
     double m_avg_runtime ; //Avg Runtime
     double m_var_runtime ; //Variance of Runtime
+    
+    // For the concurrency
+    std::vector<std::string> m_inputs;
+    std::vector<std::string> m_outputs;    
+    
   };

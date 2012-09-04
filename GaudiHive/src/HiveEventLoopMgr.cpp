@@ -71,6 +71,8 @@ StatusCode HiveEventLoopMgr::initialize()    {
     DEBMSG << "Error Initializing base class MinimalEventLoopMgr." << endmsg;
     return sc;
   }
+  
+  find_dependencies();
 
   // Setup access to event data services
   m_evtDataMgrSvc = serviceLocator()->service("EventDataSvc");
@@ -132,8 +134,8 @@ StatusCode HiveEventLoopMgr::initialize()    {
   }
 
   // Setup tbb task scheduler
-  // TODO: shouldn't be in this clase
-  m_tbb_scheduler_init = new tbb::task_scheduler_init(8);
+  // TODO: shouldn't be in this case
+//   m_tbb_scheduler_init = new tbb::task_scheduler_init(3);
 
   return StatusCode::SUCCESS;
 }
@@ -285,7 +287,7 @@ StatusCode HiveEventLoopMgr::finalize()    {
   m_evtDataSvc      = 0;
   m_evtDataMgrSvc   = 0;
 
-  delete m_tbb_scheduler_init;
+//   delete m_tbb_scheduler_init;
 
   return StatusCode::SUCCESS;
 }
@@ -306,8 +308,6 @@ StatusCode HiveEventLoopMgr::executeEvent(void* par)    {
   // Execute Algorithms
   m_incidentSvc->fireIncident(Incident(name(), IncidentType::BeginProcessing));
 
-  bool eventfailed = false;
-
   // Call the resetExecuted() method of ALL "known" algorithms
   // (before we were reseting only the topalgs)
   SmartIF<IAlgManager> algMan(serviceLocator());
@@ -317,37 +317,8 @@ StatusCode HiveEventLoopMgr::executeEvent(void* par)    {
       if (LIKELY(0 != *ialg)) (*ialg)->resetExecuted();
     }
   }
-
-  // Call the execute() method of all top algorithms
-  for (ListAlg::iterator ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
-    StatusCode sc(StatusCode::FAILURE);
-    try {
-      if (UNLIKELY(m_abortEvent)) {
-        DEBMSG << "AbortEvent incident fired by "
-               << m_abortEventSource << endmsg;
-        m_abortEvent = false;
-        sc.ignore();
-        break;
-      }
-      sc = (*ita)->sysExecute();
-    } catch ( const GaudiException& Exception ) {
-      fatal() << ".executeEvent(): Exception with tag=" << Exception.tag()
-              << " thrown by " << (*ita)->name() << endmsg;
-      error() << Exception << endmsg;
-    } catch ( const std::exception& Exception ) {
-      fatal() << ".executeEvent(): Standard std::exception thrown by "
-              << (*ita)->name() << endmsg;
-      error() << Exception.what()  << endmsg;
-    } catch(...) {
-      fatal() << ".executeEvent(): UNKNOWN Exception thrown by "
-              << (*ita)->name() << endmsg;
-    }
-
-    if (UNLIKELY(!sc.isSuccess())) {
-      warning() << "Execution of algorithm " << (*ita)->name() << " failed" << endmsg;
-      eventfailed = true;
-    }
-  }
+    
+  bool eventfailed = run_parallel();
 
   // ensure that the abortEvent flag is cleared before the next event
   if (UNLIKELY(m_abortEvent)) {
@@ -482,8 +453,176 @@ StatusCode HiveEventLoopMgr::getEventRoot(IOpaqueAddress*& refpAddr)  {
   return sc;
 }
 
-//
+// Here because temporary
+#include <iostream>
+#include <algorithm>
+
 /// Compute dependencies between the algorithms
-//void
-//HiveEventLoopMgr::compute_dependencies() {
-//}
+void
+HiveEventLoopMgr::find_dependencies() {
+  
+    /**
+     * This is not very simple, but here you have the reasons:
+     * o ATM the Algo and IAlgo were not modified
+     * o We input the inputs and outputs as "vectors" in the config as PROPERTIES
+     * o The modules store this as vector of strings
+     * o We need to massage them:(
+     * We opt for testing the scheduler and then properly change the interfaces.
+     */
+    auto tokenize_gaudi_string_vector = 
+      [] (std::string s) -> const std::vector<std::string> {
+        for (const char c: {'\'',']','['})
+          replace(s.begin(), s.end(), c, ' ');
+        // remove spaces
+        s.erase(remove_if(s.begin(), s.end(), isspace), s.end());
+        // replace commas with spaces
+        replace(s.begin(), s.end(), ',', ' ');
+        // tokenize
+        std::vector<std::string> tokens;
+        std::stringstream os(s);
+        std::string tmp;
+        while( os >> tmp )
+          tokens.push_back(tmp);
+        return tokens;
+        };
+        
+    auto get_algo_collections = 
+     [tokenize_gaudi_string_vector] (IAlgorithm* algo, const std::string & type) -> const std::vector<std::string> {
+       // This is how you can get the properties from the Ialgo and not the algo!
+       SmartIF<IProperty> algo_properties(algo);
+       return tokenize_gaudi_string_vector (algo_properties->getProperty(type).toString());
+      };
+
+    // the lambdas above will disappear ----------------- 
+      
+    const unsigned int n_algos = m_topAlgList.size();
+    std::vector<state_type> all_requirements(n_algos);
+    // create the mapping productname : index
+    std::map<std::string,unsigned int> product_indices;
+   
+    unsigned int algo_counter=0;
+    for (IAlgorithm* algo: m_topAlgList) {
+        const std::vector<std::string>& outputs = get_algo_collections(algo,"Outputs");
+        for (const std::string& output: outputs){
+            product_indices[output] = algo_counter;
+        }
+        algo_counter++;
+    }
+    // use the mapping to create a bit pattern of input requirements
+    state_type termination_requirement(0);
+    algo_counter=0;
+    for (IAlgorithm* algo : m_topAlgList) {
+        always() << " " << algo_counter << ": " << algo->name().c_str() << endmsg;
+        state_type requirements(0);
+        const std::vector<std::string>& inputs = get_algo_collections(algo,"Inputs");
+        for (const std::string& input: inputs){
+            const unsigned int input_index = product_indices[input];
+            requirements[input_index] = true;
+            always() << "\tconnecting to " <<  algo->name().c_str() 
+                     << "(via '" << input.c_str() << "')" << endmsg;
+        }
+        all_requirements[algo_counter] = requirements;
+        termination_requirement[algo_counter] = true;
+    
+      algo_counter++;
+    }
+    m_termination_requirement = termination_requirement;
+    m_all_requirements = all_requirements;
+}  
+
+bool HiveEventLoopMgr::run_parallel(){
+  bool eventfailed = false;
+  
+  // Call the execute() method of all top algorithms
+  for (ListAlg::iterator ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
+    StatusCode sc(StatusCode::FAILURE);
+    try {
+      if (UNLIKELY(m_abortEvent)) {
+        DEBMSG << "AbortEvent incident fired by "
+               << m_abortEventSource << endmsg;
+        m_abortEvent = false;
+        sc.ignore();
+        break;
+      }
+      sc = (*ita)->sysExecute();
+    } catch ( const GaudiException& Exception ) {
+      fatal() << ".executeEvent(): Exception with tag=" << Exception.tag()
+              << " thrown by " << (*ita)->name() << endmsg;
+      error() << Exception << endmsg;
+    } catch ( const std::exception& Exception ) {
+      fatal() << ".executeEvent(): Standard std::exception thrown by "
+              << (*ita)->name() << endmsg;
+      error() << Exception.what()  << endmsg;
+    } catch(...) {
+      fatal() << ".executeEvent(): UNKNOWN Exception thrown by "
+              << (*ita)->name() << endmsg;
+    }
+
+    if (UNLIKELY(!sc.isSuccess())) {
+      warning() << "Execution of algorithm " << (*ita)->name() << " failed" << endmsg;
+      eventfailed = true;
+    }
+  }  
+  
+  return eventfailed;
+  
+/**
+ Started to adapt for Gaudi
+   o Removed multiple events
+ 
+    //get the bit patterns and sort by node id (like the available algos)
+    std::vector<state_type> bits = m_all_requirements;
+    // some book keeping vectors
+    const size_t size = m_topAlgList.size();
+    std::vector<EventState*> event_states(0);
+    unsigned int in_flight(0), processed(0); 
+    
+
+    // now schedule whatever can be scheduled
+    // loop through the entire vector of algo bits
+    for (unsigned int algo = 0; algo < size; ++algo) {
+
+
+      EventState*& event_state = event_states[event_id];
+      // extract event_id specific quantities
+      state_type& current_event_bits = event_state->state;
+      // check whether all dependencies for the algorithm are fulfilled...
+      state_type tmp = (current_event_bits & bits[algo]) ^ bits[algo];
+      /// ...whether all required products are there...
+        
+      // ... and whether the algo was previously started
+      tbb::concurrent_vector<bool>& algo_has_run = event_state->algos_started_;
+      if ((tmp==0) && (algo_has_run[algo] == false)) {
+          // is there an available Algo instance one can use?
+          AlgoBase* algo_instance(0);
+          bool algo_free(0);
+          algo_free = algo_pool_.acquire(algo_instance, algo);
+          if (algo_free) {
+            AlgoTaskId* task = new AlgoTaskId(algos_[algo],algo,event_state);
+            tbb::task* t = new( tbb::task::allocate_root() ) AlgoTask(task, this);
+            tbb::task::enqueue( *t);
+            algo_has_run[algo] = true;
+          }
+        }
+
+    }
+    
+    task_cleanup();
+    
+    // check for finished events and clean up
+    for (std::vector<EventState*>::iterator i = event_states.begin(), end = event_states.end(); i != end; ++i){
+        if ((*i)->state == termination_requirement_) {
+        Context*& context = (*i)->context;
+        //printf("Finished event\n");
+        wb_.release_context(context);
+        event_loop_manager_->event_done();
+        ++processed; //to be removed
+        --in_flight; //to be removed
+        delete (*i);
+        i = event_states.erase(i);
+        }
+    }
+ 
+**/  
+  
+}

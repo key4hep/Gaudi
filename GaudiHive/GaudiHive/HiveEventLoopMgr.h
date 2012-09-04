@@ -6,7 +6,7 @@
 #include "GaudiKernel/MinimalEventLoopMgr.h"
 
 // std includes
-#include <memory>
+#include <bitset>
 
 // typedef for the event and algo state
 typedef std::bitset<1000> state_type;
@@ -47,17 +47,27 @@ protected:
   bool              m_endEventFired;
   /// Flag to disable warning messages when using external input
   bool              m_warnings;
+  
+  // Variables for the concurrency  
   /// Pointer to tbb task scheduler
   tbb::task_scheduler_init* m_tbb_scheduler_init;  
-
+  /// Get the input and output collections
+  void find_dependencies();
+  /// The termination requirement
+  state_type m_termination_requirement;
+  /// All requirements
+  std::vector<state_type> m_all_requirements;
+  /// Run algos in parallel
+  bool run_parallel();  
+  
 public:
   /// Standard Constructor
   HiveEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc);
   /// Standard Destructor
   virtual ~HiveEventLoopMgr();
   /// Create event address using event selector
-  StatusCode getEventRoot(IOpaqueAddress*& refpAddr);
-
+  StatusCode getEventRoot(IOpaqueAddress*& refpAddr);  
+  
   /// implementation of IService::initialize
   virtual StatusCode initialize();
   /// implementation of IService::reinitialize
@@ -72,5 +82,6 @@ public:
   virtual StatusCode executeEvent(void* par);
   /// implementation of IEventProcessor::executeRun()
   virtual StatusCode executeRun(int maxevt);
+
 };
 #endif // GAUDISVC_EVENTLOOPMGR_H

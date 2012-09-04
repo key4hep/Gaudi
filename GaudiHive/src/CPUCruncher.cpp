@@ -10,6 +10,10 @@ CPUCruncher::CPUCruncher ( const std::string& name , // the algorithm instance n
               , m_avg_runtime ( 1. )
               , m_var_runtime ( .01 )
     {
+      // For Concurrent run
+      declareProperty("Inputs", m_inputs, "List of required inputs");
+      declareProperty("Outputs", m_outputs, "List of provided outputs");
+      
       declareProperty ( "avgRuntime" , m_avg_runtime , "Average runtime of the module." ) ;
       declareProperty ( "varRuntime" , m_var_runtime , "Variance of the runtime of the module." ) ;     
     }  
@@ -102,6 +106,21 @@ StatusCode CPUCruncher::finalize () // the finalization of the algorithm
 
 //------------------------------------------------------------------------------
 
+const std::vector<std::string>
+CPUCruncher::get_inputs()
+{
+  return m_inputs;
+}
+
+//------------------------------------------------------------------------------
+
+const std::vector<std::string>
+CPUCruncher::get_outputs()
+{
+  return m_outputs;
+}
+
+//------------------------------------------------------------------------------
 
 
   

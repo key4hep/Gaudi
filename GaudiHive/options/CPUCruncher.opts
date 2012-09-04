@@ -15,17 +15,35 @@ EventDataSvc.RootCLID    =    1;
 // Set output level threshold 2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
 MessageSvc.OutputLevel     =  5;
 
-ApplicationMgr.TopAlg += { "CPUCruncher/Test1" };
+ApplicationMgr.TopAlg += { "CPUCruncher/Test1",
+                           "CPUCruncher/Test2",
+                           "CPUCruncher/Test3",
+                           "CPUCruncher/Test4",
+                           "CPUCruncher/Test5"};
 Test1.varRuntime=.1;
 Test1.avgRuntime=.5;
 
+Test1.Inputs={""};
+Test1.Outputs={"collA","collB"};
+
+Test2.Inputs={"collA"};
+Test2.Outputs={"collC"};
+
+Test3.Inputs={"collB","collC"};
+Test3.Outputs={"collD"};
+
+Test4.Inputs={"collA"};
+Test4.Outputs={"collE"};
+
+Test5.Inputs={"collB"};
+Test5.Outputs={""};
 
 //--------------------------------------------------------------
 // Event related parameters
 //--------------------------------------------------------------
-ApplicationMgr.EvtMax    = 20;   // events to be processed (default is 10)
+ApplicationMgr.EvtMax    = 5;   // events to be processed (default is 10)
 ApplicationMgr.EvtSel   = "NONE"; // do not use any event input
 ApplicationMgr.HistogramPersistency = "NONE";
 ApplicationMgr.StatusCodeCheck = true ;
 
-ApplicationMgr.EventLoop = "EventLoopMgr";
+ApplicationMgr.EventLoop = "HiveEventLoopMgr";
