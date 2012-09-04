@@ -35,6 +35,7 @@ LCG_prepare_paths()"""
                         "GCCXML":  "gccxml",
                         "Qt":  "qt",
                         "CASTOR":  "castor",
+                        "lfc": "Grid/LFC",
                         }
 
     __special_names__ = {"qt": "Qt"}
