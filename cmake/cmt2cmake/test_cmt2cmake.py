@@ -1002,5 +1002,34 @@ application MyTestApp app5a.cpp app5b.cpp
     calls = getCalls("if", cmakelists)
     assert calls == ['BUILD_TESTS'] * 4
 
+def test_pyqt_patterns():
+    requirements = '''
+package Test
+version v1r0
+
+use pygraphics v* LCG_Interfaces -no_auto_imports
+use Qt v* LCG_Interfaces -no_auto_imports
+
+apply_pattern install_python_modules
+
+apply_pattern PyQtResource qrc_files=../qt_resources/*.qrc outputdir=../python/Test/QtApp
+apply_pattern PyQtUIC ui_files=../qt_resources/*.ui outputdir=../python/Test/QtApp
+macro_append Test_python_dependencies " PyQtResource PyQtUIC "
+    '''
+    pkg = PackWrap("Test", requirements, files={})
+
+    cmakelists = pkg.generate()
+    print cmakelists
+
+    calls = getCalls("gen_pyqt_resource", cmakelists)
+    assert len(calls) == 1, "gen_pyqt_resource wrong count %d" % len(calls)
+    l = calls[0].strip().split()
+    assert l == ['Test.QtApp.Resources', 'Test/QtApp', 'qt_resources/*.qrc']
+
+    calls = getCalls("gen_pyqt_uic", cmakelists)
+    assert len(calls) == 1, "gen_pyqt_uic wrong count %d" % len(calls)
+    l = calls[0].strip().split()
+    assert l == ['Test.QtApp.UI', 'Test/QtApp', 'qt_resources/*.ui']
+
 from nose.core import main
 main()

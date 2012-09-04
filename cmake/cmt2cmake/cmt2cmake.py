@@ -129,11 +129,14 @@ class Package(object):
         self.macros = {}
 
         self.singleton_patterns = set(["QMTest", "install_python_modules", "install_scripts",
-                                       "install_more_includes", "god_headers", "god_dictionary"])
+                                       "install_more_includes", "god_headers", "god_dictionary",
+                                       "PyQtResource", "PyQtUIC"])
         self.install_more_includes = {}
         self.install_python_modules = self.install_scripts = self.QMTest = False
         self.god_headers = {}
         self.god_dictionary = {}
+        self.PyQtResource = {}
+        self.PyQtUIC = {}
 
         self.multi_patterns = set(["reflex_dictionary", 'component_library', 'linker_library'])
         self.reflex_dictionary = []
@@ -378,6 +381,22 @@ class Package(object):
                 libdata.append('endif()')
                 libdata = '\n'.join(libdata)
             data.append(libdata)
+            data.append('') # empty line
+
+        # PyQt resources and UIs
+        if self.PyQtResource or self.PyQtUIC:
+            data.append("# gen_pyqt_* functions are provided by 'pygraphics'")
+        if self.PyQtResource:
+            qrc_files = self.PyQtResource["qrc_files"].replace("../", "")
+            qrc_dest = self.PyQtResource["outputdir"].replace("../python/", "")
+            qrc_target = qrc_dest.replace('/', '.') + '.Resources'
+            data.append('gen_pyqt_resource(%s %s %s)' % (qrc_target, qrc_dest, qrc_files))
+        if self.PyQtUIC:
+            ui_files = self.PyQtUIC["ui_files"].replace("../", "")
+            ui_dest = self.PyQtUIC["outputdir"].replace("../python/", "")
+            ui_target = qrc_dest.replace('/', '.') + '.UI'
+            data.append('gen_pyqt_uic(%s %s %s)' % (ui_target, ui_dest, ui_files))
+        if self.PyQtResource or self.PyQtUIC:
             data.append('') # empty line
 
         # installation
