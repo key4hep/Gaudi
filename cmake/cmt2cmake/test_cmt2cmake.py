@@ -930,6 +930,48 @@ apply_pattern reflex_dictionary \\
     l = calls[0].strip().split()
     assert l[0:3] == ['Test', 'dict/TestDict.h', 'dict/TestDict.xml']
 
+def test_reflex_3():
+    requirements = '''
+package Test
+version v1r0
+
+use ROOT v* LCG_Interfaces
+use COOL v* LCG_Interfaces -no_auto_imports
+use CORAL v* LCG_Interfaces -no_auto_imports
+use Boost v* LCG_Interfaces -no_auto_imports
+
+library Test *.ccp
+apply_pattern component_library library=Test
+
+apply_pattern reflex_dictionary \\
+              dictionary=Test \\
+              headerfiles=$(TESTROOT)/dict/TestDict.h \\
+              selectionfile=$(TESTROOT)/dict/TestDict.xml \\
+              imports="COOL -import=CORAL -import=Boost"
+    '''
+    pkg = PackWrap("Test", requirements, files={})
+
+    cmakelists = pkg.generate()
+    print cmakelists
+
+    calls = getCalls("gaudi_add_module", cmakelists)
+    assert len(calls) == 1, "gaudi_add_module wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l[0] == 'Test'
+
+    calls = getCalls("gaudi_add_dictionary", cmakelists)
+    assert len(calls) == 1, "gaudi_add_dictionary wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l[0:3] == ['Test', 'dict/TestDict.h', 'dict/TestDict.xml']
+    assert 'INCLUDE_DIRS' in l
+    i = l.index('INCLUDE_DIRS')
+    assert 'LINK_LIBRARIES' in l
+    j = l.index('LINK_LIBRARIES')
+    assert set(l[i+1:j]) == set(['ROOT', 'COOL', 'CORAL', 'Boost'])
+    assert set(l[j+1:]) == set(['ROOT', 'COOL', 'CORAL', 'Boost'])
+
 def test_linkopts():
     requirements = '''
 package Test

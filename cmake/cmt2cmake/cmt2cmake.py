@@ -262,11 +262,11 @@ class Package(object):
                 v = v.replace("$(%sROOT)/" % self.name.upper(), "")
                 v = v.replace("../", "")
                 d[k] = v
-
+            imports = [i.strip('"').replace('-import=', '') for i in d.get('imports', '').strip().split()]
             rflx_dict.append((d['dictionary'] + 'Dict',
                               [d['headerfiles'], d['selectionfile']],
                               None,
-                              []))
+                              imports))
 
         # libraries
         global_imports = [extName(name[15:])
