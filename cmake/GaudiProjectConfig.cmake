@@ -286,7 +286,8 @@ macro(gaudi_project project version)
     # we need special handling of PYTHONPATH and PATH for the build-time environment
     set(_has_config NO)
     set(_has_python NO)
-    if(EXISTS ${CMAKE_BINARY_DIR}/${package}/genConf OR TARGET ${package}ConfUserDB)
+    get_filename_component(_pack ${package} NAME) # FIXME: should we merge the loops?
+    if(EXISTS ${CMAKE_BINARY_DIR}/${package}/genConf OR TARGET ${_pack}ConfUserDB)
       set(project_build_environment ${project_build_environment}
           PREPEND PYTHONPATH ${CMAKE_BINARY_DIR}/${package}/genConf)
       set(_has_config YES)
@@ -884,6 +885,7 @@ function(gaudi_generate_confuserdb)
     # FIXME: dependency on others ConfUserDB
     # Historically we have been relying on the ConfUserDB built in the dependency
     # order.
+    file(RELATIVE_PATH subdir_name ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
     set(deps)
     gaudi_list_dependencies(deps ${subdir_name})
     # get the plain package-names of the dependencies
