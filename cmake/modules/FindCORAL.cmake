@@ -7,6 +7,7 @@
 #  CORAL_<component>_LIBRARY
 #  CORAL_<component>_FOUND
 #  CORAL_LIBRARIES (not cached)
+#  CORAL_LIBRARY_DIRS (not cached)
 #  CORAL_PYTHON_PATH
 #  CORAL_BINARY_PATH (not cached)
 
@@ -20,11 +21,18 @@ foreach(component ${CORAL_FIND_COMPONENTS})
   if (CORAL_${component}_LIBRARY)
     set(CORAL_${component}_FOUND 1)
     list(APPEND CORAL_LIBRARIES ${CORAL_${component}_LIBRARY})
+
+    get_filename_component(libdir ${CORAL_${component}_LIBRARY} PATH)
+    list(APPEND CORAL_LIBRARY_DIRS ${libdir})
   else()
     set(CORAL_${component}_FOUND 0)
   endif()
   mark_as_advanced(CORAL_${component}_LIBRARY)
 endforeach()
+
+if(CORAL_LIBRARY_DIRS)
+  list(REMOVE_DUPLICATES CORAL_LIBRARY_DIRS)
+endif()
 
 find_path(CORAL_INCLUDE_DIR RelationalAccess/ConnectionService.h)
 find_path(CORAL_PYTHON_PATH coral.py)

@@ -5,11 +5,13 @@
 #  UNWIND_INCLUDE_DIR
 #  UNWIND_INCLUDE_DIRS (not cached)
 #  UNWIND_LIBRARIES
+#  UNWIND_LIBRARY_DIRS (not cached)
 
 find_path(UNWIND_INCLUDE_DIR unwind.h)
 find_library(UNWIND_LIBRARIES NAMES unwind)
 
 set(UNWIND_INCLUDE_DIRS ${UNWIND_INCLUDE_DIR})
+get_filename_component(UNWIND_LIBRARY_DIRS ${UNWIND_LIBRARIES} PATH)
 
 # handle the QUIETLY and REQUIRED arguments and set UNWIND_FOUND to TRUE if
 # all listed variables are TRUE
