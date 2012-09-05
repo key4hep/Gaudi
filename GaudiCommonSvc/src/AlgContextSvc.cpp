@@ -118,7 +118,7 @@ StatusCode AlgContextSvc::setCurrentAlg  ( IAlgorithm* a )
     //
     return StatusCode::RECOVERABLE ;                              // RETURN
   }
-  m_algorithms.push_back ( a ) ;
+  //  m_algorithms.push_back ( a ) ;
   //
   return StatusCode::SUCCESS ;                                    // RETURN
 }
@@ -134,15 +134,15 @@ StatusCode AlgContextSvc::unSetCurrentAlg ( IAlgorithm* a )
     //
     return StatusCode::RECOVERABLE ;                              // RETURN
   }
-  if ( m_algorithms.empty() || m_algorithms.back() != a )
-  {
-    MsgStream log ( msgSvc() , name() ) ;
-    log << MSG::ERROR << "Algorithm stack is invalid" << endmsg ;
-    //
-    return StatusCode::FAILURE ;
-  }
+  //  if ( m_algorithms.empty() || m_algorithms.back() != a )
+  // {
+  //   MsgStream log ( msgSvc() , name() ) ;
+  //  log << MSG::ERROR << "Algorithm stack is invalid" << endmsg ;
+  //  //
+  //  return StatusCode::FAILURE ;
+  //}
   //
-  m_algorithms.pop_back() ;                                      // POP_BACK
+  //  m_algorithms.pop_back() ;                                      // POP_BACK
   //
   return StatusCode::SUCCESS ;
 }

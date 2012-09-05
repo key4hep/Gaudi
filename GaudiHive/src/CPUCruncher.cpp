@@ -81,11 +81,13 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
 {
   
   // setup the runtime with a random number
+
   Rndm::Numbers gauss ( randSvc() , 
                         Rndm::Gauss ( m_avg_runtime , m_var_runtime ) ) ;
   
   const double runtime = fabs(gauss());
   
+//const double runtime = 0.4; 
   always ()  << "Runtime will be: "<< runtime << endmsg;
   
   

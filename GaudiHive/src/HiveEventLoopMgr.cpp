@@ -17,6 +17,7 @@
 #include "GaudiHive/HiveEventLoopMgr.h"
 
 #include "tbb/task_scheduler_init.h"
+#include "tbb/task.h"
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY(HiveEventLoopMgr)
@@ -28,11 +29,31 @@ DECLARE_SERVICE_FACTORY(HiveEventLoopMgr)
 #define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
 
+/////////////////////////////////////////////////
+/// *dirty* place for adding an AlgoTask wrapper
+class HiveAlgoTask : public tbb::task {
+  public:
+  HiveAlgoTask(IAlgorithm* algorithm, unsigned int algorithm_id, HiveEventLoopMgr* scheduler): m_algorithm(algorithm), m_algorithm_id(algorithm_id), m_scheduler(scheduler){};    
+    tbb::task* execute();
+    IAlgorithm* m_algorithm;
+    unsigned int m_algorithm_id; 
+    HiveEventLoopMgr* m_scheduler;
+};
+
+
+tbb::task* HiveAlgoTask::execute() {
+  m_algorithm->sysExecute();
+  m_scheduler->algo_has_finished(m_algorithm_id);
+  return NULL;
+  
+}
+/////////////////////////////////////////////////
+
 //--------------------------------------------------------------------------------------------
 // Standard Constructor
 //--------------------------------------------------------------------------------------------
 HiveEventLoopMgr::HiveEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
-: MinimalEventLoopMgr(nam, svcLoc)
+: MinimalEventLoopMgr(nam, svcLoc) 
 {
   m_histoDataMgrSvc   = 0;
   m_histoPersSvc      = 0;
@@ -41,12 +62,13 @@ HiveEventLoopMgr::HiveEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
   m_evtSelector       = 0;
   m_evtContext        = 0;
   m_endEventFired     = true;
-
+  m_max_parallel      = 1;
   // Declare properties
   declareProperty("HistogramPersistency", m_histPersName = "");
   declareProperty("EvtSel", m_evtsel );
   declareProperty("Warnings",m_warnings=true,
 		  "Set this property to false to suppress warning messages");
+  declareProperty("MaxAlgosParallel", m_max_parallel );
 }
 
 //--------------------------------------------------------------------------------------------
@@ -135,7 +157,7 @@ StatusCode HiveEventLoopMgr::initialize()    {
 
   // Setup tbb task scheduler
   // TODO: shouldn't be in this case
-//   m_tbb_scheduler_init = new tbb::task_scheduler_init(3);
+   m_tbb_scheduler_init = new tbb::task_scheduler_init(3);
 
   return StatusCode::SUCCESS;
 }
@@ -287,7 +309,7 @@ StatusCode HiveEventLoopMgr::finalize()    {
   m_evtDataSvc      = 0;
   m_evtDataMgrSvc   = 0;
 
-//   delete m_tbb_scheduler_init;
+  delete m_tbb_scheduler_init;
 
   return StatusCode::SUCCESS;
 }
@@ -519,7 +541,7 @@ HiveEventLoopMgr::find_dependencies() {
             const unsigned int input_index = product_indices[input];
             requirements[input_index] = true;
             always() << "\tconnecting to " <<  algo->name().c_str() 
-                     << "(via '" << input.c_str() << "')" << endmsg;
+                     << " (via '" << input.c_str() << "')" << endmsg;
         }
         all_requirements[algo_counter] = requirements;
         termination_requirement[algo_counter] = true;
@@ -532,97 +554,76 @@ HiveEventLoopMgr::find_dependencies() {
 
 bool HiveEventLoopMgr::run_parallel(){
   bool eventfailed = false;
-  
-  // Call the execute() method of all top algorithms
-  for (ListAlg::iterator ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
-    StatusCode sc(StatusCode::FAILURE);
-    try {
-      if (UNLIKELY(m_abortEvent)) {
-        DEBMSG << "AbortEvent incident fired by "
-               << m_abortEventSource << endmsg;
-        m_abortEvent = false;
-        sc.ignore();
-        break;
-      }
-      sc = (*ita)->sysExecute();
-    } catch ( const GaudiException& Exception ) {
-      fatal() << ".executeEvent(): Exception with tag=" << Exception.tag()
-              << " thrown by " << (*ita)->name() << endmsg;
-      error() << Exception << endmsg;
-    } catch ( const std::exception& Exception ) {
-      fatal() << ".executeEvent(): Standard std::exception thrown by "
-              << (*ita)->name() << endmsg;
-      error() << Exception.what()  << endmsg;
-    } catch(...) {
-      fatal() << ".executeEvent(): UNKNOWN Exception thrown by "
-              << (*ita)->name() << endmsg;
-    }
 
-    if (UNLIKELY(!sc.isSuccess())) {
-      warning() << "Execution of algorithm " << (*ita)->name() << " failed" << endmsg;
-      eventfailed = true;
-    }
-  }  
-  
+  // Reset the registry of running and finished algorithms
+  // TODO: resize needs to happen only once
+  m_algos_started.resize(m_topAlgList.size());
+  m_algos_passed.resize(m_topAlgList.size());
+  std::fill(m_algos_started.begin(),m_algos_started.end(),false);
+  std::fill(m_algos_passed.begin(),m_algos_passed.end(),false);
+  m_event_state = new state_type(0);
+  m_algos_in_flight = 0;
+
+  do {
+    unsigned int algo_counter(0);
+    for (ListAlg::iterator ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
+      StatusCode sc(StatusCode::SUCCESS); //TODO: disabled the failure part
+      try {
+        if (UNLIKELY(m_abortEvent)) {
+          DEBMSG << "AbortEvent incident fired by "
+                 << m_abortEventSource << endmsg;
+          m_abortEvent = false;
+          sc.ignore();
+          break;
+        }
+        // check whether all requirements/dependencies for the algorithm are fulfilled...
+        state_type dependencies_missing = ((*m_event_state) & m_all_requirements[algo_counter]) ^ m_all_requirements[algo_counter];  
+        // ...and whether the algorithm was already started
+        if ( (dependencies_missing == 0) && (m_algos_started[algo_counter]) == false && (m_algos_in_flight < m_max_parallel )) {
+	  tbb::task* t = new( tbb::task::allocate_root() ) HiveAlgoTask((*ita), algo_counter, this);
+          tbb::task::enqueue( *t);
+          m_algos_started[algo_counter] = true;
+          ++m_algos_in_flight;
+        }
+        ++algo_counter;
+      } catch ( const GaudiException& Exception ) {
+        fatal() << ".executeEvent(): Exception with tag=" << Exception.tag()
+                << " thrown by " << (*ita)->name() << endmsg;
+        error() << Exception << endmsg;
+      } catch ( const std::exception& Exception ) {
+        fatal() << ".executeEvent(): Standard std::exception thrown by "
+                << (*ita)->name() << endmsg;
+        error() << Exception.what()  << endmsg;
+      } catch(...) {
+        fatal() << ".executeEvent(): UNKNOWN Exception thrown by "
+                << (*ita)->name() << endmsg;
+      }
+
+      if (UNLIKELY(!sc.isSuccess())) {
+        warning() << "Execution of algorithm " << (*ita)->name() << " failed" << endmsg;
+        eventfailed = true;
+      }
+    }  
+
+    // clean-up finished tasks
+    // and update event state variables
+    bool queue_full(false);
+    unsigned int algo_id(0);
+    do {
+      queue_full = m_done_queue.try_pop(algo_id);
+      if (queue_full) {
+        m_algos_passed[algo_id] = true;
+        (*m_event_state)[algo_id] = 1;
+        --m_algos_in_flight;
+      }
+    } while (queue_full);  
+
+  } while (m_termination_requirement != (*m_event_state));
+  delete m_event_state;
   return eventfailed;
   
-/**
- Started to adapt for Gaudi
-   o Removed multiple events
- 
-    //get the bit patterns and sort by node id (like the available algos)
-    std::vector<state_type> bits = m_all_requirements;
-    // some book keeping vectors
-    const size_t size = m_topAlgList.size();
-    std::vector<EventState*> event_states(0);
-    unsigned int in_flight(0), processed(0); 
-    
+}
 
-    // now schedule whatever can be scheduled
-    // loop through the entire vector of algo bits
-    for (unsigned int algo = 0; algo < size; ++algo) {
-
-
-      EventState*& event_state = event_states[event_id];
-      // extract event_id specific quantities
-      state_type& current_event_bits = event_state->state;
-      // check whether all dependencies for the algorithm are fulfilled...
-      state_type tmp = (current_event_bits & bits[algo]) ^ bits[algo];
-      /// ...whether all required products are there...
-        
-      // ... and whether the algo was previously started
-      tbb::concurrent_vector<bool>& algo_has_run = event_state->algos_started_;
-      if ((tmp==0) && (algo_has_run[algo] == false)) {
-          // is there an available Algo instance one can use?
-          AlgoBase* algo_instance(0);
-          bool algo_free(0);
-          algo_free = algo_pool_.acquire(algo_instance, algo);
-          if (algo_free) {
-            AlgoTaskId* task = new AlgoTaskId(algos_[algo],algo,event_state);
-            tbb::task* t = new( tbb::task::allocate_root() ) AlgoTask(task, this);
-            tbb::task::enqueue( *t);
-            algo_has_run[algo] = true;
-          }
-        }
-
-    }
-    
-    task_cleanup();
-    
-    // check for finished events and clean up
-    for (std::vector<EventState*>::iterator i = event_states.begin(), end = event_states.end(); i != end; ++i){
-        if ((*i)->state == termination_requirement_) {
-        Context*& context = (*i)->context;
-        //printf("Finished event\n");
-        wb_.release_context(context);
-        event_loop_manager_->event_done();
-        ++processed; //to be removed
-        --in_flight; //to be removed
-        delete (*i);
-        i = event_states.erase(i);
-        }
-    }
- 
-**/  
-  
+void HiveEventLoopMgr::algo_has_finished(unsigned int algo_id){
+  m_done_queue.push(algo_id);
 }

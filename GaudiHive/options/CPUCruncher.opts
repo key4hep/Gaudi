@@ -41,9 +41,11 @@ Test5.Outputs={""};
 //--------------------------------------------------------------
 // Event related parameters
 //--------------------------------------------------------------
-ApplicationMgr.EvtMax    = 5;   // events to be processed (default is 10)
+ApplicationMgr.EvtMax    = 2;   // events to be processed (default is 10)
 ApplicationMgr.EvtSel   = "NONE"; // do not use any event input
 ApplicationMgr.HistogramPersistency = "NONE";
 ApplicationMgr.StatusCodeCheck = true ;
 
 ApplicationMgr.EventLoop = "HiveEventLoopMgr";
+
+HiveEventLoopMgr.MaxAlgosParallel = 4;

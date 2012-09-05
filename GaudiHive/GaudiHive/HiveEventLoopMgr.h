@@ -8,6 +8,10 @@
 // std includes
 #include <bitset>
 
+// include tbb
+#include "tbb/concurrent_vector.h"
+#include "tbb/concurrent_queue.h"
+
 // typedef for the event and algo state
 typedef std::bitset<1000> state_type;
 
@@ -49,6 +53,8 @@ protected:
   bool              m_warnings;
   
   // Variables for the concurrency  
+  /// Maximum number of parallel running algorithms
+  unsigned int m_max_parallel;
   /// Pointer to tbb task scheduler
   tbb::task_scheduler_init* m_tbb_scheduler_init;  
   /// Get the input and output collections
@@ -59,12 +65,24 @@ protected:
   std::vector<state_type> m_all_requirements;
   /// Run algos in parallel
   bool run_parallel();  
+  /// Register of algorithms started
+  tbb::concurrent_vector<bool> m_algos_started;
+  /// Register of algorithms successfully finished
+  tbb::concurrent_vector<bool> m_algos_passed;
+  /// Event state recording which products are there
+  state_type* m_event_state;
+  /// How many algos are in flight?
+  unsigned int m_algos_in_flight;
+  /// list of finished algos
+  tbb::concurrent_queue<unsigned int> m_done_queue;
   
 public:
   /// Standard Constructor
   HiveEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc);
   /// Standard Destructor
   virtual ~HiveEventLoopMgr();
+  /// Call-back for finished algo tasks
+  void algo_has_finished(unsigned int algo_id); 
   /// Create event address using event selector
   StatusCode getEventRoot(IOpaqueAddress*& refpAddr);  
   
