@@ -211,6 +211,10 @@ macro(LCG_prepare_paths)
     endif()
   endforeach()
 
+  # Required if both Qt3 and Qt4 are available.
+  string(REGEX MATCH "[0-9]+" _qt_major_version ${Qt_config_version})
+  set(DESIRED_QT_VERSION ${_qt_major_version} CACHE STRING "Pick a version of QT to use: 3 or 4")
+
   if(comp STREQUAL clang30)
     set(GCCXML_CXX_COMPILER gcc CACHE STRING "Compiler that GCCXML must use.")
   endif()

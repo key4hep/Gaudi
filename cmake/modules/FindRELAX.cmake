@@ -32,7 +32,9 @@ foreach(component ${RELAX_FIND_COMPONENTS})
     list(APPEND RELAX_ROOTMAPS ${RELAX_${component}_ROOTMAP})
   endif()
 endforeach()
-list(REMOVE_DUPLICATES RELAX_LIBRARY_DIRS)
+if(RELAX_LIBRARY_DIRS)
+  list(REMOVE_DUPLICATES RELAX_LIBRARY_DIRS)
+endif()
 
 # handle the QUIETLY and REQUIRED arguments and set RELAX_FOUND to TRUE if
 # all listed variables are TRUE

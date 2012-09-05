@@ -71,7 +71,10 @@ ignore_dep_on_subdirs.update(data_packages)
 needing_python = ('LoKiCore', 'XMLSummaryKernel', 'CondDBUI')
 
 # packages that must have the pedantic option disabled
-no_pedantic = set(['LHCbMath'])
+no_pedantic = set(['LHCbMath', 'GenEvent', 'ProcessorKernel', 'TrackKernel',
+                   'Magnet', 'L0MuonKernel', 'DetDescChecks', 'DetDescSvc',
+                   'SimComponents', 'DetDescExample', 'CondDBEntityResolver',
+                   'MuonDAQ', 'STKernel', 'CaloDAQ', 'CaloUtils'])
 
 # record of known subdirs with their libraries
 # {'subdir': {'libraries': [...]}}
@@ -220,7 +223,8 @@ class Package(object):
                 args.append('COMPONENTS')
                 args.extend(components)
             data.append('find_package(%s)' % ' '.join(args))
-        data.append("")
+        if find_packages:
+            data.append("")
 
         if self.name in no_pedantic:
             data.append('string(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")\n')
@@ -353,6 +357,9 @@ class Package(object):
                 links.remove('AIDA') # FIXME: AIDA does not have a library
 
             if links:
+                not_included = set(links).difference(find_packages, set([s.rsplit('/')[-1] for s in subdirs]))
+                if not_included:
+                    self.log.warning('imports without use: %s', ', '.join(sorted(not_included)))
                 # note: in some cases we get quoted library names
                 args.append('LINK_LIBRARIES ' + ' '.join([l.strip('"') for l in links]))
 
