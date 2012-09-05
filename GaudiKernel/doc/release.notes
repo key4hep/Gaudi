@@ -1,6 +1,11 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2012-09-05 - Marco Clemencic
+ - Fixed bug #96673: spurious warnings in GenConfUser
+   Modified genconfuser.py to extend the submodules search path for the package
+   being processed.
+
 ! 2012-08-25 - Marco Clemencic
  - Modified genconfuser.py to better discover the existing configurables in the
    CMake-based build.

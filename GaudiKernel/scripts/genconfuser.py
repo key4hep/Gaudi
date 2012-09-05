@@ -192,6 +192,9 @@ def main():
         localConfDb = os.path.join(genConfDir, package_name, package_name + '_confDb.py')
         if os.path.exists(localConfDb):
             execfile(localConfDb, {}, {})
+            # Extend the search path of the package module to find the configurables
+            package_module = __import__(package_name)
+            package_module.__path__.insert(0, os.path.join(genConfDir, package_name))
     except:
         pass # ignore failures (not important)
     del dbLock # Now we can let the others operate on the install area python directory
