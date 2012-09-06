@@ -112,12 +112,12 @@ public:
    *  to the object
    */
   virtual StatusCode objectLeaves( const DataObject*  pObject,
-                                  std::vector<IRegistry*>& refLeaves);
+				   std::vector<IRegistry*>& refLeaves);
   /** IDataManagerSvc: Explore the object store: retrieve all leaves attached
    *  to the object
    */
   virtual StatusCode objectLeaves( const IRegistry*   pRegistry,
-                                  std::vector<IRegistry*>& refLeaves);
+				   std::vector<IRegistry*>& refLeaves);
 
   /// IDataManagerSvc: Explore the object store: retrieve the object's parent
   virtual StatusCode objectParent( const DataObject*  pObject,

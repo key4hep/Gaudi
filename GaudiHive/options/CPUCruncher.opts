@@ -23,7 +23,7 @@ ApplicationMgr.TopAlg += { "CPUCruncher/Test1",
 Test1.varRuntime=.1;
 Test1.avgRuntime=.5;
 
-Test1.Inputs={""};
+Test1.Inputs={};
 Test1.Outputs={"collA","collB"};
 
 Test2.Inputs={"collA"};
@@ -36,7 +36,7 @@ Test4.Inputs={"collA"};
 Test4.Outputs={"collE"};
 
 Test5.Inputs={"collB"};
-Test5.Outputs={""};
+Test5.Outputs={};
 
 //--------------------------------------------------------------
 // Event related parameters

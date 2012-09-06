@@ -146,15 +146,16 @@ void DataSvcHelpers::RegistryEntry::setObject( DataObject* pObject )   {
 
 /// Remove an object from the container
 long DataSvcHelpers::RegistryEntry::remove  ( IRegistry* obj )    {
-  try   {
-    RegistryEntry* pEntry = dynamic_cast<RegistryEntry*>(obj);
-    Store::iterator i = std::remove(m_store.begin(), m_store.end(), pEntry);
-    if (i != m_store.end())   {
-      pEntry->release();
-      m_store.erase( i, m_store.end() );
-    }
-  }
-  catch ( ... )   {     }
+  //try   {
+    // TODO: temporarily removed by BH for concurrency
+    //    RegistryEntry* pEntry = dynamic_cast<RegistryEntry*>(obj);
+    //Store::iterator i = std::remove(m_store.begin(), m_store.end(), pEntry);
+    //if (i != m_store.end())   {
+    //  pEntry->release();
+    //  m_store.erase( i, m_store.end() );
+    //}
+  //}
+  //catch ( ... )   {     }
   return m_store.size();
 }
 
@@ -238,7 +239,8 @@ long DataSvcHelpers::RegistryEntry::deleteElements()   {
       entry->release();
     }
   }
-  m_store.erase(m_store.begin(), m_store.end());
+  // TODO: disabled by BH
+  //  m_store.erase(m_store.begin(), m_store.end());
   return 0;
 }
 

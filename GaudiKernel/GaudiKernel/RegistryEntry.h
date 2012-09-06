@@ -9,6 +9,9 @@
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/IRegistry.h"
 
+// tbb include files
+#include "tbb/concurrent_vector.h"
+
 // Forward declarations
 class DataSvc;
 class DataObject;
@@ -34,7 +37,7 @@ namespace DataSvcHelpers   {
   class GAUDI_API RegistryEntry : public IRegistry  {
   private:
     /// Definition of datastore type
-    typedef std::vector<IRegistry*> Store;
+    typedef tbb::concurrent_vector<IRegistry*> Store;
   public:
     friend class ::DataSvc;
     /// Iterator definition

@@ -87,12 +87,20 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
   
   const double runtime = fabs(gauss());
   
-//const double runtime = 0.4; 
   always ()  << "Runtime will be: "<< runtime << endmsg;
   
-  
+  // get products from the event
+  for (std::string& input : m_inputs){
+    get<DataObject>(input);
+  }
+
   findPrimes(runtime);
-  
+
+  // write products to the event
+  for (std::string& output: m_outputs){
+    put(new DataObject(), output);
+  }
+
   return StatusCode::SUCCESS ;
 }
 

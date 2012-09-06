@@ -236,7 +236,7 @@ StatusCode DataSvc::objectParent(const IRegistry*   pRegistry,
 
 /// IDataManagerSvc: Explore an object identified by its pointer.
 StatusCode DataSvc::objectLeaves( const DataObject*  pObject,
-                                 std::vector<IRegistry*>& leaves)   {
+				  std::vector<IRegistry*>& leaves)   {
   if ( pObject )    {
     return objectLeaves(pObject->registry(), leaves);
   }
@@ -247,11 +247,12 @@ StatusCode DataSvc::objectLeaves( const DataObject*  pObject,
  * registry entry.
  */
 StatusCode DataSvc::objectLeaves( const IRegistry*   pRegistry,
-                                 std::vector<IRegistry*>& leaves)   {
+				  std::vector<IRegistry*>& leaves)   {
   if ( checkRoot() )    {
     const RegEntry* node_entry = CAST_REGENTRY(const RegEntry*,pRegistry);
     if ( node_entry )   {
-      leaves = node_entry->leaves();
+      std::copy(node_entry->leaves().begin(),node_entry->leaves().end(),back_inserter(leaves));
+      //leaves = node_entry->leaves();
       return StatusCode::SUCCESS;
     }
     return INVALID_OBJECT;
