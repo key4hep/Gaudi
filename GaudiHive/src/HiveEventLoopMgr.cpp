@@ -157,7 +157,7 @@ StatusCode HiveEventLoopMgr::initialize()    {
 
   // Setup tbb task scheduler
   // TODO: shouldn't be in this case
-   m_tbb_scheduler_init = new tbb::task_scheduler_init(3);
+   m_tbb_scheduler_init = new tbb::task_scheduler_init(m_max_parallel);
 
   return StatusCode::SUCCESS;
 }
