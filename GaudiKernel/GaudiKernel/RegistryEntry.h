@@ -11,6 +11,7 @@
 
 // tbb include files
 #include "tbb/concurrent_vector.h"
+//#include "tbb/mutex.h"
 
 // Forward declarations
 class DataSvc;
@@ -61,6 +62,8 @@ namespace DataSvcHelpers   {
     IDataProviderSvc* m_pDataProviderSvc;
     /// Store of leaves
     Store             m_store;
+    ///// Mutex for having only one rw operation at a time
+    //mutable tbb::mutex m_mutex;
 
   private:
     /** The following entries serve two aspects:

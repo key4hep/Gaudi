@@ -178,18 +178,30 @@ long DataSvcHelpers::RegistryEntry::remove ( const std::string& nam )  {
 
 /// Internal method to add entries
 DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_add(const std::string& nam)    {
+  RegistryEntry* tmp(0);
+  { 
+  //  tbb::mutex::scoped_lock lock(m_mutex);
   if ( nam[0] != SEPARATOR )   {
     std::string path = nam;
     path.insert(path.begin(), SEPARATOR);
     return i_add(path);
   }
   // if this object is already present, this is an error....
-  for (Store::iterator i = m_store.begin(); i != m_store.end(); i++ )   {
+  for (Store::iterator i = m_store.begin(); i !=  m_store.end(); ++i )   {
+    // tbb::concurrent vector is not thread safe when
+    // doing insert and iteration at the same time
+    // One has to wait until the object being put is
+    // fully constructed. Here:
+    // Wait for the pointer becoming valid
+    // Alternatively one could introduce real locks. 
+    while( (*i) == NULL) {} // TODO: maybe make it volatile? 
     if ( nam == (*i)->name() )  {
       return 0;
     }
   }
-  return new RegistryEntry( nam, this );
+  tmp = new RegistryEntry( nam, this );
+  }
+  return tmp;
 }
 
 ///Add object to the container
@@ -197,7 +209,10 @@ long DataSvcHelpers::RegistryEntry::add( IRegistry* obj )    {
   try   {
     RegistryEntry* pEntry = CAST_REGENTRY(RegistryEntry*, obj);
     pEntry->setDataSvc(m_pDataProviderSvc);
+    {
+      //   tbb::mutex::scoped_lock lock(m_mutex);
     m_store.push_back(pEntry);
+    }
     pEntry->setParent(this);
     if ( !pEntry->isSoft() && pEntry->address() != 0 )   {
       pEntry->address()->setRegistry(pEntry);
@@ -252,7 +267,9 @@ IRegistry* DataSvcHelpers::RegistryEntry::i_find( const IRegistry* obj )  const 
 
 /// Find identified leaf in this registry node
 DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find(const std::string& path)   const    {
-  if ( path[0] != SEPARATOR )    {
+  {
+    //    tbb::mutex::scoped_lock lock(m_mutex); 
+ if ( path[0] != SEPARATOR )    {
     std::string thePath = path;
     thePath.insert(thePath.begin(), SEPARATOR);
     return i_find(thePath);
@@ -262,6 +279,9 @@ DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find(const std::
     std::string::size_type loc1 = path.find(SEPARATOR,1);
     std::string::size_type len2 = loc1 != std::string::npos ? loc1 : len;
     for (Store::const_iterator i = m_store.begin(); i != m_store.end(); i++ )   {
+      // tbb::concurrent_vector is not thread-safe on
+      // concurrent iteration and insert. See above in "i_add"
+      while( (*i) == NULL) {} //TODO: needs volatile?
       RegistryEntry* regEnt = CAST_REGENTRY(RegistryEntry*, *i);
       const std::string& nam = regEnt->name();
       // check that the first len2 chars of path are the same as nam
@@ -295,6 +315,7 @@ DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find(const std::
     }
   }
   return 0;
+}
 }
 
 /// Find identified leaf in this registry node
