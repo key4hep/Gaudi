@@ -12,6 +12,7 @@
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IConversionSvc.h"
 #include "GaudiKernel/AppReturnCode.h"
+#include "GaudiKernel/DataSvc.h"
 
 #include "HistogramAgent.h"
 #include "GaudiHive/HiveEventLoopMgr.h"
@@ -33,17 +34,16 @@ DECLARE_SERVICE_FACTORY(HiveEventLoopMgr)
 /// *dirty* place for adding an AlgoTask wrapper
 class HiveAlgoTask : public tbb::task {
   public:
-  HiveAlgoTask(IAlgorithm* algorithm, unsigned int algorithm_id, HiveEventLoopMgr* scheduler): m_algorithm(algorithm), m_algorithm_id(algorithm_id), m_scheduler(scheduler){};    
+  HiveAlgoTask(IAlgorithm* algorithm, HiveEventLoopMgr* scheduler): m_algorithm(algorithm), m_scheduler(scheduler){};    
     tbb::task* execute();
     IAlgorithm* m_algorithm;
-    unsigned int m_algorithm_id; 
     HiveEventLoopMgr* m_scheduler;
 };
 
 
 tbb::task* HiveAlgoTask::execute() {
   m_algorithm->sysExecute();
-  m_scheduler->algo_has_finished(m_algorithm_id);
+  m_scheduler->algo_has_finished();
   return NULL;
   
 }
@@ -519,51 +519,40 @@ HiveEventLoopMgr::find_dependencies() {
       
     const unsigned int n_algos = m_topAlgList.size();
     std::vector<state_type> all_requirements(n_algos);
-    // create the mapping productname : index
-    std::map<std::string,unsigned int> product_indices;
    
-    unsigned int algo_counter=0;
+    // Let's loop through all algos and their required inputs
+    unsigned int algo_counter(0); 
+    unsigned int input_counter(0);
     for (IAlgorithm* algo: m_topAlgList) {
-        const std::vector<std::string>& outputs = get_algo_collections(algo,"Outputs");
-        for (const std::string& output: outputs){
-            product_indices[output] = algo_counter;
-        }
-        algo_counter++;
+      const std::vector<std::string>& inputs = get_algo_collections(algo,"Inputs");
+      state_type requirements(0);
+      for (const std::string& input: inputs){
+	std::pair<std::map<std::string,unsigned int>::iterator,bool> ret;
+        ret = m_product_indices.insert(std::pair<std::string, unsigned int>("/Event/"+input,input_counter));
+        // insert successful means == wasn't known before. So increment counter
+        if (ret.second==true) {
+          ++input_counter;
+        };
+        // in any case the return value holds the proper product index 
+        requirements[ret.first->second] = true;
+      }
+      all_requirements[algo_counter] = requirements;
+      ++algo_counter;
     }
-    // use the mapping to create a bit pattern of input requirements
-    state_type termination_requirement(0);
-    algo_counter=0;
-    for (IAlgorithm* algo : m_topAlgList) {
-        always() << " " << algo_counter << ": " << algo->name().c_str() << endmsg;
-        state_type requirements(0);
-        const std::vector<std::string>& inputs = get_algo_collections(algo,"Inputs");
-        for (const std::string& input: inputs){
-            const unsigned int input_index = product_indices[input];
-            requirements[input_index] = true;
-            always() << "\tconnecting to " <<  algo->name().c_str() 
-                     << " (via '" << input.c_str() << "')" << endmsg;
-        }
-        all_requirements[algo_counter] = requirements;
-        termination_requirement[algo_counter] = true;
-    
-      algo_counter++;
-    }
-    m_termination_requirement = termination_requirement;
+    m_numberOfAlgos = algo_counter;
     m_all_requirements = all_requirements;
 }  
 
 bool HiveEventLoopMgr::run_parallel(){
   bool eventfailed = false;
 
-  // Reset the registry of running and finished algorithms
+  // Reset the registry of finished algorithms
   // TODO: resize needs to happen only once
   m_algos_started.resize(m_topAlgList.size());
-  m_algos_passed.resize(m_topAlgList.size());
   std::fill(m_algos_started.begin(),m_algos_started.end(),false);
-  std::fill(m_algos_passed.begin(),m_algos_passed.end(),false);
   m_event_state = new state_type(0);
   m_algos_in_flight = 0;
-
+  m_algos_finished = 0;
   do {
     unsigned int algo_counter(0);
     for (ListAlg::iterator ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
@@ -580,7 +569,7 @@ bool HiveEventLoopMgr::run_parallel(){
         state_type dependencies_missing = ((*m_event_state) & m_all_requirements[algo_counter]) ^ m_all_requirements[algo_counter];  
         // ...and whether the algorithm was already started
         if ( (dependencies_missing == 0) && (m_algos_started[algo_counter]) == false && (m_algos_in_flight < m_max_parallel )) {
-	  tbb::task* t = new( tbb::task::allocate_root() ) HiveAlgoTask((*ita), algo_counter, this);
+	  tbb::task* t = new( tbb::task::allocate_root() ) HiveAlgoTask((*ita), this);
           tbb::task::enqueue( *t);
           m_algos_started[algo_counter] = true;
           ++m_algos_in_flight;
@@ -605,25 +594,26 @@ bool HiveEventLoopMgr::run_parallel(){
       }
     }  
 
-    // clean-up finished tasks
-    // and update event state variables
+    // update the event state with what has been put into the DataSvc
     bool queue_full(false);
-    unsigned int algo_id(0);
+    std::string product_name;
+    DataSvc& dataSvc = dynamic_cast<DataSvc&>(*(m_evtDataSvc)); 
+    tbb::concurrent_queue<std::string>& new_products = dataSvc.new_products();
     do {
-      queue_full = m_done_queue.try_pop(algo_id);
+      queue_full = new_products.try_pop(product_name);
       if (queue_full) {
-        m_algos_passed[algo_id] = true;
-        (*m_event_state)[algo_id] = 1;
-        --m_algos_in_flight;
+        (*m_event_state)[m_product_indices[product_name]] = true; 
       }
     } while (queue_full);  
 
-  } while (m_termination_requirement != (*m_event_state));
+  } while (m_algos_finished != m_numberOfAlgos);
   delete m_event_state;
   return eventfailed;
   
 }
 
-void HiveEventLoopMgr::algo_has_finished(unsigned int algo_id){
-  m_done_queue.push(algo_id);
+void HiveEventLoopMgr::algo_has_finished(){
+  --m_algos_in_flight;
+  ++m_algos_finished;
 }
+

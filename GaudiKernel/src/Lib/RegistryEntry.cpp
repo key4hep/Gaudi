@@ -217,6 +217,8 @@ long DataSvcHelpers::RegistryEntry::add( IRegistry* obj )    {
     if ( !pEntry->isSoft() && pEntry->address() != 0 )   {
       pEntry->address()->setRegistry(pEntry);
     }
+    // let the DataProviderSvc know about the new data object 
+    m_pDataProviderSvc->new_products().push(pEntry->m_fullpath);
   }
   catch ( ... )   {
   }

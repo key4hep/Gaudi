@@ -8,13 +8,14 @@
 // Framework include files
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/IRegistry.h"
+#include "GaudiKernel/DataSvc.h"
 
 // tbb include files
 #include "tbb/concurrent_vector.h"
 //#include "tbb/mutex.h"
 
 // Forward declarations
-class DataSvc;
+//class DataSvc;
 class DataObject;
 class IDataProviderSvc;
 class IOpaqueAddress;
@@ -59,7 +60,7 @@ namespace DataSvcHelpers   {
     /// Pointer to object
     DataObject*       m_pObject;
     /// Pointer to hosting transient store
-    IDataProviderSvc* m_pDataProviderSvc;
+    DataSvc* m_pDataProviderSvc;
     /// Store of leaves
     Store             m_store;
     ///// Mutex for having only one rw operation at a time
@@ -84,7 +85,7 @@ namespace DataSvcHelpers   {
     /// Set new parent pointer
     void setParent(RegistryEntry* pParent);
     /// Set the transient data store
-    void setDataSvc(IDataProviderSvc* s)    {
+    void setDataSvc(DataSvc* s)    {
       m_pDataProviderSvc = s;
     }
     /// Pointer to parent registry entry

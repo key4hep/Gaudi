@@ -11,6 +11,7 @@
 // include tbb
 #include "tbb/concurrent_vector.h"
 #include "tbb/concurrent_queue.h"
+#include "tbb/atomic.h"
 
 // typedef for the event and algo state
 typedef std::bitset<1000> state_type;
@@ -69,20 +70,24 @@ protected:
   tbb::concurrent_vector<bool> m_algos_started;
   /// Register of algorithms successfully finished
   tbb::concurrent_vector<bool> m_algos_passed;
+  /// Register of input products
+  std::map<std::string,unsigned int> m_product_indices;
   /// Event state recording which products are there
   state_type* m_event_state;
-  /// How many algos are in flight?
-  unsigned int m_algos_in_flight;
-  /// list of finished algos
-  tbb::concurrent_queue<unsigned int> m_done_queue;
+  /// Number of algos in flight
+  tbb::atomic<unsigned int> m_algos_in_flight;
+  /// Number of finished algos
+  tbb::atomic<unsigned int> m_algos_finished;
+  /// Total number of algos
+  unsigned int  m_numberOfAlgos;
   
 public:
   /// Standard Constructor
   HiveEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc);
   /// Standard Destructor
   virtual ~HiveEventLoopMgr();
-  /// Call-back for finished algo tasks
-  void algo_has_finished(unsigned int algo_id); 
+  /// Thread-safe call-back for finished algo tasks
+  void algo_has_finished(); 
   /// Create event address using event selector
   StatusCode getEventRoot(IOpaqueAddress*& refpAddr);  
   
