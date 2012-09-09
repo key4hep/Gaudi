@@ -20,6 +20,8 @@ CPUCruncher::CPUCruncher ( const std::string& name , // the algorithm instance n
   
 void CPUCruncher::findPrimes (const double runtime)  { 
   
+  MsgStream log(msgSvc(), name(), 1983);
+
   // Limit the exercise in time
   const double start = std::clock ();
   
@@ -71,7 +73,7 @@ void CPUCruncher::findPrimes (const double runtime)  {
   // Fool Compiler optimisations:
   for (unsigned int prime_index=0; prime_index<primes_size;prime_index++)
     if (primes[prime_index] == 4)
-      always ()  << "This does never happen, but it's necessary too fool aggressive compiler optimisations!"<< endmsg ;
+      log << "This does never happen, but it's necessary too fool aggressive compiler optimisations!"<< endmsg ;
   
 }
 
@@ -79,15 +81,46 @@ void CPUCruncher::findPrimes (const double runtime)  {
 
 StatusCode CPUCruncher::execute  ()  // the execution of the algorithm 
 {
-  
-  // setup the runtime with a random number
 
-  Rndm::Numbers gauss ( randSvc() , 
-                        Rndm::Gauss ( m_avg_runtime , m_var_runtime ) ) ;
+  MsgStream logstream(msgSvc(), name(), 1983);
+
+
+  /* This will disappear with a thread safe random number generator svc
+   * Use box mueller to generate gaussian randoms
+   * The quality is not good for in depth study given that the generator is a
+   * linear congruent.
+   * Throw away basically a free number: we are in a cpu cruncher after all.
+   * The seed is taken from the clock, but we could assign a seed per module to
+   * ensure reproducibility.
+   *
+   * This is not an overkill but rather an exercise towards a thread safe
+   * random number generation.
+   */
+
+  auto getGausRandom = [] (double mean, double sigma) -> double {
+
+    unsigned int seed = std::clock();
+
+    auto getUnifRandom = [] (unsigned int & seed) ->double {
+      // from numerical recipies
+      constexpr unsigned int m = 232;
+      constexpr unsigned int a = 1664525;
+      constexpr unsigned int c = 1013904223;
+      seed = (a * seed + c) % m;
+      const double unif = double(seed) / m;
+      return unif;
+      };
+
+    const double unif1 = getUnifRandom(seed);
+    const double unif2 = getUnifRandom(seed);
+    const double normal = sqrt(-2.*log(unif1))*cos(2*M_PI*unif2);
+    return normal*sigma + mean;
+    };
+  //End Of temp block
   
-  const double runtime = fabs(gauss());
+  const double runtime = fabs(getGausRandom( m_avg_runtime , m_var_runtime ));
   
-  always ()  << "Runtime will be: "<< runtime << endmsg;
+  logstream  << MSG::ALWAYS << "Runtime will be: "<< runtime << endmsg;
   
   // get products from the event
   for (std::string& input : m_inputs){
@@ -108,8 +141,8 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
 
 StatusCode CPUCruncher::finalize () // the finalization of the algorithm 
 { 
-  
-  always ()  << "I ran." << endmsg;
+  MsgStream log(msgSvc(), name(), 1983);
+  log  << MSG::ALWAYS << "I ran." << endmsg;
   
   return GaudiAlgorithm::finalize () ;
 }
