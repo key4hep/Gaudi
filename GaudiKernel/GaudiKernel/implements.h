@@ -3,6 +3,8 @@
 
 #include "GaudiKernel/IInterface.h"
 
+#include <atomic>
+
 #ifndef __GCCXML__
 /// Helper class for the cast used in the MPL for_each algorithm in the
 /// implementation of queryInterface.
@@ -44,11 +46,11 @@ struct GAUDI_LOCAL AppendInterfaceName {
 #define _refcounting_implementation_ \
 public: \
   /** Reference Interface instance               */ \
-  virtual unsigned long addRef() { return ++m_refCount; } \
+  virtual unsigned long addRef() { return m_refCount++; } \
   /** Release Interface instance                 */ \
   virtual unsigned long release() { \
     /* Avoid to decrement 0 */ \
-    const unsigned long count = (m_refCount) ? --m_refCount : m_refCount; \
+    const unsigned long count = (m_refCount) ? m_refCount-- : m_refCount.load(); \
     if(count == 0) delete this; \
     return count; \
   } \
@@ -56,7 +58,8 @@ public: \
   virtual unsigned long refCount() const { return m_refCount; } \
 protected: \
   /** Reference counter                          */ \
-  unsigned long m_refCount; \
+  /*unsigned long m_refCount;*/ \
+  std::atomic_ulong m_refCount; \
 private:
 
 #ifndef __GCCXML__
@@ -88,8 +91,11 @@ private:
     mpl::for_each<interfaces>(appender); \
     return v; \
   } \
+  implements##N & operator=(const implements##N& obj){ if (this!=&obj) m_refCount.store(obj.m_refCount.load()); return *this;}\
   /** Default constructor */ \
-  implements##N():m_refCount(0) {} \
+  implements##N(): m_refCount(0){} \
+  /** Copy Ctor*/ \
+  implements##N(const implements##N & obj) : m_refCount(0){} \
   /** Virtual destructor */ \
   virtual ~implements##N() {} \
   _refcounting_implementation_
@@ -111,9 +117,11 @@ private:
     std::vector<std::string> v; /* temporary storage */ \
     return v; \
   } \
+  implements##N & operator=(const implements##N& obj){ if (this!=&obj) m_refCount.store(obj.m_refCount.load()); return *this;}\
   /** Default constructor */ \
-  implements##N():m_refCount(0) {} \
-  /** Virtual destructor */ \
+  implements##N(): m_refCount(0){} \
+  /** Copy Ctor*/ \
+  implements##N(const implements##N & obj) : m_refCount(0){} \  /** Virtual destructor */ \
   virtual ~implements##N() {} \
   _refcounting_implementation_
 #endif
