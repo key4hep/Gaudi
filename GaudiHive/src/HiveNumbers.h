@@ -15,6 +15,12 @@
 class IRndmGen;
 class IRndmGenSvc;
 
+/*
+ * This is a first solution to the problem of the thread safe random generation.
+ * It is locking, but the locking is "diluted" by a caching mechanism of the
+ * random numbers.
+ */
+
 namespace HiveRndm{
 
   typedef tbb::spin_rw_mutex_v3 HiveNumbersMutex;
