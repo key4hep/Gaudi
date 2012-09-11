@@ -16,7 +16,7 @@
 class GAUDI_API ISequencerTimerTool: public virtual IAlgTool {
 public:
   /// InterfaceID
-  DeclareInterfaceID(ISequencerTimerTool,2,0);
+  DeclareInterfaceID(ISequencerTimerTool,2,1);
 
   /** add a timer entry with the specified name **/
   virtual int addTimer( std::string name ) = 0 ;
@@ -47,6 +47,9 @@ public:
 
   /** returns the flag telling that global timing is wanted **/
   virtual bool globalTiming() = 0;
+
+  /** prepares and saves the timing histograms **/
+  virtual void saveHistograms() = 0;
 
   /** Destructor */
   virtual ~ISequencerTimerTool();
