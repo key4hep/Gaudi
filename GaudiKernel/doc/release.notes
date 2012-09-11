@@ -1,6 +1,15 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2012-09-10 - Benedikt Hegner
+ - Added missing copy constructor and assignment operator to 'implementsN<>'
+   base class.
+   They should not be needed because components cannot not really be copied or
+   cloned, but in some cases there are copy constructors and assignment
+   operators defined in the derived classes and in those cases the reference
+   count should be set to 0 in the initialization of a new object and not
+   touched by an assignment.
+
 ! 2012-09-05 - Marco Clemencic
  - Fixed bug #96673: spurious warnings in GenConfUser
    Modified genconfuser.py to extend the submodules search path for the package
