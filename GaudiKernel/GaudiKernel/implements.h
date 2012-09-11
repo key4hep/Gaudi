@@ -112,7 +112,7 @@ private:
   /** Default constructor */ \
   implements##N(): m_refCount(0){} \
   /** Copy Ctor*/ \
-  implements##N(const implements##N & obj) : m_refCount(0){} \
+  implements##N(const implements##N & ) : m_refCount(0){} \
   /** Virtual destructor */ \
   virtual ~implements##N() {} \
   _refcounting_implementation_
@@ -138,7 +138,7 @@ private:
   /** Default constructor */ \
   implements##N(): m_refCount(0){} \
   /** Copy Ctor*/ \
-  implements##N(const implements##N & obj) : m_refCount(0){} \
+  implements##N(const implements##N & ) : m_refCount(0){} \
   /** Virtual destructor */ \
   virtual ~implements##N() {} \
   _refcounting_implementation_
