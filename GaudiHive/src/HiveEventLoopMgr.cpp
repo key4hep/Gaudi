@@ -15,10 +15,17 @@
 #include "GaudiKernel/DataSvc.h"
 
 #include "HistogramAgent.h"
+
+// For concurrency
 #include "GaudiHive/HiveEventLoopMgr.h"
 
 #include "tbb/task_scheduler_init.h"
 #include "tbb/task.h"
+
+#include "GaudiKernel/EventContext.h"
+#include "GaudiKernel/Algorithm.h"
+
+#include <pthread.h> // only for the tID!
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY(HiveEventLoopMgr)
@@ -36,12 +43,16 @@ class HiveAlgoTask : public tbb::task {
   public:
   HiveAlgoTask(IAlgorithm* algorithm, HiveEventLoopMgr* scheduler): m_algorithm(algorithm), m_scheduler(scheduler){};    
     tbb::task* execute();
+    Algorithm* this_algo = dynamic_cast<Algorithm*>(m_algorithm);
+    this_algo->getContext()->m_thread_id = 0;
     IAlgorithm* m_algorithm;
     HiveEventLoopMgr* m_scheduler;
 };
 
 
 tbb::task* HiveAlgoTask::execute() {
+  Algorithm* this_algo = dynamic_cast<Algorithm*>(m_algorithm);
+  this_algo->getContext()->m_thread_id = pthread_self();
   m_algorithm->sysExecute();
   m_scheduler->algo_has_finished();
   return NULL;
@@ -339,7 +350,17 @@ StatusCode HiveEventLoopMgr::executeEvent(void* par)    {
       if (LIKELY(0 != *ialg)) (*ialg)->resetExecuted();
     }
   }
-    
+
+  // Assign the context to the algorithms
+  EventContext_shared_ptr evtContext(*(EventContext_shared_ptr*)par);
+  const ListAlgPtrs& allAlgs = algMan->getAlgorithms() ;
+
+  for (IAlgorithm* ialgo : allAlgs){
+	  Algorithm* algo = dynamic_cast<Algorithm*>(ialgo);
+	  algo->setContext(evtContext);
+  }
+
+
   bool eventfailed = run_parallel();
 
   // ensure that the abortEvent flag is cleared before the next event
@@ -383,6 +404,10 @@ StatusCode HiveEventLoopMgr::executeRun( int maxevt )    {
 //--------------------------------------------------------------------------------------------
 // implementation of IAppMgrUI::nextEvent
 //--------------------------------------------------------------------------------------------
+// Here the loop on the events takes place.
+// This is also the natural place to put the preparation of the algorithms
+// contexts, which contain the event specific data.
+
 StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
   static int        total_nevt = 0;
   DataObject*       pObject = 0;
@@ -442,8 +467,15 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
         warning() << "Error declaring event root DataObject" << endmsg;
       }
     }
+
+    // Prepare the event context.
+    // A ctor will come when the members are clearer.
+    EventContext_shared_ptr evtContext(new EventContext);
+    evtContext->m_evt_num = nevt;
+
+
     // Execute event for all required algorithms
-    sc = executeEvent(NULL);
+    sc = executeEvent(&evtContext);
     m_endEventFired = false;
     if( !sc.isSuccess() ){
       error() << "Terminating event processing loop due to errors" << endmsg;
@@ -485,7 +517,6 @@ HiveEventLoopMgr::find_dependencies() {
   
     /**
      * This is not very simple, but here you have the reasons:
-     * o ATM the Algo and IAlgo were not modified
      * o We input the inputs and outputs as "vectors" in the config as PROPERTIES
      * o The modules store this as vector of strings
      * o We need to massage them:(
