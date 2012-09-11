@@ -38,8 +38,9 @@ SequencerTimerTool::SequencerTimerTool( const std::string& type,
   declareProperty( "shots"        , m_shots );
   declareProperty( "Normalised"   , m_normalised = false );
   declareProperty( "GlobalTiming" , m_globalTiming = false );
-  declareProperty( "SaveHistograms" , m_saveHistograms = false );
   declareProperty( "NameSize"     , m_headerSize = 30, "Number of characters to be used in algorithm name column" );
+  // Histograms are disabled by default in this tool.
+  setProperty("HistoProduce", false).ignore();
 }
 //=============================================================================
 // Destructor
@@ -104,7 +105,7 @@ StatusCode SequencerTimerTool::finalize ( ) {
 int SequencerTimerTool::indexByName ( std::string name ) {
   std::string::size_type beg = name.find_first_not_of(" \t");
   std::string::size_type end = name.find_last_not_of(" \t");
-  std::string temp = name.substr( beg, end-beg+1 );  
+  std::string temp = name.substr( beg, end-beg+1 );
   for ( unsigned int kk=0 ; m_timerList.size() > kk ; kk++ ) {
     beg =  m_timerList[kk].name().find_first_not_of(" \t");
     end =  m_timerList[kk].name().find_last_not_of(" \t");
@@ -115,14 +116,9 @@ int SequencerTimerTool::indexByName ( std::string name ) {
 //=========================================================================
 //  Build and save the histograms
 //=========================================================================
-void SequencerTimerTool::saveHistograms() 
+void SequencerTimerTool::saveHistograms()
 {
-  if (!m_saveHistograms) 
-  {
-    info() << "Timing histograms not requested" << endmsg;
-  }
-  else
-  {    
+  if(produceHistos()){
     info() << "Saving Timing histograms" << endmsg;
     AIDA::IHistogram1D* histoTime = book("ElapsedTime");
     AIDA::IHistogram1D* histoCPU  = book("CPUTime");

@@ -11,10 +11,10 @@ Package manager : Marco Clemencic
    histograms at the first time an algorithm is finalized.
    To enable the feature, use the options:
 
-     from Configurables import TimingAuditor
+     from Configurables import TimingAuditor, SequencerTimerTool
      p = TimingAuditor()
      p.addTool(SequencerTimerTool, name = "TIMER")
-     p.TIMER.SaveHistograms = True
+     p.TIMER.HistoProduce = True
 
 
 ! 2012-07-27 - Marco Clemencic

@@ -98,7 +98,6 @@ private:
   double m_normFactor; ///< Factor to convert to standard CPU (1 GHz PIII)
   double m_speedRatio;
   bool   m_globalTiming;
-  bool   m_saveHistograms;
   std::string::size_type m_headerSize;   ///< Size of the name field
 };
 #endif // SEQUENCERTIMERTOOL_H
