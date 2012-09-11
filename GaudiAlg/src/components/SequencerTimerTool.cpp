@@ -31,6 +31,7 @@ SequencerTimerTool::SequencerTimerTool( const std::string& type,
   : GaudiHistoTool ( type, name , parent )
   , m_indent( 0 )
   , m_normFactor( 0.001 )
+  , m_speedRatio(0)
 {
   declareInterface<ISequencerTimerTool>(this);
 
@@ -120,20 +121,18 @@ void SequencerTimerTool::saveHistograms()
 {
   if(produceHistos()){
     info() << "Saving Timing histograms" << endmsg;
-    AIDA::IHistogram1D* histoTime = book("ElapsedTime");
-    AIDA::IHistogram1D* histoCPU  = book("CPUTime");
-    AIDA::IHistogram1D* histoCount  = book("Count");
+    const size_t bins = m_timerList.size();
+    AIDA::IHistogram1D* histoTime = book("ElapsedTime", 0, bins, bins);
+    AIDA::IHistogram1D* histoCPU  = book("CPUTime", 0, bins, bins);
+    AIDA::IHistogram1D* histoCount  = book("Count", 0, bins, bins);
     TH1D* tHtime = Gaudi::Utils::Aida2ROOT::aida2root(histoTime);
     TH1D* tHCPU = Gaudi::Utils::Aida2ROOT::aida2root(histoCPU);
     TH1D* tHCount = Gaudi::Utils::Aida2ROOT::aida2root(histoCount);
-    std::string lastName = "";
-    for ( unsigned int kk=0 ; m_timerList.size() > kk ; kk++ ) {
-      if ( lastName == m_timerList[kk].name() ) continue; // suppress duplicate
-      lastName = m_timerList[kk].name();
-      TimerForSequencer tfsq = m_timerList[kk];
-      tHtime->Fill(tfsq.name().c_str(),tfsq.elapsedTotal());
-      tHCPU->Fill(tfsq.name().c_str(),tfsq.cpuTotal());
-      tHCount->Fill(tfsq.name().c_str(),tfsq.count());
+    for ( size_t kk = 0 ; bins > kk ; kk++ ) {
+      TimerForSequencer &tfsq = m_timerList[kk];
+      tHtime->Fill(tfsq.name().c_str(), tfsq.elapsedTotal());
+      tHCPU->Fill(tfsq.name().c_str(), tfsq.cpuTotal());
+      tHCount->Fill(tfsq.name().c_str(), tfsq.count());
     }
   }
 }
