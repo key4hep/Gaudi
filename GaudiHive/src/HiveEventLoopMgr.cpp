@@ -42,8 +42,6 @@ DECLARE_SERVICE_FACTORY(HiveEventLoopMgr)
 class HiveAlgoTask : public tbb::task {
   public:
   HiveAlgoTask(IAlgorithm* algorithm, HiveEventLoopMgr* scheduler): m_algorithm(algorithm), m_scheduler(scheduler){};    
-    tbb::task* execute();
-    Algorithm* this_algo = dynamic_cast<Algorithm*>(m_algorithm);
     this_algo->getContext()->m_thread_id = 0;
     IAlgorithm* m_algorithm;
     HiveEventLoopMgr* m_scheduler;
