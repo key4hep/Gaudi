@@ -1,6 +1,22 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2012-09-11 - Ben Couturier
+ - Patch #5518: save TimingHistograms in job histograms
+   - converted the SequencerTimerTool to be a GaudiHistoTool
+   - book the histograms normally but convert them to ROOT (using Aida2ROOT) in
+     order to fill them with alphanumeric bin names
+   Note: to ensure that the histograms are correctly written, TimingAuditor was
+   changed to intercept the algorithms "Finalize" event, and create the
+   histograms at the first time an algorithm is finalized.
+   To enable the feature, use the options:
+
+     from Configurables import TimingAuditor
+     p = TimingAuditor()
+     p.addTool(SequencerTimerTool, name = "TIMER")
+     p.TIMER.SaveHistograms = True
+
+
 ! 2012-07-27 - Marco Clemencic
  - Rationalized the permissions of files in the repository.
 
