@@ -21,7 +21,7 @@ CPUCruncher::CPUCruncher ( const std::string& name , // the algorithm instance n
   
 void CPUCruncher::findPrimes (const double runtime)  { 
   
-  MsgStream log(msgSvc(), name(), 1983);
+  MsgStream log(msgSvc(), name());
 
   // Limit the exercise in time
   const double start = std::clock ();
@@ -83,7 +83,7 @@ void CPUCruncher::findPrimes (const double runtime)  {
 StatusCode CPUCruncher::execute  ()  // the execution of the algorithm 
 {
 
-  MsgStream logstream(msgSvc(), name(), 1983);
+  MsgStream logstream(msgSvc(), name());
 
 
   /* This will disappear with a thread safe random number generator svc
@@ -125,6 +125,8 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
   const double runtime = std::fabs(rndmgaus());
 
   logstream  << MSG::ALWAYS << "Runtime will be: "<< runtime << endmsg;
+  logstream  << "Event " <<  getContext()->m_evt_num
+		     << " on pthreadID " << getContext()->m_thread_id  << endmsg;
   
   // get products from the event
   for (std::string& input : m_inputs){
@@ -145,7 +147,7 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
 
 StatusCode CPUCruncher::finalize () // the finalization of the algorithm 
 { 
-  MsgStream log(msgSvc(), name(), 1983);
+  MsgStream log(msgSvc(), name());
   log  << MSG::ALWAYS << "I ran." << endmsg;
   
   return GaudiAlgorithm::finalize () ;
