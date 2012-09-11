@@ -630,7 +630,7 @@ bool HiveEventLoopMgr::run_parallel(){
     tbb::concurrent_queue<std::string>& new_products = dataSvc.new_products();
     do {
       queue_full = new_products.try_pop(product_name);
-      if (queue_full) {
+      if (queue_full && m_product_indices.count( product_name ) == 1) {
         (*m_event_state)[m_product_indices[product_name]] = true; 
       }
     } while (queue_full);  
