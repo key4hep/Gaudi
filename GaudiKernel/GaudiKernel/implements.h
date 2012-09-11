@@ -3,7 +3,24 @@
 
 #include "GaudiKernel/IInterface.h"
 
+// No c++11 support for gccxml
+#ifndef __GCCXML__
 #include <atomic>
+typedef std::atomic_ulong refCountType;
+#else
+typedef unsigned long refCountType;
+#endif
+
+// Anonymous namespace
+namespace {
+inline unsigned long load_counter(const refCountType* counter){
+#ifndef __GCCXML__
+        return counter->load();
+#else
+        return *counter;
+#endif
+        }
+}
 
 #ifndef __GCCXML__
 /// Helper class for the cast used in the MPL for_each algorithm in the
@@ -50,16 +67,16 @@ public: \
   /** Release Interface instance                 */ \
   virtual unsigned long release() { \
     /* Avoid to decrement 0 */ \
-    const unsigned long count = (m_refCount) ? m_refCount-- : m_refCount.load(); \
+    const unsigned long count = (m_refCount) ? m_refCount-- : load_counter(&m_refCount); \
     if(count == 0) delete this; \
     return count; \
   } \
   /** Current reference count                    */ \
-  virtual unsigned long refCount() const { return m_refCount; } \
+  virtual unsigned long refCount() const { return load_counter(&m_refCount); } \
 protected: \
   /** Reference counter                          */ \
   /*unsigned long m_refCount;*/ \
-  std::atomic_ulong m_refCount; \
+  refCountType m_refCount; \
 private:
 
 #ifndef __GCCXML__
@@ -117,11 +134,12 @@ private:
     std::vector<std::string> v; /* temporary storage */ \
     return v; \
   } \
-  implements##N & operator=(const implements##N& obj){ if (this!=&obj) m_refCount.store(obj.m_refCount.load()); return *this;}\
+  implements##N & operator=(const implements##N& obj){ if (this!=&obj) m_refCount = m_refCount; return *this;}\
   /** Default constructor */ \
   implements##N(): m_refCount(0){} \
   /** Copy Ctor*/ \
-  implements##N(const implements##N & obj) : m_refCount(0){} \  /** Virtual destructor */ \
+  implements##N(const implements##N & obj) : m_refCount(0){} \
+  /** Virtual destructor */ \
   virtual ~implements##N() {} \
   _refcounting_implementation_
 #endif
