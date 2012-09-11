@@ -1,4 +1,5 @@
 #include "CPUCruncher.h"
+#include "HiveNumbers.h"
 
 DECLARE_ALGORITHM_FACTORY(CPUCruncher) 
 
@@ -96,7 +97,7 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
    * This is not an overkill but rather an exercise towards a thread safe
    * random number generation.
    */
-
+  /*
   auto getGausRandom = [] (double mean, double sigma) -> double {
 
     unsigned int seed = std::clock();
@@ -116,10 +117,13 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
     const double normal = sqrt(-2.*log(unif1))*cos(2*M_PI*unif2);
     return normal*sigma + mean;
     };
-  //End Of temp block
-  
   const double runtime = fabs(getGausRandom( m_avg_runtime , m_var_runtime ));
-  
+  //End Of temp block
+  */
+
+  HiveRndm::HiveNumbers rndmgaus(randSvc(), Rndm::Gauss( m_avg_runtime , m_var_runtime ));
+  const double runtime = std::fabs(rndmgaus());
+
   logstream  << MSG::ALWAYS << "Runtime will be: "<< runtime << endmsg;
   
   // get products from the event
