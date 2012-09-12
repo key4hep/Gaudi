@@ -1,6 +1,11 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2012-09-11 - Marco Clemencic
+ - Minor improvements to GaudiTest.py:
+   - hide Eclipse launch configurations (in a .eclipse directory)
+   - create the directory $QMTEST_TMPDIR if missing
+
 ! 2012-09-04 - Marco Clemencic
  - Fixed a problem with the installation of configurables modules when using the
    CMTUSERCONTEXT.

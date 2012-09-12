@@ -952,13 +952,17 @@ function(gaudi_get_required_library_dirs output)
   set(collected)
   foreach(lib ${ARGN})
     set(req)
-    if(EXISTS ${lib})
+    # Note: adding a directory to the library path make sense only to find
+    # shared libraries (and not static ones).
+    if(EXISTS ${lib} AND lib MATCHES "${CMAKE_SHARED_LIBRARY_PREFIX}[^/]*${CMAKE_SHARED_LIBRARY_SUFFIX}\$")
       get_filename_component(req ${lib} PATH)
       if(req)
         list(APPEND collected ${req})
       endif()
       # FIXME: we should handle the inherited targets
       # (but it's not mandatory because they where already handled)
+    else()
+      message(STATUS "Ignoring ${lib}")
     endif()
   endforeach()
   if(collected)
