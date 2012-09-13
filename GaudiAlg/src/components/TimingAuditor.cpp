@@ -112,7 +112,7 @@ private:
 
   // Whether the timing has been saved already
   bool                 m_histoSaved;
-   
+
 
 } ;
 // ============================================================================
@@ -226,14 +226,14 @@ void TimingAuditor::after(StandardEventType evt, INamedInterface *alg, const Sta
   }
 }
 // ============================================================================
-void TimingAuditor::i_beforeFinalize( INamedInterface* alg )
+void TimingAuditor::i_beforeFinalize( INamedInterface* /*alg*/ )
 {
-  if (!m_histoSaved) 
-    {
-      m_timer->saveHistograms();
-      m_histoSaved = true;
-    }
+  if (!m_histoSaved)
+  {
+    m_timer->saveHistograms();
+    m_histoSaved = true;
   }
+}
 
 // ============================================================================
 void TimingAuditor::i_beforeInitialize( INamedInterface* alg )

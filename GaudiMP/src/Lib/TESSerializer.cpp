@@ -55,11 +55,12 @@ bool GaudiMP::TESSerializer::analyse(IRegistry* dir, int level)   {
 /// Constructor
 GaudiMP::TESSerializer::TESSerializer( IDataProviderSvc* svc, IAddressCreator* ac )
   : m_TES(svc)
+  , m_TESMgr(dynamic_cast<IDataManagerSvc*>(svc))
+  , m_currentItem(0)
+  , m_verifyItems(false)
+  , m_strict(false)
+  , m_addressCreator(ac)
 {
-  m_TESMgr = dynamic_cast<IDataManagerSvc*>(svc);
-  m_addressCreator = ac;
-  m_verifyItems = false;
-  m_strict      = false;
 }
 
 /// Serialize contents of TES to a TBufferFile
@@ -264,6 +265,8 @@ void GaudiMP::TESSerializer::loadBuffer(TBufferFile& buffer) {
           if(!dummy)
             m_TES->registerObject(location, obj);
           else {
+            // skipping to the next object
+            // (flush the remaining metadata in the buffer)
             int flag(0);
             buffer.ReadInt(flag);
             if (flag) {
@@ -271,8 +274,7 @@ void GaudiMP::TESSerializer::loadBuffer(TBufferFile& buffer) {
               buffer.ReadLong(svcType);
               long clid;
               buffer.ReadLong(clid);
-              char * cp;
-              cp = buffer.ReadString(text, sizeof(text));
+              buffer.ReadString(text, sizeof(text));
             }
             continue;
           }

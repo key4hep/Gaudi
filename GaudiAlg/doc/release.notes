@@ -1,6 +1,9 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2012-09-13 - Marco Clemencic
+ - Fixed compilation warnings.
+
 ! 2012-09-11 - Ben Couturier
  - Patch #5518: save TimingHistograms in job histograms
    - converted the SequencerTimerTool to be a GaudiHistoTool

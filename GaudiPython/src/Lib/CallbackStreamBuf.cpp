@@ -1,11 +1,11 @@
-#include "GaudiKernel/Bootstrap.h"
-// ============================================================================
-#include <sstream>    //included for stringbuf
-// ============================================================================
 #ifdef _POSIX_C_SOURCE
 #undef _POSIX_C_SOURCE
 #endif
 #include "Python.h"   //included for the python API
+// ============================================================================
+#include "GaudiKernel/Bootstrap.h"
+// ============================================================================
+#include <sstream>    //included for stringbuf
 // ============================================================================
 #include "GaudiPython/GaudiPython.h"
 // ============================================================================

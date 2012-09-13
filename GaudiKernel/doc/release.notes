@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2012-09-13 - Marco Clemencic
+ - Fixed compilation warnings.
+
 ! 2012-09-10 - Benedikt Hegner
  - Added missing copy constructor and assignment operator to 'implementsN<>'
    base class.

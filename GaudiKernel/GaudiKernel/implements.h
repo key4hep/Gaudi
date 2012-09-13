@@ -91,9 +91,9 @@ private:
   /** Default constructor */ \
   implements##N():m_refCount(0) {} \
   /** Copy constructor */ \
-  implements##N(const implements##N &other):m_refCount(0) {} \
+  implements##N(const implements##N &/*other*/):m_refCount(0) {} \
   /** Assignment operator (do not touch the reference count).*/ \
-  implements##N& operator=(const implements##N &) { return *this; } \
+  implements##N& operator=(const implements##N &/*other*/) { return *this; } \
   /** Virtual destructor */ \
   virtual ~implements##N() {} \
   _refcounting_implementation_
@@ -118,9 +118,9 @@ private:
   /** Default constructor */ \
   implements##N():m_refCount(0) {} \
   /** Copy constructor */ \
-  implements##N(const implements##N &other):m_refCount(0) {} \
+  implements##N(const implements##N &/*other*/):m_refCount(0) {} \
   /** Assignment operator (do not touch the reference count).*/ \
-  implements##N& operator=(const implements##N &) { return *this; } \
+  implements##N& operator=(const implements##N &/*other*/) { return *this; } \
   /** Virtual destructor */ \
   virtual ~implements##N() {} \
   _refcounting_implementation_
