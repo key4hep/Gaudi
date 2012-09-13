@@ -286,7 +286,8 @@ macro(gaudi_project project version)
     # we need special handling of PYTHONPATH and PATH for the build-time environment
     set(_has_config NO)
     set(_has_python NO)
-    if(EXISTS ${CMAKE_BINARY_DIR}/${package}/genConf OR TARGET ${package}ConfUserDB)
+    get_filename_component(_pack ${package} NAME) # FIXME: should we merge the loops?
+    if(EXISTS ${CMAKE_BINARY_DIR}/${package}/genConf OR TARGET ${_pack}ConfUserDB)
       set(project_build_environment ${project_build_environment}
           PREPEND PYTHONPATH ${CMAKE_BINARY_DIR}/${package}/genConf)
       set(_has_config YES)
@@ -301,12 +302,13 @@ macro(gaudi_project project version)
     if(_has_config AND _has_python)
       # we need to add a special fake __init__.py that allow import of modules
       # from different copies of the package
-      file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/python/${package})
-      file(WRITE ${CMAKE_BINARY_DIR}/python/${package}/__init__.py
-           "\nimport os,sys\n__path__ = filter(os.path.exists, [os.path.join(d, '${package}') for d in sys.path if d])\n")
-      if(EXISTS ${CMAKE_SOURCE_DIR}/${package}/python/${package}/__init__.py)
-        file(READ ${CMAKE_SOURCE_DIR}/${package}/python/${package}/__init__.py _py_init_content)
-        file(APPEND ${CMAKE_BINARY_DIR}/python/${package}/__init__.py
+      get_filename_component(packname ${package} NAME)
+      file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/python/${packname})
+      file(WRITE ${CMAKE_BINARY_DIR}/python/${packname}/__init__.py
+           "\nimport os, sys\n__path__ = filter(os.path.exists, [os.path.join(d, '${packname}') for d in sys.path if d])\n")
+      if(EXISTS ${CMAKE_SOURCE_DIR}/${package}/python/${packname}/__init__.py)
+        file(READ ${CMAKE_SOURCE_DIR}/${package}/python/${packname}/__init__.py _py_init_content)
+        file(APPEND ${CMAKE_BINARY_DIR}/python/${packname}/__init__.py
              "${_py_init_content}")
       endif()
     endif()
@@ -796,10 +798,7 @@ function(gaudi_generate_configurables library)
 
   add_custom_command(
     OUTPUT ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py ${outdir}/__init__.py
-    COMMAND ${env_cmd}
-                  -p ${ld_library_path}=.
-                  -p ${ld_library_path}=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-                  --xml ${env_xml}
+    COMMAND ${env_cmd} --xml ${env_xml}
               ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
                 --configurable-module=${confModuleName}
                 --configurable-default-name=${confDefaultName}
@@ -810,6 +809,11 @@ function(gaudi_generate_configurables library)
                 -i ${library}
     DEPENDS ${library})
   add_custom_target(${library}Conf ALL DEPENDS ${outdir}/${library}_confDb.py)
+  # Add the target to the target that groups all of them for the package.
+  if(NOT TARGET ${package}ConfAll)
+    add_custom_target(${package}ConfAll ALL)
+  endif()
+  add_dependencies(${package}ConfAll ${library}Conf)
   # Add dependencies on GaudiSvc and the genconf executable if they have to be built in the current project
   add_dependencies(${library}Conf genconf GaudiCoreSvc)
   # Notify the project level target
@@ -869,10 +873,7 @@ function(gaudi_generate_confuserdb)
     endif()
     add_custom_command(
       OUTPUT ${outdir}/${package}_user_confDb.py
-      COMMAND ${env_cmd}
-                    -p PYTHONPATH=${CMAKE_SOURCE_DIR}/GaudiKernel/python
-                    -p PYTHONPATH=${CMAKE_SOURCE_DIR}/Gaudi/python
-                    --xml ${env_xml}
+      COMMAND ${env_cmd} --xml ${env_xml}
                 ${genconfuser_cmd}
                   -r ${CMAKE_CURRENT_SOURCE_DIR}/python
                   -o ${outdir}/${package}_user_confDb.py
@@ -880,6 +881,39 @@ function(gaudi_generate_confuserdb)
     install(FILES ${outdir}/${package}_user_confDb.py
             DESTINATION python/${package})
     gaudi_merge_files_append(ConfDB ${package}ConfUserDB ${outdir}/${package}_user_confDb.py)
+
+    # FIXME: dependency on others ConfUserDB
+    # Historically we have been relying on the ConfUserDB built in the dependency
+    # order.
+    file(RELATIVE_PATH subdir_name ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+    set(deps)
+    gaudi_list_dependencies(deps ${subdir_name})
+    # get the plain package-names of the dependencies
+    set(deps_names)
+    foreach(dep ${deps})
+      get_filename_component(dep ${dep} NAME)
+      set(deps_names ${deps_names} ${dep})
+    endforeach()
+    # find the targets we need to depend on
+    set(targets)
+    # - first the regular configurables (for the current package too)
+    foreach(dep ${deps_names} ${package})
+      if(TARGET ${dep}ConfAll)
+        set(targets ${targets} ${dep}ConfAll)
+      endif()
+    endforeach()
+    # - then the 'conf-user's
+    foreach(dep ${deps_names})
+      get_filename_component(dep ${dep} NAME)
+      if(TARGET ${dep}ConfUserDB)
+        set(targets ${targets} ${dep}ConfUserDB)
+      endif()
+    endforeach()
+    #message(STATUS "${outdir}/${package}_user_confDb.py <- ${targets}")
+    if(targets) # FIXME: is this an optimization or it is better to add deps one by one?
+      add_custom_command(OUTPUT ${outdir}/${package}_user_confDb.py DEPENDS ${targets} APPEND)
+    endif()
+
   endif()
 endfunction()
 
@@ -918,13 +952,17 @@ function(gaudi_get_required_library_dirs output)
   set(collected)
   foreach(lib ${ARGN})
     set(req)
-    if(EXISTS ${lib})
+    # Note: adding a directory to the library path make sense only to find
+    # shared libraries (and not static ones).
+    if(EXISTS ${lib} AND lib MATCHES "${CMAKE_SHARED_LIBRARY_PREFIX}[^/]*${CMAKE_SHARED_LIBRARY_SUFFIX}\$")
       get_filename_component(req ${lib} PATH)
       if(req)
         list(APPEND collected ${req})
       endif()
       # FIXME: we should handle the inherited targets
       # (but it's not mandatory because they where already handled)
+    #else()
+    #  message(STATUS "Ignoring ${lib}")
     endif()
   endforeach()
   if(collected)
@@ -1234,11 +1272,7 @@ function(gaudi_add_unit_test executable)
       set(exec_suffix)
     endif()
     add_test(${package}.${executable}
-             ${env_cmd}
-                 -p ${ld_library_path}=.
-                 -p ${ld_library_path}=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-                 -p PATH=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-                 --xml ${env_xml}
+             ${env_cmd} --xml ${env_xml}
                ${executable}${exec_suffix})
   endif()
 endfunction()
@@ -1268,7 +1302,6 @@ function(gaudi_add_test name)
                         QMTESTLOCALDIR=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
                         QMTESTRESULTS=${CMAKE_CURRENT_BINARY_DIR}/tests/qmtest/results.qmr
                         QMTESTRESULTSDIR=${CMAKE_CURRENT_BINARY_DIR}/tests/qmtest
-                        QMTEST_CLASS_PATH+=${CMAKE_SOURCE_DIR}/GaudiPolicy/qmtest_classes
                         GAUDI_QMTEST_HTML_OUTPUT=${CMAKE_BINARY_DIR}/test_results)
     set(cmdline run_qmtest.py ${package})
 
@@ -1302,12 +1335,7 @@ function(gaudi_add_test name)
 
   add_test(${package}.${name}
            ${env_cmd}
-               ${extra_env}
-               -p ${ld_library_path}=.
-               -p ${ld_library_path}=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-               -p PATH=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-
-               --xml ${env_xml}
+               ${extra_env} --xml ${env_xml}
                ${cmdline})
 endfunction()
 
@@ -1325,6 +1353,7 @@ function(gaudi_install_headers)
             FILES_MATCHING
               PATTERN "*.h"
               PATTERN "*.icpp"
+              PATTERN "*.hpp"
               PATTERN "CVS" EXCLUDE
               PATTERN ".svn" EXCLUDE)
     if(NOT IS_ABSOLUTE ${hdr_dir})

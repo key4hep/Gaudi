@@ -1,5 +1,7 @@
 // $Id: PythonScriptingSvc.cpp,v 1.18 2008/10/27 21:12:08 marcocle Exp $
 
+#include "Python.h"
+
 // Include Files
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"
@@ -7,10 +9,7 @@
 #include "GaudiKernel/SmartIF.h"
 
 #include "PythonScriptingSvc.h"
-#ifdef _POSIX_C_SOURCE
-#undef _POSIX_C_SOURCE
-#endif
-#include "Python.h"
+
 #include <fstream>
 #include <sstream>
 

@@ -1,6 +1,11 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v23r4 =============================
+! 2012-09-11 - Marco Clemencic
+ - Added test for the feature introduced in patch #5518 (histogram for timing
+   measurements).
+
 ! 2012-07-27 - Marco Clemencic
  - Rationalized the permissions of files in the repository.
 

@@ -75,6 +75,24 @@ public:
   /** returns the last measured time **/
   double lastCpu()   const { return m_lastCpu; }
 
+  /** returns the total elapsed time */
+  double elapsedTotal() 
+  {
+    return m_sum;
+  }
+
+  /** returns the toptal cpu time */
+  double cpuTotal() 
+  {
+    return m_sumCpu;
+  }
+
+  /** Returns the number run count*/
+  double count() 
+  {
+    return m_num;
+  }
+
   /** Write measured time into the message stream. */
   MsgStream & fillStream(MsgStream & s) const {
     double ave = 0.;

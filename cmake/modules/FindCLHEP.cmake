@@ -8,6 +8,7 @@
 #  CLHEP_<component>_LIBRARY
 #  CLHEP_<component>_FOUND
 #  CLHEP_LIBRARIES (not cached)
+#  CLHEP_LIBRARY_DIRS (not cached)
 #
 # Note: version detection inspired by FindBoost.cmake
 
@@ -29,11 +30,18 @@ foreach(component ${_CLHEP_COMPONENTS})
   if (CLHEP_${component}_LIBRARY)
     set(CLHEP_${component}_FOUND 1)
     list(APPEND CLHEP_LIBRARIES ${CLHEP_${component}_LIBRARY})
+
+    get_filename_component(libdir ${CLHEP_${component}_LIBRARY} PATH)
+    list(APPEND CLHEP_LIBRARY_DIRS ${libdir})
   else()
     set(CLHEP_${component}_FOUND 0)
   endif()
   mark_as_advanced(CLHEP_${component}_LIBRARY)
 endforeach()
+
+if(CLHEP_LIBRARY_DIRS)
+  list(REMOVE_DUPLICATES CLHEP_LIBRARY_DIRS)
+endif()
 
 set(CLHEP_INCLUDE_DIRS ${CLHEP_INCLUDE_DIR})
 

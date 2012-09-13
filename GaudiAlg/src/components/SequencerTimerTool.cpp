@@ -1,10 +1,14 @@
 // $Id: SequencerTimerTool.cpp,v 1.12 2007/01/10 16:33:32 hmd Exp $
 // Include files
 
+// From ROOT
+#include "TH1D.h"
+
 // from Gaudi
 #include "GaudiKernel/ToolFactory.h"
 #include "GaudiKernel/RndmGenerators.h"
 #include "GaudiKernel/IRndmGenSvc.h"
+#include "GaudiUtils/Aida2ROOT.h"
 
 // local
 #include "SequencerTimerTool.h"
@@ -24,9 +28,10 @@ DECLARE_TOOL_FACTORY(SequencerTimerTool)
 SequencerTimerTool::SequencerTimerTool( const std::string& type,
                                         const std::string& name,
                                         const IInterface* parent )
-  : GaudiTool ( type, name , parent )
+  : GaudiHistoTool ( type, name , parent )
   , m_indent( 0 )
   , m_normFactor( 0.001 )
+  , m_speedRatio(0)
 {
   declareInterface<ISequencerTimerTool>(this);
 
@@ -35,6 +40,8 @@ SequencerTimerTool::SequencerTimerTool( const std::string& type,
   declareProperty( "Normalised"   , m_normalised = false );
   declareProperty( "GlobalTiming" , m_globalTiming = false );
   declareProperty( "NameSize"     , m_headerSize = 30, "Number of characters to be used in algorithm name column" );
+  // Histograms are disabled by default in this tool.
+  setProperty("HistoProduce", false).ignore();
 }
 //=============================================================================
 // Destructor
@@ -46,7 +53,7 @@ SequencerTimerTool::~SequencerTimerTool() {}
 //
 //=========================================================================
 StatusCode SequencerTimerTool::initialize ( ) {
-  GaudiTool::initialize();
+  GaudiHistoTool::initialize();
   double sum = 0;
   TimerForSequencer norm( "normalize", m_normFactor );
   norm.start();
@@ -90,7 +97,7 @@ StatusCode SequencerTimerTool::finalize ( ) {
   }
   info() << line << endmsg;
 
-  return GaudiTool::finalize();
+  return GaudiHistoTool::finalize();
 }
 
 //=========================================================================
@@ -99,7 +106,7 @@ StatusCode SequencerTimerTool::finalize ( ) {
 int SequencerTimerTool::indexByName ( std::string name ) {
   std::string::size_type beg = name.find_first_not_of(" \t");
   std::string::size_type end = name.find_last_not_of(" \t");
-  std::string temp = name.substr( beg, end-beg+1 );  
+  std::string temp = name.substr( beg, end-beg+1 );
   for ( unsigned int kk=0 ; m_timerList.size() > kk ; kk++ ) {
     beg =  m_timerList[kk].name().find_first_not_of(" \t");
     end =  m_timerList[kk].name().find_last_not_of(" \t");
@@ -107,4 +114,29 @@ int SequencerTimerTool::indexByName ( std::string name ) {
   }
   return -1;
 }
+//=========================================================================
+//  Build and save the histograms
+//=========================================================================
+void SequencerTimerTool::saveHistograms()
+{
+  if(produceHistos()){
+    info() << "Saving Timing histograms" << endmsg;
+    const size_t bins = m_timerList.size();
+    AIDA::IHistogram1D* histoTime = book("ElapsedTime", 0, bins, bins);
+    AIDA::IHistogram1D* histoCPU  = book("CPUTime", 0, bins, bins);
+    AIDA::IHistogram1D* histoCount  = book("Count", 0, bins, bins);
+    TH1D* tHtime = Gaudi::Utils::Aida2ROOT::aida2root(histoTime);
+    TH1D* tHCPU = Gaudi::Utils::Aida2ROOT::aida2root(histoCPU);
+    TH1D* tHCount = Gaudi::Utils::Aida2ROOT::aida2root(histoCount);
+    for ( size_t kk = 0 ; bins > kk ; kk++ ) {
+      TimerForSequencer &tfsq = m_timerList[kk];
+      tHtime->Fill(tfsq.name().c_str(), tfsq.elapsedTotal());
+      tHCPU->Fill(tfsq.name().c_str(), tfsq.cpuTotal());
+      tHCount->Fill(tfsq.name().c_str(), tfsq.count());
+    }
+  }
+}
 //=============================================================================
+
+
+

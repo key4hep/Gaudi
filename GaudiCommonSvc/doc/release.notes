@@ -4,6 +4,7 @@
 # Description: standard and commonly used components
 ################################################################################
 
+============================ GaudiCommonSvc v1r3 =============================
 ! 2012-07-27 - Marco Clemencic
  - Rationalized the permissions of files in the repository.
 

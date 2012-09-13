@@ -4,6 +4,7 @@
 ! Purpose     : Profiling and performance monitoring of Gaudi/LHCb software
 !-----------------------------------------------------------------------------
 
+============================ GaudiProfiling v1r6 =============================
 ! 2012-07-27 - Marco Clemencic
  - Rationalized the permissions of files in the repository.
 

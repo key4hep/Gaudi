@@ -1,6 +1,10 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+============================= GaudiPython v12r3 ==============================
+! 2012-09-13 - Marco Clemencic
+ - Fixed compilation warnings.
+
 ! 2012-07-25 - Nathalie Rauschmayr
  - Patch #5471: fixes to be able to run LHCb applications via GaudiParallel.
    Bindings.py: runSelectedEvents(): first parameter in gbl.GenericAddress must

@@ -1,6 +1,7 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+================================ Gaudi v23r4 =================================
 ! 2012-07-28 - Marco Clemencic
  - Modified gudirun.py to use a portable check of the number of CPUs.
 

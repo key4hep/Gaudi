@@ -25,13 +25,9 @@
 #ifndef GAUDIMP_PYROOTPICKLE_H
 #define GAUDIMP_PYROOTPICKLE_H
 
-#include "GaudiKernel/Kernel.h"
-
-#ifdef _POSIX_C_SOURCE
-# undef _POSIX_C_SOURCE
-#endif
 #include "Python.h"
 
+#include "GaudiKernel/Kernel.h"
 
 namespace GaudiMP {
 

@@ -1,6 +1,21 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v12r2 ==============================
+! 2012-09-13 - Marco Clemencic
+ - Removed the hack used to avoid the AFS stress caused by LCGCMT 64.
+
+! 2012-09-11 - Marco Clemencic
+ - Minor improvements to GaudiTest.py:
+   - hide Eclipse launch configurations (in a .eclipse directory)
+   - create the directory $QMTEST_TMPDIR if missing
+
+! 2012-09-04 - Marco Clemencic
+ - Fixed a problem with the installation of configurables modules when using the
+   CMTUSERCONTEXT.
+ - Fixed a bug in merge_files.py that caused a failure when the output file name
+   did not have the directory part (i.e. plain filename).
+
 ! 2012-07-30 - Marco Clemencic
  - Override LCG_releases and LCG_external to avoid stress on AFS when using
    LCGCMT >= 64.

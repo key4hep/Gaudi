@@ -5,11 +5,13 @@
 #  ORACLE_INCLUDE_DIR
 #  ORACLE_INCLUDE_DIRS (not cached)
 #  ORACLE_LIBRARIES
+#  ORACLE_LIBRARY_DIRS (not cached)
 
 find_path(ORACLE_INCLUDE_DIR oci.h)
 find_library(ORACLE_LIBRARIES NAMES clntsh oci)
 
 set(ORACLE_INCLUDE_DIRS ${ORACLE_INCLUDE_DIR})
+get_filename_component(ORACLE_LIBRARY_DIRS ${ORACLE_LIBRARIES} PATH)
 
 # handle the QUIETLY and REQUIRED arguments and set ORACLE_FOUND to TRUE if
 # all listed variables are TRUE

@@ -1437,7 +1437,10 @@ class GaudiExeTest(ExecTestBase):
             os.chdir(str(os.path.normpath(os.path.expandvars(self.workdir))))
         elif self.use_temp_dir == "true":
             if "QMTEST_TMPDIR" in os.environ:
-                os.chdir(os.environ["QMTEST_TMPDIR"])
+                qmtest_tmpdir = os.environ["QMTEST_TMPDIR"]
+                if not os.path.exists(qmtest_tmpdir):
+                    os.makedirs(qmtest_tmpdir)
+                os.chdir(qmtest_tmpdir)
             elif "qmtest.tmpdir" in context:
                 os.chdir(context["qmtest.tmpdir"])
 
@@ -1448,7 +1451,7 @@ class GaudiExeTest(ExecTestBase):
 
         try:
             # Generate eclipse.org debug launcher for the test
-            self._CreateEclipseLaunch(prog, args, destdir = origdir)
+            self._CreateEclipseLaunch(prog, args, destdir = os.path.join(origdir, '.eclipse'))
             # Run the test
             self.RunProgram(prog,
                             [ prog ] + args,
@@ -1589,6 +1592,9 @@ class GaudiExeTest(ExecTestBase):
             if oldprojdir == projbasedir:
                 # If we cannot find a .project, so no point in creating a .launch file
                 return
+        # Ensure that we have a place where to write.
+        if not os.path.exists(destdir):
+            os.makedirs(destdir)
         # Use ElementTree to parse the XML file
         from xml.etree import ElementTree as ET
         t = ET.parse(os.path.join(projbasedir, ".project"))

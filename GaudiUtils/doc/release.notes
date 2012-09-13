@@ -1,6 +1,7 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+============================== GaudiUtils v4r2 ===============================
 ! 2012-07-13 - Marco Clemencic
  - Fixed configuration for Boost 1.50.
  - Fixed a problem with symbols visibility.

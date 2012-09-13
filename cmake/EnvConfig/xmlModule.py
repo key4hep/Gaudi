@@ -8,6 +8,8 @@ from xml.dom import minidom
 import Variable
 import logging.config
 import os
+from cPickle import load, dump
+from hashlib import md5
 
 class XMLFile():
     '''Takes care of XML file operations such as reading and writing.'''
@@ -20,40 +22,57 @@ class XMLFile():
             logging.config.fileConfig(logConf)
         self.logger = logging.getLogger('envLogger')
 
-
-    def variable(self, path, namespace='EnvSchema' ,name=''):
+    def variable(self, path, namespace='EnvSchema', name=None):
         '''Returns list containing name of variable, action and value
 
         If no name given, returns list of lists of all variables and locals(instead of action 'local' is filled).
         '''
         if not os.path.isfile(path):
             raise IOError('No such file.')
-        '''Get file'''
+        sum = md5()
+        sum.update(open(path, 'rb').read())
+        sum = sum.digest()
+
+        cpath = path + "c" # preparsed file
+        try:
+            f = open(cpath, 'rb')
+            oldsum, data = load(f)
+            if oldsum == sum:
+                return data
+        except:
+            pass
+
+        # Get file
         self.doc = minidom.parse(path)
         if namespace == '':
             namespace = None
 
-        '''Get all variables'''
+        # Get all variables
         nodes = self.doc.getElementsByTagNameNS(namespace, "config")[0].childNodes
         variables = []
-        nodeNum = 0
         for node in nodes:
-            '''if it is an element node'''
+            # if it is an element node
             if node.nodeType == 1:
-                nodeNum += 1
-                if name != '':
-                    if node.getAttribute('variable') != name:
+                varname = str(node.getAttribute('variable'))
+                if name and varname != name:
                         continue
 
-                if node.localName == 'declare':
-                    variables.append([node.getAttribute('variable'), 'declare', node.getAttribute('type'), node.getAttribute('local'), nodeNum])
+                action = str(node.localName)
+                if action == 'declare':
+                    variables.append((action, (varname, str(node.getAttribute('type')), str(node.getAttribute('local')))))
                 else:
-                    if len(node.childNodes) > 0:
-                        value = node.childNodes[0].data
+                    if node.childNodes:
+                        value = str(node.childNodes[0].data)
                     else:
                         value = ''
-                    variables.append([node.getAttribute('variable'), node.localName, value, '' , nodeNum])
+                    variables.append((action, (varname, value, None)))
 
+        try:
+            f = open(cpath, 'wb')
+            dump((sum, variables), f, protocol=2)
+            f.close()
+        except:
+            pass
         return variables
 
 
@@ -91,7 +110,7 @@ class XMLFile():
 class Report():
     '''This class is used to catch errors and warnings from XML file processing to allow better managing and testing.'''
 
-    '''Sequence of levels: warn - warning - info - error'''
+    # Sequence of levels: warn - warning - info - error
     def __init__(self, level = 1, reportOutput = False):
         self.errors = []
         self.warns = []
@@ -199,10 +218,10 @@ class XMLOperations():
         self.realVariables = {}
         self.variables = {}
 
-        '''load variables and resolve references to locals and then variables'''
+        # load variables and resolve references to locals and then variables
         self._loadVariables(xmlFile)
 
-        '''report'''
+        # report
         if (self.warnings() > 0 or self.errors() > 0):
             self.report.addInfo('Encountered '+ (str)(self.warnings()) +' warnings and ' + (str)(self.errors()) + ' errors.')
             return [self.warnings(), self.errors()]
@@ -236,19 +255,19 @@ class XMLOperations():
         self.report.closeFile()
 
     def _processVars(self, variables):
-        for variable in variables:
-            if variable[1] == 'declare':
-                if variable[0] in self.variables.keys():
-                    if variable[2].lower() != self.variables[variable[0]][0]:
-                        raise Variable.EnvironmentError(variable[0], 'redeclaration')
+        for action, (arg1, arg2, arg3) in variables:
+            if action == 'declare':
+                if arg1 in self.variables.keys():
+                    if arg2.lower() != self.variables[arg1][0]:
+                        raise Variable.EnvironmentError(arg1, 'redeclaration')
                     else:
-                        if variable[3].lower() != self.variables[variable[0]][1]:
-                            raise Variable.EnvironmentError(variable[0], 'redeclaration')
+                        if arg3.lower() != self.variables[arg1][1]:
+                            raise Variable.EnvironmentError(arg1, 'redeclaration')
                 else:
-                    self.file.writeVar(variable[0], 'declare', '', variable[2], variable[3])
-                    self.variables[variable[0]] = [variable[2].lower(), variable[3].lower()]
+                    self.file.writeVar(arg1, 'declare', '', arg2, arg3)
+                    self.variables[arg1] = [arg2.lower(), arg3.lower()]
             else:
-                self.file.writeVar(variable[0], variable[1], variable[2])
+                self.file.writeVar(arg1, action, arg2)
 
 
     def _checkVariable(self, varName, action, local, value, nodeNum):
@@ -258,14 +277,14 @@ class XMLOperations():
             self.variables[varName] = []
             self.variables[varName].append(action)
 
-            '''If variable is in dict, check if this is not an unset command'''
+        # If variable is in dict, check if this is not an unset command
         elif action == 'unset':
             if 'unset' in self.variables[varName]:
                 self.report.addWarn('Multiple "unset" actions found for variable: "'+varName+'".', varName, 'multiple unset','', 'checkVariable')
             if not('unset' in self.variables[varName] and len(self.variables[varName]) == 1):
                 self.report.addError('Node '+str(nodeNum)+': "unset" action found for variable "'+varName+'" after previous command(s). Any previous commands are overridden.', varName, 'unset overwrite')
 
-                '''or set command'''
+        # or set command
         elif action == 'set':
             if len(self.variables[varName]) == 1 and 'unset' in self.variables[varName]:
                 self.report.addWarn('Node '+str(nodeNum)+': "set" action found for variable "'+varName+'" after unset. Can be merged to one set only.')
@@ -296,31 +315,31 @@ class XMLOperations():
         '''loads XML file for input variables'''
         XMLfile = XMLFile()
         variables = XMLfile.variable(fileName)
-        for variable in variables:
+        for i, (action, (arg1, arg2, arg3))  in enumerate(variables):
             undeclared = False
-            if variable[0] == '':
+            if arg1 == '':
                 raise RuntimeError('Empty variable or local name is not allowed.')
 
-            if variable[0] not in self.realVariables.keys():
-                if variable[1] != 'declare':
-                    self.report.addInfo('Node '+str(variable[4])+': Variable '+variable[0]+' is used before declaration. Treated as an unlocal list furthermore.')
+            if arg1 not in self.realVariables.keys():
+                if action != 'declare':
+                    self.report.addInfo('Node '+str(i)+': Variable '+arg1+' is used before declaration. Treated as an unlocal list furthermore.')
                     undeclared = True
-                    self.realVariables[variable[0]] = Variable.List(variable[0], False, report=self.report)
+                    self.realVariables[arg1] = Variable.List(arg1, False, report=self.report)
                 else:
-                    self.varNames.append(variable[0])
-                    if variable[2] == 'list':
-                        self.realVariables[variable[0]] = Variable.List(variable[0], variable[3], report=self.report)
+                    self.varNames.append(arg1)
+                    if arg2 == 'list':
+                        self.realVariables[arg1] = Variable.List(arg1, arg3, report=self.report)
                     else:
-                        self.realVariables[variable[0]] = Variable.Scalar(variable[0], variable[3], report=self.report)
+                        self.realVariables[arg1] = Variable.Scalar(arg1, arg3, report=self.report)
                     if not undeclared:
                         continue
 
-            if variable[1] not in self.posActions:
-                self.report.addError('Node '+str(variable[4])+': Action "'+variable[1]+'" which is not implemented found. Variable "'+variable[0]+'".', variable[0], variable[1] ,variable[2])
+            if action not in self.posActions:
+                self.report.addError('Node '+str(i)+': Action "'+action+'" which is not implemented found. Variable "'+arg1+'".', arg1, action, arg2)
                 continue
 
             else:
-                if variable[1] == 'declare':
-                    self.report.addError('Node '+str(variable[4])+': Variable '+variable[0]+' is redeclared.')
+                if action == 'declare':
+                    self.report.addError('Node '+str(i)+': Variable '+arg1+' is redeclared.')
                 else:
-                    self._checkVariable(variable[0], variable[1], self.realVariables[variable[0]].local, (str)(variable[2]), variable[4])
+                    self._checkVariable(arg1, action, self.realVariables[arg1].local, str(arg2), i)

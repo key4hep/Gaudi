@@ -6,7 +6,7 @@
 // local
 #include "HistoTimingAlg.h"
 
-// onl needed for old style histogram for speed comparision
+// only needed for old style histogram for speed comparison
 #include "AIDA/IHistogram1D.h"
 
 //-----------------------------------------------------------------------------

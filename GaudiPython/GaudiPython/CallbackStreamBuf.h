@@ -1,9 +1,9 @@
 #ifndef GAUDIPYTHON_CALLBACKSTREAMBUF_H
 #define GAUDIPYTHON_CALLBACKSTREAMBUF_H
 // ============================================================================
-#include <sstream>    //included for stringbuf
-// ============================================================================
 #include "Python.h"   //included for the python API
+// ============================================================================
+#include <sstream>    //included for stringbuf
 // ============================================================================
 #include "GaudiPython/GaudiPython.h"
 // ============================================================================
