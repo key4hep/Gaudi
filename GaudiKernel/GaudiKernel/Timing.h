@@ -163,6 +163,13 @@ namespace System  {
                          i_user - rhs.i_user,
                          i_elapsed - rhs.i_elapsed);
     }
+    /// Add the timings to the current objects
+    inline ProcessTime& operator+=(const ProcessTime &rhs) {
+    	i_kernel += rhs.i_kernel;
+    	i_user += rhs.i_user;
+    	i_elapsed += rhs.i_elapsed;
+    	return *this;
+    }
   private:
     /// Internal storage.
     TimeValueType i_kernel, i_user, i_elapsed;

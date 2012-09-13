@@ -214,6 +214,28 @@ bool ChronoEntity::operator<( const ChronoEntity& e ) const
     ( e.m_elapsed  <   m_elapsed    ) ? false : false ;
 }
 // ============================================================================
+// compound assignment operator
+// ============================================================================
+ChronoEntity& ChronoEntity::operator+=( const ChronoEntity& e )
+{
+	// System::ProcessTime type
+	m_delta += e.m_delta;
+
+	// Summing, massaging here does not make too much sense.
+	// This is done only for final reductions
+	// Keep by convention the original one.
+//	m_start += e.m_start;
+
+	// Tymevaluetypes type
+	m_user += e.m_user;
+	m_kernel += e.m_kernel;
+	m_elapsed += e.m_elapsed;
+
+	return *this;
+}
+
+
+// ============================================================================
 /*  print the chrono according the format and units
  *  @param typ  the chrono type
  *  @param fmt  the format string
