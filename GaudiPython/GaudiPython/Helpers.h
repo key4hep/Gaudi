@@ -1,15 +1,12 @@
 #ifndef GAUDIPYTHON_HELPERS_H
 #define GAUDIPYTHON_HELPERS_H
 
+#include "Python.h"
+
 // Framework
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IAlgTool.h"
-
-#ifdef _POSIX_C_SOURCE
-#undef _POSIX_C_SOURCE
-#endif
-#include "Python.h"
 
 #if PY_VERSION_HEX < 0x02050000
 // Note (MCl):

@@ -2,6 +2,9 @@
 // ============================================================================
 // CVS tag $Name:  $, version $Revision: 1.37 $
 // ============================================================================
+// Python must always be the first.
+#include <Python.h>
+
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/ParticleProperty.h"
 #include "GaudiKernel/Property.h"

@@ -2,6 +2,9 @@
 // ============================================================================
 // CVS tag $Name:  $, version $Revision: 1.37 $
 // ============================================================================
+// Python must always be the first.
+#include "Python.h"
+
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/ParticleProperty.h"
 #include "GaudiKernel/Property.h"
@@ -128,7 +131,7 @@ namespace GaudiPython
     std::vector<AIDA::IHistogram3D*>    i05_7   ;
     std::vector<AIDA::IProfile1D*>      i05_8   ;
     std::vector<AIDA::IProfile2D*>      i05_9   ;
-    
+
     //Gaudi::IIODataManager              *gu_i1000;
 
     GaudiUtils::VectorMap<int,double>   i034 ;

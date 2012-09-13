@@ -12,7 +12,6 @@
 #endif
 
 #include "GaudiMP/PyROOTPickle.h"
-#include "Python.h"
 #include "TClass.h"
 #include "TClassRef.h"
 #include "TBufferFile.h"
