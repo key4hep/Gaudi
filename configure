@@ -28,8 +28,7 @@ if [ ! -e build-dir/CMakeCache.txt ] ; then
     mkdir -p build-dir
     cd build-dir
 
-    export CMAKE_PREFIX_PATH=../cmake
-    time cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain/heptools-${LCG_version}.cmake -DBUILD_TESTS=ON $distcc_opt $ccache_opt $lcg_system_opt .. || (cd $rootdir ; rm -rf build-dir)
+    time cmake -DCMAKE_TOOLCHAIN_FILE=$rootdir/cmake/toolchain/heptools-${LCG_version}.cmake -DBUILD_TESTS=ON $distcc_opt $ccache_opt $lcg_system_opt .. || (cd $rootdir ; rm -rf build-dir)
     cd $rootdir
 fi
 
