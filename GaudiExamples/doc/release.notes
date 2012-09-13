@@ -1,6 +1,12 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2012-09-11 - Marco Clemencic
+ - Updated reference file for TBBMessageSvc test.
+
+! 2012-07-02 - Marco Clemencic
+ - Added a test for the new TBBMessageSvc.
+
 ============================ GaudiExamples v23r4 =============================
 ! 2012-09-11 - Marco Clemencic
  - Added test for the feature introduced in patch #5518 (histogram for timing
@@ -8,9 +14,6 @@ Package manager : Marco Clemencic
 
 ! 2012-07-27 - Marco Clemencic
  - Rationalized the permissions of files in the repository.
-
-! 2012-07-02 - Marco Clemencic
- - Added a test for the new TBBMessageSvc.
 
 ! 2012-06-28 - Marco Clemencic
  - Modified a property test to expose bug #95733 and updated reference files
