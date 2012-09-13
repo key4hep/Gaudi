@@ -4,6 +4,7 @@ Manatiner: Marco Clemencic
 ============================= GaudiRelease v23r4 =============================
 ! 2012-09-13 - Marco Clemencic
  - Removed the special hack used to produce the LHCb deployment kit (obsolete).
+ - Fix to tag_release.py.
 
 ! 2012-07-27 - Marco Clemencic
  - Rationalized the permissions of files in the repository.
