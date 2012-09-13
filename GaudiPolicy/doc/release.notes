@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2012-09-13 - Marco Clemencic
+ - Removed the hack used to avoid the AFS stress caused by LCGCMT 64.
+
 ! 2012-09-11 - Marco Clemencic
  - Minor improvements to GaudiTest.py:
    - hide Eclipse launch configurations (in a .eclipse directory)
