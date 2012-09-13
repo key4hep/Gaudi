@@ -1,6 +1,7 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+================================ GaudiMP v1r5 ================================
 ! 2012-09-13 - Marco Clemencic
  - Fixed compilation warnings.
 

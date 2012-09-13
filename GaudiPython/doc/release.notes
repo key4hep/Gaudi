@@ -1,6 +1,7 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+============================= GaudiPython v12r3 ==============================
 ! 2012-09-13 - Marco Clemencic
  - Fixed compilation warnings.
 

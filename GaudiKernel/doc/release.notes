@@ -1,6 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v28r3 ==============================
 ! 2012-09-13 - Marco Clemencic
  - Fixed compilation warnings.
 

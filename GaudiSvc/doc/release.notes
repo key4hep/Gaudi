@@ -1,6 +1,7 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+=============================== GaudiSvc v19r2 ===============================
 ! 2012-07-27 - Marco Clemencic
  - Rationalized the permissions of files in the repository.
 

@@ -1,6 +1,7 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v12r2 ==============================
 ! 2012-09-13 - Marco Clemencic
  - Removed the hack used to avoid the AFS stress caused by LCGCMT 64.
 
