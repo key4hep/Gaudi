@@ -19,7 +19,9 @@
 class EventContext;
 // Several algos can share the same context and the reference counting is better than the
 // explicit deallocation.
-typedef std::shared_ptr<EventContext> EventContext_shared_ptr;
+//typedef std::shared_ptr<EventContext> EventContext_shared_ptr;
+// Change for gccxml
+typedef EventContext* EventContext_shared_ptr;
 
 // fast implementation, to be better organised.
 class EventContext{
