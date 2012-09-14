@@ -167,14 +167,14 @@ ChronoStatSvc::ChronoStatSvc
 // ============================================================================
 // Compound assignment operator.
 // ============================================================================
-ChronoStatSvc& operator+= ( const ChronoStatSvc& css){
+void ChronoStatSvc::merge ( const ChronoStatSvc& css){
 
 	// Add the content of the maps, leave the rest unchanged
 
 	// Merge Chronomaps
-	for (auto item& : css.m_chronoEntities){
-		IChronoStatSvc::ChronoTag& key = item.first();
-		ChronoEntity& val = item.second();
+	for (auto& item : css.m_chronoEntities){
+		const IChronoStatSvc::ChronoTag& key = item.first;
+		const ChronoEntity& val = item.second;
 		if (m_chronoEntities.count(key))
 			m_chronoEntities[key]+=val;
 		else
@@ -182,16 +182,15 @@ ChronoStatSvc& operator+= ( const ChronoStatSvc& css){
 	}
 
 	// Merge StatMaps
-	for (auto item& : css.m_statsEntities){
-		IChronoStatSvc::StatTag& key = item.first();
-		StatEntity& val = item.second();
-		if (m_statsEntities.count(key))
-			m_statsEntities[key]+=val;
+	for (auto& item : css.m_statEntities){
+		const IChronoStatSvc::StatTag& key = item.first;
+		const StatEntity& val = item.second;
+		if (m_statEntities.count(key))
+			m_statEntities[key]+=val;
 		else
-			m_statsEntities.insert (std::pair<IChronoStatSvc::StatTag,StatEntity>(key,val));
+			m_statEntities.insert (std::pair<IChronoStatSvc::StatTag,StatEntity>(key,val));
 	}
 
-	return *this;
 }
 // ============================================================================
 // Destructor.

@@ -117,7 +117,7 @@ public:
    */
   ChronoStatSvc ( const std::string& name, ISvcLocator* svcloc );
   /// Compound assignment operator
-  ChronoStatSvc& operator+= ( const ChronoStatSvc& css);
+  void merge ( const ChronoStatSvc& css);
   /// Destructor.
   virtual ~ChronoStatSvc();
   // ============================================================================
