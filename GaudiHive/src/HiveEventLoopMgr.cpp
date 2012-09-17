@@ -18,6 +18,7 @@
 
 // For concurrency
 #include "GaudiHive/HiveEventLoopMgr.h"
+#include "GaudiHive/EventSchedulingState.h"
 
 #include "tbb/task_scheduler_init.h"
 #include "tbb/task.h"
@@ -40,22 +41,21 @@ DECLARE_SERVICE_FACTORY(HiveEventLoopMgr)
 /////////////////////////////////////////////////
 /// *dirty* place for adding an AlgoTask wrapper
 class HiveAlgoTask : public tbb::task {
-  public:
-  HiveAlgoTask(IAlgorithm* algorithm, HiveEventLoopMgr* scheduler): m_algorithm(algorithm), m_scheduler(scheduler){};    
-    tbb::task* execute();
-    IAlgorithm* m_algorithm;
-    HiveEventLoopMgr* m_scheduler;
+public:
+  HiveAlgoTask(IAlgorithm* algorithm, EventSchedulingState* scheduler): m_algorithm(algorithm), m_scheduler(scheduler){};    
+  tbb::task* execute();
+  IAlgorithm* m_algorithm;
+  EventSchedulingState* m_scheduler;
 };
-
 
 tbb::task* HiveAlgoTask::execute() {
   Algorithm* this_algo = dynamic_cast<Algorithm*>(m_algorithm);
   this_algo->getContext()->m_thread_id = pthread_self();
   m_algorithm->sysExecute();
-  m_scheduler->algo_has_finished();
+  m_scheduler->algoFinished();
   return NULL;
-  
 }
+
 /////////////////////////////////////////////////
 
 //--------------------------------------------------------------------------------------------
@@ -572,16 +572,17 @@ HiveEventLoopMgr::find_dependencies() {
     m_all_requirements = all_requirements;
 }  
 
+//--------------------------------------------------------------------------------------------
+// bool run_parallel 
+//--------------------------------------------------------------------------------------------
 bool HiveEventLoopMgr::run_parallel(){
   bool eventfailed = false;
+  // Create object containing all scheduling specific information
+  // for a single event
+  // TODO: will have to be transformed into a vector of these states 
+  // for multi-event case.
+  EventSchedulingState event_state(m_topAlgList.size());
 
-  // Reset the registry of finished algorithms
-  // TODO: resize needs to happen only once
-  m_algos_started.resize(m_topAlgList.size());
-  std::fill(m_algos_started.begin(),m_algos_started.end(),false);
-  m_event_state = new state_type(0);
-  m_algos_in_flight = 0;
-  m_algos_finished = 0;
   do {
     unsigned int algo_counter(0);
     for (ListAlg::iterator ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
@@ -595,13 +596,13 @@ bool HiveEventLoopMgr::run_parallel(){
           break;
         }
         // check whether all requirements/dependencies for the algorithm are fulfilled...
-        state_type dependencies_missing = ((*m_event_state) & m_all_requirements[algo_counter]) ^ m_all_requirements[algo_counter];  
+        state_type dependencies_missing = (event_state.state() & m_all_requirements[algo_counter]) ^ m_all_requirements[algo_counter];  
         // ...and whether the algorithm was already started
-        if ( (dependencies_missing == 0) && (m_algos_started[algo_counter]) == false && (m_algos_in_flight < m_max_parallel )) {
-	  tbb::task* t = new( tbb::task::allocate_root() ) HiveAlgoTask((*ita), this);
+        if ( (dependencies_missing == 0) && (event_state.hasStarted(algo_counter) ) == false && (m_total_algos_in_flight < m_max_parallel )) {
+	  tbb::task* t = new( tbb::task::allocate_root() ) HiveAlgoTask((*ita), &event_state);
           tbb::task::enqueue( *t);
-          m_algos_started[algo_counter] = true;
-          ++m_algos_in_flight;
+          event_state.algoStarts(algo_counter);
+          // ++m_total_algos_in_flight; //TODO: where do we reduce this counter again?
         }
         ++algo_counter;
       } catch ( const GaudiException& Exception ) {
@@ -626,23 +627,19 @@ bool HiveEventLoopMgr::run_parallel(){
     // update the event state with what has been put into the DataSvc
     bool queue_full(false);
     std::string product_name;
+
+    // TODO: in the multi-event case here a loop through the individual event stores
     DataSvc& dataSvc = dynamic_cast<DataSvc&>(*(m_evtDataSvc)); 
     tbb::concurrent_queue<std::string>& new_products = dataSvc.new_products();
     do {
       queue_full = new_products.try_pop(product_name);
-      if (queue_full && m_product_indices.count( product_name ) == 1) {
-        (*m_event_state)[m_product_indices[product_name]] = true; 
+      if (queue_full && m_product_indices.count( product_name ) == 1) { // only products with dependencies upon need to be announced to other algos
+        event_state.update_state(m_product_indices[product_name]); 
       }
     } while (queue_full);  
 
-  } while (m_algos_finished != m_numberOfAlgos);
-  delete m_event_state;
-  return eventfailed;
-  
-}
+  } while (!event_state.hasFinished());
 
-void HiveEventLoopMgr::algo_has_finished(){
-  --m_algos_in_flight;
-  ++m_algos_finished;
+  return eventfailed;
 }
 
