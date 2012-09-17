@@ -50,7 +50,7 @@ LCG_external_package(CppUnit           1.12.1_p1                                
 LCG_external_package(cx_oracle         5.1.1                                    )
 LCG_external_package(david             1_36a                                    )
 LCG_external_package(dawn              3_88a                                    )
-if(${os} STREQUAL slc5)
+if(${LCG_OS}${LCG_OSVERS} STREQUAL slc5)
 LCG_external_package(dcache_client     2.47.5-0                                 )
 else()
 LCG_external_package(dcache_client     2.47.6-1                                 )
@@ -119,7 +119,7 @@ LCG_external_package(pyminuit          0.0.1                                    
 LCG_external_package(pyparsing         1.5.6                                    )
 LCG_external_package(pyqt              4.9.3                                    )
 LCG_external_package(pytest            2.2.4                                    )
-if(NOT ${os} STREQUAL mac106)
+if(NOT ${LCG_OS}${LCG_OSVERS} STREQUAL mac106)
 LCG_external_package(Python            2.6.5p2                                  )
 else()
 LCG_external_package(Python            2.6.5                                    )
@@ -141,7 +141,7 @@ LCG_external_package(stomppy           3.1.3                                    
 LCG_external_package(storm             0.19                                     )
 LCG_external_package(sympy             0.7.1                                    )
 LCG_external_package(tcmalloc          1.7p3                                    )
-if(NOT ${os} STREQUAL slc6) # uuid is not distributed with SLC6
+if(NOT ${LCG_OS}${LCG_OSVERS} STREQUAL slc6) # uuid is not distributed with SLC6
 LCG_external_package(uuid              1.42                                     )
 endif()
 LCG_external_package(valgrind          3.7.0p1                                  )
