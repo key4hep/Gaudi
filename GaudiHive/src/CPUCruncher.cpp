@@ -16,7 +16,8 @@ CPUCruncher::CPUCruncher ( const std::string& name , // the algorithm instance n
       declareProperty("Outputs", m_outputs, "List of provided outputs");
       
       declareProperty ( "avgRuntime" , m_avg_runtime , "Average runtime of the module." ) ;
-      declareProperty ( "varRuntime" , m_var_runtime , "Variance of the runtime of the module." ) ;     
+      declareProperty ( "varRuntime" , m_var_runtime , "Variance of the runtime of the module." ) ;
+      declareProperty ( "localRndm", m_local_rndm_gen = true, "Decide if the local random generator is to be used");
     }  
   
 void CPUCruncher::findPrimes (const double runtime)  { 
@@ -85,7 +86,9 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
 
   MsgStream logstream(msgSvc(), name());
 
+  double runtime;
 
+  if (m_local_rndm_gen){
   /* This will disappear with a thread safe random number generator svc
    * Use box mueller to generate gaussian randoms
    * The quality is not good for in depth study given that the generator is a
@@ -97,7 +100,7 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
    * This is not an overkill but rather an exercise towards a thread safe
    * random number generation.
    */
-  /*
+
   auto getGausRandom = [] (double mean, double sigma) -> double {
 
     unsigned int seed = std::clock();
@@ -117,12 +120,14 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
     const double normal = sqrt(-2.*log(unif1))*cos(2*M_PI*unif2);
     return normal*sigma + mean;
     };
-  const double runtime = fabs(getGausRandom( m_avg_runtime , m_var_runtime ));
+  runtime = fabs(getGausRandom( m_avg_runtime , m_var_runtime ));
   //End Of temp block
-  */
-
+  }
+  else{
+  // Should be a member.
   HiveRndm::HiveNumbers rndmgaus(randSvc(), Rndm::Gauss( m_avg_runtime , m_var_runtime ));
-  const double runtime = std::fabs(rndmgaus());
+  runtime = std::fabs(rndmgaus());
+  }
 
   logstream  << MSG::ALWAYS << "Runtime will be: "<< runtime << endmsg;
   logstream  << "Event " <<  getContext()->m_evt_num

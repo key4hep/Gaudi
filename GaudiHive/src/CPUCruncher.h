@@ -51,6 +51,7 @@
 
     double m_avg_runtime ; //Avg Runtime
     double m_var_runtime ; //Variance of Runtime
+    bool m_local_rndm_gen; //Decide what random number generation to use
     
     // For the concurrency
     std::vector<std::string> m_inputs;
