@@ -1,21 +1,44 @@
 ################################################################################
+# HEP CMake toolchain
+#-------------------------------------------------------------------------------
+# The HEP CMake toolchain is required to build a project using the libraries and
+# tools provided by SPI/SFT (a.k.a. LCGCMT).
+#
+# The variables used to tune the toolchain behavior are:
+#
+#  - BINARY_TAG: inferred from the system or from the environment (CMAKECONFIG,
+#                CMTCONFIG), defines the target platform (by default is the same
+#                as the host)
+#  - LCG_SYSTEM: by default it is derived from BINARY_TAG, but it can be set
+#                explicitly to a compatible supported platform if the default
+#                one is not supported.
+#                E.g.: if BINARY_TAG is x86_64-ubuntu1204-gcc46-opt, LCG_SYSTEM
+#                      should be set to x86_64-slc6-gcc46.
+################################################################################
+
+################################################################################
 # Functions to get system informations for the LCG configuration.
 ################################################################################
 # Get the host architecture.
-function(find_host_arch)
+function(lcg_find_host_arch)
   if(NOT LCG_HOST_ARCH)
-    if(UNIX)
+    if(CMAKE_HOST_SYSTEM_PROCESSOR)
       set(arch ${CMAKE_HOST_SYSTEM_PROCESSOR})
     else()
-      set(arch $ENV{PROCESSOR_ARCHITECTURE})
+      if(UNIX)
+        execute_process(COMMAND uname -p OUTPUT_VARIABLE arch OUTPUT_STRIP_TRAILING_WHITESPACE)
+      else()
+        set(arch $ENV{PROCESSOR_ARCHITECTURE})
+      endif()
     endif()
 
     set(LCG_HOST_ARCH ${arch} CACHE STRING "Architecture of the host (same as CMAKE_HOST_SYSTEM_PROCESSOR).")
+    mark_as_advanced(LCG_HOST_ARCH)
   endif()
 endfunction()
 ################################################################################
 # Detect the OS name and version
-function(find_host_os)
+function(lcg_find_host_os)
   if(NOT LCG_HOST_OS OR NOT LCG_HOST_OSVERS)
     if(APPLE)
       set(os mac)
@@ -42,11 +65,12 @@ function(find_host_os)
 
     set(LCG_HOST_OS ${os} CACHE STRING "Name of the operating system (or Linux distribution)." FORCE)
     set(LCG_HOST_OSVERS ${osvers} CACHE STRING "Version of the operating system (or Linux distribution)." FORCE)
+    mark_as_advanced(LCG_HOST_OS LCG_HOST_OSVERS)
   endif()
 endfunction()
 ################################################################################
 # Get system compiler.
-function(find_host_compiler)
+function(lcg_find_host_compiler)
   if(NOT LCG_HOST_COMP OR NOT LCG_HOST_COMPVERS)
     if(WIN32)
       find_program(guessed_compiler cl gcc)
@@ -73,65 +97,73 @@ function(find_host_compiler)
 
     set(LCG_HOST_COMP ${compiler} CACHE STRING "Name of the host default compiler." FORCE)
     set(LCG_HOST_COMPVERS ${cvers} CACHE STRING "Version of the host default compiler." FORCE)
+    mark_as_advanced(LCG_HOST_COMP LCG_HOST_COMPVERS)
   endif()
 endfunction()
 ################################################################################
+# Detect host system
+function(lcg_detect_host_platform)
+  lcg_find_host_arch()
+  lcg_find_host_os()
+  lcg_find_host_compiler()
+  set(LCG_HOST_SYSTEM ${LCG_HOST_ARCH}-${LCG_HOST_OS}${LCG_HOST_OSVERS}-${LCG_HOST_COMP}${LCG_HOST_COMPVERS}
+      CACHE STRING "Platform id of the system.")
+  mark_as_advanced(LCG_HOST_SYSTEM)
+  message(STATUS "Host system: ${LCG_HOST_SYSTEM}")
+endfunction()
+################################################################################
 # Get the target system platform (arch., OS, compiler)
-function(get_target_platform)
-  if(NOT DEFINED BINARY_TAG)
-    # This toolchain requires the environment variables CMTCONFIG or CMAKECONFIG
+function(lcg_get_target_platform)
+  if(NOT BINARY_TAG)
+    # Take the target system id from the environment
     if(DEFINED ENV{CMAKECONFIG})
-      message(STATUS "binary tag from CMAKECONFIG")
-      set(BINARY_TAG $ENV{CMAKECONFIG})
+      set(tag $ENV{CMAKECONFIG})
+      set(tag_source CMAKECONFIG)
     elseif(DEFINED ENV{CMTCONFIG})
-      message(STATUS "binary tag from CMTCONFIG")
-      set(BINARY_TAG $ENV{CMTCONFIG})
+      set(tag $ENV{CMTCONFIG})
+      set(tag_source CMTCONFIG)
     else()
-      message(STATUS "Configuration tag not specified: use system default.")
-      set(BINARY_TAG ${LCG_HOST_SYSTEM}-opt)
+      set(tag ${LCG_HOST_SYSTEM}-opt)
+      set(tag_source dafault)
     endif()
-    set(BINARY_TAG ${BINARY_TAG} CACHE INTERNAL "Id of the platform")
-    message(STATUS "Using BINARY_TAG=${BINARY_TAG}")
+    message(STATUS "Target binary tag from ${tag_source}: ${tag}")
+    set(BINARY_TAG ${tag} CACHE STRING "Platform id for the produced binaries.")
   endif()
-
-  # Split the binary tag
+  # Split the target binary tag
   string(REGEX MATCHALL "[^-]+" out ${BINARY_TAG})
   list(GET out 0 arch)
   list(GET out 1 os)
   list(GET out 2 comp)
   list(GET out 3 type)
 
-  if(BINARY_TAG STREQUAL "${LCG_HOST_SYSTEM}-${type}")
-    # Host and target are the same
-    set(LCG_ARCH     ${LCG_HOST_ARCH}     CACHE STRING "Name of the target architecture." FORCE)
-    set(LCG_OS       ${LCG_HOST_OS}       CACHE STRING "Name of the target OS." FORCE)
-    set(LCG_OSVERS   ${LCG_HOST_OSVERS}   CACHE STRING "Version of the target OS." FORCE)
-    set(LCG_COMP     ${LCG_HOST_COMP}     CACHE STRING "Name of the target compiler." FORCE)
-    set(LCG_COMPVERS ${LCG_HOST_COMPVERS} CACHE STRING "Version of the target compiler." FORCE)
+  set(LCG_BUILD_TYPE ${type} CACHE STRING "Type of build (LCG id).")
 
-  else()
-    set(LCG_ARCH     ${arch}              CACHE STRING "Name of the target architecture." FORCE)
-
-    if (os MATCHES "([^0-9.]+)([0-9.]+)")
-      set(LCG_OS     ${CMAKE_MATCH_1} CACHE STRING "Name of the target OS." FORCE)
-      set(LCG_OSVERS ${CMAKE_MATCH_2} CACHE STRING "Version of the target OS." FORCE)
-    else()
-      set(LCG_OS     ${os} CACHE STRING "Name of the target OS." FORCE)
-      set(LCG_OSVERS ""    CACHE STRING "Version of the target OS." FORCE)
-    endif()
-
-    if (comp MATCHES "([^0-9.]+)([0-9.]+)")
-      set(LCG_COMP     ${CMAKE_MATCH_1} CACHE STRING "Name of the target compiler." FORCE)
-      set(LCG_COMPVERS ${CMAKE_MATCH_2} CACHE STRING "Version of the target compiler." FORCE)
-    else()
-      set(LCG_COMP     ${comp} CACHE STRING "Name of the target compiler." FORCE)
-      set(LCG_COMPVERS ""      CACHE STRING "Version of the target compiler." FORCE)
-    endif()
+  set(LCG_TARGET ${arch}-${os}-${comp})
+  if(NOT LCG_SYSTEM)
+    set(LCG_SYSTEM ${arch}-${os}-${comp} CACHE STRING "Platform id of the target system or a compatible one.")
   endif()
 
-  set(LCG_BUILD_TYPE ${type} CACHE STRING "Type of build requested.")
+  # Convert the components of the tag in the equivalents of LCG_HOST_*,
+  # but transient
+  set(LCG_ARCH  ${arch})
 
-  # build type
+  if (os MATCHES "([^0-9.]+)([0-9.]+)")
+    set(LCG_OS     ${CMAKE_MATCH_1})
+    set(LCG_OSVERS ${CMAKE_MATCH_2})
+  else()
+    set(LCG_OS     ${os})
+    set(LCG_OSVERS "")
+  endif()
+
+  if (comp MATCHES "([^0-9.]+)([0-9.]+)")
+    set(LCG_COMP     ${CMAKE_MATCH_1})
+    set(LCG_COMPVERS ${CMAKE_MATCH_2})
+  else()
+    set(LCG_COMP     ${comp})
+    set(LCG_COMPVERS "")
+  endif()
+
+  # Convert LCG_BUILD_TYPE to CMAKE_BUILD_TYPE
   if(LCG_BUILD_TYPE STREQUAL "opt")
     set(type Release)
   elseif(LCG_BUILD_TYPE STREQUAL "dbg")
@@ -139,7 +171,7 @@ function(get_target_platform)
   elseif(LCG_BUILD_TYPE STREQUAL "cov")
     set(type Coverage)
   else()
-    message(FATAL_ERROR "Build flavour ${type} not supported.")
+    message(FATAL_ERROR "LCG build type ${type} not supported.")
   endif()
   set(CMAKE_BUILD_TYPE ${type} CACHE STRING
       "Choose the type of build, options are: None Debug Release Coverage Profile RelWithDebInfo MinSizeRel.")
@@ -158,30 +190,33 @@ function(get_target_platform)
     message(FATAL_ERROR "OS ${LCG_OS} is not supported.")
   endif()
 
-  mark_as_advanced(LCG_HOST_ARCH LCG_HOST_OS LCG_HOST_OSVERS
-                   LCG_HOST_COMP LCG_HOST_COMPVERS
-                   LCG_ARCH LCG_OS LCG_OSVERS
-                   LCG_COMP LCG_COMPVERS)
+  # set default platform ids
+  set(LCG_platform ${LCG_SYSTEM}-${LCG_BUILD_TYPE} CACHE STRING "Platform ID for the AA project binaries.")
+  set(LCG_system   ${LCG_SYSTEM}-opt               CACHE STRING "Platform ID for the external libraries.")
+
+  mark_as_advanced(LCG_platform LCG_system)
+
+  message(STATUS "Target system: ${LCG_TARGET}")
+  if(NOT LCG_TARGET STREQUAL LCG_SYSTEM)
+    message(STATUS "Use LCG system: ${LCG_SYSTEM}")
+  endif()
+  message(STATUS "Build type: ${LCG_BUILD_TYPE}")
+
+  # copy variables to parent scope
+  foreach(v ARCH OS OSVERS COMP COMPVERS TARGET)
+    set(LCG_${v} ${LCG_${v}} PARENT_SCOPE)
+  endforeach()
+
 endfunction()
+
+
 
 ################################################################################
 # Run platform detection (system and target).
 ################################################################################
 # Deduce the LCG configuration tag from the system
-find_host_arch()
-find_host_os()
-find_host_compiler()
-set(LCG_HOST_SYSTEM ${LCG_HOST_ARCH}-${LCG_HOST_OS}${LCG_HOST_OSVERS}-${LCG_HOST_COMP}${LCG_HOST_COMPVERS})
-
-get_target_platform()
-set(LCG_SYSTEM ${LCG_ARCH}-${LCG_OS}${LCG_OSVERS}-${LCG_COMP}${LCG_COMPVERS})
-
-# Platform IDs
-set(LCG_platform ${LCG_SYSTEM}-${LCG_BUILD_TYPE} CACHE STRING "Platform ID for the AA project binaries.")
-set(LCG_system   ${LCG_SYSTEM}-opt               CACHE STRING "Platform ID for the external libraries.")
-
-# Flag the LCG internal cached variables as "advanced".
-mark_as_advanced(LCG_platform LCG_system)
+lcg_detect_host_platform()
+lcg_get_target_platform()
 
 ## Debug messages.
 #foreach(p LCG_HOST_ LCG_)
