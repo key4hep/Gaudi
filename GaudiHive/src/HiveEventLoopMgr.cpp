@@ -18,6 +18,7 @@
 
 // For concurrency
 #include "GaudiHive/HiveEventLoopMgr.h"
+#include "GaudiHive/HiveAlgorithmManager.h"
 #include "GaudiHive/EventSchedulingState.h"
 
 #include "tbb/task_scheduler_init.h"
@@ -77,7 +78,8 @@ HiveEventLoopMgr::HiveEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
   declareProperty("EvtSel", m_evtsel );
   declareProperty("Warnings",m_warnings=true,
 		  "Set this property to false to suppress warning messages");
-  declareProperty("MaxAlgosParallel", m_max_parallel );
+  declareProperty("MaxAlgosParallel", m_max_parallel=1 );
+  declareProperty("DumpQueues", m_DumpQueues=false );
 }
 
 //--------------------------------------------------------------------------------------------
@@ -358,6 +360,11 @@ StatusCode HiveEventLoopMgr::executeEvent(void* par)    {
 	  algo->setContext(evtContext);
   }
 
+  // Some debug
+  if(m_DumpQueues){
+	  HiveAlgorithmManager* hivealgman = dynamic_cast<HiveAlgorithmManager*> (algMan.get());
+	  if (hivealgman) hivealgman->dump();
+  	  }
 
   bool eventfailed = run_parallel();
 
@@ -583,10 +590,21 @@ bool HiveEventLoopMgr::run_parallel(){
   // for multi-event case.
   EventSchedulingState event_state(m_topAlgList.size());
 
+  // Test the new pool
+//  SmartIF<IAlgManager> algMan(serviceLocator());
+//  HiveAlgorithmManager* hivealgman = dynamic_cast<HiveAlgorithmManager*> (algMan.get());
+//  IAlgorithm* tmpalg;
+//  for (ListAlg::iterator ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ){
+//	  const std::string& name = (*ita)->name();
+//	  while( hivealgman->acquireAlgorithm(name,tmpalg) );
+//	  hivealgman->acquireAlgorithm(name,tmpalg,true);
+//  }
+
   do {
     unsigned int algo_counter(0);
     for (ListAlg::iterator ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
       StatusCode sc(StatusCode::SUCCESS); //TODO: disabled the failure part
+
       try {
         if (UNLIKELY(m_abortEvent)) {
           DEBMSG << "AbortEvent incident fired by "
@@ -599,7 +617,7 @@ bool HiveEventLoopMgr::run_parallel(){
         state_type dependencies_missing = (event_state.state() & m_all_requirements[algo_counter]) ^ m_all_requirements[algo_counter];  
         // ...and whether the algorithm was already started
         if ( (dependencies_missing == 0) && (event_state.hasStarted(algo_counter) ) == false && (m_total_algos_in_flight < m_max_parallel )) {
-	  tbb::task* t = new( tbb::task::allocate_root() ) HiveAlgoTask((*ita), &event_state);
+          tbb::task* t = new( tbb::task::allocate_root() ) HiveAlgoTask((*ita), &event_state);
           tbb::task::enqueue( *t);
           event_state.algoStarts(algo_counter);
           // ++m_total_algos_in_flight; //TODO: where do we reduce this counter again?
