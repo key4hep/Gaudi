@@ -109,7 +109,6 @@ function(lcg_detect_host_platform)
   set(LCG_HOST_SYSTEM ${LCG_HOST_ARCH}-${LCG_HOST_OS}${LCG_HOST_OSVERS}-${LCG_HOST_COMP}${LCG_HOST_COMPVERS}
       CACHE STRING "Platform id of the system.")
   mark_as_advanced(LCG_HOST_SYSTEM)
-  message(STATUS "Host system: ${LCG_HOST_SYSTEM}")
 endfunction()
 ################################################################################
 # Get the target system platform (arch., OS, compiler)
@@ -124,7 +123,7 @@ function(lcg_get_target_platform)
       set(tag_source CMTCONFIG)
     else()
       set(tag ${LCG_HOST_SYSTEM}-opt)
-      set(tag_source dafault)
+      set(tag_source default)
     endif()
     message(STATUS "Target binary tag from ${tag_source}: ${tag}")
     set(BINARY_TAG ${tag} CACHE STRING "Platform id for the produced binaries.")
@@ -196,11 +195,17 @@ function(lcg_get_target_platform)
 
   mark_as_advanced(LCG_platform LCG_system)
 
+  # Report the platform ids.
   message(STATUS "Target system: ${LCG_TARGET}")
+  message(STATUS "Build type: ${LCG_BUILD_TYPE}")
+
+  if(NOT LCG_HOST_SYSTEM STREQUAL LCG_TARGET)
+    message(STATUS "Host system: ${LCG_HOST_SYSTEM}")
+  endif()
+
   if(NOT LCG_TARGET STREQUAL LCG_SYSTEM)
     message(STATUS "Use LCG system: ${LCG_SYSTEM}")
   endif()
-  message(STATUS "Build type: ${LCG_BUILD_TYPE}")
 
   # copy variables to parent scope
   foreach(v ARCH OS OSVERS COMP COMPVERS TARGET)
