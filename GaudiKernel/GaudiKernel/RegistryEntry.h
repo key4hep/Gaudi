@@ -37,7 +37,7 @@ namespace DataSvcHelpers   {
    * @author Sebastien Ponce
    */
   class GAUDI_API RegistryEntry : public IRegistry  {
-  private:
+  protected:
     /// Definition of datastore type
     typedef tbb::concurrent_vector<IRegistry*> Store;
   public:
@@ -49,10 +49,6 @@ namespace DataSvcHelpers   {
     unsigned long     m_refCount;
     /// Is the link soft or hard?
     bool              m_isSoft;
-    /// String containing full path of the object (volatile)
-    std::string       m_fullpath;
-    /// Path name
-    std::string       m_path;
     /// Pointer to parent
     RegistryEntry*    m_pParent;
     /// Pointer to opaque address (load info)
@@ -61,10 +57,13 @@ namespace DataSvcHelpers   {
     DataObject*       m_pObject;
     /// Pointer to hosting transient store
     DataSvc* m_pDataProviderSvc;
+  public:
     /// Store of leaves
     Store             m_store;
-    ///// Mutex for having only one rw operation at a time
-    //mutable tbb::mutex m_mutex;
+    /// Path name
+    std::string       m_path;
+    /// String containing full path of the object (volatile)
+    std::string       m_fullpath;
 
   private:
     /** The following entries serve two aspects:
@@ -100,6 +99,8 @@ namespace DataSvcHelpers   {
     RegistryEntry* findLeaf(const DataObject* key)  const  {
       return i_find(key);
     }
+
+  public:
     /// Initialize link as hard link
     void makeHard (DataObject* pObject);
     /// Initialize link as hard link
@@ -108,7 +109,6 @@ namespace DataSvcHelpers   {
     void makeSoft (DataObject* pObject);
     /// Initialize link as soft link
     void makeSoft (IOpaqueAddress* pAddress);
-  public:
     /// Standard Constructor
     RegistryEntry(const std::string& path, RegistryEntry* parent = 0);
     /// Standard Destructor

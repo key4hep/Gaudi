@@ -217,8 +217,6 @@ long DataSvcHelpers::RegistryEntry::add( IRegistry* obj )    {
     if ( !pEntry->isSoft() && pEntry->address() != 0 )   {
       pEntry->address()->setRegistry(pEntry);
     }
-    // let the DataProviderSvc know about the new data object 
-    m_pDataProviderSvc->new_products().push(pEntry->m_fullpath);
   }
   catch ( ... )   {
   }
@@ -256,8 +254,7 @@ long DataSvcHelpers::RegistryEntry::deleteElements()   {
       entry->release();
     }
   }
-  // TODO: disabled by BH
-  //  m_store.erase(m_store.begin(), m_store.end());
+  m_store.clear();
   return 0;
 }
 

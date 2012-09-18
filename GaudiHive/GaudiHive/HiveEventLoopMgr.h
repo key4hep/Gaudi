@@ -72,7 +72,7 @@ protected:
   tbb::atomic<unsigned int> m_total_algos_in_flight;
   /// Total number of algos
   unsigned int  m_numberOfAlgos;
-  
+
 public:
   /// Standard Constructor
   HiveEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc);

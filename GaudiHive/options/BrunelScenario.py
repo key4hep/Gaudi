@@ -86,7 +86,7 @@ evtloop.MaxAlgosParallel = number_of_threads;
 app = ApplicationMgr()
 app.TopAlg = crunchers
 app.EvtSel = "NONE" # do not use any event input
-app.EvtMax = 1
+app.EvtMax = 10
 app.EventLoop = evtloop;
 app.MessageSvcType = "TBBMessageSvc";
 
