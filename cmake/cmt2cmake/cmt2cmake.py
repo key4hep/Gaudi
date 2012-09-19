@@ -347,6 +347,12 @@ class Package(object):
             if links or inc_dirs:
                 # external links need the include dirs
                 args.append('INCLUDE_DIRS ' + ' '.join(links + inc_dirs))
+
+            if links:
+                not_included = set(links).difference(find_packages, set([s.rsplit('/')[-1] for s in subdirs]))
+                if not_included:
+                    self.log.warning('imports without use: %s', ', '.join(sorted(not_included)))
+
             # add subdirs...
             for s in subdir_imports + subdir_local_imports:
                 if s in known_subdirs:
@@ -357,9 +363,6 @@ class Package(object):
                 links.remove('AIDA') # FIXME: AIDA does not have a library
 
             if links:
-                not_included = set(links).difference(find_packages, set([s.rsplit('/')[-1] for s in subdirs]))
-                if not_included:
-                    self.log.warning('imports without use: %s', ', '.join(sorted(not_included)))
                 # note: in some cases we get quoted library names
                 args.append('LINK_LIBRARIES ' + ' '.join([l.strip('"') for l in links]))
 
