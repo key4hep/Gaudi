@@ -157,9 +157,7 @@ public:
 	  if ( index < 0 )
 		  fatal() << "Error in acquiring " << name
 		          << ": algorithm does not exist in HiveAlgorithmManager!" << endmsg;
-
 	  return acquireAlgorithm(index, algo, createIfAbsent);
-
   }
 
   StatusCode acquireAlgorithm(unsigned int index,IAlgorithm*& algo, bool createIfAbsent=false){
@@ -168,9 +166,8 @@ public:
 	  if (sc.isSuccess())
 		  return sc;
 
-	  if (createIfAbsent){
+	  if (createIfAbsent)
 		  return createAlgorithm(index,algo);
-	  }
 
       return StatusCode::FAILURE;
 

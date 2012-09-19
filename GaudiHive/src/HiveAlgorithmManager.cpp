@@ -277,7 +277,7 @@ StatusCode HiveAlgorithmManager::restart() {
 	return rc;
 }
 
-
+#include "GaudiKernel/Algorithm.h"
 void HiveAlgorithmManager::dump() const{
 	always() << "Dumping the content of the HiveAlgoManager"<< endmsg;
 	always() << "Total Number of Queues: " << m_alg_conc_queues.size() <<endmsg;
@@ -298,6 +298,9 @@ void HiveAlgorithmManager::dump() const{
 		// now put the algos back in the concurrent queue
 		for (IAlgorithm* algo : tmp_algo_list){
 			always() << "   - Algo " << algo->name() << " " << algo << endmsg;
+//			Algorithm* tmpalgo = dynamic_cast<Algorithm*>(algo);
+//			std::cout << tmpalgo->getProperty("Inputs").toString() << std::endl;
+//			std::cout << tmpalgo->getProperty("Outputs").toString() << std::endl;
 			algo_queue->push(algo);
 		}
 		qcounter++;
