@@ -134,15 +134,21 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
 		     << " on pthreadID " << getContext()->m_thread_id  << endmsg;
   
   // get products from the event
+  // for (std::string& input : m_inputs){
+  //  get<DataObject>(input);
+  //}
   for (std::string& input : m_inputs){
-    get<DataObject>(input);
+    read<DataObject>(input);
   }
 
   findPrimes(runtime);
 
   // write products to the event
+  //for (std::string& output: m_outputs){
+  //  put(new DataObject(), output);
+  //}
   for (std::string& output: m_outputs){
-    put(new DataObject(), output);
+    write(new DataObject(), output);
   }
 
   return StatusCode::SUCCESS ;

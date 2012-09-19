@@ -20,6 +20,7 @@
 #include "GaudiHive/HiveEventLoopMgr.h"
 #include "GaudiHive/HiveAlgorithmManager.h"
 #include "GaudiHive/EventSchedulingState.h"
+#include "HiveEventRegistryEntry.h"
 
 #include "tbb/task_scheduler_init.h"
 #include "tbb/task.h"
@@ -326,7 +327,7 @@ StatusCode HiveEventLoopMgr::finalize()    {
 }
 
 //--------------------------------------------------------------------------------------------
-// executeEvent(void* par)
+// implementation of executeEvent(void* par)
 //--------------------------------------------------------------------------------------------
 StatusCode HiveEventLoopMgr::executeEvent(void* par)    {
 
@@ -341,6 +342,9 @@ StatusCode HiveEventLoopMgr::executeEvent(void* par)    {
   // Execute Algorithms
   m_incidentSvc->fireIncident(Incident(name(), IncidentType::BeginProcessing));
 
+  // Prepare the event context for concurrency
+
+
   // Call the resetExecuted() method of ALL "known" algorithms
   // (before we were reseting only the topalgs)
   SmartIF<IAlgManager> algMan(serviceLocator());
@@ -349,15 +353,6 @@ StatusCode HiveEventLoopMgr::executeEvent(void* par)    {
     for( ListAlgPtrs::const_iterator ialg = allAlgs.begin() ; allAlgs.end() != ialg ; ++ialg ) {
       if (LIKELY(0 != *ialg)) (*ialg)->resetExecuted();
     }
-  }
-
-  // Assign the context to the algorithms
-  EventContext_shared_ptr evtContext(*(EventContext_shared_ptr*)par);
-  const ListAlgPtrs& allAlgs = algMan->getAlgorithms() ;
-
-  for (IAlgorithm* ialgo : allAlgs){
-	  Algorithm* algo = dynamic_cast<Algorithm*>(ialgo);
-	  algo->setContext(evtContext);
   }
 
   // Some debug
@@ -397,7 +392,7 @@ StatusCode HiveEventLoopMgr::executeEvent(void* par)    {
 }
 
 //--------------------------------------------------------------------------------------------
-// IEventProcessing::executeRun
+// implementation of IEventProcessing::executeRun
 //--------------------------------------------------------------------------------------------
 StatusCode HiveEventLoopMgr::executeRun( int maxevt )    {
   StatusCode  sc;
@@ -473,14 +468,8 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
       }
     }
 
-    // Prepare the event context.
-    // A ctor will come when the members are clearer.
-    EventContext_shared_ptr evtContext(new EventContext);
-    evtContext->m_evt_num = nevt;
-
-
     // Execute event for all required algorithms
-    sc = executeEvent(&evtContext);
+    sc = executeEvent(NULL);
     m_endEventFired = false;
     if( !sc.isSuccess() ){
       error() << "Terminating event processing loop due to errors" << endmsg;
@@ -583,12 +572,32 @@ HiveEventLoopMgr::find_dependencies() {
 // bool run_parallel 
 //--------------------------------------------------------------------------------------------
 bool HiveEventLoopMgr::run_parallel(){
+  // Prepare the event context.
+  // A ctor will come when the members are clearer.
+  EventContext_shared_ptr evtContext(new EventContext);
+  evtContext->m_evt_num = 42; //TODO: use nevt;
+  // Assign the context to the algorithms
+  SmartIF<IAlgManager> algMan(serviceLocator());
+  const ListAlgPtrs& allAlgs = algMan->getAlgorithms() ;
+  for (IAlgorithm* ialgo : allAlgs) {
+    Algorithm* algo = dynamic_cast<Algorithm*>(ialgo);
+    algo->setContext(evtContext);
+  }
   bool eventfailed = false;
   // Create object containing all scheduling specific information
   // for a single event
   // TODO: will have to be transformed into a vector of these states 
   // for multi-event case.
   EventSchedulingState event_state(m_topAlgList.size());
+
+  DataObject* pObject;
+  m_evtDataSvc->retrieveObject("/Event",pObject);
+  DataSvcHelpers::RegistryEntry* rootRegistry = dynamic_cast<DataSvcHelpers::RegistryEntry*>(pObject->registry()); //TODO: an interface in the evtDataSvc for it would come handy
+
+  // create the single event
+  Hive::HiveEventRegistryEntry* evt_registry = new Hive::HiveEventRegistryEntry("NameDoesntMatter",rootRegistry);
+  rootRegistry->add(evt_registry);
+  evtContext->m_registry = evt_registry;
 
   // Test the new pool
 //  SmartIF<IAlgManager> algMan(serviceLocator());
@@ -646,9 +655,8 @@ bool HiveEventLoopMgr::run_parallel(){
     bool queue_full(false);
     std::string product_name;
 
-    // TODO: in the multi-event case here a loop through the individual event stores
-    DataSvc& dataSvc = dynamic_cast<DataSvc&>(*(m_evtDataSvc)); 
-    tbb::concurrent_queue<std::string>& new_products = dataSvc.new_products();
+    // TODO: in the multi-event case here a loop through the individual event registries
+    tbb::concurrent_queue<std::string>& new_products = evt_registry->new_products();
     do {
       queue_full = new_products.try_pop(product_name);
       if (queue_full && m_product_indices.count( product_name ) == 1) { // only products with dependencies upon need to be announced to other algos

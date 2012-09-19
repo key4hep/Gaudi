@@ -3,6 +3,7 @@
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiKernel/RndmGenerators.h"
 #include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/RegistryEntry.h"
 
 //------------------------------------------------------------------------------
 
@@ -48,6 +49,17 @@
     CPUCruncher& operator= ( const CPUCruncher& ) ; // no assignement
     /// The CPU intensive function
     void findPrimes (const double runtime) ; 
+    /// putting data into the event store
+    long int write (DataObject* obj, const std::string& location){
+      return m_event_context->m_registry->add(location,obj);
+    }
+    /// retrieving data from the event store 
+    template < typename T >    
+    T* read(const std::string& path){
+      T* obj = dynamic_cast<T*>( m_event_context->m_registry->find(path)->object());
+      //      Assert(obj, "get():: No valid data at '" + path + "'");
+      return obj;
+    }
 
     double m_avg_runtime ; //Avg Runtime
     double m_var_runtime ; //Variance of Runtime

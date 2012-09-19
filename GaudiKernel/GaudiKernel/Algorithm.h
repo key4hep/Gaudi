@@ -536,6 +536,9 @@ protected:
   /// callback for output level property
   void initOutputLevel(Property& prop);
 
+  // For the concurrency
+  EventContext_shared_ptr m_event_context; ///< Event specific data for multiple event processing
+
 private:
 
   std::string m_name;            ///< Algorithm's name for identification
@@ -581,8 +584,8 @@ private:
   Gaudi::StateMachine::State m_targetState;      ///< Algorithm has been initialized flag
   bool         m_isFinalized;      ///< Algorithm has been finalized flag
 
-  // For the concurrency
-  EventContext_shared_ptr m_event_context; ///< Event specific data for multiple event processing
+  //  // For the concurrency
+  //  EventContext_shared_ptr m_event_context; ///< Event specific data for multiple event processing
 
 
   /// implementation of service method
