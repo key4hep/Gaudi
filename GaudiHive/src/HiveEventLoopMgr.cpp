@@ -74,6 +74,7 @@ HiveEventLoopMgr::HiveEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
   m_evtContext        = 0;
   m_endEventFired     = true;
   m_max_parallel      = 1;
+  m_total_algos_in_flight=0;
   // Declare properties
   declareProperty("HistogramPersistency", m_histPersName = "");
   declareProperty("EvtSel", m_evtsel );
@@ -599,16 +600,15 @@ bool HiveEventLoopMgr::run_parallel(){
   rootRegistry->add(evt_registry);
   evtContext->m_registry = evt_registry;
 
-  // Test the new pool
-//  SmartIF<IAlgManager> algMan(serviceLocator());
+//  // Test the new pool
 //  HiveAlgorithmManager* hivealgman = dynamic_cast<HiveAlgorithmManager*> (algMan.get());
 //  IAlgorithm* tmpalg;
 //  for (ListAlg::iterator ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ){
 //	  const std::string& name = (*ita)->name();
 //	  while( hivealgman->acquireAlgorithm(name,tmpalg) );
-//	  hivealgman->acquireAlgorithm(name,tmpalg,true);
+//	  hivealgman->createAlgorithm(name,tmpalg);
 //  }
-
+//  hivealgman->dump();
   do {
     unsigned int algo_counter(0);
     for (ListAlg::iterator ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
@@ -624,8 +624,10 @@ bool HiveEventLoopMgr::run_parallel(){
         }
         // check whether all requirements/dependencies for the algorithm are fulfilled...
         state_type dependencies_missing = (event_state.state() & m_all_requirements[algo_counter]) ^ m_all_requirements[algo_counter];  
-        // ...and whether the algorithm was already started
-        if ( (dependencies_missing == 0) && (event_state.hasStarted(algo_counter) ) == false && (m_total_algos_in_flight < m_max_parallel )) {
+        // ...and whether the algorithm was already started and it can be started
+        if ( (dependencies_missing == 0) &&
+        	 (event_state.hasStarted(algo_counter) ) == false &&
+        	 (m_total_algos_in_flight < m_max_parallel )) {
           tbb::task* t = new( tbb::task::allocate_root() ) HiveAlgoTask((*ita), &event_state);
           tbb::task::enqueue( *t);
           event_state.algoStarts(algo_counter);
