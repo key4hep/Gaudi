@@ -8,14 +8,12 @@
 // Framework include files
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/DataSvc.h"
 
 // tbb include files
 #include "tbb/concurrent_vector.h"
-//#include "tbb/mutex.h"
 
 // Forward declarations
-//class DataSvc;
+class DataSvc;
 class DataObject;
 class IDataProviderSvc;
 class IOpaqueAddress;
@@ -56,14 +54,14 @@ namespace DataSvcHelpers   {
     /// Pointer to object
     DataObject*       m_pObject;
     /// Pointer to hosting transient store
-    DataSvc* m_pDataProviderSvc;
+    IDataProviderSvc* m_pDataProviderSvc;
   public:
     /// Store of leaves
     Store             m_store;
-    /// Path name
-    std::string       m_path;
     /// String containing full path of the object (volatile)
     std::string       m_fullpath;
+    /// Path name
+    std::string       m_path;
 
   private:
     /** The following entries serve two aspects:
@@ -84,7 +82,7 @@ namespace DataSvcHelpers   {
     /// Set new parent pointer
     void setParent(RegistryEntry* pParent);
     /// Set the transient data store
-    void setDataSvc(DataSvc* s)    {
+    void setDataSvc(IDataProviderSvc* s)    {
       m_pDataProviderSvc = s;
     }
     /// Pointer to parent registry entry

@@ -8,9 +8,6 @@
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 
-// tbb includes
-#include "tbb/concurrent_queue.h"
-
 // Forward declarations
 // Incident service
 class IIncidentSvc;
@@ -60,9 +57,6 @@ protected:
   IConversionSvc*                 m_dataLoader;
   /// Pointer to incident service
   IIncidentSvc*                   m_incidentSvc;
-  // TODO: *extremely dirty hack*
-  // this should in the ideal world go elsewhere
-  tbb::concurrent_queue<std::string> m_publishedData;
   /// Items to be pre-loaded
   LoadItems                       m_preLoads;
   /// Allow forced creation of default leaves on registerObject
@@ -81,7 +75,6 @@ protected:
   std::string                     m_accessName;
   /// Name of the data fault incident
   std::string                     m_faultName;
-
 public:
 
   /// IDataManagerSvc: Accessor for root event CLID
@@ -379,10 +372,6 @@ public:
 
   /// Service initialization
   virtual StatusCode finalize();
-
-  virtual tbb::concurrent_queue<std::string>& new_products() {
-    return m_publishedData;
-  }
 
   /// Standard Constructor
   DataSvc( const std::string& name, ISvcLocator* svc );
