@@ -158,15 +158,22 @@ public:
 		  fatal() << "Error in acquiring " << name
 		          << ": algorithm does not exist in HiveAlgorithmManager!" << endmsg;
 
+	  return acquireAlgorithm(index, algo, createIfAbsent);
+
+  }
+
+  StatusCode acquireAlgorithm(unsigned int index,IAlgorithm*& algo, bool createIfAbsent=false){
+
 	  StatusCode sc = m_alg_conc_queues[index]->try_pop(algo);
 	  if (sc.isSuccess())
 		  return sc;
 
 	  if (createIfAbsent){
-		  return createAlgorithm(name,algo);
+		  return createAlgorithm(index,algo);
 	  }
 
       return StatusCode::FAILURE;
+
   }
 
   void releaseAlgorithm(const std::string& name,IAlgorithm*& algo){
@@ -174,6 +181,11 @@ public:
 	  if ( index < 0 )
 		  fatal() << "Error in releasing " << name
 		          << ": algorithm does not exist in HiveAlgorithmManager!" << endmsg;
+	  releaseAlgorithm(index, algo);
+  }
+
+  void releaseAlgorithm(const unsigned int index,IAlgorithm*& algo){
+
 	  m_alg_conc_queues[index]->push(algo);
   }
 
