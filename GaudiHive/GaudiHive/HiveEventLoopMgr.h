@@ -7,11 +7,11 @@
 
 // std includes
 #include <bitset>
+#include <atomic>
 
 // include tbb
 #include "tbb/concurrent_vector.h"
 #include "tbb/concurrent_queue.h"
-#include "tbb/atomic.h"
 
 // typedef for the event and algo state
 typedef std::bitset<1000> state_type;
@@ -69,7 +69,7 @@ protected:
   /// Register of input products
   std::map<std::string,unsigned int> m_product_indices;
   /// Total number of algos in flight across all events
-  tbb::atomic<unsigned int> m_total_algos_in_flight;
+  std::atomic_uint m_total_algos_in_flight;
   /// Total number of algos
   unsigned int  m_numberOfAlgos;
   bool m_DumpQueues;
