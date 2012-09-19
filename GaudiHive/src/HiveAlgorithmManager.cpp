@@ -49,17 +49,16 @@ StatusCode HiveAlgorithmManager::m_addAlgorithm(IAlgorithm* alg,
 												const std::string& name,
 												const std::string& type ){
 
-	// If queue exist, push into it
-	const int index = m_name_type_collection.getIndex(alg->name());
-	if (index>=0)
-		return addAlgorithm(alg);
 
-	// If not
-	m_alg_conc_queues.push_back(new AlgConcQueue());
-	m_name_type_collection.add(name,type);
-	const unsigned int last = m_name_type_collection.size()-1;
+	int index = m_name_type_collection.getIndex(alg->name());
 
-	m_alg_conc_queues[last]->push(alg);
+	if (index<0){ // Queue not there
+		m_alg_conc_queues.push_back(new AlgConcQueue());
+		m_name_type_collection.add(name,type);
+		index = m_name_type_collection.size()-1;
+	}
+
+	m_alg_conc_queues[index]->push(alg);
 	return StatusCode::SUCCESS;
 }
 
@@ -69,7 +68,6 @@ StatusCode HiveAlgorithmManager::removeAlgorithm(IAlgorithm* alg) {
 
   // Get Queue index
   const int index = m_name_type_collection.getIndex(alg->name());
-
   return m_removeAlgorithm(index);
 }
 // removeAlgorithm
@@ -304,5 +302,6 @@ void HiveAlgorithmManager::dump() const{
 		}
 		qcounter++;
 	}
+	always() << "Dumped" << endmsg;
 
 }

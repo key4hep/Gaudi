@@ -116,6 +116,14 @@ public:
   StatusCode createAlgorithm(const std::string& algname,
                                IAlgorithm*& algorithm);
 
+  /// Bootstrap an algorithm from its index
+  StatusCode createAlgorithm(const unsigned int index,
+                               IAlgorithm*& algorithm){
+	  return createAlgorithm(m_name_type_collection.getType(index),
+			   	   	   	     m_name_type_collection.getName(index),
+			   	   	   	     algorithm);
+  }
+
   /// implementation of IAlgManager::existsAlgorithm
   virtual bool existsAlgorithm(const std::string& name) const;
   /// implementation of IAlgManager::getAlgorithms
