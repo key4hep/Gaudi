@@ -530,25 +530,21 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 				  if ( (dependencies_missing == 0) &&
 						  (event_state->hasStarted(algo_counter) ) == false &&
 						  (m_total_algos_in_flight < m_max_parallel )) {
-					  std::cout << "Launching algo " << algo_counter<< "\n";
-
 					  // Pick the algorithm if available and if not create one!
-					  IAlgorithm* ialgo;
-					  if (m_CloneAlgorithms && !hivealgman->acquireAlgorithm(algo_counter,ialgo))
-						  hivealgman->createAlgorithm(algo_counter,ialgo);
-					  assert(!hivealgman->acquireAlgorithm(algo_counter,ialgo));
+					  IAlgorithm* ialgo=NULL;
+					  if(hivealgman->acquireAlgorithm(algo_counter,ialgo,m_CloneAlgorithms)){
+						  log << MSG::INFO << "Launching algo " << algo_counter<< endmsg;
+						  // Attach context to the algo (a tuple instead of a member?)
+						  Algorithm* algo = dynamic_cast<Algorithm*> (ialgo); // because of old interface
+						  algo->setContext(event_Context);
 
-
-					  // Attach context to the algo (a tuple instead of a member?)
-					  Algorithm* algo = dynamic_cast<Algorithm*> (ialgo); // because of old interface
-					  algo->setContext(event_Context);
-
-					  tbb::task* t = new( tbb::task::allocate_root() ) HiveAlgoTask_v2(ialgo, event_state, this);
-					  tbb::task::enqueue( *t);
-					  event_state->algoStarts(algo_counter);
-					  // Decremented by the task which before exiting calls HiveEventLoopMgr_v2::taskFinished
-					  ++m_total_algos_in_flight;
-					  log << MSG::INFO << "Algos in flight: " <<  m_total_algos_in_flight << endmsg;
+						  tbb::task* t = new( tbb::task::allocate_root() ) HiveAlgoTask_v2(ialgo, event_state, this);
+						  tbb::task::enqueue( *t);
+						  event_state->algoStarts(algo_counter);
+						  // Decremented by the task which before exiting calls HiveEventLoopMgr_v2::taskFinished
+						  ++m_total_algos_in_flight;
+						  log << MSG::INFO << "Algos in flight: " <<  m_total_algos_in_flight << endmsg;
+					  }
 				  }
 
 				  // update the event state with what has been put into the DataSvc
