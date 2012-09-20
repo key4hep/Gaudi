@@ -9,5 +9,5 @@ find_package(ROOT COMPONENTS Hist RIO)
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(GaudiCommonSvc
                         *.cpp DataSvc/*.cpp HistogramSvc/*.cpp PersistencySvc/*.cpp
-                        LINK_LIBRARIES GaudiKernel Boost ROOT
+                        LINK_LIBRARIES GaudiKernel GaudiHive Boost ROOT
                         INCLUDE_DIRS Boost ROOT AIDA)
