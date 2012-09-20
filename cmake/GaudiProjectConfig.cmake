@@ -403,6 +403,14 @@ macro(_gaudi_use_other_projects)
   You need to call cmake ${hint_message}
 ")
         endif()
+        if(NOT LCG_SYSTEM STREQUAL ${other_project}_heptools_system)
+          message(FATAL_ERROR "Incompatible values of LCG_SYSTEM:
+  ${CMAKE_PROJECT_NAME} -> ${LCG_SYSTEM}
+  ${other_project} ${${other_project}_VERSION} -> ${${other_project}_heptools_system}
+
+  Check your configuration.
+")
+        endif()
         include_directories(${${other_project}_INCLUDE_DIRS})
         set(binary_paths ${${other_project}_BINARY_PATH} ${binary_paths})
         foreach(exported ${${other_project}_EXPORTED_SUBDIRS})
@@ -1530,11 +1538,18 @@ macro(gaudi_generate_project_config_file)
   file(WRITE ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake
 "# File automatically generated: DO NOT EDIT.
 set(${CMAKE_PROJECT_NAME}_heptools_version ${heptools_version})
+set(${CMAKE_PROJECT_NAME}_heptools_system ${LCG_SYSTEM})
 
-if(IS_DIRECTORY \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/\${LCG_platform}/cmake)
-  list(INSERT CMAKE_MODULE_PATH 0 \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/\${LCG_platform}/cmake)
-else()
-  message(FATAL_ERROR \"Cannot find \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/\${LCG_platform}/cmake: platform not supported\")
+set(allowed_platforms \${BINARY_TAG} \${LCG_platform} \${LCG_system})
+set(found FALSE)
+foreach(platform \${allowed_platforms})
+  if(NOT found AND IS_DIRECTORY \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/\${platform}/cmake)
+    list(INSERT CMAKE_MODULE_PATH 0 \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/\${platform}/cmake)
+    set(found TRUE)
+  endif()
+endforeach()
+if(NOT found)
+  message(FATAL_ERROR \"Cannot find cmake directory for any of \${allowed_platforms} in \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea: platform not supported\")
 endif()
 
 set(${CMAKE_PROJECT_NAME}_VERSION ${CMAKE_PROJECT_VERSION})
