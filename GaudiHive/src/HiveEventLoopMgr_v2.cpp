@@ -470,9 +470,19 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 	  // Get the number of events in flight
 	  const unsigned int n_events_in_flight = events_in_flight.size();
 
+	  const unsigned int n_evts_to_process = maxevt -n_processed_events - n_events_in_flight;
+
 	  // Now calculate how many are acquirable
+	  log << MSG::INFO << "Evts in flight: " <<  n_events_in_fligh<< endmsg;
+	  log << MSG::INFO << "Evts processed: " <<  n_processed_events<< endmsg;
+	  log << MSG::INFO << "Evts parallel: " << m_evts_parallel << endmsg;
+
+
 	  unsigned int n_acquirable_events = m_evts_parallel - n_events_in_flight;
-	  log << MSG::DEBUG << "Acquirable Events are " << n_acquirable_events << endmsg;
+	  if (n_acquirable_events > n_evts_to_process)
+		  n_acquirable_events = n_evts_to_process;
+
+	  log << MSG::INFO << "Acquirable Events are " << n_acquirable_events << endmsg;
 	  // TODO Adjust the n_acquirable_events according to the available evts....
 
 	  // Initialisation section ------------------------------------------------
@@ -496,7 +506,7 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 		  // Put a registry entry inside the evt
 		  std::string evtname ("Evt");evtname+=evt_num;
 		  Hive::HiveEventRegistryEntry* evt_registry = new Hive::HiveEventRegistryEntry(evtname,rootRegistry);
-		  std::cout << "Regentry is " << evt_registry << std::endl;
+		  log << MSG::DEBUG << "Regentry is " << evt_registry << endmsg;
 		  rootRegistry->add(evt_registry);
 		  evtContext->m_registry = evt_registry;
 
