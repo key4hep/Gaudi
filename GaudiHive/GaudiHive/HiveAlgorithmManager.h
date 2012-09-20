@@ -37,6 +37,7 @@ class IMessageSvc;
     TODO:
     1) Make the mechanism to retrieve algorithms more efficient than string
     matching. Maybe hashing?
+    2) Unify names, types and queues in the same container class / collection?
 */
 
 constexpr unsigned int ALG_NUM = 1000;
@@ -160,16 +161,14 @@ public:
 	  return acquireAlgorithm(index, algo, createIfAbsent);
   }
 
-  StatusCode acquireAlgorithm(unsigned int index,IAlgorithm*& algo, bool createIfAbsent=false){
+  StatusCode acquireAlgorithm(const unsigned int index,IAlgorithm*& algo, bool createIfAbsent=false){
 
 	  StatusCode sc = m_alg_conc_queues[index]->try_pop(algo);
-	  if (sc.isSuccess())
-		  return sc;
 
-	  if (createIfAbsent)
+	  if (createIfAbsent && !sc.isSuccess())
 		  return createAlgorithm(index,algo);
 
-      return StatusCode::FAILURE;
+      return sc;
 
   }
 
