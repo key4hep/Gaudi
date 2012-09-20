@@ -159,8 +159,7 @@ StatusCode HiveAlgorithmManager::createAlgorithm( const std::string& algtype,
 }
 
 SmartIF<IAlgorithm>& HiveAlgorithmManager::algorithm(const Gaudi::Utils::TypeNameString &typeName, const bool createIf) {
-  std::cout << "[HiveAlgorithmManager::algorithm]\n";
-  // Get Queue index
+    // Get Queue index
   const int index = m_name_type_collection.getIndex(typeName.name());
 
   // If there and queue not empty, return first
