@@ -11,6 +11,7 @@
 #include "GaudiKernel/DataSvc.h"
 
 // tbb include files
+#include "tbb/concurrent_queue.h"
 #include "tbb/concurrent_vector.h"
 
 // Forward declarations

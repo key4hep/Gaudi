@@ -178,9 +178,6 @@ long DataSvcHelpers::RegistryEntry::remove ( const std::string& nam )  {
 
 /// Internal method to add entries
 DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_add(const std::string& nam)    {
-  RegistryEntry* tmp(0);
-  { 
-  //  tbb::mutex::scoped_lock lock(m_mutex);
   if ( nam[0] != SEPARATOR )   {
     std::string path = nam;
     path.insert(path.begin(), SEPARATOR);
@@ -199,9 +196,7 @@ DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_add(const std::s
       return 0;
     }
   }
-  tmp = new RegistryEntry( nam, this );
-  }
-  return tmp;
+  return new RegistryEntry( nam, this );
 }
 
 ///Add object to the container
@@ -209,10 +204,7 @@ long DataSvcHelpers::RegistryEntry::add( IRegistry* obj )    {
   try   {
     RegistryEntry* pEntry = CAST_REGENTRY(RegistryEntry*, obj);
     pEntry->setDataSvc(m_pDataProviderSvc);
-    {
-      //   tbb::mutex::scoped_lock lock(m_mutex);
     m_store.push_back(pEntry);
-    }
     pEntry->setParent(this);
     if ( !pEntry->isSoft() && pEntry->address() != 0 )   {
       pEntry->address()->setRegistry(pEntry);
@@ -266,9 +258,7 @@ IRegistry* DataSvcHelpers::RegistryEntry::i_find( const IRegistry* obj )  const 
 
 /// Find identified leaf in this registry node
 DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find(const std::string& path)   const    {
-  {
-    //    tbb::mutex::scoped_lock lock(m_mutex); 
- if ( path[0] != SEPARATOR )    {
+  if ( path[0] != SEPARATOR )    {
     std::string thePath = path;
     thePath.insert(thePath.begin(), SEPARATOR);
     return i_find(thePath);
@@ -314,7 +304,6 @@ DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find(const std::
     }
   }
   return 0;
-}
 }
 
 /// Find identified leaf in this registry node
