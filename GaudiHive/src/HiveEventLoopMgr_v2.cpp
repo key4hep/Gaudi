@@ -468,7 +468,9 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
   while (maxevt == -1 ? true : n_processed_events<maxevt){// TODO Fix the condition in case of -1
 
 	  const unsigned int n_events_in_flight = events_in_flight.size();
+
 	  const unsigned int n_evts_to_process = maxevt - n_processed_events - n_events_in_flight;
+
 
 	  unsigned int n_acquirable_events = m_evts_parallel - n_events_in_flight;
 	  if (n_acquirable_events > n_evts_to_process)
