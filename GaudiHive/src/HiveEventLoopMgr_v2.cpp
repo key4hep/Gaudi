@@ -473,8 +473,8 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 	  const unsigned int n_evts_to_process = maxevt -n_processed_events - n_events_in_flight;
 
 	  // Now calculate how many are acquirable
-	  log << MSG::INFO << "Evts in flight: " <<  n_events_in_fligh<< endmsg;
-	  log << MSG::INFO << "Evts processed: " <<  n_processed_events<< endmsg;
+	  log << MSG::INFO << "Evts in flight: " <<  n_events_in_flight << endmsg;
+	  log << MSG::INFO << "Evts processed: " <<  n_processed_events << endmsg;
 	  log << MSG::INFO << "Evts parallel: " << m_evts_parallel << endmsg;
 
 
