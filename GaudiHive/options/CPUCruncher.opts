@@ -13,13 +13,10 @@ EventDataSvc.RootCLID    =    1;
 //--------------------------------------------------------------
 
 // Set output level threshold 2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
-MessageSvc.OutputLevel     =  4;
+MessageSvc.OutputLevel     =  3;
 
 ApplicationMgr.TopAlg += { "CPUCruncher/Test1",
-                           "CPUCruncher/Test2",
-                           "CPUCruncher/Test3",
-                           "CPUCruncher/Test4",
-                           "CPUCruncher/Test5"};
+                           "CPUCruncher/Test2"};
 Test1.varRuntime=.1;
 Test1.avgRuntime=.5;
 
@@ -29,27 +26,20 @@ Test1.Outputs={"collA","collB"};
 Test2.Inputs={"collA"};
 Test2.Outputs={"collC"};
 
-Test3.Inputs={"collB","collC"};
-Test3.Outputs={"collD"};
 
-Test4.Inputs={"collA"};
-Test4.Outputs={"collE"};
-
-Test5.Inputs={"collB"};
-Test5.Outputs={};
 
 //--------------------------------------------------------------
 // Event related parameters
 //--------------------------------------------------------------
-ApplicationMgr.EvtMax    = 2;   // events to be processed (default is 10)
+ApplicationMgr.EvtMax    = 10;   // events to be processed (default is 10)
 ApplicationMgr.EvtSel   = "NONE"; // do not use any event input
 ApplicationMgr.HistogramPersistency = "NONE";
 ApplicationMgr.StatusCodeCheck = true ;
 ApplicationMgr.EventLoop = "HiveEventLoopMgr_v2";
 
-HiveEventLoopMgr_v2.MaxAlgosParallel = 5;
-HiveEventLoopMgr_v2.MaxEventsParallel = 1;
-HiveEventLoopMgr_v2.NumThreads = 5;
-HiveEventLoopMgr_v2.CloneAlgorithms = false;
-HiveEventLoopMgr_v2.DumpQueues = true;
+HiveEventLoopMgr_v2.MaxAlgosParallel = 10;
+HiveEventLoopMgr_v2.MaxEventsParallel = 2;
+HiveEventLoopMgr_v2.NumThreads = 20;
+HiveEventLoopMgr_v2.CloneAlgorithms = true;
+HiveEventLoopMgr_v2.DumpQueues = false;
 

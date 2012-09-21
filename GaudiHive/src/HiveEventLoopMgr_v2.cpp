@@ -428,24 +428,16 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
   // Collapse executeEvent and run_parallel in the same method
   // TODO _very_ sporty on conditions and checks!!
 
+  typedef std::tuple<EventContext*,EventSchedulingState*> contextSchedState_tuple;
+  typedef DataSvcHelpers::RegistryEntry regEntry;
+
   MsgStream log(msgSvc(), name());
 
   log << MSG::INFO << "Running with " << m_evts_parallel << " parallel events and "
 	  << m_max_parallel << " algorithms." << endmsg;
 
-  DataObject*       pObject = 0;
-  StatusCode        sc(StatusCode::SUCCESS, true);
-
   // Reset the application return code.
   Gaudi::setAppReturnCode(m_appMgrProperty, Gaudi::ReturnCode::Success, true).ignore();
-
-  // The loop on events which considers several events simultaneously
-  // Algorithms are scheduled for different events on the same footing
-  // To be made members
-
-  // Maybe too many jumps in memory: deque? vector?
-  typedef std::tuple<EventContext*,EventSchedulingState*> contextSchedState_tuple;
-  std::list<contextSchedState_tuple> events_in_flight;
 
   // Lambda to check if an event has finished
   auto has_finished = [] // acquire nothing
@@ -455,7 +447,7 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
   int n_processed_events = 0;
 
   // Create the root event into which we put all events
-  sc = m_evtDataMgrSvc->setRoot ("/Event", new DataObject());
+  StatusCode sc = m_evtDataMgrSvc->setRoot ("/Event", new DataObject());
   if( !sc.isSuccess() )  {
     warning() << "Error declaring event root DataObject" << endmsg;
   }
@@ -464,143 +456,135 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
   SmartIF<IAlgManager> algMan(serviceLocator());
   HiveAlgorithmManager* hivealgman = dynamic_cast<HiveAlgorithmManager*> (algMan.get());
 
+  // Retrieve the event (even outside the loop?)
+  DataObject*       pObject = 0;
+  m_evtDataSvc->retrieveObject("/Event",pObject);
+  regEntry* rootRegistry = dynamic_cast<regEntry*>(pObject->registry()); //TODO: an interface in the evtDataSvc for it would come handy
+
+  // Events in flight
+  std::list<contextSchedState_tuple> events_in_flight;
+
   // Loop until no more evts are there
   while (maxevt == -1 ? true : n_processed_events<maxevt){// TODO Fix the condition in case of -1
 
-	  // Get the number of events in flight
 	  const unsigned int n_events_in_flight = events_in_flight.size();
 
-	  const unsigned int n_evts_to_process = maxevt -n_processed_events - n_events_in_flight;
-
-	  // Now calculate how many are acquirable
-	  log << MSG::INFO << "Evts in flight: " <<  n_events_in_flight << endmsg;
-	  log << MSG::INFO << "Evts processed: " <<  n_processed_events << endmsg;
-	  log << MSG::INFO << "Evts parallel: " << m_evts_parallel << endmsg;
+	  const unsigned int n_evts_to_process = maxevt - n_processed_events - n_events_in_flight;
 
 
 	  unsigned int n_acquirable_events = m_evts_parallel - n_events_in_flight;
 	  if (n_acquirable_events > n_evts_to_process)
 		  n_acquirable_events = n_evts_to_process;
 
+	  log << MSG::INFO << "Evts in flight: " <<  n_events_in_flight << endmsg;
+	  log << MSG::INFO << "Evts processed: " <<  n_processed_events<< endmsg;
+	  log << MSG::INFO << "Evts parallel: " << m_evts_parallel << endmsg;
 	  log << MSG::INFO << "Acquirable Events are " << n_acquirable_events << endmsg;
-	  // TODO Adjust the n_acquirable_events according to the available evts....
 
 	  // Initialisation section ------------------------------------------------
 
-	  // Retrieve the event (even outside the loop?)
-	  m_evtDataSvc->retrieveObject("/Event",pObject);
-	  typedef DataSvcHelpers::RegistryEntry regEntry;
-	  regEntry* rootRegistry = dynamic_cast<regEntry*>(pObject->registry()); //TODO: an interface in the evtDataSvc for it would come handy
-
 	  // Loop on events to be initialised
 	  for (unsigned int offset=0; offset< n_acquirable_events; ++offset){
-		  log << MSG::DEBUG << "Acquiring events and preparing ctxts" << endmsg;
-		  // Prepare the event context.
+
 		  EventContext* evtContext(new EventContext);
-
-		  // Put an evt number inside
 		  const int evt_num =  n_processed_events + offset + n_events_in_flight;
-
 		  evtContext->m_evt_num = evt_num;
 
-		  // Put a registry entry inside the evt
-		  std::string evtname ("Evt");evtname+=evt_num;
+		  std::string evtname ( "Evt_" + std::to_string(evt_num) );
 		  Hive::HiveEventRegistryEntry* evt_registry = new Hive::HiveEventRegistryEntry(evtname,rootRegistry);
-		  log << MSG::DEBUG << "Regentry is " << evt_registry << endmsg;
 		  rootRegistry->add(evt_registry);
 		  evtContext->m_registry = evt_registry;
 
-		  // Now save the context in flight events
 		  EventSchedulingState* event_state = new EventSchedulingState(m_topAlgList.size());
 		  events_in_flight.push_back(std::make_tuple(evtContext,event_state));
 		  log << MSG::INFO << "Event " << evt_num << " created. "
 				  << "Now evts in flight are: " << events_in_flight.size() << endmsg;
+
 	  }// End initialisation loop on acquired events
+
 	  // End initialisation session --------------------------------------------
 
 	  // Scheduling session ----------------------------------------------------
-	  while (events_in_flight.end() ==
-			  find_if(events_in_flight.begin(), events_in_flight.end(),has_finished)){ // loop until at least one evt finished
-		  bool eventfailed=false;
+	  auto in_flight_end = events_in_flight.end();
+	  auto in_flight_begin = events_in_flight.begin();
+	  // loop until at least one evt finished
+	  while (in_flight_end == find_if(in_flight_begin, in_flight_end ,has_finished)){
 
-		  // loop on algorithms indices
-		  for (unsigned int algo_counter=0; algo_counter<m_topAlgList.size(); algo_counter++) {
-			  // loop on events
-			  for (auto& evtContext_evtstate : events_in_flight){
-				  //std::cout << "Loop on evts in flight\n";
-				  // Just to be clear
-				  EventContext*& event_Context = std::get<0>(evtContext_evtstate);
-				  EventSchedulingState*& event_state = std::get<1>(evtContext_evtstate);
+		  for (auto& evtContext_evtstate : events_in_flight){ // loop on evts
 
-				  // check whether all requirements/dependencies for the algorithm are fulfilled...
+			  EventContext*& event_Context = std::get<0>(evtContext_evtstate);
+			  EventSchedulingState*& event_state = std::get<1>(evtContext_evtstate);
+
+			  for (unsigned int algo_counter=0; algo_counter<m_topAlgList.size(); algo_counter++) { // loop on algos
+					  // check whether all requirements/dependencies for the algorithm are fulfilled...
 				  const state_type& algo_requirements = m_all_requirements[algo_counter];
 				  state_type dependencies_missing = (event_state->state() & algo_requirements) ^ algo_requirements;
+
+				  std::cout << "Algo " << algo_counter << " Event " << event_Context->m_evt_num << std::endl;
+				  std::cout << "Dependencies missing: " << (dependencies_missing == 0) << std::endl;
+				  std::cout << "Has Started: " << event_state->hasStarted(algo_counter) << std::endl << std::endl;
 
 				  // ...and whether the algorithm was already started and if it can be started
 				  if ( (dependencies_missing == 0) &&
 						  (event_state->hasStarted(algo_counter) ) == false &&
 						  (m_total_algos_in_flight < m_max_parallel )) {
-					  // Pick the algorithm if available and if not create one!
+					  // Pick the algorithm if available and if not and requested create one
 					  IAlgorithm* ialgo=NULL;
 					  if(hivealgman->acquireAlgorithm(algo_counter,ialgo,m_CloneAlgorithms)){
 						  log << MSG::INFO << "Launching algo " << algo_counter<< endmsg;
-						  // Attach context to the algo (a tuple instead of a member?)
-						  Algorithm* algo = dynamic_cast<Algorithm*> (ialgo); // because of old interface
+						  // Attach context to the algo
+						  Algorithm* algo = dynamic_cast<Algorithm*> (ialgo);
 						  algo->setContext(event_Context);
 
 						  tbb::task* t = new( tbb::task::allocate_root() ) HiveAlgoTask_v2(ialgo, event_state, this);
 						  tbb::task::enqueue( *t);
+
 						  event_state->algoStarts(algo_counter);
-						  // Decremented by the task which before exiting calls HiveEventLoopMgr_v2::taskFinished
 						  ++m_total_algos_in_flight;
+
 						  log << MSG::INFO << "Algos in flight: " <<  m_total_algos_in_flight << endmsg;
 					  }
 				  }
 
-				  // update the event state with what has been put into the DataSvc
-				  bool queue_full(false);
-				  std::string product_name;
+			  }// end loop on algo indices
+			  // update the event state with what has been put into the DataSvc
+			  bool queue_full(false);
+			  std::string product_name;
 
-				  Hive::HiveEventRegistryEntry* hiveregistryentry= dynamic_cast<Hive::HiveEventRegistryEntry*>(event_Context->m_registry);
-				  tbb::concurrent_queue<std::string>& new_products = hiveregistryentry->new_products();
-				  do {
-					  queue_full = new_products.try_pop(product_name);
-					  if (queue_full && m_product_indices.count( product_name ) == 1) { // only products with dependencies upon need to be announced to other algos
-						  event_state->update_state(m_product_indices[product_name]);
-						  std::cout << "State updated" << std::endl;
-					  }
-				  } while (queue_full);
-			  }// end loop on evts in flight
-		  }// end loop on algo indices
-
-		  // Call the execute() method of all output streams
-		  for (ListAlg::iterator ito = m_outStreamList.begin(); ito != m_outStreamList.end(); ito++ ) {
-			  (*ito)->resetExecuted();
-			  StatusCode sc;
-			  sc = (*ito)->sysExecute();
-			  if (UNLIKELY(!sc.isSuccess())) {
-				  warning() << "Execution of output stream " << (*ito)->name() << " failed" << endmsg;
-				  eventfailed = true;
-			  }
-		  }
+			  Hive::HiveEventRegistryEntry* hiveregistryentry= dynamic_cast<Hive::HiveEventRegistryEntry*>(event_Context->m_registry);
+			  tbb::concurrent_queue<std::string>& new_products = hiveregistryentry->new_products();
+			  do {
+				  queue_full = new_products.try_pop(product_name);
+				  if (queue_full && m_product_indices.count( product_name ) == 1) { // only products with dependencies upon need to be announced to other algos
+					  event_state->update_state(m_product_indices[product_name]);
+				  }
+			  } while (queue_full);
+		  }// end loop on evts in flight
+		  if(m_DumpQueues && hivealgman) hivealgman->dump();
 	  }// end loop until at least one evt in flight finished
 
 	  // Remove from the in flight events the finished ones
-	  std::list<contextSchedState_tuple>::iterator it;
-	  for (it=events_in_flight.begin();it!=events_in_flight.end();++it){
+	  std::list<contextSchedState_tuple>::iterator it=events_in_flight.begin();
+	  while (it!=events_in_flight.end()){
 		  if (std::get<1>(*it)->hasFinished()){
-			  //			  delete std::get<0>(*it);
-			  //			  delete std::get<1>(*it);
-			  events_in_flight.erase(it++) ; // remove the value of it as it was before the increment
-			  n_processed_events++;
-			  log << MSG::INFO << "One event finished. Events in fight are "
+			  const unsigned int evt_num = std::get<0>(*it)->m_evt_num;
+			  log << MSG::INFO << "Event "<< evt_num << " finished. Events in fight are "
 					  << events_in_flight.size() << ". Processed events are "
 					  <<  n_processed_events << endmsg;
-			  // Some debug
-			  if(m_DumpQueues){
-				  if (hivealgman) hivealgman->dump();
-			  }
 
+			  delete std::get<0>(*it);
+			  delete std::get<1>(*it);
+			  it=events_in_flight.erase(it) ;
+
+			  n_processed_events++;
+
+			  log << MSG::INFO << "Now events in fight are "
+					  << events_in_flight.size() << ". Processed events are "
+					  <<  n_processed_events << endmsg;
+
+			  if(m_DumpQueues && hivealgman) hivealgman->dump();
+		  } else{
+			  ++it;
 		  }
 	  }
 
@@ -805,10 +789,13 @@ bool HiveEventLoopMgr_v2::run_parallel(){
 //------------------------------------------------------------------------------
 
 void HiveEventLoopMgr_v2::taskFinished(IAlgorithm*& algo){
-	--m_total_algos_in_flight;
 	SmartIF<IAlgManager> algMan(serviceLocator());
 	HiveAlgorithmManager* hivealgman = dynamic_cast<HiveAlgorithmManager*> (algMan.get());
+
 	hivealgman->releaseAlgorithm(algo->name(),algo);
+
+	--m_total_algos_in_flight;
+
 	MsgStream log(msgSvc(), name());
 	log << MSG::DEBUG << "Algos in flight: " <<  m_total_algos_in_flight << endmsg;
 }

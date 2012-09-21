@@ -130,7 +130,7 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
   }
 
   logstream  << MSG::ALWAYS << "Runtime will be: "<< runtime << endmsg;
-  logstream  << "Event " <<  getContext()->m_evt_num
+  logstream  << "Start event " <<  getContext()->m_evt_num
 		     << " on pthreadID " << getContext()->m_thread_id  << endmsg;
   
   // get products from the event
@@ -151,6 +151,8 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
     write(new DataObject(), output);
   }
 
+  logstream  << "Finish event " <<  getContext()->m_evt_num
+		     << " on pthreadID " << getContext()->m_thread_id  << endmsg;
   return StatusCode::SUCCESS ;
 }
 
