@@ -165,8 +165,11 @@ public:
 
 	  StatusCode sc = m_alg_conc_queues[index]->try_pop(algo);
 
-	  if (createIfAbsent && !sc.isSuccess())
-		  return createAlgorithm(index,algo);
+	  if (createIfAbsent)
+		  while(!sc.isSuccess()){
+		  createAlgorithm(index,algo);
+		  sc = m_alg_conc_queues[index]->try_pop(algo);
+	  }
 
       return sc;
 
