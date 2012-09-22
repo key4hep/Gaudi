@@ -9,6 +9,7 @@
 #include "GaudiKernel/ComponentManager.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/IAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/StatusCode.h"
 
 #include <string>
@@ -111,7 +112,7 @@ public:
   virtual StatusCode removeAlgorithm(IAlgorithm* alg);
   /// implementation of IAlgManager::createAlgorithm
   virtual StatusCode createAlgorithm(const std::string& algtype, const std::string& algname,
-                                     IAlgorithm*& algorithm, bool managed = false);
+                                     IAlgorithm*& algorithm, bool managed = true);
 
   /// Bootstrap an algorithm from its name
   StatusCode createAlgorithm(const std::string& algname,
@@ -119,10 +120,12 @@ public:
 
   /// Bootstrap an algorithm from its index
   StatusCode createAlgorithm(const unsigned int index,
-                               IAlgorithm*& algorithm){
-	  return createAlgorithm(m_name_type_collection.getType(index),
+                               IAlgorithm*& ialgorithm){
+	  StatusCode sc = createAlgorithm(m_name_type_collection.getType(index),
 			   	   	   	     m_name_type_collection.getName(index),
-			   	   	   	     algorithm);
+			   	   	   	     ialgorithm);
+
+	  return sc;
   }
 
   /// implementation of IAlgManager::existsAlgorithm
