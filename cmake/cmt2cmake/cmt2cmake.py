@@ -62,7 +62,8 @@ CMTParser = makeParser()
 
 # mappings
 ignored_packages = set(["GaudiSys", "GaudiRelease", "GaudiPolicy"])
-data_packages = set(['Det/SQLDDDB', 'FieldMap', 'TCK/HltTCK'])
+data_packages = set(['Det/SQLDDDB', 'FieldMap', 'TCK/HltTCK',
+                     'ChargedProtoANNPIDParam'])
 
 ignore_dep_on_subdirs = set(ignored_packages)
 ignore_dep_on_subdirs.update(data_packages)
@@ -94,9 +95,8 @@ def isProject(path):
     return os.path.isfile(os.path.join(path, "cmt", "project.cmt"))
 
 def projectCase(name):
-    if name.upper() == "DAVINCI":
-        return "DaVinci"
-    return name.capitalize()
+    return {'DAVINCI': 'DaVinci',
+            'LHCB': 'LHCb'}.get(name.upper(), name.capitalize())
 
 def callStringWithIndent(cmd, arglines):
     '''
