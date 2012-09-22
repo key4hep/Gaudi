@@ -50,16 +50,18 @@ StatusCode HiveAlgorithmManager::m_addAlgorithm(IAlgorithm* alg,
 												const std::string& type ){
 
 
+	StatusCode sc;
+
 	int index = m_name_type_collection.getIndex(alg->name());
 
 	if (index<0){ // Queue not there
 		m_alg_conc_queues.push_back(new AlgConcQueue());
-		m_name_type_collection.add(name,type);
+		sc = m_name_type_collection.add(name,type);
 		index = m_name_type_collection.size()-1;
 	}
 
 	m_alg_conc_queues[index]->push(alg);
-	return StatusCode::SUCCESS;
+	return sc;
 }
 
 
@@ -124,8 +126,9 @@ StatusCode HiveAlgorithmManager::createAlgorithm( const std::string& algtype,
       fatal() << "Incompatible interface IAlgorithm version for " << algtype << endmsg;
       return StatusCode::FAILURE;
     }
-    StatusCode rc;
-    m_addAlgorithm(algorithm,algname,algtype);
+    StatusCode rc =m_addAlgorithm(algorithm,algname,algtype);
+    if (!rc.isSuccess())
+    	error() << "Failed to add algorithm: [" << algname << "]" << endmsg;
 
     // this is needed to keep the reference count correct, since isValidInterface(algorithm)
     // implies an increment of the counter by 1
