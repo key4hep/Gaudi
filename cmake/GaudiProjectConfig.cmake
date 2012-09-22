@@ -1511,7 +1511,8 @@ macro(gaudi_generate_project_config_version_file)
     set(vers_id ${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR})
   endif()
 
-  file(WRITE ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}ConfigVersion.cmake
+  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/config)
+  file(WRITE ${CMAKE_BINARY_DIR}/config/${CMAKE_PROJECT_NAME}ConfigVersion.cmake
 "set(PACKAGE_NAME ${CMAKE_PROJECT_NAME})
 set(PACKAGE_VERSION ${vers_id})
 if((PACKAGE_NAME STREQUAL PACKAGE_FIND_NAME)
@@ -1525,7 +1526,7 @@ else()
   set(PACKAGE_VERSION_UNSUITABLE 1)
 endif()
 ")
-  install(FILES ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}ConfigVersion.cmake DESTINATION ${CMAKE_SOURCE_DIR})
+  install(FILES ${CMAKE_BINARY_DIR}/config/${CMAKE_PROJECT_NAME}ConfigVersion.cmake DESTINATION ${CMAKE_SOURCE_DIR})
 endmacro()
 
 #-------------------------------------------------------------------------------
@@ -1535,7 +1536,8 @@ endmacro()
 #-------------------------------------------------------------------------------
 macro(gaudi_generate_project_config_file)
   message(STATUS "Generating ${CMAKE_PROJECT_NAME}Config.cmake")
-  file(WRITE ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake
+  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/config)
+  file(WRITE ${CMAKE_BINARY_DIR}/config/${CMAKE_PROJECT_NAME}Config.cmake
 "# File automatically generated: DO NOT EDIT.
 set(${CMAKE_PROJECT_NAME}_heptools_version ${heptools_version})
 set(${CMAKE_PROJECT_NAME}_heptools_system ${LCG_SYSTEM})
@@ -1561,7 +1563,7 @@ set(${CMAKE_PROJECT_NAME}_USES ${PROJECT_USES})
 
 include(${CMAKE_PROJECT_NAME}PlatformConfig)
 ")
-  install(FILES ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake DESTINATION ${CMAKE_SOURCE_DIR})
+  install(FILES ${CMAKE_BINARY_DIR}/config/${CMAKE_PROJECT_NAME}Config.cmake DESTINATION ${CMAKE_SOURCE_DIR})
 endmacro()
 
 #-------------------------------------------------------------------------------
@@ -1578,7 +1580,9 @@ macro(gaudi_generate_project_platform_config_file)
   get_property(component_libraries GLOBAL PROPERTY COMPONENT_LIBRARIES)
 
   string(REPLACE "\$" "\\\$" project_environment_string "${project_environment}")
-  set(filename ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}PlatformConfig.cmake)
+
+  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/config)
+  set(filename ${CMAKE_BINARY_DIR}/config/${CMAKE_PROJECT_NAME}PlatformConfig.cmake)
   file(WRITE ${filename}
 "# File automatically generated: DO NOT EDIT.
 
@@ -1612,7 +1616,7 @@ foreach(p ${packages})
 endforeach()
 ")
 
-  install(FILES ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}PlatformConfig.cmake DESTINATION cmake)
+  install(FILES ${CMAKE_BINARY_DIR}/config/${CMAKE_PROJECT_NAME}PlatformConfig.cmake DESTINATION cmake)
 endmacro()
 
 #-------------------------------------------------------------------------------
