@@ -72,7 +72,7 @@ tbb::task* HiveAlgoTask_v2::execute() {
 // Standard Constructor
 //--------------------------------------------------------------------------------------------
 HiveEventLoopMgr_v2::HiveEventLoopMgr_v2(const std::string& nam, ISvcLocator* svcLoc)
-: MinimalEventLoopMgr(nam, svcLoc) 
+: MinimalEventLoopMgr(nam, svcLoc)
 {
   m_histoDataMgrSvc   = 0;
   m_histoPersSvc      = 0;
@@ -121,7 +121,7 @@ StatusCode HiveEventLoopMgr_v2::initialize()    {
     DEBMSG << "Error Initializing base class MinimalEventLoopMgr." << endmsg;
     return sc;
   }
-  
+
   find_dependencies();
 
   // Setup access to event data services
@@ -414,6 +414,7 @@ StatusCode HiveEventLoopMgr_v2::executeRun( int maxevt )    {
   StatusCode  sc;
   // initialize the base class
   sc = MinimalEventLoopMgr::executeRun(maxevt);
+  std::cout << "[HiveEventLoopMgr_v2::executeRun] exiting\n" << std::endl;
   return sc;
 }
 
@@ -497,8 +498,6 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 
 		  EventSchedulingState* event_state = new EventSchedulingState(m_topAlgList.size());
 		  events_in_flight.push_back(std::make_tuple(evtContext,event_state));
-		  log << MSG::INFO << "Event " << evt_num << " created. "
-				  << "Now evts in flight are: " << events_in_flight.size() << endmsg;
 
 	  }// End initialisation loop on acquired events
 
@@ -519,10 +518,6 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 					  // check whether all requirements/dependencies for the algorithm are fulfilled...
 				  const state_type& algo_requirements = m_all_requirements[algo_counter];
 				  state_type dependencies_missing = (event_state->state() & algo_requirements) ^ algo_requirements;
-
-				  std::cout << "Algo " << algo_counter << " Event " << event_Context->m_evt_num << std::endl;
-				  std::cout << "Dependencies missing: " << (dependencies_missing == 0) << std::endl;
-				  std::cout << "Has Started: " << event_state->hasStarted(algo_counter) << std::endl << std::endl;
 
 				  // ...and whether the algorithm was already started and if it can be started
 				  if ( (dependencies_missing == 0) &&
@@ -560,7 +555,6 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 				  }
 			  } while (queue_full);
 		  }// end loop on evts in flight
-		  if(m_DumpQueues && hivealgman) hivealgman->dump();
 	  }// end loop until at least one evt in flight finished
 
 	  // Remove from the in flight events the finished ones
@@ -578,10 +572,6 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 
 			  n_processed_events++;
 
-			  log << MSG::INFO << "Now events in fight are "
-					  << events_in_flight.size() << ". Processed events are "
-					  <<  n_processed_events << endmsg;
-
 			  if(m_DumpQueues && hivealgman) hivealgman->dump();
 		  } else{
 			  ++it;
@@ -591,7 +581,7 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 	  // End scheduling session ------------------------------------------------
 
   } // End while loop on events
-
+  std::cout << "Exit from evt loop....\n";
   return StatusCode::SUCCESS;
 
 }
@@ -624,7 +614,7 @@ StatusCode HiveEventLoopMgr_v2::getEventRoot(IOpaqueAddress*& refpAddr)  {
 /// Compute dependencies between the algorithms
 void
 HiveEventLoopMgr_v2::find_dependencies() {
-  
+
     /**
      * This is not very simple, but here you have the reasons:
      * o We input the inputs and outputs as "vectors" in the config as PROPERTIES
@@ -632,7 +622,7 @@ HiveEventLoopMgr_v2::find_dependencies() {
      * o We need to massage them:(
      * We opt for testing the scheduler and then properly change the interfaces.
      */
-    auto tokenize_gaudi_string_vector = 
+    auto tokenize_gaudi_string_vector =
       [] (std::string s) -> const std::vector<std::string> {
         for (const char c: {'\'',']','['})
           replace(s.begin(), s.end(), c, ' ');
@@ -648,33 +638,33 @@ HiveEventLoopMgr_v2::find_dependencies() {
           tokens.push_back(tmp);
         return tokens;
         };
-        
-    auto get_algo_collections = 
+
+    auto get_algo_collections =
      [tokenize_gaudi_string_vector] (IAlgorithm* algo, const std::string & type) -> const std::vector<std::string> {
        // This is how you can get the properties from the Ialgo and not the algo!
        SmartIF<IProperty> algo_properties(algo);
        return tokenize_gaudi_string_vector (algo_properties->getProperty(type).toString());
       };
 
-    // the lambdas above will disappear ----------------- 
-      
+    // the lambdas above will disappear -----------------
+
     const unsigned int n_algos = m_topAlgList.size();
     std::vector<state_type> all_requirements(n_algos);
-   
+
     // Let's loop through all algos and their required inputs
-    unsigned int algo_counter(0); 
+    unsigned int algo_counter(0);
     unsigned int input_counter(0);
     for (IAlgorithm* algo: m_topAlgList) {
       const std::vector<std::string>& inputs = get_algo_collections(algo,"Inputs");
       state_type requirements(0);
       for (const std::string& input: inputs){
-	std::pair<std::map<std::string,unsigned int>::iterator,bool> ret;
+    	std::pair<std::map<std::string,unsigned int>::iterator,bool> ret;
         ret = m_product_indices.insert(std::pair<std::string, unsigned int>("/Event/"+input,input_counter));
         // insert successful means == wasn't known before. So increment counter
         if (ret.second==true) {
           ++input_counter;
         };
-        // in any case the return value holds the proper product index 
+        // in any case the return value holds the proper product index
         requirements[ret.first->second] = true;
       }
       all_requirements[algo_counter] = requirements;
@@ -682,10 +672,10 @@ HiveEventLoopMgr_v2::find_dependencies() {
     }
     m_numberOfAlgos = algo_counter;
     m_all_requirements = all_requirements;
-}  
+}
 
 //--------------------------------------------------------------------------------------------
-// bool run_parallel 
+// bool run_parallel
 //--------------------------------------------------------------------------------------------
 bool HiveEventLoopMgr_v2::run_parallel(){
   // Prepare the event context.
@@ -702,7 +692,7 @@ bool HiveEventLoopMgr_v2::run_parallel(){
   bool eventfailed = false;
   // Create object containing all scheduling specific information
   // for a single event
-  // TODO: will have to be transformed into a vector of these states 
+  // TODO: will have to be transformed into a vector of these states
   // for multi-event case.
   EventSchedulingState event_state(m_topAlgList.size());
 
@@ -738,7 +728,7 @@ bool HiveEventLoopMgr_v2::run_parallel(){
           break;
         }
         // check whether all requirements/dependencies for the algorithm are fulfilled...
-        state_type dependencies_missing = (event_state.state() & m_all_requirements[algo_counter]) ^ m_all_requirements[algo_counter];  
+        state_type dependencies_missing = (event_state.state() & m_all_requirements[algo_counter]) ^ m_all_requirements[algo_counter];
         // ...and whether the algorithm was already started and it can be started
         if ( (dependencies_missing == 0) &&
         	 (event_state.hasStarted(algo_counter) ) == false &&
@@ -766,7 +756,7 @@ bool HiveEventLoopMgr_v2::run_parallel(){
         warning() << "Execution of algorithm " << (*ita)->name() << " failed" << endmsg;
         eventfailed = true;
       }
-    }  
+    }
 
     // update the event state with what has been put into the DataSvc
     bool queue_full(false);
@@ -777,9 +767,9 @@ bool HiveEventLoopMgr_v2::run_parallel(){
     do {
       queue_full = new_products.try_pop(product_name);
       if (queue_full && m_product_indices.count( product_name ) == 1) { // only products with dependencies upon need to be announced to other algos
-        event_state.update_state(m_product_indices[product_name]); 
+        event_state.update_state(m_product_indices[product_name]);
       }
-    } while (queue_full);  
+    } while (queue_full);
 
   } while (!event_state.hasFinished());
 
