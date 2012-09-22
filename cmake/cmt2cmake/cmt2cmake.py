@@ -85,7 +85,8 @@ known_subdirs = shelve.open(_shelve_file)
 
 def extName(n):
     mapping = {'Reflex': 'ROOT',
-               'Python': 'PythonLibs'}
+               'Python': 'PythonLibs',
+               'neurobayes_expert': 'NeuroBayesExpert'}
     return mapping.get(n, n)
 
 def isPackage(path):
