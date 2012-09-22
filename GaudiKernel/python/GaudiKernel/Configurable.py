@@ -568,6 +568,16 @@ class Configurable( object ):
 
         return props
 
+    def getPropertiesWithDescription( self ):
+        """Get all properties with their description string as { name : (value, desc) }."""
+        props = {}
+        for name, proxy in self._properties.items():
+            try:
+                props[ name ] = ( proxy.__get__( self ), proxy.__doc__)
+            except AttributeError:
+                props[ name ] = ( Configurable.propertyNoValue, proxy.__doc__)
+        return props        
+
     def getValuedProperties( self ):
         props = {}
         for name, proxy in self._properties.items():
