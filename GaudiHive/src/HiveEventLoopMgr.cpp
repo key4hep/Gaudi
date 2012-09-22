@@ -18,7 +18,7 @@
 
 // For concurrency
 #include "GaudiHive/HiveEventLoopMgr.h"
-#include "GaudiHive/HiveAlgorithmManager.h"
+#include "GaudiKernel/HiveAlgorithmManager.h"
 #include "GaudiHive/EventSchedulingState.h"
 #include "HiveEventRegistryEntry.h"
 

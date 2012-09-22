@@ -15,5 +15,10 @@ gaudi_add_module(GaudiCoreSvc
                  IncidentSvc/*.cpp
                  JobOptionsSvc/*.cpp
                  MessageSvc/*.cpp
-                 LINK_LIBRARIES GaudiKernel GaudiHive Boost TBB
-                 INCLUDE_DIRS TBB ../GaudiHive)
+                 LINK_LIBRARIES GaudiKernel Boost TBB GaudiCoreSvcHive
+                 INCLUDE_DIRS TBB )
+
+gaudi_add_library(GaudiCoreSvcHive Hive/*.cpp
+                  LINK_LIBRARIES GaudiKernel Boost TBB
+                  INCLUDE_DIRS TBB
+                  NO_PUBLIC_HEADERS)

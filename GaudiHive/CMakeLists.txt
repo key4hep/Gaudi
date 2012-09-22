@@ -10,5 +10,5 @@ find_package(TBB)
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(GaudiHive
                         *.cpp 
-                        LINK_LIBRARIES GaudiKernel Boost ROOT TBB GaudiAlgLib
+                        LINK_LIBRARIES GaudiKernel Boost ROOT TBB GaudiAlgLib GaudiCoreSvcHive
                         INCLUDE_DIRS Boost ROOT AIDA TBB)

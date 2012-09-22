@@ -1,7 +1,7 @@
 // $Id: HiveAlgorithmManager.cpp,v 1.11 2008/10/20 20:58:10 marcocle Exp $
 
 // Include files
-#include "GaudiHive/HiveAlgorithmManager.h"
+#include "GaudiKernel/HiveAlgorithmManager.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/AlgFactory.h"

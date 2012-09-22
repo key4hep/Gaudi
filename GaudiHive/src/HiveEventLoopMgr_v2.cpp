@@ -19,7 +19,7 @@
 
 // For concurrency
 #include "GaudiHive/HiveEventLoopMgr_v2.h"
-#include "GaudiHive/HiveAlgorithmManager.h"
+#include "GaudiKernel/HiveAlgorithmManager.h"
 #include "GaudiHive/EventSchedulingState.h"
 #include "HiveEventRegistryEntry.h"
 

@@ -26,7 +26,7 @@
 
 #include "GaudiCoreSvcVersion.h"
 
-#include "GaudiHive/HiveAlgorithmManager.h"
+#include "GaudiKernel/HiveAlgorithmManager.h"
 
 using System::getEnv;
 using System::isEnvSet;
