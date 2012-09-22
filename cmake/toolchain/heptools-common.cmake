@@ -203,6 +203,8 @@ macro(LCG_prepare_paths)
   set(Boost_NO_BOOST_CMAKE ON)
   set(Boost_NO_SYSTEM_PATHS ON)
 
+  set(pyanalysis_native_version ${pyanalysis_config_version}_python${Python_config_version_twodigit})
+
   set(pytools_native_version ${pytools_config_version}_python${Python_config_version_twodigit})
 
   set(QMtest_native_version ${QMtest_config_version}_python${Python_config_version_twodigit})

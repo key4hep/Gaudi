@@ -6,6 +6,7 @@ find_package(AIDA)
 find_package(Boost COMPONENTS system filesystem)
 find_package(ROOT COMPONENTS Hist RIO)
 find_package(TBB)
+find_package(pyanalysis)
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(GaudiHive
