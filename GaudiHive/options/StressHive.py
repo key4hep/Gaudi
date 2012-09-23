@@ -2,7 +2,7 @@
 
 from Gaudi.Configuration import *
 # ============================================================================
-from Configurables import GaudiExamplesCommonConf, CPUCruncher,HiveEventLoopMgr
+from Configurables import GaudiExamplesCommonConf, CPUCruncher,HiveEventLoopMgr_v2
 #GaudiExamplesCommonConf()
 # ============================================================================
 
@@ -24,8 +24,11 @@ for i in xrange(number_of_algos):
 # ============================================================================
 
 # Setup the Event Loop Manager
-evtloop = HiveEventLoopMgr()
-evtloop.MaxAlgosParallel = number_of_threads;
+evtloop = HiveEventLoopMgr_v2()
+evtloop.MaxEventsParallel = number_of_threads
+evtloop.NumThreads = number_of_threads
+evtloop.CloneAlgorithms = True
+evtloop.DumpQueues = False
 
 # And the Application Manager
 

@@ -1,6 +1,6 @@
 from Gaudi.Configuration import *
 # ============================================================================
-from Configurables import GaudiExamplesCommonConf, CPUCruncher,HiveEventLoopMgr
+from Configurables import GaudiExamplesCommonConf, CPUCruncher,HiveEventLoopMgr_v2
 #GaudiExamplesCommonConf()
 # ============================================================================     
 
@@ -74,19 +74,26 @@ def load_brunel_scenario(filename):
   return all_algos
         
 
-number_of_threads = 10
+n_threads = 10
+n_parallel_events = 10
+n_parallel_algorithms = 10
+
 crunchers = load_brunel_scenario("Brunel.TES.trace.log")
 
 # Setup the Event Loop Manager
-evtloop = HiveEventLoopMgr()
-evtloop.MaxAlgosParallel = number_of_threads;
+evtloop = HiveEventLoopMgr_v2()
+evtloop.MaxAlgosParallel = n_threads
+evtloop.MaxEventsParallel = n_parallel_events
+evtloop.NumThreads = n_parallel_algorithms
+evtloop.CloneAlgorithms = True
+evtloop.DumpQueues = False
 
 # And the Application Manager
 
 app = ApplicationMgr()
 app.TopAlg = crunchers
 app.EvtSel = "NONE" # do not use any event input
-app.EvtMax = 10
+app.EvtMax = 100
 app.EventLoop = evtloop;
 app.MessageSvcType = "TBBMessageSvc";
 

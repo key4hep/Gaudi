@@ -161,7 +161,7 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
 StatusCode CPUCruncher::finalize () // the finalization of the algorithm 
 { 
   MsgStream log(msgSvc(), name());
-  log  << MSG::ALWAYS << "I ran." << endmsg;
+  log  << MSG::ALWAYS << "I ran with an average runtime of " << m_avg_runtime << endmsg;
   
   return GaudiAlgorithm::finalize () ;
 }
