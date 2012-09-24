@@ -52,8 +52,8 @@ Hive::HiveRegistryEntry* Hive::HiveEventRegistryEntry::i_add(const std::string& 
     // fully constructed. Here:
     // Wait for the pointer becoming valid
     // Alternatively one could introduce real locks. 
-    while( (*i) == NULL) {} // TODO: maybe make it volatile? 
-    if ( nam == (*i)->name() )  {
+    //while( (*i) == NULL) { std::cout << "Ciao";} // TODO: maybe make it volatile? 
+    if (*i && nam == (*i)->name() )  {
       return 0;
     }
   }
