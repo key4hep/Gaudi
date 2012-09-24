@@ -429,6 +429,27 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
   // Collapse executeEvent and run_parallel in the same method
   // TODO _very_ sporty on conditions and checks!!
 
+	struct timespec loopstart;
+	clock_gettime( CLOCK_REALTIME, &loopstart);
+
+	auto secsFromStart = [&loopstart](timespec& now) {
+		auto timespecdiff = [] (timespec& start, timespec& end) ->timespec
+				{
+				timespec temp;
+				if ((end.tv_nsec-start.tv_nsec)<0) {
+					temp.tv_sec = end.tv_sec-start.tv_sec-1;
+					temp.tv_nsec = 1000000000+end.tv_nsec-start.tv_nsec;
+				} else {
+					temp.tv_sec = end.tv_sec-start.tv_sec;
+					temp.tv_nsec = end.tv_nsec-start.tv_nsec;
+				}
+				return temp;
+				};
+		timespec diff (timespecdiff(loopstart,now));
+		return diff.tv_sec + diff.tv_nsec/1000000000.;
+	};
+
+
   typedef std::tuple<EventContext*,EventSchedulingState*> contextSchedState_tuple;
   typedef DataSvcHelpers::RegistryEntry regEntry;
 
@@ -502,7 +523,7 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 
 			clock_gettime( CLOCK_REALTIME, &now);
 
-		  log << MSG::INFO << "Started event " << evt_num << " at " << now.tv_nsec << endmsg;
+			always()  << "Started event " << evt_num << " at " << secsFromStart(now) << endmsg;
 
 	  }// End initialisation loop on acquired events
 
@@ -571,8 +592,8 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 
 			  log << MSG::INFO << "Event "<< evt_num << " finished. Events in fight are "
 					  << events_in_flight.size() << ". Processed events are "
-					  <<  n_processed_events
-					  << " now is " <<  now.tv_nsec << endmsg;
+					  <<  n_processed_events << endmsg;
+				always() << "Event "<< evt_num << " finished. now is " <<  secsFromStart(now) << endmsg;
 
 			  delete std::get<0>(*it);
 			  delete std::get<1>(*it);

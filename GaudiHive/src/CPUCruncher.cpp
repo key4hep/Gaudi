@@ -134,8 +134,8 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
   runtime = std::fabs(rndmgaus());
   }
 
-  logstream  << MSG::ALWAYS << "Runtime will be: "<< runtime << endmsg;
-  logstream  << "Start event " <<  getContext()->m_evt_num
+  logstream  << MSG::INFO << "Runtime will be: "<< runtime << endmsg;
+  logstream  << MSG::INFO << "Start event " <<  getContext()->m_evt_num
 		     << " on pthreadID " << getContext()->m_thread_id
 		     << " at " << starttime.tv_nsec <<  endmsg;
   
@@ -159,7 +159,7 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
 
 	struct timespec endtime;
 	clock_gettime( CLOCK_REALTIME, &endtime);
-  logstream  << "Finish event " <<  getContext()->m_evt_num
+  logstream << MSG::INFO << "Finish event " <<  getContext()->m_evt_num
 		     << " on pthreadID " << getContext()->m_thread_id
 		     << " at " << endtime.tv_nsec << endmsg;
   return StatusCode::SUCCESS ;
@@ -170,7 +170,7 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
 StatusCode CPUCruncher::finalize () // the finalization of the algorithm 
 { 
   MsgStream log(msgSvc(), name());
-  log  << MSG::ALWAYS << "I ran with an average runtime of " << m_avg_runtime << endmsg;
+  log  << MSG::INFO << "I ran with an average runtime of " << m_avg_runtime << endmsg;
   
   return GaudiAlgorithm::finalize () ;
 }

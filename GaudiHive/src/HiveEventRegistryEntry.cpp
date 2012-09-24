@@ -45,6 +45,7 @@ Hive::HiveRegistryEntry* Hive::HiveEventRegistryEntry::i_add(const std::string& 
     return i_add(path);
   }
   // if this object is already present, this is an error....
+  int count=0;
   for (Store::iterator i = m_store.begin(); i !=  m_store.end(); ++i )   {
     // tbb::concurrent vector is not thread safe when
     // doing insert and iteration at the same time
@@ -52,8 +53,10 @@ Hive::HiveRegistryEntry* Hive::HiveEventRegistryEntry::i_add(const std::string& 
     // fully constructed. Here:
     // Wait for the pointer becoming valid
     // Alternatively one could introduce real locks. 
-    //while( (*i) == NULL) { std::cout << "Ciao";} // TODO: maybe make it volatile? 
-    if (*i && nam == (*i)->name() )  {
+    while( (*i) == NULL) { count++;} // TODO: maybe make it volatile?
+    if (count==64)
+    	std::cout << "." << std::endl;
+    if (nam == (*i)->name() )  {
       return 0;
     }
   }
