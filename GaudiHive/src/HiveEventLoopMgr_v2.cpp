@@ -465,6 +465,7 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
   // Events in flight
   std::list<contextSchedState_tuple> events_in_flight;
 
+	struct timespec now;
   // Loop until no more evts are there
   while (maxevt == -1 ? true : n_processed_events<maxevt){// TODO Fix the condition in case of -1
 
@@ -473,7 +474,7 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 	  const unsigned int n_evts_to_process = maxevt - n_processed_events - n_events_in_flight;
 
 
-	  unsigned int n_acquirable_events = m_evts_parallel - n_events_in_flight;
+	  unsigned int n_acquirable_events = m_evts_parallel - n_events_in_flight ;
 	  if (n_acquirable_events > n_evts_to_process)
 		  n_acquirable_events = n_evts_to_process;
 
@@ -498,6 +499,10 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 
 		  EventSchedulingState* event_state = new EventSchedulingState(m_topAlgList.size());
 		  events_in_flight.push_back(std::make_tuple(evtContext,event_state));
+
+			clock_gettime( CLOCK_REALTIME, &now);
+
+		  log << MSG::INFO << "Started event " << evt_num << " at " << now.tv_nsec << endmsg;
 
 	  }// End initialisation loop on acquired events
 
@@ -562,9 +567,12 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 	  while (it!=events_in_flight.end()){
 		  if (std::get<1>(*it)->hasFinished()){
 			  const unsigned int evt_num = std::get<0>(*it)->m_evt_num;
+			  clock_gettime( CLOCK_REALTIME, &now);
+
 			  log << MSG::INFO << "Event "<< evt_num << " finished. Events in fight are "
 					  << events_in_flight.size() << ". Processed events are "
-					  <<  n_processed_events << endmsg;
+					  <<  n_processed_events
+					  << " now is " <<  now.tv_nsec << endmsg;
 
 			  delete std::get<0>(*it);
 			  delete std::get<1>(*it);
@@ -582,6 +590,9 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 
   } // End while loop on events
   std::cout << "Exit from evt loop....\n";
+
+if(m_DumpQueues && hivealgman) hivealgman->dump();
+
   return StatusCode::SUCCESS;
 
 }

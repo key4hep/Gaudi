@@ -1,5 +1,7 @@
 #include "CPUCruncher.h"
 #include "HiveNumbers.h"
+#include <ctime>
+#include "time.h"
 
 DECLARE_ALGORITHM_FACTORY(CPUCruncher) 
 
@@ -84,6 +86,9 @@ void CPUCruncher::findPrimes (const double runtime)  {
 StatusCode CPUCruncher::execute  ()  // the execution of the algorithm 
 {
 
+	struct timespec starttime;
+	clock_gettime( CLOCK_REALTIME, &starttime);
+
   MsgStream logstream(msgSvc(), name());
 
   double runtime;
@@ -131,7 +136,8 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
 
   logstream  << MSG::ALWAYS << "Runtime will be: "<< runtime << endmsg;
   logstream  << "Start event " <<  getContext()->m_evt_num
-		     << " on pthreadID " << getContext()->m_thread_id  << endmsg;
+		     << " on pthreadID " << getContext()->m_thread_id
+		     << " at " << starttime.tv_nsec <<  endmsg;
   
   // get products from the event
   // for (std::string& input : m_inputs){
@@ -151,8 +157,11 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
     write(new DataObject(), output);
   }
 
+	struct timespec endtime;
+	clock_gettime( CLOCK_REALTIME, &endtime);
   logstream  << "Finish event " <<  getContext()->m_evt_num
-		     << " on pthreadID " << getContext()->m_thread_id  << endmsg;
+		     << " on pthreadID " << getContext()->m_thread_id
+		     << " at " << endtime.tv_nsec << endmsg;
   return StatusCode::SUCCESS ;
 }
 

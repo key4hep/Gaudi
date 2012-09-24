@@ -1,4 +1,4 @@
-#include <ctime>
+
 #include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiKernel/RndmGenerators.h"
