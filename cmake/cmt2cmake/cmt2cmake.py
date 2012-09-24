@@ -114,6 +114,16 @@ def callStringWithIndent(cmd, arglines):
     indent = '\n' + ' ' * (len(cmd) + 1)
     return cmd + '(' + indent.join(filter(None, arglines)) + ')'
 
+def writeToFile(filename, data, log=None):
+    '''
+    Write the generated CMakeLists.txt.
+    '''
+    if log and os.path.exists(filename):
+        log.info('overwriting %s', filename)
+    f = open(filename, "w")
+    f.write(data)
+    f.close()
+
 class Package(object):
     def __init__(self, path, project=None):
         self.path = os.path.realpath(path)
@@ -432,16 +442,17 @@ class Package(object):
 
         return "\n".join(data) + "\n"
 
-    def process(self, force=False):
-        # @FIXME: do something for the package
+    def process(self, overwrite=None):
         cml = os.path.join(self.path, "CMakeLists.txt")
-        if not force and os.path.exists(cml):
+        if ((overwrite == 'force')
+            or (not os.path.exists(cml))
+            or ((overwrite == 'update')
+                and (os.path.getmtime(cml) < os.path.getmtime(self.requirements)))):
+            # write the file
+            data = self.generate()
+            writeToFile(cml, data, self.log)
+        else:
             self.log.warning("file %s already exists", cml)
-            return
-        data = self.generate()
-        f = open(cml, "w")
-        f.write(data)
-        f.close()
 
     def _parseRequirements(self):
         def requirements():
@@ -640,30 +651,36 @@ class Project(object):
         data.append(l)
         return "\n".join(data) + "\n"
 
-    def process(self, force=False):
+    def process(self, overwrite=None):
         # Prepare the project configuration
         cml = os.path.join(self.path, "CMakeLists.txt")
-        if force or not os.path.exists(cml):
+        if ((overwrite == 'force')
+            or (not os.path.exists(cml))
+            or ((overwrite == 'update')
+                and (os.path.getmtime(cml) < os.path.getmtime(self.requirements)))):
             # write the file
             data = self.generate()
-            f = open(cml, "w")
-            f.write(data)
-            f.close()
+            writeToFile(cml, data, logging)
         else:
             logging.warning("file %s already exists", cml)
         # Recurse in the packages
         for p in sorted(self.packages):
-            self.packages[p].process(force)
+            self.packages[p].process(overwrite)
 
 
 def main(args=None):
     from optparse import OptionParser
     parser = OptionParser(usage="%prog [options] [path to project or package]",
                           description="Convert CMT-based projects/packages to CMake (Gaudi project)")
-    parser.add_option("-f", "--force", action="store_true",
+    parser.add_option("-f", "--force", action="store_const",
+                      dest='overwrite', const='force',
                       help="overwrite existing files")
     parser.add_option('--cache-only', action='store_true',
                       help='just update the cache without creating the CMakeLists.txt files.')
+    parser.add_option('-u' ,'--update', action='store_const',
+                      dest='overwrite', const='update',
+                      help='modify the CMakeLists.txt files if they are older than '
+                           'the corresponding requirements.')
     #parser.add_option('--cache-file', action='store',
     #                  help='file to be used for the cache')
 
@@ -690,7 +707,7 @@ def main(args=None):
         root.packages # the cache is updated by instantiating the packages
         # note that we can get here only if root is a project
     else:
-        root.process(opts.force)
+        root.process(opts.overwrite)
 
 
 if __name__ == '__main__':
