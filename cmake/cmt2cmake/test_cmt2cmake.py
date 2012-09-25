@@ -835,6 +835,32 @@ def test_god_6():
 package Test
 version v1r0
 
+apply_pattern god_headers files=../xml/*.xml
+macro TestObj2Doth_GODflags " -s ../src/ "
+    '''
+    pkg = PackWrap("Test", requirements, files={})
+
+    cmakelists = pkg.generate()
+    print cmakelists
+
+    calls = getCalls("include", cmakelists)
+    assert calls
+    l = calls[0].strip()
+    assert l == 'GaudiObjDesc'
+
+    calls = getCalls("god_build_headers", cmakelists)
+    assert len(calls) == 1, "god_build_headers wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l[0] == 'xml/*.xml'
+    assert 'PRIVATE' in l
+    assert 'DESTINTAION' not in l
+
+def test_god_7():
+    requirements = '''
+package Test
+version v1r0
+
 document customdict TestCustomDict ../dict/TestCustomDict.h
 
 apply_pattern god_dictionary files=../xml/*.xml
@@ -1072,6 +1098,7 @@ macro_append Test_python_dependencies " PyQtResource PyQtUIC "
     assert len(calls) == 1, "gen_pyqt_uic wrong count %d" % len(calls)
     l = calls[0].strip().split()
     assert l == ['Test.QtApp.UI', 'Test/QtApp', 'qt_resources/*.ui']
+
 
 from nose.core import main
 main()

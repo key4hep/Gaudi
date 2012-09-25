@@ -37,3 +37,9 @@ def test_macro():
         assert False, 'parsing should have failed: %r' % s
     except ParseException:
         pass
+
+def test_apply_pattern():
+    s = 'apply_pattern component_library library=L0DU'
+    tokens = list(CMTParser.parseString(s))
+    print tokens
+    assert tokens == ['apply_pattern', 'component_library', 'library=L0DU']

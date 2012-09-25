@@ -62,8 +62,8 @@ CMTParser = makeParser()
 
 # mappings
 ignored_packages = set(["GaudiSys", "GaudiRelease", "GaudiPolicy"])
-data_packages = set(['Det/SQLDDDB', 'FieldMap', 'TCK/HltTCK',
-                     'ChargedProtoANNPIDParam'])
+data_packages = set(['Det/SQLDDDB', 'FieldMap', 'TCK/HltTCK', 'TCK/L0TCK',
+                     'ChargedProtoANNPIDParam', 'ParamFiles'])
 
 ignore_dep_on_subdirs = set(ignored_packages)
 ignore_dep_on_subdirs.update(data_packages)
@@ -259,7 +259,11 @@ class Package(object):
             godflags = re.search(r'-s\s*(\S+)', godflags)
             if godflags:
                 god_headers_dest = os.path.normpath('Event/' + godflags.group(1))
-                godargs.append('DESTINATION ' + god_headers_dest)
+                if god_headers_dest == 'src':
+                    # special case
+                    godargs.append('PRIVATE')
+                else:
+                    godargs.append('DESTINATION ' + god_headers_dest)
 
             data.append(callStringWithIndent('god_build_headers', godargs))
             data.append("")
