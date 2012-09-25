@@ -465,18 +465,22 @@ class Package(object):
                 if '#' in l:
                     l = l[:l.find('#')]
                 l = l.strip()
+                # if we have something in the line, extend the statement
                 if l:
                     statement += l
                     if statement.endswith('\\'):
+                        # if the statement requires another line, get the next
                         statement = statement[:-1] + ' '
                         continue
-                    else:
-                        try:
-                            yield list(CMTParser.parseString(statement))
-                        except:
-                            # ignore not know statements
-                            self.log.debug("Failed to parse statement: %r", statement)
-                        statement = ""
+                # either we got something more in the statement or not, but
+                # an empty line after a '\' means ending the statement
+                if statement:
+                    try:
+                        yield list(CMTParser.parseString(statement))
+                    except:
+                        # ignore not know statements
+                        self.log.debug("Failed to parse statement: %r", statement)
+                    statement = ""
 
         for args in requirements():
             cmd = args.pop(0)

@@ -1100,5 +1100,24 @@ macro_append Test_python_dependencies " PyQtResource PyQtUIC "
     assert l == ['Test.QtApp.UI', 'Test/QtApp', 'qt_resources/*.ui']
 
 
+def test_line_cont():
+    requirements = '''
+package Test
+version v1r0
+
+library Test *.ccp
+
+macro TEST "value" \\
+
+apply_pattern component_library library=Test
+    '''
+    pkg = PackWrap("Test", requirements, files={})
+
+    cmakelists = pkg.generate()
+    print cmakelists
+
+    calls = getCalls("gaudi_add_module", cmakelists)
+    assert len(calls) == 1, "gaudi_add_module wrong count %d" % len(calls)
+
 from nose.core import main
 main()
