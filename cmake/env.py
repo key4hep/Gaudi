@@ -28,7 +28,6 @@ def set_env(env, set = [], unset = [], append = [], prepend = []):
     # remove the 'unset' variables
     for n in unset:
         if n in env:
-            log.debug("unset %s", n)
             del env[n]
     # set the requested variables
     env.update(map(parse, set))
@@ -138,7 +137,7 @@ def main():
 
 
     if not cmd:
-        for nv in env.items():
+        for nv in sorted(env.items()):
             print "%s=%s" % nv
         return 0
     else:
