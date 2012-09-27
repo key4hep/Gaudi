@@ -39,6 +39,7 @@ class Environment():
         self.actions['prepend'] = lambda n, v, _: self.prepend(n, v)
         self.actions['set'] = lambda n, v, _: self.set(n, v)
         self.actions['unset'] = lambda n, v, _: self.unset(n, v)
+        self.actions['default'] = lambda n, v, _: self.default(n, v)
         self.actions['remove'] = lambda n, v, _: self.remove(n, v)
         self.actions['remove-regexp'] = lambda n, v, _: self.remove_regexp(n, v)
         self.actions['declare'] = self.declare
@@ -162,9 +163,8 @@ class Environment():
         else:
             a = Variable.Scalar(name, local, report=self.report)
 
-        if self.loadFromSystem and not local:
-            if name in os.environ.keys():
-                a.set(os.environ[name], os.pathsep, environment=self.variables, resolve=False)
+        if self.loadFromSystem and not local and name in os.environ:
+            a.set(os.environ[name], os.pathsep, environment=self.variables, resolve=False)
         self.variables[name] = a
 
     def set(self, name, value):
@@ -178,6 +178,24 @@ class Environment():
             else:
                 self.declare(name, 'list', False)
                 self.set(name, value)
+
+    def default(self, name, value):
+        '''Sets a single variable only if it is not already set!'''
+        name = str(name)
+        if self.asWriter:
+            self._writeVarToXML(name, 'default', value)
+        else:
+            if name not in self.variables:
+                v = Variable.List(name, False, report=self.report)
+                if self.loadFromSystem and name in os.environ:
+                    v.set(os.environ[name], os.pathsep, environment=self.variables)
+                else:
+                    v.set(value, self.separator, environment=self.variables)
+                self.variables[name] = v
+            else:
+                v = self.variables[name]
+                if not v.val:
+                    v.set(value, self.separator, environment=self.variables)
 
     def unset(self, name, value=None):# pylint: disable=W0613
         '''Unsets a single variable to an empty value - overrides any previous value!'''

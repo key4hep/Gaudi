@@ -36,7 +36,7 @@ class List():
 
     def unset(self, value, separator=':', environment=None):# pylint: disable=W0613
         '''Sets the value of the List to empty. Any previous value is overwritten.'''
-        self.val = ''
+        self.val = []
 
 
     def value(self, asString=False, separator=':'):
@@ -229,6 +229,9 @@ class Scalar():
         if self.val == '.':
             self.val = ""
 
+    def unset(self, value, separator=':', environment=None):# pylint: disable=W0613
+        '''Sets the value of the varaible to empty. Any previous value is overwritten.'''
+        self.val = ''
 
     def value(self, asString=False, separator=':'):# pylint: disable=W0613
         '''Returns values of the scalar.'''
@@ -266,17 +269,14 @@ class Scalar():
         else:
             return s
 
-
     def resolveReferences(self, value, environment):
         '''Resolve references inside the scalar.'''
-
         value = self.repl(value, environment or {})
         return value
 
     def search(self, expr):
         '''Searches in scalar`s values for a match'''
-        return re.findall(expr,self.val)
-
+        return re.findall(expr, self.val)
 
     def _changeSlashes(self):
         '''Changes slashes depending on operating system.'''
@@ -286,7 +286,6 @@ class Scalar():
             else:
                 self.val = self.val[3:]
         self.val = os.path.normpath(self.val)
-
 
     def __str__(self):
         return self.val

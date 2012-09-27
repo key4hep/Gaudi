@@ -471,6 +471,29 @@ class Test(unittest.TestCase):
         finally:
             os.chdir(olddir)
 
+    def testDefaults(self):
+        tmp = TempDir({'env.xml':
+'''<?xml version="1.0" ?>
+<env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
+<env:default variable="var1">value1</env:default>
+<env:declare variable="var2" local="true" />
+<env:default variable="var2">test2</env:default>
+</env:config>'''})
+
+        if 'var1' in os.environ:
+            del os.environ['var1']
+        control = Control.Environment()
+        control.loadXML(tmp('env.xml'))
+        self.assertEqual(str(control['var1']), "value1")
+        self.assertEqual(str(control['var2']), "test2")
+
+        os.environ['var1'] = "some_value"
+        control = Control.Environment()
+        control.loadXML(tmp('env.xml'))
+        self.assertEqual(str(control['var1']), "some_value")
+        self.assertEqual(str(control['var2']), "test2")
+
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
