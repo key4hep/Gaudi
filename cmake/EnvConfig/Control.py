@@ -44,17 +44,26 @@ class Environment():
         self.actions['declare'] = self.declare
 
         self.variables = {}
+
         self.loadFromSystem = loadFromSystem
         self.asWriter = useAsWriter
         if useAsWriter:
             self.writer = xmlModule.XMLFile()
             self.startXMLinput()
 
+        # Prepare the stack for the directory of the loaded file(s)
+        self._fileDirStack = []
+        # Note: cannot use self.declare() because we do not want to write out
+        #       the changes to ${.}
+        dot = Variable.Scalar('.', local=True, report=self.report)
+        dot.set('', resolve=False)
+        self.variables['.'] = dot
+
     def _locate(self, filename, caller=None):
         '''
         Find 'filename' in the internal search path.
         '''
-        from os.path import isabs, isfile, join, dirname, normpath
+        from os.path import isabs, isfile, join, dirname, normpath, abspath
         if isabs(filename):
             return filename
         if caller:
@@ -62,8 +71,9 @@ class Environment():
             if isfile(localfile):
                 return localfile
         try:
-            return (f for f in [normpath(join(d, filename))
-                                for d in self.searchPath]
+            return (abspath(f)
+                    for f in [normpath(join(d, filename))
+                              for d in self.searchPath]
                     if isfile(f)).next()
         except StopIteration:
             from errno import ENOENT
@@ -79,7 +89,6 @@ class Environment():
         else:
             return self.variables
 
-
     def var(self, name):
         '''Gets a single variable. If not available then tries to load from system.'''
         if name in self.variables.keys():
@@ -87,8 +96,7 @@ class Environment():
         else:
             return os.environ[name]
 
-
-    def search(self, varName, expr, regExp = False):
+    def search(self, varName, expr, regExp=False):
         '''Searches in a variable for a value.'''
         return self.variables[varName].search(expr, regExp)
 
@@ -208,6 +216,11 @@ class Environment():
         '''Loads XML file for input variables.'''
         XMLfile = xmlModule.XMLFile()
         fileName = self._locate(fileName)
+        dot = self.variables['.']
+        # push the previous value of ${.} onto the stack...
+        self._fileDirStack.append(dot.value())
+        # ... and update the variable
+        dot.set(os.path.dirname(fileName), resolve=False)
         variables = XMLfile.variable(fileName, namespace=namespace)
         for i, (action, args) in enumerate(variables):
             if action not in self.actions:
@@ -216,6 +229,10 @@ class Environment():
                 if action == "include":
                     args = (args[0], fileName, None)
                 self.actions[action](*args) # pylint: disable=W0142
+        # restore the old value of ${.}
+        dot.set(self._fileDirStack.pop(), resolve=False)
+        # ensure that a change of ${.} in the file is reverted when exiting it
+        self.variables['.'] = dot
 
     def startXMLinput(self):
         '''Renew writer for new input.'''
@@ -256,8 +273,10 @@ class Environment():
         NOTE: There is no trace of actions taken, variables are written with a set action only.
         '''
         writer = xmlModule.XMLFile()
-        for var in self.variables.keys():
-            writer.writeVar(var, 'set', self.variables[var].value(True, self.separator))
+        for varName in self.variables:
+            if varName == '.':
+                continue # this is an internal transient variable
+            writer.writeVar(varName, 'set', self.variables[varName].value(True, self.separator))
         writer.writeToFile(fileName)
 
 

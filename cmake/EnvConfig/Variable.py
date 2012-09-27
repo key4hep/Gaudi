@@ -123,7 +123,7 @@ class List():
 
 
     def repl(self, s, d):
-        v = re.compile(r"\$([A-Za-z_][A-Za-z0-9_]*)|\$\(([A-Za-z_][A-Za-z0-9_]*)\)|\$\{([A-Za-z_][A-Za-z0-9_]*)\}")
+        v = re.compile(r"\$([A-Za-z_][A-Za-z0-9_]*)|\$\(([A-Za-z_][A-Za-z0-9_]*)\)|\$\{([A-Za-z_][A-Za-z0-9_]*)\}|\$\{(\.)\}")
         m = v.search(s)
         if m:
             s = s[:m.start()] + str(d[filter(None,m.groups())[0]]) + s[m.end():]

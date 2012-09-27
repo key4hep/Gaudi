@@ -354,7 +354,13 @@ class Test(unittest.TestCase):
 <env:include>second_inc.xml</env:include>
 <env:append variable="test">data1</env:append>
 </env:config>''',
-
+                       'third.xml':
+'''<?xml version="1.0" ?>
+<env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
+<env:set variable="main">third</env:set>
+<env:append variable="test">data1</env:append>
+<env:include>subdir/first_inc.xml</env:include>
+</env:config>''',
                        'first_inc.xml':
 '''<?xml version="1.0" ?>
 <env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
@@ -365,7 +371,7 @@ class Test(unittest.TestCase):
 '''<?xml version="1.0" ?>
 <env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
 <env:append variable="test">data0</env:append>
-<env:set variable="map">this_is_secnod_inc</env:set>
+<env:set variable="map">this_is_second_inc</env:set>
 </env:config>''',
                                   'first_inc.xml':
 '''<?xml version="1.0" ?>
@@ -401,7 +407,7 @@ class Test(unittest.TestCase):
         control.loadXML(tmp('second.xml'))
         self.assertEqual(str(control['main']), 'second')
         self.assertEqual(str(control['test']), 'data0:data1')
-        self.assertEqual(str(control['map']), 'this_is_secnod_inc')
+        self.assertEqual(str(control['map']), 'this_is_second_inc')
 
         control = Control.Environment(searchPath=[tmp(), tmp('subdir')])
         control.loadXML(tmp('first.xml'))
@@ -426,8 +432,44 @@ class Test(unittest.TestCase):
         control.loadXML(tmp('second.xml'))
         self.assertEqual(str(control['main']), 'second')
         self.assertEqual(str(control['test']), 'data0:data1')
-        self.assertEqual(str(control['map']), 'this_is_secnod_inc')
+        self.assertEqual(str(control['map']), 'this_is_second_inc')
 
+        control = Control.Environment(searchPath=[])
+        #self.assertRaises(OSError, control.loadXML, tmp('first.xml'))
+        control.loadXML(tmp('third.xml'))
+        self.assertEqual(str(control['main']), 'third')
+        self.assertEqual(str(control['test']), 'data1')
+        self.assertEqual(str(control['derived']), 'second_third')
+
+        control = Control.Environment(searchPath=[])
+        #self.assertRaises(OSError, control.loadXML, tmp('first.xml'))
+        control.loadXML(tmp('third.xml'))
+        self.assertEqual(str(control['main']), 'third')
+        self.assertEqual(str(control['test']), 'data1')
+        self.assertEqual(str(control['derived']), 'second_third')
+
+    def testFileDir(self):
+        tmp = TempDir({'env.xml':
+'''<?xml version="1.0" ?>
+<env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
+<env:set variable="mydir">${.}</env:set>
+<env:set variable="myparent">${.}/..</env:set>
+</env:config>'''})
+
+        control = Control.Environment()
+        control.loadXML(tmp('env.xml'))
+        self.assertEqual(str(control['mydir']), tmp())
+        self.assertEqual(str(control['myparent']), os.path.dirname(tmp()))
+
+        olddir = os.getcwd()
+        os.chdir(tmp())
+        try:
+            control = Control.Environment()
+            control.loadXML('env.xml')
+            self.assertEqual(str(control['mydir']), tmp())
+            self.assertEqual(str(control['myparent']), os.path.dirname(tmp()))
+        finally:
+            os.chdir(olddir)
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
