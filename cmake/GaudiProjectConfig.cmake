@@ -263,27 +263,35 @@ macro(gaudi_project project version)
   # - collect environment from externals
   gaudi_external_project_environment()
 
+  # (so far, the build and the release envirnoments are identical)
+  set(project_build_environment ${project_environment})
+
   message(STATUS "  environment for local subdirectories")
   # - collect internal environment
   #   - project root (for relocatability)
   string(TOUPPER ${project} _proj)
-  set(project_environment ${project_environment} SET ${_proj}_PROJECT_ROOT ${CMAKE_SOURCE_DIR})
-  #   - 'packages' roots (backward compatibility)
+  #set(project_environment ${project_environment} SET ${_proj}_PROJECT_ROOT "${CMAKE_SOURCE_DIR}")
+  file(RELATIVE_PATH _PROJECT_ROOT ${CMAKE_INSTALL_PREFIX} ${CMAKE_SOURCE_DIR})
+  #message(STATUS "_PROJECT_ROOT -> ${_PROJECT_ROOT}")
+  set(project_environment ${project_environment} SET ${_proj}_PROJECT_ROOT "\${.}/${_PROJECT_ROOT}")
+  set(project_build_environment ${project_build_environment} SET ${_proj}_PROJECT_ROOT "${CMAKE_SOURCE_DIR}")
+  #   - 'packages':
   foreach(package ${packages})
     message(STATUS "    ${package}")
     get_filename_component(_pack ${package} NAME)
-    string(TOUPPER ${_pack} _pack)
-    set(project_environment ${project_environment} SET ${_pack}ROOT \${${_proj}_PROJECT_ROOT}/${package})
-  endforeach()
-  #   - 'packages' environments
-  foreach(package ${packages})
+    string(TOUPPER ${_pack} _PACK)
+    #     - roots (backward compatibility)
+    set(project_environment ${project_environment} SET ${_PACK}ROOT \${${_proj}_PROJECT_ROOT}/${package})
+    set(project_bulid_environment ${project_build_environment} SET ${_PACK}ROOT \${${_proj}_PROJECT_ROOT}/${package})
+
+    #     - declared environments
     get_property(_pack_env DIRECTORY ${package} PROPERTY ENVIRONMENT)
     set(project_environment ${project_environment} ${_pack_env})
+    set(project_build_environment ${project_build_environment} ${_pack_env})
 
     # we need special handling of PYTHONPATH and PATH for the build-time environment
     set(_has_config NO)
     set(_has_python NO)
-    get_filename_component(_pack ${package} NAME) # FIXME: should we merge the loops?
     if(EXISTS ${CMAKE_BINARY_DIR}/${package}/genConf OR TARGET ${_pack}ConfUserDB)
       set(project_build_environment ${project_build_environment}
           PREPEND PYTHONPATH ${CMAKE_BINARY_DIR}/${package}/genConf)
@@ -319,11 +327,11 @@ macro(gaudi_project project version)
   message(STATUS "  environment for the project")
   #   - installation dirs
   set(project_environment ${project_environment}
-        PREPEND PATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/scripts
-        PREPEND PATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/bin
-        PREPEND LD_LIBRARY_PATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/lib
-        PREPEND PYTHONPATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/python
-        PREPEND PYTHONPATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/python/lib-dynload)
+        PREPEND PATH \${.}/scripts
+        PREPEND PATH \${.}/bin
+        PREPEND LD_LIBRARY_PATH \${.}/lib
+        PREPEND PYTHONPATH \${.}/python
+        PREPEND PYTHONPATH \${.}/python/lib-dynload)
   #   - build dirs
   set(project_build_environment ${project_build_environment}
       PREPEND PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
@@ -335,7 +343,7 @@ macro(gaudi_project project version)
   gaudi_generate_env_conf(${env_release_xml} ${project_environment})
   install(FILES ${env_release_xml} DESTINATION .)
   #   build-time version
-  gaudi_generate_env_conf(${env_xml} INCLUDE ${env_release_xml} ${project_build_environment})
+  gaudi_generate_env_conf(${env_xml} ${project_build_environment})
 
   #--- Generate config files to be imported by other projects.
   gaudi_generate_project_config_version_file()
@@ -1659,16 +1667,26 @@ endmacro()
 # helper macro used by gaudi_generate_env_conf.
 #-------------------------------------------------------------------------------
 macro(_env_line cmd var val output)
+  set(val_ ${val})
+  foreach(root_var ${root_vars})
+    if(${root_var})
+      if(val_ MATCHES "^${${root_var}}")
+        #message(STATUS "${val_} MATCHES ^${LCG_releases}")
+        file(RELATIVE_PATH val_ ${${root_var}} ${val_})
+        set(val_ \${${root_var}}/${val_})
+      endif()
+    endif()
+  endforeach()
   if(${cmd} STREQUAL "SET")
-    set(${output} "<env:set variable=\"${var}\">${val}</env:set>")
+    set(${output} "<env:set variable=\"${var}\">${val_}</env:set>")
   elseif(${cmd} STREQUAL "UNSET")
     set(${output} "<env:unset variable=\"${var}\"><env:unset>")
   elseif(${cmd} STREQUAL "PREPEND")
-    set(${output} "<env:prepend variable=\"${var}\">${val}</env:prepend>")
+    set(${output} "<env:prepend variable=\"${var}\">${val_}</env:prepend>")
   elseif(${cmd} STREQUAL "APPEND")
-    set(${output} "<env:append variable=\"${var}\">${val}</env:append>")
+    set(${output} "<env:append variable=\"${var}\">${val_}</env:append>")
   elseif(${cmd} STREQUAL "REMOVE")
-    set(${output} "<env:remove variable=\"${var}\">${val}</env:remove>")
+    set(${output} "<env:remove variable=\"${var}\">${val_}</env:remove>")
   elseif(${cmd} STREQUAL "INCLUDE")
     set(${output} "<env:include>${var}</env:include>")
   else()
@@ -1685,6 +1703,13 @@ endmacro()
 function(gaudi_generate_env_conf filename)
   set(data "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <env:config xmlns:env=\"EnvSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"EnvSchema EnvSchema.xsd \">\n")
+
+  # variables that need to be used to make the environment relative
+  set(root_vars LCG_releases LCG_external)
+  foreach(root_var ${root_vars})
+    set(data "${data}  <env:set variable=\"${root_var}\">${${root_var}}</env:set>\n")
+  endforeach()
+
   set(commands ${ARGN})
   #message(STATUS "start - ${commands}")
   while(commands)
@@ -1754,7 +1779,14 @@ macro(gaudi_external_project_environment)
   get_property(library_path GLOBAL PROPERTY LIBRARY_PATH)
   set(library_path ${library_path} ${library_path2})
   # Remove system libraries from the library_path
-  list(REMOVE_ITEM library_path /usr/lib /lib /usr/lib64 /lib64 /usr/lib32 /lib32)
+  #list(REMOVE_ITEM library_path /usr/lib /lib /usr/lib64 /lib64 /usr/lib32 /lib32)
+  set(old_library_path ${library_path})
+  set(library_path)
+  foreach(d ${old_library_path})
+    if(NOT d MATCHES "^(/usr|/usr/local)?/lib(32/64)?")
+      set(library_path ${library_path} ${d})
+    endif()
+  endforeach()
 
   foreach(var library_path python_path binary_path)
     if(${var})
