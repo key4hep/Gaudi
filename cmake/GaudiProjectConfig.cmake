@@ -282,7 +282,7 @@ macro(gaudi_project project version)
     string(TOUPPER ${_pack} _PACK)
     #     - roots (backward compatibility)
     set(project_environment ${project_environment} SET ${_PACK}ROOT \${${_proj}_PROJECT_ROOT}/${package})
-    set(project_bulid_environment ${project_build_environment} SET ${_PACK}ROOT \${${_proj}_PROJECT_ROOT}/${package})
+    set(project_build_environment ${project_build_environment} SET ${_PACK}ROOT \${${_proj}_PROJECT_ROOT}/${package})
 
     #     - declared environments
     get_property(_pack_env DIRECTORY ${package} PROPERTY ENVIRONMENT)
