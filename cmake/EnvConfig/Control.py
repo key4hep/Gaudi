@@ -34,7 +34,7 @@ class Environment():
             pass
 
         self.actions = {}
-        self.actions['include'] = lambda n, c, _2: self.loadXML(self._locate(n, c))
+        self.actions['include'] = lambda n, c, h: self.loadXML(self._locate(n, c, h))
         self.actions['append'] = lambda n, v, _: self.append(n, v)
         self.actions['prepend'] = lambda n, v, _: self.prepend(n, v)
         self.actions['set'] = lambda n, v, _: self.set(n, v)
@@ -52,6 +52,8 @@ class Environment():
             self.writer = xmlModule.XMLFile()
             self.startXMLinput()
 
+        self.loadedFiles = set()
+
         # Prepare the stack for the directory of the loaded file(s)
         self._fileDirStack = []
         # Note: cannot use self.declare() because we do not want to write out
@@ -60,21 +62,32 @@ class Environment():
         dot.set('', resolve=False)
         self.variables['.'] = dot
 
-    def _locate(self, filename, caller=None):
+
+    def _locate(self, filename, caller=None, hints=None):
         '''
         Find 'filename' in the internal search path.
         '''
         from os.path import isabs, isfile, join, dirname, normpath, abspath
         if isabs(filename):
             return filename
+
+        if hints is None:
+            hints = []
+        elif type(hints) is str:
+            hints = hints.split(self.separator)
+
         if caller:
-            localfile = join(dirname(caller), filename)
+            calldir = dirname(caller)
+            localfile = join(calldir, filename)
             if isfile(localfile):
                 return localfile
+            # allow for relative hints
+            hints = [join(calldir, hint) for hint in hints]
+
         try:
             return (abspath(f)
                     for f in [normpath(join(d, filename))
-                              for d in self.searchPath]
+                              for d in self.searchPath + hints]
                     if isfile(f)).next()
         except StopIteration:
             from errno import ENOENT
@@ -234,6 +247,9 @@ class Environment():
         '''Loads XML file for input variables.'''
         XMLfile = xmlModule.XMLFile()
         fileName = self._locate(fileName)
+        if fileName in self.loadedFiles:
+            return # ignore recursion
+        self.loadedFiles.add(fileName)
         dot = self.variables['.']
         # push the previous value of ${.} onto the stack...
         self._fileDirStack.append(dot.value())
@@ -244,8 +260,6 @@ class Environment():
             if action not in self.actions:
                 self.report.addError('Node {0}: No action taken with var "{1}". Probably wrong action argument: "{2}".'.format(i, args[0], action))
             else:
-                if action == "include":
-                    args = (args[0], fileName, None)
                 self.actions[action](*args) # pylint: disable=W0142
         # restore the old value of ${.}
         dot.set(self._fileDirStack.pop(), resolve=False)

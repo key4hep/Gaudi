@@ -361,6 +361,18 @@ class Test(unittest.TestCase):
 <env:append variable="test">data1</env:append>
 <env:include>subdir/first_inc.xml</env:include>
 </env:config>''',
+                       'fourth.xml':
+'''<?xml version="1.0" ?>
+<env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
+<env:set variable="main">fourth</env:set>
+<env:include hints="subdir2">fourth_inc.xml</env:include>
+</env:config>''',
+                       'recursion.xml':
+'''<?xml version="1.0" ?>
+<env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
+<env:set variable="main">recursion</env:set>
+<env:include>recursion.xml</env:include>
+</env:config>''',
                        'first_inc.xml':
 '''<?xml version="1.0" ?>
 <env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
@@ -377,6 +389,16 @@ class Test(unittest.TestCase):
 '''<?xml version="1.0" ?>
 <env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
 <env:append variable="derived">second_${main}</env:append>
+</env:config>''',
+                                  'fourth_inc.xml':
+'''<?xml version="1.0" ?>
+<env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
+<env:append variable="included">from subdir</env:append>
+</env:config>''',},
+                       'subdir2': {'fourth_inc.xml':
+'''<?xml version="1.0" ?>
+<env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">
+<env:append variable="included">from subdir2</env:append>
 </env:config>''',}})
 
         if 'ENVXMLPATH' in os.environ:
@@ -433,20 +455,28 @@ class Test(unittest.TestCase):
         self.assertEqual(str(control['main']), 'second')
         self.assertEqual(str(control['test']), 'data0:data1')
         self.assertEqual(str(control['map']), 'this_is_second_inc')
+        del os.environ['ENVXMLPATH']
 
         control = Control.Environment(searchPath=[])
-        #self.assertRaises(OSError, control.loadXML, tmp('first.xml'))
         control.loadXML(tmp('third.xml'))
         self.assertEqual(str(control['main']), 'third')
         self.assertEqual(str(control['test']), 'data1')
         self.assertEqual(str(control['derived']), 'second_third')
 
+        control = Control.Environment(searchPath=[tmp('subdir')])
+        control.loadXML(tmp('fourth.xml'))
+        self.assertEqual(str(control['main']), 'fourth')
+        self.assertEqual(str(control['included']), 'from subdir')
+
+        control = Control.Environment(searchPath=[])
+        control.loadXML(tmp('fourth.xml'))
+        self.assertEqual(str(control['main']), 'fourth')
+        self.assertEqual(str(control['included']), 'from subdir2')
+
         control = Control.Environment(searchPath=[])
         #self.assertRaises(OSError, control.loadXML, tmp('first.xml'))
-        control.loadXML(tmp('third.xml'))
-        self.assertEqual(str(control['main']), 'third')
-        self.assertEqual(str(control['test']), 'data1')
-        self.assertEqual(str(control['derived']), 'second_third')
+        control.loadXML(tmp('recursion.xml'))
+
 
     def testFileDir(self):
         tmp = TempDir({'env.xml':

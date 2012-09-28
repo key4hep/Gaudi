@@ -4,7 +4,7 @@ Small script to execute a command in a modified environment (see man 1 env).
 """
 import os
 
-def set_env(env, set = [], unset = [], append = [], prepend = []):
+def set_env(env, set = [], unset = [], append = [], prepend = []): #@ReservedAssignment
     """
     Manipulate the dictionary-like object 'env' according to the prescriptions in
     the lists 'unset', 'set', 'append' and 'prepend' (in this order).
@@ -73,6 +73,15 @@ def parse_args():
     parser.add_option("-x", "--xml",
                       action = "append",
                       help = "XML file describing the changes to the environment")
+    parser.add_option("--sh",
+                      action = "store_const", const = "sh", dest = "shell",
+                      help = "Print the environment as shell commands for 'sh'-derived shells.")
+    parser.add_option("--csh",
+                      action = "store_const", const = "csh", dest = "shell",
+                      help = "Print the environment as shell commands for 'csh'-derived shells.")
+    parser.add_option("--py",
+                      action = "store_const", const = "py", dest = "shell",
+                      help = "Print the environment as Python dictionary.")
     parser.disable_interspersed_args()
     parser.set_defaults(unset = [],
                         set = [],
@@ -115,6 +124,10 @@ def main():
     opts.set.extend(args[:i])
     cmd = args[i:]
 
+    if opts.shell and cmd:
+        print >> sys.stderr, "Invalid arguments: --%s cannot be used with a command" % opts.shell
+        return 2
+
     # prepare initial dictionary
     if opts.ignore_environment:
         env = {}
@@ -137,8 +150,14 @@ def main():
 
 
     if not cmd:
-        for nv in sorted(env.items()):
-            print "%s=%s" % nv
+        if opts.shell == 'py':
+            from pprint import pprint
+            pprint(env)
+        else:
+            format = {'sh':  "export %s='%s'",
+                      'csh': "setenv %s '%s'"}.get(opts.shell, "%s=%s")
+            for nv in sorted(env.items()):
+                print format % nv
         return 0
     else:
         from subprocess import Popen

@@ -130,6 +130,7 @@ class Test(unittest.TestCase):
 <env:prepend variable="myScalar">prepValscal</env:prepend>
 <env:declare local="true" type="scalar" variable="myScalar2"/>
 <env:include>some_file.xml</env:include>
+<env:include hints="some:place">another_file.xml</env:include>
 </env:config>''')
 
         loader = xmlModule.XMLFile()
@@ -146,7 +147,8 @@ class Test(unittest.TestCase):
                     ('append', ('myScalar', 'appValscal', None)),
                     ('prepend', ('myScalar', 'prepValscal', None)),
                     ('declare', ('myScalar2', 'scalar', 'true')),
-                    ('include', ('some_file.xml', None, None))]
+                    ('include', ('some_file.xml', None, '')),
+                    ('include', ('another_file.xml', None, 'some:place'))]
 
         self.assertEqual(variables, expected)
 

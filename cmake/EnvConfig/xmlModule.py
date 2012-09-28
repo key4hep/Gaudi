@@ -46,6 +46,10 @@ class XMLFile():
             except EOFError:
                 pass
 
+            caller = path
+        else:
+            caller = None
+
         # Get file
         doc = minidom.parse(path)
         if namespace == '':
@@ -65,7 +69,7 @@ class XMLFile():
                         value = str(node.childNodes[0].data)
                     else:
                         value = ''
-                    variables.append((action, (value, None, None)))
+                    variables.append((action, (value, caller, str(node.getAttribute('hints')))))
 
                 else:
                     varname = str(node.getAttribute('variable'))
