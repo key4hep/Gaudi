@@ -43,6 +43,8 @@ class XMLFile():
                     return data
             except IOError:
                 pass
+            except EOFError:
+                pass
 
         # Get file
         doc = minidom.parse(path)
@@ -82,7 +84,7 @@ class XMLFile():
         if isFilename:
             try:
                 f = open(cpath, 'wb')
-                dump((sum, variables), f, protocol=2)
+                dump((checksum, variables), f, protocol=2)
                 f.close()
             except IOError:
                 pass
