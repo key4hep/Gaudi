@@ -143,6 +143,10 @@ macro(gaudi_project project version)
   #       the external libraries required by the subdirectories.
   set(binary_paths)
 
+  # environment description
+  set(project_environment)
+  set(used_gaudi_projects)
+
   # Note: the indirection is needed because we are in a macro and not in a function
   #       but the variable 'PROJECT_USES' is propagated in the exports.
   set(PROJECT_USES ${ARGN})
@@ -155,6 +159,9 @@ macro(gaudi_project project version)
       list(REMOVE_AT PROJECT_USES 0)
       _gaudi_use_other_projects(${PROJECT_USES})
     endif()
+  endif()
+  if(used_gaudi_projects)
+    list(REMOVE_DUPLICATES used_gaudi_projects)
   endif()
 
   #--- commands required to build cached variable
@@ -258,7 +265,6 @@ macro(gaudi_project project version)
 
   #--- Prepare environment configuration
   message(STATUS "Preparing environment configuration:")
-  set(project_environment)
 
   # - collect environment from externals
   gaudi_external_project_environment()
@@ -430,6 +436,9 @@ macro(_gaudi_use_other_projects)
             message(STATUS "    imported ${exported} ${${exported}_VERSION}")
           endif()
         endforeach()
+        # Note: we add them in reverse order so that they appear in the correct
+        # inclusion order in the environment XML.
+        set(used_gaudi_projects ${other_project} ${used_gaudi_projects})
         if(${other_project}_USES)
           list(INSERT ARGN_ 0 ${${other_project}_USES})
         endif()
@@ -1555,6 +1564,7 @@ set(found FALSE)
 foreach(platform \${allowed_platforms})
   if(NOT found AND IS_DIRECTORY \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/\${platform}/cmake)
     list(INSERT CMAKE_MODULE_PATH 0 \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/\${platform}/cmake)
+    set(${CMAKE_PROJECT_NAME}_PLATFORM \${platform})
     set(found TRUE)
   endif()
 endforeach()
@@ -1725,6 +1735,11 @@ function(gaudi_generate_env_conf filename)
     set(data "${data}  <env:default variable=\"${root_var}\">${${root_var}}</env:default>\n")
   endforeach()
 
+  # include inherited environments
+  foreach(other_project ${used_gaudi_projects})
+    set(data "${data}  <env:include hints=\"${${other_project}_DIR}\">InstallArea/${${other_project}_PLATFORM}/${other_project}Environment.xml</env:include>\n")
+  endforeach()
+
   set(commands ${ARGN})
   #message(STATUS "start - ${commands}")
   while(commands)
@@ -1769,7 +1784,10 @@ macro(gaudi_external_project_environment)
   get_property(packages_found GLOBAL PROPERTY PACKAGES_FOUND)
   #message("${packages_found}")
   foreach(pack ${packages_found})
-    if(NOT pack STREQUAL GaudiProject)
+    # Check that it is not a "Gaudi project" (the environment is included in a
+    # different way in gaudi_generate_env_conf).
+    list(FIND used_gaudi_projects ${pack} gaudi_project_idx)
+    if((NOT pack STREQUAL GaudiProject) AND (gaudi_project_idx EQUAL -1))
       message(STATUS "    ${pack}")
       # this is needed to get the non-cache variables for the packages
       find_package(${pack} QUIET)
