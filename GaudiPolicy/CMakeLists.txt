@@ -3,9 +3,10 @@ gaudi_subdir(GaudiPolicy v12r2)
 #---Installation-----------------------------------------------------------------------------
 gaudi_install_scripts()
 
-# Set environment to access the custom QMTest classes.
-gaudi_env(PREPEND QMTEST_CLASS_PATH \${GAUDIPOLICYROOT}/qmtest_classes)
+# Set environment to access the custom QMTest classes (at build time).
+gaudi_build_env(PREPEND QMTEST_CLASS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/qmtest_classes)
 
-# FIXME: the QMTest extensions must be installed and not used from the sources.
 # Install QMTest extensions.
-#install(DIRECTORY qmtest_classes DESTINATION .)
+install(DIRECTORY qmtest_classes DESTINATION .)
+# Note: ${.} in the environment definition refers to the install prefix.
+gaudi_env(PREPEND QMTEST_CLASS_PATH \${.}/qmtest_classes)
