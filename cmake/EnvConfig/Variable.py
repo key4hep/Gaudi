@@ -26,7 +26,7 @@ class List():
         return self.varName
 
 
-    def set(self, value, separator = ':', environment={}, resolve=True):
+    def set(self, value, separator=':', environment=None, resolve=True):
         '''Sets the value of the List. Any previous value is overwritten.'''
         if resolve:
             value = self.resolveReferences(value, environment, separator)
@@ -34,16 +34,15 @@ class List():
             value = value.split(separator)
         self.val = filter(None, value)
 
-    def unset(self, value, separator = ':', environment={}):
+    def unset(self, value, separator=':', environment=None):# pylint: disable=W0613
         '''Sets the value of the List to empty. Any previous value is overwritten.'''
-        self.val = ''
+        self.val = []
 
 
-    def value(self, asString = False, separator = ':'):
+    def value(self, asString=False, separator=':'):
         '''Returns values of the List. Either as a list or string with desired separator.'''
         if asString:
-            stri = self._concatenate(separator)
-            return stri.replace(']', ':')
+            return separator.join(self.val).replace(']', ':')
         else:
             lis = self.val[:]
             if platform.system() != 'Linux':
@@ -51,11 +50,10 @@ class List():
                     item.replace(']',':')
             return lis
 
-
-    def remove_regexp(self,value,separator = ':'):
+    def remove_regexp(self, value, separator = ':'):
         self.remove(value, separator, True)
 
-    def remove(self, value, separator = ':', regexp=False):
+    def remove(self, value, separator=':', regexp=False):
         '''Removes value(s) from List. If value is not found, removal is canceled.'''
         if regexp:
             value = self.search(value, True)
@@ -71,9 +69,8 @@ class List():
                 self.val.remove(val)
 
 
-    def append(self, value, separator = ':', environment={}, warningOn=True):
+    def append(self, value, separator=':', environment=None, warningOn=True):
         '''Adds value(s) at the end of the list.'''
-
         value = self.resolveReferences(value, environment, separator)
 
         if type(value) is str:
@@ -92,9 +89,9 @@ class List():
         # add to the end of self.val the values not already there
         self.val += filter(notPresent, value)
 
-    def prepend(self, value, separator = ':', environment={}):
-        '''Adds value(s) at the beginning of the list.'''
-        '''resolve references and duplications'''
+    def prepend(self, value, separator=':', environment=None):
+        '''Adds value(s) at the beginning of the list.
+        resolve references and duplications'''
         value = self.resolveReferences(value, environment, separator)
 
         if type(value) is str:
@@ -126,7 +123,7 @@ class List():
 
 
     def repl(self, s, d):
-        v = re.compile(r"\$([A-Za-z_][A-Za-z0-9_]*)|\$\(([A-Za-z_][A-Za-z0-9_]*)\)|\$\{([A-Za-z_][A-Za-z0-9_]*)\}")
+        v = re.compile(r"\$([A-Za-z_][A-Za-z0-9_]*)|\$\(([A-Za-z_][A-Za-z0-9_]*)\)|\$\{([A-Za-z_][A-Za-z0-9_]*)\}|\$\{(\.)\}")
         m = v.search(s)
         if m:
             s = s[:m.start()] + str(d[filter(None,m.groups())[0]]) + s[m.end():]
@@ -138,12 +135,9 @@ class List():
     def resolveReferences(self, value, environment, separator = ':'):
         '''Resolves references to Lists'''
         if isinstance(value, list):
-            str = ''
-            for val in value:
-                str = val + '' + separator
-            value = str[:len(str)-1]
+            value = separator.join(value)
 
-        value = self.repl(value, environment)
+        value = self.repl(value, environment or {})
         value = value.split(separator)
 
         value = self._remDuplicates(value)
@@ -168,20 +162,10 @@ class List():
         return value
 
 
-    def _concatenate(self, separator):
-        '''Returns a List string with separator "separator" from the values list'''
-
-        stri = ""
-        for it in self.val:
-            stri += it + separator
-        stri = stri[0:len(stri)-1]
-        return stri
-
-
     def _remDuplicates(self, seq, idfun=None):
         '''removes duplicated values from list'''
         if idfun is None:
-            def idfun(x): return x
+            idfun = lambda x: x
         seen = {}
         result = []
         for item in seq:
@@ -206,7 +190,7 @@ class List():
             self.val.insert(key, value)
 
     def __delitem__(self, key):
-        self.removeVal(self.val[key])
+        self.remove(self.val[key])
 
     def __iter__(self):
         for i in self.val:
@@ -219,7 +203,7 @@ class List():
         return len(self.val)
 
     def __str__(self):
-        return self._concatenate(':')
+        return ':'.join(self.val)
 
 
 class Scalar():
@@ -227,16 +211,16 @@ class Scalar():
 
     def __init__(self, name, local=False, report = None):
         self.report = report
-        self.name = name
+        self.varName = name
         self.val = ''
 
         self.local = local
 
     def name(self):
         '''Returns the name of the scalar.'''
-        return self.name
+        return self.varName
 
-    def set(self, value, separator = ':', environment={}, resolve = True):
+    def set(self, value, separator=':', environment=None, resolve=True):# pylint: disable=W0613
         '''Sets the value of the scalar. Any previous value is overwritten.'''
         if resolve:
             value = self.resolveReferences(value, environment)
@@ -245,28 +229,31 @@ class Scalar():
         if self.val == '.':
             self.val = ""
 
+    def unset(self, value, separator=':', environment=None):# pylint: disable=W0613
+        '''Sets the value of the varaible to empty. Any previous value is overwritten.'''
+        self.val = ''
 
-    def value(self, asString = False, separator = ':'):
+    def value(self, asString=False, separator=':'):# pylint: disable=W0613
         '''Returns values of the scalar.'''
         return self.val
 
-    def remove_regexp(self,value,separator = ':'):
+    def remove_regexp(self, value, separator=':'):
         self.remove(value, separator, True)
 
-    def remove(self, value, separator = ':', regexp=True):
+    def remove(self, value, separator=':', regexp=True):# pylint: disable=W0613
         '''Removes value(s) from the scalar. If value is not found, removal is canceled.'''
         value = self.search(value)
         for val in value:
             self.val = self.val.replace(val,'')
 
-    def append(self,value, separator = ':', environment={}, warningOn=True):
+    def append(self, value, separator=':', environment=None, warningOn=True):# pylint: disable=W0613
         '''Adds value(s) at the end of the scalar.'''
         value = self.resolveReferences(value, environment)
         self.val = self.val + value
         self._changeSlashes()
 
 
-    def prepend(self,value,action='cancel', separator = ':', environment={}):
+    def prepend(self, value, action='cancel', separator=':', environment=None):# pylint: disable=W0613
         '''Adds value(s) at the beginning of the scalar.'''
         value = self.resolveReferences(value, environment)
         self.val = value + self.val
@@ -282,17 +269,14 @@ class Scalar():
         else:
             return s
 
-
     def resolveReferences(self, value, environment):
         '''Resolve references inside the scalar.'''
-
-        value = self.repl(value, environment)
+        value = self.repl(value, environment or {})
         return value
 
     def search(self, expr):
         '''Searches in scalar`s values for a match'''
-        return re.findall(expr,self.val)
-
+        return re.findall(expr, self.val)
 
     def _changeSlashes(self):
         '''Changes slashes depending on operating system.'''
@@ -303,13 +287,13 @@ class Scalar():
                 self.val = self.val[3:]
         self.val = os.path.normpath(self.val)
 
-
     def __str__(self):
         return self.val
 
-class EnvironmentError(Exception):
+class EnvError(Exception):
     '''Class which defines errors for locals operations.'''
     def __init__(self, value, code):
+        super(EnvError, self).__init__()
         self.val = value
         self.code = code
     def __str__(self):

@@ -62,7 +62,8 @@ CMTParser = makeParser()
 
 # mappings
 ignored_packages = set(["GaudiSys", "GaudiRelease", "GaudiPolicy"])
-data_packages = set(['Det/SQLDDDB', 'FieldMap', 'TCK/HltTCK'])
+data_packages = set(['Det/SQLDDDB', 'FieldMap', 'TCK/HltTCK', 'TCK/L0TCK',
+                     'ChargedProtoANNPIDParam', 'ParamFiles'])
 
 ignore_dep_on_subdirs = set(ignored_packages)
 ignore_dep_on_subdirs.update(data_packages)
@@ -84,7 +85,8 @@ known_subdirs = shelve.open(_shelve_file)
 
 def extName(n):
     mapping = {'Reflex': 'ROOT',
-               'Python': 'PythonLibs'}
+               'Python': 'PythonLibs',
+               'neurobayes_expert': 'NeuroBayesExpert'}
     return mapping.get(n, n)
 
 def isPackage(path):
@@ -94,9 +96,8 @@ def isProject(path):
     return os.path.isfile(os.path.join(path, "cmt", "project.cmt"))
 
 def projectCase(name):
-    if name.upper() == "DAVINCI":
-        return "DaVinci"
-    return name.capitalize()
+    return {'DAVINCI': 'DaVinci',
+            'LHCB': 'LHCb'}.get(name.upper(), name.capitalize())
 
 def callStringWithIndent(cmd, arglines):
     '''
@@ -112,6 +113,16 @@ def callStringWithIndent(cmd, arglines):
     '''
     indent = '\n' + ' ' * (len(cmd) + 1)
     return cmd + '(' + indent.join(filter(None, arglines)) + ')'
+
+def writeToFile(filename, data, log=None):
+    '''
+    Write the generated CMakeLists.txt.
+    '''
+    if log and os.path.exists(filename):
+        log.info('overwriting %s', filename)
+    f = open(filename, "w")
+    f.write(data)
+    f.close()
 
 class Package(object):
     def __init__(self, path, project=None):
@@ -248,7 +259,11 @@ class Package(object):
             godflags = re.search(r'-s\s*(\S+)', godflags)
             if godflags:
                 god_headers_dest = os.path.normpath('Event/' + godflags.group(1))
-                godargs.append('DESTINATION ' + god_headers_dest)
+                if god_headers_dest == 'src':
+                    # special case
+                    godargs.append('PRIVATE')
+                else:
+                    godargs.append('DESTINATION ' + god_headers_dest)
 
             data.append(callStringWithIndent('god_build_headers', godargs))
             data.append("")
@@ -347,6 +362,12 @@ class Package(object):
             if links or inc_dirs:
                 # external links need the include dirs
                 args.append('INCLUDE_DIRS ' + ' '.join(links + inc_dirs))
+
+            if links:
+                not_included = set(links).difference(find_packages, set([s.rsplit('/')[-1] for s in subdirs]))
+                if not_included:
+                    self.log.warning('imports without use: %s', ', '.join(sorted(not_included)))
+
             # add subdirs...
             for s in subdir_imports + subdir_local_imports:
                 if s in known_subdirs:
@@ -357,9 +378,6 @@ class Package(object):
                 links.remove('AIDA') # FIXME: AIDA does not have a library
 
             if links:
-                not_included = set(links).difference(find_packages, set([s.rsplit('/')[-1] for s in subdirs]))
-                if not_included:
-                    self.log.warning('imports without use: %s', ', '.join(sorted(not_included)))
                 # note: in some cases we get quoted library names
                 args.append('LINK_LIBRARIES ' + ' '.join([l.strip('"') for l in links]))
 
@@ -428,16 +446,17 @@ class Package(object):
 
         return "\n".join(data) + "\n"
 
-    def process(self, force=False):
-        # @FIXME: do something for the package
+    def process(self, overwrite=None):
         cml = os.path.join(self.path, "CMakeLists.txt")
-        if not force and os.path.exists(cml):
+        if ((overwrite == 'force')
+            or (not os.path.exists(cml))
+            or ((overwrite == 'update')
+                and (os.path.getmtime(cml) < os.path.getmtime(self.requirements)))):
+            # write the file
+            data = self.generate()
+            writeToFile(cml, data, self.log)
+        else:
             self.log.warning("file %s already exists", cml)
-            return
-        data = self.generate()
-        f = open(cml, "w")
-        f.write(data)
-        f.close()
 
     def _parseRequirements(self):
         def requirements():
@@ -446,18 +465,22 @@ class Package(object):
                 if '#' in l:
                     l = l[:l.find('#')]
                 l = l.strip()
+                # if we have something in the line, extend the statement
                 if l:
                     statement += l
                     if statement.endswith('\\'):
+                        # if the statement requires another line, get the next
                         statement = statement[:-1] + ' '
                         continue
-                    else:
-                        try:
-                            yield list(CMTParser.parseString(statement))
-                        except:
-                            # ignore not know statements
-                            self.log.debug("Failed to parse statement: %r", statement)
-                        statement = ""
+                # either we got something more in the statement or not, but
+                # an empty line after a '\' means ending the statement
+                if statement:
+                    try:
+                        yield list(CMTParser.parseString(statement))
+                    except:
+                        # ignore not know statements
+                        self.log.debug("Failed to parse statement: %r", statement)
+                    statement = ""
 
         for args in requirements():
             cmd = args.pop(0)
@@ -636,30 +659,36 @@ class Project(object):
         data.append(l)
         return "\n".join(data) + "\n"
 
-    def process(self, force=False):
+    def process(self, overwrite=None):
         # Prepare the project configuration
         cml = os.path.join(self.path, "CMakeLists.txt")
-        if force or not os.path.exists(cml):
+        if ((overwrite == 'force')
+            or (not os.path.exists(cml))
+            or ((overwrite == 'update')
+                and (os.path.getmtime(cml) < os.path.getmtime(self.requirements)))):
             # write the file
             data = self.generate()
-            f = open(cml, "w")
-            f.write(data)
-            f.close()
+            writeToFile(cml, data, logging)
         else:
             logging.warning("file %s already exists", cml)
         # Recurse in the packages
         for p in sorted(self.packages):
-            self.packages[p].process(force)
+            self.packages[p].process(overwrite)
 
 
 def main(args=None):
     from optparse import OptionParser
     parser = OptionParser(usage="%prog [options] [path to project or package]",
                           description="Convert CMT-based projects/packages to CMake (Gaudi project)")
-    parser.add_option("-f", "--force", action="store_true",
+    parser.add_option("-f", "--force", action="store_const",
+                      dest='overwrite', const='force',
                       help="overwrite existing files")
     parser.add_option('--cache-only', action='store_true',
                       help='just update the cache without creating the CMakeLists.txt files.')
+    parser.add_option('-u' ,'--update', action='store_const',
+                      dest='overwrite', const='update',
+                      help='modify the CMakeLists.txt files if they are older than '
+                           'the corresponding requirements.')
     #parser.add_option('--cache-file', action='store',
     #                  help='file to be used for the cache')
 
@@ -686,130 +715,9 @@ def main(args=None):
         root.packages # the cache is updated by instantiating the packages
         # note that we can get here only if root is a project
     else:
-        root.process(opts.force)
+        root.process(opts.overwrite)
 
 
 if __name__ == '__main__':
     main()
     sys.exit(0)
-
-all_packs = ["Kernel/XMLSummaryBase",
-"DAQ/Tell1Kernel",
-"Si/SiDAQ",
-"Calo/CaloKernel",
-"GaudiObjDesc",
-"GaudiConfUtils",
-"Kernel/Relations",
-"Event/DAQEvent",
-"Tools/FileStager",
-"Tools/XmlTools",
-"Kernel/HistoStrings",
-"L0/L0Base",
-"GaudiMTTools",
-"DAQ/MDF",
-"DAQ/MDF_ROOT",
-"Kernel/LHCbMath",
-"Kernel/HltInterfaces",
-"Det/DetDesc",
-"Det/DetDescSvc",
-"Det/DetDescCnv",
-"Det/BcmDet",
-"Kernel/PartProp",
-"Kernel/LHCbKernel",
-"L0/ProcessorKernel",
-"L0/L0MuonKernel",
-"Event/VeloEvent",
-"Det/VeloPixDet",
-"Det/VeloDet",
-"Det/STDet",
-"Rich/RichKernel",
-"Det/RichDet",
-"GaudiConf",
-"Kernel/XMLSummaryKernel",
-"Det/DetCond",
-"Tools/CondDBEntityResolver",
-"Ex/DetCondExample",
-"Det/DDDB",
-"Tools/CondDBUI",
-"Det/Magnet",
-"Det/DetDescChecks",
-"Det/OTDet",
-"Muon/MuonKernel",
-"Det/MuonDet",
-"Event/L0Event",
-"L0/L0Interfaces",
-"Det/CaloDet",
-"Det/CaloDetXmlCnv",
-"Ex/DetDescExample",
-"Det/DetSys",
-"Event/LinkerEvent",
-"Event/TrackEvent",
-"Tr/TrackKernel",
-"Event/DigiEvent",
-"OT/OTDAQ",
-"Event/EventBase",
-"Event/LumiEvent",
-"Event/GenEvent",
-"Event/MCEvent",
-"Kernel/MCInterfaces",
-"Sim/SimComponents",
-"Event/RecEvent",
-"Rich/RichRecBase",
-"Phys/LoKiCore",
-"Phys/LoKiNumbers",
-"Phys/LoKiMC",
-"Phys/LoKiGen",
-"Muon/MuonInterfaces",
-"Tf/TfKernel",
-"Tf/TsaKernel",
-"Tf/PatKernel",
-"ST/STKernel",
-"ST/STTELL1Event",
-"Kernel/KernelSys",
-"Kernel/LHCbAlgs",
-"Event/RecreatePIDTools",
-"DAQ/DAQUtils",
-"Muon/MuonDAQ",
-"Tr/TrackInterfaces",
-"Calo/CaloInterfaces",
-"Event/PhysEvent",
-"Event/SwimmingEvent",
-"Event/LinkerInstances",
-"Event/MicroDst",
-"Event/PackedEvent",
-"Event/HltEvent",
-"Phys/LoKiHlt",
-"Event/EventPacker",
-"Ex/IOExample",
-"Event/EventAssoc",
-"Event/EventSys",
-"Calo/CaloUtils",
-"Calo/CaloDAQ",
-"DAQ/DAQSys",
-"Associators/MCAssociators",
-"LHCbSys",
-]
-
-#idx = 6
-idx = all_packs.index('Event/GenEvent')
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    pr = Project("/home/marco/Devel/LHCb/workspace/LHCb_trunk")
-    print pr.packages.keys()
-    print "Woring on", all_packs[idx]
-
-    print "=== Project CMakeLists.txt", "=" * 80
-    print pr.generate()
-
-    pack = pr.packages[all_packs[idx]]
-    print "=== Package requirements", "=" * 80
-    print open(pack.requirements).read()
-    print "=== Pacakge CMakeLists.txt", "=" * 80
-    print pack.generate()
-
-    #print "=" * 80
-    #print pr.packages["Det/DetCond"].generate()
-
-    #print "=" * 80
-    #print pr.packages["Kernel/LHCbKernel"].generate()

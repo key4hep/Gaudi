@@ -9,7 +9,7 @@ import Variable
 import logging.config
 import os
 from cPickle import load, dump
-from hashlib import md5
+from hashlib import md5 # pylint: disable=E0611
 
 class XMLFile():
     '''Takes care of XML file operations such as reading and writing.'''
@@ -23,56 +23,75 @@ class XMLFile():
         self.logger = logging.getLogger('envLogger')
 
     def variable(self, path, namespace='EnvSchema', name=None):
-        '''Returns list containing name of variable, action and value
+        '''Returns list containing name of variable, action and value.
+
+        @param path: a file name or a file-like object
 
         If no name given, returns list of lists of all variables and locals(instead of action 'local' is filled).
         '''
-        if not os.path.isfile(path):
-            raise IOError('No such file.')
-        sum = md5()
-        sum.update(open(path, 'rb').read())
-        sum = sum.digest()
+        isFilename = type(path) is str
+        if isFilename:
+            checksum = md5()
+            checksum.update(open(path, 'rb').read())
+            checksum = checksum.digest()
 
-        cpath = path + "c" # preparsed file
-        try:
-            f = open(cpath, 'rb')
-            oldsum, data = load(f)
-            if oldsum == sum:
-                return data
-        except:
-            pass
+            cpath = path + "c" # preparsed file
+            try:
+                f = open(cpath, 'rb')
+                oldsum, data = load(f)
+                if oldsum == checksum:
+                    return data
+            except IOError:
+                pass
+            except EOFError:
+                pass
+
+            caller = path
+        else:
+            caller = None
 
         # Get file
-        self.doc = minidom.parse(path)
+        doc = minidom.parse(path)
         if namespace == '':
             namespace = None
 
+        ELEMENT_NODE = minidom.Node.ELEMENT_NODE
         # Get all variables
-        nodes = self.doc.getElementsByTagNameNS(namespace, "config")[0].childNodes
+        nodes = doc.getElementsByTagNameNS(namespace, "config")[0].childNodes
         variables = []
         for node in nodes:
             # if it is an element node
-            if node.nodeType == 1:
-                varname = str(node.getAttribute('variable'))
-                if name and varname != name:
-                        continue
-
+            if node.nodeType == ELEMENT_NODE:
                 action = str(node.localName)
-                if action == 'declare':
-                    variables.append((action, (varname, str(node.getAttribute('type')), str(node.getAttribute('local')))))
-                else:
+
+                if action == 'include':
                     if node.childNodes:
                         value = str(node.childNodes[0].data)
                     else:
                         value = ''
-                    variables.append((action, (varname, value, None)))
+                    variables.append((action, (value, caller, str(node.getAttribute('hints')))))
 
-        try:
-            f = open(cpath, 'wb')
-            dump((sum, variables), f, protocol=2)
-            f.close()
-        except:
-            pass
+                else:
+                    varname = str(node.getAttribute('variable'))
+                    if name and varname != name:
+                        continue
+
+                    if action == 'declare':
+                        variables.append((action, (varname, str(node.getAttribute('type')), str(node.getAttribute('local')))))
+                    else:
+                        if node.childNodes:
+                            value = str(node.childNodes[0].data)
+                        else:
+                            value = ''
+                        variables.append((action, (varname, value, None)))
+
+        if isFilename:
+            try:
+                f = open(cpath, 'wb')
+                dump((checksum, variables), f, protocol=2)
+                f.close()
+            except IOError:
+                pass
         return variables
 
 
@@ -81,9 +100,9 @@ class XMLFile():
         self.xmlResult = '<?xml version="1.0" encoding="UTF-8"?><env:config xmlns:env="EnvSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="EnvSchema ./EnvSchema.xsd ">\n'
         self.declaredVars = []
 
-    def writeToFile(self, outputFile = ''):
+    def writeToFile(self, outputFile=None):
         '''Finishes the XML input and writes XML to file.'''
-        if(outputFile == ''):
+        if outputFile is None:
             raise IOError("No output file given")
         self.xmlResult += '</env:config>'
 
@@ -94,15 +113,15 @@ class XMLFile():
         f.close()
         return outputFile
 
-    def writeVar(self, varName, action, value, type='list', local='false'):
-        '''Writes a action to a file. Declare undeclared elements (not local List is default type).'''
+    def writeVar(self, varName, action, value, vartype='list', local=False):
+        '''Writes a action to a file. Declare undeclared elements (non-local list is default type).'''
         if action == 'declare':
-            self.xmlResult += '<env:declare variable="'+varName+'" type="'+ type.lower() +'" local="'+(str(local)).lower()+'" />\n'
+            self.xmlResult += '<env:declare variable="'+varName+'" type="'+ vartype.lower() +'" local="'+(str(local)).lower()+'" />\n'
             self.declaredVars.append(varName)
             return
 
         if varName not in self.declaredVars:
-            self.xmlResult += '<env:declare variable="'+varName+'" type="'+ type +'" local="'+(str(local)).lower()+'" />\n'
+            self.xmlResult += '<env:declare variable="'+varName+'" type="'+ vartype +'" local="'+(str(local)).lower()+'" />\n'
             self.declaredVars.append(varName)
         self.xmlResult += '<env:'+action+' variable="'+ varName +'">'+value+'</env:'+action+'>\n'
 
@@ -119,7 +138,7 @@ class Report():
         self.level = level
 
         if not reportOutput:
-            self.reportOutput = False
+            self.reportOutput = None
         else:
             self.reportOutput = open(reportOutput, 'w')
 
@@ -196,10 +215,15 @@ class XMLOperations():
 
     Variables are stored in a double dictionary with keys of names and then actions.
     '''
-    def __init__(self, separator=':', reportLevel = 0, reportOutput = False):
+    def __init__(self, separator=':', reportLevel=0, reportOutput=None):
         self.posActions = ['append','prepend','set','unset', 'remove', 'remove-regexp', 'declare']
         self.separator = separator
-        self.report = Report(reportLevel, reportOutput = reportOutput)
+        self.report = Report(reportLevel, reportOutput=reportOutput)
+        self.varNames = []
+        self.realVariables = {}
+        self.variables = {}
+        self.file = None
+        self.output = None
 
     def errors(self):
         return self.report.numErrors()
@@ -214,6 +238,7 @@ class XMLOperations():
         All valid actions are checked after and duplicated variables as well.
         '''
         #self.local = Variable.Local()
+        # reset state
         self.varNames = []
         self.realVariables = {}
         self.variables = {}
@@ -259,10 +284,10 @@ class XMLOperations():
             if action == 'declare':
                 if arg1 in self.variables.keys():
                     if arg2.lower() != self.variables[arg1][0]:
-                        raise Variable.EnvironmentError(arg1, 'redeclaration')
+                        raise Variable.EnvError(arg1, 'redeclaration')
                     else:
                         if arg3.lower() != self.variables[arg1][1]:
-                            raise Variable.EnvironmentError(arg1, 'redeclaration')
+                            raise Variable.EnvError(arg1, 'redeclaration')
                 else:
                     self.file.writeVar(arg1, 'declare', '', arg2, arg3)
                     self.variables[arg1] = [arg2.lower(), arg3.lower()]
@@ -270,7 +295,7 @@ class XMLOperations():
                 self.file.writeVar(arg1, action, arg2)
 
 
-    def _checkVariable(self, varName, action, local, value, nodeNum):
+    def _checkVariable(self, varName, action, local, value, nodeNum):# pylint: disable=W0613
         '''Tries to add to variables dict, checks for errors during process'''
 
         if varName not in self.variables:
@@ -300,7 +325,7 @@ class XMLOperations():
             if action == 'remove-regexp':
                 action = 'remove_regexp'
             eval('(self.realVariables[varName]).'+action+'(value)')
-        except Variable.EnvironmentError as e:
+        except Variable.EnvError as e:
             if e.code == 'undefined':
                 self.report.addWarn('Referenced variable "' +e.val+ '" is not defined.')
             elif e.code == 'ref2var':
