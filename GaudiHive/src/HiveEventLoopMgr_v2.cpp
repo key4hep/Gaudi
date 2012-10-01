@@ -31,6 +31,10 @@
 
 #include <pthread.h> // only for the tID!
 
+
+#include <sys/resource.h>
+#include <sys/times.h>
+
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY(HiveEventLoopMgr_v2)
 
@@ -429,24 +433,24 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
   // Collapse executeEvent and run_parallel in the same method
   // TODO _very_ sporty on conditions and checks!!
 
-	struct timespec loopstart;
-	clock_gettime( CLOCK_REALTIME, &loopstart);
+	struct rusage loopstart;
+	getrusage(  RUSAGE_SELF, &loopstart);
 
-	auto secsFromStart = [&loopstart](timespec& now) {
-		auto timespecdiff = [] (timespec& start, timespec& end) ->timespec
+	auto secsFromStart = [&loopstart](rusage& now) {
+		auto timespecdiff = [] (rusage& start, rusage& end) ->rusage
 				{
-				timespec temp;
-				if ((end.tv_nsec-start.tv_nsec)<0) {
-					temp.tv_sec = end.tv_sec-start.tv_sec-1;
-					temp.tv_nsec = 1000000000+end.tv_nsec-start.tv_nsec;
+				rusage temp;
+				if ((end.ru_stime.tv_usec-start.ru_stime.tv_usec)<0) {
+					temp.ru_stime.tv_sec = end.ru_stime.tv_sec-start.ru_stime.tv_sec-1;
+					temp.ru_stime.tv_usec = 1000000+end.ru_stime.tv_usec-start.ru_stime.tv_usec;
 				} else {
-					temp.tv_sec = end.tv_sec-start.tv_sec;
-					temp.tv_nsec = end.tv_nsec-start.tv_nsec;
+					temp.ru_stime.tv_sec = end.ru_stime.tv_sec-start.ru_stime.tv_sec;
+					temp.ru_stime.tv_usec = end.ru_stime.tv_usec-start.ru_stime.tv_usec;
 				}
 				return temp;
 				};
-		timespec diff (timespecdiff(loopstart,now));
-		return diff.tv_sec + diff.tv_nsec/1000000000.;
+		rusage diff (timespecdiff(loopstart,now));
+		return diff.ru_stime.tv_sec + diff.ru_stime.tv_usec/1000000.;
 	};
 
 
@@ -486,7 +490,7 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
   // Events in flight
   std::list<contextSchedState_tuple> events_in_flight;
 
-	struct timespec now;
+	struct rusage now;
   // Loop until no more evts are there
   while (maxevt == -1 ? true : n_processed_events<maxevt){// TODO Fix the condition in case of -1
 
@@ -521,7 +525,7 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 		  EventSchedulingState* event_state = new EventSchedulingState(m_topAlgList.size());
 		  events_in_flight.push_back(std::make_tuple(evtContext,event_state));
 
-			clock_gettime( CLOCK_REALTIME, &now);
+		  getrusage(  RUSAGE_SELF, &now);
 
 			always()  << "Started event " << evt_num << " at " << secsFromStart(now) << endmsg;
 
@@ -588,7 +592,7 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 	  while (it!=events_in_flight.end()){
 		  if (std::get<1>(*it)->hasFinished()){
 			  const unsigned int evt_num = std::get<0>(*it)->m_evt_num;
-			  clock_gettime( CLOCK_REALTIME, &now);
+			  getrusage(  RUSAGE_SELF, &now);
 
 			  log << MSG::INFO << "Event "<< evt_num << " finished. Events in fight are "
 					  << events_in_flight.size() << ". Processed events are "

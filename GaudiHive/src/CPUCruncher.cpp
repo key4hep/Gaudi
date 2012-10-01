@@ -1,7 +1,9 @@
 #include "CPUCruncher.h"
 #include "HiveNumbers.h"
 #include <ctime>
-#include "time.h"
+#include <sys/resource.h>
+#include <sys/times.h>
+
 
 DECLARE_ALGORITHM_FACTORY(CPUCruncher) 
 
@@ -86,8 +88,8 @@ void CPUCruncher::findPrimes (const double runtime)  {
 StatusCode CPUCruncher::execute  ()  // the execution of the algorithm 
 {
 
-	struct timespec starttime;
-	clock_gettime( CLOCK_REALTIME, &starttime);
+	struct rusage starttime;
+	getrusage( RUSAGE_SELF, &starttime);
 
   MsgStream logstream(msgSvc(), name());
 
@@ -134,10 +136,11 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
   runtime = std::fabs(rndmgaus());
   }
 
+  float time = starttime.ru_stime.tv_sec +starttime.ru_stime.tv_usec/1000000.;
   logstream  << MSG::INFO << "Runtime will be: "<< runtime << endmsg;
   logstream  << MSG::INFO << "Start event " <<  getContext()->m_evt_num
 		     << " on pthreadID " << getContext()->m_thread_id
-		     << " at " << starttime.tv_nsec <<  endmsg;
+		     << " at " << time <<  endmsg;
   
   // get products from the event
   // for (std::string& input : m_inputs){
@@ -157,11 +160,11 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
     write(new DataObject(), output);
   }
 
-	struct timespec endtime;
-	clock_gettime( CLOCK_REALTIME, &endtime);
+	struct rusage endtime;
+	getrusage( RUSAGE_SELF, &endtime);
   logstream << MSG::INFO << "Finish event " <<  getContext()->m_evt_num
 		     << " on pthreadID " << getContext()->m_thread_id
-		     << " at " << endtime.tv_nsec << endmsg;
+		     << " at " << endtime.ru_stime.tv_sec << endmsg;
   return StatusCode::SUCCESS ;
 }
 
