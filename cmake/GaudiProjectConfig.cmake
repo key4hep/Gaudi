@@ -1645,7 +1645,7 @@ endmacro()
 # gaudi_project() and gaudi_generate_env_conf().
 #-------------------------------------------------------------------------------
 function(gaudi_env)
-  #message(STATUS "ARGN -> ${ARGN}")
+  #message(STATUS "gaudi_env(): ARGN -> ${ARGN}")
   # ensure that the variables in the value are not expanded when passing the arguments
   #string(REPLACE "\$" "\\\$" _argn "${ARGN}")
   #message(STATUS "_argn -> ${_argn}")
@@ -1658,7 +1658,7 @@ endfunction()
 # Same as gaudi_env(), but the environment is set only for building.
 #-------------------------------------------------------------------------------
 function(gaudi_build_env)
-  #message(STATUS "ARGN -> ${ARGN}")
+  #message(STATUS "gaudi_build_env(): ARGN -> ${ARGN}")
   # ensure that the variables in the value are not expanded when passing the arguments
   #string(REPLACE "\$" "\\\$" _argn "${ARGN}")
   #message(STATUS "_argn -> ${_argn}")
@@ -1802,10 +1802,18 @@ macro(gaudi_external_project_environment)
         list(APPEND binary_path ${bin_path})
       endif()
 
-      list(APPEND binary_path   ${${pack}_BINARY_PATH} ${${_pack_upper}_BINARY_PATH})
-      list(APPEND python_path   ${${pack}_PYTHON_PATH} ${${_pack_upper}_PYTHON_PATH})
-      list(APPEND environment   ${${pack}_ENVIRONMENT} ${${_pack_upper}_ENVIRONMENT})
-      list(APPEND library_path2 ${${pack}_LIBRARY_DIR} ${${pack}_LIBRARY_DIRS} ${${_pack_upper}_LIBRARY_DIR} ${${_pack_upper}_LIBRARY_DIRS})
+      list(APPEND binary_path   ${${pack}_BINARY_PATH})
+      list(APPEND python_path   ${${pack}_PYTHON_PATH})
+      list(APPEND environment   ${${pack}_ENVIRONMENT})
+      list(APPEND library_path2 ${${pack}_LIBRARY_DIR} ${${pack}_LIBRARY_DIRS})
+      # Try the version with the name of the package uppercase (unless the
+      # package name is already uppercase).
+      if(NOT pack STREQUAL _pack_upper)
+        list(APPEND binary_path   ${${_pack_upper}_BINARY_PATH})
+        list(APPEND python_path   ${${_pack_upper}_PYTHON_PATH})
+        list(APPEND environment   ${${_pack_upper}_ENVIRONMENT})
+        list(APPEND library_path2 ${${_pack_upper}_LIBRARY_DIR} ${${_pack_upper}_LIBRARY_DIRS})
+      endif()
     endif()
   endforeach()
 
