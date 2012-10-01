@@ -4,6 +4,31 @@ from Configurables import GaudiExamplesCommonConf, CPUCruncher,HiveEventLoopMgr_
 #GaudiExamplesCommonConf()
 # ============================================================================     
 
+#-------------------------------------------------------------------------------
+# Metaconfig
+
+NUMBEROFEVENTS = 10
+NUMBEROFEVENTSINFLIGHT = 5
+NUMBEROFALGOSINFLIGHT = 5
+NUMBEROFTHREADS = 10
+CLONEALGOS = False
+DUMPQUEUES = False
+VERBOSITY = 6 
+
+
+NumberOfEvents = NUMBEROFEVENTS
+NumberOfEventsInFlight = NUMBEROFEVENTSINFLIGHT
+NumberOfAlgosInFlight = NUMBEROFALGOSINFLIGHT
+NumberOfThreads = NUMBEROFTHREADS
+CloneAlgos = CLONEALGOS
+DumpQueues = DUMPQUEUES
+Verbosity = VERBOSITY
+
+
+
+#-------------------------------------------------------------------------------
+
+
 def load_brunel_scenario(filename):
   algs = {}
   timing = {}
@@ -74,28 +99,26 @@ def load_brunel_scenario(filename):
   return all_algos
         
 
-n_threads = 10
-n_parallel_events = 10
-n_parallel_algorithms = 10
+# Set output level threshold 2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
+ms = MessageSvc() 
+ms.OutputLevel     =  Verbosity
 
 crunchers = load_brunel_scenario("Brunel.TES.trace.log")
 
 # Setup the Event Loop Manager
 evtloop = HiveEventLoopMgr_v2()
-evtloop.MaxAlgosParallel = n_threads
-evtloop.MaxEventsParallel = n_parallel_events
-evtloop.NumThreads = n_parallel_algorithms
-evtloop.CloneAlgorithms = True
-evtloop.DumpQueues = False
+evtloop.MaxAlgosParallel = NumberOfAlgosInFlight
+evtloop.MaxEventsParallel = NumberOfEventsInFlight
+evtloop.NumThreads = NumberOfThreads 
+evtloop.CloneAlgorithms = CloneAlgos
+evtloop.DumpQueues = DumpQueues
 
 # And the Application Manager
-
 app = ApplicationMgr()
 app.TopAlg = crunchers
 app.EvtSel = "NONE" # do not use any event input
-app.EvtMax = 100
-app.EventLoop = evtloop;
-app.MessageSvcType = "TBBMessageSvc";
-
+app.EvtMax = NumberOfEvents
+app.EventLoop = evtloop
+app.MessageSvcType = "TBBMessageSvc"
 
 
