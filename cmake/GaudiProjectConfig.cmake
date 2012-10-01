@@ -140,7 +140,7 @@ macro(gaudi_project project version)
   # paths where to locate scripts and executables
   # Note: it's a bit a duplicate of the one used in gaudi_external_project_environment
   #       but we need it here because the other one is meant to include also
-  #       the external libraries requyired by the subdirectories.
+  #       the external libraries required by the subdirectories.
   set(binary_paths)
 
   # Note: the indirection is needed because we are in a macro and not in a function
@@ -287,6 +287,9 @@ macro(gaudi_project project version)
     #     - declared environments
     get_property(_pack_env DIRECTORY ${package} PROPERTY ENVIRONMENT)
     set(project_environment ${project_environment} ${_pack_env})
+    set(project_build_environment ${project_build_environment} ${_pack_env})
+    #       (build env only)
+    get_property(_pack_env DIRECTORY ${package} PROPERTY BUILD_ENVIRONMENT)
     set(project_build_environment ${project_build_environment} ${_pack_env})
 
     # we need special handling of PYTHONPATH and PATH for the build-time environment
@@ -1625,10 +1628,11 @@ endforeach()
 endmacro()
 
 #-------------------------------------------------------------------------------
-# gaudi_env(<SET|PREPEND|APPEND|REMOVE> <var> <value> [...repeat...])
+# gaudi_env(<SET|PREPEND|APPEND|REMOVE|UNSET|INCLUDE> <var> <value> [...repeat...])
 #
 # Declare environment variables to be modified.
-# Note: this is just a wrapper around set_property, the actual logic is in ...
+# Note: this is just a wrapper around set_property, the actual logic is in
+# gaudi_project() and gaudi_generate_env_conf().
 #-------------------------------------------------------------------------------
 function(gaudi_env)
   #message(STATUS "ARGN -> ${ARGN}")
@@ -1638,6 +1642,18 @@ function(gaudi_env)
   set_property(DIRECTORY APPEND PROPERTY ENVIRONMENT ${ARGN})
 endfunction()
 
+#-------------------------------------------------------------------------------
+# gaudi_build_env(<SET|PREPEND|APPEND|REMOVE|UNSET|INCLUDE> <var> <value> [...repeat...])
+#
+# Same as gaudi_env(), but the environment is set only for building.
+#-------------------------------------------------------------------------------
+function(gaudi_build_env)
+  #message(STATUS "ARGN -> ${ARGN}")
+  # ensure that the variables in the value are not expanded when passing the arguments
+  #string(REPLACE "\$" "\\\$" _argn "${ARGN}")
+  #message(STATUS "_argn -> ${_argn}")
+  set_property(DIRECTORY APPEND PROPERTY BUILD_ENVIRONMENT ${ARGN})
+endfunction()
 
 #-------------------------------------------------------------------------------
 # _env_conf_pop_instruction(...)
