@@ -6,7 +6,7 @@ find_package(Boost)
 find_package(AIDA)
 find_package(ROOT COMPONENTS RIO Hist XMLIO)
 find_package(XercesC)
-find_package(uuid)
+find_package(UUID)
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiUtilsLib Lib/*.cpp
@@ -14,5 +14,5 @@ gaudi_add_library(GaudiUtilsLib Lib/*.cpp
                   INCLUDE_DIRS ROOT AIDA
                   PUBLIC_HEADERS GaudiUtils)
 gaudi_add_module(GaudiUtils component/*.cpp
-                 LINK_LIBRARIES GaudiUtilsLib XercesC uuid
-                 INCLUDE_DIRS XercesC uuid)
+                 LINK_LIBRARIES GaudiUtilsLib XercesC UUID
+                 INCLUDE_DIRS XercesC UUID)

@@ -84,9 +84,20 @@ _shelve_file = os.environ.get('CMT2CMAKECACHE',
 known_subdirs = shelve.open(_shelve_file)
 
 def extName(n):
+    '''
+    Mapping between the name of the LCG_Interface name and the Find*.cmake name
+    (if non-trivial).
+    '''
     mapping = {'Reflex': 'ROOT',
                'Python': 'PythonLibs',
-               'neurobayes_expert': 'NeuroBayesExpert'}
+               'neurobayes_expert': 'NeuroBayesExpert',
+               'mysql': 'MySQL',
+               'oracle': 'Oracle',
+               'sqlite': 'SQLite',
+               'lfc': 'LFC',
+               'fftw': 'FFTW',
+               'uuid': 'UUID',
+               }
     return mapping.get(n, n)
 
 def isPackage(path):
