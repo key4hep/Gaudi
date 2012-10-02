@@ -1649,7 +1649,7 @@ function(gaudi_env)
   # ensure that the variables in the value are not expanded when passing the arguments
   #string(REPLACE "\$" "\\\$" _argn "${ARGN}")
   #message(STATUS "_argn -> ${_argn}")
-  set_property(DIRECTORY APPEND PROPERTY ENVIRONMENT ${ARGN})
+  set_property(DIRECTORY APPEND PROPERTY ENVIRONMENT "${ARGN}")
 endfunction()
 
 #-------------------------------------------------------------------------------
@@ -1662,7 +1662,7 @@ function(gaudi_build_env)
   # ensure that the variables in the value are not expanded when passing the arguments
   #string(REPLACE "\$" "\\\$" _argn "${ARGN}")
   #message(STATUS "_argn -> ${_argn}")
-  set_property(DIRECTORY APPEND PROPERTY BUILD_ENVIRONMENT ${ARGN})
+  set_property(DIRECTORY APPEND PROPERTY BUILD_ENVIRONMENT "${ARGN}")
 endfunction()
 
 #-------------------------------------------------------------------------------
