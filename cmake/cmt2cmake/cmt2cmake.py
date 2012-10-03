@@ -8,8 +8,9 @@ import re
 import logging
 import shelve
 import json
+import operator
 
-def makeParser():
+def makeParser(patterns=None):
     from pyparsing import ( Word, QuotedString, Keyword, Literal, SkipTo, StringEnd,
                             ZeroOrMore, Optional, Combine,
                             alphas, alphanums, printables )
@@ -54,13 +55,15 @@ def makeParser():
     setenv = (Keyword('set') | Keyword('path_append') | Keyword('path_prepend')) + identifier + values
 
     apply_pattern = Keyword("apply_pattern") + identifier + ZeroOrMore(variable)
-
+    if patterns:
+        direct_patterns = reduce(operator.or_, map(Keyword, set(patterns)))
+        # add the implied 'apply_pattern' to the list of tokens
+        direct_patterns.addParseAction(lambda toks: toks.insert(0, 'apply_pattern'))
+        apply_pattern = apply_pattern | (direct_patterns + ZeroOrMore(variable))
 
     statement = (package | version | use | constituent | macro | setenv | apply_pattern)
 
     return Optional(statement) + Optional(comment) + StringEnd()
-
-CMTParser = makeParser()
 
 # record of known subdirs with their libraries
 # {'subdir': {'libraries': [...]}}
@@ -172,6 +175,9 @@ class Package(object):
         self.sets = {}
         self.paths = {}
 
+        # These are patterns that can appear only once per package.
+        # The corresponding dictionary will contain the arguments passed to the
+        # pattern.
         self.singleton_patterns = set(["QMTest", "install_python_modules", "install_scripts",
                                        "install_more_includes", "god_headers", "god_dictionary",
                                        "PyQtResource", "PyQtUIC"])
@@ -182,16 +188,22 @@ class Package(object):
         self.PyQtResource = {}
         self.PyQtUIC = {}
 
-        self.multi_patterns = set(["reflex_dictionary", 'component_library', 'linker_library'])
+        # These are patterns that can be repeated in the requirements.
+        # The corresponding data members will contain the list of dictionaries
+        # corresponding to the various calls.
+        self.multi_patterns = set(['reflex_dictionary', 'component_library', 'linker_library',
+                                   'copy_relax_rootmap'])
         self.reflex_dictionary = []
         self.component_library = []
         self.linker_library = []
+        self.copy_relax_rootmap = []
 
         self.reflex_dictionaries = {}
         self.component_libraries = set()
         self.linker_libraries = set()
 
         self.log = logging.getLogger('Package(%s)' % self.name)
+        self.CMTParser = makeParser(self.singleton_patterns | self.multi_patterns)
         try:
             self._parseRequirements()
         except:
@@ -254,6 +266,8 @@ class Package(object):
                     components = ['CoolKernel', 'CoolApplication']
                 elif n == 'CORAL':
                     components = ['CoralBase', 'CoralKernel', 'RelationalAccess']
+                elif n == 'RELAX' and self.copy_relax_rootmap:
+                    components = [d['dict'] for d in self.copy_relax_rootmap if 'dict' in d]
 
                 find_packages[n] = find_packages.get(n, []) + components
 
@@ -262,6 +276,8 @@ class Package(object):
             args = [n]
             components = find_packages[n]
             if components:
+                if n == 'RELAX': # FIXME: probably we should set 'REQUIRED' for all the externals
+                    args.append('REQUIRED')
                 args.append('COMPONENTS')
                 args.extend(components)
             data.append('find_package(%s)' % ' '.join(args))
@@ -455,6 +471,17 @@ class Package(object):
         if self.PyQtResource or self.PyQtUIC:
             data.append('') # empty line
 
+        if self.copy_relax_rootmap:
+            data.extend(['# Merge the RELAX rootmaps',
+                         'set(rootmapfile ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/relax.rootmap)',
+                         callStringWithIndent('add_custom_command',
+                                              ['OUTPUT ${rootmapfile}',
+                                               'COMMAND ${merge_cmd} ${RELAX_ROOTMAPS} ${rootmapfile}',
+                                               'DEPENDS ${RELAX_ROOTMAPS}']),
+                         'add_custom_target(RelaxRootmap ALL DEPENDS ${rootmapfile})',
+                         '\n# Install the merged file',
+                         'install(FILES ${rootmapfile} DESTINATION lib)\n'])
+
         # installation
         installs = []
         if headers and not self.linker_libraries: # not installed yet
@@ -531,7 +558,7 @@ class Package(object):
                 # an empty line after a '\' means ending the statement
                 if statement:
                     try:
-                        yield list(CMTParser.parseString(statement))
+                        yield list(self.CMTParser.parseString(statement))
                     except:
                         # ignore not know statements
                         self.log.debug("Failed to parse statement: %r", statement)

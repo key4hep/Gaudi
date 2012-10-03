@@ -1,6 +1,11 @@
-from cmt2cmake import CMTParser
+from cmt2cmake import makeParser
 from pyparsing import ParseException
 
+CMTParser = makeParser(set(["QMTest", "install_python_modules", "install_scripts",
+                            "install_more_includes", "god_headers", "god_dictionary",
+                            "PyQtResource", "PyQtUIC"])
+                       | set(['reflex_dictionary', 'component_library', 'linker_library',
+                              'copy_relax_rootmap']))
 def _test_package():
     tokens = list(CMTParser.parseString('package Test'))
     assert tokens == ['package', 'Test']
@@ -40,6 +45,12 @@ def test_macro():
 
 def test_apply_pattern():
     s = 'apply_pattern component_library library=L0DU'
+    tokens = list(CMTParser.parseString(s))
+    print tokens
+    assert tokens == ['apply_pattern', 'component_library', 'library=L0DU']
+
+def test_implicit_apply_pattern():
+    s = 'component_library library=L0DU'
     tokens = list(CMTParser.parseString(s))
     print tokens
     assert tokens == ['apply_pattern', 'component_library', 'library=L0DU']

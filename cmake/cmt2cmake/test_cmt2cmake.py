@@ -114,7 +114,7 @@ def test_pack_header():
     assert len(calls) == 1, "gaudi_subdir called more than once"
 
     args = calls[0].strip().split()
-    assert args == ["ThisIsAPackage", "v123r456"]
+    assert args == ["ThisIsAPackage", "v123r456"], args
 
 def test_pack_deps():
     requirements = """
@@ -1118,6 +1118,40 @@ apply_pattern component_library library=Test
 
     calls = getCalls("gaudi_add_module", cmakelists)
     assert len(calls) == 1, "gaudi_add_module wrong count %d" % len(calls)
+
+
+def test_line_copy_relax():
+    requirements = '''
+package Test
+version v1r0
+
+use RELAX         v* LCG_Interfaces
+
+copy_relax_rootmap dict=CLHEP
+copy_relax_rootmap dict=HepMC
+copy_relax_rootmap dict=STL
+copy_relax_rootmap dict=Math
+    '''
+    pkg = PackWrap("Test", requirements, files={})
+
+    cmakelists = pkg.generate()
+    print cmakelists
+
+    calls = getCalls("find_package", cmakelists)
+    assert len(calls) == 1, "find_package wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l == ['RELAX', 'REQUIRED', 'COMPONENTS', 'CLHEP', 'HepMC', 'STL', 'Math']
+
+    calls = getCalls("add_custom_target", cmakelists)
+    assert len(calls) == 1, "add_custom_target wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l == ['RelaxRootmap', 'ALL', 'DEPENDS', '${rootmapfile}']
+
+    # No need to check every call, just that the sequence is there
+
+
 
 from nose.core import main
 main()
