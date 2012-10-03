@@ -7,6 +7,7 @@ import sys
 import re
 import logging
 import shelve
+import json
 
 def makeParser():
     from pyparsing import ( Word, QuotedString, Keyword, Literal, SkipTo, StringEnd,
@@ -61,30 +62,43 @@ def makeParser():
 
 CMTParser = makeParser()
 
-# mappings
-ignored_packages = set(["GaudiSys", "GaudiRelease", "GaudiPolicy"])
-data_packages = set(['Det/SQLDDDB', 'FieldMap', 'TCK/HltTCK', 'TCK/L0TCK',
-                     'ChargedProtoANNPIDParam', 'ParamFiles'])
-
-ignore_dep_on_subdirs = set(ignored_packages)
-ignore_dep_on_subdirs.update(data_packages)
-
-# List of packages known to actually need Python to build
-needing_python = ('LoKiCore', 'XMLSummaryKernel', 'CondDBUI')
-
-# packages that must have the pedantic option disabled
-no_pedantic = set(['LHCbMath', 'GenEvent', 'ProcessorKernel', 'TrackKernel',
-                   'Magnet', 'L0MuonKernel', 'DetDescChecks', 'DetDescSvc',
-                   'SimComponents', 'DetDescExample', 'CondDBEntityResolver',
-                   'MuonDAQ', 'STKernel', 'CaloDAQ', 'CaloUtils'])
-
-ignore_env = set(['EXPORT_ALL_SYMBOLS'])
-
 # record of known subdirs with their libraries
 # {'subdir': {'libraries': [...]}}
 _shelve_file = os.environ.get('CMT2CMAKECACHE',
                               os.path.join(os.path.dirname(__file__), 'known_subdirs.cache'))
 known_subdirs = shelve.open(_shelve_file)
+
+config = {}
+for k in ['ignored_packages', 'data_packages', 'needing_python', 'no_pedantic',
+          'ignore_env']:
+    config[k] = set()
+
+# mappings
+ignored_packages = config['ignored_packages']
+data_packages = config['data_packages']
+
+# List of packages known to actually need Python to build
+needing_python = config['needing_python']
+
+# packages that must have the pedantic option disabled
+no_pedantic = config['no_pedantic']
+
+ignore_env = config['ignore_env']
+
+def loadConfig(config_file):
+    '''
+    Merge the content of the JSON file with the configuration dictionary.
+    '''
+    global config
+    if os.path.exists(config_file):
+        data = json.load(open(config_file))
+        for k in data:
+            if k not in config:
+                config[k] = set()
+            config[k].update(map(str, data[k]))
+        # print config
+
+loadConfig(os.path.join(os.path.dirname(__file__), 'cmt2cmake.cfg'))
 
 def extName(n):
     '''
@@ -201,7 +215,8 @@ class Package(object):
         #  subdirectories (excluding specials)
         subdirs = [n for n in sorted(self.uses)
                    if not n.startswith("LCG_Interfaces/")
-                      and n not in ignore_dep_on_subdirs]
+                      and n not in ignored_packages
+                      and n not in data_packages]
 
         inc_dirs = []
         if subdirs:
@@ -746,6 +761,8 @@ def main(args=None):
         top_dir = args[0]
         if not os.path.isdir(top_dir):
             parser.error("%s is not a directory" % top_dir)
+
+    loadConfig(os.path.join(top_dir, 'cmt2cmake.cfg'))
 
     if isProject(top_dir):
         root = Project(top_dir)
