@@ -50,11 +50,12 @@ def makeParser():
     constituent = ((Keyword('library') | Keyword('application') | Keyword('document'))
                    + identifier + ZeroOrMore(constituent_option | source))
     macro = (Keyword('macro') | Keyword('macro_append')) + identifier + values
+    setenv = (Keyword('set') | Keyword('path_append') | Keyword('path_prepend')) + identifier + values
 
     apply_pattern = Keyword("apply_pattern") + identifier + ZeroOrMore(variable)
 
 
-    statement = (package | version | use | constituent | macro | apply_pattern)
+    statement = (package | version | use | constituent | macro | setenv | apply_pattern)
 
     return Optional(statement) + Optional(comment) + StringEnd()
 
@@ -76,6 +77,8 @@ no_pedantic = set(['LHCbMath', 'GenEvent', 'ProcessorKernel', 'TrackKernel',
                    'Magnet', 'L0MuonKernel', 'DetDescChecks', 'DetDescSvc',
                    'SimComponents', 'DetDescExample', 'CondDBEntityResolver',
                    'MuonDAQ', 'STKernel', 'CaloDAQ', 'CaloUtils'])
+
+ignore_env = set(['EXPORT_ALL_SYMBOLS'])
 
 # record of known subdirs with their libraries
 # {'subdir': {'libraries': [...]}}
@@ -152,6 +155,8 @@ class Package(object):
         self.applications = []
         self.documents = []
         self.macros = {}
+        self.sets = {}
+        self.paths = {}
 
         self.singleton_patterns = set(["QMTest", "install_python_modules", "install_scripts",
                                        "install_more_includes", "god_headers", "god_dictionary",
@@ -451,6 +456,30 @@ class Package(object):
         if installs:
             data.extend(installs)
             data.append('') # empty line
+
+        # environment
+        def fixSetValue(s):
+            '''
+            Convert environment variable values from CMT to CMake.
+            '''
+            # escape '$' if not done already
+            s = re.sub(r'(?<!\\)\$', '\\$', s)
+            # replace parenthesis with curly braces
+            s = re.sub(r'\$\(([^()]*)\)', r'${\1}', s)
+            # replace variables like Package_root with PACKAGEROOT
+            v = re.compile(r'\$\{(\w*)_root\}')
+            m = v.search(s)
+            while m:
+                s = s[:m.start()] + ('${%sROOT}' % m.group(1).upper()) + s[m.end():]
+                m = v.search(s)
+            return s
+
+        if self.sets:
+            data.append(callStringWithIndent('gaudi_env',
+                                             ['SET %s %s' % (v, fixSetValue(self.sets[v]))
+                                              for v in sorted(self.sets)]))
+            data.append('') # empty line
+
         # tests
         if self.QMTest:
             data.append("\ngaudi_add_test(QMTest QMTEST)")
@@ -577,6 +606,11 @@ class Package(object):
                 value = args[0].strip('"').strip("'")
                 self.macros[name] = self.macros.get(name, "") + value
 
+            elif cmd == 'set':
+                name = args.pop(0)
+                if name not in ignore_env:
+                    value = args[0].strip('"').strip("'")
+                    self.sets[name] = value
 
         # classification of libraries in the package
         unquote = lambda x: x.strip('"').strip("'")
@@ -588,7 +622,7 @@ class Package(object):
 class Project(object):
     def __init__(self, path):
         """
-        Crete a project instance from the root directory of the project.
+        Create a project instance from the root directory of the project.
         """
         self.path = os.path.realpath(path)
         if not isProject(self.path):
