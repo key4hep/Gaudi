@@ -380,7 +380,18 @@ endmacro()
 # (improve readability)
 #-------------------------------------------------------------------------------
 macro(_gaudi_use_other_projects)
-  message(STATUS "Looking for projects:")
+  set(projects_search_path)
+  foreach(_v CMAKEPROJECTPATH CMTPROJECTPATH)
+    file(TO_CMAKE_PATH "$ENV{${_v}}" _tmp)
+    set(projects_search_path ${projects_search_path} ${_tmp})
+  endforeach()
+  if(projects_search_path)
+    list(REMOVE_DUPLICATES projects_search_path)
+    message(STATUS "Looking for projects in ${projects_search_path}")
+  else()
+    message(STATUS "Looking for projects")
+  endif()
+
 
   # this is neede because of the way variable expansion works in macros
   set(ARGN_ ${ARGN})
@@ -401,7 +412,12 @@ macro(_gaudi_use_other_projects)
     endif()
 
     if(NOT ${other_project}_FOUND)
-      find_package(${other_project} ${other_project_cmake_version} HINTS ..)
+      string(TOUPPER ${other_project} other_project_upcase)
+      find_package(${other_project} ${other_project_cmake_version}
+                   HINTS ${projects_search_path}
+                   PATH_SUFFIXES ${other_project}
+                                 ${other_project_upcase}/${other_project_upcase}_${other_project_version}
+                                 ${other_project_upcase})
       if(${other_project}_FOUND)
         message(STATUS "  found ${other_project} ${${other_project}_VERSION} ${${other_project}_DIR}")
         if(NOT heptools_version STREQUAL ${other_project}_heptools_version)
@@ -442,6 +458,8 @@ macro(_gaudi_use_other_projects)
         if(${other_project}_USES)
           list(INSERT ARGN_ 0 ${${other_project}_USES})
         endif()
+      else()
+        message(FATAL_ERROR "Cannot find project ${other_project} ${other_project_version}")
       endif()
       #message(STATUS "know_packages (after ${other_project}) ${known_packages}")
     endif()
