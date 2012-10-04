@@ -380,18 +380,15 @@ endmacro()
 # (improve readability)
 #-------------------------------------------------------------------------------
 macro(_gaudi_use_other_projects)
-  set(projects_search_path)
-  foreach(_v CMAKEPROJECTPATH CMTPROJECTPATH)
-    file(TO_CMAKE_PATH "$ENV{${_v}}" _tmp)
-    set(projects_search_path ${projects_search_path} ${_tmp})
-  endforeach()
+  # Note: it works even if the env. var. is not set.
+  file(TO_CMAKE_PATH "$ENV{CMTPROJECTPATH}" projects_search_path)
+
   if(projects_search_path)
     list(REMOVE_DUPLICATES projects_search_path)
     message(STATUS "Looking for projects in ${projects_search_path}")
   else()
     message(STATUS "Looking for projects")
   endif()
-
 
   # this is neede because of the way variable expansion works in macros
   set(ARGN_ ${ARGN})
