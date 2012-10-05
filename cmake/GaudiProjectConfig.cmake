@@ -93,7 +93,7 @@ macro(gaudi_project project version)
 
   #--- Project Options and Global settings----------------------------------------------------------
   option(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
-  option(BUILD_TESTS "Set to ON to build the tests (libraries and executables)" OFF)
+  option(BUILD_TESTS "Set to OFF to disable the build of the tests (libraries and executables)" ON)
   option(HIDE_WARNINGS "Turn on or off options that are used to hide warning messages" ON)
   option(USE_EXE_SUFFIX "Add the .exe suffix to executables on Unix systems (like CMT)" ON)
   #-------------------------------------------------------------------------------------------------
