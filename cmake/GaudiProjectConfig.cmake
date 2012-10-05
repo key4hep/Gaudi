@@ -134,7 +134,7 @@ macro(gaudi_project project version)
   endforeach()
 
   # List of all known packages, including those exported by other projects
-  set(known_packages ${packages})
+  set(known_packages ${packages} ${override_subdirs})
   #message(STATUS "known_packages (initial) ${known_packages}")
 
   # paths where to locate scripts and executables
@@ -246,8 +246,11 @@ macro(gaudi_project project version)
   set(packages ${sorted_packages})
   #message(STATUS "${packages}")
   # Add all subdirectories to the project build.
+  list(LENGTH packages packages_count)
+  set(package_idx 0)
   foreach(package ${packages})
-    message(STATUS "Adding directory ${package}")
+    math(EXPR package_idx "${package_idx} + 1")
+    message(STATUS "Adding directory ${package} (${package_idx}/${packages_count})")
     add_subdirectory(${package})
   endforeach()
 
@@ -444,11 +447,12 @@ macro(_gaudi_use_other_projects)
           list(FIND known_packages ${exported} is_needed)
           if(is_needed LESS 0)
             list(APPEND known_packages ${exported})
-            get_filename_component(exported ${exported} NAME)
-            include(${exported}Export)
+            get_filename_component(expname ${exported} NAME)
+            include(${expname}Export)
             message(STATUS "    imported ${exported} ${${exported}_VERSION}")
           endif()
         endforeach()
+        list(APPEND known_packages ${${other_project}_OVERRIDDEN_SUBDIRS})
         # Note: we add them in reverse order so that they appear in the correct
         # inclusion order in the environment XML.
         set(used_gaudi_projects ${other_project} ${used_gaudi_projects})
@@ -1647,6 +1651,8 @@ foreach(p ${packages})
     set(${CMAKE_PROJECT_NAME}_EXPORTED_SUBDIRS \${${CMAKE_PROJECT_NAME}_EXPORTED_SUBDIRS} \${p})
   endif()
 endforeach()
+
+set(${CMAKE_PROJECT_NAME}_OVERRIDDEN_SUBDIRS ${override_subdirs})
 ")
 
   install(FILES ${CMAKE_BINARY_DIR}/config/${CMAKE_PROJECT_NAME}PlatformConfig.cmake DESTINATION cmake)
