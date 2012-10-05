@@ -7,8 +7,10 @@ import sys
 import re
 import logging
 import shelve
+import json
+import operator
 
-def makeParser():
+def makeParser(patterns=None):
     from pyparsing import ( Word, QuotedString, Keyword, Literal, SkipTo, StringEnd,
                             ZeroOrMore, Optional, Combine,
                             alphas, alphanums, printables )
@@ -50,32 +52,18 @@ def makeParser():
     constituent = ((Keyword('library') | Keyword('application') | Keyword('document'))
                    + identifier + ZeroOrMore(constituent_option | source))
     macro = (Keyword('macro') | Keyword('macro_append')) + identifier + values
+    setenv = (Keyword('set') | Keyword('path_append') | Keyword('path_prepend')) + identifier + values
 
     apply_pattern = Keyword("apply_pattern") + identifier + ZeroOrMore(variable)
+    if patterns:
+        direct_patterns = reduce(operator.or_, map(Keyword, set(patterns)))
+        # add the implied 'apply_pattern' to the list of tokens
+        direct_patterns.addParseAction(lambda toks: toks.insert(0, 'apply_pattern'))
+        apply_pattern = apply_pattern | (direct_patterns + ZeroOrMore(variable))
 
-
-    statement = (package | version | use | constituent | macro | apply_pattern)
+    statement = (package | version | use | constituent | macro | setenv | apply_pattern)
 
     return Optional(statement) + Optional(comment) + StringEnd()
-
-CMTParser = makeParser()
-
-# mappings
-ignored_packages = set(["GaudiSys", "GaudiRelease", "GaudiPolicy"])
-data_packages = set(['Det/SQLDDDB', 'FieldMap', 'TCK/HltTCK', 'TCK/L0TCK',
-                     'ChargedProtoANNPIDParam', 'ParamFiles'])
-
-ignore_dep_on_subdirs = set(ignored_packages)
-ignore_dep_on_subdirs.update(data_packages)
-
-# List of packages known to actually need Python to build
-needing_python = ('LoKiCore', 'XMLSummaryKernel', 'CondDBUI')
-
-# packages that must have the pedantic option disabled
-no_pedantic = set(['LHCbMath', 'GenEvent', 'ProcessorKernel', 'TrackKernel',
-                   'Magnet', 'L0MuonKernel', 'DetDescChecks', 'DetDescSvc',
-                   'SimComponents', 'DetDescExample', 'CondDBEntityResolver',
-                   'MuonDAQ', 'STKernel', 'CaloDAQ', 'CaloUtils'])
 
 # record of known subdirs with their libraries
 # {'subdir': {'libraries': [...]}}
@@ -83,10 +71,53 @@ _shelve_file = os.environ.get('CMT2CMAKECACHE',
                               os.path.join(os.path.dirname(__file__), 'known_subdirs.cache'))
 known_subdirs = shelve.open(_shelve_file)
 
+config = {}
+for k in ['ignored_packages', 'data_packages', 'needing_python', 'no_pedantic',
+          'ignore_env']:
+    config[k] = set()
+
+# mappings
+ignored_packages = config['ignored_packages']
+data_packages = config['data_packages']
+
+# List of packages known to actually need Python to build
+needing_python = config['needing_python']
+
+# packages that must have the pedantic option disabled
+no_pedantic = config['no_pedantic']
+
+ignore_env = config['ignore_env']
+
+def loadConfig(config_file):
+    '''
+    Merge the content of the JSON file with the configuration dictionary.
+    '''
+    global config
+    if os.path.exists(config_file):
+        data = json.load(open(config_file))
+        for k in data:
+            if k not in config:
+                config[k] = set()
+            config[k].update(map(str, data[k]))
+        # print config
+
+loadConfig(os.path.join(os.path.dirname(__file__), 'cmt2cmake.cfg'))
+
 def extName(n):
+    '''
+    Mapping between the name of the LCG_Interface name and the Find*.cmake name
+    (if non-trivial).
+    '''
     mapping = {'Reflex': 'ROOT',
                'Python': 'PythonLibs',
-               'neurobayes_expert': 'NeuroBayesExpert'}
+               'neurobayes_expert': 'NeuroBayesExpert',
+               'mysql': 'MySQL',
+               'oracle': 'Oracle',
+               'sqlite': 'SQLite',
+               'lfc': 'LFC',
+               'fftw': 'FFTW',
+               'uuid': 'UUID',
+               }
     return mapping.get(n, n)
 
 def isPackage(path):
@@ -141,7 +172,12 @@ class Package(object):
         self.applications = []
         self.documents = []
         self.macros = {}
+        self.sets = {}
+        self.paths = {}
 
+        # These are patterns that can appear only once per package.
+        # The corresponding dictionary will contain the arguments passed to the
+        # pattern.
         self.singleton_patterns = set(["QMTest", "install_python_modules", "install_scripts",
                                        "install_more_includes", "god_headers", "god_dictionary",
                                        "PyQtResource", "PyQtUIC"])
@@ -152,16 +188,22 @@ class Package(object):
         self.PyQtResource = {}
         self.PyQtUIC = {}
 
-        self.multi_patterns = set(["reflex_dictionary", 'component_library', 'linker_library'])
+        # These are patterns that can be repeated in the requirements.
+        # The corresponding data members will contain the list of dictionaries
+        # corresponding to the various calls.
+        self.multi_patterns = set(['reflex_dictionary', 'component_library', 'linker_library',
+                                   'copy_relax_rootmap'])
         self.reflex_dictionary = []
         self.component_library = []
         self.linker_library = []
+        self.copy_relax_rootmap = []
 
         self.reflex_dictionaries = {}
         self.component_libraries = set()
         self.linker_libraries = set()
 
         self.log = logging.getLogger('Package(%s)' % self.name)
+        self.CMTParser = makeParser(self.singleton_patterns | self.multi_patterns)
         try:
             self._parseRequirements()
         except:
@@ -185,7 +227,8 @@ class Package(object):
         #  subdirectories (excluding specials)
         subdirs = [n for n in sorted(self.uses)
                    if not n.startswith("LCG_Interfaces/")
-                      and n not in ignore_dep_on_subdirs]
+                      and n not in ignored_packages
+                      and n not in data_packages]
 
         inc_dirs = []
         if subdirs:
@@ -223,6 +266,8 @@ class Package(object):
                     components = ['CoolKernel', 'CoolApplication']
                 elif n == 'CORAL':
                     components = ['CoralBase', 'CoralKernel', 'RelationalAccess']
+                elif n == 'RELAX' and self.copy_relax_rootmap:
+                    components = [d['dict'] for d in self.copy_relax_rootmap if 'dict' in d]
 
                 find_packages[n] = find_packages.get(n, []) + components
 
@@ -231,6 +276,8 @@ class Package(object):
             args = [n]
             components = find_packages[n]
             if components:
+                if n == 'RELAX': # FIXME: probably we should set 'REQUIRED' for all the externals
+                    args.append('REQUIRED')
                 args.append('COMPONENTS')
                 args.extend(components)
             data.append('find_package(%s)' % ' '.join(args))
@@ -424,6 +471,17 @@ class Package(object):
         if self.PyQtResource or self.PyQtUIC:
             data.append('') # empty line
 
+        if self.copy_relax_rootmap:
+            data.extend(['# Merge the RELAX rootmaps',
+                         'set(rootmapfile ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/relax.rootmap)',
+                         callStringWithIndent('add_custom_command',
+                                              ['OUTPUT ${rootmapfile}',
+                                               'COMMAND ${merge_cmd} ${RELAX_ROOTMAPS} ${rootmapfile}',
+                                               'DEPENDS ${RELAX_ROOTMAPS}']),
+                         'add_custom_target(RelaxRootmap ALL DEPENDS ${rootmapfile})',
+                         '\n# Install the merged file',
+                         'install(FILES ${rootmapfile} DESTINATION lib)\n'])
+
         # installation
         installs = []
         if headers and not self.linker_libraries: # not installed yet
@@ -440,6 +498,30 @@ class Package(object):
         if installs:
             data.extend(installs)
             data.append('') # empty line
+
+        # environment
+        def fixSetValue(s):
+            '''
+            Convert environment variable values from CMT to CMake.
+            '''
+            # escape '$' if not done already
+            s = re.sub(r'(?<!\\)\$', '\\$', s)
+            # replace parenthesis with curly braces
+            s = re.sub(r'\$\(([^()]*)\)', r'${\1}', s)
+            # replace variables like Package_root with PACKAGEROOT
+            v = re.compile(r'\$\{(\w*)_root\}')
+            m = v.search(s)
+            while m:
+                s = s[:m.start()] + ('${%sROOT}' % m.group(1).upper()) + s[m.end():]
+                m = v.search(s)
+            return s
+
+        if self.sets:
+            data.append(callStringWithIndent('gaudi_env',
+                                             ['SET %s %s' % (v, fixSetValue(self.sets[v]))
+                                              for v in sorted(self.sets)]))
+            data.append('') # empty line
+
         # tests
         if self.QMTest:
             data.append("\ngaudi_add_test(QMTest QMTEST)")
@@ -476,7 +558,7 @@ class Package(object):
                 # an empty line after a '\' means ending the statement
                 if statement:
                     try:
-                        yield list(CMTParser.parseString(statement))
+                        yield list(self.CMTParser.parseString(statement))
                     except:
                         # ignore not know statements
                         self.log.debug("Failed to parse statement: %r", statement)
@@ -566,6 +648,11 @@ class Package(object):
                 value = args[0].strip('"').strip("'")
                 self.macros[name] = self.macros.get(name, "") + value
 
+            elif cmd == 'set':
+                name = args.pop(0)
+                if name not in ignore_env:
+                    value = args[0].strip('"').strip("'")
+                    self.sets[name] = value
 
         # classification of libraries in the package
         unquote = lambda x: x.strip('"').strip("'")
@@ -577,7 +664,7 @@ class Package(object):
 class Project(object):
     def __init__(self, path):
         """
-        Crete a project instance from the root directory of the project.
+        Create a project instance from the root directory of the project.
         """
         self.path = os.path.realpath(path)
         if not isProject(self.path):
@@ -701,6 +788,8 @@ def main(args=None):
         top_dir = args[0]
         if not os.path.isdir(top_dir):
             parser.error("%s is not a directory" % top_dir)
+
+    loadConfig(os.path.join(top_dir, 'cmt2cmake.cfg'))
 
     if isProject(top_dir):
         root = Project(top_dir)

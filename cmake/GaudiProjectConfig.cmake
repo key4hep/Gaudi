@@ -93,7 +93,7 @@ macro(gaudi_project project version)
 
   #--- Project Options and Global settings----------------------------------------------------------
   option(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
-  option(BUILD_TESTS "Set to ON to build the tests (libraries and executables)" OFF)
+  option(BUILD_TESTS "Set to OFF to disable the build of the tests (libraries and executables)" ON)
   option(HIDE_WARNINGS "Turn on or off options that are used to hide warning messages" ON)
   option(USE_EXE_SUFFIX "Add the .exe suffix to executables on Unix systems (like CMT)" ON)
   #-------------------------------------------------------------------------------------------------
@@ -134,7 +134,7 @@ macro(gaudi_project project version)
   endforeach()
 
   # List of all known packages, including those exported by other projects
-  set(known_packages ${packages})
+  set(known_packages ${packages} ${override_subdirs})
   #message(STATUS "known_packages (initial) ${known_packages}")
 
   # paths where to locate scripts and executables
@@ -246,8 +246,11 @@ macro(gaudi_project project version)
   set(packages ${sorted_packages})
   #message(STATUS "${packages}")
   # Add all subdirectories to the project build.
+  list(LENGTH packages packages_count)
+  set(package_idx 0)
   foreach(package ${packages})
-    message(STATUS "Adding directory ${package}")
+    math(EXPR package_idx "${package_idx} + 1")
+    message(STATUS "Adding directory ${package} (${package_idx}/${packages_count})")
     add_subdirectory(${package})
   endforeach()
 
@@ -380,7 +383,15 @@ endmacro()
 # (improve readability)
 #-------------------------------------------------------------------------------
 macro(_gaudi_use_other_projects)
-  message(STATUS "Looking for projects:")
+  # Note: it works even if the env. var. is not set.
+  file(TO_CMAKE_PATH "$ENV{CMTPROJECTPATH}" projects_search_path)
+
+  if(projects_search_path)
+    list(REMOVE_DUPLICATES projects_search_path)
+    message(STATUS "Looking for projects in ${projects_search_path}")
+  else()
+    message(STATUS "Looking for projects")
+  endif()
 
   # this is neede because of the way variable expansion works in macros
   set(ARGN_ ${ARGN})
@@ -401,7 +412,12 @@ macro(_gaudi_use_other_projects)
     endif()
 
     if(NOT ${other_project}_FOUND)
-      find_package(${other_project} ${other_project_cmake_version} HINTS ..)
+      string(TOUPPER ${other_project} other_project_upcase)
+      find_package(${other_project} ${other_project_cmake_version}
+                   HINTS ${projects_search_path}
+                   PATH_SUFFIXES ${other_project}
+                                 ${other_project_upcase}/${other_project_upcase}_${other_project_version}
+                                 ${other_project_upcase})
       if(${other_project}_FOUND)
         message(STATUS "  found ${other_project} ${${other_project}_VERSION} ${${other_project}_DIR}")
         if(NOT heptools_version STREQUAL ${other_project}_heptools_version)
@@ -431,17 +447,20 @@ macro(_gaudi_use_other_projects)
           list(FIND known_packages ${exported} is_needed)
           if(is_needed LESS 0)
             list(APPEND known_packages ${exported})
-            get_filename_component(exported ${exported} NAME)
-            include(${exported}Export)
+            get_filename_component(expname ${exported} NAME)
+            include(${expname}Export)
             message(STATUS "    imported ${exported} ${${exported}_VERSION}")
           endif()
         endforeach()
+        list(APPEND known_packages ${${other_project}_OVERRIDDEN_SUBDIRS})
         # Note: we add them in reverse order so that they appear in the correct
         # inclusion order in the environment XML.
         set(used_gaudi_projects ${other_project} ${used_gaudi_projects})
         if(${other_project}_USES)
           list(INSERT ARGN_ 0 ${${other_project}_USES})
         endif()
+      else()
+        message(FATAL_ERROR "Cannot find project ${other_project} ${other_project_version}")
       endif()
       #message(STATUS "know_packages (after ${other_project}) ${known_packages}")
     endif()
@@ -1632,6 +1651,8 @@ foreach(p ${packages})
     set(${CMAKE_PROJECT_NAME}_EXPORTED_SUBDIRS \${${CMAKE_PROJECT_NAME}_EXPORTED_SUBDIRS} \${p})
   endif()
 endforeach()
+
+set(${CMAKE_PROJECT_NAME}_OVERRIDDEN_SUBDIRS ${override_subdirs})
 ")
 
   install(FILES ${CMAKE_BINARY_DIR}/config/${CMAKE_PROJECT_NAME}PlatformConfig.cmake DESTINATION cmake)
@@ -1649,7 +1670,7 @@ function(gaudi_env)
   # ensure that the variables in the value are not expanded when passing the arguments
   #string(REPLACE "\$" "\\\$" _argn "${ARGN}")
   #message(STATUS "_argn -> ${_argn}")
-  set_property(DIRECTORY APPEND PROPERTY ENVIRONMENT ${ARGN})
+  set_property(DIRECTORY APPEND PROPERTY ENVIRONMENT "${ARGN}")
 endfunction()
 
 #-------------------------------------------------------------------------------
@@ -1662,7 +1683,7 @@ function(gaudi_build_env)
   # ensure that the variables in the value are not expanded when passing the arguments
   #string(REPLACE "\$" "\\\$" _argn "${ARGN}")
   #message(STATUS "_argn -> ${_argn}")
-  set_property(DIRECTORY APPEND PROPERTY BUILD_ENVIRONMENT ${ARGN})
+  set_property(DIRECTORY APPEND PROPERTY BUILD_ENVIRONMENT "${ARGN}")
 endfunction()
 
 #-------------------------------------------------------------------------------

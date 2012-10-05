@@ -23,5 +23,5 @@ gaudi_add_module(RootCnv components/Components.cpp
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(RootCnv dict/RootCnv_dict.h  dict/RootCnv_dict.xml LINK_LIBRARIES RootCnvLib)
 
-add_executable(gaudi_merge merge/merge.cpp)
-target_link_libraries(gaudi_merge RootCnvLib)
+gaudi_add_executable(gaudi_merge merge/merge.cpp
+                     LINK_LIBRARIES RootCnvLib)
