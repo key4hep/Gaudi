@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2012-10-05 - Marco Clemencic
+ - Set the -pedantic flag for the tag GAUDI_PEDANTIC (and target-gcc).
+
 ! 2012-10-03 - Charles Leggett
  - set max-page-size for all 64 bit gcc targets
  M       cmt/requirements

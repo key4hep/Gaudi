@@ -694,6 +694,8 @@ macro cppflags         " -fmessage-length=0 -Df2cFortran -fPIC -D_GNU_SOURCE -Dl
       target-vc9       '$(includes) /D "WIN32" /D "_MBCS"  /D "_WINDOWS" /FD /c /nologo /W3 /EHsc /MD /GR /Zm500' \
       target-vc7       '$(includes) /D "WIN32" /D "_MBCS"  /D "_WINDOWS" /FD /c /nologo /W3 /GX /MD /GR /Zm500'
 
+macro_append cppflags "" GAUDI_PEDANTIC&target-gcc " -pedantic"
+
 ##############################################################################
 # Intel compiler support
 macro_remove cppflags "" target-icc "-pedantic"
