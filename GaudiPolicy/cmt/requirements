@@ -935,9 +935,9 @@ macro_append libraryshr_linkopts   "" \
 # Add 64-bit link options for SLC5. This overrides the default library segment
 # alignment of 1MB
 macro_append componentshr_linkopts       "" \
-      target-gcc&host-slc5&target-x86_64 " -Wl,-z,max-page-size=0x1000 "
+      target-gcc&target-x86_64 " -Wl,-z,max-page-size=0x1000 "
 macro_append libraryshr_linkopts         "" \
-      target-gcc&host-slc5&target-x86_64 " -Wl,-z,max-page-size=0x1000 "
+      target-gcc&target-x86_64 " -Wl,-z,max-page-size=0x1000 "
 
 macro application_linkopts  "" \
       target-linux                 "-Wl,--export-dynamic "
