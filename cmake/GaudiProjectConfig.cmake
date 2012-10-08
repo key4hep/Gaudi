@@ -71,11 +71,15 @@ include(CMakeParseArguments)
 find_package(PythonInterp)
 
 #-------------------------------------------------------------------------------
-# gaudi_project(project version)
+# gaudi_project(project version
+#               [USE proj1 vers1 [proj2 vers2 ...]])
 #
 # Main macro for a Gaudi-based project.
 # Each project must call this macro once in the top-level CMakeLists.txt,
 # stating the project name and the version in the LHCb format (vXrY[pZ]).
+#
+# The USE list can be used to declare which Gaudi-based projects are required by
+# the broject being compiled.
 #-------------------------------------------------------------------------------
 macro(gaudi_project project version)
   set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
@@ -85,6 +89,12 @@ macro(gaudi_project project version)
 
   #--- Define the version of the project - can be used to generate sources,
   set(CMAKE_PROJECT_VERSION ${version} CACHE STRING "Version of the project")
+
+  #--- Parse the other arguments on the
+  CMAKE_PARSE_ARGUMENTS(PROJECT "" "" "USE" ${ARGN})
+  if (PROJECT_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "Wrong arguments.")
+  endif()
 
   string(REGEX MATCH "v?([0-9]+)[r.]([0-9]+)([p.]([0-9]+))?" _version ${version})
   set(CMAKE_PROJECT_VERSION_MAJOR ${CMAKE_MATCH_1} CACHE INTERNAL "Major version of project")
@@ -147,18 +157,9 @@ macro(gaudi_project project version)
   set(project_environment)
   set(used_gaudi_projects)
 
-  # Note: the indirection is needed because we are in a macro and not in a function
-  #       but the variable 'PROJECT_USES' is propagated in the exports.
-  set(PROJECT_USES ${ARGN})
   # we proceed only if we do have extra arguments
-  if(PROJECT_USES)
-    list(GET PROJECT_USES 0 el)
-    if(NOT el STREQUAL "USE")
-      message(FATAL_ERROR "Wrong argument ${el}: expected 'USE'")
-    else()
-      list(REMOVE_AT PROJECT_USES 0)
-      _gaudi_use_other_projects(${PROJECT_USES})
-    endif()
+  if(PROJECT_USE)
+    _gaudi_use_other_projects(${PROJECT_USE})
   endif()
   if(used_gaudi_projects)
     list(REMOVE_DUPLICATES used_gaudi_projects)
@@ -1596,7 +1597,7 @@ set(${CMAKE_PROJECT_NAME}_VERSION_MAJOR ${CMAKE_PROJECT_VERSION_MAJOR})
 set(${CMAKE_PROJECT_NAME}_VERSION_MINOR ${CMAKE_PROJECT_VERSION_MINOR})
 set(${CMAKE_PROJECT_NAME}_VERSION_PATCH ${CMAKE_PROJECT_VERSION_PATCH})
 
-set(${CMAKE_PROJECT_NAME}_USES ${PROJECT_USES})
+set(${CMAKE_PROJECT_NAME}_USES ${PROJECT_USE})
 
 include(${CMAKE_PROJECT_NAME}PlatformConfig)
 ")
