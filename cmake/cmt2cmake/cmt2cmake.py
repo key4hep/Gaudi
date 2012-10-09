@@ -528,6 +528,14 @@ class Package(object):
 
         return "\n".join(data) + "\n"
 
+    @property
+    def data_packages(self):
+        '''
+        Return the list of data packages used by this package in the form of a
+        dictionary {name: version_pattern}.
+        '''
+        return dict([ (n, self.uses[n][0]) for n in self.uses if n in data_packages ])
+
     def process(self, overwrite=None):
         cml = os.path.join(self.path, "CMakeLists.txt")
         if ((overwrite == 'force')
@@ -726,6 +734,44 @@ class Project(object):
             if l and l[0] == "use" and l[1] != "LCGCMT" and len(l) == 3:
                 yield (projectCase(l[1]), l[2].rsplit('_', 1)[-1])
 
+    @property
+    def data_packages(self):
+        '''
+        Return the list of data packages used by this project (i.e. by all the
+        packages in this project) in the form of a dictionary
+        {name: version_pattern}.
+        '''
+        # for debugging we map
+        def appendDict(d, kv):
+            '''
+            helper function to extend a dictionary of lists
+            '''
+            k, v = kv
+            if k in d:
+                d[k].append(v)
+            else:
+                d[k] = [v]
+            return d
+        # dictionary {"data_package": ("user_package", "data_pkg_version")}
+        dp2pkg = {}
+        for pkgname, pkg in self.packages.items():
+            for dpname, dpversion in pkg.data_packages.items():
+                appendDict(dp2pkg, (dpname, (pkgname, dpversion)))
+
+        # check and collect the data packages
+        result = {}
+        for dp in sorted(dp2pkg):
+            versions = set([v for _, v in dp2pkg[dp]])
+            if versions:
+                version = sorted(versions)[-1]
+            else:
+                version = '*'
+            if len(versions) != 1:
+                logging.warning('Different versions for data package %s, using %s from %s', dp, version, dp2pkg[dp])
+            result[dp] = version
+
+        return result
+
     def generate(self):
         # list containing the lines to write to the file
         data = ["CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)",
@@ -740,6 +786,16 @@ class Project(object):
         use = "\n                  ".join(["%s %s" % u for u in self.uses()])
         if use:
             l += "\n              USE " + use
+        # collect data packages
+        data_pkgs = []
+        for p, v in sorted(self.data_packages.items()):
+            if v in ('v*', '*'):
+                data_pkgs.append(p)
+            else:
+                data_pkgs.append("%s VERSION %s" % (p, v))
+        if data_pkgs:
+            l += ("\n              DATA " +
+                  "\n                   ".join(data_pkgs))
         l += ")"
         data.append(l)
         return "\n".join(data) + "\n"
