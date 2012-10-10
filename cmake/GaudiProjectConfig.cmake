@@ -375,6 +375,10 @@ macro(gaudi_project project version)
   gaudi_generate_project_platform_config_file()
   gaudi_generate_exports(${packages})
 
+  #--- Generate the manifest.xml file.
+  gaudi_generate_project_manifest(${CMAKE_BINARY_DIR}/manifest.xml ${ARGV})
+  install(FILES ${CMAKE_BINARY_DIR}/manifest.xml DESTINATION .)
+
   #--- CPack configuration
   set(CPACK_PACKAGE_NAME ${project})
   foreach(t MAJOR MINOR PATCH)
@@ -2154,3 +2158,68 @@ get_filename_component(_IMPORT_PREFIX \"\${_IMPORT_PREFIX}\" PATH)
     install(FILES ${pkg_exp_file} DESTINATION cmake)
   endforeach()
 endmacro()
+
+#-------------------------------------------------------------------------------
+# gaudi_generate_project_manifest()
+#
+# Internal function to generate project metadata like dependencies on other
+# projects and on external software libraries.
+#-------------------------------------------------------------------------------
+function(gaudi_generate_project_manifest filename project version)
+  # FIXME: partial replication of function argument parsing done in gaudi_project()
+  CMAKE_PARSE_ARGUMENTS(PROJECT "" "" "USE;DATA" ${ARGN})
+  # Non need to check consistency because it's already done in gaudi_project().
+
+  #header
+  set(data "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<manifest>\n")
+
+  # Project name and version
+  set(data "${data}  <project name=\"${project}\" version=\"${version}\" />\n")
+
+  # HEP toolchain version
+  if(heptools_version)
+    set(data "${data}  <heptools version=\"${heptools_version}\" />\n")
+  endif()
+
+  # Build options
+  # FIXME: I need an explicit list of options to store
+
+  # Used projects
+  if(PROJECT_USE)
+    set(data "${data}  <used_projects>\n")
+    while(PROJECT_USE)
+      list(GET PROJECT_USE 0 n)
+      list(GET PROJECT_USE 1 v)
+      list(REMOVE_AT PROJECT_USE 0 1)
+      set(data "${data}    <project name=\"${n}\" version=\"${v}\" />\n")
+    endwhile()
+    set(data "${data}  </used_projects>\n")
+  endif()
+
+  # Used data packages
+  if(PROJECT_DATA)
+    set(data "${data}  <used_data_pkgs>\n")
+    while(PROJECT_DATA)
+      list(GET PROJECT_DATA 0 n)
+      list(REMOVE_AT PROJECT_DATA 0)
+      set(v *)
+      if(PROJECT_DATA)
+        list(GET PROJECT_DATA 0 next)
+        if(next STREQUAL VERSION)
+          list(GET PROJECT_DATA 1 v)
+          list(REMOVE_AT PROJECT_DATA 0 1)
+        endif()
+      endif()
+      set(data "${data}    <package name=\"${n}\" version=\"${v}\" />\n")
+    endwhile()
+    set(data "${data}  </used_data_pkgs>\n")
+  endif()
+
+  # trailer
+  set(data "${data}</manifest>\n")
+
+  get_filename_component(fn ${filename} NAME)
+  message(STATUS "Generating ${fn}")
+  file(WRITE ${filename} "${data}")
+endfunction()
