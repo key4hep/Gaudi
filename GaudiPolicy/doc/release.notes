@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2012-10-10 - Marco Clemencic
+ - Added -Wno-long-long when using -pedantic to avoid non-interesting warnings.
+
 ! 2012-10-05 - Marco Clemencic
  - Set the -pedantic flag for the tag GAUDI_PEDANTIC (and target-gcc).
 
