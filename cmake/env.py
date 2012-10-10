@@ -140,14 +140,21 @@ def main():
     env = set_env(env,
                   set = opts.set, unset = opts.unset,
                   append = opts.append, prepend = opts.prepend)
-    if sys.platform.startswith("win"):
-        env["PATH"] = env["PATH"] + os.pathsep + env["LD_LIBRARY_PATH"]
-    elif sys.platform.startswith("darwin"):
-        if "DYLD_LIBRARY_PATH" in env:
-            env["DYLD_LIBRARY_PATH"] = env["DYLD_LIBRARY_PATH"] + os.pathsep + env["LD_LIBRARY_PATH"]
-        else:
-            env["DYLD_LIBRARY_PATH"] = env["LD_LIBRARY_PATH"]
 
+    if "LD_LIBRARY_PATH" in env:
+        # replace LD_LIBRARY_PATH with the corresponding one on other systems
+        if sys.platform.startswith("win"):
+            other = "PATH"
+        elif sys.platform.startswith("darwin"):
+            other = "DYLD_LIBRARY_PATH"
+        else:
+            other = None
+        if other:
+            if other in env:
+                env[other] = env[other] + os.pathsep + env["LD_LIBRARY_PATH"]
+            else:
+                env[other] = env["LD_LIBRARY_PATH"]
+            del env["LD_LIBRARY_PATH"]
 
     if not cmd:
         if opts.shell == 'py':
