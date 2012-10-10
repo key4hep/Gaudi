@@ -2177,9 +2177,15 @@ function(gaudi_generate_project_manifest filename project version)
   # Project name and version
   set(data "${data}  <project name=\"${project}\" version=\"${version}\" />\n")
 
-  # HEP toolchain version
+  # HEP toolchain infos
   if(heptools_version)
-    set(data "${data}  <heptools version=\"${heptools_version}\" />\n")
+    set(data "${data}  <heptools>\n")
+    # version
+    set(data "${data}    <version>${heptools_version}</version>\n")
+    # platform specifications
+    set(data "${data}    <binary_tag>${BINARY_TAG}</binary_tag>\n")
+    set(data "${data}    <lcg_system>${LCG_SYSTEM}</lcg_system>\n")
+    set(data "${data}  </heptools>\n")
   endif()
 
   # Build options

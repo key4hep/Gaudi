@@ -12,7 +12,7 @@
 #  - LCG_SYSTEM: by default it is derived from BINARY_TAG, but it can be set
 #                explicitly to a compatible supported platform if the default
 #                one is not supported.
-#                E.g.: if BINARY_TAG is x86_64-ubuntu1204-gcc46-opt, LCG_SYSTEM
+#                E.g.: if BINARY_TAG is x86_64-ubuntu12.04-gcc46-opt, LCG_SYSTEM
 #                      should be set to x86_64-slc6-gcc46.
 ################################################################################
 
