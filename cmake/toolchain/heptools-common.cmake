@@ -211,26 +211,6 @@ function(lcg_get_target_platform)
   foreach(v ARCH OS OSVERS COMP COMPVERS TARGET)
     set(LCG_${v} ${LCG_${v}} PARENT_SCOPE)
   endforeach()
-
-  # set default compiler variables
-  if(LCG_COMP MATCHES "gcc")
-    set(c_name gcc)
-    set(cxx_name g++)
-  elseif(LCG_COMP MATCHES "icc")
-    set(c_name icc)
-    set(cxx_name icpc)
-  elseif(LCG_COMP STREQUAL "clang")
-    set(c_name clang)
-    set(cxx_name clang++)
-  else()
-    message(WARNING "Unsupported compiler ${LCG_COMP}.")
-  endif()
-  if(c_name)
-    find_program(LCG_SYSTEM_C_COMPILER ${c_name})
-    find_program(LCG_SYSTEM_CXX_COMPILER ${cxx_name})
-  endif()
-  set(CMAKE_C_COMPILER   ${LCG_SYSTEM_C_COMPILER} PARENT_SCOPE)
-  set(CMAKE_CXX_COMPILER ${LCG_SYSTEM_CXX_COMPILER} PARENT_SCOPE)
 endfunction()
 
 
@@ -290,24 +270,27 @@ macro(LCG_compiler id flavor version)
   if(${id} STREQUAL ${LCG_COMP}${LCG_COMPVERS})
     if(${flavor} STREQUAL "gcc")
       set(compiler_root ${LCG_external}/${flavor}/${version}/${LCG_HOST_ARCH}-${LCG_HOST_OS}${LCG_HOST_OSVERS})
-      set(c_compiler_name lcg-gcc-${version})
-      set(cxx_compiler_name lcg-g++-${version})
+      set(c_compiler_names lcg-gcc-${version})
+      set(cxx_compiler_names lcg-g++-${version})
+    elseif(${flavor} STREQUAL "icc")
+      # Note: icc must be in the path already because of the licensing
+      set(compiler_root)
+      set(c_compiler_names lcg-icc-${version} icc)
+      set(cxx_compiler_names lcg-icpc-${version} icpc)
     elseif(${flavor} STREQUAL "clang")
       set(compiler_root ${LCG_external}/llvm/${version}/${LCG_HOST_ARCH}-${LCG_HOST_OS}${LCG_HOST_OSVERS})
-      set(c_compiler_name clang)
-      set(cxx_compiler_name clang++)
+      set(c_compiler_names lcg-clang-${version} clang)
+      set(cxx_compiler_names lcg-clang++-${version} clang++)
     else()
       message(FATAL_ERROR "Uknown compiler flavor ${flavor}.")
     endif()
     #message(STATUS "LCG_compiler($ARGV) -> ${c_compiler_name} ${cxx_compiler_name} ${compiler_root}")
     # We need to unset the default compiler names to make find_program() work.
-    set(CMAKE_C_COMPILER)
     find_program(CMAKE_C_COMPILER
-                 NAMES ${c_compiler_name}
+                 NAMES ${c_compiler_names}
                  PATHS ${compiler_root}/bin)
-    set(CMAKE_CXX_COMPILER)
     find_program(CMAKE_CXX_COMPILER
-                 NAMES ${cxx_compiler_name}
+                 NAMES ${cxx_compiler_names}
                  PATHS ${compiler_root}/bin)
     #message(STATUS "LCG_compiler($ARGV) -> ${CMAKE_C_COMPILER} ${CMAKE_CXX_COMPILER}")
   endif()
