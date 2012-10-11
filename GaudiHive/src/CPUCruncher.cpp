@@ -29,7 +29,7 @@ void CPUCruncher::findPrimes (const double runtime)  {
   MsgStream log(msgSvc(), name());
 
   // Limit the exercise in time
-  const double start = std::clock ();
+  const clock_t start = std::clock ();
   
   // Flag to trigger the allocation
   bool is_prime;
@@ -42,7 +42,7 @@ void CPUCruncher::findPrimes (const double runtime)  {
   unsigned long i = 2;
 
   // Loop on numbers
-  while ( (std::clock () - start)/CLOCKS_PER_SEC < runtime ){
+  while ( double(std::clock () - start)/CLOCKS_PER_SEC < runtime ){
     // Once at max, it returns to 0
     i+=1;    
         
@@ -74,7 +74,7 @@ void CPUCruncher::findPrimes (const double runtime)  {
   //     always ()  << primes[prime_index] << " is prime." << endmsg;
   
   } // end of while loop
-  
+  delete[] primes;
   
   // Fool Compiler optimisations:
   for (unsigned int prime_index=0; prime_index<primes_size;prime_index++)
@@ -153,8 +153,7 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
     read<DataObject>(input);
   }
 
-  //findPrimes(runtime);
-  usleep(runtime*1000000.);
+  findPrimes(runtime);
 
   // write products to the event
   //for (std::string& output: m_outputs){
