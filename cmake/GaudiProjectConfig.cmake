@@ -71,20 +71,36 @@ include(CMakeParseArguments)
 find_package(PythonInterp)
 
 #-------------------------------------------------------------------------------
-# gaudi_project(project version)
+# gaudi_project(project version
+#               [USE proj1 vers1 [proj2 vers2 ...]]
+#               [DATA package [VERSION vers] [package [VERSION vers] ...]])
 #
 # Main macro for a Gaudi-based project.
 # Each project must call this macro once in the top-level CMakeLists.txt,
 # stating the project name and the version in the LHCb format (vXrY[pZ]).
+#
+# The USE list can be used to declare which Gaudi-based projects are required by
+# the broject being compiled.
+#
+# The DATA list can be used to declare the data packages requried by the project
+# runtime.
 #-------------------------------------------------------------------------------
 macro(gaudi_project project version)
-  set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+  if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/cmake)
+    set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+  endif()
   project(${project})
   #----For some reason this is not set by calling 'project()'
   set(CMAKE_PROJECT_NAME ${project})
 
   #--- Define the version of the project - can be used to generate sources,
   set(CMAKE_PROJECT_VERSION ${version} CACHE STRING "Version of the project")
+
+  #--- Parse the other arguments on the
+  CMAKE_PARSE_ARGUMENTS(PROJECT "" "" "USE;DATA" ${ARGN})
+  if (PROJECT_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "Wrong arguments.")
+  endif()
 
   string(REGEX MATCH "v?([0-9]+)[r.]([0-9]+)([p.]([0-9]+))?" _version ${version})
   set(CMAKE_PROJECT_VERSION_MAJOR ${CMAKE_MATCH_1} CACHE INTERNAL "Major version of project")
@@ -93,10 +109,12 @@ macro(gaudi_project project version)
 
   #--- Project Options and Global settings----------------------------------------------------------
   option(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
-  option(BUILD_TESTS "Set to ON to build the tests (libraries and executables)" OFF)
+  option(BUILD_TESTS "Set to OFF to disable the build of the tests (libraries and executables)" ON)
   option(HIDE_WARNINGS "Turn on or off options that are used to hide warning messages" ON)
   option(USE_EXE_SUFFIX "Add the .exe suffix to executables on Unix systems (like CMT)" ON)
   #-------------------------------------------------------------------------------------------------
+  set(GAUDI_DATA_SUFFIXES DBASE;PARAM;EXTRAPACKAGES CACHE STRING
+      "List of (suffix) directories where to look for data packages.")
 
   if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/InstallArea/${BINARY_TAG} CACHE PATH
@@ -134,28 +152,29 @@ macro(gaudi_project project version)
   endforeach()
 
   # List of all known packages, including those exported by other projects
-  set(known_packages ${packages})
+  set(known_packages ${packages} ${override_subdirs})
   #message(STATUS "known_packages (initial) ${known_packages}")
 
   # paths where to locate scripts and executables
   # Note: it's a bit a duplicate of the one used in gaudi_external_project_environment
   #       but we need it here because the other one is meant to include also
-  #       the external libraries requyired by the subdirectories.
+  #       the external libraries required by the subdirectories.
   set(binary_paths)
 
-  # Note: the indirection is needed because we are in a macro and not in a function
-  #       but the variable 'PROJECT_USES' is propagated in the exports.
-  set(PROJECT_USES ${ARGN})
-  # we proceed only if we do have extra arguments
-  if(PROJECT_USES)
-    list(GET PROJECT_USES 0 el)
-    if(NOT el STREQUAL "USE")
-      message(FATAL_ERROR "Wrong argument ${el}: expected 'USE'")
-    else()
-      list(REMOVE_AT PROJECT_USES 0)
-      _gaudi_use_other_projects(${PROJECT_USES})
-    endif()
+  # environment description
+  set(project_environment)
+  set(used_gaudi_projects)
+
+  # Locate and import used projects.
+  if(PROJECT_USE)
+    _gaudi_use_other_projects(${PROJECT_USE})
   endif()
+  if(used_gaudi_projects)
+    list(REMOVE_DUPLICATES used_gaudi_projects)
+  endif()
+
+  # Find the required data packages and add them to the environment.
+  _gaudi_handle_data_packages(${PROJECT_DATA})
 
   #--- commands required to build cached variable
   # (python scripts are located as such but run through python)
@@ -239,8 +258,11 @@ macro(gaudi_project project version)
   set(packages ${sorted_packages})
   #message(STATUS "${packages}")
   # Add all subdirectories to the project build.
+  list(LENGTH packages packages_count)
+  set(package_idx 0)
   foreach(package ${packages})
-    message(STATUS "Adding directory ${package}")
+    math(EXPR package_idx "${package_idx} + 1")
+    message(STATUS "Adding directory ${package} (${package_idx}/${packages_count})")
     add_subdirectory(${package})
   endforeach()
 
@@ -258,35 +280,42 @@ macro(gaudi_project project version)
 
   #--- Prepare environment configuration
   message(STATUS "Preparing environment configuration:")
-  set(project_environment)
 
   # - collect environment from externals
   gaudi_external_project_environment()
+
+  # (so far, the build and the release envirnoments are identical)
+  set(project_build_environment ${project_environment})
 
   message(STATUS "  environment for local subdirectories")
   # - collect internal environment
   #   - project root (for relocatability)
   string(TOUPPER ${project} _proj)
-  set(project_environment ${project_environment} SET ${_proj}_PROJECT_ROOT ${CMAKE_SOURCE_DIR})
-  #   - 'packages' roots (backward compatibility)
+  #set(project_environment ${project_environment} SET ${_proj}_PROJECT_ROOT "${CMAKE_SOURCE_DIR}")
+  file(RELATIVE_PATH _PROJECT_ROOT ${CMAKE_INSTALL_PREFIX} ${CMAKE_SOURCE_DIR})
+  #message(STATUS "_PROJECT_ROOT -> ${_PROJECT_ROOT}")
+  set(project_environment ${project_environment} SET ${_proj}_PROJECT_ROOT "\${.}/${_PROJECT_ROOT}")
+  set(project_build_environment ${project_build_environment} SET ${_proj}_PROJECT_ROOT "${CMAKE_SOURCE_DIR}")
+  #   - 'packages':
   foreach(package ${packages})
     message(STATUS "    ${package}")
     get_filename_component(_pack ${package} NAME)
-    string(TOUPPER ${_pack} _pack)
-    set(project_environment ${project_environment} SET ${_pack}ROOT \${${_proj}_PROJECT_ROOT}/${package})
-  endforeach()
-  # (so far, the build and the release envirnoments are identical)
-  set(project_build_environment ${project_environment})
-  #   - 'packages' environments
-  foreach(package ${packages})
+    string(TOUPPER ${_pack} _PACK)
+    #     - roots (backward compatibility)
+    set(project_environment ${project_environment} SET ${_PACK}ROOT \${${_proj}_PROJECT_ROOT}/${package})
+    set(project_build_environment ${project_build_environment} SET ${_PACK}ROOT \${${_proj}_PROJECT_ROOT}/${package})
+
+    #     - declared environments
     get_property(_pack_env DIRECTORY ${package} PROPERTY ENVIRONMENT)
     set(project_environment ${project_environment} ${_pack_env})
+    set(project_build_environment ${project_build_environment} ${_pack_env})
+    #       (build env only)
+    get_property(_pack_env DIRECTORY ${package} PROPERTY BUILD_ENVIRONMENT)
     set(project_build_environment ${project_build_environment} ${_pack_env})
 
     # we need special handling of PYTHONPATH and PATH for the build-time environment
     set(_has_config NO)
     set(_has_python NO)
-    get_filename_component(_pack ${package} NAME) # FIXME: should we merge the loops?
     if(EXISTS ${CMAKE_BINARY_DIR}/${package}/genConf OR TARGET ${_pack}ConfUserDB)
       set(project_build_environment ${project_build_environment}
           PREPEND PYTHONPATH ${CMAKE_BINARY_DIR}/${package}/genConf)
@@ -322,11 +351,11 @@ macro(gaudi_project project version)
   message(STATUS "  environment for the project")
   #   - installation dirs
   set(project_environment ${project_environment}
-        PREPEND PATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/scripts
-        PREPEND PATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/bin
-        PREPEND LD_LIBRARY_PATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/lib
-        PREPEND PYTHONPATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/python
-        PREPEND PYTHONPATH \${${_proj}_PROJECT_ROOT}/InstallArea/${BINARY_TAG}/python/lib-dynload)
+        PREPEND PATH \${.}/scripts
+        PREPEND PATH \${.}/bin
+        PREPEND LD_LIBRARY_PATH \${.}/lib
+        PREPEND PYTHONPATH \${.}/python
+        PREPEND PYTHONPATH \${.}/python/lib-dynload)
   #   - build dirs
   set(project_build_environment ${project_build_environment}
       PREPEND PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
@@ -345,6 +374,10 @@ macro(gaudi_project project version)
   gaudi_generate_project_config_file()
   gaudi_generate_project_platform_config_file()
   gaudi_generate_exports(${packages})
+
+  #--- Generate the manifest.xml file.
+  gaudi_generate_project_manifest(${CMAKE_BINARY_DIR}/manifest.xml ${ARGV})
+  install(FILES ${CMAKE_BINARY_DIR}/manifest.xml DESTINATION .)
 
   #--- CPack configuration
   set(CPACK_PACKAGE_NAME ${project})
@@ -366,7 +399,15 @@ endmacro()
 # (improve readability)
 #-------------------------------------------------------------------------------
 macro(_gaudi_use_other_projects)
-  message(STATUS "Looking for projects:")
+  # Note: it works even if the env. var. is not set.
+  file(TO_CMAKE_PATH "$ENV{CMTPROJECTPATH}" projects_search_path)
+
+  if(projects_search_path)
+    list(REMOVE_DUPLICATES projects_search_path)
+    message(STATUS "Looking for projects in ${projects_search_path}")
+  else()
+    message(STATUS "Looking for projects")
+  endif()
 
   # this is neede because of the way variable expansion works in macros
   set(ARGN_ ${ARGN})
@@ -387,7 +428,12 @@ macro(_gaudi_use_other_projects)
     endif()
 
     if(NOT ${other_project}_FOUND)
-      find_package(${other_project} ${other_project_cmake_version} HINTS ..)
+      string(TOUPPER ${other_project} other_project_upcase)
+      find_package(${other_project} ${other_project_cmake_version}
+                   HINTS ${projects_search_path}
+                   PATH_SUFFIXES ${other_project}
+                                 ${other_project_upcase}/${other_project_upcase}_${other_project_version}
+                                 ${other_project_upcase})
       if(${other_project}_FOUND)
         message(STATUS "  found ${other_project} ${${other_project}_VERSION} ${${other_project}_DIR}")
         if(NOT heptools_version STREQUAL ${other_project}_heptools_version)
@@ -403,24 +449,219 @@ macro(_gaudi_use_other_projects)
   You need to call cmake ${hint_message}
 ")
         endif()
+        if(NOT LCG_SYSTEM STREQUAL ${other_project}_heptools_system)
+          message(FATAL_ERROR "Incompatible values of LCG_SYSTEM:
+  ${CMAKE_PROJECT_NAME} -> ${LCG_SYSTEM}
+  ${other_project} ${${other_project}_VERSION} -> ${${other_project}_heptools_system}
+
+  Check your configuration.
+")
+        endif()
         include_directories(${${other_project}_INCLUDE_DIRS})
         set(binary_paths ${${other_project}_BINARY_PATH} ${binary_paths})
         foreach(exported ${${other_project}_EXPORTED_SUBDIRS})
           list(FIND known_packages ${exported} is_needed)
           if(is_needed LESS 0)
             list(APPEND known_packages ${exported})
-            get_filename_component(exported ${exported} NAME)
-            include(${exported}Export)
+            get_filename_component(expname ${exported} NAME)
+            include(${expname}Export)
             message(STATUS "    imported ${exported} ${${exported}_VERSION}")
           endif()
         endforeach()
+        list(APPEND known_packages ${${other_project}_OVERRIDDEN_SUBDIRS})
+        # Note: we add them in reverse order so that they appear in the correct
+        # inclusion order in the environment XML.
+        set(used_gaudi_projects ${other_project} ${used_gaudi_projects})
         if(${other_project}_USES)
           list(INSERT ARGN_ 0 ${${other_project}_USES})
         endif()
+      else()
+        message(FATAL_ERROR "Cannot find project ${other_project} ${other_project_version}")
       endif()
       #message(STATUS "know_packages (after ${other_project}) ${known_packages}")
     endif()
 
+  endwhile()
+endmacro()
+
+#-------------------------------------------------------------------------------
+# _gaudi_highest_version(output [version ...])
+#
+# Helper function to get the highest of a list of versions in the format vXrY[pZ]
+# (actually it just compares the numbers).
+#
+# The highest version is stored in the 'output' variable.
+#-------------------------------------------------------------------------------
+function(_gaudi_highest_version output)
+  if(ARGN)
+    # use the first version as initial result
+    list(GET ARGN 0 result)
+    list(REMOVE_AT ARGN 0)
+    # convert the version to a list of numbers
+    #message(STATUS "_gaudi_highest_version: initial -> ${result}")
+    string(REGEX MATCHALL "[0-9]+" result_digits ${result})
+    list(LENGTH result_digits result_length)
+
+    foreach(candidate ${ARGN})
+      # convert the version to a list of numbers
+      #message(STATUS "_gaudi_highest_version: candidate -> ${candidate}")
+      string(REGEX MATCHALL "[0-9]+" candidate_digits ${candidate})
+      list(LENGTH candidate_digits candidate_length)
+
+      # get the upper limit of the loop over the elements
+      # (note: in case of equality after the loop, the one with more elements
+      #  wins, or 'result' in case of same length... so we preset the winner)
+      if(result_length LESS candidate_length)
+        math(EXPR limit "${result_length} - 1")
+        set(candidate_higher TRUE)
+      else()
+        math(EXPR limit "${candidate_length} - 1")
+        set(candidate_higher FALSE)
+      endif()
+      # loop on the elements of the two lists (result and candidate)
+      foreach(idx RANGE ${limit})
+        list(GET result_digits ${idx} r)
+        list(GET candidate_digits ${idx} c)
+        if(r LESS c)
+          set(candidate_higher TRUE)
+          break()
+        elseif(c LESS r)
+          set(candidate_higher FALSE)
+          break()
+        endif()
+      endforeach()
+      #message(STATUS "_gaudi_highest_version: candidate_higher -> ${candidate_higher}")
+      # replace the result if the candidate is higher
+      if(candidate_higher)
+        set(result ${candidate})
+        set(result_digits ${candidate_digits})
+        set(result_length ${candidate_length})
+      endif()
+      #message(STATUS "_gaudi_highest_version: result -> ${result}")
+    endforeach()
+  else()
+    # if we do not have arguments, return an empty variable
+    set(result)
+  endif()
+  # pass back the result
+  set(${output} ${result} PARENT_SCOPE)
+endfunction()
+
+#-------------------------------------------------------------------------------
+# gaudi_find_data_package(name [version] [[PATH_SUFFIXES] suffixes...])
+#
+# Locate a CMT-style "data package", essentially a directory of the type:
+#
+#  <prefix>/<name>/<version>
+#
+# with a file called <name>Environment.xml inside.
+#
+# <name> can contain '/'s, but they are replaced by '_'s when looking for the
+# XML file.
+#
+# <version> has to be a glob pattern (the default is '*').
+#
+# The package will be searched for in all the directories specified in the
+# environment variable CMTPROJECTPATH and in CMAKE_PREFIX_PATH. If specified,
+# the suffixes willbe appended to eache searched directory to look for the
+# data packages.
+#
+# The root of the data package will be stored in <variable>.
+#-------------------------------------------------------------------------------
+function(gaudi_find_data_package name)
+  #message(STATUS "gaudi_find_data_package(${ARGV})")
+  if(NOT ${name}_FOUND)
+    # Note: it works even if the env. var. is not set.
+    file(TO_CMAKE_PATH "$ENV{CMTPROJECTPATH}" projects_search_path)
+
+    set(version *) # default version value
+    if(ARGN AND NOT ARGV1 STREQUAL PATH_SUFFIXES)
+      set(version ${ARGV1})
+      list(REMOVE_AT ARGN 0)
+    endif()
+
+    if(ARGN)
+      list(GET ARGN 0 arg)
+      if(arg STREQUAL PATH_SUFFIXES)
+        list(REMOVE_AT ARGN 0)
+      endif()
+    endif()
+    # At this point, ARGN contains only the suffixes, if any.
+
+    string(REPLACE / _ envname ${name}Environment.xml)
+
+    set(candidate_version)
+    set(candidate_path)
+    foreach(prefix ${projects_search_path} ${CMAKE_PREFIX_PATH})
+      foreach(suffix "" ${ARGN})
+        #message(STATUS "gaudi_find_data_package: check ${prefix}/${suffix}/${name}")
+        if(IS_DIRECTORY ${prefix}/${suffix}/${name})
+          #message(STATUS "gaudi_find_data_package: scanning ${prefix}/${suffix}/${name}")
+          # Look for env files with the matching version.
+          file(GLOB envfiles RELATIVE ${prefix}/${suffix}/${name} ${prefix}/${suffix}/${name}/${version}/${envname})
+          # Translate the list of env files into the list of available versions
+          set(versions)
+          foreach(f ${envfiles})
+            get_filename_component(f ${f} PATH)
+            set(versions ${versions} ${f})
+          endforeach()
+          #message(STATUS "gaudi_find_data_package: found versions '${versions}'")
+          if(versions)
+            # find the highest version encountered so far
+            _gaudi_highest_version(high ${candidate_version} ${versions})
+            if(high AND NOT (high STREQUAL candidate_version))
+              set(candidate_version ${high})
+              set(candidate_path ${prefix}/${suffix}/${name}/${candidate_version})
+            endif()
+          endif()
+        endif()
+      endforeach()
+    endforeach()
+    if(candidate_version)
+      set(${name}_FOUND TRUE CACHE INTERNAL "")
+      set(${name}_DIR ${candidate_path} CACHE PATH "Location of ${name}")
+      mark_as_advanced(${name}_FOUND ${name}_DIR)
+      message(STATUS "Found ${name} ${candidate_version}: ${${name}_DIR}")
+    else()
+      message(FATAL_ERROR "Cannot find ${name} ${version}")
+    endif()
+  endif()
+endfunction()
+
+#-------------------------------------------------------------------------------
+# _gaudi_handle_data_pacakges([package [VERSION version] [project version [VERSION version]]...])
+#
+# Internal macro implementing the handline of the "USE" option.
+# (improve readability)
+#-------------------------------------------------------------------------------
+macro(_gaudi_handle_data_packages)
+  # this is neede because of the way variable expansion works in macros
+  set(ARGN_ ${ARGN})
+  if(ARGN_)
+    message(STATUS "Looking for data packages")
+  endif()
+  while(ARGN_)
+    # extract data package name and (optional) version from the list
+    list(GET ARGN_ 0 _data_package)
+    list(REMOVE_AT ARGN_ 0)
+    if(ARGN_) # we can look for the version only if we still have data)
+      list(GET ARGN_ 0 _data_pkg_vers)
+      if(_data_pkg_vers STREQUAL VERSION)
+        list(GET ARGN_ 1 _data_pkg_vers)
+        list(REMOVE_AT ARGN_ 0 1)
+      else()
+        set(_data_pkg_vers *) # default version value
+      endif()
+    endif()
+    if(NOT ${_data_package}_FOUND)
+      gaudi_find_data_package(${_data_package} ${_data_pkg_vers} PATH_SUFFIXES ${GAUDI_DATA_SUFFIXES})
+    else()
+      message(STATUS "Using ${_data_package}: ${${_data_package}_DIR}")
+    endif()
+    if(${_data_package}_FOUND)
+      string(REPLACE / _ _data_pkg_env ${_data_package}Environment.xml)
+      set(project_environment ${project_environment} INCLUDE ${${_data_package}_DIR}/${_data_pkg_env})
+    endif()
   endwhile()
 endmacro()
 
@@ -1503,7 +1744,8 @@ macro(gaudi_generate_project_config_version_file)
     set(vers_id ${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR})
   endif()
 
-  file(WRITE ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}ConfigVersion.cmake
+  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/config)
+  file(WRITE ${CMAKE_BINARY_DIR}/config/${CMAKE_PROJECT_NAME}ConfigVersion.cmake
 "set(PACKAGE_NAME ${CMAKE_PROJECT_NAME})
 set(PACKAGE_VERSION ${vers_id})
 if((PACKAGE_NAME STREQUAL PACKAGE_FIND_NAME)
@@ -1517,7 +1759,7 @@ else()
   set(PACKAGE_VERSION_UNSUITABLE 1)
 endif()
 ")
-  install(FILES ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}ConfigVersion.cmake DESTINATION ${CMAKE_SOURCE_DIR})
+  install(FILES ${CMAKE_BINARY_DIR}/config/${CMAKE_PROJECT_NAME}ConfigVersion.cmake DESTINATION ${CMAKE_SOURCE_DIR})
 endmacro()
 
 #-------------------------------------------------------------------------------
@@ -1527,14 +1769,23 @@ endmacro()
 #-------------------------------------------------------------------------------
 macro(gaudi_generate_project_config_file)
   message(STATUS "Generating ${CMAKE_PROJECT_NAME}Config.cmake")
-  file(WRITE ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake
+  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/config)
+  file(WRITE ${CMAKE_BINARY_DIR}/config/${CMAKE_PROJECT_NAME}Config.cmake
 "# File automatically generated: DO NOT EDIT.
 set(${CMAKE_PROJECT_NAME}_heptools_version ${heptools_version})
+set(${CMAKE_PROJECT_NAME}_heptools_system ${LCG_SYSTEM})
 
-if(IS_DIRECTORY \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/\${LCG_platform}/cmake)
-  list(INSERT CMAKE_MODULE_PATH 0 \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/\${LCG_platform}/cmake)
-else()
-  message(FATAL_ERROR \"Cannot find \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/\${LCG_platform}/cmake: platform not supported\")
+set(allowed_platforms \${BINARY_TAG} \${LCG_platform} \${LCG_system})
+set(found FALSE)
+foreach(platform \${allowed_platforms})
+  if(NOT found AND IS_DIRECTORY \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/\${platform}/cmake)
+    list(INSERT CMAKE_MODULE_PATH 0 \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/\${platform}/cmake)
+    set(${CMAKE_PROJECT_NAME}_PLATFORM \${platform})
+    set(found TRUE)
+  endif()
+endforeach()
+if(NOT found)
+  message(FATAL_ERROR \"Cannot find cmake directory for any of \${allowed_platforms} in \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea: platform not supported\")
 endif()
 
 set(${CMAKE_PROJECT_NAME}_VERSION ${CMAKE_PROJECT_VERSION})
@@ -1542,11 +1793,11 @@ set(${CMAKE_PROJECT_NAME}_VERSION_MAJOR ${CMAKE_PROJECT_VERSION_MAJOR})
 set(${CMAKE_PROJECT_NAME}_VERSION_MINOR ${CMAKE_PROJECT_VERSION_MINOR})
 set(${CMAKE_PROJECT_NAME}_VERSION_PATCH ${CMAKE_PROJECT_VERSION_PATCH})
 
-set(${CMAKE_PROJECT_NAME}_USES ${PROJECT_USES})
+set(${CMAKE_PROJECT_NAME}_USES ${PROJECT_USE})
 
 include(${CMAKE_PROJECT_NAME}PlatformConfig)
 ")
-  install(FILES ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake DESTINATION ${CMAKE_SOURCE_DIR})
+  install(FILES ${CMAKE_BINARY_DIR}/config/${CMAKE_PROJECT_NAME}Config.cmake DESTINATION ${CMAKE_SOURCE_DIR})
 endmacro()
 
 #-------------------------------------------------------------------------------
@@ -1563,7 +1814,9 @@ macro(gaudi_generate_project_platform_config_file)
   get_property(component_libraries GLOBAL PROPERTY COMPONENT_LIBRARIES)
 
   string(REPLACE "\$" "\\\$" project_environment_string "${project_environment}")
-  set(filename ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}PlatformConfig.cmake)
+
+  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/config)
+  set(filename ${CMAKE_BINARY_DIR}/config/${CMAKE_PROJECT_NAME}PlatformConfig.cmake)
   file(WRITE ${filename}
 "# File automatically generated: DO NOT EDIT.
 
@@ -1595,25 +1848,40 @@ foreach(p ${packages})
     set(${CMAKE_PROJECT_NAME}_EXPORTED_SUBDIRS \${${CMAKE_PROJECT_NAME}_EXPORTED_SUBDIRS} \${p})
   endif()
 endforeach()
+
+set(${CMAKE_PROJECT_NAME}_OVERRIDDEN_SUBDIRS ${override_subdirs})
 ")
 
-  install(FILES ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}PlatformConfig.cmake DESTINATION cmake)
+  install(FILES ${CMAKE_BINARY_DIR}/config/${CMAKE_PROJECT_NAME}PlatformConfig.cmake DESTINATION cmake)
 endmacro()
 
 #-------------------------------------------------------------------------------
-# gaudi_env(<SET|PREPEND|APPEND|REMOVE> <var> <value> [...repeat...])
+# gaudi_env(<SET|PREPEND|APPEND|REMOVE|UNSET|INCLUDE> <var> <value> [...repeat...])
 #
 # Declare environment variables to be modified.
-# Note: this is just a wrapper around set_property, the actual logic is in ...
+# Note: this is just a wrapper around set_property, the actual logic is in
+# gaudi_project() and gaudi_generate_env_conf().
 #-------------------------------------------------------------------------------
 function(gaudi_env)
-  #message(STATUS "ARGN -> ${ARGN}")
+  #message(STATUS "gaudi_env(): ARGN -> ${ARGN}")
   # ensure that the variables in the value are not expanded when passing the arguments
   #string(REPLACE "\$" "\\\$" _argn "${ARGN}")
   #message(STATUS "_argn -> ${_argn}")
-  set_property(DIRECTORY APPEND PROPERTY ENVIRONMENT ${ARGN})
+  set_property(DIRECTORY APPEND PROPERTY ENVIRONMENT "${ARGN}")
 endfunction()
 
+#-------------------------------------------------------------------------------
+# gaudi_build_env(<SET|PREPEND|APPEND|REMOVE|UNSET|INCLUDE> <var> <value> [...repeat...])
+#
+# Same as gaudi_env(), but the environment is set only for building.
+#-------------------------------------------------------------------------------
+function(gaudi_build_env)
+  #message(STATUS "gaudi_build_env(): ARGN -> ${ARGN}")
+  # ensure that the variables in the value are not expanded when passing the arguments
+  #string(REPLACE "\$" "\\\$" _argn "${ARGN}")
+  #message(STATUS "_argn -> ${_argn}")
+  set_property(DIRECTORY APPEND PROPERTY BUILD_ENVIRONMENT "${ARGN}")
+endfunction()
 
 #-------------------------------------------------------------------------------
 # _env_conf_pop_instruction(...)
@@ -1622,10 +1890,18 @@ endfunction()
 #-------------------------------------------------------------------------------
 macro(_env_conf_pop_instruction instr lst)
   #message(STATUS "_env_conf_pop_instruction ${lst} => ${${lst}}")
-  list(GET ${lst} 0 1 2 ${instr})
+  list(GET ${lst} 0 ${instr})
+  if(${instr} STREQUAL INCLUDE OR ${instr} STREQUAL UNSET)
+    list(GET ${lst} 0 1 ${instr})
+    list(REMOVE_AT ${lst} 0 1)
+    # even if the command expects only one argument, ${instr} must have 3 elements
+    # because of the way it must be passed to _env_line()
+    set(${instr} ${${instr}} _dummy_)
+  else()
+    list(GET ${lst} 0 1 2 ${instr})
+    list(REMOVE_AT ${lst} 0 1 2)
+  endif()
   #message(STATUS "_env_conf_pop_instruction ${instr} => ${${instr}}")
-  #message(STATUS "_env_conf_pop_instruction ${lst} => ${${lst}}")
-  list(REMOVE_AT ${lst} 0 1 2)
   #message(STATUS "_env_conf_pop_instruction ${lst} => ${${lst}}")
 endmacro()
 
@@ -1635,15 +1911,29 @@ endmacro()
 # helper macro used by gaudi_generate_env_conf.
 #-------------------------------------------------------------------------------
 macro(_env_line cmd var val output)
-  set(${output} "variable=\"${var}\">${val}</env:")
+  set(val_ ${val})
+  foreach(root_var ${root_vars})
+    if(${root_var})
+      if(val_ MATCHES "^${${root_var}}")
+        file(RELATIVE_PATH val_ ${${root_var}} ${val_})
+        set(val_ \${${root_var}}/${val_})
+      endif()
+    endif()
+  endforeach()
   if(${cmd} STREQUAL "SET")
-    set(${output} "<env:set ${${output}}set>")
+    set(${output} "<env:set variable=\"${var}\">${val_}</env:set>")
+  elseif(${cmd} STREQUAL "UNSET")
+    set(${output} "<env:unset variable=\"${var}\"><env:unset>")
   elseif(${cmd} STREQUAL "PREPEND")
-    set(${output} "<env:prepend ${${output}}prepend>")
+    set(${output} "<env:prepend variable=\"${var}\">${val_}</env:prepend>")
   elseif(${cmd} STREQUAL "APPEND")
-    set(${output} "<env:append ${${output}}append>")
+    set(${output} "<env:append variable=\"${var}\">${val_}</env:append>")
   elseif(${cmd} STREQUAL "REMOVE")
-    set(${output} "<env:remove ${${output}}remove>")
+    set(${output} "<env:remove variable=\"${var}\">${val_}</env:remove>")
+  elseif(${cmd} STREQUAL "INCLUDE")
+    get_filename_component(inc_name ${var} NAME)
+    get_filename_component(inc_path ${var} PATH)
+    set(${output} "<env:include hints=\"${inc_path}\">${inc_name}</env:include>")
   else()
     message(FATAL_ERROR "Unknown environment command ${cmd}")
   endif()
@@ -1658,6 +1948,18 @@ endmacro()
 function(gaudi_generate_env_conf filename)
   set(data "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <env:config xmlns:env=\"EnvSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"EnvSchema EnvSchema.xsd \">\n")
+
+  # variables that need to be used to make the environment relative
+  set(root_vars LCG_releases LCG_external)
+  foreach(root_var ${root_vars})
+    set(data "${data}  <env:default variable=\"${root_var}\">${${root_var}}</env:default>\n")
+  endforeach()
+
+  # include inherited environments
+  foreach(other_project ${used_gaudi_projects})
+    set(data "${data}  <env:include hints=\"${${other_project}_DIR}\">InstallArea/${${other_project}_PLATFORM}/${other_project}Environment.xml</env:include>\n")
+  endforeach()
+
   set(commands ${ARGN})
   #message(STATUS "start - ${commands}")
   while(commands)
@@ -1702,7 +2004,10 @@ macro(gaudi_external_project_environment)
   get_property(packages_found GLOBAL PROPERTY PACKAGES_FOUND)
   #message("${packages_found}")
   foreach(pack ${packages_found})
-    if(NOT pack STREQUAL GaudiProject)
+    # Check that it is not a "Gaudi project" (the environment is included in a
+    # different way in gaudi_generate_env_conf).
+    list(FIND used_gaudi_projects ${pack} gaudi_project_idx)
+    if((NOT pack STREQUAL GaudiProject) AND (gaudi_project_idx EQUAL -1))
       message(STATUS "    ${pack}")
       # this is needed to get the non-cache variables for the packages
       find_package(${pack} QUIET)
@@ -1717,17 +2022,32 @@ macro(gaudi_external_project_environment)
         list(APPEND binary_path ${bin_path})
       endif()
 
-      list(APPEND binary_path   ${${pack}_BINARY_PATH} ${${_pack_upper}_BINARY_PATH})
-      list(APPEND python_path   ${${pack}_PYTHON_PATH} ${${_pack_upper}_PYTHON_PATH})
-      list(APPEND environment   ${${pack}_ENVIRONMENT} ${${_pack_upper}_ENVIRONMENT})
-      list(APPEND library_path2 ${${pack}_LIBRARY_DIR} ${${pack}_LIBRARY_DIRS} ${${_pack_upper}_LIBRARY_DIR} ${${_pack_upper}_LIBRARY_DIRS})
+      list(APPEND binary_path   ${${pack}_BINARY_PATH})
+      list(APPEND python_path   ${${pack}_PYTHON_PATH})
+      list(APPEND environment   ${${pack}_ENVIRONMENT})
+      list(APPEND library_path2 ${${pack}_LIBRARY_DIR} ${${pack}_LIBRARY_DIRS})
+      # Try the version with the name of the package uppercase (unless the
+      # package name is already uppercase).
+      if(NOT pack STREQUAL _pack_upper)
+        list(APPEND binary_path   ${${_pack_upper}_BINARY_PATH})
+        list(APPEND python_path   ${${_pack_upper}_PYTHON_PATH})
+        list(APPEND environment   ${${_pack_upper}_ENVIRONMENT})
+        list(APPEND library_path2 ${${_pack_upper}_LIBRARY_DIR} ${${_pack_upper}_LIBRARY_DIRS})
+      endif()
     endif()
   endforeach()
 
   get_property(library_path GLOBAL PROPERTY LIBRARY_PATH)
   set(library_path ${library_path} ${library_path2})
   # Remove system libraries from the library_path
-  list(REMOVE_ITEM library_path /usr/lib /lib /usr/lib64 /lib64 /usr/lib32 /lib32)
+  #list(REMOVE_ITEM library_path /usr/lib /lib /usr/lib64 /lib64 /usr/lib32 /lib32)
+  set(old_library_path ${library_path})
+  set(library_path)
+  foreach(d ${old_library_path})
+    if(NOT d MATCHES "^(/usr|/usr/local)?/lib(32/64)?")
+      set(library_path ${library_path} ${d})
+    endif()
+  endforeach()
 
   foreach(var library_path python_path binary_path)
     if(${var})
@@ -1838,3 +2158,74 @@ get_filename_component(_IMPORT_PREFIX \"\${_IMPORT_PREFIX}\" PATH)
     install(FILES ${pkg_exp_file} DESTINATION cmake)
   endforeach()
 endmacro()
+
+#-------------------------------------------------------------------------------
+# gaudi_generate_project_manifest()
+#
+# Internal function to generate project metadata like dependencies on other
+# projects and on external software libraries.
+#-------------------------------------------------------------------------------
+function(gaudi_generate_project_manifest filename project version)
+  # FIXME: partial replication of function argument parsing done in gaudi_project()
+  CMAKE_PARSE_ARGUMENTS(PROJECT "" "" "USE;DATA" ${ARGN})
+  # Non need to check consistency because it's already done in gaudi_project().
+
+  #header
+  set(data "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<manifest>\n")
+
+  # Project name and version
+  set(data "${data}  <project name=\"${project}\" version=\"${version}\" />\n")
+
+  # HEP toolchain infos
+  if(heptools_version)
+    set(data "${data}  <heptools>\n")
+    # version
+    set(data "${data}    <version>${heptools_version}</version>\n")
+    # platform specifications
+    set(data "${data}    <binary_tag>${BINARY_TAG}</binary_tag>\n")
+    set(data "${data}    <lcg_system>${LCG_SYSTEM}</lcg_system>\n")
+    set(data "${data}  </heptools>\n")
+  endif()
+
+  # Build options
+  # FIXME: I need an explicit list of options to store
+
+  # Used projects
+  if(PROJECT_USE)
+    set(data "${data}  <used_projects>\n")
+    while(PROJECT_USE)
+      list(GET PROJECT_USE 0 n)
+      list(GET PROJECT_USE 1 v)
+      list(REMOVE_AT PROJECT_USE 0 1)
+      set(data "${data}    <project name=\"${n}\" version=\"${v}\" />\n")
+    endwhile()
+    set(data "${data}  </used_projects>\n")
+  endif()
+
+  # Used data packages
+  if(PROJECT_DATA)
+    set(data "${data}  <used_data_pkgs>\n")
+    while(PROJECT_DATA)
+      list(GET PROJECT_DATA 0 n)
+      list(REMOVE_AT PROJECT_DATA 0)
+      set(v *)
+      if(PROJECT_DATA)
+        list(GET PROJECT_DATA 0 next)
+        if(next STREQUAL VERSION)
+          list(GET PROJECT_DATA 1 v)
+          list(REMOVE_AT PROJECT_DATA 0 1)
+        endif()
+      endif()
+      set(data "${data}    <package name=\"${n}\" version=\"${v}\" />\n")
+    endwhile()
+    set(data "${data}  </used_data_pkgs>\n")
+  endif()
+
+  # trailer
+  set(data "${data}</manifest>\n")
+
+  get_filename_component(fn ${filename} NAME)
+  message(STATUS "Generating ${fn}")
+  file(WRITE ${filename} "${data}")
+endfunction()

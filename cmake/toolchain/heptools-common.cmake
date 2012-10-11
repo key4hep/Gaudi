@@ -12,7 +12,7 @@
 #  - LCG_SYSTEM: by default it is derived from BINARY_TAG, but it can be set
 #                explicitly to a compatible supported platform if the default
 #                one is not supported.
-#                E.g.: if BINARY_TAG is x86_64-ubuntu1204-gcc46-opt, LCG_SYSTEM
+#                E.g.: if BINARY_TAG is x86_64-ubuntu12.04-gcc46-opt, LCG_SYSTEM
 #                      should be set to x86_64-slc6-gcc46.
 ################################################################################
 
@@ -115,10 +115,10 @@ endfunction()
 function(lcg_get_target_platform)
   if(NOT BINARY_TAG)
     # Take the target system id from the environment
-    if(DEFINED ENV{CMAKECONFIG})
+    if(NOT "$ENV{CMAKECONFIG}" STREQUAL "")
       set(tag $ENV{CMAKECONFIG})
       set(tag_source CMAKECONFIG)
-    elseif(DEFINED ENV{CMTCONFIG})
+    elseif(NOT "$ENV{CMTCONFIG}" STREQUAL "")
       set(tag $ENV{CMTCONFIG})
       set(tag_source CMTCONFIG)
     else()
@@ -154,7 +154,7 @@ function(lcg_get_target_platform)
     set(LCG_OSVERS "")
   endif()
 
-  if (comp MATCHES "([^0-9.]+)([0-9.]+)")
+  if (comp MATCHES "([^0-9.]+)([0-9.]+|max)")
     set(LCG_COMP     ${CMAKE_MATCH_1})
     set(LCG_COMPVERS ${CMAKE_MATCH_2})
   else()
@@ -211,26 +211,6 @@ function(lcg_get_target_platform)
   foreach(v ARCH OS OSVERS COMP COMPVERS TARGET)
     set(LCG_${v} ${LCG_${v}} PARENT_SCOPE)
   endforeach()
-
-  # set default compiler variables
-  if(LCG_COMP MATCHES "gcc")
-    set(c_name gcc)
-    set(cxx_name g++)
-  elseif(LCG_COMP MATCHES "icc")
-    set(c_name icc)
-    set(cxx_name icpc)
-  elseif(LCG_COMP STREQUAL "clang")
-    set(c_name clang)
-    set(cxx_name clang++)
-  else()
-    message(WARNING "Unsupported compiler ${LCG_COMP}.")
-  endif()
-  if(c_name)
-    find_program(LCG_SYSTEM_C_COMPILER ${c_name})
-    find_program(LCG_SYSTEM_CXX_COMPILER ${cxx_name})
-  endif()
-  set(CMAKE_C_COMPILER   ${LCG_SYSTEM_C_COMPILER} PARENT_SCOPE)
-  set(CMAKE_CXX_COMPILER ${LCG_SYSTEM_CXX_COMPILER} PARENT_SCOPE)
 endfunction()
 
 
@@ -290,19 +270,29 @@ macro(LCG_compiler id flavor version)
   if(${id} STREQUAL ${LCG_COMP}${LCG_COMPVERS})
     if(${flavor} STREQUAL "gcc")
       set(compiler_root ${LCG_external}/${flavor}/${version}/${LCG_HOST_ARCH}-${LCG_HOST_OS}${LCG_HOST_OSVERS})
-      if(EXISTS ${compiler_root})
-        set(CMAKE_C_COMPILER   ${compiler_root}/bin/lcg-gcc-${version})
-        set(CMAKE_CXX_COMPILER ${compiler_root}/bin/lcg-g++-${version})
-      endif()
+      set(c_compiler_names lcg-gcc-${version})
+      set(cxx_compiler_names lcg-g++-${version})
+    elseif(${flavor} STREQUAL "icc")
+      # Note: icc must be in the path already because of the licensing
+      set(compiler_root)
+      set(c_compiler_names lcg-icc-${version} icc)
+      set(cxx_compiler_names lcg-icpc-${version} icpc)
     elseif(${flavor} STREQUAL "clang")
       set(compiler_root ${LCG_external}/llvm/${version}/${LCG_HOST_ARCH}-${LCG_HOST_OS}${LCG_HOST_OSVERS})
-      if(EXISTS ${compiler_root})
-        set(CMAKE_C_COMPILER   ${compiler_root}/bin/clang)
-        set(CMAKE_CXX_COMPILER ${compiler_root}/bin/clang++)
-      endif()
+      set(c_compiler_names lcg-clang-${version} clang)
+      set(cxx_compiler_names lcg-clang++-${version} clang++)
     else()
       message(FATAL_ERROR "Uknown compiler flavor ${flavor}.")
     endif()
+    #message(STATUS "LCG_compiler($ARGV) -> ${c_compiler_name} ${cxx_compiler_name} ${compiler_root}")
+    # We need to unset the default compiler names to make find_program() work.
+    find_program(CMAKE_C_COMPILER
+                 NAMES ${c_compiler_names}
+                 PATHS ${compiler_root}/bin)
+    find_program(CMAKE_CXX_COMPILER
+                 NAMES ${cxx_compiler_names}
+                 PATHS ${compiler_root}/bin)
+    #message(STATUS "LCG_compiler($ARGV) -> ${CMAKE_C_COMPILER} ${CMAKE_CXX_COMPILER}")
   endif()
 endmacro()
 

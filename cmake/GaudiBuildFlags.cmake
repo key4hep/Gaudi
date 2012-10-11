@@ -74,7 +74,7 @@ if(APPLE)
 endif()
 
 #--- Special build flags -------------------------------------------------------
-if ((GAUDI_V21 OR G21_HIDE_SYMBOLS) AND (comp MATCHES gcc4))
+if ((GAUDI_V21 OR G21_HIDE_SYMBOLS) AND (LCG_COMP STREQUAL gcc AND LCG_COMPVERS MATCHES "4[0-9]"))
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden")
 endif()
 
@@ -102,9 +102,9 @@ endif()
 
 #--- Tuning of warnings --------------------------------------------------------
 if(HIDE_WARNINGS)
-  if(comp MATCHES clang)
+  if(LCG_COMP MATCHES clang)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-overloaded-virtual -Wno-char-subscripts -Wno-unused-parameter")
-  elseif(comp MATCHES gcc4[367] OR comp MATCHES gccmax)
+  elseif(LCG_COMP STREQUAL gcc AND LCG_COMPVERS MATCHES "4[3-9]|max")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-empty-body")
   endif()
 endif()
@@ -112,6 +112,6 @@ endif()
 #--- Special flags -------------------------------------------------------------
 add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
 
-if(comp MATCHES gcc47 OR comp MATCHES gccmax)
+if(LCG_COMP STREQUAL gcc AND LCG_COMPVERS MATCHES "47|max")
   set(GCCXML_CXX_FLAGS "-D__STRICT_ANSI__")
 endif()

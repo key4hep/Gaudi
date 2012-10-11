@@ -17,11 +17,6 @@ requires a cache with the information collected for the projects the one to be
 converted depends on.  This cache has to be in the same directory as the script
 and can be easily generated running the script on all the required projects.
 
-Prerequisites
--------------
-The parsing of CMT ``requirements`` files is implemented using the module
-``pyparsing``_.
-
 Usage
 -----
 The usage is simple: just go to the top directory of the project to be converted
@@ -40,6 +35,23 @@ The next step is to translate LHCb::
 The first call updates the cache so that it can be used for the
 interdependencies of the packages in LHCb.
 
+Configuration
+-------------
+Some packages need special treatment. Few cases are supported:
+
+    - `ignored_packages`: packages that should not treated at all
+    - `data_packages`: known data packages, cannot be used in dependencies
+    - `needing_python`: packages that need to link against Python
+    - `no_pedantic`: packages that cannot compile of the -pedantic option is used
+    - `ignore_env`: special environment variables that should not be set in CMake
+
+The configuration required for the conversion of a project can be stored in a
+JSON file called `cmt2cmake.cfg` at the top level directory of the project.
+
+It must be noted that `ignored_packages` and `data_packages` require the full
+name of the package (hat+name) while the others use only the simple package name
+(without hat).
+
 Testing
 -------
 This directory contains also the tests for ``cmt2cmake.py``, written for
@@ -50,6 +62,11 @@ nosetests_. To run the tests it is enough to go to the directory containing
     $ nosetests -v --with-doctest
 
 
+Note
+----
+The parsing of CMT ``requirements`` files is implemented using the module
+``pyparsing``_. To simplify the use of the script, a copy of it is available
+together with the script itself.
 
 
 .. _CMT: http://www.cmtsite.org

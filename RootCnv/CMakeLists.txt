@@ -1,4 +1,4 @@
-gaudi_subdir(RootCnv v1r14p2)
+gaudi_subdir(RootCnv v1r18)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiUtils)
 
@@ -16,12 +16,12 @@ gaudi_add_module(RootCnv components/Components.cpp
                  LINK_LIBRARIES RootCnvLib)
 
 # Note: the set_property above is needed because that's the way REFLEX_BUILD_LIBRARIES
-#       takes the "-D" flags, and it make the following lines unneeded.
+#       takes the "-D" flags, and it makes the following lines unneeded.
 #set_property(TARGET RootCnvLib RootCnv RootCnvDict
 #             APPEND PROPERTY COMPILE_DEFINITIONS __POOL_COMPATIBILITY)
 
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(RootCnv dict/RootCnv_dict.h  dict/RootCnv_dict.xml LINK_LIBRARIES RootCnvLib)
 
-add_executable(gaudi_merge merge/merge.cpp)
-target_link_libraries(gaudi_merge RootCnvLib)
+gaudi_add_executable(gaudi_merge merge/merge.cpp
+                     LINK_LIBRARIES RootCnvLib)

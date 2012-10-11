@@ -20,6 +20,7 @@ cmt2cmake.known_subdirs['SomeSubdir'] = {'libraries': ['SubdirLib'],
 cmt2cmake.known_subdirs['JustHeaders'] = {'libraries': [],
                                           'includes': True}
 
+cmt2cmake.data_packages = set(['DataPack', 'Another/DtPkg', 'SpecialThing'])
 
 #
 # Helpers
@@ -72,6 +73,25 @@ class PackWrap(cmt2cmake.Package):
     def __del__(self):
         shutil.rmtree(self.tmpdir, ignore_errors=False)
 
+class ProjWrap(cmt2cmake.Project):
+    """
+    Helper class to test the Project.
+    """
+    def __init__(self, name, proj_cmt, files=None):
+        if not files:
+            files = {}
+        files["cmt/project.cmt"] = proj_cmt
+
+        self.tmpdir = mkdtemp()
+        rootdir = os.path.join(self.tmpdir, name)
+        buildDir(files, rootdir)
+
+        super(ProjWrap, self).__init__(rootdir)
+
+    def __del__(self):
+        shutil.rmtree(self.tmpdir, ignore_errors=False)
+
+
 def getCalls(function, cmakelists):
     '''
     extracts the arguments to all the calls to a cmake function
@@ -114,7 +134,7 @@ def test_pack_header():
     assert len(calls) == 1, "gaudi_subdir called more than once"
 
     args = calls[0].strip().split()
-    assert args == ["ThisIsAPackage", "v123r456"]
+    assert args == ["ThisIsAPackage", "v123r456"], args
 
 def test_pack_deps():
     requirements = """
@@ -835,6 +855,32 @@ def test_god_6():
 package Test
 version v1r0
 
+apply_pattern god_headers files=../xml/*.xml
+macro TestObj2Doth_GODflags " -s ../src/ "
+    '''
+    pkg = PackWrap("Test", requirements, files={})
+
+    cmakelists = pkg.generate()
+    print cmakelists
+
+    calls = getCalls("include", cmakelists)
+    assert calls
+    l = calls[0].strip()
+    assert l == 'GaudiObjDesc'
+
+    calls = getCalls("god_build_headers", cmakelists)
+    assert len(calls) == 1, "god_build_headers wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l[0] == 'xml/*.xml'
+    assert 'PRIVATE' in l
+    assert 'DESTINTAION' not in l
+
+def test_god_7():
+    requirements = '''
+package Test
+version v1r0
+
 document customdict TestCustomDict ../dict/TestCustomDict.h
 
 apply_pattern god_dictionary files=../xml/*.xml
@@ -1072,6 +1118,197 @@ macro_append Test_python_dependencies " PyQtResource PyQtUIC "
     assert len(calls) == 1, "gen_pyqt_uic wrong count %d" % len(calls)
     l = calls[0].strip().split()
     assert l == ['Test.QtApp.UI', 'Test/QtApp', 'qt_resources/*.ui']
+
+
+def test_line_cont():
+    requirements = '''
+package Test
+version v1r0
+
+library Test *.ccp
+
+macro TEST "value" \\
+
+apply_pattern component_library library=Test
+    '''
+    pkg = PackWrap("Test", requirements, files={})
+
+    cmakelists = pkg.generate()
+    print cmakelists
+
+    calls = getCalls("gaudi_add_module", cmakelists)
+    assert len(calls) == 1, "gaudi_add_module wrong count %d" % len(calls)
+
+
+def test_line_copy_relax():
+    requirements = '''
+package Test
+version v1r0
+
+use RELAX         v* LCG_Interfaces
+
+copy_relax_rootmap dict=CLHEP
+copy_relax_rootmap dict=HepMC
+copy_relax_rootmap dict=STL
+copy_relax_rootmap dict=Math
+    '''
+    pkg = PackWrap("Test", requirements, files={})
+
+    cmakelists = pkg.generate()
+    print cmakelists
+
+    calls = getCalls("find_package", cmakelists)
+    assert len(calls) == 1, "find_package wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l == ['RELAX', 'REQUIRED', 'COMPONENTS', 'CLHEP', 'HepMC', 'STL', 'Math']
+
+    calls = getCalls("add_custom_target", cmakelists)
+    assert len(calls) == 1, "add_custom_target wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l == ['RelaxRootmap', 'ALL', 'DEPENDS', '${rootmapfile}']
+
+    # No need to check every call, just that the sequence is there
+
+
+def test_project():
+    proj_cmt = '''
+project LHCB
+
+use GAUDI    GAUDI_v23r4
+use DBASE
+use PARAM
+
+build_strategy with_installarea
+setup_strategy root
+    '''
+    files = {"LHCbSys": {"cmt": {"requirements": "version v35r2"}}}
+    proj = ProjWrap("LHCb", proj_cmt, files=files)
+
+    cmakelists = proj.generate()
+    print cmakelists
+
+    calls = getCalls("find_package", cmakelists)
+    assert len(calls) == 1, "find_package wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l == ['GaudiProject']
+
+    calls = getCalls("gaudi_project", cmakelists)
+    assert len(calls) == 1, "gaudi_project wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l == ['LHCb', 'v35r2', 'USE', 'Gaudi', 'v23r4']
+
+def test_data_pkg_1():
+    proj_cmt = '''
+project TestProject
+    '''
+    files = {"TestProjectSys": {"cmt": {"requirements": "version v1r0"}},
+             "Package1": {"cmt": {"requirements":
+'''
+version v1r0
+
+use DtPkg        v7r* Another
+use DataPack     v*
+use SpecialThing *
+'''}},
+             }
+    proj = ProjWrap("TestProject", proj_cmt, files=files)
+
+    cmakelists = proj.generate()
+    print cmakelists
+
+    calls = getCalls("find_package", cmakelists)
+    assert len(calls) == 1, "find_package wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l == ['GaudiProject']
+
+    calls = getCalls("gaudi_project", cmakelists)
+    assert len(calls) == 1, "gaudi_project wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l == ['TestProject', 'v1r0', 'DATA',
+                 'Another/DtPkg', 'VERSION', 'v7r*',
+                 'DataPack',
+                 'SpecialThing']
+
+def test_data_pkg_2():
+    proj_cmt = '''
+project TestProject
+    '''
+    files = {"TestProjectSys": {"cmt": {"requirements": "version v1r0"}},
+             "Package1": {"cmt": {"requirements":
+'''
+version v1r0
+
+use DataPack     v*
+'''}},
+             "Package2": {"cmt": {"requirements":
+'''
+version v1r0
+
+use SpecialThing *
+'''}},
+             }
+    proj = ProjWrap("TestProject", proj_cmt, files=files)
+
+    cmakelists = proj.generate()
+    print cmakelists
+
+    calls = getCalls("find_package", cmakelists)
+    assert len(calls) == 1, "find_package wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l == ['GaudiProject']
+
+    calls = getCalls("gaudi_project", cmakelists)
+    assert len(calls) == 1, "gaudi_project wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l == ['TestProject', 'v1r0', 'DATA',
+                 'DataPack',
+                 'SpecialThing']
+
+def test_data_pkg_3():
+    proj_cmt = '''
+project TestProject
+    '''
+    files = {"TestProjectSys": {"cmt": {"requirements": "version v1r0"}},
+             "Package1": {"cmt": {"requirements":
+'''
+version v1r0
+
+use DataPack     v7r*
+'''}},
+             "Package2": {"cmt": {"requirements":
+'''
+version v1r0
+
+use DataPack     v*
+use DtPkg v1r0 Another
+'''}},
+             }
+    proj = ProjWrap("TestProject", proj_cmt, files=files)
+
+    cmakelists = proj.generate()
+    print cmakelists
+
+    calls = getCalls("find_package", cmakelists)
+    assert len(calls) == 1, "find_package wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l == ['GaudiProject']
+
+    calls = getCalls("gaudi_project", cmakelists)
+    assert len(calls) == 1, "gaudi_project wrong count %d" % len(calls)
+
+    l = calls[0].strip().split()
+    assert l == ['TestProject', 'v1r0', 'DATA',
+                 'Another/DtPkg', 'VERSION', 'v1r0',
+                 'DataPack', 'VERSION', 'v7r*']
 
 from nose.core import main
 main()

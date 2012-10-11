@@ -4,7 +4,7 @@ Small script to execute a command in a modified environment (see man 1 env).
 """
 import os
 
-def set_env(env, set = [], unset = [], append = [], prepend = []):
+def set_env(env, set = [], unset = [], append = [], prepend = []): #@ReservedAssignment
     """
     Manipulate the dictionary-like object 'env' according to the prescriptions in
     the lists 'unset', 'set', 'append' and 'prepend' (in this order).
@@ -28,7 +28,6 @@ def set_env(env, set = [], unset = [], append = [], prepend = []):
     # remove the 'unset' variables
     for n in unset:
         if n in env:
-            log.debug("unset %s", n)
             del env[n]
     # set the requested variables
     env.update(map(parse, set))
@@ -74,6 +73,15 @@ def parse_args():
     parser.add_option("-x", "--xml",
                       action = "append",
                       help = "XML file describing the changes to the environment")
+    parser.add_option("--sh",
+                      action = "store_const", const = "sh", dest = "shell",
+                      help = "Print the environment as shell commands for 'sh'-derived shells.")
+    parser.add_option("--csh",
+                      action = "store_const", const = "csh", dest = "shell",
+                      help = "Print the environment as shell commands for 'csh'-derived shells.")
+    parser.add_option("--py",
+                      action = "store_const", const = "py", dest = "shell",
+                      help = "Print the environment as Python dictionary.")
     parser.disable_interspersed_args()
     parser.set_defaults(unset = [],
                         set = [],
@@ -116,6 +124,10 @@ def main():
     opts.set.extend(args[:i])
     cmd = args[i:]
 
+    if opts.shell and cmd:
+        print >> sys.stderr, "Invalid arguments: --%s cannot be used with a command" % opts.shell
+        return 2
+
     # prepare initial dictionary
     if opts.ignore_environment:
         env = {}
@@ -128,18 +140,31 @@ def main():
     env = set_env(env,
                   set = opts.set, unset = opts.unset,
                   append = opts.append, prepend = opts.prepend)
-    if sys.platform.startswith("win"):
-        env["PATH"] = env["PATH"] + os.pathsep + env["LD_LIBRARY_PATH"]
-    elif sys.platform.startswith("darwin"):
-        if "DYLD_LIBRARY_PATH" in env:
-            env["DYLD_LIBRARY_PATH"] = env["DYLD_LIBRARY_PATH"] + os.pathsep + env["LD_LIBRARY_PATH"]
-        else:
-            env["DYLD_LIBRARY_PATH"] = env["LD_LIBRARY_PATH"]
 
+    if "LD_LIBRARY_PATH" in env:
+        # replace LD_LIBRARY_PATH with the corresponding one on other systems
+        if sys.platform.startswith("win"):
+            other = "PATH"
+        elif sys.platform.startswith("darwin"):
+            other = "DYLD_LIBRARY_PATH"
+        else:
+            other = None
+        if other:
+            if other in env:
+                env[other] = env[other] + os.pathsep + env["LD_LIBRARY_PATH"]
+            else:
+                env[other] = env["LD_LIBRARY_PATH"]
+            del env["LD_LIBRARY_PATH"]
 
     if not cmd:
-        for nv in env.items():
-            print "%s=%s" % nv
+        if opts.shell == 'py':
+            from pprint import pprint
+            pprint(env)
+        else:
+            format = {'sh':  "export %s='%s'",
+                      'csh': "setenv %s '%s'"}.get(opts.shell, "%s=%s")
+            for nv in sorted(env.items()):
+                print format % nv
         return 0
     else:
         from subprocess import Popen

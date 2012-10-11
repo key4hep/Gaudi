@@ -1,6 +1,16 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2012-10-10 - Marco Clemencic
+ - Added -Wno-long-long when using -pedantic to avoid non-interesting warnings.
+
+! 2012-10-05 - Marco Clemencic
+ - Set the -pedantic flag for the tag GAUDI_PEDANTIC (and target-gcc).
+
+! 2012-10-03 - Charles Leggett
+ - set max-page-size for all 64 bit gcc targets
+ M       cmt/requirements
+
 ============================= GaudiPolicy v12r2 ==============================
 ! 2012-09-13 - Marco Clemencic
  - Removed the hack used to avoid the AFS stress caused by LCGCMT 64.
