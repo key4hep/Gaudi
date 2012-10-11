@@ -39,7 +39,7 @@ void CPUCruncher::findPrimes (const double runtime)  {
   unsigned long* primes = new unsigned long[primes_size];
   primes[0]=2;
 
-  unsigned long i =2;
+  unsigned long i = 2;
 
   // Loop on numbers
   while ( (std::clock () - start)/CLOCKS_PER_SEC < runtime ){
@@ -87,6 +87,9 @@ void CPUCruncher::findPrimes (const double runtime)  {
 
 StatusCode CPUCruncher::execute  ()  // the execution of the algorithm 
 {
+
+	auto rusage2sec = [] (rusage rutime) -> float
+			 {return rutime.ru_utime.tv_sec +rutime.ru_utime.tv_usec/1000000.f;};
 
 	struct rusage starttime;
 	getrusage( RUSAGE_SELF, &starttime);
@@ -136,7 +139,7 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
   runtime = std::fabs(rndmgaus());
   }
 
-  float time = starttime.ru_stime.tv_sec +starttime.ru_stime.tv_usec/1000000.;
+  float time = rusage2sec (starttime);
   logstream  << MSG::INFO << "Runtime will be: "<< runtime << endmsg;
   logstream  << MSG::INFO << "Start event " <<  getContext()->m_evt_num
 		     << " on pthreadID " << getContext()->m_thread_id
@@ -150,7 +153,8 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
     read<DataObject>(input);
   }
 
-  findPrimes(runtime);
+  //findPrimes(runtime);
+  usleep(runtime*1000000.);
 
   // write products to the event
   //for (std::string& output: m_outputs){
@@ -162,9 +166,10 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
 
 	struct rusage endtime;
 	getrusage( RUSAGE_SELF, &endtime);
+	time = rusage2sec (endtime);
   logstream << MSG::INFO << "Finish event " <<  getContext()->m_evt_num
 		     << " on pthreadID " << getContext()->m_thread_id
-		     << " at " << endtime.ru_stime.tv_sec << endmsg;
+		     << " at " << time << endmsg;
   return StatusCode::SUCCESS ;
 }
 
