@@ -186,7 +186,8 @@ function(lcg_get_target_platform)
   elseif(LCG_OS STREQUAL "slc" OR LCG_OS STREQUAL "ubuntu")
     set(CMAKE_SYSTEM_NAME Linux PARENT_SCOPE)
   else()
-    message(FATAL_ERROR "OS ${LCG_OS} is not supported.")
+    set(CMAKE_SYSTEM_NAME ${CMAKE_HOST_SYSTEM_NAME})
+    message(WARNING "OS ${LCG_OS} is not a known platform, assuming it's a ${CMAKE_SYSTEM_NAME}.")
   endif()
 
   # set default platform ids
