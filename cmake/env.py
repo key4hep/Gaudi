@@ -58,7 +58,8 @@ def parse_args():
                           usage = "Usage: %prog [OPTION]... [NAME=VALUE]... [COMMAND [ARG]...]",
                           description = "Set each NAME to VALUE in the environment and run COMMAND.",
                           epilog = "The operations are performed in the order: unset, set, append, "
-                                   "prepend. If no COMMAND, print the resulting environment." )
+                                   "prepend, xml. If no COMMAND is provided, print the resulting "
+                                   "environment." )
     parser.add_option("-i", "--ignore-environment",
                       action = "store_true",
                       help = "start with an empty environment")

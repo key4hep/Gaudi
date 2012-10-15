@@ -4,7 +4,6 @@ Created on Jul 12, 2011
 @author: mplajner
 '''
 import unittest
-import platform
 import os
 import shutil
 from tempfile import mkdtemp
@@ -182,10 +181,7 @@ class Test(unittest.TestCase):
             stri = f.readline()
         f.close()
 
-        if platform.system() == 'Linux':
-            self.assertEqual(stri, 'export sysVar=newValue:lala\n')
-        else:
-            self.assertEqual(stri, 'set sysVar=newValue;lala\n')
+        self.assertEqual(stri, 'export sysVar=newValue:lala\n')
 
         os.remove('setupFile.txt')
 
