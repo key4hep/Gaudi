@@ -262,7 +262,9 @@ class Scalar():
 
     def _changeSlashes(self):
         '''Changes slashes depending on operating system.'''
-        self.val = os.path.normpath(self.val)
+        # we do the change only if it does not look like a URL
+        if '://' not in self.val:
+            self.val = os.path.normpath(self.val)
 
     def __str__(self):
         return self.val

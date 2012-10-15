@@ -520,6 +520,30 @@ class Test(unittest.TestCase):
         self.assertEqual(str(control['var2']), "test2")
 
 
+    def testVariableManipulations(self):
+        l = Variable.List('PATH')
+
+        l.set("/usr/bin:/some//strange/../nice/./location")
+        assert l.value(asString=True) == "/usr/bin:/some/nice/location"
+
+        l.append("/another/path")
+        assert l.value(asString=True) == "/usr/bin:/some/nice/location:/another/path"
+
+
+        s = Variable.Scalar('VAR')
+
+        s.set("/usr/bin")
+        assert s.value(asString=True) == "/usr/bin"
+
+        s.set("/some//strange/../nice/./location")
+        assert s.value(asString=True) == "/some/nice/location"
+
+        # This is undefined
+        # l.set("http://cern.ch")
+
+        s.set("http://cern.ch")
+        assert s.value(asString=True) == "http://cern.ch"
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
