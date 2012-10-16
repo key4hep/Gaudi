@@ -7,8 +7,18 @@
 
 cmake_minimum_required(VERSION 2.8.5)
 
-# Add the directory containing this file to the modules search path
-set(CMAKE_MODULE_PATH ${GaudiProject_DIR} ${CMAKE_MODULE_PATH})
+# Preset the CMAKE_MODULE_PATH from the environment, if not already defined.
+if(NOT CMAKE_MODULE_PATH)
+  # Note: this works even if the envirnoment variable is not set.
+  file(TO_CMAKE_PATH "$ENV{CMAKE_MODULE_PATH}" CMAKE_MODULE_PATH)
+endif()
+
+# Add the directory containing this file and the to the modules search path
+set(CMAKE_MODULE_PATH ${GaudiProject_DIR} ${GaudiProject_DIR}/modules ${CMAKE_MODULE_PATH})
+# Automatically add the modules directory provided by the project.
+if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/cmake})
+  set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake} ${CMAKE_MODULE_PATH})
+endif()
 
 #-------------------------------------------------------------------------------
 # Basic configuration
