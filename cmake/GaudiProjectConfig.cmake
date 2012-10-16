@@ -4,6 +4,8 @@
 #  gaudi_use_project(project version) : declare the dependency on another project
 #
 # Authors: Pere Mato, Marco Clemencic
+#
+# Commit Id: $Format:%H$
 
 cmake_minimum_required(VERSION 2.8.5)
 
