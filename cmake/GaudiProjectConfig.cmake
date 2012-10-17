@@ -943,26 +943,39 @@ function(gaudi_resolve_link_libraries variable)
         else()
           set(collected ${collected} ${${package}_LIBRARIES})
         endif()
-      elseif(package STREQUAL debug OR package STREQUAL optimized OR package STREQUAL general)
-        # pop the next element
-        list(GET packages 0 lib)
-        list(REMOVE_AT packages 0)
-        if((package STREQUAL general) OR
-           (BUILD_TYPE STREQUAL Debug AND package STREQUAL debug) OR
-           (BUILD_TYPE STREQUAL Release AND package STREQUAL optimized))
-          # we keep it only if corresponds to the build type
-          set(collected ${collected} ${lib})
-        endif()
       else()
         # if it's not a package, we just add it as it is... there are a lot of special cases
         set(collected ${collected} ${package})
       endif()
     endif()
   endforeach()
+  #message(STATUS "gaudi_resolve_link_libraries collected: ${collected}")
   if(collected)
+    #message(STATUS "Stripping build type special libraries.")
+    set(_coll)
+    while(collected)
+      # pop an element (library or qualifier)
+      list(GET collected 0 entry)
+      list(REMOVE_AT collected 0)
+      if(entry STREQUAL debug OR entry STREQUAL optimized OR entry STREQUAL general)
+        # it's a qualifier: pop another one (the library name)
+        list(GET collected 0 lib)
+        list(REMOVE_AT collected 0)
+        if((entry STREQUAL general) OR
+           (CMAKE_BUILD_TYPE STREQUAL Debug AND entry STREQUAL debug) OR
+           (CMAKE_BUILD_TYPE STREQUAL Release AND entry STREQUAL optimized))
+          # we keep it only if corresponds to the build type
+          set(_coll ${_coll} ${lib})
+        endif()
+      else()
+        # it's not a qualifier: keep it
+        set(_coll ${_coll} ${entry})
+      endif()
+    endwhile()
+    set(collected ${_coll})
     list(REMOVE_DUPLICATES collected)
+    #message(STATUS "gaudi_resolve_link_libraries output: ${collected}")
   endif()
-  #message(STATUS "gaudi_resolve_link_libraries output: ${collected}")
   set(${variable} ${collected} PARENT_SCOPE)
 endfunction()
 
