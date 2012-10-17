@@ -5,7 +5,7 @@
 # Find ROOTSYS
 #  We assume TROOT.h is in $ROOTSYS/include
 find_path(ROOT_INCLUDE_DIR TROOT.h
-          HINTS $ENV{ROOTSYS}/include)
+          HINTS ${ROOTSYS}/include $ENV{ROOTSYS}/include)
 get_filename_component(ROOTSYS ${ROOT_INCLUDE_DIR} PATH)
 set(ROOTSYS ${ROOTSYS} CACHE PATH "Location of the installation of ROOT")
 
