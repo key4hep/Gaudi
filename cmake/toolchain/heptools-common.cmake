@@ -402,4 +402,20 @@ macro(LCG_prepare_paths)
   set(CMAKE_INCLUDE_PATH ${LCG_INCLUDE_PATH} ${CMAKE_INCLUDE_PATH})
 
   #message(STATUS "LCG_PREFIX_PATH: ${LCG_PREFIX_PATH}")
+
+  #===============================================================================
+  # Path to programs that a toolchain should define (not mandatory).
+  #===============================================================================
+  if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+    find_program(CMAKE_AR       ar       )
+    find_program(CMAKE_LINKER   ld       )
+    find_program(CMAKE_NM       nm       )
+    find_program(CMAKE_OBJCOPY  objcopy  )
+    find_program(CMAKE_OBJDUMP  objdump  )
+    find_program(CMAKE_RANLIB   ranlib   )
+    find_program(CMAKE_STRIP    strip    )
+    mark_as_advanced(CMAKE_AR CMAKE_LINKER CMAKE_NM CMAKE_OBJCOPY CMAKE_OBJDUMP
+                     CMAKE_RANLIB CMAKE_STRIP)
+  endif()
+
 endmacro()
