@@ -62,29 +62,6 @@ else()
   set(GAUDI_DETACHED_DEBINFO OFF)
 endif()
 
-#-------------------------------------------------------------------------------
-# Platform transparency
-#-------------------------------------------------------------------------------
-if(WIN32)
-  set(ld_library_path PATH)
-elseif(APPLE)
-  set(ld_library_path DYLD_LIBRARY_PATH)
-else()
-  set(ld_library_path LD_LIBRARY_PATH)
-endif()
-
-set(lib lib)
-set(bin bin)
-
-if(WIN32)
-  set(ssuffix .bat)
-  set(scomment rem)
-else()
-  set(ssuffix .csh)
-  set(scomment \#)
-endif()
-
-
 #---------------------------------------------------------------------------------------------------
 # Programs and utilities needed for the build
 #---------------------------------------------------------------------------------------------------
@@ -1365,14 +1342,14 @@ macro(_gaudi_detach_debinfo target)
         #       see OUTPUT_NAME and LIBRARY_OUPUT_NAME
         set(_tn ${CMAKE_SHARED_${CMAKE_MATCH_0}_PREFIX}${target}${CMAKE_SHARED_${CMAKE_MATCH_0}_SUFFIX})
         set(_builddir ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-        set(_dest ${lib})
+        set(_dest lib)
       else()
         set(_tn ${target})
         if(USE_EXE_SUFFIX)
           set(_tn ${_tn}.exe)
         endif()
         set(_builddir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-        set(_dest ${bin})
+        set(_dest bin)
       endif()
     endif()
     #message(STATUS "_gaudi_detach_debinfo(${target}): target name -> ${_tn}")
@@ -1443,7 +1420,7 @@ function(gaudi_add_library library)
   gaudi_add_genheader_dependencies(${library})
 
   #----Installation details-------------------------------------------------------
-  install(TARGETS ${library} EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION  ${lib})
+  install(TARGETS ${library} EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION lib)
   gaudi_export(LIBRARY ${library})
   gaudi_install_headers(${ARG_PUBLIC_HEADERS})
   install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake)
@@ -1473,7 +1450,7 @@ function(gaudi_add_module library)
   gaudi_add_genheader_dependencies(${library})
 
   #----Installation details-------------------------------------------------------
-  install(TARGETS ${library} LIBRARY DESTINATION ${lib})
+  install(TARGETS ${library} LIBRARY DESTINATION lib)
   gaudi_export(MODULE ${library})
 endfunction()
 
@@ -1515,7 +1492,7 @@ function(gaudi_add_dictionary dictionary header selection)
   gaudi_merge_files_append(DictRootmap ${dictionary}Gen ${CMAKE_CURRENT_BINARY_DIR}/${rootmapname})
 
   #----Installation details-------------------------------------------------------
-  install(TARGETS ${dictionary}Dict LIBRARY DESTINATION ${lib})
+  install(TARGETS ${dictionary}Dict LIBRARY DESTINATION lib)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -1570,7 +1547,7 @@ function(gaudi_add_executable executable)
   gaudi_add_genheader_dependencies(${executable})
 
   #----Installation details-------------------------------------------------------
-  install(TARGETS ${executable} EXPORT ${CMAKE_PROJECT_NAME}Exports RUNTIME DESTINATION ${bin})
+  install(TARGETS ${executable} EXPORT ${CMAKE_PROJECT_NAME}Exports RUNTIME DESTINATION bin)
   install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake)
   gaudi_export(EXECUTABLE ${executable})
 
