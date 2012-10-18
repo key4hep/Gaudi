@@ -32,6 +32,9 @@ set(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON)
 #set(CMAKE_SKIP_BUILD_RPATH TRUE)
 
 find_program(ccache_cmd ccache)
+find_program(distcc_cmd distcc)
+mark_as_advanced(ccache_cmd distcc_cmd)
+
 if(ccache_cmd)
   option(CMAKE_USE_CCACHE "Use ccache to speed up compilation." OFF)
   if(CMAKE_USE_CCACHE)
@@ -39,7 +42,7 @@ if(ccache_cmd)
     message(STATUS "Using ccache for building")
   endif()
 endif()
-find_program(distcc_cmd distcc)
+
 if(distcc_cmd)
   option(CMAKE_USE_DISTCC "Use distcc to speed up compilation." OFF)
   if(CMAKE_USE_DISTCC)
@@ -50,10 +53,14 @@ if(distcc_cmd)
     endif()
   endif()
 endif()
-mark_as_advanced(ccache_cmd distcc_cmd)
 
-option(GAUDI_DETACHED_DEBINFO "When CMAKE_BUILD_TYPE is RelWithDebInfo, save the
-       debug information on a different file." ON)
+# This option make sense only if we have 'objcopy'
+if(CMAKE_OBJCOPY)
+  option(GAUDI_DETACHED_DEBINFO "When CMAKE_BUILD_TYPE is RelWithDebInfo, save the
+         debug information on a different file." ON)
+else()
+  set(GAUDI_DETACHED_DEBINFO OFF)
+endif()
 
 #-------------------------------------------------------------------------------
 # Platform transparency
@@ -1374,9 +1381,9 @@ macro(_gaudi_detach_debinfo target)
     #   objcopy --strip-debug foo
     #   objcopy --add-gnu-debuglink=foo.dbg foo
     add_custom_command(TARGET ${target} POST_BUILD
-        COMMAND objcopy --only-keep-debug ${_tn} ${_tn}.dbg
-        COMMAND objcopy --strip-debug ${_tn}
-        COMMAND objcopy --add-gnu-debuglink=${_tn}.dbg ${_tn}
+        COMMAND ${CMAKE_OBJCOPY} --only-keep-debug ${_tn} ${_tn}.dbg
+        COMMAND ${CMAKE_OBJCOPY} --strip-debug ${_tn}
+        COMMAND ${CMAKE_OBJCOPY} --add-gnu-debuglink=${_tn}.dbg ${_tn}
         WORKING_DIRECTORY ${_builddir}
         COMMENT "Detaching debug infos for ${_tn} (${target}).")
     # ensure that the debug file is installed on 'make install'...
