@@ -52,6 +52,9 @@ if(distcc_cmd)
 endif()
 mark_as_advanced(ccache_cmd distcc_cmd)
 
+option(GAUDI_DETACHED_DEBINFO "When CMAKE_BUILD_TYPE is RelWithDebInfo, save the
+       debug information on a different file." ON)
+
 #-------------------------------------------------------------------------------
 # Platform transparency
 #-------------------------------------------------------------------------------
@@ -1335,6 +1338,55 @@ macro(gaudi_add_genheader_dependencies target)
   endif()
 endmacro()
 
+#-------------------------------------------------------------------------------
+# _gaudi_detach_debinfo(<target>)
+#
+# Helper macro to detach the debug information from the target.
+#
+# The debug info of the given target are extracted and saved on a different file
+# with the extension '.dbg', that is installed alongside the binary.
+#-------------------------------------------------------------------------------
+macro(_gaudi_detach_debinfo target)
+  if(CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo AND GAUDI_DETACHED_DEBINFO)
+    # get the type of the target (MODULE_LIBRARY, SHARED_LIBRARY, EXECUTABLE)
+    get_property(_type TARGET ${target} PROPERTY TYPE)
+    #message(STATUS "_gaudi_detach_debinfo(${target}): target type -> ${_type}")
+    if(NOT _type STREQUAL STATIC_LIBRARY) # we ignore static libraries
+      # guess the target file name
+      if(_type MATCHES "MODULE|LIBRARY")
+        #message(STATUS "_gaudi_detach_debinfo(${target}): library sub-type -> ${CMAKE_MATCH_0}")
+        # TODO: the library name may be different from the default.
+        #       see OUTPUT_NAME and LIBRARY_OUPUT_NAME
+        set(_tn ${CMAKE_SHARED_${CMAKE_MATCH_0}_PREFIX}${target}${CMAKE_SHARED_${CMAKE_MATCH_0}_SUFFIX})
+        set(_builddir ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+        set(_dest ${lib})
+      else()
+        set(_tn ${target})
+        if(USE_EXE_SUFFIX)
+          set(_tn ${_tn}.exe)
+        endif()
+        set(_builddir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+        set(_dest ${bin})
+      endif()
+    endif()
+    #message(STATUS "_gaudi_detach_debinfo(${target}): target name -> ${_tn}")
+    # From 'man objcopy':
+    #   objcopy --only-keep-debug foo foo.dbg
+    #   objcopy --strip-debug foo
+    #   objcopy --add-gnu-debuglink=foo.dbg foo
+    add_custom_command(TARGET ${target} POST_BUILD
+        COMMAND objcopy --only-keep-debug ${_tn} ${_tn}.dbg
+        COMMAND objcopy --strip-debug ${_tn}
+        COMMAND objcopy --add-gnu-debuglink=${_tn}.dbg ${_tn}
+        WORKING_DIRECTORY ${_builddir}
+        COMMENT "Detaching debug infos for ${_tn} (${target}).")
+    # ensure that the debug file is installed on 'make install'...
+    install(FILES ${_builddir}/${_tn}.dbg DESTINATION ${_dest})
+    # ... and removed on 'make clean'.
+    set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${_builddir}/${_tn}.dbg)
+  endif()
+endmacro()
+
 #---------------------------------------------------------------------------------------------------
 # gaudi_add_library(<name>
 #                   source1 source2 ...
@@ -1372,6 +1424,7 @@ function(gaudi_add_library library)
     add_library(${library} ${srcs})
     set_target_properties(${library} PROPERTIES COMPILE_DEFINITIONS GAUDI_LINKER_LIBRARY)
     target_link_libraries(${library} ${ARG_LINK_LIBRARIES})
+    _gaudi_detach_debinfo(${library})
   endif()
 
   # Declare that the used headers are needed by the libraries linked against this one
@@ -1404,6 +1457,7 @@ function(gaudi_add_module library)
 
   add_library(${library} MODULE ${srcs})
   target_link_libraries(${library} ${ROOT_Reflex_LIBRARY} ${ARG_LINK_LIBRARIES})
+  _gaudi_detach_debinfo(${library})
 
   gaudi_generate_rootmap(${library})
   gaudi_generate_configurables(${library})
@@ -1446,6 +1500,7 @@ function(gaudi_add_dictionary dictionary header selection)
 
   reflex_dictionary(${dictionary} ${header} ${selection} LINK_LIBRARIES ${ARG_LINK_LIBRARIES} OPTIONS ${ARG_OPTIONS})
   set_target_properties(${dictionary}Dict PROPERTIES COMPILE_FLAGS "-Wno-overloaded-virtual")
+  _gaudi_detach_debinfo(${dictionary}Dict)
 
   gaudi_add_genheader_dependencies(${dictionary}Gen)
 
@@ -1500,6 +1555,7 @@ function(gaudi_add_executable executable)
 
   add_executable(${executable} ${srcs})
   target_link_libraries(${executable} ${ARG_LINK_LIBRARIES})
+  _gaudi_detach_debinfo(${executable})
 
   if (USE_EXE_SUFFIX)
     set_target_properties(${executable} PROPERTIES SUFFIX .exe)
