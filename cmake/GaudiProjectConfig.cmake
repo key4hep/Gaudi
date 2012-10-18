@@ -961,9 +961,11 @@ function(gaudi_resolve_link_libraries variable)
         # it's a qualifier: pop another one (the library name)
         list(GET collected 0 lib)
         list(REMOVE_AT collected 0)
+        # The possible values of CMAKE_BUILD_TYPE are Debug, Release,
+        # RelWithDebInfo and MinSizeRel.
         if((entry STREQUAL general) OR
            (CMAKE_BUILD_TYPE STREQUAL Debug AND entry STREQUAL debug) OR
-           (CMAKE_BUILD_TYPE STREQUAL Release AND entry STREQUAL optimized))
+           (CMAKE_BUILD_TYPE MATCHES "Rel" AND entry STREQUAL optimized))
           # we keep it only if corresponds to the build type
           set(_coll ${_coll} ${lib})
         endif()
