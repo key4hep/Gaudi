@@ -948,10 +948,11 @@ function(gaudi_resolve_link_libraries variable)
         list(GET collected 0 lib)
         list(REMOVE_AT collected 0)
         # The possible values of CMAKE_BUILD_TYPE are Debug, Release,
-        # RelWithDebInfo and MinSizeRel.
+        # RelWithDebInfo and MinSizeRel, plus the LCG/Gaudi special ones
+        # Coverage and Profile. (treat an empty CMAKE_BUILD_TYPE as Release)
         if((entry STREQUAL general) OR
-           (CMAKE_BUILD_TYPE STREQUAL Debug AND entry STREQUAL debug) OR
-           (CMAKE_BUILD_TYPE MATCHES "Rel" AND entry STREQUAL optimized))
+           (CMAKE_BUILD_TYPE MATCHES "Debug|Coverage" AND entry STREQUAL debug) OR
+           ((NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE MATCHES "Rel|Profile") AND entry STREQUAL optimized))
           # we keep it only if corresponds to the build type
           set(_coll ${_coll} ${lib})
         endif()
