@@ -28,6 +28,7 @@ if(NOT VTune_FOUND)
     set(VTune_FOUND ${VTune_LIBRARIES} CACHE INTERNAL "")
     message(STATUS "Found VTune: ${VTune_LIBRARIES}")
   endif()
+  mark_as_advanced(VTune_INCLUDE_DIRS VTune_LIBRARIES)
 endif()
 #---------------------------------------------------------------------------
 

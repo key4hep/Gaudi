@@ -177,7 +177,7 @@ function(lcg_get_target_platform)
     message(FATAL_ERROR "LCG build type ${type} not supported.")
   endif()
   set(CMAKE_BUILD_TYPE ${type} CACHE STRING
-      "Choose the type of build, options are: None Debug Release Coverage Profile RelWithDebInfo MinSizeRel.")
+      "Choose the type of build, options are: Debug Release Coverage Profile RelWithDebInfo MinSizeRel.")
 
   # architecture
   set(CMAKE_SYSTEM_PROCESSOR ${LCG_ARCH} PARENT_SCOPE)
@@ -363,6 +363,7 @@ macro(LCG_prepare_paths)
   # Required if both Qt3 and Qt4 are available.
   string(REGEX MATCH "[0-9]+" _qt_major_version ${Qt_config_version})
   set(DESIRED_QT_VERSION ${_qt_major_version} CACHE STRING "Pick a version of QT to use: 3 or 4")
+  mark_as_advanced(DESIRED_QT_VERSION)
 
   if(comp STREQUAL clang30)
     set(GCCXML_CXX_COMPILER gcc CACHE STRING "Compiler that GCCXML must use.")

@@ -228,12 +228,11 @@ macro(gaudi_project project version)
   if(TARGET genwindef)
     get_target_property(genwindef_cmd genwindef IMPORTED_LOCATION)
   else()
-    if (NOT USE_EXE_SUFFIX)
-      set(genwindef_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genwindef)
-    else()
-      set(genwindef_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genwindef.exe)
-    endif()
+    set(genwindef_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genwindef.exe)
   endif()
+
+  mark_as_advanced(env_cmd merge_cmd versheader_cmd genconfuser_cmd
+                   zippythondir_cmd gaudirun_cmd)
 
   #--- Project Installations------------------------------------------------------------------------
   install(DIRECTORY cmake/ DESTINATION cmake
