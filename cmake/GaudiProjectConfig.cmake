@@ -105,10 +105,10 @@ macro(gaudi_project project version)
   set(CMAKE_PROJECT_VERSION_PATCH ${CMAKE_MATCH_4} CACHE INTERNAL "Patch version of project")
 
   #--- Project Options and Global settings----------------------------------------------------------
-  option(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
-  option(GAUDI_BUILD_TESTS "Set to OFF to disable the build of the tests (libraries and executables)" ON)
-  option(GAUDI_HIDE_WARNINGS "Turn on or off options that are used to hide warning messages" ON)
-  option(GAUDI_USE_EXE_SUFFIX "Add the .exe suffix to executables on Unix systems (like CMT)" ON)
+  option(BUILD_SHARED_LIBS "Set to OFF to build static libraries." ON)
+  option(GAUDI_BUILD_TESTS "Set to OFF to disable the build of the tests (libraries and executables)." ON)
+  option(GAUDI_HIDE_WARNINGS "Turn on or off options that are used to hide warning messages." ON)
+  option(GAUDI_USE_EXE_SUFFIX "Add the .exe suffix to executables on Unix systems (like CMT does)." ON)
   #-------------------------------------------------------------------------------------------------
   set(GAUDI_DATA_SUFFIXES DBASE;PARAM;EXTRAPACKAGES CACHE STRING
       "List of (suffix) directories where to look for data packages.")
@@ -129,11 +129,12 @@ macro(gaudi_project project version)
 
   set(env_xml ${CMAKE_BINARY_DIR}/${project}BuildEnvironment.xml
       CACHE STRING "path to the XML file for the environment to be used in building and testing")
-  mark_as_advanced(env_xml)
 
   set(env_release_xml ${CMAKE_BINARY_DIR}/${project}Environment.xml
       CACHE STRING "path to the XML file for the environment to be used once the project is installed")
-  mark_as_advanced(env_release_xml)
+
+  mark_as_advanced(CMAKE_RUNTIME_OUTPUT_DIRECTORY CMAKE_LIBRARY_OUTPUT_DIRECTORY
+                   env_xml env_release_xml)
 
   if(GAUDI_BUILD_TESTS)
     enable_testing()
