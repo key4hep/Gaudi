@@ -1,7 +1,5 @@
 # - GaudiProject
-# Define the macros used by Gaudi-based projects, namely:
-#  gaudi_project(project version) : declare a project with it's version number
-#  gaudi_use_project(project version) : declare the dependency on another project
+# Define the macros used by Gaudi-based projects.
 #
 # Authors: Pere Mato, Marco Clemencic
 #
@@ -108,9 +106,9 @@ macro(gaudi_project project version)
 
   #--- Project Options and Global settings----------------------------------------------------------
   option(BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON)
-  option(BUILD_TESTS "Set to OFF to disable the build of the tests (libraries and executables)" ON)
-  option(HIDE_WARNINGS "Turn on or off options that are used to hide warning messages" ON)
-  option(USE_EXE_SUFFIX "Add the .exe suffix to executables on Unix systems (like CMT)" ON)
+  option(GAUDI_BUILD_TESTS "Set to OFF to disable the build of the tests (libraries and executables)" ON)
+  option(GAUDI_HIDE_WARNINGS "Turn on or off options that are used to hide warning messages" ON)
+  option(GAUDI_USE_EXE_SUFFIX "Add the .exe suffix to executables on Unix systems (like CMT)" ON)
   #-------------------------------------------------------------------------------------------------
   set(GAUDI_DATA_SUFFIXES DBASE;PARAM;EXTRAPACKAGES CACHE STRING
       "List of (suffix) directories where to look for data packages.")
@@ -137,7 +135,7 @@ macro(gaudi_project project version)
       CACHE STRING "path to the XML file for the environment to be used once the project is installed")
   mark_as_advanced(env_release_xml)
 
-  if(BUILD_TESTS)
+  if(GAUDI_BUILD_TESTS)
     enable_testing()
   endif()
 
@@ -202,7 +200,7 @@ macro(gaudi_project project version)
   if(TARGET genconf)
     get_target_property(genconf_cmd genconf IMPORTED_LOCATION)
   else()
-    if (NOT USE_EXE_SUFFIX)
+    if (NOT GAUDI_USE_EXE_SUFFIX)
       set(genconf_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genconf)
     else()
       set(genconf_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genconf.exe)
@@ -1346,7 +1344,7 @@ macro(_gaudi_detach_debinfo target)
         set(_dest lib)
       else()
         set(_tn ${target})
-        if(USE_EXE_SUFFIX)
+        if(GAUDI_USE_EXE_SUFFIX)
           set(_tn ${_tn}.exe)
         endif()
         set(_builddir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
@@ -1541,7 +1539,7 @@ function(gaudi_add_executable executable)
   target_link_libraries(${executable} ${ARG_LINK_LIBRARIES})
   _gaudi_detach_debinfo(${executable})
 
-  if (USE_EXE_SUFFIX)
+  if (GAUDI_USE_EXE_SUFFIX)
     set_target_properties(${executable} PROPERTIES SUFFIX .exe)
   endif()
 
@@ -1564,7 +1562,7 @@ endfunction()
 # on CppUnit.
 #---------------------------------------------------------------------------------------------------
 function(gaudi_add_unit_test executable)
-  if(BUILD_TESTS)
+  if(GAUDI_BUILD_TESTS)
     gaudi_common_add_build(${ARGN})
 
     find_package(CppUnit QUIET REQUIRED)

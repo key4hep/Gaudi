@@ -152,7 +152,7 @@ if(NOT GAUDI_V21)
 endif()
 
 #--- Tuning of warnings --------------------------------------------------------
-if(HIDE_WARNINGS)
+if(GAUDI_HIDE_WARNINGS)
   if(LCG_COMP MATCHES clang)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-overloaded-virtual -Wno-char-subscripts -Wno-unused-parameter")
   elseif(LCG_COMP STREQUAL gcc AND LCG_COMPVERS MATCHES "4[3-9]|max")

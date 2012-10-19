@@ -450,7 +450,7 @@ class Package(object):
                 # increase indentation
                 libdata = ['  ' + l for l in libdata.splitlines()]
                 # and wrap
-                libdata.insert(0, 'if(BUILD_TESTS)')
+                libdata.insert(0, 'if(GAUDI_BUILD_TESTS)')
                 libdata.append('endif()')
                 libdata = '\n'.join(libdata)
             data.append(libdata)
