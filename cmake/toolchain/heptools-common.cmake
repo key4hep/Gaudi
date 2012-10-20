@@ -54,10 +54,14 @@ function(lcg_find_host_os)
       if(issue MATCHES Ubuntu)
         set(os ubuntu)
         string(REGEX REPLACE ".*Ubuntu ([0-9]+)[.]([0-9]+).*" "\\1.\\2" osvers "${issue}")
-      elseif(issue MATCHES SLC)
-        set(os slc)
-        string(REGEX REPLACE ".*release ([0-9]+)[.].*" "\\1" osvers "${issue}")
+      elseif(issue MATCHES SLC|Fedora) # RedHat-like distributions
+        string(TOLOWER "${CMAKE_MATCH_0}" os)
+        if(os STREQUAL fedora)
+          set(os fc) # we use an abbreviation for Fedora
+        endif()
+        string(REGEX REPLACE ".*release ([0-9]+)[. ].*" "\\1" osvers "${issue}")
       else()
+        message(WARNING "Unkown OS, assuming 'linux'")
         set(os linux)
         set(osvers)
       endif()
@@ -169,11 +173,17 @@ function(lcg_get_target_platform)
     set(type Debug)
   elseif(LCG_BUILD_TYPE STREQUAL "cov")
     set(type Coverage)
+  elseif(LCG_BUILD_TYPE STREQUAL "pro")
+    set(type Profile)
+#  elseif(LCG_BUILD_TYPE STREQUAL "o2g")
+#    set(type RelWithDebInfo)
+#  elseif(LCG_BUILD_TYPE STREQUAL "min")
+#    set(type MinSizeRel)
   else()
     message(FATAL_ERROR "LCG build type ${type} not supported.")
   endif()
   set(CMAKE_BUILD_TYPE ${type} CACHE STRING
-      "Choose the type of build, options are: None Debug Release Coverage Profile RelWithDebInfo MinSizeRel.")
+      "Choose the type of build, options are: empty, Debug, Release, Coverage, Profile, RelWithDebInfo, MinSizeRel.")
 
   # architecture
   set(CMAKE_SYSTEM_PROCESSOR ${LCG_ARCH} PARENT_SCOPE)
@@ -183,10 +193,11 @@ function(lcg_get_target_platform)
     set(CMAKE_SYSTEM_NAME Windows PARENT_SCOPE)
   elseif(LCG_OS STREQUAL "mac")
     set(CMAKE_SYSTEM_NAME Darwin PARENT_SCOPE)
-  elseif(LCG_OS STREQUAL "slc" OR LCG_OS STREQUAL "ubuntu")
+  elseif(LCG_OS STREQUAL "slc" OR LCG_OS STREQUAL "ubuntu" OR LCG_OS STREQUAL "fc" OR LCG_OS STREQUAL "linux")
     set(CMAKE_SYSTEM_NAME Linux PARENT_SCOPE)
   else()
-    message(FATAL_ERROR "OS ${LCG_OS} is not supported.")
+    set(CMAKE_SYSTEM_NAME ${CMAKE_HOST_SYSTEM_NAME})
+    message(WARNING "OS ${LCG_OS} is not a known platform, assuming it's a ${CMAKE_SYSTEM_NAME}.")
   endif()
 
   # set default platform ids
@@ -261,6 +272,15 @@ macro(LCG_AA_project name version)
   if(${name} STREQUAL ROOT)
     # ROOT is special
     set(ROOT_home ${ROOT_home}/root)
+  endif()
+  if(NOT LCG_platform STREQUAL LCG_system)
+    # For AA projects we want to be able to fall back on non-debug builds.
+    if(NOT ${name} STREQUAL ROOT)
+      set(${name}_home ${${name}_home} ${${name}_base}/${LCG_system})
+    else()
+      # ROOT is special
+      set(ROOT_home ${ROOT_home} ${ROOT_base}/${LCG_system}/root)
+    endif()
   endif()
   list(APPEND LCG_projects ${name})
 endmacro()
@@ -349,6 +369,7 @@ macro(LCG_prepare_paths)
   # Required if both Qt3 and Qt4 are available.
   string(REGEX MATCH "[0-9]+" _qt_major_version ${Qt_config_version})
   set(DESIRED_QT_VERSION ${_qt_major_version} CACHE STRING "Pick a version of QT to use: 3 or 4")
+  mark_as_advanced(DESIRED_QT_VERSION)
 
   if(comp STREQUAL clang30)
     set(GCCXML_CXX_COMPILER gcc CACHE STRING "Compiler that GCCXML must use.")
@@ -368,9 +389,12 @@ macro(LCG_prepare_paths)
 
   foreach(name ${LCG_projects})
     list(APPEND LCG_PREFIX_PATH ${${name}_home})
+    list(APPEND LCG_INCLUDE_PATH ${${name}_base}/include)
     # We need to add python to the include path because it's the only
     # way to search for a (generic) file.
-    list(APPEND LCG_INCLUDE_PATH ${${name}_base}/include ${${name}_home}/python)
+    foreach(h ${${name}_home})
+      list(APPEND LCG_INCLUDE_PATH ${h}/python)
+    endforeach()
   endforeach()
   # Add the LCG externals dirs to the search paths.
   foreach(name ${LCG_externals})
@@ -384,4 +408,20 @@ macro(LCG_prepare_paths)
   set(CMAKE_INCLUDE_PATH ${LCG_INCLUDE_PATH} ${CMAKE_INCLUDE_PATH})
 
   #message(STATUS "LCG_PREFIX_PATH: ${LCG_PREFIX_PATH}")
+
+  #===============================================================================
+  # Path to programs that a toolchain should define (not mandatory).
+  #===============================================================================
+  if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+    find_program(CMAKE_AR       ar       )
+    find_program(CMAKE_LINKER   ld       )
+    find_program(CMAKE_NM       nm       )
+    find_program(CMAKE_OBJCOPY  objcopy  )
+    find_program(CMAKE_OBJDUMP  objdump  )
+    find_program(CMAKE_RANLIB   ranlib   )
+    find_program(CMAKE_STRIP    strip    )
+    mark_as_advanced(CMAKE_AR CMAKE_LINKER CMAKE_NM CMAKE_OBJCOPY CMAKE_OBJDUMP
+                     CMAKE_RANLIB CMAKE_STRIP)
+  endif()
+
 endmacro()

@@ -18,7 +18,7 @@ gaudi_add_module(GaudiPython Services/*.cpp
 gaudi_add_dictionary(GaudiPython dict/kernel.h dict/selection_kernel.xml
                      LINK_LIBRARIES GaudiPythonLib GaudiUtilsLib)
 
-if(BUILD_TESTS)
+if(GAUDI_BUILD_TESTS)
   gaudi_add_library(GPyTest Test/*.cpp
                     LINK_LIBRARIES GaudiKernel PythonLibs CLHEP
                     NO_PUBLIC_HEADERS)

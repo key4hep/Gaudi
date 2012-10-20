@@ -9,7 +9,7 @@ endif()
 gaudi_add_module(GaudiMonitor *.cpp
                         LINK_LIBRARIES GaudiKernel ${winsocklib})
 
-if(WIN32 AND HIDE_WARNINGS)
+if(WIN32 AND GAUDI_HIDE_WARNINGS)
   # These are needed because Windows compiler doesn't like standard C and POSIX functions,
   # but this package containes some imported (external) C file that is compiled here in C++.
   set_property(TARGET GaudiMonitor
