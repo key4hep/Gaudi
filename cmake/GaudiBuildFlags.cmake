@@ -29,7 +29,7 @@ option(GAUDI_CMT_RELEASE
 
 option(GAUDI_CPP11
        "enable C++11 compilation"
-       OFF)
+       ON)
 
 #--- Compilation Flags ---------------------------------------------------------
 if(NOT GAUDI_FLAGS_SET)
