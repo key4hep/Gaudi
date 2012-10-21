@@ -6,6 +6,8 @@
 
 ! 2012-10-21 - Marco Clemencic
  - Modified TBBMessageSvc to use the new Gaudi::SerialTaskQueue.
+ - Modified MessageSvc to separate the locking from the reportMessage
+   implementation so that TBBMessageSvc can use non-locked code.
 
 ! 2012-07-26 - Benedikt Hegner
  - Fixed compilation with -std=c++0x.

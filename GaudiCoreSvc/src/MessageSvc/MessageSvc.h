@@ -125,6 +125,13 @@ public:
   virtual void incrInactiveCount( MSG::Level level,
 				  const std::string& src );
 
+protected:
+  /// Internal implementation of reportMessage(const Message&,int) without lock.
+  virtual void i_reportMessage( const Message& msg, int outputLevel );
+
+  /// Internal implementation of reportMessage(const StatusCode&,const std::string&) without lock.
+  virtual void i_reportMessage( const StatusCode& code, const std::string& source);
+
 
 private:
   std::ostream* m_defaultStream;      ///< Pointer to the output stream.
