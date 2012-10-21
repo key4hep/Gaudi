@@ -4,6 +4,9 @@
 ! Purpose     : Profiling and performance monitoring of Gaudi/LHCb software
 !-----------------------------------------------------------------------------
 
+! 2012-10-21 - Marco Clemencic
+ - Simplified the work-around for compilation with -std=c++0x.
+
 ============================ GaudiProfiling v1r6 =============================
 ! 2012-07-27 - Marco Clemencic
  - Rationalized the permissions of files in the repository.
