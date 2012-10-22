@@ -33,9 +33,11 @@ using namespace GaudiUtils;
 
 #include <iostream>
 
-#include <thread>
-
 #include <tbb/task_group.h>
+
+// #include <thread>
+#include <chrono>
+#include "GaudiKernel/Sleep.h"
 
 namespace GaudiKernelTest {
   class SerialTaskQueueTest: public CppUnit::TestFixture {
@@ -55,8 +57,14 @@ namespace GaudiKernelTest {
       PushBackTask(std::vector<int>& results, int value):
         m_results(results), m_value(value) {}
       void run() {
-        std::chrono::milliseconds duration( 200 );
-        std::this_thread::sleep_for( duration );
+        using namespace std::chrono;
+
+        milliseconds duration( 200 );
+        //std::this_thread::sleep_for( duration );
+
+        const nanoseconds ns = duration_cast<nanoseconds>(duration);
+        Gaudi::NanoSleep(ns.count());
+
         std::cout << "PushBackTask: " << m_value << std::endl;
         m_results.push_back(m_value);
       }
@@ -86,6 +94,8 @@ namespace GaudiKernelTest {
     void tearDown() {}
 
     void test_basic_serial() {
+      std::cout << std::endl;
+
       {
 
         Gaudi::SerialTaskQueue queue;
@@ -103,6 +113,7 @@ namespace GaudiKernelTest {
     }
 
     void test_basic_parallel() {
+      std::cout << std::endl;
       {
 
         Gaudi::SerialTaskQueue queue;

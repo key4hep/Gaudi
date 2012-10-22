@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2012-10-22 - Marco Clemencic
+ - Fixed SerialTaskQueue_test to compile with LCG g++ 4.6.2 on SLC6.
+
 ! 2012-10-21 - Marco Clemencic
  - Added implementation of a serial task queue: Gaudi::SerialTaskQueue (based on
    the TBB Pattern 'Local Serializer').
