@@ -54,8 +54,9 @@ endif()
 
 # This option make sense only if we have 'objcopy'
 if(CMAKE_OBJCOPY)
-  option(GAUDI_DETACHED_DEBINFO "When CMAKE_BUILD_TYPE is RelWithDebInfo, save the
-         debug information on a different file." ON)
+  option(GAUDI_DETACHED_DEBINFO
+         "When CMAKE_BUILD_TYPE is RelWithDebInfo, save the debug information on a different file."
+         ON)
 else()
   set(GAUDI_DETACHED_DEBINFO OFF)
 endif()
