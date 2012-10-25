@@ -366,6 +366,19 @@ macro(gaudi_project project version)
   install(FILES ${env_release_xml} DESTINATION .)
   #   build-time version
   gaudi_generate_env_conf(${env_xml} ${project_build_environment})
+  #   add a small wrapper script in the build directory to easily run anything
+  set(_env_cmd_line)
+  foreach(t ${env_cmd}) # transform the env_cmd list in a space separated string
+    set(_env_cmd_line "${_env_cmd_line} ${t}")
+  endforeach()
+  if(UNIX)
+    file(WRITE ${CMAKE_BINARY_DIR}/run
+         "#!/bin/sh\nexec ${_env_cmd_line} --xml ${env_xml} \"$@\"\n")
+    execute_process(COMMAND chmod a+x ${CMAKE_BINARY_DIR}/run)
+  elseif(WIN32)
+    file(WRITE ${CMAKE_BINARY_DIR}/run.bat
+         "${_env_cmd_line} --xml ${env_xml} %1 %2 %3 %4 %5 %6 %7 %8 %9\n")
+  endif() # ignore other systems
 
   #--- Generate config files to be imported by other projects.
   gaudi_generate_project_config_version_file()
