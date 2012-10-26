@@ -1,6 +1,10 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2012-10-26 - Marco Clemencic
+ - Stop execution (in AppMgr.run()) if the return code of the application is not
+   0 (success) after configure or initialize.
+
 ============================= GaudiPython v12r3 ==============================
 ! 2012-09-13 - Marco Clemencic
  - Fixed compilation warnings.
