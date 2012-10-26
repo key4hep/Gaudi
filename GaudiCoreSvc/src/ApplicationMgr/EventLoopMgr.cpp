@@ -325,9 +325,6 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
   DataObject*       pObject = 0;
   StatusCode        sc(StatusCode::SUCCESS, true);
 
-  // Reset the application return code.
-  Gaudi::setAppReturnCode(m_appMgrProperty, Gaudi::ReturnCode::Success, true).ignore();
-
   // loop over events if the maxevt (received as input) if different from -1.
   // if evtmax is -1 it means infinite loop
   for( int nevt = 0; (maxevt == -1 ? true : nevt < maxevt);  nevt++, total_nevt++) {

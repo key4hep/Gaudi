@@ -4,6 +4,12 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2012-10-26 - Marco Clemencic
+ - Initialize the application return code to 'Success' in
+   ApplicationMgr::configure() instead of EventLoopMgr::nextEvent(int), to
+   avoid that error conditions (like failure to open a file) happening during
+   initialization are discarded.
+
 ! 2012-10-21 - Marco Clemencic
  - Modified TBBMessageSvc to use the new Gaudi::SerialTaskQueue.
  - Modified MessageSvc to separate the locking from the reportMessage

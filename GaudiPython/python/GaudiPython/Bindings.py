@@ -928,10 +928,12 @@ class AppMgr(iService) :
     def run(self, n) :
         if self.FSMState() == Gaudi.StateMachine.CONFIGURED :
             sc = self.initialize()
-            if sc.isFailure(): return sc
+            if sc.isFailure() or self.ReturnCode != 0:
+                return sc
         if self.FSMState() == Gaudi.StateMachine.INITIALIZED :
             sc = self.start()
-            if sc.isFailure(): return sc
+            if sc.isFailure() or self.ReturnCode != 0:
+                return sc
         return self._evtpro.executeRun(n)
     def executeEvent(self) :
         return self._evtpro.executeEvent()
