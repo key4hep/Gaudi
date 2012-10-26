@@ -26,7 +26,7 @@ gaudi_add_unit_test(Parsers_test ../tests/src/parsers.cpp
 gaudi_add_unit_test(test_headers_build ../tests/src/test_headers_build.cpp
                     LINK_LIBRARIES GaudiKernel)
 
-if(BUILD_TESTS)
+if(GAUDI_BUILD_TESTS)
   set_property(TEST GaudiKernel.PathResolver_test PROPERTY WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 endif()
 
@@ -44,7 +44,7 @@ gaudi_install_scripts()
 gaudi_add_test(QMTest QMTEST)
 
 #---Special options
-if(HIDE_WARNINGS)
+if(GAUDI_HIDE_WARNINGS)
   if(UNIX)
     # This hides warnings from a broken header file in CppUnit, but may
     # hide problems in the actual test source

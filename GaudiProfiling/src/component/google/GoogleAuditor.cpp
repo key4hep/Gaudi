@@ -291,26 +291,19 @@ namespace Google
     , m_sampleEventCount( 0 )
     , m_inFullAudit ( false )
   {
-    m_when =
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
-      {
-        "Initialize",
-        "ReInitialize",
-        "Execute",
-        "BeginRun",
-        "EndRun",
-        "Finalize"
-      }
-#else
-      boost::assign::list_of
-        ("Initialize")
-        ("ReInitialize")
-        ("Execute")
-        ("BeginRun")
-        ("EndRun")
-        ("Finalize")
-#endif
-    ;
+    {
+      // Note: 'tmp' is needed to avoid an issue with list_of and C++11.
+      const std::vector<std::string> tmp =
+        boost::assign::list_of
+          ("Initialize")
+          ("ReInitialize")
+          ("Execute")
+          ("BeginRun")
+          ("EndRun")
+          ("Finalize");
+      m_when = tmp;
+    }
+
     declareProperty("ActivateAt", m_when,
                     "List of phases to activate the Auditoring during" );
     declareProperty("DisableFor", m_veto,

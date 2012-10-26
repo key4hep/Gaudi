@@ -1,8 +1,15 @@
 #!/bin/sh
 cd $(dirname $0)
-rootdir=`pwd`
+root_dir=`pwd`
 
-if [ ! -e build-dir/CMakeCache.txt ] ; then
+if [ -z "$CMTCONFIG" ] ; then
+    echo 'CMTCONFIG not defined'
+    exit 2
+fi
+
+build_dir=${root_dir}/build.${CMTCONFIG}
+
+if [ ! -e ${build_dir}/CMakeCache.txt ] ; then
 
     if which distcc &> /dev/null ; then
 	distcc_opt="-DCMAKE_USE_DISTCC=ON"
@@ -16,31 +23,30 @@ if [ ! -e build-dir/CMakeCache.txt ] ; then
     case $CMTCONFIG in
        *-clang30-* | *-gccmax-* | *-g11max-* )
          lcg_system_opt=$(echo $CMTCONFIG | sed 's/-\(gccmax\|clang[0-9]*\)-\(opt\|dbg\)/-gcc46-opt/')
-         lcg_system_opt="-DLCG_system=$lcg_system_opt"
+         lcg_system_opt="-DLCG_SYSTEM=$lcg_system_opt"
          # The special compilers cannot use distcc
 	 distcc_opt="-DCMAKE_USE_DISTCC=OFF"
          ;;
     esac
 
-    mkdir -p build-dir
-    cd build-dir
+    time cmake -DCMAKE_TOOLCHAIN_FILE=${root_dir}/toolchain.cmake -H${root_dir} -B${build_dir} || rm -rf ${build_dir}
 
-    time cmake -DCMAKE_TOOLCHAIN_FILE=$rootdir/toolchain.cmake -DBUILD_TESTS=ON $distcc_opt $ccache_opt $lcg_system_opt .. || (cd $rootdir ; rm -rf build-dir)
-    cd $rootdir
+else
+    echo Project already configured.
 fi
 
-if [ -e build-dir/CMakeCache.txt ] ; then
+if [ -e ${build_dir}/CMakeCache.txt ] ; then
     cat <<EOF
 
 Now you can build with:
 
-  cd `pwd`/build-dir
+  cd ${build_dir}
   make
   make install
 
-and test with
+and test with (no need to install before testing)
 
-  ctest
+  make test
 
 EOF
 fi
