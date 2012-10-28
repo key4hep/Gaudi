@@ -934,11 +934,13 @@ macro_append libraryshr_linkopts   "" \
       host-i686&target-x86_64 " -m64" \
       host-i386&target-x86_64 " -m64"
 
-# Add 64-bit link options for SLC5. This overrides the default library segment
-# alignment of 1MB
+# Add 64-bit link options for Linux x86_64. This overrides the default library
+# segment alignment of 1MB.
 macro_append componentshr_linkopts       "" \
+      target-mac               "" \
       target-gcc&target-x86_64 " -Wl,-z,max-page-size=0x1000 "
 macro_append libraryshr_linkopts         "" \
+      target-mac               "" \
       target-gcc&target-x86_64 " -Wl,-z,max-page-size=0x1000 "
 
 macro application_linkopts  "" \
