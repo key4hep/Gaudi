@@ -25,6 +25,7 @@
 
 #include "tbb/task_scheduler_init.h"
 #include "tbb/task.h"
+#include "tbb/tick_count.h"
 
 #include "GaudiKernel/EventContext.h"
 #include "GaudiKernel/Algorithm.h"
@@ -189,7 +190,8 @@ StatusCode HiveEventLoopMgr_v2::initialize()    {
 
   // Setup tbb task scheduler
   // TODO: shouldn't be in this case
-   m_tbb_scheduler_init = new tbb::task_scheduler_init(m_num_threads);
+  // One more for the current thread
+   m_tbb_scheduler_init = new tbb::task_scheduler_init(m_num_threads+1);
 
   return StatusCode::SUCCESS;
 }
@@ -433,26 +435,10 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
   // Collapse executeEvent and run_parallel in the same method
   // TODO _very_ sporty on conditions and checks!!
 
-	struct rusage loopstart;
-	getrusage(  RUSAGE_SELF, &loopstart);
-
-	auto secsFromStart = [&loopstart](rusage& now) {
-		auto timespecdiff = [] (rusage& start, rusage& end) ->rusage
-				{
-				rusage temp;
-				if ((end.ru_stime.tv_usec-start.ru_stime.tv_usec)<0) {
-					temp.ru_stime.tv_sec = end.ru_stime.tv_sec-start.ru_stime.tv_sec-1;
-					temp.ru_stime.tv_usec = 1000000+end.ru_stime.tv_usec-start.ru_stime.tv_usec;
-				} else {
-					temp.ru_stime.tv_sec = end.ru_stime.tv_sec-start.ru_stime.tv_sec;
-					temp.ru_stime.tv_usec = end.ru_stime.tv_usec-start.ru_stime.tv_usec;
-				}
-				return temp;
-				};
-		rusage diff (timespecdiff(loopstart,now));
-		return diff.ru_stime.tv_sec + diff.ru_stime.tv_usec/1000000.;
-	};
-
+  auto start_time = tbb::tick_count::now();
+  auto secsFromStart = [&start_time]()->double{
+            return (tbb::tick_count::now()-start_time).seconds();
+            };
 
   typedef std::tuple<EventContext*,EventSchedulingState*> contextSchedState_tuple;
   typedef DataSvcHelpers::RegistryEntry regEntry;
@@ -490,7 +476,6 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
   // Events in flight
   std::list<contextSchedState_tuple> events_in_flight;
 
-	struct rusage now;
   // Loop until no more evts are there
   while (maxevt == -1 ? true : n_processed_events<maxevt){// TODO Fix the condition in case of -1
 
@@ -525,9 +510,7 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 		  EventSchedulingState* event_state = new EventSchedulingState(m_topAlgList.size());
 		  events_in_flight.push_back(std::make_tuple(evtContext,event_state));
 
-		  getrusage(  RUSAGE_SELF, &now);
-
-			always()  << "Started event " << evt_num << " at " << secsFromStart(now) << endmsg;
+		  always()  << "Started event " << evt_num << " at " << secsFromStart() << endmsg;
 
 	  }// End initialisation loop on acquired events
 
@@ -592,12 +575,10 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 	  while (it!=events_in_flight.end()){
 		  if (std::get<1>(*it)->hasFinished()){
 			  const unsigned int evt_num = std::get<0>(*it)->m_evt_num;
-			  getrusage(  RUSAGE_SELF, &now);
-
 			  log << MSG::INFO << "Event "<< evt_num << " finished. Events in fight are "
 					  << events_in_flight.size() << ". Processed events are "
 					  <<  n_processed_events << endmsg;
-				always() << "Event "<< evt_num << " finished. now is " <<  secsFromStart(now) << endmsg;
+				always() << "Event "<< evt_num << " finished. now is " <<  secsFromStart() << endmsg;
 
 			  delete std::get<0>(*it);
 			  delete std::get<1>(*it);
@@ -614,7 +595,8 @@ StatusCode HiveEventLoopMgr_v2::nextEvent(int maxevt)   {
 	  // End scheduling session ------------------------------------------------
 
   } // End while loop on events
-  std::cout << "Exit from evt loop....\n";
+
+  always() << "---> Loop Finished (seconds): " << secsFromStart() <<endmsg;
 
 if(m_DumpQueues && hivealgman) hivealgman->dump();
 

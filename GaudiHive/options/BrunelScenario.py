@@ -8,12 +8,12 @@ from Configurables import GaudiExamplesCommonConf, CPUCruncher,HiveEventLoopMgr_
 # Metaconfig
 
 NUMBEROFEVENTS = 10
-NUMBEROFEVENTSINFLIGHT = 5
-NUMBEROFALGOSINFLIGHT = 5
-NUMBEROFTHREADS = 10
-CLONEALGOS = False
+NUMBEROFEVENTSINFLIGHT = 1
+NUMBEROFALGOSINFLIGHT = 1000
+NUMBEROFTHREADS = 4
+CLONEALGOS = True
 DUMPQUEUES = False
-VERBOSITY = 6 
+VERBOSITY = 5
 
 
 NumberOfEvents = NUMBEROFEVENTS
@@ -119,6 +119,6 @@ app.TopAlg = crunchers
 app.EvtSel = "NONE" # do not use any event input
 app.EvtMax = NumberOfEvents
 app.EventLoop = evtloop
-app.MessageSvcType = "TBBMessageSvc"
+#app.MessageSvcType = "TBBMessageSvc"
 
 

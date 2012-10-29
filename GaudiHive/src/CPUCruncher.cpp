@@ -4,6 +4,11 @@
 #include <sys/resource.h>
 #include <sys/times.h>
 
+#include <tbb/tick_count.h>
+
+std::vector<unsigned int> CPUCruncher::m_niters_vect;
+std::vector<double> CPUCruncher::m_times_vect;
+
 
 DECLARE_ALGORITHM_FACTORY(CPUCruncher) 
 
@@ -15,6 +20,7 @@ CPUCruncher::CPUCruncher ( const std::string& name , // the algorithm instance n
               , m_avg_runtime ( 1. )
               , m_var_runtime ( .01 )
     {
+
       // For Concurrent run
       declareProperty("Inputs", m_inputs, "List of required inputs");
       declareProperty("Outputs", m_outputs, "List of provided outputs");
@@ -22,15 +28,102 @@ CPUCruncher::CPUCruncher ( const std::string& name , // the algorithm instance n
       declareProperty ( "avgRuntime" , m_avg_runtime , "Average runtime of the module." ) ;
       declareProperty ( "varRuntime" , m_var_runtime , "Variance of the runtime of the module." ) ;
       declareProperty ( "localRndm", m_local_rndm_gen = true, "Decide if the local random generator is to be used");
+      declareProperty ( "NIterationsVect", m_niters_vect , "Number of iterations for the calibration." ) ;
+      declareProperty ( "NTimesVect", m_times_vect , "Number of seconds for the calibration." ) ;
+
     }  
-  
-void CPUCruncher::findPrimes (const double runtime)  { 
+
+StatusCode CPUCruncher::initialize(){
+if (m_times_vect.size()==0)
+  calibrate();
+return StatusCode::SUCCESS ;
+}
+
+/*
+Calibrate the crunching finding the right relation between max number to be searched and time spent.
+The relation is a sqrt for times greater than 10^-4 seconds.
+*/
+void CPUCruncher::calibrate(){
+
+  MsgStream log(msgSvc(), name());
+  // Tunded once by hand to cover from 0 to 4
+  m_niters_vect.push_back(0);
+  m_niters_vect.push_back(500);
+  m_niters_vect.push_back(600);
+  m_niters_vect.push_back(700);
+  m_niters_vect.push_back(800);
+  m_niters_vect.push_back(1000);
+  m_niters_vect.push_back(1300);
+  m_niters_vect.push_back(1600);   
+  m_niters_vect.push_back(2000);
+  m_niters_vect.push_back(2300);
+  m_niters_vect.push_back(2600);
+  m_niters_vect.push_back(3000);
+  m_niters_vect.push_back(3300);
+  m_niters_vect.push_back(3500);
+  m_niters_vect.push_back(3900);
+  m_niters_vect.push_back(4200);
+  m_niters_vect.push_back(5000);
+  m_niters_vect.push_back(6000);
+  m_niters_vect.push_back(8000);
+  m_niters_vect.push_back(10000);
+  m_niters_vect.push_back(12000);
+  m_niters_vect.push_back(15000);
+  m_niters_vect.push_back(17000);
+  m_niters_vect.push_back(20000);
+  m_niters_vect.push_back(25000);
+  m_niters_vect.push_back(30000);
+  m_niters_vect.push_back(35000);
+  m_niters_vect.push_back(40000);
+  m_niters_vect.push_back(60000);
+  m_niters_vect.push_back(100000);
+  m_times_vect.push_back(0);
+
+  for (unsigned int i=1;i<m_niters_vect.size();++i){
+   unsigned long niters=m_niters_vect[i];
+   do{
+    auto start_cali=tbb::tick_count::now();
+    findPrimes(niters);
+    auto stop_cali=tbb::tick_count::now();
+    double deltat = (stop_cali-start_cali).seconds();   
+    m_times_vect.push_back(deltat);
+    log << MSG::INFO << "Calibration: # iters = " << niters << " => " << deltat << endmsg;
+    } while(m_times_vect[i]<m_times_vect[i-1]); // make sure that they are monotonic
+   }
+
+}
+
+unsigned long CPUCruncher::getNCaliIters(double runtime){
+ 
+ int smaller_i=-1;
+ for (auto& time:m_times_vect )
+   if (time<runtime) smaller_i++;
+ 
+ // Case 1: we are outside the interpolation range
+ if (smaller_i==m_times_vect.size())
+   return m_times_vect[smaller_i];
+
+ // Case 2: we maeke a linear interpolation
+ // y=mx+q
+ double x0=m_times_vect[smaller_i];
+ double x1=m_times_vect[smaller_i+1];
+ double y0=m_niters_vect[smaller_i];
+ double y1=m_niters_vect[smaller_i+1];
+ double m=(y1-y0)/(x1-x0);
+ double q=y0-m*x0;
+
+
+ //always() << x0 << "<" << runtime << "<" << x1 << endmsg;
+
+ return m * runtime + q ;
+ }
+
+
+void CPUCruncher::findPrimes (const unsigned long int n_iterations)  { 
+
   
   MsgStream log(msgSvc(), name());
 
-  // Limit the exercise in time
-  const clock_t start = std::clock ();
-  
   // Flag to trigger the allocation
   bool is_prime;
   
@@ -42,7 +135,7 @@ void CPUCruncher::findPrimes (const double runtime)  {
   unsigned long i = 2;
 
   // Loop on numbers
-  while ( double(std::clock () - start)/CLOCKS_PER_SEC < runtime ){
+  for (unsigned long int iiter=0;iiter<n_iterations;iiter++ ){
     // Once at max, it returns to 0
     i+=1;    
         
@@ -69,10 +162,7 @@ void CPUCruncher::findPrimes (const double runtime)  {
       primes = new_primes;        
       primes_size=new_primes_size;
     } // end is prime
-            
-  //   for (unsigned int prime_index=0; prime_index<primes_size;prime_index++) 
-  //     always ()  << primes[prime_index] << " is prime." << endmsg;
-  
+              
   } // end of while loop
   delete[] primes;
   
@@ -88,15 +178,9 @@ void CPUCruncher::findPrimes (const double runtime)  {
 StatusCode CPUCruncher::execute  ()  // the execution of the algorithm 
 {
 
-	auto rusage2sec = [] (rusage rutime) -> float
-			 {return rutime.ru_utime.tv_sec +rutime.ru_utime.tv_usec/1000000.f;};
-
-	struct rusage starttime;
-	getrusage( RUSAGE_SELF, &starttime);
-
   MsgStream logstream(msgSvc(), name());
 
-  double runtime;
+  float runtime;
 
   if (m_local_rndm_gen){
   /* This will disappear with a thread safe random number generator svc
@@ -139,36 +223,36 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
   runtime = std::fabs(rndmgaus());
   }
 
-  float time = rusage2sec (starttime);
+  tbb::tick_count starttbb=tbb::tick_count::now();
   logstream  << MSG::INFO << "Runtime will be: "<< runtime << endmsg;
   logstream  << MSG::INFO << "Start event " <<  getContext()->m_evt_num
-		     << " on pthreadID " << getContext()->m_thread_id
-		     << " at " << time <<  endmsg;
+		     << " on pthreadID " << getContext()->m_thread_id << endmsg;
   
-  // get products from the event
-  // for (std::string& input : m_inputs){
-  //  get<DataObject>(input);
-  //}
   for (std::string& input : m_inputs){
     read<DataObject>(input);
   }
 
-  findPrimes(runtime);
+  const unsigned long n_iters= getNCaliIters(runtime);
+  findPrimes( n_iters );
 
-  // write products to the event
-  //for (std::string& output: m_outputs){
-  //  put(new DataObject(), output);
-  //}
   for (std::string& output: m_outputs){
     write(new DataObject(), output);
   }
 
-	struct rusage endtime;
-	getrusage( RUSAGE_SELF, &endtime);
-	time = rusage2sec (endtime);
+  tbb::tick_count endtbb=tbb::tick_count::now();
+
+  const double actualRuntime=(endtbb-starttbb).seconds();
+
   logstream << MSG::INFO << "Finish event " <<  getContext()->m_evt_num
 		     << " on pthreadID " << getContext()->m_thread_id
-		     << " at " << time << endmsg;
+		     << " in " << actualRuntime  << " seconds" << endmsg;
+
+  logstream << MSG::INFO << "Timing: ExpectedRuntime= " << runtime 
+                         << " ActualRuntime= " << actualRuntime 
+                         << " Ratio= " << runtime/actualRuntime
+                         << " Niters= " << n_iters << endmsg;
+
+
   return StatusCode::SUCCESS ;
 }
 

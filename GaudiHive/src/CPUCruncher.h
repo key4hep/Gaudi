@@ -23,6 +23,8 @@
 
     /// the execution of the algorithm 
     virtual StatusCode execute  () ; // the execution of the algorithm 
+    /// Its initialization
+    virtual StatusCode initialize();
     /// the finalization of the algorithm 
     virtual StatusCode finalize () ; // the finalization of the algorithm 
     /// Get the inputs
@@ -48,7 +50,7 @@
     /// the assignement operator is disabled
     CPUCruncher& operator= ( const CPUCruncher& ) ; // no assignement
     /// The CPU intensive function
-    void findPrimes (const double runtime) ; 
+    void findPrimes (const unsigned long int ) ; 
     /// putting data into the event store
     long int write (DataObject* obj, const std::string& location){
       return m_event_context->m_registry->add(location,obj);
@@ -60,11 +62,17 @@
       //      Assert(obj, "get():: No valid data at '" + path + "'");
       return obj;
     }
+    /// Calibrate
+    void calibrate();
+    long unsigned int getNCaliIters(double);
+
 
     double m_avg_runtime ; //Avg Runtime
     double m_var_runtime ; //Variance of Runtime
     bool m_local_rndm_gen; //Decide what random number generation to use
-    
+    static std::vector<unsigned int>m_niters_vect;
+    static std::vector<double> m_times_vect;
+
     // For the concurrency
     std::vector<std::string> m_inputs;
     std::vector<std::string> m_outputs;    
