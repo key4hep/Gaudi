@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2012-11-05 - Marco Clemencic
+ - Test that the return code is correct after a segfault.
+
 ============================ GaudiExamples v23r4 =============================
 ! 2012-09-11 - Marco Clemencic
  - Added test for the feature introduced in patch #5518 (histogram for timing
