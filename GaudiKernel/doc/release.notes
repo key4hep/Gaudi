@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2012-11-05 - Marco Clemencic
+ - Added tests/src/parsers.cpp to the QMTest test suite.
+
 ============================= GaudiKernel v28r3 ==============================
 ! 2012-09-13 - Marco Clemencic
  - Fixed compilation warnings.
