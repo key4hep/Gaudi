@@ -9,9 +9,9 @@ string(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(GaudiCoreSvc
-                 ApplicationMgr/*.cpp
-                 EventSelector/*.cpp
-                 IncidentSvc/*.cpp
-                 JobOptionsSvc/*.cpp
-                 MessageSvc/*.cpp
+                 src/ApplicationMgr/*.cpp
+                 src/EventSelector/*.cpp
+                 src/IncidentSvc/*.cpp
+                 src/JobOptionsSvc/*.cpp
+                 src/MessageSvc/*.cpp
                  LINK_LIBRARIES GaudiKernel Boost)

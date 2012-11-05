@@ -1241,8 +1241,8 @@ endfunction()
 #-------------------------------------------------------------------------------
 # gaudi_expand_sources(<variable> source_pattern1 source_pattern2 ...)
 #
-# Get the library directories required by the linker libraries specified
-# and prepend them to the output variable.
+# Expand glob patterns for input files to a list of files, first searching in
+# ``src`` then in the current directory.
 #-------------------------------------------------------------------------------
 macro(gaudi_expand_sources VAR)
   #message(STATUS "Expand ${ARGN} in ${VAR}")
@@ -1252,7 +1252,12 @@ macro(gaudi_expand_sources VAR)
     if(files)
       set(${VAR} ${${VAR}} ${files})
     else()
-      set(${VAR} ${${VAR}} ${fp})
+      file(GLOB files ${fp})
+      if(files)
+        set(${VAR} ${${VAR}} ${files})
+      else()
+        set(${VAR} ${${VAR}} ${fp})
+      endif()
     endif()
   endforeach()
   #message(STATUS "  result: ${${VAR}}")

@@ -4,26 +4,26 @@ find_package(Boost REQUIRED COMPONENTS filesystem thread system)
 find_package(ROOT REQUIRED COMPONENTS Core Reflex)
 
 #---Libraries---------------------------------------------------------------
-gaudi_add_library(GaudiKernel Lib/*.cpp
+gaudi_add_library(GaudiKernel src/Lib/*.cpp
                   LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT
                   INCLUDE_DIRS Boost ROOT
                   PUBLIC_HEADERS GaudiKernel)
 
 #---Tests-------------------------------------------------------------------
-gaudi_add_unit_test(DirSearchPath_test ../tests/src/DirSearchPath_test.cpp
+gaudi_add_unit_test(DirSearchPath_test tests/src/DirSearchPath_test.cpp
                     LINK_LIBRARIES GaudiKernel)
-gaudi_add_unit_test(test_SerializeSTL ../tests/src/test_SerializeSTL.cpp
+gaudi_add_unit_test(test_SerializeSTL tests/src/test_SerializeSTL.cpp
                     LINK_LIBRARIES GaudiKernel)
-gaudi_add_unit_test(PathResolver_test ../tests/src/PathResolver_test.cpp
+gaudi_add_unit_test(PathResolver_test tests/src/PathResolver_test.cpp
                     LINK_LIBRARIES GaudiKernel)
-gaudi_add_unit_test(test_GaudiTime ../tests/src/test_GaudiTime.cpp
-                    LINK_LIBRARIES GaudiKernel )
-gaudi_add_unit_test(test_GaudiTiming ../tests/src/test_GaudiTiming.cpp
+gaudi_add_unit_test(test_GaudiTime tests/src/test_GaudiTime.cpp
                     LINK_LIBRARIES GaudiKernel)
-gaudi_add_unit_test(Parsers_test ../tests/src/parsers.cpp
+gaudi_add_unit_test(test_GaudiTiming tests/src/test_GaudiTiming.cpp
+                    LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(Parsers_test tests/src/parsers.cpp
                     LINK_LIBRARIES GaudiKernel)
 # This is just a compile-time tests.
-gaudi_add_unit_test(test_headers_build ../tests/src/test_headers_build.cpp
+gaudi_add_unit_test(test_headers_build tests/src/test_headers_build.cpp
                     LINK_LIBRARIES GaudiKernel)
 
 if(GAUDI_BUILD_TESTS)

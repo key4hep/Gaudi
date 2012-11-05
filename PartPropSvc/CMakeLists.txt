@@ -7,9 +7,9 @@ find_package(ROOT COMPONENTS Reflex)
 find_package(HepPDT)
 
 #---Libraries---------------------------------------------------------------
-gaudi_add_module(PartPropSvc *.cpp
-                        LINK_LIBRARIES GaudiKernel Boost ROOT HepPDT
-                        INCLUDE_DIRS Boost ROOT HepPDT)
+gaudi_add_module(PartPropSvc src/*.cpp
+                 LINK_LIBRARIES GaudiKernel Boost ROOT HepPDT
+                 INCLUDE_DIRS Boost ROOT HepPDT)
 
 #---Installation------------------------------------------------------------
 gaudi_install_joboptions(share/PartPropSvc.py)
