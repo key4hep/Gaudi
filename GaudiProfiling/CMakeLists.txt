@@ -39,15 +39,15 @@ include_directories(src/component)
 # PerfMon profiler
 #-----------------------------------
 if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-  gaudi_add_module(GaudiProfiling component/*.cpp
+  gaudi_add_module(GaudiProfiling src/component/*.cpp
                    LINK_LIBRARIES GaudiKernel z
                    INCLUDE_DIRS unwind)
 
-  gaudi_add_python_module(PyCPUFamily python/CPUFamily.cpp
+  gaudi_add_python_module(PyCPUFamily src/python/CPUFamily.cpp
                           LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}
                           INCLUDE_DIRS PythonLibs)
 
-  gaudi_add_executable(GaudiGenProfilingHtml app/pfm_gen_analysis.cpp
+  gaudi_add_executable(GaudiGenProfilingHtml src/app/pfm_gen_analysis.cpp
                        LINK_LIBRARIES z GaudiKernel)
 else()
   message(WARNING "The module GaudiProfiling is disabled (unsupported architecture ${CMAKE_SYSTEM_PROCESSOR}).")
@@ -57,7 +57,7 @@ endif()
 #-----------------------------------
 # Google PerfTools profiler
 #-----------------------------------
-gaudi_add_module(GaudiGoogleProfiling component/google/*.cpp
+gaudi_add_module(GaudiGoogleProfiling src/component/google/*.cpp
                  LINK_LIBRARIES GaudiKernel GaudiAlgLib z
                  INCLUDE_DIRS tcmalloc)
 
@@ -82,7 +82,7 @@ set_target_properties(GaudiGoogleProfiling PROPERTIES LINK_FLAGS "${gprof_linker
 # Intel VTune profiler
 #-----------------------------------
 if(VTune_FOUND)
-  gaudi_add_module(IntelProfiler component/intel/*.cpp
+  gaudi_add_module(IntelProfiler src/component/intel/*.cpp
                    LINK_LIBRARIES ${VTune_LIBRARIES} GaudiKernel
                    INCLUDE_DIRS ${VTune_INCLUDE_DIRS})
 else()

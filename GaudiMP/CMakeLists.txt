@@ -6,11 +6,11 @@ find_package(ROOT)
 find_package(PythonLibs)
 
 #---Libraries---------------------------------------------------------------
-gaudi_add_library(GaudiMPLib Lib/*.cpp
+gaudi_add_library(GaudiMPLib src/Lib/*.cpp
                   LINK_LIBRARIES GaudiKernel PythonLibs ROOT
                   INCLUDE_DIRS ROOT PythonLibs
                   PUBLIC_HEADERS GaudiMP)
-gaudi_add_module(GaudiMP component/*.cpp
+gaudi_add_module(GaudiMP src/component/*.cpp
                  LINK_LIBRARIES GaudiMPLib PythonLibs ROOT)
 
 #---Dictionaries------------------------------------------------------------
