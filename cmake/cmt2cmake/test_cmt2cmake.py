@@ -469,26 +469,41 @@ apply_pattern linker_library library="Lib4"
     assert re.match(r' *Lib4\b', l)
     assert re.search(r'\bNO_PUBLIC_HEADERS', l)
 
-def test_libraries_strip_src():
+def test_libraries_fix_src_path():
     requirements = '''
 package Test
 version v1r0
 
-library TestLib ../src/subdir/*.cpp
-apply_pattern linker_library library=TestLib
+library TestLib1 ../src/subdir/*.cpp
+apply_pattern linker_library library=TestLib1
+
+library TestLib2 ../tests/src/subdir/*.cpp
+apply_pattern linker_library library=TestLib2
+
+library TestLib3 subdir/*.cpp
+apply_pattern linker_library library=TestLib3
     '''
     pkg = PackWrap("Test", requirements, files={'TestIncludes': {}})
 
-    assert pkg.linker_libraries == set(['TestLib'])
+    assert pkg.linker_libraries == set(['TestLib1', 'TestLib2', 'TestLib3'])
 
     cmakelists = pkg.generate()
     print cmakelists
 
     calls = getCalls("gaudi_add_library", cmakelists)
-    assert len(calls) == 1, "gaudi_add_library wrong count %d" % len(calls)
+    assert len(calls) == 3, "gaudi_add_library wrong count %d" % len(calls)
+
     l = calls[0].strip().split()
-    assert l[0] == 'TestLib'
-    assert l[1] == 'subdir/*.cpp'
+    assert l[0] == 'TestLib1'
+    assert l[1] == 'src/subdir/*.cpp'
+
+    l = calls[1].strip().split()
+    assert l[0] == 'TestLib2'
+    assert l[1] == 'tests/src/subdir/*.cpp'
+
+    l = calls[2].strip().split()
+    assert l[0] == 'TestLib3'
+    assert l[1] == 'src/subdir/*.cpp'
 
 def test_subdir_links():
     requirements = '''
@@ -1074,23 +1089,23 @@ application MyTestApp app5a.cpp app5b.cpp
 
     l = calls[0].strip().split()
     assert l[0] == 'MyApp1'
-    assert l[1:] == ['app1/*.cpp']
+    assert l[1:] == ['src/app1/*.cpp']
 
     l = calls[1].strip().split()
     assert l[0] == 'MyApp2'
-    assert l[1:] == ['app2/*.cpp']
+    assert l[1:] == ['src/app2/*.cpp']
 
     l = calls[2].strip().split()
     assert l[0] == 'MyApp3'
-    assert l[1:] == ['app3/*.cpp']
+    assert l[1:] == ['src/app3/*.cpp']
 
     l = calls[3].strip().split()
     assert l[0] == 'MyApp4'
-    assert l[1:] == ['../tests/src/app4.cpp']
+    assert l[1:] == ['tests/src/app4.cpp']
 
     l = calls[4].strip().split()
     assert l[0] == 'MyTestApp'
-    assert l[1:] == ['app5a.cpp', 'app5b.cpp']
+    assert l[1:] == ['src/app5a.cpp', 'src/app5b.cpp']
 
     calls = getCalls("if", cmakelists)
     assert calls == ['GAUDI_BUILD_TESTS'] * 4

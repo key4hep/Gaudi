@@ -449,9 +449,11 @@ class Package(object):
                 data.append('# only for the applications\nfind_package(Boost COMPONENTS program_options)\n')
 
             # write command
-            sources = [s.replace('../src/', '') for s in sources]
+            if not (isGODDict or isRflxDict):
+                # dictionaries to not need to have the paths fixed
+                sources = [os.path.normpath('src/' + s) for s in sources]
             # FIXME: special case
-            sources = [s.replace('$(GAUDICONFROOT)', '${CMAKE_SOURCE_DIR}/GaudiConf') for s in sources]
+            sources = [s.replace('src/$(GAUDICONFROOT)', '${CMAKE_SOURCE_DIR}/GaudiConf') for s in sources]
             libdata = callStringWithIndent(cmd, [name] + sources + args)
 
             # FIXME: wrap the test libraries in one if block (instead of several)
