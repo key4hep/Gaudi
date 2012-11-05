@@ -73,6 +73,12 @@ gaudi_add_dictionary(GaudiExamples src/POOLIO/dict.h  src/POOLIO/dict.xml LINK_L
 gaudi_add_test(Properties FRAMEWORK options/Properties.opts ENVIRONMENT JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options)
 gaudi_add_test(AlgTools FRAMEWORK options/AlgTools.opts ENVIRONMENT JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options)
 
+# Ensure that we have the test variables in the build-time environment
+# (for easier debugging).
+gaudi_build_env(SET     STDOPTS          ${CMAKE_CURRENT_SOURCE_DIR}/options
+                SET     JOBOPTSEARCHPATH ${CMAKE_CURRENT_SOURCE_DIR}/options
+                PREPEND PYTHONPATH       ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
+
 gaudi_add_test(QMTest QMTEST
                ENVIRONMENT
                  STDOPTS=${CMAKE_CURRENT_SOURCE_DIR}/options
