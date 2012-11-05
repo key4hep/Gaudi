@@ -1332,7 +1332,7 @@ use LCGCMT LCGCMT_64a
     print toolchain
 
     calls = getCalls("set", toolchain)
-    assert len(calls) == 1, "set wrong count %d" % len(calls)
+    assert len(calls) == 2, "set wrong count %d" % len(calls)
 
     l = calls[0].strip().split()
     assert l == ['heptools_version', '64a']
@@ -1357,7 +1357,7 @@ use BASEPROJECT BASEPROJECT_v1r0
     print toolchain
 
     calls = getCalls("set", toolchain)
-    assert len(calls) == 1, "set wrong count %d" % len(calls)
+    assert len(calls) == 2, "set wrong count %d" % len(calls)
 
     l = calls[0].strip().split()
     assert l == ['heptools_version', '65']
@@ -1380,7 +1380,7 @@ project TestProjectHT
     print toolchain
 
     calls = getCalls("set", toolchain)
-    assert len(calls) == 1, "set wrong count %d" % len(calls)
+    assert len(calls) == 2, "set wrong count %d" % len(calls)
 
     l = calls[0].strip().split()
     assert l == ['heptools_version', '23']
