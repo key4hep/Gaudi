@@ -50,7 +50,7 @@ application   3DoubleFuncTest             -check -group=tests  Tests/3DoubleFunc
 macro_prepend 3DoubleFuncTestlinkopts  " $(GaudiGSL_linkopts) $(use_linkopts) "
 application   PFuncTest                   -check -group=tests  Tests/PFuncTest.cpp
 macro_prepend PFuncTestlinkopts        " $(GaudiGSL_linkopts) $(use_linkopts) "
-application   InterpTest                  -check -group=tests  Tests/Interp.cpp
+application   InterpTest                  -check -group=tests  Tests/InterpTest.cpp
 macro_prepend InterpTestlinkopts        " $(GaudiGSL_linkopts) $(use_linkopts) "
 application   GSLAdaptersTest             -check -group=tests  Tests/GSLAdaptersTest.cpp
 macro_prepend GSLAdaptersTestlinkopts   " $(GaudiGSL_linkopts) $(use_linkopts) "

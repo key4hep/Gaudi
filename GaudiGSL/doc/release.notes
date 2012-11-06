@@ -3,6 +3,9 @@
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! =============================================================================
 
+! 2012-11-06 - Marco Clemencic
+ - Renamed the source file of a test.
+
 =============================== GaudiGSL v7r11 ===============================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.
