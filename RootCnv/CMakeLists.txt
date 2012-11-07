@@ -5,7 +5,6 @@ gaudi_depends_on_subdirs(GaudiKernel GaudiUtils)
 find_package(ROOT COMPONENTS RIO Tree TreePlayer MathCore)
 
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS __POOL_COMPATIBILITY)
-string(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 gaudi_add_library(RootCnvLib src/*.cpp
                   LINK_LIBRARIES GaudiKernel GaudiUtilsLib ROOT

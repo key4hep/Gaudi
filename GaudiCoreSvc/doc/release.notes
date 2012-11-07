@@ -4,6 +4,9 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2012-11-07 - Marco Clemencic
+ - Fixes to use the '-pedantic' option.
+
 ! 2012-10-26 - Marco Clemencic
  - Initialize the application return code to 'Success' in
    ApplicationMgr::configure() instead of EventLoopMgr::nextEvent(int), to

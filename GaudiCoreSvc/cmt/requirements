@@ -43,6 +43,12 @@ private
 # Select the specific Boost libraries
 macro_append Boost_linkopts " $(Boost_linkopts_system) $(Boost_linkopts_filesystem) $(Boost_linkopts_regex) $(Boost_linkopts_thread) "
 
+# Boost Spirit (1.48) gives a compilation error (extra ';') when -pedantic is
+# used (gcc 4.3 only, for more recent version it's just a warning).
+macro_remove cppflags "" \
+     no-hide-warnings "" \
+         target-gcc43 "-pedantic"
+
 apply_pattern PackageVersionHeader where="../$(tag)"
 include_dirs "../$(tag)"
 macro_append GaudiCoreSvc_dependencies " PackageVersionHeader "
