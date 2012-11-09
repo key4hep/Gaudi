@@ -446,11 +446,21 @@ macro(_gaudi_use_other_projects)
 
     if(NOT ${other_project}_FOUND)
       string(TOUPPER ${other_project} other_project_upcase)
+      set(suffixes)
+      foreach(_s1 ${other_project}
+                 ${other_project_upcase}/${other_project_upcase}_${other_project_version}
+                 ${other_project_upcase})
+        foreach(_s2 "" "/InstallArea")
+          foreach(_s3 "" "/${BINARY_TAG}" "/${LCG_platform}" "/${LCG_system}")
+            set(suffixes ${suffixes} ${_s1}${_s2}${_s3})
+          endforeach()
+        endforeach()
+      endforeach()
+      list(REMOVE_DUPLICATES suffixes)
+      message(STATUS "suffixes ${suffixes}")
       find_package(${other_project} ${other_project_cmake_version}
                    HINTS ${projects_search_path}
-                   PATH_SUFFIXES ${other_project}
-                                 ${other_project_upcase}/${other_project_upcase}_${other_project_version}
-                                 ${other_project_upcase})
+                   PATH_SUFFIXES ${suffixes})
       if(${other_project}_FOUND)
         message(STATUS "  found ${other_project} ${${other_project}_VERSION} ${${other_project}_DIR}")
         if(NOT heptools_version STREQUAL ${other_project}_heptools_version)
@@ -1855,7 +1865,7 @@ if(PACKAGE_NAME STREQUAL PACKAGE_FIND_NAME)
   endif()
 endif()
 ")
-  install(FILES ${CMAKE_BINARY_DIR}/config/${CMAKE_PROJECT_NAME}ConfigVersion.cmake DESTINATION ${CMAKE_SOURCE_DIR})
+  install(FILES ${CMAKE_BINARY_DIR}/config/${CMAKE_PROJECT_NAME}ConfigVersion.cmake DESTINATION .)
 endmacro()
 
 #-------------------------------------------------------------------------------
@@ -1871,18 +1881,7 @@ macro(gaudi_generate_project_config_file)
 set(${CMAKE_PROJECT_NAME}_heptools_version ${heptools_version})
 set(${CMAKE_PROJECT_NAME}_heptools_system ${LCG_SYSTEM})
 
-set(allowed_platforms \${BINARY_TAG} \${LCG_platform} \${LCG_system})
-set(found FALSE)
-foreach(platform \${allowed_platforms})
-  if(NOT found AND IS_DIRECTORY \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/\${platform}/cmake)
-    list(INSERT CMAKE_MODULE_PATH 0 \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea/\${platform}/cmake)
-    set(${CMAKE_PROJECT_NAME}_PLATFORM \${platform})
-    set(found TRUE)
-  endif()
-endforeach()
-if(NOT found)
-  message(FATAL_ERROR \"Cannot find cmake directory for any of \${allowed_platforms} in \${${CMAKE_PROJECT_NAME}_DIR}/InstallArea: platform not supported\")
-endif()
+set(${CMAKE_PROJECT_NAME}_PLATFORM ${BINARY_TAG})
 
 set(${CMAKE_PROJECT_NAME}_VERSION ${CMAKE_PROJECT_VERSION})
 set(${CMAKE_PROJECT_NAME}_VERSION_MAJOR ${CMAKE_PROJECT_VERSION_MAJOR})
@@ -1891,9 +1890,10 @@ set(${CMAKE_PROJECT_NAME}_VERSION_PATCH ${CMAKE_PROJECT_VERSION_PATCH})
 
 set(${CMAKE_PROJECT_NAME}_USES ${PROJECT_USE})
 
+list(INSERT CMAKE_MODULE_PATH 0 \${${CMAKE_PROJECT_NAME}_DIR}/cmake)
 include(${CMAKE_PROJECT_NAME}PlatformConfig)
 ")
-  install(FILES ${CMAKE_BINARY_DIR}/config/${CMAKE_PROJECT_NAME}Config.cmake DESTINATION ${CMAKE_SOURCE_DIR})
+  install(FILES ${CMAKE_BINARY_DIR}/config/${CMAKE_PROJECT_NAME}Config.cmake DESTINATION .)
 endmacro()
 
 #-------------------------------------------------------------------------------
@@ -2053,7 +2053,7 @@ function(gaudi_generate_env_conf filename)
 
   # include inherited environments
   foreach(other_project ${used_gaudi_projects})
-    set(data "${data}  <env:include hints=\"${${other_project}_DIR}\">InstallArea/${${other_project}_PLATFORM}/${other_project}Environment.xml</env:include>\n")
+    set(data "${data}  <env:include hints=\"${${other_project}_DIR}\">${other_project}Environment.xml</env:include>\n")
   endforeach()
 
   set(commands ${ARGN})
