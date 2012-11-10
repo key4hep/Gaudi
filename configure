@@ -14,7 +14,7 @@ if [ ! -e ${build_dir}/CMakeCache.txt ] ; then
     # Special LCG_System for some compilers
     case $CMTCONFIG in
        *-clang30-* | *-gccmax-* | *-g11max-* )
-         lcg_system_opt=$(echo $CMTCONFIG | sed 's/-\(gccmax\|clang[0-9]*\)-\(opt\|dbg\)/-gcc46-opt/')
+         lcg_system_opt=$(echo $CMTCONFIG | sed 's/-\(gccmax\|clang[0-9]*\)-\(opt\|dbg\)/-gcc46/')
          lcg_system_opt="-DLCG_SYSTEM=$lcg_system_opt"
          # The special compilers cannot use distcc
 	 distcc_opt="-DCMAKE_USE_DISTCC=OFF"
