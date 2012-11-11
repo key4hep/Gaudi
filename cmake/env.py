@@ -98,11 +98,6 @@ def prepareEnv(ignore_system=False):
     if not ignore_system:
         # declare scalar and list variables ("*PATH*" and "*DIRS*" are lists)
         for k, v in os.environ.items():
-            if 'PATH' in k or 'DIRS' in k:
-                t = 'list'
-            else:
-                t = 'scalar'
-            control.declare(k, t, False)
             control.set(k, v)
 
     return control
