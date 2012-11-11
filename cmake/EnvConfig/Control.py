@@ -114,40 +114,16 @@ class Environment():
         '''Searches in a variable for a value.'''
         return self.variables[varName].search(expr, regExp)
 
-
-    def include(self, name, value):
-        '''Appends to an existing variable.'''
-        if self.asWriter:
-            self._writeVarToXML(name, 'append', value)
+    def _guessType(self, varname):
+        '''
+        Guess the type of the variable from its name: if the name contains
+        'PATH' or 'DIRS', then the variable is a list, otherwise it is a scalar.
+        '''
+        varname = varname.upper() # make the comparison case insensitive
+        if 'PATH' in varname or 'DIRS' in varname:
+            return 'list'
         else:
-            if name in self.variables.keys():
-                self.variables[name].append(value, self.separator, self.variables)
-            else:
-                self.declare(name, 'list', False)
-                self.append(name, value)
-
-    def append(self, name, value):
-        '''Appends to an existing variable.'''
-        if self.asWriter:
-            self._writeVarToXML(name, 'append', value)
-        else:
-            if name in self.variables.keys():
-                self.variables[name].append(value, self.separator, self.variables)
-            else:
-                self.declare(name, 'list', False)
-                self.append(name, value)
-
-
-    def prepend(self, name, value):
-        '''Prepends to an existing variable, or create a new one.'''
-        if self.asWriter:
-            self._writeVarToXML(name, 'prepend', value)
-        else:
-            if name in self.variables.keys():
-                self.variables[name].prepend(value, self.separator, self.variables)
-            else:
-                self.declare(name, 'list', False)
-                self.prepend(name, value)
+            return 'scalar'
 
     def declare(self, name, vartype, local):
         '''Creates an instance of new variable. It loads values from the OS if the variable is not local.'''
@@ -180,17 +156,33 @@ class Environment():
             a.set(os.environ[name], os.pathsep, environment=self.variables, resolve=False)
         self.variables[name] = a
 
+    def append(self, name, value):
+        '''Appends to an existing variable.'''
+        if self.asWriter:
+            self._writeVarToXML(name, 'append', value)
+        else:
+            if name not in self.variables:
+                self.declare(name, self._guessType(name), False)
+            self.variables[name].append(value, self.separator, self.variables)
+
+    def prepend(self, name, value):
+        '''Prepends to an existing variable, or create a new one.'''
+        if self.asWriter:
+            self._writeVarToXML(name, 'prepend', value)
+        else:
+            if name not in self.variables:
+                self.declare(name, self._guessType(name), False)
+            self.variables[name].prepend(value, self.separator, self.variables)
+
     def set(self, name, value):
         '''Sets a single variable - overrides any previous value!'''
         name = str(name)
         if self.asWriter:
             self._writeVarToXML(name, 'set', value)
         else:
-            if name in self.variables:
-                self.variables[name].set(value, self.separator, self.variables)
-            else:
-                self.declare(name, 'list', False)
-                self.set(name, value)
+            if name not in self.variables:
+                self.declare(name, self._guessType(name), False)
+            self.variables[name].set(value, self.separator, self.variables)
 
     def default(self, name, value):
         '''Sets a single variable only if it is not already set!'''
@@ -198,8 +190,14 @@ class Environment():
         if self.asWriter:
             self._writeVarToXML(name, 'default', value)
         else:
+            # Here it is different from the other actions because after a 'declare'
+            # we cannot tell if the variable was already set or not.
+            # FIXME: improve declare() to allow for a default.
             if name not in self.variables:
-                v = Variable.List(name, False, report=self.report)
+                if self._guessType(name) == 'list':
+                    v = Variable.List(name, False, report=self.report)
+                else:
+                    v = Variable.Scalar(name, False, report=self.report)
                 if self.loadFromSystem and name in os.environ:
                     v.set(os.environ[name], os.pathsep, environment=self.variables)
                 else:
@@ -216,22 +214,16 @@ class Environment():
             self._writeVarToXML(name, 'unset', '')
         else:
             if name in self.variables:
-                self.variables[name].set([], self.separator)
-            else:
-                a = Variable.List(name, report=self.report)
-                self.variables[name] = a
-
+                del self.variables[name]
 
     def remove(self, name, value, regexp=False):
         '''Remove value from variable.'''
         if self.asWriter:
             self._writeVarToXML(name, 'remove', value)
         else:
-            if name in self.variables:
-                self.variables[name].remove(value, self.separator, regexp)
-            elif self.loadFromSystem:
-                self.declare(name, 'list', False)
-
+            if name not in self.variables:
+                self.declare(name, self._guessType(name), False)
+            self.variables[name].remove(value, self.separator, regexp)
 
     def remove_regexp(self, name, value):
         self.remove(name, value, True)

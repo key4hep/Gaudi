@@ -6,7 +6,29 @@ Created on Jun 27, 2011
 import re
 import os
 
-class List():
+class VariableBase(object):
+    '''
+    Base class for the classes used to manipulate the environment.
+    '''
+
+    def __init__(self, name, local=False, report=None):
+        self.report = report
+        self.varName = name
+        self.local = local
+
+    def repl(self, s, d):
+        '''
+        Replace environment variables in a string.
+        '''
+        v = re.compile(r"\$([A-Za-z_][A-Za-z0-9_]*)|\$\(([A-Za-z_][A-Za-z0-9_]*)\)|\$\{([A-Za-z_][A-Za-z0-9_]*)\}|\$\{(\.)\}")
+        m = v.search(s)
+        if m:
+            s = s[:m.start()] + str(d[filter(None,m.groups())[0]]) + s[m.end():]
+            return self.repl(s,d)
+        else:
+            return s
+
+class List(VariableBase):
     '''
     Class for manipulating with environment lists.
 
@@ -15,9 +37,7 @@ class List():
     '''
 
     def __init__(self, name, local=False, report=None):
-        self.report = report
-        self.varName = name
-        self.local = local
+        super(List, self).__init__(name, local, report)
         self.val = []
 
     def name(self):
@@ -118,16 +138,6 @@ class List():
         return res
 
 
-    def repl(self, s, d):
-        v = re.compile(r"\$([A-Za-z_][A-Za-z0-9_]*)|\$\(([A-Za-z_][A-Za-z0-9_]*)\)|\$\{([A-Za-z_][A-Za-z0-9_]*)\}|\$\{(\.)\}")
-        m = v.search(s)
-        if m:
-            s = s[:m.start()] + str(d[filter(None,m.groups())[0]]) + s[m.end():]
-            return self.repl(s,d)
-        else:
-            return s
-
-
     def resolveReferences(self, value, environment, separator = ':'):
         '''Resolves references to Lists'''
         if isinstance(value, list):
@@ -188,15 +198,12 @@ class List():
         return ':'.join(self.val)
 
 
-class Scalar():
+class Scalar(VariableBase):
     '''Class for manipulating with environment scalars.'''
 
-    def __init__(self, name, local=False, report = None):
-        self.report = report
-        self.varName = name
+    def __init__(self, name, local=False, report=None):
+        super(Scalar, self).__init__(name, local, report)
         self.val = ''
-
-        self.local = local
 
     def name(self):
         '''Returns the name of the scalar.'''
@@ -240,16 +247,6 @@ class Scalar():
         value = self.resolveReferences(value, environment)
         self.val = value + self.val
         self._changeSlashes()
-
-
-    def repl(self, s, d):
-        v = re.compile(r"\$([A-Za-z_][A-Za-z0-9_]*)|\$\(([A-Za-z_][A-Za-z0-9_]*)\)|\$\{([A-Za-z_][A-Za-z0-9_]*)\}")
-        m = v.search(s)
-        if m:
-            s = s[:m.start()] + str(d[filter(None,m.groups())[0]]) + s[m.end():]
-            return self.repl(s,d)
-        else:
-            return s
 
     def resolveReferences(self, value, environment):
         '''Resolve references inside the scalar.'''
