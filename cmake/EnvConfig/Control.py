@@ -59,7 +59,8 @@ class Environment():
         # Note: cannot use self.declare() because we do not want to write out
         #       the changes to ${.}
         dot = Variable.Scalar('.', local=True, report=self.report)
-        dot.set('', resolve=False)
+        dot.expandVars = False
+        dot.set('')
         self.variables['.'] = dot
 
 
@@ -153,7 +154,10 @@ class Environment():
             a = Variable.Scalar(name, local, report=self.report)
 
         if self.loadFromSystem and not local and name in os.environ:
-            a.set(os.environ[name], os.pathsep, environment=self.variables, resolve=False)
+            a.expandVars = False # disable var expansion when importing from the environment
+            a.set(os.environ[name], os.pathsep, environment=self.variables)
+            a.expandVars = True
+
         self.variables[name] = a
 
     def append(self, name, value):
@@ -246,7 +250,7 @@ class Environment():
         # push the previous value of ${.} onto the stack...
         self._fileDirStack.append(dot.value())
         # ... and update the variable
-        dot.set(os.path.dirname(fileName), resolve=False)
+        dot.set(os.path.dirname(fileName))
         variables = XMLfile.variable(fileName, namespace=namespace)
         for i, (action, args) in enumerate(variables):
             if action not in self.actions:
@@ -254,7 +258,7 @@ class Environment():
             else:
                 self.actions[action](*args) # pylint: disable=W0142
         # restore the old value of ${.}
-        dot.set(self._fileDirStack.pop(), resolve=False)
+        dot.set(self._fileDirStack.pop())
         # ensure that a change of ${.} in the file is reverted when exiting it
         self.variables['.'] = dot
 

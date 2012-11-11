@@ -71,7 +71,7 @@ class Test(unittest.TestCase):
 
 
     def testValues(self):
-        '''Test of value appending, prepending, setting, unseting, removing'''
+        '''Test of value appending, prepending, setting, unsetting, removing'''
         control = Control.Environment()
 
         self.assertFalse('MY_PATH' in control.vars())
@@ -530,6 +530,11 @@ class Test(unittest.TestCase):
         l.append("/another/path")
         assert l.value(asString=True) == "/usr/bin:/some/nice/location:/another/path"
 
+        # duplicates removal
+        l.append("/usr/bin")
+        assert l.value(asString=True) == "/usr/bin:/some/nice/location:/another/path"
+        l.prepend("/another/path")
+        assert l.value(asString=True) == "/another/path:/usr/bin:/some/nice/location"
 
         s = Variable.Scalar('VAR')
 
