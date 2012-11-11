@@ -96,9 +96,7 @@ def prepareEnv(ignore_system=False):
     control = Control.Environment()
 
     if not ignore_system:
-        # declare scalar and list variables ("*PATH*" and "*DIRS*" are lists)
-        for k, v in os.environ.items():
-            control.set(k, v)
+        control.presetFromSystem()
 
     return control
 

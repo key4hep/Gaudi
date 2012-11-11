@@ -308,11 +308,11 @@ class Environment():
         writer.writeToFile(fileName)
 
 
-    def loadAllSystemVariables(self):
+    def presetFromSystem(self):
         '''Loads all variables from the current system settings.'''
-        for val in os.environ.keys():
-            if not val in self.variables.keys():
-                self.declare(val, 'list', False)
+        for k, v in os.environ.items():
+            if k not in self.variables:
+                self.set(k, v)
 
     def process(self):
         '''
