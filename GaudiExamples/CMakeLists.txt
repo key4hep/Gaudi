@@ -76,7 +76,7 @@ gaudi_add_test(AlgTools FRAMEWORK options/AlgTools.opts ENVIRONMENT JOBOPTSEARCH
 # Ensure that we have the test variables in the build-time environment
 # (for easier debugging).
 gaudi_build_env(SET     STDOPTS          ${CMAKE_CURRENT_SOURCE_DIR}/options
-                SET     JOBOPTSEARCHPATH ${CMAKE_CURRENT_SOURCE_DIR}/options
+                PREPEND JOBOPTSEARCHPATH ${CMAKE_CURRENT_SOURCE_DIR}/options
                 PREPEND PYTHONPATH       ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
 
 gaudi_add_test(QMTest QMTEST
