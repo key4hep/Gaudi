@@ -146,18 +146,6 @@ processors = [
               #UsePythonZip
               ]
 
-def process(variable, value, env):
-    '''
-    Call all the processors defined in the processors list on 'value' for the
-    given variable.
-
-    @return: the processed value
-    '''
-    for p in [c(env) for c in processors]:
-        if p.isTarget(variable):
-            value = p(variable, value)
-    return value
-
 class VariableBase(object):
     '''
     Base class for the classes used to manipulate the environment.
@@ -169,9 +157,16 @@ class VariableBase(object):
         self.local = local
         self.expandVars = True
 
-    def clone(self):
-        c = type(self)(self.varName, self.local, self.report)
-        c.val = type(self.val)(self.val)
+    def process(self, value, env):
+        '''
+        Call all the processors defined in the processors list on 'value'.
+
+        @return: the processed value
+        '''
+        for p in [c(env) for c in processors]:
+            if p.isTarget(self):
+                value = p(self, value)
+        return value
 
 class List(VariableBase):
     '''
@@ -193,7 +188,7 @@ class List(VariableBase):
         '''Sets the value of the List. Any previous value is overwritten.'''
         if isinstance(value, str):
             value = value.split(separator)
-        self.val = process(self, value, environment)
+        self.val = self.process(value, environment)
 
     def unset(self, value, separator=':', environment=None):# pylint: disable=W0613
         '''Sets the value of the List to empty. Any previous value is overwritten.'''
@@ -230,14 +225,14 @@ class List(VariableBase):
         '''Adds value(s) at the end of the list.'''
         if isinstance(value, str):
             value = value.split(separator)
-        self.val = process(self, self.val + value, environment)
+        self.val = self.process(self.val + value, environment)
 
     def prepend(self, value, separator=':', environment=None):
         '''Adds value(s) at the beginning of the list.
         resolve references and duplications'''
         if isinstance(value, str):
             value = value.split(separator)
-        self.val = process(self, value + self.val, environment)
+        self.val = self.process(value + self.val, environment)
 
     def search(self, expr, regExp):
         '''Searches in List's values for a match
@@ -294,7 +289,7 @@ class Scalar(VariableBase):
 
     def set(self, value, separator=':', environment=None):# pylint: disable=W0613
         '''Sets the value of the scalar. Any previous value is overwritten.'''
-        self.val = process(self, value, environment)
+        self.val = self.process(value, environment)
 
     def unset(self, value, separator=':', environment=None):# pylint: disable=W0613
         '''Sets the value of the variable to empty. Any previous value is overwritten.'''
@@ -315,11 +310,11 @@ class Scalar(VariableBase):
 
     def append(self, value, separator=':', environment=None):# pylint: disable=W0613
         '''Adds value(s) at the end of the scalar.'''
-        self.val += process(self, value, environment)
+        self.val += self.process(value, environment)
 
     def prepend(self, value, separator=':', environment=None):# pylint: disable=W0613
         '''Adds value(s) at the beginning of the scalar.'''
-        self.val = process(self, value, environment) + self.val
+        self.val = self.process(value, environment) + self.val
 
     def search(self, expr):
         '''Searches in scalar`s values for a match'''

@@ -314,6 +314,12 @@ class Environment():
             if not val in self.variables.keys():
                 self.declare(val, 'list', False)
 
+    def process(self):
+        '''
+        Call the variable processors on all the variables.
+        '''
+        for v in self.variables.values():
+            v.val = v.process(val, self.variables)
 
     def _concatenate(self, value):
         '''Returns a variable string with separator separator from the values list'''
