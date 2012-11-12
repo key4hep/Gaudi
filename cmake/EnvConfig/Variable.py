@@ -53,7 +53,7 @@ class ScalarProcessor(VariableProcessor):
     '''
     Base class for processors operating only on scalars.
     '''
-    def isTarget(self, name, typ):
+    def isTarget(self, variable):
         '''
         Return True if this variable is a scalar.
         '''
@@ -120,7 +120,7 @@ class EmptyDirsRemover(ListProcessor):
     def process(self, variable, value):
         from os.path import isdir
         from os import listdir
-        return [s for s in value if isdir(s) and listdir(s)]
+        return [s for s in value if s.endswith('.zip') or (isdir(s) and listdir(s))]
 
 class UsePythonZip(ListProcessor):
     '''
@@ -140,11 +140,20 @@ class UsePythonZip(ListProcessor):
                 val.append(s)
         return val
 
-processors = [
-              EnvExpander,
-              PathNormalizer, DuplicatesRemover, # EmptyDirsRemover,
-              #UsePythonZip
-              ]
+# Default (minimal) set of processors.
+processors = [ EnvExpander, PathNormalizer, DuplicatesRemover,
+               # special processors
+               EmptyDirsRemover, UsePythonZip
+               ]
+
+# FIXME: these are back-ward compatibility hacks: we need a proper way to add/remove processors
+if ('no-strip-path' in os.environ.get('CMTEXTRATAGS', '')
+    or 'GAUDI_NO_STRIP_PATH' in os.environ
+    or 'LB_NO_STRIP_PATH' in os.environ):
+    processors.remove(EmptyDirsRemover)
+
+if 'no-pyzip' in os.environ.get('CMTEXTRATAGS', ''):
+    processors.remove(UsePythonZip)
 
 class VariableBase(object):
     '''
