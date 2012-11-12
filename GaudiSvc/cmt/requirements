@@ -48,9 +48,4 @@ macro_append cppflags "" \
         target-darwin "" \
          target-winxp ""
 
-# Boost Spirit (1.48) gives a compilation error (extra ';') when -pedantic is used
-macro_remove cppflags "" \
-     no-hide-warnings "" \
-         target-linux "-pedantic"
-
 apply_pattern QMTest
