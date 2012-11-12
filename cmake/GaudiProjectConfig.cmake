@@ -380,6 +380,16 @@ macro(gaudi_project project version)
          "${_env_cmd_line} --xml ${env_xml} %1 %2 %3 %4 %5 %6 %7 %8 %9\n")
   endif() # ignore other systems
 
+
+  #--- Special target to print the summary of QMTest runs.
+  if(GAUDI_BUILD_TESTS)
+    add_custom_target(QMTestSummary)
+    add_custom_command(TARGET QMTestSummary
+                       COMMAND ${env_cmd} --xml ${env_xml}
+                               qmtest_summarize.py)
+  endif()
+
+
   #--- Generate config files to be imported by other projects.
   gaudi_generate_project_config_version_file()
   gaudi_generate_project_config_file()
