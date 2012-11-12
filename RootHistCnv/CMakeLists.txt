@@ -7,6 +7,6 @@ find_package(ROOT COMPONENTS RIO Hist Matrix Tree)
 find_package(Boost)
 
 #---Libraries---------------------------------------------------------------
-gaudi_add_module(RootHistCnv *.cpp
-                        LINK_LIBRARIES GaudiKernel ROOT
-                        INCLUDE_DIRS Boost ROOT AIDA)
+gaudi_add_module(RootHistCnv src/*.cpp
+                 LINK_LIBRARIES GaudiKernel ROOT
+                 INCLUDE_DIRS Boost ROOT AIDA)

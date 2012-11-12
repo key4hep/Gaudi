@@ -111,7 +111,7 @@ class gaudimain(object) :
         if not self.printsequence:
             # No printing requested
             return
-        
+
         def printAlgo( algName, appMgr, prefix = ' ') :
             print prefix + algName
             alg = appMgr.algorithm( algName.split( "/" )[ -1 ] )
@@ -122,7 +122,7 @@ class gaudimain(object) :
             elif prop.has_key( "DetectorList" ) :
                 subs = prop[ "DetectorList" ].value()
                 for i in subs : printAlgo( algName.split( "/" )[ -1 ] + i.strip( '"' ) + "Seq", appMgr, prefix + "     ")
-        
+
         mp = self.g.properties()
         print "\n ****************************** Algorithm Sequence **************************** \n"
         for i in mp["TopAlg"].value(): printAlgo( i, self.g )
@@ -150,7 +150,16 @@ class gaudimain(object) :
         self.g = GaudiPython.AppMgr()
         self._printsequence()
         runner = self.mainLoop or (lambda app, nevt: app.run(nevt))
-        statuscode = runner(self.g, self.g.EvtMax)
+        try:
+            statuscode = runner(self.g, self.g.EvtMax)
+        except SystemError:
+            # It may not be 100% correct, but usually it means a segfault in C++
+            self.g.ReturnCode = 128 + 11
+            statuscode = False
+        except:
+            # for other exceptions, just set a generic error code
+            self.g.ReturnCode = 1
+            statuscode = False
         if hasattr(statuscode, "isSuccess"):
             success = statuscode.isSuccess()
         else:

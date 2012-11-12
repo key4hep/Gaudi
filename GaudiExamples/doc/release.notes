@@ -1,6 +1,13 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2012-11-07 - Marco Clemencic
+ - Added work-around for bug #98693:
+     inconsistent behavior after segfault in Python (ROOT).
+
+! 2012-11-05 - Marco Clemencic
+ - Test that the return code is correct after a segfault.
+
 ! 2012-09-11 - Marco Clemencic
  - Updated reference file for TBBMessageSvc test.
 

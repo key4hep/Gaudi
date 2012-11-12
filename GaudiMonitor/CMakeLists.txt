@@ -6,8 +6,8 @@ if(WIN32)
   set(winsocklib ws2_32.lib)
 endif()
 #---Libraries---------------------------------------------------------------
-gaudi_add_module(GaudiMonitor *.cpp
-                        LINK_LIBRARIES GaudiKernel ${winsocklib})
+gaudi_add_module(GaudiMonitor src/*.cpp
+                 LINK_LIBRARIES GaudiKernel ${winsocklib})
 
 if(WIN32 AND GAUDI_HIDE_WARNINGS)
   # These are needed because Windows compiler doesn't like standard C and POSIX functions,

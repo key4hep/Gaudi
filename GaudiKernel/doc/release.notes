@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2012-11-05 - Marco Clemencic
+ - Added tests/src/parsers.cpp to the QMTest test suite.
+
 ! 2012-10-22 - Marco Clemencic
  - Fixed SerialTaskQueue_test to compile with LCG g++ 4.6.2 on SLC6.
 

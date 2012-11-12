@@ -11,28 +11,20 @@ build_dir=${root_dir}/build.${CMTCONFIG}
 
 if [ ! -e ${build_dir}/CMakeCache.txt ] ; then
 
-    if which distcc &> /dev/null ; then
-	distcc_opt="-DCMAKE_USE_DISTCC=ON"
-    else
-        if which ccache &> /dev/null ; then
-            ccache_opt="-DCMAKE_USE_CCACHE=ON"
-        fi
-    fi
-
     # Special LCG_System for some compilers
     case $CMTCONFIG in
        *-clang30-* | *-gccmax-* | *-g11max-* )
-         lcg_system_opt=$(echo $CMTCONFIG | sed 's/-\(gccmax\|clang[0-9]*\)-\(opt\|dbg\)/-gcc46-opt/')
+         lcg_system_opt=$(echo $CMTCONFIG | sed 's/-\(gccmax\|clang[0-9]*\)-\(opt\|dbg\)/-gcc46/')
          lcg_system_opt="-DLCG_SYSTEM=$lcg_system_opt"
          # The special compilers cannot use distcc
 	 distcc_opt="-DCMAKE_USE_DISTCC=OFF"
          ;;
     esac
 
-    time cmake -DCMAKE_TOOLCHAIN_FILE=${root_dir}/toolchain.cmake -H${root_dir} -B${build_dir} || rm -rf ${build_dir}
+    time cmake -DCMAKE_TOOLCHAIN_FILE=${root_dir}/toolchain.cmake ${lcg_system_opt} -H${root_dir} -B${build_dir} || rm -rf ${build_dir}
 
 else
-    echo Project already configured.
+    echo "Project already configured (you can use 'make rebuild_cache' to re-configure)."
 fi
 
 if [ -e ${build_dir}/CMakeCache.txt ] ; then

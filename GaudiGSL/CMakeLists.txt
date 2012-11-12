@@ -10,24 +10,23 @@ if(NOT APPLE AND NOT WIN32)
 endif()
 
 #---Libraries---------------------------------------------------------------
-gaudi_add_library(GaudiGSLLib Lib/*.cpp
+gaudi_add_library(GaudiGSLLib src/Lib/*.cpp
                   LINK_LIBRARIES GaudiAlgLib GSL CLHEP
                   INCLUDE_DIRS GSL CLHEP
                   PUBLIC_HEADERS GaudiGSL GaudiMath)
-gaudi_add_module(GaudiGSL Components/*.cpp
+gaudi_add_module(GaudiGSL src/Components/*.cpp
                  LINK_LIBRARIES GaudiGSLLib)
 
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiGSLMath dict/GaudiGSLMath.h dict/GaudiGSLMath.xml LINK_LIBRARIES GaudiGSLLib)
 
 #---Executables-------------------------------------------------------------
-gaudi_add_unit_test(IntegralInTest Tests/IntegralInTest.cpp LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib)
-gaudi_add_unit_test(DerivativeTest Tests/DerivativeTest.cpp LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib)
-gaudi_add_unit_test(2DoubleFuncTest Tests/2DoubleFuncTest.cpp LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib)
-gaudi_add_unit_test(GSLAdaptersTest Tests/GSLAdaptersTest.cpp LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib)
-gaudi_add_unit_test(PFuncTest Tests/PFuncTest.cpp LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib)
-gaudi_add_unit_test(ExceptionsTest Tests/ExceptionsTest.cpp LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib)
-gaudi_add_unit_test(SimpleFuncTest Tests/SimpleFuncTest.cpp LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib)
-gaudi_add_unit_test(3DoubleFuncTest Tests/3DoubleFuncTest.cpp LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib)
-gaudi_add_unit_test(InterpTest Tests/Interp.cpp LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib)
-gaudi_add_unit_test(Integral1Test Tests/Integral1Test.cpp LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib)
+macro(add_gsl_unit_test name)
+  gaudi_add_unit_test(${name} src/Tests/${name}.cpp LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib)
+endmacro()
+
+foreach(test IntegralInTest DerivativeTest 2DoubleFuncTest GSLAdaptersTest
+             PFuncTest ExceptionsTest SimpleFuncTest 3DoubleFuncTest InterpTest
+             Integral1Test)
+  add_gsl_unit_test(${test})
+endforeach()
