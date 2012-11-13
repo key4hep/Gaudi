@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2012-11-13 - Marco Clemencic
+ - Modified qmtest_summarize.py to work under CMake too.
+
 ! 2012-10-28 - Marco Clemencic
  - Fixed a missing space in ICC command line after the latest change.
  - Fixed compilation on MacOSX.

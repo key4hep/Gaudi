@@ -380,6 +380,16 @@ macro(gaudi_project project version)
          "${_env_cmd_line} --xml ${env_xml} %1 %2 %3 %4 %5 %6 %7 %8 %9\n")
   endif() # ignore other systems
 
+
+  #--- Special target to print the summary of QMTest runs.
+  if(GAUDI_BUILD_TESTS)
+    add_custom_target(QMTestSummary)
+    add_custom_command(TARGET QMTestSummary
+                       COMMAND ${env_cmd} --xml ${env_xml}
+                               qmtest_summarize.py)
+  endif()
+
+
   #--- Generate config files to be imported by other projects.
   gaudi_generate_project_config_version_file()
   gaudi_generate_project_config_file()
@@ -600,6 +610,7 @@ function(gaudi_find_data_package name)
   if(NOT ${name}_FOUND)
     # Note: it works even if the env. var. is not set.
     file(TO_CMAKE_PATH "$ENV{CMTPROJECTPATH}" projects_search_path)
+    file(TO_CMAKE_PATH "$ENV{CMAKE_PREFIX_PATH}" env_prefix_path)
 
     set(version *) # default version value
     if(ARGN AND NOT ARGV1 STREQUAL PATH_SUFFIXES)
@@ -619,7 +630,7 @@ function(gaudi_find_data_package name)
 
     set(candidate_version)
     set(candidate_path)
-    foreach(prefix ${projects_search_path} ${CMAKE_PREFIX_PATH})
+    foreach(prefix ${projects_search_path} ${CMAKE_PREFIX_PATH} ${env_prefix_path})
       foreach(suffix "" ${ARGN})
         #message(STATUS "gaudi_find_data_package: check ${prefix}/${suffix}/${name}")
         if(IS_DIRECTORY ${prefix}/${suffix}/${name})
