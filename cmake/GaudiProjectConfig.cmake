@@ -610,6 +610,7 @@ function(gaudi_find_data_package name)
   if(NOT ${name}_FOUND)
     # Note: it works even if the env. var. is not set.
     file(TO_CMAKE_PATH "$ENV{CMTPROJECTPATH}" projects_search_path)
+    file(TO_CMAKE_PATH "$ENV{CMAKE_PREFIX_PATH}" env_prefix_path)
 
     set(version *) # default version value
     if(ARGN AND NOT ARGV1 STREQUAL PATH_SUFFIXES)
@@ -629,7 +630,7 @@ function(gaudi_find_data_package name)
 
     set(candidate_version)
     set(candidate_path)
-    foreach(prefix ${projects_search_path} ${CMAKE_PREFIX_PATH})
+    foreach(prefix ${projects_search_path} ${CMAKE_PREFIX_PATH} ${env_prefix_path})
       foreach(suffix "" ${ARGN})
         #message(STATUS "gaudi_find_data_package: check ${prefix}/${suffix}/${name}")
         if(IS_DIRECTORY ${prefix}/${suffix}/${name})
