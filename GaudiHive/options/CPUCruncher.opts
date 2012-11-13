@@ -39,11 +39,11 @@ ApplicationMgr.EvtMax    = 15;   // events to be processed (default is 10)
 ApplicationMgr.EvtSel   = "NONE"; // do not use any event input
 ApplicationMgr.HistogramPersistency = "NONE";
 ApplicationMgr.StatusCodeCheck = false ;
-ApplicationMgr.EventLoop = "HiveEventLoopMgr_v2";
+ApplicationMgr.EventLoop = "HiveEventLoopMgr";
 
-HiveEventLoopMgr_v2.MaxAlgosParallel = 1;
-HiveEventLoopMgr_v2.MaxEventsParallel = 1;
-HiveEventLoopMgr_v2.NumThreads = 2;
-HiveEventLoopMgr_v2.CloneAlgorithms = true;
-HiveEventLoopMgr_v2.DumpQueues = false;
+HiveEventLoopMgr.MaxAlgosParallel = 1;
+HiveEventLoopMgr.MaxEventsParallel = 1;
+HiveEventLoopMgr.NumThreads = 2;
+HiveEventLoopMgr.CloneAlgorithms = true;
+HiveEventLoopMgr.DumpQueues = false;
 

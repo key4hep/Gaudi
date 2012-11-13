@@ -1,6 +1,6 @@
 from Gaudi.Configuration import *
 # ============================================================================
-from Configurables import GaudiExamplesCommonConf, CPUCruncher,HiveEventLoopMgr_v2
+from Configurables import GaudiExamplesCommonConf, CPUCruncher,HiveEventLoopMgr
 #GaudiExamplesCommonConf()
 # ============================================================================     
 
@@ -106,7 +106,7 @@ ms.OutputLevel     =  Verbosity
 crunchers = load_brunel_scenario("Brunel.TES.trace.log")
 
 # Setup the Event Loop Manager
-evtloop = HiveEventLoopMgr_v2()
+evtloop = HiveEventLoopMgr()
 evtloop.MaxAlgosParallel = NumberOfAlgosInFlight
 evtloop.MaxEventsParallel = NumberOfEventsInFlight
 evtloop.NumThreads = NumberOfThreads 

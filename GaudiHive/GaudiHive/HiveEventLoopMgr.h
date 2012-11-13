@@ -72,8 +72,14 @@ protected:
   std::atomic_uint m_total_algos_in_flight;
   /// Total number of algos
   unsigned int  m_numberOfAlgos;
+  /// Dump the algorithm queues
   bool m_DumpQueues;
-
+  /// Number of events in parallel
+  unsigned int m_evts_parallel;
+  /// Total numbers of threads
+  unsigned int m_num_threads;
+  /// Clone algorithms to run them simultaneously
+  bool m_CloneAlgorithms;
 public:
   /// Standard Constructor
   HiveEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc);
@@ -97,5 +103,8 @@ public:
   /// implementation of IEventProcessor::executeRun()
   virtual StatusCode executeRun(int maxevt);
 
+  /// Decrement the number of algos in flight and put algo back in manager - maybe private
+  void taskFinished(IAlgorithm*& algo);
+
 };
-#endif // GAUDISVC_EVENTLOOPMGR_H
+#endif // GAUDIHIVE_HIVEEVENTLOOPMGR_H
