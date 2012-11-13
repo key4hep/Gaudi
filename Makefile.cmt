@@ -56,7 +56,7 @@ ifeq ($(platform),windows)
 # we do not have 'find' on Windows, so we stick to at most one level of hats
 packages := $(strip $(subst /cmt/requirements,,$(wildcard */cmt/requirements) $(wildcard */*/cmt/requirements)))
 else
-packages := $(strip $(subst /cmt/requirements,,$(shell find . -name requirements | grep cmt/requirements | sed 's/.\///') ))
+packages := $(strip $(subst /cmt/requirements,,$(shell find . -noleaf -path "*/cmt/requirements" -a -not -path "*/tests/data/*" | sed 's/.\///') ))
 endif
 
 # --- Utility functions and variables
@@ -203,12 +203,14 @@ endif
 # This hack is needed because the stand-alone bash implementation on Windows is very limited (short command line)
 purge: clean $(foreach dep,$(wildcard $(dependency_dir)/*.pack.d),$(dep)_do_purge) $(packages:=/cmt/$(Makefile)_do_purge)
 	$(RM) -r $(dependency_dir)
+	find $(PWD) -name "*.pyc" -exec $(RM) \{} \;
 %_do_purge: clean
 	$(RM) $*
 
 # This should be the actual implementation
 #purge: clean
 #	$(RM) $(dependency_dir)/*.pack.d $(packages:=/cmt/$(Makefile))
+#	find $(PWD) -name "*.pyc" -exec $(RM) \{} \;
 
 build_flags = $(wildcard $(dependency_dir)/*.pack.build)
 remove_build_flags:
