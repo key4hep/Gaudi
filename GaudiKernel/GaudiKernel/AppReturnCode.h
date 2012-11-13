@@ -25,6 +25,7 @@ namespace Gaudi {
     const int ScheduledStop            = 0x04; //< Loop terminated because of user request
     const int IncidentFailure          = 0x05; //< Fatal error in Incident handling
     const int UnhandledException       = 0x06; //<
+    const int CorruptedInput           = 0x10; //< Input file showed a corruption
     /// @}
     /// @{
     /// Error codes for operation failures.
