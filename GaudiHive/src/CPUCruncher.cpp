@@ -77,6 +77,7 @@ void CPUCruncher::calibrate(){
   m_niters_vect.push_back(40000);
   m_niters_vect.push_back(60000);
   m_niters_vect.push_back(100000);
+  m_niters_vect.push_back(200000);
   m_times_vect.push_back(0);
 
   for (unsigned int i=1;i<m_niters_vect.size();++i){
@@ -101,7 +102,7 @@ unsigned long CPUCruncher::getNCaliIters(double runtime){
  
  // Case 1: we are outside the interpolation range
  if (smaller_i==m_times_vect.size())
-   return m_times_vect[smaller_i];
+   return m_iters_vect[smaller_i];
 
  // Case 2: we maeke a linear interpolation
  // y=mx+q
@@ -164,13 +165,14 @@ void CPUCruncher::findPrimes (const unsigned long int n_iterations)  {
     } // end is prime
               
   } // end of while loop
-  delete[] primes;
   
   // Fool Compiler optimisations:
   for (unsigned int prime_index=0; prime_index<primes_size;prime_index++)
     if (primes[prime_index] == 4)
       log << "This does never happen, but it's necessary too fool aggressive compiler optimisations!"<< endmsg ;
-  
+
+  delete[] primes;
+
 }
 
 //------------------------------------------------------------------------------
