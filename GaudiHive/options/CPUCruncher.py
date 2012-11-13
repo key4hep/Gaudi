@@ -2,7 +2,7 @@
 
 from Gaudi.Configuration import *
 # ============================================================================
-from Configurables import GaudiExamplesCommonConf, CPUCruncher
+from Configurables import GaudiExamplesCommonConf, CPUCruncher,HiveEventLoopMgr
 #GaudiExamplesCommonConf()
 # ============================================================================
 # Setup the test
@@ -12,6 +12,7 @@ cpuc1= CPUCruncher ("cruncher_1",varRuntime=.1, avgRuntime=.5)
 # ============================================================================
 
 app = ApplicationMgr()
+app.EventLoop = HiveEventLoopMgr()
 app.TopAlg = [ cpuc0, cpuc1 ]
 app.EvtSel = "NONE" # do not use any event input
 app.EvtMax = 10
