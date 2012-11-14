@@ -330,7 +330,7 @@ StatusCode HiveEventLoopMgr_old::finalize()    {
 //--------------------------------------------------------------------------------------------
 // implementation of executeEvent(void* par)
 //--------------------------------------------------------------------------------------------
-StatusCode HiveEventLoopMgr_old::executeEvent(void* par)    {
+StatusCode HiveEventLoopMgr_old::executeEvent(void* /*par*/)    {
 
   // Fire BeginEvent "Incident"
   m_incidentSvc->fireIncident(Incident(name(),IncidentType::BeginEvent));
@@ -575,7 +575,7 @@ HiveEventLoopMgr_old::find_dependencies() {
 bool HiveEventLoopMgr_old::run_parallel(){
   // Prepare the event context.
   // A ctor will come when the members are clearer.
-  EventContext_shared_ptr evtContext(new EventContext);
+	EventContext* evtContext(new EventContext);
   evtContext->m_evt_num = 42; //TODO: use nevt;
   // Assign the context to the algorithms
   SmartIF<IAlgManager> algMan(serviceLocator());
