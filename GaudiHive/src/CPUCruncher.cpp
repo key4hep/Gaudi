@@ -8,17 +8,18 @@
 
 std::vector<unsigned int> CPUCruncher::m_niters_vect;
 std::vector<double> CPUCruncher::m_times_vect;
+CPUCruncher::CHM CPUCruncher::m_name_ncopies_map;
 
-
-DECLARE_ALGORITHM_FACTORY(CPUCruncher) 
+DECLARE_ALGORITHM_FACTORY(CPUCruncher)
 
 //------------------------------------------------------------------------------  
 
 CPUCruncher::CPUCruncher ( const std::string& name , // the algorithm instance name 
-              ISvcLocator*       pSvc )
-            : GaudiAlgorithm ( name , pSvc ) 
-              , m_avg_runtime ( 1. )
-              , m_var_runtime ( .01 )
+              ISvcLocator*pSvc ):
+              GaudiAlgorithm ( name , pSvc ),
+              m_avg_runtime ( 1. ),
+              m_var_runtime ( .01 ),
+              m_shortCalib(false)
     {
 
       // For Concurrent run
@@ -30,7 +31,13 @@ CPUCruncher::CPUCruncher ( const std::string& name , // the algorithm instance n
       declareProperty ( "localRndm", m_local_rndm_gen = true, "Decide if the local random generator is to be used");
       declareProperty ( "NIterationsVect", m_niters_vect , "Number of iterations for the calibration." ) ;
       declareProperty ( "NTimesVect", m_times_vect , "Number of seconds for the calibration." ) ;
+      declareProperty ( "shortCalib", m_shortCalib , "Enable coarse grained calibration" ) ;
 
+      // Register the algo in the static concurrent hash map in order to
+      // monitor the # of copies
+      CHM::accessor name_ninstances;
+      m_name_ncopies_map.insert(name_ninstances, name);
+      name_ninstances->second += 1 ;
     }  
 
 StatusCode CPUCruncher::initialize(){
@@ -65,33 +72,42 @@ void CPUCruncher::calibrate(){
   m_niters_vect.push_back(4200);
   m_niters_vect.push_back(5000);
   m_niters_vect.push_back(6000);
-  m_niters_vect.push_back(8000);
-  m_niters_vect.push_back(10000);
-  m_niters_vect.push_back(12000);
-  m_niters_vect.push_back(15000);
-  m_niters_vect.push_back(17000);
-  m_niters_vect.push_back(20000);
-  m_niters_vect.push_back(25000);
-  m_niters_vect.push_back(30000);
-  m_niters_vect.push_back(35000);
-  m_niters_vect.push_back(40000);
-  m_niters_vect.push_back(60000);
-  m_niters_vect.push_back(100000);
-  m_niters_vect.push_back(200000);
+	m_niters_vect.push_back(8000);
+	m_niters_vect.push_back(10000);
+	m_niters_vect.push_back(12000);
+	m_niters_vect.push_back(15000);
+	m_niters_vect.push_back(17000);
+	m_niters_vect.push_back(20000);
+	m_niters_vect.push_back(25000);
+	m_niters_vect.push_back(30000);
+	m_niters_vect.push_back(35000);
+	m_niters_vect.push_back(40000);
+	m_niters_vect.push_back(60000);
+	if (!m_shortCalib){
+		m_niters_vect.push_back(100000);
+		m_niters_vect.push_back(200000);
+		}
+
+
+  m_times_vect.resize(m_niters_vect.size());
   m_times_vect.push_back(0);
 
+
+  log << MSG::INFO << "Starting calibration..." << endmsg;
   for (unsigned int i=1;i<m_niters_vect.size();++i){
    unsigned long niters=m_niters_vect[i];
+   unsigned int trials = 30;
    do{
     auto start_cali=tbb::tick_count::now();
     findPrimes(niters);
     auto stop_cali=tbb::tick_count::now();
     double deltat = (stop_cali-start_cali).seconds();   
-    m_times_vect.push_back(deltat);
-    log << MSG::INFO << "Calibration: # iters = " << niters << " => " << deltat << endmsg;
-    } while(m_times_vect[i]<m_times_vect[i-1]); // make sure that they are monotonic
+    m_times_vect[i]=deltat;
+    log << MSG::DEBUG << "Calibration: # iters = " << niters << " => " << deltat << endmsg;
+    trials--;
+    } while(trials > 0 and m_times_vect[i]<m_times_vect[i-1]); // make sure that they are monotonic
    }
-
+   log << MSG::INFO << "Calibration finished!" << endmsg;
 }
 
 unsigned long CPUCruncher::getNCaliIters(double runtime){
@@ -101,8 +117,11 @@ unsigned long CPUCruncher::getNCaliIters(double runtime){
    if (time<runtime) smaller_i++;
  
  // Case 1: we are outside the interpolation range
- if (smaller_i==m_times_vect.size())
-   return m_iters_vect[smaller_i];
+ if (smaller_i==m_times_vect.size()-1)
+   smaller_i-=1;
+
+ if (smaller_i==-1)
+   smaller_i=0;
 
  // Case 2: we maeke a linear interpolation
  // y=mx+q
@@ -227,8 +246,9 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
 
   tbb::tick_count starttbb=tbb::tick_count::now();
   logstream  << MSG::INFO << "Runtime will be: "<< runtime << endmsg;
-  logstream  << MSG::INFO << "Start event " <<  getContext()->m_evt_num
-		     << " on pthreadID " << getContext()->m_thread_id << endmsg;
+  if (getContext())
+  	logstream  << MSG::INFO << "Start event " <<  getContext()->m_evt_num
+  	           << " on pthreadID " << getContext()->m_thread_id << endmsg;
   
   for (std::string& input : m_inputs){
     read<DataObject>(input);
@@ -245,11 +265,12 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
 
   const double actualRuntime=(endtbb-starttbb).seconds();
 
-  logstream << MSG::INFO << "Finish event " <<  getContext()->m_evt_num
+  if (getContext())
+  	logstream << MSG::INFO << "Finish event " <<  getContext()->m_evt_num
 		     << " on pthreadID " << getContext()->m_thread_id
 		     << " in " << actualRuntime  << " seconds" << endmsg;
 
-  logstream << MSG::INFO << "Timing: ExpectedRuntime= " << runtime 
+  logstream << MSG::DEBUG << "Timing: ExpectedRuntime= " << runtime
                          << " ActualRuntime= " << actualRuntime 
                          << " Ratio= " << runtime/actualRuntime
                          << " Niters= " << n_iters << endmsg;
@@ -263,8 +284,25 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
 StatusCode CPUCruncher::finalize () // the finalization of the algorithm 
 { 
   MsgStream log(msgSvc(), name());
-  log  << MSG::INFO << "I ran with an average runtime of " << m_avg_runtime << endmsg;
+
+  unsigned int ninstances;
+
+  {
+  	CHM::const_accessor const_name_ninstances;
+  	m_name_ncopies_map.find(const_name_ninstances,name());
+  	ninstances=const_name_ninstances->second;
+  }
+
+  	// do not show repetitions
+  	if (ninstances!=0){
+  		always() << "Summary: name= "<< name() <<" avg_runtime= " << m_avg_runtime
+  				<< " n_clones= " << ninstances << endmsg;
   
+  		CHM::accessor name_ninstances;
+  		m_name_ncopies_map.find(name_ninstances,name());
+  		name_ninstances->second=0;
+  		}
+
   return GaudiAlgorithm::finalize () ;
 }
 
