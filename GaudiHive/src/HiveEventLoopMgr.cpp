@@ -445,8 +445,6 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 
   MsgStream log(msgSvc(), name());
 
-  log << MSG::INFO << "Running with " << m_evts_parallel << " parallel events and "
-	  << m_max_parallel << " algorithms." << endmsg;
 
   // Reset the application return code.
   Gaudi::setAppReturnCode(m_appMgrProperty, Gaudi::ReturnCode::Success, true).ignore();
@@ -455,6 +453,15 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
   auto has_finished = [] // acquire nothing
        		          (contextSchedState_tuple evtContext_evtstate) // argument is a tuple
        		          { return std::get<1>(evtContext_evtstate)->hasFinished();}; // true if finished
+
+  // Useful for the Logs
+  always() << "Running with "
+  		<< m_evts_parallel << " parallel events, "
+  		<< m_max_parallel << " max concurrent algorithms, "
+  		<< m_num_threads << " threads."
+  		<< endmsg;
+
+
 
   int n_processed_events = 0;
 
@@ -572,13 +579,29 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 
 	  // Remove from the in flight events the finished ones
 	  std::list<contextSchedState_tuple>::iterator it=events_in_flight.begin();
+
 	  while (it!=events_in_flight.end()){
+	  	// Now proceed to deletion
 		  if (std::get<1>(*it)->hasFinished()){
 			  const unsigned int evt_num = std::get<0>(*it)->m_evt_num;
 			  log << MSG::INFO << "Event "<< evt_num << " finished. Events in fight are "
 					  << events_in_flight.size() << ". Processed events are "
 					  <<  n_processed_events << endmsg;
 				always() << "Event "<< evt_num << " finished. now is " <<  secsFromStart() << endmsg;
+
+			  // Calculate min and max event num
+			  unsigned int min_event_num=0xFFFFFFFF;
+			  unsigned int max_event_num=0;
+
+			  for (auto& evtContext_evtstate : events_in_flight){
+			  	const unsigned int evt_num = std::get<0>(evtContext_evtstate)->m_evt_num;
+					// Update min and max for backlog calculation
+					if (evt_num > max_event_num) max_event_num=evt_num;
+					if (evt_num < min_event_num) min_event_num=evt_num;
+			  }
+			  unsigned int evt_backlog=max_event_num-min_event_num;
+			  always() << "Event backlog (max= " << max_event_num << ", min= "
+			  		<< min_event_num<<" ) = " << evt_backlog << endmsg;
 
 			  delete std::get<0>(*it);
 			  delete std::get<1>(*it);
@@ -592,9 +615,11 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 		  }
 	  }
 
+
 	  // End scheduling session ------------------------------------------------
 
   } // End while loop on events
+
 
   always() << "---> Loop Finished (seconds): " << secsFromStart() <<endmsg;
 
@@ -698,7 +723,7 @@ HiveEventLoopMgr::find_dependencies() {
 bool HiveEventLoopMgr::run_parallel(){
   // Prepare the event context.
   // A ctor will come when the members are clearer.
-  EventContext_shared_ptr evtContext(new EventContext);
+	EventContext* evtContext(new EventContext);
   evtContext->m_evt_num = 42; //TODO: use nevt;
   // Assign the context to the algorithms
   SmartIF<IAlgManager> algMan(serviceLocator());
