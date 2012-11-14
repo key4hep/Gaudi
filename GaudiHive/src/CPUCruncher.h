@@ -5,6 +5,8 @@
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiKernel/RegistryEntry.h"
 
+#include <tbb/concurrent_hash_map.h>
+
 //------------------------------------------------------------------------------
 
   /** @class CPUCruncher
@@ -20,6 +22,8 @@
     friend class AlgFactory<CPUCruncher> ;
 
   public:
+
+    typedef tbb::concurrent_hash_map<std::string,unsigned int> CHM;
 
     /// the execution of the algorithm 
     virtual StatusCode execute  () ; // the execution of the algorithm 
@@ -53,11 +57,15 @@
     void findPrimes (const unsigned long int ) ; 
     /// putting data into the event store
     long int write (DataObject* obj, const std::string& location){
+    	if (!m_event_context)
+    		return -1;
       return m_event_context->m_registry->add(location,obj);
     }
     /// retrieving data from the event store 
     template < typename T >    
     T* read(const std::string& path){
+    	if (!m_event_context)
+    		return nullptr;
       T* obj = dynamic_cast<T*>( m_event_context->m_registry->find(path)->object());
       //      Assert(obj, "get():: No valid data at '" + path + "'");
       return obj;
@@ -70,11 +78,16 @@
     double m_avg_runtime ; //Avg Runtime
     double m_var_runtime ; //Variance of Runtime
     bool m_local_rndm_gen; //Decide what random number generation to use
+    bool m_shortCalib;
+    // To calib only once
     static std::vector<unsigned int>m_niters_vect;
     static std::vector<double> m_times_vect;
 
     // For the concurrency
     std::vector<std::string> m_inputs;
     std::vector<std::string> m_outputs;    
-    
+
+    static CHM m_name_ncopies_map;
+
   };
+
