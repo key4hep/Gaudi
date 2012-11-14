@@ -278,6 +278,9 @@ protected:
   /// Property to record the error conditions occurring during the running.
   IntegerProperty      m_returnCode;
 
+  // For concurrency
+  bool m_useHiveAlgorithmManager;
+
 private:
    std::vector<std::string> m_okDlls;       ///< names of successfully loaded dlls
 };
