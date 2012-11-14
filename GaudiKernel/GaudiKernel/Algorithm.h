@@ -513,10 +513,10 @@ public:
 
   // For concurrency
   /// get the context
-  EventContext_shared_ptr getContext(){return m_event_context;}
+  EventContext* getContext(){return m_event_context;}
 
   /// set the context
-  void setContext(EventContext_shared_ptr context){m_event_context=context;}
+  void setContext(EventContext* context){m_event_context = context;}
 
 
 protected:
@@ -537,7 +537,7 @@ protected:
   void initOutputLevel(Property& prop);
 
   // For the concurrency
-  EventContext_shared_ptr m_event_context; ///< Event specific data for multiple event processing
+  EventContext* m_event_context; ///< Event specific data for multiple event processing
 
 private:
 
@@ -583,9 +583,6 @@ private:
   Gaudi::StateMachine::State m_state;            ///< Algorithm has been initialized flag
   Gaudi::StateMachine::State m_targetState;      ///< Algorithm has been initialized flag
   bool         m_isFinalized;      ///< Algorithm has been finalized flag
-
-  //  // For the concurrency
-  //  EventContext_shared_ptr m_event_context; ///< Event specific data for multiple event processing
 
 
   /// implementation of service method
