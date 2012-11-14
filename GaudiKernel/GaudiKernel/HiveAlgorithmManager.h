@@ -72,7 +72,7 @@ public:
           return StatusCode::SUCCESS;
 	  }
 
-	  const int getIndex(const std::string& name) const {
+	  int getIndex(const std::string& name) const {
 		  const auto iter = std::find(m_name_strings.begin(), m_name_strings.end(), name);
 		  const unsigned int index = std::distance(m_name_strings.begin(), iter);
 		  const int mone = -1;
