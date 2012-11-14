@@ -3,6 +3,25 @@
 
 #include "GaudiKernel/IInterface.h"
 
+// No c++11 support for gccxml
+#ifndef __GCCXML__
+#include <atomic>
+typedef std::atomic_ulong refCountType;
+#else
+typedef unsigned long refCountType;
+#endif
+
+// Anonymous namespace
+namespace {
+inline unsigned long load_counter(const refCountType* counter){
+#ifndef __GCCXML__
+        return counter->load();
+#else
+        return *counter;
+#endif
+        }
+}
+
 #ifndef __GCCXML__
 /// Helper class for the cast used in the MPL for_each algorithm in the
 /// implementation of queryInterface.
@@ -44,19 +63,20 @@ struct GAUDI_LOCAL AppendInterfaceName {
 #define _refcounting_implementation_ \
 public: \
   /** Reference Interface instance               */ \
-  virtual unsigned long addRef() { return ++m_refCount; } \
+  virtual unsigned long addRef() { return m_refCount++; } \
   /** Release Interface instance                 */ \
   virtual unsigned long release() { \
     /* Avoid to decrement 0 */ \
-    const unsigned long count = (m_refCount) ? --m_refCount : m_refCount; \
+    const unsigned long count = (m_refCount) ? m_refCount-- : load_counter(&m_refCount); \
     if(count == 0) delete this; \
     return count; \
   } \
   /** Current reference count                    */ \
-  virtual unsigned long refCount() const { return m_refCount; } \
+  virtual unsigned long refCount() const { return load_counter(&m_refCount); } \
 protected: \
   /** Reference counter                          */ \
-  unsigned long m_refCount; \
+  /*unsigned long m_refCount;*/ \
+  refCountType m_refCount; \
 private:
 
 #ifndef __GCCXML__

@@ -27,7 +27,8 @@
 // Constructor
 Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
                       const std::string& version)
-  : m_name(name),
+  : m_event_context(nullptr),
+    m_name(name),
     m_version(version),
     m_registerContext ( false ) ,
     m_pSvcLocator(pSvcLocator),

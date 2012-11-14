@@ -146,15 +146,16 @@ void DataSvcHelpers::RegistryEntry::setObject( DataObject* pObject )   {
 
 /// Remove an object from the container
 long DataSvcHelpers::RegistryEntry::remove  ( IRegistry* obj )    {
-  try   {
-    RegistryEntry* pEntry = dynamic_cast<RegistryEntry*>(obj);
-    Store::iterator i = std::remove(m_store.begin(), m_store.end(), pEntry);
-    if (i != m_store.end())   {
-      pEntry->release();
-      m_store.erase( i, m_store.end() );
-    }
-  }
-  catch ( ... )   {     }
+  //try   {
+    // TODO: temporarily removed by BH for concurrency
+    //    RegistryEntry* pEntry = dynamic_cast<RegistryEntry*>(obj);
+    //Store::iterator i = std::remove(m_store.begin(), m_store.end(), pEntry);
+    //if (i != m_store.end())   {
+    //  pEntry->release();
+    //  m_store.erase( i, m_store.end() );
+    //}
+  //}
+  //catch ( ... )   {     }
   return m_store.size();
 }
 
@@ -183,7 +184,14 @@ DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_add(const std::s
     return i_add(path);
   }
   // if this object is already present, this is an error....
-  for (Store::iterator i = m_store.begin(); i != m_store.end(); i++ )   {
+  for (Store::iterator i = m_store.begin(); i !=  m_store.end(); ++i )   {
+    // tbb::concurrent vector is not thread safe when
+    // doing insert and iteration at the same time
+    // One has to wait until the object being put is
+    // fully constructed. Here:
+    // Wait for the pointer becoming valid
+    // Alternatively one could introduce real locks. 
+    while( (*i) == NULL) {} // TODO: maybe make it volatile? 
     if ( nam == (*i)->name() )  {
       return 0;
     }
@@ -238,7 +246,7 @@ long DataSvcHelpers::RegistryEntry::deleteElements()   {
       entry->release();
     }
   }
-  m_store.erase(m_store.begin(), m_store.end());
+  m_store.clear();
   return 0;
 }
 
@@ -260,6 +268,9 @@ DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find(const std::
     std::string::size_type loc1 = path.find(SEPARATOR,1);
     std::string::size_type len2 = loc1 != std::string::npos ? loc1 : len;
     for (Store::const_iterator i = m_store.begin(); i != m_store.end(); i++ )   {
+      // tbb::concurrent_vector is not thread-safe on
+      // concurrent iteration and insert. See above in "i_add"
+      while( (*i) == NULL) {} //TODO: needs volatile?
       RegistryEntry* regEnt = CAST_REGENTRY(RegistryEntry*, *i);
       const std::string& nam = regEnt->name();
       // check that the first len2 chars of path are the same as nam

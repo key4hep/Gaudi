@@ -8,6 +8,8 @@
 // just needed for the thread id
 #include <thread>
 
+#include <thread>
+
 /** @class TBMessageSvc TBMessageSvc.h MessageSvc/TBMessageSvc.h
   *
   * Extension to the standard MessageSvc that

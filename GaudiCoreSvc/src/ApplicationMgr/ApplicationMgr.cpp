@@ -26,6 +26,7 @@
 
 #include "GaudiCoreSvcVersion.h"
 
+#include "GaudiKernel/HiveAlgorithmManager.h"
 
 using System::getEnv;
 using System::isEnvSet;
@@ -41,7 +42,7 @@ static const char* s_runable   = "Runable";
 #define ON_DEBUG if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
 #define ON_VERBOSE if (UNLIKELY(m_outputLevel <= MSG::VERBOSE))
 
-DECLARE_OBJECT_FACTORY(ApplicationMgr)
+DECLARE_OBJECT_FACTORY(ApplicationMgr);
 
 // Implementation class for the Application Manager. In this way the
 // ApplicationMgr class is a fully insulated concrete class. Clients
@@ -61,18 +62,21 @@ ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
 
   // Instantiate component managers
   m_managers[IService::interfaceID().id()] = new ServiceManager(this);
-  m_managers[IAlgorithm::interfaceID().id()] = new AlgorithmManager(this);
 
+  m_propertyMgr  = new PropertyMgr(this);
   m_svcLocator = svcManager();
 
   // Instantiate internal services
   // SvcLocator/Factory HAS to be already instantiated
   m_classManager = new DLLClassManager(this);
-  m_propertyMgr  = new PropertyMgr(this);
 
   m_name  = "ApplicationMgr";
   m_state = Gaudi::StateMachine::OFFLINE;
   m_targetState = Gaudi::StateMachine::OFFLINE;
+
+
+//  m_managers[IAlgorithm::interfaceID().id()] = new AlgorithmManager(this);
+  m_managers[IAlgorithm::interfaceID().id()] = new HiveAlgorithmManager(this);
 
   m_propertyMgr->declareProperty("Go",            m_SIGo = 0 );
   m_propertyMgr->declareProperty("Exit",          m_SIExit = 0 );
@@ -207,6 +211,7 @@ StatusCode ApplicationMgr::queryInterface
 // ApplicationMgr::i_startup()
 //============================================================================
 StatusCode ApplicationMgr::i_startup() {
+
   StatusCode  sc;
 
   // declare factories in current module
@@ -301,6 +306,7 @@ StatusCode ApplicationMgr::i_startup() {
 // IAppMgrUI implementation: ApplicationMgr::configure()
 //============================================================================
 StatusCode ApplicationMgr::configure() {
+
   // Check if the state is compatible with the transition
   MsgStream tlog( m_messageSvc, name() );
   if( Gaudi::StateMachine::CONFIGURED == m_state ) {

@@ -165,6 +165,34 @@ ChronoStatSvc::ChronoStatSvc
       "Use the special format for printout of efficiency counters" ) ;
 }
 // ============================================================================
+// Compound assignment operator.
+// ============================================================================
+void ChronoStatSvc::merge ( const ChronoStatSvc& css){
+
+	// Add the content of the maps, leave the rest unchanged
+
+	// Merge Chronomaps
+	for (auto& item : css.m_chronoEntities){
+		const IChronoStatSvc::ChronoTag& key = item.first;
+		const ChronoEntity& val = item.second;
+		if (m_chronoEntities.count(key))
+			m_chronoEntities[key]+=val;
+		else
+			m_chronoEntities.insert (std::pair<IChronoStatSvc::ChronoTag,ChronoEntity>(key,val));
+	}
+
+	// Merge StatMaps
+	for (auto& item : css.m_statEntities){
+		const IChronoStatSvc::StatTag& key = item.first;
+		const StatEntity& val = item.second;
+		if (m_statEntities.count(key))
+			m_statEntities[key]+=val;
+		else
+			m_statEntities.insert (std::pair<IChronoStatSvc::StatTag,StatEntity>(key,val));
+	}
+
+}
+// ============================================================================
 // Destructor.
 // ============================================================================
 ChronoStatSvc::~ChronoStatSvc()

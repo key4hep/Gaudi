@@ -116,6 +116,8 @@ public:
    *   @param svcloc pointer to servcie locator
    */
   ChronoStatSvc ( const std::string& name, ISvcLocator* svcloc );
+  /// Compound assignment operator
+  void merge ( const ChronoStatSvc& css);
   /// Destructor.
   virtual ~ChronoStatSvc();
   // ============================================================================

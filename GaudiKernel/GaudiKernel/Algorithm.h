@@ -30,6 +30,11 @@
 #include "GaudiKernel/IAlgContextSvc.h"
 #include "GaudiKernel/Property.h"
 
+// For concurrency
+#include "GaudiKernel/EventContext.h"
+
+
+
 #ifndef PACKAGE_VERSION
 #define PACKAGE_VERSION "unknown"
 #endif
@@ -505,6 +510,15 @@ public:
     const TYPE&        value )
   { return Gaudi::Utils::setProperty ( m_propertyMgr , name , value ) ; }
   // ==========================================================================
+
+  // For concurrency
+  /// get the context
+  EventContext* getContext(){return m_event_context;}
+
+  /// set the context
+  void setContext(EventContext* context){m_event_context = context;}
+
+
 protected:
 
   /// Has the Algorithm already been initialized?
@@ -522,6 +536,8 @@ protected:
   /// callback for output level property
   void initOutputLevel(Property& prop);
 
+  // For the concurrency
+  EventContext* m_event_context; ///< Event specific data for multiple event processing
 
 private:
 
@@ -567,6 +583,7 @@ private:
   Gaudi::StateMachine::State m_state;            ///< Algorithm has been initialized flag
   Gaudi::StateMachine::State m_targetState;      ///< Algorithm has been initialized flag
   bool         m_isFinalized;      ///< Algorithm has been finalized flag
+
 
   /// implementation of service method
   StatusCode service_i(const std::string& svcName,
