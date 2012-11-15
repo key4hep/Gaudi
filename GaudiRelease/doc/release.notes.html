@@ -38,6 +38,70 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
+<h2><a name="v23r5">Gaudi v23r5</a> (2012-11-15)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=64b">LCGCMT_64b</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Updates and fixes to the CMake configuration. The system is essentially ready,
+    with just a few minor tweaks to be implemented and the documentation to be prepared.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added new return code to flag a corrupted input file.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixes to return code handling.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixes some warnings.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v12r3):
+<ul>
+<li>Modified qmtest_summarize.py to work under CMake too.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Set the -pedantic flag for the tag GAUDI_PEDANTIC (and target-gcc).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>set max-page-size for all 64 bit gcc targets.<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v28r4):
+<ul>
+<li>Define the incident and return code for corrupted input files.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added tests/src/parsers.cpp to the QMTest test suite.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiCoreSvc (v1r3):
+<ul>
+<li>Initialize the application return code to 'Success' in
+   ApplicationMgr::configure() instead of EventLoopMgr::nextEvent(int), to
+   avoid that error conditions (like failure to open a file) happening during
+   initialization are discarded.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiPython (v12r4):
+<ul>
+<li>Stop execution (in AppMgr.run()) if the return code of the application is not
+   0 (success) after configure or initialize.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v23r5):
+<ul>
+<li>Ensure that we get the correct return code after a segfault in C++.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>RootCnv (v1r19):
+<ul>
+<li>Updated to version v1r19 from LHCb.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
 <h2><a name="v23r4">Gaudi v23r4</a> (2012-09-13)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=64a">LCGCMT_64a</a></h3>
 <h3>General Changes</h3>
