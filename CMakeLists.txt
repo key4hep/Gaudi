@@ -13,3 +13,7 @@ find_package(GaudiProject)
 
 # Declare project name and version
 gaudi_project(Gaudi v23r4)
+
+# This test does not really fit in a subdirectory.
+gaudi_add_test(cmake.EnvConfigTests
+               COMMAND nosetests ${CMAKE_SOURCE_DIR}/cmake/EnvConfig)
