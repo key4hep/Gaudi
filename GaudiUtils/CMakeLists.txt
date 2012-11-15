@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiUtils v4r1)
+gaudi_subdir(GaudiUtils v4r2)
 
 gaudi_depends_on_subdirs(GaudiKernel)
 
@@ -6,13 +6,13 @@ find_package(Boost)
 find_package(AIDA)
 find_package(ROOT COMPONENTS RIO Hist XMLIO Thread Matrix MathCore)
 find_package(XercesC)
-find_package(uuid)
+find_package(UUID)
 
 #---Libraries---------------------------------------------------------------
-gaudi_add_library(GaudiUtilsLib Lib/*.cpp
+gaudi_add_library(GaudiUtilsLib src/Lib/*.cpp
                   LINK_LIBRARIES GaudiKernel ROOT
                   INCLUDE_DIRS ROOT AIDA
                   PUBLIC_HEADERS GaudiUtils)
-gaudi_add_module(GaudiUtils component/*.cpp
-                 LINK_LIBRARIES GaudiUtilsLib XercesC uuid
-                 INCLUDE_DIRS XercesC uuid)
+gaudi_add_module(GaudiUtils src/component/*.cpp
+                 LINK_LIBRARIES GaudiUtilsLib XercesC UUID
+                 INCLUDE_DIRS XercesC UUID)

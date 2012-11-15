@@ -38,6 +38,81 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
+<h2><a name="v23r4">Gaudi v23r4</a> (2012-09-13)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=64a">LCGCMT_64a</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Fixed compilation with Boost 1.49 and 1.50 (for future versions of LCGCMT).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Improvements and fixes to the CMake configuration (including the possibility
+    of running the tests from the build directory).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Rationalized the permissions of files in the repository.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v12r2):
+<ul>
+<li>Added the possibility to compile with the option -std=c+=0x, for example in
+    the LCG nightly platform *-g11max-*.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v28r3):
+<ul>
+<li>Added missing copy constructor and assignment operator to 'implementsN&lt;&gt;'
+    base class.<br/>
+    (<span class="author">Benedikt Hegner</span>)</li>
+<li>Fixed bug #96673: spurious warnings in GenConfUser.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Improvements to genconfuser.py.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed bug #95733: GaudiKernel::ToStream truncates numbers &amp;lt; 1e-8<br/>
+    Use ios::showpoint instead of ios::fixed.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiAlg (v14r3):
+<ul>
+<li>Patch #5518: save TimingHistograms in job histograms<br/>
+    (<span class="author">Ben Couturier</span>)</li>
+<li>Patch #5464: Implement the 'getIfExists' for GaudiTool as well as GaudiAlgorithm<br/>
+    (<span class="author">Chris Jones</span>)</li>
+</ul>
+</li>
+<li>GaudiProfiling (v1r6):
+<ul>
+<li>Fixed compilation with -std=c++0x.<br/>
+    (<span class="author">Benedikt Hegner</span>)</li>
+</ul>
+</li>
+<li>GaudiPython (v12r3):
+<ul>
+<li>Patch #5471: fixes to be able to run LHCb applications via GaudiParallel.<br/>
+    (<span class="author">Nathalie Rauschmayr</span>)</li>
+</ul>
+</li>
+<li>GaudiMP (v1r5):
+<ul>
+<li>Patch #5471: fixes to be able to run LHCb applications via GaudiParallel.<br/>
+    (<span class="author">Nathalie Rauschmayr</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v23r4):
+<ul>
+<li>Modified gudirun.py to use a portable check of the number of CPUs.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiRelease (v23r4):
+<ul>
+<li>Removed the special hack used to produce the LHCb deployment kit (obsolete).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
 <h2><a name="v23r3">Gaudi v23r3</a> (2012-06-19)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=64">LCGCMT_64</a></h3>
 <h3>General Changes</h3>

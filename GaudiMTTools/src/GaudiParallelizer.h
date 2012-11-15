@@ -4,8 +4,9 @@
 // from Gaudi
 #include "GaudiAlg/GaudiAlgorithm.h"
 
-//Threadpool library Boost
-#include "threadpool/boost/threadpool.hpp"
+#include <tbb/task_group.h>
+#include <tbb/task_scheduler_init.h>
+#include <boost/bind.hpp>
 
 // Forward declarations
 class ISequencerTimerTool;
@@ -77,7 +78,7 @@ private:
   ISequencerTimerTool* m_timerTool;      ///< Pointer to the timer tool
   int  m_timer;                          ///< Timer number for the sequencer
 
-  boost::threadpool::pool m_thrd_pool;   ///< Thread and task pool
+  tbb::task_group m_task_group;          ///< TBB task group
   unsigned short m_nthreads;             ///< Number of threads in the thread pool
 };
 

@@ -1,6 +1,13 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2012-11-07 - Marco Clemencic
+ - Fixes to use the '-pedantic' option.
+
+=============================== GaudiSvc v19r2 ===============================
+! 2012-07-27 - Marco Clemencic
+ - Rationalized the permissions of files in the repository.
+
 =============================== GaudiSvc v19r1 ===============================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.

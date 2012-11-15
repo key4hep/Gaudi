@@ -108,11 +108,12 @@ private:
     mpl::for_each<interfaces>(appender); \
     return v; \
   } \
-  implements##N & operator=(const implements##N& obj){ if (this!=&obj) m_refCount.store(obj.m_refCount.load()); return *this;}\
   /** Default constructor */ \
-  implements##N(): m_refCount(0){} \
-  /** Copy Ctor*/ \
-  implements##N(const implements##N & ) : m_refCount(0){} \
+  implements##N():m_refCount(0) {} \
+  /** Copy constructor */ \
+  implements##N(const implements##N &/*other*/):m_refCount(0) {} \
+  /** Assignment operator (do not touch the reference count).*/ \
+  implements##N& operator=(const implements##N &/*other*/) { return *this; } \
   /** Virtual destructor */ \
   virtual ~implements##N() {} \
   _refcounting_implementation_
@@ -134,11 +135,12 @@ private:
     std::vector<std::string> v; /* temporary storage */ \
     return v; \
   } \
-  implements##N & operator=(const implements##N& obj){ if (this!=&obj) m_refCount = m_refCount; return *this;}\
   /** Default constructor */ \
-  implements##N(): m_refCount(0){} \
-  /** Copy Ctor*/ \
-  implements##N(const implements##N & ) : m_refCount(0){} \
+  implements##N():m_refCount(0) {} \
+  /** Copy constructor */ \
+  implements##N(const implements##N &/*other*/):m_refCount(0) {} \
+  /** Assignment operator (do not touch the reference count).*/ \
+  implements##N& operator=(const implements##N &/*other*/) { return *this; } \
   /** Virtual destructor */ \
   virtual ~implements##N() {} \
   _refcounting_implementation_

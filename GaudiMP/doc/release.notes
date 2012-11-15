@@ -1,6 +1,54 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+================================ GaudiMP v1r5 ================================
+! 2012-09-13 - Marco Clemencic
+ - Fixed compilation warnings.
+
+! 2012-07-27 - Marco Clemencic
+ - Rationalized the permissions of files in the repository.
+
+! 2012-07-25 - Nathalie Rauschmayr
+ - Patch #5471: fixes to be able to run LHCb applications via GaudiParallel.
+   - For Gauss:
+     - GMPBase.py:
+       - DoFirstEvent(): Call GetHistoNames instead of GetList (nearly the same
+         except of the line "rootFID = node.address().par()")
+       - GMPComponent.__init__(): Distinguish the applications
+       - GetEventNumber(): In Gauss, EventNumber must be given by the Reader due
+         to correctly set the random seeds
+       - Initialize() of worker: Interface to EventCounter in order to modify
+         the counters from outside
+       - Engine() of worker: Set EventCounter which is given by the reader
+   - General:
+     - GMPBase.py:
+       - Go(): SUCCESS/FAILURE is not a bool --> if-statement did not work
+       - Terminate(): Termination won't work when one of the processes already
+         died. Check existing processes
+       - Engine() of writer: runTime of writer was not correct as it was
+         overwritten every time
+       - DoFirstEvent(): Register links in TransientEventStore (DAQ/RawEvent)
+       - WAIT_SINGLE_EVENT = 60*6: In certain situations it happened that the
+         waiting time for the finalization was too short
+       - Engine() of worker: ItemList and optItemList have been modified. Double
+         entries caused a memory leak
+     - TESSerializer.cpp:
+       - loadBuffer(): Find objects, which are not equal to /Event in TES, and
+         read out the buffers
+     - pTools.py:
+       - ProcessTimeSpanFSR(): Time Span in FileRecords are not generated
+         correctly (no merging). Instead of writing n times TimeSpanFSR, only
+         the minimum and maximum is written
+       - syncAllRolling(): In Gauss it happened often that the Reader is too
+         fast and could not synchronize with the workers in the end. As the
+         synchronization object is not reset the Reader waits for a long time
+         until it calls processHang() and kills every process. Modifying the
+         if-statement allows to reset the waiting time of the Reader
+     - compareOutputFiles.py:
+       - Sets-module is deprecated
+       - Added functions for the comparison of FileRecords (CompareFSR(),
+         GetFSRdict(), CheckFileRecords())
+
 ================================ GaudiMP v1r4 ================================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.

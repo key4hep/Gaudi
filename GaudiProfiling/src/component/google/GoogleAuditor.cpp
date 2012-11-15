@@ -291,13 +291,20 @@ namespace Google
     , m_sampleEventCount( 0 )
     , m_inFullAudit ( false )
   {
-    declareProperty("ActivateAt", m_when = {
-		        "Initialize",
-			"ReInitialize",
-			"Execute",
-			"BeginRun",
-			"EndRun",
-		        "Finalize"},
+    {
+      // Note: 'tmp' is needed to avoid an issue with list_of and C++11.
+      const std::vector<std::string> tmp =
+        boost::assign::list_of
+          ("Initialize")
+          ("ReInitialize")
+          ("Execute")
+          ("BeginRun")
+          ("EndRun")
+          ("Finalize");
+      m_when = tmp;
+    }
+
+    declareProperty("ActivateAt", m_when,
                     "List of phases to activate the Auditoring during" );
     declareProperty("DisableFor", m_veto,
                     "List of component names to disable the auditing for" );

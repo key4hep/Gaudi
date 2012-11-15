@@ -928,10 +928,12 @@ class AppMgr(iService) :
     def run(self, n) :
         if self.FSMState() == Gaudi.StateMachine.CONFIGURED :
             sc = self.initialize()
-            if sc.isFailure(): return sc
+            if sc.isFailure() or self.ReturnCode != 0:
+                return sc
         if self.FSMState() == Gaudi.StateMachine.INITIALIZED :
             sc = self.start()
-            if sc.isFailure(): return sc
+            if sc.isFailure() or self.ReturnCode != 0:
+                return sc
         return self._evtpro.executeRun(n)
     def executeEvent(self) :
         return self._evtpro.executeEvent()
@@ -957,7 +959,7 @@ class AppMgr(iService) :
         if type(events) is not list : events = (events,)
         for evt in events :
             #--- Create POOL Address from Generic Address
-            gadd = gbl.GenericAddress(0x202, 1, fid, '/Event', 0, evt)
+            gadd = gbl.GenericAddress(0x02, 1, fid, '/Event', 0, evt)
             oadd = makeNullPointer('IOpaqueAddress')
             self._perssvc.createAddress(gadd.svcType(),gadd.clID(),gadd.par(),gadd.ipar(),oadd)
             #--- Clear TES, set root and run all algorithms

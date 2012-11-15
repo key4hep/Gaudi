@@ -1,5 +1,5 @@
 package GaudiSvc
-version v19r1
+version v19r2
 
 branches src cmt doc
 use GaudiKernel *
@@ -47,10 +47,5 @@ macro_append cppflags "" \
          target-linux " -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long " \
         target-darwin "" \
          target-winxp ""
-
-# Boost Spirit (1.48) gives a compilation error (extra ';') when -pedantic is used
-macro_remove cppflags "" \
-     no-hide-warnings "" \
-         target-linux "-pedantic"
 
 apply_pattern QMTest

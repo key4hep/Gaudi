@@ -1,6 +1,16 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+! 2012-11-05 - Marco Clemencic
+ - Ensure that we get the correct return code after a segfault in C++.
+
+================================ Gaudi v23r4 =================================
+! 2012-07-28 - Marco Clemencic
+ - Modified gudirun.py to use a portable check of the number of CPUs.
+
+! 2012-07-27 - Marco Clemencic
+ - Rationalized the permissions of files in the repository.
+
 ================================ Gaudi v23r3 =================================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.

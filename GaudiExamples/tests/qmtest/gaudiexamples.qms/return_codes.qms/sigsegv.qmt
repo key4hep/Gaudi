@@ -1,0 +1,23 @@
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="program"><text>gaudirun.py</text></argument>
+<argument name="options"><text>
+from Gaudi.Configuration import *
+from Configurables import GaudiTesting__SignallingAlg as sigalg
+import signal
+
+app = ApplicationMgr(TopAlg = [sigalg(EventCount=3, Signal=signal.SIGSEGV)],
+                     EvtSel="NONE", EvtMax=5)
+</text></argument>
+<!--
+ Work-around for bug #98693
+   https://savannah.cern.ch/bugs/?98693
+-->
+<argument name="environment"><set>
+<text>DISPLAY=:0.0</text>
+</set></argument>
+<argument name="exit_code"><integer>139</integer></argument>
+<argument name="validator"><text>
+findReferenceBlock("ApplicationMgr      ERROR Application Manager Terminated with error code 139")
+</text></argument>
+</extension>

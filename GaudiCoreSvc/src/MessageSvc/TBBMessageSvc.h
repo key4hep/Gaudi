@@ -3,11 +3,10 @@
 // Include files
 #include "MessageSvc.h"
 
-// Include TBB headers
-#include <tbb/concurrent_queue.h>
-#include <tbb/task.h>
+#include "GaudiKernel/SerialTaskQueue.h"
+
 // just needed for the thread id
-#include <tbb/compat/thread>
+#include <thread>
 
 #include <thread>
 
@@ -32,59 +31,77 @@ public:
   virtual StatusCode finalize();
 
   using MessageSvc::reportMessage;
+
+  /// Implementation of IMessageSvc::reportMessage()
+  virtual void reportMessage(const Message& msg);
+
   /// Implementation of IMessageSvc::reportMessage()
   virtual void reportMessage(const Message& msg, int outputLevel);
+
+  /// Implementation of IMessageSvc::reportMessage()
+  virtual void reportMessage(const StatusCode& code, const std::string& source = "");
 
 protected:
 private:
 
-  /// Simple class to wrap the data needed to report a message.
-  struct MessageType {
-    MessageType(Message _msg, int _level):
-      msg(_msg), level(_level), sender(std::this_thread::get_id()) {}
-    Message msg;
-    int level;
-    std::thread::id sender;
-  };
-  typedef tbb::concurrent_queue<MessageType*> QueueType;
-
-  /// Helper class to report messages.
-  class ReportTask: public tbb::task {
+  // ============================================================================
+  // Helper tasks for message reporting.
+  // ============================================================================
+  /// Common base class for the different reportMessage cases.
+  class MessageTaskCommon: public Gaudi::SerialTaskQueue::WorkItem {
   public:
-    /// Create an instance of the task, bound to the TBBMessageSvc, which is
-    /// used to pop messages from the queue and actually print them.
-    ReportTask(TBBMessageSvc& svc): m_svc(svc) {}
-    tbb::task* execute() {
-      MessageType* msg = NULL;
-      if (m_svc.m_messageQueue.try_pop(msg)) {
-        // the queue, was not empty -> process the message
-        m_svc.MessageSvc::reportMessage(msg->msg, msg->level);
-        delete msg; msg = NULL;
-        // prepare continuation
-        tbb::task* t = new(this->allocate_continuation()) ReportTask(m_svc);
-        t->increment_ref_count();
-        return t;
-      }
-      // if the queue was empty, we stop the continuation
-      return NULL;
+    MessageTaskCommon(TBBMessageSvc& svc):
+      m_svc(svc),
+      m_sender(std::this_thread::get_id()) {}
+  protected:
+    TBBMessageSvc& m_svc;
+    std::thread::id m_sender;
+  };
+
+  /// Specialized class to report a message with explicit output level.
+  class MessageWithLevel: public MessageTaskCommon {
+  public:
+    MessageWithLevel(TBBMessageSvc& svc, Message msg, int level):
+      MessageTaskCommon(svc),
+      m_msg(msg), m_level(level) {}
+    virtual void run() {
+      m_svc.i_reportMessage(m_msg, m_level);
     }
   private:
-    TBBMessageSvc& m_svc;
+    Message m_msg;
+    int m_level;
   };
 
-  friend class ReportTask;
-
-  inline void i_processMessages() {
-    if (m_barrier->ref_count() == 1) { // no running children
-      // start a new child
-      m_barrier->increment_ref_count();
-      tbb::task* t = new(m_barrier->allocate_child()) ReportTask(*this);
-      tbb::task::spawn(*t);
+  /// Specialized class to report a message with implicit output level.
+  class MessageWithoutLevel: public MessageTaskCommon {
+  public:
+    MessageWithoutLevel(TBBMessageSvc& svc, Message msg):
+      MessageTaskCommon(svc),
+      m_msg(msg) {}
+    virtual void run() {
+      const int level = m_svc.outputLevel(m_msg.getSource());
+      m_svc.i_reportMessage(m_msg, level);
     }
-  }
+  private:
+    Message m_msg;
+  };
 
-  tbb::task* m_barrier;
-  QueueType m_messageQueue;
+  /// Specialized class to report a StatusCode message.
+  class StatusCodeMessage: public MessageTaskCommon {
+  public:
+    StatusCodeMessage(TBBMessageSvc& svc, const StatusCode &sc, const std::string& source):
+      MessageTaskCommon(svc),
+      m_sc(sc),
+      m_source(source) {}
+    virtual void run() {
+      m_svc.i_reportMessage(m_sc, m_source);
+    }
+  private:
+    StatusCode m_sc;
+    std::string m_source;
+  };
+
+  Gaudi::SerialTaskQueue m_messageQueue;
 };
 
 #endif // MESSAGESVC_TBBMESSAGESVC_H

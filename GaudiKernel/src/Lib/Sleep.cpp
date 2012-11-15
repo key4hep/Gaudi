@@ -1,6 +1,8 @@
 #include "GaudiKernel/Sleep.h"
 
+#if BOOST_VERSION < 15000
 #include "boost/thread/xtime.hpp"
+#endif
 #include "boost/thread/thread.hpp"
 
 namespace Gaudi {
@@ -8,18 +10,25 @@ namespace Gaudi {
   /// Simple sleep function taken from COOL.
   /// @author Marco Clemencic
   void Sleep(int sec){
+#if BOOST_VERSION >= 15000
+    boost::this_thread::sleep_for(boost::chrono::seconds(sec));
+#else
     using namespace boost;
     xtime t;
     if ( xtime_get(&t,TIME_UTC) == TIME_UTC ) {
       t.sec += sec;
       thread::sleep(t);
     }
-    // TODO: (MCl) do something if cennot get the time.
+    // TODO: (MCl) do something if cannot get the time.
+#endif
   }
 
   /// Small variation on the sleep function for nanosecons sleep.
   /// @author Marco Clemencic
   void NanoSleep(long long nsec){
+#if BOOST_VERSION >= 15000
+    boost::this_thread::sleep_for(boost::chrono::nanoseconds(nsec));
+#else
     using namespace boost;
     xtime t;
     if ( xtime_get(&t,TIME_UTC) == TIME_UTC ) {
@@ -27,7 +36,8 @@ namespace Gaudi {
       t.nsec += nsec % 1000000000;
       thread::sleep(t);
     }
-    // TODO: (MCl) do something if cennot get the time.
+    // TODO: (MCl) do something if cannot get the time.
+#endif
   }
 
 }

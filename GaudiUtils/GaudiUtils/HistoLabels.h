@@ -6,6 +6,8 @@
 #include <string>
 #include <utility>
 
+#include "GaudiKernel/Kernel.h"
+
 namespace AIDA
 {
   class IHistogram1D;
@@ -45,8 +47,8 @@ namespace Gaudi
        *  @retval TRUE  Labels were applied OK
        *  @retval FALSE Labels were NOT applied
        */
-      bool setBinLabels( AIDA::IHistogram1D* hist,
-                         const Labels& labels ) ;
+      GAUDI_API bool setBinLabels( AIDA::IHistogram1D* hist,
+                                   const Labels& labels ) ;
 
       /** @brief Set the Bin labels for a given 1D histogram
        *
@@ -59,8 +61,8 @@ namespace Gaudi
        *  @retval TRUE  Labels were applied OK
        *  @retval FALSE Labels were NOT applied
        */
-      bool setBinLabels( AIDA::IHistogram1D* hist,
-                         const BinLabels& labels ) ;
+      GAUDI_API bool setBinLabels( AIDA::IHistogram1D* hist,
+                                   const BinLabels& labels ) ;
 
       // --------------------------------------------------------------------------
 
@@ -78,8 +80,8 @@ namespace Gaudi
        *  @retval TRUE  Labels were applied OK
        *  @retval FALSE Labels were NOT applied
        */
-      bool setBinLabels( AIDA::IProfile1D* hist,
-                         const Labels& labels ) ;
+      GAUDI_API bool setBinLabels( AIDA::IProfile1D* hist,
+                                   const Labels& labels ) ;
 
       /** @brief Set the Bin labels for a given 1D profile histogram
        *
@@ -92,8 +94,8 @@ namespace Gaudi
        *  @retval TRUE  Labels were applied OK
        *  @retval FALSE Labels were NOT applied
        */
-      bool setBinLabels( AIDA::IProfile1D* hist,
-                         const BinLabels & labels ) ;
+      GAUDI_API bool setBinLabels( AIDA::IProfile1D* hist,
+                                   const BinLabels & labels ) ;
 
       // --------------------------------------------------------------------------
 
@@ -112,9 +114,9 @@ namespace Gaudi
        *  @retval TRUE  Labels were applied OK
        *  @retval FALSE Labels were NOT applied
        */
-      bool setBinLabels( AIDA::IHistogram2D* hist,
-                         const Labels& xlabels,
-                         const Labels& ylabels ) ;
+      GAUDI_API bool setBinLabels( AIDA::IHistogram2D* hist,
+                                   const Labels& xlabels,
+                                   const Labels& ylabels ) ;
 
       /** @brief Set the Bin labels for a given 2D histogram
        *
@@ -128,9 +130,9 @@ namespace Gaudi
        *  @retval TRUE  Labels were applied OK
        *  @retval FALSE Labels were NOT applied
        */
-      bool setBinLabels( AIDA::IHistogram2D* hist,
-                         const BinLabels& xlabels,
-                         const BinLabels& ylabels ) ;
+      GAUDI_API bool setBinLabels( AIDA::IHistogram2D* hist,
+                                   const BinLabels& xlabels,
+                                   const BinLabels& ylabels ) ;
 
       // --------------------------------------------------------------------------
 
@@ -149,9 +151,9 @@ namespace Gaudi
        *  @retval TRUE  Labels were applied OK
        *  @retval FALSE Labels were NOT applied
        */
-      bool setBinLabels( AIDA::IProfile2D* hist,
-                         const Labels& xlabels,
-                         const Labels& ylabels ) ;
+      GAUDI_API bool setBinLabels( AIDA::IProfile2D* hist,
+                                   const Labels& xlabels,
+                                   const Labels& ylabels ) ;
 
       /** @brief Set the Bin labels for a given 2D profile histogram
        *
@@ -165,9 +167,9 @@ namespace Gaudi
        *  @retval TRUE  Labels were applied OK
        *  @retval FALSE Labels were NOT applied
        */
-      bool setBinLabels( AIDA::IProfile2D* hist,
-                         const BinLabels& xlabels,
-                         const BinLabels& ylabels ) ;
+      GAUDI_API bool setBinLabels( AIDA::IProfile2D* hist,
+                                   const BinLabels& xlabels,
+                                   const BinLabels& ylabels ) ;
 
       // --------------------------------------------------------------------------
 
@@ -181,9 +183,9 @@ namespace Gaudi
        *  @retval TRUE  Labels were applied OK
        *  @retval FALSE Labels were NOT applied
        */
-      bool setAxisLabels( AIDA::IHistogram1D* hist,
-                          const std::string & xAxis,
-                          const std::string & yAxis ) ;
+      GAUDI_API bool setAxisLabels( AIDA::IHistogram1D* hist,
+                                    const std::string & xAxis,
+                                    const std::string & yAxis ) ;
 
       /** @brief Set the axis labels for the given 1D profile histogram
        *
@@ -195,9 +197,9 @@ namespace Gaudi
        *  @retval TRUE  Labels were applied OK
        *  @retval FALSE Labels were NOT applied
        */
-      bool setAxisLabels( AIDA::IProfile1D* hist,
-                          const std::string & xAxis,
-                          const std::string & yAxis ) ;
+      GAUDI_API bool setAxisLabels( AIDA::IProfile1D* hist,
+                                    const std::string & xAxis,
+                                    const std::string & yAxis ) ;
 
       // --------------------------------------------------------------------------
 
@@ -211,9 +213,9 @@ namespace Gaudi
        *  @retval TRUE  Labels were applied OK
        *  @retval FALSE Labels were NOT applied
        */
-      bool setAxisLabels( AIDA::IHistogram2D* hist,
-                          const std::string & xAxis,
-                          const std::string & yAxis ) ;
+      GAUDI_API bool setAxisLabels( AIDA::IHistogram2D* hist,
+                                    const std::string & xAxis,
+                                    const std::string & yAxis ) ;
 
       /** @brief Set the axis labels for the given 2D profile histogram
        *
@@ -225,9 +227,9 @@ namespace Gaudi
        *  @retval TRUE  Labels were applied OK
        *  @retval FALSE Labels were NOT applied
        */
-      bool setAxisLabels( AIDA::IProfile2D* hist,
-                          const std::string & xAxis,
-                          const std::string & yAxis ) ;
+      GAUDI_API bool setAxisLabels( AIDA::IProfile2D* hist,
+                                    const std::string & xAxis,
+                                    const std::string & yAxis ) ;
 
       // --------------------------------------------------------------------------
 

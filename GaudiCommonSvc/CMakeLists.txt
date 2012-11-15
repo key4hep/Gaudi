@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiCommonSvc v1r2)
+gaudi_subdir(GaudiCommonSvc v1r3)
 
 gaudi_depends_on_subdirs(GaudiKernel)
 
@@ -8,6 +8,7 @@ find_package(ROOT COMPONENTS Hist RIO)
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(GaudiCommonSvc
-                        *.cpp DataSvc/*.cpp HistogramSvc/*.cpp PersistencySvc/*.cpp
-                        LINK_LIBRARIES GaudiKernel GaudiHive Boost ROOT
-                        INCLUDE_DIRS Boost ROOT AIDA)
+                 src/*.cpp DataSvc/*.cpp HistogramSvc/*.cpp PersistencySvc/*.cpp
+                 LINK_LIBRARIES GaudiKernel GaudiHive Boost ROOT
+                 INCLUDE_DIRS Boost ROOT AIDA)
+

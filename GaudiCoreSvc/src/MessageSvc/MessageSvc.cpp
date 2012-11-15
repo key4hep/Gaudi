@@ -481,10 +481,12 @@ std::string MessageSvc::colTrans(std::string col, int offset) {
 // Purpose: dispatches a message to the relevant streams.
 // ---------------------------------------------------------------------------
 //
-
 void MessageSvc::reportMessage( const Message& msg, int outputLevel )    {
   boost::recursive_mutex::scoped_lock lock(m_reportMutex);
+  i_reportMessage(msg, outputLevel);
+}
 
+void MessageSvc::i_reportMessage( const Message& msg, int outputLevel )    {
   int key = msg.getType();
 
   m_msgCount[key] ++;
@@ -590,34 +592,49 @@ void MessageSvc::reportMessage (const std::string& source,
 // Purpose: finds a message for a given status code and dispatches it.
 // ---------------------------------------------------------------------------
 //
-
-void MessageSvc::reportMessage (const StatusCode& key,
+void MessageSvc::reportMessage (const StatusCode& code,
                                 const std::string& source)
 {
   boost::recursive_mutex::scoped_lock lock(m_messageMapMutex);
+  i_reportMessage(code, source);
+}
 
-  MessageMap::const_iterator first = m_messageMap.lower_bound( key );
+void MessageSvc::i_reportMessage (const StatusCode& code,
+                                  const std::string& source)
+{
+  MessageMap::const_iterator first = m_messageMap.lower_bound( code );
   if ( first != m_messageMap.end() ) {
-    MessageMap::const_iterator last = m_messageMap.upper_bound( key );
+    MessageMap::const_iterator last = m_messageMap.upper_bound( code );
     while( first != last ) {
+      int level = outputLevel(source);
+
       Message msg = (*first).second;
-      msg.setSource( source );
-      std::ostringstream os1;
-      os1 << "Status Code " << key.getCode() << std::ends;
-      Message stat_code1( source, msg.getType(), os1.str() );
-      reportMessage( stat_code1 );
-      reportMessage( msg );
+      msg.setSource(source);
+
+      std::ostringstream os;
+      os << "Status Code " << code.getCode() << std::ends;
+
+      Message scMsg(source, msg.getType(), os.str());
+
+      i_reportMessage(scMsg, level);
+      i_reportMessage(msg, level);
+
       first++;
     }
   }
   else {
-    Message mesg = m_defaultMessage;
-    mesg.setSource( source );
-      std::ostringstream os2;
-    os2 << "Status Code " << key.getCode() << std::ends;
-    Message stat_code2( source,  mesg.getType(), os2.str() );
-    reportMessage( stat_code2 );
-    reportMessage( mesg );
+    int level = outputLevel(source);
+
+    Message msg = m_defaultMessage;
+    msg.setSource(source);
+
+    std::ostringstream os;
+    os << "Status Code " << code.getCode() << std::ends;
+
+    Message scMsg(source,  msg.getType(), os.str());
+
+    i_reportMessage(scMsg, level);
+    i_reportMessage(msg, level);
   }
 }
 

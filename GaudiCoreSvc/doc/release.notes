@@ -4,6 +4,23 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2012-11-07 - Marco Clemencic
+ - Fixes to use the '-pedantic' option.
+
+! 2012-10-26 - Marco Clemencic
+ - Initialize the application return code to 'Success' in
+   ApplicationMgr::configure() instead of EventLoopMgr::nextEvent(int), to
+   avoid that error conditions (like failure to open a file) happening during
+   initialization are discarded.
+
+! 2012-10-21 - Marco Clemencic
+ - Modified TBBMessageSvc to use the new Gaudi::SerialTaskQueue.
+ - Modified MessageSvc to separate the locking from the reportMessage
+   implementation so that TBBMessageSvc can use non-locked code.
+
+! 2012-07-26 - Benedikt Hegner
+ - Fixed compilation with -std=c++0x.
+
 ! 2012-07-02 - Marco Clemencic
  - Added specialization of MessageSvc (TBBMessageSvc) that uses TBB (Intel
    Threading Building Blocks) tasks to print the messages asynchronously.

@@ -1,5 +1,5 @@
 package GaudiPolicy
-version v12r1
+version v12r2
 
 branches cmt doc
 
@@ -694,6 +694,8 @@ macro cppflags         " -fmessage-length=0 -Df2cFortran -fPIC -D_GNU_SOURCE -Dl
       target-vc9       '$(includes) /D "WIN32" /D "_MBCS"  /D "_WINDOWS" /FD /c /nologo /W3 /EHsc /MD /GR /Zm500' \
       target-vc7       '$(includes) /D "WIN32" /D "_MBCS"  /D "_WINDOWS" /FD /c /nologo /W3 /GX /MD /GR /Zm500'
 
+macro_append cppflags "" GAUDI_PEDANTIC&target-gcc "-pedantic -Wno-long-long "
+
 ##############################################################################
 # Intel compiler support
 macro_remove cppflags "" target-icc "-pedantic"
@@ -767,6 +769,10 @@ macro_append cppflags       "" \
       host-darwin&target-i386 " -m32" \
       host-i686&target-x86_64 " -m64" \
       host-i386&target-x86_64 " -m64"
+
+# Add the c++0x options when using the g11max special platform (gcc latest with C++11)
+macro_append cppflags "" \
+        target-g11max " -std=c++0x"
 
 # FIXME: enforce the use of Boost Filesystem V3 to be compatible between 1.44 and 1.48
 macro_append pp_cppflags " -DBOOST_FILESYSTEM_VERSION=3 "
@@ -893,6 +899,9 @@ macro_append componentshr_linkopts "" \
       target-linux                 "-Wl,--no-undefined "
 
 macro_append componentshr_linkopts "" \
+      target-linux                 "-pthread "
+
+macro_append componentshr_linkopts "" \
       target-linux&target-opt&strip-symbols "-Wl,-s "
 
 macro_append componentshr_linkopts "" \
@@ -912,6 +921,9 @@ macro libraryshr_linkopts   "" \
 macro_append libraryshr_linkopts "" \
       target-linux               "-Wl,--no-undefined "
 
+macro_append libraryshr_linkopts "" \
+      target-linux                 "-pthread "
+
 macro_append libraryshr_linkopts   "" \
 	  target-cov  " $(linkdebugflags) "
 
@@ -922,12 +934,14 @@ macro_append libraryshr_linkopts   "" \
       host-i686&target-x86_64 " -m64" \
       host-i386&target-x86_64 " -m64"
 
-# Add 64-bit link options for SLC5. This overrides the default library segment
-# alignment of 1MB
+# Add 64-bit link options for Linux x86_64. This overrides the default library
+# segment alignment of 1MB.
 macro_append componentshr_linkopts       "" \
-      target-gcc&host-slc5&target-x86_64 " -Wl,-z,max-page-size=0x1000 "
+      target-mac               "" \
+      target-gcc&target-x86_64 " -Wl,-z,max-page-size=0x1000 "
 macro_append libraryshr_linkopts         "" \
-      target-gcc&host-slc5&target-x86_64 " -Wl,-z,max-page-size=0x1000 "
+      target-mac               "" \
+      target-gcc&target-x86_64 " -Wl,-z,max-page-size=0x1000 "
 
 macro application_linkopts  "" \
       target-linux                 "-Wl,--export-dynamic "
@@ -980,8 +994,8 @@ cmtpath_pattern \
     macro genconfInstallDir "" \
        <project>_without_installarea&target-unix "$(<package>_root)/python" \
        <project>_without_installarea&target-winxp "$(<package>_root)\python" \
-       <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)$(shared_install_subdir)/python"\
-       <project>_with_installarea&target-winxp '"<path>\$(<project>_installarea_prefix)$(shared_install_subdir)\python"'
+       <project>_with_installarea&target-unix "$(CMTINSTALLAREA)$(shared_install_subdir)/python"\
+       <project>_with_installarea&target-winxp '"$(CMTINSTALLAREA)$(shared_install_subdir)\python"'
 
 make_fragment genconfig -header=genconfig_header
 

@@ -73,10 +73,11 @@ if __name__ == "__main__":
                   options.verbosity)
     
     logfile = newcfg.replace(".py",".log")
-    gaudirun="/afs/cern.ch/sw/lcg/external/Python/2.6.5p2/x86_64-slc5-gcc46-opt/bin/python2.6 /afs/cern.ch/user/d/dpiparo/Gaudi/cmake/env.py -x /afs/cern.ch/user/d/dpiparo/Gaudi/InstallArea/x86_64-slc5-gcc46-opt/GaudiEnvironment.xml gaudirun.py"
-    command = "/usr/bin/time -f %%e -o timing_%s %s %s | tee %s  " %(logfile, gaudirun, newcfg,logfile)
+    gaudirun="`alias gaudirun`"
+    command = "/usr/bin/time -f %%S -o timing_%s %s %s >& %s  " %(logfile, gaudirun, newcfg,logfile)
     if options.bg:
       command+=" &"
+
     print command
     if options.execbrunel :
       import os

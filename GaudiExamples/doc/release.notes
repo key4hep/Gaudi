@@ -1,8 +1,30 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2012-11-07 - Marco Clemencic
+ - Added work-around for bug #98693:
+     inconsistent behavior after segfault in Python (ROOT).
+
+! 2012-11-05 - Marco Clemencic
+ - Test that the return code is correct after a segfault.
+
+! 2012-09-11 - Marco Clemencic
+ - Updated reference file for TBBMessageSvc test.
+
 ! 2012-07-02 - Marco Clemencic
  - Added a test for the new TBBMessageSvc.
+
+============================ GaudiExamples v23r4 =============================
+! 2012-09-11 - Marco Clemencic
+ - Added test for the feature introduced in patch #5518 (histogram for timing
+   measurements).
+
+! 2012-07-27 - Marco Clemencic
+ - Rationalized the permissions of files in the repository.
+
+! 2012-06-28 - Marco Clemencic
+ - Modified a property test to expose bug #95733 and updated reference files
+   after the fix.
 
 ============================ GaudiExamples v23r3 =============================
 ! 2012-06-09 - Marco Clemencic

@@ -25,7 +25,7 @@ GaudiParallelizer::GaudiParallelizer(const std::string& name, ISvcLocator* pSvcL
   declareProperty( "ModeOR"         , m_modeOR         = false );
   declareProperty( "MeasureTime"    , m_measureTime    = false );
   declareProperty( "ReturnOK"       , m_returnOK       = false );
-  declareProperty( "NumberOfThreads", m_nthreads = boost::thread::hardware_concurrency() );
+  declareProperty( "NumberOfThreads", m_nthreads       = 0 );
 
   m_names.declareUpdateHandler (&GaudiParallelizer::membershipHandler, this );
 }
@@ -74,12 +74,16 @@ StatusCode GaudiParallelizer::initialize() {
 
   if ( m_measureTime ) m_timerTool->decreaseIndent();
 
-  // Initialize the thread and task pool
-  if (m_nthreads == 0) m_nthreads = 1;
-  if ( msgLevel(MSG::DEBUG) ) debug() << "Initializing the thread pool with "
-                                      << m_nthreads << " threads" << endmsg;
-  m_thrd_pool = boost::threadpool::pool(m_nthreads);
+  if ( m_nthreads != 0 ) {
+    // Construct the TBB task scheduler with m_nthreads threads
+    tbb::task_scheduler_init init( m_nthreads );
+  }
+  else {
+    m_nthreads = tbb::task_scheduler_init::default_num_threads();
+  }
 
+  if ( msgLevel(MSG::DEBUG) ) debug() << "Number of threads set to be used in the TBB thread pool is "
+                                      << m_nthreads << endmsg;
   return StatusCode::SUCCESS;
 }
 
@@ -89,24 +93,21 @@ StatusCode GaudiParallelizer::initialize() {
 StatusCode GaudiParallelizer::execute() {
   if ( m_measureTime ) m_timerTool->start( m_timer );
 
-  if ( msgLevel(MSG::DEBUG) ) debug() << "==> Execute" << endmsg;
-
-  bool allScheduled = true;
+  if ( msgLevel(MSG::DEBUG) ) debug() << "==> Execute algorithms in parallel" << endmsg;
 
   for (std::vector<AlgorithmEntry>::iterator itE = m_entries.begin(); m_entries.end() != itE; ++itE ) {
     Algorithm* myAlg = itE->algorithm();
     if ( ! myAlg->isEnabled() ) continue;
       if ( ! myAlg->isExecuted() ) {
 
-        allScheduled = m_thrd_pool.schedule( boost::bind(&AlgorithmEntry::run,
-                                                         boost::ref(*itE),
-                                                         boost::ref(*this)) );
-        if ( ! allScheduled ) break;  //== Abort and return bad status
+        m_task_group.run(boost::bind(&AlgorithmEntry::run,
+                                     boost::ref(*itE),
+                                     boost::ref(*this)));
       }
   }
 
-  m_thrd_pool.wait();
-  if ( ! allScheduled ) return StatusCode::FAILURE;
+  m_task_group.wait();
+  if ( msgLevel(MSG::DEBUG) ) debug() << "==> Joining parallel algorithm tasks" << endmsg;
 
   for( std::vector<AlgorithmEntry>::const_iterator it = m_entries.begin(); it != m_entries.end(); ++it ){
     if ( msgLevel(MSG::DEBUG) ) debug() << "Algorithm wrapper " << &*it

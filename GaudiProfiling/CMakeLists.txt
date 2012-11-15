@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiProfiling v1r5)
+gaudi_subdir(GaudiProfiling v1r6)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiAlg)
 
@@ -28,24 +28,38 @@ if(NOT VTune_FOUND)
     set(VTune_FOUND ${VTune_LIBRARIES} CACHE INTERNAL "")
     message(STATUS "Found VTune: ${VTune_LIBRARIES}")
   endif()
+  mark_as_advanced(VTune_INCLUDE_DIRS VTune_LIBRARIES)
 endif()
 #---------------------------------------------------------------------------
 
-#---Libraries---------------------------------------------------------------
+#---Components--------------------------------------------------------------
 include_directories(src/component)
-gaudi_add_module(GaudiProfiling component/*.cpp
-                 LINK_LIBRARIES GaudiKernel z
-                 INCLUDE_DIRS unwind)
-gaudi_add_module(GaudiGoogleProfiling component/google/*.cpp
+
+#-----------------------------------
+# PerfMon profiler
+#-----------------------------------
+if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+  gaudi_add_module(GaudiProfiling src/component/*.cpp
+                   LINK_LIBRARIES GaudiKernel z
+                   INCLUDE_DIRS unwind)
+
+  gaudi_add_python_module(PyCPUFamily src/python/CPUFamily.cpp
+                          LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}
+                          INCLUDE_DIRS PythonLibs)
+
+  gaudi_add_executable(GaudiGenProfilingHtml src/app/pfm_gen_analysis.cpp
+                       LINK_LIBRARIES z GaudiKernel)
+else()
+  message(WARNING "The module GaudiProfiling is disabled (unsupported architecture ${CMAKE_SYSTEM_PROCESSOR}).")
+endif()
+
+
+#-----------------------------------
+# Google PerfTools profiler
+#-----------------------------------
+gaudi_add_module(GaudiGoogleProfiling src/component/google/*.cpp
                  LINK_LIBRARIES GaudiKernel GaudiAlgLib z
                  INCLUDE_DIRS tcmalloc)
-if(VTune_FOUND)
-  gaudi_add_module(IntelProfiler component/intel/*.cpp
-                   LINK_LIBRARIES ${VTune_LIBRARIES} GaudiKernel
-                   INCLUDE_DIRS ${VTune_INCLUDE_DIRS})
-else()
-  message(WARNING "VTune libraries not found, the module IntelProfiler is disabled")
-endif()
 
 # Special handling of unresorlved symbols in GaudiGoogleProfiling.
 # The profilers need to have libtcmalloc.so or libprofiler.so pre-loaded to
@@ -63,13 +77,17 @@ foreach(undef_symbol IsHeapProfilerRunning
 endforeach()
 set_target_properties(GaudiGoogleProfiling PROPERTIES LINK_FLAGS "${gprof_linker_flags}")
 
-gaudi_add_python_module(PyCPUFamily python/CPUFamily.cpp
-                    LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}
-                    INCLUDE_DIRS PythonLibs)
 
-#---Executables-------------------------------------------------------------
-gaudi_add_executable(GaudiGenProfilingHtml app/pfm_gen_analysis.cpp
-                     LINK_LIBRARIES z GaudiKernel)
+#-----------------------------------
+# Intel VTune profiler
+#-----------------------------------
+if(VTune_FOUND)
+  gaudi_add_module(IntelProfiler src/component/intel/*.cpp
+                   LINK_LIBRARIES ${VTune_LIBRARIES} GaudiKernel
+                   INCLUDE_DIRS ${VTune_INCLUDE_DIRS})
+else()
+  message(WARNING "VTune libraries not found, the module IntelProfiler is disabled")
+endif()
 
 #---Installation------------------------------------------------------------
 gaudi_install_python_modules()

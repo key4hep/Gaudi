@@ -1,6 +1,65 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2012-11-05 - Marco Clemencic
+ - Added tests/src/parsers.cpp to the QMTest test suite.
+
+! 2012-10-22 - Marco Clemencic
+ - Fixed SerialTaskQueue_test to compile with LCG g++ 4.6.2 on SLC6.
+
+! 2012-10-21 - Marco Clemencic
+ - Added implementation of a serial task queue: Gaudi::SerialTaskQueue (based on
+   the TBB Pattern 'Local Serializer').
+   Users of SerialTaskQueue must implement the tasks to be executed as
+   specializations of the class Gaudi::SerialTaskQueue::WorkItem, overriding the
+   member function 'run()'.
+   Tasks are enqueued with the method 'add(WorkItem*)' of SerialTaskQueue.
+   The destructor ensures that all the tasks are completed before giving back
+   control.
+
+============================= GaudiKernel v28r3 ==============================
+! 2012-09-13 - Marco Clemencic
+ - Fixed compilation warnings.
+
+! 2012-09-10 - Benedikt Hegner
+ - Added missing copy constructor and assignment operator to 'implementsN<>'
+   base class.
+   They should not be needed because components cannot not really be copied or
+   cloned, but in some cases there are copy constructors and assignment
+   operators defined in the derived classes and in those cases the reference
+   count should be set to 0 in the initialization of a new object and not
+   touched by an assignment.
+
+! 2012-09-05 - Marco Clemencic
+ - Fixed bug #96673: spurious warnings in GenConfUser
+   Modified genconfuser.py to extend the submodules search path for the package
+   being processed.
+
+! 2012-08-25 - Marco Clemencic
+ - Modified genconfuser.py to better discover the existing configurables in the
+   CMake-based build.
+
+! 2012-08-22 - Marco Clemencic
+ - Added option --debug to 'genconfuser.py'.
+
+! 2012-07-27 - Marco Clemencic
+ - Modified ConfigurableDb.py to search for *_merged_confDb.py in all the dirs
+   of PYTHONPATH and not only in the InstallArea.
+   It is needed to be able to run the tests from the build directory (CMake).
+ - Modified the test for bug #87340 to work without the installation of
+   libGaudiKernel.so (CMake).
+ - Rationalized the permissions of files in the repository.
+
+! 2012-07-13 - Marco Clemencic
+ - Fixed a problem with symbols visibility.
+
+! 2012-07-12 - Marco Clemencic
+ - Modified Gaudi::Sleep and Gaudi::NanoSleep to compile with Boost 1.50.
+
+! 2012-06-28 - Marco Clemencic
+ - Fixed bug #95733: GaudiKernel::ToStream truncates numbers < 1e-8
+   Use ios::showpoint instead of ios::fixed.
+
 ============================= GaudiKernel v28r2 ==============================
 ! 2012-06-08 - Marco Clemencic
  - Added CMake configuration files.

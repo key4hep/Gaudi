@@ -33,6 +33,8 @@ DoxyWarnings.log
 .pydevproject
 
 .build/
+build-dir/
+build.*/
 CMakeFiles/
 CTestTestfile.cmake
 CPackSourceConfig.cmake

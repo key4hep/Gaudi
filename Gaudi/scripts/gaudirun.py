@@ -76,24 +76,18 @@ if __name__ == "__main__":
     # Check consistency of options
 
     # Parallel Option ---------------------------------------------------------
-    from commands import getstatusoutput as gso
-    if opts.ncpus != None :
-        # try to find the max number of cpus in system (with builtin modules!)
-        stat, out = gso('cat /proc/cpuinfo | grep processor | wc -l')
-        if stat :
-            # command failed, set a default
-            sys_cpus = 8
-        else :
-            sys_cpus = int(out)
-        if opts.ncpus < -1 :
+    if opts.ncpus:
+        from multiprocessing import cpu_count
+        sys_cpus = cpu_count()
+        if opts.ncpus > sys_cpus:
+            s = "Invalid value : --ncpus : only %i cpus available" % sys_cpus
+            parser.error(s)
+        elif opts.ncpus < -1 :
             s = "Invalid value : --ncpus must be integer >= -1"
-            parser.error( s )
-        if opts.ncpus > sys_cpus :
-            s = "Invalid value : --ncpus : only %i cpus available"%(sys_cpus)
-            parser.error( s )
-        if opts.ncpus == 0 :
-            # revert to serial version, as if the option was not used.
-            opts.ncpus = None
+            parser.error(s)
+    else:
+        # FIXME: is it really needed to set it to None if it is 0 or False?
+        opts.ncpus = None
 
     # configure the logging
     import logging
@@ -201,8 +195,8 @@ if __name__ == "__main__":
         if opts.ncpus:
             logging.warning("--printsequence not supported with --ncpus: ignored")
         elif opts.dry_run:
-            logging.warning("--printsequence not supported with --dry-run: ignored")            
-    
+            logging.warning("--printsequence not supported with --dry-run: ignored")
+
     # re-enable the GaudiPython module
     del sys.modules["GaudiPython"]
 

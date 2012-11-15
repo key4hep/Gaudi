@@ -155,6 +155,7 @@ public:
   // Also some methods seem which are members of the base class do not seem
   // to be found unless forwarding methods are put here ??
   // ==========================================================================
+
   /** @brief Register a data object or container into Gaudi Event Transient Store
    *
    *  @code
@@ -192,6 +193,7 @@ public:
   {
     return GaudiCommon<AlgTool>::put ( svc , object , address , useRootInTES ) ;
   }
+
   /** @brief Register a data object or container into Gaudi Event Transient Store
    *
    *  @see IDataProviderSvc
@@ -226,6 +228,7 @@ public:
   {
     return GaudiCommon<AlgTool>::put ( evtSvc() , object , address , useRootInTES ) ;
   }
+
   /** @brief Templated access to the data in Gaudi Transient Store
    *
    *  Quick and safe access to the data in Gaudi transient store.
@@ -265,6 +268,49 @@ public:
   {
     return GaudiCommon<AlgTool>::get<TYPE> ( svc , location , useRootInTES ) ;
   }
+
+  /** @brief Templated access to the data in Gaudi Transient Store
+   *
+   *  Quick and safe access to the data in Gaudi transient store.
+   *  The method located the data at given address and perform the
+   *  debug printout about located data.
+   * 
+   *  Skips the check on the data as performed by 'get'. No exception
+   *  is thrown if the data is missing.
+   *
+   *  @code
+   *
+   *  MCHits* hits = getIfExists<MCHits>( evtSvc() , "/Event/MC/Hits" );
+   *
+   *  @endcode
+   *
+   *  @attention The method respects the setting of the job option
+   *             RootInTES by prepending the value of this to the
+   *             data location that is passed.
+   *             The default setting for RootInTES is "" so has no effect.
+   *             This behavior can be suppressed by passing the argument
+   *             useRootInTES = false
+   *
+   *  @see IDataProviderSvc
+   *  @see SmartDataPtr
+   *
+   *  @param svc      Pointer to data service (data provider)
+   *  @param location data location/address in Gaudi Transient Store
+   *  @param useRootInTES Flag to turn on(TRUE) off(FALSE) the use of
+   *                      the RootInTES location property
+   *
+   *  @return pointer to the data object. 
+   *  @retval NULL If data does not exist.
+   */
+  template < class TYPE  >
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type
+  getIfExists ( IDataProviderSvc*  svc       ,
+                const std::string& location  ,
+                const bool useRootInTES = true ) const
+  {
+    return GaudiCommon<AlgTool>::getIfExists<TYPE> ( svc , location , useRootInTES ) ;
+  }
+
   /** @brief Templated access to the data from Gaudi Event Transient Store
    *
    *  Quick and safe access to the data in Gaudi transient store.
@@ -297,6 +343,47 @@ public:
   {
     return GaudiCommon<AlgTool>::get<TYPE> ( evtSvc() , location , useRootInTES ) ;
   }
+
+  /** @brief Templated access to the data in Gaudi Transient Store
+   *
+   *  Quick and safe access to the data in Gaudi transient store.
+   *  The method located the data at given address and perform the
+   *  debug printout about located data. 
+   *
+   *  Skips the check on the data as performed by 'get'. No exception
+   *  is thrown if the data is missing.
+   *
+   *  @code
+   *
+   *  MCHits* hits = getIfExists<MCHits>( "/Event/MC/Hits" );
+   *
+   *  @endcode
+   *
+   *  @attention The method respects the setting of the job option
+   *             RootInTES by prepending the value of this to the
+   *             data location that is passed.
+   *             The default setting for RootInTES is "" so has no effect.
+   *             This behavior can be suppressed by passing the argument
+   *             useRootInTES = false
+   *
+   *  @see IDataProviderSvc
+   *  @see SmartDataPtr
+   *
+   *  @param location data location/address in Gaudi Transient Store
+   *  @param useRootInTES Flag to turn on(TRUE) off(FALSE) the use of
+   *                      the RootInTES location property
+   *
+   *  @return pointer to the data object. 
+   *  @retval NULL If data does not exist.
+   */
+  template < class TYPE  >
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type
+  getIfExists ( const std::string& location  ,
+                const bool useRootInTES = true ) const
+  {
+    return GaudiCommon<AlgTool>::getIfExists<TYPE> ( evtSvc() , location , useRootInTES ) ;
+  }
+
   /** @brief Templated access to the detector data from the
    *         Gaudi Detector Transient Store
    *
@@ -321,6 +408,37 @@ public:
   {
     return GaudiCommon<AlgTool>::get<TYPE> ( svc , location , false ) ;
   }
+
+  /** @brief Templated access to the detector data from the
+   *         Gaudi Detector Transient Store
+   *
+   *  Quick and safe access to the detector data in Gaudi transient store.
+   *
+   *  The method located the detector at the given address and perform the
+   *  debug printout about located detector.
+   * 
+   *  Skips the check on the data as performed by 'get'. No exception
+   *  is thrown if the data is missing.
+   *
+   *  @code
+   *
+   *  MyDet* mdet = getDetIfExists<MyDet>( detSvc() , "/dd/Structure/LHCb/MyDet" );
+   *
+   *  @endcode
+   *
+   *  @param svc       Pointer to data service (data provider)
+   *  @param location  Detector location/address in Gaudi Transient Store
+   *  @return          Pointer to the detector object
+   *  @retval NULL If the detector object does not exist.
+   */
+  template < class TYPE  >
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type
+  getDetIfExists ( IDataProviderSvc*  svc       ,
+                   const std::string& location  ) const
+  {
+    return GaudiCommon<AlgTool>::getIfExists<TYPE> ( svc , location , false ) ;
+  }
+
   /** @brief Templated access to the detector data from the
    *         Gaudi Detector Transient Store
    *
@@ -339,10 +457,39 @@ public:
    *  @return          Pointer to the detector object
    */
   template < class TYPE  >
-  inline TYPE* getDet ( const std::string& location   ) const
+  inline TYPE* getDet ( const std::string& location ) const
   {
     return GaudiCommon<AlgTool>::get<TYPE> ( detSvc() , location , false ) ;
   }
+
+  /** @brief Templated access to the detector data from the
+   *         Gaudi Detector Transient Store
+   *
+   *  Quick and safe access to the detector data in Gaudi transient store.
+   *
+   *  The method located the detector at the given address and perform the
+   *  debug printout about located detector.
+   * 
+   *  Skips the check on the data as performed by 'get'. No exception
+   *  is thrown if the data is missing.
+   *
+   *  @code
+   *
+   *  MyDet* mdet = getDetIfExists<MyDet>( "/dd/Structure/LHCb/MyDet" );
+   *
+   *  @endcode
+   *
+   *  @param location  Detector location/address in Gaudi Transient Store
+   *  @return          Pointer to the detector object
+   *  @retval NULL If the detector object does not exist.
+   */
+  template < class TYPE  >
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type
+  getDetIfExists ( const std::string& location ) const
+  {
+    return GaudiCommon<AlgTool>::getIfExists<TYPE> ( detSvc() , location , false ) ;
+  }
+
   /** @brief Check the existence of a data object or container
    *         in the Gaudi Transient Event Store
    *
@@ -375,6 +522,7 @@ public:
   {
     return GaudiCommon<AlgTool>::exist<TYPE> ( svc , location , useRootInTES ) ;
   }
+
   /** @brief Check the existence of a data object or container
    *         in the Gaudi Transient Event Store
    *
@@ -403,6 +551,7 @@ public:
   {
     return GaudiCommon<AlgTool>::exist<TYPE> ( evtSvc() , location , useRootInTES ) ;
   }
+
   /** @brief Check the existence of detector objects in the Gaudi
    *         Transient Detector Store
    *
@@ -425,6 +574,7 @@ public:
   {
     return GaudiCommon<AlgTool>::exist<TYPE> ( svc , location , false ) ;
   }
+
   /** @brief Check the existence of detector objects in the Gaudi
    *         Transient Detector Store
    *
@@ -445,6 +595,7 @@ public:
   {
     return GaudiCommon<AlgTool>::exist<TYPE> ( detSvc() , location , false ) ;
   }
+
   /** @brief Get the existing data object from Gaudi Event Transient store.
    *         Alternatively, create new object and register it in TES
    *         and return if object does not exist.
@@ -479,6 +630,7 @@ public:
   {
     return GaudiCommon<AlgTool>::getOrCreate<TYPE,TYPE2> ( svc , location , useRootInTES ) ;
   }
+
   /** @brief Get the existing data object from Gaudi Event Transient store.
    *         Alternatively, create new object and register it in TES
    *         and return if object does not exist.
@@ -511,6 +663,7 @@ public:
   {
     return GaudiCommon<AlgTool>::getOrCreate<TYPE,TYPE2> ( evtSvc() , location , useRootInTES ) ;
   }
+
   // ==========================================================================
 public:
   // ==========================================================================

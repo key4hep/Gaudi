@@ -44,6 +44,7 @@ public:
 private:
   void i_beforeInitialize( INamedInterface* alg );
   void i_afterInitialize( INamedInterface* alg );
+  void i_beforeFinalize( INamedInterface* alg );
   void i_beforeExecute( INamedInterface* alg );
   void i_afterExecute( INamedInterface* alg);
 
@@ -74,6 +75,7 @@ public:
     , m_inEvent    ( false )
     , m_goodForDOD ( false )
     , m_mapUser    (       )
+    , m_histoSaved ( false )
   {
     declareProperty ( "OptimizedForDOD" , m_goodForDOD ) ;
   } ;
@@ -107,6 +109,10 @@ private:
   //
   typedef GaudiUtils::HashMap<std::string,int> MapUser ;
   MapUser              m_mapUser ; ///< map used to record user timing events
+
+  // Whether the timing has been saved already
+  bool                 m_histoSaved;
+
 
 } ;
 // ============================================================================
@@ -206,6 +212,7 @@ void TimingAuditor::before(StandardEventType evt, INamedInterface *alg)
   switch (evt) {
   case IAuditor::Initialize : i_beforeInitialize( alg ); break;
   case IAuditor::Execute    : i_beforeExecute( alg );    break;
+  case IAuditor::Finalize   : i_beforeFinalize( alg );   break;
   default: break;
   }
 }
@@ -218,6 +225,16 @@ void TimingAuditor::after(StandardEventType evt, INamedInterface *alg, const Sta
   default: break;
   }
 }
+// ============================================================================
+void TimingAuditor::i_beforeFinalize( INamedInterface* /*alg*/ )
+{
+  if (!m_histoSaved)
+  {
+    m_timer->saveHistograms();
+    m_histoSaved = true;
+  }
+}
+
 // ============================================================================
 void TimingAuditor::i_beforeInitialize( INamedInterface* alg )
 {

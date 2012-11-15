@@ -139,7 +139,7 @@ ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
   m_propertyMgr->declareProperty("StalledEventMonitoring", m_stalledEventMonitoring = false,
       "Flag to enable/disable the monitoring and reporting of stalled events");
 
-  m_propertyMgr->declareProperty("ReturnCode", m_returnCode = 0,
+  m_propertyMgr->declareProperty("ReturnCode", m_returnCode = Gaudi::ReturnCode::Success,
       "Return code of the application. Set internally in case of error conditions.");
 
   // Add action handlers to the appropriate properties
@@ -320,6 +320,9 @@ StatusCode ApplicationMgr::configure() {
   }
   m_targetState = Gaudi::StateMachine::CONFIGURED;
 
+  // Reset application return code.
+  m_returnCode = Gaudi::ReturnCode::Success;
+
   StatusCode  sc;
   sc = i_startup();
   if ( !sc.isSuccess() )    {
@@ -442,7 +445,7 @@ StatusCode ApplicationMgr::configure() {
   }
 
   //--------------------------------------------------------------------------
-  // Deal with the services explicitely declared by the user.
+  // Deal with the services explicitly declared by the user.
   sc = decodeExtSvcNameList();
   if ( sc.isFailure( ) ) {
     log << MSG::ERROR << "Failure during external service association" << endmsg;

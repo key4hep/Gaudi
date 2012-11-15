@@ -58,18 +58,18 @@ void GaudiHistos<PBASE>::initGaudiHistosConstructor()
   this->declareProperty
     ( "HistoProduce"          ,
       m_produceHistos = true  ,
-      "Swith on/off the production of histograms "   ) ;
+      "Switch on/off the production of histograms" ) ;
   // print the histograms at finalization
   this->declareProperty
     ( "HistoPrint"            ,
       m_histosPrint   = false ,
-      "Switch on/off the printout of histograms at finalization"    )
+      "Switch on/off the printout of histograms at finalization" )
     -> declareUpdateHandler ( &GaudiHistos<PBASE>::printHistoHandler, this ) ;
   // check for NaN/Finite
   this->declareProperty
     ( "HistoCheckForNaN"      ,
       m_checkForNaN   = true  ,
-      "Swicth on/off the checks for NaN and Infinity for histogram fill" ) ;
+      "Switch on/off the checks for NaN and Infinity for histogram fill" ) ;
   // for HBOOK persistency, 'true' can be useful
   this->declareProperty
     ( "HistoSplitDir"         ,
@@ -104,7 +104,7 @@ void GaudiHistos<PBASE>::initGaudiHistosConstructor()
     ( "ShortFormatFor1DHistoTable" ,
       m_histo1DTableFormatShort   = " | %1$-25.25s %2%"  ,
       "Format string for printout of 1D histograms"      ) ;
-  // the header for 1D-histogram tabkle
+  // the header for 1D-histogram table
   this->declareProperty
     ( "HeaderFor1DHistoTable" ,
       m_histo1DTableHeader   = Gaudi::Utils::Histos::Formats::header () ,

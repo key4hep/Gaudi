@@ -1,6 +1,54 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2012-10-28 - Marco Clemencic
+ - Fixed a missing space in ICC command line after the latest change.
+ - Fixed compilation on MacOSX.
+
+! 2012-10-10 - Marco Clemencic
+ - Added -Wno-long-long when using -pedantic to avoid non-interesting warnings.
+
+! 2012-10-05 - Marco Clemencic
+ - Set the -pedantic flag for the tag GAUDI_PEDANTIC (and target-gcc).
+
+! 2012-10-03 - Charles Leggett
+ - set max-page-size for all 64 bit gcc targets
+ M       cmt/requirements
+
+============================= GaudiPolicy v12r2 ==============================
+! 2012-09-13 - Marco Clemencic
+ - Removed the hack used to avoid the AFS stress caused by LCGCMT 64.
+
+! 2012-09-11 - Marco Clemencic
+ - Minor improvements to GaudiTest.py:
+   - hide Eclipse launch configurations (in a .eclipse directory)
+   - create the directory $QMTEST_TMPDIR if missing
+
+! 2012-09-04 - Marco Clemencic
+ - Fixed a problem with the installation of configurables modules when using the
+   CMTUSERCONTEXT.
+ - Fixed a bug in merge_files.py that caused a failure when the output file name
+   did not have the directory part (i.e. plain filename).
+
+! 2012-07-30 - Marco Clemencic
+ - Override LCG_releases and LCG_external to avoid stress on AFS when using
+   LCGCMT >= 64.
+   *** The hack must be removed ASAP ***
+
+! 2012-07-27 - Marco Clemencic
+ - Rationalized the permissions of files in the repository.
+
+! 2012-07-26 - Marco Clemencic
+ - Added the possibility to compile with the option -std=c+=0x, for example in
+   the LCG nightly platform *-g11max-*.
+
+! 2012-07-20 - Marco Clemencic
+ - Modified the script createProjVersHeader.py to modify the destination file
+   only if there are changes (prevents useless recompilation).
+
+! 2012-06-29 - Marco Clemencic
+ - Fixed compilation problem with Boost 1.49 (foreseen for LCGCMT 65).
+
 ============================= GaudiPolicy v12r1 ==============================
 ! 2012-06-19 - Marco Clemencic
  - Small hack in GaudiTest.py to prevent spurious escape sequences in teh output

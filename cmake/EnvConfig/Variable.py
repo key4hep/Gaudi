@@ -5,9 +5,179 @@ Created on Jun 27, 2011
 '''
 import re
 import os
-import platform
+from os.path import normpath
+from zipfile import is_zipfile
 
-class List():
+class VariableProcessor(object):
+    '''
+    Base class for the objects used to process the variables.
+    '''
+    def __init__(self, env):
+        '''
+        @param env: dictionary with the reference environment to use
+        '''
+        if env is None:
+            env = {}
+        self._env = env
+
+    def isTarget(self, variable):
+        '''
+        Return True if this processor can operate on the given variable.
+        '''
+        return True
+
+    def process(self, variable, value):
+        '''
+        Process the variable.
+
+        @param value: the content of the variable to be processed
+        @return: the processed value
+        '''
+        # by default do nothing
+        return value
+
+    def __call__(self, variable, value):
+        return self.process(variable, value)
+
+class ListProcessor(VariableProcessor):
+    '''
+    Base class for processors operating only on lists.
+    '''
+    def isTarget(self, variable):
+        '''
+        Return True if this variable is a list.
+        '''
+        return isinstance(variable, List)
+
+class ScalarProcessor(VariableProcessor):
+    '''
+    Base class for processors operating only on scalars.
+    '''
+    def isTarget(self, variable):
+        '''
+        Return True if this variable is a scalar.
+        '''
+        return isinstance(variable, Scalar)
+
+class EnvExpander(VariableProcessor):
+    '''
+    Variable processor to expand the reference to environment variables.
+    '''
+    def __init__(self, env):
+        super(EnvExpander, self).__init__(env)
+        self._exp = re.compile(r"\$([A-Za-z_][A-Za-z0-9_]*)|\$\(([A-Za-z_][A-Za-z0-9_]*)\)|\$\{([A-Za-z_][A-Za-z0-9_]*)\}|\$\{(\.)\}")
+
+    def isTarget(self, variable):
+        return (super(EnvExpander, self).isTarget(variable)
+                and variable.expandVars)
+
+    def _repl(self, value):
+        m = self._exp.search(value)
+        if m:
+            value = (value[:m.start()]
+                     + str(self._env[filter(None, m.groups())[0]])
+                     + value[m.end():])
+            return self._repl(value)
+        else:
+            return value
+
+    def process(self, variable, value):
+        if isinstance(value, str):
+            value = self._repl(value)
+        else:
+            # expand only in the elements that are new
+            old_values = set(variable.val)
+            value = map(lambda v: v if v in old_values else self._repl(v), value)
+        return value
+
+class PathNormalizer(VariableProcessor):
+    '''
+    Call os.path.normpath for all the entries of the variable.
+    '''
+    def process(self, variable, value):
+        if isinstance(value, str):
+            if '://' not in value: # this might be a URL
+                value = normpath(value)
+        else:
+            value = [normpath(v) for v in value if v]
+        return value
+
+class DuplicatesRemover(ListProcessor):
+    '''
+    Remove duplicates entries from lists.
+    '''
+    def process(self, variable, value):
+        val =  []
+        for s in value:
+            if s not in val:
+                val.append(s)
+        return val
+
+class EmptyDirsRemover(ListProcessor):
+    '''
+    Remove empty or not existing directories from lists.
+    '''
+    def process(self, variable, value):
+        from os.path import isdir
+        from os import listdir
+        return [s for s in value if s.endswith('.zip') or (isdir(s) and listdir(s))]
+
+class UsePythonZip(ListProcessor):
+    '''
+    Use .zip files instead of regular directories in PYTHONPATH when possible.
+    '''
+    def isTarget(self, variable):
+        return (super(UsePythonZip, self).isTarget(variable)
+                and variable.varName == 'PYTHONPATH')
+
+    def process(self, variable, value):
+        val = []
+        for s in value:
+            z = s + '.zip'
+            if is_zipfile(z):
+                val.append(z)
+            else:
+                val.append(s)
+        return val
+
+# Default (minimal) set of processors.
+processors = [ EnvExpander, PathNormalizer, DuplicatesRemover,
+               # special processors
+               EmptyDirsRemover, UsePythonZip
+               ]
+
+# FIXME: these are back-ward compatibility hacks: we need a proper way to add/remove processors
+if ('no-strip-path' in os.environ.get('CMTEXTRATAGS', '')
+    or 'GAUDI_NO_STRIP_PATH' in os.environ
+    or 'LB_NO_STRIP_PATH' in os.environ):
+    processors.remove(EmptyDirsRemover)
+
+if 'no-pyzip' in os.environ.get('CMTEXTRATAGS', ''):
+    processors.remove(UsePythonZip)
+
+class VariableBase(object):
+    '''
+    Base class for the classes used to manipulate the environment.
+    '''
+
+    def __init__(self, name, local=False, report=None):
+        self.report = report
+        self.varName = name
+        self.local = local
+        self.expandVars = True
+
+    def process(self, value, env):
+        '''
+        Call all the processors defined in the processors list on 'value'.
+
+        @return: the processed value
+        '''
+        for p in [c(env) for c in processors]:
+            if p.isTarget(self):
+                value = p(self, value)
+        return value
+
+class List(VariableBase):
     '''
     Class for manipulating with environment lists.
 
@@ -16,46 +186,35 @@ class List():
     '''
 
     def __init__(self, name, local=False, report=None):
-        self.report = report
-        self.varName = name
-        self.local = local
+        super(List, self).__init__(name, local, report)
         self.val = []
 
     def name(self):
         '''Returns the name of the List.'''
         return self.varName
 
-
-    def set(self, value, separator = ':', environment={}, resolve=True):
+    def set(self, value, separator=':', environment=None):
         '''Sets the value of the List. Any previous value is overwritten.'''
-        if resolve:
-            value = self.resolveReferences(value, environment, separator)
-        else:
+        if isinstance(value, str):
             value = value.split(separator)
-        self.val = filter(None, value)
+        self.val = self.process(value, environment)
 
-    def unset(self, value, separator = ':', environment={}):
+    def unset(self, value, separator=':', environment=None):# pylint: disable=W0613
         '''Sets the value of the List to empty. Any previous value is overwritten.'''
-        self.val = ''
+        self.val = []
 
-
-    def value(self, asString = False, separator = ':'):
+    def value(self, asString=False, separator=':'):
         '''Returns values of the List. Either as a list or string with desired separator.'''
         if asString:
-            stri = self._concatenate(separator)
-            return stri.replace(']', ':')
+            return separator.join(self.val)
         else:
-            lis = self.val[:]
-            if platform.system() != 'Linux':
-                for item in lis:
-                    item.replace(']',':')
-            return lis
+            # clone the list
+            return list(self.val)
 
-
-    def remove_regexp(self,value,separator = ':'):
+    def remove_regexp(self, value, separator = ':'):
         self.remove(value, separator, True)
 
-    def remove(self, value, separator = ':', regexp=False):
+    def remove(self, value, separator=':', regexp=False):
         '''Removes value(s) from List. If value is not found, removal is canceled.'''
         if regexp:
             value = self.search(value, True)
@@ -71,45 +230,21 @@ class List():
                 self.val.remove(val)
 
 
-    def append(self, value, separator = ':', environment={}, warningOn=True):
+    def append(self, value, separator=':', environment=None):
         '''Adds value(s) at the end of the list.'''
-
-        value = self.resolveReferences(value, environment, separator)
-
-        if type(value) is str:
+        if isinstance(value, str):
             value = value.split(separator)
+        self.val = self.process(self.val + value, environment)
 
-        if warningOn:
-            notPresent = lambda v: v not in self.val
-        else:
-            def notPresent(v):
-                '''helper function to report duplicated entries'''
-                if v not in self.val:
-                    return True
-                else:
-                    self.report.addWarn('Var: "'+self.varName+'" value: "' + v + '". Addition canceled because of duplicate entry.')
-                    return False
-        # add to the end of self.val the values not already there
-        self.val += filter(notPresent, value)
-
-    def prepend(self, value, separator = ':', environment={}):
-        '''Adds value(s) at the beginning of the list.'''
-        '''resolve references and duplications'''
-        value = self.resolveReferences(value, environment, separator)
-
-        if type(value) is str:
+    def prepend(self, value, separator=':', environment=None):
+        '''Adds value(s) at the beginning of the list.
+        resolve references and duplications'''
+        if isinstance(value, str):
             value = value.split(separator)
-
-        new_value = []
-        for v in value + self.val:
-            if v not in new_value:
-                new_value.append(v)
-            else:
-                self.report.addWarn('Var: "' + self.varName + '" value: "' + v + '". Addition canceled because of duplicate entry.')
-        self.val = new_value
+        self.val = self.process(value + self.val, environment)
 
     def search(self, expr, regExp):
-        '''Searches in List`s values for a match
+        '''Searches in List's values for a match
 
         Use string value or set regExp to True.
         In the first case search is done only for an exact match for one of List`s value ('^' and '$' added).
@@ -124,78 +259,6 @@ class List():
 
         return res
 
-
-    def repl(self, s, d):
-        v = re.compile(r"\$([A-Za-z_][A-Za-z0-9_]*)|\$\(([A-Za-z_][A-Za-z0-9_]*)\)|\$\{([A-Za-z_][A-Za-z0-9_]*)\}")
-        m = v.search(s)
-        if m:
-            s = s[:m.start()] + str(d[filter(None,m.groups())[0]]) + s[m.end():]
-            return self.repl(s,d)
-        else:
-            return s
-
-
-    def resolveReferences(self, value, environment, separator = ':'):
-        '''Resolves references to Lists'''
-        if isinstance(value, list):
-            str = ''
-            for val in value:
-                str = val + '' + separator
-            value = str[:len(str)-1]
-
-        value = self.repl(value, environment)
-        value = value.split(separator)
-
-        value = self._remDuplicates(value)
-        value = self._changeSlashes(value)
-        return value
-
-
-    def _changeSlashes(self, value):
-        '''Changes slashes depending on operating system.'''
-        i = 0
-        while i < len(value):
-            if len(value[i]) == 0:
-                del value[i]
-                continue
-            if value[i][0] == '[':
-                if platform.system() != 'Linux':
-                    value[i] = value[i][1:]
-                else:
-                    value[i] = value[i][3:]
-            value[i] = os.path.normpath(value[i])
-            i+=1
-        return value
-
-
-    def _concatenate(self, separator):
-        '''Returns a List string with separator "separator" from the values list'''
-
-        stri = ""
-        for it in self.val:
-            stri += it + separator
-        stri = stri[0:len(stri)-1]
-        return stri
-
-
-    def _remDuplicates(self, seq, idfun=None):
-        '''removes duplicated values from list'''
-        if idfun is None:
-            def idfun(x): return x
-        seen = {}
-        result = []
-        for item in seq:
-            marker = idfun(item)
-
-            if marker in seen:
-                self.report.addWarn('Var: "'+self.varName+'" value: "' + marker + '". Addition canceled because of duplicate entry.')
-                continue
-            seen[marker] = 1
-            result.append(item)
-        return result
-
-
-
     def __getitem__(self, key):
         return self.val[key]
 
@@ -206,7 +269,7 @@ class List():
             self.val.insert(key, value)
 
     def __delitem__(self, key):
-        self.removeVal(self.val[key])
+        self.remove(self.val[key])
 
     def __iter__(self):
         for i in self.val:
@@ -219,97 +282,60 @@ class List():
         return len(self.val)
 
     def __str__(self):
-        return self._concatenate(':')
+        return ':'.join(self.val)
 
 
-class Scalar():
+class Scalar(VariableBase):
     '''Class for manipulating with environment scalars.'''
 
-    def __init__(self, name, local=False, report = None):
-        self.report = report
-        self.name = name
+    def __init__(self, name, local=False, report=None):
+        super(Scalar, self).__init__(name, local, report)
         self.val = ''
-
-        self.local = local
 
     def name(self):
         '''Returns the name of the scalar.'''
-        return self.name
+        return self.varName
 
-    def set(self, value, separator = ':', environment={}, resolve = True):
+    def set(self, value, separator=':', environment=None):# pylint: disable=W0613
         '''Sets the value of the scalar. Any previous value is overwritten.'''
-        if resolve:
-            value = self.resolveReferences(value, environment)
-        self.val = value
-        self._changeSlashes()
-        if self.val == '.':
-            self.val = ""
+        self.val = self.process(value, environment)
 
+    def unset(self, value, separator=':', environment=None):# pylint: disable=W0613
+        '''Sets the value of the variable to empty. Any previous value is overwritten.'''
+        self.val = ''
 
-    def value(self, asString = False, separator = ':'):
+    def value(self, asString=False, separator=':'):# pylint: disable=W0613
         '''Returns values of the scalar.'''
         return self.val
 
-    def remove_regexp(self,value,separator = ':'):
+    def remove_regexp(self, value, separator=':'):
         self.remove(value, separator, True)
 
-    def remove(self, value, separator = ':', regexp=True):
+    def remove(self, value, separator=':', regexp=True):# pylint: disable=W0613
         '''Removes value(s) from the scalar. If value is not found, removal is canceled.'''
         value = self.search(value)
         for val in value:
-            self.val = self.val.replace(val,'')
+            self.val = self.val.replace(val, '')
 
-    def append(self,value, separator = ':', environment={}, warningOn=True):
+    def append(self, value, separator=':', environment=None):# pylint: disable=W0613
         '''Adds value(s) at the end of the scalar.'''
-        value = self.resolveReferences(value, environment)
-        self.val = self.val + value
-        self._changeSlashes()
+        self.val += self.process(value, environment)
 
-
-    def prepend(self,value,action='cancel', separator = ':', environment={}):
+    def prepend(self, value, separator=':', environment=None):# pylint: disable=W0613
         '''Adds value(s) at the beginning of the scalar.'''
-        value = self.resolveReferences(value, environment)
-        self.val = value + self.val
-        self._changeSlashes()
-
-
-    def repl(self, s, d):
-        v = re.compile(r"\$([A-Za-z_][A-Za-z0-9_]*)|\$\(([A-Za-z_][A-Za-z0-9_]*)\)|\$\{([A-Za-z_][A-Za-z0-9_]*)\}")
-        m = v.search(s)
-        if m:
-            s = s[:m.start()] + str(d[filter(None,m.groups())[0]]) + s[m.end():]
-            return self.repl(s,d)
-        else:
-            return s
-
-
-    def resolveReferences(self, value, environment):
-        '''Resolve references inside the scalar.'''
-
-        value = self.repl(value, environment)
-        return value
+        self.val = self.process(value, environment) + self.val
 
     def search(self, expr):
         '''Searches in scalar`s values for a match'''
-        return re.findall(expr,self.val)
-
-
-    def _changeSlashes(self):
-        '''Changes slashes depending on operating system.'''
-        if self.val == '[':
-            if platform.system() != 'Linux':
-                self.val = self.val[1:]
-            else:
-                self.val = self.val[3:]
-        self.val = os.path.normpath(self.val)
-
+        return re.findall(expr, self.val)
 
     def __str__(self):
         return self.val
 
-class EnvironmentError(Exception):
+class EnvError(Exception):
     '''Class which defines errors for locals operations.'''
     def __init__(self, value, code):
+        super(EnvError, self).__init__()
         self.val = value
         self.code = code
     def __str__(self):

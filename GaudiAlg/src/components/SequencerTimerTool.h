@@ -4,7 +4,7 @@
 
 // Include files
 // from Gaudi
-#include "GaudiAlg/GaudiTool.h"
+#include "GaudiAlg/GaudiHistoTool.h"
 #include "GaudiAlg/ISequencerTimerTool.h"
 
 // local
@@ -24,7 +24,7 @@ TimingAuditor().TIMER.NameSize = 50 \endverbatim
  *  @date   2004-05-19
  */
 
-class SequencerTimerTool : public GaudiTool, virtual public ISequencerTimerTool{
+class SequencerTimerTool : public GaudiHistoTool, virtual public ISequencerTimerTool{
 public:
 
  /// Standard constructor
@@ -84,6 +84,9 @@ public:
 
   /** returns the flag telling that global timing is wanted **/
   virtual bool globalTiming() { return m_globalTiming; };
+
+  /** prepares and saves the timing histograms **/
+  virtual void saveHistograms();
 
 protected:
 

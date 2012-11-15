@@ -1,9 +1,9 @@
-gaudi_subdir(Gaudi v23r3)
+gaudi_subdir(Gaudi v23r4)
 
 gaudi_depends_on_subdirs(GaudiKernel)
 
 #---Executables-------------------------------------------------------------
-gaudi_add_executable(Gaudi main.cpp LINK_LIBRARIES GaudiKernel)
+gaudi_add_executable(Gaudi src/main.cpp LINK_LIBRARIES GaudiKernel)
 
 #---Installation------------------------------------------------------------
 gaudi_install_python_modules()

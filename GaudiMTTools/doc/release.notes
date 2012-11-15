@@ -4,6 +4,10 @@
 ! Purpose     : The package for Gaudi multithreading tools and machinery
 !-----------------------------------------------------------------------------
 
+! 2012-07-30 - Illya Shapoval
+ - The GaudiParallelizer algorithm is ported to the TBB library (the one
+   replaced is ThreadPool).
+
 ! 2012-07-13 - Marco Clemencic
  - Fixed compilation with Boost 1.50.
 
