@@ -1,6 +1,10 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2012-11-15 - Marco Clemencic
+ - Added a test for CorruptedInputFile exit code that uses a real corrupted
+   file.
+
 ! 2012-11-12 - Marco Clemencic
  - Added a test algorithm to fire custom incidents.
  - Test the return code in case of incident CorruptedInputFile.
