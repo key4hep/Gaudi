@@ -11,7 +11,7 @@ from Configurables import GaudiExamplesCommonConf, CPUCruncher,HiveEventLoopMgr
 NUMBEROFEVENTS = 10
 NUMBEROFEVENTSINFLIGHT = 1
 NUMBEROFALGOSINFLIGHT = 1000
-NUMBEROFTHREADS = 4
+NUMBEROFTHREADS = 1
 CLONEALGOS = False
 DUMPQUEUES = False
 VERBOSITY = 5
@@ -33,6 +33,9 @@ def load_athena_scenario(filename):
   all_outputs = set()
   all_inputs  = set()
   for algo in workflow["algorithms"]:
+    # Correct in presence of list wi
+    for starputs in ("inputs","outputs"):
+      if algo[starputs] == ['']: algo[starputs] = []        
     new_algo = CPUCruncher(algo["name"],
                            avgRuntime=float(algo["runtimes_wall"][1]/1000000.),
                            Inputs = algo["inputs"],
