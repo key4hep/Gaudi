@@ -100,10 +100,17 @@ macro(gaudi_project project version)
     message(FATAL_ERROR "Wrong arguments.")
   endif()
 
-  string(REGEX MATCH "v?([0-9]+)[r.]([0-9]+)([p.]([0-9]+))?" _version ${version})
-  set(CMAKE_PROJECT_VERSION_MAJOR ${CMAKE_MATCH_1} CACHE INTERNAL "Major version of project")
-  set(CMAKE_PROJECT_VERSION_MINOR ${CMAKE_MATCH_2} CACHE INTERNAL "Minor version of project")
-  set(CMAKE_PROJECT_VERSION_PATCH ${CMAKE_MATCH_4} CACHE INTERNAL "Patch version of project")
+  if(NOT CMAKE_PROJECT_VERSION STREQUAL HEAD)
+    string(REGEX MATCH "v?([0-9]+)[r.]([0-9]+)([p.]([0-9]+))?" _version ${CMAKE_PROJECT_VERSION})
+    set(CMAKE_PROJECT_VERSION_MAJOR ${CMAKE_MATCH_1} CACHE INTERNAL "Major version of project")
+    set(CMAKE_PROJECT_VERSION_MINOR ${CMAKE_MATCH_2} CACHE INTERNAL "Minor version of project")
+    set(CMAKE_PROJECT_VERSION_PATCH ${CMAKE_MATCH_4} CACHE INTERNAL "Patch version of project")
+  else()
+    # 'HEAD' version is special
+    set(CMAKE_PROJECT_VERSION_MAJOR 999)
+    set(CMAKE_PROJECT_VERSION_MINOR 999)
+    set(CMAKE_PROJECT_VERSION_PATCH 0)
+  endif()
 
   #--- Project Options and Global settings----------------------------------------------------------
   option(BUILD_SHARED_LIBS "Set to OFF to build static libraries." ON)
@@ -231,7 +238,7 @@ macro(gaudi_project project version)
   string(TOUPPER ${project} _proj)
   execute_process(COMMAND
                   ${versheader_cmd} --quiet
-                     ${project} ${version} ${CMAKE_BINARY_DIR}/include/${_proj}_VERSION.h)
+                     ${project} ${CMAKE_PROJECT_VERSION} ${CMAKE_BINARY_DIR}/include/${_proj}_VERSION.h)
   install(FILES ${CMAKE_BINARY_DIR}/include/${_proj}_VERSION.h DESTINATION include)
   # Add generated headers to the include path.
   include_directories(${CMAKE_BINARY_DIR}/include)
@@ -449,9 +456,8 @@ macro(_gaudi_use_other_projects)
         set(other_project_cmake_version ${other_project_cmake_version}.${CMAKE_MATCH_4})
       endif()
     else()
-      # "HEAD" is a special version id, that should be ignored when checking
-      # other projects versions.
-      set(other_project_cmake_version) # empty version string means 'any version'
+      # "HEAD" is a special version id (mapped to v999r999).
+      set(other_project_cmake_version 999.999)
     endif()
 
     if(NOT ${other_project}_FOUND)

@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2012-11-20 - Marco Clemencic
+ - Modified createProjVersHeader.py to understand version 'HEAD' as v999r999.
+
 ! 2012-11-13 - Marco Clemencic
  - Modified qmtest_summarize.py to work under CMake too.
 
