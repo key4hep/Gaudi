@@ -100,7 +100,7 @@ macro(gaudi_project project version)
     message(FATAL_ERROR "Wrong arguments.")
   endif()
 
-  if(NOT CMAKE_PROJECT_VERSION STREQUAL HEAD)
+  if(NOT CMAKE_PROJECT_VERSION MATCHES "^HEAD.*")
     string(REGEX MATCH "v?([0-9]+)[r.]([0-9]+)([p.]([0-9]+))?" _version ${CMAKE_PROJECT_VERSION})
     set(CMAKE_PROJECT_VERSION_MAJOR ${CMAKE_MATCH_1} CACHE INTERNAL "Major version of project")
     set(CMAKE_PROJECT_VERSION_MINOR ${CMAKE_MATCH_2} CACHE INTERNAL "Minor version of project")
@@ -448,7 +448,7 @@ macro(_gaudi_use_other_projects)
     list(GET ARGN_ 1 other_project_version)
     list(REMOVE_AT ARGN_ 0 1)
 
-    if(NOT other_project_version STREQUAL HEAD)
+    if(NOT other_project_version MATCHES "^HEAD.*")
       string(REGEX MATCH "v?([0-9]+)[r.]([0-9]+)([p.]([0-9]+))?" _version ${other_project_version})
 
       set(other_project_cmake_version ${CMAKE_MATCH_1}.${CMAKE_MATCH_2})
