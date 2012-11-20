@@ -23,7 +23,7 @@ NumberOfAlgosInFlight = NUMBEROFALGOSINFLIGHT
 NumberOfThreads = NUMBEROFTHREADS
 CloneAlgos = CLONEALGOS
 DumpQueues = DUMPQUEUES
-Verbosity = VERBOSITY
+Verbosity = 2
 
 
 def load_athena_scenario(filename):
@@ -36,9 +36,11 @@ def load_athena_scenario(filename):
     # Correct in presence of list wi
     for starputs in ("inputs","outputs"):
       if algo[starputs] == ['']: algo[starputs] = []        
+    cleaned_inputs = [input for input in algo["inputs"] if (input not in algo["outputs"] ) ]
+
     new_algo = CPUCruncher(algo["name"],
                            avgRuntime=float(algo["runtimes_wall"][1]/1000000.),
-                           Inputs = algo["inputs"],
+                           Inputs = cleaned_inputs,
                            Outputs = algo["outputs"]
                            )
     cpu_cruncher_algos.append(new_algo)
