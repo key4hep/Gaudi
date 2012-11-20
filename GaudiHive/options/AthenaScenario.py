@@ -14,7 +14,7 @@ NUMBEROFALGOSINFLIGHT = 1000
 NUMBEROFTHREADS = 1
 CLONEALGOS = False
 DUMPQUEUES = False
-VERBOSITY = 5
+VERBOSITY = 2
 
 
 NumberOfEvents = NUMBEROFEVENTS
@@ -23,7 +23,7 @@ NumberOfAlgosInFlight = NUMBEROFALGOSINFLIGHT
 NumberOfThreads = NUMBEROFTHREADS
 CloneAlgos = CLONEALGOS
 DumpQueues = DUMPQUEUES
-Verbosity = 2
+Verbosity = VERBOSITY
 
 
 def load_athena_scenario(filename):
