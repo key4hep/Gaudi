@@ -233,6 +233,7 @@ macro(gaudi_project project version)
   install(DIRECTORY cmake/EnvConfig DESTINATION scripts FILES_MATCHING PATTERN "*.py" PATTERN "*.conf")
 
   #--- Global actions for the project
+  #message(STATUS "CMAKE_MODULE_PATH -> ${CMAKE_MODULE_PATH}")
   include(GaudiBuildFlags)
   # Generate the version header for the project.
   string(TOUPPER ${project} _proj)
