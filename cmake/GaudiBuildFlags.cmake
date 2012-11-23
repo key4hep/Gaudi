@@ -198,3 +198,9 @@ add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
 if((LCG_COMP STREQUAL gcc AND LCG_COMPVERS MATCHES "47|max") OR GAUDI_CPP11)
   set(GCCXML_CXX_FLAGS "-D__STRICT_ANSI__")
 endif()
+
+if(LCG_COMP STREQUAL gcc AND LCG_COMPVERS STREQUAL 43)
+  # The -pedantic flag gives problems on GCC 4.3.
+  string(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  string(REPLACE "-pedantic" "" CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}")
+endif()
