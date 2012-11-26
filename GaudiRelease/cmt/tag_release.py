@@ -101,7 +101,7 @@ def main():
             svn("mkdir", ptagdir).wait()
             for f in ["cmt", "Makefile.cmt",
                       "Makefile-cmake.mk", "cmake", "CMakeLists.txt",
-                      "toolchain.cmake"]:
+                      "configure", "toolchain.cmake"]:
                 svn("cp", "/".join([proj, opts.branch, f]), "/".join([ptagdir, f])).wait()
 
         # prepare package tags
