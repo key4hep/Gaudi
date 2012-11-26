@@ -18,7 +18,7 @@ LCG_AA_project(RELAX RELAX_1_3_0i)
 LCG_AA_project(ROOT  5.34.03)
 
 # Compilers
-LCG_compiler(gcc43 gcc 4.3.5)
+LCG_compiler(gcc43 gcc 4.3.6)
 LCG_compiler(gcc46 gcc 4.6.2)
 LCG_compiler(gcc47 gcc 4.7.2)
 LCG_compiler(clang30 clang 3.0)
