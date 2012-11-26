@@ -1,6 +1,7 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+============================= GaudiRelease v23r5 =============================
 ============================= GaudiRelease v23r4 =============================
 ! 2012-09-13 - Marco Clemencic
  - Removed the special hack used to produce the LHCb deployment kit (obsolete).

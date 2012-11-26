@@ -1,6 +1,7 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v12r3 ==============================
 ! 2012-11-20 - Marco Clemencic
  - Modified createProjVersHeader.py to understand version 'HEAD' as v999r999.
 

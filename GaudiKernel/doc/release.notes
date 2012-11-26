@@ -1,6 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v28r4 ==============================
 ! 2012-11-12 - Marco Clemencic
  - Define the incident and return code for corrupted input files.
 
