@@ -64,8 +64,6 @@ protected:
   state_type m_termination_requirement;
   /// All requirements
   std::vector<state_type> m_all_requirements;
-  /// Run algos in parallel
-  bool run_parallel();  
   /// Register of input products
   std::map<std::string,unsigned int> m_product_indices;
   /// Total number of algos in flight across all events
@@ -80,6 +78,13 @@ protected:
   unsigned int m_num_threads;
   /// Clone algorithms to run them simultaneously
   bool m_CloneAlgorithms;
+  /// Algorithms Inputs
+  // keep room for a class hashing strings instead of strings
+  typedef std::vector<std::vector<std::string>> algosDependenciesCollection;
+  // We just need the dependencies and not the algo names.
+  algosDependenciesCollection m_AlgosDependencies;
+
+
 public:
   /// Standard Constructor
   HiveEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc);
