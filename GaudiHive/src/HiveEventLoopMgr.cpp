@@ -597,7 +597,6 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 						}
 					}
 					if (stalled){
-						std::cout << "Stalling\n";
 						std::string error("No algorithm is in flight and no algorithm can be scheduled on the events being processed.");
 						fatal() << error <<std::endl;
 						for (auto& event : events_in_flight){
