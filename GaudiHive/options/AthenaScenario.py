@@ -8,13 +8,13 @@ from Configurables import GaudiExamplesCommonConf, CPUCruncher,HiveEventLoopMgr
 #-------------------------------------------------------------------------------
 # Metaconfig
 
-NUMBEROFEVENTS = 10
+NUMBEROFEVENTS = 1
 NUMBEROFEVENTSINFLIGHT = 1
 NUMBEROFALGOSINFLIGHT = 1000
 NUMBEROFTHREADS = 1
 CLONEALGOS = False
 DUMPQUEUES = False
-VERBOSITY = 2
+VERBOSITY = 3
 
 
 NumberOfEvents = NUMBEROFEVENTS
@@ -46,6 +46,7 @@ def load_athena_scenario(filename):
     cpu_cruncher_algos.append(new_algo)
     all_outputs.update(algo["outputs"])
     all_inputs.update(algo["inputs"])
+    cpu_cruncher_algos_inputs.append(algo["inputs"])
   
   #look for the objects that haven't been provided within the job. Assume this needs to come via input
   new_algo = CPUCruncher("input",
@@ -54,15 +55,16 @@ def load_athena_scenario(filename):
                          Outputs=[item for item in all_inputs.difference(all_outputs)]
                          )
   cpu_cruncher_algos.append(new_algo)
+  cpu_cruncher_algos_inputs.append([])
 
   print [item for item in all_inputs.difference(all_outputs)]
-  return cpu_cruncher_algos
+  return cpu_cruncher_algos,cpu_cruncher_algos_inputs
         
 # Set output level threshold 2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
 ms = MessageSvc() 
 ms.OutputLevel     =  Verbosity
 
-crunchers = load_athena_scenario("Athena.json")
+crunchers,inputs = load_athena_scenario("Athena.json")
 
 # Setup the Event Loop Manager
 evtloop = HiveEventLoopMgr()
@@ -71,6 +73,7 @@ evtloop.MaxEventsParallel = NumberOfEventsInFlight
 evtloop.NumThreads = NumberOfThreads 
 evtloop.CloneAlgorithms = CloneAlgos
 evtloop.DumpQueues = DumpQueues
+evtloop.AlgosDependencies = inputs
 
 # And the Application Manager
 app = ApplicationMgr()

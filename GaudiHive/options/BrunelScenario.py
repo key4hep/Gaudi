@@ -74,6 +74,7 @@ def load_brunel_scenario(filename):
   all_inputs = set()
   all_outputs = set()
   all_algos = []
+  all_algos_inputs = []
   
   #Scale all algo timings if needed
   if Scale!=-1:
@@ -100,6 +101,7 @@ def load_brunel_scenario(filename):
         for item in deps[2]: 
             all_outputs.add(item)
         all_algos.append(new_algo)
+        all_algos_inputs.append(inputs)
   #look for the objects that haven't been provided within the job. Assume this needs to come via input
   new_algo = CPUCruncher("input",
                          avgRuntime=1,
@@ -108,15 +110,15 @@ def load_brunel_scenario(filename):
                          OutputLevel = 6
                          )
   all_algos.append(new_algo)
-
-  return all_algos
+  all_algos_inputs.append([])
+  return all_algos,all_algos_inputs
         
 
 # Set output level threshold 2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
 ms = MessageSvc() 
 ms.OutputLevel     =  Verbosity
 
-crunchers = load_brunel_scenario("Brunel.TES.trace.log")
+crunchers,inputs = load_brunel_scenario("Brunel.TES.trace.log")
 
 # Setup the Event Loop Manager
 evtloop = HiveEventLoopMgr()
@@ -125,6 +127,7 @@ evtloop.MaxEventsParallel = NumberOfEventsInFlight
 evtloop.NumThreads = NumberOfThreads 
 evtloop.CloneAlgorithms = CloneAlgos
 evtloop.DumpQueues = DumpQueues
+evtloop.AlgosDependencies = inputs
 
 # And the Application Manager
 app = ApplicationMgr()
