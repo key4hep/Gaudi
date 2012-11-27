@@ -7,13 +7,14 @@ from Configurables import GaudiExamplesCommonConf, CPUCruncher,HiveEventLoopMgr
 #-------------------------------------------------------------------------------
 # Metaconfig
 
-NUMBEROFEVENTS = 10
-NUMBEROFEVENTSINFLIGHT = 1
-NUMBEROFALGOSINFLIGHT = 1000
-NUMBEROFTHREADS = 4
+NUMBEROFEVENTS = 20
+NUMBEROFEVENTSINFLIGHT = 10
+NUMBEROFALGOSINFLIGHT = 15
+NUMBEROFTHREADS = 15
 CLONEALGOS = True
 DUMPQUEUES = False
-VERBOSITY = 5
+SCALE = 1
+VERBOSITY =5
 
 
 NumberOfEvents = NUMBEROFEVENTS
@@ -22,6 +23,7 @@ NumberOfAlgosInFlight = NUMBEROFALGOSINFLIGHT
 NumberOfThreads = NUMBEROFTHREADS
 CloneAlgos = CLONEALGOS
 DumpQueues = DUMPQUEUES
+Scale = SCALE
 Verbosity = VERBOSITY
 
 
@@ -72,6 +74,15 @@ def load_brunel_scenario(filename):
   all_inputs = set()
   all_outputs = set()
   all_algos = []
+  
+  #Scale all algo timings if needed
+  if Scale!=-1:
+    for alg in timing.keys():
+      old_timing = float(timing[alg])
+      new_timing = old_timing*Scale;
+      #print "Algorithm %s: %f --> %f" %(alg, old_timing, new_timing)
+      timing[alg]=new_timing
+  
   for i, (alg,deps) in enumerate(algs.items()):
     if alg in ["PatPVOffline","PrsADCs"]: continue
     if deps[1] or deps[2] : 
@@ -81,7 +92,8 @@ def load_brunel_scenario(filename):
         new_algo = CPUCruncher(alg,
                                avgRuntime=float(timing[alg]),
                                Inputs=inputs,
-                               Outputs=outputs
+                               Outputs=outputs,
+                               OutputLevel = 6
                               )
         for item in deps[1]: 
             all_inputs.add(item)
@@ -92,7 +104,8 @@ def load_brunel_scenario(filename):
   new_algo = CPUCruncher("input",
                          avgRuntime=1,
                          Inputs=[],
-                         Outputs=[item for item in all_inputs.difference(all_outputs)]
+                         Outputs=[item for item in all_inputs.difference(all_outputs)],
+                         OutputLevel = 6
                          )
   all_algos.append(new_algo)
 
