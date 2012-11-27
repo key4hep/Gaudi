@@ -104,6 +104,7 @@ HiveEventLoopMgr::HiveEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
 	declareProperty("NumThreads", m_num_threads);
 	declareProperty("DumpQueues", m_DumpQueues);
 	declareProperty("CloneAlgorithms", m_CloneAlgorithms= false);
+//	declareProperty("AlgosDependencies", m_AlgosDependencies);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -385,7 +386,7 @@ StatusCode HiveEventLoopMgr::executeEvent(void* /*par*/)    {
 		if (hivealgman) hivealgman->dump();
 	}
 
-	bool eventfailed = run_parallel();
+	bool eventfailed = false;//run_parallel();
 
 	// ensure that the abortEvent flag is cleared before the next event
 	if (UNLIKELY(m_abortEvent)) {
@@ -582,7 +583,7 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 					*/
 					bool stalled=true;
 					for (auto& event :events_in_flight){
-						EventSchedulingState*& this_event_state = std::get<1>(evtContext_evtstate);
+						EventSchedulingState*& this_event_state = std::get<1>(event);
 						for (auto& algo_requirements:m_all_requirements ) { // loop on algos
 							// check whether all requirements/dependencies for the algorithm are fulfilled...
 							state_type dependencies_missing = (this_event_state->state() & algo_requirements) ^ algo_requirements;
@@ -601,10 +602,10 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 							unsigned int algo_counter=0;
 							EventContext*& this_event_Context = std::get<0>(event);
 							EventSchedulingState*& this_event_state = std::get<1>(event);
-							fatal() << "Algorithms that ran for event " << event_Context->m_evt_num << std::endl;
+							fatal() << "Algorithms that ran for event " << this_event_Context->m_evt_num << std::endl;
 
 							for (auto& algo : m_topAlgList){
-								bool has_started = event_state->hasStarted(algo_counter);
+								bool has_started = this_event_state->hasStarted(algo_counter);
 								if (has_started)
 									fatal() << " o " << algo->name() << " could run" << std::endl;
 								else
@@ -706,6 +707,7 @@ StatusCode HiveEventLoopMgr::getEventRoot(IOpaqueAddress*& refpAddr)  {
 	return sc;
 }
 
+
 // Here because temporary
 #include <iostream>
 
@@ -771,108 +773,6 @@ HiveEventLoopMgr::find_dependencies() {
 	}
 	m_numberOfAlgos = algo_counter;
 	m_all_requirements = all_requirements;
-}
-
-//--------------------------------------------------------------------------------------------
-// bool run_parallel
-//--------------------------------------------------------------------------------------------
-bool HiveEventLoopMgr::run_parallel(){
-	// Prepare the event context.
-	// A ctor will come when the members are clearer.
-	EventContext* evtContext(new EventContext);
-	evtContext->m_evt_num = 42; //TODO: use nevt;
-	// Assign the context to the algorithms
-	SmartIF<IAlgManager> algMan(serviceLocator());
-	const ListAlgPtrs& allAlgs = algMan->getAlgorithms() ;
-	for (IAlgorithm* ialgo : allAlgs) {
-		Algorithm* algo = dynamic_cast<Algorithm*>(ialgo);
-		algo->setContext(evtContext);
-	}
-	bool eventfailed = false;
-	// Create object containing all scheduling specific information
-	// for a single event
-	// TODO: will have to be transformed into a vector of these states
-	// for multi-event case.
-	EventSchedulingState event_state(m_topAlgList.size());
-
-	DataObject* pObject;
-	m_evtDataSvc->retrieveObject("/Event",pObject);
-	DataSvcHelpers::RegistryEntry* rootRegistry = dynamic_cast<DataSvcHelpers::RegistryEntry*>(pObject->registry()); //TODO: an interface in the evtDataSvc for it would come handy
-
-	// create the single event
-	Hive::HiveEventRegistryEntry* evt_registry = new Hive::HiveEventRegistryEntry("NameDoesntMatter",rootRegistry);
-	rootRegistry->add(evt_registry);
-	evtContext->m_registry = evt_registry;
-
-	//  // Test the new pool
-	//  HiveAlgorithmManager* hivealgman = dynamic_cast<HiveAlgorithmManager*> (algMan.get());
-	//  IAlgorithm* tmpalg;
-	//  for (ListAlg::iterator ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ){
-	//	  const std::string& name = (*ita)->name();
-	//	  while( hivealgman->acquireAlgorithm(name,tmpalg) );
-	//	  hivealgman->createAlgorithm(name,tmpalg);
-	//  }
-	//  hivealgman->dump();
-	do {
-		unsigned int algo_counter(0);
-		for (ListAlg::iterator ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
-			StatusCode sc(StatusCode::SUCCESS); //TODO: disabled the failure part
-
-			try {
-				if (UNLIKELY(m_abortEvent)) {
-					DEBMSG << "AbortEvent incident fired by "
-							<< m_abortEventSource << endmsg;
-					m_abortEvent = false;
-					sc.ignore();
-					break;
-				}
-				// check whether all requirements/dependencies for the algorithm are fulfilled...
-				state_type dependencies_missing = (event_state.state() & m_all_requirements[algo_counter]) ^ m_all_requirements[algo_counter];
-				// ...and whether the algorithm was already started and it can be started
-				if ( (dependencies_missing == 0) &&
-						(event_state.hasStarted(algo_counter) ) == false &&
-						(m_total_algos_in_flight < m_max_parallel )) {
-					tbb::task* t = new( tbb::task::allocate_root() ) HiveAlgoTask((*ita), &event_state, this);
-					tbb::task::enqueue( *t);
-					event_state.algoStarts(algo_counter);
-					//++m_total_algos_in_flight;
-				}
-				++algo_counter;
-			} catch ( const GaudiException& Exception ) {
-				fatal() << ".executeEvent(): Exception with tag=" << Exception.tag()
-                		<< " thrown by " << (*ita)->name() << endmsg;
-				error() << Exception << endmsg;
-			} catch ( const std::exception& Exception ) {
-				fatal() << ".executeEvent(): Standard std::exception thrown by "
-						<< (*ita)->name() << endmsg;
-				error() << Exception.what()  << endmsg;
-			} catch(...) {
-				fatal() << ".executeEvent(): UNKNOWN Exception thrown by "
-						<< (*ita)->name() << endmsg;
-			}
-
-			if (UNLIKELY(!sc.isSuccess())) {
-				warning() << "Execution of algorithm " << (*ita)->name() << " failed" << endmsg;
-				eventfailed = true;
-			}
-		}
-
-		// update the event state with what has been put into the DataSvc
-		bool queue_full(false);
-		std::string product_name;
-
-		// TODO: in the multi-event case here a loop through the individual event registries
-		tbb::concurrent_queue<std::string>& new_products = evt_registry->new_products();
-		do {
-			queue_full = new_products.try_pop(product_name);
-			if (queue_full && m_product_indices.count( product_name ) == 1) { // only products with dependencies upon need to be announced to other algos
-				event_state.update_state(m_product_indices[product_name]);
-			}
-		} while (queue_full);
-
-	} while (!event_state.hasFinished());
-
-	return eventfailed;
 }
 
 //------------------------------------------------------------------------------
