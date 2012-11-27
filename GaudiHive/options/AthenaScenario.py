@@ -30,6 +30,7 @@ def load_athena_scenario(filename):
   data = open(filename).read()
   workflow = eval(data)
   cpu_cruncher_algos = []
+  cpu_cruncher_algos_inputs = []
   all_outputs = set()
   all_inputs  = set()
   for algo in workflow["algorithms"]:
