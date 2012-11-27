@@ -25,20 +25,20 @@ CPUCruncher::CPUCruncher ( const std::string& name , // the algorithm instance n
       // For Concurrent run
       declareProperty("Inputs", m_inputs, "List of required inputs");
       declareProperty("Outputs", m_outputs, "List of provided outputs");
-      
+
       declareProperty ( "avgRuntime" , m_avg_runtime , "Average runtime of the module." ) ;
       declareProperty ( "varRuntime" , m_var_runtime , "Variance of the runtime of the module." ) ;
       declareProperty ( "localRndm", m_local_rndm_gen = true, "Decide if the local random generator is to be used");
       declareProperty ( "NIterationsVect", m_niters_vect , "Number of iterations for the calibration." ) ;
       declareProperty ( "NTimesVect", m_times_vect , "Number of seconds for the calibration." ) ;
-      declareProperty ( "shortCalib", m_shortCalib , "Enable coarse grained calibration" ) ;
+      declareProperty ( "shortCalib", m_shortCalib=false , "Enable coarse grained calibration" ) ;
 
       // Register the algo in the static concurrent hash map in order to
       // monitor the # of copies
       CHM::accessor name_ninstances;
       m_name_ncopies_map.insert(name_ninstances, name);
       name_ninstances->second += 1 ;
-    }  
+    }
 
 StatusCode CPUCruncher::initialize(){
 if (m_times_vect.size()==0)
@@ -53,7 +53,6 @@ The relation is a sqrt for times greater than 10^-4 seconds.
 void CPUCruncher::calibrate(){
 
   MsgStream log(msgSvc(), name());
-  // Tunded once by hand to cover from 0 to 4
   m_niters_vect.push_back(0);
   m_niters_vect.push_back(500);
   m_niters_vect.push_back(600);
@@ -61,7 +60,7 @@ void CPUCruncher::calibrate(){
   m_niters_vect.push_back(800);
   m_niters_vect.push_back(1000);
   m_niters_vect.push_back(1300);
-  m_niters_vect.push_back(1600);   
+  m_niters_vect.push_back(1600);
   m_niters_vect.push_back(2000);
   m_niters_vect.push_back(2300);
   m_niters_vect.push_back(2600);
@@ -90,7 +89,7 @@ void CPUCruncher::calibrate(){
 
 
   m_times_vect.resize(m_niters_vect.size());
-  m_times_vect.push_back(0);
+  m_times_vect[0]=0.;
 
 
   log << MSG::INFO << "Starting calibration..." << endmsg;
@@ -101,7 +100,7 @@ void CPUCruncher::calibrate(){
     auto start_cali=tbb::tick_count::now();
     findPrimes(niters);
     auto stop_cali=tbb::tick_count::now();
-    double deltat = (stop_cali-start_cali).seconds();   
+    double deltat = (stop_cali-start_cali).seconds();
     m_times_vect[i]=deltat;
     log << MSG::DEBUG << "Calibration: # iters = " << niters << " => " << deltat << endmsg;
     trials--;
@@ -111,42 +110,48 @@ void CPUCruncher::calibrate(){
 }
 
 unsigned long CPUCruncher::getNCaliIters(double runtime){
- 
- int smaller_i=-1;
- for (auto& time:m_times_vect )
-   if (time<runtime) smaller_i++;
- 
- // Case 1: we are outside the interpolation range
- if (smaller_i==m_times_vect.size()-1)
-   smaller_i-=1;
 
- if (smaller_i==-1)
-   smaller_i=0;
+  unsigned int smaller_i=0;
+	double time=0.;
+	bool found=false;
+	// We know that the first entry is 0, so we start to iterate from 1
+	for (unsigned int i=1;i<m_times_vect.size();i++){
+		time = m_times_vect[i];
+		if (time>runtime){
+			smaller_i=i-1;
+			found=true;
+			break;
+		}
+	}
 
- // Case 2: we maeke a linear interpolation
- // y=mx+q
- double x0=m_times_vect[smaller_i];
- double x1=m_times_vect[smaller_i+1];
- double y0=m_niters_vect[smaller_i];
- double y1=m_niters_vect[smaller_i+1];
- double m=(y1-y0)/(x1-x0);
- double q=y0-m*x0;
+	// Case 1: we are outside the interpolation range, we take the last 2 points
+	if (not found)
+		smaller_i=m_times_vect.size()-2;
 
+	// Case 2: we maeke a linear interpolation
+	// y=mx+q
+	const double x0=m_times_vect[smaller_i];
+	const double x1=m_times_vect[smaller_i+1];
+	const double y0=m_niters_vect[smaller_i];
+	const double y1=m_niters_vect[smaller_i+1];
+	const double m=(y1-y0)/(x1-x0);
+	const double q=y0-m*x0;
 
- //always() << x0 << "<" << runtime << "<" << x1 << endmsg;
+	const unsigned long nCaliIters =  m * runtime + q ;
+	//always() << x0 << "<" << runtime << "<" << x1 << " Corresponding to " << nCaliIters << " iterations" << endmsg;
 
- return m * runtime + q ;
- }
+	return nCaliIters ;
+}
 
 
 void CPUCruncher::findPrimes (const unsigned long int n_iterations)  { 
 
-  
+
   MsgStream log(msgSvc(), name());
 
   // Flag to trigger the allocation
   bool is_prime;
-  
+
   // Let's prepare the material for the allocations
   unsigned int primes_size=1;
   unsigned long* primes = new unsigned long[primes_size];
@@ -157,34 +162,34 @@ void CPUCruncher::findPrimes (const unsigned long int n_iterations)  {
   // Loop on numbers
   for (unsigned long int iiter=0;iiter<n_iterations;iiter++ ){
     // Once at max, it returns to 0
-    i+=1;    
-        
+    i+=1;
+
     // Check if it can be divided by the smaller ones
     is_prime = true;
     for (unsigned long j=2;j<i && is_prime;++j){
-      if (i%j == 0){     
+      if (i%j == 0){
         is_prime = false;
-      }      
+      }
     }// end loop on numbers < than tested one
     if (is_prime){
       // copy the array of primes (INEFFICIENT ON PURPOSE!)
       unsigned int new_primes_size = 1 + primes_size;
       unsigned long* new_primes = new unsigned long[new_primes_size];
-    
+
       for (unsigned int prime_index=0; prime_index<primes_size;prime_index++){
-        new_primes[prime_index]=primes[prime_index];    
+        new_primes[prime_index]=primes[prime_index];
       }
       // attach the last prime
       new_primes[primes_size]=i;
-      
+
       // Update primes array
       delete[] primes;
-      primes = new_primes;        
+      primes = new_primes;
       primes_size=new_primes_size;
     } // end is prime
-              
+
   } // end of while loop
-  
+
   // Fool Compiler optimisations:
   for (unsigned int prime_index=0; prime_index<primes_size;prime_index++)
     if (primes[prime_index] == 4)
@@ -249,7 +254,7 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
   if (getContext())
   	logstream  << MSG::INFO << "Start event " <<  getContext()->m_evt_num
   	           << " on pthreadID " << getContext()->m_thread_id << endmsg;
-  
+
   for (std::string& input : m_inputs){
     read<DataObject>(input);
   }
@@ -271,7 +276,7 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
 		     << " in " << actualRuntime  << " seconds" << endmsg;
 
   logstream << MSG::DEBUG << "Timing: ExpectedRuntime= " << runtime
-                         << " ActualRuntime= " << actualRuntime 
+                         << " ActualRuntime= " << actualRuntime
                          << " Ratio= " << runtime/actualRuntime
                          << " Niters= " << n_iters << endmsg;
 
@@ -295,9 +300,9 @@ StatusCode CPUCruncher::finalize () // the finalization of the algorithm
 
   	// do not show repetitions
   	if (ninstances!=0){
-  		always() << "Summary: name= "<< name() <<" avg_runtime= " << m_avg_runtime
+  		log << MSG::INFO << "Summary: name= "<< name() <<" avg_runtime= " << m_avg_runtime
   				<< " n_clones= " << ninstances << endmsg;
-  
+
   		CHM::accessor name_ninstances;
   		m_name_ncopies_map.find(name_ninstances,name());
   		name_ninstances->second=0;
@@ -325,4 +330,4 @@ CPUCruncher::get_outputs()
 //------------------------------------------------------------------------------
 
 
-  
+
