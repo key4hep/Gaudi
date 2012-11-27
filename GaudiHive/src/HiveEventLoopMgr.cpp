@@ -422,7 +422,6 @@ StatusCode HiveEventLoopMgr::executeRun( int maxevt )    {
 	StatusCode  sc;
 	// initialize the base class
 	sc = MinimalEventLoopMgr::executeRun(maxevt);
-	std::cout << "[HiveEventLoopMgr::executeRun] exiting\n" << std::endl;
 	return sc;
 }
 
@@ -545,7 +544,9 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 					if ( (dependencies_missing == 0) &&
 							(event_state->hasStarted(algo_counter) ) == false &&
 							(m_total_algos_in_flight < m_max_parallel )) {
+
 						no_algo_can_run = false;
+
 						// Pick the algorithm if available and if not and requested create one
 						IAlgorithm* ialgo=NULL;
 						if(hivealgman->acquireAlgorithm(algo_counter,ialgo,m_CloneAlgorithms)){
@@ -566,35 +567,58 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 
 				}// end loop on algo indices
 
-				// Check whether we are in a stall situation FIXME
-				//while (m_total_algos_in_flight!=0)//FIXME
+				// Check whether we are in a stall situation
 				if (no_algo_can_run && // nothing can run
 						m_total_algos_in_flight==0 && // nothing is running
 						events_in_flight.size() != 0 && // at least one event is in flight
 						in_flight_end == find_if(in_flight_begin, in_flight_end ,has_finished)){ // none finished
-					std::string error("No algorithm is in flight and no algorithm can be scheduled on the events being processed.");
-					fatal() << error <<std::endl;
-					for (auto& evtContext_evtstate : events_in_flight){
-						// Show what ran
-						unsigned int algo_counter=0;
-						EventContext*& event_Context = std::get<0>(evtContext_evtstate);
-						EventSchedulingState*& event_state = std::get<1>(evtContext_evtstate);
-						fatal() << "Algorithms that ran for event " << event_Context->m_evt_num << std::endl;
-						for (auto& algo : m_topAlgList){
-							bool has_started = event_state->hasStarted(algo_counter);
-							if (has_started)
-								fatal() << " o " << algo->name() << " could run" << std::endl;
-							else
-								fatal() << " o " << algo->name() << " could NOT run" << std::endl;
-							algo_counter++;
+
+					/* Additional condition since the test above is not enough since not atomic!!
+					Indeed it could happen that:
+					o No algo could run
+					o At least one evt is in flight
+					o One algo finished, the m_total_algos_in_flight is now 0, but some input is available!
+					It would be much better to use an atomic condition, maybe via a transaction.
+					*/
+					bool stalled=true;
+					for (auto& event :events_in_flight){
+						EventSchedulingState*& this_event_state = std::get<1>(evtContext_evtstate);
+						for (auto& algo_requirements:m_all_requirements ) { // loop on algos
+							// check whether all requirements/dependencies for the algorithm are fulfilled...
+							state_type dependencies_missing = (this_event_state->state() & algo_requirements) ^ algo_requirements;
+							if (dependencies_missing == 0){
+								// Some algo can still be scheduled.
+								stalled=false;
+								break;
+							}
 						}
-
 					}
-					fatal() << endmsg;
+					if (stalled){
+						std::string error("No algorithm is in flight and no algorithm can be scheduled on the events being processed.");
+						fatal() << error <<std::endl;
+						for (auto& event : events_in_flight){
+							// Show what ran
+							unsigned int algo_counter=0;
+							EventContext*& this_event_Context = std::get<0>(event);
+							EventSchedulingState*& this_event_state = std::get<1>(event);
+							fatal() << "Algorithms that ran for event " << event_Context->m_evt_num << std::endl;
+
+							for (auto& algo : m_topAlgList){
+								bool has_started = event_state->hasStarted(algo_counter);
+								if (has_started)
+									fatal() << " o " << algo->name() << " could run" << std::endl;
+								else
+									fatal() << " o " << algo->name() << " could NOT run" << std::endl;
+								algo_counter++;
+							} // End of internal loop on algos
+
+						} // End Internal Loop on Events in flight
+						fatal() << endmsg;
 
 
-					throw GaudiException (error,"Hive",false);
-				}
+						throw GaudiException (error,"Hive",false);
+					} // End of block executed at stall
+				} // End stall check
 
 				// update the event state with what has been put into the DataSvc
 				bool queue_full(false);
@@ -862,5 +886,5 @@ void HiveEventLoopMgr::taskFinished(IAlgorithm*& algo){
 	--m_total_algos_in_flight;
 
 	MsgStream log(msgSvc(), name());
-	log << MSG::DEBUG << "Algos in flight: " <<  m_total_algos_in_flight << endmsg;
+	log << MSG::DEBUG << "[taskFinished] Algos in flight: " <<  m_total_algos_in_flight << endmsg;
 }
