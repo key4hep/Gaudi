@@ -689,13 +689,16 @@ macro(_gaudi_handle_data_packages)
     # extract data package name and (optional) version from the list
     list(GET ARGN_ 0 _data_package)
     list(REMOVE_AT ARGN_ 0)
-    set(_data_pkg_vers *) # default version value
     if(ARGN_) # we can look for the version only if we still have data)
       list(GET ARGN_ 0 _data_pkg_vers)
       if(_data_pkg_vers STREQUAL VERSION)
         list(GET ARGN_ 1 _data_pkg_vers)
         list(REMOVE_AT ARGN_ 0 1)
+      else()
+        set(_data_pkg_vers *) # default version value
       endif()
+    else()
+      set(_data_pkg_vers *) # default version value
     endif()
     if(NOT ${_data_package}_FOUND)
       gaudi_find_data_package(${_data_package} ${_data_pkg_vers} PATH_SUFFIXES ${GAUDI_DATA_SUFFIXES})
