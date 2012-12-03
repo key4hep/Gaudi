@@ -278,7 +278,9 @@ macro(gaudi_project project version)
   gaudi_merge_files(DictRootmap lib ${CMAKE_PROJECT_NAME}Dict.rootmap)
 
   # FIXME: it is not possible to produce the file python.zip at installation time
-  # because of http://public.kitware.com/Bug/view.php?id=8438
+  # because the install scripts of the subdirectories are executed after those
+  # of the parent project and we cannot have a post-install target because of
+  # http://public.kitware.com/Bug/view.php?id=8438
   # install(CODE "execute_process(COMMAND  ${zippythondir_cmd} ${CMAKE_INSTALL_PREFIX}/python)")
   add_custom_target(python.zip
                     COMMAND ${zippythondir_cmd} ${CMAKE_INSTALL_PREFIX}/python
@@ -1961,11 +1963,7 @@ set(${CMAKE_PROJECT_NAME}_INCLUDE_DIRS \${_dir}/include)
 set(${CMAKE_PROJECT_NAME}_LIBRARY_DIRS \${_dir}/lib)
 
 set(${CMAKE_PROJECT_NAME}_BINARY_PATH \${_dir}/bin \${_dir}/scripts)
-if(EXISTS \${_dir}/python.zip)
-  set(${CMAKE_PROJECT_NAME}_PYTHON_PATH \${_dir}/python.zip)
-else()
-  set(${CMAKE_PROJECT_NAME}_PYTHON_PATH \${_dir}/python)
-endif()
+set(${CMAKE_PROJECT_NAME}_PYTHON_PATH \${_dir}/python)
 
 set(${CMAKE_PROJECT_NAME}_COMPONENT_LIBRARIES ${component_libraries})
 set(${CMAKE_PROJECT_NAME}_LINKER_LIBRARIES ${linker_libraries})
