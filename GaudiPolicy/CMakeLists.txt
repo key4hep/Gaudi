@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiPolicy v12r2)
+gaudi_subdir(GaudiPolicy v12r3)
 
 #---Installation-----------------------------------------------------------------------------
 gaudi_install_scripts()

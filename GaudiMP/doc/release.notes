@@ -1,6 +1,10 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+================================ GaudiMP v1r6 ================================
+! 2012-11-14 - Marco Clemencic
+ - Updated CMakeLists.txt.
+
 ================================ GaudiMP v1r5 ================================
 ! 2012-09-13 - Marco Clemencic
  - Fixed compilation warnings.

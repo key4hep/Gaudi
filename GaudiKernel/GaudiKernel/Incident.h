@@ -78,6 +78,8 @@ namespace IncidentType
   const std::string FailInputFile = "FailInputFile"; ///< could not open or read from this file
   const std::string EndInputFile   = "EndInputFile";   ///< an input file has been finished
 
+  const std::string CorruptedInputFile = "CorruptedInputFile"; ///< the input file has shown a corruption
+
   /// Incident raised just before entering loop over the algorithms.
   const std::string BeginProcessing = "BeginProcessing";
   /// Incident raised just after the loop over the algorithms (note: before the execution of OutputStreams).

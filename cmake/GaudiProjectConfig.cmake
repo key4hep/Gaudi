@@ -100,10 +100,17 @@ macro(gaudi_project project version)
     message(FATAL_ERROR "Wrong arguments.")
   endif()
 
-  string(REGEX MATCH "v?([0-9]+)[r.]([0-9]+)([p.]([0-9]+))?" _version ${version})
-  set(CMAKE_PROJECT_VERSION_MAJOR ${CMAKE_MATCH_1} CACHE INTERNAL "Major version of project")
-  set(CMAKE_PROJECT_VERSION_MINOR ${CMAKE_MATCH_2} CACHE INTERNAL "Minor version of project")
-  set(CMAKE_PROJECT_VERSION_PATCH ${CMAKE_MATCH_4} CACHE INTERNAL "Patch version of project")
+  if(NOT CMAKE_PROJECT_VERSION MATCHES "^HEAD.*")
+    string(REGEX MATCH "v?([0-9]+)[r.]([0-9]+)([p.]([0-9]+))?" _version ${CMAKE_PROJECT_VERSION})
+    set(CMAKE_PROJECT_VERSION_MAJOR ${CMAKE_MATCH_1} CACHE INTERNAL "Major version of project")
+    set(CMAKE_PROJECT_VERSION_MINOR ${CMAKE_MATCH_2} CACHE INTERNAL "Minor version of project")
+    set(CMAKE_PROJECT_VERSION_PATCH ${CMAKE_MATCH_4} CACHE INTERNAL "Patch version of project")
+  else()
+    # 'HEAD' version is special
+    set(CMAKE_PROJECT_VERSION_MAJOR 999)
+    set(CMAKE_PROJECT_VERSION_MINOR 999)
+    set(CMAKE_PROJECT_VERSION_PATCH 0)
+  endif()
 
   #--- Project Options and Global settings----------------------------------------------------------
   option(BUILD_SHARED_LIBS "Set to OFF to build static libraries." ON)
@@ -226,12 +233,13 @@ macro(gaudi_project project version)
   install(DIRECTORY cmake/EnvConfig DESTINATION scripts FILES_MATCHING PATTERN "*.py" PATTERN "*.conf")
 
   #--- Global actions for the project
+  #message(STATUS "CMAKE_MODULE_PATH -> ${CMAKE_MODULE_PATH}")
   include(GaudiBuildFlags)
   # Generate the version header for the project.
   string(TOUPPER ${project} _proj)
   execute_process(COMMAND
                   ${versheader_cmd} --quiet
-                     ${project} ${version} ${CMAKE_BINARY_DIR}/include/${_proj}_VERSION.h)
+                     ${project} ${CMAKE_PROJECT_VERSION} ${CMAKE_BINARY_DIR}/include/${_proj}_VERSION.h)
   install(FILES ${CMAKE_BINARY_DIR}/include/${_proj}_VERSION.h DESTINATION include)
   # Add generated headers to the include path.
   include_directories(${CMAKE_BINARY_DIR}/include)
@@ -380,6 +388,16 @@ macro(gaudi_project project version)
          "${_env_cmd_line} --xml ${env_xml} %1 %2 %3 %4 %5 %6 %7 %8 %9\n")
   endif() # ignore other systems
 
+
+  #--- Special target to print the summary of QMTest runs.
+  if(GAUDI_BUILD_TESTS)
+    add_custom_target(QMTestSummary)
+    add_custom_command(TARGET QMTestSummary
+                       COMMAND ${env_cmd} --xml ${env_xml}
+                               qmtest_summarize.py)
+  endif()
+
+
   #--- Generate config files to be imported by other projects.
   gaudi_generate_project_config_version_file()
   gaudi_generate_project_config_file()
@@ -431,7 +449,7 @@ macro(_gaudi_use_other_projects)
     list(GET ARGN_ 1 other_project_version)
     list(REMOVE_AT ARGN_ 0 1)
 
-    if(NOT other_project_version STREQUAL HEAD)
+    if(NOT other_project_version MATCHES "^HEAD.*")
       string(REGEX MATCH "v?([0-9]+)[r.]([0-9]+)([p.]([0-9]+))?" _version ${other_project_version})
 
       set(other_project_cmake_version ${CMAKE_MATCH_1}.${CMAKE_MATCH_2})
@@ -439,9 +457,8 @@ macro(_gaudi_use_other_projects)
         set(other_project_cmake_version ${other_project_cmake_version}.${CMAKE_MATCH_4})
       endif()
     else()
-      # "HEAD" is a special version id, that should be ignored when checking
-      # other projects versions.
-      set(other_project_cmake_version) # empty version string means 'any version'
+      # "HEAD" is a special version id (mapped to v999r999).
+      set(other_project_cmake_version 999.999)
     endif()
 
     if(NOT ${other_project}_FOUND)
@@ -600,6 +617,7 @@ function(gaudi_find_data_package name)
   if(NOT ${name}_FOUND)
     # Note: it works even if the env. var. is not set.
     file(TO_CMAKE_PATH "$ENV{CMTPROJECTPATH}" projects_search_path)
+    file(TO_CMAKE_PATH "$ENV{CMAKE_PREFIX_PATH}" env_prefix_path)
 
     set(version *) # default version value
     if(ARGN AND NOT ARGV1 STREQUAL PATH_SUFFIXES)
@@ -619,7 +637,7 @@ function(gaudi_find_data_package name)
 
     set(candidate_version)
     set(candidate_path)
-    foreach(prefix ${projects_search_path} ${CMAKE_PREFIX_PATH})
+    foreach(prefix ${projects_search_path} ${CMAKE_PREFIX_PATH} ${env_prefix_path})
       foreach(suffix "" ${ARGN})
         #message(STATUS "gaudi_find_data_package: check ${prefix}/${suffix}/${name}")
         if(IS_DIRECTORY ${prefix}/${suffix}/${name})
@@ -679,6 +697,8 @@ macro(_gaudi_handle_data_packages)
       else()
         set(_data_pkg_vers *) # default version value
       endif()
+    else()
+      set(_data_pkg_vers *) # default version value
     endif()
     if(NOT ${_data_package}_FOUND)
       gaudi_find_data_package(${_data_package} ${_data_pkg_vers} PATH_SUFFIXES ${GAUDI_DATA_SUFFIXES})
@@ -796,6 +816,7 @@ macro(gaudi_collect_subdir_deps)
     foreach(var ${vars})
       # extract the individual subdir names
       string(REGEX REPLACE "gaudi_depends_on_subdirs *\\(([^)]+)\\)" "\\1" __p ${var})
+      string(REGEX REPLACE "(\r?\n)+$" "" ___p "${___p}")
       separate_arguments(__p)
       foreach(___p ${__p})
         # remove newlines in the matched subdir name
@@ -915,6 +936,44 @@ macro(gaudi_get_package_name VAR)
 endmacro()
 
 #-------------------------------------------------------------------------------
+# _gaudi_strip_build_type_libs(VAR)
+#
+# Helper function to reduce the list of linked libraries.
+#-------------------------------------------------------------------------------
+function(_gaudi_strip_build_type_libs variable)
+  set(collected ${${variable}})
+  #message(STATUS "Stripping build type special libraries.")
+  set(_coll)
+  while(collected)
+    # pop an element (library or qualifier)
+    list(GET collected 0 entry)
+    list(REMOVE_AT collected 0)
+    if(entry STREQUAL debug OR entry STREQUAL optimized OR entry STREQUAL general)
+      # it's a qualifier: pop another one (the library name)
+      list(GET collected 0 lib)
+      list(REMOVE_AT collected 0)
+      # The possible values of CMAKE_BUILD_TYPE are Debug, Release,
+      # RelWithDebInfo and MinSizeRel, plus the LCG/Gaudi special ones
+      # Coverage and Profile. (treat an empty CMAKE_BUILD_TYPE as Release)
+      if((entry STREQUAL general) OR
+         (CMAKE_BUILD_TYPE MATCHES "Debug|Coverage" AND entry STREQUAL debug) OR
+         ((NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE MATCHES "Rel|Profile") AND entry STREQUAL optimized))
+        # we keep it only if corresponds to the build type
+        set(_coll ${_coll} ${lib})
+      endif()
+    else()
+      # it's not a qualifier: keep it
+      set(_coll ${_coll} ${entry})
+    endif()
+  endwhile()
+  set(collected ${_coll})
+  if(collected)
+    list(REMOVE_DUPLICATES collected)
+  endif()
+  set(${variable} ${collected} PARENT_SCOPE)
+endfunction()
+
+#-------------------------------------------------------------------------------
 # gaudi_resolve_link_libraries(variable lib_or_package1 lib_or_package2 ...)
 #
 # Translate the package names in a list of link library options into the
@@ -933,16 +992,14 @@ endmacro()
 function(gaudi_resolve_link_libraries variable)
   #message(STATUS "gaudi_resolve_link_libraries input: ${ARGN}")
   set(collected)
+  set(to_be_resolved)
   foreach(package ${ARGN})
     # check if it is an actual library or a target first
     if(TARGET ${package})
       set(collected ${collected} ${package})
       get_target_property(libs ${package} REQUIRED_LIBRARIES)
-      if(libs)
-        gaudi_resolve_link_libraries(libs ${libs})
-        set(collected ${collected} ${libs})
-      endif()
-    elseif(EXISTS ${package})
+      set(to_be_resolved ${to_be_resolved} ${libs})
+    elseif(EXISTS ${package}) # it's a real file
       set(collected ${collected} ${package})
     else()
       # it must be an available package
@@ -964,36 +1021,14 @@ function(gaudi_resolve_link_libraries variable)
       endif()
     endif()
   endforeach()
-  #message(STATUS "gaudi_resolve_link_libraries collected: ${collected}")
-  if(collected)
-    #message(STATUS "Stripping build type special libraries.")
-    set(_coll)
-    while(collected)
-      # pop an element (library or qualifier)
-      list(GET collected 0 entry)
-      list(REMOVE_AT collected 0)
-      if(entry STREQUAL debug OR entry STREQUAL optimized OR entry STREQUAL general)
-        # it's a qualifier: pop another one (the library name)
-        list(GET collected 0 lib)
-        list(REMOVE_AT collected 0)
-        # The possible values of CMAKE_BUILD_TYPE are Debug, Release,
-        # RelWithDebInfo and MinSizeRel, plus the LCG/Gaudi special ones
-        # Coverage and Profile. (treat an empty CMAKE_BUILD_TYPE as Release)
-        if((entry STREQUAL general) OR
-           (CMAKE_BUILD_TYPE MATCHES "Debug|Coverage" AND entry STREQUAL debug) OR
-           ((NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE MATCHES "Rel|Profile") AND entry STREQUAL optimized))
-          # we keep it only if corresponds to the build type
-          set(_coll ${_coll} ${lib})
-        endif()
-      else()
-        # it's not a qualifier: keep it
-        set(_coll ${_coll} ${entry})
-      endif()
-    endwhile()
-    set(collected ${_coll})
-    list(REMOVE_DUPLICATES collected)
-    #message(STATUS "gaudi_resolve_link_libraries output: ${collected}")
+  _gaudi_strip_build_type_libs(to_be_resolved)
+  if(to_be_resolved)
+    gaudi_resolve_link_libraries(to_be_resolved ${to_be_resolved})
+    set(collected ${collected} ${to_be_resolved})
   endif()
+  #message(STATUS "gaudi_resolve_link_libraries collected: ${collected}")
+  _gaudi_strip_build_type_libs(collected)
+  #message(STATUS "gaudi_resolve_link_libraries output: ${collected}")
   set(${variable} ${collected} PARENT_SCOPE)
 endfunction()
 
@@ -2089,11 +2124,15 @@ macro(gaudi_external_project_environment)
 
   if(CMAKE_HOST_UNIX)
     # Guess the LD_LIBRARY_PATH required by the compiler we use (only Unix).
-    execute_process(COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libstdc++.so OUTPUT_VARIABLE cpplib)
+    #message(STATUS "find libstdc++.so -> ${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} -print-file-name=libstdc++.so")
+    set(_cmd "${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} -print-file-name=libstdc++.so")
+    separate_arguments(_cmd)
+    execute_process(COMMAND ${_cmd} OUTPUT_VARIABLE cpplib)
     get_filename_component(cpplib ${cpplib} REALPATH)
     get_filename_component(cpplib ${cpplib} PATH)
     # Special hack for the way gcc is installed onf AFS at CERN.
     string(REPLACE "contrib/gcc" "external/gcc" cpplib ${cpplib})
+    #message(STATUS "C++ lib dir -> ${cpplib}")
     set(library_path2 ${cpplib})
   endif()
 
