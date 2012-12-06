@@ -1087,6 +1087,18 @@ function(gaudi_merge_files merge_tgt dest filename)
     add_custom_target(Merged${merge_tgt} ALL DEPENDS ${output})
     # prepare the high level dependencies
     add_dependencies(Merged${merge_tgt} ${deps})
+
+    # target to generate a partial merged file
+    add_custom_command(OUTPUT ${output}_force
+                       COMMAND ${merge_cmd} --ignore-missing ${parts} ${output})
+    add_custom_target(Merged${merge_tgt}_force DEPENDS ${output}_force)
+    # ensure that we merge what we have before installing if the output was not
+    # produced
+    install(CODE "if(NOT EXISTS ${output})
+                  message(WARNING \"creating partial ${output}\")
+                  execute_process(COMMAND ${merge_cmd} --ignore-missing ${parts} ${output})
+                  endif()")
+
     # install rule for the merged DB
     install(FILES ${output} DESTINATION ${dest} OPTIONAL)
   endif()
