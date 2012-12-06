@@ -228,9 +228,10 @@ macro(gaudi_project project version)
   #--- Project Installations------------------------------------------------------------------------
   install(DIRECTORY cmake/ DESTINATION cmake
                            FILES_MATCHING PATTERN "*.cmake"
-                           PATTERN ".svn" EXCLUDE )
-  install(PROGRAMS cmake/testwrap.sh cmake/testwrap.csh cmake/testwrap.bat cmake/genCMake.py cmake/env.py DESTINATION scripts OPTIONAL)
-  install(DIRECTORY cmake/EnvConfig DESTINATION scripts FILES_MATCHING PATTERN "*.py" PATTERN "*.conf")
+                           PATTERN ".svn" EXCLUDE)
+  install(PROGRAMS cmake/env.py DESTINATION scripts OPTIONAL)
+  install(DIRECTORY cmake/EnvConfig DESTINATION scripts
+          FILES_MATCHING PATTERN "*.py" PATTERN "*.conf")
 
   #--- Global actions for the project
   #message(STATUS "CMAKE_MODULE_PATH -> ${CMAKE_MODULE_PATH}")
@@ -1087,7 +1088,7 @@ function(gaudi_merge_files merge_tgt dest filename)
     # prepare the high level dependencies
     add_dependencies(Merged${merge_tgt} ${deps})
     # install rule for the merged DB
-    install(FILES ${output} DESTINATION ${dest})
+    install(FILES ${output} DESTINATION ${dest} OPTIONAL)
   endif()
 endfunction()
 
@@ -1141,7 +1142,7 @@ function(gaudi_generate_configurables library)
   gaudi_merge_files_append(ConfDB ${library}Conf ${outdir}/${library}_confDb.py)
   #----Installation details-------------------------------------------------------
   install(FILES ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py
-          DESTINATION python/${package})
+          DESTINATION python/${package} OPTIONAL)
 
   # Check if we need to install our __init__.py (i.e. it is not already installed
   # with the python modules).
@@ -1152,7 +1153,7 @@ function(gaudi_generate_configurables library)
     list(FIND python_modules ${package} got_pkg_module)
     if(got_pkg_module LESS 0)
       # we need to install our __init__.py
-      install(FILES ${outdir}/__init__.py DESTINATION python/${package})
+      install(FILES ${outdir}/__init__.py DESTINATION python/${package} OPTIONAL)
     endif()
   endif()
 
@@ -1200,7 +1201,7 @@ function(gaudi_generate_confuserdb)
                   -o ${outdir}/${package}_user_confDb.py
                   ${package} ${modules})
     install(FILES ${outdir}/${package}_user_confDb.py
-            DESTINATION python/${package})
+            DESTINATION python/${package} OPTIONAL)
     gaudi_merge_files_append(ConfDB ${package}ConfUserDB ${outdir}/${package}_user_confDb.py)
 
     # FIXME: dependency on others ConfUserDB
@@ -1436,7 +1437,7 @@ macro(_gaudi_detach_debinfo target)
         WORKING_DIRECTORY ${_builddir}
         COMMENT "Detaching debug infos for ${_tn} (${target}).")
     # ensure that the debug file is installed on 'make install'...
-    install(FILES ${_builddir}/${_tn}.dbg DESTINATION ${_dest})
+    install(FILES ${_builddir}/${_tn}.dbg DESTINATION ${_dest} OPTIONAL)
     # ... and removed on 'make clean'.
     set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${_builddir}/${_tn}.dbg)
   endif()
@@ -1492,10 +1493,10 @@ function(gaudi_add_library library)
   gaudi_add_genheader_dependencies(${library})
 
   #----Installation details-------------------------------------------------------
-  install(TARGETS ${library} EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION lib)
+  install(TARGETS ${library} EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION lib OPTIONAL)
   gaudi_export(LIBRARY ${library})
   gaudi_install_headers(${ARG_PUBLIC_HEADERS})
-  install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake)
+  install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake OPTIONAL)
 endfunction()
 
 # Backward compatibility macro
@@ -1522,7 +1523,7 @@ function(gaudi_add_module library)
   gaudi_add_genheader_dependencies(${library})
 
   #----Installation details-------------------------------------------------------
-  install(TARGETS ${library} LIBRARY DESTINATION lib)
+  install(TARGETS ${library} LIBRARY DESTINATION lib OPTIONAL)
   gaudi_export(MODULE ${library})
 endfunction()
 
@@ -1564,7 +1565,7 @@ function(gaudi_add_dictionary dictionary header selection)
   gaudi_merge_files_append(DictRootmap ${dictionary}Gen ${CMAKE_CURRENT_BINARY_DIR}/${rootmapname})
 
   #----Installation details-------------------------------------------------------
-  install(TARGETS ${dictionary}Dict LIBRARY DESTINATION lib)
+  install(TARGETS ${dictionary}Dict LIBRARY DESTINATION lib OPTIONAL)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -1592,7 +1593,7 @@ function(gaudi_add_python_module module)
   gaudi_add_genheader_dependencies(${module})
 
   #----Installation details-------------------------------------------------------
-  install(TARGETS ${module} LIBRARY DESTINATION python/lib-dynload)
+  install(TARGETS ${module} LIBRARY DESTINATION python/lib-dynload OPTIONAL)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -1619,8 +1620,8 @@ function(gaudi_add_executable executable)
   gaudi_add_genheader_dependencies(${executable})
 
   #----Installation details-------------------------------------------------------
-  install(TARGETS ${executable} EXPORT ${CMAKE_PROJECT_NAME}Exports RUNTIME DESTINATION bin)
-  install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake)
+  install(TARGETS ${executable} EXPORT ${CMAKE_PROJECT_NAME}Exports RUNTIME DESTINATION bin OPTIONAL)
+  install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake OPTIONAL)
   gaudi_export(EXECUTABLE ${executable})
 
 endfunction()
