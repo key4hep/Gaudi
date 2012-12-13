@@ -1422,5 +1422,29 @@ project TestProjectHT
 
 
 
+
+def test_alias():
+    requirements = '''
+package Test
+version v1r0
+
+alias MyCommand "Command"
+alias pypaw "pyroot -i "
+    '''
+    pkg = PackWrap("Test", requirements, files={})
+
+    cmakelists = pkg.generate()
+    print cmakelists
+
+    calls = getCalls("gaudi_alias", cmakelists)
+    assert len(calls) == 2
+
+    calls = sorted([x.strip().split() for x in calls])
+
+    assert calls[0] == ['MyCommand', 'Command'], calls[0]
+
+    assert calls[1] == ['pypaw', 'pyroot', '-i'], calls[1]
+
+
 from nose.core import main
 main()

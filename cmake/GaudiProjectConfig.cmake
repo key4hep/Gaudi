@@ -1824,6 +1824,32 @@ function(gaudi_install_scripts)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
+# gaudi_alias(name command...)
+#
+# Create a shell script that wraps the call to the specified command, as in
+# usual Unix shell aliases.
+#---------------------------------------------------------------------------------------------------
+function(gaudi_alias name)
+  if(NOT ARGN)
+    message(FATAL_ERROR "No command specified for wrapper (alias) ${name}")
+  endif()
+  # prepare actual command line
+  set(cmd)
+  foreach(arg ${ARGN})
+    set(cmd "${cmd} \"${arg}\"")
+  endforeach()
+  # create wrapper
+  file(WRITE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${name}
+       "#!/bin/sh
+exec ${cmd} \"\$@\"
+")
+  # make it executable
+  execute_process(COMMAND chmod 755 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${name})
+  # install
+  install(PROGRAMS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${name} DESTINATION scripts)
+endfunction()
+
+#---------------------------------------------------------------------------------------------------
 # gaudi_install_joboptions(<files...>)
 #
 # Install the specified options files in the directory 'jobOptions/<package>'.
