@@ -1816,6 +1816,7 @@ function(gaudi_install_scripts)
   install(DIRECTORY scripts/ DESTINATION scripts
           FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
                            GROUP_EXECUTE GROUP_READ
+                           WORLD_EXECUTE WORLD_READ
           PATTERN "CVS" EXCLUDE
           PATTERN ".svn" EXCLUDE
           PATTERN "*~" EXCLUDE
