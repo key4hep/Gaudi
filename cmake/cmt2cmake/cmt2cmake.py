@@ -139,6 +139,7 @@ def extName(n):
                'fftw': 'FFTW',
                'uuid': 'UUID',
                'fastjet': 'FastJet',
+               'lapack': 'LAPACK',
                }
     return mapping.get(n, n)
 
