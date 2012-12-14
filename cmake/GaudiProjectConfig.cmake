@@ -819,11 +819,10 @@ macro(gaudi_collect_subdir_deps)
     foreach(var ${vars})
       # extract the individual subdir names
       string(REGEX REPLACE "gaudi_depends_on_subdirs *\\(([^)]+)\\)" "\\1" __p ${var})
-      string(REGEX REPLACE "(\r?\n)+$" "" ___p "${___p}")
+      # (replace space-type chars with spaces)
+      string(REGEX REPLACE "[\t\r\n]+" " " __p "${__p}")
       separate_arguments(__p)
       foreach(___p ${__p})
-        # remove newlines in the matched subdir name
-        string(REGEX REPLACE "(\r?\n)+$" "" ___p "${___p}")
         # check that the declared dependency refers to an existing (known) package
         list(FIND known_packages ${___p} idx)
         if(idx LESS 0)
