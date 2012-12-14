@@ -20,14 +20,15 @@ class EventContext;
 
 //fwd declaration
 namespace DataSvcHelpers {
-class RegistryEntry;
+  class RegistryEntry;
 }
+class _opaque_pthread_t;
 
 // fast implementation, to be better organised.
 class EventContext{
 public:
 	long int m_evt_num;
-	unsigned long int m_thread_id;
+	_opaque_pthread_t* m_thread_id;
   DataSvcHelpers::RegistryEntry* m_registry;
 	// type is vague on purpose.
 	void* m_event_data_provider_svc;

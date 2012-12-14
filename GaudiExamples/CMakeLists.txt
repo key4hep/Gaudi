@@ -53,9 +53,11 @@ gaudi_add_library(GaudiExamplesLib src/Lib/*.cpp
 
 gaudi_add_module(GaudiExamples ${GaudiExamples_srcs} LINK_LIBRARIES GaudiExamplesLib)
 
-gaudi_add_python_module(PyExample src/PythonModule/*.cpp
-                        LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}
-                        INCLUDE_DIRS Boost PythonLibs)
+if(BOOST_python_FOUND)
+  gaudi_add_python_module(PyExample src/PythonModule/*.cpp
+                          LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}
+                          INCLUDE_DIRS Boost PythonLibs)
+endif()
 
 gaudi_install_python_modules()
 
