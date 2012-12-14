@@ -999,10 +999,14 @@ function(gaudi_resolve_link_libraries variable)
   foreach(package ${ARGN})
     # check if it is an actual library or a target first
     if(TARGET ${package})
+      #message(STATUS "${package} is a TARGET")
       set(collected ${collected} ${package})
       get_target_property(libs ${package} REQUIRED_LIBRARIES)
-      set(to_be_resolved ${to_be_resolved} ${libs})
+      if(libs)
+        set(to_be_resolved ${to_be_resolved} ${libs})
+      endif()
     elseif(EXISTS ${package}) # it's a real file
+      #message(STATUS "${package} is a FILE")
       set(collected ${collected} ${package})
     else()
       # it must be an available package
@@ -1361,7 +1365,7 @@ macro(gaudi_common_add_build)
   CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS" ${ARGN})
   # obsolete option
   if(ARG_LIBRARIES)
-    message(WARNING "Deprecated option 'LIBRARY', use 'LINK_LIBRARIES' instead")
+    message(WARNING "Deprecated option 'LIBRARIES', use 'LINK_LIBRARIES' instead")
     set(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${ARG_LIBRARIES})
   endif()
 
