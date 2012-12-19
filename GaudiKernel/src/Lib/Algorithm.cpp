@@ -83,6 +83,9 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
       m_registerContext  ,
       "The flag to enforce the registration for Algorithm Context Service") ;
 
+  declareProperty( "IsClonable"       , m_isClonable = false );      
+  declareProperty( "Cardinality"       , m_cardinality = 1 );        
+      
   // update handlers.
   m_outputLevel.declareUpdateHandler(&Algorithm::initOutputLevel, this);  
 }

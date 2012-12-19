@@ -32,6 +32,14 @@ public:
    */  
   virtual unsigned int index() = 0;
   
+  /** Specify if the algorithm is clonable
+   */ 
+  virtual bool isClonable() = 0;
+  
+  /** Cardinality (Maximum number of clones that can exist)
+   */ 
+  virtual unsigned int cardinality() = 0;
+    
   /** The data object handles associated to the algorithm
    */
   virtual const std::vector<MinimalDataObjectHandle*>& handles() = 0; 

@@ -167,7 +167,9 @@ public:
   virtual StatusCode stop () { return StatusCode::SUCCESS ; }
   /// Implementation of IStateful. Releases the handles
   virtual StatusCode finalize   () { 
-    for (auto handle:*m_dataObjectHandles) delete handle;
+    for (std::vector<MinimalDataObjectHandle*>::iterator handle=m_dataObjectHandles->begin();
+         handle != m_dataObjectHandles->end(); handle++) 
+         delete *handle;
     return StatusCode::SUCCESS ; }
 
   /// the default (empty) implementation of IStateful::reinitialize() method
@@ -556,7 +558,13 @@ public:
   }
   
   /// Return the handles declared in the algorithm
-  const std::vector<MinimalDataObjectHandle*>& handles();
+  virtual const std::vector<MinimalDataObjectHandle*>& handles();
+  
+  /// Specifies the clonability of the algorithm
+  virtual bool isClonable () { return m_isClonable; } ;
+  
+  /// Return the cardinality 
+  virtual unsigned int cardinality () { return m_cardinality; } ;
 
 protected:
 
@@ -626,6 +634,8 @@ private:
   Gaudi::StateMachine::State m_targetState;      ///< Algorithm has been initialized flag
   bool         m_isFinalized;      ///< Algorithm has been finalized flag
 
+  bool         m_isClonable; ///< The algorithm clonability of the algorithm
+  unsigned int m_cardinality; ///< The maximum number of clones that can exist
 
   /// implementation of service method
   StatusCode service_i(const std::string& svcName,
