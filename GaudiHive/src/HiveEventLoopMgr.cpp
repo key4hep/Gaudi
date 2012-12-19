@@ -551,7 +551,12 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 				for (unsigned int algo_counter=0; algo_counter<m_topAlgList.size(); algo_counter++) { // loop on algos
 					// check whether all requirements/dependencies for the algorithm are fulfilled...
 					const state_type& algo_requirements = m_all_requirements[algo_counter];
-					state_type dependencies_missing = (event_state->state() & algo_requirements) ^ algo_requirements;
+    // Very verbose!					
+    //      log << MSG::VERBOSE << "Checking dependencies for algo " << algo_counter << ":\n" 
+    //          << "  o Requirements: " <<  algo_requirements << std::endl
+    //          << "  o State: " << event_state->state() << endmsg;
+          
+          state_type dependencies_missing = (event_state->state() & algo_requirements) ^ algo_requirements;
 
 					// ...and whether the algorithm was already started and if it can be started
 					if ( (dependencies_missing == 0) &&
@@ -599,12 +604,15 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 				if( !sc.isSuccess() )  {
 					warning() << "Error getting recent new products (since last time called)" << endmsg;
 				}
-				for (std::vector<std::string>::iterator i = new_products.begin(); i != new_products.end(); i++) {
-					if (m_product_indices.count( *i ) == 1) { // only products with dependencies upon need to be announced to other algos
-						event_state->update_state(m_product_indices[*i]);
+				for (const auto& newProduct : new_products) {
+					log << MSG::DEBUG << "New Product: " << newProduct << " in the store." << endmsg;
+					if (m_product_indices.count( newProduct ) == 1) { // only products with dependencies upon need to be announced to other algos
+						log << MSG::DEBUG << "  - Used as input by some algorithm. Updating the event state." << endmsg;
+						event_state->update_state(m_product_indices[newProduct]);
 					}
 				}
 
+				
 				// Check if we stall on the current event
 				if (no_algo_can_run && // nothing could run
 						m_total_algos_in_flight==0 && // nothing is running
@@ -786,21 +794,30 @@ HiveEventLoopMgr::find_dependencies() {
 
 	unsigned int algo_counter=0;
 	unsigned int input_counter=0;
+
+	MsgStream log(msgSvc(), name());
 	// loop on the dependencies
 	for (const auto& algoDependencies : m_AlgosDependencies){ // loop on algo dependencies lists
 		state_type requirements(0);
-
+		log << MSG::DEBUG << "Algorithm " << algo_counter << " dependencies: " << endmsg;
 		for (const auto& dependency : algoDependencies){ // loop on dependencies
+			log << MSG::DEBUG << " - " << dependency << endmsg;
 			auto ret = m_product_indices.insert(std::pair<std::string, unsigned int>("/Event/"+dependency,input_counter));
 			// insert successful means == wasn't known before. So increment counter
 			if (ret.second==true) ++input_counter;
 			// in any case the return value holds the proper product index
 			requirements[ret.first->second] = true;
+			log << MSG::DEBUG << "  - Requirements now: " << requirements[ret.first->second] << endmsg; 
 		}// end loop on single dependencies
 
 		all_requirements[algo_counter] = requirements;
 		++algo_counter;
 	} // end loop on algo dependencies lists
+
+	// Loop on the product indices
+	log << MSG::DEBUG << "Product indices:" << endmsg;
+	for (auto& prod_index: m_product_indices)
+		log << MSG::DEBUG << " - " << prod_index.first << " " << prod_index.second << endmsg;
 
 	m_numberOfAlgos = algo_counter;
 	m_all_requirements = all_requirements;
