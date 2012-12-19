@@ -4,7 +4,11 @@ gaudi_depends_on_subdirs(GaudiKernel)
 
 find_package(Boost)
 find_package(AIDA)
-find_package(ROOT COMPONENTS RIO Hist Thread Matrix MathCore)
+set (XMLIO_PACKAGE_NAME XMLIO)
+if (${APPLE})
+  set (XMLIO_PACKAGE_NAME "")
+endif (${APPLE})
+find_package(ROOT COMPONENTS RIO Hist ${XMLIO_PACKAGE_NAME} Thread Matrix MathCore)
 find_package(XercesC)
 find_package(UUID)
 
