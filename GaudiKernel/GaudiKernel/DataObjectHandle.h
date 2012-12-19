@@ -56,7 +56,7 @@ StatusCode DataObjectHandle<T>::initialize(){
      m_MS = algorithm->msgSvc();
     }
    else
-     GaudiException("Cannot cast " + m_fatherAlg->name() + " to Algorithm.",
+     throw GaudiException("Cannot cast " + m_fatherAlg->name() + " to Algorithm.",
                     "Invalid Cast",
                     StatusCode::FAILURE);         
      
@@ -129,7 +129,7 @@ T* DataObjectHandle<T>::get() {
                         + " is " + std::string(typeid(tmp).name()) 
                         + " and is different form the one of the object in the store.");
         log << MSG::ERROR << errorMsg << endmsg;        
-        GaudiException (errorMsg,"Wrong DataObjectType",StatusCode::FAILURE);                
+        throw GaudiException (errorMsg,"Wrong DataObjectType",StatusCode::FAILURE);                
       }
       else{
         log << MSG::INFO <<  "The data type specified for the handle of " 
