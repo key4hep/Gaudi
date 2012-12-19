@@ -1,20 +1,20 @@
 from Gaudi.Configuration import *
 # ============================================================================
-from Configurables import GaudiExamplesCommonConf, CPUCruncher,HiveEventLoopMgr
+from Configurables import GaudiExamplesCommonConf, CPUCruncher,HiveEventLoopMgr, HiveWhiteBoard
 #GaudiExamplesCommonConf()
 # ============================================================================     
 
 #-------------------------------------------------------------------------------
 # Metaconfig
 
-NUMBEROFEVENTS = 20
+NUMBEROFEVENTS = 100
 NUMBEROFEVENTSINFLIGHT = 10
-NUMBEROFALGOSINFLIGHT = 15
-NUMBEROFTHREADS = 15
+NUMBEROFALGOSINFLIGHT = 100
+NUMBEROFTHREADS = 10
 CLONEALGOS = True
 DUMPQUEUES = False
-SCALE = 1
-VERBOSITY =5
+SCALE = .1
+VERBOSITY = 5
 
 
 NumberOfEvents = NUMBEROFEVENTS
@@ -120,6 +120,10 @@ ms.OutputLevel     =  Verbosity
 
 crunchers,inputs = load_brunel_scenario("Brunel.TES.trace.log")
 
+whiteboard   = HiveWhiteBoard("EventDataSvc",
+                              EventSlots = NumberOfEventsInFlight)
+                
+
 # Setup the Event Loop Manager
 evtloop = HiveEventLoopMgr()
 evtloop.MaxAlgosParallel = NumberOfAlgosInFlight
@@ -135,6 +139,7 @@ app.TopAlg = crunchers
 app.EvtSel = "NONE" # do not use any event input
 app.EvtMax = NumberOfEvents
 app.EventLoop = evtloop
+app.ExtSvc =[whiteboard]
 #app.MessageSvcType = "TBBMessageSvc"
 
 
