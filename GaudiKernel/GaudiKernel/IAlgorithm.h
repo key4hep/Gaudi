@@ -7,6 +7,8 @@
 #include "GaudiKernel/StateMachine.h"
 #include <string>
 
+class MinimalDataObjectHandle;
+
 /** @class IAlgorithm IAlgorithm.h GaudiKernel/IAlgorithm.h
 
     The IAlgorithm is the interface implemented by the Algorithm base class.
@@ -25,7 +27,15 @@ public:
   /** The version of the algorithm
    */
   virtual const std::string& version() const = 0;
-
+  
+  /** The index of the algorithm
+   */  
+  virtual unsigned int index() = 0;
+  
+  /** The data object handles associated to the algorithm
+   */
+  virtual const std::vector<MinimalDataObjectHandle*>& handles() = 0; 
+  
   /** The action to be performed by the algorithm on an event. This method is
       invoked once per event for top level algorithms by the application manager.
   */
