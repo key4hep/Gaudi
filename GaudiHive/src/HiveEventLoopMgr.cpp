@@ -102,7 +102,7 @@ HiveEventLoopMgr::HiveEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
 	declareProperty("MaxAlgosParallel", m_max_parallel );
 	declareProperty("MaxEventsParallel", m_evts_parallel);
 	declareProperty("NumThreads", m_num_threads);
-	declareProperty("DumpQueues", m_DumpQueues);
+	declareProperty("DumpQueues", m_DumpQueues= false);
 	declareProperty("CloneAlgorithms", m_CloneAlgorithms= false);
 	declareProperty("AlgosDependencies", m_AlgosDependencies);
 }
@@ -143,12 +143,12 @@ StatusCode HiveEventLoopMgr::initialize()    {
 		fatal() << "Error retrieving EventDataSvc interface IDataProviderSvc." << endmsg;
 		return StatusCode::FAILURE;
 	}
-  m_whiteboard = serviceLocator()->service("EventDataSvc");
+	m_whiteboard = serviceLocator()->service("EventDataSvc");
 	if( !m_evtDataSvc.isValid() )  {
 		fatal() << "Error retrieving EventDataSvc interface IHiveWhiteBoard." << endmsg;
 		return StatusCode::FAILURE;
 	}
-  m_whiteboard->setNumberOfStores(m_evts_parallel).ignore();
+	m_whiteboard->setNumberOfStores(m_evts_parallel).ignore();
 
 	// Obtain the IProperty of the ApplicationMgr
 	m_appMgrProperty = serviceLocator();
@@ -470,12 +470,12 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 			<< endmsg;
 
 	int n_processed_events = 0;
-  StatusCode sc;
-  
+	StatusCode sc;
+
 	// Create the root event into which we put all events
 	//*PM* StatusCode sc = m_evtDataMgrSvc->setRoot ("/Event", new DataObject());
 	//*PM* if( !sc.isSuccess() )  {
-	//*PM* 	warning() << "Error declaring event root DataObject" << endmsg;
+	//*PM*     warning() << "Error declaring event root DataObject" << endmsg;
 	//*PM* }
 
 	// Get the algorithm Manager
@@ -521,12 +521,12 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 			//*PM* rootRegistry->add(evt_registry);
 			//*PM* evtContext->m_registry = evt_registry;
 
-      evtContext->m_evt_slot = m_whiteboard->allocateStore(evt_num);
-      m_whiteboard->selectStore(evtContext->m_evt_slot).ignore();
-      sc = m_evtDataMgrSvc->setRoot ("/Event", new DataObject());
-      if( !sc.isSuccess() )  {
-       	warning() << "Error declaring event root DataObject" << endmsg;
-      }
+			evtContext->m_evt_slot = m_whiteboard->allocateStore(evt_num);
+			m_whiteboard->selectStore(evtContext->m_evt_slot).ignore();
+			sc = m_evtDataMgrSvc->setRoot ("/Event", new DataObject());
+			if( !sc.isSuccess() )  {
+				warning() << "Error declaring event root DataObject" << endmsg;
+			}
 
 			EventSchedulingState* event_state = new EventSchedulingState(m_topAlgList.size());
 			events_in_flight.push_back(std::make_tuple(evtContext,event_state));
@@ -580,60 +580,6 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 
 				}// end loop on algo indices
 
-				// Check whether we are in a stall situation
-				if (no_algo_can_run && // nothing can run
-						m_total_algos_in_flight==0 && // nothing is running
-						//events_in_flight.size() != 0 && // at least one event is in flight
-						in_flight_end == find_if(in_flight_begin, in_flight_end ,has_finished)){ // none finished
-
-					std::cout << "Going to check in detail\n";
-					/* Additional condition since the test above is not enough since not atomic!!
-					Indeed it could happen that:
-					o No algo could run
-					o At least one evt is in flight
-					o One algo finished, the m_total_algos_in_flight is now 0, but some input is available!
-					It would be much better to use an atomic condition, maybe via a transaction.
-					 */
-					bool stalled=true;
-					for (auto& event :events_in_flight){
-						EventSchedulingState* this_event_state = std::get<1>(event);
-						unsigned int algo_counter=0;
-						for (auto& algo_requirements:m_all_requirements ) { // loop on algos
-							// check whether all requirements/dependencies for the algorithm are fulfilled and it did not run already...
-							state_type dependencies_missing = (this_event_state->state() & algo_requirements) ^ algo_requirements;
-							if (dependencies_missing == 0 and not this_event_state->hasStarted(algo_counter)){
-								// Some algo can still be scheduled.
-								stalled=false;
-								break;
-							}
-						}
-					}
-					if (stalled){
-						std::string error("No algorithm is in flight and no algorithm can be scheduled on the events being processed.");
-						fatal() << error <<std::endl;
-						for (auto& event : events_in_flight){
-							// Show what ran
-							unsigned int algo_counter=0;
-							EventContext* this_event_Context = std::get<0>(event);
-							EventSchedulingState* this_event_state = std::get<1>(event);
-							fatal() << "Algorithms that ran for event " << this_event_Context->m_evt_num << std::endl;
-
-							for (auto& algo : m_topAlgList){
-								bool has_started = this_event_state->hasStarted(algo_counter);
-								if (has_started)
-									fatal() << " o " << algo->name() << " could run" << std::endl;
-								else
-									fatal() << " o " << algo->name() << " could NOT run" << std::endl;
-								algo_counter++;
-							} // End of internal loop on algos
-
-						} // End Internal Loop on Events in flight
-						fatal() << endmsg;
-
-
-						throw GaudiException (error,"Hive",false);
-					} // End of block executed at stall
-				} // End stall check
 
 				// update the event state with what has been put into the DataSvc
 				//*PM* bool queue_full(false);
@@ -642,22 +588,48 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 				//*PM* Hive::HiveEventRegistryEntry* hiveregistryentry= dynamic_cast<Hive::HiveEventRegistryEntry*>(event_Context->m_registry);
 				//*PM* tbb::concurrent_queue<std::string>& new_products = hiveregistryentry->new_products();
 				//*PM* do {
-				//*PM* 	queue_full = new_products.try_pop(product_name);
-				//*PM* 	if (queue_full && m_product_indices.count( product_name ) == 1) { // only products with dependencies upon need to be announced to other algos
-				//*PM* 		event_state->update_state(m_product_indices[product_name]);
-				//*PM* 	}
+				//*PM*     queue_full = new_products.try_pop(product_name);
+				//*PM*     if (queue_full && m_product_indices.count( product_name ) == 1) { // only products with dependencies upon need to be announced to other algos
+				//*PM*         event_state->update_state(m_product_indices[product_name]);
+				//*PM*     }
 				//*PM* } while (queue_full);
-        std::vector<std::string> new_products;
-        m_whiteboard->selectStore(event_Context->m_evt_slot).ignore();
-        sc = m_whiteboard->getNewDataObjects(new_products);
-        if( !sc.isSuccess() )  {
-          warning() << "Error getting recent new products (since last time called)" << endmsg;
-        }
-        for (std::vector<std::string>::iterator i = new_products.begin(); i != new_products.end(); i++) {
-          if (m_product_indices.count( *i ) == 1) { // only products with dependencies upon need to be announced to other algos
-            event_state->update_state(m_product_indices[*i]);
-          }
-        }
+				std::vector<std::string> new_products;
+				m_whiteboard->selectStore(event_Context->m_evt_slot).ignore();
+				sc = m_whiteboard->getNewDataObjects(new_products);
+				if( !sc.isSuccess() )  {
+					warning() << "Error getting recent new products (since last time called)" << endmsg;
+				}
+				for (std::vector<std::string>::iterator i = new_products.begin(); i != new_products.end(); i++) {
+					if (m_product_indices.count( *i ) == 1) { // only products with dependencies upon need to be announced to other algos
+						event_state->update_state(m_product_indices[*i]);
+					}
+				}
+
+				// Check if we stall on the current event
+				if (no_algo_can_run && // nothing could run
+						m_total_algos_in_flight==0 && // nothing is running
+						new_products.size() == 0 && // no new product available
+						! event_state->hasFinished() ){ // the event is not finished
+
+					std::string errorMessage("No algorithm can run, "
+							"no algorithm in flight, "
+							"no new products in the store, "
+							"event not complete: this is a stall.");
+					fatal() << errorMessage << std::endl
+							<< "Algorithms that ran for event " << event_Context->m_evt_num << std::endl;
+					unsigned int algo_counter=0;
+					for (auto& algo : m_topAlgList){
+						bool has_started = event_state->hasStarted(algo_counter);
+						if (has_started)
+							fatal() << " o " << algo->name() << " could run" << std::endl;
+						else
+							fatal() << " o " << algo->name() << " could NOT run" << std::endl;
+						algo_counter++;
+					} // End ofloop on algos
+					fatal() << endmsg;
+					throw GaudiException (errorMessage,"HiveEventLoopMgr",StatusCode::FAILURE);
+				}
+
 			}// end loop on evts in flight
 		}// end loop until at least one evt in flight finished
 
@@ -668,7 +640,7 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 			// Now proceed to deletion
 			if (std::get<1>(*it)->hasFinished()){
 				const unsigned int evt_num = std::get<0>(*it)->m_evt_num;
-        const unsigned int evt_slot = std::get<0>(*it)->m_evt_slot;
+				const unsigned int evt_slot = std::get<0>(*it)->m_evt_slot;
 				log << MSG::INFO << "Event "<< evt_num << " finished. Events in fight are "
 						<< events_in_flight.size() << ". Processed events are "
 						<<  n_processed_events << endmsg;
@@ -687,15 +659,15 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 				unsigned int evt_backlog=max_event_num-min_event_num;
 				always() << "Event backlog (max= " << max_event_num << ", min= "
 						<< min_event_num<<" ) = " << evt_backlog << endmsg;
-        
-        sc = m_whiteboard->clearStore(evt_slot);
-        if( !sc.isSuccess() )  {
-          warning() << "Clear of Event data store failed" << endmsg;
-        }
-        else {
-          info() << "Cleared store " << evt_slot << endmsg;
-        }
-        m_whiteboard->freeStore(evt_slot).ignore();
+
+				sc = m_whiteboard->clearStore(evt_slot);
+				if( !sc.isSuccess() )  {
+					warning() << "Clear of Event data store failed" << endmsg;
+				}
+				else {
+					info() << "Cleared store " << evt_slot << endmsg;
+				}
+				m_whiteboard->freeStore(evt_slot).ignore();
 
 				delete std::get<0>(*it);
 				delete std::get<1>(*it);
@@ -751,63 +723,63 @@ StatusCode HiveEventLoopMgr::getEventRoot(IOpaqueAddress*& refpAddr)  {
 void
 HiveEventLoopMgr::find_dependencies() {
 
-	//	/**
-	//	 * This is not very simple, but here you have the reasons:
-	//	 * o We input the inputs and outputs as "vectors" in the config as PROPERTIES
-	//	 * o The modules store this as vector of strings
-	//	 * o We need to massage them:(
-	//	 * We opt for testing the scheduler and then properly change the interfaces.
-	//	 */
-	//	auto tokenize_gaudi_string_vector =
-	//			[] (std::string s) -> const std::vector<std::string> {
-	//		for (const char c: {'\'',']','['})
-	//			replace(s.begin(), s.end(), c, ' ');
-	//		// remove spaces
-	//		s.erase(remove_if(s.begin(), s.end(), isspace), s.end());
-	//		// replace commas with spaces
-	//		replace(s.begin(), s.end(), ',', ' ');
-	//		// tokenize
-	//		std::vector<std::string> tokens;
-	//		std::stringstream os(s);
-	//		std::string tmp;
-	//		while( os >> tmp )
-	//			tokens.push_back(tmp);
-	//		return tokens;
-	//	};
+	//    /**
+	//     * This is not very simple, but here you have the reasons:
+	//     * o We input the inputs and outputs as "vectors" in the config as PROPERTIES
+	//     * o The modules store this as vector of strings
+	//     * o We need to massage them:(
+	//     * We opt for testing the scheduler and then properly change the interfaces.
+	//     */
+	//    auto tokenize_gaudi_string_vector =
+	//            [] (std::string s) -> const std::vector<std::string> {
+	//        for (const char c: {'\'',']','['})
+	//            replace(s.begin(), s.end(), c, ' ');
+	//        // remove spaces
+	//        s.erase(remove_if(s.begin(), s.end(), isspace), s.end());
+	//        // replace commas with spaces
+	//        replace(s.begin(), s.end(), ',', ' ');
+	//        // tokenize
+	//        std::vector<std::string> tokens;
+	//        std::stringstream os(s);
+	//        std::string tmp;
+	//        while( os >> tmp )
+	//            tokens.push_back(tmp);
+	//        return tokens;
+	//    };
 	//
-	//	auto get_algo_collections =
-	//			[tokenize_gaudi_string_vector] (IAlgorithm* algo, const std::string & type) -> const std::vector<std::string> {
-	//		// This is how you can get the properties from the Ialgo and not the algo!
-	//		SmartIF<IProperty> algo_properties(algo);
-	//		return tokenize_gaudi_string_vector (algo_properties->getProperty(type).toString());
-	//	};
+	//    auto get_algo_collections =
+	//            [tokenize_gaudi_string_vector] (IAlgorithm* algo, const std::string & type) -> const std::vector<std::string> {
+	//        // This is how you can get the properties from the Ialgo and not the algo!
+	//        SmartIF<IProperty> algo_properties(algo);
+	//        return tokenize_gaudi_string_vector (algo_properties->getProperty(type).toString());
+	//    };
 	//
-	//	// the lambdas above will disappear -----------------
+	//    // the lambdas above will disappear -----------------
 	//
 	//
 
-	//	// to be replaced!!
-	//	// Let's loop through all algos and their required inputs
-	//	unsigned int algo_counter(0);
-	//	unsigned int input_counter(0);
-	//	for (IAlgorithm* algo: m_topAlgList) {
-	//		const std::vector<std::string>& inputs = get_algo_collections(algo,"Inputs");
-	//		state_type requirements(0);
-	//		for (const std::string& input: inputs){
-	//			std::pair<std::map<std::string,unsigned int>::iterator,bool> ret;
-	//			ret = m_product_indices.insert(std::pair<std::string, unsigned int>("/Event/"+input,input_counter));
-	//			// insert successful means == wasn't known before. So increment counter
-	//			if (ret.second==true) {
-	//				++input_counter;
-	//			};
-	//			// in any case the return value holds the proper product index
-	//			requirements[ret.first->second] = true;
-	//		}
-	//		all_requirements[algo_counter] = requirements;
-	//		++algo_counter;
-	//	}
-	//	m_numberOfAlgos = algo_counter;
-	//	m_all_requirements = all_requirements;
+	//    // to be replaced!!
+	//    // Let's loop through all algos and their required inputs
+	//    unsigned int algo_counter(0);
+	//    unsigned int input_counter(0);
+	//    for (IAlgorithm* algo: m_topAlgList) {
+	//        const std::vector<std::string>& inputs = get_algo_collections(algo,"Inputs");
+	//        state_type requirements(0);
+	//        for (const std::string& input: inputs){
+	//            std::pair<std::map<std::string,unsigned int>::iterator,bool> ret;
+	//            ret = m_product_indices.insert(std::pair<std::string, unsigned int>("/Event/"+input,input_counter));
+	//            // insert successful means == wasn't known before. So increment counter
+	//            if (ret.second==true) {
+	//                ++input_counter;
+	//            };
+	//            // in any case the return value holds the proper product index
+	//            requirements[ret.first->second] = true;
+	//        }
+	//        all_requirements[algo_counter] = requirements;
+	//        ++algo_counter;
+	//    }
+	//    m_numberOfAlgos = algo_counter;
+	//    m_all_requirements = all_requirements;
 
 	const unsigned int n_algos = m_topAlgList.size();
 	std::vector<state_type> all_requirements(n_algos);
@@ -833,10 +805,9 @@ HiveEventLoopMgr::find_dependencies() {
 	m_numberOfAlgos = algo_counter;
 	m_all_requirements = all_requirements;
 
-
 }
 
-//------------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 
 void HiveEventLoopMgr::taskFinished(IAlgorithm*& algo){
 	SmartIF<IAlgManager> algMan(serviceLocator());
