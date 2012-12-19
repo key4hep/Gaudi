@@ -28,6 +28,7 @@ class _opaque_pthread_t;
 class EventContext{
 public:
 	long int m_evt_num;
+  size_t   m_evt_slot;
 	_opaque_pthread_t* m_thread_id;
   DataSvcHelpers::RegistryEntry* m_registry;
 	// type is vague on purpose.

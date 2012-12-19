@@ -6,10 +6,10 @@
 //  Copyright (c) 2012 __CERN__. All rights reserved.
 //
 
-#include "GaudiKernel/Algorithm.h"
+#include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiKernel/Property.h"
 
-class GAUDI_API HiveTestAlgorithm: public Algorithm {
+class GAUDI_API HiveTestAlgorithm: public GaudiAlgorithm {
  public:
 
   /**
@@ -47,6 +47,5 @@ class GAUDI_API HiveTestAlgorithm: public Algorithm {
 
   std::vector<std::string> m_inputs;
   std::vector<std::string> m_outputs;
-
 };
 
