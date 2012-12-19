@@ -123,6 +123,9 @@ StatusCode Algorithm::sysInitialize() {
   // lock the context service
   Gaudi::Utils::AlgContext cnt
     ( this , registerContext() ? contextSvc().get() : 0 ) ;
+  
+  // Get WhiteBoard interface if implemented by EventDataSvc
+  m_WB = service("EventDataSvc");
 
   // Invoke initialize() method of the derived class inside a try/catch clause
   try {
@@ -598,6 +601,9 @@ StatusCode Algorithm::sysExecute() {
   // lock the context service
   Gaudi::Utils::AlgContext cnt
     ( this , registerContext() ? contextSvc().get() : 0 ) ;
+  
+  // HiveWhiteBoard stuff here
+  if(m_WB.isValid()) m_WB->selectStore(getContext()->m_evt_slot);
 
   Gaudi::Guards::AuditorGuard guard(this,
                                     // check if we want to audit the initialize
@@ -918,6 +924,7 @@ serviceAccessor(chronoSvc, IChronoStatSvc, "ChronoStatSvc", m_CSS)
 serviceAccessor(detSvc, IDataProviderSvc, "DetectorDataSvc", m_DDS)
 serviceAccessor(detCnvSvc, IConversionSvc, "DetectorPersistencySvc", m_DCS)
 serviceAccessor(eventSvc, IDataProviderSvc, "EventDataSvc", m_EDS)
+serviceAccessor(whiteboard, IHiveWhiteBoard, "EventDataSvc", m_WB)
 serviceAccessor(eventCnvSvc, IConversionSvc, "EventPersistencySvc", m_ECS)
 serviceAccessor(histoSvc, IHistogramSvc, "HistogramDataSvc", m_HDS)
 serviceAccessor(exceptionSvc, IExceptionSvc, "ExceptionSvc", m_EXS)

@@ -143,6 +143,12 @@ StatusCode HiveEventLoopMgr::initialize()    {
 		fatal() << "Error retrieving EventDataSvc interface IDataProviderSvc." << endmsg;
 		return StatusCode::FAILURE;
 	}
+  m_whiteboard = serviceLocator()->service("EventDataSvc");
+	if( !m_evtDataSvc.isValid() )  {
+		fatal() << "Error retrieving EventDataSvc interface IHiveWhiteBoard." << endmsg;
+		return StatusCode::FAILURE;
+	}
+  m_whiteboard->setNumberOfStores(m_evts_parallel).ignore();
 
 	// Obtain the IProperty of the ApplicationMgr
 	m_appMgrProperty = serviceLocator();
@@ -463,24 +469,23 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 			<< m_num_threads << " threads."
 			<< endmsg;
 
-
-
 	int n_processed_events = 0;
-
+  StatusCode sc;
+  
 	// Create the root event into which we put all events
-	StatusCode sc = m_evtDataMgrSvc->setRoot ("/Event", new DataObject());
-	if( !sc.isSuccess() )  {
-		warning() << "Error declaring event root DataObject" << endmsg;
-	}
+	//*PM* StatusCode sc = m_evtDataMgrSvc->setRoot ("/Event", new DataObject());
+	//*PM* if( !sc.isSuccess() )  {
+	//*PM* 	warning() << "Error declaring event root DataObject" << endmsg;
+	//*PM* }
 
 	// Get the algorithm Manager
 	SmartIF<IAlgManager> algMan(serviceLocator());
 	HiveAlgorithmManager* hivealgman = dynamic_cast<HiveAlgorithmManager*> (algMan.get());
 
 	// Retrieve the event (even outside the loop?)
-	DataObject*       pObject = 0;
-	m_evtDataSvc->retrieveObject("/Event",pObject);
-	regEntry* rootRegistry = dynamic_cast<regEntry*>(pObject->registry()); //TODO: an interface in the evtDataSvc for it would come handy
+	//*PM* DataObject*       pObject = 0;
+	//*PM* m_evtDataSvc->retrieveObject("/Event",pObject);
+	//*PM* regEntry* rootRegistry = dynamic_cast<regEntry*>(pObject->registry()); //TODO: an interface in the evtDataSvc for it would come handy
 
 	// Events in flight
 	std::list<contextSchedState_tuple> events_in_flight;
@@ -511,10 +516,17 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 			const int evt_num =  n_processed_events + offset + n_events_in_flight;
 			evtContext->m_evt_num = evt_num;
 
-			std::string evtname ( "Evt_" + std::to_string(evt_num) );
-			Hive::HiveEventRegistryEntry* evt_registry = new Hive::HiveEventRegistryEntry(evtname,rootRegistry);
-			rootRegistry->add(evt_registry);
-			evtContext->m_registry = evt_registry;
+			//*PM* std::string evtname ( "Evt_" + std::to_string(evt_num) );
+			//*PM* Hive::HiveEventRegistryEntry* evt_registry = new Hive::HiveEventRegistryEntry(evtname,rootRegistry);
+			//*PM* rootRegistry->add(evt_registry);
+			//*PM* evtContext->m_registry = evt_registry;
+
+      evtContext->m_evt_slot = m_whiteboard->allocateStore(evt_num);
+      m_whiteboard->selectStore(evtContext->m_evt_slot).ignore();
+      sc = m_evtDataMgrSvc->setRoot ("/Event", new DataObject());
+      if( !sc.isSuccess() )  {
+       	warning() << "Error declaring event root DataObject" << endmsg;
+      }
 
 			EventSchedulingState* event_state = new EventSchedulingState(m_topAlgList.size());
 			events_in_flight.push_back(std::make_tuple(evtContext,event_state));
@@ -624,17 +636,28 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 				} // End stall check
 
 				// update the event state with what has been put into the DataSvc
-				bool queue_full(false);
-				std::string product_name;
+				//*PM* bool queue_full(false);
+				//*PM* std::string product_name;
 
-				Hive::HiveEventRegistryEntry* hiveregistryentry= dynamic_cast<Hive::HiveEventRegistryEntry*>(event_Context->m_registry);
-				tbb::concurrent_queue<std::string>& new_products = hiveregistryentry->new_products();
-				do {
-					queue_full = new_products.try_pop(product_name);
-					if (queue_full && m_product_indices.count( product_name ) == 1) { // only products with dependencies upon need to be announced to other algos
-						event_state->update_state(m_product_indices[product_name]);
-					}
-				} while (queue_full);
+				//*PM* Hive::HiveEventRegistryEntry* hiveregistryentry= dynamic_cast<Hive::HiveEventRegistryEntry*>(event_Context->m_registry);
+				//*PM* tbb::concurrent_queue<std::string>& new_products = hiveregistryentry->new_products();
+				//*PM* do {
+				//*PM* 	queue_full = new_products.try_pop(product_name);
+				//*PM* 	if (queue_full && m_product_indices.count( product_name ) == 1) { // only products with dependencies upon need to be announced to other algos
+				//*PM* 		event_state->update_state(m_product_indices[product_name]);
+				//*PM* 	}
+				//*PM* } while (queue_full);
+        std::vector<std::string> new_products;
+        m_whiteboard->selectStore(event_Context->m_evt_slot).ignore();
+        sc = m_whiteboard->getNewDataObjects(new_products);
+        if( !sc.isSuccess() )  {
+          warning() << "Error getting recent new products (since last time called)" << endmsg;
+        }
+        for (std::vector<std::string>::iterator i = new_products.begin(); i != new_products.end(); i++) {
+          if (m_product_indices.count( *i ) == 1) { // only products with dependencies upon need to be announced to other algos
+            event_state->update_state(m_product_indices[*i]);
+          }
+        }
 			}// end loop on evts in flight
 		}// end loop until at least one evt in flight finished
 
@@ -645,6 +668,7 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 			// Now proceed to deletion
 			if (std::get<1>(*it)->hasFinished()){
 				const unsigned int evt_num = std::get<0>(*it)->m_evt_num;
+        const unsigned int evt_slot = std::get<0>(*it)->m_evt_slot;
 				log << MSG::INFO << "Event "<< evt_num << " finished. Events in fight are "
 						<< events_in_flight.size() << ". Processed events are "
 						<<  n_processed_events << endmsg;
@@ -663,6 +687,15 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 				unsigned int evt_backlog=max_event_num-min_event_num;
 				always() << "Event backlog (max= " << max_event_num << ", min= "
 						<< min_event_num<<" ) = " << evt_backlog << endmsg;
+        
+        sc = m_whiteboard->clearStore(evt_slot);
+        if( !sc.isSuccess() )  {
+          warning() << "Clear of Event data store failed" << endmsg;
+        }
+        else {
+          info() << "Cleared store " << evt_slot << endmsg;
+        }
+        m_whiteboard->freeStore(evt_slot).ignore();
 
 				delete std::get<0>(*it);
 				delete std::get<1>(*it);

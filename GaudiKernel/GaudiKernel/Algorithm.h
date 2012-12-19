@@ -18,6 +18,7 @@
 
 // Extra include files (forward declarations should be sufficient)
 #include "GaudiKernel/IDataProviderSvc.h"
+#include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/IHistogramSvc.h"
 #include "GaudiKernel/IConversionSvc.h"
 #include "GaudiKernel/INTupleSvc.h"
@@ -324,6 +325,8 @@ public:
   SmartIF<ISvcLocator>& serviceLocator() const;
   /// shortcut for method serviceLocator
   SmartIF<ISvcLocator>& svcLoc        () const { return serviceLocator() ; }
+  
+  SmartIF<IHiveWhiteBoard>& whiteboard() const;
 
   /// register for Algorithm Context Service?
   bool registerContext() const { return m_registerContext ; }
@@ -585,6 +588,7 @@ private:
 
   mutable SmartIF<IMessageSvc>      m_MS;       ///< Message service
   mutable SmartIF<IDataProviderSvc> m_EDS;      ///< Event data service
+  mutable SmartIF<IHiveWhiteBoard>  m_WB;       ///< Event data service (whiteboard)
   mutable SmartIF<IConversionSvc>   m_ECS;      ///< Event conversion service
   mutable SmartIF<IDataProviderSvc> m_DDS;      ///< Detector data service
   mutable SmartIF<IConversionSvc>   m_DCS;      ///< Detector conversion service

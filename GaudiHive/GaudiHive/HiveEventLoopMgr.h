@@ -3,6 +3,7 @@
 
 // Framework include files
 #include "GaudiKernel/IEvtSelector.h"
+#include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/MinimalEventLoopMgr.h"
 
 // std includes
@@ -43,6 +44,8 @@ protected:
   SmartIF<IDataManagerSvc>  m_histoDataMgrSvc;
   /// Reference to the Histogram Persistency Service
   SmartIF<IConversionSvc>   m_histoPersSvc;
+  /// Reference to the Histogram Persistency Service
+  SmartIF<IHiveWhiteBoard>  m_whiteboard;
   /// Name of the Hist Pers type
   std::string       m_histPersName;
   /// Property interface of ApplicationMgr
