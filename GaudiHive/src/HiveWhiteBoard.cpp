@@ -57,6 +57,7 @@ __thread Partition* s_current(0);
  *
  * @author Markus Frank
  * @author Sebastien Ponce
+ * @author Pere Mato 
  * @version 1.0
 */
 class HiveWhiteBoard: public extends3<Service,
