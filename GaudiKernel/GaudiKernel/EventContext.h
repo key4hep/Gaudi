@@ -33,21 +33,10 @@ class _opaque_pthread_t;
 // fast implementation, to be better organised.
 class EventContext{
 public:
-	long int m_evt_num;
+  long int m_evt_num;
   size_t   m_evt_slot;
-	THREADID_TYPE m_thread_id;
+  THREADID_TYPE m_thread_id;
   DataSvcHelpers::RegistryEntry* m_registry;
-	// type is vague on purpose.
-	void* m_event_data_provider_svc;
-	void* m_event_data_conversion_svc;
-	void* m_detector_data_provider_svc;
-	void* m_detector_data_conversion_svc;
-	void* m_histogram_svc; // might not be needed if we schedule correctly. It depends on DQM design
-	void* m_chrono_stat_svc; // can we make it ts?
-	void* m_exception_svc; // can we make it ts?
-	void* m_auditor_svc; // can we make it ts?
-	void* m_tools_svc; // hic sunt leones
-	void* m_pMonitor_svc; // hic sunt leones
 };
 
 #endif //GAUDIKERNEL_EVENTCONTEXT_H
