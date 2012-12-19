@@ -24,12 +24,15 @@
 #include "GaudiKernel/ThreadGaudi.h"
 #include "GaudiKernel/Guards.h"
 
+#include "GaudiKernel/MinimalDataObjectHandle.h"
+
 // Constructor
 Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
                       const std::string& version)
   : m_event_context(nullptr),
     m_name(name),
     m_version(version),
+    m_index(123), // FIXME: to be fixed in the algorithmManager
     m_registerContext ( false ) ,
     m_pSvcLocator(pSvcLocator),
     m_filterPassed(true),
@@ -40,6 +43,7 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
 {
   m_propertyMgr = new PropertyMgr();
   m_subAlgms = new std::vector<Algorithm *>();
+  m_dataObjectHandles = new std::vector<MinimalDataObjectHandle *>();
 
   // Declare common Algorithm properties with their defaults
   declareProperty( "OutputLevel",        m_outputLevel = MSG::NIL);
@@ -80,14 +84,14 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
       "The flag to enforce the registration for Algorithm Context Service") ;
 
   // update handlers.
-  m_outputLevel.declareUpdateHandler(&Algorithm::initOutputLevel, this);
-
+  m_outputLevel.declareUpdateHandler(&Algorithm::initOutputLevel, this);  
 }
 
 // Default Destructor
 Algorithm::~Algorithm() {
   delete m_subAlgms;
   delete m_propertyMgr;
+  delete m_dataObjectHandles;
 }
 
 // IAlgorithm implementation
@@ -843,6 +847,10 @@ const std::string& Algorithm::version() const {
   return m_version;
 }
 
+unsigned int Algorithm::index() {
+  return m_index;
+}
+
 bool Algorithm::isExecuted() const {
   return m_isExecuted;
 }
@@ -1160,6 +1168,11 @@ StatusCode Algorithm::getProperty(const std::string& n, std::string& v ) const {
 const std::vector<Property*>& Algorithm::getProperties( ) const {
   return m_propertyMgr->getProperties();
 }
+
+const std::vector<MinimalDataObjectHandle*>& Algorithm::handles(){
+  return *m_dataObjectHandles;
+}
+
 
 /**
  ** Protected Member Functions

@@ -32,8 +32,10 @@
 
 // For concurrency
 #include "GaudiKernel/EventContext.h"
-
-
+#include "GaudiKernel/IDataObjectHandle.h"
+#include "GaudiKernel/MinimalDataObjectHandle.h"
+template<class T>
+class DataObjectHandle;
 
 #ifndef PACKAGE_VERSION
 #define PACKAGE_VERSION "unknown"
@@ -148,6 +150,8 @@ public:
   virtual const std::string& name() const;
 
   virtual const std::string& version() const;
+  
+  virtual unsigned int index();
 
   /// Dummy implementation of IStateful::configure() method
   virtual StatusCode configure () { return StatusCode::SUCCESS ; }
@@ -160,8 +164,10 @@ public:
   virtual StatusCode start () { return StatusCode::SUCCESS ; }
   /// the default (empty) implementation of IStateful::stop() method
   virtual StatusCode stop () { return StatusCode::SUCCESS ; }
-  /// the default (empty) implementation of IStateful::finalize() method
-  virtual StatusCode finalize   () { return StatusCode::SUCCESS ; }
+  /// Implementation of IStateful. Releases the handles
+  virtual StatusCode finalize   () { 
+    for (auto handle:*m_dataObjectHandles) delete handle;
+    return StatusCode::SUCCESS ; }
 
   /// the default (empty) implementation of IStateful::reinitialize() method
   virtual StatusCode reinitialize ();
@@ -518,6 +524,36 @@ public:
   /// set the context
   void setContext(EventContext* context){m_event_context = context;}
 
+  /// Declare data object
+  template <typename T>
+  StatusCode declareDataObj(const std::string& address, 
+                            DataObjectHandle<T>*& doh,
+                            IDataObjectHandle::AccessType accesstype=IDataObjectHandle::READ,
+                            bool is_optional=false){
+    
+    // GCCXML cannot understand c++11 yet, NULL used.
+    
+    MsgStream log ( msgSvc() , name() );
+    
+    doh = new DataObjectHandle<T>(address,
+                                  this,
+                                  accesstype,
+                                  is_optional);    
+    doh->initialize();
+
+    // Push into the handlers container
+    if (LIKELY(doh != NULL)){
+      m_dataObjectHandles->push_back(dynamic_cast<MinimalDataObjectHandle*>(doh));      
+      log << MSG::INFO << "Handle for " << address << " successfully created and stored." << endmsg; 
+      return StatusCode::SUCCESS;  
+      }
+  
+    log << MSG::ERROR << "Handle for " << address << " could not be created." << endmsg; 
+    return StatusCode::FAILURE;  
+  }
+  
+  /// Return the handles declared in the algorithm
+  const std::vector<MinimalDataObjectHandle*>& handles();
 
 protected:
 
@@ -533,16 +569,18 @@ protected:
   /// Accessor for the Message level property
   IntegerProperty & outputLevelProperty() { return m_outputLevel; }
 
-  /// callback for output level property
+  /// Callback for output level property
   void initOutputLevel(Property& prop);
 
-  // For the concurrency
-  EventContext* m_event_context; ///< Event specific data for multiple event processing
+  /// Event specific data for multiple event processing
+  EventContext* m_event_context; 
 
 private:
 
   std::string m_name;            ///< Algorithm's name for identification
   std::string m_version;         ///< Algorithm's version
+  unsigned int m_index;          ///< Algorithm's index
+  std::vector<MinimalDataObjectHandle*>* m_dataObjectHandles; ///< The data object handles. The algorithms owns those.
   std::vector<Algorithm *>* m_subAlgms; ///< Sub algorithms
 
   mutable SmartIF<IMessageSvc>      m_MS;       ///< Message service
@@ -601,5 +639,8 @@ private:
   /// Private assignment operator: NO ASSIGNMENT ALLOWED
   Algorithm& operator=(const Algorithm& rhs);
 };
+
+#include "GaudiKernel/DataObjectHandle.h"
+
 
 #endif //GAUDIKERNEL_ALGORITHM_H
