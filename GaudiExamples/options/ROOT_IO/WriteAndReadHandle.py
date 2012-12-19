@@ -37,10 +37,12 @@ GaudiPersistency()
 
 writer = WriteHandleAlg ("Writer",
                          Output="MyCollision",
-                         UseHandle=True)
+                         UseHandle=True,
+                         OutputLevel=DEBUG)
                          
 reader = ReadHandleAlg ("Reader",
-                         Input="MyCollision")                         
+                         Input="MyCollision",
+                         OutputLevel=DEBUG)                         
 
 
 # Application setup
