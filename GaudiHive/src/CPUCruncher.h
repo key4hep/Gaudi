@@ -55,25 +55,26 @@
     CPUCruncher& operator= ( const CPUCruncher& ) ; // no assignement
     /// The CPU intensive function
     void findPrimes (const unsigned long int ) ; 
-    /// putting data into the event store
-    long int write (DataObject* obj, const std::string& location){
-    	if (!m_event_context)
-    		return -1;
-      return m_event_context->m_registry->add(location,obj);
-    }
-    /// retrieving data from the event store 
-    template < typename T >    
-    T* read(const std::string& path){
-    	if (!m_event_context)
-    		return nullptr;
-      T* obj = dynamic_cast<T*>( m_event_context->m_registry->find(path)->object());
-      //      Assert(obj, "get():: No valid data at '" + path + "'");
-      return obj;
-    }
+
+// We do not need this if we have a whiteboard    
+//     /// putting data into the event store
+//     long int write (DataObject* obj, const std::string& location){
+//     	if (!m_event_context)
+//     		return -1;
+//       return m_event_context->m_registry->add(location,obj);
+//     }
+//     /// retrieving data from the event store 
+//     template < typename T >    
+//     T* read(const std::string& path){
+//     	if (!m_event_context)
+//     		return nullptr;
+//       T* obj = dynamic_cast<T*>( m_event_context->m_registry->find(path)->object());
+//       //      Assert(obj, "get():: No valid data at '" + path + "'");
+//       return obj;
+//     }
     /// Calibrate
     void calibrate();
     long unsigned int getNCaliIters(double);
-
 
     double m_avg_runtime ; //Avg Runtime
     double m_var_runtime ; //Variance of Runtime

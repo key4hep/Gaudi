@@ -1,6 +1,7 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+=============================== GaudiSvc v19r3 ===============================
 ! 2012-11-07 - Marco Clemencic
  - Fixes to use the '-pedantic' option.
 

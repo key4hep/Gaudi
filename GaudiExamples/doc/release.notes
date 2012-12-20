@@ -1,6 +1,15 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v23r5 =============================
+! 2012-11-15 - Marco Clemencic
+ - Added a test for CorruptedInputFile exit code that uses a real corrupted
+   file.
+
+! 2012-11-12 - Marco Clemencic
+ - Added a test algorithm to fire custom incidents.
+ - Test the return code in case of incident CorruptedInputFile.
+
 ! 2012-11-07 - Marco Clemencic
  - Added work-around for bug #98693:
      inconsistent behavior after segfault in Python (ROOT).

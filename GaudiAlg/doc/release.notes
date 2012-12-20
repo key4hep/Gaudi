@@ -1,6 +1,10 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+=============================== GaudiAlg v14r4 ===============================
+! 2012-11-14 - Marco Clemencic
+ - Updated CMakeLists.txt.
+
 =============================== GaudiAlg v14r3 ===============================
 ! 2012-09-13 - Marco Clemencic
  - Fixed compilation warnings.

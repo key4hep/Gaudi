@@ -216,10 +216,14 @@ void IncidentSvc::i_fireIncident
   boost::recursive_mutex::scoped_lock lock(m_listenerMapMutex);
 
   // Special case: FailInputFile incident must set the application return code
-  if (incident.type() == IncidentType::FailInputFile) {
-    // Set the return code to Gaudi::ReturnCode::FailInput (2)
+  if (incident.type() == IncidentType::FailInputFile
+      || incident.type() == IncidentType::CorruptedInputFile) {
     SmartIF<IProperty> appmgr(serviceLocator());
-    Gaudi::setAppReturnCode(appmgr, Gaudi::ReturnCode::FailInput).ignore();
+    if (incident.type() == IncidentType::FailInputFile)
+      // Set the return code to Gaudi::ReturnCode::FailInput (2)
+      Gaudi::setAppReturnCode(appmgr, Gaudi::ReturnCode::FailInput).ignore();
+    else
+      Gaudi::setAppReturnCode(appmgr, Gaudi::ReturnCode::CorruptedInput).ignore();
   }
 
   ListenerMap::iterator itmap = m_listenerMap.find( listenerType );

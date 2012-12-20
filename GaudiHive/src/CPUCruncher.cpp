@@ -256,14 +256,15 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
   	           << " on pthreadID " << getContext()->m_thread_id << endmsg;
 
   for (std::string& input : m_inputs){
-    read<DataObject>(input);
+    // We do not use this :)
+    get<DataObject>(input);
   }
 
   const unsigned long n_iters= getNCaliIters(runtime);
   findPrimes( n_iters );
 
   for (std::string& output: m_outputs){
-    write(new DataObject(), output);
+    put(new DataObject(), output);
   }
 
   tbb::tick_count endtbb=tbb::tick_count::now();
