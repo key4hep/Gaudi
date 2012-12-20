@@ -25,10 +25,12 @@ namespace DataSvcHelpers {
 class _opaque_pthread_t;
 
 // Thread id type
-#define THREADID_TYPE unsigned long int
 #ifdef __APPLE__
   #define THREADID_TYPE _opaque_pthread_t*
+#else
+  #define THREADID_TYPE unsigned long int
 #endif
+
 
 // fast implementation, to be better organised.
 class EventContext{
