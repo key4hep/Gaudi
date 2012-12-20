@@ -46,6 +46,13 @@ public:
    * @return Status code indicating failure or success.
    */
   virtual StatusCode getNewDataObjects(std::vector<std::string>& products) = 0;
+
+  /** Check if something is new in the whiteboard without getting the products.
+   *
+   * @param  products     [IN]     Partition number (event slot)   *
+   * @return Boolean indicating the presence of new products
+   */
+  virtual bool newDataObjectsPresent() = 0;  
   
   /** Allocate a store partition for new event
    *

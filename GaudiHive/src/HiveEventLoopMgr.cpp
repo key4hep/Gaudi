@@ -559,16 +559,22 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
           state_type dependencies_missing = (event_state->state() & algo_requirements) ^ algo_requirements;
 
 					// ...and whether the algorithm was already started and if it can be started
-					if ( (dependencies_missing == 0) &&
-							(event_state->hasStarted(algo_counter) ) == false &&
+          bool algo_not_started_and_dependencies_there = (dependencies_missing == 0) &&
+                                                         (event_state->hasStarted(algo_counter) ) == false;
+          
+          // It could run, just the maximum number of algos in flight has been reached
+          if (algo_not_started_and_dependencies_there)
+            no_algo_can_run = false;
+					if (algo_not_started_and_dependencies_there &&
 							(m_total_algos_in_flight < m_max_parallel )) {
-
-						no_algo_can_run = false;
-
 						// Pick the algorithm if available and if not and requested create one
 						IAlgorithm* ialgo=NULL;
-						if(hivealgman->acquireAlgorithm(algo_counter,ialgo,m_CloneAlgorithms)){
-							log << MSG::INFO << "Launching algo " << algo_counter<< endmsg;
+            // To be transferred to the algomanager, this is inefficient
+            ListAlg::iterator algoIt = m_topAlgList.begin();
+            std::advance(algoIt, algo_counter);
+            bool clone_algo = m_CloneAlgorithms && algoIt->get()->isClonable(); 
+						if(hivealgman->acquireAlgorithm(algo_counter,ialgo,clone_algo)){
+							log << MSG::INFO << "Launching algo " << algo_counter<<  " on event " << event_Context->m_evt_num << endmsg;
 							// Attach context to the algo
 							Algorithm* algo = dynamic_cast<Algorithm*> (ialgo);
 							algo->setContext(event_Context);
@@ -584,7 +590,6 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 					} // End scheduling if block
 
 				}// end loop on algo indices
-
 
 				// update the event state with what has been put into the DataSvc
 				//*PM* bool queue_full(false);
@@ -613,30 +618,50 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 				}
 
 				
-				// Check if we stall on the current event
+				/* Check if we stall on the current event
+         * One should check if:
+         * - Nothing can run 
+         * - Nothing is running
+         * - No new product is available
+         * - The event is not finished
+         * At this point one could claim a stall.
+         * The implementation poses a challenge though, which resides in the 
+         * asyncronous termination of algorithm and potential writing in the 
+         * store. Therefore one checks the 4 aforementioned conditions.
+         * Then, the store is again checked (without removing the new 
+         * elements). If something new is there the stall is not sure 
+         * anymore.
+         * Another possibility could be to check if any algo terminated 
+         * during the checks made to the wb probably.
+         */
 				if (no_algo_can_run && // nothing could run
 						m_total_algos_in_flight==0 && // nothing is running
 						new_products.size() == 0 && // no new product available
 						! event_state->hasFinished() ){ // the event is not finished
-
-					std::string errorMessage("No algorithm can run, "
-							"no algorithm in flight, "
-							"no new products in the store, "
-							"event not complete: this is a stall.");
-					fatal() << errorMessage << std::endl
-							<< "Algorithms that ran for event " << event_Context->m_evt_num << std::endl;
-					unsigned int algo_counter=0;
-					for (auto& algo : m_topAlgList){
-						bool has_started = event_state->hasStarted(algo_counter);
-						if (has_started)
-							fatal() << " o " << algo->name() << " could run" << std::endl;
-						else
-							fatal() << " o " << algo->name() << " could NOT run" << std::endl;
-						algo_counter++;
-					} // End ofloop on algos
-					fatal() << endmsg;
-					throw GaudiException (errorMessage,"HiveEventLoopMgr",StatusCode::FAILURE);
+						
+						// Check if something arrived on the wb meanwhile
+						if(!m_whiteboard->newDataObjectsPresent()){
+            
+            std::string errorMessage("No algorithm can run, "
+                "no algorithm in flight, "
+                "no new products in the store, "
+                "event not complete: this is a stall.");
+            fatal() << errorMessage << std::endl
+                << "Algorithms that ran for event " << event_Context->m_evt_num << std::endl;
+            unsigned int algo_counter=0;
+            for (auto& algo : m_topAlgList){
+              bool has_started = event_state->hasStarted(algo_counter);
+              if (has_started)
+                fatal() << " o " << algo->name() << " could run" << std::endl;
+              else
+                fatal() << " o " << algo->name() << " could NOT run" << std::endl;
+              algo_counter++;
+              } // End ofloop on algos
+            fatal() << endmsg;
+            throw GaudiException (errorMessage,"HiveEventLoopMgr",StatusCode::FAILURE);          
+            }
 				}
+
 
 			}// end loop on evts in flight
 		}// end loop until at least one evt in flight finished
@@ -667,7 +692,19 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 				unsigned int evt_backlog=max_event_num-min_event_num;
 				always() << "Event backlog (max= " << max_event_num << ", min= "
 						<< min_event_num<<" ) = " << evt_backlog << endmsg;
-
+                 
+            
+// Output
+  // Call the execute() method of all output streams
+  for (ListAlg::iterator ito = m_outStreamList.begin(); ito != m_outStreamList.end(); ito++ ) {
+    (*ito)->resetExecuted();
+    StatusCode sc;
+    sc = (*ito)->sysExecute();
+    if (UNLIKELY(!sc.isSuccess())) {
+      warning() << "Execution of output stream " << (*ito)->name() << " failed" << endmsg;
+    }
+  }
+            
 				sc = m_whiteboard->clearStore(evt_slot);
 				if( !sc.isSuccess() )  {
 					warning() << "Clear of Event data store failed" << endmsg;

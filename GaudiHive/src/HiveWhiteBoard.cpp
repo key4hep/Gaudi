@@ -30,8 +30,8 @@
 
 namespace {  
   struct Partition  {
-    IDataProviderSvc*        dataProvider;
-    IDataManagerSvc*         dataManager;
+    SmartIF<IDataProviderSvc>        dataProvider;
+    SmartIF<IDataManagerSvc>         dataManager;
     tbb::mutex               storeMutex;
     std::vector<std::string> newDataObjects;
     int                      eventNumber;
@@ -402,9 +402,15 @@ return IDataProviderSvc::INVALID_ROOT;
     return StatusCode::SUCCESS;
   }
 
+  /// Check if new DataObjects are in the current store.
+  virtual bool newDataObjectsPresent() {
+    tbb::mutex::scoped_lock lock; lock.acquire(s_current->storeMutex);
+    return s_current->newDataObjects.size()!=0;
+  }  
+  
   /// Allocate a store partition for a given event number
   virtual size_t allocateStore( int evtnumber ) {
-    size_t free = std::string::npos;
+    //size_t free = std::string::npos;
     size_t index = 0;
     for (auto& p : m_partitions ) {
       if( p.eventNumber == evtnumber) {
