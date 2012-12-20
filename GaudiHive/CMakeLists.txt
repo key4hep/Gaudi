@@ -8,8 +8,14 @@ find_package(ROOT COMPONENTS Hist RIO)
 find_package(TBB)
 find_package(pyanalysis)
 
+set (LIBRT_NAME "rt")
+if (${APPLE})
+  set (LIBRT_NAME "")
+endif (${APPLE})
+
+
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(GaudiHive
                         *.cpp 
-                        LINK_LIBRARIES GaudiKernel Boost ROOT TBB GaudiAlgLib GaudiCoreSvcHive
+                        LINK_LIBRARIES GaudiKernel Boost ROOT TBB GaudiAlgLib GaudiCoreSvcHive ${LIBRT_NAME}
                         INCLUDE_DIRS Boost ROOT AIDA TBB)
