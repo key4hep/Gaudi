@@ -8,6 +8,8 @@
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiKernel/Sleep.h"
 #include "GaudiKernel/IEventProcessor.h"
+#include "GaudiKernel/Incident.h"
+#include "GaudiKernel/IIncidentSvc.h"
 
 #include <iostream>
 
@@ -115,6 +117,55 @@ namespace GaudiTesting {
     std::string m_mode;
   };
 
+  class CustomIncidentAlg: public GaudiAlgorithm {
+  public:
+    CustomIncidentAlg(const std::string& name, ISvcLocator *pSvcLocator):
+      GaudiAlgorithm(name, pSvcLocator) {
+      declareProperty("EventCount", m_eventCount = 3,
+          "Number of events to let go before firing the incident.");
+      declareProperty("Incident", m_incident = "",
+          "Type of incident to fire.");
+    }
+    virtual ~CustomIncidentAlg(){}
+    StatusCode initialize() {
+      StatusCode sc = GaudiAlgorithm::initialize();
+      if (sc.isFailure()) return sc;
+
+      if (m_incident.empty()) {
+        error() << "The incident type (property Incident) must be declared." << endmsg;
+        return StatusCode::FAILURE;
+      }
+
+      m_incidentSvc = service("IncidentSvc");
+      if (!m_incidentSvc) return StatusCode::FAILURE;
+
+      return StatusCode::SUCCESS;
+    }
+    StatusCode execute(){
+      if (m_eventCount == 0) {
+        info() << "Firing incident " << m_incident << endmsg;
+        m_incidentSvc->fireIncident(Incident(name(), m_incident));
+      } else if (m_eventCount > 0) {
+        info() << m_eventCount << " events to go" << endmsg;
+      } else {
+        info() << "keep processing events..." << endmsg;
+      }
+      --m_eventCount;
+      return StatusCode::SUCCESS;
+    }
+    StatusCode finalize() {
+      m_incidentSvc.reset();
+      return GaudiAlgorithm::finalize();
+    }
+  private:
+    /// Events to let go before the signal
+    int m_eventCount;
+    /// Incident to fire.
+    std::string m_incident;
+    /// Incident service.
+    SmartIF<IIncidentSvc> m_incidentSvc;
+  };
+
   /**
    * Simple algorithm that raise a signal after N events.
    */
@@ -173,4 +224,5 @@ DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, DestructorCheckAlg)
 DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, SleepyAlg)
 DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, SignallingAlg)
 DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, StopLoopAlg)
+DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, CustomIncidentAlg)
 DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, GetDataObjectAlg)

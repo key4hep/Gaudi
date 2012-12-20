@@ -99,7 +99,9 @@ def main():
         ptagdir = "%s/tags/%s/%s" % (proj, proj.upper(), pvers)
         if not svn_exists(ptagdir):
             svn("mkdir", ptagdir).wait()
-            for f in ["cmt", "Makefile.cmt", "configure", "cmake", "CMakeLists.txt"]:
+            for f in ["cmt", "Makefile.cmt",
+                      "Makefile-cmake.mk", "cmake", "CMakeLists.txt",
+                      "configure", "toolchain.cmake"]:
                 svn("cp", "/".join([proj, opts.branch, f]), "/".join([ptagdir, f])).wait()
 
         # prepare package tags

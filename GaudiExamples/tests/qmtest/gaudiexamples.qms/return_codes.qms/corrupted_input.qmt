@@ -1,0 +1,31 @@
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="program"><text>gaudirun.py</text></argument>
+<argument name="args"><set>
+  <text>-v</text>
+  <text>$GAUDIEXAMPLESROOT/options/ROOT_IO/Read.py</text>
+</set></argument>
+<argument name="options"><text>
+from Gaudi.Configuration import *
+
+# produce a currupted (truncated) copy of the output of ROOT_IO/Write.py
+import shutil
+shutil.copy('ROOTIO.dst', 'ROOTIO_corrupted.dst')
+
+f = open('ROOTIO_corrupted.dst', 'rb+')
+f.seek(1024)
+f.write('corruption!')
+f.close()
+
+esel = EventSelector()
+esel.Input = ["DATAFILE='PFN:ROOTIO_corrupted.dst' SVC='Gaudi::RootEvtSelector' OPT='READ'"]
+</text></argument>
+<argument name="prerequisites"><set>
+  <tuple><text>gaudiexamples.root_io.write</text><enumeral>PASS</enumeral></tuple>
+</set></argument>
+<argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+<argument name="exit_code"><integer>16</integer></argument>
+<argument name="validator"><text>
+findReferenceBlock("ApplicationMgr      ERROR Application Manager Terminated with error code 16")
+</text></argument>
+</extension>

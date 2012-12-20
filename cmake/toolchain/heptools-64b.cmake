@@ -3,25 +3,26 @@ cmake_minimum_required(VERSION 2.8.5)
 # Declare the version of HEP Tools we use
 # (must be done before including heptools-common to allow evolution of the
 # structure)
-set(heptools_version  64a)
+set(heptools_version  64b)
 
 include(${CMAKE_CURRENT_LIST_DIR}/heptools-common.cmake)
 
 # please keep alphabetic order and the structure (tabbing).
 # it makes it much easier to edit/read this file!
 
+
 # Application Area Projects
-LCG_AA_project(COOL  COOL_2_8_14)
-LCG_AA_project(CORAL CORAL_2_3_23)
-LCG_AA_project(RELAX RELAX_1_3_0h)
-LCG_AA_project(ROOT  5.34.00)
+LCG_AA_project(COOL  COOL_2_8_15)
+LCG_AA_project(CORAL CORAL_2_3_24)
+LCG_AA_project(RELAX RELAX_1_3_0i)
+LCG_AA_project(ROOT  5.34.03)
 
 # Compilers
-LCG_compiler(gcc43 gcc 4.3.5)
+LCG_compiler(gcc43 gcc 4.3.6)
 LCG_compiler(gcc46 gcc 4.6.2)
-LCG_compiler(gcc47 gcc 4.7.0)
+LCG_compiler(gcc47 gcc 4.7.2)
 LCG_compiler(clang30 clang 3.0)
-LCG_compiler(gccmax gcc 4.7.0)
+LCG_compiler(gccmax gcc 4.7.2)
 
 # Externals
 LCG_external_package(4suite            1.0.2p1                                  )
@@ -59,7 +60,7 @@ LCG_external_package(dcache_srm        1.9.5-23                                 
 LCG_external_package(doxygen           1.7.6                                    )
 LCG_external_package(dpm               1.7.4-7sec                               )
 LCG_external_package(Expat             2.0.1                                    )
-LCG_external_package(fastjet           2.4.4                                    )
+LCG_external_package(fastjet           3.0.3                                    )
 if(NOT APPLE)
 LCG_external_package(fftw              3.1.2                     fftw3          )
 else()
@@ -104,7 +105,7 @@ LCG_external_package(neurobayes        3.7.0                                    
 LCG_external_package(neurobayes_expert 3.7.0                                    )
 LCG_external_package(nose              1.1.2                                    )
 LCG_external_package(numpy             1.6.1                                    )
-LCG_external_package(oracle            11.2.0.1.0p3                             )
+LCG_external_package(oracle            11.2.0.3.0                               )
 LCG_external_package(processing        0.52                                     )
 LCG_external_package(py                1.4.8                                    )
 if(LCG_SYSTEM MATCHES "-slc6-")
@@ -140,7 +141,7 @@ LCG_external_package(sqlite            3070900                                  
 LCG_external_package(stomppy           3.1.3                                    )
 LCG_external_package(storm             0.19                                     )
 LCG_external_package(sympy             0.7.1                                    )
-LCG_external_package(TBB               tbb40_20120613oss         tbb            )
+LCG_external_package(TBB               41_20121003               tbb            )
 LCG_external_package(tcmalloc          1.7p3                                    )
 if(NOT LCG_SYSTEM MATCHES "-slc6-") # uuid is not distributed with SLC6
 LCG_external_package(uuid              1.42                                     )

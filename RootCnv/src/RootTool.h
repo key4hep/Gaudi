@@ -1,4 +1,3 @@
-
 /*
 * Gaudi namespace declaration
 */
@@ -113,6 +112,7 @@ namespace Gaudi {
       if ( b ) {
         TLeaf* l = b->GetLeaf(nam);
         if ( l ) {
+	  StatusCode sc = StatusCode::SUCCESS;
           b->SetAddress(text);
           msgSvc() << MSG::VERBOSE;
           for(Long64_t i=0, n=b->GetEntries(); i<n; ++i) {
@@ -121,12 +121,15 @@ namespace Gaudi {
               msgSvc() << "Add Value[" << b->GetName() << "]:" << p << endmsg;
               (this->*pmf)(v,p);
             }
+	    else {
+	      sc = RootDataConnection::ROOT_READ_ERROR;
+	    }
           }
-          return StatusCode::SUCCESS;
+          return sc;
         }
       }
       msgSvc() << MSG::ERROR << "Failed to read '" << nam << "' table." << endmsg;
-      return StatusCode::FAILURE;
+      return RootDataConnection::ROOT_READ_ERROR;
     }
     /// Analyze the Sections table entries
     bool get(const string& dsc, pair<string,ContainerSection>& e) {
@@ -192,20 +195,21 @@ namespace Gaudi {
     /// Read reference tables
     StatusCode readRefs()  {
       TTree* t = (TTree*)c->file()->Get("Sections");
+      StatusCode sc(StatusCode::SUCCESS,true);
       StringVec tmp;
-      if ( t && !readBranch(t,  "Sections",  tmp,       &RootTool::addEntry).isSuccess() )
-        return StatusCode::FAILURE;
+      if ( t && !(sc=readBranch(t,  "Sections",  tmp,       &RootTool::addEntry)).isSuccess() )
+        return sc;
       else if ( refs() ) {
         analyzeMergeMap(tmp);
-        if ( !readBranch(refs(),"Databases", dbs(),     &RootTool::addEntry).isSuccess() )
-          return StatusCode::FAILURE;
-        if ( !readBranch(refs(),"Containers",conts(),   &RootTool::addEntry).isSuccess() )
-          return StatusCode::FAILURE;
-        if ( !readBranch(refs(),"Links",     links(),   &RootTool::addEntry).isSuccess() )
-          return StatusCode::FAILURE;
-        if ( !readBranch(refs(),"Params",    params(),  &RootTool::addParam).isSuccess() )
-          return StatusCode::FAILURE;
-        return StatusCode::SUCCESS;
+        if ( !(sc=readBranch(refs(),"Databases", dbs(),     &RootTool::addEntry)).isSuccess() )
+          return sc;
+        if ( !(sc=readBranch(refs(),"Containers",conts(),   &RootTool::addEntry)).isSuccess() )
+          return sc;
+	if ( !(sc=readBranch(refs(),"Links",     links(),   &RootTool::addEntry)).isSuccess() )
+          return sc;
+	if ( !(sc=readBranch(refs(),"Params",    params(),  &RootTool::addParam)).isSuccess() )
+          return sc;
+        return sc;
       }
       return StatusCode::FAILURE;
     }
@@ -226,7 +230,7 @@ namespace Gaudi {
           val = (this->*pmf)(v[size_t(i)]);
           b->SetAddress((char*)val.c_str());
           msgSvc() << MSG::VERBOSE << "Save Value[" << b->GetName() << "]:" << val << endmsg;
-          if ( b->Fill() <= 1) sc = StatusCode::FAILURE;
+          if ( b->Fill() < 0 ) sc = StatusCode::FAILURE;
         }
         return sc;
       }

@@ -1,6 +1,10 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+============================== GaudiUtils v4r3 ===============================
+! 2012-11-14 - Marco Clemencic
+ - Updated CMakeLists.txt.
+
 ============================== GaudiUtils v4r2 ===============================
 ! 2012-07-13 - Marco Clemencic
  - Fixed configuration for Boost 1.50.
