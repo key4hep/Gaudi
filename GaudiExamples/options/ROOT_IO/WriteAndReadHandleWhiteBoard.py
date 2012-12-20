@@ -17,6 +17,8 @@ dst.Output    = "DATAFILE='PFN:HandleWB_ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT
 mini          = OutputStream("RootMini")
 mini.ItemList = ["/Event#1"]
 mini.Output   = "DATAFILE='PFN:HandleWB_ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'";
+mini.OutputLevel = VERBOSE
+
 
 # - File Summary Record
 fsr                   = RecordStream("FileRecords")
@@ -28,7 +30,7 @@ fsr.EvtConversionSvc  = FileRecordPersistencySvc()
 FileCatalog(Catalogs = [ "xmlcatalog_file:HandleWB_ROOTIO.xml" ])
 
 # Output Levels
-MessageSvc(OutputLevel=VERBOSE)
+MessageSvc(OutputLevel=WARNING)
 IncidentSvc(OutputLevel=DEBUG)
 RootCnvSvc(OutputLevel=INFO)
 
@@ -38,31 +40,41 @@ product_name="MyCollision"
 
 writer = WriteHandleAlg ("Writer",
                          Output="/Event/"+product_name,
-                         UseHandle=True)
+                         UseHandle=True,
+                         IsClonable=True)
                          
 reader = ReadHandleAlg ("Reader",
-                         Input=product_name)                         
+                         Input=product_name,
+                         IsClonable=True)                         
 
                          
-evtslots = 10   
+evtslots = 15
+algoparallel = 10
 
 whiteboard   = HiveWhiteBoard("EventDataSvc",
                               EventSlots = evtslots)
-
+                                                                                     
 eventloopmgr = HiveEventLoopMgr(MaxEventsParallel = evtslots,
-                                MaxAlgosParallel  = 20,
+                                MaxAlgosParallel  = algoparallel,
                                 CloneAlgorithms = True,
-				DumpQueues = True,
-                                AlgosDependencies = [[],[product_name]])
-                              
+                                DumpQueues = True,
+                                NumThreads = algoparallel,
+                                AlgosDependencies = [[],[product_name],[product_name]])
+
+                                
 # Application setup
 app = ApplicationMgr()
-# - I/O for the time being absent because of error to be solved
-#app.OutStream += [ dst, mini, fsr ]
+# - I/O
+# Do not put them here, but as normal algorithms.
+# Putting two of them in the top alg list will not work if more than one
+# algo is allowed to be in flight: at some point they will write to disk 
+# simultaneously, with catastrophic effects.
+
+#app.OutStream += [ mini ]
 # - Algorithms
-app.TopAlg = [ writer, reader ]
+app.TopAlg = [ writer, reader,mini]
 # - Events
-app.EvtMax   = 100
+app.EvtMax   = 50
 app.EvtSel   = "NONE" # do not use any event input
 app.HistogramPersistency = "NONE"
 app.ExtSvc = [whiteboard]
