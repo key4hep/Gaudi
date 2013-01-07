@@ -19,3 +19,11 @@ gaudi_add_module(GaudiHive
                         *.cpp 
                         LINK_LIBRARIES GaudiKernel Boost ROOT TBB GaudiAlgLib GaudiCoreSvcHive ${LIBRT_NAME}
                         INCLUDE_DIRS Boost ROOT AIDA TBB)
+                        
+gaudi_add_test(WhiteBoard
+               FRAMEWORK options/testWhiteBoard.py
+               ENVIRONMENT JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options)
+
+gaudi_add_test(CPUCruncher
+               FRAMEWORK options/CPUCruncher.py
+               ENVIRONMENT JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options)

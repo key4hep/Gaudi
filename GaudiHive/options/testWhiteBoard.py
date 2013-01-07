@@ -7,6 +7,7 @@ whiteboard   = HiveWhiteBoard("EventDataSvc",
                               EventSlots = evtslots)
 eventloopmgr = HiveEventLoopMgr(MaxEventsParallel = evtslots,
                                 MaxAlgosParallel  = 20,
+                                NumThreads = 8,
                                 AlgosDependencies = [[],['a1'],['a1'],['a2','a3']])
 
 a1 = HiveTestAlgorithm("A1", Outputs = ['/Event/a1'])
