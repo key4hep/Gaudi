@@ -46,9 +46,8 @@ StatusCode HiveAlgorithmManager::addAlgorithm(IAlgorithm* alg) {
 }
 
 StatusCode HiveAlgorithmManager::m_addAlgorithm(IAlgorithm* alg,
-												const std::string& name,
-												const std::string& type ){
-
+                                                const std::string& name,
+                                                const std::string& type ){
 
 	StatusCode sc;
 
