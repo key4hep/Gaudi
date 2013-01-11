@@ -473,20 +473,10 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
   bool eof = false;
 	StatusCode sc;
 
-	// Create the root event into which we put all events
-	//*PM* StatusCode sc = m_evtDataMgrSvc->setRoot ("/Event", new DataObject());
-	//*PM* if( !sc.isSuccess() )  {
-	//*PM*     warning() << "Error declaring event root DataObject" << endmsg;
-	//*PM* }
-
 	// Get the algorithm Manager
+        // BH: we rather want to have an AlgoPool which is different from the AlgorithmManager 
 	SmartIF<IAlgManager> algMan(serviceLocator());
 	HiveAlgorithmManager* hivealgman = dynamic_cast<HiveAlgorithmManager*> (algMan.get());
-
-	// Retrieve the event (even outside the loop?)
-	//*PM* DataObject*       pObject = 0;
-	//*PM* m_evtDataSvc->retrieveObject("/Event",pObject);
-	//*PM* regEntry* rootRegistry = dynamic_cast<regEntry*>(pObject->registry()); //TODO: an interface in the evtDataSvc for it would come handy
 
 	// Events in flight
 	std::list<contextSchedState_tuple> events_in_flight;
@@ -788,64 +778,6 @@ StatusCode HiveEventLoopMgr::getEventRoot(IOpaqueAddress*& refpAddr)  {
 /// Compute dependencies between the algorithms
 void
 HiveEventLoopMgr::find_dependencies() {
-
-	//    /**
-	//     * This is not very simple, but here you have the reasons:
-	//     * o We input the inputs and outputs as "vectors" in the config as PROPERTIES
-	//     * o The modules store this as vector of strings
-	//     * o We need to massage them:(
-	//     * We opt for testing the scheduler and then properly change the interfaces.
-	//     */
-	//    auto tokenize_gaudi_string_vector =
-	//            [] (std::string s) -> const std::vector<std::string> {
-	//        for (const char c: {'\'',']','['})
-	//            replace(s.begin(), s.end(), c, ' ');
-	//        // remove spaces
-	//        s.erase(remove_if(s.begin(), s.end(), isspace), s.end());
-	//        // replace commas with spaces
-	//        replace(s.begin(), s.end(), ',', ' ');
-	//        // tokenize
-	//        std::vector<std::string> tokens;
-	//        std::stringstream os(s);
-	//        std::string tmp;
-	//        while( os >> tmp )
-	//            tokens.push_back(tmp);
-	//        return tokens;
-	//    };
-	//
-	//    auto get_algo_collections =
-	//            [tokenize_gaudi_string_vector] (IAlgorithm* algo, const std::string & type) -> const std::vector<std::string> {
-	//        // This is how you can get the properties from the Ialgo and not the algo!
-	//        SmartIF<IProperty> algo_properties(algo);
-	//        return tokenize_gaudi_string_vector (algo_properties->getProperty(type).toString());
-	//    };
-	//
-	//    // the lambdas above will disappear -----------------
-	//
-	//
-
-	//    // to be replaced!!
-	//    // Let's loop through all algos and their required inputs
-	//    unsigned int algo_counter(0);
-	//    unsigned int input_counter(0);
-	//    for (IAlgorithm* algo: m_topAlgList) {
-	//        const std::vector<std::string>& inputs = get_algo_collections(algo,"Inputs");
-	//        state_type requirements(0);
-	//        for (const std::string& input: inputs){
-	//            std::pair<std::map<std::string,unsigned int>::iterator,bool> ret;
-	//            ret = m_product_indices.insert(std::pair<std::string, unsigned int>("/Event/"+input,input_counter));
-	//            // insert successful means == wasn't known before. So increment counter
-	//            if (ret.second==true) {
-	//                ++input_counter;
-	//            };
-	//            // in any case the return value holds the proper product index
-	//            requirements[ret.first->second] = true;
-	//        }
-	//        all_requirements[algo_counter] = requirements;
-	//        ++algo_counter;
-	//    }
-	//    m_numberOfAlgos = algo_counter;
-	//    m_all_requirements = all_requirements;
 
 	const unsigned int n_algos = m_topAlgList.size();
 	std::vector<state_type> all_requirements(n_algos);

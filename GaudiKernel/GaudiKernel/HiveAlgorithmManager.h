@@ -53,7 +53,6 @@ public:
   typedef std::vector<AlgConcQueue*> AlgConcQueues;
   typedef std::vector<std::string> Strings;
 
-
   class NameTypeCollection{
   public:
 	  NameTypeCollection(){
@@ -120,12 +119,11 @@ public:
 
   /// Bootstrap an algorithm from its index
   StatusCode createAlgorithm(const unsigned int index,
-                               IAlgorithm*& ialgorithm){
-	  StatusCode sc = createAlgorithm(m_name_type_collection.getType(index),
-			   	   	   	     m_name_type_collection.getName(index),
-			   	   	   	     ialgorithm);
-
-	  return sc;
+                             IAlgorithm*& ialgorithm){
+      StatusCode sc = createAlgorithm(m_name_type_collection.getType(index),
+                                      m_name_type_collection.getName(index),
+                                      ialgorithm);
+      return sc;
   }
 
   /// implementation of IAlgManager::existsAlgorithm
@@ -165,17 +163,13 @@ public:
   }
 
   StatusCode acquireAlgorithm(const unsigned int index,IAlgorithm*& algo, bool createIfAbsent=false){
-
-	  StatusCode sc = m_alg_conc_queues[index]->try_pop(algo);
-
-	  if (createIfAbsent)
-		  while(!sc.isSuccess()){
-		  createAlgorithm(index,algo);
-		  sc = m_alg_conc_queues[index]->try_pop(algo);
-	  }
-
+      StatusCode sc = m_alg_conc_queues[index]->try_pop(algo);
+      if (createIfAbsent)
+          while(!sc.isSuccess()){
+              createAlgorithm(index,algo);
+               sc = m_alg_conc_queues[index]->try_pop(algo);
+          }
       return sc;
-
   }
 
   void releaseAlgorithm(const std::string& name,IAlgorithm*& algo){
@@ -207,8 +201,8 @@ private:
   StatusCode m_removeAlgorithm(const int index);
 
   StatusCode m_addAlgorithm(IAlgorithm* alg,
-  			      			const std::string& name,
-  							const std::string& type );
+                            const std::string& name,
+                            const std::string& type );
 
 };
 #endif  // GAUDISVC_ALGORITHMFACTORY_H
