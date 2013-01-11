@@ -39,6 +39,7 @@ def analyze_and_fix_cycles(gr):
       print "Removed loop by deleting edge (%s,%s)" %(cycle[-1],cycle[0])
       gr.del_edge((cycle[-1],cycle[0]))
     print "\nIN TOTAL %i CYCLES\n" %(n_cycles)
+    return n_cycles >0 #whether it needed to fix cycles 
 
 def analyze_connected_componets(gr):
     cc = connected_components(gr)
@@ -71,13 +72,48 @@ def analyze_critical_path(gr):
     print "POSSIBLE SPEEDUP: %s" %(total_time/critical_time)
  
 
+def print_graph_to_json(gr,filename):
+    algorithms = {} #still make it known to workflow
+    known_names = set()
+    for edge in gr.edges():
+        if edge[0].endswith("_algo"):   
+          algoname = edge[0].rstrip("_algo")
+          product = edge[1]
+          reading = False
+        else:
+          algoname = edge[1].rstrip("_algo")
+          product = edge[0]
+          reading = True 
+    
+        if algoname not in known_names:
+            algorithms[algoname] = {"name":    algoname,
+                                    "inputs":  [],
+                                    "outputs": [],
+                                    "runtimes": [1000], #TODO dummy
+                                    "runtimes_wall" : [1000] #TODO dummy
+                                    }
+            known_names.add(algoname)
+        if reading:
+            algorithms[algoname]["inputs"].append(product)
+        else:
+            algorithms[algoname]["outputs"].append(product)
+            algorithms[algoname]["runtimes_wall"] = [gr.edge_weight(edge)/100,]
+    out = open(filename,"w")    
+    algorithm_list = [item for item in algorithms.values()]
+    workflow = { "algorithms" : algorithm_list}
+    out.write(workflow.__repr__())
+    out.close()
+
 ##########################  
 if __name__ == "__main__":
-  filename = "lhcb.json"
+  filename = "Athena.json"
   gr = read_graph_from_json(filename)
   
   # let's analysis and fix for loops:
-  analyze_and_fix_cycles(gr)
+  had_to_fix_cycles = analyze_and_fix_cycles(gr)
+  # write file with fixed graph
+  if had_to_fix_cycles:
+    print_graph_to_json(gr,filename.replace(".json","_loopfixed.json")) 
 
   # see how many disconnected components are there
   analyze_connected_componets(gr)
