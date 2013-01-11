@@ -1,7 +1,7 @@
 import json
 from Gaudi.Configuration import *
 # ============================================================================
-from Configurables import GaudiExamplesCommonConf, CPUCruncher,HiveEventLoopMgr
+from Configurables import GaudiExamplesCommonConf, CPUCruncher,HiveEventLoopMgr, HiveWhiteBoard
 #GaudiExamplesCommonConf()
 # ============================================================================     
 
@@ -36,13 +36,17 @@ def load_athena_scenario(filename):
   for algo in workflow["algorithms"]:
     # Correct in presence of list wi
     for starputs in ("inputs","outputs"):
-      if algo[starputs] == ['']: algo[starputs] = []        
+      algo[starputs] = [item.replace("/","_") for item in algo[starputs]]
+      if algo[starputs] == ['']: algo[starputs] = []
+      if algo[starputs] == ['dummy']: algo[starputs] = []
     cleaned_inputs = [input for input in algo["inputs"] if (input not in algo["outputs"] ) ]
 
+    # fix double declaration of outputs (nokey)
+    cleaned_outputs = [output for output in algo["outputs"] if (output not in all_outputs)]
     new_algo = CPUCruncher(algo["name"],
-                           avgRuntime=float(algo["runtimes_wall"][1]/1000000.),
+                           avgRuntime=float(algo["runtimes"][0]/1000000.),
                            Inputs = cleaned_inputs,
-                           Outputs = algo["outputs"]
+                           Outputs = cleaned_outputs
                            )
     cpu_cruncher_algos.append(new_algo)
     all_outputs.update(algo["outputs"])
@@ -59,19 +63,24 @@ def load_athena_scenario(filename):
   cpu_cruncher_algos_inputs.append([])
 
   print [item for item in all_inputs.difference(all_outputs)]
+
+  print len(all_outputs)
+  print len(cpu_cruncher_algos)
   return cpu_cruncher_algos,cpu_cruncher_algos_inputs
         
 # Set output level threshold 2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
 ms = MessageSvc() 
 ms.OutputLevel     =  Verbosity
 
-crunchers,inputs = load_athena_scenario("Athena.json")
+crunchers,inputs = load_athena_scenario("Athena_loopfixed.json")
+
+whiteboard   = HiveWhiteBoard("EventDataSvc", EventSlots = NumberOfEventsInFlight)
 
 # Setup the Event Loop Manager
 evtloop = HiveEventLoopMgr()
 evtloop.MaxAlgosParallel = NumberOfAlgosInFlight
 evtloop.MaxEventsParallel = NumberOfEventsInFlight
-evtloop.NumThreads = NumberOfThreads 
+evtloop.NumThreads = NumberOfThreads
 evtloop.CloneAlgorithms = CloneAlgos
 evtloop.DumpQueues = DumpQueues
 evtloop.AlgosDependencies = inputs
@@ -82,6 +91,6 @@ app.TopAlg = crunchers
 app.EvtSel = "NONE" # do not use any event input
 app.EvtMax = NumberOfEvents
 app.EventLoop = evtloop
+app.ExtSvc =[whiteboard]
 #app.MessageSvcType = "TBBMessageSvc"
-
 
