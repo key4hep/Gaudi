@@ -27,3 +27,11 @@ gaudi_add_test(WhiteBoard
 gaudi_add_test(CPUCruncher
                FRAMEWORK options/CPUCruncher.py
                ENVIRONMENT JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options)
+
+gaudi_add_test(WriteWhiteBoard
+               FRAMEWORK options/WriteWhiteBoard.py
+               ENVIRONMENT JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options)
+
+gaudi_add_test(ReadWhiteBoard
+               FRAMEWORK options/ReadWhiteBoard.py
+               ENVIRONMENT JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options)

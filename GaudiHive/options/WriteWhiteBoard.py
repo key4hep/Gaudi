@@ -62,7 +62,7 @@ eventloopmgr = HiveEventLoopMgr(MaxEventsParallel = evtslots,
                                 AlgosDependencies = [[],[product_name]])
                                 
 # Application setup
-ApplicationMgr( TopAlg = [writer, mini],
+ApplicationMgr( TopAlg = [writer, dst],
                 EvtMax   = 50,
                 EvtSel   = "NONE", # do not use any event input
                 HistogramPersistency = "NONE",

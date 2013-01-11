@@ -4,9 +4,7 @@
 
 from Gaudi.Configuration import *
 from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
-from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveEventLoopMgr
-
-
+from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveEventLoopMgr, HiveReadAlgorithm
 
 # Output Levels
 MessageSvc(OutputLevel=WARNING)
@@ -17,10 +15,13 @@ SequencerTimerTool(OutputLevel=WARNING)
 GaudiPersistency()
 
 EventSelector(OutputLevel=DEBUG, PrintFreq=50, FirstEvent=1,
-              Input = ["DATAFILE='PFN:HandleWB_ROOTIO.mdst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"])
+              Input = ["DATAFILE='PFN:/Users/mato/Development/CF4Hep/build/HandleWB_ROOTIO.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"])
 FileCatalog(Catalogs = [ "xmlcatalog_file:HandleWB_ROOTIO.xml" ])
 
 product_name="MyCollision"
+
+loader = HiveReadAlgorithm("Loader",
+                           OutputLevel=INFO)
 
 writer = WriteHandleAlg ("Writer",
                          Output="/Event/"+product_name,
@@ -29,9 +30,10 @@ writer = WriteHandleAlg ("Writer",
                          
 reader = ReadHandleAlg ("Reader",
                          Input=product_name,
-                         IsClonable=True)
-                         
-evtslots = 15
+                         IsClonable=True,
+                         OutputLevel=INFO )
+
+evtslots = 5
 algoparallel = 10
 
 whiteboard   = HiveWhiteBoard("EventDataSvc",
@@ -45,7 +47,7 @@ eventloopmgr = HiveEventLoopMgr(MaxEventsParallel = evtslots,
                                 AlgosDependencies = [[],[product_name]])
                                 
 # Application setup
-ApplicationMgr( TopAlg = [reader],
+ApplicationMgr( TopAlg = [loader, reader],
                 EvtMax   = -1,
                 HistogramPersistency = "NONE",
                 ExtSvc = [whiteboard],

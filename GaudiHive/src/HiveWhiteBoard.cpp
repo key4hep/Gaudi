@@ -23,7 +23,9 @@
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IAddressCreator.h"
 #include "GaudiKernel/IDataProviderSvc.h"
+#include "GaudiKernel/IDataStoreAgent.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
+#include "GaudiKernel/IRegistry.h"
 
 // Forward declarations
 
@@ -42,6 +44,22 @@ namespace {
       dataProvider = entry.dataProvider;
       dataManager = entry.dataManager;
       return *this;
+    }
+  };
+  class DataAgent : virtual public IDataStoreAgent  {
+  private:
+    std::vector<std::string>& m_dataObjects;
+  public:
+    DataAgent(std::vector<std::string>& objs) : m_dataObjects(objs) {}
+    virtual ~DataAgent() {}
+    virtual bool analyse(IRegistry* pReg, int )   {
+      if (0 != pReg->object()) {
+        m_dataObjects.push_back(pReg->identifier());
+        return true;
+      }
+      else {
+        return false;
+      }
     }
   };
 }
@@ -183,41 +201,49 @@ return IDataProviderSvc::INVALID_ROOT;
 
   /// IDataManagerSvc: Pass a default data loader to the service.
   virtual StatusCode setDataLoader(IConversionSvc* pDataLoader)  {
-    Partitions::iterator i;
     if ( 0 != pDataLoader  ) pDataLoader->addRef();
     if ( 0 != m_dataLoader ) m_dataLoader->release();
     if ( 0 != pDataLoader  )    {
       pDataLoader->setDataProvider(this);
     }
     m_dataLoader = pDataLoader;
-    for(i=m_partitions.begin(); i != m_partitions.end(); ++i) {
-      (*i).dataManager->setDataLoader(m_dataLoader).ignore();
+    for(auto& p: m_partitions) {
+      p.dataManager->setDataLoader(m_dataLoader).ignore();
     }
     return SUCCESS;
   }
   /// Add an item to the preload list
   virtual StatusCode addPreLoadItem(const DataStoreItem& item)    {
-    _CALL(dataProvider, addPreLoadItem, (item));
+    for(auto& p: m_partitions) p.dataProvider->addPreLoadItem(item);
+    return StatusCode::SUCCESS;
   }
   /// Add an item to the preload list
   virtual StatusCode addPreLoadItem(const std::string& item)   {
-    _CALL(dataProvider, addPreLoadItem, (item));
+    for(auto& p: m_partitions) p.dataProvider->addPreLoadItem(item);
+    return StatusCode::SUCCESS;
   }
   /// Remove an item from the preload list
   virtual StatusCode removePreLoadItem(const DataStoreItem& item)  {
-    _CALL(dataProvider, removePreLoadItem, (item));
+    for(auto& p: m_partitions) p.dataProvider->removePreLoadItem(item);
+    return StatusCode::SUCCESS;
   }
   /// Add an item to the preload list
   virtual StatusCode removePreLoadItem(const std::string& item)  {
-    _CALL(dataProvider, removePreLoadItem, (item));
+    for(auto& p: m_partitions) p.dataProvider->removePreLoadItem(item);
+    return StatusCode::SUCCESS;
   }
   /// Clear the preload list
   virtual StatusCode resetPreLoad() {
-    _CALL(dataProvider, resetPreLoad, ());
+    for(auto& p: m_partitions) p.dataProvider->resetPreLoad();
+    return StatusCode::SUCCESS;
   }
   /// load all preload items of the list
   virtual StatusCode preLoad()  {
-    _CALL(dataProvider, preLoad, ());
+    tbb::mutex::scoped_lock lock; lock.acquire(s_current->storeMutex);
+    StatusCode sc = s_current->dataProvider->preLoad();
+    DataAgent da(s_current->newDataObjects);
+    s_current->dataManager->traverseTree(&da);
+    return sc;
   }
   /// Register object with the data store.  (The most common one is the only monitored one for the time being....)
   virtual StatusCode registerObject(const std::string& path, DataObject* pObj)  {
@@ -444,7 +470,35 @@ return IDataProviderSvc::INVALID_ROOT;
     return std::string::npos;
   }
 
+  StatusCode attachServices()  {
+    StatusCode sc = service(m_loader, m_addrCreator, true);
+    if (!sc.isSuccess()) {
+      error() << "Failed to retrieve data loader " << "\"" << m_loader << "\"" << endmsg;
+      return sc;
+    }
+    IConversionSvc* dataLoader = 0;
+    sc = service(m_loader, dataLoader, true);
+    if (!sc.isSuccess()) {
+      error() << MSG::ERROR << "Failed to retrieve data loader " << "\"" << m_loader << "\"" << endmsg;
+      return sc;
+    }
+    sc = setDataLoader(dataLoader);
+    dataLoader->release();
+    if (!sc.isSuccess()) {
+      error() << MSG::ERROR << "Failed to set data loader " << "\"" << m_loader << "\"" << endmsg;
+      return sc;
+    }
+    return sc;
+  }
   
+  StatusCode detachServices()  {
+    if ( m_addrCreator )  m_addrCreator->release();
+    if ( m_dataLoader )  m_dataLoader->release();
+    m_addrCreator = 0;
+    m_dataLoader = 0;
+    return StatusCode::SUCCESS;
+  }
+
   //
   //---IService implemenation---------------------------------------------------------
   //
@@ -468,7 +522,7 @@ return IDataProviderSvc::INVALID_ROOT;
       m_partitions.push_back(Partition(svc, svc));
     }
     selectStore(0);
-    return StatusCode::SUCCESS;
+    return attachServices();
   }
 
   /// Service initialisation
@@ -476,6 +530,12 @@ return IDataProviderSvc::INVALID_ROOT;
     StatusCode sc = Service::reinitialize();
     if (!sc.isSuccess()) {
       error() << "Unable to reinitialize base class" << endmsg;
+      return sc;
+    }
+    detachServices();
+    sc = attachServices();
+    if ( !sc.isSuccess() )  {
+      error() << "Failed to attach necessary services." << endmsg;
       return sc;
     }
     return StatusCode::SUCCESS;
