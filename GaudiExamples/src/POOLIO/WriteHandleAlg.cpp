@@ -38,7 +38,7 @@ StatusCode WriteHandleAlg::execute  ()  // the execution of the algorithm
   
   log << MSG::INFO << "Ciao, I am executing" << endmsg;
 
-  Collision* c = new Collision(1);
+  Collision* c = new Collision(getContext()->m_evt_num);
   
   if (m_useHandle) m_output_handle->put(c);
   else eventSvc()->registerObject("/Event","MyCollision",c);

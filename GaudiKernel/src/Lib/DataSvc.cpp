@@ -170,7 +170,7 @@ StatusCode DataSvc::i_setRoot(const std::string& root_path,
     m_root = new RegEntry(root_path);
     m_root->makeHard(pRootObj);
     m_root->setDataSvc(this);
-    preLoad().ignore();
+    // No done with GaudiHive. preLoad().ignore();
   }
   return SUCCESS;
 }
@@ -196,7 +196,7 @@ StatusCode DataSvc::i_setRoot(const std::string& root_path,
     m_root = new RegEntry(root_path);
     m_root->makeHard(pRootAddr);
     m_root->setDataSvc(this);
-    preLoad().ignore();
+    // Not done with GaudiHive. preLoad().ignore();
   }
   return SUCCESS;
 }

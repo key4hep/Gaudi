@@ -470,6 +470,7 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 			<< endmsg;
 
 	int n_processed_events = 0;
+  bool eof = false;
 	StatusCode sc;
 
 	// Get the algorithm Manager
@@ -481,10 +482,10 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 	std::list<contextSchedState_tuple> events_in_flight;
 
 	// Loop until no more evts are there
-	while (maxevt == -1 ? true : n_processed_events<maxevt){// TODO Fix the condition in case of -1
+  
+	while( maxevt == -1 ? !eof : n_processed_events < maxevt ){// TODO Fix the condition in case of -1
 
 		const unsigned int n_events_in_flight = events_in_flight.size();
-
 		const unsigned int n_evts_to_process = maxevt - n_processed_events - n_events_in_flight;
 
 
@@ -508,10 +509,35 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 
 			evtContext->m_evt_slot = m_whiteboard->allocateStore(evt_num);
 			m_whiteboard->selectStore(evtContext->m_evt_slot).ignore();
-			sc = m_evtDataMgrSvc->setRoot ("/Event", new DataObject());
-			if( !sc.isSuccess() )  {
-				warning() << "Error declaring event root DataObject" << endmsg;
-			}
+ 
+      if( m_evtContext ) {
+        //---This is the "event iterator" context from EventSelector
+        IOpaqueAddress* pAddr = 0;
+        DataObject* pObject = 0;
+        sc = getEventRoot(pAddr);
+        if( !sc.isSuccess() )  {
+          info() << "No more events in event selection " << endmsg;
+          eof = true;
+          break;
+        }
+        sc = m_evtDataMgrSvc->setRoot ("/Event", pAddr);
+        if( !sc.isSuccess() )  {
+          warning() << "Error declaring event root address." << endmsg;
+        }
+        sc = m_evtDataSvc->retrieveObject("/Event", pObject);
+        if( !sc.isSuccess() ) {
+          warning() << "Unable to retrieve Event root object" << endmsg;
+          eof = true;
+          break;
+        }
+      }
+      else {
+        //---In case of no event selector----------------
+			  sc = m_evtDataMgrSvc->setRoot ("/Event", new DataObject());
+			  if( !sc.isSuccess() )  {
+          warning() << "Error declaring event root DataObject" << endmsg;
+			  }
+      }
 
 			EventSchedulingState* event_state = new EventSchedulingState(m_topAlgList.size());
 			events_in_flight.push_back(std::make_tuple(evtContext,event_state));
