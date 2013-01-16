@@ -78,4 +78,4 @@ public:
   virtual size_t getPartitionNumber(int eventnumber) const = 0;
   
 };
-#endif // GAUDIKERNEL_IPARTITIONCONTROL_H
+#endif // GAUDIKERNEL_IHIVEWHITEBOARD_H
