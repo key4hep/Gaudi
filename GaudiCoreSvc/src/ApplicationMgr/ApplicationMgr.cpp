@@ -75,8 +75,8 @@ ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
   m_targetState = Gaudi::StateMachine::OFFLINE;
 
 
-//  m_managers[IAlgorithm::interfaceID().id()] = new AlgorithmManager(this);
-  m_managers[IAlgorithm::interfaceID().id()] = new HiveAlgorithmManager(this);
+  m_managers[IAlgorithm::interfaceID().id()] = new AlgorithmManager(this);
+  //  m_managers[IAlgorithm::interfaceID().id()] = new HiveAlgorithmManager(this);
 
   m_propertyMgr->declareProperty("Go",            m_SIGo = 0 );
   m_propertyMgr->declareProperty("Exit",          m_SIExit = 0 );
