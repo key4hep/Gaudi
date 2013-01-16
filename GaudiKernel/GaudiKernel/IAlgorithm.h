@@ -27,6 +27,11 @@ public:
   /** The version of the algorithm
    */
   virtual const std::string& version() const = 0;
+
+  /** The type of the algorithm
+   */
+  virtual const std::string& type() const = 0;
+  virtual void  setType(const std::string& ) = 0;
   
   /** The index of the algorithm
    */  

@@ -150,6 +150,12 @@ public:
    */
   virtual const std::string& name() const;
 
+
+  /** The type of the algorithm object.
+   */
+  virtual const std::string& type() const { return m_type;}
+  virtual void setType(const std::string& type) { m_type = type;} //BH, TODO: move to proper place
+
   virtual const std::string& version() const;
   
   virtual unsigned int index();
@@ -591,6 +597,7 @@ protected:
 private:
 
   std::string m_name;            ///< Algorithm's name for identification
+  std::string m_type;            ///< Algorithm's type 
   std::string m_version;         ///< Algorithm's version
   unsigned int m_index;          ///< Algorithm's index
   std::vector<MinimalDataObjectHandle*>* m_dataObjectHandles; ///< The data object handles. The algorithms owns those.
