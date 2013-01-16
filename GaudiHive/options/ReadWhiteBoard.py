@@ -15,7 +15,7 @@ SequencerTimerTool(OutputLevel=WARNING)
 GaudiPersistency()
 
 EventSelector(OutputLevel=DEBUG, PrintFreq=50, FirstEvent=1,
-              Input = ["DATAFILE='PFN:/Users/mato/Development/CF4Hep/build/HandleWB_ROOTIO.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"])
+              Input = ["DATAFILE='PFN:HandleWB_ROOTIO.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"])
 FileCatalog(Catalogs = [ "xmlcatalog_file:HandleWB_ROOTIO.xml" ])
 
 product_name="MyCollision"
