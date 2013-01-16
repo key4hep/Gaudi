@@ -10,8 +10,10 @@
 DECLARE_SERVICE_FACTORY(AlgResourcePool)
 
 // constructor
-  AlgResourcePool::AlgResourcePool( const std::string& name, ISvcLocator* svc ) :
-    base_class(name,svc){
+AlgResourcePool::AlgResourcePool( const std::string& name, ISvcLocator* svc ) :
+    base_class(name,svc)
+{
+  declareProperty("CreateLazily", m_lazyCreation = false );
 }
 
 // destructor
@@ -22,13 +24,28 @@ AlgResourcePool::~AlgResourcePool() {
 StatusCode AlgResourcePool::initialize(){
   SmartIF<IAlgManager> algMan(serviceLocator());
   const std::list<IAlgorithm*>& algos = algMan->getAlgorithms();
+  std::hash<std::string> hash_function;
   for (auto algo : algos){
-    std::hash<std::string> hash_function;
     size_t algo_id = hash_function(algo->name());
     tbb::concurrent_queue<IAlgorithm*>* queue = new tbb::concurrent_queue<IAlgorithm*>();  
     m_algqueue_map[algo_id] = queue;
     queue->push(algo);    
+    m_n_of_allowed_instances[algo_id] = algo->cardinality();
+    m_n_of_created_instances[algo_id] = 1;
+    m_resource_requirements[algo_id] = state_type();
+    // potentially create clones; if not lazy creation we have to do it now
+    if (!m_lazyCreation) {
+      for (unsigned int i =1, end =algo->cardinality();i<end; ++i){
+        IAlgorithm* new_algo;
+        algMan->createAlgorithm(algo->type(),algo->name(), new_algo, false, false);
+        queue->push(new_algo);
+        m_n_of_created_instances[algo_id]+=1;
+      } 
+    }
   }
+  // now compute the resource needs 
+
+
   return StatusCode::SUCCESS;
 }
 
@@ -36,8 +53,11 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
   std::hash<std::string> hash_function;
   size_t algo_id = hash_function(name);
   StatusCode sc = m_algqueue_map[algo_id]->try_pop(algo); //TODO: check for existence
+  //  if (m_lazyCreation ) {
+  // TODO: fill the lazyCreation part
+  //}
+
   return sc;
-  //TODO: create things on the fly
   // check whether requirements are fulfilled. 
   //needed_resources = m_resource_requirements[algo_id];
 

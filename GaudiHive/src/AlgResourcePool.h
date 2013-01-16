@@ -39,16 +39,13 @@ public:
 
 private:
   std::mutex m_resource_mutex;
+  bool m_lazyCreation;
   state_type used_resources;
   std::map<size_t,tbb::concurrent_queue<IAlgorithm*>*> m_algqueue_map;
   std::map<size_t,state_type> m_resource_requirements;
   std::map<size_t,size_t> m_n_of_allowed_instances;
-  std::map<size_t,std::atomic<unsigned int>> m_n_of_created_instances;
+  std::map<size_t,unsigned int> m_n_of_created_instances;
 
 };
-
-// Instantiation of a static factory class used by clients to create                                                                                                      
-// instances of this service                                                                                                                                              
-//DECLARE_SERVICE_FACTORY(AlgResourcePool)
 
 #endif  // GAUDIHIVE_ALGRESOURCEPOOL_H
