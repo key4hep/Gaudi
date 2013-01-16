@@ -4,7 +4,7 @@
 
 from Gaudi.Configuration import *
 from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
-from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveEventLoopMgr, HiveReadAlgorithm
+from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveEventLoopMgr, HiveReadAlgorithm, AlgResourcePool
 
 # Output Levels
 MessageSvc(OutputLevel=WARNING)

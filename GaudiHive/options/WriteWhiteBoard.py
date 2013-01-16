@@ -4,7 +4,7 @@
 
 from Gaudi.Configuration import *
 from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
-from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveEventLoopMgr
+from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveEventLoopMgr, AlgResourcePool
 
 # Output setup
 # - DST
@@ -33,6 +33,7 @@ FileCatalog(Catalogs = [ "xmlcatalog_file:HandleWB_ROOTIO.xml" ])
 MessageSvc(OutputLevel=WARNING)
 IncidentSvc(OutputLevel=DEBUG)
 RootCnvSvc(OutputLevel=INFO)
+AlgResourcePool(OutputLevel=DEBUG)
 
 GaudiPersistency()
 

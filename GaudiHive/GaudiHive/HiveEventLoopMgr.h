@@ -2,6 +2,7 @@
 #define GAUDIHIVE_HIVEEVENTLOOPMGR_H 1
 
 // Framework include files
+#include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/IEvtSelector.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/MinimalEventLoopMgr.h"
@@ -46,6 +47,8 @@ protected:
   SmartIF<IConversionSvc>   m_histoPersSvc;
   /// Reference to the Histogram Persistency Service
   SmartIF<IHiveWhiteBoard>  m_whiteboard;
+  /// Reference to the Algorithm resource pool
+  SmartIF<IAlgResourcePool>  m_algResourcePool;
   /// Name of the Hist Pers type
   std::string       m_histPersName;
   /// Property interface of ApplicationMgr

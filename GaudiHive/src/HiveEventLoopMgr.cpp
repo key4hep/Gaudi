@@ -19,7 +19,6 @@
 
 // For concurrency
 #include "GaudiHive/HiveEventLoopMgr.h"
-#include "GaudiKernel/HiveAlgorithmManager.h"
 #include "GaudiHive/EventSchedulingState.h"
 #include "HiveEventRegistryEntry.h"
 
@@ -87,6 +86,7 @@ HiveEventLoopMgr::HiveEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
 	m_evtDataSvc        = 0;
 	m_evtSelector       = 0;
 	m_evtContext        = 0;
+        m_algResourcePool   = 0;
 	m_endEventFired     = true;
 	m_total_algos_in_flight=0;
 	m_max_parallel = 1;
@@ -196,6 +196,13 @@ StatusCode HiveEventLoopMgr::initialize()    {
 		warning() << "Histograms cannot not be saved - though required." << endmsg;
 		return sc;
 	}
+
+        // Setup algorithm resource pool
+        m_algResourcePool = serviceLocator()->service("AlgResourcePool");
+        if( !m_algResourcePool.isValid() ) {
+	  fatal() << "Error retrieving AlgResourcePool" << endmsg;
+	  return StatusCode::FAILURE;
+        }
 
 	// Setup tbb task scheduler
 	// TODO: shouldn't be in this case
@@ -386,12 +393,6 @@ StatusCode HiveEventLoopMgr::executeEvent(void* /*par*/)    {
 		}
 	}
 
-	// Some debug
-	if(m_DumpQueues){
-		HiveAlgorithmManager* hivealgman = dynamic_cast<HiveAlgorithmManager*> (algMan.get());
-		if (hivealgman) hivealgman->dump();
-	}
-
 	bool eventfailed = false;//run_parallel();
 
 	// ensure that the abortEvent flag is cleared before the next event
@@ -476,7 +477,6 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 	// Get the algorithm Manager
         // BH: we rather want to have an AlgoPool which is different from the AlgorithmManager 
 	SmartIF<IAlgManager> algMan(serviceLocator());
-	HiveAlgorithmManager* hivealgman = dynamic_cast<HiveAlgorithmManager*> (algMan.get());
 
 	// Events in flight
 	std::list<contextSchedState_tuple> events_in_flight;
@@ -576,44 +576,34 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
           // It could run, just the maximum number of algos in flight has been reached
           if (algo_not_started_and_dependencies_there)
             no_algo_can_run = false;
-					if (algo_not_started_and_dependencies_there &&
-							(m_total_algos_in_flight < m_max_parallel )) {
-						// Pick the algorithm if available and if not and requested create one
-						IAlgorithm* ialgo=NULL;
+          if (algo_not_started_and_dependencies_there &&
+             (m_total_algos_in_flight < m_max_parallel )) {
+            // Pick the algorithm if available and if not and requested create one
+            IAlgorithm* ialgo=NULL;
             // To be transferred to the algomanager, this is inefficient
             ListAlg::iterator algoIt = m_topAlgList.begin();
             std::advance(algoIt, algo_counter);
             bool clone_algo = m_CloneAlgorithms && algoIt->get()->isClonable(); 
-						if(hivealgman->acquireAlgorithm(algo_counter,ialgo,clone_algo)){
-							log << MSG::INFO << "Launching algo " << algo_counter<<  " on event " << event_Context->m_evt_num << endmsg;
-							// Attach context to the algo
-							Algorithm* algo = dynamic_cast<Algorithm*> (ialgo);
-							algo->setContext(event_Context);
+	    //if(hivealgman->acquireAlgorithm(algo_counter,ialgo,clone_algo)){
+            if(m_algResourcePool->acquireAlgorithm(algoIt->get()->name(),ialgo)){
+                log << MSG::INFO << "Launching algo " << algo_counter<<  " on event " << event_Context->m_evt_num << endmsg;
+                // Attach context to the algo
+                Algorithm* algo = dynamic_cast<Algorithm*> (ialgo);
+                algo->setContext(event_Context);
 
-							tbb::task* t = new( tbb::task::allocate_root() ) HiveAlgoTask(ialgo, event_state, this);
-							tbb::task::enqueue( *t);
+                tbb::task* t = new( tbb::task::allocate_root() ) HiveAlgoTask(ialgo, event_state, this);
+                tbb::task::enqueue( *t);
 
-							event_state->algoStarts(algo_counter);
-							++m_total_algos_in_flight;
+                event_state->algoStarts(algo_counter);
+                ++m_total_algos_in_flight;
 
-							log << MSG::INFO << "Algos in flight: " <<  m_total_algos_in_flight << endmsg;
-						}
-					} // End scheduling if block
+                log << MSG::INFO << "Algos in flight: " <<  m_total_algos_in_flight << endmsg;
+            }
+          } // End scheduling if block
 
 				}// end loop on algo indices
 
 				// update the event state with what has been put into the DataSvc
-				//*PM* bool queue_full(false);
-				//*PM* std::string product_name;
-
-				//*PM* Hive::HiveEventRegistryEntry* hiveregistryentry= dynamic_cast<Hive::HiveEventRegistryEntry*>(event_Context->m_registry);
-				//*PM* tbb::concurrent_queue<std::string>& new_products = hiveregistryentry->new_products();
-				//*PM* do {
-				//*PM*     queue_full = new_products.try_pop(product_name);
-				//*PM*     if (queue_full && m_product_indices.count( product_name ) == 1) { // only products with dependencies upon need to be announced to other algos
-				//*PM*         event_state->update_state(m_product_indices[product_name]);
-				//*PM*     }
-				//*PM* } while (queue_full);
 				std::vector<std::string> new_products;
 				m_whiteboard->selectStore(event_Context->m_evt_slot).ignore();
 				sc = m_whiteboard->getNewDataObjects(new_products);
@@ -731,7 +721,6 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 
 				n_processed_events++;
 
-				if(m_DumpQueues && hivealgman) hivealgman->dump();
 			} else{
 				++it;
 			}
@@ -742,8 +731,6 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 
 
 	always() << "---> Loop Finished (seconds): " << secsFromStart() <<endmsg;
-
-	if(m_DumpQueues && hivealgman) hivealgman->dump();
 
 	return StatusCode::SUCCESS;
 
@@ -817,13 +804,8 @@ HiveEventLoopMgr::find_dependencies() {
 //---------------------------------------------------------------------------
 
 void HiveEventLoopMgr::taskFinished(IAlgorithm*& algo){
-	SmartIF<IAlgManager> algMan(serviceLocator());
-	HiveAlgorithmManager* hivealgman = dynamic_cast<HiveAlgorithmManager*> (algMan.get());
-
-	hivealgman->releaseAlgorithm(algo->name(),algo);
-
+	m_algResourcePool->releaseAlgorithm(algo->name(),algo);
 	--m_total_algos_in_flight;
-
 	MsgStream log(msgSvc(), name());
 	log << MSG::DEBUG << "[taskFinished] Algos in flight: " <<  m_total_algos_in_flight << endmsg;
 }
