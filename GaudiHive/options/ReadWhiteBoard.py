@@ -22,7 +22,8 @@ product_name="MyCollision"
 
 loader = HiveReadAlgorithm("Loader",
                            OutputLevel=INFO,
-                           NeededResources = ['ROOTIO','SOMETHINGELSE']
+                           NeededResources = ['ROOTIO','SOMETHINGELSE'],
+                           Cardinality = 2 #framework should be able to fix this config problem
                            )
 
 writer = WriteHandleAlg ("Writer",

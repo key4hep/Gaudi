@@ -40,7 +40,7 @@ public:
 private:
   std::mutex m_resource_mutex;
   bool m_lazyCreation;
-  state_type used_resources;
+  state_type m_available_resources;
   std::map<size_t,tbb::concurrent_queue<IAlgorithm*>*> m_algqueue_map;
   std::map<size_t,state_type> m_resource_requirements;
   std::map<size_t,size_t> m_n_of_allowed_instances;

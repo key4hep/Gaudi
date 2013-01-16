@@ -11,7 +11,7 @@ DECLARE_SERVICE_FACTORY(AlgResourcePool)
 
 // constructor
 AlgResourcePool::AlgResourcePool( const std::string& name, ISvcLocator* svc ) :
-    base_class(name,svc)
+  base_class(name,svc), m_available_resources(1)
 {
   declareProperty("CreateLazily", m_lazyCreation = false );
 }
@@ -25,6 +25,11 @@ StatusCode AlgResourcePool::initialize(){
   SmartIF<IAlgManager> algMan(serviceLocator());
   const std::list<IAlgorithm*>& algos = algMan->getAlgorithms();
   std::hash<std::string> hash_function;
+
+  // book keeping for resources
+  std::map<std::string,unsigned int> resource_indices;
+  unsigned int resource_counter(0);
+
   for (auto algo : algos){
     size_t algo_id = hash_function(algo->name());
     tbb::concurrent_queue<IAlgorithm*>* queue = new tbb::concurrent_queue<IAlgorithm*>();  
@@ -32,7 +37,15 @@ StatusCode AlgResourcePool::initialize(){
     queue->push(algo);    
     m_n_of_allowed_instances[algo_id] = algo->cardinality();
     m_n_of_created_instances[algo_id] = 1;
-    m_resource_requirements[algo_id] = state_type();
+    state_type requirements(0); 
+    for (auto resource_name : algo->neededResources()){
+      auto ret = resource_indices.insert(std::pair<std::string, unsigned int>(resource_name,resource_counter));
+      // insert successful means == wasn't known before. So increment counter
+      if (ret.second==true) ++resource_counter;
+      // in any case the return value holds the proper product index
+      requirements[ret.first->second] = true;
+    }
+    m_resource_requirements[algo_id] = requirements;
     // potentially create clones; if not lazy creation we have to do it now
     if (!m_lazyCreation) {
       for (unsigned int i =1, end =algo->cardinality();i<end; ++i){
@@ -43,9 +56,8 @@ StatusCode AlgResourcePool::initialize(){
       } 
     }
   }
-  // now compute the resource needs 
-
-
+  // let's assume all resources are there
+  m_available_resources.set(true);
   return StatusCode::SUCCESS;
 }
 
@@ -56,16 +68,19 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
   //  if (m_lazyCreation ) {
   // TODO: fill the lazyCreation part
   //}
-
+  if (sc.isSuccess()){
+    state_type requirements = m_resource_requirements[algo_id];
+    m_resource_mutex.lock();
+    state_type dependencies_missing = (m_available_resources & requirements) ^ requirements;
+    if (dependencies_missing == 0) {
+      m_available_resources|=requirements;
+    } else{ 
+      sc = StatusCode::FAILURE;
+      m_algqueue_map[algo_id]->push(algo);
+    }
+    m_resource_mutex.unlock();
+  }
   return sc;
-  // check whether requirements are fulfilled. 
-  //needed_resources = m_resource_requirements[algo_id];
-
-  // declare resources as used
-  //  m_resource_mutex.lock();
-  //used_resources|= m_resource_requirements[algo_id];
-  //m_resource_mutex.unlock();
-  
 }
 
 StatusCode AlgResourcePool::releaseAlgorithm(const std::string& name, IAlgorithm*& algo){
@@ -73,9 +88,9 @@ StatusCode AlgResourcePool::releaseAlgorithm(const std::string& name, IAlgorithm
   size_t algo_id = hash_function(name);
   m_algqueue_map[algo_id]->push(algo);
   // finally release resources used by the algorithm
-  //m_resource_mutex.lock();
-  //used_resources|= m_resource_requirements[algo_id];
-  //m_resource_mutex.unlock();
+  m_resource_mutex.lock();
+  m_available_resources|= m_resource_requirements[algo_id];
+  m_resource_mutex.unlock();
   return StatusCode::SUCCESS;
  }
 
