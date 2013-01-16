@@ -49,12 +49,15 @@ StatusCode AlgorithmManager::removeAlgorithm(IAlgorithm* alg) {
 StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype,
                                               const std::string& algname,
                                               IAlgorithm*& algorithm,
-                                              bool managed)
+                                              bool managed,
+                                              bool checkIfExists)
 {
   // Check is the algorithm is already existing
-  if( existsAlgorithm( algname ) ) {
-    // return an error because an algorithm with that name already exists
-    return StatusCode::FAILURE;
+  if (checkIfExists) {
+    if( existsAlgorithm( algname ) ) {
+      // return an error because an algorithm with that name already exists
+      return StatusCode::FAILURE;
+    }
   }
   algorithm = PluginService::Create<IAlgorithm*>(algtype, algname, serviceLocator().get());
   if ( !algorithm ) {

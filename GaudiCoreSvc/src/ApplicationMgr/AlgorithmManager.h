@@ -59,7 +59,7 @@ public:
   virtual StatusCode removeAlgorithm(IAlgorithm* alg);
   /// implementation of IAlgManager::createAlgorithm
   virtual StatusCode createAlgorithm(const std::string& algtype, const std::string& algname,
-                                     IAlgorithm*& algorithm, bool managed = false);
+                                     IAlgorithm*& algorithm, bool managed = false, bool checkIfExists = true);
 
   /// implementation of IAlgManager::existsAlgorithm
   virtual bool existsAlgorithm(const std::string& name) const;

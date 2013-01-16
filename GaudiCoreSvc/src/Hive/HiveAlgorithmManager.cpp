@@ -103,9 +103,10 @@ StatusCode HiveAlgorithmManager::createAlgorithm(const std::string& algname,
 
 // createAlgorithm
 StatusCode HiveAlgorithmManager::createAlgorithm( const std::string& algtype,
-                                              const std::string& algname,
-                                              IAlgorithm*& algorithm,
-                                              bool managed)
+                                                  const std::string& algname,
+                                                  IAlgorithm*& algorithm,
+                                                  bool managed,
+                                                  bool checkIfExists) 
 {
   // Remove the check: it does not make sense anymore!
 //	  // Check is the algorithm is already existing

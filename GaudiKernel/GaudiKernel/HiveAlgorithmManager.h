@@ -111,7 +111,7 @@ public:
   virtual StatusCode removeAlgorithm(IAlgorithm* alg);
   /// implementation of IAlgManager::createAlgorithm
   virtual StatusCode createAlgorithm(const std::string& algtype, const std::string& algname,
-                                     IAlgorithm*& algorithm, bool managed = true);
+                                     IAlgorithm*& algorithm, bool managed = true, bool checkIfExists = true);
 
   /// Bootstrap an algorithm from its name
   StatusCode createAlgorithm(const std::string& algname,

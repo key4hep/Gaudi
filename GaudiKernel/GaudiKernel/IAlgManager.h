@@ -41,7 +41,8 @@ public:
   virtual StatusCode createAlgorithm( const std::string& algtype,  // Algorithm type name
                                       const std::string& algname,  // Algorithm name to be assigned
                                       IAlgorithm*& alg,            // Returned algorithm
-                                      bool managed = false         // Flag to indicate if the algorithm is managed
+                                      bool managed = false,        // Flag to indicate if the algorithm is managed
+                                      bool checkIfExists = true    // Flag to indicate if clones of existing algorithms can be created
                                     ) = 0;
 #if !defined(GAUDI_V22_API) || defined(G22_NEW_SVCLOCATOR)
   /// Find an algorithm with given name in the list of known algorithms
