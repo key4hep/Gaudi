@@ -561,10 +561,12 @@ public:
   virtual const std::vector<MinimalDataObjectHandle*>& handles();
   
   /// Specifies the clonability of the algorithm
-  virtual bool isClonable () { return m_isClonable; } ;
+  virtual bool isClonable () const { return m_isClonable; }
   
   /// Return the cardinality 
-  virtual unsigned int cardinality () { return m_cardinality; } ;
+  virtual unsigned int cardinality () const { return m_cardinality; }
+
+  virtual const std::vector<std::string>& neededResources () const { return m_neededResources; }
 
 protected:
 
@@ -636,6 +638,7 @@ private:
 
   bool         m_isClonable; ///< The algorithm clonability of the algorithm
   unsigned int m_cardinality; ///< The maximum number of clones that can exist
+  std::vector<std::string> m_neededResources; ///< The named resources needed during event looping 
 
   /// implementation of service method
   StatusCode service_i(const std::string& svcName,

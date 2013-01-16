@@ -34,11 +34,15 @@ public:
   
   /** Specify if the algorithm is clonable
    */ 
-  virtual bool isClonable() = 0;
+  virtual bool isClonable() const = 0;
   
   /** Cardinality (Maximum number of clones that can exist)
    */ 
-  virtual unsigned int cardinality() = 0;
+  virtual unsigned int cardinality() const = 0;
+
+  /** Named, non thread-safe resources used during event processing
+   */
+  virtual const std::vector<std::string>& neededResources() const = 0;
     
   /** The data object handles associated to the algorithm
    */

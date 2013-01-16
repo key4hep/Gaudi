@@ -21,7 +21,9 @@ FileCatalog(Catalogs = [ "xmlcatalog_file:HandleWB_ROOTIO.xml" ])
 product_name="MyCollision"
 
 loader = HiveReadAlgorithm("Loader",
-                           OutputLevel=INFO)
+                           OutputLevel=INFO,
+                           NeededResources = ['ROOTIO','SOMETHINGELSE']
+                           )
 
 writer = WriteHandleAlg ("Writer",
                          Output="/Event/"+product_name,
@@ -31,7 +33,7 @@ writer = WriteHandleAlg ("Writer",
 reader = ReadHandleAlg ("Reader",
                          Input=product_name,
                          IsClonable=True,
-                         OutputLevel=INFO )
+                         OutputLevel=INFO)
 
 evtslots = 5
 algoparallel = 10
