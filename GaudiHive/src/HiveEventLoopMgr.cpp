@@ -20,7 +20,6 @@
 // For concurrency
 #include "GaudiHive/HiveEventLoopMgr.h"
 #include "GaudiHive/EventSchedulingState.h"
-#include "HiveEventRegistryEntry.h"
 
 #include "tbb/task_scheduler_init.h"
 #include "tbb/task.h"
