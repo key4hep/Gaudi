@@ -583,7 +583,6 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
             ListAlg::iterator algoIt = m_topAlgList.begin();
             std::advance(algoIt, algo_counter);
             bool clone_algo = m_CloneAlgorithms && algoIt->get()->isClonable(); 
-	    //if(hivealgman->acquireAlgorithm(algo_counter,ialgo,clone_algo)){
             if(m_algResourcePool->acquireAlgorithm(algoIt->get()->name(),ialgo)){
                 log << MSG::INFO << "Launching algo " << algo_counter<<  " on event " << event_Context->m_evt_num << endmsg;
                 // Attach context to the algo
