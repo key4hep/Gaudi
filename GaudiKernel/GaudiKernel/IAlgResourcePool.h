@@ -28,9 +28,13 @@ public:
 
   /// Acquire a certain algorithm using its name 
   virtual StatusCode acquireAlgorithm(const std::string& name,IAlgorithm*& algo) = 0;
-
   /// Release a certain algorithm 
   virtual StatusCode releaseAlgorithm(const std::string& name, IAlgorithm*& algo) = 0;
+
+  /// Acquire a certain resource
+  virtual StatusCode acquireResource(const std::string& name) = 0;
+  /// Release a certrain resource
+  virtual StatusCode releaseResource(const std::string& name) = 0;
 
 };
 

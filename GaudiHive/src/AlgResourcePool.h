@@ -36,6 +36,10 @@ public:
   virtual StatusCode acquireAlgorithm(const std::string& name, IAlgorithm*& algo);
   /// Release a certain algorithm 
   virtual StatusCode releaseAlgorithm(const std::string& name, IAlgorithm*& algo);
+  /// Acquire a certain resource
+  virtual StatusCode acquireResource(const std::string& name);
+  /// Release a certrain resource 
+  virtual StatusCode releaseResource(const std::string& name);
 
 private:
   std::mutex m_resource_mutex;
@@ -45,6 +49,7 @@ private:
   std::map<size_t,state_type> m_resource_requirements;
   std::map<size_t,size_t> m_n_of_allowed_instances;
   std::map<size_t,unsigned int> m_n_of_created_instances;
+  std::map<std::string,unsigned int> m_resource_indices;
 
 };
 

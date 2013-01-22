@@ -426,10 +426,10 @@ StatusCode HiveEventLoopMgr::executeEvent(void* /*par*/)    {
 // implementation of IEventProcessing::executeRun
 //--------------------------------------------------------------------------------------------
 StatusCode HiveEventLoopMgr::executeRun( int maxevt )    {
-	StatusCode  sc;
-	// initialize the base class
-	sc = MinimalEventLoopMgr::executeRun(maxevt);
-	return sc;
+    StatusCode  sc;
+    // initialize the base class
+    sc = MinimalEventLoopMgr::executeRun(maxevt);
+    return sc;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -440,240 +440,235 @@ StatusCode HiveEventLoopMgr::executeRun( int maxevt )    {
 // contexts, which contain the event specific data.
 
 StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
-	// Collapse executeEvent and run_parallel in the same method
-	// TODO _very_ sporty on conditions and checks!!
+    // Collapse executeEvent and run_parallel in the same method
+    // TODO _very_ sporty on conditions and checks!!
 
-	auto start_time = tbb::tick_count::now();
-	auto secsFromStart = [&start_time]()->double{
-		return (tbb::tick_count::now()-start_time).seconds();
-	};
+    auto start_time = tbb::tick_count::now();
+    auto secsFromStart = [&start_time]()->double{
+        return (tbb::tick_count::now()-start_time).seconds();
+    };
 
-	typedef std::tuple<EventContext*,EventSchedulingState*> contextSchedState_tuple;
-	typedef DataSvcHelpers::RegistryEntry regEntry;
+    typedef std::tuple<EventContext*,EventSchedulingState*> contextSchedState_tuple;
+    typedef DataSvcHelpers::RegistryEntry regEntry;
 
-	MsgStream log(msgSvc(), name());
+    MsgStream log(msgSvc(), name());
 
 
-	// Reset the application return code.
-	Gaudi::setAppReturnCode(m_appMgrProperty, Gaudi::ReturnCode::Success, true).ignore();
+    // Reset the application return code.
+    Gaudi::setAppReturnCode(m_appMgrProperty, Gaudi::ReturnCode::Success, true).ignore();
 
-	// Lambda to check if an event has finished
-	auto has_finished = [] // acquire nothing
-	                     (contextSchedState_tuple evtContext_evtstate) // argument is a tuple
-	                     { return std::get<1>(evtContext_evtstate)->hasFinished();}; // true if finished
+    // Lambda to check if an event has finished
+    auto has_finished = [] // acquire nothing
+         (contextSchedState_tuple evtContext_evtstate) // argument is a tuple
+         { return std::get<1>(evtContext_evtstate)->hasFinished();}; // true if finished
 
-	// Useful for the Logs
-	always() << "Running with "
-			<< m_evts_parallel << " parallel events, "
-			<< m_max_parallel << " max concurrent algorithms, "
-			<< m_num_threads << " threads."
-			<< endmsg;
+    // Useful for the Logs
+    always() << "Running with "
+             << m_evts_parallel << " parallel events, "
+             << m_max_parallel << " max concurrent algorithms, "
+             << m_num_threads << " threads."
+             << endmsg;
 
-	int n_processed_events = 0;
-  bool eof = false;
-	StatusCode sc;
+    int n_processed_events = 0;
+    bool eof = false;
+    StatusCode sc;
 
-	// Get the algorithm Manager
-        // BH: we rather want to have an AlgoPool which is different from the AlgorithmManager 
-	SmartIF<IAlgManager> algMan(serviceLocator());
+    // Events in flight
+    std::list<contextSchedState_tuple> events_in_flight;
 
-	// Events in flight
-	std::list<contextSchedState_tuple> events_in_flight;
-
-	// Loop until no more evts are there
+    // Loop until no more evts are there
   
-	while( maxevt == -1 ? !eof : n_processed_events < maxevt ){// TODO Fix the condition in case of -1
+    while( maxevt == -1 ? !eof : n_processed_events < maxevt ){// TODO Fix the condition in case of -1
 
-		const unsigned int n_events_in_flight = events_in_flight.size();
-		const unsigned int n_evts_to_process = maxevt - n_processed_events - n_events_in_flight;
+        const unsigned int n_events_in_flight = events_in_flight.size();
+        const unsigned int n_evts_to_process = maxevt - n_processed_events - n_events_in_flight;
 
+        unsigned int n_acquirable_events = m_evts_parallel - n_events_in_flight ;
+        if (n_acquirable_events > n_evts_to_process)
+            n_acquirable_events = n_evts_to_process;
 
-		unsigned int n_acquirable_events = m_evts_parallel - n_events_in_flight ;
-		if (n_acquirable_events > n_evts_to_process)
-			n_acquirable_events = n_evts_to_process;
+        log << MSG::INFO << "Evts in flight: " <<  n_events_in_flight << endmsg;
+        log << MSG::INFO << "Evts processed: " <<  n_processed_events<< endmsg;
+        log << MSG::INFO << "Evts parallel: " << m_evts_parallel << endmsg;
+        log << MSG::INFO << "Acquirable Events are " << n_acquirable_events << endmsg;
 
-		log << MSG::INFO << "Evts in flight: " <<  n_events_in_flight << endmsg;
-		log << MSG::INFO << "Evts processed: " <<  n_processed_events<< endmsg;
-		log << MSG::INFO << "Evts parallel: " << m_evts_parallel << endmsg;
-		log << MSG::INFO << "Acquirable Events are " << n_acquirable_events << endmsg;
+        // Initialisation section ------------------------------------------------
 
-		// Initialisation section ------------------------------------------------
+        // Loop on events to be initialised
+        for (unsigned int offset=0; offset< n_acquirable_events; ++offset){
 
-		// Loop on events to be initialised
-		for (unsigned int offset=0; offset< n_acquirable_events; ++offset){
+            EventContext* evtContext(new EventContext);
+            const int evt_num =  n_processed_events + offset + n_events_in_flight;
+            evtContext->m_evt_num = evt_num;
 
-			EventContext* evtContext(new EventContext);
-			const int evt_num =  n_processed_events + offset + n_events_in_flight;
-			evtContext->m_evt_num = evt_num;
-
-			evtContext->m_evt_slot = m_whiteboard->allocateStore(evt_num);
-			m_whiteboard->selectStore(evtContext->m_evt_slot).ignore();
+            evtContext->m_evt_slot = m_whiteboard->allocateStore(evt_num);
+            m_whiteboard->selectStore(evtContext->m_evt_slot).ignore();
  
-      if( m_evtContext ) {
-        //---This is the "event iterator" context from EventSelector
-        IOpaqueAddress* pAddr = 0;
-        DataObject* pObject = 0;
-        sc = getEventRoot(pAddr);
-        if( !sc.isSuccess() )  {
-          info() << "No more events in event selection " << endmsg;
-          eof = true;
-          break;
-        }
-        sc = m_evtDataMgrSvc->setRoot ("/Event", pAddr);
-        if( !sc.isSuccess() )  {
-          warning() << "Error declaring event root address." << endmsg;
-        }
-        sc = m_evtDataSvc->retrieveObject("/Event", pObject);
-        if( !sc.isSuccess() ) {
-          warning() << "Unable to retrieve Event root object" << endmsg;
-          eof = true;
-          break;
-        }
-      }
-      else {
-        //---In case of no event selector----------------
-			  sc = m_evtDataMgrSvc->setRoot ("/Event", new DataObject());
-			  if( !sc.isSuccess() )  {
-          warning() << "Error declaring event root DataObject" << endmsg;
-			  }
-      }
-
-			EventSchedulingState* event_state = new EventSchedulingState(m_topAlgList.size());
-			events_in_flight.push_back(std::make_tuple(evtContext,event_state));
-
-			always()  << "Started event " << evt_num << " at " << secsFromStart() << endmsg;
-
-		}// End initialisation loop on acquired events
-
-		// End initialisation session --------------------------------------------
-
-		// Scheduling session ----------------------------------------------------
-		auto in_flight_end = events_in_flight.end();
-		auto in_flight_begin = events_in_flight.begin();
-		// loop until at least one evt finished
-		while (in_flight_end == find_if(in_flight_begin, in_flight_end ,has_finished)){
-			bool no_algo_can_run = true;
-			for (auto& evtContext_evtstate : events_in_flight){ // loop on evts
-
-				EventContext* event_Context = std::get<0>(evtContext_evtstate);
-				EventSchedulingState* event_state = std::get<1>(evtContext_evtstate);
-
-				for (unsigned int algo_counter=0; algo_counter<m_topAlgList.size(); algo_counter++) { // loop on algos
-					// check whether all requirements/dependencies for the algorithm are fulfilled...
-					const state_type& algo_requirements = m_all_requirements[algo_counter];
-    // Very verbose!					
-    //      log << MSG::VERBOSE << "Checking dependencies for algo " << algo_counter << ":\n" 
-    //          << "  o Requirements: " <<  algo_requirements << std::endl
-    //          << "  o State: " << event_state->state() << endmsg;
-          
-          state_type dependencies_missing = (event_state->state() & algo_requirements) ^ algo_requirements;
-
-					// ...and whether the algorithm was already started and if it can be started
-          bool algo_not_started_and_dependencies_there = (dependencies_missing == 0) &&
-                                                         (event_state->hasStarted(algo_counter) ) == false;
-          
-          // It could run, just the maximum number of algos in flight has been reached
-          if (algo_not_started_and_dependencies_there)
-            no_algo_can_run = false;
-          if (algo_not_started_and_dependencies_there &&
-             (m_total_algos_in_flight < m_max_parallel )) {
-            // Pick the algorithm if available and if not and requested create one
-            IAlgorithm* ialgo=NULL;
-            // To be transferred to the algomanager, this is inefficient
-            ListAlg::iterator algoIt = m_topAlgList.begin();
-            std::advance(algoIt, algo_counter);
-            bool clone_algo = m_CloneAlgorithms && algoIt->get()->isClonable(); 
-            if(m_algResourcePool->acquireAlgorithm(algoIt->get()->name(),ialgo)){
-                log << MSG::INFO << "Launching algo " << algo_counter<<  " on event " << event_Context->m_evt_num << endmsg;
-                // Attach context to the algo
-                Algorithm* algo = dynamic_cast<Algorithm*> (ialgo);
-                algo->setContext(event_Context);
-
-                tbb::task* t = new( tbb::task::allocate_root() ) HiveAlgoTask(ialgo, event_state, this);
-                tbb::task::enqueue( *t);
-
-                event_state->algoStarts(algo_counter);
-                ++m_total_algos_in_flight;
-
-                log << MSG::INFO << "Algos in flight: " <<  m_total_algos_in_flight << endmsg;
+            if( m_evtContext ) {
+                //---This is the "event iterator" context from EventSelector
+                IOpaqueAddress* pAddr = 0;
+                DataObject* pObject = 0;
+                // acquire lock on ROOT IO
+                m_algResourcePool->acquireResource("ROOTIO");
+                sc = getEventRoot(pAddr);
+                // release lock on ROOT IO
+		m_algResourcePool->releaseResource("ROOTIO");
+                if( !sc.isSuccess() )  {
+                    info() << "No more events in event selection " << endmsg;
+                    eof = true;
+                    break;
+                }
+                sc = m_evtDataMgrSvc->setRoot ("/Event", pAddr);
+                if( !sc.isSuccess() )  {
+                    warning() << "Error declaring event root address." << endmsg;
+		}
+                sc = m_evtDataSvc->retrieveObject("/Event", pObject);
+                if( !sc.isSuccess() ) {
+                    warning() << "Unable to retrieve Event root object" << endmsg;
+                    eof = true;
+                    break;
+                }
             }
-          } // End scheduling if block
+            else {
+                //---In case of no event selector----------------
+                sc = m_evtDataMgrSvc->setRoot ("/Event", new DataObject());
+                if( !sc.isSuccess() )  {
+                    warning() << "Error declaring event root DataObject" << endmsg;
+                }
+            }
 
-				}// end loop on algo indices
+            EventSchedulingState* event_state = new EventSchedulingState(m_topAlgList.size());
+            events_in_flight.push_back(std::make_tuple(evtContext,event_state));
+            always()  << "Started event " << evt_num << " at " << secsFromStart() << endmsg;
 
-				// update the event state with what has been put into the DataSvc
-				std::vector<std::string> new_products;
-				m_whiteboard->selectStore(event_Context->m_evt_slot).ignore();
-				sc = m_whiteboard->getNewDataObjects(new_products);
-				if( !sc.isSuccess() )  {
-					warning() << "Error getting recent new products (since last time called)" << endmsg;
-				}
-				for (const auto& newProduct : new_products) {
-					log << MSG::DEBUG << "New Product: " << newProduct << " in the store." << endmsg;
-					if (m_product_indices.count( newProduct ) == 1) { // only products with dependencies upon need to be announced to other algos
-						log << MSG::DEBUG << "  - Used as input by some algorithm. Updating the event state." << endmsg;
-						event_state->update_state(m_product_indices[newProduct]);
-					}
-				}
+        }// End initialisation loop on acquired events
+
+        // End initialisation section --------------------------------------------
+
+        // Scheduling section ----------------------------------------------------
+        auto in_flight_end = events_in_flight.end();
+        auto in_flight_begin = events_in_flight.begin();
+        // loop until at least one evt finished
+        while (in_flight_end == find_if(in_flight_begin, in_flight_end ,has_finished)){
+            bool no_algo_can_run = true;
+            for (auto& evtContext_evtstate : events_in_flight){ // loop on evts
+
+                EventContext* event_Context = std::get<0>(evtContext_evtstate);
+                EventSchedulingState* event_state = std::get<1>(evtContext_evtstate);
+
+                for (unsigned int algo_counter=0; algo_counter<m_topAlgList.size(); algo_counter++) { // loop on algos
+                    // check whether all requirements/dependencies for the algorithm are fulfilled...
+                    const state_type& algo_requirements = m_all_requirements[algo_counter];
+                    // Very verbose!					
+                    //      log << MSG::VERBOSE << "Checking dependencies for algo " << algo_counter << ":\n" 
+                    //          << "  o Requirements: " <<  algo_requirements << std::endl
+                    //          << "  o State: " << event_state->state() << endmsg;
+          
+                    state_type dependencies_missing = (event_state->state() & algo_requirements) ^ algo_requirements;
+
+                    // ...and whether the algorithm was already started and if it can be started
+                    bool algo_not_started_and_dependencies_there = (dependencies_missing == 0) &&
+                                                                   (event_state->hasStarted(algo_counter) ) == false;
+		
+                    // It could run, just the maximum number of algos in flight has been reached
+                    if (algo_not_started_and_dependencies_there)
+                        no_algo_can_run = false;
+                    if (algo_not_started_and_dependencies_there &&
+                       (m_total_algos_in_flight < m_max_parallel )) {
+                       // Pick the algorithm if available and if not and requested create one
+                       IAlgorithm* ialgo=NULL;
+                       // To be transferred to the algomanager, this is inefficient
+                       ListAlg::iterator algoIt = m_topAlgList.begin();
+                       std::advance(algoIt, algo_counter);
+                       if(m_algResourcePool->acquireAlgorithm(algoIt->get()->name(),ialgo)){
+                           log << MSG::INFO << "Launching algo " << algo_counter<<  " on event " << event_Context->m_evt_num << endmsg;
+                            // Attach context to the algo
+                            Algorithm* algo = dynamic_cast<Algorithm*> (ialgo);
+                            algo->setContext(event_Context);
+
+                            tbb::task* t = new( tbb::task::allocate_root() ) HiveAlgoTask(ialgo, event_state, this);
+                            tbb::task::enqueue( *t);
+
+                            event_state->algoStarts(algo_counter);
+                            ++m_total_algos_in_flight;
+
+                           log << MSG::INFO << "Algos in flight: " <<  m_total_algos_in_flight << endmsg;
+                       }
+		    } // End scheduling if block
+
+               }// end loop on algo indices
+ 
+               // update the event state with what has been put into the DataSvc
+               std::vector<std::string> new_products;
+               m_whiteboard->selectStore(event_Context->m_evt_slot).ignore();
+               sc = m_whiteboard->getNewDataObjects(new_products);
+               if( !sc.isSuccess() ){
+                   warning() << "Error getting recent new products (since last time called)" << endmsg;
+               }
+               for (const auto& newProduct : new_products) {
+                   log << MSG::DEBUG << "New Product: " << newProduct << " in the store." << endmsg;
+                   if (m_product_indices.count( newProduct ) == 1) { // only products with dependencies upon need to be announced to other algos
+                       log << MSG::DEBUG << "  - Used as input by some algorithm. Updating the event state." << endmsg;
+                       event_state->update_state(m_product_indices[newProduct]);
+                   }
+               }
 
 				
-				/* Check if we stall on the current event
-         * One should check if:
-         * - Nothing can run 
-         * - Nothing is running
-         * - No new product is available
-         * - The event is not finished
-         * At this point one could claim a stall.
-         * The implementation poses a challenge though, which resides in the 
-         * asyncronous termination of algorithm and potential writing in the 
-         * store. Therefore one checks the 4 aforementioned conditions.
-         * Then, the store is again checked (without removing the new 
-         * elements). If something new is there the stall is not sure 
-         * anymore.
-         * Another possibility could be to check if any algo terminated 
-         * during the checks made to the wb probably.
-         */
-				if (no_algo_can_run && // nothing could run
-						m_total_algos_in_flight==0 && // nothing is running
-						new_products.size() == 0 && // no new product available
-						! event_state->hasFinished() ){ // the event is not finished
-						
-						// Check if something arrived on the wb meanwhile
-						if(!m_whiteboard->newDataObjectsPresent()){
+               /* Check if we stall on the current event
+                * One should check if:
+                * - Nothing can run 
+                * - Nothing is running
+                * - No new product is available
+                * - The event is not finished
+                * At this point one could claim a stall.
+                * The implementation poses a challenge though, which resides in the 
+                * asyncronous termination of algorithm and potential writing in the 
+                * store. Therefore one checks the 4 aforementioned conditions.
+                * Then, the store is again checked (without removing the new 
+                * elements). If something new is there the stall is not sure 
+                * anymore.
+                * Another possibility could be to check if any algo terminated 
+                * during the checks made to the wb probably.
+                */
+                if (no_algo_can_run && // nothing could run
+                    m_total_algos_in_flight==0 && // nothing is running
+                    new_products.size() == 0 && // no new product available
+                    ! event_state->hasFinished() ){ // the event is not finished
+					
+                    // Check if something arrived on the wb meanwhile
+                    if(!m_whiteboard->newDataObjectsPresent()){
             
-            std::string errorMessage("No algorithm can run, "
-                "no algorithm in flight, "
-                "no new products in the store, "
-                "event not complete: this is a stall.");
-            fatal() << errorMessage << std::endl
-                << "Algorithms that ran for event " << event_Context->m_evt_num << std::endl;
-            unsigned int algo_counter=0;
-            for (auto& algo : m_topAlgList){
-              bool has_started = event_state->hasStarted(algo_counter);
-              if (has_started)
-                fatal() << " o " << algo->name() << " could run" << std::endl;
-              else
-                fatal() << " o " << algo->name() << " could NOT run" << std::endl;
-              algo_counter++;
-              } // End ofloop on algos
-            fatal() << endmsg;
-            throw GaudiException (errorMessage,"HiveEventLoopMgr",StatusCode::FAILURE);          
-            }
-				}
+                        std::string errorMessage("No algorithm can run, "
+                                                 "no algorithm in flight, "
+                                                 "no new products in the store, "
+                                                 "event not complete: this is a stall.");
+                        fatal() << errorMessage << std::endl
+                                << "Algorithms that ran for event " << event_Context->m_evt_num << std::endl;
+                        unsigned int algo_counter=0;
+                        for (auto& algo : m_topAlgList){
+                            bool has_started = event_state->hasStarted(algo_counter);
+                            if (has_started)
+                                fatal() << " o " << algo->name() << " could run" << std::endl;
+                            else
+                                fatal() << " o " << algo->name() << " could NOT run" << std::endl;
+                            algo_counter++;
+                        } // End ofloop on algos
+                        fatal() << endmsg;
+                        throw GaudiException (errorMessage,"HiveEventLoopMgr",StatusCode::FAILURE);          
+                    }
+		}
+            }// end loop on evts in flight
+        }// end loop until at least one evt in flight finished
 
+        // Remove from the in flight events the finished ones
+        std::list<contextSchedState_tuple>::iterator it=events_in_flight.begin();
 
-			}// end loop on evts in flight
-		}// end loop until at least one evt in flight finished
-
-		// Remove from the in flight events the finished ones
-		std::list<contextSchedState_tuple>::iterator it=events_in_flight.begin();
-
-		while (it!=events_in_flight.end()){
-			// Now proceed to deletion
-			if (std::get<1>(*it)->hasFinished()){
-				const unsigned int evt_num = std::get<0>(*it)->m_evt_num;
-				const unsigned int evt_slot = std::get<0>(*it)->m_evt_slot;
-				log << MSG::INFO << "Event "<< evt_num << " finished. Events in fight are "
+        while (it!=events_in_flight.end()){
+        // Now proceed to deletion
+        if (std::get<1>(*it)->hasFinished()){
+            const unsigned int evt_num = std::get<0>(*it)->m_evt_num;
+            const unsigned int evt_slot = std::get<0>(*it)->m_evt_slot;
+				log << MSG::INFO << "Event "<< evt_num << " finished. Events in flight are "
 						<< events_in_flight.size() << ". Processed events are "
 						<<  n_processed_events << endmsg;
 				always() << "Event "<< evt_num << " finished. now is " <<  secsFromStart() << endmsg;
@@ -693,8 +688,8 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 						<< min_event_num<<" ) = " << evt_backlog << endmsg;
                  
             
-// Output
-  // Call the execute() method of all output streams
+         // Output
+         // Call the execute() method of all output streams
   for (ListAlg::iterator ito = m_outStreamList.begin(); ito != m_outStreamList.end(); ito++ ) {
     (*ito)->resetExecuted();
     StatusCode sc;
@@ -719,19 +714,17 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 
 				n_processed_events++;
 
-			} else{
-				++it;
-			}
-		}
-		// End scheduling session ------------------------------------------------
+            } else{
+                ++it;
+            }
+        }
+        // End scheduling session ------------------------------------------------
+    
+    } // End while loop on events
 
-	} // End while loop on events
+    always() << "---> Loop Finished (seconds): " << secsFromStart() <<endmsg;
 
-
-	always() << "---> Loop Finished (seconds): " << secsFromStart() <<endmsg;
-
-	return StatusCode::SUCCESS;
-
+    return StatusCode::SUCCESS;
 }
 
 /// Create event address using event selector

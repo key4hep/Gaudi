@@ -27,7 +27,6 @@ StatusCode AlgResourcePool::initialize(){
   std::hash<std::string> hash_function;
 
   // book keeping for resources
-  std::map<std::string,unsigned int> resource_indices;
   unsigned int resource_counter(0);
 
   for (auto algo : algos){
@@ -39,7 +38,7 @@ StatusCode AlgResourcePool::initialize(){
     m_n_of_created_instances[algo_id] = 1;
     state_type requirements(0); 
     for (auto resource_name : algo->neededResources()){
-      auto ret = resource_indices.insert(std::pair<std::string, unsigned int>(resource_name,resource_counter));
+      auto ret = m_resource_indices.insert(std::pair<std::string, unsigned int>(resource_name,resource_counter));
       // insert successful means == wasn't known before. So increment counter
       if (ret.second==true) ++resource_counter;
       // in any case the return value holds the proper product index
@@ -49,8 +48,16 @@ StatusCode AlgResourcePool::initialize(){
     // potentially create clones; if not lazy creation we have to do it now
     if (!m_lazyCreation) {
       for (unsigned int i =1, end =algo->cardinality();i<end; ++i){
-        IAlgorithm* new_algo;
-        algMan->createAlgorithm(algo->type(),algo->name(), new_algo, false, false);
+        IAlgorithm* new_algo(0);
+        algMan->createAlgorithm(algo->type(),algo->name(), new_algo, true, false);
+        // BH TODO: this explicit handling of algorithm state is 
+        // neeeded as long as the MinimalEventLoopManager does management of itself
+        // In the future we'd need to leave the entire state machine business up to
+        // the AlgorithmManager 
+	StatusCode sc = new_algo->sysInitialize();
+	if( !sc.isSuccess() ) {
+	  error() << "Unable to initialize Algorithm: " << new_algo->name() << endmsg;
+        }
         queue->push(new_algo);
         m_n_of_created_instances[algo_id]+=1;
       } 
@@ -94,5 +101,17 @@ StatusCode AlgResourcePool::releaseAlgorithm(const std::string& name, IAlgorithm
   return StatusCode::SUCCESS;
  }
 
+StatusCode AlgResourcePool::acquireResource(const std::string& name){
+  m_resource_mutex.lock();
+  m_available_resources[m_resource_indices[name]] = false;
+  m_resource_mutex.unlock();
+  return StatusCode::SUCCESS;
+}
 
+StatusCode AlgResourcePool::releaseResource(const std::string& name){
+  m_resource_mutex.lock();
+  m_available_resources[m_resource_indices[name]] = true;
+  m_resource_mutex.unlock();
+  return StatusCode::SUCCESS;
+}
 
