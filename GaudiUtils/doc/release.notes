@@ -1,6 +1,9 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2013-01-22 - Vanya Belyaev
+ - Patch #5594: fix for parsing of 1D histograms with non-equidistant binnings
+
 ============================== GaudiUtils v4r3 ===============================
 ! 2012-11-14 - Marco Clemencic
  - Updated CMakeLists.txt.
