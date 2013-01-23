@@ -24,7 +24,7 @@ WriteHandleAlg::WriteHandleAlg ( const std::string& name , // the algorithm inst
 
 StatusCode WriteHandleAlg::initialize(){
   MsgStream log(msgSvc(), name());
- 
+
   StatusCode outputSC = declareDataObj(m_output_name, m_output_handle, IDataObjectHandle::WRITE);  
   return outputSC.isSuccess();
 }
@@ -38,8 +38,11 @@ StatusCode WriteHandleAlg::execute  ()  // the execution of the algorithm
   
   log << MSG::INFO << "Ciao, I am executing" << endmsg;
 
-  Collision* c = new Collision(getContext()->m_evt_num);
-  
+  // Set collision to the current event number from the context; 
+  // if the context doesn't exist, set it to some dummy value 
+  // this fallback allows to stay compatible with non-hive infrastructure 
+  Collision* c = new Collision(getContext() ? getContext()->m_evt_num : 42);
+
   if (m_useHandle) m_output_handle->put(c);
   else eventSvc()->registerObject("/Event","MyCollision",c);
   
