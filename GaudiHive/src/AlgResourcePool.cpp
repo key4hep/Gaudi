@@ -80,7 +80,7 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
     m_resource_mutex.lock();
     state_type dependencies_missing = (m_available_resources & requirements) ^ requirements;
     if (dependencies_missing == 0) {
-      m_available_resources|=requirements;
+      m_available_resources^=requirements;
     } else{ 
       sc = StatusCode::FAILURE;
       m_algqueue_map[algo_id]->push(algo);
