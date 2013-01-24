@@ -522,7 +522,9 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
                 if( !sc.isSuccess() )  {
                     warning() << "Error declaring event root address." << endmsg;
 		}
+		m_algResourcePool->acquireResource("ROOTIO");
                 sc = m_evtDataSvc->retrieveObject("/Event", pObject);
+                m_algResourcePool->releaseResource("ROOTIO"); 
                 if( !sc.isSuccess() ) {
                     warning() << "Unable to retrieve Event root object" << endmsg;
                     eof = true;
@@ -587,7 +589,9 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
                             algo->setContext(event_Context);
 
                             tbb::task* t = new( tbb::task::allocate_root() ) HiveAlgoTask(ialgo, event_state, this);
-                            tbb::task::enqueue( *t);
+                            //TODO: dirty hack to make sequential root IO happy
+                            if (algo->type() == "HiveReadAlgorithm") t->execute();
+			    else tbb::task::enqueue( *t);
 
                             event_state->algoStarts(algo_counter);
                             ++m_total_algos_in_flight;
