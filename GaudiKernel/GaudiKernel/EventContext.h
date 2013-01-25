@@ -16,12 +16,6 @@
  * @date 2012
  **/
 
-class EventContext;
-
-//fwd declaration
-namespace DataSvcHelpers {
-  class RegistryEntry;
-}
 class _opaque_pthread_t;
 
 // Thread id type
@@ -38,7 +32,6 @@ public:
   long int m_evt_num;
   size_t   m_evt_slot;
   THREADID_TYPE m_thread_id;
-  DataSvcHelpers::RegistryEntry* m_registry;
 };
 
 #endif //GAUDIKERNEL_EVENTCONTEXT_H
