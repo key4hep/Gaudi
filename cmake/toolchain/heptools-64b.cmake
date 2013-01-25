@@ -157,7 +157,7 @@ LCG_external_package(xqilla            2.2.4                                    
 else()
 LCG_external_package(xqilla            2.2.4p1                                  )
 endif()
-LCG_external_package(xrootd            3.1.0p2                                  )
+LCG_external_package(xrootd            3.2.4                                    )
 
 # Prepare the search paths according to the versions above
 LCG_prepare_paths()
