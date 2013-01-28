@@ -4,7 +4,7 @@
 #include "AlgResourcePool.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/Algorithm.h"
+#include "GaudiKernel/Algorithm.h" // will be IAlgorithm if context getter promoted to interface
 
 //===========================================================================
 // Infrastructure methods
@@ -28,21 +28,27 @@ SchedulerSvc::~SchedulerSvc(){}
 //---------------------------------------------------------------------------
 
 StatusCode SchedulerSvc::initialize(){
-  
-  // Prepare empty event slots
-  m_eventSlots.assign(m_maxEventsInFlight,EventSlot());
-  
-  // Get the algo resource pool
-  m_algResourcePool = serviceLocator()->service("AlgResourcePool");
-  
+
   // Get the list of algorithms
   SmartIF<IAlgManager> algMan(serviceLocator());
-  const std::list<IAlgorithm*>& algos = algMan->getAlgorithms();
+  const std::list<IAlgorithm*>& algos = algMan->getAlgorithms();  
   
   // Set the states vectors, one per event slot
   const unsigned int algsNumber = algos.size();  
-  m_algsStates.assign(m_maxEventsInFlight,AlgsExecutionStates(algsNumber,m_MS));
-
+  
+  // Prepare empty event slots
+  SmartIF<IHiveWhiteBoard> WB(serviceLocator());
+  StatusCode sc = WB->setNumberOfStores(m_maxEventsInFlight);
+  if (sc !=StatusCode::SUCCESS)
+    error() << "Could not properly set the number of slots in the WhiteBoard!";
+  
+  m_eventSlots.assign(m_maxEventsInFlight,EventSlot(m_algosDependencies,0,m_MS,WB));
+  for (auto& slot: m_eventSlots)
+    slot.complete=true; // to be able to insert new event
+  
+  // Get the algo resource pool
+  m_algResourcePool = serviceLocator()->service("AlgResourcePool");
+    
   // Fill the containers to convert algo names to index
   m_algname_vect.reserve(algsNumber);
   unsigned int index=0;
@@ -70,7 +76,14 @@ StatusCode SchedulerSvc::initialize(){
                                                                   this, 
                                                                   std::placeholders::_1, 
                                                                   std::placeholders::_2);
-  // the task promotes the state to finished.
+  
+  // the task promotes the state to executed.  
+  
+  m_statesTransitions["Executed2Finished"] = std::bind(&SchedulerSvc::m_promoteToFinished, 
+                                                                  this, 
+                                                                  std::placeholders::_1, 
+                                                                  std::placeholders::_2);  
+  
   
   return StatusCode::SUCCESS;
   
@@ -78,12 +91,21 @@ StatusCode SchedulerSvc::initialize(){
 
 //---------------------------------------------------------------------------
 
-StatusCode SchedulerSvc::run(){
+StatusCode SchedulerSvc::start(){
  
-  action thisAction;
+  MsgStream log(m_MS);
+  
+  // Kick off the scheduling!
+  m_updateStates();
+  
+  // Wait for actions pushed into the queue by finishing tasks.
+  action thisAction;  
+  StatusCode sc;
   while(true){
     m_actions_queue.pop(thisAction);
-    thisAction();
+    sc = thisAction();
+    if (sc!=StatusCode::SUCCESS)
+      log << MSG::VERBOSE << "Action did not succed (which is not bad per se)." << endmsg;      
   }
   
   return StatusCode::SUCCESS;
@@ -110,11 +132,13 @@ inline const std::string& SchedulerSvc::m_index2algname (unsigned int index) con
 StatusCode SchedulerSvc::addEvent(EventContext* eventContext){
    
   // Look for the first finished event, if not return failure
+  unsigned int newSlotNumber=0;
   for (auto& eventSlot: m_eventSlots){
     if (eventSlot.complete){
-      eventSlot.reset(eventContext);
+      eventSlot.reset(eventContext,newSlotNumber);
       return StatusCode::SUCCESS;
-    }    
+    }
+    newSlotNumber++;
   }
     
   warning() << "Could not find a free processing slot.";
@@ -156,6 +180,9 @@ unsigned int SchedulerSvc::completedEvents(){
 
 StatusCode SchedulerSvc::m_updateStates(){
  
+  MsgStream log(m_MS);
+  
+  //unsigned int finishedEvents=0; needed when callback is ready
   StatusCode global_sc(StatusCode::SUCCESS);
   StatusCode partial_sc;
   for (EventSlotIndex iSlot=0;iSlot<m_eventSlots.size();iSlot++){
@@ -165,21 +192,75 @@ StatusCode SchedulerSvc::m_updateStates(){
         auto tr_action (transition_Name_Action.second);
         partial_sc = tr_action(iAlgo,iSlot);
         if (partial_sc != StatusCode::SUCCESS){
-          error() << "Error occurred during the transition " 
-                  << tr_name << " for algorithm " << m_algname_vect[iAlgo]
-                  << " on processing slot " << iSlot;
+          log << MSG::INFO << "Could not apply transition " 
+              << tr_name << " for algorithm " << m_index2algname(iAlgo)
+              << " on processing slot " << iSlot << endmsg;
           global_sc=partial_sc;
         }
-      } // end loop on actions
+      } // end loop on transitions
     } // end loop on algos    
-  } // end loop on slots
+  
+    // Now check if we are in a stall
+    m_isStalled(iSlot);
+    
+    // Now check if we are done
+    // DP needed for the callback to the evtprocessor
+    //if (m_eventSlots[iSlot].algsStates.allAlgsFinished()) finishedEvents++;
+  
+  } // end loop on slots  
+  
+  // DP here put the calls to the evt processor: addEvent!
   
   return global_sc;
 }
 
 //---------------------------------------------------------------------------
+/**
+ * Checks if an event is in a stalled situation:
+ *   - Event not complete
+ *   - No algorithm is in flight
+ *   - No algorithm is ready to be scheduled
+ *   - No algorithm has finished
+ *   
+ */
+void SchedulerSvc::m_isStalled(EventSlotIndex iSlot){
+      
+  // Get the slot
+  const EventSlot& thisSlot = m_eventSlots[iSlot];
+  
+  // Get the states
+  const AlgsExecutionStates& thisStates = thisSlot.algsStates;
+  
+  if (not thisSlot.complete and
+      m_algosInFlight == 0 and
+      not thisStates.algsPresent(AlgsExecutionStates::EXECUTED) and      
+      not thisStates.algsPresent(AlgsExecutionStates::DATAFLOWALLOWED)){    
+        
+    std::string errorMessage("No algorithm is ready to run, "
+                             "no algorithm is running, "
+                             "no algorithm terminated, "
+                             "event not complete: this is a stall.");
+    fatal() << errorMessage << std::endl
+            << "Algorithms that ran for event " << thisSlot.eventContext->m_evt_num << endmsg;
+    unsigned int algoIndex=0;
+    for (const auto& thisState : thisStates ){
+      if (thisState == AlgsExecutionStates::EXECUTED or
+          thisState == AlgsExecutionStates::FINISHED)
+        fatal() << " o " << m_index2algname(algoIndex) << " could run";
+      else
+        fatal() << " o " << m_index2algname(algoIndex) << " could NOT run";
+      algoIndex++;
+    } // End ofloop on algos
+    fatal() << endmsg;
+    throw GaudiException (errorMessage,"HiveEventLoopMgr",StatusCode::FAILURE);      
+  }
+  
+}
 
-StatusCode SchedulerSvc::m_promoteToControlFlowAllowed(AlgoSlotIndex iAlgo, EventSlotIndex si){
+//---------------------------------------------------------------------------
+
+
+StatusCode SchedulerSvc::m_promoteToControlFlowAllowed(AlgoSlotIndex /*iAlgo*/, EventSlotIndex /*si*/){
   
   // Do the control flow
   return StatusCode::SUCCESS;
@@ -188,7 +269,7 @@ StatusCode SchedulerSvc::m_promoteToControlFlowAllowed(AlgoSlotIndex iAlgo, Even
 
 //---------------------------------------------------------------------------
 
-StatusCode SchedulerSvc::m_promoteToDataFlowAllowed(AlgoSlotIndex iAlgo, EventSlotIndex si){
+StatusCode SchedulerSvc::m_promoteToDataFlowAllowed(AlgoSlotIndex /*iAlgo*/, EventSlotIndex /*si*/){
   
   // Do the data flow
   return StatusCode::SUCCESS;  
@@ -199,7 +280,7 @@ StatusCode SchedulerSvc::m_promoteToDataFlowAllowed(AlgoSlotIndex iAlgo, EventSl
 
 StatusCode SchedulerSvc::m_promoteToMaxInFlightAllowed(AlgoSlotIndex iAlgo, EventSlotIndex si){
   if ( m_algosInFlight < m_maxAlgosInFlight )
-    return m_algsStates[si].updateState(iAlgo,AlgsExecutionStates::MAXINFLIGHTALLOWED);
+    return m_eventSlots[si].algsStates.updateState(iAlgo,AlgsExecutionStates::MAXINFLIGHTALLOWED);
   return StatusCode::FAILURE;
 }
 
@@ -211,7 +292,7 @@ StatusCode SchedulerSvc::m_promoteToScheduled(AlgoSlotIndex iAlgo, EventSlotInde
   StatusCode sc = m_algResourcePool->acquireAlgorithm(m_index2algname(iAlgo),ialgoPtr);
   
   if (sc == StatusCode::SUCCESS){
-    Algorithm* algoPtr = dynamic_cast<Algorithm*> (ialgoPtr);    
+    Algorithm* algoPtr = dynamic_cast<Algorithm*> (ialgoPtr); // DP: expose the setter of the context?   
     algoPtr->setContext(m_eventSlots[si].eventContext);
     tbb::task* t = new( tbb::task::allocate_root() ) AlgoExecutionTask(ialgoPtr, iAlgo, this);    
     //TODO: dirty hack to make sequential root IO happy
@@ -220,16 +301,40 @@ StatusCode SchedulerSvc::m_promoteToScheduled(AlgoSlotIndex iAlgo, EventSlotInde
     
     ++m_algosInFlight;
   }
+  else{
+    MsgStream log(m_MS);
+    log << MSG::INFO << "Could not acquire instance for algorithm " 
+        << m_index2algname(iAlgo) << " on slot " << si << endmsg;
+  }
   
   return sc;
 }
 
 //---------------------------------------------------------------------------
 
-StatusCode SchedulerSvc::m_promoteToFinished(AlgoSlotIndex iAlgo, EventSlotIndex si){
-  return m_algsStates[si].updateState(iAlgo,AlgsExecutionStates::FINISHED);
-} 
+StatusCode SchedulerSvc::m_promoteToExecuted(AlgoSlotIndex iAlgo, EventSlotIndex si, IAlgorithm* algo){  
+ 
+  // Put back the instance
+  StatusCode sc = m_algResourcePool->releaseAlgorithm(algo->name(),algo);
+  if (sc !=StatusCode::SUCCESS){
+    EventContext* eventContext = dynamic_cast<Algorithm*>(algo)->getContext(); // DP: expose context getter in IAlgo?
+    error() << "[Event " << eventContext->m_evt_num 
+            << ", Slot " << eventContext->m_evt_slot  << "] "
+            << "Instance of algorithm " << algo->name()
+            << " could not be properly put back." << endmsg;
+    return StatusCode::FAILURE;
+    }
   
+  m_algosInFlight--;
+  return m_eventSlots[si].algsStates.updateState(iAlgo,AlgsExecutionStates::EXECUTED);
+} 
+
+//---------------------------------------------------------------------------
+
+StatusCode SchedulerSvc::m_promoteToFinished(AlgoSlotIndex iAlgo, EventSlotIndex si){
+  return m_eventSlots[si].algsStates.updateState(iAlgo,AlgsExecutionStates::FINISHED);
+} 
+
 //===========================================================================
 
 

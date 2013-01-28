@@ -6,6 +6,8 @@
 #include "GaudiKernel/IRunable.h" 
 #include "GaudiKernel/Service.h" 
 #include "GaudiKernel/IAlgResourcePool.h"
+#include "GaudiKernel/IHiveWhiteBoard.h"
+#include "DataFlowManager.h"
 
 // C++ include files
 #include <vector>
@@ -15,6 +17,7 @@
 
 // External libs
 #include "tbb/concurrent_queue.h"
+#include "tbb/concurrent_vector.h" 
 
 //---------------------------------------------------------------------------
 
@@ -22,12 +25,13 @@
 class AlgsExecutionStates{
 public:
   
-  enum State {
+  enum State : unsigned short {
     GROUND,
     CONTROLFLOWALLOWED,
     DATAFLOWALLOWED,
     MAXINFLIGHTALLOWED,
     SCHEDULED,
+    EXECUTED,
     FINISHED
     };     
     
@@ -66,9 +70,15 @@ public:
           return StatusCode::FAILURE;              
         }          
       //
-      case FINISHED:
+      case EXECUTED:
         if (m_states[iAlgo]!=SCHEDULED){
           log << MSG::ERROR  << "Transition to FINISHED possible only from SCHEDULED state!";
+          return StatusCode::FAILURE;   
+        }
+      //
+      case FINISHED:
+        if (m_states[iAlgo]!=EXECUTED){
+          log << MSG::ERROR  << "Transition to FINISHED possible only from EXECUTED state!";
           return StatusCode::FAILURE;              
         }                         
       //
@@ -76,15 +86,61 @@ public:
         log << MSG::ERROR  << "Undefined state!";
         return StatusCode::FAILURE;             
     }        
-  return StatusCode::SUCCESS; 
-  };
+    return StatusCode::SUCCESS;         
+    };
+  
   void reset(){m_states.assign(m_states.size(),GROUND);};
+  bool algsPresent(State state) const{return std::find(m_states.begin(),m_states.end(),state)!=m_states.end();}
+  bool allAlgsFinished(){
+    int finishedAlgos=std::count_if(m_states.begin(),m_states.end(),[](State s) {return s == FINISHED;});
+    return m_states.size() == (unsigned int)finishedAlgos;  };
+
+  /* DP: For the scheduled2executed transition we use a concuirrent vector. 
+   * We could also encapsulate in a transaction once gcc 47 will be supported.
+   */    
+  typedef tbb::concurrent_vector<State> states_vector;
+  typedef states_vector::iterator vectIt;
+  typedef states_vector::const_iterator const_vectIt;
+  vectIt begin(){return m_states.begin();}; 
+  vectIt end(){return m_states.end();};  
+  const_vectIt begin() const{const_vectIt it = m_states.begin();return it;}; 
+  const_vectIt end() const{const_vectIt it = m_states.begin();return it;}; 
+  
 private:
-  std::vector<State>  m_states;
+  states_vector m_states;
   SmartIF<IMessageSvc> m_MS;  
   
 };
 
+//---------------------------------------------------------------------------
+
+class EventSlot{
+public:
+  EventSlot(const std::vector<std::vector<std::string>>& algoDependencies, 
+            unsigned int thisSlotNumber,
+            SmartIF<IMessageSvc> MS,
+            SmartIF<IHiveWhiteBoard> WB):
+              eventContext(nullptr),
+              algsStates(algoDependencies.size(),MS),
+              slotNumber(thisSlotNumber),
+              complete(false),
+              dataFlowMgr(WB,slotNumber,algoDependencies){};
+              
+  void reset(EventContext* theeventContext, unsigned int newSlotNumber){
+    eventContext=theeventContext;
+    algsStates.reset();
+    dataFlowMgr.reset(newSlotNumber);
+    complete=false;
+  };
+  
+  // Members ----
+  EventContext* eventContext;
+  AlgsExecutionStates algsStates; 
+  unsigned int slotNumber;
+  bool complete;
+  DataFlowManager dataFlowMgr;
+  // ControlFlowManager controlFlowMgr;
+};
 
 
 //---------------------------------------------------------------------------
@@ -100,7 +156,7 @@ private:
  *  @author  Danilo Piparo
  *  @version 1.0
  */
-class SchedulerSvc: public extends2<Service, IScheduler,IRunable> {
+class SchedulerSvc: public extends1<Service, IScheduler> {
 public:
   /// Constructor
   SchedulerSvc( const std::string& name, ISvcLocator* svc );
@@ -109,7 +165,7 @@ public:
   ~SchedulerSvc();
   
   /// To start the scheduling in a different thread
-  virtual StatusCode run ();
+  virtual StatusCode start ();
   
   /// Prepare the resources necessary for the scheduling
   virtual StatusCode initialize();
@@ -139,37 +195,26 @@ private:
 
   // Event slots management -------------------------------------------------
   int m_maxEventsInFlight;  
-  struct EventSlot{
-  public:
-    EventSlot():eventContext(nullptr),complete(false){};
-    void reset(EventContext* theeventContext){
-      eventContext=theeventContext;
-      complete=false;
-    };
-    EventContext* eventContext;
-    bool complete;
-    // DataFlowManager dataFlowMgr;
-    // ControlFlowManager controlFlowMgr;
-  };
   
   std::vector<EventSlot> m_eventSlots;  
   
   // States management ------------------------------------------------------
     
   unsigned int m_maxAlgosInFlight;
-  std::atomic<unsigned int> m_algosInFlight;
+  unsigned int m_algosInFlight;
  
   typedef unsigned int EventSlotIndex;
   typedef unsigned int AlgoSlotIndex;
   
-  std::vector<AlgsExecutionStates> m_algsStates; 
-
   StatusCode m_updateStates();
   StatusCode m_promoteToControlFlowAllowed(AlgoSlotIndex iAlgo, EventSlotIndex si);
   StatusCode m_promoteToDataFlowAllowed(AlgoSlotIndex iAlgo, EventSlotIndex si);
   StatusCode m_promoteToMaxInFlightAllowed(AlgoSlotIndex iAlgo, EventSlotIndex si);
   StatusCode m_promoteToScheduled(AlgoSlotIndex iAlgo, EventSlotIndex si);
-  StatusCode m_promoteToFinished(AlgoSlotIndex iAlgo, EventSlotIndex si); // here exit code for cflow to be handled
+  StatusCode m_promoteToExecuted(AlgoSlotIndex iAlgo, EventSlotIndex si, IAlgorithm* algo);
+  StatusCode m_promoteToFinished(AlgoSlotIndex iAlgo, EventSlotIndex si);
+  
+  void m_isStalled(EventSlotIndex si);
   
   typedef std::function<StatusCode(AlgoSlotIndex iAlgo, EventSlotIndex si)> TransitionMethod;
   std::map<std::string,TransitionMethod> m_statesTransitions;
@@ -178,9 +223,9 @@ private:
   
   // Algos Management -------------------------------------------------------
   SmartIF<IAlgResourcePool>  m_algResourcePool;
+  
   // DP Super ugly, but will disappear when the deps are declared within the C++ code of the algos.
-  typedef std::vector<std::vector<std::string>> algosDependenciesCollection;
-  algosDependenciesCollection m_algosDependencies;
+  std::vector<std::vector<std::string>> m_algosDependencies;
   
   // Actions management -----------------------------------------------------
   typedef std::function<StatusCode ()> action;

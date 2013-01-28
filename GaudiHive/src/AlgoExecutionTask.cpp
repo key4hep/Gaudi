@@ -11,16 +11,15 @@ tbb::task* AlgoExecutionTask::execute() {
   m_algorithm->sysExecute();
 
   // TODO: Here the code from the algo is to be analysed for the Control Flow
-  
+
   // Push in the scheduler queue an action to be performed 
-  m_schedSvc->m_algosInFlight--; //This is atomic, no worries.
+  auto action_promote2Executed = std::bind(&SchedulerSvc::m_promoteToExecuted, 
+                                           m_schedSvc, 
+                                           m_algoIndex, 
+                                           eventContext->m_evt_slot,
+                                           m_algorithm);      
   
-  auto promote2Finished = std::bind(&SchedulerSvc::m_promoteToFinished, 
-                                    m_schedSvc, 
-                                    m_algoIndex, 
-                                    eventContext->m_evt_slot);  
-  
-  m_schedSvc->m_actions_queue.push(promote2Finished); // This container is ts, no worries.
+  m_schedSvc->m_actions_queue.push(action_promote2Executed); // This container is ts, no worries.    
   
   return nullptr;
 }
