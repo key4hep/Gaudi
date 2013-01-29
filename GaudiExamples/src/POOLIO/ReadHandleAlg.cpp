@@ -44,7 +44,7 @@ StatusCode ReadHandleAlg::execute() {
   
   Collision* c = m_inputHandle->get();
     
-  log << MSG::INFO << "Collision number " <<  c->collision() << endmsg;  
+  log << MSG::INFO << "Event " << getContext()->m_evt_num << " Collision number " <<  c->collision() << endmsg;
   
   return StatusCode::SUCCESS;
 }

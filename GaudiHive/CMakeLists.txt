@@ -21,17 +21,18 @@ gaudi_add_module(GaudiHive
                         INCLUDE_DIRS Boost ROOT AIDA TBB)
                         
 gaudi_add_test(WhiteBoard
-               FRAMEWORK options/testWhiteBoard.py
-               ENVIRONMENT JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options)
+               FRAMEWORK options/testWhiteBoard.py)
 
 gaudi_add_test(CPUCruncher
-               FRAMEWORK options/CPUCruncher.py
-               ENVIRONMENT JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options)
+               FRAMEWORK options/CPUCruncher.py)
 
 gaudi_add_test(WriteWhiteBoard
-               FRAMEWORK options/WriteWhiteBoard.py
-               ENVIRONMENT JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options)
+               FRAMEWORK options/WriteWhiteBoard.py )
 
 gaudi_add_test(ReadWhiteBoard
                FRAMEWORK options/ReadWhiteBoard.py
-               ENVIRONMENT JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options)
+               DEPENDS WriteWhiteBoard)
+
+gaudi_add_test(ReadAndWriteWhiteBoard
+               FRAMEWORK options/ReadAndWriteWhiteBoard.py
+               DEPENDS WriteWhiteBoard)

@@ -1669,7 +1669,7 @@ endfunction()
 # prepends the value to the PATH-like variable.
 #-------------------------------------------------------------------------------
 function(gaudi_add_test name)
-  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST" "" "ENVIRONMENT;FRAMEWORK;COMMAND" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST" "" "ENVIRONMENT;FRAMEWORK;COMMAND;DEPENDS" ${ARGN})
 
   gaudi_get_package_name(package)
 
@@ -1714,6 +1714,14 @@ function(gaudi_add_test name)
            ${env_cmd}
                ${extra_env} --xml ${env_xml}
                ${cmdline})
+
+  if(ARG_DEPENDS)
+    foreach(t ${ARG_DEPENDS})
+      list(APPEND depends ${package}.${t})
+    endforeach()
+    set_property(TEST ${package}.${name} PROPERTY DEPENDS ${depends})
+  endif()
+
 endfunction()
 
 #---------------------------------------------------------------------------------------------------

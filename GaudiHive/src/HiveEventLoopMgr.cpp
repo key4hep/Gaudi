@@ -507,28 +507,16 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
             if( m_evtContext ) {
                 //---This is the "event iterator" context from EventSelector
                 IOpaqueAddress* pAddr = 0;
-                DataObject* pObject = 0;
-                // acquire lock on ROOT IO
-                m_algResourcePool->acquireResource("ROOTIO");
                 sc = getEventRoot(pAddr);
-                // release lock on ROOT IO
-		m_algResourcePool->releaseResource("ROOTIO");
                 if( !sc.isSuccess() )  {
                     info() << "No more events in event selection " << endmsg;
                     eof = true;
+                    maxevt = evt_num;  // Set the maxevt to the determined maximum
                     break;
                 }
                 sc = m_evtDataMgrSvc->setRoot ("/Event", pAddr);
                 if( !sc.isSuccess() )  {
                     warning() << "Error declaring event root address." << endmsg;
-		}
-		m_algResourcePool->acquireResource("ROOTIO");
-                sc = m_evtDataSvc->retrieveObject("/Event", pObject);
-                m_algResourcePool->releaseResource("ROOTIO"); 
-                if( !sc.isSuccess() ) {
-                    warning() << "Unable to retrieve Event root object" << endmsg;
-                    eof = true;
-                    break;
                 }
             }
             else {
@@ -541,7 +529,7 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 
             EventSchedulingState* event_state = new EventSchedulingState(m_topAlgList.size());
             events_in_flight.push_back(std::make_tuple(evtContext,event_state));
-            always()  << "Started event " << evt_num << " at " << secsFromStart() << endmsg;
+            info()  << "Started event " << evt_num << " at " << secsFromStart() << endmsg;
 
         }// End initialisation loop on acquired events
 
@@ -589,9 +577,7 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
                             algo->setContext(event_Context);
 
                             tbb::task* t = new( tbb::task::allocate_root() ) HiveAlgoTask(ialgo, event_state, this);
-                            //TODO: dirty hack to make sequential root IO happy
-                            if (algo->type() == "HiveReadAlgorithm") t->execute();
-			    else tbb::task::enqueue( *t);
+                            tbb::task::enqueue( *t);
 
                             event_state->algoStarts(algo_counter);
                             ++m_total_algos_in_flight;
@@ -675,7 +661,7 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 				log << MSG::INFO << "Event "<< evt_num << " finished. Events in flight are "
 						<< events_in_flight.size() << ". Processed events are "
 						<<  n_processed_events << endmsg;
-				always() << "Event "<< evt_num << " finished. now is " <<  secsFromStart() << endmsg;
+				info() << "Event "<< evt_num << " finished. now is " <<  secsFromStart() << endmsg;
 
 				// Calculate min and max event num
 				unsigned int min_event_num=0xFFFFFFFF;
@@ -688,7 +674,7 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 					if (evt_num < min_event_num) min_event_num=evt_num;
 				}
 				unsigned int evt_backlog=max_event_num-min_event_num;
-				always() << "Event backlog (max= " << max_event_num << ", min= "
+				info() << "Event backlog (max= " << max_event_num << ", min= "
 						<< min_event_num<<" ) = " << evt_backlog << endmsg;
                  
             
