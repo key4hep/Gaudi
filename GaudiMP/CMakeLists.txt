@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiMP v1r6)
+gaudi_subdir(GaudiMP v1r7)
 
 gaudi_depends_on_subdirs(GaudiKernel)
 

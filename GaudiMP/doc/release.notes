@@ -1,6 +1,7 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+================================ GaudiMP v1r7 ================================
 ! 2013-01-15 - Nathalie Rauschmayr
  - Patch #5593: Implemented late forking for GaudiMP
    Implemented late forking on the level of the worker processes. After

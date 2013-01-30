@@ -1,6 +1,7 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+================================ Gaudi v23r6 =================================
 ================================ Gaudi v23r5 =================================
 ! 2012-11-05 - Marco Clemencic
  - Ensure that we get the correct return code after a segfault in C++.

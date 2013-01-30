@@ -1,6 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v28r5 ==============================
 ! 2013-01-15 - Marco Clemencic
  - Minor change in ConversionSvc constructor to avoid a pointless call to
    queryInterface.
