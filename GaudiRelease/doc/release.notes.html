@@ -42,79 +42,43 @@ Purpose: Gaudi common set of packages<br><br>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=64c">LCGCMT_64c</a></h3>
 <h3>General Changes</h3>
 <ul>
-<li><br/>
-    (<span class="author"></span>)</li>
+<li>Improvements and fixes to the CMake configuration and modules.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
 </ul>
 <h3>Packages Changes</h3>
 <ul>
 <li>GaudiPolicy (v12r4):
 <ul>
-<li><br/>
-    (<span class="author"></span>)</li>
+<li>Modified Python zipping to fail if coding is not correct.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Minor fixes.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
 </ul>
-<pre>
-! 2013-01-25 - Marco Clemencic
- - Ignore '.__afs**' when zipping Python directories
- - Check that the Python files have the correct encoding.
-   http://www.python.org/dev/peps/pep-0263/
-
-! 2012-12-06 - Marco Clemencic
- - Added to merge_files.py the possibility to ignore missing fragments.
-</pre>
 </li>
 <li>GaudiKernel (v28r5):
 <ul>
-<li><br/>
-    (<span class="author"></span>)</li>
+<li>Minor change in ConversionSvc constructor to avoid a pointless call to
+   queryInterface.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
 </ul>
-<pre>
-! 2013-01-15 - Marco Clemencic
- - Minor change in ConversionSvc constructor to avoid a pointless call to
-   queryInterface.
-</pre>
 </li>
 <li>GaudiUtils (v4r4):
 <ul>
-<li><br/>
-    (<span class="author"></span>)</li>
+<li> Patch #5594: fix for parsing of 1D histograms with non-equidistant binnings.<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
 </ul>
-<pre>
-! 2013-01-22 - Vanya Belyaev
- - Patch #5594: fix for parsing of 1D histograms with non-equidistant binnings
-</pre>
 </li>
 <li>GaudiPython (v12r5):
 <ul>
-<li><br/>
-    (<span class="author"></span>)</li>
+<li>Added dictionaries for HistoStrings (GaudiUtils).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
 </ul>
-<pre>
-! 2013-01-24 - Marco Clemencic
- - Added dictionaries for HistoStrings (GaudiUtils).
-</pre>
 </li>
 <li>GaudiMP (v1r7):
 <ul>
-<li><br/>
-    (<span class="author"></span>)</li>
+<li>Patch #5593: Implemented late forking for GaudiMP.<br/>
+    (<span class="author">Nathalie Rauschmayr</span>)</li>
 </ul>
-<pre>
-! 2013-01-15 - Nathalie Rauschmayr
- - Patch #5593: Implemented late forking for GaudiMP
-   Implemented late forking on the level of the worker processes. After
-   Application Manager has been initialized and before the first event has been
-   processed, subworkers are forked by the main worker.
-</pre>
-</li>
-<li>GaudiRelease (v23r6):
-<ul>
-<li><br/>
-    (<span class="author"></span>)</li>
-</ul>
-<pre>
-! 2013-01-28 - Marco Clemencic
- - Minor fix to update_versions.py.
-</pre>
 </li>
 </ul>
 <!-- ====================================================================== -->
