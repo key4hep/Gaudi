@@ -1,6 +1,9 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+! 2013-01-28 - Marco Clemencic
+ - Minor fix to update_versions.py.
+
 ============================= GaudiRelease v23r5 =============================
 ============================= GaudiRelease v23r4 =============================
 ! 2012-09-13 - Marco Clemencic
