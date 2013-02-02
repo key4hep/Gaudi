@@ -22,6 +22,11 @@ AlgResourcePool::~AlgResourcePool() {
 
 // initialize the pool with the list of algos known to the IAlgManager  
 StatusCode AlgResourcePool::initialize(){
+  
+  StatusCode sc(Service::initialize());
+  if (!sc.isSuccess())
+    warning () << "Base class could not be started" << endmsg;  
+  
   SmartIF<IAlgManager> algMan(serviceLocator());
   const std::list<IAlgorithm*>& algos = algMan->getAlgorithms();
   std::hash<std::string> hash_function;
@@ -70,7 +75,7 @@ StatusCode AlgResourcePool::initialize(){
 
 StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm*& algo){
   std::hash<std::string> hash_function;
-  size_t algo_id = hash_function(name);
+  size_t algo_id = hash_function(name);  
   StatusCode sc = m_algqueue_map[algo_id]->try_pop(algo); //TODO: check for existence
   //  if (m_lazyCreation ) {
   // TODO: fill the lazyCreation part
