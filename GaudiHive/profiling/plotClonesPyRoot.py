@@ -27,7 +27,7 @@ def parseLog(logfilename):
   for line in lines:
     if "Summary: name=" in line:
       runtime_nclones = map(float,
-                            re.match(".* avg_runtime= ([0-9]*.[0-9]*) n_clones= ([0-9]*).*",line).groups())
+                            re.match(".* avg_runtime= ([0-9]*.[0-9]*|[0-9]*.[0-9]*e-[0-9]*) n_clones= ([0-9]).*",line).groups())
       vals.append(runtime_nclones)
     elif "Running with" in line:
       NEventsInFlight,NThreads=map( int, re.match(".* Running with ([0-9]*) parallel events.*algorithms, ([0-9]*) threads",line).groups()) 
