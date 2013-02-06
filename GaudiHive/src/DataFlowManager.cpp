@@ -2,30 +2,25 @@
 
 //---------------------------------------------------------------------------
 // Static members
-std::vector< longBitset > DataFlowManager::m_algosRequirements;
-std::unordered_map<std::string,unsigned int> DataFlowManager::m_productName_index_map;
+std::vector< DataFlowManager::longBitset > DataFlowManager::m_algosRequirements;
+std::unordered_map<std::string,long int> DataFlowManager::m_productName_index_map;
 
 //---------------------------------------------------------------------------
 /**
  * If this is the first instance, the constructor fills the requirements of 
  * all algorithms and indexes the data products.
  */
-DataFlowManager::DataFlowManager(SmartIF<IHiveWhiteBoard> whiteboard, 
-                                 unsigned int eventSlotNumber,           
-                                 algosDependenciesCollection algosDependencies):
-    m_whiteboard(whiteboard),
-    m_evtSlotNumber(eventSlotNumber),
-    m_dataObjectsCatalog(0){
+DataFlowManager::DataFlowManager(algosDependenciesCollection algosDependencies){
 
   // If it's not the first instance, nothing to do here
   if (m_algosRequirements.size()==0){      
     // This is the first instance, compile the requirements
     m_algosRequirements.resize(algosDependencies.size());
-                        
+
     // Fill the requirements
     unsigned int algoIndex=0;    
     unsigned int productIndex=0;    
-    for (auto& thisAlgoDependencies : algosDependencies){
+    for (auto& thisAlgoDependencies : algosDependencies){      
       // Make a local alias for better readability
       auto& depenency_bits = m_algosRequirements[algoIndex];    
       for (auto& product : thisAlgoDependencies){
@@ -38,10 +33,10 @@ DataFlowManager::DataFlowManager(SmartIF<IHiveWhiteBoard> whiteboard,
       algoIndex++;
     }// end loop on algorithms
   }
-                    
+
 }
 
-//---------------------------------------------------------------------------                  
+//---------------------------------------------------------------------------
 
 /**
  * This method is called to know if the algorithm can run according to what 
@@ -50,32 +45,28 @@ DataFlowManager::DataFlowManager(SmartIF<IHiveWhiteBoard> whiteboard,
 bool DataFlowManager::canAlgorithmRun(unsigned int iAlgo){
   const longBitset& thisAlgoRequirements = m_algosRequirements[iAlgo];
   longBitset dependencies_missing = (m_dataObjectsCatalog & thisAlgoRequirements) ^ thisAlgoRequirements;
-  if (dependencies_missing == 0) 
-    return true;
-  else 
-    return false;
+  return dependencies_missing == 0 ? true : false;
 }
 
-//---------------------------------------------------------------------------  
+//---------------------------------------------------------------------------
 
 /// Update the catalog of available products in the slot
-void DataFlowManager::updateDataObjectsCatalog(){
+void DataFlowManager::updateDataObjectsCatalog(const std::vector<std::string>& newProducts){
   // DP: performance of interrogating the WB to be checked.
-  std::vector<std::string> new_products;  
-  m_whiteboard->selectStore(m_evtSlotNumber).ignore();
-  m_whiteboard->getNewDataObjects(new_products).ignore();  
-  for (const auto& new_product : new_products)
-    m_dataObjectsCatalog[m_productName2index(new_product)]=true;
+  for (const auto& new_product : newProducts){
+    const int index = m_productName2index(new_product);
+//    std::cout << "New product on slot "<< m_evtSlotNumber << " ***" << new_product<< " indexed as "<< index <<"*** " << std::endl;
+    if (index>=0)
+      m_dataObjectsCatalog[index]=true;
+  }
   
 }
 
-//---------------------------------------------------------------------------  
-  
+//---------------------------------------------------------------------------
 
-void DataFlowManager::reset(unsigned int newEventSlotNumber){
-  m_dataObjectsCatalog = 0;
-  m_evtSlotNumber = newEventSlotNumber;
+/// Reset the slot for a new event
+void DataFlowManager::reset(){
+  m_dataObjectsCatalog.reset();
 }
 
-//---------------------------------------------------------------------------                  
-
+//---------------------------------------------------------------------------

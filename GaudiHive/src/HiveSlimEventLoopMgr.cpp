@@ -1,6 +1,5 @@
-#include <algorithm>
-#include <tuple>
 
+// FW includes
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/MsgStream.h"
@@ -15,15 +14,25 @@
 #include "GaudiKernel/AppReturnCode.h"
 #include "GaudiKernel/DataSvc.h"
 
+#include "GaudiKernel/IChronoStatSvc.h"
+
 #include "HistogramAgent.h"
 
-// For concurrency
+
 #include "GaudiHive/HiveSlimEventLoopMgr.h"
 
 #include "GaudiKernel/EventContext.h"
 #include "GaudiKernel/Algorithm.h"
 
 #include <GaudiKernel/GaudiException.h>
+
+#include <GaudiKernel/IScheduler.h>
+
+// std includes
+#include <thread>
+
+// External libraries
+#include "tbb/tick_count.h"
 
 
 // Instantiation of a static factory class used by clients to create instances of this service
@@ -48,8 +57,6 @@ HiveSlimEventLoopMgr::HiveSlimEventLoopMgr(const std::string& nam, ISvcLocator* 
 	m_evtDataSvc        = 0;
 	m_evtSelector       = 0;
 	m_evtContext        = 0;
-	m_endEventFired     = true;
-
 
 	// Declare properties
 	declareProperty("HistogramPersistency", m_histPersName = "");
@@ -96,7 +103,11 @@ StatusCode HiveSlimEventLoopMgr::initialize()    {
 		fatal() << "Error retrieving EventDataSvc interface IHiveWhiteBoard." << endmsg;
 		return StatusCode::FAILURE;
 	}
-
+  m_schedulerSvc = serviceLocator()->service("ForwardSchedulerSvc");
+  if ( !m_schedulerSvc.isValid()){
+    fatal() << "Error retrieving SchedulerSvc interface ISchedulerSvc." << endmsg;
+    return StatusCode::FAILURE;    
+  }
 	// Obtain the IProperty of the ApplicationMgr
 	m_appMgrProperty = serviceLocator();
 	if ( ! m_appMgrProperty.isValid() )   {
@@ -381,97 +392,131 @@ StatusCode HiveSlimEventLoopMgr::executeRun( int maxevt )    {
 // contexts, which contain the event specific data.
 
 StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
- 
 
-    // Loop until no more evts are there
+  // Calculate runtime
+  auto start_time = tbb::tick_count::now();
+  auto secsFromStart = [&start_time]()->double{
+    return (tbb::tick_count::now()-start_time).seconds();
+  };
+
+  // Reset the application return code.
+  Gaudi::setAppReturnCode(m_appMgrProperty, Gaudi::ReturnCode::Success, true).ignore();  
   
-//     while( maxevt == -1 ? !eof : n_processed_events < maxevt ){// TODO Fix the condition in case of -1
+  int finishedEvts =0;
+  int createdEvts =0;
+  bool eof = false;
+  info() << "Starting loop on events" << endmsg;
+  // Loop until the finished events did not reach the maxevt number
+  while (maxevt == -1 ? !eof : finishedEvts < maxevt){
+    // if the created events did not reach maxevt, create an event    
+    if (createdEvts < maxevt && m_schedulerSvc->freeSlots()>0){
+      info() << "Beginning to process event " <<  createdEvts << endmsg;
+      EventContext* evtContext(new EventContext);
+      const int evt_num = createdEvts;
+      evtContext->m_evt_num = evt_num;
+
+      evtContext->m_evt_slot = m_whiteboard->allocateStore(evt_num);
+      StatusCode sc = m_whiteboard->selectStore(evtContext->m_evt_slot);
+      if (!sc.isSuccess()){
+        warning() << "Slot " << evtContext->m_evt_slot 
+                  << " could not be selected for the WhiteBoard" << endmsg;
+      }
+
+      if( m_evtContext ) {
+          //---This is the "event iterator" context from EventSelector
+          IOpaqueAddress* pAddr = 0;
+          sc = getEventRoot(pAddr);
+          if( !sc.isSuccess() )  {
+              info() << "No more events in event selection " << endmsg;
+              eof = true;
+              maxevt = evt_num;  // Set the maxevt to the determined maximum
+              continue; // jump to the next round of the while
+          }
+          sc = m_evtDataMgrSvc->setRoot ("/Event", pAddr);
+          if( !sc.isSuccess() )  {
+              warning() << "Error declaring event root address." << endmsg;
+          }
+      }
+      else {
+          //---In case of no event selector----------------
+          sc = m_evtDataMgrSvc->setRoot ("/Event", new DataObject());
+          if( !sc.isSuccess() )  {
+              warning() << "Error declaring event root DataObject" << endmsg;
+          }
+      }
+
+      // Now add to the scheduler 
+      info() << "Adding event " << evtContext->m_evt_num << ", slot " << evtContext->m_evt_slot
+               << " to the scheduler" << endmsg;
+      StatusCode addEventStatus = m_schedulerSvc->pushNewEvent(evtContext);
+
+      // If this fails, we need to wait for something to complete
+      if (!addEventStatus.isSuccess()){
+          fatal() << "An event processing slot should be now free in the scheduler, but it appears not to be the case." << endmsg;
+      }
+
+      createdEvts++;
+
+    } // end if condition createdEvts < maxevt
+    else{ // all the events were created but not all finished or the slots were all busy: the scheduler should finish its job
+
+      debug() << "Draining the scheduler" << endmsg;
+
+      // maybe we can do better
+      std::vector<EventContext*> finishedEvtContexts;
+
+      EventContext* finishedEvtContext(nullptr);
+
+      // Here we wait not to loose cpu resources
+      debug() << "Waiting for a context" << endmsg;
+      m_schedulerSvc->popFinishedEvent(finishedEvtContext).ignore();
+      debug() << "Context obtained" << endmsg;
+
+      // We got past it: cache the pointer
+      finishedEvtContexts.push_back(finishedEvtContext);
+
+      // Let's see if we can pop other event contexts
+      while (m_schedulerSvc->tryPopFinishedEvent(finishedEvtContext).isSuccess())
+         finishedEvtContexts.push_back(finishedEvtContext);
 
 
-        // Initialisation section ------------------------------------------------
+      // Now we flush them
+      for (auto& thisFinishedEvtContext : finishedEvtContexts){
+        if (!thisFinishedEvtContext)
+          fatal() << "Detected nullptr ctxt while clearing WB!"<< endmsg;
 
-        // Loop on events to be initialised
-//         for (unsigned int offset=0; offset< n_acquirable_events; ++offset){
-// 
-//             EventContext* evtContext(new EventContext);
-//             const int evt_num =  n_processed_events + offset + n_events_in_flight;
-//             evtContext->m_evt_num = evt_num;
-// 
-//             evtContext->m_evt_slot = m_whiteboard->allocateStore(evt_num);
-//             m_whiteboard->selectStore(evtContext->m_evt_slot).ignore();
-//  
-//             if( m_evtContext ) {
-//                 //---This is the "event iterator" context from EventSelector
-//                 IOpaqueAddress* pAddr = 0;
-//                 DataObject* pObject = 0;
-//                 // acquire lock on ROOT IO
-//                 m_algResourcePool->acquireResource("ROOTIO");
-//                 sc = getEventRoot(pAddr);
-//                 // release lock on ROOT IO
-//                 m_algResourcePool->releaseResource("ROOTIO");
-//                 if( !sc.isSuccess() )  {
-//                     info() << "No more events in event selection " << endmsg;
-//                     eof = true;
-//                     break;
-//                 }
-//                 sc = m_evtDataMgrSvc->setRoot ("/Event", pAddr);
-//                 if( !sc.isSuccess() )  {
-//                     warning() << "Error declaring event root address." << endmsg;
-//                 }
-//                 m_algResourcePool->acquireResource("ROOTIO");
-//                 sc = m_evtDataSvc->retrieveObject("/Event", pObject);
-//                 m_algResourcePool->releaseResource("ROOTIO"); 
-//                 if( !sc.isSuccess() ) {
-//                     warning() << "Unable to retrieve Event root object" << endmsg;
-//                     eof = true;
-//                     break;
-//                 }
-//             }
-//             else {
-//                 //---In case of no event selector----------------
-//                 sc = m_evtDataMgrSvc->setRoot ("/Event", new DataObject());
-//                 if( !sc.isSuccess() )  {
-//                     warning() << "Error declaring event root DataObject" << endmsg;
-//                 }
-//             }
+      // clear slot in the WB
+      info() << "Clearing slot " << thisFinishedEvtContext->m_evt_slot << " (event " << thisFinishedEvtContext->m_evt_num
+               <<  ") of the whiteboard" << endmsg;
+      StatusCode sc = m_clearWBSlot(thisFinishedEvtContext->m_evt_slot);
+      if (!sc.isSuccess())
+          error() << "Whiteboard slot " << thisFinishedEvtContext->m_evt_slot << " could not be properly cleared";
 
-//            events_in_flight.push_back(std::make_tuple(evtContext,event_state));
+      // clear finished evt ctxt
+      delete finishedEvtContext;
+      finishedEvts++;
+      }
 
-//        }// End initialisation loop on acquired events
+    }
+  } // end main loop on finished events  
 
-        // End initialisation section --------------------------------------------
+  info() << "---> Loop Finished (seconds): " << secsFromStart() <<endmsg;
 
-        // Scheduling section ----------------------------------------------------
-
-            
-         // Output
-         // Call the execute() method of all output streams
-//         for (ListAlg::iterator ito = m_outStreamList.begin(); ito != m_outStreamList.end(); ito++ ) {
-//           (*ito)->resetExecuted();
-//           StatusCode sc;
-//           sc = (*ito)->sysExecute();
-//           if (UNLIKELY(!sc.isSuccess())) {
-//             warning() << "Execution of output stream " << (*ito)->name() << " failed" << endmsg;
-//           }
-//         }
-//             
-//         sc = m_whiteboard->clearStore(evt_slot);
-//         if( !sc.isSuccess() )  {
-//           warning() << "Clear of Event data store failed" << endmsg;
-//           }
-//         else {
-//           info() << "Cleared store " << evt_slot << endmsg;          
-//         }
-//         m_whiteboard->freeStore(evt_slot).ignore();
-// 
-//         n_processed_events++;
-
-        // End scheduling session ------------------------------------------------
-    
-//     } // End while loop on events
-
-    return StatusCode::SUCCESS;
+  return StatusCode::SUCCESS;
+  
 }
+
+//---------------------------------------------------------------------------
+
+StatusCode HiveSlimEventLoopMgr::m_clearWBSlot(int evtSlot)  {
+  StatusCode sc = m_whiteboard->clearStore(evtSlot);
+  if( !sc.isSuccess() )  {
+    warning() << "Clear of Event data store failed" << endmsg;    
+  }
+  return m_whiteboard->freeStore(evtSlot);  
+}
+
+//---------------------------------------------------------------------------
 
 /// Create event address using event selector
 StatusCode HiveSlimEventLoopMgr::getEventRoot(IOpaqueAddress*& refpAddr)  {
@@ -493,4 +538,27 @@ StatusCode HiveSlimEventLoopMgr::getEventRoot(IOpaqueAddress*& refpAddr)  {
 	}
 	return sc;
 }
+
+
+//---------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

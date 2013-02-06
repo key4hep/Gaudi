@@ -36,3 +36,7 @@ gaudi_add_test(ReadWhiteBoard
 gaudi_add_test(ReadAndWriteWhiteBoard
                FRAMEWORK options/ReadAndWriteWhiteBoard.py
                DEPENDS WriteWhiteBoard)
+
+gaudi_add_test(ForwardScheduler
+               FRAMEWORK options/ForwardSchedulerSimpleTest.py
+               DEPENDS WhiteBoard)

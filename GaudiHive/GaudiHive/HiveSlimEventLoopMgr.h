@@ -6,10 +6,12 @@
 #include "GaudiKernel/IEvtSelector.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/MinimalEventLoopMgr.h"
+#include "GaudiKernel/IScheduler.h"
 
+// Standard includes
+#include <functional>
 
-// include tbb
-#include "tbb/concurrent_vector.h"
+// External Libraries
 #include "tbb/concurrent_queue.h"
 
 // Forward declarations
@@ -17,13 +19,8 @@ class IIncidentSvc;
 class IDataManagerSvc;
 class IDataProviderSvc;
 
-namespace tbb {
-  class task_scheduler_init;
-}
-
-class HiveSlimEventLoopMgr : public MinimalEventLoopMgr   {
-public:
-
+class HiveSlimEventLoopMgr: public MinimalEventLoopMgr   {
+  
 protected:
   /// Reference to the Event Data Service's IDataManagerSvc interface
   SmartIF<IDataManagerSvc>  m_evtDataMgrSvc;
@@ -52,7 +49,11 @@ protected:
   bool              m_endEventFired;
   /// Flag to disable warning messages when using external input
   bool              m_warnings;
-
+  /// A shortcut for the scheduler
+  SmartIF<IScheduler> m_schedulerSvc;
+  /// Clear a slot in the WB 
+  StatusCode m_clearWBSlot(int evtSlot);
+  
 
 public:
   /// Standard Constructor
@@ -75,8 +76,7 @@ public:
   /// implementation of IEventProcessor::executeEvent(void* par)
   virtual StatusCode executeEvent(void* par);
   /// implementation of IEventProcessor::executeRun()
-  virtual StatusCode executeRun(int maxevt);
-
+  virtual StatusCode executeRun(int maxevt);  
 
 };
 #endif // GAUDIHIVE_HIVEEVENTLOOPMGR_H
