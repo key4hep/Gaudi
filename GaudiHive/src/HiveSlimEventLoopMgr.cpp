@@ -479,22 +479,23 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
       while (m_schedulerSvc->tryPopFinishedEvent(finishedEvtContext).isSuccess())
          finishedEvtContexts.push_back(finishedEvtContext);
 
-
       // Now we flush them
       for (auto& thisFinishedEvtContext : finishedEvtContexts){
         if (!thisFinishedEvtContext)
           fatal() << "Detected nullptr ctxt while clearing WB!"<< endmsg;
 
-      // clear slot in the WB
-      info() << "Clearing slot " << thisFinishedEvtContext->m_evt_slot << " (event " << thisFinishedEvtContext->m_evt_num
-               <<  ") of the whiteboard" << endmsg;
-      StatusCode sc = m_clearWBSlot(thisFinishedEvtContext->m_evt_slot);
-      if (!sc.isSuccess())
-          error() << "Whiteboard slot " << thisFinishedEvtContext->m_evt_slot << " could not be properly cleared";
+        // clear slot in the WB
+        info() << "Clearing slot " << thisFinishedEvtContext->m_evt_slot 
+               << " (event " << thisFinishedEvtContext->m_evt_num
+               << ") of the whiteboard" << endmsg;
+        StatusCode sc = m_clearWBSlot(thisFinishedEvtContext->m_evt_slot);
+        if (!sc.isSuccess())
+            error() << "Whiteboard slot " << thisFinishedEvtContext->m_evt_slot 
+                    << " could not be properly cleared";
 
-      // clear finished evt ctxt
-      delete finishedEvtContext;
-      finishedEvts++;
+        // clear finished evt ctxt
+        delete thisFinishedEvtContext;
+        finishedEvts++;
       }
 
     }

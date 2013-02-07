@@ -4,11 +4,14 @@
 // FW includes
 #include "GaudiKernel/IAlgorithm.h"
 #include <GaudiKernel/SmartIF.h>
-#include <unordered_map>
+
 
 // std includes
 #include <bitset>
 #include <list>
+#include <vector>
+#include <string>
+#include <unordered_map>
 
 /**@class DataFlowManager DataFlowManager.h GaudiHive/src/DataFlowManager.h
  *
@@ -42,6 +45,12 @@ public:
 
   /// Reset to default values
   void reset();
+  
+  /// Get the content of the catalog
+  std::vector<std::string> content() const;
+
+  /// Get the dependencies of a single algo;
+  std::vector<std::string> dataDependencies(unsigned int iAlgo) const;
 
 private:
   /// Catalog of the products in the whiteboard
@@ -52,7 +61,10 @@ private:
   inline long int m_productName2index(const std::string productName){return m_productName_index_map.count(productName)>0 ? m_productName_index_map[productName]: -1 ;};
   /// Track the products, assigning an index to them. Static since the same for all events.
   static std::unordered_map<std::string,long int> m_productName_index_map;
-  
+  /// Simple helper method
+  inline std::string& m_index2productName(const unsigned int i){return m_productName_vec[i];};
+  /// Track the products, assigning an index to them. Static since the same for all events.
+  static std::vector<std::string> m_productName_vec;
 };
 
 #endif

@@ -22,138 +22,6 @@
 
 //---------------------------------------------------------------------------
 
-/**
-* Helper class to hold the states of the algorithms.s
-*/
-class AlgsExecutionStates{
-public:
-
-  /// Execution states of the algorithms
-  enum State : unsigned short {
-    INITIAL,
-    CONTROLREADY,
-    DATAREADY,
-    SCHEDULED,
-    EXECUTED,
-    FINISHED,
-    ERROR
-    };
-
-  AlgsExecutionStates(unsigned int algsNumber, SmartIF<IMessageSvc> MS):
-    m_states(algsNumber,INITIAL),
-    m_MS(MS){};    
-  ~AlgsExecutionStates(){};
-  StatusCode updateState(unsigned int iAlgo,State newState){
-    MsgStream log(m_MS, "AlgExecutionStates");
-    switch (newState) {
-      case INITIAL:
-        log << MSG::ERROR << "A transition to INITIAL is not defined.";
-        return StatusCode::FAILURE;
-      //
-      case CONTROLREADY:
-        if (m_states[iAlgo]!=INITIAL){
-          log << MSG::ERROR << "Transition to CONTROLREADY possible only from INITIAL state!" << endmsg;
-          return StatusCode::FAILURE;              
-        } else {     
-          m_states[iAlgo]=CONTROLREADY;
-          return StatusCode::SUCCESS; 
-        }
-      //
-      case DATAREADY:
-        if (m_states[iAlgo]!=CONTROLREADY){
-          log << MSG::ERROR  << "Transition to DATAREADY possible only from CONTROLREADY state!" << endmsg;
-          return StatusCode::FAILURE;              
-        } else {       
-          m_states[iAlgo]=DATAREADY;
-          return StatusCode::SUCCESS; 
-        }
-      case SCHEDULED:
-        if (m_states[iAlgo]!=DATAREADY){
-          log << MSG::ERROR  << "Transition to SCHEDULED possible only from DATAREADY state!" << endmsg;
-          return StatusCode::FAILURE;              
-        } else {
-          m_states[iAlgo]=SCHEDULED;
-          return StatusCode::SUCCESS; 
-        }           
-      //
-      case EXECUTED:
-        if (m_states[iAlgo]!=SCHEDULED){
-          log << MSG::ERROR  << "Transition to EXECUTED possible only from SCHEDULED state!" << endmsg;
-          return StatusCode::FAILURE;   
-        } else {
-          m_states[iAlgo]=EXECUTED;
-          return StatusCode::SUCCESS; 
-        } 
-      //
-      case FINISHED:
-        if (m_states[iAlgo]!=EXECUTED){
-          log << MSG::ERROR  << "Transition to FINISHED possible only from EXECUTED state!" << endmsg;
-          return StatusCode::FAILURE;
-        } else {
-          m_states[iAlgo]=FINISHED;
-          return StatusCode::SUCCESS; 
-        }
-      //
-      default:
-        log << MSG::ERROR  << "Undefined state!" << endmsg;
-        return StatusCode::FAILURE;
-    }
-    return StatusCode::FAILURE;
-    };
-
-  void reset(){m_states.assign(m_states.size(),INITIAL);};
-  bool algsPresent(State state) const{return std::find(m_states.begin(),m_states.end(),state)!=m_states.end();}
-  bool allAlgsFinished(){
-    int finishedAlgos=std::count_if(m_states.begin(),m_states.end(),[](State s) {return s == FINISHED;});
-    return m_states.size() == (unsigned int)finishedAlgos;  };
-  inline State algorithmState(unsigned int iAlgo){return iAlgo>=m_states.size()? ERROR : m_states[iAlgo];};
-
-  typedef std::vector<State> states_vector;
-  typedef states_vector::iterator vectIt;
-  typedef states_vector::const_iterator const_vectIt;
-  vectIt begin(){return m_states.begin();}; 
-  vectIt end(){return m_states.end();};  
-  const_vectIt begin() const{const_vectIt it = m_states.begin();return it;}; 
-  const_vectIt end() const{const_vectIt it = m_states.end();return it;}; 
-
-private:
-  states_vector m_states;
-  SmartIF<IMessageSvc> m_MS;
-  
-};
-
-//---------------------------------------------------------------------------
-
-class EventSlot{
-public:
-  EventSlot(const std::vector<std::vector<std::string>>& algoDependencies, 
-            unsigned int numberOfAlgorithms,
-            SmartIF<IMessageSvc> MS):
-              eventContext(nullptr),
-              algsStates(numberOfAlgorithms,MS),
-              complete(false),
-              dataFlowMgr(algoDependencies){};
-    
-  ~EventSlot(){};
-
-  void reset(EventContext* theeventContext){
-    eventContext=theeventContext;
-    algsStates.reset();
-    dataFlowMgr.reset();
-    complete=false;
-  };
-  
-  // Members ----
-  EventContext* eventContext;
-  AlgsExecutionStates algsStates; 
-  bool complete;
-  DataFlowManager dataFlowMgr;
-  // ControlFlowManager controlFlowMgr;
-};
-
-
-//---------------------------------------------------------------------------
-
 /**@class ForwardSchedulerSvc ForwardSchedulerSvc.h GaudiKernel/ForwardSchedulerSvc.h
  *
  *  The SchedulerSvc implements the IScheduler interface. It manages all the 
@@ -174,13 +42,10 @@ public:
 
   /// Initialise
   virtual StatusCode initialize();
-
-  /// Prepare the resources necessary for the scheduling and activate
-  virtual StatusCode start();
-
-  /// Deactivate the scheduler
-  virtual StatusCode stop();
   
+  /// Finalise
+  virtual StatusCode finalize();  
+
   /// Make an event available to the scheduler
   virtual StatusCode pushNewEvent(EventContext* eventContext);
   
@@ -224,6 +89,141 @@ private:
   SmartIF<IHiveWhiteBoard> m_whiteboard; 
 
   // Event slots management -------------------------------------------------
+    
+    /**
+    * Helper class to hold the states of the algorithms.s
+    */
+    class AlgsExecutionStates{
+    public:
+    
+    /// Execution states of the algorithms
+    enum State : unsigned short {
+        INITIAL,
+        CONTROLREADY,
+        DATAREADY,
+        SCHEDULED,
+        EXECUTED,
+        FINISHED,
+        ERROR
+        };
+    
+    static std::map<State,std::string> stateNames;
+    
+    AlgsExecutionStates(unsigned int algsNumber, SmartIF<IMessageSvc> MS):
+        m_states(algsNumber,INITIAL),
+        m_MS(MS){};    
+    ~AlgsExecutionStates(){};
+    StatusCode updateState(unsigned int iAlgo,State newState){
+        MsgStream log(m_MS, "AlgExecutionStates");
+        const unsigned int states_size = m_states.size();
+        if (iAlgo>=states_size)
+        log << MSG::ERROR << "Index out of bound ("
+            << iAlgo << " and the size of the states vector is "
+            << states_size << ")" << endmsg;
+        switch (newState) {
+        case INITIAL:
+            log << MSG::ERROR << "[AlgIndex " << iAlgo <<"] Transition to INITIAL is not defined.";
+            return StatusCode::FAILURE;
+        //
+        case CONTROLREADY:
+            if (m_states[iAlgo]!=INITIAL){
+            log << MSG::ERROR << "[AlgIndex " << iAlgo <<"] Transition to CONTROLREADY possible only from INITIAL state! The state is " << m_states[iAlgo] << endmsg;
+            return StatusCode::FAILURE;              
+            } else {     
+            m_states[iAlgo]=CONTROLREADY;
+            return StatusCode::SUCCESS; 
+            }
+        //
+        case DATAREADY:
+            if (m_states[iAlgo]!=CONTROLREADY){
+            log << MSG::ERROR  << "[AlgIndex " << iAlgo <<"] Transition to DATAREADY possible only from CONTROLREADY state!The state is " << m_states[iAlgo] << endmsg;
+            return StatusCode::FAILURE;              
+            } else {       
+            m_states[iAlgo]=DATAREADY;
+            return StatusCode::SUCCESS; 
+            }
+        case SCHEDULED:
+            if (m_states[iAlgo]!=DATAREADY){
+            log << MSG::ERROR  << "[AlgIndex " << iAlgo <<"] Transition to SCHEDULED possible only from DATAREADY state! The state is " << m_states[iAlgo] << endmsg;
+            return StatusCode::FAILURE;              
+            } else {
+            m_states[iAlgo]=SCHEDULED;
+            return StatusCode::SUCCESS; 
+            }           
+        //
+        case EXECUTED:
+            if (m_states[iAlgo]!=SCHEDULED){
+            log << MSG::ERROR  << "[AlgIndex " << iAlgo <<"] Transition to EXECUTED possible only from SCHEDULED state! The state is " << m_states[iAlgo] << endmsg;
+            return StatusCode::FAILURE;   
+            } else {
+            m_states[iAlgo]=EXECUTED;
+            return StatusCode::SUCCESS; 
+            } 
+        //
+        case FINISHED:
+            if (m_states[iAlgo]!=EXECUTED){
+            log << MSG::ERROR  << "[AlgIndex " << iAlgo <<"] Transition to FINISHED possible only from EXECUTED state! The state is " << m_states[iAlgo] << endmsg;
+            return StatusCode::FAILURE;
+            } else {
+            m_states[iAlgo]=FINISHED;
+            return StatusCode::SUCCESS; 
+            }
+        //
+        default:
+            log << MSG::ERROR  << "[AlgIndex " << iAlgo <<"] Undefined state!" << endmsg;
+            return StatusCode::FAILURE;
+        }
+        return StatusCode::FAILURE;
+        };
+    
+    void reset(){m_states.assign(m_states.size(),INITIAL);};
+    bool algsPresent(State state) const{return std::find(m_states.begin(),m_states.end(),state)!=m_states.end();}
+    bool allAlgsFinished(){
+        int finishedAlgos=std::count_if(m_states.begin(),m_states.end(),[](State s) {return s == FINISHED;});
+        return m_states.size() == (unsigned int)finishedAlgos;  };
+    inline State algorithmState(unsigned int iAlgo){return iAlgo>=m_states.size()? ERROR : m_states[iAlgo];};
+    
+    typedef std::vector<State> states_vector;
+    typedef states_vector::iterator vectIt;
+    typedef states_vector::const_iterator const_vectIt;
+    vectIt begin(){return m_states.begin();}; 
+    vectIt end(){return m_states.end();};  
+    const_vectIt begin() const{const_vectIt it = m_states.begin();return it;}; 
+    const_vectIt end() const{const_vectIt it = m_states.end();return it;}; 
+    
+    private:
+    states_vector m_states;
+    SmartIF<IMessageSvc> m_MS;
+    
+    };
+
+
+  class EventSlot{
+  public:
+    EventSlot(const std::vector<std::vector<std::string>>& algoDependencies, 
+              unsigned int numberOfAlgorithms,
+              SmartIF<IMessageSvc> MS):
+                eventContext(nullptr),
+                algsStates(numberOfAlgorithms,MS),
+                complete(false),
+                dataFlowMgr(algoDependencies){};
+      
+    ~EventSlot(){};
+
+    void reset(EventContext* theeventContext){
+      eventContext=theeventContext;
+      algsStates.reset();
+      dataFlowMgr.reset();
+      complete=false;
+    };
+    
+    // Members ----
+    EventContext* eventContext;
+    AlgsExecutionStates algsStates; 
+    bool complete;
+    DataFlowManager dataFlowMgr;
+  };   
+  
   int m_maxEventsInFlight;
   std::vector<EventSlot> m_eventSlots;  
   /// This is atomic to account for asyncronous updates by the scheduler wrt the rest
@@ -239,7 +239,7 @@ private:
   typedef unsigned int AlgoSlotIndex;
 
   /// Loop on algorithm in the slots and promote them to successive states
-  StatusCode m_updateStates(EventSlotIndex si=-1 );
+  StatusCode m_updateStates(EventSlotIndex si=-1);
   StatusCode m_promoteToControlReady(AlgoSlotIndex iAlgo, EventSlotIndex si);
   StatusCode m_promoteToDataReady(AlgoSlotIndex iAlgo, EventSlotIndex si);
   StatusCode m_promoteToScheduled(AlgoSlotIndex iAlgo, EventSlotIndex si);
