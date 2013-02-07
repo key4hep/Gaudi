@@ -25,7 +25,6 @@ std::map<ForwardSchedulerSvc::AlgsExecutionStates::State,std::string> ForwardSch
     {DATAREADY,"DATAREADY"},
     {SCHEDULED,"SCHEDULED"},
     {EXECUTED,"EXECUTED"},
-    {FINISHED,"FINISHED"},
     {ERROR,"ERROR"}
     };
 
@@ -251,7 +250,7 @@ StatusCode ForwardSchedulerSvc::m_drain(){
   
   unsigned int slotNum=0;
   for (auto& thisSlot : m_eventSlots){
-    if (not thisSlot.algsStates.allAlgsFinished()){
+    if (not thisSlot.algsStates.allAlgsExecuted()){
       m_updateStates(slotNum);
     }
     slotNum++;
@@ -349,7 +348,7 @@ StatusCode ForwardSchedulerSvc::m_updateStates(EventSlotIndex si){
            state_transition!=statesTransitions.end() && partial_sc.isSuccess();
            state_transition++){
         partial_sc = state_transition->second(iAlgo,iSlot);
-        if (!partial_sc.isSuccess()){
+        if (partial_sc.isFailure()){
           debug() << "Could not apply transition from " 
               << thisAlgsStates.algorithmState(iAlgo) << " for algorithm " << m_index2algname(iAlgo)
               << " on processing slot " << iSlot << endmsg;
@@ -358,22 +357,14 @@ StatusCode ForwardSchedulerSvc::m_updateStates(EventSlotIndex si){
         } // end loop on transitions
     } // end loop on algos
 
-    // Now it's possible to promote safely the EXECUTED algos to FINISHED
-    for (AlgoSlotIndex iAlgo=0;iAlgo<m_algname_vect.size();++iAlgo)
-      if (thisAlgsStates.algorithmState(iAlgo)==AlgsExecutionStates::EXECUTED){
-        StatusCode finished(m_promoteToFinished(iAlgo,iSlot));
-        if (!finished.isSuccess())
-          warning() << "Algorithm could not be transitioned to FINISHED" << endmsg;
-      }
-
     // Not complete because this would mean that the slot is already free!
-    if (!thisSlot.complete && thisSlot.algsStates.allAlgsFinished()){
-      thisSlot.complete=true;      
+    if (!thisSlot.complete && thisSlot.algsStates.allAlgsExecuted()){
+      thisSlot.complete=true;
       m_finishedEvents.push(thisSlot.eventContext);
       debug() << "Event " << thisSlot.eventContext->m_evt_num 
              << " finished (slot "<< thisSlot.eventContext->m_evt_slot 
              << ")." << endmsg;
-      thisSlot.eventContext= nullptr;             
+      thisSlot.eventContext= nullptr;
       m_freeSlots++;
     } else{
       m_isStalled(iSlot).ignore();
@@ -399,7 +390,6 @@ StatusCode ForwardSchedulerSvc::m_isStalled(EventSlotIndex iSlot){
 
   if (m_actionsQueue.empty() &&
       m_algosInFlight == 0 &&
-      !thisSlot.algsStates.algsPresent(AlgsExecutionStates::EXECUTED) &&
       !thisSlot.algsStates.algsPresent(AlgsExecutionStates::DATAREADY)){
 
     info() << "About to declare a stall"<< endmsg;
@@ -553,19 +543,8 @@ StatusCode ForwardSchedulerSvc::m_promoteToExecuted(AlgoSlotIndex iAlgo, EventSl
   debug() << "Trying to promote " << m_index2algname(iAlgo) << " to EXECUTED" << endmsg;
   sc = m_eventSlots[si].algsStates.updateState(iAlgo,AlgsExecutionStates::EXECUTED);
   if (sc.isSuccess())
-    debug() << "Promoting " << m_index2algname(iAlgo) << " to EXECUTED" << endmsg;
+    debug() << "Promoting " << m_index2algname(iAlgo) << " on slot " << si << " to EXECUTED" << endmsg;
   return sc;
-} 
-
-//---------------------------------------------------------------------------
-
-StatusCode ForwardSchedulerSvc::m_promoteToFinished(AlgoSlotIndex iAlgo, EventSlotIndex si){
-
-  StatusCode sc = m_eventSlots[si].algsStates.updateState(iAlgo,AlgsExecutionStates::FINISHED);
-  if (sc.isSuccess())
-    debug() << "Promoting " << m_index2algname(iAlgo) << " on slot " << si << " to FINISHED" << endmsg;
-  return sc;
-} 
-
+}
 
 //===========================================================================
