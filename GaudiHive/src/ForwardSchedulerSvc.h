@@ -103,7 +103,6 @@ private:
         DATAREADY,
         SCHEDULED,
         EXECUTED,
-        FINISHED,
         ERROR
         };
     
@@ -160,15 +159,6 @@ private:
             return StatusCode::SUCCESS; 
             } 
         //
-        case FINISHED:
-            if (m_states[iAlgo]!=EXECUTED){
-            log << MSG::ERROR  << "[AlgIndex " << iAlgo <<"] Transition to FINISHED possible only from EXECUTED state! The state is " << m_states[iAlgo] << endmsg;
-            return StatusCode::FAILURE;
-            } else {
-            m_states[iAlgo]=FINISHED;
-            return StatusCode::SUCCESS; 
-            }
-        //
         default:
             log << MSG::ERROR  << "[AlgIndex " << iAlgo <<"] Undefined state!" << endmsg;
             return StatusCode::FAILURE;
@@ -178,9 +168,9 @@ private:
     
     void reset(){m_states.assign(m_states.size(),INITIAL);};
     bool algsPresent(State state) const{return std::find(m_states.begin(),m_states.end(),state)!=m_states.end();}
-    bool allAlgsFinished(){
-        int finishedAlgos=std::count_if(m_states.begin(),m_states.end(),[](State s) {return s == FINISHED;});
-        return m_states.size() == (unsigned int)finishedAlgos;  };
+    bool allAlgsExecuted(){
+        int execAlgos=std::count_if(m_states.begin(),m_states.end(),[](State s) {return s == EXECUTED;});
+        return m_states.size() == (unsigned int)execAlgos;  };
     inline State algorithmState(unsigned int iAlgo){return iAlgo>=m_states.size()? ERROR : m_states[iAlgo];};
     
     typedef std::vector<State> states_vector;
