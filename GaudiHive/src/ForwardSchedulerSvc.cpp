@@ -264,6 +264,7 @@ StatusCode ForwardSchedulerSvc::m_drain(){
 */
 StatusCode ForwardSchedulerSvc::popFinishedEvent(EventContext*& eventContext){
   m_finishedEvents.pop(eventContext);
+  m_freeSlots++;
   debug() << "Popped slot " << eventContext->m_evt_slot << "(event " 
          << eventContext->m_evt_num << ")" << endmsg;
   return StatusCode::SUCCESS;
@@ -277,6 +278,7 @@ StatusCode ForwardSchedulerSvc::tryPopFinishedEvent(EventContext*& eventContext)
   if (m_finishedEvents.try_pop(eventContext)){
     debug() << "Try Pop successful slot " << eventContext->m_evt_slot << "(event " 
            << eventContext->m_evt_num << ")" << endmsg;
+    m_freeSlots++;
     return StatusCode::SUCCESS;
   }
   return StatusCode::FAILURE;
@@ -321,12 +323,12 @@ StatusCode ForwardSchedulerSvc::m_updateStates(EventSlotIndex si){
    const int eventsSlotsSize(m_eventSlots.size());
    eventSlotsPtrs.reserve(eventsSlotsSize);
     for (auto slotIt=m_eventSlots.begin();slotIt!=m_eventSlots.end();slotIt++){
-        if (!slotIt->complete)
+      if (!slotIt->complete)
         eventSlotsPtrs.push_back(&(*slotIt));
-        }
+      }
     std::sort(eventSlotsPtrs.begin(),
-                    eventSlotsPtrs.end(), 
-                    [](EventSlot* a, EventSlot* b){return a->eventContext->m_evt_num < b->eventContext->m_evt_num;});
+              eventSlotsPtrs.end(), 
+              [](EventSlot* a, EventSlot* b){return a->eventContext->m_evt_num < b->eventContext->m_evt_num;});
     } else{
       eventSlotsPtrs.push_back(&m_eventSlots[si]);
     }
@@ -365,7 +367,6 @@ StatusCode ForwardSchedulerSvc::m_updateStates(EventSlotIndex si){
              << " finished (slot "<< thisSlot.eventContext->m_evt_slot 
              << ")." << endmsg;
       thisSlot.eventContext= nullptr;
-      m_freeSlots++;
     } else{
       m_isStalled(iSlot).ignore();
     }
@@ -400,7 +401,8 @@ StatusCode ForwardSchedulerSvc::m_isStalled(EventSlotIndex iSlot){
     unsigned int algoIndex=0;
     for (const AlgsExecutionStates::State& thisState : thisSlot.algsStates ){
         errorMsg << " o " << m_index2algname(algoIndex) 
-                       << " was in state " << AlgsExecutionStates::stateNames[thisState]<< ". Its data dependencies are ";
+                 << " was in state " << AlgsExecutionStates::stateNames[thisState] 
+                 << ". Its data dependencies are ";
         auto deps (thisSlot.dataFlowMgr.dataDependencies(algoIndex));
         char separator=',';
         const int depsSize=deps.size();
@@ -421,8 +423,8 @@ StatusCode ForwardSchedulerSvc::m_isStalled(EventSlotIndex iSlot){
     }
 
     throw GaudiException (errorMsg.str(),
-                                            "ForwardSchedulerSvc",
-                                            StatusCode::FAILURE);
+                          "ForwardSchedulerSvc",
+                          StatusCode::FAILURE);
 
     return StatusCode::FAILURE;
   }
