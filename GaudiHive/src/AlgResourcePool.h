@@ -31,7 +31,10 @@ public:
   // Standard destructor
   ~AlgResourcePool();
 
+  virtual StatusCode start();
+  virtual StatusCode stop();
   virtual StatusCode initialize();
+  virtual StatusCode finalize();
   /// Acquire a certain algorithm using its name 
   virtual StatusCode acquireAlgorithm(const std::string& name, IAlgorithm*& algo);
   /// Release a certain algorithm 
@@ -42,10 +45,11 @@ public:
   virtual StatusCode releaseResource(const std::string& name);
 
 private:
+  typedef tbb::concurrent_queue<IAlgorithm*> concurrentQueueIAlgPtr;
   std::mutex m_resource_mutex;
   bool m_lazyCreation;
   state_type m_available_resources;
-  std::map<size_t,tbb::concurrent_queue<IAlgorithm*>*> m_algqueue_map;
+  std::map<size_t,concurrentQueueIAlgPtr*> m_algqueue_map;
   std::map<size_t,state_type> m_resource_requirements;
   std::map<size_t,size_t> m_n_of_allowed_instances;
   std::map<size_t,unsigned int> m_n_of_created_instances;

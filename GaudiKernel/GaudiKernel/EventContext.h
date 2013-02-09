@@ -33,6 +33,7 @@ public:
     m_evt_num(0),
     m_evt_slot(0),
     m_thread_id(0){};
+  bool m_evt_failed;
   long int m_evt_num;
   size_t   m_evt_slot;
   THREADID_TYPE m_thread_id;

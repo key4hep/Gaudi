@@ -173,12 +173,14 @@ StatusCode ForwardSchedulerSvc::m_activate(){
  */
 StatusCode ForwardSchedulerSvc::m_deactivate(){
   
-  // Drain the scheduler
-  m_actionsQueue.push(std::bind(&ForwardSchedulerSvc::m_drain,
-                                this));
-  
-  // This would be the last action
-  m_actionsQueue.push([this]() -> StatusCode {m_isActive=false;return StatusCode::SUCCESS;});
+  if (m_isActive){
+    // Drain the scheduler
+    m_actionsQueue.push(std::bind(&ForwardSchedulerSvc::m_drain,
+                                  this));
+    
+    // This would be the last action
+    m_actionsQueue.push([this]() -> StatusCode {m_isActive=false;return StatusCode::SUCCESS;});
+  }
   
   return StatusCode::SUCCESS;
 }
@@ -284,6 +286,31 @@ StatusCode ForwardSchedulerSvc::tryPopFinishedEvent(EventContext*& eventContext)
   return StatusCode::FAILURE;
 }
 
+//---------------------------------------------------------------------------
+/// Stops scheduling and returns the failure
+StatusCode ForwardSchedulerSvc::m_eventFailed(EventContext* eventContext){
+  
+  fatal() << "Event " << eventContext->m_evt_num << " on slot " 
+          << eventContext->m_evt_slot << " failed" << endmsg;
+
+  // Set the number of slots available to 0
+  m_freeSlots=0;          
+          
+  // Empty queue and deactivate the service
+  action thisAction;
+  while(m_actionsQueue.try_pop(thisAction)){};
+  m_deactivate();
+  
+  // Push into the finished events queue the failed context
+  EventContext* thisEvtContext;
+  while(m_finishedEvents.try_pop(thisEvtContext)){};
+  m_finishedEvents.push(eventContext);
+  
+  return StatusCode::SUCCESS;
+  
+
+  
+}
 
 //===========================================================================
 
@@ -482,7 +509,7 @@ StatusCode ForwardSchedulerSvc::m_promoteToScheduled(AlgoSlotIndex iAlgo, EventS
               << " is a nullptr (slot " << si<< ")" << endmsg;
 
     algoPtr->setContext(m_eventSlots[si].eventContext);
-    tbb::task* t = new( tbb::task::allocate_root() ) AlgoExecutionTask(ialgoPtr, iAlgo, this);
+    tbb::task* t = new( tbb::task::allocate_root() ) AlgoExecutionTask(ialgoPtr, iAlgo, serviceLocator(), this);
     tbb::task::enqueue( *t);
     ++m_algosInFlight;
     debug() << "Algorithm " << algName << " was submitted. Algorithms scheduled are "
@@ -510,6 +537,11 @@ StatusCode ForwardSchedulerSvc::m_promoteToExecuted(AlgoSlotIndex iAlgo, EventSl
   if (!castedAlgo)
     fatal() << "The casting did not succed!" << endmsg;
   EventContext* eventContext = castedAlgo->getContext();
+
+  // Checkif the execution failed
+  if (eventContext->m_evt_failed)
+    m_eventFailed(eventContext);
+  
   StatusCode sc = m_algResourcePool->releaseAlgorithm(algo->name(),algo);
 
   if (!sc.isSuccess()){
@@ -550,3 +582,6 @@ StatusCode ForwardSchedulerSvc::m_promoteToExecuted(AlgoSlotIndex iAlgo, EventSl
 }
 
 //===========================================================================
+
+
+

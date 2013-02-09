@@ -53,7 +53,12 @@ protected:
   SmartIF<IScheduler> m_schedulerSvc;
   /// Clear a slot in the WB 
   StatusCode m_clearWBSlot(int evtSlot);
+  /// Declare the root address of the event
+  StatusCode m_declareEventRootAddress();
+  /// Create event context
+  StatusCode m_createEventContext(EventContext*& eventContext, int createdEvents);
   
+  StatusCode m_drainScheduler(int& finishedEvents);
 
 public:
   /// Standard Constructor
@@ -61,8 +66,7 @@ public:
   /// Standard Destructor
   virtual ~HiveSlimEventLoopMgr();
   /// Create event address using event selector
-  StatusCode getEventRoot(IOpaqueAddress*& refpAddr);  
-  
+  StatusCode getEventRoot(IOpaqueAddress*& refpAddr);    
   /// implementation of IService::initialize
   virtual StatusCode initialize();
   /// implementation of IService::reinitialize

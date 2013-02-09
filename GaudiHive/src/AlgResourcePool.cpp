@@ -1,10 +1,15 @@
 // $Id: HiveAlgorithmManager.cpp,v 1.11 2008/10/20 20:58:10 marcocle Exp $
 
-// Include files
+// Include Files
+
+// Framework
 #include "AlgResourcePool.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/SvcFactory.h"
+
+// C++
 #include <functional>
+#include <queue>
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY(AlgResourcePool)
@@ -16,9 +21,18 @@ AlgResourcePool::AlgResourcePool( const std::string& name, ISvcLocator* svc ) :
   declareProperty("CreateLazily", m_lazyCreation = false );
 }
 
+//---------------------------------------------------------------------------
+
 // destructor
 AlgResourcePool::~AlgResourcePool() {
+  
+  for (auto& algoId_algoQueue : m_algqueue_map){
+    auto* queue = algoId_algoQueue.second;
+    delete queue;
+  }
 }
+
+//---------------------------------------------------------------------------
 
 // initialize the pool with the list of algos known to the IAlgManager  
 StatusCode AlgResourcePool::initialize(){
@@ -59,9 +73,9 @@ StatusCode AlgResourcePool::initialize(){
         // neeeded as long as the MinimalEventLoopManager does management of itself
         // In the future we'd need to leave the entire state machine business up to
         // the AlgorithmManager 
-	StatusCode sc = new_algo->sysInitialize();
-	if( !sc.isSuccess() ) {
-	  error() << "Unable to initialize Algorithm: " << new_algo->name() << endmsg;
+        StatusCode sc = new_algo->sysInitialize();
+        if( !sc.isSuccess() ) {
+          error() << "Unable to initialize Algorithm: " << new_algo->name() << endmsg;
         }
         queue->push(new_algo);
         m_n_of_created_instances[algo_id]+=1;
@@ -73,6 +87,68 @@ StatusCode AlgResourcePool::initialize(){
   return StatusCode::SUCCESS;
 }
 
+//---------------------------------------------------------------------------
+
+StatusCode AlgResourcePool::start(){
+  return Service::start();
+}
+
+//---------------------------------------------------------------------------
+  
+StatusCode AlgResourcePool::stop(){
+  StatusCode stopSc;
+  // Loop on all algos and stop them  
+  SmartIF<IAlgManager> algMan(serviceLocator());
+  const std::list<IAlgorithm*>& algos = algMan->getAlgorithms();
+  for (IAlgorithm* ialgoPtr: algos){
+    stopSc = ialgoPtr->sysStop();
+    if (stopSc.isFailure()){
+      error() << "Unable to stop Algorithm: " << ialgoPtr->name() << endmsg;
+      return stopSc;
+    }
+  } 
+  return Service::stop();
+}
+
+//---------------------------------------------------------------------------  
+
+StatusCode AlgResourcePool::finalize(){
+  
+  StatusCode sc;
+  StatusCode scRet;
+  
+  // Loop on all algos and finalize them
+  SmartIF<IAlgManager> algMan(serviceLocator());
+  const std::list<IAlgorithm*>& algos = algMan->getAlgorithms();
+  for (IAlgorithm* ialgoPtr: algos){
+    sc = ialgoPtr->sysFinalize();
+    if( !sc.isSuccess() ) {
+      scRet = StatusCode::FAILURE;
+      warning() << "Finalization of algorithm " << ialgoPtr->name() << " failed" << endmsg;
+    }
+  }
+  
+  
+  // Clear the queues which contain now invalid pointers!
+  for (auto& algoId_AlgoQueue : m_algqueue_map )
+    algoId_AlgoQueue.second->clear();
+    
+  // Remove the algorithm from the manager
+  for (IAlgorithm* ialgoPtr: algos){
+    if (algMan->removeAlgorithm(ialgoPtr).isFailure()) {
+      scRet = StatusCode::FAILURE;
+      warning() << "Problems removing Algorithm " << ialgoPtr->name() << endmsg;
+    }
+  }
+  
+  // DP output streams do not need to be released. Indeed they are treated 
+  // as managed algos.
+  
+  return scRet;
+}
+
+//---------------------------------------------------------------------------  
+  
 StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm*& algo){
   std::hash<std::string> hash_function;
   size_t algo_id = hash_function(name);  
@@ -81,6 +157,7 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
   // TODO: fill the lazyCreation part
   //}
   if (sc.isSuccess()){
+    algo->resetExecuted();
     state_type requirements = m_resource_requirements[algo_id];
     m_resource_mutex.lock();
     state_type dependencies_missing = (m_available_resources & requirements) ^ requirements;
@@ -95,6 +172,8 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
   return sc;
 }
 
+//---------------------------------------------------------------------------
+
 StatusCode AlgResourcePool::releaseAlgorithm(const std::string& name, IAlgorithm*& algo){
   std::hash<std::string> hash_function;
   size_t algo_id = hash_function(name);
@@ -106,12 +185,16 @@ StatusCode AlgResourcePool::releaseAlgorithm(const std::string& name, IAlgorithm
   return StatusCode::SUCCESS;
  }
 
+//--------------------------------------------------------------------------- 
+ 
 StatusCode AlgResourcePool::acquireResource(const std::string& name){
   m_resource_mutex.lock();
   m_available_resources[m_resource_indices[name]] = false;
   m_resource_mutex.unlock();
   return StatusCode::SUCCESS;
 }
+
+//---------------------------------------------------------------------------
 
 StatusCode AlgResourcePool::releaseResource(const std::string& name){
   m_resource_mutex.lock();
@@ -120,3 +203,4 @@ StatusCode AlgResourcePool::releaseResource(const std::string& name){
   return StatusCode::SUCCESS;
 }
 
+//---------------------------------------------------------------------------

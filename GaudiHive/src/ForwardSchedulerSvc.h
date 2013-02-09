@@ -220,6 +220,8 @@ private:
   std::atomic_uint m_freeSlots;
   tbb::concurrent_bounded_queue<EventContext*> m_finishedEvents;
 
+  StatusCode m_eventFailed(EventContext* eventContext);
+  
   // States management ------------------------------------------------------
 
   unsigned int m_maxAlgosInFlight;
