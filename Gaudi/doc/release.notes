@@ -13,7 +13,8 @@ Package manager : Marco Clemencic
                       options are added (compress output, be verbose)
     o --profilerOutput: Specify the output file name. If not selected, a default
                         is provided.
-    o --profilerExtraOptions: specify extra options for the profiler.
+    o --profilerExtraOptions: specify extra options for the profiler, where the
+                              '--' is replaces with a '__'.
 
 ================================ Gaudi v23r6 =================================
 ================================ Gaudi v23r5 =================================
