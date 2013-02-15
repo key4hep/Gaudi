@@ -80,35 +80,41 @@ def _zipChanges(directory, infolist):
             log.info(" %s -> %s", "R", filename)
     return (added, modified, untouched, removed)
 
-def checkEncoding(path):
+def checkEncoding(fileObj):
     '''
     Check that a file honors the declared encoding (default ASCII for Python 2
     and UTF-8 for Python 3).
 
-    Raises a UnicodeDecodeError in case of problems.
+    Raises a UnicodeDecodeError in case of decoding problems and LookupError if
+    the specified codec does not exists.
 
     See http://www.python.org/dev/peps/pep-0263/
     '''
+    from itertools import islice
+
     # default encoding
     if sys.version_info[0] <= 2:
         enc = 'ascii'
     else:
         enc = 'utf-8'
 
-    # find the encoding of the file, if specified
+    # find the encoding of the file, if specified (in the first two lines)
     enc_exp = re.compile(r"coding[:=]\s*([-\w.]+)")
-    f = open(path)
-    count = 2 # number of lines
-    while count:
-        m = enc_exp.search(f.readline())
+    for l in islice(fileObj, 2):
+        m = enc_exp.search(l)
         if m:
             enc = m.group(1)
             break
-        count -= 1
 
-    logging.getLogger('checkEncoding').debug('checking encoding %s on %s', enc, path)
+    if hasattr(fileObj, 'name'):
+        logging.getLogger('checkEncoding').debug('checking encoding %s on %s',
+                                                 enc, fileObj.name)
+    else:
+        logging.getLogger('checkEncoding').debug('checking encoding %s on file object',
+                                                 enc)
     # try to read the file with the declared encoding
-    codecs.open(path, encoding=enc).read()
+    fileObj.seek(0)
+    codecs.getreader(enc)(fileObj).read()
 
 
 ## Make a zip file out of a directory containing python modules
@@ -143,7 +149,7 @@ def zipdir(directory, no_pyc = False):
             z = zipfile.PyZipFile(tempBuf, "w", zipfile.ZIP_DEFLATED)
             for f in added + modified + untouched:
                 src = os.path.join(directory, f)
-                checkEncoding(src)
+                checkEncoding(open(src, 'rb'))
                 if no_pyc:
                     log.debug("adding '%s'", f)
                     z.write(src, f)

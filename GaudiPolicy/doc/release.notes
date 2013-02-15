@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-02-08 - Marco Clemencic
+ - Improvements to the checker for Python files encoding.
+
 ============================= GaudiPolicy v12r4 ==============================
 ! 2013-01-25 - Marco Clemencic
  - Ignore '.__afs**' when zipping Python directories
