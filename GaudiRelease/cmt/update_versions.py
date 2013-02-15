@@ -217,5 +217,14 @@ def main():
         out.append(l)
     open(global_rel_notes, "w").writelines(out)
 
+    # update the global CMakeLists.txt
+    global_cmakelists = os.path.join("..","..","CMakeLists.txt")
+    out = []
+    for l in open(global_cmakelists):
+        if l.strip().startswith('gaudi_project'):
+            l = 'gaudi_project(Gaudi %s)\n' % new_version
+        out.append(l)
+    open(global_cmakelists, "w").writelines(out)
+
 if __name__ == '__main__':
     main()
