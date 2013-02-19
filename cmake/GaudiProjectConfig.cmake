@@ -1667,6 +1667,13 @@ endfunction()
 # If special environment settings are needed, they can be specified in the
 # section ENVIRONMENT as <var>=<value> or <var>+=<value>, where the secon format
 # prepends the value to the PATH-like variable.
+# Great flexibility is given by the following options:
+#  FAILS - the tests succeds if the command fails (return code !=0)
+#  DEPENDS - ensures an order of execution of tests (e.g. do not run a read 
+#            test if the write one failed)
+#  PASSREGEX - Specify a regexp; if matched in the output the test is successful
+#  FAILREGEX - Specify a regexp; if matched in the output the test is failed
+# 
 #-------------------------------------------------------------------------------
 function(gaudi_add_test name)
   CMAKE_PARSE_ARGUMENTS(ARG "QMTEST;FAILS" "" "ENVIRONMENT;FRAMEWORK;COMMAND;DEPENDS;PASSREGEX;FAILREGEX" ${ARGN})
