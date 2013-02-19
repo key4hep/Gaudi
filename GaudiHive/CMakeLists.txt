@@ -45,4 +45,7 @@ gaudi_add_test(ForwardScheduler
                
 gaudi_add_test(ForwardSchedulerStall
                FRAMEWORK options/ForwardSchedulerStall.py          
-               DEPENDS ForwardScheduler)               
+               DEPENDS ForwardScheduler
+               FAILS)           
+               
+               
