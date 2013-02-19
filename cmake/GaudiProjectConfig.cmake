@@ -1669,7 +1669,7 @@ endfunction()
 # prepends the value to the PATH-like variable.
 #-------------------------------------------------------------------------------
 function(gaudi_add_test name)
-  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST" "" "ENVIRONMENT;FRAMEWORK;COMMAND;DEPENDS" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST;FAILS" "" "ENVIRONMENT;FRAMEWORK;COMMAND;DEPENDS;PASSREGEX;FAILREGEX" ${ARGN})
 
   gaudi_get_package_name(package)
 
@@ -1721,6 +1721,19 @@ function(gaudi_add_test name)
     endforeach()
     set_property(TEST ${package}.${name} PROPERTY DEPENDS ${depends})
   endif()
+  
+  if(ARG_FAILS)
+    set_property(TEST ${package}.${name} PROPERTY WILL_FAIL TRUE)
+  endif()
+  
+  if(ARG_PASSREGEX)
+    set_property(TEST ${package}.${name} PROPERTY PASS_REGULAR_EXPRESSION ${ARG_PASSREGEX})
+  endif()
+
+  if(ARG_FAILREGEX)
+    set_property(TEST ${package}.${name} PROPERTY FAIL_REGULAR_EXPRESSION ${ARG_FAILREGEX})
+  endif()
+  
 
 endfunction()
 
