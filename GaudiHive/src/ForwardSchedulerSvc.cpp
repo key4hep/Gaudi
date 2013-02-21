@@ -17,7 +17,7 @@
 #include "AlgResourcePool.h"
 
 // Instantiation of a static factory class used by clients to create instances of this service
-DECLARE_SERVICE_FACTORY(ForwardSchedulerSvc);
+DECLARE_SERVICE_FACTORY(ForwardSchedulerSvc)
 
 std::map<ForwardSchedulerSvc::AlgsExecutionStates::State,std::string> ForwardSchedulerSvc::AlgsExecutionStates::stateNames= {
     {INITIAL,"INITIAL"},

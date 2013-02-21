@@ -10,7 +10,7 @@
 //
 // 22/06/2012: Marco Clemencic
 // ----------------------------------------------------------------------------
-DECLARE_SERVICE_FACTORY(TBBMessageSvc);
+DECLARE_SERVICE_FACTORY(TBBMessageSvc)
 
 // ============================================================================
 // Standard constructor, initializes variables
