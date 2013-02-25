@@ -1,6 +1,22 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+! 2013-02-15 - Danilo Piparo
+ - Patch #5605: Run performance profilers with gaudirun.py command line options
+   Allow to operate performance profilers directly from gaudirun.py, simply
+   using command line options. Igprof and Valgrind (whole suite: callgrind,
+   massif, cachegrind, drd, ...) are supported.
+   Three options have been added:
+    o --profilerName: Specify the profiler name. The possibilities are
+                      igprofMem, igprofPerf and valgrind<toolname>. For igprof,
+                      sensible and basically universal meaningful default
+                      options are added (compress output, be verbose)
+    o --profilerOutput: Specify the output file name. If not selected, a default
+                        is provided.
+    o --profilerExtraOptions: specify extra options for the profiler, where the
+                              '--' is replaces with a '__'.
+
+================================ Gaudi v23r6 =================================
 ================================ Gaudi v23r5 =================================
 ! 2012-11-05 - Marco Clemencic
  - Ensure that we get the correct return code after a segfault in C++.

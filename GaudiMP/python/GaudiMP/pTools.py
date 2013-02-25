@@ -99,9 +99,11 @@ class HistoAgent( ) :
         for tup in self.histos :
             workerID, histDict = tup
             added = 0 ; registered = 0; booked = 0
+
             for n in histDict.keys() :
                 o = histDict[ n ]
                 obj = self.hvt.retrieve( n )
+
                 if obj :
                     try    :
                         aida2root(obj).Add(o)
@@ -110,6 +112,7 @@ class HistoAgent( ) :
                         errors += 1
                     added += 1
                 else :
+
                     if o.__class__.__name__ in self.bookingDict.keys() :
                         try    :
                             self.bookingDict[o.__class__.__name__](n, o)
@@ -569,10 +572,12 @@ class Syncer( object ) :
         self.step   = step
         self.d = {}
         self.manyEvents = manyEvents
+
         for i in xrange(-2, nWorkers) :
             self.d[ i ] = SyncMini( Event(), lastEvent=Event() )
             if self.manyEvents :
                 self.limitFirst = firstEvent
+
         self.keys       = self.d.keys()
         self.nWorkers   = nWorkers
         self.log        = log

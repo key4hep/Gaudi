@@ -9,7 +9,7 @@ import sys
 from datetime import datetime
 import locker
 
-def mergeFiles( fragFileNames, mergedFileName, commentChar, doMerge ):
+def mergeFiles( fragFileNames, mergedFileName, commentChar, doMerge, ignoreMissing ):
 
     startMark = "%s --Beg " % commentChar
     timeMark  = "%s --Date inserted: %s" % (commentChar, datetime.now())
@@ -54,6 +54,9 @@ def mergeFiles( fragFileNames, mergedFileName, commentChar, doMerge ):
 
         if doMerge:
             for f in fragFileNames:
+                if ignoreMissing and not os.path.exists(f):
+                    print "WARNING: '%s' does not exist, I'm ignoring it" % f
+                    continue
                 # I do not want to add 2 empty lines at the beginning of a file
                 if newLines:
                     newLines.append('\n\n')
@@ -129,6 +132,12 @@ if __name__ == "__main__":
         action = "store_true",
         help = "Do no create stamp files."
         )
+    parser.add_option(
+        "--ignore-missing",
+        dest = "ignoreMissing",
+        action = "store_true",
+        help = "Print a warning if a fragment file is missing, but do not fail."
+        )
 
     (options, args) = parser.parse_args()
 
@@ -167,7 +176,8 @@ if __name__ == "__main__":
     if True: #try:
         sc = mergeFiles( options.fragFileNames, options.mergedFileName,
                          options.commentChar,
-                         doMerge = options.doMerge )
+                         doMerge = options.doMerge,
+                         ignoreMissing = options.ignoreMissing)
         if not options.no_stamp:
             for stamp in map(stampFileName, options.fragFileNames):
                 open(stamp, 'w')

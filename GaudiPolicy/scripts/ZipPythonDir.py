@@ -3,7 +3,14 @@
 ## file ZipPythonDir.py
 #  Script to generate a zip file that can replace a directory in the python path.
 
-import os, sys, zipfile, logging, stat, time
+import os
+import sys
+import zipfile
+import logging
+import stat
+import time
+import re
+import codecs
 from StringIO import StringIO
 
 # Add to the path the entry needed to import the locker module.
@@ -63,7 +70,8 @@ def _zipChanges(directory, infolist):
                     log.debug(" %s -> %s", action, filename)
                 else:
                     log.info(" %s -> %s", action, filename)
-            elif ext not in [".pyc", ".pyo", ".stamp", ".cmtref"]: # extensions that can be ignored
+            # cases that can be ignored
+            elif ext not in [".pyc", ".pyo", ".stamp", ".cmtref"] and not f.startswith('.__afs'):
                 raise ZipdirError("Cannot add '%s' to the zip file, only '.py' are allowed." % os.path.join(arcdir, f))
     # check for removed files
     for filename in infos:
@@ -71,6 +79,43 @@ def _zipChanges(directory, infolist):
             removed.append(filename)
             log.info(" %s -> %s", "R", filename)
     return (added, modified, untouched, removed)
+
+def checkEncoding(fileObj):
+    '''
+    Check that a file honors the declared encoding (default ASCII for Python 2
+    and UTF-8 for Python 3).
+
+    Raises a UnicodeDecodeError in case of decoding problems and LookupError if
+    the specified codec does not exists.
+
+    See http://www.python.org/dev/peps/pep-0263/
+    '''
+    from itertools import islice
+
+    # default encoding
+    if sys.version_info[0] <= 2:
+        enc = 'ascii'
+    else:
+        enc = 'utf-8'
+
+    # find the encoding of the file, if specified (in the first two lines)
+    enc_exp = re.compile(r"coding[:=]\s*([-\w.]+)")
+    for l in islice(fileObj, 2):
+        m = enc_exp.search(l)
+        if m:
+            enc = m.group(1)
+            break
+
+    if hasattr(fileObj, 'name'):
+        logging.getLogger('checkEncoding').debug('checking encoding %s on %s',
+                                                 enc, fileObj.name)
+    else:
+        logging.getLogger('checkEncoding').debug('checking encoding %s on file object',
+                                                 enc)
+    # try to read the file with the declared encoding
+    fileObj.seek(0)
+    codecs.getreader(enc)(fileObj).read()
+
 
 ## Make a zip file out of a directory containing python modules
 def zipdir(directory, no_pyc = False):
@@ -104,6 +149,7 @@ def zipdir(directory, no_pyc = False):
             z = zipfile.PyZipFile(tempBuf, "w", zipfile.ZIP_DEFLATED)
             for f in added + modified + untouched:
                 src = os.path.join(directory, f)
+                checkEncoding(open(src, 'rb'))
                 if no_pyc:
                     log.debug("adding '%s'", f)
                     z.write(src, f)
@@ -121,6 +167,11 @@ def zipdir(directory, no_pyc = False):
             log.info("File '%s' closed", filename)
         else:
             log.info("Nothing to do on '%s'", filename)
+    except UnicodeDecodeError, x:
+        log.error("Wrong encoding in file '%s':", src)
+        log.error("    %s", x)
+        log.error("Probably you forgot the line '# -*- coding: utf-8 -*-'")
+        sys.exit(1)
     finally:
         locker.unlock(zipFile)
         zipFile.close()

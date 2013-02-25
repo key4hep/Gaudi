@@ -38,6 +38,50 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
+<h2><a name="v23r6">Gaudi v23r6</a> (2013-01-28)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=64c">LCGCMT_64c</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Improvements and fixes to the CMake configuration and modules.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v12r4):
+<ul>
+<li>Modified Python zipping to fail if coding is not correct.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Minor fixes.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v28r5):
+<ul>
+<li>Minor change in ConversionSvc constructor to avoid a pointless call to
+   queryInterface.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiUtils (v4r4):
+<ul>
+<li> Patch #5594: fix for parsing of 1D histograms with non-equidistant binnings.<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+</ul>
+</li>
+<li>GaudiPython (v12r5):
+<ul>
+<li>Added dictionaries for HistoStrings (GaudiUtils).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiMP (v1r7):
+<ul>
+<li>Patch #5593: Implemented late forking for GaudiMP.<br/>
+    (<span class="author">Nathalie Rauschmayr</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
 <h2><a name="v23r5">Gaudi v23r5</a> (2012-11-26)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=64b">LCGCMT_64b</a></h3>
 <h3>General Changes</h3>

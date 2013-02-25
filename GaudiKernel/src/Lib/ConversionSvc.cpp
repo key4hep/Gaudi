@@ -405,11 +405,11 @@ StatusCode ConversionSvc::createAddress( long /* svc_type */,
 
 /// Standard Constructor
 ConversionSvc::ConversionSvc(const std::string& name, ISvcLocator* svc, long type)
- : base_class(name, svc)
+ : base_class(name, svc),
+   m_cnvSvc(static_cast<IConversionSvc*>(this))
 {
   m_type            = type;
   m_dataSvc         = 0;
-  m_cnvSvc          = this;
   m_workers = new Workers();
   setAddressCreator(this).ignore();
 }

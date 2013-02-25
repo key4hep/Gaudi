@@ -8,7 +8,7 @@ from multiprocessing import cpu_count, current_process
 from multiprocessing.queues import Empty
 from pTools import *
 import time, sys, os
-
+from ROOT import TParallelMergingFile
 # This script contains the bases for the Gaudi MultiProcessing (GMP)
 # classes
 
@@ -43,7 +43,7 @@ WAIT_SINGLE_EVENT = 60*6
 WAIT_FINALISE     = 60*2
 STEP_INITIALISE   = 10
 STEP_EVENT        = 2
-STEP_FINALISE     = 5
+STEP_FINALISE     = 10
 
 # My switch for direct switching on/off Smaps Algorithm in GaudiPython AppMgr
 SMAPS = False
@@ -197,10 +197,11 @@ class CollectHistograms( PyAlgorithm ) :
     def execute( self ) :
         return SUCCESS
     def finalize( self ) :
-        self.log.info('CollectHistograms Finalise (%s)'%(self._gmpc.nodeType))
+	self.log.info('CollectHistograms Finalise (%s)'%(self._gmpc.nodeType))
         self._gmpc.hDict = self._gmpc.dumpHistograms( )
         ks = self._gmpc.hDict.keys()
         self.log.info('%i Objects in Histogram Store'%(len(ks)))
+
         # crashes occurred due to Memory Error during the sending of hundreds
         # histos on slc5 machines, so instead, break into chunks
         # send 100 at a time
@@ -211,7 +212,7 @@ class CollectHistograms( PyAlgorithm ) :
             smalld = dict( [(key, self._gmpc.hDict[key]) for key in someKeys] )
             self._gmpc.hq.put( (self._gmpc.nodeID, smalld) )
         # "finished" Notification
-        self.log.debug('Signalling end of histos to Writer')
+	self.log.debug('Signalling end of histos to Writer')
         self._gmpc.hq.put( 'HISTOS_SENT' )
         self.log.debug( 'Waiting on Sync Event' )
         self._gmpc.sEvent.wait()
@@ -284,13 +285,14 @@ class EventCommunicator( object ) :
         return itemIn
 
     def finalize( self ) :
-        self.log.info('Finalize Event Communicator : %s'%(self._gmpc.nodeType))
+        self.log.info('Finalize Event Communicator : %s %s'%(self._gmpc, self._gmpc.nodeType))
         # Reader sends one flag for each worker
         # Workers send one flag each
         # Writer sends nothing (it's at the end of the chain)
         if   self._gmpc.nodeType == 'Reader' : downstream = self._gmpc.nWorkers
         elif self._gmpc.nodeType == 'Writer' : downstream = 0
         elif self._gmpc.nodeType == 'Worker' : downstream = 1
+
         for i in xrange(downstream) :
             self.qout.put( 'FINISHED' )
         if self._gmpc.nodeType != 'Writer' :
@@ -395,7 +397,7 @@ class GMPComponent( object ) :
     # -1 for reader
     # -2 for writer
     # 0,...,nWorkers-1 for the Workers
-    def __init__( self, nodeType, nodeID, queues, events, params  ) :
+    def __init__( self, nodeType, nodeID, queues, events, params, subworkers   ) :
         # declare a Gaudi MultiProcessing Node
         # the nodeType is going to be one of Reader, Worker, Writer
         # qPair is going to be a tuple of ( qin, qout )
@@ -414,13 +416,25 @@ class GMPComponent( object ) :
 
         # necessary for knowledge of the system
         self.nWorkers, self.sEvent, self.config, self.log = params
+        self.subworkers = subworkers
         self.nodeID   = nodeID
 
         # describe the state of the node by the current Event Number
         self.currentEvent = None
 
         # Unpack the Queues : (events, histos, filerecords)
-        qPair, histq, fq = queues
+        self.queues = queues
+        self.num = 0
+
+        ks = self.config.keys()
+        self.app = None
+        list = ["Brunel", "DaVinci", "Boole", "Gauss"]
+        for k in list:
+           if k in ks: self.app = k
+
+    def Start( self ) :
+        # define the separate process
+        qPair, histq, fq = self.queues
 
         # Set up the Queue Mechanisms ( Event Communicators )
         if self.nodeType == 'Reader' or self.nodeType == 'Worker' :
@@ -459,20 +473,12 @@ class GMPComponent( object ) :
         self.firstEvTime = 0.0
         self.tTime       = 0.0
 
-        # define the separate process
         self.proc = Process( target=self.Engine )
-	
-	self.num = 0	
-
-	ks = self.config.keys()
-        self.app = None
-        list = ["Brunel", "DaVinci", "Boole", "Gauss"]
-        for k in list:
-           if k in ks: self.app = k
-
-    def Start( self ) :
         # Fork and start the separate process
         self.proc.start()
+
+
+
 
     def Engine( self ) :
         # This will be the method carried out by the Node
@@ -526,6 +532,7 @@ class GMPComponent( object ) :
             path = l
             try :
                 n = self.evt[path].evtNumber()
+
                 return n
             except :
                 # No evt number at this path
@@ -535,6 +542,7 @@ class GMPComponent( object ) :
         # The Evt Number is in bank type 16, bank 0, data pt 4
         try :
             n = self.evt['/Event/DAQ/RawEvent'].banks(16)[0].data()[4]
+
             return n
         except :
             pass
@@ -548,7 +556,7 @@ class GMPComponent( object ) :
       else:
            if self.nodeID == -1:
              self.num = self.num + 1
-             self.log.info( 'Evt Number %d' % self.num )
+
              return self.num
 
     def IdentifyWriters( self ) :
@@ -605,10 +613,9 @@ class GMPComponent( object ) :
         self.StartGaudiPython( )
 
         if self.app == 'Gauss':
-            
+
             tool = self.a.tool( "ToolSvc.EvtCounter" )
             self.cntr = InterfaceCast( gbl.IEventCounter )( tool.getInterface() )
-            self.log.info("interface %s" %self.cntr)
         else:
             self.cntr = None
 
@@ -639,8 +646,8 @@ class GMPComponent( object ) :
 # =============================================================================
 
 class Reader( GMPComponent )  :
-    def __init__( self, queues, events, params ) :
-        GMPComponent.__init__(self, 'Reader', -1, queues, events, params )
+    def __init__( self, queues, events, params, subworkers  ) :
+        GMPComponent.__init__(self, 'Reader', -1, queues, events, params, subworkers  )
 
     def processConfiguration( self ) :
         # Reader :
@@ -652,7 +659,7 @@ class Reader( GMPComponent )  :
         if "HistogramPersistencySvc" in self.config.keys() :
             self.config[ 'HistogramPersistencySvc' ].OutputFile = ''
         self.config['MessageSvc'].Format    = '[Reader]% F%18W%S%7W%R%T %0W%M'
-        self.evtMax = self.config[ 'ApplicationMgr' ].EvtMax   	
+        self.evtMax = self.config[ 'ApplicationMgr' ].EvtMax
 
     def DumpEvent( self ) :
         tb = TBufferFile( TBuffer.kWrite )
@@ -706,6 +713,13 @@ class Reader( GMPComponent )  :
                 return SUCCESS
 
     def Engine( self ) :
+        # rename process
+        import os
+        import ctypes
+        libc = ctypes.CDLL('libc.so.6')
+        name = str(self.nodeType) + str(self.nodeID) + '\0'
+        libc.prctl(15,name,0,0,0)
+
 
         startEngine = time.time()
         self.log.name = 'Reader'
@@ -759,18 +773,183 @@ class Reader( GMPComponent )  :
         self.Report()
 
 # =============================================================================
-
-class Worker( GMPComponent ) :
-    def __init__( self, workerID, queues, events, params ) :
-        GMPComponent.__init__(self,'Worker', workerID, queues, events, params)
+class Subworker(GMPComponent):
+    def __init__( self, workerID, queues, events, params, subworkers  ) :
+        GMPComponent.__init__(self,'Worker', workerID, queues, events, params, subworkers )
         # Identify the writer streams
         self.writerDict = self.IdentifyWriters( )
         # Identify the accept/veto checks for each event
         self.acceptAlgs, self.requireAlgs, self.vetoAlgs = self.getCheckAlgs()
-        self.log.debug("Worker-%i Created OK"%(self.nodeID))
+        self.log.info("Subworker-%i Created OK"%(self.nodeID))
+        self.eventOutput = True
+
+    def Engine( self ) :
+        # rename process
+        import os
+        import ctypes
+        libc = ctypes.CDLL('libc.so.6')
+        name = str(self.nodeType) + str(self.nodeID) + '\0'
+        libc.prctl(15,name,0,0,0)
+
+        self.initEvent.set()
+        startEngine = time.time()
+        msg = self.a.service('MessageSvc')
+        msg.Format = '[' + self.log.name + '] % F%18W%S%7W%R%T %0W%M'
+
+        self.log.name = "Worker-%i"%(self.nodeID)
+        self.log.info("Subworker %i starting Engine"%(self.nodeID))
+        self.filerecordsAgent = FileRecordsAgent(self)
+
+        # populate the TESSerializer itemlist
+        self.log.info('EVT WRITERS ON WORKER : %i'\
+                       %( len(self.writerDict['events'])))
+
+        nEventWriters = len( self.writerDict[ "events" ] )
+        self.a.addAlgorithm( CollectHistograms(self) )
+
+        # Begin processing
+        Go = True
+        while Go :
+            packet = self.evcom.receive( )
+            if packet : pass
+            else      : continue
+            if packet == 'FINISHED' : break
+            evtNumber, tbin = packet    # unpack
+            if self.cntr != None:
+
+                self.cntr.setEventCounter( evtNumber )
+
+            self.nIn += 1
+            self.TS.Load( tbin )
+
+            t = time.time()
+            sc = self.a.executeEvent()
+            if self.nIn == 1 :
+                self.firstEvTime = time.time()-t
+            else :
+                self.rTime += (time.time()-t)
+            if sc.isSuccess() :
+                pass
+            else :
+	        self.log.name = "Worker-%i"%(self.nodeID)
+                self.log.warning('Did not Execute Event')
+                self.evt.clearStore()
+                continue
+            if self.isEventPassed() :
+                pass
+            else :
+                self.log.name = "Worker-%i"%(self.nodeID)
+                self.log.warning( 'Event did not pass : %i'%(evtNumber) )
+                self.evt.clearStore()
+                continue
+            if self.eventOutput :
+                # It may be the case of generating Event Tags; hence
+                #   no event output
+                self.currentEvent = self.getEventNumber( )
+                tb = self.TS.Dump( )
+                self.evcom.send( (self.currentEvent, tb) )
+                self.nOut += 1
+            self.inc.fireIncident(gbl.Incident('Subworker','EndEvent'))
+            self.eventLoopSyncer.set()
+            self.evt.clearStore( )
+        self.log.name = "Worker-%i"%(self.nodeID)
+        self.log.info('Setting <Last> Event %s' %(self.nodeID))
+        self.lastEvent.set()
+
+        self.evcom.finalize()
+        # Now send the FileRecords and stop/finalize the appMgr
+        self.filerecordsAgent.SendFileRecords()
+        self.tTime = time.time()-startEngine
+        self.Finalize()
+        self.Report()
+        #self.finalEvent.set()
+
+    def SetServices(self,a, evt, hvt, fsr, inc, pers, ts , cntr):
+        self.a = a
+        self.evt = evt
+        self.hvt = hvt
+        self.fsr = fsr
+        #self.inc = inc
+        self.inc = self.a.service('IncidentSvc','IIncidentSvc')
+        self.pers = pers
+        self.ts  = ts
+        self.cntr = cntr
+        self.TS  = TESSerializer( self.ts, self.evt,
+                                  self.nodeType, self.nodeID, self.log )
+
+
+    def getCheckAlgs( self ) :
+        '''
+        For some output writers, a check is performed to see if the event has
+        executed certain algorithms.
+        These reside in the AcceptAlgs property for those writers
+        '''
+        acc = []
+        req = []
+        vet = []
+        for m in self.writerDict[ "events" ] :
+            if hasattr(m.w, 'AcceptAlgs')  : acc += m.w.AcceptAlgs
+            if hasattr(m.w, 'RequireAlgs') : req += m.w.RequireAlgs
+            if hasattr(m.w, 'VetoAlgs')    : vet += m.w.VetoAlgs
+        return (acc, req, vet)
+
+
+    def checkExecutedPassed( self, algName ) :
+        if  self.a.algorithm( algName )._ialg.isExecuted()\
+        and self.a.algorithm( algName )._ialg.filterPassed() :
+            return True
+        else :
+            return False
+
+    def isEventPassed( self ) :
+        '''
+        Check the algorithm status for an event.
+        Depending on output writer settings, the event
+          may be declined based on various criteria.
+        This is a transcript of the check that occurs in GaudiSvc::OutputStream
+        '''
+        passed = False
+
+        self.log.debug('self.acceptAlgs is %s'%(str(self.acceptAlgs)))
+        if self.acceptAlgs :
+            for name in self.acceptAlgs :
+                if self.checkExecutedPassed( name ) :
+                    passed = True
+                    break
+        else :
+            passed = True
+
+        self.log.debug('self.requireAlgs is %s'%(str(self.requireAlgs)))
+        for name in self.requireAlgs :
+            if self.checkExecutedPassed( name ) :
+                pass
+            else :
+                self.log.info('Evt declined (requireAlgs) : %s'%(name) )
+                passed = False
+
+        self.log.debug('self.vetoAlgs is %s'%(str(self.vetoAlgs)))
+        for name in self.vetoAlgs :
+            if self.checkExecutedPassed( name ) :
+                pass
+            else :
+                self.log.info( 'Evt declined : (vetoAlgs) : %s'%(name) )
+                passed = False
+        return passed
+
+# =============================================================================
+class Worker( GMPComponent ) :
+    def __init__( self, workerID, queues, events, params , subworkers ) :
+        GMPComponent.__init__(self,'Worker', workerID, queues, events, params, subworkers )
+        # Identify the writer streams
+        self.writerDict = self.IdentifyWriters( )
+        # Identify the accept/veto checks for each event
+        self.acceptAlgs, self.requireAlgs, self.vetoAlgs = self.getCheckAlgs()
+        self.log.name = "Worker-%i"%(self.nodeID)
+        self.log.info("Worker-%i Created OK"%(self.nodeID))
         self.eventOutput = True
 
     def processConfiguration( self ) :
+
         # Worker :
         #   No input
         #   No output
@@ -796,21 +975,29 @@ class Worker( GMPComponent ) :
         #    pass
         #else                :
         #    self.config[ 'MessageSvc' ].OutputLevel = ERROR
-        
-        try:
+
+        if self.app == "Gauss":
+          try:
             if "ToolSvc.EvtCounter" not in self.config:
                 from Configurables import EvtCounter
                 counter = EvtCounter()
             else:
                 counter = self.config["ToolSvc.EvtCounter"]
             counter.UseIncident = False
-        except:
+          except:
             # ignore errors when trying to change the configuration of the EvtCounter
             self.log.warning('Cannot configure EvtCounter')
 
     def Engine( self ) :
+
+        # rename process
+        import os
+        import ctypes
+        libc = ctypes.CDLL('libc.so.6')
+        name = str(self.nodeType) + str(self.nodeID) + '\0'
+        libc.prctl(15,name,0,0,0)
+
         startEngine = time.time()
-        self.log.name = "Worker-%i"%(self.nodeID)
         self.log.info("Worker %i starting Engine"%(self.nodeID))
         self.Initialize()
         self.filerecordsAgent = FileRecordsAgent(self)
@@ -846,11 +1033,7 @@ class Worker( GMPComponent ) :
             self.log.info( 'There is no Event Output for this app' )
             self.eventOutput = False
 
-        # add the Histogram Collection Algorithm
-        self.a.addAlgorithm( CollectHistograms(self) )
-	
         # Begin processing
-        self.log.name = "Worker-%i"%(self.nodeID)
         Go = True
         while Go :
             packet = self.evcom.receive( )
@@ -858,13 +1041,26 @@ class Worker( GMPComponent ) :
             else      : continue
             if packet == 'FINISHED' : break
             evtNumber, tbin = packet    # unpack
-            if self.cntr != None: 
-		
+            if self.cntr != None:
                 self.cntr.setEventCounter( evtNumber )
-            
+
+            # subworkers are forked before the first event is processed
+            # reader-thread for ConDB must be closed and reopened in each subworker
+            # this is done by disconnect()
+            if self.nIn == 0:
+
+                self.log.info("Fork new subworkers and disconnect from CondDB")
+                condDB = self.a.service('CondDBCnvSvc', gbl.ICondDBReader)
+                condDB.disconnect()
+
+                # Fork subworkers and share services
+                for k in self.subworkers:
+                   k.SetServices(self.a, self.evt, self.hvt, self.fsr, self.inc, self.pers, self.ts, self.cntr)
+                   k.Start()
+                   self.a.addAlgorithm( CollectHistograms(self) )
             self.nIn += 1
             self.TS.Load( tbin )
-            # print 'Worker-%i : Event %i'%(self.nodeID, evtNumber)
+
             t = time.time()
             sc = self.a.executeEvent()
             if self.nIn == 1 :
@@ -903,6 +1099,10 @@ class Worker( GMPComponent ) :
         self.Finalize()
         self.tTime = time.time()-startEngine
         self.Report()
+
+        for k in self.subworkers:
+            self.log.info('Join subworkers')
+            k.proc.join()
 
     def getCheckAlgs( self ) :
         '''
@@ -965,8 +1165,8 @@ class Worker( GMPComponent ) :
 # =============================================================================
 
 class Writer( GMPComponent ) :
-    def __init__( self, queues, events, params ) :
-        GMPComponent.__init__(self,'Writer', -2, queues, events, params)
+    def __init__( self, queues, events, params, subworkers  ) :
+        GMPComponent.__init__(self,'Writer', -2, queues, events, params, subworkers )
         # Identify the writer streams
         self.writerDict = self.IdentifyWriters( )
         # This keeps track of workers as they finish
@@ -1017,8 +1217,15 @@ class Writer( GMPComponent ) :
             newName=self.config[hs].OutputFile.replace('.',\
                                                        '.p%i.'%(self.nWorkers))
             self.config[ hs ].OutputFile = newName
-    
+
     def Engine( self ) :
+        # rename process
+        import os
+        import ctypes
+        libc = ctypes.CDLL('libc.so.6')
+        name = str(self.nodeType) + str(self.nodeID) + '\0'
+        libc.prctl(15,name,0,0,0)
+
         startEngine = time.time()
         self.Initialize()
         self.histoAgent = HistoAgent( self )
@@ -1035,6 +1242,7 @@ class Writer( GMPComponent ) :
                 continue
             if packet == 'FINISHED' :
                 self.log.info('Writer got FINISHED flag : Worker %i'%(current))
+
                 self.status[current] = True
                 if all(self.status) :
                     self.log.info('FINISHED recd from all workers, break loop')
@@ -1113,17 +1321,19 @@ class Coord( object ) :
         # params are common to al subprocesses
         params = (self.nWorkers, self.histSyncEvent, self.config, self.log)
 
+        self.subworkers = []
         # Declare SubProcesses!
-        self.reader= Reader(self.getQueues(-1), self.getSyncEvents(-1), params)
+        for i in range(1, self.nWorkers ) :
+            sub = Subworker( i, self.getQueues(i), self.getSyncEvents(i), params, self.subworkers )
+            self.subworkers.append( sub )
+        self.reader= Reader(self.getQueues(-1), self.getSyncEvents(-1), params, self.subworkers)
         self.workers = []
-        for i in xrange( self.nWorkers ) :
-            wk = Worker( i, self.getQueues(i), self.getSyncEvents(i), params )
-            self.workers.append( wk )
-        self.writer= Writer(self.getQueues(-2), self.getSyncEvents(-2), params)
+        wk = Worker( 0, self.getQueues(0), self.getSyncEvents(0), params, self.subworkers )
+        self.writer= Writer(self.getQueues(-2), self.getSyncEvents(-2), params, self.subworkers)
 
         self.system = []
         self.system.append(self.writer)
-        [ self.system.append(w) for w in self.workers ]
+        self.system.append(wk)
         self.system.append(self.reader)
 
     def getSyncEvents( self, nodeID ) :
@@ -1143,8 +1353,11 @@ class Coord( object ) :
         # Initialise
         self.log.name = 'GaudiPython-Parallel-Logger'
         self.log.info( 'INITIALISING SYSTEM' )
+
+        # Start reader, writer and main worker
         for p in self.system :
             p.Start()
+
         sc = self.sInit.syncAll(step="Initialise")
         if sc == SUCCESS: pass
         else  : self.Terminate() ; return FAILURE
