@@ -16,7 +16,8 @@ eventloopmgr = HiveEventLoopMgr(MaxEventsParallel = evtslots,
 a1 = CPUCruncher("A1", 
                  Outputs = ['/Event/a1'],
                  varRuntime=.1, 
-                 avgRuntime=.5 )
+                 avgRuntime=.5,
+                 shortCalib = True )
 a2 = CPUCruncher("A2", 
                  Inputs = ['/Event/a1'],
                  Outputs = ['/Event/a2'])
