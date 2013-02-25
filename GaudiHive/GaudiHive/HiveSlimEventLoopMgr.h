@@ -1,5 +1,5 @@
-#ifndef GAUDIHIVE_HIVEEVENTLOOPMGR_H
-#define GAUDIHIVE_HIVEEVENTLOOPMGR_H 1
+#ifndef GAUDIHIVE_HIVESLIMEVENTLOOPMGR_H
+#define GAUDIHIVE_HIVESLIMEVENTLOOPMGR_H 1
 
 // Framework include files
 #include "GaudiKernel/IAlgResourcePool.h"
@@ -7,6 +7,8 @@
 #include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/MinimalEventLoopMgr.h"
 #include "GaudiKernel/IScheduler.h"
+#include "GaudiKernel/IIncidentSvc.h"
+#include <GaudiKernel/IIncidentListener.h>
 
 // Standard includes
 #include <functional>
@@ -19,7 +21,7 @@ class IIncidentSvc;
 class IDataManagerSvc;
 class IDataProviderSvc;
 
-class HiveSlimEventLoopMgr: public MinimalEventLoopMgr   {
+class HiveSlimEventLoopMgr: public extends1<Service, IEventProcessor>   {
   
 protected:
   /// Reference to the Event Data Service's IDataManagerSvc interface
@@ -57,9 +59,19 @@ protected:
   StatusCode m_declareEventRootAddress();
   /// Create event context
   StatusCode m_createEventContext(EventContext*& eventContext, int createdEvents);
-  
+  /// Drain the scheduler from all actions that may be queued
   StatusCode m_drainScheduler(int& finishedEvents);
-
+  /// Instance of the incident listener waiting for AbortEvent. 
+  SmartIF< IIncidentListener >  m_abortEventListener;
+  /// Name of the scheduler to be used
+  std::string m_schedulerName;
+  /// Scheduled stop of event processing
+  bool                m_scheduledStop;
+  /// Reference to the IAppMgrUI interface of the application manager
+  SmartIF<IAppMgrUI> m_appMgrUI;  
+  /// Reference to the incident service
+  SmartIF<IIncidentSvc> m_incidentSvc;
+  
 public:
   /// Standard Constructor
   HiveSlimEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc);
@@ -81,6 +93,7 @@ public:
   virtual StatusCode executeEvent(void* par);
   /// implementation of IEventProcessor::executeRun()
   virtual StatusCode executeRun(int maxevt);  
-
+  /// implementation of IEventProcessor::stopRun()
+  virtual StatusCode stopRun();
 };
-#endif // GAUDIHIVE_HIVEEVENTLOOPMGR_H
+#endif // GAUDIHIVE_HIVESLIMEVENTLOOPMGR_H
