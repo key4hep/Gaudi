@@ -1,4 +1,3 @@
-// $Id: IAlgManager.h,v 1.7 2008/06/02 14:20:38 marcocle Exp $
 #ifndef GAUDIHIVE_ALGRESOURCEPOOL_H
 #define GAUDIHIVE_ALGRESOURCEPOOL_H
 
@@ -7,14 +6,17 @@
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/Service.h" 
 #include "GaudiKernel/IAlgorithm.h"
+
 // std includes
 #include <string>
+#include <list>
+#include <vector>
 #include <bitset>
 #include <atomic>
 #include <mutex>
 
+// External libs
 #include "tbb/concurrent_queue.h"
-typedef std::bitset<1000> state_type;
 
 /** @class AlgResourcePool AlgResourcePool.h GaudiHive/AlgResourcePool.h
 
@@ -32,9 +34,7 @@ public:
   ~AlgResourcePool();
 
   virtual StatusCode start();
-  virtual StatusCode stop();
   virtual StatusCode initialize();
-  virtual StatusCode finalize();
   /// Acquire a certain algorithm using its name 
   virtual StatusCode acquireAlgorithm(const std::string& name, IAlgorithm*& algo);
   /// Release a certain algorithm 
@@ -46,6 +46,9 @@ public:
 
 private:
   typedef tbb::concurrent_queue<IAlgorithm*> concurrentQueueIAlgPtr;
+  typedef std::list<SmartIF<IAlgorithm> > ListAlg;
+  typedef std::bitset<1000> state_type;
+  
   std::mutex m_resource_mutex;
   bool m_lazyCreation;
   state_type m_available_resources;
@@ -54,6 +57,12 @@ private:
   std::map<size_t,size_t> m_n_of_allowed_instances;
   std::map<size_t,unsigned int> m_n_of_created_instances;
   std::map<std::string,unsigned int> m_resource_indices;
+  StatusCode m_decodeTopAlgs();
+  /// The names of the algorithms to be passed to the algorithm manager
+  StringArrayProperty m_topAlgNames;
+  /// The list of algorithms
+  ListAlg m_algList;
+ 
 
 };
 

@@ -1,15 +1,16 @@
-// $Id: HiveAlgorithmManager.cpp,v 1.11 2008/10/20 20:58:10 marcocle Exp $
-
 // Include Files
 
 // Framework
 #include "AlgResourcePool.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/SvcFactory.h"
+#include "GaudiKernel/ThreadGaudi.h"
 
 // C++
 #include <functional>
 #include <queue>
+
+// DP TODO: Manage smartifs and not pointers to algos
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY(AlgResourcePool)
@@ -19,6 +20,7 @@ AlgResourcePool::AlgResourcePool( const std::string& name, ISvcLocator* svc ) :
   base_class(name,svc), m_available_resources(1)
 {
   declareProperty("CreateLazily", m_lazyCreation = false );
+  declareProperty("TopAlg", m_topAlgNames );
 }
 
 //---------------------------------------------------------------------------
@@ -40,48 +42,19 @@ StatusCode AlgResourcePool::initialize(){
   StatusCode sc(Service::initialize());
   if (!sc.isSuccess())
     warning () << "Base class could not be started" << endmsg;  
+ 
+  // Try to recover the topAlgList from the ApplicationManager for backward-compatibility
+  if (m_topAlgNames.value().empty()){
+    info() << "TopAlg list empty. Recovering the one of Application Manager" << endmsg;
+    const Gaudi::Utils::TypeNameString appMgrName("ApplicationMgr/ApplicationMgr");
+    SmartIF<IProperty> appMgrProps (serviceLocator()->service(appMgrName));
+    m_topAlgNames.assign(appMgrProps->getProperty("TopAlg"));
+  } 
+    
+  sc = m_decodeTopAlgs();
+  if (sc.isFailure())
+    warning() << "Algorithms could not be properly decoded." << endmsg;
   
-  SmartIF<IAlgManager> algMan(serviceLocator());
-  const std::list<IAlgorithm*>& algos = algMan->getAlgorithms();
-  std::hash<std::string> hash_function;
-
-  // book keeping for resources
-  unsigned int resource_counter(0);
-
-  for (auto algo : algos){
-    size_t algo_id = hash_function(algo->name());
-    tbb::concurrent_queue<IAlgorithm*>* queue = new tbb::concurrent_queue<IAlgorithm*>();  
-    m_algqueue_map[algo_id] = queue;
-    queue->push(algo);    
-    m_n_of_allowed_instances[algo_id] = algo->cardinality();
-    m_n_of_created_instances[algo_id] = 1;
-    state_type requirements(0); 
-    for (auto resource_name : algo->neededResources()){
-      auto ret = m_resource_indices.insert(std::pair<std::string, unsigned int>(resource_name,resource_counter));
-      // insert successful means == wasn't known before. So increment counter
-      if (ret.second==true) ++resource_counter;
-      // in any case the return value holds the proper product index
-      requirements[ret.first->second] = true;
-    }
-    m_resource_requirements[algo_id] = requirements;
-    // potentially create clones; if not lazy creation we have to do it now
-    if (!m_lazyCreation) {
-      for (unsigned int i =1, end =algo->cardinality();i<end; ++i){
-        IAlgorithm* new_algo(0);
-        algMan->createAlgorithm(algo->type(),algo->name(), new_algo, true, false);
-        // BH TODO: this explicit handling of algorithm state is 
-        // neeeded as long as the MinimalEventLoopManager does management of itself
-        // In the future we'd need to leave the entire state machine business up to
-        // the AlgorithmManager 
-        StatusCode sc = new_algo->sysInitialize();
-        if( !sc.isSuccess() ) {
-          error() << "Unable to initialize Algorithm: " << new_algo->name() << endmsg;
-        }
-        queue->push(new_algo);
-        m_n_of_created_instances[algo_id]+=1;
-      } 
-    }
-  }
   // let's assume all resources are there
   m_available_resources.set(true);
   return StatusCode::SUCCESS;
@@ -90,68 +63,37 @@ StatusCode AlgResourcePool::initialize(){
 //---------------------------------------------------------------------------
 
 StatusCode AlgResourcePool::start(){
-  return Service::start();
-}
-
-//---------------------------------------------------------------------------
   
-StatusCode AlgResourcePool::stop(){
-  StatusCode stopSc;
-  // Loop on all algos and stop them  
-  SmartIF<IAlgManager> algMan(serviceLocator());
-  const std::list<IAlgorithm*>& algos = algMan->getAlgorithms();
-  for (IAlgorithm* ialgoPtr: algos){
-    stopSc = ialgoPtr->sysStop();
-    if (stopSc.isFailure()){
-      error() << "Unable to stop Algorithm: " << ialgoPtr->name() << endmsg;
-      return stopSc;
-    }
-  } 
-  return Service::stop();
-}
-
-//---------------------------------------------------------------------------  
-
-StatusCode AlgResourcePool::finalize(){
+  StatusCode startSc = Service::start();
+  if ( ! startSc.isSuccess() ) return startSc;
   
-  StatusCode sc;
-  StatusCode scRet;
-  
-  // Loop on all algos and finalize them
-  SmartIF<IAlgManager> algMan(serviceLocator());
-  const std::list<IAlgorithm*>& algos = algMan->getAlgorithms();
-  for (IAlgorithm* ialgoPtr: algos){
-    sc = ialgoPtr->sysFinalize();
-    if( !sc.isSuccess() ) {
-      scRet = StatusCode::FAILURE;
-      warning() << "Finalization of algorithm " << ialgoPtr->name() << " failed" << endmsg;
-    }
-  }
-  
-  
-  // Clear the queues which contain now invalid pointers!
-  for (auto& algoId_AlgoQueue : m_algqueue_map )
-    algoId_AlgoQueue.second->clear();
-    
-  // Remove the algorithm from the manager
-  for (IAlgorithm* ialgoPtr: algos){
-    if (algMan->removeAlgorithm(ialgoPtr).isFailure()) {
-      scRet = StatusCode::FAILURE;
-      warning() << "Problems removing Algorithm " << ialgoPtr->name() << endmsg;
-    }
-  }
-  
-  // DP output streams do not need to be released. Indeed they are treated 
-  // as managed algos.
-  
-  return scRet;
+  // sys-Start the algos
+  for (auto& ialgo : m_algList){
+    startSc = ialgo->sysStart();
+    if (startSc.isFailure()){
+      error() << "Unable to start Algorithm: " << ialgo->name() << endmsg;
+      return startSc;
+      }
+    }   
+  return StatusCode::SUCCESS;    
 }
 
 //---------------------------------------------------------------------------  
   
 StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm*& algo){
+  
+  
+  
   std::hash<std::string> hash_function;
   size_t algo_id = hash_function(name);  
+  
+  if (m_algqueue_map.find(algo_id) == m_algqueue_map.end()){
+    error() << "Algorithm " << name << " requested, but not recognised" 
+            << endmsg;
+    algo=nullptr;
+    return StatusCode::FAILURE;
+  }
+  
   StatusCode sc = m_algqueue_map[algo_id]->try_pop(algo); //TODO: check for existence
   //  if (m_lazyCreation ) {
   // TODO: fill the lazyCreation part
@@ -201,6 +143,96 @@ StatusCode AlgResourcePool::releaseResource(const std::string& name){
   m_available_resources[m_resource_indices[name]] = true;
   m_resource_mutex.unlock();
   return StatusCode::SUCCESS;
+}
+
+//---------------------------------------------------------------------------
+
+StatusCode AlgResourcePool::m_decodeTopAlgs()    {
+  
+  SmartIF<IAlgManager> algMan ( serviceLocator() );
+  if (!algMan.isValid()){
+    error() << "Algorithm manager could not be properly fetched." << endmsg;
+    return StatusCode::FAILURE;  
+  }
+  
+  // Useful lambda not to repeat ourselves
+  auto createAlg = [&algMan,this] (const std::string& item_type,
+                                     const std::string& item_name,  
+                                     IAlgorithm*& algo){
+        StatusCode createAlgSc = algMan->createAlgorithm(item_type, 
+                                                         item_name, 
+                                                         algo, 
+                                                         true, 
+                                                         false);
+        if (createAlgSc.isFailure())
+          this->warning() << "Algorithm " << item_type << "/" << item_name 
+                          << " could not be created." << endmsg;    
+    };
+  // End of lambda
+  
+  StatusCode sc = StatusCode::SUCCESS;
+
+  std::hash<std::string> hash_function;
+
+  // book keeping for resources
+  unsigned int resource_counter(0);  
+    
+  const std::vector<std::string>& algNames = m_topAlgNames.value( );
+  
+  for (auto& algName : algNames) {
+    
+    Gaudi::Utils::TypeNameString item(algName);
+    
+    debug() << "Decoding " << item << endmsg;
+    
+    // Got the type and name. Now creating the algorithm, avoiding duplicate creation.
+    std::string item_name = item.name();// + getGaudiThreadIDfromName(name());
+// 
+    size_t algo_id = hash_function(item_name);
+    tbb::concurrent_queue<IAlgorithm*>* queue = new tbb::concurrent_queue<IAlgorithm*>(); 
+    m_algqueue_map[algo_id] = queue;
+    
+    // DP TODO Do it properly with SmartIFs, also in the queues
+    IAlgorithm* algo(nullptr);    
+    SmartIF<IAlgorithm> algoSmartIF (algMan->algorithm(item_name,false));
+    
+    if (!algoSmartIF.isValid()){
+      createAlg(item.type(),item_name,algo);      
+    } else {    
+      algo = algoSmartIF.get();
+    }
+      queue->push(algo);
+      m_algList.push_back(algo);
+      m_n_of_allowed_instances[algo_id] = algo->cardinality();
+      m_n_of_created_instances[algo_id] = 1;
+    
+      state_type requirements(0);     
+          
+      for (auto resource_name : algo->neededResources()){
+        auto ret = m_resource_indices.insert(std::pair<std::string, unsigned int>(resource_name,resource_counter));
+        // insert successful means == wasn't known before. So increment counter
+        if (ret.second==true) ++resource_counter;
+        // in any case the return value holds the proper product index
+        requirements[ret.first->second] = true;
+      }
+      
+      m_resource_requirements[algo_id] = requirements;
+    
+    // potentially create clones; if not lazy creation we have to do it now
+    if (!m_lazyCreation) {
+      for (unsigned int i =1, end =algo->cardinality();i<end; ++i){      
+        createAlg(item.type(),item_name,algo);      
+        queue->push(algo);
+        m_n_of_created_instances[algo_id]+=1;
+      } 
+    }    
+    
+  }
+  // DP TODO: check if init/start is really necessary (gaudi state machine state check in algman...)
+  algMan->initialize();
+  algMan->start();    
+  
+  return sc;
 }
 
 //---------------------------------------------------------------------------
