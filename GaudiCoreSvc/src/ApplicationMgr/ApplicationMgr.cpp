@@ -40,7 +40,7 @@ static const char* s_runable   = "Runable";
 #define ON_DEBUG if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
 #define ON_VERBOSE if (UNLIKELY(m_outputLevel <= MSG::VERBOSE))
 
-DECLARE_OBJECT_FACTORY(ApplicationMgr);
+DECLARE_OBJECT_FACTORY(ApplicationMgr)
 
 // Implementation class for the Application Manager. In this way the
 // ApplicationMgr class is a fully insulated concrete class. Clients
