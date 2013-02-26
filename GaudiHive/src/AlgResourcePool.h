@@ -6,6 +6,7 @@
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/Service.h" 
 #include "GaudiKernel/IAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 
 // std includes
 #include <string>
@@ -43,7 +44,9 @@ public:
   virtual StatusCode acquireResource(const std::string& name);
   /// Release a certrain resource 
   virtual StatusCode releaseResource(const std::string& name);
-
+  
+  virtual std::list<IAlgorithm*> getFlatAlgList();  
+  
 private:
   typedef tbb::concurrent_queue<IAlgorithm*> concurrentQueueIAlgPtr;
   typedef std::list<SmartIF<IAlgorithm> > ListAlg;
@@ -57,12 +60,27 @@ private:
   std::map<size_t,size_t> m_n_of_allowed_instances;
   std::map<size_t,unsigned int> m_n_of_created_instances;
   std::map<std::string,unsigned int> m_resource_indices;
+  
+  /// Decode the top alg list
   StatusCode m_decodeTopAlgs();
+  
+  /// Recursively flatten an algList
+  StatusCode m_flattenSequencer(Algorithm* sequencer, ListAlg& alglist, unsigned int recursionDepth=0);
+   
   /// The names of the algorithms to be passed to the algorithm manager
   StringArrayProperty m_topAlgNames;
-  /// The list of algorithms
-  ListAlg m_algList;
- 
+  
+  /// The list of all algorithms created withing the Pool which are not top
+  ListAlg m_algList;  
+  
+  /// The list of top algorithms
+  ListAlg m_topAlgList;
+  
+  /// The flat list of algorithms w/o clones
+  ListAlg m_flatUniqueAlgList;
+  
+  /// The flat list of algorithms w/o clones which is returned
+  std::list<IAlgorithm*> m_flatUniqueAlgPtrList;
 
 };
 
