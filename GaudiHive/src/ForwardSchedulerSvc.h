@@ -52,7 +52,7 @@ public:
   /// Blocks until an event is availble
   virtual StatusCode popFinishedEvent(EventContext*& eventContext);  
 
-  /// Blocks until an event is availble
+  /// Try to fetch an event from the scheduler
   virtual StatusCode tryPopFinishedEvent(EventContext*& eventContext);  
 
   /// Get free slots number

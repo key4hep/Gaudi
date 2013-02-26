@@ -1,6 +1,5 @@
 // Framework includes
 #include "GaudiKernel/SvcFactory.h"
-#include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/Algorithm.h" // will be IAlgorithm if context getter promoted to interface
 #include "tbb/task.h"
@@ -61,22 +60,8 @@ StatusCode ForwardSchedulerSvc::initialize(){
     error() << "Error retrieving AlgoResourcePool interface IAlgoResourcePool." << endmsg;
   
   // Get the list of algorithms
-  SmartIF<IAlgManager> algMan(serviceLocator());
-  const std::list<IAlgorithm*>& algos = algMan->getAlgorithms();  
-    
-  // Set the states vectors, one per event slot
-  
-  // For the size, we have to take the number of unique algorithms, to avoid
-  // double counting of clones
-  std::unordered_set<std::string> algosNamesSet;
-  std::vector<std::string> algoNamesVector; // an ordered container..
-  for_each(algos.begin(), 
-           algos.end(), 
-           [&algosNamesSet,&algoNamesVector] (IAlgorithm* algo) {
-             auto ret = algosNamesSet.insert(algo->name());
-             if (ret.second) algoNamesVector.push_back(algo->name());});
-  const unsigned int algsNumber = algosNamesSet.size();  
-
+  const std::list<IAlgorithm*>& algos = m_algResourcePool->getFlatAlgList();  
+  const unsigned int algsNumber = algos.size(); 
   info() << "Found " <<  algsNumber << " algorithms" << endmsg;
 
   // Prepare empty event slots
@@ -103,11 +88,13 @@ StatusCode ForwardSchedulerSvc::initialize(){
   // Fill the containers to convert algo names to index
   m_algname_vect.reserve(algsNumber);
   unsigned int index=0;
-  for (const auto& name : algoNamesVector){
+
+  for (IAlgorithm* algo : algos){
+    const std::string& name = algo->name();
     m_algname_index_map[name]=index;
     m_algname_vect.emplace_back(name);    
     index++;
-  }
+  }  
 
    // Activate the scheduler 
   info() << "Activating scheduler in a separate thread" << endmsg;
