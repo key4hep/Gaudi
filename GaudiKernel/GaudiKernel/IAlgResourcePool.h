@@ -2,9 +2,12 @@
 #ifndef GAUDIKERNEL_IALGRESOURCEPOOL_H
 #define GAUDIKERNEL_IALGRESOURCEPOOL_H
 
-// Include files
+// Framework includes
 #include "GaudiKernel/IInterface.h"
+
+// C++ includes
 #include <string>
+#include <list>
 
 // Forward class declaration
 class IAlgorithm;
@@ -31,6 +34,9 @@ public:
   /// Release a certain algorithm 
   virtual StatusCode releaseAlgorithm(const std::string& name, IAlgorithm*& algo) = 0;
 
+  /// Get the flat list of algorithms
+  virtual std::list<IAlgorithm*> getFlatAlgList() = 0;
+  
   /// Acquire a certain resource
   virtual StatusCode acquireResource(const std::string& name) = 0;
   /// Release a certrain resource
