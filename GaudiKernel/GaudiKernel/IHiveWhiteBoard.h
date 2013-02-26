@@ -24,14 +24,14 @@ public:
    * @param  partition     [IN]     Partition number (event slot)   *
    * @return Status code indicating failure or success.
    */
-  virtual StatusCode selectStore(size_t partition) = 0;
+  virtual StatusCode selectStore(size_t partitionIndex) = 0;
 
   /** Clear an given 'slot'.
    *
    * @param  partition     [IN]     Partition number (event slot)   *
    * @return Status code indicating failure or success.
    */
-  virtual StatusCode clearStore(size_t partition) = 0;
+  virtual StatusCode clearStore(size_t partitionIndex) = 0;
   
   /** Set the number of 'slots'.
    *
@@ -67,7 +67,7 @@ public:
    * @param     partition     [IN]     Partition number
    * @return Status code indicating failure or success.
    */
-  virtual StatusCode freeStore( size_t partition ) = 0;
+  virtual StatusCode freeStore( size_t partitionIndex ) = 0;
   
   
   /** Get the partition number corresponding to a given event
