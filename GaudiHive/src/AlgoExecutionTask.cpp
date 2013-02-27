@@ -51,6 +51,10 @@ tbb::task* AlgoExecutionTask::execute() {
   try {
     RetCodeGuard rcg(appmgr, Gaudi::ReturnCode::UnhandledException);
     sc = m_algorithm->sysExecute();
+    if (UNLIKELY(!sc.isSuccess()))  {
+      log << MSG::WARNING << "Execution of algorithm " << m_algorithm->name() << " failed" << endmsg;
+    eventfailed = true;
+  }    
     rcg.ignore(); // disarm the guard
   } catch ( const GaudiException& Exception ) {
     log << MSG::FATAL << ".executeEvent(): Exception with tag=" << Exception.tag()
@@ -63,22 +67,16 @@ tbb::task* AlgoExecutionTask::execute() {
   } catch(...) {
     log << MSG::FATAL << ".executeEvent(): UNKNOWN Exception thrown by "
             << m_algorithm->name() << endmsg;
-  }
+  }  
 
-  if (UNLIKELY(!sc.isSuccess()))  {
-    log << MSG::WARNING << "Execution of algorithm " << m_algorithm->name() << " failed" << endmsg;
-    eventfailed = true;
-  }
+  // DP it is important to propagate the failure of an event.
+  // We need to stop execution when this happens so that execute run can 
+  // then receive the FAILURE
+  eventContext->m_evt_failed=eventfailed;  
   
-
-  if (eventfailed){
-    // TODO
-    //Add to the context the fact that the event failed!
-  }
   
   // TODO: Here the code from the algo is to be analysed for the Control Flow
 
-  // TODO: call a scheduler function..
   // Push in the scheduler queue an action to be performed 
   auto action_promote2Executed = std::bind(&ForwardSchedulerSvc::m_promoteToExecuted, 
                                            m_schedSvc, 
@@ -86,10 +84,6 @@ tbb::task* AlgoExecutionTask::execute() {
                                            eventContext->m_evt_slot,
                                            m_algorithm);
 
-  // DP it is important to propagate the failure of an event.
-  // We need to stop execution when this happens so that execute run can 
-  // then receive the FAILURE
-  eventContext->m_evt_failed=eventfailed;  
   m_schedSvc->m_actionsQueue.push(action_promote2Executed);    
 
   return nullptr;

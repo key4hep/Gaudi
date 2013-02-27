@@ -64,7 +64,7 @@ private:
   // Utils and shortcuts ----------------------------------------------------
 
   /// Activate scheduler
-  StatusCode m_activate();
+  void m_activate();
 
   /// Deactivate scheduler
   StatusCode m_deactivate();

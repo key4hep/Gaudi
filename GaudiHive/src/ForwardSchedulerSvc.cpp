@@ -50,14 +50,19 @@ StatusCode ForwardSchedulerSvc::initialize(){
   StatusCode sc(Service::initialize());
   if (!sc.isSuccess())
     warning () << "Base class could not be initialized" << endmsg;  
-  
-  // Set the number of slots
-  m_freeSlots=m_maxEventsInFlight;
-  
+
   // Get the algo resource pool
   m_algResourcePool = serviceLocator()->service("AlgResourcePool");
   if (!m_algResourcePool.isValid())
-    error() << "Error retrieving AlgoResourcePool interface IAlgoResourcePool." << endmsg;
+    error() << "Error retrieving AlgoResourcePool" << endmsg;  
+  
+  // Get Whiteboard
+  m_whiteboard = serviceLocator()->service("EventDataSvc");
+  if (!m_whiteboard.isValid())
+    fatal() << "Error retrieving EventDataSvc interface IHiveWhiteBoard." << endmsg;  
+  
+  // Set the number of slots
+  m_freeSlots=m_maxEventsInFlight; 
   
   // Get the list of algorithms
   const std::list<IAlgorithm*>& algos = m_algResourcePool->getFlatAlgList();  
@@ -65,30 +70,33 @@ StatusCode ForwardSchedulerSvc::initialize(){
   info() << "Found " <<  algsNumber << " algorithms" << endmsg;
 
   // Prepare empty event slots
-  m_whiteboard = serviceLocator()->service("EventDataSvc");
-  if (!m_whiteboard.isValid())
-    fatal() << "Error retrieving EventDataSvc interface IHiveWhiteBoard." << endmsg;
-
   info() << "Setting the whiteboard slots to " << m_maxEventsInFlight << endmsg;
   sc = m_whiteboard->setNumberOfStores(m_maxEventsInFlight);
   if (!sc.isSuccess())
     warning() << "Number of stores in the WhiteBoard could not be properly set!" << endmsg;
 
-  info() << "Algodependecies size is " << m_algosDependencies.size() << endmsg;
+  const unsigned int algosDependenciesSize=m_algosDependencies.size();
+  info() << "Algodependecies size is " << algosDependenciesSize << endmsg;
 
+  // If no dependencies given, just assume none are required
+  if (algosDependenciesSize == 0){
+    auto beginIt = m_algosDependencies.begin();
+    std::vector<std::string> emptyDeps(0);
+    m_algosDependencies.insert (beginIt,algsNumber,emptyDeps);
+  }
+  
   // Shortcut for the message service
   SmartIF<IMessageSvc> messageSvc (serviceLocator());
   if (!messageSvc.isValid())
     error() << "Error retrieving MessageSvc interface IMessageSvc." << endmsg;
-
+    
   m_eventSlots.assign(m_maxEventsInFlight,EventSlot(m_algosDependencies,algsNumber,messageSvc));
-  for (auto& slot: m_eventSlots)
-    slot.complete=true; // to be able to insert new eventContext
+  std::for_each(m_eventSlots.begin(),m_eventSlots.end(),[](EventSlot& slot){slot.complete=true;});
+  //for (auto& slot: m_eventSlots) slot.complete=true; // to be able to insert new eventContext
    
   // Fill the containers to convert algo names to index
   m_algname_vect.reserve(algsNumber);
   unsigned int index=0;
-
   for (IAlgorithm* algo : algos){
     const std::string& name = algo->name();
     m_algname_index_map[name]=index;
@@ -96,7 +104,7 @@ StatusCode ForwardSchedulerSvc::initialize(){
     index++;
   }  
 
-   // Activate the scheduler 
+  // Activate the scheduler 
   info() << "Activating scheduler in a separate thread" << endmsg;
   m_thread = std::thread (std::bind(&ForwardSchedulerSvc::m_activate,
                                     this));  
@@ -128,14 +136,14 @@ StatusCode ForwardSchedulerSvc::finalize(){
  * queue is not empty. This will guarantee that all actions are executed and 
  * a stall is not created.
  */
-StatusCode ForwardSchedulerSvc::m_activate(){  
+void ForwardSchedulerSvc::m_activate(){  
   
   // Now it's running
   m_isActive=true;
   
   // Wait for actions pushed into the queue by finishing tasks.
   action thisAction;  
-  StatusCode sc;
+  StatusCode sc(StatusCode::SUCCESS);
   
   // Continue to wait if the scheduler is running or there is something to do
   info() << "Start checking the actionsQueue" << endmsg;
@@ -147,7 +155,6 @@ StatusCode ForwardSchedulerSvc::m_activate(){
     else
       verbose() << "Action succed." << endmsg;
   }
-  return StatusCode::SUCCESS;
 }
 
 //---------------------------------------------------------------------------
@@ -163,8 +170,7 @@ StatusCode ForwardSchedulerSvc::m_deactivate(){
   if (m_isActive){
     // Drain the scheduler
     m_actionsQueue.push(std::bind(&ForwardSchedulerSvc::m_drain,
-                                  this));
-    
+                                  this));    
     // This would be the last action
     m_actionsQueue.push([this]() -> StatusCode {m_isActive=false;return StatusCode::SUCCESS;});
   }
@@ -255,7 +261,7 @@ StatusCode ForwardSchedulerSvc::popFinishedEvent(EventContext*& eventContext){
   m_finishedEvents.pop(eventContext);
   m_freeSlots++;
   debug() << "Popped slot " << eventContext->m_evt_slot << "(event " 
-         << eventContext->m_evt_num << ")" << endmsg;
+          << eventContext->m_evt_num << ")" << endmsg;
   return StatusCode::SUCCESS;
 }
 
@@ -265,8 +271,8 @@ StatusCode ForwardSchedulerSvc::popFinishedEvent(EventContext*& eventContext){
 */
 StatusCode ForwardSchedulerSvc::tryPopFinishedEvent(EventContext*& eventContext){
   if (m_finishedEvents.try_pop(eventContext)){
-    debug() << "Try Pop successful slot " << eventContext->m_evt_slot << "(event " 
-           << eventContext->m_evt_num << ")" << endmsg;
+    debug() << "Try Pop successful slot " << eventContext->m_evt_slot 
+            << "(event " << eventContext->m_evt_num << ")" << endmsg;
     m_freeSlots++;
     return StatusCode::SUCCESS;
   }
@@ -312,13 +318,13 @@ StatusCode ForwardSchedulerSvc::m_updateStates(EventSlotIndex si){
   const std::map<AlgsExecutionStates::State, std::function<StatusCode(AlgoSlotIndex iAlgo, EventSlotIndex si)>> 
    statesTransitions = {
   {AlgsExecutionStates::INITIAL, std::bind(&ForwardSchedulerSvc::m_promoteToControlReady,
-                                  this,
-                                  std::placeholders::_1,
-                                  std::placeholders::_2)},
+                                 this,
+                                 std::placeholders::_1,
+                                 std::placeholders::_2)},
   {AlgsExecutionStates::CONTROLREADY, std::bind(&ForwardSchedulerSvc::m_promoteToDataReady,
-                                  this,
-                                  std::placeholders::_1,  
-                                  std::placeholders::_2)},
+                                      this,
+                                      std::placeholders::_1,  
+                                      std::placeholders::_2)},
   {AlgsExecutionStates::DATAREADY, std::bind(&ForwardSchedulerSvc::m_promoteToScheduled,
                                    this,
                                    std::placeholders::_1,
@@ -355,7 +361,7 @@ StatusCode ForwardSchedulerSvc::m_updateStates(EventSlotIndex si){
     AlgsExecutionStates& thisAlgsStates = thisSlot.algsStates;
 
     for (unsigned int iAlgo=0;iAlgo<m_algname_vect.size();++iAlgo){
-      const AlgsExecutionStates::State& algState =thisAlgsStates.algorithmState(iAlgo);
+      const AlgsExecutionStates::State& algState = thisAlgsStates.algorithmState(iAlgo);
       if (algState==AlgsExecutionStates::ERROR)
         error() << " Algo " << m_index2algname(iAlgo) << " is in ERROR state." << endmsg;
       // Loop on state transitions from the one suited to algo state up to the one for SCHEDULED.
@@ -395,13 +401,8 @@ StatusCode ForwardSchedulerSvc::m_updateStates(EventSlotIndex si){
 //---------------------------------------------------------------------------
 
 StatusCode ForwardSchedulerSvc::m_isStalled(EventSlotIndex iSlot){
-  //DP add the dependencies for an even clearer message
   // Get the slot
   EventSlot& thisSlot = m_eventSlots[iSlot];
-  if (thisSlot.complete){
-    info() << "Evt was complete"<< endmsg;
-    return StatusCode::SUCCESS;
-  }
 
   if (m_actionsQueue.empty() &&
       m_algosInFlight == 0 &&
@@ -516,7 +517,7 @@ StatusCode ForwardSchedulerSvc::m_promoteToScheduled(AlgoSlotIndex iAlgo, EventS
 }
 
 //---------------------------------------------------------------------------
-/// This method is called only from within the AlgoExecutionTask.
+/// The call to this method is triggered only from within the AlgoExecutionTask.
 StatusCode ForwardSchedulerSvc::m_promoteToExecuted(AlgoSlotIndex iAlgo, EventSlotIndex si, IAlgorithm* algo){  
 
   // Put back the instance
