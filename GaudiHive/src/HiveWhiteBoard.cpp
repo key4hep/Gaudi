@@ -521,7 +521,7 @@ return IDataProviderSvc::INVALID_ROOT;
       }
       m_partitions.push_back(Partition(svc, svc));
     }
-    selectStore(0);
+    selectStore(0).ignore();
     return attachServices();
   }
 

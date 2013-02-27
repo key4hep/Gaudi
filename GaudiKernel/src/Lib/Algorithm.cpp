@@ -607,7 +607,7 @@ StatusCode Algorithm::sysExecute() {
     ( this , registerContext() ? contextSvc().get() : 0 ) ;
   
   // HiveWhiteBoard stuff here
-  if(m_WB.isValid()) m_WB->selectStore(getContext() ? getContext()->m_evt_slot : 0);
+  if(m_WB.isValid()) m_WB->selectStore(getContext() ? getContext()->m_evt_slot : 0).ignore();
 
   Gaudi::Guards::AuditorGuard guard(this,
                                     // check if we want to audit the initialize
