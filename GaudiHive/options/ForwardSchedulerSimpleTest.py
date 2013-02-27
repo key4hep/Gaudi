@@ -1,7 +1,7 @@
 #!/usr/bin/env gaudirun.py
 
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, ForwardSchedulerSvc, CPUCruncher
+from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, ForwardSchedulerSvc, CPUCruncher,AlgResourcePool
 
 InertMessageSvc(OutputLevel=INFO)
 
@@ -21,6 +21,8 @@ scheduler = ForwardSchedulerSvc(MaxEventsInFlight = evtslots,
                                 OutputLevel=WARNING,
                                 AlgosDependencies = [[],['a1'],['a1'],['a2','a3']])
 
+AlgResourcePool(OutputLevel=DEBUG)
+                                
 a1 = CPUCruncher("A1", 
                  Outputs = ['/Event/a1'],
                  shortCalib=True,
