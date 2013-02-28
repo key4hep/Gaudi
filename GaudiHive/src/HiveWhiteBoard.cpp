@@ -102,6 +102,8 @@ protected:
   size_t              m_slots;
   /// Allow forced creation of default leaves on registerObject. 
   bool                m_forceLeaves;
+  /// Flag to enable interrupts on data creation requests. 
+  bool m_enableFaultHdlr;
   
 public:
   /// IDataManagerSvc: Accessor for root event CLID
@@ -520,6 +522,7 @@ return IDataProviderSvc::INVALID_ROOT;
       svc->setProperty("RootCLID", std::to_string(m_rootCLID));
       svc->setProperty("RootName", m_rootName);
       svc->setProperty("ForceLeaves", std::to_string(m_forceLeaves));
+      svc->setProperty("EnableFaultHandler", std::to_string(m_enableFaultHdlr));
        
       sc = svc->initialize();
       if (!sc.isSuccess()) {
@@ -564,11 +567,12 @@ return IDataProviderSvc::INVALID_ROOT;
     m_dataLoader(0), m_addrCreator(0)
   {
     m_dataLoader = 0;
-    declareProperty("RootCLID",         m_rootCLID);
-    declareProperty("RootName",         m_rootName);
-    declareProperty("DataLoader",       m_loader="EventPersistencySvc");
-    declareProperty("EventSlots",       m_slots = 1);
-    declareProperty("ForceLeaves",      m_forceLeaves = 1);
+    declareProperty("RootCLID",           m_rootCLID);
+    declareProperty("RootName",           m_rootName);
+    declareProperty("DataLoader",         m_loader="EventPersistencySvc");
+    declareProperty("EventSlots",         m_slots = 1);
+    declareProperty("ForceLeaves",        m_forceLeaves = 1);
+    declareProperty("EnableFaultHandler", m_enableFaultHdlr = 0);
   }
 
   /// Standard Destructor
