@@ -36,6 +36,7 @@ ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* 
 {
   declareProperty("MaxEventsInFlight", m_maxEventsInFlight = 1 );
   declareProperty("MaxAlgosInFlight", m_maxAlgosInFlight = 1 );
+  declareProperty("WhiteboardSvc", m_whiteboardSvcName = "EventDataSvc" );
   // Will disappear when dependencies are properly propagated into the C++ code of the algos
   declareProperty("AlgosDependencies", m_algosDependencies);    
 }
@@ -57,7 +58,7 @@ StatusCode ForwardSchedulerSvc::initialize(){
     error() << "Error retrieving AlgoResourcePool" << endmsg;  
   
   // Get Whiteboard
-  m_whiteboard = serviceLocator()->service("EventDataSvc");
+  m_whiteboard = serviceLocator()->service(m_whiteboardSvcName);
   if (!m_whiteboard.isValid())
     fatal() << "Error retrieving EventDataSvc interface IHiveWhiteBoard." << endmsg;  
   

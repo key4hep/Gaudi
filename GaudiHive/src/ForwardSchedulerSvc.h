@@ -87,6 +87,9 @@ private:
 
   /// The whiteboard
   SmartIF<IHiveWhiteBoard> m_whiteboard; 
+  
+  /// The whiteboard name
+  std::string m_whiteboardSvcName; 
 
   // Event slots management -------------------------------------------------
     

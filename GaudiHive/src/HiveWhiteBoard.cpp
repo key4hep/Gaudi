@@ -100,7 +100,9 @@ protected:
   Partitions          m_partitions;
   /// Datastore slots
   size_t              m_slots;
-
+  /// Allow forced creation of default leaves on registerObject. 
+  bool                m_forceLeaves;
+  
 public:
   /// IDataManagerSvc: Accessor for root event CLID
   virtual CLID rootCLID() const {
@@ -514,6 +516,11 @@ return IDataProviderSvc::INVALID_ROOT;
       std::ostringstream oss;
       oss << name() << "_" << i;
       DataSvc* svc = new DataSvc(oss.str(), serviceLocator());
+      // Percolate properties
+      svc->setProperty("RootCLID", std::to_string(m_rootCLID));
+      svc->setProperty("RootName", m_rootName);
+      svc->setProperty("ForceLeaves", std::to_string(m_forceLeaves));
+       
       sc = svc->initialize();
       if (!sc.isSuccess()) {
         error() << "Failed to instantiate DataSvc as store partition" << endmsg;
@@ -561,6 +568,7 @@ return IDataProviderSvc::INVALID_ROOT;
     declareProperty("RootName",         m_rootName);
     declareProperty("DataLoader",       m_loader="EventPersistencySvc");
     declareProperty("EventSlots",       m_slots = 1);
+    declareProperty("ForceLeaves",      m_forceLeaves = 1);
   }
 
   /// Standard Destructor

@@ -241,9 +241,7 @@ StatusCode AlgResourcePool::m_decodeTopAlgs()    {
     const std::string& item_name = ialgoSmartIF->name();
     Algorithm* algo = dynamic_cast<Algorithm*> ( ialgoSmartIF.get() );
     if (!algo) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
-    const std::string& item_type = algo->type();
-    
-    debug() << "type/name to create clones of: " << item_type << "/" << item_name << endmsg;
+    const std::string& item_type = algo->type();      
     
     size_t algo_id = hash_function(item_name);    
     tbb::concurrent_queue<IAlgorithm*>* queue = new tbb::concurrent_queue<IAlgorithm*>(); 
@@ -272,6 +270,7 @@ StatusCode AlgResourcePool::m_decodeTopAlgs()    {
     // potentially create clones; if not lazy creation we have to do it now
     if (!m_lazyCreation) {
       for (unsigned int i =1, end =ialgo->cardinality();i<end; ++i){
+        debug() << "type/name to create clone of: " << item_type << "/" << item_name << endmsg;
         IAlgorithm* ialgoClone(nullptr);
         createAlg(item_type,item_name,ialgoClone);      
         queue->push(ialgoClone);
