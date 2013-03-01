@@ -1677,7 +1677,8 @@ endfunction()
 #                [FRAMEWORK options1 options2 ...|QMTEST|COMMAND cmd args ...]
 #                [ENVIRONMENT variable[+]=value ...]
 #                [DEPENDS other_test ...]
-#                [FAILS] [PASSREGEX regex] [FAILREGEX regex])
+#                [FAILS] [PASSREGEX regex] [FAILREGEX regex]
+#                [TIMEOUT seconds])
 #
 # Declare a run-time test in the subdirectory.
 # The test can be of the types:
@@ -1696,7 +1697,7 @@ endfunction()
 #
 #-------------------------------------------------------------------------------
 function(gaudi_add_test name)
-  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST;FAILS" "" "ENVIRONMENT;FRAMEWORK;COMMAND;DEPENDS;PASSREGEX;FAILREGEX" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST;FAILS" "TIMEOUT" "ENVIRONMENT;FRAMEWORK;COMMAND;DEPENDS;PASSREGEX;FAILREGEX" ${ARGN})
 
   gaudi_get_package_name(package)
 
@@ -1761,6 +1762,9 @@ function(gaudi_add_test name)
     set_property(TEST ${package}.${name} PROPERTY FAIL_REGULAR_EXPRESSION ${ARG_FAILREGEX})
   endif()
 
+  if(ARG_TIMEOUT)
+    set_property(TEST ${package}.${name} PROPERTY TIMEOUT ${ARG_TIMEOUT})
+  endif()
 
 endfunction()
 
