@@ -37,6 +37,12 @@ public:
   /// Get the flat list of algorithms
   virtual std::list<IAlgorithm*> getFlatAlgList() = 0;
   
+  /// Begin Run
+  virtual StatusCode beginRun() = 0;
+  
+  /// End Run
+  virtual StatusCode endRun() = 0;
+    
   /// Acquire a certain resource
   virtual StatusCode acquireResource(const std::string& name) = 0;
   /// Release a certrain resource

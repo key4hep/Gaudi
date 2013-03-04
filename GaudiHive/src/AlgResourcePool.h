@@ -47,6 +47,10 @@ public:
   
   virtual std::list<IAlgorithm*> getFlatAlgList();  
   
+  virtual StatusCode beginRun();  
+  
+  virtual StatusCode endRun();  
+  
 private:
   typedef tbb::concurrent_queue<IAlgorithm*> concurrentQueueIAlgPtr;
   typedef std::list<SmartIF<IAlgorithm> > ListAlg;

@@ -296,5 +296,34 @@ std::list<IAlgorithm*> AlgResourcePool::getFlatAlgList(){
 
 //---------------------------------------------------------------------------
 
+StatusCode AlgResourcePool::beginRun(){
+  StatusCode sc;
+  // Call the beginRun() method of all top algorithms
+  for (auto& algoSmartIF : m_flatUniqueAlgList ) {
+    sc = algoSmartIF->sysBeginRun();
+    if (!sc.isSuccess()) {
+      warning() << "beginRun() of algorithm " << algoSmartIF->name() << " failed" << endmsg;
+      return StatusCode::FAILURE;
+    }
+  }
+  return StatusCode::SUCCESS;
+}
 
+//---------------------------------------------------------------------------
+
+StatusCode AlgResourcePool::endRun() {
+  
+  StatusCode sc;
+  // Call the endrun() method of all top algorithms
+  for (auto& algoSmartIF : m_flatUniqueAlgList ) {
+    sc = algoSmartIF->sysEndRun();
+    if (!sc.isSuccess()) {
+      warning() << "endRun() of algorithm " << algoSmartIF->name() << " failed" << endmsg;
+      return StatusCode::FAILURE;
+    }
+  }
+  return StatusCode::SUCCESS;  
+} 
+
+//---------------------------------------------------------------------------
 
