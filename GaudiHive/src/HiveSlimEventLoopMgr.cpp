@@ -339,9 +339,6 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
   
   info() << "Beginning to process event " <<  createdEvts << endmsg;
 
-  // Fire BeginEvent "Incident"
-  m_incidentSvc->fireIncident(Incident(name(),IncidentType::BeginEvent));
-
   // An incident may schedule a stop, in which case is better to exit before the actual execution.
   // DP have to find out who shoots this
 /*  if ( m_scheduledStop ) {
@@ -362,6 +359,9 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
     return StatusCode::SUCCESS;
     }
 
+  // Fire BeginEvent "Incident"
+  m_incidentSvc->fireIncident(Incident(name(),IncidentType::BeginEvent));    
+    
   // Now add event to the scheduler 
   info() << "Adding event " << evtContext->m_evt_num 
           << ", slot " << evtContext->m_evt_slot
@@ -386,40 +386,24 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
 StatusCode HiveSlimEventLoopMgr::executeRun( int maxevt )    {
   StatusCode  sc;
   bool eventfailed = false;
-
-//   // DP Where to put this? Probably to be left here and delegate call to AlgoPool
-//   ListAlg::iterator ita;
-//   // Call the beginRun() method of all top algorithms
-//   for (ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
-//     sc = (*ita)->sysBeginRun();
-//     if (!sc.isSuccess()) {
-//       warning() << "beginRun() of algorithm " << (*ita)->name() << " failed" << endmsg;
-//       eventfailed = true;
-//     }
-//   }
+  
+  sc = m_algResourcePool->beginRun();
+  if (sc.isFailure()) 
+    eventfailed=true;
 
   // Call now the nextEvent(...)
   sc = nextEvent(maxevt);
-  if (!sc.isSuccess()) {
+  if (!sc.isSuccess())
     eventfailed = true;
-  }
 
-//   // DP And this? Probably to be left here and delegate call to AlgoPool
-//   // Call the endRun() method of all top algorithms
-//   for (ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
-//     sc = (*ita)->sysEndRun();
-//     if (!sc.isSuccess()) {
-//       warning() << "endRun() of algorithm " << (*ita)->name() << " failed" << endmsg;
-//       eventfailed = true;
-//     }
-//   }
+  sc = m_algResourcePool->endRun();
+  if (sc.isFailure())
+    eventfailed=true;
 
-  if (eventfailed) {
+  if (eventfailed) 
     return StatusCode::FAILURE;
-  }
-  else {
+  else 
     return StatusCode::SUCCESS;
-  };
 }
 
 //--------------------------------------------------------------------------------------------
