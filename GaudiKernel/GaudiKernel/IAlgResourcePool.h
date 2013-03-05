@@ -37,6 +37,9 @@ public:
   /// Get the flat list of algorithms
   virtual std::list<IAlgorithm*> getFlatAlgList() = 0;
   
+  /// Get top list of algorithms
+  virtual std::list<IAlgorithm*> getTopAlgList() = 0;  
+  
   /// Begin Run
   virtual StatusCode beginRun() = 0;
   
