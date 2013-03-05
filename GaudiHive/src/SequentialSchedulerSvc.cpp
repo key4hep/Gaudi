@@ -91,14 +91,21 @@ StatusCode SequentialSchedulerSvc::pushNewEvent(EventContext* eventContext){
   m_freeSlots--;
   
   debug() << "[pushNewEvent] Free slots are now: " << m_freeSlots << endmsg;
-  
-  m_eventContext= eventContext;
-  
+
+  // Call the resetExecuted() method of ALL "known" algorithms
+  // (From the MinimalEventLoopMgr)
+  SmartIF<IAlgManager> algMan(serviceLocator());
+  if (LIKELY(algMan.isValid())) {
+    const std::list<IAlgorithm*>& allAlgs = algMan->getAlgorithms() ;
+    for( IAlgorithm* ialg : allAlgs ) {
+      if (LIKELY(nullptr != ialg))ialg->resetExecuted();
+    }
+  }
+    
+  m_eventContext= eventContext;  
   bool eventfailed=false;  
   
   for (IAlgorithm* ialgorithm : m_algList){
-  
-    ialgorithm->resetExecuted();
     
     Algorithm* this_algo = dynamic_cast<Algorithm*>(ialgorithm);  
     if (!this_algo){
