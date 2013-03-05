@@ -46,6 +46,7 @@ public:
   virtual StatusCode releaseResource(const std::string& name);
   
   virtual std::list<IAlgorithm*> getFlatAlgList();  
+  virtual std::list<IAlgorithm*> getTopAlgList();
   
   virtual StatusCode beginRun();  
   
@@ -86,6 +87,12 @@ private:
   /// The flat list of algorithms w/o clones which is returned
   std::list<IAlgorithm*> m_flatUniqueAlgPtrList;
 
+  /// The top list of algorithms
+  std::list<IAlgorithm*> m_topAlgPtrList;
+
+  /// OMG this has so to be removed
+  bool m_doHacks;
+  
 };
 
 #endif  // GAUDIHIVE_ALGRESOURCEPOOL_H
