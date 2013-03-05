@@ -116,7 +116,7 @@ StatusCode HiveSlimEventLoopMgr::initialize()    {
         fatal() << "Error retrieving EventDataSvc interface IHiveWhiteBoard." << endmsg;
         return StatusCode::FAILURE;
     }
-    m_schedulerSvc = serviceLocator()->service("ForwardSchedulerSvc");
+    m_schedulerSvc = serviceLocator()->service(m_schedulerName);
     if ( !m_schedulerSvc.isValid()){
         fatal() << "Error retrieving SchedulerSvc interface ISchedulerSvc." << endmsg;
         return StatusCode::FAILURE;    
@@ -336,6 +336,13 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
 
   // Leave the interface intact and swallow this C trick.
   int& createdEvts = *((int*)createdEvts_IntPtr);
+
+  EventContext* evtContext(nullptr);
+  
+  if ( m_createEventContext(evtContext,createdEvts).isFailure() ){
+    fatal() << "Impossible to create event context" << endmsg;
+    return StatusCode::FAILURE;
+  }
   
   info() << "Beginning to process event " <<  createdEvts << endmsg;
 
@@ -345,13 +352,6 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
     always() << "Terminating event processing loop due to a stop scheduled by an incident listener" << endmsg;
     return StatusCode::SUCCESS;
   }*/      
-
-  EventContext* evtContext(nullptr);
-  
-  if ( m_createEventContext(evtContext,createdEvts).isFailure() ){
-    fatal() << "Impossible to create event context" << endmsg;
-    return StatusCode::FAILURE;
-  }
 
   StatusCode declEvtRootSc = m_declareEventRootAddress();
   if (declEvtRootSc.isFailure()) { // We ran out of events!
@@ -586,7 +586,9 @@ StatusCode HiveSlimEventLoopMgr::m_drainScheduler(int& finishedEvts){
     delete thisFinishedEvtContext;
     
     finishedEvts++;
-    
+
+    m_incidentSvc->fireIncident(Incident(name(),IncidentType::EndEvent));
+
     m_incidentSvc->fireIncident(Incident(name(), IncidentType::EndProcessing));
     
   }
