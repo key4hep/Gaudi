@@ -64,8 +64,8 @@ macro_remove GaudiProfiling_python_init_dependencies "IntelProfilerConf" \
 macro_remove zip_GaudiProfiling_python_modules_dependencies "IntelProfilerConfDbMerge" \
                                                      have-vtune ""
 
-macro_append use_includes " $(VTune_cppflags) "
-macro_append IntelProfiler_use_linkopts " $(VTune_linkopts) "
+macro_append use_includes "" have-vtune " $(VTune_cppflags) "
+macro_append IntelProfiler_use_linkopts "" have-vtune " $(VTune_linkopts) "
 
 use             libunwind   v* LCG_Interfaces
 # Not using the libunwind library, only the headers
