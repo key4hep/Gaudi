@@ -21,6 +21,7 @@ AlgResourcePool::AlgResourcePool( const std::string& name, ISvcLocator* svc ) :
 {
   declareProperty("CreateLazily", m_lazyCreation = false );
   declareProperty("TopAlg", m_topAlgNames );
+  declareProperty("DoHacks", m_doHacks=false);
 }
 
 //---------------------------------------------------------------------------
@@ -148,21 +149,52 @@ StatusCode AlgResourcePool::releaseResource(const std::string& name){
 StatusCode AlgResourcePool::m_flattenSequencer(Algorithm* algo, ListAlg& alglist, unsigned int recursionDepth){
       
   // DP: here feed the ControlFlowSvc with the proper info?
+  // Hacks waiting the Control Flow:
+  // 1) Take only the first algo if the sequencer is an OR
+  // 2) Skip the  HltDecReportsDecoder-s
+
+  const std::string hack_banner("\n\n****************\n HACK PRESENT: PLEASE PROVIDE CONTROL FLOW!\n ****************\n");
+  
+  // Hack 2)
+  static bool HltDecReportsDecoded=false;
+
+
   
   std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
-  if (subAlgorithms->empty()){
+  if (subAlgorithms->empty() and not (algo->type() == "GaudiSequencer")){
     debug() << std::string(recursionDepth, ' ') << algo->name() << " is not a sequencer. Appending it" << endmsg;
     alglist.emplace_back(algo);
     return StatusCode::SUCCESS;
   }
 
   // Recursively unroll
+  ++recursionDepth;
   debug() << std::string(recursionDepth, ' ') << algo->name() << " is a sequencer. Flattening it." << endmsg;  
-  for (Algorithm* subalgo : *subAlgorithms ){      
-    StatusCode sc (m_flattenSequencer(subalgo,alglist,++recursionDepth));
+  for (Algorithm* subalgo : *subAlgorithms ){
+    // Hack 2)
+    if ( subalgo->type() == "HltDecReportsDecoder" and m_doHacks){
+      if (HltDecReportsDecoded){
+        always() << hack_banner<<endmsg;
+        always() << "HACK -- Removing " << subalgo->type()<< "/" << subalgo->name() << endmsg;
+        continue;
+        }
+      else
+        HltDecReportsDecoded=true;
+    }
+    
+    StatusCode sc (m_flattenSequencer(subalgo,alglist,recursionDepth));
     if (sc.isFailure()){
       error() << "Algorithm " << subalgo->name() << " could not be flattened" << endmsg;
       return sc;
+    }
+    // Hack 1) take only the first possibility    
+    if (algo->type() == "GaudiSequencer" and m_doHacks){
+      SmartIF<IProperty> p (algo);
+      if (p->getProperty("ModeOR").toString() == "True"){
+        always() << hack_banner<<endmsg;
+        always() << "HACK -- Stop OR sequence at first element: " << subalgo->type()<< "/" << subalgo->name() << endmsg;
+        break;
+      }
     }
   }  
 
@@ -296,16 +328,34 @@ std::list<IAlgorithm*> AlgResourcePool::getFlatAlgList(){
 
 //---------------------------------------------------------------------------
 
+std::list<IAlgorithm*> AlgResourcePool::getTopAlgList(){
+  m_topAlgPtrList.clear();
+  for (auto algoSmartIF :m_topAlgList )
+    m_topAlgPtrList.push_back(const_cast<IAlgorithm*>(algoSmartIF.get()));
+  return m_topAlgPtrList;  
+}
+
+//---------------------------------------------------------------------------
+
 StatusCode AlgResourcePool::beginRun(){
-  StatusCode sc;
-  // Call the beginRun() method of all top algorithms
-  for (auto& algoSmartIF : m_flatUniqueAlgList ) {
-    sc = algoSmartIF->sysBeginRun();
+  auto algBeginRun = [&] (SmartIF<IAlgorithm>& algoSmartIF) -> StatusCode {
+    StatusCode sc = algoSmartIF->sysBeginRun();
     if (!sc.isSuccess()) {
       warning() << "beginRun() of algorithm " << algoSmartIF->name() << " failed" << endmsg;
-      return StatusCode::FAILURE;
+    return StatusCode::FAILURE;
     }
+    return StatusCode::SUCCESS;
+  };  
+  // Call the beginRun() method of all top algorithms
+  for (auto& algoSmartIF : m_flatUniqueAlgList ) {
+    if (algBeginRun(algoSmartIF).isFailure())
+      return StatusCode::FAILURE;
   }
+  for (auto& algoSmartIF : m_topAlgList ) {
+    if (algBeginRun(algoSmartIF).isFailure())
+    return StatusCode::FAILURE;
+  }
+  
   return StatusCode::SUCCESS;
 }
 
@@ -313,14 +363,22 @@ StatusCode AlgResourcePool::beginRun(){
 
 StatusCode AlgResourcePool::endRun() {
   
-  StatusCode sc;
-  // Call the endrun() method of all top algorithms
-  for (auto& algoSmartIF : m_flatUniqueAlgList ) {
-    sc = algoSmartIF->sysEndRun();
+  auto algEndRun = [&] (SmartIF<IAlgorithm>& algoSmartIF) -> StatusCode {
+    StatusCode sc = algoSmartIF->sysEndRun();
     if (!sc.isSuccess()) {
       warning() << "endRun() of algorithm " << algoSmartIF->name() << " failed" << endmsg;
       return StatusCode::FAILURE;
     }
+    return StatusCode::SUCCESS;
+  };
+  // Call the beginRun() method of all top algorithms
+  for (auto& algoSmartIF : m_flatUniqueAlgList ) {
+    if (algEndRun(algoSmartIF).isFailure())
+    return StatusCode::FAILURE;
+  }
+  for (auto& algoSmartIF : m_topAlgList ) {
+    if (algEndRun(algoSmartIF).isFailure())
+    return StatusCode::FAILURE;
   }
   return StatusCode::SUCCESS;  
 } 
