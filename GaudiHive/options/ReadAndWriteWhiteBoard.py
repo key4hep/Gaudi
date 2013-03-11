@@ -32,12 +32,6 @@ loader = HiveReadAlgorithm("Loader",
                            NeededResources = ['ROOTIO']
                            )
 
-writer = WriteHandleAlg ("Writer",
-                         Output="/Event/"+product_name,
-                         UseHandle=True,
-                         NeededResources = ['ROOTIO']
-                         )
-                         
 reader = ReadHandleAlg ("Reader",
                          Input=product_name,
                          IsClonable=True,
@@ -55,9 +49,8 @@ eventloopmgr = HiveEventLoopMgr(MaxEventsParallel = evtslots,
                                 CloneAlgorithms = True,
                                 DumpQueues = True,
                                 NumThreads = algoparallel,
-                                AlgosDependencies = [[],[product_name], [product_name]])#,[product_name]])
-#                                AlgosDependencies = [[],[product_name],[product_name]])
-# Application setup
+                                AlgosDependencies = [[],[product_name], [product_name]])
+                                
 ApplicationMgr( TopAlg = [loader, reader,dst],
                 EvtMax   = 44,
                 HistogramPersistency = "NONE",
