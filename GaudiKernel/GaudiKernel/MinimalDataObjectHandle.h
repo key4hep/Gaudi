@@ -41,7 +41,7 @@ public:
   bool wasWritten() const;    
   
 protected:
-  const std::string m_productName;
+  const std::string m_dataProductName;
   IAlgorithm* m_fatherAlg;
   void setRead(bool wasRead=true);
   void setWritten(bool wasWritten=true);  
@@ -49,7 +49,6 @@ protected:
 private:  
   const bool m_isOptional;
   const unsigned int m_dataProductIndex;
-  const std::string m_dataProductName;
   const AccessType m_accessType;
   bool m_wasRead;
   bool m_wasWritten;    

@@ -7,11 +7,10 @@ MinimalDataObjectHandle::MinimalDataObjectHandle(const std::string& productName,
                                                  IAlgorithm* fatherAlg,
                                                  AccessType accessType,
                                                  bool isOptional):
-                                                 m_productName(productName),
+                                                 m_dataProductName(productName),
                                                  m_fatherAlg(fatherAlg),
                                                  m_isOptional(isOptional),
                                                  m_dataProductIndex(m_tmp_dpi++),
-                                                 m_dataProductName(productName),
                                                  m_accessType(accessType),
                                                  m_wasRead(false),
                                                  m_wasWritten(false){
