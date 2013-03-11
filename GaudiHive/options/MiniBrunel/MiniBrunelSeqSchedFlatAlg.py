@@ -39,6 +39,7 @@ loader = HiveReadAlgorithm("Loader",
 ApplicationMgr().ExtSvc = ['AlgResourcePool']
 ApplicationMgr().ExtSvc += [ whiteboard ]
 ApplicationMgr().EventLoop = slimeventloopmgr
+ApplicationMgr().TopAlg = [loader]+ApplicationMgr().TopAlg
 ApplicationMgr().OutputLevel=INFO
 
 IncidentSvc().OutputLevel=WARNING

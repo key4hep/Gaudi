@@ -39,6 +39,7 @@ loader = HiveReadAlgorithm("Loader",
 ApplicationMgr().ExtSvc = ['AlgResourcePool']
 ApplicationMgr().ExtSvc += [ whiteboard ]
 ApplicationMgr().EventLoop = slimeventloopmgr
+ApplicationMgr().TopAlg = [loader]+ApplicationMgr().TopAlg
 ApplicationMgr().OutputLevel=INFO
 
 IncidentSvc().OutputLevel=WARNING
@@ -60,12 +61,14 @@ from Configurables import InertMessageSvc
 msgSvc = InertMessageSvc("MessageSvc")
 ApplicationMgr(MessageSvcType=msgSvc.getType())
 ApplicationMgr().SvcMapping.append(msgSvc)
-                
+
+
+
 # Fine tuning of Brunel
 from Configurables import Brunel, RecSysConf, RecMoniConf, LumiAlgsConf
 Brunel(
        OutputType='NONE', # Do not write output
-       EvtMax=50,
+       EvtMax=500,
       )
 # Change input file
 EventSelector().Input = [
@@ -82,7 +85,6 @@ from Configurables import LumiAlgsConf
 def disableLumi():
     LumiAlgsConf().LumiSequencer.Members = []
 appendPostConfigAction(disableLumi)
-
 
 # Check the algos and outstreams
 def printAppMan():

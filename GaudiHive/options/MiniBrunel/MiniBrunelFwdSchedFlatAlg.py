@@ -26,7 +26,7 @@ whiteboard   = HiveWhiteBoard("EventDataSvc",
 # configured to be sequential: 1 evt in flight, no deps, 1 algo in flight
 scheduler = ForwardSchedulerSvc(MaxEventsInFlight = simultaneousEvents,
                                 MaxAlgosInFlight = 1,
-                                OutputLevel=WARNING,
+                                OutputLevel=INFO,
                                 AlgosDependencies = [])
 
 #-----------------------------------------------------------------
@@ -75,7 +75,7 @@ ApplicationMgr().SvcMapping.append(msgSvc)
 from Configurables import Brunel, RecSysConf, RecMoniConf, LumiAlgsConf
 Brunel(
        OutputType='NONE', # Do not write output
-       EvtMax=10,
+       EvtMax=500,
       )
 # Change input file
 EventSelector().Input = [
@@ -93,9 +93,3 @@ def disableLumi():
     LumiAlgsConf().LumiSequencer.Members = []
 appendPostConfigAction(disableLumi)
 
-
-# Check the algos and outstreams
-def printAppMan():
-  print ApplicationMgr().OutStream
-  print ApplicationMgr().TopAlg
-appendPostConfigAction(printAppMan)

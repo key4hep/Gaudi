@@ -5,6 +5,7 @@ from Configurables import AlgResourcePool,\
                           HiveSlimEventLoopMgr,\
                           HiveWhiteBoard,\
                           HiveReadAlgorithm,\
+                          SequentialSchedulerSvc,\
                           EventClockSvc,\
                           ODINDecodeTool
 #-----------------------------------------------------------------
@@ -16,13 +17,17 @@ whiteboard   = HiveWhiteBoard("EventDataSvc",
                               EventSlots = 1)                            
 #-----------------------------------------------------------------
 # Resource Pool
-AlgResourcePool(OutputLevel = DEBUG )                       
+AlgResourcePool(OutputLevel = DEBUG,
+                DoHacks=True)                       
 
 #-----------------------------------------------------------------
 # Event Loop Manager
 slimeventloopmgr = HiveSlimEventLoopMgr(SchedulerName="SequentialSchedulerSvc",
                                         OutputLevel=INFO)      
-                                
+#-----------------------------------------------------------------
+# Sequential Scheduler
+SequentialSchedulerSvc(UseTopAlgList=False)
+                                        
 #-----------------------------------------------------------------
 # Read Algorithm
 GaudiPersistency()
@@ -60,7 +65,7 @@ ApplicationMgr().SvcMapping.append(msgSvc)
 from Configurables import Brunel, RecSysConf, RecMoniConf, LumiAlgsConf
 Brunel(
        OutputType='NONE', # Do not write output
-       EvtMax=15,
+       EvtMax=50,
       )
 # Change input file
 EventSelector().Input = [
