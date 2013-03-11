@@ -260,7 +260,7 @@ StatusCode AlgResourcePool::m_decodeTopAlgs()    {
   if (outputLevel() <= MSG::DEBUG){
     debug() << "List of algorithms is: " << endmsg;
     for (auto& algo : m_flatUniqueAlgList)
-      debug() << "  o " << algo->name() <<  endmsg;
+      debug() << "  o " << algo->type() << "/" << algo->name() <<  endmsg;
   }  
   // DP: TODO Make algos unique: Do we need this?  
   // Unrolled --- 
