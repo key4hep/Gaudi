@@ -15,6 +15,10 @@
 #include "AlgoExecutionTask.h"
 #include "AlgResourcePool.h"
 
+// External libs
+// DP waiting for the TBB service
+#include "tbb/task_scheduler_init.h"
+
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY(ForwardSchedulerSvc)
 
@@ -79,11 +83,25 @@ StatusCode ForwardSchedulerSvc::initialize(){
   const unsigned int algosDependenciesSize=m_algosDependencies.size();
   info() << "Algodependecies size is " << algosDependenciesSize << endmsg;
 
-  // If no dependencies given, just assume none are required
-  if (algosDependenciesSize == 0){
-    auto beginIt = m_algosDependencies.begin();
-    std::vector<std::string> emptyDeps(0);
-    m_algosDependencies.insert (beginIt,algsNumber,emptyDeps);
+  /* Dependencies
+   0) Read deps from config file
+   1) Look for handles in algo, if none
+   2) Assume none are required
+  */
+  if (algosDependenciesSize == 0){    
+    for (IAlgorithm* ialgoPtr : algos){
+      Algorithm* algoPtr = dynamic_cast<Algorithm*> (ialgoPtr);
+      const std::vector<MinimalDataObjectHandle*>& algoHandles(algoPtr->handles());
+      std::vector<std::string> algoDependencies;
+      for (MinimalDataObjectHandle* handlePtr : algoHandles ){
+        if (handlePtr->accessType() == IDataObjectHandle::AccessType::READ){
+          const std::string& productName = handlePtr->dataProductName();
+          info() << "READ Handle found for product " << productName << endmsg;
+          algoDependencies.emplace_back(productName);
+        }
+      }
+      m_algosDependencies.emplace_back(algoDependencies);      
+    }
   }
   
   // Shortcut for the message service
@@ -104,7 +122,7 @@ StatusCode ForwardSchedulerSvc::initialize(){
     m_algname_vect.emplace_back(name);    
     index++;
   }  
-
+  
   // Activate the scheduler 
   info() << "Activating scheduler in a separate thread" << endmsg;
   m_thread = std::thread (std::bind(&ForwardSchedulerSvc::m_activate,
@@ -141,6 +159,14 @@ void ForwardSchedulerSvc::m_activate(){
   
   // Now it's running
   m_isActive=true;
+
+//   /** Temp waiting for the TBB service. Must be initialised in the thread
+//    * from where the tasks are launched
+//    * http://threadingbuildingblocks.org/docs/doxygen/a00342.html
+//    * The scheduler is initialised here since this method runs in a separate
+//    * thread and spawns the tasks (through the execution of the lambdas)
+//   **/
+  //tbb::task_scheduler_init TBBSchedInit(m_maxAlgosInFlight+1);
   
   // Wait for actions pushed into the queue by finishing tasks.
   action thisAction;  

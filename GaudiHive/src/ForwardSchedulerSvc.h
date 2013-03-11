@@ -19,7 +19,6 @@
 // External libs
 #include "tbb/concurrent_queue.h"
 
-
 //---------------------------------------------------------------------------
 
 /**@class ForwardSchedulerSvc ForwardSchedulerSvc.h GaudiKernel/ForwardSchedulerSvc.h
@@ -257,7 +256,7 @@ private:
   typedef std::function<StatusCode ()> action;
   /// Queue where closures are stored and picked for execution
   tbb::concurrent_bounded_queue<action> m_actionsQueue;  
-
+  
   // Needed to queue actions on algorithm finishing and decrement algos in flight
   friend class AlgoExecutionTask;
 
