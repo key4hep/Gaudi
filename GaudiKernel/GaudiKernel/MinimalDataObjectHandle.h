@@ -27,6 +27,9 @@ public:
 
   /// Return the product index
   unsigned int dataProductIndex() const;
+
+  /// Return the product name
+  const std::string& dataProductName() const;
   
   /// Access type
   AccessType accessType() const ;
@@ -46,6 +49,7 @@ protected:
 private:  
   const bool m_isOptional;
   const unsigned int m_dataProductIndex;
+  const std::string m_dataProductName;
   const AccessType m_accessType;
   bool m_wasRead;
   bool m_wasWritten;    

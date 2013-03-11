@@ -2,7 +2,6 @@
 #define GAUDIHIVE_DATAOBJECTHANDLE_H
 
 #include <GaudiKernel/MinimalDataObjectHandle.h>
-//#include <GaudiAlg/GaudiCommon.h>
 #include <GaudiKernel/ServiceLocatorHelper.h>
 #include <GaudiKernel/GaudiException.h>
 #include "GaudiKernel/Algorithm.h"
@@ -32,6 +31,7 @@ public:
   
   /// Register from the transient store using the processed event number to identify the correct slot
   void put (T* object);
+  
 private:
   bool m_goodType;
   SmartIF<IDataProviderSvc> m_EDS;
@@ -57,9 +57,8 @@ StatusCode DataObjectHandle<T>::initialize(){
     }
    else
      throw GaudiException("Cannot cast " + m_fatherAlg->name() + " to Algorithm.",
-                    "Invalid Cast",
-                    StatusCode::FAILURE);         
-     
+                          "Invalid Cast",
+                          StatusCode::FAILURE);              
    m_goodType = false;
    
    return StatusCode::SUCCESS;
@@ -100,7 +99,6 @@ DataObjectHandle<T>::DataObjectHandle(const std::string& productName,
 
 //---------------------------------------------------------------------------                                           
 
-// As in GaudiAlgorithm
 /**
  * Try to retrieve from the transient store. If the retrieval succeded and 
  * this is the first time we retrieve, perform a dynamic cast to the desired 
@@ -121,10 +119,10 @@ T* DataObjectHandle<T>::get() {
     if (UNLIKELY(!m_goodType)){ // Check type compatibility once
       MsgStream log(m_MS,"DataObjectHandle");
       T tmp;
-      
+      // DP: can use a gaudi feature?
       m_goodType = ( typeid(tmp) == typeid(*dataObjectp) ) ;
 
-      if (! m_goodType){
+      if (!m_goodType){
         std::string errorMsg("The type provided for "+ m_productName 
                         + " is " + std::string(typeid(tmp).name()) 
                         + " and is different form the one of the object in the store.");
@@ -139,7 +137,7 @@ T* DataObjectHandle<T>::get() {
     }
     
     if (LIKELY(m_goodType)) { // From the second read on, this is safe
-      returnObject = reinterpret_cast<T*> (dataObjectp);       
+      returnObject = static_cast<T*> (dataObjectp);
     }
 
   }

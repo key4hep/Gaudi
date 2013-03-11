@@ -44,6 +44,9 @@ public:
 
   /// Return the product index
   virtual unsigned int dataProductIndex() const = 0;
+
+  /// Return the product index
+  virtual const std::string& dataProductName() const = 0;
   
   /// Access type
   virtual AccessType accessType() const = 0;

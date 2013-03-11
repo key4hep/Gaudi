@@ -11,6 +11,7 @@ MinimalDataObjectHandle::MinimalDataObjectHandle(const std::string& productName,
                                                  m_fatherAlg(fatherAlg),
                                                  m_isOptional(isOptional),
                                                  m_dataProductIndex(m_tmp_dpi++),
+                                                 m_dataProductName(productName),
                                                  m_accessType(accessType),
                                                  m_wasRead(false),
                                                  m_wasWritten(false){
@@ -49,6 +50,12 @@ bool MinimalDataObjectHandle::isOptional() const {
 
 unsigned int MinimalDataObjectHandle::dataProductIndex() const {
   return m_dataProductIndex;
+}
+
+//---------------------------------------------------------------------------
+
+const std::string& MinimalDataObjectHandle::dataProductName() const {
+  return m_dataProductName;
 }
 
 //---------------------------------------------------------------------------
