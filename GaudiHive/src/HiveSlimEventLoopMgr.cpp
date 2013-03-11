@@ -587,9 +587,8 @@ StatusCode HiveSlimEventLoopMgr::m_drainScheduler(int& finishedEvts){
     
     finishedEvts++;
 
+    m_incidentSvc->fireIncident(Incident(name(), IncidentType::EndProcessing));    
     m_incidentSvc->fireIncident(Incident(name(),IncidentType::EndEvent));
-
-    m_incidentSvc->fireIncident(Incident(name(), IncidentType::EndProcessing));
     
   }
   return StatusCode::SUCCESS;
