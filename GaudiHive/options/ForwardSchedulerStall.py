@@ -3,7 +3,7 @@
 from Gaudi.Configuration import *
 from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, ForwardSchedulerSvc, CPUCruncher
 
-TBBMessageSvc(OutputLevel=WARNING)
+InertMessageSvc(OutputLevel=WARNING)
 
 # metaconfig
 evtslots = 10
@@ -48,4 +48,4 @@ ApplicationMgr( EvtMax = evtMax,
                 ExtSvc =[whiteboard],
                 EventLoop = slimeventloopmgr,
                 TopAlg = [a1,a2,a3,a4],
-                MessageSvcType="TBBMessageSvc")
+                MessageSvcType="InertMessageSvc")
