@@ -56,22 +56,6 @@
     /// The CPU intensive function
     void findPrimes (const unsigned long int ) ; 
 
-// We do not need this if we have a whiteboard    
-//     /// putting data into the event store
-//     long int write (DataObject* obj, const std::string& location){
-//     	if (!m_event_context)
-//     		return -1;
-//       return m_event_context->m_registry->add(location,obj);
-//     }
-//     /// retrieving data from the event store 
-//     template < typename T >    
-//     T* read(const std::string& path){
-//     	if (!m_event_context)
-//     		return nullptr;
-//       T* obj = dynamic_cast<T*>( m_event_context->m_registry->find(path)->object());
-//       //      Assert(obj, "get():: No valid data at '" + path + "'");
-//       return obj;
-//     }
     /// Calibrate
     void calibrate();
     long unsigned int getNCaliIters(double);
@@ -80,13 +64,17 @@
     double m_var_runtime ; //Variance of Runtime
     bool m_local_rndm_gen; //Decide what random number generation to use
     bool m_shortCalib;
+
     // To calib only once
     static std::vector<unsigned int>m_niters_vect;
     static std::vector<double> m_times_vect;
 
     // For the concurrency
     std::vector<std::string> m_inputs;
-    std::vector<std::string> m_outputs;    
+    std::vector<std::string> m_outputs;
+
+    std::vector<DataObjectHandle<DataObject>*> m_inputHandles;
+    std::vector<DataObjectHandle<DataObject>*> m_outputHandles;
 
     static CHM m_name_ncopies_map;
 

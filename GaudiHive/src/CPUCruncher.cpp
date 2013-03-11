@@ -41,9 +41,24 @@ CPUCruncher::CPUCruncher ( const std::string& name , // the algorithm instance n
     }
 
 StatusCode CPUCruncher::initialize(){
-if (m_times_vect.size()==0)
-  calibrate();
-return StatusCode::SUCCESS ;
+  if (m_times_vect.size()==0){
+    calibrate();
+  }
+
+  m_inputHandles.resize(m_inputs.size(),nullptr);
+  unsigned int counter=0;
+  for (const std::string inputName : m_inputs){
+    declareDataObj(inputName, m_inputHandles[counter], IDataObjectHandle::READ).ignore();    
+    counter++;
+  }
+  counter=0;
+  m_outputHandles.resize(m_outputs.size(),nullptr);
+  for (const std::string outputName : m_outputs){
+    declareDataObj(outputName, m_outputHandles[counter], IDataObjectHandle::WRITE).ignore();
+    counter++;
+  }  
+
+  return StatusCode::SUCCESS ;
 }
 
 /*
@@ -71,21 +86,21 @@ void CPUCruncher::calibrate(){
   m_niters_vect.push_back(4200);
   m_niters_vect.push_back(5000);
   m_niters_vect.push_back(6000);
-	m_niters_vect.push_back(8000);
-	m_niters_vect.push_back(10000);
-	m_niters_vect.push_back(12000);
-	m_niters_vect.push_back(15000);
-	m_niters_vect.push_back(17000);
-	m_niters_vect.push_back(20000);
-	m_niters_vect.push_back(25000);
-	m_niters_vect.push_back(30000);
-	m_niters_vect.push_back(35000);
-	m_niters_vect.push_back(40000);
-	m_niters_vect.push_back(60000);
-	if (!m_shortCalib){
-		m_niters_vect.push_back(100000);
-		m_niters_vect.push_back(200000);
-		}
+  m_niters_vect.push_back(8000);
+  m_niters_vect.push_back(10000);
+  m_niters_vect.push_back(12000);
+  m_niters_vect.push_back(15000);
+  m_niters_vect.push_back(17000);
+  m_niters_vect.push_back(20000);
+  m_niters_vect.push_back(25000);
+  m_niters_vect.push_back(30000);
+  m_niters_vect.push_back(35000);
+  m_niters_vect.push_back(40000);
+  m_niters_vect.push_back(60000);
+  if (!m_shortCalib){
+    m_niters_vect.push_back(100000);
+    m_niters_vect.push_back(200000);
+    }
 
 
   m_times_vect.resize(m_niters_vect.size());
@@ -112,35 +127,35 @@ void CPUCruncher::calibrate(){
 unsigned long CPUCruncher::getNCaliIters(double runtime){
 
   unsigned int smaller_i=0;
-	double time=0.;
-	bool found=false;
-	// We know that the first entry is 0, so we start to iterate from 1
-	for (unsigned int i=1;i<m_times_vect.size();i++){
-		time = m_times_vect[i];
-		if (time>runtime){
-			smaller_i=i-1;
-			found=true;
-			break;
-		}
-	}
+  double time=0.;
+  bool found=false;
+  // We know that the first entry is 0, so we start to iterate from 1
+  for (unsigned int i=1;i<m_times_vect.size();i++){
+    time = m_times_vect[i];
+    if (time>runtime){
+      smaller_i=i-1;
+      found=true;
+      break;
+    }
+  }
 
-	// Case 1: we are outside the interpolation range, we take the last 2 points
-	if (not found)
-		smaller_i=m_times_vect.size()-2;
+  // Case 1: we are outside the interpolation range, we take the last 2 points
+  if (not found)
+    smaller_i=m_times_vect.size()-2;
 
-	// Case 2: we maeke a linear interpolation
-	// y=mx+q
-	const double x0=m_times_vect[smaller_i];
-	const double x1=m_times_vect[smaller_i+1];
-	const double y0=m_niters_vect[smaller_i];
-	const double y1=m_niters_vect[smaller_i+1];
-	const double m=(y1-y0)/(x1-x0);
-	const double q=y0-m*x0;
+  // Case 2: we maeke a linear interpolation
+  // y=mx+q
+  const double x0=m_times_vect[smaller_i];
+  const double x1=m_times_vect[smaller_i+1];
+  const double y0=m_niters_vect[smaller_i];
+  const double y1=m_niters_vect[smaller_i+1];
+  const double m=(y1-y0)/(x1-x0);
+  const double q=y0-m*x0;
 
-	const unsigned long nCaliIters =  m * runtime + q ;
-	//always() << x0 << "<" << runtime << "<" << x1 << " Corresponding to " << nCaliIters << " iterations" << endmsg;
+  const unsigned long nCaliIters =  m * runtime + q ;
+  //always() << x0 << "<" << runtime << "<" << x1 << " Corresponding to " << nCaliIters << " iterations" << endmsg;
 
-	return nCaliIters ;
+  return nCaliIters ;
 }
 
 
@@ -252,19 +267,20 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
   tbb::tick_count starttbb=tbb::tick_count::now();
   logstream  << MSG::INFO << "Runtime will be: "<< runtime << endmsg;
   if (getContext())
-  	logstream  << MSG::INFO << "Start event " <<  getContext()->m_evt_num
-  	           << " on pthreadID " << getContext()->m_thread_id << endmsg;
+    logstream  << MSG::INFO << "Start event " <<  getContext()->m_evt_num
+               << " on pthreadID " << getContext()->m_thread_id << endmsg;
 
-  for (std::string& input : m_inputs){
-    // We do not use this :)
-    get<DataObject>(input);
+  for (auto* inputHandle: m_inputHandles){
+    DataObject* obj = inputHandle->get();
+    if (obj == nullptr)
+      logstream << MSG::ERROR << "A read object was a null pointer." << endmsg;
   }
-
+  
   const unsigned long n_iters= getNCaliIters(runtime);
   findPrimes( n_iters );
 
-  for (std::string& output: m_outputs){
-    put(new DataObject(), output);
+  for (auto* outputHandle: m_outputHandles){
+    outputHandle->put(new DataObject());
   }
 
   tbb::tick_count endtbb=tbb::tick_count::now();
@@ -272,9 +288,9 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
   const double actualRuntime=(endtbb-starttbb).seconds();
 
   if (getContext())
-  	logstream << MSG::INFO << "Finish event " <<  getContext()->m_evt_num
-		     << " on pthreadID " << getContext()->m_thread_id
-		     << " in " << actualRuntime  << " seconds" << endmsg;
+    logstream << MSG::INFO << "Finish event " <<  getContext()->m_evt_num
+         << " on pthreadID " << getContext()->m_thread_id
+         << " in " << actualRuntime  << " seconds" << endmsg;
 
   logstream << MSG::DEBUG << "Timing: ExpectedRuntime= " << runtime
                          << " ActualRuntime= " << actualRuntime
@@ -294,20 +310,20 @@ StatusCode CPUCruncher::finalize () // the finalization of the algorithm
   unsigned int ninstances;
 
   {
-  	CHM::const_accessor const_name_ninstances;
-  	m_name_ncopies_map.find(const_name_ninstances,name());
-  	ninstances=const_name_ninstances->second;
+    CHM::const_accessor const_name_ninstances;
+    m_name_ncopies_map.find(const_name_ninstances,name());
+    ninstances=const_name_ninstances->second;
   }
 
-  	// do not show repetitions
-  	if (ninstances!=0){
-  		log << MSG::INFO << "Summary: name= "<< name() <<" avg_runtime= " << m_avg_runtime
-  				<< " n_clones= " << ninstances << endmsg;
+    // do not show repetitions
+    if (ninstances!=0){
+      log << MSG::INFO << "Summary: name= "<< name() <<" avg_runtime= " << m_avg_runtime
+          << " n_clones= " << ninstances << endmsg;
 
-  		CHM::accessor name_ninstances;
-  		m_name_ncopies_map.find(name_ninstances,name());
-  		name_ninstances->second=0;
-  		}
+      CHM::accessor name_ninstances;
+      m_name_ncopies_map.find(name_ninstances,name());
+      name_ninstances->second=0;
+      }
 
   return GaudiAlgorithm::finalize () ;
 }
