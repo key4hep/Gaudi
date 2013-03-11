@@ -104,34 +104,39 @@ DataObjectHandle<T>::DataObjectHandle(const std::string& productName,
  * this is the first time we retrieve, perform a dynamic cast to the desired 
  * object. Then finally set the handle as Read.
  * If this is not the first time we cast and the cast worked, just use the 
- * plain C cast (explicit conversion): we do not need the checks of the 
- * dynamic cast!
+ * static cast: we do not need the checks of the dynamic cast for every access!
  */
 template<typename T>  
 T* DataObjectHandle<T>::get() {
 
   DataObject* dataObjectp = NULL;
-  StatusCode sc = m_EDS->retrieveObject(m_productName, dataObjectp);
+  StatusCode sc = m_EDS->retrieveObject(m_dataProductName, dataObjectp);
   
   T* returnObject = NULL;
   if ( LIKELY( sc.isSuccess() ) ){ 
     
     if (UNLIKELY(!m_goodType)){ // Check type compatibility once
       MsgStream log(m_MS,"DataObjectHandle");
-      T tmp;
-      // DP: can use a gaudi feature?
-      m_goodType = ( typeid(tmp) == typeid(*dataObjectp) ) ;
 
+      // DP: can use a gaudi feature?
+      m_goodType = (NULL != dynamic_cast<T*> (dataObjectp));
+      //( typeid(tmp) == typeid(*dataObjectp) ) ;
+
+      T tmp;
+      
+      const std::string dataType(typeid(tmp).name());
+      
       if (!m_goodType){
-        std::string errorMsg("The type provided for "+ m_productName 
-                        + " is " + std::string(typeid(tmp).name()) 
-                        + " and is different form the one of the object in the store.");
+        std::string errorMsg("The type provided for "+ m_dataProductName 
+                             + " is " + dataType
+                             + " and is different form the one of the object in the store.");
         log << MSG::ERROR << errorMsg << endmsg;        
         throw GaudiException (errorMsg,"Wrong DataObjectType",StatusCode::FAILURE);                
       }
       else{
-        log << MSG::INFO <<  "The data type specified for the handle of " 
-            << m_productName << " is the same of the object in the store. "
+        log << MSG::INFO <<  "The data type (" <<  dataType
+            << ") specified for the handle of " << m_dataProductName
+            << " is the same of the object in the store. "
             << "From now on a reinterpret_cast will be performed." << endmsg;
       }
     }
@@ -144,10 +149,12 @@ T* DataObjectHandle<T>::get() {
   else{ // Problems in getting from the store
     MsgStream log(m_MS,"DataObjectHandle");
     log << MSG::ERROR << "Cannot retrieve " 
-        << m_productName << " from transient store." << endmsg;
+        << m_dataProductName << " from transient store. "
+        << "As a result, a segmentation fault is very likely." << endmsg;
+    return NULL;
   }
   
-  setRead();        
+  setRead();
   return returnObject;  
 }
   
@@ -156,7 +163,7 @@ template<typename T>
 void DataObjectHandle<T>::put (T *objectp){
     
   
-    StatusCode sc = m_EDS->registerObject(m_productName, objectp);
+    StatusCode sc = m_EDS->registerObject(m_dataProductName, objectp);
     if ( LIKELY( sc.isSuccess() ) )
     setWritten();    
 }
