@@ -28,15 +28,15 @@ fsr.EvtConversionSvc  = FileRecordPersistencySvc()
 FileCatalog(Catalogs = [ "xmlcatalog_file:Handle_ROOTIO.xml" ])
 
 # Output Levels
-MessageSvc(OutputLevel=VERBOSE)
-IncidentSvc(OutputLevel=DEBUG)
+MessageSvc(OutputLevel=INFO)
+IncidentSvc(OutputLevel=INFO)
 RootCnvSvc(OutputLevel=INFO)
 
 GaudiPersistency()
 
 
 writer = WriteHandleAlg ("Writer",
-                         Output="MyCollision",
+                         Output="/Event/MyCollision",
                          UseHandle=True,
                          OutputLevel=DEBUG)
                          

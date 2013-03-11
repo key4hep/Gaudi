@@ -36,7 +36,7 @@ StatusCode WriteHandleAlg::execute  ()  // the execution of the algorithm
 
   MsgStream log(msgSvc(), name());
   
-  log << MSG::INFO << "Ciao, I am executing" << endmsg;
+  log << MSG::INFO << "Hello, I am executing" << endmsg;
 
   // Set collision to the current event number from the context; 
   // if the context doesn't exist, set it to some dummy value 

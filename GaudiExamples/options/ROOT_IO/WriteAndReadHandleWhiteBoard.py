@@ -40,11 +40,13 @@ product_name="MyCollision"
 
 writer = WriteHandleAlg ("Writer",
                          Output="/Event/"+product_name,
+                         OutputLevel=DEBUG,
                          UseHandle=True,
                          IsClonable=True)
                          
 reader = ReadHandleAlg ("Reader",
                          Input=product_name,
+                         OutputLevel=DEBUG,
                          IsClonable=True)                         
 
                          

@@ -86,3 +86,13 @@ gaudi_add_test(QMTest QMTEST
                  STDOPTS=${CMAKE_CURRENT_SOURCE_DIR}/options
                  JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options
                  PYTHONPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
+
+gaudi_add_test(WriteAndReadHandle
+               FRAMEWORK options/ROOT_IO/WriteAndReadHandle.py)
+
+gaudi_add_test(WriteAndReadHandleError
+               FRAMEWORK options/ROOT_IO/WriteAndReadHandleError.py.
+               FAILS)
+               
+gaudi_add_test(WriteAndReadHandleWhiteBoard
+               FRAMEWORK options/ROOT_IO/WriteAndReadHandleWhiteBoard.py)               

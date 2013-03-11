@@ -43,8 +43,10 @@ StatusCode ReadHandleAlg::execute() {
   MsgStream log(msgSvc(), name());
   
   Collision* c = m_inputHandle->get();
-    
-  log << MSG::INFO << "Event " << getContext()->m_evt_num << " Collision number " <<  c->collision() << endmsg;
+
+  const int evtNum = getContext()? getContext()->m_evt_num : -1;
+
+  log << MSG::INFO << "Event " << evtNum << " Collision number " <<  c->collision() << endmsg;
   
   return StatusCode::SUCCESS;
 }
