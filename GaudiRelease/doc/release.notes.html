@@ -38,6 +38,85 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
+<h2><a name="v23r7">Gaudi v23r7</a> (2013-03-12)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=64d">LCGCMT_64d</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v12r5):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2013-02-08 - Marco Clemencic
+ - Improvements to the checker for Python files encoding.
+</pre>
+</li>
+<li>GaudiKernel (v28r6):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2013-02-21 - Marco Clemencic
+ - Fixed compilation with CMT on Ubuntu 12.10 (gcc 4.7.2).
+
+! 2013-01-30 - Marco Clemencic
+ - Fixed a problem in the detection of Boost 1.50 (Sleep.cpp).
+</pre>
+</li>
+<li>GaudiProfiling (v1r8):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2013-03-05 - Hubert Degaudenzi
+ - Fixed compilation on Fedora Core 17 when VTune is missing.
+</pre>
+</li>
+<li>Gaudi (v23r7):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2013-02-15 - Danilo Piparo
+ - Patch #5605: Run performance profilers with gaudirun.py command line options
+   Allow to operate performance profilers directly from gaudirun.py, simply
+   using command line options. Igprof and Valgrind (whole suite: callgrind,
+   massif, cachegrind, drd, ...) are supported.
+   Three options have been added:
+    o --profilerName: Specify the profiler name. The possibilities are
+                      igprofMem, igprofPerf and valgrind&lt;toolname&gt;. For igprof,
+                      sensible and basically universal meaningful default
+                      options are added (compress output, be verbose)
+    o --profilerOutput: Specify the output file name. If not selected, a default
+                        is provided.
+    o --profilerExtraOptions: specify extra options for the profiler, where the
+                              '--' is replaced with a '__'.
+</pre>
+</li>
+<li>GaudiRelease (v23r7):
+<ul>
+<li><br/>
+    (<span class="author"></span>)</li>
+</ul>
+<pre>
+! 2013-02-26 - Marco Clemencic
+ - Updates to doxygen main page.
+
+! 2013-02-15 - Marco Clemencic
+ - Fixed update_versions.py to change the version in the global CMakeLists.txt.
+</pre>
+</li>
+</ul>
+<!-- ====================================================================== -->
 <h2><a name="v23r6">Gaudi v23r6</a> (2013-01-28)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=64c">LCGCMT_64c</a></h3>
 <h3>General Changes</h3>

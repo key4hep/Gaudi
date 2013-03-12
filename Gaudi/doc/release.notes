@@ -1,6 +1,7 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+================================ Gaudi v23r7 =================================
 ! 2013-02-15 - Danilo Piparo
  - Patch #5605: Run performance profilers with gaudirun.py command line options
    Allow to operate performance profilers directly from gaudirun.py, simply
