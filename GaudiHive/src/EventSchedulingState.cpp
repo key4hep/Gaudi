@@ -1,7 +1,7 @@
 #include "GaudiHive/EventSchedulingState.h"
 
 EventSchedulingState::EventSchedulingState(const unsigned int& n_algos)
-  : m_numberOfAlgos(n_algos), m_eventState(0)
+  : m_numberOfAlgos(n_algos), m_eventState(n_algos)
 {
   m_algosInFlight = 0;
   m_algosFinished = 0;

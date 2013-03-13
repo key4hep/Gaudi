@@ -34,7 +34,7 @@ MessageSvc(OutputLevel=WARNING)
 IncidentSvc(OutputLevel=DEBUG)
 RootCnvSvc(OutputLevel=INFO)
 AlgResourcePool(OutputLevel=DEBUG)
-
+HiveEventLoopMgr(OutputLevel=INFO)
 GaudiPersistency()
 
 product_name="MyCollision"

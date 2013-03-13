@@ -2,7 +2,7 @@
 
 //---------------------------------------------------------------------------
 // Static members
-std::vector< DataFlowManager::longBitset > DataFlowManager::m_algosRequirements;
+std::vector< DataFlowManager::dependency_bitset > DataFlowManager::m_algosRequirements;
 std::unordered_map<std::string,long int> DataFlowManager::m_productName_index_map;
 std::vector<std::string> DataFlowManager::m_productName_vec;
 //---------------------------------------------------------------------------
@@ -12,23 +12,29 @@ std::vector<std::string> DataFlowManager::m_productName_vec;
  */
 DataFlowManager::DataFlowManager(algosDependenciesCollection algosDependencies){
 
+  // Count how many products are actually requested
+  unsigned int nProducts(0);
+  for (auto& thisAlgoDependencies : algosDependencies){
+    nProducts += thisAlgoDependencies.size(); 
+  }
+
   // If it's not the first instance, nothing to do here
   if (m_algosRequirements.size()==0){      
     // This is the first instance, compile the requirements
-    m_algosRequirements.resize(algosDependencies.size());
+    m_algosRequirements.resize(algosDependencies.size(),dependency_bitset(nProducts));
 
     // Fill the requirements
     unsigned int algoIndex=0;    
     unsigned int productIndex=0;    
     for (auto& thisAlgoDependencies : algosDependencies){      
       // Make a local alias for better readability
-      auto& depenency_bits = m_algosRequirements[algoIndex];    
+      auto& dependency_bits = m_algosRequirements[algoIndex];    
       for (auto& product : thisAlgoDependencies){
         auto ret_val = m_productName_index_map.insert(std::pair<std::string, unsigned int>("/Event/"+product,productIndex));
         // insert successful means product wasn't known before. So increment counter
         if (ret_val.second==true) ++productIndex;
         // in any case the return value holds the proper product index
-        depenency_bits[ret_val.first->second] = true;                  
+        dependency_bits[ret_val.first->second] = true;                  
       }// end loop on products on which the algo depends
       algoIndex++;
     }// end loop on algorithms
@@ -48,9 +54,8 @@ DataFlowManager::DataFlowManager(algosDependenciesCollection algosDependencies){
  * data objects are in the event.
  */
 bool DataFlowManager::canAlgorithmRun(unsigned int iAlgo){
-  const longBitset& thisAlgoRequirements = m_algosRequirements[iAlgo];
-  longBitset dependencies_missing = (m_dataObjectsCatalog & thisAlgoRequirements) ^ thisAlgoRequirements;
-  return dependencies_missing == 0 ? true : false;
+  const dependency_bitset& thisAlgoRequirements = m_algosRequirements[iAlgo];
+  return thisAlgoRequirements.is_subset_of(m_dataObjectsCatalog);
 }
 
 //---------------------------------------------------------------------------
