@@ -554,11 +554,9 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
                     //          << "  o Requirements: " <<  algo_requirements << std::endl
                     //          << "  o State: " << event_state->state() << endmsg;
           
-                    state_type dependencies_missing = (event_state->state() & algo_requirements) ^ algo_requirements;
-
                     // ...and whether the algorithm was already started and if it can be started
-                    bool algo_not_started_and_dependencies_there = (dependencies_missing == 0) &&
-                                                                   (event_state->hasStarted(algo_counter) ) == false;
+                    bool algo_not_started_and_dependencies_there = (algo_requirements.is_subset_of(event_state->state()) &&
+								    (event_state->hasStarted(algo_counter) ) == false);
 		
                     // It could run, just the maximum number of algos in flight has been reached
                     if (algo_not_started_and_dependencies_there)
@@ -747,16 +745,21 @@ StatusCode HiveEventLoopMgr::getEventRoot(IOpaqueAddress*& refpAddr)  {
 void
 HiveEventLoopMgr::find_dependencies() {
 
+        // Count how many products are actually requested
+        unsigned int nProducts(0);
+        for (auto& thisAlgoDependencies : m_AlgosDependencies){
+            nProducts += thisAlgoDependencies.size();
+        }
 	const unsigned int n_algos = m_topAlgList.size();
-	std::vector<state_type> all_requirements(n_algos);
+	std::vector<state_type> all_requirements(n_algos,state_type(nProducts));
 
 	unsigned int algo_counter=0;
 	unsigned int input_counter=0;
 
-	MsgStream log(msgSvc(), name());
+        MsgStream log(msgSvc(), name());
 	// loop on the dependencies
 	for (const auto& algoDependencies : m_AlgosDependencies){ // loop on algo dependencies lists
-		state_type requirements(0);
+		state_type requirements(nProducts);
 		log << MSG::DEBUG << "Algorithm " << algo_counter << " dependencies: " << endmsg;
 		for (const auto& dependency : algoDependencies){ // loop on dependencies
 			log << MSG::DEBUG << " - " << dependency << endmsg;

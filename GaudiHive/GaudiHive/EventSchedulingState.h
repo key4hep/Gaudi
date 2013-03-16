@@ -3,13 +3,12 @@
 
 
 #include "tbb/concurrent_vector.h"
+#include "boost/dynamic_bitset.hpp"
 
 #include <atomic>
-#include <bitset>
-
 
 // typedef for the event and algo state
-typedef std::bitset<1000> state_type;
+typedef boost::dynamic_bitset<> state_type;
 
 
 class EventSchedulingState {

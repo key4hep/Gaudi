@@ -5,9 +5,10 @@
 #include "GaudiKernel/IAlgorithm.h"
 #include <GaudiKernel/SmartIF.h>
 
+// boost
+#include "boost/dynamic_bitset.hpp"
 
 // std includes
-#include <bitset>
 #include <list>
 #include <vector>
 #include <string>
@@ -19,7 +20,7 @@
  *  the algorithms in terms of dataObjects. 
  *  One instance of the DataFlowManager is responsible for one  event.
  * 
- *  @author  Danilo Piparo
+ *  @author  Danilo Piparo, Benedikt Hegner
  *  @version 1.0
  */
 class DataFlowManager{
@@ -27,7 +28,7 @@ class DataFlowManager{
 public:
 
   /// Type holding the dependencies for one single algorithm
-  typedef std::bitset<1000> longBitset;
+  typedef boost::dynamic_bitset<> dependency_bitset;
 
   typedef std::vector<std::vector<std::string>> algosDependenciesCollection;  
   /// Constructor
@@ -54,9 +55,9 @@ public:
 
 private:
   /// Catalog of the products in the whiteboard
-  longBitset m_dataObjectsCatalog;
+  dependency_bitset m_dataObjectsCatalog;
   /// Requirements of algos. Static since the same for all events.
-  static std::vector< longBitset > m_algosRequirements; 
+  static std::vector< dependency_bitset > m_algosRequirements; 
   /// Simple helper method
   inline long int m_productName2index(const std::string productName){return m_productName_index_map.count(productName)>0 ? m_productName_index_map[productName]: -1 ;};
   /// Track the products, assigning an index to them. Static since the same for all events.

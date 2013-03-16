@@ -8,15 +8,17 @@
 #include "GaudiKernel/MinimalEventLoopMgr.h"
 
 // std includes
-#include <bitset>
 #include <atomic>
+
+//include boost
+#include <boost/dynamic_bitset.hpp>
 
 // include tbb
 #include "tbb/concurrent_vector.h"
 #include "tbb/concurrent_queue.h"
 
 // typedef for the event and algo state
-typedef std::bitset<1000> state_type;
+typedef boost::dynamic_bitset<> state_type;
 
 // Forward declarations
 class IIncidentSvc;
