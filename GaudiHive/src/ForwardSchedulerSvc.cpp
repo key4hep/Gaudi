@@ -36,7 +36,8 @@ std::map<ForwardSchedulerSvc::AlgsExecutionStates::State,std::string> ForwardSch
 
 ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* svcLoc ):
  base_class(name,svcLoc),
- m_isActive(false)
+ m_isActive(false),
+ m_algosInFlight(0)
 {
   declareProperty("MaxEventsInFlight", m_maxEventsInFlight = 1 );
   declareProperty("MaxAlgosInFlight", m_maxAlgosInFlight = 1 );
@@ -166,7 +167,7 @@ void ForwardSchedulerSvc::m_activate(){
 //    * The scheduler is initialised here since this method runs in a separate
 //    * thread and spawns the tasks (through the execution of the lambdas)
 //   **/
-  //tbb::task_scheduler_init TBBSchedInit(m_maxAlgosInFlight+1);
+  tbb::task_scheduler_init TBBSchedInit(m_maxAlgosInFlight+1);
   
   // Wait for actions pushed into the queue by finishing tasks.
   action thisAction;  
@@ -420,7 +421,7 @@ StatusCode ForwardSchedulerSvc::m_updateStates(EventSlotIndex si){
 
   } // end loop on slots    
 
-  info() << "States Updated." << endmsg;  
+  verbose() << "States Updated." << endmsg;
 
   return global_sc;
 }
@@ -527,7 +528,7 @@ StatusCode ForwardSchedulerSvc::m_promoteToScheduled(AlgoSlotIndex iAlgo, EventS
     tbb::task* t = new( tbb::task::allocate_root() ) AlgoExecutionTask(ialgoPtr, iAlgo, serviceLocator(), this);
     tbb::task::enqueue( *t);
     ++m_algosInFlight;
-    debug() << "Algorithm " << algName << " was submitted. Algorithms scheduled are "
+    info() << "Algorithm " << algName << " was submitted. Algorithms scheduled are "
            << m_algosInFlight << endmsg;
 
     StatusCode updateSc ( m_eventSlots[si].algsStates.updateState(iAlgo,AlgsExecutionStates::SCHEDULED) );
@@ -573,6 +574,7 @@ StatusCode ForwardSchedulerSvc::m_promoteToExecuted(AlgoSlotIndex iAlgo, EventSl
   m_whiteboard->selectStore(eventContext->m_evt_slot).ignore();
 
   // update prods in the dataflow
+  // DP: Handles could be used. Just update what the algo wrote
   std::vector<std::string> new_products;
   m_whiteboard->getNewDataObjects(new_products).ignore();
   m_eventSlots[si].dataFlowMgr.updateDataObjectsCatalog(new_products);
