@@ -81,7 +81,7 @@ def gather_new_versions(f):
     return versions
 
 def extract_recent_rel_notes(filename):
-    changelog_entry = re.compile(r'^(! [0-9]{4}-[0-9]{2}-[0-9]{2} -)|============')
+    changelog_entry = re.compile(r'^(! [0-9]{4}-[0-9]{2}-[0-9]{2} -)|!?============')
     separator_entry = re.compile(r'^!?============')
     notes = []
     state = "searching"
@@ -216,6 +216,15 @@ def main():
             block_added = True
         out.append(l)
     open(global_rel_notes, "w").writelines(out)
+
+    # update the global CMakeLists.txt
+    global_cmakelists = os.path.join("..","..","CMakeLists.txt")
+    out = []
+    for l in open(global_cmakelists):
+        if l.strip().startswith('gaudi_project'):
+            l = 'gaudi_project(Gaudi %s)\n' % new_version
+        out.append(l)
+    open(global_cmakelists, "w").writelines(out)
 
 if __name__ == '__main__':
     main()

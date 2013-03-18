@@ -80,9 +80,9 @@ namespace Gaudi
                 | enc::char_('{')[qi::_val='}']
                 | enc::char_('(')[qi::_val=')'];
           end = enc::char_(qi::_r1);
-          result = begin[qi::_a = qi::_1]
-                   >> inner[qi::_val = qi::_1]
-                   >> end(qi::_a);
+          result =  begin[qi::_a = qi::_1]
+            >> inner[qi::_val = qi::_1]
+            >> end(qi::_a) ;
         }
         VectorGrammar<Iterator, std::vector<double>, Skipper> edges  ;
         RealGrammar<Iterator, double, Skipper> low, high;
@@ -113,9 +113,9 @@ namespace Gaudi
             |
             (( qi::lit("title") | "'title'" | "\"title\"" )
             >> ":" >> title  [ qi::_val /= qi::_1 ])
-            |
-            (( qi::lit("X") | "'X'" | "\"X\"" | "x" | "'x'" | "\"x\"" ) >> ':'
-            >> edges [ qi::_val &= qi::_1 ])
+             |
+             ( -(( qi::lit("X") | "'X'" | "\"X\"" | "x" | "'x'" | "\"x\"" ) >> ':' )
+               >> edges [ qi::_val &= qi::_1 ])
             |
             (( qi::lit("nbins")  | "'nbins'"  | "\"nbins\""  )
                >> ":" >> nbins [qi::_val  |= qi::_1])

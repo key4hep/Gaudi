@@ -1,27 +1,33 @@
 #!/usr/bin/env python
 
-def getArgsWithoutoProfilerInfo(args,profilerName,outputName,extraOptions):
-  """
-  Remove from the arguments the presence of the profiler and its output in 
-  order to relaunch the script w/o infinite loops.
-  """
-  import re
-  args_string=""
-  for arg in args: args_string+="%s " %arg
-  args_string=args_string[:-1]      
-  
-  # replace the occurrence of the profiler
-  args_string = re.sub("--profilerName\s*(=)?\s*%s"%profilerName,"",args_string)
-  
-  # replace the occurrence of the outputname
-  args_string = re.sub("--profilerOutput\s*(=)?\s*%s"%outputName,"",args_string)
-  
-  # replace the extra options
-  args_string = re.sub("--profilerExtraOptions\s*(=)?\s*%s"%extraOptions,"",args_string)
-  
-  return args_string.split()
+def getArgsWithoutoProfilerInfo(args):
+    """
+    Remove from the arguments the presence of the profiler and its output in
+    order to relaunch the script w/o infinite loops.
 
-  
+    >>> getArgsWithoutoProfilerInfo(['--profilerName', 'igprof', 'myopts.py'])
+    ['myopts.py']
+
+    >>> getArgsWithoutoProfilerInfo(['--profilerName=igprof', 'myopts.py'])
+    ['myopts.py']
+
+    >>> getArgsWithoutoProfilerInfo(['--profilerName', 'igprof', '--profilerExtraOptions', 'a b c', 'myopts.py'])
+    ['myopts.py']
+
+    >>> getArgsWithoutoProfilerInfo(['--profilerName', 'igprof', '--options', 'a b c', 'myopts.py'])
+    ['--options', 'a b c', 'myopts.py']
+    """
+    newargs = []
+    args = list(args) # make a temp copy
+    while args:
+        o = args.pop(0)
+        if o.startswith('--profile'):
+            if '=' not in o:
+                args.pop(0)
+        else:
+            newargs.append(o)
+    return newargs
+
 #---------------------------------------------------------------------
 if __name__ == "__main__":
     import os, sys    
@@ -88,19 +94,18 @@ if __name__ == "__main__":
         parser.add_option("--preload", action="append",
                           help="Allow pre-loading of special libraries (e.g. Google "
                                "profiling libraries).")
-                               
         # Option to use a profiler
         parser.add_option("--profilerName", type="string",
                           help="Select one profiler among: igprofPerf, igprofMem and valgrind<toolname>")
 
         # Option to specify the filename where to collect the profiler's output
         parser.add_option("--profilerOutput", type="string",
-                          help="Specify the name of the output file for the profiler output")    
-        
+                          help="Specify the name of the output file for the profiler output")
+
         # Option to specify the filename where to collect the profiler's output
         parser.add_option("--profilerExtraOptions", type="string",
-                          help="Specify additional options for the profiler. The '--' string should be expressed as '__' (--my-opt becomes __my-opt)")                           
-                          
+                          help="Specify additional options for the profiler. The '--' string should be expressed as '__' (--my-opt becomes __my-opt)")
+
     parser.set_defaults(options = [],
                         tcmalloc = False,
                         profilerName = '',
@@ -165,82 +170,81 @@ if __name__ == "__main__":
             args = [ a for a in sys.argv if a != '-T' and not '--tcmalloc'.startswith(a) ]
             os.execv(sys.executable, [sys.executable] + args)
 
-    # Profiler Support ------      
-    if opts.profilerName != "":
+    # Profiler Support ------
+    if opts.profilerName:
         profilerName = opts.profilerName
-        profilerExecName=""
-        profilerOutput= opts.profilerOutput
-        if opts.profilerOutput == "":
-            profilerOutput = profilerName+".output"
-          
+        profilerExecName = ""
+        profilerOutput = opts.profilerOutput or (profilerName + ".output")
+
         # To restart the application removing the igprof option and prepending the string
-        args = getArgsWithoutoProfilerInfo(sys.argv,
-                                           profilerName,
-                                           opts.profilerOutput,
-                                           opts.profilerExtraOptions)
-        
+        args = getArgsWithoutoProfilerInfo(sys.argv)
+
         igprofPerfOptions = "-d -pp -z -o igprof.pp.gz".split()
-        
+
         profilerOptions = ""
         if profilerName == "igprof":
-            if opts.profilerOutput == "":
-              profilerOutput += ".profile.gz"            
-            profilerOptions = "-d -z -o %s" %profilerOutput    
-            profilerExecName="igprof"
+            if not opts.profilerOutput:
+                profilerOutput += ".profile.gz"
+            profilerOptions = "-d -z -o %s" % profilerOutput
+            profilerExecName = "igprof"
+
         elif profilerName == "igprofPerf":
-            if opts.profilerOutput == "":
-              profilerOutput += ".pp.gz"            
-            profilerOptions = "-d -pp -z -o %s" %profilerOutput
-            profilerExecName="igprof"
+            if not opts.profilerOutput:
+                profilerOutput += ".pp.gz"
+            profilerOptions = "-d -pp -z -o %s" % profilerOutput
+            profilerExecName = "igprof"
+
         elif profilerName == "igprofMem":
-            if opts.profilerOutput == "":
-              profilerOutput += ".mp.gz"            
-            profilerOptions = "-d -mp -z -o %s" %profilerOutput    
-            profilerExecName="igprof"
-        elif "valgrind" in profilerName: 
-            # extract the tool         
-            if opts.profilerOutput == "":
-              profilerOutput += ".log"
-            toolname=profilerName.replace('valgrind','')       
-            outoption="--log-file"
-            if toolname in ("massif","callgrind","cachegrind"):
-                outoption="--%s-out-file" %toolname
-            profilerOptions = "--tool=%s %s=%s" %(toolname,outoption,profilerOutput)
-            profilerExecName="valgrind"
+            if not opts.profilerOutput:
+                profilerOutput += ".mp.gz"
+            profilerOptions = "-d -mp -z -o %s" % profilerOutput
+            profilerExecName = "igprof"
+
+        elif "valgrind" in profilerName:
+            # extract the tool
+            if not opts.profilerOutput:
+                profilerOutput += ".log"
+            toolname = profilerName.replace('valgrind','')
+            outoption = "--log-file"
+            if toolname in ("massif", "callgrind", "cachegrind"):
+                outoption = "--%s-out-file" % toolname
+            profilerOptions = "--tool=%s %s=%s" % (toolname, outoption, profilerOutput)
+            profilerExecName = "valgrind"
+
         else:
-            root_logger.warning("Profiler %s not recognised!" %profilerName)
-        
+            root_logger.warning("Profiler %s not recognized!" % profilerName)
+
         # Add potential extra options
         if opts.profilerExtraOptions!="":
             profilerExtraOptions = opts.profilerExtraOptions
-            profilerExtraOptions=profilerExtraOptions.replace("__","--")
-            profilerOptions += " %s" %profilerExtraOptions
-        
+            profilerExtraOptions = profilerExtraOptions.replace("__","--")
+            profilerOptions += " %s" % profilerExtraOptions
+
         # now we look for the full path of the profiler: is it really there?
         import distutils.spawn
         profilerPath = distutils.spawn.find_executable(profilerExecName)
-        if profilerPath == None:
-            root_logger.error("Cannot locate profiler %s" %profilerExecName )
+        if not profilerPath:
+            root_logger.error("Cannot locate profiler %s" % profilerExecName)
             sys.exit(1)
-        
+
         root_logger.info("------ Profiling options are on ------ \n"\
                          " o Profiler: %s\n"\
                          " o Options: '%s'.\n"\
-                         " o Output: %s" %(profilerExecName,profilerOptions,profilerOutput))
-        
+                         " o Output: %s" % (profilerExecName, profilerOptions, profilerOutput))
+
         # We profile python
         profilerOptions += " python"
-            
+
         # now we have all the ingredients to prepare our command
-        arglist = [profilerPath] +profilerOptions.split() + args
-        arglist = [ a for a in arglist if a!='' ]                
+        arglist = [profilerPath] + profilerOptions.split() + args
+        arglist = [ a for a in arglist if a!='' ]
         #print profilerPath
         #for arg in arglist:
             #print arg
-        os.execv(profilerPath, arglist)        
-    
+        os.execv(profilerPath, arglist)
+
     # End Profiler Support ------
-    
+
     if opts.pickle_output:
         if opts.output:
             root_logger.error("Conflicting options: use only --pickle-output or --output")

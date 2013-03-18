@@ -49,6 +49,8 @@ namespace
     //
     const TAxis*       axis  = histo.GetXaxis() ;
     const unsigned int nBins = axis->GetNbins() ;
+    //
+    stream << std::endl << "'X' : { " ;
     if ( axis->IsVariableBinSize() )
     {
       const TArrayD*     xbins = axis->GetXbins() ;
@@ -56,19 +58,17 @@ namespace
       std::vector<double> edges ;
       for  ( unsigned int iBin = 0 ; iBin < xsize ; ++iBin )
       { edges.push_back ( xbins->At( iBin ) ) ; }
-      // the edges
-      stream << std::endl ;
       stream << "'edges' : "  ;
-      Gaudi::Utils::toStream (  edges , stream ) << " ," << std::endl;
+      Gaudi::Utils::toStream (  edges , stream ) << " }, " << std::endl;
     }
     else
     {
       stream << "'nbins' : "  ;
-      Gaudi::Utils::toStream (  nBins            , stream ) << " , " ;
+      Gaudi::Utils::toStream (  nBins            , stream ) << "  , " ;
       stream << "'low'   : "  ;
-      Gaudi::Utils::toStream (  axis->GetXmin () , stream ) << " , " ;
+      Gaudi::Utils::toStream (  axis->GetXmin () , stream ) << "  , " ;
       stream << "'high'  : "  ;
-      Gaudi::Utils::toStream (  axis->GetXmax () , stream ) << " , " << std::endl ;
+      Gaudi::Utils::toStream (  axis->GetXmax () , stream ) << " }, " << std::endl ;
     }
     // finally: the content
     std::vector<std::pair<double,double> > bins ;

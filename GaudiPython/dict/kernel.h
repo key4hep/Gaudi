@@ -78,6 +78,7 @@
 #include "GaudiUtils/IIODataManager.h"
 #include "GaudiUtils/HistoStats.h"
 #include "GaudiUtils/HistoDump.h"
+#include "GaudiUtils/HistoStrings.h"
 
 #include <iostream>
 #include <istream>
