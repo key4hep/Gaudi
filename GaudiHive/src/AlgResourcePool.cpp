@@ -152,6 +152,10 @@ StatusCode AlgResourcePool::m_flattenSequencer(Algorithm* algo, ListAlg& alglist
   // Hacks waiting the Control Flow:
   // 1) Take only the first algo if the sequencer is an OR
   // 2) Skip the  HltDecReportsDecoder-s
+  // 3) Skip the RawBankReadoutStatusConverter-s
+  // 4) Skip HltRoutingBitsFilter
+  // 5) Skip LoKi::HDRFilter
+  // 6) Skip EventCountHisto
 
   const std::string hack_banner("\n\n****************\n HACK PRESENT: PLEASE PROVIDE CONTROL FLOW!\n ****************\n");
   
@@ -171,15 +175,16 @@ StatusCode AlgResourcePool::m_flattenSequencer(Algorithm* algo, ListAlg& alglist
   ++recursionDepth;
   debug() << std::string(recursionDepth, ' ') << algo->name() << " is a sequencer. Flattening it." << endmsg;  
   for (Algorithm* subalgo : *subAlgorithms ){
-    // Hack 2)
-    if ( subalgo->type() == "HltDecReportsDecoder" and m_doHacks){
-      if (HltDecReportsDecoded){
-        always() << hack_banner<<endmsg;
-        always() << "HACK -- Removing " << subalgo->type()<< "/" << subalgo->name() << endmsg;
-        continue;
-        }
-      else
-        HltDecReportsDecoded=true;
+    // Hack 2) 3) 4) 5) 6)
+    if ( ( subalgo->type() == "HltDecReportsDecoder" or
+           subalgo->type() == "RawBankReadoutStatusConverter" or
+           subalgo->type() == "HltRoutingBitsFilter" or
+           subalgo->type() == "LoKi::HDRFilter" or
+           subalgo->type() == "EventCountHisto")
+         and m_doHacks){
+      always() << hack_banner<<endmsg;
+      always() << "HACK -- Removing " << subalgo->type()<< "/" << subalgo->name() << endmsg;
+      continue;
     }
     
     StatusCode sc (m_flattenSequencer(subalgo,alglist,recursionDepth));
