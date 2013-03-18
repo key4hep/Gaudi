@@ -22,12 +22,13 @@
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY(ForwardSchedulerSvc)
 
-std::map<ForwardSchedulerSvc::AlgsExecutionStates::State,std::string> ForwardSchedulerSvc::AlgsExecutionStates::stateNames= {
+std::map<AlgsExecutionStates::State,std::string> AlgsExecutionStates::stateNames= {
     {INITIAL,"INITIAL"},
     {CONTROLREADY,"CONTROLREADY"},
     {DATAREADY,"DATAREADY"},
     {SCHEDULED,"SCHEDULED"},
-    {EXECUTED,"EXECUTED"},
+    {EVTACCEPTED,"EVTACCEPTED"},
+    {EVTREJECTED,"EVTREJECTED"},
     {ERROR,"ERROR"}
     };
 
@@ -585,16 +586,23 @@ StatusCode ForwardSchedulerSvc::m_promoteToExecuted(AlgoSlotIndex iAlgo, EventSl
   debug() << "Algorithm " << algo->name() << " executed. Algorithms in flight are "
       << m_algosInFlight << endmsg;
 
-   // Schedule an update of the stati of the algorithms
+   // Schedule an update of the status of the algorithms
    auto updateAction = std::bind(&ForwardSchedulerSvc::m_updateStates,
                                  this,
                                  -1);
    m_actionsQueue.push(updateAction);
 
-  debug() << "Trying to promote " << m_index2algname(iAlgo) << " to EXECUTED" << endmsg;
-  sc = m_eventSlots[si].algsStates.updateState(iAlgo,AlgsExecutionStates::EXECUTED);
+  debug() << "Trying to handle execution result of " << m_index2algname(iAlgo) << "." << endmsg;
+  State state;
+  if (algo->filterPassed()){
+    state = State::EVTACCEPTED;
+  } else {
+    state = State::EVTREJECTED;
+  }
+
+  sc = m_eventSlots[si].algsStates.updateState(iAlgo,state);
   if (sc.isSuccess())
-    debug() << "Promoting " << m_index2algname(iAlgo) << " on slot " << si << " to EXECUTED" << endmsg;
+    debug() << "Promoting " << m_index2algname(iAlgo) << " on slot " << si << " to " << AlgsExecutionStates::stateNames[state] << endmsg;
   return sc;
 }
 
