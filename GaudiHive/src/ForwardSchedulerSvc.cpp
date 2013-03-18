@@ -22,16 +22,6 @@
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY(ForwardSchedulerSvc)
 
-std::map<AlgsExecutionStates::State,std::string> AlgsExecutionStates::stateNames= {
-    {INITIAL,"INITIAL"},
-    {CONTROLREADY,"CONTROLREADY"},
-    {DATAREADY,"DATAREADY"},
-    {SCHEDULED,"SCHEDULED"},
-    {EVTACCEPTED,"EVTACCEPTED"},
-    {EVTREJECTED,"EVTREJECTED"},
-    {ERROR,"ERROR"}
-    };
-
 //===========================================================================
 // Infrastructure methods
 
@@ -586,11 +576,11 @@ StatusCode ForwardSchedulerSvc::m_promoteToExecuted(AlgoSlotIndex iAlgo, EventSl
   debug() << "Algorithm " << algo->name() << " executed. Algorithms in flight are "
       << m_algosInFlight << endmsg;
 
-   // Schedule an update of the status of the algorithms
-   auto updateAction = std::bind(&ForwardSchedulerSvc::m_updateStates,
-                                 this,
-                                 -1);
-   m_actionsQueue.push(updateAction);
+  // Schedule an update of the status of the algorithms
+  auto updateAction = std::bind(&ForwardSchedulerSvc::m_updateStates,
+                                this,
+                                -1);
+  m_actionsQueue.push(updateAction);
 
   debug() << "Trying to handle execution result of " << m_index2algname(iAlgo) << "." << endmsg;
   State state;
