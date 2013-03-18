@@ -17,6 +17,7 @@ DataFlowManager::DataFlowManager(algosDependenciesCollection algosDependencies){
   for (auto& thisAlgoDependencies : algosDependencies){
     nProducts += thisAlgoDependencies.size(); 
   }
+  m_dataObjectsCatalog.resize(nProducts);
 
   // If it's not the first instance, nothing to do here
   if (m_algosRequirements.size()==0){      
@@ -65,7 +66,6 @@ void DataFlowManager::updateDataObjectsCatalog(const std::vector<std::string>& n
   // DP: performance of interrogating the WB to be checked.
   for (const auto& new_product : newProducts){
     const int index = m_productName2index(new_product);
-//    std::cout << "New product on slot "<< m_evtSlotNumber << " ***" << new_product<< " indexed as "<< index <<"*** " << std::endl;
     if (index>=0)
       m_dataObjectsCatalog[index]=true;
   }
