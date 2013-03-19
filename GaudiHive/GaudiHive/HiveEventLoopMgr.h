@@ -91,7 +91,8 @@ protected:
   typedef std::vector<std::vector<std::string>> algosDependenciesCollection;
   // We just need the dependencies and not the algo names.
   algosDependenciesCollection m_AlgosDependencies;
-
+  // Number of products to deal with
+  unsigned int m_nProducts;
 
 public:
   /// Standard Constructor

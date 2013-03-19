@@ -13,7 +13,7 @@ typedef boost::dynamic_bitset<> state_type;
 
 class EventSchedulingState {
  public:
-  EventSchedulingState(const unsigned int& n_algos);
+  EventSchedulingState(const unsigned int& n_algos,const unsigned int& n_products);
   ~EventSchedulingState(){};
 
   void algoFinished(); 

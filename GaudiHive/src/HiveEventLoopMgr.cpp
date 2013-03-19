@@ -92,6 +92,7 @@ HiveEventLoopMgr::HiveEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
 	m_evts_parallel = 1;
 	m_num_threads = 1;
 	m_DumpQueues = true;
+        m_nProducts = 0;
 
 	// Declare properties
 	declareProperty("HistogramPersistency", m_histPersName = "");
@@ -527,7 +528,7 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
                 }
             }
 
-            EventSchedulingState* event_state = new EventSchedulingState(m_topAlgList.size());
+            EventSchedulingState* event_state = new EventSchedulingState(m_topAlgList.size(),m_nProducts);
             events_in_flight.push_back(std::make_tuple(evtContext,event_state));
             info()  << "Started event " << evt_num << " at " << secsFromStart() << endmsg;
 
@@ -746,12 +747,11 @@ void
 HiveEventLoopMgr::find_dependencies() {
 
         // Count how many products are actually requested
-        unsigned int nProducts(0);
         for (auto& thisAlgoDependencies : m_AlgosDependencies){
-            nProducts += thisAlgoDependencies.size();
+            m_nProducts += thisAlgoDependencies.size();
         }
 	const unsigned int n_algos = m_topAlgList.size();
-	std::vector<state_type> all_requirements(n_algos,state_type(nProducts));
+	std::vector<state_type> all_requirements(n_algos,state_type(m_nProducts));
 
 	unsigned int algo_counter=0;
 	unsigned int input_counter=0;
@@ -759,7 +759,7 @@ HiveEventLoopMgr::find_dependencies() {
         MsgStream log(msgSvc(), name());
 	// loop on the dependencies
 	for (const auto& algoDependencies : m_AlgosDependencies){ // loop on algo dependencies lists
-		state_type requirements(nProducts);
+		state_type requirements(m_nProducts);
 		log << MSG::DEBUG << "Algorithm " << algo_counter << " dependencies: " << endmsg;
 		for (const auto& dependency : algoDependencies){ // loop on dependencies
 			log << MSG::DEBUG << " - " << dependency << endmsg;
