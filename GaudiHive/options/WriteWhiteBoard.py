@@ -4,7 +4,7 @@
 
 from Gaudi.Configuration import *
 from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
-from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveEventLoopMgr, AlgResourcePool
+from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveSlimEventLoopMgr, AlgResourcePool, ForwardSchedulerSvc
 
 # Output setup
 # - DST
@@ -34,7 +34,6 @@ MessageSvc(OutputLevel=WARNING)
 IncidentSvc(OutputLevel=DEBUG)
 RootCnvSvc(OutputLevel=INFO)
 AlgResourcePool(OutputLevel=DEBUG)
-HiveEventLoopMgr(OutputLevel=INFO)
 GaudiPersistency()
 
 product_name="MyCollision"
@@ -53,13 +52,13 @@ evtslots = 15
 algoparallel = 10
 
 whiteboard   = HiveWhiteBoard("EventDataSvc",
-                              EventSlots = evtslots)
-                                                                                     
-eventloopmgr = HiveEventLoopMgr(MaxEventsParallel = evtslots,
-                                MaxAlgosParallel  = algoparallel,
-                                CloneAlgorithms = True,
-                                DumpQueues = True,
-                                NumThreads = algoparallel,
+                              EventSlots = evtslots)                                                                                   
+
+eventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
+                                
+scheduler = ForwardSchedulerSvc(MaxEventsInFlight = evtslots,
+                                MaxAlgosInFlight = algoparallel,
+                                OutputLevel=WARNING,
                                 AlgosDependencies = [[],[product_name]])
                                 
 # Application setup

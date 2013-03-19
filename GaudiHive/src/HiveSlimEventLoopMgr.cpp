@@ -442,10 +442,11 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
   int createdEvts =0;
   info() << "Starting loop on events" << endmsg;
   // Loop until the finished events did not reach the maxevt number
-  while (finishedEvts < maxevt){
+  bool loop_ended=false;
+  while ( !loop_ended and (maxevt < 0 or finishedEvts < maxevt)){
     // if the created events did not reach maxevt, create an event    
     if (createdEvts >= 0 && // The events are not finished with an unlimited number of events
-        createdEvts < maxevt &&  // The events are not finished with a limited number of events
+        (createdEvts < maxevt or maxevt<0) &&  // The events are not finished with a limited number of events
         m_schedulerSvc->freeSlots()>0){ // There are still free slots in the scheduler
 
       debug() << "createdEvts: " << createdEvts << ", freeslots: " << m_schedulerSvc->freeSlots() << endmsg;
@@ -463,7 +464,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
 
       // Pull out of the scheduler the finished events
       if (m_drainScheduler(finishedEvts).isFailure()){
-        return StatusCode::FAILURE;     
+        loop_ended = true;
       }
     }
   } // end main loop on finished events  
@@ -545,6 +546,8 @@ StatusCode  HiveSlimEventLoopMgr::m_createEventContext(EventContext*& evtContext
 
 StatusCode HiveSlimEventLoopMgr::m_drainScheduler(int& finishedEvts){
 
+  StatusCode sc(StatusCode::SUCCESS);
+    
   // maybe we can do better
   std::vector<EventContext*> finishedEvtContexts;
 
@@ -552,15 +555,20 @@ StatusCode HiveSlimEventLoopMgr::m_drainScheduler(int& finishedEvts){
 
   // Here we wait not to loose cpu resources
   debug() << "Waiting for a context" << endmsg;
-  m_schedulerSvc->popFinishedEvent(finishedEvtContext).ignore();
-  debug() << "Context obtained" << endmsg;
+  sc = m_schedulerSvc->popFinishedEvent(finishedEvtContext);
 
   // We got past it: cache the pointer
-  finishedEvtContexts.push_back(finishedEvtContext);
+  if (sc.isSuccess()){
+    debug() << "Context obtained" << endmsg;
+    finishedEvtContexts.push_back(finishedEvtContext);
+  } else{
+    return StatusCode::FAILURE;
+  }
 
   // Let's see if we can pop other event contexts
-  while (m_schedulerSvc->tryPopFinishedEvent(finishedEvtContext).isSuccess())
+  while (m_schedulerSvc->tryPopFinishedEvent(finishedEvtContext).isSuccess()){
     finishedEvtContexts.push_back(finishedEvtContext);
+  }
 
   // Now we flush them
   for (auto& thisFinishedEvtContext : finishedEvtContexts){

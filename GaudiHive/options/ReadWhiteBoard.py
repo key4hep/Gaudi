@@ -4,7 +4,7 @@
 
 from Gaudi.Configuration import *
 from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
-from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveEventLoopMgr, HiveReadAlgorithm, AlgResourcePool
+from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveSlimEventLoopMgr, HiveReadAlgorithm,ForwardSchedulerSvc, AlgResourcePool
 
 # Output Levels
 MessageSvc(OutputLevel=WARNING)
@@ -41,12 +41,12 @@ algoparallel = 10
 
 whiteboard   = HiveWhiteBoard("EventDataSvc",
                               EventSlots = evtslots)
-                                                                                     
-eventloopmgr = HiveEventLoopMgr(MaxEventsParallel = evtslots,
-                                MaxAlgosParallel  = algoparallel,
-                                CloneAlgorithms = True,
-                                DumpQueues = True,
-                                NumThreads = algoparallel,
+
+eventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
+
+scheduler = ForwardSchedulerSvc(MaxEventsInFlight = evtslots,
+                                MaxAlgosInFlight = algoparallel,
+                                OutputLevel=WARNING,
                                 AlgosDependencies = [[],[product_name]])
                                 
 # Application setup

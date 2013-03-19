@@ -273,7 +273,7 @@ StatusCode ForwardSchedulerSvc::m_drain(){
   
   unsigned int slotNum=0;
   for (auto& thisSlot : m_eventSlots){
-    if (not thisSlot.algsStates.allAlgsExecuted()){
+    if (not thisSlot.algsStates.allAlgsExecuted() and not thisSlot.complete){
       m_updateStates(slotNum);
     }
     slotNum++;
@@ -286,11 +286,16 @@ StatusCode ForwardSchedulerSvc::m_drain(){
 * Get a finished event or block until one becomes available.
 */
 StatusCode ForwardSchedulerSvc::popFinishedEvent(EventContext*& eventContext){
-  m_finishedEvents.pop(eventContext);
-  m_freeSlots++;
-  debug() << "Popped slot " << eventContext->m_evt_slot << "(event " 
-          << eventContext->m_evt_num << ")" << endmsg;
-  return StatusCode::SUCCESS;
+  if (m_freeSlots == m_maxEventsInFlight){
+      return StatusCode::FAILURE;     
+  }
+  else{
+    m_finishedEvents.pop(eventContext);
+    m_freeSlots++;
+    debug() << "Popped slot " << eventContext->m_evt_slot << "(event "
+            << eventContext->m_evt_num << ")" << endmsg;
+    return StatusCode::SUCCESS;
+  }
 }
 
 //---------------------------------------------------------------------------
