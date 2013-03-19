@@ -200,14 +200,14 @@ StatusCode AlgResourcePool::m_flattenSequencer(Algorithm* algo, ListAlg& alglist
       return sc;
     }
     // Hack 1) take only the first possibility    
-    if (algo->type() == "GaudiSequencer" and m_doHacks){
-      SmartIF<IProperty> p (algo);
-      if (p->getProperty("ModeOR").toString() == "True"){
-        always() << hack_banner<<endmsg;
-        always() << "HACK -- Stop OR sequence at first element: " << subalgo->type()<< "/" << subalgo->name() << endmsg;
-        break;
-      }
-    }
+    //    if (algo->type() == "GaudiSequencer" and m_doHacks){
+    //      SmartIF<IProperty> p (algo);
+    //      if (p->getProperty("ModeOR").toString() == "True"){
+    //        always() << hack_banner<<endmsg;
+    //        always() << "HACK -- Stop OR sequence at first element: " << subalgo->type()<< "/" << subalgo->name() << endmsg;
+    //        break;
+    //      }
+    //    }
   }  
 
   return StatusCode::SUCCESS;
