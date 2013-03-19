@@ -159,11 +159,6 @@ StatusCode AlgResourcePool::m_flattenSequencer(Algorithm* algo, ListAlg& alglist
 
   const std::string hack_banner("\n\n****************\n HACK PRESENT: PLEASE PROVIDE CONTROL FLOW!\n ****************\n");
   
-  // Hack 2)
-  static bool HltDecReportsDecoded=false;
-
-
-  
   std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
   if (subAlgorithms->empty() and not (algo->type() == "GaudiSequencer")){
     debug() << std::string(recursionDepth, ' ') << algo->name() << " is not a sequencer. Appending it" << endmsg;
