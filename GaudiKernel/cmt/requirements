@@ -40,7 +40,7 @@ macro genconfig_cmd           $(GAUDIKERNELROOT)/$(tag)/genconf.exe \
 private
 
 application genconf -import=Boost Util/genconf.cpp
-macro_append genconflinkopts "-ldl $(GaudiKernel_linkopts) $(Boost_linkopts) $(Boost_linkopts_filesystem) $(Boost_linkopts_regex) $(Boost_linkopts_program_options)"
+macro_append genconflinkopts "$(GaudiKernel_linkopts) $(Boost_linkopts) $(Boost_linkopts_filesystem) $(Boost_linkopts_regex) $(Boost_linkopts_program_options)"
 macro genconf_dependencies GaudiKernel
 
 # FIXME: (MCl) I do not understand why genconf gets the CppUnit link options,
