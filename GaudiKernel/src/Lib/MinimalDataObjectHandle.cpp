@@ -14,7 +14,7 @@ MinimalDataObjectHandle::MinimalDataObjectHandle(const std::string& productName,
                                                  m_accessType(accessType),
                                                  m_wasRead(false),
                                                  m_wasWritten(false){
-  // Register algo on the Sched Svc                                                 
+                                                   
   }
   
 //---------------------------------------------------------------------------

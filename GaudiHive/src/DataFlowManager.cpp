@@ -63,7 +63,6 @@ bool DataFlowManager::canAlgorithmRun(unsigned int iAlgo){
 
 /// Update the catalog of available products in the slot
 void DataFlowManager::updateDataObjectsCatalog(const std::vector<std::string>& newProducts){
-  // DP: performance of interrogating the WB to be checked.
   for (const auto& new_product : newProducts){
     const int index = m_productName2index(new_product);
     if (index>=0)

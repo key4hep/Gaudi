@@ -54,7 +54,7 @@ namespace {
     virtual ~DataAgent() {}
     virtual bool analyse(IRegistry* pReg, int )   {
       if (0 != pReg->object()) {
-        m_dataObjects.push_back(pReg->identifier());
+        m_dataObjects.emplace_back(pReg->identifier());
         return true;
       }
       else {

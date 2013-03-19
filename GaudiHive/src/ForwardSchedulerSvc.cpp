@@ -582,6 +582,8 @@ StatusCode ForwardSchedulerSvc::m_promoteToExecuted(AlgoSlotIndex iAlgo, EventSl
   // DP: Handles could be used. Just update what the algo wrote
   std::vector<std::string> new_products;
   m_whiteboard->getNewDataObjects(new_products).ignore();
+  for (const auto& new_product : new_products)
+    debug() << "Found in WB: " << new_product << endmsg;
   m_eventSlots[si].dataFlowMgr.updateDataObjectsCatalog(new_products);
 
   // update controlflow
