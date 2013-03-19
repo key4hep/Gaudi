@@ -146,7 +146,7 @@ StatusCode AlgResourcePool::releaseResource(const std::string& name){
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::m_flattenSequencer(Algorithm* algo, ListAlg& alglist, unsigned int recursionDepth){
+StatusCode AlgResourcePool::m_flattenSequencer(Algorithm* algo, ListAlg& alglist, concurrency::DecisionNode* motherNode, unsigned int recursionDepth){
       
   // DP: here feed the ControlFlowSvc with the proper info?
   // Hacks waiting the Control Flow:
@@ -163,12 +163,24 @@ StatusCode AlgResourcePool::m_flattenSequencer(Algorithm* algo, ListAlg& alglist
   if (subAlgorithms->empty() and not (algo->type() == "GaudiSequencer")){
     debug() << std::string(recursionDepth, ' ') << algo->name() << " is not a sequencer. Appending it" << endmsg;
     alglist.emplace_back(algo);
+    motherNode->addDaughterNode(new concurrency::AlgorithmNode(algo->name(),false,false));
     return StatusCode::SUCCESS;
   }
 
   // Recursively unroll
   ++recursionDepth;
   debug() << std::string(recursionDepth, ' ') << algo->name() << " is a sequencer. Flattening it." << endmsg;  
+  bool modeOR =false;
+  bool allPass =false;
+  bool isLazy = false;
+  if ("GaudiSequencer" == algo->type()) {
+    modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
+    allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
+    isLazy = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
+  }
+  concurrency::DecisionNode* node = new concurrency::DecisionNode(modeOR,allPass,isLazy);
+  motherNode->addDaughterNode(node);
+
   for (Algorithm* subalgo : *subAlgorithms ){
     // Hack 2) 3) 4) 5) 6)
     if ( ( subalgo->type() == "HltDecReportsDecoder" or
@@ -181,8 +193,8 @@ StatusCode AlgResourcePool::m_flattenSequencer(Algorithm* algo, ListAlg& alglist
       always() << "HACK -- Removing " << subalgo->type()<< "/" << subalgo->name() << endmsg;
       continue;
     }
-    
-    StatusCode sc (m_flattenSequencer(subalgo,alglist,recursionDepth));
+
+    StatusCode sc (m_flattenSequencer(subalgo,alglist,node,recursionDepth));
     if (sc.isFailure()){
       error() << "Algorithm " << subalgo->name() << " could not be flattened" << endmsg;
       return sc;
@@ -250,12 +262,15 @@ StatusCode AlgResourcePool::m_decodeTopAlgs()    {
     m_topAlgList.push_back(algoSmartIF);    
   }
   // Top Alg list filled ----
-  
+
+  // prepare the head node for the control flow
+  m_cfNode = new concurrency::DecisionNode(true,true,false);
+
   // Now we unroll it ----
   for (auto& algoSmartIF : m_topAlgList){    
     Algorithm* algorithm = dynamic_cast<Algorithm*> (algoSmartIF.get());
     if (!algorithm) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
-    sc = m_flattenSequencer(algorithm,m_flatUniqueAlgList);       
+    sc = m_flattenSequencer(algorithm, m_flatUniqueAlgList, m_cfNode);       
   }    
   if (outputLevel() <= MSG::DEBUG){
     debug() << "List of algorithms is: " << endmsg;

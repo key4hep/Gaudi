@@ -112,7 +112,7 @@ public:
       int execAlgos=std::count_if(m_states.begin(),m_states.end(),[](State s) {return (s == EVTACCEPTED || s== EVTREJECTED);});
       return m_states.size() == (unsigned int)execAlgos; };
     inline State algorithmState(unsigned int iAlgo){return iAlgo>=m_states.size()? ERROR : m_states[iAlgo];};
-    
+
     typedef std::vector<State> states_vector;
     typedef states_vector::iterator vectIt;
     typedef states_vector::const_iterator const_vectIt;
@@ -120,9 +120,9 @@ public:
     vectIt end(){return m_states.end();};  
     const_vectIt begin() const{const_vectIt it = m_states.begin();return it;};
     const_vectIt end() const{const_vectIt it = m_states.end();return it;};
-    
+
+    states_vector m_states;    
  private:
-    states_vector m_states;
     SmartIF<IMessageSvc> m_MS;
     
 };

@@ -8,6 +8,9 @@
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/Algorithm.h"
 
+// TODO: include here is only a workaround
+#include "ControlFlowManager.h"
+
 // std includes
 #include <string>
 #include <list>
@@ -51,6 +54,8 @@ public:
   virtual StatusCode beginRun();  
   
   virtual StatusCode endRun();  
+
+  virtual concurrency::ControlFlowNode* getControlFlow() const {return m_cfNode;} 
   
 private:
   typedef tbb::concurrent_queue<IAlgorithm*> concurrentQueueIAlgPtr;
@@ -70,7 +75,7 @@ private:
   StatusCode m_decodeTopAlgs();
   
   /// Recursively flatten an algList
-  StatusCode m_flattenSequencer(Algorithm* sequencer, ListAlg& alglist, unsigned int recursionDepth=0);
+  StatusCode m_flattenSequencer(Algorithm* sequencer, ListAlg& alglist, concurrency::DecisionNode* motherNode, unsigned int recursionDepth=0);
    
   /// The names of the algorithms to be passed to the algorithm manager
   StringArrayProperty m_topAlgNames;
@@ -92,7 +97,9 @@ private:
 
   /// OMG this has so to be removed
   bool m_doHacks;
-  
+
+  /// OMG yet another hack
+  concurrency::DecisionNode* m_cfNode;  
 };
 
 #endif  // GAUDIHIVE_ALGRESOURCEPOOL_H

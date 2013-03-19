@@ -114,6 +114,10 @@ StatusCode ForwardSchedulerSvc::initialize(){
     m_algname_vect.emplace_back(name);    
     index++;
   }  
+
+  // prepare the control flow part
+  const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>(m_algResourcePool.get());
+  m_cfManager.initialize(algPool->getControlFlow(), m_algname_index_map);
   
   // Activate the scheduler 
   info() << "Activating scheduler in a separate thread" << endmsg;
@@ -336,10 +340,6 @@ StatusCode ForwardSchedulerSvc::m_updateStates(EventSlotIndex si){
   // Posterchild for constexpr with gcc4.7 onwards!
   const std::map<AlgsExecutionStates::State, std::function<StatusCode(AlgoSlotIndex iAlgo, EventSlotIndex si)>> 
    statesTransitions = {
-  {AlgsExecutionStates::INITIAL, std::bind(&ForwardSchedulerSvc::m_promoteToControlReady,
-                                 this,
-                                 std::placeholders::_1,
-                                 std::placeholders::_2)},
   {AlgsExecutionStates::CONTROLREADY, std::bind(&ForwardSchedulerSvc::m_promoteToDataReady,
                                       this,
                                       std::placeholders::_1,  
@@ -378,6 +378,9 @@ StatusCode ForwardSchedulerSvc::m_updateStates(EventSlotIndex si){
     // Cache the states of the algos to improve readability and performance
     auto& thisSlot = m_eventSlots[iSlot];
     AlgsExecutionStates& thisAlgsStates = thisSlot.algsStates;
+
+    // Take care of the control ready update
+    m_cfManager.updateEventState(thisAlgsStates.m_states);
 
     for (unsigned int iAlgo=0;iAlgo<m_algname_vect.size();++iAlgo){
       const AlgsExecutionStates::State& algState = thisAlgsStates.algorithmState(iAlgo);

@@ -7,7 +7,10 @@
 #include "GaudiKernel/Service.h" 
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
+
+// Local includes
 #include "AlgsExecutionStates.h"
+#include "ControlFlowManager.h"
 #include "DataFlowManager.h"
 
 // C++ include files
@@ -162,6 +165,9 @@ private:
   typedef std::function<StatusCode ()> action;
   /// Queue where closures are stored and picked for execution
   tbb::concurrent_bounded_queue<action> m_actionsQueue;  
+
+  // Member to take care of the control flow 
+  concurrency::ControlFlowManager m_cfManager;
   
   // Needed to queue actions on algorithm finishing and decrement algos in flight
   friend class AlgoExecutionTask;
