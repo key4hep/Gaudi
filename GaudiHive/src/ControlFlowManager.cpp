@@ -67,7 +67,6 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   void ControlFlowManager::updateEventState(std::vector<State>& algo_states) const {
     m_headNode->updateState(algo_states);
-
   };
 
 } // namespace
