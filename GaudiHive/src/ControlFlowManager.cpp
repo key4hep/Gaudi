@@ -22,10 +22,10 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void DecisionNode::printState(std::stringstream& output, const std::vector<int>& node_results, const unsigned int& recursionLevel) const {
-    output << std::string(recursionLevel, ' ') << m_nodeName << " : " << stateToString(node_results[m_nodeIndex]) << std::endl;
+  void DecisionNode::printState(std::stringstream& output, const std::vector<int>& node_decisions, const unsigned int& recursionLevel) const {
+    output << std::string(recursionLevel, ' ') << m_nodeName << " : " << stateToString(node_decisions[m_nodeIndex]) << std::endl;
     for (auto daughter : m_daughters ) {
-      daughter->printState(output,node_results,recursionLevel+1);      
+      daughter->printState(output,node_decisions,recursionLevel+1);      
     }
   }
 
@@ -63,8 +63,8 @@ namespace concurrency {
   }
   
   //---------------------------------------------------------------------------
-  void AlgorithmNode::printState(std::stringstream& output, const std::vector<int>& node_results, const unsigned int& recursionLevel) const {
-    output << std::string(recursionLevel, ' ') << m_nodeName << " : " << stateToString(node_results[m_nodeIndex]) << std::endl;  
+  void AlgorithmNode::printState(std::stringstream& output, const std::vector<int>& node_decisions, const unsigned int& recursionLevel) const {
+    output << std::string(recursionLevel, ' ') << m_nodeName << " : " << stateToString(node_decisions[m_nodeIndex]) << std::endl;  
   }
 
   //---------------------------------------------------------------------------
@@ -97,8 +97,8 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void ControlFlowManager::updateEventState(std::vector<State>& algo_states, std::vector<int>& node_results) const {
-    m_headNode->updateState(algo_states, node_results);
+  void ControlFlowManager::updateEventState(std::vector<State>& algo_states, std::vector<int>& node_decisions) const {
+    m_headNode->updateState(algo_states, node_decisions);
   }
 
 } // namespace
