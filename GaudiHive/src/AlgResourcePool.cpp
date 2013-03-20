@@ -17,7 +17,7 @@ DECLARE_SERVICE_FACTORY(AlgResourcePool)
 
 // constructor
 AlgResourcePool::AlgResourcePool( const std::string& name, ISvcLocator* svc ) :
-  base_class(name,svc), m_available_resources(1)
+  base_class(name,svc), m_available_resources(1), m_nodeCounter(0)
 {
   declareProperty("CreateLazily", m_lazyCreation = false );
   declareProperty("TopAlg", m_topAlgNames );
@@ -163,7 +163,8 @@ StatusCode AlgResourcePool::m_flattenSequencer(Algorithm* algo, ListAlg& alglist
   if (subAlgorithms->empty() and not (algo->type() == "GaudiSequencer")){
     debug() << std::string(recursionDepth, ' ') << algo->name() << " is not a sequencer. Appending it" << endmsg;
     alglist.emplace_back(algo);
-    motherNode->addDaughterNode(new concurrency::AlgorithmNode(algo->name(),false,false));
+    motherNode->addDaughterNode(new concurrency::AlgorithmNode(m_nodeCounter,algo->name(),false,false));
+    ++m_nodeCounter;
     return StatusCode::SUCCESS;
   }
 
@@ -178,7 +179,8 @@ StatusCode AlgResourcePool::m_flattenSequencer(Algorithm* algo, ListAlg& alglist
     allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
     isLazy = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
   }
-  concurrency::DecisionNode* node = new concurrency::DecisionNode(modeOR,allPass,isLazy);
+  concurrency::DecisionNode* node = new concurrency::DecisionNode(m_nodeCounter,algo->name(),modeOR,allPass,isLazy);
+  ++m_nodeCounter;
   motherNode->addDaughterNode(node);
 
   for (Algorithm* subalgo : *subAlgorithms ){
@@ -264,7 +266,8 @@ StatusCode AlgResourcePool::m_decodeTopAlgs()    {
   // Top Alg list filled ----
 
   // prepare the head node for the control flow
-  m_cfNode = new concurrency::DecisionNode(true,true,false);
+  m_cfNode = new concurrency::DecisionNode(m_nodeCounter, "JOB", true,true,false);
+  ++m_nodeCounter;
 
   // Now we unroll it ----
   for (auto& algoSmartIF : m_topAlgList){    

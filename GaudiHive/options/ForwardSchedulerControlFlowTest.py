@@ -7,7 +7,7 @@ from Configurables import  GaudiSequencer
 InertMessageSvc(OutputLevel=INFO)
 
 # metaconfig
-evtslots = 13
+evtslots = 1
 evtMax = 20
 cardinality=10
 algosInFlight=10
@@ -19,41 +19,45 @@ slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 
 scheduler = ForwardSchedulerSvc(MaxEventsInFlight = evtslots,
                                 MaxAlgosInFlight = algosInFlight,
-                                OutputLevel=WARNING,
-                                AlgosDependencies = [[],['a1'],['a1'],['a2','a3']])
+                                OutputLevel=DEBUG)
 
 AlgResourcePool(OutputLevel=DEBUG)
-                                
-a1 = CPUCruncher("A1", 
-                 Outputs = ['/Event/a1'],
-                 shortCalib=True,
-                 varRuntime=.1, 
-                 avgRuntime=.5 )
-a2 = CPUCruncher("A2", 
-                 shortCalib=True,
-                 Inputs = ['/Event/a1'],
-                 Outputs = ['/Event/a2'])
-a3 = CPUCruncher("A3", 
-                 shortCalib=True,
-                 Inputs = ['/Event/a1'],
-                 Outputs = ['/Event/a3'])
-a4 = CPUCruncher("A4", 
-                 shortCalib=True,
-                 Inputs = ['/Event/a2','/Event/a3'],
-                 Outputs = ['/Event/a4'])
 
-for algo in [a1,a2,a3,a4]:
-  algo.Cardinality = cardinality
-  algo.OutputLevel=WARNING
+FakeInput = CPUCruncher("FakeInput", 
+                        Outputs = ['/Event/DAQ/ODIN','/Event/DAQ/RawEvent','/Event/Hlt/LumiSummary'],
+                        shortCalib=True,
+                        varRuntime=.1, 
+                        avgRuntime=.1 )
 
+BrunelInit = CPUCruncher("BrunelInit",
+                         Inputs = ['DAQ/ODIN','DAQ/RawEvent'],
+                         Outputs = ['/Event/Rec/Status', '/Event/Rec/Header'],
+                         shortCalib=True)
+
+PhysFilter = CPUCruncher("PhysFilter", 
+                         shortCalib=True,
+                         Inputs = ['Hlt/LumiSummary'])
+
+HltDecReportsDecoder = CPUCruncher("HltDecReportsDecoder", 
+                                   shortCalib=True,
+                                   Inputs = ['DAQ/RawEvent'],
+                                   Outputs = ['/Event/Hlt/DecReports'])
+
+HltErrorFilter = CPUCruncher("HltErrorFilter",
+                             shortCalib=True,
+                             Inputs = ['Hlt/DecReports'])
+                                   
 sequence1 = GaudiSequencer("Sequence1")
-sequence1.Members += [a1,a2]
+sequence1.Members += [FakeInput,BrunelInit,PhysFilter,HltDecReportsDecoder]
 sequence1.ModeOR = False
 sequence1.ShortCircuit = False # whether the evaluation is lazy or not!
+sequence2 = GaudiSequencer("Sequence2")
+sequence2.Members += [sequence1, HltErrorFilter]
+
 
 ApplicationMgr( EvtMax = evtMax,
                 EvtSel = 'NONE',
                 ExtSvc =[whiteboard],
                 EventLoop = slimeventloopmgr,
-                TopAlg = [sequence1,a3,a4],
+                TopAlg = [sequence2],
                 MessageSvcType="InertMessageSvc")

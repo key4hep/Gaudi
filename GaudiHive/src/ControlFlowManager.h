@@ -9,7 +9,7 @@
 #include "AlgsExecutionStates.h"
 
 
-// TODO: add non-lazy behaviour!
+// TODO: simplify structure put into updateState
 
 namespace concurrency {
 
@@ -18,21 +18,28 @@ namespace concurrency {
   class ControlFlowNode {
   public:
     /// Constructor
-    ControlFlowNode(){};
+    ControlFlowNode(unsigned int& index, const std::string& name) : m_nodeIndex(index), m_nodeName(name) {};
     /// Destructor
     virtual ~ControlFlowNode(){}; 
     /// Initialize
     virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map){}; 
     /// Method to set algos to CONTROLREADY, if possible
-    virtual int updateState(std::vector<State>& states) const = 0;
+    virtual int updateState(std::vector<State>& states, std::vector<int>& node_results) const = 0;
+    /// Print a string representing the control flow state
+    virtual void printState(std::stringstream& output, const std::vector<int>& node_results, const unsigned int& recursionLevel) const = 0;
+  protected:
+    /// Translation between state id and name
+    std::string stateToString(const int& stateId) const;
+    unsigned int m_nodeIndex;
+    std::string m_nodeName;
   };
 
 
   class DecisionNode : public ControlFlowNode {
   public:
     /// Constructor
-    DecisionNode(bool modeOR, bool allPass, bool isLazy) : 
-      ControlFlowNode(),
+    DecisionNode(unsigned int& index, const std::string& name, bool modeOR, bool allPass, bool isLazy) : 
+      ControlFlowNode(index, name),
       m_modeOR(modeOR), m_allPass(allPass), m_isLazy(isLazy),m_daughters() 
       {};
     /// Destructor
@@ -40,9 +47,11 @@ namespace concurrency {
     /// Initialize
     virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
     /// Method to set algos to CONTROLREADY, if possible
-    virtual int updateState(std::vector<State>& states) const;
+    virtual int updateState(std::vector<State>& states, std::vector<int>& node_results) const;  
     /// Add a daughter node
     void addDaughterNode(ControlFlowNode* node){m_daughters.push_back(node);}
+    /// Print a string representing the control flow state
+    virtual void printState(std::stringstream& output, const std::vector<int>& node_results, const unsigned int& recursionLevel) const;
   private:
     /// Whether acting as "and" (false) or "or" node (true) 
     bool m_modeOR;
@@ -57,14 +66,16 @@ namespace concurrency {
 
   class AlgorithmNode : public ControlFlowNode {
   public:
-    AlgorithmNode(std::string algoName, bool inverted, bool allPass) : 
-      ControlFlowNode(),
+    AlgorithmNode(unsigned int& index, const std::string& algoName, bool inverted, bool allPass) : 
+      ControlFlowNode(index, algoName),
       m_algoName(algoName),m_inverted(inverted),m_allPass(allPass) 
       {};
     /// Initialize
     virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
     /// Method to set algos to CONTROLREADY, if possible
-    virtual int updateState(std::vector<State>& states) const;
+    virtual int updateState(std::vector<State>& states, std::vector<int>& node_results) const;
+    /// Print a string representing the control flow state
+    virtual void printState(std::stringstream& output, const std::vector<int>& node_results, const unsigned int& recursionLevel) const;
   private:
     /// The index of the algorithm 
     unsigned int m_algoIndex;
@@ -93,10 +104,12 @@ public:
   /// A little bit silly, but who cares. ;-)
   bool needsAlgorithmToRun(const unsigned int iAlgo) const;
   /// Update the state of algorithms to controlready, where possible 
-  void updateEventState(std::vector<State>& algo_states) const;
+  void updateEventState(std::vector<State>& algo_states, std::vector<int>& node_results) const;
   /// Initialize the control flow manager
   /// It greps the topalg list and the index map for the algo names 
   void initialize(ControlFlowNode* headNode, const std::unordered_map<std::string,unsigned int>& algname_index_map); 
+  /// Print the state of the control flow for a given event
+  void printEventState(std::stringstream& ss, const std::vector<int>& node_results, const unsigned int& recursionLevel) const {m_headNode->printState(ss,node_results,recursionLevel);}
 
 private:
   /// the head node of the control flow graph; may want to have multiple ones once supporting trigger paths

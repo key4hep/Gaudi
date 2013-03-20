@@ -56,6 +56,7 @@ public:
   virtual StatusCode endRun();  
 
   virtual concurrency::ControlFlowNode* getControlFlow() const {return m_cfNode;} 
+  virtual unsigned int getControlFlowNodeCounter() const {return m_nodeCounter;}
   
 private:
   typedef tbb::concurrent_queue<IAlgorithm*> concurrentQueueIAlgPtr;
@@ -100,6 +101,7 @@ private:
 
   /// OMG yet another hack
   concurrency::DecisionNode* m_cfNode;  
+  unsigned int m_nodeCounter;
 };
 
 #endif  // GAUDIHIVE_ALGRESOURCEPOOL_H
