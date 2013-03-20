@@ -134,10 +134,10 @@ T* DataObjectHandle<T>::get() {
         throw GaudiException (errorMsg,"Wrong DataObjectType",StatusCode::FAILURE);                
       }
       else{
-        log << MSG::INFO <<  "The data type (" <<  dataType
+        log << MSG::DEBUG <<  "The data type (" <<  dataType
             << ") specified for the handle of " << m_dataProductName
             << " is the same of the object in the store. "
-            << "From now on a reinterpret_cast will be performed." << endmsg;
+            << "From now on the result of a static_cast will be returned." << endmsg;
       }
     }
     
