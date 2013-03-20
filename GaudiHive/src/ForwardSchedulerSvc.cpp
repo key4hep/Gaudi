@@ -101,30 +101,30 @@ StatusCode ForwardSchedulerSvc::initialize(){
       m_algosDependencies.emplace_back(algoDependencies);      
     }
   }
-  
-  // Shortcut for the message service
-  SmartIF<IMessageSvc> messageSvc (serviceLocator());
-  if (!messageSvc.isValid())
-    error() << "Error retrieving MessageSvc interface IMessageSvc." << endmsg;
-    
-  m_eventSlots.assign(m_maxEventsInFlight,EventSlot(m_algosDependencies,algsNumber,messageSvc));
-  std::for_each(m_eventSlots.begin(),m_eventSlots.end(),[](EventSlot& slot){slot.complete=true;});
-  //for (auto& slot: m_eventSlots) slot.complete=true; // to be able to insert new eventContext
-   
-  // Fill the containers to convert algo names to index
+
+  // Fill the containers to convert algo names to index 
   m_algname_vect.reserve(algsNumber);
   unsigned int index=0;
   for (IAlgorithm* algo : algos){
     const std::string& name = algo->name();
     m_algname_index_map[name]=index;
-    m_algname_vect.emplace_back(name);    
+    m_algname_vect.emplace_back(name);
     index++;
-  }  
+  }
 
   // prepare the control flow part
   const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>(m_algResourcePool.get());
   m_cfManager.initialize(algPool->getControlFlow(), m_algname_index_map);
-  
+  unsigned int controlFlowNodeNumber = algPool->getControlFlowNodeCounter();
+  // Shortcut for the message service
+  SmartIF<IMessageSvc> messageSvc (serviceLocator());
+  if (!messageSvc.isValid())
+    error() << "Error retrieving MessageSvc interface IMessageSvc." << endmsg;
+    
+  m_eventSlots.assign(m_maxEventsInFlight,EventSlot(m_algosDependencies,algsNumber,controlFlowNodeNumber,messageSvc));
+  std::for_each(m_eventSlots.begin(),m_eventSlots.end(),[](EventSlot& slot){slot.complete=true;});
+  //for (auto& slot: m_eventSlots) slot.complete=true; // to be able to insert new eventContext
+   
   // Activate the scheduler 
   info() << "Activating scheduler in a separate thread" << endmsg;
   m_thread = std::thread (std::bind(&ForwardSchedulerSvc::m_activate,
@@ -391,7 +391,7 @@ StatusCode ForwardSchedulerSvc::m_updateStates(EventSlotIndex si){
     AlgsExecutionStates& thisAlgsStates = thisSlot.algsStates;
 
     // Take care of the control ready update
-    m_cfManager.updateEventState(thisAlgsStates.m_states);
+    m_cfManager.updateEventState(thisAlgsStates.m_states,thisSlot.controlFlowState);
 
     for (unsigned int iAlgo=0;iAlgo<m_algname_vect.size();++iAlgo){
       const AlgsExecutionStates::State& algState = thisAlgsStates.algorithmState(iAlgo);
@@ -419,6 +419,10 @@ StatusCode ForwardSchedulerSvc::m_updateStates(EventSlotIndex si){
       debug() << "Event " << thisSlot.eventContext->m_evt_num 
              << " finished (slot "<< thisSlot.eventContext->m_evt_slot 
              << ")." << endmsg;
+      // now let's return the fully evaluated result of the control flow
+      std::stringstream ss;
+      m_cfManager.printEventState(ss,thisSlot.controlFlowState,0);
+      debug() << ss.str() << endmsg;
       thisSlot.eventContext= nullptr;
     } else{
       m_isStalled(iSlot).ignore();
@@ -473,6 +477,10 @@ StatusCode ForwardSchedulerSvc::m_isStalled(EventSlotIndex iSlot){
     for (auto product : wbSlotContent ){
         errorMsg << " o " << product << std::endl;
     }
+
+    // Snapshot of the ControlFlow
+    errorMsg << "The status of the control flow for this event was:" << std::endl;
+    m_cfManager.printEventState(errorMsg,thisSlot.controlFlowState,0);
 
     throw GaudiException (errorMsg.str(),
                           "ForwardSchedulerSvc",

@@ -103,11 +103,13 @@ private:
   public:
     EventSlot(const std::vector<std::vector<std::string>>& algoDependencies, 
               unsigned int numberOfAlgorithms,
+              unsigned int numberOfControlFlowNodes,
               SmartIF<IMessageSvc> MS):
                 eventContext(nullptr),
                 algsStates(numberOfAlgorithms,MS),
                 complete(false),
-                dataFlowMgr(algoDependencies){};
+                dataFlowMgr(algoDependencies),
+                controlFlowState(numberOfControlFlowNodes,-1){};
       
     ~EventSlot(){};
 
@@ -116,6 +118,7 @@ private:
       algsStates.reset();
       dataFlowMgr.reset();
       complete=false;
+      controlFlowState.assign(controlFlowState.size(),-1);
     };
     
     // Members ----
@@ -123,6 +126,7 @@ private:
     AlgsExecutionStates algsStates; 
     bool complete;
     DataFlowManager dataFlowMgr;
+    std::vector<int> controlFlowState;
   };   
   
   int m_maxEventsInFlight;
