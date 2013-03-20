@@ -22,15 +22,6 @@
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY(ForwardSchedulerSvc)
 
-std::map<ForwardSchedulerSvc::AlgsExecutionStates::State,std::string> ForwardSchedulerSvc::AlgsExecutionStates::stateNames= {
-    {INITIAL,"INITIAL"},
-    {CONTROLREADY,"CONTROLREADY"},
-    {DATAREADY,"DATAREADY"},
-    {SCHEDULED,"SCHEDULED"},
-    {EXECUTED,"EXECUTED"},
-    {ERROR,"ERROR"}
-    };
-
 //===========================================================================
 // Infrastructure methods
 
@@ -123,6 +114,10 @@ StatusCode ForwardSchedulerSvc::initialize(){
     m_algname_vect.emplace_back(name);    
     index++;
   }  
+
+  // prepare the control flow part
+  const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>(m_algResourcePool.get());
+  m_cfManager.initialize(algPool->getControlFlow(), m_algname_index_map);
   
   // Activate the scheduler 
   info() << "Activating scheduler in a separate thread" << endmsg;
@@ -350,10 +345,6 @@ StatusCode ForwardSchedulerSvc::m_updateStates(EventSlotIndex si){
   // Posterchild for constexpr with gcc4.7 onwards!
   const std::map<AlgsExecutionStates::State, std::function<StatusCode(AlgoSlotIndex iAlgo, EventSlotIndex si)>> 
    statesTransitions = {
-  {AlgsExecutionStates::INITIAL, std::bind(&ForwardSchedulerSvc::m_promoteToControlReady,
-                                 this,
-                                 std::placeholders::_1,
-                                 std::placeholders::_2)},
   {AlgsExecutionStates::CONTROLREADY, std::bind(&ForwardSchedulerSvc::m_promoteToDataReady,
                                       this,
                                       std::placeholders::_1,  
@@ -392,6 +383,9 @@ StatusCode ForwardSchedulerSvc::m_updateStates(EventSlotIndex si){
     // Cache the states of the algos to improve readability and performance
     auto& thisSlot = m_eventSlots[iSlot];
     AlgsExecutionStates& thisAlgsStates = thisSlot.algsStates;
+
+    // Take care of the control ready update
+    m_cfManager.updateEventState(thisAlgsStates.m_states);
 
     for (unsigned int iAlgo=0;iAlgo<m_algname_vect.size();++iAlgo){
       const AlgsExecutionStates::State& algState = thisAlgsStates.algorithmState(iAlgo);
@@ -592,16 +586,23 @@ StatusCode ForwardSchedulerSvc::m_promoteToExecuted(AlgoSlotIndex iAlgo, EventSl
   debug() << "Algorithm " << algo->name() << " executed. Algorithms in flight are "
       << m_algosInFlight << endmsg;
 
-   // Schedule an update of the stati of the algorithms
-   auto updateAction = std::bind(&ForwardSchedulerSvc::m_updateStates,
-                                 this,
-                                 -1);
-   m_actionsQueue.push(updateAction);
+  // Schedule an update of the status of the algorithms
+  auto updateAction = std::bind(&ForwardSchedulerSvc::m_updateStates,
+                                this,
+                                -1);
+  m_actionsQueue.push(updateAction);
 
-  debug() << "Trying to promote " << m_index2algname(iAlgo) << " to EXECUTED" << endmsg;
-  sc = m_eventSlots[si].algsStates.updateState(iAlgo,AlgsExecutionStates::EXECUTED);
+  debug() << "Trying to handle execution result of " << m_index2algname(iAlgo) << "." << endmsg;
+  State state;
+  if (algo->filterPassed()){
+    state = State::EVTACCEPTED;
+  } else {
+    state = State::EVTREJECTED;
+  }
+
+  sc = m_eventSlots[si].algsStates.updateState(iAlgo,state);
   if (sc.isSuccess())
-    debug() << "Promoting " << m_index2algname(iAlgo) << " on slot " << si << " to EXECUTED" << endmsg;
+    debug() << "Promoting " << m_index2algname(iAlgo) << " on slot " << si << " to " << AlgsExecutionStates::stateNames[state] << endmsg;
   return sc;
 }
 

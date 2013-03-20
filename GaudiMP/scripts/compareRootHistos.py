@@ -284,7 +284,7 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity) :
   print '\t\tINTEGRAL TEST        : %i'%( otherTest )
   print '\t\tENTRIES TEST         : %i'%( xEntries )
   if checkBin2BinIdentity:
-    print '\t\BIN2BIN TEST         : %i'%( passedIdentity )
+    print '\t\tBIN2BIN TEST         : %i'%( passedIdentity )
   print '\t\t                       ____'
   print '\t\tTested               : %i'%( cEntries )  
 
@@ -292,9 +292,11 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity) :
   print '\t\tK-Test      : %i'%( failedKol  )
   print '\t\tIntegrals   : %i'%( xIntegrals )    
   print '\t\tEntries     : %i'%( xEntries   )  
-  if (failedKol+xIntegrals+xEntries+failedIdentity)!=0:
+  retval = failedKol+xIntegrals+xEntries+failedIdentity
+  if retval!=0:
     print '\nThe two sets of histograms were not identical'
-  print '\n'+'='*80  
+  print '\n'+'='*80
+  return retval  
 
 # =================================================================================================
 
@@ -319,7 +321,8 @@ if __name__ == '__main__' :
                     help="Check for bin to bin identity")
   (options, args) = parser.parse_args()
 
-  if not args:
+  if len(args)!=2:
+    print "Wrong number of rootfiles. Usage:"
     print usage
     sys.exit(1)
   
@@ -345,9 +348,10 @@ if __name__ == '__main__' :
   state = comparePaths( ts, tp )
   
   # compare histos from each file
-  compareHistos( ts, tp, state, checkBin2BinIdentity=options.bin2bin )
+  retval =compareHistos( ts, tp, state, checkBin2BinIdentity=options.bin2bin )
   
   # finished with TFiles
   tfs.Close()     ; tfp.Close()
  
+  sys.exit(retval)
 
