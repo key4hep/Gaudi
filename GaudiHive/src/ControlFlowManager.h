@@ -20,9 +20,9 @@ namespace concurrency {
     /// Constructor
     ControlFlowNode(unsigned int& index, const std::string& name) : m_nodeIndex(index), m_nodeName(name) {};
     /// Destructor
-    virtual ~ControlFlowNode(){}; 
+    virtual ~ControlFlowNode(){};
     /// Initialize
-    virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map){}; 
+    virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map) = 0;
     /// Method to set algos to CONTROLREADY, if possible
     virtual int updateState(std::vector<State>& states, std::vector<int>& node_results) const = 0;
     /// Print a string representing the control flow state
