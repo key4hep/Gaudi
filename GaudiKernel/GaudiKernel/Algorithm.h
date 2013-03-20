@@ -555,7 +555,7 @@ public:
     // Push into the handlers container
     if (LIKELY(doh != NULL)){
       m_dataObjectHandles->push_back(dynamic_cast<MinimalDataObjectHandle*>(doh));      
-      log << MSG::INFO << "Handle for " << address << " successfully created and stored." << endmsg; 
+      log << MSG::DEBUG << "Handle for " << address << " successfully created and stored." << endmsg;
       return StatusCode::SUCCESS;  
       }
   
