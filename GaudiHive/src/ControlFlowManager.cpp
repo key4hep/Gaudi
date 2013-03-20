@@ -23,7 +23,7 @@ namespace concurrency {
 
   //---------------------------------------------------------------------------
   void DecisionNode::printState(std::stringstream& output, const std::vector<int>& node_results, const unsigned int& recursionLevel) const {
-    output << std::string(" ", recursionLevel) << m_nodeName << " : " << stateToString(node_results[m_nodeIndex]) << std::endl;
+    output << std::string(recursionLevel, ' ') << m_nodeName << " : " << stateToString(node_results[m_nodeIndex]) << std::endl;
     for (auto daughter : m_daughters ) {
       daughter->printState(output,node_results,recursionLevel+1);      
     }
@@ -33,7 +33,7 @@ namespace concurrency {
   int DecisionNode::updateState(std::vector<State>& states, std::vector<int>& node_decisions) const {
     // check whether we already had a result earlier
     //    if (-1 != node_decisions[m_nodeIndex] ) { return node_decisions[m_nodeIndex]; }
-    int decision = ((m_allPass) ? 1 : -1);
+    int decision = ((m_allPass && m_isLazy) ? 1 : -1);
     bool hasUndecidedChild = false;
     for (auto daughter : m_daughters){
       if (m_isLazy && (-1 !=decision || hasUndecidedChild ) ) {
@@ -53,6 +53,7 @@ namespace concurrency {
     }
     // in all other cases I stay with previous decisions
     node_decisions[m_nodeIndex] = decision;
+    if (m_allPass) decision = 1; 
     return decision;
   }
 
@@ -60,9 +61,10 @@ namespace concurrency {
   void AlgorithmNode::initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map){
     m_algoIndex = algname_index_map.at(m_algoName);
   }
-
+  
+  //---------------------------------------------------------------------------
   void AlgorithmNode::printState(std::stringstream& output, const std::vector<int>& node_results, const unsigned int& recursionLevel) const {
-    output << std::string(" ", recursionLevel) << m_nodeName << " : " << stateToString(node_results[m_nodeIndex]) << std::endl;  
+    output << std::string(recursionLevel, ' ') << m_nodeName << " : " << stateToString(node_results[m_nodeIndex]) << std::endl;  
   }
 
   //---------------------------------------------------------------------------
