@@ -178,6 +178,7 @@ StatusCode AlgResourcePool::m_flattenSequencer(Algorithm* algo, ListAlg& alglist
     modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
     allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
     isLazy = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
+    if (allPass) isLazy = false; // standard GaudiSequencer behaviour on all pass is to execute everything
   }
   concurrency::DecisionNode* node = new concurrency::DecisionNode(m_nodeCounter,algo->name(),modeOR,allPass,isLazy);
   ++m_nodeCounter;
