@@ -85,13 +85,19 @@ StatusCode ForwardSchedulerSvc::initialize(){
       Algorithm* algoPtr = dynamic_cast<Algorithm*> (ialgoPtr);
       const std::vector<MinimalDataObjectHandle*>& algoHandles(algoPtr->handles());
       std::vector<std::string> algoDependencies;
-      for (MinimalDataObjectHandle* handlePtr : algoHandles ){
-        if (handlePtr->accessType() == IDataObjectHandle::AccessType::READ){
-          const std::string& productName = handlePtr->dataProductName();
-          info() << "READ Handle found for product " << productName << endmsg;
-          algoDependencies.emplace_back(productName);
-        }
+      if (!algoHandles.empty()){
+        info() << "Algorithm " << algoPtr->name() << " data dependencies:" << endmsg;
+        for (MinimalDataObjectHandle* handlePtr : algoHandles ){
+          if (handlePtr->accessType() == IDataObjectHandle::AccessType::READ){
+            const std::string& productName = handlePtr->dataProductName();
+            info() << "  o READ Handle found for product " << productName << endmsg;
+            algoDependencies.emplace_back(productName);
+          }
+        }          
+      } else {
+        info() << "Algorithm " << algoPtr->name() << " has no data dependencies." << endmsg;
       }
+      
       m_algosDependencies.emplace_back(algoDependencies);      
     }
   }
@@ -448,6 +454,10 @@ StatusCode ForwardSchedulerSvc::m_isStalled(EventSlotIndex iSlot){
         auto deps (thisSlot.dataFlowMgr.dataDependencies(algoIndex));
         char separator=',';
         const int depsSize=deps.size();
+        if (depsSize==0){
+          errorMsg << " none.";
+        }
+        
         for (int i=0;i<depsSize;++i){
           if (i==depsSize-1)
             separator = ' ';
