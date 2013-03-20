@@ -287,7 +287,7 @@ StatusCode ForwardSchedulerSvc::m_drain(){
 * Get a finished event or block until one becomes available.
 */
 StatusCode ForwardSchedulerSvc::popFinishedEvent(EventContext*& eventContext){
-  if (m_freeSlots == m_maxEventsInFlight){
+  if (static_cast<int>(m_freeSlots) == m_maxEventsInFlight){
       return StatusCode::FAILURE;     
   }
   else{
