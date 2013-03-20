@@ -74,9 +74,6 @@ tbb::task* AlgoExecutionTask::execute() {
   // then receive the FAILURE
   eventContext->m_evt_failed=eventfailed;  
   
-  
-  // TODO: Here the code from the algo is to be analysed for the Control Flow
-
   // Push in the scheduler queue an action to be performed 
   auto action_promote2Executed = std::bind(&ForwardSchedulerSvc::m_promoteToExecuted, 
                                            m_schedSvc, 

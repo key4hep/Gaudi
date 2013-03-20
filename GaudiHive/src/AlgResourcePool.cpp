@@ -147,17 +147,6 @@ StatusCode AlgResourcePool::releaseResource(const std::string& name){
 
 StatusCode AlgResourcePool::m_flattenSequencer(Algorithm* algo, ListAlg& alglist, concurrency::DecisionNode* motherNode, unsigned int recursionDepth){
       
-  // DP: here feed the ControlFlowSvc with the proper info?
-  // Hacks waiting the Control Flow:
-  // 1) Take only the first algo if the sequencer is an OR
-  // 2) Skip the  HltDecReportsDecoder-s
-  // 3) Skip the RawBankReadoutStatusConverter-s
-  // 4) Skip HltRoutingBitsFilter
-  // 5) Skip LoKi::HDRFilter
-  // 6) Skip EventCountHisto
-
-  const std::string hack_banner("\n\n****************\n HACK PRESENT: PLEASE PROVIDE CONTROL FLOW!\n ****************\n");
-  
   std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
   if (subAlgorithms->empty() and not (algo->type() == "GaudiSequencer")){
     debug() << std::string(recursionDepth, ' ') << algo->name() << " is not a sequencer. Appending it" << endmsg;
@@ -242,7 +231,7 @@ StatusCode AlgResourcePool::m_decodeTopAlgs()    {
   // Top Alg list filled ----
 
   // prepare the head node for the control flow
-  m_cfNode = new concurrency::DecisionNode(m_nodeCounter, "JOB", true,true,false);
+  m_cfNode = new concurrency::DecisionNode(m_nodeCounter, "EVENT LOOP", true,true,false);
   ++m_nodeCounter;
 
   // Now we unroll it ----
