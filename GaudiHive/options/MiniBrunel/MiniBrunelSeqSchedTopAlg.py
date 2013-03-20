@@ -68,7 +68,7 @@ ApplicationMgr().SvcMapping.append(msgSvc)
 from Configurables import Brunel, RecSysConf, RecMoniConf, LumiAlgsConf
 Brunel(
        OutputType='NONE', # Do not write output
-       EvtMax=500,
+       EvtMax=5,
       )
 # Change input file
 EventSelector().Input = [

@@ -25,7 +25,7 @@ whiteboard   = HiveWhiteBoard("EventDataSvc",
 # Scheduler
 # configured to be sequential: 1 evt in flight, no deps, 1 algo in flight
 scheduler = ForwardSchedulerSvc(MaxEventsInFlight = simultaneousEvents,
-                                MaxAlgosInFlight = 1,
+                                MaxAlgosInFlight = 4,
                                 OutputLevel=INFO,
                                 AlgosDependencies = [])
 

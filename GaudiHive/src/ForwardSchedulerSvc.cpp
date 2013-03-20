@@ -413,7 +413,10 @@ StatusCode ForwardSchedulerSvc::m_updateStates(EventSlotIndex si){
     } // end loop on algos
 
     // Not complete because this would mean that the slot is already free!
-    if (!thisSlot.complete && thisSlot.algsStates.allAlgsExecuted()){
+    if (!thisSlot.complete &&
+      !thisSlot.algsStates.algsPresent(AlgsExecutionStates::CONTROLREADY) &&
+      !thisSlot.algsStates.algsPresent(AlgsExecutionStates::DATAREADY) &&
+      !thisSlot.algsStates.algsPresent(AlgsExecutionStates::SCHEDULED)){
       thisSlot.complete=true;
       m_finishedEvents.push(thisSlot.eventContext);
       debug() << "Event " << thisSlot.eventContext->m_evt_num 
@@ -443,7 +446,7 @@ StatusCode ForwardSchedulerSvc::m_isStalled(EventSlotIndex iSlot){
 
   if (m_actionsQueue.empty() &&
       m_algosInFlight == 0 &&
-      !thisSlot.algsStates.algsPresent(AlgsExecutionStates::DATAREADY)){
+      (!thisSlot.algsStates.algsPresent(AlgsExecutionStates::DATAREADY))){
 
     info() << "About to declare a stall"<< endmsg;
 
@@ -477,13 +480,15 @@ StatusCode ForwardSchedulerSvc::m_isStalled(EventSlotIndex iSlot){
     for (auto product : wbSlotContent ){
         errorMsg << " o " << product << std::endl;
     }
-
+ 
     // Snapshot of the ControlFlow
     errorMsg << "The status of the control flow for this event was:" << std::endl;
     m_cfManager.printEventState(errorMsg,thisSlot.controlFlowState,0);
 
-    throw GaudiException (errorMsg.str(),
-                          "ForwardSchedulerSvc",
+    fatal() << errorMsg.str() << endmsg;
+    
+    throw GaudiException ("Stall detected",
+                          name(),
                           StatusCode::FAILURE);
 
     return StatusCode::FAILURE;
