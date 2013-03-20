@@ -21,7 +21,6 @@ AlgResourcePool::AlgResourcePool( const std::string& name, ISvcLocator* svc ) :
 {
   declareProperty("CreateLazily", m_lazyCreation = false );
   declareProperty("TopAlg", m_topAlgNames );
-  declareProperty("DoHacks", m_doHacks=false);
 }
 
 //---------------------------------------------------------------------------
@@ -185,37 +184,13 @@ StatusCode AlgResourcePool::m_flattenSequencer(Algorithm* algo, ListAlg& alglist
   motherNode->addDaughterNode(node);
 
   for (Algorithm* subalgo : *subAlgorithms ){
-    // Hack 2) 3) 4) 5) 6)
-    if ( ( subalgo->type() == "HltDecReportsDecoder" or
-           subalgo->type() == "RawBankReadoutStatusConverter" or
-           subalgo->type() == "HltRoutingBitsFilter" or
-           subalgo->type() == "LoKi::HDRFilter" or
-           subalgo->type() == "EventCountHisto")
-         and m_doHacks){
-      always() << hack_banner<<endmsg;
-      always() << "HACK -- Removing " << subalgo->type()<< "/" << subalgo->name() << endmsg;
-      continue;
-    }
-
     StatusCode sc (m_flattenSequencer(subalgo,alglist,node,recursionDepth));
     if (sc.isFailure()){
       error() << "Algorithm " << subalgo->name() << " could not be flattened" << endmsg;
       return sc;
     }
-    // Hack 1) take only the first possibility    
-    //    if (algo->type() == "GaudiSequencer" and m_doHacks){
-    //      SmartIF<IProperty> p (algo);
-    //      if (p->getProperty("ModeOR").toString() == "True"){
-    //        always() << hack_banner<<endmsg;
-    //        always() << "HACK -- Stop OR sequence at first element: " << subalgo->type()<< "/" << subalgo->name() << endmsg;
-    //        break;
-    //      }
-    //    }
   }  
-
   return StatusCode::SUCCESS;
-    
-  
 }
 
 //---------------------------------------------------------------------------
