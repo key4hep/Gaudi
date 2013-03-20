@@ -8,9 +8,6 @@
 // fwk includes
 #include "AlgsExecutionStates.h"
 
-
-// TODO: simplify structure put into updateState
-
 namespace concurrency {
 
   typedef AlgsExecutionStates::State State;
@@ -90,7 +87,8 @@ namespace concurrency {
 
 /**@class ControlFlowManager ControlFlowManager.h GaudiHive/src/ControlFlowManager.h
  *
- *  For now one instance can be shared across events
+ *  Manage the control flow using a tree structure
+ *  Once initialized, the tree is const and can be shared across events
  * 
  *  @author  Benedikt Hegner
  *  @version 1.0
