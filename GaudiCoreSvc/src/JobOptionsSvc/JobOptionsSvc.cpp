@@ -12,6 +12,7 @@
 #include "Units.h"
 #include "PragmaOptions.h"
 #include "Node.h"
+#include "PythonConfig.h"
 // ============================================================================
 // Gaudi:
 // ============================================================================
@@ -68,6 +69,10 @@ StatusCode JobOptionsSvc::initialize()
   // Read the job options if needed
   if ( this->m_source_type == "NONE" ) {
     sc =  StatusCode::SUCCESS;
+  }
+  else if (this->m_source_type == "PYTHON" ) {
+    PythonConfig conf(this);  
+    conf.readConfig(m_source_path);
   }
   else {
     sc = this->readOptions( m_source_path , m_dir_search_path);
