@@ -1,5 +1,9 @@
 Package: GaudiRelease
-Manatiner: Marco Clemencic
+Maintainer: Marco Clemencic
+
+! 2013-03-27 - Hubert Degaudenzi
+ - Added protection in heptools-common if Boost_config_verison is not defined.
+   This is the case when using Boost from the system instead of the LCG stack
 
 ============================= GaudiRelease v23r7 =============================
 ! 2013-02-26 - Marco Clemencic
