@@ -48,6 +48,7 @@ m_pmgr()
   m_pmgr.declareProperty( "PATH"       , m_source_path   ) ;
   m_pmgr.declareProperty( "SEARCHPATH" , m_dir_search_path ) ;
   m_pmgr.declareProperty( "DUMPFILE"   , m_dump          ) ;
+  m_pmgr.declareProperty( "PYTHONACTION" , m_pythonAction  ) ;
 }
 // ============================================================================
 StatusCode JobOptionsSvc::setProperty( const Property &p )
@@ -72,7 +73,7 @@ StatusCode JobOptionsSvc::initialize()
   }
   else if (this->m_source_type == "PYTHON" ) {
     PythonConfig conf(this);  
-    conf.readConfig(m_source_path);
+    conf.evaluateConfig(m_source_path, m_pythonAction);
   }
   else {
     sc = this->readOptions( m_source_path , m_dir_search_path);

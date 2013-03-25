@@ -2,7 +2,6 @@
 #include <string>
 #include "GaudiKernel/Bootstrap.h"
 #include "GaudiKernel/IAppMgrUI.h"
-#include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/Property.h"
@@ -55,6 +54,6 @@ int main ( int argc, char** argv )
   SmartIF<IAppMgrUI> appUI  ( iface );
   propMgr->setProperty("JobOptionsType","PYTHON");
   propMgr->setProperty("JobOptionsPath",fileName); 
-
+  propMgr->setProperty("JobOptionsPostAction", ""); //TODO: grep this from command line
   return appUI->run();
 }

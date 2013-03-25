@@ -24,7 +24,7 @@ class PythonConfig {
 public:
   PythonConfig(IJobOptionsSvc* jos) : 
     m_IJobOptionsSvc(jos){};
-  StatusCode readConfig(const std::string& filename);
+    StatusCode evaluateConfig(const std::string& filename, const std::string& pythonAction);
 private:
   SmartIF<IJobOptionsSvc> m_IJobOptionsSvc;
 };
