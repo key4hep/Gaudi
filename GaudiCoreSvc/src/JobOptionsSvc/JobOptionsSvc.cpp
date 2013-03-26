@@ -73,7 +73,7 @@ StatusCode JobOptionsSvc::initialize()
   }
   else if (this->m_source_type == "PYTHON" ) {
     PythonConfig conf(this);  
-    conf.evaluateConfig(m_source_path, m_pythonAction);
+    sc = conf.evaluateConfig(m_source_path, m_pythonAction);
   }
   else {
     sc = this->readOptions( m_source_path , m_dir_search_path);
