@@ -19,7 +19,7 @@ int main ( int argc, char** argv )
   options_description desc("Allowed options");
   desc.add_options()
         ("help,h", "produce help message")
-        ("config", value<std::string>(), "the python configuration file")
+        ("config", value<std::string>(), "comma separated list of python configuration files")
   ;
   positional_options_description p;
   p.add("config", 1);
