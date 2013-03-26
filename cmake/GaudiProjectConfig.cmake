@@ -483,18 +483,20 @@ macro(_gaudi_use_other_projects)
                    PATH_SUFFIXES ${suffixes})
       if(${other_project}_FOUND)
         message(STATUS "  found ${other_project} ${${other_project}_VERSION} ${${other_project}_DIR}")
-        if(NOT heptools_version STREQUAL ${other_project}_heptools_version)
-          if(${other_project}_heptools_version)
-            set(hint_message "with the option '-DCMAKE_TOOLCHAIN_FILE=.../heptools-${${other_project}_heptools_version}.cmake'")
-          else()
-            set(hint_message "without the option '-DCMAKE_TOOLCHAIN_FILE=...'")
-          endif()
-          message(FATAL_ERROR "Incompatible versions of heptools toolchains:
+        if(heptools_version)
+          if(NOT heptools_version STREQUAL ${other_project}_heptools_version)
+            if(${other_project}_heptools_version)
+              set(hint_message "with the option '-DCMAKE_TOOLCHAIN_FILE=.../heptools-${${other_project}_heptools_version}.cmake'")
+            else()
+              set(hint_message "without the option '-DCMAKE_TOOLCHAIN_FILE=...'")
+            endif()
+            message(FATAL_ERROR "Incompatible versions of heptools toolchains:
   ${CMAKE_PROJECT_NAME} -> ${heptools_version}
   ${other_project} ${${other_project}_VERSION} -> ${${other_project}_heptools_version}
 
   You need to call cmake ${hint_message}
 ")
+          endif()
         endif()
         if(NOT LCG_SYSTEM STREQUAL ${other_project}_heptools_system)
           message(FATAL_ERROR "Incompatible values of LCG_SYSTEM:
