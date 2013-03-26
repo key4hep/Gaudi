@@ -241,6 +241,7 @@ protected:
   StringArrayProperty  m_dllNameList;       ///< List of DDL's names
   std::string          m_jobOptionsType;    ///< Source type (e.g. dbase, file...)
   std::string          m_jobOptionsPath;    ///< The "file" to look for properties
+  std::string          m_jobOptionsPostAction;  ///< additional command to run on config
   std::string          m_runableType;       ///< Runable type
   std::string          m_eventLoopMgr;      ///< Processing manager type
   std::string          m_evtsel;            ///< Event selection

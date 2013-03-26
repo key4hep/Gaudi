@@ -100,6 +100,7 @@ ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
   // Declare Job Options Service properties and set default
   m_propertyMgr->declareProperty("JobOptionsType", m_jobOptionsType = "FILE");
   m_propertyMgr->declareProperty("JobOptionsPath", m_jobOptionsPath = "");
+  m_propertyMgr->declareProperty("JobOptionsPostAction", m_jobOptionsPostAction = "");
   m_propertyMgr->declareProperty("EvtMax",         m_evtMax = -1);
   m_propertyMgr->declareProperty("EvtSel",         m_evtsel );
   m_propertyMgr->declareProperty("OutputLevel",    m_outputLevel = MSG::INFO);
@@ -237,6 +238,14 @@ StatusCode ApplicationMgr::i_startup() {
   if( !sc.isSuccess() )   {
     fatal() << "Error setting TYPE option in JobOptionsSvc" << endmsg;
     return sc;
+  }
+
+  if ( m_jobOptionsPostAction != "") {
+    sc = jobOptsIProp->setProperty( StringProperty("PYTHONACTION", m_jobOptionsPostAction) );
+    if( !sc.isSuccess() ) {
+      fatal() << "Error setting JobOptionsPostAction option in JobOptionsSvc" << endmsg;
+      return sc;
+    }
   }
 
   if ( m_jobOptionsPath != "") {         // The command line takes precedence
