@@ -1,6 +1,15 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-03-05 - Charles Leggett
+ - Merge with GaudiPolicy-11-01-16
+   - Conditional usage
+   - extra env vars
+   - install.py hack for darwin cp on afs
+
+M       cmt/requirements
+M       scripts/install.py
+
 ! 2013-03-27 - Hubert Degaudenzi
  - Modified createProjVersHeader.py to understand only the LHCb version
    style(vXrY[pZ]) , the ATLAS version style (bla-X-Y[-Z]) and the plain

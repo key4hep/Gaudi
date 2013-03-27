@@ -1420,6 +1420,52 @@ set GAUDI_DOXY_HOME $(GAUDI_home)/GaudiRelease/doc
 #     action CppCheck "cppcheck --all --quiet $(includes) ../src || echo 'No Cpp files' "
 
 #-------------------------------------------------------------------
+# Conditional use of packages
+#-------------------------------------------------------------------
+#
+# Pattern to "use" a package only if a certain tag <tag> is present. If tag is 
+#    NOT active, package will be not be used.
+#
+#   pkg:  package name
+#   tag:  tag name to switch on usage of package
+#   ver:  version of package 
+#   root: root path of package
+#   opt:  extra options to pass
+#
+# parameters ver, root, and opt are optional
+#
+# eg:  use_if pkg=Reflex tag=useReflex ver="*" root="LCG_Interfaces"
+#
+pattern use_if \
+    document use_if pkg=<pkg> tag=<tag> ver=<ver> root=<root> opt="<opt>" ; \
+    private ; \
+    macro use_<pkg>_if "" <tag> "<pkg> <ver> <root> <opt>" ; \
+    end_private ; \
+    use $(use_<pkg>_if)
+
+#
+# Pattern to SUPPRESS "use" of a package if a certain tag <tag> is present. If
+#    tag is NOT active, package will be used by default.
+#
+#   pkg:  package name
+#   tag:  tag name to switch OFF usage of package
+#   ver:  version of package 
+#   root: root path of package
+#   opt:  extra options to pass
+#
+# parameters ver, root, and opt are optional
+#
+# eg:  use_unless pkg=GaudiPoolDb tag=ATLAS ver="*" root="LCG_Interfaces" opt="-no_auto_imports"
+#
+pattern use_unless \
+#    document use_unless pkg=<pkg> tag=<tag> ver=<ver> root=<root> opt="<opt>" ; \
+    private ; \
+    macro use_<pkg>_unless "<pkg> <ver> <root> <opt>" <tag> "" ; \
+    end_private ; \
+    use $(use_<pkg>_unless)
+
+
+#-------------------------------------------------------------------
 # ATLAS specific stuff
 #-------------------------------------------------------------------
 
@@ -1428,6 +1474,26 @@ tag ATLAS no-pyzip
 
 macro_append pp_cppflags "" \
       ATLAS " -DATLAS_GAUDI_V21 "
+
+macro_append pp_cppflags "" \
+      target-opt " -DNDEBUG "
+
+#
+# extra CPP flags
+#
+
+# for building slc5 binaries on slc6 host
+macro CppSpecificFlags "" \
+    ATLAS&host-slc6&target-slc5 " -D__USE_XOPEN2K8 "
+
+# set an env var for use outside, eg a Makefile
+set CPPEXPFLAGS "" \
+  ATLAS $(CppSpecificFlags)
+
+macro_append pp_cppflags " $(CppSpecificFlags)"
+macro_append pp_cflags   " $(CppSpecificFlags)"
+
+#-------------------------------------------------------------------
 
 # FIXME: This should be the kind of pattern to enable custom test settings, but
 # an environment variable is not so safe to use.
