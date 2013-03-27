@@ -1,6 +1,16 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+================================ GaudiMP-01-07-01 ============================
+! 2013-03-06 - Charles Leggett
+ - merge with GaudiMP-01-01-12
+ - updated IoComponentMgr
+ - added various Boost link libraries to GaudiMP_linkopts
+
+M       cmt/requirements
+M       src/component/IoComponentMgr.cpp
+M       src/component/IoComponentMgr.h
+
 ================================ GaudiMP v1r7 ================================
 ! 2013-01-15 - Nathalie Rauschmayr
  - Patch #5593: Implemented late forking for GaudiMP
