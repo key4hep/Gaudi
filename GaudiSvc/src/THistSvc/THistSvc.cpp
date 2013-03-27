@@ -16,6 +16,9 @@
 #include "GaudiKernel/IEventProcessor.h"
 #include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/IIoComponentMgr.h"
+#include "GaudiKernel/IFileMgr.h"
+
+#include "boost/bind.hpp"
 
 
 #include "TROOT.h"
@@ -44,13 +47,15 @@ inline void toupper(std::string &s)
 //*************************************************************************//
 
 THistSvc::THistSvc( const std::string& name, ISvcLocator* svc )
-  : base_class(name, svc), m_log(msgSvc(), name ), signaledStop(false) {
+  : base_class(name, svc), m_log(msgSvc(), name ), signaledStop(false), 
+    m_delayConnect(false),m_okToConnect(false),
+    p_incSvc(0), p_fileMgr(0) {
 
   declareProperty ("AutoSave", m_autoSave=0 );
   declareProperty ("AutoFlush", m_autoFlush=0 );
   declareProperty ("PrintAll", m_print=false);
   declareProperty ("MaxFileSize", m_maxFileSize=10240,
-                   "maximum file size in MB. if exceeded, will cause an abort");
+		   "maximum file size in MB. if exceeded, will cause an abort. -1 to never check.");
   declareProperty ("CompressionLevel", m_compressionLevel=1 )->declareUpdateHandler( &THistSvc::setupCompressionLevel, this );
   declareProperty ("Output", m_outputfile )->declareUpdateHandler( &THistSvc::setupOutputFile, this );
   declareProperty ("Input", m_inputfile )->declareUpdateHandler ( &THistSvc::setupInputFile,  this );
@@ -69,10 +74,6 @@ THistSvc::~THistSvc() {
 StatusCode
 THistSvc::initialize() {
   GlobalDirectoryRestore restore;
-
-  m_alreadyConnectedOutFiles.clear();
-  m_alreadyConnectedInFiles.clear();
-
 
   // Super ugly hack to make sure we have the OutputLevel set first, so we
   // can see DEBUG printouts in update handlers.
@@ -130,14 +131,49 @@ THistSvc::initialize() {
             << gDebug<< endmsg;
   }
 
-  IIncidentSvc* p_incSvc(0);
-
   if (service("IncidentSvc", p_incSvc, true).isFailure()) {
     m_log << MSG::ERROR << "unable to get the IncidentSvc" << endmsg;
     st = StatusCode::FAILURE;
   } else {
     p_incSvc->addListener( this, "EndEvent", 100, true);
   }
+
+  if (service("FileMgr",p_fileMgr,true).isFailure()) {
+    m_log << MSG::ERROR << "unable to get the FileMgr" << endmsg;
+    st = StatusCode::FAILURE;
+  } else {
+    m_log << MSG::DEBUG << "got the FileMgr" << endmsg;
+  }
+
+
+  // Register open/close callback actions
+
+  Io::bfcn_action_t boa = boost::bind(&THistSvc::rootOpenAction, this, _1,_2);
+  if (p_fileMgr->regAction(boa, Io::OPEN, Io::ROOT).isFailure()) {
+    m_log << MSG::ERROR
+	  << "unable to register ROOT file open action with FileMgr"
+	  << endmsg;
+  }
+  Io::bfcn_action_t bea = boost::bind(&THistSvc::rootOpenErrAction, this, _1,_2);
+  if (p_fileMgr->regAction(bea, Io::OPEN_ERR, Io::ROOT).isFailure()) {
+    m_log << MSG::ERROR
+	  << "unable to register ROOT file open Error action with FileMgr"
+	  << endmsg;
+  }
+
+
+  m_okToConnect = true;
+
+  if (m_delayConnect == true) {
+    if (m_inputfile.value().size() > 0) { setupInputFile(m_inputfile); }
+    if (m_outputfile.value().size() > 0) { setupOutputFile(m_outputfile); }
+
+    m_delayConnect = false;
+
+  }
+  m_alreadyConnectedOutFiles.clear();
+  m_alreadyConnectedInFiles.clear();
+
 
   IIoComponentMgr* iomgr(0);
 
@@ -163,8 +199,8 @@ THistSvc::initialize() {
         const std::string fname = ireg->second.first->GetName();
         const IIoComponentMgr::IoMode::Type iomode =
           ( ireg->second.second==THistSvc::READ
-            ? IIoComponentMgr::IoMode::Input
-            : IIoComponentMgr::IoMode::Output );
+	    ? IIoComponentMgr::IoMode::READ
+	    : IIoComponentMgr::IoMode::WRITE );
         if ( !iomgr->io_register (this, iomode, fname).isSuccess () ) {
           m_log << MSG::WARNING << "could not register file ["
                 << fname << "] with the I/O component manager..." << endmsg;
@@ -305,7 +341,7 @@ THistSvc::finalize() {
 
     string tmpfn=itr->second.first->GetName();
 
-    itr->second.first->Close();
+    p_fileMgr->close(itr->second.first, name());
 
     IIncidentSvc *pi(0);
     if (service("IncidentSvc",pi).isFailure()) {
@@ -314,59 +350,44 @@ THistSvc::finalize() {
     }
 
     if (itr->second.second==SHARE) {
-      TFile *outputfile;
+
       //Merge File
-      try {
-        if (m_log.level() <= MSG::DEBUG)
-          m_log << MSG::DEBUG << "Opening Final Output File: "
-                << m_sharedFiles[itr->first].c_str() << endmsg;
-        outputfile = new TFile(m_sharedFiles[itr->first].c_str(), "UPDATE");
-      } catch (const std::exception& Exception) {
-        m_log << MSG::ERROR << "exception caught while trying to open root"
-              << " file for appending: " << Exception.what() << std::endl
-              << "  -> file probably corrupt." << endmsg;
-         pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile,
-                                       m_sharedFiles[itr->first]));
-        return StatusCode::FAILURE;
-      } catch (...) {
-        m_log << MSG::ERROR << "Problems opening output file  \""
-              << m_sharedFiles[itr->first]
-              << "\" for append: probably corrupt" << endmsg;
-         pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile,
-                                       m_sharedFiles[itr->first]));
+      void* vf(0);
+      int r = p_fileMgr->open(Io::ROOT,name(), m_sharedFiles[itr->first],
+			      Io::WRITE|Io::APPEND,vf,"HIST");
+
+      if (r != 0 ) {
+	m_log << MSG::ERROR << "unable to open Final Output File: \""
+	      << m_sharedFiles[itr->first] << "\" for merging"
+	      << endmsg;
         return StatusCode::FAILURE;
       }
 
+      TFile *outputfile = (TFile*) vf;
       pi->fireIncident(FileIncident(name(), IncidentType::WroteToOutputFile,
                                      m_sharedFiles[itr->first]));
 
       if (m_log.level() <= MSG::DEBUG)
         m_log << MSG::DEBUG << "THistSvc::write()::Merging Rootfile "<<endmsg;
-      TFile *inputfile;
-      try {
-        if (m_log.level() <= MSG::DEBUG)
-          m_log << MSG::DEBUG << "Openning again Temporary File: "
-                << tmpfn.c_str() << endmsg;
-        inputfile=new TFile(tmpfn.c_str(),"READ");
-      } catch (const std::exception& Exception) {
-        m_log << MSG::ERROR << "exception caught while trying to open root"
-              << " file for appending: " << Exception.what() << std::endl
-              << "  -> file probably corrupt." << endmsg;
-        return StatusCode::FAILURE;
-      } catch (...) {
-        m_log << MSG::ERROR << "Problems opening output file  \""
-              << tmpfn.c_str()
-              << "\" for append: probably corrupt" << endmsg;
+
+      vf = 0;
+      r = p_fileMgr->open(Io::ROOT,name(),tmpfn,Io::READ,vf,"HIST");
+
+      if (r != 0) {
+	m_log << MSG::ERROR << "unable to open temporary file: \""
+	      << tmpfn << endmsg;
         return StatusCode::FAILURE;
       }
+
+      TFile *inputfile = (TFile*) vf;
 
       outputfile->SetCompressionLevel( inputfile->GetCompressionLevel() );
 
       MergeRootFile(outputfile, inputfile);
 
       outputfile->Write();
-      outputfile->Close();
-      inputfile->Close();
+      p_fileMgr->close(outputfile,name());
+      p_fileMgr->close(inputfile,name());
 
       if (m_log.level() <= MSG::DEBUG)
         m_log << MSG::DEBUG << "Trying to remove temporary file \"" << tmpfn
@@ -1270,6 +1291,19 @@ THistSvc::setupCompressionLevel( Property& /* cl */ )
 void
 THistSvc::setupInputFile( Property& /*m_inputfile*/ )
 {
+
+  if (FSMState() < Gaudi::StateMachine::CONFIGURED || !m_okToConnect ) {
+
+    m_log <<MSG::DEBUG << "Delaying connection of Input Files until Initialize"
+	  << ". now in " << FSMState() 
+	  << endmsg;
+
+    m_delayConnect = true;
+  } else {
+
+    m_log <<MSG::DEBUG << "Now connecting of Input Files"
+	  << endmsg;
+
   StatusCode sc = StatusCode::SUCCESS;
 
   typedef std::vector<std::string> Strings_t;
@@ -1292,6 +1326,9 @@ THistSvc::setupInputFile( Property& /*m_inputfile*/ )
     throw GaudiException( "Problem connecting inputfile !!", name(),
                           StatusCode::FAILURE );
   }
+    
+  }
+
   return;
 }
 
@@ -1300,6 +1337,13 @@ THistSvc::setupInputFile( Property& /*m_inputfile*/ )
 void
 THistSvc::setupOutputFile( Property& /*m_outputfile*/ )
 {
+  if (FSMState() < Gaudi::StateMachine::CONFIGURED || !m_okToConnect) {
+    m_log <<MSG::DEBUG << "Delaying connection of Input Files until Initialize"
+	  << ". now in " << FSMState() 
+	  << endmsg;
+    m_delayConnect = true;
+  } else {
+
   StatusCode sc = StatusCode::SUCCESS;
 
   typedef std::vector<std::string> Strings_t;
@@ -1323,6 +1367,7 @@ THistSvc::setupOutputFile( Property& /*m_outputfile*/ )
                           StatusCode::FAILURE );
   }
   return;
+  }
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -1330,7 +1375,7 @@ THistSvc::setupOutputFile( Property& /*m_outputfile*/ )
 void
 THistSvc::updateFiles() {
 
-  // If TTrees grow beyond TTree::fgMaxFileSize, a new file is
+  // If TTrees grow beyond TTree::fgMaxTreeSize, a new file is
   // automatically created by root, and the old one closed. We
   // need to migrate all the UIDs over to show the correct file
   // pointer. This is ugly.
@@ -1344,12 +1389,20 @@ THistSvc::updateFiles() {
 #ifndef NDEBUG
     if (m_log.level() <= MSG::VERBOSE)
       m_log << MSG::VERBOSE << " update: " << uitr->first << " "
-	    << uitr->second.id << endmsg;
+	    << uitr->second.id << " " << uitr->second.mode << endmsg;
 #endif
     TObject* to = uitr->second.obj;
     TFile* oldFile = uitr->second.file;
     if (!to) {
       m_log << MSG::WARNING << uitr->first << ": TObject == 0" << endmsg;
+    } else if ( uitr->second.temp || uitr->second.mode == READ ) {
+      // do nothing - no need to check how big the file is since we
+      // are just reading it.
+#ifndef NDEBUG
+    if (m_log.level() <= MSG::VERBOSE) 
+      m_log << MSG::VERBOSE << "     skipping" << endmsg;
+#endif
+
     } else if (to->IsA()->InheritsFrom("TTree")) {
       TTree* tr = dynamic_cast<TTree*>(to);
       TFile* newFile = tr->GetCurrentFile();
@@ -1404,7 +1457,7 @@ THistSvc::updateFiles() {
                     << sitr->second << "\"" << endmsg;
 #endif
             m_fileStreams.erase(sitr);
-            m_fileStreams.insert( make_pair(newFileName, streamName) );
+	    m_fileStreams.insert( make_pair<std::string,std::string>(newFileName,streamName) );
           }
 
 
@@ -1567,7 +1620,7 @@ THistSvc::connect(const std::string& ident) {
       return StatusCode::FAILURE;
     } else {
       TFile *f2 = f_info.first;
-      m_files[stream] = make_pair(f2, newMode);
+      m_files[stream] = make_pair<TFile*,Mode>(f2,newMode);
       if (m_log.level() <= MSG::DEBUG)
         m_log << MSG::DEBUG << "Connecting stream: \"" << stream
               << "\" to previously opened TFile: \"" << filename << "\""
@@ -1583,34 +1636,22 @@ THistSvc::connect(const std::string& ident) {
     return StatusCode::FAILURE;
   }
 
-  TFile *f(0) ;
+  void* vf(0);
+  TFile *f(0);
+
   if (newMode == THistSvc::READ) {
     // old file
 
-    try {
-      f = TFile::Open(filename.c_str(),"READ");
-    } catch (const std::exception& Exception) {
-      m_log << MSG::ERROR << "exception caught while trying to open root"
-            << " file for reading: " << Exception.what() << std::endl
-            << "  -> file probably corrupt." << endmsg;
-      pi->fireIncident(FileIncident(name(), IncidentType::FailInputFile,
-                                    filename));
-      return StatusCode::FAILURE;
-    } catch (...) {
-      m_log << MSG::ERROR << "Problems opening input file  \"" << filename
-            << "\": probably corrupt" << endmsg;
-      pi->fireIncident(FileIncident(name(), IncidentType::FailInputFile,
-                                     filename));
+    int r = p_fileMgr->open(Io::ROOT,name(), filename,Io::READ,vf,"HIST");
+
+    if (r != 0) {
+      m_log << "Unable to open ROOT file " << filename << " for reading"
+	    << endmsg;
       return StatusCode::FAILURE;
     }
 
-    if (!f->IsOpen()) {
-      m_log << MSG::ERROR << "Unable to open input file \"" << filename
-            << "\": file does not exist" << endmsg;
-      pi->fireIncident(FileIncident(name(), IncidentType::FailInputFile,
-                                    filename));
-      return StatusCode::FAILURE;
-    }
+  
+    f = (TFile*) vf;
 
     // FIX ME!
     pi->fireIncident(FileIncident(name(), "BeginHistFile",
@@ -1618,50 +1659,32 @@ THistSvc::connect(const std::string& ident) {
 
 
   } else if (newMode == THistSvc::WRITE) {
-    // new file
+    // new file. error if file exists
 
-    f = TFile::Open(filename.c_str(),"NEW",stream.c_str(),cl);
-    if (!f->IsOpen()) {
-      m_log << MSG::ERROR << "Unable to create new output file \"" << filename
-            << "\" for writing: file already exists" << endmsg;
-      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile,
-                                    filename));
+    int r = p_fileMgr->open(Io::ROOT,name(),filename, (Io::WRITE|Io::CREATE|Io::EXCL),
+			    vf,"HIST");
+
+    if (r != 0) {
+      m_log << "Unable to open ROOT file " << filename << " for writing"
+	    << endmsg;
       return StatusCode::FAILURE;
     }
 
-    // FIX ME!
-    pi->fireIncident(FileIncident(name(), "BeginHistFile",
-                                   filename));
+    f = (TFile*)vf;
 
   } else if (newMode == THistSvc::APPEND) {
     // update file
 
-    try {
-      f =  TFile::Open(filename.c_str(),"UPDATE",stream.c_str(),cl);
-    } catch (const std::exception& Exception) {
-      m_log << MSG::ERROR << "exception caught while trying to open root"
-            << " file for appending: " << Exception.what() << std::endl
-            << "  -> file probably corrupt." << endmsg;
-      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile,
-                                    filename));
-      return StatusCode::FAILURE;
-    } catch (...) {
-      m_log << MSG::ERROR << "Problems opening output file  \"" << filename
-            << "\" for append: probably corrupt" << endmsg;
-      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile,
-                                    filename));
+    int r = p_fileMgr->open(Io::ROOT,name(),filename, (Io::WRITE | Io::APPEND),
+			    vf,"HIST");
+    if (r != 0) {
+      m_log << MSG::ERROR << "unable to open file \"" << filename 
+            << "\" for appending" << endmsg;
       return StatusCode::FAILURE;
     }
 
-    if (!f->IsOpen()) {
-      m_log << MSG::ERROR << "Unable to open output file \"" << filename
-            << "\" for appending" << endmsg;
-      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile,
-                                    filename));
-      return StatusCode::FAILURE;
-    }
-    pi->fireIncident(FileIncident(name(), IncidentType::BeginOutputFile,
-                                  filename));
+    f = (TFile*) vf;
+
 
   } else if (newMode == THistSvc::SHARE) {
     // SHARE file type
@@ -1679,67 +1702,36 @@ THistSvc::connect(const std::string& ident) {
             << "\" and realfilename="<<realfilename << endmsg;
     m_sharedFiles[stream]=realfilename;
 
-    try {
-      f = TFile::Open(filename.c_str(),"NEW",stream.c_str(),cl);
-    } catch (const std::exception& Exception) {
-      m_log << MSG::ERROR << "exception caught while trying to open root"
-            << " file for appending: " << Exception.what() << std::endl
-            << "  -> file probably corrupt." << endmsg;
-      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile,
-                                    filename));
-      return StatusCode::FAILURE;
-    } catch (...) {
-      m_log << MSG::ERROR << "Problems opening output file  \"" << filename
-            << "\" for append: probably corrupt" << endmsg;
-      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile,
-                                    filename));
+
+    int r = p_fileMgr->open(Io::ROOT,name(), filename, (Io::WRITE|Io::CREATE|Io::EXCL),
+			    vf,"HIST");
+
+    if (r != 0) {
+      m_log << "Unable to open ROOT file " << filename << " for writing"
+	    << endmsg;
       return StatusCode::FAILURE;
     }
 
-    if (!f->IsOpen()) {
-      m_log << MSG::ERROR << "Unable to open output file \"" << filename
-            << "\" for appending" << endmsg;
-      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile,
-                                    filename));
-      return StatusCode::FAILURE;
-    }
-    pi->fireIncident(FileIncident(name(), IncidentType::BeginOutputFile,
-                                  filename));
+    f = (TFile*)vf;
 
   } else if (newMode == THistSvc::UPDATE) {
     // update file
 
-    try {
-      f =  TFile::Open(filename.c_str(),"RECREATE",stream.c_str(),cl);
-    } catch (const std::exception& Exception) {
-      m_log << MSG::ERROR << "exception caught while trying to open root"
-            << " file for updating: " << Exception.what() << std::endl
-            << "  -> file probably corrupt." << endmsg;
-      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile,
-                                    filename));
-      return StatusCode::FAILURE;
-    } catch (...) {
-      m_log << MSG::ERROR << "Problems opening output file  \"" << filename
-            << "\" for update: probably corrupt" << endmsg;
-      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile,
-                                    filename));
+    int r = p_fileMgr->open(Io::ROOT,name(), filename, (Io::WRITE|Io::CREATE), 
+			    vf, "HIST");
+
+    if (r != 0) {
+      m_log << "Unable to open ROOT file " << filename << " for appending"
+	    << endmsg;
       return StatusCode::FAILURE;
     }
 
-    if (!f->IsOpen()) {
-      m_log << MSG::ERROR << "Unable to open output file \"" << filename
-            << "\" for updating" << endmsg;
-      pi->fireIncident(FileIncident(name(), IncidentType::FailOutputFile,
-                                    filename));
-      return StatusCode::FAILURE;
-    }
-    pi->fireIncident(FileIncident(name(), IncidentType::BeginOutputFile,
-                                  filename));
+    f = (TFile*)vf;
 
   }
 
-  m_files[stream] = make_pair(f, newMode);
-  m_fileStreams.insert(make_pair(filename, stream));
+  m_files[stream] = make_pair<TFile*,Mode>(f,newMode);
+  m_fileStreams.insert(make_pair<std::string,std::string>(filename,stream));
 
   if (m_log.level() <= MSG::DEBUG)
     m_log << MSG::DEBUG << "Opening TFile \"" << filename << "\"  stream: \""
@@ -1921,6 +1913,10 @@ THistSvc::handle( const Incident& /* inc */ ) {
 
   if (signaledStop) return ;
 
+  if (m_maxFileSize.value() == -1) {
+    return;
+  }
+
   // convert to bytes.
   Long64_t mfs = (Long64_t)m_maxFileSize.value() * (Long64_t)1048576;
   Long64_t mfs_warn = mfs * 95 / 100;
@@ -2063,9 +2059,23 @@ THistSvc::io_reinit ()
 	m_log << MSG::DEBUG << "got a new name [" << fname << "]..." << endmsg;
     }
     // create a new TFile
-    TFile *newfile = TFile::Open (fname.c_str(), f->GetOption());
+    // TFile *newfile = TFile::Open (fname.c_str(), f->GetOption());
+
+    void* vf;
+    Option_t *opts = f->GetOption();
+    int r = p_fileMgr->open(Io::ROOT,name(),fname,Io::WRITE,vf,"HIST");
+    if (r != 0) {
+      m_log << MSG::ERROR << "unable to open file \"" << fname 
+	    << "\" for writing" << endmsg;
+      return StatusCode::FAILURE;
+    }
+    TFile *newfile = (TFile*) vf;
+    newfile->SetOption(opts);
+      
+
     if (ifile->second.second != THistSvc::READ) {
       copyFileLayout (newfile, f);
+      ifile->second.first = newfile;
     }
 
     // loop over all uids and migrate them to the new file
@@ -2079,7 +2089,6 @@ THistSvc::io_reinit ()
       }
       TDirectory *olddir = this->changeDir (hid);
       hid.file = newfile;
-      ifile->second.first = newfile;
       // side-effect: create needed directories...
       TDirectory *newdir = this->changeDir (hid);
       TClass *cl = hid.obj->IsA();
@@ -2110,11 +2119,73 @@ THistSvc::io_reinit ()
       }
     }
     f->ReOpen ("READ");
-    f->Close();
+    p_fileMgr->close(f,name());
     f = newfile;
   }
 
   return all_good ? StatusCode::SUCCESS : StatusCode::FAILURE;
 }
 
+
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+StatusCode
+THistSvc::rootOpenAction( const Io::FileAttr* fa, const std::string& caller) {
+
+  if (fa->tech() != Io::ROOT) {
+    // This should never happen
+    return StatusCode::SUCCESS;
+  }
+
+  if (fa->desc() != "HIST") {
+    return StatusCode::SUCCESS;
+  }
+
+  p_incSvc->fireIncident(FileIncident(caller, "OpenHistFile", fa->name()));
+
+  if ( fa->flags().isRead() ) {
+    p_incSvc->fireIncident(FileIncident(caller, "BeginHistFile", fa->name()));
+  } else if ( fa->flags().isWrite() ) {
+    p_incSvc->fireIncident(FileIncident(caller, IncidentType::BeginOutputFile, 
+					fa->name()));
+  } else {
+    // for Io::RW
+    p_incSvc->fireIncident(FileIncident(caller, IncidentType::BeginOutputFile, 
+					fa->name()));
+  }
+
+  return StatusCode::SUCCESS;
+
+
+}
+
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+StatusCode
+THistSvc::rootOpenErrAction( const Io::FileAttr* fa, const std::string& caller) {
+
+  if (fa->tech() != Io::ROOT) {
+    // This should never happen
+    return StatusCode::SUCCESS;
+  }
+
+  if (fa->desc() != "HIST") {
+    return StatusCode::SUCCESS;
+  }
+
+  if ( fa->flags().isRead() ) {
+    p_incSvc->fireIncident(FileIncident(caller, IncidentType::FailInputFile,
+					fa->name()));
+  } else if ( fa->flags().isWrite() ) {
+    p_incSvc->fireIncident(FileIncident(caller, IncidentType::FailOutputFile,
+					fa->name()));
+  } else {
+    // for Io::RW
+    p_incSvc->fireIncident(FileIncident(caller, "FailRWFile", fa->name()));
+  }
+
+
+  return StatusCode::SUCCESS;
+
+
+}

@@ -1,6 +1,23 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2013-03-06 - Charles Leggett
+ - merge with GaudiSvc-18-13-27-13
+ - add FileMgr
+ - update THistSvc
+
+M       cmt/requirements
+A       src/FileMgr
+A       src/FileMgr/POSIXFileHandler.cpp
+A       src/FileMgr/RootFileHandler.cpp
+A       src/FileMgr/FileMgr.cpp
+A       src/FileMgr/POSIXFileHandler.h
+A       src/FileMgr/RootFileHandler.h
+A       src/FileMgr/FileMgr.h
+M       src/THistSvc/THistSvc.icc
+M       src/THistSvc/THistSvc.cpp
+M       src/THistSvc/THistSvc.h
+
 !2013-04-09 - Hubert Degaudenzi
  - src/THistSvc/THistSvc.cpp: fixed cppcheck warning.
 
