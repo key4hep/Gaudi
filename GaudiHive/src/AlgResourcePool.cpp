@@ -17,7 +17,7 @@ DECLARE_SERVICE_FACTORY(AlgResourcePool)
 
 // constructor
 AlgResourcePool::AlgResourcePool( const std::string& name, ISvcLocator* svc ) :
-  base_class(name,svc), m_available_resources(1), m_nodeCounter(0)
+  base_class(name,svc), m_available_resources(0), m_nodeCounter(0)
 {
   declareProperty("CreateLazily", m_lazyCreation = false );
   declareProperty("TopAlg", m_topAlgNames );
@@ -100,8 +100,7 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
     algo->resetExecuted();
     state_type requirements = m_resource_requirements[algo_id];
     m_resource_mutex.lock();
-    state_type dependencies_missing = (m_available_resources & requirements) ^ requirements;
-    if (dependencies_missing == 0) {
+    if (requirements.is_subset_of(m_available_resources)) {
       m_available_resources^=requirements;
     } else{ 
       sc = StatusCode::FAILURE;
@@ -247,9 +246,9 @@ StatusCode AlgResourcePool::m_decodeTopAlgs()    {
   }  
   // DP: TODO Make algos unique: Do we need this?  
   // Unrolled --- 
-  
+
   // Now let's manage the clones
-  unsigned int resource_counter(0);  
+  unsigned int resource_counter(0);
   std::hash<std::string> hash_function;   
   for (auto& ialgoSmartIF : m_flatUniqueAlgList) {      
     
@@ -275,7 +274,10 @@ StatusCode AlgResourcePool::m_decodeTopAlgs()    {
     for (auto resource_name : ialgo->neededResources()){
       auto ret = m_resource_indices.insert(std::pair<std::string, unsigned int>(resource_name,resource_counter));
       // insert successful means == wasn't known before. So increment counter
-      if (ret.second==true) ++resource_counter;
+      if (ret.second==true) {
+         ++resource_counter;
+         requirements.resize(resource_counter);
+      }
       // in any case the return value holds the proper product index
       requirements[ret.first->second] = true;
     }
@@ -293,6 +295,14 @@ StatusCode AlgResourcePool::m_decodeTopAlgs()    {
       } 
     }        
   }
+
+  // Now resize all the requirement bitsets to the same size
+  for (auto& kv :  m_resource_requirements) {
+    kv.second.resize(resource_counter);
+  }
+  // Set all resources to be available
+  m_available_resources.resize(resource_counter,true);
+
   // DP TODO: check if init/start is really necessary (gaudi state machine state check in algman...)
   algMan->initialize();
   algMan->start();    
