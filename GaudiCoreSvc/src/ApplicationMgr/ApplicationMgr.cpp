@@ -464,7 +464,7 @@ StatusCode ApplicationMgr::configure() {
   // Retrieve intrinsic services. If needed configure them.
   //--------------------------------------------------------------------------
   Gaudi::Utils::TypeNameString evtloop_item(m_eventLoopMgr);
-  sc = addMultiSvc(evtloop_item, 100);
+  sc = addMultiSvc(evtloop_item, ServiceManager::DEFAULT_SVC_PRIORITY*10);
   if( !sc.isSuccess() )  {
     log << MSG::FATAL << "Error adding :" << m_eventLoopMgr << endmsg;
     return sc;
@@ -1028,7 +1028,7 @@ StatusCode ApplicationMgr::decodeCreateSvcNameList() {
   VectorName::const_iterator et(theNames.end());
   while(result.isSuccess() && it != et) {
     Gaudi::Utils::TypeNameString item(*it++);
-    if( (result = svcManager()->addService(item, 10) ).isFailure()) {
+    if( (result = svcManager()->addService(item, ServiceManager::DEFAULT_SVC_PRIORITY) ).isFailure()) {
       MsgStream log( m_messageSvc, m_name );
       log << MSG::ERROR << "decodeCreateSvcNameList: Cannot create service "
           << item.type() << "/" << item.name() << endmsg;
@@ -1067,7 +1067,7 @@ StatusCode ApplicationMgr::decodeExtSvcNameList( ) {
   while(result.isSuccess() && it != et) {
     Gaudi::Utils::TypeNameString item(*it++);
     if (m_extSvcCreates == true) {
-      if ( (result = svcManager()->addService(item, 10)).isFailure()) {
+      if ( (result = svcManager()->addService(item, ServiceManager::DEFAULT_SVC_PRIORITY)).isFailure()) {
         MsgStream log( m_messageSvc, m_name );
         log << MSG::ERROR << "decodeExtSvcNameList: Cannot create service "
             << item.type() << "/" << item.name() << endmsg;
@@ -1107,7 +1107,7 @@ StatusCode ApplicationMgr::decodeMultiThreadSvcNameList( ) {
          it != theNames.end();
          ++it) {
       Gaudi::Utils::TypeNameString item(*it);
-      result = addMultiSvc(item, 10);
+      result = addMultiSvc(item, ServiceManager::DEFAULT_SVC_PRIORITY);
       //FIXME SHOULD CLONE?
       if( result.isFailure() ) {
         MsgStream log( m_messageSvc, m_name );
