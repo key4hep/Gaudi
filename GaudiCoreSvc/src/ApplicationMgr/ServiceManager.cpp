@@ -117,6 +117,8 @@ StatusCode ServiceManager::addService(const Gaudi::Utils::TypeNameString& typeNa
     // If the service does not exist, we create it
     SmartIF<IService> &svc = createService(typeName);
     if (svc.isValid()) {
+      it = find(svc.get()); // now it is in the list because createService added it
+      it->priority = prio;
       StatusCode sc = StatusCode(StatusCode::SUCCESS, true);
       if (targetFSMState() >= Gaudi::StateMachine::INITIALIZED) {
         sc = svc->sysInitialize();
@@ -124,7 +126,6 @@ StatusCode ServiceManager::addService(const Gaudi::Utils::TypeNameString& typeNa
           sc = svc->sysStart();
         }
       }
-      it = find(svc.get()); // now it is in the list because createService added it
       if(sc.isFailure()) { // if initialization failed, remove it from the list
         error() << "Unable to initialize service \"" << typeName.name() << "\""
                 << endmsg;
@@ -142,10 +143,12 @@ StatusCode ServiceManager::addService(const Gaudi::Utils::TypeNameString& typeNa
     } else {
       return StatusCode::FAILURE;
     }
+  } else {
+    // if the service is already known, it is equivalent to a setPriority
+    it->priority = prio; 
   }
   // 'it' is defined because either we found the service or we created it
   // Now we can activate the service
-  it->priority = prio; // if the service is already known, it is equivalent to a setPriority
   it->active = true;   // and make it active
   return StatusCode(StatusCode::SUCCESS, true);
 }
@@ -405,19 +408,20 @@ StatusCode ServiceManager::finalize()
   // ToolSvc, and StatusCodeSvc after that
   int pri_tool = getPriority("ToolSvc");
   if (pri_tool != 0) {
-    setPriority("THistSvc",pri_tool-1).ignore();
-    setPriority("ChronoStatSvc",pri_tool-2).ignore();
-    setPriority("AuditorSvc",pri_tool-3).ignore();
-    setPriority("NTupleSvc",pri_tool-1).ignore();
-    setPriority("HistogramDataSvc",pri_tool-1).ignore();
+    setPriority("THistSvc",pri_tool-10).ignore();
+    setPriority("ChronoStatSvc",pri_tool-20).ignore();
+    setPriority("AuditorSvc",pri_tool-30).ignore();
+    setPriority("NTupleSvc",pri_tool-10).ignore();
+    setPriority("HistogramDataSvc",pri_tool-10).ignore();
     // Preserve the relative ordering between HistogramDataSvc and HistogramPersistencySvc
-    setPriority("HistogramPersistencySvc",pri_tool-2).ignore();
+    setPriority("HistogramPersistencySvc",pri_tool-20).ignore();
   }
 
   // make sure the StatusCodeSvc gets finalized really late:
   setPriority("StatusCodeSvc",-9999).ignore();
 
   m_listsvc.sort(); // ensure that the list is ordered by priority
+  // dump();
   // we work on a copy to avoid to operate twice on the services created on demand
   // (which are already in the correct state).
   ListSvc tmpList(m_listsvc);
@@ -498,5 +502,39 @@ bool ServiceManager::loopCheckEnabled() const {
 void ServiceManager::setLoopCheckEnabled(bool en) {
   m_loopCheck = en;
 }
+
+
+//------------------------------------------------------------------------------
+// Dump out contents of service list
+//------------------------------------------------------------------------------
+void ServiceManager::dump() const {
+
+  MsgStream log(msgSvc(),name());
+
+  log << MSG::INFO << "\n"
+      << "=====================  listing all services  ===================\n"
+      << " prior   ref name                           active\n";
+
+  ListSvc::const_iterator it;
+  for (it=m_listsvc.begin(); it != m_listsvc.end(); ++it) {
+
+    log.width(6);
+    log.flags(std::ios_base::right);
+    log << it->priority << " ";
+    log.width(5);
+    log << it->service->refCount() << " ";
+    log.width(30);
+    log.flags(std::ios_base::left);
+    log << it->service->name() << " ";
+    log.width(2);
+    log << it->active << std::endl;
+
+  }
+
+  log << "=================================================================\n";
+  log << endmsg;
+
+}
+
 
 DECLARE_OBJECT_FACTORY(ServiceManager)

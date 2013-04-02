@@ -76,9 +76,9 @@ public:
   virtual bool existsService(const std::string& name) const;
 
   /// implementation of ISvcManager::addService
-  virtual StatusCode addService(IService* svc, int prio = 10);
+  virtual StatusCode addService(IService* svc, int prio = 100);
   /// implementation of ISvcManager::addService
-  virtual StatusCode addService(const Gaudi::Utils::TypeNameString& typeName, int prio = 10);
+  virtual StatusCode addService(const Gaudi::Utils::TypeNameString& typeName, int prio = 100);
   /// implementation of ISvcManager::removeService
   virtual StatusCode removeService(IService* svc);
   /// implementation of ISvcManager::removeService
@@ -157,6 +157,10 @@ private:
 
   /// Mutex to synchronize shared service initialization between threads
   boost::recursive_mutex  m_svcinitmutex;
+
+private:
+  void dump() const;
+
 };
 #endif  // GAUDISVC_ServiceManager_H
 
