@@ -165,6 +165,9 @@ private:
   /// Drain the actions present in the queue
   StatusCode m_drain();
 
+  /// Size of the threadpool initialised by TBB
+  unsigned int m_threadPoolSize;
+
   // Actions management -----------------------------------------------------
   typedef std::function<StatusCode ()> action;
   /// Queue where closures are stored and picked for execution

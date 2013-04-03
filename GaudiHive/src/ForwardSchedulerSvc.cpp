@@ -28,10 +28,12 @@ DECLARE_SERVICE_FACTORY(ForwardSchedulerSvc)
 ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* svcLoc ):
  base_class(name,svcLoc),
  m_isActive(false),
- m_algosInFlight(0)
+ m_algosInFlight(0),
+ m_threadPoolSize(1) 
 {
   declareProperty("MaxEventsInFlight", m_maxEventsInFlight = 1 );
   declareProperty("MaxAlgosInFlight", m_maxAlgosInFlight = 1 );
+  declareProperty("ThreadPoolSize", m_threadPoolSize = 1 );
   declareProperty("WhiteboardSvc", m_whiteboardSvcName = "EventDataSvc" );
   // Will disappear when dependencies are properly propagated into the C++ code of the algos
   declareProperty("AlgosDependencies", m_algosDependencies);    
@@ -123,7 +125,13 @@ StatusCode ForwardSchedulerSvc::initialize(){
     
   m_eventSlots.assign(m_maxEventsInFlight,EventSlot(m_algosDependencies,algsNumber,controlFlowNodeNumber,messageSvc));
   std::for_each(m_eventSlots.begin(),m_eventSlots.end(),[](EventSlot& slot){slot.complete=true;});
-  //for (auto& slot: m_eventSlots) slot.complete=true; // to be able to insert new eventContext
+
+  // Clearly inform about the level of concurrency
+  info() << "Concurrency level information:" << endmsg;
+  info() << " o Number of events in flight: " << m_maxEventsInFlight << endmsg;
+  info() << " o Number of algorithms in flight: " << m_maxAlgosInFlight << endmsg;
+  info() << " o TBB thread pool size: " << m_threadPoolSize << endmsg;
+          
    
   // Activate the scheduler 
   info() << "Activating scheduler in a separate thread" << endmsg;
@@ -162,13 +170,14 @@ void ForwardSchedulerSvc::m_activate(){
   // Now it's running
   m_isActive=true;
 
-//   /** Temp waiting for the TBB service. Must be initialised in the thread
-//    * from where the tasks are launched
-//    * http://threadingbuildingblocks.org/docs/doxygen/a00342.html
-//    * The scheduler is initialised here since this method runs in a separate
-//    * thread and spawns the tasks (through the execution of the lambdas)
-//   **/
-  tbb::task_scheduler_init TBBSchedInit(m_maxAlgosInFlight+1);
+  /** The pool must be initialised in the thread from where the tasks are 
+   * launched (http://threadingbuildingblocks.org/docs/doxygen/a00342.html)
+   * The scheduler is initialised here since this method runs in a separate
+   * thread and spawns the tasks (through the execution of the lambdas)
+  **/
+
+  debug() << "Initialising a TBB thread pool of size " << m_threadPoolSize << endmsg;
+  tbb::task_scheduler_init TBBSchedInit(m_threadPoolSize);
   
   // Wait for actions pushed into the queue by finishing tasks.
   action thisAction;  
@@ -606,7 +615,7 @@ StatusCode ForwardSchedulerSvc::m_promoteToExecuted(AlgoSlotIndex iAlgo, EventSl
   // update controlflow
   // .......
 
-  debug() << "Algorithm " << algo->name() << " executed. Algorithms in flight are "
+  debug() << "Algorithm " << algo->name() << " executed. Algorithms scheduled are "
       << m_algosInFlight << endmsg;
 
   // Schedule an update of the status of the algorithms
