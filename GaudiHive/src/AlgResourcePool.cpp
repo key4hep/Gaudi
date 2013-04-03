@@ -244,7 +244,7 @@ StatusCode AlgResourcePool::m_decodeTopAlgs()    {
     for (auto& algo : m_flatUniqueAlgList)
       debug() << "  o " << algo->type() << "/" << algo->name() <<  endmsg;
   }  
-  // DP: TODO Make algos unique: Do we need this?  
+
   // Unrolled --- 
 
   // Now let's manage the clones
@@ -253,6 +253,9 @@ StatusCode AlgResourcePool::m_decodeTopAlgs()    {
   for (auto& ialgoSmartIF : m_flatUniqueAlgList) {      
     
     const std::string& item_name = ialgoSmartIF->name();
+
+    verbose() << "Treating resource management and clones of " << item_name << endmsg;
+    
     Algorithm* algo = dynamic_cast<Algorithm*> ( ialgoSmartIF.get() );
     if (!algo) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
     const std::string& item_type = algo->type();      
@@ -270,20 +273,22 @@ StatusCode AlgResourcePool::m_decodeTopAlgs()    {
     m_n_of_created_instances[algo_id] = 1;
   
     state_type requirements(0);     
-        
-    for (auto resource_name : ialgo->neededResources()){
+
+    for (auto& resource_name : ialgo->neededResources()){
       auto ret = m_resource_indices.insert(std::pair<std::string, unsigned int>(resource_name,resource_counter));
       // insert successful means == wasn't known before. So increment counter
       if (ret.second==true) {
          ++resource_counter;
-         requirements.resize(resource_counter);
       }
+      // Resize for every algo according to the found resources
+      requirements.resize(resource_counter);
       // in any case the return value holds the proper product index
       requirements[ret.first->second] = true;
+
     }
-    
+
     m_resource_requirements[algo_id] = requirements;
-  
+
     // potentially create clones; if not lazy creation we have to do it now
     if (!m_lazyCreation) {
       for (unsigned int i =1, end =ialgo->cardinality();i<end; ++i){
@@ -292,16 +297,19 @@ StatusCode AlgResourcePool::m_decodeTopAlgs()    {
         createAlg(item_type,item_name,ialgoClone);      
         queue->push(ialgoClone);
         m_n_of_created_instances[algo_id]+=1;
-      } 
-    }        
+      }
+    }
+    
   }
 
   // Now resize all the requirement bitsets to the same size
   for (auto& kv :  m_resource_requirements) {
     kv.second.resize(resource_counter);
   }
+  
   // Set all resources to be available
-  m_available_resources.resize(resource_counter,true);
+  m_available_resources.resize(resource_counter);
+  m_available_resources.set();
 
   // DP TODO: check if init/start is really necessary (gaudi state machine state check in algman...)
   algMan->initialize();
