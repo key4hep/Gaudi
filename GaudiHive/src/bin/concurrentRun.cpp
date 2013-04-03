@@ -19,7 +19,8 @@ int main ( int argc, char** argv )
   options_description desc("Allowed options");
   desc.add_options()
         ("help,h", "produce help message")
-        ("config", value<std::string>(), "the python configuration file")
+        ("config", value<std::string>(), "comma separated list of python configuration files")
+        ("post-option", value<std::string>(), "python command to be run after ConfigurableUser has been applied")
   ;
   positional_options_description p;
   p.add("config", 1);
@@ -47,6 +48,11 @@ int main ( int argc, char** argv )
   } else {
     fileName = vm["config"].as<std::string>();
   }
+
+  std::string postAction;
+  if (0 != vm.count("post-option")) {
+    postAction = vm["post-option"].as<std::string>();
+  }
   // end of options handling
 
   IInterface* iface = Gaudi::createApplicationMgr();
@@ -54,6 +60,6 @@ int main ( int argc, char** argv )
   SmartIF<IAppMgrUI> appUI  ( iface );
   propMgr->setProperty("JobOptionsType","PYTHON");
   propMgr->setProperty("JobOptionsPath",fileName); 
-  propMgr->setProperty("JobOptionsPostAction", ""); //TODO: grep this from command line
+  propMgr->setProperty("JobOptionsPostAction", postAction); //TODO: grep this from command line
   return appUI->run();
 }

@@ -20,6 +20,7 @@
 #include <mutex>
 
 // External libs
+#include "boost/dynamic_bitset.hpp"
 #include "tbb/concurrent_queue.h"
 
 /** @class AlgResourcePool AlgResourcePool.h GaudiHive/AlgResourcePool.h
@@ -61,7 +62,7 @@ public:
 private:
   typedef tbb::concurrent_queue<IAlgorithm*> concurrentQueueIAlgPtr;
   typedef std::list<SmartIF<IAlgorithm> > ListAlg;
-  typedef std::bitset<1000> state_type;
+  typedef boost::dynamic_bitset<> state_type;
   
   std::mutex m_resource_mutex;
   bool m_lazyCreation;

@@ -22,11 +22,11 @@ StatusCode PythonConfig::evaluateConfig(const std::string& fileName, const std::
        main_namespace["adaptor"] = ptr(&adaptor);      
 
        // some python helper
-       std::string command("execfile('");
-       command += fileName + "')\n";
+       std::string command("for name in '");
+       command += fileName + "'.split(','): execfile(name)\n";
        command += "from GaudiKernel.Configurable import expandvars\nfrom GaudiKernel.Proxy.Configurable import applyConfigurableUsers\napplyConfigurableUsers()\n";
        command += pythonAction; 
-       command += "for n, c in Configurable.allConfigurables.items():\n  for p, v in  c.getValuedProperties().items() :\n    v = expandvars(v)\n    if   type(v) == str : v = '\"%s\"' % v # need double quotes\n    elif type(v) == long: v = '%d'   % v # prevent pending 'L'\n    adaptor.addPropertyToJobOptions(n,p,str(v))";
+       command += "\nfor n, c in Configurable.allConfigurables.items():\n  for p, v in  c.getValuedProperties().items() :\n    v = expandvars(v)\n    if   type(v) == str : v = '\"%s\"' % v # need double quotes\n    elif type(v) == long: v = '%d'   % v # prevent pending 'L'\n    adaptor.addPropertyToJobOptions(n,p,str(v))";
 
        // Now fire off the translation
        handle<> ignored(( PyRun_String( command.c_str(),
