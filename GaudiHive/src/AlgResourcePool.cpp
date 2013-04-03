@@ -56,7 +56,7 @@ StatusCode AlgResourcePool::initialize(){
     warning() << "Algorithms could not be properly decoded." << endmsg;
   
   // let's assume all resources are there
-  m_available_resources.set(true);
+  m_available_resources.set();
   return StatusCode::SUCCESS;
 }
 
