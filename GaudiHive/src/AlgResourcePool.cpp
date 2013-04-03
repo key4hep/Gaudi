@@ -245,7 +245,6 @@ StatusCode AlgResourcePool::m_decodeTopAlgs()    {
     for (auto& algo : m_flatUniqueAlgList)
       debug() << "  o " << algo->type() << "/" << algo->name() <<  endmsg;
   }  
-  // DP: TODO Make algos unique: Do we need this?  
   // Unrolled --- 
   
   // Now let's manage the clones
@@ -293,7 +292,7 @@ StatusCode AlgResourcePool::m_decodeTopAlgs()    {
       } 
     }        
   }
-  // DP TODO: check if init/start is really necessary (gaudi state machine state check in algman...)
+
   algMan->initialize();
   algMan->start();    
   
