@@ -283,10 +283,10 @@ macro(LCG_AA_project name version)
   set(${name}_native_version ${version})
   set(${name}_base ${LCG_releases}/${name}/${${name}_native_version})
   set(${name}_home ${${name}_base}/${LCG_platform})
-  if(${name} STREQUAL ROOT)
-    # ROOT is special
-    set(ROOT_home ${ROOT_home}/root)
-  endif()
+  #if(${name} STREQUAL ROOT)
+  #  # ROOT is special
+  #  set(ROOT_home ${ROOT_home}/root)
+  #endif()
   if(NOT LCG_platform STREQUAL LCG_system)
     # For AA projects we want to be able to fall back on non-debug builds.
     if(NOT ${name} STREQUAL ROOT)
