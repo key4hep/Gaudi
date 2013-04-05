@@ -30,6 +30,8 @@ apply_pattern ld_library_path
 #===============================================================
 private
 
+apply_pattern genconfig_add_extraModules extraModules=ExtraModules tag=ATLAS
+
 macro_append ROOT_linkopts " -lHist -lReflex -lMatrix -lGraf" \
               target-winxp " libHist.lib libReflex.lib libMatrix.lib libGraf.lib" \
              target-mac104 " -lHist -lReflex -lMatrix -lGraf"
