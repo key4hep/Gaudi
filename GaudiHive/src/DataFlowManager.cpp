@@ -84,7 +84,7 @@ void DataFlowManager::reset(){
 std::vector<std::string> DataFlowManager::content() const{  
   // with move semantics this is ~fine
   std::vector<std::string> products;
-  for (unsigned int i=0;i<m_productName_vec.size();++i){
+  for (unsigned int i=0;i<m_dataObjectsCatalog.size();++i){
     if (m_dataObjectsCatalog[i])
       products.push_back(m_productName_vec[i]);
   }
