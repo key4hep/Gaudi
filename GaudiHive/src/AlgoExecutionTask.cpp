@@ -46,7 +46,7 @@ tbb::task* AlgoExecutionTask::execute() {
   
   SmartIF<IMessageSvc> messageSvc (m_serviceLocator);
   MsgStream log(messageSvc, "AlgoExecutionTask");
-  // Call the execute() method of all top algorithms
+
   StatusCode sc(StatusCode::FAILURE);
   try {
     RetCodeGuard rcg(appmgr, Gaudi::ReturnCode::UnhandledException);

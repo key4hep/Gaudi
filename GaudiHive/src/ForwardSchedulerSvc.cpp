@@ -265,10 +265,33 @@ StatusCode ForwardSchedulerSvc::pushNewEvent(EventContext* eventContext){
     return this->m_updateStates(thisSlotNum);
   }; // end of lambda
 
+  
+// // HACK
+//   static decltype(action)* prevAction;
+//   if (eventContext->m_evt_num == 0){
+//     m_actionsQueue.push(action);
+//     return StatusCode::SUCCESS;
+//   }
+//   else if(eventContext->m_evt_num == 1){
+//     always() << "Holding update states since evt number is 1" << endmsg;
+//     prevAction=new decltype(action) (action);
+//     return StatusCode::SUCCESS;
+//   }
+//   else if(eventContext->m_evt_num == 2){
+//     always() << "Pushing update states for 1 and 2 since evt number is 2" << endmsg;
+//     m_actionsQueue.push(action);
+//     m_actionsQueue.push(*prevAction);
+//     return StatusCode::SUCCESS;
+//   }
+//   else{
+//     m_actionsQueue.push(action);
+//     return StatusCode::SUCCESS;
+//   }
+  
+
   // Kick off the scheduling!
   m_actionsQueue.push(action);
 
-  // It should never reach this point...
   return StatusCode::SUCCESS;;
 }
 //---------------------------------------------------------------------------
@@ -329,6 +352,8 @@ StatusCode ForwardSchedulerSvc::m_eventFailed(EventContext* eventContext){
   fatal() << "Event " << eventContext->m_evt_num << " on slot " 
           << eventContext->m_evt_slot << " failed" << endmsg;
 
+  m_dumpSchedulerState(-1);
+          
   // Set the number of slots available to 0
   m_freeSlots=0;          
           
@@ -342,9 +367,7 @@ StatusCode ForwardSchedulerSvc::m_eventFailed(EventContext* eventContext){
   while(m_finishedEvents.try_pop(thisEvtContext)){};
   m_finishedEvents.push(eventContext);
   
-  return StatusCode::SUCCESS;
-  
-
+  return StatusCode::FAILURE;
   
 }
 
@@ -458,52 +481,69 @@ StatusCode ForwardSchedulerSvc::m_isStalled(EventSlotIndex iSlot){
       (!thisSlot.algsStates.algsPresent(AlgsExecutionStates::DATAREADY))){
 
     info() << "About to declare a stall"<< endmsg;
-
-    std::stringstream errorMsg;
-    errorMsg << "Stall detected!\n";
-    errorMsg << "Algorithms states for event " << thisSlot.eventContext->m_evt_num << std::endl;
-    unsigned int algoIndex=0;
-    for (const AlgsExecutionStates::State& thisState : thisSlot.algsStates ){
-        errorMsg << " o " << m_index2algname(algoIndex) 
-                 << " was in state " << AlgsExecutionStates::stateNames[thisState] 
-                 << ". Its data dependencies are ";
-        auto deps (thisSlot.dataFlowMgr.dataDependencies(algoIndex));
-        char separator=',';
-        const int depsSize=deps.size();
-        if (depsSize==0){
-          errorMsg << " none.";
-        }
-        
-        for (int i=0;i<depsSize;++i){
-          if (i==depsSize-1)
-            separator = ' ';
-          errorMsg << deps[i] << separator;
-           }
-        errorMsg << std::endl;
-        algoIndex++;
-    }
-    
-    // Snapshot of the WhiteBoard
-    errorMsg << "The content of the whiteboard for this event was:" << std::endl;
-    const auto& wbSlotContent ( thisSlot.dataFlowMgr.content() );
-    for (auto product : wbSlotContent ){
-        errorMsg << " o " << product << std::endl;
-    }
- 
-    // Snapshot of the ControlFlow
-    errorMsg << "The status of the control flow for this event was:" << std::endl;
-    m_cfManager.printEventState(errorMsg,thisSlot.controlFlowState,0);
-
-    fatal() << errorMsg.str() << endmsg;
-    
+    fatal() << "Stall detected!" << endmsg;
+    m_dumpSchedulerState(iSlot);
     throw GaudiException ("Stall detected",
                           name(),
                           StatusCode::FAILURE);
-
     return StatusCode::FAILURE;
   }
+  return StatusCode::SUCCESS;
+}
 
-return StatusCode::SUCCESS;
+//---------------------------------------------------------------------------
+
+void ForwardSchedulerSvc::m_dumpSchedulerState(EventSlotIndex iSlot){
+
+  EventSlotIndex slotCount = -1;
+  for (auto thisSlot : m_eventSlots){
+    slotCount++;
+
+    if ( thisSlot.complete )
+      continue;
+    
+    if ( 0 > iSlot or iSlot == slotCount){      
+      fatal() << "Algorithms states for event " << thisSlot.eventContext->m_evt_num << endmsg;
+      unsigned int algoIndex=0;
+      for (const AlgsExecutionStates::State& thisState : thisSlot.algsStates ){
+        fatal() << " o " << m_index2algname(algoIndex)
+                << " was in state " << AlgsExecutionStates::stateNames[thisState]
+                << ". Its data dependencies are ";
+        auto deps (thisSlot.dataFlowMgr.dataDependencies(algoIndex));
+        char separator=',';
+        std::stringstream depsStringStream;
+        const int depsSize=deps.size();
+        if (depsSize==0){
+          depsStringStream << " none.";
+        }
+
+        for (int i=0;i<depsSize;++i){
+          if (i==depsSize-1)
+            separator = ' ';
+          depsStringStream << deps[i] << separator;
+          }
+         algoIndex++;
+         fatal() << depsStringStream.str() << endmsg;
+      }
+      
+      
+      // Snapshot of the WhiteBoard
+      fatal() << "The content of the whiteboard for this event was:" << endmsg;
+      const auto& wbSlotContent ( thisSlot.dataFlowMgr.content() );
+      for (auto& product : wbSlotContent ){
+        fatal() << " o " << product << endmsg;
+      }
+
+      // Snapshot of the ControlFlow
+      fatal() << "The status of the control flow for this event was:" << endmsg;
+      std::stringstream cFlowStateStringStream;
+      m_cfManager.printEventState(cFlowStateStringStream,thisSlot.controlFlowState,0);
+
+      fatal() << cFlowStateStringStream.str() << endmsg;
+
+      }
+
+  }
 
 }
 
@@ -559,7 +599,8 @@ StatusCode ForwardSchedulerSvc::m_promoteToScheduled(AlgoSlotIndex iAlgo, EventS
     tbb::task* t = new( tbb::task::allocate_root() ) AlgoExecutionTask(ialgoPtr, iAlgo, serviceLocator(), this);
     tbb::task::enqueue( *t);
     ++m_algosInFlight;
-    info() << "Algorithm " << algName << " was submitted. Algorithms scheduled are "
+    info() << "Algorithm " << algName << " was submitted on event "
+           << eventContext->m_evt_num <<  ". Algorithms scheduled are "
            << m_algosInFlight << endmsg;
 
     StatusCode updateSc ( m_eventSlots[si].algsStates.updateState(iAlgo,AlgsExecutionStates::SCHEDULED) );
