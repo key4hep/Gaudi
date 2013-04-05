@@ -156,6 +156,9 @@ private:
   /// Check if the scheduling is in a stall
   StatusCode m_isStalled(EventSlotIndex si);
 
+  /// Dump the state of the scheduler
+  void m_dumpSchedulerState(EventSlotIndex iSlot);
+  
   // Algos Management -------------------------------------------------------
   SmartIF<IAlgResourcePool>  m_algResourcePool;
 
