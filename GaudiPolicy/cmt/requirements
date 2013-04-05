@@ -1016,15 +1016,20 @@ macro genconfig_configurableAlgTool "ConfigurableAlgTool"
 macro genconfig_configurableAuditor "ConfigurableAuditor"
 macro genconfig_configurableService "ConfigurableService"
 
+
+## add pattern and macro for importing extra python modules into genconf's output
+macro genconfig_extraModules ""
+pattern genconfig_add_extraModules \
+   macro_append genconfig_extraModules "--user-module=<package>.<extraModules> " 
+
+
 ## add pattern and macro for library preloading for genconf
-
 macro genconfig_preload ""
-
 pattern genconfig_add_preload \
    macro_append genconfig_preload "--load-library=<library> " ;
 
-# this pattern creates the helper library
 
+## this pattern creates the helper library
 pattern genconf_helper_lib \
    library <package>GenConfHelperLib <src> ; \
    macro <package>_genconfig_preload_lib "$(<package>_root)/$(tag)/$(library_prefix)<package>GenConfHelperLib.$(shlibsuffix)" \
@@ -1081,6 +1086,7 @@ pattern do_real_genconfig \
            outdir=$(<package>_root)$(genconfDir)<package> \
            library=<library> \
 	   library_preload=$(genconfig_preload) \
+           extra_modules=$(genconfig_extraModules) \
            conf_destdir=$(genconfInstallDir) \
            confModuleName=$(genconfig_configurableModuleName) \
            confDefaultName=$(genconfig_configurableDefaultName) \
