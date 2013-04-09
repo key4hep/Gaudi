@@ -176,10 +176,11 @@ public:
                                 IOpaqueAddress* pRootAddr);
 
   /** IDataManagerSvc: IDataManagerSvc: Pass a default data loader to the
-   *  service.
+   *  service and optionally a data provider
    */
-  virtual StatusCode setDataLoader( IConversionSvc* svc );
-
+  virtual StatusCode setDataLoader( IConversionSvc* svc,
+                                    IDataProviderSvc* dpsvc = 0 );
+  
   /// Add an item to the preload list
   virtual StatusCode addPreLoadItem( const DataStoreItem& item );
 

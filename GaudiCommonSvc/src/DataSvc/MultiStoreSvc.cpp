@@ -261,7 +261,7 @@ public:
     return STATUS::FAILURE;
   }
   /// IDataManagerSvc: Pass a default data loader to the service.
-  virtual STATUS setDataLoader(IConversionSvc* pDataLoader)  {
+  virtual STATUS setDataLoader(IConversionSvc* pDataLoader, IDataProviderSvc* pdsvc = nullptr)  {
     Partitions::iterator i;
     if ( 0 != pDataLoader  ) pDataLoader->addRef();
     if ( 0 != m_dataLoader ) m_dataLoader->release();
