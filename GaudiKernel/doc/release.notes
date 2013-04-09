@@ -1,6 +1,11 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-04-09 - Hubert Degaudenzi
+ - src/Lib/System.cpp: fixed cppcheck warning.
+ - GaudiKernel/KeyedObject.h: idem
+ - GaudiKernel/ServiceHandle.h: idem
+
 ============================= GaudiKernel v28r6 ==============================
 ! 2013-02-21 - Marco Clemencic
  - Fixed compilation with CMT on Ubuntu 12.10 (gcc 4.7.2).
