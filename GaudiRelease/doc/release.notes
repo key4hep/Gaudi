@@ -1,6 +1,12 @@
 Package: GaudiRelease
 Maintainer: Marco Clemencic
 
+! 2013-04-09 - Hubert Degaudenzi
+ - modifications in the gaudi_add_unit_test function:
+   - added the possibility to use Boost unit tests
+   - added the possibility to pass a TIMEOUT parameter (in seconds)
+   - added the possibility to pass some environment variables
+
 ! 2013-03-27 - Hubert Degaudenzi
  - Added protection in heptools-common if Boost_config_verison is not defined.
    This is the case when using Boost from the system instead of the LCG stack
