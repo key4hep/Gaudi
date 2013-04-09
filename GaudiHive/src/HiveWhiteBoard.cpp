@@ -14,6 +14,8 @@
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/DataSvc.h"
 #include "tbb/spin_mutex.h"
+#include "tbb/recursive_mutex.h"
+
 
 //Interfaces
 #include "GaudiKernel/ISvcLocator.h"
@@ -29,12 +31,15 @@
 
 // Forward declarations
 
+typedef  tbb::recursive_mutex wbMutex;
+//typedef  tbb::spin_mutex wbMutex;
 
-namespace {  
+namespace {
   struct Partition  {
+
     SmartIF<IDataProviderSvc>        dataProvider;
     SmartIF<IDataManagerSvc>         dataManager;
-    tbb::spin_mutex               storeMutex;
+    wbMutex               storeMutex;
     std::vector<std::string> newDataObjects;
     int                      eventNumber;
     Partition() : dataProvider(0), dataManager(0), eventNumber(-1) {}
@@ -117,23 +122,20 @@ public:
 
 // macro to help writing the function calls
 #define _CALL(P,F,ARGS) if(s_current) { \
-tbb::spin_mutex::scoped_lock lock; lock.acquire(s_current->storeMutex);\
+wbMutex::scoped_lock lock; lock.acquire(s_current->storeMutex);\
 return s_current->P ? s_current->P->F ARGS : IDataProviderSvc::INVALID_ROOT; }\
 return IDataProviderSvc::INVALID_ROOT;
 
   /// IDataManagerSvc: Register object address with the data store.
   virtual StatusCode registerAddress(const std::string& path, IOpaqueAddress* pAddr)   {
-    std::cout << "Registering address " << path << std::endl;
     _CALL(dataManager, registerAddress, (path, pAddr));
   }
   /// IDataManagerSvc: Register object address with the data store.
   virtual StatusCode registerAddress(DataObject* parent, const std::string& path, IOpaqueAddress* pAddr)  {
-    std::cout << "Registering address " << path << std::endl;
     _CALL(dataManager, registerAddress, (parent, path, pAddr));
   }
   /// IDataManagerSvc: Register object address with the data store.
   virtual StatusCode registerAddress(IRegistry* parent, const std::string& path, IOpaqueAddress* pAdd)  {
-    std::cout << "Registering address " << path << std::endl;
     _CALL(dataManager, registerAddress, (parent, path, pAdd));
   }
   /// IDataManagerSvc: Unregister object address from the data store.
@@ -206,8 +208,11 @@ return IDataProviderSvc::INVALID_ROOT;
     _CALL(dataManager, setRoot, (path, pAddr));
   }
 
-  /// IDataManagerSvc: Pass a default data loader to the service.
-  virtual StatusCode setDataLoader(IConversionSvc* pDataLoader)  {
+  /** IDataManagerSvc: Pass a default data loader to the service.
+   * The optional data provider is not considered. On the other hand, the data
+   * provider is specified to be the whiteboard.
+   */
+  virtual StatusCode setDataLoader(IConversionSvc* pDataLoader, IDataProviderSvc* dpsvc=nullptr)  {
     if ( 0 != pDataLoader  ) pDataLoader->addRef();
     if ( 0 != m_dataLoader ) m_dataLoader->release();
     if ( 0 != pDataLoader  )    {
@@ -215,7 +220,7 @@ return IDataProviderSvc::INVALID_ROOT;
     }
     m_dataLoader = pDataLoader;
     for(auto& p: m_partitions) {
-      p.dataManager->setDataLoader(m_dataLoader).ignore();
+      p.dataManager->setDataLoader(m_dataLoader,this).ignore();
     }
     return SUCCESS;
   }
@@ -246,7 +251,7 @@ return IDataProviderSvc::INVALID_ROOT;
   }
   /// load all preload items of the list
   virtual StatusCode preLoad()  {
-    tbb::spin_mutex::scoped_lock lock; lock.acquire(s_current->storeMutex);
+    wbMutex::scoped_lock lock; lock.acquire(s_current->storeMutex);
     StatusCode sc = s_current->dataProvider->preLoad();
     DataAgent da(s_current->newDataObjects);
     s_current->dataManager->traverseTree(&da);
@@ -254,7 +259,7 @@ return IDataProviderSvc::INVALID_ROOT;
   }
   /// Register object with the data store.  (The most common one is the only monitored one for the time being....)
   virtual StatusCode registerObject(const std::string& path, DataObject* pObj)  {
-    tbb::spin_mutex::scoped_lock lock; lock.acquire(s_current->storeMutex);
+    wbMutex::scoped_lock lock; lock.acquire(s_current->storeMutex);
     StatusCode sc = s_current->dataProvider->registerObject(path, pObj);
     if( sc.isSuccess()) {
       s_current->newDataObjects.push_back(path);
@@ -429,7 +434,7 @@ return IDataProviderSvc::INVALID_ROOT;
   
   /// Get the list of new DataObjects in the current store.
   virtual StatusCode getNewDataObjects(std::vector<std::string>& products) {
-    tbb::spin_mutex::scoped_lock lock; lock.acquire(s_current->storeMutex);
+    wbMutex::scoped_lock lock; lock.acquire(s_current->storeMutex);
     products = s_current->newDataObjects;
     s_current->newDataObjects.clear();
     return StatusCode::SUCCESS;
@@ -437,7 +442,7 @@ return IDataProviderSvc::INVALID_ROOT;
 
   /// Check if new DataObjects are in the current store.
   virtual bool newDataObjectsPresent() {
-    tbb::spin_mutex::scoped_lock lock; lock.acquire(s_current->storeMutex);
+    wbMutex::scoped_lock lock; lock.acquire(s_current->storeMutex);
     return s_current->newDataObjects.size()!=0;
   }  
   
