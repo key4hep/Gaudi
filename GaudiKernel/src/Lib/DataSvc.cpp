@@ -202,11 +202,11 @@ StatusCode DataSvc::i_setRoot(const std::string& root_path,
 }
 
 /// IDataManagerSvc: Pass a default data loader to the service.
-StatusCode DataSvc::setDataLoader(IConversionSvc* pDataLoader)    {
+StatusCode DataSvc::setDataLoader(IConversionSvc* pDataLoader, IDataProviderSvc* dpsvc)    {
   if ( 0 != pDataLoader  ) pDataLoader->addRef();
   if ( 0 != m_dataLoader ) m_dataLoader->release();
   if ( 0 != pDataLoader  )    {
-    pDataLoader->setDataProvider(this).ignore();
+    pDataLoader->setDataProvider(dpsvc == nullptr ? this : dpsvc).ignore();
   }
   m_dataLoader = pDataLoader;
   return SUCCESS;
