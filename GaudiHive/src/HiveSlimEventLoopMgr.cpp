@@ -218,8 +218,7 @@ StatusCode HiveSlimEventLoopMgr::reinitialize() {
         error() << "Can not create Context " << theSvc->name( ) << endmsg;
         return sc;
       }
-      info() << "EventSelector service changed to "
-          << theSvc->name( ) << endmsg;
+
     }
     else if ( m_evtSelector.isValid() ) {
       if ( m_evtContext ) {
@@ -353,15 +352,16 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
     return StatusCode::SUCCESS;
   }*/      
 
+  
   StatusCode declEvtRootSc = m_declareEventRootAddress();
   if (declEvtRootSc.isFailure()) { // We ran out of events!
     createdEvts = -1;  // Set created event to a negative value: we finished!
     return StatusCode::SUCCESS;
     }
-
+    
   // Fire BeginEvent "Incident"
   m_incidentSvc->fireIncident(Incident(name(),IncidentType::BeginEvent));    
-    
+  
   // Now add event to the scheduler 
   info() << "Adding event " << evtContext->m_evt_num 
           << ", slot " << evtContext->m_evt_slot
@@ -442,10 +442,14 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
   int createdEvts =0;
   info() << "Starting loop on events" << endmsg;
   // Loop until the finished events did not reach the maxevt number
-  bool loop_ended=false;
+  bool loop_ended = false;
+  // Run the first event before spilling more than one
+  bool newEvtAllowed = false ;
+
   while ( !loop_ended and (maxevt < 0 or finishedEvts < maxevt)){
     // if the created events did not reach maxevt, create an event    
-    if (createdEvts >= 0 && // The events are not finished with an unlimited number of events
+    if ((newEvtAllowed or createdEvts == 0 ) && // Launch the first event alone
+        createdEvts >= 0 && // The events are not finished with an unlimited number of events
         (createdEvts < maxevt or maxevt<0) &&  // The events are not finished with a limited number of events
         m_schedulerSvc->freeSlots()>0){ // There are still free slots in the scheduler
 
@@ -454,7 +458,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
       StatusCode sc = executeEvent(&createdEvts);
       if (sc.isFailure())
         return StatusCode::FAILURE;
-
+      
     } // end if condition createdEvts < maxevt
     else{ 
       // all the events were created but not all finished or the slots were 
@@ -466,6 +470,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
       if (m_drainScheduler(finishedEvts).isFailure()){
         loop_ended = true;
       }
+      newEvtAllowed = true;
     }
   } // end main loop on finished events  
 
@@ -503,7 +508,7 @@ StatusCode HiveSlimEventLoopMgr::getEventRoot(IOpaqueAddress*& refpAddr)  {
 StatusCode HiveSlimEventLoopMgr::m_declareEventRootAddress(){
   
   StatusCode sc;
-  if( m_evtContext ) {
+  if( m_evtContext ) {      
       //---This is the "event iterator" context from EventSelector
       IOpaqueAddress* pAddr = 0;
       sc = getEventRoot(pAddr);
@@ -580,8 +585,11 @@ StatusCode HiveSlimEventLoopMgr::m_drainScheduler(int& finishedEvts){
       delete thisFinishedEvtContext;
       return StatusCode::FAILURE;
     }
+
+    m_incidentSvc->fireIncident(Incident(name(), IncidentType::EndProcessing));
+    m_incidentSvc->fireIncident(Incident(name(),IncidentType::EndEvent));
     
-    info() << "Clearing slot " << thisFinishedEvtContext->m_evt_slot 
+    debug() << "Clearing slot " << thisFinishedEvtContext->m_evt_slot
           << " (event " << thisFinishedEvtContext->m_evt_num
           << ") of the whiteboard" << endmsg;
     
@@ -594,9 +602,6 @@ StatusCode HiveSlimEventLoopMgr::m_drainScheduler(int& finishedEvts){
     delete thisFinishedEvtContext;
     
     finishedEvts++;
-
-    m_incidentSvc->fireIncident(Incident(name(), IncidentType::EndProcessing));    
-    m_incidentSvc->fireIncident(Incident(name(),IncidentType::EndEvent));
     
   }
   return StatusCode::SUCCESS;
