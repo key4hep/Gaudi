@@ -144,7 +144,7 @@ StatusCode HiveEventLoopMgr::initialize()    {
 		return StatusCode::FAILURE;
 	}
 	m_whiteboard = serviceLocator()->service("EventDataSvc");
-	if( !m_evtDataSvc.isValid() )  {
+	if( !m_whiteboard.isValid() )  {
 		fatal() << "Error retrieving EventDataSvc interface IHiveWhiteBoard." << endmsg;
 		return StatusCode::FAILURE;
 	}
