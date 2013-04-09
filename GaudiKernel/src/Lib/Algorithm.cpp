@@ -125,8 +125,8 @@ StatusCode Algorithm::sysInitialize() {
   //m_errorCount = 0;
 
   // lock the context service
-  Gaudi::Utils::AlgContext cnt
-    ( this , registerContext() ? contextSvc().get() : 0 ) ;
+//   Gaudi::Utils::AlgContext cnt
+//     ( this , registerContext() ? contextSvc().get() : 0 ) ;
   
   // Get WhiteBoard interface if implemented by EventDataSvc
   m_WB = service("EventDataSvc");
