@@ -50,7 +50,7 @@ HiveSlimEventLoopMgr::HiveSlimEventLoopMgr(const std::string& name, ISvcLocator*
   m_histoDataMgrSvc   = 0;
   m_histoPersSvc      = 0;
   m_evtDataMgrSvc     = 0;
-  m_evtDataSvc        = 0;
+  m_whiteboard        = 0;
   m_evtSelector       = 0;
   m_evtContext        = 0;
 
@@ -73,7 +73,7 @@ HiveSlimEventLoopMgr::~HiveSlimEventLoopMgr()   {
   if( m_histoDataMgrSvc ) m_histoDataMgrSvc->release();
   if( m_histoPersSvc ) m_histoPersSvc->release();
   if( m_evtDataMgrSvc ) m_evtDataMgrSvc->release();
-  if( m_evtDataSvc ) m_evtDataSvc->release();
+  if( m_whiteboard ) m_whiteboard->release();
   if( m_evtSelector ) m_evtSelector->release();
   if( m_evtContext ) delete m_evtContext;
 }
@@ -106,13 +106,8 @@ StatusCode HiveSlimEventLoopMgr::initialize()    {
         fatal() << "Error retrieving EventDataSvc interface IDataManagerSvc." << endmsg;
         return StatusCode::FAILURE;
     }
-    m_evtDataSvc = serviceLocator()->service("EventDataSvc");
-    if( !m_evtDataSvc.isValid() )  {
-        fatal() << "Error retrieving EventDataSvc interface IDataProviderSvc." << endmsg;
-        return StatusCode::FAILURE;
-    }
     m_whiteboard = serviceLocator()->service("EventDataSvc");
-    if( !m_evtDataSvc.isValid() )  {
+    if( !m_whiteboard.isValid() )  {
         fatal() << "Error retrieving EventDataSvc interface IHiveWhiteBoard." << endmsg;
         return StatusCode::FAILURE;
     }
@@ -322,7 +317,7 @@ StatusCode HiveSlimEventLoopMgr::finalize()    {
   m_histoPersSvc    = 0;
 
   m_evtSelector     = 0;
-  m_evtDataSvc      = 0;
+  m_whiteboard      = 0;
   m_evtDataMgrSvc   = 0;
 
   return scRet;

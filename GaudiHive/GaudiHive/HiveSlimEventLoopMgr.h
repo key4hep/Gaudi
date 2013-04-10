@@ -26,8 +26,6 @@ class HiveSlimEventLoopMgr: public extends1<Service, IEventProcessor>   {
 protected:
   /// Reference to the Event Data Service's IDataManagerSvc interface
   SmartIF<IDataManagerSvc>  m_evtDataMgrSvc;
-  /// Reference to the Event Data Service's IDataProviderSvc interface
-  SmartIF<IDataProviderSvc> m_evtDataSvc;
   /// Reference to the Event Selector
   SmartIF<IEvtSelector>     m_evtSelector;
   /// Event Iterator
@@ -38,7 +36,7 @@ protected:
   SmartIF<IDataManagerSvc>  m_histoDataMgrSvc;
   /// Reference to the Histogram Persistency Service
   SmartIF<IConversionSvc>   m_histoPersSvc;
-  /// Reference to the Histogram Persistency Service
+  /// Reference to the Whiteboard 
   SmartIF<IHiveWhiteBoard>  m_whiteboard;
   /// Reference to the Algorithm resource pool
   SmartIF<IAlgResourcePool>  m_algResourcePool;
