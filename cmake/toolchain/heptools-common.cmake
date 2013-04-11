@@ -283,18 +283,9 @@ macro(LCG_AA_project name version)
   set(${name}_native_version ${version})
   set(${name}_base ${LCG_releases}/${name}/${${name}_native_version})
   set(${name}_home ${${name}_base}/${LCG_platform})
-  if(${name} STREQUAL ROOT)
-    # ROOT is special
-    set(ROOT_home ${ROOT_home}/root)
-  endif()
   if(NOT LCG_platform STREQUAL LCG_system)
     # For AA projects we want to be able to fall back on non-debug builds.
-    if(NOT ${name} STREQUAL ROOT)
-      set(${name}_home ${${name}_home} ${${name}_base}/${LCG_system})
-    else()
-      # ROOT is special
-      set(ROOT_home ${ROOT_home} ${ROOT_base}/${LCG_system}/root)
-    endif()
+    set(${name}_home ${${name}_home} ${${name}_base}/${LCG_system})
   endif()
   list(APPEND LCG_projects ${name})
 endmacro()
@@ -420,9 +411,6 @@ macro(LCG_prepare_paths)
   foreach(name ${LCG_externals})
     list(APPEND LCG_PREFIX_PATH ${${name}_home})
   endforeach()
-
-  # AIDA is special
-  list(APPEND LCG_INCLUDE_PATH ${LCG_external}/${AIDA_directory_name}/${AIDA_native_version}/share/src/cpp)
 
   set(CMAKE_PREFIX_PATH ${LCG_PREFIX_PATH} ${CMAKE_PREFIX_PATH})
   set(CMAKE_INCLUDE_PATH ${LCG_INCLUDE_PATH} ${CMAKE_INCLUDE_PATH})
