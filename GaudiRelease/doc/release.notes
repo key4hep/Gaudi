@@ -1,7 +1,10 @@
 Package: GaudiRelease
 Maintainer: Marco Clemencic
 
-! 2013-04-10  Hubert Degaudenzi
+! 2013-04-11 - Hubert Degaudenzi
+ - cmake/toolchain/heptools-common.cmake: fix mac osx arch detection
+
+! 2013-04-10 - Hubert Degaudenzi
  - added the possibility to use the env variable BINARY_TAG instead of
    CMAKECONFIG or CMTCONFIG. Files changed:
 	- configure
