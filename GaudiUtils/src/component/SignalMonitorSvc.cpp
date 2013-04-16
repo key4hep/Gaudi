@@ -348,6 +348,7 @@ namespace Gaudi {
         m_usedSignals.reserve(2);
         m_usedSignals.push_back("SIGINT");
         m_usedSignals.push_back("SIGXCPU");
+        m_stopRequested = false;
         declareProperty("Signals", m_usedSignals,
             "List of signal names or numbers to use to schedule a stop. "
             "If the signal is followed by a '+' the signal is propagated the previously "

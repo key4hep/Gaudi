@@ -76,6 +76,9 @@ public:
   // Return the algorithm properties.
   const PropertyList& properties() const { return m_properties; }
 
+  // Return the jobHistory
+  const JobHistory* jobHistory() const { return m_jobHistory; }
+
   void dump(std::ostream &, const bool isXML=false, int indent=0) const;
 
   const std::string& name() const { return algtool_name(); }

@@ -1,6 +1,9 @@
 Package: GaudiMonitor
 Package manager : Marco Clemencic
 
+! 2013-04-16 - Marco Clemencic
+ - Fixed Clang warnings.
+
 ============================= GaudiMonitor v3r2 ==============================
 ! 2012-11-14 - Marco Clemencic
  - Updated CMakeLists.txt.
