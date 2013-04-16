@@ -412,6 +412,9 @@ macro(LCG_prepare_paths)
     list(APPEND LCG_PREFIX_PATH ${${name}_home})
   endforeach()
 
+  # AIDA is special
+  list(APPEND LCG_INCLUDE_PATH ${LCG_external}/${AIDA_directory_name}/${AIDA_native_version}/share/src/cpp)
+
   set(CMAKE_PREFIX_PATH ${LCG_PREFIX_PATH} ${CMAKE_PREFIX_PATH})
   set(CMAKE_INCLUDE_PATH ${LCG_INCLUDE_PATH} ${CMAKE_INCLUDE_PATH})
 
