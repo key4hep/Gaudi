@@ -382,8 +382,8 @@ macro(LCG_prepare_paths)
   set(DESIRED_QT_VERSION ${_qt_major_version} CACHE STRING "Pick a version of QT to use: 3 or 4")
   mark_as_advanced(DESIRED_QT_VERSION)
 
-  if(comp STREQUAL clang30)
-    set(GCCXML_CXX_COMPILER gcc CACHE STRING "Compiler that GCCXML must use.")
+  if(LCG_COMP MATCHES "clang")
+    set(GCCXML_CXX_COMPILER g++ CACHE STRING "Compiler that GCCXML must use.")
   endif()
 
   # This is not really needed because Xerces has its own version macro, but it was
