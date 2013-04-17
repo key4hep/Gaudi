@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2013-04-16 - Marco Clemencic
+ - Fixed Clang warnings.
+
 ============================ GaudiExamples v23r7 =============================
 ============================ GaudiExamples v23r6 =============================
 ============================ GaudiExamples v23r5 =============================

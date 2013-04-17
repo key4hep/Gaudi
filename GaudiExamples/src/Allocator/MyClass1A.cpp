@@ -1,8 +1,7 @@
-// $Id: MyClass1A.cpp,v 1.1 2006/02/14 15:07:07 hmd Exp $
-// ============================================================================
-// CVS tag $NAme:$, version $Revision: 1.1 $
-// ============================================================================
-// CVS tag $Name:  $ 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-private-field"
+#endif
 // ============================================================================
 // Include files
 // ============================================================================
@@ -15,27 +14,27 @@
 #include "MyClass1A.h"
 // ============================================================================
 
-/** @file 
+/** @file
  *  Implementation file for class MyClass1
- *  @date 2006-02-14 
+ *  @date 2006-02-14
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  */
 
-MyClass1A::MyClass1A(){}
+MyClass1A::MyClass1A() {}
 MyClass1A::~MyClass1A(){}
 
 
 // ============================================================================
-// Anonymous namespace to hide the allocator 
+// Anonymous namespace to hide the allocator
 // ============================================================================
-namespace 
+namespace
 {
   GaudiUtils::Allocator<MyClass1A> s_Allocator ;
 }
 // ============================================================================
 
 // ============================================================================
-/// overloaded 'new' operator 
+/// overloaded 'new' operator
 // ============================================================================
 void* MyClass1A::operator new(size_t)
 {
@@ -46,12 +45,15 @@ void* MyClass1A::operator new(size_t)
 // ============================================================================
 
 // ============================================================================
-/// overloaded 'delete' operator 
+/// overloaded 'delete' operator
 // ============================================================================
 void MyClass1A::operator delete( void *hit )
 { s_Allocator.FreeSingle( (MyClass1A*) hit ); }
 // ============================================================================
 
 // ============================================================================
-// The END 
+// The END
 // ============================================================================
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif

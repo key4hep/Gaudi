@@ -35,7 +35,6 @@ m_pmgr()
 , m_source_type()
 , m_dir_search_path()
 , m_dump()
-, m_dumped( false )
 {
   std::string tmp ;
   tmp = System::getEnv ( "JOBOPTSEARCHPATH" ) ;

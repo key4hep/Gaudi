@@ -30,7 +30,7 @@ using std::vector;
 // Constructor.
 
 AlgorithmHistory::AlgorithmHistory(const Algorithm& alg, const JobHistory* job)
-: 
+:
   m_algorithm_type(System::typeinfoName(typeid(alg))),
   m_algorithm_version(alg.version()),
   m_algorithm_name(alg.name()),
@@ -59,7 +59,8 @@ AlgorithmHistory::AlgorithmHistory(const std::string& algVersion,
   m_algorithm_name(algName),
   m_algorithm(0),
   m_properties(props),
-  m_subalgorithm_histories(subHists) {}
+  m_subalgorithm_histories(subHists),
+  m_jobHistory(0) {}
 
 //**********************************************************************
 
@@ -75,7 +76,7 @@ AlgorithmHistory::~AlgorithmHistory() {
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-const CLID& 
+const CLID&
 AlgorithmHistory::classID() {
 
   static CLID CLID_AlgorithmHistory = 56809101;  //from `clid AlgorithmHistory`
@@ -121,9 +122,9 @@ AlgorithmHistory::dump(std::ostream& ost, const bool isXML, int ind) const {
   } else {
     ind += 2;
     indent(ost,ind);
-    ost << "<COMPONENT name=\"" << algorithm_name() 
-	<< "\" class=\"" << convert_string(algorithm_type()) 
-	<< "\" version=\"" << algorithm_version() 
+    ost << "<COMPONENT name=\"" << algorithm_name()
+	<< "\" class=\"" << convert_string(algorithm_type())
+	<< "\" version=\"" << algorithm_version()
 	<< "\">" << std::endl;
 
     for ( AlgorithmHistory::PropertyList::const_iterator
@@ -131,8 +132,8 @@ AlgorithmHistory::dump(std::ostream& ost, const bool isXML, int ind) const {
 	  ipprop!=properties().end(); ++ipprop ) {
       const Property& prop = **ipprop;
       indent(ost,ind+2);
-      ost << "<PROPERTY name=\"" << prop.name() 
-	  << "\" value=\"" << convert_string(prop.toString()) 
+      ost << "<PROPERTY name=\"" << prop.name()
+	  << "\" value=\"" << convert_string(prop.toString())
 	  << "\" documentation=\"" << convert_string(prop.documentation())
 	  << "\">" << std::endl;
     }
@@ -149,9 +150,9 @@ AlgorithmHistory::dump(std::ostream& ost, const bool isXML, int ind) const {
 
     indent(ost,ind);
     ost << "</COMPONENT>" << std::endl;
- 
-    
-    
+
+
+
 
 
   }

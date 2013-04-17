@@ -4,6 +4,9 @@
 # Description: standard and commonly used components
 ################################################################################
 
+! 2013-04-16 - Marco Clemencic
+ - Fixed Clang warnings.
+
 ============================ GaudiCommonSvc v1r4 =============================
 ! 2012-11-14 - Marco Clemencic
  - Updated CMakeLists.txt.

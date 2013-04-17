@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-04-16 - Marco Clemencic
+ - Fixed Clang warnings.
+
 ! 2013-04-09 - Hubert Degaudenzi
  - src/Lib/System.cpp: fixed cppcheck warning.
  - GaudiKernel/KeyedObject.h: idem
@@ -3993,4 +3996,3 @@ Improvements
   Changed to support two or more conversion services. This was needed to
   support the Root conversion service.
   Added classes OutputStream, OutputStreamAgent
-

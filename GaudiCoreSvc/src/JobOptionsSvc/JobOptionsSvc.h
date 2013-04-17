@@ -79,6 +79,5 @@ class JobOptionsSvc : public extends2<Service, IProperty, IJobOptionsSvc> {
   std::string m_dir_search_path;
   std::string m_dump;
   SvcCatalog  m_svc_catalog;
-  bool m_dumped;
 };
 #endif /* JOBOPTIONSSVC_H_ */

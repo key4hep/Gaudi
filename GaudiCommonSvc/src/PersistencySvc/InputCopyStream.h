@@ -18,7 +18,7 @@ class IDataStoreLeaves;
  *  @author:  P. Koppenburg
  *  @author:  M. Clemencic
 */
-class InputCopyStream : public OutputStream 
+class InputCopyStream : public OutputStream
 {
 
 public:
@@ -40,9 +40,6 @@ public:
 
 private:
 
-  /// Allow optional items to be on TES instead of input file
-  bool m_takeOptionalFromTES;
-
   /// Pointer to the (public) tool used to retrieve the objects in a file.
   IDataStoreLeaves *m_leavesTool;
 
@@ -51,7 +48,7 @@ private:
 
 protected:
 
-  /// Overriden from the base class (InputCopyStream has always input).
+  /// Overridden from the base class (InputCopyStream has always input).
   virtual bool hasInput() const
   {
     return true;

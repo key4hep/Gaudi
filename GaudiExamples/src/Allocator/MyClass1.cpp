@@ -1,8 +1,7 @@
-// $Id: MyClass1.cpp,v 1.1 2006/02/14 15:07:07 hmd Exp $
-// ============================================================================
-// CVS tag $NAme:$, version $Revision: 1.1 $
-// ============================================================================
-// CVS tag $Name:  $ 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-private-field"
+#endif
 // ============================================================================
 // Include files
 // ============================================================================
@@ -11,9 +10,9 @@
 #include "MyClass1.h"
 // ============================================================================
 
-/** @file 
+/** @file
  *  Implementation file for class MyClass1
- *  @date 2006-02-14 
+ *  @date 2006-02-14
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  */
 
@@ -21,5 +20,8 @@ MyClass1::MyClass1(){}
 MyClass1::~MyClass1(){}
 
 // ============================================================================
-// The END 
+// The END
 // ============================================================================
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
