@@ -1,6 +1,11 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-04-18 - Charles Leggett
+ - patches for CMT v1r26
+
+M       cmt/requirements
+
 ! 2013-04-05 - Charles Leggett
  - merge macro and pattern for genconf extra modules, make it tag dependent
 
