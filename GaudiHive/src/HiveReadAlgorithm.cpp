@@ -13,13 +13,12 @@ public:
 
 DECLARE_ALGORITHM_FACTORY(HiveReadAlgorithm)
 
-StatusCode HiveReadAlgorithm::initialize()
-{
-  return evtSvc()->addPreLoadItem(DataStoreItem("/Event",99));
+StatusCode HiveReadAlgorithm::initialize(){
+    return evtSvc()->addPreLoadItem(DataStoreItem("/Event",99));
 }
 
 StatusCode HiveReadAlgorithm::execute()
 {
-  info() << "Running now for event " << getContext()->m_evt_num << endmsg;
+  info() << "Running now for event and preloading /Event " << getContext()->m_evt_num << endmsg;
   return evtSvc()->preLoad();
 }
