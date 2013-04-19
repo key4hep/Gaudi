@@ -24,7 +24,8 @@ class ContainedObject;
     The stream buffer is a small object collecting object data.
     The basic idea behind the StreamBuffer is generic object conversion.
     The StreamBuffer acts as a byte stream (hence inheriting from a
-    std::string) and stores any information streamed to the buffer.
+    std::string: DP: this is not true anymore and it is not a bad thing in my
+    opinion) and stores any information streamed to the buffer.
     Since the information must be represented in a generic way
     on the fly byte swapping is performed. However, not only primitive
     data can be stored in the buffer, but also pointers to DataObjects
@@ -159,22 +160,22 @@ protected:
   Mode             m_mode;
 
   /// Current buffer pointer
-  long             m_pointer;
+  mutable long             m_pointer;
 
   /// Total buffer length
-  long             m_length;
+  mutable long             m_length;
 
   /// Pointer to heap buffer
-  char*            m_buffer;
+  mutable char*            m_buffer;
 
   /// Flag indicating swapping
   bool             m_swapEnabled;
 
   /// Container with links to contained objects
-  ContainedLinks   m_containedLinks;
+  mutable ContainedLinks   m_containedLinks;
 
   /// Container with links to contained objects
-  IdentifiedLinks  m_identifiedLinks;
+  mutable IdentifiedLinks  m_identifiedLinks;
 
   /// Hook function for analysis of data to the stream
   AnalyzeFunction  m_analyzer;
@@ -228,6 +229,16 @@ public:
   /// Reset the buffer
   void erase()    {
     m_pointer = 0;
+  }
+  /// Remove the data buffer and pass it to client. It's the client responsability to free the memory
+  char* adopt() const   {
+    char* ptr = m_buffer;
+    m_containedLinks.erase (m_containedLinks.begin(), m_containedLinks.end());
+    m_identifiedLinks.erase(m_identifiedLinks.begin(),m_identifiedLinks.end());
+    m_buffer = nullptr; //char *
+    m_pointer = 0; // long
+    m_length = 0; // long
+    return ptr;
   }
   /// Reserve buffer space; Default: 16 k buffer size
   void reserve(long len)   {
