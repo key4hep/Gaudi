@@ -355,7 +355,7 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
     }
     
   // Fire BeginEvent "Incident"
-  m_incidentSvc->fireIncident(Incident(name(),IncidentType::BeginEvent));    
+  m_incidentSvc->fireIncident(Incident(name(),IncidentType::BeginEvent));
   
   // Now add event to the scheduler 
   info() << "Adding event " << evtContext->m_evt_num 
