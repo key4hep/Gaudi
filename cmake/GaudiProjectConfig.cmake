@@ -1675,7 +1675,10 @@ endfunction()
 #-------------------------------------------------------------------------------
 # gaudi_add_test(<name>
 #                [FRAMEWORK options1 options2 ...|QMTEST|COMMAND cmd args ...]
-#                [ENVIRONMENT variable[+]=value ...])
+#                [ENVIRONMENT variable[+]=value ...]
+#                [DEPENDS other_test ...]
+#                [FAILS] [PASSREGEX regex] [FAILREGEX regex]
+#                [TIMEOUT seconds])
 #
 # Declare a run-time test in the subdirectory.
 # The test can be of the types:
@@ -1687,14 +1690,14 @@ endfunction()
 # prepends the value to the PATH-like variable.
 # Great flexibility is given by the following options:
 #  FAILS - the tests succeds if the command fails (return code !=0)
-#  DEPENDS - ensures an order of execution of tests (e.g. do not run a read 
+#  DEPENDS - ensures an order of execution of tests (e.g. do not run a read
 #            test if the write one failed)
 #  PASSREGEX - Specify a regexp; if matched in the output the test is successful
 #  FAILREGEX - Specify a regexp; if matched in the output the test is failed
-# 
+#
 #-------------------------------------------------------------------------------
 function(gaudi_add_test name)
-  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST;FAILS" "" "ENVIRONMENT;FRAMEWORK;COMMAND;DEPENDS;PASSREGEX;FAILREGEX" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST;FAILS" "TIMEOUT" "ENVIRONMENT;FRAMEWORK;COMMAND;DEPENDS;PASSREGEX;FAILREGEX" ${ARGN})
 
   gaudi_get_package_name(package)
 
@@ -1746,11 +1749,11 @@ function(gaudi_add_test name)
     endforeach()
     set_property(TEST ${package}.${name} PROPERTY DEPENDS ${depends})
   endif()
-  
+
   if(ARG_FAILS)
     set_property(TEST ${package}.${name} PROPERTY WILL_FAIL TRUE)
   endif()
-  
+
   if(ARG_PASSREGEX)
     set_property(TEST ${package}.${name} PROPERTY PASS_REGULAR_EXPRESSION ${ARG_PASSREGEX})
   endif()
@@ -1758,7 +1761,10 @@ function(gaudi_add_test name)
   if(ARG_FAILREGEX)
     set_property(TEST ${package}.${name} PROPERTY FAIL_REGULAR_EXPRESSION ${ARG_FAILREGEX})
   endif()
-  
+
+  if(ARG_TIMEOUT)
+    set_property(TEST ${package}.${name} PROPERTY TIMEOUT ${ARG_TIMEOUT})
+  endif()
 
 endfunction()
 

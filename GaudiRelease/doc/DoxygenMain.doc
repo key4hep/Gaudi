@@ -26,7 +26,10 @@
   </tr>
   <tr>
         <td><b>Supported platforms</b></td>
-        <td>Windows with VC++ 7.1, Scientific Linux CERN 4 with gcc-3.4 (released with debug and non debug versions, 32 and 64 bits)</td>
+        <td>
+        Scientific Linux CERN 5 with gcc-4.3 and gcc-4.6 (released with debug and non debug versions, 32 and 64 bits),
+        Scientific Linux CERN 6 with gcc-4.6 (released with debug and non debug versions, 64 bits only),
+        </td>
   </tr>
   <tr>
         <td><b>Download</b></td>
@@ -78,7 +81,7 @@
 </UL>
 See also:
   Standard Template Library
-    (<a href="http://gcc.gnu.org/onlinedocs/libstdc++/libstdc++-html-USERS-3.4/index.html" target="_blank">gcc-3.4</a>,
-     <a href="http://gcc.gnu.org/onlinedocs/libstdc++/libstdc++-html-USERS-4.3/index.html" target="_blank">gcc-4.3</a>)
+    (<a href="http://gcc.gnu.org/onlinedocs/libstdc++/libstdc++-html-USERS-4.3/index.html" target="_blank">gcc-4.3</a>,
+     <a href="http://gcc.gnu.org/onlinedocs/gcc-4.6.3/libstdc++/api/" target="_blank">gcc-4.6</a>)
 \endhtmlonly
  */

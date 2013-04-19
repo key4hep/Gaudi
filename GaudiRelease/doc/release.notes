@@ -1,6 +1,9 @@
 Package: GaudiRelease
 Manatiner: Marco Clemencic
 
+! 2013-02-26 - Marco Clemencic
+ - Updates to doxygen main page.
+
 ! 2013-02-15 - Marco Clemencic
  - Fixed update_versions.py to change the version in the global CMakeLists.txt.
 
