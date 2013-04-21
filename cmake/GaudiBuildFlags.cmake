@@ -31,7 +31,6 @@ option(GAUDI_CPP11
        "enable C++11 compilation"
        ON)
 
-
 #--- Compilation Flags ---------------------------------------------------------
 if(NOT GAUDI_FLAGS_SET)
   #message(STATUS "Setting cached build flags")
@@ -154,9 +153,8 @@ if ((GAUDI_V21 OR G21_HIDE_SYMBOLS) AND (LCG_COMP STREQUAL gcc AND LCG_COMPVERS 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden")
 endif()
 
-if (GAUDI_CPP11)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
+if ( GAUDI_CPP11 )
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 endif()
 
 if(NOT GAUDI_V21)
