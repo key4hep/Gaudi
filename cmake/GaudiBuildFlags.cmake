@@ -1,11 +1,3 @@
-# Special defaults
-if ("${LCG_COMP}${LCG_COMPVERS}" STREQUAL "gcc47")
-  # C++11 is enable by default on gcc47
-  set(GAUDI_CPP11_DEFAULT ON)
-else()
-  set(GAUDI_CPP11_DEFAULT OFF)
-endif()
-
 #--- Gaudi Build Options -------------------------------------------------------
 # Build options that map to compile time features
 #
@@ -37,7 +29,7 @@ option(GAUDI_CMT_RELEASE
 
 option(GAUDI_CPP11
        "enable C++11 compilation"
-       ${GAUDI_CPP11_DEFAULT})
+       ON)
 
 
 #--- Compilation Flags ---------------------------------------------------------
