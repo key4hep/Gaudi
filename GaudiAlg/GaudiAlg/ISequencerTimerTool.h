@@ -1,4 +1,3 @@
-// $Id: ISequencerTimerTool.h,v 1.4 2005/07/29 16:49:43 hmd Exp $
 #ifndef ISEQUENCERTIMERTOOL_H
 #define ISEQUENCERTIMERTOOL_H 1
 
@@ -24,7 +23,7 @@ public:
 public:
 
   /// InterfaceID
-  DeclareInterfaceID(ISequencerTimerTool,2,1);
+  DeclareInterfaceID(ISequencerTimerTool,3,0);
 
   /** add a timer entry with the specified name **/
   virtual int addTimer( const std::string& name ) = 0 ;

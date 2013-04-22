@@ -39,7 +39,7 @@ DECLARE_TOOL_FACTORY(SequencerTimerTool)
   declareProperty( "shots"        , m_shots );
   declareProperty( "Normalised"   , m_normalised = false );
   declareProperty( "GlobalTiming" , m_globalTiming = false );
-  declareProperty( "NameSize"     , m_headerSize = 30, 
+  declareProperty( "NameSize"     , m_headerSize = 30,
                    "Number of characters to be used in algorithm name column" );
   // Histograms are disabled by default in this tool.
   setProperty("HistoProduce", false).ignore();
@@ -161,13 +161,13 @@ int SequencerTimerTool::addTimer( const std::string& name )
   myName += name;
   if ( myName.size() < m_headerSize )
   {
-    const std::string space( m_headerSize, ' ' );
+    const std::string space( m_headerSize - myName.size(), ' ' );
     myName += space ;
   }
 
   //myName = myName.substr( 0, m_headerSize );
 
-  m_timerList.push_back( TimerForSequencer( myName, 
+  m_timerList.push_back( TimerForSequencer( myName,
                                             m_headerSize,
                                             m_normFactor ) );
 

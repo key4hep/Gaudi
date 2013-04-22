@@ -17,7 +17,7 @@ class TimerForSequencer
 public:
 
   /** Constructor. Specify the name, for later printing. */
-  TimerForSequencer( const std::string& name, 
+  TimerForSequencer( const std::string& name,
                      const unsigned int size,
                      const double factor )
     : m_name     ( name ),
@@ -25,7 +25,7 @@ public:
       m_factor   ( factor ),
       m_startClock ( 0LL  ),
       m_startCpu   ( 0LL  ),
-      m_num      ( 0L   ),
+      m_num      ( 0LL  ),
       m_lastTime ( 0.   ),
       m_lastCpu  ( 0.   ),
       m_min      ( 0.   ),
@@ -77,8 +77,8 @@ private:
   std::string m_name;
   unsigned int m_size;
   double m_factor;
-  longlong m_startClock;
-  longlong m_startCpu;
+  long long m_startClock;
+  long long m_startCpu;
 
   long long m_num;
   double m_lastTime;
