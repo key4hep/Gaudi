@@ -25,13 +25,13 @@ DECLARE_TOOL_FACTORY(SequencerTimerTool)
 //=============================================================================
 // Standard constructor, initializes variables
 //=============================================================================
-SequencerTimerTool::SequencerTimerTool( const std::string& type,
-                                        const std::string& name,
-                                        const IInterface* parent )
-  : GaudiHistoTool ( type, name , parent )
-  , m_indent( 0 )
-  , m_normFactor( 0.001 )
-  , m_speedRatio(0)
+  SequencerTimerTool::SequencerTimerTool( const std::string& type,
+                                          const std::string& name,
+                                          const IInterface* parent )
+    : GaudiHistoTool ( type, name , parent )
+    , m_indent( 0 )
+    , m_normFactor( 0.001 )
+    , m_speedRatio(0)
 {
   declareInterface<ISequencerTimerTool>(this);
 
@@ -39,7 +39,8 @@ SequencerTimerTool::SequencerTimerTool( const std::string& type,
   declareProperty( "shots"        , m_shots );
   declareProperty( "Normalised"   , m_normalised = false );
   declareProperty( "GlobalTiming" , m_globalTiming = false );
-  declareProperty( "NameSize"     , m_headerSize = 30, "Number of characters to be used in algorithm name column" );
+  declareProperty( "NameSize"     , m_headerSize = 30, 
+                   "Number of characters to be used in algorithm name column" );
   // Histograms are disabled by default in this tool.
   setProperty("HistoProduce", false).ignore();
 }
@@ -52,10 +53,12 @@ SequencerTimerTool::~SequencerTimerTool() {}
 //=========================================================================
 //
 //=========================================================================
-StatusCode SequencerTimerTool::initialize ( ) {
-  GaudiHistoTool::initialize();
+StatusCode SequencerTimerTool::initialize ( )
+{
+  const StatusCode sc = GaudiHistoTool::initialize();
+  if ( sc.isFailure() ) return sc;
   double sum = 0;
-  TimerForSequencer norm( "normalize", m_normFactor );
+  TimerForSequencer norm( "normalize", m_headerSize, m_normFactor );
   norm.start();
   IRndmGenSvc* rsvc = svc<IRndmGenSvc>( "RndmGenSvc", true );
   { // Use dummy loop suggested by Vanya Belyaev:
@@ -70,15 +73,17 @@ StatusCode SequencerTimerTool::initialize ( ) {
   info() << "This machine has a speed about "
          << format( "%6.2f", 1000.*m_speedRatio)
          << " times the speed of a 2.8 GHz Xeon." << endmsg ;
-   if ( m_normalised ) {
+  if ( m_normalised ) {
     m_normFactor = m_speedRatio;
   }
-  return StatusCode::SUCCESS;
+  return sc;
 }
+
 //=========================================================================
 //  Finalize : Report timers
 //=========================================================================
-StatusCode SequencerTimerTool::finalize ( ) {
+StatusCode SequencerTimerTool::finalize ( )
+{
 
   std::string line(m_headerSize + 68, '-');
   info() << line << endmsg
@@ -90,7 +95,8 @@ StatusCode SequencerTimerTool::finalize ( ) {
          << line << endmsg;
 
   std::string lastName = "";
-  for ( unsigned int kk=0 ; m_timerList.size() > kk ; kk++ ) {
+  for ( unsigned int kk=0 ; m_timerList.size() > kk ; kk++ )
+  {
     if ( lastName == m_timerList[kk].name() ) continue; // suppress duplicate
     lastName = m_timerList[kk].name();
     info() << m_timerList[kk] << endmsg;
@@ -103,7 +109,8 @@ StatusCode SequencerTimerTool::finalize ( ) {
 //=========================================================================
 //  Return the index of a specified name. Trailing and leading spaces ignored
 //=========================================================================
-int SequencerTimerTool::indexByName ( std::string name ) {
+int SequencerTimerTool::indexByName ( const std::string& name )
+{
   std::string::size_type beg = name.find_first_not_of(" \t");
   std::string::size_type end = name.find_last_not_of(" \t");
   std::string temp = name.substr( beg, end-beg+1 );
@@ -114,21 +121,24 @@ int SequencerTimerTool::indexByName ( std::string name ) {
   }
   return -1;
 }
+
 //=========================================================================
 //  Build and save the histograms
 //=========================================================================
 void SequencerTimerTool::saveHistograms()
 {
-  if(produceHistos()){
+  if ( produceHistos() )
+  {
     info() << "Saving Timing histograms" << endmsg;
     const size_t bins = m_timerList.size();
     AIDA::IHistogram1D* histoTime = book("ElapsedTime", 0, bins, bins);
     AIDA::IHistogram1D* histoCPU  = book("CPUTime", 0, bins, bins);
     AIDA::IHistogram1D* histoCount  = book("Count", 0, bins, bins);
-    TH1D* tHtime = Gaudi::Utils::Aida2ROOT::aida2root(histoTime);
-    TH1D* tHCPU = Gaudi::Utils::Aida2ROOT::aida2root(histoCPU);
+    TH1D* tHtime  = Gaudi::Utils::Aida2ROOT::aida2root(histoTime);
+    TH1D* tHCPU   = Gaudi::Utils::Aida2ROOT::aida2root(histoCPU);
     TH1D* tHCount = Gaudi::Utils::Aida2ROOT::aida2root(histoCount);
-    for ( size_t kk = 0 ; bins > kk ; kk++ ) {
+    for ( size_t kk = 0 ; bins > kk ; kk++ )
+    {
       TimerForSequencer &tfsq = m_timerList[kk];
       tHtime->Fill(tfsq.name().c_str(), tfsq.elapsedTotal());
       tHCPU->Fill(tfsq.name().c_str(), tfsq.cpuTotal());
@@ -136,7 +146,32 @@ void SequencerTimerTool::saveHistograms()
     }
   }
 }
+
 //=============================================================================
+// Add a timer
+//=============================================================================
+int SequencerTimerTool::addTimer( const std::string& name )
+{
+  std::string myName;
+  if ( 0 < m_indent )
+  {
+    const std::string prefix( m_indent, ' ' );
+    myName += prefix;
+  }
+  myName += name;
+  if ( myName.size() < m_headerSize )
+  {
+    const std::string space( m_headerSize, ' ' );
+    myName += space ;
+  }
 
+  //myName = myName.substr( 0, m_headerSize );
 
+  m_timerList.push_back( TimerForSequencer( myName, 
+                                            m_headerSize,
+                                            m_normFactor ) );
 
+  return m_timerList.size() - 1;
+}
+
+//=============================================================================

@@ -1,6 +1,9 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2013-04-22 - Chris Jones
+ - Patch #5631: Fix bug in sequencer timer in GaudiAlg
+
 =============================== GaudiAlg v14r4 ===============================
 ! 2012-11-14 - Marco Clemencic
  - Updated CMakeLists.txt.
