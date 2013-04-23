@@ -1620,7 +1620,8 @@ class GaudiExeTest(ExecTestBase):
         # Note: the "quoteattr(k)" is not needed because special chars cannot be part of a variable name,
         # but it doesn't harm.
         data["environment"] = "\n".join(['<mapEntry key=%s value=%s/>' % (quoteattr(k), quoteattr(v))
-                                         for k, v in os.environ.iteritems()])
+                                         for k, v in os.environ.iteritems()
+                                         if k not in ('MAKEOVERRIDES', 'MAKEFLAGS', 'MAKELEVEL')])
 
         data["exec"] = which(prog) or prog
         if os.path.basename(data["exec"]).lower().startswith("python"):

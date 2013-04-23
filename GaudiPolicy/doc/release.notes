@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-04-23 - Marco Clemencic
+ - Exclude some (make) variables in the Eclipse launcher configuration generated
+   with QMTest, because they can cause problems in some builds.
+
 ! 2013-03-22 - Marco Clemencic
  - Enable C++11 by default when using gcc 4.7
 
