@@ -62,8 +62,6 @@ public:
   /// Constructors
   ObjectList()
     : m_list(0) { }
-  ObjectList( const char* name )
-    : m_list(0) { }
   /// Copy Constructor
   ObjectList( const ObjectList<TYPE>& value )
     : m_list(value.m_list) { }

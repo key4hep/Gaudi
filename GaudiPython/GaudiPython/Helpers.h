@@ -144,7 +144,7 @@ private:
     return size/sizeof(T);
   }
 
-  template <class T> static PyObject* toPython(T* o) { return 0; }
+  template <class T> static PyObject* toPython(T* /*o*/) { return 0; }
   static PyObject* toPython(int* o) { return PyInt_FromLong((long)*o); }
   static PyObject* toPython(short* o) { return PyInt_FromLong((long)*o); }
   static PyObject* toPython(char* o) { return PyInt_FromLong((long)*o); }

@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-04-22 - Marco Clemencic
+ - Fixed more Clang warnings.
+
 ! 2013-04-16 - Marco Clemencic
  - Fixed Clang warnings.
 

@@ -1,6 +1,3 @@
-// $Id: Allocator.h,v 1.1 2006/02/14 15:01:12 hmd Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.1 $
 // ============================================================================
 /** @file
  *  Allocator
@@ -51,7 +48,7 @@
 #ifndef GAUDIKERNEL_Allocator_h
 #define GAUDIKERNEL_Allocator_h 1
 // ============================================================================
-// Incldue files
+// Include files
 // ============================================================================
 // STD & STL
 // ============================================================================
@@ -123,7 +120,7 @@ namespace GaudiUtils
     const_pointer address(const_reference r) const { return &r; }
 
     /// Allocates space for n elements of type Type, but does not initialise
-    pointer allocate(size_type n, void* hint = 0)
+    pointer allocate(size_type n, void* /*hint*/ = 0)
     {
       // Allocates space for n elements of type Type, but does not initialise
       //
