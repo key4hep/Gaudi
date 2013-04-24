@@ -736,6 +736,8 @@ StatusCode ApplicationMgr::terminate() {
 
   if (m_returnCode.value() == Gaudi::ReturnCode::Success) {
     log << MSG::INFO << "Application Manager Terminated successfully" << endmsg;
+  } else if (m_returnCode.value() == Gaudi::ReturnCode::ScheduledStop ) {
+    log << MSG::INFO << "Application Manager Terminated successfully with a user requested ScheduledStop" << endmsg;
   } else {
     log << MSG::ERROR << "Application Manager Terminated with error code " << m_returnCode.value() << endmsg;
   }
