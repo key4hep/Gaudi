@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IConverter.h,v 1.5 2003/08/05 13:49:16 mato Exp $
 #ifndef GAUDIKERNEL_ICONVERTER_H
 #define GAUDIKERNEL_ICONVERTER_H
 
@@ -196,6 +195,9 @@ public:
       @param     pObject    Pointer to location of the object
    */
   virtual StatusCode updateRepRefs(IOpaqueAddress* pAddress, DataObject* pObject) = 0;
+
+  /// Virtual destructor
+  virtual ~IConverter() {}
 
   /// Status code
   enum Status {

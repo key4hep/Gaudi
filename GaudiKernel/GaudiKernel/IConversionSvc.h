@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IConversionSvc.h,v 1.8 2006/01/26 09:11:14 mato Exp $
 #ifndef GAUDIKERNEL_ICONVERSIONSVC_H
 #define GAUDIKERNEL_ICONVERSIONSVC_H
 
@@ -14,7 +13,7 @@ class ICnvFactory;
 
     <P> The conversion service interface allows to:
     <UL>
-    <LI> Add, get and remove data converters from the sercvice.
+    <LI> Add, get and remove data converters from the service.
     <LI> Create objects using converters: e.g. create the transient
          representation of a persistent object.
     <LI> convert objects - the opposite of create: e.g. convert transient
@@ -61,41 +60,44 @@ public:
 
   /** Retrieve converter from list
    *  @param clid the clid of the converter
-   *  @return the converter corresponding to clid or 0 if non wasa found
+   *  @return the converter corresponding to clid or 0 if none was found
    */
   virtual IConverter* converter(const CLID& clid) = 0;
 
   /** Connect the output file to the service.
-   *  @param      outputFile  String containig output file
+   *  @param      outputFile  String containing output file
    *  @return     Status code indicating success or failure.
    */
   virtual StatusCode connectOutput(const std::string& outputFile) = 0;
 
   /** Connect the output file to the service with open mode.
-   *  @param      outputFile  String containig output file
-   *  @param      openMode    String containig opening mode of the output file
+   *  @param      outputFile  String containing output file
+   *  @param      openMode    String containing opening mode of the output file
    *  @return     Status code indicating success or failure.
    */
   virtual StatusCode connectOutput(const std::string& outputFile,
                                    const std::string& openMode) = 0;
 
   /** Commit pending output.
-   *  @param      outputFile  String containig output file
+   *  @param      outputFile  String containing output file
    *  @param      do_commit   if true commit the output and flush
    *                          eventually pending items to the database
    *                          if false, discard pending buffers.
-   *                          Note: The possibility to commit or rollback
+   *                          Note: The possibility to commit or roll-back
    *                          depends on the database technology used!
    *  @return     Status code indicating success or failure.
    */
   virtual StatusCode commitOutput(const std::string& outputFile,
                                   bool do_commit) = 0;
 
+  /// Virtual destructor
+  virtual ~IConversionSvc() {}
+
   /// Status code definitions
   enum Status  {
    /// Success
    CONVERSIONSVC_NO_ERROR = ICONVERSIONSVC_LAST_ERROR+1,
-   /// No proper converter is availible to the service
+   /// No proper converter is available to the service
    NO_CONVERTER
   };
 };
