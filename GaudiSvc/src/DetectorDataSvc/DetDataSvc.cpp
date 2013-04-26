@@ -27,7 +27,7 @@ DECLARE_SERVICE_FACTORY(DetDataSvc)
 // Service initialization
 StatusCode DetDataSvc::initialize()   {
   // Call base class initialization
-  StatusCode sc  = DataSvc::initialize();
+  StatusCode sc  = TsDataSvc::initialize();
   if( UNLIKELY(sc.isFailure()) ) return sc;
 
   // Set Data Loader
@@ -145,7 +145,7 @@ StatusCode DetDataSvc::finalize()
   setDataLoader(0).ignore();
 
   // Finalize the base class
-  return DataSvc::finalize();
+  return TsDataSvc::finalize();
 }
 
 /// Remove all data objects in the data store.
@@ -153,7 +153,7 @@ StatusCode DetDataSvc::clearStore()   {
 
   MsgStream log(msgSvc(), name());
 
-  DataSvc::clearStore().ignore();
+  TsDataSvc::clearStore().ignore();
 
   if( m_usePersistency ) {
     // Create root address
@@ -266,7 +266,7 @@ StatusCode DetDataSvc::updateObject( DataObject* toUpdate ) {
 
   // Now delegate update to the conversion service by calling the base class
   DEBMSG << "Delegate update to relevant conversion service" << endmsg;
-  StatusCode status = DataSvc::updateObject(toUpdate);
+  StatusCode status = TsDataSvc::updateObject(toUpdate);
   if ( !status.isSuccess() ) {
     error() << "Could not update DataObject" << endmsg;
     if ( status == NO_DATA_LOADER )
