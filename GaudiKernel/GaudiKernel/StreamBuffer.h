@@ -235,7 +235,7 @@ public:
     char* ptr = m_buffer;
     m_containedLinks.erase (m_containedLinks.begin(), m_containedLinks.end());
     m_identifiedLinks.erase(m_identifiedLinks.begin(),m_identifiedLinks.end());
-    m_buffer = nullptr; //char *
+    m_buffer = NULL; //char *
     m_pointer = 0; // long
     m_length = 0; // long
     return ptr;
