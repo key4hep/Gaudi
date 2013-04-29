@@ -424,7 +424,8 @@ return IDataProviderSvc::INVALID_ROOT;
   
   /// Set the number of event slots (copies of DataSvc objects).
   virtual StatusCode setNumberOfStores(size_t slots) {
-    if(FSMState() ==  Gaudi::StateMachine::INITIALIZED) {
+    if(slots != m_slots and
+       FSMState() ==  Gaudi::StateMachine::INITIALIZED) {
       warning() << "Too late to change the number of slots!" << endmsg;
       return StatusCode::FAILURE;
     }
