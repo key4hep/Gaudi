@@ -26,7 +26,6 @@
 // GaudiAlg
 // ============================================================================
 #include "GaudiAlg/Maps.h"
-#include "GaudiAlg/HbookName.h"
 // ============================================================================
 // Forward declarations
 namespace AIDA
@@ -2705,11 +2704,7 @@ public: // trivial & non-trivial accessors
   /// get histogram directory           (property "HistoDir")
   inline const std::string& histoDir      () const { return m_histoDir      ; }
   /// get the constructed histogram path
-  inline std::string histoPath () const
-  {
-    const std::string path = histoTopDir() + histoDir();
-    return ( splitHistoDir() ? dirHbookName(path) : path );
-  }
+  std::string histoPath () const;
   /// print histograms at finalization ?
   inline bool histosPrint () const  { return m_histosPrint ; }
   /// Use old style sequencial numerical automatically assigned IDs ?

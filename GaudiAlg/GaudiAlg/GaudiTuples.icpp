@@ -17,6 +17,7 @@
 #include "GaudiAlg/GaudiTupleAlg.h"
 #include "GaudiAlg/TupleDetail.h"
 #include "GaudiAlg/Print.h"
+#include "GaudiAlg/HbookName.h"
 // ============================================================================
 /* @file GaudiTuples.cpp
  *
@@ -425,13 +426,17 @@ long GaudiTuples<PBASE>::printEvtCols () const
 // ============================================================================
 template <class PBASE>
 bool GaudiTuples<PBASE>::nTupleExists ( const TupleID& ID ) const
-{ return m_nTupleMapID.end() != m_nTupleMapID.find ( ID ) ; }
+{ 
+  return m_nTupleMapID.end() != m_nTupleMapID.find ( ID ) ; 
+}
 // ============================================================================
 // check the existence AND validity of the Event Tag Collection with the given ID
 // ============================================================================
 template <class PBASE>
 bool GaudiTuples<PBASE>::evtColExists ( const TupleID& ID ) const
-{ return m_evtColMapID.end() != m_evtColMapID.find ( ID ) ; }
+{ 
+  return m_evtColMapID.end() != m_evtColMapID.find ( ID ) ; 
+}
 // ============================================================================
 // Handle method for changes in the 'NTuplePrint'      property
 // ============================================================================
@@ -451,6 +456,24 @@ void GaudiTuples<PBASE>::printEvtColHandler  ( Property& )
   // no action if not yet initialized
   if ( this -> FSMState() < Gaudi::StateMachine::INITIALIZED ) { return ; }
   if ( this -> evtColsPrint() ) { this -> printEvtCols () ; }
+}
+// ============================================================================
+// get the constructed N-Tuple path
+// ============================================================================
+template <class PBASE>
+std::string GaudiTuples<PBASE>::nTuplePath() const
+{
+  const std::string path = nTupleLUN() + "/" + nTupleTopDir() + nTupleDir();
+  return ( splitNTupleDir() ? dirHbookName( path ) : path ) ;
+}
+// ============================================================================
+// get the constructed Event Tag Collection path
+// ============================================================================
+template <class PBASE>
+std::string GaudiTuples<PBASE>::evtColPath() const
+{
+  std::string path = evtColLUN() + "/" + evtColTopDir() + evtColDir();
+  return ( splitEvtColDir() ? dirHbookName( path ) : path );
 }
 // ============================================================================
 // The END
