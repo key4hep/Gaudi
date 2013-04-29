@@ -1,6 +1,12 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2013-04-29 - Chris Jones
+ - Patch #5641: Suppress GaudiAlg HbookName.h clang warnings
+   Removed the unused method, and reorganized things a bit so this header is no
+   longer included by the class headers, and thus everyone downstream, but only
+   when the icpp files are compiled.
+
 ! 2013-04-22 - Marco Clemencic
  - Fixes to patch #5631
 

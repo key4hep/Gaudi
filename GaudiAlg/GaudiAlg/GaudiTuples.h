@@ -217,11 +217,7 @@ public:  // trivial accessors
   /// get the value for N-Tuple offset    (property "NTupleOffSet")
   TupleID::NumericID nTupleOffSet   () const { return m_nTupleOffSet   ; }
   /// get the constructed N-Tuple path
-  std::string        nTuplePath     () const
-  {
-    const std::string path = nTupleLUN() + "/" + nTupleTopDir() + nTupleDir();
-    return ( splitNTupleDir() ? dirHbookName( path ) : path ) ;
-  }
+  std::string        nTuplePath     () const;
   /// get the flag for Event Tag Collection production (property "EvtColsProduce")
   bool               produceEvtCols () const { return m_produceEvtCols ; }
   /// get the flag for Event Tag Collection path split (property "EvtColsSplitDir")
@@ -235,11 +231,7 @@ public:  // trivial accessors
   /// get the value for Event Tag Collection offset    (property "EvtColsOffSet")
   TupleID::NumericID evtColOffSet   () const { return m_evtColOffSet   ; }
   /// get the constructed Event Tag Collection path
-  std::string        evtColPath     () const
-  {
-    std::string path = evtColLUN() + "/" + evtColTopDir() + evtColDir();
-    return ( splitEvtColDir() ? dirHbookName( path ) : path );
-  }
+  std::string        evtColPath     () const;
   /// print tuples at finalization
   bool tuplesPrint  () const { return m_tuplesPrint  ; }
   /// print event collections at finalization
