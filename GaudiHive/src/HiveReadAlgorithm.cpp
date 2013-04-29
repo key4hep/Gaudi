@@ -19,6 +19,9 @@ StatusCode HiveReadAlgorithm::initialize(){
 
 StatusCode HiveReadAlgorithm::execute()
 {
-  info() << "Running now for event and preloading /Event " << getContext()->m_evt_num << endmsg;
+  EventContext* ctxt = getContext();
+  if (ctxt){
+    info() << "Running now for event " << ctxt->m_evt_num << endmsg;
+  }
   return evtSvc()->preLoad();
 }
