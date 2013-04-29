@@ -421,7 +421,7 @@ StatusCode HiveSlimEventLoopMgr::stopRun() {
 // Here the loop on the events takes place.
 // This is also the natural place to put the preparation of the algorithms
 // contexts, which contain the event specific data.
-
+#include "GaudiKernel/Memory.h"
 StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
 
   // Calculate runtime
@@ -449,7 +449,11 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
         m_schedulerSvc->freeSlots()>0){ // There are still free slots in the scheduler
 
       debug() << "createdEvts: " << createdEvts << ", freeslots: " << m_schedulerSvc->freeSlots() << endmsg;
-        
+      constexpr double oneOver1204 = 1./1024.;
+      info()   << "Event Number = " << createdEvts
+               << " WSS (MB) = " << System::mappedMemory(System::MemoryUnit::kByte)*oneOver1204
+               << " Time (s) = " << secsFromStart() << endmsg;
+    
       StatusCode sc = executeEvent(&createdEvts);
       if (sc.isFailure())
         return StatusCode::FAILURE;
