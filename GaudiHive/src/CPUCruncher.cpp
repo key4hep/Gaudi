@@ -265,9 +265,9 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
   }
 
   tbb::tick_count starttbb=tbb::tick_count::now();
-  logstream  << MSG::INFO << "Runtime will be: "<< runtime << endmsg;
+  logstream  << MSG::DEBUG << "Runtime will be: "<< runtime << endmsg;
   if (getContext())
-    logstream  << MSG::INFO << "Start event " <<  getContext()->m_evt_num
+    logstream  << MSG::DEBUG << "Start event " <<  getContext()->m_evt_num
                << " on pthreadID " << getContext()->m_thread_id << endmsg;
 
   for (auto* inputHandle: m_inputHandles){
@@ -288,7 +288,7 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
   const double actualRuntime=(endtbb-starttbb).seconds();
 
   if (getContext())
-    logstream << MSG::INFO << "Finish event " <<  getContext()->m_evt_num
+    logstream << MSG::DEBUG << "Finish event " <<  getContext()->m_evt_num
          << " on pthreadID " << getContext()->m_thread_id
          << " in " << actualRuntime  << " seconds" << endmsg;
 
@@ -315,10 +315,12 @@ StatusCode CPUCruncher::finalize () // the finalization of the algorithm
     ninstances=const_name_ninstances->second;
   }
 
+  constexpr double s2ms=1000.;
     // do not show repetitions
     if (ninstances!=0){
-      log << MSG::INFO << "Summary: name= "<< name() <<" avg_runtime= " << m_avg_runtime
-          << " n_clones= " << ninstances << endmsg;
+      log << MSG::INFO << "Summary: name= "<< name()
+                       <<"\t avg_runtime= " << m_avg_runtime*s2ms
+                       << "\t n_clones= " << ninstances << endmsg;
 
       CHM::accessor name_ninstances;
       m_name_ncopies_map.find(name_ninstances,name());
