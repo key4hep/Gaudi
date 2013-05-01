@@ -1,0 +1,247 @@
+% CF4Hep coding conventions draft
+% Benedikt HEGNER
+% 15.4.2013
+
+# Introduction #
+These coding conventions are an update to the coding convention document LHCb 2001-054 by Olivier Callot.
+This text is a preliminary draft and by no means complete yet.
+
+# Naming conventions #
+Naming is something difficult to check by an automated tool, and everybody has his own feeling of what is a good name for an entity. However one should follow some guidelines, so that everyone understands what sort of entity is behind the name. Names should be meaningful, but not too long so that statements are not too long!
+
+1. Names are usually made of several words, written together without underscore, each first letter of a word being uppercased. The case of the first letter is specified by other rules, but is usually lowercase. Don't use special characters. Only alphanumeric characters are allowed. Example : `nextHighVoltage`
+2. Names are case sensitive. However, do not create names that differ only by the case. Example : `track, Track, TRACK`
+3. Avoid single character, or meaningless names like "`jjj`" except for local loop or array indices.
+3. Class names must be nouns, or noun phrases. The first letter is capital.
+4. Data Member names should be private variables and start with "m_" followed by a lowercase letter. 
+    - Protected variables may be used for base classes.
+    - Never use public data members. Instead you should use accessors functions.
+5. Static variables -- if really needed -- should start by "s_" to distinguish them clearly.
+6. Avoid global variables. They cause problems with shared images. Their function is better replaced by a class with mainly accessor methods. Avoid global functions and operators. The only case where you can use them is symmetric binary operators and mathematical functions. 
+7. Accessor functions are named from the variable they control. The "get" accessor is mainly the variable name, the set accessor has a "set" prefix.
+Ex: trackHits( )         // Get the value of m_TrackHits
+    setTrackHits( nnn )  // Set the value.
+8. Other functions must be verb or verb phrases. Like all member functions (excluding creators) they start with a lowercase letter. 
+9. Functions that create or make a new object should start with the verb "create" or "make".
+
+## Header files
+Header files with extension ".h" contain the description of the class. They may contain some implementation, but only in the case this is inline code. The rest of the code is in the implementation file, with extension ".cpp". 
+
+1. Each class should have a header file and an implementation file, the name of the files should be the name of the class. 
+2. A header file should contain the definition of only a single class. If this class defines and uses internally another class, they can be both defined in the same file.
+3. Every header file contains a mechanism to prevent multiple inclusion. The file "Package/File.h" starts and ends by the following lines:
+
+~~~~~~
+    #ifndef PACKAGE_FILE_H
+    #define PACKAGE_FILE_H 1
+    … body of the header file …
+    #endif   // PACKAGE_FILE_H
+~~~~~~
+
+4. One should minimise the number of header files included, to avoid too complex dependencies. In particular, if one uses only a pointer or reference to a class, one can just do a forward declaration, without including the class header file :
+
+~~~~~~
+    class Line;       // forward declaration, this is enough
+    class Point {
+    public:
+      Number distance(const Line& line) const; // distance
+    };
+~~~~~~
+
+5. The class declaration starts with the "public" members first, this includes the constructors and destructors. Then the "protected" and the "private" sections. One may use typedef to clarify the typing, they should be at the beginning of the public section of the class declaration.
+6. Header files should not have any method bodies inside the class definition. The "inline" functions should go at the end of the file, after the class definition. The other functions should all be in the implementation file. Inline function should NOT call something external to the class. One could however put a very simple accessor on the declaration line, to make the header file more readable.
+
+~~~~~~
+    class Point {
+   public:
+      Number x()                   const {return m_x; }
+     void   setX( const Number x )      {m_x = x;    } 
+    private:
+      Number m_x;
+};
+~~~~~~
+
+7. C++ include (header) files should have the extension ".h" and  C++ implementation files should have the extension ".cpp". 
+8. For including standard files, use `#include <filename>`, for user files, use the syntax `#include "Package/FileName.h"`. Never use a relative path for include file. For private header files which are in the same directory as the source file, you should use `#include "FileName.h"`.
+
+
+# Implementation Files #
+The implementation file contains the non-trivial member functions. They should hold the definition of a single class, they may contain auxiliary (private) classes if needed.
+
+1. A constructor should initialise all variables and internal objects which may be used in the class. Variables may also be initialised by their declaration in the header file.
+2. A copy constructor is mandatory, together with an assignment operator, if a class has built-in pointer member data.  Note that the arguments should be const reference. If you want to prevent copy and/or assignment, you should provide a private declaration of the copy and assignment constructors. The object can no longer be copied.
+
+~~~~
+    class Line {
+    public:
+      Line (const Line & );            // copy constructor
+      Line & operator= (const Line &); // Assignment operator
+~~~~
+
+3. Declare a "virtual" destructor for every class
+
+~~~~
+    class Line {
+    public:
+      virtual ~Line( );     // virtual destructor
+    };
+~~~~
+
+4. Virtual functions should be re-declared "virtual" in derived classes, just for clarity. And also to avoid mistakes when deriving a class from this derived class
+
+
+# Member functions and arguments #
+1. Functions without side effects are by far better. The use of the `const` specifier is strongly encouraged, to make clear that a function doesn't change the object, or that the arguments are not changed. Take the following example. The 'distance' function has a const argument, as the line is not modified, and is `const` as the point is not affected. The 'translate' method is also not affecting its argument, but the object is modified and the method can not be `const`.
+
+~~~~
+    class Point {
+    public:
+      Number distance( const Line& line ) const; // distance
+      void   translate( const Vector& vector );  // translate
+    };
+~~~~
+
+2. Pass objects by constant reference. Passing by value is also acceptable for small objects. 
+3. The use of default arguments is strongly discouraged. This reduces the risk of forgetting an argument…
+4. Do not declare functions with unspecified ( "..." ) arguments.
+5. The returned value of a function should always be tested. A function that does not have a void type should always return a meaningful value. `StatusCode::SUCCESS` is a good return value, this is used in the Algorithm class.
+6. The exception mechanism should be used only to trap *exceptionally unusual* problems.
+
+# Object Ownership #
+Object ownership and is one of the most complicated things to get right. Usually confusion arises for objects that are once created and then shared across an application. In CF4Hep the share of data across objects is modeled by services, which by convention all own the data they provide. In general, as a rule of thumb every object that does "new" has ownership of this object and is responsible for its lifetime. The only exception to this rule in CF4Hep are objects written into the Whiteboard. These objects may be created inside an algorithm, but the ownership is getting transferred to the Whiteboard on write.
+These considerations aside, the following conventions may be useful:
+
+1. Think about ownership before you start typing.
+2. Use the appropriate smart pointer of C++11 supporting the ownership intended: Shared ownership (`shared_ptr`), ownership transfer (`unique_ptr`) or weak referencing (`weak_ptr`).
+3. If you share access and ownership, make sure the shared data are thread-safe.
+4. Avoid the usage of bare pointers. Smart pointers are cheaper than you may think! For example, unique_ptr do not cost anything extra in terms of runtime.
+5. Every invocation of "new" should be matched with exactly one invocation of "delete", and they should be clearly related if they are more than 5 lines apart. This doesn't apply for objects created on the Transient Store: This is the case you want the object to persist longer that the code which created it !
+6. A function must not use the "delete" operator to any pointer passed to it as argument. 
+7. Use "new" and "delete" in place of "malloc()" and "free()".
+8. Any pointer to automatic objects should have the same or a smaller scope than the object it points to.
+
+
+# Concurrent programming and thread safety #
+
+Some words about the difference of tasks and threads.
+
+1. Do not create, use or manage threads yourself. Use the task-based model of the framework and split up independent work items into separate algorithms.
+2. If you want to parallelize within an algorithm, take advantage of `tbb::parallel_for`. Do not use any services within the parallelized loop.
+2. Do not use global or static variables. That easily causes hard to debug data races.
+3. Thread local variables and local caches should be used with care. Use the framework provided task-local storages instead.
+4. If you need thread-safe data structures, use the C++11 provided data types or the ones provided by Intel's TBB.
+5. Do not use locks to fix data races, you can create deadlocks easily. Try atomics or software-transactional memory solutions first.
+6. If your class uses locks, document this in the interface
+7. Take advantage of the `const`-keyword to announce which parts of your interface are thread-safe.
+
+
+
+#   Coding style #
+This area is usually the most debated, as some aesthetic considerations are involved. There are sometimes also 'religious' issues, because there is no way to convince each other that this is better than that. It's only something one can believe, but can't prove!
+But it is important to try to get a similar look, for an easier maintenance, as most code writers will be replaced during the lifetime of the experiment.
+
+## General lay-out ##
+
+1. Each block is indented by two spaces. It starts by an opening brace on the line of the control statement, and end by a closing brace alone on its line, with optionally a comment indicating which block is closed. In case of "if ( ) {" statement, the closing brace may be followed on the same line by an "else {" or "else if ( ) {" clause.
+   if ( 1 < x ) {
+     log << MSG::INFO << "x>1" << endreq; 
+   } // x greater than 1 
+
+2. One can also put a short single line statement on the same line, like:
+
+~~~~
+   if ( 1 < x ) { x = 1; }
+~~~~
+3. When declaring a function, try to put one argument per line, this allows inline comments, and helps to keep lines short.
+
+~~~~
+    int myFunction( int          intVAlue,
+                    std::string  aString,
+                    MyClass*     myClassPointerValue );
+~~~~
+
+
+## Comments ##
+
+Comments should be abundant, and must follow the following rules to allow an automatic documentation by the DOXYGEN tool:
+
+1. Every header file should have a comment block to describe the class, in the format appropriate for the tool, just before the class declaration:
+
+~~~~
+    /** @class ClassName ClassName.h Package/ClassName.h
+     *
+     * The first sentence will be used as a summary. The rest of 
+     * the text is a complete, free format description. It      
+     * should end with author and date in the format:
+     *
+     *   @author Your Name
+     *   @author A colleague helped also
+     *   @date  08/03/2001
+     */
+    class ClassName {
+~~~~
+
+2. Every method should have a description before it, either in a single line with "///" or with a block, again starting with "/**" and ending with "*/". Arguments and parameters can be indicated by special tags:
+
+~~~~
+    /** A method with arguments to be documented on
+     *   several lines if needed.
+     *   @return  status code
+     *   @param arg1 this is the meaning of this argument
+     *   @param blabla another reason
+     */
+    virtual int method2( Type1 arg1, Type2 blabla );
+~~~~
+
+3. For comments that you don't want in the documentation, use a simple "//". The C-like syntax is discouraged, except in the DOXYGEN formatted blocks. Use blank lines to separate blocks of statements, but don't use blank comment lines, i.e. a line which contains only "//" and nothing else is more a nuisance for the code clarity.
+
+
+## How to write a safer code ##
+
+1. Comparison between a variable and a constant should have the constant first, the compiler will then spot it if you  forgot one of the equal signs in `if ( 0 == value ) {`. By comparison, `if ( value = 0 ) {` is a valid statement, but is not what you usually want ! 
+3. Comparison between floating point values should not test for equality. In case this is what you want, test that the difference is smaller than a small number.
+4. To test that a pointer is valid, compare it to the value zero, do not treat it as having a Boolean value:
+
+~~~~ 
+    if ( 0 != ptr ) {
+~~~~
+
+5. In "switch" statements, each choice must have a closing break, or a clear comment indicating that the fall-through is the desired behaviour.
+6. Constants should NOT be defined by #define pre-processor statements. 
+7. Re-use existing classes, in particular the rich set of STL:
+    - Use std::string instead of  char*. 
+    - Don't use built-in arrays. Use one of the STL containers like std::vector.
+    - Do not use struct, use a class to hold your data.
+    - Do not use "union" types
+    - Use "bool" type for logical values.
+    - Use the "MsgStream" for all your outputs
+    - Explicitly put "std::",
+8. Avoid overloading operators, unless there is a clear improvement in the clarity of the code.
+9. Avoid complicated implicit precedence rules, use parentheses to clarify your wishes. 
+10. Use cast operators for data-type conversion . You should use static_cast or dynamic_cast, but not reinterpret_cast or const_cast. The best is to provide the appropriate cast operator inside the class. 
+11. All C++ entities should be defined only in the smallest scope they are needed. 
+
+
+## Readability and maintainability ##
+
+1. User defined operators are discouraged. Their use tends to make the code cryptic for anyone else than the author. Member functions are as good, and carry a description of their purpose in their name. If used, they should behave 'naturally', i.e. as they behave for usual numbers and objects:
+    - The assignment operator function should return a reference to their left operand. 
+    - The "+" operator should do something like an addition. 
+    - The "[]" operator should be an access by a sort of index.
+2. Macros are discouraged for producing code. They make the code more difficult to understand and to maintain, and are impossible to debug.
+3. Use spaces to separate the operators from their operands:
+`m_x = x;`   is more readable than   `m_x=x;`
+
+4. A function should have a single return statement. One may use return statements when checking the arguments as the beginning of a function, but one should avoid a return statement in the middle of nested loop and if blocks.
+5. `goto` statements are strictly forbidden. They make the code structure more confused.
+6. The conditional operator `condition ? true : false` is discouraged. It is acceptable only for very simple statements and never nested. A simple "if" block is preferred, it is by far more readable, and as efficient.
+6. Compiler warning messages give very good advices, which you should follow. Silencing them away blindly is the wrong approach.
+
+
+## Build system conventions ##
+
+Add comments about build system.
+
+
+
+
