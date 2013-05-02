@@ -118,7 +118,25 @@ def makeEnv(actions, ignore_system=False):
         apply(getattr(control, action), args)
 
     # extract the result env dictionary
-    return control.vars()
+    env = control.vars()
+
+    # set the library search path correctly for the non-Linux platforms
+    if "LD_LIBRARY_PATH" in env:
+        # replace LD_LIBRARY_PATH with the corresponding one on other systems
+        if sys.platform.startswith("win"):
+            other = "PATH"
+        elif sys.platform.startswith("darwin"):
+            other = "DYLD_LIBRARY_PATH"
+        else:
+            other = None
+        if other:
+            if other in env:
+                env[other] = env[other] + os.pathsep + env["LD_LIBRARY_PATH"]
+            else:
+                env[other] = env["LD_LIBRARY_PATH"]
+            del env["LD_LIBRARY_PATH"]
+
+    return env
 
 def main():
     '''
@@ -141,21 +159,6 @@ def main():
         return 2
 
     env = makeEnv(opts.actions, opts.ignore_environment)
-
-    if "LD_LIBRARY_PATH" in env:
-        # replace LD_LIBRARY_PATH with the corresponding one on other systems
-        if sys.platform.startswith("win"):
-            other = "PATH"
-        elif sys.platform.startswith("darwin"):
-            other = "DYLD_LIBRARY_PATH"
-        else:
-            other = None
-        if other:
-            if other in env:
-                env[other] = env[other] + os.pathsep + env["LD_LIBRARY_PATH"]
-            else:
-                env[other] = env["LD_LIBRARY_PATH"]
-            del env["LD_LIBRARY_PATH"]
 
     if not cmd:
         if opts.shell == 'py':
