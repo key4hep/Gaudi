@@ -7,6 +7,7 @@ import xmlModule
 import os
 from time import gmtime, strftime
 import Variable
+import EnvConfig
 
 class Environment():
     '''object to hold settings of environment'''
@@ -24,14 +25,8 @@ class Environment():
         self.separator = ':'
 
         # Prepeare the internal search path for xml files (used by 'include' elements)
-        self.searchPath = ['.']
-        if searchPath is not None:
-            self.searchPath.extend(searchPath)
-        try:
-            self.searchPath.extend(os.environ['ENVXMLPATH'].split(os.pathsep))
-        except KeyError:
-            # ignore if the env variable is not there
-            pass
+        if searchPath is None:
+            self.searchPath = []
 
         self.actions = {}
         self.actions['include'] = lambda n, c, h: self.loadXML(self._locate(n, c, h))
@@ -88,7 +83,7 @@ class Environment():
         try:
             return (abspath(f)
                     for f in [normpath(join(d, filename))
-                              for d in self.searchPath + hints]
+                              for d in EnvConfig.path + self.searchPath + hints]
                     if isfile(f)).next()
         except StopIteration:
             from errno import ENOENT

@@ -402,8 +402,13 @@ class Test(unittest.TestCase):
 <env:append variable="included">from subdir2</env:append>
 </env:config>''',}})
 
+        # set the basic search path to the minimal default
         if 'ENVXMLPATH' in os.environ:
             del os.environ['ENVXMLPATH']
+        import EnvConfig
+        saved_path = EnvConfig.path
+        EnvConfig.path = ['.']
+
         control = Control.Environment(searchPath=[])
 
         #self.assertRaises(OSError, control.loadXML, tmp('first.xml'))
@@ -478,6 +483,9 @@ class Test(unittest.TestCase):
         control = Control.Environment(searchPath=[])
         #self.assertRaises(OSError, control.loadXML, tmp('first.xml'))
         control.loadXML(tmp('recursion.xml'))
+
+        # restore search path
+        EnvConfig.path = saved_path
 
 
     def testFileDir(self):
