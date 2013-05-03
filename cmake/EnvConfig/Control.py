@@ -9,7 +9,7 @@ from time import gmtime, strftime
 import Variable
 import EnvConfig
 
-class Environment():
+class Environment(object):
     '''object to hold settings of environment'''
 
     def __init__(self, loadFromSystem=True, useAsWriter=False, reportLevel=1, searchPath=None):

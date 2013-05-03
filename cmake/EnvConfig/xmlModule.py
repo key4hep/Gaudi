@@ -11,7 +11,7 @@ import os
 from cPickle import load, dump
 from hashlib import md5 # pylint: disable=E0611
 
-class XMLFile():
+class XMLFile(object):
     '''Takes care of XML file operations such as reading and writing.'''
 
     def __init__(self):
@@ -110,7 +110,6 @@ class XMLFile():
         with open(outputFile, "w") as f:
             f.write( doc.toxml() )
 
-        f.close()
         return outputFile
 
     def writeVar(self, varName, action, value, vartype='list', local=False):
@@ -126,7 +125,7 @@ class XMLFile():
         self.xmlResult += '<env:'+action+' variable="'+ varName +'">'+value+'</env:'+action+'>\n'
 
 
-class Report():
+class Report(object):
     '''This class is used to catch errors and warnings from XML file processing to allow better managing and testing.'''
 
     # Sequence of levels: warn - warning - info - error
@@ -210,7 +209,7 @@ class Report():
         return self.warns[key]
 
 
-class XMLOperations():
+class XMLOperations(object):
     '''This class is for checking and merging XML files.
 
     Variables are stored in a double dictionary with keys of names and then actions.
@@ -325,7 +324,7 @@ class XMLOperations():
             if action == 'remove-regexp':
                 action = 'remove_regexp'
             eval('(self.realVariables[varName]).'+action+'(value)')
-        except Variable.EnvError as e:
+        except Variable.EnvError, e:
             if e.code == 'undefined':
                 self.report.addWarn('Referenced variable "' +e.val+ '" is not defined.')
             elif e.code == 'ref2var':
