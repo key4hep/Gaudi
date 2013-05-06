@@ -95,4 +95,7 @@ gaudi_add_test(WriteAndReadHandleError
                FAILS)
                
 gaudi_add_test(WriteAndReadHandleWhiteBoard
-               FRAMEWORK options/ROOT_IO/WriteAndReadHandleWhiteBoard.py)               
+               FRAMEWORK options/ROOT_IO/WriteAndReadHandleWhiteBoard.py)
+
+gaudi_add_test(CloneWithPrivateTools
+               FRAMEWORK options/AlgToolsClone.py)                        

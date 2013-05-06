@@ -224,7 +224,7 @@ StatusCode AlgResourcePool::m_decodeTopAlgs()    {
       algoSmartIF = algo;
     }    
     // Init and start
-    algoSmartIF->sysInitialize();    
+    algoSmartIF->sysInitialize();
     m_topAlgList.push_back(algoSmartIF);    
   }
   // Top Alg list filled ----
@@ -294,7 +294,8 @@ StatusCode AlgResourcePool::m_decodeTopAlgs()    {
       for (unsigned int i =1, end =ialgo->cardinality();i<end; ++i){
         debug() << "type/name to create clone of: " << item_type << "/" << item_name << endmsg;
         IAlgorithm* ialgoClone(nullptr);
-        createAlg(item_type,item_name,ialgoClone);      
+        createAlg(item_type,item_name,ialgoClone);
+        ialgoClone->sysInitialize();    
         queue->push(ialgoClone);
         m_n_of_created_instances[algo_id]+=1;
       }

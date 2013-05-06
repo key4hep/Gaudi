@@ -21,6 +21,8 @@ MyAlgorithm::MyAlgorithm(const std::string& name, ISvcLocator* ploc)
 //------------------------------------------------------------------------------
   declareProperty("ToolWithName", m_privateToolType = "MyTool",
                   "Type of the tool to use (internal name is ToolWithName)");
+  declareProperty("ProvateToolsOnly", m_privateToolsOnly = false,
+                  "Do not look for public tools.");
 }
 
 //------------------------------------------------------------------------------
@@ -31,21 +33,25 @@ StatusCode MyAlgorithm::initialize() {
   StatusCode sc;
   log << MSG::INFO << "initializing...." << endmsg;
 
-  sc = toolSvc()->retrieveTool("MyTool", m_publicTool );
-  if( sc.isFailure() ) {
-    log << MSG::ERROR<< "Error retrieving the public tool" << endmsg;
-    return sc;
+  if ( !m_privateToolsOnly ){
+    sc = toolSvc()->retrieveTool("MyTool", m_publicTool );
+    if( sc.isFailure() ) {
+      log << MSG::ERROR<< "Error retrieving the public tool" << endmsg;
+      return sc;
+    }
+    sc = toolSvc()->retrieveTool("MyGaudiTool", m_publicGTool );
+    if( sc.isFailure() ) {
+      log << MSG::ERROR<< "Error retrieving the Gaudi public tool" << endmsg;
+      return sc;
+    }
   }
+  
   sc = toolSvc()->retrieveTool("MyTool", m_privateTool, this );
   if( sc.isFailure() ) {
     log << MSG::ERROR<< "Error retrieving the private tool" << endmsg;
     return sc;
   }
-  sc = toolSvc()->retrieveTool("MyGaudiTool", m_publicGTool );
-  if( sc.isFailure() ) {
-    log << MSG::ERROR<< "Error retrieving the Gaudi public tool" << endmsg;
-    return sc;
-  }
+
   sc = toolSvc()->retrieveTool("MyGaudiTool", m_privateGTool, this );
   if( sc.isFailure() ) {
     log << MSG::ERROR<< "Error retrieving the Gaudi private tool" << endmsg;
@@ -77,9 +83,11 @@ StatusCode MyAlgorithm::execute() {
   MsgStream         log( msgSvc(), name() );
   log << MSG::INFO << "executing...." << endmsg;
 
-  m_publicTool->doIt();
+  if ( !m_privateToolsOnly ){
+    m_publicTool->doIt();
+    m_publicGTool->doIt();
+    }  
   m_privateTool->doIt();
-  m_publicGTool->doIt();
   m_privateGTool->doIt();
   m_privateToolWithName->doIt();
   m_privateOtherInterface->doItAgain();
@@ -94,9 +102,11 @@ StatusCode MyAlgorithm::finalize() {
   MsgStream log(msgSvc(), name());
   log << MSG::INFO << "finalizing...." << endmsg;
 
-  toolSvc()->releaseTool( m_publicTool ).ignore();
+  if ( !m_privateToolsOnly ){
+    toolSvc()->releaseTool( m_publicTool ).ignore();
+    toolSvc()->releaseTool( m_publicGTool ).ignore();    
+    }
   toolSvc()->releaseTool( m_privateTool ).ignore();
-  toolSvc()->releaseTool( m_publicGTool ).ignore();
   toolSvc()->releaseTool( m_privateGTool ).ignore();
   toolSvc()->releaseTool( m_privateToolWithName ).ignore();
   toolSvc()->releaseTool( m_privateOtherInterface ).ignore();

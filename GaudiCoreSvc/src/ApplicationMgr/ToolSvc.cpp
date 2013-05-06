@@ -324,11 +324,10 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
 
   // Find tool in list of those already existing, and tell its
   // interface that it has been used one more time
-  ListTools::const_iterator it;
-  for( it = m_instancesTools.begin(); it != m_instancesTools.end(); ++it ) {
-    if( (*it)->name() == fullname ) {
-      ON_DEBUG debug() << "Retrieved tool " << toolname << endmsg;
-      itool = *it;
+  for( IAlgTool* iAlgTool : m_instancesTools) {
+    if( iAlgTool->name() == fullname && iAlgTool->parent() == parent ) {
+      ON_DEBUG debug() << "Retrieved tool " << toolname << " with parent " << parent << endmsg;
+      itool = iAlgTool;
       break;
     }
   }
@@ -355,6 +354,7 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
         << endmsg;
     return sc;
   }
+
   ///////////////
   /// invoke retrieve callbacks...
   ///////////////
@@ -478,13 +478,22 @@ private:
   IAlgTool* m_tool;
 };
 }
+
 //------------------------------------------------------------------------------
+/**
+ * Now able to handle clones. The test of tool existence is performed according to 
+ * three criteria: name, type and parent.
+ * If a tool is private, i.e. the parent is not the tool Svc, and it exist but
+ * the parent is not the specified one, a clone is handed over.
+ * No clones of public tools are allowed since they would be undistinguishable.
+**/
 StatusCode ToolSvc::create(const std::string& tooltype,
                            const std::string& toolname,
                            const IInterface* parent,
                            IAlgTool*& tool)
   //------------------------------------------------------------------------------
 {
+
   // protect against empty type
   if ( UNLIKELY(tooltype.empty()) ) {
     error() << "create(): No Tool Type given" << endmsg;
@@ -499,11 +508,22 @@ StatusCode ToolSvc::create(const std::string& tooltype,
   // The tool is removed from the list of known tools too.
   ToolCreateGuard toolguard(m_instancesTools);
 
-  // Check if the tool already exist : this should never happen
+  // Check if the tool already exist : this could happen with clones
   const std::string fullname = nameTool(toolname, parent);
   if( UNLIKELY(existsTool(fullname)) ) {
-    error() << "Tool " << fullname << " already exists" << endmsg;
-    return StatusCode::FAILURE;
+    // Now check if the parent is the same. This allows for clones
+    for (IAlgTool* iAlgTool: m_instancesTools){
+      if ( iAlgTool->name() ==  toolname && iAlgTool->parent() == parent){
+        // The tool exist with this name, type and parent: this is bad!
+        // This excludes the possibility of cloning public tools intrinsecally
+        error() << "Tool " << fullname << " already exists with the same parent" << endmsg;
+        if (parent == this)
+          error() << "... In addition, the parent is the ToolSvc: public tools cannot be cloned!" << endmsg;
+
+        return StatusCode::FAILURE;
+      }
+    }
+    ON_DEBUG debug() << "Creating clone of " << fullname << endmsg;
   }
   // instantiate the tool using the factory
   try {
