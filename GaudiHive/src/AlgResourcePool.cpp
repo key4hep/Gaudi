@@ -348,14 +348,10 @@ StatusCode AlgResourcePool::beginRun(){
     }
     return StatusCode::SUCCESS;
   };  
-  // Call the beginRun() method of all top algorithms
+  // Call the beginRun() method of all algorithms
   for (auto& algoSmartIF : m_flatUniqueAlgList ) {
     if (algBeginRun(algoSmartIF).isFailure())
       return StatusCode::FAILURE;
-  }
-  for (auto& algoSmartIF : m_topAlgList ) {
-    if (algBeginRun(algoSmartIF).isFailure())
-    return StatusCode::FAILURE;
   }
   
   return StatusCode::SUCCESS;
