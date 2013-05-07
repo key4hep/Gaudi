@@ -4,6 +4,8 @@ import os
 import sys
 assert sys.version_info >= (2, 6), "Python 2.6 required"
 
+import logging
+
 __all__ = []
 
 # Prepare the search path for environment XML files
@@ -47,6 +49,7 @@ class Script(object):
         self.opts = None
         self.cmd = None
         self.control = None
+        self.log = None
         self.env = {}
         # Run the core code of the script
         self._prepare_parser()
@@ -60,9 +63,10 @@ class Script(object):
         '''
         from optparse import OptionParser, OptionValueError
         parser = OptionParser(prog=os.path.basename(sys.argv[0]),
-                                   usage=self.__usage__,
-                                   description=self.__desc__,
-                                   epilog=self.__epilog__)
+                              usage=self.__usage__,
+                              description=self.__desc__,
+                              epilog=self.__epilog__)
+        self.log = logging.getLogger(parser.prog)
 
         def addOperation(option, opt, value, parser, action):
             '''
@@ -113,8 +117,21 @@ class Script(object):
         parser.add_option("--py",
                           action="store_const", const="py", dest="shell",
                           help="Print the environment as Python dictionary.")
+
+        parser.add_option('--verbose', action='store_const',
+                          const=logging.INFO, dest='log_level',
+                          help='print more information')
+        parser.add_option('--debug', action='store_const',
+                          const=logging.DEBUG, dest='log_level',
+                          help='print debug messages')
+        parser.add_option('--quiet', action='store_const',
+                          const=logging.WARNING, dest='log_level',
+                          help='print only warning messages (default)')
+
         parser.disable_interspersed_args()
-        parser.set_defaults(actions=[], ignore_environment=False)
+        parser.set_defaults(actions=[],
+                            ignore_environment=False,
+                            log_level=logging.WARNING)
 
         self.parser = parser
 
@@ -123,6 +140,10 @@ class Script(object):
         Parse the command line arguments.
         '''
         opts, args = self.parser.parse_args(args)
+
+        # set the logging level
+        logging.basicConfig(level=opts.log_level)
+
         cmd = []
         # find the (implicit) 'set' arguments in the list of arguments
         # and put the rest in the command

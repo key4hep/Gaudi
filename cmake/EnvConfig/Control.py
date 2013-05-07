@@ -8,11 +8,12 @@ import os
 from time import gmtime, strftime
 import Variable
 import EnvConfig
+import logging
 
 class Environment(object):
     '''object to hold settings of environment'''
 
-    def __init__(self, loadFromSystem=True, useAsWriter=False, reportLevel=1, searchPath=None):
+    def __init__(self, loadFromSystem=True, useAsWriter=False, searchPath=None):
         '''Initial variables to be pushed and setup
 
         append switch between append and prepend for initial variables.
@@ -20,7 +21,7 @@ class Environment(object):
         If useAsWriter == True than every change to variables is recorded to XML file.
         reportLevel sets the level of messaging.
         '''
-        self.report = xmlModule.Report(reportLevel)
+        self.log = logging.getLogger('Environment')
 
         self.separator = ':'
 
@@ -53,7 +54,7 @@ class Environment(object):
         self._fileDirStack = []
         # Note: cannot use self.declare() because we do not want to write out
         #       the changes to ${.}
-        dot = Variable.Scalar('.', local=True, report=self.report)
+        dot = Variable.Scalar('.', local=True)
         dot.expandVars = False
         dot.set('')
         self.variables['.'] = dot
@@ -141,9 +142,9 @@ class Environment(object):
                         raise Variable.EnvError(name, 'redeclaration')
 
         if vartype.lower() == "list":
-            a = Variable.List(name, local, report=self.report)
+            a = Variable.List(name, local)
         else:
-            a = Variable.Scalar(name, local, report=self.report)
+            a = Variable.Scalar(name, local)
 
         if self.loadFromSystem and not local and name in os.environ:
             a.expandVars = False # disable var expansion when importing from the environment
@@ -191,9 +192,9 @@ class Environment(object):
             # FIXME: improve declare() to allow for a default.
             if name not in self.variables:
                 if self._guessType(name) == 'list':
-                    v = Variable.List(name, False, report=self.report)
+                    v = Variable.List(name, False)
                 else:
-                    v = Variable.Scalar(name, False, report=self.report)
+                    v = Variable.Scalar(name, False)
                 if self.loadFromSystem and name in os.environ:
                     v.set(os.environ[name], os.pathsep, environment=self.variables)
                 else:
@@ -246,7 +247,7 @@ class Environment(object):
         variables = XMLfile.variable(fileName, namespace=namespace)
         for i, (action, args) in enumerate(variables):
             if action not in self.actions:
-                self.report.addError('Node {0}: No action taken with var "{1}". Probably wrong action argument: "{2}".'.format(i, args[0], action))
+                self.log.error('Node {0}: No action taken with var "{1}". Probably wrong action argument: "{2}".'.format(i, args[0], action))
             else:
                 self.actions[action](*args) # pylint: disable=W0142
         # restore the old value of ${.}
@@ -334,7 +335,7 @@ class Environment(object):
 
     def __setitem__(self, key, value):
         if key in self.variables.keys():
-            self.report.addWarn('Addition canceled because of duplicate entry. Var: "' + key + '" value: "' + value + '".')
+            self.log.warning('Addition canceled because of duplicate entry. Var: "%s" value: "%s".', key, value)
         else:
             self.append(key, value)
 
