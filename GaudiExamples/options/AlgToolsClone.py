@@ -8,7 +8,7 @@ from Configurables import GaudiExamplesCommonConf
 GaudiExamplesCommonConf()
 
 myalg = MyAlgorithm('MyAlg',
-                    ProvateToolsOnly = True,
+                    PrivateToolsOnly = True,
                     Cardinality = 20,
                     IsClonable = True)
 

@@ -21,7 +21,7 @@ MyAlgorithm::MyAlgorithm(const std::string& name, ISvcLocator* ploc)
 //------------------------------------------------------------------------------
   declareProperty("ToolWithName", m_privateToolType = "MyTool",
                   "Type of the tool to use (internal name is ToolWithName)");
-  declareProperty("ProvateToolsOnly", m_privateToolsOnly = false,
+  declareProperty("PrivateToolsOnly", m_privateToolsOnly = false,
                   "Do not look for public tools.");
 }
 
