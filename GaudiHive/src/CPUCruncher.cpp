@@ -32,6 +32,7 @@ CPUCruncher::CPUCruncher ( const std::string& name , // the algorithm instance n
       declareProperty ( "NIterationsVect", m_niters_vect , "Number of iterations for the calibration." ) ;
       declareProperty ( "NTimesVect", m_times_vect , "Number of seconds for the calibration." ) ;
       declareProperty ( "shortCalib", m_shortCalib=false , "Enable coarse grained calibration" ) ;
+      declareProperty ( "RwRepetitions", m_rwRepetitions=1, "Increase access to the WB" ) ;
 
       // Register the algo in the static concurrent hash map in order to
       // monitor the # of copies
@@ -271,7 +272,10 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
                << " on pthreadID " << getContext()->m_thread_id << endmsg;
 
   for (auto* inputHandle: m_inputHandles){
-    DataObject* obj = inputHandle->get();
+    DataObject* obj = nullptr;
+    for (unsigned int i=0; i<m_rwRepetitions;++i){
+      obj = inputHandle->get();
+    }
     if (obj == nullptr)
       logstream << MSG::ERROR << "A read object was a null pointer." << endmsg;
   }
@@ -280,9 +284,16 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
   findPrimes( n_iters );
 
   for (auto* outputHandle: m_outputHandles){
-    outputHandle->put(new DataObject());
+      outputHandle->put(new DataObject());
   }
 
+  for (auto* inputHandle: m_inputHandles){
+    DataObject* obj = nullptr;
+    for (unsigned int i=1; i<m_rwRepetitions;++i){
+      obj = inputHandle->get();
+    }
+  }
+  
   tbb::tick_count endtbb=tbb::tick_count::now();
 
   const double actualRuntime=(endtbb-starttbb).seconds();

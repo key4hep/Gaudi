@@ -76,6 +76,8 @@
     std::vector<DataObjectHandle<DataObject>*> m_inputHandles;
     std::vector<DataObjectHandle<DataObject>*> m_outputHandles;
 
+    unsigned int m_rwRepetitions;
+    
     static CHM m_name_ncopies_map;
 
   };
