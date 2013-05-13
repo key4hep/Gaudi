@@ -2187,7 +2187,8 @@ function(gaudi_generate_env_conf filename)
 
   # include inherited environments
   foreach(other_project ${used_gaudi_projects})
-    set(data "${data}  <env:include hints=\"${${other_project}_DIR}\">${other_project}Environment.xml</env:include>\n")
+    set(data "${data}  <env:search_path>${${other_project}_DIR}</env:search_path>\n")
+    set(data "${data}  <env:include>${other_project}Environment.xml</env:include>\n")
   endforeach()
 
   set(commands ${ARGN})

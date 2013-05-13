@@ -39,6 +39,7 @@ class Environment(object):
         self.actions['remove'] = lambda n, v, _: self.remove(n, v)
         self.actions['remove-regexp'] = lambda n, v, _: self.remove_regexp(n, v)
         self.actions['declare'] = self.declare
+        self.actions['search_path'] = lambda n, _1, _2: self.searchPath.extend(n.split(self.separator))
 
         self.variables = {}
 
@@ -68,6 +69,7 @@ class Environment(object):
         if isabs(filename):
             return filename
 
+        self.log.debug('looking for %s', filename)
         if hints is None:
             hints = []
         elif type(hints) is str:
@@ -76,19 +78,26 @@ class Environment(object):
         if caller:
             calldir = dirname(caller)
             localfile = join(calldir, filename)
+            self.log.debug('trying %s', localfile)
             if isfile(localfile):
+                self.log.debug('OK (local file)')
                 return localfile
             # allow for relative hints
             hints = [join(calldir, hint) for hint in hints]
 
+        sp = EnvConfig.path + self.searchPath + hints
+        def candidates():
+            for d in sp:
+                f = normpath(join(d, filename))
+                self.log.debug('trying %s', f)
+                yield f
         try:
-            return (abspath(f)
-                    for f in [normpath(join(d, filename))
-                              for d in EnvConfig.path + self.searchPath + hints]
-                    if isfile(f)).next()
+            f = (abspath(f) for f in candidates() if isfile(f)).next()
+            self.log.debug('OK')
+            return f
         except StopIteration:
             from errno import ENOENT
-            raise OSError(ENOENT, 'cannot find file in %r' % self.searchPath, filename)
+            raise OSError(ENOENT, 'cannot find file in %r' % sp, filename)
 
     def vars(self, strings=True):
         '''returns dictionary of all variables optionally converted to string'''

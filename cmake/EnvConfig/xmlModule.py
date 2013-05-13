@@ -66,6 +66,13 @@ class XMLFile(object):
                         value = ''
                     variables.append((action, (value, caller, str(node.getAttribute('hints')))))
 
+                elif action == 'search_path':
+                    if node.childNodes:
+                        value = str(node.childNodes[0].data)
+                    else:
+                        value = ''
+                    variables.append((action, (value, None, None)))
+
                 else:
                     varname = str(node.getAttribute('variable'))
                     if name and varname != name:
