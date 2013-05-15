@@ -127,10 +127,10 @@ StatusCode ForwardSchedulerSvc::initialize(){
   std::for_each(m_eventSlots.begin(),m_eventSlots.end(),[](EventSlot& slot){slot.complete=true;});
 
   // Clearly inform about the level of concurrency
-  info() << "Concurrency level information:" << endmsg;
-  info() << " o Number of events in flight: " << m_maxEventsInFlight << endmsg;
-  info() << " o Number of algorithms in flight: " << m_maxAlgosInFlight << endmsg;
-  info() << " o TBB thread pool size: " << m_threadPoolSize << endmsg;
+  always() << "Concurrency level information:" << endmsg;
+  always() << " o Number of events in flight: " << m_maxEventsInFlight << endmsg;
+  always() << " o Number of algorithms in flight: " << m_maxAlgosInFlight << endmsg;
+  always() << " o TBB thread pool size: " << m_threadPoolSize << endmsg;
           
    
   // Activate the scheduler 
@@ -177,7 +177,7 @@ void ForwardSchedulerSvc::m_activate(){
   **/
 
   debug() << "Initialising a TBB thread pool of size " << m_threadPoolSize << endmsg;
-  tbb::task_scheduler_init TBBSchedInit(m_threadPoolSize);
+  tbb::task_scheduler_init TBBSchedInit(m_threadPoolSize+1);
   
   // Wait for actions pushed into the queue by finishing tasks.
   action thisAction;  
