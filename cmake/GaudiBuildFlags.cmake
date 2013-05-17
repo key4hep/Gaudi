@@ -32,6 +32,7 @@ option(GAUDI_CPP11
        ON)
 
 #--- Compilation Flags ---------------------------------------------------------
+add_definitions(-DGOD_NOALLOC)
 if(NOT GAUDI_FLAGS_SET)
   #message(STATUS "Setting cached build flags")
 
