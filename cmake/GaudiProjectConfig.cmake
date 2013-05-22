@@ -299,6 +299,17 @@ macro(gaudi_project project version)
   # (so far, the build and the release envirnoments are identical)
   set(project_build_environment ${project_environment})
 
+  # FIXME: this should not be needed, but there is a bug in genreflex
+  # special environment variables for GCCXML
+  if(GCCXML_CXX_COMPILER)
+    set(project_build_environment ${project_build_environment}
+        SET GCCXML_COMPILER "${GCCXML_CXX_COMPILER}")
+  endif()
+  if(GCCXML_CXX_FLAGS)
+    set(project_build_environment ${project_build_environment}
+        SET GCCXML_CXXFLAGS "${GCCXML_CXX_FLAGS}")
+  endif()
+
   message(STATUS "  environment for local subdirectories")
   # - collect internal environment
   #   - project root (for relocatability)
