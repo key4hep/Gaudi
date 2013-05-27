@@ -28,6 +28,8 @@ class Environment(object):
         # Prepeare the internal search path for xml files (used by 'include' elements)
         if searchPath is None:
             self.searchPath = []
+        else:
+            self.searchPath = list(searchPath)
 
         self.actions = {}
         self.actions['include'] = lambda n, c, h: self.loadXML(self._locate(n, c, h))

@@ -5,6 +5,7 @@ Created on Jul 12, 2011
 '''
 import unittest
 import os
+import sys
 import shutil
 from tempfile import mkdtemp
 
@@ -406,8 +407,8 @@ class Test(unittest.TestCase):
         if 'ENVXMLPATH' in os.environ:
             del os.environ['ENVXMLPATH']
         import EnvConfig
-        saved_path = EnvConfig.path
-        EnvConfig.path = ['.']
+        saved_path = list(EnvConfig.path)
+        EnvConfig.path[:] = ['.']
 
         control = Control.Environment(searchPath=[])
 
@@ -456,13 +457,15 @@ class Test(unittest.TestCase):
         self.assertEqual(str(control['test_path']), 'data1:data2')
         self.assertEqual(str(control['derived']), 'another_first')
 
-        os.environ['ENVXMLPATH'] = os.pathsep.join([tmp(), tmp('subdir')])
+        #os.environ['ENVXMLPATH'] = os.pathsep.join([tmp(), tmp('subdir')])
+        EnvConfig.path[:] = ['.', tmp(), tmp('subdir')]
         control = Control.Environment(searchPath=[])
         control.loadXML(tmp('second.xml'))
         self.assertEqual(str(control['main']), 'second')
         self.assertEqual(str(control['test_path']), 'data0:data1')
         self.assertEqual(str(control['map']), 'this_is_second_inc')
-        del os.environ['ENVXMLPATH']
+        #del os.environ['ENVXMLPATH']
+        EnvConfig.path[:] = ['.']
 
         control = Control.Environment(searchPath=[])
         control.loadXML(tmp('third.xml'))
