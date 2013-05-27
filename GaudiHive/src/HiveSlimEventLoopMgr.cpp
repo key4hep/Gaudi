@@ -425,8 +425,8 @@ StatusCode HiveSlimEventLoopMgr::stopRun() {
 StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
 
   // Calculate runtime
-  auto start_time = tbb::tick_count::now();
-  auto secsFromStart = [&start_time]()->double{
+  tbb::tick_count start_time = tbb::tick_count::now();
+  auto secsFromStart = [] (tbb::tick_count start_time)->double{
     return (tbb::tick_count::now()-start_time).seconds();
   };
 
@@ -441,6 +441,8 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
   // Run the first event before spilling more than one
   bool newEvtAllowed = false ;
 
+  constexpr double oneOver1204 = 1./1024.;
+  
   while ( !loop_ended and (maxevt < 0 or finishedEvts < maxevt)){
     // if the created events did not reach maxevt, create an event    
     if ((newEvtAllowed or createdEvts == 0 ) && // Launch the first event alone
@@ -448,11 +450,15 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
         (createdEvts < maxevt or maxevt<0) &&  // The events are not finished with a limited number of events
         m_schedulerSvc->freeSlots()>0){ // There are still free slots in the scheduler
 
+      if (1==createdEvts) // reset counter to count from event 1
+        start_time = tbb::tick_count::now();
+        
       debug() << "createdEvts: " << createdEvts << ", freeslots: " << m_schedulerSvc->freeSlots() << endmsg;
-      constexpr double oneOver1204 = 1./1024.;
-      info()   << "Event Number = " << createdEvts
-               << " WSS (MB) = " << System::mappedMemory(System::MemoryUnit::kByte)*oneOver1204
-               << " Time (s) = " << secsFromStart() << endmsg;
+      if (0!=createdEvts){        
+        info()   << "Event Number = " << createdEvts
+                 << " WSS (MB) = " << System::mappedMemory(System::MemoryUnit::kByte)*oneOver1204
+                 << " Time (s) = " << secsFromStart(start_time) << endmsg;
+        }
     
       StatusCode sc = executeEvent(&createdEvts);
       if (sc.isFailure())
@@ -473,7 +479,9 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
     }
   } // end main loop on finished events  
 
-  info() << "---> Loop Finished (seconds): " << secsFromStart() <<endmsg;
+  info() << "---> Loop Finished (skipping 1st evt) - "
+         << " WSS " << System::mappedMemory(System::MemoryUnit::kByte)*oneOver1204
+         << " total time " << secsFromStart(start_time) <<endmsg;
 
   return StatusCode::SUCCESS;
   
