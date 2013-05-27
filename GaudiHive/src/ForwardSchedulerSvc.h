@@ -136,6 +136,8 @@ private:
   tbb::concurrent_bounded_queue<EventContext*> m_finishedEvents;
 
   StatusCode m_eventFailed(EventContext* eventContext);
+
+  std::vector<unsigned int> m_eventNumberBlacklist;
   
   // States management ------------------------------------------------------
 
@@ -158,6 +160,9 @@ private:
 
   /// Dump the state of the scheduler
   void m_dumpSchedulerState(EventSlotIndex iSlot);
+
+  /// Keep track of update actions scheduled
+  bool m_updateNeeded;
   
   // Algos Management -------------------------------------------------------
   SmartIF<IAlgResourcePool>  m_algResourcePool;

@@ -29,12 +29,14 @@ ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* 
  base_class(name,svcLoc),
  m_isActive(false),
  m_algosInFlight(0),
+ m_updateNeeded(true),
  m_threadPoolSize(1) 
 {
   declareProperty("MaxEventsInFlight", m_maxEventsInFlight = 1 );
   declareProperty("MaxAlgosInFlight", m_maxAlgosInFlight = 1 );
   declareProperty("ThreadPoolSize", m_threadPoolSize = 1 );
   declareProperty("WhiteboardSvc", m_whiteboardSvcName = "EventDataSvc" );
+  declareProperty("EventNumberBlackList", m_eventNumberBlacklist);
   // Will disappear when dependencies are properly propagated into the C++ code of the algos
   declareProperty("AlgosDependencies", m_algosDependencies);    
 }
@@ -251,7 +253,18 @@ StatusCode ForwardSchedulerSvc::pushNewEvent(EventContext* eventContext){
     info() << "A free processing slot could not be found." << endmsg;
     return StatusCode::FAILURE;   
     }
-
+    
+  // Check if event number is in blacklist
+  if (m_eventNumberBlacklist.end() !=
+    std::find(m_eventNumberBlacklist.begin(),m_eventNumberBlacklist.end(),eventContext->m_evt_num)){
+      // if yes just publish the event as a finished one
+      info() << "Skipping event " << eventContext->m_evt_num << endmsg;
+      eventContext->m_evt_failed=false;
+      m_finishedEvents.push(eventContext);
+      m_freeSlots--;
+      return StatusCode::SUCCESS;
+    }
+    
   m_freeSlots--;
 
   auto action = [this,eventContext] () -> StatusCode {
@@ -264,35 +277,11 @@ StatusCode ForwardSchedulerSvc::pushNewEvent(EventContext* eventContext){
     thisSlot.reset(eventContext);
     return this->m_updateStates(thisSlotNum);
   }; // end of lambda
-
-  
-// // HACK
-//   static decltype(action)* prevAction;
-//   if (eventContext->m_evt_num == 0){
-//     m_actionsQueue.push(action);
-//     return StatusCode::SUCCESS;
-//   }
-//   else if(eventContext->m_evt_num == 1){
-//     always() << "Holding update states since evt number is 1" << endmsg;
-//     prevAction=new decltype(action) (action);
-//     return StatusCode::SUCCESS;
-//   }
-//   else if(eventContext->m_evt_num == 2){
-//     always() << "Pushing update states for 1 and 2 since evt number is 2" << endmsg;
-//     m_actionsQueue.push(action);
-//     m_actionsQueue.push(*prevAction);
-//     return StatusCode::SUCCESS;
-//   }
-//   else{
-//     m_actionsQueue.push(action);
-//     return StatusCode::SUCCESS;
-//   }
-  
-
+ 
   // Kick off the scheduling!
   m_actionsQueue.push(action);
 
-  return StatusCode::SUCCESS;;
+  return StatusCode::SUCCESS;
 }
 //---------------------------------------------------------------------------
 
@@ -378,9 +367,13 @@ StatusCode ForwardSchedulerSvc::m_eventFailed(EventContext* eventContext){
 
 StatusCode ForwardSchedulerSvc::m_updateStates(EventSlotIndex si){
 
+  m_updateNeeded=true;
+  
+  info() << "ForwardSchedulerSvc::m_updateStates" << endmsg;
+  
   // Fill a map of initial state / action using closures.
   // done to update the states w/o several if/elses
-  // Posterchild for constexpr with gcc4.7 onwards!
+  // Posterchild for constexpr with gcc4.7 onwards!  
   const std::map<AlgsExecutionStates::State, std::function<StatusCode(AlgoSlotIndex iAlgo, EventSlotIndex si)>> 
    statesTransitions = {
   {AlgsExecutionStates::CONTROLREADY, std::bind(&ForwardSchedulerSvc::m_promoteToDataReady,
@@ -599,7 +592,7 @@ StatusCode ForwardSchedulerSvc::m_promoteToScheduled(AlgoSlotIndex iAlgo, EventS
     tbb::task* t = new( tbb::task::allocate_root() ) AlgoExecutionTask(ialgoPtr, iAlgo, serviceLocator(), this);
     tbb::task::enqueue( *t);
     ++m_algosInFlight;
-    info() << "Algorithm " << algName << " was submitted on event "
+    debug() << "Algorithm " << algName << " was submitted on event "
            << eventContext->m_evt_num <<  ". Algorithms scheduled are "
            << m_algosInFlight << endmsg;
 
@@ -659,11 +652,15 @@ StatusCode ForwardSchedulerSvc::m_promoteToExecuted(AlgoSlotIndex iAlgo, EventSl
   debug() << "Algorithm " << algo->name() << " executed. Algorithms scheduled are "
       << m_algosInFlight << endmsg;
 
-  // Schedule an update of the status of the algorithms
-  auto updateAction = std::bind(&ForwardSchedulerSvc::m_updateStates,
-                                this,
-                                -1);
-  m_actionsQueue.push(updateAction);
+  // Limit number of updates
+  if (m_updateNeeded){
+    // Schedule an update of the status of the algorithms
+    auto updateAction = std::bind(&ForwardSchedulerSvc::m_updateStates,
+                                  this,
+                                  -1);    
+    m_actionsQueue.push(updateAction);
+    m_updateNeeded=false;
+  }
 
   debug() << "Trying to handle execution result of " << m_index2algname(iAlgo) << "." << endmsg;
   State state;
