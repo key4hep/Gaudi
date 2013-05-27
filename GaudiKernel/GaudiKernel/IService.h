@@ -78,6 +78,9 @@ public:
    */
   virtual Gaudi::StateMachine::State targetFSMState() const = 0;
 
+  /// virtual destructor
+  virtual ~IService() {}
+
 protected:
   virtual void setServiceManager(ISvcManager*) = 0;
 };

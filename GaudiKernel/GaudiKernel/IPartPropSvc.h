@@ -27,7 +27,8 @@ public:
   virtual void setUnknownParticleHandler( HepPDT::ProcessUnknownID*,
 					  const std::string& ) = 0;
 
+  /// virtual destructor
+  virtual ~IPartPropSvc() {}
 };
 
 #endif
-

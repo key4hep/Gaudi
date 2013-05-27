@@ -70,6 +70,8 @@ public:
       const Gaudi::CounterSummary::SaveType saveType=
           Gaudi::CounterSummary::SaveSimpleCounter)=0;
 
+  /// virtual destructor
+  virtual ~ICounterSummarySvc() {}
 };
 
 #endif
