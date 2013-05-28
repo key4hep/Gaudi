@@ -1102,6 +1102,13 @@ class GaudiExeTest(ExecTestBase):
             """,
             default_value="false"
             ),
+
+        qm.fields.IntegerField(
+            name = "signal",
+            title = "Expected signal",
+            description = """Expect termination by signal.""",
+            default_value=None
+            ),
         ]
 
     def PlatformIsNotSupported(self, context, result):
@@ -1512,8 +1519,10 @@ class GaudiExeTest(ExecTestBase):
         if stack_trace:
             result["ExecTest.stack_trace"] = result.Quote(stack_trace)
 
+        print "===================", exit_status, os.WIFEXITED(exit_status)
         # If the process terminated normally, check the outputs.
-        if sys.platform == "win32" or os.WIFEXITED(exit_status):
+        if (sys.platform == "win32" or os.WIFEXITED(exit_status)
+            or self.signal == os.WTERMSIG(exit_status)):
             # There are no causes of failure yet.
             causes = []
             # The target program terminated normally.  Extract the
@@ -1554,6 +1563,8 @@ class GaudiExeTest(ExecTestBase):
             result["ExecTest.signal_number"] = signal_number
             result["ExecTest.stdout"] = result.Quote(e.stdout)
             result["ExecTest.stderr"] = result.Quote(e.stderr)
+            if self.signal:
+                result["ExecTest.expected_signal_number"] = str(self.signal)
         elif os.WIFSTOPPED(exit_status):
             # The target program was stopped.  Construe that as a
             # test failure.
