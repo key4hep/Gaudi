@@ -299,6 +299,19 @@ macro(gaudi_project project version)
   # (so far, the build and the release envirnoments are identical)
   set(project_build_environment ${project_environment})
 
+  # FIXME: this should not be needed, but there is a bug in genreflex
+  if(BINARY_TAG MATCHES "i686-.*")
+    # special environment variables for GCCXML
+    if(GCCXML_CXX_COMPILER)
+      set(project_build_environment ${project_build_environment}
+          SET GCCXML_COMPILER "${GCCXML_CXX_COMPILER}")
+    endif()
+    if(GCCXML_CXX_FLAGS)
+      set(project_build_environment ${project_build_environment}
+          SET GCCXML_CXXFLAGS "${GCCXML_CXX_FLAGS}")
+    endif()
+  endif()
+
   message(STATUS "  environment for local subdirectories")
   # - collect internal environment
   #   - project root (for relocatability)
@@ -1577,6 +1590,9 @@ function(gaudi_add_dictionary dictionary header selection)
   CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS;OPTIONS" ${ARGN})
   gaudi_common_add_build(${ARG_UNPARSED_ARGUMENTS} LIBRARIES ${ARG_LIBRARIES} LINK_LIBRARIES ${ARG_LINK_LIBRARIES} INCLUDE_DIRS ${ARG_INCLUDE_DIRS})
 
+  # override the genreflex call to wrap it in the right environment
+  set(ROOT_genreflex_CMD ${env_cmd} --xml ${env_xml} ${ROOT_genreflex_CMD})
+
   reflex_dictionary(${dictionary} ${header} ${selection} LINK_LIBRARIES ${ARG_LINK_LIBRARIES} OPTIONS ${ARG_OPTIONS})
   set_target_properties(${dictionary}Dict PROPERTIES COMPILE_FLAGS "-Wno-overloaded-virtual")
   _gaudi_detach_debinfo(${dictionary}Dict)
@@ -2171,7 +2187,8 @@ function(gaudi_generate_env_conf filename)
 
   # include inherited environments
   foreach(other_project ${used_gaudi_projects})
-    set(data "${data}  <env:include hints=\"${${other_project}_DIR}\">${other_project}Environment.xml</env:include>\n")
+    set(data "${data}  <env:search_path>${${other_project}_DIR}</env:search_path>\n")
+    set(data "${data}  <env:include>${other_project}Environment.xml</env:include>\n")
   endforeach()
 
   set(commands ${ARGN})
