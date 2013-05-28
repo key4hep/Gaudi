@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2013-05-28 - Marco Clemencic
+ - Added test for the abort of stalled events.
+
 ! 2013-04-16 - Marco Clemencic
  - Fixed Clang warnings.
 

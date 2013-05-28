@@ -1,0 +1,35 @@
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+  <argument name="program"><text>gaudirun.py</text></argument>
+  <argument name="options"><text>
+from Gaudi.Configuration import *
+
+from Configurables import GaudiTesting__SleepyAlg as SleepyAlg
+from Configurables import StalledEventMonitor
+
+importOptions("Common.opts")
+
+alg = SleepyAlg("Sleepy", SleepTime = 10)
+sem = StalledEventMonitor(EventTimeout = 5,
+                          MaxTimeoutCount = 1,
+                          StackTrace = True)
+
+app = ApplicationMgr(TopAlg = [alg],
+                     EvtSel = "NONE", EvtMax = 2,
+                     StalledEventMonitoring = True)
+
+</text></argument>
+<argument name="signal"><integer>6</integer></argument>
+<argument name="validator"><text>
+import re
+stdout = re.subn(r"size = [0-9]+(\.[0-9]*)? MB", "size = # MB", stdout)[0]
+
+findReferenceBlock("EventWatchdog       FATAL too much time on a single event: aborting process")
+
+findReferenceBlock("=== Stalled event: current stack trace ===", stdout=stderr, id='stderr')
+
+if not 'in GaudiTesting::SleepyAlg::execute' in stderr:
+    causes.append('invalid stack trace')
+
+</text></argument>
+</extension>
