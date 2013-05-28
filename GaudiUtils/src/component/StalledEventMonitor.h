@@ -17,7 +17,7 @@
 class WatchdogThread;
 class IIncidentSvc;
 
-/** 
+/**
  *  Service that monitor the time taken by processing of single events using a
  *  separate thread.
  *
@@ -51,8 +51,14 @@ public:
   virtual StatusCode finalize();
 
 private:
-  /// Number of seconds allowed to process a single event
+  /// Number of seconds allowed to process a single event.
   unsigned int m_eventTimeout;
+
+  /// Number timeouts before aborting the execution (0 means never abort).
+  int m_maxTimeoutCount;
+
+  /// Whether to print a stack-trace on timeout.
+  bool m_stackTrace;
 
   /// Pointer to the watchdog thread that checks for the event timeout.
   std::auto_ptr<WatchdogThread> m_watchdog;
