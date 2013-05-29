@@ -1,6 +1,7 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+=============================== GaudiAlg v14r5 ===============================
 ! 2013-04-29 - Chris Jones
  - Patch #5641: Suppress GaudiAlg HbookName.h clang warnings
    Removed the unused method, and reorganized things a bit so this header is no

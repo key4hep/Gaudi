@@ -1,6 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v28r7 ==============================
 ! 2013-04-25 - Marco Clemencic
  - Added virtual destructors for IConverter and IConversionSvc to fix issue
    CFHEP-87 <https://sft.its.cern.ch/jira/browse/CFHEP-87>.

@@ -1,6 +1,7 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+============================== GaudiUtils v4r5 ===============================
 ! 2013-05-28 - Marco Clemencic
  - Modified StalledEventMonitor to be able to print a stack trace of the stalled
    process and abort the execution.

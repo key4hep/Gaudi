@@ -38,6 +38,47 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
+<h2><a name="v23r8">Gaudi v23r8</a> (2013-05-29)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=65">LCGCMT_65</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Fixed Clang 3.2 warnings.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v12r6):
+<ul>
+<li>Improvements to the QMTest wrapper class.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Enabled C++11 by default when using gcc 4.7.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v28r7):
+<ul>
+<li>Added virtual destructors for IConverter and IConversionSvc to fix issue
+   <a href="https://sft.its.cern.ch/jira/browse/CFHEP-87">CFHEP-87</a>.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiUtils (v4r5):
+<ul>
+<li>Modified StalledEventMonitor to be able to print a stack trace of the stalled
+   process and abort the execution.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiAlg (v14r5):
+<ul>
+<li>Patch #5641: Suppress GaudiAlg HbookName.h clang warnings<br/>
+    (<span class="author">Chris Jones</span>)</li>
+<li>Patch #5631: Fix bug in sequencer timer in GaudiAlg<br/>
+    (<span class="author">Chris Jones</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
 <h2><a name="v23r7">Gaudi v23r7</a> (2013-03-12)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=64d">LCGCMT_64d</a></h3>
 <h3>General Changes</h3>

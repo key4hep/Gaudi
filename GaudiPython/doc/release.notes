@@ -1,6 +1,7 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+============================= GaudiPython v12r6 ==============================
 ! 2013-04-22 - Marco Clemencic
  - Fixed Clang warnings.
 

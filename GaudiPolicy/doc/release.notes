@@ -1,6 +1,7 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v12r6 ==============================
 ! 2013-04-28 - Marco Clemencic
  - Extended the GaudiExeTest class to allow expected termination by signal.
    To accept termination by signal of a test, set the test field 'signal',

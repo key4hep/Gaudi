@@ -4,6 +4,7 @@
 # Description: standard and commonly used components
 ################################################################################
 
+============================ GaudiCommonSvc v1r5 =============================
 ! 2013-04-16 - Marco Clemencic
  - Fixed Clang warnings.
 
