@@ -287,6 +287,10 @@ StatusCode EventLoopMgr::finalize()    {
 //--------------------------------------------------------------------------------------------
 StatusCode EventLoopMgr::executeEvent(void* par)    {
 
+  // DP Monitoring
+  
+
+  
   // Fire BeginEvent "Incident"
   m_incidentSvc->fireIncident(Incident(name(),IncidentType::BeginEvent));
   // An incident may schedule a stop, in which case is better to exit before the actual execution.
@@ -320,7 +324,20 @@ StatusCode EventLoopMgr::executeRun( int maxevt )    {
 //--------------------------------------------------------------------------------------------
 // implementation of IAppMgrUI::nextEvent
 //--------------------------------------------------------------------------------------------
+// External libraries
+#include "tbb/tick_count.h"
+#include "GaudiKernel/Memory.h"
 StatusCode EventLoopMgr::nextEvent(int maxevt)   {
+
+  // DP Monitoring
+  // Calculate runtime
+  auto start_time = tbb::tick_count::now();
+  auto secsFromStart = [&start_time]()->double{
+    return (tbb::tick_count::now()-start_time).seconds();
+  };
+  const float oneOver1204 = 1.f/1024.f;
+
+  
   static int        total_nevt = 0;
   DataObject*       pObject = 0;
   StatusCode        sc(StatusCode::SUCCESS, true);
@@ -329,6 +346,11 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
   // if evtmax is -1 it means infinite loop
   for( int nevt = 0; (maxevt == -1 ? true : nevt < maxevt);  nevt++, total_nevt++) {
 
+    always() << "Event Number = " << total_nevt
+             << " WSS (MB) = " << System::mappedMemory(System::MemoryUnit::kByte)*oneOver1204
+             << " Time (s) = " << secsFromStart() << endmsg;
+
+    
     // Check if there is a scheduled stop issued by some algorithm/service
     if ( m_scheduledStop ) {
       m_scheduledStop = false;
@@ -385,6 +407,9 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
       return sc;
     }
   }
+
+  always() << "---> Loop Finished (seconds): " << secsFromStart() <<endmsg;
+  
   return StatusCode::SUCCESS;
 }
 
