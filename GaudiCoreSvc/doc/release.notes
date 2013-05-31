@@ -4,6 +4,10 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+============================= GaudiCoreSvc v1r4 ==============================
+! 2013-04-16 - Marco Clemencic
+ - Fixed Clang warnings.
+
 ============================= GaudiCoreSvc v1r3 ==============================
 ! 2012-11-12 - Marco Clemencic
  - Set the application return code to CorruptedInput in case of incident
