@@ -4,6 +4,9 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2013-06-03 - Sasha Mazurov
+ - Fixed parsing of '.opts' files with C++11 enabled.
+
 ============================= GaudiCoreSvc v1r4 ==============================
 ! 2013-04-16 - Marco Clemencic
  - Fixed Clang warnings.
