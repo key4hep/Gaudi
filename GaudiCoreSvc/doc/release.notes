@@ -4,6 +4,9 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2013-06-06 - Marco Clemencic
+ - Minor change in the printout of the job option parser.
+
 ! 2013-06-03 - Sasha Mazurov
  - Fixed parsing of '.opts' files with C++11 enabled.
 
