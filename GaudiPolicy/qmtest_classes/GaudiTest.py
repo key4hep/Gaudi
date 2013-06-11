@@ -1519,7 +1519,6 @@ class GaudiExeTest(ExecTestBase):
         if stack_trace:
             result["ExecTest.stack_trace"] = result.Quote(stack_trace)
 
-        print "===================", exit_status, os.WIFEXITED(exit_status)
         # If the process terminated normally, check the outputs.
         if (sys.platform == "win32" or os.WIFEXITED(exit_status)
             or self.signal == os.WTERMSIG(exit_status)):
