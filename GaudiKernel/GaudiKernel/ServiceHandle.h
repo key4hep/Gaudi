@@ -100,7 +100,7 @@ private:
 
 /** @class ServiceHandleArray ServiceHandle.h GaudiKernel/ServiceHandle.h
 
-    Array of Handles to be used in lieu of vector of naked pointers to tools. 
+    Array of Handles to be used in lieu of vector of naked pointers to tools.
     This allows better control through the framework of tool loading and usage.
     @parameter T is the AlgTool interface class (or concrete class) of
     the tool to use, and must derive from IAlgTool.
@@ -116,12 +116,14 @@ public:
   //
   /** Generic constructor. Probably not very useful...
    **/
-  ServiceHandleArray( const std::vector< std::string >& myTypesAndNamesList, 
-		      const std::string& myComponentType, const std::string& myParentName  ): 
+  ServiceHandleArray( const std::vector< std::string >& myTypesAndNamesList,
+		      const std::string& myComponentType, const std::string& myParentName  ):
     GaudiHandleArray< ServiceHandle<T> >( myTypesAndNamesList,
 					  myComponentType,
 					  myParentName)
   {  }
+
+  virtual ~ServiceHandleArray() {}
 
   ServiceHandleArray( const std::string& myParentName )
     : GaudiHandleArray< ServiceHandle<T> >( "Service", myParentName)
@@ -132,7 +134,7 @@ public:
     GaudiHandleArray< ServiceHandle<T> >::push_back( handle );
     return true;
   }
-  
+
   virtual bool push_back( const ServiceHandle<T>& myHandle ) {
     return push_back( myHandle.typeAndName() );
   }

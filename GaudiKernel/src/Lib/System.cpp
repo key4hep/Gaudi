@@ -575,8 +575,8 @@ const std::vector<std::string> System::cmdLineArgs()    {
         s_argvStrings[0] = exeName();
         s_argvChars[0]   = s_argvStrings[0].c_str();
       }
+      ::fclose(cmdLine);
     }
-    ::fclose(cmdLine);
 #endif
   }
   return s_argvStrings;

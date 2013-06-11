@@ -1,6 +1,11 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-04-09 - Hubert Degaudenzi
+ - src/Lib/System.cpp: fixed cppcheck warning.
+ - GaudiKernel/KeyedObject.h: idem
+ - GaudiKernel/ServiceHandle.h: idem
+
 ============================= GaudiKernel v28r7 ==============================
 ! 2013-04-25 - Marco Clemencic
  - Added virtual destructors for IConverter and IConversionSvc to fix issue
@@ -4002,4 +4007,3 @@ Improvements
   Changed to support two or more conversion services. This was needed to
   support the Root conversion service.
   Added classes OutputStream, OutputStreamAgent
-

@@ -2,19 +2,25 @@
 cd $(dirname $0)
 root_dir=`pwd`
 
-if [ -z "$CMTCONFIG" ] ; then
+if [ -n "$BINARY_TAG" ] ; then
+	binary_tag=$BINARY_TAG
+elif [ -n "$CMAKECONFIG" ] ; then
+	binary_tag=$CMAKECONFIG
+elif [ -n "$CMTCONFIG" ] ; then
+	binary_tag=$CMTCONFIG
+else
     echo 'CMTCONFIG not defined'
     exit 2
 fi
 
-build_dir=${root_dir}/build.${CMTCONFIG}
+build_dir=${root_dir}/build.${binary_tag}
 
 if [ ! -e ${build_dir}/CMakeCache.txt ] ; then
 
     # Special LCG_System for some compilers
-    case $CMTCONFIG in
+    case ${binary_tag} in
        *-clang30-* | *-gccmax-* | *-g11max-* )
-         lcg_system_opt=$(echo $CMTCONFIG | sed 's/-\(gccmax\|clang[0-9]*\)-\(opt\|dbg\)/-gcc46/')
+         lcg_system_opt=$(echo ${binary_tag} | sed 's/-\(gccmax\|clang[0-9]*\)-\(opt\|dbg\)/-gcc46/')
          lcg_system_opt="-DLCG_SYSTEM=$lcg_system_opt"
          # The special compilers cannot use distcc
 	 distcc_opt="-DCMAKE_USE_DISTCC=OFF"

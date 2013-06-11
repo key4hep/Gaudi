@@ -1,5 +1,26 @@
 Package: GaudiRelease
-Manatiner: Marco Clemencic
+Maintainer: Marco Clemencic
+
+! 2013-04-11 - Hubert Degaudenzi
+ - cmake/toolchain/heptools-common.cmake: fix mac osx arch detection
+
+! 2013-04-10 - Hubert Degaudenzi
+ - added the possibility to use the env variable BINARY_TAG instead of
+   CMAKECONFIG or CMTCONFIG. Files changed:
+	- configure
+	- cmake/toolchain/heptools-common.cmake
+	- Makefile-cmake.mk
+
+! 2013-04-09 - Hubert Degaudenzi
+ - modifications in the gaudi_add_unit_test function:
+   - added the possibility to use Boost unit tests
+   - added the possibility to pass a TIMEOUT parameter (in seconds)
+   - added the possibility to pass some environment variables
+
+! 2013-03-27 - Hubert Degaudenzi
+ - Added protection in heptools-common if Boost_config_verison is not defined.
+   This is the case when using Boost from the system instead of the LCG stack
+ - fixed heptools compatibility check if heptools is not used at all.
 
 ============================= GaudiRelease v23r8 =============================
 ============================= GaudiRelease v23r7 =============================
