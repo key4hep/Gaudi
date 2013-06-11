@@ -328,12 +328,6 @@ macro(gaudi_project project version)
         PREPEND LD_LIBRARY_PATH ${CMAKE_INSTALL_PREFIX}/lib
         PREPEND PYTHONPATH ${CMAKE_INSTALL_PREFIX}/python
         PREPEND PYTHONPATH ${CMAKE_INSTALL_PREFIX}/python/lib-dynload)
-  #   - build dirs
-  set(project_build_environment ${project_build_environment}
-      PREPEND PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-      PREPEND LD_LIBRARY_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-      PREPEND PYTHONPATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-      PREPEND PYTHONPATH ${CMAKE_BINARY_DIR}/python)
 
   message(STATUS "  environment for local subdirectories")
   #   - project root (for relocatability)
@@ -394,6 +388,13 @@ macro(gaudi_project project version)
           PREPEND PATH \${${_proj}_PROJECT_ROOT}/${package}/scripts)
     endif()
   endforeach()
+
+  #   - build dirs
+  set(project_build_environment ${project_build_environment}
+      PREPEND PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+      PREPEND LD_LIBRARY_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+      PREPEND PYTHONPATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+      PREPEND PYTHONPATH ${CMAKE_BINARY_DIR}/python)
 
   # - produce environment XML description
   #   release version
