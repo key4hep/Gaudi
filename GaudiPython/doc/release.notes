@@ -1,6 +1,12 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2013-06-13 - Marco Clemencic
+ - Replaced PyCintex with ROOT.
+   We still try to import PyCintex because it's the only way to enable Cintex
+   (see <https://sft.its.cern.ch/jira/browse/ROOT-3623>, but it does not work
+   in Python).
+
 ============================= GaudiPython v12r6 ==============================
 ! 2013-04-22 - Marco Clemencic
  - Fixed Clang warnings.

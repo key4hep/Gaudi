@@ -506,6 +506,7 @@ normalizeExamples = LineSkipper(["//GP:",
                                  r"SUCCESS\s*Booked \d+ Histogram\(s\)",
                                  r"^ \|",
                                  r"^ ID=",
+                                 r'Note: .* File "vector" already loaded'
                                  ] ) + normalizeExamples + skipEmptyLines + \
                                   normalizeEOL + \
                                   LineSorter("Services to release : ")

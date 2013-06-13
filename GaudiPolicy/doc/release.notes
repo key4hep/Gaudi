@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-06-13 - Marco Clemencic
+ - Added a special exclusion pattern for reference file comparison to ignore a
+   message from ROOT after the removal of PyCintex.
+
 ! 2013-03-27 - Hubert Degaudenzi
  - Modified createProjVersHeader.py to understand only the LHCb version
    style(vXrY[pZ]) , the ATLAS version style (bla-X-Y[-Z]) and the plain

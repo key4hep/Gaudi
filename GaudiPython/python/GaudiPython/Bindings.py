@@ -3,9 +3,8 @@
 
 """ GaudiPython.Bindings module.
     This module provides the basic bindings of the main Gaudi
-    components to Python. It is itself based on the PyCintex
-    extersion module provided by LCG/ROOT that provided
-    dynamic bindigns of classes for which LCG dictionaires exists.
+    components to Python. It is itself based on the ROOT Python
+    extension module.
 """
 
 __all__ = [ 'gbl','InterfaceCast', 'Interface', 'PropertyEntry',
@@ -16,20 +15,24 @@ __all__ = [ 'gbl','InterfaceCast', 'Interface', 'PropertyEntry',
             'getClass', 'loaddict', 'deprecation' ]
 
 import os, sys, string, warnings, re
-import PyCintex
+try:
+    import PyCintex # needed to enable Cintex if it exists
+    del PyCintex
+except ImportError:
+    pass
+import ROOT
 import Pythonizations
 # Import Configurable from AthenaCommon or GaudiKernel if the first is not
 # available.
 from GaudiKernel.Proxy.Configurable import Configurable, getNeededConfigurables
 
 #namespaces
-gbl    = PyCintex.makeNamespace('')
+gbl    = ROOT
 Gaudi = gbl.Gaudi
 
 _gaudi = None
 
 #----Useful shortcuts for classes -------------------------------------------------------
-#Helper              = PyCintex.makeClass     ('GaudiPython::Helper')
 Helper              = gbl.GaudiPython.Helper
 StringProperty      = gbl.SimpleProperty     ('string','BoundedVerifier<string>')
 StringPropertyRef   = gbl.SimplePropertyRef  ('string','NullVerifier<string>')
@@ -53,10 +56,9 @@ else:
     toArray = lambda typ: getattr(Helper,"toArray<%s>"%typ)
 
 #----Convenient accessors to PyROOT functionality ---------------------------------------
-ROOT            = PyCintex.libPyROOT
-makeNullPointer = PyCintex.libPyROOT.MakeNullPointer
-makeClass       = PyCintex.libPyROOT.MakeRootClass
-setOwnership    = PyCintex.libPyROOT.SetOwnership
+makeNullPointer = ROOT.MakeNullPointer
+makeClass       = ROOT.MakeRootClass
+setOwnership    = ROOT.SetOwnership
 
 def deprecation(message):
     warnings.warn('GaudiPython: '+ message, DeprecationWarning, stacklevel=3)
@@ -66,11 +68,12 @@ class InterfaceCast(object) :
     """ Helper class to obtain the adequate interface from a component
         by using the Gaudi queryInterface() mechanism """
     def __init__(self, t ) :
-        if type(t) is str : t = PyCintex.makeClass(t)
+        if type(t) is str:
+            t = getattr(ROOT, t)
         self.type = t
     def __call__(self, obj) :
         if obj :
-            ip = PyCintex.libPyROOT.MakeNullPointer(self.type)
+            ip = ROOT.MakeNullPointer(self.type)
             try:
                 if obj.queryInterface(self.type.interfaceID(), ip).isSuccess() :
                     return ip
@@ -96,7 +99,9 @@ def loaddict(dict) :
     if Helper.loadDynamicLib(dict) == 1 : return
     else :
         try:
-            PyCintex.loadDict(dict)
+            if sys.platform != 'win32' and not dict.startswith('lib'):
+                dict = 'lib' + dict
+            ROOT.gSystem.Load(dict)
         except:
             raise ImportError, 'Error loading dictionary library'
 
@@ -750,8 +755,6 @@ class AppMgr(iService) :
     def state(self) : return self._isvc.FSMState()
     def FSMState(self) : return self._isvc.FSMState()
     def targetFSMState(self) : return self._isvc.targetFSMState()
-    def loaddict(self, dict) :
-        loaddict(dict)
     def service(self, name, interface = None) :
         svc = Helper.service( self._svcloc, name )
         if interface :
