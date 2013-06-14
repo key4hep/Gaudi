@@ -35,6 +35,7 @@ DoxyWarnings.log
 .build/
 build-dir/
 build.*/
+.eclipse/
 CMakeFiles/
 CTestTestfile.cmake
 CPackSourceConfig.cmake
