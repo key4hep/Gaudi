@@ -49,4 +49,11 @@ gaudi_add_test(ForwardSchedulerStall
                FAILS)           
                
 gaudi_add_test(SequentialSchedulerSimpleTest
-               FRAMEWORK options/SequentialSchedulerSimpleTest.py)                        
+               FRAMEWORK options/SequentialSchedulerSimpleTest.py)
+
+
+# BugFixes
+
+gaudi_add_test(BugCFHEP114
+               FRAMEWORK options/BugCFHEP114.py
+               DEPENDS WhiteBoard)
