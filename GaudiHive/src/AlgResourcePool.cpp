@@ -311,11 +311,7 @@ StatusCode AlgResourcePool::m_decodeTopAlgs()    {
   // Set all resources to be available
   m_available_resources.resize(resource_counter);
   m_available_resources.set();
-
-  // DP TODO: check if init/start is really necessary (gaudi state machine state check in algman...)
-  algMan->initialize();
-  algMan->start();    
-  
+ 
   return sc;
 }
 
