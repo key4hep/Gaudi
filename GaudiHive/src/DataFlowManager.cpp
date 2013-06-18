@@ -26,12 +26,12 @@ DataFlowManager::DataFlowManager(algosDependenciesCollection algosDependencies){
 
     // Fill the requirements
     unsigned int algoIndex=0;    
-    unsigned int productIndex=0;    
+    long int productIndex=0;
     for (auto& thisAlgoDependencies : algosDependencies){      
       // Make a local alias for better readability
       auto& dependency_bits = m_algosRequirements[algoIndex];    
       for (auto& product : thisAlgoDependencies){
-        auto ret_val = m_productName_index_map.insert(std::pair<std::string, unsigned int>("/Event/"+product,productIndex));
+        auto ret_val = m_productName_index_map.insert(std::pair<std::string, long int>("/Event/"+product,productIndex));
         // insert successful means product wasn't known before. So increment counter
         if (ret_val.second==true) ++productIndex;
         // in any case the return value holds the proper product index
@@ -41,7 +41,7 @@ DataFlowManager::DataFlowManager(algosDependenciesCollection algosDependencies){
     }// end loop on algorithms
   
   // Now the vector of products    
-  m_productName_vec.resize(m_algosRequirements.size());
+  m_productName_vec.resize(m_productName_index_map.size());
   for (auto& name_idx : m_productName_index_map)
     m_productName_vec[name_idx.second]=name_idx.first;    
   }
@@ -64,7 +64,7 @@ bool DataFlowManager::canAlgorithmRun(unsigned int iAlgo){
 /// Update the catalog of available products in the slot
 void DataFlowManager::updateDataObjectsCatalog(const std::vector<std::string>& newProducts){
   for (const auto& new_product : newProducts){
-    const int index = m_productName2index(new_product);
+    const int index = productName2index(new_product);
     if (index>=0)
       m_dataObjectsCatalog[index]=true;
   }

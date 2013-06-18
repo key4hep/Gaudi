@@ -58,14 +58,15 @@ private:
   dependency_bitset m_dataObjectsCatalog;
   /// Requirements of algos. Static since the same for all events.
   static std::vector< dependency_bitset > m_algosRequirements; 
-  /// Simple helper method
-  inline long int m_productName2index(const std::string productName){return m_productName_index_map.count(productName)>0 ? m_productName_index_map[productName]: -1 ;};
-  /// Track the products, assigning an index to them. Static since the same for all events.
-  static std::unordered_map<std::string,long int> m_productName_index_map;
-  /// Simple helper method
-  inline std::string& m_index2productName(const unsigned int i){return m_productName_vec[i];};
   /// Track the products, assigning an index to them. Static since the same for all events.
   static std::vector<std::string> m_productName_vec;
+  /// Track the products, assigning an index to them. Static since the same for all events.
+  static std::unordered_map<std::string,long int> m_productName_index_map;  
+  /// Simple helper method to convert the product name into an index
+  inline long int productName2index(const std::string productName){return m_productName_index_map.count(productName)>0 ? m_productName_index_map[productName]: -1 ;};
+  /// Simple helper method to convert an index to a product name
+  inline std::string& index2productName(const unsigned int i){return m_productName_vec[i];};
+
 };
 
 #endif
