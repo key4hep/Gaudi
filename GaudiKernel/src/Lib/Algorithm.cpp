@@ -187,6 +187,9 @@ StatusCode Algorithm::sysInitialize() {
     sc = StatusCode::FAILURE;
   }
 
+  // Set IsClonable to true if the Cardinality is greater than one
+  if (m_cardinality > 0 ) m_isClonable = true;
+  
   return sc;
 }
 
