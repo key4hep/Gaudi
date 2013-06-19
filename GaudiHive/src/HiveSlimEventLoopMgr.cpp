@@ -333,7 +333,7 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
 
   EventContext* evtContext(nullptr);
   
-  if ( m_createEventContext(evtContext,createdEvts).isFailure() ){
+  if ( createEventContext(evtContext,createdEvts).isFailure() ){
     fatal() << "Impossible to create event context" << endmsg;
     return StatusCode::FAILURE;
   }
@@ -348,7 +348,7 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
   }*/      
 
   
-  StatusCode declEvtRootSc = m_declareEventRootAddress();
+  StatusCode declEvtRootSc = declareEventRootAddress();
   if (declEvtRootSc.isFailure()) { // We ran out of events!
     createdEvts = -1;  // Set created event to a negative value: we finished!
     return StatusCode::SUCCESS;
@@ -473,7 +473,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
       debug() << "Draining the scheduler" << endmsg;
 
       // Pull out of the scheduler the finished events
-      if (m_drainScheduler(finishedEvts).isFailure()){
+      if (drainScheduler(finishedEvts).isFailure()){
         loop_ended = true;
       }
       newEvtAllowed = true;
@@ -513,7 +513,7 @@ StatusCode HiveSlimEventLoopMgr::getEventRoot(IOpaqueAddress*& refpAddr)  {
 
 //---------------------------------------------------------------------------
 
-StatusCode HiveSlimEventLoopMgr::m_declareEventRootAddress(){
+StatusCode HiveSlimEventLoopMgr::declareEventRootAddress(){
   
   StatusCode sc;
   if( m_evtContext ) {      
@@ -541,7 +541,7 @@ StatusCode HiveSlimEventLoopMgr::m_declareEventRootAddress(){
 
 //---------------------------------------------------------------------------
 
-StatusCode  HiveSlimEventLoopMgr::m_createEventContext(EventContext*& evtContext, int createdEvts){
+StatusCode  HiveSlimEventLoopMgr::createEventContext(EventContext*& evtContext, int createdEvts){
   evtContext = new EventContext;
 
   evtContext->m_evt_num = createdEvts;
@@ -557,7 +557,7 @@ StatusCode  HiveSlimEventLoopMgr::m_createEventContext(EventContext*& evtContext
 
 //---------------------------------------------------------------------------
 
-StatusCode HiveSlimEventLoopMgr::m_drainScheduler(int& finishedEvts){
+StatusCode HiveSlimEventLoopMgr::drainScheduler(int& finishedEvts){
 
   StatusCode sc(StatusCode::SUCCESS);
     
@@ -605,7 +605,7 @@ StatusCode HiveSlimEventLoopMgr::m_drainScheduler(int& finishedEvts){
           << " (event " << thisFinishedEvtContext->m_evt_num
           << ") of the whiteboard" << endmsg;
     
-    StatusCode sc = m_clearWBSlot(thisFinishedEvtContext->m_evt_slot);
+    StatusCode sc = clearWBSlot(thisFinishedEvtContext->m_evt_slot);
     if (!sc.isSuccess())
         error() << "Whiteboard slot " << thisFinishedEvtContext->m_evt_slot 
                 << " could not be properly cleared";
@@ -621,7 +621,7 @@ StatusCode HiveSlimEventLoopMgr::m_drainScheduler(int& finishedEvts){
 
 //---------------------------------------------------------------------------
 
-StatusCode HiveSlimEventLoopMgr::m_clearWBSlot(int evtSlot)  {
+StatusCode HiveSlimEventLoopMgr::clearWBSlot(int evtSlot)  {
   StatusCode sc = m_whiteboard->clearStore(evtSlot);
   if( !sc.isSuccess() )  {
     warning() << "Clear of Event data store failed" << endmsg;    

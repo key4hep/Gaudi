@@ -52,13 +52,13 @@ protected:
   /// A shortcut for the scheduler
   SmartIF<IScheduler> m_schedulerSvc;
   /// Clear a slot in the WB 
-  StatusCode m_clearWBSlot(int evtSlot);
+  StatusCode clearWBSlot(int evtSlot);
   /// Declare the root address of the event
-  StatusCode m_declareEventRootAddress();
+  StatusCode declareEventRootAddress();
   /// Create event context
-  StatusCode m_createEventContext(EventContext*& eventContext, int createdEvents);
+  StatusCode createEventContext(EventContext*& eventContext, int createdEvents);
   /// Drain the scheduler from all actions that may be queued
-  StatusCode m_drainScheduler(int& finishedEvents);
+  StatusCode drainScheduler(int& finishedEvents);
   /// Instance of the incident listener waiting for AbortEvent. 
   SmartIF< IIncidentListener >  m_abortEventListener;
   /// Name of the scheduler to be used
