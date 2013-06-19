@@ -182,7 +182,6 @@ return IDataProviderSvc::INVALID_ROOT;
     }
     return StatusCode::SUCCESS;
   }
-
   
   /// Analyze by traversing all data objects below the sub tree
   virtual StatusCode traverseSubTree(const std::string& path, IDataStoreAgent* pAgent)  {
@@ -424,13 +423,18 @@ return IDataProviderSvc::INVALID_ROOT;
   
   /// Set the number of event slots (copies of DataSvc objects).
   virtual StatusCode setNumberOfStores(size_t slots) {
-    if(slots != m_slots and
+    if((int)slots != m_slots and
        FSMState() ==  Gaudi::StateMachine::INITIALIZED) {
       warning() << "Too late to change the number of slots!" << endmsg;
       return StatusCode::FAILURE;
     }
     m_slots = slots;
     return StatusCode::SUCCESS;
+  }
+
+  /// Get the number of event slots (copies of DataSvc objects).
+  virtual size_t getNumberOfStores() {
+    return m_slots;
   }
   
   /// Get the list of new DataObjects in the current store.

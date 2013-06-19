@@ -11,6 +11,7 @@
 /**@class IHiveWhiteBoard IHiveWhiteBoard.h GaudiKernel/IHiveWhiteBoard.h
  *
  *  @author  Pere Mato
+ *  @author  Danilo Piparo  
  *  @version 1.0
  */
 class GAUDI_API IHiveWhiteBoard: virtual public IInterface {
@@ -40,6 +41,12 @@ public:
    */
   virtual StatusCode setNumberOfStores(size_t slots) = 0;
 
+  /** Get the number of 'slots'.
+   * 
+   * @return Number of event stores allocated in the whiteboard
+   */
+  virtual size_t getNumberOfStores() = 0;
+  
   /** Get the latest new data objects registred in store.
    *
    * @param  products     [IN]     Partition number (event slot)   *

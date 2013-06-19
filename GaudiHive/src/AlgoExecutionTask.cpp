@@ -75,7 +75,7 @@ tbb::task* AlgoExecutionTask::execute() {
   eventContext->m_evt_failed=eventfailed;  
   
   // Push in the scheduler queue an action to be performed 
-  auto action_promote2Executed = std::bind(&ForwardSchedulerSvc::m_promoteToExecuted, 
+  auto action_promote2Executed = std::bind(&ForwardSchedulerSvc::promoteToExecuted,
                                            m_schedSvc, 
                                            m_algoIndex, 
                                            eventContext->m_evt_slot,

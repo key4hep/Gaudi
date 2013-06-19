@@ -454,11 +454,12 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
         start_time = tbb::tick_count::now();
         
       debug() << "createdEvts: " << createdEvts << ", freeslots: " << m_schedulerSvc->freeSlots() << endmsg;
-      if (0!=createdEvts){        
-        info()   << "Event Number = " << createdEvts
-                 << " WSS (MB) = " << System::mappedMemory(System::MemoryUnit::kByte)*oneOver1204
-                 << " Time (s) = " << secsFromStart(start_time) << endmsg;
-        }
+//  DP remove to remove the syscalls...
+//      if (0!=createdEvts){        
+//        info()   << "Event Number = " << createdEvts
+//                 << " WSS (MB) = " << System::mappedMemory(System::MemoryUnit::kByte)*oneOver1204
+//                << " Time (s) = " << secsFromStart(start_time) << endmsg;
+//        }
     
       StatusCode sc = executeEvent(&createdEvts);
       if (sc.isFailure())
@@ -571,26 +572,30 @@ StatusCode HiveSlimEventLoopMgr::m_drainScheduler(int& finishedEvts){
 
   // We got past it: cache the pointer
   if (sc.isSuccess()){
-    debug() << "Context obtained" << endmsg;
-    finishedEvtContexts.push_back(finishedEvtContext);
+    debug() << "Context obtained" << endmsg;    
   } else{
-    return StatusCode::FAILURE;
+    // A problem occurred.
+    debug() << "Context not obtained: a problem in the scheduling?" << endmsg;
+//     return StatusCode::FAILURE;
   }
-
+  finishedEvtContexts.push_back(finishedEvtContext);
+  
   // Let's see if we can pop other event contexts
   while (m_schedulerSvc->tryPopFinishedEvent(finishedEvtContext).isSuccess()){
     finishedEvtContexts.push_back(finishedEvtContext);
   }
 
   // Now we flush them
+  StatusCode finalSC;
   for (auto& thisFinishedEvtContext : finishedEvtContexts){
-    if (!thisFinishedEvtContext)
-      fatal() << "Detected nullptr ctxt while clearing WB!"<< endmsg;
-
+    if (nullptr == thisFinishedEvtContext){
+      error() << "Detected nullptr ctxt before clearing WB!"<< endmsg;
+      finalSC = StatusCode::FAILURE;
+      continue;
+    }    
     if (thisFinishedEvtContext->m_evt_failed){
       fatal() << "Failed event detected"<< endmsg;
-      delete thisFinishedEvtContext;
-      return StatusCode::FAILURE;
+      finalSC = StatusCode::FAILURE;
     }
 
     m_incidentSvc->fireIncident(Incident(name(), IncidentType::EndProcessing));
@@ -611,7 +616,7 @@ StatusCode HiveSlimEventLoopMgr::m_drainScheduler(int& finishedEvts){
     finishedEvts++;
     
   }
-  return StatusCode::SUCCESS;
+  return finalSC;
 }
 
 //---------------------------------------------------------------------------
