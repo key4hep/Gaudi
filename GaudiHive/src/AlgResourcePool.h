@@ -74,10 +74,10 @@ private:
   std::map<std::string,unsigned int> m_resource_indices;
   
   /// Decode the top alg list
-  StatusCode m_decodeTopAlgs();
+  StatusCode decodeTopAlgs();
   
   /// Recursively flatten an algList
-  StatusCode m_flattenSequencer(Algorithm* sequencer, ListAlg& alglist, concurrency::DecisionNode* motherNode, unsigned int recursionDepth=0);
+  StatusCode flattenSequencer(Algorithm* sequencer, ListAlg& alglist, concurrency::DecisionNode* motherNode, unsigned int recursionDepth=0);
    
   /// The names of the algorithms to be passed to the algorithm manager
   StringArrayProperty m_topAlgNames;

@@ -51,7 +51,7 @@ StatusCode AlgResourcePool::initialize(){
     m_topAlgNames.assign(appMgrProps->getProperty("TopAlg"));
   } 
     
-  sc = m_decodeTopAlgs();
+  sc = decodeTopAlgs();
   if (sc.isFailure())
     warning() << "Algorithms could not be properly decoded." << endmsg;
   
@@ -144,7 +144,7 @@ StatusCode AlgResourcePool::releaseResource(const std::string& name){
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::m_flattenSequencer(Algorithm* algo, ListAlg& alglist, concurrency::DecisionNode* motherNode, unsigned int recursionDepth){
+StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, concurrency::DecisionNode* motherNode, unsigned int recursionDepth){
       
   std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
   if (subAlgorithms->empty() and not (algo->type() == "GaudiSequencer")){
@@ -172,7 +172,7 @@ StatusCode AlgResourcePool::m_flattenSequencer(Algorithm* algo, ListAlg& alglist
   motherNode->addDaughterNode(node);
 
   for (Algorithm* subalgo : *subAlgorithms ){
-    StatusCode sc (m_flattenSequencer(subalgo,alglist,node,recursionDepth));
+    StatusCode sc (flattenSequencer(subalgo,alglist,node,recursionDepth));
     if (sc.isFailure()){
       error() << "Algorithm " << subalgo->name() << " could not be flattened" << endmsg;
       return sc;
@@ -183,7 +183,7 @@ StatusCode AlgResourcePool::m_flattenSequencer(Algorithm* algo, ListAlg& alglist
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::m_decodeTopAlgs()    {
+StatusCode AlgResourcePool::decodeTopAlgs()    {
   
   SmartIF<IAlgManager> algMan ( serviceLocator() );
   if (!algMan.isValid()){
@@ -237,7 +237,7 @@ StatusCode AlgResourcePool::m_decodeTopAlgs()    {
   for (auto& algoSmartIF : m_topAlgList){    
     Algorithm* algorithm = dynamic_cast<Algorithm*> (algoSmartIF.get());
     if (!algorithm) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
-    sc = m_flattenSequencer(algorithm, m_flatUniqueAlgList, m_cfNode);       
+    sc = flattenSequencer(algorithm, m_flatUniqueAlgList, m_cfNode);
   }    
   if (outputLevel() <= MSG::DEBUG){
     debug() << "List of algorithms is: " << endmsg;
