@@ -600,12 +600,14 @@ macro_prepend  cpp_name "" \
     lcg-compiler&target-gcc&CERNDISTCC "" \
     lcg-compiler&target-gccmax    "" \
     lcg-compiler&target-g11max    "" \
-    lcg-compiler&target-gcc       "lcg-"
+    lcg-compiler&target-gcc       "lcg-" \
+    lcg-compiler&target-clang     "lcg-"
 macro_append   cpp_name "" \
     lcg-compiler&target-gcc&CERNDISTCC "" \
     lcg-compiler&target-gccmax    "" \
     lcg-compiler&target-g11max    "" \
-    lcg-compiler&target-gcc       "-$(gcc_config_version)"
+    lcg-compiler&target-gcc       "-$(gcc_config_version)" \
+    lcg-compiler&target-clang     "-$(clang_config_version)"
 macro cpp_name "$(cpp_name)" target-icc "icpc"
 
 # C compiler
@@ -613,24 +615,29 @@ macro_prepend  cc_name  "" \
     lcg-compiler&target-gcc&CERNDISTCC "" \
     lcg-compiler&target-gccmax    "" \
     lcg-compiler&target-g11max    "" \
-    lcg-compiler&target-gcc       "lcg-"
+    lcg-compiler&target-gcc       "lcg-" \
+    lcg-compiler&target-clang     "lcg-"
 macro_append   cc_name  "" \
     lcg-compiler&target-gcc&CERNDISTCC "" \
     lcg-compiler&target-gccmax    "" \
     lcg-compiler&target-g11max    "" \
-    lcg-compiler&target-gcc       "-$(gcc_config_version)"
+    lcg-compiler&target-gcc       "-$(gcc_config_version)" \
+    lcg-compiler&target-clang     "-$(clang_config_version)"
 
 # FORTRAN compiler
+# note: for clang we use the gcc FORTRAN
 macro_prepend  for_name "" \
     lcg-compiler&target-gcc&CERNDISTCC "" \
     lcg-compiler&target-gccmax    "" \
     lcg-compiler&target-g11max    "" \
-    lcg-compiler&target-gcc       "lcg-"
+    lcg-compiler&target-gcc       "lcg-" \
+    lcg-compiler&target-clang     "lcg-"
 macro_append   for_name "" \
     lcg-compiler&target-gcc&CERNDISTCC "" \
     lcg-compiler&target-gccmax    "" \
     lcg-compiler&target-g11max    "" \
-    lcg-compiler&target-gcc       "-$(gcc_config_version)"
+    lcg-compiler&target-gcc       "-$(gcc_config_version)" \
+    lcg-compiler&target-clang     "-$(gcc_config_version)"
 
 # C++ debug, optimized and profiled options
 macro cppdebugflags    "" \
