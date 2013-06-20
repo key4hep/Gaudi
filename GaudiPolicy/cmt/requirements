@@ -644,6 +644,7 @@ macro cppdebugflags    "" \
       target-dbg        "$(cppdebugflags_s)"\
       target-opt        "$(cppoptimized_s)"
 macro cppdebugflags_s  "-g" \
+      target-gcc48     "-Og -g" \
       target-winxp            "/Od /Z7"
 macro cppoptimized_s   "-O2 -DNDEBUG" \
       use-O3&target-gcc "-O3 -DNDEBUG" \
@@ -658,6 +659,7 @@ macro cdebugflags     "" \
       target-dbg           "$(cdebugflags_s)" \
       target-opt           "$(coptimized_s)"
 macro cdebugflags_s   "-g" \
+      target-gcc48    "-Og -g" \
       target-winxp           "/Od /Z7"
 macro coptimized_s    "-O2 -DNDEBUG" \
       use-O3&target-gcc "-O3 -DNDEBUG" \
@@ -667,6 +669,7 @@ macro coptimized_s    "-O2 -DNDEBUG" \
 macro fdebugflags      "" \
       target-dbg            "$(fdebugflags_s)"
 macro fdebugflags_s    "-g"\
+      target-gcc48     "-Og -g" \
       target-winxp            "/nopdbfile /debug:full /optimize:0"
 macro foptimized_s     "-O2 -DNDEBUG" \
       use-O3&target-gcc  "-O3 -DNDEBUG" \

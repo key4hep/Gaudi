@@ -4,6 +4,7 @@ package manager: Marco Clemencic
 ! 2013-06-20 - Marco Clemencic
  - Use the special name lcg-<compiler>-<version> for Clang too (already done
    when building with CMake).
+ - Use -Og when compiling in debug mode with gcc 4.8.
 
 ! 2013-06-10 - Marco Clemencic
  - Added -Wno-deprecated for gcc 4.8 (as it was done already for 4.6 and 4.7).
