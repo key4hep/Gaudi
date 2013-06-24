@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2013-06-24 - Marco Clemencic
+ - Fixed compilation with C++11 after the changes to THistSvc.cpp.
+
 ! 2013-04-18 - Charles Leggett
  - added GaudiMonitor to list of extra modules
 

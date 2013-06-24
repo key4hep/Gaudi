@@ -47,7 +47,7 @@ inline void toupper(std::string &s)
 //*************************************************************************//
 
 THistSvc::THistSvc( const std::string& name, ISvcLocator* svc )
-  : base_class(name, svc), m_log(msgSvc(), name ), signaledStop(false), 
+  : base_class(name, svc), m_log(msgSvc(), name ), signaledStop(false),
     m_delayConnect(false),m_okToConnect(false),
     p_incSvc(0), p_fileMgr(0) {
 
@@ -1295,7 +1295,7 @@ THistSvc::setupInputFile( Property& /*m_inputfile*/ )
   if (FSMState() < Gaudi::StateMachine::CONFIGURED || !m_okToConnect ) {
 
     m_log <<MSG::DEBUG << "Delaying connection of Input Files until Initialize"
-	  << ". now in " << FSMState() 
+	  << ". now in " << FSMState()
 	  << endmsg;
 
     m_delayConnect = true;
@@ -1326,7 +1326,7 @@ THistSvc::setupInputFile( Property& /*m_inputfile*/ )
     throw GaudiException( "Problem connecting inputfile !!", name(),
                           StatusCode::FAILURE );
   }
-    
+
   }
 
   return;
@@ -1339,7 +1339,7 @@ THistSvc::setupOutputFile( Property& /*m_outputfile*/ )
 {
   if (FSMState() < Gaudi::StateMachine::CONFIGURED || !m_okToConnect) {
     m_log <<MSG::DEBUG << "Delaying connection of Input Files until Initialize"
-	  << ". now in " << FSMState() 
+	  << ". now in " << FSMState()
 	  << endmsg;
     m_delayConnect = true;
   } else {
@@ -1399,7 +1399,7 @@ THistSvc::updateFiles() {
       // do nothing - no need to check how big the file is since we
       // are just reading it.
 #ifndef NDEBUG
-    if (m_log.level() <= MSG::VERBOSE) 
+    if (m_log.level() <= MSG::VERBOSE)
       m_log << MSG::VERBOSE << "     skipping" << endmsg;
 #endif
 
@@ -1457,7 +1457,7 @@ THistSvc::updateFiles() {
                     << sitr->second << "\"" << endmsg;
 #endif
             m_fileStreams.erase(sitr);
-	    m_fileStreams.insert( make_pair<std::string,std::string>(newFileName,streamName) );
+	    m_fileStreams.insert( make_pair(newFileName,streamName) );
           }
 
 
@@ -1620,7 +1620,7 @@ THistSvc::connect(const std::string& ident) {
       return StatusCode::FAILURE;
     } else {
       TFile *f2 = f_info.first;
-      m_files[stream] = make_pair<TFile*,Mode>(f2,newMode);
+      m_files[stream] = make_pair(f2,newMode);
       if (m_log.level() <= MSG::DEBUG)
         m_log << MSG::DEBUG << "Connecting stream: \"" << stream
               << "\" to previously opened TFile: \"" << filename << "\""
@@ -1650,7 +1650,7 @@ THistSvc::connect(const std::string& ident) {
       return StatusCode::FAILURE;
     }
 
-  
+
     f = (TFile*) vf;
 
     // FIX ME!
@@ -1678,7 +1678,7 @@ THistSvc::connect(const std::string& ident) {
     int r = p_fileMgr->open(Io::ROOT,name(),filename, (Io::WRITE | Io::APPEND),
 			    vf,"HIST");
     if (r != 0) {
-      m_log << MSG::ERROR << "unable to open file \"" << filename 
+      m_log << MSG::ERROR << "unable to open file \"" << filename
             << "\" for appending" << endmsg;
       return StatusCode::FAILURE;
     }
@@ -1717,7 +1717,7 @@ THistSvc::connect(const std::string& ident) {
   } else if (newMode == THistSvc::UPDATE) {
     // update file
 
-    int r = p_fileMgr->open(Io::ROOT,name(), filename, (Io::WRITE|Io::CREATE), 
+    int r = p_fileMgr->open(Io::ROOT,name(), filename, (Io::WRITE|Io::CREATE),
 			    vf, "HIST");
 
     if (r != 0) {
@@ -1730,8 +1730,8 @@ THistSvc::connect(const std::string& ident) {
 
   }
 
-  m_files[stream] = make_pair<TFile*,Mode>(f,newMode);
-  m_fileStreams.insert(make_pair<std::string,std::string>(filename,stream));
+  m_files[stream] = make_pair(f,newMode);
+  m_fileStreams.insert(make_pair(filename,stream));
 
   if (m_log.level() <= MSG::DEBUG)
     m_log << MSG::DEBUG << "Opening TFile \"" << filename << "\"  stream: \""
@@ -2065,13 +2065,13 @@ THistSvc::io_reinit ()
     Option_t *opts = f->GetOption();
     int r = p_fileMgr->open(Io::ROOT,name(),fname,Io::WRITE,vf,"HIST");
     if (r != 0) {
-      m_log << MSG::ERROR << "unable to open file \"" << fname 
+      m_log << MSG::ERROR << "unable to open file \"" << fname
 	    << "\" for writing" << endmsg;
       return StatusCode::FAILURE;
     }
     TFile *newfile = (TFile*) vf;
     newfile->SetOption(opts);
-      
+
 
     if (ifile->second.second != THistSvc::READ) {
       copyFileLayout (newfile, f);
@@ -2146,11 +2146,11 @@ THistSvc::rootOpenAction( const Io::FileAttr* fa, const std::string& caller) {
   if ( fa->flags().isRead() ) {
     p_incSvc->fireIncident(FileIncident(caller, "BeginHistFile", fa->name()));
   } else if ( fa->flags().isWrite() ) {
-    p_incSvc->fireIncident(FileIncident(caller, IncidentType::BeginOutputFile, 
+    p_incSvc->fireIncident(FileIncident(caller, IncidentType::BeginOutputFile,
 					fa->name()));
   } else {
     // for Io::RW
-    p_incSvc->fireIncident(FileIncident(caller, IncidentType::BeginOutputFile, 
+    p_incSvc->fireIncident(FileIncident(caller, IncidentType::BeginOutputFile,
 					fa->name()));
   }
 
