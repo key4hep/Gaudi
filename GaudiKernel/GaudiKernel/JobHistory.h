@@ -22,7 +22,7 @@
 
 class Property;
 
-class GAUDI_API JobHistory: public HistoryObj, public IVersHistoryObj {
+class GAUDI_API JobHistory: public HistoryObj, virtual public IVersHistoryObj {
 
 public:
 
@@ -58,7 +58,7 @@ public:  // functions
 	     const time_t& time);
 
   // Destructor.
-  ~JobHistory();
+  virtual ~JobHistory();
 
   // Class IDs
   virtual const CLID& clID() const { return classID(); }
