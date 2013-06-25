@@ -493,11 +493,15 @@ StatusCode ForwardSchedulerSvc::updateStates(int si){
       !thisSlot.algsStates.algsPresent(AlgsExecutionStates::DATAREADY) &&
       !thisSlot.algsStates.algsPresent(AlgsExecutionStates::SCHEDULED)){
       thisSlot.complete=true;
-      m_finishedEvents.push(thisSlot.eventContext);
-      debug() << "Event " << thisSlot.eventContext->m_evt_num 
-             << " finished (slot "<< thisSlot.eventContext->m_evt_slot 
-             << ")." << endmsg;
-      // now let's return the fully evaluated result of the control flow
+      // if the event did not fail, add it to the finished events
+      // otherwise it is taken care of in the error handling already
+      if (!thisSlot.eventContext->m_evt_failed) {
+        m_finishedEvents.push(thisSlot.eventContext);
+        debug() << "Event " << thisSlot.eventContext->m_evt_num
+                << " finished (slot "<< thisSlot.eventContext->m_evt_slot
+                << ")." << endmsg;
+      }
+    // now let's return the fully evaluated result of the control flow
       std::stringstream ss;
       m_cfManager.printEventState(ss,thisSlot.controlFlowState,0);
       debug() << ss.str() << endmsg;
