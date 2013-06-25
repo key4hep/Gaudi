@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IHistogramSvc.h,v 1.13 2008/10/09 09:59:14 marcocle Exp $
 #ifndef GAUDIKERNEL_IHISTOGRAMSVC_H
 #define GAUDIKERNEL_IHISTOGRAMSVC_H
 
@@ -734,6 +733,9 @@ public:
   virtual DataObject* createDirectory	(
     const std::string& parentDir,
     const std::string& subDir  ) = 0;
+
+  /// virtual destructor
+  virtual ~IHistogramSvc() {}
 
   /// Avoids a compiler warning about hidden functions.
   using IDataProviderSvc::registerObject;

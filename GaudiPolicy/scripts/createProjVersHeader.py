@@ -4,6 +4,12 @@ import os
 import sys
 import re
 from optparse import OptionParser
+
+lhcb_ver_style = "v(?P<maj_ver>[0-9]+)r(?P<min_ver>[0-9]+)(?:p(?P<pat_ver>[0-9]+))?"
+atlas_ver_style = "[A-Za-z]+\-(?P<maj_ver>[0-9]+)\-(?P<min_ver>[0-9]+)(?:\-(?P<pat_ver>[0-9]+))?"
+plain_ver_style = "(?P<maj_ver>[0-9]+)\.(?P<min_ver>[0-9]+)(?:\.(?P<pat_ver>[0-9]+))?"
+
+
 def main():
     parser = OptionParser(usage="ERROR: Usage %prog <project> <version> <outputfile>")
     parser.add_option("-q", "--quiet", action="store_true",
@@ -19,7 +25,10 @@ def main():
     if version.startswith('HEAD'):
         majver, minver, patver = 999, 999, 0 # special handling
     else:
-        m = re.match("(v|([A-Za-z]+\-))(?P<maj_ver>[0-9]+)(r|\-)(?P<min_ver>[0-9]+)(?:(p|\-)(?P<pat_ver>[0-9]+))?", version)
+        for style in [lhcb_ver_style, atlas_ver_style, plain_ver_style ] :
+            m = re.match(style, version)
+            if m :
+                break
         majver = int(m.groupdict()['maj_ver'])
         minver = int(m.groupdict()['min_ver'])
         patver = int(m.groupdict()['pat_ver'] or 0)

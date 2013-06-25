@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IRndmGenSvc.h,v 1.4 2006/11/30 14:43:13 mato Exp $
 #ifndef GAUDIKERNEL_IRNDMGENSVC_H
 #define GAUDIKERNEL_IRNDMGENSVC_H
 
@@ -41,12 +40,15 @@ public:
       @return pointer to random number engine
   */
   virtual IRndmEngine* engine() = 0;
+
   /** Add a Generator factory.
       @param fac Pointer to factory to be added
       @return StatusCode indicating success or failure.
   */
-
   virtual StatusCode generator(const IRndmGen::Param& par, IRndmGen*& refpGen) = 0;
+
+  /// virtual destructor
+  virtual ~IRndmGenSvc() {}
 };
 
 #endif // GAUDIKERNEL_IRNDMGENSVC_H

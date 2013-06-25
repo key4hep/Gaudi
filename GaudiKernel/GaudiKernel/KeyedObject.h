@@ -76,7 +76,7 @@ public:
   virtual StreamBuffer& serialize( StreamBuffer& s );
 private:
   /// NOBODY may copy these objects
-  KeyedObject(const KeyedObject& copy) : ContainedObject(copy) {               }
+  KeyedObject(const KeyedObject& copy) : ContainedObject(copy), m_refCount(0), m_hasKey(true) {               }
 };
 
 /*

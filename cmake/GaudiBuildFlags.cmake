@@ -1,3 +1,13 @@
+# Special defaults
+if (LCG_COMPVERS VERSION_LESS "47")
+  set(GAUDI_CPP11_DEFAULT OFF)
+else()
+  # C++11 is enable by default on gcc >= 4.7
+  set(GAUDI_CPP11_DEFAULT ON)
+endif()
+# special for GaudiHive
+set(GAUDI_CPP11_DEFAULT ON)
+
 #--- Gaudi Build Options -------------------------------------------------------
 # Build options that map to compile time features
 #
@@ -29,7 +39,8 @@ option(GAUDI_CMT_RELEASE
 
 option(GAUDI_CPP11
        "enable C++11 compilation"
-       ON)
+       ${GAUDI_CPP11_DEFAULT})
+
 
 #--- Compilation Flags ---------------------------------------------------------
 add_definitions(-DGOD_NOALLOC)
@@ -154,8 +165,14 @@ if ((GAUDI_V21 OR G21_HIDE_SYMBOLS) AND (LCG_COMP STREQUAL gcc AND LCG_COMPVERS 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden")
 endif()
 
-if ( GAUDI_CPP11 )
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+if (GAUDI_CPP11)
+  if (LCG_COMPVERS VERSION_LESS "47")
+    # gcc 4.6 only understands c++0x
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+  else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
+  endif()
 endif()
 
 if(NOT GAUDI_V21)

@@ -606,7 +606,7 @@ HistorySvc::createDataHistoryObj(const CLID& id, const std::string& key,
       algHist = getAlgHistory( *alg );
     } else {
       m_log << MSG::WARNING
-            << "Could not extract concerete Algorithm:"
+            << "Could not extract concrete Algorithm:"
             << endl
             << "          object CLID: " << id << "  key: \"" << key
             << "\"" << endmsg;

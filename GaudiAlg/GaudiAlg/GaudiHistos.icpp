@@ -34,6 +34,7 @@
 #include "GaudiAlg/CheckForNaN.h"
 #include "GaudiAlg/Print.h"
 #include "GaudiAlg/Fill.h"
+#include "GaudiAlg/HbookName.h"
 // ============================================================================
 // forward declarations from AIDA
 // ============================================================================
@@ -124,11 +125,11 @@ void GaudiHistos<PBASE>::initGaudiHistosConstructor()
 template <class PBASE>
 StatusCode GaudiHistos<PBASE>::
 #ifdef __ICC
-  i_ghInitialize
+i_ghInitialize
 #else
-  initialize
+initialize
 #endif
-  ()
+()
 {
   // initialize base class
   const StatusCode sc = PBASE::initialize();
@@ -166,11 +167,11 @@ StatusCode GaudiHistos<PBASE>::
 template <class PBASE>
 StatusCode GaudiHistos<PBASE>::
 #ifdef __ICC
-  i_ghFinalize
+i_ghFinalize
 #else
-  finalize
+finalize
 #endif
-  ()
+()
 {
 
   if ( produceHistos() )
@@ -537,6 +538,15 @@ void GaudiHistos<PBASE>::printHistoHandler( Property& )
   // no action if not yet initialized
   if ( this -> FSMState() < Gaudi::StateMachine::INITIALIZED ) { return ; }
   if ( this -> histosPrint() ) { this -> printHistos ( MSG::ALWAYS ) ; }
+}
+// ============================================================================
+// get the constructed histogram path
+// ============================================================================
+template < class PBASE >
+std::string GaudiHistos<PBASE>::histoPath () const
+{
+  const std::string path = histoTopDir() + histoDir();
+  return ( splitHistoDir() ? dirHbookName(path) : path );
 }
 // ============================================================================
 // 1D

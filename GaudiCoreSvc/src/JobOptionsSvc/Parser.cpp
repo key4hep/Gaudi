@@ -29,12 +29,33 @@ namespace qi = boost::spirit::qi;
 // ============================================================================
 namespace {
 // ============================================================================
+void GetLastLineAndColumn(std::ifstream& ifs, int& line, int& column) {
+    int n = 0;
+    std::string str;
+    while(!ifs.eof()) {
+        getline(ifs, str);
+        n++;
+    }
+    line = n;
+    column = str.length()+1;
+    ifs.clear();
+    ifs.seekg(0, ifs.beg);
+}
+
 template<typename Grammar>
 bool ParseStream(std::ifstream& stream,
         const std::string& stream_name, gp::Messages* messages,
                gp::Node* root) {
-    // iterate over stream input
-    BaseIterator in_begin(stream);
+    
+    int last_line, last_column;
+    
+
+    GetLastLineAndColumn(stream, last_line, last_column);
+
+    std::string input((std::istreambuf_iterator<char>(stream)),
+             std::istreambuf_iterator<char>());
+
+    BaseIterator in_begin(input.begin());
     // convert input iterator to forward iterator, usable by spirit parser
     ForwardIterator fwd_begin =
             boost::spirit::make_default_multi_pass(in_begin);
@@ -51,10 +72,12 @@ bool ParseStream(std::ifstream& stream,
     root->value = stream_name;
     bool result = qi::phrase_parse(position_begin,
             position_end, gr, skipper, *root);
-    if (result && (position_begin==position_end)) {
+
+    const IteratorPosition& pos = position_begin.get_position();    
+    if (result && (pos.line == last_line) && (pos.column == last_column)) {
         return true;
     }
-    const IteratorPosition& pos = position_begin.get_position();
+
     messages->AddError(gp::Position(stream_name, pos.line,
             pos.column),"parse error");
     return false;

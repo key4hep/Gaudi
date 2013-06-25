@@ -43,24 +43,24 @@ public:
   virtual std::vector<std::string> getGraphs() const = 0;
 
   //  virtual StatusCode getTHists(TList&) const = 0;
-  virtual StatusCode getTHists(TDirectory *td, TList &, 
+  virtual StatusCode getTHists(TDirectory *td, TList &,
 			       bool recurse=false) const = 0;
-  virtual StatusCode getTHists(const std::string& name, TList &, 
+  virtual StatusCode getTHists(const std::string& name, TList &,
 			       bool recurse=false) const = 0;
 
-  virtual StatusCode getTHists(TDirectory *td, TList &, 
+  virtual StatusCode getTHists(TDirectory *td, TList &,
 			       bool recurse=false, bool reg=false) = 0;
-  virtual StatusCode getTHists(const std::string& name, TList &, 
+  virtual StatusCode getTHists(const std::string& name, TList &,
 			       bool recurse=false, bool reg=false) = 0;
 
   //  virtual StatusCode getTTrees(TList&) const = 0;
-  virtual StatusCode getTTrees(TDirectory *td, TList &, 
+  virtual StatusCode getTTrees(TDirectory *td, TList &,
 			       bool recurse=false) const = 0;
-  virtual StatusCode getTTrees(const std::string& name, TList &, 
+  virtual StatusCode getTTrees(const std::string& name, TList &,
 			       bool recurse=false) const = 0;
-  virtual StatusCode getTTrees(TDirectory *td, TList &, 
+  virtual StatusCode getTTrees(TDirectory *td, TList &,
 			       bool recurse=false, bool reg=false) = 0;
-  virtual StatusCode getTTrees(const std::string& name, TList &, 
+  virtual StatusCode getTTrees(const std::string& name, TList &,
 			       bool recurse=false, bool reg=false) = 0;
 
   virtual StatusCode regGraph(const std::string& name) = 0;
@@ -69,6 +69,8 @@ public:
 
   virtual bool exists(const std::string& name) const = 0;
 
+  /// virtual destructor
+  virtual ~ITHistSvc() {}
 };
 
 #endif

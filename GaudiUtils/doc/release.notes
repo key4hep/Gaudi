@@ -1,6 +1,14 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+============================== GaudiUtils v4r5 ===============================
+! 2013-05-28 - Marco Clemencic
+ - Modified StalledEventMonitor to be able to print a stack trace of the stalled
+   process and abort the execution.
+
+! 2013-04-16 - Marco Clemencic
+ - Fixed Clang warnings.
+
 ============================== GaudiUtils v4r4 ===============================
 ! 2013-01-22 - Vanya Belyaev
  - Patch #5594: fix for parsing of 1D histograms with non-equidistant binnings

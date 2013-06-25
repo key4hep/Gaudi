@@ -62,8 +62,6 @@ public:
   /// Constructors
   ObjectList()
     : m_list(0) { }
-  ObjectList( const char* name )
-    : m_list(0) { }
   /// Copy Constructor
   ObjectList( const ObjectList<TYPE>& value )
     : m_list(value.m_list) { }
@@ -73,21 +71,13 @@ public:
     clear();
   }
 
-  /// Retrieve pointer to class defininition structure
+  /// Retrieve pointer to class definition structure
   virtual const CLID& clID() const {
     return ObjectList<TYPE>::classID();
   }
   static const CLID& classID() {
     static CLID clid = TYPE::classID() + CLID_ObjectList;
     return clid;
-  }
-
-  /// Clone operator
-  const ObjectList<TYPE>& operator = (const ObjectList<TYPE> &right) {
-    this->processingVersion = right.m_processingVersion;
-    this->detectorDataObject = right.m_detectorDataObject;
-    m_list = right.m_list;
-    return *this;
   }
 
   /// Return an iterator pointing to the beginning of the container
@@ -207,7 +197,7 @@ public:
     m_list.pop_back();
   }
 
-  /// Release object from the container (the poiter will be removed
+  /// Release object from the container (the pointer will be removed
   /// from the container, but the object itself will remain alive) (see the method pop_back)
   virtual long remove(ContainedObject* value) {
     // Find the object of value value
@@ -219,7 +209,7 @@ public:
       }
     }
     if( end() == iter )  {
-      // Object cannot be released from the conatiner,
+      // Object cannot be released from the container,
       // as it is not contained in it
       return -1;
     }
@@ -271,7 +261,7 @@ public:
   }
 
   /// Return distance of a given object from the beginning of its container
-  /// It correcponds to the "index" ( from 0 to size()-1 ) If "obj" not fount, return -1
+  /// It corresponds to the "index" ( from 0 to size()-1 ) If "obj" not fount, return -1
   virtual long index( const ContainedObject* obj ) const {
     long i = 0;
     typename ObjectList<TYPE>::const_iterator   iter;

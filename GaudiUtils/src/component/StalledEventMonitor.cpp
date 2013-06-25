@@ -12,6 +12,10 @@
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/Memory.h"
 
+#include "TSystem.h"
+
+#include <csignal>
+
 namespace {
   /// Specialized watchdog to monitor the event loop and spot possible infinite loops.
   class EventWatchdog: public WatchdogThread {
@@ -19,14 +23,25 @@ namespace {
     EventWatchdog(const SmartIF<IMessageSvc> &msgSvc,
                   const std::string &name,
                   boost::posix_time::time_duration timeout,
+                  bool stackTrace = false,
+                  long maxCount = 0,
                   bool autostart = false):
         WatchdogThread(timeout, autostart),
         log(msgSvc, name),
-        m_counter(0) {}
+        m_counter(0),
+        m_maxCount(maxCount),
+        m_stackTrace(stackTrace){}
     virtual ~EventWatchdog() {}
   private:
+    /// message stream used to report problems
     MsgStream log;
+    /// internal counter of the occurrences of consecutive timeouts
     long m_counter;
+    /// how many timeouts before aborting (0 means never abort)
+    long m_maxCount;
+    /// whether to dump a stack trace when the timeout is reached
+    bool m_stackTrace;
+    /// main watchdog function
     void action() {
       if (!m_counter) {
         log << MSG::WARNING << "More than " << getTimeout().total_seconds()
@@ -39,7 +54,16 @@ namespace {
           " virtual size = " << System::virtualMemory() / 1024. << " MB"
           ", resident set size = " << System::pagedMemory() / 1024.<< " MB"
           << endmsg;
+      if (m_stackTrace && gSystem) {
+        // TSystem::StackTrace() prints on the standard error, so we
+        std::cerr << "=== Stalled event: current stack trace ===" << std::endl;
+        gSystem->StackTrace();
+      }
       ++m_counter;
+      if (m_maxCount > 0 && m_counter >= m_maxCount) {
+        log << MSG::FATAL << "too much time on a single event: aborting process" << endmsg;
+        std::raise(SIGABRT);
+      }
     }
     void onPing() {
       if (m_counter) {
@@ -62,8 +86,13 @@ StalledEventMonitor::StalledEventMonitor(const std::string& name, ISvcLocator* s
   base_class(name, svcLoc) {
 
   declareProperty("EventTimeout", m_eventTimeout = 600,
-                  "Number of seconds allowed to process a single event (0 to disable the check)");
+                  "Number of seconds allowed to process a single event (0 to disable the check).");
 
+  declareProperty("MaxTimeoutCount", m_maxTimeoutCount = 0,
+                  "Number timeouts before aborting the execution (0 means never abort).");
+
+  declareProperty("StackTrace", m_stackTrace = false,
+                  "Whether to print the stack-trace on timeout.");
 }
 
 // Destructor
@@ -82,7 +111,9 @@ StatusCode StalledEventMonitor::initialize() {
     m_watchdog = std::auto_ptr<WatchdogThread>(
         new EventWatchdog(msgSvc(),
             "EventWatchdog",
-            boost::posix_time::seconds(m_eventTimeout)));
+            boost::posix_time::seconds(m_eventTimeout),
+            m_stackTrace,
+            m_maxTimeoutCount));
 
     // register to the incident service
     std::string serviceName = "IncidentSvc";

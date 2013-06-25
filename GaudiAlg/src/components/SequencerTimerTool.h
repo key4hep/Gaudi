@@ -24,7 +24,16 @@ TimingAuditor().TIMER.NameSize = 50 \endverbatim
  *  @date   2004-05-19
  */
 
-class SequencerTimerTool : public GaudiHistoTool, virtual public ISequencerTimerTool{
+class SequencerTimerTool : public GaudiHistoTool, 
+                           virtual public ISequencerTimerTool
+{
+
+public:
+
+  using ISequencerTimerTool::start;
+  using ISequencerTimerTool::stop;
+  using ISequencerTimerTool::name;
+
 public:
 
  /// Standard constructor
@@ -41,46 +50,32 @@ public:
   virtual StatusCode finalize();
 
   /** add a timer entry with the specified name **/
-  virtual int addTimer( std::string name ) {
-    std::string myName;
-    if ( 0 < m_indent ) {
-      std::string prefix( m_indent, ' ' );
-      myName += prefix;
-    }
-    std::string space( m_headerSize, ' ' );
-    myName += name + space ;
-    myName = myName.substr( 0, m_headerSize );
-
-    m_timerList.push_back( TimerForSequencer(myName, m_normFactor) );
-    return m_timerList.size() -1;
-  };
+  virtual int addTimer( const std::string& name );
 
   /** Increase the indentation of the name **/
-  virtual void increaseIndent()    { m_indent += 2; };
+  virtual void increaseIndent() { m_indent += 2; }
 
   /** Decrease the indentation of the name **/
-  virtual void decreaseIndent()    {
+  virtual void decreaseIndent() 
+  {
     m_indent -= 2;
     if ( 0 > m_indent ) m_indent = 0;
-  };
+  }
 
-  using ISequencerTimerTool::start;
   /** start the counter, i.e. register the current time **/
-  void start( int index )  {   m_timerList[index].start();  };
+  void start( int index ) { m_timerList[index].start(); }
 
-  using ISequencerTimerTool::stop;
   /** stop the counter, return the elapsed time **/
-  double stop( int index )  {   return m_timerList[index].stop();  };
+  double stop( int index ) { return m_timerList[index].stop(); }
 
   /** returns the last time **/
-  double lastTime( int index )  {   return m_timerList[index].lastTime();  };
+  double lastTime( int index ) { return m_timerList[index].lastTime(); }
 
-  using ISequencerTimerTool::name;
   /** returns the name of the counter **/
-  std::string name( int index )  {   return m_timerList[index].name();  };
+  const std::string& name( int index ) { return m_timerList[index].name(); }
 
   /** returns the index of the counter with that name, or -1 **/
-  int indexByName( std::string name );
+  int indexByName( const std::string& name );
 
   /** returns the flag telling that global timing is wanted **/
   virtual bool globalTiming() { return m_globalTiming; };
@@ -88,9 +83,8 @@ public:
   /** prepares and saves the timing histograms **/
   virtual void saveHistograms();
 
-protected:
-
 private:
+
   int m_shots;       ///< Number of shots for CPU normalization
   bool m_normalised; ///< Is the time scaled to a nominal PIII ?
   int m_indent;      ///< Amount of indentation
@@ -99,5 +93,6 @@ private:
   double m_speedRatio;
   bool   m_globalTiming;
   std::string::size_type m_headerSize;   ///< Size of the name field
+
 };
 #endif // SEQUENCERTIMERTOOL_H

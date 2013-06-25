@@ -1,6 +1,27 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-03-27 - Hubert Degaudenzi
+ - Modified createProjVersHeader.py to understand only the LHCb version
+   style(vXrY[pZ]) , the ATLAS version style (bla-X-Y[-Z]) and the plain
+   version style (X.Y[.Z])
+
+! 2013-06-10 - Marco Clemencic
+ - Added -Wno-deprecated for gcc 4.8 (as it was done already for 4.6 and 4.7).
+ - GaudiTest.py: Removed a stale debug printout statement.
+
+============================= GaudiPolicy v12r6 ==============================
+! 2013-04-28 - Marco Clemencic
+ - Extended the GaudiExeTest class to allow expected termination by signal.
+   To accept termination by signal of a test, set the test field 'signal',
+   e.g. (for SIGABRT):
+
+     <argument name="signal"><integer>6</integer></argument>
+
+! 2013-04-23 - Marco Clemencic
+ - Exclude some (make) variables in the Eclipse launcher configuration generated
+   with QMTest, because they can cause problems in some builds.
+
 ! 2013-03-22 - Marco Clemencic
  - Enable C++11 by default when using gcc 4.7
 

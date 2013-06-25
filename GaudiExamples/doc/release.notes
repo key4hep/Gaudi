@@ -1,6 +1,14 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v23r8 =============================
+! 2013-05-28 - Marco Clemencic
+ - Added test for the abort of stalled events.
+
+! 2013-04-16 - Marco Clemencic
+ - Fixed Clang warnings.
+
+============================ GaudiExamples v23r7 =============================
 ============================ GaudiExamples v23r6 =============================
 ============================ GaudiExamples v23r5 =============================
 ! 2012-11-15 - Marco Clemencic

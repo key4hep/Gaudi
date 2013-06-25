@@ -264,6 +264,8 @@ macro(gaudi_project project version)
   #message(STATUS "${packages}")
   set(packages ${sorted_packages})
   #message(STATUS "${packages}")
+
+  file(WRITE ${CMAKE_BINARY_DIR}/subdirs_deps.dot "digraph subdirs_deps {\n")
   # Add all subdirectories to the project build.
   list(LENGTH packages packages_count)
   set(package_idx 0)
@@ -272,6 +274,7 @@ macro(gaudi_project project version)
     message(STATUS "Adding directory ${package} (${package_idx}/${packages_count})")
     add_subdirectory(${package})
   endforeach()
+  file(APPEND ${CMAKE_BINARY_DIR}/subdirs_deps.dot "}\n")
 
   #--- Special global targets for merging files.
   gaudi_merge_files(ConfDB python ${CMAKE_PROJECT_NAME}_merged_confDb.py)
@@ -296,8 +299,37 @@ macro(gaudi_project project version)
   # (so far, the build and the release envirnoments are identical)
   set(project_build_environment ${project_environment})
 
-  message(STATUS "  environment for local subdirectories")
+  # FIXME: this should not be needed, but there is a bug in genreflex
+  if(BINARY_TAG MATCHES "i686-.*")
+    # special environment variables for GCCXML
+    if(GCCXML_CXX_COMPILER)
+      set(project_build_environment ${project_build_environment}
+          SET GCCXML_COMPILER "${GCCXML_CXX_COMPILER}")
+    endif()
+    if(GCCXML_CXX_FLAGS)
+      set(project_build_environment ${project_build_environment}
+          SET GCCXML_CXXFLAGS "${GCCXML_CXX_FLAGS}")
+    endif()
+  endif()
+
   # - collect internal environment
+  message(STATUS "  environment for the project")
+  #   - installation dirs
+  set(project_environment ${project_environment}
+        PREPEND PATH \${.}/scripts
+        PREPEND PATH \${.}/bin
+        PREPEND LD_LIBRARY_PATH \${.}/lib
+        PREPEND PYTHONPATH \${.}/python
+        PREPEND PYTHONPATH \${.}/python/lib-dynload)
+  #     (installation dirs added to build env to be able to test pre-built bins)
+  set(project_build_environment ${project_build_environment}
+        PREPEND PATH ${CMAKE_INSTALL_PREFIX}/scripts
+        PREPEND PATH ${CMAKE_INSTALL_PREFIX}/bin
+        PREPEND LD_LIBRARY_PATH ${CMAKE_INSTALL_PREFIX}/lib
+        PREPEND PYTHONPATH ${CMAKE_INSTALL_PREFIX}/python
+        PREPEND PYTHONPATH ${CMAKE_INSTALL_PREFIX}/python/lib-dynload)
+
+  message(STATUS "  environment for local subdirectories")
   #   - project root (for relocatability)
   string(TOUPPER ${project} _proj)
   #set(project_environment ${project_environment} SET ${_proj}_PROJECT_ROOT "${CMAKE_SOURCE_DIR}")
@@ -357,20 +389,13 @@ macro(gaudi_project project version)
     endif()
   endforeach()
 
-  message(STATUS "  environment for the project")
-  #   - installation dirs
-  set(project_environment ${project_environment}
-        PREPEND PATH \${.}/scripts
-        PREPEND PATH \${.}/bin
-        PREPEND LD_LIBRARY_PATH \${.}/lib
-        PREPEND PYTHONPATH \${.}/python
-        PREPEND PYTHONPATH \${.}/python/lib-dynload)
   #   - build dirs
   set(project_build_environment ${project_build_environment}
       PREPEND PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
       PREPEND LD_LIBRARY_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
       PREPEND PYTHONPATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
       PREPEND PYTHONPATH ${CMAKE_BINARY_DIR}/python)
+
   # - produce environment XML description
   #   release version
   gaudi_generate_env_conf(${env_release_xml} ${project_environment})
@@ -419,6 +444,8 @@ macro(gaudi_project project version)
   set(CPACK_SYSTEM_NAME ${BINARY_TAG})
 
   set(CPACK_GENERATOR TGZ)
+
+  set(CPACK_SOURCE_IGNORE_FILES "/InstallArea/;/build\\\\..*/;/\\\\.svn/;/\\\\.settings/;\\\\..*project;\\\\.gitignore")
 
   include(CPack)
 
@@ -483,18 +510,20 @@ macro(_gaudi_use_other_projects)
                    PATH_SUFFIXES ${suffixes})
       if(${other_project}_FOUND)
         message(STATUS "  found ${other_project} ${${other_project}_VERSION} ${${other_project}_DIR}")
-        if(NOT heptools_version STREQUAL ${other_project}_heptools_version)
-          if(${other_project}_heptools_version)
-            set(hint_message "with the option '-DCMAKE_TOOLCHAIN_FILE=.../heptools-${${other_project}_heptools_version}.cmake'")
-          else()
-            set(hint_message "without the option '-DCMAKE_TOOLCHAIN_FILE=...'")
-          endif()
-          message(FATAL_ERROR "Incompatible versions of heptools toolchains:
+        if(heptools_version)
+          if(NOT heptools_version STREQUAL ${other_project}_heptools_version)
+            if(${other_project}_heptools_version)
+              set(hint_message "with the option '-DCMAKE_TOOLCHAIN_FILE=.../heptools-${${other_project}_heptools_version}.cmake'")
+            else()
+              set(hint_message "without the option '-DCMAKE_TOOLCHAIN_FILE=...'")
+            endif()
+            message(FATAL_ERROR "Incompatible versions of heptools toolchains:
   ${CMAKE_PROJECT_NAME} -> ${heptools_version}
   ${other_project} ${${other_project}_VERSION} -> ${${other_project}_heptools_version}
 
   You need to call cmake ${hint_message}
 ")
+          endif()
         endif()
         if(NOT LCG_SYSTEM STREQUAL ${other_project}_heptools_system)
           message(FATAL_ERROR "Incompatible values of LCG_SYSTEM:
@@ -802,6 +831,11 @@ function(gaudi_depends_on_subdirs)
     # prevent multiple executions
     set(gaudi_depends_on_subdirs_called TRUE PARENT_SCOPE)
   endif()
+
+  # add the dependencies lines to the DOT dependency graph
+  foreach(d ${ARGN})
+    file(APPEND ${CMAKE_BINARY_DIR}/subdirs_deps.dot "\"${subdir_name}\" -> \"${d}\";\n")
+  endforeach()
 endfunction()
 
 #-------------------------------------------------------------------------------
@@ -1569,6 +1603,9 @@ function(gaudi_add_dictionary dictionary header selection)
   CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS;OPTIONS" ${ARGN})
   gaudi_common_add_build(${ARG_UNPARSED_ARGUMENTS} LIBRARIES ${ARG_LIBRARIES} LINK_LIBRARIES ${ARG_LINK_LIBRARIES} INCLUDE_DIRS ${ARG_INCLUDE_DIRS})
 
+  # override the genreflex call to wrap it in the right environment
+  set(ROOT_genreflex_CMD ${env_cmd} --xml ${env_xml} ${ROOT_genreflex_CMD})
+
   reflex_dictionary(${dictionary} ${header} ${selection} LINK_LIBRARIES ${ARG_LINK_LIBRARIES} OPTIONS ${ARG_OPTIONS})
   set_target_properties(${dictionary}Dict PROPERTIES COMPILE_FLAGS "-Wno-overloaded-virtual")
   _gaudi_detach_debinfo(${dictionary}Dict)
@@ -1645,20 +1682,38 @@ endfunction()
 # gaudi_add_unit_test(<name>
 #                     source1 source2 ...
 #                     LINK_LIBRARIES library1 library2 ...
-#                     INCLUDE_DIRS dir1 package2 ...)
+#                     INCLUDE_DIRS dir1 package2 ...
+#                     [ENVIRONMENT variable[+]=value ...]
+#                     [TIMEOUT seconds]
+#                     [TYPE Boost|CppUnit])
 #
 # Special version of gaudi_add_executable which automatically adds the dependency
 # on CppUnit.
+# If special environment settings are needed, they can be specified in the
+# section ENVIRONMENT as <var>=<value> or <var>+=<value>, where the second format
+# prepends the value to the PATH-like variable.
+# The default TYPE is CppUnit and Boost can also be specified.
 #---------------------------------------------------------------------------------------------------
 function(gaudi_add_unit_test executable)
   if(GAUDI_BUILD_TESTS)
-    gaudi_common_add_build(${ARGN})
 
-    find_package(CppUnit QUIET REQUIRED)
+    CMAKE_PARSE_ARGUMENTS(${executable}_UNIT_TEST "" "TYPE;TIMEOUT" "ENVIRONMENT" ${ARGN})
+
+    gaudi_common_add_build(${${executable}_UNIT_TEST_UNPARSED_ARGUMENTS})
+
+    if(NOT ${executable}_UNIT_TEST_TYPE)
+      set(${executable}_UNIT_TEST_TYPE CppUnit)
+    endif()
+
+    if (${${executable}_UNIT_TEST_TYPE} STREQUAL "Boost")
+      find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+    else()
+      find_package(${${executable}_UNIT_TEST_TYPE} QUIET REQUIRED)
+    endif()
 
     gaudi_add_executable(${executable} ${srcs}
-                         LINK_LIBRARIES ${ARG_LINK_LIBRARIES} CppUnit
-                         INCLUDE_DIRS ${ARG_INCLUDE_DIRS} CppUnit)
+                         LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${${executable}_UNIT_TEST_TYPE}
+                         INCLUDE_DIRS ${ARG_INCLUDE_DIRS} ${${executable}_UNIT_TEST_TYPE})
 
     gaudi_get_package_name(package)
 
@@ -1666,11 +1721,29 @@ function(gaudi_add_unit_test executable)
     if(NOT exec_suffix)
       set(exec_suffix)
     endif()
+
+    foreach(var ${${executable}_UNIT_TEST_ENVIRONMENT})
+      string(FIND ${var} "+=" is_prepend)
+      if(NOT is_prepend LESS 0)
+        # the argument contains +=
+        string(REPLACE "+=" "=" var ${var})
+        set(extra_env ${extra_env} -p ${var})
+      else()
+        set(extra_env ${extra_env} -s ${var})
+      endif()
+    endforeach()
+
     add_test(${package}.${executable}
-             ${env_cmd} --xml ${env_xml}
+             ${env_cmd} ${extra_env} --xml ${env_xml}
                ${executable}${exec_suffix})
+
+    if(${executable}_UNIT_TEST_TIMEOUT)
+      set_property(TEST ${package}.${executable} PROPERTY TIMEOUT ${${executable}_UNIT_TEST_TIMEOUT})
+    endif()
+
   endif()
 endfunction()
+
 
 #-------------------------------------------------------------------------------
 # gaudi_add_test(<name>
@@ -1686,7 +1759,7 @@ endfunction()
 #  QMTEST - run the QMTest tests in the standard directory
 #  COMMAND - execute a command
 # If special environment settings are needed, they can be specified in the
-# section ENVIRONMENT as <var>=<value> or <var>+=<value>, where the secon format
+# section ENVIRONMENT as <var>=<value> or <var>+=<value>, where the second format
 # prepends the value to the PATH-like variable.
 # Great flexibility is given by the following options:
 #  FAILS - the tests succeds if the command fails (return code !=0)
@@ -2163,7 +2236,8 @@ function(gaudi_generate_env_conf filename)
 
   # include inherited environments
   foreach(other_project ${used_gaudi_projects})
-    set(data "${data}  <env:include hints=\"${${other_project}_DIR}\">${other_project}Environment.xml</env:include>\n")
+    set(data "${data}  <env:search_path>${${other_project}_DIR}</env:search_path>\n")
+    set(data "${data}  <env:include>${other_project}Environment.xml</env:include>\n")
   endforeach()
 
   set(commands ${ARGN})

@@ -1,6 +1,10 @@
 Package: GaudiAud
 Package manager : David Quarrie, Marco Clemencic
 
+! 2013-06-06 - Marco Clemencic
+ - Minor change in the configuration of a test to work around an issue in the
+   latest JobOptions parser.
+
 =============================== GaudiAud v9r8 ================================
 ! 2012-11-14 - Marco Clemencic
  - Updated CMakeLists.txt.

@@ -1,4 +1,3 @@
-// $Id: IDataProviderSvc.h,v 1.6 2005/01/19 08:23:16 mato Exp $
 #ifndef GAUDIKERNEL_IDATAPROVIDERSVC_H
 #define GAUDIKERNEL_IDATAPROVIDERSVC_H
 
@@ -555,6 +554,9 @@ public:
     /// Terminator
     LAST
   };
+
+  /// virtual destructor
+  virtual ~IDataProviderSvc() {}
 };
 
 #endif // GAUDIKERNEL_IDATAPROVIDERSVC_H

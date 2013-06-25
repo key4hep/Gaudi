@@ -1,5 +1,5 @@
 package GaudiPolicy
-version v12r4
+version v12r6
 
 branches cmt doc
 
@@ -789,8 +789,9 @@ macro_append cppflags "" \
          no-hide-warnings "" \
          target-gcc43 " -Wno-deprecated" \
          target-gcc46 " -Wno-deprecated" \
-         target-gccmax " -Wno-deprecated" \
          target-gcc47 " -Wno-deprecated" \
+         target-gcc48 " -Wno-deprecated" \
+         target-gccmax " -Wno-deprecated" \
          target-clang " -Wno-deprecated"
 # FIXME: (MCl)
 macro_append cppflags "" \

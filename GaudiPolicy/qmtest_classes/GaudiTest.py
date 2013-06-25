@@ -1102,6 +1102,13 @@ class GaudiExeTest(ExecTestBase):
             """,
             default_value="false"
             ),
+
+        qm.fields.IntegerField(
+            name = "signal",
+            title = "Expected signal",
+            description = """Expect termination by signal.""",
+            default_value=None
+            ),
         ]
 
     def PlatformIsNotSupported(self, context, result):
@@ -1513,7 +1520,8 @@ class GaudiExeTest(ExecTestBase):
             result["ExecTest.stack_trace"] = result.Quote(stack_trace)
 
         # If the process terminated normally, check the outputs.
-        if sys.platform == "win32" or os.WIFEXITED(exit_status):
+        if (sys.platform == "win32" or os.WIFEXITED(exit_status)
+            or self.signal == os.WTERMSIG(exit_status)):
             # There are no causes of failure yet.
             causes = []
             # The target program terminated normally.  Extract the
@@ -1554,6 +1562,8 @@ class GaudiExeTest(ExecTestBase):
             result["ExecTest.signal_number"] = signal_number
             result["ExecTest.stdout"] = result.Quote(e.stdout)
             result["ExecTest.stderr"] = result.Quote(e.stderr)
+            if self.signal:
+                result["ExecTest.expected_signal_number"] = str(self.signal)
         elif os.WIFSTOPPED(exit_status):
             # The target program was stopped.  Construe that as a
             # test failure.
@@ -1620,7 +1630,8 @@ class GaudiExeTest(ExecTestBase):
         # Note: the "quoteattr(k)" is not needed because special chars cannot be part of a variable name,
         # but it doesn't harm.
         data["environment"] = "\n".join(['<mapEntry key=%s value=%s/>' % (quoteattr(k), quoteattr(v))
-                                         for k, v in os.environ.iteritems()])
+                                         for k, v in os.environ.iteritems()
+                                         if k not in ('MAKEOVERRIDES', 'MAKEFLAGS', 'MAKELEVEL')])
 
         data["exec"] = which(prog) or prog
         if os.path.basename(data["exec"]).lower().startswith("python"):

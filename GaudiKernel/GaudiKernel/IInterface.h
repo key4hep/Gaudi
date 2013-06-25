@@ -1,4 +1,3 @@
-// $Id: IInterface.h,v 1.14 2008/01/29 08:28:14 marcocle Exp $
 #ifndef GAUDIKERNEL_IINTERFACE_H
 #define GAUDIKERNEL_IINTERFACE_H
 

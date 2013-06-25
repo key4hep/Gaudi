@@ -22,6 +22,7 @@ LCG_compiler(gcc43 gcc 4.3.5)
 LCG_compiler(gcc46 gcc 4.6.2)
 LCG_compiler(gcc47 gcc 4.7.2)
 LCG_compiler(clang30 clang 3.0)
+LCG_compiler(clang32 clang 3.2)
 LCG_compiler(gccmax gcc 4.7.2)
 
 # Externals
