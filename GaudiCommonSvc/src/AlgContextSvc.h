@@ -10,22 +10,22 @@
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/IAlgContextSvc.h"
 #include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/Service.h"
+#include <boost/thread.hpp>
 // ============================================================================
 // Forward declarations
 // ============================================================================
 template <class TYPE> class SvcFactory;
-class IIncidentSvc ;
 // ============================================================================
 /** @class AlgContexSvc
  *  Simple implementation of interface IAlgContextSvc
  *  for Algorithm Context Service
  *  @author ATLAS Collaboration
  *  @author modified by Vanya BELYAEV ibelyaev@physics.sye.edu
+ *  @author incident listening  removed by Benedikt Hegner
  *  @date 2007-03-07 (modified)
  */
-class AlgContextSvc: public extends2<Service, IAlgContextSvc, IIncidentListener>
+class AlgContextSvc: public extends1<Service, IAlgContextSvc>
 {
 public:
   /// friend factory for instantiations
@@ -39,10 +39,7 @@ public:
   virtual IAlgorithm*       currentAlg  () const ;
   /// get the stack of executed algorithms @see IAlgContextSvc
   virtual const IAlgContextSvc::Algorithms& algorithms  () const
-  { return m_algorithms ; }
-public:
-  /// handle incident @see IIncidentListener
-  virtual void handle ( const Incident& ) ;
+  { return *m_algorithms ; }
 public:
   /// standard initialization of the service @see IService
   virtual StatusCode initialize () ;
@@ -64,11 +61,7 @@ private:
   AlgContextSvc& operator=( const AlgContextSvc& ); ///< no assignment
 private:
   // the stack of current algorithms
-  IAlgContextSvc::Algorithms m_algorithms ; ///< the stack of current algorithms
-  // pointer to Incident Service
-  IIncidentSvc*              m_inc        ; ///< pointer to Incident Service
-  // flag to perform more checking
-  bool                       m_check      ;
+  boost::thread_specific_ptr<IAlgContextSvc::Algorithms> m_algorithms; ///< the stack of current algorithms
 } ;
 
 // ============================================================================
