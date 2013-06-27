@@ -2,6 +2,8 @@
 #include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/Algorithm.h" // will be IAlgorithm if context getter promoted to interface
+#include <GaudiAlg/GaudiAlgorithm.h>
+#include <GaudiKernel/IDataManagerSvc.h>
 #include "tbb/task.h"
 
 // C++
@@ -97,16 +99,28 @@ StatusCode ForwardSchedulerSvc::initialize(){
    1) Look for handles in algo, if none
    2) Assume none are required
   */
-  if (algosDependenciesSize == 0){    
+  if (algosDependenciesSize == 0){
+    // Get the event root from the IDataManagerSvc interface of the WhiteBoard
+    SmartIF<IDataManagerSvc> dataMgrSvc (m_whiteboard);
+    std::string rootInTESName(dataMgrSvc->rootName());
+    if ("" != rootInTESName && '/'!=rootInTESName[rootInTESName.size()-1]){
+      rootInTESName = rootInTESName+"/";
+    }
+    
     for (IAlgorithm* ialgoPtr : algos){
       Algorithm* algoPtr = dynamic_cast<Algorithm*> (ialgoPtr);
+      if (nullptr == algoPtr){
+         fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
+      }
+                 
       const std::vector<MinimalDataObjectHandle*>& algoHandles(algoPtr->handles());
       std::vector<std::string> algoDependencies;
       if (!algoHandles.empty()){
+        
         info() << "Algorithm " << algoPtr->name() << " data dependencies:" << endmsg;
         for (MinimalDataObjectHandle* handlePtr : algoHandles ){
           if (handlePtr->accessType() == IDataObjectHandle::AccessType::READ){
-            const std::string& productName = handlePtr->dataProductName();
+            const std::string& productName = rootInTESName + handlePtr->dataProductName();
             info() << "  o READ Handle found for product " << productName << endmsg;
             algoDependencies.emplace_back(productName);
           }
@@ -281,7 +295,7 @@ StatusCode ForwardSchedulerSvc::pushNewEvent(EventContext* eventContext){
     }  
   
   if (m_freeSlots.load() == 0){
-    info() << "A free processing slot could not be found." << endmsg;
+    debug() << "A free processing slot could not be found." << endmsg;
     return StatusCode::FAILURE;   
     }
     
@@ -417,9 +431,7 @@ StatusCode ForwardSchedulerSvc::eventFailed(EventContext* eventContext){
 StatusCode ForwardSchedulerSvc::updateStates(int si){
 
   m_updateNeeded=true;
-  
-  info() << "ForwardSchedulerSvc::updateStates" << endmsg;
-  
+    
   // Fill a map of initial state / action using closures.
   // done to update the states w/o several if/elses
   // Posterchild for constexpr with gcc4.7 onwards!  
@@ -750,7 +762,7 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si, IA
     debug() << "Found in WB: " << new_product << endmsg;
   m_eventSlots[si].dataFlowMgr.updateDataObjectsCatalog(new_products);
 
-  info() << "Algorithm " << algo->name() << " executed. Algorithms scheduled are "
+  debug() << "Algorithm " << algo->name() << " executed. Algorithms scheduled are "
       << m_algosInFlight << endmsg;
 
   // Limit number of updates

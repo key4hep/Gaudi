@@ -31,7 +31,7 @@ DataFlowManager::DataFlowManager(algosDependenciesCollection algosDependencies){
       // Make a local alias for better readability
       auto& dependency_bits = m_algosRequirements[algoIndex];    
       for (auto& product : thisAlgoDependencies){
-        auto ret_val = m_productName_index_map.insert(std::pair<std::string, long int>("/Event/"+product,productIndex));
+        auto ret_val = m_productName_index_map.insert(std::pair<std::string, long int>(product,productIndex));
         // insert successful means product wasn't known before. So increment counter
         if (ret_val.second==true) ++productIndex;
         // in any case the return value holds the proper product index
