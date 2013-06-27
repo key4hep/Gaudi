@@ -1,6 +1,12 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-06-27 - Marco Clemencic
+ - Fixed CFHEP-78: configurables created after applyConfigurableUser()
+   Force the instantiation of all Handles properties during the call to
+   applyConfigurableUser.
+   https://sft.its.cern.ch/jira/browse/CFHEP-78
+
 ! 2013-04-09 - Hubert Degaudenzi
  - src/Lib/System.cpp: fixed cppcheck warning.
  - GaudiKernel/KeyedObject.h: idem
