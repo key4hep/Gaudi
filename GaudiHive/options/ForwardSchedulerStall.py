@@ -16,8 +16,7 @@ whiteboard   = HiveWhiteBoard("EventDataSvc",
 
 slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 
-scheduler = ForwardSchedulerSvc(MaxEventsInFlight = evtslots,
-                                MaxAlgosInFlight = algosInFlight,
+scheduler = ForwardSchedulerSvc(MaxAlgosInFlight = algosInFlight,
                                 OutputLevel=WARNING)
 
 a1 = CPUCruncher("A1", 

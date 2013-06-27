@@ -42,8 +42,7 @@ eventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 
 # We must put the full path in this deprecated expression of dependencies.
 # Using a controlflow for the output would be the way to go
-scheduler = ForwardSchedulerSvc(MaxEventsInFlight = evtslots,
-                                MaxAlgosInFlight = algoparallel,
+scheduler = ForwardSchedulerSvc(MaxAlgosInFlight = algoparallel,
                                 OutputLevel=WARNING,
                                 AlgosDependencies = [[],[product_name_full_path]])
                                 

@@ -33,7 +33,7 @@ ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* 
  m_algosInFlight(0),
  m_updateNeeded(true)
 {
-  declareProperty("MaxEventsInFlight", m_maxEventsInFlight = 1 );
+  declareProperty("MaxEventsInFlight", m_maxEventsInFlight = 0 );
   declareProperty("ThreadPoolSize", m_threadPoolSize = 1 );
   declareProperty("WhiteboardSvc", m_whiteboardSvcName = "EventDataSvc" );
   declareProperty("EventNumberBlackList", m_eventNumberBlacklist);
@@ -74,15 +74,19 @@ StatusCode ForwardSchedulerSvc::initialize(){
   if (m_maxEventsInFlight!=0){
     warning() << "Property MaxEventsInFlight was set. This works but it's deprecated. "
               << "Please migrate your code options files." << endmsg;
-    }              
-  if (m_maxEventsInFlight != (int)numberOfWBSlots){
-      warning() << "The number of events in flight (" << m_maxEventsInFlight
-      << ") differs from the slots in the whiteboard ("
-      << numberOfWBSlots << "). Setting the number of events in flight to "
-      << numberOfWBSlots << endmsg;
-      m_maxEventsInFlight = numberOfWBSlots;
-    }
-   
+
+   if (m_maxEventsInFlight != (int)numberOfWBSlots){
+         warning() << "In addition, the number of events in flight ("
+         << m_maxEventsInFlight << ") differs from the slots in the whiteboard ("
+         << numberOfWBSlots << "). Setting the number of events in flight to "
+         << numberOfWBSlots << endmsg;
+         
+      }
+  }      
+
+  // Align the two quantities
+  m_maxEventsInFlight = numberOfWBSlots;
+  
   // Set the number of free slots
   m_freeSlots=m_maxEventsInFlight; 
   
