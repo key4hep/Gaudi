@@ -19,21 +19,17 @@ EventSelector(OutputLevel=DEBUG, PrintFreq=50, FirstEvent=1,
 FileCatalog(Catalogs = [ "xmlcatalog_file:HandleWB_ROOTIO.xml" ])
 
 product_name="MyCollision"
+product_name_full_path="/Event/"+product_name
 
 loader = HiveReadAlgorithm("Loader",
                            OutputLevel=INFO,
                            NeededResources = ['ROOTIO','SOMETHINGELSE'],
                            Cardinality = 2 #framework should be able to fix this config problem
                            )
-
-writer = WriteHandleAlg ("Writer",
-                         Output="/Event/"+product_name,
-                         UseHandle=True,
-                         IsClonable=True)
                          
 reader = ReadHandleAlg ("Reader",
                          Input=product_name,
-                         IsClonable=True,
+                         Cardinality=4,
                          OutputLevel=INFO)
 
 evtslots = 5
@@ -44,14 +40,16 @@ whiteboard   = HiveWhiteBoard("EventDataSvc",
 
 eventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 
+# We must put the full path in this deprecated expression of dependencies.
+# Using a controlflow for the output would be the way to go
 scheduler = ForwardSchedulerSvc(MaxEventsInFlight = evtslots,
                                 MaxAlgosInFlight = algoparallel,
                                 OutputLevel=WARNING,
-                                AlgosDependencies = [[],[product_name]])
+                                AlgosDependencies = [[],[product_name_full_path]])
                                 
 # Application setup
 ApplicationMgr( TopAlg = [loader, reader],
-                EvtMax   = -1,
+                EvtMax   = 500,
                 HistogramPersistency = "NONE",
                 ExtSvc = [whiteboard],
                 EventLoop = eventloopmgr)

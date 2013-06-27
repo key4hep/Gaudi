@@ -18,8 +18,7 @@ slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 
 scheduler = ForwardSchedulerSvc(MaxEventsInFlight = evtslots,
                                 MaxAlgosInFlight = algosInFlight,
-                                OutputLevel=WARNING,
-                                AlgosDependencies = [[],['a1'],['a1'],['a2','a3']])
+                                OutputLevel=WARNING)
 
 a1 = CPUCruncher("A1", 
                  Outputs = ['/Event/a1'],
@@ -28,15 +27,15 @@ a1 = CPUCruncher("A1",
                  avgRuntime=.5 )
 a2 = CPUCruncher("A2", 
                  shortCalib=True,
-                 Inputs = ['/Event/a1'],
+                 Inputs = ['a1'],
                  Outputs = ['/Event/a2'])
 a3 = CPUCruncher("A3", 
                  shortCalib=True,
-                 Inputs = ['/Event/a1'],
+                 Inputs = ['a1'],
                  Outputs = ['/Event/a3UPS!']) #<=== MISTAKE!
 a4 = CPUCruncher("A4", 
                  shortCalib=True,
-                 Inputs = ['/Event/a2','/Event/a3'],
+                 Inputs = ['a2','a3'],
                  Outputs = ['/Event/a4'])
 
 for algo in [a1,a2,a3,a4]:

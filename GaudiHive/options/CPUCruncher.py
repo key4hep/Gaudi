@@ -28,7 +28,7 @@ a4 = CPUCruncher("A4",
                  Inputs = ['/Event/a2','/Event/a3'],
                  Outputs = ['/Event/a4'])
 
-ApplicationMgr( EvtMax = 50,
+ApplicationMgr( EvtMax = 10,
                 EvtSel = 'NONE',
                 ExtSvc =[whiteboard],
                 EventLoop = eventloopmgr,

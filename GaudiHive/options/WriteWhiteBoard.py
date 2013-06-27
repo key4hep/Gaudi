@@ -37,33 +37,31 @@ AlgResourcePool(OutputLevel=DEBUG)
 GaudiPersistency()
 
 product_name="MyCollision"
+product_name_full_path="/Event/"+product_name
 
 writer = WriteHandleAlg ("Writer",
                          Output="/Event/"+product_name,
                          UseHandle=True,
-                         IsClonable=True)
-                         
-reader = ReadHandleAlg ("Reader",
-                         Input=product_name,
-                         IsClonable=True)                         
+                         Cardinality=4,
+                         OutputLevel=WARNING)
 
-                         
-evtslots = 15
+evtslots = 20
 algoparallel = 10
 
 whiteboard   = HiveWhiteBoard("EventDataSvc",
                               EventSlots = evtslots)                                                                                   
 
 eventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
-                                
-scheduler = ForwardSchedulerSvc(MaxEventsInFlight = evtslots,
-                                MaxAlgosInFlight = algoparallel,
-                                OutputLevel=WARNING,
-                                AlgosDependencies = [[],[product_name]])
+
+# We must put the full path in this deprecated expression of dependencies.
+# Using a controlflow for the output would be the way to go
+scheduler = ForwardSchedulerSvc(MaxAlgosInFlight = algoparallel,
+                                OutputLevel=INFO,
+                                AlgosDependencies = [[],[product_name_full_path]])
                                 
 # Application setup
-ApplicationMgr( TopAlg = [writer, dst],
-                EvtMax   = 50,
+ApplicationMgr( TopAlg = [writer,dst],
+                EvtMax   = 500,
                 EvtSel   = "NONE", # do not use any event input
                 HistogramPersistency = "NONE",
                 ExtSvc = [whiteboard],
