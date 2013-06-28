@@ -34,7 +34,7 @@ ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* 
  m_updateNeeded(true)
 {
   declareProperty("MaxEventsInFlight", m_maxEventsInFlight = 0 );
-  declareProperty("ThreadPoolSize", m_threadPoolSize = 1 );
+  declareProperty("ThreadPoolSize", m_threadPoolSize = -1 );
   declareProperty("WhiteboardSvc", m_whiteboardSvcName = "EventDataSvc" );
   declareProperty("EventNumberBlackList", m_eventNumberBlacklist);
   // Will disappear when dependencies are properly propagated into the C++ code of the algos
