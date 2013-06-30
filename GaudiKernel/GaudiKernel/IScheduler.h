@@ -7,13 +7,15 @@
 
 // C++ include files
 #include <functional>
+#include <vector>
 
 /**@class IScheduler IScheduler.h GaudiKernel/IScheduler.h
  *
  *  General interface for algorithm scheduler.
  * 
  *  @author  Danilo Piparo
- *  @version 1.0
+ *  @author  Benedikt Hegner
+ *  @version 1.1
  */
 class GAUDI_API IScheduler: virtual public IInterface {
 public:
@@ -22,6 +24,10 @@ public:
   
   /// Make an event available to the scheduler
   virtual StatusCode pushNewEvent(EventContext* eventContext) = 0;
+
+  /// Make a list of events available to the scheduler
+  /// This method makes a bunch creation of new events atomic to the scheduler
+  virtual StatusCode pushNewEvents(std::vector<EventContext*>& eventContexts) = 0; 
     
   /// Retrieve a finished event from the scheduler
   virtual StatusCode popFinishedEvent(EventContext*& eventContext) = 0;

@@ -12,6 +12,7 @@
 // Local 
 #include "SequentialSchedulerSvc.h"
 #include "AlgResourcePool.h"
+#include "RetCodeGuard.h"
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY(SequentialSchedulerSvc)
@@ -58,27 +59,6 @@ StatusCode SequentialSchedulerSvc::finalize(){
   if (!sc.isSuccess())
     warning () << "Base class could not be finalized" << endmsg;     
   return sc;  
-}
-
-  namespace {
-  /// Helper class to set the application return code in case of early exit
-  /// (e.g. exception).
-  class RetCodeGuard {
-  public:
-    inline RetCodeGuard(const SmartIF<IProperty> &appmgr, int retcode):
-      m_appmgr(appmgr), m_retcode(retcode) {}
-    inline void ignore() {
-      m_retcode = Gaudi::ReturnCode::Success;
-    }
-    inline ~RetCodeGuard() {
-      if (UNLIKELY(Gaudi::ReturnCode::Success != m_retcode)) {
-        Gaudi::setAppReturnCode(m_appmgr, m_retcode);
-      }
-    }
-  private:
-    SmartIF<IProperty> m_appmgr;
-    int m_retcode;
-  };
 }
 
 //---------------------------------------------------------------------------  
@@ -155,6 +135,16 @@ StatusCode SequentialSchedulerSvc::pushNewEvent(EventContext* eventContext){
   
 }
 
+//---------------------------------------------------------------------------
+StatusCode SequentialSchedulerSvc::pushNewEvents(std::vector<EventContext*>& eventContexts){
+  StatusCode sc;
+  for (auto context : eventContexts){
+    sc = pushNewEvent(context);
+    if (sc != StatusCode::SUCCESS) return sc;
+  }
+  return sc;
+}
+
 //---------------------------------------------------------------------------   
 /// Blocks until an event is availble
 StatusCode SequentialSchedulerSvc::popFinishedEvent(EventContext*& eventContext){
@@ -178,4 +168,4 @@ StatusCode SequentialSchedulerSvc::tryPopFinishedEvent(EventContext*& eventConte
  */
 unsigned int SequentialSchedulerSvc::freeSlots(){return m_freeSlots;}
 
-//---------------------------------------------------------------------------  
+//---------------------------------------------------------------------------

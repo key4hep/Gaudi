@@ -84,7 +84,10 @@ public:
 
   /// Make an event available to the scheduler
   virtual StatusCode pushNewEvent(EventContext* eventContext);
-  
+
+  // Make multiple events available to the scheduler
+  virtual StatusCode pushNewEvents(std::vector<EventContext*>& eventContexts);  
+
   /// Blocks until an event is availble
   virtual StatusCode popFinishedEvent(EventContext*& eventContext);  
 

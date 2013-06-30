@@ -334,11 +334,21 @@ StatusCode ForwardSchedulerSvc::pushNewEvent(EventContext* eventContext){
 
   return StatusCode::SUCCESS;
 }
-//---------------------------------------------------------------------------
 
+//---------------------------------------------------------------------------
+StatusCode ForwardSchedulerSvc::pushNewEvents(std::vector<EventContext*>& eventContexts){
+  StatusCode sc;
+  for (auto context : eventContexts){
+    sc = pushNewEvent(context);
+    if (sc != StatusCode::SUCCESS) return sc;
+  }
+  return sc;
+}
+
+//---------------------------------------------------------------------------
 unsigned int ForwardSchedulerSvc::freeSlots(){
   return std::max(m_freeSlots.load(),0);
-  }
+}
 
 //---------------------------------------------------------------------------
 /**

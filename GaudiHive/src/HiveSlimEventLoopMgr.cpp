@@ -363,6 +363,7 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
           << " to the scheduler" << endmsg;
   
   m_incidentSvc->fireIncident(Incident(name(), IncidentType::BeginProcessing));
+
   StatusCode addEventStatus = m_schedulerSvc->pushNewEvent(evtContext);
 
   // If this fails, we need to wait for something to complete

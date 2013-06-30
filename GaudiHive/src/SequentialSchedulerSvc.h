@@ -30,7 +30,8 @@
  * entity.
  * 
  *  @author  Danilo Piparo
- *  @version 1.0
+ *  @author  Benedikt Hegner 
+ *  @version 1.1
  */
 class SequentialSchedulerSvc: public extends1<Service, IScheduler> {
 public:
@@ -48,6 +49,9 @@ public:
 
   /// Make an event available to the scheduler
   virtual StatusCode pushNewEvent(EventContext* eventContext);
+
+  // Make multiple events available to the scheduler
+  virtual StatusCode pushNewEvents(std::vector<EventContext*>& eventContexts);
   
   /// Blocks until an event is availble
   virtual StatusCode popFinishedEvent(EventContext*& eventContext);  
