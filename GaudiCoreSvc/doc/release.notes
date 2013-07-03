@@ -4,6 +4,9 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2013-07-03 - Marco Clemencic
+ - Replaced Reflex queries with TClass queries.
+
 ! 2013-04-09 - Hubert Degaudenzi
  - src/EventSelector/EventSelector.cpp: fixed cppcheck warning.
 

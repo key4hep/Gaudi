@@ -4,9 +4,12 @@
 ! Purpose     : Root based persistency
 !-----------------------------------------------------------------------------
 
+! 2013-07-03 - Marco Clemencic
+ - Replaced Reflex queries with TClass queries.
+
 !========================= RootCnv v1r19 2012-11-14 =========================
 ! 2012-11-14 - Markus Frank
- - Add incident "CorruptedInputFile" if the data or reference branch 
+ - Add incident "CorruptedInputFile" if the data or reference branch
    of a given file cannot be read (aka ROOT returns -1 on read).
 
 ! 2012-11-07 - Marco Clemencic

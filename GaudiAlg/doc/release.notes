@@ -1,6 +1,9 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2013-07-03 - Marco Clemencic
+ - Replaced Reflex queries with TClass queries.
+
 =============================== GaudiAlg v14r5 ===============================
 ! 2013-04-29 - Chris Jones
  - Patch #5641: Suppress GaudiAlg HbookName.h clang warnings

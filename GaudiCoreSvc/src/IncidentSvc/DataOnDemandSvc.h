@@ -19,9 +19,9 @@
 #include "GaudiKernel/IDODAlgMapper.h"
 #include "GaudiKernel/IDODNodeMapper.h"
 // ============================================================================
-// Reflex
+// ROOT TClass
 // ============================================================================
-#include "Reflex/Reflex.h"
+#include "TClass.h"
 // ============================================================================
 // Forward declarations
 // ============================================================================
@@ -94,7 +94,7 @@ public:
   // ==========================================================================
   // Typedefs
   typedef std::vector<std::string> Setup;
-  typedef ROOT::Reflex::Type       ClassH;
+  typedef TClass*                  ClassH;
   // ==========================================================================
   /** @struct Protection
    *  Helper class of the DataOnDemandSvc
