@@ -53,7 +53,6 @@
 
 #include "Reflex/PluginService.h"
 #include "Reflex/Reflex.h"
-#include "Reflex/SharedLibrary.h"
 
 #include "RVersion.h"
 
@@ -65,16 +64,13 @@
 #include <set>
 #include <vector>
 
-
 #include "DsoUtils.h"
-
-
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
 using namespace std;
-using namespace ROOT::Reflex;
+using ROOT::Reflex::PluginService;
 
 // useful typedefs
 typedef std::vector<std::string> Strings_t;
@@ -360,9 +356,12 @@ int main ( int argc, char** argv )
     for (Strings_t::const_iterator lLib=lLib_list.begin();
 	 lLib != lLib_list.end();
 	 ++lLib) {
-      // load done through ROOT::Reflex helper class
-      SharedLibrary tmplib(*lLib) ;
-      tmplib.Load() ;
+      // load done through Gaudi helper class
+      System::ImageHandle tmp; // we ignore the library handle
+      unsigned long err = System::loadDynamicLib(*lLib, &tmp);
+      if (err != 1) {
+        cout << "WARNING: failed to load: "<< *lLib << endl;
+      }
     }
   }
 
@@ -372,7 +371,7 @@ int main ( int argc, char** argv )
       fs::create_directory(out);
     }
     catch ( fs::filesystem_error &err ) {
-      cout << "ERR0R: error creating directory: "<< err.what() << endl;
+      cout << "ERROR: error creating directory: "<< err.what() << endl;
       return EXIT_FAILURE;
     }
   }
@@ -415,16 +414,16 @@ int main ( int argc, char** argv )
 
 /// Given a Reflex::Member object, return the id for the configurable (name or id, if it is a string).
 /// non-string ids are used for the persistency (DataObjects)
-inline std::string getId(const Member & m) {
+inline std::string getId(const ROOT::Reflex::Member & m) {
       return (m.Properties().HasProperty("id") && (m.Properties().PropertyValue("id").TypeInfo() == typeid(std::string))) ?
              m.Properties().PropertyAsString("id") :
              m.Properties().PropertyAsString("name") ;
 }
 
 template <class T>
-IProperty *makeInstance(const Member &member, const vector<void*> &args)
+IProperty *makeInstance(const ROOT::Reflex::Member &member, const vector<void*> &args)
 {
-  Object dummy;
+  ROOT::Reflex::Object dummy;
   T* obj;
 #if ROOT_VERSION_CODE < ROOT_VERSION(5,21,6)
   obj = static_cast<T*>(member.Invoke(dummy,args).Address());
@@ -454,7 +453,7 @@ int configGenerator::genConfig( const Strings_t& libs )
   }
 
   //--- Iterate over component factories --------------------------------------
-  Scope factories = Scope::ByName(PLUGINSVC_FACTORY_NS);
+  ROOT::Reflex::Scope factories = ROOT::Reflex::Scope::ByName(PLUGINSVC_FACTORY_NS);
   if ( !factories ) {
     cout << "ERROR: No PluginSvc factory namespace could be found" << endl;
     return EXIT_FAILURE;
@@ -480,7 +479,7 @@ int configGenerator::genConfig( const Strings_t& libs )
     // alive components, so we can extract our signal later on
     set<string> bkgNames;
     if ( !isGaudiSvc ) {
-      for ( Member_Iterator it = factories.FunctionMember_Begin();
+      for ( ROOT::Reflex::Member_Iterator it = factories.FunctionMember_Begin();
             it != factories.FunctionMember_End(); ++it ) {
         string ident = getId(*it);
         if ( PluginService::Debug() > 0 ) {
@@ -500,7 +499,7 @@ int configGenerator::genConfig( const Strings_t& libs )
       continue;
     }
 
-    for ( Member_Iterator it = factories.FunctionMember_Begin();
+    for ( ROOT::Reflex::Member_Iterator it = factories.FunctionMember_Begin();
           it != factories.FunctionMember_End();
           ++it ) {
       const string ident = getId(*it);

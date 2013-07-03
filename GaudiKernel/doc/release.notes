@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-07-03 - Marco Clemencic
+ - genconf.cpp: replaces Reflex::SharedLibrary::Load with the equivalent Gaudi
+   function.
+
 ! 2013-04-09 - Hubert Degaudenzi
  - src/Lib/System.cpp: fixed cppcheck warning.
  - GaudiKernel/KeyedObject.h: idem
