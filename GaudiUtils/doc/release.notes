@@ -1,6 +1,9 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2013-07-03 - Marco Clemencic
+ - Minor changes in a comment.
+
 ============================== GaudiUtils v4r5 ===============================
 ! 2013-05-28 - Marco Clemencic
  - Modified StalledEventMonitor to be able to print a stack trace of the stalled
