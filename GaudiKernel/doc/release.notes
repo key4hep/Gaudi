@@ -4,6 +4,7 @@ Package manager : Marco Clemencic
 ! 2013-07-03 - Marco Clemencic
  - genconf.cpp: replaces Reflex::SharedLibrary::Load with the equivalent Gaudi
    function.
+ - Added test for System::currentTime.
 
 ! 2013-04-09 - Hubert Degaudenzi
  - src/Lib/System.cpp: fixed cppcheck warning.
