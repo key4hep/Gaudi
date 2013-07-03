@@ -1,6 +1,9 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2013-07-03 - Marco Clemencic
+ - Removed explicit link against Reflex from cmt/requirements.
+
 ! 2013-06-13 - Marco Clemencic
  - Replaced PyCintex with ROOT.
    We still try to import PyCintex because it's the only way to enable Cintex

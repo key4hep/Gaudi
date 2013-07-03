@@ -29,9 +29,9 @@ apply_pattern ld_library_path
 #===============================================================
 private
 
-macro_append ROOT_linkopts " -lHist -lReflex -lMatrix -lGraf" \
-              target-winxp " libHist.lib libReflex.lib libMatrix.lib libGraf.lib" \
-             target-mac104 " -lHist -lReflex -lMatrix -lGraf"
+macro_append ROOT_linkopts " -lHist -lMatrix -lGraf" \
+              target-winxp " libHist.lib libMatrix.lib libGraf.lib" \
+             target-mac104 " -lHist -lMatrix -lGraf"
 macro_append ROOT_linkopts     "" \
     ROOT_GE_5_15&target-mac104 " -lNet"
 

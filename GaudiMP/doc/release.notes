@@ -1,6 +1,9 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+! 2013-07-03 - Marco Clemencic
+ - Removed explicit link against Reflex from cmt/requirements.
+
 ================================ GaudiMP v1r7 ================================
 ! 2013-01-15 - Nathalie Rauschmayr
  - Patch #5593: Implemented late forking for GaudiMP

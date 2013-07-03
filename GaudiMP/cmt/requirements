@@ -7,7 +7,6 @@ use GaudiKernel        *
 use GaudiPython        * -no_auto_imports
 
 use Python             *  LCG_Interfaces -no_auto_imports
-use Reflex             *  LCG_Interfaces -no_auto_imports
 use ROOT               *  LCG_Interfaces -no_auto_imports
 
 apply_pattern install_more_includes more=GaudiMP
@@ -16,10 +15,10 @@ apply_pattern install_scripts
 
 
 #-------Applications and Libraries-----------------------------------------------
-library GaudiMPLib   Lib/*.cpp      -import=Python -import=Reflex -import=ROOT -no_static
+library GaudiMPLib   Lib/*.cpp      -import=Python -import=ROOT -no_static
 apply_pattern  linker_library    library=GaudiMPLib
 
-library GaudiMP   component/*.cpp      -import=Python -import=Reflex -import=ROOT -no_static
+library GaudiMP   component/*.cpp      -import=Python -import=ROOT -no_static
 apply_pattern  component_library library=GaudiMP
 
 
@@ -28,7 +27,7 @@ apply_pattern reflex_dictionary dictionary=GaudiMP \
                                 headerfiles=$(GAUDIMPROOT)/dict/gaudimp_dict.h \
                                 selectionfile=../dict/selection.xml \
                                 options="--no_templatetypedefs -I$(Python_inc)" \
-                                imports="Python -import=Reflex -import=ROOT"
+                                imports="Python -import=ROOT"
 
 #--------------------------------------------------------------------------------
 private

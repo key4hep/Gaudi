@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2013-07-03 - Marco Clemencic
+ - Removed explicit link against Reflex from cmt/requirements.
+
 !2013-04-09 - Hubert Degaudenzi
  - src/THistSvc/THistSvc.cpp: fixed cppcheck warning.
 
