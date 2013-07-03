@@ -120,7 +120,7 @@ StatusCode RootEvtSelector::initialize()    {
   if ( !status.isSuccess() ) {
     return error("Error initializing base class Service!");
   }
-  
+
   SmartIF<IPersistencySvc> ipers(serviceLocator()->service(m_persName));
   if( !ipers.isValid() )   {
     return error("Unable to locate IPersistencySvc interface of "+m_persName);
@@ -277,7 +277,7 @@ RootEvtSelector::createAddress(const Context& ctxt, IOpaqueAddress*& pAddr) cons
       RootEvtSelectorContext::Files::const_iterator fileit = pctxt->fileIterator();
       if ( fileit != pctxt->files().end() ) {
         const string par[2] = {pctxt->fid(), m_rootName};
-        const unsigned long ipar[2] = {0,ent};
+        const unsigned long ipar[2] = {0, static_cast<unsigned long>(ent)};
         return m_dbMgr->createAddress(m_dbMgr->repSvcType(),m_rootCLID,&par[0],&ipar[0],pAddr);
       }
     }

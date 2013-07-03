@@ -633,7 +633,7 @@ StatusCode RootNTupleCnv::createRep(DataObject* pObj, IOpaqueAddress*& pAddr)  {
         status = m_dbMgr->commitOutput(path, true);
         if ( status.isSuccess() ) {
           string spar[]   = { path, cntName};
-          unsigned long ipar[] = { (unsigned long)con, ~0x0 };
+          unsigned long ipar[] = { (unsigned long)con, (unsigned long)~0x0 };
           status = m_dbMgr->createAddress(repSvcType(),pObj->clID(),spar,ipar,pAddr);
           if ( status.isSuccess() ) {
             RootAddress* rpA = dynamic_cast<RootAddress*>(pAddr);
