@@ -6,6 +6,7 @@
 
 ! 2013-07-03 - Marco Clemencic
  - Replaced Reflex queries with TClass queries.
+ - Replaced obsolete 'gROOT->GetClass' with 'TClass::GetClass'.
 
 !========================= RootCnv v1r19 2012-11-14 =========================
 ! 2012-11-14 - Markus Frank

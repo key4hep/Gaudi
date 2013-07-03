@@ -530,13 +530,13 @@ StatusCode RootNTupleCnv::createRep(DataObject* pObj, IOpaqueAddress*& pAddr)  {
           if ( it->length() == 1 )  {
             desc = System::typeinfoName(typeid(RootRef));
             os << 0 << ';' << 0 << ';';
-            cl = gROOT->GetClass(desc.c_str(),kTRUE);
+            cl = TClass::GetClass(desc.c_str(),kTRUE);
           }
           break;
         case DataTypeInfo::POINTER:
           if ( it->length() == 1 )  {
             os << 0 << ';' << 0 << ';';
-            cl = gROOT->GetClass(it->typeID(), kTRUE);
+            cl = TClass::GetClass(it->typeID(), kTRUE);
           }
           break;
         case DataTypeInfo::UCHAR:
