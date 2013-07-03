@@ -4,6 +4,7 @@ Package manager : Marco Clemencic
 ! 2013-07-03 - Marco Clemencic
  - Minor changes in a comment.
  - Removed explicit link against Reflex from cmt/requirements.
+ - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
 
 ============================== GaudiUtils v4r5 ===============================
 ! 2013-05-28 - Marco Clemencic

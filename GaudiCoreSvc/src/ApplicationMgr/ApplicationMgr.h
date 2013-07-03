@@ -129,7 +129,7 @@ public:
   void  multiThreadSvcNameListHandler( Property& theProp );
   StatusCode decodeDllNameList       ( );
   void       dllNameListHandler      ( Property& theProp );
-  void       reflexDebugPropertyHandler ( Property& theProp );
+  void       pluginDebugPropertyHandler ( Property& theProp );
   void       initLoopCheckHndlr      ( Property& );
   //@}
 
@@ -250,7 +250,7 @@ protected:
   std::string          m_appVersion;        ///< The version of the application
   bool                 m_actHistory;        ///< Activate HistorySvc
   bool                 m_codeCheck;         ///< Activate StatusCode checking
-  IntegerProperty      m_reflexDebugLevel;  ///< Debug level for the reflex plugin system
+  IntegerProperty      m_pluginDebugLevel;  ///< Debug level for the plugin system
 
   StringArrayProperty  m_createSvcNameList;
 

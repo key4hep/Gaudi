@@ -1,14 +1,13 @@
 #include "GaudiKernel/DeclareFactoryEntries.h"
 #include "GaudiKernel/strcasecmp.h"
 #include "GaudiKernel/MsgStream.h"
-#include "Reflex/PluginService.h"
+#include "GaudiKernel/PluginService.h"
 #include "MultiFileCatalog.h"
 #include <stdexcept>
 #include <algorithm>
 
 namespace Gaudi { std::string createGuidAsString(); }
 
-using ROOT::Reflex::PluginService;
 using namespace Gaudi;
 using namespace std;
 DECLARE_NAMESPACE_SERVICE_FACTORY(Gaudi,MultiFileCatalog)

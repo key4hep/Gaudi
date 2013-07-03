@@ -16,7 +16,7 @@
 /// needed when no algorithm is found or could be returned
 static SmartIF<IAlgorithm> no_algorithm;
 
-using ROOT::Reflex::PluginService;
+using Gaudi::PluginService;
 
 // constructor
 AlgorithmManager::AlgorithmManager(IInterface* application):
@@ -94,7 +94,7 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype,
   if (! err.empty()) {
     this->error() << err << endmsg;
   }
-  this->error() << "More information may be available by setting the global jobOpt \"ReflexPluginDebugLevel\" to 1" << endmsg;
+  this->error() << "More information may be available by setting the global jobOpt \"PluginDebugLevel\" to 1" << endmsg;
 
   return StatusCode::FAILURE;
 }

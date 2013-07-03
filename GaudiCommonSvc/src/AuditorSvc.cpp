@@ -14,7 +14,7 @@
 //  instances of this service
 DECLARE_SERVICE_FACTORY(AuditorSvc)
 
-using ROOT::Reflex::PluginService;
+using Gaudi::PluginService;
 //
 // ClassName:   AuditorSvc
 //

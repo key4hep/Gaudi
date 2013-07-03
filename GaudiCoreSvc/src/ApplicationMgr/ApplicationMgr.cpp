@@ -127,7 +127,7 @@ ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
       m_propertiesPrint = false,
       "Flag to activate the printout of properties" );
 
-  m_propertyMgr->declareProperty("ReflexPluginDebugLevel", m_reflexDebugLevel = 0 );
+  m_propertyMgr->declareProperty("PluginDebugLevel", m_pluginDebugLevel = 0 );
 
   m_propertyMgr->declareProperty("StopOnSignal", m_stopOnSignal = false,
       "Flag to enable/disable the signal handler that schedule a stop of the event loop");
@@ -144,7 +144,7 @@ ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
   m_topAlgNameList.declareUpdateHandler(&ApplicationMgr::evtLoopPropertyHandler, this);
   m_outStreamNameList.declareUpdateHandler(&ApplicationMgr::evtLoopPropertyHandler, this);
   m_outStreamType.declareUpdateHandler(&ApplicationMgr::evtLoopPropertyHandler, this);
-  m_reflexDebugLevel.declareUpdateHandler(&ApplicationMgr::reflexDebugPropertyHandler, this);
+  m_pluginDebugLevel.declareUpdateHandler(&ApplicationMgr::pluginDebugPropertyHandler, this);
   m_svcMapping.push_back("EvtDataSvc/EventDataSvc");
   m_svcMapping.push_back("DetDataSvc/DetectorDataSvc");
   m_svcMapping.push_back("HistogramSvc/HistogramDataSvc");
@@ -1286,21 +1286,21 @@ StatusCode ApplicationMgr::decodeDllNameList() {
 }
 
 //============================================================================
-// Reflex debug level handler
+// Plugin debug level handler
 //============================================================================
-void ApplicationMgr::reflexDebugPropertyHandler( Property& )
+void ApplicationMgr::pluginDebugPropertyHandler( Property& )
 {
-  // Setup debug level for Reflex plugin system
+  // Setup debug level for the plugin system
   MsgStream log (m_messageSvc, name());
   log << MSG::INFO
-      << "Updating ROOT::Reflex::PluginService::SetDebug(level) to level="
-      << (int)m_reflexDebugLevel
+      << "Updating Gaudi::PluginService::SetDebug(level) to level="
+      << (int)m_pluginDebugLevel
       << endmsg;
-  ROOT::Reflex::PluginService::SetDebug(m_reflexDebugLevel);
+  Gaudi::PluginService::SetDebug(m_pluginDebugLevel);
 }
 
 //============================================================================
-// Reflex debug level handler
+// Init loop check handler
 //============================================================================
 void ApplicationMgr::initLoopCheckHndlr(Property&) {
   svcManager()->setLoopCheckEnabled(m_loopCheck);

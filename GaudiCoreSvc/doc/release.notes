@@ -8,6 +8,9 @@
  - Replaced Reflex queries with TClass queries.
  - Changed cmt/requirements to link against ROOT libraries (needed by the
    replacement of Reflex).
+ - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
+ - Renamed the ApplicationMgr property ReflexPluginDebugLevel to
+   PluginDebugLevel.
 
 ! 2013-04-09 - Hubert Degaudenzi
  - src/EventSelector/EventSelector.cpp: fixed cppcheck warning.

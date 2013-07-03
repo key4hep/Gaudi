@@ -465,7 +465,7 @@ public:
           return status;
         }
         else if ( m_selectorName != "" )   {
-          SmartIF<ISelectStatement> stmt(ROOT::Reflex::PluginService::Create<IInterface*>(m_selectorName,serviceLocator()));
+          SmartIF<ISelectStatement> stmt(Gaudi::PluginService::Create<IInterface*>(m_selectorName,serviceLocator()));
           if ( stmt.isValid( ) )    {
             if ( m_criteria.length() > 0 ) stmt->setCriteria(m_criteria);
             nt->attachSelector(stmt);

@@ -156,7 +156,7 @@ StatusCode DataStreamTool::initializeStream(EventSelectorDataStream* s)   {
 
 // Create (sub-) Event selector service
 StatusCode DataStreamTool::createSelector(const std::string& nam, const std::string& typ, IEvtSelector*& sel) {
-  IService* isvc = ROOT::Reflex::PluginService::Create<IService*>(typ, nam, serviceLocator());
+  IService* isvc = Gaudi::PluginService::Create<IService*>(typ, nam, serviceLocator());
   if ( isvc ) {
     StatusCode status = isvc->queryInterface(IEvtSelector::interfaceID(), (void**)&sel);
     if ( status.isSuccess() ) {

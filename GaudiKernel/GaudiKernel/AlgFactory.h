@@ -3,7 +3,7 @@
 #define GAUDIKERNEL_ALGFACTORY_H
 
 #include "GaudiKernel/Kernel.h"
-#include "Reflex/PluginService.h"
+#include "GaudiKernel/PluginService.h"
 #include "RVersion.h"
 
 // The following is needed to be backward compatible with the old factories of Gaudi. Otherwise the components

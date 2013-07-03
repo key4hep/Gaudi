@@ -2,7 +2,7 @@
 #ifndef GAUDIKERNEL_DATAOBJECTFACTORY_H
 #define GAUDIKERNEL_DATAOBJECTFACTORY_H
 
-#include "Reflex/PluginService.h"
+#include "GaudiKernel/PluginService.h"
 // Macros to declare component factories
 #define DECLARE_OBJECT_FACTORY(x)              PLUGINSVC_FACTORY(x,IInterface*(IInterface*))
 #define DECLARE_NAMESPACE_OBJECT_FACTORY(n,x)  using n::x; PLUGINSVC_FACTORY(x,IInterface*(IInterface*))

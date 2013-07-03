@@ -27,7 +27,7 @@
 //  instances of this service
 DECLARE_SERVICE_FACTORY(ToolSvc)
 
-using ROOT::Reflex::PluginService;
+using Gaudi::PluginService;
 namespace bl = boost::lambda;
 
 //------------------------------------------------------------------------------

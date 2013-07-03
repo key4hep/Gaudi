@@ -17,7 +17,7 @@
 #define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
 
-using ROOT::Reflex::PluginService;
+using Gaudi::PluginService;
 
 /// needed when no service is found or could be returned
 static SmartIF<IService> no_service;

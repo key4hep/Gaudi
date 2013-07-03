@@ -28,7 +28,7 @@
 #include "RndmGen.h"
 #include "RndmGenSvc.h"
 
-using ROOT::Reflex::PluginService;
+using Gaudi::PluginService;
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service

@@ -3,6 +3,7 @@ Package manager : Marco Clemencic
 
 ! 2013-07-03 - Marco Clemencic
  - Removed explicit link against Reflex from cmt/requirements.
+ - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
 
 !2013-04-09 - Hubert Degaudenzi
  - src/THistSvc/THistSvc.cpp: fixed cppcheck warning.

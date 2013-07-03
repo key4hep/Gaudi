@@ -11,7 +11,7 @@
 #include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/ConversionSvc.h"
 
-using ROOT::Reflex::PluginService;
+using Gaudi::PluginService;
 
 enum CnvSvcAction   {
   CREATE_OBJ,

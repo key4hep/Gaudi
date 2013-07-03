@@ -3,6 +3,7 @@ Package manager : Marco Clemencic
 
 ! 2013-07-03 - Marco Clemencic
  - Removed explicit link against Reflex from cmt/requirements.
+ - Removed references to Reflex from comments.
 
 ! 2013-06-13 - Marco Clemencic
  - Replaced PyCintex with ROOT.

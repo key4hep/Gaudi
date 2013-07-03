@@ -3,7 +3,7 @@
 #define GAUDIKERNEL_CNVFACTORY_H
 
 #include "GaudiKernel/Kernel.h"
-#include "Reflex/PluginService.h"
+#include "GaudiKernel/PluginService.h"
 #include "GaudiKernel/ClassID.h"
 #include "RVersion.h"
 

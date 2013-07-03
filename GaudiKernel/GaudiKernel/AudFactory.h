@@ -3,7 +3,7 @@
 #define GAUDIKERNEL_AUDFACTORY_H
 
 #include "GaudiKernel/Kernel.h"
-#include "Reflex/PluginService.h"
+#include "GaudiKernel/PluginService.h"
 
 #define DECLARE_AUDITOR(x)  /*dummy*/
 #define DECLARE_NAMESPACE_AUDITOR(n,x)  /*dummy*/

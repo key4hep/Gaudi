@@ -12,8 +12,8 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IClassManager.h"
 
-#include "Reflex/PluginService.h"
-using ROOT::Reflex::PluginService;
+#include "GaudiKernel/PluginService.h"
+using Gaudi::PluginService;
 
 
 namespace Gaudi

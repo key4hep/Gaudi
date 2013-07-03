@@ -51,7 +51,8 @@
 
 #include "GaudiKernel/Time.h"
 
-#include "Reflex/PluginService.h"
+#include "GaudiKernel/PluginService.h"
+
 #include "Reflex/Reflex.h"
 
 #include "RVersion.h"
@@ -70,7 +71,7 @@ namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
 using namespace std;
-using ROOT::Reflex::PluginService;
+using Gaudi::PluginService;
 
 // useful typedefs
 typedef std::vector<std::string> Strings_t;

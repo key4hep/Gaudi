@@ -6,6 +6,7 @@
 
 ! 2013-07-03 - Marco Clemencic
  - Clean up in the cmt/requirements.
+ - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
 
 ============================ GaudiCommonSvc v1r5 =============================
 ! 2013-04-16 - Marco Clemencic

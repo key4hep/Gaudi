@@ -13,7 +13,7 @@
 
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Service.h"
-#include "Reflex/PluginService.h"
+#include "GaudiKernel/PluginService.h"
 
 #include "XMLFileCatalog.h"
 

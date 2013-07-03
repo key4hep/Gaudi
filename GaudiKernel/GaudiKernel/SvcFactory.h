@@ -2,7 +2,7 @@
 #ifndef KERNEL_SVCFACTORY_H
 #define KERNEL_SVCFACTORY_H
 
-#include "Reflex/PluginService.h"
+#include "GaudiKernel/PluginService.h"
 #include "RVersion.h"
 
 // The following is needed to be backward compatible with the old factories of Gaudi. Otherwise the components

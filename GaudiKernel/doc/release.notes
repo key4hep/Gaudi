@@ -5,6 +5,9 @@ Package manager : Marco Clemencic
  - genconf.cpp: replaces Reflex::SharedLibrary::Load with the equivalent Gaudi
    function.
  - Added test for System::currentTime.
+ - Added a GaudiKernel/PluginService.h to hide the technical implementation of
+   the plugin service for the migration to ROOT 6.
+ - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
 
 ! 2013-04-09 - Hubert Degaudenzi
  - src/Lib/System.cpp: fixed cppcheck warning.
