@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-07-03 - Marco Clemencic
+ - Added test for System::currentTime.
+
 ! 2013-06-27 - Marco Clemencic
  - Fixed CFHEP-78: configurables created after applyConfigurableUser()
    Force the instantiation of all Handles properties during the call to

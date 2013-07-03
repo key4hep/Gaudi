@@ -7,6 +7,7 @@
 
 #include "GaudiKernel/Timing.h"
 #include "GaudiKernel/Sleep.h"
+#include <math.h>
 
 // from SPI version of the testdriver
 #include <cppunit/extensions/TestFactoryRegistry.h>
@@ -66,6 +67,20 @@ namespace GaudiKernelTest {
       CPPUNIT_ASSERT_EQUAL( System::adjustTime<System::Year    >(t),                  39LL );
       CPPUNIT_ASSERT_EQUAL( System::adjustTime<System::Native  >(t),   12345678901234560LL );
 
+    }
+
+    void test_currentTime() {
+      long long now = System::currentTime(System::microSec);
+      CPPUNIT_ASSERT(now); // non-zero
+
+      Gaudi::Sleep(1); // wait a wee bit
+
+      long long later = System::currentTime(System::microSec);
+      CPPUNIT_ASSERT(later); // non-zero
+
+      CPPUNIT_ASSERT(later > now);
+      float seconds = float(later-now)/1000000;
+      CPPUNIT_ASSERT(fabs(seconds - 1.f) < 0.01);
     }
 
     void test_ProcessTime() {
