@@ -4,6 +4,13 @@
 ! Purpose     : Root based persistency
 !-----------------------------------------------------------------------------
 
+!========================= RootCnv v1r20 2013-05-23 =========================
+! 2013-04-25 - Markus Frank
+ - Fix compiler warnings for gcc47
+
+! 2012-11-22 - Markus Frank
+ - Add event extractor
+
 !========================= RootCnv v1r19 2012-11-14 =========================
 ! 2012-11-14 - Markus Frank
  - Add incident "CorruptedInputFile" if the data or reference branch 
