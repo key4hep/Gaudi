@@ -1,6 +1,20 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-07-03 - Marco Clemencic
+ - Added test for System::currentTime.
+
+! 2013-06-27 - Marco Clemencic
+ - Fixed CFHEP-78: configurables created after applyConfigurableUser()
+   Force the instantiation of all Handles properties during the call to
+   applyConfigurableUser.
+   https://sft.its.cern.ch/jira/browse/CFHEP-78
+
+! 2013-04-09 - Hubert Degaudenzi
+ - src/Lib/System.cpp: fixed cppcheck warning.
+ - GaudiKernel/KeyedObject.h: idem
+ - GaudiKernel/ServiceHandle.h: idem
+
 ============================= GaudiKernel v28r7 ==============================
 ! 2013-04-25 - Marco Clemencic
  - Added virtual destructors for IConverter and IConversionSvc to fix issue
@@ -4002,4 +4016,3 @@ Improvements
   Changed to support two or more conversion services. This was needed to
   support the Root conversion service.
   Added classes OutputStream, OutputStreamAgent
-

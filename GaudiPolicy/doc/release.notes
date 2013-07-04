@@ -1,6 +1,11 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-03-27 - Hubert Degaudenzi
+ - Modified createProjVersHeader.py to understand only the LHCb version
+   style(vXrY[pZ]) , the ATLAS version style (bla-X-Y[-Z]) and the plain
+   version style (X.Y[.Z])
+
 ! 2013-06-20 - Marco Clemencic
  - Use the special name lcg-<compiler>-<version> for Clang too (already done
    when building with CMake).

@@ -105,6 +105,7 @@ EventSelector::firstOfNextStream(bool shutDown, EvtSelectorContext& iter) const 
 
   if ( status.isSuccess() )   {
 
+    if(s!=NULL) {
     if ( !s->isInitialized() )    {
       EventSelector* thisPtr = const_cast<EventSelector*>(this);
       status = thisPtr->m_streamtool->initializeStream(const_cast<EventSelectorDataStream*>(s));
@@ -127,7 +128,6 @@ EventSelector::firstOfNextStream(bool shutDown, EvtSelectorContext& iter) const 
         }
       }
     }
-    if(s!=NULL) {
       m_incidentSvc->fireIncident(Incident(s->dbName(),IncidentType::FailInputFile));
     }
   }
