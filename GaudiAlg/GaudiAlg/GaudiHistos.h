@@ -2707,6 +2707,8 @@ public: // trivial & non-trivial accessors
   std::string histoPath () const;
   /// print histograms at finalization ?
   inline bool histosPrint () const  { return m_histosPrint ; }
+  /// print histogram counters at finalization ?
+  inline bool histoCountersPrint () const  { return m_histoCountersPrint ; }
   /// Use old style sequencial numerical automatically assigned IDs ?
   inline bool useNumericAutoIDs() const { return m_useNumericAutoIDs; }
   // ==========================================================================
@@ -3103,6 +3105,8 @@ private:
   std::string m_histoDir      ;
   /// print histograms at finalization
   bool        m_histosPrint   ;
+  /// print histogram counters at finalization
+  bool        m_histoCountersPrint   ;
   /// Flag to turn on/off the registration of histograms to the Monitoring Service
   bool        m_declareMoniHists;
   // ==========================================================================

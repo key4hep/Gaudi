@@ -1,5 +1,5 @@
-# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/ROOT_IO/ExtCollWrite.py'
-# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/ROOT_IO/ExtCollWrite.py'
+# --> Including file '/afs/cern.ch/work/c/cattanem/private/cmtuser/Gaudi_v23r8/GaudiExamples/options/ROOT_IO/ExtCollWrite.py'
+# <-- End of file '/afs/cern.ch/work/c/cattanem/private/cmtuser/Gaudi_v23r8/GaudiExamples/options/ROOT_IO/ExtCollWrite.py'
 # applying configuration of GaudiPersistency
 # /***** User GaudiPersistency/GaudiPersistency ******************************************************
 # |-<no properties>
@@ -26,8 +26,8 @@
  'ToolSvc.SequencerTimerTool': {'OutputLevel': 4}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r1)
-                                          running on lxplus445.cern.ch on Thu Jun 28 15:31:53 2012
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r4)
+                                          running on lxbuild163.cern.ch on Thu Jul  4 15:05:45 2013
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EvtTupleSvc          INFO Added stream file:PFN:ROOT_IO.etags as EXTEVT
@@ -35,7 +35,7 @@ EventAlgs            INFO Member list: Gaudi::Examples::ExtendedEvtCol/Fill
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
-Fill              SUCCESS List of ALL properties of Gaudi::Examples::ExtendedEvtCol/Fill  #properties = 61
+Fill              SUCCESS List of ALL properties of Gaudi::Examples::ExtendedEvtCol/Fill  #properties = 62
 Fill              SUCCESS Property ['Name': Value] =  'Tracks':MyTracks
 Fill              SUCCESS Property ['Name': Value] =  'EvtColDir':Fill
 Fill              SUCCESS Property ['Name': Value] =  'EvtColTopDir':
@@ -63,6 +63,7 @@ Fill              SUCCESS Property ['Name': Value] =  'HistoTopDir':
 Fill              SUCCESS Property ['Name': Value] =  'HistoOffSet':0
 Fill              SUCCESS Property ['Name': Value] =  'HistoSplitDir':False
 Fill              SUCCESS Property ['Name': Value] =  'HistoCheckForNaN':True
+Fill              SUCCESS Property ['Name': Value] =  'HistoCountersPrint':True
 Fill              SUCCESS Property ['Name': Value] =  'HistoPrint':False
 Fill              SUCCESS Property ['Name': Value] =  'HistoProduce':True
 Fill              SUCCESS Property ['Name': Value] =  'RequireObjects':[  ]
@@ -104,7 +105,7 @@ ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 FileRecordPersi...   INFO Added successfully Conversion service:RootCnvSvc
 EventSelector     SUCCESS Reading Event record 1. Record number within stream 1: 1
-IODataManager        INFO Referring to dataset ROOT_IO.etags by its file ID:582004A0-25C1-E111-B61D-003048F0E2C4
+IODataManager        INFO Referring to dataset ROOT_IO.etags by its file ID:F48BD270-AAE4-E211-92D8-003048C9CD62
 Gaudi::RootData...   INFO Recreate Database file:PFN:ROOT_IO.etags as /EXTEVT
 EventSelector     SUCCESS Reading Event record 101. Record number within stream 1: 101
 EventSelector     SUCCESS Reading Event record 201. Record number within stream 1: 201
@@ -132,11 +133,11 @@ Fill              SUCCESS Booked 0 N-Tuples and 1 Event Tag Collections
 Fill              SUCCESS List of booked Event Tag Collections in directory "EXTEVT/Fill"
 Fill              SUCCESS  ID=MyCOL1        Title="Trivial Event Tag Collection"            #items=8  {Address,Ntrack,TrkMom[1]/V,px[1]/V,py[1]/V,pz[1]/V,Energy,Track} Items:{ 'Address' : 'IOpaqueAddress*' , 'Energy' : 'D' , 'Ntrack' : 'I' , 'Track' : 'Gaudi::Examples::MyTrack*' , 'TrkMom' : 'FArray' , 'px' : 'FArray' , 'py' : 'FArray' , 'pz' : 'FArray' }
 EventLoopMgr         INFO Histograms converted successfully according to request.
-RootCnvSvc           INFO Disconnected data IO:70FB6F8C-25C1-E111-BD32-003048F0E2C4 [ROOTIO.dst]
-RootCnvSvc           INFO Disconnected data IO:DA81CF8C-25C1-E111-BD32-003048F0E2C4 [ROOTIO.mdst]
+RootCnvSvc           INFO Disconnected data IO:4E7F7A58-AAE4-E211-BBA1-003048C9CD62 [ROOTIO.dst]
+RootCnvSvc           INFO Disconnected data IO:98769D58-AAE4-E211-BBA1-003048C9CD62 [ROOTIO.mdst]
 ToolSvc              INFO Removing all tools created by ToolSvc
 EvtTupleSvc          INFO NTuples saved successfully
-EvtTupleSvc.EXTEVT   INFO Disconnected data IO:582004A0-25C1-E111-B61D-003048F0E2C4 [ROOT_IO.etags]
+EvtTupleSvc.EXTEVT   INFO Disconnected data IO:F48BD270-AAE4-E211-92D8-003048C9CD62 [ROOT_IO.etags]
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
 Number of MyTrack instances:18
