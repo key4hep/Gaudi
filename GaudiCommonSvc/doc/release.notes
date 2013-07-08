@@ -4,6 +4,10 @@
 # Description: standard and commonly used components
 ################################################################################
 
+! 2013-07-08 - Chris Jones
+ - Patch #5649 :Improvements to exception handling debug information in
+                OutputStream
+
 ============================ GaudiCommonSvc v1r5 =============================
 ! 2013-04-16 - Marco Clemencic
  - Fixed Clang warnings.
