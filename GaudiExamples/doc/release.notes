@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2013-07-11 - Marco Clemencic
+ - Added tests to expose the solution to bug #101513.
+
 ! 2013-07-08 - Marco Cattaneo
  - Patch #5653: Add HistoCountersPrint property to GaudiHistos
    Updated reference files.
