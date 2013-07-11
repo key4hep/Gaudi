@@ -49,6 +49,9 @@ namespace Gaudi  {
     bool                 m_useGFAL;
     /// Property: Flag if unaccessible files should be quarantines in job
     bool                 m_quarantine;
+    /// Property DisablePFNWarning: if set to True will not report when a file
+    /// is opened by it's physical name.
+    bool                 m_disablePFNWarning;
 
     /// Map with I/O descriptors
     ConnectionMap        m_connectionMap;
@@ -60,7 +63,7 @@ namespace Gaudi  {
     StatusCode reconnect(Entry* e);
     StatusCode error(CSTR msg, bool rethrow);
     StatusCode establishConnection(Connection* con);
-    
+
     SmartIF<IIncidentSvc> m_incSvc; ///the incident service
 
   public:

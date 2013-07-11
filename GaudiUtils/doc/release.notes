@@ -1,6 +1,11 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2013-07-09 - Marco Clemencic
+ - Fixed bug #101513: Raw->Raw processing should not print an error
+   Added the property DisablePFNWarning to silence the ERROR message about files
+   opened by their physical name.
+
 ============================== GaudiUtils v4r5 ===============================
 ! 2013-05-28 - Marco Clemencic
  - Modified StalledEventMonitor to be able to print a stack trace of the stalled
