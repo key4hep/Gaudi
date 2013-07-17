@@ -16,7 +16,7 @@ use Gaudi          v23r9
 use GaudiKernel    v28r8
 use GaudiCoreSvc   v1r5
 use GaudiCommonSvc v1r6
-use GaudiSvc       v19r3
+use GaudiSvc       v19r4
 use GaudiAud       v9r9
 use GaudiAlg       v14r6
 use GaudiGSL       v7r12
@@ -24,7 +24,7 @@ use GaudiUtils     v4r6
 use GaudiPartProp  v1r2
 
 # Technology-specific Persistency packages
-use RootCnv        v1r21
+use RootCnv        v1r20p1
 use RootHistCnv    v11r2
 use GaudiPython    v12r6
 
