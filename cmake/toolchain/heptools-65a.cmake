@@ -144,7 +144,7 @@ if(NOT "${LCG_OS}${LCG_OS_VERS}" STREQUAL "slc6") # uuid is not distributed with
 LCG_external_package(uuid              1.42                                     )
 endif()
 LCG_external_package(valgrind          3.8.0                                    )
-LCG_external_package(vdt               0.3.2                                    )
+LCG_external_package(VDT               0.3.2                     vdt            )
 LCG_external_package(voms              2.0.8-1                                  )
 LCG_external_package(vomsapi_noglobus  1.9.17-1                                 )
 LCG_external_package(vomsapic          1.9.17-1                                 )
