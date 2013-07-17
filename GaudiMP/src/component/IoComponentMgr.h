@@ -1,8 +1,8 @@
 ///////////////////////// -*- C++ -*- /////////////////////////////
-// IoComponentMgr.h 
+// IoComponentMgr.h
 // Header file for class IoComponentMgr
 // Author: S.Binet<binet@cern.ch>
-/////////////////////////////////////////////////////////////////// 
+///////////////////////////////////////////////////////////////////
 #ifndef GAUDIMP_IOCOMPONENTMGR_H
 #define GAUDIMP_IOCOMPONENTMGR_H 1
 
@@ -23,28 +23,23 @@
 
 // Forward declaration
 class ISvcLocator;
-template <class TYPE> class SvcFactory;
-
 
 class IoComponentMgr: public extends1<Service, IIoComponentMgr> {
+  ///////////////////////////////////////////////////////////////////
+  // Public methods:
+  ///////////////////////////////////////////////////////////////////
+ public:
 
-  friend class SvcFactory<IoComponentMgr>;
+  // Copy constructor:
 
-  /////////////////////////////////////////////////////////////////// 
-  // Public methods: 
-  /////////////////////////////////////////////////////////////////// 
- public: 
-
-  // Copy constructor: 
-
-  /// Constructor with parameters: 
+  /// Constructor with parameters:
   IoComponentMgr( const std::string& name, ISvcLocator* pSvcLocator );
 
-  /// Destructor: 
-  virtual ~IoComponentMgr(); 
+  /// Destructor:
+  virtual ~IoComponentMgr();
 
-  // Assignment operator: 
-  //IoComponentMgr &operator=(const IoComponentMgr &alg); 
+  // Assignment operator:
+  //IoComponentMgr &operator=(const IoComponentMgr &alg);
 
   /// Gaudi Service Implementation
   //@{
@@ -53,8 +48,8 @@ class IoComponentMgr: public extends1<Service, IIoComponentMgr> {
 
   //@}
 
-  /////////////////////////////////////////////////////////////////// 
-  // Const methods: 
+  ///////////////////////////////////////////////////////////////////
+  // Const methods:
   ///////////////////////////////////////////////////////////////////
 
   /** @brief: check if the registry contains a given @c IIoComponent
@@ -69,9 +64,9 @@ class IoComponentMgr: public extends1<Service, IIoComponentMgr> {
   bool io_contains (IIoComponent* iocomponent,
 		    const std::string& fname) const;
 
-  /////////////////////////////////////////////////////////////////// 
-  // Non-const methods: 
-  /////////////////////////////////////////////////////////////////// 
+  ///////////////////////////////////////////////////////////////////
+  // Non-const methods:
+  ///////////////////////////////////////////////////////////////////
 
   /** @brief: allow a @c IIoComponent to register itself with this
    *          manager so appropriate actions can be taken when e.g.
@@ -114,12 +109,12 @@ class IoComponentMgr: public extends1<Service, IIoComponentMgr> {
   virtual
   StatusCode io_finalize ();
 
-  /////////////////////////////////////////////////////////////////// 
-  // Private data: 
-  /////////////////////////////////////////////////////////////////// 
- private: 
+  ///////////////////////////////////////////////////////////////////
+  // Private data:
+  ///////////////////////////////////////////////////////////////////
+ private:
 
-  /// Default constructor: 
+  /// Default constructor:
   IoComponentMgr();
 
   mutable MsgStream m_log;
@@ -140,7 +135,7 @@ class IoComponentMgr: public extends1<Service, IIoComponentMgr> {
   /// location of the python dictionary
   std::string m_dict_location;
 
-}; 
+};
 
 
 #endif //> !GAUDIMP_IOCOMPONENTMGR_H

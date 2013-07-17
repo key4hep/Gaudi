@@ -37,8 +37,6 @@
 #include <map>
 
 // Forward declarations
-// Service factory
-template <class TYPE> class SvcFactory;
 // This class
 class MultiStoreSvc;
 
@@ -89,7 +87,6 @@ class MultiStoreSvc: public extends3<Service,
                                      IPartitionControl>
 {
 protected:
-  /// The class creator is of course a friend!
   typedef std::vector<std::string>         PartitionDefs;
   typedef std::map<std::string, Partition> Partitions;
   /// Integer Property corresponding to CLID of root entry

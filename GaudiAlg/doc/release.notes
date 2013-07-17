@@ -1,6 +1,9 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2013-07-17 - Marco Clemencic
+ - Removed factories forward declarations and use of DECLARE_FACTORY_ENTRIES.
+
 ! 2013-07-03 - Marco Clemencic
  - Replaced Reflex queries with TClass queries.
 

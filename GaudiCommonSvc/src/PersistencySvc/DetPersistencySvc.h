@@ -6,9 +6,7 @@
 class DetPersistencySvc  : virtual public PersistencySvc
 {
 public:
-    
-    friend class SvcFactory<DetPersistencySvc>;
-    
+
     // Initialize the service.
     virtual StatusCode initialize();
 
@@ -17,7 +15,7 @@ public:
 
     // Standard Constructor
     DetPersistencySvc(const std::string& name, ISvcLocator* svc);
-    
+
     // Standard Destructor
     virtual ~DetPersistencySvc();
 

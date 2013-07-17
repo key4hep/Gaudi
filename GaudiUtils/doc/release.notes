@@ -1,6 +1,9 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2013-07-17 - Marco Clemencic
+ - Removed factories forward declarations.
+
 ! 2013-07-03 - Marco Clemencic
  - Minor changes in a comment.
  - Removed explicit link against Reflex from cmt/requirements.

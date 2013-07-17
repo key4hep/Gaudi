@@ -7,7 +7,6 @@
 // ============================================================================
 #include "GaudiKernel/IExceptionSvc.h"
 #include "GaudiKernel/Service.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/MsgStream.h"
 // ============================================================================
 /** @class ExceptionSvc
@@ -18,7 +17,6 @@
  */
 // ============================================================================
 class ExceptionSvc: public extends1<Service, IExceptionSvc> {
-  friend class SvcFactory<ExceptionSvc> ;
 public:
   /// Handle caught GaudiExceptions
   virtual StatusCode handle

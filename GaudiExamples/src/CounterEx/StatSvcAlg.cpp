@@ -1,6 +1,6 @@
 // $Id: StatSvcAlg.cpp,v 1.1 2007/08/06 08:44:04 marcocle Exp $
 // ============================================================================
-// Include files 
+// Include files
 // ============================================================================
 // STD & STL
 // ============================================================================
@@ -17,7 +17,7 @@
 #include "GaudiAlg/GaudiAlgorithm.h"
 // ============================================================================
 /** @file
- *  Simple example to illustrate the statistical abilities of 
+ *  Simple example to illustrate the statistical abilities of
  *  "Stat"-part of Chrono&Stat Service
  *  @see Stat
  *  @see StatEntity
@@ -31,7 +31,7 @@
 namespace GaudiExamples
 {
   /** @class StatSvcAlg
-   *  Simple algorithm to illustrate the statistical abilities of 
+   *  Simple algorithm to illustrate the statistical abilities of
    *  "Stat"-part of Chrono&Stat Service
    *  @see Stat
    *  @see StatEntity
@@ -42,25 +42,23 @@ namespace GaudiExamples
    */
   class StatSvcAlg : public GaudiAlgorithm
   {
-    // friend factory for instantiation:
-    friend class AlgFactory<StatSvcAlg> ;
   public:
     /// initialize the algorithm
-    StatusCode initialize () 
+    StatusCode initialize ()
     {
       StatusCode sc = GaudiAlgorithm::initialize () ;
-      if ( sc.isFailure() ) { return sc ; }                      // RETURN 
+      if ( sc.isFailure() ) { return sc ; }                      // RETURN
       m_stat = svc<IStatSvc> ( "ChronoStatSvc" , true ) ;
       return StatusCode::SUCCESS ;
     }
-    /// the main execution method 
+    /// the main execution method
     StatusCode execute    () ;
-  protected:
+  public:
     /// standard constructor from name and Service Locator
-    StatSvcAlg ( const std::string& name , ISvcLocator* svc ) 
-      : GaudiAlgorithm ( name , svc ) 
+    StatSvcAlg ( const std::string& name , ISvcLocator* svc )
+      : GaudiAlgorithm ( name , svc )
       , m_stat         ( 0 )
-    {} 
+    {}
     /// destructor (virtual and protected)
     virtual ~StatSvcAlg() {} ;
   private:
@@ -69,14 +67,14 @@ namespace GaudiExamples
   } ;
 } // end of namespace GaudiExamples
 // ============================================================================
-// the main execution method 
+// the main execution method
 // ============================================================================
-StatusCode GaudiExamples::StatSvcAlg::execute    () 
+StatusCode GaudiExamples::StatSvcAlg::execute    ()
 {
   Stat st1 ( m_stat , "counter1" ) ;
   Stat st2 ( m_stat , "counter2" ) ;
   Stat st3 ( m_stat , "counter3" , 0.3 ) ;
-  
+
   Stat eff ( m_stat , "eff" , 0 < sin( 10 * st1->flag() ) ) ;
   //
   st1 += 0.1     ;
@@ -84,9 +82,9 @@ StatusCode GaudiExamples::StatSvcAlg::execute    ()
   st2 += st1 ;
   ++st3 ;
   st2-- ;
-  
+
   eff += 0 < cos ( 20 * st2->flag() ) ;
-  
+
   //
   return StatusCode::SUCCESS ;
 }

@@ -36,9 +36,6 @@ namespace GaudiExamples
    */
   class TimingAlg : public GaudiAlgorithm
   {
-    // friend factory needed for instantiation
-    friend class AlgFactory<GaudiExamples::TimingAlg> ;
-    // ========================================================================
   public:
     // ========================================================================
     /// the execution of the algorithm
@@ -46,7 +43,7 @@ namespace GaudiExamples
     /// the finalization of the algorithm
     virtual StatusCode finalize () ; // the finalization of the algorithm
     // ========================================================================
-  protected:
+  public:
     // ========================================================================
     /** standard constructor
      *  @param name the algorithm instance name

@@ -6,7 +6,6 @@
 #include "GaudiKernel/ConversionSvc.h"
 
 // Forward declarations
-template <class TYPE> class SvcFactory;
 class TFile;
 
 
@@ -19,9 +18,6 @@ namespace RootHistCnv {
 */
 
   class PersSvc : public ConversionSvc {
-
-    friend class SvcFactory<PersSvc>;
-
   public:
     /// Initialise the service
     virtual StatusCode initialize();

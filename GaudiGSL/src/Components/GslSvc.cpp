@@ -1,4 +1,3 @@
-// $Id: GslSvc.cpp,v 1.2 2006/01/10 20:00:05 hmd Exp $
 // Include files
 // from Gaudi
 #include "GaudiKernel/SvcFactory.h"
@@ -26,14 +25,6 @@
  *
  * @author Vanya Belyaev Ivan.Belyaev@itep.ru
  * @date 29/04/2002
- */
-// ============================================================================
-
-// ============================================================================
-/** mandatory static factory for service instantiation
- *  @see  SvcFactory
- *  @see ISvcFactory
- *  @see    IFactory
  */
 // ============================================================================
 DECLARE_SERVICE_FACTORY(GslSvc)

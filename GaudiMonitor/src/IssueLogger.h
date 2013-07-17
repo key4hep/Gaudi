@@ -11,13 +11,9 @@
 #include <vector>
 #include <map>
 
-// Forward declarations
-template <class TYPE> class SvcFactory;
 
 class IssueLogger: public extends1<Service, IIssueLogger> {
-
 public:
-  friend class SvcFactory<IssueLogger>;
 
   virtual StatusCode initialize();
   virtual StatusCode reinitialize();

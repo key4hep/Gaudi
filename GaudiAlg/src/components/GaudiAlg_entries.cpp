@@ -10,15 +10,3 @@ DECLARE_ALGORITHM_FACTORY( Prescaler      )
 DECLARE_ALGORITHM_FACTORY( Sequencer      )
 DECLARE_ALGORITHM_FACTORY( GaudiAlgorithm )
 DECLARE_ALGORITHM_FACTORY( GaudiSequencer )
-
-DECLARE_FACTORY_ENTRIES( GaudiAlg ) {
-    DECLARE_ALGORITHM( EventCounter   );
-    DECLARE_ALGORITHM( Prescaler      );
-    DECLARE_ALGORITHM( Sequencer      );
-    DECLARE_ALGORITHM( GaudiAlgorithm );
-    DECLARE_ALGORITHM( GaudiSequencer );
-    DECLARE_TOOL( SequencerTimerTool );
-    DECLARE_TOOL( ErrorTool  ) ;
-    DECLARE_TOOL( HistoTool  ) ;
-    DECLARE_TOOL( TupleTool  ) ;
-}

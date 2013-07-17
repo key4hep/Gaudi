@@ -12,9 +12,6 @@
 #include "TTree.h"
 
 
-// Forward declarations
-template <class TYPE> class CnvFactory;
-
 namespace RootHistCnv {
 
   /** @class RootHistCnv::RCWNTupleCnv RCWNTupleCnv.h
@@ -24,9 +21,6 @@ namespace RootHistCnv {
    */
 
   class RCWNTupleCnv : public RNTupleCnv {
-
-    friend class CnvFactory<RCWNTupleCnv>;
-
   public:
     /// Inquire class type
     static const CLID& classID()    {

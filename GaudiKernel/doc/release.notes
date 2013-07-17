@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-07-17 - Marco Clemencic
+ - Removed factories forward declarations.
+
 ! 2013-07-03 - Marco Clemencic
  - genconf.cpp: replaces Reflex::SharedLibrary::Load with the equivalent Gaudi
    function.

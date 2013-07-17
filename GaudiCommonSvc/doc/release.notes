@@ -4,6 +4,9 @@
 # Description: standard and commonly used components
 ################################################################################
 
+! 2013-07-17 - Marco Clemencic
+ - Removed factories forward declarations.
+
 ! 2013-07-03 - Marco Clemencic
  - Clean up in the cmt/requirements.
  - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.

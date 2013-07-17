@@ -1,6 +1,9 @@
 Package : ParticleProp
 Package manager : Charles Leggett
 
+! 2013-07-17 - Marco Clemencic
+ - Removed factories forward declarations.
+
 ! 2013-07-03 - Marco Clemencic
  - Removed explicit link to Reflex from CMakeLists.txt.
 

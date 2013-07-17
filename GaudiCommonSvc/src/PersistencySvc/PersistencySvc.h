@@ -22,10 +22,6 @@
 #include <algorithm>
 #include <functional>
 
-// Forward declarations
-template <class TYPE> class SvcFactory;
-namespace { template <class P, class S> class Factory; }
-
 /** PersistencySvc class implementation definition.
 
     <P> System:  The LHCb Offline System
@@ -55,8 +51,6 @@ class PersistencySvc  : public extends3<Service,
                                         IPersistencySvc,
                                         IAddressCreator> {
 protected:
-  friend class SvcFactory<PersistencySvc>;
-  friend class Factory<PersistencySvc,IService* (std::string,ISvcLocator *)>;
 
   class ServiceEntry {
     long             m_serviceType;

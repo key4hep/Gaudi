@@ -36,10 +36,6 @@ namespace Gaudi
      */
     class SelCreate : public GaudiAlgorithm
     {
-      // ======================================================================
-      /// friend factory for instantiation
-      friend class AlgFactory<Gaudi::Examples::SelCreate> ;
-      // ======================================================================
     public:
       // ======================================================================
       /// the only one essential method
@@ -91,7 +87,7 @@ namespace Gaudi
         return StatusCode::SUCCESS ;
       }
       // ======================================================================
-    protected:
+    public:
       // ======================================================================
       /** standard constructor
        *  @param name the algorithm instance name

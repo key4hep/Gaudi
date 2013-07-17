@@ -44,8 +44,6 @@ using namespace CLHEP;
 // ============================================================================
 class TupleAlg : public GaudiTupleAlg
 {
-  /// friend factory for instantiation
-  friend class AlgFactory<TupleAlg> ;
 public:
   /// initialize the algorithm
   StatusCode initialize ()

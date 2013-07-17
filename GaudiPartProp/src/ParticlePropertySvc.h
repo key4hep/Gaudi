@@ -11,7 +11,6 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/Service.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/IParticlePropertySvc.h"
 
 class IFileAccess;

@@ -1,6 +1,9 @@
 Package: GaudiMonitor
 Package manager : Marco Clemencic
 
+! 2013-07-17 - Marco Clemencic
+ - Removed factories forward declarations.
+
 ============================= GaudiMonitor v3r3 ==============================
 ! 2013-04-16 - Marco Clemencic
  - Fixed Clang warnings.

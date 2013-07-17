@@ -1,4 +1,3 @@
-// $Id: DataSvc.h,v 1.14 2006/11/30 14:43:13 mato Exp $
 #ifndef GAUDIKERNEL_DATASVC_H
 #define GAUDIKERNEL_DATASVC_H
 
@@ -17,8 +16,6 @@ class IOpaqueAddress;
 class DataObject;
 // Data store agent
 class IDataStoreAgent;
-// Service factory
-template <class TYPE> class SvcFactory;
 
 // Do not clutter global namespace for helpers...
 namespace DataSvcHelpers    {
@@ -41,9 +38,6 @@ namespace DataSvcHelpers    {
 */
 class GAUDI_API DataSvc: public extends2<Service, IDataProviderSvc, IDataManagerSvc>
 {
-  /// The class creator is of course a friend!
-  friend class SvcFactory<DataSvc>;
-
 public:
   /// Define set of load items
   typedef std::vector<DataStoreItem> LoadItems;

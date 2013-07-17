@@ -1,6 +1,9 @@
 Package: RootHistCnv
 Package manager : David Quarrie
 
+! 2013-07-17 - Marco Clemencic
+ - Removed factories forward declarations.
+
 ! 2013-07-03 - Marco Clemencic
  - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
 

@@ -32,16 +32,12 @@ namespace Gaudi
     // ========================================================================
     class BoostArrayProperties : public GaudiAlgorithm
     {
-      // ======================================================================
-      /// the friend factory for instantiation
-      friend class AlgFactory<Gaudi::Examples::BoostArrayProperties> ;
-      // ======================================================================
     public:
       // ======================================================================
       /// execute it!
       StatusCode execute () ;
       // ======================================================================
-    protected:
+    public:
       // ======================================================================
       /** Standard constructor
        *
