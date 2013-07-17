@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiAud v9r8)
+gaudi_subdir(GaudiAud v9r9)
 
 gaudi_depends_on_subdirs(GaudiKernel)
 

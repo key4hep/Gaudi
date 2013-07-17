@@ -1,6 +1,7 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+=============================== GaudiAlg v14r6 ===============================
 ! 2013-07-08 - Marco Cattaneo
  - Patch #5653: Add HistoCountersPrint property to GaudiHistos
    - Add HistoCountersPrint property to GaudiHistos, to control printing of

@@ -1,6 +1,7 @@
 Package: GaudiRelease
 Maintainer: Marco Clemencic
 
+============================= GaudiRelease v23r9 =============================
 ! 2013-04-11 - Hubert Degaudenzi
  - cmake/toolchain/heptools-common.cmake: fix mac osx arch detection
 

@@ -1,6 +1,7 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v23r9 =============================
 ! 2013-07-11 - Marco Clemencic
  - Added tests to expose the solution to bug #101513.
 

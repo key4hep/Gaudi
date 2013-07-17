@@ -4,6 +4,7 @@
 # Description: standard and commonly used components
 ################################################################################
 
+============================ GaudiCommonSvc v1r6 =============================
 ! 2013-07-08 - Chris Jones
  - Patch #5649 :Improvements to exception handling debug information in
                 OutputStream

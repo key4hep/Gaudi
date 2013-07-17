@@ -4,6 +4,7 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+============================= GaudiCoreSvc v1r5 ==============================
 ! 2013-04-09 - Hubert Degaudenzi
  - src/EventSelector/EventSelector.cpp: fixed cppcheck warning.
 

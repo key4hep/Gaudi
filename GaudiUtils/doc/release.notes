@@ -1,6 +1,7 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+============================== GaudiUtils v4r6 ===============================
 ! 2013-07-09 - Marco Clemencic
  - Fixed bug #101513: Raw->Raw processing should not print an error
    Added the property DisablePFNWarning to silence the ERROR message about files

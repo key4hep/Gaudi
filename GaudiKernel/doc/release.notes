@@ -1,6 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v28r8 ==============================
 ! 2013-07-04 - Marco Clemencic
  - Updated the exclusion list in make_patch.py.
 

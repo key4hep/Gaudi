@@ -1,6 +1,7 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v12r7 ==============================
 ! 2013-03-27 - Hubert Degaudenzi
  - Modified createProjVersHeader.py to understand only the LHCb version
    style(vXrY[pZ]) , the ATLAS version style (bla-X-Y[-Z]) and the plain
