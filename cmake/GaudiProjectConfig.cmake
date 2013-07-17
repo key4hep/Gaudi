@@ -1167,6 +1167,8 @@ function(gaudi_generate_configurables library)
   set(confAuditor ConfigurableAuditor)
   set(confService ConfigurableService)
 
+  # Note: the dependencies on GaudiSvc and the genconf executable are needed
+  #       in case they have to be built in the current project
   add_custom_command(
     OUTPUT ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py ${outdir}/__init__.py
     COMMAND ${env_cmd} --xml ${env_xml}
@@ -1178,7 +1180,7 @@ function(gaudi_generate_configurables library)
                 --configurable-auditor=${confAuditor}
                 --configurable-service=${confService}
                 -i ${library}
-    DEPENDS ${library})
+    DEPENDS ${library} genconf GaudiCoreSvc)
   add_custom_target(${library}Conf ALL DEPENDS ${outdir}/${library}_confDb.py)
   # Add the target to the target that groups all of them for the package.
   if(NOT TARGET ${package}ConfAll)
@@ -1186,7 +1188,6 @@ function(gaudi_generate_configurables library)
   endif()
   add_dependencies(${package}ConfAll ${library}Conf)
   # Add dependencies on GaudiSvc and the genconf executable if they have to be built in the current project
-  add_dependencies(${library}Conf genconf GaudiCoreSvc)
   # Notify the project level target
   gaudi_merge_files_append(ConfDB ${library}Conf ${outdir}/${library}_confDb.py)
   #----Installation details-------------------------------------------------------
