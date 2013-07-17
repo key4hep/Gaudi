@@ -12,9 +12,9 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IClassManager.h"
 
-#include "GaudiKernel/PluginService.h"
-using Gaudi::PluginService;
-
+#include "GaudiKernel/ObjectFactory.h"
+#include "GaudiKernel/SvcFactory.h"
+#include "GaudiKernel/AlgFactory.h"
 
 namespace Gaudi
 {
@@ -27,7 +27,7 @@ namespace Gaudi
     created. This responds to any subsequent requests for services by
     returning StatusCode::FAILURE, unless the ApplicationMgr singleton
     instance has been created in the interim. In this case, the BootstrapAppMgr
-    forwards the request to the ApplicationMgr instance. The motiviation for
+    forwards the request to the ApplicationMgr instance. The motivation for
     this is to handle static object instances where the constructor attempts
     to locate services and would otherwise instantiate the ApplicationMgr
     instance in an unorderly manner. This logic requires that the
@@ -162,22 +162,22 @@ IInterface* Gaudi::createInstance( const std::string& name,
 //------------------------------------------------------------------------------
 {
 
-  IInterface* ii = PluginService::Create<IInterface*>(factname,(IInterface*)0);
+  IInterface* ii = ObjFactory::create(factname, (IInterface*)0);
   if ( ii ) return ii;
-  IService* is = PluginService::Create<IService*>(factname, name, (ISvcLocator*)0);
+  IService* is = SvcFactory::create(factname, name, (ISvcLocator*)0);
   if ( is ) return is;
-  IAlgorithm* ia = PluginService::Create<IAlgorithm*>(factname, name, (ISvcLocator*)0);
+  IAlgorithm* ia = AlgFactory::create(factname, name, (ISvcLocator*)0);
   if ( ia ) return ia;
 
   StatusCode status;
   void* libHandle = 0;
   status = System::loadDynamicLib( dllname, &libHandle);
   if ( status.isSuccess() )   {
-    ii = PluginService::Create<IInterface*>(factname, (IInterface*)0);
+    ii = ObjFactory::create(factname, (IInterface*)0);
     if ( ii ) return ii;
-    is = PluginService::Create<IService*>(factname, name, (ISvcLocator*)0);
+    is = SvcFactory::create(factname, name, (ISvcLocator*)0);
     if ( is ) return is;
-    ia = PluginService::Create<IAlgorithm*>(factname, name, (ISvcLocator*)0);
+    ia = AlgFactory::create(factname, name, (ISvcLocator*)0);
     if ( ia ) return ia;
 
     return 0;

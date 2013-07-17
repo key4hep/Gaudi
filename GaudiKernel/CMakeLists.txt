@@ -1,11 +1,13 @@
 gaudi_subdir(GaudiKernel v28r7)
 
+gaudi_depends_on_subdirs(GaudiPluginService)
+
 find_package(Boost REQUIRED COMPONENTS filesystem thread system)
-find_package(ROOT REQUIRED COMPONENTS Core Reflex)
+find_package(ROOT REQUIRED COMPONENTS Core)
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiKernel src/Lib/*.cpp
-                  LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT
+                  LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT GaudiPluginService
                   INCLUDE_DIRS Boost ROOT
                   PUBLIC_HEADERS GaudiKernel)
 

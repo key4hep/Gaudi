@@ -15,9 +15,9 @@ typedef TemplatedAlg<int,std::vector<std::string> > t1;
 typedef TemplatedAlg<double, bool > t2;
 
 DECLARE_ALGORITHM_FACTORY(t1)
-DECLARE_NAMED_ALGORITHM_FACTORY(t1,TAlgIS)
+DECLARE_NAMED_ALGORITHM_FACTORY(t1,"TAlgIS")
 DECLARE_ALGORITHM_FACTORY(t2)
-DECLARE_NAMED_ALGORITHM_FACTORY(t2,TAlgDB)
+DECLARE_NAMED_ALGORITHM_FACTORY(t2,"TAlgDB")
 
 
 template <typename T, typename R>

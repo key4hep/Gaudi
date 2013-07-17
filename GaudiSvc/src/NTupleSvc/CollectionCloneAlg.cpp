@@ -18,6 +18,7 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/NTuple.h"
+#include "GaudiKernel/ObjectFactory.h"
 #include <vector>
 
 namespace {
@@ -465,7 +466,7 @@ public:
           return status;
         }
         else if ( m_selectorName != "" )   {
-          SmartIF<ISelectStatement> stmt(Gaudi::PluginService::Create<IInterface*>(m_selectorName,serviceLocator()));
+          SmartIF<ISelectStatement> stmt(ObjFactory::create(m_selectorName, serviceLocator()));
           if ( stmt.isValid( ) )    {
             if ( m_criteria.length() > 0 ) stmt->setCriteria(m_criteria);
             nt->attachSelector(stmt);

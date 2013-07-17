@@ -16,8 +16,6 @@
 /// needed when no algorithm is found or could be returned
 static SmartIF<IAlgorithm> no_algorithm;
 
-using Gaudi::PluginService;
-
 // constructor
 AlgorithmManager::AlgorithmManager(IInterface* application):
   base_class(application, IAlgorithm::interfaceID())
@@ -56,10 +54,7 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype,
     // return an error because an algorithm with that name already exists
     return StatusCode::FAILURE;
   }
-  algorithm = PluginService::Create<IAlgorithm*>(algtype, algname, serviceLocator().get());
-  if ( !algorithm ) {
-    algorithm = PluginService::CreateWithId<IAlgorithm*>(algtype, algname, serviceLocator().get());
-  }
+  algorithm = AlgFactory::create(algtype, algname, serviceLocator().get());
   if ( algorithm ) {
     // Check the compatibility of the version of the interface obtained
     if( !isValidInterface(algorithm) ) {

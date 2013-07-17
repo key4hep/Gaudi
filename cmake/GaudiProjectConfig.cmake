@@ -215,6 +215,16 @@ macro(gaudi_project project version)
       set(genconf_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genconf.exe)
     endif()
   endif()
+  # similar case for listcomponents
+  if(TARGET listcomponents)
+    get_target_property(listcomponents_cmd listcomponents IMPORTED_LOCATION)
+  else()
+    if (NOT GAUDI_USE_EXE_SUFFIX)
+      set(listcomponents_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/listcomponents)
+    else()
+      set(listcomponents_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/listcomponents.exe)
+    endif()
+  endif()
   # same as genconf (but it might never be built because it's needed only on WIN32)
   if(TARGET genwindef)
     get_target_property(genwindef_cmd genwindef IMPORTED_LOCATION)
@@ -278,7 +288,7 @@ macro(gaudi_project project version)
 
   #--- Special global targets for merging files.
   gaudi_merge_files(ConfDB python ${CMAKE_PROJECT_NAME}_merged_confDb.py)
-  gaudi_merge_files(Rootmap lib ${CMAKE_PROJECT_NAME}.rootmap)
+  gaudi_merge_files(ComponentsList lib ${CMAKE_PROJECT_NAME}.components)
   gaudi_merge_files(DictRootmap lib ${CMAKE_PROJECT_NAME}Dict.rootmap)
 
   # FIXME: it is not possible to produce the file python.zip at installation time
@@ -1562,10 +1572,10 @@ function(gaudi_add_module library)
   gaudi_common_add_build(${ARGN})
 
   add_library(${library} MODULE ${srcs})
-  target_link_libraries(${library} ${ROOT_Reflex_LIBRARY} ${ARG_LINK_LIBRARIES})
+  target_link_libraries(${library} GaudiPluginService ${ARG_LINK_LIBRARIES})
   _gaudi_detach_debinfo(${library})
 
-  gaudi_generate_rootmap(${library})
+  gaudi_generate_componentslist(${library})
   gaudi_generate_configurables(${library})
 
   set_property(GLOBAL APPEND PROPERTY COMPONENT_LIBRARIES ${library})
@@ -1999,23 +2009,24 @@ macro(gaudi_install_cmake_modules)
 endmacro()
 
 #---------------------------------------------------------------------------------------------------
-# gaudi_generate_rootmap(library)
+# gaudi_generate_componentslist(library)
 #
-# Create the .rootmap file needed by the plug-in system.
+# Create the .components file needed by the plug-in system.
 #---------------------------------------------------------------------------------------------------
-function(gaudi_generate_rootmap library)
+function(gaudi_generate_componentslist library)
   find_package(ROOT QUIET)
-  set(rootmapfile ${library}.rootmap)
+  set(componentsfile ${library}.components)
 
   set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_MODULE_SUFFIX})
-  add_custom_command(OUTPUT ${rootmapfile}
+  add_custom_command(OUTPUT ${componentsfile}
                      COMMAND ${env_cmd}
                        --xml ${env_xml}
-		             ${ROOT_genmap_CMD} -i ${libname} -o ${rootmapfile}
-                     DEPENDS ${library})
-  add_custom_target(${library}Rootmap ALL DEPENDS ${rootmapfile})
+		             ${listcomponents_cmd} ${libname} > ${componentsfile}
+                     DEPENDS ${library} listcomponents)
+  add_custom_target(${library}ComponentsList ALL DEPENDS ${componentsfile})
   # Notify the project level target
-  gaudi_merge_files_append(Rootmap ${library}Rootmap ${CMAKE_CURRENT_BINARY_DIR}/${library}.rootmap)
+  gaudi_merge_files_append(ComponentsList ${library}ComponentsList
+                           ${CMAKE_CURRENT_BINARY_DIR}/${componentsfile})
 endfunction()
 
 #-------------------------------------------------------------------------------

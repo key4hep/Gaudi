@@ -1,7 +1,7 @@
 #include "GaudiKernel/DeclareFactoryEntries.h"
 #include "GaudiKernel/strcasecmp.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/PluginService.h"
+#include <Gaudi/PluginService.h>
 #include "MultiFileCatalog.h"
 #include <stdexcept>
 #include <algorithm>
@@ -129,18 +129,23 @@ void MultiFileCatalog::printError(CSTR msg, bool rethrow)  const  {
 void MultiFileCatalog::addCatalog(CSTR con)  {
   if ( !con.empty() )  {
     if ( 0 == findCatalog(con,false) )  {
-      static string xml_typ = "Gaudi::XMLFileCatalog";
+      static const string xml_typ = "Gaudi::XMLFileCatalog";
       string::size_type id0 = con.find("_");
       string typ = con.substr(0,id0);
       string url = con.substr(id0+1);
       IInterface* cat = 0;
       if ( strncasecmp("xml",typ.c_str(),3) == 0 )    {
-        cat = PluginService::Create<IInterface*>(xml_typ,url,msgSvc().get());
+        cat = IFileCatalog::Factory::create(xml_typ,url,msgSvc().get());
       }
-      else    {
-        cat = PluginService::Create<IInterface*>(typ,url,serviceLocator().get());
-        if ( !cat )  {
-          cat = PluginService::Create<IInterface*>(typ,url,msgSvc().get());
+      else {
+        using Gaudi::PluginService::Details::Registry;
+        Registry& registry = Registry::instance();
+        if (registry.getInfo(typ).type ==
+                   typeid(SvcFactory::FuncType).name()) {
+          cat = SvcFactory::create(typ,url,serviceLocator().get());
+        } else if (registry.getInfo(typ).type ==
+            typeid(IFileCatalog::Factory::FuncType).name()) {
+          cat = IFileCatalog::Factory::create(typ,url,msgSvc().get());
         }
       }
       if ( cat )  {

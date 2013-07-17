@@ -1,8 +1,8 @@
 #ifndef GAUDIFILECATALOG_IFILECATALOG_H
 #define GAUDIFILECATALOG_IFILECATALOG_H
-// $ID:$
 
 #include "GaudiKernel/IInterface.h"
+#include <Gaudi/PluginService.h>
 #include <string>
 #include <vector>
 #include <utility>
@@ -26,6 +26,10 @@ namespace Gaudi {
   public:
     /// InterfaceID
     DeclareInterfaceID(IFileCatalog,2,0);
+
+    typedef Gaudi::PluginService::Factory2<IInterface*,
+                                           const std::string&,
+                                           IMessageSvc*> Factory;
 
     /// Public type definitions
     typedef std::pair<std::string,std::string>  NamedItem;

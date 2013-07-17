@@ -27,7 +27,6 @@
 //  instances of this service
 DECLARE_SERVICE_FACTORY(ToolSvc)
 
-using Gaudi::PluginService;
 namespace bl = boost::lambda;
 
 //------------------------------------------------------------------------------
@@ -507,7 +506,7 @@ StatusCode ToolSvc::create(const std::string& tooltype,
   }
   // instantiate the tool using the factory
   try {
-    toolguard = PluginService::Create<IAlgTool*>(tooltype, tooltype, fullname, parent);
+    toolguard = ToolFactory::create(tooltype, tooltype, fullname, parent);
     if ( UNLIKELY(! toolguard.get()) ){
        error() << "Cannot create tool " << tooltype << " (No factory found)" << endmsg;
        return StatusCode::FAILURE;

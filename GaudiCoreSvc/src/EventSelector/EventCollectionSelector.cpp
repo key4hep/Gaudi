@@ -168,7 +168,7 @@ EventCollectionSelector::connectStatement(const std::string& typ, const std::str
   std::string seltyp = typ;
   if ( seltyp.length() > 0 || crit.length() > 0 )   {
     if ( crit.length() > 0 && seltyp.length() == 0 ) seltyp = "NTuple::Selector";
-    SmartIF<ISelectStatement> stmt(Gaudi::PluginService::Create<IInterface*>(seltyp, (IInterface*)serviceLocator()));
+    SmartIF<ISelectStatement> stmt(ObjFactory::create(seltyp, serviceLocator()));
     if ( stmt.isValid( ) )    {
       if ( crit.length() > 0 ) stmt->setCriteria(crit);
       tuple->attachSelector(stmt).ignore();

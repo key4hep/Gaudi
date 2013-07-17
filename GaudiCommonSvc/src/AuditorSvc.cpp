@@ -1,11 +1,10 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiSvc/src/AuditorSvc/AuditorSvc.cpp,v 1.19 2008/10/27 19:22:21 marcocle Exp $
-
 // Include Files
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IAuditor.h"
 #include "GaudiKernel/INamedInterface.h"
 #include "GaudiKernel/SvcFactory.h"
+#include "GaudiKernel/AudFactory.h"
 #include "GaudiKernel/TypeNameString.h"
 #include "GaudiKernel/GaudiException.h"
 #include "AuditorSvc.h"
@@ -14,7 +13,6 @@
 //  instances of this service
 DECLARE_SERVICE_FACTORY(AuditorSvc)
 
-using Gaudi::PluginService;
 //
 // ClassName:   AuditorSvc
 //
@@ -27,7 +25,7 @@ IAuditor* AuditorSvc::newAuditor_( MsgStream& log, const std::string& name ) {
   IAuditor* aud = 0;
   StatusCode sc;
   Gaudi::Utils::TypeNameString item(name) ;
-  aud = PluginService::Create<IAuditor*>( item.type(), item.name(), serviceLocator().get() );
+  aud = AudFactory::create( item.type(), item.name(), serviceLocator().get() );
   if ( aud ) {
     aud->addRef();
     if ( m_targetState >= Gaudi::StateMachine::INITIALIZED ) {

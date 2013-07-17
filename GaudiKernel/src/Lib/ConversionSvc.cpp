@@ -11,8 +11,6 @@
 #include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/ConversionSvc.h"
 
-using Gaudi::PluginService;
-
 enum CnvSvcAction   {
   CREATE_OBJ,
   FILL_OBJ_REFS,
@@ -308,10 +306,10 @@ IConverter* ConversionSvc::createConverter(long typ,
                                            const CLID& clid,
                                            const ICnvFactory* /*fac*/)   {
   IConverter* pConverter;
-  pConverter = PluginService::CreateWithId<IConverter*>(ConverterID(typ,clid),serviceLocator().get());
+  pConverter = CnvFactory::create(ConverterID(typ,clid), serviceLocator().get());
   if ( 0 == pConverter )  {
     typ = (typ<0xFF) ? typ : typ&0xFFFFFF00;
-    pConverter = PluginService::CreateWithId<IConverter*>(ConverterID(typ,clid),serviceLocator().get());
+    pConverter = CnvFactory::create(ConverterID(typ,clid), serviceLocator().get());
   }
   return pConverter;
 }

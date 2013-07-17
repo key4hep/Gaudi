@@ -13,9 +13,6 @@
 
 #include "GaudiKernel/System.h"
 
-// Reflex includes
-#include "Reflex/Reflex.h"
-
 namespace DsoUtils {
 
 inline std::string libNativeName( const std::string& libName )
@@ -32,16 +29,10 @@ inline std::string libNativeName( const std::string& libName )
 
 #ifdef _GNU_SOURCE
 #include <dlfcn.h>
-static std::string dsoName( const ROOT::Reflex::Member& mem )
+static std::string dsoName(void* addr)
 {
   Dl_info info;
-  if (dladdr (
-#if __GNUC__ < 4
-      (void*)mem.Stubfunction()
-#else
-      System::FuncPtrCast<void*>(mem.Stubfunction())
-#endif
-      , &info) == 0)
+  if (dladdr(addr, &info) == 0)
     return "";
 
   const char* pos = strrchr (info.dli_fname, '/');
@@ -54,9 +45,8 @@ static std::string dsoName( const ROOT::Reflex::Member& mem )
 #elif defined(_WIN32)
 #include <windows.h>
 
-static std::string dsoName( const ROOT::Reflex::Member& mem )
+static std::string dsoName(void* addr)
 {
-  void* addr = (void*)(mem.Stubfunction());
   if (addr) {
     MEMORY_BASIC_INFORMATION mbi;
     if ( VirtualQuery(addr, &mbi, sizeof(mbi)) )    {
@@ -83,8 +73,7 @@ static std::string dsoName( const ROOT::Reflex::Member& )
 
 #endif
 
-static bool inDso( const ROOT::Reflex::Member& mem,
-                    const std::string& dsoname )
+static bool inDso(void *addr, const std::string& dsoname)
 {
 #ifdef _WIN32
   char sep = '\\';
@@ -92,7 +81,7 @@ static bool inDso( const ROOT::Reflex::Member& mem,
   char sep = '/';
 #endif
 
-  std::string srcname = dsoName(mem);
+  std::string srcname = dsoName(addr);
   if (srcname.empty()) {
     // we do not know the name of the library, let's guess it's OK
     return true;

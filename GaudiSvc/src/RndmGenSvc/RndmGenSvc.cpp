@@ -20,6 +20,7 @@
 // Framework include files
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/SvcFactory.h"
+#include "GaudiKernel/ObjectFactory.h"
 #include "GaudiKernel/ISvcManager.h"
 #include "GaudiKernel/IRndmEngine.h"
 
@@ -27,8 +28,6 @@
 
 #include "RndmGen.h"
 #include "RndmGenSvc.h"
-
-using Gaudi::PluginService;
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
@@ -126,7 +125,7 @@ IRndmEngine* RndmGenSvc::engine()     {
 /// Retrieve a valid generator from the service.
 StatusCode RndmGenSvc::generator(const IRndmGen::Param& par, IRndmGen*& refpGen)   {
   StatusCode status = StatusCode::FAILURE;
-  IInterface* iface = PluginService::CreateWithId<IInterface*>(par.type(),(IInterface*)m_engine);
+  IInterface* iface = ObjFactory::create(par.type(),(IInterface*)m_engine);
   if ( iface ) {
     // query requested interface (adds ref count)
     status = iface->queryInterface(IRndmGen::interfaceID(), (void**)& refpGen);

@@ -1,0 +1,39 @@
+!-----------------------------------------------------------------------------
+! Package     : GaudiPluginService
+! Responsible : Marco Clemencic
+! Purpose     : Provide a generic plugin service.
+!-----------------------------------------------------------------------------
+
+! 2013-07-17 - Marco Clemencic
+ - First complete implementation of a ROOT/Reflex-free Plugin Service for
+   Gaudi. The typical use is:
+
+   - headers
+
+     #include <Gaudi/PluginService.h>
+
+     class IMyInterface { ... };
+
+     class MyBaseComponent: virtual public IMyInterface {
+     public:
+       typedef Gaudi::PluginService::Factory1<IMyInterface*,
+                                              const std::string&>
+                                              Factory;
+       MyBaseComponent(const std::string&);
+       ...
+     };
+
+     class MyDerivedComponent: public MyBaseComponent {
+       ...
+     };
+
+   - sources
+
+     #include "MyDerivedComponent.h"
+     DECLARE_FACTORY(MyDerivedComponent, MyBaseComponent::Factory)
+
+   - to instantiate
+
+     #include "MyBaseComponent.h"
+     IMyInterface* ptr =
+         MyBaseComponent::Factory::create("MyDerivedComponent", "argument");
