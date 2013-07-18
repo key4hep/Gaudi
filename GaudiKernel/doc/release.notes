@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-07-18 - Marco Clemencic
+ - Fixed compilation problem on slc6-gcc46.
+
 ! 2013-07-17 - Marco Clemencic
  - Use the new ROOT-free Plugin Service.
 
