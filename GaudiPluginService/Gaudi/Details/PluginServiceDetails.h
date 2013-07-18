@@ -209,10 +209,10 @@ namespace Gaudi { namespace PluginService {
     class _INTERNAL_FACTORY_REGISTER_CNAME(type, serial) { \
     public: \
       typedef factory s_t; \
-      typedef Gaudi::PluginService::Details::Factory<type> f_t; \
+      typedef ::Gaudi::PluginService::Details::Factory<type> f_t; \
       static s_t::FuncType creator() { return &f_t::create<s_t>; } \
       _INTERNAL_FACTORY_REGISTER_CNAME(type, serial) () { \
-        using Gaudi::PluginService::Details::Registry; \
+        using ::Gaudi::PluginService::Details::Registry; \
         Registry::instance().add<s_t, type>(id, creator()); \
       } \
     } _INTERNAL_FACTORY_REGISTER_CNAME(s_ ## type, serial); \

@@ -21,7 +21,7 @@
   _INTERNAL_DECLARE_FACTORY(type, id, factory, __LINE__)
 
 #define DECLARE_FACTORY(type, factory) \
-  DECLARE_FACTORY_WITH_ID(type, Gaudi::PluginService::Details::demangle<type>(), factory)
+  DECLARE_FACTORY_WITH_ID(type, ::Gaudi::PluginService::Details::demangle<type>(), factory)
 
 namespace Gaudi { namespace PluginService {
 

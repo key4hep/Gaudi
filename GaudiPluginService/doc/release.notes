@@ -4,6 +4,9 @@
 ! Purpose     : Provide a generic plugin service.
 !-----------------------------------------------------------------------------
 
+! 2013-07-18 - Marco Clemencic
+ - Fixed a problem when the DECLARE_* macros are called from within a namespace.
+
 ! 2013-07-17 - Marco Clemencic
  - First complete implementation of a ROOT/Reflex-free Plugin Service for
    Gaudi. The typical use is:
