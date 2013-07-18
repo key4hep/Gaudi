@@ -5,6 +5,12 @@
 !-----------------------------------------------------------------------------
 
 ! 2013-07-18 - Marco Clemencic
+ - Modified the symbol resolution policy when loading a component library,
+   using RTLD_LAZY instead of RTLD_NOW.
+   It allows loading of component libraries with unresolved symbols, but it is
+   consistent with the old behavior.
+
+! 2013-07-18 - Marco Clemencic
  - Added the macros DECLARE_COMPONENT and DECLARE_COMPONENT_WITH_ID to simplify
    the declaration of component classes when the factory is declared as the
    typedef Factory in a base class.
