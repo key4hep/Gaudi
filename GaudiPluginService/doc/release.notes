@@ -5,6 +5,15 @@
 !-----------------------------------------------------------------------------
 
 ! 2013-07-18 - Marco Clemencic
+ - Added the macros DECLARE_COMPONENT and DECLARE_COMPONENT_WITH_ID to simplify
+   the declaration of component classes when the factory is declared as the
+   typedef Factory in a base class.
+   In the example below the declaration becomes:
+
+       #include "MyDerivedComponent.h"
+       DECLARE_COMPONENT(MyDerivedComponent)
+
+! 2013-07-18 - Marco Clemencic
  - Fixed a problem when the DECLARE_* macros are called from within a namespace.
 
 ! 2013-07-17 - Marco Clemencic

@@ -23,6 +23,12 @@
 #define DECLARE_FACTORY(type, factory) \
   DECLARE_FACTORY_WITH_ID(type, ::Gaudi::PluginService::Details::demangle<type>(), factory)
 
+#define DECLARE_COMPONENT(type) \
+  DECLARE_FACTORY(type, type::Factory)
+
+#define DECLARE_COMPONENT_WITH_ID(type, id) \
+  DECLARE_FACTORY_WITH_ID(type, id, type::Factory)
+
 namespace Gaudi { namespace PluginService {
 
   /// Class wrapping the signature for a factory without arguments.
