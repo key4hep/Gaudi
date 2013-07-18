@@ -5,7 +5,6 @@
 #endif
 
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AudFactory.h"
 #include "GaudiKernel/IChronoStatSvc.h"
 
 #include "GaudiKernel/Stat.h"

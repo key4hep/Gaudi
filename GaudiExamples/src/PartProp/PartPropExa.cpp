@@ -2,7 +2,6 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IPartPropSvc.h"
-#include "GaudiKernel/AlgFactory.h"
 
 #include "HepPDT/ParticleDataTable.hh"
 

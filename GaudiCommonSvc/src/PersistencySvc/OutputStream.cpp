@@ -1,9 +1,5 @@
-// $Id: OutputStream.cpp,v 1.23 2008/01/15 13:46:52 marcocle Exp $
-#define GAUDISVC_PERSISTENCYSVC_OUTPUTSTREAM_CPP
-
 // Framework include files
 #include "GaudiKernel/Tokenizer.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/ISvcLocator.h"

@@ -1,5 +1,3 @@
-// $Id: Algorithm.h,v 1.34 2008/06/02 14:20:38 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIKERNEL_ALGORITHM_H
 #define GAUDIKERNEL_ALGORITHM_H
 // ============================================================================
@@ -29,6 +27,7 @@
 #include "GaudiKernel/IExceptionSvc.h"
 #include "GaudiKernel/IAlgContextSvc.h"
 #include "GaudiKernel/Property.h"
+#include <Gaudi/PluginService.h>
 
 #ifndef PACKAGE_VERSION
 #define PACKAGE_VERSION "unknown"
@@ -61,6 +60,9 @@
  */
 class GAUDI_API Algorithm: public implements3<IAlgorithm, IProperty, IStateful> {
 public:
+  typedef Gaudi::PluginService::Factory2<IAlgorithm*,
+                                         const std::string&,
+                                         ISvcLocator*> Factory;
 
   /** Constructor
    *  @param name    The algorithm object's name
@@ -584,5 +586,44 @@ private:
   /// Private assignment operator: NO ASSIGNMENT ALLOWED
   Algorithm& operator=(const Algorithm& rhs);
 };
+
+#ifndef GAUDI_NEW_PLUGIN_SERVICE
+template <class T>
+class AlgFactory {
+public:
+  typedef typename T::Factory::ReturnType ReturnType;
+  typedef typename T::Factory::Arg1Type   Arg1Type;
+  typedef typename T::Factory::Arg2Type   Arg2Type;
+  static inline ReturnType create(Arg1Type a1, Arg2Type a2) {
+    return new T(a1, a2);
+  }
+};
+#define AlgFactoryHelper(x) \
+    namespace Gaudi { namespace PluginService { namespace Details { \
+    template <> class Factory<x> { \
+      public: \
+      template <typename S> \
+      static typename S::ReturnType create(typename S::Arg1Type a1, \
+                                           typename S::Arg2Type a2) { \
+        return AlgFactory<x>::create(a1, a2); \
+      } \
+    }; }}}
+
+// Macros to declare component factories
+#define DECLARE_ALGORITHM_FACTORY(x)              AlgFactoryHelper(x) \
+                                                  DECLARE_COMPONENT(x)
+#define DECLARE_NAMED_ALGORITHM_FACTORY(x, n)     AlgFactoryHelper(x) \
+                                                  DECLARE_COMPONENT_WITH_ID(x, n)
+#define DECLARE_NAMESPACE_ALGORITHM_FACTORY(n, x) using n::x; \
+                                                  AlgFactoryHelper(x) \
+                                                  DECLARE_COMPONENT(x)
+
+#else
+
+// Macros to declare component factories
+#define DECLARE_ALGORITHM_FACTORY(x)              DECLARE_COMPONENT(x)
+#define DECLARE_NAMED_ALGORITHM_FACTORY(x, n)     DECLARE_COMPONENT_WITH_ID(x, n)
+#define DECLARE_NAMESPACE_ALGORITHM_FACTORY(n, x) using n::x; DECLARE_COMPONENT(x)
+#endif
 
 #endif //GAUDIKERNEL_ALGORITHM_H

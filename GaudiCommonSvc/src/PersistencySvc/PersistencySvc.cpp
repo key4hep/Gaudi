@@ -17,10 +17,8 @@
 //====================================================================
 #define  PERSISTENCYSVC_PERSISTENCYSVC_CPP
 
-// Interface defintions
+// Interface definitions
 #include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/SvcFactory.h"
-#include "GaudiKernel/CnvFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IConverter.h"
 #include "GaudiKernel/ISvcLocator.h"

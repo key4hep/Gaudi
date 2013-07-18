@@ -1,8 +1,5 @@
-//$Id: RandomNumbetrAlg.cpp,v 1.16 2007/09/28 11:48:17 marcocle Exp $	//
-
 // Framework include files
 #include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IRndmGen.h"

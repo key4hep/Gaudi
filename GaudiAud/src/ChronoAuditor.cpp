@@ -8,7 +8,6 @@
 #endif
 
 #include "ChronoAuditor.h"
-#include "GaudiKernel/AudFactory.h"
 
 DECLARE_AUDITOR_FACTORY(ChronoAuditor)
 

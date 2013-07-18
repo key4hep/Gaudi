@@ -1,5 +1,3 @@
-// $Id:$
-// ============================================================================
 #ifndef IncidentSvc_IncidentSvc_H
 #define IncidentSvc_IncidentSvc_H
 // ============================================================================
@@ -13,14 +11,13 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/Service.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/StringKey.h"
 #include "GaudiKernel/StringKey.h"
 #include "GaudiKernel/HashMap.h"
 #include "GaudiKernel/ChronoEntity.h"
 // ============================================================================
-// Booots
+// Boost
 // ============================================================================
 #include "boost/thread/recursive_mutex.hpp"
 // ============================================================================

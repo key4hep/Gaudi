@@ -1,11 +1,8 @@
-#define ROOTHISTCNV_RNTUPLECNV_CPP
-
 // Include files
 #include "NTupleInfo.h"
 #include "RNTupleCnv.h"
 #include "RootObjAddress.h"
 
-#include "GaudiKernel/CnvFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/IDataProviderSvc.h"

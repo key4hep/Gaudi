@@ -10,7 +10,6 @@
 // Framework include files
 #include <string>
 #include "GaudiKernel/ICounterSvc.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/MsgStream.h"
 

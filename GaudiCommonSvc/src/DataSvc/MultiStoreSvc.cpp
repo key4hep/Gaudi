@@ -23,7 +23,6 @@
 #include "GaudiKernel/TypeNameString.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Tokenizer.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/ISvcManager.h"

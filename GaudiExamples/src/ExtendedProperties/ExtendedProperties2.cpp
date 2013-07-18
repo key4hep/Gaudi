@@ -1,4 +1,3 @@
-// $Id: ExtendedProperties.cpp,v 1.7 2008/01/14 19:45:34 marcocle Exp $
 // ============================================================================
 // Include files
 // ============================================================================
@@ -11,7 +10,6 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/Point3DTypes.h"
 #include "GaudiKernel/Point4DTypes.h"
 #include "GaudiKernel/Vector3DTypes.h"

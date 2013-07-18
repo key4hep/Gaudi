@@ -160,5 +160,4 @@ StatusCode StalledEventMonitor::finalize() {
 }
 
 // Declaration of the factory
-#include "GaudiKernel/SvcFactory.h"
 DECLARE_SERVICE_FACTORY(StalledEventMonitor)

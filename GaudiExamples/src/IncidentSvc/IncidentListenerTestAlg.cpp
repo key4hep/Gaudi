@@ -6,8 +6,6 @@
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/Incident.h"
 
-#include "GaudiKernel/AlgFactory.h"
-
 // Static Factory declaration
 DECLARE_ALGORITHM_FACTORY(IncidentListenerTestAlg)
 

@@ -65,7 +65,4 @@ namespace GaudiTesting {
 
 }
 
-
-#include "GaudiKernel/SvcFactory.h"
-
 DECLARE_NAMESPACE_SERVICE_FACTORY(GaudiTesting, FailingSvc)

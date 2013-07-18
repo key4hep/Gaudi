@@ -1,8 +1,6 @@
-// $Id: AppMgrRunable.cpp,v 1.8 2008/06/02 14:21:35 marcocle Exp $
 #define  GAUDISVC_APPMGRRUNABLE_CPP
 
 #include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/IAppMgrUI.h"
 #include "GaudiKernel/ISvcLocator.h"
 

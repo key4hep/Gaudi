@@ -1,8 +1,5 @@
-//$Id: EventCollectionSelector.cpp,v 1.16 2007/01/09 16:54:47 hmd Exp $
-
 // Include files
 #include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ObjectFactory.h"
 #include "GaudiKernel/GenericAddress.h"
 #include "GaudiKernel/MsgStream.h"

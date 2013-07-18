@@ -17,7 +17,6 @@
 //====================================================================
 #define  DATASVC_EVTDATASVC_CPP
 
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IConversionSvc.h"
 

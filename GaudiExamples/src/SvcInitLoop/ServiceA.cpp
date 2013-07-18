@@ -1,4 +1,3 @@
-#include "GaudiKernel/SvcFactory.h"
 #include "ServiceA.h"
 
 // Static Factory declaration

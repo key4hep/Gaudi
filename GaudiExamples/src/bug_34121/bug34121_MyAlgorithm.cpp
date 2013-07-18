@@ -1,8 +1,5 @@
-// $Id: bug34121_MyAlgorithm.cpp,v 1.1 2008/03/03 21:04:28 marcocle Exp $
-
 // Include files
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IToolSvc.h"

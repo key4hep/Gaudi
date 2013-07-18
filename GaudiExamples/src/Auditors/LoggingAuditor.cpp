@@ -1,6 +1,5 @@
 #include "GaudiKernel/Auditor.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AudFactory.h"
 
 // ============================================================================
 /** @class LoggingAuditor

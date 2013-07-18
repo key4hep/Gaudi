@@ -1,8 +1,5 @@
-// $Id: MTMessageSvc.cpp,v 1.4 2006/04/20 16:34:57 hmd Exp $
-
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/StatusCode.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/Message.h"
 #include "MTMessageSvc.h"
 

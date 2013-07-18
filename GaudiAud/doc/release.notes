@@ -1,6 +1,10 @@
 Package: GaudiAud
 Package manager : David Quarrie, Marco Clemencic
 
+! 2013-07-18 - Marco Clemencic
+ - Removed use of obsolete AlgFactory.h, SvcFactory.h, ToolFactory.h,
+   AudFactory.h and CnvFactory.h.
+
 ! 2013-06-06 - Marco Clemencic
  - Minor change in the configuration of a test to work around an issue in the
    latest JobOptions parser.

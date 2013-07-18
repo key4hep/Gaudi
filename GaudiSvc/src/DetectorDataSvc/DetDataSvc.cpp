@@ -9,7 +9,6 @@
 #include "GaudiKernel/IValidity.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/System.h"
 using System::isEnvSet;
 using System::getEnv;

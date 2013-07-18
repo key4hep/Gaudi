@@ -50,10 +50,10 @@
 #include "GaudiKernel/HashMap.h"
 #include "GaudiKernel/GaudiHandle.h"
 
-#include "GaudiKernel/AudFactory.h"
-#include "GaudiKernel/SvcFactory.h"
-#include "GaudiKernel/ToolFactory.h"
-#include "GaudiKernel/AlgFactory.h"
+#include "GaudiKernel/Auditor.h"
+#include "GaudiKernel/Service.h"
+#include "GaudiKernel/AlgTool.h"
+#include "GaudiKernel/Algorithm.h"
 
 #include "GaudiKernel/Time.h"
 
@@ -541,16 +541,16 @@ int configGenerator::genConfig( const Strings_t& libs )
       SmartIF<IProperty> prop;
       try {
         if ( type == "Algorithm" ) {
-          prop = SmartIF<IAlgorithm>(AlgFactory::create(ident, cname, svcLoc));
+          prop = SmartIF<IAlgorithm>(Algorithm::Factory::create(ident, cname, svcLoc));
         }
         else if ( type == "Service") {
-          prop = SmartIF<IService>(SvcFactory::create(ident, cname, svcLoc));
+          prop = SmartIF<IService>(Service::Factory::create(ident, cname, svcLoc));
         }
         else if ( type == "AlgTool") {
-          prop = SmartIF<IAlgTool>(ToolFactory::create(ident, cname, type, dummySvc));
+          prop = SmartIF<IAlgTool>(AlgTool::Factory::create(ident, cname, type, dummySvc));
         }
         else if ( type == "Auditor") {
-          prop = SmartIF<IAuditor>(AudFactory::create(ident, cname, svcLoc));
+          prop = SmartIF<IAuditor>(Auditor::Factory::create(ident, cname, svcLoc));
         }
         else if ( type == "ApplicationMgr") {
           prop = SmartIF<ISvcLocator>(svcLoc);

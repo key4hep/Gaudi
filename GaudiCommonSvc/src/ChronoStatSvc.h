@@ -1,7 +1,3 @@
-// $Id: ChronoStatSvc.h,v 1.13 2008/05/13 12:37:19 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.13 $
-// ============================================================================
 #ifndef      GAUDISVC_CHRONOSTATSVC_H__
 #define      GAUDISVC_CHRONOSTATSVC_H__
 // ============================================================================
@@ -15,7 +11,6 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/IChronoStatSvc.h"

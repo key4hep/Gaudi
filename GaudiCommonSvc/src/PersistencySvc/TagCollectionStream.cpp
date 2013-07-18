@@ -1,11 +1,7 @@
-// $Id: TagCollectionStream.cpp,v 1.2 2006/09/18 16:06:52 hmd Exp $
-#define GAUDISVC_PERSISTENCYSVC_OUTPUTSTREAM_CPP
-
 // Framework include files
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/Tokenizer.h"
 #include "GaudiKernel/SmartDataPtr.h"
 #include "GaudiKernel/IDataSourceMgr.h"

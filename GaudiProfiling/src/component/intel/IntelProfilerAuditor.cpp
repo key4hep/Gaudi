@@ -13,7 +13,6 @@
 #include <boost/foreach.hpp>
 
 // * Gaudi libraries.
-#include "GaudiKernel/AudFactory.h"
 #include "GaudiKernel/Auditor.h"
 #include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/GaudiException.h"

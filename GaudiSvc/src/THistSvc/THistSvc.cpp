@@ -6,7 +6,6 @@
 
 #include "THistSvc.h"
 
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/Tokenizer.h"
 #include "GaudiKernel/GaudiException.h"

@@ -1,13 +1,9 @@
-// $Id: CounterSvcAlg.cpp,v 1.2 2008/02/21 11:32:38 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $, verison $Revision: 1.2 $
 // ============================================================================
 // Include files
 // ============================================================================
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/ICounterSvc.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/MsgStream.h"
 

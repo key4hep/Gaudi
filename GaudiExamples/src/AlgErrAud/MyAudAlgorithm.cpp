@@ -1,8 +1,5 @@
-// $Id: MyAudAlgorithm.cpp,v 1.1 2007/01/22 16:06:13 hmd Exp $
-
 // Include files
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IToolSvc.h"

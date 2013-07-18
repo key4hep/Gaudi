@@ -1,5 +1,4 @@
 // Include files
-#include "GaudiKernel/CnvFactory.h"
 #include "DirectoryCnv.h"
 //------------------------------------------------------------------------------
 //

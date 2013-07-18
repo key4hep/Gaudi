@@ -1,10 +1,8 @@
-// $Id: AlgorithmManager.cpp,v 1.11 2008/10/20 20:58:10 marcocle Exp $
-
 // Include files
 #include "AlgorithmManager.h"
 #include "GaudiKernel/IAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/TypeNameString.h"
@@ -54,7 +52,7 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype,
     // return an error because an algorithm with that name already exists
     return StatusCode::FAILURE;
   }
-  algorithm = AlgFactory::create(algtype, algname, serviceLocator().get());
+  algorithm = Algorithm::Factory::create(algtype, algname, serviceLocator().get());
   if ( algorithm ) {
     // Check the compatibility of the version of the interface obtained
     if( !isValidInterface(algorithm) ) {

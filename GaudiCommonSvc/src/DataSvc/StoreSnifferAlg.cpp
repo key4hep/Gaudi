@@ -1,4 +1,3 @@
-// $Header: $
 //  ====================================================================
 //  StoreSnifferAlg.cpp
 //  --------------------------------------------------------------------
@@ -11,7 +10,6 @@
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/SmartDataPtr.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/MsgStream.h"

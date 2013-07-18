@@ -7,8 +7,6 @@
 #include "GaudiKernel/PropertyMgr.h"
 #include "GaudiKernel/Property.h"
 
-#include "GaudiKernel/AlgFactory.h"
-
 #include <sstream>
 
 // Static Factory declaration

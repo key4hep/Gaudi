@@ -19,7 +19,6 @@
 
 // Framework include files
 #include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ObjectFactory.h"
 #include "GaudiKernel/ISvcManager.h"
 #include "GaudiKernel/IRndmEngine.h"

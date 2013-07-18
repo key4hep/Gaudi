@@ -10,7 +10,6 @@
 #define GAUDISVC_PERSISTENCYSVC_EVTCOLLECTIONSTREAM_CPP
 
 // Framework include files
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/INTupleSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"

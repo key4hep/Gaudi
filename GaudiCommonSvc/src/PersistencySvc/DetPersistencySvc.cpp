@@ -3,7 +3,6 @@
 #include <iostream>
 
 // Implementation specific definitions
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "DetPersistencySvc.h"

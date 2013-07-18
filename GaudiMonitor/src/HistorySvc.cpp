@@ -1,6 +1,4 @@
-#ifndef GAUDISVC_FASTHISTORYSVC_H
- #include "HistorySvc.h"
-#endif
+#include "HistorySvc.h"
 
 #include "GaudiKernel/HistoryObj.h"
 
@@ -10,12 +8,7 @@
 #include "GaudiKernel/DataHistory.h"
 #include "GaudiKernel/ServiceHistory.h"
 
-#ifndef KERNEL_SVCFACTORY_H
- #include "GaudiKernel/SvcFactory.h"
-#endif
-#ifndef GAUDIKERNEL_ISVCLOCATOR_H
- #include "GaudiKernel/ISvcLocator.h"
-#endif
+#include "GaudiKernel/ISvcLocator.h"
 
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/Bootstrap.h"

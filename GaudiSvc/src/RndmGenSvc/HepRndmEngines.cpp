@@ -27,7 +27,6 @@
 #include <cmath>
 
 // Framework include files
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IIncidentSvc.h"

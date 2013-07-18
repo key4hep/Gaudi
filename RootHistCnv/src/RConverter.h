@@ -1,10 +1,8 @@
-// $Id: RConverter.h,v 1.8 2006/11/30 20:51:35 mato Exp $
 #ifndef ROOTHISTCNV_RCONVERTER_H
 #define ROOTHISTCNV_RCONVERTER_H 1
 
 // Include files
 #include "GaudiKernel/Converter.h"
-#include "GaudiKernel/CnvFactory.h"
 #include "TDirectory.h"
 #include <string>
 #include <map>
@@ -18,7 +16,7 @@ class TFile;
 class GlobalDirectoryRestore  {
   TDirectory* m_current;
 public:
-  GlobalDirectoryRestore() { 
+  GlobalDirectoryRestore() {
     m_current = gDirectory;
   }
   virtual ~GlobalDirectoryRestore()  {
@@ -63,25 +61,25 @@ namespace RootHistCnv {
     /// Standard destructor
     virtual ~RConverter() {     }
     /// Create the transient representation of an object.
-    virtual StatusCode readObject( IOpaqueAddress* pAddr, 
+    virtual StatusCode readObject( IOpaqueAddress* pAddr,
                                    DataObject*& refpObj);
     /// Create the persistent representation of an object.
     virtual TObject* createPersistent(DataObject* pObj);
     /// Create address of the transient object according to the requested representation.
-    StatusCode createAddress( DataObject* pObject, 
+    StatusCode createAddress( DataObject* pObject,
                               TDirectory* pDir,
-                              TObject* pTObject, 
+                              TObject* pTObject,
                               IOpaqueAddress*& refpAddr);
 
-    StatusCode createAddress(const std::string& rzdir, 
-			     const CLID& clid, 
-			     long id, 
+    StatusCode createAddress(const std::string& rzdir,
+			     const CLID& clid,
+			     long id,
 			     TObject* pTobj,
 			     IOpaqueAddress*& refpAddress);
 
-    StatusCode createAddress(const std::string& rzdir, 
-			     const CLID& clid, 
-			     const std::string& title, 
+    StatusCode createAddress(const std::string& rzdir,
+			     const CLID& clid,
+			     const std::string& title,
 			     TObject* pTobj,
 			     IOpaqueAddress*& refpAddress);
 

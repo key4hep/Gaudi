@@ -3,8 +3,7 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IAuditor.h"
 #include "GaudiKernel/INamedInterface.h"
-#include "GaudiKernel/SvcFactory.h"
-#include "GaudiKernel/AudFactory.h"
+#include "GaudiKernel/Auditor.h"
 #include "GaudiKernel/TypeNameString.h"
 #include "GaudiKernel/GaudiException.h"
 #include "AuditorSvc.h"
@@ -25,7 +24,7 @@ IAuditor* AuditorSvc::newAuditor_( MsgStream& log, const std::string& name ) {
   IAuditor* aud = 0;
   StatusCode sc;
   Gaudi::Utils::TypeNameString item(name) ;
-  aud = AudFactory::create( item.type(), item.name(), serviceLocator().get() );
+  aud = Auditor::Factory::create( item.type(), item.name(), serviceLocator().get() );
   if ( aud ) {
     aud->addRef();
     if ( m_targetState >= Gaudi::StateMachine::INITIALIZED ) {

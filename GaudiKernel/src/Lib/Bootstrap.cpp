@@ -1,5 +1,3 @@
-//$Id: Bootstrap.cpp,v 1.14 2007/12/12 16:02:32 marcocle Exp $
-
 #include <iostream>
 
 #include "GaudiKernel/Bootstrap.h"
@@ -13,8 +11,8 @@
 #include "GaudiKernel/IClassManager.h"
 
 #include "GaudiKernel/ObjectFactory.h"
-#include "GaudiKernel/SvcFactory.h"
-#include "GaudiKernel/AlgFactory.h"
+#include "GaudiKernel/Service.h"
+#include "GaudiKernel/Algorithm.h"
 
 namespace Gaudi
 {
@@ -164,9 +162,9 @@ IInterface* Gaudi::createInstance( const std::string& name,
 
   IInterface* ii = ObjFactory::create(factname, (IInterface*)0);
   if ( ii ) return ii;
-  IService* is = SvcFactory::create(factname, name, (ISvcLocator*)0);
+  IService* is = Service::Factory::create(factname, name, (ISvcLocator*)0);
   if ( is ) return is;
-  IAlgorithm* ia = AlgFactory::create(factname, name, (ISvcLocator*)0);
+  IAlgorithm* ia = Algorithm::Factory::create(factname, name, (ISvcLocator*)0);
   if ( ia ) return ia;
 
   StatusCode status;
@@ -175,9 +173,9 @@ IInterface* Gaudi::createInstance( const std::string& name,
   if ( status.isSuccess() )   {
     ii = ObjFactory::create(factname, (IInterface*)0);
     if ( ii ) return ii;
-    is = SvcFactory::create(factname, name, (ISvcLocator*)0);
+    is = Service::Factory::create(factname, name, (ISvcLocator*)0);
     if ( is ) return is;
-    ia = AlgFactory::create(factname, name, (ISvcLocator*)0);
+    ia = Algorithm::Factory::create(factname, name, (ISvcLocator*)0);
     if ( ia ) return ia;
 
     return 0;

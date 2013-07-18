@@ -1,5 +1,4 @@
 ///////////////////////// -*- C++ -*- /////////////////////////////
-// $Id: QotdAlg.h,v 1.1 2007/05/08 09:16:25 hmd Exp $
 #ifndef MULTIPLELOGSTREAMS_QOTDALG_H
 #define MULTIPLELOGSTREAMS_QOTDALG_H 1
 
@@ -15,12 +14,12 @@
 
 namespace GaudiEx {
 
-class QotdAlg : public Algorithm 
+class QotdAlg : public Algorithm
 {
 
 public:
   // Constructor of this form must be provided
-  QotdAlg(const std::string& name, ISvcLocator* pSvcLocator); 
+  QotdAlg(const std::string& name, ISvcLocator* pSvcLocator);
 
   // Three mandatory member functions of any algorithm
   StatusCode initialize();

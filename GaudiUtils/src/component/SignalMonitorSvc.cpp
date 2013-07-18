@@ -510,8 +510,6 @@ namespace Gaudi {
 Gaudi::Utils::SignalMonitorSvc* Gaudi::Utils::SignalMonitorSvc::s_instance = 0;
 
 // ========================================================================
-#include "GaudiKernel/SvcFactory.h"
-
 // Instantiation of a static factory class used by clients to create instances of this service
 typedef Gaudi::Utils::SignalMonitorSvc g_u_sms;
 DECLARE_SERVICE_FACTORY(g_u_sms)

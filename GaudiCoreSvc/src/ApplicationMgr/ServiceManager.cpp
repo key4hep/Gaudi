@@ -1,7 +1,6 @@
 // Include files
 #include "ServiceManager.h"
 #include "GaudiKernel/IService.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/TypeNameString.h"
 #include "GaudiKernel/System.h"
@@ -71,7 +70,7 @@ SmartIF<IService>& ServiceManager::createService(const Gaudi::Utils::TypeNameStr
     type.erase(ip,type.length());
   }
 
-  IService* service = SvcFactory::create(type, name, static_cast<ISvcLocator*>(this)); // serviceLocator().get());
+  IService* service = Service::Factory::create(type, name, static_cast<ISvcLocator*>(this)); // serviceLocator().get());
 
   if ( service ) {
     m_listsvc.push_back(service);

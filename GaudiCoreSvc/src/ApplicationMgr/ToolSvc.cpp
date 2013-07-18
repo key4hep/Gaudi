@@ -1,13 +1,11 @@
 // Include Files
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Service.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/IHistorySvc.h"
-#include "GaudiKernel/ToolFactory.h"
 #include "ToolSvc.h"
 #include <algorithm>
 #include <map>
@@ -506,7 +504,7 @@ StatusCode ToolSvc::create(const std::string& tooltype,
   }
   // instantiate the tool using the factory
   try {
-    toolguard = ToolFactory::create(tooltype, tooltype, fullname, parent);
+    toolguard = AlgTool::Factory::create(tooltype, tooltype, fullname, parent);
     if ( UNLIKELY(! toolguard.get()) ){
        error() << "Cannot create tool " << tooltype << " (No factory found)" << endmsg;
        return StatusCode::FAILURE;

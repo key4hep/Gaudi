@@ -141,8 +141,8 @@ void MultiFileCatalog::addCatalog(CSTR con)  {
         using Gaudi::PluginService::Details::Registry;
         Registry& registry = Registry::instance();
         if (registry.getInfo(typ).type ==
-                   typeid(SvcFactory::FuncType).name()) {
-          cat = SvcFactory::create(typ,url,serviceLocator().get());
+                   typeid(Service::Factory::FuncType).name()) {
+          cat = Service::Factory::create(typ,url,serviceLocator().get());
         } else if (registry.getInfo(typ).type ==
             typeid(IFileCatalog::Factory::FuncType).name()) {
           cat = IFileCatalog::Factory::create(typ,url,msgSvc().get());

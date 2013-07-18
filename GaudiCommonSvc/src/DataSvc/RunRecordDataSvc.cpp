@@ -17,10 +17,7 @@
 //====================================================================
 #define  DATASVC_RUNRECORDDATASVC_CPP
 
-#include "GaudiKernel/SvcFactory.h"
 #include "RecordDataSvc.h"
-
-
 
 /** @class RunRecordDataSvc
  *

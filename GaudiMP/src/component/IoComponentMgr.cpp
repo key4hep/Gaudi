@@ -14,7 +14,6 @@
 // STL includes
 
 // FrameWork includes
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/Property.h"
 
 DECLARE_SERVICE_FACTORY(IoComponentMgr)

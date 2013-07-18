@@ -16,7 +16,7 @@
 #include "GaudiKernel/EventSelectorDataStream.h"
 #include "GaudiKernel/DataStreamTool.h"
 #include "GaudiKernel/ToolFactory.h"
-#include "GaudiKernel/SvcFactory.h"
+#include "GaudiKernel/Service.h"
 
 #include <sstream>
 
@@ -156,7 +156,7 @@ StatusCode DataStreamTool::initializeStream(EventSelectorDataStream* s)   {
 
 // Create (sub-) Event selector service
 StatusCode DataStreamTool::createSelector(const std::string& nam, const std::string& typ, IEvtSelector*& sel) {
-  IService* isvc = SvcFactory::create(typ, nam, serviceLocator());
+  IService* isvc = Service::Factory::create(typ, nam, serviceLocator());
   if ( isvc ) {
     StatusCode status = isvc->queryInterface(IEvtSelector::interfaceID(), (void**)&sel);
     if ( status.isSuccess() ) {

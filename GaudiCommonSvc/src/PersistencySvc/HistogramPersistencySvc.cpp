@@ -26,7 +26,6 @@
 // ============================================================================
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/DataObject.h"

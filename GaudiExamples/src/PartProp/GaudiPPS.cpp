@@ -1,6 +1,5 @@
 // Include files
 // from Gaudi
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IParticlePropertySvc.h"
 
 // local
@@ -13,7 +12,7 @@
 //-----------------------------------------------------------------------------
 namespace GaudiExamples {
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY( GaudiPPS )
+DECLARE_COMPONENT( GaudiPPS )
 
 
 //=============================================================================

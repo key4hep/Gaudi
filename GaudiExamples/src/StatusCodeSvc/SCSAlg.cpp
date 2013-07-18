@@ -2,8 +2,6 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"
 
-#include "GaudiKernel/AlgFactory.h"
-
 ///////////////////////////////////////////////////////////////////////////
 SCSAlg::SCSAlg( const std::string& name, ISvcLocator* pSvcLocator ) :
   Algorithm(name, pSvcLocator)

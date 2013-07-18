@@ -1,12 +1,10 @@
-// $Id: HistoTimingAlg.h,v 1.1 2005/10/03 14:15:30 hmd Exp $
-#ifndef HISTOGRAMS_HistoTimingAlg_H 
+#ifndef HISTOGRAMS_HistoTimingAlg_H
 #define HISTOGRAMS_HistoTimingAlg_H 1
 
 #include <map>
 #include <sstream>
 
 // GaudiKernel
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiKernel/RndmGenerators.h"
 
@@ -14,17 +12,17 @@
 #include "GaudiAlg/GaudiHistoAlg.h"
 
 /** @class HistoTimingAlg HistoTimingAlg.h Histograms/HistoTimingAlg.h
- *  
+ *
  *  Timing tests for various histogramming methods
  *
  *  @author Chris Jones
  *  @date   2005-08-12
  */
 
-class HistoTimingAlg : public GaudiHistoAlg 
+class HistoTimingAlg : public GaudiHistoAlg
 {
 
-public: 
+public:
 
   /// Standard constructor
   HistoTimingAlg( const std::string& name, ISvcLocator* pSvcLocator );

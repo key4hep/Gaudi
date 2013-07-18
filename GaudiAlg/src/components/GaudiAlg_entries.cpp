@@ -3,7 +3,6 @@
 #include "GaudiAlg/Sequencer.h"
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiAlg/GaudiSequencer.h"
-#include "GaudiKernel/DeclareFactoryEntries.h"
 
 DECLARE_ALGORITHM_FACTORY( EventCounter   )
 DECLARE_ALGORITHM_FACTORY( Prescaler      )

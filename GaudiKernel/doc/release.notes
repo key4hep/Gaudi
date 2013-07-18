@@ -2,6 +2,13 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 
 ! 2013-07-18 - Marco Clemencic
+ - Removed the need of AlgFactory.h, SvcFactory.h, ToolFactory.h, AudFactory.h
+   and CnvFactory.h.
+ - Moved the factories typedefs from the global namespace to the class scope.
+ - Introduced backward compatibility hacks to handle non-public constructors
+   (the hack can be disabled defining the macro GAUDI_NEW_PLUGIN_SERVICE).
+
+! 2013-07-18 - Marco Clemencic
  - Fixed compilation problem on slc6-gcc46.
 
 ! 2013-07-17 - Marco Clemencic

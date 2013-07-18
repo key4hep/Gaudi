@@ -12,6 +12,7 @@
 #include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/IMonitorSvc.h"
 #include "GaudiKernel/IStateful.h"
+#include <Gaudi/PluginService.h>
 
 #include <vector>
 #include <list>
@@ -33,6 +34,10 @@
 class GAUDI_API AlgTool: public implements3<IAlgTool, IProperty, IStateful> {
   friend class ToolSvc;
 public:
+  typedef Gaudi::PluginService::Factory3<IAlgTool*,
+                                         const std::string&,
+                                         const std::string&,
+                                         const IInterface*> Factory;
 
   /// Query for a given interface
   virtual StatusCode queryInterface(const InterfaceID& riid, void** ppvUnknown);
@@ -348,5 +353,46 @@ private:
   Gaudi::StateMachine::State m_state;            ///< state of the Tool
   Gaudi::StateMachine::State m_targetState;      ///< state of the Tool
 };
+
+
+#ifndef GAUDI_NEW_PLUGIN_SERVICE
+template <class T>
+class ToolFactory {
+public:
+  typedef typename T::Factory::ReturnType ReturnType;
+  typedef typename T::Factory::Arg1Type   Arg1Type;
+  typedef typename T::Factory::Arg2Type   Arg2Type;
+  typedef typename T::Factory::Arg3Type   Arg3Type;
+  static inline ReturnType create(Arg1Type a1, Arg2Type a2, Arg3Type a3) {
+    return new T(a1, a2, a3);
+  }
+};
+#define ToolFactoryHelper(x) \
+    namespace Gaudi { namespace PluginService { namespace Details { \
+    template <> class Factory<x> { \
+      public: \
+      template <typename S> \
+      static typename S::ReturnType create(typename S::Arg1Type a1, \
+                                           typename S::Arg2Type a2, \
+                                           typename S::Arg3Type a3) { \
+        return ToolFactory<x>::create(a1, a2, a3); \
+      } \
+    }; }}}
+
+// macros to declare factories
+#define DECLARE_TOOL_FACTORY(x)              ToolFactoryHelper(x) \
+                                             DECLARE_COMPONENT(x)
+#define DECLARE_NAMESPACE_TOOL_FACTORY(n, x) using n::x; \
+                                             ToolFactoryHelper(x) \
+                                             DECLARE_COMPONENT(x)
+
+#else
+
+// Macros to declare component factories
+#define DECLARE_TOOL_FACTORY(x)              DECLARE_COMPONENT(x)
+#define DECLARE_NAMESPACE_TOOL_FACTORY(n,x)  using n::x; DECLARE_COMPONENT(x)
+
+#endif
+
 
 #endif // GAUDIKERNEL_ALGTOOL_H

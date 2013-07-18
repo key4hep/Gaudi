@@ -1,8 +1,5 @@
-// $Id: StopperAlg.cpp,v 1.4 2006/11/30 10:35:26 mato Exp $
-
 // Include files
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IEventProcessor.h"

@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiSvc/src/NTupleSvc/CollectionCloneAlg.cpp,v 1.7 2006/12/06 17:18:05 mato Exp $
 //	====================================================================
 //  CollectionCloneAlg.cpp
 //	--------------------------------------------------------------------
@@ -11,7 +10,6 @@
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/GenericAddress.h"
 #include "GaudiKernel/SmartDataPtr.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/Tokenizer.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/Algorithm.h"

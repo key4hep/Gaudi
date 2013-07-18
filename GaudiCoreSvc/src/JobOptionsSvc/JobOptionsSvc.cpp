@@ -18,7 +18,6 @@
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/Property.h"
 
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/System.h"
 // ============================================================================

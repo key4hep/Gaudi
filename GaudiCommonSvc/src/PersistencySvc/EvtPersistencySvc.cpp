@@ -5,13 +5,13 @@
 //	Package    : System ( The LHCb Offline System)
 //
 //  Description: implementation of the Event data persistency service
-//               This specialized service only deals with event related 
+//               This specialized service only deals with event related
 //               data
 //
 //	Author     : M.Frank
 //  History    :
 // +---------+----------------------------------------------+---------
-// |    Date |                 Comment                      | Who     
+// |    Date |                 Comment                      | Who
 // +---------+----------------------------------------------+---------
 // | 29/10/98| Initial version                              | MF
 // +---------+----------------------------------------------+---------
@@ -20,7 +20,6 @@
 #define  PERSISTENCYSVC_EVTPERSISTENCYSVC_CPP
 
 // Implementation specific definitions
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "EvtPersistencySvc.h"

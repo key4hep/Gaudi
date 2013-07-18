@@ -2,8 +2,6 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"
 
-#include "GaudiKernel/AlgFactory.h"
-
 // Static Factory declaration
 
 DECLARE_ALGORITHM_FACTORY(ColorMsgAlg)

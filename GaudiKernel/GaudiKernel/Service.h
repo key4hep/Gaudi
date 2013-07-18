@@ -1,5 +1,3 @@
-// $Id: Service.h,v 1.23 2008/06/02 14:20:37 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIKERNEL_SERVICE_H
 #define GAUDIKERNEL_SERVICE_H
 // ============================================================================
@@ -15,6 +13,7 @@
 #include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/CommonMessaging.h"
 #include "GaudiKernel/SmartIF.h"
+#include <Gaudi/PluginService.h>
 // ============================================================================
 #include <vector>
 // ============================================================================
@@ -33,6 +32,9 @@ class ServiceManager;
  */
 class GAUDI_API Service: public CommonMessaging<implements3<IService, IProperty, IStateful> > {
 public:
+  typedef Gaudi::PluginService::Factory2<IService*,
+                                         const std::string&,
+                                         ISvcLocator*> Factory;
   friend class ServiceManager;
 
   /// Release Interface instance.
@@ -94,7 +96,7 @@ public:
    *  Note: the interface IProperty allows setting of the properties either
    *        directly from other properties or from strings only
    *
-   *  This is very convinient in resetting of the default
+   *  This is very convenient in resetting of the default
    *  properties in the derived classes.
    *  E.g. without this method one needs to convert
    *  everything into strings to use IProperty::setProperty
@@ -269,5 +271,45 @@ private:
   /** callback for output level property */
   void initOutputLevel(Property& prop);
 };
+
+#ifndef GAUDI_NEW_PLUGIN_SERVICE
+template <class T>
+class SvcFactory {
+public:
+  typedef typename T::Factory::ReturnType ReturnType;
+  typedef typename T::Factory::Arg1Type   Arg1Type;
+  typedef typename T::Factory::Arg2Type   Arg2Type;
+  static inline ReturnType create(Arg1Type a1, Arg2Type a2) {
+    return new T(a1, a2);
+  }
+};
+#define SvcFactoryHelper(x) \
+    namespace Gaudi { namespace PluginService { namespace Details { \
+    template <> class Factory<x> { \
+      public: \
+      template <typename S> \
+      static typename S::ReturnType create(typename S::Arg1Type a1, \
+                                           typename S::Arg2Type a2) { \
+        return SvcFactory<x>::create(a1, a2); \
+      } \
+    }; }}}
+
+// macros to declare factories
+#define DECLARE_SERVICE_FACTORY(x)              SvcFactoryHelper(x) \
+                                                DECLARE_COMPONENT(x)
+#define DECLARE_NAMED_SERVICE_FACTORY(x, n)     SvcFactoryHelper(x) \
+                                                DECLARE_COMPONENT_WITH_ID(x, n)
+#define DECLARE_NAMESPACE_SERVICE_FACTORY(n, x) using n::x; \
+                                                SvcFactoryHelper(x) \
+                                                DECLARE_COMPONENT(x)
+
+#else
+
+// macros to declare factories
+#define DECLARE_SERVICE_FACTORY(x)              DECLARE_COMPONENT(x)
+#define DECLARE_NAMED_SERVICE_FACTORY(x, n)     DECLARE_COMPONENT_WITH_ID(x, n)
+#define DECLARE_NAMESPACE_SERVICE_FACTORY(n, x) using n::x; DECLARE_COMPONENT(x)
+
+#endif
 
 #endif // GAUDIKERNEL_SERVICE_H

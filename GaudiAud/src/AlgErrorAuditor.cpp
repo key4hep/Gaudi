@@ -1,7 +1,6 @@
 #include "AlgErrorAuditor.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IMessageSvc.h"
-#include "GaudiKernel/AudFactory.h"
 #include "GaudiKernel/GaudiException.h"
 
 DECLARE_AUDITOR_FACTORY(AlgErrorAuditor)

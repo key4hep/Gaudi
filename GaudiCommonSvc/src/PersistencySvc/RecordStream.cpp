@@ -1,8 +1,4 @@
-// $Id: RecordStream.cpp,v 1.1 2008/12/10 18:37:36 marcocle Exp $
-#define GAUDISVC_PERSISTENCYSVC_OUTPUTFSRSTREAM_CPP
-
 // Framework include files
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"

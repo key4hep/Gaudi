@@ -1,6 +1,5 @@
 #include "MTHelloWorld.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "MTMessageSvc.h"
 
 DECLARE_ALGORITHM_FACTORY(MTHelloWorld);
