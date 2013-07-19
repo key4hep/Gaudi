@@ -8,7 +8,7 @@
 
 // Instantiation of a static factory class used by clients to create instances of this service
 
-DECLARE_SERVICE_FACTORY(AppMgrRunable)
+DECLARE_COMPONENT(AppMgrRunable)
 
 // Standard Constructor
 AppMgrRunable::AppMgrRunable(const std::string& nam, ISvcLocator* svcLoc)

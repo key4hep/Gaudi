@@ -21,7 +21,7 @@
 #include <set>
 
 // Define the algorithm factory for the standard output data writer
-DECLARE_ALGORITHM_FACTORY(OutputStream)
+DECLARE_COMPONENT(OutputStream)
 
 // Standard Constructor
 OutputStream::OutputStream(const std::string& name, ISvcLocator* pSvcLocator)

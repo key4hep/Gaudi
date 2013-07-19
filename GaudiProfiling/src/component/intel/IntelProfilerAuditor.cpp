@@ -441,4 +441,4 @@ void IntelProfilerAuditor::after(StandardEventType type,
 }
 
 // Register the auditor
-DECLARE_AUDITOR_FACTORY(IntelProfilerAuditor)
+DECLARE_COMPONENT(IntelProfilerAuditor)

@@ -261,4 +261,4 @@ StatusCodeSvc::parseFilter(const string& str, string& fnc, string& lib) {
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-DECLARE_SERVICE_FACTORY(StatusCodeSvc)
+DECLARE_COMPONENT(StatusCodeSvc)

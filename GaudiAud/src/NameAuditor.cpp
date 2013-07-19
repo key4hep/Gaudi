@@ -6,7 +6,7 @@
 
 #include "GaudiKernel/MsgStream.h"
 
-DECLARE_AUDITOR_FACTORY(NameAuditor)
+DECLARE_COMPONENT(NameAuditor)
 
 NameAuditor::NameAuditor(const std::string& name, ISvcLocator* pSvcLocator):
   CommonAuditor(name, pSvcLocator) {

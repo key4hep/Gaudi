@@ -3,7 +3,7 @@
 
 #include "GaudiKernel/MsgStream.h"
 
-DECLARE_ALGORITHM_FACTORY(LoopAlg)
+DECLARE_COMPONENT(LoopAlg)
 
 //------------------------------------------------------------------------------
 LoopAlg::LoopAlg(const std::string& name,

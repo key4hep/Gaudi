@@ -171,4 +171,4 @@ StatusCode FuncMinimumGenAlg::finalize() {
 
 //=============================================================================
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY(FuncMinimumGenAlg)
+DECLARE_COMPONENT(FuncMinimumGenAlg)

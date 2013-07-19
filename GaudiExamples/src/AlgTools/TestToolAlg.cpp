@@ -13,7 +13,7 @@
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY(TestToolAlg)
+DECLARE_COMPONENT(TestToolAlg)
 
 //=============================================================================
 // Standard constructor, initializes variables

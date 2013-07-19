@@ -30,7 +30,7 @@
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_SERVICE_FACTORY(RndmGenSvc)
+DECLARE_COMPONENT(RndmGenSvc)
 
 /// Standard Service constructor
 RndmGenSvc::RndmGenSvc(const std::string& nam, ISvcLocator* svc)

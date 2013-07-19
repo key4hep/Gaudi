@@ -18,7 +18,7 @@
 #include "EvtCollectionStream.h"
 
 // Define the algorithm factory for the standard output data writer
-DECLARE_ALGORITHM_FACTORY(EvtCollectionStream)
+DECLARE_COMPONENT(EvtCollectionStream)
 
 // Standard Constructor
 EvtCollectionStream::EvtCollectionStream(const std::string& name, ISvcLocator* pSvcLocator)

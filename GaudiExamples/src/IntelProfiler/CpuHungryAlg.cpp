@@ -31,7 +31,7 @@ private:
 
 
 // Register algorithm
-DECLARE_ALGORITHM_FACTORY(CpuHungryAlg)
+DECLARE_COMPONENT(CpuHungryAlg)
 
 CpuHungryAlg::CpuHungryAlg(const std::string& name, ISvcLocator* pSvcLocator)
   : GaudiAlgorithm(name, pSvcLocator),m_nevent(0)

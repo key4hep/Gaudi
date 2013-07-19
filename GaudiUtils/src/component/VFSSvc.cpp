@@ -4,7 +4,7 @@
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/IAlgTool.h"
 
-DECLARE_SERVICE_FACTORY(VFSSvc)
+DECLARE_COMPONENT(VFSSvc)
 
 //------------------------------------------------------------------------------
 VFSSvc::VFSSvc(const std::string& name, ISvcLocator* svc):

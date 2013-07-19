@@ -10,7 +10,7 @@
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY( ReadTES )
+DECLARE_COMPONENT( ReadTES )
 
 
 //=============================================================================

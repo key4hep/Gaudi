@@ -10,7 +10,7 @@
 #include <sstream>
 
 // Static Factory declaration
-DECLARE_ALGORITHM_FACTORY(History)
+DECLARE_COMPONENT(History)
 
 ///////////////////////////////////////////////////////////////////////////
 

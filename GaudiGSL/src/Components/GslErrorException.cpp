@@ -81,7 +81,7 @@ StatusCode GslErrorException::handle
 }
 // ============================================================================
 
-DECLARE_TOOL_FACTORY(GslErrorException)
+DECLARE_COMPONENT(GslErrorException)
 
 // ============================================================================
 // The END

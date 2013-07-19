@@ -9,7 +9,7 @@
 
 // Static Factory declaration
 
-DECLARE_ALGORITHM_FACTORY(PropertyProxy)
+DECLARE_COMPONENT(PropertyProxy)
 
 // Constructor
 //------------------------------------------------------------------------------

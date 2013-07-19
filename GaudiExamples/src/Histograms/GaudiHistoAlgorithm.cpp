@@ -20,7 +20,7 @@
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY(GaudiHistoAlgorithm)
+DECLARE_COMPONENT(GaudiHistoAlgorithm)
 
 
 //=============================================================================

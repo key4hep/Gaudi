@@ -498,4 +498,4 @@ public:
     return StatusCode::SUCCESS;
   }
 };
-DECLARE_ALGORITHM_FACTORY(CollectionCloneAlg)
+DECLARE_COMPONENT(CollectionCloneAlg)

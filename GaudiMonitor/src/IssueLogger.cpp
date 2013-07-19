@@ -14,7 +14,7 @@
 
 using namespace std;
 
-DECLARE_SERVICE_FACTORY(IssueLogger)
+DECLARE_COMPONENT(IssueLogger)
 
 //*************************************************************************//
 inline void toupper(std::string &s)

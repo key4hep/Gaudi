@@ -193,4 +193,4 @@ public:
   }
 };
 
-DECLARE_ALGORITHM_FACTORY(StoreSnifferAlg)
+DECLARE_COMPONENT(StoreSnifferAlg)

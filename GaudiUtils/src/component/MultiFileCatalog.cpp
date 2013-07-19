@@ -1,4 +1,3 @@
-#include "GaudiKernel/DeclareFactoryEntries.h"
 #include "GaudiKernel/strcasecmp.h"
 #include "GaudiKernel/MsgStream.h"
 #include <Gaudi/PluginService.h>
@@ -10,7 +9,8 @@ namespace Gaudi { std::string createGuidAsString(); }
 
 using namespace Gaudi;
 using namespace std;
-DECLARE_NAMESPACE_SERVICE_FACTORY(Gaudi,MultiFileCatalog)
+
+DECLARE_COMPONENT(MultiFileCatalog)
 
 namespace {
   template <class V,class F>

@@ -78,7 +78,8 @@ namespace Gaudi
 // ============================================================================
 /// MANDATORY factory for instantiation
 // ============================================================================
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(Gaudi::Examples,ExtendedEvtCol)
+using Gaudi::Examples::ExtendedEvtCol;
+DECLARE_COMPONENT(ExtendedEvtCol)
 // ============================================================================
 /// local anonymous namespace to hide some technicalities
 // ============================================================================

@@ -1170,4 +1170,4 @@ void PerfMonAuditor::i_afterExecute(INamedInterface* alg)
  return;
 }
 
-DECLARE_AUDITOR_FACTORY(PerfMonAuditor)
+DECLARE_COMPONENT(PerfMonAuditor)

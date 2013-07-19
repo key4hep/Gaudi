@@ -89,7 +89,8 @@ StatusCode GaudiExamples::StatSvcAlg::execute    ()
 // ============================================================================
 // Factory:
 // ============================================================================
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiExamples,StatSvcAlg)
+using GaudiExamples::StatSvcAlg;
+DECLARE_COMPONENT(StatSvcAlg)
 // ============================================================================
 // The END
 // ============================================================================

@@ -44,7 +44,7 @@
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_SERVICE_FACTORY(NTupleSvc)
+DECLARE_COMPONENT(NTupleSvc)
 
 /// Selector factory instantiation
 DECLARE_NAMESPACE_OBJECT_FACTORY(NTuple,Selector)

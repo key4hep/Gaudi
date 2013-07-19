@@ -34,7 +34,7 @@
 #include "HistogramSvc.h"
 // ============================================================================
 // Instantiation of a factory class used by clients
-DECLARE_SERVICE_FACTORY(HistogramSvc)
+DECLARE_COMPONENT(HistogramSvc)
 // ============================================================================
 using namespace AIDA;
 // ============================================================================

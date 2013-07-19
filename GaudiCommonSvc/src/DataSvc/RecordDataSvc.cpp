@@ -33,7 +33,7 @@ using namespace std;
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_SERVICE_FACTORY(RecordDataSvc)
+DECLARE_COMPONENT(RecordDataSvc)
 
 /// Service initialisation
 StatusCode RecordDataSvc::initialize()    {

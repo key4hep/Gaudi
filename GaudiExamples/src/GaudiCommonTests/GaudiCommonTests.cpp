@@ -17,7 +17,7 @@ using namespace Gaudi::Examples ;
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY(GaudiCommonTests)
+DECLARE_COMPONENT(GaudiCommonTests)
 
 //=============================================================================
 // Standard constructor, initializes variables

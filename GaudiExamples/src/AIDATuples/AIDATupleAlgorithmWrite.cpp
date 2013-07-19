@@ -96,4 +96,4 @@ StatusCode AIDATupleAlgorithmWrite::finalize()
 }
 
 // Static factory declaration
-DECLARE_ALGORITHM_FACTORY(AIDATupleAlgorithmWrite)
+DECLARE_COMPONENT(AIDATupleAlgorithmWrite)

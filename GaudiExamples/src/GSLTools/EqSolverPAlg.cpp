@@ -19,7 +19,7 @@
 using namespace Genfun;
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY(EqSolverPAlg)
+DECLARE_COMPONENT(EqSolverPAlg)
 
 //=============================================================================
 // Standard constructor, initializes variables

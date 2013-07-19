@@ -15,7 +15,7 @@
 #include "TFile.h"
 #include "TError.h"
 
-DECLARE_ALGORITHM_FACTORY(THistRead)
+DECLARE_COMPONENT(THistRead)
 
 //------------------------------------------------------------------------------
 THistRead::THistRead(const std::string& name,

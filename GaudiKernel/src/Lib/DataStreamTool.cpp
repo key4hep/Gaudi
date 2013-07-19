@@ -1,4 +1,3 @@
-// $Id: DataStreamTool.cpp,v 1.5 2008/04/04 15:12:19 marcocle Exp $
 // Include files
 
 // from Gaudi
@@ -25,10 +24,6 @@
 //
 // 2006-09-21 : Andres Felipe Osorio Oliveros
 //-----------------------------------------------------------------------------
-
-// Declaration of the Tool Factory
-// Now the declaration is done in GaudiSvc
-//DECLARE_TOOL_FACTORY( DataStreamTool )
 
 //=============================================================================
 // Standard constructor, initializes variables

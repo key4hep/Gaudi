@@ -23,7 +23,7 @@
 
 // Instantiation of a static factory class used by clients to create
 //  instances of this service
-DECLARE_SERVICE_FACTORY(ToolSvc)
+DECLARE_COMPONENT(ToolSvc)
 
 namespace bl = boost::lambda;
 

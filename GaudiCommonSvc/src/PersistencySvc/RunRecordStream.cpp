@@ -9,7 +9,7 @@
 #include "RunRecordStream.h"
 
 // Define the algorithm factory for the standard output data writer
-DECLARE_ALGORITHM_FACTORY(RunRecordStream)
+DECLARE_COMPONENT(RunRecordStream)
 
 StatusCode RunRecordStream::finalize() {
   MsgStream log(msgSvc(), name());

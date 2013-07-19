@@ -15,7 +15,7 @@
 #include "TDirectory.h"
 #include "TError.h"
 
-DECLARE_ALGORITHM_FACTORY(THistWrite)
+DECLARE_COMPONENT(THistWrite)
 
 //------------------------------------------------------------------------------
 THistWrite::THistWrite(const std::string& name,

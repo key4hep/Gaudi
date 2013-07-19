@@ -20,7 +20,7 @@ using namespace std;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-DECLARE_SERVICE_FACTORY(ExceptionSvc)
+DECLARE_COMPONENT(ExceptionSvc)
 
 inline void toupper(std::string &s)
 {

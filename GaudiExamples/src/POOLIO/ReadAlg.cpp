@@ -30,7 +30,7 @@
 
 using namespace Gaudi::Examples;
 
-DECLARE_ALGORITHM_FACTORY(ReadAlg)
+DECLARE_COMPONENT(ReadAlg)
 
 //--------------------------------------------------------------------
 // Initialize

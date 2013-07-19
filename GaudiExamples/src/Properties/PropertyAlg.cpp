@@ -315,4 +315,4 @@ StatusCode PropertyAlg::finalize() {
 }
 
 // Static Factory declaration
-DECLARE_ALGORITHM_FACTORY(PropertyAlg)
+DECLARE_COMPONENT(PropertyAlg)

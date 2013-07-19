@@ -106,10 +106,10 @@ namespace GaudiExamples
     std::string m_counterBaseName;
   };
 
-} // end of namespace GaudiExamples
+  // ==========================================================================
+  DECLARE_COMPONENT(CounterSvcAlg)
 
-// ============================================================================
-DECLARE_NAMESPACE_ALGORITHM_FACTORY (GaudiExamples, CounterSvcAlg)
+} // end of namespace GaudiExamples
 
 // ============================================================================
 // The END

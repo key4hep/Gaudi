@@ -8,7 +8,7 @@
 #include "MyGaudiAlgorithm.h"
 
 // Static Factory declaration
-DECLARE_ALGORITHM_FACTORY(MyGaudiAlgorithm)
+DECLARE_COMPONENT(MyGaudiAlgorithm)
 
 // Constructor
 //------------------------------------------------------------------------------

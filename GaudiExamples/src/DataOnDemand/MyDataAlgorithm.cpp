@@ -4,7 +4,7 @@
 
 // Static Factory declaration
 
-DECLARE_ALGORITHM_FACTORY(MyDataAlgorithm)
+DECLARE_COMPONENT(MyDataAlgorithm)
 
 // Constructor
 //------------------------------------------------------------------------------

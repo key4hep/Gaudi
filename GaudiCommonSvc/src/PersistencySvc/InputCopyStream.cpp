@@ -10,7 +10,7 @@
 #include "InputCopyStream.h"
 
 // Define the algorithm factory for the standard output data writer
-DECLARE_ALGORITHM_FACTORY(InputCopyStream)
+DECLARE_COMPONENT(InputCopyStream)
 
 // Standard Constructor
 InputCopyStream::InputCopyStream(const std::string& name, ISvcLocator* pSvcLocator)

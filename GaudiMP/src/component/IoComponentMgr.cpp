@@ -16,7 +16,7 @@
 // FrameWork includes
 #include "GaudiKernel/Property.h"
 
-DECLARE_SERVICE_FACTORY(IoComponentMgr)
+DECLARE_COMPONENT(IoComponentMgr)
 
 
 ///////////////////////////////////////////////////////////////////

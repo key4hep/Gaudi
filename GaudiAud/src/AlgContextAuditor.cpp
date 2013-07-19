@@ -34,7 +34,7 @@ namespace
 // ============================================================================
 // mandatory auditor factory, needed for instantiation
 // ============================================================================
-DECLARE_AUDITOR_FACTORY(AlgContextAuditor)
+DECLARE_COMPONENT(AlgContextAuditor)
 // ============================================================================
 // standard constructor @see Auditor
 // ============================================================================

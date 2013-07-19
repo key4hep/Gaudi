@@ -18,7 +18,7 @@
 #include "EventIterator.h"
 #include <climits>
 
-DECLARE_SERVICE_FACTORY(EventSelector)
+DECLARE_COMPONENT(EventSelector)
 
 // Standard constructor
 EventSelector::EventSelector(const std::string& name, ISvcLocator* svcloc )

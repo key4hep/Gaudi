@@ -263,4 +263,4 @@ public:
   }
 };
 
-DECLARE_ALGORITHM_FACTORY(StoreExplorerAlg)
+DECLARE_COMPONENT(StoreExplorerAlg)

@@ -214,11 +214,10 @@ namespace GaudiTesting {
     SmartIF<IDataProviderSvc> m_dataProvider;
   };
 
+  DECLARE_COMPONENT(DestructorCheckAlg)
+  DECLARE_COMPONENT(SleepyAlg)
+  DECLARE_COMPONENT(SignallingAlg)
+  DECLARE_COMPONENT(StopLoopAlg)
+  DECLARE_COMPONENT(CustomIncidentAlg)
+  DECLARE_COMPONENT(GetDataObjectAlg)
 }
-
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, DestructorCheckAlg)
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, SleepyAlg)
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, SignallingAlg)
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, StopLoopAlg)
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, CustomIncidentAlg)
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, GetDataObjectAlg)

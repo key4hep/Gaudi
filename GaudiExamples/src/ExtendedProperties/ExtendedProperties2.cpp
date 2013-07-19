@@ -157,7 +157,8 @@ StatusCode Gaudi::Examples::ExtendedProperties2::execute()
 // ============================================================================
 // the factory
 // ============================================================================
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(Gaudi::Examples,ExtendedProperties2)
+using Gaudi::Examples::ExtendedProperties2;
+DECLARE_COMPONENT(ExtendedProperties2)
 // ============================================================================
 // The END
 // ============================================================================

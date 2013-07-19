@@ -6,7 +6,7 @@
 
 #include "GaudiKernel/IssueSeverity.h"
 
-DECLARE_ALGORITHM_FACTORY(ErrorLogTest)
+DECLARE_COMPONENT(ErrorLogTest)
 
 //------------------------------------------------------------------------------
 ErrorLogTest::ErrorLogTest(const std::string& name,

@@ -60,4 +60,4 @@ void SCSAlg::fncUnchecked2() {
 }
 
 // Static Factory declaration
-DECLARE_ALGORITHM_FACTORY(SCSAlg)
+DECLARE_COMPONENT(SCSAlg)

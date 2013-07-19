@@ -9,7 +9,7 @@
 
 #include <math.h>
 
-DECLARE_ALGORITHM_FACTORY(NTupleAlgorithm)
+DECLARE_COMPONENT(NTupleAlgorithm)
 
 //------------------------------------------------------------------------------
 NTupleAlgorithm::NTupleAlgorithm(const std::string& name,

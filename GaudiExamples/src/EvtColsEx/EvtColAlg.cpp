@@ -131,7 +131,8 @@ StatusCode Gaudi::Examples::EvtColAlg::execute()
   return StatusCode::SUCCESS ;
 }
 // ============================================================================
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(Gaudi::Examples,EvtColAlg)
+using Gaudi::Examples::EvtColAlg;
+DECLARE_COMPONENT(EvtColAlg)
 // ============================================================================
 // The END
 // ============================================================================

@@ -143,4 +143,4 @@ public:
   }
 };
 
-DECLARE_ALGORITHM_FACTORY(PartitionSwitchAlg)
+DECLARE_COMPONENT(PartitionSwitchAlg)

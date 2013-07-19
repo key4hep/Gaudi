@@ -26,7 +26,7 @@
 
 using namespace Gaudi::Examples;
 
-DECLARE_ALGORITHM_FACTORY(WriteAlg)
+DECLARE_COMPONENT(WriteAlg)
 
 //--------------------------------------------------------------------
 // Register data leaf

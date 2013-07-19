@@ -9,7 +9,7 @@
 
 // Static Factory declaration
 
-DECLARE_ALGORITHM_FACTORY(MyAudAlgorithm)
+DECLARE_COMPONENT(MyAudAlgorithm)
 
 // Constructor
 //------------------------------------------------------------------------------

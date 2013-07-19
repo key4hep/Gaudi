@@ -80,6 +80,6 @@ namespace GaudiSvcTest  {
       return StatusCode::SUCCESS;
     }
   };
-}
 
-DECLARE_NAMESPACE_ALGORITHM_FACTORY (GaudiSvcTest, CounterTestAlg)
+  DECLARE_COMPONENT(CounterTestAlg)
+}

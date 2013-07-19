@@ -9,7 +9,7 @@
 
 // Static factory declaration
 
-DECLARE_ALGORITHM_FACTORY(AIDATupleAlgorithmRead)
+DECLARE_COMPONENT(AIDATupleAlgorithmRead)
 
 //--------------------------------------------------------
 AIDATupleAlgorithmRead::AIDATupleAlgorithmRead(const std::string& name,

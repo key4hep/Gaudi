@@ -175,7 +175,8 @@ StatusCode GaudiExamples::TimingAlg::finalize () // the finalization of the algo
 }
 // ============================================================================
 // declare the factory (needed for instantiation)
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiExamples,TimingAlg)
+using GaudiExamples::TimingAlg;
+DECLARE_COMPONENT(TimingAlg)
 // ============================================================================
 // The END
 // ============================================================================

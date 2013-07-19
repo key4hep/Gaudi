@@ -9,7 +9,7 @@
 #include "RecordStream.h"
 
 // Define the algorithm factory for the standard output data writer
-DECLARE_ALGORITHM_FACTORY(RecordStream)
+DECLARE_COMPONENT(RecordStream)
 
 // Standard Constructor
 RecordStream::RecordStream(const std::string& name, ISvcLocator* pSvcLocator)

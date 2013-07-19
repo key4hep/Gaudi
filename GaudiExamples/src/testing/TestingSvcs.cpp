@@ -63,6 +63,5 @@ namespace GaudiTesting {
     }
   };
 
+  DECLARE_COMPONENT(FailingSvc)
 }
-
-DECLARE_NAMESPACE_SERVICE_FACTORY(GaudiTesting, FailingSvc)

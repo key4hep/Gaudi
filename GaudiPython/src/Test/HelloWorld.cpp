@@ -5,7 +5,7 @@
 #include "HelloWorld.h"
 
 // Static Factory declaration
-DECLARE_ALGORITHM_FACTORY(HelloWorld)
+DECLARE_COMPONENT(HelloWorld)
 
 // Constructor
 //------------------------------------------------------------------------------

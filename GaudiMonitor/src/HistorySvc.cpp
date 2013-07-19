@@ -32,7 +32,7 @@
 #include <limits>
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-DECLARE_SERVICE_FACTORY(HistorySvc)
+DECLARE_COMPONENT(HistorySvc)
 
 using namespace std;
 

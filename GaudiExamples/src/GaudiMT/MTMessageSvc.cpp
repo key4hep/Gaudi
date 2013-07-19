@@ -11,7 +11,7 @@ extern pthread_mutex_t coutmutex;
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_SERVICE_FACTORY(MTMessageSvc)
+DECLARE_COMPONENT(MTMessageSvc)
 
 // Constructor
 MTMessageSvc::MTMessageSvc( const std::string& name, ISvcLocator* svcloc )

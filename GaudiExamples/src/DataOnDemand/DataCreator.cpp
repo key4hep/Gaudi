@@ -2,7 +2,7 @@
 #include "DataCreator.h"
 
 // Static Factory declaration
-DECLARE_ALGORITHM_FACTORY(DataCreator)
+DECLARE_COMPONENT(DataCreator)
 
 // Constructor
 //------------------------------------------------------------------------------

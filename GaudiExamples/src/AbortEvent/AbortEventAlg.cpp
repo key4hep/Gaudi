@@ -14,7 +14,7 @@
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY( AbortEventAlg )
+DECLARE_COMPONENT( AbortEventAlg )
 
 //=============================================================================
 // Standard constructor, initializes variables

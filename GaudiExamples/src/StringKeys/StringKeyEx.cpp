@@ -167,7 +167,8 @@ StatusCode Gaudi::Examples::StringKeyEx::execute()
 }
 // ============================================================================
 /// the factory:
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(Gaudi::Examples,StringKeyEx)
+using Gaudi::Examples::StringKeyEx;
+DECLARE_COMPONENT(StringKeyEx)
 // ============================================================================
 // The END
 // ========-===================================================================

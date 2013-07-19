@@ -3,9 +3,9 @@
 
 #include "GaudiKernel/MsgStream.h"
 
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiEx, QotdAlg)
-
 using namespace GaudiEx;
+
+DECLARE_COMPONENT(QotdAlg)
 
 //------------------------------------------------------------------------------
 QotdAlg::QotdAlg(const std::string& name,

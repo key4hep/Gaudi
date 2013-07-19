@@ -10,7 +10,7 @@
 #include "TagCollectionStream.h"
 
 // Define the algorithm factory for the standard output data writer
-DECLARE_ALGORITHM_FACTORY(TagCollectionStream)
+DECLARE_COMPONENT(TagCollectionStream)
 
 static const char SEPARATOR = IDataProviderSvc::SEPARATOR;
 

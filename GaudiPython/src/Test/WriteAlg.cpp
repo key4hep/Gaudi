@@ -14,7 +14,7 @@
 #include "MyTrack.h"
 #include "MyVertex.h"
 
-DECLARE_ALGORITHM_FACTORY(WriteAlg)
+DECLARE_COMPONENT(WriteAlg)
 
 //--------------------------------------------------------------------
 // Initialize

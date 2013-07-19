@@ -31,7 +31,7 @@
 using namespace std;
 
 
-DECLARE_SERVICE_FACTORY(THistSvc)
+DECLARE_COMPONENT(THistSvc)
 
 inline void toupper(std::string &s)
 {

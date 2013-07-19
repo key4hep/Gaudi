@@ -16,7 +16,7 @@
 
 #include <memory>
 
-DECLARE_SERVICE_FACTORY(EventCollectionSelector)
+DECLARE_COMPONENT(EventCollectionSelector)
 
 /** @class EventCollectionContext
  *

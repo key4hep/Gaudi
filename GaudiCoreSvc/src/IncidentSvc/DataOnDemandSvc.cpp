@@ -977,7 +977,7 @@ void DataOnDemandSvc::dump
 /** Instantiation of a static factory class used by clients to create
  *  the instances of this service
  */
-DECLARE_SERVICE_FACTORY(DataOnDemandSvc)
+DECLARE_COMPONENT(DataOnDemandSvc)
 // ============================================================================
 
 // ============================================================================

@@ -4,6 +4,9 @@
 ! Purpose     : Root based persistency
 !-----------------------------------------------------------------------------
 
+! 2013-07-19 - Marco Clemencic
+ - Clean up in the use of the new PluginService.
+
 ! 2013-07-18 - Marco Clemencic
  - Removed use of obsolete AlgFactory.h, SvcFactory.h, ToolFactory.h,
    AudFactory.h and CnvFactory.h.

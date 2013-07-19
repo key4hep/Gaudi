@@ -79,8 +79,8 @@ StatusCode MyAlgorithm::finalize() {
   return StatusCode::SUCCESS;
 }
 
-}
 
 // Static Factory declaration
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(bug_34121,MyAlgorithm)
+DECLARE_COMPONENT(MyAlgorithm)
 
+} // namespace bug_34121

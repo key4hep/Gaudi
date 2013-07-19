@@ -8,7 +8,7 @@
 
 #include <math.h>
 
-DECLARE_ALGORITHM_FACTORY(HistoAlgorithm)
+DECLARE_COMPONENT(HistoAlgorithm)
 
 
 //------------------------------------------------------------------------------

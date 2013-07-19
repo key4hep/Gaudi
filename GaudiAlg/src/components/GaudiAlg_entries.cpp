@@ -4,8 +4,8 @@
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiAlg/GaudiSequencer.h"
 
-DECLARE_ALGORITHM_FACTORY( EventCounter   )
-DECLARE_ALGORITHM_FACTORY( Prescaler      )
-DECLARE_ALGORITHM_FACTORY( Sequencer      )
-DECLARE_ALGORITHM_FACTORY( GaudiAlgorithm )
-DECLARE_ALGORITHM_FACTORY( GaudiSequencer )
+DECLARE_COMPONENT( EventCounter   )
+DECLARE_COMPONENT( Prescaler      )
+DECLARE_COMPONENT( Sequencer      )
+DECLARE_COMPONENT( GaudiAlgorithm )
+DECLARE_COMPONENT( GaudiSequencer )

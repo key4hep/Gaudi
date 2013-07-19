@@ -21,7 +21,7 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/System.h"
 // ============================================================================
-DECLARE_SERVICE_FACTORY(JobOptionsSvc)
+DECLARE_COMPONENT(JobOptionsSvc)
 // ============================================================================
 // Namespace aliases:
 // ============================================================================

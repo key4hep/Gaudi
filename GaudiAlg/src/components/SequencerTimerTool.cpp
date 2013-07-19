@@ -18,7 +18,7 @@
 //-----------------------------------------------------------------------------
 
 // Declaration of the Tool Factory
-DECLARE_TOOL_FACTORY(SequencerTimerTool)
+DECLARE_COMPONENT(SequencerTimerTool)
 
 //=============================================================================
 // Standard constructor, initializes variables

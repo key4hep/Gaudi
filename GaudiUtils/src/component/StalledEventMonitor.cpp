@@ -160,4 +160,4 @@ StatusCode StalledEventMonitor::finalize() {
 }
 
 // Declaration of the factory
-DECLARE_SERVICE_FACTORY(StalledEventMonitor)
+DECLARE_COMPONENT(StalledEventMonitor)

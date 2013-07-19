@@ -76,8 +76,9 @@ namespace Gaudi
   } // end of namespace Gaudi::Examples
 } // end of namespace Gaudi
 // ============================================================================
-/// the factory (nessessry for instantiation)
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(Gaudi::Examples,HistoProps)
+/// the factory (necessary for instantiation)
+using Gaudi::Examples::HistoProps;
+DECLARE_COMPONENT(HistoProps)
 // ============================================================================
 // Execute the algorithm
 // ============================================================================

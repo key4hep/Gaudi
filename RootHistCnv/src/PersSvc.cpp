@@ -19,7 +19,8 @@
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_NAMESPACE_SERVICE_FACTORY(RootHistCnv,PersSvc)
+using RootHistCnv::PersSvc;
+DECLARE_COMPONENT(PersSvc)
 
 namespace RootHistCnv {
   static std::string stat_dir = "/stat";

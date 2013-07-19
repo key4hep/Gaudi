@@ -16,7 +16,7 @@ using AIDA::IHistogram1D;
 // Example related include files
 #include "RandomNumberAlg.h"
 
-DECLARE_ALGORITHM_FACTORY(RandomNumberAlg)
+DECLARE_COMPONENT(RandomNumberAlg)
 
 /**  Algorithm parameters which can be set at run time must be declared.
      This should be done in the constructor.

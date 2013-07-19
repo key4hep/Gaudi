@@ -2,7 +2,7 @@
 #include "GaudiKernel/MsgStream.h"
 #include "MTMessageSvc.h"
 
-DECLARE_ALGORITHM_FACTORY(MTHelloWorld);
+DECLARE_COMPONENT(MTHelloWorld);
 
 /////////////////////////////////////////////////////////////////////////////
 

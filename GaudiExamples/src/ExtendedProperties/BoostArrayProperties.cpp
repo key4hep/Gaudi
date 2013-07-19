@@ -87,7 +87,8 @@ StatusCode Gaudi::Examples::BoostArrayProperties::execute ()
 // ============================================================================
 /// The Factory
 // ============================================================================
-DECLARE_NAMESPACE_ALGORITHM_FACTORY( Gaudi::Examples , BoostArrayProperties )
+using Gaudi::Examples::BoostArrayProperties;
+DECLARE_COMPONENT(BoostArrayProperties)
 // ============================================================================
 // The END
 // ============================================================================

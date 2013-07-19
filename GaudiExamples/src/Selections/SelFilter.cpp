@@ -126,7 +126,8 @@ namespace Gaudi
 } // end of namespace Gaudi
 // ============================================================================
 /// The factory (needed for instantiation)
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(Gaudi::Examples,SelFilter)
+using Gaudi::Examples::SelFilter;
+DECLARE_COMPONENT(SelFilter)
 // ============================================================================
 // The END
 // ============================================================================
