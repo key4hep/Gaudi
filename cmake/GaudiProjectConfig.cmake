@@ -1180,12 +1180,17 @@ function(gaudi_generate_configurables library)
   # Note: the dependencies on GaudiSvc and the genconf executable are needed
   #       in case they have to be built in the current project
   if(TARGET GaudiCoreSvc)
+    get_target_property(GaudiCoreSvcIsImported GaudiCoreSvc IMPORTED)
+  else()
+    set(GaudiCoreSvcIsImported TRUE) # no target or imported is the same
+  endif()
+
+  if(NOT GaudiCoreSvcIsImported) # it's a local target
     set(deps GaudiCoreSvc genconf)
   else()
-    # GaudiCoreSvc is a component library so the target is not exported, but we
-    # can assume it has been already built.
     set(deps genconf)
   endif()
+
   add_custom_command(
     OUTPUT ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py ${outdir}/__init__.py
     COMMAND ${env_cmd} --xml ${env_xml}
