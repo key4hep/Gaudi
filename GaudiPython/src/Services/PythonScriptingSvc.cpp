@@ -14,7 +14,7 @@
 #include <sstream>
 
 // Special for Unixes
-#if defined(linux)
+#if defined(__linux)
   #include "dlfcn.h"
 #endif
 
@@ -71,7 +71,7 @@ StatusCode PythonScriptingSvc::initialize()
   std::string vers(version, 0, version.find_first_of('.',version.find_first_of('.')+1));
   log << MSG::INFO << "Python version: [" << vers << "]" << endmsg;
 
-#if defined(linux)
+#if defined(__linux)
   // This is hack to make global the python symbols
   // which are needed by the other python modules
   // (eg. readline, math, etc,) libraries.
