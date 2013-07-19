@@ -4,6 +4,9 @@
 ! Purpose     : Provide a generic plugin service.
 !-----------------------------------------------------------------------------
 
+! 2013-07-19 - Marco Clemencic
+ - Added instructions for the Plugin Service in a README.md file.
+
 ! 2013-07-18 - Marco Clemencic
  - Modified the symbol resolution policy when loading a component library,
    using RTLD_LAZY instead of RTLD_NOW.
