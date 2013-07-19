@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 
 ! 2013-07-19 - Marco Clemencic
+ - Improved the printout of genconf.
+
+! 2013-07-19 - Marco Clemencic
  - Clean up in the use of the new PluginService.
 
 ! 2013-07-18 - Marco Clemencic

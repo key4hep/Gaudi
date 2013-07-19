@@ -435,15 +435,6 @@ int configGenerator::genConfig( const Strings_t& libs )
   }
 
   //--- Iterate over component factories --------------------------------------
-  /*
-   ROOT::Reflex::Scope factories = ROOT::Reflex::Scope::ByName("__pf__");
-
-  if ( !factories ) {
-    cout << "ERROR: No PluginSvc factory namespace could be found" << endl;
-    return EXIT_FAILURE;
-  }
-  */
-
   using Gaudi::PluginService::Details::Registry;
   Registry& registry = Registry::instance();
 
@@ -515,9 +506,6 @@ int configGenerator::genConfig( const Strings_t& libs )
       // handle possible problems with templated components
       boost::trim(name);
 
-      cout << " - component: " << info.className
-           << " (" << name << ':'<< type << ")" << endl;
-
       if ( type == "IInterface" ) {
         /// not enough information...
         /// skip it
@@ -536,6 +524,11 @@ int configGenerator::genConfig( const Strings_t& libs )
         allGood = false;
         continue;
       }
+
+      cout << " - component: " << info.className << " (";
+      if (info.className != name)
+        cout << name << ": ";
+      cout << type << ")" << endl;
 
       string cname = "DefaultName";
       SmartIF<IProperty> prop;
