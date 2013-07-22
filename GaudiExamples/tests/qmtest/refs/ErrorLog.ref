@@ -47,7 +47,7 @@ IssueLogger         DEBUG Writing INFO issues to MsgStream[m
 IssueLogger         DEBUG Writing RECOVERABLE issues to MsgStream[m
 IssueLogger         DEBUG Writing FATAL issues to MsgStream[m
 IssueLogger         DEBUG Writing ALWAYS issues to MsgStream[m
-[94;101;1mIssueLogger         FATAL FATAL  ../src/ErrorLog/ErrorLogTest.cpp:38  "this is a fatal" [16:31:47 2009/03/13 CET]
+[94;101;1mIssueLogger         FATAL FATAL  ../src/ErrorLog/ErrorLogTest.cpp:34  "this is a fatal" [16:31:47 2009/03/13 CET]
 #1  0x2a9a7c0180 ErrorLogTest::initialize()  [/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/InstallArea/slc4_amd64_gcc34_dbg/lib/libGaudiExamples.so]
 #2  0x2a95f762d8 Algorithm::sysInitialize()  [/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/InstallArea/slc4_amd64_gcc34_dbg/lib/libGaudiKernel.so]
 #3  0x2a96013d34 MinimalEventLoopMgr::initialize()  [/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/InstallArea/slc4_amd64_gcc34_dbg/lib/libGaudiKernel.so]
@@ -63,7 +63,7 @@ IssueLogger         DEBUG Writing ALWAYS issues to MsgStream[m
 #13 0x3a0301c330 __libc_start_main  [/lib64/tls/libc.so.6]
 #14 0x4005a8 __gxx_personality_v0  [/afs/cern.ch/user/m/marcocle/scratch0/workspace/GAUDI/InstallArea/slc4_amd64_gcc34_dbg/bin/Gaudi.exe]
 [m
-IssueLogger          INFO INFO  ../src/ErrorLog/ErrorLogTest.cpp:44  "info ErrObj" [16:31:47 2009/03/13 CET][m
+IssueLogger          INFO INFO  ../src/ErrorLog/ErrorLogTest.cpp:40  "info ErrObj" [16:31:47 2009/03/13 CET][m
 [93;1mEventLoopMgr      WARNING Unable to locate service "EventSelector" [m
 [93;1mEventLoopMgr      WARNING No events will be processed from external input.[m
 [93;1mHistogramPersis...WARNING Histograms saving not required.[m
