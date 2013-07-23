@@ -5,6 +5,9 @@
 !-----------------------------------------------------------------------------
 
 ! 2013-07-23 - Marco Clemencic
+ - Added thread safety (with locks) if compiled with C++11.
+
+! 2013-07-23 - Marco Clemencic
  - Changes the dlopen flags from (RTLD_LAZY | RTLD_LOCAL) to
    (RTLD_LAZY | RTLD_GLOBAL) to avoid problems with Python binary modules
    imported through the Python C/C++ API.

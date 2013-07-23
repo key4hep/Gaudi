@@ -24,6 +24,20 @@
 #include <cxxabi.h>
 #include <sys/stat.h>
 
+#if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
+#define REG_SCOPE_LOCK \
+  std::lock_guard<std::recursive_mutex> _guard(m_mutex);
+
+namespace {
+  std::mutex registrySingletonMutex;
+}
+#define SINGLETON_LOCK \
+  std::lock_guard<std::mutex> _guard(::registrySingletonMutex);
+#else
+#define REG_SCOPE_LOCK
+#define SINGLETON_LOCK
+#endif
+
 // string trimming functions taken from
 // http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
 #include <algorithm>
@@ -49,6 +63,9 @@ static inline std::string &trim(std::string &s) {
 }
 
 namespace {
+  /// Helper function used to set values in FactoryInfo data members only
+  /// if the original value is empty and reporting warnings in case of
+  /// inconsistencies.
   inline void factoryInfoSetHelper(std::string& dest, const std::string value,
                                    const std::string& desc,
                                    const std::string& id) {
@@ -77,6 +94,7 @@ namespace Gaudi { namespace PluginService {
     }
 
     Registry& Registry::instance() {
+      SINGLETON_LOCK
       static Registry r;
       return r;
     }
@@ -84,6 +102,8 @@ namespace Gaudi { namespace PluginService {
     Registry::Registry(): m_initialized(false) {}
 
     void Registry::initialize() {
+      REG_SCOPE_LOCK
+      if (m_initialized) return;
       m_initialized = true;
 #ifdef WIN32
       const char* envVar = "PATH";
@@ -168,6 +188,7 @@ namespace Gaudi { namespace PluginService {
     void Registry::add(const std::string& id, void *factory,
                        const std::string& type, const std::string& rtype,
                        const std::string& className){
+      REG_SCOPE_LOCK
       FactoryMap &facts = factories();
       FactoryMap::iterator entry = facts.find(id);
       if (entry == facts.end())
@@ -176,7 +197,7 @@ namespace Gaudi { namespace PluginService {
         facts.insert(std::make_pair(id, FactoryInfo("unknown", factory,
                                                     type, rtype, className)));
       } else {
-        // do not replace an existing factory for a new one
+        // do not replace an existing factory with a new one
         if (!entry->second.ptr) {
           entry->second.ptr = factory;
         }
@@ -187,6 +208,7 @@ namespace Gaudi { namespace PluginService {
     }
 
     void* Registry::get(const std::string& id, const std::string& type) const {
+      REG_SCOPE_LOCK
       const FactoryMap &facts = factories();
       FactoryMap::const_iterator f = facts.find(id);
       if (f != facts.end())
@@ -212,6 +234,7 @@ namespace Gaudi { namespace PluginService {
     }
 
     const Registry::FactoryInfo& Registry::getInfo(const std::string& id) const {
+      REG_SCOPE_LOCK
       static FactoryInfo unknown("unknown");
       const FactoryMap &facts = factories();
       FactoryMap::const_iterator f = facts.find(id);
@@ -223,9 +246,11 @@ namespace Gaudi { namespace PluginService {
     }
 
     std::set<Registry::KeyType> Registry::loadedFactories() const {
+      REG_SCOPE_LOCK
+      const FactoryMap &facts = factories();
       std::set<KeyType> l;
-      for (FactoryMap::const_iterator f = m_factories.begin();
-           f != m_factories.end(); ++f)
+      for (FactoryMap::const_iterator f = facts.begin();
+           f != facts.end(); ++f)
       {
         if (f->second.ptr)
           l.insert(f->first);

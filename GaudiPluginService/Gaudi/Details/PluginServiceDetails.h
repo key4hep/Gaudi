@@ -19,6 +19,10 @@
 #include <set>
 #include <typeinfo>
 
+#if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
+#include <mutex>
+#endif
+
 namespace Gaudi { namespace PluginService {
 
   namespace Details {
@@ -168,6 +172,11 @@ namespace Gaudi { namespace PluginService {
 
       /// Internal storage for factories.
       FactoryMap m_factories;
+
+#if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
+      /// Mutex used to control concurrent access to the internal data.
+      mutable std::recursive_mutex m_mutex;
+#endif
     };
 
     /// Simple logging class, just to provide a default implementation.
