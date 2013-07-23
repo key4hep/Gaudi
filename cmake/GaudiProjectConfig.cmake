@@ -875,6 +875,11 @@ macro(gaudi_collect_subdir_deps)
         list(APPEND ${_p}_DEPENDENCIES ${___p})
       endforeach()
     endforeach()
+    # Specila dependency required for modules
+    string(REGEX MATCHALL "gaudi_add_module *\\(([^)]+)\\)" vars ${file_contents})
+    if(vars AND NOT _p STREQUAL GaudiCoreSvc)
+      list(APPEND ${_p}_DEPENDENCIES GaudiCoreSvc)
+    endif()
   endforeach()
 endmacro()
 # helper function used by gaudi_sort_subdirectories
