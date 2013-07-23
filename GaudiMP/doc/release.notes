@@ -1,6 +1,10 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+! 2013-07-23 - Marco Clemencic
+ - Modified IoComponentMgr::initialize to print the Python error in case of
+   failure when importing 'GaudiMP.IoRegistry'.
+
 ! 2013-07-19 - Marco Clemencic
  - Clean up in the use of the new PluginService.
 

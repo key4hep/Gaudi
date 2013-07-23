@@ -77,7 +77,6 @@ StatusCode IoComponentMgr::initialize()
     }
   }
 
-
   // retrieve the python dictionary holding the I/O registry
   const std::string py_module_name = "GaudiMP.IoRegistry";
   m_log << MSG::DEBUG << "importing module [" << py_module_name << "]..."
@@ -86,6 +85,8 @@ StatusCode IoComponentMgr::initialize()
   if ( !module || !PyModule_Check (module) ) {
     m_log << MSG::ERROR << "Could not import [" << py_module_name << "] !"
 	  << endmsg;
+    // print Python backtrace (to stderr)
+    PyErr_Print();
     Py_XDECREF (module);
     return StatusCode::FAILURE;
   }
