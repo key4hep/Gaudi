@@ -192,7 +192,7 @@ namespace Gaudi { namespace PluginService {
       if (f != facts.end())
       {
         if (!f->second.ptr) {
-          if (!dlopen(f->second.library.c_str(), RTLD_LAZY | RTLD_LOCAL)) {
+          if (!dlopen(f->second.library.c_str(), RTLD_LAZY | RTLD_GLOBAL)) {
             logger().warning("cannot load " + f->second.library +
                              " for factory " + id);
             char *dlmsg = dlerror();

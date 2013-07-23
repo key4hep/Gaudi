@@ -4,6 +4,13 @@
 ! Purpose     : Provide a generic plugin service.
 !-----------------------------------------------------------------------------
 
+! 2013-07-23 - Marco Clemencic
+ - Changes the dlopen flags from (RTLD_LAZY | RTLD_LOCAL) to
+   (RTLD_LAZY | RTLD_GLOBAL) to avoid problems with Python binary modules
+   imported through the Python C/C++ API.
+   The Python binary modules may not be linked to the Python library, so they
+   need that the Python symbols are visible globally.
+
 ! 2013-07-19 - Marco Clemencic
  - Added instructions for the Plugin Service in a README.md file.
 
