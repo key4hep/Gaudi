@@ -258,37 +258,24 @@ public:
 template <class T>
 class AudFactory {
 public:
-  typedef typename T::Factory::ReturnType ReturnType;
-  typedef typename T::Factory::Arg1Type   Arg1Type;
-  typedef typename T::Factory::Arg2Type   Arg2Type;
-  static inline ReturnType create(Arg1Type a1, Arg2Type a2) {
+  template <typename S>
+  static typename S::ReturnType create(typename S::Arg1Type a1,
+                                       typename S::Arg2Type a2) {
     return new T(a1, a2);
   }
 };
 
-#define AudFactoryHelper(x) \
-    namespace Gaudi { namespace PluginService { namespace Details { \
-    template <> class Factory<x> { \
-      public: \
-      template <typename S> \
-      static typename S::ReturnType create(typename S::Arg1Type a1, \
-                                           typename S::Arg2Type a2) { \
-        return AudFactory<x>::create(a1, a2); \
-      } \
-    }; }}}
-
-// macros to declare factories
-#define DECLARE_AUDITOR_FACTORY(x)              AudFactoryHelper(x) \
-                                                DECLARE_COMPONENT(x)
-#define DECLARE_NAMESPACE_AUDITOR_FACTORY(n, x) using n::x; \
-                                                AudFactoryHelper(x) \
-                                                DECLARE_COMPONENT(x)
+// Macros to declare component factories
+#define DECLARE_AUDITOR_FACTORY(x) \
+  DECLARE_FACTORY_WITH_CREATOR(x, AudFactory< x >, Auditor::Factory)
+#define DECLARE_NAMESPACE_AUDITOR_FACTORY(n, x) \
+    DECLARE_AUDITOR_FACTORY(n::x)
 
 #else
 
 // macros to declare factories
 #define DECLARE_AUDITOR_FACTORY(x)              DECLARE_COMPONENT(x)
-#define DECLARE_NAMESPACE_AUDITOR_FACTORY(n, x) using n::x; DECLARE_COMPONENT(x)
+#define DECLARE_NAMESPACE_AUDITOR_FACTORY(n, x) DECLARE_COMPONENT(n::x)
 
 #endif
 

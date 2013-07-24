@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-07-25 - Marco Clemencic
+ - Modified factory declarations to allow private/protected constructors.
+
 ! 2013-07-19 - Marco Clemencic
  - Improved the printout of genconf.
 

@@ -276,32 +276,20 @@ private:
 template <class T>
 class SvcFactory {
 public:
-  typedef typename T::Factory::ReturnType ReturnType;
-  typedef typename T::Factory::Arg1Type   Arg1Type;
-  typedef typename T::Factory::Arg2Type   Arg2Type;
-  static inline ReturnType create(Arg1Type a1, Arg2Type a2) {
+  template <typename S>
+  static typename S::ReturnType create(typename S::Arg1Type a1,
+                                       typename S::Arg2Type a2) {
     return new T(a1, a2);
   }
 };
-#define SvcFactoryHelper(x) \
-    namespace Gaudi { namespace PluginService { namespace Details { \
-    template <> class Factory<x> { \
-      public: \
-      template <typename S> \
-      static typename S::ReturnType create(typename S::Arg1Type a1, \
-                                           typename S::Arg2Type a2) { \
-        return SvcFactory<x>::create(a1, a2); \
-      } \
-    }; }}}
 
-// macros to declare factories
-#define DECLARE_SERVICE_FACTORY(x)              SvcFactoryHelper(x) \
-                                                DECLARE_COMPONENT(x)
-#define DECLARE_NAMED_SERVICE_FACTORY(x, n)     SvcFactoryHelper(x) \
-                                                DECLARE_COMPONENT_WITH_ID(x, n)
-#define DECLARE_NAMESPACE_SERVICE_FACTORY(n, x) using n::x; \
-                                                SvcFactoryHelper(x) \
-                                                DECLARE_COMPONENT(x)
+// Macros to declare component factories
+#define DECLARE_SERVICE_FACTORY(x) \
+  DECLARE_FACTORY_WITH_CREATOR(x, SvcFactory< x >, Service::Factory)
+#define DECLARE_NAMED_SERVICE_FACTORY(x, n) \
+  DECLARE_FACTORY_WITH_ID_AND_CREATOR(x, SvcFactory< x >, n, Service::Factory)
+#define DECLARE_NAMESPACE_SERVICE_FACTORY(n, x) \
+  DECLARE_SERVICE_FACTORY(n::x)
 
 #else
 

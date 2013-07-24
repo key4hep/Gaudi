@@ -591,39 +591,28 @@ private:
 template <class T>
 class AlgFactory {
 public:
-  typedef typename T::Factory::ReturnType ReturnType;
-  typedef typename T::Factory::Arg1Type   Arg1Type;
-  typedef typename T::Factory::Arg2Type   Arg2Type;
-  static inline ReturnType create(Arg1Type a1, Arg2Type a2) {
+  template <typename S>
+  static typename S::ReturnType create(typename S::Arg1Type a1,
+                                       typename S::Arg2Type a2) {
     return new T(a1, a2);
   }
 };
-#define AlgFactoryHelper(x) \
-    namespace Gaudi { namespace PluginService { namespace Details { \
-    template <> class Factory<x> { \
-      public: \
-      template <typename S> \
-      static typename S::ReturnType create(typename S::Arg1Type a1, \
-                                           typename S::Arg2Type a2) { \
-        return AlgFactory<x>::create(a1, a2); \
-      } \
-    }; }}}
 
 // Macros to declare component factories
-#define DECLARE_ALGORITHM_FACTORY(x)              AlgFactoryHelper(x) \
-                                                  DECLARE_COMPONENT(x)
-#define DECLARE_NAMED_ALGORITHM_FACTORY(x, n)     AlgFactoryHelper(x) \
-                                                  DECLARE_COMPONENT_WITH_ID(x, n)
-#define DECLARE_NAMESPACE_ALGORITHM_FACTORY(n, x) using n::x; \
-                                                  AlgFactoryHelper(x) \
-                                                  DECLARE_COMPONENT(x)
+#define DECLARE_ALGORITHM_FACTORY(x) \
+  DECLARE_FACTORY_WITH_CREATOR(x, AlgFactory< x >, Algorithm::Factory)
+#define DECLARE_NAMED_ALGORITHM_FACTORY(x, n) \
+  DECLARE_FACTORY_WITH_ID_AND_CREATOR(x, AlgFactory< x >, n, Algorithm::Factory)
+#define DECLARE_NAMESPACE_ALGORITHM_FACTORY(n, x) \
+  DECLARE_ALGORITHM_FACTORY(n::x)
 
 #else
 
 // Macros to declare component factories
 #define DECLARE_ALGORITHM_FACTORY(x)              DECLARE_COMPONENT(x)
 #define DECLARE_NAMED_ALGORITHM_FACTORY(x, n)     DECLARE_COMPONENT_WITH_ID(x, n)
-#define DECLARE_NAMESPACE_ALGORITHM_FACTORY(n, x) using n::x; DECLARE_COMPONENT(x)
+#define DECLARE_NAMESPACE_ALGORITHM_FACTORY(n, x) DECLARE_COMPONENT(n::x)
+
 #endif
 
 #endif //GAUDIKERNEL_ALGORITHM_H

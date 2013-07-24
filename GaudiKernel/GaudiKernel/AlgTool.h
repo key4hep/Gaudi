@@ -359,32 +359,19 @@ private:
 template <class T>
 class ToolFactory {
 public:
-  typedef typename T::Factory::ReturnType ReturnType;
-  typedef typename T::Factory::Arg1Type   Arg1Type;
-  typedef typename T::Factory::Arg2Type   Arg2Type;
-  typedef typename T::Factory::Arg3Type   Arg3Type;
-  static inline ReturnType create(Arg1Type a1, Arg2Type a2, Arg3Type a3) {
+  template <typename S>
+  static typename S::ReturnType create(typename S::Arg1Type a1,
+                                       typename S::Arg2Type a2,
+                                       typename S::Arg3Type a3) {
     return new T(a1, a2, a3);
   }
 };
-#define ToolFactoryHelper(x) \
-    namespace Gaudi { namespace PluginService { namespace Details { \
-    template <> class Factory<x> { \
-      public: \
-      template <typename S> \
-      static typename S::ReturnType create(typename S::Arg1Type a1, \
-                                           typename S::Arg2Type a2, \
-                                           typename S::Arg3Type a3) { \
-        return ToolFactory<x>::create(a1, a2, a3); \
-      } \
-    }; }}}
 
-// macros to declare factories
-#define DECLARE_TOOL_FACTORY(x)              ToolFactoryHelper(x) \
-                                             DECLARE_COMPONENT(x)
-#define DECLARE_NAMESPACE_TOOL_FACTORY(n, x) using n::x; \
-                                             ToolFactoryHelper(x) \
-                                             DECLARE_COMPONENT(x)
+// Macros to declare component factories
+#define DECLARE_TOOL_FACTORY(x) \
+  DECLARE_FACTORY_WITH_CREATOR(x, ToolFactory< x >, AlgTool::Factory)
+#define DECLARE_NAMESPACE_TOOL_FACTORY(n, x) \
+    DECLARE_TOOL_FACTORY(n::x)
 
 #else
 
