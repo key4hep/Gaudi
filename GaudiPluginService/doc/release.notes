@@ -4,6 +4,9 @@
 ! Purpose     : Provide a generic plugin service.
 !-----------------------------------------------------------------------------
 
+! 2013-07-24 - Marco Clemencic
+ - Added some tests.
+
 ! 2013-07-23 - Marco Clemencic
  - Added thread safety (with locks) if compiled with C++11.
 
