@@ -4,6 +4,10 @@
 ! Purpose     : Provide a generic plugin service.
 !-----------------------------------------------------------------------------
 
+! 2013-07-25 - Marco Clemencic
+ - Added an extra level of indirection (a creator class) to allow components
+   with protected/private constructors.
+
 ! 2013-07-24 - Marco Clemencic
  - Do not use the type name in the helper local class created by the DECLARE_*
    macros: it's not really needed and it allows the use of namespaces and

@@ -21,7 +21,15 @@
   _INTERNAL_DECLARE_FACTORY(type, id, factory, __LINE__)
 
 #define DECLARE_FACTORY(type, factory) \
-  DECLARE_FACTORY_WITH_ID(type, ::Gaudi::PluginService::Details::demangle<type>(), factory)
+  DECLARE_FACTORY_WITH_ID(type, \
+      ::Gaudi::PluginService::Details::demangle<type>(), factory)
+
+#define DECLARE_FACTORY_WITH_CREATOR_AND_ID(type, typecreator, id, factory) \
+  _INTERNAL_DECLARE_FACTORY_WITH_CREATOR(type, typecreator, id, factory, __LINE__)
+
+#define DECLARE_FACTORY_WITH_CREATOR(type, typecreator, factory) \
+  DECLARE_FACTORY_WITH_CREATOR_AND_ID(type, typecreator, \
+      ::Gaudi::PluginService::Details::demangle<type>(), factory)
 
 #define DECLARE_COMPONENT(type) \
   DECLARE_FACTORY(type, type::Factory)
