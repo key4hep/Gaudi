@@ -5,6 +5,11 @@
 !-----------------------------------------------------------------------------
 
 ! 2013-07-24 - Marco Clemencic
+ - Do not use the type name in the helper local class created by the DECLARE_*
+   macros: it's not really needed and it allows the use of namespaces and
+   templates in the parameter passed to DECLARE_*.
+
+! 2013-07-24 - Marco Clemencic
  - Added some tests.
 
 ! 2013-07-23 - Marco Clemencic

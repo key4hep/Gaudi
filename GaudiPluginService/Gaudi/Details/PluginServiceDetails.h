@@ -211,7 +211,7 @@ namespace Gaudi { namespace PluginService {
 }}
 
 #define _INTERNAL_FACTORY_REGISTER_CNAME(name, serial) \
-  _register_ ## name ## _ ## serial
+  _register_ ## _ ## serial
 
 #define _INTERNAL_DECLARE_FACTORY(type, id, factory, serial) \
   namespace { \
