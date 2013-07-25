@@ -602,7 +602,8 @@ public:
 #define DECLARE_ALGORITHM_FACTORY(x) \
   DECLARE_FACTORY_WITH_CREATOR(x, AlgFactory< x >, Algorithm::Factory)
 #define DECLARE_NAMED_ALGORITHM_FACTORY(x, n) \
-  DECLARE_FACTORY_WITH_ID_AND_CREATOR(x, AlgFactory< x >, n, Algorithm::Factory)
+  DECLARE_FACTORY_WITH_CREATOR_AND_ID(x, AlgFactory< x >, \
+                                      #n, Algorithm::Factory)
 #define DECLARE_NAMESPACE_ALGORITHM_FACTORY(n, x) \
   DECLARE_ALGORITHM_FACTORY(n::x)
 
@@ -610,7 +611,7 @@ public:
 
 // Macros to declare component factories
 #define DECLARE_ALGORITHM_FACTORY(x)              DECLARE_COMPONENT(x)
-#define DECLARE_NAMED_ALGORITHM_FACTORY(x, n)     DECLARE_COMPONENT_WITH_ID(x, n)
+#define DECLARE_NAMED_ALGORITHM_FACTORY(x, n)     DECLARE_COMPONENT_WITH_ID(x, #n)
 #define DECLARE_NAMESPACE_ALGORITHM_FACTORY(n, x) DECLARE_COMPONENT(n::x)
 
 #endif

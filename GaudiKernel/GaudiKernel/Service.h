@@ -287,7 +287,7 @@ public:
 #define DECLARE_SERVICE_FACTORY(x) \
   DECLARE_FACTORY_WITH_CREATOR(x, SvcFactory< x >, Service::Factory)
 #define DECLARE_NAMED_SERVICE_FACTORY(x, n) \
-  DECLARE_FACTORY_WITH_ID_AND_CREATOR(x, SvcFactory< x >, n, Service::Factory)
+  DECLARE_FACTORY_WITH_CREATOR_AND_ID(x, SvcFactory< x >, #n, Service::Factory)
 #define DECLARE_NAMESPACE_SERVICE_FACTORY(n, x) \
   DECLARE_SERVICE_FACTORY(n::x)
 
@@ -295,7 +295,7 @@ public:
 
 // macros to declare factories
 #define DECLARE_SERVICE_FACTORY(x)              DECLARE_COMPONENT(x)
-#define DECLARE_NAMED_SERVICE_FACTORY(x, n)     DECLARE_COMPONENT_WITH_ID(x, n)
+#define DECLARE_NAMED_SERVICE_FACTORY(x, n)     DECLARE_COMPONENT_WITH_ID(x, #n)
 #define DECLARE_NAMESPACE_SERVICE_FACTORY(n, x) DECLARE_COMPONENT(n::x)
 
 #endif

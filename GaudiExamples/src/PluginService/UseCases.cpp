@@ -18,5 +18,6 @@ namespace GaudiTesting {
     };
 
     DECLARE_ALGORITHM_FACTORY(Algorithm1)
+    DECLARE_NAMED_ALGORITHM_FACTORY(Algorithm1, Named1)
   }
 }
