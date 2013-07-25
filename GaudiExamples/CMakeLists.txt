@@ -44,7 +44,8 @@ set(GaudiExamples_srcs
     src/StringKeys/*.cpp
     src/StatusCodeSvc/*.cpp
     src/testing/*.cpp
-    src/IntelProfiler/*.cpp)
+    src/IntelProfiler/*.cpp
+    src/PluginService/*.cpp)
 
 gaudi_add_library(GaudiExamplesLib src/Lib/*.cpp
                   LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib HepPDT ROOT

@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2013-07-25 - Marco Clemencic
+ - Added build-time test for the PluginService use cases.
+
 ! 2013-07-22 - Marco Clemencic
  - Fixed reference files of ErrorLog example.
 
