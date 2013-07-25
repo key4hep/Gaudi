@@ -377,7 +377,7 @@ public:
 
 // Macros to declare component factories
 #define DECLARE_TOOL_FACTORY(x)              DECLARE_COMPONENT(x)
-#define DECLARE_NAMESPACE_TOOL_FACTORY(n,x)  using n::x; DECLARE_COMPONENT(x)
+#define DECLARE_NAMESPACE_TOOL_FACTORY(n,x)  DECLARE_COMPONENT(n::x)
 
 #endif
 

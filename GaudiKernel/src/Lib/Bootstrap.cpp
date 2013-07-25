@@ -98,13 +98,13 @@ IAppMgrUI* Gaudi::createApplicationMgrEx(const std::string& dllname,
 ISvcLocator* Gaudi::svcLocator()
 //------------------------------------------------------------------------------
 //
-// A dual-stage boostrap mechanism is used to ensure an orderly startup
+// A dual-stage bootstrap mechanism is used to ensure an orderly startup
 // of the ApplicationMgr. If this function is called before the singleton
 // ApplicationMgr instance exists, a BootSvcLocator singleton instance is
 // created. This responds to any subsequent requests for services by
 // returning StatusCode::FAILURE, unless the ApplicationMgr singleton
 // instance has been created in the interim. In this case, the BootSvcLocator
-// forwards the request to the ApplicationMgr instance. The motiviation for
+// forwards the request to the ApplicationMgr instance. The motivation for
 // this is to handle static object instances where the constructor attempts
 // to locate services and would otherwise instantiate the ApplicationMgr
 // instance in an unorderly manner. This logic requires that the

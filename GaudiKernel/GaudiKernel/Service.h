@@ -296,7 +296,7 @@ public:
 // macros to declare factories
 #define DECLARE_SERVICE_FACTORY(x)              DECLARE_COMPONENT(x)
 #define DECLARE_NAMED_SERVICE_FACTORY(x, n)     DECLARE_COMPONENT_WITH_ID(x, n)
-#define DECLARE_NAMESPACE_SERVICE_FACTORY(n, x) using n::x; DECLARE_COMPONENT(x)
+#define DECLARE_NAMESPACE_SERVICE_FACTORY(n, x) DECLARE_COMPONENT(n::x)
 
 #endif
 
