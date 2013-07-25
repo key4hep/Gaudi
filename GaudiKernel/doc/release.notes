@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 
 ! 2013-07-25 - Marco Clemencic
+ - Fixed a "misbalance warning" in genconf.
+
+! 2013-07-25 - Marco Clemencic
  - Minor updates to a couple of macros.
 
 ! 2013-07-25 - Marco Clemencic

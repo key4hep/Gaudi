@@ -541,6 +541,8 @@ int configGenerator::genConfig( const Strings_t& libs )
         }
         else if ( type == "AlgTool") {
           prop = SmartIF<IAlgTool>(AlgTool::Factory::create(ident, cname, type, dummySvc));
+          // FIXME: AlgTool base class increase artificially by 1 the refcount.
+          prop->release();
         }
         else if ( type == "Auditor") {
           prop = SmartIF<IAuditor>(Auditor::Factory::create(ident, cname, svcLoc));
