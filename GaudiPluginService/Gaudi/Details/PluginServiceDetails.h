@@ -26,63 +26,35 @@
 namespace Gaudi { namespace PluginService {
 
   namespace Details {
-
-    /// Helper class to instantiate the components.
-    /// Can be replaced to allow components with private or protected
-    /// constructors.
-    template <class T>
-    class DefaultCreator {
-    public:
-      template <typename S>
-      static typename S::ReturnType create() {
-        return new T();
-      }
-      template <typename S>
-      static typename S::ReturnType create(typename S::Arg1Type a1) {
-        return new T(a1);
-      }
-      template <typename S>
-      static typename S::ReturnType create(typename S::Arg1Type a1,
-                                           typename S::Arg2Type a2) {
-        return new T(a1, a2);
-      }
-      template <typename S>
-      static typename S::ReturnType create(typename S::Arg1Type a1,
-                                           typename S::Arg2Type a2,
-                                           typename S::Arg3Type a3) {
-        return new T(a1, a2, a3);
-      }
-    };
-
     /// Class providing default factory functions.
     ///
     /// The template argument T is the class to be created, while the methods
     /// template argument S is the specific factory signature.
-    template <class T, class C=DefaultCreator<T> >
+    template <class T>
     class Factory {
     public:
 
       template <typename S>
       static typename S::ReturnType create() {
-        return C().create<S>();
+        return new T();
       }
 
       template <typename S>
       static typename S::ReturnType create(typename S::Arg1Type a1) {
-        return C().create<S>(a1);
+        return new T(a1);
       }
 
       template <typename S>
       static typename S::ReturnType create(typename S::Arg1Type a1,
                                            typename S::Arg2Type a2) {
-        return C().create<S>(a1, a2);
+        return new T(a1, a2);
       }
 
       template <typename S>
       static typename S::ReturnType create(typename S::Arg1Type a1,
                                            typename S::Arg2Type a2,
                                            typename S::Arg3Type a3) {
-        return C().create<S>(a1, a2, a3);
+        return new T(a1, a2, a3);
       }
 
     };
@@ -241,12 +213,13 @@ namespace Gaudi { namespace PluginService {
 #define _INTERNAL_FACTORY_REGISTER_CNAME(name, serial) \
   _register_ ## _ ## serial
 
-#define _INTERNAL_DECLARE_FACTORY(type, id, factory, serial) \
+#define _INTERNAL_DECLARE_FACTORY_WITH_CREATOR(type, typecreator, \
+                                               id, factory, serial) \
   namespace { \
     class _INTERNAL_FACTORY_REGISTER_CNAME(type, serial) { \
     public: \
       typedef factory s_t; \
-      typedef ::Gaudi::PluginService::Details::Factory<type> f_t; \
+      typedef typecreator f_t; \
       static s_t::FuncType creator() { return &f_t::create<s_t>; } \
       _INTERNAL_FACTORY_REGISTER_CNAME(type, serial) () { \
         using ::Gaudi::PluginService::Details::Registry; \
@@ -255,19 +228,9 @@ namespace Gaudi { namespace PluginService {
     } _INTERNAL_FACTORY_REGISTER_CNAME(s_ ## type, serial); \
   }
 
-#define _INTERNAL_DECLARE_FACTORY_WITH_CREATOR(type, typecreator, \
-                                               id, factory, serial) \
-  namespace { \
-    class _INTERNAL_FACTORY_REGISTER_CNAME(type, serial) { \
-    public: \
-      typedef factory s_t; \
-      typedef ::Gaudi::PluginService::Details::Factory<type, typecreator> f_t; \
-      static s_t::FuncType creator() { return &f_t::create<s_t>; } \
-      _INTERNAL_FACTORY_REGISTER_CNAME(type, serial) () { \
-        using ::Gaudi::PluginService::Details::Registry; \
-        Registry::instance().add<s_t, type>(id, creator()); \
-      } \
-    } _INTERNAL_FACTORY_REGISTER_CNAME(s_ ## type, serial); \
-  }
+#define _INTERNAL_DECLARE_FACTORY(type, id, factory, serial) \
+  _INTERNAL_DECLARE_FACTORY_WITH_CREATOR(type, \
+    ::Gaudi::PluginService::Details::Factory<type>, \
+    id, factory, serial)
 
 #endif //_GAUDI_PLUGIN_SERVICE_DETAILS_H_
