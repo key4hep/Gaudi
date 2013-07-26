@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2013-07-26 - Marco Clemencic
+ - Fixed a warning.
+
 ! 2013-07-25 - Marco Clemencic
  - Added build-time test for the PluginService use cases.
 

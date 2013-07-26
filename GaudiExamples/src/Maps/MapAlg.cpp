@@ -1,12 +1,8 @@
-// $Id: MapAlg.cpp,v 1.4 2007/05/24 14:36:37 hmd Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.4 $
 // ============================================================================
 // Include files
 // ============================================================================
 // from GaudiKernel
 // ============================================================================
-#include "GaudiKernel/DeclareFactoryEntries.h"
 #include "GaudiKernel/VectorMap.h"
 #include "GaudiKernel/Map.h"
 #include "GaudiKernel/HashMap.h"
