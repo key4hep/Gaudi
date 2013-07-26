@@ -60,7 +60,7 @@ StatusCode GaudiTuples<PBASE>::
     { return  this->Error( "INTupleSvc* points to NULL!" ); }
     // Print ntuple path
     this->Print( "The N-Tuple   path is set to be '" + nTuplePath() + "'",
-                 StatusCode(StatusCode::SUCCESS, true) , MSG::DEBUG);
+                 StatusCode(StatusCode::SUCCESS, true) , MSG::DEBUG).ignore();
   }
   else
   { this->debug() << "Production of N-Tuples is switched OFF" << endmsg; }
@@ -72,7 +72,7 @@ StatusCode GaudiTuples<PBASE>::
     { return  this->Error( "INTupleSvc* points to NULL!" ); }
     // Print EvtCol path
     this->Print( "The EventCol  path is set to be '" + evtColPath() + "'",
-                 StatusCode(StatusCode::SUCCESS, true) , MSG::DEBUG );
+                 StatusCode(StatusCode::SUCCESS, true) , MSG::DEBUG ).ignore();
   }
   else
   { this->debug() << "Production of Event Collections is switched OFF" << endmsg; }

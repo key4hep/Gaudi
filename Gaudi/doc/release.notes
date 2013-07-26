@@ -1,6 +1,13 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+================================ Gaudi v23r9 =================================
+! 2013-07-09 - Marco Clemencic
+ - Fixed a problem with a spurious error message when the import from
+   Configurables fails.
+   If the import fails, instead of an ImportError we were getting a RuntimeError
+   about sys.path containing something else then strings.
+
 ================================ Gaudi v23r8 =================================
 ================================ Gaudi v23r7 =================================
 ! 2013-02-15 - Danilo Piparo

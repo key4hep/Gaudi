@@ -1131,13 +1131,13 @@ class ConfigurableUser( Configurable ):
             setattr(self, n, v)
         self._enabled = _enabled
         self.__users__ = []
-        
+
         # Needed to retrieve the actual class if the declaration in __used_configurables__
         # and  __queried_configurables__ is done with strings.
         from GaudiKernel.ConfigurableDb import getConfigurable as confDbGetConfigurable
 
         # Set the list of users of the used configurables
-        # 
+        #
         self.__used_instances__ = []
         for used in self.__used_configurables__:
             # By default we want to use the default name of the instances
@@ -1153,7 +1153,7 @@ class ConfigurableUser( Configurable ):
                 used_class = confDbGetConfigurable(used)
             else:
                 used_class = used
-            # Instantiate the configurable that we are going to use 
+            # Instantiate the configurable that we are going to use
             try:
                 inst = used_class(name = used_name, _enabled = False)
             except AttributeError:
@@ -1277,20 +1277,20 @@ class ConfigurableUser( Configurable ):
         low level one.
         """
         pass
-    
+
     def _instanceName(self, cls):
         """
         Function used to define the name of the private instance of a given class
         name.
         This method is used when the __used_configurables_property__ declares the
-        need of a private used configurable without specifying the name. 
+        need of a private used configurable without specifying the name.
         """
         if type(cls) is str:
             clName = cls
         else:
             clName = cls.__name__
         return "%s_%s" % (self.name(), clName)
-    
+
     def getUsedInstance(self, name):
         """
         Return the used instance with a given name.
@@ -1300,7 +1300,7 @@ class ConfigurableUser( Configurable ):
                 if hasattr(i, "_enabled"):
                     # ensure that the instances retrieved through the method are
                     # enabled
-                    i._enabled = True 
+                    i._enabled = True
                 return i
         raise KeyError(name)
 
@@ -1367,6 +1367,17 @@ def applyConfigurableUsers():
         raise Error("Detected loop in the ConfigurableUser "
                     " dependencies: %r" % [ c.name()
                                             for c in confUsers ])
+    # ensure that all the Handles have been triggered
+    known = set()
+    unknown = set(Configurable.allConfigurables)
+    while unknown:
+        for k in unknown:
+            if not known: # do not print during the first iteration
+                log.debug('new configurable created automatically: %s', k)
+            # this trigger the instantiation from handles
+            Configurable.allConfigurables[k].properties()
+            known.add(k)
+        unknown -= known
     # Call post-config actions
     for action in postConfigActions:
         action()

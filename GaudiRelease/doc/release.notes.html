@@ -38,6 +38,76 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
+<h2><a name="v23r9">Gaudi v23r9</a> (2013-07-17)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=65a">LCGCMT_65a</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Improvements to the CMake configuration<br/>
+    (<span class="author">Hubert Degaudenzi</span>)</li>
+<li>Fixed cppcheck warning.<br/>
+    (<span class="author">Hubert Degaudenzi</span>)</li>
+<li>Minor fixes to the configuration for Clang and gcc 4.8.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v12r7):
+<ul>
+<li>Use -Og when compiling in debug mode with gcc 4.8.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v28r8):
+<ul>
+<li>Fixed <a href="https://sft.its.cern.ch/jira/browse/CFHEP-78">CFHEP-78</a>:
+    configurables created after applyConfigurableUser()<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added test for System::currentTime.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Updated the exclusion list in make_patch.py.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiCoreSvc (v1r5):
+<ul>
+<li>Fixed parsing of '.opts' files with C++11 enabled.<br/>
+    (<span class="author">Sasha Mazurov</span>)</li>
+</ul>
+</li>
+<li>GaudiUtils (v4r6):
+<ul>
+<li>Fixed bug #101513: Raw-&gt;Raw processing should not print an error<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>RootCnv (v1r20p1):
+<ul>
+<li>Minor fixes<br/>
+    (<span class="author">Marco Clemencic, Markus Frank</span>)</li>
+</ul>
+</li>
+<li>GaudiAlg (v14r6):
+<ul>
+<li>Patch #5653: Add HistoCountersPrint property to GaudiHistos<br/>
+    (<span class="author">Marco Cattaneo</span>)</li>
+</ul>
+</li>
+<li>GaudiCommonSvc (v1r6):
+<ul>
+<li>Patch #5649 :Improvements to exception handling debug information in
+    OutputStream<br/>
+    (<span class="author">Chris Jones</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v23r9):
+<ul>
+<li>Fixed a problem with a spurious error message when the import from
+    Configurables fails.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
 <h2><a name="v23r8">Gaudi v23r8</a> (2013-05-29)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=65">LCGCMT_65</a></h3>
 <h3>General Changes</h3>

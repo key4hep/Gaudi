@@ -5,10 +5,16 @@ package manager: Marco Clemencic
  - Added a special exclusion pattern for reference file comparison to ignore a
    message from ROOT after the removal of PyCintex.
 
+============================= GaudiPolicy v12r7 ==============================
 ! 2013-03-27 - Hubert Degaudenzi
  - Modified createProjVersHeader.py to understand only the LHCb version
    style(vXrY[pZ]) , the ATLAS version style (bla-X-Y[-Z]) and the plain
    version style (X.Y[.Z])
+
+! 2013-06-20 - Marco Clemencic
+ - Use the special name lcg-<compiler>-<version> for Clang too (already done
+   when building with CMake).
+ - Use -Og when compiling in debug mode with gcc 4.8.
 
 ! 2013-06-10 - Marco Clemencic
  - Added -Wno-deprecated for gcc 4.8 (as it was done already for 4.6 and 4.7).

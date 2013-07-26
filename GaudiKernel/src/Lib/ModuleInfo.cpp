@@ -63,7 +63,7 @@ const std::string& System::moduleName()   {
         _psApi.GetModuleBaseNameA( processHandle(), (HINSTANCE)moduleHandle(), moduleName, sizeof(moduleName) );
       }
       std::string mod = moduleName;
-#elif defined(linux) || defined(__APPLE__)
+#elif defined(__linux) || defined(__APPLE__)
       std::string mod = ::basename((char*)((Dl_info*)moduleHandle())->dli_fname);
 #elif __hpux
       std::string mod = ::basename(((HMODULE*)moduleHandle())->dsc.filename);
@@ -88,7 +88,7 @@ const std::string& System::moduleNameFull()   {
       }
 #else
       const char *path =
-#  if defined(linux) || defined(__APPLE__)
+#  if defined(__linux) || defined(__APPLE__)
           ((Dl_info*)moduleHandle())->dli_fname;
 #  elif __hpux
           ((HMODULE*)moduleHandle())->dsc.filename;
@@ -149,7 +149,7 @@ System::ImageHandle System::moduleHandle()    {
         }
       }
       return handle;
-#elif defined(linux) || defined(__APPLE__)
+#elif defined(__linux) || defined(__APPLE__)
       static Dl_info info;
       if ( 0 !=
            ::dladdr(
@@ -181,7 +181,7 @@ System::ImageHandle System::exeHandle()    {
     return handle;
   }
   return 0;
-#elif defined(linux) || defined(__APPLE__)
+#elif defined(__linux) || defined(__APPLE__)
   // This does NOT work!
   static Dl_info infoBuf, *info = &infoBuf;
   if ( 0 == info ) {
@@ -215,7 +215,7 @@ const std::string& System::exeName()    {
       _psApi.GetModuleFileNameExA( processHandle(), (HINSTANCE)exeHandle(), name,sizeof(name) );
       module = name;
     }
-#elif defined(linux) || defined(__APPLE__)
+#elif defined(__linux) || defined(__APPLE__)
     char cmd[512];
     ::sprintf(cmd, "/proc/%d/exe", ::getpid());
     module = "Unknown";
@@ -244,7 +244,7 @@ const std::vector<std::string> System::linkedModules()    {
         }
       }
     }
-#elif defined(linux) || defined(__APPLE__)
+#elif defined(__linux) || defined(__APPLE__)
     char ff[512], cmd[1024], fname[1024], buf1[64], buf2[64], buf3[64], buf4[64];
     ::sprintf(ff, "/proc/%d/maps", ::getpid());
     FILE* maps = ::fopen(ff, "r");

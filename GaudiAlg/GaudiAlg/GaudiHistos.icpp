@@ -66,6 +66,10 @@ void GaudiHistos<PBASE>::initGaudiHistosConstructor()
       m_histosPrint   = false ,
       "Switch on/off the printout of histograms at finalization" )
     -> declareUpdateHandler ( &GaudiHistos<PBASE>::printHistoHandler, this ) ;
+  this->declareProperty
+    ( "HistoCountersPrint"         ,
+      m_histoCountersPrint = true ,
+      "Switch on/off the printout of histogram counters at finalization" ) ;  
   // check for NaN/Finite
   this->declareProperty
     ( "HistoCheckForNaN"      ,
@@ -151,13 +155,13 @@ initialize
   {
     this ->
       Warning( "Using numerical automatic IDs. These are not guaranteed to be totally deterministic. Use with care...",
-               StatusCode::SUCCESS );
+               StatusCode::SUCCESS ).ignore();
   }
 
   // Finally, print the location histogram will be written to
   this->Print
     ( "The histogram path is set to be '" + histoPath() + "'",
-      StatusCode( StatusCode::SUCCESS, true )  , MSG::DEBUG );
+      StatusCode( StatusCode::SUCCESS, true )  , MSG::DEBUG ).ignore();
 
   return sc;
 }
@@ -178,7 +182,7 @@ finalize
   {
 
     // Count how many histos of each type
-    if ( !noHistos() )
+    if ( (!noHistos()) && histoCountersPrint() )
     {
       const unsigned int n1D  = histo1DMapID   () . size () ;
       const unsigned int n2D  = histo2DMapID   () . size () ;

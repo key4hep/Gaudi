@@ -18,6 +18,10 @@ Package manager : Marco Clemencic
    (see <https://sft.its.cern.ch/jira/browse/ROOT-3623>, but it does not work
    in Python).
 
+! 2013-07-19 - Marco Clemencic
+ - Replaced "#ifdef linux" with "#ifdef __linux" (more reliable: Rolf Seuster
+   reported that "linux" is not defined when using C++11).
+
 ============================= GaudiPython v12r6 ==============================
 ! 2013-04-22 - Marco Clemencic
  - Fixed Clang warnings.

@@ -26,6 +26,14 @@ Package manager : Marco Clemencic
 ! 2013-07-03 - Marco Clemencic
  - Removed explicit link against Reflex from cmt/requirements.
 
+============================ GaudiExamples v23r9 =============================
+! 2013-07-11 - Marco Clemencic
+ - Added tests to expose the solution to bug #101513.
+
+! 2013-07-08 - Marco Cattaneo
+ - Patch #5653: Add HistoCountersPrint property to GaudiHistos
+   Updated reference files.
+
 ============================ GaudiExamples v23r8 =============================
 ! 2013-05-28 - Marco Clemencic
  - Added test for the abort of stalled events.
