@@ -4,6 +4,9 @@
 ! Purpose     : Profiling and performance monitoring of Gaudi/LHCb software
 !-----------------------------------------------------------------------------
 
+! 2013-07-26 - Marco Clemencic
+ - Ported new GaudiPluginService to CMT.
+
 ! 2013-07-19 - Marco Clemencic
  - Clean up in the use of the new PluginService.
 

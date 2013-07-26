@@ -56,8 +56,8 @@ apply_tag $(have_vtune)
 # Keep the IntelProfiler targets only if we do have VTune.
 macro_remove constituents "IntelProfilerConfDbMerge" have-vtune ""
 macro_remove constituents "IntelProfilerConf"        have-vtune ""
-macro_remove constituents "IntelProfilerMergeMap"    have-vtune ""
-macro_remove constituents "IntelProfilerRootMap"     have-vtune ""
+macro_remove constituents "IntelProfilerMergeComponentsList"    have-vtune ""
+macro_remove constituents "IntelProfilerComponentsList"     have-vtune ""
 macro_remove constituents "IntelProfiler"            have-vtune ""
 macro_remove GaudiProfiling_python_init_dependencies "IntelProfilerConf" \
                                                      have-vtune ""

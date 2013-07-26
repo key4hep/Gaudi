@@ -473,11 +473,11 @@ pattern generate_componentslist \
     macro merge_componentslist_tag "--do-merge"   \
 	  do_merge_componentslist  "--do-merge"   \
 	  no_merge_componentslist  "--un-merge" ; \
-    document merge_componentslist <library>ComponentsList -group=<group> \
+    document merge_componentslist <library>MergeComponentsList -group=<group> \
              library=<library> \
              merge_componentslist_switch=$(merge_componentslist_tag) \
              $(bin)$(library_prefix)<library>.$(shlibsuffix) ; \
-    macro_append <library>ComponentsList_dependencies " <library>ComponentsList " ; \
+    macro_append <library>MergeComponentsList_dependencies " <library>ComponentsList " ; \
   end_private
 
 
