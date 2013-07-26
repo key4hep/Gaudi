@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-07-26 - Marco Clemencic
+ - Ported new GaudiPluginService to CMT.
+
 ! 2013-06-13 - Marco Clemencic
  - Added a special exclusion pattern for reference file comparison to ignore a
    message from ROOT after the removal of PyCintex.

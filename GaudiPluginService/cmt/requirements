@@ -1,0 +1,16 @@
+package GaudiPluginService
+version v1r0
+author "Marco Clemencic"
+
+use GaudiPolicy *
+
+apply_pattern install_more_includes more=Gaudi
+
+library GaudiPluginService -no_static  PluginService.cpp
+apply_pattern linker_library library=GaudiPluginService
+
+application listcomponents listcomponents.cpp
+macro_append listcomponents_dependencies " GaudiPluginService "
+
+macro listcomponents_cmd listcomponents.exe
+make_fragment listcomponents -header=listcomponents_header

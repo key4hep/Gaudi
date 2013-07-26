@@ -144,7 +144,7 @@ pattern component_library \
     apply_pattern libraryShr library="<library>" ; \
     apply_pattern library_Cshlibflags library="<library>" ;\
     macro <library>_dependencies "$(<package>_linker_library) " ;\
-    apply_pattern generate_rootmap library=<library> group=<group> ; \
+    apply_pattern generate_componentslist library=<library> group=<group> ; \
     apply_pattern generate_configurables library=<library> group=<group>
 
 pattern linker_library \
@@ -465,19 +465,19 @@ pattern application_path \
     path_prepend LD_LIBRARY_PATH  "" \
         <project>_without_installarea&target-unix "${<package>_root}/$(<package>_tag)"
 
-pattern generate_rootmap \
-  document genmap <library>RootMap -group=<group> LIBNAME=<library> ; \
-  macro_append <library>RootMap_dependencies " <library> " ; \
+pattern generate_componentslist \
+  document listcomponents <library>ComponentsList -group=<group> LIBNAME=<library> ; \
+  macro_append <library>ComponentsList_dependencies " <library> " ; \
   private ; \
     apply_pattern application_path ; \
-    macro merge_rootmap_tag "--do-merge"   \
-	  do_merge_rootmap  "--do-merge"   \
-	  no_merge_rootmap  "--un-merge" ; \
-    document merge_rootmap <library>MergeMap -group=<group> \
+    macro merge_componentslist_tag "--do-merge"   \
+	  do_merge_componentslist  "--do-merge"   \
+	  no_merge_componentslist  "--un-merge" ; \
+    document merge_componentslist <library>ComponentsList -group=<group> \
              library=<library> \
-             merge_rootmap_switch=$(merge_rootmap_tag) \
+             merge_componentslist_switch=$(merge_componentslist_tag) \
              $(bin)$(library_prefix)<library>.$(shlibsuffix) ; \
-    macro_append <library>MergeMap_dependencies " <library>RootMap " ; \
+    macro_append <library>ComponentsList_dependencies " <library>ComponentsList " ; \
   end_private
 
 
@@ -573,9 +573,9 @@ macro make_shlib    "echo" \
       host-darwin "${CMTROOT}/mgr/cmt_make_shlib_common.sh extract" \
       host-visualc "$(GAUDIPOLICYROOT)\cmt\cmt_make_shlib.bat"
 
-macro merge_rootmap_cmd "python $(GaudiPolicy_root)/scripts/merge_files.py" \
+macro merge_componentslist_cmd "python $(GaudiPolicy_root)/scripts/merge_files.py" \
            target-winxp "$(GaudiPolicy_root)/scripts/merge_files.py"
-make_fragment merge_rootmap -header=merge_rootmap_header
+make_fragment merge_componentslist -header=merge_componentslist_header
 macro libdirname "lib" # defaults for fragments of libs and bins
 macro bindirname "bin" # defaults for fragments of libs and bins
 

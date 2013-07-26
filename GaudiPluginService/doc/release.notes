@@ -4,6 +4,9 @@
 ! Purpose     : Provide a generic plugin service.
 !-----------------------------------------------------------------------------
 
+! 2013-07-26 - Marco Clemencic
+ - Ported new GaudiPluginService to CMT.
+
 ! 2013-07-25 - Marco Clemencic
  - Removed the extra level of indirection and simplified the support for
    private/protected constructors.

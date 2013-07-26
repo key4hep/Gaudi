@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 
 ! 2013-07-26 - Marco Clemencic
+ - Ported new GaudiPluginService to CMT.
+
+! 2013-07-26 - Marco Clemencic
  - Fixed a warning.
 
 ! 2013-07-25 - Marco Clemencic

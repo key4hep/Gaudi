@@ -34,7 +34,7 @@ library GaudiCoreSvc -no_static -import=Boost -import=ROOT \
 # equivalent to apply_pattern component_library, except for the genconf part
 apply_pattern libraryShr          library=GaudiCoreSvc
 apply_pattern library_Cshlibflags library=GaudiCoreSvc
-apply_pattern generate_rootmap    library=GaudiCoreSvc
+apply_pattern generate_componentslist    library=GaudiCoreSvc
 
 # this pattern is applied instead of "generate_configurables" to
 # avoid infinite recursion.
