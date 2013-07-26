@@ -878,7 +878,7 @@ macro(gaudi_collect_subdir_deps)
         list(APPEND ${_p}_DEPENDENCIES ${___p})
       endforeach()
     endforeach()
-    # Specila dependency required for modules
+    # Special dependency required for modules
     string(REGEX MATCHALL "gaudi_add_module *\\(([^)]+)\\)" vars ${file_contents})
     if(vars AND NOT _p STREQUAL GaudiCoreSvc)
       list(APPEND ${_p}_DEPENDENCIES GaudiCoreSvc)
@@ -2034,7 +2034,6 @@ endmacro()
 # Create the .components file needed by the plug-in system.
 #---------------------------------------------------------------------------------------------------
 function(gaudi_generate_componentslist library)
-  find_package(ROOT QUIET)
   set(componentsfile ${library}.components)
 
   set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_MODULE_SUFFIX})
