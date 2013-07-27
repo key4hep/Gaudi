@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-07-27 - Marco Clemencic
+ - Restored merge_rootmap macros and fragments, used by the Reflex dictionary
+   pattern.
+
 ! 2013-07-26 - Marco Clemencic
  - Ported new GaudiPluginService to CMT.
 

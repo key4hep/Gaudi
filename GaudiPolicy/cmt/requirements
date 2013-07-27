@@ -576,6 +576,9 @@ macro make_shlib    "echo" \
 macro merge_componentslist_cmd "python $(GaudiPolicy_root)/scripts/merge_files.py" \
            target-winxp "$(GaudiPolicy_root)/scripts/merge_files.py"
 make_fragment merge_componentslist -header=merge_componentslist_header
+macro merge_rootmap_cmd "python $(GaudiPolicy_root)/scripts/merge_files.py" \
+           target-winxp "$(GaudiPolicy_root)/scripts/merge_files.py"
+make_fragment merge_rootmap -header=merge_rootmap_header
 macro libdirname "lib" # defaults for fragments of libs and bins
 macro bindirname "bin" # defaults for fragments of libs and bins
 
