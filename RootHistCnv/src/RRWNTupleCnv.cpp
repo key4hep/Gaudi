@@ -10,7 +10,7 @@
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_NAMESPACE_CONVERTER(RootHistCnv,RRWNTupleCnv)
+DECLARE_NAMESPACE_CONVERTER_FACTORY(RootHistCnv,RRWNTupleCnv)
 
 //------------------------------------------------------------------------------
 StatusCode RootHistCnv::RRWNTupleCnv::book(const std::string& desc,

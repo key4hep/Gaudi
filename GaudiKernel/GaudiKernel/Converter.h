@@ -167,44 +167,26 @@ inline std::ostream& operator << ( std::ostream& s, const ConverterID& id) {
 template <class T>
 class CnvFactory {
 public:
-  typedef typename T::Factory::ReturnType ReturnType;
-  typedef typename T::Factory::Arg1Type   Arg1Type;
-  static inline ReturnType create(Arg1Type a1) {
+  template <typename S>
+  static typename S::ReturnType create(typename S::Arg1Type a1) {
     return new T(a1);
   }
 };
 
-#define CnvFactoryHelper(x) \
-    namespace Gaudi { namespace PluginService { namespace Details { \
-    template <> class Factory<x> { \
-      public: \
-      template <typename S> \
-      static typename S::ReturnType create(typename S::Arg1Type a1) { \
-        return CnvFactory<x>::create(a1); \
-      } \
-    }; }}}
-
 // Macro to declare component factories
-#define DECLARE_CONVERTER_FACTORY(x) CnvFactoryHelper(x) \
-    DECLARE_COMPONENT_WITH_ID(x, ConverterID(x::storageType(), x::classID()))
-#define DECLARE_CONVERTER(x) \
-    DECLARE_COMPONENT_WITH_ID(x, ConverterID(x::storageType(), x::classID()))
-
-// Macro to declare component factories in a C++ namespace
-#define DECLARE_NAMESPACE_CONVERTER_FACTORY(n, x) using n::x; CnvFactoryHelper(x) \
-DECLARE_COMPONENT_WITH_ID(x, ConverterID(x::storageType(), x::classID()))
-#define DECLARE_NAMESPACE_CONVERTER(n, x) \
-using n::x; DECLARE_COMPONENT_WITH_ID(x, ConverterID(x::storageType(), x::classID()))
+#define DECLARE_CONVERTER_FACTORY(x) \
+    DECLARE_FACTORY_WITH_CREATOR_AND_ID(x, CnvFactory< x >, \
+        ConverterID(x::storageType(), x::classID()), Converter::Factory)
+#define DECLARE_NAMESPACE_CONVERTER_FACTORY(n, x) \
+    DECLARE_CONVERTER_FACTORY(n::x)
 
 #else
 
 // Macro to declare component factories
-#define DECLARE_CONVERTER(x) \
+#define DECLARE_CONVERTER_FACTORY(x) \
     DECLARE_COMPONENT_WITH_ID(x, ConverterID(x::storageType(), x::classID()))
-
-// Macro to declare component factories in a C++ namespace
-#define DECLARE_NAMESPACE_CONVERTER(n, x) \
-using n::x; DECLARE_COMPONENT_WITH_ID(x, ConverterID(x::storageType(), x::classID()))
+#define DECLARE_NAMESPACE_CONVERTER_FACTORY(n, x) \
+    DECLARE_CONVERTER_FACTORY(n::x)
 
 #endif
 

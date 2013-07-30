@@ -1,6 +1,12 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-07-30 - Marco Clemencic
+ - Applied the change to factory declarations needed for private/protected
+   constructors to Converters too.
+ - Removed the macros DECLARE_CONVERTER to avoid confusion with the obsolete
+   ones with the same name.
+
 ! 2013-07-26 - Marco Clemencic
  - Ported new GaudiPluginService to CMT.
 
