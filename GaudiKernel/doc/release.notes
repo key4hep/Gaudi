@@ -4,6 +4,7 @@ Package manager : Marco Clemencic
 ! 2013-06-24 - Marco Clemencic
  - restored presetting of Services outputLevel from MessageSvc (needed to use
    the properties SetDebug, SetVerbose, etc of MessageSvc).
+ - restored inheritance of JobHistory on IVersHistoryObj to 'virtual public'.
 
 ! 2013-04-05 - Charles Leggett
  - add new optional parameter to genconf to allow import/declaration of
