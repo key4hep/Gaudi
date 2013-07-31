@@ -13,7 +13,8 @@ library GaudiSvc -import=Boost -import=CLHEP -import=ROOT -no_static \
                  DetectorDataSvc/*.cpp \
                  NTupleSvc/*.cpp \
                  RndmGenSvc/*.cpp \
-                 THistSvc/*.cpp
+                 THistSvc/*.cpp \
+		 FileMgr/*.cpp
 
 
 library GaudiSvcTest -group=tests ../tests/src/component/*.cpp -no_static
@@ -33,7 +34,7 @@ macro_append ROOT_linkopts " -lHist -lReflex -lMatrix -lGraf" \
               target-winxp " libHist.lib libReflex.lib libMatrix.lib libGraf.lib" \
              target-mac104 " -lHist -lReflex -lMatrix -lGraf"
 macro_append ROOT_linkopts     "" \
-    ROOT_GE_5_15&target-mac104 " -lNet"
+    ROOT_GE_5_15           " -lNet"
 
 macro_append Boost_linkopts "" target-winxp " $(Boost_linkopts_date_time) "
 
