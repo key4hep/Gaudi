@@ -28,7 +28,7 @@ ${CONSTITUENT}install : $(outdir)/$(confpy)
 	 $(install_command) --exclude="*.py?" --exclude="__init__.py" $(outdir) $(conf_destdir) ; \
 
 $(outdir)/$(confpy) : $(conflib) $(outdir)
-	$(genconf_silent) $(genconfig_cmd) $(library_preload) -o $(outdir) -p $(package) \
+	$(genconf_silent) $(genconfig_cmd) $(library_preload) $(extra_modules) -o $(outdir) -p $(package) \
 	  --configurable-module=$(confModuleName) \
 	  --configurable-default-name=$(confDefaultName) \
 	  --configurable-algorithm=$(confAlgorithm) \

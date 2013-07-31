@@ -1,6 +1,16 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-04-05 - Charles Leggett
+ - add macro and pattern for loading of optional modules into <pkg>Conf.py 
+   files via genconf. This eases the transition of ATLAS packages that 
+   imported modules that used to be in GaudiSvc but are now in GaudiCoreSvc or 
+   GaudiCommonSvc
+
+M       cmt/requirements
+M       cmt/fragments/nmake/genconfig_header
+M       cmt/fragments/genconfig_header
+
 ! 2013-03-05 - Charles Leggett
  - Merge with GaudiPolicy-11-01-16
    - Conditional usage
