@@ -4,6 +4,15 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2013-04-02 - Charles Leggett
+ - ServiceManager:
+   - allow setting of priority from a service's initialize method
+   - change default piority of services to 100 from 10
+   - push down priorities of "problematic" services
+   - added dump() method to list services for debugging
+M       src/ApplicationMgr/ServiceManager.h
+M       src/ApplicationMgr/ServiceManager.cpp
+
 ! 2013-04-09 - Hubert Degaudenzi
  - src/EventSelector/EventSelector.cpp: fixed cppcheck warning.
 
