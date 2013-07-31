@@ -1,6 +1,11 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2013-04-18 - Charles Leggett
+ - added GaudiMonitor to list of extra modules
+
+M       python/ExtraModules.py
+
 ! 2013-04-05 - Charles Leggett
  - automatically import modules from GaudiCoreSvc and GaudiCommonSvc into
    GaudiSvcConf.py for ATLAS tag via genconfig_add_extraModules pattern and use
