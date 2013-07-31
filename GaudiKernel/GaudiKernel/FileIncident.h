@@ -26,7 +26,7 @@ public:
 		const std::string& fileName,
 		const std::string& fileGuid);
    FileIncident(const FileIncident& rhs);
-//   virtual ~FileIncident();
+   virtual ~FileIncident();
 
    /// Overloaded Assignment Operator
    const FileIncident& operator=(const FileIncident& rhs);
@@ -48,7 +48,6 @@ inline FileIncident::FileIncident(const std::string& source,
 inline FileIncident::FileIncident(const FileIncident& rhs) : Incident(rhs),
         m_fileName(rhs.m_fileName),
         m_fileGuid(rhs.m_fileGuid) {}
-inline FileIncident::~FileIncident() {}
 
 inline const FileIncident& FileIncident::operator=(const FileIncident& rhs) {
    if (this != &rhs) {
