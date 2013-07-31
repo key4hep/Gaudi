@@ -4,12 +4,14 @@
 // Author: S.Binet<binet@cern.ch>
 ///////////////////////////////////////////////////////////////////
 
-// python includes
-#include <Python.h>
-
 // GaudiMP includes
 #include "IoComponentMgr.h"
+#include "GaudiKernel/IIncidentSvc.h"
+#include "GaudiKernel/FileIncident.h"
 
+#include "GaudiKernel/IFileMgr.h"
+#include "GaudiKernel/ServiceHandle.h"
+#include <boost/filesystem.hpp>
 
 // STL includes
 
@@ -17,19 +19,37 @@
 #include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/Property.h"
 
+#define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
+#define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
+
+#define DEBMSG ON_DEBUG debug()
+#define VERMSG ON_VERBOSE verbose()
+
 DECLARE_SERVICE_FACTORY(IoComponentMgr)
 
+using namespace std;
 
-///////////////////////////////////////////////////////////////////
-// Public methods:
-///////////////////////////////////////////////////////////////////
 
-// Constructors
-////////////////
+std::ostream& 
+operator<< ( std::ostream& os, const IIoComponentMgr::IoMode::Type& m) {
+  switch (m) {
+  case IIoComponentMgr::IoMode::READ :  os << "READ"; break;
+  case IIoComponentMgr::IoMode::WRITE : os << "WRITE"; break;
+  case IIoComponentMgr::IoMode::RW :    os << "RW"; break;
+  default:
+    os << "INVALID"; break;
+  }
+    
+  return os;
+
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 IoComponentMgr::IoComponentMgr( const std::string& name,
 				ISvcLocator* svc )
-: base_class(name,svc), m_log(msgSvc(), name ),
-    m_dict   ( 0 )
+: base_class(name,svc), m_log(msgSvc(), name )
 {
   //
   // Property declaration
@@ -46,18 +66,17 @@ IoComponentMgr::IoComponentMgr( const std::string& name,
 // 		   " dictionary.");
 }
 
-// Destructor
-///////////////
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 IoComponentMgr::~IoComponentMgr()
 {
-  Py_XDECREF (m_dict);
 }
 
-// Service's Hooks
-////////////////////////////
-StatusCode IoComponentMgr::initialize()
-{
-  m_log << MSG::INFO << "Initializing " << name() << "..." << endmsg;
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+StatusCode 
+IoComponentMgr::initialize() {
+  m_log << MSG::DEBUG << "--> initialize()" << endmsg;
 
   if ( Service::initialize().isFailure() ) {
     m_log << MSG::ERROR << "Unable to initialize Service base class" << endmsg;
@@ -65,102 +84,35 @@ StatusCode IoComponentMgr::initialize()
   }
   m_log.setLevel( m_outputLevel.value() );
 
-  if ( ! Py_IsInitialized() ) {
-    if (m_log.level() <= MSG::DEBUG) {
-      m_log << MSG::DEBUG << "Initializing Python" << endmsg;
-    }
-    PyEval_InitThreads();
-    Py_Initialize();
+  IIncidentSvc* p_incSvc(0);
 
-    if ( ! Py_IsInitialized() ) {
-      m_log << MSG::ERROR << "Unable to initialize Python" << endmsg;
+  if (service("IncidentSvc", p_incSvc, true).isFailure()) {
+    m_log << MSG::ERROR << "unable to get the IncidentSvc" << endmsg;
       return StatusCode::FAILURE;
-    }
-  }
-
-
-  // retrieve the python dictionary holding the I/O registry
-  const std::string py_module_name = "GaudiMP.IoRegistry";
-  m_log << MSG::DEBUG << "importing module [" << py_module_name << "]..."
-	<< endmsg;
-  PyObject *module = PyImport_ImportModule ((char*)py_module_name.c_str());
-  if ( !module || !PyModule_Check (module) ) {
-    m_log << MSG::ERROR << "Could not import [" << py_module_name << "] !"
-	  << endmsg;
-    Py_XDECREF (module);
-    return StatusCode::FAILURE;
-  }
-
-  const std::string py_class_name = "IoRegistry";
-  PyObject *pyclass = PyDict_GetItemString (PyModule_GetDict(module),
-					    (char*)py_class_name.c_str());
-  // borrowed ref.
-  Py_XINCREF (pyclass);
-  if ( !pyclass ) {
-    m_log << MSG::ERROR << "Could not import ["
-	  << py_class_name << "] from module ["
-	  << py_module_name << "] !"
-	  << endmsg ;
-    Py_XDECREF (pyclass);
-    Py_DECREF  (module);
-    return StatusCode::FAILURE;
-  }
-
-  m_dict = PyObject_GetAttrString (pyclass, (char*)"instances");
-  if ( !m_dict || !PyDict_Check (m_dict) ) {
-    m_log << MSG::ERROR
-	  << "could not retrieve attribute [instances] from class ["
-	  << py_module_name << "." << py_class_name << "] !" << endmsg;
-    Py_DECREF (pyclass);
-    Py_DECREF (module);
-    return StatusCode::FAILURE;
-  }
-
-  m_log << MSG::INFO <<  "python I/O registry retrieved [ok]" << endmsg;
-  if ( m_log.level() <=  MSG::DEBUG ) {
-    std::string repr = "";
-    // PyObject_Repr returns a new ref.
-    PyObject* py_repr = PyObject_Repr (m_dict);
-    if ( py_repr && PyString_Check(py_repr) ) {
-      repr = PyString_AsString(py_repr);
-    }
-    Py_XDECREF( py_repr );
-    m_log << MSG::DEBUG << "content: " << repr << endmsg;
+  } else {
+    p_incSvc->addListener( this, IncidentType::BeginOutputFile, 100, true);
+    p_incSvc->addListener( this, IncidentType::BeginInputFile, 100, true);
   }
 
   return StatusCode::SUCCESS;
 }
 
-StatusCode IoComponentMgr::finalize()
-{
-  m_log << MSG::INFO << "Finalizing " << name() << "..." << endmsg;
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-
-  if (m_log.level() <= MSG::DEBUG) {
-    m_log << MSG::DEBUG << "Listing all monitored entries: " << std::endl;
-
-    std::string repr = "";
-    // PyObject_Repr returns a new ref.
-    PyObject* py_repr = PyObject_Repr (m_dict);
-    if ( py_repr && PyString_Check(py_repr) ) {
-      repr = PyString_AsString(py_repr);
-    }
-    Py_XDECREF( py_repr );
-    m_log << MSG::DEBUG << "content: " << repr << endmsg;
-  }
+StatusCode 
+IoComponentMgr::finalize() {
+  m_log << MSG::DEBUG << "--> finalize()" << endmsg;
 
   return StatusCode::SUCCESS;
 }
 
-///////////////////////////////////////////////////////////////////
-// Const methods:
-///////////////////////////////////////////////////////////////////
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-  /** @brief: check if the registry contains a given @c IIoComponent
+/** @brief: check if the registry contains a given @c IIoComponent
    */
 bool
-IoComponentMgr::io_hasitem (IIoComponent* iocomponent) const
-{
+IoComponentMgr::io_hasitem (IIoComponent* iocomponent) const {
+  DEBMSG << "--> io_hasitem()" << endmsg;
   if ( 0 == iocomponent ) {
     return false;
   }
@@ -169,6 +121,8 @@ IoComponentMgr::io_hasitem (IIoComponent* iocomponent) const
   return io != m_ioregistry.end();
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 /** @brief: check if the registry contains a given @c IIoComponent and
  *          that component had @param `fname` as a filename
  */
@@ -176,48 +130,36 @@ bool
 IoComponentMgr::io_contains (IIoComponent* iocomponent,
 			     const std::string& fname) const
 {
+  m_log << MSG::DEBUG << "--> io_contains()" << endmsg;
   if ( 0 == iocomponent ) {
     return false;
   }
   const std::string& ioname = iocomponent->name();
 
-  // m_dict is a python dictionary like so:
-  //  { 'iocomp-name' : { 'oldfname' : [ 'iomode', 'newfname' ] } }
+  DEBMSG << "io_contains:  c: " << ioname << " f: " << fname << endmsg;
 
-  // -> check there is an 'iocomp-name' entry
-  // -> retrieve that entry
-  PyObject *o = PyDict_GetItemString (m_dict, (char*)ioname.c_str());
-  Py_XINCREF (o);
-
-  // -> check it is a dictionary
-  if ( NULL==o || !PyDict_Check (o) ) {
-    Py_XDECREF (o);
-
+  pair<iodITR,iodITR> fit = m_cdict.equal_range(iocomponent);
+  if (fit.first == fit.second) {
     return false;
+  } else {
+    iodITR it;
+    for (it=fit.first; it != fit.second; ++it) {
+      IoComponentEntry ioe = it->second;
+      DEBMSG << "   " << ioe << endmsg;
+      if (ioe.m_oldfname == "") {
+	m_log << MSG::ERROR << "IIoComponent " << ioname 
+	      << "  has empty old filename" << endmsg;
+    return false;
+      } else if (ioe.m_oldfname == fname) {
+	return true;
+      }
+    } 
   }
 
-  // -> check 'oldfname' exists
-  PyObject *item = PyDict_GetItemString (o, (char*)fname.c_str());
-
-  const bool contains = (item != 0);
-  if ( contains == false ) {
-    std::string repr = "";
-    // PyObject_Repr returns a new ref.
-    PyObject* py_repr = PyObject_Repr (o);
-    if ( py_repr && PyString_Check(py_repr) ) {
-      repr = PyString_AsString(py_repr);
-    }
-    Py_XDECREF( py_repr );
-    m_log << MSG::ERROR << "content: " << repr << endmsg;
-  }
-  Py_DECREF (o);
-  Py_XDECREF(item);
-  return contains;
+  return false;
 }
 
-///////////////////////////////////////////////////////////////////
-// Non-const methods:
-///////////////////////////////////////////////////////////////////
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /** @brief: allow a @c IIoComponent to register itself with this
  *          manager so appropriate actions can be taken when e.g.
@@ -234,8 +176,10 @@ IoComponentMgr::io_register (IIoComponent* iocomponent)
     return StatusCode::FAILURE;
   }
   const std::string& ioname = iocomponent->name();
+  DEBMSG << "--> io_register(" << ioname << ")" << endmsg;
   IoRegistry_t::iterator itr = m_ioregistry.find (ioname);
   if ( itr == m_ioregistry.end() ) {
+    DEBMSG << "    registering IoComponent \"" << ioname << "\"" << endmsg;
     iocomponent->addRef(); // ownership...
     m_ioregistry[ioname] = iocomponent;
     m_iostack.push_back (iocomponent);
@@ -246,6 +190,8 @@ IoComponentMgr::io_register (IIoComponent* iocomponent)
   return StatusCode::SUCCESS;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 /** @brief: allow a @c IIoComponent to register itself with this
  *          manager so appropriate actions can be taken when e.g.
  *          a @c fork(2) has been issued (this is usually handled
@@ -255,12 +201,17 @@ IoComponentMgr::io_register (IIoComponent* iocomponent)
 StatusCode
 IoComponentMgr::io_register (IIoComponent* iocomponent,
 			     IIoComponentMgr::IoMode::Type iomode,
-			     const std::string& fname)
+			     const std::string& fname,
+			     const std::string& pfn)
 {
   if ( 0 == iocomponent ) {
     return StatusCode::FAILURE;
   }
   const std::string& ioname = iocomponent->name();
+
+  DEBMSG << "--> io_register(" << ioname << ","
+	 << ( (iomode== IIoComponentMgr::IoMode::READ) ? "R" : "W" )
+	 << "," << fname << ")" << endmsg;
 
   if ( !io_hasitem (iocomponent) ) {
     if ( !io_register (iocomponent).isSuccess() ) {
@@ -272,91 +223,37 @@ IoComponentMgr::io_register (IIoComponent* iocomponent,
     }
   }
 
-  // m_dict is a python dictionary like so:
-  //  { 'iocomp-name' : { 'oldfname' : [ 'iomode', 'newfname' ] } }
-
-  // -> check there is an 'iocomp-name' entry
-  // -> retrieve that entry
-  PyObject *o = PyDict_GetItemString (m_dict, (char*)ioname.c_str());
-
-  // -> check it is a dictionary
-  if ( NULL==o ) {
-    o = PyDict_New();
-    if (NULL == o) {
-      m_log << MSG::ERROR << "could not create an I/O entry for ["
-	    << ioname << "] "
-	    << "in the I/O registry !" << endmsg;
-      return StatusCode::FAILURE;
-    }
-    if ( 0 != PyDict_SetItemString (m_dict, (char*)ioname.c_str(), o) ) {
-      Py_DECREF (o);
-      m_log << MSG::ERROR << "could not create an I/O entry for ["
-	    << ioname << "] " << "in the I/O registry !" << endmsg;
-      return StatusCode::FAILURE;
-    }
-  } else if ( !PyDict_Check (o) ) {
-    m_log << MSG::ERROR
-	  << "internal consistency error (expected a dictionary !)"
-	  << endmsg;
-    return StatusCode::FAILURE;
+  pair<iodITR,iodITR> fit = m_cdict.equal_range(iocomponent);
+  if (fit.first != fit.second) {
+    for (iodITR it=fit.first; it != fit.second; ++it) {
+      IoComponentEntry ioe = it->second;
+      if (ioe.m_oldfname == fname) {
+	if (ioe.m_iomode == iomode) {
+	  m_log << MSG::INFO << "IoComponent " << ioname
+	  	<< " has already had file " << fname 
+	   	<< " registered with i/o mode " << iomode << endmsg;
+	  return StatusCode::SUCCESS;
   } else {
-    // borrowed ref.
-    Py_INCREF (o);
+	  m_log << MSG::WARNING << "IoComponent " << ioname
+		<< " has already had file " << fname 
+		<< " registered with a different i/o mode " << ioe.m_iomode 
+		<< " - now trying " << iomode << endmsg;
+  }
+  }
+  }
   }
 
-  // -> check if 'fname' has already been registered
-  std::string mode;
-  switch (iomode) {
-  case IIoComponentMgr::IoMode::Input: mode ="<input>"; break;
-  case IIoComponentMgr::IoMode::Output:mode ="<output>";break;
-  default:
-    m_log << MSG::ERROR << "unknown value for iomode: [" << iomode << "] !"
-	  << endmsg;
-    Py_DECREF (o);
-    return StatusCode::FAILURE;
-  }
+  // We need to take into account that boost::filesystem::absolute() does not 
+  // work for files read from eos, i.e. starting with "root:"
+  std::string tmp_name = pfn.empty()?fname:pfn;
+  bool from_eos = tmp_name.find("root:")==0;
+  IoComponentEntry ioc(fname,(from_eos?tmp_name:boost::filesystem::absolute(tmp_name).string()),iomode);
+  m_cdict.insert( pair<IIoComponent*, IoComponentEntry>(iocomponent, ioc) );
 
-  PyObject *val = PyDict_GetItemString (o, (char*)fname.c_str());
-  if ( 0 != val ) {
-    Py_DECREF (o);
-    return StatusCode::SUCCESS;
-  }
-
-  val = PyList_New(2);
-  if ( 0 == val ) {
-    m_log << MSG::ERROR << "could not allocate a python-list !" << endmsg;
-    Py_DECREF (o);
-    return StatusCode::FAILURE;
-  }
-
-  int err = PyList_SetItem (val,
-			    0, PyString_FromString ((char*)mode.c_str()));
-  if (err) {
-    Py_DECREF (val);
-    Py_DECREF (o);
-    m_log << MSG::ERROR << "could not set py-iomode !" << endmsg;
-    return StatusCode::FAILURE;
-  }
-  Py_INCREF (Py_None);
-  // PyList_SetItem steals the ref...
-  err = PyList_SetItem (val, 1, Py_None);
-  if (err) {
-    Py_DECREF (val);
-    Py_DECREF (o);
-    m_log << MSG::ERROR << "could not properly fill python-list !" << endmsg;
-    return StatusCode::FAILURE;
-  }
-  err = PyDict_SetItemString (o, (char*)fname.c_str(), val);
-  if (err) {
-    m_log << MSG::ERROR << "could not properly fill registry w/ python-list !"
-	  << endmsg;
-    Py_DECREF (val);
-    Py_DECREF (o);
-    return StatusCode::FAILURE;
-  }
-  Py_DECREF (o);
   return StatusCode::SUCCESS;
 }
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /** @brief: retrieve the new filename for a given @c IIoComponent and
  *          @param `oldfname` filename
@@ -369,47 +266,38 @@ IoComponentMgr::io_retrieve (IIoComponent* iocomponent,
     return StatusCode::FAILURE;
   }
 
+  std::string ofname = fname;
   const std::string& ioname = iocomponent->name();
 
-  // m_dict is a python dictionary like so:
-  //  { 'iocomp-name' : { 'oldfname' : [ 'iomode', 'newfname' ] } }
+  m_log << MSG::DEBUG << "--> io_retrieve(" << ioname << "," << fname << ")" 
+	<< endmsg;
 
-  // -> check there is an 'iocomp-name' entry
-  // -> retrieve that entry
-  PyObject *o = PyDict_GetItemString (m_dict, (char*)ioname.c_str());
-  Py_XINCREF (o);
-
-  // -> check it is a dictionary
-  if ( NULL==o || !PyDict_Check (o) ) {
-    Py_XDECREF (o);
+  iodITR it;
+  if (!findComp(iocomponent,ofname,it)) {
+    DEBMSG << "could not find c: " << ioname << "  old_f: " << ofname << endmsg;
     return StatusCode::FAILURE;
+  } else {
+
+    IoDict_t::iterator it;
+    for (it = m_cdict.equal_range(iocomponent).first;
+	 it != m_cdict.equal_range(iocomponent).second;
+	 ++it) {
+
+      if (it->second.m_oldfname == ofname) {
+	DEBMSG << "retrieving new name for the component " << iocomponent->name() 
+	       << " old name: " << ofname 
+	       << ", new name: " << it->second.m_newfname << endmsg;
+	fname = it->second.m_newfname;
+	return StatusCode::SUCCESS;
+      }
+  }
   }
 
-  // -> check 'oldfname' exists
-  PyObject *pylist = PyDict_GetItemString (o, (char*)fname.c_str());
-  Py_XINCREF (pylist);
-
-  if ( NULL==pylist || !PyList_Check (pylist) ) {
-    Py_XDECREF(pylist);
-    Py_DECREF (o);
-    return StatusCode::FAILURE;
-  }
-
-  const std::size_t sz = PyList_Size (pylist);
-  if ( 2 != sz ) {
-    m_log << MSG::ERROR << "[" << ioname << "][" << fname << "] list has size ["
-	  << sz << " ! (expected sz==2)"
-	  << endmsg;
-    Py_DECREF (o);
-    Py_DECREF (pylist);
-    return StatusCode::FAILURE;
-  }
-
-  fname = PyString_AsString ( PyList_GetItem (pylist, 1) );
-  Py_DECREF (o);
-  Py_DECREF (pylist);
-  return StatusCode::SUCCESS;
+  DEBMSG << "Unexpected error! Unable to find entry in the dictionary corresponding to old filename: " << ofname << endmsg; 
+  return StatusCode::FAILURE;
 }
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /** @brief: reinitialize the I/O subsystem.
  *  This effectively calls @c IIoComponent::io_reinit on all the registered
@@ -418,7 +306,14 @@ IoComponentMgr::io_retrieve (IIoComponent* iocomponent,
 StatusCode
 IoComponentMgr::io_reinitialize ()
 {
+  m_log << MSG::DEBUG << "--> io_reinitialize()" << endmsg;
   m_log << MSG::DEBUG << "reinitializing I/O subsystem..." << endmsg;
+
+  if (m_log.level() <= MSG::DEBUG) {
+    m_log << MSG::DEBUG << "Listing all monitored entries: " << std::endl;
+    DEBMSG << list() << endmsg;
+  }
+
   bool allgood = true;
   for ( IoStack_t::iterator io = m_iostack.begin(), ioEnd = m_iostack.end();
 	io != ioEnd;
@@ -436,13 +331,118 @@ IoComponentMgr::io_reinitialize ()
 
   // we are done.
   // FIXME: shall we allow for multiple io_reinitialize ?
-  m_iostack.clear();
-  m_ioregistry.clear();
+  // m_iostack.clear();
+  // m_ioregistry.clear();
+  // m_cdict.clear();
 
   return allgood
     ? StatusCode::SUCCESS
     : StatusCode::FAILURE;
 }
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+StatusCode
+IoComponentMgr::io_update(IIoComponent* ioc, const std::string& old_fname,
+			  const std::string& new_fname) {
+
+  DEBMSG << "--> io_update(" << ioc->name() << "," 
+	 << old_fname << "," << new_fname << ")" << endmsg;
+
+  IoDict_t::iterator it;
+  for (it = m_cdict.equal_range(ioc).first; 
+       it != m_cdict.equal_range(ioc).second;
+       ++it) {
+
+    if (it->second.m_oldfname == old_fname) {
+      DEBMSG << "updating " << ioc->name() << " f: " << old_fname << " -> "
+	     << new_fname << endmsg;
+      it->second.m_newfname = new_fname;
+      return StatusCode::SUCCESS;
+    }
+  }
+
+  return StatusCode::FAILURE;
+
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+StatusCode
+IoComponentMgr::io_update(IIoComponent* ioc, const std::string& work_dir) {
+
+  DEBMSG << "--> io_update(" << ioc->name() << "," 
+	 << work_dir << ")" << endmsg;
+
+  IoDict_t::iterator it;
+  for (it = m_cdict.equal_range(ioc).first; 
+       it != m_cdict.equal_range(ioc).second;
+       ++it) {
+    
+    switch(it->second.m_iomode) {
+    case IIoComponentMgr::IoMode::READ:
+      {
+	it->second.m_newfname = it->second.m_oldabspath;
+	break;
+      }
+    case IIoComponentMgr::IoMode::WRITE:
+      {
+	boost::filesystem::path oldPath(it->second.m_oldfname);
+	if(oldPath.is_relative() && 
+	   oldPath.filename()==oldPath.relative_path()) {
+
+	  // Only file name was provided for writing. This is the usual mode of operation
+	  // ***
+	  // NB. In such cases it would make sense to set newfname=oldfname, however this will break
+	  //     existing client codes, which assume that newfname contains "/" 
+	  //     Thus we set newfname=workdir/oldfname
+	  // ***
+
+	  boost::filesystem::path newfname(work_dir);
+	  newfname /= oldPath;
+	  it->second.m_newfname = newfname.string();
+	}
+	else {
+	  // New name should be the old absolute path
+	  it->second.m_newfname = it->second.m_oldabspath;
+	}
+
+	break;
+      }
+    default:
+      {
+	// Don't know how to deal with either RW or INVALID
+	m_log << MSG::ERROR << "Unable to update IoComponent for the mode " << it->second.m_iomode << endmsg;
+	return StatusCode::FAILURE;
+      }
+    }
+
+  } // for
+
+  return StatusCode::SUCCESS;
+
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+StatusCode 
+IoComponentMgr::io_update_all (const std::string& work_dir)
+{
+  DEBMSG << "-->io_update_all for the directory " << work_dir << endmsg;
+  bool allgood = true;
+  for ( IoStack_t::iterator io = m_iostack.begin(), ioEnd = m_iostack.end();
+        io != ioEnd;
+        ++io ) {
+    if ( !io_update(*io,work_dir).isSuccess() ) {
+      allgood = false;
+      m_log << MSG::ERROR << "problem in [" << (*io)->name()
+            << "]->io_update() !" << endmsg;
+    }
+  }
+  return allgood ? StatusCode::SUCCESS : StatusCode::FAILURE;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /** @brief: finalize the I/O subsystem.
  *  Hook to allow to e.g. give a chance to I/O subsystems to merge output
@@ -451,19 +451,132 @@ IoComponentMgr::io_reinitialize ()
 StatusCode
 IoComponentMgr::io_finalize ()
 {
+  DEBMSG << "--> io_finalize()" << endmsg;
   return StatusCode::SUCCESS;
 }
 
-///////////////////////////////////////////////////////////////////
-// Protected methods:
-///////////////////////////////////////////////////////////////////
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-///////////////////////////////////////////////////////////////////
-// Const methods:
-///////////////////////////////////////////////////////////////////
+bool
+IoComponentMgr::findComp(IIoComponent* c, const std::string& f, iodITR& itr) 
+  const {
 
-///////////////////////////////////////////////////////////////////
-// Non-const methods:
-///////////////////////////////////////////////////////////////////
+  pair<iodITR,iodITR> pit;
+  if (!findComp(c,pit)) {
+    itr = pit.first;
+    return false;
+  }
+  
+  for (itr = pit.first; itr != pit.second; ++itr) {
+    if (itr->second.m_oldfname == f) {
+      return true;
+    }
+  }
+
+  return false;
+
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool 
+IoComponentMgr::findComp(IIoComponent* c, std::pair<iodITR,iodITR>& pit) const {
+
+  pit = m_cdict.equal_range(c);
+
+  if (pit.first == pit.second) {
+    return false;
+  } else {
+    return true;
+  }
+
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool
+IoComponentMgr::findComp(const std::string& c, 
+			 std::pair<iodITR,iodITR>& pit) const {
+
+  pit.first = m_cdict.end();
+  pit.second = m_cdict.end();
+
+  IoRegistry_t::const_iterator itr = m_ioregistry.find(c);
+  if (itr == m_ioregistry.end()) {
+    return false;
+  }
+
+  return findComp(itr->second, pit);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+std::string
+IoComponentMgr::list() const {
+
+  ostringstream ost;
+
+  ost << "Listing all IoComponents (" << m_cdict.size() << "): " << endl;
+  for (iodITR it = m_cdict.begin(); it != m_cdict.end(); ++it) {
+    ost << "  " << it->first->name() << "  " << it->second
+	<< endl;
+  }
+
+  return ost.str();
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void 
+IoComponentMgr::handle ( const Incident& i ) {
+
+  pair<iodITR,iodITR> pit;
+  
+
+  if ( i.type() == IncidentType::BeginInputFile ) {
+
+    const FileIncident *fi = dynamic_cast<const FileIncident*> ( &i );
+    DEBMSG << "BeginInputFile:   s: " << fi->source() << "  t: " << fi->type()
+	   << "  n: " << fi->fileName() << "  g: " << fi->fileGuid()
+	   << endmsg;
+
+    if (findComp(fi->source(),pit)) {
+      DEBMSG << "  found component: " << endmsg;
+      while (pit.first != pit.second) {
+	IIoComponent* c = pit.first->first;
+	IoComponentEntry e = pit.first->second;
+	DEBMSG << "    c: " << c->name() << "  " << e << endmsg;
+	
+	++pit.first;
+      }
+    } else {
+      DEBMSG << "  could not find component \"" << fi->source() 
+	     << "\"!" << endmsg;
+    }
+	  
 
 
+  } else if ( i.type() == IncidentType::BeginOutputFile ) {
+
+    const FileIncident *fi = dynamic_cast<const FileIncident*> ( &i );
+    DEBMSG << "BeginOutputFile:   s: " << fi->source() << "  t: " << fi->type()
+	   << "  n: " << fi->fileName() << "  g: " << fi->fileGuid()
+	   << endmsg;
+
+    if (findComp(fi->source(),pit)) {
+      DEBMSG << "  found component: " << endmsg;
+      while (pit.first != pit.second) {
+	IIoComponent* c = pit.first->first;
+	IoComponentEntry e = pit.first->second;
+	DEBMSG << "    c: " << c->name() << "  " << e << endmsg;
+	
+	++pit.first;
+      }
+    } else {
+      DEBMSG << "  could not find component \"" << fi->source() 
+	     << "\"!" << endmsg;
+    }
+
+  }
+
+}
