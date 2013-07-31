@@ -1476,7 +1476,7 @@ macro_append pp_cppflags "" \
       ATLAS " -DATLAS_GAUDI_V21 "
 
 macro_append pp_cppflags "" \
-      target-opt " -DNDEBUG "
+      ATLAS&target-opt " -DNDEBUG "
 
 #
 # extra CPP flags
