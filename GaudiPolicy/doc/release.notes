@@ -1,6 +1,11 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-03-27 - Hubert Degaudenzi
+ - Modified createProjVersHeader.py to understand only the LHCb version
+   style(vXrY[pZ]) , the ATLAS version style (bla-X-Y[-Z]) and the plain
+   version style (X.Y[.Z])
+
 ! 2013-06-10 - Marco Clemencic
  - Added -Wno-deprecated for gcc 4.8 (as it was done already for 4.6 and 4.7).
  - GaudiTest.py: Removed a stale debug printout statement.
