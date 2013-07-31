@@ -189,7 +189,7 @@ StatusCode HistorySvc::initialize() {
 			     std::numeric_limits<long>::min(),rethrow,oneShot);
 
   if (m_outputFile.find(".XML") != string::npos || m_outputFile.find(".xml") != string::npos) {
-    ON_DEBUG 
+    ON_DEBUG
       m_log << MSG::DEBUG << "output format is XML" << endmsg;
     m_outputFileTypeXML = true;
   }
@@ -341,7 +341,7 @@ StatusCode HistorySvc::finalize() {
   ON_VERBOSE
     m_log << MSG::VERBOSE << "HistorySvc::finalize()" << endmsg;
 
- 
+
   clearState();
 
   StatusCode status = Service::finalize();
@@ -375,14 +375,12 @@ HistorySvc::registerAlg(const Algorithm &alg) {
   AlgorithmHistory *algHist = new AlgorithmHistory(alg, job);
   m_algmap[&alg] = algHist;
 
-#ifndef NDEBUG
-  if (m_log.level() <= MSG::DEBUG) {
+  ON_DEBUG {
     m_log << MSG::DEBUG << "Registering algorithm: ";
     m_log.setColor(MSG::CYAN);
     m_log << alg.name() << endmsg;
     m_log.resetColor();
   }
-#endif
 
   return StatusCode(StatusCode::SUCCESS,true);
 
@@ -478,7 +476,7 @@ HistorySvc::listProperties() const {
 
   m_log << MSG::INFO;
   m_log.setColor(MSG::CYAN);
-  m_log << "Dumping properties for all Algorithms (" << m_algmap.size() 
+  m_log << "Dumping properties for all Algorithms (" << m_algmap.size()
 	<< ")" << endmsg;
 
   std::map<const Algorithm*, AlgorithmHistory*>::const_iterator itr;
@@ -1011,13 +1009,13 @@ HistorySvc::dumpState(std::ofstream& ofs) const {
   for (itrj=props.begin(); itrj != props.end(); ++itrj) {
     // client is the name of the component of the current property
     std::string client = itrj->first;
-    const Property* prp = itrj->second; 
-    
+    const Property* prp = itrj->second;
+
     if (m_outputFileTypeXML) {
 
       if (client != client_currently_open) {
 	if(client_currently_open!="start") ofs << "    </COMPONENT>" << endl;
-	ofs << "    <COMPONENT name=\"" 
+	ofs << "    <COMPONENT name=\""
 	    << client << "\" class=\"undefined\">" << std::endl;
       }
     } else {
@@ -1025,13 +1023,13 @@ HistorySvc::dumpState(std::ofstream& ofs) const {
     }
 
     ofs << dumpProp(prp,m_outputFileTypeXML,6) << endl;
-    
+
     client_currently_open = client;
 
     if (m_outputFileTypeXML)
   ofs << "    </COMPONENT>" << endl;
   }
-   
+
 
   if(m_outputFileTypeXML) {
     ofs << "</GLOBAL>" << endl << "<SERVICES>" << endl;
@@ -1056,7 +1054,7 @@ HistorySvc::dumpState(std::ofstream& ofs) const {
   std::map<const Algorithm*, AlgorithmHistory*>::const_iterator itr;
   for (itr=m_algmap.begin(); itr != m_algmap.end(); ++itr) {
     const Algorithm* alg = itr->first;
-    
+
     dumpState(alg,ofs);
 
   }
@@ -1112,16 +1110,16 @@ HistorySvc::dumpState(const INamedInterface *in, std::ofstream& ofs) const {
     hist = dynamic_cast<HistoryObj*>( o );
     vhist = dynamic_cast<IVersHistoryObj*>( o );
   } else {
-    m_log << MSG::ERROR 
-	  << "Could not dcast interface to accepted History Obj type for " 
+    m_log << MSG::ERROR
+	  << "Could not dcast interface to accepted History Obj type for "
 	  << in->name() << endreq;
     return;
   }
 
-  if (hist == 0 || vhist == 0) { 
-    m_log << MSG::ERROR << "Could not dcast recognized object to HistoryObj or IVersHistoryObj. This should never happen." 
+  if (hist == 0 || vhist == 0) {
+    m_log << MSG::ERROR << "Could not dcast recognized object to HistoryObj or IVersHistoryObj. This should never happen."
 	  << endmsg;
-    return; 
+    return;
   }
 
   if (m_outputFileTypeXML) {
