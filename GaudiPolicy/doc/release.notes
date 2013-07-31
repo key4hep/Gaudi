@@ -2,6 +2,11 @@ package GaudiPolicy
 package manager: Marco Clemencic
 
 ! 2013-04-05 - Charles Leggett
+ - merge macro and pattern for genconf extra modules, make it tag dependent
+
+M       cmt/requirements
+
+! 2013-04-05 - Charles Leggett
  - add macro and pattern for loading of optional modules into <pkg>Conf.py 
    files via genconf. This eases the transition of ATLAS packages that 
    imported modules that used to be in GaudiSvc but are now in GaudiCoreSvc or 
