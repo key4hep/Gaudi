@@ -531,13 +531,14 @@ make_fragment sln_dependency_trailer
 
 # C++
 # The cpp fragments for enhanced computation of dependencies are not available on Windows
-# and must be disabled on CMT v1r25 (we use the built-in version).
-macro cpp_fragment "cpp" target-winxp "" CMTv1&CMTr25 ""
+# and must be disabled on CMT v1r25, and later (we use the built-in version).
+macro cpp_fragment "cpp" target-winxp "" CMTv1&CMTr25 "" CMTv1&CMTr26 ""
 make_fragment $(cpp_fragment)
-macro cpp_library_fragment "cpp_library" target-winxp "" CMTv1&CMTr25 ""
+macro cpp_library_fragment "cpp_library" target-winxp "" CMTv1&CMTr25 "" CMTv1&CMTr26 ""
 make_fragment $(cpp_library_fragment)
 
 tag CMTv1&CMTr25 c_native_dependencies cpp_native_dependencies
+tag CMTv1&CMTr26 c_native_dependencies cpp_native_dependencies
 
 macro cmt_compiler_version "${cmt_compiler_version}" \
               target-gcc43 "gcc43"
@@ -590,6 +591,7 @@ macro lib_no_static_fragment "" \
        CMTp20070208&target-winxp "library_no_static" \
        CMTp20090520&target-winxp "library_no_static" \
        CMTr20&target-unix "" \
+       CMTr26&target-unix "" \
        target-unix "library_no_static"
 make_fragment $(lib_no_static_fragment)
 
