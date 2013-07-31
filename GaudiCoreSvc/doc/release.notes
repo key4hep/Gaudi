@@ -4,6 +4,11 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2013-04-24 - Charles Leggett
+ - ApplicationMgr:
+   - a "ScheduledStop" should not result in a termination error message
+M       src/ApplicationMgr/ApplicationMgr.cpp
+
 ! 2013-04-02 - Charles Leggett
  - ServiceManager:
    - use default service priority from ISvcManager
