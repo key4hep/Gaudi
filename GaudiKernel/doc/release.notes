@@ -2,6 +2,10 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 
 ! 2013-04-02 - Charles Leggett
+ - use a const int for default piority of services
+M       GaudiKernel/ISvcManager.h
+
+! 2013-04-02 - Charles Leggett
  - change default piority of services to 100 from 10
 M       GaudiKernel/ISvcManager.h
 

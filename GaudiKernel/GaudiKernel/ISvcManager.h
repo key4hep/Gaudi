@@ -31,12 +31,14 @@ public:
   /// InterfaceID
   DeclareInterfaceID(ISvcManager,4,0);
 
+  static const int DEFAULT_SVC_PRIORITY = 100;
+
   /** Add a service to the "active" list of services of the factory
     * @param svc Pointer to the service
     *
     * @return StatusCode indicating success or failure.
     */
-  virtual StatusCode addService( IService* svc, int prio = 100) = 0;
+  virtual StatusCode addService( IService* svc, int prio = DEFAULT_SVC_PRIORITY) = 0;
 
 #if !defined(GAUDI_V22_API) || defined(G22_NEW_SVCLOCATOR)
   /** Add a service to the "active" list of services of the factory
@@ -54,7 +56,7 @@ public:
     *
     * @return StatusCode indicating success or failure.
     */
-  virtual StatusCode addService( const Gaudi::Utils::TypeNameString& nametype, int prio = 100) = 0;
+  virtual StatusCode addService( const Gaudi::Utils::TypeNameString& nametype, int prio = DEFAULT_SVC_PRIORITY) = 0;
 
   /** Remove a service from the "active" list of services of the factory
     * @param svc Pointer to the service
