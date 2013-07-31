@@ -22,7 +22,7 @@
 
 class Property;
 
-class GAUDI_API JobHistory: public HistoryObj, virtual public IVersHistoryObj {
+class GAUDI_API JobHistory: public HistoryObj, public IVersHistoryObj {
 
 public:
 

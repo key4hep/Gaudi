@@ -43,8 +43,8 @@ StatusCode Service::sysInitialize() {
                                       // check if we want to audit the initialize
                                       (m_auditorInitialize) ? auditorSvc().get() : 0,
                                       IAuditor::Initialize);
-    if ((name() != "MessageSvc") && msgSvc().isValid()) // pre-set the outputLevel from the MessageSvc value
-      m_outputLevel = msgSvc()->outputLevel(name());
+    // if ((name() != "MessageSvc") && msgSvc().isValid()) // pre-set the outputLevel from the MessageSvc value
+    //   m_outputLevel = msgSvc()->outputLevel(name());
     sc = initialize(); // This should change the state to Gaudi::StateMachine::CONFIGURED
     if (sc.isSuccess())
       m_state = m_targetState;
