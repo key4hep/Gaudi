@@ -1,6 +1,18 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2013-03-26 - Charles Leggett
+ - added example for FileMgr
+M       cmt/requirements
+A       src/FileMgr
+A       src/FileMgr/FileMgrTest.cpp
+A       src/FileMgr/FileMgrTest.h
+A       options/FileMgrTest.opts
+
+! 2013-03-05 - Charles Leggett
+ - conditional usage for GaudiPartProp and RootCnv
+M       cmt/requirements
+
 ============================ GaudiExamples v23r8 =============================
 ! 2013-05-28 - Marco Clemencic
  - Added test for the abort of stalled events.
