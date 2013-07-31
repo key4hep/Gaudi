@@ -236,7 +236,10 @@ def update(src,dest,old_dest = None, syml = False, logdir = realpath(".")):
                 # doing the copy (shutil.copystat fails if the destination file
                 # is not owned by the current user).
                 os.remove(realdest)
-            shutil.copy2(realsrc, realdest) # do the copy (cp -p src dest)
+            if sys.platform != "darwin":
+                shutil.copy2(realsrc, realdest) # do the copy (cp -p src dest)
+            else:
+                shutil.copy(realsrc, realdest) # do the copy (cp src dest)
             
     #if old_dest != dest: # the file was installed somewhere else
     #    # remove the old destination
