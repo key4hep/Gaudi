@@ -1,6 +1,11 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-04-05 - Charles Leggett
+ - add new optional parameter to genconf to allow import/declaration of 
+   user specified module
+M       src/Util/genconf.cpp
+
 ! 2013-04-02 - Charles Leggett
  - use a const int for default piority of services
 M       GaudiKernel/ISvcManager.h
