@@ -36,8 +36,8 @@ macro RootCnv_ext_linkopts  ' -lRootCnvLib ' WIN32 ' RootCnvLib.lib '
 
 private
 
-macro_append ROOT_linkopts " -lCintex -lTreePlayer -lMathCore " \
-             target-winxp  " libCintex.lib libTreePlayer.lib libMathCore.lib "
+macro_append ROOT_linkopts " -lTreePlayer -lMathCore " \
+             target-winxp  " libTreePlayer.lib libMathCore.lib "
 
 macro_append ROOT_cppflags '' \
              target-winxp '-FI"$(ROOTSYS)/include/w32pragma.h"'
