@@ -13,9 +13,7 @@ endif()
 gaudi_add_library(GaudiGSLLib src/Lib/*.cpp
                   LINK_LIBRARIES GaudiAlgLib GSL CLHEP
                   INCLUDE_DIRS GSL CLHEP
-                  PUBLIC_HEADERS GaudiGSL GaudiMath)
-gaudi_add_module(GaudiGSL src/Components/*.cpp
-                 LINK_LIBRARIES GaudiGSLLib)
+                  PUBLIC_HEADERS GaudiMath)
 
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiGSLMath dict/GaudiGSLMath.h dict/GaudiGSLMath.xml LINK_LIBRARIES GaudiGSLLib)

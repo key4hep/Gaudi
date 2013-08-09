@@ -159,7 +159,7 @@ But it is important to try to get a similar look, for an easier maintenance, as 
                     std::string  aString,
                     MyClass*     myClassPointerValue );
 ~~~~
-
+4. Lines should not be longer than 120 characters.
 
 ## Comments ##
 
