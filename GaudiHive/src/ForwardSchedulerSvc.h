@@ -3,8 +3,8 @@
 
 // Framework include files
 #include "GaudiKernel/IScheduler.h"
-#include "GaudiKernel/IRunable.h" 
-#include "GaudiKernel/Service.h" 
+#include "GaudiKernel/IRunable.h"
+#include "GaudiKernel/Service.h"
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
 
@@ -29,9 +29,9 @@ typedef AlgsExecutionStates::State State;
 
 /**@class ForwardSchedulerSvc ForwardSchedulerSvc.h GaudiKernel/ForwardSchedulerSvc.h
  *
- *  The SchedulerSvc implements the IScheduler interface. It manages all the 
- *  execution states of the algorithms and interacts with the TBB runtime for 
- *  the algorithm tasks submission. A state machine takes care of the tracking 
+ *  The SchedulerSvc implements the IScheduler interface. It manages all the
+ *  execution states of the algorithms and interacts with the TBB runtime for
+ *  the algorithm tasks submission. A state machine takes care of the tracking
  *  of the execution state of the algorithms.
  *  This is a forward scheduler: algorithms are scheduled for execution as soon
  *  as their data dependencies are available in the whiteboard.
@@ -62,8 +62,8 @@ typedef AlgsExecutionStates::State State;
  *  * popFinishedEvent: to retrieve an event from the scheduler (blocking)
  *
  * Please refer to the full documentation of the methods for more details.
- *  
- * 
+ *
+ *
  *  @author  Danilo Piparo
  *  @author  Benedikt Hegner
  *  @version 1.1
@@ -78,21 +78,21 @@ public:
 
   /// Initialise
   virtual StatusCode initialize();
-  
+
   /// Finalise
-  virtual StatusCode finalize();  
+  virtual StatusCode finalize();
 
   /// Make an event available to the scheduler
   virtual StatusCode pushNewEvent(EventContext* eventContext);
 
   // Make multiple events available to the scheduler
-  virtual StatusCode pushNewEvents(std::vector<EventContext*>& eventContexts);  
+  virtual StatusCode pushNewEvents(std::vector<EventContext*>& eventContexts);
 
   /// Blocks until an event is availble
-  virtual StatusCode popFinishedEvent(EventContext*& eventContext);  
+  virtual StatusCode popFinishedEvent(EventContext*& eventContext);
 
   /// Try to fetch an event from the scheduler
-  virtual StatusCode tryPopFinishedEvent(EventContext*& eventContext);  
+  virtual StatusCode tryPopFinishedEvent(EventContext*& eventContext);
 
   /// Get free slots number
   virtual unsigned int freeSlots();
@@ -124,19 +124,19 @@ private:
   inline const std::string& index2algname (unsigned int index);
 
   /// Vector to bookkeep the information necessary to the index2name conversion
-  std::vector<std::string> m_algname_vect;  
+  std::vector<std::string> m_algname_vect;
 
   /// A shortcut to the whiteboard
-  SmartIF<IHiveWhiteBoard> m_whiteboard; 
-  
+  SmartIF<IHiveWhiteBoard> m_whiteboard;
+
   /// The whiteboard name
-  std::string m_whiteboardSvcName; 
+  std::string m_whiteboardSvcName;
 
   // Event slots management -------------------------------------------------
-  /// Class representing the event slot  
+  /// Class representing the event slot
   class EventSlot{
   public:
-    EventSlot(const std::vector<std::vector<std::string>>& algoDependencies, 
+    EventSlot(const std::vector<std::vector<std::string>>& algoDependencies,
               unsigned int numberOfAlgorithms,
               unsigned int numberOfControlFlowNodes,
               SmartIF<IMessageSvc> MS):
@@ -145,7 +145,7 @@ private:
                 complete(false),
                 dataFlowMgr(algoDependencies),
                 controlFlowState(numberOfControlFlowNodes,-1){};
-      
+
     ~EventSlot(){};
 
     /// Reset all resources in order to reuse the slot
@@ -156,7 +156,7 @@ private:
       complete=false;
       controlFlowState.assign(controlFlowState.size(),-1);
     };
-    
+
     /// Cache for the eventContext
     EventContext* eventContext;
     /// Vector of algorithms states
@@ -167,14 +167,14 @@ private:
     DataFlowManager dataFlowMgr;
     /// State of the control flow
     std::vector<int> controlFlowState;
-  };   
+  };
 
   /// Vector of events slots
   std::vector<EventSlot> m_eventSlots;
-  
+
   /// Maximum number of event processed simultaneously
   int m_maxEventsInFlight;
-  
+
   /// Atomic to account for asyncronous updates by the scheduler wrt the rest
   std::atomic_int m_freeSlots;
 
@@ -186,7 +186,7 @@ private:
 
   /// List of events to be skipped. The number is the number in the job.
   std::vector<unsigned int> m_eventNumberBlacklist;
-  
+
   // States management ------------------------------------------------------
 
   /// Maximum number of simultaneous algorithms
@@ -213,7 +213,7 @@ private:
 
   /// Keep track of update actions scheduled
   bool m_updateNeeded;
-  
+
   // Algos Management -------------------------------------------------------
   /// Cache for the algorithm resource pool
   SmartIF<IAlgResourcePool>  m_algResourcePool;
@@ -224,7 +224,7 @@ private:
   /// Drain the actions present in the queue
   StatusCode m_drain();
 
-  /// Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose  
+  /// Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose
   int m_threadPoolSize;
 
   // Actions management -----------------------------------------------------
@@ -232,11 +232,13 @@ private:
   typedef std::function<StatusCode ()> action;
 
   /// Queue where closures are stored and picked for execution
-  tbb::concurrent_bounded_queue<action> m_actionsQueue;  
+  tbb::concurrent_bounded_queue<action> m_actionsQueue;
 
-  /// Member to take care of the control flow 
+  /// Member to take care of the control flow
   concurrency::ControlFlowManager m_cfManager;
-  
+  // XXX: CF tests. Temporary property to switch between ControlFlow implementations
+  bool m_CFNext;
+
   // Needed to queue actions on algorithm finishing and decrement algos in flight
   friend class AlgoExecutionTask;
 
