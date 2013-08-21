@@ -3,11 +3,13 @@
 <argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/Aida2Root.opts</text></set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="reference"><text>refs/Aida2Root.ref</text></argument>
+<argument name="error_reference"><text>refs/Aida2Root.err.ref</text></argument>
 <argument name="validator"><text>
-preprocessor = normalizeExamples + \
+preprocessor = (normalizeExamples +
     RegexpReplacer(when = "^Aida2Root",
         orig = r"(INFO.*'(skewness|kurtosis)(Err)?'.*)\|([0-9.e+\- ]*\|){2}",
-        repl = r"\1| ### | ### |")
+        repl = r"\1| ### | ### |") +
+    LineSkipper(regexps = [r'Info in &lt;TCanvas::Print&gt;: png file .* has been created']))
 
 validateWithReference(preproc = preprocessor)
 </text></argument>
