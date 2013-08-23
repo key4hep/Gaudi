@@ -4,6 +4,9 @@
 ! Purpose     : Provide a generic plugin service.
 !-----------------------------------------------------------------------------
 
+! 2013-08-23 - Marco Clemencic
+ - Updated the CMT configuration.
+
 ! 2013-08-23 - Sebastien Binet
  - Added optional metadata (properties) to the factories.
  - Added a Python module to query the list of factories (based on ctypes).
