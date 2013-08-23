@@ -4,9 +4,13 @@
 gaudi_subdir(GaudiPluginService v1r0)
 
 # Library
-gaudi_add_library(GaudiPluginService src/PluginService.cpp
+gaudi_add_library(GaudiPluginService src/PluginService.cpp src/capi_pluginservice.cpp
                   LINK_LIBRARIES ${CMAKE_DL_LIBS}
                   PUBLIC_HEADERS Gaudi)
+
+# python modules
+gaudi_install_python_modules()
+
 # Application
 gaudi_add_executable(listcomponents src/listcomponents.cpp src/PluginService.cpp)
 target_link_libraries(listcomponents ${CMAKE_DL_LIBS})

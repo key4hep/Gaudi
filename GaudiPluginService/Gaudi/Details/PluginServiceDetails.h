@@ -95,18 +95,23 @@ namespace Gaudi { namespace PluginService {
     public:
       typedef std::string KeyType;
 
+      /// Type used for the properties implementation.
+      typedef std::map<KeyType, std::string> Properties;
+
       struct FactoryInfo {
         FactoryInfo(const std::string& lib, void* p=0,
                     const std::string& t="",
                     const std::string& rt="",
-                    const std::string& cn=""):
-          library(lib), ptr(p), type(t), rtype(rt), className(cn) {}
+                    const std::string& cn="",
+                    const Properties& props=Properties()):
+        library(lib), ptr(p), type(t), rtype(rt), className(cn), properties(props) {}
 
         std::string library;
         void* ptr;
         std::string type;
         std::string rtype;
         std::string className;
+        Properties properties;
       };
 
       /// Type used for the database implementation.
@@ -133,8 +138,20 @@ namespace Gaudi { namespace PluginService {
       /// Retrieve the FactoryInfo object for an id.
       const FactoryInfo& getInfo(const std::string& id) const;
 
-      /// Return a list of all the known factories
+      /// Add a property to an already existing FactoryInfo object (via its id.)
+      Registry&
+      addProperty(const std::string& id, 
+                  const std::string& k,
+                  const std::string& v);
+
+      /// Return a list of all the known and loaded factories
       std::set<KeyType> loadedFactories() const;
+
+      /// Return the known factories (loading the list if not yet done).
+      inline const FactoryMap& factories() const {
+        if (!m_initialized) const_cast<Registry*>(this)->initialize();
+        return m_factories;
+      }
 
     private:
       /// Private constructor for the singleton pattern.
@@ -149,17 +166,12 @@ namespace Gaudi { namespace PluginService {
       /// Add a factory to the database.
       void add(const std::string& id, void *factory,
                const std::string& type, const std::string& rtype,
-               const std::string& className);
+               const std::string& className,
+               const Properties& props = Properties());
 
-      /// Return the know factories (loading the list if not yet done).
+      /// Return the known factories (loading the list if not yet done).
       inline FactoryMap& factories() {
         if (!m_initialized) initialize();
-        return m_factories;
-      }
-
-      /// Return the know factories (loading the list if not yet done).
-      inline const FactoryMap& factories() const {
-        if (!m_initialized) const_cast<Registry*>(this)->initialize();
         return m_factories;
       }
 
