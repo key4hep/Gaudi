@@ -23,6 +23,26 @@
 #include <mutex>
 #endif
 
+#if __GNUC__ >= 4
+#  define GAUDIPS_HASCLASSVISIBILITY
+#endif
+
+#if defined(GAUDIPS_HASCLASSVISIBILITY)
+#  define GAUDIPS_IMPORT __attribute__((visibility("default")))
+#  define GAUDIPS_EXPORT __attribute__((visibility("default")))
+#  define GAUDIPS_LOCAL  __attribute__((visibility("hidden")))
+#else
+#  define GAUDIPS_IMPORT
+#  define GAUDIPS_EXPORT
+#  define GAUDIPS_LOCAL
+#endif
+
+#ifdef GaudiPluginService_EXPORTS
+#define GAUDIPS_API GAUDIPS_EXPORT
+#else
+#define GAUDIPS_API GAUDIPS_IMPORT
+#endif
+
 namespace Gaudi { namespace PluginService {
 
   namespace Details {
@@ -61,6 +81,7 @@ namespace Gaudi { namespace PluginService {
 
     /// Function used to load a specific factory function.
     /// @return the pointer to the factory function.
+    GAUDIPS_API
     void* getCreator(const std::string& id, const std::string& type);
 
     /// Convoluted implementation of getCreator with an embedded
@@ -84,6 +105,7 @@ namespace Gaudi { namespace PluginService {
 
     /// Return a canonical name for type_info object (implementation borrowed
     ///  from GaudiKernel/System).
+    GAUDIPS_API
     std::string demangle(const std::type_info& id);
 
     /// Return a canonical name for the template argument.
@@ -91,7 +113,7 @@ namespace Gaudi { namespace PluginService {
     inline std::string demangle() { return demangle(typeid(T)); }
 
     /// In-memory database of the loaded factories.
-    class Registry {
+    class GAUDIPS_API Registry {
     public:
       typedef std::string KeyType;
 
@@ -140,7 +162,7 @@ namespace Gaudi { namespace PluginService {
 
       /// Add a property to an already existing FactoryInfo object (via its id.)
       Registry&
-      addProperty(const std::string& id, 
+      addProperty(const std::string& id,
                   const std::string& k,
                   const std::string& v);
 
@@ -192,7 +214,7 @@ namespace Gaudi { namespace PluginService {
     };
 
     /// Simple logging class, just to provide a default implementation.
-    class Logger {
+    class GAUDIPS_API Logger {
     public:
       enum Level { Debug=0, Info=1, Warning=2, Error=3 };
       Logger(Level level = Warning): m_level(level) {}
@@ -209,16 +231,16 @@ namespace Gaudi { namespace PluginService {
     };
 
     /// Return the current logger instance.
-    Logger& logger();
+    GAUDIPS_API Logger& logger();
     /// Set the logger instance to use.
     /// It must be a new instance and the ownership is passed to the function.
-    void setLogger(Logger* logger);
+    GAUDIPS_API void setLogger(Logger* logger);
   }
 
   /// Backward compatibility with Reflex.
-  void SetDebug(int debugLevel);
+  GAUDIPS_API void SetDebug(int debugLevel);
   /// Backward compatibility with Reflex.
-  int Debug();
+  GAUDIPS_API int Debug();
 
 }}
 

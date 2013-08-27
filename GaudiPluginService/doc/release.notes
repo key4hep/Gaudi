@@ -4,6 +4,9 @@
 ! Purpose     : Provide a generic plugin service.
 !-----------------------------------------------------------------------------
 
+! 2013-08-27 - Marco Clemencic
+ - Fixed symbol visibility.
+
 ! 2013-08-23 - Marco Clemencic
  - Updated the CMT configuration.
 

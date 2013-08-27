@@ -24,3 +24,7 @@ macro_append listcomponentslinkopts " -ldl "
 
 macro listcomponents_cmd listcomponents.exe
 make_fragment listcomponents -header=listcomponents_header
+
+private
+macro_append pp_cppflags " -DGaudiPluginService_EXPORTS "
+end_private
