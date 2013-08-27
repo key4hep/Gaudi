@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-08-27 - Marco Clemencic
+ - Fixed compile-time issue when symbol hiding is enabled (gcc 4.7).
+
 ! 2013-07-19 - Marco Clemencic
  - Replaced "#ifdef linux" with "#ifdef __linux" (more reliable: Rolf Seuster
    reported that "linux" is not defined when using C++11).

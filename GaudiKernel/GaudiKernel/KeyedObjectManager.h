@@ -21,13 +21,13 @@ namespace Containers   {
   /// Object manipulator type definition
   typedef long (*MANIPULATOR)(void*);
   /// Parametrisation class for hashmap-like implementation.
-  struct hashmap;
+  struct GAUDI_API hashmap;
   /// Parametrisation class for map-like implementation.
-  struct map;
+  struct GAUDI_API map;
   /// Parametrisation class for redirection array - like implementation.
-  struct array;
+  struct GAUDI_API array;
   /// Parametrisation class for vector-like implementation.
-  struct vector;
+  struct GAUDI_API vector;
 
   /** KeyedObjectManager
    *  Class to manage keyed objects. This class is instantiated for two
