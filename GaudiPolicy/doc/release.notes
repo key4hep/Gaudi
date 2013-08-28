@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-08-28 - Marco Clemencic
+ - Use the wrapper lcg-icpc-13 when buildin for icc13.
+
 ============================= GaudiPolicy v12r7 ==============================
 ! 2013-03-27 - Hubert Degaudenzi
  - Modified createProjVersHeader.py to understand only the LHCb version
