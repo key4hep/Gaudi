@@ -1,6 +1,17 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-08-29 - Kevin Win-Lime
+ - Modified GaudiTest.py to add a new result stream class called
+   XMLResultStream. This class format the QMtest output to be an CTest like
+   XML output.
+ - Modified classes.qmc to declare the new class XMLResultStream to QMTest.
+ - Modified run_qmtest.py to allow the using of this new class. There are two
+   way to use this class. You can use the option "--xml-output output_Dir"
+   or set the environment variable : "GAUDI_QMTEST_XML_OUTPUT=output_Dir"
+   where "output_Dir" is the directory where you want to see the xml files.
+   The option has the priority on the environment variable.
+
 ============================= GaudiPolicy v12r8 ==============================
 ! 2013-09-25 - Marco Clemencic
  - Changed GaudiTest.py to set LC_ALL to C, to avoid the new message from

@@ -18,9 +18,6 @@ from subprocess import Popen, PIPE, STDOUT
 # ensure the preferred locale
 os.environ['LC_ALL'] = 'C'
 
-# Needed for the SQL wraper
-import sqlite3
-
 # Needed for the XML wrapper
 try:
     import xml.etree.cElementTree as ET
