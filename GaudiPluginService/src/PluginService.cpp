@@ -185,18 +185,20 @@ namespace Gaudi { namespace PluginService {
       }
     }
 
-    void Registry::add(const std::string& id, void *factory,
-                       const std::string& type, const std::string& rtype,
-                       const std::string& className,
-                       const Properties& props){
+    Registry::FactoryInfo&
+    Registry::add(const std::string& id, void *factory,
+                  const std::string& type, const std::string& rtype,
+                  const std::string& className,
+                  const Properties& props){
       REG_SCOPE_LOCK
       FactoryMap &facts = factories();
       FactoryMap::iterator entry = facts.find(id);
       if (entry == facts.end())
       {
         // this factory was not known yet
-        facts.insert(std::make_pair(id, FactoryInfo("unknown", factory,
-                                                    type, rtype, className, props)));
+        entry = facts.insert(std::make_pair(id, 
+                                            FactoryInfo("unknown", factory,
+                                                        type, rtype, className, props))).first;
       } else {
         // do not replace an existing factory with a new one
         if (!entry->second.ptr) {
@@ -206,6 +208,7 @@ namespace Gaudi { namespace PluginService {
         factoryInfoSetHelper(entry->second.rtype, rtype, "return type", id);
         factoryInfoSetHelper(entry->second.className, className, "class", id);
       }
+      return entry->second;
     }
 
     void* Registry::get(const std::string& id, const std::string& type) const {

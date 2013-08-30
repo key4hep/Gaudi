@@ -1,5 +1,5 @@
 #include <vector>
-#include <Gaudi/capi/pluginservice.h>
+#include "capi_pluginservice.h"
 #include <Gaudi/PluginService.h>
 
 #include <iostream>

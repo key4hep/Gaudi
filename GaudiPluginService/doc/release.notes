@@ -4,6 +4,10 @@
 ! Purpose     : Provide a generic plugin service.
 !-----------------------------------------------------------------------------
 
+! 2013-08-28 - Sebastien Binet
+ - Added (C++) tests for optional metadata (properties).
+ - Added docstrings to the python interface.
+
 ! 2013-08-27 - Marco Clemencic
  - Fixed symbol visibility.
 

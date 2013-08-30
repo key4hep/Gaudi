@@ -134,6 +134,11 @@ namespace Gaudi { namespace PluginService {
         std::string rtype;
         std::string className;
         Properties properties;
+
+        FactoryInfo& addProperty(const KeyType& k, const std::string& v) {
+          properties[k] = v;
+          return *this;
+        }
       };
 
       /// Type used for the database implementation.
@@ -144,11 +149,11 @@ namespace Gaudi { namespace PluginService {
 
       /// Add a factory to the database.
       template <typename F, typename T, typename I>
-      inline void add(const I& id, typename F::FuncType ptr){
+      inline FactoryInfo& add(const I& id, typename F::FuncType ptr){
         union { typename F::FuncType src; void* dst; } p2p;
         p2p.src = ptr;
         std::ostringstream o; o << id;
-        add(o.str(), p2p.dst,
+        return add(o.str(), p2p.dst,
             typeid(typename F::FuncType).name(),
             typeid(typename F::ReturnType).name(),
             demangle<T>());
@@ -186,10 +191,11 @@ namespace Gaudi { namespace PluginService {
       Registry(const Registry&): m_initialized(false) {}
 
       /// Add a factory to the database.
-      void add(const std::string& id, void *factory,
-               const std::string& type, const std::string& rtype,
-               const std::string& className,
-               const Properties& props = Properties());
+      FactoryInfo&
+      add(const std::string& id, void *factory,
+          const std::string& type, const std::string& rtype,
+          const std::string& className,
+          const Properties& props = Properties());
 
       /// Return the known factories (loading the list if not yet done).
       inline FactoryMap& factories() {

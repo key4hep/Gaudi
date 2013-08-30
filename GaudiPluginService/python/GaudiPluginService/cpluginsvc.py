@@ -1,4 +1,21 @@
 ## cpluginsvc is a ctypes-based wrapper for the C-exposed API of GaudiPluginService
+__doc__ = '''
+cpluginsvc is a ctypes-based wrapper for the C-API of the GaudiPluginService.
+
+e.g.:
+
+>>> from GaudiPluginService import cpluginsvc
+>>> for _,f in cpluginsvc.factories().items():
+...     try:
+...         f.load()
+...     except Exception:
+...         print ("** could not load [%s] for factory [%s]" % (f.library, f.name))
+...         continue
+...     print f
+...     for k,v in f.properties.iteritems():
+...         print ("\t%s: %s" % (k,v))
+'''
+
 import ctypes
 import ctypes.util
 
@@ -28,6 +45,8 @@ _libname = _get_filename()
 _lib = ctypes.cdll.LoadLibrary(_libname)
 
 class Registry(ctypes.Structure):
+    '''Registry holds the list of factories known by the gaudi PluginService.
+    '''
     _fields_ = [("_registry", ctypes.c_void_p)]
 
     @property
@@ -42,6 +61,8 @@ class Registry(ctypes.Structure):
 
 _instance = None
 def registry():
+    '''registry returns the singleton-like instance of the plugin service.'''
+    
     global _instance
     if _instance:
         return _instance
@@ -49,9 +70,21 @@ def registry():
     return _instance
 
 def factories():
+    '''
+    factories returns the list of components factory informations known to the plugin service
+    '''
     return registry().factories
 
 class Factory(ctypes.Structure):
+    """
+    Factory holds informations about a component's factory:
+    - its name
+    - the library hosting that component
+    - the type of component (algorithm, service, tool, ...)
+    - the return type of this factory
+    - the C++ class name of that component
+    - the properties which may decorate that component.
+    """
     _fields_ = [
         ("_registry", Registry),
         ("_id", ctypes.c_char_p),
@@ -103,6 +136,10 @@ class Factory(ctypes.Structure):
     pass
 
 class Property(ctypes.Structure):
+    '''
+    Property is a pair (key, value) optionally decorating a factory.
+    It is used to attach additional informations about a factory.
+    '''
     _fields_ = [
         ("_registry", Registry),
         ("_id", ctypes.c_char_p),
@@ -195,7 +232,7 @@ if __name__ == "__main__":
             print ("** could not load [%s] for factory [%s]" % (f.library, f.name))
             continue
         print f
-        for p in f.properties:
-            print ("\t%s: %s" % (p.key, p.value))
+        for k,v in f.properties.items():
+            print ("\t%s: %s" % (k,v))
 
 ## EOF
