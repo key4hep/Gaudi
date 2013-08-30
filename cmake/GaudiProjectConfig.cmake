@@ -2271,6 +2271,24 @@ function(gaudi_generate_env_conf filename)
 endfunction()
 
 #-------------------------------------------------------------------------------
+# _gaudi_find_standard_libdir(libname var)
+#
+# Find the location of a standard library asking the compiler.
+#-------------------------------------------------------------------------------
+function(_gaudi_find_standard_lib libname var)
+  #message(STATUS "find ${libname} -> ${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} -print-file-name=libstdc++.so")
+  set(_cmd "${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} -print-file-name=${libname}")
+  separate_arguments(_cmd)
+  execute_process(COMMAND ${_cmd} OUTPUT_VARIABLE cpplib)
+  get_filename_component(cpplib ${cpplib} REALPATH)
+  get_filename_component(cpplib ${cpplib} PATH)
+  # Special hack for the way gcc is installed onf AFS at CERN.
+  string(REPLACE "contrib/gcc" "external/gcc" cpplib ${cpplib})
+  #message(STATUS "${libname} lib dir -> ${cpplib}")
+  set(${var} ${cpplib} PARENT_SCOPE)
+endfunction()
+
+#-------------------------------------------------------------------------------
 # gaudi_external_project_environment()
 #
 # Collect the environment details from the found packages and add them to the
@@ -2286,16 +2304,11 @@ macro(gaudi_external_project_environment)
 
   if(CMAKE_HOST_UNIX)
     # Guess the LD_LIBRARY_PATH required by the compiler we use (only Unix).
-    #message(STATUS "find libstdc++.so -> ${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} -print-file-name=libstdc++.so")
-    set(_cmd "${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} -print-file-name=libstdc++.so")
-    separate_arguments(_cmd)
-    execute_process(COMMAND ${_cmd} OUTPUT_VARIABLE cpplib)
-    get_filename_component(cpplib ${cpplib} REALPATH)
-    get_filename_component(cpplib ${cpplib} PATH)
-    # Special hack for the way gcc is installed onf AFS at CERN.
-    string(REPLACE "contrib/gcc" "external/gcc" cpplib ${cpplib})
-    #message(STATUS "C++ lib dir -> ${cpplib}")
-    set(library_path2 ${cpplib})
+    _gaudi_find_standard_lib(libstdc++.so library_path2)
+    if (CMAKE_CXX_COMPILER MATCHES "icpc")
+      _gaudi_find_standard_lib(libimf.so icc_libdir)
+      set(library_path2 ${library_path2} ${icc_libdir})
+    endif()
   endif()
 
   get_property(packages_found GLOBAL PROPERTY PACKAGES_FOUND)
