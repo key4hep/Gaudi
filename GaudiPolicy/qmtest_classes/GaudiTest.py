@@ -334,6 +334,15 @@ import re
 #       that would be beyond unicode!!!
 _illegal_xml_chars_RE = re.compile(u'[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]')
 
+def hexreplace( match ):
+    "Return the hex string "
+    return "".join(map(hexConvert,match.group()))
+
+def hexConvert(char):
+    return hex(ord(char))
+def convert_xml_illegal_chars(val):
+    return _illegal_xml_chars_RE.sub(hexreplace, val)
+
 def escape_xml_illegal_chars(val, replacement='?'):
     """Filter out characters that are illegal in XML.
     Looks for any character in val that is not allowed in XML
@@ -2146,7 +2155,7 @@ class XMLResultStream(ResultStream):
             ExitCode.set("name","exit_code")
             ExitCode.set("type","numeric/integer" )
             value = ET.SubElement(ExitCode, "Value")
-            value.text = escape_xml_illegal_chars(result["ExecTest.exit_code"])
+            value.text = convert_xml_illegal_chars(result["ExecTest.exit_code"])
 
         TestStartTime= ET.SubElement(Results,"NamedMeasurement")
         TestStartTime.set("name","Start_Time")
@@ -2176,18 +2185,18 @@ class XMLResultStream(ResultStream):
             value = ET.SubElement(fields[field], "Value")
             # to escape the <pre></pre>
             if "<pre>" in  result[field][0:6] :
-                value.text = escape_xml_illegal_chars(result[field][5:-6])
+                value.text = convert_xml_illegal_chars(result[field][5:-6])
             else :
-                value.text = escape_xml_illegal_chars(result[field])
+                value.text = convert_xml_illegal_chars(result[field])
 
 
         if result.has_key("ExecTest.stdout" ) : #"ExecTest.stdout" in result :
             Measurement = ET.SubElement(Results, "Measurement")
             value = ET.SubElement(Measurement, "Value")
             if "<pre>" in  result["ExecTest.stdout"][0:6] :
-                value.text = escape_xml_illegal_chars(result["ExecTest.stdout"][5:-6])
+                value.text = convert_xml_illegal_chars(result["ExecTest.stdout"][5:-6])
             else :
-                value.text = escape_xml_illegal_chars(result["ExecTest.stdout"])
+                value.text = convert_xml_illegal_chars(result["ExecTest.stdout"])
 
 
         # write in the file
