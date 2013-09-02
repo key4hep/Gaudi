@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-09-02 - Marco Clemencic
+ - Reverted the change for icc13 to fix the build in LCG nightlies.
+
 ! 2013-08-28 - Marco Clemencic
  - Use the wrapper lcg-icpc-13 when buildin for icc13.
 
