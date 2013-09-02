@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2013-08-30 - Marco Clemencic
+ - Added  a basic test for GaudiMP's RecordOutputStream and ReplayOutputStream.
+
 ! 2013-08-21 - Marco Clemencic
  - Fix for a spurious error in the aida2root test with the latest versions of
    ROOT.
