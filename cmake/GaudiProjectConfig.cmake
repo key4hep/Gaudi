@@ -1873,7 +1873,8 @@ function(gaudi_add_test name)
                         QMTESTLOCALDIR=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
                         QMTESTRESULTS=${CMAKE_CURRENT_BINARY_DIR}/tests/qmtest/results.qmr
                         QMTESTRESULTSDIR=${CMAKE_CURRENT_BINARY_DIR}/tests/qmtest
-                        GAUDI_QMTEST_HTML_OUTPUT=${CMAKE_BINARY_DIR}/test_results)
+                        GAUDI_QMTEST_HTML_OUTPUT=${CMAKE_BINARY_DIR}/test_results
+                        GAUDI_QMTEST_XML_OUTPUT=${CMAKE_BINARY_DIR}/xml_test_results)
     set(cmdline run_qmtest.py ${package})
 
   elseif(ARG_FRAMEWORK)

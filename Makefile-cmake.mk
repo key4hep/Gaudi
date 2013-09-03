@@ -15,7 +15,7 @@
 #     all
 #         (default) build everything
 #  
-#     test
+#     test [*]_
 #         run the declared tests
 #
 #     install
@@ -85,8 +85,13 @@ configure: $(BUILDDIR)/Makefile
 endif
 	@ # do not delegate further
 
+# This wrapping around the test target is used to ensure the generation of
+# the XML output from ctest. 
+test:
+	$(MAKE) -C build.$(BINARY_TAG) ARGS="-T test $(ARGS)" $@
+
 tests: all
-	-$(MAKE) -C build.$(BINARY_TAG) test
+	-$(MAKE) -C build.$(BINARY_TAG) ARGS="-T test" test
 	$(MAKE) -C build.$(BINARY_TAG) QMTestSummary
 
 # ensure that the target are always passed to the CMake Makefile
