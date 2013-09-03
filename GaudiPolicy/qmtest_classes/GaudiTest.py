@@ -1937,6 +1937,13 @@ class XMLResultStream(ResultStream):
             All results will be written to the directory indicated.""",
             verbatim = "true",
             default_value = ""),
+        qm.fields.TextField(
+            name = "prefix",
+            title = "Output File Prefix",
+            description = """The output file name will be the specified prefix
+            followed by 'Test.xml' (CTest convention).""",
+            verbatim = "true",
+            default_value = ""),
     ]
 
     def __init__(self, arguments = None, **args):
@@ -1950,26 +1957,25 @@ class XMLResultStream(ResultStream):
         self._cest = CEST()
         self._utc0 = UTC0()
 
-        # I have used a trick to get the packageName without changing the command line. The self.dir of xmlStream is the xml file path and not the folder
-        tmp = self.dir.split("/")
-        self.dir = "/".join(tmp[0:-1])
-        self._xmlFile = tmp[-1]+"_Test.xml"
-
+        self._xmlFile = os.path.join(self.dir, self.prefix + 'Test.xml')
 
         # add some global variable
         self._endTime = None
         # Format the XML file if it not exists
-        if not os.path.isfile(self.dir+"/"+self._xmlFile) :
+        if not os.path.isfile(self._xmlFile):
+            # check that the container directory exists and create it if not
+            if not os.path.exists(os.path.dirname(self._xmlFile)):
+                os.makedirs(os.path.dirname(self._xmlFile))
 
             newdataset = ET.Element("newdataset")
             self._tree = ET.ElementTree(newdataset)
-            self._tree.write(self.dir+"/"+self._xmlFile)
+            self._tree.write(self._xmlFile)
         else :
             # Read the xml file
-            self._tree = ET.parse(self.dir+"/"+self._xmlFile)
+            self._tree = ET.parse(self._xmlFile)
             newdataset = self._tree.getroot()
 
-         # Find the corresponding site, if do not exist, create it
+        # Find the corresponding site, if do not exist, create it
 
         #site = newdataset.find('Site[@BuildStamp="'+result["qmtest.start_time"]+'"][@OSPlatform="'+os.getenv("CMTOPT")+'"]')
         # I don't know why this syntax doesn't work. Maybe it is because of the python version. Indeed,
@@ -2148,7 +2154,6 @@ class XMLResultStream(ResultStream):
 
         # Here we can add some NamedMeasurment which we know the type
         #
-        #
         if "ExecTest.exit_code" in summary["fields"] :
             summary["fields"].remove("ExecTest.exit_code")
             ExitCode= ET.SubElement(Results,"NamedMeasurement")
@@ -2199,10 +2204,8 @@ class XMLResultStream(ResultStream):
                 value.text = convert_xml_illegal_chars(result["ExecTest.stdout"])
 
 
-        # write in the file
-
-
-        self._tree.write(self.dir+"/"+self._xmlFile,"utf-8") #,True) in python 2.7 to add the xml header
+        # write the file
+        self._tree.write(self._xmlFile, "utf-8") #,True) in python 2.7 to add the xml header
 
 
     def Summarize(self):
@@ -2220,5 +2223,5 @@ class XMLResultStream(ResultStream):
         self._ElapsedMinutes.text = str(total_seconds_replacement(delta)/60)
 
         # Write into the file
-        self._tree.write(self.dir+"/"+self._xmlFile,"utf-8") #,True) in python 2.7 to add the xml header
+        self._tree.write(self._xmlFile, "utf-8") #,True) in python 2.7 to add the xml header
 

@@ -104,12 +104,11 @@ def main(argv = None):
             qmtest_cmd += ["--tdb", tdb]
         print "==========> Initializing QMTest database"
         os.system(" ".join(qmtest_cmd + ["create-tdb"]))
-    
+
     if opts.xml_output:
-        opts.xml_output+="/"+opts.package
-        opts.qmtest_args.insert(0, '''--result-stream "GaudiTest.XMLResultStream(dir='%s')"'''    
-                                              % opts.xml_output.replace("\\","\\\\"))
-    
+        opts.qmtest_args.insert(0, '''--result-stream "GaudiTest.XMLResultStream(dir='%s',prefix='%s_')"'''
+                                   % (opts.xml_output.replace("\\","\\\\"), opts.package))
+
     if opts.html_output:
         opts.qmtest_args.insert(0, '''--result-stream "GaudiTest.HTMLResultStream(dir='%s')"'''
                                   % opts.html_output.replace("\\","\\\\"))
