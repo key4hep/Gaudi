@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-09-03 - Marco Clemencic
+ - Modified GaudiTest.py to use also the line 'from Configurables import' as
+   signature for Python options embedded in a '.qmt' file.
+
 ! 2013-09-02 - Marco Clemencic
  - Reverted the change for icc13 to fix the build in LCG nightlies.
 

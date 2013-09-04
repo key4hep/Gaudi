@@ -1422,7 +1422,7 @@ class GaudiExeTest(ExecTestBase):
         tmpfile = None
         if self.options.strip():
             ext = ".opts"
-            if re.search(r"from\s*Gaudi.Configuration\s*import\s*\*", self.options):
+            if re.search(r"from\s+Gaudi.Configuration\s+import\s+\*|from\s+Configurables\s+import", self.options):
                 ext = ".py"
             tmpfile = TempFile(ext)
             tmpfile.writelines("\n".join(self.options.splitlines()))
