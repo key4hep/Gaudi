@@ -36,8 +36,11 @@ StatusCode RecordOutputStream::initialize() {
 
   if ( msgLevel(MSG::DEBUG) ) debug() << "==> Initialize" << endmsg;
 
-  if (m_streamName.empty())
-    return Error("the option OutputStreamName must be provided");
+  if (m_streamName.empty()) {
+    m_streamName = "Deferred:" + name();
+    debug() << "Using default OutputStreamName: '"
+            << m_streamName << "'" << endmsg;
+  }
 
   m_flagLocation = locationRoot() + "/" + m_streamName;
   return StatusCode::SUCCESS;

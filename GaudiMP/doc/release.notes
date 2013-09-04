@@ -1,6 +1,11 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+! 2013-09-04 - Marco Clemencic
+ - Modified RecordOutputStream to allow an implicit value for  OutputStreamName:
+   "Deferred:" + name.
+   This is needed to enforce deferred write using algorithm type aliasing.
+
 ! 2013-08-30 - Marco Clemencic
  - Task #47619: Defer calls to OutputStreams in GaudiMP
    Added a class to record which streams should be triggered and a class to
