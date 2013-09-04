@@ -56,14 +56,24 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype,
     // return an error because an algorithm with that name already exists
     return StatusCode::FAILURE;
   }
-  algorithm = PluginService::Create<IAlgorithm*>(algtype, algname, serviceLocator().get());
+  std::string actualalgtype(algtype);
+  // a '\' in front of the type name prevents alias replacement
+  if ((actualalgtype.size() > 8) && (actualalgtype.substr(0, 8) == "unalias:")) {
+    actualalgtype = actualalgtype.substr(8);
+  } else {
+    AlgTypeAliasesMap::iterator typeAlias = m_algTypeAliases.find(algtype);
+    if (typeAlias != m_algTypeAliases.end()) {
+      actualalgtype = typeAlias->second;
+    }
+  }
+  algorithm = PluginService::Create<IAlgorithm*>(actualalgtype, algname, serviceLocator().get());
   if ( !algorithm ) {
-    algorithm = PluginService::CreateWithId<IAlgorithm*>(algtype, algname, serviceLocator().get());
+    algorithm = PluginService::CreateWithId<IAlgorithm*>(actualalgtype, algname, serviceLocator().get());
   }
   if ( algorithm ) {
     // Check the compatibility of the version of the interface obtained
     if( !isValidInterface(algorithm) ) {
-      fatal() << "Incompatible interface IAlgorithm version for " << algtype << endmsg;
+      fatal() << "Incompatible interface IAlgorithm version for " << actualalgtype << endmsg;
       return StatusCode::FAILURE;
     }
     StatusCode rc;
@@ -85,7 +95,7 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype,
     }
     return rc;
   }
-  this->error() << "Algorithm of type " << algtype
+  this->error() << "Algorithm of type " << actualalgtype
                 << " is unknown (No factory available)." << endmsg;
 #ifndef _WIN32
   errno = 0xAFFEDEAD; // code used by Gaudi for library load errors: forces getLastErrorString do use dlerror (on Linux)
