@@ -1,6 +1,10 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2013-09-09 - Marco Clemencic
+ - Reverted changes to the aida2root test and applied them to aida2rootex
+   (where they were originally meant to go).
+
 ! 2013-09-04 - Marco Clemencic
  - Testing the enforcing of deferred write using algorithm type aliasing.
 
