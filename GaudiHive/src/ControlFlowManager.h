@@ -17,7 +17,7 @@ namespace concurrency {
   class ControlFlowNode {
   public:
     /// Constructor
-    ControlFlowNode(unsigned int& index, const std::string& name) : m_nodeIndex(index), m_nodeName(name), m_parentNode(nullptr) {};
+    ControlFlowNode(unsigned int& index, const std::string& name) : m_nodeIndex(index), m_nodeName(name) {};
     /// Destructor
     virtual ~ControlFlowNode() {};
     /// Initialize
@@ -35,8 +35,6 @@ namespace concurrency {
     virtual void printState(std::stringstream& output,
                             const std::vector<int>& node_decisions,
                             const unsigned int& recursionLevel) const = 0;
-    /// XXX: CF tests. Method to add a parent node
-    void addParentNode(ControlFlowNode* node) { m_parentNode = node; }
     /// XXX: CF tests.
     unsigned int getNodeIndex() { return m_nodeIndex; }
     virtual void updateDecision(std::vector<State>& states,
@@ -46,8 +44,6 @@ namespace concurrency {
     std::string stateToString(const int& stateId) const;
     unsigned int m_nodeIndex;
     std::string m_nodeName;
-    /// XXX: CF tests
-    ControlFlowNode* m_parentNode;
   };
 
 
@@ -56,7 +52,7 @@ namespace concurrency {
     /// Constructor
     DecisionNode(unsigned int& index, const std::string& name, bool modeOR, bool allPass, bool isLazy) :
       ControlFlowNode(index, name),
-      m_modeOR(modeOR), m_allPass(allPass), m_isLazy(isLazy),m_daughters()
+      m_modeOR(modeOR), m_allPass(allPass), m_isLazy(isLazy), m_daughters(), m_parentNode(nullptr)
       {};
     /// Destructor
     virtual ~DecisionNode();
@@ -74,13 +70,15 @@ namespace concurrency {
     /// Method to set algos to CONTROLREADY, if possible
     virtual int updateState(std::vector<State>& states,
                             std::vector<int>& node_decisions) const;
+    /// XXX: CF tests. Method to add a parent node
+    void addParentNode(DecisionNode* node) { m_parentNode = node; }
     /// Add a daughter node
-    void addDaughterNode(ControlFlowNode* node){connectNodes(node);}
+    void addDaughterNode(ControlFlowNode* node) { m_daughters.push_back(node); }
     /// XXX: CF tests. Add related nodes
-    void connectNodes(ControlFlowNode* node){
-      m_daughters.push_back(node);
-      node->addParentNode(this);
-    }
+    //void connectNodes(ControlFlowNode* node){
+    //  m_daughters.push_back(node);
+    //  addParentNode(this);
+    //}
     /// Print a string representing the control flow state
     virtual void printState(std::stringstream& output,
                             const std::vector<int>& node_decisions,
@@ -94,6 +92,8 @@ namespace concurrency {
     bool  m_isLazy;
     /// All the direct daughter nodes in the tree
     std::vector<ControlFlowNode*> m_daughters;
+    /// XXX: CF tests
+    DecisionNode* m_parentNode;
   };
 
 
@@ -101,13 +101,15 @@ namespace concurrency {
   public:
     AlgorithmNode(unsigned int& index, const std::string& algoName, bool inverted, bool allPass) :
       ControlFlowNode(index, algoName),
-      m_algoName(algoName),m_inverted(inverted),m_allPass(allPass)
+      m_algoName(algoName),m_inverted(inverted),m_allPass(allPass), m_parentNode(nullptr)
       {};
     /// Initialize
     virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
     /// XXX: CF tests
     virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map,
                             GraphMap& graph_map);
+    /// XXX: CF tests. Method to add a parent node
+    void addParentNode(DecisionNode* node) { m_parentNode = node; }
     /// Method to set algos to CONTROLREADY, if possible
     virtual int updateState(std::vector<State>& states,
                             std::vector<int>& node_decisions) const;
@@ -130,6 +132,8 @@ namespace concurrency {
     bool m_inverted;
     /// Whether the selection result is relevant or always "pass"
     bool m_allPass;
+    /// XXX: CF tests
+    DecisionNode* m_parentNode;
   };
 
 

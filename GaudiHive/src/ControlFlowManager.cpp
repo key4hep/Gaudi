@@ -114,14 +114,9 @@ namespace concurrency {
     // in all other cases I stay with previous decisions
     node_decisions[m_nodeIndex] = decision;
 
-    if (-1 != decision && m_parentNode) {
-      DecisionNode* parentNode = dynamic_cast<DecisionNode*>(m_parentNode);
-      if (parentNode) {
-        parentNode->updateDecision(states, node_decisions);
-      } else {
-        std::cout << "FATAL: Casting of parent decision node did not succeed!" << std::endl;
-      }
-    }
+    // propagate decision upwards through the decision graph
+    if (-1 != decision && m_parentNode)
+      m_parentNode->updateDecision(states, node_decisions);
   }
 
   //---------------------------------------------------------------------------
@@ -216,14 +211,8 @@ namespace concurrency {
       decision =  -1; // result not known yet
     }
     node_decisions[m_nodeIndex] = decision;
-    DecisionNode* parentNode = dynamic_cast<DecisionNode*>(m_parentNode);
-    if (parentNode != 0) {
-      //parentNode->updateDecision(m_nodeIndex, decision, node_decisions);
-      parentNode->updateDecision(states, node_decisions);
-    } else {
-      std::cout << "Null pointer on type-cast for parent of node [" << m_nodeName << "]" << endmsg;
-    }
-    //parentNode->updateDecision(states, node_decisions);
+
+    m_parentNode->updateDecision(states, node_decisions);
   }
 
   //---------------------------------------------------------------------------
