@@ -201,7 +201,9 @@ macro(gaudi_project project version)
   set(merge_cmd ${PYTHON_EXECUTABLE} ${merge_cmd} --no-stamp)
 
   find_program(versheader_cmd createProjVersHeader.py HINTS ${binary_paths})
-  set(versheader_cmd ${PYTHON_EXECUTABLE} ${versheader_cmd})
+  if(versheader_cmd)
+    set(versheader_cmd ${PYTHON_EXECUTABLE} ${versheader_cmd})
+  endif()
 
   find_program(genconfuser_cmd genconfuser.py HINTS ${binary_paths})
   set(genconfuser_cmd ${PYTHON_EXECUTABLE} ${genconfuser_cmd})
@@ -246,10 +248,12 @@ macro(gaudi_project project version)
   include(GaudiBuildFlags)
   # Generate the version header for the project.
   string(TOUPPER ${project} _proj)
-  execute_process(COMMAND
-                  ${versheader_cmd} --quiet
-                     ${project} ${CMAKE_PROJECT_VERSION} ${CMAKE_BINARY_DIR}/include/${_proj}_VERSION.h)
-  install(FILES ${CMAKE_BINARY_DIR}/include/${_proj}_VERSION.h DESTINATION include)
+  if(versheader_cmd)
+    execute_process(COMMAND
+                    ${versheader_cmd} --quiet
+                       ${project} ${CMAKE_PROJECT_VERSION} ${CMAKE_BINARY_DIR}/include/${_proj}_VERSION.h)
+    install(FILES ${CMAKE_BINARY_DIR}/include/${_proj}_VERSION.h DESTINATION include)
+  endif()
   # Add generated headers to the include path.
   include_directories(${CMAKE_BINARY_DIR}/include)
 
@@ -289,14 +293,20 @@ macro(gaudi_project project version)
   gaudi_merge_files(Rootmap lib ${CMAKE_PROJECT_NAME}.rootmap)
   gaudi_merge_files(DictRootmap lib ${CMAKE_PROJECT_NAME}Dict.rootmap)
 
-  # FIXME: it is not possible to produce the file python.zip at installation time
-  # because the install scripts of the subdirectories are executed after those
-  # of the parent project and we cannot have a post-install target because of
-  # http://public.kitware.com/Bug/view.php?id=8438
-  # install(CODE "execute_process(COMMAND  ${zippythondir_cmd} ${CMAKE_INSTALL_PREFIX}/python)")
-  add_custom_target(python.zip
-                    COMMAND ${zippythondir_cmd} ${CMAKE_INSTALL_PREFIX}/python
-                    COMMENT "Zipping Python modules")
+  if(zippythondir_cmd)
+    # FIXME: it is not possible to produce the file python.zip at installation time
+    # because the install scripts of the subdirectories are executed after those
+    # of the parent project and we cannot have a post-install target because of
+    # http://public.kitware.com/Bug/view.php?id=8438
+    # install(CODE "execute_process(COMMAND  ${zippythondir_cmd} ${CMAKE_INSTALL_PREFIX}/python)")
+    add_custom_target(python.zip
+                      COMMAND ${zippythondir_cmd} ${CMAKE_INSTALL_PREFIX}/python
+                      COMMENT "Zipping Python modules")
+  else()
+    # if we cannot zip the Python directory (e.g. projects not usng Gaudi) we
+    # still need a fake python.zip target, expected by the nightly builds.
+    add_custom_target(python.zip)
+  endif()
 
   #--- Prepare environment configuration
   message(STATUS "Preparing environment configuration:")
