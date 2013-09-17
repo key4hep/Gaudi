@@ -277,6 +277,19 @@ macro(gaudi_project project version)
   set(packages ${sorted_packages})
   #message(STATUS "${packages}")
 
+  # Search standard libraries.
+  set(std_library_path)
+  if(CMAKE_HOST_UNIX)
+    # Guess the LD_LIBRARY_PATH required by the compiler we use (only Unix).
+    _gaudi_find_standard_lib(libstdc++.so std_library_path)
+    if (CMAKE_CXX_COMPILER MATCHES "icpc")
+      _gaudi_find_standard_lib(libimf.so icc_libdir)
+      set(std_library_path ${std_library_path} ${icc_libdir})
+    endif()
+    # this ensures that the std libraries are in RPATH
+    link_directories(${std_library_path})
+  endif()
+
   file(WRITE ${CMAKE_BINARY_DIR}/subdirs_deps.dot "digraph subdirs_deps {\n")
   # Add all subdirectories to the project build.
   list(LENGTH packages packages_count)
@@ -2321,14 +2334,8 @@ macro(gaudi_external_project_environment)
   set(environment)
   set(library_path2)
 
-  if(CMAKE_HOST_UNIX)
-    # Guess the LD_LIBRARY_PATH required by the compiler we use (only Unix).
-    _gaudi_find_standard_lib(libstdc++.so library_path2)
-    if (CMAKE_CXX_COMPILER MATCHES "icpc")
-      _gaudi_find_standard_lib(libimf.so icc_libdir)
-      set(library_path2 ${library_path2} ${icc_libdir})
-    endif()
-  endif()
+  # add path to standard libraries to LD_LIBRARY_PATH
+  set(library_path2 ${std_library_path})
 
   get_property(packages_found GLOBAL PROPERTY PACKAGES_FOUND)
   #message("${packages_found}")
