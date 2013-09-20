@@ -1197,10 +1197,12 @@ function(gaudi_merge_files merge_tgt dest filename)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
-# gaudi_generate_configurables(library)
+# gaudi_generate_configurables(library [PRELOAD <lib>])
 #
 # Internal function. Add the targets needed to produce the configurables for a
 # module (component library).
+#
+# The PRELOAD argument is used
 #
 # Note: see gaudi_install_python_modules for a description of how conflicts
 #       between the installations of __init__.py are solved.
@@ -1208,7 +1210,21 @@ endfunction()
 function(gaudi_generate_configurables library)
   gaudi_get_package_name(package)
 
-  # set(library_preload)  # TODO....
+  CMAKE_PARSE_ARGUMENTS(ARG "" "PRELOAD" "" ${ARGN})
+
+  set(conf_depends ${library})
+
+  if(ARG_PRELOAD)
+    if(NOT EXISTS ${ARG_PRELOAD})
+      # assume it's a bare library name
+      if(TARGET ${ARG_PRELOAD})
+        set(conf_depends ${conf_depends} ${ARG_PRELOAD})
+      endif()
+      set(ARG_PRELOAD ${CMAKE_SHARED_LIBRARY_PREFIX}${ARG_PRELOAD}${CMAKE_SHARED_LIBRARY_SUFFIX})
+    endif()
+    # prepare the option for genconf_cmd
+    set(library_preload "--load-library=${ARG_PRELOAD}")
+  endif()
 
   # Prepare the build directory
   set(outdir ${CMAKE_CURRENT_BINARY_DIR}/genConf/${package})
@@ -1233,7 +1249,7 @@ function(gaudi_generate_configurables library)
                 --configurable-auditor=${confAuditor}
                 --configurable-service=${confService}
                 -i ${library}
-    DEPENDS ${library})
+    DEPENDS ${conf_depends})
   add_custom_target(${library}Conf ALL DEPENDS ${outdir}/${library}_confDb.py)
   # Add the target to the target that groups all of them for the package.
   if(NOT TARGET ${package}ConfAll)
@@ -1610,17 +1626,25 @@ macro(gaudi_linker_library)
 endmacro()
 
 #---------------------------------------------------------------------------------------------------
-#---gaudi_add_module(<name> source1 source2 ... LINK_LIBRARIES library1 library2 ...)
+# gaudi_add_module(<name> source1 source2 ...
+#                  LINK_LIBRARIES library1 library2 ...
+#                  GENCONF_PRELOAD library)
 #---------------------------------------------------------------------------------------------------
 function(gaudi_add_module library)
-  gaudi_common_add_build(${ARGN})
+  # this function uses an extra option: 'GENCONF_PRELOAD'
+  CMAKE_PARSE_ARGUMENTS(ARG "" "GENCONF_PRELOAD" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS" ${ARGN})
+  gaudi_common_add_build(${ARG_UNPARSED_ARGUMENTS} LIBRARIES ${ARG_LIBRARIES}
+                         LINK_LIBRARIES ${ARG_LINK_LIBRARIES} INCLUDE_DIRS ${ARG_INCLUDE_DIRS})
 
   add_library(${library} MODULE ${srcs})
   target_link_libraries(${library} ${ROOT_Reflex_LIBRARY} ${ARG_LINK_LIBRARIES})
   _gaudi_detach_debinfo(${library})
 
   gaudi_generate_rootmap(${library})
-  gaudi_generate_configurables(${library})
+  if(ARG_GENCONF_PRELOAD)
+    set(ARG_GENCONF_PRELOAD PRELOAD ${ARG_GENCONF_PRELOAD})
+  endif()
+  gaudi_generate_configurables(${library} ${ARG_GENCONF_PRELOAD})
 
   set_property(GLOBAL APPEND PROPERTY COMPONENT_LIBRARIES ${library})
 
@@ -2380,6 +2404,13 @@ macro(gaudi_external_project_environment)
         list(APPEND environment   ${${_pack_upper}_ENVIRONMENT})
         list(APPEND library_path2 ${${_pack_upper}_LIBRARY_DIR} ${${_pack_upper}_LIBRARY_DIRS})
       endif()
+      # use also the libraries variable
+      foreach(_lib ${${pack}_LIBRARIES} ${${_pack_upper}_LIBRARIES})
+        if(EXISTS ${_lib})
+          get_filename_component(_lib ${_lib} PATH)
+          list(APPEND library_path2 ${_lib})
+        endif()
+      endforeach()
     endif()
   endforeach()
 
