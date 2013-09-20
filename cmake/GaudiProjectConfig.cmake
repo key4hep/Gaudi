@@ -548,7 +548,7 @@ macro(_gaudi_use_other_projects)
         endforeach()
       endforeach()
       list(REMOVE_DUPLICATES suffixes)
-      message(STATUS "suffixes ${suffixes}")
+      #message(STATUS "suffixes ${suffixes}")
       find_package(${other_project} ${other_project_cmake_version}
                    HINTS ${projects_search_path}
                    PATH_SUFFIXES ${suffixes})
