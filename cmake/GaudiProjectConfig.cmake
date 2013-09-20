@@ -78,7 +78,8 @@ find_package(PythonInterp)
 #-------------------------------------------------------------------------------
 # gaudi_project(project version
 #               [USE proj1 vers1 [proj2 vers2 ...]]
-#               [DATA package [VERSION vers] [package [VERSION vers] ...]])
+#               [DATA package [VERSION vers] [package [VERSION vers] ...]]
+#               [FORTRAN])
 #
 # Main macro for a Gaudi-based project.
 # Each project must call this macro once in the top-level CMakeLists.txt,
@@ -89,23 +90,32 @@ find_package(PythonInterp)
 #
 # The DATA list can be used to declare the data packages requried by the project
 # runtime.
+#
+# The FORTRAN option enable the FOTRAN language for the project.
 #-------------------------------------------------------------------------------
 macro(gaudi_project project version)
   if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/cmake)
     set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
   endif()
-  project(${project})
+
+  #--- Parse the optional arguments
+  CMAKE_PARSE_ARGUMENTS(PROJECT "FORTRAN" "" "USE;DATA" ${ARGN})
+  if (PROJECT_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "Wrong arguments.")
+  endif()
+
+  # Define the languages for the project
+  set(_languages CXX C)
+  if(PROJECT_FORTRAN)
+    set(_languages ${_languages} Fortran)
+  endif()
+
+  project(${project} ${_languages})
   #----For some reason this is not set by calling 'project()'
   set(CMAKE_PROJECT_NAME ${project})
 
   #--- Define the version of the project - can be used to generate sources,
   set(CMAKE_PROJECT_VERSION ${version} CACHE STRING "Version of the project")
-
-  #--- Parse the other arguments on the
-  CMAKE_PARSE_ARGUMENTS(PROJECT "" "" "USE;DATA" ${ARGN})
-  if (PROJECT_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Wrong arguments.")
-  endif()
 
   if(NOT CMAKE_PROJECT_VERSION MATCHES "^HEAD.*")
     string(REGEX MATCH "v?([0-9]+)[r.]([0-9]+)([p.]([0-9]+))?" _version ${CMAKE_PROJECT_VERSION})
