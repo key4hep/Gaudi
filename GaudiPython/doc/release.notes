@@ -1,6 +1,7 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+============================= GaudiPython v12r7 ==============================
 ! 2013-07-19 - Marco Clemencic
  - Replaced "#ifdef linux" with "#ifdef __linux" (more reliable: Rolf Seuster
    reported that "linux" is not defined when using C++11).

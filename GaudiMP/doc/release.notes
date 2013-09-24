@@ -1,6 +1,7 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+================================ GaudiMP v1r8 ================================
 ! 2013-09-04 - Marco Clemencic
  - Modified RecordOutputStream to allow an implicit value for  OutputStreamName:
    "Deferred:" + name.

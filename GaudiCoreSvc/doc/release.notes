@@ -4,6 +4,7 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+============================= GaudiCoreSvc v1r6 ==============================
 ! 2013-09-04 - Marco Clemencic
  - Extended AlgorithmManager and ApplicationMgr to allow aliasing of algorithm
    types.

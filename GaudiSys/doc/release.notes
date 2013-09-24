@@ -1,6 +1,7 @@
 package GaudiSys
 package manager: Pere Mato
 
+============================== GaudiSys v23r10 ===============================
 ! 2013-07-23 - Marco Clemencic
  - Added dummy CMakeLists.txt to silence a (new) warning.
 

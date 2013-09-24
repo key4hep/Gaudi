@@ -1,6 +1,7 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+================================ Gaudi v23r10 ================================
 ! 2013-09-03 - Marco Clemencic
  - Modified gaudirun.py to accept a .qmt file as argument.
    When a file ending by '.qmt' is encountered on the command line, it is parsed

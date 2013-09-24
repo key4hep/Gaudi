@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiKernel v28r8)
+gaudi_subdir(GaudiKernel v28r9)
 
 find_package(Boost REQUIRED COMPONENTS filesystem thread system)
 find_package(ROOT REQUIRED COMPONENTS Core Reflex)
