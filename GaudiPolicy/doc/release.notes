@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-09-24 - Marco Clemencic, Danilo Piparo
+ - Disabled the warning about unused local typedefs in gcc-4.8 (~900 hits in
+   Boost).
+
 ! 2013-07-27 - Marco Clemencic
  - Restored merge_rootmap macros and fragments, used by the Reflex dictionary
    pattern.
