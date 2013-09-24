@@ -16,9 +16,10 @@ endif()
 # Add the directory containing this file and the to the modules search path
 set(CMAKE_MODULE_PATH ${GaudiProject_DIR} ${GaudiProject_DIR}/modules ${CMAKE_MODULE_PATH})
 # Automatically add the modules directory provided by the project.
-if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/cmake})
-  set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake} ${CMAKE_MODULE_PATH})
+if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/cmake)
+  set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 endif()
+#message(STATUS "CMAKE_MODULE_PATH -> ${CMAKE_MODULE_PATH}")
 
 #-------------------------------------------------------------------------------
 # Basic configuration
@@ -94,10 +95,6 @@ find_package(PythonInterp)
 # The FORTRAN option enable the FOTRAN language for the project.
 #-------------------------------------------------------------------------------
 macro(gaudi_project project version)
-  if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/cmake)
-    set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
-  endif()
-
   #--- Parse the optional arguments
   CMAKE_PARSE_ARGUMENTS(PROJECT "FORTRAN" "" "USE;DATA" ${ARGN})
   if (PROJECT_UNPARSED_ARGUMENTS)
@@ -196,6 +193,23 @@ macro(gaudi_project project version)
   if(used_gaudi_projects)
     list(REMOVE_DUPLICATES used_gaudi_projects)
   endif()
+  #message(STATUS "used_gaudi_projects -> ${used_gaudi_projects}")
+
+  # Ensure that we have the correct order of the modules search path.
+  # (the included <project>Config.cmake files are prepending their entries to
+  # the module path).
+  foreach(_p ${used_gaudi_projects})
+    if(IS_DIRECTORY ${${_p}_DIR}/cmake)
+      set(CMAKE_MODULE_PATH ${${_p}_DIR}/cmake ${CMAKE_MODULE_PATH})
+    endif()
+  endforeach()
+  if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/cmake)
+    set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+  endif()
+  if(CMAKE_MODULE_PATH)
+    list(REMOVE_DUPLICATES CMAKE_MODULE_PATH)
+  endif()
+  #message(STATUS "CMAKE_MODULE_PATH -> ${CMAKE_MODULE_PATH}")
 
   # Find the required data packages and add them to the environment.
   _gaudi_handle_data_packages(${PROJECT_DATA})
