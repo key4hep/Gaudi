@@ -1,6 +1,9 @@
 Package: GaudiRelease
 Maintainer: Marco Clemencic
 
+! 2013-09-24 - Marco Clemencic
+ - Switched to LCGCMT 66.
+
 ! 2013-04-11 - Hubert Degaudenzi
  - cmake/toolchain/heptools-common.cmake: fix mac osx arch detection
 

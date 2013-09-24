@@ -1,5 +1,5 @@
 # Special wrapper to load the declared version of the heptools toolchain.
-set(heptools_version 65)
+set(heptools_version 66)
 
 find_file(use_heptools_module UseHEPTools.cmake
           HINTS ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
