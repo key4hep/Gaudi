@@ -803,6 +803,11 @@ macro_append cppflags "" \
          target-gcc48 " -Wno-deprecated" \
          target-gccmax " -Wno-deprecated" \
          target-clang " -Wno-deprecated"
+# FIXME: (MCl) hide ~900 warnings from Boost
+macro_append cppflags "" \
+         no-hide-warnings "" \
+         target-gcc48 " -Wno-unused-local-typedefs" \
+         target-gccmax " -Wno-unused-local-typedefs"
 # FIXME: (MCl)
 macro_append cppflags "" \
          no-hide-warnings "" \

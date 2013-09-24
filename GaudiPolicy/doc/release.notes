@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-09-24 - Marco Clemencic, Danilo Piparo
+ - Disabled the warning about unused local typedefs in gcc-4.8 (~900 hits in
+   Boost).
+
 ! 2013-09-03 - Marco Clemencic
  - Modified GaudiTest.py to use also the line 'from Configurables import' as
    signature for Python options embedded in a '.qmt' file.
