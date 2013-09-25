@@ -15,6 +15,9 @@ import string
 import difflib
 from subprocess import Popen, PIPE, STDOUT
 
+# ensure the preferred locale
+os.environ['LC_ALL'] = 'C'
+
 import qm
 from qm.test.classes.command import ExecTestBase
 from qm.test.result_stream import ResultStream

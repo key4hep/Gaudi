@@ -88,6 +88,11 @@ def getArgsFromQmt(qmtfile):
 
 #---------------------------------------------------------------------
 if __name__ == "__main__":
+    # ensure that we (and the subprocesses) use the C standard localization
+    if os.environ.get('LC_ALL') != 'C':
+        print '# setting LC_ALL to "C"'
+        os.environ['LC_ALL'] = 'C'
+
     from optparse import OptionParser
     parser = OptionParser(usage = "%prog [options] <opts_file> ...")
     parser.add_option("-n","--dry-run", action="store_true",

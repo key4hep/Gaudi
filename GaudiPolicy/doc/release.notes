@@ -2,6 +2,10 @@ package GaudiPolicy
 package manager: Marco Clemencic
 
 ============================= GaudiPolicy v12r8 ==============================
+! 2013-09-25 - Marco Clemencic
+ - Changed GaudiTest.py to set LC_ALL to C, to avoid the new message from
+   gaudirun.py and GaudiPython.
+
 ! 2013-09-24 - Marco Clemencic, Danilo Piparo
  - Disabled the warning about unused local typedefs in gcc-4.8 (~900 hits in
    Boost).
