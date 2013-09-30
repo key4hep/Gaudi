@@ -473,8 +473,6 @@ normalizeExamples = LineSkipper(["//GP:",
                                  "DEBUG Service base class initialized successfully", # changed between v20 and v21
                                  "DEBUG Incident  timing:", # introduced with patch #3487
                                  "INFO  'CnvServices':[", # changed the level of the message from INFO to DEBUG
-                                 # This comes from ROOT, when using GaudiPython
-                                 'Note: (file "(tmpfile)", line 2) File "set" already loaded',
                                  # The signal handler complains about SIGXCPU not defined on some platforms
                                  'SIGXCPU',
                                  ],regexps = [
@@ -506,7 +504,6 @@ normalizeExamples = LineSkipper(["//GP:",
                                  r"SUCCESS\s*Booked \d+ Histogram\(s\)",
                                  r"^ \|",
                                  r"^ ID=",
-                                 r'Note: .* File "vector" already loaded'
                                  ] ) + normalizeExamples + skipEmptyLines + \
                                   normalizeEOL + \
                                   LineSorter("Services to release : ")
