@@ -18,7 +18,7 @@ import os, sys, string, warnings, re
 try:
     import cppyy
 except ImportError:
-    # backward compatibility
+    # FIXME: backward compatibility
     print "# WARNING: using PyCintex as cppyy implementation"
     import PyCintex as cppyy
 import Pythonizations

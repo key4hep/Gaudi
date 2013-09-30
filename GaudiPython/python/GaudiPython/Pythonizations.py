@@ -10,7 +10,7 @@ __all__ = [ ]
 try:
     from cppyy import gbl
 except ImportError:
-    # backward compatibility
+    # FIXME: backward compatibility
     print "# WARNING: using PyCintex as cppyy implementation"
     from PyCintex import gbl
 
