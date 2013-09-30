@@ -7,8 +7,12 @@
 
 __all__ = [ ]
 
-import ROOT
-gbl = ROOT
+try:
+    from cppyy import gbl
+except ImportError:
+    # backward compatibility
+    print "# WARNING: using PyCintex as cppyy implementation"
+    from PyCintex import gbl
 
 if not hasattr(gbl,'ostream') : gbl.gROOT.ProcessLine("#include <ostream>")
 if not hasattr(gbl,'stringstream') : gbl.gROOT.ProcessLine("#include <sstream>")
@@ -62,7 +66,7 @@ def _draw_aida_ ( self , *args ) :
     >>> aida.Draw()
 
     """
-    _fun = ROOT.Gaudi.Utils.Aida2ROOT.aida2root
+    _fun = gbl.Gaudi.Utils.Aida2ROOT.aida2root
     _root = _fun ( self )
     return _root.Draw( *args )
 
