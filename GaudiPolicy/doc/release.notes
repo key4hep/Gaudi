@@ -2,6 +2,9 @@ package GaudiPolicy
 package manager: Marco Clemencic
 
 ! 2013-09-30 - Marco Clemencic
+ - Tentatively set the environment variable TCLING_INCLUDE_PATH.
+
+! 2013-09-30 - Marco Clemencic
  - Removed a couple of ignored strings in the tests outputs (should not be
    needed).
 

@@ -330,6 +330,7 @@ macro(gaudi_project project version)
         PREPEND PATH \${.}/scripts
         PREPEND PATH \${.}/bin
         PREPEND LD_LIBRARY_PATH \${.}/lib
+        PREPEND ROOT_INCLUDE_PATH \${.}/include
         PREPEND PYTHONPATH \${.}/python
         PREPEND PYTHONPATH \${.}/python/lib-dynload)
   #     (installation dirs added to build env to be able to test pre-built bins)
@@ -337,6 +338,7 @@ macro(gaudi_project project version)
         PREPEND PATH ${CMAKE_INSTALL_PREFIX}/scripts
         PREPEND PATH ${CMAKE_INSTALL_PREFIX}/bin
         PREPEND LD_LIBRARY_PATH ${CMAKE_INSTALL_PREFIX}/lib
+        PREPEND ROOT_INCLUDE_PATH ${CMAKE_INSTALL_PREFIX}/include
         PREPEND PYTHONPATH ${CMAKE_INSTALL_PREFIX}/python
         PREPEND PYTHONPATH ${CMAKE_INSTALL_PREFIX}/python/lib-dynload)
 
@@ -401,12 +403,20 @@ __path__ = [d for d in [os.path.join(d, '${packname}') for d in sys.path if d]
       set(project_build_environment ${project_build_environment}
           PREPEND PATH \${${_proj}_PROJECT_ROOT}/${package}/scripts)
     endif()
+
+    get_property(_has_local_headers DIRECTORY ${package}
+                 PROPERTY INSTALLS_LOCAL_HEADERS SET)
+    if(_has_local_headers)
+      set(project_build_environment ${project_build_environment}
+          PREPEND ROOT_INCLUDE_PATH \${${_proj}_PROJECT_ROOT}/${package})
+    endif()
   endforeach()
 
   #   - build dirs
   set(project_build_environment ${project_build_environment}
       PREPEND PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
       PREPEND LD_LIBRARY_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+      PREPEND ROOT_INCLUDE_PATH ${CMAKE_BINARY_DIR}/include
       PREPEND PYTHONPATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
       PREPEND PYTHONPATH ${CMAKE_BINARY_DIR}/python)
 
