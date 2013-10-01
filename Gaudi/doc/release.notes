@@ -1,6 +1,23 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+================================ Gaudi v23r10 ================================
+! 2013-09-25 - Marco Clemencic
+ - Enforce LC_ALL=C in gaudirun.py.
+
+! 2013-09-03 - Marco Clemencic
+ - Modified gaudirun.py to accept a .qmt file as argument.
+   When a file ending by '.qmt' is encountered on the command line, it is parsed
+   and replaced with the arguments and the option file it contains before the
+   list of arguments is passed to the the command line options parser.
+
+================================ Gaudi v23r9 =================================
+! 2013-07-09 - Marco Clemencic
+ - Fixed a problem with a spurious error message when the import from
+   Configurables fails.
+   If the import fails, instead of an ImportError we were getting a RuntimeError
+   about sys.path containing something else then strings.
+
 ================================ Gaudi v23r8 =================================
 ================================ Gaudi v23r7 =================================
 ! 2013-02-15 - Danilo Piparo

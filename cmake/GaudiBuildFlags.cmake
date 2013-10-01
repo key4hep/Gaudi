@@ -76,6 +76,10 @@ if(NOT GAUDI_FLAGS_SET)
         "-fmessage-length=0 -pipe -ansi -Wall -Wextra -Werror=return-type -pthread -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long"
         CACHE STRING "Flags used by the compiler during all build types."
         FORCE)
+    set(CMAKE_Fortran_FLAGS
+        "-fmessage-length=0 -pipe -Wall -Wextra -Werror=return-type -pthread -pedantic -fsecond-underscore"
+        CACHE STRING "Flags used by the compiler during all build types."
+        FORCE)
 
     # Build type compilation flags (if different from default or uknown to CMake)
     if(GAUDI_CMT_RELEASE)
@@ -85,12 +89,31 @@ if(NOT GAUDI_FLAGS_SET)
       set(CMAKE_C_FLAGS_RELEASE "-O2 -DNDEBUG"
           CACHE STRING "Flags used by the compiler during release builds."
           FORCE)
+      set(CMAKE_Fortran_FLAGS_RELEASE "-O2 -DNDEBUG"
+          CACHE STRING "Flags used by the compiler during release builds."
+          FORCE)
+    endif()
+
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND LCG_COMPVERS VERSION_GREATER "47")
+      # Use -Og with Debug builds in gcc >= 4.8
+      set(CMAKE_CXX_FLAGS_DEBUG "-Og -g"
+          CACHE STRING "Flags used by the compiler during Debug builds."
+          FORCE)
+      set(CMAKE_C_FLAGS_DEBUG "-Og -g"
+          CACHE STRING "Flags used by the compiler during Debug builds."
+          FORCE)
+      set(CMAKE_C_FLAGS_DEBUG "-Og -g"
+          CACHE STRING "Flags used by the compiler during Debug builds."
+          FORCE)
     endif()
 
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g -DNDEBUG"
         CACHE STRING "Flags used by the compiler during Release with Debug Info builds."
         FORCE)
     set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O2 -g -DNDEBUG"
+        CACHE STRING "Flags used by the compiler during Release with Debug Info builds."
+        FORCE)
+    set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-O2 -g -DNDEBUG"
         CACHE STRING "Flags used by the compiler during Release with Debug Info builds."
         FORCE)
 
@@ -100,6 +123,9 @@ if(NOT GAUDI_FLAGS_SET)
     set(CMAKE_C_FLAGS_COVERAGE "--coverage"
         CACHE STRING "Flags used by the compiler during coverage builds."
         FORCE)
+    set(CMAKE_Fortran_FLAGS_COVERAGE "--coverage"
+        CACHE STRING "Flags used by the compiler during coverage builds."
+        FORCE)
 
     set(CMAKE_CXX_FLAGS_PROFILE "-pg"
         CACHE STRING "Flags used by the compiler during profile builds."
@@ -107,10 +133,14 @@ if(NOT GAUDI_FLAGS_SET)
     set(CMAKE_C_FLAGS_PROFILE "-pg"
         CACHE STRING "Flags used by the compiler during profile builds."
         FORCE)
+    set(CMAKE_Fortran_FLAGS_PROFILE "-pg"
+        CACHE STRING "Flags used by the compiler during profile builds."
+        FORCE)
+
 
     # The others are already marked as 'advanced' by CMake, these are custom.
-    mark_as_advanced(CMAKE_C_FLAGS_COVERAGE CMAKE_CXX_FLAGS_COVERAGE
-                     CMAKE_C_FLAGS_PROFILE CMAKE_CXX_FLAGS_PROFILE)
+    mark_as_advanced(CMAKE_C_FLAGS_COVERAGE CMAKE_CXX_FLAGS_COVERAGE CMAKE_Fortran_FLAGS_COVERAGE
+                     CMAKE_C_FLAGS_PROFILE CMAKE_CXX_FLAGS_PROFILE CMAKE_Fortran_FLAGS_PROFILE)
 
   endif()
 
@@ -196,6 +226,7 @@ endif()
 if (LCG_HOST_ARCH STREQUAL x86_64 AND LCG_ARCH STREQUAL i686)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
   set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -m32")
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -m32")
   set(GCCXML_CXX_FLAGS "${GCCXML_CXX_FLAGS} -m32")
 elseif(NOT "${LCG_HOST_ARCH}" STREQUAL "${LCG_ARCH}")
   message(FATAL_ERROR "Cannot build for ${LCG_ARCH} on ${LCG_HOST_ARCH}.")
@@ -208,6 +239,9 @@ if(GAUDI_HIDE_WARNINGS)
   #elseif(LCG_COMP STREQUAL gcc AND LCG_COMPVERS MATCHES "4[3-9]|max")
   else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-empty-body")
+    if(LCG_COMPVERS MATCHES "48|max")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-local-typedefs")
+    endif()
   endif()
 endif()
 

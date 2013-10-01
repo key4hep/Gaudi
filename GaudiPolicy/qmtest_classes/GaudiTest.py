@@ -15,6 +15,9 @@ import string
 import difflib
 from subprocess import Popen, PIPE, STDOUT
 
+# ensure the preferred locale
+os.environ['LC_ALL'] = 'C'
+
 import qm
 from qm.test.classes.command import ExecTestBase
 from qm.test.result_stream import ResultStream
@@ -1422,7 +1425,7 @@ class GaudiExeTest(ExecTestBase):
         tmpfile = None
         if self.options.strip():
             ext = ".opts"
-            if re.search(r"from\s*Gaudi.Configuration\s*import\s*\*", self.options):
+            if re.search(r"from\s+Gaudi.Configuration\s+import\s+\*|from\s+Configurables\s+import", self.options):
                 ext = ".py"
             tmpfile = TempFile(ext)
             tmpfile.writelines("\n".join(self.options.splitlines()))

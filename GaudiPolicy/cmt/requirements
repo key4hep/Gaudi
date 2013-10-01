@@ -1,5 +1,5 @@
 package GaudiPolicy
-version v12r6
+version v12r8
 
 branches cmt doc
 
@@ -600,12 +600,14 @@ macro_prepend  cpp_name "" \
     lcg-compiler&target-gcc&CERNDISTCC "" \
     lcg-compiler&target-gccmax    "" \
     lcg-compiler&target-g11max    "" \
-    lcg-compiler&target-gcc       "lcg-"
+    lcg-compiler&target-gcc       "lcg-" \
+    lcg-compiler&target-clang     "lcg-"
 macro_append   cpp_name "" \
     lcg-compiler&target-gcc&CERNDISTCC "" \
     lcg-compiler&target-gccmax    "" \
     lcg-compiler&target-g11max    "" \
-    lcg-compiler&target-gcc       "-$(gcc_config_version)"
+    lcg-compiler&target-gcc       "-$(gcc_config_version)" \
+    lcg-compiler&target-clang     "-$(clang_config_version)"
 macro cpp_name "$(cpp_name)" target-icc "icpc"
 
 # C compiler
@@ -613,30 +615,36 @@ macro_prepend  cc_name  "" \
     lcg-compiler&target-gcc&CERNDISTCC "" \
     lcg-compiler&target-gccmax    "" \
     lcg-compiler&target-g11max    "" \
-    lcg-compiler&target-gcc       "lcg-"
+    lcg-compiler&target-gcc       "lcg-" \
+    lcg-compiler&target-clang     "lcg-"
 macro_append   cc_name  "" \
     lcg-compiler&target-gcc&CERNDISTCC "" \
     lcg-compiler&target-gccmax    "" \
     lcg-compiler&target-g11max    "" \
-    lcg-compiler&target-gcc       "-$(gcc_config_version)"
+    lcg-compiler&target-gcc       "-$(gcc_config_version)" \
+    lcg-compiler&target-clang     "-$(clang_config_version)"
 
 # FORTRAN compiler
+# note: for clang we use the gcc FORTRAN
 macro_prepend  for_name "" \
     lcg-compiler&target-gcc&CERNDISTCC "" \
     lcg-compiler&target-gccmax    "" \
     lcg-compiler&target-g11max    "" \
-    lcg-compiler&target-gcc       "lcg-"
+    lcg-compiler&target-gcc       "lcg-" \
+    lcg-compiler&target-clang     "lcg-"
 macro_append   for_name "" \
     lcg-compiler&target-gcc&CERNDISTCC "" \
     lcg-compiler&target-gccmax    "" \
     lcg-compiler&target-g11max    "" \
-    lcg-compiler&target-gcc       "-$(gcc_config_version)"
+    lcg-compiler&target-gcc       "-$(gcc_config_version)" \
+    lcg-compiler&target-clang     "-$(gcc_config_version)"
 
 # C++ debug, optimized and profiled options
 macro cppdebugflags    "" \
       target-dbg        "$(cppdebugflags_s)"\
       target-opt        "$(cppoptimized_s)"
 macro cppdebugflags_s  "-g" \
+      target-gcc48     "-Og -g" \
       target-winxp            "/Od /Z7"
 macro cppoptimized_s   "-O2 -DNDEBUG" \
       use-O3&target-gcc "-O3 -DNDEBUG" \
@@ -651,6 +659,7 @@ macro cdebugflags     "" \
       target-dbg           "$(cdebugflags_s)" \
       target-opt           "$(coptimized_s)"
 macro cdebugflags_s   "-g" \
+      target-gcc48    "-Og -g" \
       target-winxp           "/Od /Z7"
 macro coptimized_s    "-O2 -DNDEBUG" \
       use-O3&target-gcc "-O3 -DNDEBUG" \
@@ -660,6 +669,7 @@ macro coptimized_s    "-O2 -DNDEBUG" \
 macro fdebugflags      "" \
       target-dbg            "$(fdebugflags_s)"
 macro fdebugflags_s    "-g"\
+      target-gcc48     "-Og -g" \
       target-winxp            "/nopdbfile /debug:full /optimize:0"
 macro foptimized_s     "-O2 -DNDEBUG" \
       use-O3&target-gcc  "-O3 -DNDEBUG" \
@@ -793,6 +803,11 @@ macro_append cppflags "" \
          target-gcc48 " -Wno-deprecated" \
          target-gccmax " -Wno-deprecated" \
          target-clang " -Wno-deprecated"
+# FIXME: (MCl) hide ~900 warnings from Boost
+macro_append cppflags "" \
+         no-hide-warnings "" \
+         target-gcc48 " -Wno-unused-local-typedefs" \
+         target-gccmax " -Wno-unused-local-typedefs"
 # FIXME: (MCl)
 macro_append cppflags "" \
          no-hide-warnings "" \

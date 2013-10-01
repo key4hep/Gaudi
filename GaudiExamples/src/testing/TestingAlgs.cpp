@@ -214,15 +214,49 @@ namespace GaudiTesting {
     SmartIF<IDataProviderSvc> m_dataProvider;
   };
 
+  class OddEventsFilter: public GaudiAlgorithm {
+  public:
+    OddEventsFilter(const std::string& name, ISvcLocator *pSvcLocator):
+      GaudiAlgorithm(name, pSvcLocator), m_counter(0)
+    {
+    }
+    StatusCode initialize() {
+      m_counter = 0;
+      return GaudiAlgorithm::initialize();
+    }
+    StatusCode execute() {
+      setFilterPassed((++m_counter) % 2);
+      return StatusCode::SUCCESS;
+    }
+  protected:
+    int m_counter;
+  };
+
+  class EvenEventsFilter: public OddEventsFilter {
+  public:
+    EvenEventsFilter(const std::string& name, ISvcLocator *pSvcLocator):
+      OddEventsFilter(name, pSvcLocator)
+    {
+    }
+    StatusCode execute() {
+      setFilterPassed(((++m_counter) % 2) == 0);
+      return StatusCode::SUCCESS;
+    }
+  };
+
 }
 
 
 
 #include "GaudiKernel/AlgFactory.h"
 
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, DestructorCheckAlg)
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, SleepyAlg)
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, SignallingAlg)
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, StopLoopAlg)
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, CustomIncidentAlg)
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiTesting, GetDataObjectAlg)
+namespace GaudiTesting {
+  DECLARE_ALGORITHM_FACTORY(DestructorCheckAlg)
+  DECLARE_ALGORITHM_FACTORY(SleepyAlg)
+  DECLARE_ALGORITHM_FACTORY(SignallingAlg)
+  DECLARE_ALGORITHM_FACTORY(StopLoopAlg)
+  DECLARE_ALGORITHM_FACTORY(CustomIncidentAlg)
+  DECLARE_ALGORITHM_FACTORY(GetDataObjectAlg)
+  DECLARE_ALGORITHM_FACTORY(OddEventsFilter)
+  DECLARE_ALGORITHM_FACTORY(EvenEventsFilter)
+}

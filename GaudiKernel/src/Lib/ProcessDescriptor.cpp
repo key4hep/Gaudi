@@ -447,7 +447,7 @@ long System::ProcessDescriptor::query(long pid,
                                               0);
     status = (status==0) ? 1 : 0;
 #elif defined(_WIN32)                     // Windows 95,98...
-#elif defined(linux)
+#elif defined(__linux)
     linux_proc prc;
     readProcStat(processID(pid), prc);
     rusage usage;
@@ -480,7 +480,7 @@ long System::ProcessDescriptor::query(long pid,
                                               0);
     status = (status==0) ? 1 : 0;
 #elif defined(_WIN32)                     // Windows 95,98...
-#elif defined(linux)                      // Linux
+#elif defined(__linux)                      // Linux
     //rusage usage;
     //getrusage(RUSAGE_SELF, &usage);
     rlimit lim;
@@ -555,7 +555,7 @@ long System::ProcessDescriptor::query(long pid,
                                               0);
     status = (status==0) ? 1 : 0;
 #elif defined(_WIN32)                     // Windows 95,98...
-#elif defined(linux)                      // Linux
+#elif defined(__linux)                      // Linux
     const ssize_t bufsize = 1024;
     char buf[bufsize];
     sprintf(buf,"/proc/%ld/statm", processID(pid));
@@ -603,7 +603,7 @@ long System::ProcessDescriptor::query(long pid,
                                               0);
     status = (status==0) ? 1 : 0;
 #elif defined(_WIN32)                     // Windows 95,98...
-#elif defined(linux)                      // Linux
+#elif defined(__linux)                      // Linux
     // On linux all this stuff typically is not set
     // (ie. rlim_max=RLIM_INFINITY...)
     rlimit lim;
@@ -650,7 +650,7 @@ long System::ProcessDescriptor::query(long pid,
                                               0);
     status = (status==0) ? 1 : 0;
 #elif defined(_WIN32)                     // Windows 95,98...
-#elif defined(linux)                      // Linux
+#elif defined(__linux)                      // Linux
     linux_proc prc;
     readProcStat( processID(pid), prc);
     vb->ExitStatus                   = 0;
@@ -685,7 +685,7 @@ long System::ProcessDescriptor::query(long pid,
                                               0);
     status = (status==0) ? 1 : 0;
 #elif defined(_WIN32)                     // Windows 95,98...
-#elif defined(linux)                      // Linux
+#elif defined(__linux)                      // Linux
     // prc.startup is in ticks since system start :
     // need to offset for absolute time
     tms tmsb;

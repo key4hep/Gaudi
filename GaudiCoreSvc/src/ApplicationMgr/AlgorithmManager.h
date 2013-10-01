@@ -1,4 +1,3 @@
-// $Id: AlgorithmManager.h,v 1.4 2008/06/02 14:21:35 marcocle Exp $	//
 #ifndef GAUDISVC_ALGORITHMMANAGER_H
 #define GAUDISVC_ALGORITHMMANAGER_H
 
@@ -47,6 +46,7 @@ public:
 
   /// typedefs and classes
   typedef std::list<AlgorithmItem> ListAlg;
+  typedef std::map<std::string, std::string> AlgTypeAliasesMap;
 
   /// default creator
   AlgorithmManager( IInterface* iface );
@@ -88,11 +88,16 @@ public:
 
   virtual SmartIF<IAlgorithm> &algorithm(const Gaudi::Utils::TypeNameString &typeName, const bool createIf = true);
 
+  AlgTypeAliasesMap& typeAliases() { return m_algTypeAliases; }
+  const AlgTypeAliasesMap& typeAliases() const { return m_algTypeAliases; }
+
 private:
   ListAlg      m_listalg;     ///< List of algorithms maintained by AlgorithmManager
 
   /// List of pointers to the know services used to implement getAlgorithms()
   mutable std::list<IAlgorithm*> m_listOfPtrs;
+
+  AlgTypeAliasesMap m_algTypeAliases;
 
 };
 #endif  // GAUDISVC_ALGORITHMFACTORY_H

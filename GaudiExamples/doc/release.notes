@@ -1,6 +1,32 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v23r10 ============================
+! 2013-09-09 - Marco Clemencic
+ - Reverted changes to the aida2root test and applied them to aida2rootex
+   (where they were originally meant to go).
+
+! 2013-09-04 - Marco Clemencic
+ - Testing the enforcing of deferred write using algorithm type aliasing.
+
+! 2013-09-04 - Marco Clemencic
+ - Added a test for algorithm type aliasing.
+
+! 2013-08-30 - Marco Clemencic
+ - Added a basic test for GaudiMP's RecordOutputStream and ReplayOutputStream.
+
+! 2013-08-21 - Marco Clemencic
+ - Fix for a spurious error in the aida2root test with the latest versions of
+   ROOT.
+
+============================ GaudiExamples v23r9 =============================
+! 2013-07-11 - Marco Clemencic
+ - Added tests to expose the solution to bug #101513.
+
+! 2013-07-08 - Marco Cattaneo
+ - Patch #5653: Add HistoCountersPrint property to GaudiHistos
+   Updated reference files.
+
 ============================ GaudiExamples v23r8 =============================
 ! 2013-05-28 - Marco Clemencic
  - Added test for the abort of stalled events.

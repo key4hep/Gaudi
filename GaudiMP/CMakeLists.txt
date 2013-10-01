@@ -1,6 +1,6 @@
-gaudi_subdir(GaudiMP v1r7)
+gaudi_subdir(GaudiMP v1r8)
 
-gaudi_depends_on_subdirs(GaudiKernel)
+gaudi_depends_on_subdirs(GaudiKernel GaudiAlg)
 
 find_package(ROOT)
 find_package(PythonLibs)
@@ -11,7 +11,7 @@ gaudi_add_library(GaudiMPLib src/Lib/*.cpp
                   INCLUDE_DIRS ROOT PythonLibs
                   PUBLIC_HEADERS GaudiMP)
 gaudi_add_module(GaudiMP src/component/*.cpp
-                 LINK_LIBRARIES GaudiMPLib PythonLibs ROOT)
+                 LINK_LIBRARIES GaudiMPLib PythonLibs ROOT GaudiAlgLib)
 
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiMPLib dict/gaudimp_dict.h dict/selection.xml LINK_LIBRARIES GaudiMPLib)

@@ -4,6 +4,23 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+============================= GaudiCoreSvc v1r6 ==============================
+! 2013-09-04 - Marco Clemencic
+ - Extended AlgorithmManager and ApplicationMgr to allow aliasing of algorithm
+   types.
+   These options:
+
+       from Configurables import ApplicationMgr
+
+       app = ApplicationMgr()
+       app.AlgTypeAliases['MyAlg'] = 'MyNewAlg'
+
+   instruct the AlgorithmManager to create instances of MyNewAlg whenever it is
+   requested to create a MyAlg.
+   The aliasing can be bypassed by prefixing the string 'unalias:' to the class
+   name.
+
+============================= GaudiCoreSvc v1r5 ==============================
 ! 2013-04-09 - Hubert Degaudenzi
  - src/EventSelector/EventSelector.cpp: fixed cppcheck warning.
 

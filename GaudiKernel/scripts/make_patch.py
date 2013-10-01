@@ -174,14 +174,11 @@ def main():
                          "slc4_amd64_gcc34*",
                          "slc4_amd64_gcc43*",
                          "win32_vc71*",
-                         "i686-slc3-gcc323*",
-                         "i686-slc4-gcc34*",
-                         "i686-slc4-gcc41*",
-                         "x86_64-slc4-gcc34*",
-                         "x86_64-slc4-gcc41*",
-                         "i686-slc5-gcc43*",
-                         "x86_64-slc5-gcc43*",
-                         "x86_64-slc5-icc*",
+                         "i686-slc[34567]-[ig]cc*",
+                         "i686-slc[34567]-clang*",
+                         "x86_64-slc[34567]-[ig]cc*",
+                         "x86_64-slc[34567]-clang*",
+                         ".eclipse",
                          ]
     if "CMTCONFIG" in os.environ:
         opts.exclusions.append(os.environ["CMTCONFIG"])

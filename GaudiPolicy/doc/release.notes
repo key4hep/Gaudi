@@ -1,10 +1,35 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v12r8 ==============================
+! 2013-09-25 - Marco Clemencic
+ - Changed GaudiTest.py to set LC_ALL to C, to avoid the new message from
+   gaudirun.py and GaudiPython.
+
+! 2013-09-24 - Marco Clemencic, Danilo Piparo
+ - Disabled the warning about unused local typedefs in gcc-4.8 (~900 hits in
+   Boost).
+
+! 2013-09-03 - Marco Clemencic
+ - Modified GaudiTest.py to use also the line 'from Configurables import' as
+   signature for Python options embedded in a '.qmt' file.
+
+! 2013-09-02 - Marco Clemencic
+ - Reverted the change for icc13 to fix the build in LCG nightlies.
+
+! 2013-08-28 - Marco Clemencic
+ - Use the wrapper lcg-icpc-13 when buildin for icc13.
+
+============================= GaudiPolicy v12r7 ==============================
 ! 2013-03-27 - Hubert Degaudenzi
  - Modified createProjVersHeader.py to understand only the LHCb version
    style(vXrY[pZ]) , the ATLAS version style (bla-X-Y[-Z]) and the plain
    version style (X.Y[.Z])
+
+! 2013-06-20 - Marco Clemencic
+ - Use the special name lcg-<compiler>-<version> for Clang too (already done
+   when building with CMake).
+ - Use -Og when compiling in debug mode with gcc 4.8.
 
 ! 2013-06-10 - Marco Clemencic
  - Added -Wno-deprecated for gcc 4.8 (as it was done already for 4.6 and 4.7).

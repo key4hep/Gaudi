@@ -1,9 +1,10 @@
 package GaudiMP
-version v1r7
+version v1r8
 
 branches      GaudiMP cmt doc src dict python scripts
 
 use GaudiKernel        *
+use GaudiAlg           *
 use GaudiPython        * -no_auto_imports
 
 use Python             *  LCG_Interfaces -no_auto_imports

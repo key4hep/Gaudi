@@ -1,4 +1,4 @@
-gaudi_subdir(RootCnv v1r19)
+gaudi_subdir(RootCnv v1r20p1)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiUtils)
 
@@ -23,4 +23,6 @@ gaudi_add_module(RootCnv components/Components.cpp
 gaudi_add_dictionary(RootCnv dict/RootCnv_dict.h  dict/RootCnv_dict.xml LINK_LIBRARIES RootCnvLib)
 
 gaudi_add_executable(gaudi_merge merge/merge.cpp
+                     LINK_LIBRARIES RootCnvLib)
+gaudi_add_executable(extract_event merge/extractEvt.cpp
                      LINK_LIBRARIES RootCnvLib)

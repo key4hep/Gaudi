@@ -1,6 +1,7 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+=============================== GaudiSvc v19r4 ===============================
 !2013-04-09 - Hubert Degaudenzi
  - src/THistSvc/THistSvc.cpp: fixed cppcheck warning.
 

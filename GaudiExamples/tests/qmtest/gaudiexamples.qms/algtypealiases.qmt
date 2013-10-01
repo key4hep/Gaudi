@@ -1,0 +1,18 @@
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+  <argument name="program"><text>gaudirun.py</text></argument>
+  <argument name="options"><text>
+from Gaudi.Configuration import *
+
+from Configurables import ApplicationMgr, HelloWorld, SubAlg
+
+app = ApplicationMgr(EvtSel='NONE', EvtMax=4)
+
+app.TopAlg = ['HelloWorld/HW1', 'unalias:HelloWorld/HW2' ]
+
+app.AlgTypeAliases['HelloWorld'] = 'SubAlg'
+
+  </text></argument>
+  <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+  <argument name="reference"><text>refs/AlgTypeAliases.ref</text></argument>
+</extension>

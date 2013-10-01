@@ -1,6 +1,21 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v28r9 ==============================
+! 2013-08-27 - Marco Clemencic
+ - Fixed compile-time issue when symbol hiding is enabled (gcc 4.7).
+
+! 2013-07-19 - Marco Clemencic
+ - Replaced "#ifdef linux" with "#ifdef __linux" (more reliable: Rolf Seuster
+   reported that "linux" is not defined when using C++11).
+
+============================= GaudiKernel v28r8 ==============================
+! 2013-07-04 - Marco Clemencic
+ - Updated the exclusion list in make_patch.py.
+
+! 2013-07-03 - Marco Clemencic
+ - Added test for System::currentTime.
+
 ! 2013-06-27 - Marco Clemencic
  - Fixed CFHEP-78: configurables created after applyConfigurableUser()
    Force the instantiation of all Handles properties during the call to

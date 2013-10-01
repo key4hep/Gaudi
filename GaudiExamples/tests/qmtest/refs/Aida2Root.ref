@@ -1,4 +1,4 @@
-JobOptionsSvc        INFO # =======> /tmp/marcocle/GAUDI/GAUDI_v23r2p1/GaudiExamples/options/Histograms.opts)
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/c/cattanem/private/cmtuser/Gaudi_v23r8/GaudiExamples/options/Histograms.opts)
 JobOptionsSvc        INFO # (5,1): AuditorSvc.Auditors = ["ChronoAuditor"]
 JobOptionsSvc        INFO # (9,1): MessageSvc.OutputLevel = 3
 JobOptionsSvc        INFO # (20,1): ApplicationMgr.TopAlg += ["GaudiHistoAlgorithm/SimpleHistos"]
@@ -19,20 +19,20 @@ JobOptionsSvc        INFO # (48,1): RootHistSvc.OutputFile = "histo.root"
 JobOptionsSvc        INFO # (57,1): HistogramDataSvc.Input = ["InFile DATAFILE='../data/input.hbook' TYP='HBOOK'"]
 JobOptionsSvc        INFO # (59,1): HistogramDataSvc.Predefined1DHistos = {"/stat/Histos2/2":["TEST2", -100, 200]}
 JobOptionsSvc        INFO # (63,1): HistogramDataSvc.OutputLevel = 2
-JobOptionsSvc        INFO # =======> /tmp/marcocle/GAUDI/GAUDI_v23r2p1/GaudiExamples/options/Aida2Root.opts)
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/c/cattanem/private/cmtuser/Gaudi_v23r8/GaudiExamples/options/Aida2Root.opts)
 JobOptionsSvc        INFO # (3,1): ApplicationMgr.TopAlg += ["Aida2Root"]
-JobOptionsSvc        INFO Job options successfully read in from /tmp/marcocle/GAUDI/GAUDI_v23r2p1/GaudiExamples/options/Aida2Root.opts
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/c/cattanem/private/cmtuser/Gaudi_v23r8/GaudiExamples/options/Aida2Root.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r1)
-                                          running on lxplus425.cern.ch on Fri Jun 29 09:46:15 2012
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r4)
+                                          running on lxbuild163.cern.ch on Thu Jul  4 14:41:20 2013
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 SimpleHistos        DEBUG Property update for OutputLevel : new value = 2
 SimpleHistos        DEBUG Property update for OutputLevel : new value = 2
 SimpleHistos        DEBUG Initialize base class GaudiCommon<Algorithm>
 SimpleHistos        DEBUG could not locate CounterSummarySvc, no counter summary will be made
-SimpleHistos        DEBUG List of ALL properties of GaudiHistoAlgorithm/SimpleHistos  #properties = 46
+SimpleHistos        DEBUG List of ALL properties of GaudiHistoAlgorithm/SimpleHistos  #properties = 47
 SimpleHistos        DEBUG Property ['Name': Value] =  'AutoStringIDPurgeMap':{ '/' : '=SLASH=' }
 SimpleHistos        DEBUG Property ['Name': Value] =  'UseSequencialNumericAutoIDs':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'HeaderFor1DHistoTable':|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
@@ -45,6 +45,7 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'HistoTopDir':
 SimpleHistos        DEBUG Property ['Name': Value] =  'HistoOffSet':0
 SimpleHistos        DEBUG Property ['Name': Value] =  'HistoSplitDir':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'HistoCheckForNaN':True
+SimpleHistos        DEBUG Property ['Name': Value] =  'HistoCountersPrint':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'HistoPrint':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'HistoProduce':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
@@ -86,7 +87,7 @@ HistogramDataSvc     INFO Added stream file:../data/input.hbook as InFile
 HistogramDataSvc     INFO  Predefined 1D-Histograms:
 HistogramDataSvc     INFO  Path='Histos2/2' Description ('TEST2',-100,200,100)
 SimpleHistos        DEBUG GaudiHistoAlgorithm:: The histogram path is set to be 'SimpleHistos'
-Histos2           SUCCESS List of ALL properties of Gaudi::Examples::HistoProps/Histos2  #properties = 48
+Histos2           SUCCESS List of ALL properties of Gaudi::Examples::HistoProps/Histos2  #properties = 49
 Histos2           SUCCESS Property ['Name': Value] =  'Histo2':('',-5.00000,5.00000,200)
 Histos2           SUCCESS Property ['Name': Value] =  'Histo1':('Histogram1',-3.00000,3.00000,200)
 Histos2           SUCCESS Property ['Name': Value] =  'AutoStringIDPurgeMap':{ '/' : '=SLASH=' }
@@ -101,6 +102,7 @@ Histos2           SUCCESS Property ['Name': Value] =  'HistoTopDir':
 Histos2           SUCCESS Property ['Name': Value] =  'HistoOffSet':0
 Histos2           SUCCESS Property ['Name': Value] =  'HistoSplitDir':False
 Histos2           SUCCESS Property ['Name': Value] =  'HistoCheckForNaN':True
+Histos2           SUCCESS Property ['Name': Value] =  'HistoCountersPrint':True
 Histos2           SUCCESS Property ['Name': Value] =  'HistoPrint':True
 Histos2           SUCCESS Property ['Name': Value] =  'HistoProduce':True
 Histos2           SUCCESS Property ['Name': Value] =  'RequireObjects':[  ]
@@ -135,7 +137,7 @@ Histos2           SUCCESS Property ['Name': Value] =  'ErrorCount':0
 Histos2           SUCCESS Property ['Name': Value] =  'ErrorMax':1
 Histos2           SUCCESS Property ['Name': Value] =  'Enable':True
 Histos2           SUCCESS Property ['Name': Value] =  'OutputLevel':3
-Aida2Root         SUCCESS List of ALL properties of Aida2Root/Aida2Root  #properties = 51
+Aida2Root         SUCCESS List of ALL properties of Aida2Root/Aida2Root  #properties = 52
 Aida2Root         SUCCESS Property ['Name': Value] =  'Profs2D':[ 'SimpleHistos/321' , 'SimpleHistos/2dprof' ]
 Aida2Root         SUCCESS Property ['Name': Value] =  'Profs1D':[ 'SimpleHistos/Expo V Gauss 1DProf' ]
 Aida2Root         SUCCESS Property ['Name': Value] =  'Histos3D':[ 'SimpleHistos/3D plot AutoID' , 'SimpleHistos/3d' ]
@@ -153,6 +155,7 @@ Aida2Root         SUCCESS Property ['Name': Value] =  'HistoTopDir':
 Aida2Root         SUCCESS Property ['Name': Value] =  'HistoOffSet':0
 Aida2Root         SUCCESS Property ['Name': Value] =  'HistoSplitDir':False
 Aida2Root         SUCCESS Property ['Name': Value] =  'HistoCheckForNaN':True
+Aida2Root         SUCCESS Property ['Name': Value] =  'HistoCountersPrint':True
 Aida2Root         SUCCESS Property ['Name': Value] =  'HistoPrint':False
 Aida2Root         SUCCESS Property ['Name': Value] =  'HistoProduce':True
 Aida2Root         SUCCESS Property ['Name': Value] =  'RequireObjects':[  ]
@@ -417,11 +420,11 @@ EventLoopMgr         INFO Histograms converted successfully according to request
 *****Chrono*****     INFO ****************************************************************************************************
 *****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)
 *****Chrono*****     INFO ****************************************************************************************************
-1DForcedNumericID    INFO Time User   : Tot=   15 [ms] Ave/Min/Max=  0.3(+- 17.3)/    0/1e+03 [us] #=49999
-1DForcedAlphaID      INFO Time User   : Tot=   15 [ms] Ave/Min/Max=  0.3(+- 17.3)/    0/1e+03 [us] #=49999
-1DAutoID             INFO Time User   : Tot=   15 [ms] Ave/Min/Max=  0.3(+- 17.3)/    0/1e+03 [us] #=49999
-1DOldStyle           INFO Time User   : Tot=   35 [ms] Ave/Min/Max=  0.7(+- 26.4)/    0/1e+03 [us] #=49999
-ChronoStatSvc        INFO Time User   : Tot= 4.28  [s]                                             #=  1
+1DForcedNumericID    INFO Time User   : Tot=   43 [ms] Ave/Min/Max= 0.86(+- 29.3)/    0/1e+03 [us] #=49999
+1DOldStyle           INFO Time User   : Tot=   40 [ms] Ave/Min/Max=  0.8(+- 28.3)/    0/1e+03 [us] #=49999
+1DForcedAlphaID      INFO Time User   : Tot=   45 [ms] Ave/Min/Max=  0.9(+-   30)/    0/1e+03 [us] #=49999
+1DAutoID             INFO Time User   : Tot=   59 [ms] Ave/Min/Max= 1.18(+- 34.3)/    0/1e+03 [us] #=49999
+ChronoStatSvc        INFO Time User   : Tot= 4.73  [s]                                             #=  1
 *****Chrono*****     INFO ****************************************************************************************************
 ChronoStatSvc.f...   INFO  Service finalized successfully
 HistogramDataSvc    DEBUG  Substituted histograms #1 :

@@ -26,7 +26,7 @@ class _ConfigurablesModule(object):
         if name == "__all__":
             retval = cfgDb.keys()
         elif name == "__path__":
-            retval == None
+            raise AttributeError("'module' object has no attribute '__path__'")
         elif name in cfgDb.keys(): # ignore private names
             retval = confDbGetConfigurable(name)
         elif name in aliases: # special case of aliases

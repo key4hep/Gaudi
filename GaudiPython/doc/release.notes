@@ -1,6 +1,14 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+============================= GaudiPython v12r7 ==============================
+! 2013-09-25 - Marco Clemencic
+ - Enforce LC_ALL=C in the GaudiPython module.
+
+! 2013-07-19 - Marco Clemencic
+ - Replaced "#ifdef linux" with "#ifdef __linux" (more reliable: Rolf Seuster
+   reported that "linux" is not defined when using C++11).
+
 ============================= GaudiPython v12r6 ==============================
 ! 2013-04-22 - Marco Clemencic
  - Fixed Clang warnings.

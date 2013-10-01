@@ -576,7 +576,7 @@ void GaudiCommon<PBASE>::Exception( const std::string    & msg ,
 {
   // increase local counter of exceptions
   ++m_exceptions[ msg ];
-  Print ( "Exception (re)throw: " + msg , sc , MSG::FATAL );
+  Print ( "Exception (re)throw: " + msg , sc , MSG::FATAL ).ignore();
   throw GaudiException( this->name() + ":: " + msg , this->name() , sc, exc);
 }
 // ============================================================================
@@ -591,7 +591,7 @@ void GaudiCommon<PBASE>::Exception( const std::string    & msg ,
 {
   // increase local counter of exceptions
   ++m_exceptions[ msg ];
-  Print ( "Exception (re)throw: " + msg , sc , MSG::FATAL  );
+  Print ( "Exception (re)throw: " + msg , sc , MSG::FATAL  ).ignore();
   throw GaudiException( this->name() + ":: " + msg+"("+exc.what()+")", "", sc );
 }
 // ============================================================================
@@ -605,7 +605,7 @@ void GaudiCommon<PBASE>::Exception( const std::string    & msg ,
 {
   // increase local counter of exceptions
   ++m_exceptions[ msg ];
-  Print ( "Exception throw: " + msg , sc , MSG::FATAL );
+  Print ( "Exception throw: " + msg , sc , MSG::FATAL ).ignore();
   throw GaudiException( this->name() + ":: " + msg , "",  sc );
 }
 // ============================================================================
@@ -786,7 +786,7 @@ DataObject* GaudiCommon<PBASE>::put ( IDataProviderSvc*  svc     ,
   { Print( "The object of type '"                    +
            System::typeinfoName( typeid( *object ) ) +
            "' is registered in TS at address '"
-           + fullLocation + "'" , status , MSG::DEBUG ) ; }
+           + fullLocation + "'" , status , MSG::DEBUG ).ignore() ; }
   return object;
 }
 // ============================================================================

@@ -1,4 +1,3 @@
-// $Id: OutputStream.cpp,v 1.23 2008/01/15 13:46:52 marcocle Exp $
 #define GAUDISVC_PERSISTENCYSVC_OUTPUTSTREAM_CPP
 
 // Framework include files
@@ -29,7 +28,7 @@ DECLARE_ALGORITHM_FACTORY(OutputStream)
 
 // Standard Constructor
 OutputStream::OutputStream(const std::string& name, ISvcLocator* pSvcLocator)
- : Algorithm(name, pSvcLocator)
+: Algorithm(name, pSvcLocator)
 {
   m_doPreLoad      = true;
   m_doPreLoadOpt   = false;
@@ -104,7 +103,7 @@ StatusCode OutputStream::initialize() {
     if( !status.isSuccess() )   {
       log << MSG::FATAL << "Unable to connect to conversion service." << endmsg;
       if(m_outputName!="" && m_fireIncidents) m_incidentSvc->fireIncident(Incident(m_outputName,
-                                           IncidentType::FailOutputFile));
+                                                                                   IncidentType::FailOutputFile));
       return status;
     }
   }
@@ -160,7 +159,7 @@ StatusCode OutputStream::finalize() {
   MsgStream log(msgSvc(), name());
   log << MSG::INFO << "Events output: " << m_events << endmsg;
   if(m_fireIncidents) m_incidentSvc->fireIncident(Incident(m_outputName,
-                                       IncidentType::EndOutputFile));
+                                                           IncidentType::EndOutputFile));
   m_incidentSvc.reset();
   m_pDataProvider.reset();
   m_pDataManager.reset();
@@ -171,58 +170,103 @@ StatusCode OutputStream::finalize() {
 }
 
 // Work entry point
-StatusCode OutputStream::execute() {
+StatusCode OutputStream::execute()
+{
   // Clear any previously existing item list
   clearSelection();
   // Test whether this event should be output
-  if ( isEventAccepted() )  {
-    StatusCode sc = writeObjects();
+  if ( isEventAccepted() )
+  {
+    const StatusCode sc = writeObjects();
     clearSelection();
-    m_events++;
-    if(sc.isSuccess() && m_fireIncidents)
+    ++m_events;
+    if ( sc.isSuccess() && m_fireIncidents )
+    {
       m_incidentSvc->fireIncident(Incident(m_outputName,
                                            IncidentType::WroteToOutputFile));
-    else if(m_fireIncidents)
+    }
+    else if ( m_fireIncidents )
+    {
       m_incidentSvc->fireIncident(Incident(m_outputName,
                                            IncidentType::FailOutputFile));
+    }
     return sc;
   }
   return StatusCode::SUCCESS;
 }
 
 // Select the different objects and write them to file
-StatusCode OutputStream::writeObjects()  {
+StatusCode OutputStream::writeObjects()
+{
   // Connect the output file to the service
   StatusCode status = collectObjects();
-  if ( status.isSuccess() )   {
+  if ( status.isSuccess() )
+  {
     IDataSelector*  sel = selectedObjects();
-    if ( sel->begin() != sel->end() )  {
+    if ( sel->begin() != sel->end() )
+    {
       status = m_pConversionSvc->connectOutput(m_outputName, m_outputType);
-      if ( status.isSuccess() )   {
+      if ( status.isSuccess() )
+      {
         // Now pass the collection to the persistency service
-        IDataSelector::iterator j;
-        IOpaqueAddress* pAddress = 0;
-        for ( j = sel->begin(); j != sel->end(); j++ )    {
-          StatusCode iret = m_pConversionSvc->createRep( *j, pAddress );
-          if ( !iret.isSuccess() )      {
-            status = iret;
-            continue;
+        IOpaqueAddress* pAddress = NULL;
+        for ( IDataSelector::iterator j = sel->begin(); j != sel->end(); ++j )
+        {
+          try
+          {
+            const StatusCode iret = m_pConversionSvc->createRep( *j, pAddress );
+            if ( !iret.isSuccess() )
+            {
+              status = iret;
+              continue;
+            }
+            IRegistry* pReg = (*j)->registry();
+            pReg->setAddress(pAddress);
           }
-          IRegistry* pReg = (*j)->registry();
-          pReg->setAddress(pAddress);
+          catch ( const std::exception & excpt )
+          {
+            MsgStream log( msgSvc(), name() );
+            const std::string loc = ( (*j)->registry() ?
+                                      (*j)->registry()->identifier() : "UnRegistered" );
+            log << MSG::FATAL
+                << "std::exception during createRep for '" << loc << "' "
+                << System::typeinfoName( typeid(**j) )
+                << endmsg;
+            log << MSG::FATAL << excpt.what() << endmsg;
+            throw;
+          }
         }
-        for ( j = sel->begin(); j != sel->end(); j++ )    {
-          IRegistry* pReg = (*j)->registry();
-          StatusCode iret = m_pConversionSvc->fillRepRefs( pReg->address(), *j );
-          if ( !iret.isSuccess() )      {
-            status = iret;
+        for ( IDataSelector::iterator j = sel->begin(); j != sel->end(); ++j )
+        {
+          try
+          {
+            IRegistry* pReg = (*j)->registry();
+            const StatusCode iret = m_pConversionSvc->fillRepRefs( pReg->address(), *j );
+            if ( !iret.isSuccess() )
+            {
+              status = iret;
+            }
+          }
+          catch ( const std::exception & excpt )
+          {
+            MsgStream log( msgSvc(), name() );
+            const std::string loc = ( (*j)->registry() ?
+                                      (*j)->registry()->identifier() : "UnRegistered" );
+            log << MSG::FATAL
+                << "std::exception during fillRepRefs for '" << loc << "'"
+                << System::typeinfoName( typeid(**j) )
+                << endmsg;
+            log << MSG::FATAL << excpt.what() << endmsg;
+            throw;
           }
         }
         // Commit the data if there was no error; otherwise possibly discard
-        if ( status.isSuccess() )  {
+        if ( status.isSuccess() )
+        {
           status = m_pConversionSvc->commitOutput(m_outputName, true);
         }
-        else   {
+        else
+        {
           m_pConversionSvc->commitOutput(m_outputName, false).ignore();
         }
       }
@@ -331,7 +375,7 @@ OutputStream::findItem(const std::string& path)  {
 
 // Add item to output streamer list
 void OutputStream::addItem(Items& itms, const std::string& descriptor)   {
-	MsgStream log(msgSvc(), name());
+  MsgStream log(msgSvc(), name());
   int level = 0;
   size_t sep = descriptor.rfind("#");
   std::string obj_path (descriptor,0,sep);
@@ -396,7 +440,7 @@ StatusCode OutputStream::connectConversionSvc()   {
       case 'N':
       case 'W':
         m_outputType = "NEW";
-        break;
+      	break;
       case 'U':
         m_outputType = "UPDATE";
         break;
