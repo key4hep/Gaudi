@@ -7,6 +7,9 @@
 </set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="validator"><text>
+stdout = '\n'.join(l for l in stdout.splitlines()
+                   if 'EventLoopMgr      SUCCESS Event Number =' not in l and
+                      'EventLoopMgr      SUCCESS ---> Loop Finished' not in l)
 findReferenceBlock('''
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
@@ -22,6 +25,6 @@ ApplicationMgr       INFO Application Manager Stopped successfully
 Stream1              INFO finalizing....
 Stream2              INFO finalizing....
 EventInit            INFO finalizing....
-''')
+''', stdout=stdout)
 </text></argument>
 </extension>

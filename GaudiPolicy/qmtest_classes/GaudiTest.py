@@ -480,6 +480,9 @@ normalizeExamples = LineSkipper(["//GP:",
                                  'Note: (file "(tmpfile)", line 2) File "set" already loaded',
                                  # The signal handler complains about SIGXCPU not defined on some platforms
                                  'SIGXCPU',
+                                 # FIXME: special lines printed in GaudiHive
+                                 'EventLoopMgr      SUCCESS Event Number = ',
+                                 'EventLoopMgr      SUCCESS ---> Loop Finished',
                                  ],regexps = [
                                  r"^JobOptionsSvc        INFO *$",
                                  r"^#", # Ignore python comments

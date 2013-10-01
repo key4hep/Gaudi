@@ -1,32 +1,25 @@
-JobOptionsSvc        INFO
-//GP:================================================================================
-//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/ColorMsg.opts" (0,0)
-//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Common.opts" (5,10)
-//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Services.opts" (7,10)
-AuditorSvc.Auditors =  [ "ChronoAuditor" ] ;                            //GP: (1,1)
-//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Services.opts" (24,1)
-ApplicationMgr.StatusCodeCheck = 1;                                     //GP: (7,10)
-//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Common.opts" (16,1)
-ApplicationMgr.TopAlg =  [ "ColorMsgAlg" ] ;                            //GP: (5,10)
-MessageSvc.OutputLevel = 1;                                             //GP: (5,10)
-MessageSvc.useColors = 1;                                               //GP: (5,10)
-MessageSvc.fatalColorCode =  [ "blue" , "red" ] ;                       //GP: (5,10)
-MessageSvc.errorColorCode =  [ "[97;101;1m" ] ;                         //GP: (5,10)
-MessageSvc.warningColorCode =  [ "yellow" ] ;                           //GP: (5,10)
-MessageSvc.infoColorCode =  [ "[96;1m" ] ;                              //GP: (5,10)
-MessageSvc.debugColorCode =  [ "[92;1m" ] ;                             //GP: (5,10)
-MessageSvc.verboseColorCode =  [ "[95;4m" ] ;                           //GP: (5,10)
-ApplicationMgr.EvtMax = 2;                                              //GP: (5,10)
-ApplicationMgr.EvtSel = "NONE";                                         //GP: (5,10)
-//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/ColorMsg.opts" (39,1)
-//GP:================================================================================
-
-JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/ColorMsg.opts
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Services.opts
+JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Common.opts
+JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/ColorMsg.opts
+JobOptionsSvc        INFO # (10,1): ApplicationMgr.TopAlg = ["ColorMsgAlg"]
+JobOptionsSvc        INFO # (16,1): MessageSvc.OutputLevel = 1
+JobOptionsSvc        INFO # (17,1): MessageSvc.useColors = 1
+JobOptionsSvc        INFO # (18,1): MessageSvc.fatalColorCode = ["blue", "red"]
+JobOptionsSvc        INFO # (19,1): MessageSvc.errorColorCode = ["[97;101;1m"]
+JobOptionsSvc        INFO # (20,1): MessageSvc.warningColorCode = ["yellow"]
+JobOptionsSvc        INFO # (21,1): MessageSvc.infoColorCode = ["[96;1m"]
+JobOptionsSvc        INFO # (22,1): MessageSvc.debugColorCode = ["[92;1m"]
+JobOptionsSvc        INFO # (23,1): MessageSvc.verboseColorCode = ["[95;4m"]
+JobOptionsSvc        INFO # (31,1): ApplicationMgr.EvtMax = 2
+JobOptionsSvc        INFO # (32,1): ApplicationMgr.EvtSel = "NONE"
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/ColorMsg.opts
 [92;1mApplicationMgr      DEBUG Getting my own properties[m
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on pclhcb55 on Fri Apr 23 10:04:51 2010
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r6)
+                                          running on pclhcb117 on Tue Oct  1 14:11:03 2013
 ====================================================================================================================================[m
 [96;1mApplicationMgr       INFO Application Manager Configured successfully[m
 [92;1mServiceManager      DEBUG Initializing service StatusCodeSvc[m
@@ -42,6 +35,7 @@ ApplicationMgr    SUCCESS
 [92;1mEventDataSvc        DEBUG Service base class initialized successfully[m
 [95;4mEventDataSvc      VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
 [92;1mEventPersistenc...  DEBUG Service base class initialized successfully[m
+[95;4mColorMsgAlg       VERBOSE ServiceLocatorHelper::service: found service EventDataSvc[m
 [98;1mEventLoopMgr      WARNING Unable to locate service "EventSelector" [m
 [98;1mEventLoopMgr      WARNING No events will be processed from external input.[m
 [92;1mHistogramDataSvc    DEBUG Service base class initialized successfully[m
@@ -106,7 +100,7 @@ ApplicationMgr    SUCCESS
 [92;1mServiceManager      DEBUG Finalizing service StatusCodeSvc[m
 [92;1mServiceManager      DEBUG Service reference count check:[m
 [92;1mServiceManager      DEBUG ---- StatusCodeSvc (refCount = 2)[m
-[92;1mServiceManager      DEBUG ---- MessageSvc (refCount = 11)[m
+[92;1mServiceManager      DEBUG ---- MessageSvc (refCount = 12)[m
 [92;1mServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)[m
 [92;1mServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)[m
 [92;1mServiceManager      DEBUG ---- IncidentSvc (refCount = 2)[m
