@@ -21,6 +21,11 @@ try:
 except ImportError:
     pass
 import ROOT
+
+#DP TEMP: Waiting for the full blown fix, to run all the tests
+ROOT.DataObject
+ROOT.Chrono
+
 import Pythonizations
 # Import Configurable from AthenaCommon or GaudiKernel if the first is not
 # available.
