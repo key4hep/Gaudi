@@ -63,7 +63,7 @@ namespace GaudiRoot {
     /// ROOT I/O callback
     virtual void operator()(TBuffer &b, void *obj)  {
       try {
-        if ( b.IsReading() ) 
+        if ( b.IsReading() )
           get(b,obj);
         else
           put(b,obj);
@@ -202,9 +202,11 @@ namespace GaudiRoot {
     static bool first = true;
     if ( first ) {
       first = false;
+#if ROOT_VERSION_CODE < ROOT_VERSION(5,99,0)
       gSystem->Load("libCintex");
       gROOT->ProcessLine("Cintex::Cintex::Enable()");
       gROOT->ProcessLine("#include <vector>");
+#endif
       gInterpreter->EnableAutoLoading();
       gInterpreter->AutoLoad("DataObject");
       gInterpreter->AutoLoad("PoolDbLinkManager");
