@@ -1,24 +1,6 @@
 #ifndef GAUDIPYTHON_HELPERS_H
 #define GAUDIPYTHON_HELPERS_H
 
-#ifdef linux
-
-#include <stdio.h>
-
-#ifdef _POSIX_C_SOURCE
-#undef _POSIX_C_SOURCE
-#endif
-
-#ifdef _FILE_OFFSET_BITS
-#undef _FILE_OFFSET_BITS
-#endif
-
-#ifdef _XOPEN_SOURCE
-#undef _XOPEN_SOURCE
-#endif
-
-#endif // linux
-
 #include "Python.h"
 
 // Framework

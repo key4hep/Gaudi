@@ -61,6 +61,14 @@ cmtpath_pattern_reverse \
          <project>_with_installarea&target-winxp ' "<path>\$(<project>_installarea_prefix)$(shared_install_subdir)\include"' ; \
    include_dirs ${<project>_install_include}
 
+cmtpath_pattern \
+   macro <project>_install_include "" \
+         <project>_without_installarea "" \
+         <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)$(shared_install_subdir)/include" \
+         <project>_with_installarea&target-winxp '"<path>\$(<project>_installarea_prefix)$(shared_install_subdir)\include"' ; \
+    path_remove  ROOT_INCLUDE_PATH ${<project>_install_include} ; \
+    path_prepend ROOT_INCLUDE_PATH ${<project>_install_include}
+
 macro copyInclude "cp -Rup " \
       host-winxp  "xcopy /S/Q/Y/I/D " \
       host-darwin "cp -Rp"
@@ -807,6 +815,11 @@ macro_append cppflags "" \
          target-gcc48 " -Wno-deprecated" \
          target-gccmax " -Wno-deprecated" \
          target-clang " -Wno-deprecated"
+# FIXME: (MCl) hide ~900 warnings from Boost
+macro_append cppflags "" \
+         no-hide-warnings "" \
+         target-gcc48 " -Wno-unused-local-typedefs" \
+         target-gccmax " -Wno-unused-local-typedefs"
 # FIXME: (MCl)
 macro_append cppflags "" \
          no-hide-warnings "" \

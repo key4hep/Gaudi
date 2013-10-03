@@ -25,6 +25,37 @@ public:
 class Component0: public Base { };
 DECLARE_COMPONENT(Component0)
 
+class Component1: public Base { };
+#define DECLARE_COMPONENT_WITH_PROPS(type)                \
+  DECLARE_FACTORY_WITH_PROPS(type, type::Factory)
+#define DECLARE_FACTORY_WITH_PROPS(type, factory)         \
+  DECLARE_FACTORY_WITH_ID_AND_PROPS(type, \
+                          ::Gaudi::PluginService::Details::demangle<type>(), \
+                          factory)
+#define DECLARE_FACTORY_WITH_ID_AND_PROPS(type, id, factory)         \
+  _INTERNAL_DECLARE_FACTORY_WITH_PROPS(type, id, factory, __LINE__)
+#define _INTERNAL_DECLARE_FACTORY_WITH_PROPS(type, id, factory, serial)            \
+  _INTERNAL_DECLARE_FACTORY_WITH_CREATOR_AND_PROPS \
+  (type,                                                                \
+   ::Gaudi::PluginService::Details::Factory<type>,                      \
+   id, factory, serial)
+#define _INTERNAL_DECLARE_FACTORY_WITH_CREATOR_AND_PROPS(type, typecreator,       \
+                                               id, factory, serial)     \
+  namespace {                                                           \
+    class _INTERNAL_FACTORY_REGISTER_CNAME(type, serial) {              \
+    public:                                                             \
+      typedef factory s_t;                                              \
+      typedef typecreator f_t;                                          \
+      static s_t::FuncType creator() { return &f_t::create<s_t>; }      \
+      _INTERNAL_FACTORY_REGISTER_CNAME(type, serial) () {               \
+        using ::Gaudi::PluginService::Details::Registry;                \
+        Registry::instance().add<s_t, type>(id, creator())              \
+          .addProperty("name", #type);                                  \
+      }                                                                 \
+    } _INTERNAL_FACTORY_REGISTER_CNAME(s_ ## type, serial);             \
+  }
+
+DECLARE_COMPONENT_WITH_PROPS(Component1)
 
 // standard use, 2 arguments
 class Base2 {
@@ -99,4 +130,13 @@ BOOST_AUTO_TEST_CASE( ids )
   BOOST_CHECK(Base2::Factory::create("Id2", "id", -2) != 0);
   BOOST_CHECK(Base::Factory::create("A") != 0);
   BOOST_CHECK(Base::Factory::create("B") != 0);
+}
+
+BOOST_AUTO_TEST_CASE( properties )
+{
+  using Gaudi::PluginService::Details::Registry;
+  Registry &reg = Registry::instance();
+  Registry::Properties props = reg.getInfo("Component1").properties;
+  
+  BOOST_CHECK(props["name"] == "Component1");
 }

@@ -1,6 +1,10 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2013-09-30 - Marco Clemencic
+ - Switched from ROOT.py to cppyy.
+   See https://sft.its.cern.ch/jira/browse/ROOT-154
+
 ! 2013-07-19 - Marco Clemencic
  - Clean up in the use of the new PluginService.
 

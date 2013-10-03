@@ -1,6 +1,10 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2013-09-30 - Marco Clemencic
+ - Fix for a spurious error in the aida2rootex test with the latest versions
+   of ROOT.
+
 ! 2013-07-26 - Marco Clemencic
  - Fixed a warning.
 

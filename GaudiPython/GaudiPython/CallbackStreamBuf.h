@@ -1,24 +1,6 @@
 #ifndef GAUDIPYTHON_CALLBACKSTREAMBUF_H
 #define GAUDIPYTHON_CALLBACKSTREAMBUF_H
 // ============================================================================
-#ifdef linux
-
-#include <stdio.h>
-
-#ifdef _POSIX_C_SOURCE
-#undef _POSIX_C_SOURCE
-#endif
-
-#ifdef _FILE_OFFSET_BITS
-#undef _FILE_OFFSET_BITS
-#endif
-
-#ifdef _XOPEN_SOURCE
-#undef _XOPEN_SOURCE
-#endif
-
-#endif // linux
-
 #include "Python.h"   //included for the python API
 // ============================================================================
 #include <sstream>    //included for stringbuf

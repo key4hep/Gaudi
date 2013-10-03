@@ -3,25 +3,6 @@
 // CVS tag $Name:  $, version $Revision: 1.37 $
 // ============================================================================
 // Python must always be the first.
-
-#ifdef linux
-
-#include <stdio.h>
-
-#ifdef _POSIX_C_SOURCE
-#undef _POSIX_C_SOURCE
-#endif
-
-#ifdef _FILE_OFFSET_BITS
-#undef _FILE_OFFSET_BITS
-#endif
-
-#ifdef _XOPEN_SOURCE
-#undef _XOPEN_SOURCE
-#endif
-
-#endif // linux
-
 #include "Python.h"
 
 #include "GaudiKernel/Algorithm.h"

@@ -23,6 +23,26 @@
 #include <mutex>
 #endif
 
+#if __GNUC__ >= 4
+#  define GAUDIPS_HASCLASSVISIBILITY
+#endif
+
+#if defined(GAUDIPS_HASCLASSVISIBILITY)
+#  define GAUDIPS_IMPORT __attribute__((visibility("default")))
+#  define GAUDIPS_EXPORT __attribute__((visibility("default")))
+#  define GAUDIPS_LOCAL  __attribute__((visibility("hidden")))
+#else
+#  define GAUDIPS_IMPORT
+#  define GAUDIPS_EXPORT
+#  define GAUDIPS_LOCAL
+#endif
+
+#ifdef GaudiPluginService_EXPORTS
+#define GAUDIPS_API GAUDIPS_EXPORT
+#else
+#define GAUDIPS_API GAUDIPS_IMPORT
+#endif
+
 namespace Gaudi { namespace PluginService {
 
   namespace Details {
@@ -61,6 +81,7 @@ namespace Gaudi { namespace PluginService {
 
     /// Function used to load a specific factory function.
     /// @return the pointer to the factory function.
+    GAUDIPS_API
     void* getCreator(const std::string& id, const std::string& type);
 
     /// Convoluted implementation of getCreator with an embedded
@@ -84,6 +105,7 @@ namespace Gaudi { namespace PluginService {
 
     /// Return a canonical name for type_info object (implementation borrowed
     ///  from GaudiKernel/System).
+    GAUDIPS_API
     std::string demangle(const std::type_info& id);
 
     /// Return a canonical name for the template argument.
@@ -91,22 +113,32 @@ namespace Gaudi { namespace PluginService {
     inline std::string demangle() { return demangle(typeid(T)); }
 
     /// In-memory database of the loaded factories.
-    class Registry {
+    class GAUDIPS_API Registry {
     public:
       typedef std::string KeyType;
+
+      /// Type used for the properties implementation.
+      typedef std::map<KeyType, std::string> Properties;
 
       struct FactoryInfo {
         FactoryInfo(const std::string& lib, void* p=0,
                     const std::string& t="",
                     const std::string& rt="",
-                    const std::string& cn=""):
-          library(lib), ptr(p), type(t), rtype(rt), className(cn) {}
+                    const std::string& cn="",
+                    const Properties& props=Properties()):
+        library(lib), ptr(p), type(t), rtype(rt), className(cn), properties(props) {}
 
         std::string library;
         void* ptr;
         std::string type;
         std::string rtype;
         std::string className;
+        Properties properties;
+
+        FactoryInfo& addProperty(const KeyType& k, const std::string& v) {
+          properties[k] = v;
+          return *this;
+        }
       };
 
       /// Type used for the database implementation.
@@ -117,11 +149,11 @@ namespace Gaudi { namespace PluginService {
 
       /// Add a factory to the database.
       template <typename F, typename T, typename I>
-      inline void add(const I& id, typename F::FuncType ptr){
+      inline FactoryInfo& add(const I& id, typename F::FuncType ptr){
         union { typename F::FuncType src; void* dst; } p2p;
         p2p.src = ptr;
         std::ostringstream o; o << id;
-        add(o.str(), p2p.dst,
+        return add(o.str(), p2p.dst,
             typeid(typename F::FuncType).name(),
             typeid(typename F::ReturnType).name(),
             demangle<T>());
@@ -133,8 +165,20 @@ namespace Gaudi { namespace PluginService {
       /// Retrieve the FactoryInfo object for an id.
       const FactoryInfo& getInfo(const std::string& id) const;
 
-      /// Return a list of all the known factories
+      /// Add a property to an already existing FactoryInfo object (via its id.)
+      Registry&
+      addProperty(const std::string& id,
+                  const std::string& k,
+                  const std::string& v);
+
+      /// Return a list of all the known and loaded factories
       std::set<KeyType> loadedFactories() const;
+
+      /// Return the known factories (loading the list if not yet done).
+      inline const FactoryMap& factories() const {
+        if (!m_initialized) const_cast<Registry*>(this)->initialize();
+        return m_factories;
+      }
 
     private:
       /// Private constructor for the singleton pattern.
@@ -147,19 +191,15 @@ namespace Gaudi { namespace PluginService {
       Registry(const Registry&): m_initialized(false) {}
 
       /// Add a factory to the database.
-      void add(const std::string& id, void *factory,
-               const std::string& type, const std::string& rtype,
-               const std::string& className);
+      FactoryInfo&
+      add(const std::string& id, void *factory,
+          const std::string& type, const std::string& rtype,
+          const std::string& className,
+          const Properties& props = Properties());
 
-      /// Return the know factories (loading the list if not yet done).
+      /// Return the known factories (loading the list if not yet done).
       inline FactoryMap& factories() {
         if (!m_initialized) initialize();
-        return m_factories;
-      }
-
-      /// Return the know factories (loading the list if not yet done).
-      inline const FactoryMap& factories() const {
-        if (!m_initialized) const_cast<Registry*>(this)->initialize();
         return m_factories;
       }
 
@@ -180,7 +220,7 @@ namespace Gaudi { namespace PluginService {
     };
 
     /// Simple logging class, just to provide a default implementation.
-    class Logger {
+    class GAUDIPS_API Logger {
     public:
       enum Level { Debug=0, Info=1, Warning=2, Error=3 };
       Logger(Level level = Warning): m_level(level) {}
@@ -197,16 +237,16 @@ namespace Gaudi { namespace PluginService {
     };
 
     /// Return the current logger instance.
-    Logger& logger();
+    GAUDIPS_API Logger& logger();
     /// Set the logger instance to use.
     /// It must be a new instance and the ownership is passed to the function.
-    void setLogger(Logger* logger);
+    GAUDIPS_API void setLogger(Logger* logger);
   }
 
   /// Backward compatibility with Reflex.
-  void SetDebug(int debugLevel);
+  GAUDIPS_API void SetDebug(int debugLevel);
   /// Backward compatibility with Reflex.
-  int Debug();
+  GAUDIPS_API int Debug();
 
 }}
 

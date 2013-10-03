@@ -3,8 +3,8 @@
 
 """ GaudiPython.Bindings module.
     This module provides the basic bindings of the main Gaudi
-    components to Python. It is itself based on the ROOT Python
-    extension module.
+    components to Python. It is itself based on the ROOT cppyy
+    Python extension module.
 """
 
 __all__ = [ 'gbl','InterfaceCast', 'Interface', 'PropertyEntry',
@@ -16,15 +16,15 @@ __all__ = [ 'gbl','InterfaceCast', 'Interface', 'PropertyEntry',
 
 import os, sys, string, warnings, re
 try:
-    import PyCintex # needed to enable Cintex if it exists
-    del PyCintex
+    import cppyy
 except ImportError:
-    pass
-import ROOT
+    # FIXME: backward compatibility
+    print "# WARNING: using PyCintex as cppyy implementation"
+    import PyCintex as cppyy
 
 #DP TEMP: Waiting for the full blown fix, to run all the tests
-ROOT.DataObject
-ROOT.Chrono
+cppyy.gbl.DataObject
+cppyy.gbl.Chrono
 
 import Pythonizations
 # Import Configurable from AthenaCommon or GaudiKernel if the first is not
@@ -32,7 +32,7 @@ import Pythonizations
 from GaudiKernel.Proxy.Configurable import Configurable, getNeededConfigurables
 
 #namespaces
-gbl    = ROOT
+gbl   = cppyy.gbl
 Gaudi = gbl.Gaudi
 
 _gaudi = None
@@ -61,9 +61,10 @@ else:
     toArray = lambda typ: getattr(Helper,"toArray<%s>"%typ)
 
 #----Convenient accessors to PyROOT functionality ---------------------------------------
-makeNullPointer = ROOT.MakeNullPointer
-makeClass       = ROOT.MakeRootClass
-setOwnership    = ROOT.SetOwnership
+ROOT            = cppyy.libPyROOT
+makeNullPointer = cppyy.libPyROOT.MakeNullPointer
+makeClass       = cppyy.libPyROOT.MakeRootClass
+setOwnership    = cppyy.libPyROOT.SetOwnership
 
 def deprecation(message):
     warnings.warn('GaudiPython: '+ message, DeprecationWarning, stacklevel=3)
@@ -74,11 +75,11 @@ class InterfaceCast(object) :
         by using the Gaudi queryInterface() mechanism """
     def __init__(self, t ) :
         if type(t) is str:
-            t = getattr(ROOT, t)
+            t = getattr(gbl, t)
         self.type = t
     def __call__(self, obj) :
         if obj :
-            ip = ROOT.MakeNullPointer(self.type)
+            ip = makeNullPointer(self.type)
             try:
                 if obj.queryInterface(self.type.interfaceID(), ip).isSuccess() :
                     return ip
@@ -104,9 +105,7 @@ def loaddict(dict) :
     if Helper.loadDynamicLib(dict) == 1 : return
     else :
         try:
-            if sys.platform != 'win32' and not dict.startswith('lib'):
-                dict = 'lib' + dict
-            ROOT.gSystem.Load(dict)
+            cppyy.loadDict(dict)
         except:
             raise ImportError, 'Error loading dictionary library'
 
@@ -519,7 +518,7 @@ class iHistogramSvc(iDataSvc) :
         >>> svc = ...
         >>> histo = svc.getAsROOT ( 'path/to/my/histogram' )
         """
-        fun=gbl.Gaudi.Utils.Aida2ROOT.aida2root
+        fun = gbl.Gaudi.Utils.Aida2ROOT.aida2root
         return fun( self.getAsAIDA( path ) )
 
 #----iNTupleSvc class---------------------------------------------------------------------
