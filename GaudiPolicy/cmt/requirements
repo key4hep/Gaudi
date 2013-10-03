@@ -709,8 +709,7 @@ macro_append LCG_Platforms_cflags "" \
 macro_append LCG_Platforms_fflags "" \
                        target-cov " --coverage"
 
-# Added to mute 3000 warnings with Boost: -Wunused-local-typedefs
-macro cppflags         " -fmessage-length=0 -Df2cFortran -fPIC -D_GNU_SOURCE -Dlinux -Dunix -pipe -ansi -Wall -Wextra -Werror=return-type -pthread -Wno-unused-local-typedefs" \
+macro cppflags         " -fmessage-length=0 -Df2cFortran -fPIC -D_GNU_SOURCE -Dlinux -Dunix -pipe -ansi -Wall -Wextra -Werror=return-type -pthread " \
       target-mac105    " -Df2cFortran -fPIC -D_GNU_SOURCE -Dunix -pipe -ansi -Wall -Wextra -Werror=return-type -Wno-long-double " \
       target-mac106    " -Df2cFortran -fPIC -D_GNU_SOURCE -Dunix -pipe -ansi -Wall -Wextra -Werror=return-type " \
       target-vc9       '$(includes) /D "WIN32" /D "_MBCS"  /D "_WINDOWS" /FD /c /nologo /W3 /EHsc /MD /GR /Zm500' \
