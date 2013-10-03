@@ -5,6 +5,9 @@
 !-----------------------------------------------------------------------------
 
 ! 2013-10-03 - Marco Clemencic
+ - Work-around for ROOT 6 autoloading problem (genreflex rootmap is incomplete).
+
+! 2013-10-03 - Marco Clemencic
  - Removed dynamic loading of libCintex.so in RootIOHandler (ROOT 6 only).
 
 ! 2013-08-27 - Marco Clemencic, Danilo Piparo
