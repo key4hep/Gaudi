@@ -1,6 +1,10 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2013-10-24 - Marco Clemencic
+ - Use ROOT6WorkAroundEnabled for bug ROOT-5581.
+   https://sft.its.cern.ch/jira/browse/ROOT-5581
+
 ! 2013-09-30 - Marco Clemencic
  - Switched from ROOT.py to cppyy.
    See https://sft.its.cern.ch/jira/browse/ROOT-154

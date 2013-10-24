@@ -14,6 +14,8 @@ __all__ = [ 'gbl','InterfaceCast', 'Interface', 'PropertyEntry',
             'ROOT', 'makeNullPointer', 'makeClass', 'setOwnership',
             'getClass', 'loaddict', 'deprecation' ]
 
+from GaudiKernel import ROOT6WorkAroundEnabled
+
 import os, sys, string, warnings, re
 try:
     import cppyy
@@ -22,9 +24,10 @@ except ImportError:
     print "# WARNING: using PyCintex as cppyy implementation"
     import PyCintex as cppyy
 
-#DP TEMP: Waiting for the full blown fix, to run all the tests
-cppyy.gbl.DataObject
-cppyy.gbl.Chrono
+if ROOT6WorkAroundEnabled('ROOT-5581'):
+    # FIXME: (DP) Waiting for the full blown fix, to run all the tests
+    cppyy.gbl.DataObject
+    cppyy.gbl.Chrono
 
 import Pythonizations
 # Import Configurable from AthenaCommon or GaudiKernel if the first is not
