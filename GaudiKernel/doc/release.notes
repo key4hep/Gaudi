@@ -1,6 +1,18 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-10-24 - Marco Clemencic
+ - Added a small Python function to simplify enabling and disabling of
+   specific ROOT 6 work-arounds.
+   In Python use:
+
+       from GaudiKernel import ROOT6WorkAroundEnabled
+       if ROOT6WorkAroundEnabled('work-around-id'):
+           # code for my work-around ...
+
+   To disable the work-around set the environment variable ROOT6_WORK_AROUND
+   to 'none' or '-work-around-id' (a comma separated list is accepted).
+
 ! 2013-10-03 - Marco Clemencic
  - Added missing (needed) include in StringKey.h.
 
