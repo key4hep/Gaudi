@@ -1,6 +1,10 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2013-10-24 - Marco Clemencic
+ - Added TupleEx.py options and test (clone of TupleEx.opts, with different
+   compression).
+
 ============================ GaudiExamples v23r10 ============================
 ! 2013-09-09 - Marco Clemencic
  - Reverted changes to the aida2root test and applied them to aida2rootex
