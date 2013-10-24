@@ -2,6 +2,10 @@ Package: GaudiPython
 Package manager : Marco Clemencic
 
 ! 2013-10-24 - Marco Clemencic
+ - Added work-around for bug ROOT-5623.
+   https://sft.its.cern.ch/jira/browse/ROOT-5623
+
+! 2013-10-24 - Marco Clemencic
  - Use ROOT6WorkAroundEnabled for bug ROOT-5581.
    https://sft.its.cern.ch/jira/browse/ROOT-5581
 
