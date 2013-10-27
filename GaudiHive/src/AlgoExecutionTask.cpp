@@ -3,6 +3,7 @@
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IProperty.h"
+#include "GaudiKernel/ContextSpecificPtr.h"
 
 // C++
 #include <functional>
@@ -20,6 +21,7 @@ tbb::task* AlgoExecutionTask::execute() {
   bool eventfailed=false;
   EventContext* eventContext = this_algo->getContext();
   eventContext->m_thread_id = pthread_self();
+  Gaudi::Hive::setCurrentContextId(eventContext->m_evt_slot);
 
   // Get the IProperty interface of the ApplicationMgr to pass it to RetCodeGuard
   const SmartIF<IProperty> appmgr(m_serviceLocator);

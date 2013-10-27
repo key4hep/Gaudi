@@ -1,6 +1,15 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-10-27 - Marco Clemencic
+ - Added Gaudi::Hive::ContextSpecificPtr, a smart pointer with independent
+   values for different tasks.
+   In addition to the standard smart pointer functionalities, it features:
+     - ``accumulate`` to allow gathering of informations collected in different
+                      contexts (slots)
+     - ``for_each`` to call a function on each pointer
+     - ``deleteAll`` to delete all the created objects
+
 ! 2013-06-27 - Marco Clemencic
  - Fixed CFHEP-78: configurables created after applyConfigurableUser()
    Force the instantiation of all Handles properties during the call to
