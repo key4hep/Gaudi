@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-10-28 - Marco Clemencic
+ - Added unit test for Gaudi::Hive::ContextSpecificPtr.
+
 ! 2013-10-27 - Marco Clemencic
  - Added Gaudi::Hive::ContextSpecificPtr, a smart pointer with independent
    values for different tasks.

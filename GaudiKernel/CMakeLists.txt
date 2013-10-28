@@ -25,6 +25,9 @@ gaudi_add_unit_test(Parsers_test tests/src/parsers.cpp
                     LINK_LIBRARIES GaudiKernel)
 gaudi_add_unit_test(SerialTaskQueue_test ../tests/src/SerialTaskQueue_test.cpp
                     LINK_LIBRARIES GaudiKernel TBB)
+gaudi_add_unit_test(ContextSpecificPtrTest tests/src/test_ContextSpecificPtr.cpp
+                    LINK_LIBRARIES GaudiKernel TYPE Boost)
+
 # This is just a compile-time tests.
 gaudi_add_unit_test(test_headers_build tests/src/test_headers_build.cpp
                     LINK_LIBRARIES GaudiKernel)
