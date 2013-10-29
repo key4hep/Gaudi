@@ -49,9 +49,6 @@ GaudiHandleArrayProperty = gbl.GaudiHandleArrayProperty
 DataObject          = gbl.DataObject
 SUCCESS             = gbl.StatusCode( gbl.StatusCode.SUCCESS, True )
 FAILURE             = gbl.StatusCode( gbl.StatusCode.FAILURE, True )
-if ROOT6WorkAroundEnabled('ROOT-5623'):
-    # FIXME: (MCl) work-around for ROOT (cppyy) bug ROOT-5623
-    StringProperty('dummy', 'dummy')
 
 # toIntArray, toShortArray, etc.
 for l in [ l for l in dir(Helper) if re.match("^to.*Array$",l) ]:

@@ -2,6 +2,10 @@ Package: GaudiPython
 Package manager : Marco Clemencic
 
 ! 2013-10-29 - Marco Clemencic
+ - Removed work-around for bug ROOT-5623.
+   https://sft.its.cern.ch/jira/browse/ROOT-5623
+
+! 2013-10-29 - Marco Clemencic
  - Modified __str__ implementation in Pythonizations.py to return a Python
    string and not an std::string.
 
