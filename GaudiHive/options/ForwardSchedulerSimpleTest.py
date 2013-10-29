@@ -29,7 +29,9 @@ entity to test it. It's an algorithm that simply wastes cpu.
 from Gaudi.Configuration import *
 from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
                            ForwardSchedulerSvc, AlgResourcePool,
-                           CPUCruncher, ContextEventCounter)
+                           CPUCruncher,
+                           ContextEventCounterPtr,
+                           ContextEventCounterData)
 
 # metaconfig -------------------------------------------------------------------
 # It's confortable to collect the relevant parameters at the top of the optionfile
@@ -94,7 +96,8 @@ for algo in [a1, a2, a3, a4]:
   algo.varRuntime=.3
   algo.avgRuntime=.5  
 
-ctr = ContextEventCounter("CNT", Cardinality=0, OutputLevel=INFO)
+ctrp = ContextEventCounterPtr("CNT*", Cardinality=0, OutputLevel=INFO)
+ctrd = ContextEventCounterData("CNT&", Cardinality=0, OutputLevel=INFO)
 
 # Application Manager ----------------------------------------------------------
 # We put everything together and change the type of message service
@@ -103,7 +106,7 @@ ApplicationMgr( EvtMax = evtMax,
                 EvtSel = 'NONE',
                 ExtSvc =[whiteboard],
                 EventLoop = slimeventloopmgr,
-                TopAlg = [a1, a2, a3, a4, ctr],
+                TopAlg = [a1, a2, a3, a4, ctrp, ctrd],
                 MessageSvcType="InertMessageSvc")
 
 #-------------------------------------------------------------------------------
