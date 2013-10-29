@@ -1,6 +1,12 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-10-29 - Marco Clemencic
+ - Added Gaudi::Hive::ContextSpecificData, a sort of "smart reference"
+   equivalent to ContextSpecificPtr, but easier to use.
+ - Added unit tests for ContextSpecificData and extended tests for
+   ContextSpecificPtr.
+
 ! 2013-10-28 - Marco Clemencic
  - Added unit test for Gaudi::Hive::ContextSpecificPtr.
 

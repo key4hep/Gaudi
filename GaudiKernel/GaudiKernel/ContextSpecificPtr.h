@@ -76,9 +76,9 @@ namespace Gaudi {
       /// Set to null all the used pointers.
       void clear() { m_ptrs.clear(); }
 
-      /// Taking a function f that from a T* produces a value, return the sum
-      /// of all the values corresponding to the contained pointers using init
-      /// as first value.
+      /// Taking a function f that from a T* produces a value, return the sum of
+      /// all the values corresponding to the contained pointers using init as
+      /// first value.
       template< class Mapper >
       typename std::result_of<Mapper(const T*)>::type
       accumulate(Mapper f, typename std::result_of<Mapper(const T*)>::type init) const {
@@ -86,8 +86,9 @@ namespace Gaudi {
         return accumulate(f, init, std::plus<R>());
       }
 
-      /// Taking a function f that from a T* produces a value, return the sum
-      /// of all the values using init as first value.
+      /// Taking a function f that from a T* produces a value, return the
+      /// accumulated  result, through the operation 'op', of all the values
+      /// corresponding to the contained pointers using init as first value.
       template< class Mapper, class BinaryOperation >
       typename std::result_of<Mapper(const T*)>::type
       accumulate(Mapper f, typename std::result_of<Mapper(const T*)>::type init,
@@ -101,12 +102,14 @@ namespace Gaudi {
         });
       }
 
+      /// Call a function on each contained pointer.
       template< class F >
       void for_each(F f) const {
         std::lock_guard<std::mutex> lock(m_ptrs_lock);
         for(auto& i: m_ptrs) f(i.second);
       }
 
+      /// Call a function on each contained pointer. (non-const version)
       template< class F >
       void for_each(F f) {
         std::lock_guard<std::mutex> lock(m_ptrs_lock);
@@ -114,7 +117,7 @@ namespace Gaudi {
       }
 
       void deleteAll() {
-        for_each([](T*& p) {delete p; p = nullptr;} );
+        for_each([](T*& p) {delete p; p = nullptr;});
       }
 
 
@@ -125,6 +128,80 @@ namespace Gaudi {
       mutable std::mutex m_ptrs_lock;
     };
 
+
+    /**
+     *  Implementation of a context specific storage accessible as a sort of
+     *  smart reference class.
+     *
+     *  New values are created from the prototype passed to the constructor.
+     */
+    template< typename T >
+    class ContextSpecificData {
+    public:
+      /// Constructor with default initialization.
+      ContextSpecificData(): m_proto() {}
+      /// Constructor with prototype value.
+      ContextSpecificData(const T& proto): m_proto(proto) {}
+
+      /// Destructor.
+      ~ContextSpecificData() {
+        m_ptr.deleteAll();
+      }
+
+      inline operator T& () {
+        if (m_ptr)
+          return *m_ptr;
+        else
+          return *(m_ptr = new T(m_proto));
+      }
+
+      inline operator T& () const {
+        if (m_ptr)
+          return *m_ptr;
+        else
+          return *(m_ptr = new T(m_proto));
+      }
+
+      /// Assignment operator.
+      inline T& operator= (const T& other) {
+        return (T&)(*this) = other;
+      }
+
+      /// Return the sum of all the contained values using init as first value.
+      inline T accumulate(T init) const {
+        return accumulate(init, std::plus<T>());
+      }
+
+      /// Return the accumulated result, through the operation 'op', of all the
+      /// contained values using init as first value.
+      template< class T1, class BinaryOperation >
+      T1 accumulate(T1 init, BinaryOperation op) const {
+        return m_ptr.accumulate([] (const T* p) -> T { return *p; },
+                                init, op);
+      }
+
+      /// Call a function on each contained value.
+      template< class F >
+      void for_each(F f) const {
+        m_ptr.for_each([&f] (const T* p) { f(*p); });
+      }
+
+      /// Call a function on each contained value. (non-const version)
+      template< class F >
+      void for_each(F f) {
+        m_ptr.for_each([&f] (T* p) { f(*p); });
+      }
+
+    private:
+      // FIXME: implement a proper copy constructor
+      ContextSpecificData(const ContextSpecificData&) = delete;
+
+      /// Prototype value.
+      T m_proto;
+      /// Internal implementation.
+      mutable ContextSpecificPtr<T> m_ptr;
+
+    };
   }
 }
 
