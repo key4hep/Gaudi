@@ -24,11 +24,6 @@ except ImportError:
     print "# WARNING: using PyCintex as cppyy implementation"
     import PyCintex as cppyy
 
-if ROOT6WorkAroundEnabled('ROOT-5581'):
-    # FIXME: (DP) Waiting for the full blown fix, to run all the tests
-    cppyy.gbl.DataObject
-    cppyy.gbl.Chrono
-
 import Pythonizations
 # Import Configurable from AthenaCommon or GaudiKernel if the first is not
 # available.
