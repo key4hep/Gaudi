@@ -37,7 +37,7 @@ def _printFillStream(o) :
     if  o :
         s = gbl.stringstream()
         o.fillStream(s)
-        out = s.str()
+        out = str(s.str())
         if out == '' :
             out = o.__class__.__name__ + ' object'
             if hasattr( o, 'hasKey') and o.hasKey() :
