@@ -176,10 +176,7 @@ return IDataProviderSvc::INVALID_ROOT;
   }
   /// IDataManagerSvc: Remove all data objects in the data store.
   virtual StatusCode clearStore()  {
-    Partitions::iterator i;
-    for(i=m_partitions.begin(); i != m_partitions.end(); ++i) {
-      (*i).dataManager->clearStore().ignore();
-    }
+    for(auto& p: m_partitions) p.dataManager->clearStore().ignore();
     return StatusCode::SUCCESS;
   }
   
