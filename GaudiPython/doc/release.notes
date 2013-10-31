@@ -1,6 +1,11 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2013-10-31 - Marco Clemencic
+ - Moved the import of Pythonizations (in Bindings) after the auto-loading of
+   the main dictionaries, to avoid the warnings about the order of inclusion of
+   Python.h (see <https://sft.its.cern.ch/jira/browse/ROOT-5478>, point 2).
+
 ! 2013-10-29 - Marco Clemencic
  - Removed work-around for bug ROOT-5581.
    https://sft.its.cern.ch/jira/browse/ROOT-5581

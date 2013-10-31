@@ -24,18 +24,14 @@ except ImportError:
     print "# WARNING: using PyCintex as cppyy implementation"
     import PyCintex as cppyy
 
-import Pythonizations
 # Import Configurable from AthenaCommon or GaudiKernel if the first is not
 # available.
 from GaudiKernel.Proxy.Configurable import Configurable, getNeededConfigurables
 
-#namespaces
-gbl   = cppyy.gbl
-Gaudi = gbl.Gaudi
-
 _gaudi = None
 
 #----Useful shortcuts for classes -------------------------------------------------------
+gbl   = cppyy.gbl
 Helper              = gbl.GaudiPython.Helper
 StringProperty      = gbl.SimpleProperty     ('string','BoundedVerifier<string>')
 StringPropertyRef   = gbl.SimplePropertyRef  ('string','NullVerifier<string>')
@@ -44,6 +40,14 @@ GaudiHandleArrayProperty = gbl.GaudiHandleArrayProperty
 DataObject          = gbl.DataObject
 SUCCESS             = gbl.StatusCode( gbl.StatusCode.SUCCESS, True )
 FAILURE             = gbl.StatusCode( gbl.StatusCode.FAILURE, True )
+
+# This module should be loaded after the (auto)loading of the GaudiKernel and
+# GaudiPython dictionaries (triggered above), to avoid warnings from cling in
+# ROOT 6 (see <https://sft.its.cern.ch/jira/browse/ROOT-5478>, point 2).
+import Pythonizations
+
+# Gaudi namespace (this bust be done after Pythonizations)
+Gaudi = gbl.Gaudi
 
 # toIntArray, toShortArray, etc.
 for l in [ l for l in dir(Helper) if re.match("^to.*Array$",l) ]:
