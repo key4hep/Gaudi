@@ -2,18 +2,48 @@
 #include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/MsgStream.h"
+#include "GaudiKernel/IJobOptionsSvc.h"
+#include "GaudiKernel/ISvcLocator.h"
+#include "GaudiKernel/Bootstrap.h"
 
+// ROOT
 #include "TROOT.h"
 #include "RFileCnv.h"
 #include "TFile.h"
+
+// local
+#include "RootCompressionSettings.h"
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
 DECLARE_NAMESPACE_CONVERTER_FACTORY(RootHistCnv,RFileCnv)
 
+// Standard constructor
+RootHistCnv::RFileCnv::RFileCnv( ISvcLocator* svc )
+: RDirectoryCnv ( svc, classID() ),
+  m_compLevel   ( ""             )
+{ }
+
 //------------------------------------------------------------------------------
-StatusCode RootHistCnv::RFileCnv::createObj(IOpaqueAddress* pAddress,
-                                            DataObject*& refpObject)
+StatusCode RootHistCnv::RFileCnv::initialize()
+{
+  // Set compression level property ...
+  std::auto_ptr<PropertyMgr> pmgr ( new PropertyMgr() );
+  pmgr->declareProperty( "GlobalCompression", m_compLevel );
+  ISvcLocator * svcLoc = Gaudi::svcLocator();
+  SmartIF<IJobOptionsSvc> jobSvc = 
+    svcLoc->service<IJobOptionsSvc>("JobOptionsSvc");
+  const StatusCode sc = ( jobSvc.isValid() && 
+                          jobSvc->setMyProperties("RFileCnv",&*pmgr) );
+  
+  // initialise base class
+  return ( sc && RDirectoryCnv::initialize() );
+}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+StatusCode RootHistCnv::RFileCnv::createObj( IOpaqueAddress* pAddress,
+                                             DataObject*& refpObject )
 //------------------------------------------------------------------------------
 {
   MsgStream log(msgSvc(), "RFileCnv");
@@ -35,7 +65,6 @@ StatusCode RootHistCnv::RFileCnv::createObj(IOpaqueAddress* pAddress,
     log << MSG::VERBOSE << "ROOT already initialized, debug = "
         << gDebug<< endmsg;
   }
-
 
   // Determine access mode:
 
@@ -71,23 +100,30 @@ StatusCode RootHistCnv::RFileCnv::createObj(IOpaqueAddress* pAddress,
 
 
   } else if ( mode[0] == 'U' ) {
+
     log << MSG::INFO << "opening Root file \"" << fname << "\" for updating"
         << endmsg;
 
     log << MSG::ERROR << "don't know how to do this yet. Aborting." << endmsg;
     exit(1);
 
-
   } else if ( mode[0] == 'N' ) {
-    log << MSG::INFO << "opening Root file \"" << fname << "\" for writing"
-        << endmsg;
 
+    log << MSG::INFO << "opening Root file \"" << fname << "\" for writing";
+    if ( !m_compLevel.empty() ) 
+    { log << ", CompressionLevel='" << m_compLevel << "'"; }
+    log << endmsg;
 
-    rfile = TFile::Open(fname.c_str(),"RECREATE","Gaudi Trees");
+    rfile = TFile::Open( fname.c_str(), "RECREATE", "Gaudi Trees" );
     if ( ! ( rfile && rfile->IsOpen() ) ) {
       log << MSG::ERROR << "Could not open file " << fname << " for writing"
           << endmsg;
       return StatusCode::FAILURE;
+    }
+    if ( !m_compLevel.empty() ) 
+    {
+      const RootCompressionSettings settings(m_compLevel);
+      rfile->SetCompressionSettings(settings.level()); 
     }
 
     regTFile(ooname,rfile).ignore();
@@ -108,21 +144,7 @@ StatusCode RootHistCnv::RFileCnv::createObj(IOpaqueAddress* pAddress,
   }
 
   return StatusCode::FAILURE;
-
-
-  //    TFile* rfile = TFile::Open(spar[0].c_str(),"RECREATE","Gaudi ROOT Ntuples");
-  //    if (! rfile->IsOpen() ) {
-  //      log << MSG::ERROR << "Could not open file " << spar[0] << " for writing" << endmsg;
-  //      return StatusCode::FAILURE;
-  //    }
-  //    ipar[0] = (unsigned long)rfile;
-  //    NTuple::File* pFile = new NTuple::File(objType(), spar[0], oname);
-  //    pFile->setOpen(true);
-  //    refpObject = pFile;
-  //    return StatusCode::SUCCESS;
-
 }
-
 
 //------------------------------------------------------------------------------
 StatusCode RootHistCnv::RFileCnv::createRep( DataObject* pObject,

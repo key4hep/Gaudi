@@ -30,6 +30,29 @@ Package manager : Marco Clemencic
 ! 2013-07-03 - Marco Clemencic
  - Removed explicit link against Reflex from cmt/requirements.
 
+! 2013-10-24 - Marco Clemencic
+ - Added TupleEx.py options and test (clone of TupleEx.opts, with different
+   compression).
+
+============================ GaudiExamples v23r10 ============================
+! 2013-09-09 - Marco Clemencic
+ - Reverted changes to the aida2root test and applied them to aida2rootex
+   (where they were originally meant to go).
+
+! 2013-09-04 - Marco Clemencic
+ - Testing the enforcing of deferred write using algorithm type aliasing.
+
+! 2013-09-04 - Marco Clemencic
+ - Added a test for algorithm type aliasing.
+
+! 2013-08-30 - Marco Clemencic
+ - Added a basic test for GaudiMP's RecordOutputStream and ReplayOutputStream.
+
+! 2013-08-21 - Marco Clemencic
+ - Fix for a spurious error in the aida2root test with the latest versions of
+   ROOT.
+>>>>>>> origin/master
+
 ============================ GaudiExamples v23r9 =============================
 ! 2013-07-11 - Marco Clemencic
  - Added tests to expose the solution to bug #101513.

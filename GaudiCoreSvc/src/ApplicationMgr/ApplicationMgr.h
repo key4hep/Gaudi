@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiSvc/src/ApplicationMgr/ApplicationMgr.h,v 1.34 2008/11/10 15:29:09 marcocle Exp $	//
 #ifndef GAUDI_APPLICATIONMGR_H
 #define GAUDI_APPLICATIONMGR_H
 

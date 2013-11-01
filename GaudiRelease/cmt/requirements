@@ -3,18 +3,18 @@
 
 package GaudiRelease
 
-version v23r9
+version v23r10
 branches doc cmt
 
 # CMT and Gaudi policy
-use GaudiPolicy	   v12r7
+use GaudiPolicy	   v12r8
 
 # Gaudi executable
-use Gaudi          v23r9
+use Gaudi          v23r10
 
 # Gaudi libraries - generic
-use GaudiKernel    v28r8
-use GaudiCoreSvc   v1r5
+use GaudiKernel    v28r9
+use GaudiCoreSvc   v1r6
 use GaudiCommonSvc v1r6
 use GaudiSvc       v19r4
 use GaudiAud       v9r9
@@ -26,10 +26,10 @@ use GaudiPartProp  v1r2
 # Technology-specific Persistency packages
 use RootCnv        v1r20p1
 use RootHistCnv    v11r2
-use GaudiPython    v12r6
+use GaudiPython    v12r7
 
 # Container package specifying the minimum set of core packages
-use GaudiSys       v23r9
+use GaudiSys       v23r10
 
 # Monitoring utilities.
 use GaudiMonitor   v3r3
@@ -38,10 +38,10 @@ use GaudiMonitor   v3r3
 use GaudiProfiling v1r8
 
 # Multi Processing libraries
-use GaudiMP v1r7
+use GaudiMP v1r8
 
 # Examples packages
-use GaudiExamples   v23r9
+use GaudiExamples   v23r10
 
 
 # Atlas packages

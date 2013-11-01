@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+import os
+import sys
+
 def getArgsWithoutoProfilerInfo(args):
     """
     Remove from the arguments the presence of the profiler and its output in
@@ -28,10 +31,68 @@ def getArgsWithoutoProfilerInfo(args):
             newargs.append(o)
     return newargs
 
+def rationalizepath(path):
+    '''
+    Convert the given path to a real path if the pointed file exists, otherwise
+    just normalize it.
+    '''
+    path = os.path.normpath(os.path.expandvars(path))
+    if os.path.exists(path):
+        path = os.path.realpath(path)
+    return path
+
+# variable used to keep alive the temporary option files extracted from the .qmt
+_qmt_tmp_opt_files = []
+def getArgsFromQmt(qmtfile):
+    '''
+    Given a .qmt file, return the command line arguments of the corresponding
+    test.
+    '''
+    from xml.etree import ElementTree as ET
+    global _qmt_tmp_opt_files
+    # parse the .qmt file and extract args and options
+    qmt = ET.parse(qmtfile)
+    args = [a.text for a in qmt.findall("argument[@name='args']//text")]
+    options = qmt.find("argument[@name='options']/text")
+
+    if options is not None: # options need to be dumped in a temporary file
+        from tempfile import NamedTemporaryFile
+        import re
+        if re.search(r"from\s+Gaudi.Configuration\s+import\s+\*"
+                     r"|from\s+Configurables\s+import", options.text):
+            tmp_opts = NamedTemporaryFile(suffix='.py')
+        else:
+            tmp_opts = NamedTemporaryFile(suffix='.opts')
+        tmp_opts.write(options.text)
+        tmp_opts.flush()
+        args.append(tmp_opts.name)
+        _qmt_tmp_opt_files.append(tmp_opts)
+
+    # relative paths in a .qmt are rooted in the qmtest directory, so
+    # - find where the .qmt lives
+    qmtfile = os.path.abspath(qmtfile)
+    if 'qmtest' in qmtfile.split(os.path.sep):
+        # this return the path up to the 'qmtest' entry in qmtfile
+        testdir = qmtfile
+        while os.path.basename(testdir) != 'qmtest':
+            testdir = os.path.dirname(testdir)
+    else:
+        testdir = '.'
+    # - temporarily switch to that directory and rationalize the paths
+    old_cwd = os.getcwd()
+    os.chdir(testdir)
+    args = map(rationalizepath, args)
+    os.chdir(old_cwd)
+
+    return args
 
 #---------------------------------------------------------------------
 if __name__ == "__main__":
-    import os, sys
+    # ensure that we (and the subprocesses) use the C standard localization
+    if os.environ.get('LC_ALL') != 'C':
+        print '# setting LC_ALL to "C"'
+        os.environ['LC_ALL'] = 'C'
+
     from optparse import OptionParser
     parser = OptionParser(usage = "%prog [options] <opts_file> ...")
     parser.add_option("-n","--dry-run", action="store_true",
@@ -116,7 +177,17 @@ if __name__ == "__main__":
                         preload = [],
                         ncpus = None)
 
-    opts, args = parser.parse_args()
+    # replace .qmt files in the command line with their contained args
+    argv = []
+    for a in sys.argv[1:]:
+        if a.endswith('.qmt') and os.path.exists(a):
+            argv.extend(getArgsFromQmt(a))
+        else:
+            argv.append(a)
+    if argv != sys.argv[1:]:
+        print '# Running', sys.argv[0], 'with arguments', argv
+
+    opts, args = parser.parse_args(args=argv)
 
     # Check consistency of options
 

@@ -18,6 +18,30 @@ Package manager : Sebastien Binet
 ! 2013-07-03 - Marco Clemencic
  - Removed explicit link against Reflex from cmt/requirements.
 
+================================ GaudiMP v1r8 ================================
+! 2013-09-04 - Marco Clemencic
+ - Modified RecordOutputStream to allow an implicit value for  OutputStreamName:
+   "Deferred:" + name.
+   This is needed to enforce deferred write using algorithm type aliasing.
+
+! 2013-08-30 - Marco Clemencic
+ - Task #47619: Defer calls to OutputStreams in GaudiMP
+   Added a class to record which streams should be triggered and a class to
+   use the recorded informations to trigger the OutputStream instances:
+   RecordOutputStream and ReplayOutputStream.
+
+   To use the delayed write, one need to translate options like:
+
+       mySeq.members.append(OutputStream('MyStream'))
+
+   with something like:
+
+       mySeq.members.append(RecordOutputStream('RecordMyStream',
+                                               OutputStreamName='MyStream'))
+       ApplicationMgr().OutputStream.append(
+         ReplayOutputStream(OutputStreams=[OutputStream('MyStream')])
+       )
+
 ================================ GaudiMP v1r7 ================================
 ! 2013-01-15 - Nathalie Rauschmayr
  - Patch #5593: Implemented late forking for GaudiMP

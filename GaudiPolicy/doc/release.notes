@@ -13,6 +13,11 @@ package manager: Marco Clemencic
  - Removed a couple of ignored strings in the tests outputs (should not be
    needed).
 
+============================= GaudiPolicy v12r8 ==============================
+! 2013-09-25 - Marco Clemencic
+ - Changed GaudiTest.py to set LC_ALL to C, to avoid the new message from
+   gaudirun.py and GaudiPython.
+
 ! 2013-09-24 - Marco Clemencic, Danilo Piparo
  - Disabled the warning about unused local typedefs in gcc-4.8 (~900 hits in
    Boost).
@@ -27,6 +32,16 @@ package manager: Marco Clemencic
 ! 2013-06-13 - Marco Clemencic
  - Added a special exclusion pattern for reference file comparison to ignore a
    message from ROOT after the removal of PyCintex.
+
+! 2013-09-03 - Marco Clemencic
+ - Modified GaudiTest.py to use also the line 'from Configurables import' as
+   signature for Python options embedded in a '.qmt' file.
+
+! 2013-09-02 - Marco Clemencic
+ - Reverted the change for icc13 to fix the build in LCG nightlies.
+
+! 2013-08-28 - Marco Clemencic
+ - Use the wrapper lcg-icpc-13 when buildin for icc13.
 
 ============================= GaudiPolicy v12r7 ==============================
 ! 2013-03-27 - Hubert Degaudenzi

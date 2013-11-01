@@ -47,6 +47,10 @@ Package manager : Marco Clemencic
    (see <https://sft.its.cern.ch/jira/browse/ROOT-3623>, but it does not work
    in Python).
 
+============================= GaudiPython v12r7 ==============================
+! 2013-09-25 - Marco Clemencic
+ - Enforce LC_ALL=C in the GaudiPython module.
+
 ! 2013-07-19 - Marco Clemencic
  - Replaced "#ifdef linux" with "#ifdef __linux" (more reliable: Rolf Seuster
    reported that "linux" is not defined when using C++11).

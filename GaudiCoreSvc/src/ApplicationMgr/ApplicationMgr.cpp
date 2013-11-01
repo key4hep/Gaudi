@@ -61,7 +61,8 @@ ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
 
   // Instantiate component managers
   m_managers[IService::interfaceID().id()] = new ServiceManager(this);
-  m_managers[IAlgorithm::interfaceID().id()] = new AlgorithmManager(this);
+  AlgorithmManager *algMgr = new AlgorithmManager(this);
+  m_managers[IAlgorithm::interfaceID().id()] = algMgr;
 
   m_svcLocator = svcManager();
 
@@ -137,6 +138,9 @@ ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
 
   m_propertyMgr->declareProperty("ReturnCode", m_returnCode = Gaudi::ReturnCode::Success,
       "Return code of the application. Set internally in case of error conditions.");
+
+  m_propertyMgr->declareProperty("AlgTypeAliases", algMgr->typeAliases(),
+      "Aliases of algorithm types, to replace an algorithm type for every instance");
 
   // Add action handlers to the appropriate properties
   m_SIGo.declareUpdateHandler  ( &ApplicationMgr::SIGoHandler         , this );

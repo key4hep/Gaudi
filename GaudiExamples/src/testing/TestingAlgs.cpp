@@ -214,10 +214,47 @@ namespace GaudiTesting {
     SmartIF<IDataProviderSvc> m_dataProvider;
   };
 
+  class OddEventsFilter: public GaudiAlgorithm {
+  public:
+    OddEventsFilter(const std::string& name, ISvcLocator *pSvcLocator):
+      GaudiAlgorithm(name, pSvcLocator), m_counter(0)
+    {
+    }
+    StatusCode initialize() {
+      m_counter = 0;
+      return GaudiAlgorithm::initialize();
+    }
+    StatusCode execute() {
+      setFilterPassed((++m_counter) % 2);
+      return StatusCode::SUCCESS;
+    }
+  protected:
+    int m_counter;
+  };
+
+  class EvenEventsFilter: public OddEventsFilter {
+  public:
+    EvenEventsFilter(const std::string& name, ISvcLocator *pSvcLocator):
+      OddEventsFilter(name, pSvcLocator)
+    {
+    }
+    StatusCode execute() {
+      setFilterPassed(((++m_counter) % 2) == 0);
+      return StatusCode::SUCCESS;
+    }
+  };
+
+}
+
+#include "GaudiKernel/AlgFactory.h"
+
+namespace GaudiTesting {
   DECLARE_COMPONENT(DestructorCheckAlg)
   DECLARE_COMPONENT(SleepyAlg)
   DECLARE_COMPONENT(SignallingAlg)
   DECLARE_COMPONENT(StopLoopAlg)
   DECLARE_COMPONENT(CustomIncidentAlg)
   DECLARE_COMPONENT(GetDataObjectAlg)
+  DECLARE_COMPONENT(OddEventsFilter)
+  DECLARE_COMPONENT(EvenEventsFilter)
 }
