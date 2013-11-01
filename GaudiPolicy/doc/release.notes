@@ -1,6 +1,11 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-11-01 - Marco Clemencic
+ - Override the pattern reflex_dictionary because of an issue with ROOT6.
+   With ROOT 6 the '_Instantiations' dummy class used in the dictionaries
+   must have a different name in each dictionary.
+
 ! 2013-09-30 - Marco Clemencic
  - Tentatively set the environment variable TCLING_INCLUDE_PATH.
 

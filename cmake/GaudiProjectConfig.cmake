@@ -1661,6 +1661,12 @@ function(gaudi_add_dictionary dictionary header selection)
   CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS;OPTIONS" ${ARGN})
   gaudi_common_add_build(${ARG_UNPARSED_ARGUMENTS} LIBRARIES ${ARG_LIBRARIES} LINK_LIBRARIES ${ARG_LINK_LIBRARIES} INCLUDE_DIRS ${ARG_INCLUDE_DIRS})
 
+  # FIXME: With ROOT 6 the '_Instantiations' dummy class used in the
+  #        dictionaries must have a different name in each dictionary.
+  set(ARG_OPTIONS ${ARG_OPTIONS}
+      -U_Instantiations
+      -D_Instantiations=${dictionary}_Instantiations)
+
   # override the genreflex call to wrap it in the right environment
   set(ROOT_genreflex_CMD ${env_cmd} --xml ${env_xml} ${ROOT_genreflex_CMD})
 
