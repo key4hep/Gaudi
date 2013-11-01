@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2013-11-01 - Marco Clemencic
+ - Fix to reference file.
+
 ! 2013-10-24 - Marco Clemencic
  - Added TupleEx.py options and test (clone of TupleEx.opts, with different
    compression).

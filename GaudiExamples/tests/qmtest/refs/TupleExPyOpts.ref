@@ -16,7 +16,7 @@ EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
-RFileCnv             INFO opening Root file "TupleEx.root" for writing
+RFileCnv             INFO opening Root file "TupleEx.root" for writing, CompressionLevel='LZMA:6'
 RRWNTupleCnv         INFO ID 1: added branch: gauss / gauss/D
 RRWNTupleCnv         INFO ID 1: added branch: flat / flat/D
 RRWNTupleCnv         INFO ID 1: added branch: expo / expo/D
