@@ -1,6 +1,12 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2013-11-05 - Marco Clemencic
+ - Restore the old order of load of Pythonizations because the new order was
+   causing a failure in ROOT 5.
+ - Reenabled the work-around for bug ROOT-5581, renamed ROOT-5478 because it
+   fixes that problem too and it works in both ROOT 5 and ROOT 6.
+
 ! 2013-10-31 - Marco Clemencic
  - Moved the import of Pythonizations (in Bindings) after the auto-loading of
    the main dictionaries, to avoid the warnings about the order of inclusion of
