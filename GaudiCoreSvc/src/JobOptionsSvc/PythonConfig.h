@@ -22,9 +22,9 @@ private:
 // Helper class to be invoked by JobOptionsSvc 
 class PythonConfig {
 public:
-  PythonConfig(IJobOptionsSvc* jos) : 
+  PythonConfig(IJobOptionsSvc* jos) :
     m_IJobOptionsSvc(jos){};
-    StatusCode evaluateConfig(const std::string& filename, const std::string& pythonAction);
+    StatusCode evaluateConfig(const std::string& filename, const std::string& preAction, const std::string& postAction);
 private:
   SmartIF<IJobOptionsSvc> m_IJobOptionsSvc;
 };

@@ -79,6 +79,7 @@ class JobOptionsSvc : public extends2<Service, IProperty, IJobOptionsSvc> {
   std::string m_dir_search_path;
   std::string m_dump;
   std::string m_pythonAction;
+  std::string m_pythonParams;
   SvcCatalog  m_svc_catalog;
 };
 #endif /* JOBOPTIONSSVC_H_ */

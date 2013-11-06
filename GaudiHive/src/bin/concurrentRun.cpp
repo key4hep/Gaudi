@@ -21,6 +21,7 @@ int main ( int argc, char** argv )
         ("help,h", "produce help message")
         ("config", value<std::string>(), "comma separated list of python configuration files")
         ("post-option", value<std::string>(), "python command to be run after ConfigurableUser has been applied")
+        ("param", value<std::vector<std::string>>(), "parameters to the configuration file, multiple can be given")
   ;
   positional_options_description p;
   p.add("config", 1);
@@ -49,6 +50,16 @@ int main ( int argc, char** argv )
     fileName = vm["config"].as<std::string>();
   }
 
+  std::stringstream params;
+  if (0 != vm.count("param")) {
+	  std::vector<std::string> vParams = vm["param"].as<std::vector<std::string>>();
+	  std::cout << "Configuration parameters are:" << std::endl;
+	  for(std::string s : vParams){
+		  params << s << "\n";
+		  std::cout << "\t"<< s << std::endl;
+	  }
+  }
+
   std::string postAction;
   if (0 != vm.count("post-option")) {
     postAction = vm["post-option"].as<std::string>();
@@ -60,6 +71,7 @@ int main ( int argc, char** argv )
   SmartIF<IAppMgrUI> appUI  ( iface );
   propMgr->setProperty("JobOptionsType","PYTHON");
   propMgr->setProperty("JobOptionsPath",fileName); 
+  propMgr->setProperty("JobOptionsPreAction", params.str());
   propMgr->setProperty("JobOptionsPostAction", postAction); //TODO: grep this from command line
   return appUI->run();
 }
