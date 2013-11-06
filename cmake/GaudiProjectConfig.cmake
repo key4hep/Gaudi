@@ -181,6 +181,9 @@ macro(gaudi_project project version)
   #       but we need it here because the other one is meant to include also
   #       the external libraries required by the subdirectories.
   set(binary_paths)
+  
+  # paths where to find headers
+  set_property(GLOBAL PROPERTY INCLUDE_PATHS)
 
   # environment description
   set(project_environment)
@@ -360,6 +363,26 @@ macro(gaudi_project project version)
 
   # - collect environment from externals
   gaudi_external_project_environment()
+
+  # - include directories
+  get_property(include_paths GLOBAL PROPERTY INCLUDE_PATHS)
+  if(include_paths)
+    list(REMOVE_DUPLICATES include_paths)
+    # Remove system dirs
+    #list(REMOVE_ITEM include_paths /usr/include /include)
+    set(old_include_paths ${include_paths})
+    set(include_paths)
+    foreach(d ${old_include_paths})
+      if(NOT d MATCHES "^(/usr|/usr/local)?/include")
+        set(include_paths ${include_paths} ${d})
+      endif()
+    endforeach() 
+    message(STATUS "include_paths -> ${include_paths}")
+  endif()
+  foreach(_inc_dir ${include_paths})
+    set(project_environment ${project_environment}
+        PREPEND ROOT_INCLUDE_PATH ${_inc_dir})
+  endforeach()
 
   # (so far, the build and the release envirnoments are identical)
   set(project_build_environment ${project_environment})
@@ -612,6 +635,7 @@ macro(_gaudi_use_other_projects)
 ")
         endif()
         include_directories(${${other_project}_INCLUDE_DIRS})
+        set_property(GLOBAL APPEND PROPERTY INCLUDE_PATHS ${${other_project}_INCLUDE_DIRS})
         set(binary_paths ${${other_project}_BINARY_PATH} ${binary_paths})
         foreach(exported ${${other_project}_EXPORTED_SUBDIRS})
           list(FIND known_packages ${exported} is_needed)
@@ -867,6 +891,7 @@ function(include_package_directories)
         # Include the directories
         #message(STATUS "include_package_directories5 include_directories(${${to_incl}})")
         include_directories(${${to_incl}})
+        set_property(GLOBAL APPEND PROPERTY INCLUDE_PATHS ${${to_incl}})
       endif()
     endif()
   endforeach()
