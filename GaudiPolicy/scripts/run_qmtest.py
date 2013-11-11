@@ -25,6 +25,10 @@ def parseOptions(argv = None):
         opts.html_output = os.path.normpath(os.path.expandvars(os.environ.get("GAUDI_QMTEST_HTML_OUTPUT")))
     else:
         opts.html_output = None
+    if "GAUDI_QMTEST_XML_OUTPUT" in os.environ:
+        opts.xml_output = os.path.normpath(os.path.expandvars(os.environ.get("GAUDI_QMTEST_XML_OUTPUT")))
+    else:
+        opts.xml_output = None
 
     # First argument is the package name:
     if argv:
@@ -54,6 +58,10 @@ def parseOptions(argv = None):
             opts.have_user_options -= 1
         elif o in ["--html-output"]:
             opts.html_output = os.path.realpath(argv.pop(0))
+            opts.have_user_options -= 2
+        # Add xml output option
+        elif o in ["--xml-output"]:
+            opts.xml_output = os.path.realpath(argv.pop(0))
             opts.have_user_options -= 2
         else:
             opts.qmtest_args.append(o)
@@ -96,6 +104,10 @@ def main(argv = None):
             qmtest_cmd += ["--tdb", tdb]
         print "==========> Initializing QMTest database"
         os.system(" ".join(qmtest_cmd + ["create-tdb"]))
+
+    if opts.xml_output:
+        opts.qmtest_args.insert(0, '''--result-stream "GaudiTest.XMLResultStream(dir='%s',prefix='%s_')"'''
+                                   % (opts.xml_output.replace("\\","\\\\"), opts.package))
 
     if opts.html_output:
         opts.qmtest_args.insert(0, '''--result-stream "GaudiTest.HTMLResultStream(dir='%s')"'''

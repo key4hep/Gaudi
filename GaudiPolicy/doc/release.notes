@@ -1,6 +1,26 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-11-11 - Marco Clemencic
+ - Added tool CTestXML2HTML, to convert CTest-compatible XML files into web
+   pages easy to navigate.
+ - Fixed time handling in XMLResultStream (correct time zone support).
+
+! 2013-09-03 - Marco Clemencic
+ - Minor changes/fixes to the new XMLResultStream and the corresponding code in
+   run_qmtest.py.
+
+! 2013-08-29 - Kevin Win-Lime
+ - Modified GaudiTest.py to add a new result stream class called
+   XMLResultStream. This class format the QMtest output to be an CTest like
+   XML output.
+ - Modified classes.qmc to declare the new class XMLResultStream to QMTest.
+ - Modified run_qmtest.py to allow the using of this new class. There are two
+   way to use this class. You can use the option "--xml-output output_Dir"
+   or set the environment variable : "GAUDI_QMTEST_XML_OUTPUT=output_Dir"
+   where "output_Dir" is the directory where you want to see the xml files.
+   The option has the priority on the environment variable.
+
 ============================= GaudiPolicy v12r8 ==============================
 ! 2013-09-25 - Marco Clemencic
  - Changed GaudiTest.py to set LC_ALL to C, to avoid the new message from
@@ -18,7 +38,7 @@ package manager: Marco Clemencic
  - Reverted the change for icc13 to fix the build in LCG nightlies.
 
 ! 2013-08-28 - Marco Clemencic
- - Use the wrapper lcg-icpc-13 when buildin for icc13.
+ - Use the wrapper lcg-icpc-13 when building for icc13.
 
 ============================= GaudiPolicy v12r7 ==============================
 ! 2013-03-27 - Hubert Degaudenzi
