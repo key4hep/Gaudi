@@ -13,6 +13,8 @@ import tempfile
 import shutil
 import string
 import difflib
+import time
+import calendar
 from subprocess import Popen, PIPE, STDOUT
 
 # ensure the preferred locale
@@ -23,7 +25,6 @@ try:
     import xml.etree.cElementTree as ET
 except ImportError:
     import xml.etree.ElementTree as ET
-from datetime import  *
 
 # redefinition of timedelta.total_seconds() because it is not present in the 2.6 version
 def total_seconds_replacement(timedelta) :
@@ -36,7 +37,7 @@ from qm.test.result_stream import ResultStream
 
 ### Needed by the re-implementation of TimeoutExecutable
 import qm.executable
-import time, signal
+import signal
 # The classes in this module are implemented differently depending on
 # the operating system in use.
 if sys.platform == "win32":
@@ -301,22 +302,6 @@ def rationalizepath(p):
     if os.path.exists(p):
         p = os.path.realpath(p)
     return p
-
-# Timezone class
-class CEST(tzinfo):
-    def utcoffset(self,dt):
-        return timedelta(hours=1)+self.dst(dt)
-    def tzname(self,dt):
-        return "Geneva CEST"
-    def dst(self,dt):
-        return timedelta(hours=1)
-class UTC0(tzinfo):
-    def utcoffset(self,dt):
-        return timedelta(0)
-    def tzname(self,dt):
-        return "UTC0"
-    def dst(self,dt):
-        return timedelta(0)
 
 # XML Escaping character
 import re
@@ -1954,12 +1939,10 @@ class XMLResultStream(ResultStream):
         """
         ResultStream.__init__(self, arguments, **args)
 
-        self._cest = CEST()
-        self._utc0 = UTC0()
-
         self._xmlFile = os.path.join(self.dir, self.prefix + 'Test.xml')
 
         # add some global variable
+        self._startTime = None
         self._endTime = None
         # Format the XML file if it not exists
         if not os.path.isfile(self._xmlFile):
@@ -2039,6 +2022,7 @@ class XMLResultStream(ResultStream):
         else :  # We get the elements
             self._Testing = self._site.find("Testing")
             self._StartDateTime = self._Testing.find("StartDateTime")
+            self._StartTestTime = self._Testing.find("StartTestTime")
             self._TestList = self._Testing.find("TestList")
             self._EndDateTime = self._Testing.find("EndDateTime")
             self._EndTestTime = self._Testing.find("EndTestTime")
@@ -2091,21 +2075,15 @@ class XMLResultStream(ResultStream):
             haveEndDate = False
 
         # writing the start date time
-        if haveStartDate and self._StartDateTime.text is None :
-            startTime = datetime.strptime(result["qmtest.start_time"],"%Y-%m-%dT%H:%M:%SZ")
-            startTime = startTime.replace(tzinfo=self._utc0)
-            startTime = startTime.astimezone(self._cest)
-            self._StartDateTime.text =  startTime.strftime("%b %d %H:%M CEST")
-            self._StartTestTime.text = startTime.strftime('%s')
+        if haveStartDate and self._StartTestTime.text is None :
+            self._startTime = calendar.timegm(time.strptime(result["qmtest.start_time"], "%Y-%m-%dT%H:%M:%SZ"))
+            self._StartDateTime.text = time.strftime("%b %d %H:%M %Z", time.localtime(self._startTime))
+            self._StartTestTime.text = str(self._startTime)
             self._site.set("BuildStamp" , result["qmtest.start_time"] )
 
         #Save the end date time in memory
         if haveEndDate:
-            self._endTime = datetime.strptime(result["qmtest.end_time"],"%Y-%m-%dT%H:%M:%SZ")
-            self._endTime = self._endTime.replace(tzinfo=self._utc0)
-            self._endTime = self._endTime.astimezone(self._cest)
-
-
+            self._endTime = calendar.timegm(time.strptime(result["qmtest.end_time"], "%Y-%m-%dT%H:%M:%SZ"))
 
 
         #add the current test to the test list
@@ -2132,11 +2110,8 @@ class XMLResultStream(ResultStream):
 
         if haveStartDate and haveEndDate :
             # Compute the test duration
-            startTime = datetime.strptime(result["qmtest.start_time"],"%Y-%m-%dT%H:%M:%SZ")
-            startTime = startTime.replace(tzinfo=self._utc0)
-            startTime = startTime.astimezone(self._cest)
-            delta = self._endTime-startTime
-            testduration = str(total_seconds_replacement(delta))
+            delta = self._endTime - self._startTime
+            testduration = str(delta)
             Testduration= ET.SubElement(Results,"NamedMeasurement")
             Testduration.set("name","Execution Time")
             Testduration.set("type","numeric/float" )
@@ -2167,7 +2142,7 @@ class XMLResultStream(ResultStream):
         TestStartTime.set("type","String" )
         value = ET.SubElement(TestStartTime, "Value")
         if haveStartDate :
-            value.text = escape_xml_illegal_chars(startTime.strftime("%b %d %H:%M CEST %Y"))
+            value.text = escape_xml_illegal_chars(time.strftime("%b %d %H:%M %Z %Y", time.localtime(self._startTime)))
         else :
             value.text = " "
 
@@ -2176,7 +2151,7 @@ class XMLResultStream(ResultStream):
         TestEndTime.set("type","String" )
         value = ET.SubElement(TestEndTime, "Value")
         if haveStartDate :
-            value.text = escape_xml_illegal_chars(self._endTime .strftime("%b %d %H:%M CEST %Y"))
+            value.text = escape_xml_illegal_chars(time.strftime("%b %d %H:%M %Z %Y", time.localtime(self._endTime)))
         else :
             value.text = " "
 
@@ -2210,17 +2185,16 @@ class XMLResultStream(ResultStream):
 
     def Summarize(self):
 
-
         # Set the final end date time
-        self._EndDateTime.text =  self._endTime.strftime("%b %d %H:%M CEST")
-        self._EndTestTime.text = self._endTime.strftime('%s')
+        self._EndTestTime.text = str(self._endTime)
+        self._EndDateTime.text = time.strftime("%b %d %H:%M %Z", time.localtime(self._endTime))
 
         # Compute the total duration
-
-        startTime = datetime.strptime(self._StartDateTime.text,"%b %d %H:%M CEST")
-        startTime = startTime.replace(tzinfo=self._cest,year=self._endTime.year)
-        delta = self._endTime-startTime
-        self._ElapsedMinutes.text = str(total_seconds_replacement(delta)/60)
+        if self._endTime and self._startTime:
+            delta = self._endTime - self._startTime
+        else:
+            delta = 0
+        self._ElapsedMinutes.text = str(delta/60)
 
         # Write into the file
         self._tree.write(self._xmlFile, "utf-8") #,True) in python 2.7 to add the xml header

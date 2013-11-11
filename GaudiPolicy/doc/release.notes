@@ -1,6 +1,11 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-11-11 - Marco Clemencic
+ - Added tool CTestXML2HTML, to convert CTest-compatible XML files into web
+   pages easy to navigate.
+ - Fixed time handling in XMLResultStream (correct time zone support).
+
 ! 2013-09-03 - Marco Clemencic
  - Minor changes/fixes to the new XMLResultStream and the corresponding code in
    run_qmtest.py.
