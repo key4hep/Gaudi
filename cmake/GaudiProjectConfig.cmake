@@ -481,6 +481,10 @@ __path__ = [d for d in [os.path.join(d, '${packname}') for d in sys.path if d]
     add_custom_command(TARGET QMTestSummary
                        COMMAND ${env_cmd} --xml ${env_xml}
                                qmtest_summarize.py)
+    add_custom_target(HTMLSummary)
+    add_custom_command(TARGET HTMLSummary
+                       COMMAND ${env_cmd} --xml ${env_xml}
+                               CTestXML2HTML)
   endif()
 
 
