@@ -42,7 +42,6 @@ li.test.highlighted {
 /* foldable list bullets */
 li.group {
 	list-style: none;
-	margin-left: 25px;
 	cursor: pointer;
 }
 li.group>span{
@@ -52,7 +51,6 @@ li.group>span{
 li.test {
 	list-style: none;
 	margin-left: 0px;
-
 }
 /* foldable list bullets */
 ul.fieldid > li.foldable{
@@ -60,7 +58,7 @@ ul.fieldid > li.foldable{
 	margin-left: 0px;
 }
 
-ul.groupContainer {
+ul.topGroup {
 	padding: 0px;
 }
 

@@ -89,7 +89,7 @@ class TestOrganizer :
                 a link to each test
         @param fileName: The name of the file where the html will be stored
         """
-        self._root = ET.Element("ul",{"linkreference":linkreference,"class":"groupContainer"})
+        self._root = ET.Element("ul",{"linkreference":linkreference,"class":"topGroup"})
         self.tree = ET.ElementTree(self._root)
         self.seeker = self.elementSeeker()
         self.fileName = fileName
@@ -412,7 +412,7 @@ def updateAnnotations(site,Testing,outputTemp,annotationsList):
             annotations["start_ts"] = startTimeNew
         # update the end time
         endTimeOld = int(annotations["end_ts"])
-        endTimeNew = int(Testing.find("EndTestTime").text)
+        endTimeNew = int(Testing.find("EndTestTime").text or '0')
         delta = endTimeOld - endTimeNew
         if endTimeOld < endTimeNew:
             annotations["end_time"] = time.strftime("%b %d %H:%M %Z", time.localtime(endTimeNew))
