@@ -2075,11 +2075,12 @@ class XMLResultStream(ResultStream):
             haveEndDate = False
 
         # writing the start date time
-        if haveStartDate and self._StartTestTime.text is None :
+        if haveStartDate:
             self._startTime = calendar.timegm(time.strptime(result["qmtest.start_time"], "%Y-%m-%dT%H:%M:%SZ"))
-            self._StartDateTime.text = time.strftime("%b %d %H:%M %Z", time.localtime(self._startTime))
-            self._StartTestTime.text = str(self._startTime)
-            self._site.set("BuildStamp" , result["qmtest.start_time"] )
+            if self._StartTestTime.text is None:
+                self._StartDateTime.text = time.strftime("%b %d %H:%M %Z", time.localtime(self._startTime))
+                self._StartTestTime.text = str(self._startTime)
+                self._site.set("BuildStamp" , result["qmtest.start_time"] )
 
         #Save the end date time in memory
         if haveEndDate:
@@ -2108,7 +2109,7 @@ class XMLResultStream(ResultStream):
         # add the test after the other test
         self._Testing.insert(3,Test)
 
-        if haveStartDate and haveEndDate :
+        if haveStartDate and haveEndDate:
             # Compute the test duration
             delta = self._endTime - self._startTime
             testduration = str(delta)
@@ -2118,14 +2119,10 @@ class XMLResultStream(ResultStream):
             value = ET.SubElement(Testduration, "Value")
             value.text = testduration
 
-        #remove the fields that have been already written
-        if "qmtest.end_time" in summary["fields"] :
-            summary["fields"].remove("qmtest.end_time")
-        if "qmtest.start_time" in summary["fields"] :
-            summary["fields"].remove("qmtest.start_time")
-        # remove the stdout for the end
-        if "ExecTest.stdout" in summary["fields"] :
-            summary["fields"].remove("ExecTest.stdout")
+        #remove the fields that we store in a different way
+        for n in ("qmtest.end_time", "qmtest.start_time", "qmtest.cause", "ExecTest.stdout"):
+            if n in summary["fields"]:
+                summary["fields"].remove(n)
 
         # Here we can add some NamedMeasurment which we know the type
         #
@@ -2144,7 +2141,7 @@ class XMLResultStream(ResultStream):
         if haveStartDate :
             value.text = escape_xml_illegal_chars(time.strftime("%b %d %H:%M %Z %Y", time.localtime(self._startTime)))
         else :
-            value.text = " "
+            value.text = ""
 
         TestEndTime= ET.SubElement(Results,"NamedMeasurement")
         TestEndTime.set("name","End_Time")
@@ -2153,8 +2150,14 @@ class XMLResultStream(ResultStream):
         if haveStartDate :
             value.text = escape_xml_illegal_chars(time.strftime("%b %d %H:%M %Z %Y", time.localtime(self._endTime)))
         else :
-            value.text = " "
+            value.text = ""
 
+        if summary["cause"]:
+            FailureCause= ET.SubElement(Results,"NamedMeasurement")
+            FailureCause.set("name", "Cause")
+            FailureCause.set("type", "String" )
+            value = ET.SubElement(FailureCause, "Value")
+            value.text = escape_xml_illegal_chars(summary["cause"])
 
         #Fill the result
         fields = {}

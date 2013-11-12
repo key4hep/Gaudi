@@ -170,7 +170,7 @@ class TestOrganizer :
         element.set("linkreference",father.get("linkreference")+"/"+cleanBrackets(sonName)+str(fatherLevel))
         subSpan = ET.SubElement(element, "span", {"class":"clickable folded"})
         subImg = ET.SubElement(subSpan, "img", {"src":"plus.png"})
-        subImg.text = sonName+" : "
+        subImg.text = sonName+": "
 
         return element
 
@@ -193,15 +193,15 @@ class TestOrganizer :
         # Prepare the test
         span = ET.Element("span")#,{"index":cleanBrackets(testName.lower())})
 
-        # direct link
-        link = ET.SubElement(span, "a", { "style":"float:left;", "href": father.get("linkreference")+"//"+cleanBrackets(testName)})
-        ET.SubElement(link, "img", {"title":"Direct link to the test","src":"link.png"})
-
         #test
         li = ET.SubElement(span, "li", {"class":"test foldable"})
         span2 = ET.SubElement(li, "span", {"class":"clickable folded"})
         ET.SubElement(span2, "img", {"src":"plus.png"})
         ET.SubElement(span2, "span", { "id":cleanBrackets(testName), "class":"testid"}).text = testName+": "
+
+        # direct link
+        link = ET.SubElement(li, "a", {"class": "permalink", "href": father.get("linkreference")+"//"+cleanBrackets(testName)})
+        ET.SubElement(link, "img", {"title":"Direct link to the test","src":"link.png"})
 
         status = testElement.get("Status")
         if status in self.status :
@@ -209,7 +209,7 @@ class TestOrganizer :
         else :
             status = cleanSpace(cleanWebChar(status))
 
-        ET.SubElement(span2, "span", {"class":status}).text = status
+        ET.SubElement(span2, "span", {"class":status}).text = status + " "
 
         # add status in groups
         groups = self._groups
@@ -221,25 +221,31 @@ class TestOrganizer :
                 groups[adr]["Statistics"][status] += 1
                 groups = groups[adr]
         # field container
-        ul = ET.SubElement(li, "ul", {"class":"fieldid","testName":completeTestName, "style":"display: none;"})
+        ul = ET.SubElement(li, "ul", {"class":"fieldid", "testName":completeTestName, "style":"display: none;"})
 
         self._addField(ul,"start_time")
         self._addField(ul,"end_time")
 
         # find the well position
         index = bisect.bisect(testList, completeTestName.lower())
-        testList.insert(index,completeTestName.lower())
+        testList.insert(index, completeTestName.lower())
 
         #insert the test
-        container.insert(index,span)
+        container.insert(index, span)
 
         for namedMeasurment in testElement.find("Results").getiterator("NamedMeasurement"):
-            fieldName = cleanSpace(cleanWebChar(namedMeasurment.get("name"))).lower()
-            if fieldName == "end_time" or  fieldName == "start_time" or fieldName == "qmtest.cause" or  fieldName == "qmtest.target":
+            name = namedMeasurment.get("name")
+            if name == 'Cause':
+                cause = namedMeasurment.find("Value")
+                if cause is not None:
+                    ET.SubElement(span2, "span", {"class": "cause"}).text = cause.text + " "
+                continue
+            fieldName = cleanSpace(cleanWebChar(name)).lower()
+            if fieldName in ('end_time', 'start_time', 'qmtest.cause', 'qmtest.target'):
                 continue
             self._addField(ul, fieldName)
 
-        self._addField(ul,"stdout")
+        self._addField(ul, "stdout")
 
     def _addField(self,parent,fieldName):
         """ Add a html fiel to a test.
@@ -310,7 +316,7 @@ class TestOrganizer :
         else :
             sites = newdataset.getchildren()
         for site in sites :
-            print "    -> Process the site : "+site.get("BuildStamp")
+            print "    -> Process the site: "+site.get("BuildStamp")
             Testing = site.find("Testing")
             # process each test case
             for Test in Testing.findall("Test") :
@@ -402,14 +408,14 @@ def updateAnnotations(site,Testing,outputTemp,annotationsList):
         startTimeOld = annotations["start_ts"]
         startTimeNew = time.gmtime(int(Testing.find("StartTestTime").text))
         if startTimeNew < startTimeOld:
-            annotations["start_time"] = time.strftime("%b %d %H:%M %Z", localtime(startTimeNew))
+            annotations["start_time"] = time.strftime("%b %d %H:%M %Z", time.localtime(startTimeNew))
             annotations["start_ts"] = startTimeNew
         # update the end time
         endTimeOld = int(annotations["end_ts"])
         endTimeNew = int(Testing.find("EndTestTime").text)
         delta = endTimeOld - endTimeNew
         if endTimeOld < endTimeNew:
-            annotations["end_time"] = time.strftime("%b %d %H:%M %Z", localtime(endTimeNew))
+            annotations["end_time"] = time.strftime("%b %d %H:%M %Z", time.localtime(endTimeNew))
             annotations["end_ts"] = endTimeNew
         # adding the generator if new
         if site.get("Generator") not in annotations["version"]:
@@ -442,18 +448,21 @@ def main():
 
     # parse the command line option
     usage = "usage: %prog [options] Convert CTest like XML into a webpage"
-    epilog = """ Author : Win-Lime Kevin
-     kevin.win-lime@telecom-bretagne.eu
-     Wrote the 22/08/13."""
+    epilog = "Author: Win-Lime Kevin <kevin.win-lime@telecom-bretagne.eu> (22/08/13)."
     parser = OptionParser(usage=usage,epilog=epilog)
-    parser.add_option("-i", "--inputFile", action = "store" ,dest="inputFile",
-                      help="read the inputFile", metavar="FILE")
-    parser.add_option("-d", "--inputDirectory", action = "store" ,dest="inputDirectory",
-                      help="read all files ended by Test.xml in the input directory. The default value is the active directory", metavar="DIRECTORY")
-    parser.add_option("-o", "--outputDirectory",
-                      dest="outputDirectory",default="html",
-                      help="Write the result to the output directory. The default value is ./html/",metavar="DIRECTORY")
+    parser.add_option("-i", "--inputFile", action = "store", metavar="FILE",
+                      help="read the inputFile")
+    parser.add_option("-d", "--inputDirectory", action = "store",
+                      metavar="DIRECTORY",
+                      help="read all files ended by Test.xml in the input "
+                           "directory. The default value is the active "
+                           "directory")
+    parser.add_option("-o", "--outputDirectory", action = "store",
+                      metavar="DIRECTORY",
+                      help="Write the result to the output directory. The "
+                           "default value is ./html/")
 
+    parser.set_defaults(inputDirectory='.', outputDirectory='html')
     (options, args) = parser.parse_args()
 
     # verify the input file
@@ -464,14 +473,10 @@ def main():
             exit(1)
         else :
             inputs.append(options.inputFile)
-    directory = "."
     # verify the input directory and search in it for Test.xml file.
     # only if there is no filename specified. by default, the program search all the file in its (sub)directirie
-    if inputs ==  [] :
-        if options.inputDirectory is not None :
-            if os.path.isdir(options.inputDirectory) :
-                directory = options.inputDirectory
-        for r,d,f in os.walk(directory) :
+    if not inputs:
+        for r,d,f in os.walk(options.inputDirectory) :
             for files in f:
                 if files.endswith("Test.xml"):
                     inputs.append(os.path.join(r,files))
@@ -481,7 +486,7 @@ def main():
         print " No file found \n"
         exit()
 
-    print "The conversion is starting"
+    print "Converting *Test.xml files from %s to HTML format in %s" % (options.inputDirectory, options.outputDirectory)
     # verify or create the output directory
     output = options.outputDirectory
     if not os.path.isdir(output) :
@@ -586,7 +591,7 @@ def main():
                 for NamedMeasurement in Results.getiterator("NamedMeasurement") :
 
                     summary["fields"].append(cleanSpace(cleanWebChar(NamedMeasurement.get("name"))))  # remove the space character
-                    if NamedMeasurement.get("name") == "Fail Reason" : # or NamedMeasurement.get("name") == "Pass Reason" :
+                    if NamedMeasurement.get("name") == "Cause" : # or NamedMeasurement.get("name") == "Pass Reason" :
                         if NamedMeasurement.find("Value") is not None and NamedMeasurement.find("Value").text is not None :
                             summary["cause"] = cleanWebChar(NamedMeasurement.find("Value").text)
 

@@ -1,24 +1,24 @@
 /* Coloring of results */
 .PASS {
-color: green;
+	color: green;
 }
 .FAIL, .ERROR {
-color: red;
+	color: red;
 }
 .UNTESTED, .SKIPPED {
-color: orange;
+	color: orange;
 }
 
 .testid {
-color: blue;
+	color: blue;
 }
 .testid:hover {
-color: red;
+	color: red;
 }
 
 .results .cause {
-color: gray;
-font-size: small;
+	color: gray;
+	font-size: small;
 }
 
 /* ** Cursor feedback ** */
@@ -35,16 +35,15 @@ li.test>.clickable:hover {
 	color: red;
 }
 li.test.highlighted {
-	border-style:solid;
-	border-color:gray;
-
+	border-style: solid;
+	border-color: gray;
 }
 
 /* foldable list bullets */
 li.group {
-  	list-style: none;
-  	margin-left:25px;
-  	cursor: pointer;
+	list-style: none;
+	margin-left: 25px;
+	cursor: pointer;
 }
 li.group>span{
 	color:black;
@@ -52,34 +51,44 @@ li.group>span{
 /* foldable list bullets */
 li.test {
 	list-style: none;
-	margin-left:0px;
+	margin-left: 0px;
 
 }
 /* foldable list bullets */
-ul.fieldid>li.foldable{
-  list-style: none;
-  margin-left:0px;
+ul.fieldid > li.foldable{
+	list-style: none;
+	margin-left: 0px;
 }
-ul.testContainer ,ul.groupContainer {
-	padding:0px;
 
+ul.groupContainer {
+	padding: 0px;
 }
 
 #main{
-padding-left:31px;
+	padding-left: 31px;
+	margin-left: 31px;
 }
 
 section#content{
-width:25px;
-min-height:20px;
-
+	width: 25px;
+	min-height: 20px;
 }
 
 
 .display{
-	color:blue;
+	color: blue;
 	cursor: pointer;
 }
 .display:hover{
-    color:red;
+	color: red;
+}
+
+.ui-menu {
+	width: 150px;
+	position: fixed;
+}
+
+#image_sommaire {
+	display: run-in;
+	position: fixed;
 }
