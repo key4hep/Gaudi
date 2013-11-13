@@ -4,6 +4,10 @@
 ! Purpose     : Root based persistency
 !-----------------------------------------------------------------------------
 
+! 2013-11-13 - Marco Clemencic
+ - Removed work-around for the autoloading problem.
+ - Made PoolClasses.h a public header (needed for relocatability of dictionaries).
+
 ! 2013-10-03 - Marco Clemencic
  - Work-around for ROOT 6 autoloading problem (genreflex rootmap is incomplete).
 

@@ -701,7 +701,7 @@ StatusCode RootNTupleCnv::fillRepRefs(IOpaqueAddress* pAddr, DataObject* pObj)  
 }
 
 #ifdef __POOL_COMPATIBILITY
-#include "PoolClasses.h"
+#include "RootCnv/PoolClasses.h"
 
 // Compatibility code to access ETCs, which were written using POOL
 
