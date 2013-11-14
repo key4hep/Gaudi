@@ -332,7 +332,7 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
   // DP Monitoring
   // Calculate runtime
   auto start_time = tbb::tick_count::now();
-  auto secsFromStart = [&start_time]()->double{
+  auto secsFromStart = [](tbb::tick_count start_time)->double{
     return (tbb::tick_count::now()-start_time).seconds();
   };
   const float oneOver1204 = 1.f/1024.f;
@@ -346,9 +346,12 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
   // if evtmax is -1 it means infinite loop
   for( int nevt = 0; (maxevt == -1 ? true : nevt < maxevt);  nevt++, total_nevt++) {
 
+	  if(1 == nevt) // reset after first evt
+		  start_time = tbb::tick_count::now();
+
     always() << "Event Number = " << total_nevt
              << " WSS (MB) = " << System::mappedMemory(System::MemoryUnit::kByte)*oneOver1204
-             << " Time (s) = " << secsFromStart() << endmsg;
+             << " Time (s) = " << secsFromStart(start_time) << endmsg;
 
     
     // Check if there is a scheduled stop issued by some algorithm/service
@@ -408,7 +411,9 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
     }
   }
 
-  always() << "---> Loop Finished (seconds): " << secsFromStart() <<endmsg;
+  info() << "---> Loop Finished (skipping 1st evt) - "
+           << " WSS " << System::mappedMemory(System::MemoryUnit::kByte)*oneOver1204
+           << " total time " << secsFromStart(start_time) <<endmsg;
   
   return StatusCode::SUCCESS;
 }
