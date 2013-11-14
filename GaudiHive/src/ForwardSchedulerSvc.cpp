@@ -312,10 +312,10 @@ StatusCode ForwardSchedulerSvc::pushNewEvent(EventContext* eventContext){
       info() << "Skipping event " << eventContext->m_evt_num << endmsg;
       eventContext->m_evt_failed=false;
       m_finishedEvents.push(eventContext);
-      m_freeSlots--;
+      m_freeSlots--; //fake instantaneous processing of event
       return StatusCode::SUCCESS;
     }
-
+  //no problem as push new event is only called from one thread (event loop manager)
   m_freeSlots--;
 
   auto action = [this,eventContext] () -> StatusCode {
