@@ -94,6 +94,8 @@ StatusCode SequentialSchedulerSvc::pushNewEvent(EventContext* eventContext){
                             StatusCode::FAILURE);
     }
 
+    debug() << "Running algorithm " << this_algo->name() << endmsg;
+
     m_eventContext->m_thread_id = pthread_self();  
     this_algo->setContext(m_eventContext);
     
@@ -122,6 +124,9 @@ StatusCode SequentialSchedulerSvc::pushNewEvent(EventContext* eventContext){
       fatal() << ".executeEvent(): UNKNOWN Exception thrown by "
               << ialgorithm->name() << endmsg;
     }  
+
+    debug() << "Algorithm " << this_algo->name() << (eventfailed ? " failed" : " succeeded") << endmsg;
+    debug() << "Algorithm " << this_algo->name() << (this_algo->filterPassed() ? " passed" : " rejected") << endmsg;
 
     // DP it is important to propagate the failure of an event.
     // We need to stop execution when this happens so that execute run can 
