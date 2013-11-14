@@ -444,7 +444,9 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
 
   constexpr double oneOver1204 = 1./1024.;
   
+  uint iteration = 0;
   while ( !loop_ended and (maxevt < 0 or finishedEvts < maxevt)){
+	  debug() << "work loop iteration " << iteration++ << endmsg;
     // if the created events did not reach maxevt, create an event    
     if ((newEvtAllowed or createdEvts == 0 ) && // Launch the first event alone
         createdEvts >= 0 && // The events are not finished with an unlimited number of events
