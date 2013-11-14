@@ -80,7 +80,7 @@ StatusCode AlgResourcePool::start(){
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm*& algo){
+StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm*& algo, bool blocking){
 
   std::hash<std::string> hash_function;
   size_t algo_id = hash_function(name);
@@ -92,7 +92,17 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
     return StatusCode::FAILURE;
   }
 
-  StatusCode sc = m_algqueue_map[algo_id]->try_pop(algo); //TODO: check for existence
+  StatusCode sc;
+  if(blocking){
+	  m_algqueue_map[algo_id]->pop(algo);
+  	  sc = StatusCode::SUCCESS;
+  }  else {
+	  sc = m_algqueue_map[algo_id]->try_pop(algo);
+  }
+
+  if(sc.isFailure())
+	  error() << "No instance of algorithm " << name << " could be retrieved" << endmsg;
+
   //  if (m_lazyCreation ) {
   // TODO: fill the lazyCreation part
   //}
@@ -104,6 +114,7 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
       m_available_resources^=requirements;
     } else{
       sc = StatusCode::FAILURE;
+      error() << "Failure to allocate resources of algorithm " << name << endmsg;
       m_algqueue_map[algo_id]->push(algo);
     }
     m_resource_mutex.unlock();
@@ -114,13 +125,17 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
 //---------------------------------------------------------------------------
 
 StatusCode AlgResourcePool::releaseAlgorithm(const std::string& name, IAlgorithm*& algo){
+
   std::hash<std::string> hash_function;
   size_t algo_id = hash_function(name);
-  m_algqueue_map[algo_id]->push(algo);
-  // finally release resources used by the algorithm
+
+  // release resources used by the algorithm
   m_resource_mutex.lock();
   m_available_resources|= m_resource_requirements[algo_id];
   m_resource_mutex.unlock();
+
+  //release algorithm itself
+  m_algqueue_map[algo_id]->push(algo);
   return StatusCode::SUCCESS;
  }
 
@@ -265,7 +280,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
     const std::string& item_type = algo->type();
 
     size_t algo_id = hash_function(item_name);
-    tbb::concurrent_queue<IAlgorithm*>* queue = new tbb::concurrent_queue<IAlgorithm*>();
+    concurrentQueueIAlgPtr* queue = new concurrentQueueIAlgPtr();
     m_algqueue_map[algo_id] = queue;
 
     // DP TODO Do it properly with SmartIFs, also in the queues

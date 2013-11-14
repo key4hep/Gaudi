@@ -41,7 +41,7 @@ public:
   virtual StatusCode start();
   virtual StatusCode initialize();
   /// Acquire a certain algorithm using its name 
-  virtual StatusCode acquireAlgorithm(const std::string& name, IAlgorithm*& algo);
+  virtual StatusCode acquireAlgorithm(const std::string& name, IAlgorithm*& algo, bool blocking = false);
   /// Release a certain algorithm 
   virtual StatusCode releaseAlgorithm(const std::string& name, IAlgorithm*& algo);
   /// Acquire a certain resource
@@ -60,7 +60,7 @@ public:
   virtual unsigned int getControlFlowNodeCounter() const {return m_nodeCounter;}
   
 private:
-  typedef tbb::concurrent_queue<IAlgorithm*> concurrentQueueIAlgPtr;
+  typedef tbb::concurrent_bounded_queue<IAlgorithm*> concurrentQueueIAlgPtr;
   typedef std::list<SmartIF<IAlgorithm> > ListAlg;
   typedef boost::dynamic_bitset<> state_type;
   

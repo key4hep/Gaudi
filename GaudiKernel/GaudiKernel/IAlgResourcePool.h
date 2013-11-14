@@ -30,7 +30,7 @@ public:
   DeclareInterfaceID(IAlgResourcePool,1,0);
 
   /// Acquire a certain algorithm using its name 
-  virtual StatusCode acquireAlgorithm(const std::string& name,IAlgorithm*& algo) = 0;
+  virtual StatusCode acquireAlgorithm(const std::string& name,IAlgorithm*& algo, bool blocking = false) = 0;
   /// Release a certain algorithm 
   virtual StatusCode releaseAlgorithm(const std::string& name, IAlgorithm*& algo) = 0;
 
