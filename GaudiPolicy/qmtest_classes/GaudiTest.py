@@ -336,7 +336,10 @@ class BasicOutputValidator:
 
         # The "splitlines" method works independently of the line ending
         # convention in use.
-        return s1.splitlines() == s2.splitlines()
+        # FIXME: (MCl) Work-around for ROOT-5694 <https://sft.its.cern.ch/jira/browse/ROOT-5694>
+        to_ignore = re.compile(r'Warning in <TClassTable::Add>: class .* already in TClassTable')
+        keep_line = lambda l: not to_ignore.match(l)
+        return filter(keep_line, s1.splitlines()) == filter(keep_line, s2.splitlines())
 
 class FilePreprocessor:
     """ Base class for a callable that takes a file and returns a modified
@@ -507,6 +510,8 @@ normalizeExamples = LineSkipper(["//GP:",
                                  r"SUCCESS\s*Booked \d+ Histogram\(s\)",
                                  r"^ \|",
                                  r"^ ID=",
+                                 # FIXME: (MCl) Work-around for ROOT-5694 <https://sft.its.cern.ch/jira/browse/ROOT-5694>
+                                 r'Warning in <TClassTable::Add>: class .* already in TClassTable',
                                  ] ) + normalizeExamples + skipEmptyLines + \
                                   normalizeEOL + \
                                   LineSorter("Services to release : ")

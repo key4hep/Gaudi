@@ -1,6 +1,11 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-11-15 - Marco Clemencic
+ - Ignore warning about classes already in TClassTable in the tests while
+   ROOT-5694 is being fixed.
+   See https://sft.its.cern.ch/jira/browse/ROOT-5694
+
 ! 2013-11-01 - Marco Clemencic
  - Override the pattern reflex_dictionary because of an issue with ROOT6.
    With ROOT 6 the '_Instantiations' dummy class used in the dictionaries
