@@ -4,6 +4,11 @@
 ! Purpose     : Root based persistency
 !-----------------------------------------------------------------------------
 
+! 2013-11-15 - Marco Clemencic
+ - Made the data member of pool::Token transient (it was implicit in ROOT 5, but
+   must be explicit in ROOT 6).
+   See https://sft.its.cern.ch/jira/browse/ROOT-5700
+
 ! 2013-11-13 - Marco Clemencic
  - Removed work-around for the autoloading problem.
  - Made PoolClasses.h a public header (needed for relocatability of dictionaries).
