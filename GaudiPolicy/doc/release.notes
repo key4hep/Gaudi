@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-11-18 - Marco Clemencic
+ - Minor change in GaudiTest to absorb a change in a debug message.
+
 ============================= GaudiPolicy-13-00-00 =========================
 ! 2013-08-30 - Charles Leggett
  - retag for Atlas merge
