@@ -22,7 +22,7 @@ ApplicationMgr      DEBUG Getting my own properties[m
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v1r4)
-                                          running on pclhcb117 on Mon Jun 24 09:53:56 2013
+                                          running on pclhcb117 on Mon Nov 18 11:32:12 2013
 ====================================================================================================================================[m
 ApplicationMgr       INFO Application Manager Configured successfully[m
 ServiceManager      DEBUG Initializing service StatusCodeSvc[m
@@ -118,9 +118,6 @@ ServiceManager      DEBUG Stopping service IncidentSvc[m
 ServiceManager      DEBUG Stopping service AppMgrRunable[m
 ServiceManager      DEBUG Stopping service StatusCodeSvc[m
 ApplicationMgr       INFO Application Manager Stopped successfully[m
-ServiceManager      DEBUG Finalizing service HistorySvc[m
-HistorySvc        VERBOSE HistorySvc::finalize()[m
-HistorySvc           INFO Service finalised successfully[m
 ServiceManager      DEBUG Finalizing service EventLoopMgr[m
 IncidentSvc         DEBUG Removing [AbortEvent] listener '<unknown>'[m
 EventLoopMgr         INFO Histograms converted successfully according to request.[m
@@ -138,11 +135,15 @@ IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0(+-0)/0/0[ms] T
 ServiceManager      DEBUG Finalizing service AppMgrRunable[m
 ServiceManager      DEBUG Finalizing service HistogramDataSvc[m
 ServiceManager      DEBUG Finalizing service HistogramPersistencySvc[m
+ServiceManager      DEBUG Finalizing service HistorySvc[m
+HistorySvc        VERBOSE HistorySvc::finalize()[m
+HistorySvc           INFO Service finalised successfully[m
 ServiceManager      DEBUG Finalizing service StatusCodeSvc[m
-ServiceManager      DEBUG Service reference count check:[m
+ServiceManager      DEBUG Looping over all active services...[m
 ServiceManager      DEBUG ---- StatusCodeSvc (refCount = 3)[m
 ServiceManager      DEBUG ---- MessageSvc (refCount = 15)[m
 ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 4)[m
+ServiceManager      DEBUG ---- HistorySvc (refCount = 4)[m
 ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 3)[m
 ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 4)[m
 ServiceManager      DEBUG ---- AppMgrRunable (refCount = 4)[m
@@ -152,6 +153,5 @@ ServiceManager      DEBUG ---- EventDataSvc (refCount = 4)[m
 ServiceManager      DEBUG ---- AlgContextSvc (refCount = 4)[m
 ServiceManager      DEBUG ---- ToolSvc (refCount = 4)[m
 ServiceManager      DEBUG ---- EventLoopMgr (refCount = 4)[m
-ServiceManager      DEBUG ---- HistorySvc (refCount = 4)[m
 ApplicationMgr       INFO Application Manager Finalized successfully[m
 ApplicationMgr       INFO Application Manager Terminated successfully[m

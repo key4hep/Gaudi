@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2013-11-18 - Marco Clemencic
+ - Updated reference files.
+
 ============================ GaudiExamples-24-00-00 ========================
 ! 2013-08-30 - Charles Leggett
  - retag for Atlas merge
