@@ -149,7 +149,7 @@ StatusCode ServiceManager::addService(const Gaudi::Utils::TypeNameString& typeNa
     }
   } else {
     // if the service is already known, it is equivalent to a setPriority
-    it->priority = prio; 
+    it->priority = prio;
   }
   // 'it' is defined because either we found the service or we created it
   // Now we can activate the service
@@ -438,57 +438,52 @@ StatusCode ServiceManager::finalize()
 
   m_listsvc.sort(); // ensure that the list is ordered by priority
   // dump();
-  // we work on a copy to avoid to operate twice on the services created on demand
-  // (which are already in the correct state).
-  ListSvc tmpList(m_listsvc);
 
   StatusCode sc(StatusCode::SUCCESS, true);
-  // call finalize() for all services in reverse order
-  ListSvc::reverse_iterator rit;
-  for (rit = tmpList.rbegin(); rit != tmpList.rend(); ++rit ) {
-    if (!rit->active) continue; // only act on active services
-    const std::string& name = rit->service->name();
-    // ignore the current state for the moment
-    // if( Gaudi::StateMachine::INITIALIZED == rit->service->state() ) {
-    DEBMSG << "Finalizing service " << name << endmsg;
-    if ( !(rit->service->sysFinalize()).isSuccess() ) {
-      warning() << "Finalization of service " << name << " failed" << endmsg;
-      sc = StatusCode::FAILURE;
+  {
+    // we work on a copy to avoid to operate twice on the services created on demand
+    // (which are already in the correct state).
+    ListSvc tmpList(m_listsvc);
+
+    // call finalize() for all services in reverse order
+    ListSvc::reverse_iterator rit;
+    for (rit = tmpList.rbegin(); rit != tmpList.rend(); ++rit ) {
+      if (!rit->active) continue; // only act on active services
+      const std::string& name = rit->service->name();
+      // ignore the current state for the moment
+      // if( Gaudi::StateMachine::INITIALIZED == rit->service->state() ) {
+      DEBMSG << "Finalizing service " << name << endmsg;
+      if ( !(rit->service->sysFinalize()).isSuccess() ) {
+        warning() << "Finalization of service " << name << " failed" << endmsg;
+        sc = StatusCode::FAILURE;
+      }
     }
-  }
-  DEBMSG << "Service reference count check:" << endmsg;
-  ListSvc::iterator it;
-  while (!tmpList.empty()) {
-    it = tmpList.begin();
-    const std::string& name = it->service->name();
-    const unsigned long rc = it->service->refCount() - 1; // exclude the count due to the temporary list
-    DEBMSG << "---- " << name
-           << " (refCount = " << rc << ")" << endmsg;
-    if (rc < 1) {
-      warning() << "Too low reference count for " << name
-                << " (should not go below 1 at this point)" << endmsg;
-      it->service->addRef();
-    }
-    tmpList.pop_front();
   }
 
   // call SvcPostFinalize on all clients
-  std::vector<IIncidentListener*>::iterator itr;
-  Incident inc("ServiceManager",IncidentType::SvcPostFinalize);
-  DEBMSG << "will call SvcPostFinalize for " << postFinList.size() << " clients"
-	 << endmsg;
-  for (itr = postFinList.begin(); itr != postFinList.end(); ++itr) {
-    (*itr)->handle(inc);
-  }  
+  if (!postFinList.empty()) {
+    DEBMSG << "Will call SvcPostFinalize for " << postFinList.size() << " clients"
+           << endmsg;
+    Incident inc("ServiceManager", IncidentType::SvcPostFinalize);
+    std::vector<IIncidentListener*>::iterator itr;
+    for (itr = postFinList.begin(); itr != postFinList.end(); ++itr) {
+      (*itr)->handle(inc);
+    }
+  }
 
   // loop over all Active Services, removing them one by one.
   // They should be deleted because the reference counting goes to 0.
-  DEBMSG << "looping over all active services..." << endmsg;
-  it = m_listsvc.begin();
+  DEBMSG << "Looping over all active services..." << endmsg;
+  ListSvc::iterator it = m_listsvc.begin();
   while (it != m_listsvc.end()) {
-    DEBMSG << " - [" << it->service->name()
-	   << "] ref-count [" << it->service->refCount() << "]" 
+    DEBMSG << "---- " << it->service->name()
+	   << " (refCount = " << it->service->refCount() << ")"
 	   << endmsg;
+    if (it->service->refCount() < 1) {
+      warning() << "Too low reference count for " << it->service->name()
+                << " (should not go below 1 at this point)" << endmsg;
+      it->service->addRef();
+    }
     if (it->active) {
       it = m_listsvc.erase(it);
     } else {
@@ -496,7 +491,7 @@ StatusCode ServiceManager::finalize()
     }
   }
 
-  return sc ;
+  return sc;
 }
 
 
