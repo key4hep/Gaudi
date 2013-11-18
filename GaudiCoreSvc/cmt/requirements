@@ -3,7 +3,7 @@
 # Maintainer : Marco Clemencic
 # ============================================================================
 package    GaudiCoreSvc
-version    v1r6
+version    v2r0
 
 # ============================================================================
 # Structure, i.e. directories to process.

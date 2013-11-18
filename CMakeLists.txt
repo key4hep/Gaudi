@@ -12,7 +12,7 @@ find_package(GaudiProject)
 #---------------------------------------------------------------
 
 # Declare project name and version
-gaudi_project(Gaudi v23r10)
+gaudi_project(Gaudi v24r0)
 
 # This test does not really fit in a subdirectory.
 gaudi_add_test(cmake.EnvConfigTests
