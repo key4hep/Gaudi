@@ -1,5 +1,5 @@
 package GaudiPolicy
-version v12r8
+version v13r1
 
 branches cmt doc
 
@@ -531,13 +531,14 @@ make_fragment sln_dependency_trailer
 
 # C++
 # The cpp fragments for enhanced computation of dependencies are not available on Windows
-# and must be disabled on CMT v1r25 (we use the built-in version).
-macro cpp_fragment "cpp" target-winxp "" CMTv1&CMTr25 ""
+# and must be disabled on CMT v1r25, and later (we use the built-in version).
+macro cpp_fragment "cpp" target-winxp "" CMTv1&CMTr25 "" CMTv1&CMTr26 ""
 make_fragment $(cpp_fragment)
-macro cpp_library_fragment "cpp_library" target-winxp "" CMTv1&CMTr25 ""
+macro cpp_library_fragment "cpp_library" target-winxp "" CMTv1&CMTr25 "" CMTv1&CMTr26 ""
 make_fragment $(cpp_library_fragment)
 
 tag CMTv1&CMTr25 c_native_dependencies cpp_native_dependencies
+tag CMTv1&CMTr26 c_native_dependencies cpp_native_dependencies
 
 macro cmt_compiler_version "${cmt_compiler_version}" \
               target-gcc43 "gcc43"
@@ -590,6 +591,7 @@ macro lib_no_static_fragment "" \
        CMTp20070208&target-winxp "library_no_static" \
        CMTp20090520&target-winxp "library_no_static" \
        CMTr20&target-unix "" \
+       CMTr26&target-unix "" \
        target-unix "library_no_static"
 make_fragment $(lib_no_static_fragment)
 
@@ -1031,15 +1033,22 @@ macro genconfig_configurableAlgTool "ConfigurableAlgTool"
 macro genconfig_configurableAuditor "ConfigurableAuditor"
 macro genconfig_configurableService "ConfigurableService"
 
+
+## add pattern and macro for importing extra python modules into genconf's output
+macro genconfig_extraModules ""
+pattern genconfig_add_extraModules \
+   apply_pattern declare_python_modules files=<extraModules>.py ; \
+   macro_append genconfig_extraModules "" \
+        <tag> "--user-module=<package>.<extraModules> "
+
+
 ## add pattern and macro for library preloading for genconf
-
 macro genconfig_preload ""
-
 pattern genconfig_add_preload \
    macro_append genconfig_preload "--load-library=<library> " ;
 
-# this pattern creates the helper library
 
+## this pattern creates the helper library
 pattern genconf_helper_lib \
    library <package>GenConfHelperLib <src> ; \
    macro <package>_genconfig_preload_lib "$(<package>_root)/$(tag)/$(library_prefix)<package>GenConfHelperLib.$(shlibsuffix)" \
@@ -1096,6 +1105,7 @@ pattern do_real_genconfig \
            outdir=$(<package>_root)$(genconfDir)<package> \
            library=<library> \
 	   library_preload=$(genconfig_preload) \
+           extra_modules=$(genconfig_extraModules) \
            conf_destdir=$(genconfInstallDir) \
            confModuleName=$(genconfig_configurableModuleName) \
            confDefaultName=$(genconfig_configurableDefaultName) \
@@ -1435,6 +1445,52 @@ set GAUDI_DOXY_HOME $(GAUDI_home)/GaudiRelease/doc
 #     action CppCheck "cppcheck --all --quiet $(includes) ../src || echo 'No Cpp files' "
 
 #-------------------------------------------------------------------
+# Conditional use of packages
+#-------------------------------------------------------------------
+#
+# Pattern to "use" a package only if a certain tag <tag> is present. If tag is 
+#    NOT active, package will be not be used.
+#
+#   pkg:  package name
+#   tag:  tag name to switch on usage of package
+#   ver:  version of package 
+#   root: root path of package
+#   opt:  extra options to pass
+#
+# parameters ver, root, and opt are optional
+#
+# eg:  use_if pkg=Reflex tag=useReflex ver="*" root="LCG_Interfaces"
+#
+pattern use_if \
+    document use_if pkg=<pkg> tag=<tag> ver=<ver> root=<root> opt="<opt>" ; \
+    private ; \
+    macro use_<pkg>_if "" <tag> "<pkg> <ver> <root> <opt>" ; \
+    end_private ; \
+    use $(use_<pkg>_if)
+
+#
+# Pattern to SUPPRESS "use" of a package if a certain tag <tag> is present. If
+#    tag is NOT active, package will be used by default.
+#
+#   pkg:  package name
+#   tag:  tag name to switch OFF usage of package
+#   ver:  version of package 
+#   root: root path of package
+#   opt:  extra options to pass
+#
+# parameters ver, root, and opt are optional
+#
+# eg:  use_unless pkg=GaudiPoolDb tag=ATLAS ver="*" root="LCG_Interfaces" opt="-no_auto_imports"
+#
+pattern use_unless \
+#    document use_unless pkg=<pkg> tag=<tag> ver=<ver> root=<root> opt="<opt>" ; \
+    private ; \
+    macro use_<pkg>_unless "<pkg> <ver> <root> <opt>" <tag> "" ; \
+    end_private ; \
+    use $(use_<pkg>_unless)
+
+
+#-------------------------------------------------------------------
 # ATLAS specific stuff
 #-------------------------------------------------------------------
 
@@ -1443,6 +1499,26 @@ tag ATLAS no-pyzip
 
 macro_append pp_cppflags "" \
       ATLAS " -DATLAS_GAUDI_V21 "
+
+macro_append pp_cppflags "" \
+      ATLAS&target-opt " -DNDEBUG "
+
+#
+# extra CPP flags
+#
+
+# for building slc5 binaries on slc6 host
+macro CppSpecificFlags "" \
+    ATLAS&host-slc6&target-slc5 " -D__USE_XOPEN2K8 "
+
+# set an env var for use outside, eg a Makefile
+set CPPEXPFLAGS "" \
+  ATLAS $(CppSpecificFlags)
+
+macro_append pp_cppflags " $(CppSpecificFlags)"
+macro_append pp_cflags   " $(CppSpecificFlags)"
+
+#-------------------------------------------------------------------
 
 # FIXME: This should be the kind of pattern to enable custom test settings, but
 # an environment variable is not so safe to use.

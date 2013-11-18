@@ -29,3 +29,9 @@ IIoComponent::~IIoComponent(){}
 
 #include "GaudiKernel/IIoComponentMgr.h"
 IIoComponentMgr::~IIoComponentMgr(){}
+
+#include "GaudiKernel/IFileMgr.h"
+IFileMgr::~IFileMgr(){}
+
+#include "GaudiKernel/FileIncident.h"
+FileIncident::~FileIncident(){}

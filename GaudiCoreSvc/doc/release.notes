@@ -4,6 +4,58 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+============================= GaudiCoreSvc v2r1 ==============================
+! 2013-11-18 - Marco Clemencic
+ - Removed duplicated print of of service ref count (use old format for
+   backward compatibility with tests).
+
+============================= GaudiCoreSvc-02-00-03 =========================
+! 2013-10-24 - Charles Leggett
+ - implement IncidentSvc::getListeners
+ - ServiceManager will trigger SvcPostFinalize incident
+
+M       src/ApplicationMgr/ServiceManager.cpp
+M       src/IncidentSvc/IncidentSvc.h
+M       src/IncidentSvc/IncidentSvc.cpp
+
+============================= GaudiCoreSvc-02-00-02 =========================
+! 2013-09-10 - Charles Leggett
+ - re-introduce release/deletion of services during ServiceManager::finalize()
+
+M       src/ApplicationMgr/ServiceManager.cpp
+
+============================= GaudiCoreSvc-02-00-01 =========================
+! 2013-09-09 - Charles Leggett
+ - re-introduce ordering rules for HistorySvc and FileMgr in 
+   ServiceManager::finalize()
+
+M       src/ApplicationMgr/ServiceManager.cpp
+
+============================= GaudiCoreSvc-02-00-00 =========================
+! 2013-08-30 - Charles Leggett
+ - retag for Atlas merge
+
+! 2013-04-24 - Charles Leggett
+ - ApplicationMgr:
+   - a "ScheduledStop" should not result in a termination error message
+M       src/ApplicationMgr/ApplicationMgr.cpp
+
+! 2013-04-02 - Charles Leggett
+ - ServiceManager:
+   - use default service priority from ISvcManager
+   - incorporate def priority in AppMgr
+M       src/ApplicationMgr/ServiceManager.h
+M       src/ApplicationMgr/ApplicationMgr.cpp
+
+! 2013-04-02 - Charles Leggett
+ - ServiceManager:
+   - allow setting of priority from a service's initialize method
+   - change default piority of services to 100 from 10
+   - push down priorities of "problematic" services
+   - added dump() method to list services for debugging
+M       src/ApplicationMgr/ServiceManager.h
+M       src/ApplicationMgr/ServiceManager.cpp
+
 ============================= GaudiCoreSvc v1r6 ==============================
 ! 2013-09-04 - Marco Clemencic
  - Extended AlgorithmManager and ApplicationMgr to allow aliasing of algorithm

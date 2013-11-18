@@ -1,0 +1,672 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+  <title>Gaudi Release Notes</title>
+  <script type="text/javascript" language="JavaScript">
+<!-- Work around for old browsers
+  function LinkToSavannah(){
+    // do nothing
+  }
+//-->
+  </script>
+  <script type="text/javascript" language="JavaScript1.2">
+<!-- This function requires JavaScript 1.2
+  // replaces the occurrences of (patch|task|bug)+number with the link to the savannah page
+  function LinkToSavannah()
+  {
+    patch = "<a href='https://savannah.cern.ch/patch/index.php?$2'>$1&nbsp;#$2</a>";
+    bug = "<a href='https://savannah.cern.ch/bug/index.php?$2'>$1&nbsp;#$2</a>";
+    task = "<a href='https://savannah.cern.ch/task/index.php?$2'>$1&nbsp;#$2</a>";
+    s = document.getElementsByTagName("body")[0].innerHTML;
+    s = s.replace(/([Pp]atch) #([0-9]*)/g,patch);
+    s = s.replace(/([Tt]ask) #([0-9]*)/g,task);
+    s = s.replace(/([Bb]ug) #([0-9]*)/g,bug);
+    document.getElementsByTagName("body")[0].innerHTML = s;
+  }
+// -->
+  </script>
+  <style type="text/css">
+span.author { color: #737373; }
+  </style>
+</head>
+<body onload="javascript:LinkToSavannah()">
+<pre>
+Package: GaudiRelease<br>
+Package Coordinator: Marco Clemencic, Charles Leggett<br>
+Purpose: Gaudi common set of packages<br><br>
+</pre>
+<!-- ====================================================================== -->
+<h2><a name="v23r10">Gaudi v23r10</a> (2013-09-24)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=66">LCGCMT_66</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Modified gaudirun.py to accept a .qmt file (QMTest test description) as
+    argument (see release notes of package Gaudi).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added two helper algorithms to allow deferred conditional write
+    (see task #47619 and GaudiMP release notes for details).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Enforcing the localization to the standard "C" in gaudirun.py and
+    GaudiPython via the environment variable LC_ALL.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Minor fixes.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v23r9">Gaudi v23r9</a> (2013-07-17)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=65a">LCGCMT_65a</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Improvements to the CMake configuration<br/>
+    (<span class="author">Hubert Degaudenzi</span>)</li>
+<li>Fixed cppcheck warning.<br/>
+    (<span class="author">Hubert Degaudenzi</span>)</li>
+<li>Minor fixes to the configuration for Clang and gcc 4.8.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v12r7):
+<ul>
+<li>Use -Og when compiling in debug mode with gcc 4.8.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v28r8):
+<ul>
+<li>Fixed <a href="https://sft.its.cern.ch/jira/browse/CFHEP-78">CFHEP-78</a>:
+    configurables created after applyConfigurableUser()<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added test for System::currentTime.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Updated the exclusion list in make_patch.py.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiCoreSvc (v1r5):
+<ul>
+<li>Fixed parsing of '.opts' files with C++11 enabled.<br/>
+    (<span class="author">Sasha Mazurov</span>)</li>
+</ul>
+</li>
+<li>GaudiUtils (v4r6):
+<ul>
+<li>Fixed bug #101513: Raw-&gt;Raw processing should not print an error<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>RootCnv (v1r20p1):
+<ul>
+<li>Minor fixes<br/>
+    (<span class="author">Marco Clemencic, Markus Frank</span>)</li>
+</ul>
+</li>
+<li>GaudiAlg (v14r6):
+<ul>
+<li>Patch #5653: Add HistoCountersPrint property to GaudiHistos<br/>
+    (<span class="author">Marco Cattaneo</span>)</li>
+</ul>
+</li>
+<li>GaudiCommonSvc (v1r6):
+<ul>
+<li>Patch #5649 :Improvements to exception handling debug information in
+    OutputStream<br/>
+    (<span class="author">Chris Jones</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v23r9):
+<ul>
+<li>Fixed a problem with a spurious error message when the import from
+    Configurables fails.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v23r8">Gaudi v23r8</a> (2013-05-29)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=65">LCGCMT_65</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Fixed Clang 3.2 warnings.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v12r6):
+<ul>
+<li>Improvements to the QMTest wrapper class.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Enabled C++11 by default when using gcc 4.7.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v28r7):
+<ul>
+<li>Added virtual destructors for IConverter and IConversionSvc to fix issue
+   <a href="https://sft.its.cern.ch/jira/browse/CFHEP-87">CFHEP-87</a>.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiUtils (v4r5):
+<ul>
+<li>Modified StalledEventMonitor to be able to print a stack trace of the stalled
+   process and abort the execution.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiAlg (v14r5):
+<ul>
+<li>Patch #5641: Suppress GaudiAlg HbookName.h clang warnings<br/>
+    (<span class="author">Chris Jones</span>)</li>
+<li>Patch #5631: Fix bug in sequencer timer in GaudiAlg<br/>
+    (<span class="author">Chris Jones</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v23r7">Gaudi v23r7</a> (2013-03-12)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=64d">LCGCMT_64d</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Minor fixes.<br/>
+    (<span class="author">Marco Clemencic, Hubert Degaudenzi</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>Gaudi (v23r7):
+<ul>
+<li>Patch #5605: Run performance profilers with gaudirun.py command line options<br/>
+    (<span class="author">Danilo Piparo</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v23r6">Gaudi v23r6</a> (2013-01-28)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=64c">LCGCMT_64c</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Improvements and fixes to the CMake configuration and modules.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v12r4):
+<ul>
+<li>Modified Python zipping to fail if coding is not correct.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Minor fixes.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v28r5):
+<ul>
+<li>Minor change in ConversionSvc constructor to avoid a pointless call to
+   queryInterface.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiUtils (v4r4):
+<ul>
+<li> Patch #5594: fix for parsing of 1D histograms with non-equidistant binnings.<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+</ul>
+</li>
+<li>GaudiPython (v12r5):
+<ul>
+<li>Added dictionaries for HistoStrings (GaudiUtils).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiMP (v1r7):
+<ul>
+<li>Patch #5593: Implemented late forking for GaudiMP.<br/>
+    (<span class="author">Nathalie Rauschmayr</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v23r5">Gaudi v23r5</a> (2012-11-26)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=64b">LCGCMT_64b</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Updates and fixes to the CMake configuration. The system is essentially ready,
+    with just a few minor tweaks to be implemented and the documentation to be prepared.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added new return code to flag a corrupted input file.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixes to return code handling.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixes some warnings.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v12r3):
+<ul>
+<li>Modified qmtest_summarize.py to work under CMake too.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Set the -pedantic flag for the tag GAUDI_PEDANTIC (and target-gcc).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>set max-page-size for all 64 bit gcc targets.<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v28r4):
+<ul>
+<li>Define the incident and return code for corrupted input files.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added tests/src/parsers.cpp to the QMTest test suite.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiCoreSvc (v1r3):
+<ul>
+<li>Initialize the application return code to 'Success' in
+   ApplicationMgr::configure() instead of EventLoopMgr::nextEvent(int), to
+   avoid that error conditions (like failure to open a file) happening during
+   initialization are discarded.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiPython (v12r4):
+<ul>
+<li>Stop execution (in AppMgr.run()) if the return code of the application is not
+   0 (success) after configure or initialize.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v23r5):
+<ul>
+<li>Ensure that we get the correct return code after a segfault in C++.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>RootCnv (v1r19):
+<ul>
+<li>Updated to version v1r19 from LHCb.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v23r4">Gaudi v23r4</a> (2012-09-13)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=64a">LCGCMT_64a</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Fixed compilation with Boost 1.49 and 1.50 (for future versions of LCGCMT).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Improvements and fixes to the CMake configuration (including the possibility
+    of running the tests from the build directory).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Rationalized the permissions of files in the repository.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v12r2):
+<ul>
+<li>Added the possibility to compile with the option -std=c+=0x, for example in
+    the LCG nightly platform *-g11max-*.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v28r3):
+<ul>
+<li>Added missing copy constructor and assignment operator to 'implementsN&lt;&gt;'
+    base class.<br/>
+    (<span class="author">Benedikt Hegner</span>)</li>
+<li>Fixed bug #96673: spurious warnings in GenConfUser.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Improvements to genconfuser.py.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed bug #95733: GaudiKernel::ToStream truncates numbers &amp;lt; 1e-8<br/>
+    Use ios::showpoint instead of ios::fixed.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiAlg (v14r3):
+<ul>
+<li>Patch #5518: save TimingHistograms in job histograms<br/>
+    (<span class="author">Ben Couturier</span>)</li>
+<li>Patch #5464: Implement the 'getIfExists' for GaudiTool as well as GaudiAlgorithm<br/>
+    (<span class="author">Chris Jones</span>)</li>
+</ul>
+</li>
+<li>GaudiProfiling (v1r6):
+<ul>
+<li>Fixed compilation with -std=c++0x.<br/>
+    (<span class="author">Benedikt Hegner</span>)</li>
+</ul>
+</li>
+<li>GaudiPython (v12r3):
+<ul>
+<li>Patch #5471: fixes to be able to run LHCb applications via GaudiParallel.<br/>
+    (<span class="author">Nathalie Rauschmayr</span>)</li>
+</ul>
+</li>
+<li>GaudiMP (v1r5):
+<ul>
+<li>Patch #5471: fixes to be able to run LHCb applications via GaudiParallel.<br/>
+    (<span class="author">Nathalie Rauschmayr</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v23r4):
+<ul>
+<li>Modified gudirun.py to use a portable check of the number of CPUs.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiRelease (v23r4):
+<ul>
+<li>Removed the special hack used to produce the LHCb deployment kit (obsolete).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v23r3">Gaudi v23r3</a> (2012-06-19)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=64">LCGCMT_64</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Fixed compilation warnings and errors on various platforms (Clang 3.0, gcc 4.7, gcc with c++11 enabled)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added configuration files to build Gaudi with CMake (all the versions numbers of the packages had to be increased).<br/>
+    They are in an alpha state, so not ready for production and the API is not stable, but the builds are equivalent to the CMT ones.<br/>
+    To test, run the script <code>configure</code> in the top level directory and follow the instructions.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v12r1):
+<ul>
+<li>Use the compiler native dependencies from CMT when using CMT v1r25.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added fragment to install generic resources (install_resources).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Modified GaudiTest.GaudiExeTest to be able to run executables with or without
+   the <code>.exe</code> extension.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiAlg (v14r2):
+<ul>
+<li>Patch #5410: Enable the suppression of misbalance summary from GaudiTool<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+<li>Task #22742: Optimize the GaudiAlgorithm get() functions<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Patch #5379: Improvements for GaudiAlgs.py<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+</ul>
+</li>
+<li>GaudiProfiling (v1r5):
+<ul>
+<li>Disable on MacOSX (cannot compile).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiCommonSvc (v1r2):
+<ul>
+<li>Patch #5390: fix unprotected VERBOSE and DEBUG messages<br/>
+    (<span class="author">Marco Cattaneo</span>)</li>
+</ul>
+</li>
+<li>GaudiPython (v12r2):
+<ul>
+<li>Patch #5379: Improvements for GaudiAlgs.py<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v23r3):
+<ul>
+<li>Task #22742: Optimize the GaudiAlgorithm get() functions<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Patch #5379: Improvements for GaudiAlgs.py<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v23r2">Gaudi v23r2</a> (2012-03-24)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=62b">LCGCMT_62b</a></h3>
+<h3>General Changes</h3>
+This is a minor update mainly meant to pick up latest versions of external packages.
+<h3>Packages Changes</h3>
+<ul>
+<li>RootCnv (v1r14):
+<ul>
+<li>Removed duplicated warning message.<br/>
+    (<span class="author">Markus Frank</span>)</li>
+</ul>
+</li>
+<li>GaudiProfiling (v1r4):
+<ul>
+<li>Patch #5209: Added IntelProfiler component<br/>
+    (<span class="author">Sasha Mazurov</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v23r2):
+<ul>
+<li>Fixed bug #92122: option '--printsequence' of gaudirun.py no longer works<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v23r2):
+<ul>
+<li>Patch #5210: add example for IntelProfiler
+    (see doc/intelprofiler.md)<br/>
+    (<span class="author">Sasha Mazurov</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v23r1">Gaudi v23r1</a> (2012-02-27)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=62a">LCGCMT_62a</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Minor changes.</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiKernel (v28r1):
+<ul>
+<li>Patch #5204: GaudiKernel parsers: allow 'L' suffix in integer literals<br/>
+    (<span class="author">Sasha Mazurov</span>)</li>
+<li>Fixed compatibility problem with Python 2.7.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>RootCnv (v1r13):
+<ul>
+<li>Add option to RootCnvSvc to change compression factor<br/>
+    (<span class="author">Markus Frank</span>)</li>
+</ul>
+</li>
+<li>GaudiAlg (v14r1):
+<ul>
+<li>Patch #5234: Fix incorrect type in GaudiAlg tuples<br/>
+    (<span class="author">Chris Jones</span>)</li>
+</ul>
+</li>
+<li>GaudiProfiling (v1r3):
+<ul>
+<li>Patch #4852: Auditors based on the Google Perf Tools<br/>
+    Note: the Google auditors require preloaded libraries: tcmalloc or profiler.<br/>
+    (<span class="author">Chris Jones</span>)</li>
+</ul>
+</li>
+<li>GaudiCommonSvc (v1r1):
+<ul>
+<li>Add a "TESVetoList" property to InputCopyStream<br/>
+    (<span class="author">Chris Jones</span>)</li>
+</ul>
+</li>
+<li>GaudiPython (v12r1):
+<ul>
+<li>Patch #5235: ntuples in (Gaudi)Python<br/>
+    (<span class="author">Vanya Belyaev</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v23r1):
+<ul>
+<li>Modified gaudirun.py to be able to preload arbitrary libraries<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v23r0">Gaudi v23r0</a> (2012-01-24)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=62a">LCGCMT_62a</a></h3>
+<h3>General Changes</h3>
+This is a major release of Gaudi. The main changes are:
+<ul>
+<li>Repackaging of GaudiSvc mainly to reduce the size of the libraries that users
+    may need to override (task #23931, patch #1816).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Removed GaudiPoolDb and introduced RootCnv.<br/>
+    The Application Area project POOL is not used anymore, but an alternative
+    based on ROOT (can read POOL files) has been copied from LHCb. The new
+    conversion service is still developed in LHCb and comments/bug reports have
+    to be directed to Markus Frank.<br/>
+    (<span class="author">Marco Clemencic</span>, <span class="author">Markus Frank</span>)</li>
+<li>Fixed bug #85377: GaudiTuple tuple does not understand ulonglong<br/>
+    (<span class="author">Chris Jones</span>)</li>
+<li>Modified ApplicationMgr to return non-zero in case of failure during finalization
+    and to print different messages in finalization and termination in case of errors.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v12r0):
+<ul>
+<li>Patch #5165: Change GaudiPolicy requirements to allow compilation with -O3
+    (CMT tag "use-O3")<br/>
+    (<span class="author">Ben Couturier</span>)</li>
+<li>Moved the genConf directories of the packages inside the binary directory.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added the <i>fake</i> CMTCONFIGs *-test (only few of them), implying the tag
+    target-test, which should be used for tunable (by experiments) tests.<br/>
+    <i><font color="red">Not yet functional</font></i><br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added the pattern PackageVersionHeader, similar to ProjectVersionHeader, but
+    dedicated to packages and with the possibility of specifying the destination
+    directory of the generated header.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v28r0):
+<ul>
+<li>Added interfaces for tools used to add dynamic mapping to DataOnDemandSvc:
+    IDODNodeMapper, IDODAlgMapper.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed bug #89628: Missing const methods in CommonMessaging.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed bug #89653: Gaudi is not ready for Boost 1.48 (filesystem V3)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Removed the unused FastContainerSvc.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiCoreSvc (v1r0):
+<ul>
+<li>Modified ServiceManager to avoid race conditions on concurrent requests of
+   services from different threads.<br/>
+    (<span class="author">Illya Shapoval</span>)</li>
+<li>Patch #5183: JobOptionsSvc: warnings and environment variables<br/>
+    (<span class="author">Sasha Mazurov</span>)</li>
+<li>Modified DataOnDemandSvc to accept tools to map paths to node types
+    (IDODNodeMapper) and to algorithms (IDODAlgMapper).<br/>
+    Added a basic IDODNodeMapper and IDODAlgMapper (DODBasicMapper) implementing
+     the minimal DataOnDemandSvc static mapping.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Patch #5176: fix problem with underscore in property names (Boost 1.48)<br/>
+    (<span class="author">Sasha Mazurov</span>)</li>
+<li>Make ApplicationMgr print the version of the package if no version is
+    specified in the options.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Patch #5166: Allow "::" in property and component names.<br/>
+    (<span class="author">Sasha Mazurov</span>)</li>
+</ul>
+</li>
+<li>GaudiMonitor (v3r0):
+<ul>
+<li>Removed DataListenerSvc.<br/>
+    Moved from GaudiSvc: ExceptionSvc, HistorySvc, IssueLogger.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiPartProp (v1r0):
+<ul>
+<li>New package: contains Gaudi::ParticlePropertySvc, originally in GaudiSvc. (task #23931, patch #1816)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiSvc (v19r0):
+<ul>
+<li>Moved several services from GaudiSvc to other packages. (task #23931, patch #1816)<br/>
+    See package release notes for details.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed bug #89653: Gaudi is not ready for Boost 1.48 (filesystem V3)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiUtils (v4r0):
+<ul>
+<li>Imported HistoStrings functions from (LHCb) Kernel/HistoStrings.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>RootCnv (v1r12):
+<ul>
+<li>Imported from LHCb (Online/RootCnv), with minor changes.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiCommonSvc (v1r0):
+<ul>
+<li>New package: contains services used by most applications. (task #23931, patch #1816)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiPython (v12r0):
+<ul>
+<li>Fixed bug #88448: HistoFile does not know TFile<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>First prototype of generic/extensible persistency configuration.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiMP (v1r3):
+<ul>
+<li>Address failures due to missing temporary files.<br/>
+    (<span class="author">Wim Lavrijsen</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v23r0):
+<ul>
+<li>Added support for class aliases in the meta-module "Configurables".<br/>
+    Added RootCnvSvc and RootEvtSelector to the list of aliased services
+    (enforcing the default name to preserve compatibility with LHCb).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v23r0):
+<ul>
+<li>Major restructuring of tests:
+    <ul>
+    <li>replaced POOL persistency with the new ROOT one</li>
+    <li>removed obsolete test runner scripts</li>
+    <li>added tests/qmtest/refs</li>
+    <li>added tests/data</li>
+    </ul>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added test for dynamic configuration of DataOnDemandSvc.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<hr/>
+<a href="release.notes.v22.html">Older versions</a>
+</body>
+</html>

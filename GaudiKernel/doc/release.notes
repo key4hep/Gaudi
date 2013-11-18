@@ -1,6 +1,83 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v29r1 ==============================
+============================= GaudiKernel-29-00-02 =============================
+! 2013-10-24 - Charles Leggett
+ - add IIncidentSvc::getListeners(vector<IIncidentListeners*>, IncType) -
+       return all clients of a specific incident type
+ - add IncidentType::SvcPostFinalize
+
+M       GaudiKernel/IIncidentSvc.h
+M       GaudiKernel/Incident.h
+
+============================= GaudiKernel-29-00-01 =============================
+! 2013-09-30 - Charles Leggett
+ - added io_finalize to IIoComponent.h
+   currently not pure virtual, to ease client transition. will be made pure 
+   when transition complete.
+
+M       GaudiKernel/IIoComponent.h
+
+============================= GaudiKernel-29-00-00 =============================
+
+! 2013-06-24 - Marco Clemencic
+ - restored presetting of Services outputLevel from MessageSvc (needed to use
+   the properties SetDebug, SetVerbose, etc of MessageSvc).
+ - restored inheritance of JobHistory on IVersHistoryObj to 'virtual public'.
+
+! 2013-04-05 - Charles Leggett
+ - add new optional parameter to genconf to allow import/declaration of
+   user specified module
+M       src/Util/genconf.cpp
+
+! 2013-04-02 - Charles Leggett
+ - use a const int for default priority of services
+M       GaudiKernel/ISvcManager.h
+
+! 2013-04-02 - Charles Leggett
+ - change default priority of services to 100 from 10
+M       GaudiKernel/ISvcManager.h
+
+! 2013-03-20 - Charles Leggett
+- fix FileIncident dtor
+M       GaudiKernel/FileIncident.h
+
+! 2013-03-19 - Charles Leggett
+
+several fixes to bring trunk in line with GaudiKernel-27-13-25
+
+ - fix inheritance structure of History objects
+M       GaudiKernel/AlgToolHistory.h
+M       GaudiKernel/JobHistory.h
+M       GaudiKernel/AlgorithmHistory.h
+M       GaudiKernel/ServiceHistory.h
+
+ - Service.cpp: don't preset outputLevel
+M       src/Lib/Service.cpp
+
+ - FileIncident.h: remove payload, move vdtor
+M       GaudiKernel/FileIncident.h
+
+ - TypeNameString.h: include <ostream>
+M       GaudiKernel/TypeNameString.h
+
+! 2013-03-06 - Charles Leggett
+ - move virtual dtor of IFileMgr and IoComponentMgr to VirtualDestructors.cpp
+D       src/Lib/IIoComponentMgr.cpp
+D       src/Lib/IIoComponent.cpp
+M       src/Lib/VirtualDestructors.cpp
+D       src/Lib/IFileMgr.cpp
+
+! 2013-03-06 - Charles Leggett
+ - add/update IFileMgr and IoComponentMgr
+
+A       src/Lib/IIoComponentMgr.cpp
+A       src/Lib/IIoComponent.cpp
+A       src/Lib/IFileMgr.cpp
+A       GaudiKernel/IFileMgr.h
+M       GaudiKernel/IIoComponentMgr.h
+
 ============================= GaudiKernel v28r9 ==============================
 ! 2013-08-27 - Marco Clemencic
  - Fixed compile-time issue when symbol hiding is enabled (gcc 4.7).

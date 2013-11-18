@@ -132,7 +132,7 @@ public:
   ///  - iterate over all the modules (ie: library names)
   ///  - for each module extract component informations
   ///  - eventually generate the header/body/trailer python file and "Db" file
-  int genConfig( const Strings_t& modules );
+  int genConfig( const Strings_t& modules, const string& userModule );
 
   /// customize the Module name where configurable base classes are defined
   void setConfigurableModule( const std::string& moduleName )
@@ -205,6 +205,7 @@ int main ( int argc, char** argv )
   fs::path out;
   Strings_t libs;
   std::string pkgName;
+  std::string userModule;
 
   // declare a group of options that will be allowed only on command line
   po::options_description generic("Generic options");
@@ -230,6 +231,9 @@ int main ( int argc, char** argv )
     ("load-library,l",
      po::value< Strings_t >()->composing(),
      "preloading library")
+    ("user-module,m",
+     po::value<string>(),
+     "user-defined module to be imported by the genConf-generated one")
     ;
 
   // declare a group of options that will be allowed both on command line
@@ -302,6 +306,11 @@ int main ( int argc, char** argv )
     cout << "ERROR: 'package-name' required" << endl;
     cout << visible << endl;
     return EXIT_FAILURE;
+  }
+
+  if( vm.count("user-module") ) {
+    userModule = vm["user-module"].as<string>();
+    cout << "INFO: will import user module " << userModule << endl; 
   }
 
   if( vm.count("input-libraries") ) {
@@ -391,7 +400,7 @@ int main ( int argc, char** argv )
 
   int sc = EXIT_FAILURE;
   try {
-    sc = py.genConfig( libs );
+    sc = py.genConfig( libs, userModule );
   }
   catch ( exception& e ) {
     cout << "ERROR: Could not generate Configurable(s) !\n"
@@ -436,7 +445,7 @@ IProperty *makeInstance(const Member &member, const vector<void*> &args)
 
 
 //-----------------------------------------------------------------------------
-int configGenerator::genConfig( const Strings_t& libs )
+int configGenerator::genConfig( const Strings_t& libs, const string& userModule )
 //-----------------------------------------------------------------------------
 {
   //--- Disable checking StatusCode -------------------------------------------
@@ -645,6 +654,8 @@ int configGenerator::genConfig( const Strings_t& libs )
               std::ios_base::out|std::ios_base::trunc );
 
     genHeader ( py, db );
+    if (!userModule.empty()) 
+      py << "from " << userModule << " import *" <<endl;
     genBody   ( py, db );
     genTrailer( py, db );
 
