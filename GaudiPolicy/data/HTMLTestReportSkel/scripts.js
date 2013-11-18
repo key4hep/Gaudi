@@ -123,10 +123,10 @@ jQuery.fn.summary = function() {
 function foldingAction() {
 	var me = $(this);
     if (me.hasClass('folded')) {
- 	   me.nextAll().slideDown();
+ 	   me.nextAll('div,ul').slideDown();
  	   me.find('img').attr('src', 'minus.png');
     } else {
- 	   me.nextAll().slideUp();
+ 	   me.nextAll('div,ul').slideUp();
  	   me.find('img').attr('src', 'plus.png');
     }
     me.toggleClass("folded");
