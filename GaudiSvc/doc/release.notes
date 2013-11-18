@@ -1,6 +1,7 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+=============================== GaudiSvc v20r1 ===============================
 =============================== GaudiSvc-20-00-00 =========================
 ! 2013-08-30 - Charles Leggett
  - retag for Atlas merge

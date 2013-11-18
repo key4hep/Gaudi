@@ -4,6 +4,7 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+============================= GaudiCoreSvc v2r1 ==============================
 ! 2013-11-18 - Marco Clemencic
  - Removed duplicated print of of service ref count (use old format for
    backward compatibility with tests).

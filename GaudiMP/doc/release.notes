@@ -1,6 +1,7 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+================================ GaudiMP v2r1 ================================
 ================================ GaudiMP-02-00-01 ============================
 ! 2013-10-10 - Charles Leggett
  - implementation io_finalize() in IoComponentMgr.cpp
