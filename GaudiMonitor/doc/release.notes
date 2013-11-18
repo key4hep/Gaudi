@@ -1,6 +1,10 @@
 Package: GaudiMonitor
 Package manager : Marco Clemencic
 
+============================= GaudiMonitor-04-00-00 =========================
+! 2013-08-30 - Charles Leggett
+ - retag for Atlas merge
+
 ! 2013-06-24 - Marco Clemencic
  - Removed last NDEBUG from HistorySvc.cpp
 

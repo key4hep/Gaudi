@@ -451,8 +451,31 @@ IoComponentMgr::io_update_all (const std::string& work_dir)
 StatusCode
 IoComponentMgr::io_finalize ()
 {
-  DEBMSG << "--> io_finalize()" << endmsg;
-  return StatusCode::SUCCESS;
+
+  m_log << MSG::DEBUG << "--> io_finalize()" << endmsg;
+  m_log << MSG::DEBUG << "finalizing I/O subsystem..." << endmsg;
+
+  if (m_log.level() <= MSG::DEBUG) {
+    m_log << MSG::DEBUG << "Listing all monitored entries: " << std::endl;
+    DEBMSG << list() << endmsg;
+  }
+
+  bool allgood = true;
+  for ( IoStack_t::iterator io = m_iostack.begin(), ioEnd = m_iostack.end();
+        io != ioEnd;
+        ++io ) {
+    m_log << MSG::DEBUG << " [" << (*io)->name() << "]->io_finalize()..."
+          << endmsg;
+    if ( !(*io)->io_finalize().isSuccess() ) {
+      allgood = false;
+      m_log << MSG::ERROR << "problem in [" << (*io)->name()
+            << "]->io_finalize() !" << endmsg;
+    }
+  }
+
+  return allgood
+    ? StatusCode::SUCCESS
+    : StatusCode::FAILURE;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

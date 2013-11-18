@@ -1,6 +1,13 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+=============================== GaudiAlg v14r6 ===============================
+! 2013-07-08 - Marco Cattaneo
+ - Patch #5653: Add HistoCountersPrint property to GaudiHistos
+   - Add HistoCountersPrint property to GaudiHistos, to control printing of
+     booked histogram statistics in finalize. Default true (print the summary)
+   - Fix some unchecked StatusCodes
+
 =============================== GaudiAlg v14r5 ===============================
 ! 2013-04-29 - Chris Jones
  - Patch #5641: Suppress GaudiAlg HbookName.h clang warnings

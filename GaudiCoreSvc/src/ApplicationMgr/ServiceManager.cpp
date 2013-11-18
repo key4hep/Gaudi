@@ -7,6 +7,10 @@
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/ObjectFactory.h"
+#include "GaudiKernel/SmartIF.h"
+#include "GaudiKernel/IIncidentSvc.h"
+#include "GaudiKernel/IIncidentListener.h"
+#include "GaudiKernel/Incident.h"
 
 #include <iostream>
 #include <cassert>
@@ -405,7 +409,7 @@ StatusCode ServiceManager::finalize()
 //------------------------------------------------------------------------------
 {
   // make sure that HistogramDataSvc and THistSvc get finalized after the
-  // ToolSvc, and StatusCodeSvc after that
+  // ToolSvc, and the FileMgr and StatusCodeSvc after that
   int pri_tool = getPriority("ToolSvc");
   if (pri_tool != 0) {
     setPriority("THistSvc",pri_tool-10).ignore();
@@ -415,6 +419,18 @@ StatusCode ServiceManager::finalize()
     setPriority("HistogramDataSvc",pri_tool-10).ignore();
     // Preserve the relative ordering between HistogramDataSvc and HistogramPersistencySvc
     setPriority("HistogramPersistencySvc",pri_tool-20).ignore();
+    setPriority("HistorySvc",pri_tool-30).ignore();
+    setPriority("FileMgr",pri_tool-40).ignore();
+  }
+
+
+  // get list of PostFinalize clients
+  std::vector<IIncidentListener*> postFinList;
+  {
+    SmartIF<IIncidentSvc> p_inc(service("IncidentSvc",false));
+    if (p_inc.isValid()) {
+      p_inc->getListeners(postFinList,IncidentType::SvcPostFinalize);
+    }
   }
 
   // make sure the StatusCodeSvc gets finalized really late:
@@ -456,16 +472,30 @@ StatusCode ServiceManager::finalize()
     tmpList.pop_front();
   }
 
+  // call SvcPostFinalize on all clients
+  std::vector<IIncidentListener*>::iterator itr;
+  Incident inc("ServiceManager",IncidentType::SvcPostFinalize);
+  DEBMSG << "will call SvcPostFinalize for " << postFinList.size() << " clients"
+	 << endmsg;
+  for (itr = postFinList.begin(); itr != postFinList.end(); ++itr) {
+    (*itr)->handle(inc);
+  }  
+
   // loop over all Active Services, removing them one by one.
   // They should be deleted because the reference counting goes to 0.
+  DEBMSG << "looping over all active services..." << endmsg;
   it = m_listsvc.begin();
   while (it != m_listsvc.end()) {
+    DEBMSG << " - [" << it->service->name()
+	   << "] ref-count [" << it->service->refCount() << "]" 
+	   << endmsg;
     if (it->active) {
       it = m_listsvc.erase(it);
     } else {
       ++it;
     }
   }
+
   return sc ;
 }
 

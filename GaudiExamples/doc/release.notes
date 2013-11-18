@@ -1,6 +1,10 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples-24-00-00 ========================
+! 2013-08-30 - Charles Leggett
+ - retag for Atlas merge
+
 ! 2013-06-24 - Marco Clemencic
  - Updated reference files for History and THistSvc tests.
 

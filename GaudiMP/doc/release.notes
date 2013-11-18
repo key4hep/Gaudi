@@ -1,6 +1,16 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+================================ GaudiMP-02-00-01 ============================
+! 2013-10-10 - Charles Leggett
+ - implementation io_finalize() in IoComponentMgr.cpp
+
+M       src/component/IoComponentMgr.cpp
+
+================================ GaudiMP-02-00-00 ============================
+! 2013-08-30 - Charles Leggett
+ - retag for Atlas merge
+
 ================================ GaudiMP-01-07-01 ============================
 ! 2013-03-06 - Charles Leggett
  - merge with GaudiMP-01-01-12

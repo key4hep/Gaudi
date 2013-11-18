@@ -4,6 +4,32 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+============================= GaudiCoreSvc-02-00-03 =========================
+! 2013-10-24 - Charles Leggett
+ - implement IncidentSvc::getListeners
+ - ServiceManager will trigger SvcPostFinalize incident
+
+M       src/ApplicationMgr/ServiceManager.cpp
+M       src/IncidentSvc/IncidentSvc.h
+M       src/IncidentSvc/IncidentSvc.cpp
+
+============================= GaudiCoreSvc-02-00-02 =========================
+! 2013-09-10 - Charles Leggett
+ - re-introduce release/deletion of services during ServiceManager::finalize()
+
+M       src/ApplicationMgr/ServiceManager.cpp
+
+============================= GaudiCoreSvc-02-00-01 =========================
+! 2013-09-09 - Charles Leggett
+ - re-introduce ordering rules for HistorySvc and FileMgr in 
+   ServiceManager::finalize()
+
+M       src/ApplicationMgr/ServiceManager.cpp
+
+============================= GaudiCoreSvc-02-00-00 =========================
+! 2013-08-30 - Charles Leggett
+ - retag for Atlas merge
+
 ! 2013-04-24 - Charles Leggett
  - ApplicationMgr:
    - a "ScheduledStop" should not result in a termination error message

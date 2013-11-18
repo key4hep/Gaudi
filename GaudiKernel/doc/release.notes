@@ -1,6 +1,25 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel-29-00-02 =============================
+! 2013-10-24 - Charles Leggett
+ - add IIncidentSvc::getListeners(vector<IIncidentListeners*>, IncType) -
+       return all clients of a specific incident type
+ - add IncidentType::SvcPostFinalize
+
+M       GaudiKernel/IIncidentSvc.h
+M       GaudiKernel/Incident.h
+
+============================= GaudiKernel-29-00-01 =============================
+! 2013-09-30 - Charles Leggett
+ - added io_finalize to IIoComponent.h
+   currently not pure virtual, to ease client transition. will be made pure 
+   when transition complete.
+
+M       GaudiKernel/IIoComponent.h
+
+============================= GaudiKernel-29-00-00 =============================
+
 ! 2013-06-24 - Marco Clemencic
  - restored presetting of Services outputLevel from MessageSvc (needed to use
    the properties SetDebug, SetVerbose, etc of MessageSvc).

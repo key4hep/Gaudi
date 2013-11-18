@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy-13-00-00 =========================
+! 2013-08-30 - Charles Leggett
+ - retag for Atlas merge
+
 ! 2013-04-18 - Charles Leggett
  - patches for CMT v1r26
 

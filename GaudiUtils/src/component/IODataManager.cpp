@@ -26,6 +26,9 @@ IODataManager::IODataManager(CSTR nam, ISvcLocator* svcloc)
   declareProperty("UseGFAL",         m_useGFAL = true);
   declareProperty("QuarantineFiles", m_quarantine = true);
   declareProperty("AgeLimit",        m_ageLimit = 2);
+  declareProperty("DisablePFNWarning", m_disablePFNWarning = false,
+                  "if set to True, we will not report when a file "
+                  "is opened by it's physical name");
 }
 
 /// IService implementation: Db event selector override
@@ -342,7 +345,7 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
         fid = connection->fid();
         m_fidMap[dataset] = m_fidMap[dsn] = m_fidMap[fid] = fid;
         if (  !(rw==Connection::CREATE || rw==Connection::RECREATE) )  {
-          if ( strcasecmp(dsn.c_str(),fid.c_str()) == 0 )  {
+          if ( ! m_disablePFNWarning && strcasecmp(dsn.c_str(),fid.c_str()) == 0 )  {
             log << MSG::ERROR << "Referring to existing dataset " << dsn
                 << " by its physical name." << endmsg;
             log << "You may not be able to navigate back to the input file"

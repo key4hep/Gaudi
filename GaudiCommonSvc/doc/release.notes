@@ -4,6 +4,10 @@
 # Description: standard and commonly used components
 ################################################################################
 
+============================ GaudiCommonSvc-02-00-00 =========================
+! 2013-08-30 - Charles Leggett
+ - retag for Atlas merge
+
 ============================ GaudiCommonSvc v1r5 =============================
 ! 2013-04-16 - Marco Clemencic
  - Fixed Clang warnings.
