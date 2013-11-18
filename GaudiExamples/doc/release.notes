@@ -1,6 +1,32 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2013-11-18 - Marco Clemencic
+ - Updated reference files.
+
+============================ GaudiExamples-24-00-00 ========================
+! 2013-08-30 - Charles Leggett
+ - retag for Atlas merge
+
+! 2013-06-24 - Marco Clemencic
+ - Updated reference files for History and THistSvc tests.
+
+! 2013-04-23 - Charles Leggett
+ - unchecked StatusCode
+M       src/AlgSequencer/StopperAlg.cpp
+
+! 2013-03-26 - Charles Leggett
+ - added example for FileMgr
+M       cmt/requirements
+A       src/FileMgr
+A       src/FileMgr/FileMgrTest.cpp
+A       src/FileMgr/FileMgrTest.h
+A       options/FileMgrTest.opts
+
+! 2013-03-05 - Charles Leggett
+ - conditional usage for GaudiPartProp and RootCnv
+M       cmt/requirements
+
 ! 2013-11-01 - Marco Clemencic
  - Fix to reference file.
 

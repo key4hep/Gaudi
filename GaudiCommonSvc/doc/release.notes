@@ -4,6 +4,10 @@
 # Description: standard and commonly used components
 ################################################################################
 
+============================ GaudiCommonSvc-02-00-00 =========================
+! 2013-08-30 - Charles Leggett
+ - retag for Atlas merge
+
 ============================ GaudiCommonSvc v1r6 =============================
 ! 2013-07-08 - Chris Jones
  - Patch #5649 :Improvements to exception handling debug information in

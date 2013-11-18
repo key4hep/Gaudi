@@ -39,8 +39,10 @@ class GAUDI_API IIoComponent : virtual public INamedInterface
   /** @brief callback method to reinitialize the internal state of
    *         the component for I/O purposes (e.g. upon @c fork(2))
    */
-  virtual
-  StatusCode io_reinit () = 0;
+  virtual StatusCode io_reinit () = 0;
+
+  virtual StatusCode io_finalize () { return StatusCode::SUCCESS; }
+   
 }; 
 
 // I/O operators

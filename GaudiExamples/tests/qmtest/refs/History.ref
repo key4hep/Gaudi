@@ -1,35 +1,28 @@
-JobOptionsSvc        INFO
-//GP:================================================================================
-//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/History.opts" (0,0)
-//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Common.opts" (5,10)
-//GP: include "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Services.opts" (7,10)
-AuditorSvc.Auditors =  [ "ChronoAuditor" ] ;                            //GP: (1,1)
-//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Services.opts" (24,1)
-ApplicationMgr.StatusCodeCheck = 1;                                     //GP: (7,10)
-//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/Common.opts" (16,1)
-ApplicationMgr.TopAlg =  [ "History" ] ;                                //GP: (5,10)
-ApplicationMgr.ActivateHistory = 1;                                     //GP: (5,10)
-MessageSvc.OutputLevel = 1;                                             //GP: (5,10)
-MessageSvc.useColors = 1;                                               //GP: (5,10)
-MessageSvc.setVerbose +=  [ "HistorySvc" ] ;                            //GP: (5,10)
-MessageSvc.setDebug +=  [ "FastHistorySvc" ] ;                          //GP: (5,10)
-MessageSvc.setDebug +=  [ "StatusCodeSvc" , "IncidentSvc" ] ;           //GP: (5,10)
-HistorySvc.Dump = 0;                                                    //GP: (5,10)
-HistorySvc.OutputFile = "history.dat";                                  //GP: (5,10)
-HistorySvc.OutputLevel = 0;                                             //GP: (5,10)
-FastHistorySvc.Dump = 1;                                                //GP: (5,10)
-FastHistorySvc.OutputFile = "history.dat";                              //GP: (5,10)
-ApplicationMgr.EvtMax = 2;                                              //GP: (5,10)
-ApplicationMgr.EvtSel = "NONE";                                         //GP: (5,10)
-//GP: end  "/afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/History.opts" (43,1)
-//GP:================================================================================
-
-JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/GaudiExamples/options/History.opts
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Services.opts
+JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Common.opts
+JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/History.opts
+JobOptionsSvc        INFO # (10,1): ApplicationMgr.TopAlg = ["History"]
+JobOptionsSvc        INFO # (11,1): ApplicationMgr.ActivateHistory = 1
+JobOptionsSvc        INFO # (16,1): MessageSvc.OutputLevel = 1
+JobOptionsSvc        INFO # (17,1): MessageSvc.useColors = 1
+JobOptionsSvc        INFO # (19,1): MessageSvc.setVerbose += ["HistorySvc"]
+JobOptionsSvc        INFO # (20,1): MessageSvc.setDebug += ["FastHistorySvc"]
+JobOptionsSvc        INFO # (21,1): MessageSvc.setDebug += ["StatusCodeSvc", "IncidentSvc"]
+JobOptionsSvc        INFO # (23,1): HistorySvc.Dump = 0
+JobOptionsSvc        INFO # (24,1): HistorySvc.OutputFile = "history.dat"
+JobOptionsSvc        INFO # (25,1): HistorySvc.OutputLevel = 0
+JobOptionsSvc        INFO # (27,1): FastHistorySvc.Dump = 1
+JobOptionsSvc        INFO # (28,1): FastHistorySvc.OutputFile = "history.dat"
+JobOptionsSvc        INFO # (35,1): ApplicationMgr.EvtMax = 2
+JobOptionsSvc        INFO # (36,1): ApplicationMgr.EvtSel = "NONE"
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/History.opts
 ApplicationMgr      DEBUG Getting my own properties[m
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on lxplus416.cern.ch on Wed Mar 16 14:08:11 2011
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r4)
+                                          running on pclhcb117 on Mon Nov 18 11:32:12 2013
 ====================================================================================================================================[m
 ApplicationMgr       INFO Application Manager Configured successfully[m
 ServiceManager      DEBUG Initializing service StatusCodeSvc[m
@@ -57,6 +50,7 @@ HistogramPersis...  DEBUG Service base class initialized successfully[m
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc[m
 ServiceManager      DEBUG Initializing service HistorySvc[m
 HistorySvc          DEBUG Service base class initialized successfully[m
+HistorySvc          DEBUG Initializing HistorySvc[m
 AlgContextSvc       DEBUG Service base class initialized successfully[m
 AlgContextSvc     VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
 IncidentSvc         DEBUG Adding [BeginEvent] listener 'AlgContextSvc' with priority 0[m
@@ -79,17 +73,40 @@ ToolSvc             DEBUG START transition for AlgTools[m
 ServiceManager      DEBUG Starting service EventLoopMgr[m
 ServiceManager      DEBUG Starting service HistorySvc[m
 ApplicationMgr       INFO Application Manager Started successfully[m
-IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [BeginEvent][m
-IncidentSvc       VERBOSE Calling 'HistorySvc' for incident [BeginEvent][m
 HistorySvc        VERBOSE ServiceLocatorHelper::service: found service JobOptionsSvc[m
-HistorySvc           INFO Registered 1 Algorithms[m
+HistorySvc          DEBUG Registering algorithm: [96;1mHistory[m
+HistorySvc           INFO [mRegistered 1 Algorithms[m
 HistorySvc           INFO Registered 0 AlgTools[m
-HistorySvc           INFO [m[m[m[m[m[m[m[m[m[m[m[m[mRegistered 13 Services[m
-IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [EndEvent][m
-IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [BeginEvent][m
+HistorySvc          DEBUG Registering Service: [96;1mStatusCodeSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mMessageSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mJobOptionsSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mAppMgrRunable[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mIncidentSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mEventPersistencySvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mEventDataSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mHistogramPersistencySvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mHistogramDataSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mAlgContextSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mToolSvc[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mEventLoopMgr[m
+HistorySvc          DEBUG [mRegistering Service: [96;1mHistorySvc[m
+HistorySvc           INFO [mRegistered 13 Services[m
 ServiceManager      DEBUG Stopping service HistorySvc[m
+HistorySvc        VERBOSE MessageSvc is Service[m
+HistorySvc        VERBOSE JobOptionsSvc is Service[m
+HistorySvc        VERBOSE StatusCodeSvc is Service[m
+HistorySvc        VERBOSE EventLoopMgr is Service[m
+HistorySvc        VERBOSE AppMgrRunable is Service[m
+HistorySvc        VERBOSE HistorySvc is Service[m
+HistorySvc        VERBOSE IncidentSvc is Service[m
+HistorySvc        VERBOSE EventDataSvc is Service[m
+HistorySvc        VERBOSE EventPersistencySvc is Service[m
+HistorySvc        VERBOSE HistogramDataSvc is Service[m
+HistorySvc        VERBOSE HistogramPersistencySvc is Service[m
+HistorySvc        VERBOSE AlgContextSvc is Service[m
+HistorySvc        VERBOSE ToolSvc is Service[m
+HistorySvc        VERBOSE History is Alg[m
 ServiceManager      DEBUG Stopping service EventLoopMgr[m
-IncidentSvc       VERBOSE Calling 'AlgContextSvc' for incident [EndEvent][m
 ServiceManager      DEBUG Stopping service ToolSvc[m
 ToolSvc             DEBUG STOP transition for AlgTools[m
 ServiceManager      DEBUG Stopping service AlgContextSvc[m
@@ -101,8 +118,6 @@ ServiceManager      DEBUG Stopping service IncidentSvc[m
 ServiceManager      DEBUG Stopping service AppMgrRunable[m
 ServiceManager      DEBUG Stopping service StatusCodeSvc[m
 ApplicationMgr       INFO Application Manager Stopped successfully[m
-ServiceManager      DEBUG Finalizing service HistorySvc[m
-HistorySvc           INFO Service finalised successfully[m
 ServiceManager      DEBUG Finalizing service EventLoopMgr[m
 IncidentSvc         DEBUG Removing [AbortEvent] listener '<unknown>'[m
 EventLoopMgr         INFO Histograms converted successfully according to request.[m
@@ -120,11 +135,15 @@ IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0(+-0)/0/0[ms] T
 ServiceManager      DEBUG Finalizing service AppMgrRunable[m
 ServiceManager      DEBUG Finalizing service HistogramDataSvc[m
 ServiceManager      DEBUG Finalizing service HistogramPersistencySvc[m
+ServiceManager      DEBUG Finalizing service HistorySvc[m
+HistorySvc        VERBOSE HistorySvc::finalize()[m
+HistorySvc           INFO Service finalised successfully[m
 ServiceManager      DEBUG Finalizing service StatusCodeSvc[m
-ServiceManager      DEBUG Service reference count check:[m
+ServiceManager      DEBUG Looping over all active services...[m
 ServiceManager      DEBUG ---- StatusCodeSvc (refCount = 3)[m
 ServiceManager      DEBUG ---- MessageSvc (refCount = 15)[m
 ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 4)[m
+ServiceManager      DEBUG ---- HistorySvc (refCount = 4)[m
 ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 3)[m
 ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 4)[m
 ServiceManager      DEBUG ---- AppMgrRunable (refCount = 4)[m
@@ -134,6 +153,5 @@ ServiceManager      DEBUG ---- EventDataSvc (refCount = 4)[m
 ServiceManager      DEBUG ---- AlgContextSvc (refCount = 4)[m
 ServiceManager      DEBUG ---- ToolSvc (refCount = 4)[m
 ServiceManager      DEBUG ---- EventLoopMgr (refCount = 4)[m
-ServiceManager      DEBUG ---- HistorySvc (refCount = 4)[m
 ApplicationMgr       INFO Application Manager Finalized successfully[m
 ApplicationMgr       INFO Application Manager Terminated successfully[m

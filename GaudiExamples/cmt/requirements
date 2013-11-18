@@ -8,13 +8,14 @@ use AIDA         * LCG_Interfaces
 
 use Gaudi        *
 
-use GaudiPartProp  * -no_auto_imports
+apply_pattern use_unless pkg=GaudiPartProp tag=ATLAS ver="*" opt="-no_auto_imports"
+
 use PartPropSvc  * -no_auto_imports
 use GaudiPython  * -no_auto_imports
 use GaudiGSL     *
 use RootHistCnv  * -no_auto_imports
 
-use RootCnv * -no_auto_imports
+apply_pattern use_unless pkg=RootCnv tag=ATLAS ver="*" opt="-no_auto_imports"
 
 use Boost * LCG_Interfaces
 use HepPDT * LCG_Interfaces
@@ -55,6 +56,7 @@ library GaudiExamples    -import=Reflex -no_static \
                           SvcInitLoop/*.cpp \
                           StringKeys/*.cpp \
                           StatusCodeSvc/*.cpp \
+                          FileMgr/*.cpp \
                           testing/*.cpp \
                           IntelProfiler/*.cpp \
                           Dll/GaudiExamples*.cpp

@@ -5,6 +5,7 @@
 // Include Files
 #include "GaudiKernel/IInterface.h"
 #include <string>
+#include <vector>
 
 // Forward declarations
 class IIncidentListener;
@@ -39,6 +40,9 @@ public:
   */
   virtual void removeListener(IIncidentListener* lis,
                               const std::string& type = "" ) = 0;
+
+  virtual void getListeners(std::vector<IIncidentListener*>& lis,
+			    const std::string& type = "") const = 0;
 
   /** Fire an Incident
       @param Incident being fired

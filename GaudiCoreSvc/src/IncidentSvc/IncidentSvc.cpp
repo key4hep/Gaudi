@@ -294,6 +294,31 @@ void IncidentSvc::fireIncident( const Incident& incident )
   }
 
 }
+
+// ============================================================================
+void 
+IncidentSvc::getListeners(std::vector<IIncidentListener*>& lis, 
+			  const std::string& type) const
+{
+
+  boost::recursive_mutex::scoped_lock lock(m_listenerMapMutex);
+
+  std::string ltype;
+  if (type == "") { ltype = "ALL"; } else { ltype = type; }
+
+  lis.clear();
+
+  ListenerMap::const_iterator itr=m_listenerMap.find( ltype );
+  if (itr == m_listenerMap.end()) return;
+
+  ListenerList::const_iterator itlist;
+  for (itlist = itr->second->begin(); itlist != itr->second->end(); ++itlist) {
+    lis.push_back(itlist->iListener);
+  }
+
+
+}
+
 // ============================================================================
 // The END
 // ============================================================================

@@ -1,6 +1,42 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-11-18 - Marco Clemencic
+ - Minor change in GaudiTest to absorb a change in a debug message.
+
+============================= GaudiPolicy-13-00-00 =========================
+! 2013-08-30 - Charles Leggett
+ - retag for Atlas merge
+
+! 2013-04-18 - Charles Leggett
+ - patches for CMT v1r26
+
+M       cmt/requirements
+
+! 2013-04-05 - Charles Leggett
+ - merge macro and pattern for genconf extra modules, make it tag dependent
+
+M       cmt/requirements
+
+! 2013-04-05 - Charles Leggett
+ - add macro and pattern for loading of optional modules into <pkg>Conf.py 
+   files via genconf. This eases the transition of ATLAS packages that 
+   imported modules that used to be in GaudiSvc but are now in GaudiCoreSvc or 
+   GaudiCommonSvc
+
+M       cmt/requirements
+M       cmt/fragments/nmake/genconfig_header
+M       cmt/fragments/genconfig_header
+
+! 2013-03-05 - Charles Leggett
+ - Merge with GaudiPolicy-11-01-16
+   - Conditional usage
+   - extra env vars
+   - install.py hack for darwin cp on afs
+
+M       cmt/requirements
+M       scripts/install.py
+
 ============================= GaudiPolicy v12r8 ==============================
 ! 2013-09-25 - Marco Clemencic
  - Changed GaudiTest.py to set LC_ALL to C, to avoid the new message from

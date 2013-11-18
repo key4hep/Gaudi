@@ -21,7 +21,7 @@ class JobHistory;
  *
  */
 
-class GAUDI_API AlgToolHistory: public HistoryObj, virtual public IVersHistoryObj {
+class GAUDI_API AlgToolHistory: public HistoryObj, public IVersHistoryObj {
 
 private:  // data
 

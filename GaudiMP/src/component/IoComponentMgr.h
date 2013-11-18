@@ -20,13 +20,15 @@
 // GaudiKernel
 #include "GaudiKernel/IIoComponent.h"
 #include "GaudiKernel/IIoComponentMgr.h"
+#include "GaudiKernel/IIncidentListener.h"
 
 // Forward declaration
 class ISvcLocator;
 template <class TYPE> class SvcFactory;
 
 
-class IoComponentMgr: public extends1<Service, IIoComponentMgr> {
+class IoComponentMgr: public extends2<Service, IIoComponentMgr,
+		      IIncidentListener> {
 
   friend class SvcFactory<IoComponentMgr>;
 
@@ -52,6 +54,8 @@ class IoComponentMgr: public extends1<Service, IIoComponentMgr> {
   virtual StatusCode finalize();
 
   //@}
+
+  void handle(const Incident&);
 
   /////////////////////////////////////////////////////////////////// 
   // Const methods: 
@@ -91,7 +95,29 @@ class IoComponentMgr: public extends1<Service, IIoComponentMgr> {
   virtual
   StatusCode io_register (IIoComponent* iocomponent,
 			  IIoComponentMgr::IoMode::Type iomode,
-			  const std::string& fname);
+			  const std::string& fname,
+			  const std::string& pfn);
+
+  /** @brief: allow a @c IIoComponent to update the contents of the
+   *          registry with a new file name
+   */
+  virtual
+  StatusCode io_update (IIoComponent* iocomponent,
+			const std::string& old_fname,
+			const std::string& new_fname);
+
+  /** @brief: allow a @c IIoComponent to update the contents of the
+   *          registry with a new work directory
+   */
+  virtual
+  StatusCode io_update (IIoComponent* iocomponent,
+			const std::string& work_dir);
+
+  // VT. new method
+  /** @brief: Update all @c IIoComponents with a new work directory
+   */
+  virtual
+  StatusCode io_update_all (const std::string& work_dir);
 
   /** @brief: retrieve the new filename for a given @c IIoComponent and
    *          @param `fname` filename
@@ -119,6 +145,42 @@ class IoComponentMgr: public extends1<Service, IIoComponentMgr> {
   /////////////////////////////////////////////////////////////////// 
  private: 
 
+  struct IoComponentEntry {
+    std::string m_oldfname;
+    std::string m_oldabspath; // VT. store absolute path
+    std::string m_newfname;
+    IIoComponentMgr::IoMode::Type m_iomode;
+
+    IoComponentEntry():m_oldfname(""),m_oldabspath(""),m_newfname(""), // VT. changes
+		       m_iomode(IIoComponentMgr::IoMode::INVALID) {}
+    IoComponentEntry(const std::string& f, const std::string& p,       // VT. changes
+		     const IIoComponentMgr::IoMode::Type& t)
+      : m_oldfname(f), m_oldabspath(p),m_newfname(""), m_iomode(t){}   // VT. changes
+    IoComponentEntry(const IoComponentEntry& rhs):m_oldfname(rhs.m_oldfname),
+						  m_oldabspath(rhs.m_oldabspath), // VT. changes
+						  m_newfname(rhs.m_newfname),
+						  m_iomode(rhs.m_iomode){}
+    bool operator < (IoComponentEntry const &rhs) const {
+      if (m_oldfname == rhs.m_oldfname) {
+	return (m_iomode < rhs.m_iomode);
+      } else {
+	return (m_oldfname < rhs.m_oldfname);
+      }
+    }
+
+    friend std::ostream& operator<< ( std::ostream& os, const IoComponentEntry& c) {
+      os << "old: \"" << c.m_oldfname 
+	 << "\"  absolute path: \"" << c.m_oldabspath
+	 << "\"  new: \"" << c.m_newfname
+	 << "\"  m: " << ( (c.m_iomode == IIoComponentMgr::IoMode::READ) ? 
+			 "R" : "W" );
+      return os;
+    }
+
+  };
+
+
+
   /// Default constructor: 
   IoComponentMgr();
 
@@ -132,13 +194,22 @@ class IoComponentMgr: public extends1<Service, IIoComponentMgr> {
   /// Stack of @c IIoComponents to properly handle order of registration
   IoStack_t m_iostack;
 
-  /** pointer to a python dictionary holding the associations:
-   *    { 'iocomp-name' : { 'oldfname' : [ 'iomode', 'newfname' ] } }
-   */
-  PyObject *m_dict;
+
+  // This is the registry
+  typedef std::multimap<IIoComponent*, IoComponentEntry > IoDict_t;
+  typedef IoDict_t::const_iterator iodITR;
+
+  IoDict_t m_cdict;
 
   /// location of the python dictionary
   std::string m_dict_location;
+
+  bool findComp(IIoComponent*, const std::string&, iodITR& ) const;
+  bool findComp(IIoComponent*, std::pair<iodITR,iodITR>& ) const;
+  bool findComp(const std::string&, std::pair<iodITR,iodITR>& ) const;
+
+  std::string list() const;
+
 
 }; 
 

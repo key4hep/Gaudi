@@ -70,7 +70,7 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
       return StatusCode::FAILURE;
     }
     to = dynamic_cast<TObject*>(hist);
-    hid = THistID(uid,temp,to,f);
+    hid = THistID(uid,temp,to,f,m_files.find(stream)->second.second);
 
   } else if (hist == 0) {
     m_log << MSG::ERROR << "Unable to read in hist with id: \""
@@ -93,7 +93,7 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
       return StatusCode::FAILURE;
     }
 
-    hid = THistID(uid,temp,to,f);
+    hid = THistID(uid,temp,to,f,m_files.find(stream)->second.second);
     TDirectory* dir = changeDir(hid);
 
     if ( dynamic_cast<TTree*>(hist) != 0 ) {

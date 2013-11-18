@@ -458,6 +458,8 @@ for w,o,r in [
               ("ServiceLocatorHelper::", "ServiceLocatorHelper::(create|locate)Service", "ServiceLocatorHelper::service"),
               # Remove the leading 0 in Windows' exponential format
               (None, r"e([-+])0([0-9][0-9])", r"e\1\2"),
+              # Output line changed in Gaudi v24
+              (None, r'Service reference count check:', r'Looping over all active services...'),
               ]: #[ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
     normalizeExamples += RegexpReplacer(o,r,w)
 normalizeExamples = LineSkipper(["//GP:",
