@@ -184,8 +184,6 @@ private:
   /// Method to check if an event failed and take appropriate actions
   StatusCode eventFailed(EventContext* eventContext);
 
-  /// List of events to be skipped. The number is the number in the job.
-  std::vector<unsigned int> m_eventNumberBlacklist;
 
   // States management ------------------------------------------------------
 

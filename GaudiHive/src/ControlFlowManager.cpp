@@ -43,7 +43,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  int DecisionNode::updateState(std::vector<State>& states,
+  int DecisionNode::updateState(AlgsExecutionStates& states,
                                 std::vector<int>& node_decisions) const {
     // check whether we already had a result earlier
     //    if (-1 != node_decisions[m_nodeIndex] ) { return node_decisions[m_nodeIndex]; }
@@ -72,7 +72,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void DecisionNode::updateDecision(std::vector<State>& states,
+  void DecisionNode::updateDecision(AlgsExecutionStates& states,
                                     std::vector<int>& node_decisions) const {
     int decision = ((m_allPass && m_isLazy) ? 1 : -1);
     bool hasUndecidedChild = false;
@@ -89,8 +89,8 @@ namespace concurrency {
       if (-1 == res) {
         hasUndecidedChild = true;
         //daughter->promoteToControlReadyState(states, node_decisions);
-        State& state = states[daughter->getNodeIndex()];
-        if (State::INITIAL == state) state = State::CONTROLREADY;
+        if (State::INITIAL == states[daughter->getNodeIndex()])
+        	states.updateState(daughter->getNodeIndex(), State::CONTROLREADY);
       // "and"-mode (once first result false, the overall decision is false)
       } else if (false == m_modeOR && res == 0) {
         decision = 0;
@@ -120,7 +120,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void DecisionNode::promoteToControlReadyState(std::vector<State>& states,
+  void DecisionNode::promoteToControlReadyState(AlgsExecutionStates& states,
                                                 std::vector<int>& node_decisions) const {
     //std::cout << "REACHED DECISNODE " << m_nodeName << std::endl;
     if (-1 != node_decisions[m_nodeIndex]) {
@@ -151,12 +151,12 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void AlgorithmNode::promoteToControlReadyState(std::vector<State>& states,
+  void AlgorithmNode::promoteToControlReadyState(AlgsExecutionStates& states,
                                                  std::vector<int>& node_decisions) const {
 
     //std::cout << "REACHED ALGONODE " << m_algoName << std::endl;
-    State& state = states[m_algoIndex];
-    if (State::INITIAL == state) state = State::CONTROLREADY;
+    if (State::INITIAL == states[m_algoIndex])
+    	states.updateState(m_algoIndex, State::CONTROLREADY);
   }
 
 
@@ -169,15 +169,15 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  int AlgorithmNode::updateState(std::vector<State>& states,
+  int AlgorithmNode::updateState(AlgsExecutionStates& states,
                                  std::vector<int>& node_decisions) const {
     // check whether we already had a result earlier
     //    if (-1 != node_decisions[m_nodeIndex] ) { return node_decisions[m_nodeIndex]; }
     // since we reached this point in the control flow, this algorithm is supposed to run
     // if it hasn't already
-    State& state = states[m_algoIndex];
+    const State& state = states[m_algoIndex];
     unsigned int decision = -1;
-    if (State::INITIAL == state) {state = State::CONTROLREADY;}
+    if (State::INITIAL == state) {states.updateState(m_algoIndex, State::CONTROLREADY);}
     // now derive the proper result to pass back
     if (true == m_allPass) {
       decision = 1;
@@ -193,10 +193,10 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void AlgorithmNode::updateDecision(std::vector<State>& states,
+  void AlgorithmNode::updateDecision(AlgsExecutionStates& states,
                                      std::vector<int>& node_decisions) const {
 
-    State& state = states[m_algoIndex];
+    const State& state = states[m_algoIndex];
     int decision = -1;
     //if (State::INITIAL == state) {state = State::CONTROLREADY;}
 
@@ -223,13 +223,13 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void ControlFlowManager::updateEventState(std::vector<State>& algo_states,
+  void ControlFlowManager::updateEventState(AlgsExecutionStates& algo_states,
                                             std::vector<int>& node_decisions) const {
     m_headNode->updateState(algo_states, node_decisions);
   }
 
   //---------------------------------------------------------------------------
-  void ControlFlowManager::promoteToControlReadyState(std::vector<State>& algo_states,
+  void ControlFlowManager::promoteToControlReadyState(AlgsExecutionStates& algo_states,
                                                       std::vector<int>& node_decisions) const {
     m_headNode->promoteToControlReadyState(algo_states, node_decisions);
   }

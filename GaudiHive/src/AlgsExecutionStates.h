@@ -10,7 +10,9 @@
 #include <unordered_map>
 #include <functional>
 #include <thread>
+#include <iterator>
 
+#include <boost/dynamic_bitset.hpp>
 
 //---------------------------------------------------------------------------
 
@@ -25,106 +27,128 @@
  */
 class AlgsExecutionStates{
 public:
-    
-  /// Execution states of the algorithms
-  enum State : unsigned short {
-    INITIAL,
-      CONTROLREADY,
-      DATAREADY,
-      SCHEDULED,
-      EVTACCEPTED,
-      EVTREJECTED,
-        ERROR
-      };
-    
-  static std::map<State,std::string> stateNames;
-    
-  AlgsExecutionStates(unsigned int algsNumber, SmartIF<IMessageSvc> MS):
-    m_states(algsNumber,INITIAL),
-    m_MS(MS){};    
-    ~AlgsExecutionStates(){};
-    StatusCode updateState(unsigned int iAlgo,State newState){
-      MsgStream log(m_MS, "AlgExecutionStates");
-      const unsigned int states_size = m_states.size();
-      if (iAlgo>=states_size)
-        log << MSG::ERROR << "Index out of bound ("
-            << iAlgo << " and the size of the states vector is "
-            << states_size << ")" << endmsg;
-      switch (newState) {
-      case INITIAL:
-	log << MSG::ERROR << "[AlgIndex " << iAlgo <<"] Transition to INITIAL is not defined.";
-	return StatusCode::FAILURE;
-        //
-      case CONTROLREADY:
-	if (m_states[iAlgo]!=INITIAL){
-	  log << MSG::ERROR << "[AlgIndex " << iAlgo <<"] Transition to CONTROLREADY possible only from INITIAL state! The state is " << m_states[iAlgo] << endmsg;
-	  return StatusCode::FAILURE;              
-	} else {     
-	  m_states[iAlgo]=CONTROLREADY;
-	  return StatusCode::SUCCESS; 
-	}
-        //
-      case DATAREADY:
-	if (m_states[iAlgo]!=CONTROLREADY){
-	  log << MSG::ERROR  << "[AlgIndex " << iAlgo <<"] Transition to DATAREADY possible only from CONTROLREADY state!The state is " << m_states[iAlgo] << endmsg;
-	  return StatusCode::FAILURE;              
-	} else {       
-	  m_states[iAlgo]=DATAREADY;
-	  return StatusCode::SUCCESS; 
-	}
-      case SCHEDULED:
-	if (m_states[iAlgo]!=DATAREADY){
-	  log << MSG::ERROR  << "[AlgIndex " << iAlgo <<"] Transition to SCHEDULED possible only from DATAREADY state! The state is " << m_states[iAlgo] << endmsg;
-	  return StatusCode::FAILURE;              
-	} else {
-	  m_states[iAlgo]=SCHEDULED;
-	  return StatusCode::SUCCESS; 
-	}           
-        //
-      case EVTACCEPTED:
-	if (m_states[iAlgo]!=SCHEDULED){
-	  log << MSG::ERROR  << "[AlgIndex " << iAlgo <<"] Transition to EVTACCEPTED possible only from SCHEDULED state! The state is " << m_states[iAlgo] << endmsg;
-	  return StatusCode::FAILURE;   
-	} else {
-	  m_states[iAlgo]=EVTACCEPTED;
-	  return StatusCode::SUCCESS; 
-	} 
-        //
-      default:
-      case EVTREJECTED:
-        if (m_states[iAlgo]!=SCHEDULED){
-          log << MSG::ERROR  << "[AlgIndex " << iAlgo <<"] Transition to EVTACCEPTED possible only from SCHEDULED state! The state is " << m_states[iAlgo] << endmsg;
-          return StatusCode::FAILURE;
-        } else {
-          m_states[iAlgo]=EVTREJECTED;
-          return StatusCode::SUCCESS;
-        }
-        //                                
-	log << MSG::ERROR  << "[AlgIndex " << iAlgo <<"] Undefined state!" << endmsg;
-	return StatusCode::FAILURE;
-      }
-      return StatusCode::FAILURE;
-    };
-    
-    void reset(){m_states.assign(m_states.size(),INITIAL);};
-    bool algsPresent(State state) const{return std::find(m_states.begin(),m_states.end(),state)!=m_states.end();}
-    bool allAlgsExecuted(){
-      int execAlgos=std::count_if(m_states.begin(),m_states.end(),[](State s) {return (s == EVTACCEPTED || s== EVTREJECTED);});
-      return m_states.size() == (unsigned int)execAlgos; };
-    inline State algorithmState(unsigned int iAlgo){return iAlgo>=m_states.size()? ERROR : m_states[iAlgo];};
 
-    typedef std::vector<State> states_vector;
-    typedef states_vector::iterator vectIt;
-    typedef states_vector::const_iterator const_vectIt;
-    vectIt begin(){return m_states.begin();}; 
-    vectIt end(){return m_states.end();};  
-    const_vectIt begin() const{const_vectIt it = m_states.begin();return it;};
-    const_vectIt end() const{const_vectIt it = m_states.end();return it;};
+	/// Execution states of the algorithms
+	enum State : unsigned short {
+		INITIAL = 0,
+		CONTROLREADY = 1,
+		DATAREADY = 2,
+		SCHEDULED = 3,
+		EVTACCEPTED = 4,
+		EVTREJECTED = 5,
+		ERROR = 6
+	};
 
-    states_vector m_states;    
- private:
-    SmartIF<IMessageSvc> m_MS;
-    
+	static std::map<State,std::string> stateNames;
+
+	AlgsExecutionStates(unsigned int algsNumber, SmartIF<IMessageSvc> MS):
+		m_MS(MS) {
+
+		for(uint i = INITIAL; i <= ERROR; ++i)
+			m_states[i] = boost::dynamic_bitset<>(algsNumber); //everything initialized to zero
+
+		m_states[INITIAL].set();
+	};
+
+	~AlgsExecutionStates(){};
+
+	StatusCode updateState(unsigned int iAlgo,State newState);
+
+	void reset(){
+		m_states[INITIAL].set();
+
+		for(uint i = (INITIAL+1); i <= ERROR; ++i)
+			m_states[i].reset();
+	};
+
+	bool algsPresent(State state) const {
+		return m_states.at(state).any();
+	};
+
+	bool allAlgsExecuted() const {
+		return m_states.at(EVTACCEPTED).count() + m_states.at(EVTREJECTED).count() == m_states.at(INITIAL).size();
+	};
+
+	State operator[](unsigned int i) const {
+
+		for(uint k = INITIAL; k <= ERROR; ++k) //early access, because often in lower state
+			if(m_states.at(k).test(i))
+				return State(k);
+
+		return ERROR;
+
+	};
+
+	size_t size() const {
+		return m_states.at(INITIAL).size();
+	}
+
+private:
+	std::unordered_map<uint, boost::dynamic_bitset<> > m_states;
+	SmartIF<IMessageSvc> m_MS;
+
+public:
+	class Iterator : public std::iterator<std::forward_iterator_tag, uint> {
+
+	public:
+
+		enum POS { BEGIN, END};
+
+		Iterator(POS pos, const boost::dynamic_bitset<> & bs) : bs_(&bs) {
+			if(pos == POS::BEGIN)
+				pos_ = bs_->find_first();
+			if(pos == POS::END)
+				pos_ = boost::dynamic_bitset<>::npos;
+			//std::cout << "initialized iterator at " << pos_ << std::endl;
+		}
+
+		~Iterator() {}
+
+		Iterator& operator=(const Iterator& other){
+			pos_ = other.pos_;
+			bs_ = other.bs_;
+			return(*this);
+		}
+
+		bool operator==(const Iterator& other){
+			return bs_ == other.bs_ && pos_ == other.pos_;
+		}
+
+		bool operator!=(const Iterator& other){
+			return bs_ != other.bs_ || pos_ != other.pos_;
+		}
+
+		Iterator& operator++(){
+			if (pos_ != boost::dynamic_bitset<>::npos){
+				pos_ = bs_->find_next(pos_);
+				//std::cout << "advanced iterator to " << pos_ << std::endl;
+			}
+			return(*this);
+		}
+
+		Iterator& operator++(int){
+			return(++(*this));
+		}
+
+		uint operator*(){
+			return pos_;
+		}
+
+	private:
+		boost::dynamic_bitset<>::size_type pos_;
+		const boost::dynamic_bitset<> * bs_;
+	};
+
+	Iterator begin(State kind)
+	{
+		return(Iterator(Iterator::POS::BEGIN, m_states.at(kind)));
+	}
+
+	Iterator end(State kind)
+	{
+		return(Iterator(Iterator::POS::END, m_states.at(kind)));
+	}
+
 };
 
 #endif // GAUDIHIVE_ALGSEXECUTIONSTATES_H

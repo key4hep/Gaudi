@@ -101,7 +101,7 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
   }
 
   if(sc.isFailure())
-	  error() << "No instance of algorithm " << name << " could be retrieved" << endmsg;
+	  debug() << "No instance of algorithm " << name << " could be retrieved in non-blocking mode" << endmsg;
 
   //  if (m_lazyCreation ) {
   // TODO: fill the lazyCreation part

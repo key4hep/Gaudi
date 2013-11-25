@@ -26,10 +26,10 @@ namespace concurrency {
     virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map,
                             GraphMap& graph_map) = 0;
     /// XXX: CF tests. Method to set algos to CONTROLREADY, if possible
-    virtual void promoteToControlReadyState(std::vector<State>& states,
+    virtual void promoteToControlReadyState(AlgsExecutionStates& states,
                                             std::vector<int>& node_decisions) const = 0;
     /// XXX: CF tests. Method to set algos to CONTROLREADY, if possible
-    virtual int updateState(std::vector<State>& states,
+    virtual int updateState(AlgsExecutionStates& states,
                             std::vector<int>& node_decisions) const = 0;
     /// Print a string representing the control flow state
     virtual void printState(std::stringstream& output,
@@ -37,7 +37,7 @@ namespace concurrency {
                             const unsigned int& recursionLevel) const = 0;
     /// XXX: CF tests.
     unsigned int getNodeIndex() { return m_nodeIndex; }
-    virtual void updateDecision(std::vector<State>& states,
+    virtual void updateDecision(AlgsExecutionStates& states,
                                 std::vector<int>& node_decisions) const = 0;
   protected:
     /// Translation between state id and name
@@ -62,13 +62,13 @@ namespace concurrency {
     virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map,
                             GraphMap& graph_map);
     /// XXX: CF tests. Method to set algos to CONTROLREADY, if possible
-    virtual void promoteToControlReadyState(std::vector<State>& states,
+    virtual void promoteToControlReadyState(AlgsExecutionStates& states,
                                             std::vector<int>& node_decisions) const;
     /// XXX: CF tests
-    virtual void updateDecision(std::vector<State>& states,
+    virtual void updateDecision(AlgsExecutionStates& states,
                                 std::vector<int>& node_decisions) const;
     /// Method to set algos to CONTROLREADY, if possible
-    virtual int updateState(std::vector<State>& states,
+    virtual int updateState(AlgsExecutionStates& states,
                             std::vector<int>& node_decisions) const;
     /// XXX: CF tests. Method to add a parent node
     void addParentNode(DecisionNode* node) { m_parentNode = node; }
@@ -111,13 +111,13 @@ namespace concurrency {
     /// XXX: CF tests. Method to add a parent node
     void addParentNode(DecisionNode* node) { m_parentNode = node; }
     /// Method to set algos to CONTROLREADY, if possible
-    virtual int updateState(std::vector<State>& states,
+    virtual int updateState(AlgsExecutionStates& states,
                             std::vector<int>& node_decisions) const;
     /// XXX: CF tests.
-    virtual void promoteToControlReadyState(std::vector<State>& states,
+    virtual void promoteToControlReadyState(AlgsExecutionStates& states,
                                             std::vector<int>& node_decisions) const;
     /// XXX: CF tests.
-    virtual void updateDecision(std::vector<State>& states,
+    virtual void updateDecision(AlgsExecutionStates& states,
                                 std::vector<int>& node_decisions) const;
     /// Print a string representing the control flow state
     virtual void printState(std::stringstream& output,
@@ -154,12 +154,12 @@ public:
   /// A little bit silly, but who cares. ;-)
   bool needsAlgorithmToRun(const unsigned int iAlgo) const;
   /// Update the state of algorithms to controlready, where possible
-  void updateEventState(std::vector<State>& algo_states,
+  void updateEventState(AlgsExecutionStates & algo_states,
                         std::vector<int>& node_decisions) const;
   /// XXX: CF tests.
-  void updateEventState(std::vector<State>& algo_states) const;
+  void updateEventState(AlgsExecutionStates& algo_states) const;
   /// XXX: CF tests
-  void promoteToControlReadyState(std::vector<State>& algo_states,
+  void promoteToControlReadyState(AlgsExecutionStates& algo_states,
                                   std::vector<int>& node_decisions) const;
   /// Initialize the control flow manager
   /// It greps the topalg list and the index map for the algo names

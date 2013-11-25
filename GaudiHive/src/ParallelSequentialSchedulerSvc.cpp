@@ -7,6 +7,8 @@
 #include "GaudiKernel/CommonMessaging.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 
+#include "GaudiKernel/ContextSpecificPtr.h"
+
 // C++
 #include <list>
 #include <thread>
@@ -233,8 +235,8 @@ tbb::task* SequentialTask::execute() {
 	const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>(m_scheduler->m_algResourcePool.get());
 	std::vector<int> nodeDecisions(algPool->getControlFlowNodeCounter(), -1);
 
-	m_scheduler->m_controlFlow.updateEventState(algStates.m_states, nodeDecisions);
-	m_scheduler->m_controlFlow.promoteToControlReadyState(algStates.m_states, nodeDecisions);
+	m_scheduler->m_controlFlow.updateEventState(algStates, nodeDecisions);
+	m_scheduler->m_controlFlow.promoteToControlReadyState(algStates, nodeDecisions);
 
 	//initialize data flow manager
 	//DataFlowManager dataFlow(m_scheduler->m_algosDependencies);
@@ -242,91 +244,92 @@ tbb::task* SequentialTask::execute() {
 	//intitialize context
 	m_eventContext->m_thread_id = pthread_self();
 	bool eventFailed = false;
+	Gaudi::Hive::setCurrentContextId(m_eventContext->m_evt_slot);
 
 	// loop while algorithms are controlFlowReady and event has not failed
 	while(!eventFailed && algStates.algsPresent(AlgsExecutionStates::State::CONTROLREADY) ){
 
 		//std::cout << "[" << m_eventContext->m_evt_num << "] algorithms left" << std::endl;
 
-		std::for_each(m_scheduler->m_algList.begin(), m_scheduler->m_algList.end(),
+		//std::for_each(m_scheduler->m_algList.begin(), m_scheduler->m_algList.end(),
 
-				[&] (IAlgorithm* ialgorithm) {
+		//[&] (IAlgorithm* ialgorithm) {
+		for(auto it = algStates.begin(AlgsExecutionStates::State::CONTROLREADY); it != algStates.end(AlgsExecutionStates::State::CONTROLREADY); ++it){
 
-					uint algIndex = m_scheduler->m_algname_index_map[ialgorithm->name()];
+			uint algIndex = *it;
 
-					if(AlgsExecutionStates::State::CONTROLREADY == algStates.algorithmState(algIndex)){
-							//&& dataFlow.canAlgorithmRun(algIndex)){
+			std::string algName = m_scheduler->m_algname_vect[algIndex];
 
-						//promote algorithm to data ready
-						algStates.updateState(algIndex,AlgsExecutionStates::DATAREADY);
+			//promote algorithm to data ready
+			algStates.updateState(algIndex,AlgsExecutionStates::DATAREADY);
 
-						//std::cout << "Running algorithm [" << algIndex << "] " << ialgorithm->name() << " for event " << m_eventContext->m_evt_num << std::endl;
-						log << MSG::DEBUG << "Running algorithm [" << algIndex << "] " << ialgorithm->name() << " for event " << m_eventContext->m_evt_num << endmsg;
+			//std::cout << "Running algorithm [" << algIndex << "] " << ialgorithm->name() << " for event " << m_eventContext->m_evt_num << std::endl;
+			log << MSG::DEBUG << "Running algorithm [" << algIndex << "] " << algName << " for event " << m_eventContext->m_evt_num << endmsg;
 
-						IAlgorithm* ialgoPtr=nullptr;
-						sc = m_algPool->acquireAlgorithm(ialgorithm->name(),ialgoPtr, true); //blocking call
+			IAlgorithm* ialgoPtr=nullptr;
+			sc = m_algPool->acquireAlgorithm(algName,ialgoPtr, true); //blocking call
 
-						if(sc.isFailure() || ialgoPtr == nullptr){
-							log << MSG::ERROR << "Could not acquire algorithm " << ialgorithm->name() << endmsg;
-							m_eventContext->m_evt_failed=true;
-						} else { // we got an algorithm
+			if(sc.isFailure() || ialgoPtr == nullptr){
+				log << MSG::ERROR << "Could not acquire algorithm " << algName << endmsg;
+				m_eventContext->m_evt_failed=true;
+			} else { // we got an algorithm
 
-							//promote algorithm to scheduled
-							algStates.updateState(algIndex,AlgsExecutionStates::SCHEDULED);
+				//promote algorithm to scheduled
+				algStates.updateState(algIndex,AlgsExecutionStates::SCHEDULED);
 
-							Algorithm* algoPtr = dynamic_cast<Algorithm*> (ialgoPtr); // DP: expose the setter of the context?
-							algoPtr->setContext(m_eventContext);
+				Algorithm* algoPtr = dynamic_cast<Algorithm*> (ialgoPtr); // DP: expose the setter of the context?
+				algoPtr->setContext(m_eventContext);
 
-							// Call the execute() method
-							try {
-								RetCodeGuard rcg(appmgr, Gaudi::ReturnCode::UnhandledException);
-								sc = algoPtr->sysExecute();
-								if (UNLIKELY(!sc.isSuccess()))  {
-									log << MSG::WARNING  << "Execution of algorithm " << ialgorithm->name() << " failed" << endmsg;
-									eventFailed = true;
-								}
-								rcg.ignore(); // disarm the guard
-							} catch ( const GaudiException& Exception ) {
-								log << MSG::ERROR << ".executeEvent(): Exception with tag=" << Exception.tag()
-																				   << " thrown by " << ialgorithm->name() << endmsg;
-								log << MSG::ERROR << Exception << endmsg;
-							} catch ( const std::exception& Exception ) {
-								log << MSG::FATAL << ".executeEvent(): Standard std::exception thrown by "
-										<< ialgorithm->name() << endmsg;
-								log << MSG::ERROR <<  Exception.what()  << endmsg;
-							} catch(...) {
-								log << MSG::FATAL << ".executeEvent(): UNKNOWN Exception thrown by "
-										<< ialgorithm->name() << endmsg;
-							}
+				// Call the execute() method
+				try {
+					RetCodeGuard rcg(appmgr, Gaudi::ReturnCode::UnhandledException);
+					sc = algoPtr->sysExecute();
+					if (UNLIKELY(!sc.isSuccess()))  {
+						log << MSG::WARNING  << "Execution of algorithm " << algName << " failed" << endmsg;
+						eventFailed = true;
+					}
+					rcg.ignore(); // disarm the guard
+				} catch ( const GaudiException& Exception ) {
+					log << MSG::ERROR << ".executeEvent(): Exception with tag=" << Exception.tag()
+																								   << " thrown by " << algName << endmsg;
+					log << MSG::ERROR << Exception << endmsg;
+				} catch ( const std::exception& Exception ) {
+					log << MSG::FATAL << ".executeEvent(): Standard std::exception thrown by "
+							<< algName << endmsg;
+					log << MSG::ERROR <<  Exception.what()  << endmsg;
+				} catch(...) {
+					log << MSG::FATAL << ".executeEvent(): UNKNOWN Exception thrown by "
+							<< algName << endmsg;
+				}
 
-							if(sc.isFailure()){
-								eventFailed = true;
-							}
+				if(sc.isFailure()){
+					eventFailed = true;
+				}
 
-							//std::cout << "Algorithm [" << algIndex << "] " << ialgorithm->name() << " for event " << m_eventContext->m_evt_num
-							//		<< (eventFailed ? " failed" : " succeeded") << std::endl;
-							log << MSG::DEBUG << "Algorithm [" << algIndex << "] " << ialgorithm->name() << " for event " << m_eventContext->m_evt_num
-									<< (eventFailed ? " failed" : " succeded") << endmsg;
+				//std::cout << "Algorithm [" << algIndex << "] " << ialgorithm->name() << " for event " << m_eventContext->m_evt_num
+				//		<< (eventFailed ? " failed" : " succeeded") << std::endl;
+				log << MSG::DEBUG << "Algorithm [" << algIndex << "] " << algName << " for event " << m_eventContext->m_evt_num
+						<< (eventFailed ? " failed" : " succeded") << endmsg;
 
-							AlgsExecutionStates::State state;
-							if (ialgoPtr->filterPassed()){
-							    state = AlgsExecutionStates::State::EVTACCEPTED;
-							} else {
-							    state = AlgsExecutionStates::State::EVTREJECTED;
-							}
+				AlgsExecutionStates::State state;
+				if (ialgoPtr->filterPassed()){
+					state = AlgsExecutionStates::State::EVTACCEPTED;
+				} else {
+					state = AlgsExecutionStates::State::EVTREJECTED;
+				}
 
-							//std::cout << "Algorithm [" << algIndex << "] " << ialgorithm->name() << " for event " << m_eventContext->m_evt_num
-							//		<< (ialgoPtr->filterPassed() ? " passed" : " rejected") << std::endl;
-							log << MSG::DEBUG << "Algorithm [" << algIndex << "] " << ialgorithm->name() << " for event " << m_eventContext->m_evt_num
-									<< (ialgoPtr->filterPassed() ? " passed" : " rejected") << endmsg;
+				//std::cout << "Algorithm [" << algIndex << "] " << ialgorithm->name() << " for event " << m_eventContext->m_evt_num
+				//		<< (ialgoPtr->filterPassed() ? " passed" : " rejected") << std::endl;
+				log << MSG::DEBUG << "Algorithm [" << algIndex << "] " << algName << " for event " << m_eventContext->m_evt_num
+						<< (ialgoPtr->filterPassed() ? " passed" : " rejected") << endmsg;
 
-							sc = m_algPool->releaseAlgorithm(ialgorithm->name(),ialgoPtr);
+				sc = m_algPool->releaseAlgorithm(algName,ialgoPtr);
 
-							algStates.updateState(algIndex,state);
+				algStates.updateState(algIndex,state);
 
-							//just for debug: look at products -- not thread safe
-							// Update the catalog: some new products may be there
-							/*m_scheduler->m_whiteboard->selectStore(m_eventContext->m_evt_slot).ignore();
+				//just for debug: look at products -- not thread safe
+				// Update the catalog: some new products may be there
+				/*m_scheduler->m_whiteboard->selectStore(m_eventContext->m_evt_slot).ignore();
 
 							// update prods in the dataflow
 							// DP: Handles could be used. Just update what the algo wrote
@@ -335,13 +338,13 @@ tbb::task* SequentialTask::execute() {
 							for (const auto& new_product : new_products)
 								std::cout << "Found in WB: " << new_product << std::endl;
 							//dataFlow.updateDataObjectsCatalog(new_products);*/
-						}
+			}
 
-					}
-			});
+		}
+		//);
 
-		m_scheduler->m_controlFlow.updateEventState(algStates.m_states, nodeDecisions);
-		m_scheduler->m_controlFlow.promoteToControlReadyState(algStates.m_states, nodeDecisions);
+		m_scheduler->m_controlFlow.updateEventState(algStates, nodeDecisions);
+		m_scheduler->m_controlFlow.promoteToControlReadyState(algStates, nodeDecisions);
 
 		if(eventFailed){
 			m_eventContext->m_evt_failed=eventFailed;

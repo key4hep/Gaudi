@@ -7,6 +7,11 @@
 #include "GaudiKernel/Service.h" 
 #include "GaudiKernel/IAlgResourcePool.h"
 
+#include "AlgResourcePool.h"
+#include "ControlFlowManager.h"
+#include "DataFlowManager.h"
+
+
 // C++ include files
 #include <vector>
 #include <string>
@@ -63,9 +68,24 @@ public:
 
 private:
   
+  StatusCode processEvents();
+
   /// Decide if the top alglist or its flat version has to be used
   bool m_useTopAlgList;
+  SmartIF<IAlgResourcePool> m_algResourcePool;
   
+  //control flow manager
+  concurrency::ControlFlowManager m_controlFlow;
+
+  /// Vector to bookkeep the information necessary to the index2name conversion
+  std::vector<std::string> m_algname_vect;
+
+  /// Map to bookkeep the information necessary to the name2index conversion
+  std::unordered_map<std::string,unsigned int> m_algname_index_map;
+
+  /// Ugly, will disappear when the deps are declared only within the C++ code of the algos.
+  std::vector<std::vector<std::string>> m_algosDependencies;
+
   /// Cache the list of algs to be executed
   std::list<IAlgorithm*> m_algList;
   
@@ -74,6 +94,7 @@ private:
   
   /// The number of free slots (0 or 1)
   int m_freeSlots;
+  std::vector<EventContext*> m_evtCtx_buffer;
   
 };
 
