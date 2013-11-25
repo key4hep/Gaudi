@@ -15,6 +15,7 @@
 
 // External Libraries
 #include "tbb/concurrent_queue.h"
+#include <boost/dynamic_bitset.hpp>
 
 // Forward declarations
 class IIncidentSvc;
@@ -70,6 +71,12 @@ protected:
   /// Reference to the incident service
   SmartIF<IIncidentSvc> m_incidentSvc;
   
+  /// List of events to be skipped. The number is the number in the job.
+  std::vector<unsigned int> m_eventNumberBlacklist;
+
+  //if finite number of evts is processed use bitset
+  boost::dynamic_bitset<> * m_blackListBS;
+
 public:
   /// Standard Constructor
   HiveSlimEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc);

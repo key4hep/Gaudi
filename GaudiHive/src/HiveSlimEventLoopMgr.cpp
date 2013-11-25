@@ -53,6 +53,7 @@ HiveSlimEventLoopMgr::HiveSlimEventLoopMgr(const std::string& name, ISvcLocator*
   m_whiteboard        = 0;
   m_evtSelector       = 0;
   m_evtContext        = 0;
+  m_blackListBS  = nullptr;
 
   // Declare properties
   declareProperty("HistogramPersistency", m_histPersName = "");
@@ -61,6 +62,7 @@ HiveSlimEventLoopMgr::HiveSlimEventLoopMgr(const std::string& name, ISvcLocator*
       "Set this property to false to suppress warning messages");
   declareProperty("SchedulerName", m_schedulerName="ForwardSchedulerSvc",
                   "Name of the scheduler to be used");
+  declareProperty("EventNumberBlackList", m_eventNumberBlacklist);
   
   m_scheduledStop = false;
   
@@ -170,6 +172,9 @@ StatusCode HiveSlimEventLoopMgr::initialize()    {
         return StatusCode::FAILURE;
     }
     
+    std::sort(m_eventNumberBlacklist.begin(), m_eventNumberBlacklist.end());
+    info() << "Found " << m_eventNumberBlacklist.size() << " events in black list" << endmsg;
+
     return StatusCode::SUCCESS;
 }
 //--------------------------------------------------------------------------------------------
@@ -333,6 +338,18 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
 
   EventContext* evtContext(nullptr);
   
+  // Check if event number is in blacklist
+  if(LIKELY(m_blackListBS != nullptr)){ //we are processing a finite number of events, use bitset blacklist
+	  if(m_blackListBS->test(createdEvts)){
+		  info() << "Event " << createdEvts  << " on black list" << endmsg;
+		  return StatusCode::RECOVERABLE;
+	  }
+  } else  if(std::binary_search(m_eventNumberBlacklist.begin(),m_eventNumberBlacklist.end(),createdEvts)){
+
+	  info() << "Event " << createdEvts  << " on black list" << endmsg;
+	  return StatusCode::RECOVERABLE;
+  }
+
   if ( createEventContext(evtContext,createdEvts).isFailure() ){
     fatal() << "Impossible to create event context" << endmsg;
     return StatusCode::FAILURE;
@@ -383,6 +400,13 @@ StatusCode HiveSlimEventLoopMgr::executeRun( int maxevt )    {
   StatusCode  sc;
   bool eventfailed = false;
   
+  if(maxevt > 0){ //finite number of events to process
+	  m_blackListBS = new boost::dynamic_bitset<>(maxevt); //all initialized to zero
+	  for(uint i = 0; i < m_eventNumberBlacklist.size() && m_eventNumberBlacklist[i] <= maxevt; ++i ){ //black list is sorted in init
+		  m_blackListBS->set(m_eventNumberBlacklist[i], true);
+	  }
+  }
+
   sc = m_algResourcePool->beginRun();
   if (sc.isFailure()) 
     eventfailed=true;
@@ -395,6 +419,9 @@ StatusCode HiveSlimEventLoopMgr::executeRun( int maxevt )    {
   sc = m_algResourcePool->endRun();
   if (sc.isFailure())
     eventfailed=true;
+
+  if(m_blackListBS != nullptr)
+	  delete m_blackListBS;
 
   if (eventfailed) 
     return StatusCode::FAILURE;
@@ -436,6 +463,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
   
   int finishedEvts =0;
   int createdEvts =0;
+  int skippedEvts = 0;
   info() << "Starting loop on events" << endmsg;
   // Loop until the finished events did not reach the maxevt number
   bool loop_ended = false;
@@ -445,7 +473,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
   constexpr double oneOver1204 = 1./1024.;
   
   uint iteration = 0;
-  while ( !loop_ended and (maxevt < 0 or finishedEvts < maxevt)){
+  while ( !loop_ended and (maxevt < 0 or (finishedEvts+skippedEvts) < maxevt)){
 	  debug() << "work loop iteration " << iteration++ << endmsg;
     // if the created events did not reach maxevt, create an event    
     if ((newEvtAllowed or createdEvts == 0 ) && // Launch the first event alone
@@ -464,9 +492,26 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
 //                << " Time (s) = " << secsFromStart(start_time) << endmsg;
 //        }
     
-      StatusCode sc = executeEvent(&createdEvts);
-      if (sc.isFailure())
-        return StatusCode::FAILURE;
+      //TODO can we adapt the interface of executeEvent for a nicer solution?
+      StatusCode sc = StatusCode::RECOVERABLE;
+      while(!sc.isSuccess() //we haven't created an event yet
+    		  && (createdEvts < maxevt or maxevt<0)){ //redunant check for maxEvts, can we do better?
+    	  sc = executeEvent(&createdEvts);
+
+    	  if (sc.isRecoverable()){ //we skipped an event
+
+    		  //this is all to skip the event
+    		  size_t slot = m_whiteboard->allocateStore(createdEvts); //we need a new store, not to change the previous event
+    		  m_whiteboard->selectStore(slot);
+    		  declareEventRootAddress(); //actually skip over the event
+    		  m_whiteboard->freeStore(slot); // delete the store
+
+    		  ++createdEvts;
+    		  ++skippedEvts;
+    	  } else if (sc.isRecoverable()){ //exit immediatly
+    		  return StatusCode::FAILURE;
+    	  } // else we have an success --> exit loop
+      }
       
     } // end if condition createdEvts < maxevt
     else{ 
@@ -486,6 +531,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
   info() << "---> Loop Finished (skipping 1st evt) - "
          << " WSS " << System::mappedMemory(System::MemoryUnit::kByte)*oneOver1204
          << " total time " << secsFromStart(start_time) <<endmsg;
+  info() << skippedEvts << " events were SKIPed" << endmsg;
 
   return StatusCode::SUCCESS;
   
