@@ -4,6 +4,15 @@
 # Description: standard and commonly used components
 ################################################################################
 
+============================ GaudiCommonSvc-02-01-01 =========================
+
+! 2013-11-27 - Charles Leggett
+ - ChronoStatSvc: add output for per-event timing of execute(). controlled by
+   jobOpt "PerEventFile". default is empty string (do nothing).
+
+M       src/ChronoStatSvc.cpp
+M       src/ChronoStatSvc.h
+
 ============================ GaudiCommonSvc v2r1 =============================
 ============================ GaudiCommonSvc-02-00-00 =========================
 ! 2013-08-30 - Charles Leggett

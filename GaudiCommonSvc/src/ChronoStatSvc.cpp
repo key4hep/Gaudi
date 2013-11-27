@@ -26,6 +26,7 @@
 #include "GaudiKernel/ChronoEntity.h"
 #include "GaudiKernel/StatEntity.h"
 #include "GaudiKernel/Stat.h"
+#include "GaudiKernel/IIncidentSvc.h"
 // ============================================================================
 /// local
 // ============================================================================
@@ -163,6 +164,11 @@ ChronoStatSvc::ChronoStatSvc
   declareProperty
     ( "UseEfficiencyRowFormat" , m_useEffFormat                    ,
       "Use the special format for printout of efficiency counters" ) ;
+
+  declareProperty
+    ( "PerEventFile", m_perEventFile="",
+      "File name for per-event deltas" );
+
 }
 // ============================================================================
 // Destructor.
@@ -190,6 +196,22 @@ StatusCode ChronoStatSvc::initialize()
   if (sc.isFailure()) {
     log << MSG::ERROR << "setting my properties" << endmsg;
     return StatusCode::FAILURE;
+  }
+
+  // only add an EndEvent listener if per-event output requested
+  if (m_perEventFile != "") {
+    m_ofd.open(m_perEventFile);
+    if (!m_ofd.is_open()) {
+      log << MSG::ERROR << "unable to open per-event output file \""
+	  << m_perEventFile << "\"" << endmsg;
+    } else {
+      IIncidentSvc *ii(0);
+      if (! service("IncidentSvc",ii).isSuccess()) {
+	log << MSG::ERROR << "Unable to find IncidentSvc" << endmsg;
+	return StatusCode::FAILURE;
+      }
+      ii->addListener(this,IncidentType::EndEvent);
+    }
   }
 
   log << MSG::INFO << " Number of skipped events for MemStat"
@@ -233,6 +255,24 @@ StatusCode ChronoStatSvc::finalize()
   ///
   /// stop its own chrono
   chronoStop( name() ) ;
+
+  if (m_ofd.is_open()) {
+
+    std::string alg;
+    TimeMap::const_iterator itr;
+    for (itr=m_perEvtTime.begin(); itr != m_perEvtTime.end(); ++itr) {
+      alg = itr->first;
+      alg.erase(alg.length()-8,8);
+      m_ofd << alg << " ";
+      std::vector<IChronoSvc::ChronoTime>::const_iterator itt;
+      for (itt=itr->second.begin(); itt!=itr->second.end(); ++itt) {
+	m_ofd << " " << (long int)(*itt);
+      }
+      m_ofd << std::endl;
+    }
+
+    m_ofd.close();
+  }
 
   ///
   /// Is the final chrono table to be printed?
@@ -645,6 +685,30 @@ void ChronoStatSvc::printStats()
   if ( m_statCoutFlag  ) { std::cout << stars << std::endl;            }
   else                   { log << m_statPrintLevel << stars << endmsg; }
 }
+
+// ============================================================================
+
+void ChronoStatSvc::handle(const Incident& /* inc */) {
+
+  if (! m_ofd.is_open()) return;
+
+  TimeMap::iterator itm;
+  ChronoMap::const_iterator itr;
+  for (itr=m_chronoEntities.begin(); itr != m_chronoEntities.end(); ++itr) {
+    if (itr->first.find(":Execute") == std::string::npos) continue;
+    
+    itm = m_perEvtTime.find(itr->first);
+    if (itm == m_perEvtTime.end()) {
+      m_perEvtTime[itr->first] = 
+	std::vector<IChronoSvc::ChronoTime> { 
+	itr->second.delta(IChronoSvc::ELAPSED) };
+    } else {
+      itm->second.push_back( itr->second.delta(IChronoSvc::ELAPSED) );
+    }
+  }
+
+}
+
 
 // ============================================================================
 // The END
