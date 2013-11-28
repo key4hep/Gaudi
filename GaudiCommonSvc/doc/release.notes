@@ -4,6 +4,13 @@
 # Description: standard and commonly used components
 ################################################################################
 
+============================ GaudiCommonSvc-02-01-02 =========================
+
+! 2013-11-27 - Charles Leggett
+ - ChronoStatSvc: make compatible on gcc46
+
+M       src/ChronoStatSvc.cpp
+
 ============================ GaudiCommonSvc-02-01-01 =========================
 
 ! 2013-11-27 - Charles Leggett

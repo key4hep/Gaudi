@@ -200,7 +200,7 @@ StatusCode ChronoStatSvc::initialize()
 
   // only add an EndEvent listener if per-event output requested
   if (m_perEventFile != "") {
-    m_ofd.open(m_perEventFile);
+    m_ofd.open(m_perEventFile.c_str());
     if (!m_ofd.is_open()) {
       log << MSG::ERROR << "unable to open per-event output file \""
 	  << m_perEventFile << "\"" << endmsg;
@@ -699,9 +699,13 @@ void ChronoStatSvc::handle(const Incident& /* inc */) {
     
     itm = m_perEvtTime.find(itr->first);
     if (itm == m_perEvtTime.end()) {
-      m_perEvtTime[itr->first] = 
-	std::vector<IChronoSvc::ChronoTime> { 
-	itr->second.delta(IChronoSvc::ELAPSED) };
+      // for when we move past gcc46....
+      // m_perEvtTime[itr->first] = 
+      // 	std::vector<IChronoSvc::ChronoTime> { 
+      // 	itr->second.delta(IChronoSvc::ELAPSED) };
+
+      m_perEvtTime[itr->first] = std::vector<IChronoSvc::ChronoTime>();
+      m_perEvtTime[itr->first].push_back(itr->second.delta(IChronoSvc::ELAPSED));
     } else {
       itm->second.push_back( itr->second.delta(IChronoSvc::ELAPSED) );
     }
