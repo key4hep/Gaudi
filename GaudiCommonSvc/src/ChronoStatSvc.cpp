@@ -160,7 +160,7 @@ ChronoStatSvc::ChronoStatSvc
       "The format for the regular row in the output Stat-table"    ) ;
   declareProperty
     ( "EfficiencyRowFormat"    , m_format2                         ,
-      "The format for the regular row in the outptu Stat-table"    ) ;
+      "The format for the regular row in the output Stat-table"    ) ;
   declareProperty
     ( "UseEfficiencyRowFormat" , m_useEffFormat                    ,
       "Use the special format for printout of efficiency counters" ) ;
@@ -204,13 +204,14 @@ StatusCode ChronoStatSvc::initialize()
     if (!m_ofd.is_open()) {
       log << MSG::ERROR << "unable to open per-event output file \""
 	  << m_perEventFile << "\"" << endmsg;
+      return StatusCode::FAILURE;
     } else {
-      IIncidentSvc *ii(0);
-      if (! service("IncidentSvc",ii).isSuccess()) {
+      SmartIF<IIncidentSvc> ii(serviceLocator()->service("IncidentSvc"));
+      if (! ii) {
 	log << MSG::ERROR << "Unable to find IncidentSvc" << endmsg;
 	return StatusCode::FAILURE;
       }
-      ii->addListener(this,IncidentType::EndEvent);
+      ii->addListener(this, IncidentType::EndEvent);
     }
   }
 
@@ -257,7 +258,8 @@ StatusCode ChronoStatSvc::finalize()
   chronoStop( name() ) ;
 
   if (m_ofd.is_open()) {
-
+    MsgStream log(msgSvc(), name());
+    log << MSG::DEBUG << "writing per-event timing data to '" << m_perEventFile << "'" << endmsg;
     std::string alg;
     TimeMap::const_iterator itr;
     for (itr=m_perEvtTime.begin(); itr != m_perEvtTime.end(); ++itr) {
@@ -477,7 +479,7 @@ void    ChronoStatSvc::stat
   StatMap::iterator theIter=m_statEntities.find(statTag);
 
   StatEntity * theStat=0 ;
-  // if new entity, specify the neumber of events to be skipped
+  // if new entity, specify the number of events to be skipped
   if (theIter==m_statEntities.end()){
     // new stat entity
     StatEntity& theSe = m_statEntities[ statTag ];
@@ -696,12 +698,12 @@ void ChronoStatSvc::handle(const Incident& /* inc */) {
   ChronoMap::const_iterator itr;
   for (itr=m_chronoEntities.begin(); itr != m_chronoEntities.end(); ++itr) {
     if (itr->first.find(":Execute") == std::string::npos) continue;
-    
+
     itm = m_perEvtTime.find(itr->first);
     if (itm == m_perEvtTime.end()) {
       // for when we move past gcc46....
-      // m_perEvtTime[itr->first] = 
-      // 	std::vector<IChronoSvc::ChronoTime> { 
+      // m_perEvtTime[itr->first] =
+      // 	std::vector<IChronoSvc::ChronoTime> {
       // 	itr->second.delta(IChronoSvc::ELAPSED) };
 
       m_perEvtTime[itr->first] = std::vector<IChronoSvc::ChronoTime>();
