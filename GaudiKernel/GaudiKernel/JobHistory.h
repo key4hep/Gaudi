@@ -58,7 +58,7 @@ public:  // functions
 	     const time_t& time);
 
   // Destructor.
-  ~JobHistory();
+  virtual ~JobHistory();
 
   // Class IDs
   virtual const CLID& clID() const { return classID(); }

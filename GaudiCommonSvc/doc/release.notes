@@ -21,6 +21,30 @@
  - Clean up in the cmt/requirements.
  - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
 
+! 2013-11-28 - Marco Clemencic
+ - Fixes to ChronoStatSvc new feature.
+
+============================ GaudiCommonSvc-02-01-02 =========================
+
+! 2013-11-27 - Charles Leggett
+ - ChronoStatSvc: make compatible on gcc46
+
+M       src/ChronoStatSvc.cpp
+
+============================ GaudiCommonSvc-02-01-01 =========================
+
+! 2013-11-27 - Charles Leggett
+ - ChronoStatSvc: add output for per-event timing of execute(). controlled by
+   jobOpt "PerEventFile". default is empty string (do nothing).
+
+M       src/ChronoStatSvc.cpp
+M       src/ChronoStatSvc.h
+
+============================ GaudiCommonSvc v2r1 =============================
+============================ GaudiCommonSvc-02-00-00 =========================
+! 2013-08-30 - Charles Leggett
+ - retag for Atlas merge
+
 ============================ GaudiCommonSvc v1r6 =============================
 ! 2013-07-08 - Chris Jones
  - Patch #5649 :Improvements to exception handling debug information in

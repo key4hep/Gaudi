@@ -8,12 +8,14 @@
 #include <string>
 #include <map>
 #include <functional>
+#include <fstream>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/IChronoStatSvc.h"
+#include "GaudiKernel/IIncidentListener.h"
 // ============================================================================
 /// forward declarations
 // ============================================================================
@@ -28,7 +30,8 @@ class IMessageSvc  ;
  *   @author:  Vanya BELYAEV Ivan.Belyaev@itep.ru
  *   @daate:   December 1, 1999
  */
-class ChronoStatSvc: public extends1<Service, IChronoStatSvc> {
+class ChronoStatSvc: public extends2<Service, IChronoStatSvc, 
+				     IIncidentListener> {
 public:
   // ============================================================================
   /// some useful typedefs
@@ -114,6 +117,11 @@ public:
   /// Destructor.
   virtual ~ChronoStatSvc();
   // ============================================================================
+
+public:
+  void handle(const Incident& incident);
+
+
 protected:
   // ============================================================================
   // print the "Stat" part of the ChronoStatSvc
@@ -179,6 +187,12 @@ private:
   std::string    m_format2 ; ///< format for "efficiency" statistical printout rows
   // flag to use the special "efficiency" format
   bool           m_useEffFormat ; ///< flag to use the special "efficiency" format
+
+  typedef std::map<ChronoTag, std::vector<IChronoSvc::ChronoTime> > TimeMap;
+  TimeMap m_perEvtTime;
+  std::string   m_perEventFile;
+  std::ofstream m_ofd;
+
   // ============================================================================
 };
 // ============================================================================

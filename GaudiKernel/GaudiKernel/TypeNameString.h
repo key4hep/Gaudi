@@ -1,6 +1,7 @@
 #ifndef GAUDIKERNEL_TYPENAMESTRING_H
 #define GAUDIKERNEL_TYPENAMESTRING_H
 #include <string>
+#include <ostream>
 
 namespace Gaudi {
   namespace Utils {

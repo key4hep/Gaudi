@@ -19,6 +19,10 @@ Package manager : Marco Clemencic
  - Removed explicit link against Reflex from cmt/requirements.
  - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
 
+! 2013-11-01 - Markus Frank
+ - Add support for data federations. The IODataManager will try out
+   all PFNs in the file catalog until one entry is found, which can be opened.
+
 ============================== GaudiUtils v4r6 ===============================
 ! 2013-07-09 - Marco Clemencic
  - Fixed bug #101513: Raw->Raw processing should not print an error

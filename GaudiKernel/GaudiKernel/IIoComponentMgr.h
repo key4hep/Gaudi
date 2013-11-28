@@ -30,8 +30,10 @@ class GAUDI_API IIoComponentMgr : virtual public INamedInterface
  public: 
   struct IoMode {
     enum Type {
-      Input  = 0,
-      Output
+      READ = 0,
+      WRITE,
+      RW,
+      INVALID
     };
   };
 
@@ -62,7 +64,30 @@ class GAUDI_API IIoComponentMgr : virtual public INamedInterface
   virtual
   StatusCode io_register (IIoComponent* iocomponent,
 			  IIoComponentMgr::IoMode::Type iomode,
-			  const std::string& fname) = 0;
+			  const std::string& fname,
+			  const std::string& pfn="") = 0;
+
+
+  /** @brief: allow a @c IIoComponent to update the contents of the
+   *          registry with a new file name
+   */
+  virtual
+  StatusCode io_update (IIoComponent* iocomponent,
+  			const std::string& old_fname,
+  			const std::string& new_fname) = 0;
+
+  /** @brief: allow a @c IIoComponent to update the contents of the
+   *          registry with a new work directory
+   */
+  virtual
+  StatusCode io_update (IIoComponent* iocomponent,
+  			const std::string& work_dir) = 0;
+
+  // VT. new method
+  /** @brief: Update all @c IIoComponents with a new work directory
+   */
+  virtual
+  StatusCode io_update_all (const std::string& work_dir) = 0;
 
   /** @brief: check if the registry contains a given @c IIoComponent
    */

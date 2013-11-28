@@ -20,6 +20,7 @@ Package manager : David Quarrie
 ! 2013-07-03 - Marco Clemencic
  - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
 
+============================= RootHistCnv v11r3 ==============================
 ! 2013-10-24 - Chris Jones
  - Add a property to RootHistCnv::RFileCnv that allows the ROOT compression
    settings to be defined. Configuration syntax takes the form :-

@@ -3,6 +3,7 @@
 
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/ITHistSvc.h"
+#include "GaudiKernel/IFileMgr.h"
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/IIoComponent.h"
 #include "GaudiKernel/MsgStream.h"
@@ -21,6 +22,7 @@
 #include <set>
 #include <map>
 
+class IIncidentSvc;
 class THistSvc: public extends3<Service, ITHistSvc, IIncidentListener,
 				IIoComponent> {
 
@@ -100,38 +102,37 @@ private:
     int m_ge;
   };
 
+  enum Mode {
+    READ,
+    WRITE,
+    UPDATE,
+    APPEND,
+    SHARE,
+    INVALID
+  };
 
   struct THistID {
     std::string id;
     bool        temp;
     TObject*    obj;
     TFile*      file;
+    Mode        mode;
 
-    THistID():id(""),temp(true),obj(0),file(0) {}
+    THistID():id(""),temp(true),obj(0),file(0),mode(INVALID) {}
     THistID(const THistID& rhs):id(rhs.id), temp(rhs.temp),
-                                obj(rhs.obj), file(rhs.file) {}
+                                obj(rhs.obj), file(rhs.file), mode(rhs.mode) {}
     THistID(std::string& i, bool& t, TObject* o, TFile* f)
-      : id(i), temp(t), obj(o), file(f){}
+      : id(i), temp(t), obj(o), file(f), mode(INVALID){
+    }
+    THistID(std::string& i, bool& t, TObject* o, TFile* f, Mode m)
+      : id(i), temp(t), obj(o), file(f), mode(m){
+    }
 
     bool operator < (THistID const &rhs) const {
       return (obj < rhs.obj);
     }
   };
 
-  enum Mode {
-    READ,
-    WRITE,
-    UPDATE,
-    APPEND,
-    SHARE
-  };
-
-  mutable MsgStream m_log;
-
-  typedef std::map<std::string, THistID> uidMap;
-  typedef std::multimap<std::string, THistID> idMap;
-  typedef std::map<TObject*, THistID> objMap;
-  typedef std::multimap<std::string, std::string> streamMap;
 
   template <typename T>
   StatusCode regHist_i(T* hist, const std::string& name);
@@ -170,6 +171,12 @@ private:
 
   void copyFileLayout(TDirectory*, TDirectory*);
 
+  void MergeRootFile( TDirectory *target, TDirectory *source); 
+
+  ////////
+
+  mutable MsgStream m_log;
+
   StringArrayProperty m_inputfile, m_outputfile;
   std::vector<std::string> m_Rstream, m_Wstream;
   IntegerProperty m_autoSave, m_autoFlush, m_compressionLevel, m_maxFileSize;
@@ -183,7 +190,11 @@ private:
   /// registered by the setupOutputFile callback method
   std::set<std::string> m_alreadyConnectedOutFiles;
 
-  //  std::map<TObject*, TFile*> m_tobjs;
+
+  typedef std::map<std::string, THistID> uidMap;
+  typedef std::multimap<std::string, THistID> idMap;
+  typedef std::map<TObject*, THistID> objMap;
+  typedef std::multimap<std::string, std::string> streamMap;
 
   uidMap m_uids;
   idMap  m_ids;
@@ -193,11 +204,17 @@ private:
   streamMap m_fileStreams;                                // fileName->streams
 
   std::map<std::string, std::string > m_sharedFiles; // stream->filename of shared files
-  void MergeRootFile( TDirectory *target, TDirectory *source);
 
   bool signaledStop;
+  bool m_delayConnect, m_okToConnect;
 
   mutable std::string m_curstream;
+
+  IIncidentSvc* p_incSvc;
+  IFileMgr* p_fileMgr;
+
+  StatusCode rootOpenAction( FILEMGR_CALLBACK_ARGS );
+  StatusCode rootOpenErrAction( FILEMGR_CALLBACK_ARGS );
 
 };
 

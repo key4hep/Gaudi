@@ -21,6 +21,7 @@
 #include "GaudiKernel/ChronoEntity.h"
 #include "GaudiKernel/StatEntity.h"
 #include "GaudiKernel/Stat.h"
+#include "GaudiKernel/IIncidentSvc.h"
 // ============================================================================
 /// local
 // ============================================================================
@@ -154,10 +155,15 @@ ChronoStatSvc::ChronoStatSvc
       "The format for the regular row in the output Stat-table"    ) ;
   declareProperty
     ( "EfficiencyRowFormat"    , m_format2                         ,
-      "The format for the regular row in the outptu Stat-table"    ) ;
+      "The format for the regular row in the output Stat-table"    ) ;
   declareProperty
     ( "UseEfficiencyRowFormat" , m_useEffFormat                    ,
       "Use the special format for printout of efficiency counters" ) ;
+
+  declareProperty
+    ( "PerEventFile", m_perEventFile="",
+      "File name for per-event deltas" );
+
 }
 // ============================================================================
 // Destructor.
@@ -185,6 +191,23 @@ StatusCode ChronoStatSvc::initialize()
   if (sc.isFailure()) {
     log << MSG::ERROR << "setting my properties" << endmsg;
     return StatusCode::FAILURE;
+  }
+
+  // only add an EndEvent listener if per-event output requested
+  if (m_perEventFile != "") {
+    m_ofd.open(m_perEventFile.c_str());
+    if (!m_ofd.is_open()) {
+      log << MSG::ERROR << "unable to open per-event output file \""
+	  << m_perEventFile << "\"" << endmsg;
+      return StatusCode::FAILURE;
+    } else {
+      SmartIF<IIncidentSvc> ii(serviceLocator()->service("IncidentSvc"));
+      if (! ii) {
+	log << MSG::ERROR << "Unable to find IncidentSvc" << endmsg;
+	return StatusCode::FAILURE;
+      }
+      ii->addListener(this, IncidentType::EndEvent);
+    }
   }
 
   log << MSG::INFO << " Number of skipped events for MemStat"
@@ -228,6 +251,25 @@ StatusCode ChronoStatSvc::finalize()
   ///
   /// stop its own chrono
   chronoStop( name() ) ;
+
+  if (m_ofd.is_open()) {
+    MsgStream log(msgSvc(), name());
+    log << MSG::DEBUG << "writing per-event timing data to '" << m_perEventFile << "'" << endmsg;
+    std::string alg;
+    TimeMap::const_iterator itr;
+    for (itr=m_perEvtTime.begin(); itr != m_perEvtTime.end(); ++itr) {
+      alg = itr->first;
+      alg.erase(alg.length()-8,8);
+      m_ofd << alg << " ";
+      std::vector<IChronoSvc::ChronoTime>::const_iterator itt;
+      for (itt=itr->second.begin(); itt!=itr->second.end(); ++itt) {
+	m_ofd << " " << (long int)(*itt);
+      }
+      m_ofd << std::endl;
+    }
+
+    m_ofd.close();
+  }
 
   ///
   /// Is the final chrono table to be printed?
@@ -432,7 +474,7 @@ void    ChronoStatSvc::stat
   StatMap::iterator theIter=m_statEntities.find(statTag);
 
   StatEntity * theStat=0 ;
-  // if new entity, specify the neumber of events to be skipped
+  // if new entity, specify the number of events to be skipped
   if (theIter==m_statEntities.end()){
     // new stat entity
     StatEntity& theSe = m_statEntities[ statTag ];
@@ -640,6 +682,34 @@ void ChronoStatSvc::printStats()
   if ( m_statCoutFlag  ) { std::cout << stars << std::endl;            }
   else                   { log << m_statPrintLevel << stars << endmsg; }
 }
+
+// ============================================================================
+
+void ChronoStatSvc::handle(const Incident& /* inc */) {
+
+  if (! m_ofd.is_open()) return;
+
+  TimeMap::iterator itm;
+  ChronoMap::const_iterator itr;
+  for (itr=m_chronoEntities.begin(); itr != m_chronoEntities.end(); ++itr) {
+    if (itr->first.find(":Execute") == std::string::npos) continue;
+
+    itm = m_perEvtTime.find(itr->first);
+    if (itm == m_perEvtTime.end()) {
+      // for when we move past gcc46....
+      // m_perEvtTime[itr->first] =
+      // 	std::vector<IChronoSvc::ChronoTime> {
+      // 	itr->second.delta(IChronoSvc::ELAPSED) };
+
+      m_perEvtTime[itr->first] = std::vector<IChronoSvc::ChronoTime>();
+      m_perEvtTime[itr->first].push_back(itr->second.delta(IChronoSvc::ELAPSED));
+    } else {
+      itm->second.push_back( itr->second.delta(IChronoSvc::ELAPSED) );
+    }
+  }
+
+}
+
 
 // ============================================================================
 // The END
