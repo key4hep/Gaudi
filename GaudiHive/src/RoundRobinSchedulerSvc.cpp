@@ -221,7 +221,7 @@ StatusCode RoundRobinSchedulerSvc::processEvents(){
 					for(uint i =0; i < algResults.size(); ++i){
 						fatal() << i << ": " << (algResults[i] ==  AlgsExecutionStates::State::EVTACCEPTED ? "A" : "R") << "\t";
 						if(algResults[i] ==  AlgsExecutionStates::State::EVTREJECTED){
-							std::cerr << m_evtCtx_buffer[i]->m_evt_num << std::endl;
+							//std::cerr << m_evtCtx_buffer[i]->m_evt_num << std::endl;
 						}
 					}
 					fatal() << endmsg;
