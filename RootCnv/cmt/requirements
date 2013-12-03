@@ -1,14 +1,14 @@
 package RootCnv
-version           v1r20p1
+version           v1r21
 
 author Markus Frank
 
 branches  cmt dict src
 
 use GaudiKernel *
-use GaudiUtils *
+use GaudiUtils  *
 use ROOT        * LCG_Interfaces
-##use GenEvent v* Event
+##use GenEvent  * Event
 
 #===========================================================================
 apply_pattern install_more_includes more=RootCnv

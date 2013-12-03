@@ -4,6 +4,26 @@
 # Description: standard and commonly used components
 ################################################################################
 
+============================ GaudiCommonSvc v2r2 =============================
+! 2013-11-28 - Marco Clemencic
+ - Fixes to ChronoStatSvc new feature.
+
+============================ GaudiCommonSvc-02-01-02 =========================
+
+! 2013-11-27 - Charles Leggett
+ - ChronoStatSvc: make compatible on gcc46
+
+M       src/ChronoStatSvc.cpp
+
+============================ GaudiCommonSvc-02-01-01 =========================
+
+! 2013-11-27 - Charles Leggett
+ - ChronoStatSvc: add output for per-event timing of execute(). controlled by
+   jobOpt "PerEventFile". default is empty string (do nothing).
+
+M       src/ChronoStatSvc.cpp
+M       src/ChronoStatSvc.h
+
 ============================ GaudiCommonSvc v2r1 =============================
 ============================ GaudiCommonSvc-02-00-00 =========================
 ! 2013-08-30 - Charles Leggett
