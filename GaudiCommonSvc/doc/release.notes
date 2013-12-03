@@ -4,6 +4,7 @@
 # Description: standard and commonly used components
 ################################################################################
 
+============================ GaudiCommonSvc v2r2 =============================
 ! 2013-11-28 - Marco Clemencic
  - Fixes to ChronoStatSvc new feature.
 

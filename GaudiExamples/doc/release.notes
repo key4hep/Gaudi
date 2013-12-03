@@ -1,6 +1,7 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v24r2 =============================
 ! 2013-11-28 - Marco Clemencic
  - Added test for PerEventFile feature of ChronoStatSvc.
 
