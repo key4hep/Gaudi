@@ -4,6 +4,9 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2013-12-04 - Marco Clemencic
+ - Removed unnecessary use of boost::shared_ptr.
+
 ! 2013-07-26 - Marco Clemencic
  - Ported new GaudiPluginService to CMT.
 
@@ -50,7 +53,7 @@ M       src/ApplicationMgr/ServiceManager.cpp
 
 ============================= GaudiCoreSvc-02-00-01 =========================
 ! 2013-09-09 - Charles Leggett
- - re-introduce ordering rules for HistorySvc and FileMgr in 
+ - re-introduce ordering rules for HistorySvc and FileMgr in
    ServiceManager::finalize()
 
 M       src/ApplicationMgr/ServiceManager.cpp
