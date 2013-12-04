@@ -12,7 +12,7 @@
 // ============================================================================
 // Local
 // ============================================================================
-#include "MyTrack.h"
+#include "GaudiExamples/MyTrack.h"
 // ============================================================================
 #ifdef __ICC
 // disable icc remark #2259: non-pointer conversion from "double" to "float" may lose significant bits

@@ -16,8 +16,8 @@
 
 // Example related include files
 #include "EvtCollectionWrite.h"
-#include "Event.h"
-#include "MyTrack.h"
+#include "GaudiExamples/Event.h"
+#include "GaudiExamples/MyTrack.h"
 
 #include <cmath>
 

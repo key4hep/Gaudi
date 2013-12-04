@@ -1,6 +1,10 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2013-12-04 - Marco Clemencic
+ - Made public the test event model headers of GaudiExamplesLib (needed to
+   support ROOT 6.00-beta).
+
 ! 2013-11-01 - Marco Clemencic
  - Fix to reference file.
 

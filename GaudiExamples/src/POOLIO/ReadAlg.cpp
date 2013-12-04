@@ -22,9 +22,9 @@
 #include "ReadAlg.h"
 
 // Event Model related classes
-#include "Event.h"
-#include "MyTrack.h"
-#include "Counter.h"
+#include "GaudiExamples/Event.h"
+#include "GaudiExamples/MyTrack.h"
+#include "GaudiExamples/Counter.h"
 
 #include "GaudiKernel/System.h"
 

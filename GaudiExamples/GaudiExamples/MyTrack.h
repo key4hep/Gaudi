@@ -13,7 +13,7 @@
 #include "GaudiKernel/ObjectVector.h"
 #include "GaudiKernel/SharedObjectsContainer.h"
 // =============================================================================
-#include "Event.h"
+#include "GaudiExamples/Event.h"
 // ============================================================================
 
 namespace Gaudi

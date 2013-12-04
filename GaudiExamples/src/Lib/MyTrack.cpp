@@ -1,4 +1,4 @@
-#include "MyTrack.h"
+#include "GaudiExamples/MyTrack.h"
 
 using namespace Gaudi::Examples ;
 

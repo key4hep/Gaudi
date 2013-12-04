@@ -49,8 +49,8 @@ set(GaudiExamples_srcs
 
 gaudi_add_library(GaudiExamplesLib src/Lib/*.cpp
                   LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib HepPDT ROOT
-                  INCLUDE_DIRS HepPDT ROOT ${CMAKE_CURRENT_SOURCE_DIR}/src/Lib
-                  NO_PUBLIC_HEADERS)
+                  INCLUDE_DIRS HepPDT ROOT
+                  PUBLIC_HEADERS GaudiExamples)
 
 gaudi_add_module(GaudiExamples ${GaudiExamples_srcs} LINK_LIBRARIES GaudiExamplesLib)
 
