@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-12-04 - Marco Clemencic
+ - Replaced boost::shared_ptr with std::shared_ptr when using C++11.
+   See https://sft.its.cern.ch/jira/browse/ROOT-5806
+
 ! 2013-10-24 - Marco Clemencic
  - Added a small Python function to simplify enabling and disabling of
    specific ROOT 6 work-arounds.
@@ -86,7 +90,7 @@ M       GaudiKernel/Incident.h
 ============================= GaudiKernel-29-00-01 =============================
 ! 2013-09-30 - Charles Leggett
  - added io_finalize to IIoComponent.h
-   currently not pure virtual, to ease client transition. will be made pure 
+   currently not pure virtual, to ease client transition. will be made pure
    when transition complete.
 
 M       GaudiKernel/IIoComponent.h
