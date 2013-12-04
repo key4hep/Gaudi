@@ -19,6 +19,7 @@ Package manager : Marco Clemencic
  - Removed explicit link against Reflex from cmt/requirements.
  - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
 
+============================== GaudiUtils v4r7 ===============================
 ! 2013-11-01 - Markus Frank
  - Add support for data federations. The IODataManager will try out
    all PFNs in the file catalog until one entry is found, which can be opened.

@@ -33,6 +33,7 @@ Package manager : Marco Clemencic
 ! 2013-07-03 - Marco Clemencic
  - Removed explicit link against Reflex from cmt/requirements.
 
+============================ GaudiExamples v24r2 =============================
 ! 2013-11-28 - Marco Clemencic
  - Added test for PerEventFile feature of ChronoStatSvc.
 

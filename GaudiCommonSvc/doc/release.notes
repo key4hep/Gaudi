@@ -21,6 +21,7 @@
  - Clean up in the cmt/requirements.
  - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
 
+============================ GaudiCommonSvc v2r2 =============================
 ! 2013-11-28 - Marco Clemencic
  - Fixes to ChronoStatSvc new feature.
 
