@@ -1,4 +1,3 @@
-// $Id: StatusCode.h,v 1.12 2008/10/28 17:21:58 marcocle Exp $
 #ifndef GAUDIKERNEL_STATUSCODE_H
 #define GAUDIKERNEL_STATUSCODE_H
 
@@ -6,7 +5,10 @@
 
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/IssueSeverity.h"
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
+
+#include "RVersion.h"
+
+#if (defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L) && (ROOT_VERSION_CODE >= ROOT_VERSION(5,99,0))
 #include <memory>
 #else
 #include "boost/shared_ptr.hpp"
@@ -137,7 +139,7 @@ protected:
   /// The status code.
   unsigned long   d_code;      ///< The status code
   mutable bool    m_checked;   ///< If the Status code has been checked
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
+#if (defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L) && (ROOT_VERSION_CODE >= ROOT_VERSION(5,99,0))
   typedef std::shared_ptr<IssueSeverity> SeverityPtr;
 #else
   typedef boost::shared_ptr<IssueSeverity> SeverityPtr;

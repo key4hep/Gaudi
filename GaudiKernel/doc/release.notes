@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-12-05 - Marco Clemencic
+ - Re-enabled boost::shared_ptr for ROOT 5 (gccxml does not understand C++11).
+
 ! 2013-12-04 - Marco Clemencic
  - Replaced boost::shared_ptr with std::shared_ptr when using C++11.
    See https://sft.its.cern.ch/jira/browse/ROOT-5806
