@@ -2,6 +2,10 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 
 ! 2013-12-05 - Marco Clemencic
+ - Re-disabled boost::shared_ptr to remove the dependency on ROOT in
+   StatusCode.h.  For GCCXML we hide the actual implementation.
+
+! 2013-12-05 - Marco Clemencic
  - Re-enabled boost::shared_ptr for ROOT 5 (gccxml does not understand C++11).
 
 ! 2013-12-04 - Marco Clemencic
