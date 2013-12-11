@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 =============================== GaudiSvc v20r1 ===============================
 =============================== GaudiSvc-20-00-00 =========================
 ! 2013-08-30 - Charles Leggett

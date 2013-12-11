@@ -1,0 +1,45 @@
+# -*- yml -*-
+package: {
+    name:    GaudiAlg,
+    authors: ["gaudi collaboration"],
+
+    version:  "v14r6",
+    deps: {
+        public: [
+            GaudiKernel,
+            GaudiUtils,
+            LCG_Interfaces/ROOT,
+            LCG_Interfaces/AIDA,
+            LCG_Interfaces/Boost,
+        ],
+    }
+}
+
+options: {
+}
+
+configure: {
+}
+
+build: {
+
+    GaudiAlgLib: {
+        features: "gaudi_library",
+        source:   ["src/lib/*.cpp"],
+        use: ["GaudiKernel",
+              "GaudiUtilsLib",
+              "boost-regex",
+              "AIDA"],
+    },
+
+    GaudiAlg: {
+        features: "gaudi_module",
+        source:   ["src/components/*.cpp"],
+        use: ["GaudiAlgLib", "GaudiKernel",
+              "GaudiUtilsLib",
+              "boost-regex", "AIDA", "ROOT",
+              ],
+    },
+}
+
+## EOF ##

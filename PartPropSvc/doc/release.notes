@@ -1,6 +1,9 @@
 Package : ParticleProp
 Package manager : Charles Leggett
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ============================== PartPropSvc v4r6 ==============================
 ! 2012-11-14 - Marco Clemencic
  - Updated CMakeLists.txt.

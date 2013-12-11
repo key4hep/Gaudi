@@ -1,6 +1,9 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ================================ GaudiMP v2r1 ================================
 ================================ GaudiMP-02-00-01 ============================
 ! 2013-10-10 - Charles Leggett

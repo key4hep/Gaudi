@@ -3,6 +3,9 @@
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! =============================================================================
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 =============================== GaudiGSL v7r12 ===============================
 ! 2012-11-06 - Marco Clemencic
  - Renamed the source file of a test.

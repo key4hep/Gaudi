@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ============================ GaudiExamples v24r2 =============================
 ! 2013-11-28 - Marco Clemencic
  - Added test for PerEventFile feature of ChronoStatSvc.

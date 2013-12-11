@@ -1,6 +1,9 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ============================== GaudiUtils v4r7 ===============================
 ! 2013-11-01 - Markus Frank
  - Add support for data federations. The IODataManager will try out

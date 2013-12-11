@@ -1,0 +1,29 @@
+# -*- yml -*-
+
+package: {
+    name:    GaudiSys,
+    authors: ["gaudi collaboration"],
+
+    version:  "v24r2",
+    deps: {
+        public: [
+            GaudiKernel,
+            GaudiCoreSvc,
+            GaudiCommonSvc,
+            GaudiAud,
+            GaudiAlg,
+            GaudiPython,
+        ],
+    }
+}
+
+options: {
+}
+
+configure: {
+}
+
+build: {
+}
+
+## EOF ##

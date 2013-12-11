@@ -1,6 +1,9 @@
 Package: RootHistCnv
 Package manager : David Quarrie
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ============================= RootHistCnv v11r3 ==============================
 ! 2013-10-24 - Chris Jones
  - Add a property to RootHistCnv::RFileCnv that allows the ROOT compression

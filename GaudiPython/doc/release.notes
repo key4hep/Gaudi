@@ -1,6 +1,9 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ============================= GaudiPython v12r7 ==============================
 ! 2013-09-25 - Marco Clemencic
  - Enforce LC_ALL=C in the GaudiPython module.

@@ -1,0 +1,29 @@
+# -*- yml -*-
+package: {
+    name:    GaudiAud,
+    authors: ["gaudi collaboration"],
+
+    version:  "v9r9",
+    deps: {
+        public: [
+            GaudiKernel,
+        ],
+    }
+}
+
+options: {
+}
+
+configure: {
+}
+
+build: {
+
+    GaudiAud: {
+        features: "gaudi_module",
+        source:   ["src/*.cpp"],
+        use:      [GaudiKernel],
+    },
+}
+
+## EOF ##

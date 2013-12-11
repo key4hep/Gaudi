@@ -1,6 +1,9 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 =============================== GaudiAlg v14r6 ===============================
 ! 2013-07-08 - Marco Cattaneo
  - Patch #5653: Add HistoCountersPrint property to GaudiHistos

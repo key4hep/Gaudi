@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ============================= GaudiKernel v29r1 ==============================
 ============================= GaudiKernel-29-00-02 =============================
 ! 2013-10-24 - Charles Leggett

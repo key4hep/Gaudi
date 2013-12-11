@@ -1,6 +1,9 @@
 Package: GaudiMonitor
 Package manager : Marco Clemencic
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ============================= GaudiMonitor v4r1 ==============================
 ============================= GaudiMonitor-04-00-00 =========================
 ! 2013-08-30 - Charles Leggett

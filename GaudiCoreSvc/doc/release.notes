@@ -4,6 +4,9 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ============================= GaudiCoreSvc v2r1 ==============================
 ! 2013-11-18 - Marco Clemencic
  - Removed duplicated print of of service ref count (use old format for

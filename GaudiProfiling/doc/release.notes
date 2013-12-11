@@ -4,6 +4,9 @@
 ! Purpose     : Profiling and performance monitoring of Gaudi/LHCb software
 !-----------------------------------------------------------------------------
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ============================ GaudiProfiling v1r8 =============================
 ! 2013-03-05 - Hubert Degaudenzi
  - Fixed compilation on Fedora Core 17 when VTune is missing.

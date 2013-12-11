@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ============================= GaudiPolicy v13r1 ==============================
 ! 2013-11-18 - Marco Clemencic
  - Minor change in GaudiTest to absorb a change in a debug message.

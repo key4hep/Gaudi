@@ -1,6 +1,9 @@
 package GaudiSys
 package manager: Pere Mato
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 =============================== GaudiSys v24r2 ===============================
 =============================== GaudiSys v24r1 ===============================
 =============================== GaudiSys v24r0 ===============================

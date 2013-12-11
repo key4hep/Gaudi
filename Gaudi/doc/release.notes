@@ -1,6 +1,9 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ================================ Gaudi v24r2 =================================
 ================================ Gaudi v24r1 =================================
 ================================ Gaudi v24r0 =================================
