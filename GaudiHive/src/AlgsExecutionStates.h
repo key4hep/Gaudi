@@ -42,49 +42,36 @@ public:
 	static std::map<State,std::string> stateNames;
 
 	AlgsExecutionStates(unsigned int algsNumber, SmartIF<IMessageSvc> MS):
-		m_MS(MS) {
-
-		for(uint i = INITIAL; i <= ERROR; ++i)
-			m_states[i] = boost::dynamic_bitset<>(algsNumber); //everything initialized to zero
-
-		m_states[INITIAL].set();
-	};
+		m_states(algsNumber,INITIAL),
+		m_MS(MS) {	};
 
 	~AlgsExecutionStates(){};
 
 	StatusCode updateState(unsigned int iAlgo,State newState);
 
-	void reset(){
-		m_states[INITIAL].set();
+	void reset(){m_states.assign(m_states.size(),INITIAL);};
 
-		for(uint i = (INITIAL+1); i <= ERROR; ++i)
-			m_states[i].reset();
+	bool algsPresent(State state) const{
+		return std::find(m_states.begin(),m_states.end(),state)!=m_states.end();
+	}
+
+	bool allAlgsExecuted(){
+		int execAlgos=std::count_if(m_states.begin(),m_states.end(),[](State s) {return (s == EVTACCEPTED || s== EVTREJECTED);});
+		return m_states.size() == (unsigned int)execAlgos;
 	};
 
-	bool algsPresent(State state) const {
-		return m_states.at(state).any();
-	};
+	const State & operator[](unsigned int i) const {
 
-	bool allAlgsExecuted() const {
-		return m_states.at(EVTACCEPTED).count() + m_states.at(EVTREJECTED).count() == m_states.at(INITIAL).size();
-	};
-
-	State operator[](unsigned int i) const {
-
-		for(uint k = INITIAL; k <= ERROR; ++k) //early access, because often in lower state
-			if(m_states.at(k).test(i))
-				return State(k);
-
-		return ERROR;
+		return m_states.at(i);
 
 	};
 
 	size_t size() const {
-		return m_states.at(INITIAL).size();
+		return m_states.size();
 	}
 
 private:
-	std::unordered_map<uint, boost::dynamic_bitset<> > m_states;
+	std::vector<State> m_states;
 	SmartIF<IMessageSvc> m_MS;
 
 public:
@@ -94,11 +81,11 @@ public:
 
 		enum POS { BEGIN, END};
 
-		Iterator(POS pos, const boost::dynamic_bitset<> & bs) : bs_(&bs) {
+		Iterator(POS pos, State s, const std::vector<State> & v) : s_(s), v_(&v) {
 			if(pos == POS::BEGIN)
-				pos_ = bs_->find_first();
+				pos_ = std::find(v_->begin(),v_->end(), s_);
 			if(pos == POS::END)
-				pos_ = boost::dynamic_bitset<>::npos;
+				pos_ = v_->end();
 			//std::cout << "initialized iterator at " << pos_ << std::endl;
 		}
 
@@ -106,21 +93,22 @@ public:
 
 		Iterator& operator=(const Iterator& other){
 			pos_ = other.pos_;
-			bs_ = other.bs_;
+			v_ = other.v_;
+			s_ = other.s_;
 			return(*this);
 		}
 
 		bool operator==(const Iterator& other){
-			return bs_ == other.bs_ && pos_ == other.pos_;
+			return pos_ == other.pos_ && s_ == other.s_ && v_ == other.v_;
 		}
 
 		bool operator!=(const Iterator& other){
-			return bs_ != other.bs_ || pos_ != other.pos_;
+			return pos_ != other.pos_ || s_ != other.s_ || v_ != other.v_;
 		}
 
 		Iterator& operator++(){
-			if (pos_ != boost::dynamic_bitset<>::npos){
-				pos_ = bs_->find_next(pos_);
+			if (pos_ != v_->end()){
+				pos_ = std::find(++pos_, v_->end(), s_);
 				//std::cout << "advanced iterator to " << pos_ << std::endl;
 			}
 			return(*this);
@@ -131,22 +119,23 @@ public:
 		}
 
 		uint operator*(){
-			return pos_;
+			return std::distance(v_->begin(), pos_);
 		}
 
 	private:
-		boost::dynamic_bitset<>::size_type pos_;
-		const boost::dynamic_bitset<> * bs_;
+		std::vector<State>::const_iterator pos_;
+		State s_;
+		const std::vector<State> * v_;
 	};
 
 	Iterator begin(State kind)
 	{
-		return(Iterator(Iterator::POS::BEGIN, m_states.at(kind)));
+		return(Iterator(Iterator::POS::BEGIN, kind, m_states));
 	}
 
 	Iterator end(State kind)
 	{
-		return(Iterator(Iterator::POS::END, m_states.at(kind)));
+		return(Iterator(Iterator::POS::END, kind, m_states));
 	}
 
 };
