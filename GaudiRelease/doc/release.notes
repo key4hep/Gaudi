@@ -1,6 +1,9 @@
 Package: GaudiRelease
 Maintainer: Marco Clemencic
 
+! 2013-12-12 - Sebastien Binet
+ - modified update_versions.py to also handle hwaf-hscripts.
+
 ! 2013-12-11 - Sebastien Binet
  - Added hwaf configuration files.
 

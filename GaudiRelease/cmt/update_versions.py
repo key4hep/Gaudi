@@ -10,6 +10,9 @@ import os, re, sys, time
 # guess current version
 _req_version_pattern = re.compile(r"^\s*version\s*(v[0-9]+r[0-9]+(?:p[0-9]+)?)\s*$")
 _cml_version_pattern = re.compile(r"^\s*gaudi_subdir\s*\(\s*\S+\s+(v[0-9]+r[0-9]+(?:p[0-9]+)?)\)\s*$")
+_hwaf_hpyscript_version_pattern = re.compile(r"^\s*[\"']version[\"']\s*:\s*[\"'](v[0-9]+r[0-9]+(?:p[0-9]+)?)[\"'].*$")
+_hwaf_ymlscript_version_pattern = re.compile(r"^\s*version\s*:\s*([\"']|)(v[0-9]+r[0-9]+(?:p[0-9]+)?)([\"']|).*$")
+
 def extract_version(f):
     """
     Find the version number in a requirements file.
@@ -34,6 +37,34 @@ def change_cml_version(cml, newversion):
             out.append(l)
         if changed:
             open(cml, "w").writelines(out)
+
+def change_hwaf_version(pkgdir, newversion):
+    hname = os.path.join(pkgdir, "hscript.py")
+    yname = os.path.join(pkgdir, "hscript.yml")
+    fname = None
+    pat = None
+    if os.path.exists(hname):
+        pat   = _hwaf_hpyscript_version_pattern
+        fname = hname
+    elif os.path.exists(yname):
+        pat   = _hwaf_ymlscript_version_pattern
+        fname = yname
+    else:
+        print ("*** package [%s] has no hwaf script" % pkgdir)
+        return
+    
+    out = []
+    changed = False
+    for l in open(hname):
+        m = pat.match(l)
+        if m and m.group(1) != newversion:
+            print "%s: %s -> %s"%(fname, m.group(1), newversion)
+            l = l.replace(m.group(1), newversion)
+            changed = True
+        out.append(l)
+    if changed:
+        open(fname, "w").writelines(out)
+    return
 
 def change_version(packagedir, newversion):
     """
@@ -68,6 +99,9 @@ def change_version(packagedir, newversion):
     if "GaudiKernel" in packagedir:
         cml = os.path.normpath(os.path.join(packagedir, "..", "src", "Util", "CMakeLists.txt"))
         change_cml_version(cml, newversion)
+
+    # update hscripts
+    change_hwaf_version(packagedir, newversion)
     return changed
 
 _use_pattern = re.compile(r"^\s*use\s*(\w+)\s*(v[0-9]+r[0-9]+(?:p[0-9]+)?)\s*(\w+)?\s*$")
