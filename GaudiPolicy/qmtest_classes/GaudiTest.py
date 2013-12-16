@@ -15,6 +15,13 @@ import string
 import difflib
 from subprocess import Popen, PIPE, STDOUT
 
+try:
+    from GaudiKernel import ROOT6WorkAroundEnabled
+except ImportError:
+    def ROOT6WorkAroundEnabled(id=None):
+        # dummy implementation
+        return False
+
 # ensure the preferred locale
 os.environ['LC_ALL'] = 'C'
 
@@ -336,10 +343,13 @@ class BasicOutputValidator:
 
         # The "splitlines" method works independently of the line ending
         # convention in use.
-        # FIXME: (MCl) Work-around for ROOT-5694 <https://sft.its.cern.ch/jira/browse/ROOT-5694>
-        to_ignore = re.compile(r'Warning in <TClassTable::Add>: class .* already in TClassTable')
-        keep_line = lambda l: not to_ignore.match(l)
-        return filter(keep_line, s1.splitlines()) == filter(keep_line, s2.splitlines())
+        if ROOT6WorkAroundEnabled('ROOT-5694'):
+            # FIXME: (MCl) Work-around for ROOT-5694 <https://sft.its.cern.ch/jira/browse/ROOT-5694>
+            to_ignore = re.compile(r'Warning in <TClassTable::Add>: class .* already in TClassTable')
+            keep_line = lambda l: not to_ignore.match(l)
+            return filter(keep_line, s1.splitlines()) == filter(keep_line, s2.splitlines())
+        else:
+            return s1.splitlines() == s2.splitlines()
 
 class FilePreprocessor:
     """ Base class for a callable that takes a file and returns a modified
@@ -465,7 +475,8 @@ for w,o,r in [
               (None, r'Service reference count check:', r'Looping over all active services...'),
               ]: #[ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
     normalizeExamples += RegexpReplacer(o,r,w)
-normalizeExamples = LineSkipper(["//GP:",
+
+lineSkipper = LineSkipper(["//GP:",
                                  "JobOptionsSvc        INFO # ",
                                  "JobOptionsSvc     WARNING # ",
                                  "Time User",
@@ -512,11 +523,15 @@ normalizeExamples = LineSkipper(["//GP:",
                                  r"SUCCESS\s*Booked \d+ Histogram\(s\)",
                                  r"^ \|",
                                  r"^ ID=",
-                                 # FIXME: (MCl) Work-around for ROOT-5694 <https://sft.its.cern.ch/jira/browse/ROOT-5694>
-                                 r'Warning in <TClassTable::Add>: class .* already in TClassTable',
-                                 ] ) + normalizeExamples + skipEmptyLines + \
-                                  normalizeEOL + \
-                                  LineSorter("Services to release : ")
+                                 ] )
+if ROOT6WorkAroundEnabled('ROOT-5694'):
+    # FIXME: (MCl) Work-around for ROOT-5694 <https://sft.its.cern.ch/jira/browse/ROOT-5694>
+    lineSkipper += LineSkipper(regexps = [
+        r'Warning in <TClassTable::Add>: class .* already in TClassTable',
+        ])
+
+normalizeExamples = (lineSkipper + normalizeExamples + skipEmptyLines +
+                     normalizeEOL + LineSorter("Services to release : "))
 
 class ReferenceFileValidator:
     def __init__(self, reffile, cause, result_key, preproc = normalizeExamples):

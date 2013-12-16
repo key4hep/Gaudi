@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-12-16 - Marco Clemencic
+ - Use GaudiKernel.ROOT6WorkAroundEnabled to enable/disable the workaround for
+   ROOT-5694.
+
 ! 2013-11-15 - Marco Clemencic
  - Ignore warning about classes already in TClassTable in the tests while
    ROOT-5694 is being fixed.
@@ -37,9 +41,9 @@ M       cmt/requirements
 M       cmt/requirements
 
 ! 2013-04-05 - Charles Leggett
- - add macro and pattern for loading of optional modules into <pkg>Conf.py 
-   files via genconf. This eases the transition of ATLAS packages that 
-   imported modules that used to be in GaudiSvc but are now in GaudiCoreSvc or 
+ - add macro and pattern for loading of optional modules into <pkg>Conf.py
+   files via genconf. This eases the transition of ATLAS packages that
+   imported modules that used to be in GaudiSvc but are now in GaudiCoreSvc or
    GaudiCommonSvc
 
 M       cmt/requirements
