@@ -1,6 +1,10 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2013-12-16 - Marco Clemencic
+ - Added workaround for ROOT-5847.
+   https://sft.its.cern.ch/jira/browse/ROOT-5847
+
 ! 2013-11-05 - Marco Clemencic
  - Restore the old order of load of Pythonizations because the new order was
    causing a failure in ROOT 5.

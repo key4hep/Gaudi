@@ -8,6 +8,9 @@
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IAlgTool.h"
 
+// FIXME: (MCl) workaround for ROOT-5847
+class Property;
+
 #if PY_VERSION_HEX < 0x02050000
 // Note (MCl):
 // In Python 2.5, all the functions working with lenghts use the type PySsize_t
@@ -132,6 +135,9 @@ struct Helper {
     if ( 0 != hsvc && hsvc->findObject ( path , h ).isSuccess() ) { return h ; }
     return 0 ;
   }
+  // FIXME: (MCl) workaround for ROOT-5847
+  static const Property* WorkaroundROOT5847(const Property* p) { return p; }
+
 // Array support
 private:
   template <class T>
