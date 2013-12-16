@@ -55,7 +55,7 @@ __all__ = (
 import GaudiPython.Bindings                           ##       The basic module
 iAlgorithm = GaudiPython.Bindings.iAlgorithm          ##    Algorithm interface
 iAlgTool   = GaudiPython.Bindings.iAlgTool            ##         Tool interface
-#
+
 from GaudiPython.Bindings import (
     SUCCESS        ,                                  ##            status code
     InterfaceCast  ,                                  ##       "queryInterface"
@@ -64,9 +64,11 @@ from GaudiPython.Bindings import (
     iNTupleSvc     ,                                  ##        N-Tuple service
     AppMgr                                            ##    Application Manager
     )
-#
+
 from GaudiPython.Bindings   import gbl as cpp         ##  global C++ namepspace
 from GaudiPython.HistoUtils import aida2root          ## AIDA -> ROTO converter
+
+from GaudiKernel import ROOT6WorkAroundEnabled
 # =============================================================================
 # std C++ namespace
 std = cpp.std                                         ## std C++ namespace
@@ -202,7 +204,7 @@ def _init_ ( self , name , **args ) :
     # take some care about the ownership of the algorithms
     if not appMgr.__dict__.has_key ( 'GaudiPythonAlgos') :
         appMgr.__dict__[ 'GaudiPythonAlgos'] = []
-    appMgr.__dict__[ 'GaudiPythonAlgos'].append( self ) 
+    appMgr.__dict__[ 'GaudiPythonAlgos'].append( self )
 
 # =============================================================================
 ## The default initialization (initialization of base C++ class + data
@@ -385,19 +387,19 @@ def _getDet   ( self , location ) :
     return self._detSvc_[location]
 
 # =============================================================================
-##  get the data from TES using GaudiCommon methods, respecting RootInTES 
+##  get the data from TES using GaudiCommon methods, respecting RootInTES
 def _get_  ( self , location , rootInTES = True ) :
     """
     Get the object from Transient Event Store using GaudiCommon machinery,
-    respecting RootInTES behaviour 
+    respecting RootInTES behaviour
     """
     return AlgDecorator.get_ ( self , location  , rootInTES )
 # =============================================================================
-##  check the data from TES using GaudiCommon methods, respecting RootInTES 
+##  check the data from TES using GaudiCommon methods, respecting RootInTES
 def _exist_ ( self , location , rootInTES = True ) :
     """
     Check  the object in Transient Event Store using GaudiCommon machinery,
-    respecting RootInTES behaviour 
+    respecting RootInTES behaviour
     """
     return AlgDecorator.exist_ ( self , location  , rootInTES )
 
@@ -1047,7 +1049,7 @@ def _t_nTuple_      ( s , *a ) :
 def _t_ntuple_      ( s , *a ) :
     """
     Access to underlying NTuple::Tuple object
-    """    
+    """
     return _Dec.ntuple     ( s , *a )
 def _t_valid_       ( s , *a ) :
     """
@@ -1056,42 +1058,42 @@ def _t_valid_       ( s , *a ) :
     return _Dec.valid      ( s , *a )
 def _t_write_       ( s , *a ) :
     """
-    Commit the row/record to n-tuple 
+    Commit the row/record to n-tuple
     """
     return _Dec.write      ( s , *a )
 def _t_column_      ( s , *a ) :
     """
-    Fill the certain column to n-tuple 
+    Fill the certain column to n-tuple
     """
     return _Dec.column     ( s , *a )
 def _t_column_ll_   ( s , *a ) :
     """
-    Fill the 'long long' column 
+    Fill the 'long long' column
     """
     return _Dec.column_ll  ( s , *a )
 def _t_column_ull_  ( s , *a ) :
     """
-    Fill the 'unsigned long long' column 
+    Fill the 'unsigned long long' column
     """
     return _Dec.column_ull ( s , *a )
 def _t_array_       ( s , *a ) :
     """
-    Fill the fixed-size array column 
+    Fill the fixed-size array column
     """
     return _Dec.array      ( s , *a )
 def _t_matrix_      ( s , *a ) :
     """
-    Fill the fixed-size matrix column 
+    Fill the fixed-size matrix column
     """
     return _Dec.matrix     ( s , *a )
 def _t_farray_      ( s , *a ) :
     """
-    Fill the floating-size array column 
+    Fill the floating-size array column
     """
     return _Dec.farray     ( s , *a )
 def _t_fmatrix_     ( s , *a ) :
     """
-    Fill the floating-size matrix column 
+    Fill the floating-size matrix column
     """
     return _Dec.fmatrix    ( s , *a )
 
@@ -1113,7 +1115,7 @@ Tuple.valid       = _t_valid_
 Tuple.write       = _t_write_
 Tuple.column      = _t_column_
 Tuple.column_ll   = _t_column_ll_
-Tuple.column_ull  = _t_column_ull_ 
+Tuple.column_ull  = _t_column_ull_
 Tuple.array       = _t_array_
 Tuple.matrix      = _t_matrix_
 Tuple.farray      = _t_farray_
@@ -1360,18 +1362,21 @@ def _get_all_histos_  ( component , method , name ) :
             if   _id.numeric() : _id = _id.numericID  ()
             elif _id.literal() : _id = _id.literalID  ()
             else               : _id = _is.idAsString ()
-            _res [ _id ] = _his[ _i ]
+            h = _his[ _i ]
+            if ROOT6WorkAroundEnabled('ROOT-5850'):
+                h = cpp.GaudiPython.Helper.WorkaroundROOT5850(h)
+            _res [ _id ] = h
 
     if not name : return _res                          ## return the dictionary
 
-    id = cpp.GaudiAlg.ID ( name ) 
+    id = cpp.GaudiAlg.ID ( name )
     for i in ( name            ,
                id.literalID () ,
                id.numericID () ,
                id.idAsString() , id  ) :
         h = _res.get( i , None  )
         if not not h : return h   ## return the histogram
-        
+
     return None
 # =============================================================================
 def _Histos_a_ ( self , name = None ) :

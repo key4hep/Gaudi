@@ -2,6 +2,10 @@ Package: GaudiPython
 Package manager : Marco Clemencic
 
 ! 2013-12-16 - Marco Clemencic
+ - Added workaround for ROOT-5850.
+   https://sft.its.cern.ch/jira/browse/ROOT-5850
+
+! 2013-12-16 - Marco Clemencic
  - Added workaround for ROOT-5847.
    https://sft.its.cern.ch/jira/browse/ROOT-5847
 
