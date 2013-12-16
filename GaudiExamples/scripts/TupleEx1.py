@@ -34,6 +34,11 @@ Numbers = Rndm.Numbers
 
 from   GaudiPython.GaudiAlgs   import TupleAlgo, mapvct
 
+from GaudiKernel import ROOT6WorkAroundEnabled
+
+if ROOT6WorkAroundEnabled('ROOT-5836'):
+    GaudiPython.loaddict('CLHEPRflx')
+
 # =============================================================================
 ## Primitive function which transform arbitrary sequence  into
 #  GaudiPython.Vector ( std::vector<double> )
@@ -92,7 +97,7 @@ class TupleEx1(TupleAlgo) :
         # fill N-Tuple with long long numbers:
         tuple1 . column_ll  ( 'poiss2' , int( poisson () ) )
         tuple1 . column_ll  ( 'binom2' , int( binom   () ) )
-        
+
         # fill N-Tuple with unsigned long long numbers:
         tuple1 . column_ull ( 'poiss3' , int( poisson () ) )
         tuple1 . column_ull ( 'binom3' , int( binom   () ) )
