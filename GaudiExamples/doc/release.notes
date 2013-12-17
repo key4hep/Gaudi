@@ -1,6 +1,10 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2013-12-17 - Marco Clemencic
+ - Added workaround for SPI-385.
+   https://sft.its.cern.ch/jira/browse/SPI-385
+
 ! 2013-12-16 - Marco Clemencic
  - Added workaround for ROOT-5836.
    https://sft.its.cern.ch/jira/browse/ROOT-5836
