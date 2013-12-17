@@ -1,6 +1,11 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-12-17 - Marco Clemencic
+ - Removed work-around for ROOT-5694, because it was not needed anymore and it
+   was hiding SPI-385.
+   https://sft.its.cern.ch/jira/browse/SPI-385
+
 ! 2013-12-16 - Marco Clemencic
  - Use GaudiKernel.ROOT6WorkAroundEnabled to enable/disable the workaround for
    ROOT-5694.
