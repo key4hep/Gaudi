@@ -37,7 +37,6 @@ GaudiPython.loaddict('STLAddRflx')
 from GaudiKernel import ROOT6WorkAroundEnabled
 is_root6 = GaudiPython.gbl.gROOT.GetVersionCode() >= ((5 << 16) + (99 << 8))
 if not (ROOT6WorkAroundEnabled('SPI-385') and is_root6):
-    include
     GaudiPython.loaddict('MathRflx')
     GaudiPython.loaddict('MathAddRflx')
 

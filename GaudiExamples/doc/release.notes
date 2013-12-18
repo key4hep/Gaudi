@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2013-12-18 - Marco Clemencic
+ - Fixed a typo in TupleEx3.py.
+
 ! 2013-12-17 - Marco Clemencic
  - Added workaround for SPI-385.
    https://sft.its.cern.ch/jira/browse/SPI-385
