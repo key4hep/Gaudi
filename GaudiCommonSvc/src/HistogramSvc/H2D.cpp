@@ -1,4 +1,3 @@
-// $Id: H2D.cpp,v 1.16 2007/07/16 13:36:17 hmd Exp $
 #ifdef __ICC
 // disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
 //   TODO: To be removed, since it comes from ROOT TMathBase.h
@@ -233,7 +232,7 @@ void Gaudi::Histogram2D::copyFromAida(const IHistogram2D& h) {
       }
     }
   }
-  // need to do set entries after setting contents otherwise root will recalulate them
+  // need to do set entries after setting contents otherwise root will recalculate them
   // taking into account how many time  SetBinContents() has been called
   m_rep->SetEntries(h.allEntries());
   // fill stat vector

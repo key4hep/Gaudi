@@ -23,7 +23,6 @@
 #include "GaudiKernel/TypeNameString.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Tokenizer.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/ISvcManager.h"
@@ -37,8 +36,6 @@
 #include <map>
 
 // Forward declarations
-// Service factory
-template <class TYPE> class SvcFactory;
 // This class
 class MultiStoreSvc;
 
@@ -89,7 +86,6 @@ class MultiStoreSvc: public extends3<Service,
                                      IPartitionControl>
 {
 protected:
-  /// The class creator is of course a friend!
   typedef std::vector<std::string>         PartitionDefs;
   typedef std::map<std::string, Partition> Partitions;
   /// Integer Property corresponding to CLID of root entry
@@ -764,4 +760,4 @@ public:
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_SERVICE_FACTORY(MultiStoreSvc)
+DECLARE_COMPONENT(MultiStoreSvc)

@@ -1,14 +1,12 @@
-// $Id: $
 // ===========================================================================
 // Include files
 // ===========================================================================
-// STD & STL 
+// STD & STL
 // ===========================================================================
 #include <map>
 // ===========================================================================
 // GaudiKernel
 // ===========================================================================
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/StringKey.h"
 #include "GaudiKernel/Map.h"
@@ -21,7 +19,7 @@
 namespace Gaudi
 {
   // =========================================================================
-  namespace Examples 
+  namespace Examples
   {
     // =======================================================================
     /** @class StringKeyEx   StringKeys/StirngKeyEx.cpp
@@ -30,35 +28,31 @@ namespace Gaudi
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-10-07
      */
-    class StringKeyEx : public GaudiAlgorithm 
+    class StringKeyEx : public GaudiAlgorithm
     {
+    public:
       // ======================================================================
-      /// the friend factory for instantiations 
-      friend class AlgFactory<Gaudi::Examples::StringKeyEx>;
+      /// execution of the algorithm
+      virtual StatusCode execute () ;
       // ======================================================================
     public:
       // ======================================================================
-      /// execution of the algorithm 
-      virtual StatusCode execute () ;
-      // ======================================================================
-    protected:
-      // ======================================================================
       /** standard constructor
-       *  @param name algorithm instance name 
+       *  @param name algorithm instance name
        *  @param pSvc pointer to Service Locator
        */
-      StringKeyEx 
-      ( const std::string& name ,                //    algorithm instance name 
+      StringKeyEx
+      ( const std::string& name ,                //    algorithm instance name
         ISvcLocator*       pSvc )                // pointer to Service Locator
         : GaudiAlgorithm ( name , pSvc )
-        , m_key  () 
-        , m_keys () 
+        , m_key  ()
+        , m_keys ()
       {
         declareProperty ( "Key"  , m_key  , "The string key" ) ;
         declareProperty ( "Keys" , m_keys , "The vector of keys" ) ;
       }
-      /// virtual & protected destructor 
-      virtual ~StringKeyEx () {}             // virtual & protected destructor 
+      /// virtual & protected destructor
+      virtual ~StringKeyEx () {}             // virtual & protected destructor
       // ======================================================================
     private:
       // ======================================================================
@@ -76,24 +70,24 @@ namespace Gaudi
       // ======================================================================
       /// get the key ;
       Key  m_key  ;                                              // get the key
-      /// get the keys 
-      Keys m_keys ;                                             // get the keys 
+      /// get the keys
+      Keys m_keys ;                                             // get the keys
       // ======================================================================
     } ;
     // ========================================================================
-  } //                                         end of namespace Gaudi::Examples 
+  } //                                         end of namespace Gaudi::Examples
   // ==========================================================================
 } //                                                     end of namespace Gaudi
 // ============================================================================
-// Execution method 
+// Execution method
 // ============================================================================
-StatusCode Gaudi::Examples::StringKeyEx::execute() 
+StatusCode Gaudi::Examples::StringKeyEx::execute()
 {
   // 1. check the settings of key from the properties
   always() << "The Key  : " << Gaudi::Utils::toString ( m_key  ) << endmsg ;
   always() << "The Keys : " << Gaudi::Utils::toString ( m_keys ) << endmsg ;
   //
-  
+
   // prepare some maps
   typedef std::map<std::string,int>              MAP1 ;
   typedef GaudiUtils::Map<std::string,int>       MAP2 ;
@@ -114,16 +108,16 @@ StatusCode Gaudi::Examples::StringKeyEx::execute()
   MAP02 map02 ;
   MAP03 map03 ;
   MAP04 map04 ;
-  
-  for ( Keys::const_iterator it = m_keys.begin() ; m_keys.end() != it ; ++it ) 
+
+  for ( Keys::const_iterator it = m_keys.begin() ; m_keys.end() != it ; ++it )
   {
     int index = it - m_keys.begin() ;
-    
+
     map1.insert ( std::make_pair ( *it , index ) ) ;
     map2.insert ( std::make_pair ( *it , index ) ) ;
     map3.insert ( std::make_pair ( *it , index ) ) ;
     map4.insert ( std::make_pair ( *it , index ) ) ;
-    
+
     map01.insert ( std::make_pair ( *it , index ) ) ;
     map02.insert ( std::make_pair ( *it , index ) ) ;
     map03.insert ( std::make_pair ( *it , index ) ) ;
@@ -135,14 +129,14 @@ StatusCode Gaudi::Examples::StringKeyEx::execute()
   always() << "Map 2:" << Gaudi::Utils::toString ( map2  ) << endmsg ;
   always() << "Map 3:" << Gaudi::Utils::toString ( map3  ) << endmsg ;
   always() << "Map 4:" << Gaudi::Utils::toString ( map4  ) << endmsg ;
-  
+
   always() << "Map01:" << Gaudi::Utils::toString ( map01 ) << endmsg ;
   always() << "Map02:" << Gaudi::Utils::toString ( map02 ) << endmsg ;
   always() << "Map03:" << Gaudi::Utils::toString ( map03 ) << endmsg ;
   always() << "Map04:" << Gaudi::Utils::toString ( map04 ) << endmsg ;
 
   always() << "check for       StringKey " << Gaudi::Utils::toString ( m_key ) << endmsg ;
-  
+
   always () << " In Map 1: " << Gaudi::Utils::toString ( map1.end() != map1.find ( m_key ) ) << endmsg ;
   always () << " In Map 2: " << Gaudi::Utils::toString ( map2.end() != map2.find ( m_key ) ) << endmsg ;
   always () << " In Map 3: " << Gaudi::Utils::toString ( map3.end() != map3.find ( m_key ) ) << endmsg ;
@@ -156,7 +150,7 @@ StatusCode Gaudi::Examples::StringKeyEx::execute()
   std::string akey = "rrr" ;
 
   always() << "check for std::string key " << Gaudi::Utils::toString ( akey ) << endmsg ;
-  
+
   always () << " In Map 1: " << Gaudi::Utils::toString ( map1.end() != map1.find ( akey ) ) << endmsg ;
   always () << " In Map 2: " << Gaudi::Utils::toString ( map2.end() != map2.find ( akey ) ) << endmsg ;
   always () << " In Map 3: " << Gaudi::Utils::toString ( map3.end() != map3.find ( akey ) ) << endmsg ;
@@ -168,12 +162,13 @@ StatusCode Gaudi::Examples::StringKeyEx::execute()
   always () << " In Map04: " << Gaudi::Utils::toString ( map04.end() != map04.find ( akey ) ) << endmsg ;
 
 
-  
+
   return StatusCode::SUCCESS ;
 }
 // ============================================================================
 /// the factory:
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(Gaudi::Examples,StringKeyEx) 
+using Gaudi::Examples::StringKeyEx;
+DECLARE_COMPONENT(StringKeyEx)
 // ============================================================================
-// The END 
+// The END
 // ========-===================================================================

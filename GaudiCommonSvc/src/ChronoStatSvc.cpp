@@ -1,7 +1,3 @@
-// $Id: ChronoStatSvc.cpp,v 1.18 2008/05/13 12:37:19 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.18 $
-// ============================================================================
 #ifdef _WIN32
 #pragma warning( disable : 4786 )
 #endif
@@ -20,7 +16,6 @@
 // ============================================================================
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/StatusCode.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/IChronoStatSvc.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ChronoEntity.h"
@@ -35,7 +30,7 @@
 /// Instantiation of a static factory class used by clients to create
 /// instances of this service
 // ============================================================================
-DECLARE_SERVICE_FACTORY(ChronoStatSvc)
+DECLARE_COMPONENT(ChronoStatSvc)
 // ============================================================================
 /** @file
  *   Implementation of class ChronoStatSvc

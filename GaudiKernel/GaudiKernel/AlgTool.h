@@ -12,6 +12,7 @@
 #include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/IMonitorSvc.h"
 #include "GaudiKernel/IStateful.h"
+#include <Gaudi/PluginService.h>
 
 #include <vector>
 #include <list>
@@ -33,6 +34,10 @@
 class GAUDI_API AlgTool: public implements3<IAlgTool, IProperty, IStateful> {
   friend class ToolSvc;
 public:
+  typedef Gaudi::PluginService::Factory3<IAlgTool*,
+                                         const std::string&,
+                                         const std::string&,
+                                         const IInterface*> Factory;
 
   /// Query for a given interface
   virtual StatusCode queryInterface(const InterfaceID& riid, void** ppvUnknown);
@@ -348,5 +353,33 @@ private:
   Gaudi::StateMachine::State m_state;            ///< state of the Tool
   Gaudi::StateMachine::State m_targetState;      ///< state of the Tool
 };
+
+
+#ifndef GAUDI_NEW_PLUGIN_SERVICE
+template <class T>
+class ToolFactory {
+public:
+  template <typename S>
+  static typename S::ReturnType create(typename S::Arg1Type a1,
+                                       typename S::Arg2Type a2,
+                                       typename S::Arg3Type a3) {
+    return new T(a1, a2, a3);
+  }
+};
+
+// Macros to declare component factories
+#define DECLARE_TOOL_FACTORY(x) \
+  DECLARE_FACTORY_WITH_CREATOR(x, ToolFactory< x >, AlgTool::Factory)
+#define DECLARE_NAMESPACE_TOOL_FACTORY(n, x) \
+    DECLARE_TOOL_FACTORY(n::x)
+
+#else
+
+// Macros to declare component factories
+#define DECLARE_TOOL_FACTORY(x)              DECLARE_COMPONENT(x)
+#define DECLARE_NAMESPACE_TOOL_FACTORY(n,x)  DECLARE_COMPONENT(n::x)
+
+#endif
+
 
 #endif // GAUDIKERNEL_ALGTOOL_H

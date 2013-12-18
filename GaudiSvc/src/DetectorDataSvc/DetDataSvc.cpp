@@ -9,7 +9,6 @@
 #include "GaudiKernel/IValidity.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/System.h"
 using System::isEnvSet;
 using System::getEnv;
@@ -22,7 +21,7 @@ using System::getEnv;
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_SERVICE_FACTORY(DetDataSvc)
+DECLARE_COMPONENT(DetDataSvc)
 
 // Service initialization
 StatusCode DetDataSvc::initialize()   {

@@ -1,11 +1,7 @@
-// $Id: NTupleAlgorithm.cpp,v 1.7 2006/12/15 13:37:36 hmd Exp $
-
-
 // Include files
 #include "NTupleAlgorithm.h"
 
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IHistogramSvc.h"
 #include "GaudiKernel/SmartDataPtr.h"
 
@@ -13,7 +9,7 @@
 
 #include <math.h>
 
-DECLARE_ALGORITHM_FACTORY(NTupleAlgorithm)
+DECLARE_COMPONENT(NTupleAlgorithm)
 
 //------------------------------------------------------------------------------
 NTupleAlgorithm::NTupleAlgorithm(const std::string& name,

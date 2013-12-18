@@ -1,8 +1,3 @@
-// $Id: PerfMonAuditor.cpp,v 0.1 2009/10/28 Daniele Francesco Kruse $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 0.1 $
-// ============================================================================
-
 #include "GaudiKernel/Auditor.h"
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/IIncidentListener.h"
@@ -10,7 +5,6 @@
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/VectorMap.h"
 #include "GaudiKernel/HashMap.h"
-#include "GaudiKernel/AudFactory.h"
 #include "GaudiKernel/MsgStream.h"
 
 /*BEGIN: perfmon*/
@@ -1176,4 +1170,4 @@ void PerfMonAuditor::i_afterExecute(INamedInterface* alg)
  return;
 }
 
-DECLARE_AUDITOR_FACTORY(PerfMonAuditor)
+DECLARE_COMPONENT(PerfMonAuditor)

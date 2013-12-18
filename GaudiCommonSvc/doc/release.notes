@@ -4,6 +4,23 @@
 # Description: standard and commonly used components
 ################################################################################
 
+! 2013-07-19 - Marco Clemencic
+ - Clean up in the use of the new PluginService.
+
+! 2013-07-18 - Marco Clemencic
+ - Removed use of obsolete AlgFactory.h, SvcFactory.h, ToolFactory.h,
+   AudFactory.h and CnvFactory.h.
+
+! 2013-07-17 - Marco Clemencic
+ - Use the new ROOT-free Plugin Service.
+
+! 2013-07-17 - Marco Clemencic
+ - Removed factories forward declarations.
+
+! 2013-07-03 - Marco Clemencic
+ - Clean up in the cmt/requirements.
+ - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
+
 ! 2013-12-11 - Sebastien Binet
  - Added hwaf configuration files.
 

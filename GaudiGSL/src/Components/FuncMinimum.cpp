@@ -359,4 +359,4 @@ FuncMinimum::~FuncMinimum( ) ///< Destructor
 //=============================================================================
 
 // Declaration of the Tool Factory
-DECLARE_TOOL_FACTORY(FuncMinimum)
+DECLARE_COMPONENT(FuncMinimum)

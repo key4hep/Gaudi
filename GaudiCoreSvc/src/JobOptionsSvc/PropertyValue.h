@@ -13,7 +13,6 @@
 // ============================================================================
 #include <boost/variant.hpp>
 #include <boost/scoped_ptr.hpp>
-#include <boost/shared_ptr.hpp>
 // ============================================================================
 #include "Position.h"
 // ============================================================================
@@ -22,8 +21,6 @@ namespace Gaudi { namespace Parsers {
 class PropertyValue {
 // ----------------------------------------------------------------------------
  public:
-  typedef boost::shared_ptr<PropertyValue> SharedPtr;
-  typedef boost::shared_ptr<const PropertyValue> ConstSharedPtr;
   typedef boost::scoped_ptr<PropertyValue> ScopedPtr;
   typedef boost::scoped_ptr<const PropertyValue> ConstScopedPtr;
 

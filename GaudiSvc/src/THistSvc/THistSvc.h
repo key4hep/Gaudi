@@ -22,13 +22,8 @@
 #include <set>
 #include <map>
 
-class IFileMgr;
 class IIncidentSvc;
-
-// Forward declarations
-template <class TYPE> class SvcFactory;
-
-class THistSvc: public extends3<Service, ITHistSvc, IIncidentListener, 
+class THistSvc: public extends3<Service, ITHistSvc, IIncidentListener,
 				IIoComponent> {
 
 public:
@@ -61,9 +56,9 @@ public:
   virtual std::vector<std::string> getTrees() const;
   virtual std::vector<std::string> getGraphs() const;
 
-  virtual StatusCode getTHists(TDirectory *td, TList &, 
+  virtual StatusCode getTHists(TDirectory *td, TList &,
 			       bool recurse=false) const;
-  virtual StatusCode getTHists(const std::string& name, TList &, 
+  virtual StatusCode getTHists(const std::string& name, TList &,
 			       bool recurse=false) const;
 
   virtual StatusCode getTHists(TDirectory *td, TList &tl,
@@ -71,9 +66,9 @@ public:
   virtual StatusCode getTHists(const std::string& name, TList &tl,
 			       bool recurse=false, bool reg=false);
 
-  virtual StatusCode getTTrees(TDirectory *td, TList &, 
+  virtual StatusCode getTTrees(TDirectory *td, TList &,
 			       bool recurse=false) const;
-  virtual StatusCode getTTrees(const std::string& name, TList &, 
+  virtual StatusCode getTTrees(const std::string& name, TList &,
 			       bool recurse=false) const;
 
   virtual StatusCode getTTrees(TDirectory *td, TList & tl,

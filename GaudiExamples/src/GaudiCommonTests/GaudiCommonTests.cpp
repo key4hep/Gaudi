@@ -1,10 +1,6 @@
-// $Id: GaudiCommonTests.cpp,v 1.2 2008/01/18 15:04:32 marcocle Exp $
-// Include files
-
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiKernel/RndmGenerators.h"
 #include "GaudiKernel/IRegistry.h"
@@ -21,7 +17,7 @@ using namespace Gaudi::Examples ;
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY(GaudiCommonTests)
+DECLARE_COMPONENT(GaudiCommonTests)
 
 //=============================================================================
 // Standard constructor, initializes variables

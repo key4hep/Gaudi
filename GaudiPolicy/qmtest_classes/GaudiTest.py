@@ -17,6 +17,13 @@ import time
 import calendar
 from subprocess import Popen, PIPE, STDOUT
 
+try:
+    from GaudiKernel import ROOT6WorkAroundEnabled
+except ImportError:
+    def ROOT6WorkAroundEnabled(id=None):
+        # dummy implementation
+        return False
+
 # ensure the preferred locale
 os.environ['LC_ALL'] = 'C'
 
@@ -509,7 +516,8 @@ for w,o,r in [
               (None, r'Service reference count check:', r'Looping over all active services...'),
               ]: #[ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
     normalizeExamples += RegexpReplacer(o,r,w)
-normalizeExamples = LineSkipper(["//GP:",
+
+lineSkipper = LineSkipper(["//GP:",
                                  "JobOptionsSvc        INFO # ",
                                  "JobOptionsSvc     WARNING # ",
                                  "Time User",
@@ -525,8 +533,6 @@ normalizeExamples = LineSkipper(["//GP:",
                                  "DEBUG Service base class initialized successfully", # changed between v20 and v21
                                  "DEBUG Incident  timing:", # introduced with patch #3487
                                  "INFO  'CnvServices':[", # changed the level of the message from INFO to DEBUG
-                                 # This comes from ROOT, when using GaudiPython
-                                 'Note: (file "(tmpfile)", line 2) File "set" already loaded',
                                  # The signal handler complains about SIGXCPU not defined on some platforms
                                  'SIGXCPU',
                                  ],regexps = [
@@ -558,9 +564,10 @@ normalizeExamples = LineSkipper(["//GP:",
                                  r"SUCCESS\s*Booked \d+ Histogram\(s\)",
                                  r"^ \|",
                                  r"^ ID=",
-                                 ] ) + normalizeExamples + skipEmptyLines + \
-                                  normalizeEOL + \
-                                  LineSorter("Services to release : ")
+                                 ] )
+
+normalizeExamples = (lineSkipper + normalizeExamples + skipEmptyLines +
+                     normalizeEOL + LineSorter("Services to release : "))
 
 class ReferenceFileValidator:
     def __init__(self, reffile, cause, result_key, preproc = normalizeExamples):

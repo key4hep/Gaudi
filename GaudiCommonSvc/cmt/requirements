@@ -35,9 +35,6 @@ apply_pattern component_library library=GaudiCommonSvc
 
 private
 macro_append Boost_linkopts " $(Boost_linkopts_system) $(Boost_linkopts_filesystem) "
-#macro_append ROOT_linkopts " -lHist -lReflex -lMatrix -lGraf" \
-#              target-winxp " libHist.lib libReflex.lib libMatrix.lib libGraf.lib" \
-#             target-mac104 " -lHist -lReflex -lMatrix -lGraf"
 macro_append ROOT_linkopts " -lHist" \
               target-winxp " libHist.lib" \
              target-mac104 " -lHist"

@@ -89,7 +89,7 @@ StatusCode  Tool::finalize()
 //------------------------------------------------------------------------------
 Tool::~Tool( ) {}
 //------------------------------------------------------------------------------
-}
 
 // Declaration of the AlgTool Factory
-DECLARE_NAMESPACE_TOOL_FACTORY(bug_34121,Tool)
+DECLARE_COMPONENT(Tool)
+} // namespace bug_34121

@@ -7,7 +7,6 @@
 
 // Forward declarations
 class TTree;
-template <class TYPE> class CnvFactory;
 
 namespace RootHistCnv {
 /** @class RootHistCnv::RRWNTupleCnv RRWNTupleCnv.h
@@ -17,10 +16,6 @@ namespace RootHistCnv {
 */
 
   class RRWNTupleCnv : public RNTupleCnv   {
-
-    /// Creator needs access to constructor/destructor
-    friend class CnvFactory<RRWNTupleCnv>;
-
   public:
     /// Inquire class type
     static const CLID& classID()    {

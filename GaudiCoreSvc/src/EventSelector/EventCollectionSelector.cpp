@@ -1,8 +1,5 @@
-//$Id: EventCollectionSelector.cpp,v 1.16 2007/01/09 16:54:47 hmd Exp $
-
 // Include files
 #include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ObjectFactory.h"
 #include "GaudiKernel/GenericAddress.h"
 #include "GaudiKernel/MsgStream.h"
@@ -19,7 +16,7 @@
 
 #include <memory>
 
-DECLARE_SERVICE_FACTORY(EventCollectionSelector)
+DECLARE_COMPONENT(EventCollectionSelector)
 
 /** @class EventCollectionContext
  *
@@ -168,7 +165,7 @@ EventCollectionSelector::connectStatement(const std::string& typ, const std::str
   std::string seltyp = typ;
   if ( seltyp.length() > 0 || crit.length() > 0 )   {
     if ( crit.length() > 0 && seltyp.length() == 0 ) seltyp = "NTuple::Selector";
-    SmartIF<ISelectStatement> stmt(ROOT::Reflex::PluginService::Create<IInterface*>(seltyp, (IInterface*)serviceLocator()));
+    SmartIF<ISelectStatement> stmt(ObjFactory::create(seltyp, serviceLocator()));
     if ( stmt.isValid( ) )    {
       if ( crit.length() > 0 ) stmt->setCriteria(crit);
       tuple->attachSelector(stmt).ignore();

@@ -2,7 +2,7 @@
 #include <fstream>
 
 #include "GaudiKernel/ToolFactory.h"
-DECLARE_TOOL_FACTORY( FileReadTool )
+DECLARE_COMPONENT( FileReadTool )
 
 FileReadTool::FileReadTool( const std::string& type,
                             const std::string& name,

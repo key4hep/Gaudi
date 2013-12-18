@@ -32,6 +32,7 @@
 #include "boost/algorithm/string/classification.hpp"
 #include "boost/algorithm/string/trim.hpp"
 #include "boost/algorithm/string/case_conv.hpp"
+#include "boost/algorithm/string/replace.hpp"
 #include "boost/format.hpp"
 #include "boost/regex.hpp"
 
@@ -49,13 +50,14 @@
 #include "GaudiKernel/HashMap.h"
 #include "GaudiKernel/GaudiHandle.h"
 
+#include "GaudiKernel/Auditor.h"
+#include "GaudiKernel/Service.h"
+#include "GaudiKernel/AlgTool.h"
+#include "GaudiKernel/Algorithm.h"
+
 #include "GaudiKernel/Time.h"
 
-#include "Reflex/PluginService.h"
-#include "Reflex/Reflex.h"
-#include "Reflex/SharedLibrary.h"
-
-#include "RVersion.h"
+#include <Gaudi/PluginService.h>
 
 #include <algorithm>
 #include <iostream>
@@ -65,16 +67,14 @@
 #include <set>
 #include <vector>
 
-
 #include "DsoUtils.h"
-
-
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
 using namespace std;
-using namespace ROOT::Reflex;
+
+class IConverter;
 
 // useful typedefs
 typedef std::vector<std::string> Strings_t;
@@ -361,7 +361,7 @@ int main ( int argc, char** argv )
   }
 
   if ( vm.count("debug-level") ) {
-    PluginService::SetDebug( vm["debug-level"].as<int>() );
+    Gaudi::PluginService::SetDebug( vm["debug-level"].as<int>() );
   }
 
   if ( vm.count("load-library") ) {
@@ -369,9 +369,12 @@ int main ( int argc, char** argv )
     for (Strings_t::const_iterator lLib=lLib_list.begin();
 	 lLib != lLib_list.end();
 	 ++lLib) {
-      // load done through ROOT::Reflex helper class
-      SharedLibrary tmplib(*lLib) ;
-      tmplib.Load() ;
+      // load done through Gaudi helper class
+      System::ImageHandle tmp; // we ignore the library handle
+      unsigned long err = System::loadDynamicLib(*lLib, &tmp);
+      if (err != 1) {
+        cout << "WARNING: failed to load: "<< *lLib << endl;
+      }
     }
   }
 
@@ -381,7 +384,7 @@ int main ( int argc, char** argv )
       fs::create_directory(out);
     }
     catch ( fs::filesystem_error &err ) {
-      cout << "ERR0R: error creating directory: "<< err.what() << endl;
+      cout << "ERROR: error creating directory: "<< err.what() << endl;
       return EXIT_FAILURE;
     }
   }
@@ -422,28 +425,6 @@ int main ( int argc, char** argv )
   return sc;
 }
 
-/// Given a Reflex::Member object, return the id for the configurable (name or id, if it is a string).
-/// non-string ids are used for the persistency (DataObjects)
-inline std::string getId(const Member & m) {
-      return (m.Properties().HasProperty("id") && (m.Properties().PropertyValue("id").TypeInfo() == typeid(std::string))) ?
-             m.Properties().PropertyAsString("id") :
-             m.Properties().PropertyAsString("name") ;
-}
-
-template <class T>
-IProperty *makeInstance(const Member &member, const vector<void*> &args)
-{
-  Object dummy;
-  T* obj;
-#if ROOT_VERSION_CODE < ROOT_VERSION(5,21,6)
-  obj = static_cast<T*>(member.Invoke(dummy,args).Address());
-#else
-  member.Invoke(dummy,obj,args);
-#endif
-  return dynamic_cast<IProperty*>(obj);
-}
-
-
 //-----------------------------------------------------------------------------
 int configGenerator::genConfig( const Strings_t& libs, const string& userModule )
 //-----------------------------------------------------------------------------
@@ -463,11 +444,10 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
   }
 
   //--- Iterate over component factories --------------------------------------
-  Scope factories = Scope::ByName(PLUGINSVC_FACTORY_NS);
-  if ( !factories ) {
-    cout << "ERROR: No PluginSvc factory namespace could be found" << endl;
-    return EXIT_FAILURE;
-  }
+  using Gaudi::PluginService::Details::Registry;
+  Registry& registry = Registry::instance();
+
+  std::set<std::string> bkgNames = registry.loadedFactories();
 
   ISvcLocator* svcLoc = Gaudi::svcLocator();
   IInterface*  dummySvc = new Service( "DummySvc", svcLoc );
@@ -485,21 +465,6 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
     m_pyBuf.str("");
     m_dbBuf.str("");
 
-    // Scan the pluginSvc namespace and store the "background" of already
-    // alive components, so we can extract our signal later on
-    set<string> bkgNames;
-    if ( !isGaudiSvc ) {
-      for ( Member_Iterator it = factories.FunctionMember_Begin();
-            it != factories.FunctionMember_End(); ++it ) {
-        string ident = getId(*it);
-        if ( PluginService::Debug() > 0 ) {
-          cout << "::: " << ident << endl;
-        }
-        bkgNames.insert( ident );
-      }
-    }
-    const set<string>::const_iterator bkgNamesEnd = bkgNames.end();
-
     //--- Load component library ----------------------------------------------
     System::ImageHandle handle;
     unsigned long err = System::loadDynamicLib( *iLib, &handle );
@@ -509,48 +474,46 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
       continue;
     }
 
-    for ( Member_Iterator it = factories.FunctionMember_Begin();
-          it != factories.FunctionMember_End();
-          ++it ) {
-      const string ident = getId(*it);
-      if ( bkgNames.find(ident) != bkgNamesEnd ) {
-        if ( PluginService::Debug() > 0 ) {
+    std::set<std::string> factories = registry.loadedFactories();
+
+    for ( std::set<std::string>::iterator it = factories.begin();
+          it != factories.end(); ++it ) {
+      const string ident = *it;
+      if ( bkgNames.find(ident) != bkgNames.end() ) {
+        if ( Gaudi::PluginService::Details::logger().level() <= 1 ) {
           cout << "\t==> skipping [" << ident << "]..." << endl;
         }
         continue;
       }
 
+      const Registry::FactoryInfo info = registry.getInfo(*it);
+      const string rtype = info.rtype;
+
       // Atlas contributed code (patch #1247)
       // Skip the generation of configurables if the component does not come
       // from the same library we are processing (i.e. we found a symbol that
       // is coming from a library loaded by the linker).
-      // Windows implementation is empty.
-      if ( !DsoUtils::inDso( *it, DsoUtils::libNativeName(*iLib) ) ) {
-        cout << "WARNING: library [" << *iLib << "] requested factory "
-        << "from another library ["
-        << DsoUtils::dsoName(*it) << "]"
-        << " ==> [" << ident << "] !!"
-        << endl;
+      if ( !DsoUtils::inDso( info.ptr, DsoUtils::libNativeName(*iLib) ) ) {
+        cout << "WARNING: library [" << *iLib << "] exposes factory ["
+             << ident << "] which is declared in ["
+             << DsoUtils::dsoName(info.ptr) << "] !!" << endl;
         continue;
       }
 
-      const string rtype = it->TypeOf().ReturnType().Name();
       string type;
       bool known = true;
       if      ( ident == "ApplicationMgr" ) type = "ApplicationMgr";
-      else if ( rtype == "IInterface*" )    type = "IInterface";
-      else if ( rtype == "IAlgorithm*" )    type = "Algorithm";
-      else if ( rtype == "IService*" )      type = "Service";
-      else if ( rtype == "IAlgTool*" )      type = "AlgTool";
-      else if ( rtype == "IAuditor*" )      type = "Auditor";
-      else if ( rtype == "IConverter*" )    type = "Converter";
-      else if ( rtype == "DataObject*" )    type = "DataObject";
+      else if ( rtype == typeid(IInterface*).name() )    type = "IInterface";
+      else if ( rtype == typeid(IAlgorithm*).name() )    type = "Algorithm";
+      else if ( rtype == typeid(IService*  ).name() )    type = "Service";
+      else if ( rtype == typeid(IAlgTool*  ).name() )    type = "AlgTool";
+      else if ( rtype == typeid(IAuditor*  ).name() )    type = "Auditor";
+      else if ( rtype == typeid(IConverter*).name() )    type = "Converter";
+      else if ( rtype == typeid(DataObject*).name() )    type = "DataObject";
       else                                  type = "Unknown", known = false;
       string name = ident;
       // handle possible problems with templated components
       boost::trim(name);
-
-      cout << " - component: " << name << endl;
 
       if ( type == "IInterface" ) {
         /// not enough information...
@@ -563,11 +526,6 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
         continue;
       }
 
-      //if ( type == "ApplicationMgr" ) {
-      ///  @FIXME: no Configurable for this component. yet...
-      ///  continue;
-      //}
-
       if ( !known ) {
         cout << "WARNING: Unknown (return) type [" << rtype << "] !!\n"
              << "WARNING: component [" << ident << "] is skipped !"
@@ -576,40 +534,33 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
         continue;
       }
 
+      cout << " - component: " << info.className << " (";
+      if (info.className != name)
+        cout << name << ": ";
+      cout << type << ")" << endl;
+
       string cname = "DefaultName";
-      vector<void*>  args;
-      args.reserve( 3 );
-      if ( type == "AlgTool" ) {
-        args.resize( 3 );
-        args[0] = &cname;
-        args[1] = &type;
-        args[2] = dummySvc;
-      }
-      else {
-        args.resize( 2 );
-        args[0] = &cname;
-        args[1] = svcLoc;
-      }
-      IProperty* prop = 0;
+      SmartIF<IProperty> prop;
       try {
         if ( type == "Algorithm" ) {
-          prop = makeInstance<IAlgorithm>(*it,args);
+          prop = SmartIF<IAlgorithm>(Algorithm::Factory::create(ident, cname, svcLoc));
         }
         else if ( type == "Service") {
-          prop = makeInstance<IService>(*it,args);
+          prop = SmartIF<IService>(Service::Factory::create(ident, cname, svcLoc));
         }
         else if ( type == "AlgTool") {
-          prop = makeInstance<IAlgTool>(*it,args);
+          prop = SmartIF<IAlgTool>(AlgTool::Factory::create(ident, cname, type, dummySvc));
+          // FIXME: AlgTool base class increase artificially by 1 the refcount.
+          prop->release();
         }
         else if ( type == "Auditor") {
-          prop = makeInstance<IAuditor>(*it,args);
+          prop = SmartIF<IAuditor>(Auditor::Factory::create(ident, cname, svcLoc));
         }
         else if ( type == "ApplicationMgr") {
-          //svcLoc->queryInterface(IProperty::interfaceID(), pp_cast<void>(&prop));
-          svcLoc->queryInterface(IProperty::interfaceID(), (void**)(&prop));
+          prop = SmartIF<ISvcLocator>(svcLoc);
         }
         else {
-          prop = makeInstance<IInterface>(*it,args);
+          continue; // unknown
         }
       }
       catch ( exception& e ) {
@@ -629,7 +580,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
         if (genComponent( *iLib, name, type, prop->getProperties() )) {
           allGood = false;
         }
-        prop->release();
+        prop.reset();
       } else {
         cout << "ERROR: could not cast IInterface* object to an IProperty* !\n"
              << "ERROR: return type from PluginSvc is [" << rtype << "]...\n"
@@ -843,6 +794,7 @@ void configGenerator::pythonizeName( string& name )
 {
   static string  in("<>&*,: ().");
   static string out("__rp__s___");
+  boost::algorithm::replace_all(name, ", ", ",");
   for ( string::iterator i = name.begin(); i != name.end(); ++i ) {
     if ( in.find(*i) != string::npos ) *i = out[in.find(*i)];
   }

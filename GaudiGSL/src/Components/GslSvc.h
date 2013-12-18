@@ -14,7 +14,6 @@
 #include "GaudiGSL/GslError.h"
 
 // forward declarations
-template <class TYPE> class SvcFactory ; // GaudiKernel
 class IGslErrorHandler                 ; // from GaudiGSL
 
 /** @class GslSvc GslSvc.h
@@ -84,9 +83,6 @@ class IGslErrorHandler                 ; // from GaudiGSL
  *  @date   29/04/2002
  */
 class GslSvc: public extends1<Service, IGslSvc> {
-  /// friend factory for instantiation
-  friend class SvcFactory<GslSvc>;
-
 public:
 
   /** handle the GSL error

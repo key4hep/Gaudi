@@ -1,6 +1,89 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2013-12-05 - Marco Clemencic
+ - Re-disabled boost::shared_ptr to remove the dependency on ROOT in
+   StatusCode.h.  For GCCXML we hide the actual implementation.
+
+! 2013-12-05 - Marco Clemencic
+ - Re-enabled boost::shared_ptr for ROOT 5 (gccxml does not understand C++11).
+
+! 2013-12-04 - Marco Clemencic
+ - Replaced boost::shared_ptr with std::shared_ptr when using C++11.
+   See https://sft.its.cern.ch/jira/browse/ROOT-5806
+
+! 2013-10-24 - Marco Clemencic
+ - Added a small Python function to simplify enabling and disabling of
+   specific ROOT 6 work-arounds.
+   In Python use:
+
+       from GaudiKernel import ROOT6WorkAroundEnabled
+       if ROOT6WorkAroundEnabled('work-around-id'):
+           # code for my work-around ...
+
+   To disable the work-around set the environment variable ROOT6_WORK_AROUND
+   to 'none' or '-work-around-id' (a comma separated list is accepted).
+
+! 2013-10-03 - Marco Clemencic
+ - Added missing (needed) include in StringKey.h.
+
+! 2013-08-27 - Marco Clemencic
+ - Fixed compile-time issue when symbol hiding is enabled (gcc 4.7).
+
+! 2013-07-30 - Marco Clemencic
+ - Applied the change to factory declarations needed for private/protected
+   constructors to Converters too.
+ - Removed the macros DECLARE_CONVERTER to avoid confusion with the obsolete
+   ones with the same name.
+
+! 2013-07-26 - Marco Clemencic
+ - Ported new GaudiPluginService to CMT.
+
+! 2013-07-26 - Marco Clemencic
+ - Fixed a warning.
+
+! 2013-07-25 - Marco Clemencic
+ - Fixed mistake in the name of a macro.
+
+! 2013-07-25 - Marco Clemencic
+ - Fixed a "misbalance warning" in genconf.
+
+! 2013-07-25 - Marco Clemencic
+ - Minor updates to a couple of macros.
+
+! 2013-07-25 - Marco Clemencic
+ - Modified factory declarations to allow private/protected constructors.
+
+! 2013-07-19 - Marco Clemencic
+ - Improved the printout of genconf.
+
+! 2013-07-19 - Marco Clemencic
+ - Clean up in the use of the new PluginService.
+
+! 2013-07-18 - Marco Clemencic
+ - Removed the need of AlgFactory.h, SvcFactory.h, ToolFactory.h, AudFactory.h
+   and CnvFactory.h.
+ - Moved the factories typedefs from the global namespace to the class scope.
+ - Introduced backward compatibility hacks to handle non-public constructors
+   (the hack can be disabled defining the macro GAUDI_NEW_PLUGIN_SERVICE).
+
+! 2013-07-18 - Marco Clemencic
+ - Fixed compilation problem on slc6-gcc46.
+
+! 2013-07-17 - Marco Clemencic
+ - Use the new ROOT-free Plugin Service.
+
+! 2013-07-17 - Marco Clemencic
+ - Removed factories forward declarations.
+
+! 2013-07-03 - Marco Clemencic
+ - genconf.cpp: replaces Reflex::SharedLibrary::Load with the equivalent Gaudi
+   function.
+ - Added test for System::currentTime.
+ - Added a GaudiKernel/PluginService.h to hide the technical implementation of
+   the plugin service for the migration to ROOT 6.
+ - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
+
 ! 2013-12-11 - Sebastien Binet
  - Added hwaf configuration files.
 
@@ -17,7 +100,7 @@ M       GaudiKernel/Incident.h
 ============================= GaudiKernel-29-00-01 =============================
 ! 2013-09-30 - Charles Leggett
  - added io_finalize to IIoComponent.h
-   currently not pure virtual, to ease client transition. will be made pure 
+   currently not pure virtual, to ease client transition. will be made pure
    when transition complete.
 
 M       GaudiKernel/IIoComponent.h

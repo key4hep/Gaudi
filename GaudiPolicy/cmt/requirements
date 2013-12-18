@@ -61,6 +61,14 @@ cmtpath_pattern_reverse \
          <project>_with_installarea&target-winxp ' "<path>\$(<project>_installarea_prefix)$(shared_install_subdir)\include"' ; \
    include_dirs ${<project>_install_include}
 
+cmtpath_pattern \
+   macro <project>_install_include "" \
+         <project>_without_installarea "" \
+         <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)$(shared_install_subdir)/include" \
+         <project>_with_installarea&target-winxp '"<path>\$(<project>_installarea_prefix)$(shared_install_subdir)\include"' ; \
+    path_remove  ROOT_INCLUDE_PATH ${<project>_install_include} ; \
+    path_prepend ROOT_INCLUDE_PATH ${<project>_install_include}
+
 macro copyInclude "cp -Rup " \
       host-winxp  "xcopy /S/Q/Y/I/D " \
       host-darwin "cp -Rp"
@@ -144,7 +152,7 @@ pattern component_library \
     apply_pattern libraryShr library="<library>" ; \
     apply_pattern library_Cshlibflags library="<library>" ;\
     macro <library>_dependencies "$(<package>_linker_library) " ;\
-    apply_pattern generate_rootmap library=<library> group=<group> ; \
+    apply_pattern generate_componentslist library=<library> group=<group> ; \
     apply_pattern generate_configurables library=<library> group=<group>
 
 pattern linker_library \
@@ -465,19 +473,19 @@ pattern application_path \
     path_prepend LD_LIBRARY_PATH  "" \
         <project>_without_installarea&target-unix "${<package>_root}/$(<package>_tag)"
 
-pattern generate_rootmap \
-  document genmap <library>RootMap -group=<group> LIBNAME=<library> ; \
-  macro_append <library>RootMap_dependencies " <library> " ; \
+pattern generate_componentslist \
+  document listcomponents <library>ComponentsList -group=<group> LIBNAME=<library> ; \
+  macro_append <library>ComponentsList_dependencies " <library> " ; \
   private ; \
     apply_pattern application_path ; \
-    macro merge_rootmap_tag "--do-merge"   \
-	  do_merge_rootmap  "--do-merge"   \
-	  no_merge_rootmap  "--un-merge" ; \
-    document merge_rootmap <library>MergeMap -group=<group> \
+    macro merge_componentslist_tag "--do-merge"   \
+	  do_merge_componentslist  "--do-merge"   \
+	  no_merge_componentslist  "--un-merge" ; \
+    document merge_componentslist <library>MergeComponentsList -group=<group> \
              library=<library> \
-             merge_rootmap_switch=$(merge_rootmap_tag) \
+             merge_componentslist_switch=$(merge_componentslist_tag) \
              $(bin)$(library_prefix)<library>.$(shlibsuffix) ; \
-    macro_append <library>MergeMap_dependencies " <library>RootMap " ; \
+    macro_append <library>MergeComponentsList_dependencies " <library>ComponentsList " ; \
   end_private
 
 
@@ -574,6 +582,9 @@ macro make_shlib    "echo" \
       host-darwin "${CMTROOT}/mgr/cmt_make_shlib_common.sh extract" \
       host-visualc "$(GAUDIPOLICYROOT)\cmt\cmt_make_shlib.bat"
 
+macro merge_componentslist_cmd "python $(GaudiPolicy_root)/scripts/merge_files.py" \
+           target-winxp "$(GaudiPolicy_root)/scripts/merge_files.py"
+make_fragment merge_componentslist -header=merge_componentslist_header
 macro merge_rootmap_cmd "python $(GaudiPolicy_root)/scripts/merge_files.py" \
            target-winxp "$(GaudiPolicy_root)/scripts/merge_files.py"
 make_fragment merge_rootmap -header=merge_rootmap_header
@@ -1415,6 +1426,17 @@ pattern -global zip_python_modules_container_fallback \
 #
 #-------------------------------------------------------------------
 make_fragment install_resources -header=install_resources_header
+
+
+#-------------------------------------------------------------------
+# Override the pattern reflex_dictionary because of an issue with ROOT6.
+# With ROOT 6 the '_Instantiations' dummy class used in the dictionaries
+# must have a different name in each dictionary.
+#-------------------------------------------------------------------
+use Reflex v* LCG_Interfaces -no_auto_imports
+pattern reflex_dictionary \
+  apply_pattern reflex_dictionary_src dictionary=<dictionary> headerfiles=<headerfiles> selectionfile=<selectionfile> options="<options> -U_Instantiations -D_Instantiations=<dictionary>_Instantiations" ;\
+  apply_pattern reflex_dictionary_lib dictionary=<dictionary> imports=<imports>
 
 #-------------------------------------------------------------------
 # Doxygen business

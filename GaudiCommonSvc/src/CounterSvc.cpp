@@ -1,6 +1,3 @@
-// $Id: CounterSvc.cpp,v 1.6 2007/09/24 19:15:57 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $, verison $Revision: 1.6 $
 // ============================================================================
 // STD & SLT
 // ============================================================================
@@ -13,7 +10,6 @@
 // ============================================================================
 #include "GaudiKernel/ICounterSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/HashMap.h"
@@ -231,7 +227,7 @@ private:
 // ===========================================================================
 // Instantiation of a static factory class used by clients
 // ===========================================================================
-DECLARE_SERVICE_FACTORY(CounterSvc)
+DECLARE_COMPONENT(CounterSvc)
 // ===========================================================================
 // Access a counter object by name and group
 // ===========================================================================

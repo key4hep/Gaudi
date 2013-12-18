@@ -245,7 +245,7 @@ namespace
 } // end of anonymous namespace
 
 void DataOnDemandSvc::i_setNodeHandler(const std::string &name, const std::string &type){
-  ClassH cl = ROOT::Reflex::Type::ByName(type) ;
+  ClassH cl = TClass::GetClass(type.c_str()) ;
   if (!cl) {
     warning()
         << "Failed to access dictionary class for "
@@ -783,7 +783,7 @@ DataOnDemandSvc::execHandler ( const std::string& tag, Node& n)
   else
   {
     // try to recover the handler
-    if ( !n.clazz  ) { n.clazz = ROOT::Reflex::Type::ByName(n.name) ; }
+    if ( !n.clazz  ) { n.clazz = TClass::GetClass(n.name.c_str()) ; }
     if ( !n.clazz  )
     {
       stream()
@@ -793,17 +793,15 @@ DataOnDemandSvc::execHandler ( const std::string& tag, Node& n)
         << "' for location:" << tag << endmsg;
       return StatusCode::FAILURE ;                               // RETURN
     }
-    //
-    ROOT::Reflex::Object obj = n.clazz.Construct();
 
-    object = (DataObject*) obj.Address();
+    object = reinterpret_cast<DataObject*>(n.clazz->New());
 
     if ( !object )
     {
       stream()
         << MSG::ERROR
         << "Failed to create an object of type:"
-        << n.clazz.Name(ROOT::Reflex::SCOPED) << " for location:" << tag
+        << n.clazz->GetName() << " for location:" << tag
         << endmsg;
       return StatusCode::FAILURE  ;                               // RETURN
     }
@@ -979,7 +977,7 @@ void DataOnDemandSvc::dump
 /** Instantiation of a static factory class used by clients to create
  *  the instances of this service
  */
-DECLARE_SERVICE_FACTORY(DataOnDemandSvc)
+DECLARE_COMPONENT(DataOnDemandSvc)
 // ============================================================================
 
 // ============================================================================

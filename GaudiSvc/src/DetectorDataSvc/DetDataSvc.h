@@ -24,8 +24,6 @@ class IAddressCreator;
 class DetDataSvc  : public extends2<DataSvc, IDetDataSvc, IIncidentListener>
 {
 
-  friend class SvcFactory<DetDataSvc>;
-
   // unhides DataSvc updateObject methods
   using DataSvc::updateObject;
 

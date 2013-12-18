@@ -2,7 +2,6 @@
 #include "GaudiKernel/Debugger.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/strcasecmp.h"
-#include "GaudiKernel/DeclareFactoryEntries.h"
 #include "GaudiUtils/IFileCatalog.h"
 #include "IODataManager.h"
 #include "GaudiKernel/SmartIF.h"
@@ -11,9 +10,9 @@
 
 #include <set>
 
-DECLARE_NAMESPACE_SERVICE_FACTORY(Gaudi,IODataManager)
-
 using namespace Gaudi;
+
+DECLARE_COMPONENT(IODataManager)
 
 enum { S_OK = StatusCode::SUCCESS, S_ERROR=StatusCode::FAILURE };
 

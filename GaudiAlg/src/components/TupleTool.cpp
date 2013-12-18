@@ -1,37 +1,33 @@
-// $Id: TupleTool.cpp,v 1.2 2006/01/10 19:53:58 hmd Exp $
 // ============================================================================
-// Include files 
-// ============================================================================
-// GaudiKernel
-#include "GaudiKernel/ToolFactory.h" 
+// Include files
 // ============================================================================
 // local
 // ============================================================================
 #include "TupleTool.h"
 // ============================================================================
 
-/** @file 
+/** @file
  * Implementation file for class : TupleTool
- * 
- * @date 2004-06-28 
+ *
+ * @date 2004-06-28
  * @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  */
 
 // ============================================================================
 // Declaration of the Tool Factory
 // ============================================================================
-DECLARE_TOOL_FACTORY(TupleTool)
+DECLARE_COMPONENT(TupleTool)
 // ============================================================================
-  
+
 // ============================================================================
 /** Standard constructor
- *  @see GaudiTupleTool 
+ *  @see GaudiTupleTool
  *  @see GaudiHistoTool
  *  @see      GaudiTool
- *  @see        AlgTool 
- *  @param type   tool type (?) 
- *  @param name   tool name 
- *  @param parent pointer to parent component 
+ *  @see        AlgTool
+ *  @param type   tool type (?)
+ *  @param name   tool name
+ *  @param parent pointer to parent component
  */
 // ============================================================================
 TupleTool::TupleTool( const std::string& type,
@@ -44,7 +40,7 @@ TupleTool::TupleTool( const std::string& type,
 
 
 // ============================================================================
-/// destructor: virtual and protected 
+/// destructor: virtual and protected
 // ============================================================================
 TupleTool::~TupleTool() {}
 // ============================================================================

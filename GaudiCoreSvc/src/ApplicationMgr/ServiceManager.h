@@ -18,7 +18,6 @@
 
 // Forward declarations
 class IService;
-class ISvcFactory;
 class IMessageSvc;
 class Property;
 

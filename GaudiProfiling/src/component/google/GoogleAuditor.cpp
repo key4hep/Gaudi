@@ -5,7 +5,6 @@
 #include <memory>
 #include <algorithm>
 
-#include "GaudiKernel/AudFactory.h"
 #include "GaudiKernel/Auditor.h"
 #include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/GaudiException.h"
@@ -515,8 +514,8 @@ namespace Google
 
   };
 
-  DECLARE_AUDITOR_FACTORY( HeapProfiler )
-  DECLARE_AUDITOR_FACTORY( HeapChecker  )
-  DECLARE_AUDITOR_FACTORY( CPUProfiler  )
+  DECLARE_COMPONENT( HeapProfiler )
+  DECLARE_COMPONENT( HeapChecker  )
+  DECLARE_COMPONENT( CPUProfiler  )
 
 }

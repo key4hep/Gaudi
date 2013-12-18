@@ -15,9 +15,6 @@
 // local
 #include "GaudiGSL/IEqSolver.h"
 
-/// forward declaration
-template <class TOOL> class ToolFactory;
-
 /** @class  EqSolver EqSolver.h
  *  The simplest concrete implementation of IEqSolver interface
  *  @see    GaudiGSL/IEqSolver.h
@@ -26,8 +23,6 @@ template <class TOOL> class ToolFactory;
  */
 
 class EqSolver : public extends1<GaudiTool, IEqSolver> {
-  // friend factory for instantiation
-  friend class ToolFactory<EqSolver> ;
 public:
   typedef std::vector<Equations>   Jacobi ;
 public:

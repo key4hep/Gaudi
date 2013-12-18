@@ -1,10 +1,7 @@
-// $Id: THistWrite.cpp,v 1.3 2008/05/13 10:05:47 marcocle Exp $
-
 // Include files
 #include "THistWrite.h"
 
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/RndmGenerators.h"
 #include "GaudiKernel/ITHistSvc.h"
 #include <math.h>
@@ -18,7 +15,7 @@
 #include "TDirectory.h"
 #include "TError.h"
 
-DECLARE_ALGORITHM_FACTORY(THistWrite)
+DECLARE_COMPONENT(THistWrite)
 
 //------------------------------------------------------------------------------
 THistWrite::THistWrite(const std::string& name,

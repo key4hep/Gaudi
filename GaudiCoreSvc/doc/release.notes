@@ -4,6 +4,33 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2013-12-04 - Marco Clemencic
+ - Removed unnecessary use of boost::shared_ptr.
+
+! 2013-07-26 - Marco Clemencic
+ - Ported new GaudiPluginService to CMT.
+
+! 2013-07-19 - Marco Clemencic
+ - Clean up in the use of the new PluginService.
+
+! 2013-07-18 - Marco Clemencic
+ - Removed use of obsolete AlgFactory.h, SvcFactory.h, ToolFactory.h,
+   AudFactory.h and CnvFactory.h.
+
+! 2013-07-17 - Marco Clemencic
+ - Use the new ROOT-free Plugin Service.
+
+! 2013-07-17 - Marco Clemencic
+ - Removed factories forward declarations.
+
+! 2013-07-03 - Marco Clemencic
+ - Replaced Reflex queries with TClass queries.
+ - Changed cmt/requirements to link against ROOT libraries (needed by the
+   replacement of Reflex).
+ - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
+ - Renamed the ApplicationMgr property ReflexPluginDebugLevel to
+   PluginDebugLevel.
+
 ! 2013-12-11 - Sebastien Binet
  - Added hwaf configuration files.
 
@@ -29,7 +56,7 @@ M       src/ApplicationMgr/ServiceManager.cpp
 
 ============================= GaudiCoreSvc-02-00-01 =========================
 ! 2013-09-09 - Charles Leggett
- - re-introduce ordering rules for HistorySvc and FileMgr in 
+ - re-introduce ordering rules for HistorySvc and FileMgr in
    ServiceManager::finalize()
 
 M       src/ApplicationMgr/ServiceManager.cpp

@@ -181,6 +181,9 @@ macro(gaudi_project project version)
   #       but we need it here because the other one is meant to include also
   #       the external libraries required by the subdirectories.
   set(binary_paths)
+  
+  # paths where to find headers
+  set_property(GLOBAL PROPERTY INCLUDE_PATHS)
 
   # environment description
   set(project_environment)
@@ -247,6 +250,16 @@ macro(gaudi_project project version)
       set(genconf_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genconf)
     else()
       set(genconf_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genconf.exe)
+    endif()
+  endif()
+  # similar case for listcomponents
+  if(TARGET listcomponents)
+    get_target_property(listcomponents_cmd listcomponents IMPORTED_LOCATION)
+  else()
+    if (NOT GAUDI_USE_EXE_SUFFIX)
+      set(listcomponents_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/listcomponents)
+    else()
+      set(listcomponents_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/listcomponents.exe)
     endif()
   endif()
   # same as genconf (but it might never be built because it's needed only on WIN32)
@@ -327,7 +340,7 @@ macro(gaudi_project project version)
 
   #--- Special global targets for merging files.
   gaudi_merge_files(ConfDB python ${CMAKE_PROJECT_NAME}_merged_confDb.py)
-  gaudi_merge_files(Rootmap lib ${CMAKE_PROJECT_NAME}.rootmap)
+  gaudi_merge_files(ComponentsList lib ${CMAKE_PROJECT_NAME}.components)
   gaudi_merge_files(DictRootmap lib ${CMAKE_PROJECT_NAME}Dict.rootmap)
 
   if(zippythondir_cmd)
@@ -350,6 +363,26 @@ macro(gaudi_project project version)
 
   # - collect environment from externals
   gaudi_external_project_environment()
+
+  # - include directories
+  get_property(include_paths GLOBAL PROPERTY INCLUDE_PATHS)
+  if(include_paths)
+    list(REMOVE_DUPLICATES include_paths)
+    # Remove system dirs
+    #list(REMOVE_ITEM include_paths /usr/include /include)
+    set(old_include_paths ${include_paths})
+    set(include_paths)
+    foreach(d ${old_include_paths})
+      if(NOT d MATCHES "^(/usr|/usr/local)?/include")
+        set(include_paths ${include_paths} ${d})
+      endif()
+    endforeach() 
+    message(STATUS "include_paths -> ${include_paths}")
+  endif()
+  foreach(_inc_dir ${include_paths})
+    set(project_environment ${project_environment}
+        PREPEND ROOT_INCLUDE_PATH ${_inc_dir})
+  endforeach()
 
   # (so far, the build and the release envirnoments are identical)
   set(project_build_environment ${project_environment})
@@ -374,6 +407,7 @@ macro(gaudi_project project version)
         PREPEND PATH \${.}/scripts
         PREPEND PATH \${.}/bin
         PREPEND LD_LIBRARY_PATH \${.}/lib
+        PREPEND ROOT_INCLUDE_PATH \${.}/include
         PREPEND PYTHONPATH \${.}/python
         PREPEND PYTHONPATH \${.}/python/lib-dynload)
   #     (installation dirs added to build env to be able to test pre-built bins)
@@ -381,6 +415,7 @@ macro(gaudi_project project version)
         PREPEND PATH ${CMAKE_INSTALL_PREFIX}/scripts
         PREPEND PATH ${CMAKE_INSTALL_PREFIX}/bin
         PREPEND LD_LIBRARY_PATH ${CMAKE_INSTALL_PREFIX}/lib
+        PREPEND ROOT_INCLUDE_PATH ${CMAKE_INSTALL_PREFIX}/include
         PREPEND PYTHONPATH ${CMAKE_INSTALL_PREFIX}/python
         PREPEND PYTHONPATH ${CMAKE_INSTALL_PREFIX}/python/lib-dynload)
 
@@ -445,12 +480,20 @@ __path__ = [d for d in [os.path.join(d, '${packname}') for d in sys.path if d]
       set(project_build_environment ${project_build_environment}
           PREPEND PATH \${${_proj}_PROJECT_ROOT}/${package}/scripts)
     endif()
+
+    get_property(_has_local_headers DIRECTORY ${package}
+                 PROPERTY INSTALLS_LOCAL_HEADERS SET)
+    if(_has_local_headers)
+      set(project_build_environment ${project_build_environment}
+          PREPEND ROOT_INCLUDE_PATH \${${_proj}_PROJECT_ROOT}/${package})
+    endif()
   endforeach()
 
   #   - build dirs
   set(project_build_environment ${project_build_environment}
       PREPEND PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
       PREPEND LD_LIBRARY_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+      PREPEND ROOT_INCLUDE_PATH ${CMAKE_BINARY_DIR}/include
       PREPEND PYTHONPATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
       PREPEND PYTHONPATH ${CMAKE_BINARY_DIR}/python)
 
@@ -596,6 +639,7 @@ macro(_gaudi_use_other_projects)
 ")
         endif()
         include_directories(${${other_project}_INCLUDE_DIRS})
+        set_property(GLOBAL APPEND PROPERTY INCLUDE_PATHS ${${other_project}_INCLUDE_DIRS})
         set(binary_paths ${${other_project}_BINARY_PATH} ${binary_paths})
         foreach(exported ${${other_project}_EXPORTED_SUBDIRS})
           list(FIND known_packages ${exported} is_needed)
@@ -851,6 +895,7 @@ function(include_package_directories)
         # Include the directories
         #message(STATUS "include_package_directories5 include_directories(${${to_incl}})")
         include_directories(${${to_incl}})
+        set_property(GLOBAL APPEND PROPERTY INCLUDE_PATHS ${${to_incl}})
       endif()
     endif()
   endforeach()
@@ -927,6 +972,11 @@ macro(gaudi_collect_subdir_deps)
         list(APPEND ${_p}_DEPENDENCIES ${___p})
       endforeach()
     endforeach()
+    # Special dependency required for modules
+    string(REGEX MATCHALL "gaudi_add_module *\\(([^)]+)\\)" vars ${file_contents})
+    if(vars AND NOT _p STREQUAL GaudiCoreSvc)
+      list(APPEND ${_p}_DEPENDENCIES GaudiCoreSvc)
+    endif()
   endforeach()
 endmacro()
 # helper function used by gaudi_sort_subdirectories
@@ -1256,6 +1306,20 @@ function(gaudi_generate_configurables library)
   set(confAuditor ConfigurableAuditor)
   set(confService ConfigurableService)
 
+  # Note: the dependencies on GaudiSvc and the genconf executable are needed
+  #       in case they have to be built in the current project
+  if(TARGET GaudiCoreSvc)
+    get_target_property(GaudiCoreSvcIsImported GaudiCoreSvc IMPORTED)
+  else()
+    set(GaudiCoreSvcIsImported TRUE) # no target or imported is the same
+  endif()
+
+  if(NOT GaudiCoreSvcIsImported) # it's a local target
+    set(deps GaudiCoreSvc genconf)
+  else()
+    set(deps genconf)
+  endif()
+
   add_custom_command(
     OUTPUT ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py ${outdir}/__init__.py
     COMMAND ${env_cmd} --xml ${env_xml}
@@ -1267,7 +1331,7 @@ function(gaudi_generate_configurables library)
                 --configurable-auditor=${confAuditor}
                 --configurable-service=${confService}
                 -i ${library}
-    DEPENDS ${conf_depends})
+    DEPENDS ${library} ${deps})
   add_custom_target(${library}Conf ALL DEPENDS ${outdir}/${library}_confDb.py)
   # Add the target to the target that groups all of them for the package.
   if(NOT TARGET ${package}ConfAll)
@@ -1275,7 +1339,6 @@ function(gaudi_generate_configurables library)
   endif()
   add_dependencies(${package}ConfAll ${library}Conf)
   # Add dependencies on GaudiSvc and the genconf executable if they have to be built in the current project
-  add_dependencies(${library}Conf genconf GaudiCoreSvc)
   # Notify the project level target
   gaudi_merge_files_append(ConfDB ${library}Conf ${outdir}/${library}_confDb.py)
   #----Installation details-------------------------------------------------------
@@ -1655,10 +1718,10 @@ function(gaudi_add_module library)
                          LINK_LIBRARIES ${ARG_LINK_LIBRARIES} INCLUDE_DIRS ${ARG_INCLUDE_DIRS})
 
   add_library(${library} MODULE ${srcs})
-  target_link_libraries(${library} ${ROOT_Reflex_LIBRARY} ${ARG_LINK_LIBRARIES})
+  target_link_libraries(${library} GaudiPluginService ${ARG_LINK_LIBRARIES})
   _gaudi_detach_debinfo(${library})
 
-  gaudi_generate_rootmap(${library})
+  gaudi_generate_componentslist(${library})
   if(ARG_GENCONF_PRELOAD)
     set(ARG_GENCONF_PRELOAD PRELOAD ${ARG_GENCONF_PRELOAD})
   endif()
@@ -1699,6 +1762,12 @@ function(gaudi_add_dictionary dictionary header selection)
   # this function uses an extra option: 'OPTIONS'
   CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS;OPTIONS" ${ARGN})
   gaudi_common_add_build(${ARG_UNPARSED_ARGUMENTS} LIBRARIES ${ARG_LIBRARIES} LINK_LIBRARIES ${ARG_LINK_LIBRARIES} INCLUDE_DIRS ${ARG_INCLUDE_DIRS})
+
+  # FIXME: With ROOT 6 the '_Instantiations' dummy class used in the
+  #        dictionaries must have a different name in each dictionary.
+  set(ARG_OPTIONS ${ARG_OPTIONS}
+      -U_Instantiations
+      -D_Instantiations=${dictionary}_Instantiations)
 
   # override the genreflex call to wrap it in the right environment
   set(ROOT_genreflex_CMD ${env_cmd} --xml ${env_xml} ${ROOT_genreflex_CMD})
@@ -2096,23 +2165,23 @@ macro(gaudi_install_cmake_modules)
 endmacro()
 
 #---------------------------------------------------------------------------------------------------
-# gaudi_generate_rootmap(library)
+# gaudi_generate_componentslist(library)
 #
-# Create the .rootmap file needed by the plug-in system.
+# Create the .components file needed by the plug-in system.
 #---------------------------------------------------------------------------------------------------
-function(gaudi_generate_rootmap library)
-  find_package(ROOT QUIET)
-  set(rootmapfile ${library}.rootmap)
+function(gaudi_generate_componentslist library)
+  set(componentsfile ${library}.components)
 
   set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_MODULE_SUFFIX})
-  add_custom_command(OUTPUT ${rootmapfile}
+  add_custom_command(OUTPUT ${componentsfile}
                      COMMAND ${env_cmd}
                        --xml ${env_xml}
-		             ${ROOT_genmap_CMD} -i ${libname} -o ${rootmapfile}
-                     DEPENDS ${library})
-  add_custom_target(${library}Rootmap ALL DEPENDS ${rootmapfile})
+		             ${listcomponents_cmd} ${libname} > ${componentsfile}
+                     DEPENDS ${library} listcomponents)
+  add_custom_target(${library}ComponentsList ALL DEPENDS ${componentsfile})
   # Notify the project level target
-  gaudi_merge_files_append(Rootmap ${library}Rootmap ${CMAKE_CURRENT_BINARY_DIR}/${library}.rootmap)
+  gaudi_merge_files_append(ComponentsList ${library}ComponentsList
+                           ${CMAKE_CURRENT_BINARY_DIR}/${componentsfile})
 endfunction()
 
 #-------------------------------------------------------------------------------

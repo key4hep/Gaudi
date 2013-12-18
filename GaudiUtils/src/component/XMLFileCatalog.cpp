@@ -13,7 +13,7 @@
 
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Service.h"
-#include "Reflex/PluginService.h"
+#include <Gaudi/PluginService.h>
 
 #include "XMLFileCatalog.h"
 
@@ -35,7 +35,8 @@ using namespace std;
 #define setIdAttribute(a, b) setIdAttribute(a)
 #endif
 
-PLUGINSVC_FACTORY(XMLFileCatalog,IInterface*(std::string, IMessageSvc*))
+
+DECLARE_FACTORY(XMLFileCatalog, IFileCatalog::Factory)
 
 namespace {
 

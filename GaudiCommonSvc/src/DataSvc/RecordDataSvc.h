@@ -8,7 +8,7 @@ class IConversionSvc;
 
 
 /** @class RecordDataSvc RecordDataSvc.h
- * 
+ *
  *   A RecordDataSvc is the base class for event services
  *
  *   When a new datafile is opened the data service retrieves an incident
@@ -24,7 +24,6 @@ class IConversionSvc;
  *   @version 1.0
  */
 class RecordDataSvc  : public extends1<DataSvc, IIncidentListener> {
-  friend class SvcFactory<RecordDataSvc>;
  protected:
   typedef std::vector<std::string> StringV;
  public:
@@ -40,7 +39,7 @@ class RecordDataSvc  : public extends1<DataSvc, IIncidentListener> {
 
   /// Standard Destructor
   virtual ~RecordDataSvc();
-  
+
  protected:
   /// Load new record into the data store if necessary
   void registerRecord(const std::string& data, IOpaqueAddress* pAddr);

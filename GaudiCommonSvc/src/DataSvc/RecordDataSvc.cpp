@@ -20,7 +20,6 @@
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IIncidentSvc.h"
@@ -34,7 +33,7 @@ using namespace std;
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_SERVICE_FACTORY(RecordDataSvc)
+DECLARE_COMPONENT(RecordDataSvc)
 
 /// Service initialisation
 StatusCode RecordDataSvc::initialize()    {

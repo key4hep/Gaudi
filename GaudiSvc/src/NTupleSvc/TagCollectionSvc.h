@@ -16,7 +16,7 @@
     Description:
     See the base class definition files for more detailed documentation
     of the implementing class.
-    The basic functionality of the implementation is enhanced to 
+    The basic functionality of the implementation is enhanced to
     allow for more general N-tuples, which can be used also
     as event tag collections.
 
@@ -24,8 +24,6 @@
     @Version 1.0
 */
 class TagCollectionSvc : public NTupleSvc   {
-protected:
-  friend class SvcFactory<TagCollectionSvc>;
 public:
   /// unhides some NTupleSvc methods
   using NTupleSvc::connect;
@@ -47,9 +45,9 @@ protected:
       @param svc     Service type if sepecified in the options
       @param props
   */
-  virtual StatusCode createService( const std::string& nam, 
-                                    const std::string& typ, 
-                                    const std::vector<Prop>& props, 
+  virtual StatusCode createService( const std::string& nam,
+                                    const std::string& typ,
+                                    const std::vector<Prop>& props,
                                     IConversionSvc*& pSvc);
 };
 

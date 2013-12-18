@@ -1,16 +1,12 @@
-// $Id: ErrorLogTest.cpp,v 1.3 2006/11/30 10:35:26 mato Exp $
-
-
 // Include files
 #include "ErrorLogTest.h"
 
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/RndmGenerators.h"
 
 #include "GaudiKernel/IssueSeverity.h"
 
-DECLARE_ALGORITHM_FACTORY(ErrorLogTest)
+DECLARE_COMPONENT(ErrorLogTest)
 
 //------------------------------------------------------------------------------
 ErrorLogTest::ErrorLogTest(const std::string& name,

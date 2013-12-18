@@ -1,8 +1,5 @@
-// $Id: PersSvc.cpp,v 1.15 2007/03/15 15:53:15 hmd Exp $
-
 // Include files
 #include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IRegistry.h"
@@ -22,7 +19,8 @@
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_NAMESPACE_SERVICE_FACTORY(RootHistCnv,PersSvc)
+using RootHistCnv::PersSvc;
+DECLARE_COMPONENT(PersSvc)
 
 namespace RootHistCnv {
   static std::string stat_dir = "/stat";

@@ -2,9 +2,8 @@
 #include "LoopAlg.h"
 
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 
-DECLARE_ALGORITHM_FACTORY(LoopAlg)
+DECLARE_COMPONENT(LoopAlg)
 
 //------------------------------------------------------------------------------
 LoopAlg::LoopAlg(const std::string& name,

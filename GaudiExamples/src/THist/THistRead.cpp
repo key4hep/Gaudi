@@ -1,10 +1,7 @@
-// $Id: THistRead.cpp,v 1.2 2006/11/27 09:53:07 hmd Exp $
-
 // Include files
 #include "THistRead.h"
 
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/RndmGenerators.h"
 #include "GaudiKernel/ITHistSvc.h"
 #include <math.h>
@@ -18,7 +15,7 @@
 #include "TFile.h"
 #include "TError.h"
 
-DECLARE_ALGORITHM_FACTORY(THistRead)
+DECLARE_COMPONENT(THistRead)
 
 //------------------------------------------------------------------------------
 THistRead::THistRead(const std::string& name,

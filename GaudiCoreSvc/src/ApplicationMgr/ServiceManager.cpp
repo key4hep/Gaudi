@@ -1,7 +1,6 @@
 // Include files
 #include "ServiceManager.h"
 #include "GaudiKernel/IService.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/TypeNameString.h"
 #include "GaudiKernel/System.h"
@@ -20,8 +19,6 @@
 
 #define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
-
-using ROOT::Reflex::PluginService;
 
 /// needed when no service is found or could be returned
 static SmartIF<IService> no_service;
@@ -77,10 +74,7 @@ SmartIF<IService>& ServiceManager::createService(const Gaudi::Utils::TypeNameStr
     type.erase(ip,type.length());
   }
 
-  IService* service = PluginService::Create<IService*>(type, name, static_cast<ISvcLocator*>(this)); // serviceLocator().get());
-  if ( !service ) {
-    service = PluginService::CreateWithId<IService*>(type, name, static_cast<ISvcLocator*>(this)); // serviceLocator().get());
-  }
+  IService* service = Service::Factory::create(type, name, static_cast<ISvcLocator*>(this)); // serviceLocator().get());
 
   if ( service ) {
     m_listsvc.push_back(service);

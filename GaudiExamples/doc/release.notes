@@ -1,6 +1,50 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2013-12-17 - Marco Clemencic
+ - Added workaround for SPI-385.
+   https://sft.its.cern.ch/jira/browse/SPI-385
+
+! 2013-12-16 - Marco Clemencic
+ - Added workaround for ROOT-5836.
+   https://sft.its.cern.ch/jira/browse/ROOT-5836
+
+! 2013-12-04 - Marco Clemencic
+ - Made public the test event model headers of GaudiExamplesLib (needed to
+   support ROOT 6.00-beta).
+
+! 2013-11-01 - Marco Clemencic
+ - Fix to reference file.
+
+! 2013-09-30 - Marco Clemencic
+ - Fix for a spurious error in the aida2rootex test with the latest versions
+   of ROOT.
+
+! 2013-07-26 - Marco Clemencic
+ - Fixed a warning.
+
+! 2013-07-25 - Marco Clemencic
+ - Added build-time test for the PluginService use cases.
+
+! 2013-07-22 - Marco Clemencic
+ - Fixed reference files of ErrorLog example.
+
+! 2013-07-19 - Marco Clemencic
+ - Clean up in the use of the new PluginService.
+
+! 2013-07-18 - Marco Clemencic
+ - Removed use of obsolete AlgFactory.h, SvcFactory.h, ToolFactory.h,
+   AudFactory.h and CnvFactory.h.
+
+! 2013-07-17 - Marco Clemencic
+ - Use the new ROOT-free Plugin Service.
+
+! 2013-07-17 - Marco Clemencic
+ - Removed factories forward declarations.
+
+! 2013-07-03 - Marco Clemencic
+ - Removed explicit link against Reflex from cmt/requirements.
+
 ! 2013-12-11 - Sebastien Binet
  - Added hwaf configuration files.
 
@@ -59,6 +103,7 @@ M       cmt/requirements
 ! 2013-08-21 - Marco Clemencic
  - Fix for a spurious error in the aida2root test with the latest versions of
    ROOT.
+>>>>>>> origin/master
 
 ============================ GaudiExamples v23r9 =============================
 ! 2013-07-11 - Marco Clemencic

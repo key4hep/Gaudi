@@ -6,7 +6,6 @@
 
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/StatusCode.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/Message.h"
 #include "GaudiKernel/xtoa.h"
 #include "MessageSvc.h"
@@ -19,7 +18,7 @@ using namespace std;
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_SERVICE_FACTORY(MessageSvc)
+DECLARE_COMPONENT(MessageSvc)
 
 static std::string levelNames[MSG::NUM_LEVELS];
 

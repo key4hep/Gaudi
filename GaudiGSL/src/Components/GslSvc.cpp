@@ -1,7 +1,5 @@
-// $Id: GslSvc.cpp,v 1.2 2006/01/10 20:00:05 hmd Exp $
 // Include files
 // from Gaudi
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/ISvcLocator.h"
@@ -28,15 +26,7 @@
  * @date 29/04/2002
  */
 // ============================================================================
-
-// ============================================================================
-/** mandatory static factory for service instantiation
- *  @see  SvcFactory
- *  @see ISvcFactory
- *  @see    IFactory
- */
-// ============================================================================
-DECLARE_SERVICE_FACTORY(GslSvc)
+DECLARE_COMPONENT(GslSvc)
 // ============================================================================
 
 // ============================================================================

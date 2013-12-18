@@ -8,6 +8,17 @@
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IAlgTool.h"
 
+// FIXME: (MCl) workaround for ROOT-5847
+class Property;
+// FIXME: (MCl) workaround for ROOT-5850
+namespace AIDA {
+  class IHistogram1D;
+  class IHistogram2D;
+  class IHistogram3D;
+  class IProfile1D;
+  class IProfile2D;
+}
+
 #if PY_VERSION_HEX < 0x02050000
 // Note (MCl):
 // In Python 2.5, all the functions working with lenghts use the type PySsize_t
@@ -132,6 +143,15 @@ struct Helper {
     if ( 0 != hsvc && hsvc->findObject ( path , h ).isSuccess() ) { return h ; }
     return 0 ;
   }
+  // FIXME: (MCl) workaround for ROOT-5847
+  static const Property* WorkaroundROOT5847(const Property* p) { return p; }
+  // FIXME: (MCl) workaround for ROOT-5850
+  static const AIDA::IProfile1D* WorkaroundROOT5850(const AIDA::IProfile1D* p) { return p; }
+  static const AIDA::IProfile2D* WorkaroundROOT5850(const AIDA::IProfile2D* p) { return p; }
+  static const AIDA::IHistogram1D* WorkaroundROOT5850(const AIDA::IHistogram1D* p) { return p; }
+  static const AIDA::IHistogram2D* WorkaroundROOT5850(const AIDA::IHistogram2D* p) { return p; }
+  static const AIDA::IHistogram3D* WorkaroundROOT5850(const AIDA::IHistogram3D* p) { return p; }
+
 // Array support
 private:
   template <class T>

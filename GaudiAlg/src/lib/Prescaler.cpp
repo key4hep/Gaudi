@@ -1,7 +1,6 @@
 #include "GaudiAlg/Prescaler.h"
 
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 
 Prescaler::Prescaler(const std::string& name, ISvcLocator* pSvcLocator) :
   GaudiAlgorithm(name, pSvcLocator) ,
@@ -23,7 +22,7 @@ Prescaler::initialize()
   if ( !sc) return sc;
 
   info() << name( ) << ":Prescaler::Initialize - pass: " << m_percentPass << endmsg;
- 
+
  return sc;
 }
 

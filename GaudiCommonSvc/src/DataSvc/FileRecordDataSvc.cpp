@@ -9,7 +9,7 @@
 //  Author     : M.Frank
 //  History    :
 // +---------+----------------------------------------------+---------
-// |    Date |                 Comment                      | Who     
+// |    Date |                 Comment                      | Who
 // +---------+----------------------------------------------+---------
 // | 10/12/08| Initial version                              | MF
 // +---------+----------------------------------------------+---------
@@ -17,13 +17,10 @@
 //====================================================================
 #define  DATASVC_FILERECORDDATASVC_CPP
 
-#include "GaudiKernel/SvcFactory.h"
 #include "RecordDataSvc.h"
 
-
-
 /** @class FileRecordDataSvc
- * 
+ *
  *   A FileRecordDataSvc is the base class for event services
  *
  *   When a new datafile is opened the data service retrieves an incident
@@ -50,9 +47,9 @@ class FileRecordDataSvc  : public RecordDataSvc   {
     m_persSvcName      = "PersistencySvc/FileRecordPersistencySvc";
   }
   /// Standard Destructor
-  virtual ~FileRecordDataSvc() {}  
+  virtual ~FileRecordDataSvc() {}
 };
 
 // Instantiation of a static factory class used by clients to create instances of this service
-DECLARE_SERVICE_FACTORY(FileRecordDataSvc)
+DECLARE_COMPONENT(FileRecordDataSvc)
 

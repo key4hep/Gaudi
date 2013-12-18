@@ -1,4 +1,3 @@
-// $Id: TimingAlg.cpp,v 1.1 2008/05/13 12:39:00 marcocle Exp $
 // ============================================================================
 // Include files
 // ============================================================================
@@ -8,7 +7,6 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/Chrono.h"
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiKernel/RndmGenerators.h"
@@ -36,9 +34,6 @@ namespace GaudiExamples
    */
   class TimingAlg : public GaudiAlgorithm
   {
-    // friend factory needed for instantiation
-    friend class AlgFactory<GaudiExamples::TimingAlg> ;
-    // ========================================================================
   public:
     // ========================================================================
     /// the execution of the algorithm
@@ -46,7 +41,7 @@ namespace GaudiExamples
     /// the finalization of the algorithm
     virtual StatusCode finalize () ; // the finalization of the algorithm
     // ========================================================================
-  protected:
+  public:
     // ========================================================================
     /** standard constructor
      *  @param name the algorithm instance name
@@ -180,7 +175,8 @@ StatusCode GaudiExamples::TimingAlg::finalize () // the finalization of the algo
 }
 // ============================================================================
 // declare the factory (needed for instantiation)
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiExamples,TimingAlg)
+using GaudiExamples::TimingAlg;
+DECLARE_COMPONENT(TimingAlg)
 // ============================================================================
 // The END
 // ============================================================================

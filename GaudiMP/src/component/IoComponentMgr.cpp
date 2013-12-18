@@ -16,7 +16,6 @@
 // STL includes
 
 // FrameWork includes
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/Property.h"
 
 #define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
@@ -25,12 +24,12 @@
 #define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
 
-DECLARE_SERVICE_FACTORY(IoComponentMgr)
+DECLARE_COMPONENT(IoComponentMgr)
 
 using namespace std;
 
 
-std::ostream& 
+std::ostream&
 operator<< ( std::ostream& os, const IIoComponentMgr::IoMode::Type& m) {
   switch (m) {
   case IIoComponentMgr::IoMode::READ :  os << "READ"; break;
@@ -39,7 +38,7 @@ operator<< ( std::ostream& os, const IIoComponentMgr::IoMode::Type& m) {
   default:
     os << "INVALID"; break;
   }
-    
+
   return os;
 
 }
@@ -74,7 +73,7 @@ IoComponentMgr::~IoComponentMgr()
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode 
+StatusCode
 IoComponentMgr::initialize() {
   m_log << MSG::DEBUG << "--> initialize()" << endmsg;
 
@@ -99,7 +98,7 @@ IoComponentMgr::initialize() {
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode 
+StatusCode
 IoComponentMgr::finalize() {
   m_log << MSG::DEBUG << "--> finalize()" << endmsg;
 
@@ -147,13 +146,13 @@ IoComponentMgr::io_contains (IIoComponent* iocomponent,
       IoComponentEntry ioe = it->second;
       DEBMSG << "   " << ioe << endmsg;
       if (ioe.m_oldfname == "") {
-	m_log << MSG::ERROR << "IIoComponent " << ioname 
+	m_log << MSG::ERROR << "IIoComponent " << ioname
 	      << "  has empty old filename" << endmsg;
     return false;
       } else if (ioe.m_oldfname == fname) {
 	return true;
       }
-    } 
+    }
   }
 
   return false;
@@ -230,20 +229,20 @@ IoComponentMgr::io_register (IIoComponent* iocomponent,
       if (ioe.m_oldfname == fname) {
 	if (ioe.m_iomode == iomode) {
 	  m_log << MSG::INFO << "IoComponent " << ioname
-	  	<< " has already had file " << fname 
+	  	<< " has already had file " << fname
 	   	<< " registered with i/o mode " << iomode << endmsg;
 	  return StatusCode::SUCCESS;
   } else {
 	  m_log << MSG::WARNING << "IoComponent " << ioname
-		<< " has already had file " << fname 
-		<< " registered with a different i/o mode " << ioe.m_iomode 
+		<< " has already had file " << fname
+		<< " registered with a different i/o mode " << ioe.m_iomode
 		<< " - now trying " << iomode << endmsg;
   }
   }
   }
   }
 
-  // We need to take into account that boost::filesystem::absolute() does not 
+  // We need to take into account that boost::filesystem::absolute() does not
   // work for files read from eos, i.e. starting with "root:"
   std::string tmp_name = pfn.empty()?fname:pfn;
   bool from_eos = tmp_name.find("root:")==0;
@@ -269,7 +268,7 @@ IoComponentMgr::io_retrieve (IIoComponent* iocomponent,
   std::string ofname = fname;
   const std::string& ioname = iocomponent->name();
 
-  m_log << MSG::DEBUG << "--> io_retrieve(" << ioname << "," << fname << ")" 
+  m_log << MSG::DEBUG << "--> io_retrieve(" << ioname << "," << fname << ")"
 	<< endmsg;
 
   iodITR it;
@@ -284,8 +283,8 @@ IoComponentMgr::io_retrieve (IIoComponent* iocomponent,
 	 ++it) {
 
       if (it->second.m_oldfname == ofname) {
-	DEBMSG << "retrieving new name for the component " << iocomponent->name() 
-	       << " old name: " << ofname 
+	DEBMSG << "retrieving new name for the component " << iocomponent->name()
+	       << " old name: " << ofname
 	       << ", new name: " << it->second.m_newfname << endmsg;
 	fname = it->second.m_newfname;
 	return StatusCode::SUCCESS;
@@ -293,7 +292,7 @@ IoComponentMgr::io_retrieve (IIoComponent* iocomponent,
   }
   }
 
-  DEBMSG << "Unexpected error! Unable to find entry in the dictionary corresponding to old filename: " << ofname << endmsg; 
+  DEBMSG << "Unexpected error! Unable to find entry in the dictionary corresponding to old filename: " << ofname << endmsg;
   return StatusCode::FAILURE;
 }
 
@@ -346,11 +345,11 @@ StatusCode
 IoComponentMgr::io_update(IIoComponent* ioc, const std::string& old_fname,
 			  const std::string& new_fname) {
 
-  DEBMSG << "--> io_update(" << ioc->name() << "," 
+  DEBMSG << "--> io_update(" << ioc->name() << ","
 	 << old_fname << "," << new_fname << ")" << endmsg;
 
   IoDict_t::iterator it;
-  for (it = m_cdict.equal_range(ioc).first; 
+  for (it = m_cdict.equal_range(ioc).first;
        it != m_cdict.equal_range(ioc).second;
        ++it) {
 
@@ -371,14 +370,14 @@ IoComponentMgr::io_update(IIoComponent* ioc, const std::string& old_fname,
 StatusCode
 IoComponentMgr::io_update(IIoComponent* ioc, const std::string& work_dir) {
 
-  DEBMSG << "--> io_update(" << ioc->name() << "," 
+  DEBMSG << "--> io_update(" << ioc->name() << ","
 	 << work_dir << ")" << endmsg;
 
   IoDict_t::iterator it;
-  for (it = m_cdict.equal_range(ioc).first; 
+  for (it = m_cdict.equal_range(ioc).first;
        it != m_cdict.equal_range(ioc).second;
        ++it) {
-    
+
     switch(it->second.m_iomode) {
     case IIoComponentMgr::IoMode::READ:
       {
@@ -388,13 +387,13 @@ IoComponentMgr::io_update(IIoComponent* ioc, const std::string& work_dir) {
     case IIoComponentMgr::IoMode::WRITE:
       {
 	boost::filesystem::path oldPath(it->second.m_oldfname);
-	if(oldPath.is_relative() && 
+	if(oldPath.is_relative() &&
 	   oldPath.filename()==oldPath.relative_path()) {
 
 	  // Only file name was provided for writing. This is the usual mode of operation
 	  // ***
 	  // NB. In such cases it would make sense to set newfname=oldfname, however this will break
-	  //     existing client codes, which assume that newfname contains "/" 
+	  //     existing client codes, which assume that newfname contains "/"
 	  //     Thus we set newfname=workdir/oldfname
 	  // ***
 
@@ -425,7 +424,7 @@ IoComponentMgr::io_update(IIoComponent* ioc, const std::string& work_dir) {
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-StatusCode 
+StatusCode
 IoComponentMgr::io_update_all (const std::string& work_dir)
 {
   DEBMSG << "-->io_update_all for the directory " << work_dir << endmsg;
@@ -481,7 +480,7 @@ IoComponentMgr::io_finalize ()
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 bool
-IoComponentMgr::findComp(IIoComponent* c, const std::string& f, iodITR& itr) 
+IoComponentMgr::findComp(IIoComponent* c, const std::string& f, iodITR& itr)
   const {
 
   pair<iodITR,iodITR> pit;
@@ -489,7 +488,7 @@ IoComponentMgr::findComp(IIoComponent* c, const std::string& f, iodITR& itr)
     itr = pit.first;
     return false;
   }
-  
+
   for (itr = pit.first; itr != pit.second; ++itr) {
     if (itr->second.m_oldfname == f) {
       return true;
@@ -502,7 +501,7 @@ IoComponentMgr::findComp(IIoComponent* c, const std::string& f, iodITR& itr)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool 
+bool
 IoComponentMgr::findComp(IIoComponent* c, std::pair<iodITR,iodITR>& pit) const {
 
   pit = m_cdict.equal_range(c);
@@ -518,7 +517,7 @@ IoComponentMgr::findComp(IIoComponent* c, std::pair<iodITR,iodITR>& pit) const {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 bool
-IoComponentMgr::findComp(const std::string& c, 
+IoComponentMgr::findComp(const std::string& c,
 			 std::pair<iodITR,iodITR>& pit) const {
 
   pit.first = m_cdict.end();
@@ -550,11 +549,11 @@ IoComponentMgr::list() const {
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void 
+void
 IoComponentMgr::handle ( const Incident& i ) {
 
   pair<iodITR,iodITR> pit;
-  
+
 
   if ( i.type() == IncidentType::BeginInputFile ) {
 
@@ -573,10 +572,10 @@ IoComponentMgr::handle ( const Incident& i ) {
 	++pit.first;
       }
     } else {
-      DEBMSG << "  could not find component \"" << fi->source() 
+      DEBMSG << "  could not find component \"" << fi->source()
 	     << "\"!" << endmsg;
     }
-	  
+	
 
 
   } else if ( i.type() == IncidentType::BeginOutputFile ) {
@@ -596,7 +595,7 @@ IoComponentMgr::handle ( const Incident& i ) {
 	++pit.first;
       }
     } else {
-      DEBMSG << "  could not find component \"" << fi->source() 
+      DEBMSG << "  could not find component \"" << fi->source()
 	     << "\"!" << endmsg;
     }
 

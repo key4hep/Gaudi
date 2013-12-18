@@ -1,8 +1,5 @@
-// $Id: FuncMinimumGenAlg.cpp,v 1.3 2006/01/10 19:58:26 hmd Exp $
-
 // Include files
 // from Gaudi
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiGSL/IFuncMinimum.h"
 #include "GaudiMath/Adapters.h"
@@ -174,4 +171,4 @@ StatusCode FuncMinimumGenAlg::finalize() {
 
 //=============================================================================
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY(FuncMinimumGenAlg)
+DECLARE_COMPONENT(FuncMinimumGenAlg)

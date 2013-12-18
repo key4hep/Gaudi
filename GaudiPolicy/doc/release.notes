@@ -1,6 +1,32 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2013-12-17 - Marco Clemencic
+ - Removed work-around for ROOT-5694, because it was not needed anymore and it
+   was hiding SPI-385.
+   https://sft.its.cern.ch/jira/browse/SPI-385
+
+! 2013-12-16 - Marco Clemencic
+ - Use GaudiKernel.ROOT6WorkAroundEnabled to enable/disable the workaround for
+   ROOT-5694.
+
+! 2013-11-15 - Marco Clemencic
+ - Ignore warning about classes already in TClassTable in the tests while
+   ROOT-5694 is being fixed.
+   See https://sft.its.cern.ch/jira/browse/ROOT-5694
+
+! 2013-11-01 - Marco Clemencic
+ - Override the pattern reflex_dictionary because of an issue with ROOT6.
+   With ROOT 6 the '_Instantiations' dummy class used in the dictionaries
+   must have a different name in each dictionary.
+
+! 2013-09-30 - Marco Clemencic
+ - Tentatively set the environment variable TCLING_INCLUDE_PATH.
+
+! 2013-09-30 - Marco Clemencic
+ - Removed a couple of ignored strings in the tests outputs (should not be
+   needed).
+
 ! 2013-11-11 - Marco Clemencic
  - Added tool CTestXML2HTML, to convert CTest-compatible XML files into web
    pages easy to navigate.
@@ -43,9 +69,9 @@ M       cmt/requirements
 M       cmt/requirements
 
 ! 2013-04-05 - Charles Leggett
- - add macro and pattern for loading of optional modules into <pkg>Conf.py 
-   files via genconf. This eases the transition of ATLAS packages that 
-   imported modules that used to be in GaudiSvc but are now in GaudiCoreSvc or 
+ - add macro and pattern for loading of optional modules into <pkg>Conf.py
+   files via genconf. This eases the transition of ATLAS packages that
+   imported modules that used to be in GaudiSvc but are now in GaudiCoreSvc or
    GaudiCommonSvc
 
 M       cmt/requirements
@@ -69,6 +95,17 @@ M       scripts/install.py
 ! 2013-09-24 - Marco Clemencic, Danilo Piparo
  - Disabled the warning about unused local typedefs in gcc-4.8 (~900 hits in
    Boost).
+
+! 2013-07-27 - Marco Clemencic
+ - Restored merge_rootmap macros and fragments, used by the Reflex dictionary
+   pattern.
+
+! 2013-07-26 - Marco Clemencic
+ - Ported new GaudiPluginService to CMT.
+
+! 2013-06-13 - Marco Clemencic
+ - Added a special exclusion pattern for reference file comparison to ignore a
+   message from ROOT after the removal of PyCintex.
 
 ! 2013-09-03 - Marco Clemencic
  - Modified GaudiTest.py to use also the line 'from Configurables import' as

@@ -2,7 +2,6 @@ package GaudiExamples
 version v24r2
 
 use ROOT         * LCG_Interfaces
-use Reflex       * LCG_Interfaces -no_auto_imports
 use RELAX        * LCG_Interfaces -no_auto_imports
 use AIDA         * LCG_Interfaces
 
@@ -20,11 +19,10 @@ apply_pattern use_unless pkg=RootCnv tag=ATLAS ver="*" opt="-no_auto_imports"
 use Boost * LCG_Interfaces
 use HepPDT * LCG_Interfaces
 
-include_dirs $(GAUDIEXAMPLESROOT)/src/Lib
-
+apply_pattern install_more_includes more=GaudiExamples
 library GaudiExamplesLib -no_static Lib/*.cpp
 
-library GaudiExamples    -import=Reflex -no_static \
+library GaudiExamples    -no_static \
                           AbortEvent/*.cpp \
                           AlgSequencer/*.cpp \
                           AlgTools/*.cpp \

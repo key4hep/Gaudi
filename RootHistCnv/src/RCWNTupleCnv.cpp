@@ -1,12 +1,9 @@
-// $Id: RCWNTupleCnv.cpp,v 1.17 2007/05/29 13:06:17 mato Exp $
 #define ROOTHISTCNV_RCWNTUPLECNV_CPP
 
 #define ALLOW_ALL_TYPES
 
-
 // Include files
 #include "GaudiKernel/xtoa.h"
-#include "GaudiKernel/CnvFactory.h"
 #include "GaudiKernel/INTupleSvc.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/NTuple.h"
@@ -36,7 +33,7 @@ template <class T> void analyzeItem(std::string typ,
                                     std::string& desc,
                                     std::string& block_name,
                                     std::string& var_name,
-                                    long& lowerRange, 
+                                    long& lowerRange,
                                     long& upperRange,
                                     long& size)
 //-----------------------------------------------------------------------------
@@ -54,7 +51,7 @@ template <class T> void analyzeItem(std::string typ,
   if ( it->hasIndex() || it->length() > 1 )   {
     text << '[';
   }
-  if ( it->hasIndex() )  
+  if ( it->hasIndex() )
   {
     std::string ind_blk, ind_var;
     std::string ind = it->index();
@@ -68,14 +65,14 @@ template <class T> void analyzeItem(std::string typ,
   else if ( it->dim(ndim) > 1 )   {
     text << it->dim(ndim);
   }
-  
+
   for ( int i = ndim-1; i>=0; i-- ){
     text << "][" << it->dim(i);
   }
   if ( it->hasIndex() || it->length() > 1 )   {
     text << ']';
   }
-  
+
   if (it->range().lower() != it->range().min() &&
       it->range().upper() != it->range().max() ) {
     lowerRange = (long) it->range().lower();
@@ -196,7 +193,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::book(const std::string& desc,
         << " var: " << var_name << " rng: " << lowerRange << " "
         << upperRange << " sz: " << size << " " << cursize
         << " buf_pos: " << size-cursize << endmsg;
-    
+
     item_fullname.push_back(var_name);
     item_buf_pos.push_back(size-cursize);
     item_buf_len.push_back(cursize);
@@ -275,7 +272,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::book(const std::string& desc,
         }
       }
     }
-                              
+
     rtree->GetListOfBranches()->Add(br);
 
   }
@@ -505,7 +502,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
 
       if (indexLeaf != 0) {
         //index Arrays and Matrices
-        
+
         indexName = indexLeaf->GetName();
         //	  indexRange = tl->GetNdata();
         indexRange = indexLeaf->GetMaximum();
@@ -629,12 +626,12 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
   for (; iitr!= itemList.end(); ++iitr) {
     TLeaf* leaf = (*iitr).first;
     int isize   = (*iitr).second;
-    
+
     log << MSG::VERBOSE << "setting TBranch " << leaf->GetBranch()->GetName()
         << " buffer at " << (void*) bufpos << endmsg;
-    
+
     leaf->GetBranch()->SetAddress((void*)bufpos);
-    
+
 //        //testing
 //        if (leaf->IsA()->InheritsFrom("TLeafI")) {
 //  	for (int ievt=0; ievt<5; ievt++) {
@@ -655,7 +652,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
     log << MSG::ERROR << "buffer size mismatch: " << ts << "  " << totsize
         << endmsg;
   }
-  
+
   refpObject = ntup;
 
   return StatusCode::SUCCESS;

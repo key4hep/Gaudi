@@ -11,6 +11,7 @@ apply_tag skip_genconfuser
 end_private
 
 use GaudiPolicy  *
+use GaudiPluginService *
 use Reflex       *   LCG_Interfaces
 use Boost        *   LCG_Interfaces
 

@@ -1,17 +1,15 @@
-// $Id: AuditorTestAlg.cpp,v 1.1 2008/04/03 14:42:59 marcocle Exp $
-
 // Include files
 // from Gaudi
 #include "GaudiAlg/GaudiAlgorithm.h"
 
 /** @class AuditorTestAlg AuditorTestAlg.cpp
- *  
+ *
  *
  *  @author Marco Clemencic
  *  @date   Apr 2, 2008
  */
 class AuditorTestAlg : public GaudiAlgorithm {
-public: 
+public:
   /// Standard constructor
   AuditorTestAlg( const std::string& name, ISvcLocator* pSvcLocator );
 
@@ -27,9 +25,6 @@ private:
 
 };
 
-// from Gaudi
-#include "GaudiKernel/AlgFactory.h" 
-
 //-----------------------------------------------------------------------------
 // Implementation for class : AuditorTestAlg
 //
@@ -37,7 +32,7 @@ private:
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY( AuditorTestAlg )
+DECLARE_COMPONENT( AuditorTestAlg )
 
 //=============================================================================
 // Standard constructor, initializes variables
@@ -46,12 +41,12 @@ AuditorTestAlg::AuditorTestAlg( const std::string& name,
                             ISvcLocator* pSvcLocator)
   : GaudiAlgorithm ( name , pSvcLocator )
 {
-  
+
 }
 //=============================================================================
 // Destructor
 //=============================================================================
-AuditorTestAlg::~AuditorTestAlg() {} 
+AuditorTestAlg::~AuditorTestAlg() {}
 
 //=============================================================================
 // Initialization
@@ -61,7 +56,7 @@ StatusCode AuditorTestAlg::initialize() {
   if ( sc.isFailure() ) return sc;  // error printed already by GaudiAlgorithm
 
   debug() << "==> Initialize" << endmsg;
-  
+
   return StatusCode::SUCCESS;
 }
 
@@ -71,12 +66,12 @@ StatusCode AuditorTestAlg::initialize() {
 StatusCode AuditorTestAlg::execute() {
 
   debug() << "==> Execute" << endmsg;
-  
+
   const IAuditor::CustomEventType evt("loop");
   auditorSvc()->before(evt,name());
   for (long i = 0; i < 1000000; ++i) {}
   auditorSvc()->after(evt,name());
-  
+
   return StatusCode::SUCCESS;
 }
 

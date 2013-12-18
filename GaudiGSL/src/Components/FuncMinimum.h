@@ -16,9 +16,6 @@
 // local
 #include "GaudiGSL/IFuncMinimum.h"
 
-/// forward declaration
-template <class TOOL> class ToolFactory;
-
 /** @class  FuncMinimum FuncMinimum.h
  *  The simplest concrete implementation of IFuncMinimum interface
  *  @see    GaudiGSL/IFuncMinimum.h
@@ -27,8 +24,6 @@ template <class TOOL> class ToolFactory;
  */
 
 class FuncMinimum : public extends1<GaudiTool, IFuncMinimum> {
-  // friend factory for instantiation
-  friend class ToolFactory<FuncMinimum> ;
 public:
   typedef std::vector<const GenFunc*> Gradient;
 public:

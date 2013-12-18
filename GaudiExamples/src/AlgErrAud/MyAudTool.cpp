@@ -11,7 +11,7 @@
 #include "MyAudTool.h"
 
 // Declaration of the AlgTool Factory
-DECLARE_TOOL_FACTORY(MyAudTool)
+DECLARE_COMPONENT(MyAudTool)
 
 //------------------------------------------------------------------------------
 MyAudTool::MyAudTool( const std::string& type,

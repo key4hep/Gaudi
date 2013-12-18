@@ -1,10 +1,8 @@
-// $Id: MTEventLoopMgr.cpp,v 1.5 2006/11/30 10:35:27 mato Exp $
 #define  GAUDISVC_MTEVENTLOOPMGR_CPP
 
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/IEvtSelector.h"
@@ -17,7 +15,7 @@
 
 // Instantiation of a static factory class used by clients to create instances of this service
 
-DECLARE_SERVICE_FACTORY(MTEventLoopMgr);
+DECLARE_COMPONENT(MTEventLoopMgr);
 
 //--------------------------------------------------------------------------------------------
 // Standard Constructor

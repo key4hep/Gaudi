@@ -1,4 +1,3 @@
-// $Id: AlgContextSvc.cpp,v 1.4 2007/05/24 13:49:47 hmd Exp $
 // ============================================================================
 // Include files
 // ============================================================================
@@ -6,7 +5,6 @@
 // ============================================================================
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/IIncidentSvc.h"
 // ============================================================================
 // Local
@@ -23,7 +21,7 @@
 /** Instantiation of a static factory class used by clients to create
  *  instances of this service
  */
-DECLARE_SERVICE_FACTORY(AlgContextSvc)
+DECLARE_COMPONENT(AlgContextSvc)
 // ============================================================================
 // Standard Constructor
 // ============================================================================

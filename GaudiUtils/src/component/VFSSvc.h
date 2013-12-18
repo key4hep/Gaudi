@@ -10,7 +10,6 @@
 #include <list>
 
 // Forward declarations
-template <class TYPE> class SvcFactory;
 class IToolSvc;
 class IAlgTool;
 
@@ -38,16 +37,12 @@ public:
   /// @see IFileAccess::protocols
   virtual const std::vector<std::string> &protocols() const;
 
-protected:
   /// Standard constructor
   VFSSvc(const std::string& name, ISvcLocator* svcloc);
 
   virtual ~VFSSvc(); ///< Destructor
 
 private:
-
-  // Allow SvcFactory to instantiate the service.
-  friend class SvcFactory<VFSSvc>;
 
   /// Names of the handlers to use
   std::vector<std::string> m_urlHandlersNames;

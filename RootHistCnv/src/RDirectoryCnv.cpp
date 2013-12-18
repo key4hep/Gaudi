@@ -1,8 +1,4 @@
-// Id: $
-#define ROOTHISTCNV_RDIRECTORYCNV_CPP
-
 // Include files
-#include "GaudiKernel/CnvFactory.h"
 #include "GaudiKernel/xtoa.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IDataManagerSvc.h"

@@ -1,10 +1,7 @@
-// $Id: TupleAlg2.cpp,v 1.5 2007/05/24 14:36:37 hmd Exp $
 // ============================================================================
-// CVS tag $Name:  $ , version $Revision: 1.5 $
+// Include files
 // ============================================================================
-// Include files 
-// ============================================================================
-// STD & STL 
+// STD & STL
 // ============================================================================
 #include <utility>
 // ============================================================================
@@ -12,9 +9,8 @@
 // ============================================================================
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiKernel/RndmGenerators.h"
-#include "GaudiKernel/AlgFactory.h"
 // ============================================================================
-// GaudiAlg 
+// GaudiAlg
 // ============================================================================
 #include "GaudiAlg/Tuple.h"
 #include "GaudiAlg/GaudiTupleAlg.h"
@@ -25,7 +21,7 @@
 // ============================================================================
 
 // ============================================================================
-/** @class TupleAlg2 
+/** @class TupleAlg2
  *
  *  Example of usage of partial specializations for Ntupel columns
  *
@@ -35,16 +31,15 @@
 // ============================================================================
 
 
-class TupleAlg2 : public GaudiTupleAlg 
-{ /// friend factory for instantiation
-  friend class AlgFactory<TupleAlg2> ;
+class TupleAlg2 : public GaudiTupleAlg
+{
 public:
-  /// initialize the algorithm 
-  StatusCode initialize () 
+  /// initialize the algorithm
+  StatusCode initialize ()
   {
     StatusCode sc = GaudiTupleAlg::initialize() ;
     if ( sc.isFailure() ) { return sc ; }
-    // check for random numbers service 
+    // check for random numbers service
     Assert (randSvc() != 0, "Random Service is not available!");
     //
     return StatusCode::SUCCESS ;
@@ -55,27 +50,27 @@ public:
   StatusCode execute    () ;
 
   /** standard constructor
-   *  @param name algorithm instance name 
-   *  @param pSvc pointer to Service Locator 
+   *  @param name algorithm instance name
+   *  @param pSvc pointer to Service Locator
    */
-  TupleAlg2 
-  ( const std::string& name , 
-    ISvcLocator*       pSvc ) 
+  TupleAlg2
+  ( const std::string& name ,
+    ISvcLocator*       pSvc )
     : GaudiTupleAlg ( name , pSvc ) {};
   // destructor
   virtual ~TupleAlg2() {} ;
 private:
-  // default constructor is disabled 
+  // default constructor is disabled
   TupleAlg2() ;
-  // copy constructor is disabled 
+  // copy constructor is disabled
   TupleAlg2( const TupleAlg2& ) ;
-  // assignement op[erator is disabled 
+  // assignement op[erator is disabled
   TupleAlg2& operator=( const TupleAlg2& ) ;
 };
 
 
 // ============================================================================
-DECLARE_ALGORITHM_FACTORY(TupleAlg2)
+DECLARE_COMPONENT(TupleAlg2)
 // ============================================================================
 
 // ============================================================================
@@ -83,61 +78,61 @@ DECLARE_ALGORITHM_FACTORY(TupleAlg2)
  *  @see IAlgoruthm
  */
 // ============================================================================
-StatusCode TupleAlg2::execute() 
-{  
-  /// avoid long names 
+StatusCode TupleAlg2::execute()
+{
+  /// avoid long names
   using namespace Tuples       ;
   using namespace TupleExample ;
-  
+
   Rndm::Numbers gauss   ( randSvc() , Rndm::Gauss       (   0.0 ,  1.0 ) ) ;
   Rndm::Numbers flat    ( randSvc() , Rndm::Flat        ( -10.0 , 10.0 ) ) ;
   Rndm::Numbers expo    ( randSvc() , Rndm::Exponential (   1.0        ) ) ;
   Rndm::Numbers breit   ( randSvc() , Rndm::BreitWigner (   0.0 ,  1.0 ) ) ;
   Rndm::Numbers poisson ( randSvc() , Rndm::Poisson     (   2.0        ) ) ;
   Rndm::Numbers binom   ( randSvc() , Rndm::Binomial    (   8   , 0.25 ) ) ;
-  
+
   // ==========================================================================
-  // book and fill simple NTuple with "dublets" 
+  // book and fill simple NTuple with "dublets"
   // ==========================================================================
   Tuple tuple1 = nTuple ( "dublets" , "Tuple with dublets" ) ;
-  
+
   Dublet d1 = Dublet ( gauss () , gauss () ) ;
   Dublet d2 = Dublet ( flat  () , flat  () ) ;
   Dublet d3 = Dublet ( breit () , breit () ) ;
   Dublet d4 = Dublet ( expo  () , expo  () ) ;
-  
+
   tuple1 << Column( "d1" , d1 )
          << Column( "d2" , d2 )
          << Column( "d3" , d3 )
          << Column( "d4" , d4 ) ;
 
   tuple1 -> write() ;
-  
+
   // ==========================================================================
-  // book and fill simple NTuple with "triplets" 
+  // book and fill simple NTuple with "triplets"
   // ==========================================================================
   Tuple tuple2 = nTuple ( "triplets" , "Tuple with triplets" ) ;
-  
+
   Triplet tr1 ;
   tr1.first.first  = gauss () ;
   tr1.first.second = gauss () ;
   tr1.second       = gauss () ;
-  
+
   Triplet tr2 ;
   tr2.first.first  = flat  () ;
   tr2.first.second = flat  () ;
   tr2.second       = flat  () ;
-  
+
   tuple2 << Column ( "tr1" , tr1 ) ;
   tuple2 << Column ( "tr2" , tr2 ) ;
-  
+
   tuple2 -> write() ;
-  
+
   return StatusCode::SUCCESS ;
-  
+
 }
 // ============================================================================
 
 // ============================================================================
-// The END 
+// The END
 // ============================================================================

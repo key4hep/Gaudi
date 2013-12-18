@@ -1,8 +1,4 @@
-// $Id: HistorySvc.cpp,v 1.18 2008/06/04 12:35:15 marcocle Exp $
-
-#ifndef GAUDISVC_FASTHISTORYSVC_H
- #include "HistorySvc.h"
-#endif
+#include "HistorySvc.h"
 
 #include "GaudiKernel/HistoryObj.h"
 #include "GaudiKernel/IVersHistoryObj.h"
@@ -13,12 +9,7 @@
 #include "GaudiKernel/DataHistory.h"
 #include "GaudiKernel/ServiceHistory.h"
 
-#ifndef KERNEL_SVCFACTORY_H
- #include "GaudiKernel/SvcFactory.h"
-#endif
-#ifndef GAUDIKERNEL_ISVCLOCATOR_H
- #include "GaudiKernel/ISvcLocator.h"
-#endif
+#include "GaudiKernel/ISvcLocator.h"
 
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/Bootstrap.h"
@@ -45,7 +36,7 @@
 #define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-DECLARE_SERVICE_FACTORY(HistorySvc)
+DECLARE_COMPONENT(HistorySvc)
 
 using namespace std;
 

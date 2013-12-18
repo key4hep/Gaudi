@@ -1,10 +1,8 @@
-// $Id: AbortEventAlg.cpp,v 1.1 2007/11/16 18:34:56 marcocle Exp $
-// Include files 
+// Include files
 
 // from Gaudi
-#include "GaudiKernel/AlgFactory.h" 
-#include "GaudiKernel/Incident.h" 
-#include "GaudiKernel/IIncidentSvc.h" 
+#include "GaudiKernel/Incident.h"
+#include "GaudiKernel/IIncidentSvc.h"
 
 // local
 #include "AbortEventAlg.h"
@@ -16,7 +14,7 @@
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY( AbortEventAlg )
+DECLARE_COMPONENT( AbortEventAlg )
 
 //=============================================================================
 // Standard constructor, initializes variables
@@ -32,7 +30,7 @@ AbortEventAlg::AbortEventAlg( const std::string& name,
 //=============================================================================
 // Destructor
 //=============================================================================
-AbortEventAlg::~AbortEventAlg() {} 
+AbortEventAlg::~AbortEventAlg() {}
 
 //=============================================================================
 // Initialization
@@ -46,7 +44,7 @@ StatusCode AbortEventAlg::initialize() {
   m_incidentSvc = svc<IIncidentSvc>("IncidentSvc",true);
 
   m_counter = 0;
-  
+
   return StatusCode::SUCCESS;
 }
 
@@ -56,11 +54,11 @@ StatusCode AbortEventAlg::initialize() {
 StatusCode AbortEventAlg::execute() {
 
   debug() << "==> Execute" << endmsg;
-  
+
   if ( ++m_counter == m_count ){
     m_incidentSvc->fireIncident(Incident(name(),IncidentType::AbortEvent));
   }
-  
+
   return StatusCode::SUCCESS;
 }
 

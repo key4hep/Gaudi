@@ -1,8 +1,4 @@
-// $Id: RFileCnv.cpp,v 1.14 2007/03/15 15:53:15 hmd Exp $
-#define ROOTHISTCNV_RFILECNV_CPP
-
 // Include files
-#include "GaudiKernel/CnvFactory.h"
 #include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/MsgStream.h"

@@ -1,8 +1,6 @@
-// $Id: ConversionSvc.cpp,v 1.22 2007/09/24 08:58:21 hmd Exp $
 #define  GAUDIKERNEL_CONVERSIONSVC_CPP
 
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/CnvFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/System.h"
@@ -10,8 +8,7 @@
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/ConversionSvc.h"
-
-using ROOT::Reflex::PluginService;
+#include "GaudiKernel/Converter.h"
 
 enum CnvSvcAction   {
   CREATE_OBJ,
@@ -308,10 +305,10 @@ IConverter* ConversionSvc::createConverter(long typ,
                                            const CLID& clid,
                                            const ICnvFactory* /*fac*/)   {
   IConverter* pConverter;
-  pConverter = PluginService::CreateWithId<IConverter*>(ConverterID(typ,clid),serviceLocator().get());
+  pConverter = Converter::Factory::create(ConverterID(typ,clid), serviceLocator().get());
   if ( 0 == pConverter )  {
     typ = (typ<0xFF) ? typ : typ&0xFFFFFF00;
-    pConverter = PluginService::CreateWithId<IConverter*>(ConverterID(typ,clid),serviceLocator().get());
+    pConverter = Converter::Factory::create(ConverterID(typ,clid), serviceLocator().get());
   }
   return pConverter;
 }

@@ -17,10 +17,8 @@
 //====================================================================
 #define  PERSISTENCYSVC_PERSISTENCYSVC_CPP
 
-// Interface defintions
+// Interface definitions
 #include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/SvcFactory.h"
-#include "GaudiKernel/CnvFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IConverter.h"
 #include "GaudiKernel/ISvcLocator.h"
@@ -42,7 +40,7 @@
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_SERVICE_FACTORY(PersistencySvc)
+DECLARE_COMPONENT(PersistencySvc)
 
 enum CnvSvcAction   {
   CREATE_OBJ,

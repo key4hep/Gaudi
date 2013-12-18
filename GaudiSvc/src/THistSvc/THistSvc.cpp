@@ -6,7 +6,6 @@
 
 #include "THistSvc.h"
 
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/Tokenizer.h"
 #include "GaudiKernel/GaudiException.h"
@@ -35,7 +34,7 @@
 using namespace std;
 
 
-DECLARE_SERVICE_FACTORY(THistSvc)
+DECLARE_COMPONENT(THistSvc)
 
 inline void toupper(std::string &s)
 {

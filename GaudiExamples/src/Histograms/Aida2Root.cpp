@@ -1,5 +1,3 @@
-// $Id: Aida2Root.cpp,v 1.6 2008/01/17 15:06:55 marcocle Exp $
-
 #ifdef __ICC
 // disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
 //   TODO: To be removed, since it comes from ROOT TMathBase.h
@@ -7,9 +5,9 @@
 #endif
 
 // ============================================================================
-// Include files 
+// Include files
 // ============================================================================
-// ROOT 
+// ROOT
 // ============================================================================
 #include "TH1D.h"
 #include "TH2D.h"
@@ -17,17 +15,13 @@
 #include "TProfile.h"
 #include "TProfile2D.h"
 // ============================================================================
-// AIDA 
+// AIDA
 // ============================================================================
 #include "AIDA/IHistogram1D.h"
 #include "AIDA/IHistogram2D.h"
 #include "AIDA/IHistogram3D.h"
 #include "AIDA/IProfile1D.h"
 #include "AIDA/IProfile2D.h"
-// ============================================================================
-// GaudiKernel
-// ============================================================================
-#include "GaudiKernel/AlgFactory.h"
 // ============================================================================
 // GaudiAlg
 // ============================================================================
@@ -37,7 +31,7 @@
 // ============================================================================
 // Boost
 // ============================================================================
-#include "boost/format.hpp" 
+#include "boost/format.hpp"
 // ============================================================================
 /** @class Aida2Root
  *
@@ -49,15 +43,15 @@
 class Aida2Root : public GaudiHistoAlg
 {
 public:
-  /// execution of the algorithm 
+  /// execution of the algorithm
   StatusCode execute  () { return StatusCode::SUCCESS ; };
-  /// finalization of the algorithm 
+  /// finalization of the algorithm
   StatusCode finalize () ;
 public:
   // standard constructor
-  Aida2Root 
-  ( const std::string& name , 
-    ISvcLocator*       pSvc ) 
+  Aida2Root
+  ( const std::string& name ,
+    ISvcLocator*       pSvc )
     : GaudiHistoAlg ( name , pSvc )
     //
     , m_1Ds ()
@@ -92,43 +86,43 @@ public:
     m_2Ps.push_back ( "SimpleHistos/321"          ) ;
     m_2Ps.push_back ( "SimpleHistos/2dprof"       ) ;
     declareProperty ( "Profs2D"  , m_2Ps ) ;
-    // 
+    //
     setProperty     ( "PropertiesPrint" , "True"  ).ignore() ;
   }
-  /// virtual destructor 
+  /// virtual destructor
   virtual ~Aida2Root() {}
 private:
-  // the default constructor is disabled 
+  // the default constructor is disabled
   Aida2Root() ;
-  // the default constructor is disabled 
+  // the default constructor is disabled
   Aida2Root( const Aida2Root& ) ;
   // the assignement  is disabled
   Aida2Root& operator=( const Aida2Root& ) ;
 private:
   typedef std::vector<std::string> List ;
-  // the list of 1D-histograms 
-  List m_1Ds ; ///< the list of 1D-histograms 
-  // the list of 2D-histograms 
-  List m_2Ds ; ///< the list of 2D-histograms 
-  // the list of 3D-histograms 
-  List m_3Ds ; ///< the list of 3D-histograms 
+  // the list of 1D-histograms
+  List m_1Ds ; ///< the list of 1D-histograms
+  // the list of 2D-histograms
+  List m_2Ds ; ///< the list of 2D-histograms
+  // the list of 3D-histograms
+  List m_3Ds ; ///< the list of 3D-histograms
   // the list of 1D-profiles
-  List m_1Ps ; ///< the list of 1D-profiles 
-  // the list of 2D-profiles 
-  List m_2Ps ; ///< the list of 2D-profiles  
+  List m_1Ps ; ///< the list of 1D-profiles
+  // the list of 2D-profiles
+  List m_2Ps ; ///< the list of 2D-profiles
 } ;
 // ============================================================================
 /// Declaration of the Algorithm Factory
 // ============================================================================
-DECLARE_ALGORITHM_FACTORY(Aida2Root)
+DECLARE_COMPONENT(Aida2Root)
 // ============================================================================
-namespace 
+namespace
 {
   inline
-  std::string print ( const double       aida   , 
-                      const double       root   , 
+  std::string print ( const double       aida   ,
+                      const double       root   ,
                       const std::string& name   ,
-                      const std::string& format ) 
+                      const std::string& format )
   {
     boost::format fmt ( format ) ;
     fmt % name % aida % root % ( aida - root ) ;
@@ -136,142 +130,142 @@ namespace
   }
 }
 // ============================================================================
-/// finalize the algorithm 
+/// finalize the algorithm
 // ============================================================================
-StatusCode Aida2Root::finalize() 
+StatusCode Aida2Root::finalize()
 {
-  
+
   always() << "Get the native ROOT representation of histograms!" << endmsg ;
-  
+
   {  // loop over all 1D-histograms
-    for ( List::const_iterator ipath = m_1Ds.begin() ; 
-          m_1Ds.end() != ipath ; ++ipath ) 
+    for ( List::const_iterator ipath = m_1Ds.begin() ;
+          m_1Ds.end() != ipath ; ++ipath )
     {
       /// retrieve the historam by full path:
       AIDA::IHistogram1D* aida = 0 ;
       StatusCode sc = histoSvc()->retrieveObject( *ipath , aida ) ;
-      if ( sc.isFailure() || 0 == aida ) 
+      if ( sc.isFailure() || 0 == aida )
       { return Error ( "Unable to retrieve 1D-histogram '" + (*ipath) + "'"  ) ; }
-      /// convert it to ROOT 
+      /// convert it to ROOT
       TH1D* root = Gaudi::Utils::Aida2ROOT::aida2root ( aida ) ;
-      if ( 0 == root ) 
+      if ( 0 == root )
       { return Error ( "Unable to convert to ROOT the 1D-histogram '"+(*ipath)+"'") ; }
-      /// use the native printout from ROOT 
+      /// use the native printout from ROOT
       info() << "The native ROOT printout for 1D-histogram '" << (*ipath) << "':" << endmsg ;
-      root->Print() ;  
+      root->Print() ;
 
-      info () << " |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      | "  << endmsg ;      
+      info () << " |  Compare       | AIDA/HistoStats |     ROOT/TH1    |      Delta      | "  << endmsg ;
       const std::string format = " | %1$-14.14s | %2$ 15.8g | %3$- 15.8g | %4$= 15.8g | "  ;
-      info () << print 
-        ( Gaudi::Utils::HistoStats::mean        ( aida ) , 
+      info () << print
+        ( Gaudi::Utils::HistoStats::mean        ( aida ) ,
           root->GetMean      ()    , "'mean'"        , format  ) << endmsg ;
-      info () << print 
-        ( Gaudi::Utils::HistoStats::meanErr     ( aida ) , 
+      info () << print
+        ( Gaudi::Utils::HistoStats::meanErr     ( aida ) ,
           root->GetMeanError ()    , "'meanErr'"     , format  ) << endmsg ;
-      info () << print 
-        ( Gaudi::Utils::HistoStats::rms         ( aida ) , 
+      info () << print
+        ( Gaudi::Utils::HistoStats::rms         ( aida ) ,
           root->GetRMS       ()    , "'rms'"         , format  ) << endmsg ;
-      info () << print 
-        ( Gaudi::Utils::HistoStats::rmsErr      ( aida ) , 
+      info () << print
+        ( Gaudi::Utils::HistoStats::rmsErr      ( aida ) ,
           root->GetRMSError  ()    , "'rmsErr'"      , format  ) << endmsg ;
-      info () << print 
-        ( Gaudi::Utils::HistoStats::skewness    ( aida ) , 
-          root->GetSkewness ()     , "'skewness'"    , format  ) << endmsg ;      
-      info () << print 
-        ( Gaudi::Utils::HistoStats::skewnessErr ( aida ) , 
-          root->GetSkewness ( 11 ) , "'skewnessErr'" , format  ) << endmsg ;      
-      info () << print 
-        ( Gaudi::Utils::HistoStats::kurtosis  ( aida ) , 
+      info () << print
+        ( Gaudi::Utils::HistoStats::skewness    ( aida ) ,
+          root->GetSkewness ()     , "'skewness'"    , format  ) << endmsg ;
+      info () << print
+        ( Gaudi::Utils::HistoStats::skewnessErr ( aida ) ,
+          root->GetSkewness ( 11 ) , "'skewnessErr'" , format  ) << endmsg ;
+      info () << print
+        ( Gaudi::Utils::HistoStats::kurtosis  ( aida ) ,
           root->GetKurtosis ()     , "'kurtosis'"    , format  ) << endmsg ;
-      info () << print 
-        ( Gaudi::Utils::HistoStats::kurtosisErr ( aida ) , 
+      info () << print
+        ( Gaudi::Utils::HistoStats::kurtosisErr ( aida ) ,
           root->GetKurtosis ( 11 ) , "'kurtosisErr'" , format  ) << endmsg ;
     }
   }
 
   { // loop over all 2D-histograms
-    for ( List::const_iterator ipath = m_2Ds.begin() ; 
-          m_2Ds.end() != ipath ; ++ipath ) 
+    for ( List::const_iterator ipath = m_2Ds.begin() ;
+          m_2Ds.end() != ipath ; ++ipath )
     {
       /// retrieve the historam by full path:
       AIDA::IHistogram2D* aida = 0 ;
       StatusCode sc = histoSvc()->retrieveObject( *ipath , aida ) ;
-      if ( sc.isFailure() || 0 == aida ) 
+      if ( sc.isFailure() || 0 == aida )
       { return Error ( "Unable to retrieve 2D-histogram '" + (*ipath) + "'"  ) ; }
-      /// convert it to ROOT 
+      /// convert it to ROOT
       TH2D* root = Gaudi::Utils::Aida2ROOT::aida2root ( aida ) ;
-      if ( 0 == root ) 
+      if ( 0 == root )
       { return Error ( "Unable to convert to ROOT the 2D-histogram '"+(*ipath)+"'") ; }
-      /// use the native printout from ROOT 
+      /// use the native printout from ROOT
       info() << "The native ROOT printout for 2D-histogram '" << (*ipath) << "':" << endmsg ;
-      root->Print() ;  
+      root->Print() ;
     }
   }
-  
+
   { // loop over all 3D-histograms
-    for ( List::const_iterator ipath = m_3Ds.begin() ; 
-          m_3Ds.end() != ipath ; ++ipath ) 
+    for ( List::const_iterator ipath = m_3Ds.begin() ;
+          m_3Ds.end() != ipath ; ++ipath )
     {
       /// retrieve the historam by full path:
       AIDA::IHistogram3D* aida = 0 ;
       StatusCode sc = histoSvc()->retrieveObject( *ipath , aida ) ;
-      if ( sc.isFailure() || 0 == aida ) 
+      if ( sc.isFailure() || 0 == aida )
       { return Error ( "Unable to retrieve 3D-histogram '" + (*ipath) + "'"  ) ; }
-      /// convert it to ROOT 
+      /// convert it to ROOT
 	TH3D* root = Gaudi::Utils::Aida2ROOT::aida2root ( aida ) ;
-      if ( 0 == root ) 
+      if ( 0 == root )
       { return Error ( "Unable to convert to ROOT the 3D-histogram '"+(*ipath)+"'") ; }
-      /// use the native printout from ROOT 
+      /// use the native printout from ROOT
       info() << "The native ROOT printout for 3D-histogram '" << (*ipath) << "':" << endmsg ;
-      root->Print() ;  
+      root->Print() ;
     }
   }
-  
 
-  { // loop over all 1D-profiles 
-    for ( List::const_iterator ipath = m_1Ps.begin() ; 
-          m_1Ps.end() != ipath ; ++ipath ) 
+
+  { // loop over all 1D-profiles
+    for ( List::const_iterator ipath = m_1Ps.begin() ;
+          m_1Ps.end() != ipath ; ++ipath )
     {
       /// retrieve the historam by full path:
       AIDA::IProfile1D* aida = 0 ;
       StatusCode sc = histoSvc()->retrieveObject( *ipath , aida ) ;
-      if ( sc.isFailure() || 0 == aida ) 
+      if ( sc.isFailure() || 0 == aida )
       { return Error ( "Unable to retrieve 1D-profile '" + (*ipath) + "'"  ) ; }
-      /// convert it to ROOT 
+      /// convert it to ROOT
 	TProfile* root = Gaudi::Utils::Aida2ROOT::aida2root ( aida ) ;
-      if ( 0 == root ) 
+      if ( 0 == root )
       { return Error ( "Unable to convert to ROOT the 1D-profile '"+(*ipath)+"'") ; }
-      /// use the native printout from ROOT 
+      /// use the native printout from ROOT
       info() << "The native ROOT printout for 1D-profile '" << (*ipath) << "':" << endmsg ;
-      root->Print() ;  
+      root->Print() ;
     }
   }
-  
-  
-  { // loop over all 2D-profiles 
-    for ( List::const_iterator ipath = m_2Ps.begin() ; 
-          m_2Ps.end() != ipath ; ++ipath ) 
+
+
+  { // loop over all 2D-profiles
+    for ( List::const_iterator ipath = m_2Ps.begin() ;
+          m_2Ps.end() != ipath ; ++ipath )
     {
       /// retrieve the historam by full path:
       AIDA::IProfile2D* aida = 0 ;
       StatusCode sc = histoSvc()->retrieveObject( *ipath , aida ) ;
-      if ( sc.isFailure() || 0 == aida ) 
+      if ( sc.isFailure() || 0 == aida )
       { Error ( "Unable to retrieve 2D-profile '" + (*ipath) + "'"  ) ; }
-      /// convert it to ROOT 
+      /// convert it to ROOT
 	TProfile2D* root = Gaudi::Utils::Aida2ROOT::aida2root ( aida ) ;
-      if ( 0 == root ) 
+      if ( 0 == root )
       { Error ( "Unable to convert to ROOT the 2D-profile '"+(*ipath)+"'") ; }
-      /// use the native printout from ROOT 
+      /// use the native printout from ROOT
       info() << "The native ROOT printout for 2D-profile '" << (*ipath) << "':" << endmsg ;
-      root->Print() ;  
+      root->Print() ;
     }
   }
-  
+
   return GaudiHistoAlg::finalize() ;
 }
 
 
 // ============================================================================
-// The END 
+// The END
 // ============================================================================
 

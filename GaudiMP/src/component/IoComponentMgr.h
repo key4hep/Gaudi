@@ -1,8 +1,8 @@
 ///////////////////////// -*- C++ -*- /////////////////////////////
-// IoComponentMgr.h 
+// IoComponentMgr.h
 // Header file for class IoComponentMgr
 // Author: S.Binet<binet@cern.ch>
-/////////////////////////////////////////////////////////////////// 
+///////////////////////////////////////////////////////////////////
 #ifndef GAUDIMP_IOCOMPONENTMGR_H
 #define GAUDIMP_IOCOMPONENTMGR_H 1
 
@@ -24,29 +24,24 @@
 
 // Forward declaration
 class ISvcLocator;
-template <class TYPE> class SvcFactory;
-
 
 class IoComponentMgr: public extends2<Service, IIoComponentMgr,
 		      IIncidentListener> {
+  ///////////////////////////////////////////////////////////////////
+  // Public methods:
+  ///////////////////////////////////////////////////////////////////
+ public:
 
-  friend class SvcFactory<IoComponentMgr>;
+  // Copy constructor:
 
-  /////////////////////////////////////////////////////////////////// 
-  // Public methods: 
-  /////////////////////////////////////////////////////////////////// 
- public: 
-
-  // Copy constructor: 
-
-  /// Constructor with parameters: 
+  /// Constructor with parameters:
   IoComponentMgr( const std::string& name, ISvcLocator* pSvcLocator );
 
-  /// Destructor: 
-  virtual ~IoComponentMgr(); 
+  /// Destructor:
+  virtual ~IoComponentMgr();
 
-  // Assignment operator: 
-  //IoComponentMgr &operator=(const IoComponentMgr &alg); 
+  // Assignment operator:
+  //IoComponentMgr &operator=(const IoComponentMgr &alg);
 
   /// Gaudi Service Implementation
   //@{
@@ -57,8 +52,8 @@ class IoComponentMgr: public extends2<Service, IIoComponentMgr,
 
   void handle(const Incident&);
 
-  /////////////////////////////////////////////////////////////////// 
-  // Const methods: 
+  ///////////////////////////////////////////////////////////////////
+  // Const methods:
   ///////////////////////////////////////////////////////////////////
 
   /** @brief: check if the registry contains a given @c IIoComponent
@@ -73,9 +68,9 @@ class IoComponentMgr: public extends2<Service, IIoComponentMgr,
   bool io_contains (IIoComponent* iocomponent,
 		    const std::string& fname) const;
 
-  /////////////////////////////////////////////////////////////////// 
-  // Non-const methods: 
-  /////////////////////////////////////////////////////////////////// 
+  ///////////////////////////////////////////////////////////////////
+  // Non-const methods:
+  ///////////////////////////////////////////////////////////////////
 
   /** @brief: allow a @c IIoComponent to register itself with this
    *          manager so appropriate actions can be taken when e.g.
@@ -140,10 +135,10 @@ class IoComponentMgr: public extends2<Service, IIoComponentMgr,
   virtual
   StatusCode io_finalize ();
 
-  /////////////////////////////////////////////////////////////////// 
-  // Private data: 
-  /////////////////////////////////////////////////////////////////// 
- private: 
+  ///////////////////////////////////////////////////////////////////
+  // Private data:
+  ///////////////////////////////////////////////////////////////////
+ private:
 
   struct IoComponentEntry {
     std::string m_oldfname;
@@ -169,10 +164,10 @@ class IoComponentMgr: public extends2<Service, IIoComponentMgr,
     }
 
     friend std::ostream& operator<< ( std::ostream& os, const IoComponentEntry& c) {
-      os << "old: \"" << c.m_oldfname 
+      os << "old: \"" << c.m_oldfname
 	 << "\"  absolute path: \"" << c.m_oldabspath
 	 << "\"  new: \"" << c.m_newfname
-	 << "\"  m: " << ( (c.m_iomode == IIoComponentMgr::IoMode::READ) ? 
+	 << "\"  m: " << ( (c.m_iomode == IIoComponentMgr::IoMode::READ) ?
 			 "R" : "W" );
       return os;
     }
@@ -181,7 +176,7 @@ class IoComponentMgr: public extends2<Service, IIoComponentMgr,
 
 
 
-  /// Default constructor: 
+  /// Default constructor:
   IoComponentMgr();
 
   mutable MsgStream m_log;
@@ -211,7 +206,7 @@ class IoComponentMgr: public extends2<Service, IIoComponentMgr,
   std::string list() const;
 
 
-}; 
+};
 
 
 #endif //> !GAUDIMP_IOCOMPONENTMGR_H

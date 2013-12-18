@@ -1,8 +1,6 @@
-// $Id: AppMgrRunable.cpp,v 1.8 2008/06/02 14:21:35 marcocle Exp $
 #define  GAUDISVC_APPMGRRUNABLE_CPP
 
 #include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/IAppMgrUI.h"
 #include "GaudiKernel/ISvcLocator.h"
 
@@ -10,7 +8,7 @@
 
 // Instantiation of a static factory class used by clients to create instances of this service
 
-DECLARE_SERVICE_FACTORY(AppMgrRunable)
+DECLARE_COMPONENT(AppMgrRunable)
 
 // Standard Constructor
 AppMgrRunable::AppMgrRunable(const std::string& nam, ISvcLocator* svcLoc)

@@ -1,15 +1,12 @@
-// $Id: ParentAlg.cpp,v 1.5 2006/11/30 10:35:26 mato Exp $
-
 // Include files
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "ParentAlg.h"
 
 // Static Factory declaration
 
-DECLARE_ALGORITHM_FACTORY(ParentAlg)
+DECLARE_COMPONENT(ParentAlg)
 
 // Constructor
 //------------------------------------------------------------------------------

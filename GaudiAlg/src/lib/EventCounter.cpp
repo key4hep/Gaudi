@@ -1,7 +1,5 @@
-//$Id: EventCounter.cpp,v 1.1 2004/07/12 13:39:20 mato Exp $
 #include "GaudiAlg/EventCounter.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 
 /**
  ** Constructor(s)

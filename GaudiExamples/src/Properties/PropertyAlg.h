@@ -7,19 +7,15 @@
 #include "GaudiKernel/Property.h"
 #include "GaudiKernel/MsgStream.h"
 
-template <class T> class AlgFactory;
-
 /** @class PropertyAlg
     Trivial Algorithm for tutorial purposes
 
     @author nobody
 */
 class PropertyAlg : public Algorithm {
-protected:
+public:
   /// Constructor of this form must be provided
   PropertyAlg(const std::string& name, ISvcLocator* pSvcLocator);
-public:
-  friend class AlgFactory<PropertyAlg>;
   /// Three mandatory member functions of any algorithm
   StatusCode initialize();
   StatusCode execute();

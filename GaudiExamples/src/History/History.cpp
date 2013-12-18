@@ -7,12 +7,10 @@
 #include "GaudiKernel/PropertyMgr.h"
 #include "GaudiKernel/Property.h"
 
-#include "GaudiKernel/AlgFactory.h"
-
 #include <sstream>
 
 // Static Factory declaration
-DECLARE_ALGORITHM_FACTORY(History)
+DECLARE_COMPONENT(History)
 
 ///////////////////////////////////////////////////////////////////////////
 

@@ -1,6 +1,5 @@
 #include "GaudiKernel/Auditor.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AudFactory.h"
 
 // ============================================================================
 /** @class LoggingAuditor
@@ -72,6 +71,5 @@ public:
 
 };
 
+DECLARE_COMPONENT(LoggingAuditor)
 }
-
-DECLARE_NAMESPACE_AUDITOR_FACTORY(GaudiExamples,LoggingAuditor)
