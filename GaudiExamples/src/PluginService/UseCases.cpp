@@ -12,7 +12,7 @@ namespace GaudiTesting {
     private:
       Algorithm1(const std::string& name, ISvcLocator *svcloc):
         Algorithm(name, svcloc) {}
-      friend AlgFactory<Algorithm1>;
+      friend class AlgFactory<Algorithm1>;
     public:
       StatusCode execute() { return StatusCode::SUCCESS; }
     };

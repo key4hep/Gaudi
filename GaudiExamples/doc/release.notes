@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2013-12-19 - Marco Clemencic
+ - Fixed error in PluginService build-time test with gcc 4.6.
+
 ! 2013-12-18 - Marco Clemencic
  - Fixed a typo in TupleEx3.py.
 
