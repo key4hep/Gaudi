@@ -8,6 +8,8 @@ gaudi_add_library(GaudiPluginService src/PluginService.cpp src/capi_pluginservic
                   LINK_LIBRARIES ${CMAKE_DL_LIBS}
                   PUBLIC_HEADERS Gaudi)
 
+# Disable generation of ConfUserDB (must be done before gaudi_install_python_modules)
+set_directory_properties(PROPERTIES CONFIGURABLE_USER_MODULES None)
 # python modules
 gaudi_install_python_modules()
 
