@@ -12,6 +12,9 @@ use GaudiPolicy	   v13r1
 # Gaudi executable
 use Gaudi          v24r2
 
+# Gaudi Plugin Service
+use GaudiPluginService    v1r0
+
 # Gaudi libraries - generic
 use GaudiKernel    v29r1
 use GaudiCoreSvc   v2r1
