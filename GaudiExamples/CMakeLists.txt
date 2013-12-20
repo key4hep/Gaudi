@@ -43,6 +43,7 @@ set(GaudiExamples_srcs
     src/SvcInitLoop/*.cpp
     src/StringKeys/*.cpp
     src/StatusCodeSvc/*.cpp
+    src/FileMgr/*.cpp
     src/testing/*.cpp
     src/IntelProfiler/*.cpp
     src/PluginService/*.cpp)
