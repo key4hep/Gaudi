@@ -1812,6 +1812,7 @@ function(gaudi_add_python_module module)
   # require Python libraries
   find_package(PythonLibs QUIET REQUIRED)
 
+  include_directories(${PYTHON_INCLUDE_DIRS})
   add_library(${module} MODULE ${srcs})
   if(win32)
     set_target_properties(${module} PROPERTIES SUFFIX .pyd PREFIX "")
