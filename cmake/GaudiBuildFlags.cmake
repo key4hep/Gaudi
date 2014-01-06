@@ -70,7 +70,7 @@ if(NOT GAUDI_FLAGS_SET)
         CACHE STRING "Flags used by the compiler during all build types."
         FORCE)
     set(CMAKE_C_FLAGS
-        "-fmessage-length=0 -pipe -ansi -Wall -Wextra -Werror=return-type -pthread -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long"
+        "-fmessage-length=0 -pipe -ansi -Wall -Wextra -Werror=return-type -pthread -pedantic -Wwrite-strings -Wpointer-arith -Wno-long-long"
         CACHE STRING "Flags used by the compiler during all build types."
         FORCE)
     set(CMAKE_Fortran_FLAGS
@@ -222,7 +222,7 @@ endif()
 
 if (LCG_HOST_ARCH STREQUAL x86_64 AND LCG_ARCH STREQUAL i686)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
-  set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -m32")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -m32")
   set(GCCXML_CXX_FLAGS "${GCCXML_CXX_FLAGS} -m32")
 elseif(NOT LCG_HOST_ARCH STREQUAL LCG_ARCH)

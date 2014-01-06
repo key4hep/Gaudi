@@ -181,7 +181,7 @@ macro(gaudi_project project version)
   #       but we need it here because the other one is meant to include also
   #       the external libraries required by the subdirectories.
   set(binary_paths)
-  
+
   # paths where to find headers
   set_property(GLOBAL PROPERTY INCLUDE_PATHS)
 
@@ -325,6 +325,18 @@ macro(gaudi_project project version)
     endif()
     # this ensures that the std libraries are in RPATH
     link_directories(${std_library_path})
+    # find the real path to the compiler
+    set(compiler_bin_path)
+    get_filename_component(cxx_basename "${CMAKE_CXX_COMPILER}" NAME)
+    foreach(_ldir ${std_library_path})
+      while(NOT _ldir STREQUAL "/")
+        get_filename_component(_ldir "${_ldir}" PATH)
+        if(EXISTS "${_ldir}/bin/${cxx_basename}")
+          set(compiler_bin_path ${compiler_bin_path} "${_ldir}/bin")
+          break()
+        endif()
+      endwhile()
+    endforeach()
   endif()
 
   file(WRITE ${CMAKE_BINARY_DIR}/subdirs_deps.dot "digraph subdirs_deps {\n")
@@ -376,7 +388,7 @@ macro(gaudi_project project version)
       if(NOT d MATCHES "^(/usr|/usr/local)?/include")
         set(include_paths ${include_paths} ${d})
       endif()
-    endforeach() 
+    endforeach()
     message(STATUS "include_paths -> ${include_paths}")
   endif()
   foreach(_inc_dir ${include_paths})
@@ -1800,6 +1812,7 @@ function(gaudi_add_python_module module)
   # require Python libraries
   find_package(PythonLibs QUIET REQUIRED)
 
+  include_directories(${PYTHON_INCLUDE_DIRS})
   add_library(${module} MODULE ${srcs})
   if(win32)
     set_target_properties(${module} PROPERTIES SUFFIX .pyd PREFIX "")
@@ -2430,7 +2443,7 @@ endfunction()
 # Find the location of a standard library asking the compiler.
 #-------------------------------------------------------------------------------
 function(_gaudi_find_standard_lib libname var)
-  #message(STATUS "find ${libname} -> ${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} -print-file-name=libstdc++.so")
+  #message(STATUS "find ${libname} -> ${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} -print-file-name=${libname}")
   set(_cmd "${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} -print-file-name=${libname}")
   separate_arguments(_cmd)
   execute_process(COMMAND ${_cmd} OUTPUT_VARIABLE cpplib)
@@ -2458,6 +2471,9 @@ macro(gaudi_external_project_environment)
 
   # add path to standard libraries to LD_LIBRARY_PATH
   set(library_path2 ${std_library_path})
+
+  # add path to the compiler to the path
+  set(binary_path ${compiler_bin_path})
 
   get_property(packages_found GLOBAL PROPERTY PACKAGES_FOUND)
   #message("${packages_found}")
