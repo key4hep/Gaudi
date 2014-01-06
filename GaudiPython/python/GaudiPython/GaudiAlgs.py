@@ -68,7 +68,6 @@ from GaudiPython.Bindings import (
 from GaudiPython.Bindings   import gbl as cpp         ##  global C++ namepspace
 from GaudiPython.HistoUtils import aida2root          ## AIDA -> ROTO converter
 
-from GaudiKernel import ROOT6WorkAroundEnabled
 # =============================================================================
 # std C++ namespace
 std = cpp.std                                         ## std C++ namespace
@@ -1362,10 +1361,7 @@ def _get_all_histos_  ( component , method , name ) :
             if   _id.numeric() : _id = _id.numericID  ()
             elif _id.literal() : _id = _id.literalID  ()
             else               : _id = _is.idAsString ()
-            h = _his[ _i ]
-            if ROOT6WorkAroundEnabled('ROOT-5850'):
-                h = cpp.GaudiPython.Helper.WorkaroundROOT5850(h)
-            _res [ _id ] = h
+            _res[ _id ] = _his[ _i ]
 
     if not name : return _res                          ## return the dictionary
 

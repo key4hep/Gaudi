@@ -243,8 +243,6 @@ class iProperty(object) :
             props = self._optsvc.getProperties(self._name)
             for p in props :
                 if not p.name() == name : continue
-                if ROOT6WorkAroundEnabled('ROOT-5847'):
-                    p = gbl.GaudiPython.Helper.WorkaroundROOT5847(p)
                 # from JobOptionsSvc we always have only strings
                 try:    return eval( p.value(), {}, {} )
                 except: return p.value()
