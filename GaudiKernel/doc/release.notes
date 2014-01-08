@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2014-01-08 - Marco Clemencic
+ - Further fix (in System::loadDynamicLib) to cure the regression in the option
+   --load-library of genconf.
+
 ! 2013-12-29 - Marco Clemencic
  - Fixed a regression with the option --load-library of genconf.
 
