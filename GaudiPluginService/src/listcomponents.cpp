@@ -14,6 +14,7 @@
 #include <iostream>
 #include <string>
 #include <set>
+#include <cstdlib>
 
 #include <getopt.h>
 #include <dlfcn.h>
@@ -57,8 +58,9 @@ int main(int argc, char* argv[]) {
 
     } else {
       std::cerr << "ERROR: failed to load " << argv[i] << std::endl;
+      return EXIT_FAILURE;
     }
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
