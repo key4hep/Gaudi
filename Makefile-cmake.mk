@@ -87,7 +87,7 @@ endif
 
 # This wrapping around the test target is used to ensure the generation of
 # the XML output from ctest. 
-test:
+test: $(BUILDDIR)/Makefile
 	$(MAKE) -C build.$(BINARY_TAG) ARGS="-T test $(ARGS)" $@
 
 tests: all
