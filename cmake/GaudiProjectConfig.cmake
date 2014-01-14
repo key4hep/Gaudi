@@ -34,7 +34,7 @@ if (GAUDI_BUILD_PREFIX_CMD)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${GAUDI_BUILD_PREFIX_CMD}")
   message(STATUS "Prefix build commands with '${GAUDI_BUILD_PREFIX_CMD}'")
 else()
-  find_program(ccache_cmd ccache)
+  find_program(ccache_cmd ccache-swig ccache)
   find_program(distcc_cmd distcc)
   mark_as_advanced(ccache_cmd distcc_cmd)
 
@@ -1765,11 +1765,9 @@ endmacro()
 #-------------------------------------------------------------------------------
 function(gaudi_add_dictionary dictionary header selection)
   # ensure that we have Reflex
+  find_package(ROOT QUIET COMPONENTS Reflex)
   if(NOT ROOT_Reflex_LIBRARY)
-    find_package(ROOT QUIET COMPONENTS Reflex)
-    if(NOT ROOT_Reflex_LIBRARY)
-      message(FATAL_ERROR "Reflex not found! Cannot produce dictionaries.")
-    endif()
+    message(FATAL_ERROR "Reflex not found! Cannot produce dictionaries.")
   endif()
   # this function uses an extra option: 'OPTIONS'
   CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS;OPTIONS" ${ARGN})

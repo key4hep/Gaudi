@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-01-14 - Sasha Mazurov
+ - Use Phoenix V3 in Boost Spirit (fixes compilation with Clang 3.3).
+
 ! 2013-12-17 - Marco Clemencic
  - Removed work-around for ROOT-5694, because it was not needed anymore and it
    was hiding SPI-385.

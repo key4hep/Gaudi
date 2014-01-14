@@ -804,6 +804,10 @@ macro_append cflags "" \
 
 # FIXME: enforce the use of Boost Filesystem V3 to be compatible between 1.44 and 1.48
 macro_append pp_cppflags " -DBOOST_FILESYSTEM_VERSION=3 "
+# FIXME: enforce the use of Boost Phoenix V3 (V2 does not work with recent compilers)
+#        see http://stackoverflow.com/q/20721486
+#        and http://stackoverflow.com/a/20440238/504346
+macro_append pp_cppflags " -DBOOST_SPIRIT_USE_PHOENIX_V3 "
 
 # ---- Disable warnings coming from external libraries
 #      the hacks can be disabled with the tag "no-hide-warnings".
@@ -1470,12 +1474,12 @@ set GAUDI_DOXY_HOME $(GAUDI_home)/GaudiRelease/doc
 # Conditional use of packages
 #-------------------------------------------------------------------
 #
-# Pattern to "use" a package only if a certain tag <tag> is present. If tag is 
+# Pattern to "use" a package only if a certain tag <tag> is present. If tag is
 #    NOT active, package will be not be used.
 #
 #   pkg:  package name
 #   tag:  tag name to switch on usage of package
-#   ver:  version of package 
+#   ver:  version of package
 #   root: root path of package
 #   opt:  extra options to pass
 #
@@ -1496,7 +1500,7 @@ pattern use_if \
 #
 #   pkg:  package name
 #   tag:  tag name to switch OFF usage of package
-#   ver:  version of package 
+#   ver:  version of package
 #   root: root path of package
 #   opt:  extra options to pass
 #

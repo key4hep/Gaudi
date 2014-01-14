@@ -4,6 +4,10 @@
 ! Purpose     : Provide a generic plugin service.
 !-----------------------------------------------------------------------------
 
+! 2014-01-10 - Marco Clemencic
+ - Fixed error handling in listcomponents.cpp: exit with a failure status code
+   if there is an error loading a library.
+
 ! 2013-12-19 - Marco Clemencic
  - Minor fix to CMake configuration.
 
