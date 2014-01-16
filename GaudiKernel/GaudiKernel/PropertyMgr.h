@@ -18,6 +18,7 @@
 // ============================================================================
 #include "GaudiKernel/Property.h"
 #include "GaudiKernel/IProperty.h"
+#include "GaudiKernel/DataItemProperty.h"
 // ============================================================================
 
 // pre-declaration of GaudiHandles is sufficient
@@ -90,6 +91,17 @@ public:
   ( const std::string& name, 
     ServiceHandleArray<TYPE>& ref, 
     const std::string& doc = "none" ) ;  
+  /// Declare a property (specialization)
+  template<class TYPE>
+  Property* declareProperty
+  ( const std::string& name,
+    DataItem<TYPE>& ref,
+    const std::string& doc = "none" ) ;
+  /// Declare a property (specialization)
+  Property* declareProperty
+  ( const std::string& name,
+    DataItems& ref,
+    const std::string& doc = "none" ) ;
   /// Declare a remote property
   Property* declareRemoteProperty
   ( const std::string& name       ,
@@ -281,6 +293,38 @@ PropertyMgr::declareProperty
   const std::string& doc ) 
 {
   Property* p = new GaudiHandleArrayProperty( name, ref );
+  //
+  p -> setDocumentation    ( doc ) ;
+  m_properties . push_back ( p   ) ;
+  m_todelete   . push_back ( p   ) ;
+  //
+  return p ;
+}
+
+// ============================================================================
+template <class TYPE>
+inline Property*
+PropertyMgr::declareProperty
+( const std::string& name,
+  DataItem<TYPE>& ref,
+  const std::string& doc )
+{
+  Property* p = new DataItemProperty<TYPE>( name, ref );
+  //
+  p -> setDocumentation    ( doc ) ;
+  m_properties . push_back ( p   ) ;
+  m_todelete   . push_back ( p   ) ;
+  //
+  return p ;
+}
+// ============================================================================
+inline Property*
+PropertyMgr::declareProperty
+( const std::string& name,
+  DataItems& ref,
+  const std::string& doc )
+{
+  Property* p = new DataItemArrayProperty( name, ref );
   //
   p -> setDocumentation    ( doc ) ;
   m_properties . push_back ( p   ) ;

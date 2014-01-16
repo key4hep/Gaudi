@@ -24,6 +24,11 @@ MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
                   "Type of the tool to use (internal name is ToolWithName)");
   declareProperty("PrivToolHandle", m_myPrivToolHandle);
   declareProperty("PubToolHandle", m_myPubToolHandle);
+
+  m_inputDataItems.insert(std::shared_ptr<DataItemBase>(new DataItem<DataObject>("tracks", "/Event/Rec/Tracks")));
+  m_inputDataItems.insert(std::shared_ptr<DataItemBase>(new DataItem<DataObject>("hits", "/Event/Rec/Hits")));
+
+  m_outputDataItems.insert(std::shared_ptr<DataItemBase>(new DataItem<DataObject>("trackSelection", "/Event/MyAnalysis/Tracks", false, IDataObjectHandle::WRITE)));
 }
 
 //------------------------------------------------------------------------------
@@ -46,6 +51,9 @@ StatusCode MyGaudiAlgorithm::initialize() {
        m_myPubToolHandle.retrieve().isFailure() ) {
     return StatusCode::FAILURE;
   }
+
+  info() << m_inputDataItems.toString() << endmsg;
+  info() << m_outputDataItems.toString() << endmsg;
 
   info() << "....initialization done" << endmsg;
 

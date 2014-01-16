@@ -48,6 +48,7 @@
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/HashMap.h"
 #include "GaudiKernel/GaudiHandle.h"
+#include "GaudiKernel/DataItemProperty.h"
 
 #include "GaudiKernel/Time.h"
 
@@ -104,6 +105,8 @@ class configGenerator
   /// to import GaudiHandles (ie: if one of the components has a XyzHandle<T>)
   bool    m_importGaudiHandles;
 
+  bool m_importDataItems;
+
   /// buffer of generated configurables informations for the "Db" file
   /// The "Db" file is holding informations about the generated configurables
   /// This file is later one used by the PropertyProxy.py to locate
@@ -124,6 +127,7 @@ public:
     m_outputDirName     ( outputDirName ),
     m_pyBuf             ( ),
     m_importGaudiHandles( false ),
+    m_importDataItems( false ),
     m_dbBuf             ( ),
     m_configurable      ( )
   {}
@@ -473,6 +477,7 @@ int configGenerator::genConfig( const Strings_t& libs )
 
     // reset state
     m_importGaudiHandles = false;
+    m_importDataItems = false;
     m_pyBuf.str("");
     m_dbBuf.str("");
 
@@ -704,6 +709,10 @@ void configGenerator::genHeader( std::ostream& py,
     py << "from GaudiKernel.GaudiHandles import *\n";
   }
 
+  if ( m_importDataItems ) {
+     py << "from GaudiKernel.DataItems import *\n";
+   }
+
   genImport(py,boost::format("from %1%.Configurable import *"));
 
   // db file part
@@ -898,6 +907,24 @@ void configGenerator::pythonizeValue( const Property* p,
 
     pvalue = base.pythonRepr();
     ptype  = "GaudiHandleArray";
+  }
+  else if ( ti == typeid(DataItemBase) ) {
+      m_importDataItems = true;
+      const DataItemPropertyBase& hdl
+        = dynamic_cast<const DataItemPropertyBase&>(*p);
+      const DataItemBase&     base = hdl.value();
+
+      pvalue = base.pythonRepr();
+      ptype  = "DataItem";
+  }
+  else if ( ti == typeid(DataItems) ) {
+      m_importDataItems = true;
+      const DataItemArrayProperty& hdl
+        = dynamic_cast<const DataItemArrayProperty&>(*p);
+      const DataItems&     base = hdl.value();
+
+      pvalue = base.pythonRepr();
+      ptype  = "DataItems";
   }
   else {
     std::ostringstream v_str;

@@ -24,8 +24,6 @@
 #include "GaudiKernel/ThreadGaudi.h"
 #include "GaudiKernel/Guards.h"
 
-#include "GaudiKernel/MinimalDataObjectHandle.h"
-
 // Constructor
 Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
                       const std::string& version)
@@ -50,6 +48,11 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   declareProperty( "Enable",             m_isEnabled = true);
   declareProperty( "ErrorMax",           m_errorMax  = 1);
   declareProperty( "ErrorCount",         m_errorCount = 0);
+
+  //declare input and output properties
+  declareProperty( "InputDataItems", m_inputDataItems);
+  declareProperty( "OutputDataItems", m_outputDataItems);
+
   // Auditor monitoring properties
 
   // Get the default setting for service auditing from the AppMgr

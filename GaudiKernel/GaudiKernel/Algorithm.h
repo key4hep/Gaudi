@@ -35,6 +35,8 @@
 #include "GaudiKernel/EventContext.h"
 #include "GaudiKernel/IDataObjectHandle.h"
 #include "GaudiKernel/MinimalDataObjectHandle.h"
+#include "GaudiKernel/DataItemProperty.h"
+
 template<class T>
 class DataObjectHandle;
 
@@ -603,6 +605,12 @@ private:
   std::vector<MinimalDataObjectHandle*>* m_dataObjectHandles; ///< The data object handles. The algorithms owns those.
   std::vector<Algorithm *>* m_subAlgms; ///< Sub algorithms
 
+protected:
+  //input and output definition
+  DataItems m_inputDataItems;
+  DataItems m_outputDataItems;
+
+private:
   mutable SmartIF<IMessageSvc>      m_MS;       ///< Message service
   mutable SmartIF<IDataProviderSvc> m_EDS;      ///< Event data service
   mutable SmartIF<IHiveWhiteBoard>  m_WB;       ///< Event data service (whiteboard)
