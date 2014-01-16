@@ -1,9 +1,6 @@
 #ifndef GAUDIKERNEL_IDATASELECTOR_H
 #define GAUDIKERNEL_IDATASELECTOR_H
 
-// Framework include files
-#include "GaudiKernel/Kernel.h"
-
 // Include files
 #include <vector>
 
@@ -14,7 +11,6 @@ class DataObject;
 	until the responsible guy does his work!
 	M.Frank
 */
-class IDataSelector : virtual public std::vector<DataObject*>    {
-};
+typedef std::vector<DataObject*> IDataSelector;
 
 #endif  // KERNEL_IDATASELECTOR_H

@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-01-16 - Marco Clemencic
+ - Temporarily disable the change in Boost Spirit version (breaks some code in
+   LHCb).
+
 ! 2014-01-14 - Sasha Mazurov
  - Use Phoenix V3 in Boost Spirit (fixes compilation with Clang 3.3).
 
