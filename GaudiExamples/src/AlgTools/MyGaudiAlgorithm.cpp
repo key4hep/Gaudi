@@ -27,10 +27,13 @@ MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
   m_tracks = declareInput<DataObject>("tracks", "/Event/Rec/Tracks");
   m_hits = declareInput<DataObject>("hits", "/Event/Rec/Hits");
 
+  m_raw = declareInput<DataObject>("raw", std::vector<std::string>({"/Rec/RAW", "/DAQ/RAW"}));
+
   m_selectedTracks = declareOutput<DataObject>("trackSelection", "/Event/MyAnalysis/Tracks");
 
   std::cout << "handle " << m_tracks->dataProductName() << " is " << (m_tracks.isValid() ? "" : "NOT") << " valid" << std::endl;
   std::cout << "handle " << m_hits->dataProductName() << " is " << (m_hits.isValid() ? "" : "NOT") << " valid" << std::endl;
+  std::cout << "handle " << m_raw->dataProductName() << " is " << (m_raw.isValid() ? "" : "NOT") << " valid" << std::endl;
   std::cout << "handle " << m_selectedTracks->dataProductName() << " is " << (m_selectedTracks.isValid() ? "" : "NOT") << " valid" << std::endl;
 }
 
@@ -57,6 +60,7 @@ StatusCode MyGaudiAlgorithm::initialize() {
 
   info() << m_tracks->dataProductName() << endmsg;
   info() << m_hits->dataProductName() << endmsg;
+  info() << m_raw->dataProductName() << endmsg;
 
   info() << m_selectedTracks->dataProductName() << endmsg;
 

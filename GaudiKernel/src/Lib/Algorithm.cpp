@@ -136,6 +136,12 @@ StatusCode Algorithm::sysInitialize() {
   //update input/output declarations with relative path
   //init data handle
   bool rootSet = m_rootInTES != ""; //root set, update address
+
+  //add last slash if necessary
+  if ("" != m_rootInTES && '/'!=m_rootInTES[m_rootInTES.size()-1]){
+	  m_rootInTES += "/";
+  }
+
   for(auto tag : m_inputDataItems){
 	  if(rootSet && m_inputDataItems[tag].address()[0] != '/') //we have a relative address
 		  m_inputDataItems[tag].setAddress(m_rootInTES + m_inputDataItems[tag].address());

@@ -1,14 +1,15 @@
 __version__ = "$Revision: 0.1 $"
 __doc__ = """The python module holding python bindings to DataObjectDescriptor"""
 
-FIELD_SEP = '|';
-ITEM_SEP = '#';
+FIELD_SEP = '|'
+ITEM_SEP = '#'
+ADDR_SEP = '&'
 
 # s = "tracks|/evt/rec/tracks|0|0#hits|/evt/velo/hits|0|0#selTracks|/evt/mySel/tracks|0|1"
 
 class DataObjectDescriptor(object):
     
-    __slots__ = ('tag', 'address', 'optional', 'accessType')
+    __slots__ = ('tag', 'address', 'alternativeAddresses', 'optional', 'accessType')
 
     #define accessTypes
     READ = 0
@@ -37,13 +38,29 @@ class DataObjectDescriptor(object):
             return
         
         self.tag = a[0]
-        self.address = a[1]
+        
+        if not ADDR_SEP in a[1]: #only one address provided 
+            self.address = a[1]
+            self.alternativeAddresses = []
+        else: #we have alternative addresses
+            addr = a[1].split(ADDR_SEP)
+            self.address = addr[0]
+            self.alternativeAddresses = addr[1:]
+        
         self.optional = int(a[2]) == 1 
         self.accessType = int(a[3])
         
     def __str__(self):
-        return self.tag + FIELD_SEP + self.address\
-               + FIELD_SEP + str(int(self.optional)) + FIELD_SEP + str(self.accessType)
+        s =  self.tag + FIELD_SEP + self.address 
+        
+        for a in self.alternativeAddresses:
+            s += ADDR_SEP + a
+            
+        s += FIELD_SEP
+        
+        s += str(int(self.optional)) + FIELD_SEP + str(self.accessType)
+        
+        return s
                
     def __repr__(self):
         return "%s(""%s"")" % (self.__class__.__name__, self.__str__())

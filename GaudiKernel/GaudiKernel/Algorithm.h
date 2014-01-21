@@ -577,6 +577,19 @@ public:
   }
 
   template<class T>
+  SmartIF<DataObjectHandle<T> > declareInput(
+		  const std::string& tag,
+		  const std::vector<std::string>& addresses,
+		  bool optional=false,
+		  IDataObjectHandle::AccessType accessType=IDataObjectHandle::READ){
+
+	  	m_inputDataItems.insert(tag, addresses, optional, accessType);
+
+	  	return m_inputDataItems[tag].createHandle<T>(this);
+
+  }
+
+  template<class T>
   SmartIF<DataObjectHandle<T> > declareOutput(
 		  const std::string& tag,
 		  const std::string& address,

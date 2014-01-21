@@ -41,6 +41,7 @@ private:
 
   SmartIF<DataObjectHandle<DataObject>> m_tracks;
   SmartIF<DataObjectHandle<DataObject>> m_hits;
+  SmartIF<DataObjectHandle<DataObject>> m_raw;
 
   SmartIF<DataObjectHandle<DataObject>> m_selectedTracks;
 

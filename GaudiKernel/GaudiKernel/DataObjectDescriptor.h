@@ -24,6 +24,15 @@ public:
 			const IDataObjectHandle::AccessType accessType = IDataObjectHandle::READ)
 	: m_tag(tag), m_address(address), m_optional(optional), m_accessType(accessType) {};
 
+	DataObjectDescriptor(const std::string& tag,
+			const std::vector<std::string>& addresses,
+			const bool optional = false,
+			const IDataObjectHandle::AccessType accessType = IDataObjectHandle::READ)
+	: m_tag(tag), m_address(addresses[0]), m_optional(optional), m_accessType(accessType) {
+
+		setAltAddress(addresses, true); //
+	};
+
 	DataObjectDescriptor(const DataObjectDescriptor & value) {
 
 		//std::cout << "copy constructor for " << value.m_tag << ": " << "my handle is " <<
@@ -34,6 +43,7 @@ public:
 
 		setTag(value.m_tag);
 		setAddress(value.m_address);
+		setAltAddress(value.m_altAddresses);
 		setOptional(value.m_optional);
 		setAccessType(value.m_accessType);
 	}
@@ -54,6 +64,7 @@ public:
 
 		setTag(value.m_tag);
 		setAddress(value.m_address);
+		setAltAddress(value.m_altAddresses);
 		setOptional(value.m_optional);
 		setAccessType(value.m_accessType);
 
@@ -67,6 +78,7 @@ public:
 	void setOptional(bool optional);
 
 	const std::string& address() const;
+	const std::vector<std::string> & alternativeAddresses() const;
 
 	//sets the address of the descriptor and updates the handle if present
 	void setAddress(const std::string& address);
@@ -110,10 +122,12 @@ public:
 
 private:
 	void setHandle(SmartIF<MinimalDataObjectHandle> handle);
+	void setAltAddress(const std::vector<std::string> & addresses, bool skipFirst = false);
 
 private:
 	std::string m_tag;
 	std::string m_address;
+	std::vector<std::string> m_altAddresses;
 	bool m_optional;
 	IDataObjectHandle::AccessType m_accessType;
 	SmartIF<MinimalDataObjectHandle> m_handle;
@@ -141,6 +155,11 @@ public:
 
 	void insert(const std::string& tag,
 				const std::string& address,
+				const bool optional = false,
+				const IDataObjectHandle::AccessType accessType = IDataObjectHandle::READ);
+
+	void insert(const std::string& tag,
+				const std::vector<std::string>& addresses,
 				const bool optional = false,
 				const IDataObjectHandle::AccessType accessType = IDataObjectHandle::READ);
 

@@ -12,6 +12,7 @@
 
 #include <GaudiKernel/DataObjectDescriptor.h>
 
+const char ADDR_SEP = '&';
 const char FIELD_SEP = '|';
 const char ITEM_SEP = '#';
 
@@ -20,10 +21,22 @@ std::ostream& operator<<( std::ostream&   stream ,
 { return stream << di.toString() ; }
 
 const std::string DataObjectDescriptor::toString() const {
-	return  m_tag + FIELD_SEP
-			+ m_address + FIELD_SEP
-			+ boost::lexical_cast<std::string>(m_optional) + FIELD_SEP
-			+ boost::lexical_cast<std::string>(m_accessType);
+	std::stringstream str;
+
+	str << m_tag << FIELD_SEP;
+	str << m_address;
+
+	if(UNLIKELY(!m_altAddresses.empty())){
+		for(auto & s : m_altAddresses)
+			str << ADDR_SEP << s;
+	}
+
+	str << FIELD_SEP;
+
+	str << boost::lexical_cast<std::string>(m_optional) << FIELD_SEP;
+	str << boost::lexical_cast<std::string>(m_accessType);
+
+	return str.str();
 }
 
 const std::string DataObjectDescriptor::pythonRepr() const {
@@ -35,7 +48,17 @@ void DataObjectDescriptor::fromString(const std::string& s) {
 	boost::split(items, s, boost::is_any_of(boost::lexical_cast<std::string>(FIELD_SEP)), boost::token_compress_on);
 
 	setTag(items[0]);
-	setAddress(items[1]); //address
+
+	if(LIKELY(items[1].find(ADDR_SEP) == std::string::npos))
+		setAddress(items[1]); //address
+	else { //alternative addresses provided
+		std::vector<std::string> addr;
+		boost::split(addr, s, boost::is_any_of(boost::lexical_cast<std::string>(ADDR_SEP)), boost::token_compress_on);
+
+		setAddress(addr[0]); //main address
+		setAltAddress(addr, true); //set alternatives, skipping first
+	}
+
 	setOptional(boost::lexical_cast<bool>( items[2] ));
 	setAccessType(IDataObjectHandle::AccessType(boost::lexical_cast<int>( items[3] )));
 
@@ -89,6 +112,10 @@ const std::string& DataObjectDescriptor::address() const {
 	return m_address;
 }
 
+const std::vector<std::string>& DataObjectDescriptor::alternativeAddresses() const {
+	return m_altAddresses;
+}
+
 void DataObjectDescriptor::setAddress(const std::string& address) {
 
 	//std::cout << "setting address for " << m_tag << " from " << m_address << " to " << address
@@ -98,6 +125,10 @@ void DataObjectDescriptor::setAddress(const std::string& address) {
 
 	if(m_handle.isValid()) //only update if present
 		m_handle->setDataProductName(m_address);
+}
+
+void DataObjectDescriptor::setAltAddress(const std::vector<std::string> & addresses, bool skipFirst){
+	m_altAddresses.assign(addresses.begin() + skipFirst, addresses.end());
 }
 
 const std::string DataObjectDescriptorCollection::toString() const {
@@ -157,6 +188,19 @@ void DataObjectDescriptorCollection::insert(const std::string& tag,
 		m_dataItems.emplace(std::piecewise_construct,
 		          std::make_tuple(tag),
 		          std::make_tuple(tag, address, optional, accessType));
+	}
+
+}
+
+void DataObjectDescriptorCollection::insert(const std::string& tag,
+		const std::vector<std::string>& addresses,
+		const bool optional,
+		const IDataObjectHandle::AccessType accessType){
+
+	if(!contains(tag)){
+		m_dataItems.emplace(std::piecewise_construct,
+		          std::make_tuple(tag),
+		          std::make_tuple(tag, addresses, optional, accessType));
 	}
 
 }
