@@ -377,3 +377,21 @@ StatusCode AlgResourcePool::endRun() {
   }
   return StatusCode::SUCCESS;
 }
+
+//---------------------------------------------------------------------------
+
+StatusCode AlgResourcePool::stop(){
+
+  StatusCode stopSc = Service::stop();
+  if ( ! stopSc.isSuccess() ) return stopSc;
+
+  // sys-Stop the algos
+  for (auto& ialgo : m_algList){
+    stopSc = ialgo->sysStop();
+    if (stopSc.isFailure()){
+      error() << "Unable to stop Algorithm: " << ialgo->name() << endmsg;
+      return stopSc;
+    }
+    }
+  return StatusCode::SUCCESS;
+}

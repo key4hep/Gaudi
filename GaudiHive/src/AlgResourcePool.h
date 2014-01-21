@@ -55,6 +55,8 @@ public:
   virtual StatusCode beginRun();
   virtual StatusCode endRun();
 
+  virtual StatusCode stop();
+
   virtual concurrency::ControlFlowGraph* getControlFlowGraph() const {return m_CFGraph;}
 
 private:
