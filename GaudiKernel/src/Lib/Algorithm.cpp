@@ -41,7 +41,6 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
 {
   m_propertyMgr = new PropertyMgr();
   m_subAlgms = new std::vector<Algorithm *>();
-  m_dataObjectHandles = new std::vector<MinimalDataObjectHandle *>();
 
   // Declare common Algorithm properties with their defaults
   declareProperty( "OutputLevel",        m_outputLevel = MSG::NIL);
@@ -52,6 +51,7 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   //declare input and output properties
   declareProperty( "InputDataItems", m_inputDataItems);
   declareProperty( "OutputDataItems", m_outputDataItems);
+  declareProperty( "RootInTES",         m_rootInTES = "");
 
   // Auditor monitoring properties
 
@@ -98,7 +98,6 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
 Algorithm::~Algorithm() {
   delete m_subAlgms;
   delete m_propertyMgr;
-  delete m_dataObjectHandles;
 }
 
 // IAlgorithm implementation
@@ -133,6 +132,22 @@ StatusCode Algorithm::sysInitialize() {
   
   // Get WhiteBoard interface if implemented by EventDataSvc
   m_WB = service("EventDataSvc");
+
+  //update input/output declarations with relative path
+  //init data handle
+  bool rootSet = m_rootInTES != ""; //root set, update address
+  for(auto tag : m_inputDataItems){
+	  if(rootSet && m_inputDataItems[tag].address()[0] != '/') //we have a relative address
+		  m_inputDataItems[tag].setAddress(m_rootInTES + m_inputDataItems[tag].address());
+
+	  m_inputDataItems[tag].getBaseHandle()->initialize();
+  }
+  for(auto tag : m_outputDataItems){
+	  if(rootSet && m_outputDataItems[tag].address()[0] != '/') //we have a relative address
+		  m_outputDataItems[tag].setAddress(m_rootInTES + m_outputDataItems[tag].address());
+
+	  m_outputDataItems[tag].getBaseHandle()->initialize();
+  }
 
   // Invoke initialize() method of the derived class inside a try/catch clause
   try {
@@ -1192,10 +1207,19 @@ const std::vector<Property*>& Algorithm::getProperties( ) const {
   return m_propertyMgr->getProperties();
 }
 
-const std::vector<MinimalDataObjectHandle*>& Algorithm::handles(){
-  return *m_dataObjectHandles;
-}
+const std::vector<MinimalDataObjectHandle*> Algorithm::handles(){
 
+	std::vector<MinimalDataObjectHandle*> handles;
+
+	for(auto it : m_inputDataItems)
+		handles.push_back(m_inputDataItems[it].getBaseHandle().get());
+
+	for(auto it : m_outputDataItems)
+		handles.push_back(m_outputDataItems[it].getBaseHandle().get());
+
+	return handles;
+
+}
 
 /**
  ** Protected Member Functions

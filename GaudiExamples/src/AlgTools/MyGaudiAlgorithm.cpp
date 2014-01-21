@@ -3,7 +3,6 @@
 // Include files
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/AlgFactory.h"
-#include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IToolSvc.h"
 
@@ -25,10 +24,14 @@ MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
   declareProperty("PrivToolHandle", m_myPrivToolHandle);
   declareProperty("PubToolHandle", m_myPubToolHandle);
 
-  m_inputDataItems.insert(std::shared_ptr<DataItemBase>(new DataItem<DataObject>("tracks", "/Event/Rec/Tracks")));
-  m_inputDataItems.insert(std::shared_ptr<DataItemBase>(new DataItem<DataObject>("hits", "/Event/Rec/Hits")));
+  m_tracks = declareInput<DataObject>("tracks", "/Event/Rec/Tracks");
+  m_hits = declareInput<DataObject>("hits", "/Event/Rec/Hits");
 
-  m_outputDataItems.insert(std::shared_ptr<DataItemBase>(new DataItem<DataObject>("trackSelection", "/Event/MyAnalysis/Tracks", false, IDataObjectHandle::WRITE)));
+  m_selectedTracks = declareOutput<DataObject>("trackSelection", "/Event/MyAnalysis/Tracks");
+
+  std::cout << "handle " << m_tracks->dataProductName() << " is " << (m_tracks.isValid() ? "" : "NOT") << " valid" << std::endl;
+  std::cout << "handle " << m_hits->dataProductName() << " is " << (m_hits.isValid() ? "" : "NOT") << " valid" << std::endl;
+  std::cout << "handle " << m_selectedTracks->dataProductName() << " is " << (m_selectedTracks.isValid() ? "" : "NOT") << " valid" << std::endl;
 }
 
 //------------------------------------------------------------------------------
@@ -52,8 +55,10 @@ StatusCode MyGaudiAlgorithm::initialize() {
     return StatusCode::FAILURE;
   }
 
-  info() << m_inputDataItems.toString() << endmsg;
-  info() << m_outputDataItems.toString() << endmsg;
+  info() << m_tracks->dataProductName() << endmsg;
+  info() << m_hits->dataProductName() << endmsg;
+
+  info() << m_selectedTracks->dataProductName() << endmsg;
 
   info() << "....initialization done" << endmsg;
 

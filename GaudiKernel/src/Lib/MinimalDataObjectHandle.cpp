@@ -13,7 +13,8 @@ MinimalDataObjectHandle::MinimalDataObjectHandle(const std::string& productName,
                                                  m_dataProductIndex(m_tmp_dpi++),
                                                  m_accessType(accessType),
                                                  m_wasRead(false),
-                                                 m_wasWritten(false){
+                                                 m_wasWritten(false),
+                                                 m_initialized(false){
                                                    
   }
   
@@ -22,6 +23,8 @@ MinimalDataObjectHandle::MinimalDataObjectHandle(const std::string& productName,
 StatusCode MinimalDataObjectHandle::initialize(){
   setRead(false);
   setWritten(false);
+
+  m_initialized = true;
   return StatusCode::SUCCESS;
 }
 
@@ -55,6 +58,17 @@ unsigned int MinimalDataObjectHandle::dataProductIndex() const {
 
 const std::string& MinimalDataObjectHandle::dataProductName() const {
   return m_dataProductName;
+}
+
+StatusCode MinimalDataObjectHandle::setDataProductName(const std::string & address){
+
+	//only allowed if not initialized yet
+	if(m_initialized)
+		return StatusCode::FAILURE;
+
+	m_dataProductName = address;
+
+	return StatusCode::SUCCESS;
 }
 
 //---------------------------------------------------------------------------

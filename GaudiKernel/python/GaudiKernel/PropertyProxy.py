@@ -8,7 +8,7 @@ __all__ = [ 'PropertyProxy', 'GaudiHandlePropertyProxy', 'GaudiHandleArrayProper
 import os,glob
 from GaudiKernel.GaudiHandles import *
 from GaudiKernel import ConfigurableDb
-from GaudiKernel.DataItems import *
+from GaudiKernel.DataObjectDescriptor import *
 
 import logging
 log = logging.getLogger( 'PropertyProxy' )
@@ -344,7 +344,7 @@ class GaudiHandleArrayPropertyProxy(GaudiHandlePropertyProxyBase):
 
         return newValue
 
-class DataItemPropertyProxy(PropertyProxy):
+class DataObjectDescriptorPropertyProxy(PropertyProxy):
     
     def __init__(self, descr, docString, default):
         PropertyProxy.__init__( self, descr, docString, default )
@@ -377,21 +377,21 @@ class DataItemPropertyProxy(PropertyProxy):
         if value is None: value = ''
         
         if type(value) == str:
-            return DataItem(value)
-        elif isinstance(value, DataItem):
+            return DataObjectDescriptor(value)
+        elif isinstance(value, DataObjectDescriptor):
             return value
         
-class DataItemsPropertyProxy(DataItemPropertyProxy):
+class DataObjectDescriptorCollectionPropertyProxy(DataObjectDescriptorPropertyProxy):
     def __init__( self, descr, docString, default ):
-        DataItemPropertyProxy.__init__( self, descr, docString, default )
+        DataObjectDescriptorPropertyProxy.__init__( self, descr, docString, default )
         self.arrayType = type(default)
 
     def convertValueToBeSet( self, obj, value ):
         if value is None: value = ''
         
         if type(value) == str:
-            return DataItems(value)
-        elif isinstance(value, DataItems):
+            return DataObjectDescriptorCollection(value)
+        elif isinstance(value, DataObjectDescriptorCollection):
             return value
 
 def PropertyProxyFactory( descr, doc, default ):
@@ -403,10 +403,10 @@ def PropertyProxyFactory( descr, doc, default ):
     if isinstance(default,GaudiHandle):
         return GaudiHandlePropertyProxy( descr, doc, default )
     
-    if isinstance(default,DataItem):
-        return DataItemPropertyProxy( descr, doc, default )
+    if isinstance(default,DataObjectDescriptor):
+        return DataObjectDescriptorPropertyProxy( descr, doc, default )
 
-    if isinstance(default,DataItems):
-        return DataItemsPropertyProxy( descr, doc, default )
+    if isinstance(default,DataObjectDescriptorCollection):
+        return DataObjectDescriptorCollectionPropertyProxy( descr, doc, default )
 
     return PropertyProxy( descr, doc, default )

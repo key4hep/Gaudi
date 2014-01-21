@@ -12,7 +12,7 @@ mygalg.PrivToolHandle.String = "Is a private tool"
 
 print mygalg
 
-mygalg.InputDataItems.tracks.productName = '/Event/BestTracks/Tracks'
+mygalg.InputDataItems.tracks.address = '/Event/BestTracks/Tracks'
 
 print mygalg
 

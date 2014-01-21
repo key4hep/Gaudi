@@ -18,7 +18,7 @@
 // ============================================================================
 #include "GaudiKernel/Property.h"
 #include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/DataItemProperty.h"
+#include "GaudiKernel/DataObjectDescriptor.h"
 // ============================================================================
 
 // pre-declaration of GaudiHandles is sufficient
@@ -92,15 +92,14 @@ public:
     ServiceHandleArray<TYPE>& ref, 
     const std::string& doc = "none" ) ;  
   /// Declare a property (specialization)
-  template<class TYPE>
   Property* declareProperty
   ( const std::string& name,
-    DataItem<TYPE>& ref,
+    DataObjectDescriptor& ref,
     const std::string& doc = "none" ) ;
   /// Declare a property (specialization)
   Property* declareProperty
   ( const std::string& name,
-    DataItems& ref,
+    DataObjectDescriptorCollection& ref,
     const std::string& doc = "none" ) ;
   /// Declare a remote property
   Property* declareRemoteProperty
@@ -302,14 +301,13 @@ PropertyMgr::declareProperty
 }
 
 // ============================================================================
-template <class TYPE>
 inline Property*
 PropertyMgr::declareProperty
 ( const std::string& name,
-  DataItem<TYPE>& ref,
+  DataObjectDescriptor& ref,
   const std::string& doc )
 {
-  Property* p = new DataItemProperty<TYPE>( name, ref );
+  Property* p = new DataObjectDescriptorProperty( name, ref );
   //
   p -> setDocumentation    ( doc ) ;
   m_properties . push_back ( p   ) ;
@@ -321,10 +319,10 @@ PropertyMgr::declareProperty
 inline Property*
 PropertyMgr::declareProperty
 ( const std::string& name,
-  DataItems& ref,
+  DataObjectDescriptorCollection& ref,
   const std::string& doc )
 {
-  Property* p = new DataItemArrayProperty( name, ref );
+  Property* p = new DataObjectDescriptorCollectionProperty( name, ref );
   //
   p -> setDocumentation    ( doc ) ;
   m_properties . push_back ( p   ) ;

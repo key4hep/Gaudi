@@ -35,7 +35,7 @@
 #include "GaudiKernel/EventContext.h"
 #include "GaudiKernel/IDataObjectHandle.h"
 #include "GaudiKernel/MinimalDataObjectHandle.h"
-#include "GaudiKernel/DataItemProperty.h"
+#include "GaudiKernel/DataObjectDescriptor.h"
 
 template<class T>
 class DataObjectHandle;
@@ -174,11 +174,7 @@ public:
   /// the default (empty) implementation of IStateful::stop() method
   virtual StatusCode stop () { return StatusCode::SUCCESS ; }
   /// Implementation of IStateful. Releases the handles
-  virtual StatusCode finalize   () { 
-    for (std::vector<MinimalDataObjectHandle*>::iterator handle=m_dataObjectHandles->begin();
-         handle != m_dataObjectHandles->end(); handle++) 
-         delete *handle;
-    return StatusCode::SUCCESS ; }
+  virtual StatusCode finalize   () { return StatusCode::SUCCESS ; }
 
   /// the default (empty) implementation of IStateful::reinitialize() method
   virtual StatusCode reinitialize ();
@@ -539,34 +535,62 @@ public:
 
   /// Declare data object
   template <typename T>
-  StatusCode declareDataObj(const std::string& address, 
+  __attribute__ ((deprecated)) StatusCode declareDataObj(const std::string& address,
                             DataObjectHandle<T>*& doh,
                             IDataObjectHandle::AccessType accesstype=IDataObjectHandle::READ,
-                            bool is_optional=false){
-    
+                            bool is_optional=false) {
+
     // GCCXML cannot understand c++11 yet, NULL used.
-    
+
+	  SmartIF<DataObjectHandle<T> > sDOH;
+	  std::string tag = address.substr(address.find_last_of('/'));
+
+	  if(accesstype == IDataObjectHandle::READ || accesstype == IDataObjectHandle::UPDATE)
+		  sDOH = declareInput<T>(tag, address, is_optional, accesstype);
+	  else
+		  sDOH = declareOutput<T>(tag, address, accesstype, is_optional);
+
     MsgStream log ( msgSvc() , name() );
-    
-    doh = new DataObjectHandle<T>(address,
-                                  this,
-                                  accesstype,
-                                  is_optional);    
-    doh->initialize();
 
     // Push into the handlers container
-    if (LIKELY(doh != NULL)){
-      m_dataObjectHandles->push_back(dynamic_cast<MinimalDataObjectHandle*>(doh));      
+    if (LIKELY(sDOH.isValid())){
       log << MSG::DEBUG << "Handle for " << address << " successfully created and stored." << endmsg;
-      return StatusCode::SUCCESS;  
-      }
-  
-    log << MSG::ERROR << "Handle for " << address << " could not be created." << endmsg; 
-    return StatusCode::FAILURE;  
+      doh = sDOH.get();
+      return StatusCode::SUCCESS;
+    }
+
+    log << MSG::ERROR << "Handle for " << address << " could not be created." << endmsg;
+    return StatusCode::FAILURE;
   }
   
+  template<class T>
+  SmartIF<DataObjectHandle<T> > declareInput(
+		  const std::string& tag,
+		  const std::string& address,
+		  bool optional=false,
+		  IDataObjectHandle::AccessType accessType=IDataObjectHandle::READ){
+
+	  	m_inputDataItems.insert(tag, address, optional, accessType);
+
+	  	return m_inputDataItems[tag].createHandle<T>(this);
+
+  }
+
+  template<class T>
+  SmartIF<DataObjectHandle<T> > declareOutput(
+		  const std::string& tag,
+		  const std::string& address,
+		  IDataObjectHandle::AccessType accessType=IDataObjectHandle::WRITE,
+		  bool optional=false){
+
+	  	m_outputDataItems.insert(tag, address, optional, accessType);
+
+	  	return m_outputDataItems[tag].createHandle<T>(this);
+
+  }
+
   /// Return the handles declared in the algorithm
-  virtual const std::vector<MinimalDataObjectHandle*>& handles();
+  __attribute__ ((deprecated)) virtual const std::vector<MinimalDataObjectHandle*> handles();
   
   /// Specifies the clonability of the algorithm
   virtual bool isClonable () const { return m_isClonable; }
@@ -602,13 +626,12 @@ private:
   std::string m_type;            ///< Algorithm's type 
   std::string m_version;         ///< Algorithm's version
   unsigned int m_index;          ///< Algorithm's index
-  std::vector<MinimalDataObjectHandle*>* m_dataObjectHandles; ///< The data object handles. The algorithms owns those.
   std::vector<Algorithm *>* m_subAlgms; ///< Sub algorithms
 
-protected:
   //input and output definition
-  DataItems m_inputDataItems;
-  DataItems m_outputDataItems;
+  DataObjectDescriptorCollection m_inputDataItems;
+  DataObjectDescriptorCollection m_outputDataItems;
+  std::string m_rootInTES;
 
 private:
   mutable SmartIF<IMessageSvc>      m_MS;       ///< Message service

@@ -1,14 +1,14 @@
 __version__ = "$Revision: 0.1 $"
-__doc__ = """The python module holding python bindings to DataItems"""
+__doc__ = """The python module holding python bindings to DataObjectDescriptor"""
 
 FIELD_SEP = '|';
 ITEM_SEP = '#';
 
 # s = "tracks|/evt/rec/tracks|0|0#hits|/evt/velo/hits|0|0#selTracks|/evt/mySel/tracks|0|1"
 
-class DataItem(object):
+class DataObjectDescriptor(object):
     
-    __slots__ = ('tag', 'productName', 'optional', 'accessType')
+    __slots__ = ('tag', 'address', 'optional', 'accessType')
 
     #define accessTypes
     READ = 0
@@ -37,12 +37,12 @@ class DataItem(object):
             return
         
         self.tag = a[0]
-        self.productName = a[1]
+        self.address = a[1]
         self.optional = int(a[2]) == 1 
         self.accessType = int(a[3])
         
     def __str__(self):
-        return self.tag + FIELD_SEP + self.productName\
+        return self.tag + FIELD_SEP + self.address\
                + FIELD_SEP + str(int(self.optional)) + FIELD_SEP + str(self.accessType)
                
     def __repr__(self):
@@ -51,7 +51,7 @@ class DataItem(object):
     def toStringProperty(self):
         return self.__str__()
 
-class DataItems(object):
+class DataObjectDescriptorCollection(object):
     
     def __init__(self,dataItems):        
         object.__init__(self)
@@ -59,7 +59,7 @@ class DataItems(object):
         #dataItems is a string of format
         # "itemITEM_SEPitemITEM_SEP"
         # each item is a string of 
-        # "tagFIELD_SEPproductNameFIELD_SEPoptionalFIELD_SEPaccessType"
+        # "tagFIELD_SEPaddressFIELD_SEPoptionalFIELD_SEPaccessType"
         
         if dataItems == "":
             return
@@ -69,7 +69,7 @@ class DataItems(object):
         items = dataItems.split(ITEM_SEP)
         
         for item in items:
-            d = DataItem(item)
+            d = DataObjectDescriptor(item)
             object.__setattr__(self, d.tag, d)
             
     def __getattr__(self, name):
