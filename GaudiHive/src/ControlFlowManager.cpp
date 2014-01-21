@@ -22,23 +22,14 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void DecisionNode::initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map,
-                                GraphMap& graph_map){
-    graph_map[m_nodeName].push_back(this);
-
-    for (auto daughter : m_daughters) {
-      daughter->initialize(algname_index_map, graph_map);
-    }
-  }
-
-  //---------------------------------------------------------------------------
   void DecisionNode::printState(std::stringstream& output,
+                                std::vector<State>& states,
                                 const std::vector<int>& node_decisions,
                                 const unsigned int& recursionLevel) const {
-    output << std::string(recursionLevel, ' ') << m_nodeName << " : "
-           << stateToString(node_decisions[m_nodeIndex]) << std::endl;
+    output << std::string(recursionLevel, ' ') << m_nodeName << " (" << m_nodeIndex << ")" << ", w/ decision: "
+           << stateToString(node_decisions[m_nodeIndex]) << "(" << node_decisions[m_nodeIndex] <<")" << std::endl;
     for (auto daughter : m_daughters ) {
-      daughter->printState(output,node_decisions,recursionLevel+1);
+      daughter->printState(output,states,node_decisions,recursionLevel+2);
     }
   }
 
@@ -84,13 +75,21 @@ namespace concurrency {
         node_decisions[m_nodeIndex] = decision;
         return;
       }
-
-      auto res = node_decisions[daughter->getNodeIndex()];
+      // modified
+      int& res = node_decisions[daughter->getNodeIndex()];
       if (-1 == res) {
         hasUndecidedChild = true;
         //daughter->promoteToControlReadyState(states, node_decisions);
-        State& state = states[daughter->getNodeIndex()];
-        if (State::INITIAL == state) state = State::CONTROLREADY;
+        if (typeid(*daughter) != typeid(concurrency::DecisionNode)) {
+          AlgorithmNode* algod = (AlgorithmNode*) daughter;
+          State& state = states[algod->getAlgoIndex()];
+          if (State::INITIAL == state) {
+              state = State::CONTROLREADY;
+          }
+        } else {
+          daughter->updateDecision(states, node_decisions);
+        }
+
       // "and"-mode (once first result false, the overall decision is false)
       } else if (false == m_modeOR && res == 0) {
         decision = 0;
@@ -115,14 +114,15 @@ namespace concurrency {
     node_decisions[m_nodeIndex] = decision;
 
     // propagate decision upwards through the decision graph
-    if (-1 != decision && m_parentNode)
-      m_parentNode->updateDecision(states, node_decisions);
+    if (-1 != decision)
+      for (auto p : m_parents)
+          p->updateDecision(states, node_decisions);
   }
 
   //---------------------------------------------------------------------------
   void DecisionNode::promoteToControlReadyState(std::vector<State>& states,
                                                 std::vector<int>& node_decisions) const {
-    //std::cout << "REACHED DECISNODE " << m_nodeName << std::endl;
+
     if (-1 != node_decisions[m_nodeIndex]) {
       return;
     }
@@ -144,17 +144,9 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void AlgorithmNode::initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map,
-                                 GraphMap& graph_map){
-    m_algoIndex = algname_index_map.at(m_algoName);
-    graph_map[m_algoName].push_back(this);
-  }
-
-  //---------------------------------------------------------------------------
   void AlgorithmNode::promoteToControlReadyState(std::vector<State>& states,
                                                  std::vector<int>& node_decisions) const {
 
-    //std::cout << "REACHED ALGONODE " << m_algoName << std::endl;
     State& state = states[m_algoIndex];
     if (State::INITIAL == state) state = State::CONTROLREADY;
   }
@@ -162,10 +154,12 @@ namespace concurrency {
 
   //---------------------------------------------------------------------------
   void AlgorithmNode::printState(std::stringstream& output,
+                                 std::vector<State>& states,
                                  const std::vector<int>& node_decisions,
                                  const unsigned int& recursionLevel) const {
-    output << std::string(recursionLevel, ' ') << m_nodeName << " : "
-           << stateToString(node_decisions[m_nodeIndex]) << std::endl;
+    output << std::string(recursionLevel, ' ') << m_nodeName << " (" << m_nodeIndex << ")" << ", w/ decision: "
+           << stateToString(node_decisions[m_nodeIndex]) << "(" << node_decisions[m_nodeIndex] << ")"
+           << ", in state: " << states[m_algoIndex] << std::endl;
   }
 
   //---------------------------------------------------------------------------
@@ -188,6 +182,7 @@ namespace concurrency {
     } else {
       decision =  -1; // result not known yet
     }
+
     node_decisions[m_nodeIndex] = decision;
     return decision;
   }
@@ -195,7 +190,6 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   void AlgorithmNode::updateDecision(std::vector<State>& states,
                                      std::vector<int>& node_decisions) const {
-
     State& state = states[m_algoIndex];
     int decision = -1;
     //if (State::INITIAL == state) {state = State::CONTROLREADY;}
@@ -210,28 +204,119 @@ namespace concurrency {
     } else {
       decision =  -1; // result not known yet
     }
+
     node_decisions[m_nodeIndex] = decision;
 
-    m_parentNode->updateDecision(states, node_decisions);
+    for (auto p : m_parents)
+      p->updateDecision(states, node_decisions);
   }
 
   //---------------------------------------------------------------------------
-  void ControlFlowManager::initialize(ControlFlowNode* node,
+  void ControlFlowGraph::initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map){
+    m_headNode->initialize(algname_index_map);
+  }
+
+  //---------------------------------------------------------------------------
+  void ControlFlowGraph::addAlgorithmNode(const std::string& algoName, const std::string& parentName, bool inverted, bool allPass) {
+
+    auto itP = m_graphAggMap.find(parentName);
+    concurrency::DecisionNode* parentNode = itP->second;
+
+    auto itA = m_graphAlgoMap.find(algoName);
+    concurrency::AlgorithmNode* algoNode;
+    if ( itA != m_graphAlgoMap.end()) {
+      algoNode = itA->second;
+    } else {
+      algoNode = new concurrency::AlgorithmNode(m_nodeCounter,algoName,inverted,allPass);
+      ++m_nodeCounter;
+      m_graphAlgoMap[algoName] = algoNode;
+      //std::cout << "CF: AlgoNode " << algoName << " at: " << algoNode << std::endl;
+    }
+
+    parentNode->addDaughterNode(algoNode);
+    algoNode->addParentNode(parentNode);
+
+  }
+
+  //---------------------------------------------------------------------------
+  void ControlFlowGraph::addAggregateNode(const std::string& aggregateName, const std::string& parentName, bool modeOR, bool allPass, bool isLazy) {
+
+    auto itP = m_graphAggMap.find(parentName);
+    concurrency::DecisionNode* parentNode = itP->second;
+
+    auto itA = m_graphAggMap.find(aggregateName);
+    concurrency::DecisionNode* aggregateNode;
+    if ( itA != m_graphAggMap.end()) {
+      aggregateNode = itA->second;
+    } else {
+      aggregateNode = new concurrency::DecisionNode(m_nodeCounter,aggregateName,modeOR,allPass,isLazy);
+      ++m_nodeCounter;
+      m_graphAggMap[aggregateName] = aggregateNode;
+      //std::cout << "CF: AggregateNode " << aggregateName << " at: " << aggregateNode << std::endl;
+    }
+
+    parentNode->addDaughterNode(aggregateNode);
+    aggregateNode->addParentNode(parentNode);
+
+  }
+
+  ///
+  void ControlFlowGraph::addHeadNode(const std::string& headName, bool modeOR, bool allPass, bool isLazy) {
+
+    auto itH = m_graphAggMap.find(headName);
+    if ( itH != m_graphAggMap.end()) {
+      m_headNode = itH->second;
+    } else {
+      m_headNode = new concurrency::DecisionNode(m_nodeCounter, headName, modeOR, allPass, isLazy);
+      ++m_nodeCounter;
+      m_graphAggMap[headName] = m_headNode;
+    }
+
+  }
+
+  //---------------------------------------------------------------------------
+  void ControlFlowGraph::updateEventState(std::vector<State>& algo_states,
+                                          std::vector<int>& node_decisions) const {
+    m_headNode->updateState(algo_states, node_decisions);
+  }
+
+  //---------------------------------------------------------------------------
+  void ControlFlowGraph::updateDecision(const std::string& algo_name,
+                                        std::vector<State>& algo_states,
+                                        std::vector<int>& node_decisions) const {
+    m_graphAlgoMap.at(algo_name)->updateDecision(algo_states, node_decisions);
+  }
+
+  //---------------------------------------------------------------------------
+  void ControlFlowGraph::promoteToControlReadyState(std::vector<State>& algo_states,
+                                                    std::vector<int>& node_decisions) const {
+    m_headNode->promoteToControlReadyState(algo_states, node_decisions);
+  }
+
+  //---------------------------------------------------------------------------
+  void ControlFlowManager::initialize(ControlFlowGraph* cf_graph,
                                       const std::unordered_map<std::string,unsigned int>& algname_index_map){
-    m_headNode = node;
-    node->initialize(algname_index_map, m_graphMap);
+    m_CFGraph = cf_graph;
+    cf_graph->initialize(algname_index_map);
   }
 
   //---------------------------------------------------------------------------
   void ControlFlowManager::updateEventState(std::vector<State>& algo_states,
                                             std::vector<int>& node_decisions) const {
-    m_headNode->updateState(algo_states, node_decisions);
+    m_CFGraph->updateEventState(algo_states, node_decisions);
+  }
+
+  //---------------------------------------------------------------------------
+  void ControlFlowManager::updateDecision(const std::string& algo_name,
+                                          std::vector<State>& algo_states,
+                                          std::vector<int>& node_decisions) const {
+    m_CFGraph->updateDecision(algo_name, algo_states, node_decisions);
   }
 
   //---------------------------------------------------------------------------
   void ControlFlowManager::promoteToControlReadyState(std::vector<State>& algo_states,
                                                       std::vector<int>& node_decisions) const {
-    m_headNode->promoteToControlReadyState(algo_states, node_decisions);
+    m_CFGraph->promoteToControlReadyState(algo_states, node_decisions);
   }
 
 } // namespace

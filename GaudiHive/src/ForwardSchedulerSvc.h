@@ -195,8 +195,9 @@ private:
   /// Number of algoritms presently in flight
   unsigned int m_algosInFlight;
 
-  /// Loop on algorithm in the slots and promote them to successive states (-1 means all slots)
-  StatusCode updateStates(int si=-1);
+  /// Loop on algorithm in the slots and promote them to successive states (-1 means all slots, while empty string
+  /// means skipping an update of the Control Flow state)
+  StatusCode updateStates(int si=-1, const std::string& algo_name=std::string());
 
   /// Algorithm promotion: Accepted by the control flow
   StatusCode promoteToControlReady(unsigned int iAlgo, int si);

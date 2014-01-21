@@ -4,7 +4,7 @@
 // Include files
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/IAlgManager.h"
-#include "GaudiKernel/Service.h" 
+#include "GaudiKernel/Service.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/Algorithm.h"
 
@@ -40,30 +40,28 @@ public:
 
   virtual StatusCode start();
   virtual StatusCode initialize();
-  /// Acquire a certain algorithm using its name 
+  /// Acquire a certain algorithm using its name
   virtual StatusCode acquireAlgorithm(const std::string& name, IAlgorithm*& algo);
-  /// Release a certain algorithm 
+  /// Release a certain algorithm
   virtual StatusCode releaseAlgorithm(const std::string& name, IAlgorithm*& algo);
   /// Acquire a certain resource
   virtual StatusCode acquireResource(const std::string& name);
-  /// Release a certrain resource 
+  /// Release a certrain resource
   virtual StatusCode releaseResource(const std::string& name);
-  
-  virtual std::list<IAlgorithm*> getFlatAlgList();  
-  virtual std::list<IAlgorithm*> getTopAlgList();
-  
-  virtual StatusCode beginRun();  
-  
-  virtual StatusCode endRun();  
 
-  virtual concurrency::ControlFlowNode* getControlFlow() const {return m_cfNode;} 
-  virtual unsigned int getControlFlowNodeCounter() const {return m_nodeCounter;}
-  
+  virtual std::list<IAlgorithm*> getFlatAlgList();
+  virtual std::list<IAlgorithm*> getTopAlgList();
+
+  virtual StatusCode beginRun();
+  virtual StatusCode endRun();
+
+  virtual concurrency::ControlFlowGraph* getControlFlowGraph() const {return m_CFGraph;}
+
 private:
   typedef tbb::concurrent_queue<IAlgorithm*> concurrentQueueIAlgPtr;
   typedef std::list<SmartIF<IAlgorithm> > ListAlg;
   typedef boost::dynamic_bitset<> state_type;
-  
+
   std::mutex m_resource_mutex;
   bool m_lazyCreation;
   state_type m_available_resources;
@@ -72,25 +70,25 @@ private:
   std::map<size_t,size_t> m_n_of_allowed_instances;
   std::map<size_t,unsigned int> m_n_of_created_instances;
   std::map<std::string,unsigned int> m_resource_indices;
-  
+
   /// Decode the top alg list
   StatusCode decodeTopAlgs();
-  
+
   /// Recursively flatten an algList
-  StatusCode flattenSequencer(Algorithm* sequencer, ListAlg& alglist, concurrency::DecisionNode* motherNode, unsigned int recursionDepth=0);
-   
+  StatusCode flattenSequencer(Algorithm* sequencer, ListAlg& alglist, const std::string& parentName, unsigned int recursionDepth=0);
+
   /// The names of the algorithms to be passed to the algorithm manager
   StringArrayProperty m_topAlgNames;
-  
+
   /// The list of all algorithms created withing the Pool which are not top
-  ListAlg m_algList;  
-  
+  ListAlg m_algList;
+
   /// The list of top algorithms
   ListAlg m_topAlgList;
-  
+
   /// The flat list of algorithms w/o clones
   ListAlg m_flatUniqueAlgList;
-  
+
   /// The flat list of algorithms w/o clones which is returned
   std::list<IAlgorithm*> m_flatUniqueAlgPtrList;
 
@@ -101,8 +99,7 @@ private:
   bool m_doHacks;
 
   /// OMG yet another hack
-  concurrency::DecisionNode* m_cfNode;  
-  unsigned int m_nodeCounter;
+  concurrency::ControlFlowGraph* m_CFGraph;
 };
 
 #endif  // GAUDIHIVE_ALGRESOURCEPOOL_H
