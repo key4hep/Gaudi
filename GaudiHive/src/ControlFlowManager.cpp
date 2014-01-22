@@ -67,12 +67,15 @@ namespace concurrency {
                                     std::vector<int>& node_decisions) const {
     int decision = ((m_allPass && m_isLazy) ? 1 : -1);
     bool hasUndecidedChild = false;
+    //std::cout << "UPDATING DAUGHTERS of DECISION NODE: " << m_nodeName << std::endl;
 
     for (auto daughter : m_daughters){
       // if lazy return once result is known already or we can't fully evaluate
       // right now because one daughter decision is missing still
+      //std::cout << "----UPDATING DAUGHTER: " << daughter->getNodeName() << std::endl;
       if (m_isLazy && (-1 != decision || hasUndecidedChild)) {
         node_decisions[m_nodeIndex] = decision;
+        //std::cout << "LEAVING (UPDATING) DECISION NODE: " << m_nodeName << std::endl;
         return;
       }
       // modified
@@ -84,6 +87,7 @@ namespace concurrency {
           AlgorithmNode* algod = (AlgorithmNode*) daughter;
           State& state = states[algod->getAlgoIndex()];
           if (State::INITIAL == state) {
+              //std::cout << "----> UPDATING DAUGHTER STATE to CONTROLREADY: " << daughter->getNodeName() << std::endl;
               state = State::CONTROLREADY;
           }
         } else {
@@ -122,7 +126,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   void DecisionNode::promoteToControlReadyState(std::vector<State>& states,
                                                 std::vector<int>& node_decisions) const {
-
+    //std::cout << "REACHED DECISNODE " << m_nodeName << std::endl;
     if (-1 != node_decisions[m_nodeIndex]) {
       return;
     }
@@ -147,6 +151,7 @@ namespace concurrency {
   void AlgorithmNode::promoteToControlReadyState(std::vector<State>& states,
                                                  std::vector<int>& node_decisions) const {
 
+    //std::cout << "REACHED ALGONODE " << m_algoName << std::endl;
     State& state = states[m_algoIndex];
     if (State::INITIAL == state) state = State::CONTROLREADY;
   }
@@ -202,10 +207,11 @@ namespace concurrency {
     } else if (State::EVTREJECTED == state) {
       decision = m_inverted;
     } else {
-      decision =  -1; // result not known yet
+      decision = -1; // result not known yet
     }
 
     node_decisions[m_nodeIndex] = decision;
+    //std::cout << "Propagating decision '" << node_decisions[m_nodeIndex] << "' of node " << m_nodeName << "to parents" << std::endl;
 
     for (auto p : m_parents)
       p->updateDecision(states, node_decisions);
@@ -230,7 +236,7 @@ namespace concurrency {
       algoNode = new concurrency::AlgorithmNode(m_nodeCounter,algoName,inverted,allPass);
       ++m_nodeCounter;
       m_graphAlgoMap[algoName] = algoNode;
-      //std::cout << "CF: AlgoNode " << algoName << " at: " << algoNode << std::endl;
+      debug() << "AlgoNode " << algoName << " added @ " << algoNode << endmsg;
     }
 
     parentNode->addDaughterNode(algoNode);
@@ -252,7 +258,7 @@ namespace concurrency {
       aggregateNode = new concurrency::DecisionNode(m_nodeCounter,aggregateName,modeOR,allPass,isLazy);
       ++m_nodeCounter;
       m_graphAggMap[aggregateName] = aggregateNode;
-      //std::cout << "CF: AggregateNode " << aggregateName << " at: " << aggregateNode << std::endl;
+      debug() << "AggregateNode " << aggregateName << " added @ " << aggregateNode << endmsg;
     }
 
     parentNode->addDaughterNode(aggregateNode);
@@ -284,6 +290,7 @@ namespace concurrency {
   void ControlFlowGraph::updateDecision(const std::string& algo_name,
                                         std::vector<State>& algo_states,
                                         std::vector<int>& node_decisions) const {
+    debug() << "Setting decision of algorithm " << algo_name << " and propagating it upwards.." << endmsg;
     m_graphAlgoMap.at(algo_name)->updateDecision(algo_states, node_decisions);
   }
 

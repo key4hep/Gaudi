@@ -7,6 +7,7 @@
 
 // fwk includes
 #include "AlgsExecutionStates.h"
+#include "GaudiKernel/CommonMessaging.h"
 
 namespace concurrency {
 
@@ -129,10 +130,13 @@ namespace concurrency {
 typedef std::unordered_map<std::string,AlgorithmNode*> GraphAlgoMap;
 typedef std::unordered_map<std::string,DecisionNode*> GraphAggregateMap;
 
-class ControlFlowGraph {
+class IControlFlowGraph {};
+
+class ControlFlowGraph : public CommonMessaging<IControlFlowGraph> {
 public:
     /// Constructor
-    ControlFlowGraph() : m_headNode(0), m_nodeCounter(0) {};
+    ControlFlowGraph(const std::string& name, SmartIF<ISvcLocator> svc) :
+      m_headNode(0), m_nodeCounter(0), m_svcLocator(svc), m_name(name) {};
     /// Destructor
     ~ControlFlowGraph() {
       if (m_headNode != 0) delete m_headNode;
@@ -162,12 +166,19 @@ public:
                     std::vector<State>& states,
                     const std::vector<int>& node_decisions,
                     const unsigned int& recursionLevel) const {m_headNode->printState(output,states,node_decisions,recursionLevel);};
+    /// Retrieve name of the service
+    const std::string& name() const {return m_name;}
+    /// Retrieve pointer to service locator
+    SmartIF<ISvcLocator>& serviceLocator() const {return m_svcLocator;}
 private:
     /// the head node of the control flow graph; may want to have multiple ones once supporting trigger paths
     DecisionNode* m_headNode;
     GraphAlgoMap m_graphAlgoMap;
     GraphAggregateMap m_graphAggMap;
     unsigned int m_nodeCounter;
+    /// Service locator (needed to access the MessageSvc)
+    mutable SmartIF<ISvcLocator> m_svcLocator;
+    const std::string m_name;
   };
 
 /**@class ControlFlowManager ControlFlowManager.h GaudiHive/src/ControlFlowManager.h

@@ -54,7 +54,9 @@ StatusCode AlgResourcePool::initialize(){
   }
 
   // XXX: Prepare empty Control Flow graph
-  m_CFGraph = new concurrency::ControlFlowGraph();
+  const std::string& name = "ControlFlowGraph";
+  SmartIF<ISvcLocator> svc = serviceLocator();
+  m_CFGraph = new concurrency::ControlFlowGraph(name, svc);
 
   sc = decodeTopAlgs();
   if (sc.isFailure())
