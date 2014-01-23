@@ -194,7 +194,7 @@ public:
   /// Constructor
   ControlFlowManager() : m_CFGraph(0) {};
   /// Destructor
-  virtual ~ControlFlowManager() {if (m_CFGraph != 0) delete m_CFGraph;};
+  virtual ~ControlFlowManager() {};
   ///
   ControlFlowGraph* getControlFlowGraph() {return m_CFGraph;}
   /// A little bit silly, but who cares. ;-)
