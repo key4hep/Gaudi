@@ -9,6 +9,7 @@ from GaudiKernel.Constants import error_explanation, \
                                   VERBOSE, DEBUG, INFO, WARNING, ERROR, FATAL
 from GaudiKernel.PropertyProxy import PropertyProxy
 from GaudiKernel.GaudiHandles import *
+from GaudiKernel.DataObjectDescriptor import *
 
 ### data ---------------------------------------------------------------------
 __all__ = [ 'Configurable',
@@ -382,6 +383,12 @@ class Configurable( object ):
     def __getattr__( self, attr ):  # until ToolProperties exist ...
 
         if attr in self.__tools : return self.__tools[attr]
+        
+        if attr in self._properties:
+            if isinstance(self._properties[attr].__get__( self ), DataObjectDescriptor):
+                return self._properties[attr].__get__( self )
+            if isinstance(self._properties[attr].__get__( self ), DataObjectDescriptorCollection):
+                return self._properties[attr].__get__( self )
 
         for c in self.__children:
             if c.getName() == attr:

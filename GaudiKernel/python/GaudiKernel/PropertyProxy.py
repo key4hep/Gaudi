@@ -8,6 +8,7 @@ __all__ = [ 'PropertyProxy', 'GaudiHandlePropertyProxy', 'GaudiHandleArrayProper
 import os,glob
 from GaudiKernel.GaudiHandles import *
 from GaudiKernel import ConfigurableDb
+from GaudiKernel.DataObjectDescriptor import *
 
 import logging
 log = logging.getLogger( 'PropertyProxy' )
@@ -343,14 +344,69 @@ class GaudiHandleArrayPropertyProxy(GaudiHandlePropertyProxyBase):
 
         return newValue
 
+class DataObjectDescriptorPropertyProxy(PropertyProxy):
+    
+    def __init__(self, descr, docString, default):
+        PropertyProxy.__init__( self, descr, docString, default )
+        
+    def __get__(self, obj, type=None):
+        try:
+            return self.descr.__get__( obj, type )
+        except AttributeError:
+            # Get default
+            try:
+                default = obj.__class__.getDefaultProperty( self.descr.__name__ )
+                default = self.convertValueToBeSet( obj, default )
+                if default:
+                    self.__set__( obj, default )
+            except AttributeError,e:
+                # change type of exception to avoid false error message
+                raise RuntimeError(*e.args)
 
+        return self.descr.__get__( obj, type )
+    
+    def __set__(self, obj, value):
+        if not obj._isInSetDefaults() or not obj in self.history:
+            value = self.convertValueToBeSet( obj, value )
+            # assign the value
+            self.descr.__set__( obj, value )
+            log.debug( "Setting %s = %r", self.fullPropertyName( obj ), value )
+            self.history.setdefault( obj, [] ).append( value)
+            
+    def convertValueToBeSet(self, obj, value):
+        if value is None: value = ''
+        
+        if type(value) == str:
+            return DataObjectDescriptor(value)
+        elif isinstance(value, DataObjectDescriptor):
+            return value
+        
+class DataObjectDescriptorCollectionPropertyProxy(DataObjectDescriptorPropertyProxy):
+    def __init__( self, descr, docString, default ):
+        DataObjectDescriptorPropertyProxy.__init__( self, descr, docString, default )
+        self.arrayType = type(default)
+
+    def convertValueToBeSet( self, obj, value ):
+        if value is None: value = ''
+        
+        if type(value) == str:
+            return DataObjectDescriptorCollection(value)
+        elif isinstance(value, DataObjectDescriptorCollection):
+            return value
 
 def PropertyProxyFactory( descr, doc, default ):
 #   print "PropertyProxyFactory( %s, %r )" % (descr.__name__,default)
+    
     if isinstance(default,GaudiHandleArray):
         return GaudiHandleArrayPropertyProxy( descr, doc, default )
 
     if isinstance(default,GaudiHandle):
         return GaudiHandlePropertyProxy( descr, doc, default )
+    
+    if isinstance(default,DataObjectDescriptor):
+        return DataObjectDescriptorPropertyProxy( descr, doc, default )
+
+    if isinstance(default,DataObjectDescriptorCollection):
+        return DataObjectDescriptorCollectionPropertyProxy( descr, doc, default )
 
     return PropertyProxy( descr, doc, default )

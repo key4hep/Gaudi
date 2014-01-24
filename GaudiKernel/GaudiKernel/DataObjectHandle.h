@@ -4,6 +4,7 @@
 #include <GaudiKernel/MinimalDataObjectHandle.h>
 #include <GaudiKernel/ServiceLocatorHelper.h>
 #include <GaudiKernel/GaudiException.h>
+#include <GaudiKernel/Property.h>
 #include "GaudiKernel/Algorithm.h"
 
 template<typename T>

@@ -19,8 +19,8 @@ public:
   /// Finalize
   StatusCode finalize();  
   
-  /// Reinitialize
-  StatusCode reinitialize();
+  /// Reinitialize -> may be overwritten in derived class
+  virtual StatusCode reinitialize();
   
   /// Check if the data object declared is optional for the algorithm
   bool isOptional() const;
@@ -31,6 +31,10 @@ public:
   /// Return the product name
   const std::string& dataProductName() const;
   
+
+  /// Update address of data product if possible -> not if was written
+  StatusCode setDataProductName(const std::string & address);
+
   /// Access type
   AccessType accessType() const ;
   
@@ -41,7 +45,7 @@ public:
   bool wasWritten() const;    
   
 protected:
-  const std::string m_dataProductName;
+  std::string m_dataProductName;
   IAlgorithm* m_fatherAlg;
   void setRead(bool wasRead=true);
   void setWritten(bool wasWritten=true);  
@@ -51,7 +55,8 @@ private:
   const unsigned int m_dataProductIndex;
   const AccessType m_accessType;
   bool m_wasRead;
-  bool m_wasWritten;    
+  bool m_wasWritten;
+  bool m_initialized;
   
   // Temporary there waiting the mapping interface to be there
   static unsigned int m_tmp_dpi;  

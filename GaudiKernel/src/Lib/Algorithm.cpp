@@ -24,8 +24,6 @@
 #include "GaudiKernel/ThreadGaudi.h"
 #include "GaudiKernel/Guards.h"
 
-#include "GaudiKernel/MinimalDataObjectHandle.h"
-
 // Constructor
 Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
                       const std::string& version)
@@ -43,13 +41,18 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
 {
   m_propertyMgr = new PropertyMgr();
   m_subAlgms = new std::vector<Algorithm *>();
-  m_dataObjectHandles = new std::vector<MinimalDataObjectHandle *>();
 
   // Declare common Algorithm properties with their defaults
   declareProperty( "OutputLevel",        m_outputLevel = MSG::NIL);
   declareProperty( "Enable",             m_isEnabled = true);
   declareProperty( "ErrorMax",           m_errorMax  = 1);
   declareProperty( "ErrorCount",         m_errorCount = 0);
+
+  //declare input and output properties
+  declareProperty( "InputDataObjects", m_inputDataObjects);
+  declareProperty( "OutputDataObjects", m_outputDataObjects);
+  declareProperty( "RootInTES",         m_rootInTES = "");
+
   // Auditor monitoring properties
 
   // Get the default setting for service auditing from the AppMgr
@@ -95,7 +98,6 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
 Algorithm::~Algorithm() {
   delete m_subAlgms;
   delete m_propertyMgr;
-  delete m_dataObjectHandles;
 }
 
 // IAlgorithm implementation
@@ -130,6 +132,28 @@ StatusCode Algorithm::sysInitialize() {
   
   // Get WhiteBoard interface if implemented by EventDataSvc
   m_WB = service("EventDataSvc");
+
+  //update input/output declarations with relative path
+  //init data handle
+  bool rootSet = m_rootInTES != ""; //root set, update address
+
+  //add last slash if necessary
+  if ("" != m_rootInTES && '/'!=m_rootInTES[m_rootInTES.size()-1]){
+	  m_rootInTES += "/";
+  }
+
+  for(auto tag : m_inputDataObjects){
+	  if(rootSet && m_inputDataObjects[tag].address()[0] != '/') //we have a relative address
+		  m_inputDataObjects[tag].setAddress(m_rootInTES + m_inputDataObjects[tag].address());
+
+	  m_inputDataObjects[tag].getBaseHandle()->initialize();
+  }
+  for(auto tag : m_outputDataObjects){
+	  if(rootSet && m_outputDataObjects[tag].address()[0] != '/') //we have a relative address
+		  m_outputDataObjects[tag].setAddress(m_rootInTES + m_outputDataObjects[tag].address());
+
+	  m_outputDataObjects[tag].getBaseHandle()->initialize();
+  }
 
   // Invoke initialize() method of the derived class inside a try/catch clause
   try {
@@ -1189,10 +1213,19 @@ const std::vector<Property*>& Algorithm::getProperties( ) const {
   return m_propertyMgr->getProperties();
 }
 
-const std::vector<MinimalDataObjectHandle*>& Algorithm::handles(){
-  return *m_dataObjectHandles;
-}
+const std::vector<MinimalDataObjectHandle*> Algorithm::handles(){
 
+	std::vector<MinimalDataObjectHandle*> handles;
+
+	for(auto it : m_inputDataObjects)
+		handles.push_back(m_inputDataObjects[it].getBaseHandle().get());
+
+	for(auto it : m_outputDataObjects)
+		handles.push_back(m_outputDataObjects[it].getBaseHandle().get());
+
+	return handles;
+
+}
 
 /**
  ** Protected Member Functions

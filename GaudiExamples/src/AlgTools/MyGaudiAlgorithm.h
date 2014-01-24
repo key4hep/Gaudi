@@ -4,9 +4,9 @@
 
 // Include files
 #include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ToolHandle.h"
+#include "GaudiKernel/DataObject.h"
 
 // Forward references
 class IMyTool;
@@ -38,6 +38,12 @@ private:
 
   ToolHandle<IMyTool> m_myPrivToolHandle;
   ToolHandle<IMyTool> m_myPubToolHandle;
+
+  SmartIF<DataObjectHandle<DataObject>> m_tracks;
+  SmartIF<DataObjectHandle<DataObject>> m_hits;
+  SmartIF<DataObjectHandle<DataObject>> m_raw;
+
+  SmartIF<DataObjectHandle<DataObject>> m_selectedTracks;
 
 };
 
