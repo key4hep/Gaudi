@@ -70,11 +70,12 @@
     static std::vector<double> m_times_vect;
 
     // For the concurrency
-    std::vector<std::string> m_inputs;
-    std::vector<std::string> m_outputs;
 
-    std::vector<DataObjectHandle<DataObject>*> m_inputHandles;
-    std::vector<DataObjectHandle<DataObject>*> m_outputHandles;
+    const uint MAX_INPUTS = 10;
+    const uint MAX_OUTPUTS = 2;
+
+    std::vector<SmartIF<DataObjectHandle<DataObject> > > m_inputHandles;
+    std::vector<SmartIF<DataObjectHandle<DataObject> > > m_outputHandles;
 
     unsigned int m_rwRepetitions;
     

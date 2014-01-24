@@ -570,9 +570,9 @@ public:
 		  bool optional=false,
 		  IDataObjectHandle::AccessType accessType=IDataObjectHandle::READ){
 
-	  	m_inputDataItems.insert(tag, address, optional, accessType);
+	  	m_inputDataObjects.insert(tag, address, optional, accessType);
 
-	  	return m_inputDataItems[tag].createHandle<T>(this);
+	  	return m_inputDataObjects[tag].createHandle<T>(this);
 
   }
 
@@ -583,9 +583,9 @@ public:
 		  bool optional=false,
 		  IDataObjectHandle::AccessType accessType=IDataObjectHandle::READ){
 
-	  	m_inputDataItems.insert(tag, addresses, optional, accessType);
+	  	m_inputDataObjects.insert(tag, addresses, optional, accessType);
 
-	  	return m_inputDataItems[tag].createHandle<T>(this);
+	  	return m_inputDataObjects[tag].createHandle<T>(this);
 
   }
 
@@ -596,15 +596,22 @@ public:
 		  IDataObjectHandle::AccessType accessType=IDataObjectHandle::WRITE,
 		  bool optional=false){
 
-	  	m_outputDataItems.insert(tag, address, optional, accessType);
+	  	m_outputDataObjects.insert(tag, address, optional, accessType);
 
-	  	return m_outputDataItems[tag].createHandle<T>(this);
+	  	return m_outputDataObjects[tag].createHandle<T>(this);
 
   }
 
   /// Return the handles declared in the algorithm
   __attribute__ ((deprecated)) virtual const std::vector<MinimalDataObjectHandle*> handles();
   
+  virtual const DataObjectDescriptorCollection & inputDataObjects() const {
+	  return m_inputDataObjects;
+  }
+  virtual const DataObjectDescriptorCollection & outputDataObjects() const {
+	  return m_outputDataObjects;
+  }
+
   /// Specifies the clonability of the algorithm
   virtual bool isClonable () const { return m_isClonable; }
   
@@ -642,8 +649,8 @@ private:
   std::vector<Algorithm *>* m_subAlgms; ///< Sub algorithms
 
   //input and output definition
-  DataObjectDescriptorCollection m_inputDataItems;
-  DataObjectDescriptorCollection m_outputDataItems;
+  DataObjectDescriptorCollection m_inputDataObjects;
+  DataObjectDescriptorCollection m_outputDataObjects;
   std::string m_rootInTES;
 
 private:

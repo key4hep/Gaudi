@@ -92,14 +92,14 @@ class DataObjectDescriptorCollection(object):
     def __getattr__(self, name):
         #is only called if attribute doesn't exist
         #don't allow creation of new DataItems
-        raise AttributeError
+        raise AttributeError(name)
     
     def __setattr__(self, name, value):
         if name in self.__dict__:
             return object.__setattr__(self, name, value)
         else:
             #don't allow creation of new attributes
-            raise AttributeError
+            raise AttributeError(name)
         
     def __str__(self):
         return ITEM_SEP.join([str(self.__dict__[s]) for s in self.__dict__])

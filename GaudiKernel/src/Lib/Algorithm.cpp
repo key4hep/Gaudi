@@ -49,8 +49,8 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   declareProperty( "ErrorCount",         m_errorCount = 0);
 
   //declare input and output properties
-  declareProperty( "InputDataItems", m_inputDataItems);
-  declareProperty( "OutputDataItems", m_outputDataItems);
+  declareProperty( "InputDataObjects", m_inputDataObjects);
+  declareProperty( "OutputDataObjects", m_outputDataObjects);
   declareProperty( "RootInTES",         m_rootInTES = "");
 
   // Auditor monitoring properties
@@ -142,17 +142,17 @@ StatusCode Algorithm::sysInitialize() {
 	  m_rootInTES += "/";
   }
 
-  for(auto tag : m_inputDataItems){
-	  if(rootSet && m_inputDataItems[tag].address()[0] != '/') //we have a relative address
-		  m_inputDataItems[tag].setAddress(m_rootInTES + m_inputDataItems[tag].address());
+  for(auto tag : m_inputDataObjects){
+	  if(rootSet && m_inputDataObjects[tag].address()[0] != '/') //we have a relative address
+		  m_inputDataObjects[tag].setAddress(m_rootInTES + m_inputDataObjects[tag].address());
 
-	  m_inputDataItems[tag].getBaseHandle()->initialize();
+	  m_inputDataObjects[tag].getBaseHandle()->initialize();
   }
-  for(auto tag : m_outputDataItems){
-	  if(rootSet && m_outputDataItems[tag].address()[0] != '/') //we have a relative address
-		  m_outputDataItems[tag].setAddress(m_rootInTES + m_outputDataItems[tag].address());
+  for(auto tag : m_outputDataObjects){
+	  if(rootSet && m_outputDataObjects[tag].address()[0] != '/') //we have a relative address
+		  m_outputDataObjects[tag].setAddress(m_rootInTES + m_outputDataObjects[tag].address());
 
-	  m_outputDataItems[tag].getBaseHandle()->initialize();
+	  m_outputDataObjects[tag].getBaseHandle()->initialize();
   }
 
   // Invoke initialize() method of the derived class inside a try/catch clause
@@ -1217,11 +1217,11 @@ const std::vector<MinimalDataObjectHandle*> Algorithm::handles(){
 
 	std::vector<MinimalDataObjectHandle*> handles;
 
-	for(auto it : m_inputDataItems)
-		handles.push_back(m_inputDataItems[it].getBaseHandle().get());
+	for(auto it : m_inputDataObjects)
+		handles.push_back(m_inputDataObjects[it].getBaseHandle().get());
 
-	for(auto it : m_outputDataItems)
-		handles.push_back(m_outputDataItems[it].getBaseHandle().get());
+	for(auto it : m_outputDataObjects)
+		handles.push_back(m_outputDataObjects[it].getBaseHandle().get());
 
 	return handles;
 

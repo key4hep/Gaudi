@@ -8,6 +8,7 @@
 #include <string>
 
 class MinimalDataObjectHandle;
+class DataObjectDescriptorCollection;
 
 /** @class IAlgorithm IAlgorithm.h GaudiKernel/IAlgorithm.h
 
@@ -53,6 +54,9 @@ public:
    */
   __attribute__ ((deprecated)) virtual const std::vector<MinimalDataObjectHandle*> handles() = 0;
   
+  virtual const DataObjectDescriptorCollection & inputDataObjects() const = 0;
+  virtual const DataObjectDescriptorCollection & outputDataObjects() const = 0;
+
   /** The action to be performed by the algorithm on an event. This method is
       invoked once per event for top level algorithms by the application manager.
   */
