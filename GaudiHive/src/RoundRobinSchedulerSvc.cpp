@@ -65,7 +65,7 @@ StatusCode RoundRobinSchedulerSvc::initialize(){
   //initialize control flow manager
   	const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>(m_algResourcePool.get());
 
-  	m_controlFlow.initialize(algPool->getControlFlow(), m_algname_index_map);
+  	m_controlFlow.initialize(algPool->getControlFlowGraph(), m_algname_index_map);
 
   return StatusCode::SUCCESS;
 
@@ -126,7 +126,7 @@ StatusCode RoundRobinSchedulerSvc::processEvents(){
 	//initialize control algorithm states and decisions
 	AlgsExecutionStates algStates(m_algList.size(), messageSvc);
 	const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>(m_algResourcePool.get());
-	std::vector<int> nodeDecisions(algPool->getControlFlowNodeCounter(), -1);
+	std::vector<int> nodeDecisions(algPool->getControlFlowGraph()->getControlFlowNodeCounter(), -1);
 
 
 	m_controlFlow.updateEventState(algStates, nodeDecisions);

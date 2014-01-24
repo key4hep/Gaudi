@@ -150,8 +150,8 @@ StatusCode ForwardSchedulerSvc::initialize(){
 
   // prepare the control flow part
   const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>(m_algResourcePool.get());
-  m_cfManager.initialize(algPool->getControlFlow(), m_algname_index_map);
-  unsigned int controlFlowNodeNumber = algPool->getControlFlowNodeCounter();
+  m_cfManager.initialize(algPool->getControlFlowGraph(), m_algname_index_map);
+  unsigned int controlFlowNodeNumber = m_cfManager.getControlFlowGraph()->getControlFlowNodeCounter();
 
   // Shortcut for the message service
   SmartIF<IMessageSvc> messageSvc (serviceLocator());
@@ -435,7 +435,7 @@ StatusCode ForwardSchedulerSvc::eventFailed(EventContext* eventContext){
  * * No algorithms have been signed off by the data flow
  * * No algorithms have been scheduled
 */
-StatusCode ForwardSchedulerSvc::updateStates(int si){
+StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_name){
 
   m_updateNeeded=true;
 
@@ -485,7 +485,12 @@ StatusCode ForwardSchedulerSvc::updateStates(int si){
 
     // Take care of the control ready update
     // XXX: CF tests
-    if (!m_CFNext) m_cfManager.updateEventState(thisAlgsStates,thisSlot.controlFlowState);
+    if (!m_CFNext) {
+      m_cfManager.updateEventState(thisAlgsStates,thisSlot.controlFlowState);
+    } else {
+      if (!algo_name.empty())
+        m_cfManager.updateDecision(algo_name,thisAlgsStates,thisSlot.controlFlowState);
+    }
 
 
     //DF note: all this this is a loop over all algs and applies CR->DR and DR->SCHD transistions
@@ -553,7 +558,7 @@ StatusCode ForwardSchedulerSvc::updateStates(int si){
     	}
     	// now let's return the fully evaluated result of the control flow
     	std::stringstream ss;
-    	m_cfManager.printEventState(ss,thisSlot.controlFlowState,0);
+    	m_cfManager.printEventState(ss, thisSlot.algsStates, thisSlot.controlFlowState,0);
     	debug() << ss.str() << endmsg;
     	thisSlot.eventContext= nullptr;
     } else{
@@ -673,7 +678,7 @@ void ForwardSchedulerSvc::dumpSchedulerState(int iSlot){
       // Snapshot of the ControlFlow
       outputMessageStream << "The status of the control flow for this event was:\n";
       std::stringstream cFlowStateStringStream;
-      m_cfManager.printEventState(cFlowStateStringStream,thisSlot.controlFlowState,0);
+      m_cfManager.printEventState(cFlowStateStringStream, thisSlot.algsStates, thisSlot.controlFlowState,0);
 
       outputMessageStream << cFlowStateStringStream.str();
 
@@ -772,7 +777,7 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si, IA
     fatal() << "The casting did not succeed!" << endmsg;
   EventContext* eventContext = castedAlgo->getContext();
 
-  // Checkif the execution failed
+  // Check if the execution failed
   if (eventContext->m_evt_failed)
     eventFailed(eventContext);
 
@@ -804,13 +809,15 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si, IA
           << m_algosInFlight << endmsg;
 
   // Limit number of updates
+  if (m_CFNext) m_updateNeeded = true; // XXX: CF tests: with the new CF traversal the if clause below has to be removed
   if (m_updateNeeded){
     // Schedule an update of the status of the algorithms
     auto updateAction = std::bind(&ForwardSchedulerSvc::updateStates,
                                   this,
-                                  -1);
+                                  -1,
+                                  algo->name());
     m_actionsQueue.push(updateAction);
-    m_updateNeeded=false;
+    m_updateNeeded = false;
   }
 
   debug() << "Trying to handle execution result of " << index2algname(iAlgo) << "." << endmsg;
@@ -826,11 +833,6 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si, IA
   if (sc.isSuccess())
     debug() << "Promoting " << index2algname(iAlgo) << " on slot " << si << " to "
             << AlgsExecutionStates::stateNames[state] << endmsg;
-
-  // XXX: CF tests. This conditional call will be needed only during the ControlFlow development phase
-  if (m_CFNext)
-    for (const auto& graph_node: m_cfManager.m_graphMap[algo->name()])
-      graph_node->updateDecision(thisSlot.algsStates,thisSlot.controlFlowState);
 
   return sc;
 }

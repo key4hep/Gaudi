@@ -4,7 +4,7 @@
 // Include files
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/IAlgManager.h"
-#include "GaudiKernel/Service.h" 
+#include "GaudiKernel/Service.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/Algorithm.h"
 
@@ -51,14 +51,14 @@ public:
   
   virtual std::list<IAlgorithm*> getFlatAlgList();  
   virtual std::list<IAlgorithm*> getTopAlgList();
-  
-  virtual StatusCode beginRun();  
-  
-  virtual StatusCode endRun();  
 
-  virtual concurrency::ControlFlowNode* getControlFlow() const {return m_cfNode;} 
-  virtual unsigned int getControlFlowNodeCounter() const {return m_nodeCounter;}
-  
+  virtual StatusCode beginRun();
+  virtual StatusCode endRun();
+
+  virtual StatusCode stop();
+
+  virtual concurrency::ControlFlowGraph* getControlFlowGraph() const {return m_CFGraph;}
+
 private:
   typedef tbb::concurrent_bounded_queue<IAlgorithm*> concurrentQueueIAlgPtr;
   typedef std::list<SmartIF<IAlgorithm> > ListAlg;
@@ -75,22 +75,22 @@ private:
   
   /// Decode the top alg list
   StatusCode decodeTopAlgs();
-  
+
   /// Recursively flatten an algList
-  StatusCode flattenSequencer(Algorithm* sequencer, ListAlg& alglist, concurrency::DecisionNode* motherNode, unsigned int recursionDepth=0);
-   
+  StatusCode flattenSequencer(Algorithm* sequencer, ListAlg& alglist, const std::string& parentName, unsigned int recursionDepth=0);
+
   /// The names of the algorithms to be passed to the algorithm manager
   StringArrayProperty m_topAlgNames;
-  
+
   /// The list of all algorithms created withing the Pool which are not top
-  ListAlg m_algList;  
-  
+  ListAlg m_algList;
+
   /// The list of top algorithms
   ListAlg m_topAlgList;
-  
+
   /// The flat list of algorithms w/o clones
   ListAlg m_flatUniqueAlgList;
-  
+
   /// The flat list of algorithms w/o clones which is returned
   std::list<IAlgorithm*> m_flatUniqueAlgPtrList;
 
@@ -101,8 +101,7 @@ private:
   bool m_doHacks;
 
   /// OMG yet another hack
-  concurrency::DecisionNode* m_cfNode;  
-  unsigned int m_nodeCounter;
+  concurrency::ControlFlowGraph* m_CFGraph;
 };
 
 #endif  // GAUDIHIVE_ALGRESOURCEPOOL_H

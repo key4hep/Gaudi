@@ -17,7 +17,7 @@ DECLARE_SERVICE_FACTORY(AlgResourcePool)
 
 // constructor
 AlgResourcePool::AlgResourcePool( const std::string& name, ISvcLocator* svc ) :
-  base_class(name,svc), m_available_resources(0), m_nodeCounter(0)
+  base_class(name,svc), m_available_resources(0), m_CFGraph(0)
 {
   declareProperty("CreateLazily", m_lazyCreation = false );
   declareProperty("TopAlg", m_topAlgNames );
@@ -32,6 +32,8 @@ AlgResourcePool::~AlgResourcePool() {
     auto* queue = algoId_algoQueue.second;
     delete queue;
   }
+
+  delete m_CFGraph;
 }
 
 //---------------------------------------------------------------------------
@@ -50,6 +52,11 @@ StatusCode AlgResourcePool::initialize(){
     SmartIF<IProperty> appMgrProps (serviceLocator()->service(appMgrName));
     m_topAlgNames.assign(appMgrProps->getProperty("TopAlg"));
   }
+
+  // XXX: Prepare empty Control Flow graph
+  const std::string& name = "ControlFlowGraph";
+  SmartIF<ISvcLocator> svc = serviceLocator();
+  m_CFGraph = new concurrency::ControlFlowGraph(name, svc);
 
   sc = decodeTopAlgs();
   if (sc.isFailure())
@@ -159,17 +166,14 @@ StatusCode AlgResourcePool::releaseResource(const std::string& name){
 
 //---------------------------------------------------------------------------
 
-StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, concurrency::DecisionNode* motherNode, unsigned int recursionDepth){
+StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, const std::string& parentName, unsigned int recursionDepth){
 
   std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
   if (subAlgorithms->empty() and not (algo->type() == "GaudiSequencer")){
     debug() << std::string(recursionDepth, ' ') << algo->name() << " is not a sequencer. Appending it" << endmsg;
     alglist.emplace_back(algo);
-    concurrency::AlgorithmNode* node = new concurrency::AlgorithmNode(m_nodeCounter,algo->name(),false,false);
-    motherNode->addDaughterNode(node);
-    node->addParentNode(motherNode);
+    m_CFGraph->addAlgorithmNode(algo->name(),parentName,false,false);
 
-    ++m_nodeCounter;
     return StatusCode::SUCCESS;
   }
 
@@ -183,15 +187,12 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
     modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
     allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
     isLazy = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
-    if (allPass) isLazy = false; // standard GaudiSequencer behaviour on all pass is to execute everything
+    if (allPass) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
   }
-  concurrency::DecisionNode* node = new concurrency::DecisionNode(m_nodeCounter,algo->name(),modeOR,allPass,isLazy);
-  ++m_nodeCounter;
-  motherNode->addDaughterNode(node);
-  node->addParentNode(motherNode);
+  m_CFGraph->addAggregateNode(algo->name(),parentName,modeOR,allPass,isLazy);
 
   for (Algorithm* subalgo : *subAlgorithms ){
-    StatusCode sc (flattenSequencer(subalgo,alglist,node,recursionDepth));
+    StatusCode sc (flattenSequencer(subalgo,alglist,algo->name(),recursionDepth));
     if (sc.isFailure()){
       error() << "Algorithm " << subalgo->name() << " could not be flattened" << endmsg;
       return sc;
@@ -235,7 +236,6 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
     Gaudi::Utils::TypeNameString item(name);
     const std::string& item_name = item.name();
     const std::string& item_type = item.type();
-
     SmartIF<IAlgorithm> algoSmartIF (algMan->algorithm(item_name,false));
 
     if (!algoSmartIF.isValid()){
@@ -248,20 +248,19 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
   }
   // Top Alg list filled ----
 
-  // prepare the head node for the control flow
-  m_cfNode = new concurrency::DecisionNode(m_nodeCounter, "EVENT LOOP", true,true,false);
-  ++m_nodeCounter;
+  // start forming the control flow graph by adding the head node
+  m_CFGraph->addHeadNode("EVENT LOOP",true,true,false);
 
   // Now we unroll it ----
   for (auto& algoSmartIF : m_topAlgList){
     Algorithm* algorithm = dynamic_cast<Algorithm*> (algoSmartIF.get());
     if (!algorithm) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
-    sc = flattenSequencer(algorithm, m_flatUniqueAlgList, m_cfNode);
+    sc = flattenSequencer(algorithm, m_flatUniqueAlgList, "EVENT LOOP");
   }
   if (outputLevel() <= MSG::DEBUG){
     debug() << "List of algorithms is: " << endmsg;
     for (auto& algo : m_flatUniqueAlgList)
-      debug() << "  o " << algo->type() << "/" << algo->name() <<  endmsg;
+      debug() << "  o " << algo->type() << "/" << algo->name() << " @ " << algo <<  endmsg;
   }
 
   // Unrolled ---
@@ -398,3 +397,18 @@ StatusCode AlgResourcePool::endRun() {
 
 //---------------------------------------------------------------------------
 
+StatusCode AlgResourcePool::stop(){
+
+  StatusCode stopSc = Service::stop();
+  if ( ! stopSc.isSuccess() ) return stopSc;
+
+  // sys-Stop the algos
+  for (auto& ialgo : m_algList){
+    stopSc = ialgo->sysStop();
+    if (stopSc.isFailure()){
+      error() << "Unable to stop Algorithm: " << ialgo->name() << endmsg;
+      return stopSc;
+    }
+    }
+  return StatusCode::SUCCESS;
+}
