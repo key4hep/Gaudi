@@ -22,11 +22,11 @@ CPUCruncher::CPUCruncher(const std::string& name, // the algorithm instance name
 	// For Concurrent run
 	m_inputHandles.resize(MAX_INPUTS);
 	for (uint i = 0; i < MAX_INPUTS; ++i)
-		m_inputHandles[i] = declareInput<DataObject>("input_" + std::to_string(i), "");
+		m_inputHandles[i] = declareInput<DataObject>("input_" + std::to_string(i), MinimalDataObjectHandle::NULL_ADDRESS);
 
 	m_outputHandles.resize(MAX_OUTPUTS);
 	for (uint i = 0; i < MAX_OUTPUTS; ++i)
-		m_outputHandles[i] = declareOutput< DataObject>("output_" + std::to_string(i), "");
+		m_outputHandles[i] = declareOutput< DataObject>("output_" + std::to_string(i), MinimalDataObjectHandle::NULL_ADDRESS);
 
 	declareProperty("avgRuntime", m_avg_runtime,
 			"Average runtime of the module.");
@@ -268,7 +268,7 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
                << " on pthreadID " << getContext()->m_thread_id << endmsg;
 
   for (auto & inputHandle: m_inputHandles){
-	  if(inputHandle->dataProductName() == "")
+	  if(!inputHandle->isValid())
 		continue;
 
     DataObject* obj = nullptr;
@@ -283,14 +283,14 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
   findPrimes( n_iters );
 
   for (auto & outputHandle: m_outputHandles){
-	  if(outputHandle->dataProductName() == "")
+	  if(!outputHandle->isValid())
 		continue;
 
 	  outputHandle->put(new DataObject());
   }
 
   for (auto & inputHandle: m_inputHandles){
-	  if(inputHandle->dataProductName() == "")
+	  if(!inputHandle->isValid())
 		continue;
 
     DataObject* obj = nullptr;

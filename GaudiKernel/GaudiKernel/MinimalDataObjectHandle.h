@@ -42,8 +42,12 @@ public:
   bool wasRead() const;
   
   /// Check if operation was performed
-  bool wasWritten() const;    
+  bool wasWritten() const;
+
+  bool isValid() const;
   
+  const static std::string NULL_ADDRESS;
+
 protected:
   std::string m_dataProductName;
   IAlgorithm* m_fatherAlg;

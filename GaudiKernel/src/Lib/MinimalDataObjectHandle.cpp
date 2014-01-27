@@ -1,6 +1,7 @@
 #include "GaudiKernel/MinimalDataObjectHandle.h"
 
 unsigned int MinimalDataObjectHandle::m_tmp_dpi=0;
+const std::string MinimalDataObjectHandle::NULL_ADDRESS  = "_NULL";
 //---------------------------------------------------------------------------
 
 MinimalDataObjectHandle::MinimalDataObjectHandle(const std::string& productName,
@@ -69,6 +70,10 @@ StatusCode MinimalDataObjectHandle::setDataProductName(const std::string & addre
 	m_dataProductName = address;
 
 	return StatusCode::SUCCESS;
+}
+
+bool MinimalDataObjectHandle::isValid() const {
+	return m_dataProductName != NULL_ADDRESS;
 }
 
 //---------------------------------------------------------------------------

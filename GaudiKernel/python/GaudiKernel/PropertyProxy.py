@@ -379,7 +379,7 @@ class DataObjectDescriptorPropertyProxy(PropertyProxy):
         if type(value) == str:
             return DataObjectDescriptor(value)
         elif isinstance(value, DataObjectDescriptor):
-            return value
+            return DataObjectDescriptor(value.__str__())
         
 class DataObjectDescriptorCollectionPropertyProxy(DataObjectDescriptorPropertyProxy):
     def __init__( self, descr, docString, default ):
@@ -392,7 +392,7 @@ class DataObjectDescriptorCollectionPropertyProxy(DataObjectDescriptorPropertyPr
         if type(value) == str:
             return DataObjectDescriptorCollection(value)
         elif isinstance(value, DataObjectDescriptorCollection):
-            return value
+            return DataObjectDescriptorCollection(value.__str__())
 
 def PropertyProxyFactory( descr, doc, default ):
 #   print "PropertyProxyFactory( %s, %r )" % (descr.__name__,default)
