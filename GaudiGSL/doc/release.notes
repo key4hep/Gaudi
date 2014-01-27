@@ -3,6 +3,10 @@
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! =============================================================================
 
+! 2014-01-27 - Marco Clemencic
+ - Fixed long standing issue with InterpTest test, actually due to a bug in the
+   copy constructor of SplineBase.
+
 ! 2013-07-19 - Marco Clemencic
  - Clean up in the use of the new PluginService.
 
