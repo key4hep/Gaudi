@@ -46,7 +46,7 @@
 # settings
 CMAKE := cmake
 CTEST := ctest
-NINJA := $(shell which ninja)
+NINJA := $(shell which ninja 2> /dev/null)
 
 ifneq ($(wildcard $(CURDIR)/toolchain.cmake),)
   override CMAKEFLAGS += -DCMAKE_TOOLCHAIN_FILE=$(CURDIR)/toolchain.cmake
