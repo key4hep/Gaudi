@@ -112,6 +112,7 @@ class TestOrganizer :
         oldGroups = groups
 
         index = 0
+        j = None
         for j in range(len(adress[:-1])):
             if adress[j] not in groups :
                 if j>0:
@@ -131,7 +132,7 @@ class TestOrganizer :
             groups = groups[adress[j]]
 
 
-        self._addtest(entry,testElement,groups["TestList"])
+        self._addtest(entry,testElement,groups["TestList"],j)
 
 
         return True
@@ -175,7 +176,7 @@ class TestOrganizer :
         return element
 
 
-    def _addtest(self,father,testElement,testList):
+    def _addtest(self,father,testElement,testList,fatherLevel):
         """ Add a html test element
             @param father: the  "group" father html  element.
             @param testElement: The test ET.element taken from a ctest Like xml
@@ -185,7 +186,9 @@ class TestOrganizer :
         container = self.seeker.findElement({"class":"testContainer"}, father,2)
         if container is None :
             # Make the container
-            div = ET.SubElement(father, "div",{"style":"display:none;"})
+            div = ET.SubElement(father, "div")
+            if fatherLevel is not None:
+                div.set("style","display:none;")
             container = ET.SubElement(div, "ul",{"class":"testContainer"})
         #get the testName
         completeTestName = cleanSpace(cleanWebChar(testElement.find("Name").text))

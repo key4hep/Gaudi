@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-01-29 - Marco Clemencic
+ - Fixed LBCORE-370: Some test results do not show up in the new HTML summary.
+   https://its.cern.ch/jira/browse/LBCORE-370
+
 ! 2014-01-17 - Marco Clemencic
  - Re-enabled the Boost fix only for Clang.
 
