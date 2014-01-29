@@ -23,7 +23,7 @@ namespace concurrency {
 
   //---------------------------------------------------------------------------
   void DecisionNode::printState(std::stringstream& output,
-  								AlgsExecutionStates& states,
+                                AlgsExecutionStates& states,
                                 const std::vector<int>& node_decisions,
                                 const unsigned int& recursionLevel) const {
     output << std::string(recursionLevel, ' ') << m_nodeName << " (" << m_nodeIndex << ")" << ", w/ decision: "
@@ -83,13 +83,11 @@ namespace concurrency {
       if (-1 == res) {
         hasUndecidedChild = true;
         //daughter->promoteToControlReadyState(states, node_decisions);
-        if (State::INITIAL == states[daughter->getNodeIndex()])
-        	states.updateState(daughter->getNodeIndex(), State::CONTROLREADY);
         if (typeid(*daughter) != typeid(concurrency::DecisionNode)) {
           AlgorithmNode* algod = (AlgorithmNode*) daughter;
           if (State::INITIAL == states[algod->getAlgoIndex()]) {
-              //std::cout << "----> UPDATING DAUGHTER STATE to CONTROLREADY: " << daughter->getNodeName() << std::endl;
-        	  states.updateState(algod->getAlgoIndex(), State::CONTROLREADY);
+            //std::cout << "----> UPDATING DAUGHTER STATE to CONTROLREADY: " << daughter->getNodeName() << std::endl;
+            states.updateState(algod->getAlgoIndex(), State::CONTROLREADY);
           }
         } else {
           daughter->updateDecision(states, node_decisions);
@@ -160,7 +158,7 @@ namespace concurrency {
 
   //---------------------------------------------------------------------------
   void AlgorithmNode::printState(std::stringstream& output,
-  								AlgsExecutionStates& states,
+                                 AlgsExecutionStates& states,
                                  const std::vector<int>& node_decisions,
                                  const unsigned int& recursionLevel) const {
     output << std::string(recursionLevel, ' ') << m_nodeName << " (" << m_nodeIndex << ")" << ", w/ decision: "
@@ -288,7 +286,7 @@ namespace concurrency {
 
   //---------------------------------------------------------------------------
   void ControlFlowGraph::updateDecision(const std::string& algo_name,
-		  	  	  	  	  	  	  	  	  AlgsExecutionStates& algo_states,
+                                        AlgsExecutionStates& algo_states,
                                         std::vector<int>& node_decisions) const {
     debug() << "Setting decision of algorithm " << algo_name << " and propagating it upwards.." << endmsg;
     m_graphAlgoMap.at(algo_name)->updateDecision(algo_states, node_decisions);
