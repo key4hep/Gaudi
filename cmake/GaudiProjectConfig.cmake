@@ -34,7 +34,7 @@ if (GAUDI_BUILD_PREFIX_CMD)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${GAUDI_BUILD_PREFIX_CMD}")
   message(STATUS "Prefix build commands with '${GAUDI_BUILD_PREFIX_CMD}'")
 else()
-  find_program(ccache_cmd ccache ccache-swig)
+  find_program(ccache_cmd NAMES ccache ccache-swig)
   find_program(distcc_cmd distcc)
   mark_as_advanced(ccache_cmd distcc_cmd)
 
