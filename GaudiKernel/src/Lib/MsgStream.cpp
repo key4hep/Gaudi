@@ -92,7 +92,7 @@ void MsgStream::setColor(MSG::Color col) {
   if ( m_useColors)   {
     int fc = 90 + col;
     try { // this may throw and we must not do it
-      m_stream << "[" << fc << ";1m";
+      m_stream << "\x1b[" << fc << ";1m";
     }
     catch(...) {}
   }
@@ -104,7 +104,7 @@ void MsgStream::setColor(MSG::Color fg, MSG::Color bg) {
   if ( m_useColors )   {
     try { // this may throw and we must not do it
       int fc = 90 + fg;
-      m_stream << "[" << fc;
+      m_stream << "\x1b[" << fc;
       int bc = 100 + bg;
       m_stream << ";" << bc;
       m_stream << ";1m";
@@ -118,7 +118,7 @@ void MsgStream::resetColor() {
 #ifndef _WIN32
   if ( m_useColors )   {
     try { // this may throw and we must not do it
-      m_stream << "[m" << m_service->getLogColor(m_currLevel);
+      m_stream << "\x1b[m" << m_service->getLogColor(m_currLevel);
     }
     catch(...) {}
   }
