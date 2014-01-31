@@ -60,6 +60,20 @@ else()
   endif()
 endif()
 
+# If Vera++ is available and it is requested by the user, check every source
+# file for style problems. 
+find_package(vera++)
+if(VERA++_USE_FILE)
+  option(ENABLE_VERA++_CHECKS "Use Vera++ to check the C++ code during the build" OFF)
+  if(ENABLE_VERA++_CHECKS)
+    include(${VERA++_USE_FILE})
+    get_filename_component(VERA++_ROOT ${VERA++_USE_FILE} PATH)
+    add_vera_targets(*.h *.hxx *.icpp *.cpp
+                     RECURSE
+                     ROOT ${VERA++_ROOT})
+  endif()
+endif()
+
 # This option make sense only if we have 'objcopy'
 if(CMAKE_OBJCOPY)
   option(GAUDI_DETACHED_DEBINFO
