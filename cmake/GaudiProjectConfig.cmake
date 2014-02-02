@@ -62,7 +62,7 @@ endif()
 
 # If Vera++ is available and it is requested by the user, check every source
 # file for style problems. 
-find_package(vera++)
+find_package(vera++ QUIET)
 if(VERA++_USE_FILE)
   option(ENABLE_VERA++_CHECKS "Use Vera++ to check the C++ code during the build" OFF)
   if(ENABLE_VERA++_CHECKS)
