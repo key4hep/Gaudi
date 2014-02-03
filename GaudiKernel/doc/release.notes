@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2014-02-03 - Marco Clemencic
+ - Do not generate configurables for the factory aliases used for backward
+   compatibility with the Reflex Plugin Service. 
+
 ! 2014-01-31 - Marco Clemencic
  - Replaced non-ASCII characters in string literals with the corresponding
    escape sequence.
