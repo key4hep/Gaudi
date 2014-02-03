@@ -27,4 +27,5 @@ make_fragment listcomponents -header=listcomponents_header
 
 private
 macro_append pp_cppflags " -DGaudiPluginService_EXPORTS "
+macro_append pp_cppflags " -DGAUDI_REFLEX_COMPONENT_ALIASES "
 end_private
