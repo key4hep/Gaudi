@@ -489,6 +489,10 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
       const Registry::FactoryInfo info = registry.getInfo(*it);
       const string rtype = info.rtype;
 
+      // do not generate configurables for the Reflex-compatible aliases
+      if (info.properties.find("ReflexName") != info.properties.end())
+        continue;
+
       // Atlas contributed code (patch #1247)
       // Skip the generation of configurables if the component does not come
       // from the same library we are processing (i.e. we found a symbol that

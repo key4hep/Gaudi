@@ -3,6 +3,14 @@
 
 gaudi_subdir(GaudiPluginService v1r0)
 
+# Local build options
+option(GAUDI_REFLEX_COMPONENT_ALIASES
+       "allow use of old style (Reflex) component names"
+       ON)
+if(GAUDI_REFLEX_COMPONENT_ALIASES)
+  add_definitions(-DGAUDI_REFLEX_COMPONENT_ALIASES)
+endif()
+
 # Library
 gaudi_add_library(GaudiPluginService src/PluginService.cpp src/capi_pluginservice.cpp
                   LINK_LIBRARIES ${CMAKE_DL_LIBS}

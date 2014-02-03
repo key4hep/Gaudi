@@ -78,6 +78,33 @@ namespace {
       Gaudi::PluginService::Details::logger().warning(o.str());
     }
   }
+
+  struct OldStyleCnv {
+    std::string name;
+    void operator() (const char c) {
+      switch(c) {
+      case '<':
+      case '>':
+      case ',':
+      case '(':
+      case ')':
+      case ':':
+      case '.':
+        name.push_back('_'); break;
+      case '&':
+        name.push_back('r'); break;
+      case '*':
+        name.push_back('p'); break;
+      case ' ': break;
+      default:
+        name.push_back(c); break;
+      }
+    }
+  };
+  /// Convert a class name in the string used with the Reflex plugin service
+  std::string old_style_name(const std::string& name) {
+    return std::for_each(name.begin(), name.end(), OldStyleCnv()).name;
+  }
 }
 
 namespace Gaudi { namespace PluginService {
@@ -130,7 +157,7 @@ namespace Gaudi { namespace PluginService {
             pos = newpos;
           }
           logger().debug(std::string(" looking into ") + dirName);
-          // look for files called "*.factories" in the directory
+          // look for files called "*.components" in the directory
           DIR *dir = opendir(dirName.c_str());
           if (dir) {
             struct dirent * entry;
@@ -170,6 +197,15 @@ namespace Gaudi { namespace PluginService {
                   const std::string lib(line, 0, pos);
                   const std::string fact(line, pos+1);
                   m_factories.insert(std::make_pair(fact, FactoryInfo(lib)));
+#ifdef GAUDI_REFLEX_COMPONENT_ALIASES
+                  // add an alias for the factory using the Reflex convention
+                  std::string old_name = old_style_name(fact);
+                  if (fact != old_name) {
+                    FactoryInfo old_info(lib);
+                    old_info.properties["ReflexName"] = "true";
+                    m_factories.insert(std::make_pair(old_name, old_info));
+                  }
+#endif
                   ++factoriesCount;
                 }
                 if (logger().level() <= Logger::Debug) {
@@ -196,7 +232,7 @@ namespace Gaudi { namespace PluginService {
       if (entry == facts.end())
       {
         // this factory was not known yet
-        entry = facts.insert(std::make_pair(id, 
+        entry = facts.insert(std::make_pair(id,
                                             FactoryInfo("unknown", factory,
                                                         type, rtype, className, props))).first;
       } else {
@@ -208,6 +244,13 @@ namespace Gaudi { namespace PluginService {
         factoryInfoSetHelper(entry->second.rtype, rtype, "return type", id);
         factoryInfoSetHelper(entry->second.className, className, "class", id);
       }
+#ifdef GAUDI_REFLEX_COMPONENT_ALIASES
+      // add an alias for the factory using the Reflex convention
+      std::string old_name = old_style_name(id);
+      if (id != old_name)
+        add(old_name, factory, type, rtype, className, props)
+          .properties["ReflexName"] = "true";
+#endif
       return entry->second;
     }
 
@@ -217,6 +260,12 @@ namespace Gaudi { namespace PluginService {
       FactoryMap::const_iterator f = facts.find(id);
       if (f != facts.end())
       {
+#ifdef GAUDI_REFLEX_COMPONENT_ALIASES
+        const Properties& props = f->second.properties;
+        if (props.find("ReflexName") != props.end())
+          logger().warning("requesting factory via old name '" + id + "'"
+                           "use '" + f->second.className + "' instead");
+#endif
         if (!f->second.ptr) {
           if (!dlopen(f->second.library.c_str(), RTLD_LAZY | RTLD_GLOBAL)) {
             logger().warning("cannot load " + f->second.library +
@@ -228,11 +277,12 @@ namespace Gaudi { namespace PluginService {
           }
           f = facts.find(id); // ensure that the iterator is valid
         }
-        if (f->second.type == type)
+        if (f->second.type == type) {
           return f->second.ptr;
-        else
+        } else {
           logger().warning("found factory " + id + ", but of wrong type: " +
                            f->second.type + " instead of " + type);
+        }
       }
       return 0; // factory not found
     }
@@ -250,7 +300,7 @@ namespace Gaudi { namespace PluginService {
     }
 
     Registry&
-    Registry::addProperty(const std::string& id, 
+    Registry::addProperty(const std::string& id,
                           const std::string& k,
                           const std::string& v) {
       REG_SCOPE_LOCK

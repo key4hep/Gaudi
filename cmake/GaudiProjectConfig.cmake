@@ -34,7 +34,7 @@ if (GAUDI_BUILD_PREFIX_CMD)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${GAUDI_BUILD_PREFIX_CMD}")
   message(STATUS "Prefix build commands with '${GAUDI_BUILD_PREFIX_CMD}'")
 else()
-  find_program(ccache_cmd ccache-swig ccache)
+  find_program(ccache_cmd NAMES ccache ccache-swig)
   find_program(distcc_cmd distcc)
   mark_as_advanced(ccache_cmd distcc_cmd)
 
@@ -57,6 +57,20 @@ else()
         message(STATUS "Using distcc for building")
       endif()
     endif()
+  endif()
+endif()
+
+# If Vera++ is available and it is requested by the user, check every source
+# file for style problems. 
+find_package(vera++ QUIET)
+if(VERA++_USE_FILE)
+  option(ENABLE_VERA++_CHECKS "Use Vera++ to check the C++ code during the build" OFF)
+  if(ENABLE_VERA++_CHECKS)
+    include(${VERA++_USE_FILE})
+    get_filename_component(VERA++_ROOT ${VERA++_USE_FILE} PATH)
+    add_vera_targets(*.h *.hxx *.icpp *.cpp
+                     RECURSE
+                     ROOT ${VERA++_ROOT})
   endif()
 endif()
 
@@ -1860,12 +1874,15 @@ endfunction()
 #                     source1 source2 ...
 #                     LINK_LIBRARIES library1 library2 ...
 #                     INCLUDE_DIRS dir1 package2 ...
+#                     [WORKING_DIRECTORY dir]
 #                     [ENVIRONMENT variable[+]=value ...]
 #                     [TIMEOUT seconds]
 #                     [TYPE Boost|CppUnit])
 #
 # Special version of gaudi_add_executable which automatically adds the dependency
-# on CppUnit.
+# on CppUnit and declares the test to CTest (add_test).
+# The WORKING_DIRECTORY option can be passed if the command needs to be run from
+# a fixed directory.
 # If special environment settings are needed, they can be specified in the
 # section ENVIRONMENT as <var>=<value> or <var>+=<value>, where the second format
 # prepends the value to the PATH-like variable.
@@ -1874,12 +1891,16 @@ endfunction()
 function(gaudi_add_unit_test executable)
   if(GAUDI_BUILD_TESTS)
 
-    CMAKE_PARSE_ARGUMENTS(${executable}_UNIT_TEST "" "TYPE;TIMEOUT" "ENVIRONMENT" ${ARGN})
+    CMAKE_PARSE_ARGUMENTS(${executable}_UNIT_TEST "" "TYPE;TIMEOUT;WORKING_DIRECTORY" "ENVIRONMENT" ${ARGN})
 
     gaudi_common_add_build(${${executable}_UNIT_TEST_UNPARSED_ARGUMENTS})
 
     if(NOT ${executable}_UNIT_TEST_TYPE)
       set(${executable}_UNIT_TEST_TYPE CppUnit)
+    endif()
+
+    if(NOT ${executable}_UNIT_TEST_WORKING_DIRECTORY)
+      set(${executable}_UNIT_TEST_WORKING_DIRECTORY .)
     endif()
 
     if (${${executable}_UNIT_TEST_TYPE} STREQUAL "Boost")
@@ -1910,8 +1931,9 @@ function(gaudi_add_unit_test executable)
       endif()
     endforeach()
 
-    add_test(${package}.${executable}
-             ${env_cmd} ${extra_env} --xml ${env_xml}
+    add_test(NAME ${package}.${executable}
+             WORKING_DIRECTORY ${${executable}_UNIT_TEST_WORKING_DIRECTORY}
+             COMMAND ${env_cmd} ${extra_env} --xml ${env_xml}
                ${executable}${exec_suffix})
 
     if(${executable}_UNIT_TEST_TIMEOUT)
@@ -1925,6 +1947,7 @@ endfunction()
 #-------------------------------------------------------------------------------
 # gaudi_add_test(<name>
 #                [FRAMEWORK options1 options2 ...|QMTEST|COMMAND cmd args ...]
+#                [WORKING_DIRECTORY dir]
 #                [ENVIRONMENT variable[+]=value ...]
 #                [DEPENDS other_test ...]
 #                [FAILS] [PASSREGEX regex] [FAILREGEX regex]
@@ -1938,6 +1961,8 @@ endfunction()
 # If special environment settings are needed, they can be specified in the
 # section ENVIRONMENT as <var>=<value> or <var>+=<value>, where the second format
 # prepends the value to the PATH-like variable.
+# The WORKING_DIRECTORY option can be passed if the command needs to be run from
+# a fixed directory (ignored by QMTEST tests).
 # Great flexibility is given by the following options:
 #  FAILS - the tests succeds if the command fails (return code !=0)
 #  DEPENDS - ensures an order of execution of tests (e.g. do not run a read
@@ -1947,7 +1972,7 @@ endfunction()
 #
 #-------------------------------------------------------------------------------
 function(gaudi_add_test name)
-  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST;FAILS" "TIMEOUT" "ENVIRONMENT;FRAMEWORK;COMMAND;DEPENDS;PASSREGEX;FAILREGEX" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST;FAILS" "TIMEOUT;WORKING_DIRECTORY" "ENVIRONMENT;FRAMEWORK;COMMAND;DEPENDS;PASSREGEX;FAILREGEX" ${ARGN})
 
   gaudi_get_package_name(package)
 
@@ -1978,6 +2003,10 @@ function(gaudi_add_test name)
     message(FATAL_ERROR "Type of test '${name}' not declared")
   endif()
 
+  if(NOT ARG_WORKING_DIRECTORY)
+    set(ARG_WORKING_DIRECTORY .)
+  endif()
+
   foreach(var ${ARG_ENVIRONMENT})
     string(FIND ${var} "+=" is_prepend)
     if(NOT is_prepend LESS 0)
@@ -1989,9 +2018,9 @@ function(gaudi_add_test name)
     endif()
   endforeach()
 
-  add_test(${package}.${name}
-           ${env_cmd}
-               ${extra_env} --xml ${env_xml}
+  add_test(NAME ${package}.${name}
+           WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY}
+           COMMAND ${env_cmd} ${extra_env} --xml ${env_xml}
                ${cmdline})
 
   if(ARG_DEPENDS)
@@ -2034,6 +2063,7 @@ function(gaudi_install_headers)
               PATTERN "*.h"
               PATTERN "*.icpp"
               PATTERN "*.hpp"
+              PATTERN "*.hxx"
               PATTERN "CVS" EXCLUDE
               PATTERN ".svn" EXCLUDE)
     if(NOT IS_ABSOLUTE ${hdr_dir})
@@ -2413,8 +2443,11 @@ function(gaudi_generate_env_conf filename)
   endforeach()
 
   # include inherited environments
+  # (note: it's important that the full search path is ready before we start including)
   foreach(other_project ${used_gaudi_projects})
     set(data "${data}  <env:search_path>${${other_project}_DIR}</env:search_path>\n")
+  endforeach()
+  foreach(other_project ${used_gaudi_projects})
     set(data "${data}  <env:include>${other_project}Environment.xml</env:include>\n")
   endforeach()
 

@@ -4,6 +4,10 @@
 ! Purpose     : Provide a generic plugin service.
 !-----------------------------------------------------------------------------
 
+! 2014-02-03 - Marco Clemencic
+ - Added support for Reflex names for components, enabled with the compile flag
+   -DGAUDI_REFLEX_COMPONENT_ALIASES.
+
 ! 2014-01-10 - Marco Clemencic
  - Fixed error handling in listcomponents.cpp: exit with a failure status code
    if there is an error loading a library.
