@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2014-02-04 - Marco Clemencic
+ - Fixed list of sources.
+
 ! 2014-02-03 - Marco Clemencic
  - Added test to ensure that old Reflex component names still work with the new
    plugin service.
