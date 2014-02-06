@@ -1,6 +1,9 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2014-02-06 - Marco Clemencic
+ - Added missing (?) header to the dictionary (needed for ROOT 6).
+
 ! 2014-01-06 - Marco Clemencic
  - Removed workarounds for ROOT-5850 and ROOT-5847.
    https://sft.its.cern.ch/jira/browse/ROOT-5850
