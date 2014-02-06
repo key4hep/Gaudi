@@ -1,6 +1,11 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+! 2014-02-06 - Marco Clemencic
+ - Added test exposing bug #103803:
+   ConfigurableUser instances created in the __apply_configuration__ of another
+   one are not "applied".
+
 ! 2013-12-11 - Sebastien Binet
  - Added hwaf configuration files.
 
