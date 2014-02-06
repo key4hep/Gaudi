@@ -909,6 +909,14 @@ class Configurable( object ):
         rep += Configurable._printFooter( indentStr, title )
         return rep
 
+    def isApplicable(self):
+        '''
+        Return True is the instance can be "applied".
+        Always False for plain Configurable instances
+        (i.e. not ConfigurableUser).
+        '''
+        return False
+
 ### classes for generic Gaudi component ===========
 class DummyDescriptor( object ):
     def __init__( self, name ):
@@ -1112,7 +1120,8 @@ class ConfigurableAuditor( Configurable ):
 class ConfigurableUser( Configurable ):
     __slots__ = { "__users__": [],
                   "__used_instances__": [],
-                  "_enabled": True }
+                  "_enabled": True,
+                  "_applied": False }
     ## list of ConfigurableUser classes this one is going to modify in the
     #  __apply_configuration__ method.
     #  The list may contain class objects, strings representing class objects or
@@ -1131,6 +1140,7 @@ class ConfigurableUser( Configurable ):
             setattr(self, n, v)
         self._enabled = _enabled
         self.__users__ = []
+        self._applied = False
 
         # Needed to retrieve the actual class if the declaration in __used_configurables__
         # and  __queried_configurables__ is done with strings.
@@ -1304,6 +1314,13 @@ class ConfigurableUser( Configurable ):
                 return i
         raise KeyError(name)
 
+    def isApplicable(self):
+        '''
+        Return True is the instance can be "applied".
+        '''
+        return (not self.__users__) and self._enabled and not self._applied
+
+
 # list of callables to be called after all the __apply_configuration__ are called.
 postConfigActions = []
 def appendPostConfigAction(function):
@@ -1319,7 +1336,7 @@ def appendPostConfigAction(function):
     postConfigActions.append(function)
 def removePostConfigAction(function):
     """
-    Remove a collable from the list of post-config actions.
+    Remove a callable from the list of post-config actions.
     The list is directly accessible as 'GaudiKernel.Configurable.postConfigActions'.
     """
     postConfigActions.remove(function)
@@ -1337,36 +1354,42 @@ def applyConfigurableUsers():
         return
     _appliedConfigurableUsers_ = True
 
-    confUsers = [ c
-                  for c in Configurable.allConfigurables.values()
-                  if hasattr(c,"__apply_configuration__") ]
-    applied = True # needed to detect dependency loops
-    while applied and confUsers:
-        newConfUsers = [] # list of conf users that cannot be applied yet
-        applied = False
-        for c in confUsers:
-            if hasattr(c,"__users__") and c.__users__:
-                newConfUsers.append(c) # cannot use this one yet
-            else: # it does not have users or the list is empty
-                applied = True
-                # the ConfigurableUser is enabled if it doesn't have an _enabled
-                # property or its value is True
-                enabled = (not hasattr(c, "_enabled")) or c._enabled
-                if enabled:
-                    log.info("applying configuration of %s", c.name())
-                    c.__apply_configuration__()
-                    log.info(c)
-                else:
-                    log.info("skipping configuration of %s", c.name())
-                if hasattr(c, "__detach_used__"):
-                    # tells the used configurables that they are not needed anymore
-                    c.__detach_used__()
-        confUsers = newConfUsers # list of C.U.s still to go
-    if confUsers:
-        # this means that some C.U.s could not be applied because of a dependency loop
-        raise Error("Detected loop in the ConfigurableUser "
+    def applicableConfUsers():
+        '''
+        Generator returning all the configurables that can be applied in the
+        order in which they can be applied.
+        '''
+        # This is tricky...
+        # We keep on looking for the first configurable that can be applied.
+        # When we cannot find any, 'next()' raises a StopIteration that is
+        # propagated outside of the infinite loop and the function, then handled
+        # correctly from outside (it is the exception that is raised when you
+        # exit from a generator).
+        # Checking every time the full list is inefficient, but it is the
+        # easiest way to fix bug #103803.
+        # <https://savannah.cern.ch/bugs/?103803>
+        while True:
+            yield (c for c in Configurable.allConfigurables.values()
+                   if c.isApplicable()).next()
+
+    for c in applicableConfUsers():
+        log.info("applying configuration of %s", c.name())
+        c.__apply_configuration__()
+        c._applied = True # flag the instance as already applied
+        log.info(c)
+        if hasattr(c, "__detach_used__"):
+            # tells the used configurables that they are not needed anymore
+            c.__detach_used__()
+
+    # check for dependency loops
+    leftConfUsers = [c for c in Configurable.allConfigurables.values()
+                     if hasattr(c, '__apply_configuration__') and
+                        c._enabled and not c._applied]
+    # if an enabled configurable has not been applied, there must be a dependency loop
+    if leftConfUsers:
+        raise Error("Detected loop in the ConfigurableUser"
                     " dependencies: %r" % [ c.name()
-                                            for c in confUsers ])
+                                            for c in leftConfUsers ])
     # ensure that all the Handles have been triggered
     known = set()
     unknown = set(Configurable.allConfigurables)
