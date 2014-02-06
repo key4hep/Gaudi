@@ -2,6 +2,10 @@ Package : Gaudi
 Package manager : Marco Clemencic
 
 ! 2014-02-06 - Marco Clemencic
+ - Improved test gaudi.conf_user.autoapply to be more robust in case of a change
+   in the order of application of configurables.
+
+! 2014-02-06 - Marco Clemencic
  - Added test exposing bug #103803:
    ConfigurableUser instances created in the __apply_configuration__ of another
    one are not "applied".
