@@ -403,7 +403,7 @@ macro(gaudi_project project version)
         set(include_paths ${include_paths} ${d})
       endif()
     endforeach()
-    message(STATUS "include_paths -> ${include_paths}")
+    #message(STATUS "include_paths -> ${include_paths}")
   endif()
   foreach(_inc_dir ${include_paths})
     set(project_environment ${project_environment}
