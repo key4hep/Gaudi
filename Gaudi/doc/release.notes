@@ -1,6 +1,9 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+! 2014-02-07 - Marco Clemencic
+ - Modified configurables test to expose bug #103808.
+
 ! 2014-02-06 - Marco Clemencic
  - Improved test gaudi.conf_user.autoapply to be more robust in case of a change
    in the order of application of configurables.
