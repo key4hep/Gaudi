@@ -9,6 +9,9 @@ class ConfigurableUserTest(ConfigurableUser):
         print self
         appliedConf.append(self.getName())
 
+class NotActivelyUsed(ConfigurableUserTest):
+    __slots__ = { "Property": -1 }
+
 class SubModule1(ConfigurableUserTest):
     __slots__ = { "Property1": 0 }
 
@@ -17,6 +20,7 @@ class SubModule2(ConfigurableUserTest):
 
 class SubModule3(ConfigurableUserTest):
     __slots__ = { "Property1": 3 }
+    __used_configurables__ = [ NotActivelyUsed ]
 
 class MultiInstance(ConfigurableUserTest):
     __slots__ = { "Property": 0 }
@@ -41,6 +45,7 @@ class Application(ConfigurableUserTest):
         MultiInstance(self._instanceName(MultiInstance))
         ti = self.getUsedInstance("TestInstance")
         ti.Property = 1
+        NotActivelyUsed(Property=-5)
 
 calledActions = []
 
@@ -73,7 +78,8 @@ expected = {'Application':               ('Property1', 10),
             'SubModule1':                ('Property1', 10),
             'SubModule2':                ('Property1', 10),
             'TestInstance_SubModule1':   ('Property1', 0),
-            'Application_MultiInstance_SubModule1': ('Property1', 0)}
+            'Application_MultiInstance_SubModule1': ('Property1', 0),
+            'NotActivelyUsed':           ('Property', -5)}
 assert set(appliedConf) == set(expected)
 
 # check the order of application
@@ -81,6 +87,7 @@ assert appliedConf.index('Application') < appliedConf.index('SubModule1')
 assert appliedConf.index('Application') < appliedConf.index('SubModule2')
 assert appliedConf.index('Application') < appliedConf.index('Application_MultiInstance')
 assert appliedConf.index('Application') < appliedConf.index('TestInstance')
+assert appliedConf.index('Application') < appliedConf.index('NotActivelyUsed')
 
 assert appliedConf.index('TestInstance') < appliedConf.index('TestInstance_SubModule1')
 

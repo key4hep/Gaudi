@@ -1,6 +1,11 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2014-02-07 - Marco Clemencic
+ - Fixed bug #103808: regression introduced with the fix to bug #103803
+   The problem was that ConfigurableUser instances not enabled were not
+   correctly taken into account in the graph of dependencies.
+
 ! 2014-02-06 - Marco Clemencic
  - Fixed bug #103803: handle correctly ConfUsers created during the apply step.
 
