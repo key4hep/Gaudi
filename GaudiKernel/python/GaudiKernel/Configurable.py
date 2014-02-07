@@ -1318,7 +1318,7 @@ class ConfigurableUser( Configurable ):
         '''
         Return True is the instance can be "applied".
         '''
-        return (not self.__users__) and self._enabled and not self._applied
+        return (not self.__users__) and (not self._applied)
 
 
 # list of callables to be called after all the __apply_configuration__ are called.
@@ -1373,10 +1373,13 @@ def applyConfigurableUsers():
                    if c.isApplicable()).next()
 
     for c in applicableConfUsers():
-        log.info("applying configuration of %s", c.name())
-        c.__apply_configuration__()
+        if c._enabled:
+            log.info("applying configuration of %s", c.name())
+            c.__apply_configuration__()
+            log.info(c)
+        else:
+            log.info("skipping configuration of %s", c.name())
         c._applied = True # flag the instance as already applied
-        log.info(c)
         if hasattr(c, "__detach_used__"):
             # tells the used configurables that they are not needed anymore
             c.__detach_used__()
