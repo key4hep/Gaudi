@@ -488,8 +488,10 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
     if (!m_CFNext) {
       m_cfManager.updateEventState(thisAlgsStates,thisSlot.controlFlowState);
     } else {
-      if (!algo_name.empty())
+      if (!algo_name.empty()) {
+        m_cfManager.promoteDataConsumers(algo_name,thisAlgsStates);
         m_cfManager.updateDecision(algo_name,thisAlgsStates,thisSlot.controlFlowState);
+      }
     }
 
 
