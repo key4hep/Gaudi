@@ -1,6 +1,16 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2014-02-10 - Marco Clemencic
+ - Modified applyConfigurableUsers implementations to print the configurables
+   applied on stderr if the environment variable GAUDI_DEBUG_CONF_USER is
+   defined.
+
+! 2014-02-10 - Marco Clemencic
+ - Keep the buggy implementation of 'applyConfigurableUsers()' (bug #103803) to
+   provide backward compatibility until all the problems with the configuration
+   are fixed.
+
 ! 2014-02-07 - Marco Clemencic
  - Fixed bug #103808: regression introduced with the fix to bug #103803
    The problem was that ConfigurableUser instances not enabled were not

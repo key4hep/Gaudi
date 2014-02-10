@@ -1372,9 +1372,12 @@ def applyConfigurableUsers():
             yield (c for c in Configurable.allConfigurables.values()
                    if c.isApplicable()).next()
 
+    debugApplyOrder = 'GAUDI_DUBUG_CONF_USER' in os.environ
     for c in applicableConfUsers():
         if c._enabled:
             log.info("applying configuration of %s", c.name())
+            if debugApplyOrder:
+                sys.stderr.write('applying %r' % c)
             c.__apply_configuration__()
             log.info(c)
         else:
@@ -1393,6 +1396,68 @@ def applyConfigurableUsers():
         raise Error("Detected loop in the ConfigurableUser"
                     " dependencies: %r" % [ c.name()
                                             for c in leftConfUsers ])
+    # ensure that all the Handles have been triggered
+    known = set()
+    unknown = set(Configurable.allConfigurables)
+    while unknown:
+        for k in unknown:
+            if not known: # do not print during the first iteration
+                log.debug('new configurable created automatically: %s', k)
+            # this trigger the instantiation from handles
+            Configurable.allConfigurables[k].properties()
+            known.add(k)
+        unknown -= known
+    # Call post-config actions
+    for action in postConfigActions:
+        action()
+
+def applyConfigurableUsers_old():
+    """
+    Obsolete (buggy) implementation of applyConfigurableUsers(), kept to provide
+    backward compatibility for configurations that where relying (implicitly) on
+    bug #103803, or on a specific (non guaranteed) order of execution.
+
+    @see applyConfigurableUsers()
+    """
+    # Avoid double calls
+    global _appliedConfigurableUsers_, postConfigActions
+    if _appliedConfigurableUsers_:
+        return
+    _appliedConfigurableUsers_ = True
+
+    debugApplyOrder = 'GAUDI_DUBUG_CONF_USER' in os.environ
+    confUsers = [ c
+                  for c in Configurable.allConfigurables.values()
+                  if hasattr(c,"__apply_configuration__") ]
+    applied = True # needed to detect dependency loops
+    while applied and confUsers:
+        newConfUsers = [] # list of conf users that cannot be applied yet
+        applied = False
+        for c in confUsers:
+            if hasattr(c,"__users__") and c.__users__:
+                newConfUsers.append(c) # cannot use this one yet
+            else: # it does not have users or the list is empty
+                applied = True
+                # the ConfigurableUser is enabled if it doesn't have an _enabled
+                # property or its value is True
+                enabled = (not hasattr(c, "_enabled")) or c._enabled
+                if enabled:
+                    log.info("applying configuration of %s", c.name())
+                    if debugApplyOrder:
+                        sys.stderr.write('applying %r' % c)
+                    c.__apply_configuration__()
+                    log.info(c)
+                else:
+                    log.info("skipping configuration of %s", c.name())
+                if hasattr(c, "__detach_used__"):
+                    # tells the used configurables that they are not needed anymore
+                    c.__detach_used__()
+        confUsers = newConfUsers # list of C.U.s still to go
+    if confUsers:
+        # this means that some C.U.s could not be applied because of a dependency loop
+        raise Error("Detected loop in the ConfigurableUser "
+                    " dependencies: %r" % [ c.name()
+                                            for c in confUsers ])
     # ensure that all the Handles have been triggered
     known = set()
     unknown = set(Configurable.allConfigurables)
