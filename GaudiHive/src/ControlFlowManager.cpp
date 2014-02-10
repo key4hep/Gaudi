@@ -155,6 +155,13 @@ namespace concurrency {
     	states.updateState(m_algoIndex, State::CONTROLREADY);
   }
 
+  //---------------------------------------------------------------------------
+  void AlgorithmNode::promoteToControlReadyState(AlgsExecutionStates& states) const {
+
+    //std::cout << "REACHED ALGONODE " << m_algoName << std::endl;
+    if (State::INITIAL == states[m_algoIndex])
+        states.updateState(m_algoIndex, State::CONTROLREADY);
+  }
 
   //---------------------------------------------------------------------------
   void AlgorithmNode::printState(std::stringstream& output,
@@ -215,13 +222,102 @@ namespace concurrency {
       p->updateDecision(states, node_decisions);
   }
 
-//---------------------------------------------------------------------------
+
+
+
+  //---------------------------------------------------------------------------
   void ControlFlowGraph::initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map){
     m_headNode->initialize(algname_index_map);
+    buildDataDependenciesRealm();
   }
 
   //---------------------------------------------------------------------------
-  void ControlFlowGraph::addAlgorithmNode(const std::string& algoName, const std::string& parentName, bool inverted, bool allPass) {
+  void ControlFlowGraph::registerAlgorithmInDDIndex(Algorithm* algo) {
+
+    const std::string& algoName = algo->name();
+
+    DataObjectDescriptorCollection inputDataObjects = algo->inputDataObjects();
+    for (auto tag : inputDataObjects) {
+      if (inputDataObjects[tag].getBaseHandle()->isValid()) {
+        const std::string& inputAddress = inputDataObjects[tag].address();
+        auto& addresses = m_algoInputsMap[algoName];
+        if (std::find(addresses.begin(), addresses.end(), inputAddress) == addresses.end())
+          addresses.push_back(inputAddress);
+      }
+    }
+
+    auto it_in = m_algoInputsMap.find(algoName);
+    if ( it_in != m_algoInputsMap.end()) {
+      debug() << "Inputs of " << algoName << ": ";
+      for (auto input : it_in->second) {
+        debug() << input << ", ";
+      }
+      debug() << endmsg;
+    }
+
+    DataObjectDescriptorCollection outputDataObjects = algo->outputDataObjects();
+    for (auto tag : outputDataObjects) {
+      if (outputDataObjects[tag].getBaseHandle()->isValid()) {
+        const std::string& outputAddress = outputDataObjects[tag].address();
+        auto& addresses = m_algoOutputsMap[algoName];
+        if (std::find(addresses.begin(), addresses.end(), outputAddress) == addresses.end())
+          addresses.push_back(outputAddress);
+      }
+    }
+
+    auto it_out = m_algoOutputsMap.find(algoName);
+    if ( it_out != m_algoOutputsMap.end()) {
+      debug() << "Outputs of " << algoName << ": ";
+      for (auto output : it_out->second) {
+        debug() << output << ", ";
+      }
+      debug() << endmsg;
+ }
+  }
+  //---------------------------------------------------------------------------
+  void ControlFlowGraph::buildDataDependenciesRealm() {
+
+    for (auto algo : m_graphAlgoMap) {
+
+      for (auto input : m_algoInputsMap[algo.first]) {
+        for (auto algoSupplier : m_algoOutputsMap) {
+          const std::vector<std::string>& outputs = m_algoOutputsMap[algoSupplier.first];
+          if (std::find(outputs.begin(),outputs.end(),input) != outputs.end()) {
+            auto consumer = m_graphAlgoMap[algo.first];
+            const std::vector<AlgorithmNode*>& known_suppliers = consumer->getSupplierNodes();
+            auto supplier = m_graphAlgoMap[algoSupplier.first];
+            const std::vector<AlgorithmNode*>& known_consumers = supplier->getConsumerNodes();
+            if (std::find(known_suppliers.begin(),known_suppliers.end(),supplier) == known_suppliers.end())
+              consumer->addSupplierNode(supplier);
+            if (std::find(known_consumers.begin(),known_consumers.end(),consumer) == known_consumers.end())
+              supplier->addConsumerNode(consumer);
+          }
+        }
+      }
+
+      for (auto output : m_algoOutputsMap[algo.first]) {
+        for (auto algoConsumer : m_algoInputsMap) {
+          const std::vector<std::string>& inputs = m_algoInputsMap[algoConsumer.first];
+          if (std::find(inputs.begin(),inputs.end(),output) != inputs.end()) {
+            auto supplier = m_graphAlgoMap[algo.first];
+            const std::vector<AlgorithmNode*>& known_consumers = supplier->getConsumerNodes();
+            auto consumer = m_graphAlgoMap[algoConsumer.first];
+            const std::vector<AlgorithmNode*>& known_suppliers = consumer->getSupplierNodes();
+            if (std::find(known_suppliers.begin(),known_suppliers.end(),supplier) == known_suppliers.end())
+              consumer->addSupplierNode(supplier);
+            if (std::find(known_consumers.begin(),known_consumers.end(),consumer) == known_consumers.end())
+              supplier->addConsumerNode(consumer);
+          }
+        }
+      }
+
+    }
+  }
+
+  //---------------------------------------------------------------------------
+  void ControlFlowGraph::addAlgorithmNode(Algorithm* algo, const std::string& parentName, bool inverted, bool allPass) {
+
+    const std::string& algoName = algo->name();
 
     auto itP = m_graphAggMap.find(parentName);
     concurrency::DecisionNode* parentNode = itP->second;
@@ -240,10 +336,13 @@ namespace concurrency {
     parentNode->addDaughterNode(algoNode);
     algoNode->addParentNode(parentNode);
 
+    registerAlgorithmInDDIndex(algo);
   }
 
   //---------------------------------------------------------------------------
-  void ControlFlowGraph::addAggregateNode(const std::string& aggregateName, const std::string& parentName, bool modeOR, bool allPass, bool isLazy) {
+  void ControlFlowGraph::addAggregateNode(Algorithm* aggregateAlgo, const std::string& parentName, bool modeOR, bool allPass, bool isLazy) {
+
+    const std::string& aggregateName = aggregateAlgo->name();
 
     auto itP = m_graphAggMap.find(parentName);
     concurrency::DecisionNode* parentNode = itP->second;
@@ -298,6 +397,19 @@ namespace concurrency {
     m_headNode->promoteToControlReadyState(algo_states, node_decisions);
   }
 
+
+  //---------------------------------------------------------------------------
+  void ControlFlowGraph::promoteDataConsumers(const std::string& algo_name, AlgsExecutionStates& states) const {
+    debug() << "About to promote " << m_graphAlgoMap.at(algo_name)->getConsumerNodes().size()
+            << " data consumer(s) for " << algo_name << endmsg;
+    for (auto node : m_graphAlgoMap.at(algo_name)->getConsumerNodes()) {
+      debug() << "  ... about to promote consumer " << node->getNodeName() << endmsg;
+      node->promoteToControlReadyState(states);
+    }
+  }
+
+
+
   //---------------------------------------------------------------------------
   void ControlFlowManager::initialize(ControlFlowGraph* cf_graph,
                                       const std::unordered_map<std::string,unsigned int>& algname_index_map){
@@ -322,6 +434,11 @@ namespace concurrency {
   void ControlFlowManager::promoteToControlReadyState(AlgsExecutionStates& algo_states,
                                                       std::vector<int>& node_decisions) const {
     m_CFGraph->promoteToControlReadyState(algo_states, node_decisions);
+  }
+
+  //---------------------------------------------------------------------------
+  void ControlFlowManager::promoteDataConsumers(const std::string& algo_name, AlgsExecutionStates& states) const {
+    m_CFGraph->promoteDataConsumers(algo_name, states);
   }
 
 } // namespace

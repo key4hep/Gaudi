@@ -3,10 +3,12 @@
 
 // std includes
 #include <vector>
+#include <algorithm>
 #include <unordered_map>
 
 // fwk includes
 #include "AlgsExecutionStates.h"
+#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/CommonMessaging.h"
 
 namespace concurrency {
@@ -98,20 +100,30 @@ namespace concurrency {
     virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
     /// XXX: CF tests. Method to add a parent node
     void addParentNode(DecisionNode* node) { m_parents.push_back(node); }
+    /// Associate an AlgorithmNode, which is a data supplier for this one
+    void addSupplierNode(AlgorithmNode* node) { m_suppliers.push_back(node); }
+    /// Associate an AlgorithmNode, which is a data consumer of this one
+    void addConsumerNode(AlgorithmNode* node) { m_consumers.push_back(node); }
+    /// Get all supplier nodes
+    std::vector<AlgorithmNode*> getSupplierNodes() {return m_suppliers;}
+    /// Get all consumer nodes
+    std::vector<AlgorithmNode*> getConsumerNodes() {return m_consumers;}
     /// XXX: CF tests
     unsigned int getAlgoIndex() { return m_algoIndex; }
     /// Method to set algos to CONTROLREADY, if possible
     virtual int updateState(AlgsExecutionStates& states,
                             std::vector<int>& node_decisions) const;
-    /// XXX: CF tests.
+    /// XXX: CF tests
     virtual void promoteToControlReadyState(AlgsExecutionStates& states,
                                             std::vector<int>& node_decisions) const;
-    /// XXX: CF tests.
+    /// XXX: CF tests
+    void promoteToControlReadyState(AlgsExecutionStates& states) const;
+    /// XXX: CF tests
     virtual void updateDecision(AlgsExecutionStates& states,
                                 std::vector<int>& node_decisions) const;
     /// Print a string representing the control flow state
     virtual void printState(std::stringstream& output,
-    						AlgsExecutionStates& states,
+    			    AlgsExecutionStates& states,
                             const std::vector<int>& node_decisions,
                             const unsigned int& recursionLevel) const;
   private:
@@ -125,10 +137,16 @@ namespace concurrency {
     bool m_allPass;
     /// XXX: CF tests
     std::vector<DecisionNode*> m_parents;
+    /// AlgorithmNodes that represent algorithms producing an input needed for the algorithm
+    std::vector<AlgorithmNode*> m_suppliers;
+    /// AlgorithmNodes that represent algorithms which need the output of the algorithm
+    std::vector<AlgorithmNode*> m_consumers;
   };
 
 typedef std::unordered_map<std::string,AlgorithmNode*> GraphAlgoMap;
 typedef std::unordered_map<std::string,DecisionNode*> GraphAggregateMap;
+typedef std::unordered_map<std::string,std::vector<std::string> > AlgoInputsMap;
+typedef std::unordered_map<std::string,std::vector<std::string> > AlgoOutputsMap;
 
 class IControlFlowGraph {};
 
@@ -143,12 +161,16 @@ public:
     };
     /// Initialize graph
     void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
+    /// Register algorithm in the Data Dependency index
+    void registerAlgorithmInDDIndex(Algorithm* algo);
+    /// Interconnect algorithm nodes reflecting their data dependencies
+    void buildDataDependenciesRealm();
     /// Add a node, which has no parents
     void addHeadNode(const std::string& headName, bool modeOR, bool allPass, bool isLazy);
     /// Add algorithm node
-    void addAlgorithmNode(const std::string& daughterName, const std::string& parentName, bool inverted, bool allPass);
+    void addAlgorithmNode(Algorithm* daughterAlgo, const std::string& parentName, bool inverted, bool allPass);
     /// Add a node, which aggregates decisions of direct daughter nodes
-    void addAggregateNode(const std::string& daughterName, const std::string& parentName, bool modeOR, bool allPass, bool isLazy);
+    void addAggregateNode(Algorithm* daughterAlgo, const std::string& parentName, bool modeOR, bool allPass, bool isLazy);
     /// Get total number of graph nodes
     unsigned int getControlFlowNodeCounter() const {return m_nodeCounter;}
     /// XXX CF tests. Is needed for older CF implementation
@@ -161,6 +183,8 @@ public:
     /// XXX CF tests. A method to promote algorithm to Control Ready state (is used only to trigger the chain reaction of execution)
     void promoteToControlReadyState(AlgsExecutionStates& states,
                                     std::vector<int>& node_decisions) const;
+    ///
+    void promoteDataConsumers(const std::string& algo_name, AlgsExecutionStates& states) const;
     /// Print a string representing the control flow state
     void printState(std::stringstream& output,
                     AlgsExecutionStates& states,
@@ -173,8 +197,13 @@ public:
 private:
     /// the head node of the control flow graph; may want to have multiple ones once supporting trigger paths
     DecisionNode* m_headNode;
+    /// Indexes of decision realm
     GraphAlgoMap m_graphAlgoMap;
     GraphAggregateMap m_graphAggMap;
+    /// Indexes of data dependencies realm
+    AlgoInputsMap m_algoInputsMap;
+    AlgoOutputsMap m_algoOutputsMap;
+    /// Total number of nodes in the graph
     unsigned int m_nodeCounter;
     /// Service locator (needed to access the MessageSvc)
     mutable SmartIF<ISvcLocator> m_svcLocator;
@@ -211,6 +240,8 @@ public:
   /// XXX: CF tests
   void promoteToControlReadyState(AlgsExecutionStates& algo_states,
                                   std::vector<int>& node_decisions) const;
+  /// Promote data dependent algorithms to a new state
+  void promoteDataConsumers(const std::string& algo_name, AlgsExecutionStates& states) const;
   /// Initialize the control flow manager
   /// It greps the topalg list and the index map for the algo names
   void initialize(ControlFlowGraph* CFGraph,

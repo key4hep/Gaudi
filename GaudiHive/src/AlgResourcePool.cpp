@@ -172,7 +172,7 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
   if (subAlgorithms->empty() and not (algo->type() == "GaudiSequencer")){
     debug() << std::string(recursionDepth, ' ') << algo->name() << " is not a sequencer. Appending it" << endmsg;
     alglist.emplace_back(algo);
-    m_CFGraph->addAlgorithmNode(algo->name(),parentName,false,false);
+    m_CFGraph->addAlgorithmNode(algo,parentName,false,false);
 
     return StatusCode::SUCCESS;
   }
@@ -189,7 +189,7 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
     isLazy = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
     if (allPass) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
   }
-  m_CFGraph->addAggregateNode(algo->name(),parentName,modeOR,allPass,isLazy);
+  m_CFGraph->addAggregateNode(algo,parentName,modeOR,allPass,isLazy);
 
   for (Algorithm* subalgo : *subAlgorithms ){
     StatusCode sc (flattenSequencer(subalgo,alglist,algo->name(),recursionDepth));
