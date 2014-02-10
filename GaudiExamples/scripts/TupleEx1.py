@@ -34,10 +34,8 @@ Numbers = Rndm.Numbers
 
 from   GaudiPython.GaudiAlgs   import TupleAlgo, mapvct
 
-from GaudiKernel import ROOT6WorkAroundEnabled
-
-if ROOT6WorkAroundEnabled('ROOT-5836'):
-    GaudiPython.loaddict('CLHEPRflx')
+# ensure that we have the dictionary for CLHEP::HepVector to avoid a warning
+GaudiPython.loaddict('CLHEPRflx')
 
 # =============================================================================
 ## Primitive function which transform arbitrary sequence  into
