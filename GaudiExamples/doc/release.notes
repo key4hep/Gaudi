@@ -1,6 +1,10 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2014-02-10 - Marco Clemencic
+ - Modified the test gaudiexamples.return_codes.sigsegv not to expect a print
+   out from the ApplicationMgr (required for ROOT 6).
+
 ! 2014-02-07 - Marco Clemencic
  - Made the workaround for ROOT-5836 a permanent fix.
    The rationale is that the new warning message we are getting with ROOT 6 is
