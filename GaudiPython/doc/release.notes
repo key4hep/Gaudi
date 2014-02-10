@@ -1,6 +1,10 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2014-02-07 - Marco Clemencic
+ - Added workaround for ROOT-6032.
+   https://sft.its.cern.ch/jira/browse/ROOT-6032
+
 ! 2014-02-06 - Marco Clemencic
  - Added missing (?) header to the dictionary (needed for ROOT 6).
 

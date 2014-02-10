@@ -207,15 +207,24 @@ class iProperty(object) :
             if not gbl.Gaudi.Utils.hasProperty ( ip , name ) :
                 raise AttributeError, 'property %s does not exist' % name
             prop = ip.getProperty(name)
-            if not hasattr ( prop , 'value' ) or not type( value ) == type( prop.value() ) :
+
+            if ROOT6WorkAroundEnabled('ROOT-6032'):
+                canSetValue = (hasattr(prop, 'value') and
+                               'const(&)[' not in prop.value.func_doc and
+                               type(value) == type(prop.value()))
+            else:
+                canSetValue = (hasattr(prop, 'value') and
+                               type(value) == type(prop.value()))
+
+            if canSetValue:
+                if not prop.setValue(value) :
+                    raise AttributeError, 'property %s could not be set from %s' % (name, value)
+            else:
                 if   tuple     == type( value  )     : value = str(value)
                 elif hasattr ( value , 'toString' )  : value = value.toString()
                 elif not long  == type( value )      : value = '%s' % value
                 else                                 : value = '%d' % value
                 if prop.fromString( value ).isFailure() :
-                    raise AttributeError, 'property %s could not be set from %s' % (name,value)
-            else :
-                if not prop.setValue( value ) :
                     raise AttributeError, 'property %s could not be set from %s' % (name,value)
         else :
             if   type(value) == str            : value = '"%s"' % value # need double quotes
