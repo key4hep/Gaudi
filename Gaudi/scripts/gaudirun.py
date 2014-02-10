@@ -136,7 +136,9 @@ if __name__ == "__main__":
     parser.add_option("--new-conf-user-apply", action="store_false",
                       dest="old_conf_user_apply",
                       help="use the new (correct) logic when applying "
-                           "ConfigurableUsers (fixed bug #103803)")
+                           "ConfigurableUsers (fixed bug #103803), can be "
+                           "turned on also with the environment variable "
+                           "GAUDI_FIXED_APPLY_CONF")
     parser.add_option("-o", "--output", action = "store", type = "string",
                       help ="dump the configuration to a file. The format of "
                             "the options is determined by the extension of the "
@@ -183,7 +185,8 @@ if __name__ == "__main__":
                         profilerExtraOptions = '',
                         preload = [],
                         ncpus = None,
-                        old_conf_user_apply=True)
+                        # the old logic can be turned off with an env variable
+                        old_conf_user_apply='GAUDI_FIXED_APPLY_CONF' not in os.environ)
 
     # replace .qmt files in the command line with their contained args
     argv = []
