@@ -1,6 +1,11 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+! 2014-02-10 - Marco Clemencic
+ - Allow switching between old 'applyConfigurableUsers()' (bug #103803) and the
+   new one (fixed the bug, but different order of execution).
+   The old one is the default and will be made deprecated.
+
 ! 2014-02-07 - Marco Clemencic
  - Modified configurables test to expose bug #103808.
 
