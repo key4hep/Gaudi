@@ -10,13 +10,13 @@
 //------------------------------------------------------------------------------
 
   /** @class CPUCruncher
-   * 
+   *
    * A class that implements a search for prime numbers.
-   * A lot of allocations are performed on purpose not to stress only the FP 
+   * A lot of allocations are performed on purpose not to stress only the FP
    * unit of the CPU.
-   * 
+   *
    */
-  class CPUCruncher : public GaudiAlgorithm 
+  class CPUCruncher : public GaudiAlgorithm
   {
 
     friend class AlgFactory<CPUCruncher> ;
@@ -25,36 +25,36 @@
 
     typedef tbb::concurrent_hash_map<std::string,unsigned int> CHM;
 
-    /// the execution of the algorithm 
-    virtual StatusCode execute  () ; // the execution of the algorithm 
+    /// the execution of the algorithm
+    virtual StatusCode execute  () ; // the execution of the algorithm
     /// Its initialization
     virtual StatusCode initialize();
-    /// the finalization of the algorithm 
-    virtual StatusCode finalize () ; // the finalization of the algorithm 
+    /// the finalization of the algorithm
+    virtual StatusCode finalize () ; // the finalization of the algorithm
     /// Get the inputs
     virtual const std::vector<std::string> get_inputs();
     /// Get the outputs
     virtual const std::vector<std::string> get_outputs();
-    
+
   protected:
 
-    CPUCruncher 
-    ( const std::string& name , // the algorithm instance name 
-      ISvcLocator*       pSvc ); // the Service Locator 
+    CPUCruncher
+    ( const std::string& name , // the algorithm instance name
+      ISvcLocator*       pSvc ); // the Service Locator
 
-    /// virtual & protected desctrustor 
+    /// virtual & protected desctrustor
     virtual ~CPUCruncher() {}     // virtual & protected desctrustor
 
   private:
 
-    /// the default constructor is disabled 
+    /// the default constructor is disabled
     CPUCruncher () ;                              // no default constructor
     /// the copy constructor is disabled
-    CPUCruncher            ( const CPUCruncher& ) ; // no copy constructor 
+    CPUCruncher            ( const CPUCruncher& ) ; // no copy constructor
     /// the assignement operator is disabled
     CPUCruncher& operator= ( const CPUCruncher& ) ; // no assignement
     /// The CPU intensive function
-    void findPrimes (const unsigned long int ) ; 
+    void findPrimes (const unsigned long int ) ;
 
     /// Calibrate
     void calibrate();
@@ -71,14 +71,14 @@
 
     // For the concurrency
 
-    const uint MAX_INPUTS = 10;
-    const uint MAX_OUTPUTS = 2;
+    const uint MAX_INPUTS = 40;
+    const uint MAX_OUTPUTS = 10;
 
     std::vector<SmartIF<DataObjectHandle<DataObject> > > m_inputHandles;
     std::vector<SmartIF<DataObjectHandle<DataObject> > > m_outputHandles;
 
     unsigned int m_rwRepetitions;
-    
+
     static CHM m_name_ncopies_map;
 
   };
