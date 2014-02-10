@@ -1372,9 +1372,12 @@ def applyConfigurableUsers():
             yield (c for c in Configurable.allConfigurables.values()
                    if c.isApplicable()).next()
 
+    debugApplyOrder = 'GAUDI_DUBUG_CONF_USER' in os.environ
     for c in applicableConfUsers():
         if c._enabled:
             log.info("applying configuration of %s", c.name())
+            if debugApplyOrder:
+                sys.stderr.write('applying %r' % c)
             c.__apply_configuration__()
             log.info(c)
         else:
@@ -1422,6 +1425,7 @@ def applyConfigurableUsers_old():
         return
     _appliedConfigurableUsers_ = True
 
+    debugApplyOrder = 'GAUDI_DUBUG_CONF_USER' in os.environ
     confUsers = [ c
                   for c in Configurable.allConfigurables.values()
                   if hasattr(c,"__apply_configuration__") ]
@@ -1439,6 +1443,8 @@ def applyConfigurableUsers_old():
                 enabled = (not hasattr(c, "_enabled")) or c._enabled
                 if enabled:
                     log.info("applying configuration of %s", c.name())
+                    if debugApplyOrder:
+                        sys.stderr.write('applying %r' % c)
                     c.__apply_configuration__()
                     log.info(c)
                 else:
