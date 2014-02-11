@@ -152,15 +152,23 @@ namespace concurrency {
 
     //std::cout << "REACHED ALGONODE " << m_algoName << std::endl;
     if (State::INITIAL == states[m_algoIndex])
-    	states.updateState(m_algoIndex, State::CONTROLREADY);
+      states.updateState(m_algoIndex, State::CONTROLREADY);
   }
 
   //---------------------------------------------------------------------------
   void AlgorithmNode::promoteToControlReadyState(AlgsExecutionStates& states) const {
 
     //std::cout << "REACHED ALGONODE " << m_algoName << std::endl;
-    if (State::INITIAL == states[m_algoIndex])
-        states.updateState(m_algoIndex, State::CONTROLREADY);
+    if (State::INITIAL == states[m_algoIndex]) {
+      bool time2control = true;
+      for (auto algoNode : m_suppliers)
+        if (states[algoNode->getAlgoIndex()] != State::EVTACCEPTED) {
+          time2control = false;
+          break;
+        }
+
+      if (time2control) states.updateState(m_algoIndex, State::CONTROLREADY);
+    }
   }
 
   //---------------------------------------------------------------------------
