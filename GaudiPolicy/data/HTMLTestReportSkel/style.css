@@ -90,3 +90,7 @@ section#content{
 	display: run-in;
 	position: fixed;
 }
+
+#slot-info {
+	font-size: 80%;
+}

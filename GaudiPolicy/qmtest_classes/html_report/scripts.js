@@ -249,6 +249,13 @@ $(function () {
 	$(".loading").loadingIcon().removeClass("loading");
 	var ignore_fields = ["qmtest.cause", "qmtest.target"];
 	var fields_order = ["qmtest.start_time", "qmtest.end_time"];
+
+	// Add details about the slot (if available)
+	$.get("../../../slot-config.json").done(function(slot_config) {
+		$('#slot-info').text('(slot ' + slot_config.slot + ' ' +
+				slot_config.date + ')');
+	});
+
 	// load the summary
 	$.get("summary.json", parseSummary, 'json')
 	.success(function(){

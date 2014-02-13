@@ -495,6 +495,11 @@ def main():
     if not os.path.isdir(output) :
         os.makedirs(output)
 
+    # Copy the project build manifest, if present.
+    manifest_file = os.path.join(options.inputDirectory, 'manifest.xml')
+    if os.path.exists(manifest_file):
+        shutil.copy(manifest_file, output)
+
     # Initialise the annotations
     annotations = [{}]
     # create the summary file

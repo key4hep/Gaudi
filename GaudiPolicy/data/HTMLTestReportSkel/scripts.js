@@ -310,9 +310,29 @@ $(function () {
 	var ignore_fields = ["qmtest.cause", "qmtest.target"];
 	var fields_order = ["start_time", "end_time"];
 
+	// Add details about the project (if available)
+	$.get("manifest.xml").done(function(manifest) {
+		var proj = $("manifest > project", manifest);
+		if (proj) {
+			var text = ("for " + proj.attr("name") + " " +
+					     proj.attr("version"));
+			var binary_tag = $("binary_tag", manifest);
+			if (binary_tag)
+				text += " on " + binary_tag.text();
+			$("#project-info").text(text);
+			$(document).attr('title', 'Test Report ' + text);
+		}
+	});
+
+	// Add details about the slot (if available)
+	$.get("../../../slot-config.json").done(function(slot_config) {
+		$('#slot-info').text('(slot ' + slot_config.slot + ' ' +
+				slot_config.date + ')');
+	});
+
 	// load the summary
 	$.get("summary.json", parseSummary, 'json')
-	.success(function(){
+	.done(function(){
 		$("#summary").summary();
 		//var ul = $("<ul />");
 
@@ -361,7 +381,7 @@ $(function () {
 
 	// load annotations
 	$.getJSON('annotations.json')
-	.success(function(data) {
+	.done(function(data) {
 		$('#annotations').annotations(data).makeToggleable().removeClass("loading");
 
 	});

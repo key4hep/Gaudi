@@ -2,6 +2,12 @@ package GaudiPolicy
 package manager: Marco Clemencic
 
 ! 2014-02-13 - Marco Clemencic
+ - Fixed LBCORE-292: added project and slot details to the test summaries
+   The test results page now contains the project name, version, and platform
+   (CMake builds only), and the slot name and date (CMT and CMake).
+   https://its.cern.ch/jira/browse/LBCORE-292
+
+! 2014-02-13 - Marco Clemencic
  - Added support for CMTCONFIG x86_64-slc6-gcc48-test.
 
 ! 2014-01-29 - Marco Clemencic
