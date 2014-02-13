@@ -210,6 +210,10 @@ public:
     return (T*)a;
   }
 
+  // FIXME: (MCl) workaround for ROOT-6028, ROOT-6054, ROOT-6073
+  static StatusCode setPropertyFromString(Property& p, const std::string& s) {
+    return p.fromString(s);
+  }
 };
 
 template PyObject* Helper::toArray(int*,Py_ssize_t);

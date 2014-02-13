@@ -224,7 +224,11 @@ class iProperty(object) :
                 elif hasattr ( value , 'toString' )  : value = value.toString()
                 elif not long  == type( value )      : value = '%s' % value
                 else                                 : value = '%d' % value
-                if prop.fromString( value ).isFailure() :
+                if ROOT6WorkAroundEnabled('ROOT-6028'):
+                    sc = cppyy.gbl.GaudiPython.Helper.setPropertyFromString(prop, value)
+                else:
+                    sc = prop.fromString(value)
+                if sc.isFailure() :
                     raise AttributeError, 'property %s could not be set from %s' % (name,value)
         else :
             if   type(value) == str            : value = '"%s"' % value # need double quotes
