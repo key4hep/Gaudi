@@ -305,9 +305,9 @@ def which(executable):
     return None
 
 def rationalizepath(p):
-    p = os.path.normpath(os.path.expandvars(p))
-    if os.path.exists(p):
-        p = os.path.realpath(p)
+    np = os.path.normpath(os.path.expandvars(p))
+    if os.path.exists(np):
+        p = os.path.realpath(np)
     return p
 
 # XML Escaping character
