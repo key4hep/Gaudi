@@ -17,6 +17,7 @@ use Python * LCG_Interfaces -no_auto_imports
 tag x86_64-slc5-gcc43-test   x86_64-slc5-gcc43-opt target-test
 tag x86_64-slc5-gcc46-test   x86_64-slc5-gcc46-opt target-test
 tag x86_64-slc6-gcc46-test   x86_64-slc6-gcc46-opt target-test
+tag x86_64-slc6-gcc48-test   x86_64-slc6-gcc48-opt target-test
 
 # Add Google malloc replacement to the LD_LIBRARY_PATH
 use tcmalloc * LCG_Interfaces -no_auto_imports
