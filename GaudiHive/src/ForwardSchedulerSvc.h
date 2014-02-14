@@ -237,6 +237,8 @@ private:
   concurrency::ControlFlowManager m_cfManager;
   // XXX: CF tests. Temporary property to switch between ControlFlow implementations
   bool m_CFNext;
+  // XXX: CF tests. Temporary property to switch between DataFlow implementations
+  bool m_DFNext;
 
   // Needed to queue actions on algorithm finishing and decrement algos in flight
   friend class AlgoExecutionTask;

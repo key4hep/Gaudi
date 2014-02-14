@@ -41,6 +41,7 @@ ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* 
   declareProperty("MaxAlgosInFlight", m_maxAlgosInFlight = 0, "Taken from the whiteboard. Deprecated" );
   // XXX: CF tests. Temporary property to switch between ControlFlow implementations
   declareProperty("ControlFlowManagerNext", m_CFNext = false );
+  declareProperty("DataFlowManagerNext", m_DFNext = false );
 }
 
 //---------------------------------------------------------------------------
@@ -467,8 +468,9 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
        if (!slotIt->complete)
          eventSlotsPtrs.push_back(&(*slotIt));
      }
-     std::sort(eventSlotsPtrs.begin(), eventSlotsPtrs.end(), [](EventSlot* a, EventSlot* b) {
-       return a->eventContext->m_evt_num < b->eventContext->m_evt_num;});
+     std::sort(eventSlotsPtrs.begin(),
+               eventSlotsPtrs.end(),
+               [](EventSlot* a, EventSlot* b) {return a->eventContext->m_evt_num < b->eventContext->m_evt_num;});
    } else {
      eventSlotsPtrs.push_back(&m_eventSlots[si]);
    }
@@ -484,9 +486,10 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
     // XXX: CF tests
     if (!m_CFNext) {
       m_cfManager.updateEventState(thisAlgsStates,thisSlot.controlFlowState);
+      if (m_DFNext && !algo_name.empty()) m_cfManager.promoteDataConsumersToCR(algo_name,thisAlgsStates);
     } else {
       if (!algo_name.empty()) {
-        m_cfManager.promoteDataConsumers(algo_name,thisAlgsStates);
+        if (m_DFNext) m_cfManager.promoteDataConsumersToCR(algo_name,thisAlgsStates);
         m_cfManager.updateDecision(algo_name,thisAlgsStates,thisSlot.controlFlowState);
       }
     }
@@ -670,7 +673,7 @@ void ForwardSchedulerSvc::dumpSchedulerState(int iSlot) {
 
       outputMessageStream << cFlowStateStringStream.str();
 
-    fatal() <<  outputMessageStream.str() << endmsg;
+      fatal() <<  outputMessageStream.str() << endmsg;
     }
   }
 
@@ -693,7 +696,13 @@ StatusCode ForwardSchedulerSvc::promoteToControlReady(unsigned int iAlgo, int si
 
 StatusCode ForwardSchedulerSvc::promoteToDataReady(unsigned int iAlgo, int si) {
 
-  StatusCode sc (m_eventSlots[si].dataFlowMgr.canAlgorithmRun(iAlgo));
+  StatusCode sc;
+  if (!m_DFNext) {
+    sc = m_eventSlots[si].dataFlowMgr.canAlgorithmRun(iAlgo);
+  } else {
+    sc = m_cfManager.algo_data_dependencies_satisfied(index2algname(iAlgo),m_eventSlots[si].algsStates);
+  }
+
   StatusCode updateSc(StatusCode::FAILURE);
   if (sc == StatusCode::SUCCESS)
     updateSc = m_eventSlots[si].algsStates.updateState(iAlgo,AlgsExecutionStates::DATAREADY);
@@ -784,7 +793,9 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si, IA
   for (const auto& new_product : new_products)
     debug() << "Found in WB: " << new_product << endmsg;
   EventSlot& thisSlot = m_eventSlots[si];
-  thisSlot.dataFlowMgr.updateDataObjectsCatalog(new_products);
+  // XXX: CF tests
+  if (!m_DFNext)
+    thisSlot.dataFlowMgr.updateDataObjectsCatalog(new_products);
 
   debug() << "Algorithm " << algo->name() << " executed. Algorithms scheduled are " << m_algosInFlight << endmsg;
 

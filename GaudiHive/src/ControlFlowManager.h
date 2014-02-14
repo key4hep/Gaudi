@@ -110,6 +110,8 @@ namespace concurrency {
     std::vector<AlgorithmNode*> getConsumerNodes() {return m_consumers;}
     /// XXX: CF tests
     unsigned int getAlgoIndex() { return m_algoIndex; }
+    /// Method to check whether the Algorithm has its all data dependency satisfied
+    bool data_dependencies_satisfied(const AlgsExecutionStates& states) const;
     /// Method to set algos to CONTROLREADY, if possible
     virtual int updateState(AlgsExecutionStates& states,
                             std::vector<int>& node_decisions) const;
@@ -148,9 +150,11 @@ typedef std::unordered_map<std::string,DecisionNode*> GraphAggregateMap;
 typedef std::unordered_map<std::string,std::vector<std::string> > AlgoInputsMap;
 typedef std::unordered_map<std::string,std::vector<std::string> > AlgoOutputsMap;
 
+class ControlFlowManager;
 class IControlFlowGraph {};
 
 class ControlFlowGraph : public CommonMessaging<IControlFlowGraph> {
+  friend ControlFlowManager;
 public:
     /// Constructor
     ControlFlowGraph(const std::string& name, SmartIF<ISvcLocator> svc) :
@@ -180,11 +184,6 @@ public:
     void updateDecision(const std::string& algo_name,
                         AlgsExecutionStates& states,
                         std::vector<int>& node_decisions) const;
-    /// XXX CF tests. A method to promote algorithm to Control Ready state (is used only to trigger the chain reaction of execution)
-    void promoteToControlReadyState(AlgsExecutionStates& states,
-                                    std::vector<int>& node_decisions) const;
-    ///
-    void promoteDataConsumers(const std::string& algo_name, AlgsExecutionStates& states) const;
     /// Print a string representing the control flow state
     void printState(std::stringstream& output,
                     AlgsExecutionStates& states,
@@ -241,7 +240,9 @@ public:
   void promoteToControlReadyState(AlgsExecutionStates& algo_states,
                                   std::vector<int>& node_decisions) const;
   /// Promote data dependent algorithms to a new state
-  void promoteDataConsumers(const std::string& algo_name, AlgsExecutionStates& states) const;
+  void promoteDataConsumersToCR(const std::string& algo_name, AlgsExecutionStates& states) const;
+  /// Check all data dependencies of an algorithm are satisfied
+  bool algo_data_dependencies_satisfied(const std::string& algo_name, const AlgsExecutionStates& states) const;
   /// Initialize the control flow manager
   /// It greps the topalg list and the index map for the algo names
   void initialize(ControlFlowGraph* CFGraph,
