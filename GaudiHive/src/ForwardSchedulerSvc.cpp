@@ -105,13 +105,6 @@ StatusCode ForwardSchedulerSvc::initialize(){
    2) Assume none are required
   */
   if (algosDependenciesSize == 0){
-    // Get the event root from the IDataManagerSvc interface of the WhiteBoard
-    SmartIF<IDataManagerSvc> dataMgrSvc (m_whiteboard);
-    std::string rootInTESName(dataMgrSvc->rootName());
-    if ("" != rootInTESName && '/'!=rootInTESName[rootInTESName.size()-1]){
-      rootInTESName = rootInTESName+"/";
-    }
-
     for (IAlgorithm* ialgoPtr : algos){
       Algorithm* algoPtr = dynamic_cast<Algorithm*> (ialgoPtr);
       if (nullptr == algoPtr){
@@ -125,7 +118,7 @@ StatusCode ForwardSchedulerSvc::initialize(){
         info() << "Algorithm " << algoPtr->name() << " data dependencies:" << endmsg;
         for (MinimalDataObjectHandle* handlePtr : algoHandles ){
           if (handlePtr->accessType() == IDataObjectHandle::AccessType::READ && handlePtr->isValid()){
-            const std::string& productName = rootInTESName + handlePtr->dataProductName();
+            const std::string& productName = handlePtr->dataProductName();
             info() << "  o READ Handle found for product " << productName << endmsg;
             algoDependencies.emplace_back(productName);
           }
@@ -700,7 +693,7 @@ StatusCode ForwardSchedulerSvc::promoteToDataReady(unsigned int iAlgo, int si) {
   if (!m_DFNext) {
     sc = m_eventSlots[si].dataFlowMgr.canAlgorithmRun(iAlgo);
   } else {
-    sc = m_cfManager.algo_data_dependencies_satisfied(index2algname(iAlgo),m_eventSlots[si].algsStates);
+    sc = m_cfManager.algoDataDependenciesSatisfied(index2algname(iAlgo),m_eventSlots[si].algsStates);
   }
 
   StatusCode updateSc(StatusCode::FAILURE);
