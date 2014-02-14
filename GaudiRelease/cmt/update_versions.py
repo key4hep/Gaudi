@@ -11,7 +11,7 @@ import os, re, sys, time
 _req_version_pattern = re.compile(r"^\s*version\s*(v[0-9]+r[0-9]+(?:p[0-9]+)?)\s*$")
 _cml_version_pattern = re.compile(r"^\s*gaudi_subdir\s*\(\s*\S+\s+(v[0-9]+r[0-9]+(?:p[0-9]+)?)\)\s*$")
 _hwaf_hpyscript_version_pattern = re.compile(r"^\s*[\"']version[\"']\s*:\s*[\"'](v[0-9]+r[0-9]+(?:p[0-9]+)?)[\"'].*$")
-_hwaf_ymlscript_version_pattern = re.compile(r"^\s*version\s*:\s*([\"']|)(v[0-9]+r[0-9]+(?:p[0-9]+)?)([\"']|).*$")
+_hwaf_ymlscript_version_pattern = re.compile(r"^\s*version\s*:\s*[\"'](v[0-9]+r[0-9]+(?:p[0-9]+)?)[\"'].*$")
 
 def extract_version(f):
     """
@@ -39,8 +39,8 @@ def change_cml_version(cml, newversion):
             open(cml, "w").writelines(out)
 
 def change_hwaf_version(pkgdir, newversion):
-    hname = os.path.join(pkgdir, "hscript.py")
-    yname = os.path.join(pkgdir, "hscript.yml")
+    hname = os.path.join(pkgdir, "..", "hscript.py")
+    yname = os.path.join(pkgdir, "..", "hscript.yml")
     fname = None
     pat = None
     if os.path.exists(hname):
@@ -52,10 +52,10 @@ def change_hwaf_version(pkgdir, newversion):
     else:
         print ("*** package [%s] has no hwaf script" % pkgdir)
         return
-    
+
     out = []
     changed = False
-    for l in open(hname):
+    for l in open(fname):
         m = pat.match(l)
         if m and m.group(1) != newversion:
             print "%s: %s -> %s"%(fname, m.group(1), newversion)

@@ -1,6 +1,9 @@
 Package: GaudiRelease
 Maintainer: Marco Clemencic
 
+! 2014-02-14 - Marco Clemencic
+ - minor fix to update_versions.py
+
 ! 2013-12-19 - Marco Clemencic
  - Added GaudiPluginService to GaudiRelease (for getpack).
 
