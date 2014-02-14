@@ -28,6 +28,9 @@ Package manager : Marco Clemencic
  - Added workaround for ROOT-5847.
    https://sft.its.cern.ch/jira/browse/ROOT-5847
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ! 2013-11-05 - Marco Clemencic
  - Restore the old order of load of Pythonizations because the new order was
    causing a failure in ROOT 5.
@@ -79,9 +82,6 @@ Package manager : Marco Clemencic
    We still try to import PyCintex because it's the only way to enable Cintex
    (see <https://sft.its.cern.ch/jira/browse/ROOT-3623>, but it does not work
    in Python).
-
-! 2013-12-11 - Sebastien Binet
- - Added hwaf configuration files.
 
 ============================= GaudiPython v12r7 ==============================
 ! 2013-09-25 - Marco Clemencic

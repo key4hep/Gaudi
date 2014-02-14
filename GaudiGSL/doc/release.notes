@@ -7,6 +7,9 @@
  - Fixed long standing issue with InterpTest test, actually due to a bug in the
    copy constructor of SplineBase.
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ! 2013-07-19 - Marco Clemencic
  - Clean up in the use of the new PluginService.
 
@@ -16,9 +19,6 @@
 
 ! 2013-07-17 - Marco Clemencic
  - Removed factories forward declarations.
-
-! 2013-12-11 - Sebastien Binet
- - Added hwaf configuration files.
 
 =============================== GaudiGSL v7r12 ===============================
 ! 2012-11-06 - Marco Clemencic

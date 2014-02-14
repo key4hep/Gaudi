@@ -4,6 +4,9 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ! 2013-12-04 - Marco Clemencic
  - Removed unnecessary use of boost::shared_ptr.
 
@@ -30,9 +33,6 @@
  - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
  - Renamed the ApplicationMgr property ReflexPluginDebugLevel to
    PluginDebugLevel.
-
-! 2013-12-11 - Sebastien Binet
- - Added hwaf configuration files.
 
 ============================= GaudiCoreSvc v2r1 ==============================
 ! 2013-11-18 - Marco Clemencic

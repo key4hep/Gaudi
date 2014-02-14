@@ -37,6 +37,9 @@ package manager: Marco Clemencic
  - Use GaudiKernel.ROOT6WorkAroundEnabled to enable/disable the workaround for
    ROOT-5694.
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ! 2013-11-15 - Marco Clemencic
  - Ignore warning about classes already in TClassTable in the tests while
    ROOT-5694 is being fixed.
@@ -73,9 +76,6 @@ package manager: Marco Clemencic
    or set the environment variable : "GAUDI_QMTEST_XML_OUTPUT=output_Dir"
    where "output_Dir" is the directory where you want to see the xml files.
    The option has the priority on the environment variable.
-
-! 2013-12-11 - Sebastien Binet
- - Added hwaf configuration files.
 
 ============================= GaudiPolicy v13r1 ==============================
 ! 2013-11-18 - Marco Clemencic

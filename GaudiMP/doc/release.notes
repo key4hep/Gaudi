@@ -1,6 +1,9 @@
 Package: GaudiMP
 Package manager : Sebastien Binet
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ! 2013-07-23 - Marco Clemencic
  - Modified IoComponentMgr::initialize to print the Python error in case of
    failure when importing 'GaudiMP.IoRegistry'.
@@ -17,9 +20,6 @@ Package manager : Sebastien Binet
 
 ! 2013-07-03 - Marco Clemencic
  - Removed explicit link against Reflex from cmt/requirements.
-
-! 2013-12-11 - Sebastien Binet
- - Added hwaf configuration files.
 
 ================================ GaudiMP v2r1 ================================
 ================================ GaudiMP-02-00-01 ============================

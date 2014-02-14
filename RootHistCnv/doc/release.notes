@@ -1,6 +1,9 @@
 Package: RootHistCnv
 Package manager : David Quarrie
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ! 2013-07-30 - Marco Clemencic
  - Use DECLARE_CONVERTER_FACTORY instead of DECLARE_CONVERTER (avoid clashes).
 
@@ -19,9 +22,6 @@ Package manager : David Quarrie
 
 ! 2013-07-03 - Marco Clemencic
  - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
-
-! 2013-12-11 - Sebastien Binet
- - Added hwaf configuration files.
 
 ============================= RootHistCnv v11r3 ==============================
 ! 2013-10-24 - Chris Jones

@@ -1,6 +1,9 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ! 2013-07-19 - Marco Clemencic
  - Clean up in the use of the new PluginService.
 
@@ -18,9 +21,6 @@ Package manager : Marco Clemencic
  - Minor changes in a comment.
  - Removed explicit link against Reflex from cmt/requirements.
  - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
-
-! 2013-12-11 - Sebastien Binet
- - Added hwaf configuration files.
 
 ============================== GaudiUtils v4r7 ===============================
 ! 2013-11-01 - Markus Frank

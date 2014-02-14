@@ -41,6 +41,9 @@ Package manager : Marco Clemencic
 ! 2013-12-29 - Marco Clemencic
  - Fixed a regression with the option --load-library of genconf.
 
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
 ! 2013-12-05 - Marco Clemencic
  - Re-disabled boost::shared_ptr to remove the dependency on ROOT in
    StatusCode.h.  For GCCXML we hide the actual implementation.
@@ -123,9 +126,6 @@ Package manager : Marco Clemencic
  - Added a GaudiKernel/PluginService.h to hide the technical implementation of
    the plugin service for the migration to ROOT 6.
  - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
-
-! 2013-12-11 - Sebastien Binet
- - Added hwaf configuration files.
 
 ============================= GaudiKernel v29r1 ==============================
 ============================= GaudiKernel-29-00-02 =============================
