@@ -1,6 +1,7 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+============================ GaudiExamples v25r0 =============================
 ! 2014-02-10 - Marco Clemencic
  - Modified the test gaudiexamples.return_codes.sigsegv not to expect a print
    out from the ApplicationMgr (required for ROOT 6).

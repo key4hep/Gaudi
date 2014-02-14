@@ -1,6 +1,7 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+================================ Gaudi v25r0 =================================
 ! 2014-02-10 - Marco Clemencic
  - Enable the fixed 'applyConfigurableUsers()' if the environment variable
    GAUDI_FIXED_APPLY_CONF is set.

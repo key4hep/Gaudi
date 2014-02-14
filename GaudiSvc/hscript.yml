@@ -4,7 +4,7 @@ package: {
     name:    GaudiSvc,
     authors: [],
 
-    version:  "v19r4",
+    version:  "v21r0",
     deps: {
         public: [
             GaudiKernel,

@@ -7,7 +7,7 @@ PACKAGE = {
     "name":    "GaudiPython",
     "authors": ["gaudi collaboration"],
 
-    "version":  "v12r6",
+    "version":  "v13r0",
 }
 
 ### ---------------------------------------------------------------------------

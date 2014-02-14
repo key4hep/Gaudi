@@ -4,7 +4,7 @@ package: {
     name:    GaudiSys,
     authors: ["gaudi collaboration"],
 
-    version:  "v24r2",
+    version:  "v25r0",
     deps: {
         public: [
             GaudiKernel,

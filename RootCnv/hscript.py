@@ -7,7 +7,7 @@ PACKAGE = {
     "name":    "RootCnv",
     "authors": ["gaudi collaboration"],
 
-    "version":  "v1r21",
+    "version":  "v1r22",
 }
 
 ### ---------------------------------------------------------------------------

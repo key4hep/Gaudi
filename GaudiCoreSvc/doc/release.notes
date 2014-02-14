@@ -4,6 +4,7 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+============================= GaudiCoreSvc v3r0 ==============================
 ! 2013-12-11 - Sebastien Binet
  - Added hwaf configuration files.
 

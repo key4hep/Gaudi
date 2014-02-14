@@ -4,7 +4,7 @@ package: {
     name:    PartPropSvc,
     authors: ["gaudi collaboration"],
 
-    version:  "v4r6",
+    version:  "v5r0",
     deps: {
         public: [
             GaudiPolicy,

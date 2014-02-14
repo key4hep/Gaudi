@@ -7,7 +7,7 @@ PACKAGE = {
     "name":    "GaudiKernel",
     "authors": ["LHCb Gaudi Team"],
 
-    "version":  "v28r8",
+    "version":  "v30r0",
 }
 
 ### ---------------------------------------------------------------------------

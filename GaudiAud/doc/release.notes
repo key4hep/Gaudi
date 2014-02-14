@@ -1,6 +1,7 @@
 Package: GaudiAud
 Package manager : David Quarrie, Marco Clemencic
 
+=============================== GaudiAud v10r0 ===============================
 ! 2013-12-11 - Sebastien Binet
  - Added hwaf configuration files.
 

@@ -4,7 +4,7 @@ package: {
     name:    GaudiPartProp,
     authors: ["gaudi collaboration"],
 
-    version:  "v1r2",
+    version:  "v2r0",
     deps: {
         public: [
             GaudiKernel,

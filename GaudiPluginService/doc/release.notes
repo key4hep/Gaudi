@@ -4,6 +4,7 @@
 ! Purpose     : Provide a generic plugin service.
 !-----------------------------------------------------------------------------
 
+========================== GaudiPluginService v1r0 ===========================
 ! 2014-02-03 - Marco Clemencic
  - Added support for Reflex names for components, enabled with the compile flag
    -DGAUDI_REFLEX_COMPONENT_ALIASES.

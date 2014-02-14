@@ -4,6 +4,7 @@
 # Description: standard and commonly used components
 ################################################################################
 
+============================ GaudiCommonSvc v3r0 =============================
 ! 2013-12-11 - Sebastien Binet
  - Added hwaf configuration files.
 

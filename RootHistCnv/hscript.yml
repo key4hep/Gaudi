@@ -4,7 +4,7 @@ package: {
     name:    RootHistCnv,
     authors: ["gaudi collaboration"],
 
-    version:  "v11r2",
+    version:  "v12r0",
     deps: {
         public: [
             GaudiKernel,

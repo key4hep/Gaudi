@@ -4,7 +4,7 @@ package: {
     name:    GaudiUtils,
     authors: ["gaudi collaboration"],
 
-    version:  "v4r7",
+    version:  "v5r0",
     deps: {
         public: [
             GaudiKernel,

@@ -1,6 +1,7 @@
 Package: RootHistCnv
 Package manager : David Quarrie
 
+============================= RootHistCnv v12r0 ==============================
 ! 2013-12-11 - Sebastien Binet
  - Added hwaf configuration files.
 

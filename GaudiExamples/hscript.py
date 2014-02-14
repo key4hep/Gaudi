@@ -7,7 +7,7 @@ PACKAGE = {
     "name":    "GaudiExamples",
     "authors": ["gaudi collaboration"],
 
-    "version":  "v24r2",
+    "version":  "v25r0",
 }
 
 ### ---------------------------------------------------------------------------

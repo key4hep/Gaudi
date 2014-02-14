@@ -3,7 +3,7 @@ package: {
     name:    GaudiCoreSvc,
     authors: ["gaudi collaboration"],
 
-    version:  "v1r5",
+    version:  "v3r0",
     deps: {
         public: [
             GaudiKernel,

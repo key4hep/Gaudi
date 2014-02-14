@@ -7,7 +7,7 @@ PACKAGE = {
     "name":    "GaudiMP",
     "authors": ["gaudi collaboration"],
 
-    "version":  "v1r7",
+    "version":  "v3r0",
 }
 
 ### ---------------------------------------------------------------------------

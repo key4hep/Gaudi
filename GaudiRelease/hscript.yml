@@ -7,7 +7,7 @@ package: {
     name:    GaudiRelease,
     authors: [],
 
-    version:  "v24r2",
+    version:  "v25r0",
     deps: {
         public: [
             GaudiPolicy,

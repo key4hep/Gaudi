@@ -3,7 +3,7 @@ package: {
     name:    GaudiGSL,
     authors: ["gaudi collaboration"],
 
-    version:  "v7r12",
+    version:  "v8r0",
     deps: {
         public: [
             GaudiKernel,

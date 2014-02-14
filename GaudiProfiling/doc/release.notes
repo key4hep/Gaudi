@@ -4,6 +4,7 @@
 ! Purpose     : Profiling and performance monitoring of Gaudi/LHCb software
 !-----------------------------------------------------------------------------
 
+============================ GaudiProfiling v2r0 =============================
 ! 2013-12-11 - Sebastien Binet
  - Added hwaf configuration files.
 

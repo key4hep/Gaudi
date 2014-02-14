@@ -4,7 +4,7 @@ package: {
     name:    GaudiMonitor,
     authors: ["gaudi collaboration"],
 
-    version:  "v3r3",
+    version:  "v5r0",
     deps: {
         public: [
             GaudiKernel,

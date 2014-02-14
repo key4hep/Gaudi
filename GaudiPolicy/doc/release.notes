@@ -1,6 +1,7 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v14r0 ==============================
 ! 2014-02-13 - Marco Clemencic
  - Prevent path normalization in test arguments if they do not point to a file.
    Needed because sometimes an argument is a URL and it must not be normalized.
