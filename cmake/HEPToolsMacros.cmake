@@ -330,6 +330,8 @@ macro(lcg_set_external name hash version dir)
           endif()
         endif()
         list(APPEND LCG_projects ${name})
+    elseif("${name}" STREQUAL "cmaketools")
+        # ignore problematic externals
     else()
         #message(STATUS "External ${name} -> ${${name}_config_version}")
         list(APPEND LCG_externals ${name})
