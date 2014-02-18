@@ -158,13 +158,13 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   void AlgorithmNode::promoteToControlReadyState(AlgsExecutionStates& states) const {
 
-    //std::cout << "REACHED ALGONODE " << m_algoName << std::endl;
-    if (State::INITIAL == states[m_algoIndex] && data_dependencies_satisfied(states))
+    std::cout << "REACHED ALGONODE (DATACONSUMER)" << m_algoName << std::endl;
+    if (State::INITIAL == states[m_algoIndex] && dataDependenciesSatisfied(states))
       states.updateState(m_algoIndex, State::CONTROLREADY);
   }
 
   //---------------------------------------------------------------------------
-  bool AlgorithmNode::data_dependencies_satisfied(const AlgsExecutionStates& states) const {
+  bool AlgorithmNode::dataDependenciesSatisfied(const AlgsExecutionStates& states) const {
 
     bool result = true;
     for (auto algoNode : m_suppliers)
@@ -242,6 +242,8 @@ namespace concurrency {
   void ControlFlowGraph::initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map){
     m_headNode->initialize(algname_index_map);
     buildDataDependenciesRealm();
+    //for (auto n : getDataIndependentNodes())
+    //  info() << "Independent node: " << n->getNodeName() << endmsg;
   }
 
   //---------------------------------------------------------------------------
@@ -354,6 +356,12 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
+  AlgorithmNode* ControlFlowGraph::getAlgorithmNode(const std::string& algoName) const {
+
+    return m_graphAlgoMap.at(algoName);
+  }
+
+  //---------------------------------------------------------------------------
   void ControlFlowGraph::addAggregateNode(Algorithm* aggregateAlgo, const std::string& parentName, bool modeOR, bool allPass, bool isLazy) {
 
     const std::string& aggregateName = aggregateAlgo->name();
@@ -402,7 +410,19 @@ namespace concurrency {
                                         AlgsExecutionStates& algo_states,
                                         std::vector<int>& node_decisions) const {
     debug() << "Setting decision of algorithm " << algo_name << " and propagating it upwards.." << endmsg;
-    m_graphAlgoMap.at(algo_name)->updateDecision(algo_states, node_decisions);
+    getAlgorithmNode(algo_name)->updateDecision(algo_states, node_decisions);
+  }
+
+  //---------------------------------------------------------------------------
+  std::vector<AlgorithmNode*> ControlFlowGraph::getDataIndependentNodes() const {
+
+    std::vector<AlgorithmNode*> result;
+
+    for (auto node : m_algoInputsMap)
+      if (node.second.empty())
+        result.push_back(getAlgorithmNode(node.first));
+
+    return result;
   }
 
 
@@ -438,7 +458,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   void ControlFlowManager::promoteDataConsumersToCR(const std::string& algo_name, AlgsExecutionStates& states) const {
 
-    const std::vector<AlgorithmNode*>& consumers = m_CFGraph->m_graphAlgoMap.at(algo_name)->getConsumerNodes();
+    const std::vector<AlgorithmNode*>& consumers = m_CFGraph->getAlgorithmNode(algo_name)->getConsumerNodes();
     //debug() << "About to promote " << consumers.size() << " data consumer(s) for " << algo_name << endmsg;
     for (auto node : consumers) {
       //debug() << "  ... about to promote consumer " << node->getNodeName() << endmsg;
@@ -448,8 +468,8 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  bool ControlFlowManager::algo_data_dependencies_satisfied(const std::string& algo_name, const AlgsExecutionStates& states) const {
-    return m_CFGraph->m_graphAlgoMap.at(algo_name)->data_dependencies_satisfied(states);
+  bool ControlFlowManager::algoDataDependenciesSatisfied(const std::string& algo_name, const AlgsExecutionStates& states) const {
+    return m_CFGraph->getAlgorithmNode(algo_name)->dataDependenciesSatisfied(states);
   }
 
 } // namespace

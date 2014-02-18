@@ -111,7 +111,7 @@ namespace concurrency {
     /// XXX: CF tests
     unsigned int getAlgoIndex() { return m_algoIndex; }
     /// Method to check whether the Algorithm has its all data dependency satisfied
-    bool data_dependencies_satisfied(const AlgsExecutionStates& states) const;
+    bool dataDependenciesSatisfied(const AlgsExecutionStates& states) const;
     /// Method to set algos to CONTROLREADY, if possible
     virtual int updateState(AlgsExecutionStates& states,
                             std::vector<int>& node_decisions) const;
@@ -173,6 +173,8 @@ public:
     void addHeadNode(const std::string& headName, bool modeOR, bool allPass, bool isLazy);
     /// Add algorithm node
     void addAlgorithmNode(Algorithm* daughterAlgo, const std::string& parentName, bool inverted, bool allPass);
+    /// Get the Algorithm node from the graph with name algoName
+    AlgorithmNode* getAlgorithmNode(const std::string& algoName) const;
     /// Add a node, which aggregates decisions of direct daughter nodes
     void addAggregateNode(Algorithm* daughterAlgo, const std::string& parentName, bool modeOR, bool allPass, bool isLazy);
     /// Get total number of graph nodes
@@ -189,6 +191,8 @@ public:
                     AlgsExecutionStates& states,
                     const std::vector<int>& node_decisions,
                     const unsigned int& recursionLevel) const {m_headNode->printState(output,states,node_decisions,recursionLevel);};
+    ///
+    std::vector<AlgorithmNode*> getDataIndependentNodes() const;
     /// Retrieve name of the service
     const std::string& name() const {return m_name;}
     /// Retrieve pointer to service locator
@@ -242,7 +246,7 @@ public:
   /// Promote data dependent algorithms to a new state
   void promoteDataConsumersToCR(const std::string& algo_name, AlgsExecutionStates& states) const;
   /// Check all data dependencies of an algorithm are satisfied
-  bool algo_data_dependencies_satisfied(const std::string& algo_name, const AlgsExecutionStates& states) const;
+  bool algoDataDependenciesSatisfied(const std::string& algo_name, const AlgsExecutionStates& states) const;
   /// Initialize the control flow manager
   /// It greps the topalg list and the index map for the algo names
   void initialize(ControlFlowGraph* CFGraph,
