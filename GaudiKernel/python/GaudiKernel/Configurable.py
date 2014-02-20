@@ -3,6 +3,7 @@
 # Author: Martin Woudstra (Martin.Woudstra@cern.ch)
 
 import copy, string, types, os
+import sys
 from inspect import isclass
 import GaudiKernel.ConfigurableMeta as ConfigurableMeta
 from GaudiKernel.Constants import error_explanation, \

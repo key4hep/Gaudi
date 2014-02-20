@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2014-02-20 - Marco Clemencic
+ - Added missing import to "GaudiKernel.Configurable".
+
 ============================= GaudiKernel v30r0 ==============================
 ! 2014-02-10 - Marco Clemencic
  - Modified applyConfigurableUsers implementations to print the configurables
