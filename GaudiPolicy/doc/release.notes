@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-02-21 - Marco Clemencic
+ - Modified the genconfig_add_extraModules pattern.
+
 ============================= GaudiPolicy v14r0 ==============================
 ! 2014-02-13 - Marco Clemencic
  - Prevent path normalization in test arguments if they do not point to a file.

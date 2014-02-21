@@ -23,5 +23,7 @@ if(GAUDI_BUILD_TESTS)
   gaudi_add_module(GaudiSvcTest tests/src/component/*.cpp LINK_LIBRARIES GaudiKernel ${Boost_REGEX_LIBRARY})
 endif()
 
+gaudi_install_python_modules()
+
 #---Test-----------------------------------------------------------------------
 gaudi_add_test(QMTest QMTEST)

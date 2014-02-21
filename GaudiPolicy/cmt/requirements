@@ -1053,9 +1053,9 @@ macro genconfig_configurableService "ConfigurableService"
 ## add pattern and macro for importing extra python modules into genconf's output
 macro genconfig_extraModules ""
 pattern genconfig_add_extraModules \
-   apply_pattern declare_python_modules files=<extraModules>.py ; \
+   apply_pattern install_python_modules ; \
    macro_append genconfig_extraModules "" \
-        <tag> "--user-module=<package>.<extraModules> "
+        <tag> "--user-module=<extraModules> "
 
 
 ## add pattern and macro for library preloading for genconf
