@@ -15,9 +15,16 @@ SET(GaudiSvc_srcs
     src/THistSvc/*.cpp
     src/FileMgr/*.cpp)
 
-gaudi_add_module(GaudiSvc ${GaudiSvc_srcs}
-                 LINK_LIBRARIES GaudiKernel Boost ROOT CLHEP
-                 INCLUDE_DIRS Boost ROOT AIDA CLHEP)
+if(NOT GAUDI_ATLAS)
+  gaudi_add_module(GaudiSvc ${GaudiSvc_srcs}
+                   LINK_LIBRARIES GaudiKernel Boost ROOT CLHEP
+                   INCLUDE_DIRS Boost ROOT AIDA CLHEP)
+else()
+  gaudi_add_module(GaudiSvc ${GaudiSvc_srcs}
+                   LINK_LIBRARIES GaudiKernel Boost ROOT CLHEP
+                   INCLUDE_DIRS Boost ROOT AIDA CLHEP
+                   GENCONF_USER_MODULE GaudiSvc.ExtraModules)
+endif()
 
 if(GAUDI_BUILD_TESTS)
   gaudi_add_module(GaudiSvcTest tests/src/component/*.cpp LINK_LIBRARIES GaudiKernel ${Boost_REGEX_LIBRARY})
