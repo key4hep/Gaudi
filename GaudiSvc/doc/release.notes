@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2014-02-21 - Marco Clemencic
+ - Modified the genconfig_add_extraModules pattern.
+
 =============================== GaudiSvc v21r0 ===============================
 ! 2013-12-11 - Sebastien Binet
  - Added hwaf configuration files.

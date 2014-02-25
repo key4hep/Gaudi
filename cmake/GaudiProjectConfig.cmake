@@ -61,7 +61,7 @@ else()
 endif()
 
 # If Vera++ is available and it is requested by the user, check every source
-# file for style problems. 
+# file for style problems.
 find_package(vera++ QUIET)
 if(VERA++_USE_FILE)
   option(ENABLE_VERA++_CHECKS "Use Vera++ to check the C++ code during the build" OFF)
@@ -1304,7 +1304,7 @@ endfunction()
 function(gaudi_generate_configurables library)
   gaudi_get_package_name(package)
 
-  CMAKE_PARSE_ARGUMENTS(ARG "" "PRELOAD" "" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "" "PRELOAD;USER_MODULE" "" ${ARGN})
 
   set(conf_depends ${library})
 
@@ -1325,12 +1325,13 @@ function(gaudi_generate_configurables library)
   file(MAKE_DIRECTORY ${outdir})
 
   # Python classes used for the various component types.
-  set(confModuleName GaudiKernel.Proxy)
-  set(confDefaultName Configurable.DefaultName)
-  set(confAlgorithm ConfigurableAlgorithm)
-  set(confAlgTool ConfigurableAlgTool)
-  set(confAuditor ConfigurableAuditor)
-  set(confService ConfigurableService)
+  set(genconf_opts
+      "--configurable-module=GaudiKernel.Proxy"
+      "--configurable-default-name=Configurable.DefaultName"
+      "--configurable-algorithm=ConfigurableAlgorithm"
+      "--configurable-algtool=ConfigurableAlgTool"
+      "--configurable-auditor=ConfigurableAuditor"
+      "--configurable-service=ConfigurableService")
 
   # Note: the dependencies on GaudiSvc and the genconf executable are needed
   #       in case they have to be built in the current project
@@ -1346,16 +1347,15 @@ function(gaudi_generate_configurables library)
     set(deps genconf)
   endif()
 
+  if(ARG_USER_MODULE)
+    set(genconf_opts ${genconf_opts} "--user-module=${ARG_USER_MODULE}")
+  endif()
+
   add_custom_command(
     OUTPUT ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py ${outdir}/__init__.py
     COMMAND ${env_cmd} --xml ${env_xml}
               ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
-                --configurable-module=${confModuleName}
-                --configurable-default-name=${confDefaultName}
-                --configurable-algorithm=${confAlgorithm}
-                --configurable-algtool=${confAlgTool}
-                --configurable-auditor=${confAuditor}
-                --configurable-service=${confService}
+                ${genconf_opts}
                 -i ${library}
     DEPENDS ${library} ${deps})
   add_custom_target(${library}Conf ALL DEPENDS ${outdir}/${library}_confDb.py)
@@ -1739,7 +1739,8 @@ endmacro()
 #---------------------------------------------------------------------------------------------------
 function(gaudi_add_module library)
   # this function uses an extra option: 'GENCONF_PRELOAD'
-  CMAKE_PARSE_ARGUMENTS(ARG "" "GENCONF_PRELOAD" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "" "GENCONF_PRELOAD;GENCONF_USER_MODULE"
+                            "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS" ${ARGN})
   gaudi_common_add_build(${ARG_UNPARSED_ARGUMENTS} LIBRARIES ${ARG_LIBRARIES}
                          LINK_LIBRARIES ${ARG_LINK_LIBRARIES} INCLUDE_DIRS ${ARG_INCLUDE_DIRS})
 
@@ -1748,10 +1749,13 @@ function(gaudi_add_module library)
   _gaudi_detach_debinfo(${library})
 
   gaudi_generate_componentslist(${library})
-  if(ARG_GENCONF_PRELOAD)
-    set(ARG_GENCONF_PRELOAD PRELOAD ${ARG_GENCONF_PRELOAD})
-  endif()
-  gaudi_generate_configurables(${library} ${ARG_GENCONF_PRELOAD})
+  set(ARG_GENCONF)
+  foreach(genconf_sub_opt PRELOAD USER_MODULE)
+    if(ARG_GENCONF_${genconf_sub_opt})
+      set(ARG_GENCONF ${ARG_GENCONF} ${genconf_sub_opt} ${ARG_GENCONF_${genconf_sub_opt}})
+    endif()
+  endforeach()
+  gaudi_generate_configurables(${library} ${ARG_GENCONF})
 
   set_property(GLOBAL APPEND PROPERTY COMPONENT_LIBRARIES ${library})
 

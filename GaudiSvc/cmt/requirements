@@ -30,7 +30,7 @@ apply_pattern ld_library_path
 #===============================================================
 private
 
-apply_pattern genconfig_add_extraModules extraModules=ExtraModules tag=ATLAS
+apply_pattern genconfig_add_extraModules extraModules=GaudiSvc.ExtraModules tag=ATLAS
 
 macro_append ROOT_linkopts " -lHist -lMatrix -lGraf" \
               target-winxp " libHist.lib libMatrix.lib libGraf.lib" \
