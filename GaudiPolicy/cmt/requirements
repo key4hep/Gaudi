@@ -1516,7 +1516,19 @@ pattern use_unless \
     end_private ; \
     use $(use_<pkg>_unless)
 
-
+####################################################################
+# Generate manifest.xml file.
+####################################################################
+pattern -global generate_manifest_file \
+    private ; \
+    macro generate_manifest_file_output "$(CMTINSTALLAREA)/$(tag)/manifest.xml" ; \
+	macro generate_manifest_file_deps "FORCE" ; \
+	macro generate_manifest_file_command "python $(GaudiPolicy_root)/scripts/project_manifest.py -o $(generate_manifest_file_output) $(<package>_cmtpath)/CMakeLists.txt $(LCG_config_version) $(tag)" ; \
+	macro generate_manifest_file_applied "NullCommand" \
+		       container-package "CallCommand" ; \
+    apply_pattern $(generate_manifest_file_applied) target=generate_manifest_file ; \
+	end_private
+	
 #-------------------------------------------------------------------
 # ATLAS specific stuff
 #-------------------------------------------------------------------

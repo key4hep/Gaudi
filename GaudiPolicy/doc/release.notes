@@ -2,6 +2,12 @@ package GaudiPolicy
 package manager: Marco Clemencic
 
 ! 2014-02-21 - Marco Clemencic
+ - LBCORE-331: Generate manifest.xml for CMT built projects
+   Added generation of manifest.xml during CMT builds (requires that the
+   project does have a top-level CMake configuration file).
+   https://its.cern.ch/jira/browse/LBCORE-331
+
+! 2014-02-21 - Marco Clemencic
  - Modified the genconfig_add_extraModules pattern.
 
 ============================= GaudiPolicy v14r0 ==============================
