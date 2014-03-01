@@ -17,9 +17,9 @@ macro(use_heptools heptools_version)
             NAMES LCG_${heptools_version}_${BINARY_TAG}.txt
                   LCG_${heptools_version}_${LCG_platform}.txt
                   LCG_${heptools_version}_${LCG_system}.txt
-                  LCG_release_${BINARY_TAG}.txt
-                  LCG_release_${LCG_platform}.txt
-                  LCG_release_${LCG_system}.txt
+                  LCG_externals_${BINARY_TAG}.txt
+                  LCG_externals_${LCG_platform}.txt
+                  LCG_externals_${LCG_system}.txt
             HINTS ENV CMTPROJECTPATH
             PATH_SUFFIXES LCG_${heptools_version})
 
@@ -34,8 +34,10 @@ macro(use_heptools heptools_version)
 
     file(STRINGS ${LCG_TOOLCHAIN_INFO} _lcg_infos)
     foreach(_l ${_lcg_infos})
-      string(REGEX REPLACE "; *" ";" _l "${_l}")
-      lcg_set_external(${_l})
+      if(NOT _l MATCHES "^(PLATFORM|VERSION):")
+        string(REGEX REPLACE "; *" ";" _l "${_l}")
+        lcg_set_external(${_l})
+      endif()
     endforeach()
 
     lcg_prepare_paths()
