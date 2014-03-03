@@ -1,6 +1,10 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2014-03-03 - Marco Clemencic
+ - Modified name ot hthe "instantiations" class used in the test dictionary
+   to avoid clashed in ROOT 6.
+
 ============================ GaudiExamples v25r0 =============================
 ! 2014-02-10 - Marco Clemencic
  - Modified the test gaudiexamples.return_codes.sigsegv not to expect a print

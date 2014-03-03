@@ -96,7 +96,7 @@
 #include "GaudiKernel/IValidity.h"
 #include "GaudiKernel/IDataStreamTool.h"
 
-namespace {
+namespace GaudiKernelDict {
   struct __Instantiations :
     public  KeyedObject<int>,
     public  KeyedObject<unsigned int>,

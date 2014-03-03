@@ -19,7 +19,7 @@
 //template KeyedContainer<MyVertex>;
 //template KeyedObject<long>;
 //template std::vector<KeyedObject<long int>* >;
-struct __Instantiations
+struct POOLIOTestDict__Instantiations
 {
   ObjectVector<Gaudi::Examples::MyTrack> i1;
   ObjectVector<Gaudi::Examples::MyVertex> i2;
