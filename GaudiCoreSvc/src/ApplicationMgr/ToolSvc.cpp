@@ -673,6 +673,18 @@ std::string ToolSvc::nameTool( const std::string& toolname,
 }
 
 //------------------------------------------------------------------------------
+ToolSvc::ListTools ToolSvc::getToolsByParent(const IInterface * parent){
+	ListTools result;
+
+	for(const auto tool : m_instancesTools){
+		if(tool->parent() == parent)
+			result.push_back(tool);
+	}
+
+	return result;
+}
+
+//------------------------------------------------------------------------------
 bool ToolSvc::existsTool( const std::string& fullname) const
   //------------------------------------------------------------------------------
 {

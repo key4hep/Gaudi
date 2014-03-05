@@ -238,6 +238,85 @@ public:
   {
     return m_propertyMgr-> declareRemoteProperty ( name , rsvc , rname ) ;
   }
+
+	/** Declare input data object
+	 *
+	 *  @param tag to identify input object in python config
+	 *  @param address relative or absolute address in TES
+	 *  @param optional optional input
+	 *  @param accessType read, write or update
+	 *  @return DataObjectHandle
+	 */
+
+	template<class T>
+	SmartIF<DataObjectHandle<T> > declareInput(const std::string& tag,
+			const std::string& address,
+			bool optional = false, IDataObjectHandle::AccessType accessType =
+					IDataObjectHandle::READ) {
+
+		m_inputDataObjects.insert(tag, address, optional, accessType);
+
+		return m_inputDataObjects[tag].createHandle < T > (this);
+
+	}
+
+	/** Declare input data object
+	 *
+	 *  @param tag to identify input object in python config
+	 *  @param addresses relative or absolute addresses in TES, first is main address
+	 *  @param optional optional input
+	 *  @param accessType read, write or update
+	 *  @return DataObjectHandle
+	 */
+
+	template<class T>
+	SmartIF<DataObjectHandle<T> > declareInput(const std::string& tag,
+			const std::vector<std::string>& addresses,
+			bool optional = false, IDataObjectHandle::AccessType accessType =
+					IDataObjectHandle::READ) {
+
+		m_inputDataObjects.insert(tag, addresses, optional, accessType);
+
+		return m_inputDataObjects[tag].createHandle < T > (this);
+
+	}
+
+	/** Declare output data object
+	 *
+	 *  @param tag to identify input object in python config
+	 *  @param address relative or absolute address in TES
+	 *  @param optional optional input
+	 *  @param accessType write or update
+	 *  @return DataObjectHandle
+	 */
+	template<class T>
+	SmartIF<DataObjectHandle<T> > declareOutput(const std::string& tag,
+			const std::string& address,
+			IDataObjectHandle::AccessType accessType = IDataObjectHandle::WRITE,
+			bool optional = false) {
+
+		m_outputDataObjects.insert(tag, address, optional, accessType);
+
+		return m_outputDataObjects[tag].createHandle < T > (this);
+
+	}
+
+	/** get inputs
+	 *  @return DataObjectDescriptorCollection of inputs
+	 */
+
+	DataObjectDescriptorCollection & getInputs() {
+		return m_inputDataObjects;
+	}
+
+
+	/** get outputs
+	 *  @return DataObjectDescriptorCollection of outputs
+	 */
+	DataObjectDescriptorCollection & getOutputs() {
+		return m_outputDataObjects;
+	}
+
   // ==========================================================================
   /// Access the auditor service
   IAuditorSvc* auditorSvc() const;
@@ -324,6 +403,9 @@ private:
   PropertyMgr*         m_propertyMgr;      ///< Property Manager
   InterfaceList        m_interfaceList;    ///< Interface list
   std::string          m_threadID;         ///< Thread Id for Alg Tool
+
+  DataObjectDescriptorCollection m_inputDataObjects; //input data objects
+  DataObjectDescriptorCollection m_outputDataObjects; //output data objects
 
   /** implementation of service method */
   StatusCode service_i(const std::string& algName,

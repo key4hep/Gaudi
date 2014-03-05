@@ -563,6 +563,15 @@ public:
     return StatusCode::FAILURE;
   }
   
+  /** Declare input data object
+     *
+     *  @param tag to identify input object in python config
+     *  @param address relative or absolute address in TES
+     *  @param optional optional input
+     *  @param accessType read, write or update
+     *  @return DataObjectHandle
+     */
+
   template<class T>
   SmartIF<DataObjectHandle<T> > declareInput(
 		  const std::string& tag,
@@ -576,6 +585,15 @@ public:
 
   }
 
+
+  /** Declare input data object
+     *
+     *  @param tag to identify input object in python config
+     *  @param addresses relative or absolute addresses in TES, first is main address
+     *  @param optional optional input
+     *  @param accessType read, write or update
+     *  @return DataObjectHandle
+     */
   template<class T>
   SmartIF<DataObjectHandle<T> > declareInput(
 		  const std::string& tag,
@@ -589,6 +607,14 @@ public:
 
   }
 
+  /** Declare output data object
+     *
+     *  @param tag to identify input object in python config
+     *  @param address relative or absolute address in TES
+     *  @param optional optional input
+     *  @param accessType write or update
+     *  @return DataObjectHandle
+     */
   template<class T>
   SmartIF<DataObjectHandle<T> > declareOutput(
 		  const std::string& tag,
@@ -601,6 +627,21 @@ public:
 	  	return m_outputDataObjects[tag].createHandle<T>(this);
 
   }
+
+	/** get inputs
+	 *  @return DataObjectDescriptorCollection of inputs
+	 */
+
+	const DataObjectDescriptorCollection & getInputs() const {
+		return m_inputDataObjects;
+	}
+
+	/** get outputs
+	 *  @return DataObjectDescriptorCollection of outputs
+	 */
+	const DataObjectDescriptorCollection & getOutputs() const {
+		return m_outputDataObjects;
+	}
 
   /// Return the handles declared in the algorithm
   __attribute__ ((deprecated)) virtual const std::vector<MinimalDataObjectHandle*> handles();

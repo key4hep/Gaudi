@@ -24,9 +24,6 @@ class ToolSvc : public extends1<Service, IToolSvc> {
 
 public:
 
-  // Typedefs
-  typedef std::list<IAlgTool*>     ListTools;
-
   /// Initialize the service.
   virtual StatusCode initialize();
 
@@ -68,6 +65,9 @@ public:
 
   /// Get Tool full name by combining nameByUser and "parent" part
   std::string nameTool(const std::string& nameByUser, const IInterface* parent);
+
+  //get tools of specified parent
+  ListTools getToolsByParent(const IInterface * parent);
 
   /// Get current refcount for tool
   unsigned long refCountTool( IAlgTool* tool ) const { return tool->refCount(); }

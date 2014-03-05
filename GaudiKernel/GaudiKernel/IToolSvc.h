@@ -19,6 +19,9 @@ public:
   /// InterfaceID
   DeclareInterfaceID(IToolSvc,2,0);
 
+  // Typedefs
+  typedef std::list<IAlgTool*>     ListTools;
+
   /** Retrieve tool with tool dependent part of the name automatically
    *  assigned. By default a tool will be created if it does not exist,
    *  unless otherwise specified. By default it will be a common tool
@@ -199,6 +202,12 @@ public:
                       parent,
                       createIf );
   }
+
+  /**Get all Tools belonging to a parent
+   * @param parent the parent holding the tools
+   * @return list of tools belonging to parent
+   */
+  virtual ListTools getToolsByParent(const IInterface * parent) = 0;
 
   /**  allow call-backs when a tool is a created
    *   or retrieved

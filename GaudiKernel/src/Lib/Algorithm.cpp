@@ -23,6 +23,7 @@
 #include "GaudiKernel/ServiceLocatorHelper.h"
 #include "GaudiKernel/ThreadGaudi.h"
 #include "GaudiKernel/Guards.h"
+#include "GaudiKernel/AlgTool.h"
 
 // Constructor
 Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
@@ -220,6 +221,29 @@ StatusCode Algorithm::sysInitialize() {
     m_isClonable = true;
   }
   
+  //all TES accessing tools have been created in initialize() of derived class
+  //query toolSvc for own tools and build dependencies
+  std::function<void(const IInterface *)> addToolDOD = [&] (const IInterface * parent) {
+	  auto myTools = toolSvc()->getToolsByParent(parent);
+	  for(auto itool : myTools){
+		  AlgTool * tool = dynamic_cast<AlgTool *>(itool);
+
+		  auto inputs = tool->getInputs();
+		  for(auto dod : inputs){
+			  m_inputDataObjects.insert(inputs[dod]);
+		  }
+
+		  auto outputs = tool->getOutputs();
+		  for(auto dod : outputs){
+			  m_outputDataObjects.insert(outputs[dod]);
+		  }
+
+		  addToolDOD(itool);
+	  }
+  };
+
+  addToolDOD(this);
+
   return sc;
 }
 
