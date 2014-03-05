@@ -93,6 +93,13 @@ if __name__ == "__main__":
         print '# setting LC_ALL to "C"'
         os.environ['LC_ALL'] = 'C'
 
+    from GaudiKernel import ROOT6WorkAroundEnabled
+    if ROOT6WorkAroundEnabled('ROOT-6125'):
+        try:
+            import readline
+        except ImportError:
+            pass
+
     from optparse import OptionParser
     parser = OptionParser(usage = "%prog [options] <opts_file> ...")
     parser.add_option("-n","--dry-run", action="store_true",
