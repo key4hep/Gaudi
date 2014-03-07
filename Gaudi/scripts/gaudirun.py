@@ -96,8 +96,9 @@ if __name__ == "__main__":
     from GaudiKernel import ROOT6WorkAroundEnabled
     if ROOT6WorkAroundEnabled('ROOT-6125'):
         try:
-            import readline
-        except ImportError:
+            from ctypes import cdll
+            cdll.LoadLibrary('libCling.so')
+        except (ImportError, OSError):
             pass
 
     from optparse import OptionParser

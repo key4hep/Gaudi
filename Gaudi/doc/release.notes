@@ -1,6 +1,11 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+! 2014-03-07 - Marco Clemencic
+ - Fixed the workaround for ROOT-6125 after having understood what the problem
+   really is.
+   https://sft.its.cern.ch/jira/browse/ROOT-6125
+
 ! 2014-03-05 - Marco Clemencic
  - Added workaround for ROOT-6125 (crash loading libCling.so when using
    tcmalloc).
