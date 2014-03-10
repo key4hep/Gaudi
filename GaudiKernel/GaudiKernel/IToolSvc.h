@@ -4,6 +4,7 @@
 #include "GaudiKernel/IInterface.h"
 #include "GaudiKernel/System.h"
 #include <string>
+#include <list>
 
 // Forward declaration
 class IAlgTool;

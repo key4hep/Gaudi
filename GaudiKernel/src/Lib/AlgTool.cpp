@@ -82,6 +82,20 @@ IMessageSvc* AlgTool::msgSvc()  const
   return m_messageSvc;
 }
 
+// ============================================================================
+// accessor to event service  service
+// ============================================================================
+IDataProviderSvc* AlgTool::evtSvc    () const
+{
+  if ( 0 == m_evtSvc )
+  {
+	StatusCode sc = service("EventDataSvc", m_evtSvc, true);
+	if (sc.isFailure()) {
+		throw GaudiException("Service [EventDataSvc] not found", name(), sc);
+	}
+  }
+  return m_evtSvc ;
+}
 //------------------------------------------------------------------------------
 IToolSvc* AlgTool::toolSvc() const
   //------------------------------------------------------------------------------
@@ -186,6 +200,7 @@ AlgTool::AlgTool( const std::string& type,
   , m_parent        ( parent )
   , m_svcLocator    ( 0 )
   , m_messageSvc    ( 0 )
+  , m_evtSvc		( 0 )
   , m_ptoolSvc      ( 0 )
   , m_pMonitorSvc   ( NULL )
   , m_propertyMgr   ( new PropertyMgr() )
@@ -199,6 +214,7 @@ AlgTool::AlgTool( const std::string& type,
   addRef(); // Initial count set to 1
 
   declareProperty( "MonitorService", m_monitorSvcName = "MonitorSvc" );
+  declareProperty( "RootInTES",         m_rootInTES = "");
 
   { // get the "OutputLevel" property from parent
     const Property* _p = Gaudi::Utils::getProperty ( parent , "OutputLevel") ;
@@ -277,7 +293,6 @@ StatusCode AlgTool::sysInitialize() {
     sc = initialize();
     if (sc.isSuccess())
       m_state = m_targetState;
-    return sc;
   }
   catch( const GaudiException& Exception ) {
     MsgStream log ( msgSvc() , name() + ".sysInitialize()" );
@@ -294,7 +309,30 @@ StatusCode AlgTool::sysInitialize() {
     MsgStream log ( msgSvc() , name() + ".sysInitialize()" );
     log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
   }
-  return StatusCode::FAILURE ;
+
+  //update input/output declarations with relative path
+  //init data handle
+  bool rootSet = m_rootInTES != ""; //root set, update address
+
+  //add last slash if necessary
+  if ("" != m_rootInTES && '/'!=m_rootInTES[m_rootInTES.size()-1]){
+	  m_rootInTES += "/";
+  }
+
+  for(auto tag : m_inputDataObjects){
+	  if(rootSet && m_inputDataObjects[tag].address()[0] != '/') //we have a relative address
+		  m_inputDataObjects[tag].setAddress(m_rootInTES + m_inputDataObjects[tag].address());
+
+	  m_inputDataObjects[tag].getBaseHandle()->initialize();
+  }
+  for(auto tag : m_outputDataObjects){
+	  if(rootSet && m_outputDataObjects[tag].address()[0] != '/') //we have a relative address
+		  m_outputDataObjects[tag].setAddress(m_rootInTES + m_outputDataObjects[tag].address());
+
+	  m_outputDataObjects[tag].getBaseHandle()->initialize();
+  }
+
+  return sc;
 
 }
 
@@ -571,6 +609,7 @@ AlgTool::~AlgTool()
 {
   delete m_propertyMgr;
   if( m_ptoolSvc ) m_ptoolSvc->release();
+  if( m_evtSvc ) m_evtSvc->release();
   if( m_pAuditorSvc ) m_pAuditorSvc->release();
   if ( m_pMonitorSvc ) { m_pMonitorSvc->undeclareAll(this); m_pMonitorSvc->release(); }
 }

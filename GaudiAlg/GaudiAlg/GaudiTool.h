@@ -127,10 +127,7 @@ public: // accessors
    *  @return pointer to detector service
    */
   IDataProviderSvc*    detSvc    () const ;
-  /** accessor to event service  service
-   *  @return pointer to detector service
-   */
-  IDataProviderSvc*    evtSvc    () const ;
+
   /** accessor to Incident Service
    *  @return pointer to the Incident Service
    */
@@ -702,8 +699,6 @@ private:
   mutable INTupleSvc*    m_ntupleSvc          ;
   /// pointer to the event tag collection service
   mutable INTupleSvc*    m_evtColSvc          ;
-  /// pointer to Event Data Service
-  mutable IDataProviderSvc* m_evtSvc          ;
   /// pointer to Detector Data Service
   mutable IDataProviderSvc* m_detSvc          ;
   /// pointer to Chrono & Stat Service

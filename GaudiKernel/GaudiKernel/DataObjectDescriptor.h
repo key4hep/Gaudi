@@ -4,6 +4,8 @@
 #include <GaudiKernel/MinimalDataObjectHandle.h>
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/Property.h>
+#include <GaudiKernel/IAlgorithm.h>
+#include <GaudiKernel/IAlgTool.h>
 
 #include <map>
 #include <memory>
@@ -108,6 +110,19 @@ public:
 	}
 
 	template<class T>
+	SmartIF<DataObjectHandle<T> > createHandle(IAlgTool* fatherTool) {
+
+		if (!m_handle.isValid() || m_handle->dataProductName() != address()){
+			m_handle = SmartIF<DataObjectHandle<T> >(
+					new DataObjectHandle<T>(address(), fatherTool,
+							accessType(), optional()));
+
+			//std::cout << "Created handle for " << m_tag << ": handle is " << (m_handle.isValid() ? "" : "NOT") << " valid" << std::endl;
+		}
+
+		return getHandle<T>();
+	}
+	template<class T>
 	SmartIF<DataObjectHandle<T> > getHandle() const {
 		return SmartIF<DataObjectHandle<T> >(dynamic_cast<DataObjectHandle<T> *>(m_handle.get()));
 	}
@@ -186,6 +201,24 @@ public:
 	end() {
 		return boost::transform_iterator<get_key<std::string, DataObjectDescriptor>,
 										 std::map<std::string, DataObjectDescriptor>::iterator>(
+												 m_dataItems.end(), get_key<std::string, DataObjectDescriptor>());
+	}
+
+	boost::transform_iterator<
+		get_key<std::string, DataObjectDescriptor>,
+		std::map<std::string, DataObjectDescriptor>::const_iterator>
+	begin() const {
+		return boost::transform_iterator<get_key<std::string, DataObjectDescriptor>,
+										 std::map<std::string, DataObjectDescriptor>::const_iterator>(
+												 m_dataItems.begin(), get_key<std::string, DataObjectDescriptor>());
+	}
+
+	boost::transform_iterator<
+		get_key<std::string, DataObjectDescriptor>,
+		std::map<std::string, DataObjectDescriptor>::const_iterator>
+	end() const {
+		return boost::transform_iterator<get_key<std::string, DataObjectDescriptor>,
+										 std::map<std::string, DataObjectDescriptor>::const_iterator>(
 												 m_dataItems.end(), get_key<std::string, DataObjectDescriptor>());
 	}
 

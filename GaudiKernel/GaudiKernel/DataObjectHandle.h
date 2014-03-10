@@ -6,6 +6,7 @@
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/Property.h>
 #include "GaudiKernel/Algorithm.h"
+#include "GaudiKernel/AlgTool.h"
 
 template<typename T>
 class DataObjectHandle : public MinimalDataObjectHandle {
@@ -18,6 +19,12 @@ public:
                    AccessType accessType = READ,
                    bool isOptional=false);
   
+  /// Initialises mother class
+  DataObjectHandle(const std::string& productName,
+                   IAlgTool* fatherTool,
+                   AccessType accessType = READ,
+                   bool isOptional=false);
+
   /// Initialize
   StatusCode initialize();
 
@@ -36,7 +43,9 @@ public:
 private:
   bool m_goodType;
   SmartIF<IDataProviderSvc> m_EDS;
-  SmartIF<IMessageSvc> m_MS;  
+  SmartIF<IMessageSvc> m_MS;
+  IAlgorithm* m_fatherAlg;
+  IAlgTool* m_fatherTool;
   DataObjectHandle(const DataObjectHandle& );
   DataObjectHandle& operator=(const DataObjectHandle& );  
   
@@ -47,21 +56,35 @@ template<typename T>
 StatusCode DataObjectHandle<T>::initialize(){
 
   // GCCXML cannot understand c++11 yet, NULL used.
-  
+
   MinimalDataObjectHandle::initialize();
-  
-  // Fetch the event Data Service from the algorithm
-   Algorithm* algorithm = dynamic_cast<Algorithm*>(m_fatherAlg);
-   if (LIKELY(algorithm != NULL)){
-     m_EDS = algorithm->eventSvc();
-     m_MS = algorithm->msgSvc();
-    }
-   else
-     throw GaudiException("Cannot cast " + m_fatherAlg->name() + " to Algorithm.",
-                          "Invalid Cast",
-                          StatusCode::FAILURE);              
+
+  if (m_fatherAlg != 0) {
+		// Fetch the event Data Service from the algorithm
+		Algorithm* algorithm = dynamic_cast<Algorithm*>(m_fatherAlg);
+		if (LIKELY(algorithm != NULL)) {
+			m_EDS = algorithm->evtSvc();
+			m_MS = algorithm->msgSvc();
+		} else
+			throw GaudiException(
+					"Cannot cast " + m_fatherAlg->name() + " to Algorithm.",
+					"Invalid Cast", StatusCode::FAILURE);
+	}
+
+	if (m_fatherTool != 0) {
+		// Fetch the event Data Service from the algorithm
+		AlgTool* tool = dynamic_cast<AlgTool*>(m_fatherTool);
+		if (LIKELY(tool != NULL)) {
+			m_EDS = tool->evtSvc();
+			m_MS = tool->msgSvc();
+		} else
+			throw GaudiException(
+					"Cannot cast " + m_fatherTool->name() + " to AlgTool.",
+					"Invalid Cast", StatusCode::FAILURE);
+	}
+
    m_goodType = false;
-   
+
    return StatusCode::SUCCESS;
 }
 
@@ -93,9 +116,23 @@ DataObjectHandle<T>::DataObjectHandle(const std::string& productName,
                                       IDataObjectHandle::AccessType accessType,
                                       bool isOptional):
                    MinimalDataObjectHandle(productName,
-                                           fatherAlg,
                                            accessType,
                                            isOptional),
+                                           m_fatherAlg(fatherAlg),
+                                           m_fatherTool(0),
+                                           m_goodType(false){}
+
+//---------------------------------------------------------------------------
+template<typename T>
+DataObjectHandle<T>::DataObjectHandle(const std::string& productName,
+                                      IAlgTool* fatherTool,
+                                      IDataObjectHandle::AccessType accessType,
+                                      bool isOptional):
+                   MinimalDataObjectHandle(productName,
+                                           accessType,
+                                           isOptional),
+                                           m_fatherAlg(0),
+                                           m_fatherTool(fatherTool),
                                            m_goodType(false){}
 
 //---------------------------------------------------------------------------                                           
@@ -110,14 +147,28 @@ DataObjectHandle<T>::DataObjectHandle(const std::string& productName,
 template<typename T>  
 T* DataObjectHandle<T>::get() {
 
+	MsgStream log(m_MS,"DataObjectHandle");
+
   DataObject* dataObjectp = NULL;
+
   StatusCode sc = m_EDS->retrieveObject(m_dataProductName, dataObjectp);
   
+  if(sc.isSuccess())
+	  log << MSG::DEBUG << "Using main location " << m_dataProductName << " for " << *dataObjectp << endmsg;
+
+  if(sc.isFailure() && ! m_alternativeDataProducts.empty()){
+	  for(uint i = 0; i < m_alternativeDataProducts.size() && sc.isFailure(); ++i){
+		  sc = m_EDS->retrieveObject(m_alternativeDataProducts[i], dataObjectp);
+
+		  if(sc.isSuccess())
+		  	  log << MSG::DEBUG << "Using alternative location " << m_alternativeDataProducts[i] << " for " << *dataObjectp << endmsg;
+	  }
+  }
+
   T* returnObject = NULL;
   if ( LIKELY( sc.isSuccess() ) ){ 
     
     if (UNLIKELY(!m_goodType)){ // Check type compatibility once
-      MsgStream log(m_MS,"DataObjectHandle");
 
       // DP: can use a gaudi feature?
       m_goodType = (NULL != dynamic_cast<T*> (dataObjectp));

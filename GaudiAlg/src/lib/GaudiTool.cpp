@@ -144,8 +144,7 @@ GaudiTool::GaudiTool ( const std::string& this_type   ,
   //  services
   , m_ntupleSvc   ( 0 )
   , m_evtColSvc   ( 0 )
-  , m_evtSvc      ( 0 )
-  , m_detSvc      ( 0 )
+  , m_detSvc	  ( 0 )
   , m_chronoSvc   ( 0 )
   , m_incSvc      ( 0 )
   , m_histoSvc    ( 0 )
@@ -192,7 +191,6 @@ StatusCode    GaudiTool::finalize   ()
     debug() << " ==> Finalize the base class GaudiTool " << endmsg;
 
   // clear "explicit services"
-    m_evtSvc    = 0 ;
     m_detSvc    = 0 ;
     m_chronoSvc = 0 ;
     m_incSvc    = 0 ;
@@ -242,18 +240,7 @@ INTupleSvc* GaudiTool::evtColSvc () const
   }
   return m_evtColSvc ;
 }
-// ============================================================================
-// accessor to event service  service
-// ============================================================================
-IDataProviderSvc* GaudiTool::evtSvc    () const
-{
-  if ( 0 == m_evtSvc )
-  {
-    m_evtSvc =
-      svc<IDataProviderSvc>( GaudiToolServices::s_EventDataSvc , true ) ;
-  }
-  return m_evtSvc ;
-}
+
 // ============================================================================
 // accessor to Incident Service
 // ============================================================================

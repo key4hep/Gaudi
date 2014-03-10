@@ -2,14 +2,13 @@
 #define GAUDIHIVE_MINIMALDATAOBJECTHANDLE_H
 
 #include "GaudiKernel/IDataObjectHandle.h"
-#include "GaudiKernel/IAlgorithm.h"
+#include <vector>
 
 class MinimalDataObjectHandle : public implements1<IDataObjectHandle> {
 
 public:        
   /// Constructor initialises the members and registers products in SchedSvc
   MinimalDataObjectHandle(const std::string& productName,
-                          IAlgorithm* fatherAlg,
                           AccessType accessType,
                           bool isOptional);
 
@@ -34,6 +33,7 @@ public:
 
   /// Update address of data product if possible -> not if was written
   StatusCode setDataProductName(const std::string & address);
+  StatusCode setDataProductNames(const std::vector<std::string> & addresses);
 
   /// Access type
   AccessType accessType() const ;
@@ -50,7 +50,7 @@ public:
 
 protected:
   std::string m_dataProductName;
-  IAlgorithm* m_fatherAlg;
+  std::vector<std::string> m_alternativeDataProducts;
   void setRead(bool wasRead=true);
   void setWritten(bool wasWritten=true);  
   

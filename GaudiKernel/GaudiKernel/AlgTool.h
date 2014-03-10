@@ -7,11 +7,18 @@
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IMessageSvc.h"
+#include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/PropertyMgr.h"
 #include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/IMonitorSvc.h"
 #include "GaudiKernel/IStateful.h"
+
+#include "GaudiKernel/IDataObjectHandle.h"
+#include "GaudiKernel/DataObjectDescriptor.h"
+
+template<class T>
+class DataObjectHandle;
 
 #include <vector>
 #include <list>
@@ -153,6 +160,11 @@ public:
 
   /// Retrieve pointer to message service.
   IMessageSvc* msgSvc() const;
+
+  /** accessor to event service  service
+   *  @return pointer to detector service
+   */
+  IDataProviderSvc*    evtSvc    () const ;
 
   /// The standard ToolSvc service, Return a pointer to the service if present
   IToolSvc* toolSvc() const;
@@ -305,7 +317,7 @@ public:
 	 *  @return DataObjectDescriptorCollection of inputs
 	 */
 
-	DataObjectDescriptorCollection & getInputs() {
+	const DataObjectDescriptorCollection & inputDataObjects() const {
 		return m_inputDataObjects;
 	}
 
@@ -313,7 +325,7 @@ public:
 	/** get outputs
 	 *  @return DataObjectDescriptorCollection of outputs
 	 */
-	DataObjectDescriptorCollection & getOutputs() {
+	const DataObjectDescriptorCollection & outputDataObjects() const {
 		return m_outputDataObjects;
 	}
 
@@ -397,6 +409,7 @@ private:
   const IInterface*    m_parent;           ///< AlgTool parent
   mutable ISvcLocator* m_svcLocator;       ///< Pointer to Service Locator service
   mutable IMessageSvc* m_messageSvc;       ///< Message service
+  mutable IDataProviderSvc* m_evtSvc; 	   ///< Event data service
   mutable IToolSvc*    m_ptoolSvc;         ///< Tool service
   mutable IMonitorSvc* m_pMonitorSvc;      ///< Online Monitoring Service
   std::string          m_monitorSvcName;   ///< Name to use for Monitor Service
@@ -406,6 +419,7 @@ private:
 
   DataObjectDescriptorCollection m_inputDataObjects; //input data objects
   DataObjectDescriptorCollection m_outputDataObjects; //output data objects
+  std::string m_rootInTES;
 
   /** implementation of service method */
   StatusCode service_i(const std::string& algName,

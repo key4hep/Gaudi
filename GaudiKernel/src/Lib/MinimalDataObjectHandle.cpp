@@ -5,11 +5,9 @@ const std::string MinimalDataObjectHandle::NULL_ADDRESS  = "_NULL";
 //---------------------------------------------------------------------------
 
 MinimalDataObjectHandle::MinimalDataObjectHandle(const std::string& productName,
-                                                 IAlgorithm* fatherAlg,
                                                  AccessType accessType,
                                                  bool isOptional):
                                                  m_dataProductName(productName),
-                                                 m_fatherAlg(fatherAlg),
                                                  m_isOptional(isOptional),
                                                  m_dataProductIndex(m_tmp_dpi++),
                                                  m_accessType(accessType),
@@ -68,6 +66,18 @@ StatusCode MinimalDataObjectHandle::setDataProductName(const std::string & addre
 		return StatusCode::FAILURE;
 
 	m_dataProductName = address;
+
+	return StatusCode::SUCCESS;
+}
+
+StatusCode MinimalDataObjectHandle::setDataProductNames(const std::vector<std::string> & addresses){
+
+	//only allowed if not initialized yet
+	if(m_initialized)
+		return StatusCode::FAILURE;
+
+	m_dataProductName = addresses[0];
+	m_alternativeDataProducts.assign(addresses.begin()+1, addresses.end());
 
 	return StatusCode::SUCCESS;
 }

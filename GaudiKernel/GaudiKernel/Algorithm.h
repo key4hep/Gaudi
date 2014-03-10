@@ -628,21 +628,6 @@ public:
 
   }
 
-	/** get inputs
-	 *  @return DataObjectDescriptorCollection of inputs
-	 */
-
-	const DataObjectDescriptorCollection & getInputs() const {
-		return m_inputDataObjects;
-	}
-
-	/** get outputs
-	 *  @return DataObjectDescriptorCollection of outputs
-	 */
-	const DataObjectDescriptorCollection & getOutputs() const {
-		return m_outputDataObjects;
-	}
-
   /// Return the handles declared in the algorithm
   __attribute__ ((deprecated)) virtual const std::vector<MinimalDataObjectHandle*> handles();
   

@@ -146,14 +146,10 @@ StatusCode Algorithm::sysInitialize() {
   for(auto tag : m_inputDataObjects){
 	  if(rootSet && m_inputDataObjects[tag].address()[0] != '/') //we have a relative address
 		  m_inputDataObjects[tag].setAddress(m_rootInTES + m_inputDataObjects[tag].address());
-
-	  m_inputDataObjects[tag].getBaseHandle()->initialize();
   }
   for(auto tag : m_outputDataObjects){
 	  if(rootSet && m_outputDataObjects[tag].address()[0] != '/') //we have a relative address
 		  m_outputDataObjects[tag].setAddress(m_rootInTES + m_outputDataObjects[tag].address());
-
-	  m_outputDataObjects[tag].getBaseHandle()->initialize();
   }
 
   // Invoke initialize() method of the derived class inside a try/catch clause
@@ -220,28 +216,59 @@ StatusCode Algorithm::sysInitialize() {
   else if (m_cardinality > 1 ) {
     m_isClonable = true;
   }
+
+  //now go over DataHandles again: could be changes in initialize() of derived class
+  //update input/output declarations with relative path
+  //init data handle
+  rootSet = m_rootInTES != ""; //root set, update address
+
+  //add last slash if necessary
+  if ("" != m_rootInTES && '/'!=m_rootInTES[m_rootInTES.size()-1]){
+	  m_rootInTES += "/";
+  }
+
+  for(auto tag : m_inputDataObjects){
+	  if(rootSet && m_inputDataObjects[tag].address()[0] != '/') //we have a relative address
+		  m_inputDataObjects[tag].setAddress(m_rootInTES + m_inputDataObjects[tag].address());
+
+	  m_inputDataObjects[tag].getBaseHandle()->initialize();
+  }
+  for(auto tag : m_outputDataObjects){
+	  if(rootSet && m_outputDataObjects[tag].address()[0] != '/') //we have a relative address
+		  m_outputDataObjects[tag].setAddress(m_rootInTES + m_outputDataObjects[tag].address());
+
+	  m_outputDataObjects[tag].getBaseHandle()->initialize();
+  }
   
   //all TES accessing tools have been created in initialize() of derived class
   //query toolSvc for own tools and build dependencies
   std::function<void(const IInterface *)> addToolDOD = [&] (const IInterface * parent) {
-	  auto myTools = toolSvc()->getToolsByParent(parent);
-	  for(auto itool : myTools){
-		  AlgTool * tool = dynamic_cast<AlgTool *>(itool);
 
-		  auto inputs = tool->getInputs();
+	  MsgStream log ( msgSvc() , name() ) ;
+
+	  auto myTools = toolSvc()->getToolsByParent(parent);
+	  for(auto tool : myTools){
+
+		  log << MSG::INFO << "Adding data dependencies for tool " << tool->name() << endmsg;
+
+		  auto inputs = tool->inputDataObjects();
 		  for(auto dod : inputs){
+			  log << MSG::INFO << "\tInput: " << dod << endmsg;
 			  m_inputDataObjects.insert(inputs[dod]);
 		  }
 
-		  auto outputs = tool->getOutputs();
+		  auto outputs = tool->outputDataObjects();
 		  for(auto dod : outputs){
+			  log << MSG::INFO << "\tOutput: " << dod << endmsg;
 			  m_outputDataObjects.insert(outputs[dod]);
 		  }
 
-		  addToolDOD(itool);
+		  addToolDOD(tool);
 	  }
   };
 
+  MsgStream log ( msgSvc() , name() ) ;
+  log << MSG::INFO << "Adding tools for " << this->name() << endmsg;
   addToolDOD(this);
 
   return sc;

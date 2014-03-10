@@ -20,6 +20,10 @@ class IAlgorithm;
     @author Pere Mato
     @date 15/11/01 version 2 introduced
 */
+
+
+class DataObjectDescriptorCollection;
+
 class GAUDI_API IAlgTool: virtual public INamedInterface {
 public:
   /// InterfaceID
@@ -73,6 +77,9 @@ public:
   /** Get the current state.
    */
   virtual Gaudi::StateMachine::State FSMState() const = 0;
+
+  virtual const DataObjectDescriptorCollection & inputDataObjects() const = 0;
+  virtual const DataObjectDescriptorCollection & outputDataObjects() const = 0;
 
   /** Initialization of the Tool. This method is called typically
    *  by the ToolSvc. It allows to complete  the initialization that
