@@ -85,9 +85,10 @@ namespace concurrency {
         //daughter->promoteToControlReadyState(states, node_decisions);
         if (typeid(*daughter) != typeid(concurrency::DecisionNode)) {
           AlgorithmNode* algod = (AlgorithmNode*) daughter;
-          if (State::INITIAL == states[algod->getAlgoIndex()]) {
+          if (State::INITIAL == states[algod->getAlgoIndex()] && algod->dataDependenciesSatisfied(states)) {
             //std::cout << "----> UPDATING DAUGHTER STATE to CONTROLREADY: " << daughter->getNodeName() << std::endl;
             states.updateState(algod->getAlgoIndex(), State::CONTROLREADY);
+            states.updateState(algod->getAlgoIndex(), State::DATAREADY);
           }
         } else {
           daughter->updateDecision(states, node_decisions);
@@ -151,8 +152,10 @@ namespace concurrency {
                                                  std::vector<int>& node_decisions) const {
 
     //std::cout << "REACHED ALGONODE " << m_algoName << std::endl;
-    if (State::INITIAL == states[m_algoIndex])
+    if (State::INITIAL == states[m_algoIndex] && dataDependenciesSatisfied(states)) {
       states.updateState(m_algoIndex, State::CONTROLREADY);
+      states.updateState(m_algoIndex, State::DATAREADY);
+    }
   }
 
   //---------------------------------------------------------------------------

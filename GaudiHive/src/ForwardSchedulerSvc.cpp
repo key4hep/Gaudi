@@ -142,6 +142,7 @@ StatusCode ForwardSchedulerSvc::initialize(){
   }
 
   // prepare the control flow part
+  if (m_CFNext) m_DFNext = true; //force usage of new data flow machinery when new control flow is used
   const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>(m_algResourcePool.get());
   m_cfManager.initialize(algPool->getControlFlowGraph(), m_algname_index_map);
   unsigned int controlFlowNodeNumber = m_cfManager.getControlFlowGraph()->getControlFlowNodeCounter();
@@ -479,12 +480,9 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
     // XXX: CF tests
     if (!m_CFNext) {
       m_cfManager.updateEventState(thisAlgsStates,thisSlot.controlFlowState);
-      if (m_DFNext && !algo_name.empty()) m_cfManager.promoteDataConsumersToCR(algo_name,thisAlgsStates);
     } else {
-      if (!algo_name.empty()) {
-        if (m_DFNext) m_cfManager.promoteDataConsumersToCR(algo_name,thisAlgsStates);
+      if (!algo_name.empty())
         m_cfManager.updateDecision(algo_name,thisAlgsStates,thisSlot.controlFlowState);
-      }
     }
 
 
@@ -512,17 +510,20 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
 
     StatusCode partial_sc;
     //first update CONTROLREADY to DATAREADY
-    for(auto it = thisAlgsStates.begin(AlgsExecutionStates::State::CONTROLREADY);
-        it != thisAlgsStates.end(AlgsExecutionStates::State::CONTROLREADY); ++it) {
+    if (!m_CFNext) {
+      for(auto it = thisAlgsStates.begin(AlgsExecutionStates::State::CONTROLREADY);
+          it != thisAlgsStates.end(AlgsExecutionStates::State::CONTROLREADY); ++it) {
 
-      uint algIndex = *it;
-      partial_sc = promoteToDataReady(algIndex, iSlot);
-      if (partial_sc.isFailure()) {
-        debug() << "Could not apply transition from "
-                << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::CONTROLREADY]
-                << " for algorithm " << index2algname(algIndex) << " on processing slot " << iSlot << endmsg;
+        uint algIndex = *it;
+        partial_sc = promoteToDataReady(algIndex, iSlot);
+        if (partial_sc.isFailure()) {
+          debug() << "Could not apply transition from "
+                  << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::CONTROLREADY]
+                  << " for algorithm " << index2algname(algIndex) << " on processing slot " << iSlot << endmsg;
+        }
       }
     }
+
     //now update DATAREADY to SCHEDULED
     for(auto it = thisAlgsStates.begin(AlgsExecutionStates::State::DATAREADY);
         it != thisAlgsStates.end(AlgsExecutionStates::State::DATAREADY); ++it) {
@@ -776,19 +777,20 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si, IA
 
   m_algosInFlight--;
 
-  // Update the catalog: some new products may be there
-  m_whiteboard->selectStore(eventContext->m_evt_slot).ignore();
-
-  // update prods in the dataflow
-  // DP: Handles could be used. Just update what the algo wrote
-  std::vector<std::string> new_products;
-  m_whiteboard->getNewDataObjects(new_products).ignore();
-  for (const auto& new_product : new_products)
-    debug() << "Found in WB: " << new_product << endmsg;
   EventSlot& thisSlot = m_eventSlots[si];
   // XXX: CF tests
-  if (!m_DFNext)
+  if (!m_DFNext) {
+    // Update the catalog: some new products may be there
+    m_whiteboard->selectStore(eventContext->m_evt_slot).ignore();
+
+    // update prods in the dataflow
+    // DP: Handles could be used. Just update what the algo wrote
+    std::vector<std::string> new_products;
+    m_whiteboard->getNewDataObjects(new_products).ignore();
+    for (const auto& new_product : new_products)
+      debug() << "Found in WB: " << new_product << endmsg;
     thisSlot.dataFlowMgr.updateDataObjectsCatalog(new_products);
+  }
 
   debug() << "Algorithm " << algo->name() << " executed. Algorithms scheduled are " << m_algosInFlight << endmsg;
 
