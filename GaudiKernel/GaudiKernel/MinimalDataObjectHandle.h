@@ -4,13 +4,13 @@
 #include "GaudiKernel/IDataObjectHandle.h"
 #include <vector>
 
+class DataObjectDescriptor;
+
 class MinimalDataObjectHandle : public implements1<IDataObjectHandle> {
 
 public:        
   /// Constructor initialises the members and registers products in SchedSvc
-  MinimalDataObjectHandle(const std::string& productName,
-                          AccessType accessType,
-                          bool isOptional);
+  MinimalDataObjectHandle(DataObjectDescriptor & descriptor);
 
   /// Initialize
   StatusCode initialize();
@@ -46,18 +46,17 @@ public:
 
   bool isValid() const;
   
+  bool initialized() const { return m_initialized; }
+
   const static std::string NULL_ADDRESS;
 
 protected:
-  std::string m_dataProductName;
-  std::vector<std::string> m_alternativeDataProducts;
+  DataObjectDescriptor & m_descriptor;
   void setRead(bool wasRead=true);
   void setWritten(bool wasWritten=true);  
   
-private:  
-  const bool m_isOptional;
+private:
   const unsigned int m_dataProductIndex;
-  const AccessType m_accessType;
   bool m_wasRead;
   bool m_wasWritten;
   bool m_initialized;

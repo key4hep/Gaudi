@@ -263,26 +263,24 @@ StatusCode GaudiCommon<PBASE>::
 
   //update DataHandles to point to full TES location
 
-  //get root of DataManager
-  SmartIF<IDataManagerSvc> dataMgrSvc (PBASE::evtSvc());
-  std::string rootName(dataMgrSvc->rootName());
-  if ("" != rootName && '/'!=rootName[rootName.size()-1]){
-       rootName = rootName + "/";
-  }
-
   auto fixLocation = [&] (const std::string & location) -> std::string {
 	  std::string result = fullTESLocation(location, UseRootInTES);
 
+	  info() << "Changing " << location << " to "
+			  << result << endmsg;
+
 	  //check whether we have an absolute path if yes return it - else prepend DataManager Root
-	  return result[0] == '/' ? result : rootName + result;
+	  return result;
   };
 
   for(auto tag : PBASE::inputDataObjects()){
-	  info() << "Changing " << PBASE::inputDataObjects()[tag].address() << " to " << fixLocation(PBASE::inputDataObjects()[tag].address()) << endmsg;
 	  PBASE::inputDataObjects()[tag].setAddress(fixLocation(PBASE::inputDataObjects()[tag].address()));
+	  auto altAddress = PBASE::inputDataObjects()[tag].alternativeAddresses();
+	  for(uint i = 0; i < altAddress.size(); ++i)
+		  altAddress[i] = fixLocation(altAddress[i]);
+	  PBASE::inputDataObjects()[tag].setAltAddress(altAddress);
   }
   for(auto tag : PBASE::outputDataObjects()){
-	  info() << "Changing " << PBASE::outputDataObjects()[tag].address() << " to " << fixLocation(PBASE::outputDataObjects()[tag].address()) << endmsg;
 	  PBASE::outputDataObjects()[tag].setAddress(fixLocation(PBASE::outputDataObjects()[tag].address()));
   }
 

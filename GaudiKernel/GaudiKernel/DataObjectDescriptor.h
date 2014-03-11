@@ -84,6 +84,8 @@ public:
 
 	//sets the address of the descriptor and updates the handle if present
 	void setAddress(const std::string& address);
+	void setAddresses(const std::vector<std::string>& address);
+	void setAltAddress(const std::vector<std::string> & addresses){ setAltAddress(addresses, false); }
 
 	const std::string& tag() const;
 	void setTag(const std::string& tag);
@@ -100,8 +102,7 @@ public:
 
 		if (!m_handle.isValid() || m_handle->dataProductName() != address()){
 			m_handle = SmartIF<DataObjectHandle<T> >(
-					new DataObjectHandle<T>(address(), fatherAlg,
-							accessType(), optional()));
+					new DataObjectHandle<T>(*this, fatherAlg));
 
 			//std::cout << "Created handle for " << m_tag << ": handle is " << (m_handle.isValid() ? "" : "NOT") << " valid" << std::endl;
 		}
@@ -114,8 +115,7 @@ public:
 
 		if (!m_handle.isValid() || m_handle->dataProductName() != address()){
 			m_handle = SmartIF<DataObjectHandle<T> >(
-					new DataObjectHandle<T>(address(), fatherTool,
-							accessType(), optional()));
+					new DataObjectHandle<T>(*this, fatherTool));
 
 			//std::cout << "Created handle for " << m_tag << ": handle is " << (m_handle.isValid() ? "" : "NOT") << " valid" << std::endl;
 		}
@@ -137,7 +137,7 @@ public:
 
 private:
 	void setHandle(SmartIF<MinimalDataObjectHandle> handle);
-	void setAltAddress(const std::vector<std::string> & addresses, bool skipFirst = false);
+	void setAltAddress(const std::vector<std::string> & addresses, bool skipFirst);
 
 private:
 	std::string m_tag;

@@ -1,19 +1,16 @@
 #include "GaudiKernel/MinimalDataObjectHandle.h"
+#include "GaudiKernel/DataObjectDescriptor.h"
 
 unsigned int MinimalDataObjectHandle::m_tmp_dpi=0;
 const std::string MinimalDataObjectHandle::NULL_ADDRESS  = "_NULL";
 //---------------------------------------------------------------------------
 
-MinimalDataObjectHandle::MinimalDataObjectHandle(const std::string& productName,
-                                                 AccessType accessType,
-                                                 bool isOptional):
-                                                 m_dataProductName(productName),
-                                                 m_isOptional(isOptional),
-                                                 m_dataProductIndex(m_tmp_dpi++),
-                                                 m_accessType(accessType),
-                                                 m_wasRead(false),
-                                                 m_wasWritten(false),
-                                                 m_initialized(false){
+MinimalDataObjectHandle::MinimalDataObjectHandle(DataObjectDescriptor & descriptor)
+	:    m_descriptor(descriptor),
+	     m_dataProductIndex(m_tmp_dpi++),
+	     m_wasRead(false),
+	     m_wasWritten(false),
+	     m_initialized(false){
                                                    
   }
   
@@ -44,7 +41,7 @@ StatusCode MinimalDataObjectHandle::finalize(){
 //---------------------------------------------------------------------------  
   
 bool MinimalDataObjectHandle::isOptional() const {
-  return m_isOptional;
+  return m_descriptor.optional();
 }
 
 //---------------------------------------------------------------------------
@@ -56,7 +53,7 @@ unsigned int MinimalDataObjectHandle::dataProductIndex() const {
 //---------------------------------------------------------------------------
 
 const std::string& MinimalDataObjectHandle::dataProductName() const {
-  return m_dataProductName;
+  return m_descriptor.address();
 }
 
 StatusCode MinimalDataObjectHandle::setDataProductName(const std::string & address){
@@ -65,7 +62,7 @@ StatusCode MinimalDataObjectHandle::setDataProductName(const std::string & addre
 	if(m_initialized)
 		return StatusCode::FAILURE;
 
-	m_dataProductName = address;
+	m_descriptor.setAddress(address);
 
 	return StatusCode::SUCCESS;
 }
@@ -76,20 +73,19 @@ StatusCode MinimalDataObjectHandle::setDataProductNames(const std::vector<std::s
 	if(m_initialized)
 		return StatusCode::FAILURE;
 
-	m_dataProductName = addresses[0];
-	m_alternativeDataProducts.assign(addresses.begin()+1, addresses.end());
+	m_descriptor.setAddresses(addresses);
 
 	return StatusCode::SUCCESS;
 }
 
 bool MinimalDataObjectHandle::isValid() const {
-	return m_dataProductName != NULL_ADDRESS;
+	return m_descriptor.address() != NULL_ADDRESS;
 }
 
 //---------------------------------------------------------------------------
 
 auto MinimalDataObjectHandle::accessType() const -> AccessType {
-  return m_accessType;
+  return m_descriptor.accessType();
 }
 
 //---------------------------------------------------------------------------

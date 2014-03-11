@@ -212,6 +212,10 @@ StatusCode Algorithm::sysInitialize() {
   }
 
   auto fixLocation = [&] (const std::string & location) -> std::string {
+
+	  log << MSG::INFO << "Changing " << location << " to "
+	  			  << ('/' ? location : rootName + location) << endmsg;
+
 	  //check whether we have an absolute path if yes return it - else prepend DataManager Root
 	  return location[0] == '/' ? location : rootName + location;
   };
@@ -219,6 +223,12 @@ StatusCode Algorithm::sysInitialize() {
     //init data handle
   for(auto tag : m_inputDataObjects){
 	  m_inputDataObjects[tag].setAddress(fixLocation(m_inputDataObjects[tag].address()));
+
+	  auto altAddress = m_inputDataObjects[tag].alternativeAddresses();
+	  for(uint i = 0; i < altAddress.size(); ++i)
+		  altAddress[i] = fixLocation(altAddress[i]);
+	  m_inputDataObjects[tag].setAltAddress(altAddress);
+
 	  m_inputDataObjects[tag].getBaseHandle()->initialize();
   }
   for(auto tag : m_outputDataObjects){

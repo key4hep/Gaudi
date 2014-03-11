@@ -43,8 +43,9 @@ GaudiCommon<PBASE>::fullTESLocation( const std::string & location,
            :
              0 == location.find("/Event/") ?
                rootInTES() + location.substr(7)
-             :
-               rootInTES() + location );
+             : location[0] == '/' ?
+            	 rootInTES() + location.substr(1)
+               : rootInTES() + location );
 }
 // ============================================================================
 // Templated access to the data in Gaudi Transient Store

@@ -14,17 +14,12 @@ class DataObjectHandle : public MinimalDataObjectHandle {
 public:
       
   /// Initialises mother class
-  DataObjectHandle(const std::string& productName,
-                   IAlgorithm* fatherAlg,
-                   AccessType accessType = READ,
-                   bool isOptional=false);
+  DataObjectHandle(DataObjectDescriptor & descriptor,
+                   IAlgorithm* fatherAlg);
   
   /// Initialises mother class
-  DataObjectHandle(const std::string& productName,
-                   IAlgTool* fatherTool,
-                   AccessType accessType = READ,
-                   bool isOptional=false);
-
+  DataObjectHandle(DataObjectDescriptor & descriptor,
+                   IAlgTool* fatherAlg);
   /// Initialize
   StatusCode initialize();
 
@@ -41,11 +36,11 @@ public:
   void put (T* object);
   
 private:
-  bool m_goodType;
   SmartIF<IDataProviderSvc> m_EDS;
   SmartIF<IMessageSvc> m_MS;
   IAlgorithm* m_fatherAlg;
   IAlgTool* m_fatherTool;
+  bool m_goodType;
   DataObjectHandle(const DataObjectHandle& );
   DataObjectHandle& operator=(const DataObjectHandle& );  
   
@@ -111,26 +106,18 @@ StatusCode DataObjectHandle<T>::finalize(){
 
 //---------------------------------------------------------------------------
 template<typename T>
-DataObjectHandle<T>::DataObjectHandle(const std::string& productName,
-                                      IAlgorithm* fatherAlg,
-                                      IDataObjectHandle::AccessType accessType,
-                                      bool isOptional):
-                   MinimalDataObjectHandle(productName,
-                                           accessType,
-                                           isOptional),
+DataObjectHandle<T>::DataObjectHandle(DataObjectDescriptor & descriptor,
+                                      IAlgorithm* fatherAlg):
+                   MinimalDataObjectHandle(descriptor),
                                            m_fatherAlg(fatherAlg),
                                            m_fatherTool(0),
                                            m_goodType(false){}
 
 //---------------------------------------------------------------------------
 template<typename T>
-DataObjectHandle<T>::DataObjectHandle(const std::string& productName,
-                                      IAlgTool* fatherTool,
-                                      IDataObjectHandle::AccessType accessType,
-                                      bool isOptional):
-                   MinimalDataObjectHandle(productName,
-                                           accessType,
-                                           isOptional),
+DataObjectHandle<T>::DataObjectHandle(DataObjectDescriptor & descriptor,
+                                      IAlgTool* fatherTool):
+                   MinimalDataObjectHandle(descriptor),
                                            m_fatherAlg(0),
                                            m_fatherTool(fatherTool),
                                            m_goodType(false){}
@@ -151,17 +138,17 @@ T* DataObjectHandle<T>::get() {
 
   DataObject* dataObjectp = NULL;
 
-  StatusCode sc = m_EDS->retrieveObject(m_dataProductName, dataObjectp);
+  StatusCode sc = m_EDS->retrieveObject(dataProductName(), dataObjectp);
   
   if(sc.isSuccess())
-	  log << MSG::DEBUG << "Using main location " << m_dataProductName << " for " << *dataObjectp << endmsg;
+	  log << MSG::DEBUG << "Using main location " << dataProductName() << " for " << *dataObjectp << endmsg;
 
-  if(sc.isFailure() && ! m_alternativeDataProducts.empty()){
-	  for(uint i = 0; i < m_alternativeDataProducts.size() && sc.isFailure(); ++i){
-		  sc = m_EDS->retrieveObject(m_alternativeDataProducts[i], dataObjectp);
+  if(sc.isFailure() && ! m_descriptor.alternativeAddresses().empty()){
+	  for(uint i = 0; i < m_descriptor.alternativeAddresses().size() && sc.isFailure(); ++i){
+		  sc = m_EDS->retrieveObject(m_descriptor.alternativeAddresses()[i], dataObjectp);
 
 		  if(sc.isSuccess())
-		  	  log << MSG::DEBUG << "Using alternative location " << m_alternativeDataProducts[i] << " for " << *dataObjectp << endmsg;
+		  	  log << MSG::DEBUG << "Using alternative location " << m_descriptor.alternativeAddresses()[i] << " for " << *dataObjectp << endmsg;
 	  }
   }
 
@@ -179,7 +166,7 @@ T* DataObjectHandle<T>::get() {
       const std::string dataType(typeid(tmp).name());
       
       if (!m_goodType){
-        std::string errorMsg("The type provided for "+ m_dataProductName 
+        std::string errorMsg("The type provided for "+ dataProductName()
                              + " is " + dataType
                              + " and is different form the one of the object in the store.");
         log << MSG::ERROR << errorMsg << endmsg;        
@@ -187,7 +174,7 @@ T* DataObjectHandle<T>::get() {
       }
       else{
         log << MSG::DEBUG <<  "The data type (" <<  dataType
-            << ") specified for the handle of " << m_dataProductName
+            << ") specified for the handle of " << dataProductName()
             << " is the same of the object in the store. "
             << "From now on the result of a static_cast will be returned." << endmsg;
       }
@@ -201,7 +188,7 @@ T* DataObjectHandle<T>::get() {
   else{ // Problems in getting from the store
     MsgStream log(m_MS,"DataObjectHandle");
     log << MSG::ERROR << "Cannot retrieve " 
-        << m_dataProductName << " from transient store. "
+        << dataProductName() << " from transient store. "
         << "As a result, a segmentation fault is very likely." << endmsg;
     return NULL;
   }
@@ -215,7 +202,7 @@ template<typename T>
 void DataObjectHandle<T>::put (T *objectp){
     
   
-    StatusCode sc = m_EDS->registerObject(m_dataProductName, objectp);
+    StatusCode sc = m_EDS->registerObject(dataProductName(), objectp);
     if ( LIKELY( sc.isSuccess() ) )
     setWritten();    
 }

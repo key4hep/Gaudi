@@ -45,6 +45,7 @@ const std::string DataObjectDescriptor::pythonRepr() const {
 
 void DataObjectDescriptor::fromString(const std::string& s) {
 	std::vector<std::string> items;
+
 	boost::split(items, s, boost::is_any_of(boost::lexical_cast<std::string>(FIELD_SEP)), boost::token_compress_on);
 
 	setTag(items[0]);
@@ -53,7 +54,7 @@ void DataObjectDescriptor::fromString(const std::string& s) {
 		setAddress(items[1]); //address
 	else { //alternative addresses provided
 		std::vector<std::string> addr;
-		boost::split(addr, s, boost::is_any_of(boost::lexical_cast<std::string>(ADDR_SEP)), boost::token_compress_on);
+		boost::split(addr, items[1], boost::is_any_of(boost::lexical_cast<std::string>(ADDR_SEP)), boost::token_compress_on);
 
 		setAddress(addr[0]); //main address
 		setAltAddress(addr, true); //set alternatives, skipping first
@@ -121,14 +122,24 @@ void DataObjectDescriptor::setAddress(const std::string& address) {
 	//std::cout << "setting address for " << m_tag << " from " << m_address << " to " << address
 	//		<< " with " << (m_handle.isValid() ? "valid" : "NOT valid") << " handle" << std::endl;
 
-	m_address = address;
+	if(!m_handle || !m_handle->initialized())
+		m_address = address;
+}
 
-	if(m_handle.isValid()) //only update if present
-		m_handle->setDataProductName(m_address);
+void DataObjectDescriptor::setAddresses(const std::vector<std::string>& addresses) {
+
+	//std::cout << "setting address for " << m_tag << " from " << m_address << " to " << address
+	//		<< " with " << (m_handle.isValid() ? "valid" : "NOT valid") << " handle" << std::endl;
+
+	if(!m_handle || !m_handle->initialized()){
+		setAddress(addresses[0]);
+		setAltAddress(addresses, true);
+	}
 }
 
 void DataObjectDescriptor::setAltAddress(const std::vector<std::string> & addresses, bool skipFirst){
-	m_altAddresses.assign(addresses.begin() + skipFirst, addresses.end());
+	if(!m_handle || !m_handle->initialized())
+		m_altAddresses.assign(addresses.begin() + skipFirst, addresses.end());
 }
 
 const std::string DataObjectDescriptorCollection::toString() const {
