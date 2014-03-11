@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-03-11 - Marco Clemencic
+ - Re-enabled change in Boost Spirit version for all the platforms (problem
+   fixed in LHCb).
+
 ! 2014-02-21 - Marco Clemencic
  - LBCORE-331: Generate manifest.xml for CMT built projects
    Added generation of manifest.xml during CMT builds (requires that the

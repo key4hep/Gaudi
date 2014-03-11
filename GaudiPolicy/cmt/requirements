@@ -808,7 +808,7 @@ macro_append pp_cppflags " -DBOOST_FILESYSTEM_VERSION=3 "
 # FIXME: enforce the use of Boost Phoenix V3 (V2 does not work with recent compilers)
 #        see http://stackoverflow.com/q/20721486
 #        and http://stackoverflow.com/a/20440238/504346
-macro_append pp_cppflags "" target-clang " -DBOOST_SPIRIT_USE_PHOENIX_V3 "
+macro_append pp_cppflags " -DBOOST_SPIRIT_USE_PHOENIX_V3 "
 
 # ---- Disable warnings coming from external libraries
 #      the hacks can be disabled with the tag "no-hide-warnings".
@@ -1528,7 +1528,7 @@ pattern -global generate_manifest_file \
 		       container-package "CallCommand" ; \
     apply_pattern $(generate_manifest_file_applied) target=generate_manifest_file ; \
 	end_private
-	
+
 #-------------------------------------------------------------------
 # ATLAS specific stuff
 #-------------------------------------------------------------------
