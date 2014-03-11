@@ -166,7 +166,7 @@ public:
     /// Initialize graph
     void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
     /// Register algorithm in the Data Dependency index
-    void registerAlgorithmInDDIndex(Algorithm* algo);
+    void registerAlgorithmInDDIndex(const Algorithm* algo);
     /// Interconnect algorithm nodes reflecting their data dependencies
     void buildDataDependenciesRealm();
     /// Add a node, which has no parents

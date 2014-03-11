@@ -5,6 +5,7 @@
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
+#include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IConversionSvc.h"
 #include "GaudiKernel/IHistogramSvc.h"
 #include "GaudiKernel/INTupleSvc.h"
@@ -52,7 +53,6 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   //declare input and output properties
   declareProperty( "InputDataObjects", m_inputDataObjects);
   declareProperty( "OutputDataObjects", m_outputDataObjects);
-  declareProperty( "RootInTES",         m_rootInTES = "");
 
   // Auditor monitoring properties
 
@@ -104,6 +104,8 @@ Algorithm::~Algorithm() {
 // IAlgorithm implementation
 StatusCode Algorithm::sysInitialize() {
 
+	  MsgStream log ( msgSvc() , name() ) ;
+
   // Bypass the initialization if the algorithm
   // has already been initialized.
   if ( Gaudi::StateMachine::INITIALIZED <= FSMState() ) return StatusCode::SUCCESS;
@@ -133,24 +135,6 @@ StatusCode Algorithm::sysInitialize() {
   
   // Get WhiteBoard interface if implemented by EventDataSvc
   m_WB = service("EventDataSvc");
-
-  //update input/output declarations with relative path
-  //init data handle
-  bool rootSet = m_rootInTES != ""; //root set, update address
-
-  //add last slash if necessary
-  if ("" != m_rootInTES && '/'!=m_rootInTES[m_rootInTES.size()-1]){
-	  m_rootInTES += "/";
-  }
-
-  for(auto tag : m_inputDataObjects){
-	  if(rootSet && m_inputDataObjects[tag].address()[0] != '/') //we have a relative address
-		  m_inputDataObjects[tag].setAddress(m_rootInTES + m_inputDataObjects[tag].address());
-  }
-  for(auto tag : m_outputDataObjects){
-	  if(rootSet && m_outputDataObjects[tag].address()[0] != '/') //we have a relative address
-		  m_outputDataObjects[tag].setAddress(m_rootInTES + m_outputDataObjects[tag].address());
-  }
 
   // Invoke initialize() method of the derived class inside a try/catch clause
   try {
@@ -217,26 +201,28 @@ StatusCode Algorithm::sysInitialize() {
     m_isClonable = true;
   }
 
-  //now go over DataHandles again: could be changes in initialize() of derived class
-  //update input/output declarations with relative path
-  //init data handle
-  rootSet = m_rootInTES != ""; //root set, update address
 
-  //add last slash if necessary
-  if ("" != m_rootInTES && '/'!=m_rootInTES[m_rootInTES.size()-1]){
-	  m_rootInTES += "/";
+  //update DataHandles to point to full TES location
+
+  //get root of DataManager
+  SmartIF<IDataManagerSvc> dataMgrSvc (evtSvc());
+  std::string rootName(dataMgrSvc->rootName());
+  if ("" != rootName && '/'!=rootName[rootName.size()-1]){
+       rootName = rootName + "/";
   }
 
-  for(auto tag : m_inputDataObjects){
-	  if(rootSet && m_inputDataObjects[tag].address()[0] != '/') //we have a relative address
-		  m_inputDataObjects[tag].setAddress(m_rootInTES + m_inputDataObjects[tag].address());
+  auto fixLocation = [&] (const std::string & location) -> std::string {
+	  //check whether we have an absolute path if yes return it - else prepend DataManager Root
+	  return location[0] == '/' ? location : rootName + location;
+  };
 
+    //init data handle
+  for(auto tag : m_inputDataObjects){
+	  m_inputDataObjects[tag].setAddress(fixLocation(m_inputDataObjects[tag].address()));
 	  m_inputDataObjects[tag].getBaseHandle()->initialize();
   }
   for(auto tag : m_outputDataObjects){
-	  if(rootSet && m_outputDataObjects[tag].address()[0] != '/') //we have a relative address
-		  m_outputDataObjects[tag].setAddress(m_rootInTES + m_outputDataObjects[tag].address());
-
+	  m_inputDataObjects[tag].setAddress(fixLocation(m_inputDataObjects[tag].address()));
 	  m_outputDataObjects[tag].getBaseHandle()->initialize();
   }
   
@@ -267,7 +253,6 @@ StatusCode Algorithm::sysInitialize() {
 	  }
   };
 
-  MsgStream log ( msgSvc() , name() ) ;
   log << MSG::INFO << "Adding tools for " << this->name() << endmsg;
   addToolDOD(this);
 

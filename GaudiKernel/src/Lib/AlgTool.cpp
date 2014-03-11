@@ -3,6 +3,7 @@
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IJobOptionsSvc.h"
+#include "GaudiKernel/IDataManagerSvc.h"
 
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/Service.h"
@@ -214,7 +215,6 @@ AlgTool::AlgTool( const std::string& type,
   addRef(); // Initial count set to 1
 
   declareProperty( "MonitorService", m_monitorSvcName = "MonitorSvc" );
-  declareProperty( "RootInTES",         m_rootInTES = "");
 
   { // get the "OutputLevel" property from parent
     const Property* _p = Gaudi::Utils::getProperty ( parent , "OutputLevel") ;
@@ -310,25 +310,27 @@ StatusCode AlgTool::sysInitialize() {
     log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
   }
 
-  //update input/output declarations with relative path
-  //init data handle
-  bool rootSet = m_rootInTES != ""; //root set, update address
+  //update DataHandles to point to full TES location
 
-  //add last slash if necessary
-  if ("" != m_rootInTES && '/'!=m_rootInTES[m_rootInTES.size()-1]){
-	  m_rootInTES += "/";
+  //get root of DataManager
+  SmartIF<IDataManagerSvc> dataMgrSvc (evtSvc());
+  std::string rootName(dataMgrSvc->rootName());
+  if ("" != rootName && '/'!=rootName[rootName.size()-1]){
+       rootName = rootName + "/";
   }
 
-  for(auto tag : m_inputDataObjects){
-	  if(rootSet && m_inputDataObjects[tag].address()[0] != '/') //we have a relative address
-		  m_inputDataObjects[tag].setAddress(m_rootInTES + m_inputDataObjects[tag].address());
+  auto fixLocation = [&] (const std::string & location) -> std::string {
+	  //check whether we have an absolute path if yes return it - else prepend DataManager Root
+	  return location[0] == '/' ? location : rootName + location;
+  };
 
+    //init data handle
+  for(auto tag : m_inputDataObjects){
+	  m_inputDataObjects[tag].setAddress(fixLocation(m_inputDataObjects[tag].address()));
 	  m_inputDataObjects[tag].getBaseHandle()->initialize();
   }
   for(auto tag : m_outputDataObjects){
-	  if(rootSet && m_outputDataObjects[tag].address()[0] != '/') //we have a relative address
-		  m_outputDataObjects[tag].setAddress(m_rootInTES + m_outputDataObjects[tag].address());
-
+	  m_inputDataObjects[tag].setAddress(fixLocation(m_inputDataObjects[tag].address()));
 	  m_outputDataObjects[tag].getBaseHandle()->initialize();
   }
 

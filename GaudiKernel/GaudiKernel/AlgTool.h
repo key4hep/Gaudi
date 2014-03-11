@@ -329,6 +329,17 @@ public:
 		return m_outputDataObjects;
 	}
 
+protected:
+
+	  DataObjectDescriptorCollection & inputDataObjects() {
+		  return m_inputDataObjects;
+	  }
+	  DataObjectDescriptorCollection & outputDataObjects() {
+		  return m_outputDataObjects;
+	  }
+
+public:
+
   // ==========================================================================
   /// Access the auditor service
   IAuditorSvc* auditorSvc() const;
@@ -419,7 +430,7 @@ private:
 
   DataObjectDescriptorCollection m_inputDataObjects; //input data objects
   DataObjectDescriptorCollection m_outputDataObjects; //output data objects
-  std::string m_rootInTES;
+  std::string m_dataRoot;
 
   /** implementation of service method */
   StatusCode service_i(const std::string& algName,

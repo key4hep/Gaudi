@@ -23,6 +23,7 @@
 #include "GaudiKernel/Property.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
+#include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/ObjectVector.h"
 #include "GaudiKernel/SmartDataPtr.h"
 #include "GaudiKernel/SmartRef.h"
@@ -259,6 +260,31 @@ StatusCode GaudiCommon<PBASE>::
   // properties will be printed if asked for or in "MSG::DEBUG" mode
   if      ( propsPrint()         ) { printProps(MSG::ALWAYS); }
   else if ( msgLevel(MSG::DEBUG) ) { printProps(MSG::DEBUG);  }
+
+  //update DataHandles to point to full TES location
+
+  //get root of DataManager
+  SmartIF<IDataManagerSvc> dataMgrSvc (PBASE::evtSvc());
+  std::string rootName(dataMgrSvc->rootName());
+  if ("" != rootName && '/'!=rootName[rootName.size()-1]){
+       rootName = rootName + "/";
+  }
+
+  auto fixLocation = [&] (const std::string & location) -> std::string {
+	  std::string result = fullTESLocation(location, UseRootInTES);
+
+	  //check whether we have an absolute path if yes return it - else prepend DataManager Root
+	  return result[0] == '/' ? result : rootName + result;
+  };
+
+  for(auto tag : PBASE::inputDataObjects()){
+	  info() << "Changing " << PBASE::inputDataObjects()[tag].address() << " to " << fixLocation(PBASE::inputDataObjects()[tag].address()) << endmsg;
+	  PBASE::inputDataObjects()[tag].setAddress(fixLocation(PBASE::inputDataObjects()[tag].address()));
+  }
+  for(auto tag : PBASE::outputDataObjects()){
+	  info() << "Changing " << PBASE::outputDataObjects()[tag].address() << " to " << fixLocation(PBASE::outputDataObjects()[tag].address()) << endmsg;
+	  PBASE::outputDataObjects()[tag].setAddress(fixLocation(PBASE::outputDataObjects()[tag].address()));
+  }
 
   return sc;
 }

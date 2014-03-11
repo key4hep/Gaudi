@@ -631,12 +631,23 @@ public:
   /// Return the handles declared in the algorithm
   __attribute__ ((deprecated)) virtual const std::vector<MinimalDataObjectHandle*> handles();
   
-  virtual const DataObjectDescriptorCollection & inputDataObjects() const {
+  const DataObjectDescriptorCollection & inputDataObjects() const {
 	  return m_inputDataObjects;
   }
-  virtual const DataObjectDescriptorCollection & outputDataObjects() const {
+  const DataObjectDescriptorCollection & outputDataObjects() const {
 	  return m_outputDataObjects;
   }
+
+protected:
+
+   DataObjectDescriptorCollection & inputDataObjects() {
+	  return m_inputDataObjects;
+  }
+   DataObjectDescriptorCollection & outputDataObjects() {
+	  return m_outputDataObjects;
+  }
+
+public:
 
   /// Specifies the clonability of the algorithm
   virtual bool isClonable () const { return m_isClonable; }
@@ -677,7 +688,7 @@ private:
   //input and output definition
   DataObjectDescriptorCollection m_inputDataObjects;
   DataObjectDescriptorCollection m_outputDataObjects;
-  std::string m_rootInTES;
+
 
 private:
   mutable SmartIF<IMessageSvc>      m_MS;       ///< Message service

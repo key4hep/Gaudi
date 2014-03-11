@@ -250,11 +250,11 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void ControlFlowGraph::registerAlgorithmInDDIndex(Algorithm* algo) {
+  void ControlFlowGraph::registerAlgorithmInDDIndex(const Algorithm* algo) {
 
     const std::string& algoName = algo->name();
 
-    DataObjectDescriptorCollection inputDataObjects = algo->inputDataObjects();
+    const DataObjectDescriptorCollection & inputDataObjects = algo->inputDataObjects();
     for (auto tag : inputDataObjects) {
       if (inputDataObjects[tag].getBaseHandle()->isValid()) {
         const std::string& inputAddress = inputDataObjects[tag].address();
@@ -273,7 +273,7 @@ namespace concurrency {
       debug() << endmsg;
     }
 
-    DataObjectDescriptorCollection outputDataObjects = algo->outputDataObjects();
+    const DataObjectDescriptorCollection & outputDataObjects = algo->outputDataObjects();
     for (auto tag : outputDataObjects) {
       if (outputDataObjects[tag].getBaseHandle()->isValid()) {
         const std::string& outputAddress = outputDataObjects[tag].address();
