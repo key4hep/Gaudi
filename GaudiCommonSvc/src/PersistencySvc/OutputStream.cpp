@@ -1,8 +1,5 @@
-#define GAUDISVC_PERSISTENCYSVC_OUTPUTSTREAM_CPP
-
 // Framework include files
 #include "GaudiKernel/Tokenizer.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/ISvcLocator.h"
@@ -24,7 +21,7 @@
 #include <set>
 
 // Define the algorithm factory for the standard output data writer
-DECLARE_ALGORITHM_FACTORY(OutputStream)
+DECLARE_COMPONENT(OutputStream)
 
 // Standard Constructor
 OutputStream::OutputStream(const std::string& name, ISvcLocator* pSvcLocator)

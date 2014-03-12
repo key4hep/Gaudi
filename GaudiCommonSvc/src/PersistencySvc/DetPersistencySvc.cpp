@@ -3,14 +3,13 @@
 #include <iostream>
 
 // Implementation specific definitions
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "DetPersistencySvc.h"
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_SERVICE_FACTORY(DetPersistencySvc)
+DECLARE_COMPONENT(DetPersistencySvc)
 
 // Finalize the service.
 StatusCode DetPersistencySvc::finalize()

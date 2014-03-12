@@ -11,7 +11,7 @@
 #include "MyTool.h"
 
 // Declaration of the AlgTool Factory
-DECLARE_TOOL_FACTORY(MyTool)
+DECLARE_COMPONENT(MyTool)
 
 //------------------------------------------------------------------------------
 MyTool::MyTool( const std::string& type,

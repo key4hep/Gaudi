@@ -1,4 +1,3 @@
-// $Id: DataStreamTool.cpp,v 1.5 2008/04/04 15:12:19 marcocle Exp $
 // Include files
 
 // from Gaudi
@@ -16,7 +15,7 @@
 #include "GaudiKernel/EventSelectorDataStream.h"
 #include "GaudiKernel/DataStreamTool.h"
 #include "GaudiKernel/ToolFactory.h"
-#include "GaudiKernel/SvcFactory.h"
+#include "GaudiKernel/Service.h"
 
 #include <sstream>
 
@@ -25,10 +24,6 @@
 //
 // 2006-09-21 : Andres Felipe Osorio Oliveros
 //-----------------------------------------------------------------------------
-
-// Declaration of the Tool Factory
-// Now the declaration is done in GaudiSvc
-//DECLARE_TOOL_FACTORY( DataStreamTool )
 
 //=============================================================================
 // Standard constructor, initializes variables
@@ -156,7 +151,7 @@ StatusCode DataStreamTool::initializeStream(EventSelectorDataStream* s)   {
 
 // Create (sub-) Event selector service
 StatusCode DataStreamTool::createSelector(const std::string& nam, const std::string& typ, IEvtSelector*& sel) {
-  IService* isvc = ROOT::Reflex::PluginService::Create<IService*>(typ, nam, serviceLocator());
+  IService* isvc = Service::Factory::create(typ, nam, serviceLocator());
   if ( isvc ) {
     StatusCode status = isvc->queryInterface(IEvtSelector::interfaceID(), (void**)&sel);
     if ( status.isSuccess() ) {

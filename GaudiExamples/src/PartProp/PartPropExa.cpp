@@ -2,7 +2,6 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IPartPropSvc.h"
-#include "GaudiKernel/AlgFactory.h"
 
 #include "HepPDT/ParticleDataTable.hh"
 
@@ -10,7 +9,7 @@
 
 // Static Factory declaration
 
-DECLARE_ALGORITHM_FACTORY(PartPropExa)
+DECLARE_COMPONENT(PartPropExa)
 
 PartPropExa::PartPropExa( const std::string& name, ISvcLocator* pSvcLocator ) :
   Algorithm(name, pSvcLocator)

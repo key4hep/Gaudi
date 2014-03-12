@@ -1,8 +1,5 @@
-// $Id: MyGaudiAlgorithm.cpp,v 1.1 2008/10/10 15:18:56 marcocle Exp $
-
 // Include files
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IToolSvc.h"
 
@@ -10,7 +7,7 @@
 #include "MyGaudiAlgorithm.h"
 
 // Static Factory declaration
-DECLARE_ALGORITHM_FACTORY(MyGaudiAlgorithm)
+DECLARE_COMPONENT(MyGaudiAlgorithm)
 
 // Constructor
 //------------------------------------------------------------------------------

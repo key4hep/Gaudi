@@ -1,4 +1,4 @@
-#include "MyVertex.h"
+#include "GaudiExamples/MyVertex.h"
 
 using namespace Gaudi::Examples ;
 

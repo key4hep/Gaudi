@@ -1,7 +1,6 @@
 // Include files
 
 // from Gaudi
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/MsgStream.h"
 
 // local
@@ -14,7 +13,7 @@
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY(TestToolAlgFailure)
+DECLARE_COMPONENT(TestToolAlgFailure)
 
 //=============================================================================
 // Standard constructor, initializes variables

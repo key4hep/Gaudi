@@ -120,7 +120,7 @@ StatusCode RootEvtSelector::initialize()    {
   if ( !status.isSuccess() ) {
     return error("Error initializing base class Service!");
   }
-  
+
   SmartIF<IPersistencySvc> ipers(serviceLocator()->service(m_persName));
   if( !ipers.isValid() )   {
     return error("Unable to locate IPersistencySvc interface of "+m_persName);

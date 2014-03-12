@@ -1,11 +1,8 @@
-// $Id: DataCreator.cpp,v 1.5 2007/10/29 14:25:31 hmd Exp $
-
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "DataCreator.h"
 
 // Static Factory declaration
-DECLARE_ALGORITHM_FACTORY(DataCreator)
+DECLARE_COMPONENT(DataCreator)
 
 // Constructor
 //------------------------------------------------------------------------------

@@ -84,6 +84,11 @@ namespace IncidentType
   const std::string BeginProcessing = "BeginProcessing";
   /// Incident raised just after the loop over the algorithms (note: before the execution of OutputStreams).
   const std::string EndProcessing = "EndProcessing";
+
+  /// ONLY For Services that need something after they've been finalized.
+  /// Caveat Emptor: Don't use unless you're a Service or know you'll exist
+  ///                after all services have been finalized!!!
+  const std::string SvcPostFinalize = "PostFinalize";
 }
 
 #endif //GAUDI_INCIDENT_H

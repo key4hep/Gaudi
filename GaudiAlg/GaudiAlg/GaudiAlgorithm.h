@@ -20,7 +20,6 @@
 // forward declarations:
 // ============================================================================
 class                   INTupleSvc     ; // GaudiKernel
-template<class T> class  AlgFactory    ; // GaudiKernel
 // ============================================================================
 /* @file GaudiAlgorithm.h
  *
@@ -94,8 +93,6 @@ template<class T> class  AlgFactory    ; // GaudiKernel
 // ============================================================================
 class GAUDI_API GaudiAlgorithm: public GaudiCommon<Algorithm>
 {
-  // friend factory for instantiation
-  friend class AlgFactory<GaudiAlgorithm>;
 public:
   // ==========================================================================
   /** standard initialization method
@@ -258,7 +255,7 @@ public:
    *  Quick and safe access to the data in Gaudi transient store.
    *  The method located the data at given address and perform the
    *  debug printout about located data.
-   * 
+   *
    *  Skips the check on the data as performed by 'get'. No exception
    *  is thrown if the data is missing.
    *
@@ -283,7 +280,7 @@ public:
    *  @param useRootInTES Flag to turn on(TRUE) off(FALSE) the use of
    *                      the RootInTES location property
    *
-   *  @return pointer to the data object. 
+   *  @return pointer to the data object.
    *  @retval NULL If data does not exist.
    */
   template < class TYPE  >
@@ -333,7 +330,7 @@ public:
    *
    *  Quick and safe access to the data in Gaudi transient store.
    *  The method located the data at given address and perform the
-   *  debug printout about located data. 
+   *  debug printout about located data.
    *
    *  Skips the check on the data as performed by 'get'. No exception
    *  is thrown if the data is missing.
@@ -358,7 +355,7 @@ public:
    *  @param useRootInTES Flag to turn on(TRUE) off(FALSE) the use of
    *                      the RootInTES location property
    *
-   *  @return pointer to the data object. 
+   *  @return pointer to the data object.
    *  @retval NULL If data does not exist.
    */
   template < class TYPE  >
@@ -401,7 +398,7 @@ public:
    *
    *  The method located the detector at the given address and perform the
    *  debug printout about located detector.
-   * 
+   *
    *  Skips the check on the data as performed by 'get'. No exception
    *  is thrown if the data is missing.
    *
@@ -454,7 +451,7 @@ public:
    *
    *  The method located the detector at the given address and perform the
    *  debug printout about located detector.
-   * 
+   *
    *  Skips the check on the data as performed by 'get'. No exception
    *  is thrown if the data is missing.
    *

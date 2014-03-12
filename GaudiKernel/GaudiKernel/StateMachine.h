@@ -35,9 +35,6 @@ enum Transition {
  */
 State GAUDI_API ChangeState(const Transition transition, const State state);
 
-} // namespace Gaudi
-} // namespace StateMachine
-
 /// Pretty print of states.
 inline std::ostream & operator << (std::ostream & s, const Gaudi::StateMachine::State &st) {
   switch (st) {
@@ -61,5 +58,8 @@ inline std::ostream & operator << (std::ostream & s, const Gaudi::StateMachine::
   }
   return s; // cannot be reached, but make the compiler happy
 }
+
+} // namespace StateMachine
+} // namespace Gaudi
 
 #endif /*GAUDIKERNEL_STATEMACHINE_H_*/

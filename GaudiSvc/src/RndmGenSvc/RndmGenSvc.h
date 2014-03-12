@@ -19,13 +19,8 @@
 #include "GaudiKernel/IRndmGenSvc.h"
 
 // Forward declarations
-template <class TYPE> class SvcFactory;
-namespace { template <class P, class S> class Factory; }
-
 class IRndmGenFactory;
 class IMessageSvc;
-class IFactory;
-
 
 /** Random Generator service definition
 
@@ -53,7 +48,6 @@ class IFactory;
 */
 class RndmGenSvc : public extends3<Service, IRndmGenSvc, IRndmEngine, ISerialize> {
 private:
-  friend class Factory<RndmGenSvc,IService* (std::string,ISvcLocator *)>;
   /// Random number engine
   mutable IRndmEngine* m_engine;
   /// Serialization interface of random number engine

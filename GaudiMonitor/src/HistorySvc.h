@@ -34,9 +34,6 @@ class AlgorithmHistory;
 class ServiceHistory;
 struct DHH;
 
-// Forward declarations
-template <class TYPE> class SvcFactory;
-
 /** @class HistorySvc HistorySvc.h
  *
  *  HistorySvc class definition
@@ -104,9 +101,6 @@ private:
 
   void clearState();
 
-  // Allow SvcFactory to instantiate the service.
-  friend class SvcFactory<HistorySvc>;
-
   bool m_isInitialized;
   bool m_dump;
   bool m_activate;
@@ -139,7 +133,7 @@ private:
   void dumpState(std::ofstream&) const;
   void dumpState(const INamedInterface*, std::ofstream&) const;
 
-  std::string dumpProp(const Property*, const bool isXML=false, 
+  std::string dumpProp(const Property*, const bool isXML=false,
 		       int indent=0) const;
 
   IAlgorithm* getCurrentIAlg() const;

@@ -113,4 +113,4 @@ public:
 };
 
 // Declaration of the Tool Factory
-DECLARE_TOOL_FACTORY(PartitionSwitchTool)
+DECLARE_COMPONENT(PartitionSwitchTool)

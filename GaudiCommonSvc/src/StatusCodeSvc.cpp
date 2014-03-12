@@ -1,6 +1,5 @@
 #include "StatusCodeSvc.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/StatusCode.h"
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -262,4 +261,4 @@ StatusCodeSvc::parseFilter(const string& str, string& fnc, string& lib) {
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-DECLARE_SERVICE_FACTORY(StatusCodeSvc)
+DECLARE_COMPONENT(StatusCodeSvc)

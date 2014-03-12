@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IMagneticFieldSvc.h,v 1.8 2006/05/29 08:46:06 hmd Exp $
 #ifndef GAUDIKERNEL_IMAGNETICFIELDSVC_H
 #define GAUDIKERNEL_IMAGNETICFIELDSVC_H
 
@@ -9,7 +8,6 @@
 
 
 // Forward declarations
-template <class TYPE> class SvcFactory;
 namespace ROOT {
   namespace Math {
     class DefaultCoordinateSystemTag;

@@ -8,7 +8,6 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/Tokenizer.h"
 // ============================================================================
@@ -21,7 +20,7 @@ using namespace std;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-DECLARE_SERVICE_FACTORY(ExceptionSvc)
+DECLARE_COMPONENT(ExceptionSvc)
 
 inline void toupper(std::string &s)
 {

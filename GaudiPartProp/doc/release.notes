@@ -4,6 +4,17 @@
 ! Purpose     : Gaudi Particle Property Service
 !-----------------------------------------------------------------------------
 
+============================= GaudiPartProp v2r0 =============================
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
+! 2013-07-18 - Marco Clemencic
+ - Removed use of obsolete AlgFactory.h, SvcFactory.h, ToolFactory.h,
+   AudFactory.h and CnvFactory.h.
+
+! 2013-07-17 - Marco Clemencic
+ - Removed factories forward declarations.
+
 ============================= GaudiPartProp v1r2 =============================
 ! 2012-11-14 - Marco Clemencic
  - Updated CMakeLists.txt.

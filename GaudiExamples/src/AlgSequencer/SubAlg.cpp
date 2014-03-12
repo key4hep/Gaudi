@@ -1,15 +1,12 @@
-// $Id: SubAlg.cpp,v 1.3 2006/11/30 10:35:26 mato Exp $
-
 // Include files
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "SubAlg.h"
 
 // Static Factory declaration
 
-DECLARE_ALGORITHM_FACTORY(SubAlg)
+DECLARE_COMPONENT(SubAlg)
 
 // Constructor
 //------------------------------------------------------------------------------

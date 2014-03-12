@@ -25,7 +25,6 @@
 #include "GaudiKernel/Property.h"
 #include "GaudiKernel/Tokenizer.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IConversionSvc.h"
 #include "GaudiKernel/GenericAddress.h"
@@ -35,7 +34,7 @@
 #include "HistogramSvc.h"
 // ============================================================================
 // Instantiation of a factory class used by clients
-DECLARE_SERVICE_FACTORY(HistogramSvc)
+DECLARE_COMPONENT(HistogramSvc)
 // ============================================================================
 using namespace AIDA;
 // ============================================================================

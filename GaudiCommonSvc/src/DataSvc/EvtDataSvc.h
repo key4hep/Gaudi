@@ -13,8 +13,6 @@
  *  @author M.Frank
  */
 class EvtDataSvc  : public DataSvc   {
-  friend class SvcFactory<EvtDataSvc>;
-
 public:
   virtual StatusCode initialize();
   virtual StatusCode reinitialize();

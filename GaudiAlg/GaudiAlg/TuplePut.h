@@ -13,9 +13,9 @@
 // =============================================================================
 #include "GaudiAlg/TupleObj.h"
 // ============================================================================
-// Reflex
+// ROOT TClass
 // ============================================================================
-#include "Reflex/Reflex.h"
+#include "TClass.h"
 // =============================================================================
 /** @file
  *  Implementation file for Tuple::TupleObj::put method
@@ -129,20 +129,19 @@ inline StatusCode Tuples::TupleObj::put
   if (  invalid    () ) { return InvalidTuple     ; }   // RETURN
   if ( !evtColType () ) { return InvalidOperation ; }   // RETURN
 
-  // static block: The Reflex type description & the flag
+  // static block: The type description & the flag
   static bool               s_fail = false ;                // STATIC
-  static ROOT::Reflex::Type s_type         ;                // STATIC
+  static TClass*            s_type = 0     ;                // STATIC
   // check the status
   if      (  s_fail  ) { return InvalidItem ; }                           // RETURN
   else if ( !s_type  )
   {
-    const std::string class_name = System::typeinfoName ( typeid ( TYPE ) ) ;
-    s_type = ROOT::Reflex::Type::ByName( class_name  ) ;
+    s_type = TClass::GetClass(typeid(TYPE));
     if ( !s_type )
     {
       s_fail = true ;
-      return Error ( " put('"+name+"'," + class_name +
-                     ") :Invalid ROOT::Reflex::Type", InvalidItem ) ;    // RETURN
+      return Error ( " put('"+name+"'," + System::typeinfoName(typeid(TYPE)) +
+                     ") :Invalid ROOT Type", InvalidItem ) ;    // RETURN
     }
   }
   // the local storage of items

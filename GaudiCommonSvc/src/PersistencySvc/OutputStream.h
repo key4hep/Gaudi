@@ -12,9 +12,6 @@
 #include <string>
 
 // forward declarations
-template <class ConcreteAlgorithm> class AlgFactory;
-namespace { template <class P, class S> class Factory; }
-
 class IIncidentSvc;
 class IRegistry;
 class IConversionSvc;
@@ -28,16 +25,13 @@ class DataStoreItem;
     Version: 1.0
 */
 class OutputStream : public Algorithm     {
-  friend class AlgFactory<OutputStream>;
-  friend class Factory<OutputStream,IAlgorithm* (std::string,ISvcLocator *)>;
-
 public:
   typedef std::vector<DataStoreItem*> Items;
   typedef std::vector<std::string>    ItemNames;
 protected:
-  /// Reference to the indicent service
+  /// Reference to the incident service
   SmartIF<IIncidentSvc> m_incidentSvc;
-  /// Flag indicating wether data pre-loading should be performed
+  /// Flag indicating whether data pre-loading should be performed
   bool                     m_doPreLoad;
   /// Flag indicating whether optional items should be preloaded
   bool                     m_doPreLoadOpt;

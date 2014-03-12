@@ -11,7 +11,6 @@
 // Boost:
 // ============================================================================
 #include <boost/scoped_ptr.hpp>
-#include <boost/shared_ptr.hpp>
 // ============================================================================
 #include "Position.h"
 // ============================================================================
@@ -22,8 +21,6 @@ class Position;
 class PropertyName {
  public:
 // ----------------------------------------------------------------------------
-  typedef boost::shared_ptr<PropertyName> SharedPtr;
-  typedef boost::shared_ptr<const PropertyName> ConstSharedPtr;
   typedef boost::scoped_ptr<PropertyName> ScopedPtr;
   typedef boost::scoped_ptr<const PropertyName> ConstScopedPtr;
 // ----------------------------------------------------------------------------

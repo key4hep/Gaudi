@@ -27,7 +27,7 @@ public:
 
 #include "GaudiKernel/ToolFactory.h"
 // Declaration of the Tool Factory
-DECLARE_TOOL_FACTORY(TestToolFailing)
+DECLARE_COMPONENT(TestToolFailing)
 
 TestToolFailing::TestToolFailing(const std::string& type,
                                  const std::string& name,

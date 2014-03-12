@@ -5,7 +5,6 @@
 #endif
 
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AudFactory.h"
 #include "GaudiKernel/IChronoStatSvc.h"
 
 #include "GaudiKernel/Stat.h"
@@ -14,7 +13,7 @@
 #include "ProcStats.h"
 #include "MemStatAuditor.h"
 
-DECLARE_AUDITOR_FACTORY(MemStatAuditor)
+DECLARE_COMPONENT(MemStatAuditor)
 
 MemStatAuditor::MemStatAuditor(const std::string& name, ISvcLocator* pSvcLocator) :
   MemoryAuditor(name, pSvcLocator), m_vSize(-1.)

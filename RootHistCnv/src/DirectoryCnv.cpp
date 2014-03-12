@@ -1,7 +1,4 @@
-// $Id: DirectoryCnv.cpp,v 1.6 2006/11/13 15:19:34 hmd Exp $
-
 // Include files
-#include "GaudiKernel/CnvFactory.h"
 #include "DirectoryCnv.h"
 //------------------------------------------------------------------------------
 //
@@ -10,9 +7,9 @@
 // Author :                   Charles Leggett
 //
 //------------------------------------------------------------------------------
-DECLARE_NAMESPACE_CONVERTER_FACTORY(RootHistCnv,DirectoryCnv)
+DECLARE_NAMESPACE_CONVERTER_FACTORY(RootHistCnv, DirectoryCnv)
 //------------------------------------------------------------------------------
-StatusCode RootHistCnv::DirectoryCnv::createObj(IOpaqueAddress* /* pAddress */, 
+StatusCode RootHistCnv::DirectoryCnv::createObj(IOpaqueAddress* /* pAddress */,
                                                 DataObject*& refpObject)
 {
   refpObject = new DataObject();
@@ -20,12 +17,12 @@ StatusCode RootHistCnv::DirectoryCnv::createObj(IOpaqueAddress* /* pAddress */,
 }
 
 //------------------------------------------------------------------------------
-StatusCode 
+StatusCode
 RootHistCnv::DirectoryCnv::createRep(DataObject* pObj, IOpaqueAddress*& refpAddr) {
   if ( changeDirectory(pObj) ) {
     const char* d_nam = pObj->name().c_str()+1;
-    if (! gDirectory->GetKey(d_nam) ) { 
-      gDirectory->mkdir(d_nam); 
+    if (! gDirectory->GetKey(d_nam) ) {
+      gDirectory->mkdir(d_nam);
     }
     gDirectory->cd(d_nam);
     return createAddress(pObj, gDirectory, 0, refpAddr);

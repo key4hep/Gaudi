@@ -1,7 +1,3 @@
-// $Id: TimingAuditor.cpp,v 1.5 2008/04/05 08:04:22 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.5 $
-// ============================================================================
 #include "GaudiKernel/Auditor.h"
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/IIncidentListener.h"
@@ -9,7 +5,6 @@
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/VectorMap.h"
 #include "GaudiKernel/HashMap.h"
-#include "GaudiKernel/AudFactory.h"
 #include "GaudiKernel/MsgStream.h"
 // ============================================================================
 // GaudiAlg
@@ -118,7 +113,7 @@ private:
 // ============================================================================
 /// factory:
 // ============================================================================
-DECLARE_AUDITOR_FACTORY(TimingAuditor)
+DECLARE_COMPONENT(TimingAuditor)
 // ============================================================================
 StatusCode TimingAuditor::initialize ()
 {

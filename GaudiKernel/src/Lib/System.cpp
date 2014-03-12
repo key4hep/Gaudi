@@ -134,10 +134,17 @@ unsigned long System::loadDynamicLib(const std::string& name, ImageHandle* handl
     } else {
       // build the dll name
       std::string dllName = name;
+      // if the lib name contains '/' we can assume is the path to a file
+      // (relative or absolute), otherwise it might be a logical library name
+      // (i.e. without 'lib' and '.so')
+      if (dllName.find('/') == std::string::npos) {
 #if defined(__linux) || defined(__APPLE__)
-      dllName = "lib" + dllName;
+        if (dllName.substr(0, 3) != "lib")
+          dllName = "lib" + dllName;
 #endif
-      dllName += SHLIB_SUFFIX;
+        if (dllName.find(SHLIB_SUFFIX) == std::string::npos)
+          dllName += SHLIB_SUFFIX;
+      }
       // try to locate the dll using the standard PATH
       res = loadWithoutEnvironment(dllName, handle);
     }

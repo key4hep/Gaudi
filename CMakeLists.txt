@@ -11,9 +11,15 @@ endif()
 find_package(GaudiProject)
 #---------------------------------------------------------------
 
-# Declare project name and version
-gaudi_project(Gaudi v23r10)
+option(GAUDI_ATLAS "Enable ATLAS-specific settings" OFF)
 
-# This test does not really fit in a subdirectory.
+# Declare project name and version
+gaudi_project(Gaudi v25r0)
+
+# These tests do not really fit in a subdirectory.
 gaudi_add_test(cmake.EnvConfigTests
                COMMAND nosetests ${CMAKE_SOURCE_DIR}/cmake/EnvConfig)
+gaudi_add_test(cmake.project_manifest.doctest
+               COMMAND ${PYTHON_EXECUTABLE} -m doctest
+                       ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/project_manifest.py)
+               

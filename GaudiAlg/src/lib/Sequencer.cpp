@@ -7,7 +7,6 @@
 
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Chrono.h"
 #include "GaudiKernel/Stat.h"

@@ -2,7 +2,6 @@
 
 #include "GaudiKernel/IAlgContextSvc.h"
 #include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/AudFactory.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/MsgStream.h"
 
@@ -35,7 +34,7 @@ namespace
 // ============================================================================
 // mandatory auditor factory, needed for instantiation
 // ============================================================================
-DECLARE_AUDITOR_FACTORY(AlgContextAuditor)
+DECLARE_COMPONENT(AlgContextAuditor)
 // ============================================================================
 // standard constructor @see Auditor
 // ============================================================================

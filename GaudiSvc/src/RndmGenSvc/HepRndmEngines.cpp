@@ -27,7 +27,6 @@
 #include <cmath>
 
 // Framework include files
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IIncidentSvc.h"
@@ -221,16 +220,16 @@ namespace HepRndm  {
 
 }
 
-typedef HepRndm::Engine<DualRand> e1; DECLARE_SERVICE_FACTORY(e1)
-typedef HepRndm::Engine<TripleRand> e2; DECLARE_SERVICE_FACTORY(e2)
-typedef HepRndm::Engine<DRand48Engine> e3; DECLARE_SERVICE_FACTORY(e3)
-typedef HepRndm::Engine<Hurd160Engine> e4; DECLARE_SERVICE_FACTORY(e4)
-typedef HepRndm::Engine<Hurd288Engine> e5; DECLARE_SERVICE_FACTORY(e5)
-typedef HepRndm::Engine<HepJamesRandom> e6; DECLARE_SERVICE_FACTORY(e6)
-typedef HepRndm::Engine<MTwistEngine> e7; DECLARE_SERVICE_FACTORY(e7)
-typedef HepRndm::Engine<RanecuEngine> e8; DECLARE_SERVICE_FACTORY(e8)
-typedef HepRndm::Engine<Ranlux64Engine> e9; DECLARE_SERVICE_FACTORY(e9)
-typedef HepRndm::Engine<RanluxEngine> e10; DECLARE_SERVICE_FACTORY(e10)
-typedef HepRndm::Engine<RanshiEngine> e11; DECLARE_SERVICE_FACTORY(e11)
+typedef HepRndm::Engine<DualRand> e1; DECLARE_COMPONENT(e1)
+typedef HepRndm::Engine<TripleRand> e2; DECLARE_COMPONENT(e2)
+typedef HepRndm::Engine<DRand48Engine> e3; DECLARE_COMPONENT(e3)
+typedef HepRndm::Engine<Hurd160Engine> e4; DECLARE_COMPONENT(e4)
+typedef HepRndm::Engine<Hurd288Engine> e5; DECLARE_COMPONENT(e5)
+typedef HepRndm::Engine<HepJamesRandom> e6; DECLARE_COMPONENT(e6)
+typedef HepRndm::Engine<MTwistEngine> e7; DECLARE_COMPONENT(e7)
+typedef HepRndm::Engine<RanecuEngine> e8; DECLARE_COMPONENT(e8)
+typedef HepRndm::Engine<Ranlux64Engine> e9; DECLARE_COMPONENT(e9)
+typedef HepRndm::Engine<RanluxEngine> e10; DECLARE_COMPONENT(e10)
+typedef HepRndm::Engine<RanshiEngine> e11; DECLARE_COMPONENT(e11)
 
 

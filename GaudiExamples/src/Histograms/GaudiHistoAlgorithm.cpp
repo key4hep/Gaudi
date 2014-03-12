@@ -1,12 +1,9 @@
-// $Id: GaudiHistoAlgorithm.cpp,v 1.5 2008/10/09 09:59:14 marcocle Exp $
 // Include files
-
 #include "boost/assign/list_of.hpp"
 
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiKernel/RndmGenerators.h"
 
@@ -23,7 +20,7 @@
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY(GaudiHistoAlgorithm)
+DECLARE_COMPONENT(GaudiHistoAlgorithm)
 
 
 //=============================================================================
@@ -111,15 +108,15 @@ StatusCode GaudiHistoAlgorithm::execute()
   profile1D( gauss , expo  , "Expo V Gauss 1DProf s",  -5 ,  5 , 50 , "s" ) ;
   profile1D( flat  , gauss , "Gauss V Flat 1DProf"  , -10 , 10 , 10       ) ;
   profile1D( flat  , gauss , "Gauss V Flat 1DProf S", -10 , 10 , 10 , "s" ) ;
-  profile1D( flat  , gauss , "Gauss V Flat 1DProf, with limits-I"   , 
+  profile1D( flat  , gauss , "Gauss V Flat 1DProf, with limits-I"   ,
              -10 , 10 , 10 , ""  ,  0 , 5 );
-  profile1D( flat  , gauss , "Gauss V Flat 1DProf, with limits-I  s", 
+  profile1D( flat  , gauss , "Gauss V Flat 1DProf, with limits-I  s",
              -10 , 10 , 10 , "s" ,  0 , 5 );
-  profile1D( flat  , gauss , "Gauss V Flat 1DProf, with limits-II"  , 
+  profile1D( flat  , gauss , "Gauss V Flat 1DProf, with limits-II"  ,
              -10 , 10 , 10 , ""  , -5 , 0 );
-  profile1D( flat  , gauss , "Gauss V Flat 1DProf, with limits-II s", 
+  profile1D( flat  , gauss , "Gauss V Flat 1DProf, with limits-II s",
              -10 , 10 , 10 , "s" , -5 , 0 );
-  
+
   // 2D profile histo with forced ID
   profile2D( gauss, expo, poisson, "2dprof", "2D profile1", -5, 5, 0, 5 );
   profile2D( gauss, expo, poisson, 321, "2D profile2", -5, 5, 0, 5 );
@@ -137,7 +134,7 @@ StatusCode GaudiHistoAlgorithm::execute()
   // 3D
   plot3D( flat, gauss, expo, "varBinning/z", "3D Variable Binning", edgesX, edgesY, edgesZ );
   // 1D profile
-  profile1D( flat, gauss, 
+  profile1D( flat, gauss,
              "varBinning/a", "1D Profile Variable Binning", edgesX );
   // 2D Profile
   profile2D( flat, gauss, expo, "varBinning/b", "2D Profile Variable Binning", edgesX, edgesY );

@@ -17,9 +17,6 @@
 
 // Required for inheritance
 #include "GaudiKernel/Algorithm.h"
-// forward declarations
-template <class ConcreteAlgorithm> class AlgFactory;
-namespace { template <class P, class S> class Factory; }
 
 
 /** A small to stream Data I/O.
@@ -27,9 +24,6 @@ namespace { template <class P, class S> class Factory; }
     Version: 1.0
 */
 class EvtCollectionStream : public Algorithm     {
-  friend class AlgFactory<EvtCollectionStream>;
-  friend class Factory<EvtCollectionStream,IAlgorithm* (std::string,ISvcLocator *)>;
-
   typedef std::vector<std::string>    ItemNames;
   typedef std::vector<DataStoreItem*> Items;
 protected:
@@ -41,14 +35,15 @@ protected:
   ItemNames     m_itemNames;
   /// Vector of items to be saved to this stream
   Items         m_itemList;
-protected:
+public:
   /// Standard algorithm Constructor
   EvtCollectionStream(const std::string& name, ISvcLocator* pSvcLocator);
+protected:
   /// Standard Destructor
   virtual ~EvtCollectionStream();
   /// Clear item list
   void clearItems();
-  /// Add item to output stramer list
+  /// Add item to output streamer list
   void addItem(const std::string& descriptor);
 public:
   /// Initialize EvtCollectionStream

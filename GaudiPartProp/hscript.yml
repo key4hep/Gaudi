@@ -1,0 +1,30 @@
+# -*- yml -*-
+
+package: {
+    name:    GaudiPartProp,
+    authors: ["gaudi collaboration"],
+
+    version:  "v2r0",
+    deps: {
+        public: [
+            GaudiKernel,
+        ],
+    }
+}
+
+options: {
+}
+
+configure: {
+}
+
+build: {
+
+    GaudiPartProp: {
+        features: "gaudi_module",
+        source:   ["src/*.cpp"],
+        use:      [GaudiKernel],
+    },
+}
+
+## EOF ##

@@ -1,9 +1,4 @@
-// $Id: EventNodeKiller.cpp,v 1.4 2008-11-13 07:37:33 cattanem Exp $
 // Include files
-
-// from Gaudi
-#include "GaudiKernel/AlgFactory.h"
-
 // local
 #include "EventNodeKiller.h"
 
@@ -14,7 +9,7 @@
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY( EventNodeKiller )
+DECLARE_COMPONENT( EventNodeKiller )
 
 
 //=============================================================================

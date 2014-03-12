@@ -4,7 +4,7 @@
 
 // Framework include files
 #include "GaudiKernel/Algorithm.h"
-#include "Counter.h"
+#include "GaudiExamples/Counter.h"
 
 /** @class WriteAlg WriteAlg.h
 

@@ -3,6 +3,24 @@
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! =============================================================================
 
+=============================== GaudiGSL v8r0 ================================
+! 2014-01-27 - Marco Clemencic
+ - Fixed long standing issue with InterpTest test, actually due to a bug in the
+   copy constructor of SplineBase.
+
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
+! 2013-07-19 - Marco Clemencic
+ - Clean up in the use of the new PluginService.
+
+! 2013-07-18 - Marco Clemencic
+ - Removed use of obsolete AlgFactory.h, SvcFactory.h, ToolFactory.h,
+   AudFactory.h and CnvFactory.h.
+
+! 2013-07-17 - Marco Clemencic
+ - Removed factories forward declarations.
+
 =============================== GaudiGSL v7r12 ===============================
 ! 2012-11-06 - Marco Clemencic
  - Renamed the source file of a test.

@@ -1,8 +1,5 @@
-// $Id: MTMessageSvc.cpp,v 1.4 2006/04/20 16:34:57 hmd Exp $
-
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/StatusCode.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/Message.h"
 #include "MTMessageSvc.h"
 
@@ -14,7 +11,7 @@ extern pthread_mutex_t coutmutex;
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_SERVICE_FACTORY(MTMessageSvc)
+DECLARE_COMPONENT(MTMessageSvc)
 
 // Constructor
 MTMessageSvc::MTMessageSvc( const std::string& name, ISvcLocator* svcloc )

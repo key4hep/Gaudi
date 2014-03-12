@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiSvc/src/DataSvc/PartitionSwitchAlg.cpp,v 1.2 2006/01/19 07:27:21 mato Exp $
 //	====================================================================
 //  PartitionSwitchAlg.cpp
 //	--------------------------------------------------------------------
@@ -7,7 +6,6 @@
 //
 //	====================================================================
 #include "GaudiKernel/IPartitionControl.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IToolSvc.h"
@@ -145,4 +143,4 @@ public:
   }
 };
 
-DECLARE_ALGORITHM_FACTORY(PartitionSwitchAlg)
+DECLARE_COMPONENT(PartitionSwitchAlg)

@@ -16,7 +16,7 @@
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY(HistoTimingAlg)
+DECLARE_COMPONENT(HistoTimingAlg)
 
 //=============================================================================
 // Standard constructor, initializes variables

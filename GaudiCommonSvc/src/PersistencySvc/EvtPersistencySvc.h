@@ -36,9 +36,6 @@
 */
 class EvtPersistencySvc  : virtual public PersistencySvc	{
 public:
-  friend class SvcFactory<EvtPersistencySvc>;
-  friend class Factory<EvtPersistencySvc,IService* (std::string,ISvcLocator *)>;
-
   /**@name PersistencySvc overrides    */
   //@{
   /// Initialize the service.

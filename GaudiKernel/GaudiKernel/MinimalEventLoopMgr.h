@@ -26,7 +26,6 @@
 class GAUDI_API MinimalEventLoopMgr: public extends1<Service, IEventProcessor>
 {
 public:
-  /// Creator friend class
   typedef std::list<SmartIF<IAlgorithm> >  ListAlg;
   typedef std::list<IAlgorithm*>  ListAlgPtrs;
   typedef std::list<std::string>   ListName;
@@ -113,6 +112,6 @@ private:
   MinimalEventLoopMgr(const MinimalEventLoopMgr&);
   /// Fake assignment operator (never implemented).
   MinimalEventLoopMgr& operator= (const MinimalEventLoopMgr&);
-  
+
 };
 #endif // GAUDIKERNEL_MINIMALEVENTLOOPMGR_H

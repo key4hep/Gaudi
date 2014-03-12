@@ -1,6 +1,89 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+============================= GaudiPython v13r0 ==============================
+! 2014-02-13 - Marco Clemencic
+ - Added workaround for ROOT-6028...
+   or ROOT-6054 or ROOT-6073.. depending on the point of view.
+   https://sft.its.cern.ch/jira/browse/ROOT-6028
+   https://sft.its.cern.ch/jira/browse/ROOT-6054
+   https://sft.its.cern.ch/jira/browse/ROOT-6073
+
+! 2014-02-07 - Marco Clemencic
+ - Added workaround for ROOT-6032.
+   https://sft.its.cern.ch/jira/browse/ROOT-6032
+
+! 2014-02-06 - Marco Clemencic
+ - Added missing (?) header to the dictionary (needed for ROOT 6).
+
+! 2014-01-06 - Marco Clemencic
+ - Removed workarounds for ROOT-5850 and ROOT-5847.
+   https://sft.its.cern.ch/jira/browse/ROOT-5850
+   https://sft.its.cern.ch/jira/browse/ROOT-5847
+
+! 2013-12-16 - Marco Clemencic
+ - Added workaround for ROOT-5850.
+   https://sft.its.cern.ch/jira/browse/ROOT-5850
+
+! 2013-12-16 - Marco Clemencic
+ - Added workaround for ROOT-5847.
+   https://sft.its.cern.ch/jira/browse/ROOT-5847
+
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
+! 2013-11-05 - Marco Clemencic
+ - Restore the old order of load of Pythonizations because the new order was
+   causing a failure in ROOT 5.
+ - Reenabled the work-around for bug ROOT-5581, renamed ROOT-5478 because it
+   fixes that problem too and it works in both ROOT 5 and ROOT 6.
+
+! 2013-10-31 - Marco Clemencic
+ - Moved the import of Pythonizations (in Bindings) after the auto-loading of
+   the main dictionaries, to avoid the warnings about the order of inclusion of
+   Python.h (see <https://sft.its.cern.ch/jira/browse/ROOT-5478>, point 2).
+
+! 2013-10-29 - Marco Clemencic
+ - Removed work-around for bug ROOT-5581.
+   https://sft.its.cern.ch/jira/browse/ROOT-5581
+
+! 2013-10-29 - Marco Clemencic
+ - Removed work-around for bug ROOT-5623.
+   https://sft.its.cern.ch/jira/browse/ROOT-5623
+
+! 2013-10-29 - Marco Clemencic
+ - Modified __str__ implementation in Pythonizations.py to return a Python
+   string and not an std::string.
+
+! 2013-10-24 - Marco Clemencic
+ - Added work-around for bug ROOT-5623.
+   https://sft.its.cern.ch/jira/browse/ROOT-5623
+
+! 2013-10-24 - Marco Clemencic
+ - Use ROOT6WorkAroundEnabled for bug ROOT-5581.
+   https://sft.its.cern.ch/jira/browse/ROOT-5581
+
+! 2013-09-30 - Marco Clemencic
+ - Switched from ROOT.py to cppyy.
+   See https://sft.its.cern.ch/jira/browse/ROOT-154
+
+! 2013-07-19 - Marco Clemencic
+ - Clean up in the use of the new PluginService.
+
+! 2013-07-18 - Marco Clemencic
+ - Removed use of obsolete AlgFactory.h, SvcFactory.h, ToolFactory.h,
+   AudFactory.h and CnvFactory.h.
+
+! 2013-07-03 - Marco Clemencic
+ - Removed explicit link against Reflex from cmt/requirements.
+ - Removed references to Reflex from comments.
+
+! 2013-06-13 - Marco Clemencic
+ - Replaced PyCintex with ROOT.
+   We still try to import PyCintex because it's the only way to enable Cintex
+   (see <https://sft.its.cern.ch/jira/browse/ROOT-3623>, but it does not work
+   in Python).
+
 ============================= GaudiPython v12r7 ==============================
 ! 2013-09-25 - Marco Clemencic
  - Enforce LC_ALL=C in the GaudiPython module.

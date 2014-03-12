@@ -3,6 +3,7 @@
 # Author: Martin Woudstra (Martin.Woudstra@cern.ch)
 
 import copy, string, types, os
+import sys
 from inspect import isclass
 import GaudiKernel.ConfigurableMeta as ConfigurableMeta
 from GaudiKernel.Constants import error_explanation, \
@@ -926,6 +927,14 @@ class Configurable( object ):
         rep += Configurable._printFooter( indentStr, title )
         return rep
 
+    def isApplicable(self):
+        '''
+        Return True is the instance can be "applied".
+        Always False for plain Configurable instances
+        (i.e. not ConfigurableUser).
+        '''
+        return False
+
 ### classes for generic Gaudi component ===========
 class DummyDescriptor( object ):
     def __init__( self, name ):
@@ -1129,7 +1138,8 @@ class ConfigurableAuditor( Configurable ):
 class ConfigurableUser( Configurable ):
     __slots__ = { "__users__": [],
                   "__used_instances__": [],
-                  "_enabled": True }
+                  "_enabled": True,
+                  "_applied": False }
     ## list of ConfigurableUser classes this one is going to modify in the
     #  __apply_configuration__ method.
     #  The list may contain class objects, strings representing class objects or
@@ -1148,6 +1158,7 @@ class ConfigurableUser( Configurable ):
             setattr(self, n, v)
         self._enabled = _enabled
         self.__users__ = []
+        self._applied = False
 
         # Needed to retrieve the actual class if the declaration in __used_configurables__
         # and  __queried_configurables__ is done with strings.
@@ -1321,6 +1332,13 @@ class ConfigurableUser( Configurable ):
                 return i
         raise KeyError(name)
 
+    def isApplicable(self):
+        '''
+        Return True is the instance can be "applied".
+        '''
+        return (not self.__users__) and (not self._applied)
+
+
 # list of callables to be called after all the __apply_configuration__ are called.
 postConfigActions = []
 def appendPostConfigAction(function):
@@ -1336,7 +1354,7 @@ def appendPostConfigAction(function):
     postConfigActions.append(function)
 def removePostConfigAction(function):
     """
-    Remove a collable from the list of post-config actions.
+    Remove a callable from the list of post-config actions.
     The list is directly accessible as 'GaudiKernel.Configurable.postConfigActions'.
     """
     postConfigActions.remove(function)
@@ -1354,6 +1372,78 @@ def applyConfigurableUsers():
         return
     _appliedConfigurableUsers_ = True
 
+    def applicableConfUsers():
+        '''
+        Generator returning all the configurables that can be applied in the
+        order in which they can be applied.
+        '''
+        # This is tricky...
+        # We keep on looking for the first configurable that can be applied.
+        # When we cannot find any, 'next()' raises a StopIteration that is
+        # propagated outside of the infinite loop and the function, then handled
+        # correctly from outside (it is the exception that is raised when you
+        # exit from a generator).
+        # Checking every time the full list is inefficient, but it is the
+        # easiest way to fix bug #103803.
+        # <https://savannah.cern.ch/bugs/?103803>
+        while True:
+            yield (c for c in Configurable.allConfigurables.values()
+                   if c.isApplicable()).next()
+
+    debugApplyOrder = 'GAUDI_DUBUG_CONF_USER' in os.environ
+    for c in applicableConfUsers():
+        if c._enabled:
+            log.info("applying configuration of %s", c.name())
+            if debugApplyOrder:
+                sys.stderr.write('applying %r' % c)
+            c.__apply_configuration__()
+            log.info(c)
+        else:
+            log.info("skipping configuration of %s", c.name())
+        c._applied = True # flag the instance as already applied
+        if hasattr(c, "__detach_used__"):
+            # tells the used configurables that they are not needed anymore
+            c.__detach_used__()
+
+    # check for dependency loops
+    leftConfUsers = [c for c in Configurable.allConfigurables.values()
+                     if hasattr(c, '__apply_configuration__') and
+                        c._enabled and not c._applied]
+    # if an enabled configurable has not been applied, there must be a dependency loop
+    if leftConfUsers:
+        raise Error("Detected loop in the ConfigurableUser"
+                    " dependencies: %r" % [ c.name()
+                                            for c in leftConfUsers ])
+    # ensure that all the Handles have been triggered
+    known = set()
+    unknown = set(Configurable.allConfigurables)
+    while unknown:
+        for k in unknown:
+            if not known: # do not print during the first iteration
+                log.debug('new configurable created automatically: %s', k)
+            # this trigger the instantiation from handles
+            Configurable.allConfigurables[k].properties()
+            known.add(k)
+        unknown -= known
+    # Call post-config actions
+    for action in postConfigActions:
+        action()
+
+def applyConfigurableUsers_old():
+    """
+    Obsolete (buggy) implementation of applyConfigurableUsers(), kept to provide
+    backward compatibility for configurations that where relying (implicitly) on
+    bug #103803, or on a specific (non guaranteed) order of execution.
+
+    @see applyConfigurableUsers()
+    """
+    # Avoid double calls
+    global _appliedConfigurableUsers_, postConfigActions
+    if _appliedConfigurableUsers_:
+        return
+    _appliedConfigurableUsers_ = True
+
+    debugApplyOrder = 'GAUDI_DUBUG_CONF_USER' in os.environ
     confUsers = [ c
                   for c in Configurable.allConfigurables.values()
                   if hasattr(c,"__apply_configuration__") ]
@@ -1371,6 +1461,8 @@ def applyConfigurableUsers():
                 enabled = (not hasattr(c, "_enabled")) or c._enabled
                 if enabled:
                     log.info("applying configuration of %s", c.name())
+                    if debugApplyOrder:
+                        sys.stderr.write('applying %r' % c)
                     c.__apply_configuration__()
                     log.info(c)
                 else:

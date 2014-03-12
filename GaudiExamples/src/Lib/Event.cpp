@@ -1,4 +1,4 @@
-#include "Event.h"
+#include "GaudiExamples/Event.h"
 
 using namespace Gaudi::Examples ;
 

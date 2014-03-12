@@ -6,7 +6,7 @@
 //	Author     : M.Frank
 //  History    :
 // +---------+----------------------------------------------+---------
-// |    Date |                 Comment                      | Who     
+// |    Date |                 Comment                      | Who
 // +---------+----------------------------------------------+---------
 // | 29/10/99| Initial version                              | MF
 // +---------+----------------------------------------------+---------
@@ -340,7 +340,7 @@ namespace HepRndm  {
   protected:
     RandGeneral*     m_generator;
     HepRandomEngine* m_hepEngine;
-  public: 
+  public:
     /// Standard Constructor
     Generator(IInterface* engine)
     : RndmGen (engine), m_generator(0), m_hepEngine(0)    {
@@ -356,7 +356,7 @@ namespace HepRndm  {
           Rndm::DefinedPdf* specs = dynamic_cast<Rndm::DefinedPdf*>(m_params);
           if ( 0 != specs )  {
             m_generator = new RandGeneral( &specs->pdf()[0],
-                                           specs->pdf().size(), 
+                                           specs->pdf().size(),
                                            specs->interpolation());
             BaseEngine* engine = dynamic_cast<BaseEngine*>(m_engine);
             if ( 0 != engine )    {
@@ -392,7 +392,7 @@ namespace HepRndm  {
 #endif
   // Specialized shoot function
   template <> double Generator<Rndm::GaussianTail>::shoot()    const     {
-    /* Code obtained and adapted from GSL 
+    /* Code obtained and adapted from GSL
      gsl_ran_gaussian_tail (const gsl_rng * r, const double a, const double sigma)
      Returns a gaussian random variable larger than a
      This implementation does one-sided upper-tailed deviates.
@@ -431,14 +431,13 @@ namespace HepRndm  {
 // re-enable icc remark #1572
 #pragma warning(pop)
 #endif
-  } 
+  }
 }
-
 
 using namespace Rndm;
 #define DECLARE_GENERATOR_FACTORY(x,i)   \
   typedef HepRndm::Generator<x> b##i; \
-  PLUGINSVC_FACTORY_WITH_ID(b##i,x::typeID(),IInterface*(IInterface*))
+  DECLARE_FACTORY_WITH_ID(b##i,x::typeID(),ObjFactory)
 
 
 DECLARE_GENERATOR_FACTORY(Bit,1)

@@ -7,9 +7,9 @@
 #include "GaudiKernel/DataObjectHandle.h"
 
 // Event Model related classes
-#include "Event.h"
-#include "MyTrack.h"
-#include "Counter.h"
+#include "GaudiExamples/Event.h"
+#include "GaudiExamples/MyTrack.h"
+#include "GaudiExamples/Counter.h"
 
 using namespace Gaudi::Examples;
 
@@ -18,38 +18,38 @@ using namespace Gaudi::Examples;
 class WriteHandleAlg : public GaudiAlgorithm {
 
     friend class AlgFactory<WriteHandleAlg> ;
-   
+
   public:
 
-    /// the execution of the algorithm 
-    virtual StatusCode execute  () ; // the execution of the algorithm 
+    /// the execution of the algorithm
+    virtual StatusCode execute  () ; // the execution of the algorithm
     /// Its initialization
     virtual StatusCode initialize();
-    /// the finalization of the algorithm 
-    virtual StatusCode finalize () ; // the finalization of the algorithm 
-    
+    /// the finalization of the algorithm
+    virtual StatusCode finalize () ; // the finalization of the algorithm
+
   protected:
 
-    WriteHandleAlg 
-    ( const std::string& name , // the algorithm instance name 
-      ISvcLocator*       pSvc ); // the Service Locator 
+    WriteHandleAlg
+    ( const std::string& name , // the algorithm instance name
+      ISvcLocator*       pSvc ); // the Service Locator
 
-    /// virtual & protected desctrustor 
+    /// virtual & protected desctrustor
     virtual ~WriteHandleAlg() {}     // virtual & protected desctrustor
 
   private:
 
-    /// the default constructor is disabled 
+    /// the default constructor is disabled
     WriteHandleAlg () ;                              // no default constructor
     /// the copy constructor is disabled
-    WriteHandleAlg            ( const WriteHandleAlg& ) ; // no copy constructor 
+    WriteHandleAlg            ( const WriteHandleAlg& ) ; // no copy constructor
     /// the assignement operator is disabled
     WriteHandleAlg& operator= ( const WriteHandleAlg& ) ; // no assignement
 
     DataObjectHandle<Collision>* m_output_handle;
-    
+
     std::string m_output_name;
-    
+
     bool m_useHandle;
 
   };

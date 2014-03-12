@@ -19,6 +19,10 @@ namespace Gaudi {
     */
   class MultiFileCatalog: public extends2<Service, IFileCatalog, IFileCatalogMgr>
   {
+  public:
+    // disambiguate between Service::Factory and IFileCatalog::Factory
+    typedef Service::Factory Factory;
+
   protected:
     typedef const std::string&         CSTR;
     typedef std::vector<IFileCatalog*> Catalogs;

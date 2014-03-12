@@ -1,8 +1,7 @@
-#include "GaudiKernel/SvcFactory.h"
 #include "ServiceA.h"
 
 // Static Factory declaration
-DECLARE_SERVICE_FACTORY(ServiceA)
+DECLARE_COMPONENT(ServiceA)
 
 ServiceA::ServiceA(const std::string& nam, ISvcLocator* svcLoc) :
  Service(nam, svcLoc)

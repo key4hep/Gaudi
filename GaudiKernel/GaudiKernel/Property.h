@@ -828,7 +828,7 @@ public:
   bool setValue( const GaudiHandleBase& value );
 
 private:
-  /** Pointer to the real property. Reference would be better, but Reflex does not
+  /** Pointer to the real property. Reference would be better, but ROOT does not
       support references yet */
    GaudiHandleBase* m_pValue;
 };
@@ -887,7 +887,7 @@ public:
   bool setValue( const GaudiHandleArrayBase& value );
 
 private:
-  /** Pointer to the real property. Reference would be better, but Reflex does not
+  /** Pointer to the real property. Reference would be better, but ROOT does not
       support references yet */
    GaudiHandleArrayBase* m_pValue;
 

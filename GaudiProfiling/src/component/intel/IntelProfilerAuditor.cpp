@@ -13,7 +13,6 @@
 #include <boost/foreach.hpp>
 
 // * Gaudi libraries.
-#include "GaudiKernel/AudFactory.h"
 #include "GaudiKernel/Auditor.h"
 #include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/GaudiException.h"
@@ -442,4 +441,4 @@ void IntelProfilerAuditor::after(StandardEventType type,
 }
 
 // Register the auditor
-DECLARE_AUDITOR_FACTORY(IntelProfilerAuditor)
+DECLARE_COMPONENT(IntelProfilerAuditor)

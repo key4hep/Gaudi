@@ -1,5 +1,5 @@
 // $Id: GaudiCommonTests.h,v 1.1 2007/05/16 19:22:25 hmd Exp $
-#ifndef HISTOGRAMS_GAUDIHISTOALGORITHM_H 
+#ifndef HISTOGRAMS_GAUDIHISTOALGORITHM_H
 #define HISTOGRAMS_GAUDIHISTOALGORITHM_H 1
 
 // Include files
@@ -7,11 +7,11 @@
 #include "GaudiAlg/GaudiAlgorithm.h"
 
 // Event Model related classes
-#include "Event.h"
-#include "MyTrack.h"
+#include "GaudiExamples/Event.h"
+#include "GaudiExamples/MyTrack.h"
 
 /** @class GaudiCommonTests GaudiCommonTests.h
- *  
+ *
  *  Example algorithm for the GaudiCommon class, to test various features.
  *
  *  @author Chris Jones
@@ -21,7 +21,7 @@
 class GaudiCommonTests : public GaudiAlgorithm
 {
 
-public: 
+public:
 
   /// Standard constructor
   GaudiCommonTests( const std::string& name, ISvcLocator* pSvcLocator );

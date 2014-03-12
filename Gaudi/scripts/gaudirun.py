@@ -93,6 +93,14 @@ if __name__ == "__main__":
         print '# setting LC_ALL to "C"'
         os.environ['LC_ALL'] = 'C'
 
+    from GaudiKernel import ROOT6WorkAroundEnabled
+    if ROOT6WorkAroundEnabled('ROOT-6125'):
+        try:
+            from ctypes import cdll
+            cdll.LoadLibrary('libCling.so')
+        except (ImportError, OSError):
+            pass
+
     from optparse import OptionParser
     parser = OptionParser(usage = "%prog [options] <opts_file> ...")
     parser.add_option("-n","--dry-run", action="store_true",
@@ -130,6 +138,15 @@ if __name__ == "__main__":
     parser.add_option("--no-conf-user-apply", action="store_true",
                       help="disable the automatic application of configurable "
                            "users (for backward compatibility)")
+    parser.add_option("--old-conf-user-apply", action="store_true",
+                      help="use the old logic when applying ConfigurableUsers "
+                           "(with bug #103803) [default]")
+    parser.add_option("--new-conf-user-apply", action="store_false",
+                      dest="old_conf_user_apply",
+                      help="use the new (correct) logic when applying "
+                           "ConfigurableUsers (fixed bug #103803), can be "
+                           "turned on also with the environment variable "
+                           "GAUDI_FIXED_APPLY_CONF")
     parser.add_option("-o", "--output", action = "store", type = "string",
                       help ="dump the configuration to a file. The format of "
                             "the options is determined by the extension of the "
@@ -174,7 +191,9 @@ if __name__ == "__main__":
                         profilerOutput = '',
                         profilerExtraOptions = '',
                         preload = [],
-                        ncpus = None)
+                        ncpus = None,
+                        # the old logic can be turned off with an env variable
+                        old_conf_user_apply='GAUDI_FIXED_APPLY_CONF' not in os.environ)
 
     # replace .qmt files in the command line with their contained args
     argv = []
@@ -363,7 +382,10 @@ if __name__ == "__main__":
         GaudiKernel.Proxy.Configurable._appliedConfigurableUsers_ = True
 
     # This need to be done before dumping
-    from GaudiKernel.Proxy.Configurable import applyConfigurableUsers
+    if opts.old_conf_user_apply:
+        from GaudiKernel.Proxy.Configurable import applyConfigurableUsers_old as applyConfigurableUsers
+    else:
+        from GaudiKernel.Proxy.Configurable import applyConfigurableUsers
     applyConfigurableUsers()
 
     # Options to be processed after applyConfigurableUsers

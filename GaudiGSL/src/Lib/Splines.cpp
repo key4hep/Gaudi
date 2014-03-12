@@ -98,8 +98,9 @@ namespace Genfun
       , m_accel     ( 0            )
       , m_type      ( right.m_type )
     {
-      std::memcpy(m_x, right.m_x, m_dim);
-      std::memcpy(m_y, right.m_y, m_dim);
+      const std::size_t size = sizeof(double) * m_dim;
+      std::memcpy(m_x, right.m_x, size);
+      std::memcpy(m_y, right.m_y, size);
     }
     // ========================================================================
 

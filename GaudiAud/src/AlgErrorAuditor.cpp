@@ -1,10 +1,9 @@
 #include "AlgErrorAuditor.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IMessageSvc.h"
-#include "GaudiKernel/AudFactory.h"
 #include "GaudiKernel/GaudiException.h"
 
-DECLARE_AUDITOR_FACTORY(AlgErrorAuditor)
+DECLARE_COMPONENT(AlgErrorAuditor)
 
 AlgErrorAuditor::AlgErrorAuditor(const std::string& name, ISvcLocator* pSvcLocator)
   : Auditor(name, pSvcLocator), m_error(0), m_fatal(0) {

@@ -24,7 +24,6 @@
 #include "GaudiKernel/IConversionSvc.h"
 
 #include "GaudiKernel/xtoa.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/GaudiException.h"
 

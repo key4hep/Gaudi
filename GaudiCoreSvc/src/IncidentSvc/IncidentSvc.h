@@ -1,5 +1,3 @@
-// $Id:$
-// ============================================================================
 #ifndef IncidentSvc_IncidentSvc_H
 #define IncidentSvc_IncidentSvc_H
 // ============================================================================
@@ -13,14 +11,13 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/Service.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/StringKey.h"
 #include "GaudiKernel/StringKey.h"
 #include "GaudiKernel/HashMap.h"
 #include "GaudiKernel/ChronoEntity.h"
 // ============================================================================
-// Booots
+// Boost
 // ============================================================================
 #include "boost/thread/recursive_mutex.hpp"
 // ============================================================================
@@ -76,6 +73,9 @@ public:
   virtual void fireIncident
   ( const Incident&    incident  ) ;
 
+  virtual void getListeners (std::vector<IIncidentListener*>& lis,
+			     const std::string& type = "") const ;
+
   // Standard Constructor.
   IncidentSvc( const std::string& name, ISvcLocator* svc );
   // Destructor.
@@ -94,7 +94,7 @@ private:
   const std::string *m_currentIncidentType;
 
   /// Mutex to synchronize access to m_listenerMap
-  boost::recursive_mutex m_listenerMapMutex;
+  mutable boost::recursive_mutex m_listenerMapMutex;
 
   /// timer & it's lock
   mutable ChronoEntity m_timer     ;

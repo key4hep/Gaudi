@@ -45,7 +45,7 @@ namespace Gaudi
     {
       // ======================================================================
       /** @class HistoStrings
-       *  Helepr class to produce "good" Reflex dictionries
+       *  Helper class to produce "good" dictionaries
        *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
        *  @date 2009-09-26
        */

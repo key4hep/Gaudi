@@ -1,0 +1,39 @@
+# File: cmt/fragments/merge_componentslist_header
+# Author: Sebastien Binet (binet@cern.ch)
+
+# Makefile fragment to merge a <library>.components file into a single
+# <project>.components file in the (lib) install area
+# If no InstallArea is present the fragment is dummy
+
+
+.PHONY: ${CONSTITUENT} ${CONSTITUENT}clean
+
+# default is already '#'
+#genmap_comment_char := "'#'"
+
+componentsListRef    := ../$(tag)/$(library).components
+
+ifdef CMTINSTALLAREA
+componentsListDir    := ${CMTINSTALLAREA}/$(tag)/lib
+mergedComponentsList := $(componentsListDir)/$(project).components
+stampComponentsList  := $(componentsListRef).stamp
+else
+componentsListDir    := ../$(tag)
+mergedComponentsList :=
+stampComponentsList  :=
+endif
+
+${CONSTITUENT} :: $(stampComponentsList) $(mergedComponentsList)
+	@:
+
+.NOTPARALLEL : $(stampComponentsList) $(mergedComponentsList)
+
+$(stampComponentsList) $(mergedComponentsList) :: $(componentsListRef)
+	@echo "Running merge_componentslist  ${CONSTITUENT}"
+	$(merge_componentslist_cmd) $(merge_componentslist_switch) \
+         --input-file $(componentsListRef) --merged-file $(mergedComponentsList)
+
+${CONSTITUENT}clean ::
+	$(cleanup_silent) $(merge_componentslist_cmd) --un-merge \
+         --input-file $(componentsListRef) --merged-file $(mergedComponentsList) ;
+	$(cleanup_silent) $(remove_command) $(stampComponentsList)

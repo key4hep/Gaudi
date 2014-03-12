@@ -26,7 +26,6 @@
 // ============================================================================
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/DataObject.h"
@@ -46,7 +45,7 @@
 // ============================================================================
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_SERVICE_FACTORY(HistogramPersistencySvc)
+DECLARE_COMPONENT(HistogramPersistencySvc)
 
 // ============================================================================
 // Finalize the service.

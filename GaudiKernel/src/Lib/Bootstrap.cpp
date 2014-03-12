@@ -1,5 +1,3 @@
-//$Id: Bootstrap.cpp,v 1.14 2007/12/12 16:02:32 marcocle Exp $
-
 #include <iostream>
 
 #include "GaudiKernel/Bootstrap.h"
@@ -12,9 +10,9 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IClassManager.h"
 
-#include "Reflex/PluginService.h"
-using ROOT::Reflex::PluginService;
-
+#include "GaudiKernel/ObjectFactory.h"
+#include "GaudiKernel/Service.h"
+#include "GaudiKernel/Algorithm.h"
 
 namespace Gaudi
 {
@@ -27,7 +25,7 @@ namespace Gaudi
     created. This responds to any subsequent requests for services by
     returning StatusCode::FAILURE, unless the ApplicationMgr singleton
     instance has been created in the interim. In this case, the BootstrapAppMgr
-    forwards the request to the ApplicationMgr instance. The motiviation for
+    forwards the request to the ApplicationMgr instance. The motivation for
     this is to handle static object instances where the constructor attempts
     to locate services and would otherwise instantiate the ApplicationMgr
     instance in an unorderly manner. This logic requires that the
@@ -100,13 +98,13 @@ IAppMgrUI* Gaudi::createApplicationMgrEx(const std::string& dllname,
 ISvcLocator* Gaudi::svcLocator()
 //------------------------------------------------------------------------------
 //
-// A dual-stage boostrap mechanism is used to ensure an orderly startup
+// A dual-stage bootstrap mechanism is used to ensure an orderly startup
 // of the ApplicationMgr. If this function is called before the singleton
 // ApplicationMgr instance exists, a BootSvcLocator singleton instance is
 // created. This responds to any subsequent requests for services by
 // returning StatusCode::FAILURE, unless the ApplicationMgr singleton
 // instance has been created in the interim. In this case, the BootSvcLocator
-// forwards the request to the ApplicationMgr instance. The motiviation for
+// forwards the request to the ApplicationMgr instance. The motivation for
 // this is to handle static object instances where the constructor attempts
 // to locate services and would otherwise instantiate the ApplicationMgr
 // instance in an unorderly manner. This logic requires that the
@@ -162,22 +160,22 @@ IInterface* Gaudi::createInstance( const std::string& name,
 //------------------------------------------------------------------------------
 {
 
-  IInterface* ii = PluginService::Create<IInterface*>(factname,(IInterface*)0);
+  IInterface* ii = ObjFactory::create(factname, (IInterface*)0);
   if ( ii ) return ii;
-  IService* is = PluginService::Create<IService*>(factname, name, (ISvcLocator*)0);
+  IService* is = Service::Factory::create(factname, name, (ISvcLocator*)0);
   if ( is ) return is;
-  IAlgorithm* ia = PluginService::Create<IAlgorithm*>(factname, name, (ISvcLocator*)0);
+  IAlgorithm* ia = Algorithm::Factory::create(factname, name, (ISvcLocator*)0);
   if ( ia ) return ia;
 
   StatusCode status;
   void* libHandle = 0;
   status = System::loadDynamicLib( dllname, &libHandle);
   if ( status.isSuccess() )   {
-    ii = PluginService::Create<IInterface*>(factname, (IInterface*)0);
+    ii = ObjFactory::create(factname, (IInterface*)0);
     if ( ii ) return ii;
-    is = PluginService::Create<IService*>(factname, name, (ISvcLocator*)0);
+    is = Service::Factory::create(factname, name, (ISvcLocator*)0);
     if ( is ) return is;
-    ia = PluginService::Create<IAlgorithm*>(factname, name, (ISvcLocator*)0);
+    ia = Algorithm::Factory::create(factname, name, (ISvcLocator*)0);
     if ( ia ) return ia;
 
     return 0;

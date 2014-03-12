@@ -5,9 +5,8 @@
 #include "NameAuditor.h"
 
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AudFactory.h"
 
-DECLARE_AUDITOR_FACTORY(NameAuditor)
+DECLARE_COMPONENT(NameAuditor)
 
 NameAuditor::NameAuditor(const std::string& name, ISvcLocator* pSvcLocator):
   CommonAuditor(name, pSvcLocator) {
