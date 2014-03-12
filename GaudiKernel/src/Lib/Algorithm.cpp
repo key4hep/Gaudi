@@ -87,12 +87,12 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
       m_registerContext  ,
       "The flag to enforce the registration for Algorithm Context Service") ;
 
-  declareProperty( "IsClonable"       , m_isClonable = false );      
-  declareProperty( "Cardinality"      , m_cardinality = 1 );        
+  declareProperty( "IsClonable"       , m_isClonable = false );
+  declareProperty( "Cardinality"      , m_cardinality = 1 );
   declareProperty( "NeededResources"    , m_neededResources = std::vector<std::string>() );
-      
+
   // update handlers.
-  m_outputLevel.declareUpdateHandler(&Algorithm::initOutputLevel, this);  
+  m_outputLevel.declareUpdateHandler(&Algorithm::initOutputLevel, this);
 }
 
 // Default Destructor
@@ -132,7 +132,7 @@ StatusCode Algorithm::sysInitialize() {
   // lock the context service
 //   Gaudi::Utils::AlgContext cnt
 //     ( this , registerContext() ? contextSvc().get() : 0 ) ;
-  
+
   // Get WhiteBoard interface if implemented by EventDataSvc
   m_WB = service("EventDataSvc");
 
@@ -195,7 +195,7 @@ StatusCode Algorithm::sysInitialize() {
   // If Cardinality is 0, bring the value to 1
   if (m_cardinality == 0 ) {
     m_cardinality = 1;
-  }  
+  }
   // Set IsClonable to true if the Cardinality is greater than one
   else if (m_cardinality > 1 ) {
     m_isClonable = true;
@@ -232,10 +232,10 @@ StatusCode Algorithm::sysInitialize() {
 	  m_inputDataObjects[tag].getBaseHandle()->initialize();
   }
   for(auto tag : m_outputDataObjects){
-	  m_inputDataObjects[tag].setAddress(fixLocation(m_inputDataObjects[tag].address()));
+	  m_outputDataObjects[tag].setAddress(fixLocation(m_outputDataObjects[tag].address()));
 	  m_outputDataObjects[tag].getBaseHandle()->initialize();
   }
-  
+
   //all TES accessing tools have been created in initialize() of derived class
   //query toolSvc for own tools and build dependencies
   std::function<void(const IInterface *)> addToolDOD = [&] (const IInterface * parent) {
@@ -684,7 +684,7 @@ StatusCode Algorithm::sysExecute() {
   // lock the context service
   Gaudi::Utils::AlgContext cnt
     ( this , registerContext() ? contextSvc().get() : 0 ) ;
-  
+
   // HiveWhiteBoard stuff here
   if(m_WB.isValid()) m_WB->selectStore(getContext() ? getContext()->m_evt_slot : 0).ignore();
 
