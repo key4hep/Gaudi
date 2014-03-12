@@ -1,6 +1,5 @@
 #include "IssueLogger.h"
 
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Tokenizer.h"
@@ -15,7 +14,7 @@
 
 using namespace std;
 
-DECLARE_SERVICE_FACTORY(IssueLogger)
+DECLARE_COMPONENT(IssueLogger)
 
 //*************************************************************************//
 inline void toupper(std::string &s)

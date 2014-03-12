@@ -1,12 +1,8 @@
-// $Id: EvtColAlg.cpp,v 1.8 2007/09/28 11:48:17 marcocle Exp $
-// ============================================================================
-// CVS tag $Nme:$, verison $Revision: 1.8 $ 
 // ============================================================================
 // Include files
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/INTupleSvc.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/DataObject.h"
@@ -14,7 +10,7 @@
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiKernel/RndmGenerators.h"
 // ============================================================================
-// GaudiAlg 
+// GaudiAlg
 // ============================================================================
 #include "GaudiAlg/Tuples.h"
 #include "GaudiAlg/Tuple.h"
@@ -22,8 +18,8 @@
 #include "GaudiAlg/GaudiTupleAlg.h"
 // ============================================================================
 /** @file
- *  Example of usage GaudiTupleAlg base class fro Event Tag Colections 
- *  @see GaudiTupleAlg 
+ *  Example of usage GaudiTupleAlg base class fro Event Tag Colections
+ *  @see GaudiTupleAlg
  *  @see Tuples::TupleObj
  *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
  *  @date 2005-08-17
@@ -33,38 +29,38 @@
 namespace Gaudi
 {
   namespace Examples
-  { 
+  {
     /** @class EvtColAlg
-     *  Example of usage GaudiTupleAlg base class 
+     *  Example of usage GaudiTupleAlg base class
      *  @attention the action of Tuples::TupleObg::write uis restored again!
-     *  @see GaudiTupleAlg 
+     *  @see GaudiTupleAlg
      *  @author Vanya BELYAEV Ivan.Belyaev@lapp.in2p3.fr
      *  @date 2005-08-17
      */
     // ========================================================================
-    class EvtColAlg : public GaudiTupleAlg 
+    class EvtColAlg : public GaudiTupleAlg
     {
     public:
-      StatusCode initialize ()  
+      StatusCode initialize ()
       {
         StatusCode sc = GaudiTupleAlg::initialize() ;
         if ( sc.isFailure() ) { return sc ; }
-        // check for random numbers service 
+        // check for random numbers service
         Assert (randSvc() != 0, "Random Service is not available!");
         //
         return StatusCode::SUCCESS ;
       };
       /// the only one essential methos
-      StatusCode execute    ()  ; 
+      StatusCode execute    ()  ;
       /** standard construtor
-       *  @param name algorrithm instance name 
+       *  @param name algorrithm instance name
        *  @param pSvc pointer to service locator
        */
-      EvtColAlg ( const std::string& name , 
-                  ISvcLocator*       pSvc ) 
-        : GaudiTupleAlg ( name , pSvc ) 
+      EvtColAlg ( const std::string& name ,
+                  ISvcLocator*       pSvc )
+        : GaudiTupleAlg ( name , pSvc )
       {
-        /// redefine the default values for various properties 
+        /// redefine the default values for various properties
         setProperty ( "NTupleProduce"    , "false" ).ignore() ;
         setProperty ( "NTuplePrint"      , "false" ).ignore() ;
         setProperty ( "HistogramProduce" , "false" ).ignore() ;
@@ -75,49 +71,49 @@ namespace Gaudi
         setProperty ( "EvtColsProduce"   , "true"  ).ignore() ;
         setProperty ( "EvtColsPrint"     , "true"  ).ignore() ;
       } ;
-      /// virtual and protected dectrustor 
+      /// virtual and protected dectrustor
       virtual ~EvtColAlg(){}
     private:
-      // default constructor is private 
+      // default constructor is private
       EvtColAlg() ;
-      // copy constructor is disabled 
+      // copy constructor is disabled
       EvtColAlg( const EvtColAlg& ) ;
-      // assignement operator is disabled 
-      EvtColAlg& operator=( const EvtColAlg& ) ;  
+      // assignement operator is disabled
+      EvtColAlg& operator=( const EvtColAlg& ) ;
     };
     // ========================================================================
-  } // end of namespace Gaudi::Examples 
+  } // end of namespace Gaudi::Examples
 } // end of namespace Gaudi
 // ============================================================================
-/// the only one real method - algorithm execution 
+/// the only one real method - algorithm execution
 // ============================================================================
-StatusCode Gaudi::Examples::EvtColAlg::execute() 
+StatusCode Gaudi::Examples::EvtColAlg::execute()
 {
   static int s_nEvt = 0 ;
   static int s_nRun = 0 ;
-  
+
   if ( 1 == ++s_nEvt % 50  ) { ++s_nRun ; }
-  
+
   DataObject*     event    = get<DataObject>( "/Event" ) ;
   if ( 0 == event    ) { return StatusCode::FAILURE ; }
   IRegistry*      registry = event->registry() ;
   if ( 0 == registry ) { return Error("IRegistry* point to NULL!"); }
   IOpaqueAddress* address  = registry->address () ;
   if ( 0 == address  ) { return Error("Address points to NULL!"); }
-  
+
   Rndm::Numbers gauss   ( randSvc() , Rndm::Gauss       (   0.0 ,  1.0 ) ) ;
   Rndm::Numbers flat    ( randSvc() , Rndm::Flat        ( -10.0 , 10.0 ) ) ;
   Rndm::Numbers expo    ( randSvc() , Rndm::Exponential (   1.0        ) ) ;
   Rndm::Numbers breit   ( randSvc() , Rndm::BreitWigner (   0.0 ,  1.0 ) ) ;
   Rndm::Numbers poisson ( randSvc() , Rndm::Poisson     (   2.0        ) ) ;
   Rndm::Numbers binom   ( randSvc() , Rndm::Binomial    (   8   , 0.25 ) ) ;
-  
+
   // get the event tag collection
   Tuple tuple = evtCol( TupleID("COL1") , "The most trivial Event Tag Collection" );
-  
+
   // event address (the most important information)
   tuple -> column ( "Address" ,       address    ).ignore() ;
-  // put 'event' and 'run' number 
+  // put 'event' and 'run' number
   tuple -> column ( "evtNum"  ,       s_nEvt     ).ignore() ;
   tuple -> column ( "runNum"  ,       s_nRun     ).ignore() ;
   // put some 'data'
@@ -128,15 +124,16 @@ StatusCode Gaudi::Examples::EvtColAlg::execute()
   tuple -> column ( "poisson" , (int) poisson () ).ignore() ;
   tuple -> column ( "binom"   , (int) binom   () ).ignore() ;
   tuple -> column ( "flag"    ,   0 > gauss   () ).ignore() ; // boolean
-  
+
   // The action of is restored again!
   tuple -> write  () ; ///< The action is restored again!           NB !!
-  
+
   return StatusCode::SUCCESS ;
 }
 // ============================================================================
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(Gaudi::Examples,EvtColAlg)
+using Gaudi::Examples::EvtColAlg;
+DECLARE_COMPONENT(EvtColAlg)
 // ============================================================================
-// The END 
+// The END
 // ============================================================================
 

@@ -1,6 +1,17 @@
 Package: GaudiAud
 Package manager : David Quarrie, Marco Clemencic
 
+=============================== GaudiAud v10r0 ===============================
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
+! 2013-07-19 - Marco Clemencic
+ - Clean up in the use of the new PluginService.
+
+! 2013-07-18 - Marco Clemencic
+ - Removed use of obsolete AlgFactory.h, SvcFactory.h, ToolFactory.h,
+   AudFactory.h and CnvFactory.h.
+
 =============================== GaudiAud v9r9 ================================
 ! 2013-06-06 - Marco Clemencic
  - Minor change in the configuration of a test to work around an issue in the

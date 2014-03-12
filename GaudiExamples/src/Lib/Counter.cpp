@@ -1,4 +1,4 @@
-#include "Counter.h"
+#include "GaudiExamples/Counter.h"
 
 using namespace Gaudi::Examples ;
 

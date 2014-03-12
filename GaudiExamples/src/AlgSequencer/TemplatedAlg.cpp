@@ -1,8 +1,5 @@
-// $Id: TemplatedAlg.cpp,v 1.1 2008/10/09 21:00:37 marcocle Exp $
-
 // Include files
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IEventProcessor.h"
@@ -14,10 +11,10 @@
 typedef TemplatedAlg<int,std::vector<std::string> > t1;
 typedef TemplatedAlg<double, bool > t2;
 
-DECLARE_ALGORITHM_FACTORY(t1)
-DECLARE_NAMED_ALGORITHM_FACTORY(t1,TAlgIS)
-DECLARE_ALGORITHM_FACTORY(t2)
-DECLARE_NAMED_ALGORITHM_FACTORY(t2,TAlgDB)
+DECLARE_COMPONENT(t1)
+DECLARE_COMPONENT_WITH_ID(t1,"TAlgIS")
+DECLARE_COMPONENT(t2)
+DECLARE_COMPONENT_WITH_ID(t2,"TAlgDB")
 
 
 template <typename T, typename R>

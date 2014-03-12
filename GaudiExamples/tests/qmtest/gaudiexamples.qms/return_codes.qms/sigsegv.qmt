@@ -16,8 +16,8 @@ app = ApplicationMgr(TopAlg = [sigalg(EventCount=3, Signal=signal.SIGSEGV)],
 <argument name="environment"><set>
 <text>DISPLAY=:0.0</text>
 </set></argument>
-<argument name="exit_code"><integer>139</integer></argument>
 <argument name="validator"><text>
-findReferenceBlock("ApplicationMgr      ERROR Application Manager Terminated with error code 139")
+# no-op to avoid the check on the stderr
 </text></argument>
+<argument name="exit_code"><integer>139</integer></argument>
 </extension>

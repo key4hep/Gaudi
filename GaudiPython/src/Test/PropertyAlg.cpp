@@ -1,8 +1,5 @@
-// $Id: PropertyAlg.cpp,v 1.2 2007/04/27 14:59:56 hmd Exp $
-
 // Include files
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IChronoStatSvc.h"
@@ -12,7 +9,7 @@
 
 
 // Static Factory declaration
-DECLARE_ALGORITHM_FACTORY(PropertyAlg)
+DECLARE_COMPONENT(PropertyAlg)
 
 // Constructor
 //------------------------------------------------------------------------------
@@ -52,7 +49,7 @@ PropertyAlg::PropertyAlg(const std::string& name, ISvcLocator* ploc)
   declareProperty( "FloatArray",     m_floatarray );
   declareProperty( "DoubleArray",    m_doublearray );
   declareProperty( "StringArray",    m_stringarray );
-  
+
 }
 
 

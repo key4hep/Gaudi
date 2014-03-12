@@ -1,8 +1,5 @@
-// $Id: PropertyProxy.cpp,v 1.4 2006/11/30 10:35:27 mato Exp $
-
 // Include files
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IAlgManager.h"
@@ -12,7 +9,7 @@
 
 // Static Factory declaration
 
-DECLARE_ALGORITHM_FACTORY(PropertyProxy)
+DECLARE_COMPONENT(PropertyProxy)
 
 // Constructor
 //------------------------------------------------------------------------------

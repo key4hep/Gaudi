@@ -1,8 +1,5 @@
-// $Id: PropertyAlg.cpp,v 1.24 2008/10/30 23:40:17 marcocle Exp $
-
 // Include files
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IChronoStatSvc.h"
@@ -318,4 +315,4 @@ StatusCode PropertyAlg::finalize() {
 }
 
 // Static Factory declaration
-DECLARE_ALGORITHM_FACTORY(PropertyAlg)
+DECLARE_COMPONENT(PropertyAlg)

@@ -61,7 +61,7 @@ namespace GaudiPython
     /// commit the row
     static StatusCode       write  ( const Tuples::Tuple&  tuple ) ;
     // ========================================================================
-  public: // primitives  
+  public: // primitives
     // ========================================================================
     /// more or less simple columns:    long
     static StatusCode column
@@ -89,19 +89,19 @@ namespace GaudiPython
       const std::string&   name  ,
       const bool           value ) ;
     // ========================================================================
-    /// more or less simple columns:    long long 
-    static StatusCode column_ll 
+    /// more or less simple columns:    long long
+    static StatusCode column_ll
     ( const Tuples::Tuple&     tuple ,
       const std::string&       name  ,
       const long long          value ) ;
     // ========================================================================
-    /// more or less simple columns:    unsigned long long 
-    static StatusCode column_ull 
+    /// more or less simple columns:    unsigned long long
+    static StatusCode column_ull
     ( const Tuples::Tuple&     tuple ,
       const std::string&       name  ,
       const unsigned long long value ) ;
     // ========================================================================
-  public:  // event tag collections 
+  public:  // event tag collections
     // ========================================================================
     /// more or less simple columns:    IOpaqueAddress
     static StatusCode column
@@ -122,7 +122,7 @@ namespace GaudiPython
       const std::string&               name  ,
       const Gaudi::LorentzVector&      value ) ;
     // ========================================================================
-  public: // 3D geometry 
+  public: // 3D geometry
     // ========================================================================
     /// Advanced columns: 3D-vector
     static StatusCode column
@@ -136,7 +136,7 @@ namespace GaudiPython
       const std::string&              name  ,
       const Gaudi::XYZPoint&          value ) ;
     // ========================================================================
-  public:   // floating size arrays 
+  public:   // floating size arrays
     // ========================================================================
     /// Advanced columns: floating-size arrays
     static StatusCode farray
@@ -146,7 +146,7 @@ namespace GaudiPython
       const std::string&              length ,
       const size_t                    maxv   ) ;
     // ========================================================================
-  public:   // floating-size matrices 
+  public:   // floating-size matrices
     // ========================================================================
     /// Advanced columns: floating-size matrices
     static StatusCode fmatrix
@@ -165,7 +165,7 @@ namespace GaudiPython
       const std::string&              length ,
       const size_t                    maxv   ) ;
     // ========================================================================
-  public:   // fixed size arrays 
+  public:   // fixed size arrays
     // ========================================================================
     /// Advanced columns: fixed size arrays
     static StatusCode array
@@ -203,7 +203,7 @@ namespace GaudiPython
       const std::string&              name   ,
       const Gaudi::Vector5&           data   ) ;
     // ========================================================================
-  public:   // fixed size matrices 
+  public:   // fixed size matrices
     // ========================================================================
     /// Advanced columns: fixed size arrays
     static StatusCode array
@@ -398,15 +398,15 @@ namespace GaudiPython
       const std::string&              name  ,
       const Gaudi::SymMatrix9x9&      value ) ;
     // ========================================================================
-  public:   // some auxillary  objects 
+  public:   // some auxillary  objects
     // ========================================================================
-    /// advanced column: time 
+    /// advanced column: time
     static StatusCode column
     ( const Tuples::Tuple&            tuple ,
       const std::string&              name  ,
       const Gaudi::Time&              value ) ;
-    /// advanced column: time 
-    static StatusCode column 
+    /// advanced column: time
+    static StatusCode column
     ( const Tuples::Tuple&            tuple ,
       const Gaudi::Time&              value ) ;
     // ========================================================================
@@ -441,7 +441,7 @@ namespace GaudiPython
   } ;
   // ==========================================================================
   /** @class TupleAlgDecorator TupleDecorator.h GaudiPython/TupleDecorator.h
-   *  Simple class to perform the "decoration" of Tuples in Python/Reflex
+   *  Simple class to perform the "decoration" of Tuples in Python/ROOT
    *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
    *  @date   2005-08-17
    */
@@ -506,7 +506,7 @@ namespace GaudiPython
   } ;
   // ==========================================================================
   /** @class TupleToolDecorator TupleDecorator.h GaudiPython/TupleDecorator.h
-   *  Simple class to perform the "decoration" of Tuples in Python/Reflex
+   *  Simple class to perform the "decoration" of Tuples in Python/ROOT
    *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
    *  @date   2005-08-17
    */

@@ -10,7 +10,6 @@
 #define GAUDISVC_PERSISTENCYSVC_EVTCOLLECTIONSTREAM_CPP
 
 // Framework include files
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/INTupleSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
@@ -19,7 +18,7 @@
 #include "EvtCollectionStream.h"
 
 // Define the algorithm factory for the standard output data writer
-DECLARE_ALGORITHM_FACTORY(EvtCollectionStream)
+DECLARE_COMPONENT(EvtCollectionStream)
 
 // Standard Constructor
 EvtCollectionStream::EvtCollectionStream(const std::string& name, ISvcLocator* pSvcLocator)

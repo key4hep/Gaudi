@@ -46,3 +46,7 @@ font-size: small;
 li.foldable {
   list-style: none;
 }
+
+#slot-info {
+	font-size: 80%;
+}

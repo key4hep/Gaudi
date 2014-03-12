@@ -14,7 +14,7 @@
 //-----------------------------------------------------------------------------
 
 // Declaration of the Tool Factory
-DECLARE_TOOL_FACTORY(TestTool)
+DECLARE_COMPONENT(TestTool)
 
 //=============================================================================
 // Standard constructor, initializes variables

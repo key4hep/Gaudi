@@ -1,4 +1,3 @@
-// $Id: StatusCode.h,v 1.12 2008/10/28 17:21:58 marcocle Exp $
 #ifndef GAUDIKERNEL_STATUSCODE_H
 #define GAUDIKERNEL_STATUSCODE_H
 
@@ -6,7 +5,12 @@
 
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/IssueSeverity.h"
+
+#if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
+#include <memory>
+#else
 #include "boost/shared_ptr.hpp"
+#endif
 
 /**
  * @class StatusCode StatusCode.h GaudiKernel/StatusCode.h
@@ -133,7 +137,15 @@ protected:
   /// The status code.
   unsigned long   d_code;      ///< The status code
   mutable bool    m_checked;   ///< If the Status code has been checked
+#if defined(__GCCXML__)
+  // This is because GCCXML needs to see something that is not too in conflict with
+  // boost or std
+  typedef IssueSeverity* SeverityPtr;
+#elif defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
+  typedef std::shared_ptr<IssueSeverity> SeverityPtr;
+#else
   typedef boost::shared_ptr<IssueSeverity> SeverityPtr;
+#endif
   SeverityPtr     m_severity;  ///< Pointer to a IssueSeverity
 
   static bool     s_checking;  ///< Global flag to control if StatusCode need to be checked

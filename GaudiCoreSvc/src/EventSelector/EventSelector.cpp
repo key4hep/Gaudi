@@ -1,10 +1,7 @@
-// $Id: EventSelector.cpp,v 1.46 2008/10/30 18:01:03 marcocle Exp $
-
 // Include files
 #include "GaudiKernel/xtoa.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/Incident.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/Tokenizer.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IIncidentSvc.h"
@@ -21,7 +18,7 @@
 #include "EventIterator.h"
 #include <climits>
 
-DECLARE_SERVICE_FACTORY(EventSelector)
+DECLARE_COMPONENT(EventSelector)
 
 // Standard constructor
 EventSelector::EventSelector(const std::string& name, ISvcLocator* svcloc )

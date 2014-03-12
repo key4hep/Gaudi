@@ -1,15 +1,12 @@
-// $Id: HelloWorld.cpp,v 1.9 2006/11/30 10:35:26 mato Exp $
-
 // Include files
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "HelloWorld.h"
 
 // Static Factory declaration
 
-DECLARE_ALGORITHM_FACTORY(HelloWorld)
+DECLARE_COMPONENT(HelloWorld)
 
 // Constructor
 //------------------------------------------------------------------------------

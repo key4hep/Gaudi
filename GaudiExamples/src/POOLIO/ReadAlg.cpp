@@ -9,7 +9,6 @@
 //      ====================================================================
 
 // Framework include files
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/DataStoreItem.h"
 #include "GaudiKernel/SmartDataPtr.h"
 #include "GaudiKernel/MsgStream.h"
@@ -23,15 +22,15 @@
 #include "ReadAlg.h"
 
 // Event Model related classes
-#include "Event.h"
-#include "MyTrack.h"
-#include "Counter.h"
+#include "GaudiExamples/Event.h"
+#include "GaudiExamples/MyTrack.h"
+#include "GaudiExamples/Counter.h"
 
 #include "GaudiKernel/System.h"
 
 using namespace Gaudi::Examples;
 
-DECLARE_ALGORITHM_FACTORY(ReadAlg)
+DECLARE_COMPONENT(ReadAlg)
 
 //--------------------------------------------------------------------
 // Initialize

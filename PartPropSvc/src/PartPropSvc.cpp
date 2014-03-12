@@ -5,7 +5,6 @@
 #endif
 
 //Include files
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/PathResolver.h"
@@ -266,6 +265,6 @@ PartPropSvc::setUnknownParticleHandler(HepPDT::ProcessUnknownID* puid,
 
 // Instantiation of a static factory class used by clients to create
 //  instances of this service
-DECLARE_SERVICE_FACTORY(PartPropSvc)
+DECLARE_COMPONENT(PartPropSvc)
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//

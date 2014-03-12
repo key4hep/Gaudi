@@ -9,9 +9,9 @@
 class IIncidentSvc;
 
 // Event Model related classes
-#include "Event.h"
-#include "MyTrack.h"
-#include "Counter.h"
+#include "GaudiExamples/Event.h"
+#include "GaudiExamples/MyTrack.h"
+#include "GaudiExamples/Counter.h"
 
 using namespace Gaudi::Examples;
 
@@ -20,13 +20,13 @@ using namespace Gaudi::Examples;
 
 class ReadHandleAlg : public Algorithm {
 
-  DataObjectHandle<Collision>* m_inputHandle;  
+  DataObjectHandle<Collision>* m_inputHandle;
   std::string m_inputName;
-  
+
 public:
   /// Constructor: A constructor of this form must be provided.
   ReadHandleAlg(const std::string& nam, ISvcLocator* pSvc)
-    : Algorithm(nam, pSvc){ 
+    : Algorithm(nam, pSvc){
      declareProperty ( "Input", m_inputName, "The name of the input" );
     }
   /// Standard Destructor

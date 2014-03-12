@@ -3,7 +3,6 @@
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/IEvtSelector.h"
@@ -17,7 +16,7 @@
 
 
 // Instantiation of a static factory class used by clients to create instances of this service
-DECLARE_SERVICE_FACTORY(EventLoopMgr)
+DECLARE_COMPONENT(EventLoopMgr)
 
 
 #define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))

@@ -1,6 +1,71 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2014-02-21 - Marco Clemencic
+ - Modified the genconfig_add_extraModules pattern.
+
+=============================== GaudiSvc v21r0 ===============================
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
+! 2013-07-19 - Marco Clemencic
+ - Clean up in the use of the new PluginService.
+
+! 2013-07-18 - Marco Clemencic
+ - Removed use of obsolete AlgFactory.h, SvcFactory.h, ToolFactory.h,
+   AudFactory.h and CnvFactory.h.
+
+! 2013-07-17 - Marco Clemencic
+ - Use the new ROOT-free Plugin Service.
+
+! 2013-07-17 - Marco Clemencic
+ - Removed factories forward declarations.
+
+! 2013-07-03 - Marco Clemencic
+ - Removed explicit link against Reflex from cmt/requirements.
+ - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
+
+=============================== GaudiSvc v20r1 ===============================
+=============================== GaudiSvc-20-00-00 =========================
+! 2013-08-30 - Charles Leggett
+ - retag for Atlas merge
+
+! 2013-06-24 - Marco Clemencic
+ - Fixed compilation with C++11 after the changes to THistSvc.cpp.
+ - Added FileMgr to CMake configuration.
+
+! 2013-04-18 - Charles Leggett
+ - added GaudiMonitor to list of extra modules
+
+M       python/ExtraModules.py
+
+! 2013-04-05 - Charles Leggett
+ - automatically import modules from GaudiCoreSvc and GaudiCommonSvc into
+   GaudiSvcConf.py for ATLAS tag via genconfig_add_extraModules pattern and use
+   of python/ExtraModules.py file
+
+A       python
+A       python/ExtraModules.py
+M       cmt/requirements
+
+
+! 2013-03-06 - Charles Leggett
+ - merge with GaudiSvc-18-13-39
+ - add FileMgr
+ - update THistSvc
+
+M       cmt/requirements
+A       src/FileMgr
+A       src/FileMgr/POSIXFileHandler.cpp
+A       src/FileMgr/RootFileHandler.cpp
+A       src/FileMgr/FileMgr.cpp
+A       src/FileMgr/POSIXFileHandler.h
+A       src/FileMgr/RootFileHandler.h
+A       src/FileMgr/FileMgr.h
+M       src/THistSvc/THistSvc.icc
+M       src/THistSvc/THistSvc.cpp
+M       src/THistSvc/THistSvc.h
+
 =============================== GaudiSvc v19r4 ===============================
 !2013-04-09 - Hubert Degaudenzi
  - src/THistSvc/THistSvc.cpp: fixed cppcheck warning.

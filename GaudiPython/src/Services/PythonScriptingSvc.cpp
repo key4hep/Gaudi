@@ -1,11 +1,8 @@
-// $Id: PythonScriptingSvc.cpp,v 1.18 2008/10/27 21:12:08 marcocle Exp $
-
 #include "Python.h"
 
 // Include Files
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/SmartIF.h"
 
 #include "PythonScriptingSvc.h"
@@ -20,7 +17,7 @@
 
 // Instantiation of a static factory class used by clients to create
 //  instances of this service
-DECLARE_SERVICE_FACTORY(PythonScriptingSvc)
+DECLARE_COMPONENT(PythonScriptingSvc)
 
 //----------------------------------------------------------------------------------
 PythonScriptingSvc::PythonScriptingSvc( const std::string& name, ISvcLocator* svc )

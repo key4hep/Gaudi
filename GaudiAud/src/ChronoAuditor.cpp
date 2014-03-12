@@ -8,9 +8,8 @@
 #endif
 
 #include "ChronoAuditor.h"
-#include "GaudiKernel/AudFactory.h"
 
-DECLARE_AUDITOR_FACTORY(ChronoAuditor)
+DECLARE_COMPONENT(ChronoAuditor)
 
 ChronoAuditor::ChronoAuditor(const std::string& name, ISvcLocator* pSvcLocator)
 : CommonAuditor(name, pSvcLocator) {

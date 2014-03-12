@@ -2,7 +2,6 @@
 #include "GaudiKernel/Debugger.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/strcasecmp.h"
-#include "GaudiKernel/DeclareFactoryEntries.h"
 #include "GaudiUtils/IFileCatalog.h"
 #include "IODataManager.h"
 #include "GaudiKernel/SmartIF.h"
@@ -11,9 +10,9 @@
 
 #include <set>
 
-DECLARE_NAMESPACE_SERVICE_FACTORY(Gaudi,IODataManager)
-
 using namespace Gaudi;
+
+DECLARE_COMPONENT(IODataManager)
 
 enum { S_OK = StatusCode::SUCCESS, S_ERROR=StatusCode::FAILURE };
 
@@ -22,10 +21,10 @@ static std::set<std::string>    s_badFiles;
 IODataManager::IODataManager(CSTR nam, ISvcLocator* svcloc)
   : base_class(nam, svcloc), m_ageLimit(2)
 {
-  declareProperty("CatalogType",     m_catalogSvcName="Gaudi::MultiFileCatalog/FileCatalog");
-  declareProperty("UseGFAL",         m_useGFAL = true);
-  declareProperty("QuarantineFiles", m_quarantine = true);
-  declareProperty("AgeLimit",        m_ageLimit = 2);
+  declareProperty("CatalogType",      m_catalogSvcName="Gaudi::MultiFileCatalog/FileCatalog");
+  declareProperty("UseGFAL",          m_useGFAL = true);
+  declareProperty("QuarantineFiles",  m_quarantine = true);
+  declareProperty("AgeLimit",         m_ageLimit = 2);
   declareProperty("DisablePFNWarning", m_disablePFNWarning = false,
                   "if set to True, we will not report when a file "
                   "is opened by it's physical name");
@@ -63,7 +62,7 @@ StatusCode IODataManager::finalize()  {
   return Service::finalize();
 }
 
-// Small routine to issue exceptions
+/// Small routine to issue exceptions
 StatusCode IODataManager::error(CSTR msg, bool rethrow)  {
   MsgStream log(msgSvc(),name());
   log << MSG::ERROR << "Error: " << msg << endmsg;
@@ -72,6 +71,7 @@ StatusCode IODataManager::error(CSTR msg, bool rethrow)  {
   }
   return S_ERROR;
 }
+
 /// Get connection by owner instance (0=ALL)
 IODataManager::Connections IODataManager::connections(const IInterface* owner) const  {
   Connections conns;
@@ -276,22 +276,28 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
           error("connectDataIO> Failed to resolve FID:"+dsn,false).ignore();
           return IDataConnection::BAD_DATA_CONNECTION;
         }
-        std::string pfn = files[0].first;
-        m_fidMap[dsn] = m_fidMap[dataset] = m_fidMap[pfn] = dsn;
-        sc = connectDataIO(PFN, rw, pfn, technology, keep_open, connection);
-        if ( !sc.isSuccess() )  {
-          if ( m_quarantine ) s_badFiles.insert(pfn);
-          m_incSvc->fireIncident(Incident(pfn,IncidentType::FailInputFile));
-          return IDataConnection::BAD_DATA_CONNECTION;
-        }
-
-        return sc;
+	for(IFileCatalog::Files::const_iterator i=files.begin(); i!=files.end(); ++i)  {
+	  std::string pfn = (*i).first;
+	  if ( i != files.begin() )  {
+	    log << MSG::WARNING << "Attempt to connect dsn:" << dsn
+		<< " with next entry in data federation:" << pfn << "." << endmsg;
+	  }
+	  sc = connectDataIO(PFN, rw, pfn, technology, keep_open, connection);
+	  if ( !sc.isSuccess() )  {
+	    if ( m_quarantine ) s_badFiles.insert(pfn);
+	    m_incSvc->fireIncident(Incident(pfn,IncidentType::FailInputFile));
+	  }
+	  else   {
+	    m_fidMap[dsn] = m_fidMap[dataset] = m_fidMap[pfn] = dsn;
+	    return sc;
+	  }
+	}
+	log << MSG::ERROR << "Failed to open dsn:" << dsn
+	    << " Federated file could not be resolved from "
+	    << files.size() << " entries." << endmsg;
+	return IDataConnection::BAD_DATA_CONNECTION;
       }
       return S_ERROR;
-      //Connection* c = (*fi).second->connection;
-      //sc = connectDataIO(PFN, rw, c->pfn(), technology, keep_open, connection);
-      //if ( !sc.isSuccess() && m_quarantine ) s_badFiles.insert(c->pfn());
-      //return sc;
     }
     std::string fid;
     FidMap::iterator j = m_fidMap.find(dsn);

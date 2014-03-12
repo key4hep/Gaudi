@@ -9,6 +9,7 @@
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/HistogramBase.h"
+#include "GaudiKernel/ObjectFactory.h"
 #include "RootObjAddress.h"
 #include "TArray.h"
 #include <memory>
@@ -34,7 +35,7 @@ namespace RootHistCnv {
   public:
     /// Create the transient representation of an object.
     virtual StatusCode createObj(IOpaqueAddress* pAddr, DataObject*& refpObj) {
-      refpObj = ROOT::Reflex::PluginService::CreateWithId<DataObject*>(objType());
+      refpObj = DataObjFactory::create(objType());
       RootObjAddress *r = dynamic_cast<RootObjAddress*>(pAddr);
       Q* h = dynamic_cast<Q*>(refpObj);
       if ( r && h )   {

@@ -1,0 +1,39 @@
+# -*- yml -*-
+package: {
+    name:    GaudiCoreSvc,
+    authors: ["gaudi collaboration"],
+
+    version:  "v3r0",
+    deps: {
+        public: [
+            GaudiKernel,
+            LCG_Interfaces/Boost,
+        ],
+    }
+}
+
+options: {
+}
+
+configure: {
+}
+
+build: {
+
+    GaudiCoreSvc: {
+        features: "gaudi_module",
+        source:   ["src/ApplicationMgr/*.cpp",
+                   "src/EventSelector/*.cpp",
+                   "src/IncidentSvc/*.cpp",
+                   "src/JobOptionsSvc/*.cpp",
+                   "src/MessageSvc/*.cpp"],
+        use: ["GaudiKernel",
+              "boost-system",
+              "boost-filesystem",
+              "boost-regex",
+              "boost-thread",
+              ]
+    },
+}
+
+## EOF ##

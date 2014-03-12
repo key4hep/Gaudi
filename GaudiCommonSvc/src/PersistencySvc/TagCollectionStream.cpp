@@ -1,11 +1,7 @@
-// $Id: TagCollectionStream.cpp,v 1.2 2006/09/18 16:06:52 hmd Exp $
-#define GAUDISVC_PERSISTENCYSVC_OUTPUTSTREAM_CPP
-
 // Framework include files
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/Tokenizer.h"
 #include "GaudiKernel/SmartDataPtr.h"
 #include "GaudiKernel/IDataSourceMgr.h"
@@ -14,7 +10,7 @@
 #include "TagCollectionStream.h"
 
 // Define the algorithm factory for the standard output data writer
-DECLARE_ALGORITHM_FACTORY(TagCollectionStream)
+DECLARE_COMPONENT(TagCollectionStream)
 
 static const char SEPARATOR = IDataProviderSvc::SEPARATOR;
 

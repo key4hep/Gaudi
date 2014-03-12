@@ -3,9 +3,8 @@
 
 """ GaudiPython.Bindings module.
     This module provides the basic bindings of the main Gaudi
-    components to Python. It is itself based on the PyCintex
-    extersion module provided by LCG/ROOT that provided
-    dynamic bindigns of classes for which LCG dictionaires exists.
+    components to Python. It is itself based on the ROOT cppyy
+    Python extension module.
 """
 
 __all__ = [ 'gbl','InterfaceCast', 'Interface', 'PropertyEntry',
@@ -15,21 +14,34 @@ __all__ = [ 'gbl','InterfaceCast', 'Interface', 'PropertyEntry',
             'ROOT', 'makeNullPointer', 'makeClass', 'setOwnership',
             'getClass', 'loaddict', 'deprecation' ]
 
+from GaudiKernel import ROOT6WorkAroundEnabled
+
 import os, sys, string, warnings, re
-import PyCintex
+try:
+    import cppyy
+except ImportError:
+    # FIXME: backward compatibility
+    print "# WARNING: using PyCintex as cppyy implementation"
+    import PyCintex as cppyy
+
+if ROOT6WorkAroundEnabled('ROOT-5478'):
+    # Trigger the loading of GaudiKernelDict
+    cppyy.gbl.DataObject
+    # Trigger the loading of GaudiPythonDict
+    cppyy.gbl.Chrono
+
 import Pythonizations
 # Import Configurable from AthenaCommon or GaudiKernel if the first is not
 # available.
 from GaudiKernel.Proxy.Configurable import Configurable, getNeededConfigurables
 
 #namespaces
-gbl    = PyCintex.makeNamespace('')
+gbl   = cppyy.gbl
 Gaudi = gbl.Gaudi
 
 _gaudi = None
 
 #----Useful shortcuts for classes -------------------------------------------------------
-#Helper              = PyCintex.makeClass     ('GaudiPython::Helper')
 Helper              = gbl.GaudiPython.Helper
 StringProperty      = gbl.SimpleProperty     ('string','BoundedVerifier<string>')
 StringPropertyRef   = gbl.SimplePropertyRef  ('string','NullVerifier<string>')
@@ -38,6 +50,7 @@ GaudiHandleArrayProperty = gbl.GaudiHandleArrayProperty
 DataObject          = gbl.DataObject
 SUCCESS             = gbl.StatusCode( gbl.StatusCode.SUCCESS, True )
 FAILURE             = gbl.StatusCode( gbl.StatusCode.FAILURE, True )
+
 # toIntArray, toShortArray, etc.
 for l in [ l for l in dir(Helper) if re.match("^to.*Array$",l) ]:
     exec "%s = Helper.%s"%(l,l)
@@ -53,10 +66,10 @@ else:
     toArray = lambda typ: getattr(Helper,"toArray<%s>"%typ)
 
 #----Convenient accessors to PyROOT functionality ---------------------------------------
-ROOT            = PyCintex.libPyROOT
-makeNullPointer = PyCintex.libPyROOT.MakeNullPointer
-makeClass       = PyCintex.libPyROOT.MakeRootClass
-setOwnership    = PyCintex.libPyROOT.SetOwnership
+ROOT            = cppyy.libPyROOT
+makeNullPointer = cppyy.libPyROOT.MakeNullPointer
+makeClass       = cppyy.libPyROOT.MakeRootClass
+setOwnership    = cppyy.libPyROOT.SetOwnership
 
 def deprecation(message):
     warnings.warn('GaudiPython: '+ message, DeprecationWarning, stacklevel=3)
@@ -66,11 +79,12 @@ class InterfaceCast(object) :
     """ Helper class to obtain the adequate interface from a component
         by using the Gaudi queryInterface() mechanism """
     def __init__(self, t ) :
-        if type(t) is str : t = PyCintex.makeClass(t)
+        if type(t) is str:
+            t = getattr(gbl, t)
         self.type = t
     def __call__(self, obj) :
         if obj :
-            ip = PyCintex.libPyROOT.MakeNullPointer(self.type)
+            ip = makeNullPointer(self.type)
             try:
                 if obj.queryInterface(self.type.interfaceID(), ip).isSuccess() :
                     return ip
@@ -96,7 +110,7 @@ def loaddict(dict) :
     if Helper.loadDynamicLib(dict) == 1 : return
     else :
         try:
-            PyCintex.loadDict(dict)
+            cppyy.loadDict(dict)
         except:
             raise ImportError, 'Error loading dictionary library'
 
@@ -193,15 +207,28 @@ class iProperty(object) :
             if not gbl.Gaudi.Utils.hasProperty ( ip , name ) :
                 raise AttributeError, 'property %s does not exist' % name
             prop = ip.getProperty(name)
-            if not hasattr ( prop , 'value' ) or not type( value ) == type( prop.value() ) :
+
+            if ROOT6WorkAroundEnabled('ROOT-6032'):
+                canSetValue = (hasattr(prop, 'value') and
+                               'const(&)[' not in prop.value.func_doc and
+                               type(value) == type(prop.value()))
+            else:
+                canSetValue = (hasattr(prop, 'value') and
+                               type(value) == type(prop.value()))
+
+            if canSetValue:
+                if not prop.setValue(value) :
+                    raise AttributeError, 'property %s could not be set from %s' % (name, value)
+            else:
                 if   tuple     == type( value  )     : value = str(value)
                 elif hasattr ( value , 'toString' )  : value = value.toString()
                 elif not long  == type( value )      : value = '%s' % value
                 else                                 : value = '%d' % value
-                if prop.fromString( value ).isFailure() :
-                    raise AttributeError, 'property %s could not be set from %s' % (name,value)
-            else :
-                if not prop.setValue( value ) :
+                if ROOT6WorkAroundEnabled('ROOT-6028'):
+                    sc = cppyy.gbl.GaudiPython.Helper.setPropertyFromString(prop, value)
+                else:
+                    sc = prop.fromString(value)
+                if sc.isFailure() :
                     raise AttributeError, 'property %s could not be set from %s' % (name,value)
         else :
             if   type(value) == str            : value = '"%s"' % value # need double quotes
@@ -509,7 +536,7 @@ class iHistogramSvc(iDataSvc) :
         >>> svc = ...
         >>> histo = svc.getAsROOT ( 'path/to/my/histogram' )
         """
-        fun=gbl.Gaudi.Utils.Aida2ROOT.aida2root
+        fun = gbl.Gaudi.Utils.Aida2ROOT.aida2root
         return fun( self.getAsAIDA( path ) )
 
 #----iNTupleSvc class---------------------------------------------------------------------
@@ -750,8 +777,6 @@ class AppMgr(iService) :
     def state(self) : return self._isvc.FSMState()
     def FSMState(self) : return self._isvc.FSMState()
     def targetFSMState(self) : return self._isvc.targetFSMState()
-    def loaddict(self, dict) :
-        loaddict(dict)
     def service(self, name, interface = None) :
         svc = Helper.service( self._svcloc, name )
         if interface :

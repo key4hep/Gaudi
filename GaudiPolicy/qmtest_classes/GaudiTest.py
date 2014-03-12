@@ -13,10 +13,30 @@ import tempfile
 import shutil
 import string
 import difflib
+import time
+import calendar
 from subprocess import Popen, PIPE, STDOUT
+
+try:
+    from GaudiKernel import ROOT6WorkAroundEnabled
+except ImportError:
+    def ROOT6WorkAroundEnabled(id=None):
+        # dummy implementation
+        return False
 
 # ensure the preferred locale
 os.environ['LC_ALL'] = 'C'
+
+# Needed for the XML wrapper
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
+
+# redefinition of timedelta.total_seconds() because it is not present in the 2.6 version
+def total_seconds_replacement(timedelta) :
+    return timedelta.days*86400 + timedelta.seconds + timedelta.microseconds/1000000
+
 
 import qm
 from qm.test.classes.command import ExecTestBase
@@ -24,7 +44,7 @@ from qm.test.result_stream import ResultStream
 
 ### Needed by the re-implementation of TimeoutExecutable
 import qm.executable
-import time, signal
+import signal
 # The classes in this module are implemented differently depending on
 # the operating system in use.
 if sys.platform == "win32":
@@ -260,6 +280,7 @@ class CMT:
         else:
             return self.show(["macro_value",k]).strip()
 
+
 ## Locates an executable in the executables path ($PATH) and returns the full
 #  path to it.
 #  If the executable cannot be found, None is returned
@@ -284,10 +305,43 @@ def which(executable):
     return None
 
 def rationalizepath(p):
-    p = os.path.normpath(os.path.expandvars(p))
-    if os.path.exists(p):
-        p = os.path.realpath(p)
+    np = os.path.normpath(os.path.expandvars(p))
+    if os.path.exists(np):
+        p = os.path.realpath(np)
     return p
+
+# XML Escaping character
+import re
+
+# xml 1.0 valid characters:
+#    Char ::= #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]
+# so to invert that, not in Char ::
+#       x0 - x8 | xB | xC | xE - x1F
+#       (most control characters, though TAB, CR, LF allowed)
+#       | #xD800 - #xDFFF
+#       (unicode surrogate characters)
+#       | #xFFFE | #xFFFF |
+#       (unicode end-of-plane non-characters)
+#       >= 110000
+#       that would be beyond unicode!!!
+_illegal_xml_chars_RE = re.compile(u'[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]')
+
+def hexreplace( match ):
+    "Return the hex string "
+    return "".join(map(hexConvert,match.group()))
+
+def hexConvert(char):
+    return hex(ord(char))
+def convert_xml_illegal_chars(val):
+    return _illegal_xml_chars_RE.sub(hexreplace, val)
+
+def escape_xml_illegal_chars(val, replacement='?'):
+    """Filter out characters that are illegal in XML.
+    Looks for any character in val that is not allowed in XML
+    and replaces it with replacement ('?' by default).
+
+    """
+    return _illegal_xml_chars_RE.sub(replacement, val)
 
 ########################################################################
 # Output Validation Classes
@@ -458,9 +512,12 @@ for w,o,r in [
               ("ServiceLocatorHelper::", "ServiceLocatorHelper::(create|locate)Service", "ServiceLocatorHelper::service"),
               # Remove the leading 0 in Windows' exponential format
               (None, r"e([-+])0([0-9][0-9])", r"e\1\2"),
+              # Output line changed in Gaudi v24
+              (None, r'Service reference count check:', r'Looping over all active services...'),
               ]: #[ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
     normalizeExamples += RegexpReplacer(o,r,w)
-normalizeExamples = LineSkipper(["//GP:",
+
+lineSkipper = LineSkipper(["//GP:",
                                  "JobOptionsSvc        INFO # ",
                                  "JobOptionsSvc     WARNING # ",
                                  "Time User",
@@ -476,8 +533,6 @@ normalizeExamples = LineSkipper(["//GP:",
                                  "DEBUG Service base class initialized successfully", # changed between v20 and v21
                                  "DEBUG Incident  timing:", # introduced with patch #3487
                                  "INFO  'CnvServices':[", # changed the level of the message from INFO to DEBUG
-                                 # This comes from ROOT, when using GaudiPython
-                                 'Note: (file "(tmpfile)", line 2) File "set" already loaded',
                                  # The signal handler complains about SIGXCPU not defined on some platforms
                                  'SIGXCPU',
                                  # FIXME: special lines printed in GaudiHive
@@ -512,9 +567,10 @@ normalizeExamples = LineSkipper(["//GP:",
                                  r"SUCCESS\s*Booked \d+ Histogram\(s\)",
                                  r"^ \|",
                                  r"^ ID=",
-                                 ] ) + normalizeExamples + skipEmptyLines + \
-                                  normalizeEOL + \
-                                  LineSorter("Services to release : ")
+                                 ] )
+
+normalizeExamples = (lineSkipper + normalizeExamples + skipEmptyLines +
+                     normalizeEOL + LineSorter("Services to release : "))
 
 class ReferenceFileValidator:
     def __init__(self, reffile, cause, result_key, preproc = normalizeExamples):
@@ -1856,3 +1912,305 @@ class HTMLResultStream(ResultStream):
     def Summarize(self):
         # Not implemented.
         pass
+
+
+
+
+class XMLResultStream(ResultStream):
+    """An 'XMLResultStream' writes its output to a Ctest XML file.
+
+    The argument 'dir' is used to select the destination file for the XML
+    report.
+    The destination directory may already contain the report from a previous run
+    (for example of a different package), in which case it will be overrided to
+    with the new data.
+    """
+    arguments = [
+        qm.fields.TextField(
+            name = "dir",
+            title = "Destination Directory",
+            description = """The name of the directory.
+
+            All results will be written to the directory indicated.""",
+            verbatim = "true",
+            default_value = ""),
+        qm.fields.TextField(
+            name = "prefix",
+            title = "Output File Prefix",
+            description = """The output file name will be the specified prefix
+            followed by 'Test.xml' (CTest convention).""",
+            verbatim = "true",
+            default_value = ""),
+    ]
+
+    def __init__(self, arguments = None, **args):
+        """Prepare the destination directory.
+
+        Creates the destination directory and store in it some preliminary
+        annotations .
+        """
+        ResultStream.__init__(self, arguments, **args)
+
+        self._xmlFile = os.path.join(self.dir, self.prefix + 'Test.xml')
+
+        # add some global variable
+        self._startTime = None
+        self._endTime = None
+        # Format the XML file if it not exists
+        if not os.path.isfile(self._xmlFile):
+            # check that the container directory exists and create it if not
+            if not os.path.exists(os.path.dirname(self._xmlFile)):
+                os.makedirs(os.path.dirname(self._xmlFile))
+
+            newdataset = ET.Element("newdataset")
+            self._tree = ET.ElementTree(newdataset)
+            self._tree.write(self._xmlFile)
+        else :
+            # Read the xml file
+            self._tree = ET.parse(self._xmlFile)
+            newdataset = self._tree.getroot()
+
+        # Find the corresponding site, if do not exist, create it
+
+        #site = newdataset.find('Site[@BuildStamp="'+result["qmtest.start_time"]+'"][@OSPlatform="'+os.getenv("CMTOPT")+'"]')
+        # I don't know why this syntax doesn't work. Maybe it is because of the python version. Indeed,
+        # This works well in the python terminal. So I have to make a for:
+        for site in newdataset.getiterator() :
+            if  site.get("OSPlatform") == os.uname()[4]: # and  site.get("BuildStamp") == result["qmtest.start_time"] and:
+                # Here we can add some variable to define the difference beetween 2 site
+                self._site = site
+                break
+            else :
+                site = None
+
+
+        if  site is None :
+            import socket
+            import multiprocessing
+            attrib = {
+                      "BuildName" : os.getenv("CMTCONFIG"),
+                      "Name" : os.uname()[1] ,
+                      "Generator" : "QMTest "+qm.version ,
+                      "OSName" : os.uname()[0] ,
+                      "Hostname" : socket.gethostname() ,
+                      "OSRelease" : os.uname()[2] ,
+                      "OSVersion" :os.uname()[3] ,
+                      "OSPlatform" :os.uname()[4] ,
+                      "Is64Bits" : "unknown" ,
+                      "VendorString" : "unknown" ,
+                      "VendorID" :"unknown" ,
+                      "FamilyID" :"unknown" ,
+                      "ModelID" :"unknown" ,
+                      "ProcessorCacheSize" :"unknown" ,
+                      "NumberOfLogicalCPU" : str(multiprocessing.cpu_count()) ,
+                      "NumberOfPhysicalCPU" : "0" ,
+                      "TotalVirtualMemory" : "0" ,
+                      "TotalPhysicalMemory" : "0" ,
+                      "LogicalProcessorsPerPhysical" : "0" ,
+                      "ProcessorClockFrequency" : "0" ,
+                      }
+            self._site = ET.SubElement(newdataset, "site", attrib)
+            self._Testing = ET.SubElement(self._site,"Testing")
+
+            # Start time elements
+            self._StartDateTime = ET.SubElement(self._Testing, "StartDateTime")
+
+            self._StartTestTime = ET.SubElement(self._Testing, "StartTestTime")
+
+
+            self._TestList = ET.SubElement(self._Testing, "TestList")
+
+            ## End time elements
+            self._EndDateTime = ET.SubElement(self._Testing, "EndDateTime")
+
+
+            self._EndTestTime = ET.SubElement(self._Testing, "EndTestTime")
+
+
+
+            self._ElapsedMinutes = ET.SubElement(self._Testing, "ElapsedMinutes")
+
+
+        else :  # We get the elements
+            self._Testing = self._site.find("Testing")
+            self._StartDateTime = self._Testing.find("StartDateTime")
+            self._StartTestTime = self._Testing.find("StartTestTime")
+            self._TestList = self._Testing.find("TestList")
+            self._EndDateTime = self._Testing.find("EndDateTime")
+            self._EndTestTime = self._Testing.find("EndTestTime")
+            self._ElapsedMinutes = self._Testing.find("ElapsedMinutes")
+
+        """
+        # Add some non-QMTest attributes
+        if "CMTCONFIG" in os.environ:
+            self.WriteAnnotation("cmt.cmtconfig", os.environ["CMTCONFIG"])
+        import socket
+        self.WriteAnnotation("hostname", socket.gethostname())
+        """
+
+
+    def WriteAnnotation(self, key, value):
+        if key == "qmtest.run.start_time":
+            if self._site.get("qmtest.run.start_time") is not None :
+                return None
+        self._site.set(str(key),str(value))
+    def WriteResult(self, result):
+        """Prepare the test result directory in the destination directory storing
+        into it the result fields.
+        A summary of the test result is stored both in a file in the test directory
+        and in the global summary file.
+        """
+        summary = {}
+        summary["id"] = result.GetId()
+        summary["outcome"] = result.GetOutcome()
+        summary["cause"] = result.GetCause()
+        summary["fields"] = result.keys()
+        summary["fields"].sort()
+
+
+        # Since we miss proper JSON support, I hack a bit
+        for f in ["id", "outcome", "cause"]:
+            summary[f] = str(summary[f])
+        summary["fields"] = map(str, summary["fields"])
+
+
+        # format
+        # package_Test.xml
+
+        if "qmtest.start_time" in summary["fields"]:
+            haveStartDate = True
+        else :
+            haveStartDate = False
+        if "qmtest.end_time" in summary["fields"]:
+            haveEndDate = True
+        else :
+            haveEndDate = False
+
+        # writing the start date time
+        if haveStartDate:
+            self._startTime = calendar.timegm(time.strptime(result["qmtest.start_time"], "%Y-%m-%dT%H:%M:%SZ"))
+            if self._StartTestTime.text is None:
+                self._StartDateTime.text = time.strftime("%b %d %H:%M %Z", time.localtime(self._startTime))
+                self._StartTestTime.text = str(self._startTime)
+                self._site.set("BuildStamp" , result["qmtest.start_time"] )
+
+        #Save the end date time in memory
+        if haveEndDate:
+            self._endTime = calendar.timegm(time.strptime(result["qmtest.end_time"], "%Y-%m-%dT%H:%M:%SZ"))
+
+
+        #add the current test to the test list
+        tl = ET.Element("Test")
+        tl.text = summary["id"]
+        self._TestList.insert(0,tl)
+
+        #Fill the current test
+        Test = ET.Element("Test")
+        if summary["outcome"] == "PASS":
+            Test.set("Status", "passed")
+        elif summary["outcome"] == "FAIL":
+            Test.set("Status", "failed")
+        elif summary["outcome"] == "SKIPPED" or summary["outcome"] == "UNTESTED":
+            Test.set("Status", "skipped")
+        elif summary["outcome"] == "ERROR":
+            Test.set("Status", "failed")
+        Name = ET.SubElement(Test, "Name",)
+        Name.text = summary["id"]
+        Results = ET.SubElement(Test, "Results")
+
+        # add the test after the other test
+        self._Testing.insert(3,Test)
+
+        if haveStartDate and haveEndDate:
+            # Compute the test duration
+            delta = self._endTime - self._startTime
+            testduration = str(delta)
+            Testduration= ET.SubElement(Results,"NamedMeasurement")
+            Testduration.set("name","Execution Time")
+            Testduration.set("type","numeric/float" )
+            value = ET.SubElement(Testduration, "Value")
+            value.text = testduration
+
+        #remove the fields that we store in a different way
+        for n in ("qmtest.end_time", "qmtest.start_time", "qmtest.cause", "ExecTest.stdout"):
+            if n in summary["fields"]:
+                summary["fields"].remove(n)
+
+        # Here we can add some NamedMeasurment which we know the type
+        #
+        if "ExecTest.exit_code" in summary["fields"] :
+            summary["fields"].remove("ExecTest.exit_code")
+            ExitCode= ET.SubElement(Results,"NamedMeasurement")
+            ExitCode.set("name","exit_code")
+            ExitCode.set("type","numeric/integer" )
+            value = ET.SubElement(ExitCode, "Value")
+            value.text = convert_xml_illegal_chars(result["ExecTest.exit_code"])
+
+        TestStartTime= ET.SubElement(Results,"NamedMeasurement")
+        TestStartTime.set("name","Start_Time")
+        TestStartTime.set("type","String" )
+        value = ET.SubElement(TestStartTime, "Value")
+        if haveStartDate :
+            value.text = escape_xml_illegal_chars(time.strftime("%b %d %H:%M %Z %Y", time.localtime(self._startTime)))
+        else :
+            value.text = ""
+
+        TestEndTime= ET.SubElement(Results,"NamedMeasurement")
+        TestEndTime.set("name","End_Time")
+        TestEndTime.set("type","String" )
+        value = ET.SubElement(TestEndTime, "Value")
+        if haveStartDate :
+            value.text = escape_xml_illegal_chars(time.strftime("%b %d %H:%M %Z %Y", time.localtime(self._endTime)))
+        else :
+            value.text = ""
+
+        if summary["cause"]:
+            FailureCause= ET.SubElement(Results,"NamedMeasurement")
+            FailureCause.set("name", "Cause")
+            FailureCause.set("type", "String" )
+            value = ET.SubElement(FailureCause, "Value")
+            value.text = escape_xml_illegal_chars(summary["cause"])
+
+        #Fill the result
+        fields = {}
+        for field in summary["fields"] :
+            fields[field] = ET.SubElement(Results, "NamedMeasurement")
+            fields[field].set("type","String")
+            fields[field].set("name",field)
+            value = ET.SubElement(fields[field], "Value")
+            # to escape the <pre></pre>
+            if "<pre>" in  result[field][0:6] :
+                value.text = convert_xml_illegal_chars(result[field][5:-6])
+            else :
+                value.text = convert_xml_illegal_chars(result[field])
+
+
+        if result.has_key("ExecTest.stdout" ) : #"ExecTest.stdout" in result :
+            Measurement = ET.SubElement(Results, "Measurement")
+            value = ET.SubElement(Measurement, "Value")
+            if "<pre>" in  result["ExecTest.stdout"][0:6] :
+                value.text = convert_xml_illegal_chars(result["ExecTest.stdout"][5:-6])
+            else :
+                value.text = convert_xml_illegal_chars(result["ExecTest.stdout"])
+
+
+        # write the file
+        self._tree.write(self._xmlFile, "utf-8") #,True) in python 2.7 to add the xml header
+
+
+    def Summarize(self):
+
+        # Set the final end date time
+        self._EndTestTime.text = str(self._endTime)
+        self._EndDateTime.text = time.strftime("%b %d %H:%M %Z", time.localtime(self._endTime))
+
+        # Compute the total duration
+        if self._endTime and self._startTime:
+            delta = self._endTime - self._startTime
+        else:
+            delta = 0
+        self._ElapsedMinutes.text = str(delta/60)
+
+        # Write into the file
+        self._tree.write(self._xmlFile, "utf-8") #,True) in python 2.7 to add the xml header
+

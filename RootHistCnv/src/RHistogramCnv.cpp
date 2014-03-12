@@ -1,6 +1,4 @@
-// $Id: RHistogramCnv.cpp,v 1.3 2007/07/16 13:37:52 hmd Exp $
 #include "RHistogramCnv.h"
-#include "GaudiKernel/CnvFactory.h"
 
 #include "TProfile.h"
 #include "AIDA/IProfile1D.h"

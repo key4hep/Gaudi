@@ -1,6 +1,33 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+============================== GaudiUtils v5r0 ===============================
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
+! 2013-07-19 - Marco Clemencic
+ - Clean up in the use of the new PluginService.
+
+! 2013-07-18 - Marco Clemencic
+ - Removed use of obsolete AlgFactory.h, SvcFactory.h, ToolFactory.h,
+   AudFactory.h and CnvFactory.h.
+
+! 2013-07-17 - Marco Clemencic
+ - Use the new ROOT-free Plugin Service.
+
+! 2013-07-17 - Marco Clemencic
+ - Removed factories forward declarations.
+
+! 2013-07-03 - Marco Clemencic
+ - Minor changes in a comment.
+ - Removed explicit link against Reflex from cmt/requirements.
+ - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
+
+============================== GaudiUtils v4r7 ===============================
+! 2013-11-01 - Markus Frank
+ - Add support for data federations. The IODataManager will try out
+   all PFNs in the file catalog until one entry is found, which can be opened.
+
 ============================== GaudiUtils v4r6 ===============================
 ! 2013-07-09 - Marco Clemencic
  - Fixed bug #101513: Raw->Raw processing should not print an error

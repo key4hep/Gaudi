@@ -5,4 +5,5 @@
 <class-directory>
   <class kind="test" name="GaudiTest.GaudiExeTest"/>
   <class kind="result_stream" name="GaudiTest.HTMLResultStream"/>
+  <class kind="result_stream" name="GaudiTest.XMLResultStream"/>
 </class-directory>

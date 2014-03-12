@@ -1,5 +1,5 @@
 package GaudiPolicy
-version v12r8
+version v14r0
 
 branches cmt doc
 
@@ -17,6 +17,7 @@ use Python * LCG_Interfaces -no_auto_imports
 tag x86_64-slc5-gcc43-test   x86_64-slc5-gcc43-opt target-test
 tag x86_64-slc5-gcc46-test   x86_64-slc5-gcc46-opt target-test
 tag x86_64-slc6-gcc46-test   x86_64-slc6-gcc46-opt target-test
+tag x86_64-slc6-gcc48-test   x86_64-slc6-gcc48-opt target-test
 
 # Add Google malloc replacement to the LD_LIBRARY_PATH
 use tcmalloc * LCG_Interfaces -no_auto_imports
@@ -60,6 +61,14 @@ cmtpath_pattern_reverse \
          <project>_with_installarea&target-unix " <path>/$(<project>_installarea_prefix)$(shared_install_subdir)/include "\
          <project>_with_installarea&target-winxp ' "<path>\$(<project>_installarea_prefix)$(shared_install_subdir)\include"' ; \
    include_dirs ${<project>_install_include}
+
+cmtpath_pattern \
+   macro <project>_install_include "" \
+         <project>_without_installarea "" \
+         <project>_with_installarea&target-unix "<path>/$(<project>_installarea_prefix)$(shared_install_subdir)/include" \
+         <project>_with_installarea&target-winxp '"<path>\$(<project>_installarea_prefix)$(shared_install_subdir)\include"' ; \
+    path_remove  ROOT_INCLUDE_PATH ${<project>_install_include} ; \
+    path_prepend ROOT_INCLUDE_PATH ${<project>_install_include}
 
 macro copyInclude "cp -Rup " \
       host-winxp  "xcopy /S/Q/Y/I/D " \
@@ -144,7 +153,7 @@ pattern component_library \
     apply_pattern libraryShr library="<library>" ; \
     apply_pattern library_Cshlibflags library="<library>" ;\
     macro <library>_dependencies "$(<package>_linker_library) " ;\
-    apply_pattern generate_rootmap library=<library> group=<group> ; \
+    apply_pattern generate_componentslist library=<library> group=<group> ; \
     apply_pattern generate_configurables library=<library> group=<group>
 
 pattern linker_library \
@@ -465,19 +474,19 @@ pattern application_path \
     path_prepend LD_LIBRARY_PATH  "" \
         <project>_without_installarea&target-unix "${<package>_root}/$(<package>_tag)"
 
-pattern generate_rootmap \
-  document genmap <library>RootMap -group=<group> LIBNAME=<library> ; \
-  macro_append <library>RootMap_dependencies " <library> " ; \
+pattern generate_componentslist \
+  document listcomponents <library>ComponentsList -group=<group> LIBNAME=<library> ; \
+  macro_append <library>ComponentsList_dependencies " <library> " ; \
   private ; \
     apply_pattern application_path ; \
-    macro merge_rootmap_tag "--do-merge"   \
-	  do_merge_rootmap  "--do-merge"   \
-	  no_merge_rootmap  "--un-merge" ; \
-    document merge_rootmap <library>MergeMap -group=<group> \
+    macro merge_componentslist_tag "--do-merge"   \
+	  do_merge_componentslist  "--do-merge"   \
+	  no_merge_componentslist  "--un-merge" ; \
+    document merge_componentslist <library>MergeComponentsList -group=<group> \
              library=<library> \
-             merge_rootmap_switch=$(merge_rootmap_tag) \
+             merge_componentslist_switch=$(merge_componentslist_tag) \
              $(bin)$(library_prefix)<library>.$(shlibsuffix) ; \
-    macro_append <library>MergeMap_dependencies " <library>RootMap " ; \
+    macro_append <library>MergeComponentsList_dependencies " <library>ComponentsList " ; \
   end_private
 
 
@@ -531,13 +540,14 @@ make_fragment sln_dependency_trailer
 
 # C++
 # The cpp fragments for enhanced computation of dependencies are not available on Windows
-# and must be disabled on CMT v1r25 (we use the built-in version).
-macro cpp_fragment "cpp" target-winxp "" CMTv1&CMTr25 ""
+# and must be disabled on CMT v1r25, and later (we use the built-in version).
+macro cpp_fragment "cpp" target-winxp "" CMTv1&CMTr25 "" CMTv1&CMTr26 ""
 make_fragment $(cpp_fragment)
-macro cpp_library_fragment "cpp_library" target-winxp "" CMTv1&CMTr25 ""
+macro cpp_library_fragment "cpp_library" target-winxp "" CMTv1&CMTr25 "" CMTv1&CMTr26 ""
 make_fragment $(cpp_library_fragment)
 
 tag CMTv1&CMTr25 c_native_dependencies cpp_native_dependencies
+tag CMTv1&CMTr26 c_native_dependencies cpp_native_dependencies
 
 macro cmt_compiler_version "${cmt_compiler_version}" \
               target-gcc43 "gcc43"
@@ -573,6 +583,9 @@ macro make_shlib    "echo" \
       host-darwin "${CMTROOT}/mgr/cmt_make_shlib_common.sh extract" \
       host-visualc "$(GAUDIPOLICYROOT)\cmt\cmt_make_shlib.bat"
 
+macro merge_componentslist_cmd "python $(GaudiPolicy_root)/scripts/merge_files.py" \
+           target-winxp "$(GaudiPolicy_root)/scripts/merge_files.py"
+make_fragment merge_componentslist -header=merge_componentslist_header
 macro merge_rootmap_cmd "python $(GaudiPolicy_root)/scripts/merge_files.py" \
            target-winxp "$(GaudiPolicy_root)/scripts/merge_files.py"
 make_fragment merge_rootmap -header=merge_rootmap_header
@@ -590,6 +603,7 @@ macro lib_no_static_fragment "" \
        CMTp20070208&target-winxp "library_no_static" \
        CMTp20090520&target-winxp "library_no_static" \
        CMTr20&target-unix "" \
+       CMTr26&target-unix "" \
        target-unix "library_no_static"
 make_fragment $(lib_no_static_fragment)
 
@@ -791,6 +805,10 @@ macro_append cflags "" \
 
 # FIXME: enforce the use of Boost Filesystem V3 to be compatible between 1.44 and 1.48
 macro_append pp_cppflags " -DBOOST_FILESYSTEM_VERSION=3 "
+# FIXME: enforce the use of Boost Phoenix V3 (V2 does not work with recent compilers)
+#        see http://stackoverflow.com/q/20721486
+#        and http://stackoverflow.com/a/20440238/504346
+macro_append pp_cppflags " -DBOOST_SPIRIT_USE_PHOENIX_V3 "
 
 # ---- Disable warnings coming from external libraries
 #      the hacks can be disabled with the tag "no-hide-warnings".
@@ -1031,15 +1049,22 @@ macro genconfig_configurableAlgTool "ConfigurableAlgTool"
 macro genconfig_configurableAuditor "ConfigurableAuditor"
 macro genconfig_configurableService "ConfigurableService"
 
+
+## add pattern and macro for importing extra python modules into genconf's output
+macro genconfig_extraModules ""
+pattern genconfig_add_extraModules \
+   apply_pattern install_python_modules ; \
+   macro_append genconfig_extraModules "" \
+        <tag> "--user-module=<extraModules> "
+
+
 ## add pattern and macro for library preloading for genconf
-
 macro genconfig_preload ""
-
 pattern genconfig_add_preload \
    macro_append genconfig_preload "--load-library=<library> " ;
 
-# this pattern creates the helper library
 
+## this pattern creates the helper library
 pattern genconf_helper_lib \
    library <package>GenConfHelperLib <src> ; \
    macro <package>_genconfig_preload_lib "$(<package>_root)/$(tag)/$(library_prefix)<package>GenConfHelperLib.$(shlibsuffix)" \
@@ -1096,6 +1121,7 @@ pattern do_real_genconfig \
            outdir=$(<package>_root)$(genconfDir)<package> \
            library=<library> \
 	   library_preload=$(genconfig_preload) \
+           extra_modules=$(genconfig_extraModules) \
            conf_destdir=$(genconfInstallDir) \
            confModuleName=$(genconfig_configurableModuleName) \
            confDefaultName=$(genconfig_configurableDefaultName) \
@@ -1406,6 +1432,17 @@ pattern -global zip_python_modules_container_fallback \
 #-------------------------------------------------------------------
 make_fragment install_resources -header=install_resources_header
 
+
+#-------------------------------------------------------------------
+# Override the pattern reflex_dictionary because of an issue with ROOT6.
+# With ROOT 6 the '_Instantiations' dummy class used in the dictionaries
+# must have a different name in each dictionary.
+#-------------------------------------------------------------------
+use Reflex v* LCG_Interfaces -no_auto_imports
+pattern reflex_dictionary \
+  apply_pattern reflex_dictionary_src dictionary=<dictionary> headerfiles=<headerfiles> selectionfile=<selectionfile> options="<options> -U_Instantiations -D_Instantiations=<dictionary>_Instantiations" ;\
+  apply_pattern reflex_dictionary_lib dictionary=<dictionary> imports=<imports>
+
 #-------------------------------------------------------------------
 # Doxygen business
 #-------------------------------------------------------------------
@@ -1435,6 +1472,64 @@ set GAUDI_DOXY_HOME $(GAUDI_home)/GaudiRelease/doc
 #     action CppCheck "cppcheck --all --quiet $(includes) ../src || echo 'No Cpp files' "
 
 #-------------------------------------------------------------------
+# Conditional use of packages
+#-------------------------------------------------------------------
+#
+# Pattern to "use" a package only if a certain tag <tag> is present. If tag is
+#    NOT active, package will be not be used.
+#
+#   pkg:  package name
+#   tag:  tag name to switch on usage of package
+#   ver:  version of package
+#   root: root path of package
+#   opt:  extra options to pass
+#
+# parameters ver, root, and opt are optional
+#
+# eg:  use_if pkg=Reflex tag=useReflex ver="*" root="LCG_Interfaces"
+#
+pattern use_if \
+    document use_if pkg=<pkg> tag=<tag> ver=<ver> root=<root> opt="<opt>" ; \
+    private ; \
+    macro use_<pkg>_if "" <tag> "<pkg> <ver> <root> <opt>" ; \
+    end_private ; \
+    use $(use_<pkg>_if)
+
+#
+# Pattern to SUPPRESS "use" of a package if a certain tag <tag> is present. If
+#    tag is NOT active, package will be used by default.
+#
+#   pkg:  package name
+#   tag:  tag name to switch OFF usage of package
+#   ver:  version of package
+#   root: root path of package
+#   opt:  extra options to pass
+#
+# parameters ver, root, and opt are optional
+#
+# eg:  use_unless pkg=GaudiPoolDb tag=ATLAS ver="*" root="LCG_Interfaces" opt="-no_auto_imports"
+#
+pattern use_unless \
+#    document use_unless pkg=<pkg> tag=<tag> ver=<ver> root=<root> opt="<opt>" ; \
+    private ; \
+    macro use_<pkg>_unless "<pkg> <ver> <root> <opt>" <tag> "" ; \
+    end_private ; \
+    use $(use_<pkg>_unless)
+
+####################################################################
+# Generate manifest.xml file.
+####################################################################
+pattern -global generate_manifest_file \
+    private ; \
+    macro generate_manifest_file_output "$(CMTINSTALLAREA)/$(tag)/manifest.xml" ; \
+	macro generate_manifest_file_deps "FORCE" ; \
+	macro generate_manifest_file_command "python $(GaudiPolicy_root)/scripts/project_manifest.py -o $(generate_manifest_file_output) $(<package>_cmtpath)/CMakeLists.txt $(LCG_config_version) $(tag)" ; \
+	macro generate_manifest_file_applied "NullCommand" \
+		       container-package "CallCommand" ; \
+    apply_pattern $(generate_manifest_file_applied) target=generate_manifest_file ; \
+	end_private
+
+#-------------------------------------------------------------------
 # ATLAS specific stuff
 #-------------------------------------------------------------------
 
@@ -1443,6 +1538,26 @@ tag ATLAS no-pyzip
 
 macro_append pp_cppflags "" \
       ATLAS " -DATLAS_GAUDI_V21 "
+
+macro_append pp_cppflags "" \
+      ATLAS&target-opt " -DNDEBUG "
+
+#
+# extra CPP flags
+#
+
+# for building slc5 binaries on slc6 host
+macro CppSpecificFlags "" \
+    ATLAS&host-slc6&target-slc5 " -D__USE_XOPEN2K8 "
+
+# set an env var for use outside, eg a Makefile
+set CPPEXPFLAGS "" \
+  ATLAS $(CppSpecificFlags)
+
+macro_append pp_cppflags " $(CppSpecificFlags)"
+macro_append pp_cflags   " $(CppSpecificFlags)"
+
+#-------------------------------------------------------------------
 
 # FIXME: This should be the kind of pattern to enable custom test settings, but
 # an environment variable is not so safe to use.

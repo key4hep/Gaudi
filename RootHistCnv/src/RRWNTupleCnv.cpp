@@ -1,10 +1,6 @@
-// $Id: RRWNTupleCnv.cpp,v 1.6 2006/01/10 20:12:02 hmd Exp $
-#define ROOTHISTCNV_RRWNTUPLECNV_CPP
-
 #define ALLOW_ALL_TYPES
 
 // Compiler include files
-#include "GaudiKernel/CnvFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/NTuple.h"
 #include "GaudiKernel/INTupleSvc.h"

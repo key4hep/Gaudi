@@ -17,7 +17,6 @@
 //====================================================================
 #define  DATASVC_EVTDATASVC_CPP
 
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IConversionSvc.h"
 
@@ -25,7 +24,7 @@
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_SERVICE_FACTORY(EvtDataSvc)
+DECLARE_COMPONENT(EvtDataSvc)
 
 /// Service initialisation
 StatusCode EvtDataSvc::initialize()    {

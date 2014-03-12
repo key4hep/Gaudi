@@ -10,8 +10,6 @@
 // STL include files
 #include <map>
 
-// Forward declarations
-template <class TYPE> class SvcFactory;
 
 /** @class NTupleSvc NTupleSvc.h
  *
@@ -33,7 +31,6 @@ protected:
     Connection(IConversionSvc* s) : service(s) {}
     Connection(const Connection& c) : service(c.service) {}
   };
-  friend class SvcFactory<NTupleSvc>;
   typedef std::vector< std::string >              DBaseEntries;
   typedef std::map<std::string, Connection>       Connections;
   typedef std::pair<std::string,std::string>      Prop;

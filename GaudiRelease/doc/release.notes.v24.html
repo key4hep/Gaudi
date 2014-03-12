@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+  <title>Gaudi Release Notes</title>
+  <script type="text/javascript" language="JavaScript">
+<!-- Work around for old browsers
+  function LinkToSavannah(){
+    // do nothing
+  }
+//-->
+  </script>
+  <script type="text/javascript" language="JavaScript1.2">
+<!-- This function requires JavaScript 1.2
+  // replaces the occurrences of (patch|task|bug)+number with the link to the savannah page
+  function LinkToSavannah()
+  {
+    patch = "<a href='https://savannah.cern.ch/patch/index.php?$2'>$1&nbsp;#$2</a>";
+    bug = "<a href='https://savannah.cern.ch/bug/index.php?$2'>$1&nbsp;#$2</a>";
+    task = "<a href='https://savannah.cern.ch/task/index.php?$2'>$1&nbsp;#$2</a>";
+    s = document.getElementsByTagName("body")[0].innerHTML;
+    s = s.replace(/([Pp]atch) #([0-9]*)/g,patch);
+    s = s.replace(/([Tt]ask) #([0-9]*)/g,task);
+    s = s.replace(/([Bb]ug) #([0-9]*)/g,bug);
+    document.getElementsByTagName("body")[0].innerHTML = s;
+  }
+// -->
+  </script>
+  <style type="text/css">
+span.author { color: #737373; }
+  </style>
+</head>
+<body onload="javascript:LinkToSavannah()">
+<pre>
+Package: GaudiRelease<br>
+Package Coordinator: Marco Clemencic, Charles Leggett<br>
+Purpose: Gaudi common set of packages<br><br>
+</pre>
+<!-- ====================================================================== -->
+<h2><a name="v24r2">Gaudi v24r2</a> (2013-12-03)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=66">LCGCMT_66</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Add support for data federations (fall back on replicas in case of failures).<br/>
+    (<span class="author">Markus Frank</span>)</li>
+<li>ChronoStatSvc: add output for per-event timing of execute().<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiUtils (v4r7):
+<ul>
+<li>Add support for data federations. The IODataManager will try out
+    all PFNs in the file catalog until one entry is found, which can be opened.<br/>
+    (<span class="author">Markus Frank</span>)</li>
+</ul>
+</li>
+<li>GaudiCommonSvc (v2r2):
+<ul>
+<li>ChronoStatSvc: add output for per-event timing of execute(). Controlled by
+    jobOpt "PerEventFile". Default is empty string (do nothing).<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Minor fix.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v24r2):
+<ul>
+<li>Added test for PerEventFile feature of ChronoStatSvc.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v24r1">Gaudi v24r1</a> (2013-11-18)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=66">LCGCMT_66</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Merge ATLAS branch.<br/>
+    (<span class="author">Marco Clemencic</span>, <span class="author">Charles Leggett</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>RootHistCnv (v11r3):
+<ul>
+<li>Add a property to RootHistCnv::RFileCnv that allows the ROOT compression
+    settings to be defined.<br/>
+    (<span class="author">Chris Jones</span>)</li>
+</ul>
+</li>
+</ul>
+<hr/>
+<a href="release.notes.v23.html">Older versions</a>
+</body>
+</html>

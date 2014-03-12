@@ -9,7 +9,6 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ParticleProperty.h"
@@ -27,7 +26,7 @@ namespace Gaudi {
 /** Instantiation of a static factory class used by clients to create
  *  instances of this service
  */
-DECLARE_SERVICE_FACTORY(ParticlePropertySvc)
+DECLARE_COMPONENT(ParticlePropertySvc)
 // ============================================================================
 /** @file
  *

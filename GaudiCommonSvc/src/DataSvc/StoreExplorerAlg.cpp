@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiSvc/src/DataSvc/StoreExplorerAlg.cpp,v 1.8 2007/10/24 19:06:06 marcocle Exp $
 //	====================================================================
 //  StoreExplorerAlg.cpp
 //	--------------------------------------------------------------------
@@ -14,7 +13,6 @@
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/SmartDataPtr.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/MsgStream.h"
@@ -265,4 +263,4 @@ public:
   }
 };
 
-DECLARE_ALGORITHM_FACTORY(StoreExplorerAlg)
+DECLARE_COMPONENT(StoreExplorerAlg)

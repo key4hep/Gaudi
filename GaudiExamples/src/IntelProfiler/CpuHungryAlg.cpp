@@ -1,10 +1,9 @@
 // # Include files
-// Standart:
+// Standard:
 #include <unistd.h>
 #include <math.h>
 // Gaudi:
 #include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiKernel/AlgFactory.h"
 
 /// Algorithm which consume a lot of CPU.
 ///
@@ -13,7 +12,7 @@ class CpuHungryAlg: public GaudiAlgorithm {
 public:
   /// Standard constructor
   CpuHungryAlg(const std::string& name, ISvcLocator* pSvcLocator);
-  /// ... and desctructor
+  /// ... and destructor
   virtual ~CpuHungryAlg(); ///< Destructor
 
   virtual StatusCode initialize();    ///< Algorithm initialization
@@ -32,7 +31,7 @@ private:
 
 
 // Register algorithm
-DECLARE_ALGORITHM_FACTORY(CpuHungryAlg)
+DECLARE_COMPONENT(CpuHungryAlg)
 
 CpuHungryAlg::CpuHungryAlg(const std::string& name, ISvcLocator* pSvcLocator)
   : GaudiAlgorithm(name, pSvcLocator),m_nevent(0)

@@ -1,10 +1,8 @@
-// $Id: SelCreate.cpp,v 1.1 2008/10/10 08:06:33 marcocle Exp $
 // ============================================================================
 // Include files
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiKernel/RndmGenerators.h"
 // ============================================================================
@@ -14,7 +12,7 @@
 // ============================================================================
 // Local
 // ============================================================================
-#include "MyTrack.h"
+#include "GaudiExamples/MyTrack.h"
 // ============================================================================
 #ifdef __ICC
 // disable icc remark #2259: non-pointer conversion from "double" to "float" may lose significant bits
@@ -36,10 +34,6 @@ namespace Gaudi
      */
     class SelCreate : public GaudiAlgorithm
     {
-      // ======================================================================
-      /// friend factory for instantiation
-      friend class AlgFactory<Gaudi::Examples::SelCreate> ;
-      // ======================================================================
     public:
       // ======================================================================
       /// the only one essential method
@@ -91,7 +85,7 @@ namespace Gaudi
         return StatusCode::SUCCESS ;
       }
       // ======================================================================
-    protected:
+    public:
       // ======================================================================
       /** standard constructor
        *  @param name the algorithm instance name
@@ -119,7 +113,8 @@ namespace Gaudi
 } // end of namespace Gaudi
 // ============================================================================
 /// The factory (needed for instantiation)
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(Gaudi::Examples,SelCreate)
+using Gaudi::Examples::SelCreate;
+DECLARE_COMPONENT(SelCreate)
 // ============================================================================
 // The END
 // ============================================================================

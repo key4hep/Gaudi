@@ -36,7 +36,6 @@ namespace AIDA {
 }
 // ============================================================================
 // Forward declarations
-template <class T> class SvcFactory;
 #define DBINS(x) int n##x, double low##x, double up##x
 #define BINS(x)  n##x, low##x, up##x
 #define NOT_IMPLEMENTED { not_implemented(); return 0; }
@@ -51,8 +50,6 @@ class HistogramSvc : virtual public extends1<DataSvc, IHistogramSvc>,
 {
 
 private:
-  // Allow SvcFactory to instantiate the service.
-  friend class SvcFactory<HistogramSvc>;
   typedef const std::pair<std::string,std::string>& STRPAIR;
   void not_implemented()  const {
     MsgStream log( msgSvc(), name() );

@@ -1,6 +1,47 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+! 2014-03-07 - Marco Clemencic
+ - Fixed the workaround for ROOT-6125 after having understood what the problem
+   really is.
+   https://sft.its.cern.ch/jira/browse/ROOT-6125
+
+! 2014-03-05 - Marco Clemencic
+ - Added workaround for ROOT-6125 (crash loading libCling.so when using
+   tcmalloc).
+   https://sft.its.cern.ch/jira/browse/ROOT-6125
+
+================================ Gaudi v25r0 =================================
+! 2014-02-10 - Marco Clemencic
+ - Enable the fixed 'applyConfigurableUsers()' if the environment variable
+   GAUDI_FIXED_APPLY_CONF is set.
+
+! 2014-02-10 - Marco Clemencic
+ - Allow switching between old 'applyConfigurableUsers()' (bug #103803) and the
+   new one (fixed the bug, but different order of execution).
+   The old one is the default and will be made deprecated.
+
+! 2014-02-07 - Marco Clemencic
+ - Modified configurables test to expose bug #103808.
+
+! 2014-02-06 - Marco Clemencic
+ - Improved test gaudi.conf_user.autoapply to be more robust in case of a change
+   in the order of application of configurables.
+
+! 2014-02-06 - Marco Clemencic
+ - Added test exposing bug #103803:
+   ConfigurableUser instances created in the __apply_configuration__ of another
+   one are not "applied".
+
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
+================================ Gaudi v24r2 =================================
+================================ Gaudi v24r1 =================================
+================================ Gaudi v24r0 =================================
+! 2013-08-30 - Charles Leggett
+ - retag for Atlas merge
+
 ================================ Gaudi v23r10 ================================
 ! 2013-09-25 - Marco Clemencic
  - Enforce LC_ALL=C in gaudirun.py.

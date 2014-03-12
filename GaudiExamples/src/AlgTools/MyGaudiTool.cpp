@@ -11,7 +11,7 @@
 #include "MyGaudiTool.h"
 
 // Declaration of the AlgTool Factory
-DECLARE_TOOL_FACTORY(MyGaudiTool)
+DECLARE_COMPONENT(MyGaudiTool)
 
 //------------------------------------------------------------------------------
 MyGaudiTool::MyGaudiTool( const std::string& type,

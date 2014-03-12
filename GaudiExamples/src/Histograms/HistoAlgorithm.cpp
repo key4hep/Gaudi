@@ -1,18 +1,14 @@
-// $Id: HistoAlgorithm.cpp,v 1.11 2006/11/30 10:35:27 mato Exp $
-
-
 // Include files
 #include "HistoAlgorithm.h"
 
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IHistogramSvc.h"
 #include "GaudiKernel/SmartDataPtr.h"
 #include "GaudiKernel/DataObject.h"
 
 #include <math.h>
 
-DECLARE_ALGORITHM_FACTORY(HistoAlgorithm)
+DECLARE_COMPONENT(HistoAlgorithm)
 
 
 //------------------------------------------------------------------------------

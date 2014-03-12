@@ -33,8 +33,12 @@ Gaudi       = GaudiPython.gbl.Gaudi
 
 GaudiPython.loaddict('STLRflx')
 GaudiPython.loaddict('STLAddRflx')
-GaudiPython.loaddict('MathRflx')
-GaudiPython.loaddict('MathAddRflx')
+
+from GaudiKernel import ROOT6WorkAroundEnabled
+is_root6 = GaudiPython.gbl.gROOT.GetVersionCode() >= ((5 << 16) + (99 << 8))
+if not (ROOT6WorkAroundEnabled('SPI-385') and is_root6):
+    GaudiPython.loaddict('MathRflx')
+    GaudiPython.loaddict('MathAddRflx')
 
 vct1        = GaudiPython.gbl.vector('double')
 

@@ -246,17 +246,15 @@ namespace GaudiTesting {
 
 }
 
-
-
 #include "GaudiKernel/AlgFactory.h"
 
 namespace GaudiTesting {
-  DECLARE_ALGORITHM_FACTORY(DestructorCheckAlg)
-  DECLARE_ALGORITHM_FACTORY(SleepyAlg)
-  DECLARE_ALGORITHM_FACTORY(SignallingAlg)
-  DECLARE_ALGORITHM_FACTORY(StopLoopAlg)
-  DECLARE_ALGORITHM_FACTORY(CustomIncidentAlg)
-  DECLARE_ALGORITHM_FACTORY(GetDataObjectAlg)
-  DECLARE_ALGORITHM_FACTORY(OddEventsFilter)
-  DECLARE_ALGORITHM_FACTORY(EvenEventsFilter)
+  DECLARE_COMPONENT(DestructorCheckAlg)
+  DECLARE_COMPONENT(SleepyAlg)
+  DECLARE_COMPONENT(SignallingAlg)
+  DECLARE_COMPONENT(StopLoopAlg)
+  DECLARE_COMPONENT(CustomIncidentAlg)
+  DECLARE_COMPONENT(GetDataObjectAlg)
+  DECLARE_COMPONENT(OddEventsFilter)
+  DECLARE_COMPONENT(EvenEventsFilter)
 }

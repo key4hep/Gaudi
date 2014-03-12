@@ -1,8 +1,4 @@
-// $Id: InputCopyStream.cpp,v 1.2 2006/01/10 20:09:27 hmd Exp $
-#define GAUDISVC_PERSISTENCYSVC_INPUTCOPYSTREAM_CPP
-
 // Framework include files
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
@@ -14,10 +10,10 @@
 #include "InputCopyStream.h"
 
 // Define the algorithm factory for the standard output data writer
-DECLARE_ALGORITHM_FACTORY(InputCopyStream)
+DECLARE_COMPONENT(InputCopyStream)
 
 // Standard Constructor
-  InputCopyStream::InputCopyStream(const std::string& name, ISvcLocator* pSvcLocator)
+InputCopyStream::InputCopyStream(const std::string& name, ISvcLocator* pSvcLocator)
     : OutputStream  ( name, pSvcLocator),
       m_leavesTool  ( NULL             ),
       m_tesVetoList (                  )

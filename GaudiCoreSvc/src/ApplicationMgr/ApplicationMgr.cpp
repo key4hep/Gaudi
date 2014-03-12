@@ -131,7 +131,7 @@ ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
       m_propertiesPrint = false,
       "Flag to activate the printout of properties" );
 
-  m_propertyMgr->declareProperty("ReflexPluginDebugLevel", m_reflexDebugLevel = 0 );
+  m_propertyMgr->declareProperty("PluginDebugLevel", m_pluginDebugLevel = 0 );
 
   m_propertyMgr->declareProperty("StopOnSignal", m_stopOnSignal = false,
       "Flag to enable/disable the signal handler that schedule a stop of the event loop");
@@ -151,7 +151,7 @@ ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
   m_topAlgNameList.declareUpdateHandler(&ApplicationMgr::evtLoopPropertyHandler, this);
   m_outStreamNameList.declareUpdateHandler(&ApplicationMgr::evtLoopPropertyHandler, this);
   m_outStreamType.declareUpdateHandler(&ApplicationMgr::evtLoopPropertyHandler, this);
-  m_reflexDebugLevel.declareUpdateHandler(&ApplicationMgr::reflexDebugPropertyHandler, this);
+  m_pluginDebugLevel.declareUpdateHandler(&ApplicationMgr::pluginDebugPropertyHandler, this);
   m_svcMapping.push_back("EvtDataSvc/EventDataSvc");
   m_svcMapping.push_back("DetDataSvc/DetectorDataSvc");
   m_svcMapping.push_back("HistogramSvc/HistogramDataSvc");
@@ -489,7 +489,7 @@ StatusCode ApplicationMgr::configure() {
   // Retrieve intrinsic services. If needed configure them.
   //--------------------------------------------------------------------------
   Gaudi::Utils::TypeNameString evtloop_item(m_eventLoopMgr);
-  sc = addMultiSvc(evtloop_item, 100);
+  sc = addMultiSvc(evtloop_item, ServiceManager::DEFAULT_SVC_PRIORITY*10);
   if( !sc.isSuccess() )  {
     log << MSG::FATAL << "Error adding :" << m_eventLoopMgr << endmsg;
     return sc;
@@ -761,6 +761,8 @@ StatusCode ApplicationMgr::terminate() {
 
   if (m_returnCode.value() == Gaudi::ReturnCode::Success) {
     log << MSG::INFO << "Application Manager Terminated successfully" << endmsg;
+  } else if (m_returnCode.value() == Gaudi::ReturnCode::ScheduledStop ) {
+    log << MSG::INFO << "Application Manager Terminated successfully with a user requested ScheduledStop" << endmsg;
   } else {
     log << MSG::ERROR << "Application Manager Terminated with error code " << m_returnCode.value() << endmsg;
   }
@@ -1053,7 +1055,7 @@ StatusCode ApplicationMgr::decodeCreateSvcNameList() {
   VectorName::const_iterator et(theNames.end());
   while(result.isSuccess() && it != et) {
     Gaudi::Utils::TypeNameString item(*it++);
-    if( (result = svcManager()->addService(item, 10) ).isFailure()) {
+    if( (result = svcManager()->addService(item, ServiceManager::DEFAULT_SVC_PRIORITY) ).isFailure()) {
       MsgStream log( m_messageSvc, m_name );
       log << MSG::ERROR << "decodeCreateSvcNameList: Cannot create service "
           << item.type() << "/" << item.name() << endmsg;
@@ -1092,7 +1094,7 @@ StatusCode ApplicationMgr::decodeExtSvcNameList( ) {
   while(result.isSuccess() && it != et) {
     Gaudi::Utils::TypeNameString item(*it++);
     if (m_extSvcCreates == true) {
-      if ( (result = svcManager()->addService(item, 10)).isFailure()) {
+      if ( (result = svcManager()->addService(item, ServiceManager::DEFAULT_SVC_PRIORITY)).isFailure()) {
         MsgStream log( m_messageSvc, m_name );
         log << MSG::ERROR << "decodeExtSvcNameList: Cannot create service "
             << item.type() << "/" << item.name() << endmsg;
@@ -1132,7 +1134,7 @@ StatusCode ApplicationMgr::decodeMultiThreadSvcNameList( ) {
          it != theNames.end();
          ++it) {
       Gaudi::Utils::TypeNameString item(*it);
-      result = addMultiSvc(item, 10);
+      result = addMultiSvc(item, ServiceManager::DEFAULT_SVC_PRIORITY);
       //FIXME SHOULD CLONE?
       if( result.isFailure() ) {
         MsgStream log( m_messageSvc, m_name );
@@ -1311,21 +1313,21 @@ StatusCode ApplicationMgr::decodeDllNameList() {
 }
 
 //============================================================================
-// Reflex debug level handler
+// Plugin debug level handler
 //============================================================================
-void ApplicationMgr::reflexDebugPropertyHandler( Property& )
+void ApplicationMgr::pluginDebugPropertyHandler( Property& )
 {
-  // Setup debug level for Reflex plugin system
+  // Setup debug level for the plugin system
   MsgStream log (m_messageSvc, name());
   log << MSG::INFO
-      << "Updating ROOT::Reflex::PluginService::SetDebug(level) to level="
-      << (int)m_reflexDebugLevel
+      << "Updating Gaudi::PluginService::SetDebug(level) to level="
+      << (int)m_pluginDebugLevel
       << endmsg;
-  ROOT::Reflex::PluginService::SetDebug(m_reflexDebugLevel);
+  Gaudi::PluginService::SetDebug(m_pluginDebugLevel);
 }
 
 //============================================================================
-// Reflex debug level handler
+// Init loop check handler
 //============================================================================
 void ApplicationMgr::initLoopCheckHndlr(Property&) {
   svcManager()->setLoopCheckEnabled(m_loopCheck);

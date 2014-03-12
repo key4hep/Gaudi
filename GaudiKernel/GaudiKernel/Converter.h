@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/Converter.h,v 1.10 2004/09/11 00:22:41 leggett Exp $
 #ifndef GAUDIKERNEL_CONVERTER_H
 #define GAUDIKERNEL_CONVERTER_H
 
@@ -24,6 +23,8 @@ class IRegistry;
 */
 class GAUDI_API Converter : public implements1<IConverter> {
 public:
+  typedef Gaudi::PluginService::Factory1<IConverter*,
+                                         ISvcLocator*> Factory;
 
   /// Initialize the converter
   virtual StatusCode initialize();
@@ -142,5 +143,51 @@ private:
 		       void** ppSvc) const;
 };
 
+
+// Identified class for converters' factories
+class GAUDI_API ConverterID {
+public:
+  ConverterID( long stype, CLID clid ) : m_stype(stype), m_clid(clid) {}
+  ~ConverterID() {}
+  inline bool operator ==(const ConverterID& id) const {
+    return m_stype == id.m_stype && m_clid == id.m_clid;
+  }
+private:
+  friend std::ostream& operator << ( std::ostream&, const ConverterID&);
+  long m_stype;
+  CLID m_clid;
+};
+
+inline std::ostream& operator << ( std::ostream& s, const ConverterID& id) {
+  return s << "CNV_" << id.m_stype << "_" << id.m_clid;
+}
+
+
+#ifndef GAUDI_NEW_PLUGIN_SERVICE
+template <class T>
+class CnvFactory {
+public:
+  template <typename S>
+  static typename S::ReturnType create(typename S::Arg1Type a1) {
+    return new T(a1);
+  }
+};
+
+// Macro to declare component factories
+#define DECLARE_CONVERTER_FACTORY(x) \
+    DECLARE_FACTORY_WITH_CREATOR_AND_ID(x, CnvFactory< x >, \
+        ConverterID(x::storageType(), x::classID()), Converter::Factory)
+#define DECLARE_NAMESPACE_CONVERTER_FACTORY(n, x) \
+    DECLARE_CONVERTER_FACTORY(n::x)
+
+#else
+
+// Macro to declare component factories
+#define DECLARE_CONVERTER_FACTORY(x) \
+    DECLARE_COMPONENT_WITH_ID(x, ConverterID(x::storageType(), x::classID()))
+#define DECLARE_NAMESPACE_CONVERTER_FACTORY(n, x) \
+    DECLARE_CONVERTER_FACTORY(n::x)
+
+#endif
 
 #endif // GAUDIKERNEL_CONVERTER_H

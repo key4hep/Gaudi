@@ -5,7 +5,6 @@
 #include <boost/lexical_cast.hpp>
 
 // Framework include files
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
@@ -16,7 +15,7 @@
 #include "SequentialOutputStream.h"
 
 // Define the algorithm factory for the standard output data writer
-DECLARE_ALGORITHM_FACTORY( SequentialOutputStream )
+DECLARE_COMPONENT( SequentialOutputStream )
 
 using namespace std;
 namespace bf = boost::filesystem;

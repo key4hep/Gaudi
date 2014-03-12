@@ -1,14 +1,14 @@
 package RootCnv
-version           v1r20p1
+version           v1r22
 
 author Markus Frank
 
 branches  cmt dict src
 
 use GaudiKernel *
-use GaudiUtils *
+use GaudiUtils  *
 use ROOT        * LCG_Interfaces
-##use GenEvent v* Event
+##use GenEvent  * Event
 
 #===========================================================================
 apply_pattern install_more_includes more=RootCnv
@@ -36,8 +36,8 @@ macro RootCnv_ext_linkopts  ' -lRootCnvLib ' WIN32 ' RootCnvLib.lib '
 
 private
 
-macro_append ROOT_linkopts " -lCintex -lTreePlayer -lMathCore " \
-             target-winxp  " libCintex.lib libTreePlayer.lib libMathCore.lib "
+macro_append ROOT_linkopts " -lTreePlayer -lMathCore " \
+             target-winxp  " libTreePlayer.lib libMathCore.lib "
 
 macro_append ROOT_cppflags '' \
              target-winxp '-FI"$(ROOTSYS)/include/w32pragma.h"'

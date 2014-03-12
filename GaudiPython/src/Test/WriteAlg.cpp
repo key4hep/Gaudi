@@ -1,7 +1,4 @@
-// $Id: WriteAlg.cpp,v 1.6 2007/04/27 14:59:56 hmd Exp $
-
 // Framework include files
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/SmartDataPtr.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/RndmGenerators.h"
@@ -17,7 +14,7 @@
 #include "MyTrack.h"
 #include "MyVertex.h"
 
-DECLARE_ALGORITHM_FACTORY(WriteAlg)
+DECLARE_COMPONENT(WriteAlg)
 
 //--------------------------------------------------------------------
 // Initialize

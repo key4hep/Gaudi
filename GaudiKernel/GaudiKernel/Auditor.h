@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/Auditor.h,v 1.17 2008/10/27 19:22:20 marcocle Exp $
 #ifndef GAUDIKERNEL_AUDITOR_H
 #define GAUDIKERNEL_AUDITOR_H
 
@@ -8,6 +7,7 @@
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/ISvcLocator.h"  /*used by service(..)*/
 #include "GaudiKernel/PropertyMgr.h"
+#include <Gaudi/PluginService.h>
 #include <string>
 #include <vector>
 
@@ -33,6 +33,9 @@ class Algorithm;
 */
 class GAUDI_API Auditor : public implements2<IAuditor, IProperty> {
 public:
+  typedef Gaudi::PluginService::Factory2<IAuditor*,
+                                         const std::string&,
+                                         ISvcLocator*> Factory;
 
   /** Constructor
       @param name    The algorithm object's name
@@ -247,9 +250,34 @@ public:
   // Private Copy constructor: NO COPY ALLOWED
   Auditor(const Auditor& a);
 
-  // Private asignment operator: NO ASSIGNMENT ALLOWED
+  // Private assignment operator: NO ASSIGNMENT ALLOWED
   Auditor& operator=(const Auditor& rhs);
 };
+
+#ifndef GAUDI_NEW_PLUGIN_SERVICE
+template <class T>
+class AudFactory {
+public:
+  template <typename S>
+  static typename S::ReturnType create(typename S::Arg1Type a1,
+                                       typename S::Arg2Type a2) {
+    return new T(a1, a2);
+  }
+};
+
+// Macros to declare component factories
+#define DECLARE_AUDITOR_FACTORY(x) \
+  DECLARE_FACTORY_WITH_CREATOR(x, AudFactory< x >, Auditor::Factory)
+#define DECLARE_NAMESPACE_AUDITOR_FACTORY(n, x) \
+    DECLARE_AUDITOR_FACTORY(n::x)
+
+#else
+
+// macros to declare factories
+#define DECLARE_AUDITOR_FACTORY(x)              DECLARE_COMPONENT(x)
+#define DECLARE_NAMESPACE_AUDITOR_FACTORY(n, x) DECLARE_COMPONENT(n::x)
+
+#endif
 
 #endif //GAUDIKERNEL_AUDITOR_H
 

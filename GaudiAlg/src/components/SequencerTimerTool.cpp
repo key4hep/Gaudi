@@ -1,11 +1,9 @@
-// $Id: SequencerTimerTool.cpp,v 1.12 2007/01/10 16:33:32 hmd Exp $
 // Include files
 
 // From ROOT
 #include "TH1D.h"
 
 // from Gaudi
-#include "GaudiKernel/ToolFactory.h"
 #include "GaudiKernel/RndmGenerators.h"
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiUtils/Aida2ROOT.h"
@@ -20,7 +18,7 @@
 //-----------------------------------------------------------------------------
 
 // Declaration of the Tool Factory
-DECLARE_TOOL_FACTORY(SequencerTimerTool)
+DECLARE_COMPONENT(SequencerTimerTool)
 
 //=============================================================================
 // Standard constructor, initializes variables

@@ -1,6 +1,14 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+
+! 2014-03-03 - Marco Clemencic
+ - Changed the namespace used for __Instanitations in the dictionary to avoid
+   clashes in ROOT 6;
+
+! 2014-02-20 - Marco Clemencic
+ - Added missing import to "GaudiKernel.Configurable".
+
 ! 2013-10-29 - Marco Clemencic
  - Added Gaudi::Hive::ContextSpecificData, a sort of "smart reference"
    equivalent to ContextSpecificPtr, but easier to use.
@@ -18,6 +26,211 @@ Package manager : Marco Clemencic
                       contexts (slots)
      - ``for_each`` to call a function on each pointer
      - ``deleteAll`` to delete all the created objects
+
+============================= GaudiKernel v30r0 ==============================
+! 2014-02-10 - Marco Clemencic
+ - Modified applyConfigurableUsers implementations to print the configurables
+   applied on stderr if the environment variable GAUDI_DEBUG_CONF_USER is
+   defined.
+
+! 2014-02-10 - Marco Clemencic
+ - Keep the buggy implementation of 'applyConfigurableUsers()' (bug #103803) to
+   provide backward compatibility until all the problems with the configuration
+   are fixed.
+
+! 2014-02-07 - Marco Clemencic
+ - Fixed bug #103808: regression introduced with the fix to bug #103803
+   The problem was that ConfigurableUser instances not enabled were not
+   correctly taken into account in the graph of dependencies.
+
+! 2014-02-06 - Marco Clemencic
+ - Fixed bug #103803: handle correctly ConfUsers created during the apply step.
+
+! 2014-02-03 - Marco Clemencic
+ - Do not generate configurables for the factory aliases used for backward
+   compatibility with the Reflex Plugin Service.
+
+! 2014-01-31 - Marco Clemencic
+ - Replaced non-ASCII characters in string literals with the corresponding
+   escape sequence.
+
+! 2014-01-17 - Marco Clemencic
+ - Fixed pretty-printer of Gaudi::StateMachine::State in Clang.
+
+! 2014-01-14 - Marco Clemencic
+ - Replaced dummy IDataSelector declaration with a typedef (fixes a C++11
+   warning).
+
+! 2014-01-08 - Marco Clemencic
+ - Further fix (in System::loadDynamicLib) to cure the regression in the option
+   --load-library of genconf.
+
+! 2013-12-29 - Marco Clemencic
+ - Fixed a regression with the option --load-library of genconf.
+
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
+! 2013-12-05 - Marco Clemencic
+ - Re-disabled boost::shared_ptr to remove the dependency on ROOT in
+   StatusCode.h.  For GCCXML we hide the actual implementation.
+
+! 2013-12-05 - Marco Clemencic
+ - Re-enabled boost::shared_ptr for ROOT 5 (gccxml does not understand C++11).
+
+! 2013-12-04 - Marco Clemencic
+ - Replaced boost::shared_ptr with std::shared_ptr when using C++11.
+   See https://sft.its.cern.ch/jira/browse/ROOT-5806
+
+! 2013-10-24 - Marco Clemencic
+ - Added a small Python function to simplify enabling and disabling of
+   specific ROOT 6 work-arounds.
+   In Python use:
+
+       from GaudiKernel import ROOT6WorkAroundEnabled
+       if ROOT6WorkAroundEnabled('work-around-id'):
+           # code for my work-around ...
+
+   To disable the work-around set the environment variable ROOT6_WORK_AROUND
+   to 'none' or '-work-around-id' (a comma separated list is accepted).
+
+! 2013-10-03 - Marco Clemencic
+ - Added missing (needed) include in StringKey.h.
+
+! 2013-08-27 - Marco Clemencic
+ - Fixed compile-time issue when symbol hiding is enabled (gcc 4.7).
+
+! 2013-07-30 - Marco Clemencic
+ - Applied the change to factory declarations needed for private/protected
+   constructors to Converters too.
+ - Removed the macros DECLARE_CONVERTER to avoid confusion with the obsolete
+   ones with the same name.
+
+! 2013-07-26 - Marco Clemencic
+ - Ported new GaudiPluginService to CMT.
+
+! 2013-07-26 - Marco Clemencic
+ - Fixed a warning.
+
+! 2013-07-25 - Marco Clemencic
+ - Fixed mistake in the name of a macro.
+
+! 2013-07-25 - Marco Clemencic
+ - Fixed a "misbalance warning" in genconf.
+
+! 2013-07-25 - Marco Clemencic
+ - Minor updates to a couple of macros.
+
+! 2013-07-25 - Marco Clemencic
+ - Modified factory declarations to allow private/protected constructors.
+
+! 2013-07-19 - Marco Clemencic
+ - Improved the printout of genconf.
+
+! 2013-07-19 - Marco Clemencic
+ - Clean up in the use of the new PluginService.
+
+! 2013-07-18 - Marco Clemencic
+ - Removed the need of AlgFactory.h, SvcFactory.h, ToolFactory.h, AudFactory.h
+   and CnvFactory.h.
+ - Moved the factories typedefs from the global namespace to the class scope.
+ - Introduced backward compatibility hacks to handle non-public constructors
+   (the hack can be disabled defining the macro GAUDI_NEW_PLUGIN_SERVICE).
+
+! 2013-07-18 - Marco Clemencic
+ - Fixed compilation problem on slc6-gcc46.
+
+! 2013-07-17 - Marco Clemencic
+ - Use the new ROOT-free Plugin Service.
+
+! 2013-07-17 - Marco Clemencic
+ - Removed factories forward declarations.
+
+! 2013-07-03 - Marco Clemencic
+ - genconf.cpp: replaces Reflex::SharedLibrary::Load with the equivalent Gaudi
+   function.
+ - Added test for System::currentTime.
+ - Added a GaudiKernel/PluginService.h to hide the technical implementation of
+   the plugin service for the migration to ROOT 6.
+ - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
+
+============================= GaudiKernel v29r1 ==============================
+============================= GaudiKernel-29-00-02 =============================
+! 2013-10-24 - Charles Leggett
+ - add IIncidentSvc::getListeners(vector<IIncidentListeners*>, IncType) -
+       return all clients of a specific incident type
+ - add IncidentType::SvcPostFinalize
+
+M       GaudiKernel/IIncidentSvc.h
+M       GaudiKernel/Incident.h
+
+============================= GaudiKernel-29-00-01 =============================
+! 2013-09-30 - Charles Leggett
+ - added io_finalize to IIoComponent.h
+   currently not pure virtual, to ease client transition. will be made pure
+   when transition complete.
+
+M       GaudiKernel/IIoComponent.h
+
+============================= GaudiKernel-29-00-00 =============================
+
+! 2013-06-24 - Marco Clemencic
+ - restored presetting of Services outputLevel from MessageSvc (needed to use
+   the properties SetDebug, SetVerbose, etc of MessageSvc).
+ - restored inheritance of JobHistory on IVersHistoryObj to 'virtual public'.
+
+! 2013-04-05 - Charles Leggett
+ - add new optional parameter to genconf to allow import/declaration of
+   user specified module
+M       src/Util/genconf.cpp
+
+! 2013-04-02 - Charles Leggett
+ - use a const int for default priority of services
+M       GaudiKernel/ISvcManager.h
+
+! 2013-04-02 - Charles Leggett
+ - change default priority of services to 100 from 10
+M       GaudiKernel/ISvcManager.h
+
+! 2013-03-20 - Charles Leggett
+- fix FileIncident dtor
+M       GaudiKernel/FileIncident.h
+
+! 2013-03-19 - Charles Leggett
+
+several fixes to bring trunk in line with GaudiKernel-27-13-25
+
+ - fix inheritance structure of History objects
+M       GaudiKernel/AlgToolHistory.h
+M       GaudiKernel/JobHistory.h
+M       GaudiKernel/AlgorithmHistory.h
+M       GaudiKernel/ServiceHistory.h
+
+ - Service.cpp: don't preset outputLevel
+M       src/Lib/Service.cpp
+
+ - FileIncident.h: remove payload, move vdtor
+M       GaudiKernel/FileIncident.h
+
+ - TypeNameString.h: include <ostream>
+M       GaudiKernel/TypeNameString.h
+
+! 2013-03-06 - Charles Leggett
+ - move virtual dtor of IFileMgr and IoComponentMgr to VirtualDestructors.cpp
+D       src/Lib/IIoComponentMgr.cpp
+D       src/Lib/IIoComponent.cpp
+M       src/Lib/VirtualDestructors.cpp
+D       src/Lib/IFileMgr.cpp
+
+! 2013-03-06 - Charles Leggett
+ - add/update IFileMgr and IoComponentMgr
+
+A       src/Lib/IIoComponentMgr.cpp
+A       src/Lib/IIoComponent.cpp
+A       src/Lib/IFileMgr.cpp
+A       GaudiKernel/IFileMgr.h
+M       GaudiKernel/IIoComponentMgr.h
+>>>>>>> master
 
 ============================= GaudiKernel v28r9 ==============================
 ! 2013-08-27 - Marco Clemencic

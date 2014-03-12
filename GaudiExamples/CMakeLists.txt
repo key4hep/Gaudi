@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiExamples v23r10)
+gaudi_subdir(GaudiExamples v25r0)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiUtils GaudiGSL GaudiAlg)
 
@@ -42,13 +42,15 @@ set(GaudiExamples_srcs
     src/SvcInitLoop/*.cpp
     src/StringKeys/*.cpp
     src/StatusCodeSvc/*.cpp
+    src/FileMgr/*.cpp
     src/testing/*.cpp
-    src/IntelProfiler/*.cpp)
+    src/IntelProfiler/*.cpp
+    src/PluginService/*.cpp)
 
 gaudi_add_library(GaudiExamplesLib src/Lib/*.cpp
                   LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib HepPDT ROOT
-                  INCLUDE_DIRS HepPDT ROOT ${CMAKE_CURRENT_SOURCE_DIR}/src/Lib
-                  NO_PUBLIC_HEADERS)
+                  INCLUDE_DIRS HepPDT ROOT
+                  PUBLIC_HEADERS GaudiExamples)
 
 gaudi_add_module(GaudiExamples ${GaudiExamples_srcs} LINK_LIBRARIES GaudiExamplesLib)
 

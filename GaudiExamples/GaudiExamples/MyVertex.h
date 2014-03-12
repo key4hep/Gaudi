@@ -7,8 +7,8 @@
 #include "GaudiKernel/KeyedContainer.h"
 #include "GaudiKernel/SmartRefVector.h"
 
-#include "Event.h"
-#include "MyTrack.h"
+#include "GaudiExamples/Event.h"
+#include "GaudiExamples/MyTrack.h"
 
 
 namespace Gaudi {

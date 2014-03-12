@@ -1,6 +1,40 @@
 Package: RootHistCnv
 Package manager : David Quarrie
 
+============================= RootHistCnv v12r0 ==============================
+! 2013-12-11 - Sebastien Binet
+ - Added hwaf configuration files.
+
+! 2013-07-30 - Marco Clemencic
+ - Use DECLARE_CONVERTER_FACTORY instead of DECLARE_CONVERTER (avoid clashes).
+
+! 2013-07-19 - Marco Clemencic
+ - Clean up in the use of the new PluginService.
+
+! 2013-07-18 - Marco Clemencic
+ - Removed use of obsolete AlgFactory.h, SvcFactory.h, ToolFactory.h,
+   AudFactory.h and CnvFactory.h.
+
+! 2013-07-17 - Marco Clemencic
+ - Use the new ROOT-free Plugin Service.
+
+! 2013-07-17 - Marco Clemencic
+ - Removed factories forward declarations.
+
+! 2013-07-03 - Marco Clemencic
+ - Replaced references to ROOT::Reflex::PluginService with Gaudi::PluginService.
+
+============================= RootHistCnv v11r3 ==============================
+! 2013-10-24 - Chris Jones
+ - Add a property to RootHistCnv::RFileCnv that allows the ROOT compression
+   settings to be defined. Configuration syntax takes the form :-
+      from GaudiKernel.Configurable import ConfigurableGeneric as RFileCnv
+      RFileCnv('RFileCnv').GlobalCompression = "LZMA:6"
+   where the first part of the string is the compression algorithm, the second
+   the compression level. Default string is "" which means the nothing 
+   explicitly set, and the defualt ROOT compression level (currently equivalent 
+   to "ZLIB:1") is used.
+
 ============================= RootHistCnv v11r2 ==============================
 ! 2012-11-14 - Marco Clemencic
  - Updated CMakeLists.txt.

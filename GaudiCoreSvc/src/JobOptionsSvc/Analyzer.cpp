@@ -8,7 +8,6 @@
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/format.hpp>
-#include <boost/shared_ptr.hpp>
 // ============================================================================
 #include "Analyzer.h"
 #include "Parser.h"

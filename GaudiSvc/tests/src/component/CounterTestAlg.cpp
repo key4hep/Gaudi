@@ -10,7 +10,6 @@
 // Framework include files
 #include <string>
 #include "GaudiKernel/ICounterSvc.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/MsgStream.h"
 
@@ -81,6 +80,6 @@ namespace GaudiSvcTest  {
       return StatusCode::SUCCESS;
     }
   };
-}
 
-DECLARE_NAMESPACE_ALGORITHM_FACTORY (GaudiSvcTest, CounterTestAlg)
+  DECLARE_COMPONENT(CounterTestAlg)
+}

@@ -1,15 +1,11 @@
-// $Id: QotdAlg.cpp,v 1.1 2007/05/08 09:16:25 hmd Exp $
-
-
 // Include files
 #include "QotdAlg.h"
 
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
-
-DECLARE_NAMESPACE_ALGORITHM_FACTORY(GaudiEx, QotdAlg)
 
 using namespace GaudiEx;
+
+DECLARE_COMPONENT(QotdAlg)
 
 //------------------------------------------------------------------------------
 QotdAlg::QotdAlg(const std::string& name,

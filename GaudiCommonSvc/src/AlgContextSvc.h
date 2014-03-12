@@ -15,7 +15,6 @@
 // ============================================================================
 // Forward declarations
 // ============================================================================
-template <class TYPE> class SvcFactory;
 // ============================================================================
 /** @class AlgContexSvc
  *  Simple implementation of interface IAlgContextSvc
@@ -27,9 +26,6 @@ template <class TYPE> class SvcFactory;
  */
 class AlgContextSvc: public extends1<Service, IAlgContextSvc>
 {
-public:
-  /// friend factory for instantiations
-  friend class SvcFactory<AlgContextSvc>;
 public:
   /// set     the currently executing algorithm  ("push_back") @see IAlgContextSvc
   virtual StatusCode     setCurrentAlg  ( IAlgorithm* a ) ;

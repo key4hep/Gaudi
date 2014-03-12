@@ -65,11 +65,15 @@ if(NOT ROOT_FIND_COMPONENTS)
   set(ROOT_FIND_COMPONENTS Core)
 endif()
 
+# list of variable that should be checked
+set(_root_required_vars ROOT_INCLUDE_DIR)
+
 # Locate the libraries (forcing few default ones)
 while(ROOT_FIND_COMPONENTS)
   # pop the first element from the list
   list(GET ROOT_FIND_COMPONENTS 0 component)
   list(REMOVE_AT ROOT_FIND_COMPONENTS 0)
+  list(APPEND _root_required_vars ROOT_${component}_LIBRARY)
   # look for the library if not found yet
   if(NOT ROOT_${component}_LIBRARY)
     find_library(ROOT_${component}_LIBRARY NAMES ${component} lib${component}
@@ -113,7 +117,7 @@ endforeach()
 # handle the QUIETLY and REQUIRED arguments and set ROOT_FOUND to TRUE if
 # all listed variables are TRUE
 INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(ROOT DEFAULT_MSG ROOT_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(ROOT DEFAULT_MSG ${_root_required_vars})
 mark_as_advanced(ROOT_FOUND ROOTSYS ROOT_INCLUDE_DIR)
 
 ######################################################################
@@ -239,6 +243,7 @@ function(reflex_dictionary dictionary headerfile selectionfile)
   # ensure that we split on the spaces
   separate_arguments(ARG_OPTIONS)
   reflex_generate_dictionary(${dictionary} ${headerfile} ${selectionfile} OPTIONS ${ARG_OPTIONS})
+  include_directories(${ROOT_INCLUDE_DIR})
   add_library(${dictionary}Dict MODULE ${gensrcdict})
   target_link_libraries(${dictionary}Dict ${ARG_LINK_LIBRARIES} ${ROOT_Reflex_LIBRARY})
   # ensure that *Gen and *Dict are not built at the same time

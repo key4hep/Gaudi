@@ -1,0 +1,31 @@
+//##############################################################
+// Job options file
+//==============================================================
+
+AuditorSvc.Auditors = { "ChronoAuditor" };
+//--------------------------------------------------------------
+
+
+//--------------------------------------------------------------
+// Private Application Configuration options
+//--------------------------------------------------------------
+ApplicationMgr.TopAlg   = { "FileMgrTest" };
+
+// Set output level threshold (2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
+MessageSvc.OutputLevel  = 3;
+MessageSvc.UseColors = true;
+FileMgrTest.OutputLevel = 2;
+FileMgr.OutputLevel = 2;
+FileMgr.LogFile = "filemgr.log";
+//FileMgr.TSSL_UserProxy = "NONE";
+//FileMgr.TSSL_CertDir = "NONE";
+ApplicationMgr.OutputLevel = 1;
+ServiceManager.OutputLevel = 2;
+StatusCodeSvc.OutputLevel = 1;
+
+//--------------------------------------------------------------
+// Event related parameters
+//--------------------------------------------------------------
+ApplicationMgr.EvtMax   = 3;
+ApplicationMgr.EvtSel  = "NONE";
+

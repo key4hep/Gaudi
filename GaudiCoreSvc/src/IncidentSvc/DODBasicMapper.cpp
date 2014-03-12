@@ -30,7 +30,7 @@ namespace Gaudi {
 //
 // 16/01/2012: Marco Clemencic
 // ----------------------------------------------------------------------------
-DECLARE_TOOL_FACTORY(DODBasicMapper)
+DECLARE_COMPONENT(DODBasicMapper)
 
 // ============================================================================
 // Standard constructor, initializes variables

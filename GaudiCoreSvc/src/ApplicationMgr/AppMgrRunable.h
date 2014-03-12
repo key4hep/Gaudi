@@ -8,7 +8,6 @@
 
 // Forward declarations
 class IAppMgrUI;
-template <class T> class SvcFactory;
 
 /** Class definition of AppMgrRunable.
     This is the default runnable of the application manager.
@@ -28,9 +27,6 @@ template <class T> class SvcFactory;
    @version 1.0
 */
 class AppMgrRunable : public extends1<Service, IRunable> {
-  /// Creator friend
-  friend class SvcFactory<AppMgrRunable>;
-
 protected:
   /// Reference to application manager UI
   IAppMgrUI*    m_appMgrUI;

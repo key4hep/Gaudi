@@ -1,9 +1,7 @@
-// $Id: AIDATupleAlgorithmRead.cpp,v 1.3 2006/11/27 09:53:05 hmd Exp $
 // Include files
 #include "AIDATupleAlgorithmRead.h"
 
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IAIDATupleSvc.h"
 #include "GaudiKernel/SmartDataPtr.h"
 #include "GaudiKernel/DataObject.h"
@@ -11,7 +9,7 @@
 
 // Static factory declaration
 
-DECLARE_ALGORITHM_FACTORY(AIDATupleAlgorithmRead)
+DECLARE_COMPONENT(AIDATupleAlgorithmRead)
 
 //--------------------------------------------------------
 AIDATupleAlgorithmRead::AIDATupleAlgorithmRead(const std::string& name,

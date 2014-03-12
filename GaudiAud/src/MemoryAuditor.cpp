@@ -9,9 +9,8 @@
 
 #include "MemoryAuditor.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/AudFactory.h"
 
-DECLARE_AUDITOR_FACTORY(MemoryAuditor)
+DECLARE_COMPONENT(MemoryAuditor)
 
 MemoryAuditor::MemoryAuditor(const std::string& name, ISvcLocator* pSvcLocator)
 : CommonAuditor(name, pSvcLocator) {

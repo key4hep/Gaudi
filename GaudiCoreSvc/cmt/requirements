@@ -3,7 +3,7 @@
 # Maintainer : Marco Clemencic
 # ============================================================================
 package    GaudiCoreSvc
-version    v1r6
+version    v3r0
 
 # ============================================================================
 # Structure, i.e. directories to process.
@@ -15,12 +15,13 @@ branches doc src cmt
 # ============================================================================
 use GaudiKernel *
 use Boost * LCG_Interfaces -no_auto_imports
+use ROOT * LCG_Interfaces -no_auto_imports
 
 include_path    none
 # ============================================================================
 # Component library building rule
 # ============================================================================
-library GaudiCoreSvc -no_static -import=Boost \
+library GaudiCoreSvc -no_static -import=Boost -import=ROOT \
     ApplicationMgr/*.cpp \
     EventSelector/*.cpp \
     IncidentSvc/*.cpp \
@@ -33,7 +34,7 @@ library GaudiCoreSvc -no_static -import=Boost \
 # equivalent to apply_pattern component_library, except for the genconf part
 apply_pattern libraryShr          library=GaudiCoreSvc
 apply_pattern library_Cshlibflags library=GaudiCoreSvc
-apply_pattern generate_rootmap    library=GaudiCoreSvc
+apply_pattern generate_componentslist    library=GaudiCoreSvc
 
 # this pattern is applied instead of "generate_configurables" to
 # avoid infinite recursion.

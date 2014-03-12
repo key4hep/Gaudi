@@ -3,11 +3,11 @@
 #include "GaudiKernel/ContainedObject.h"
 #include "GaudiKernel/ObjectVector.h"
 
-#include "Event.h"
-#include "Collision.h"
-#include "MyTrack.h"
-#include "MyVertex.h"
-#include "Counter.h"
+#include "GaudiExamples/Event.h"
+#include "GaudiExamples/Collision.h"
+#include "GaudiExamples/MyTrack.h"
+#include "GaudiExamples/MyVertex.h"
+#include "GaudiExamples/Counter.h"
 
 //template ObjectVector<MyTrack>;
 //template ObjectVector<MyVertex>;
@@ -19,7 +19,7 @@
 //template KeyedContainer<MyVertex>;
 //template KeyedObject<long>;
 //template std::vector<KeyedObject<long int>* >;
-struct __Instantiations 
+struct POOLIOTestDict__Instantiations
 {
   ObjectVector<Gaudi::Examples::MyTrack> i1;
   ObjectVector<Gaudi::Examples::MyVertex> i2;
