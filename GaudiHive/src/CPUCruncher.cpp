@@ -22,11 +22,11 @@ CPUCruncher::CPUCruncher(const std::string& name, // the algorithm instance name
 	// For Concurrent run
 	m_inputHandles.resize(MAX_INPUTS);
 	for (uint i = 0; i < MAX_INPUTS; ++i)
-		m_inputHandles[i] = declareInput<DataObject>("input_" + std::to_string(i), MinimalDataObjectHandle::NULL_ADDRESS);
+		m_inputHandles[i] = declareInput<DataObject>("input_" + std::to_string(i));
 
 	m_outputHandles.resize(MAX_OUTPUTS);
 	for (uint i = 0; i < MAX_OUTPUTS; ++i)
-		m_outputHandles[i] = declareOutput< DataObject>("output_" + std::to_string(i), MinimalDataObjectHandle::NULL_ADDRESS);
+		m_outputHandles[i] = declareOutput< DataObject>("output_" + std::to_string(i));
 
 	declareProperty("avgRuntime", m_avg_runtime,
 			"Average runtime of the module.");

@@ -16,6 +16,8 @@ const char ADDR_SEP = '&';
 const char FIELD_SEP = '|';
 const char ITEM_SEP = '#';
 
+const std::string DataObjectDescriptor::NULL_ = "NULL";
+
 std::ostream& operator<<( std::ostream&   stream ,
                           const DataObjectDescriptor& di   )
 { return stream << di.toString() ; }

@@ -57,9 +57,6 @@ public:
   /// Check if write operation was performed
   virtual bool wasWritten() const = 0;
 
-  /// Check if we have a valid handle
-  virtual bool isValid() const = 0;
-  
 };
 
 #endif // GAUDIHIVE_IDATAOBJECTHANDLE_H

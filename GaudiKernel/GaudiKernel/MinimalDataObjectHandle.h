@@ -45,10 +45,8 @@ public:
   bool wasWritten() const;
 
   bool isValid() const;
-  
-  bool initialized() const { return m_initialized; }
 
-  const static std::string NULL_ADDRESS;
+  bool initialized() const { return m_initialized; }
 
 protected:
   DataObjectDescriptor & m_descriptor;

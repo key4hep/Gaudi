@@ -222,18 +222,23 @@ StatusCode Algorithm::sysInitialize() {
 
     //init data handle
   for(auto tag : m_inputDataObjects){
-	  m_inputDataObjects[tag].setAddress(fixLocation(m_inputDataObjects[tag].address()));
+		if (m_inputDataObjects[tag].valid()) {
+			m_inputDataObjects[tag].setAddress(
+					fixLocation(m_inputDataObjects[tag].address()));
 
-	  auto altAddress = m_inputDataObjects[tag].alternativeAddresses();
-	  for(uint i = 0; i < altAddress.size(); ++i)
-		  altAddress[i] = fixLocation(altAddress[i]);
-	  m_inputDataObjects[tag].setAltAddress(altAddress);
+			auto altAddress = m_inputDataObjects[tag].alternativeAddresses();
+			for (uint i = 0; i < altAddress.size(); ++i)
+				altAddress[i] = fixLocation(altAddress[i]);
+			m_inputDataObjects[tag].setAltAddress(altAddress);
 
-	  m_inputDataObjects[tag].getBaseHandle()->initialize();
+			m_inputDataObjects[tag].getBaseHandle()->initialize();
+		}
   }
   for(auto tag : m_outputDataObjects){
-	  m_outputDataObjects[tag].setAddress(fixLocation(m_outputDataObjects[tag].address()));
-	  m_outputDataObjects[tag].getBaseHandle()->initialize();
+	  if(m_outputDataObjects[tag].valid()){
+		  m_outputDataObjects[tag].setAddress(fixLocation(m_outputDataObjects[tag].address()));
+		  m_outputDataObjects[tag].getBaseHandle()->initialize();
+	  }
   }
 
   //all TES accessing tools have been created in initialize() of derived class

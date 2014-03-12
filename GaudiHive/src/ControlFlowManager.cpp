@@ -256,7 +256,7 @@ namespace concurrency {
 
     const DataObjectDescriptorCollection & inputDataObjects = algo->inputDataObjects();
     for (auto tag : inputDataObjects) {
-      if (inputDataObjects[tag].getBaseHandle()->isValid()) {
+      if (inputDataObjects[tag].valid()) {
         const std::string& inputAddress = inputDataObjects[tag].address();
         auto& addresses = m_algoInputsMap[algoName];
         if (std::find(addresses.begin(), addresses.end(), inputAddress) == addresses.end())
@@ -275,7 +275,7 @@ namespace concurrency {
 
     const DataObjectDescriptorCollection & outputDataObjects = algo->outputDataObjects();
     for (auto tag : outputDataObjects) {
-      if (outputDataObjects[tag].getBaseHandle()->isValid()) {
+      if (outputDataObjects[tag].valid()) {
         const std::string& outputAddress = outputDataObjects[tag].address();
         auto& addresses = m_algoOutputsMap[algoName];
         if (std::find(addresses.begin(), addresses.end(), outputAddress) == addresses.end())

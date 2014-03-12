@@ -267,7 +267,7 @@ public:
 
 	template<class T>
 	SmartIF<DataObjectHandle<T> > declareInput(const std::string& tag,
-			const std::string& address,
+			const std::string& address = DataObjectDescriptor::NULL_,
 			bool optional = false, IDataObjectHandle::AccessType accessType =
 					IDataObjectHandle::READ) {
 
@@ -308,7 +308,7 @@ public:
 	 */
 	template<class T>
 	SmartIF<DataObjectHandle<T> > declareOutput(const std::string& tag,
-			const std::string& address,
+			const std::string& address = DataObjectDescriptor::NULL_,
 			IDataObjectHandle::AccessType accessType = IDataObjectHandle::WRITE,
 			bool optional = false) {
 

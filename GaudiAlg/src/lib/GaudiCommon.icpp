@@ -274,14 +274,18 @@ StatusCode GaudiCommon<PBASE>::
   };
 
   for(auto tag : PBASE::inputDataObjects()){
-	  PBASE::inputDataObjects()[tag].setAddress(fixLocation(PBASE::inputDataObjects()[tag].address()));
-	  auto altAddress = PBASE::inputDataObjects()[tag].alternativeAddresses();
-	  for(uint i = 0; i < altAddress.size(); ++i)
-		  altAddress[i] = fixLocation(altAddress[i]);
-	  PBASE::inputDataObjects()[tag].setAltAddress(altAddress);
+	  if(PBASE::inputDataObjects()[tag].valid()){
+		  PBASE::inputDataObjects()[tag].setAddress(fixLocation(PBASE::inputDataObjects()[tag].address()));
+		  auto altAddress = PBASE::inputDataObjects()[tag].alternativeAddresses();
+		  for(uint i = 0; i < altAddress.size(); ++i)
+			  altAddress[i] = fixLocation(altAddress[i]);
+		  PBASE::inputDataObjects()[tag].setAltAddress(altAddress);
+	  }
   }
   for(auto tag : PBASE::outputDataObjects()){
-	  PBASE::outputDataObjects()[tag].setAddress(fixLocation(PBASE::outputDataObjects()[tag].address()));
+	  if(PBASE::outputDataObjects()[tag].valid()){
+		  PBASE::outputDataObjects()[tag].setAddress(fixLocation(PBASE::outputDataObjects()[tag].address()));
+	  }
   }
 
   return sc;

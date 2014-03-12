@@ -19,6 +19,9 @@ class DataObjectHandle;
 class GAUDI_API DataObjectDescriptor{
 
 public:
+	static const std::string NULL_;
+
+public:
 
 	DataObjectDescriptor(const std::string& tag,
 			const std::string& address,
@@ -134,6 +137,10 @@ public:
 	//SmartIF<MinimalDataObjectHandle> getHandle() const {
 		//return m_handle;
 	//}
+
+	bool valid() const {
+		return address() != NULL_;
+	}
 
 private:
 	void setHandle(SmartIF<MinimalDataObjectHandle> handle);

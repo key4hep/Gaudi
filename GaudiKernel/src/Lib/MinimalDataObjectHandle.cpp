@@ -2,7 +2,6 @@
 #include "GaudiKernel/DataObjectDescriptor.h"
 
 unsigned int MinimalDataObjectHandle::m_tmp_dpi=0;
-const std::string MinimalDataObjectHandle::NULL_ADDRESS  = "_NULL";
 //---------------------------------------------------------------------------
 
 MinimalDataObjectHandle::MinimalDataObjectHandle(DataObjectDescriptor & descriptor)
@@ -78,10 +77,6 @@ StatusCode MinimalDataObjectHandle::setDataProductNames(const std::vector<std::s
 	return StatusCode::SUCCESS;
 }
 
-bool MinimalDataObjectHandle::isValid() const {
-	return m_descriptor.address() != NULL_ADDRESS;
-}
-
 //---------------------------------------------------------------------------
 
 auto MinimalDataObjectHandle::accessType() const -> AccessType {
@@ -92,6 +87,12 @@ auto MinimalDataObjectHandle::accessType() const -> AccessType {
 
 bool MinimalDataObjectHandle::wasRead() const {
   return m_wasRead;
+}
+
+//---------------------------------------------------------------------------
+
+bool MinimalDataObjectHandle::isValid() const {
+  return m_descriptor.valid();
 }
 
 //---------------------------------------------------------------------------
