@@ -25,24 +25,28 @@ slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 scheduler = ForwardSchedulerSvc(MaxEventsInFlight = evtslots,
                                 MaxAlgosInFlight = algosInFlight,
                                 OutputLevel=WARNING,
-                                AlgosDependencies = [[],['a1'],['a1'],['a2','a3','a4']])
+                                AlgosDependencies = [[],['/Event/a1'],['/Event/a1'],['/Event/a2','/Event/a3','/Event/a4']])
 
 AlgResourcePool(OutputLevel=DEBUG)
-                                
-a1 = CPUCruncher("A1", 
-                 Outputs = ['/Event/a1'],
+
+a1 = CPUCruncher("A1",
                  shortCalib=True,
-                 varRuntime=.01, 
+                 varRuntime=.01,
                  avgRuntime=.1 )
-a2 = CPUCruncher("A2", 
-                 shortCalib=True,
-                 Outputs = ['/Event/a2'])
-a3 = CPUCruncher("A3", 
-                 shortCalib=True,
-                 Outputs = ['/Event/a3','/Event/a4'])
-a4 = CPUCruncher("A4", 
-                 shortCalib=True,
-                 Outputs = ['/Event/a5'])
+a1.OutputDataObjects.output_0.address = '/Event/a1'
+
+a2 = CPUCruncher("A2",
+                 shortCalib=True)
+a2.OutputDataObjects.output_0.address = '/Event/a2'
+
+a3 = CPUCruncher("A3",
+                 shortCalib=True)
+a3.OutputDataObjects.output_0.address = '/Event/a3'
+a3.OutputDataObjects.output_1.address = '/Event/a4'
+
+a4 = CPUCruncher("A4",
+                 shortCalib=True)
+a4.OutputDataObjects.output_0.address = '/Event/a5'
 
 for algo in [a1,a2,a3,a4]:
   algo.Cardinality = cardinality

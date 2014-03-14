@@ -4,7 +4,7 @@
 
 from Gaudi.Configuration import *
 from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
-from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveEventLoopMgr, HiveReadAlgorithm, AlgResourcePool
+from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveSlimEventLoopMgr, HiveReadAlgorithm,ForwardSchedulerSvc, AlgResourcePool
 
 # Output Levels
 MessageSvc(OutputLevel=WARNING)
@@ -26,6 +26,7 @@ EventSelector(OutputLevel=DEBUG, PrintFreq=50, FirstEvent=1,
 FileCatalog(Catalogs = [ "xmlcatalog_file:HandleWB_ROOTIO.xml" ])
 
 product_name="MyCollision"
+product_name_full_path="/Event/"+product_name
 
 loader = HiveReadAlgorithm("Loader",
                            OutputLevel=INFO,
@@ -43,13 +44,14 @@ algoparallel = 20
 
 whiteboard   = HiveWhiteBoard("EventDataSvc",
                               EventSlots = evtslots)
-                                                                                     
-eventloopmgr = HiveEventLoopMgr(MaxEventsParallel = evtslots,
-                                MaxAlgosParallel  = algoparallel,
-                                CloneAlgorithms = True,
-                                DumpQueues = True,
-                                NumThreads = algoparallel,
-                                AlgosDependencies = [[],[product_name], [product_name]])
+
+eventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
+
+# We must put the full path in this deprecated expression of dependencies.
+# Using a controlflow for the output would be the way to go
+scheduler = ForwardSchedulerSvc(MaxAlgosInFlight = algoparallel,
+                                OutputLevel=WARNING,
+                                AlgosDependencies = [[],[product_name_full_path], [product_name_full_path]])
                                 
 ApplicationMgr( TopAlg = [loader, reader,dst],
                 EvtMax   = 44,
