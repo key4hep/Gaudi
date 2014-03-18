@@ -145,8 +145,9 @@ namespace concurrency {
     std::vector<AlgorithmNode*> m_consumers;
   };
 
-typedef std::unordered_map<std::string,AlgorithmNode*> GraphAlgoMap;
-typedef std::unordered_map<std::string,DecisionNode*> GraphAggregateMap;
+
+typedef std::unordered_map<std::string,AlgorithmNode*> AlgoNodesMap;
+typedef std::unordered_map<std::string,DecisionNode*> DecisionHubsMap;
 typedef std::unordered_map<std::string,std::vector<std::string> > AlgoInputsMap;
 typedef std::unordered_map<std::string,std::vector<std::string> > AlgoOutputsMap;
 
@@ -200,12 +201,13 @@ public:
 private:
     /// the head node of the control flow graph; may want to have multiple ones once supporting trigger paths
     DecisionNode* m_headNode;
-    /// Indexes of decision realm
-    GraphAlgoMap m_graphAlgoMap;
-    GraphAggregateMap m_graphAggMap;
-    /// Indexes of data dependencies realm
-    AlgoInputsMap m_algoInputsMap;
-    AlgoOutputsMap m_algoOutputsMap;
+    /// Index: map of algorithm's name to AlgorithmNode
+    AlgoNodesMap m_algoNameToAlgoNodeMap;
+    /// Index: map of decision's name to DecisionHub
+    DecisionHubsMap m_decisionNameToDecisionHubMap;
+    /// Indexes: maps of algorithm's name to algorithm's inputs/outputs
+    AlgoInputsMap m_algoNameToAlgoInputsMap;
+    AlgoOutputsMap m_algoNameToAlgoOutputsMap;
     /// Total number of nodes in the graph
     unsigned int m_nodeCounter;
     /// Service locator (needed to access the MessageSvc)

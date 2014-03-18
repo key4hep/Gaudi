@@ -258,14 +258,14 @@ namespace concurrency {
     for (auto tag : inputDataObjects) {
       if (inputDataObjects[tag].valid()) {
         const std::string& inputAddress = inputDataObjects[tag].address();
-        auto& addresses = m_algoInputsMap[algoName];
+        auto& addresses = m_algoNameToAlgoInputsMap[algoName];
         if (std::find(addresses.begin(), addresses.end(), inputAddress) == addresses.end())
           addresses.push_back(inputAddress);
       }
     }
 
-    auto it_in = m_algoInputsMap.find(algoName);
-    if ( it_in != m_algoInputsMap.end()) {
+    auto it_in = m_algoNameToAlgoInputsMap.find(algoName);
+    if ( it_in != m_algoNameToAlgoInputsMap.end()) {
       debug() << "Inputs of " << algoName << ": ";
       for (auto input : it_in->second) {
         debug() << input << ", ";
@@ -277,14 +277,14 @@ namespace concurrency {
     for (auto tag : outputDataObjects) {
       if (outputDataObjects[tag].valid()) {
         const std::string& outputAddress = outputDataObjects[tag].address();
-        auto& addresses = m_algoOutputsMap[algoName];
+        auto& addresses = m_algoNameToAlgoOutputsMap[algoName];
         if (std::find(addresses.begin(), addresses.end(), outputAddress) == addresses.end())
           addresses.push_back(outputAddress);
       }
     }
 
-    auto it_out = m_algoOutputsMap.find(algoName);
-    if ( it_out != m_algoOutputsMap.end()) {
+    auto it_out = m_algoNameToAlgoOutputsMap.find(algoName);
+    if ( it_out != m_algoNameToAlgoOutputsMap.end()) {
       debug() << "Outputs of " << algoName << ": ";
       for (auto output : it_out->second) {
         debug() << output << ", ";
@@ -296,15 +296,15 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   void ControlFlowGraph::buildDataDependenciesRealm() {
 
-    for (auto algo : m_graphAlgoMap) {
+    for (auto algo : m_algoNameToAlgoNodeMap) {
 
-      for (auto input : m_algoInputsMap[algo.first]) {
-        for (auto algoSupplier : m_algoOutputsMap) {
-          const std::vector<std::string>& outputs = m_algoOutputsMap[algoSupplier.first];
+      for (auto input : m_algoNameToAlgoInputsMap[algo.first]) {
+        for (auto algoSupplier : m_algoNameToAlgoOutputsMap) {
+          const std::vector<std::string>& outputs = m_algoNameToAlgoOutputsMap[algoSupplier.first];
           if (std::find(outputs.begin(),outputs.end(),input) != outputs.end()) {
-            auto consumer = m_graphAlgoMap[algo.first];
+            auto consumer = m_algoNameToAlgoNodeMap[algo.first];
             const std::vector<AlgorithmNode*>& known_suppliers = consumer->getSupplierNodes();
-            auto supplier = m_graphAlgoMap[algoSupplier.first];
+            auto supplier = m_algoNameToAlgoNodeMap[algoSupplier.first];
             const std::vector<AlgorithmNode*>& known_consumers = supplier->getConsumerNodes();
             if (std::find(known_suppliers.begin(),known_suppliers.end(),supplier) == known_suppliers.end())
               consumer->addSupplierNode(supplier);
@@ -314,13 +314,13 @@ namespace concurrency {
         }
       }
 
-      for (auto output : m_algoOutputsMap[algo.first]) {
-        for (auto algoConsumer : m_algoInputsMap) {
-          const std::vector<std::string>& inputs = m_algoInputsMap[algoConsumer.first];
+      for (auto output : m_algoNameToAlgoOutputsMap[algo.first]) {
+        for (auto algoConsumer : m_algoNameToAlgoInputsMap) {
+          const std::vector<std::string>& inputs = m_algoNameToAlgoInputsMap[algoConsumer.first];
           if (std::find(inputs.begin(),inputs.end(),output) != inputs.end()) {
-            auto supplier = m_graphAlgoMap[algo.first];
+            auto supplier = m_algoNameToAlgoNodeMap[algo.first];
             const std::vector<AlgorithmNode*>& known_consumers = supplier->getConsumerNodes();
-            auto consumer = m_graphAlgoMap[algoConsumer.first];
+            auto consumer = m_algoNameToAlgoNodeMap[algoConsumer.first];
             const std::vector<AlgorithmNode*>& known_suppliers = consumer->getSupplierNodes();
             if (std::find(known_suppliers.begin(),known_suppliers.end(),supplier) == known_suppliers.end())
               consumer->addSupplierNode(supplier);
@@ -338,17 +338,17 @@ namespace concurrency {
 
     const std::string& algoName = algo->name();
 
-    auto itP = m_graphAggMap.find(parentName);
+    auto itP = m_decisionNameToDecisionHubMap.find(parentName);
     concurrency::DecisionNode* parentNode = itP->second;
 
-    auto itA = m_graphAlgoMap.find(algoName);
+    auto itA = m_algoNameToAlgoNodeMap.find(algoName);
     concurrency::AlgorithmNode* algoNode;
-    if ( itA != m_graphAlgoMap.end()) {
+    if ( itA != m_algoNameToAlgoNodeMap.end()) {
       algoNode = itA->second;
     } else {
       algoNode = new concurrency::AlgorithmNode(m_nodeCounter,algoName,inverted,allPass);
       ++m_nodeCounter;
-      m_graphAlgoMap[algoName] = algoNode;
+      m_algoNameToAlgoNodeMap[algoName] = algoNode;
       debug() << "AlgoNode " << algoName << " added @ " << algoNode << endmsg;
     }
 
@@ -361,7 +361,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   AlgorithmNode* ControlFlowGraph::getAlgorithmNode(const std::string& algoName) const {
 
-    return m_graphAlgoMap.at(algoName);
+    return m_algoNameToAlgoNodeMap.at(algoName);
   }
 
   //---------------------------------------------------------------------------
@@ -369,17 +369,17 @@ namespace concurrency {
 
     const std::string& aggregateName = aggregateAlgo->name();
 
-    auto itP = m_graphAggMap.find(parentName);
+    auto itP = m_decisionNameToDecisionHubMap.find(parentName);
     concurrency::DecisionNode* parentNode = itP->second;
 
-    auto itA = m_graphAggMap.find(aggregateName);
+    auto itA = m_decisionNameToDecisionHubMap.find(aggregateName);
     concurrency::DecisionNode* aggregateNode;
-    if ( itA != m_graphAggMap.end()) {
+    if ( itA != m_decisionNameToDecisionHubMap.end()) {
       aggregateNode = itA->second;
     } else {
       aggregateNode = new concurrency::DecisionNode(m_nodeCounter,aggregateName,modeOR,allPass,isLazy);
       ++m_nodeCounter;
-      m_graphAggMap[aggregateName] = aggregateNode;
+      m_decisionNameToDecisionHubMap[aggregateName] = aggregateNode;
       debug() << "AggregateNode " << aggregateName << " added @ " << aggregateNode << endmsg;
     }
 
@@ -391,13 +391,13 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   void ControlFlowGraph::addHeadNode(const std::string& headName, bool modeOR, bool allPass, bool isLazy) {
 
-    auto itH = m_graphAggMap.find(headName);
-    if ( itH != m_graphAggMap.end()) {
+    auto itH = m_decisionNameToDecisionHubMap.find(headName);
+    if ( itH != m_decisionNameToDecisionHubMap.end()) {
       m_headNode = itH->second;
     } else {
       m_headNode = new concurrency::DecisionNode(m_nodeCounter, headName, modeOR, allPass, isLazy);
       ++m_nodeCounter;
-      m_graphAggMap[headName] = m_headNode;
+      m_decisionNameToDecisionHubMap[headName] = m_headNode;
     }
 
   }
@@ -421,7 +421,7 @@ namespace concurrency {
 
     std::vector<AlgorithmNode*> result;
 
-    for (auto node : m_algoInputsMap)
+    for (auto node : m_algoNameToAlgoInputsMap)
       if (node.second.empty())
         result.push_back(getAlgorithmNode(node.first));
 
