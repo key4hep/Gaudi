@@ -545,7 +545,7 @@ public:
     // GCCXML cannot understand c++11 yet, NULL used.
 
 	  SmartIF<DataObjectHandle<T> > sDOH;
-	  auto slashPos = address.find_last_of('/');
+	  std::string::size_type slashPos = address.find_last_of('/');
 	  std::string tag = address.substr(slashPos != std::string::npos ? slashPos : 0);
 
 	  if(accesstype == IDataObjectHandle::READ || accesstype == IDataObjectHandle::UPDATE)
