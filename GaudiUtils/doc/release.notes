@@ -1,6 +1,9 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2014-03-18 - Ben Couturier
+ - Fixed bug #104127: remove hwaf configuration.
+
 ============================== GaudiUtils v5r0 ===============================
 ! 2013-12-11 - Sebastien Binet
  - Added hwaf configuration files.

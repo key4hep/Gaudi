@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2014-03-18 - Ben Couturier
+ - Fixed bug #104127: remove hwaf configuration.
+
 ! 2014-03-03 - Marco Clemencic
  - Modified name ot hthe "instantiations" class used in the test dictionary
    to avoid clashed in ROOT 6.

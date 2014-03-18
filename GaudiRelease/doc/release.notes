@@ -1,6 +1,9 @@
 Package: GaudiRelease
 Maintainer: Marco Clemencic
 
+! 2014-03-18 - Ben Couturier
+ - Fixed bug #104127: remove hwaf configuration.
+
 ============================= GaudiRelease v25r0 =============================
 ! 2014-02-14 - Marco Clemencic
  - minor fix to update_versions.py

@@ -3,6 +3,9 @@
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! =============================================================================
 
+! 2014-03-18 - Ben Couturier
+ - Fixed bug #104127: remove hwaf configuration.
+
 =============================== GaudiGSL v8r0 ================================
 ! 2014-01-27 - Marco Clemencic
  - Fixed long standing issue with InterpTest test, actually due to a bug in the

@@ -4,6 +4,9 @@
 # Description: basic and mandatory components for a Gaudi application
 ################################################################################
 
+! 2014-03-18 - Ben Couturier
+ - Fixed bug #104127: remove hwaf configuration.
+
 ============================= GaudiCoreSvc v3r0 ==============================
 ! 2013-12-11 - Sebastien Binet
  - Added hwaf configuration files.

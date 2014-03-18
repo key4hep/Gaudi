@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2014-03-18 - Ben Couturier
+ - Fixed bug #104127: remove hwaf configuration.
+
 ! 2014-03-03 - Marco Clemencic
  - Changed the namespace used for __Instanitations in the dictionary to avoid
    clashes in ROOT 6;

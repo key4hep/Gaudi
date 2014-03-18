@@ -1,6 +1,9 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2014-03-18 - Ben Couturier
+ - Fixed bug #104127: remove hwaf configuration.
+
 ============================= GaudiPython v13r0 ==============================
 ! 2014-02-13 - Marco Clemencic
  - Added workaround for ROOT-6028...

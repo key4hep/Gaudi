@@ -1,6 +1,9 @@
 Package : ParticleProp
 Package manager : Charles Leggett
 
+! 2014-03-18 - Ben Couturier
+ - Fixed bug #104127: remove hwaf configuration.
+
 ============================== PartPropSvc v5r0 ==============================
 ! 2013-12-11 - Sebastien Binet
  - Added hwaf configuration files.
