@@ -28,6 +28,7 @@ LCG_compiler(clang32 clang 3.2)
 LCG_compiler(clang33 clang 3.3)
 LCG_compiler(gccmax gcc 4.8.1)
 
+message(WARNING "${CMAKE_CURRENT_LIST_FILE} -> ${LCG_OS}${LCG_OSVERS}")
 # Externals
 LCG_external_package(4suite            1.0.2p1                                  )
 LCG_external_package(AIDA              3.2.1                                    )
@@ -46,7 +47,7 @@ LCG_external_package(CppUnit           1.12.1_p1                                
 LCG_external_package(cx_oracle         5.1.1                                    )
 LCG_external_package(david             1_36a                                    )
 LCG_external_package(dawn              3_88a                                    )
-if("${LCG_OS}${LCG_OS_VERS}" STREQUAL "slc5")
+if("${LCG_OS}${LCG_OSVERS}" STREQUAL "slc5")
 LCG_external_package(dcache_client     2.47.5-0                                 )
 else()
 LCG_external_package(dcache_client     2.47.6-1                                 )
@@ -84,7 +85,7 @@ LCG_external_package(lcgutils          1.13.0-0                                 
 LCG_external_package(lcov              1.9                                      )
 LCG_external_package(lfc               1.8.5-1                   Grid/LFC       )
 LCG_external_package(libsvm            2.86                                     )
-if("${LCG_OS}${LCG_OS_VERS}" STREQUAL "slc6")
+if("${LCG_OS}${LCG_OSVERS}" STREQUAL "slc6")
 LCG_external_package(libtool           2.4.2                                    )
 else()
 LCG_external_package(libtool           1.5.26                                   )
@@ -140,7 +141,7 @@ LCG_external_package(swig              1.3.40                                   
 LCG_external_package(sympy             0.7.1                                    )
 LCG_external_package(tbb               41_20121003                              )
 LCG_external_package(tcmalloc          1.7p3                                    )
-if(NOT "${LCG_OS}${LCG_OS_VERS}" STREQUAL "slc6") # uuid is not distributed with SLC6
+if(NOT "${LCG_OS}${LCG_OSVERS}" STREQUAL "slc6") # uuid is not distributed with SLC6
 LCG_external_package(uuid              1.42                                     )
 endif()
 LCG_external_package(valgrind          3.8.0                                    )
