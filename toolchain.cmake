@@ -1,5 +1,5 @@
 # Special wrapper to load the declared version of the heptools toolchain.
-set(heptools_version 66)
+set(heptools_version 68)
 
 # this check is needed because the toolchain is called when checking the
 # compiler (without the proper cache)
