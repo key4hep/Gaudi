@@ -1,6 +1,9 @@
 Package: GaudiRelease
 Maintainer: Marco Clemencic
 
+! 2014-03-19 - Marco Clemencic
+ - Removed hwaf handling from update_versions.py
+
 ! 2014-03-18 - Ben Couturier
  - Fixed bug #104127: remove hwaf configuration.
 
