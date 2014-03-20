@@ -1064,12 +1064,16 @@ function(gaudi_get_packages var)
   # FIXME: trick to get the relative path to the build directory
   file(GLOB rel_build_dir RELATIVE ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR})
   set(packages)
+  get_directory_property(_ignored_subdirs GAUDI_IGNORE_SUBDIRS)
   file(GLOB_RECURSE cmakelist_files RELATIVE ${CMAKE_SOURCE_DIR} CMakeLists.txt)
   foreach(file ${cmakelist_files})
     # ignore the source directory itself and files in the build directory
     if(NOT file STREQUAL CMakeLists.txt AND NOT file MATCHES "^${rel_build_dir}")
       get_filename_component(package ${file} PATH)
-      list(APPEND packages ${package})
+      list(FIND _ignored_subdirs ${package} _ignored)
+      if(_ignored EQUAL -1) # not ignored
+        list(APPEND packages ${package})
+      endif()
     endif()
   endforeach()
   list(SORT var)
