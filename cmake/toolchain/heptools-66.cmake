@@ -28,7 +28,6 @@ LCG_compiler(clang32 clang 3.2)
 LCG_compiler(clang33 clang 3.3)
 LCG_compiler(gccmax gcc 4.8.1)
 
-message(WARNING "${CMAKE_CURRENT_LIST_FILE} -> ${LCG_OS}${LCG_OSVERS}")
 # Externals
 LCG_external_package(4suite            1.0.2p1                                  )
 LCG_external_package(AIDA              3.2.1                                    )
