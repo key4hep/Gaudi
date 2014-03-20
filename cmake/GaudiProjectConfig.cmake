@@ -1408,7 +1408,7 @@ define_property(DIRECTORY
 function(gaudi_generate_confuserdb)
   gaudi_get_package_name(package)
   get_directory_property(modules CONFIGURABLE_USER_MODULES)
-  if( NOT (modules STREQUAL "None") ) # ConfUser enabled
+  if( genconfuser_cmd AND NOT (modules STREQUAL "None") ) # ConfUser enabled
     set(outdir ${CMAKE_CURRENT_BINARY_DIR}/genConf/${package})
 
     # get the optional dependencies from argument and properties
