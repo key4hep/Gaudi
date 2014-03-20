@@ -147,9 +147,11 @@ inline TOOL* GaudiCommon<PBASE>::tool( const std::string& type           ,
     { Exception("tool():: Could not retrieve Tool '" + type + "'/'" + name + "'", sc ) ; }
     if ( 0 == Tool )
     { Exception("tool():: Could not retrieve Tool '" + type + "'/'" + name + "'"     ) ; }
-    // add the tool into list of known tools to be properly released
-    addToToolList( Tool );
   }
+
+  //insert tool into list of tools
+  PBASE::registerTool(Tool);
+
   // return *VALID* located tool
   return Tool ;
 }
@@ -173,7 +175,7 @@ inline TOOL* GaudiCommon<PBASE>::tool( const std::string& type   ,
   if ( 0 == Tool )
   { Exception("tool():: Could not retrieve Tool '" + type + "'"     ) ; }
   // add the tool into the list of known tools to be properly released
-  addToToolList( Tool );
+  PBASE::registerTool(Tool);
   // return *VALID* located tool
   return Tool ;
 }

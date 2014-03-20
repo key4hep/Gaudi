@@ -175,20 +175,20 @@ public:
 
 	bool contains(const std::string & o) const;
 
-	void insert(const std::string& tag,
+	bool insert(const std::string& tag,
 				const std::string& address,
 				const bool optional = false,
 				const IDataObjectHandle::AccessType accessType = IDataObjectHandle::READ);
 
-	void insert(const std::string& tag,
+	bool insert(const std::string& tag,
 				const std::vector<std::string>& addresses,
 				const bool optional = false,
 				const IDataObjectHandle::AccessType accessType = IDataObjectHandle::READ);
 
-	void insert(const DataObjectDescriptor & item);
+	bool insert(const DataObjectDescriptor & item);
 	void update(const DataObjectDescriptor & item);
 
-	void insert(const std::string & item);
+	bool insert(const std::string & item);
 	void update(const std::string & item);
 
 	void insertOrUpdate(const std::string & item);

@@ -14,12 +14,15 @@
 #include "GaudiKernel/IMonitorSvc.h"
 #include "GaudiKernel/IStateful.h"
 #include <Gaudi/PluginService.h>
+#include "GaudiKernel/ToolHandle.h"
 
 #include "GaudiKernel/IDataObjectHandle.h"
 #include "GaudiKernel/DataObjectDescriptor.h"
 
 template<class T>
 class DataObjectHandle;
+
+class ToolHandleInfo;
 
 #include <vector>
 #include <list>
@@ -271,7 +274,18 @@ public:
 			bool optional = false, IDataObjectHandle::AccessType accessType =
 					IDataObjectHandle::READ) {
 
-		m_inputDataObjects.insert(tag, address, optional, accessType);
+		bool res = m_inputDataObjects.insert(tag, address, optional, accessType);
+
+		MsgStream log ( msgSvc() , name() );
+
+		if (LIKELY(res)) {
+			log << MSG::DEBUG << "Handle for " << tag << " (" << address << ")"
+					<< " successfully created and stored." << endmsg;
+		} else {
+
+			log << MSG::ERROR << "Handle for " << tag << " (" << address << ")"
+				<< " could not be created." << endmsg;
+		}
 
 		return m_inputDataObjects[tag].createHandle < T > (this);
 
@@ -292,7 +306,18 @@ public:
 			bool optional = false, IDataObjectHandle::AccessType accessType =
 					IDataObjectHandle::READ) {
 
-		m_inputDataObjects.insert(tag, addresses, optional, accessType);
+		bool res = m_inputDataObjects.insert(tag, addresses, optional, accessType);
+
+		MsgStream log ( msgSvc() , name() );
+
+		if (LIKELY(res)) {
+			log << MSG::DEBUG << "Handle for " << tag
+					<< " successfully created and stored." << endmsg;
+		} else {
+
+			log << MSG::ERROR << "Handle for " << tag
+				<< " could not be created." << endmsg;
+		}
 
 		return m_inputDataObjects[tag].createHandle < T > (this);
 
@@ -312,7 +337,18 @@ public:
 			IDataObjectHandle::AccessType accessType = IDataObjectHandle::WRITE,
 			bool optional = false) {
 
-		m_outputDataObjects.insert(tag, address, optional, accessType);
+		bool res = m_outputDataObjects.insert(tag, address, optional, accessType);
+
+		MsgStream log ( msgSvc() , name() );
+
+		if (LIKELY(res)) {
+			log << MSG::DEBUG << "Handle for " << tag << " (" << address << ")"
+					<< " successfully created and stored." << endmsg;
+		} else {
+
+			log << MSG::ERROR << "Handle for " << tag << " (" << address << ")"
+				<< " could not be created." << endmsg;
+		}
 
 		return m_outputDataObjects[tag].createHandle < T > (this);
 
@@ -334,6 +370,87 @@ public:
 		return m_outputDataObjects;
 	}
 
+	void registerTool(IAlgTool * tool) const {
+		MsgStream log(msgSvc(), name());
+
+		log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
+		m_tools.push_back(tool);
+	}
+
+	void deregisterTool(IAlgTool * tool) const {
+		std::vector<IAlgTool *>::iterator it = std::find(m_tools.begin(),
+				m_tools.end(), tool);
+
+		MsgStream log(msgSvc(), name());
+		if (it != m_tools.end()) {
+			log << MSG::DEBUG << "De-Registering tool " << tool->name()
+					<< endmsg;
+			m_tools.erase(it);
+		} else {
+			log << MSG::DEBUG << "Could not de-register tool " << tool->name()
+					<< endmsg;
+		}
+	}
+
+	void registerToolHandle(ToolHandleInfo * toolhandle) const {
+
+		MsgStream log(msgSvc(), name());
+
+		log << MSG::DEBUG << "Registering toolhandle " << endmsg;
+
+		m_toolHandles.push_back(toolhandle);
+	}
+
+	void deregisterToolHandle(ToolHandleInfo * toolhandle) const {
+		std::vector<ToolHandleInfo *>::iterator it = std::find(
+				m_toolHandles.begin(), m_toolHandles.end(), toolhandle);
+
+		MsgStream log(msgSvc(), name());
+		if (it != m_toolHandles.end()) {
+
+			log << MSG::DEBUG << "De-Registering toolhandle" << endmsg;
+
+			m_toolHandles.erase(it);
+		} else {
+			log << MSG::DEBUG << "Could not de-register toolhandle" << endmsg;
+		}
+	}
+
+	/** Declare used tool
+	 *
+	 *  @param toolTypeAndName
+	 *  @param parent, default public tool
+	 *  @param create if necessary, default true
+	 *  @return ToolHandle
+	 */
+	template<class T>
+	ToolHandle<T> & declareTool(std::string toolTypeAndName = 0,
+			const IInterface* parent = 0, bool createIf = true) {
+
+		if (toolTypeAndName == "")
+			toolTypeAndName = System::typeinfoName(typeid(T));
+
+		ToolHandle<T> * result = new ToolHandle<T>(toolTypeAndName, parent,
+				createIf);
+		m_toolHandles.push_back(result);
+
+		MsgStream log(msgSvc(), name());
+
+		if (result) {
+			log << MSG::DEBUG << "Handle for tool" << toolTypeAndName
+					<< " successfully created and stored." << endmsg;
+		} else {
+
+			log << MSG::ERROR << "Handle for tool" << toolTypeAndName
+					<< " could not be created." << endmsg;
+		}
+
+		return *result;
+
+	}
+
+	const std::vector<IAlgTool *> & tools() const;
+
 protected:
 
 	  DataObjectDescriptorCollection & inputDataObjects() {
@@ -342,6 +459,12 @@ protected:
 	  DataObjectDescriptorCollection & outputDataObjects() {
 		  return m_outputDataObjects;
 	  }
+
+	  std::vector<IAlgTool *> & tools();
+
+private:
+   //place IAlgTools defined via ToolHandles in m_tools
+   void initToolHandles() const;
 
 public:
 
@@ -435,7 +558,11 @@ private:
 
   DataObjectDescriptorCollection m_inputDataObjects; //input data objects
   DataObjectDescriptorCollection m_outputDataObjects; //output data objects
-  std::string m_dataRoot;
+
+  //tools used by tool
+  mutable std::vector<IAlgTool *> m_tools;
+  mutable std::vector<ToolHandleInfo *> m_toolHandles;
+  mutable bool m_toolHandlesInit;  /// flag indicating whether ToolHandle tools have been added to m_tools
 
   /** implementation of service method */
   StatusCode service_i(const std::string& algName,

@@ -192,37 +192,49 @@ bool DataObjectDescriptorCollection::contains(const std::string & s) const {
 	return s != "" && m_dataItems.find(s) != m_dataItems.end();
 }
 
-void DataObjectDescriptorCollection::insert(const std::string& tag,
+bool DataObjectDescriptorCollection::insert(const std::string& tag,
 		const std::string& address,
 		const bool optional,
 		const IDataObjectHandle::AccessType accessType){
 
 	if(!contains(tag)){
-		m_dataItems.emplace(std::piecewise_construct,
+		auto res = m_dataItems.emplace(std::piecewise_construct,
 		          std::make_tuple(tag),
 		          std::make_tuple(tag, address, optional, accessType));
+
+		return res.second;
 	}
+
+	return false;
 
 }
 
-void DataObjectDescriptorCollection::insert(const std::string& tag,
+bool DataObjectDescriptorCollection::insert(const std::string& tag,
 		const std::vector<std::string>& addresses,
 		const bool optional,
 		const IDataObjectHandle::AccessType accessType){
 
 	if(!contains(tag)){
-		m_dataItems.emplace(std::piecewise_construct,
+		auto res = m_dataItems.emplace(std::piecewise_construct,
 		          std::make_tuple(tag),
 		          std::make_tuple(tag, addresses, optional, accessType));
+
+		return res.second;
 	}
+
+	return false;
 
 }
 
-void DataObjectDescriptorCollection::insert(const DataObjectDescriptor & item){
+bool DataObjectDescriptorCollection::insert(const DataObjectDescriptor & item){
 
 	if(!contains(item.tag())){
-		m_dataItems.emplace(item.tag(), item);
+		auto res = m_dataItems.emplace(item.tag(), item);
+
+		return res.second;
 	}
+
+	return false;
 
 }
 
@@ -242,13 +254,17 @@ void DataObjectDescriptorCollection::update(const std::string & item){
 
 }
 
-void DataObjectDescriptorCollection::insert(const std::string & item){
+bool DataObjectDescriptorCollection::insert(const std::string & item){
 
 	std::string tag = DataObjectDescriptor::tag(item);
 
 	if(tag != "" && !contains(tag)){
-		m_dataItems.emplace(tag, item);
+		auto res = m_dataItems.emplace(tag, item);
+
+		return res.second;
 	}
+
+	return false;
 
 }
 

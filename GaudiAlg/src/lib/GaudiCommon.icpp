@@ -266,7 +266,7 @@ StatusCode GaudiCommon<PBASE>::
   auto fixLocation = [&] (const std::string & location) -> std::string {
 	  std::string result = fullTESLocation(location, UseRootInTES);
 
-	  info() << "Changing " << location << " to "
+	  debug() << "Changing " << location << " to "
 			  << result << endmsg;
 
 	  //check whether we have an absolute path if yes return it - else prepend DataManager Root
@@ -331,14 +331,14 @@ StatusCode GaudiCommon<PBASE>::
   if ( msgLevel(MSG::DEBUG) )
   {
     debug() << "Tools to release :";
-    for ( AlgTools::const_iterator i = m_tools.begin();
-          i != m_tools.end(); ++i )
+    for ( AlgTools::const_iterator i = PBASE::tools().begin();
+          i != PBASE::tools().end(); ++i )
     {
       debug() << " " << (*i)->name();
     }
     debug() << endmsg;
   }
-  while ( !m_tools.empty() ) { sc = sc && releaseTool( m_tools.back() ) ; }
+  while ( !PBASE::tools().empty() ) { sc = sc && releaseTool( PBASE::tools().back() ) ; }
 
   // release all located services
   if ( msgLevel(MSG::DEBUG) )
@@ -418,9 +418,9 @@ StatusCode GaudiCommon<PBASE>::releaseTool ( const IAlgTool* algTool ) const
   if( this->toolSvc() == 0 )
   { return Error ( "releaseTool(IAlgTool):: IToolSvc* points to NULL!" ) ; }
   // find a tool in the list of active tools
-  AlgTools::reverse_iterator it =
-    std::find( m_tools.rbegin() , m_tools.rend() , algTool ) ;
-  if(  m_tools.rend() == it )
+  AlgTools::const_reverse_iterator it =
+    std::find( PBASE::tools().rbegin() , PBASE::tools().rend() , algTool ) ;
+  if(  PBASE::tools().rend() == it )
   { return Warning("releaseTool(IAlgTool):: IAlgTool* is not active"   ) ; }
   // get the tool
   IAlgTool* t = *it ;
@@ -429,7 +429,7 @@ StatusCode GaudiCommon<PBASE>::releaseTool ( const IAlgTool* algTool ) const
   if ( msgLevel(MSG::DEBUG) )
   { debug() << "Releasing tool '" << name << "'" << endmsg; }
   // remove the tool from the lists
-  m_tools.erase( --it.base() ) ;
+  PBASE::deregisterTool(t);
   // release tool
   if ( msgLevel(MSG::DEBUG) ) {
     this->debug() << "The tool '" << t->name() << "' of type '"
@@ -468,23 +468,6 @@ StatusCode GaudiCommon<PBASE>::releaseSvc ( const IInterface* Svc  ) const
   return Warning( "releaseSvc(IInterface):: IInterface* is not a service" );
 }
 // ============================================================================
-
-// ============================================================================
-// Add the given tool to the list of active tools
-// ============================================================================
-template < class PBASE >
-void GaudiCommon<PBASE>::addToToolList( IAlgTool * tool ) const
-{
-  if( 0 != tool ) {
-    if ( this->msgLevel ( MSG::DEBUG ) ) {
-      this->debug() << "The tool of type '"
-                    << System::typeinfoName(typeid(*tool))
-                    << "' has been added with the name '"
-                    << tool->name() << "'" << endmsg ;
-    }
-    m_tools.push_back( tool ) ;
-  }
-}
 // ============================================================================
 
 // ============================================================================

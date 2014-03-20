@@ -13,6 +13,7 @@
 #include "GaudiKernel/ServiceLocatorHelper.h"
 #include "GaudiKernel/ThreadGaudi.h"
 #include "GaudiKernel/Guards.h"
+#include "GaudiKernel/ToolHandle.h"
 
 //------------------------------------------------------------------------------
 StatusCode AlgTool::queryInterface
@@ -207,6 +208,7 @@ AlgTool::AlgTool( const std::string& type,
   , m_propertyMgr   ( new PropertyMgr() )
   , m_interfaceList (       )
   , m_threadID      (       )
+  , m_toolHandlesInit(false)
   , m_pAuditorSvc   ( 0     )
   , m_auditInit     ( false )
   , m_state         ( Gaudi::StateMachine::CONFIGURED )
@@ -323,7 +325,7 @@ StatusCode AlgTool::sysInitialize() {
 
   auto fixLocation = [&] (const std::string & location) -> std::string {
 
-	  log << MSG::INFO << "Changing " << location << " to "
+	  log << MSG::DEBUG << "Changing " << location << " to "
 	  			  << ('/' ? location : rootName + location) << endmsg;
 
 	  //check whether we have an absolute path if yes return it - else prepend DataManager Root
@@ -629,6 +631,43 @@ AlgTool::~AlgTool()
   if( m_evtSvc ) m_evtSvc->release();
   if( m_pAuditorSvc ) m_pAuditorSvc->release();
   if ( m_pMonitorSvc ) { m_pMonitorSvc->undeclareAll(this); m_pMonitorSvc->release(); }
+}
+
+
+void AlgTool::initToolHandles() const{
+
+	MsgStream log ( msgSvc() , name() ) ;
+
+	for(auto th : m_toolHandles){
+		IAlgTool * tool = nullptr;
+
+		//if(th->retrieve().isFailure())
+			//log << MSG::DEBUG << "Error in retrieving tool from ToolHandle" << endmsg;
+
+		//get generic tool interface from ToolHandle
+		if(th->retrieve(tool).isSuccess() && tool != nullptr){
+			m_tools.push_back(tool);
+			log << MSG::DEBUG << "Adding ToolHandle tool " << tool->name() << " (" << tool->type() << ")" << endmsg;
+		} else {
+			log << MSG::DEBUG << "Trying to add nullptr tool" << endmsg;
+		}
+	}
+
+	m_toolHandlesInit = true;
+}
+
+const std::vector<IAlgTool *> & AlgTool::tools() const {
+	if(UNLIKELY(!m_toolHandlesInit))
+		initToolHandles();
+
+	return m_tools;
+}
+
+std::vector<IAlgTool *> & AlgTool::tools() {
+	if(UNLIKELY(!m_toolHandlesInit))
+		initToolHandles();
+
+	return m_tools;
 }
 
 //------------------------------------------------------------------------------

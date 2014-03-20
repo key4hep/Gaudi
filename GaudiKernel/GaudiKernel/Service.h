@@ -14,6 +14,8 @@
 #include "GaudiKernel/CommonMessaging.h"
 #include "GaudiKernel/SmartIF.h"
 #include <Gaudi/PluginService.h>
+#include "GaudiKernel/ToolHandle.h"
+
 // ============================================================================
 #include <vector>
 // ============================================================================
@@ -228,6 +230,24 @@ public:
   {
   	return m_propertyMgr -> declareRemoteProperty ( name , rsvc , rname ) ;
   }
+
+  /** Declare used tool
+	 *
+	 *  @param toolTypeAndName
+	 *  @param parent, default public tool
+	 *  @param create if necessary, default true
+	 *  @return ToolHandle
+	 */
+	template<class T>
+	ToolHandle<T> declareTool(std::string toolTypeAndName = 0,
+			const IInterface* parent = 0, bool createIf = true) {
+
+		if (toolTypeAndName == "")
+			toolTypeAndName = System::typeinfoName(typeid(T));
+
+		return ToolHandle<T>(toolTypeAndName, parent, createIf);
+	}
+
   // ==========================================================================
   /** The standard auditor service.May not be invoked before sysInitialize()
    *  has been invoked.

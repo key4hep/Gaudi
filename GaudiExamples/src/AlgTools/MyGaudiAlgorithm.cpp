@@ -12,9 +12,7 @@ DECLARE_COMPONENT(MyGaudiAlgorithm)
 // Constructor
 //------------------------------------------------------------------------------
 MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
-  : GaudiAlgorithm(name, ploc)
-  , m_myPrivToolHandle("MyTool/PrivToolHandle", this)
-  , m_myPubToolHandle("MyTool/PubToolHandle") {
+  : GaudiAlgorithm(name, ploc) {
   //------------------------------------------------------------------------------
   declareProperty("ToolWithName", m_privateToolType = "MyTool",
                   "Type of the tool to use (internal name is ToolWithName)");
@@ -32,6 +30,9 @@ MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
   std::cout << "handle " << m_hits->dataProductName() << " is " << (m_hits.isValid() ? "" : "NOT") << " valid" << std::endl;
   std::cout << "handle " << m_raw->dataProductName() << " is " << (m_raw.isValid() ? "" : "NOT") << " valid" << std::endl;
   std::cout << "handle " << m_selectedTracks->dataProductName() << " is " << (m_selectedTracks.isValid() ? "" : "NOT") << " valid" << std::endl;
+
+  m_myPrivToolHandle = declareTool<IMyTool>("MyTool/PrivToolHandle", this);
+  m_myPubToolHandle = declareTool<IMyTool>("MyTool/PubToolHandle");
 }
 
 //------------------------------------------------------------------------------
@@ -72,12 +73,16 @@ StatusCode MyGaudiAlgorithm::execute() {
   //------------------------------------------------------------------------------
   info() << "executing...." << endmsg;
 
+  info() << "tools created with tool<T>..." << endmsg;
+
   m_publicTool->doIt();
   m_privateTool->doIt();
   m_publicGTool->doIt();
   m_privateGTool->doIt();
   m_privateToolWithName->doIt();
   m_privateOtherInterface->doItAgain();
+
+  info() << "tools created via ToolHandle<T>...." << endmsg;
 
   m_myPrivToolHandle->doIt();
   m_myPubToolHandle->doIt();

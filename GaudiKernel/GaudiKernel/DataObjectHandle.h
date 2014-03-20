@@ -12,7 +12,7 @@ template<typename T>
 class DataObjectHandle : public MinimalDataObjectHandle {
 
 public:
-      
+
   /// Initialises mother class
   DataObjectHandle(DataObjectDescriptor & descriptor,
                    IAlgorithm* fatherAlg);
@@ -42,7 +42,7 @@ private:
   IAlgTool* m_fatherTool;
   bool m_goodType;
   DataObjectHandle(const DataObjectHandle& );
-  DataObjectHandle& operator=(const DataObjectHandle& );  
+  DataObjectHandle& operator=(const DataObjectHandle& );
   
 };
 
