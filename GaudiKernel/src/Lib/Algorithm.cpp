@@ -228,22 +228,37 @@ StatusCode Algorithm::sysInitialize() {
 
     //init data handle
   for(auto tag : m_inputDataObjects){
-		if (m_inputDataObjects[tag].valid()) {
-			m_inputDataObjects[tag].setAddress(
-					fixLocation(m_inputDataObjects[tag].address()));
+		if (m_inputDataObjects[tag].isValid()) {
+			m_inputDataObjects[tag].setDataProductName(
+					fixLocation(m_inputDataObjects[tag].dataProductName()));
 
-			auto altAddress = m_inputDataObjects[tag].alternativeAddresses();
+			auto altAddress = m_inputDataObjects[tag].descriptor()->alternativeAddresses();
 			for (uint i = 0; i < altAddress.size(); ++i)
 				altAddress[i] = fixLocation(altAddress[i]);
-			m_inputDataObjects[tag].setAltAddress(altAddress);
+			m_inputDataObjects[tag].descriptor()->setAltAddress(altAddress);
 
-			m_inputDataObjects[tag].getBaseHandle()->initialize();
+			  if(m_inputDataObjects[tag].initialize().isSuccess())
+					log << MSG::DEBUG << "Data Handle " << tag
+					<< " (" << m_inputDataObjects[tag].dataProductName()
+					<< ") initialized" << endmsg;
+			  else
+				  log << MSG::FATAL << "Data Handle " << tag
+					<< " (" << m_inputDataObjects[tag].dataProductName()
+					<< ") could NOT be initialized" << endmsg;
 		}
   }
   for(auto tag : m_outputDataObjects){
-	  if(m_outputDataObjects[tag].valid()){
-		  m_outputDataObjects[tag].setAddress(fixLocation(m_outputDataObjects[tag].address()));
-		  m_outputDataObjects[tag].getBaseHandle()->initialize();
+	  if(m_outputDataObjects[tag].isValid()){
+		  m_outputDataObjects[tag].setDataProductName(fixLocation(m_outputDataObjects[tag].dataProductName()));
+
+		  if(m_outputDataObjects[tag].initialize().isSuccess())
+			  log << MSG::DEBUG << "Data Handle " << tag
+			  << " (" << m_outputDataObjects[tag].dataProductName()
+			  << ") initialized" << endmsg;
+		  else
+			  log << MSG::FATAL << "Data Handle " << tag
+			  << " (" << m_outputDataObjects[tag].dataProductName()
+			  << ") could NOT be initialized" << endmsg;
 	  }
   }
 
@@ -273,13 +288,13 @@ StatusCode Algorithm::sysInitialize() {
 		  auto inputs = tool->inputDataObjects();
 		  for(auto dod : inputs){
 			  log << MSG::DEBUG << "\tInput: " << dod << endmsg;
-			  m_inputDataObjects.insert(inputs[dod]);
+			  m_inputDataObjects.insert(&inputs[dod]);
 		  }
 
 		  auto outputs = tool->outputDataObjects();
 		  for(auto dod : outputs){
 			  log << MSG::DEBUG << "\tOutput: " << dod << endmsg;
-			  m_outputDataObjects.insert(outputs[dod]);
+			  m_outputDataObjects.insert(&outputs[dod]);
 		  }
 
 		  addToolDOD(tool);
@@ -1287,10 +1302,10 @@ const std::vector<MinimalDataObjectHandle*> Algorithm::handles(){
 	std::vector<MinimalDataObjectHandle*> handles;
 
 	for(auto it : m_inputDataObjects)
-		handles.push_back(m_inputDataObjects[it].getBaseHandle().get());
+		handles.push_back(&m_inputDataObjects[it]);
 
 	for(auto it : m_outputDataObjects)
-		handles.push_back(m_outputDataObjects[it].getBaseHandle().get());
+		handles.push_back(&m_outputDataObjects[it]);
 
 	return handles;
 

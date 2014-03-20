@@ -137,6 +137,9 @@ private:
       m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
       {  }
 
+  //ToolHandle(const ToolHandle& );
+  //ToolHandle& operator=(const ToolHandle& );
+
 public:
 
   /** Retrieve the AlgTool. Release existing tool if needed.

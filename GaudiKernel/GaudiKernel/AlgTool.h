@@ -16,7 +16,7 @@
 #include <Gaudi/PluginService.h>
 #include "GaudiKernel/ToolHandle.h"
 
-#include "GaudiKernel/IDataObjectHandle.h"
+#include "GaudiKernel/MinimalDataObjectHandle.h"
 #include "GaudiKernel/DataObjectDescriptor.h"
 
 template<class T>
@@ -261,96 +261,117 @@ public:
 
 	/** Declare input data object
 	 *
-	 *  @param tag to identify input object in python config
+	 *  @param propertyName to identify input object in python config
+	 *  @param handle data handle
 	 *  @param address relative or absolute address in TES
 	 *  @param optional optional input
 	 *  @param accessType read, write or update
-	 *  @return DataObjectHandle
 	 */
 
 	template<class T>
-	SmartIF<DataObjectHandle<T> > declareInput(const std::string& tag,
+	StatusCode declareInput(const std::string& propertyName, DataObjectHandle<T> & handle,
 			const std::string& address = DataObjectDescriptor::NULL_,
-			bool optional = false, IDataObjectHandle::AccessType accessType =
-					IDataObjectHandle::READ) {
+			bool optional = false, MinimalDataObjectHandle::AccessType accessType =
+					MinimalDataObjectHandle::READ) {
 
-		bool res = m_inputDataObjects.insert(tag, address, optional, accessType);
+		bool res = m_inputDataObjects.insert(propertyName, &handle);
 
-		MsgStream log ( msgSvc() , name() );
+		handle.descriptor()->setTag(propertyName);
+		handle.descriptor()->setAddress(address);
+		handle.descriptor()->setAccessType(accessType);
+		handle.descriptor()->setOptional(optional);
+
+		handle.setOwner(this);
+
+		MsgStream log(msgSvc(), name());
 
 		if (LIKELY(res)) {
-			log << MSG::DEBUG << "Handle for " << tag << " (" << address << ")"
-					<< " successfully created and stored." << endmsg;
+			log << MSG::DEBUG << "Handle for " << propertyName << " ("
+					<< address << ")" << " successfully created and stored."
+					<< endmsg;
 		} else {
-
-			log << MSG::ERROR << "Handle for " << tag << " (" << address << ")"
-				<< " could not be created." << endmsg;
+			log << MSG::ERROR << "Handle for " << propertyName << " ("
+					<< address << ")" << " could not be created." << endmsg;
 		}
 
-		return m_inputDataObjects[tag].createHandle < T > (this);
+		return res;
 
 	}
 
 	/** Declare input data object
 	 *
-	 *  @param tag to identify input object in python config
+	 *  @param propertyName to identify input object in python config
+     *  @param handle data handle
 	 *  @param addresses relative or absolute addresses in TES, first is main address
 	 *  @param optional optional input
 	 *  @param accessType read, write or update
-	 *  @return DataObjectHandle
 	 */
 
 	template<class T>
-	SmartIF<DataObjectHandle<T> > declareInput(const std::string& tag,
+	StatusCode declareInput(const std::string& propertyName, DataObjectHandle<T> & handle,
 			const std::vector<std::string>& addresses,
-			bool optional = false, IDataObjectHandle::AccessType accessType =
-					IDataObjectHandle::READ) {
+			bool optional = false, MinimalDataObjectHandle::AccessType accessType =
+					MinimalDataObjectHandle::READ) {
 
-		bool res = m_inputDataObjects.insert(tag, addresses, optional, accessType);
+		bool res = m_inputDataObjects.insert(propertyName, &handle);
 
-		MsgStream log ( msgSvc() , name() );
+		handle.descriptor()->setTag(propertyName);
+		handle.descriptor()->setAddresses(addresses);
+		handle.descriptor()->setAccessType(accessType);
+		handle.descriptor()->setOptional(optional);
+
+		handle.setOwner(this);
+
+		MsgStream log(msgSvc(), name());
 
 		if (LIKELY(res)) {
-			log << MSG::DEBUG << "Handle for " << tag
-					<< " successfully created and stored." << endmsg;
+			log << MSG::DEBUG << "Handle for " << propertyName << " ("
+					<< addresses[0] << ")" << " successfully created and stored."
+					<< endmsg;
 		} else {
-
-			log << MSG::ERROR << "Handle for " << tag
-				<< " could not be created." << endmsg;
+			log << MSG::ERROR << "Handle for " << propertyName << " ("
+					<< addresses[0] << ")" << " could not be created." << endmsg;
 		}
 
-		return m_inputDataObjects[tag].createHandle < T > (this);
+		return res;
 
 	}
 
 	/** Declare output data object
 	 *
-	 *  @param tag to identify input object in python config
+	 *  @param propertyName to identify input object in python config
+	 *  @param handle data handle
 	 *  @param address relative or absolute address in TES
 	 *  @param optional optional input
 	 *  @param accessType write or update
-	 *  @return DataObjectHandle
 	 */
 	template<class T>
-	SmartIF<DataObjectHandle<T> > declareOutput(const std::string& tag,
+	StatusCode declareOutput(const std::string& propertyName, DataObjectHandle<T> & handle,
 			const std::string& address = DataObjectDescriptor::NULL_,
-			IDataObjectHandle::AccessType accessType = IDataObjectHandle::WRITE,
+			MinimalDataObjectHandle::AccessType accessType = MinimalDataObjectHandle::WRITE,
 			bool optional = false) {
 
-		bool res = m_outputDataObjects.insert(tag, address, optional, accessType);
+		bool res = m_outputDataObjects.insert(propertyName, &handle);
 
-		MsgStream log ( msgSvc() , name() );
+		handle.descriptor()->setTag(propertyName);
+		handle.descriptor()->setAddress(address);
+		handle.descriptor()->setAccessType(accessType);
+		handle.descriptor()->setOptional(optional);
+
+		handle.setOwner(this);
+
+		MsgStream log(msgSvc(), name());
 
 		if (LIKELY(res)) {
-			log << MSG::DEBUG << "Handle for " << tag << " (" << address << ")"
-					<< " successfully created and stored." << endmsg;
+			log << MSG::DEBUG << "Handle for " << propertyName << " ("
+					<< address << ")" << " successfully created and stored."
+					<< endmsg;
 		} else {
-
-			log << MSG::ERROR << "Handle for " << tag << " (" << address << ")"
-				<< " could not be created." << endmsg;
+			log << MSG::ERROR << "Handle for " << propertyName << " ("
+					<< address << ")" << " could not be created." << endmsg;
 		}
 
-		return m_outputDataObjects[tag].createHandle < T > (this);
+		return res;
 
 	}
 

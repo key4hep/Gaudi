@@ -334,20 +334,35 @@ StatusCode AlgTool::sysInitialize() {
 
     //init data handle
   for(auto tag : m_inputDataObjects){
-	  if(m_inputDataObjects[tag].valid()){
-		  m_inputDataObjects[tag].setAddress(fixLocation(m_inputDataObjects[tag].address()));
-		  auto altAddress = m_inputDataObjects[tag].alternativeAddresses();
+	  if(m_inputDataObjects[tag].isValid()){
+		  m_inputDataObjects[tag].setDataProductName(fixLocation(m_inputDataObjects[tag].dataProductName()));
+		  auto altAddress = m_inputDataObjects[tag].descriptor()->alternativeAddresses();
 		  for(uint i = 0; i < altAddress.size(); ++i)
 			  altAddress[i] = fixLocation(altAddress[i]);
-		  m_inputDataObjects[tag].setAltAddress(altAddress);
+		  m_inputDataObjects[tag].descriptor()->setAltAddress(altAddress);
 
-		  m_inputDataObjects[tag].getBaseHandle()->initialize();
+		  if(m_inputDataObjects[tag].initialize().isSuccess())
+				log << MSG::DEBUG << "Data Handle " << tag
+				<< " (" << m_inputDataObjects[tag].dataProductName()
+				<< ") initialized" << endmsg;
+		  else
+			  log << MSG::FATAL << "Data Handle " << tag
+				<< " (" << m_inputDataObjects[tag].dataProductName()
+				<< ") could NOT be initialized" << endmsg;
 	  }
   }
   for(auto tag : m_outputDataObjects){
-	  if(m_outputDataObjects[tag].valid()){
-		  m_inputDataObjects[tag].setAddress(fixLocation(m_inputDataObjects[tag].address()));
-	  	  m_outputDataObjects[tag].getBaseHandle()->initialize();
+	  if(m_outputDataObjects[tag].isValid()){
+		  m_inputDataObjects[tag].setDataProductName(fixLocation(m_inputDataObjects[tag].dataProductName()));
+
+		  if(m_outputDataObjects[tag].initialize().isSuccess())
+			  log << MSG::DEBUG << "Data Handle " << tag
+			  << " (" << m_outputDataObjects[tag].dataProductName()
+			  << ") initialized" << endmsg;
+		  else
+			  log << MSG::FATAL << "Data Handle " << tag
+			  << " (" << m_outputDataObjects[tag].dataProductName()
+			  << ") could NOT be initialized" << endmsg;
 	  }
   }
 

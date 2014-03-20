@@ -1,6 +1,5 @@
 #pragma once
 
-#include <GaudiKernel/IDataObjectHandle.h>
 #include <GaudiKernel/MinimalDataObjectHandle.h>
 #include <GaudiKernel/GaudiException.h>
 #include <GaudiKernel/Property.h>
@@ -26,19 +25,20 @@ public:
 	DataObjectDescriptor(const std::string& tag,
 			const std::string& address,
 			const bool optional = false,
-			const IDataObjectHandle::AccessType accessType = IDataObjectHandle::READ)
+			const MinimalDataObjectHandle::AccessType accessType = MinimalDataObjectHandle::READ)
 	: m_tag(tag), m_address(address), m_optional(optional), m_accessType(accessType) {};
 
 	DataObjectDescriptor(const std::string& tag,
 			const std::vector<std::string>& addresses,
 			const bool optional = false,
-			const IDataObjectHandle::AccessType accessType = IDataObjectHandle::READ)
+			const MinimalDataObjectHandle::AccessType accessType = MinimalDataObjectHandle::READ)
 	: m_tag(tag), m_address(addresses[0]), m_optional(optional), m_accessType(accessType) {
 
 		setAltAddress(addresses, true); //
 	};
 
-	DataObjectDescriptor(const DataObjectDescriptor & value) {
+private:
+	DataObjectDescriptor(const DataObjectDescriptor & value); /* {
 
 		//std::cout << "copy constructor for " << value.m_tag << ": " << "my handle is " <<
 		//			(m_handle.isValid() ? "" : "NOT") << "valid; other handle is " << (value.m_handle.isValid() ? "" : "NOT") << " valid" << std::endl;
@@ -51,15 +51,13 @@ public:
 		setAltAddress(value.m_altAddresses);
 		setOptional(value.m_optional);
 		setAccessType(value.m_accessType);
-	}
+	}*/
 
-	DataObjectDescriptor(const std::string s){
+	/*DataObjectDescriptor(const std::string s){
 		fromString(s);
-	}
+	}*/
 
-public:
-
-	DataObjectDescriptor & operator=(const DataObjectDescriptor& value){
+	DataObjectDescriptor & operator=(const DataObjectDescriptor& value); /*{
 
 		//std::cout << "operator= for " << value.m_tag << ": " << "my handle is " <<
 		//			(m_handle.isValid() ? "" : "NOT") << "valid; other handle is " << (value.m_handle.isValid() ? "" : "NOT") << " valid" << std::endl;
@@ -74,10 +72,12 @@ public:
 		setAccessType(value.m_accessType);
 
 		return *this;
-	}
+	}*/
 
-	IDataObjectHandle::AccessType accessType() const;
-	void setAccessType(IDataObjectHandle::AccessType accessType);
+public:
+
+	MinimalDataObjectHandle::AccessType accessType() const;
+	void setAccessType(MinimalDataObjectHandle::AccessType accessType);
 
 	bool optional() const;
 	void setOptional(bool optional);
@@ -100,7 +100,7 @@ public:
 
 	const std::string pythonRepr() const;
 
-	template<class T>
+	/*template<class T>
 	SmartIF<DataObjectHandle<T> > createHandle(IAlgorithm* fatherAlg) {
 
 		if (!m_handle.isValid() || m_handle->dataProductName() != address()){
@@ -132,7 +132,7 @@ public:
 
 	SmartIF<MinimalDataObjectHandle> getBaseHandle() const {
 		return m_handle;
-	}
+	}*/
 
 	//SmartIF<MinimalDataObjectHandle> getHandle() const {
 		//return m_handle;
@@ -143,7 +143,7 @@ public:
 	}
 
 private:
-	void setHandle(SmartIF<MinimalDataObjectHandle> handle);
+	//void setHandle(SmartIF<MinimalDataObjectHandle> handle);
 	void setAltAddress(const std::vector<std::string> & addresses, bool skipFirst);
 
 private:
@@ -151,8 +151,8 @@ private:
 	std::string m_address;
 	std::vector<std::string> m_altAddresses;
 	bool m_optional;
-	IDataObjectHandle::AccessType m_accessType;
-	SmartIF<MinimalDataObjectHandle> m_handle;
+	MinimalDataObjectHandle::AccessType m_accessType;
+	//SmartIF<MinimalDataObjectHandle> m_handle;
 
 };
 
@@ -176,67 +176,60 @@ public:
 	bool contains(const std::string & o) const;
 
 	bool insert(const std::string& tag,
-				const std::string& address,
-				const bool optional = false,
-				const IDataObjectHandle::AccessType accessType = IDataObjectHandle::READ);
+				MinimalDataObjectHandle * descriptor);
 
-	bool insert(const std::string& tag,
-				const std::vector<std::string>& addresses,
-				const bool optional = false,
-				const IDataObjectHandle::AccessType accessType = IDataObjectHandle::READ);
+	bool insert(MinimalDataObjectHandle * item);
+	bool update(MinimalDataObjectHandle * item);
 
-	bool insert(const DataObjectDescriptor & item);
-	void update(const DataObjectDescriptor & item);
+	//bool insert(const std::string & item);
+	bool update(const std::string & item);
 
-	bool insert(const std::string & item);
-	void update(const std::string & item);
-
-	void insertOrUpdate(const std::string & item);
+	//void insertOrUpdate(const std::string & item);
 
 	boost::transform_iterator<
-		get_key<std::string, DataObjectDescriptor>,
-		std::map<std::string, DataObjectDescriptor>::iterator>
+		get_key<std::string, MinimalDataObjectHandle *>,
+		std::map<std::string, MinimalDataObjectHandle *>::iterator>
 	begin() {
-		return boost::transform_iterator<get_key<std::string, DataObjectDescriptor>,
-										 std::map<std::string, DataObjectDescriptor>::iterator>(
-												 m_dataItems.begin(), get_key<std::string, DataObjectDescriptor>());
+		return boost::transform_iterator<get_key<std::string, MinimalDataObjectHandle *>,
+										 std::map<std::string, MinimalDataObjectHandle *>::iterator>(
+												 m_dataItems.begin(), get_key<std::string, MinimalDataObjectHandle *>());
 	}
 
 	boost::transform_iterator<
-		get_key<std::string, DataObjectDescriptor>,
-		std::map<std::string, DataObjectDescriptor>::iterator>
+		get_key<std::string, MinimalDataObjectHandle *>,
+		std::map<std::string, MinimalDataObjectHandle *>::iterator>
 	end() {
-		return boost::transform_iterator<get_key<std::string, DataObjectDescriptor>,
-										 std::map<std::string, DataObjectDescriptor>::iterator>(
-												 m_dataItems.end(), get_key<std::string, DataObjectDescriptor>());
+		return boost::transform_iterator<get_key<std::string, MinimalDataObjectHandle *>,
+										 std::map<std::string, MinimalDataObjectHandle *>::iterator>(
+												 m_dataItems.end(), get_key<std::string, MinimalDataObjectHandle *>());
 	}
 
 	boost::transform_iterator<
-		get_key<std::string, DataObjectDescriptor>,
-		std::map<std::string, DataObjectDescriptor>::const_iterator>
+		get_key<std::string, MinimalDataObjectHandle *>,
+		std::map<std::string, MinimalDataObjectHandle *>::const_iterator>
 	begin() const {
-		return boost::transform_iterator<get_key<std::string, DataObjectDescriptor>,
-										 std::map<std::string, DataObjectDescriptor>::const_iterator>(
-												 m_dataItems.begin(), get_key<std::string, DataObjectDescriptor>());
+		return boost::transform_iterator<get_key<std::string, MinimalDataObjectHandle *>,
+										 std::map<std::string, MinimalDataObjectHandle *>::const_iterator>(
+												 m_dataItems.begin(), get_key<std::string, MinimalDataObjectHandle *>());
 	}
 
 	boost::transform_iterator<
-		get_key<std::string, DataObjectDescriptor>,
-		std::map<std::string, DataObjectDescriptor>::const_iterator>
+		get_key<std::string, MinimalDataObjectHandle *>,
+		std::map<std::string, MinimalDataObjectHandle *>::const_iterator>
 	end() const {
-		return boost::transform_iterator<get_key<std::string, DataObjectDescriptor>,
-										 std::map<std::string, DataObjectDescriptor>::const_iterator>(
-												 m_dataItems.end(), get_key<std::string, DataObjectDescriptor>());
+		return boost::transform_iterator<get_key<std::string, MinimalDataObjectHandle *>,
+										 std::map<std::string, MinimalDataObjectHandle *>::const_iterator>(
+												 m_dataItems.end(), get_key<std::string, MinimalDataObjectHandle *>());
 	}
 
-	const DataObjectDescriptor & operator[](const std::string & tag) const;
-	DataObjectDescriptor & operator[](const std::string & tag);
+	const MinimalDataObjectHandle & operator[](const std::string & tag) const;
+	MinimalDataObjectHandle & operator[](const std::string & tag);
 
 	const std::string toString() const;
 	const std::string pythonRepr() const;
 
 private:
-	std::map<std::string, DataObjectDescriptor> m_dataItems;
+	std::map<std::string, MinimalDataObjectHandle *> m_dataItems;
 
 };
 

@@ -1,22 +1,52 @@
 #ifndef GAUDIHIVE_MINIMALDATAOBJECTHANDLE_H
 #define GAUDIHIVE_MINIMALDATAOBJECTHANDLE_H
 
-#include "GaudiKernel/IDataObjectHandle.h"
+#include "GaudiKernel/StatusCode.h"
+
 #include <vector>
+#include <string>
 
 class DataObjectDescriptor;
+class DataObjectDescriptorCollection;
+class Algorithm;
+class AlgTool;
 
-class MinimalDataObjectHandle : public implements1<IDataObjectHandle> {
+template <class U> class GaudiCommon;
 
-public:        
+class MinimalDataObjectHandle {
+
+public:
+	  /// The type of the access
+	  // Genreflex cannot compile it with the c++11 features (strong typed + enum type)
+	  enum AccessType {
+	    /// Read only access to the data object
+	    READ,
+	    /// Data object is produced
+	    WRITE,
+	    /// Update of data object is allowed
+	    UPDATE
+	    };
+
+	  friend class Algorithm;
+	  friend class AlgTool;
+	  friend class DataObjectDescriptorCollection;
+	  template <class U> friend class GaudiCommon;
+
+public:
+
+  MinimalDataObjectHandle();
+
   /// Constructor initialises the members and registers products in SchedSvc
+  /// the MinimalDataObjectHandle takes over the ownership of the descriptor
   MinimalDataObjectHandle(DataObjectDescriptor & descriptor);
 
+  virtual ~MinimalDataObjectHandle();
+
   /// Initialize
-  StatusCode initialize();
+  virtual StatusCode initialize();
   
   /// Finalize
-  StatusCode finalize();  
+  virtual StatusCode finalize();
   
   /// Reinitialize -> may be overwritten in derived class
   virtual StatusCode reinitialize();
@@ -49,9 +79,12 @@ public:
   bool initialized() const { return m_initialized; }
 
 protected:
-  DataObjectDescriptor & m_descriptor;
+  DataObjectDescriptor * m_descriptor;
+
   void setRead(bool wasRead=true);
-  void setWritten(bool wasWritten=true);  
+  void setWritten(bool wasWritten=true);
+
+  DataObjectDescriptor * descriptor();
   
 private:
   const unsigned int m_dataProductIndex;
@@ -60,7 +93,7 @@ private:
   bool m_initialized;
   
   // Temporary there waiting the mapping interface to be there
-  static unsigned int m_tmp_dpi;  
+  static unsigned int m_tmp_dpi;
   
   MinimalDataObjectHandle(const MinimalDataObjectHandle& );
   MinimalDataObjectHandle& operator=(const MinimalDataObjectHandle& );

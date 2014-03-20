@@ -117,7 +117,7 @@ StatusCode ForwardSchedulerSvc::initialize(){
 
         info() << "Algorithm " << algoPtr->name() << " data dependencies:" << endmsg;
         for (MinimalDataObjectHandle* handlePtr : algoHandles ){
-          if (handlePtr->accessType() == IDataObjectHandle::AccessType::READ && handlePtr->isValid()){
+          if (handlePtr->accessType() == MinimalDataObjectHandle::AccessType::READ && handlePtr->isValid()){
             const std::string& productName = handlePtr->dataProductName();
             info() << "  o READ Handle found for product " << productName << endmsg;
             algoDependencies.emplace_back(productName);

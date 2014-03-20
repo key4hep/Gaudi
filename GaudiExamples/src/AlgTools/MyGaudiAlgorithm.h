@@ -39,11 +39,11 @@ private:
   ToolHandle<IMyTool> m_myPrivToolHandle;
   ToolHandle<IMyTool> m_myPubToolHandle;
 
-  SmartIF<DataObjectHandle<DataObject> > m_tracks;
-  SmartIF<DataObjectHandle<DataObject> > m_hits;
-  SmartIF<DataObjectHandle<DataObject> > m_raw;
+  DataObjectHandle<DataObject> m_tracks;
+  DataObjectHandle<DataObject> m_hits;
+  DataObjectHandle<DataObject> m_raw;
 
-  SmartIF<DataObjectHandle<DataObject>> m_selectedTracks;
+  DataObjectHandle<DataObject> m_selectedTracks;
 
 };
 

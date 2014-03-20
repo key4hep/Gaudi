@@ -43,7 +43,7 @@
       ISvcLocator*       pSvc ); // the Service Locator
 
     /// virtual & protected desctrustor
-    virtual ~CPUCruncher() {}     // virtual & protected desctrustor
+    virtual ~CPUCruncher();     // virtual & protected desctrustor
 
   private:
 
@@ -74,8 +74,8 @@
     const uint MAX_INPUTS = 40;
     const uint MAX_OUTPUTS = 10;
 
-    std::vector<SmartIF<DataObjectHandle<DataObject> > > m_inputHandles;
-    std::vector<SmartIF<DataObjectHandle<DataObject> > > m_outputHandles;
+    std::vector<DataObjectHandle<DataObject> *> m_inputHandles;
+    std::vector<DataObjectHandle<DataObject> *> m_outputHandles;
 
     unsigned int m_rwRepetitions;
 

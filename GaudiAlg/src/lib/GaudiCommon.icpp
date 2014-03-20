@@ -274,17 +274,20 @@ StatusCode GaudiCommon<PBASE>::
   };
 
   for(auto tag : PBASE::inputDataObjects()){
-	  if(PBASE::inputDataObjects()[tag].valid()){
-		  PBASE::inputDataObjects()[tag].setAddress(fixLocation(PBASE::inputDataObjects()[tag].address()));
-		  auto altAddress = PBASE::inputDataObjects()[tag].alternativeAddresses();
+	  if(PBASE::inputDataObjects()[tag].isValid()){
+		  PBASE::inputDataObjects()[tag].setDataProductName(
+				  fixLocation(PBASE::inputDataObjects()[tag].dataProductName()));
+
+		  auto altAddress = PBASE::inputDataObjects()[tag].descriptor()->alternativeAddresses();
 		  for(uint i = 0; i < altAddress.size(); ++i)
 			  altAddress[i] = fixLocation(altAddress[i]);
-		  PBASE::inputDataObjects()[tag].setAltAddress(altAddress);
+		  PBASE::inputDataObjects()[tag].descriptor()->setAltAddress(altAddress);
 	  }
   }
   for(auto tag : PBASE::outputDataObjects()){
-	  if(PBASE::outputDataObjects()[tag].valid()){
-		  PBASE::outputDataObjects()[tag].setAddress(fixLocation(PBASE::outputDataObjects()[tag].address()));
+	  if(PBASE::outputDataObjects()[tag].isValid()){
+		  PBASE::outputDataObjects()[tag].setDataProductName(
+				  fixLocation(PBASE::outputDataObjects()[tag].dataProductName()));
 	  }
   }
 
