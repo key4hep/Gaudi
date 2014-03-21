@@ -1,5 +1,5 @@
 /*
- * DataObjectHandle.cpp
+* DataObjectHandle.cpp
  *
  *  Created on: Jan 9, 2014
  *      Author: dfunke
@@ -46,6 +46,10 @@ const std::string DataObjectDescriptor::pythonRepr() const {
 }
 
 void DataObjectDescriptor::fromString(const std::string& s) {
+
+	if(s == "") //nothing to do
+		return;
+
 	std::vector<std::string> items;
 
 	boost::split(items, s, boost::is_any_of(boost::lexical_cast<std::string>(FIELD_SEP)), boost::token_compress_on);
@@ -420,13 +424,16 @@ void DataObjectDescriptorCollectionProperty::toStream(std::ostream& out) const {
 
 StatusCode DataObjectDescriptorCollectionProperty::fromString(const std::string& s) {
 
-	//std::cout << "from string: " << s << std::endl;
+	//std::cerr << "from string: " << s << std::endl;
+
+	if(s == "") // nothing to do
+		return StatusCode::SUCCESS;
 
 	std::vector<std::string> items;
 	boost::split(items, s, boost::is_any_of(boost::lexical_cast<std::string>(ITEM_SEP)), boost::token_compress_on);
 
 	for(uint i = 0; i < items.size(); ++i){
-		//std::cout << "item " << i << ": " << items[i] << std::endl;
+		//std::cerr << "item " << i << ": " << items[i] << std::endl;
 		if(!m_dataItems->update(items[i]))
 			return StatusCode::FAILURE;
 	}
