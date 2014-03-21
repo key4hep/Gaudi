@@ -68,7 +68,7 @@ public:
   //Get a reference to the generic IAlgTool
   virtual StatusCode retrieve( IAlgTool*& algTool ) const = 0;
 
-private:
+protected:
   const IInterface* m_parent;
   bool m_createIf;
 
@@ -94,7 +94,7 @@ class ToolHandle : public ToolHandleInfo, public GaudiHandle<T> {
 public:
 	ToolHandle()
 	: GaudiHandle<T>("", "", ""),
-	  m_pToolSvc("", ""){ }
+	  m_pToolSvc("ToolSvc", ""){ }
 
 private:
   //
@@ -137,10 +137,25 @@ private:
       m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
       {  }
 
-  //ToolHandle(const ToolHandle& );
-  //ToolHandle& operator=(const ToolHandle& );
+  ToolHandle(const ToolHandle& );
+  ToolHandle& operator=(const ToolHandle& );
 
 public:
+
+  StatusCode initialize(const std::string& toolTypeAndName,
+		  const IInterface* parent = 0, bool createIf = true){
+
+	  	GaudiHandleBase::setTypeAndName(toolTypeAndName);
+	  	GaudiHandleBase::setComponentType(ToolHandleInfo::toolComponentType(parent));
+	  	GaudiHandleBase::setParentName(ToolHandleInfo::toolParentName(parent));
+
+		m_parent = parent;
+		m_createIf = createIf;
+
+		StatusCode sc = m_pToolSvc.initialize("ToolSvc", GaudiHandleBase::parentName());
+
+		return sc;
+  }
 
   /** Retrieve the AlgTool. Release existing tool if needed.
       Function must be repeated here to avoid hiding the function retrieve( T*& ) */

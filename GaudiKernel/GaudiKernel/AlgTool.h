@@ -439,25 +439,25 @@ public:
 
 	/** Declare used tool
 	 *
+	 *  @param handle ToolHandle<T>
 	 *  @param toolTypeAndName
 	 *  @param parent, default public tool
 	 *  @param create if necessary, default true
-	 *  @return ToolHandle
 	 */
 	template<class T>
-	ToolHandle<T> & declareTool(std::string toolTypeAndName = "",
-			const IInterface* parent = 0, bool createIf = true) {
+	StatusCode declareTool(ToolHandle<T> & handle, std::string toolTypeAndName =
+			"", const IInterface* parent = 0, bool createIf = true) {
 
 		if (toolTypeAndName == "")
 			toolTypeAndName = System::typeinfoName(typeid(T));
 
-		ToolHandle<T> * result = new ToolHandle<T>(toolTypeAndName, parent,
-				createIf);
-		m_toolHandles.push_back(result);
+		StatusCode sc = handle.initialize(toolTypeAndName, parent, createIf);
+
+		m_toolHandles.push_back(&handle);
 
 		MsgStream log(msgSvc(), name());
 
-		if (result) {
+		if (sc.isSuccess()) {
 			log << MSG::DEBUG << "Handle for tool" << toolTypeAndName
 					<< " successfully created and stored." << endmsg;
 		} else {
@@ -466,7 +466,7 @@ public:
 					<< " could not be created." << endmsg;
 		}
 
-		return *result;
+		return sc;
 
 	}
 

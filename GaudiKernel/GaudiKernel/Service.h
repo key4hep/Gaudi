@@ -231,21 +231,35 @@ public:
   	return m_propertyMgr -> declareRemoteProperty ( name , rsvc , rname ) ;
   }
 
-  /** Declare used tool
+	  /** Declare used tool
 	 *
+	 *  @param handle ToolHandle<T>
 	 *  @param toolTypeAndName
 	 *  @param parent, default public tool
 	 *  @param create if necessary, default true
-	 *  @return ToolHandle
 	 */
 	template<class T>
-	ToolHandle<T> declareTool(std::string toolTypeAndName = "",
-			const IInterface* parent = 0, bool createIf = true) {
+	StatusCode declareTool(ToolHandle<T> & handle, std::string toolTypeAndName =
+			"", const IInterface* parent = 0, bool createIf = true) {
 
 		if (toolTypeAndName == "")
 			toolTypeAndName = System::typeinfoName(typeid(T));
 
-		return ToolHandle<T>(toolTypeAndName, parent, createIf);
+		StatusCode sc = handle.initialize(toolTypeAndName, parent, createIf);
+
+		MsgStream log(msgSvc(), name());
+
+		if (sc.isSuccess()) {
+			log << MSG::DEBUG << "Handle for tool" << toolTypeAndName
+					<< " successfully created and stored." << endmsg;
+		} else {
+
+			log << MSG::ERROR << "Handle for tool" << toolTypeAndName
+					<< " could not be created." << endmsg;
+		}
+
+		return sc;
+
 	}
 
   // ==========================================================================
