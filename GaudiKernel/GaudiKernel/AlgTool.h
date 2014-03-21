@@ -445,7 +445,7 @@ public:
 	 *  @return ToolHandle
 	 */
 	template<class T>
-	ToolHandle<T> & declareTool(std::string toolTypeAndName = 0,
+	ToolHandle<T> & declareTool(std::string toolTypeAndName = "",
 			const IInterface* parent = 0, bool createIf = true) {
 
 		if (toolTypeAndName == "")
