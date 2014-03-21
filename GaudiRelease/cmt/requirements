@@ -3,14 +3,14 @@
 
 package GaudiRelease
 
-version v25r1
+version v25r1p1
 branches doc cmt
 
 # CMT and Gaudi policy
 use GaudiPolicy	   v14r1
 
 # Gaudi executable
-use Gaudi          v25r1
+use Gaudi          v25r1p1
 
 # Gaudi Plugin Service
 use GaudiPluginService    v1r0
@@ -32,7 +32,7 @@ use RootHistCnv    v12r1
 use GaudiPython    v13r1
 
 # Container package specifying the minimum set of core packages
-use GaudiSys       v25r1
+use GaudiSys       v25r1p1
 
 # Monitoring utilities.
 use GaudiMonitor   v5r1
@@ -44,7 +44,7 @@ use GaudiProfiling v2r1
 use GaudiMP v3r1
 
 # Examples packages
-use GaudiExamples   v25r1
+use GaudiExamples   v25r1p1
 
 
 # Atlas packages

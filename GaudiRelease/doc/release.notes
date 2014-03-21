@@ -1,6 +1,7 @@
 Package: GaudiRelease
 Maintainer: Marco Clemencic
 
+============================ GaudiRelease v25r1p1 ============================
 ============================= GaudiRelease v25r1 =============================
 ! 2014-03-19 - Marco Clemencic
  - Removed hwaf handling from update_versions.py

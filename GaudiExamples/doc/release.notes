@@ -1,6 +1,7 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+=========================== GaudiExamples v25r1p1 ============================
 ============================ GaudiExamples v25r1 =============================
 ! 2014-03-18 - Ben Couturier
  - Fixed bug #104127: remove hwaf configuration.
