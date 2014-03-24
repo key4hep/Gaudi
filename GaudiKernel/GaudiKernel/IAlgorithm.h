@@ -9,6 +9,7 @@
 
 class MinimalDataObjectHandle;
 class DataObjectDescriptorCollection;
+class IAlgTool;
 
 /** @class IAlgorithm IAlgorithm.h GaudiKernel/IAlgorithm.h
 

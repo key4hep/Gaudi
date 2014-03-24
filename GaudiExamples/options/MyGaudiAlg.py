@@ -7,7 +7,8 @@ from Configurables import MyGaudiAlgorithm
 from Configurables import GaudiExamplesCommonConf
 GaudiExamplesCommonConf()
 
-mygalg = MyGaudiAlgorithm('MyGaudiAlg')
+mygalg = MyGaudiAlgorithm('MyGaudiAlg',
+                          OutputLevel = DEBUG )
 mygalg.PrivToolHandle.String = "Is a private tool"
 
 print mygalg

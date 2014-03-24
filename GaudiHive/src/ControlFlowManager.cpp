@@ -282,8 +282,8 @@ namespace concurrency {
 
     debug() << "Inputs of " << algoName << ": ";
     for (auto tag : inputDOCollection) {
-      if (inputDOCollection[tag].valid())
-        debug() << inputDOCollection[tag].address() << " | ";
+      if (inputDOCollection[tag].isValid())
+        debug() << inputDOCollection[tag].dataProductName() << " | ";
     }
     debug() << endmsg;
 
@@ -292,8 +292,8 @@ namespace concurrency {
 
     debug() << "Outputs of " << algoName << ": ";
     for (auto tag : outputDOCollection) {
-      if (outputDOCollection[tag].valid())
-        debug() << outputDOCollection[tag].address() << " | ";
+      if (outputDOCollection[tag].isValid())
+        debug() << outputDOCollection[tag].dataProductName() << " | ";
     }
     debug() << endmsg;
   }
@@ -310,11 +310,11 @@ namespace concurrency {
       // Find producers for all the inputs of the target node
       const DataObjectDescriptorCollection& targetInCollection = *m_algoNameToAlgoInputsMap[algo.first];
       for (auto inputTag : targetInCollection) {
-        const std::string& input2Match = targetInCollection[inputTag].address();
+        const std::string& input2Match = targetInCollection[inputTag].dataProductName();
         for (auto producer : m_algoNameToAlgoOutputsMap) {
           const DataObjectDescriptorCollection& outputs = *m_algoNameToAlgoOutputsMap[producer.first];
           for (auto outputTag : outputs) {
-            if (outputs[outputTag].valid() && outputs[outputTag].address() == input2Match) {
+            if (outputs[outputTag].isValid() && outputs[outputTag].dataProductName() == input2Match) {
               const std::vector<AlgorithmNode*>& known_producers = targetNode->getSupplierNodes();
               auto valid_producer = m_algoNameToAlgoNodeMap[producer.first];
               const std::vector<AlgorithmNode*>& known_consumers = valid_producer->getConsumerNodes();
@@ -330,11 +330,11 @@ namespace concurrency {
       // Find consumers for all the outputs of the target node
       const DataObjectDescriptorCollection& targetOutCollection = *m_algoNameToAlgoOutputsMap[algo.first];
       for (auto outputTag : targetOutCollection) {
-        const std::string& output2Match = targetOutCollection[outputTag].address();
+        const std::string& output2Match = targetOutCollection[outputTag].dataProductName();
         for (auto consumer : m_algoNameToAlgoInputsMap) {
           const DataObjectDescriptorCollection& inputs = *m_algoNameToAlgoInputsMap[consumer.first];
           for (auto inputTag : inputs) {
-            if (inputs[inputTag].valid() && inputs[inputTag].address() == output2Match) {
+            if (inputs[inputTag].isValid() && inputs[inputTag].dataProductName() == output2Match) {
               const std::vector<AlgorithmNode*>& known_consumers = targetNode->getConsumerNodes();
               auto valid_consumer = m_algoNameToAlgoNodeMap[consumer.first];
               const std::vector<AlgorithmNode*>& known_producers = valid_consumer->getSupplierNodes();
@@ -362,8 +362,8 @@ namespace concurrency {
       StatusCode sc;
       const DataObjectDescriptorCollection& outCollection = *m_algoNameToAlgoOutputsMap[algo.first];
       for (auto outputTag : outCollection) {
-        if (outCollection[outputTag].valid()) {
-          const std::string& output = outCollection[outputTag].address();
+        if (outCollection[outputTag].isValid()) {
+          const std::string& output = outCollection[outputTag].dataProductName();
           sc = addDataNode(output);
           if (!sc.isSuccess()) {
             error() << "Extra producer (" << algo.first << ") for DataObject @ " << output
@@ -381,9 +381,9 @@ namespace concurrency {
     for (auto algo : m_algoNameToAlgoNodeMap) {
       const DataObjectDescriptorCollection& inCollection = *m_algoNameToAlgoInputsMap[algo.first];
       for (auto inputTag : inCollection) {
-        if (inCollection[inputTag].valid()) {
+        if (inCollection[inputTag].isValid()) {
           DataNode* dataNode = nullptr;
-          auto primaryPath = inCollection[inputTag].address();
+          auto primaryPath = inCollection[inputTag].dataProductName();
           auto itP = m_dataPathToDataNodeMap.find(primaryPath);
           if (itP != m_dataPathToDataNodeMap.end()) {
             dataNode = getDataNode(primaryPath);
@@ -530,7 +530,7 @@ namespace concurrency {
     for (auto node : m_algoNameToAlgoInputsMap) {
       const DataObjectDescriptorCollection& collection = *(node.second);
       for (auto tag : collection)
-        if (collection[tag].valid()) {
+        if (collection[tag].isValid()) {
           result.push_back(getAlgorithmNode(node.first));
           break;
         }

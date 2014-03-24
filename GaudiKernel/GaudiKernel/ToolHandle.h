@@ -17,10 +17,14 @@ class IInterface;
 class IAlgTool;
 class IToolSvc;
 
+class Algorithm;
+class AlgTool;
+class Service;
+
 /** General info and helper functions for toolhandles and arrays */
 class ToolHandleInfo {
 protected:
-  ToolHandleInfo( const IInterface* parent = 0, bool createIf = true )
+  ToolHandleInfo(const IInterface* parent = 0, bool createIf = true )
     : m_parent(parent), m_createIf(createIf)
     {}
 
@@ -61,9 +65,13 @@ public:
     }
   }
 
-private:
+  //Get a reference to the generic IAlgTool
+  virtual StatusCode retrieve( IAlgTool*& algTool ) const = 0;
+
+protected:
   const IInterface* m_parent;
   bool m_createIf;
+
 };
 
 /** @class ToolHandle ToolHandle.h GaudiKernel/ToolHandle.h
@@ -78,20 +86,30 @@ private:
 */
 template< class T >
 class ToolHandle : public ToolHandleInfo, public GaudiHandle<T> {
+
+	friend class Algorithm;
+	friend class AlgTool;
+	friend class Service;
+
 public:
+	ToolHandle()
+	: GaudiHandle<T>("", "", ""),
+	  m_pToolSvc("ToolSvc", ""){ }
+
+private:
   //
   // Constructors etc.
   //
   /** Constructor for a tool with default tool type and name.
       Can be called only if the type T is a concrete tool type (not an interface),
       and you want to use the default name. */
-  ToolHandle( const IInterface* parent = 0, bool createIf = true )
+  /*ToolHandle(const IInterface* parent = 0, bool createIf = true )
     : ToolHandleInfo(parent,createIf),
       GaudiHandle<T>( GaudiHandle<T>::getDefaultType(),
 		      ToolHandleInfo::toolComponentType(parent),
 		      ToolHandleInfo::toolParentName(parent) ),
       m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
-  {}
+  {  }*/
 
   /** Create a handle ('smart pointer') to a tool.
       The arguments are passed on to ToolSvc, and have the same meaning:
@@ -101,6 +119,7 @@ public:
 					 const IInterface*  parent   = 0    ,
 					 bool               createIf = true )
       @endcode
+      @param owner: class owning the ToolHandle
       @param toolType: "MyToolType/MyToolName"
                        "MyToolType" is short for "MyToolType/MyToolType"
                        'MyToolType' is the name of the class of the concrete tool
@@ -110,13 +129,33 @@ public:
                      a public (shared) tool.
       @param createIf: if true, create tool if not yet existing.
   */
-  ToolHandle( const std::string& toolTypeAndName, const IInterface* parent = 0, bool createIf = true )
+  ToolHandle(const std::string& toolTypeAndName, const IInterface* parent = 0, bool createIf = true )
     : ToolHandleInfo(parent,createIf),
       GaudiHandle<T>( toolTypeAndName,
 		      ToolHandleInfo::toolComponentType(parent),
 		      ToolHandleInfo::toolParentName(parent) ),
       m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
-  {}
+      {  }
+
+  ToolHandle(const ToolHandle& );
+  ToolHandle& operator=(const ToolHandle& );
+
+public:
+
+  StatusCode initialize(const std::string& toolTypeAndName,
+		  const IInterface* parent = 0, bool createIf = true){
+
+	  	GaudiHandleBase::setTypeAndName(toolTypeAndName);
+	  	GaudiHandleBase::setComponentType(ToolHandleInfo::toolComponentType(parent));
+	  	GaudiHandleBase::setParentName(ToolHandleInfo::toolParentName(parent));
+
+		m_parent = parent;
+		m_createIf = createIf;
+
+		StatusCode sc = m_pToolSvc.initialize("ToolSvc", GaudiHandleBase::parentName());
+
+		return sc;
+  }
 
   /** Retrieve the AlgTool. Release existing tool if needed.
       Function must be repeated here to avoid hiding the function retrieve( T*& ) */
@@ -132,9 +171,23 @@ public:
 
   /** Do the real retrieval of the AlgTool. */
   virtual StatusCode retrieve( T*& algTool ) const {
+
     return m_pToolSvc->retrieve( GaudiHandleBase::typeAndName(), T::interfaceID(),
 				 (IAlgTool*&)(algTool),
 				 ToolHandleInfo::parent(), ToolHandleInfo::createIf() );
+
+  }
+
+  /** Get a generic reference of the IAlgTool for processing in the sysInitialize. */
+  virtual StatusCode retrieve( IAlgTool*& algTool ) const {
+
+	  //This explicit casting is required in order to properly re-interpret the <T> Tool
+
+	  T * tool;
+	  StatusCode sc = retrieve(tool);
+	  algTool = tool;
+
+	  return sc;
   }
 
   /** Do the real release of the AlgTool. */

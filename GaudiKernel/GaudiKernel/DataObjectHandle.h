@@ -12,7 +12,13 @@ template<typename T>
 class DataObjectHandle : public MinimalDataObjectHandle {
 
 public:
-      
+	friend class Algorithm;
+	friend class AlgTool;
+
+public:
+
+  DataObjectHandle();
+
   /// Initialises mother class
   DataObjectHandle(DataObjectDescriptor & descriptor,
                    IAlgorithm* fatherAlg);
@@ -36,13 +42,24 @@ public:
   void put (T* object);
   
 private:
+  void setOwner(IAlgorithm * fatherAlg){
+	m_fatherAlg = fatherAlg;
+	m_fatherTool = 0;
+  }
+
+  void setOwner(IAlgTool * fatherTool){
+	  m_fatherAlg = 0;
+	  m_fatherTool = fatherTool;
+  }
+
+private:
   SmartIF<IDataProviderSvc> m_EDS;
   SmartIF<IMessageSvc> m_MS;
   IAlgorithm* m_fatherAlg;
   IAlgTool* m_fatherTool;
   bool m_goodType;
   DataObjectHandle(const DataObjectHandle& );
-  DataObjectHandle& operator=(const DataObjectHandle& );  
+  DataObjectHandle& operator=(const DataObjectHandle& );
   
 };
 
@@ -53,6 +70,10 @@ StatusCode DataObjectHandle<T>::initialize(){
   // GCCXML cannot understand c++11 yet, NULL used.
 
   MinimalDataObjectHandle::initialize();
+
+  if(m_fatherAlg == 0 && m_fatherTool == 0){
+	return StatusCode::FAILURE;
+  }
 
   if (m_fatherAlg != 0) {
 		// Fetch the event Data Service from the algorithm
@@ -87,7 +108,10 @@ StatusCode DataObjectHandle<T>::initialize(){
 template<typename T>
 StatusCode DataObjectHandle<T>::reinitialize(){
 
-  MinimalDataObjectHandle::reinitialize();
+  StatusCode sc = MinimalDataObjectHandle::reinitialize();
+
+  if(sc.isFailure())
+	  return sc;
   
   m_goodType = false;
   
@@ -97,12 +121,17 @@ StatusCode DataObjectHandle<T>::reinitialize(){
 //---------------------------------------------------------------------------
 template<typename T>
 StatusCode DataObjectHandle<T>::finalize(){
-
-  MinimalDataObjectHandle::finalize();
   
-  return StatusCode::SUCCESS;
+  return MinimalDataObjectHandle::finalize();
 }
 
+
+//---------------------------------------------------------------------------
+template<typename T>
+DataObjectHandle<T>::DataObjectHandle():
+				   m_fatherAlg(0),
+				   m_fatherTool(0),
+				   m_goodType(false){}
 
 //---------------------------------------------------------------------------
 template<typename T>
@@ -143,12 +172,12 @@ T* DataObjectHandle<T>::get() {
   if(sc.isSuccess())
 	  log << MSG::DEBUG << "Using main location " << dataProductName() << " for " << *dataObjectp << endmsg;
 
-  if(sc.isFailure() && ! m_descriptor.alternativeAddresses().empty()){
-	  for(uint i = 0; i < m_descriptor.alternativeAddresses().size() && sc.isFailure(); ++i){
-		  sc = m_EDS->retrieveObject(m_descriptor.alternativeAddresses()[i], dataObjectp);
+  if(sc.isFailure() && ! m_descriptor->alternativeAddresses().empty()){
+	  for(uint i = 0; i < m_descriptor->alternativeAddresses().size() && sc.isFailure(); ++i){
+		  sc = m_EDS->retrieveObject(m_descriptor->alternativeAddresses()[i], dataObjectp);
 
 		  if(sc.isSuccess())
-		  	  log << MSG::DEBUG << "Using alternative location " << m_descriptor.alternativeAddresses()[i] << " for " << *dataObjectp << endmsg;
+		  	  log << MSG::DEBUG << "Using alternative location " << m_descriptor->alternativeAddresses()[i] << " for " << *dataObjectp << endmsg;
 	  }
   }
 
@@ -200,7 +229,6 @@ T* DataObjectHandle<T>::get() {
 //---------------------------------------------------------------------------
 template<typename T>  
 void DataObjectHandle<T>::put (T *objectp){
-    
   
     StatusCode sc = m_EDS->registerObject(dataProductName(), objectp);
     if ( LIKELY( sc.isSuccess() ) )

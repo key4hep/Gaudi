@@ -1,5 +1,5 @@
 /*
- * DataObjectHandle.cpp
+* DataObjectHandle.cpp
  *
  *  Created on: Jan 9, 2014
  *      Author: dfunke
@@ -46,6 +46,10 @@ const std::string DataObjectDescriptor::pythonRepr() const {
 }
 
 void DataObjectDescriptor::fromString(const std::string& s) {
+
+	if(s == "") //nothing to do
+		return;
+
 	std::vector<std::string> items;
 
 	boost::split(items, s, boost::is_any_of(boost::lexical_cast<std::string>(FIELD_SEP)), boost::token_compress_on);
@@ -63,16 +67,16 @@ void DataObjectDescriptor::fromString(const std::string& s) {
 	}
 
 	setOptional(boost::lexical_cast<bool>( items[2] ));
-	setAccessType(IDataObjectHandle::AccessType(boost::lexical_cast<int>( items[3] )));
+	setAccessType(MinimalDataObjectHandle::AccessType(boost::lexical_cast<int>( items[3] )));
 
 }
 
-IDataObjectHandle::AccessType DataObjectDescriptor::accessType() const {
+MinimalDataObjectHandle::AccessType DataObjectDescriptor::accessType() const {
 	return m_accessType;
 }
 
 void DataObjectDescriptor::setAccessType(
-		IDataObjectHandle::AccessType accessType) {
+		MinimalDataObjectHandle::AccessType accessType) {
 	m_accessType = accessType;
 }
 
@@ -124,7 +128,7 @@ void DataObjectDescriptor::setAddress(const std::string& address) {
 	//std::cout << "setting address for " << m_tag << " from " << m_address << " to " << address
 	//		<< " with " << (m_handle.isValid() ? "valid" : "NOT valid") << " handle" << std::endl;
 
-	if(!m_handle || !m_handle->initialized())
+	//if(!m_handle || !m_handle->initialized())
 		m_address = address;
 }
 
@@ -133,14 +137,14 @@ void DataObjectDescriptor::setAddresses(const std::vector<std::string>& addresse
 	//std::cout << "setting address for " << m_tag << " from " << m_address << " to " << address
 	//		<< " with " << (m_handle.isValid() ? "valid" : "NOT valid") << " handle" << std::endl;
 
-	if(!m_handle || !m_handle->initialized()){
+	//if(!m_handle || !m_handle->initialized()){
 		setAddress(addresses[0]);
 		setAltAddress(addresses, true);
-	}
+	//}
 }
 
 void DataObjectDescriptor::setAltAddress(const std::vector<std::string> & addresses, bool skipFirst){
-	if(!m_handle || !m_handle->initialized())
+	//if(!m_handle || !m_handle->initialized())
 		m_altAddresses.assign(addresses.begin() + skipFirst, addresses.end());
 }
 
@@ -149,7 +153,7 @@ const std::string DataObjectDescriptorCollection::toString() const {
 	std::stringstream out;
 
 	for(auto it = m_dataItems.begin(); it != m_dataItems.end(); ++it){
-		out << it->second.toString() << ITEM_SEP;
+		out << it->second->descriptor()->toString() << ITEM_SEP;
 	}
 
 	std::string sOut = out.str();
@@ -158,7 +162,7 @@ const std::string DataObjectDescriptorCollection::toString() const {
 
 }
 
-void DataObjectDescriptor::setHandle(SmartIF<MinimalDataObjectHandle> handle){
+/*void DataObjectDescriptor::setHandle(SmartIF<MinimalDataObjectHandle> handle){
 
 	//std::cout << "setting handle for " << m_tag << ": " << "my handle is " <<
 	//		(m_handle.isValid() ? "" : "NOT") << "valid; other handle is " << (handle.isValid() ? "" : "NOT") << " valid" << std::endl;
@@ -166,7 +170,7 @@ void DataObjectDescriptor::setHandle(SmartIF<MinimalDataObjectHandle> handle){
 	if(!m_handle.isValid() && handle.isValid()) //don't override an existing handle with NULL handle
 		m_handle = handle;
 
-}
+}*/
 
 DataObjectDescriptorCollection::DataObjectDescriptorCollection(const DataObjectDescriptorCollection & other){
 	m_dataItems.insert(other.m_dataItems.begin(), other.m_dataItems.end());
@@ -192,75 +196,80 @@ bool DataObjectDescriptorCollection::contains(const std::string & s) const {
 	return s != "" && m_dataItems.find(s) != m_dataItems.end();
 }
 
-void DataObjectDescriptorCollection::insert(const std::string& tag,
-		const std::string& address,
-		const bool optional,
-		const IDataObjectHandle::AccessType accessType){
+bool DataObjectDescriptorCollection::insert(const std::string& tag,
+		MinimalDataObjectHandle * descriptor){
 
 	if(!contains(tag)){
-		m_dataItems.emplace(std::piecewise_construct,
-		          std::make_tuple(tag),
-		          std::make_tuple(tag, address, optional, accessType));
+		auto res = m_dataItems.insert(std::make_pair(tag, descriptor));
+
+		return res.second;
 	}
 
+	return false;
+
 }
 
-void DataObjectDescriptorCollection::insert(const std::string& tag,
-		const std::vector<std::string>& addresses,
-		const bool optional,
-		const IDataObjectHandle::AccessType accessType){
+bool DataObjectDescriptorCollection::insert(MinimalDataObjectHandle * item){
 
-	if(!contains(tag)){
-		m_dataItems.emplace(std::piecewise_construct,
-		          std::make_tuple(tag),
-		          std::make_tuple(tag, addresses, optional, accessType));
+	if(!contains(item->descriptor()->tag())){
+		auto res = m_dataItems.insert(std::make_pair(item->descriptor()->tag(), item));
+
+		return res.second;
 	}
 
+	return false;
+
 }
 
-void DataObjectDescriptorCollection::insert(const DataObjectDescriptor & item){
+bool DataObjectDescriptorCollection::update(MinimalDataObjectHandle * item){
 
-	if(!contains(item.tag())){
-		m_dataItems.emplace(item.tag(), item);
+	if(contains(item->descriptor()->tag())){
+		m_dataItems.at(item->descriptor()->tag()) = item;
+
+		return true;
 	}
 
-}
-
-void DataObjectDescriptorCollection::update(const DataObjectDescriptor & item){
-
-	if(contains(item.tag()))
-		m_dataItems.at(item.tag()) = item;
+	return false;
 
 }
 
-void DataObjectDescriptorCollection::update(const std::string & item){
+bool DataObjectDescriptorCollection::update(const std::string & item){
 
 	std::string tag = DataObjectDescriptor::tag(item);
 
-	if(tag != "" && contains(tag))
-		m_dataItems.at(tag).fromString(item);
+	if(tag != "" && contains(tag)){
+		m_dataItems.at(tag)->descriptor()->fromString(item);
+
+		return true;
+	}
+
+	return false;
 
 }
 
-void DataObjectDescriptorCollection::insert(const std::string & item){
+/*bool DataObjectDescriptorCollection::insert(const std::string & item){
 
 	std::string tag = DataObjectDescriptor::tag(item);
 
 	if(tag != "" && !contains(tag)){
-		m_dataItems.emplace(tag, item);
+		auto res = m_dataItems.emplace(tag, item);
+
+		return res.second;
 	}
 
+	return false;
+
+}*/
+
+const MinimalDataObjectHandle & DataObjectDescriptorCollection::operator [](const std::string & tag) const {
+	return *m_dataItems.at(tag);
 }
 
-const DataObjectDescriptor & DataObjectDescriptorCollection::operator [](const std::string & tag) const {
-	return m_dataItems.at(tag);
+MinimalDataObjectHandle & DataObjectDescriptorCollection::operator [](const std::string & tag) {
+	return *m_dataItems.at(tag);
 }
 
-DataObjectDescriptor & DataObjectDescriptorCollection::operator [](const std::string & tag) {
-	return m_dataItems.at(tag);
-}
-
-void DataObjectDescriptorCollection::insertOrUpdate(const std::string & item){
+/*void DataObjectDescriptorCollection::insertOrUpdate(const std::string & item){
 
 	//std::cout << "insertOrUpdate: " << item << std::endl;
 
@@ -275,7 +284,7 @@ void DataObjectDescriptorCollection::insertOrUpdate(const std::string & item){
 		update(item);
 	else
 		insert(item);
-}
+}*/
 
 
 DataObjectDescriptorProperty::DataObjectDescriptorProperty(const std::string & name,
@@ -291,7 +300,7 @@ DataObjectDescriptorProperty::DataObjectDescriptorProperty(DataObjectDescriptorP
 DataObjectDescriptorProperty::DataObjectDescriptorProperty(const DataObjectDescriptorProperty & other)
 	: Property(other.name(), typeid(DataObjectDescriptor)) {
 
-	m_item = new DataObjectDescriptor(other.value());
+	m_item = const_cast<DataObjectDescriptor *>(&other.value());
 
 }
 
@@ -311,7 +320,7 @@ DataObjectDescriptorProperty& DataObjectDescriptorProperty::operator =(
 	setName(value.name());
 
 	delete m_item;
-	m_item = new DataObjectDescriptor(value.value());
+	m_item = const_cast<DataObjectDescriptor *>(&value.value());
 
 	return *this;
 
@@ -415,14 +424,18 @@ void DataObjectDescriptorCollectionProperty::toStream(std::ostream& out) const {
 
 StatusCode DataObjectDescriptorCollectionProperty::fromString(const std::string& s) {
 
-	//std::cout << "from string: " << s << std::endl;
+	//std::cerr << "from string: " << s << std::endl;
+
+	if(s == "") // nothing to do
+		return StatusCode::SUCCESS;
 
 	std::vector<std::string> items;
 	boost::split(items, s, boost::is_any_of(boost::lexical_cast<std::string>(ITEM_SEP)), boost::token_compress_on);
 
 	for(uint i = 0; i < items.size(); ++i){
-		//std::cout << "item " << i << ": " << items[i] << std::endl;
-		m_dataItems->insertOrUpdate(items[i]);
+		//std::cerr << "item " << i << ": " << items[i] << std::endl;
+		if(!m_dataItems->update(items[i]))
+			return StatusCode::FAILURE;
 	}
 
 	return useUpdateHandler();

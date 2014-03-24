@@ -25,6 +25,7 @@
 #include "GaudiKernel/ThreadGaudi.h"
 #include "GaudiKernel/Guards.h"
 #include "GaudiKernel/AlgTool.h"
+#include "GaudiKernel/ToolHandle.h"
 
 // Constructor
 Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
@@ -38,6 +39,7 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
     m_filterPassed(true),
     m_isEnabled(true),
     m_isExecuted(false),
+    m_toolHandlesInit(false),
     m_state(Gaudi::StateMachine::CONFIGURED),
     m_targetState(Gaudi::StateMachine::CONFIGURED)
 {
@@ -99,6 +101,10 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
 Algorithm::~Algorithm() {
   delete m_subAlgms;
   delete m_propertyMgr;
+
+  for(auto t : m_toolHandles)
+	  delete t;
+
 }
 
 // IAlgorithm implementation
@@ -213,7 +219,7 @@ StatusCode Algorithm::sysInitialize() {
 
   auto fixLocation = [&] (const std::string & location) -> std::string {
 
-	  log << MSG::INFO << "Changing " << location << " to "
+	  log << MSG::DEBUG << "Changing " << location << " to "
 	  			  << ('/' ? location : rootName + location) << endmsg;
 
 	  //check whether we have an absolute path if yes return it - else prepend DataManager Root
@@ -222,22 +228,37 @@ StatusCode Algorithm::sysInitialize() {
 
     //init data handle
   for(auto tag : m_inputDataObjects){
-		if (m_inputDataObjects[tag].valid()) {
-			m_inputDataObjects[tag].setAddress(
-					fixLocation(m_inputDataObjects[tag].address()));
+		if (m_inputDataObjects[tag].isValid()) {
+			m_inputDataObjects[tag].setDataProductName(
+					fixLocation(m_inputDataObjects[tag].dataProductName()));
 
-			auto altAddress = m_inputDataObjects[tag].alternativeAddresses();
+			auto altAddress = m_inputDataObjects[tag].descriptor()->alternativeAddresses();
 			for (uint i = 0; i < altAddress.size(); ++i)
 				altAddress[i] = fixLocation(altAddress[i]);
-			m_inputDataObjects[tag].setAltAddress(altAddress);
+			m_inputDataObjects[tag].descriptor()->setAltAddress(altAddress);
 
-			m_inputDataObjects[tag].getBaseHandle()->initialize();
+			  if(m_inputDataObjects[tag].initialize().isSuccess())
+					log << MSG::DEBUG << "Data Handle " << tag
+					<< " (" << m_inputDataObjects[tag].dataProductName()
+					<< ") initialized" << endmsg;
+			  else
+				  log << MSG::FATAL << "Data Handle " << tag
+					<< " (" << m_inputDataObjects[tag].dataProductName()
+					<< ") could NOT be initialized" << endmsg;
 		}
   }
   for(auto tag : m_outputDataObjects){
-	  if(m_outputDataObjects[tag].valid()){
-		  m_outputDataObjects[tag].setAddress(fixLocation(m_outputDataObjects[tag].address()));
-		  m_outputDataObjects[tag].getBaseHandle()->initialize();
+	  if(m_outputDataObjects[tag].isValid()){
+		  m_outputDataObjects[tag].setDataProductName(fixLocation(m_outputDataObjects[tag].dataProductName()));
+
+		  if(m_outputDataObjects[tag].initialize().isSuccess())
+			  log << MSG::DEBUG << "Data Handle " << tag
+			  << " (" << m_outputDataObjects[tag].dataProductName()
+			  << ") initialized" << endmsg;
+		  else
+			  log << MSG::FATAL << "Data Handle " << tag
+			  << " (" << m_outputDataObjects[tag].dataProductName()
+			  << ") could NOT be initialized" << endmsg;
 	  }
   }
 
@@ -247,28 +268,40 @@ StatusCode Algorithm::sysInitialize() {
 
 	  MsgStream log ( msgSvc() , name() ) ;
 
-	  auto myTools = toolSvc()->getToolsByParent(parent);
-	  for(auto tool : myTools){
+	  std::vector<IAlgTool *> tools;
 
-		  log << MSG::INFO << "Adding data dependencies for tool " << tool->name() << endmsg;
+	  const Algorithm * alg = dynamic_cast<const Algorithm *>(parent);
+	  if(alg != NULL)
+		  tools = alg->tools();
+	  else{
+		  const AlgTool * algTool = dynamic_cast<const AlgTool *>(parent);
+		  if(algTool != NULL)
+			  tools = algTool->tools();
+		  else
+			  log << MSG::FATAL << "Could not build data dependencies of algorithm, wrong parameter" << endmsg;
 
+	  }
+
+	  for(auto tool : tools){
+
+		  log << MSG::DEBUG << "Adding data dependencies for tool " << tool->name() << " (" << tool->type() << ")" << endmsg;
 		  auto inputs = tool->inputDataObjects();
 		  for(auto dod : inputs){
-			  log << MSG::INFO << "\tInput: " << dod << endmsg;
-			  m_inputDataObjects.insert(inputs[dod]);
+			  log << MSG::DEBUG << "\tInput: " << dod << endmsg;
+			  m_inputDataObjects.insert(&inputs[dod]);
 		  }
 
 		  auto outputs = tool->outputDataObjects();
 		  for(auto dod : outputs){
-			  log << MSG::INFO << "\tOutput: " << dod << endmsg;
-			  m_outputDataObjects.insert(outputs[dod]);
+			  log << MSG::DEBUG << "\tOutput: " << dod << endmsg;
+			  m_outputDataObjects.insert(&outputs[dod]);
 		  }
 
 		  addToolDOD(tool);
 	  }
   };
 
-  log << MSG::INFO << "Adding tools for " << this->name() << endmsg;
+  log << MSG::DEBUG << "Adding tools for " << this->name() << endmsg;
   addToolDOD(this);
 
   return sc;
@@ -1269,13 +1302,49 @@ const std::vector<MinimalDataObjectHandle*> Algorithm::handles(){
 	std::vector<MinimalDataObjectHandle*> handles;
 
 	for(auto it : m_inputDataObjects)
-		handles.push_back(m_inputDataObjects[it].getBaseHandle().get());
+		handles.push_back(&m_inputDataObjects[it]);
 
 	for(auto it : m_outputDataObjects)
-		handles.push_back(m_outputDataObjects[it].getBaseHandle().get());
+		handles.push_back(&m_outputDataObjects[it]);
 
 	return handles;
 
+}
+
+void Algorithm::initToolHandles() const{
+
+	MsgStream log ( msgSvc() , name() ) ;
+
+	for(auto th : m_toolHandles){
+		IAlgTool * tool = nullptr;
+
+		//if(th->retrieve().isFailure())
+			//log << MSG::DEBUG << "Error in retrieving tool from ToolHandle" << endmsg;
+
+		//get generic tool interface from ToolHandle
+		if(th->retrieve(tool).isSuccess() && tool != nullptr){
+			m_tools.push_back(tool);
+			log << MSG::DEBUG << "Adding ToolHandle tool " << tool->name() << " (" << tool->type() << ")" << endmsg;
+		} else {
+			log << MSG::DEBUG << "Trying to add nullptr tool" << endmsg;
+		}
+	}
+
+	m_toolHandlesInit = true;
+}
+
+const std::vector<IAlgTool *> & Algorithm::tools() const {
+	if(UNLIKELY(!m_toolHandlesInit))
+		initToolHandles();
+
+	return m_tools;
+}
+
+std::vector<IAlgTool *> & Algorithm::tools() {
+	if(UNLIKELY(!m_toolHandlesInit))
+		initToolHandles();
+
+	return m_tools;
 }
 
 /**

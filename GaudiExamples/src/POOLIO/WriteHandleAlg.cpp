@@ -25,7 +25,7 @@ WriteHandleAlg::WriteHandleAlg ( const std::string& name , // the algorithm inst
 StatusCode WriteHandleAlg::initialize(){
   MsgStream log(msgSvc(), name());
 
-  StatusCode outputSC = declareDataObj(m_output_name, m_output_handle, IDataObjectHandle::WRITE);  
+  StatusCode outputSC = declareDataObj(m_output_name, m_output_handle, MinimalDataObjectHandle::WRITE);
   return outputSC.isSuccess();
 }
 

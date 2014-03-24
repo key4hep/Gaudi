@@ -734,8 +734,6 @@ public:
   // ==========================================================================
 public:
   // ==========================================================================
-  /// get the list of aquired tools
-  const AlgTools& tools    () const { return m_tools    ; }    // get all tools
   /// get the list of aquired services
   const Services& services () const { return m_services ; } // get all services
   // ==========================================================================
@@ -768,8 +766,6 @@ public:
   // ==========================================================================
 private:
   // ==========================================================================
-  /// Add the given tool to the list of acquired tools
-  void addToToolList    ( IAlgTool * tool ) const;
   /// Add the given service to the list of acquired services
   void addToServiceList ( const SmartIF<IService>& svc ) const;
   /// Constructor initializations
@@ -781,8 +777,6 @@ private:
 private:
   /// The predefined message stream
   mutable MsgStream* m_msgStream   ;
-  /// List of active  tools
-  mutable AlgTools   m_tools       ;
   /// List of active  services
   mutable Services   m_services    ;
   // ==========================================================================

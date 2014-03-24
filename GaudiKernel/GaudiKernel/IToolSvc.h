@@ -204,12 +204,6 @@ public:
                       createIf );
   }
 
-  /**Get all Tools belonging to a parent
-   * @param parent the parent holding the tools
-   * @return list of tools belonging to parent
-   */
-  virtual ListTools getToolsByParent(const IInterface * parent) = 0;
-
   /**  allow call-backs when a tool is a created
    *   or retrieved
    *

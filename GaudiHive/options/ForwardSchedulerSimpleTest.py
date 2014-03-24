@@ -77,17 +77,21 @@ AlgResourcePool(OutputLevel=DEBUG)
 
 # Set up of the crunchers, daily business --------------------------------------
 
-a1 = CPUCruncher("A1", 
-                 Outputs = ['/Event/a1'])
-a2 = CPUCruncher("A2", 
-                 Inputs = ['a1'],
-                 Outputs = ['/Event/a2'])
-a3 = CPUCruncher("A3", 
-                 Inputs = ['a1'],
-                 Outputs = ['/Event/a3'])
-a4 = CPUCruncher("A4", 
-                 Inputs = ['a2','a3'],
-                 Outputs = ['/Event/a4'])
+a1 = CPUCruncher("A1")
+a1.OutputDataObjects.output_0.address = '/Event/a1'
+
+a2 = CPUCruncher("A2") 
+a2.InputDataObjects.input_0.address = 'a1'
+a2.OutputDataObjects.output_0.address = '/Event/a2'
+
+a3 = CPUCruncher("A3") 
+a3.InputDataObjects.input_0.address = 'a1'
+a3.OutputDataObjects.output_0.address = '/Event/a3'
+
+a4 = CPUCruncher("A4") 
+a4.InputDataObjects.input_0.address = 'a2'
+a4.InputDataObjects.input_1.address = 'a3'
+a4.OutputDataObjects.output_0.address = '/Event/a4'
 
 for algo in [a1, a2, a3, a4]:
   algo.shortCalib=True

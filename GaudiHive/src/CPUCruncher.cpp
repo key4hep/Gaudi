@@ -21,12 +21,16 @@ CPUCruncher::CPUCruncher(const std::string& name, // the algorithm instance name
 
 	// For Concurrent run
 	m_inputHandles.resize(MAX_INPUTS);
-	for (uint i = 0; i < MAX_INPUTS; ++i)
-		m_inputHandles[i] = declareInput<DataObject>("input_" + std::to_string(i));
+	for (uint i = 0; i < MAX_INPUTS; ++i){
+		m_inputHandles[i] = new DataObjectHandle<DataObject>();
+		declareInput("input_" + std::to_string(i), *m_inputHandles[i]);
+	}
 
 	m_outputHandles.resize(MAX_OUTPUTS);
-	for (uint i = 0; i < MAX_OUTPUTS; ++i)
-		m_outputHandles[i] = declareOutput< DataObject>("output_" + std::to_string(i));
+	for (uint i = 0; i < MAX_OUTPUTS; ++i){
+		m_outputHandles[i] = new DataObjectHandle<DataObject>();
+		declareOutput("output_" + std::to_string(i), *m_outputHandles[i]);
+	}
 
 	declareProperty("avgRuntime", m_avg_runtime,
 			"Average runtime of the module.");
@@ -48,6 +52,17 @@ CPUCruncher::CPUCruncher(const std::string& name, // the algorithm instance name
 	CHM::accessor name_ninstances;
 	m_name_ncopies_map.insert(name_ninstances, name);
 	name_ninstances->second += 1;
+}
+
+CPUCruncher::~CPUCruncher() {
+	for (uint i = 0; i < MAX_INPUTS; ++i) {
+		delete m_inputHandles[i];
+	}
+
+	m_outputHandles.resize(MAX_OUTPUTS);
+	for (uint i = 0; i < MAX_OUTPUTS; ++i) {
+		delete m_outputHandles[i];
+	}
 }
 
 StatusCode CPUCruncher::initialize(){
@@ -353,7 +368,7 @@ CPUCruncher::get_inputs()
 {
   std::vector<std::string> di;
   for (auto & h: m_inputHandles){
-  	  if(h->dataProductName() != "")
+  	  if(h->isValid())
   		di.push_back(h->dataProductName());
   }
 
@@ -367,7 +382,7 @@ CPUCruncher::get_outputs()
 {
 	  std::vector<std::string> di;
 	  for (auto & h: m_outputHandles){
-	  	  if(h->dataProductName() != "")
+	  	  if(h->isValid())
 	  		di.push_back(h->dataProductName());
 	  }
 

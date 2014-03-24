@@ -14,12 +14,15 @@
 #include "GaudiKernel/IMonitorSvc.h"
 #include "GaudiKernel/IStateful.h"
 #include <Gaudi/PluginService.h>
+#include "GaudiKernel/ToolHandle.h"
 
-#include "GaudiKernel/IDataObjectHandle.h"
+#include "GaudiKernel/MinimalDataObjectHandle.h"
 #include "GaudiKernel/DataObjectDescriptor.h"
 
 template<class T>
 class DataObjectHandle;
+
+class ToolHandleInfo;
 
 #include <vector>
 #include <list>
@@ -258,63 +261,117 @@ public:
 
 	/** Declare input data object
 	 *
-	 *  @param tag to identify input object in python config
+	 *  @param propertyName to identify input object in python config
+	 *  @param handle data handle
 	 *  @param address relative or absolute address in TES
 	 *  @param optional optional input
 	 *  @param accessType read, write or update
-	 *  @return DataObjectHandle
 	 */
 
 	template<class T>
-	SmartIF<DataObjectHandle<T> > declareInput(const std::string& tag,
+	StatusCode declareInput(const std::string& propertyName, DataObjectHandle<T> & handle,
 			const std::string& address = DataObjectDescriptor::NULL_,
-			bool optional = false, IDataObjectHandle::AccessType accessType =
-					IDataObjectHandle::READ) {
+			bool optional = false, MinimalDataObjectHandle::AccessType accessType =
+					MinimalDataObjectHandle::READ) {
 
-		m_inputDataObjects.insert(tag, address, optional, accessType);
+		bool res = m_inputDataObjects.insert(propertyName, &handle);
 
-		return m_inputDataObjects[tag].createHandle < T > (this);
+		handle.descriptor()->setTag(propertyName);
+		handle.descriptor()->setAddress(address);
+		handle.descriptor()->setAccessType(accessType);
+		handle.descriptor()->setOptional(optional);
+
+		handle.setOwner(this);
+
+		MsgStream log(msgSvc(), name());
+
+		if (LIKELY(res)) {
+			log << MSG::DEBUG << "Handle for " << propertyName << " ("
+					<< address << ")" << " successfully created and stored."
+					<< endmsg;
+		} else {
+			log << MSG::ERROR << "Handle for " << propertyName << " ("
+					<< address << ")" << " could not be created." << endmsg;
+		}
+
+		return res;
 
 	}
 
 	/** Declare input data object
 	 *
-	 *  @param tag to identify input object in python config
+	 *  @param propertyName to identify input object in python config
+     *  @param handle data handle
 	 *  @param addresses relative or absolute addresses in TES, first is main address
 	 *  @param optional optional input
 	 *  @param accessType read, write or update
-	 *  @return DataObjectHandle
 	 */
 
 	template<class T>
-	SmartIF<DataObjectHandle<T> > declareInput(const std::string& tag,
+	StatusCode declareInput(const std::string& propertyName, DataObjectHandle<T> & handle,
 			const std::vector<std::string>& addresses,
-			bool optional = false, IDataObjectHandle::AccessType accessType =
-					IDataObjectHandle::READ) {
+			bool optional = false, MinimalDataObjectHandle::AccessType accessType =
+					MinimalDataObjectHandle::READ) {
 
-		m_inputDataObjects.insert(tag, addresses, optional, accessType);
+		bool res = m_inputDataObjects.insert(propertyName, &handle);
 
-		return m_inputDataObjects[tag].createHandle < T > (this);
+		handle.descriptor()->setTag(propertyName);
+		handle.descriptor()->setAddresses(addresses);
+		handle.descriptor()->setAccessType(accessType);
+		handle.descriptor()->setOptional(optional);
+
+		handle.setOwner(this);
+
+		MsgStream log(msgSvc(), name());
+
+		if (LIKELY(res)) {
+			log << MSG::DEBUG << "Handle for " << propertyName << " ("
+					<< addresses[0] << ")" << " successfully created and stored."
+					<< endmsg;
+		} else {
+			log << MSG::ERROR << "Handle for " << propertyName << " ("
+					<< addresses[0] << ")" << " could not be created." << endmsg;
+		}
+
+		return res;
 
 	}
 
 	/** Declare output data object
 	 *
-	 *  @param tag to identify input object in python config
+	 *  @param propertyName to identify input object in python config
+	 *  @param handle data handle
 	 *  @param address relative or absolute address in TES
 	 *  @param optional optional input
 	 *  @param accessType write or update
-	 *  @return DataObjectHandle
 	 */
 	template<class T>
-	SmartIF<DataObjectHandle<T> > declareOutput(const std::string& tag,
+	StatusCode declareOutput(const std::string& propertyName, DataObjectHandle<T> & handle,
 			const std::string& address = DataObjectDescriptor::NULL_,
-			IDataObjectHandle::AccessType accessType = IDataObjectHandle::WRITE,
+			MinimalDataObjectHandle::AccessType accessType = MinimalDataObjectHandle::WRITE,
 			bool optional = false) {
 
-		m_outputDataObjects.insert(tag, address, optional, accessType);
+		bool res = m_outputDataObjects.insert(propertyName, &handle);
 
-		return m_outputDataObjects[tag].createHandle < T > (this);
+		handle.descriptor()->setTag(propertyName);
+		handle.descriptor()->setAddress(address);
+		handle.descriptor()->setAccessType(accessType);
+		handle.descriptor()->setOptional(optional);
+
+		handle.setOwner(this);
+
+		MsgStream log(msgSvc(), name());
+
+		if (LIKELY(res)) {
+			log << MSG::DEBUG << "Handle for " << propertyName << " ("
+					<< address << ")" << " successfully created and stored."
+					<< endmsg;
+		} else {
+			log << MSG::ERROR << "Handle for " << propertyName << " ("
+					<< address << ")" << " could not be created." << endmsg;
+		}
+
+		return res;
 
 	}
 
@@ -334,6 +391,87 @@ public:
 		return m_outputDataObjects;
 	}
 
+	void registerTool(IAlgTool * tool) const {
+		MsgStream log(msgSvc(), name());
+
+		log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
+		m_tools.push_back(tool);
+	}
+
+	void deregisterTool(IAlgTool * tool) const {
+		std::vector<IAlgTool *>::iterator it = std::find(m_tools.begin(),
+				m_tools.end(), tool);
+
+		MsgStream log(msgSvc(), name());
+		if (it != m_tools.end()) {
+			log << MSG::DEBUG << "De-Registering tool " << tool->name()
+					<< endmsg;
+			m_tools.erase(it);
+		} else {
+			log << MSG::DEBUG << "Could not de-register tool " << tool->name()
+					<< endmsg;
+		}
+	}
+
+	void registerToolHandle(ToolHandleInfo * toolhandle) const {
+
+		MsgStream log(msgSvc(), name());
+
+		log << MSG::DEBUG << "Registering toolhandle " << endmsg;
+
+		m_toolHandles.push_back(toolhandle);
+	}
+
+	void deregisterToolHandle(ToolHandleInfo * toolhandle) const {
+		std::vector<ToolHandleInfo *>::iterator it = std::find(
+				m_toolHandles.begin(), m_toolHandles.end(), toolhandle);
+
+		MsgStream log(msgSvc(), name());
+		if (it != m_toolHandles.end()) {
+
+			log << MSG::DEBUG << "De-Registering toolhandle" << endmsg;
+
+			m_toolHandles.erase(it);
+		} else {
+			log << MSG::DEBUG << "Could not de-register toolhandle" << endmsg;
+		}
+	}
+
+	/** Declare used tool
+	 *
+	 *  @param handle ToolHandle<T>
+	 *  @param toolTypeAndName
+	 *  @param parent, default public tool
+	 *  @param create if necessary, default true
+	 */
+	template<class T>
+	StatusCode declareTool(ToolHandle<T> & handle, std::string toolTypeAndName =
+			"", const IInterface* parent = 0, bool createIf = true) {
+
+		if (toolTypeAndName == "")
+			toolTypeAndName = System::typeinfoName(typeid(T));
+
+		StatusCode sc = handle.initialize(toolTypeAndName, parent, createIf);
+
+		m_toolHandles.push_back(&handle);
+
+		MsgStream log(msgSvc(), name());
+
+		if (sc.isSuccess()) {
+			log << MSG::DEBUG << "Handle for tool" << toolTypeAndName
+					<< " successfully created and stored." << endmsg;
+		} else {
+
+			log << MSG::ERROR << "Handle for tool" << toolTypeAndName
+					<< " could not be created." << endmsg;
+		}
+
+		return sc;
+
+	}
+
+	const std::vector<IAlgTool *> & tools() const;
+
 protected:
 
 	  DataObjectDescriptorCollection & inputDataObjects() {
@@ -342,6 +480,12 @@ protected:
 	  DataObjectDescriptorCollection & outputDataObjects() {
 		  return m_outputDataObjects;
 	  }
+
+	  std::vector<IAlgTool *> & tools();
+
+private:
+   //place IAlgTools defined via ToolHandles in m_tools
+   void initToolHandles() const;
 
 public:
 
@@ -435,7 +579,11 @@ private:
 
   DataObjectDescriptorCollection m_inputDataObjects; //input data objects
   DataObjectDescriptorCollection m_outputDataObjects; //output data objects
-  std::string m_dataRoot;
+
+  //tools used by tool
+  mutable std::vector<IAlgTool *> m_tools;
+  mutable std::vector<ToolHandleInfo *> m_toolHandles;
+  mutable bool m_toolHandlesInit;  /// flag indicating whether ToolHandle tools have been added to m_tools
 
   /** implementation of service method */
   StatusCode service_i(const std::string& algName,
