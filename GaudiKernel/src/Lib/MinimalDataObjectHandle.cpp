@@ -59,6 +59,10 @@ bool MinimalDataObjectHandle::isOptional() const {
   return m_descriptor->optional();
 }
 
+void MinimalDataObjectHandle::setOptional(bool optional){
+	m_descriptor->setOptional(optional);
+}
+
 //---------------------------------------------------------------------------
 
 unsigned int MinimalDataObjectHandle::dataProductIndex() const {
@@ -69,6 +73,10 @@ unsigned int MinimalDataObjectHandle::dataProductIndex() const {
 
 const std::string& MinimalDataObjectHandle::dataProductName() const {
   return m_descriptor->address();
+}
+
+const std::vector<std::string> & MinimalDataObjectHandle::alternativeDataProductNames() const{
+  return m_descriptor->alternativeAddresses();
 }
 
 StatusCode MinimalDataObjectHandle::setDataProductName(const std::string & address){

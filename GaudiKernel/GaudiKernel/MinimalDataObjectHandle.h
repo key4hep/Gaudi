@@ -53,12 +53,14 @@ public:
   
   /// Check if the data object declared is optional for the algorithm
   bool isOptional() const;
+  void setOptional(bool optional = true);
 
   /// Return the product index
   unsigned int dataProductIndex() const;
 
   /// Return the product name
   const std::string& dataProductName() const;
+  const std::vector<std::string> & alternativeDataProductNames() const;
   
 
   /// Update address of data product if possible -> not if was written
