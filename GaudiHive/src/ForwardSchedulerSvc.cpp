@@ -144,7 +144,7 @@ StatusCode ForwardSchedulerSvc::initialize(){
   // prepare the control flow part
   if (m_CFNext) m_DFNext = true; //force usage of new data flow machinery when new control flow is used
   const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>(m_algResourcePool.get());
-  m_cfManager.initialize(algPool->getControlFlowGraph(), m_algname_index_map);
+  sc = m_cfManager.initialize(algPool->getControlFlowGraph(), m_algname_index_map);
   unsigned int controlFlowNodeNumber = m_cfManager.getControlFlowGraph()->getControlFlowNodeCounter();
 
   // Shortcut for the message service
@@ -166,7 +166,7 @@ StatusCode ForwardSchedulerSvc::initialize(){
   info() << "Activating scheduler in a separate thread" << endmsg;
   m_thread = std::thread (std::bind(&ForwardSchedulerSvc::activate,
                                     this));
-  return StatusCode::SUCCESS;
+  return sc;
 
 }
 //---------------------------------------------------------------------------
@@ -539,6 +539,7 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
 
     // Not complete because this would mean that the slot is already free!
     if (!thisSlot.complete &&
+        m_cfManager.rootDecisionResolved(thisSlot.controlFlowState) &&
         !thisSlot.algsStates.algsPresent(AlgsExecutionStates::CONTROLREADY) &&
         !thisSlot.algsStates.algsPresent(AlgsExecutionStates::DATAREADY) &&
         !thisSlot.algsStates.algsPresent(AlgsExecutionStates::SCHEDULED)) {

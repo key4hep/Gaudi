@@ -89,17 +89,22 @@ namespace concurrency {
     std::vector<DecisionNode*> m_parents;
   };
 
+  class DataNode;
 
   class AlgorithmNode : public ControlFlowNode {
   public:
+    /// Constructor
     AlgorithmNode(unsigned int& index, const std::string& algoName, bool inverted, bool allPass) :
       ControlFlowNode(index, algoName),
       m_algoIndex(0),m_algoName(algoName),m_inverted(inverted),m_allPass(allPass)
       {};
+    /// Destructor
+    ~AlgorithmNode();
     /// Initialize
     virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
     /// XXX: CF tests. Method to add a parent node
     void addParentNode(DecisionNode* node) { m_parents.push_back(node); }
+
     /// Associate an AlgorithmNode, which is a data supplier for this one
     void addSupplierNode(AlgorithmNode* node) { m_suppliers.push_back(node); }
     /// Associate an AlgorithmNode, which is a data consumer of this one
@@ -108,6 +113,16 @@ namespace concurrency {
     std::vector<AlgorithmNode*> getSupplierNodes() {return m_suppliers;}
     /// Get all consumer nodes
     std::vector<AlgorithmNode*> getConsumerNodes() {return m_consumers;}
+
+    /// Associate an AlgorithmNode, which is a data supplier for this one
+    void addOutputDataNode(DataNode* node) { m_outputs.push_back(node); }
+    /// Associate an AlgorithmNode, which is a data consumer of this one
+    void addInputDataNode(DataNode* node) { m_inputs.push_back(node); }
+    /// Get all supplier nodes
+    std::vector<DataNode*> getOutputDataNodes() {return m_outputs;}
+    /// Get all consumer nodes
+    std::vector<DataNode*> getInputDataNodes() {return m_inputs;}
+
     /// XXX: CF tests
     unsigned int getAlgoIndex() { return m_algoIndex; }
     /// Method to check whether the Algorithm has its all data dependency satisfied
@@ -139,17 +154,46 @@ namespace concurrency {
     bool m_allPass;
     /// XXX: CF tests
     std::vector<DecisionNode*> m_parents;
+
+    /// Vectors, used in data dependencies realm
     /// AlgorithmNodes that represent algorithms producing an input needed for the algorithm
     std::vector<AlgorithmNode*> m_suppliers;
     /// AlgorithmNodes that represent algorithms which need the output of the algorithm
     std::vector<AlgorithmNode*> m_consumers;
+
+    /// Vectors, used in augmented data dependencies realm
+    /// Outputs of algorithms, represented as DataNode's
+    std::vector<DataNode*> m_outputs;
+    /// Inputs of algorithms, represented as DataNode's
+    std::vector<DataNode*> m_inputs;
   };
 
+class DataNode {
+public:
+    /// Constructor
+    DataNode(const std::string& path) : m_data_object_path(path) {};
+    /// Destructor
+    ~DataNode() {};
+    std::string getPath() {return m_data_object_path;}
+    /// Associate an AlgorithmNode, which is a data supplier for this one
+    void addProducerNode(AlgorithmNode* node) {m_producers.push_back(node);}
+    /// Associate an AlgorithmNode, which is a data consumer of this one
+    void addConsumerNode(AlgorithmNode* node) {m_consumers.push_back(node);}
+    /// Get all data object producers
+    std::vector<AlgorithmNode*> getProducers() {return m_producers;}
+    /// Get all data object consumers
+    std::vector<AlgorithmNode*> getConsumers() {return m_consumers;}
+private:
+    std::string m_data_object_path;
+    std::vector<AlgorithmNode*> m_producers;
+    std::vector<AlgorithmNode*> m_consumers;
+  };
 
 typedef std::unordered_map<std::string,AlgorithmNode*> AlgoNodesMap;
 typedef std::unordered_map<std::string,DecisionNode*> DecisionHubsMap;
-typedef std::unordered_map<std::string,std::vector<std::string> > AlgoInputsMap;
-typedef std::unordered_map<std::string,std::vector<std::string> > AlgoOutputsMap;
+typedef std::unordered_map<std::string,DataNode*> DataNodesMap;
+typedef std::unordered_map<std::string,const DataObjectDescriptorCollection*> AlgoInputsMap;
+typedef std::unordered_map<std::string,const DataObjectDescriptorCollection*> AlgoOutputsMap;
 
 class ControlFlowManager;
 class IControlFlowGraph {};
@@ -165,19 +209,25 @@ public:
       if (m_headNode != 0) delete m_headNode;
     };
     /// Initialize graph
-    void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
+    StatusCode initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
     /// Register algorithm in the Data Dependency index
-    void registerAlgorithmInDDIndex(const Algorithm* algo);
-    /// Interconnect algorithm nodes reflecting their data dependencies
-    void buildDataDependenciesRealm();
+    void registerIODataObjects(const Algorithm* algo);
+    /// Build data dependency realm WITHOUT data object nodes: just interconnect algorithm nodes directly
+    StatusCode buildDataDependenciesRealm();
+    /// Build data dependency realm WITH data object nodes participating
+    StatusCode buildAugmentedDataDependenciesRealm();
     /// Add a node, which has no parents
     void addHeadNode(const std::string& headName, bool modeOR, bool allPass, bool isLazy);
     /// Add algorithm node
     void addAlgorithmNode(Algorithm* daughterAlgo, const std::string& parentName, bool inverted, bool allPass);
-    /// Get the Algorithm node from the graph with name algoName
+    /// Get the AlgorithmNode from by algorithm name using graph index
     AlgorithmNode* getAlgorithmNode(const std::string& algoName) const;
+    /// Add DataNode that represents DataObject
+    StatusCode addDataNode(const std::string& dataPath);
+    /// Get DataNode by DataObject path using graph index
+    DataNode* getDataNode(const std::string& dataPath);
     /// Add a node, which aggregates decisions of direct daughter nodes
-    void addAggregateNode(Algorithm* daughterAlgo, const std::string& parentName, bool modeOR, bool allPass, bool isLazy);
+    void addDecisionHubNode(Algorithm* daughterAlgo, const std::string& parentName, bool modeOR, bool allPass, bool isLazy);
     /// Get total number of graph nodes
     unsigned int getControlFlowNodeCounter() const {return m_nodeCounter;}
     /// XXX CF tests. Is needed for older CF implementation
@@ -205,6 +255,8 @@ private:
     AlgoNodesMap m_algoNameToAlgoNodeMap;
     /// Index: map of decision's name to DecisionHub
     DecisionHubsMap m_decisionNameToDecisionHubMap;
+    /// Index: map of data path to DataNode
+    DataNodesMap m_dataPathToDataNodeMap;
     /// Indexes: maps of algorithm's name to algorithm's inputs/outputs
     AlgoInputsMap m_algoNameToAlgoInputsMap;
     AlgoOutputsMap m_algoNameToAlgoOutputsMap;
@@ -215,6 +267,8 @@ private:
     const std::string m_name;
   };
 
+class IControlFlowManager {};
+
 /**@class ControlFlowManager ControlFlowManager.h GaudiHive/src/ControlFlowManager.h
  *
  *  Manage the control flow using a tree structure
@@ -223,13 +277,17 @@ private:
  *  @author  Benedikt Hegner
  *  @version 1.0
  */
-class ControlFlowManager{
+class ControlFlowManager  : public CommonMessaging<IControlFlowManager> {
 public:
   /// Constructor
-  ControlFlowManager() : m_CFGraph(0) {};
+  ControlFlowManager() : m_name("ControlFlowManager"), m_CFGraph(0) {};
   /// Destructor
   virtual ~ControlFlowManager() {};
-  ///
+  /// Initialize the control flow manager
+  /// It greps the topalg list and the index map for the algo names
+  StatusCode initialize(ControlFlowGraph* CFGraph,
+                        const std::unordered_map<std::string,unsigned int>& algname_index_map);
+  /// Get the flow graph instance
   ControlFlowGraph* getControlFlowGraph() {return m_CFGraph;}
   /// A little bit silly, but who cares. ;-)
   bool needsAlgorithmToRun(const unsigned int iAlgo) const;
@@ -249,15 +307,19 @@ public:
   void promoteDataConsumersToCR(const std::string& algo_name, AlgsExecutionStates& states) const;
   /// Check all data dependencies of an algorithm are satisfied
   bool algoDataDependenciesSatisfied(const std::string& algo_name, const AlgsExecutionStates& states) const;
-  /// Initialize the control flow manager
-  /// It greps the topalg list and the index map for the algo names
-  void initialize(ControlFlowGraph* CFGraph,
-                  const std::unordered_map<std::string,unsigned int>& algname_index_map);
+  /// Check whether root decision was resolved
+  bool rootDecisionResolved(const std::vector<int>& node_decisions) const;
   /// Print the state of the control flow for a given event
-  void printEventState(std::stringstream& ss,AlgsExecutionStates& states,
+  void printEventState(std::stringstream& ss,
+                       AlgsExecutionStates& states,
                        const std::vector<int>& node_decisions,
                        const unsigned int& recursionLevel) const {m_CFGraph->printState(ss,states,node_decisions,recursionLevel);}
+  /// Retrieve name of the service
+  const std::string& name() const {return m_name;}
+  /// Retrieve pointer to service locator
+  SmartIF<ISvcLocator>& serviceLocator() const {return m_CFGraph->serviceLocator();}
 private:
+  std::string m_name;
   /// the control flow graph
   ControlFlowGraph* m_CFGraph;
 };

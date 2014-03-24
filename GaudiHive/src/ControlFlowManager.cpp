@@ -143,6 +143,14 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
+  AlgorithmNode::~AlgorithmNode() {
+
+    for (auto node : m_outputs) {
+      delete node;
+    }
+  }
+
+  //---------------------------------------------------------------------------
   void AlgorithmNode::initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map){
     m_algoIndex = algname_index_map.at(m_algoName);
   }
@@ -170,11 +178,19 @@ namespace concurrency {
   bool AlgorithmNode::dataDependenciesSatisfied(const AlgsExecutionStates& states) const {
 
     bool result = true;
+    /*
     for (auto algoNode : m_suppliers)
       if (State::EVTACCEPTED != states[algoNode->getAlgoIndex()]) {
         result = false;
         break;
       }
+    */
+    for (auto dataNode : m_inputs)
+      for (auto algoNode : dataNode->getProducers())
+        if (State::EVTACCEPTED != states[algoNode->getAlgoIndex()]) {
+          result = false;
+          break;
+        }
 
     return result;
   }
@@ -242,95 +258,159 @@ namespace concurrency {
 
 
   //---------------------------------------------------------------------------
-  void ControlFlowGraph::initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map){
+  StatusCode ControlFlowGraph::initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map){
+
     m_headNode->initialize(algname_index_map);
-    buildDataDependenciesRealm();
+    //StatusCode sc = buildDataDependenciesRealm();
+    StatusCode sc = buildAugmentedDataDependenciesRealm();
+
+    if (!sc.isSuccess())
+      error() << "Could not build the data dependency realm." << endmsg;
     //for (auto n : getDataIndependentNodes())
     //  info() << "Independent node: " << n->getNodeName() << endmsg;
+
+    return sc;
   }
 
   //---------------------------------------------------------------------------
-  void ControlFlowGraph::registerAlgorithmInDDIndex(const Algorithm* algo) {
+  void ControlFlowGraph::registerIODataObjects(const Algorithm* algo) {
 
     const std::string& algoName = algo->name();
 
-    const DataObjectDescriptorCollection & inputDataObjects = algo->inputDataObjects();
-    for (auto tag : inputDataObjects) {
-      if (inputDataObjects[tag].valid()) {
-        const std::string& inputAddress = inputDataObjects[tag].address();
-        auto& addresses = m_algoNameToAlgoInputsMap[algoName];
-        if (std::find(addresses.begin(), addresses.end(), inputAddress) == addresses.end())
-          addresses.push_back(inputAddress);
-      }
-    }
+    const DataObjectDescriptorCollection& inputDOCollection = algo->inputDataObjects();
+    m_algoNameToAlgoInputsMap[algoName] = &inputDOCollection;
 
-    auto it_in = m_algoNameToAlgoInputsMap.find(algoName);
-    if ( it_in != m_algoNameToAlgoInputsMap.end()) {
-      debug() << "Inputs of " << algoName << ": ";
-      for (auto input : it_in->second) {
-        debug() << input << ", ";
-      }
-      debug() << endmsg;
+    debug() << "Inputs of " << algoName << ": ";
+    for (auto tag : inputDOCollection) {
+      if (inputDOCollection[tag].valid())
+        debug() << inputDOCollection[tag].address() << " | ";
     }
+    debug() << endmsg;
 
-    const DataObjectDescriptorCollection & outputDataObjects = algo->outputDataObjects();
-    for (auto tag : outputDataObjects) {
-      if (outputDataObjects[tag].valid()) {
-        const std::string& outputAddress = outputDataObjects[tag].address();
-        auto& addresses = m_algoNameToAlgoOutputsMap[algoName];
-        if (std::find(addresses.begin(), addresses.end(), outputAddress) == addresses.end())
-          addresses.push_back(outputAddress);
-      }
-    }
+    const DataObjectDescriptorCollection& outputDOCollection = algo->outputDataObjects();
+    m_algoNameToAlgoOutputsMap[algoName] = &outputDOCollection;
 
-    auto it_out = m_algoNameToAlgoOutputsMap.find(algoName);
-    if ( it_out != m_algoNameToAlgoOutputsMap.end()) {
-      debug() << "Outputs of " << algoName << ": ";
-      for (auto output : it_out->second) {
-        debug() << output << ", ";
-      }
-      debug() << endmsg;
+    debug() << "Outputs of " << algoName << ": ";
+    for (auto tag : outputDOCollection) {
+      if (outputDOCollection[tag].valid())
+        debug() << outputDOCollection[tag].address() << " | ";
     }
+    debug() << endmsg;
   }
 
   //---------------------------------------------------------------------------
-  void ControlFlowGraph::buildDataDependenciesRealm() {
+  StatusCode ControlFlowGraph::buildDataDependenciesRealm() {
+
+    StatusCode global_sc(StatusCode::SUCCESS);
 
     for (auto algo : m_algoNameToAlgoNodeMap) {
 
-      for (auto input : m_algoNameToAlgoInputsMap[algo.first]) {
-        for (auto algoSupplier : m_algoNameToAlgoOutputsMap) {
-          const std::vector<std::string>& outputs = m_algoNameToAlgoOutputsMap[algoSupplier.first];
-          if (std::find(outputs.begin(),outputs.end(),input) != outputs.end()) {
-            auto consumer = m_algoNameToAlgoNodeMap[algo.first];
-            const std::vector<AlgorithmNode*>& known_suppliers = consumer->getSupplierNodes();
-            auto supplier = m_algoNameToAlgoNodeMap[algoSupplier.first];
-            const std::vector<AlgorithmNode*>& known_consumers = supplier->getConsumerNodes();
-            if (std::find(known_suppliers.begin(),known_suppliers.end(),supplier) == known_suppliers.end())
-              consumer->addSupplierNode(supplier);
-            if (std::find(known_consumers.begin(),known_consumers.end(),consumer) == known_consumers.end())
-              supplier->addConsumerNode(consumer);
+      auto targetNode = m_algoNameToAlgoNodeMap[algo.first];
+
+      // Find producers for all the inputs of the target node
+      const DataObjectDescriptorCollection& targetInCollection = *m_algoNameToAlgoInputsMap[algo.first];
+      for (auto inputTag : targetInCollection) {
+        const std::string& input2Match = targetInCollection[inputTag].address();
+        for (auto producer : m_algoNameToAlgoOutputsMap) {
+          const DataObjectDescriptorCollection& outputs = *m_algoNameToAlgoOutputsMap[producer.first];
+          for (auto outputTag : outputs) {
+            if (outputs[outputTag].valid() && outputs[outputTag].address() == input2Match) {
+              const std::vector<AlgorithmNode*>& known_producers = targetNode->getSupplierNodes();
+              auto valid_producer = m_algoNameToAlgoNodeMap[producer.first];
+              const std::vector<AlgorithmNode*>& known_consumers = valid_producer->getConsumerNodes();
+              if (std::find(known_producers.begin(),known_producers.end(),valid_producer) == known_producers.end())
+                targetNode->addSupplierNode(valid_producer);
+              if (std::find(known_consumers.begin(),known_consumers.end(),targetNode) == known_consumers.end())
+                valid_producer->addConsumerNode(targetNode);
+            }
           }
         }
       }
 
-      for (auto output : m_algoNameToAlgoOutputsMap[algo.first]) {
-        for (auto algoConsumer : m_algoNameToAlgoInputsMap) {
-          const std::vector<std::string>& inputs = m_algoNameToAlgoInputsMap[algoConsumer.first];
-          if (std::find(inputs.begin(),inputs.end(),output) != inputs.end()) {
-            auto supplier = m_algoNameToAlgoNodeMap[algo.first];
-            const std::vector<AlgorithmNode*>& known_consumers = supplier->getConsumerNodes();
-            auto consumer = m_algoNameToAlgoNodeMap[algoConsumer.first];
-            const std::vector<AlgorithmNode*>& known_suppliers = consumer->getSupplierNodes();
-            if (std::find(known_suppliers.begin(),known_suppliers.end(),supplier) == known_suppliers.end())
-              consumer->addSupplierNode(supplier);
-            if (std::find(known_consumers.begin(),known_consumers.end(),consumer) == known_consumers.end())
-              supplier->addConsumerNode(consumer);
+      // Find consumers for all the outputs of the target node
+      const DataObjectDescriptorCollection& targetOutCollection = *m_algoNameToAlgoOutputsMap[algo.first];
+      for (auto outputTag : targetOutCollection) {
+        const std::string& output2Match = targetOutCollection[outputTag].address();
+        for (auto consumer : m_algoNameToAlgoInputsMap) {
+          const DataObjectDescriptorCollection& inputs = *m_algoNameToAlgoInputsMap[consumer.first];
+          for (auto inputTag : inputs) {
+            if (inputs[inputTag].valid() && inputs[inputTag].address() == output2Match) {
+              const std::vector<AlgorithmNode*>& known_consumers = targetNode->getConsumerNodes();
+              auto valid_consumer = m_algoNameToAlgoNodeMap[consumer.first];
+              const std::vector<AlgorithmNode*>& known_producers = valid_consumer->getSupplierNodes();
+              if (std::find(known_producers.begin(),known_producers.end(),targetNode) == known_producers.end())
+                valid_consumer->addSupplierNode(targetNode);
+              if (std::find(known_consumers.begin(),known_consumers.end(),valid_consumer) == known_consumers.end())
+                targetNode->addConsumerNode(valid_consumer);
+            }
           }
         }
       }
 
     }
+    return global_sc;
+  }
+
+  //---------------------------------------------------------------------------
+  StatusCode ControlFlowGraph::buildAugmentedDataDependenciesRealm() {
+
+    StatusCode global_sc(StatusCode::SUCCESS);
+
+    // Create the DataObjects (DO) realm (represented by DataNodes in the graph), connected to DO producers (AlgorithmNodes)
+    for (auto algo : m_algoNameToAlgoNodeMap) {
+
+      StatusCode sc;
+      const DataObjectDescriptorCollection& outCollection = *m_algoNameToAlgoOutputsMap[algo.first];
+      for (auto outputTag : outCollection) {
+        if (outCollection[outputTag].valid()) {
+          const std::string& output = outCollection[outputTag].address();
+          sc = addDataNode(output);
+          if (!sc.isSuccess()) {
+            error() << "Extra producer (" << algo.first << ") for DataObject @ " << output
+                    << " has been detected: this is not allowed." << endmsg;
+            global_sc = StatusCode::FAILURE;
+          }
+          auto dataNode = getDataNode(output);
+          dataNode->addProducerNode(algo.second);
+          algo.second->addOutputDataNode(dataNode);
+        }
+      }
+    }
+
+    // Connect previously created DO realm to DO consumers (AlgorithmNodes)
+    for (auto algo : m_algoNameToAlgoNodeMap) {
+      const DataObjectDescriptorCollection& inCollection = *m_algoNameToAlgoInputsMap[algo.first];
+      for (auto inputTag : inCollection) {
+        if (inCollection[inputTag].valid()) {
+          DataNode* dataNode = nullptr;
+          auto primaryPath = inCollection[inputTag].address();
+          auto itP = m_dataPathToDataNodeMap.find(primaryPath);
+          if (itP != m_dataPathToDataNodeMap.end()) {
+            dataNode = getDataNode(primaryPath);
+            if (!inCollection[inputTag].alternativeAddresses().empty())
+              warning() << "Dropping all alternative data dependencies in the graph, but '" << primaryPath
+                        << "', for algorithm " << algo.first << endmsg;
+          } else {
+            for (auto alterPath : inCollection[inputTag].alternativeAddresses()) {
+              auto itAP = m_dataPathToDataNodeMap.find(alterPath);
+              if (itAP != m_dataPathToDataNodeMap.end()) {
+                dataNode = getDataNode(alterPath);
+                warning() << "Dropping all alternative data dependencies in the graph, but '" << alterPath
+                          << "', for algorithm " << algo.first << endmsg;
+                break;
+              }
+            }
+          }
+          if (!dataNode) {
+            dataNode->addConsumerNode(algo.second);
+            algo.second->addInputDataNode(dataNode);
+          }
+
+        }
+      }
+    }
+
+    return global_sc;
   }
 
   //---------------------------------------------------------------------------
@@ -355,7 +435,7 @@ namespace concurrency {
     parentNode->addDaughterNode(algoNode);
     algoNode->addParentNode(parentNode);
 
-    registerAlgorithmInDDIndex(algo);
+    registerIODataObjects(algo);
   }
 
   //---------------------------------------------------------------------------
@@ -365,7 +445,33 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void ControlFlowGraph::addAggregateNode(Algorithm* aggregateAlgo, const std::string& parentName, bool modeOR, bool allPass, bool isLazy) {
+  StatusCode ControlFlowGraph::addDataNode(const std::string& dataPath) {
+
+    StatusCode sc;
+
+    auto itD = m_dataPathToDataNodeMap.find(dataPath);
+    concurrency::DataNode* dataNode;
+    if ( itD != m_dataPathToDataNodeMap.end()) {
+      dataNode = itD->second;
+      sc = StatusCode::FAILURE;
+    } else {
+      dataNode = new concurrency::DataNode(dataPath);
+      m_dataPathToDataNodeMap[dataPath] = dataNode;
+      debug() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
+      sc = StatusCode::SUCCESS;
+    }
+
+    return sc;
+  }
+
+  //---------------------------------------------------------------------------
+  DataNode* ControlFlowGraph::getDataNode(const std::string& dataPath) {
+
+    return m_dataPathToDataNodeMap.at(dataPath);
+  }
+
+  //---------------------------------------------------------------------------
+  void ControlFlowGraph::addDecisionHubNode(Algorithm* aggregateAlgo, const std::string& parentName, bool modeOR, bool allPass, bool isLazy) {
 
     const std::string& aggregateName = aggregateAlgo->name();
 
@@ -421,9 +527,14 @@ namespace concurrency {
 
     std::vector<AlgorithmNode*> result;
 
-    for (auto node : m_algoNameToAlgoInputsMap)
-      if (node.second.empty())
-        result.push_back(getAlgorithmNode(node.first));
+    for (auto node : m_algoNameToAlgoInputsMap) {
+      const DataObjectDescriptorCollection& collection = *(node.second);
+      for (auto tag : collection)
+        if (collection[tag].valid()) {
+          result.push_back(getAlgorithmNode(node.first));
+          break;
+        }
+    }
 
     return result;
   }
@@ -433,10 +544,14 @@ namespace concurrency {
 
 
   //---------------------------------------------------------------------------
-  void ControlFlowManager::initialize(ControlFlowGraph* cf_graph,
-                                      const std::unordered_map<std::string,unsigned int>& algname_index_map){
+  StatusCode ControlFlowManager::initialize(ControlFlowGraph* cf_graph,
+                                            const std::unordered_map<std::string,unsigned int>& algname_index_map){
     m_CFGraph = cf_graph;
-    cf_graph->initialize(algname_index_map);
+    StatusCode sc = cf_graph->initialize(algname_index_map);
+    if (!sc.isSuccess())
+      error() << "Could not initialize the flow graph." << endmsg;
+
+    return sc;
   }
 
   //---------------------------------------------------------------------------
@@ -473,6 +588,11 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   bool ControlFlowManager::algoDataDependenciesSatisfied(const std::string& algo_name, const AlgsExecutionStates& states) const {
     return m_CFGraph->getAlgorithmNode(algo_name)->dataDependenciesSatisfied(states);
+  }
+
+  //---------------------------------------------------------------------------
+  bool ControlFlowManager::rootDecisionResolved(const std::vector<int>& node_decisions) const {
+    return (-1 != node_decisions[m_CFGraph->m_headNode->getNodeIndex()]) ? true : false;
   }
 
 } // namespace

@@ -189,7 +189,7 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
     isLazy = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
     if (allPass) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
   }
-  m_CFGraph->addAggregateNode(algo,parentName,modeOR,allPass,isLazy);
+  m_CFGraph->addDecisionHubNode(algo,parentName,modeOR,allPass,isLazy);
 
   for (Algorithm* subalgo : *subAlgorithms ){
     StatusCode sc (flattenSequencer(subalgo,alglist,algo->name(),recursionDepth));
