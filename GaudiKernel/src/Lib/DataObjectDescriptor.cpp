@@ -138,8 +138,10 @@ void DataObjectDescriptor::setAddresses(const std::vector<std::string>& addresse
 	//		<< " with " << (m_handle.isValid() ? "valid" : "NOT valid") << " handle" << std::endl;
 
 	//if(!m_handle || !m_handle->initialized()){
+	if(!addresses.empty()){
 		setAddress(addresses[0]);
 		setAltAddress(addresses, true);
+	}
 	//}
 }
 

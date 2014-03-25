@@ -28,6 +28,8 @@
 #include "GaudiKernel/ICounterSummarySvc.h"
 #include "GaudiKernel/IUpdateManagerSvc.h"
 #include "GaudiKernel/HashMap.h"
+#include "GaudiKernel/DataObjectHandle.h"
+
 // ============================================================================
 // forward declarations
 // ============================================================================
