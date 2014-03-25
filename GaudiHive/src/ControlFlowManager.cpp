@@ -387,11 +387,11 @@ namespace concurrency {
           auto itP = m_dataPathToDataNodeMap.find(primaryPath);
           if (itP != m_dataPathToDataNodeMap.end()) {
             dataNode = getDataNode(primaryPath);
-            if (!inCollection[inputTag].alternativeAddresses().empty())
+            if (!inCollection[inputTag].alternativeDataProductNames().empty())
               warning() << "Dropping all alternative data dependencies in the graph, but '" << primaryPath
                         << "', for algorithm " << algo.first << endmsg;
           } else {
-            for (auto alterPath : inCollection[inputTag].alternativeAddresses()) {
+            for (auto alterPath : inCollection[inputTag].alternativeDataProductNames()) {
               auto itAP = m_dataPathToDataNodeMap.find(alterPath);
               if (itAP != m_dataPathToDataNodeMap.end()) {
                 dataNode = getDataNode(alterPath);
