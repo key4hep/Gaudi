@@ -162,9 +162,9 @@ namespace concurrency {
     std::vector<AlgorithmNode*> m_consumers;
 
     /// Vectors, used in augmented data dependencies realm
-    /// Outputs of algorithms, represented as DataNode's
+    /// Outputs of the algorithm, represented as DataNode's
     std::vector<DataNode*> m_outputs;
-    /// Inputs of algorithms, represented as DataNode's
+    /// Inputs of the algorithm, represented as DataNode's
     std::vector<DataNode*> m_inputs;
   };
 

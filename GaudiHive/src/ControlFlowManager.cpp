@@ -185,12 +185,17 @@ namespace concurrency {
         break;
       }
     */
-    for (auto dataNode : m_inputs)
+    for (auto dataNode : m_inputs) {
+
+      result = false;
       for (auto algoNode : dataNode->getProducers())
-        if (State::EVTACCEPTED != states[algoNode->getAlgoIndex()]) {
-          result = false;
+        if (State::EVTACCEPTED == states[algoNode->getAlgoIndex()]) {
+          result = true;
           break;
         }
+
+      if (!result) break;
+    }
 
     return result;
   }
@@ -453,7 +458,8 @@ namespace concurrency {
     concurrency::DataNode* dataNode;
     if ( itD != m_dataPathToDataNodeMap.end()) {
       dataNode = itD->second;
-      sc = StatusCode::FAILURE;
+      //sc = StatusCode::FAILURE;
+      sc = StatusCode::SUCCESS;
     } else {
       dataNode = new concurrency::DataNode(dataPath);
       m_dataPathToDataNodeMap[dataPath] = dataNode;
