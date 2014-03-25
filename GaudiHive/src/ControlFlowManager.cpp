@@ -401,7 +401,7 @@ namespace concurrency {
               }
             }
           }
-          if (!dataNode) {
+          if (dataNode) {
             dataNode->addConsumerNode(algo.second);
             algo.second->addInputDataNode(dataNode);
           }
