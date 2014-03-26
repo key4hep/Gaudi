@@ -75,8 +75,9 @@ namespace concurrency {
       //std::cout << "----UPDATING DAUGHTER: " << daughter->getNodeName() << std::endl;
       if (m_isLazy && (-1 != decision || hasUndecidedChild)) {
         node_decisions[m_nodeIndex] = decision;
+        break;
         //std::cout << "LEAVING (UPDATING) DECISION NODE: " << m_nodeName << std::endl;
-        return;
+        //return;
       }
       // modified
       int& res = node_decisions[daughter->getNodeIndex()];
