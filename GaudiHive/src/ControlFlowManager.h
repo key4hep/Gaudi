@@ -35,8 +35,8 @@ namespace concurrency {
                             const std::vector<int>& node_decisions,
                             const unsigned int& recursionLevel) const = 0;
     /// XXX: CF tests.
-    unsigned int getNodeIndex() { return m_nodeIndex; }
-    std::string getNodeName() { return m_nodeName; }
+    unsigned int getNodeIndex() const { return m_nodeIndex; }
+    std::string getNodeName() const { return m_nodeName; }
     virtual void updateDecision(AlgsExecutionStates& states,
                                 std::vector<int>& node_decisions) const = 0;
   protected:

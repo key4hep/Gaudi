@@ -353,7 +353,7 @@ StatusCode AlgTool::sysInitialize() {
   }
   for(auto tag : m_outputDataObjects){
 	  if(m_outputDataObjects[tag].isValid()){
-		  m_inputDataObjects[tag].setDataProductName(fixLocation(m_inputDataObjects[tag].dataProductName()));
+		  m_outputDataObjects[tag].setDataProductName(fixLocation(m_outputDataObjects[tag].dataProductName()));
 
 		  if(m_outputDataObjects[tag].initialize().isSuccess())
 			  log << MSG::DEBUG << "Data Handle " << tag

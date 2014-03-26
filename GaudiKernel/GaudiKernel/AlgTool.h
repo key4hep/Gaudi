@@ -326,11 +326,11 @@ public:
 
 		if (LIKELY(res)) {
 			log << MSG::DEBUG << "Handle for " << propertyName << " ("
-					<< addresses[0] << ")" << " successfully created and stored."
+					<< (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " successfully created and stored."
 					<< endmsg;
 		} else {
 			log << MSG::ERROR << "Handle for " << propertyName << " ("
-					<< addresses[0] << ")" << " could not be created." << endmsg;
+					<< (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " could not be created." << endmsg;
 		}
 
 		return res;
@@ -348,8 +348,8 @@ public:
 	template<class T>
 	StatusCode declareOutput(const std::string& propertyName, DataObjectHandle<T> & handle,
 			const std::string& address = DataObjectDescriptor::NULL_,
-			MinimalDataObjectHandle::AccessType accessType = MinimalDataObjectHandle::WRITE,
-			bool optional = false) {
+			bool optional = false,
+			MinimalDataObjectHandle::AccessType accessType = MinimalDataObjectHandle::WRITE) {
 
 		bool res = m_outputDataObjects.insert(propertyName, &handle);
 
