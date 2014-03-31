@@ -13,7 +13,7 @@ namespace GaudiTesting {
     SvcWithTool(const std::string& name, ISvcLocator *pSvcLocator):
       Service(name, pSvcLocator) {
 
-    	declareTool(m_tool);
+    	declarePublicTool(m_tool);
 
     }
     virtual ~SvcWithTool(){}

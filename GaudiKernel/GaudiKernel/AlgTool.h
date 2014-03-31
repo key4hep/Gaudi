@@ -437,7 +437,7 @@ public:
 		}
 	}
 
-	/** Declare used tool
+	/** Declare used public tool
 	 *
 	 *  @param handle ToolHandle<T>
 	 *  @param toolTypeAndName
@@ -445,24 +445,57 @@ public:
 	 *  @param create if necessary, default true
 	 */
 	template<class T>
-	StatusCode declareTool(ToolHandle<T> & handle, std::string toolTypeAndName =
-			"", const IInterface* parent = 0, bool createIf = true) {
+	StatusCode declarePublicTool(ToolHandle<T> & handle, std::string toolTypeAndName =
+			"", bool createIf = true) {
 
 		if (toolTypeAndName == "")
 			toolTypeAndName = System::typeinfoName(typeid(T));
 
-		StatusCode sc = handle.initialize(toolTypeAndName, parent, createIf);
+		StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
 
 		m_toolHandles.push_back(&handle);
 
 		MsgStream log(msgSvc(), name());
 
 		if (sc.isSuccess()) {
-			log << MSG::DEBUG << "Handle for tool" << toolTypeAndName
+			log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
 					<< " successfully created and stored." << endmsg;
 		} else {
 
-			log << MSG::ERROR << "Handle for tool" << toolTypeAndName
+			log << MSG::ERROR << "Handle for public tool" << toolTypeAndName
+					<< " could not be created." << endmsg;
+		}
+
+		return sc;
+
+	}
+
+	/** Declare used private tool
+	 *
+	 *  @param handle ToolHandle<T>
+	 *  @param toolTypeAndName
+	 *  @param parent, default public tool
+	 *  @param create if necessary, default true
+	 */
+	template<class T>
+	StatusCode declarePrivateTool(ToolHandle<T> & handle, std::string toolTypeAndName =
+			"", bool createIf = true) {
+
+		if (toolTypeAndName == "")
+			toolTypeAndName = System::typeinfoName(typeid(T));
+
+		StatusCode sc = handle.initialize(toolTypeAndName, this, createIf);
+
+		m_toolHandles.push_back(&handle);
+
+		MsgStream log(msgSvc(), name());
+
+		if (sc.isSuccess()) {
+			log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
+					<< " successfully created and stored." << endmsg;
+		} else {
+
+			log << MSG::ERROR << "Handle for private tool" << toolTypeAndName
 					<< " could not be created." << endmsg;
 		}
 

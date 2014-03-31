@@ -31,8 +31,8 @@ MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
   std::cout << "handle " << m_raw.dataProductName() << " is " << (m_raw.isValid() ? "" : "NOT") << " valid" << std::endl;
   std::cout << "handle " << m_selectedTracks.dataProductName() << " is " << (m_selectedTracks.isValid() ? "" : "NOT") << " valid" << std::endl;
 
-  declareTool(m_myPrivToolHandle, "MyTool/PrivToolHandle", this);
-  declareTool(m_myPubToolHandle, "MyTool/PubToolHandle");
+  declarePrivateTool(m_myPrivToolHandle, "MyTool/PrivToolHandle");
+  declarePublicTool(m_myPubToolHandle, "MyTool/PubToolHandle");
 }
 
 //------------------------------------------------------------------------------
