@@ -1,6 +1,9 @@
 from Gaudi.Configuration import *
 # ============================================================================
 from Configurables import GaudiExamplesCommonConf, CPUCruncher,HiveEventLoopMgr, HiveWhiteBoard
+
+import json
+
 #GaudiExamplesCommonConf()
 # ============================================================================     
 
@@ -75,6 +78,11 @@ def load_brunel_scenario(filename):
   all_outputs = set()
   all_algos = []
   all_algos_inputs = []
+  
+  sTiming = json.dumps(timing)
+  
+  f = open("algTimings.json", 'w')
+  print >> f, sTiming
   
   #Scale all algo timings if needed
   if Scale!=-1:

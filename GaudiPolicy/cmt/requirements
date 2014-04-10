@@ -1566,3 +1566,6 @@ macro_append pp_cflags   " $(CppSpecificFlags)"
 # use $(gaudi_test_policy_use)
 
 tag target-test use-O3
+
+macro_append cppflags "" \
+      HIVE " -std=c++11 "

@@ -14,6 +14,7 @@ use GaudiPolicy  *
 use GaudiPluginService *
 use Reflex       *   LCG_Interfaces
 use Boost        *   LCG_Interfaces
+use tbb		 *   LCG_Interfaces
 
 apply_pattern install_more_includes more=GaudiKernel
 

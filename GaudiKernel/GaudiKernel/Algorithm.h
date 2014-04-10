@@ -676,73 +676,109 @@ public:
 
   	}
 
-  /// Return the handles declared in the algorithm
-  __attribute__ ((deprecated)) virtual const std::vector<MinimalDataObjectHandle*> handles();
-  
-  const DataObjectDescriptorCollection & inputDataObjects() const {
-	  return m_inputDataObjects;
-  }
-  const DataObjectDescriptorCollection & outputDataObjects() const {
-	  return m_outputDataObjects;
-  }
+	/// Return the handles declared in the algorithm
+	__attribute__ ((deprecated)) virtual const std::vector<
+			MinimalDataObjectHandle*> handles();
 
-  void registerTool(IAlgTool * tool) const {
+	const DataObjectDescriptorCollection & inputDataObjects() const {
+		return m_inputDataObjects;
+	}
+	const DataObjectDescriptorCollection & outputDataObjects() const {
+		return m_outputDataObjects;
+	}
 
-	  	MsgStream log ( msgSvc() , name() );
+	void registerTool(IAlgTool * tool) const {
+
+		MsgStream log(msgSvc(), name());
 
 		log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
 
-	  m_tools.push_back(tool);
-  }
+		m_tools.push_back(tool);
+	}
 
-  void deregisterTool(IAlgTool * tool) const {
-	  std::vector<IAlgTool *>::iterator it = std::find(m_tools.begin(), m_tools.end(), tool);
+	void deregisterTool(IAlgTool * tool) const {
+		std::vector<IAlgTool *>::iterator it = std::find(m_tools.begin(),
+				m_tools.end(), tool);
 
-	  MsgStream log ( msgSvc() , name() );
-	  if(it != m_tools.end()){
+		MsgStream log(msgSvc(), name());
+		if (it != m_tools.end()) {
 
-			log << MSG::DEBUG << "De-Registering tool " << tool->name() << endmsg;
+			log << MSG::DEBUG << "De-Registering tool " << tool->name()
+					<< endmsg;
 
-		  m_tools.erase(it);
-	  } else {
-		  log << MSG::DEBUG << "Could not de-register tool " << tool->name() << endmsg;
-	  }
-  }
+			m_tools.erase(it);
+		} else {
+			log << MSG::DEBUG << "Could not de-register tool " << tool->name()
+					<< endmsg;
+		}
+	}
 
-  /** Declare used tool
-       *
-       *  @param handle ToolHandle<T>
-       *  @param toolTypeAndName
-       *  @param parent, default public tool
-       *  @param create if necessary, default true
-       */
-    template<class T>
-    StatusCode declareTool( ToolHandle<T> & handle,
-  		  std::string toolTypeAndName = "",
-  		  const IInterface* parent = 0, bool createIf = true) {
+	/** Declare used Private tool
+	 *
+	 *  @param handle ToolHandle<T>
+	 *  @param toolTypeAndName
+	 *  @param parent, default public tool
+	 *  @param create if necessary, default true
+	 */
+	template<class T>
+	StatusCode declarePrivateTool(ToolHandle<T> & handle,
+			std::string toolTypeAndName = "",
+			bool createIf = true) {
 
-    	if(toolTypeAndName == "")
-    		toolTypeAndName = System::typeinfoName( typeid(T) );
+		if (toolTypeAndName == "")
+			toolTypeAndName = System::typeinfoName(typeid(T));
 
+		StatusCode sc = handle.initialize(toolTypeAndName, this, createIf);
 
-    	StatusCode sc = handle.initialize(toolTypeAndName, parent, createIf);
+		m_toolHandles.push_back(&handle);
 
-  	  	m_toolHandles.push_back(&handle);
+		MsgStream log(msgSvc(), name());
 
-  	  	MsgStream log ( msgSvc() , name() );
+		if (sc.isSuccess()) {
+			log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
+					<< " successfully created and stored." << endmsg;
+		} else {
 
-  		if (sc.isSuccess()) {
-  			log << MSG::DEBUG << "Handle for tool" << toolTypeAndName
-  					<< " successfully created and stored." << endmsg;
-  		} else {
+			log << MSG::ERROR << "Handle for private tool" << toolTypeAndName
+					<< " could not be created." << endmsg;
+		}
 
-  			log << MSG::ERROR << "Handle for tool" << toolTypeAndName
-  				<< " could not be created." << endmsg;
-  		}
+		return sc;
 
-  	  	return sc;
+	}
 
-    }
+	/** Declare used Public tool
+	 *
+	 *  @param handle ToolHandle<T>
+	 *  @param toolTypeAndName
+	 *  @param parent, default public tool
+	 *  @param create if necessary, default true
+	 */
+	template<class T>
+	StatusCode declarePublicTool(ToolHandle<T> & handle, std::string toolTypeAndName = "",
+			bool createIf = true) {
+
+		if (toolTypeAndName == "")
+			toolTypeAndName = System::typeinfoName(typeid(T));
+
+		StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
+
+		m_toolHandles.push_back(&handle);
+
+		MsgStream log(msgSvc(), name());
+
+		if (sc.isSuccess()) {
+			log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
+					<< " successfully created and stored." << endmsg;
+		} else {
+
+			log << MSG::ERROR << "Handle for public tool" << toolTypeAndName
+					<< " could not be created." << endmsg;
+		}
+
+		return sc;
+
+	}
 
   const std::vector<IAlgTool *> & tools() const;
 

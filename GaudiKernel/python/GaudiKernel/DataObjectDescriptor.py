@@ -9,7 +9,7 @@ ADDR_SEP = '&'
 
 class DataObjectDescriptor(object):
     
-    __slots__ = ('tag', 'address', 'alternativeAddresses', 'optional', 'accessType')
+    __slots__ = ('Tag', 'Path', 'AlternativePaths', 'Optional', 'AccessType')
 
     #define accessTypes
     READ = 0
@@ -37,28 +37,28 @@ class DataObjectDescriptor(object):
         if len(a) != 4:
             return
         
-        self.tag = a[0]
+        self.Tag = a[0]
         
         if not ADDR_SEP in a[1]: #only one address provided 
-            self.address = a[1]
-            self.alternativeAddresses = []
+            self.Path = a[1]
+            self.AlternativePaths = []
         else: #we have alternative addresses
             addr = a[1].split(ADDR_SEP)
-            self.address = addr[0]
-            self.alternativeAddresses = addr[1:]
+            self.Path = addr[0]
+            self.AlternativePaths = addr[1:]
         
-        self.optional = int(a[2]) == 1 
-        self.accessType = int(a[3])
+        self.Optional = int(a[2]) == 1 
+        self.AccessType = int(a[3])
         
     def __str__(self):
-        s =  self.tag + FIELD_SEP + self.address 
+        s =  self.Tag + FIELD_SEP + self.Path 
         
-        for a in self.alternativeAddresses:
+        for a in self.AlternativePaths:
             s += ADDR_SEP + a
             
         s += FIELD_SEP
         
-        s += str(int(self.optional)) + FIELD_SEP + str(self.accessType)
+        s += str(int(self.Optional)) + FIELD_SEP + str(self.AccessType)
         
         return s
                
