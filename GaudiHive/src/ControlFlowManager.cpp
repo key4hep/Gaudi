@@ -79,18 +79,25 @@ namespace concurrency {
         //std::cout << "LEAVING (UPDATING) DECISION NODE: " << m_nodeName << std::endl;
         //return;
       }
+
       // modified
       int& res = node_decisions[daughter->getNodeIndex()];
       if (-1 == res) {
         hasUndecidedChild = true;
         //daughter->promoteToControlReadyState(states, node_decisions);
+
         if (typeid(*daughter) != typeid(concurrency::DecisionNode)) {
           AlgorithmNode* algod = (AlgorithmNode*) daughter;
-          if (State::INITIAL == states[algod->getAlgoIndex()] && algod->dataDependenciesSatisfied(states)) {
+          auto& algoState = states[algod->getAlgoIndex()];
+          if (State::INITIAL == algoState) {
             //std::cout << "----> UPDATING DAUGHTER STATE to CONTROLREADY: " << daughter->getNodeName() << std::endl;
             states.updateState(algod->getAlgoIndex(), State::CONTROLREADY);
-            states.updateState(algod->getAlgoIndex(), State::DATAREADY);
+            if (algod->dataDependenciesSatisfied(states))
+              algod->promoteToDataReadyState(states);
+          } else if (State::CONTROLREADY == algoState && algod->dataDependenciesSatisfied(states)) {
+            algod->promoteToDataReadyState(states);
           }
+
         } else {
           daughter->updateDecision(states, node_decisions);
         }
@@ -161,10 +168,18 @@ namespace concurrency {
                                                  std::vector<int>& node_decisions) const {
 
     //std::cout << "REACHED ALGONODE " << m_algoName << std::endl;
-    if (State::INITIAL == states[m_algoIndex] && dataDependenciesSatisfied(states)) {
+    if (State::INITIAL == states[m_algoIndex]) {
       states.updateState(m_algoIndex, State::CONTROLREADY);
-      states.updateState(m_algoIndex, State::DATAREADY);
+      if (dataDependenciesSatisfied(states))
+        promoteToDataReadyState(states);
     }
+  }
+
+  //---------------------------------------------------------------------------
+  void AlgorithmNode::promoteToDataReadyState(AlgsExecutionStates& states) const {
+
+    states.updateState(m_algoIndex, State::DATAREADY);
+
   }
 
   //---------------------------------------------------------------------------
@@ -241,7 +256,6 @@ namespace concurrency {
 
     const State& state = states[m_algoIndex];
     int decision = -1;
-    //if (State::INITIAL == state) {state = State::CONTROLREADY;}
 
     // now derive the proper result to pass back
     if (true == m_allPass) {
@@ -256,8 +270,15 @@ namespace concurrency {
 
     node_decisions[m_nodeIndex] = decision;
 
-    for (auto p : m_parents)
-      p->updateDecision(states, node_decisions);
+    if (-1 != decision) {
+      for (auto output : m_outputs)
+        for (auto consumer : output->getConsumers())
+          if (State::CONTROLREADY == states[consumer->getAlgoIndex()] && consumer->dataDependenciesSatisfied(states))
+            consumer->promoteToDataReadyState(states);
+
+      for (auto p : m_parents)
+        p->updateDecision(states, node_decisions);
+    }
   }
 
 
@@ -432,7 +453,7 @@ namespace concurrency {
     if ( itA != m_algoNameToAlgoNodeMap.end()) {
       algoNode = itA->second;
     } else {
-      algoNode = new concurrency::AlgorithmNode(m_nodeCounter,algoName,inverted,allPass);
+      algoNode = new concurrency::AlgorithmNode(*this,m_nodeCounter,algoName,inverted,allPass);
       ++m_nodeCounter;
       m_algoNameToAlgoNodeMap[algoName] = algoNode;
       debug() << "AlgoNode " << algoName << " added @ " << algoNode << endmsg;
@@ -462,7 +483,7 @@ namespace concurrency {
       //sc = StatusCode::FAILURE;
       sc = StatusCode::SUCCESS;
     } else {
-      dataNode = new concurrency::DataNode(dataPath);
+      dataNode = new concurrency::DataNode(*this,dataPath);
       m_dataPathToDataNodeMap[dataPath] = dataNode;
       debug() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
       sc = StatusCode::SUCCESS;
@@ -472,7 +493,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  DataNode* ControlFlowGraph::getDataNode(const std::string& dataPath) {
+  DataNode* ControlFlowGraph::getDataNode(const std::string& dataPath) const {
 
     return m_dataPathToDataNodeMap.at(dataPath);
   }
@@ -490,7 +511,7 @@ namespace concurrency {
     if ( itA != m_decisionNameToDecisionHubMap.end()) {
       aggregateNode = itA->second;
     } else {
-      aggregateNode = new concurrency::DecisionNode(m_nodeCounter,aggregateName,modeOR,allPass,isLazy);
+      aggregateNode = new concurrency::DecisionNode(*this,m_nodeCounter,aggregateName,modeOR,allPass,isLazy);
       ++m_nodeCounter;
       m_decisionNameToDecisionHubMap[aggregateName] = aggregateNode;
       debug() << "AggregateNode " << aggregateName << " added @ " << aggregateNode << endmsg;
@@ -508,7 +529,7 @@ namespace concurrency {
     if ( itH != m_decisionNameToDecisionHubMap.end()) {
       m_headNode = itH->second;
     } else {
-      m_headNode = new concurrency::DecisionNode(m_nodeCounter, headName, modeOR, allPass, isLazy);
+      m_headNode = new concurrency::DecisionNode(*this,m_nodeCounter,headName,modeOR,allPass,isLazy);
       ++m_nodeCounter;
       m_decisionNameToDecisionHubMap[headName] = m_headNode;
     }

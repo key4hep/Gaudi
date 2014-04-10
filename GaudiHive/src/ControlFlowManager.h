@@ -5,6 +5,8 @@
 #include <vector>
 #include <algorithm>
 #include <unordered_map>
+#include <chrono>
+#include <fstream>
 
 // fwk includes
 #include "AlgsExecutionStates.h"
@@ -14,11 +16,13 @@
 namespace concurrency {
 
   typedef AlgsExecutionStates::State State;
+  class ControlFlowGraph;
 
   class ControlFlowNode {
   public:
     /// Constructor
-    ControlFlowNode(unsigned int& index, const std::string& name) : m_nodeIndex(index), m_nodeName(name) {};
+    ControlFlowNode(ControlFlowGraph& graph, unsigned int nodeIndex, const std::string& name) :
+      m_graph(&graph), m_nodeIndex(nodeIndex), m_nodeName(name) {};
     /// Destructor
     virtual ~ControlFlowNode() {};
     /// Initialize
@@ -40,6 +44,7 @@ namespace concurrency {
     virtual void updateDecision(AlgsExecutionStates& states,
                                 std::vector<int>& node_decisions) const = 0;
   protected:
+    ControlFlowGraph* m_graph;
     /// Translation between state id and name
     std::string stateToString(const int& stateId) const;
     unsigned int m_nodeIndex;
@@ -50,8 +55,8 @@ namespace concurrency {
   class DecisionNode : public ControlFlowNode {
   public:
     /// Constructor
-    DecisionNode(unsigned int& index, const std::string& name, bool modeOR, bool allPass, bool isLazy) :
-      ControlFlowNode(index, name),
+    DecisionNode(ControlFlowGraph& graph, unsigned int nodeIndex, const std::string& name, bool modeOR, bool allPass, bool isLazy) :
+      ControlFlowNode(graph, nodeIndex, name),
       m_modeOR(modeOR), m_allPass(allPass), m_isLazy(isLazy), m_daughters()
       {};
     /// Destructor
@@ -94,8 +99,8 @@ namespace concurrency {
   class AlgorithmNode : public ControlFlowNode {
   public:
     /// Constructor
-    AlgorithmNode(unsigned int& index, const std::string& algoName, bool inverted, bool allPass) :
-      ControlFlowNode(index, algoName),
+    AlgorithmNode(ControlFlowGraph& graph, unsigned int nodeIndex, const std::string& algoName, bool inverted, bool allPass) :
+      ControlFlowNode(graph, nodeIndex, algoName),
       m_algoIndex(0),m_algoName(algoName),m_inverted(inverted),m_allPass(allPass)
       {};
     /// Destructor
@@ -135,6 +140,8 @@ namespace concurrency {
                                             std::vector<int>& node_decisions) const;
     /// XXX: CF tests
     void promoteToControlReadyState(AlgsExecutionStates& states) const;
+    ///
+    void promoteToDataReadyState(AlgsExecutionStates& states) const;
     /// XXX: CF tests
     virtual void updateDecision(AlgsExecutionStates& states,
                                 std::vector<int>& node_decisions) const;
@@ -171,7 +178,7 @@ namespace concurrency {
 class DataNode {
 public:
     /// Constructor
-    DataNode(const std::string& path) : m_data_object_path(path) {};
+    DataNode(ControlFlowGraph& graph, const std::string& path) : m_graph(&graph), m_data_object_path(path) {};
     /// Destructor
     ~DataNode() {};
     std::string getPath() {return m_data_object_path;}
@@ -184,6 +191,7 @@ public:
     /// Get all data object consumers
     std::vector<AlgorithmNode*> getConsumers() {return m_consumers;}
 private:
+    ControlFlowGraph* m_graph;
     std::string m_data_object_path;
     std::vector<AlgorithmNode*> m_producers;
     std::vector<AlgorithmNode*> m_consumers;
@@ -203,7 +211,7 @@ class ControlFlowGraph : public CommonMessaging<IControlFlowGraph> {
 public:
     /// Constructor
     ControlFlowGraph(const std::string& name, SmartIF<ISvcLocator> svc) :
-      m_headNode(0), m_nodeCounter(0), m_svcLocator(svc), m_name(name) {};
+      m_headNode(0), m_nodeCounter(0), m_svcLocator(svc), m_name(name), m_initTime(std::chrono::high_resolution_clock::now()) {};
     /// Destructor
     ~ControlFlowGraph() {
       if (m_headNode != 0) delete m_headNode;
@@ -225,7 +233,7 @@ public:
     /// Add DataNode that represents DataObject
     StatusCode addDataNode(const std::string& dataPath);
     /// Get DataNode by DataObject path using graph index
-    DataNode* getDataNode(const std::string& dataPath);
+    DataNode* getDataNode(const std::string& dataPath) const;
     /// Add a node, which aggregates decisions of direct daughter nodes
     void addDecisionHubNode(Algorithm* daughterAlgo, const std::string& parentName, bool modeOR, bool allPass, bool isLazy);
     /// Get total number of graph nodes
@@ -248,6 +256,9 @@ public:
     const std::string& name() const {return m_name;}
     /// Retrieve pointer to service locator
     SmartIF<ISvcLocator>& serviceLocator() const {return m_svcLocator;}
+    ///
+    const std::chrono::system_clock::time_point getInitTime() const {return m_initTime;};
+
 private:
     /// the head node of the control flow graph; may want to have multiple ones once supporting trigger paths
     DecisionNode* m_headNode;
@@ -265,6 +276,7 @@ private:
     /// Service locator (needed to access the MessageSvc)
     mutable SmartIF<ISvcLocator> m_svcLocator;
     const std::string m_name;
+    const std::chrono::system_clock::time_point m_initTime;
   };
 
 class IControlFlowManager {};
@@ -288,7 +300,7 @@ public:
   StatusCode initialize(ControlFlowGraph* CFGraph,
                         const std::unordered_map<std::string,unsigned int>& algname_index_map);
   /// Get the flow graph instance
-  ControlFlowGraph* getControlFlowGraph() {return m_CFGraph;}
+  ControlFlowGraph* getControlFlowGraph() const {return m_CFGraph;}
   /// A little bit silly, but who cares. ;-)
   bool needsAlgorithmToRun(const unsigned int iAlgo) const;
   /// Update the state of algorithms to controlready, where possible
