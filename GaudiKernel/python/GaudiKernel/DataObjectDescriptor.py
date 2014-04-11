@@ -87,7 +87,7 @@ class DataObjectDescriptorCollection(object):
         
         for item in items:
             d = DataObjectDescriptor(item)
-            object.__setattr__(self, d.tag, d)
+            object.__setattr__(self, d.Tag, d)
             
     def __getattr__(self, name):
         #is only called if attribute doesn't exist
