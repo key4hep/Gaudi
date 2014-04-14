@@ -1,6 +1,9 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2014-04-14 - Marco Clemencic
+ - Removed obsolete/pointless call to 'generate_rootmap' pattern.
+
 =============================== GaudiSvc v21r1 ===============================
 ! 2014-03-18 - Ben Couturier
  - Fixed bug #104127: remove hwaf configuration.
