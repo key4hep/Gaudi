@@ -1402,7 +1402,7 @@ pattern zip_python_modules \
 	private ; \
 	macro zip_<group><package>_python_modules_output "$(CMTINSTALLAREA)$(shared_install_subdir)/python.zip" ; \
 	macro zip_<group><package>_python_modules_deps "FORCE" ; \
-	macro zip_<group><package>_python_modules_command "python $(GaudiPolicy_root)/scripts/ZipPythonDir.py $(CMTINSTALLAREA)$(shared_install_subdir)/python" ; \
+	macro zip_<group><package>_python_modules_command "test -d $(CMTINSTALLAREA)$(shared_install_subdir)/python && python $(GaudiPolicy_root)/scripts/ZipPythonDir.py $(CMTINSTALLAREA)$(shared_install_subdir)/python || echo Nothing to zip." ; \
 	macro zip_<group><package>_python_modules_pattern_applied "CallCommand" \
 		no-pyzip&container-package "CallCommand" \
 		no-pyzip "NullCommand" ; \
