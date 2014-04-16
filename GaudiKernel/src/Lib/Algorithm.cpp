@@ -82,6 +82,8 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   declareProperty( "AuditStart"       , m_auditorStart        = audit ) ;
   declareProperty( "AuditStop"        , m_auditorStop         = audit ) ;
 
+  declareProperty( "Timeline"         , m_doTimeline          = false ) ;
+
   declareProperty( "MonitorService"   , m_monitorSvcName      = "MonitorSvc" );
 
   declareProperty
@@ -728,8 +730,19 @@ StatusCode Algorithm::sysExecute() {
                                     (m_auditorExecute) ? auditorSvc().get() : 0,
                                     IAuditor::Execute,
                                     status);
+
+  TimelineEvent timeline;
+  timeline.algorithm = this->name();
+  timeline.thread = getContext() ? getContext()->m_thread_id : 0;
+  timeline.slot = getContext() ? getContext()->m_evt_slot : 0;
+  timeline.event = getContext() ? getContext()->m_evt_num : 0;
+
   try {
+
+	timeline.start = Clock::now();
     status = execute();
+    timeline.end = Clock::now();
+
     setExecuted(true);  // set the executed flag
 
     if (status.isFailure()) {
@@ -776,6 +789,9 @@ StatusCode Algorithm::sysExecute() {
 
     status = exceptionSvc()->handle(*this);
   }
+
+  if(m_doTimeline)
+	  timelineSvc()->registerTimelineEvent(timeline);
 
   if( status.isFailure() ) {
     MsgStream log ( msgSvc() , name() );
@@ -1051,6 +1067,7 @@ serviceAccessor(ntupleSvc, INTupleSvc, "NTupleSvc", m_NTS)
 serviceAccessor(randSvc, IRndmGenSvc, "RndmGenSvc", m_RGS)
 serviceAccessor(toolSvc, IToolSvc, "ToolSvc", m_ptoolSvc)
 serviceAccessor(contextSvc, IAlgContextSvc,"AlgContextSvc", m_contextSvc)
+serviceAccessor(timelineSvc, ITimelineSvc,"TimelineSvc", m_timelineSvc)
 
 
 // Obsoleted name, kept due to the backwards compatibility

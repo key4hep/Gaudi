@@ -10,6 +10,7 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IStateful.h"
+#include "GaudiKernel/ITimelineSvc.h"
 
 #include <string>
 #include <vector>
@@ -329,6 +330,8 @@ public:
 
   /// get Algorithm Context Service
   SmartIF<IAlgContextSvc>& contextSvc() const ;
+
+  SmartIF<ITimelineSvc>& timelineSvc() const ;
 
   /** The standard service locator.
    *  Returns a pointer to the service locator service.
@@ -861,6 +864,9 @@ private:
   mutable SmartIF<IToolSvc>         m_ptoolSvc;    ///< ToolSvc Service
   mutable SmartIF<IMonitorSvc>      m_pMonitorSvc; ///< Online Monitoring Service
   mutable SmartIF<IAlgContextSvc>   m_contextSvc ; ///< Algorithm Context Service
+
+  mutable SmartIF<ITimelineSvc>   m_timelineSvc ; ///< Timeline Service
+
   bool  m_registerContext ; ///< flag to register for Algorithm Context Service
   std::string               m_monitorSvcName; ///< Name to use for Monitor Service
   SmartIF<ISvcLocator>  m_pSvcLocator;      ///< Pointer to service locator service
@@ -885,6 +891,8 @@ private:
   Gaudi::StateMachine::State m_state;            ///< Algorithm has been initialized flag
   Gaudi::StateMachine::State m_targetState;      ///< Algorithm has been initialized flag
   bool         m_isFinalized;      ///< Algorithm has been finalized flag
+
+  bool		   m_doTimeline; // send events to TimelineSvc
 
   bool         m_isClonable; ///< The algorithm clonability of the algorithm
   unsigned int m_cardinality; ///< The maximum number of clones that can exist
