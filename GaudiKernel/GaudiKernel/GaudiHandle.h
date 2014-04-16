@@ -196,6 +196,10 @@ public:
     return *this;
   }
 
+  ~GaudiHandle(){
+	  release();
+  }
+
   /** Retrieve the component. Release existing component if needed. */
   StatusCode retrieve() const { // not really const, because it updates m_pObject
     if ( m_pObject && release().isFailure() ) return StatusCode::FAILURE;
