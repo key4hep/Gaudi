@@ -102,9 +102,6 @@ Algorithm::~Algorithm() {
   delete m_subAlgms;
   delete m_propertyMgr;
 
-  for(auto t : m_toolHandles)
-	  delete t;
-
 }
 
 // IAlgorithm implementation
