@@ -138,6 +138,8 @@ if(NOT GAUDI_FLAGS_SET)
     # The others are already marked as 'advanced' by CMake, these are custom.
     mark_as_advanced(CMAKE_C_FLAGS_COVERAGE CMAKE_CXX_FLAGS_COVERAGE CMAKE_Fortran_FLAGS_COVERAGE
                      CMAKE_C_FLAGS_PROFILE CMAKE_CXX_FLAGS_PROFILE CMAKE_Fortran_FLAGS_PROFILE)
+    mark_as_advanced(CMAKE_Fortran_COMPILER CMAKE_Fortran_FLAGS
+                     CMAKE_Fortran_FLAGS_RELEASE CMAKE_Fortran_FLAGS_RELWITHDEBINFO)
 
   endif()
 
