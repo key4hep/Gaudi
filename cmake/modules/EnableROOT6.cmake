@@ -4,7 +4,7 @@
 set(ROOT_ALL_COMPONENTS Core Cling RIO Hist Tree TreePlayer Matrix
                         GenVector MathCore MathMore XMLIO Graf Gui Rint Physics)
 # and build tools
-set(ROOT_ALL_TOOLS genreflex genmap root rootcling)
+set(ROOT_ALL_TOOLS root rootcling genreflex)
 
 # Helper macro to discover the dependencies between components needed on Mac)
 macro(_root_get_deps libpath var)
