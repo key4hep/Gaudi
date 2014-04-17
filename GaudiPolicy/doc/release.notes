@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-04-17 - Marco Clemencic
+ - Ignore TInterpreter::ReadRootmapFile warnings until we find a way to fix
+   them. (ROOT6_WORK_AROUND: ReadRootmapCheck)
+
 ============================= GaudiPolicy v14r1 ==============================
 ! 2014-03-18 - Ben Couturier
  - Fixed bug #104127: remove hwaf configuration.
