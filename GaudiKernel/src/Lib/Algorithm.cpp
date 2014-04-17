@@ -82,7 +82,7 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   declareProperty( "AuditStart"       , m_auditorStart        = audit ) ;
   declareProperty( "AuditStop"        , m_auditorStop         = audit ) ;
 
-  declareProperty( "Timeline"         , m_doTimeline          = false ) ;
+  declareProperty( "Timeline"         , m_doTimeline          = true  ) ;
 
   declareProperty( "MonitorService"   , m_monitorSvcName      = "MonitorSvc" );
 

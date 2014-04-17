@@ -86,7 +86,7 @@ void TimelineSvc::outputTimeline(){
 
 	std::ofstream out(m_timelineFile, std::ofstream::out | std::ofstream::trunc);
 
-	out << "#start end algorithm thread slot event";
+	out << "#start end algorithm thread slot event" << std::endl;
 
 	for(const auto & e : m_events){
 		out << std::chrono::duration_cast<std::chrono::nanoseconds>(e.start.time_since_epoch()).count() << " "

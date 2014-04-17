@@ -197,7 +197,7 @@ public:
   }
 
   ~GaudiHandle(){
-	  release();
+	  //release();
   }
 
   /** Retrieve the component. Release existing component if needed. */
