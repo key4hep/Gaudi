@@ -1789,10 +1789,10 @@ endmacro()
 # directories to the variable.
 #-------------------------------------------------------------------------------
 function(gaudi_add_dictionary dictionary header selection)
-  # ensure that we have Reflex
-  find_package(ROOT QUIET COMPONENTS Reflex)
-  if(NOT ROOT_Reflex_LIBRARY)
-    message(FATAL_ERROR "Reflex not found! Cannot produce dictionaries.")
+  # ensure that we can produce dictionaries
+  find_package(ROOT QUIET)
+  if(NOT ROOT_REFLEX_DICT_ENABLED)
+    message(FATAL_ERROR "ROOT cannot produce dictionaries with genreflex.")
   endif()
   # this function uses an extra option: 'OPTIONS'
   CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS;OPTIONS" ${ARGN})
