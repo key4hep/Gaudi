@@ -20,21 +20,17 @@ using namespace Gaudi::Examples;
 
 class ReadHandleAlg : public Algorithm {
 
-  DataObjectHandle<Collision>* m_inputHandle;
-  std::string m_inputName;
+  DataObjectHandle<Collision> m_inputHandle;
 
 public:
   /// Constructor: A constructor of this form must be provided.
   ReadHandleAlg(const std::string& nam, ISvcLocator* pSvc)
     : Algorithm(nam, pSvc){
-     declareProperty ( "Input", m_inputName, "The name of the input" );
+     declareInput ( "Input", m_inputHandle);
     }
   /// Standard Destructor
   virtual ~ReadHandleAlg() { }
-  /// Initialize
-  virtual StatusCode initialize();
-  /// Finalize
-  virtual StatusCode finalize();
+
   /// Event callback
   virtual StatusCode execute();
 };

@@ -23,10 +23,6 @@ class WriteHandleAlg : public GaudiAlgorithm {
 
     /// the execution of the algorithm
     virtual StatusCode execute  () ; // the execution of the algorithm
-    /// Its initialization
-    virtual StatusCode initialize();
-    /// the finalization of the algorithm
-    virtual StatusCode finalize () ; // the finalization of the algorithm
 
   protected:
 
@@ -46,9 +42,7 @@ class WriteHandleAlg : public GaudiAlgorithm {
     /// the assignement operator is disabled
     WriteHandleAlg& operator= ( const WriteHandleAlg& ) ; // no assignement
 
-    DataObjectHandle<Collision>* m_output_handle;
-
-    std::string m_output_name;
+    DataObjectHandle<Collision> m_output_handle;
 
     bool m_useHandle;
 

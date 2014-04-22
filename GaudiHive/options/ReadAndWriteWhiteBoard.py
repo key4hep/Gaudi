@@ -34,10 +34,11 @@ loader = HiveReadAlgorithm("Loader",
                            )
 
 reader = ReadHandleAlg ("Reader",
-                         Input=product_name,
                          IsClonable=True,
                          OutputLevel=INFO,
                          NeededResources=["ROOTIO"])
+reader.Inputs.Input.Path=product_name
+
 
 evtslots = 6
 algoparallel = 20
