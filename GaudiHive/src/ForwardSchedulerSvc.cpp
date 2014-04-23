@@ -40,7 +40,7 @@ ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* 
   declareProperty("AlgosDependencies", m_algosDependencies);
   declareProperty("MaxAlgosInFlight", m_maxAlgosInFlight = 0, "Taken from the whiteboard. Deprecated" );
   // XXX: CF tests. Temporary property to switch between ControlFlow implementations
-  declareProperty("ControlFlowManagerNext", m_CFNext = false );
+  declareProperty("useGraphFlowManagement", m_CFNext = false );
   declareProperty("DataFlowManagerNext", m_DFNext = false );
 }
 
