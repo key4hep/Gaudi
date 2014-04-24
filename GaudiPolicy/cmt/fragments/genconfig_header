@@ -8,7 +8,7 @@
 
 confpy  := ${CONSTITUENT}.py
 conflib := $(bin)$(library_prefix)$(library).$(shlibsuffix)
-dbpy    := $(library)_confDb.py
+dbascii := $(library)_confDb.ascii
 instdir := $(CMTINSTALLAREA)$(shared_install_subdir)/python/$(package)
 product := $(instdir)/$(confpy)
 initpy  := $(instdir)/__init__.py
@@ -41,7 +41,7 @@ $(outdir):
 	@ if [ ! -d $(outdir) ] ; then mkdir -p $(outdir) ; fi ;
 
 ${CONSTITUENT}clean :: ${CONSTITUENT}uninstall
-	$(cleanup_silent) $(remove_command) $(outdir)/$(confpy) $(outdir)/$(dbpy)
+	$(cleanup_silent) $(remove_command) $(outdir)/$(confpy) $(outdir)/$(dbascii)
 
 uninstall :: ${CONSTITUENT}uninstall
 
