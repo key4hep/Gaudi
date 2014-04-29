@@ -1064,12 +1064,16 @@ function(gaudi_get_packages var)
   # FIXME: trick to get the relative path to the build directory
   file(GLOB rel_build_dir RELATIVE ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR})
   set(packages)
+  get_directory_property(_ignored_subdirs GAUDI_IGNORE_SUBDIRS)
   file(GLOB_RECURSE cmakelist_files RELATIVE ${CMAKE_SOURCE_DIR} CMakeLists.txt)
   foreach(file ${cmakelist_files})
     # ignore the source directory itself and files in the build directory
     if(NOT file STREQUAL CMakeLists.txt AND NOT file MATCHES "^${rel_build_dir}")
       get_filename_component(package ${file} PATH)
-      list(APPEND packages ${package})
+      list(FIND _ignored_subdirs ${package} _ignored)
+      if(_ignored EQUAL -1) # not ignored
+        list(APPEND packages ${package})
+      endif()
     endif()
   endforeach()
   list(SORT var)
@@ -1408,7 +1412,7 @@ define_property(DIRECTORY
 function(gaudi_generate_confuserdb)
   gaudi_get_package_name(package)
   get_directory_property(modules CONFIGURABLE_USER_MODULES)
-  if( NOT (modules STREQUAL "None") ) # ConfUser enabled
+  if( genconfuser_cmd AND NOT (modules STREQUAL "None") ) # ConfUser enabled
     set(outdir ${CMAKE_CURRENT_BINARY_DIR}/genConf/${package})
 
     # get the optional dependencies from argument and properties
@@ -1785,10 +1789,10 @@ endmacro()
 # directories to the variable.
 #-------------------------------------------------------------------------------
 function(gaudi_add_dictionary dictionary header selection)
-  # ensure that we have Reflex
-  find_package(ROOT QUIET COMPONENTS Reflex)
-  if(NOT ROOT_Reflex_LIBRARY)
-    message(FATAL_ERROR "Reflex not found! Cannot produce dictionaries.")
+  # ensure that we can produce dictionaries
+  find_package(ROOT QUIET)
+  if(NOT ROOT_REFLEX_DICT_ENABLED)
+    message(FATAL_ERROR "ROOT cannot produce dictionaries with genreflex.")
   endif()
   # this function uses an extra option: 'OPTIONS'
   CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS;OPTIONS" ${ARGN})
