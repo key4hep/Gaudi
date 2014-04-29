@@ -26,7 +26,7 @@ set(GaudiExamples_srcs
     src/PartProp/*.cpp
     src/Properties/*.cpp
     src/ExtendedProperties/*.cpp
-    src/POOLIO/*.cpp
+    src/IO/*.cpp
     src/ColorMsg/ColorMsgAlg.cpp
     src/History/History.cpp
     src/THist/*.cpp
@@ -68,7 +68,7 @@ gaudi_add_executable(Allocator src/Allocator/*.cpp
 
 
 #---Dictionaries------------------------------------------------------------
-gaudi_add_dictionary(GaudiExamples src/POOLIO/dict.h  src/POOLIO/dict.xml LINK_LIBRARIES GaudiExamplesLib)
+gaudi_add_dictionary(GaudiExamples src/IO/dict.h  src/IO/dict.xml LINK_LIBRARIES GaudiExamplesLib)
 
 
 #---Tests-------------------------------------------------------------------

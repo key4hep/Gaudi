@@ -37,7 +37,7 @@ library GaudiExamples    -no_static \
                           PartProp/*.cpp \
                           Properties/*.cpp \
                           ExtendedProperties/*.cpp \
-                          POOLIO/*.cpp \
+                          IO/*.cpp \
                           ColorMsg/ColorMsgAlg.cpp \
                           History/History.cpp \
                           THist/*.cpp \
@@ -61,8 +61,8 @@ library GaudiExamples    -no_static \
 
 
 apply_pattern reflex_dictionary dictionary=GaudiExamples \
-				headerfiles=$(GAUDIEXAMPLESROOT)/src/POOLIO/dict.h \
-				selectionfile=$(GAUDIEXAMPLESROOT)/src/POOLIO/dict.xml \
+				headerfiles=$(GAUDIEXAMPLESROOT)/src/IO/dict.h \
+				selectionfile=$(GAUDIEXAMPLESROOT)/src/IO/dict.xml \
 				options=" $(includes) "
 macro GaudiExamplesDict_use_linkopts $(use_linkopts)
 
