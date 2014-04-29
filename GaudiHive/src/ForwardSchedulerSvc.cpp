@@ -144,9 +144,8 @@ StatusCode ForwardSchedulerSvc::initialize(){
   // prepare the control flow part
   if (m_CFNext) m_DFNext = true; //force usage of new data flow machinery when new control flow is used
   const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>(m_algResourcePool.get());
-  sc = m_cfManager.initialize(algPool->getControlFlowGraph(), m_algname_index_map);
+  sc = m_cfManager.initialize(algPool->getControlFlowGraph(), m_algname_index_map, m_eventSlots);
   unsigned int controlFlowNodeNumber = m_cfManager.getControlFlowGraph()->getControlFlowNodeCounter();
-
   // Shortcut for the message service
   SmartIF<IMessageSvc> messageSvc (serviceLocator());
   if (!messageSvc.isValid())
@@ -161,11 +160,14 @@ StatusCode ForwardSchedulerSvc::initialize(){
   info() << " o Number of algorithms in flight: " << m_maxAlgosInFlight << endmsg;
   info() << " o TBB thread pool size: " << m_threadPoolSize << endmsg;
 
+  // Simulating execution flow by analyzing the graph topology and logic only
+  m_cfManager.simulateExecutionFlow();
 
   // Activate the scheduler in another thread.
   info() << "Activating scheduler in a separate thread" << endmsg;
   m_thread = std::thread (std::bind(&ForwardSchedulerSvc::activate,
                                     this));
+
   return sc;
 
 }
@@ -310,7 +312,7 @@ StatusCode ForwardSchedulerSvc::pushNewEvent(EventContext* eventContext){
     info() << "A free processing slot was found." << endmsg;
     thisSlot.reset(eventContext);
     // XXX: CF tests
-    if (m_CFNext) m_cfManager.promoteToControlReadyState(thisSlot.algsStates,thisSlot.controlFlowState);
+    if (m_CFNext) m_cfManager.promoteToControlReadyState(thisSlot.algsStates,thisSlot.controlFlowState,thisSlotNum);
     return this->updateStates(thisSlotNum);
   }; // end of lambda
 
@@ -430,6 +432,8 @@ StatusCode ForwardSchedulerSvc::eventFailed(EventContext* eventContext){
 */
 StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_name){
 
+
+
   m_updateNeeded=true;
 
   // Fill a map of initial state / action using closures.
@@ -482,7 +486,7 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
       m_cfManager.updateEventState(thisAlgsStates,thisSlot.controlFlowState);
     } else {
       if (!algo_name.empty())
-        m_cfManager.updateDecision(algo_name,thisAlgsStates,thisSlot.controlFlowState);
+        m_cfManager.updateDecision(algo_name,iSlot,thisAlgsStates,thisSlot.controlFlowState);
     }
 
 
@@ -695,7 +699,7 @@ StatusCode ForwardSchedulerSvc::promoteToDataReady(unsigned int iAlgo, int si) {
   if (!m_DFNext) {
     sc = m_eventSlots[si].dataFlowMgr.canAlgorithmRun(iAlgo);
   } else {
-    sc = m_cfManager.algoDataDependenciesSatisfied(index2algname(iAlgo),m_eventSlots[si].algsStates);
+    sc = m_cfManager.algoDataDependenciesSatisfied(index2algname(iAlgo),si);
   }
 
   StatusCode updateSc(StatusCode::FAILURE);

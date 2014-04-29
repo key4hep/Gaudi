@@ -7,9 +7,11 @@
 #include <unordered_map>
 #include <chrono>
 #include <fstream>
+#include <sstream>
 
 // fwk includes
 #include "AlgsExecutionStates.h"
+#include "EventSlot.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/CommonMessaging.h"
 
@@ -17,8 +19,10 @@ namespace concurrency {
 
   typedef AlgsExecutionStates::State State;
   class ControlFlowGraph;
+  class CFVisitor;
 
   class ControlFlowNode {
+    friend CFVisitor;
   public:
     /// Constructor
     ControlFlowNode(ControlFlowGraph& graph, unsigned int nodeIndex, const std::string& name) :
@@ -27,8 +31,11 @@ namespace concurrency {
     virtual ~ControlFlowNode() {};
     /// Initialize
     virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map) = 0;
+    ///
+    virtual bool accept(CFVisitor& visitor) = 0;
     /// XXX: CF tests. Method to set algos to CONTROLREADY, if possible
-    virtual void promoteToControlReadyState(AlgsExecutionStates& states,
+    virtual void promoteToControlReadyState(const int& slotNum,
+                                            AlgsExecutionStates& states,
                                             std::vector<int>& node_decisions) const = 0;
     /// XXX: CF tests. Method to set algos to CONTROLREADY, if possible
     virtual int updateState(AlgsExecutionStates& states,
@@ -41,7 +48,8 @@ namespace concurrency {
     /// XXX: CF tests.
     unsigned int getNodeIndex() const { return m_nodeIndex; }
     std::string getNodeName() const { return m_nodeName; }
-    virtual void updateDecision(AlgsExecutionStates& states,
+    virtual void updateDecision(const int& slotNum,
+                                AlgsExecutionStates& states,
                                 std::vector<int>& node_decisions) const = 0;
   protected:
     ControlFlowGraph* m_graph;
@@ -53,29 +61,35 @@ namespace concurrency {
 
 
   class DecisionNode : public ControlFlowNode {
+    friend CFVisitor;
   public:
     /// Constructor
     DecisionNode(ControlFlowGraph& graph, unsigned int nodeIndex, const std::string& name, bool modeOR, bool allPass, bool isLazy) :
       ControlFlowNode(graph, nodeIndex, name),
-      m_modeOR(modeOR), m_allPass(allPass), m_isLazy(isLazy), m_daughters()
+      m_modeOR(modeOR), m_allPass(allPass), m_isLazy(isLazy), m_children()
       {};
     /// Destructor
     virtual ~DecisionNode();
     /// Initialize
     virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
+    virtual bool accept(CFVisitor& visitor);
     /// XXX: CF tests. Method to set algos to CONTROLREADY, if possible
-    virtual void promoteToControlReadyState(AlgsExecutionStates& states,
+    virtual void promoteToControlReadyState(const int& slotNum,
+                                            AlgsExecutionStates& states,
                                             std::vector<int>& node_decisions) const;
     /// XXX: CF tests
-    virtual void updateDecision(AlgsExecutionStates& states,
+    virtual void updateDecision(const int& slotNum,
+                                AlgsExecutionStates& states,
                                 std::vector<int>& node_decisions) const;
     /// Method to set algos to CONTROLREADY, if possible
     virtual int updateState(AlgsExecutionStates& states,
                             std::vector<int>& node_decisions) const;
     /// XXX: CF tests. Method to add a parent node
-    void addParentNode(DecisionNode* node) { m_parents.push_back(node); }
+    void addParentNode(DecisionNode* node);
     /// Add a daughter node
-    void addDaughterNode(ControlFlowNode* node) { m_daughters.push_back(node); }
+    void addDaughterNode(ControlFlowNode* node);
+    ///
+    std::vector<ControlFlowNode*> getDaughters() const {return m_children;}
     /// Print a string representing the control flow state
     virtual void printState(std::stringstream& output,
     						AlgsExecutionStates& states,
@@ -89,7 +103,7 @@ namespace concurrency {
     /// Whether to evaluate lazily - i.e. whether to stop once result known
     bool  m_isLazy;
     /// All direct daughter nodes in the tree
-    std::vector<ControlFlowNode*> m_daughters;
+    std::vector<ControlFlowNode*> m_children;
     /// XXX: CF tests. All direct parent nodes in the tree
     std::vector<DecisionNode*> m_parents;
   };
@@ -107,8 +121,10 @@ namespace concurrency {
     ~AlgorithmNode();
     /// Initialize
     virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
+    ///
+    virtual bool accept(CFVisitor& visitor);
     /// XXX: CF tests. Method to add a parent node
-    void addParentNode(DecisionNode* node) { m_parents.push_back(node); }
+    void addParentNode(DecisionNode* node);
 
     /// Associate an AlgorithmNode, which is a data supplier for this one
     void addSupplierNode(AlgorithmNode* node) { m_suppliers.push_back(node); }
@@ -120,30 +136,33 @@ namespace concurrency {
     std::vector<AlgorithmNode*> getConsumerNodes() {return m_consumers;}
 
     /// Associate an AlgorithmNode, which is a data supplier for this one
-    void addOutputDataNode(DataNode* node) { m_outputs.push_back(node); }
+    void addOutputDataNode(DataNode* node);
     /// Associate an AlgorithmNode, which is a data consumer of this one
-    void addInputDataNode(DataNode* node) { m_inputs.push_back(node); }
+    void addInputDataNode(DataNode* node);
     /// Get all supplier nodes
     std::vector<DataNode*> getOutputDataNodes() {return m_outputs;}
     /// Get all consumer nodes
     std::vector<DataNode*> getInputDataNodes() {return m_inputs;}
 
     /// XXX: CF tests
-    unsigned int getAlgoIndex() { return m_algoIndex; }
+    unsigned int getAlgoIndex() const { return m_algoIndex; }
     /// Method to check whether the Algorithm has its all data dependency satisfied
-    bool dataDependenciesSatisfied(const AlgsExecutionStates& states) const;
+    bool dataDependenciesSatisfied(const int& slotNum) const;
+    bool dataDependenciesSatisfied(AlgsExecutionStates& states) const;
     /// Method to set algos to CONTROLREADY, if possible
     virtual int updateState(AlgsExecutionStates& states,
                             std::vector<int>& node_decisions) const;
     /// XXX: CF tests
-    virtual void promoteToControlReadyState(AlgsExecutionStates& states,
+    virtual void promoteToControlReadyState(const int& slotNum,
+                                            AlgsExecutionStates& states,
                                             std::vector<int>& node_decisions) const;
     /// XXX: CF tests
-    void promoteToControlReadyState(AlgsExecutionStates& states) const;
+    void promoteToControlReadyState(const int& slotNum, AlgsExecutionStates& states) const;
     ///
     void promoteToDataReadyState(AlgsExecutionStates& states) const;
     /// XXX: CF tests
-    virtual void updateDecision(AlgsExecutionStates& states,
+    virtual void updateDecision(const int& slotNum,
+                                AlgsExecutionStates& states,
                                 std::vector<int>& node_decisions) const;
     /// Print a string representing the control flow state
     virtual void printState(std::stringstream& output,
@@ -183,9 +202,15 @@ public:
     ~DataNode() {};
     std::string getPath() {return m_data_object_path;}
     /// Associate an AlgorithmNode, which is a data supplier for this one
-    void addProducerNode(AlgorithmNode* node) {m_producers.push_back(node);}
+    void addProducerNode(AlgorithmNode* node) {
+      if (std::find(m_producers.begin(),m_producers.end(),node) == m_producers.end())
+        m_producers.push_back(node);
+    }
     /// Associate an AlgorithmNode, which is a data consumer of this one
-    void addConsumerNode(AlgorithmNode* node) {m_consumers.push_back(node);}
+    void addConsumerNode(AlgorithmNode* node) {
+      if (std::find(m_producers.begin(),m_producers.end(),node) == m_producers.end())
+        m_consumers.push_back(node);
+    }
     /// Get all data object producers
     std::vector<AlgorithmNode*> getProducers() {return m_producers;}
     /// Get all data object consumers
@@ -211,13 +236,16 @@ class ControlFlowGraph : public CommonMessaging<IControlFlowGraph> {
 public:
     /// Constructor
     ControlFlowGraph(const std::string& name, SmartIF<ISvcLocator> svc) :
-      m_headNode(0), m_nodeCounter(0), m_svcLocator(svc), m_name(name), m_initTime(std::chrono::high_resolution_clock::now()) {};
+     m_headNode(0), m_nodeCounter(0), m_svcLocator(svc), m_name(name), m_initTime(std::chrono::high_resolution_clock::now()),
+     m_eventSlots(nullptr) {};
     /// Destructor
     ~ControlFlowGraph() {
       if (m_headNode != 0) delete m_headNode;
     };
     /// Initialize graph
     StatusCode initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
+    StatusCode initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map,
+                          std::vector<EventSlot>& eventSlots);
     /// Register algorithm in the Data Dependency index
     void registerIODataObjects(const Algorithm* algo);
     /// Build data dependency realm WITHOUT data object nodes: just interconnect algorithm nodes directly
@@ -227,7 +255,7 @@ public:
     /// Add a node, which has no parents
     void addHeadNode(const std::string& headName, bool modeOR, bool allPass, bool isLazy);
     /// Add algorithm node
-    void addAlgorithmNode(Algorithm* daughterAlgo, const std::string& parentName, bool inverted, bool allPass);
+    StatusCode addAlgorithmNode(Algorithm* daughterAlgo, const std::string& parentName, bool inverted, bool allPass);
     /// Get the AlgorithmNode from by algorithm name using graph index
     AlgorithmNode* getAlgorithmNode(const std::string& algoName) const;
     /// Add DataNode that represents DataObject
@@ -235,7 +263,7 @@ public:
     /// Get DataNode by DataObject path using graph index
     DataNode* getDataNode(const std::string& dataPath) const;
     /// Add a node, which aggregates decisions of direct daughter nodes
-    void addDecisionHubNode(Algorithm* daughterAlgo, const std::string& parentName, bool modeOR, bool allPass, bool isLazy);
+    StatusCode addDecisionHubNode(Algorithm* daughterAlgo, const std::string& parentName, bool modeOR, bool allPass, bool isLazy);
     /// Get total number of graph nodes
     unsigned int getControlFlowNodeCounter() const {return m_nodeCounter;}
     /// XXX CF tests. Is needed for older CF implementation
@@ -243,6 +271,7 @@ public:
                           std::vector<int>& node_decisions) const;
     /// A method to update algorithm node decision, and propagate it upwards
     void updateDecision(const std::string& algo_name,
+                        const int& slotNum,
                         AlgsExecutionStates& states,
                         std::vector<int>& node_decisions) const;
     /// Print a string representing the control flow state
@@ -258,6 +287,10 @@ public:
     SmartIF<ISvcLocator>& serviceLocator() const {return m_svcLocator;}
     ///
     const std::chrono::system_clock::time_point getInitTime() const {return m_initTime;};
+    ///
+    AlgsExecutionStates& getAlgoStates(const int& slotNum) const {return m_eventSlots->at(slotNum).algsStates;};
+    ///
+    std::vector<int>& getNodeDecisions(const int& slotNum) const {return m_eventSlots->at(slotNum).controlFlowState;}
 
 private:
     /// the head node of the control flow graph; may want to have multiple ones once supporting trigger paths
@@ -277,7 +310,110 @@ private:
     mutable SmartIF<ISvcLocator> m_svcLocator;
     const std::string m_name;
     const std::chrono::system_clock::time_point m_initTime;
+    ///
+    std::vector<EventSlot>* m_eventSlots;
   };
+
+
+class IVisitor {
+public:
+  virtual ~IVisitor() {};
+  virtual bool visitEnter(DecisionNode&) = 0;
+  virtual bool visit(DecisionNode&) = 0;
+  virtual bool visitLeave(DecisionNode&) = 0;
+  virtual bool visitEnter(AlgorithmNode&) = 0;
+  virtual bool visit(AlgorithmNode& node) = 0;
+};
+
+class CFVisitor : public IVisitor {
+public:
+  /// Constructor
+  CFVisitor(const int& slotNum) : m_algosCompleted(0), m_slotNum(slotNum) {};
+  /// Destructor
+  virtual ~CFVisitor() {};
+
+  virtual bool visitEnter(DecisionNode& node) {
+
+    if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != 1)
+      return true;
+    return false;
+  }
+
+  virtual bool visit(DecisionNode& node) {
+
+    //std::cout << "1-st level Decision: " << node.getNodeName() << std::endl;
+    bool allChildDecisionsResolved = true;
+    for (auto child : node.getDaughters()) {
+      int& childDecision = child->m_graph->getNodeDecisions(m_slotNum)[child->getNodeIndex()];
+
+      if (childDecision == 1 && node.m_modeOR && node.m_isLazy) {
+        node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] = 1;
+        return true;
+      }
+
+      if (childDecision == -1) {
+        allChildDecisionsResolved = false;
+      }
+    }
+
+    if (allChildDecisionsResolved)
+      node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] = 1;
+
+    return allChildDecisionsResolved;
+  }
+
+  virtual bool visitLeave(DecisionNode& node) {
+
+    if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != 1)
+      return true;
+    return false;
+  }
+
+
+  virtual bool visitEnter(AlgorithmNode& node) {
+
+    if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != 1)
+      return true;
+    return false;
+  }
+
+
+  virtual bool visit(AlgorithmNode& node) {
+
+    std::vector<int>& decisions = node.m_graph->getNodeDecisions(m_slotNum);
+    AlgsExecutionStates& states = node.m_graph->getAlgoStates(m_slotNum);
+    int& decision = decisions[node.getNodeIndex()];
+
+    if (State::INITIAL == states[node.getAlgoIndex()]) {
+      states.updateState(node.getAlgoIndex(), State::CONTROLREADY);
+      if (node.dataDependenciesSatisfied(m_slotNum)) {
+        states.updateState(node.getAlgoIndex(), State::DATAREADY);
+        states.updateState(node.getAlgoIndex(), State::SCHEDULED);
+        states.updateState(node.getAlgoIndex(), State::EVTACCEPTED);
+        decision = 1;
+        ++m_algosCompleted;
+        //std::cout << "Algorithm decided: " << node.getNodeName() << std::endl;
+        return true;
+      }
+    } else if (State::CONTROLREADY == states[node.getAlgoIndex()] && node.dataDependenciesSatisfied(m_slotNum)) {
+      states.updateState(node.getAlgoIndex(), State::DATAREADY);
+      states.updateState(node.getAlgoIndex(), State::SCHEDULED);
+      states.updateState(node.getAlgoIndex(), State::EVTACCEPTED);
+      decision = 1;
+      ++m_algosCompleted;
+      //std::cout << "Algorithm decided: " << node.getNodeName() << std::endl;
+      return true;
+    }
+
+    return false;
+  }
+public:
+  int m_algosCompleted;
+private:
+  int m_slotNum;
+};
+
+
 
 class IControlFlowManager {};
 
@@ -298,7 +434,12 @@ public:
   /// Initialize the control flow manager
   /// It greps the topalg list and the index map for the algo names
   StatusCode initialize(ControlFlowGraph* CFGraph,
-                        const std::unordered_map<std::string,unsigned int>& algname_index_map);
+                          const std::unordered_map<std::string,unsigned int>& algname_index_map);
+  StatusCode initialize(ControlFlowGraph* CFGraph,
+                        const std::unordered_map<std::string,unsigned int>& algname_index_map,
+                        std::vector<EventSlot>& eventSlots);
+  ///
+  void simulateExecutionFlow() const;
   /// Get the flow graph instance
   ControlFlowGraph* getControlFlowGraph() const {return m_CFGraph;}
   /// A little bit silly, but who cares. ;-)
@@ -308,17 +449,17 @@ public:
                         std::vector<int>& node_decisions) const;
   ///
   void updateDecision(const std::string& algo_name,
+                      const int& slotNum,
                       AlgsExecutionStates& states,
                       std::vector<int>& node_decisions) const;
   /// XXX: CF tests.
   void updateEventState(AlgsExecutionStates& algo_states) const;
   /// XXX: CF tests
   void promoteToControlReadyState(AlgsExecutionStates& algo_states,
-                                  std::vector<int>& node_decisions) const;
-  /// Promote data dependent algorithms to a new state
-  void promoteDataConsumersToCR(const std::string& algo_name, AlgsExecutionStates& states) const;
+                                  std::vector<int>& node_decisions,
+                                  const int& slotNum=-1) const;
   /// Check all data dependencies of an algorithm are satisfied
-  bool algoDataDependenciesSatisfied(const std::string& algo_name, const AlgsExecutionStates& states) const;
+  bool algoDataDependenciesSatisfied(const std::string& algo_name, const int& slotNum) const;
   /// Check whether root decision was resolved
   bool rootDecisionResolved(const std::vector<int>& node_decisions) const;
   /// Print the state of the control flow for a given event
