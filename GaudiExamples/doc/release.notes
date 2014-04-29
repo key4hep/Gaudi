@@ -2,6 +2,9 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 
 ! 2014-04-29 - Marco Clemencic
+ - Added tests to check the multi-input example.
+
+! 2014-04-29 - Marco Clemencic
  - Added an example to demonstrate how to access at run time in the TES data
    from a secondary file.
 
