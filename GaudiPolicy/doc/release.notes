@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-04-17 - Marco Clemencic
+ - Ignore TInterpreter::ReadRootmapFile warnings until we find a way to fix
+   them. (ROOT6_WORK_AROUND: ReadRootmapCheck)
+
 ! 2014-04-16 - Marco Clemencic
  - Fixed LBCORE-463 (build error when no 'python' dir in InstallArea).
    https://its.cern.ch/jira/browse/LBCORE-463

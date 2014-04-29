@@ -3,6 +3,9 @@
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! =============================================================================
 
+! 2014-04-25 - Marco Clemencic
+ - Removed duplicated dictionary entries (already in RELAX).
+
 =============================== GaudiGSL v8r1 ================================
 ! 2014-03-18 - Ben Couturier
  - Fixed bug #104127: remove hwaf configuration.

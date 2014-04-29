@@ -2,7 +2,6 @@
   <selection>
   <class pattern="GaudiMath::*"       />
   <class pattern="Genfun::GaudiMath*" />
-  <class pattern="Genfun::A*"         />
   <class pattern="IGsl*"              />
   <class pattern="Gsl*"               />
   <class pattern="Gsl*"               />
