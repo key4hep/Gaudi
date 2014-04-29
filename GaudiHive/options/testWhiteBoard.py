@@ -10,13 +10,13 @@ eventloopmgr = HiveEventLoopMgr(MaxEventsParallel = evtslots,
                                 NumThreads = 8,
                                 AlgosDependencies = [[],['a1'],['a1'],['a2','a3']])
 
-a1 = HiveTestAlgorithm("A1", Outputs = ['/Event/a1'])
-a2 = HiveTestAlgorithm("A2", Inputs = ['/Event/a1'],
-                             Outputs = ['/Event/a2'])
-a3 = HiveTestAlgorithm("A3", Inputs = ['/Event/a1'],
-                             Outputs = ['/Event/a3'])
-a4 = HiveTestAlgorithm("A4", Inputs = ['/Event/a2','/Event/a3'],
-                             Outputs = ['/Event/a4'])
+a1 = HiveTestAlgorithm("A1", Output = ['/Event/a1'])
+a2 = HiveTestAlgorithm("A2", Input = ['/Event/a1'],
+                             Output = ['/Event/a2'])
+a3 = HiveTestAlgorithm("A3", Input = ['/Event/a1'],
+                             Output = ['/Event/a3'])
+a4 = HiveTestAlgorithm("A4", Input = ['/Event/a2','/Event/a3'],
+                             Output = ['/Event/a4'])
 
 ApplicationMgr( EvtMax = 100,
                 EvtSel = 'NONE',

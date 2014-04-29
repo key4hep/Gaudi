@@ -28,9 +28,9 @@ loader = HiveReadAlgorithm("Loader",
                            )
                          
 reader = ReadHandleAlg ("Reader",
-                         Input=product_name,
                          Cardinality=4,
                          OutputLevel=INFO)
+reader.Inputs.Input.Path=product_name
 
 evtslots = 5
 algoparallel = 10

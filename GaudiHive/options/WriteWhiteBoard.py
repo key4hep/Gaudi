@@ -40,10 +40,12 @@ product_name="MyCollision"
 product_name_full_path="/Event/"+product_name
 
 writer = WriteHandleAlg ("Writer",
-                         Output="/Event/"+product_name,
                          UseHandle=True,
                          Cardinality=4,
                          OutputLevel=WARNING)
+
+writer.Outputs.Output.Path ="/Event/"+product_name
+
 
 evtslots = 20
 algoparallel = 10

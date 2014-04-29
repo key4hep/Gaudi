@@ -32,8 +32,8 @@ HiveTestAlgorithm::HiveTestAlgorithm(const std::string& name, ISvcLocator* pSvcL
   m_inputs( 0 ),
   m_outputs( 0 )
 {
-  declareProperty("Inputs", m_inputs, "List of required inputs");
-  declareProperty("Outputs", m_outputs, "List of provided outputs");
+  declareProperty("Input", m_inputs, "List of required inputs");
+  declareProperty("Output", m_outputs, "List of provided outputs");
 }
 
 /**

@@ -19,30 +19,13 @@ using namespace Gaudi::Examples;
 DECLARE_ALGORITHM_FACTORY(ReadHandleAlg)
 
 //--------------------------------------------------------------------
-// Initialize
-//--------------------------------------------------------------------
-StatusCode ReadHandleAlg::initialize() {
-  MsgStream log(msgSvc(), name());
-  StatusCode sc = declareDataObj(m_inputName,m_inputHandle);
-  return sc;
-}
-
-//--------------------------------------------------------------------
-// Finalize
-//--------------------------------------------------------------------
-StatusCode ReadHandleAlg::finalize() {
-
-  return StatusCode::SUCCESS;
-}
-
-//--------------------------------------------------------------------
 // Execute
 //--------------------------------------------------------------------
 StatusCode ReadHandleAlg::execute() {
   
   MsgStream log(msgSvc(), name());
   
-  Collision* c = m_inputHandle->get();
+  Collision* c = m_inputHandle.get();
 
   const int evtNum = getContext()? getContext()->m_evt_num : -1;
 
