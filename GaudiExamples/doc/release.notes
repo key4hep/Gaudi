@@ -1,6 +1,9 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2014-04-29 - Marco Clemencic
+ - Renamed the POOLIO subdirectory to IO.
+
 =========================== GaudiExamples v25r1p1 ============================
 ============================ GaudiExamples v25r1 =============================
 ! 2014-03-18 - Ben Couturier
