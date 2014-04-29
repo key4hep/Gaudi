@@ -2,6 +2,10 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 
 ! 2014-04-29 - Marco Clemencic
+ - Added an example to demonstrate how to access at run time in the TES data
+   from a secondary file.
+
+! 2014-04-29 - Marco Clemencic
  - Renamed the POOLIO subdirectory to IO.
 
 =========================== GaudiExamples v25r1p1 ============================

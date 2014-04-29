@@ -57,7 +57,8 @@ library GaudiExamples    -no_static \
                           FileMgr/*.cpp \
                           testing/*.cpp \
                           IntelProfiler/*.cpp \
-                          PluginService/*.cpp
+                          PluginService/*.cpp \
+                          MultiInput/*.cpp
 
 
 apply_pattern reflex_dictionary dictionary=GaudiExamples \
