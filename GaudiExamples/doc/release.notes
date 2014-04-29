@@ -10,7 +10,7 @@ Package manager : Marco Clemencic
  - Fixed bug #104127: remove hwaf configuration.
 
 ! 2014-03-03 - Marco Clemencic
- - Modified name ot hthe "instantiations" class used in the test dictionary
+ - Modified name of the "instantiations" class used in the test dictionary
    to avoid clashed in ROOT 6.
 
 ============================ GaudiExamples v25r0 =============================
