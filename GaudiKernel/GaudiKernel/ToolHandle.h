@@ -96,7 +96,15 @@ public:
 	: GaudiHandle<T>("", "", ""),
 	  m_pToolSvc("ToolSvc", ""){ }
 
+#ifdef ATLAS
+//provide transitional path for ATLAS to migrate away from instantiating ToolHandles directly
+public:
+
+#else
+
 private:
+
+#endif
   //
   // Constructors etc.
   //
@@ -129,6 +137,11 @@ private:
                      a public (shared) tool.
       @param createIf: if true, create tool if not yet existing.
   */
+
+#ifdef ATLAS
+	//warn about using deprecated explicit ToolHandle construction
+	__attribute__ ((deprecated ("UNtracked ToolHandle - Migrate explicit DataHandle constructor to declareTool Algorithm Propery") ))
+#endif
   ToolHandle(const std::string& toolTypeAndName, const IInterface* parent = 0, bool createIf = true )
     : ToolHandleInfo(parent,createIf),
       GaudiHandle<T>( toolTypeAndName,
@@ -136,6 +149,8 @@ private:
 		      ToolHandleInfo::toolParentName(parent) ),
       m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
       {  }
+
+private:
 
   ToolHandle(const ToolHandle& );
   ToolHandle& operator=(const ToolHandle& );
