@@ -34,7 +34,7 @@ namespace concurrency {
     ///
     virtual bool accept(CFVisitor& visitor) = 0;
     /// XXX: CF tests. Method to set algos to CONTROLREADY, if possible
-    virtual void promoteToControlReadyState(const int& slotNum,
+    virtual bool promoteToControlReadyState(const int& slotNum,
                                             AlgsExecutionStates& states,
                                             std::vector<int>& node_decisions) const = 0;
     /// XXX: CF tests. Method to set algos to CONTROLREADY, if possible
@@ -74,7 +74,7 @@ namespace concurrency {
     virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
     virtual bool accept(CFVisitor& visitor);
     /// XXX: CF tests. Method to set algos to CONTROLREADY, if possible
-    virtual void promoteToControlReadyState(const int& slotNum,
+    virtual bool promoteToControlReadyState(const int& slotNum,
                                             AlgsExecutionStates& states,
                                             std::vector<int>& node_decisions) const;
     /// XXX: CF tests
@@ -153,11 +153,11 @@ namespace concurrency {
     virtual int updateState(AlgsExecutionStates& states,
                             std::vector<int>& node_decisions) const;
     /// XXX: CF tests
-    virtual void promoteToControlReadyState(const int& slotNum,
+    virtual bool promoteToControlReadyState(const int& slotNum,
                                             AlgsExecutionStates& states,
                                             std::vector<int>& node_decisions) const;
     ///
-    void promoteToDataReadyState(AlgsExecutionStates& states) const;
+    bool promoteToDataReadyState(const int& slotNum) const;
     /// XXX: CF tests
     virtual void updateDecision(const int& slotNum,
                                 AlgsExecutionStates& states,

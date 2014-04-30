@@ -109,16 +109,8 @@ namespace concurrency {
 
         if (typeid(*daughter) != typeid(concurrency::DecisionNode)) {
           AlgorithmNode* algod = (AlgorithmNode*) daughter;
-          auto& algoState = states[algod->getAlgoIndex()];
-          if (State::INITIAL == algoState) {
-            //std::cout << "----> UPDATING DAUGHTER STATE to CONTROLREADY: " << daughter->getNodeName() << std::endl;
-            states.updateState(algod->getAlgoIndex(), State::CONTROLREADY);
-            if (algod->dataDependenciesSatisfied(slotNum))
-              algod->promoteToDataReadyState(states);
-          } else if (State::CONTROLREADY == algoState && algod->dataDependenciesSatisfied(slotNum)) {
-            algod->promoteToDataReadyState(states);
-          }
-
+          algod->promoteToControlReadyState(slotNum,states,node_decisions);
+          algod->promoteToDataReadyState(slotNum);
         } else {
           daughter->updateDecision(slotNum, states, node_decisions);
         }
@@ -155,23 +147,25 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void DecisionNode::promoteToControlReadyState(const int& slotNum,
+  bool DecisionNode::promoteToControlReadyState(const int& slotNum,
                                                 AlgsExecutionStates& states,
                                                 std::vector<int>& node_decisions) const {
     //std::cout << "REACHED DECISNODE " << m_nodeName << std::endl;
     if (-1 != node_decisions[m_nodeIndex]) {
-      return;
+      return true;
     }
 
     for (auto daughter : m_children ) {
       auto res = node_decisions[daughter->getNodeIndex()];
       if (-1 == res) {
         daughter->promoteToControlReadyState(slotNum, states, node_decisions);
-        if (m_isLazy) return;
+        if (m_isLazy) return true;
       } else if (m_isLazy) {
-        if ((false == m_modeOR && res == 0) || (true == m_modeOR && res == 1)) return;
+        if ((false == m_modeOR && res == 0) || (true == m_modeOR && res == 1)) return true;
       }
     }
+
+    return true;
   }
 
   //---------------------------------------------------------------------------
@@ -201,48 +195,57 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void AlgorithmNode::initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map){
+  void AlgorithmNode::initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map) {
+
     m_algoIndex = algname_index_map.at(m_algoName);
   }
 
   //---------------------------------------------------------------------------
-  void AlgorithmNode::promoteToControlReadyState(const int& slotNum,
+  bool AlgorithmNode::promoteToControlReadyState(const int& slotNum,
                                                  AlgsExecutionStates& states,
                                                  std::vector<int>& node_decisions) const {
 
-    //std::cout << "REACHED ALGONODE " << m_algoName << std::endl;
-    if (State::INITIAL == states[m_algoIndex]) {
+    auto state = states[m_algoIndex];
+    bool result = false;
+
+    if (State::INITIAL == state) {
       states.updateState(m_algoIndex, State::CONTROLREADY);
-      if (slotNum != -1) {
-        if (dataDependenciesSatisfied(slotNum))
-          promoteToDataReadyState(states);
-      } else {
-        if (dataDependenciesSatisfied(states))
-          promoteToDataReadyState(states);
-      }
+      //std::cout << "----> UPDATING ALGORITHM to CONTROLREADY: " << m_algoName << std::endl;
+      result = true;
+    } else if (State::CONTROLREADY == state) {
+      result = true;
     }
+
+    return result;
   }
 
   //---------------------------------------------------------------------------
-  void AlgorithmNode::promoteToDataReadyState(AlgsExecutionStates& states) const {
+  bool AlgorithmNode::promoteToDataReadyState(const int& slotNum) const {
 
-    states.updateState(m_algoIndex, State::DATAREADY);
-    //std::cout << "----> UPDATING DAUGHTER STATE to DATAREADY: " << getNodeName() << std::endl;
+    auto states = m_graph->getAlgoStates(slotNum);
+    auto state = states[m_algoIndex];
+    bool result = false;
 
+    if (State::CONTROLREADY == state) {
+      if (dataDependenciesSatisfied(slotNum)) {
+        //std::cout << "----> UPDATING ALGORITHM to DATAREADY: " << m_algoName << std::endl;
+        states.updateState(m_algoIndex, State::DATAREADY);
+        result = true;
 
-    auto xtime = std::chrono::high_resolution_clock::now();
+        auto xtime = std::chrono::high_resolution_clock::now();
+        std::stringstream s;
+        s << getNodeName() << ", "
+          << std::chrono::duration_cast<std::chrono::nanoseconds>(xtime-m_graph->getInitTime()).count() << "\n";
+        std::ofstream myfile;
+        myfile.open("DRTiming.csv", std::ios::app);
+        myfile << s.str();
+        myfile.close();
+      }
+    } else if (State::DATAREADY == state) {
+      result = true;
+    }
 
-    //std::chrono::system_clock::time_point tp = std::chrono::system_clock::now();
-    //std::chrono::system_clock::duration dtn = tp.time_since_epoch();
-
-    std::stringstream s;
-    s << getNodeName()
-      << ", " << std::chrono::duration_cast<std::chrono::nanoseconds>(xtime-m_graph->getInitTime()).count() << "\n";
-
-    std::ofstream myfile;
-    myfile.open("DRTiming.csv", std::ios::app);
-    myfile << s.str();
-    myfile.close();
+    return result;
   }
 
   //---------------------------------------------------------------------------
@@ -348,8 +351,7 @@ namespace concurrency {
     if (-1 != decision) {
       for (auto output : m_outputs)
         for (auto consumer : output->getConsumers())
-          if (State::CONTROLREADY == states[consumer->getAlgoIndex()] && consumer->dataDependenciesSatisfied(slotNum))
-            consumer->promoteToDataReadyState(states);
+          consumer->promoteToDataReadyState(slotNum);
 
       for (auto p : m_parents)
         p->updateDecision(slotNum, states, node_decisions);
