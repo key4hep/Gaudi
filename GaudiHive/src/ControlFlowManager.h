@@ -156,8 +156,6 @@ namespace concurrency {
     virtual void promoteToControlReadyState(const int& slotNum,
                                             AlgsExecutionStates& states,
                                             std::vector<int>& node_decisions) const;
-    /// XXX: CF tests
-    void promoteToControlReadyState(const int& slotNum, AlgsExecutionStates& states) const;
     ///
     void promoteToDataReadyState(AlgsExecutionStates& states) const;
     /// XXX: CF tests

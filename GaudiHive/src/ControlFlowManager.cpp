@@ -246,14 +246,6 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void AlgorithmNode::promoteToControlReadyState(const int& slotNum, AlgsExecutionStates& states) const {
-
-    //std::cout << "REACHED ALGONODE (DATACONSUMER)" << m_algoName << std::endl;
-    if (State::INITIAL == states[m_algoIndex] && dataDependenciesSatisfied(slotNum))
-      states.updateState(m_algoIndex, State::CONTROLREADY);
-  }
-
-  //---------------------------------------------------------------------------
   bool AlgorithmNode::dataDependenciesSatisfied(const int& slotNum) const {
 
     bool result = true;
@@ -745,6 +737,7 @@ namespace concurrency {
 
     std::vector<int> fixedNodeDecisions;
     int cntr = 0;
+    std::vector<int> counters;
     while (!rootDecisionResolved(nodeDecisions)) {
       cntr += 1;
       int prevAlgosNum = vis.m_algosCompleted;
@@ -752,12 +745,11 @@ namespace concurrency {
       fixedNodeDecisions = m_CFGraph->getNodeDecisions(0);
       m_CFGraph->m_headNode->accept(vis);
       if ( fixedNodeDecisions == nodeDecisions) {
-        error() << fixedNodeDecisions << endmsg;
-        error() << nodeDecisions << endmsg;
-        error() << "No progress on iteration " << cntr << " detected" << endmsg;
+        error() << "  No progress on iteration " << cntr << " detected" << endmsg;
+        debug() << nodeDecisions << endmsg;
         break;
       }
-      info() << "  Iteration #" << cntr << " finished, algorithms completed in total: " << vis.m_algosCompleted << endmsg;
+      info() << "   Iteration #" << cntr << " finished, total algorithms executed: " << vis.m_algosCompleted << endmsg;
 
       std::stringstream s;
       s << cntr << ", " << (vis.m_algosCompleted-prevAlgosNum) << "\n";
@@ -766,9 +758,13 @@ namespace concurrency {
       myfile.open("RunSimulation.csv", std::ios::app);
       myfile << s.str();
       myfile.close();
+
+
+      if (vis.m_algosCompleted != prevAlgosNum)
+        counters.push_back(vis.m_algosCompleted);
     }
 
-    info() << "Number of iterations is: " << cntr << endmsg;
+    info() << "Asymptotical concurrency depth: " << (float) vis.m_algosCompleted / (float) counters.size() << endmsg;
 
     // Reset algorithm states and node decisions
     m_CFGraph->getAlgoStates(0).reset();
