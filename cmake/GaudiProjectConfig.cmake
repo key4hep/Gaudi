@@ -1396,9 +1396,10 @@ function(gaudi_generate_configurables library)
   endif()
 
   add_custom_command(
-    OUTPUT ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py ${outdir}/__init__.py
+    OUTPUT ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py
     COMMAND ${env_cmd} --xml ${env_xml}
               ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
+                --no-init
                 ${genconf_opts}
                 -i ${library}
     DEPENDS ${library} ${deps})
@@ -1424,7 +1425,12 @@ function(gaudi_generate_configurables library)
     list(FIND python_modules ${package} got_pkg_module)
     if(got_pkg_module LESS 0)
       # we need to install our __init__.py
-      install(FILES ${outdir}/__init__.py DESTINATION python/${package} OPTIONAL)
+      if(NOT EXISTS ${outdir}/__init__.py)
+        file(MAKE_DIRECTORY ${outdir})
+        file(WRITE ${outdir}/__init__.py "")
+        message(STATUS "Created dummy ${outdir}/__init__.py")
+        install(FILES ${outdir}/__init__.py DESTINATION python/${package} OPTIONAL)
+      endif()
     endif()
   endif()
 
