@@ -105,10 +105,9 @@ namespace concurrency {
       int& res = node_decisions[daughter->getNodeIndex()];
       if (-1 == res) {
         hasUndecidedChild = true;
-        //daughter->promoteToControlReadyState(states, node_decisions);
 
         if (typeid(*daughter) != typeid(concurrency::DecisionNode)) {
-          AlgorithmNode* algod = (AlgorithmNode*) daughter;
+          auto algod = (AlgorithmNode*) daughter;
           algod->promoteToControlReadyState(slotNum,states,node_decisions);
           algod->promoteToDataReadyState(slotNum);
         } else {
@@ -169,7 +168,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  bool DecisionNode::accept(CFVisitor& visitor) {
+  bool DecisionNode::accept(IGraphVisitor& visitor) {
 
     if (visitor.visitEnter(*this)) {
       bool result = visitor.visit(*this);
@@ -359,7 +358,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  bool AlgorithmNode::accept(CFVisitor& visitor) {
+  bool AlgorithmNode::accept(IGraphVisitor& visitor) {
 
     if (visitor.visitEnter(*this)) {
       int result = visitor.visit(*this);
@@ -730,10 +729,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void ControlFlowManager::simulateExecutionFlow() const {
-
-    // Prepare a visitor of event slot '0'
-    CFVisitor vis = CFVisitor(0);
+  void ControlFlowManager::simulateExecutionFlow(IGraphVisitor& visitor) const {
 
     std::vector<int>& nodeDecisions = m_CFGraph->getNodeDecisions(0);
 
@@ -742,19 +738,19 @@ namespace concurrency {
     std::vector<int> counters;
     while (!rootDecisionResolved(nodeDecisions)) {
       cntr += 1;
-      int prevAlgosNum = vis.m_algosCompleted;
+      int prevAlgosNum = visitor.m_nodesSucceeded;
       debug() << "  Proceeding with iteration #" << cntr << endmsg;
       fixedNodeDecisions = m_CFGraph->getNodeDecisions(0);
-      m_CFGraph->m_headNode->accept(vis);
+      m_CFGraph->m_headNode->accept(visitor);
       if ( fixedNodeDecisions == nodeDecisions) {
         error() << "  No progress on iteration " << cntr << " detected" << endmsg;
         debug() << nodeDecisions << endmsg;
         break;
       }
-      info() << "   Iteration #" << cntr << " finished, total algorithms executed: " << vis.m_algosCompleted << endmsg;
+      info() << "   Iteration #" << cntr << " finished, total algorithms executed: " << visitor.m_nodesSucceeded << endmsg;
 
       std::stringstream s;
-      s << cntr << ", " << (vis.m_algosCompleted-prevAlgosNum) << "\n";
+      s << cntr << ", " << (visitor.m_nodesSucceeded-prevAlgosNum) << "\n";
 
       std::ofstream myfile;
       myfile.open("RunSimulation.csv", std::ios::app);
@@ -762,11 +758,11 @@ namespace concurrency {
       myfile.close();
 
 
-      if (vis.m_algosCompleted != prevAlgosNum)
-        counters.push_back(vis.m_algosCompleted);
+      if (visitor.m_nodesSucceeded != prevAlgosNum)
+        counters.push_back(visitor.m_nodesSucceeded);
     }
 
-    info() << "Asymptotical concurrency depth: " << (float) vis.m_algosCompleted / (float) counters.size() << endmsg;
+    info() << "Asymptotical concurrency speedup depth: " << (float) visitor.m_nodesSucceeded / (float) counters.size() << endmsg;
 
     // Reset algorithm states and node decisions
     m_CFGraph->getAlgoStates(0).reset();
@@ -802,7 +798,20 @@ namespace concurrency {
 
   //---------------------------------------------------------------------------
   bool ControlFlowManager::rootDecisionResolved(const std::vector<int>& node_decisions) const {
+
     return (-1 != node_decisions[m_CFGraph->m_headNode->getNodeIndex()]) ? true : false;
+  }
+
+  //---------------------------------------------------------------------------
+  void ControlFlowManager::touchReadyAlgorithms(IGraphVisitor& visitor) const {
+
+    auto states = m_CFGraph->getAlgoStates(visitor.m_slotNum);
+    auto decisions = m_CFGraph->getNodeDecisions(visitor.m_slotNum);
+
+    //m_CFGraph->m_headNode->promoteToControlReadyState(slotNum,states,decisions);
+
+    m_CFGraph->m_headNode->accept(visitor);
+
   }
 
 } // namespace
