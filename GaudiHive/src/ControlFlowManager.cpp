@@ -86,6 +86,7 @@ namespace concurrency {
                                     std::vector<int>& node_decisions) const {
 
     int decision = ((m_allPass && m_isLazy) ? 1 : -1);
+    bool keepGoing = true;
     bool hasUndecidedChild = false;
     //std::cout << "++++++++++++++++++++BEGIN(UPDATING)++++++++++++++++++++" << std::endl;
     //std::cout << "UPDATING DAUGHTERS of DECISION NODE: " << m_nodeName << std::endl;
@@ -94,9 +95,9 @@ namespace concurrency {
       // if lazy return once result is known already or we can't fully evaluate
       // right now because one daughter decision is missing still
       //std::cout << "----UPDATING DAUGHTER: " << daughter->getNodeName() << std::endl;
-      if (m_isLazy && (-1 != decision || hasUndecidedChild)) {
+      if (m_isLazy && !keepGoing) {
         node_decisions[m_nodeIndex] = decision;
-        //std::cout << "LEAVING (UPDATING) DECISION NODE: " << m_nodeName << std::endl;
+        //std::cout << "STOPPING ITERATION OVER (UPDATING) DECISION NODE CHILDREN: " << m_nodeName << std::endl;
         break;
         //return;
       }
@@ -105,11 +106,12 @@ namespace concurrency {
       int& res = node_decisions[daughter->getNodeIndex()];
       if (-1 == res) {
         hasUndecidedChild = true;
-
         if (typeid(*daughter) != typeid(concurrency::DecisionNode)) {
           auto algod = (AlgorithmNode*) daughter;
           algod->promoteToControlReadyState(slotNum,states,node_decisions);
-          algod->promoteToDataReadyState(slotNum);
+          bool result = algod->promoteToDataReadyState(slotNum);
+          if (result)
+            keepGoing = false;
         } else {
           daughter->updateDecision(slotNum, states, node_decisions);
         }
@@ -117,9 +119,11 @@ namespace concurrency {
       // "and"-mode (once first result false, the overall decision is false)
       } else if (false == m_modeOR && res == 0) {
         decision = 0;
+        keepGoing = false;
       // "or"-mode  (once first result true, the overall decision is true)
       } else if (true  == m_modeOR && res == 1) {
         decision = 1;
+        keepGoing = false;
       }
     }
 
@@ -204,7 +208,7 @@ namespace concurrency {
                                                  AlgsExecutionStates& states,
                                                  std::vector<int>& node_decisions) const {
 
-    auto state = states[m_algoIndex];
+    auto& state = states[m_algoIndex];
     bool result = false;
 
     if (State::INITIAL == state) {
@@ -221,8 +225,8 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   bool AlgorithmNode::promoteToDataReadyState(const int& slotNum) const {
 
-    auto states = m_graph->getAlgoStates(slotNum);
-    auto state = states[m_algoIndex];
+    auto& states = m_graph->getAlgoStates(slotNum);
+    auto& state = states[m_algoIndex];
     bool result = false;
 
     if (State::CONTROLREADY == state) {
@@ -241,6 +245,8 @@ namespace concurrency {
         myfile.close();
       }
     } else if (State::DATAREADY == state) {
+      result = true;
+    } else if (State::SCHEDULED == state) {
       result = true;
     }
 
