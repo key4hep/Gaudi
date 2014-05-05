@@ -316,7 +316,7 @@ StatusCode ForwardSchedulerSvc::pushNewEvent(EventContext* eventContext){
     thisSlot.reset(eventContext);
     // XXX: CF tests
     if (m_CFNext) {
-      auto vis = concurrency::TopDownParser(0);
+      auto vis = concurrency::TopDownParser(thisSlotNum);
       m_cfManager.touchReadyAlgorithms(vis);
     }
 
