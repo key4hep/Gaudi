@@ -16,6 +16,7 @@
 #include "ForwardSchedulerSvc.h"
 #include "AlgoExecutionTask.h"
 #include "AlgResourcePool.h"
+#include "EFGraphVisitors.h"
 
 // External libs
 // DP waiting for the TBB service
@@ -161,7 +162,9 @@ StatusCode ForwardSchedulerSvc::initialize(){
   info() << " o TBB thread pool size: " << m_threadPoolSize << endmsg;
 
   // Simulating execution flow by analyzing the graph topology and logic only
-  m_cfManager.simulateExecutionFlow();
+
+  auto vis = concurrency::RunSimulator(0);
+  m_cfManager.simulateExecutionFlow(vis);
 
   // Activate the scheduler in another thread.
   info() << "Activating scheduler in a separate thread" << endmsg;
@@ -312,7 +315,11 @@ StatusCode ForwardSchedulerSvc::pushNewEvent(EventContext* eventContext){
     info() << "A free processing slot was found." << endmsg;
     thisSlot.reset(eventContext);
     // XXX: CF tests
-    if (m_CFNext) m_cfManager.promoteToControlReadyState(thisSlot.algsStates,thisSlot.controlFlowState,thisSlotNum);
+    if (m_CFNext) {
+      auto vis = concurrency::TopDownParser(0);
+      m_cfManager.touchReadyAlgorithms(vis);
+    }
+
     return this->updateStates(thisSlotNum);
   }; // end of lambda
 

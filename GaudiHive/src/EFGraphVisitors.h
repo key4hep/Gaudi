@@ -6,15 +6,15 @@
 
 namespace concurrency {
 
-  class CFVisitor : public IGraphVisitor {
+  class RunSimulator : public IGraphVisitor {
   public:
     /// Constructor
-    CFVisitor(const int& slotNum) {
+    RunSimulator(const int& slotNum) {
       m_nodesSucceeded = 0;
       m_slotNum = slotNum;
     };
     /// Destructor
-    virtual ~CFVisitor() {};
+    virtual ~RunSimulator() {};
 
     virtual bool visitEnter(DecisionNode& node) const;
 
@@ -28,6 +28,29 @@ namespace concurrency {
     virtual bool visit(AlgorithmNode& node);
 
   };
+
+  class TopDownParser : public IGraphVisitor {
+    public:
+      /// Constructor
+      TopDownParser(const int& slotNum) {
+        m_nodesSucceeded = 0;
+        m_slotNum = slotNum;
+      };
+      /// Destructor
+      virtual ~TopDownParser() {};
+
+      virtual bool visitEnter(DecisionNode& node) const;
+
+      virtual bool visit(DecisionNode& node) const;
+
+      virtual bool visitLeave(DecisionNode& node) const;
+
+
+      virtual bool visitEnter(AlgorithmNode& node) const;
+
+      virtual bool visit(AlgorithmNode& node);
+
+    };
 
 }
 
