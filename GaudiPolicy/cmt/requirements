@@ -1357,8 +1357,8 @@ macro GenConfUser_script "genconfuser.py" \
                    target-winxp "genconfuser.bat"
 pattern real_genconfuser \
 	private ; \
-	macro <package>GenConfUser_output "$(<package>_root)$(genconfDir)<package>/<package>_user_confDb.ascii" \
-	                            target-winxp "$(<package>_root)$(genconfDir)<package>\<package>_user_confDb.ascii" ; \
+	macro <package>GenConfUser_output "$(<package>_root)$(genconfDir)<package>/<package>_user.confdb" \
+	                            target-winxp "$(<package>_root)$(genconfDir)<package>\<package>_user.confdb" ; \
 	macro <package>GenConfUser_python "$(<package>_root)/python" \
                                     target-winxp "$(<package>_root)\python" ; \
 	macro <package>GenConfUser_deps "FORCE" ; \

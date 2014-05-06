@@ -35,7 +35,7 @@ def _inheritsfrom(derived, basename):
 def loadConfigurableDb():
     '''
     Equivalent to GaudiKernel.ConfigurableDb.loadConfigurableDb(), but does a
-    deep search and executes the '*_confDb.ascii' files instead of importing them.
+    deep search and executes the '*.confdb' files instead of importing them.
     '''
     # find the '*_confDb.ascii' files that are not merged ones
     log = GaudiKernel.ConfigurableDb.log
@@ -44,7 +44,7 @@ def loadConfigurableDb():
         log.debug( "walking in [%s]..." % path )
         if not os.path.exists(path):
             continue
-        confDbFiles = [ f for f in glob(os.path.join(path, "*_confDb.ascii"))
+        confDbFiles = [ f for f in glob(os.path.join(path, "*.confdb"))
                         if 'merged' not in f and os.path.isfile(f) ]
         for confDb in confDbFiles:
             # turn filename syntax into module syntax: remove path+extension and replace / with . (dot)
@@ -164,7 +164,7 @@ def main():
         genConfDir = os.path.join("..", "genConf")
 
     if not opts.output:
-        outputfile = os.path.join(genConfDir, package_name + '_user_confDb.ascii')
+        outputfile = os.path.join(genConfDir, package_name + '_user.confdb')
     else:
         outputfile = opts.output
 
@@ -200,7 +200,7 @@ def main():
         # configurables
         sys.path.insert(0, genConfDir)
         sys.path.insert(0, os.path.join("..", "python"))
-        localConfDb = os.path.join(genConfDir, package_name + '_confDb.ascii')
+        localConfDb = os.path.join(genConfDir, package_name + '.confdb')
         if os.path.exists(localConfDb):
             cfgDb._loadModule(localConfDb)
             # Extend the search path of the package module to find the configurables

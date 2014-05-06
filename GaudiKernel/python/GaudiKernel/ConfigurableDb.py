@@ -126,7 +126,7 @@ def loadConfigurableDb():
         log.debug( "walking in [%s]..." % path )
         if not os.path.exists(path):
             continue
-        confDbFiles = [ f for f in glob(path_join(path, "*_merged_confDb.ascii"))
+        confDbFiles = [ f for f in glob(path_join(path, "*_merged.confdb"))
                         if os.path.isfile(f) ]
         for confDb in confDbFiles:
             nFiles += 1

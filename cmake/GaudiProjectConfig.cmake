@@ -365,7 +365,7 @@ macro(gaudi_project project version)
   file(APPEND ${CMAKE_BINARY_DIR}/subdirs_deps.dot "}\n")
 
   #--- Special global targets for merging files.
-  gaudi_merge_files(ConfDB lib ${CMAKE_PROJECT_NAME}_merged_confDb.ascii)
+  gaudi_merge_files(ConfDB lib ${CMAKE_PROJECT_NAME}_merged.confdb)
   gaudi_merge_files(ComponentsList lib ${CMAKE_PROJECT_NAME}.components)
   gaudi_merge_files(DictRootmap lib ${CMAKE_PROJECT_NAME}Dict.rootmap)
 
@@ -1359,13 +1359,13 @@ function(gaudi_generate_configurables library)
   endif()
 
   add_custom_command(
-    OUTPUT ${outdir}/${library}_confDb.ascii ${outdir}/${library}Conf.py ${outdir}/__init__.py
+    OUTPUT ${outdir}/${library}.confdb ${outdir}/${library}Conf.py ${outdir}/__init__.py
     COMMAND ${env_cmd} --xml ${env_xml}
               ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
                 ${genconf_opts}
                 -i ${library}
     DEPENDS ${library} ${deps})
-  add_custom_target(${library}Conf ALL DEPENDS ${outdir}/${library}_confDb.ascii)
+  add_custom_target(${library}Conf ALL DEPENDS ${outdir}/${library}.confdb)
   # Add the target to the target that groups all of them for the package.
   if(NOT TARGET ${package}ConfAll)
     add_custom_target(${package}ConfAll ALL)
@@ -1373,11 +1373,11 @@ function(gaudi_generate_configurables library)
   add_dependencies(${package}ConfAll ${library}Conf)
   # Add dependencies on GaudiSvc and the genconf executable if they have to be built in the current project
   # Notify the project level target
-  gaudi_merge_files_append(ConfDB ${library}Conf ${outdir}/${library}_confDb.ascii)
+  gaudi_merge_files_append(ConfDB ${library}Conf ${outdir}/${library}.confdb)
   #----Installation details-------------------------------------------------------
   install(FILES ${outdir}/${library}Conf.py
           DESTINATION python/${package} OPTIONAL)
-  install(FILES ${outdir}/${library}_confDb.ascii
+  install(FILES ${outdir}/${library}.confdb
           DESTINATION lib OPTIONAL)
 
   # Check if we need to install our __init__.py (i.e. it is not already installed
@@ -1425,20 +1425,20 @@ function(gaudi_generate_confuserdb)
     #       we have to force it because we cannot define the dependencies
     #       correctly (on the Python files)
     add_custom_target(${package}ConfUserDB ALL
-                      DEPENDS ${outdir}/${package}_user_confDb.ascii)
+                      DEPENDS ${outdir}/${package}_user.confdb)
     if(${ARG_DEPENDS} ${PROPERTY_DEPENDS})
       add_dependencies(${package}ConfUserDB ${ARG_DEPENDS} ${PROPERTY_DEPENDS})
     endif()
     add_custom_command(
-      OUTPUT ${outdir}/${package}_user_confDb.ascii
+      OUTPUT ${outdir}/${package}_user.confdb
       COMMAND ${env_cmd} --xml ${env_xml}
                 ${genconfuser_cmd}
                   -r ${CMAKE_CURRENT_SOURCE_DIR}/python
-                  -o ${outdir}/${package}_user_confDb.ascii
+                  -o ${outdir}/${package}_user.confdb
                   ${package} ${modules})
-    install(FILES ${outdir}/${package}_user_confDb.ascii
+    install(FILES ${outdir}/${package}_user.confdb
             DESTINATION lib OPTIONAL)
-    gaudi_merge_files_append(ConfDB ${package}ConfUserDB ${outdir}/${package}_user_confDb.ascii)
+    gaudi_merge_files_append(ConfDB ${package}ConfUserDB ${outdir}/${package}_user.confdb)
 
     # FIXME: dependency on others ConfUserDB
     # Historically we have been relying on the ConfUserDB built in the dependency
@@ -1467,9 +1467,9 @@ function(gaudi_generate_confuserdb)
         set(targets ${targets} ${dep}ConfUserDB)
       endif()
     endforeach()
-    #message(STATUS "${outdir}/${package}_user_confDb.ascii <- ${targets}")
+    #message(STATUS "${outdir}/${package}_user.confdb <- ${targets}")
     if(targets) # FIXME: is this an optimization or it is better to add deps one by one?
-      add_custom_command(OUTPUT ${outdir}/${package}_user_confDb.ascii DEPENDS ${targets} APPEND)
+      add_custom_command(OUTPUT ${outdir}/${package}_user.confdb DEPENDS ${targets} APPEND)
     endif()
 
   endif()

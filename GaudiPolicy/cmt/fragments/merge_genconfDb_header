@@ -1,8 +1,8 @@
 # File: cmt/fragments/merge_genconfDb_header
 # Author: Sebastien Binet (binet@cern.ch)
 
-# Makefile fragment to merge a <library>_confDb.ascii file into a single
-# <project>_merged_confDb.ascii file in the (python) install area
+# Makefile fragment to merge a <library>.confdb file into a single
+# <project>_merged.confdb file in the (python) install area
 # Note that <project> is massaged to get a valid python module name
 # (ie: remove dots and dashes)
 
@@ -12,9 +12,9 @@
 #genconfDb_comment_char := "'#'"
 
 instdir      := ${CMTINSTALLAREA}$(shared_install_subdir)
-confDbRef    := $(inDir)/$(library)_confDb.ascii
+confDbRef    := $(inDir)/$(library).confdb
 stampConfDb  := $(confDbRef).stamp
-mergedConfDb := $(instdir)/lib/$(subst .,_,$(subst -,_,$(project)))_merged_confDb.ascii
+mergedConfDb := $(instdir)/lib/$(subst .,_,$(subst -,_,$(project)))_merged.confdb
 
 ${CONSTITUENT} :: $(stampConfDb) $(mergedConfDb)
 	@:

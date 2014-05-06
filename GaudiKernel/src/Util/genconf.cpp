@@ -601,7 +601,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
     const std::string pyName = ( fs::path(m_outputDirName) /
                   fs::path(*iLib+"Conf.py") ).string();
     const std::string dbName = ( fs::path(m_outputDirName) /
-                  fs::path(*iLib+"_confDb.ascii") ).string();
+                  fs::path(*iLib+".confdb") ).string();
 
     std::fstream py( pyName.c_str(),
               std::ios_base::out|std::ios_base::trunc );
