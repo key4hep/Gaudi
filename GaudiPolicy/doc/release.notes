@@ -1,6 +1,11 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-05-06 - Sebastien Binet
+ - fix bug #102404: implement a pure ascii based configurable-db.
+   these ascii files are now named .confdb (for the per package ones)
+   *_user.confdb (for the user ones) and *_merged.confdb (for the merged ones.)
+
 ! 2014-04-17 - Marco Clemencic
  - Ignore TInterpreter::ReadRootmapFile warnings until we find a way to fix
    them. (ROOT6_WORK_AROUND: ReadRootmapCheck)

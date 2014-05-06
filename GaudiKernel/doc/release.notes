@@ -1,6 +1,11 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2014-05-06 - Sebastien Binet
+ - fix bug #102404: implement a pure ascii based configurable-db.
+   these ascii files are now named .confdb (for the per package ones)
+   *_user.confdb (for the user ones) and *_merged.confdb (for the merged ones.)
+
 ! 2014-03-21 - Marco Clemencic, Rolf Seuster, David Quarrie
  - Re-enabled the DECLARE_FACTORY_ENTRIES family of macros (needed by ATLAS).
 
