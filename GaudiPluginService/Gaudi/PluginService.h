@@ -15,6 +15,7 @@
 
 #include <string>
 #include <typeinfo>
+#include <utility>
 #include <Gaudi/Details/PluginServiceDetails.h>
 
 #define DECLARE_FACTORY_WITH_ID(type, id, factory) \
@@ -45,17 +46,17 @@ namespace Gaudi { namespace PluginService {
   class Factory {
   public:
     typedef R  ReturnType;
-    typedef R (*FuncType)(Args...);
+    typedef R (*FuncType)(Args&&...);
 
     static ReturnType create(const std::string& id, Args... args) {
       const FuncType c = Details::getCreator<FuncType>(id);
-      return c ? (*c)(args...) : 0;
+      return c ? (*c)(std::forward<Args>(args)...) : 0;
     }
 
     template <typename T>
     static ReturnType create(const T& id, Args... args) {
       std::ostringstream o; o << id;
-      return create(o.str(), args...);
+      return create(o.str(), std::forward<Args>(args)...);
     }
   };
 #endif

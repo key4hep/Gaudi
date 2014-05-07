@@ -18,6 +18,7 @@
 #include <map>
 #include <set>
 #include <typeinfo>
+#include <utility>
 
 #if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
 #include <mutex>
@@ -55,8 +56,8 @@ namespace Gaudi { namespace PluginService {
     public:
 #ifndef __REFLEX__
       template <typename S, typename... Args>
-        static typename S::ReturnType create(Args... args) {
-        return new T(args...);
+        static typename S::ReturnType create(Args&&... args) {
+        return new T(std::forward<Args>(args)...);
       }
 #endif
     };
