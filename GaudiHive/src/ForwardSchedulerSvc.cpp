@@ -121,6 +121,17 @@ StatusCode ForwardSchedulerSvc::initialize(){
             const std::string& productName = handlePtr->dataProductName();
             info() << "  o READ Handle found for product " << productName << endmsg;
             algoDependencies.emplace_back(productName);
+
+            //just for info output alternative locations
+            if(handlePtr->alternativeDataProductNames().size()!= 0){
+            	info() << "\t\t alternative locations";
+            	for(auto s : handlePtr->alternativeDataProductNames())
+            		info() << " " << s;
+            	info() << endmsg;
+            }
+          } else {
+        	  //output WRITE handles just for info
+        	  info() << "  o WRITE Handle found for product " << handlePtr->dataProductName() << endmsg;
           }
         }
       } else {

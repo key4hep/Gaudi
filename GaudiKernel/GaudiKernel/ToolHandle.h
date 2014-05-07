@@ -65,12 +65,32 @@ public:
     }
   }
 
-  //Get a reference to the generic IAlgTool
-  virtual StatusCode retrieve( IAlgTool*& algTool ) const = 0;
-
 protected:
   const IInterface* m_parent;
   bool m_createIf;
+
+};
+
+/** @class BaseToolHandle ToolHandle.h GaudiKernel/ToolHandle.h
+
+    Non-templated base class for actual ToolHandle<T>.
+    Defines the interface for the management of ToolHandles in the Algorithms and Tools
+
+    @author Daniel Funke <daniel.funke@cern.ch>
+*/
+class BaseToolHandle: public ToolHandleInfo {
+
+protected:
+  BaseToolHandle(const IInterface* parent = 0, bool createIf = true )
+    : ToolHandleInfo(parent, createIf)
+    {}
+
+public:
+  virtual ~BaseToolHandle() {};
+
+public:
+	  //Get a reference to the generic IAlgTool
+	  virtual StatusCode retrieve( IAlgTool*& algTool ) const = 0;
 
 };
 
@@ -85,7 +105,7 @@ protected:
     @author Martin.Woudstra@cern.ch
 */
 template< class T >
-class ToolHandle : public ToolHandleInfo, public GaudiHandle<T> {
+class ToolHandle : public BaseToolHandle, public GaudiHandle<T> {
 
 	friend class Algorithm;
 	friend class AlgTool;
@@ -140,20 +160,23 @@ private:
 
 #ifdef ATLAS
 	//warn about using deprecated explicit ToolHandle construction
-	__attribute__ ((deprecated ("UNtracked ToolHandle - Migrate explicit DataHandle constructor to declareTool Algorithm Propery") ))
+	__attribute__ ((deprecated ("UNtracked ToolHandle - Migrate explicit DataHandle constructor to declareTool Algorithm Property") ))
 #endif
   ToolHandle(const std::string& toolTypeAndName, const IInterface* parent = 0, bool createIf = true )
-    : ToolHandleInfo(parent,createIf),
+    : BaseToolHandle(parent,createIf),
       GaudiHandle<T>( toolTypeAndName,
 		      ToolHandleInfo::toolComponentType(parent),
 		      ToolHandleInfo::toolParentName(parent) ),
       m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
       {  }
 
+//ATLAS still requires the copy constructor and operator= for the transition
+#ifndef ATLAS
 private:
 
   ToolHandle(const ToolHandle& );
   ToolHandle& operator=(const ToolHandle& );
+#endif
 
 public:
 

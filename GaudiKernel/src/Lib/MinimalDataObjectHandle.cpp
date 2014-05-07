@@ -90,6 +90,17 @@ StatusCode MinimalDataObjectHandle::setDataProductName(const std::string & addre
 	return StatusCode::SUCCESS;
 }
 
+StatusCode MinimalDataObjectHandle::setAlternativeDataProductNames(const std::vector<std::string> & alternativeAddresses){
+
+	//only allowed if not initialized yet
+	if(m_initialized)
+		return StatusCode::FAILURE;
+
+	m_descriptor->setAltAddresses(alternativeAddresses);
+
+	return StatusCode::SUCCESS;
+}
+
 StatusCode MinimalDataObjectHandle::setDataProductNames(const std::vector<std::string> & addresses){
 
 	//only allowed if not initialized yet

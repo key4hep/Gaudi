@@ -11,8 +11,6 @@ class DataObjectDescriptorCollection;
 class Algorithm;
 class AlgTool;
 
-template <class U> class GaudiCommon;
-
 class MinimalDataObjectHandle {
 
 public:
@@ -30,7 +28,6 @@ public:
 	  friend class Algorithm;
 	  friend class AlgTool;
 	  friend class DataObjectDescriptorCollection;
-	  template <class U> friend class GaudiCommon;
 
 public:
 
@@ -65,6 +62,7 @@ public:
 
   /// Update address of data product if possible -> not if was written
   StatusCode setDataProductName(const std::string & address);
+  StatusCode setAlternativeDataProductNames(const std::vector<std::string> & alternativeAddresses);
   StatusCode setDataProductNames(const std::vector<std::string> & addresses);
 
   /// Access type

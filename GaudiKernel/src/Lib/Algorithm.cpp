@@ -207,57 +207,30 @@ StatusCode Algorithm::sysInitialize() {
   }
 
 
-  //update DataHandles to point to full TES location
-
-  //get root of DataManager
-  SmartIF<IDataManagerSvc> dataMgrSvc (evtSvc());
-  std::string rootName(dataMgrSvc->rootName());
-  if ("" != rootName && '/'!=rootName[rootName.size()-1]){
-       rootName = rootName + "/";
-  }
-
-  auto fixLocation = [&] (const std::string & location) -> std::string {
-
-	  log << MSG::DEBUG << "Changing " << location << " to "
-	  			  << ('/' ? location : rootName + location) << endmsg;
-
-	  //check whether we have an absolute path if yes return it - else prepend DataManager Root
-	  return location[0] == '/' ? location : rootName + location;
-  };
-
-    //init data handle
-  for(auto tag : m_inputDataObjects){
+  //init data handle
+	for (auto tag : m_inputDataObjects) {
 		if (m_inputDataObjects[tag].isValid()) {
-			m_inputDataObjects[tag].setDataProductName(
-					fixLocation(m_inputDataObjects[tag].dataProductName()));
-
-			auto altAddress = m_inputDataObjects[tag].descriptor()->alternativeAddresses();
-			for (uint i = 0; i < altAddress.size(); ++i)
-				altAddress[i] = fixLocation(altAddress[i]);
-			m_inputDataObjects[tag].descriptor()->setAltAddress(altAddress);
-
-			  if(m_inputDataObjects[tag].initialize().isSuccess())
-					log << MSG::DEBUG << "Data Handle " << tag
-					<< " (" << m_inputDataObjects[tag].dataProductName()
-					<< ") initialized" << endmsg;
-			  else
-				  log << MSG::FATAL << "Data Handle " << tag
-					<< " (" << m_inputDataObjects[tag].dataProductName()
-					<< ") could NOT be initialized" << endmsg;
+			if (m_inputDataObjects[tag].initialize().isSuccess())
+				log << MSG::DEBUG << "Data Handle " << tag << " ("
+						<< m_inputDataObjects[tag].dataProductName()
+						<< ") initialized" << endmsg;
+			else
+				log << MSG::FATAL << "Data Handle " << tag << " ("
+						<< m_inputDataObjects[tag].dataProductName()
+						<< ") could NOT be initialized" << endmsg;
 		}
-  }
-  for(auto tag : m_outputDataObjects){
-	  if(m_outputDataObjects[tag].isValid()){
-		  m_outputDataObjects[tag].setDataProductName(fixLocation(m_outputDataObjects[tag].dataProductName()));
+	}
+	for (auto tag : m_outputDataObjects) {
+		if (m_outputDataObjects[tag].isValid()) {
 
-		  if(m_outputDataObjects[tag].initialize().isSuccess())
-			  log << MSG::DEBUG << "Data Handle " << tag
-			  << " (" << m_outputDataObjects[tag].dataProductName()
-			  << ") initialized" << endmsg;
-		  else
-			  log << MSG::FATAL << "Data Handle " << tag
-			  << " (" << m_outputDataObjects[tag].dataProductName()
-			  << ") could NOT be initialized" << endmsg;
+			if (m_outputDataObjects[tag].initialize().isSuccess())
+				log << MSG::DEBUG << "Data Handle " << tag << " ("
+						<< m_outputDataObjects[tag].dataProductName()
+						<< ") initialized" << endmsg;
+			else
+				log << MSG::FATAL << "Data Handle " << tag << " ("
+						<< m_outputDataObjects[tag].dataProductName()
+						<< ") could NOT be initialized" << endmsg;
 	  }
   }
 

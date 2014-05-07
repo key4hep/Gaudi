@@ -63,7 +63,7 @@ void DataObjectDescriptor::fromString(const std::string& s) {
 		boost::split(addr, items[1], boost::is_any_of(boost::lexical_cast<std::string>(ADDR_SEP)), boost::token_compress_on);
 
 		setAddress(addr[0]); //main address
-		setAltAddress(addr, true); //set alternatives, skipping first
+		setAltAddresses(addr, true); //set alternatives, skipping first
 	}
 
 	setOptional(boost::lexical_cast<bool>( items[2] ));
@@ -140,12 +140,12 @@ void DataObjectDescriptor::setAddresses(const std::vector<std::string>& addresse
 	//if(!m_handle || !m_handle->initialized()){
 	if(!addresses.empty()){
 		setAddress(addresses[0]);
-		setAltAddress(addresses, true);
+		setAltAddresses(addresses, true);
 	}
 	//}
 }
 
-void DataObjectDescriptor::setAltAddress(const std::vector<std::string> & addresses, bool skipFirst){
+void DataObjectDescriptor::setAltAddresses(const std::vector<std::string> & addresses, bool skipFirst){
 	//if(!m_handle || !m_handle->initialized())
 		m_altAddresses.assign(addresses.begin() + skipFirst, addresses.end());
 }

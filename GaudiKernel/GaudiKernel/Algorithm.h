@@ -844,7 +844,7 @@ private:
 
   //tools used by algorithm
   mutable std::vector<IAlgTool *> m_tools;
-  mutable std::vector<ToolHandleInfo *> m_toolHandles;
+  mutable std::vector<BaseToolHandle *> m_toolHandles;
 
 
 private:
