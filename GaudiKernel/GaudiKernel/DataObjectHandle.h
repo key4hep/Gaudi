@@ -35,10 +35,30 @@ public:
   /// Finalize
   StatusCode finalize();    
  
-  /// Get from the transient store using the processed event number to identify the correct slot
-  T* get() ;
+  /**
+   * Retrieve object from transient data store
+   */
+  T* get() { return get(true); }
+
+  /**
+   * Bypass check of existence of object in transient store
+   * Only uses main location of the
+   */
+  T* getIfExists() { return get(false); }
+
+  /**
+   * Check the existence of the object in the transient store
+   */
+  bool exist() { return get(false) != NULL; }
   
-  /// Register from the transient store using the processed event number to identify the correct slot
+  /**
+   * Get object from store or create a new one if it doesn't exist
+   */
+  T* getOrCreate();
+
+  /**
+   * Register object in transient store
+   */
   void put (T* object);
   
 private:
@@ -53,6 +73,9 @@ private:
   }
 
 private:
+
+  T* get(bool mustExist);
+
   SmartIF<IDataProviderSvc> m_EDS;
   SmartIF<IMessageSvc> m_MS;
   IAlgorithm* m_fatherAlg;
@@ -161,7 +184,7 @@ DataObjectHandle<T>::DataObjectHandle(DataObjectDescriptor & descriptor,
  * static cast: we do not need the checks of the dynamic cast for every access!
  */
 template<typename T>  
-T* DataObjectHandle<T>::get() {
+T* DataObjectHandle<T>::get(bool mustExist) {
 
 	MsgStream log(m_MS,"DataObjectHandle");
 
@@ -214,12 +237,9 @@ T* DataObjectHandle<T>::get() {
     }
 
   }
-  else{ // Problems in getting from the store
-    MsgStream log(m_MS,"DataObjectHandle");
-    log << MSG::ERROR << "Cannot retrieve " 
-        << dataProductName() << " from transient store. "
-        << "As a result, a segmentation fault is very likely." << endmsg;
-    return NULL;
+  else if(mustExist){ // Problems in getting from the store
+    throw GaudiException("Cannot retrieve " + dataProductName() + " from transient store.",
+    				     m_fatherAlg != 0 ? m_fatherAlg->name() : m_fatherTool->name(), StatusCode::FAILURE);
   }
   
   setRead();
@@ -233,6 +253,27 @@ void DataObjectHandle<T>::put (T *objectp){
     StatusCode sc = m_EDS->registerObject(dataProductName(), objectp);
     if ( LIKELY( sc.isSuccess() ) )
     setWritten();    
+}
+
+//---------------------------------------------------------------------------
+template<typename T>
+T* DataObjectHandle<T>::getOrCreate (){
+
+	T* obj = get(false);
+
+	//object exists, we are done
+	if(obj != NULL){
+		return obj;
+	}
+
+	MsgStream log(m_MS,"DataObjectHandle");
+	log << MSG::DEBUG << "Object " << dataProductName() << " does not exist, creating it" << endmsg;
+
+	//create it
+	obj = new T();
+	put(obj);
+
+	return obj;
 }
                                            
 #endif
