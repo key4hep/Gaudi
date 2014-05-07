@@ -1,6 +1,10 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2014-05-07 - Sebastien Binet
+ - use new PluginService API (with C++11 variadic templates for the factories.)
+ - hide the C++11 constructs from Reflex as GCC-XML parser predates C++11
+
 ============================== GaudiUtils v5r1 ===============================
 ! 2014-03-18 - Ben Couturier
  - Fixed bug #104127: remove hwaf configuration.
