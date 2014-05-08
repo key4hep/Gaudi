@@ -13,6 +13,7 @@
 #include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/DataSvc.h"
+#include "GaudiKernel/ThreadLocalPtr.h"
 #include "tbb/spin_mutex.h"
 #include "tbb/recursive_mutex.h"
 
@@ -69,7 +70,7 @@ namespace {
   };
 }
 
-__thread Partition* s_current(0);
+THREAD_LOCAL_PTR Partition* s_current(0);
 
 /**
  * @class HiveWhiteBoard

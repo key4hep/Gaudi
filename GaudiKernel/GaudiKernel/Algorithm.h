@@ -559,7 +559,6 @@ public:
 	  else
 		  return declareOutput<T>(tag, *doh, address, is_optional, accesstype);
 
-    MsgStream log ( msgSvc() , name() );
   }
   
   /** Declare input data object

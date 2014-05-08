@@ -184,7 +184,7 @@ StatusCode MinimalEventLoopMgr::start()    {
 //--------------------------------------------------------------------------------------------
 StatusCode MinimalEventLoopMgr::stop()    {
 
-  StatusCode sc = StatusCode::SUCCESS;
+  StatusCode sc(StatusCode::SUCCESS,true);
 
   ListAlg::iterator ita;
   // Stop all the TopAlgs. In fact Algorithms are protected against getting
