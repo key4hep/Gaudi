@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-05-09 - Marco Clemencic
+ - Override the reflex_dictionary fragments to change the name of the .cpp
+   generated from genreflex (needed for the PCMs in ROOT 6).
+
 ! 2014-04-17 - Marco Clemencic
  - Ignore TInterpreter::ReadRootmapFile warnings until we find a way to fix
    them. (ROOT6_WORK_AROUND: ReadRootmapCheck)
