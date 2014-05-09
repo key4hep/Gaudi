@@ -29,6 +29,9 @@ $(gensrcdict) $(rootmapdict) :: $(${NAME}_h_dependencies) $(${dictionary}_reflex
 	@-mkdir -p $(dictdir)
 	$(genreflex_cmd) ${FULLNAME} -o $(gensrcdict) $(${NAME}_reflex_options)  \
 			 $(${dictionary}_reflex_options) $(rootmapopts) $(gccxml_cppflags) $(pp_cppflags) $(includes) $(use_pp_cppflags)
+	test -e "$(dictdir)/${dictionary}Dict_rdict.pcm" \
+	   && $(install_command) $(dictdir)/${dictionary}Dict_rdict.pcm ${CMTINSTALLAREA}/$(tag)/lib \
+	   || true
 
 ${CONSTITUENT}clean ::
 	@echo 'Deleting $(gensrcdict) $(rootmapdict)'
