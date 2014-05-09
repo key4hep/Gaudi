@@ -151,11 +151,11 @@ macro(reflex_generate_dictionary dictionary _headerfile _selectionfile)
     set(headerfiles ${CMAKE_CURRENT_SOURCE_DIR}/${_headerfile})
   endif()
 
-  set(gensrcdict ${dictionary}_dict.cpp)
+  set(gensrcdict ${dictionary}Dict.cpp)
 
   if(ARG_SPLIT_CLASSDEF)
     set(ARG_OPTIONS ${ARG_OPTIONS} --split=classdef)
-    set(gensrcclassdef ${dictionary}_dict_classdef.cpp)
+    set(gensrcclassdef ${dictionary}Dict_classdef.cpp)
   else()
     set(gensrcclassdef)
   endif()
@@ -191,7 +191,6 @@ macro(reflex_generate_dictionary dictionary _headerfile _selectionfile)
   add_custom_target(${dictionary}Gen ALL DEPENDS ${gensrcdict} ${rootmapname} ${gensrcclassdef})
 
   set_property(TARGET ${dictionary}Gen PROPERTY ROOTMAPFILE ${rootmapname})
-
 endmacro()
 
 #-------------------------------------------------------------------------------

@@ -1819,6 +1819,7 @@ function(gaudi_add_dictionary dictionary header selection)
 
   #----Installation details-------------------------------------------------------
   install(TARGETS ${dictionary}Dict LIBRARY DESTINATION lib OPTIONAL)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}Dict_rdict.pcm DESTINATION lib OPTIONAL)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
