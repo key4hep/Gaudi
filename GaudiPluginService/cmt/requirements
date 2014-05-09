@@ -25,6 +25,10 @@ macro_append listcomponentslinkopts " -ldl "
 macro listcomponents_cmd listcomponents.exe
 make_fragment listcomponents -header=listcomponents_header
 
+# we need to be able to determine if PluginSvc is available globally
+macro_append pp_cppflags " -DHAVE_GAUDI_PLUGINSVC "
+macro_append pp_cflags   " -DHAVE_GAUDI_PLUGINSVC "
+
 private
 macro_append pp_cppflags " -DGaudiPluginService_EXPORTS "
 macro_append pp_cppflags " -DGAUDI_REFLEX_COMPONENT_ALIASES "
