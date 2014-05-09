@@ -2228,7 +2228,7 @@ function(gaudi_generate_componentslist library)
   add_custom_command(OUTPUT ${componentsfile}
                      COMMAND ${env_cmd}
                        --xml ${env_xml}
-		             ${listcomponents_cmd} ${libname} > ${componentsfile}
+		             ${listcomponents_cmd} --output ${componentsfile} ${libname}
                      DEPENDS ${library} listcomponents)
   add_custom_target(${library}ComponentsList ALL DEPENDS ${componentsfile})
   # Notify the project level target
