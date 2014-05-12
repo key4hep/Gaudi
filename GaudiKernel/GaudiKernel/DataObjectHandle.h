@@ -83,7 +83,7 @@ private:
   bool m_goodType;
   DataObjectHandle(const DataObjectHandle& );
   DataObjectHandle& operator=(const DataObjectHandle& );
-  
+
 };
 
 //---------------------------------------------------------------------------
@@ -259,10 +259,15 @@ void DataObjectHandle<T>::put (T *objectp){
 template<typename T>
 T* DataObjectHandle<T>::getOrCreate (){
 
+	//this process needs to be locking for multi-threaded applications
+	//lock(); --> done in caller
+
 	T* obj = get(false);
 
 	//object exists, we are done
 	if(obj != NULL){
+
+		//unlock();
 		return obj;
 	}
 
@@ -273,6 +278,7 @@ T* DataObjectHandle<T>::getOrCreate (){
 	obj = new T();
 	put(obj);
 
+	//unlock();
 	return obj;
 }
                                            
