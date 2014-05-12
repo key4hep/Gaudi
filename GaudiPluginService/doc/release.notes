@@ -4,6 +4,11 @@
 ! Purpose     : Provide a generic plugin service.
 !-----------------------------------------------------------------------------
 
+! 2014-05-09 - Marco Clemencic
+ - Improved command line of listcomponents: now it accepts --output and --help.
+ - Modified the listcomponents CMT document to use --output instead of output
+   redirection. Fixes bug #104455
+
 ========================== GaudiPluginService v1r0 ===========================
 ! 2014-02-03 - Marco Clemencic
  - Added support for Reflex names for components, enabled with the compile flag

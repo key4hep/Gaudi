@@ -1,0 +1,67 @@
+# File: cmt/fragments/reflex_dictionary_generator
+# Author: Pere Mato
+
+# Makefile fragment to generate the Reflex dictionary together with a local rootmap file
+# and a merged file in the installation area if InstallArea is present
+
+
+.PHONY: ${CONSTITUENT} ${CONSTITUENT}clean MergeRootMap MergeRootMapclean
+
+ppcmd=-I
+
+dictdir=../$(tag)/dict/${dictionary}
+gensrcdict=$(dictdir)/${dictionary}Dict.cpp
+ifdef ${dictionary}_rootmap
+  rootmapname=${dictionary}Dict.rootmap
+  rootmapdict=$(dictdir)/$(rootmapname)
+  rootmapopts=--rootmap=$(rootmapname) --rootmap-lib=$(library_prefix)${dictionary}Dict
+else
+  rootmapdict=
+endif
+
+${CONSTITUENT} ::  $(gensrcdict) $(rootmapdict) MergeRootMap
+	@:
+
+.NOTPARALLEL: $(gensrcdict) $(rootmapdict)
+
+$(gensrcdict) $(rootmapdict) :: $(${NAME}_h_dependencies) $(${dictionary}_reflex_selection_file)
+	echo $@ ${NAME}${FILESUFFIX}
+	@-mkdir -p $(dictdir)
+	$(genreflex_cmd) ${FULLNAME} -o $(gensrcdict) $(${NAME}_reflex_options)  \
+			 $(${dictionary}_reflex_options) $(rootmapopts) $(gccxml_cppflags) $(pp_cppflags) $(includes) $(use_pp_cppflags)
+	test -e "$(dictdir)/${dictionary}Dict_rdict.pcm" \
+	   && $(install_command) $(dictdir)/${dictionary}Dict_rdict.pcm ${CMTINSTALLAREA}/$(tag)/lib \
+	   || true
+
+${CONSTITUENT}clean ::
+	@echo 'Deleting $(gensrcdict) $(rootmapdict)'
+	@$(uninstall_command) $(gensrcdict) $(rootmapdict)
+
+
+#---Dealing with merging the rootmap files
+ifdef  ${dictionary}_rootmap
+
+mergedrootmapdir=$(dir $(${dictionary}_rootmap))
+mergedrootmap=$(${dictionary}_rootmap)
+stamprootmap=$(mergedrootmapdir)/$(rootmapname).stamp
+
+MergeRootMap :: $(stamprootmap) $(mergedrootmap)
+	@:
+
+$(stamprootmap) $(mergedrootmap) :: $(rootmapdict)
+	@echo "Running merge_rootmap  ${CONSTITUENT}"
+	@-mkdir -p $(mergedrootmapdir)
+	@touch $(mergedrootmap)
+	$(merge_rootmap_cmd) --do-merge --input-file $(rootmapdict) --merged-file $(mergedrootmap)
+
+${CONSTITUENT}clean ::
+	@echo "Un-merging rootmap"
+	@$(merge_rootmap_cmd) --un-merge --input-file $(rootmapdict) --merged-file $(mergedrootmap)
+	@$(uninstall_command) $(stamprootmap)
+
+else
+
+MergeRootMap ::
+        @:
+
+endif

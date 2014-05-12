@@ -1783,7 +1783,8 @@ endmacro()
 # gaudi_add_dictionary(dictionary header selection
 #                      LINK_LIBRARIES ...
 #                      INCLUDE_DIRS ...
-#                      OPTIONS ...)
+#                      OPTIONS ...
+#                      [SPLIT_CLASSDEF])
 #
 # Find all the CMakeLists.txt files in the sub-directories and add their
 # directories to the variable.
@@ -1795,7 +1796,7 @@ function(gaudi_add_dictionary dictionary header selection)
     message(FATAL_ERROR "ROOT cannot produce dictionaries with genreflex.")
   endif()
   # this function uses an extra option: 'OPTIONS'
-  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS;OPTIONS" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "SPLIT_CLASSDEF" "" "LIBRARIES;LINK_LIBRARIES;INCLUDE_DIRS;OPTIONS" ${ARGN})
   gaudi_common_add_build(${ARG_UNPARSED_ARGUMENTS} LIBRARIES ${ARG_LIBRARIES} LINK_LIBRARIES ${ARG_LINK_LIBRARIES} INCLUDE_DIRS ${ARG_INCLUDE_DIRS})
 
   # FIXME: With ROOT 6 the '_Instantiations' dummy class used in the
@@ -1807,7 +1808,13 @@ function(gaudi_add_dictionary dictionary header selection)
   # override the genreflex call to wrap it in the right environment
   set(ROOT_genreflex_CMD ${env_cmd} --xml ${env_xml} ${ROOT_genreflex_CMD})
 
-  reflex_dictionary(${dictionary} ${header} ${selection} LINK_LIBRARIES ${ARG_LINK_LIBRARIES} OPTIONS ${ARG_OPTIONS})
+  # we need to forward the SPLIT_CLASSDEF option to reflex_dictionary()
+  if(ARG_SPLIT_CLASSDEF)
+    set(ARG_SPLIT_CLASSDEF SPLIT_CLASSDEF)
+  else()
+    set(ARG_SPLIT_CLASSDEF)
+  endif()
+  reflex_dictionary(${dictionary} ${header} ${selection} LINK_LIBRARIES ${ARG_LINK_LIBRARIES} OPTIONS ${ARG_OPTIONS} ${ARG_SPLIT_CLASSDEF})
   set_target_properties(${dictionary}Dict PROPERTIES COMPILE_FLAGS "-Wno-overloaded-virtual")
   _gaudi_detach_debinfo(${dictionary}Dict)
 
@@ -1819,6 +1826,7 @@ function(gaudi_add_dictionary dictionary header selection)
 
   #----Installation details-------------------------------------------------------
   install(TARGETS ${dictionary}Dict LIBRARY DESTINATION lib OPTIONAL)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}Dict_rdict.pcm DESTINATION lib OPTIONAL)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -2228,7 +2236,7 @@ function(gaudi_generate_componentslist library)
   add_custom_command(OUTPUT ${componentsfile}
                      COMMAND ${env_cmd}
                        --xml ${env_xml}
-		             ${listcomponents_cmd} ${libname} > ${componentsfile}
+		             ${listcomponents_cmd} --output ${componentsfile} ${libname}
                      DEPENDS ${library} listcomponents)
   add_custom_target(${library}ComponentsList ALL DEPENDS ${componentsfile})
   # Notify the project level target
