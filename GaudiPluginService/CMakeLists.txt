@@ -30,14 +30,14 @@ gaudi_add_unit_test(Test_GaudiPluginService_UseCases tests/src/UseCases.cpp
                     TYPE Boost)
 
 gaudi_add_test(listcomponents.usage
-               COMMAND $<TARGET_FILE:listcomponents>
+               COMMAND $<TARGET_FILE_NAME:listcomponents>
                PASSREGEX "Usage:")
 gaudi_add_test(listcomponents.help1
-               COMMAND $<TARGET_FILE:listcomponents> -h
+               COMMAND $<TARGET_FILE_NAME:listcomponents> -h
                PASSREGEX "Options:")
 gaudi_add_test(listcomponents.help2
-               COMMAND $<TARGET_FILE:listcomponents> --help
+               COMMAND $<TARGET_FILE_NAME:listcomponents> --help
                PASSREGEX "Options:")
 gaudi_add_test(listcomponents.wrong_args
-               COMMAND $<TARGET_FILE:listcomponents> -o
+               COMMAND $<TARGET_FILE_NAME:listcomponents> -o
                PASSREGEX "ERROR: missing argument")
