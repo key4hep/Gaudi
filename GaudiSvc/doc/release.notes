@@ -1,6 +1,11 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2014-04-24 - Charles Leggett
+ - updated generate_rootmap to generate_componentlist
+
+M	cmt/requirements
+
 ! 2014-02-21 - Marco Clemencic
  - Modified the genconfig_add_extraModules pattern.
 

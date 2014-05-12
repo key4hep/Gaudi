@@ -1,6 +1,8 @@
 #include "GaudiKernel/ContextSpecificPtr.h"
+#include "GaudiKernel/ThreadLocalPtr.h"
 
-static thread_local Gaudi::Hive::ContextIdType s_currentContextId(0);
+
+static THREAD_LOCAL_PTR Gaudi::Hive::ContextIdType s_currentContextId(0);
 
 namespace Gaudi {
   namespace Hive {
