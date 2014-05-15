@@ -30,6 +30,10 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON)
 #set(CMAKE_SKIP_BUILD_RPATH TRUE)
 
+# Regular expression used to parse version strings in LHCb and ATLAS.
+# It handles versions strings like "vXrY[pZ[aN]]" and "1.2.3.4"
+set(GAUDI_VERSION_REGEX "v?([0-9]+)[r.]([0-9]+)([p.]([0-9]+)(([a-z.])([0-9]+))?)?")
+
 if (GAUDI_BUILD_PREFIX_CMD)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${GAUDI_BUILD_PREFIX_CMD}")
   message(STATUS "Prefix build commands with '${GAUDI_BUILD_PREFIX_CMD}'")
@@ -93,6 +97,7 @@ find_package(PythonInterp)
 #-------------------------------------------------------------------------------
 # gaudi_project(project version
 #               [USE proj1 vers1 [proj2 vers2 ...]]
+#               [TOOLS tool vers]
 #               [DATA package [VERSION vers] [package [VERSION vers] ...]]
 #               [FORTRAN])
 #
@@ -103,6 +108,9 @@ find_package(PythonInterp)
 # The USE list can be used to declare which Gaudi-based projects are required by
 # the broject being compiled.
 #
+# The TOOLS list can be used to declare the tools version to be used. These contribute to
+# the CMAKE_PREFIX_PATH and CMAKE_MODULE_PATH but are not themselves treated as projects.
+#
 # The DATA list can be used to declare the data packages requried by the project
 # runtime.
 #
@@ -110,7 +118,7 @@ find_package(PythonInterp)
 #-------------------------------------------------------------------------------
 macro(gaudi_project project version)
   #--- Parse the optional arguments
-  CMAKE_PARSE_ARGUMENTS(PROJECT "FORTRAN" "" "USE;DATA" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(PROJECT "FORTRAN" "" "USE;DATA;TOOLS" ${ARGN})
   if (PROJECT_UNPARSED_ARGUMENTS)
     message(FATAL_ERROR "Wrong arguments.")
   endif()
@@ -128,16 +136,17 @@ macro(gaudi_project project version)
   #--- Define the version of the project - can be used to generate sources,
   set(CMAKE_PROJECT_VERSION ${version} CACHE STRING "Version of the project")
 
-  if(NOT CMAKE_PROJECT_VERSION MATCHES "^HEAD.*")
-    string(REGEX MATCH "v?([0-9]+)[r.]([0-9]+)([p.]([0-9]+))?" _version ${CMAKE_PROJECT_VERSION})
+  if(CMAKE_PROJECT_VERSION MATCHES "${GAUDI_VERSION_REGEX}")
     set(CMAKE_PROJECT_VERSION_MAJOR ${CMAKE_MATCH_1} CACHE INTERNAL "Major version of project")
     set(CMAKE_PROJECT_VERSION_MINOR ${CMAKE_MATCH_2} CACHE INTERNAL "Minor version of project")
     set(CMAKE_PROJECT_VERSION_PATCH ${CMAKE_MATCH_4} CACHE INTERNAL "Patch version of project")
+    set(CMAKE_PROJECT_VERSION_TWEAK ${CMAKE_MATCH_7} CACHE INTERNAL "Tweak version of project")
   else()
-    # 'HEAD' version is special
+    # Treat everything else (including HEAD, rel_1, etc) as HEAD
     set(CMAKE_PROJECT_VERSION_MAJOR 999)
     set(CMAKE_PROJECT_VERSION_MINOR 999)
     set(CMAKE_PROJECT_VERSION_PATCH 0)
+    set(CMAKE_PROJECT_VERSION_TWEAK 0)
   endif()
 
   #--- Project Options and Global settings----------------------------------------------------------
@@ -157,11 +166,11 @@ macro(gaudi_project project version)
 
   if(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin CACHE STRING
-	   "Single build output directory for all executables" FORCE)
+        "Single build output directory for all executables" FORCE)
   endif()
   if(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE STRING
-	   "Single build output directory for all libraries" FORCE)
+        "Single build output directory for all libraries" FORCE)
   endif()
 
   set(env_xml ${CMAKE_BINARY_DIR}/${project}BuildEnvironment.xml
@@ -360,6 +369,8 @@ macro(gaudi_project project version)
   foreach(package ${packages})
     math(EXPR package_idx "${package_idx} + 1")
     message(STATUS "Adding directory ${package} (${package_idx}/${packages_count})")
+    #message(STATUS "CMAKE_PREFIX_PATH -> ${CMAKE_PREFIX_PATH}")
+    #message(STATUS "CMAKE_MODULE_PATH -> ${CMAKE_MODULE_PATH}")
     add_subdirectory(${package})
   endforeach()
   file(APPEND ${CMAKE_BINARY_DIR}/subdirs_deps.dot "}\n")
@@ -436,6 +447,13 @@ macro(gaudi_project project version)
         PREPEND ROOT_INCLUDE_PATH \${.}/include
         PREPEND PYTHONPATH \${.}/python
         PREPEND PYTHONPATH \${.}/python/lib-dynload)
+  if(GAUDI_ATLAS)
+    set(project_environment ${project_environment}
+        PREPEND JOBOPTSEARCHPATH \${.}/jobOptions
+        PREPEND ROOTMAPSEARCHPATH \${.}/rootmap
+        PREPEND DATAPATH \${.}/share
+        PREPEND XMLPATH \${.}/XML)
+  endif()
   #     (installation dirs added to build env to be able to test pre-built bins)
   set(project_build_environment ${project_build_environment}
         PREPEND PATH ${CMAKE_INSTALL_PREFIX}/scripts
@@ -444,6 +462,13 @@ macro(gaudi_project project version)
         PREPEND ROOT_INCLUDE_PATH ${CMAKE_INSTALL_PREFIX}/include
         PREPEND PYTHONPATH ${CMAKE_INSTALL_PREFIX}/python
         PREPEND PYTHONPATH ${CMAKE_INSTALL_PREFIX}/python/lib-dynload)
+  if(GAUDI_ATLAS)
+    set(project_build_environment ${project_build_environment}
+        PREPEND JOBOPTSEARCHPATH ${CMAKE_INSTALL_PREFIX}/jobOptions
+        PREPEND ROOTMAPSEARCHPATH ${CMAKE_INSTALL_PREFIX}/rootmap
+        PREPEND DATAPATH ${CMAKE_INSTALL_PREFIX}/share
+        PREPEND XMLPATH ${CMAKE_INSTALL_PREFIX}/XML)
+  endif()
 
   message(STATUS "  environment for local subdirectories")
   #   - project root (for relocatability)
@@ -522,6 +547,13 @@ __path__ = [d for d in [os.path.join(d, '${packname}') for d in sys.path if d]
       PREPEND ROOT_INCLUDE_PATH ${CMAKE_BINARY_DIR}/include
       PREPEND PYTHONPATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
       PREPEND PYTHONPATH ${CMAKE_BINARY_DIR}/python)
+  if(GAUDI_ATLAS)
+	set(project_build_environment ${project_build_environment}
+        PREPEND JOBOPTSEARCHPATH ${CMAKE_BINARY_DIR}/jobOptions
+        PREPEND ROOTMAPSEARCHPATH ${CMAKE_BINARY_DIR}/rootmap
+        PREPEND DATAPATH ${CMAKE_BINARY_DIR}/share
+        PREPEND XMLPATH ${CMAKE_BINARY_DIR}/XML)
+  endif()
 
   # - produce environment XML description
   #   release version
@@ -610,24 +642,27 @@ macro(_gaudi_use_other_projects)
     list(GET ARGN_ 1 other_project_version)
     list(REMOVE_AT ARGN_ 0 1)
 
-    if(NOT other_project_version MATCHES "^HEAD.*")
-      string(REGEX MATCH "v?([0-9]+)[r.]([0-9]+)([p.]([0-9]+))?" _version ${other_project_version})
-
-      set(other_project_cmake_version ${CMAKE_MATCH_1}.${CMAKE_MATCH_2})
-      if(NOT CMAKE_MATCH_4 STREQUAL "")
-        set(other_project_cmake_version ${other_project_cmake_version}.${CMAKE_MATCH_4})
-      endif()
+    #message(STATUS "project -> ${other_project}, version -> ${other_project_version}")
+    if(other_project_version MATCHES "${GAUDI_VERSION_REGEX}")
+      set(other_project_cmake_version "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}")
+      foreach(_i 4 7)
+        if(CMAKE_MATCH_${_i})
+          set(other_project_cmake_version "${other_project_cmake_version}.${CMAKE_MATCH_${_i}}")
+        endif()
+      endforeach()
     else()
-      # "HEAD" is a special version id (mapped to v999r999).
-      set(other_project_cmake_version 999.999)
+      # Anything not recognised as a LHCb or ATLAS numbered version (mapped to 999.999).
+      set(other_project_cmake_version "999.999")
     endif()
+    #message(STATUS "other_project_cmake_version -> ${other_project_cmake_version}")
 
     if(NOT ${other_project}_FOUND)
       string(TOUPPER ${other_project} other_project_upcase)
       set(suffixes)
       foreach(_s1 ${other_project}
-                 ${other_project_upcase}/${other_project_upcase}_${other_project_version}
-                 ${other_project_upcase})
+                  ${other_project}/${other_project_version}
+                  ${other_project_upcase}/${other_project_upcase}_${other_project_version}
+                  ${other_project_upcase})
         foreach(_s2 "" "/InstallArea")
           foreach(_s3 "" "/${BINARY_TAG}" "/${LCG_platform}" "/${LCG_system}")
             set(suffixes ${suffixes} ${_s1}${_s2}${_s3})
@@ -635,7 +670,9 @@ macro(_gaudi_use_other_projects)
         endforeach()
       endforeach()
       list(REMOVE_DUPLICATES suffixes)
-      #message(STATUS "suffixes ${suffixes}")
+      #message(STATUS "project: ${other_project} version: ${${other_project}_version} dir: ${${other_project}_DIR} cmake: ${other_project_cmake_version}")
+      #message(STATUS "search_path: ${projects_search_path}")
+      #message(STATUS "suffixes: ${suffixes}")
       find_package(${other_project} ${other_project_cmake_version}
                    HINTS ${projects_search_path}
                    PATH_SUFFIXES ${suffixes})
@@ -2083,6 +2120,8 @@ function(gaudi_install_headers)
               PATTERN "*.icpp"
               PATTERN "*.hpp"
               PATTERN "*.hxx"
+              PATTERN "*.icc"
+              PATTERN "*.inl"
               PATTERN "CVS" EXCLUDE
               PATTERN ".svn" EXCLUDE)
     if(NOT IS_ABSOLUTE ${hdr_dir})
@@ -2236,7 +2275,7 @@ function(gaudi_generate_componentslist library)
   add_custom_command(OUTPUT ${componentsfile}
                      COMMAND ${env_cmd}
                        --xml ${env_xml}
-		             ${listcomponents_cmd} --output ${componentsfile} ${libname}
+                     ${listcomponents_cmd} --output ${componentsfile} ${libname}
                      DEPENDS ${library} listcomponents)
   add_custom_target(${library}ComponentsList ALL DEPENDS ${componentsfile})
   # Notify the project level target
@@ -2253,11 +2292,12 @@ endfunction()
 macro(gaudi_generate_project_config_version_file)
   message(STATUS "Generating ${CMAKE_PROJECT_NAME}ConfigVersion.cmake")
 
-  if(CMAKE_PROJECT_VERSION_PATCH)
-    set(vers_id ${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}.${CMAKE_PROJECT_VERSION_PATCH})
-  else()
-    set(vers_id ${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR})
-  endif()
+  set(vers_id "${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}")
+  foreach(_i PATCH TWEAK)
+    if(CMAKE_PROJECT_VERSION_${_i})
+      set(vers_id "${vers_id}.${CMAKE_PROJECT_VERSION_${_i}}")
+    endif()
+  endforeach()
 
   file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/config)
   file(WRITE ${CMAKE_BINARY_DIR}/config/${CMAKE_PROJECT_NAME}ConfigVersion.cmake
@@ -2759,7 +2799,7 @@ endmacro()
 #-------------------------------------------------------------------------------
 function(gaudi_generate_project_manifest filename project version)
   # FIXME: partial replication of function argument parsing done in gaudi_project()
-  CMAKE_PARSE_ARGUMENTS(PROJECT "" "" "USE;DATA" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(PROJECT "" "" "USE;DATA;TOOLS" ${ARGN})
   # Non need to check consistency because it's already done in gaudi_project().
 
   #header

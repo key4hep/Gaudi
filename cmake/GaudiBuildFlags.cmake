@@ -266,3 +266,7 @@ if(LCG_COMP STREQUAL gcc AND LCG_COMPVERS STREQUAL 43)
   string(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
   string(REPLACE "-pedantic" "" CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}")
 endif()
+
+if(GAUDI_ATLAS)
+  include(AthenaBuildFlags)
+endif()
