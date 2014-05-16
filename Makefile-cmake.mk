@@ -66,7 +66,9 @@ BUILDDIR := $(CURDIR)/build.$(BINARY_TAG)
 
 ifneq ($(NINJA),)
   ifeq ($(USE_MAKE),)
-    USE_NINJA := 1
+    ifeq ($(shell grep "FORTRAN\|NO_NINJA" CMakeLists.txt),)
+      USE_NINJA := 1
+    endif
   endif
 endif
 
