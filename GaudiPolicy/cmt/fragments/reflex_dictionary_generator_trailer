@@ -1,2 +1,0 @@
-${CONSTITUENT}clean ::
-	@/bin/rm -rf ../$(tag)/dict

@@ -1439,8 +1439,6 @@ make_fragment install_resources -header=install_resources_header
 # must have a different name in each dictionary.
 #-------------------------------------------------------------------
 use Reflex v* LCG_Interfaces -no_auto_imports
-make_fragment reflex_dictionary_generator -header=reflex_dictionary_generator_header \
-              -trailer=reflex_dictionary_generator_trailer -dependencies
 pattern reflex_dictionary \
   apply_pattern reflex_dictionary_src dictionary=<dictionary> headerfiles=<headerfiles> selectionfile=<selectionfile> options="<options> -U_Instantiations -D_Instantiations=<dictionary>_Instantiations" ;\
   apply_pattern reflex_dictionary_lib dictionary=<dictionary> imports=<imports>

@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-05-16 - Marco Clemencic
+ - Removed the overridden reflex_dictionary fragments (changes now in LCGCMT).
+
 ! 2014-05-09 - Marco Clemencic
  - Modified reflex_dictionary fragments to install the generated PCMs, if any.
 
