@@ -28,6 +28,7 @@ make_fragment listcomponents -header=listcomponents_header
 # we need to be able to determine if PluginSvc is available globally
 macro_append pp_cppflags " -DHAVE_GAUDI_PLUGINSVC "
 macro_append pp_cflags   " -DHAVE_GAUDI_PLUGINSVC "
+apply_tag HAVE_GAUDI_PLUGINSVC
 
 private
 macro_append pp_cppflags " -DGaudiPluginService_EXPORTS "

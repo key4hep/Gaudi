@@ -4,6 +4,9 @@
 ! Purpose     : Provide a generic plugin service.
 !-----------------------------------------------------------------------------
 
+! 2014-05-19 - Charles Leggett
+ - add HAVE_GAUDI_PLUGINSVC tag for cmt requirements
+
 ! 2014-05-09 - Charles Leggett
  - add macro HAVE_GAUDI_PLUGINSVC so external packages can see if it's available
 
