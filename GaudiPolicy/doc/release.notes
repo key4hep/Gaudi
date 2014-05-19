@@ -3,6 +3,8 @@ package manager: Marco Clemencic
 
 ! 2014-05-19 - Charles Leggett
  - fix use_if cmt pattern
+ - alias cmt pattern generate_rootmap to generate_componentslist for backward
+   compatibility
 
 ! 2014-04-17 - Marco Clemencic
  - Ignore TInterpreter::ReadRootmapFile warnings until we find a way to fix

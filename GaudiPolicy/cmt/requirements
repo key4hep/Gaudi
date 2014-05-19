@@ -489,6 +489,10 @@ pattern generate_componentslist \
     macro_append <library>MergeComponentsList_dependencies " <library>ComponentsList " ; \
   end_private
 
+# TEMPORARY alias for backward compatibility in ATLAS. FIXME!
+pattern generate_rootmap \
+  apply_pattern generate_componentslist library=<library> group=<group>
+
 
 # Tags and Global macros=====================================================
 
