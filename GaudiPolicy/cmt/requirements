@@ -1489,7 +1489,7 @@ set GAUDI_DOXY_HOME $(GAUDI_home)/GaudiRelease/doc
 # eg:  use_if pkg=Reflex tag=useReflex ver="*" root="LCG_Interfaces"
 #
 pattern use_if \
-    document use_if pkg=<pkg> tag=<tag> ver=<ver> root=<root> opt="<opt>" ; \
+#    document use_if pkg=<pkg> tag=<tag> ver=<ver> root=<root> opt="<opt>" ; \
     private ; \
     macro use_<pkg>_if "" <tag> "<pkg> <ver> <root> <opt>" ; \
     end_private ; \

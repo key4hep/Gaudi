@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-05-19 - Charles Leggett
+ - fix use_if cmt pattern
+
 ! 2014-04-17 - Marco Clemencic
  - Ignore TInterpreter::ReadRootmapFile warnings until we find a way to fix
    them. (ROOT6_WORK_AROUND: ReadRootmapCheck)
