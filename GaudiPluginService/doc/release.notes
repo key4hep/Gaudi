@@ -4,6 +4,8 @@
 ! Purpose     : Provide a generic plugin service.
 !-----------------------------------------------------------------------------
 
+========================== GaudiPluginService v1r1 ===========================
+
 ! 2014-05-19 - Charles Leggett
  - add HAVE_GAUDI_PLUGINSVC tag for cmt requirements
 
