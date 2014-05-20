@@ -1,6 +1,8 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+============================= GaudiPolicy v14r2 ==============================
+
 ! 2014-05-19 - Charles Leggett
  - fix use_if cmt pattern
  - alias cmt pattern generate_rootmap to generate_componentslist for backward
