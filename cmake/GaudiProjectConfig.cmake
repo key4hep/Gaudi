@@ -1395,11 +1395,37 @@ function(gaudi_generate_configurables library)
     set(genconf_opts ${genconf_opts} "--user-module=${ARG_USER_MODULE}")
   endif()
 
+  # check if genconf supports --no-init
+  if(NOT DEFINED GENCONF_WITH_NO_INIT)
+    #message(STATUS "Check if genconf supports --no-init ...")
+    # FIXME: (MCl) I do not like this, but I need a quick hack
+    if(EXISTS ${CMAKE_SOURCE_DIR}/GaudiKernel1/src/Util/genconf.cpp)
+      #message(STATUS "... reading ${CMAKE_SOURCE_DIR}/GaudiKernel/src/Util/genconf.cpp ...")
+      file(READ ${CMAKE_SOURCE_DIR}/GaudiKernel/src/Util/genconf.cpp _genconf_details)
+    else()
+      #message(STATUS "... running genconf --help ...")
+      execute_process(COMMAND ${env_cmd} --xml ${env_xml}
+                              ${genconf_cmd} --help
+                      OUTPUT_VARIABLE _genconf_details)
+    endif()
+    if(_genconf_details MATCHES "no-init")
+      set(GENCONF_WITH_NO_INIT YES)
+    else()
+      set(GENCONF_WITH_NO_INIT NO)
+    endif()
+    set(GENCONF_WITH_NO_INIT "${GENCONF_WITH_NO_INIT}"
+        CACHE BOOL "Wether the genconf command supports the options --no-init")
+    #message(STATUS "... ${GENCONF_WITH_NO_INIT}")
+  else()
+    if(GENCONF_WITH_NO_INIT)
+      set(genconf_opts "--no-init" ${genconf_opts})
+    endif()
+  endif()
+
   add_custom_command(
     OUTPUT ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py
     COMMAND ${env_cmd} --xml ${env_xml}
               ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
-                --no-init
                 ${genconf_opts}
                 -i ${library}
     DEPENDS ${library} ${deps})
