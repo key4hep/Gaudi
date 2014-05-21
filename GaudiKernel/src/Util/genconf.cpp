@@ -291,7 +291,7 @@ int main ( int argc, char** argv )
     po::notify(vm);
   }
   catch ( po::error& err ) {
-    cout << "ERR0R: error detected while parsing command options: "<< err.what() << endl;
+    cout << "ERROR: error detected while parsing command options: "<< err.what() << endl;
     return EXIT_FAILURE;
   }
 
