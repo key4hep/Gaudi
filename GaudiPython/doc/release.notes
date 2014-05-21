@@ -2,6 +2,9 @@ Package: GaudiPython
 Package manager : Marco Clemencic
 
 ! 2014-05-21 - Marco Clemencic
+ - Moved dictionary for InterfaceID from GaudiPython to GaudiKernel.
+
+! 2014-05-21 - Marco Clemencic
  - Moved dictionary for GaudiHandle*Property from GaudiPython to GaudiKernel.
 
 ============================= GaudiPython v13r1 ==============================
