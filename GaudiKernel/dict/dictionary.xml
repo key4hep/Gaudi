@@ -16,6 +16,8 @@
   <class name="GaudiHandleInfo"/>
   <class name="GaudiHandleBase"/>
   <class name="GaudiHandleArrayBase"/>
+  <class name="GaudiHandleProperty"/>
+  <class name="GaudiHandleArrayProperty"/>  
 
   <class name="LinkManager"/>
   <class name="LinkManager::Link">

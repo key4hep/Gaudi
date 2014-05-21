@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2014-05-21 - Marco Clemencic
+ - Moved dictionary for GaudiHandle*Property from GaudiPython to GaudiKernel.
+
 ! 2014-03-21 - Marco Clemencic, Rolf Seuster, David Quarrie
  - Re-enabled the DECLARE_FACTORY_ENTRIES family of macros (needed by ATLAS).
 
