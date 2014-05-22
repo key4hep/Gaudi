@@ -514,17 +514,32 @@ macro(gaudi_project project version)
       # we need to add a special fake __init__.py that allow import of modules
       # from different copies of the package
       get_filename_component(packname ${package} NAME)
-      file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/python/${packname})
-      file(WRITE ${CMAKE_BINARY_DIR}/python/${packname}/__init__.py "
+      # find python packages in the python directory of the subdir
+      file(GLOB_RECURSE pypacks
+           RELATIVE ${CMAKE_SOURCE_DIR}/${package}/python
+           ${CMAKE_SOURCE_DIR}/${package}/python/*/__init__.py)
+      # sanitize the list (we only need the directory name)
+      string(REPLACE "//" "/" pypacks "${pypacks}")
+      string(REPLACE "/__init__.py" "" pypacks "${pypacks}")
+      #message(STATUS "pypacks -> ${pypacks}")
+      # add the top package if it was not found
+      set(pypacks ${packname} ${pypacks})
+      list(REMOVE_DUPLICATES pypacks)
+      # create all the __init__.py files
+      foreach(pypack ${pypacks})
+        message(STATUS "creating local ${pypack}/__init__.py")
+        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/python/${pypack})
+        file(WRITE ${CMAKE_BINARY_DIR}/python/${pypack}/__init__.py "
 import os, sys
-__path__ = [d for d in [os.path.join(d, '${packname}') for d in sys.path if d]
+__path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
             if os.path.exists(d) or 'python.zip' in d]
 ")
-      if(EXISTS ${CMAKE_SOURCE_DIR}/${package}/python/${packname}/__init__.py)
-        file(READ ${CMAKE_SOURCE_DIR}/${package}/python/${packname}/__init__.py _py_init_content)
-        file(APPEND ${CMAKE_BINARY_DIR}/python/${packname}/__init__.py
-             "${_py_init_content}")
-      endif()
+        if(EXISTS ${CMAKE_SOURCE_DIR}/${package}/python/${pypack}/__init__.py)
+          file(READ ${CMAKE_SOURCE_DIR}/${package}/python/${pypack}/__init__.py _py_init_content)
+          file(APPEND ${CMAKE_BINARY_DIR}/python/${pypack}/__init__.py
+               "${_py_init_content}")
+        endif()
+      endforeach()
     endif()
 
     if(EXISTS ${CMAKE_SOURCE_DIR}/${package}/scripts)
