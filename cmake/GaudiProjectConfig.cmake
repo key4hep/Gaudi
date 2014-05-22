@@ -1395,16 +1395,34 @@ function(gaudi_generate_configurables library)
     set(genconf_opts ${genconf_opts} "--user-module=${ARG_USER_MODULE}")
   endif()
 
+  # Check if we need to produce our own __init__.py (i.e. it is not already
+  # installed with the python modules).
+  # Note: no need to do anything if we already have configurables
+  get_property(has_configurables DIRECTORY PROPERTY has_configurables)
+  if(NOT has_configurables)
+    get_property(python_modules DIRECTORY PROPERTY has_python_modules)
+    list(FIND python_modules ${package} got_pkg_module)
+    if(got_pkg_module LESS 0)
+      # we need to install our __init__.py
+      set(genconf_needs_init TRUE)
+    else()
+      set(genconf_needs_init FALSE)
+    endif()
+  endif()
+
   # check if genconf supports --no-init
   if(NOT DEFINED GENCONF_WITH_NO_INIT)
     #message(STATUS "Check if genconf supports --no-init ...")
     # FIXME: (MCl) I do not like this, but I need a quick hack
-    if(EXISTS ${CMAKE_SOURCE_DIR}/GaudiKernel1/src/Util/genconf.cpp)
+    if(EXISTS ${CMAKE_SOURCE_DIR}/GaudiKernel/src/Util/genconf.cpp)
       #message(STATUS "... reading ${CMAKE_SOURCE_DIR}/GaudiKernel/src/Util/genconf.cpp ...")
       file(READ ${CMAKE_SOURCE_DIR}/GaudiKernel/src/Util/genconf.cpp _genconf_details)
     else()
+      get_filename_component(genconf_dir ${genconf_cmd} PATH)
+      get_filename_component(genconf_dir ${genconf_dir} PATH)
+      file(GLOB genconf_env "${genconf_dir}/*Environment.xml")
       #message(STATUS "... running genconf --help ...")
-      execute_process(COMMAND ${env_cmd} --xml ${env_xml}
+      execute_process(COMMAND ${env_cmd} --xml ${genconf_env}
                               ${genconf_cmd} --help
                       OUTPUT_VARIABLE _genconf_details)
     endif()
@@ -1414,16 +1432,24 @@ function(gaudi_generate_configurables library)
       set(GENCONF_WITH_NO_INIT NO)
     endif()
     set(GENCONF_WITH_NO_INIT "${GENCONF_WITH_NO_INIT}"
-        CACHE BOOL "Wether the genconf command supports the options --no-init")
+        CACHE BOOL "Whether the genconf command supports the options --no-init")
     #message(STATUS "... ${GENCONF_WITH_NO_INIT}")
   else()
     if(GENCONF_WITH_NO_INIT)
-      set(genconf_opts "--no-init" ${genconf_opts})
+      if(NOT genconf_needs_init)
+        set(genconf_opts "--no-init" ${genconf_opts})
+      endif()
     endif()
   endif()
 
+  set(genconf_products ${outdir}/${library}_confDb.py
+                       ${outdir}/${library}Conf.py)
+  if(genconf_needs_init OR NOT GENCONF_WITH_NO_INIT)
+    set(genconf_products ${genconf_products} ${outdir}/__init__.py)
+  endif()
+
   add_custom_command(
-    OUTPUT ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py
+    OUTPUT ${genconf_products}
     COMMAND ${env_cmd} --xml ${env_xml}
               ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
                 ${genconf_opts}
@@ -1439,26 +1465,7 @@ function(gaudi_generate_configurables library)
   # Notify the project level target
   gaudi_merge_files_append(ConfDB ${library}Conf ${outdir}/${library}_confDb.py)
   #----Installation details-------------------------------------------------------
-  install(FILES ${outdir}/${library}_confDb.py ${outdir}/${library}Conf.py
-          DESTINATION python/${package} OPTIONAL)
-
-  # Check if we need to install our __init__.py (i.e. it is not already installed
-  # with the python modules).
-  # Note: no need to do anything if we already have configurables
-  get_property(has_configurables DIRECTORY PROPERTY has_configurables)
-  if(NOT has_configurables)
-    get_property(python_modules DIRECTORY PROPERTY has_python_modules)
-    list(FIND python_modules ${package} got_pkg_module)
-    if(got_pkg_module LESS 0)
-      # we need to install our __init__.py
-      if(NOT EXISTS ${outdir}/__init__.py)
-        file(MAKE_DIRECTORY ${outdir})
-        file(WRITE ${outdir}/__init__.py "")
-        message(STATUS "Created dummy ${outdir}/__init__.py")
-        install(FILES ${outdir}/__init__.py DESTINATION python/${package} OPTIONAL)
-      endif()
-    endif()
-  endif()
+  install(FILES ${genconf_products} DESTINATION python/${package} OPTIONAL)
 
   # Property used to synchronize the installation of Python modules between
   # gaudi_generate_configurables and gaudi_install_python_modules.
