@@ -9,9 +9,6 @@ if os.name == 'nt':
     import msvcrt
 elif os.name == 'posix':
     import fcntl
-    LOCK_EX = fcntl.F_WRLCK
-    LOCK_SH = fcntl.F_RDLCK
-    LOCK_NB = fcntl.F_UNLCK
 else:
     raise RuntimeError("Locker only defined for nt and posix platforms")
 
@@ -19,7 +16,7 @@ if os.name == 'nt':
     def lock(file):
         """
         Lock first 10 bytes of a file.
-        """ 
+        """
         pos = file.tell() # remember current position
         file.seek(0)
         # By default, python tries about 10 times, then throws an exception.
@@ -37,91 +34,26 @@ if os.name == 'nt':
     def unlock(file):
         """
         Unlock first 10 bytes of a file.
-        """ 
+        """
         pos = file.tell() # remember current position
         file.seek(0)
         msvcrt.locking(file.fileno(),msvcrt.LK_UNLCK,10)
         file.seek(pos) # reset position
 
 elif os.name =='posix':
-    import socket, errno
-
-    def _tmpFileName(fileName):
-        return "%s.%s.%d" % ( fileName, socket.gethostname(), os.getpid() )
-    def _lckFileName(fileName):
-        return "%s.lock" % fileName
-
-    def _linkCount( lockFileName ):
+    def lock(file) :
+        # Lock with a simple call to lockf() - this blocks until the lock is aquired
         try:
-            return os.stat(lockFileName).st_nlink
-        except OSError, e:
-            if e.errno != errno.ENOENT:
-                raise
-            return -1
-    def _read(fileName):
-        try:
-            fp = open(fileName)
-            try:     readFileName = fp.read()
-            finally: fp.close()
-            return readFileName
-        except EnvironmentError, e:
-            if e.errno != errno.ENOENT:
-                raise
-            return None
-            
-    def _sleep(): time.sleep(8)
-
-    def lock(file):
-        fileName = file.name
-        tmpFileName = _tmpFileName(fileName)
-        fp = open( tmpFileName, "w" )
-        fp.write( tmpFileName )
-        fp.close()
-
-        lockFileName = _lckFileName( fileName )
-        while True:
-            if _linkCount(lockFileName) != -1: _sleep()
-            try:
-                os.link( tmpFileName, lockFileName )
-                # we acquired the lock
-                return
-            except OSError, e:
-                if e.errno == errno.ENOENT:
-                    pass
-                elif e.errno != errno.EEXIST:
-                    os.unlink(tmpFileName)
-                    raise
-                elif _linkCount( lockFileName ) != 2:
-                    pass
-                elif _read(lockFileName) == tmpFileName:
-                    raise
-                else:
-                    # someone else owns that lock
-                    pass
-            ## didn't get the lock !!
-            ## say something ?
-            #print _id_()," failed to acquire the lock ..."
-            _sleep()
-            pass
+            fcntl.lockf( file, fcntl.LOCK_EX )
+        except IOError, exc_value:
+            print "Problem when trying to lock {0}, IOError {1}".format(file, exc_value[0])
+            raise
         return
-    
+
     def unlock(file):
-        fileName = file.name
-        tmpFileName  = _tmpFileName(fileName)
-        lockFileName = _lckFileName( fileName )
-
-        try:
-            os.unlink( lockFileName )
-        except OSError, e:
-            if e.errno != errno.ENOENT:
-                raise
-        # remove the tmp file
-        try:
-            os.unlink( tmpFileName )
-        except OSError, e:
-            if e.errno != errno.ENOENT:
-                raise
+        fcntl.lockf( file, fcntl.LOCK_UN )
         return
+
 
 import logging
 ## Lock a file.
@@ -145,6 +77,7 @@ class LockFile(object):
             lock(self.file)
         except:
             self.log.warning("Cannot acquire lock on %s", self.name)
+
     def __del__(self):
         if self.file:
             unlock(self.file)
@@ -155,4 +88,14 @@ class LockFile(object):
                 except:
                     pass
             self.log.info("%s - Lock on %s released", time.strftime("%Y-%m-%d_%H:%M:%S"), self.name)
+            self.file = None # Don't unlock twice!
+
+
+    # The following methods are needed to allow the use of python's "with" statement, i.e,
+    #     with LockFile("myFile") as mylock:
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.__del__()
 

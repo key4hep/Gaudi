@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-05-22 - Graeme Stewart
+ - fixed locker.py to address some special use case (see patch #3169).
+
 ============================= GaudiPolicy v14r2 ==============================
 
 ! 2014-05-19 - Charles Leggett
