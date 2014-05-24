@@ -95,8 +95,10 @@ gbl.IUpdateManagerSvc.update = lambda self,obj: gbl.IUpdateManagerSvc.PythonHelp
 gbl.IUpdateManagerSvc.invalidate = lambda self,obj: gbl.IUpdateManagerSvc.PythonHelper.invalidate(self,obj)
 
 #---Globals--------------------------------------------------------------------
-gbl.StatusCode.SUCCESS = 1
-gbl.StatusCode.FAILURE = 0
+if not hasattr(gbl.StatusCode, 'SUCCESS'):
+    # emulate enums
+    gbl.StatusCode.SUCCESS = 1
+    gbl.StatusCode.FAILURE = 0
 
 # - string key, equality
 if hasattr ( gbl.Gaudi.StringKey ,'__cpp_eq__' ) :
