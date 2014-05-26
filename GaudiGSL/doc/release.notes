@@ -3,6 +3,9 @@
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! =============================================================================
 
+! 2014-05-26 - Marco Clemencic
+ - Removed duplicated dictionary entries (already in RELAX).
+
 ! 2014-04-25 - Marco Clemencic
  - Removed duplicated dictionary entries (already in RELAX).
 
