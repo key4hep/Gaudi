@@ -186,21 +186,21 @@ DataObjectHandle<T>::DataObjectHandle(DataObjectDescriptor & descriptor,
 template<typename T>  
 T* DataObjectHandle<T>::get(bool mustExist) {
 
-	MsgStream log(m_MS,"DataObjectHandle");
+  //MsgStream log(m_MS,"DataObjectHandle");
 
   DataObject* dataObjectp = NULL;
 
   StatusCode sc = m_EDS->retrieveObject(dataProductName(), dataObjectp);
   
-  if(sc.isSuccess())
-	  log << MSG::DEBUG << "Using main location " << dataProductName() << " for " << *dataObjectp << endmsg;
+  //if(sc.isSuccess())
+  //  log << MSG::DEBUG << "Using main location " << dataProductName() << " for " << *dataObjectp << endmsg;
 
   if(sc.isFailure() && ! m_descriptor->alternativeAddresses().empty()){
 	  for(uint i = 0; i < m_descriptor->alternativeAddresses().size() && sc.isFailure(); ++i){
 		  sc = m_EDS->retrieveObject(m_descriptor->alternativeAddresses()[i], dataObjectp);
 
-		  if(sc.isSuccess())
-		  	  log << MSG::DEBUG << "Using alternative location " << m_descriptor->alternativeAddresses()[i] << " for " << *dataObjectp << endmsg;
+		  //if(sc.isSuccess())
+		  //	  log << MSG::DEBUG << "Using alternative location " << m_descriptor->alternativeAddresses()[i] << " for " << *dataObjectp << endmsg;
 	  }
   }
 
@@ -221,14 +221,14 @@ T* DataObjectHandle<T>::get(bool mustExist) {
         std::string errorMsg("The type provided for "+ dataProductName()
                              + " is " + dataType
                              + " and is different form the one of the object in the store.");
-        log << MSG::ERROR << errorMsg << endmsg;        
+        //log << MSG::ERROR << errorMsg << endmsg;
         throw GaudiException (errorMsg,"Wrong DataObjectType",StatusCode::FAILURE);                
       }
       else{
-        log << MSG::DEBUG <<  "The data type (" <<  dataType
-            << ") specified for the handle of " << dataProductName()
-            << " is the same of the object in the store. "
-            << "From now on the result of a static_cast will be returned." << endmsg;
+        //log << MSG::DEBUG <<  "The data type (" <<  dataType
+        //    << ") specified for the handle of " << dataProductName()
+        //    << " is the same of the object in the store. "
+        //    << "From now on the result of a static_cast will be returned." << endmsg;
       }
     }
     
@@ -271,8 +271,8 @@ T* DataObjectHandle<T>::getOrCreate (){
 		return obj;
 	}
 
-	MsgStream log(m_MS,"DataObjectHandle");
-	log << MSG::DEBUG << "Object " << dataProductName() << " does not exist, creating it" << endmsg;
+	//MsgStream log(m_MS,"DataObjectHandle");
+	//log << MSG::DEBUG << "Object " << dataProductName() << " does not exist, creating it" << endmsg;
 
 	//create it
 	obj = new T();
