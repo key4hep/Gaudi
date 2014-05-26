@@ -28,7 +28,7 @@
 #include <GaudiKernel/IScheduler.h>
 
 // External libraries
-#include "tbb/tick_count.h"
+#include <chrono>
 
 
 // Instantiation of a static factory class used by clients to create instances of this service
@@ -341,12 +341,12 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
   // Check if event number is in blacklist
   if(LIKELY(m_blackListBS != nullptr)){ //we are processing a finite number of events, use bitset blacklist
 	  if(m_blackListBS->test(createdEvts)){
-		  info() << "Event " << createdEvts  << " on black list" << endmsg;
+		  verbose() << "Event " << createdEvts  << " on black list" << endmsg;
 		  return StatusCode::RECOVERABLE;
 	  }
   } else  if(std::binary_search(m_eventNumberBlacklist.begin(),m_eventNumberBlacklist.end(),createdEvts)){
 
-	  info() << "Event " << createdEvts  << " on black list" << endmsg;
+	  verbose() << "Event " << createdEvts  << " on black list" << endmsg;
 	  return StatusCode::RECOVERABLE;
   }
 
@@ -355,7 +355,7 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
     return StatusCode::FAILURE;
   }
   
-  info() << "Beginning to process event " <<  createdEvts << endmsg;
+  verbose() << "Beginning to process event " <<  createdEvts << endmsg;
 
   // An incident may schedule a stop, in which case is better to exit before the actual execution.
   // DP have to find out who shoots this
@@ -375,7 +375,7 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
   m_incidentSvc->fireIncident(Incident(name(),IncidentType::BeginEvent));
   
   // Now add event to the scheduler 
-  info() << "Adding event " << evtContext->m_evt_num 
+  verbose() << "Adding event " << evtContext->m_evt_num
           << ", slot " << evtContext->m_evt_slot
           << " to the scheduler" << endmsg;
   
@@ -453,10 +453,8 @@ StatusCode HiveSlimEventLoopMgr::stopRun() {
 StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
 
   // Calculate runtime
-  tbb::tick_count start_time = tbb::tick_count::now();
-  auto secsFromStart = [] (tbb::tick_count start_time)->double{
-    return (tbb::tick_count::now()-start_time).seconds();
-  };
+  typedef std::chrono::high_resolution_clock Clock;
+  typedef Clock::time_point time_point;
 
   // Reset the application return code.
   Gaudi::setAppReturnCode(m_appMgrProperty, Gaudi::ReturnCode::Success, true).ignore();  
@@ -473,6 +471,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
   constexpr double oneOver1204 = 1./1024.;
   
   uint iteration = 0;
+  time_point start_time = Clock::now();
   while ( !loop_ended and (maxevt < 0 or (finishedEvts+skippedEvts) < maxevt)){
 	  debug() << "work loop iteration " << iteration++ << endmsg;
     // if the created events did not reach maxevt, create an event    
@@ -482,7 +481,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
         m_schedulerSvc->freeSlots()>0){ // There are still free slots in the scheduler
 
       if (1==createdEvts) // reset counter to count from event 1
-        start_time = tbb::tick_count::now();
+        start_time = Clock::now();
         
       debug() << "createdEvts: " << createdEvts << ", freeslots: " << m_schedulerSvc->freeSlots() << endmsg;
 //  DP remove to remove the syscalls...
@@ -526,11 +525,12 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
       }
       newEvtAllowed = true;
     }
-  } // end main loop on finished events  
+  } // end main loop on finished events
+  time_point end_time = Clock::now();
 
   info() << "---> Loop Finished (skipping 1st evt) - "
          << " WSS " << System::mappedMemory(System::MemoryUnit::kByte)*oneOver1204
-         << " total time " << secsFromStart(start_time) <<endmsg;
+         << " total time " << std::chrono::duration_cast < std::chrono::nanoseconds > (end_time - start_time).count() <<endmsg;
   info() << skippedEvts << " events were SKIPed" << endmsg;
 
   return StatusCode::SUCCESS;
