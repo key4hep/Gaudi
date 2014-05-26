@@ -82,7 +82,7 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   declareProperty( "AuditStart"       , m_auditorStart        = audit ) ;
   declareProperty( "AuditStop"        , m_auditorStop         = audit ) ;
 
-  declareProperty( "Timeline"         , m_doTimeline          = true  ) ;
+  declareProperty( "Timeline"         , m_doTimeline          = false  ) ;
 
   declareProperty( "MonitorService"   , m_monitorSvcName      = "MonitorSvc" );
 
@@ -712,9 +712,12 @@ StatusCode Algorithm::sysExecute() {
 
   try {
 
-	timeline.start = Clock::now();
+	if(UNLIKELY(m_doTimeline))
+		  timeline.start = Clock::now();
     status = execute();
-    timeline.end = Clock::now();
+
+    if(UNLIKELY(m_doTimeline))
+    	timeline.end = Clock::now();
 
     setExecuted(true);  // set the executed flag
 
@@ -763,7 +766,7 @@ StatusCode Algorithm::sysExecute() {
     status = exceptionSvc()->handle(*this);
   }
 
-  if(m_doTimeline)
+  if(UNLIKELY(m_doTimeline))
 	  timelineSvc()->registerTimelineEvent(timeline);
 
   if( status.isFailure() ) {
