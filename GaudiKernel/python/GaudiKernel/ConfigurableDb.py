@@ -119,31 +119,37 @@ def loadConfigurableDb():
     import sys
     from glob import glob
     from os.path import join as path_join
-    log.debug( "importing confDb packages..." )
+    log.debug( "loading confDb files..." )
     nFiles = 0 # counter of imported files
-    pathlist = os.getenv("LD_LIBRARY_PATH","").split(os.pathsep)
+    pathlist = os.getenv("LD_LIBRARY_PATH", "").split(os.pathsep)
     for path in pathlist:
-        log.debug( "walking in [%s]..." % path )
-        if not os.path.exists(path):
+        log.debug( "walking in [%s]...", path )
+        if not os.path.isdir(path):
             continue
-        confDbFiles = [ f for f in glob(path_join(path, "*_merged.confdb"))
-                        if os.path.isfile(f) ]
+        confDbFiles = [f for f in [path_join(path, f) for f in os.listdir(path)
+                                   if f.endswith('.confdb')]
+                       if os.path.isfile(f)]
+        # check if we use "*_merged.confdb"
+        mergedConfDbFiles = [f for f in confDbFiles
+                             if f.endswith('_merged.confdb')]
+        if mergedConfDbFiles:
+            # use only the merged ones
+            confDbFiles = mergedConfDbFiles
+
         for confDb in confDbFiles:
-            nFiles += 1
-            # turn filename syntax into module syntax: remove path+extension and replace / with . (dot)
-            confDbModule = os.path.splitext(confDb[len(path)+1:])[0].replace(os.sep,'.')
-            log.debug( "\t-importing [%s]..." % confDbModule )
+            log.debug( "\t-loading [%s]...", confDb )
             try:
                 cfgDb._loadModule( confDb )
             except Exception, err:
-                log.warning( "Could not import module [%s] !", confDb )
+                log.warning( "Could not load file [%s] !", confDb )
                 log.warning( "Reason: %s", err )
                 pass
+            nFiles += 1
             pass # loop over confdb-files
         pass # loop over paths
-    log.debug( "importing confDb packages... [DONE]" )
+    log.debug( "loading confDb files... [DONE]" )
     nPkgs = len( set([k['package'] for k in cfgDb.values()]) )
-    log.debug( "imported %i confDb packages" % nPkgs )
+    log.debug( "loaded %i confDb files", nPkgs )
     return nFiles
 
 
