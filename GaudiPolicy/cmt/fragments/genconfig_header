@@ -25,7 +25,7 @@ install :: ${CONSTITUENT}install
 
 ${CONSTITUENT}install : $(outdir)/$(confpy)
 	@echo "Installing $(outdir) in $(conf_destdir)" ; \
-	 $(install_command) --exclude="*.py?" --exclude="__init__.py" $(outdir) $(conf_destdir) ; \
+	 $(install_command) --exclude="*.py?" --exclude="__init__.py" --exclude="*.confdb" $(outdir) $(conf_destdir) ; \
 
 $(outdir)/$(confpy) : $(conflib) $(outdir)
 	$(genconf_silent) $(genconfig_cmd) $(library_preload) $(extra_modules) -o $(outdir) -p $(package) \

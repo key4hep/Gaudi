@@ -376,7 +376,7 @@ macro(gaudi_project project version)
   file(APPEND ${CMAKE_BINARY_DIR}/subdirs_deps.dot "}\n")
 
   #--- Special global targets for merging files.
-  gaudi_merge_files(ConfDB lib ${CMAKE_PROJECT_NAME}_merged.confdb)
+  gaudi_merge_files(ConfDB lib ${CMAKE_PROJECT_NAME}.confdb)
   gaudi_merge_files(ComponentsList lib ${CMAKE_PROJECT_NAME}.components)
   gaudi_merge_files(DictRootmap lib ${CMAKE_PROJECT_NAME}Dict.rootmap)
 
@@ -1480,7 +1480,6 @@ function(gaudi_generate_configurables library)
   gaudi_merge_files_append(ConfDB ${library}Conf ${outdir}/${library}.confdb)
   #----Installation details-------------------------------------------------------
   install(FILES ${genconf_products} DESTINATION python/${package} OPTIONAL)
-  install(FILES ${outdir}/${library}.confdb DESTINATION lib OPTIONAL)
 
   # Property used to synchronize the installation of Python modules between
   # gaudi_generate_configurables and gaudi_install_python_modules.
@@ -1525,8 +1524,6 @@ function(gaudi_generate_confuserdb)
                   -r ${CMAKE_CURRENT_SOURCE_DIR}/python
                   -o ${outdir}/${package}_user.confdb
                   ${package} ${modules})
-    install(FILES ${outdir}/${package}_user.confdb
-            DESTINATION lib OPTIONAL)
     gaudi_merge_files_append(ConfDB ${package}ConfUserDB ${outdir}/${package}_user.confdb)
 
     # FIXME: dependency on others ConfUserDB

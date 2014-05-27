@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-05-16 - Marco Clemencic
+ - Modified genconf patterns to avoid installation of .confdb files and
+   produce a .confdb instead of _merged.confdb.
+
 ! 2014-05-06 - Sebastien Binet
  - fix bug #102404: implement a pure ascii based configurable-db.
    these ascii files are now named .confdb (for the per package ones)

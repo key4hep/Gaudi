@@ -2,9 +2,7 @@
 # Author: Sebastien Binet (binet@cern.ch)
 
 # Makefile fragment to merge a <library>.confdb file into a single
-# <project>_merged.confdb file in the (python) install area
-# Note that <project> is massaged to get a valid python module name
-# (ie: remove dots and dashes)
+# <project>.confdb file in the (lib) install area
 
 .PHONY: ${CONSTITUENT} ${CONSTITUENT}clean
 
@@ -14,7 +12,7 @@
 instdir      := ${CMTINSTALLAREA}$(shared_install_subdir)
 confDbRef    := $(inDir)/$(library).confdb
 stampConfDb  := $(confDbRef).stamp
-mergedConfDb := $(instdir)/lib/$(subst .,_,$(subst -,_,$(project)))_merged.confdb
+mergedConfDb := $(instdir)/lib/$(project).confdb
 
 ${CONSTITUENT} :: $(stampConfDb) $(mergedConfDb)
 	@:
