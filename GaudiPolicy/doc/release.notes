@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-05-27 - Marco Clemencic
+ - Minor fixes to GaudiTest.py: use unicode instead of ascii in XML template,
+   and allow disabling of Eclipse launchers generation.
+
 ! 2014-05-22 - Graeme Stewart
  - fixed locker.py to address some special use case (see patch #3169).
 
