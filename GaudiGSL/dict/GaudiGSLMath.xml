@@ -8,6 +8,8 @@
   </selection>
 
   <exclusion>
+    <!-- already in CLHEPRflx -->
+    <class name="Genfun::AbsFunction"/>
     <!-- These are typedef to vector<double> and cause problems. -->
     <class pattern="Genfun::GaudiMathImplementation::Numerical*Integral::Points"/>
     <class pattern="Genfun::GaudiMathImplementation::*::Data1D" />

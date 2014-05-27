@@ -4,6 +4,9 @@
 ! Purpose     : Provide a generic plugin service.
 !-----------------------------------------------------------------------------
 
+! 2014-05-12 - Marco Clemencic
+ - Fixed listcomponents command lines tests (CMake only).
+
 ========================== GaudiPluginService v1r1 ===========================
 
 ! 2014-05-19 - Charles Leggett

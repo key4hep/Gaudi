@@ -1,6 +1,16 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-05-16 - Marco Clemencic
+ - Removed the overridden reflex_dictionary fragments (changes now in LCGCMT).
+
+! 2014-05-09 - Marco Clemencic
+ - Modified reflex_dictionary fragments to install the generated PCMs, if any.
+
+! 2014-05-09 - Marco Clemencic
+ - Override the reflex_dictionary fragments to change the name of the .cpp
+   generated from genreflex (needed for the PCMs in ROOT 6).
+
 ! 2014-05-27 - Marco Clemencic
  - Minor fixes to GaudiTest.py: use unicode instead of ascii in XML template,
    and allow disabling of Eclipse launchers generation.

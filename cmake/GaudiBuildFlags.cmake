@@ -225,13 +225,16 @@ if(NOT GAUDI_V21)
   endforeach()
 endif()
 
-if (LCG_HOST_ARCH STREQUAL x86_64 AND LCG_ARCH STREQUAL i686)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -m32")
-  set(GCCXML_CXX_FLAGS "${GCCXML_CXX_FLAGS} -m32")
-elseif(NOT LCG_HOST_ARCH STREQUAL LCG_ARCH)
-  message(FATAL_ERROR "Cannot build for ${LCG_ARCH} on ${LCG_HOST_ARCH}.")
+if (LCG_HOST_ARCH AND LCG_ARCH)
+  # this is valid only in the LCG toolchain context
+  if (LCG_HOST_ARCH STREQUAL x86_64 AND LCG_ARCH STREQUAL i686)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -m32")
+    set(GCCXML_CXX_FLAGS "${GCCXML_CXX_FLAGS} -m32")
+  elseif(NOT LCG_HOST_ARCH STREQUAL LCG_ARCH)
+    message(FATAL_ERROR "Cannot build for ${LCG_ARCH} on ${LCG_HOST_ARCH}.")
+  endif()
 endif()
 
 #--- Tuning of warnings --------------------------------------------------------
@@ -269,4 +272,8 @@ if(LCG_COMP STREQUAL gcc AND LCG_COMPVERS STREQUAL 43)
   # The -pedantic flag gives problems on GCC 4.3.
   string(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
   string(REPLACE "-pedantic" "" CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}")
+endif()
+
+if(GAUDI_ATLAS)
+  include(AthenaBuildFlags)
 endif()
