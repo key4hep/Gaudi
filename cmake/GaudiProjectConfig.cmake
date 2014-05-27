@@ -527,7 +527,7 @@ macro(gaudi_project project version)
       list(REMOVE_DUPLICATES pypacks)
       # create all the __init__.py files
       foreach(pypack ${pypacks})
-        message(STATUS "creating local ${pypack}/__init__.py")
+        #message(STATUS "creating local ${pypack}/__init__.py")
         file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/python/${pypack})
         file(WRITE ${CMAKE_BINARY_DIR}/python/${pypack}/__init__.py "
 import os, sys
@@ -2772,6 +2772,7 @@ endfunction()
 # Internal function that generate the export data.
 #-------------------------------------------------------------------------------
 macro(gaudi_generate_exports)
+  message(STATUS "Generating 'export' files.")
   foreach(package ${ARGN})
     # we do not use the "Hat" for the export names
     get_filename_component(pkgname ${package} NAME)
@@ -2785,7 +2786,7 @@ macro(gaudi_generate_exports)
         OR exported_cmake OR ${package}_DEPENDENCIES OR subdir_version)
       set(pkg_exp_file ${pkgname}Export.cmake)
 
-      message(STATUS "Generating ${pkg_exp_file}")
+      #message(STATUS "Generating ${pkg_exp_file}")
       set(pkg_exp_file ${CMAKE_CURRENT_BINARY_DIR}/${pkg_exp_file})
 
       file(WRITE ${pkg_exp_file}
