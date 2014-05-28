@@ -30,22 +30,22 @@ FakeInput = CPUCruncher("FakeInput",
                         avgRuntime=.1 )
 
 BrunelInit = CPUCruncher("BrunelInit",
-                         Inputs = ['DAQ/ODIN','DAQ/RawEvent'],
+                         Inputs = ['/Event/DAQ/ODIN','/Event/DAQ/RawEvent'],
                          Outputs = ['/Event/Rec/Status', '/Event/Rec/Header'],
                          shortCalib=True)
 
 PhysFilter = CPUCruncher("PhysFilter", 
                          shortCalib=True,
-                         Inputs = ['Hlt/LumiSummary'])
+                         Inputs = ['/Event/Hlt/LumiSummary'])
 
 HltDecReportsDecoder = CPUCruncher("HltDecReportsDecoder", 
                                    shortCalib=True,
-                                   Inputs = ['DAQ/RawEvent'],
+                                   Inputs = ['/Event/DAQ/RawEvent'],
                                    Outputs = ['/Event/Hlt/DecReports'])
 
 HltErrorFilter = CPUCruncher("HltErrorFilter",
                              shortCalib=True,
-                             Inputs = ['Hlt/DecReports'])
+                             Inputs = ['/Event/Hlt/DecReports'])
                                    
 sequence1 = GaudiSequencer("Sequence1")
 sequence1.Members += [FakeInput,BrunelInit,PhysFilter,HltDecReportsDecoder]
