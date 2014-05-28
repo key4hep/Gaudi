@@ -1,6 +1,19 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
 
+! 2014-05-27 - Marco Clemencic
+ - Minor fix to CMake configuration (CMT equivalence).
+
+! 2014-05-24 - Marco Clemencic
+ - Address the problem described in ROOT-6315 by making the enum overriding
+   optional.
+
+! 2014-05-21 - Marco Clemencic
+ - Moved dictionary for InterfaceID from GaudiPython to GaudiKernel.
+
+! 2014-05-21 - Marco Clemencic
+ - Moved dictionary for GaudiHandle*Property from GaudiPython to GaudiKernel.
+
 ============================= GaudiPython v13r1 ==============================
 ! 2014-03-18 - Ben Couturier
  - Fixed bug #104127: remove hwaf configuration.

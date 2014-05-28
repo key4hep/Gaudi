@@ -234,6 +234,8 @@ int main ( int argc, char** argv )
     ("user-module,m",
      po::value<string>(),
      "user-defined module to be imported by the genConf-generated one")
+     ("no-init",
+      "do not generate the (empty) __init__.py")
     ;
 
   // declare a group of options that will be allowed both on command line
@@ -289,7 +291,7 @@ int main ( int argc, char** argv )
     po::notify(vm);
   }
   catch ( po::error& err ) {
-    cout << "ERR0R: error detected while parsing command options: "<< err.what() << endl;
+    cout << "ERROR: error detected while parsing command options: "<< err.what() << endl;
     return EXIT_FAILURE;
   }
 
@@ -310,7 +312,7 @@ int main ( int argc, char** argv )
 
   if( vm.count("user-module") ) {
     userModule = vm["user-module"].as<string>();
-    cout << "INFO: will import user module " << userModule << endl; 
+    cout << "INFO: will import user module " << userModule << endl;
   }
 
   if( vm.count("input-libraries") ) {
@@ -411,7 +413,7 @@ int main ( int argc, char** argv )
     return EXIT_FAILURE;
   }
 
-  if ( EXIT_SUCCESS == sc ) {
+  if ( EXIT_SUCCESS == sc && ! vm.count("no-init")) {
     // create an empty __init__.py file in the output dir
     fstream initPy( ( out / fs::path( "__init__.py" ) ).string().c_str(),
         std::ios_base::out|std::ios_base::trunc );
@@ -609,7 +611,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
               std::ios_base::out|std::ios_base::trunc );
 
     genHeader ( py, db );
-    if (!userModule.empty()) 
+    if (!userModule.empty())
       py << "from " << userModule << " import *" <<endl;
     genBody   ( py, db );
     genTrailer( py, db );

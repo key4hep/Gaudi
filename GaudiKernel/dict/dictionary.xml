@@ -16,6 +16,8 @@
   <class name="GaudiHandleInfo"/>
   <class name="GaudiHandleBase"/>
   <class name="GaudiHandleArrayBase"/>
+  <class name="GaudiHandleProperty"/>
+  <class name="GaudiHandleArrayProperty"/>  
 
   <class name="LinkManager"/>
   <class name="LinkManager::Link">
@@ -72,6 +74,7 @@
   <class name="IInspectable"/>
   <class name="IInspector"/>
   <class name="IInterface"/>
+  <class name="InterfaceID"/>
   <class name="IIssueLogger"/>
   <class name="IJobOptionsSvc"/>
   <class name="IMagneticFieldSvc"/>

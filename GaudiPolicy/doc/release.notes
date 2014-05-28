@@ -6,6 +6,30 @@ package manager: Marco Clemencic
    these ascii files are now named .confdb (for the per package ones)
    *_user.confdb (for the user ones) and *_merged.confdb (for the merged ones.)
 
+! 2014-05-16 - Marco Clemencic
+ - Removed the overridden reflex_dictionary fragments (changes now in LCGCMT).
+
+! 2014-05-09 - Marco Clemencic
+ - Modified reflex_dictionary fragments to install the generated PCMs, if any.
+
+! 2014-05-09 - Marco Clemencic
+ - Override the reflex_dictionary fragments to change the name of the .cpp
+   generated from genreflex (needed for the PCMs in ROOT 6).
+
+! 2014-05-27 - Marco Clemencic
+ - Minor fixes to GaudiTest.py: use unicode instead of ascii in XML template,
+   and allow disabling of Eclipse launchers generation.
+
+! 2014-05-22 - Graeme Stewart
+ - fixed locker.py to address some special use case (see patch #3169).
+
+============================= GaudiPolicy v14r2 ==============================
+
+! 2014-05-19 - Charles Leggett
+ - fix use_if cmt pattern
+ - alias cmt pattern generate_rootmap to generate_componentslist for backward
+   compatibility
+
 ! 2014-04-17 - Marco Clemencic
  - Ignore TInterpreter::ReadRootmapFile warnings until we find a way to fix
    them. (ROOT6_WORK_AROUND: ReadRootmapCheck)

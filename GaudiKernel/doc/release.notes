@@ -6,6 +6,27 @@ Package manager : Marco Clemencic
    these ascii files are now named .confdb (for the per package ones)
    *_user.confdb (for the user ones) and *_merged.confdb (for the merged ones.)
 
+! 2014-05-27 - Marco Clemencic
+ - Minor fix to CMake configuration (CMT equivalence).
+
+! 2014-05-21 - Marco Clemencic
+ - Fixed minor typo in genconf.cpp.
+
+! 2014-04-30 - Marco Clemencic
+ - Added command line option --no-init to genconf.
+   It disable to creation of the dummy __init__.py so that we can have better
+   control on when it is created in the CMake build (was causing warnings with
+   Ninja).
+
+! 2014-05-21 - Marco Clemencic
+ - Moved dictionary for InterfaceID from GaudiPython to GaudiKernel.
+
+! 2014-05-21 - Marco Clemencic
+ - Moved dictionary for GaudiHandle*Property from GaudiPython to GaudiKernel.
+
+! 2014-05-15 - Beat Jost
+ - Added the interface IPublishSvc.
+
 ! 2014-03-21 - Marco Clemencic, Rolf Seuster, David Quarrie
  - Re-enabled the DECLARE_FACTORY_ENTRIES family of macros (needed by ATLAS).
 

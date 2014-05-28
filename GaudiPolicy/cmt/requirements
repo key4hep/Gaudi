@@ -1,5 +1,5 @@
 package GaudiPolicy
-version v14r1
+version v14r2
 
 branches cmt doc
 
@@ -488,6 +488,10 @@ pattern generate_componentslist \
              $(bin)$(library_prefix)<library>.$(shlibsuffix) ; \
     macro_append <library>MergeComponentsList_dependencies " <library>ComponentsList " ; \
   end_private
+
+# TEMPORARY alias for backward compatibility in ATLAS. FIXME!
+pattern generate_rootmap \
+  apply_pattern generate_componentslist library=<library> group=<group>
 
 
 # Tags and Global macros=====================================================
@@ -1489,7 +1493,7 @@ set GAUDI_DOXY_HOME $(GAUDI_home)/GaudiRelease/doc
 # eg:  use_if pkg=Reflex tag=useReflex ver="*" root="LCG_Interfaces"
 #
 pattern use_if \
-    document use_if pkg=<pkg> tag=<tag> ver=<ver> root=<root> opt="<opt>" ; \
+#    document use_if pkg=<pkg> tag=<tag> ver=<ver> root=<root> opt="<opt>" ; \
     private ; \
     macro use_<pkg>_if "" <tag> "<pkg> <ver> <root> <opt>" ; \
     end_private ; \

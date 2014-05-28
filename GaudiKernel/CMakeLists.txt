@@ -24,6 +24,8 @@ gaudi_add_unit_test(test_GaudiTiming tests/src/test_GaudiTiming.cpp
                     LINK_LIBRARIES GaudiKernel)
 gaudi_add_unit_test(Parsers_test tests/src/parsers.cpp
                     LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(Memory_test tests/src/Memory_test.cpp
+                    LINK_LIBRARIES GaudiKernel)
 # This is just a compile-time tests.
 gaudi_add_unit_test(test_headers_build tests/src/test_headers_build.cpp
                     LINK_LIBRARIES GaudiKernel)

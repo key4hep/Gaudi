@@ -14,7 +14,7 @@ gaudi_add_module(GaudiMP src/component/*.cpp
                  LINK_LIBRARIES GaudiMPLib PythonLibs ROOT GaudiAlgLib)
 
 #---Dictionaries------------------------------------------------------------
-gaudi_add_dictionary(GaudiMPLib dict/gaudimp_dict.h dict/selection.xml LINK_LIBRARIES GaudiMPLib)
+gaudi_add_dictionary(GaudiMP dict/gaudimp_dict.h dict/selection.xml LINK_LIBRARIES GaudiMPLib)
 
 #---Installation------------------------------------------------------------
 gaudi_install_python_modules()

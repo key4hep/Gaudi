@@ -1661,6 +1661,9 @@ class GaudiExeTest(ExecTestBase):
         #             may be converting them to HTML tags
 
     def _CreateEclipseLaunch(self, prog, args, destdir = None):
+        if 'NO_ECLIPSE_LAUNCHERS' in os.environ:
+            # do not generate eclipse launchers if the user asks so
+            return
         # Find the project name used in ecplise.
         # The name is in a file called ".project" in one of the parent directories
         projbasedir = os.path.normpath(destdir)
@@ -1724,7 +1727,7 @@ class GaudiExeTest(ExecTestBase):
         data["project"] = projectName.strip()
 
         # Template for the XML file, based on eclipse 3.4
-        xml = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+        xml = u"""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.cdt.launch.applicationLaunchType">
 <booleanAttribute key="org.eclipse.cdt.debug.mi.core.AUTO_SOLIB" value="true"/>
 <listAttribute key="org.eclipse.cdt.debug.mi.core.AUTO_SOLIB_LIST"/>
