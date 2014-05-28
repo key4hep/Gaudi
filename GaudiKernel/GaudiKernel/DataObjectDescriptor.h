@@ -174,6 +174,7 @@ public:
 	DataObjectDescriptorCollection & operator=(const DataObjectDescriptorCollection& other);
 
 	bool contains(const std::string & o) const;
+	bool contains(const MinimalDataObjectHandle * o) const;
 
 	bool insert(const std::string& tag,
 				MinimalDataObjectHandle * descriptor);

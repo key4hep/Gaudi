@@ -795,6 +795,10 @@ protected:
 
    std::vector<IAlgTool *> & tools();
 
+
+   // adds declared in- and outputs of subAlgorithms to own DOHs
+   void addSubAlgorithmDataObjectHandles();
+
 private:
    //place IAlgTools defined via ToolHandles in m_tools
    void initToolHandles() const;

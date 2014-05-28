@@ -1337,6 +1337,49 @@ std::vector<IAlgTool *> & Algorithm::tools() {
 	return m_tools;
 }
 
+void Algorithm::addSubAlgorithmDataObjectHandles(){
+	//add all DOHs of SubAlgs to own collection
+
+	MsgStream log ( msgSvc() , name() ) ;
+
+	for(Algorithm * alg : *m_subAlgms){
+
+		assert(alg->isInitialized());
+
+		log << MSG::DEBUG << "Adding subAlg DOHs for " << alg->name() << endmsg;
+
+		for(auto tag : alg->inputDataObjects()){
+			auto doh = &alg->inputDataObjects()[tag];
+
+			if(!doh->isValid())
+				continue;
+
+			//if the output of an previous algorithm produces the required input don't add it
+			if(!m_outputDataObjects.contains(doh)){
+				log << MSG::DEBUG << "\tinput handle " << doh->dataProductName() << " is real input to sequence, adding as "
+					<< (alg->name() + "/" + doh->descriptor()->tag()) << endmsg;
+
+				m_inputDataObjects.insert(alg->name() + "/" + doh->descriptor()->tag() ,doh);
+			} else {
+				log << MSG::DEBUG << "\tinput handle " << doh->dataProductName() << " is produced by algorithm in sequence" << endmsg;
+			}
+		}
+
+		//add output after input to properly treat update DOH
+		for(auto tag : alg->outputDataObjects()){
+			auto doh = &alg->outputDataObjects()[tag];
+
+			if(!doh->isValid())
+				continue;
+
+			log << MSG::DEBUG << "\toutput handle " << doh->dataProductName() << " is output of sequence, adding as "
+				<< (alg->name() + "/" + doh->descriptor()->tag()) << endmsg;
+
+			m_outputDataObjects.insert(alg->name() + "/" + doh->descriptor()->tag(), doh);
+		}
+	}
+}
+
 /**
  ** Protected Member Functions
  **/
