@@ -1456,6 +1456,7 @@ function(gaudi_generate_configurables library)
     endif()
     set(GENCONF_WITH_NO_INIT "${GENCONF_WITH_NO_INIT}"
         CACHE BOOL "Whether the genconf command supports the options --no-init")
+    mark_as_advanced(GENCONF_WITH_NO_INIT)
     #message(STATUS "... ${GENCONF_WITH_NO_INIT}")
   else()
     if(GENCONF_WITH_NO_INIT)
