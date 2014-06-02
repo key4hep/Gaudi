@@ -1,6 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+============================= GaudiKernel v30r2 ==============================
 ! 2014-05-27 - Marco Clemencic
  - Minor fix to CMake configuration (CMT equivalence).
 

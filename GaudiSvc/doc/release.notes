@@ -1,6 +1,7 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+=============================== GaudiSvc v21r2 ===============================
 ! 2014-04-14 - Marco Clemencic
  - Removed obsolete/pointless call to 'generate_rootmap' pattern.
 

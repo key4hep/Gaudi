@@ -1,5 +1,5 @@
 package GaudiSvc
-version v21r1
+version v21r2
 
 branches src cmt doc
 use GaudiKernel *

@@ -1,5 +1,5 @@
 package GaudiPluginService
-version v1r1
+version v1r2
 author "Marco Clemencic"
 
 private

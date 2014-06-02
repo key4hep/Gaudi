@@ -55,6 +55,87 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
+<h2><a name="v25r2">Gaudi v25r2</a> (2014-06-02)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=68">LCGCMT_68</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Fixes to support ROOT 6.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v14r3):
+<ul>
+<li>Improvements to locker.py.<br/>
+    (<span class="author">Graeme Stewart</span>)</li>
+<li>Minor improvements to GaudiTest.py.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed LBCORE-463 (build error when no 'python' dir in InstallArea).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Alias cmt pattern generate_rootmap to generate_componentslist for backward compatibility.<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiPluginService (v1r2):
+<ul>
+<li>Improved command line of listcomponents.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Modified the listcomponents CMT document to use --output instead of output redirection. Fixes bug #104455.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added CMT tag HAVE_GAUDI_PLUGINSVC and preprocessor macro HAVE_GAUDI_PLUGINSVC to simplify migration.<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v30r2):
+<ul>
+<li>Minor fixes for CMake.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added option "--no-init" to genconf.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Moved some dictionaries from GaudiPython to GaudiKernel (ROOT 6 support).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added the interface IPublishSvc.<br/>
+    (<span class="author">Beat Jost</span>)</li>
+<li>Re-enabled the DECLARE_FACTORY_ENTRIES family of macros (needed by ATLAS).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiSvc (v21r2):
+<ul>
+<li>Removed obsolete/pointless call to 'generate_rootmap' pattern.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiGSL (v8r2):
+<ul>
+<li>Removed duplicated dictionary entries (already in RELAX).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiPython (v13r2):
+<ul>
+<li>Optional enum workaround (see ROOT-6315).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Moved some dictionaries from GaudiPython to GaudiKernel (ROOT 6 support).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v25r2):
+<ul>
+<li>Reverted work-around for ROOT-6125 (fixed upstream).<br/>
+</ul>
+</li>
+<li>GaudiExamples (v25r2):
+<ul>
+<li>Renamed POOLIO subdirectory to IO.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added an example to demonstrate how to access at run time in the TES data
+   from a secondary file.  <br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
 <h2><a name="v25r1p1">Gaudi v25r1p1</a> (2014-03-21)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=68_root6">LCGCMT_68_root6</a></h3>
 <h3>General Changes</h3>

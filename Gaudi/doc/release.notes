@@ -1,6 +1,7 @@
 Package : Gaudi
 Package manager : Marco Clemencic
 
+================================ Gaudi v25r2 =================================
 ! 2014-03-26 - Marco Clemencic
  - Reverted work-around for ROOT-6125 (fixed upstream).
 
