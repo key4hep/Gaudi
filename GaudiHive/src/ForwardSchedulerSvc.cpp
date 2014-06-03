@@ -104,32 +104,60 @@ StatusCode ForwardSchedulerSvc::initialize(){
    1) Look for handles in algo, if none
    2) Assume none are required
   */
-  if (algosDependenciesSize == 0){
-    for (IAlgorithm* ialgoPtr : algos){
-      Algorithm* algoPtr = dynamic_cast<Algorithm*> (ialgoPtr);
-      if (nullptr == algoPtr){
-         fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
-      }
+	if (algosDependenciesSize == 0) {
+		for (IAlgorithm* ialgoPtr : algos) {
+			Algorithm* algoPtr = dynamic_cast<Algorithm*>(ialgoPtr);
+			if (nullptr == algoPtr) {
+				fatal()
+						<< "Could not convert IAlgorithm into Algorithm: this will result in a crash."
+						<< endmsg;
+			}
 
-      const std::vector<MinimalDataObjectHandle*>& algoHandles(algoPtr->handles());
-      std::vector<std::string> algoDependencies;
-      if (!algoHandles.empty()){
+			const std::vector<MinimalDataObjectHandle*>& algoHandles(
+					algoPtr->handles());
+			std::vector<std::string> algoDependencies;
+			if (!algoHandles.empty()) {
 
-        info() << "Algorithm " << algoPtr->name() << " data dependencies:" << endmsg;
-        for (MinimalDataObjectHandle* handlePtr : algoHandles ){
-          if (handlePtr->accessType() == MinimalDataObjectHandle::AccessType::READ && handlePtr->isValid()){
-            const std::string& productName = handlePtr->dataProductName();
-            info() << "  o READ Handle found for product " << productName << endmsg;
-            algoDependencies.emplace_back(productName);
-          }
-        }
-      } else {
-        info() << "Algorithm " << algoPtr->name() << " has no data dependencies." << endmsg;
-      }
+				info() << "Algorithm " << algoPtr->name()
+						<< " data dependencies:" << endmsg;
+				for (MinimalDataObjectHandle* handlePtr : algoHandles) {
+					if (handlePtr->isValid()) {
+						if (handlePtr->accessType()
+								== MinimalDataObjectHandle::AccessType::READ) {
+							const std::string& productName =
+									handlePtr->dataProductName();
+							info() << "  o READ Handle found for product "
+									<< productName << endmsg;
+							algoDependencies.emplace_back(productName);
 
-      m_algosDependencies.emplace_back(algoDependencies);
-    }
-  }
+							//just for info output alternative locations
+							if (handlePtr->alternativeDataProductNames().size()
+									!= 0) {
+								info() << "\t\t alternative locations";
+								for (auto s : handlePtr->alternativeDataProductNames())
+									info() << " " << s;
+								info() << endmsg;
+							}
+						} else {
+							//output WRITE handles just for info
+							info() << "  o WRITE Handle found for product "
+									<< handlePtr->dataProductName() << endmsg;
+						}
+					}
+				}
+			} else {
+				info() << "Algorithm " << algoPtr->name()
+						<< " has no data dependencies." << endmsg;
+			}
+
+			m_algosDependencies.emplace_back(algoDependencies);
+		}
+	} else {
+		if (algsNumber != algosDependenciesSize){
+			error() << "number of Algorithms is different from size of Data Dependency list!" << endmsg;
+			return StatusCode::FAILURE;
+		}
+	}
 
   // Fill the containers to convert algo names to index
   m_algname_vect.reserve(algsNumber);

@@ -44,7 +44,7 @@ macro_append Boost_linkopts "" target-winxp " $(Boost_linkopts_date_time) "
 #macro_append fileparse_testlinkopts     " -L../$(tag) -lGaudiSvc" \
 #  target-winxp                          " /libpath:$(GAUDISVCROOT)/$(tag) GaudiSvc.lib"
 
-apply_pattern generate_rootmap library=GaudiSvcTest group=tests
+apply_pattern generate_componentslist library=GaudiSvcTest group=tests
 
 macro_append cppflags "" \
          target-linux " -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long " \

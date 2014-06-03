@@ -413,30 +413,6 @@ public:
 		}
 	}
 
-	void registerToolHandle(ToolHandleInfo * toolhandle) const {
-
-		MsgStream log(msgSvc(), name());
-
-		log << MSG::DEBUG << "Registering toolhandle " << endmsg;
-
-		m_toolHandles.push_back(toolhandle);
-	}
-
-	void deregisterToolHandle(ToolHandleInfo * toolhandle) const {
-		std::vector<ToolHandleInfo *>::iterator it = std::find(
-				m_toolHandles.begin(), m_toolHandles.end(), toolhandle);
-
-		MsgStream log(msgSvc(), name());
-		if (it != m_toolHandles.end()) {
-
-			log << MSG::DEBUG << "De-Registering toolhandle" << endmsg;
-
-			m_toolHandles.erase(it);
-		} else {
-			log << MSG::DEBUG << "Could not de-register toolhandle" << endmsg;
-		}
-	}
-
 	/** Declare used public tool
 	 *
 	 *  @param handle ToolHandle<T>
@@ -615,7 +591,7 @@ private:
 
   //tools used by tool
   mutable std::vector<IAlgTool *> m_tools;
-  mutable std::vector<ToolHandleInfo *> m_toolHandles;
+  mutable std::vector<BaseToolHandle *> m_toolHandles;
   mutable bool m_toolHandlesInit;  /// flag indicating whether ToolHandle tools have been added to m_tools
 
   /** implementation of service method */

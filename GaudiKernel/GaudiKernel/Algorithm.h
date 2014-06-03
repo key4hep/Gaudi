@@ -559,7 +559,6 @@ public:
 	  else
 		  return declareOutput<T>(tag, *doh, address, is_optional, accesstype);
 
-    MsgStream log ( msgSvc() , name() );
   }
   
   /** Declare input data object
@@ -796,6 +795,10 @@ protected:
 
    std::vector<IAlgTool *> & tools();
 
+
+   // adds declared in- and outputs of subAlgorithms to own DOHs
+   void addSubAlgorithmDataObjectHandles();
+
 private:
    //place IAlgTools defined via ToolHandles in m_tools
    void initToolHandles() const;
@@ -844,7 +847,7 @@ private:
 
   //tools used by algorithm
   mutable std::vector<IAlgTool *> m_tools;
-  mutable std::vector<ToolHandleInfo *> m_toolHandles;
+  mutable std::vector<BaseToolHandle *> m_toolHandles;
 
 
 private:
