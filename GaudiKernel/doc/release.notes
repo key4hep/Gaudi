@@ -1,7 +1,7 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
-============================= GaudiKernel v30r2 ==============================
+============================= GaudiKernel v30r3 ==============================
 ! 2014-05-27 - Marco Clemencic
  - Minor fix to CMake configuration (CMT equivalence).
 
@@ -23,6 +23,7 @@ Package manager : Marco Clemencic
 ! 2014-05-15 - Beat Jost
  - Added the interface IPublishSvc.
 
+============================= GaudiKernel v30r2 ==============================
 ! 2014-03-21 - Marco Clemencic, Rolf Seuster, David Quarrie
  - Re-enabled the DECLARE_FACTORY_ENTRIES family of macros (needed by ATLAS).
 

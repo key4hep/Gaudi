@@ -16,7 +16,7 @@ use Gaudi          v25r2
 use GaudiPluginService    v1r2
 
 # Gaudi libraries - generic
-use GaudiKernel    v30r2
+use GaudiKernel    v30r3
 use GaudiCoreSvc   v3r1
 use GaudiCommonSvc v3r1
 use GaudiSvc       v21r2
