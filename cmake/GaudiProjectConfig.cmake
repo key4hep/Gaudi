@@ -376,7 +376,7 @@ macro(gaudi_project project version)
   file(APPEND ${CMAKE_BINARY_DIR}/subdirs_deps.dot "}\n")
 
   #--- Special global targets for merging files.
-  gaudi_merge_files(ConfDB python ${CMAKE_PROJECT_NAME}_merged_confDb.py)
+  gaudi_merge_files(ConfDB lib ${CMAKE_PROJECT_NAME}.confdb)
   gaudi_merge_files(ComponentsList lib ${CMAKE_PROJECT_NAME}.components)
   gaudi_merge_files(DictRootmap lib ${CMAKE_PROJECT_NAME}Dict.rootmap)
 
@@ -1457,20 +1457,19 @@ function(gaudi_generate_configurables library)
     endif()
   endif()
 
-  set(genconf_products ${outdir}/${library}_confDb.py
-                       ${outdir}/${library}Conf.py)
+  set(genconf_products ${outdir}/${library}Conf.py)
   if(genconf_needs_init OR NOT GENCONF_WITH_NO_INIT)
     set(genconf_products ${genconf_products} ${outdir}/__init__.py)
   endif()
 
   add_custom_command(
-    OUTPUT ${genconf_products}
+    OUTPUT ${genconf_products} ${outdir}/${library}.confdb
     COMMAND ${env_cmd} --xml ${env_xml}
               ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
                 ${genconf_opts}
                 -i ${library}
     DEPENDS ${library} ${deps})
-  add_custom_target(${library}Conf ALL DEPENDS ${outdir}/${library}_confDb.py)
+  add_custom_target(${library}Conf ALL DEPENDS ${outdir}/${library}.confdb)
   # Add the target to the target that groups all of them for the package.
   if(NOT TARGET ${package}ConfAll)
     add_custom_target(${package}ConfAll ALL)
@@ -1478,7 +1477,7 @@ function(gaudi_generate_configurables library)
   add_dependencies(${package}ConfAll ${library}Conf)
   # Add dependencies on GaudiSvc and the genconf executable if they have to be built in the current project
   # Notify the project level target
-  gaudi_merge_files_append(ConfDB ${library}Conf ${outdir}/${library}_confDb.py)
+  gaudi_merge_files_append(ConfDB ${library}Conf ${outdir}/${library}.confdb)
   #----Installation details-------------------------------------------------------
   install(FILES ${genconf_products} DESTINATION python/${package} OPTIONAL)
 
@@ -1514,20 +1513,18 @@ function(gaudi_generate_confuserdb)
     #       we have to force it because we cannot define the dependencies
     #       correctly (on the Python files)
     add_custom_target(${package}ConfUserDB ALL
-                      DEPENDS ${outdir}/${package}_user_confDb.py)
+                      DEPENDS ${outdir}/${package}_user.confdb)
     if(${ARG_DEPENDS} ${PROPERTY_DEPENDS})
       add_dependencies(${package}ConfUserDB ${ARG_DEPENDS} ${PROPERTY_DEPENDS})
     endif()
     add_custom_command(
-      OUTPUT ${outdir}/${package}_user_confDb.py
+      OUTPUT ${outdir}/${package}_user.confdb
       COMMAND ${env_cmd} --xml ${env_xml}
                 ${genconfuser_cmd}
                   -r ${CMAKE_CURRENT_SOURCE_DIR}/python
-                  -o ${outdir}/${package}_user_confDb.py
+                  -o ${outdir}/${package}_user.confdb
                   ${package} ${modules})
-    install(FILES ${outdir}/${package}_user_confDb.py
-            DESTINATION python/${package} OPTIONAL)
-    gaudi_merge_files_append(ConfDB ${package}ConfUserDB ${outdir}/${package}_user_confDb.py)
+    gaudi_merge_files_append(ConfDB ${package}ConfUserDB ${outdir}/${package}_user.confdb)
 
     # FIXME: dependency on others ConfUserDB
     # Historically we have been relying on the ConfUserDB built in the dependency
@@ -1556,9 +1553,9 @@ function(gaudi_generate_confuserdb)
         set(targets ${targets} ${dep}ConfUserDB)
       endif()
     endforeach()
-    #message(STATUS "${outdir}/${package}_user_confDb.py <- ${targets}")
+    #message(STATUS "${outdir}/${package}_user.confdb <- ${targets}")
     if(targets) # FIXME: is this an optimization or it is better to add deps one by one?
-      add_custom_command(OUTPUT ${outdir}/${package}_user_confDb.py DEPENDS ${targets} APPEND)
+      add_custom_command(OUTPUT ${outdir}/${package}_user.confdb DEPENDS ${targets} APPEND)
     endif()
 
   endif()

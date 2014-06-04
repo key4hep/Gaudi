@@ -1361,15 +1361,15 @@ macro GenConfUser_script "genconfuser.py" \
                    target-winxp "genconfuser.bat"
 pattern real_genconfuser \
 	private ; \
-	macro <package>GenConfUser_output "$(<package>_root)$(genconfDir)<package>/<package>_user_confDb.py" \
-	                            target-winxp "$(<package>_root)$(genconfDir)<package>\<package>_user_confDb.py" ; \
+	macro <package>GenConfUser_output "$(<package>_root)$(genconfDir)<package>/<package>_user.confdb" \
+	                            target-winxp "$(<package>_root)$(genconfDir)<package>\<package>_user.confdb" ; \
 	macro <package>GenConfUser_python "$(<package>_root)/python" \
                                     target-winxp "$(<package>_root)\python" ; \
 	macro <package>GenConfUser_deps "FORCE" ; \
 	macro <package>GenConfUser_command "$(GenConfUser_script) --lockerpath $(GaudiPolicy_root)/scripts -r $(<package>GenConfUser_python) -o $(<package>GenConfUser_output) <package> $(<package>ConfUserModules)" ; \
 	apply_pattern CallCommand target=<package>GenConfUser ; \
 	document merge_genconfDb <package>ConfUserDbMerge -group=<group> \
-		inDir=$(<package>_root)$(genconfDir)<package> \
+        inDir=$(<package>_root)$(genconfDir)<package> \
 		library=<package>_user \
 		merge_genconfDb_switch="--do-merge" ; \
 	macro_append <package>_python_init_dependencies " <package>GenConfUser " ; \

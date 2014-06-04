@@ -66,6 +66,28 @@ class _CfgDb( dict ):
     def duplicates(self):
         return self._duplicates
 
+    def _loadModule(self, fname):
+        f = open(fname)
+        for i,ll in enumerate(f):
+            l = ll.strip()
+            if l.startswith('#') or len(l) <= 0:
+                continue
+            try:
+                line = l.split()
+                cname = line[2]
+                pkg = line[0].split('.')[0]
+                module = line[0]
+                lib = line[1]
+                self.add(cname, pkg, module, lib)
+            except Exception:
+                f.close()
+                raise Exception(
+                    "invalid line format: %s:%d: %r" %
+                    (fname, i+1, ll)
+                    )
+            pass
+        f.close()
+
     pass # class _CfgDb
 
 class _Singleton( object ):
@@ -95,42 +117,39 @@ def loadConfigurableDb():
     """
     import os
     import sys
-    from zipfile import is_zipfile, ZipFile
     from glob import glob
     from os.path import join as path_join
-    log.debug( "importing confDb packages..." )
+    log.debug( "loading confDb files..." )
     nFiles = 0 # counter of imported files
-    for path in sys.path:
-        log.debug( "walking in [%s]..." % path )
-        if not os.path.exists(path):
+    pathlist = os.getenv("LD_LIBRARY_PATH", "").split(os.pathsep)
+    for path in pathlist:
+        log.debug( "walking in [%s]...", path )
+        if not os.path.isdir(path):
             continue
-        if is_zipfile(path):
-            # turn filename syntax into module syntax: remove path+extension and replace / with . (dot)
-            confDbModules = [ os.path.splitext(f)[0].replace('/','.')
-                              for f in ZipFile(path).namelist()
-                              if f.endswith("_merged_confDb.py") or f.endswith("_merged_confDb.pyc") ]
-        else:
-            # turn filename syntax into module syntax: remove path+extension and replace / with . (dot)
-            confDbModules = [ os.path.splitext( f[len(path)+1:] )[0].replace(os.sep,'.')
-                              for f in glob(path_join(path, "*_merged_confDb.py"))
-                              if os.path.isfile(f) ]
-        for confDbModule in confDbModules:
-            nFiles += 1
-            log.debug( "\t-importing [%s]..." % confDbModule )
+        confDbFiles = [f for f in [path_join(path, f) for f in os.listdir(path)
+                                   if f.endswith('.confdb')]
+                       if os.path.isfile(f)]
+        # check if we use "*_merged.confdb"
+        mergedConfDbFiles = [f for f in confDbFiles
+                             if f.endswith('_merged.confdb')]
+        if mergedConfDbFiles:
+            # use only the merged ones
+            confDbFiles = mergedConfDbFiles
+
+        for confDb in confDbFiles:
+            log.debug( "\t-loading [%s]...", confDb )
             try:
-                mod = __import__( confDbModule )
-            except ImportError, err:
-                log.warning( "Could not import module [%s] !", confDbModule )
+                cfgDb._loadModule( confDb )
+            except Exception, err:
+                log.warning( "Could not load file [%s] !", confDb )
                 log.warning( "Reason: %s", err )
                 pass
-            else:
-                # don't need to keep the module
-                del mod
-            pass
-        pass # loop over sys.path
-    log.debug( "importing confDb packages... [DONE]" )
+            nFiles += 1
+            pass # loop over confdb-files
+        pass # loop over paths
+    log.debug( "loading confDb files... [DONE]" )
     nPkgs = len( set([k['package'] for k in cfgDb.values()]) )
-    log.debug( "imported %i confDb packages" % nPkgs )
+    log.debug( "loaded %i confDb files", nPkgs )
     return nFiles
 
 

@@ -34,6 +34,9 @@ if(GAUDI_BUILD_TESTS)
   set_property(TEST GaudiKernel.PathResolver_test PROPERTY WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 endif()
 
+gaudi_add_test(confdb
+               COMMAND nosetests ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose/confdb)
+
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIBRARIES GaudiKernel)
 

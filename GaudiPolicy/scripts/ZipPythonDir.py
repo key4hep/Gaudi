@@ -71,7 +71,8 @@ def _zipChanges(directory, infolist):
                 else:
                     log.info(" %s -> %s", action, filename)
             # cases that can be ignored
-            elif ext not in [".pyc", ".pyo", ".stamp", ".cmtref"] and not f.startswith('.__afs'):
+            elif (ext not in [".pyc", ".pyo", ".stamp", ".cmtref", ".confdb"]
+                  and not f.startswith('.__afs')):
                 raise ZipdirError("Cannot add '%s' to the zip file, only '.py' are allowed." % os.path.join(arcdir, f))
     # check for removed files
     for filename in infos:
