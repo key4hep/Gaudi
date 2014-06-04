@@ -97,7 +97,7 @@ StatusCode RoundRobinSchedulerSvc::pushNewEvent(EventContext* eventContext){
 
 	--m_freeSlots;
 	m_evtCtx_buffer.push_back(eventContext);
-	eventContext->m_evt_failed = false;
+	eventContext->setFail(false);
 
 	return m_freeSlots > 0 ? StatusCode::SUCCESS : processEvents();
 }
@@ -166,19 +166,19 @@ StatusCode RoundRobinSchedulerSvc::processEvents(){
 				algoPtr->resetExecuted();
 
 				for (uint i = 0; i < m_evtCtx_buffer.size(); ++i) {
-					if (false == m_evtCtx_buffer[i]->m_evt_failed) {
+				  if (false == m_evtCtx_buffer[i]->evtFail()) {
 						bool eventfailed=false;
 
-						m_evtCtx_buffer[i]->m_thread_id = pthread_self();
+						// m_evtCtx_buffer[i]->m_thread_id = pthread_self();
 						algoPtr->resetExecuted();
 						algoPtr->setContext(m_evtCtx_buffer[i]);
-						Gaudi::Hive::setCurrentContextId(m_evtCtx_buffer[i]->m_evt_slot);
+						Gaudi::Hive::setCurrentContextId(m_evtCtx_buffer[i]->slot());
 						// Call the execute() method
 						try {
 							RetCodeGuard rcg(appmgr, Gaudi::ReturnCode::UnhandledException);
 							sc = ialgoPtr->sysExecute();
 							if (UNLIKELY(!sc.isSuccess()))  {
-								warning() << "Execution of algorithm " << algName << " failed for event " << m_evtCtx_buffer[i]->m_evt_num << endmsg;
+								warning() << "Execution of algorithm " << algName << " failed for event " << m_evtCtx_buffer[i]->evt() << endmsg;
 								eventfailed = true;
 							}
 							rcg.ignore(); // disarm the guard
@@ -194,7 +194,7 @@ StatusCode RoundRobinSchedulerSvc::processEvents(){
 							fatal() << ".executeEvent(): UNKNOWN Exception thrown by "
 									<< algName << endmsg;
 						}
-						m_evtCtx_buffer[i]->m_evt_failed=eventfailed;
+						m_evtCtx_buffer[i]->setFail(eventfailed);
 					}
 
 					if (ialgoPtr->filterPassed()){
@@ -255,8 +255,8 @@ StatusCode RoundRobinSchedulerSvc::popFinishedEvent(EventContext*& eventContext)
 
 	m_finishedEvents.pop(eventContext);
   m_freeSlots++;
-  debug() << "Popped slot " << eventContext->m_evt_slot << "(event "
-          << eventContext->m_evt_num << ")" << endmsg;
+  debug() << "Popped slot " << eventContext->slot() << "(event "
+          << eventContext->evt() << ")" << endmsg;
   return StatusCode::SUCCESS;
 }
   
@@ -264,8 +264,8 @@ StatusCode RoundRobinSchedulerSvc::popFinishedEvent(EventContext*& eventContext)
 /// Try to get a finished event, if not available just return a failure 
 StatusCode RoundRobinSchedulerSvc::tryPopFinishedEvent(EventContext*& eventContext){
   if (m_finishedEvents.try_pop(eventContext)){
-    debug() << "Try Pop successful slot " << eventContext->m_evt_slot
-            << "(event " << eventContext->m_evt_num << ")" << endmsg;
+    debug() << "Try Pop successful slot " << eventContext->slot()
+            << "(event " << eventContext->evt() << ")" << endmsg;
      m_freeSlots++;
     return StatusCode::SUCCESS;
   }

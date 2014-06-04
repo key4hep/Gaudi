@@ -158,9 +158,12 @@ private:
       @param createIf: if true, create tool if not yet existing.
   */
 
-#ifdef ATLAS
+#if defined(ATLAS) && defined(TOOLHANDLE_DEPR_WARN)
 	//warn about using deprecated explicit ToolHandle construction
-	__attribute__ ((deprecated ("UNtracked ToolHandle - Migrate explicit DataHandle constructor to declareTool Algorithm Property") ))
+#pragma message("Untracked ToolHandle: Migrate explicit DataHandle constructor to declareTool Algorithm Property")
+
+  __attribute__ ((deprecated))
+
 #endif
   ToolHandle(const std::string& toolTypeAndName, const IInterface* parent = 0, bool createIf = true )
     : BaseToolHandle(parent,createIf),

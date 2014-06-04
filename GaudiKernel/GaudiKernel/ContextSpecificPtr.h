@@ -10,6 +10,8 @@
 // For the definition of GAUDI_API
 #include "Kernel.h"
 
+class EventContext;
+
 namespace Gaudi {
   namespace Hive {
     /// Internal type used for the ContextId.
@@ -19,9 +21,13 @@ namespace Gaudi {
     /// The returned id is valid only within the (sys)Execute method of
     /// algorithms.
     GAUDI_API ContextIdType currentContextId();
+    GAUDI_API ContextIdType currentContextEvt();
 
     /// Used by the framework to change the value of the current context id.
     GAUDI_API void setCurrentContextId(ContextIdType newId);
+    GAUDI_API void setCurrentContextEvt(long int evtN);
+    GAUDI_API void setCurrentContextId(ContextIdType newId, long int evtN);
+    GAUDI_API void setCurrentContextId(const EventContext* ctx);
 
     /**
      *  Simple implementation of a smart pointer with different values for

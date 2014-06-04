@@ -696,7 +696,7 @@ StatusCode Algorithm::sysExecute() {
     ( this , registerContext() ? contextSvc().get() : 0 ) ;
 
   // HiveWhiteBoard stuff here
-  if(m_WB.isValid()) m_WB->selectStore(getContext() ? getContext()->m_evt_slot : 0).ignore();
+  if(m_WB.isValid()) m_WB->selectStore(getContext() ? getContext()->slot() : 0).ignore();
 
   Gaudi::Guards::AuditorGuard guard(this,
                                     // check if we want to audit the initialize
@@ -706,9 +706,9 @@ StatusCode Algorithm::sysExecute() {
 
   TimelineEvent timeline;
   timeline.algorithm = this->name();
-  timeline.thread = getContext() ? getContext()->m_thread_id : 0;
-  timeline.slot = getContext() ? getContext()->m_evt_slot : 0;
-  timeline.event = getContext() ? getContext()->m_evt_num : 0;
+  //  timeline.thread = getContext() ? getContext()->m_thread_id : 0;
+  timeline.slot = getContext() ? getContext()->slot() : 0;
+  timeline.event = getContext() ? getContext()->evt() : 0;
 
   try {
 

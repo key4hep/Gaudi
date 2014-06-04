@@ -155,6 +155,15 @@ protected:
   /// The default time format.
   static const char* DEFAULT_TIME_FORMAT;
 
+  /// For slot and event number from EventContext
+  static const char SLOT;
+  static const char EVTNUM;
+  static const char THREAD;
+
+  size_t m_ecSlot;
+  long int m_ecEvt;
+  long unsigned int m_ecThrd;
+
 };
 
 /// Insert the message into a stream.

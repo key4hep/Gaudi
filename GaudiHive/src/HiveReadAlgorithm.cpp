@@ -21,7 +21,7 @@ StatusCode HiveReadAlgorithm::execute()
 {
   EventContext* ctxt = getContext();
   if (ctxt){
-    info() << "Running now for event " << ctxt->m_evt_num << endmsg;
+    info() << "Running now for event " << ctxt->evt() << endmsg;
   }
   return evtSvc()->preLoad();
 }

@@ -96,7 +96,7 @@ StatusCode SequentialSchedulerSvc::pushNewEvent(EventContext* eventContext){
 
     debug() << "Running algorithm " << this_algo->name() << endmsg;
 
-    m_eventContext->m_thread_id = pthread_self();  
+    // m_eventContext->m_thread_id = pthread_self();  
     this_algo->setContext(m_eventContext);
     
     // Get the IProperty interface of the ApplicationMgr to pass it to RetCodeGuard
@@ -131,7 +131,7 @@ StatusCode SequentialSchedulerSvc::pushNewEvent(EventContext* eventContext){
     // DP it is important to propagate the failure of an event.
     // We need to stop execution when this happens so that execute run can 
     // then receive the FAILURE
-    m_eventContext->m_evt_failed=eventfailed;
+    m_eventContext->setFail(eventfailed);
     
     if (eventfailed)
       return StatusCode::FAILURE;    

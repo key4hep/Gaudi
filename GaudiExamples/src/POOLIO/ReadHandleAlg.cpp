@@ -27,7 +27,7 @@ StatusCode ReadHandleAlg::execute() {
   
   Collision* c = m_inputHandle.get();
 
-  const int evtNum = getContext()? getContext()->m_evt_num : -1;
+  const int evtNum = getContext()? getContext()->evt() : -1;
 
   log << MSG::INFO << "Event " << evtNum << " Collision number " <<  c->collision() << endmsg;
   
