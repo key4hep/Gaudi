@@ -123,9 +123,9 @@ def loadConfigurableDb():
     nFiles = 0 # counter of imported files
     pathlist = os.getenv("LD_LIBRARY_PATH", "").split(os.pathsep)
     for path in pathlist:
-        log.debug( "walking in [%s]...", path )
         if not os.path.isdir(path):
             continue
+        log.debug( "walking in [%s]...", path )
         confDbFiles = [f for f in [path_join(path, f) for f in os.listdir(path)
                                    if f.endswith('.confdb')]
                        if os.path.isfile(f)]

@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2014-06-04 - Marco Clemencic
+ - Tentative fix for genconfuser for the new .confdb files (without _merge).
+
 ! 2014-05-27 - Marco Clemencic
  - In order to remove the _merged.confdb and use a single installed .confdb:
    - Modified loadConfigurableDb to handle transparently both plain .confdb

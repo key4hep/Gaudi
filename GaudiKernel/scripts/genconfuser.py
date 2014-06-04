@@ -37,28 +37,29 @@ def loadConfigurableDb():
     Equivalent to GaudiKernel.ConfigurableDb.loadConfigurableDb(), but does a
     deep search and executes the '*.confdb' files instead of importing them.
     '''
-    # find the '*_confDb.ascii' files that are not merged ones
     log = GaudiKernel.ConfigurableDb.log
-    pathlist = os.getenv("LD_LIBRARY_PATH","").split(os.pathsep)
+    from os.path import join as path_join
+    # look for the confdb files in all the reasonable places
+    #  - CMake builds
+    confDbFiles = []
+    for path in sys.path:
+        confDbFiles += [f for f in glob(path_join(path, '*', '*.confdb'))
+                        if os.path.isfile(f)]
+    #  - used projects and local merged file
+    pathlist = os.getenv("LD_LIBRARY_PATH", "").split(os.pathsep)
     for path in pathlist:
-        log.debug( "walking in [%s]..." % path )
-        if not os.path.exists(path):
-            continue
-        confDbFiles = [ f for f in glob(os.path.join(path, "*.confdb"))
-                        if 'merged' not in f and os.path.isfile(f) ]
-        for confDb in confDbFiles:
-            # turn filename syntax into module syntax: remove path+extension and replace / with . (dot)
-            confDbModule = os.path.splitext(confDb[len(path)+1:])[0].replace(os.sep,'.')
-            log.debug( "\t-importing [%s]..." % confDbModule )
-            try:
-                cfgDb._loadModule( confDb )
-            except Exception, err:
-                # It may happen that the file is found but not completely
-                # written, usually during parallel builds, but we do not care.
-                log.warning( "Could not import module [%s] !", confDb )
-                log.warning( "Reason: %s", err )
-                pass
-            pass # loop over sys.path
+        confDbFiles += [f for f in [path_join(path, f) for f in os.listdir(path)
+                                    if f.endswith('.confdb')]]
+    #  - load the confdb files
+    for confDb in confDbFiles:
+        log.debug( "\t-loading [%s]..." % confDb )
+        try:
+            cfgDb._loadModule( confDb )
+        except Exception, err:
+            # It may happen that the file is found but not completely
+            # written, usually during parallel builds, but we do not care.
+            log.warning( "Could not load file [%s] !", confDb )
+            log.warning( "Reason: %s", err )
     # top up with the regular merged confDb (for the used projects)
     GaudiKernel.ConfigurableDb.loadConfigurableDb()
 
