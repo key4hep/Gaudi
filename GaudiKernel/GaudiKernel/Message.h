@@ -162,7 +162,7 @@ protected:
 
   size_t m_ecSlot;
   long int m_ecEvt;
-  long unsigned int m_ecThrd;
+  pthread_t m_ecThrd;
 
 };
 
