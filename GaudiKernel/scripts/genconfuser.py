@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 Generate _confDb.py files for ConfigurableUser classes.
 """
@@ -201,7 +202,7 @@ def main():
         # configurables
         sys.path.insert(0, genConfDir)
         sys.path.insert(0, os.path.join("..", "python"))
-        localConfDb = os.path.join(genConfDir, package_name + '.confdb')
+        localConfDb = os.path.join(genConfDir, package_name, package_name + '.confdb')
         if os.path.exists(localConfDb):
             cfgDb._loadModule(localConfDb)
             # Extend the search path of the package module to find the configurables
