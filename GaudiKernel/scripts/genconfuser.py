@@ -48,7 +48,7 @@ def loadConfigurableDb():
                         if os.path.isfile(f)]
     #  - used projects and local merged file
     pathlist = os.getenv("LD_LIBRARY_PATH", "").split(os.pathsep)
-    for path in pathlist:
+    for path in filter(os.path.isdir, pathlist):
         confDbFiles += [f for f in [path_join(path, f) for f in os.listdir(path)
                                     if f.endswith('.confdb')]]
     #  - load the confdb files

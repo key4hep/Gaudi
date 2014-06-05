@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 
 ! 2014-06-05 - Marco Clemencic
+ - Fixed crash in genconfuser in a special case.
+
+! 2014-06-05 - Marco Clemencic
  - Fixed spurious warning coming from genconfuser after the switch to the new
    .confdb files.
 
