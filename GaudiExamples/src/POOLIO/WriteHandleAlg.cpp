@@ -34,7 +34,7 @@ StatusCode WriteHandleAlg::execute  ()  // the execution of the algorithm
   // Set collision to the current event number from the context; 
   // if the context doesn't exist, set it to some dummy value 
   // this fallback allows to stay compatible with non-hive infrastructure 
-  Collision* c = new Collision(getContext() ? getContext()->m_evt_num : 42);
+  Collision* c = new Collision(getContext() ? getContext()->evt() : 42);
 
   if (m_useHandle) m_output_handle.put(c);
   else eventSvc()->registerObject("/Event","MyCollision",c);

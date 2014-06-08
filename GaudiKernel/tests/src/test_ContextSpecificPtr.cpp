@@ -9,7 +9,7 @@ BOOST_AUTO_TEST_CASE( basic_usage )
 {
   ContextSpecificPtr<int> p;
 
-  setCurrentContextId(0);
+  setCurrentContextId((ContextIdType)0);
 
   BOOST_CHECK( ! p.isValid() );
 
@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE( basic_usage )
 
   BOOST_CHECK( p0 != p1 );
 
-  setCurrentContextId(0);
+  setCurrentContextId((ContextIdType)0);
 
   BOOST_REQUIRE( p.isValid() );
   BOOST_CHECK( *p == 42 );
@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE( ctx_data )
 {
   ContextSpecificData<int> i;
 
-  setCurrentContextId(0);
+  setCurrentContextId((ContextIdType)0);
 
   BOOST_CHECK( i == 0 );
 
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE( ctx_data )
 
   BOOST_CHECK( i0 != i1 );
 
-  setCurrentContextId(0);
+  setCurrentContextId((ContextIdType)0);
 
   BOOST_CHECK( i == 42 );
 
@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE( ctx_data_with_proto )
 {
   ContextSpecificData<int> i(123);
 
-  setCurrentContextId(0);
+  setCurrentContextId((ContextIdType)0);
 
   BOOST_CHECK( i == 123 );
 
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE( ctx_data_with_proto )
 
   BOOST_CHECK( i0 != i1 );
 
-  setCurrentContextId(0);
+  setCurrentContextId((ContextIdType)0);
 
   BOOST_CHECK( i == 42 );
 
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE( ctx_complex_data )
   ContextSpecificData<TestClass> i;
   ContextSpecificData<TestClass> j(TestClass(1, 2));
 
-  setCurrentContextId(0);
+  setCurrentContextId((ContextIdType)0);
 
   BOOST_CHECK( ((TestClass&)i).a == 0 );
   BOOST_CHECK( ((TestClass&)i).b == 0 );
@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE( ctx_complex_data )
   BOOST_CHECK( ((TestClass&)j).a == 1 );
   BOOST_CHECK( ((TestClass&)j).b == 2 );
 
-  setCurrentContextId(0);
+  setCurrentContextId((ContextIdType)0);
 
   BOOST_CHECK( ((TestClass&)i).a == 3 );
   BOOST_CHECK( ((TestClass&)i).b == 4 );

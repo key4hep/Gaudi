@@ -375,8 +375,8 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
   m_incidentSvc->fireIncident(Incident(name(),IncidentType::BeginEvent));
   
   // Now add event to the scheduler 
-  info() << "Adding event " << evtContext->m_evt_num 
-          << ", slot " << evtContext->m_evt_slot
+  info() << "Adding event " << evtContext->evt()
+	 << ", slot " << evtContext->slot()
           << " to the scheduler" << endmsg;
   
   m_incidentSvc->fireIncident(Incident(name(), IncidentType::BeginProcessing));
@@ -593,12 +593,11 @@ StatusCode HiveSlimEventLoopMgr::declareEventRootAddress(){
 StatusCode  HiveSlimEventLoopMgr::createEventContext(EventContext*& evtContext, int createdEvts){
   evtContext = new EventContext;
 
-  evtContext->m_evt_num = createdEvts;
-  evtContext->m_evt_slot = m_whiteboard->allocateStore(createdEvts);
+  evtContext->set(createdEvts, m_whiteboard->allocateStore(createdEvts));
   
-  StatusCode sc = m_whiteboard->selectStore(evtContext->m_evt_slot);
+  StatusCode sc = m_whiteboard->selectStore(evtContext->slot());
   if (sc.isFailure()){
-    warning() << "Slot " << evtContext->m_evt_slot 
+    warning() << "Slot " << evtContext->slot() 
               << " could not be selected for the WhiteBoard" << endmsg;
   }  
   return sc;
@@ -642,7 +641,7 @@ StatusCode HiveSlimEventLoopMgr::drainScheduler(int& finishedEvts){
       finalSC = StatusCode::FAILURE;
       continue;
     }    
-    if (thisFinishedEvtContext->m_evt_failed){
+    if (thisFinishedEvtContext->evtFail()){
       fatal() << "Failed event detected"<< endmsg;
       finalSC = StatusCode::FAILURE;
     }
@@ -650,13 +649,13 @@ StatusCode HiveSlimEventLoopMgr::drainScheduler(int& finishedEvts){
     m_incidentSvc->fireIncident(Incident(name(), IncidentType::EndProcessing));
     m_incidentSvc->fireIncident(Incident(name(),IncidentType::EndEvent));
     
-    debug() << "Clearing slot " << thisFinishedEvtContext->m_evt_slot
-          << " (event " << thisFinishedEvtContext->m_evt_num
+    debug() << "Clearing slot " << thisFinishedEvtContext->slot()
+	    << " (event " << thisFinishedEvtContext->evt()
           << ") of the whiteboard" << endmsg;
     
-    StatusCode sc = clearWBSlot(thisFinishedEvtContext->m_evt_slot);
+    StatusCode sc = clearWBSlot(thisFinishedEvtContext->slot());
     if (!sc.isSuccess())
-        error() << "Whiteboard slot " << thisFinishedEvtContext->m_evt_slot 
+      error() << "Whiteboard slot " << thisFinishedEvtContext->slot() 
                 << " could not be properly cleared";
 
     

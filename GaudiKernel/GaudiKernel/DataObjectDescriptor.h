@@ -34,7 +34,7 @@ public:
 			const MinimalDataObjectHandle::AccessType accessType = MinimalDataObjectHandle::READ)
 	: m_tag(tag), m_address(addresses[0]), m_optional(optional), m_accessType(accessType) {
 
-		setAltAddress(addresses, true); //
+		setAltAddresses(addresses, true); //
 	};
 
 private:
@@ -88,7 +88,7 @@ public:
 	//sets the address of the descriptor and updates the handle if present
 	void setAddress(const std::string& address);
 	void setAddresses(const std::vector<std::string>& address);
-	void setAltAddress(const std::vector<std::string> & addresses){ setAltAddress(addresses, false); }
+	void setAltAddresses(const std::vector<std::string> & addresses){ setAltAddresses(addresses, false); }
 
 	const std::string& tag() const;
 	void setTag(const std::string& tag);
@@ -144,7 +144,7 @@ public:
 
 private:
 	//void setHandle(SmartIF<MinimalDataObjectHandle> handle);
-	void setAltAddress(const std::vector<std::string> & addresses, bool skipFirst);
+	void setAltAddresses(const std::vector<std::string> & addresses, bool skipFirst);
 
 private:
 	std::string m_tag;
@@ -174,6 +174,7 @@ public:
 	DataObjectDescriptorCollection & operator=(const DataObjectDescriptorCollection& other);
 
 	bool contains(const std::string & o) const;
+	bool contains(const MinimalDataObjectHandle * o) const;
 
 	bool insert(const std::string& tag,
 				MinimalDataObjectHandle * descriptor);

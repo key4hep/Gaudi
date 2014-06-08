@@ -1,6 +1,22 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2014-06-03 - Charles Leggett
+ - EventContext: turn it into a real class, remove thread info
+ - ContextSpecificPtr: add evt num to thread local info
+ - Message: print out current slot/evt/thread on demand 
+            via %E,%N,%X respectively
+
+! 2014-05-08 - Charles Leggett
+ - a few fixes for gcc47
+ - backward compatibility for factories
+ - unchecked statusCode in MinimalEventLoopMgr::stop
+
+#	modified:   GaudiKernel/GaudiKernel/Algorithm.h
+#	modified:   GaudiKernel/GaudiKernel/DeclareFactoryEntries.h
+#	modified:   GaudiKernel/doc/release.notes
+#	modified:   GaudiKernel/src/Lib/ContextSpecificPtr.cpp
+#	modified:   GaudiKernel/src/Lib/MinimalEventLoopMgr.cpp
 
 ! 2014-03-03 - Marco Clemencic
  - Changed the namespace used for __Instanitations in the dictionary to avoid

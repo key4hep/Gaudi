@@ -62,8 +62,8 @@ public:
 };
 
 tbb::task* HiveAlgoTask::execute() {
-	Algorithm* this_algo = dynamic_cast<Algorithm*>(m_algorithm);
-	this_algo->getContext()->m_thread_id = pthread_self();
+	// Algorithm* this_algo = dynamic_cast<Algorithm*>(m_algorithm);
+	// this_algo->getContext()->m_thread_id = pthread_self();
 	m_algorithm->sysExecute();
 	m_scheduler->algoFinished();
 	// put back the algo into the hive algorithm manager
@@ -500,10 +500,8 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 
             EventContext* evtContext(new EventContext);
             const int evt_num =  n_processed_events + offset + n_events_in_flight;
-            evtContext->m_evt_num = evt_num;
-
-            evtContext->m_evt_slot = m_whiteboard->allocateStore(evt_num);
-            m_whiteboard->selectStore(evtContext->m_evt_slot).ignore();
+	    evtContext->set(evt_num,  m_whiteboard->allocateStore(evt_num) );
+            m_whiteboard->selectStore(evtContext->slot()).ignore();
  
             if( m_evtContext ) {
                 //---This is the "event iterator" context from EventSelector
@@ -570,7 +568,7 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
                        ListAlg::iterator algoIt = m_topAlgList.begin();
                        std::advance(algoIt, algo_counter);
                        if(m_algResourcePool->acquireAlgorithm(algoIt->get()->name(),ialgo)){
-                           log << MSG::INFO << "Launching algo " << algo_counter<<  " on event " << event_Context->m_evt_num << endmsg;
+                           log << MSG::INFO << "Launching algo " << algo_counter<<  " on event " << event_Context->evt() << endmsg;
                             // Attach context to the algo
                             Algorithm* algo = dynamic_cast<Algorithm*> (ialgo);
                             algo->setContext(event_Context);
@@ -589,7 +587,7 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
  
                // update the event state with what has been put into the DataSvc
                std::vector<std::string> new_products;
-               m_whiteboard->selectStore(event_Context->m_evt_slot).ignore();
+               m_whiteboard->selectStore(event_Context->slot()).ignore();
                sc = m_whiteboard->getNewDataObjects(new_products);
                if( !sc.isSuccess() ){
                    warning() << "Error getting recent new products (since last time called)" << endmsg;
@@ -632,7 +630,7 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
                                                  "no new products in the store, "
                                                  "event not complete: this is a stall.");
                         fatal() << errorMessage << std::endl
-                                << "Algorithms that ran for event " << event_Context->m_evt_num << std::endl;
+                                << "Algorithms that ran for event " << event_Context->evt() << std::endl;
                         unsigned int algo_counter=0;
                         for (auto& algo : m_topAlgList){
                             bool has_started = event_state->hasStarted(algo_counter);
@@ -655,8 +653,8 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
         while (it!=events_in_flight.end()){
         // Now proceed to deletion
         if (std::get<1>(*it)->hasFinished()){
-            const unsigned int evt_num = std::get<0>(*it)->m_evt_num;
-            const unsigned int evt_slot = std::get<0>(*it)->m_evt_slot;
+            const unsigned int evt_num = std::get<0>(*it)->evt();
+            const unsigned int evt_slot = std::get<0>(*it)->slot();
 				log << MSG::INFO << "Event "<< evt_num << " finished. Events in flight are "
 						<< events_in_flight.size() << ". Processed events are "
 						<<  n_processed_events << endmsg;
@@ -667,7 +665,7 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 				unsigned int max_event_num=0;
 
 				for (auto& evtContext_evtstate : events_in_flight){
-					const unsigned int evt_num = std::get<0>(evtContext_evtstate)->m_evt_num;
+					const unsigned int evt_num = std::get<0>(evtContext_evtstate)->evt();
 					// Update min and max for backlog calculation
 					if (evt_num > max_event_num) max_event_num=evt_num;
 					if (evt_num < min_event_num) min_event_num=evt_num;

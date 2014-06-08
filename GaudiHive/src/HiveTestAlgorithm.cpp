@@ -55,7 +55,7 @@ StatusCode
 HiveTestAlgorithm::execute()
 {
   ++m_total;
-  int evt = getContext()->m_evt_num;
+  int evt = getContext()->evt();
   
   info() << ":HiveTestAlgorithm::getting inputs... " << evt << endmsg;
   

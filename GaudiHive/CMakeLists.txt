@@ -52,6 +52,11 @@ gaudi_add_test(SequentialSchedulerSimpleTest
                FRAMEWORK options/SequentialSchedulerSimpleTest.py)
 
 
+# Test the AtomicSequencer
+gaudi_add_test(AtomicSequencer
+               FRAMEWORK options/AtomicAlgSequencerTest.py
+               DEPENDS WhiteBoard)
+
 # BugFixes
 
 gaudi_add_test(BugCFHEP114

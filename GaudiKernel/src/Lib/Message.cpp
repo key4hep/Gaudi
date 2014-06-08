@@ -9,6 +9,7 @@
 #include "GaudiKernel/Message.h"
 #include "GaudiKernel/Timing.h"
 #include "GaudiKernel/Time.h"
+#include "GaudiKernel/ContextSpecificPtr.h"
 
 using namespace MSG;
 
@@ -22,6 +23,9 @@ const char Message::TIME = 't';
 const char Message::UTIME = 'u';
 const char Message::SOURCE = 'S';
 const char Message::FILL = 'F';
+const char Message::SLOT = 's';
+const char Message::EVTNUM = 'e';
+const char Message::THREAD = 'X';
 const char Message::WIDTH = 'W';
 //const char* Message::DEFAULT_FORMAT = "% F%67W%L#############################################################################\n-----------------------------------------------------------------------------\nMessage follows...\nSource  : %S\nType    : %T\nMessage : %M\nEnd of message.\n-----------------------------------------------------------------------------\n";
 const char* Message::DEFAULT_FORMAT = "% F%18W%S%7W%R%T %0W%M";
@@ -47,6 +51,9 @@ Message::Message() :
   m_time_format(DEFAULT_TIME_FORMAT), m_type( NIL ),
   m_fill( ' ' ), m_width( 0 ), m_left( true )
 {
+  m_ecSlot = Gaudi::Hive::currentContextId();
+  m_ecEvt = Gaudi::Hive::currentContextEvt();
+  m_ecThrd = pthread_self();
 }
 
 //#############################################################################
@@ -60,6 +67,9 @@ Message::Message ( const char* src, int type, const char* msg ) :
   m_time_format(DEFAULT_TIME_FORMAT), m_type( type ),
   m_fill( ' ' ), m_width( 0 ), m_left( true )
 {
+  m_ecSlot = Gaudi::Hive::currentContextId();
+  m_ecEvt = Gaudi::Hive::currentContextEvt();
+  m_ecThrd = pthread_self();
 }
 
 //#############################################################################
@@ -73,6 +83,9 @@ Message::Message ( const std::string& src, int type, const std::string& msg ) :
   m_time_format(DEFAULT_TIME_FORMAT), m_type( type ),
   m_fill( ' ' ), m_width( 0 ), m_left( true )
 {
+  m_ecSlot = Gaudi::Hive::currentContextId();
+  m_ecEvt = Gaudi::Hive::currentContextEvt();
+  m_ecThrd = pthread_self();
 }
 
 //#############################################################################
@@ -281,6 +294,7 @@ void Message::makeFormattedMsg( const std::string& format ) const
     while( i != format.end() && *i != FORMAT_PREFIX &&
            *i != MESSAGE && *i != TYPE && *i != SOURCE &&
            *i != FILL && *i != WIDTH && *i != TIME && *i != UTIME &&
+           *i != SLOT && *i != EVTNUM && *i != THREAD &&
            *i != JUSTIFY_LEFT && *i != JUSTIFY_RIGHT ) {
       this_format += *i++;
     }
@@ -330,6 +344,44 @@ void Message::decodeFormat( const std::string& format ) const
       {
         const std::string& timeStr = formattedTime ( m_time_format, true ) ;
         sizeField( timeStr );
+      }
+      break;
+
+    case THREAD:
+      {
+	std::ostringstream ost;
+	//	ost << "0x" << std::hex << pthread_self();
+	ost << "0x" << std::hex << m_ecThrd;
+	const std::string& thrStr( ost.str() );
+	sizeField( thrStr );
+      }
+      break;
+  
+    case SLOT:
+      {
+        if (m_ecEvt >= 0) {
+          std::ostringstream ost;
+          ost << m_ecSlot;
+          const std::string& slotStr (ost.str());
+          sizeField( slotStr );
+        } else {
+          const std::string& slotStr( "" );
+          sizeField( slotStr );
+        }
+      }
+      break;
+
+    case EVTNUM:
+      {
+        if (m_ecEvt >= 0 ) {
+          std::ostringstream ost;
+          ost << m_ecEvt;
+          const std::string& slotStr (ost.str());
+          sizeField( slotStr );
+        } else {
+          const std::string& slotStr( "" );
+          sizeField( slotStr );
+        }
       }
       break;
 

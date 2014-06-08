@@ -159,7 +159,7 @@ StatusCode ParallelSequentialSchedulerSvc::finalize(){
 StatusCode ParallelSequentialSchedulerSvc::pushNewEvent(EventContext* eventContext){
   std::vector<EventContext*> eventContexts;
   eventContexts.push_back(eventContext);
-  eventContext->m_evt_failed = false;
+  eventContext->setFail(false);
   return pushNewEvents(eventContexts);
 }
 
@@ -170,7 +170,7 @@ StatusCode ParallelSequentialSchedulerSvc::pushNewEvents(std::vector<EventContex
 			//only one thread executes scheduler --> m_freeSlots can only grow if other thread finishes
 			m_freeSlots--;
 
-			debug() << "Enqueuing event " << evt->m_evt_num << " @ " << evt->m_evt_slot << endmsg;
+			debug() << "Enqueuing event " << evt->evt() << " @ " << evt->slot() << endmsg;
 
 			tbb::task* t = new( tbb::task::allocate_root() )
 					SequentialTask(serviceLocator(), evt, this, m_algResourcePool);
@@ -191,8 +191,8 @@ StatusCode ParallelSequentialSchedulerSvc::pushNewEvents(std::vector<EventContex
 StatusCode ParallelSequentialSchedulerSvc::popFinishedEvent(EventContext*& eventContext){
 
 	m_finishedEvents.pop(eventContext);
-    debug() << "Popped slot " << eventContext->m_evt_slot << "(event "
-            << eventContext->m_evt_num << ")" << endmsg;
+    debug() << "Popped slot " << eventContext->slot() << "(event "
+            << eventContext->evt() << ")" << endmsg;
     m_freeSlots++;
     return StatusCode::SUCCESS;
 }
@@ -203,8 +203,8 @@ StatusCode ParallelSequentialSchedulerSvc::popFinishedEvent(EventContext*& event
 */
 StatusCode ParallelSequentialSchedulerSvc::tryPopFinishedEvent(EventContext*& eventContext){
   if (m_finishedEvents.try_pop(eventContext)){
-    debug() << "Try Pop successful slot " << eventContext->m_evt_slot
-            << "(event " << eventContext->m_evt_num << ")" << endmsg;
+    debug() << "Try Pop successful slot " << eventContext->slot()
+            << "(event " << eventContext->evt() << ")" << endmsg;
     m_freeSlots++;
     return StatusCode::SUCCESS;
   }
@@ -242,14 +242,14 @@ tbb::task* SequentialTask::execute() {
 	//DataFlowManager dataFlow(m_scheduler->m_algosDependencies);
 
 	//intitialize context
-	m_eventContext->m_thread_id = pthread_self();
+	//	m_eventContext->m_thread_id = pthread_self();
 	bool eventFailed = false;
-	Gaudi::Hive::setCurrentContextId(m_eventContext->m_evt_slot);
+	Gaudi::Hive::setCurrentContextId(m_eventContext->slot());
 
 	// loop while algorithms are controlFlowReady and event has not failed
 	while(!eventFailed && algStates.algsPresent(AlgsExecutionStates::State::CONTROLREADY) ){
 
-		//std::cout << "[" << m_eventContext->m_evt_num << "] algorithms left" << std::endl;
+		//std::cout << "[" << m_eventContext->evt() << "] algorithms left" << std::endl;
 
 		//std::for_each(m_scheduler->m_algList.begin(), m_scheduler->m_algList.end(),
 
@@ -263,15 +263,15 @@ tbb::task* SequentialTask::execute() {
 			//promote algorithm to data ready
 			algStates.updateState(algIndex,AlgsExecutionStates::DATAREADY);
 
-			//std::cout << "Running algorithm [" << algIndex << "] " << ialgorithm->name() << " for event " << m_eventContext->m_evt_num << std::endl;
-			log << MSG::DEBUG << "Running algorithm [" << algIndex << "] " << algName << " for event " << m_eventContext->m_evt_num << endmsg;
+			//std::cout << "Running algorithm [" << algIndex << "] " << ialgorithm->name() << " for event " << m_eventContext->evt() << std::endl;
+			log << MSG::DEBUG << "Running algorithm [" << algIndex << "] " << algName << " for event " << m_eventContext->evt() << endmsg;
 
 			IAlgorithm* ialgoPtr=nullptr;
 			sc = m_algPool->acquireAlgorithm(algName,ialgoPtr, true); //blocking call
 
 			if(sc.isFailure() || ialgoPtr == nullptr){
 				log << MSG::ERROR << "Could not acquire algorithm " << algName << endmsg;
-				m_eventContext->m_evt_failed=true;
+				m_eventContext->setFail(true);
 			} else { // we got an algorithm
 
 				//promote algorithm to scheduled
@@ -306,9 +306,9 @@ tbb::task* SequentialTask::execute() {
 					eventFailed = true;
 				}
 
-				//std::cout << "Algorithm [" << algIndex << "] " << ialgorithm->name() << " for event " << m_eventContext->m_evt_num
+				//std::cout << "Algorithm [" << algIndex << "] " << ialgorithm->name() << " for event " << m_eventContext->evt()
 				//		<< (eventFailed ? " failed" : " succeeded") << std::endl;
-				log << MSG::DEBUG << "Algorithm [" << algIndex << "] " << algName << " for event " << m_eventContext->m_evt_num
+				log << MSG::DEBUG << "Algorithm [" << algIndex << "] " << algName << " for event " << m_eventContext->evt()
 						<< (eventFailed ? " failed" : " succeded") << endmsg;
 
 				AlgsExecutionStates::State state;
@@ -318,9 +318,9 @@ tbb::task* SequentialTask::execute() {
 					state = AlgsExecutionStates::State::EVTREJECTED;
 				}
 
-				//std::cout << "Algorithm [" << algIndex << "] " << ialgorithm->name() << " for event " << m_eventContext->m_evt_num
+				//std::cout << "Algorithm [" << algIndex << "] " << ialgorithm->name() << " for event " << m_eventContext->evt()
 				//		<< (ialgoPtr->filterPassed() ? " passed" : " rejected") << std::endl;
-				log << MSG::DEBUG << "Algorithm [" << algIndex << "] " << algName << " for event " << m_eventContext->m_evt_num
+				log << MSG::DEBUG << "Algorithm [" << algIndex << "] " << algName << " for event " << m_eventContext->evt()
 						<< (ialgoPtr->filterPassed() ? " passed" : " rejected") << endmsg;
 
 				sc = m_algPool->releaseAlgorithm(algName,ialgoPtr);
@@ -329,7 +329,7 @@ tbb::task* SequentialTask::execute() {
 
 				//just for debug: look at products -- not thread safe
 				// Update the catalog: some new products may be there
-				/*m_scheduler->m_whiteboard->selectStore(m_eventContext->m_evt_slot).ignore();
+				/*m_scheduler->m_whiteboard->selectStore(m_eventContext->slot()).ignore();
 
 							// update prods in the dataflow
 							// DP: Handles could be used. Just update what the algo wrote
@@ -347,13 +347,13 @@ tbb::task* SequentialTask::execute() {
 		m_scheduler->m_controlFlow.promoteToControlReadyState(algStates, nodeDecisions);
 
 		if(eventFailed){
-			m_eventContext->m_evt_failed=eventFailed;
-			//std::cout << "ERROR: " << "event " << m_eventContext->m_evt_num << " failed" << std::endl;
+			m_eventContext->setFail(eventFailed);
+			//std::cout << "ERROR: " << "event " << m_eventContext->evt() << " failed" << std::endl;
 			break;
 		}
 
 		if(!algStates.algsPresent(AlgsExecutionStates::State::CONTROLREADY) && !algStates.allAlgsExecuted()){
-			//std::cout << "WARNING: " << " not all algorithms executed for event " << m_eventContext->m_evt_num << std::endl;
+			//std::cout << "WARNING: " << " not all algorithms executed for event " << m_eventContext->evt() << std::endl;
 
 			/*std::for_each(m_scheduler->m_algList.begin(), m_scheduler->m_algList.end(),
 
@@ -361,7 +361,7 @@ tbb::task* SequentialTask::execute() {
 						uint algIndex = m_scheduler->m_algname_index_map[ialgorithm->name()];
 
 						if(AlgsExecutionStates::State::SCHEDULED >= algStates.algorithmState(algIndex))
-							std::cout << "Event [" << m_eventContext->m_evt_num << "] algorithm " << ialgorithm->name()
+							std::cout << "Event [" << m_eventContext->evt() << "] algorithm " << ialgorithm->name()
 								<< " NOT executed" << std::endl;
 
 			});*/

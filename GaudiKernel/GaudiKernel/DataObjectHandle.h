@@ -35,10 +35,30 @@ public:
   /// Finalize
   StatusCode finalize();    
  
-  /// Get from the transient store using the processed event number to identify the correct slot
-  T* get() ;
+  /**
+   * Retrieve object from transient data store
+   */
+  T* get() { return get(true); }
+
+  /**
+   * Bypass check of existence of object in transient store
+   * Only uses main location of the
+   */
+  T* getIfExists() { return get(false); }
+
+  /**
+   * Check the existence of the object in the transient store
+   */
+  bool exist() { return get(false) != NULL; }
   
-  /// Register from the transient store using the processed event number to identify the correct slot
+  /**
+   * Get object from store or create a new one if it doesn't exist
+   */
+  T* getOrCreate();
+
+  /**
+   * Register object in transient store
+   */
   void put (T* object);
   
 private:
@@ -53,6 +73,9 @@ private:
   }
 
 private:
+
+  T* get(bool mustExist);
+
   SmartIF<IDataProviderSvc> m_EDS;
   SmartIF<IMessageSvc> m_MS;
   IAlgorithm* m_fatherAlg;
@@ -60,7 +83,7 @@ private:
   bool m_goodType;
   DataObjectHandle(const DataObjectHandle& );
   DataObjectHandle& operator=(const DataObjectHandle& );
-  
+
 };
 
 //---------------------------------------------------------------------------
@@ -161,23 +184,23 @@ DataObjectHandle<T>::DataObjectHandle(DataObjectDescriptor & descriptor,
  * static cast: we do not need the checks of the dynamic cast for every access!
  */
 template<typename T>  
-T* DataObjectHandle<T>::get() {
+T* DataObjectHandle<T>::get(bool mustExist) {
 
-	MsgStream log(m_MS,"DataObjectHandle");
+  //MsgStream log(m_MS,"DataObjectHandle");
 
   DataObject* dataObjectp = NULL;
 
   StatusCode sc = m_EDS->retrieveObject(dataProductName(), dataObjectp);
   
-  if(sc.isSuccess())
-	  log << MSG::DEBUG << "Using main location " << dataProductName() << " for " << *dataObjectp << endmsg;
+  //if(sc.isSuccess())
+  //  log << MSG::DEBUG << "Using main location " << dataProductName() << " for " << *dataObjectp << endmsg;
 
   if(sc.isFailure() && ! m_descriptor->alternativeAddresses().empty()){
 	  for(uint i = 0; i < m_descriptor->alternativeAddresses().size() && sc.isFailure(); ++i){
 		  sc = m_EDS->retrieveObject(m_descriptor->alternativeAddresses()[i], dataObjectp);
 
-		  if(sc.isSuccess())
-		  	  log << MSG::DEBUG << "Using alternative location " << m_descriptor->alternativeAddresses()[i] << " for " << *dataObjectp << endmsg;
+		  //if(sc.isSuccess())
+		  //	  log << MSG::DEBUG << "Using alternative location " << m_descriptor->alternativeAddresses()[i] << " for " << *dataObjectp << endmsg;
 	  }
   }
 
@@ -198,14 +221,14 @@ T* DataObjectHandle<T>::get() {
         std::string errorMsg("The type provided for "+ dataProductName()
                              + " is " + dataType
                              + " and is different form the one of the object in the store.");
-        log << MSG::ERROR << errorMsg << endmsg;        
+        //log << MSG::ERROR << errorMsg << endmsg;
         throw GaudiException (errorMsg,"Wrong DataObjectType",StatusCode::FAILURE);                
       }
       else{
-        log << MSG::DEBUG <<  "The data type (" <<  dataType
-            << ") specified for the handle of " << dataProductName()
-            << " is the same of the object in the store. "
-            << "From now on the result of a static_cast will be returned." << endmsg;
+        //log << MSG::DEBUG <<  "The data type (" <<  dataType
+        //    << ") specified for the handle of " << dataProductName()
+        //    << " is the same of the object in the store. "
+        //    << "From now on the result of a static_cast will be returned." << endmsg;
       }
     }
     
@@ -214,12 +237,9 @@ T* DataObjectHandle<T>::get() {
     }
 
   }
-  else{ // Problems in getting from the store
-    MsgStream log(m_MS,"DataObjectHandle");
-    log << MSG::ERROR << "Cannot retrieve " 
-        << dataProductName() << " from transient store. "
-        << "As a result, a segmentation fault is very likely." << endmsg;
-    return NULL;
+  else if(mustExist){ // Problems in getting from the store
+    throw GaudiException("Cannot retrieve " + dataProductName() + " from transient store.",
+    				     m_fatherAlg != 0 ? m_fatherAlg->name() : m_fatherTool->name(), StatusCode::FAILURE);
   }
   
   setRead();
@@ -233,6 +253,33 @@ void DataObjectHandle<T>::put (T *objectp){
     StatusCode sc = m_EDS->registerObject(dataProductName(), objectp);
     if ( LIKELY( sc.isSuccess() ) )
     setWritten();    
+}
+
+//---------------------------------------------------------------------------
+template<typename T>
+T* DataObjectHandle<T>::getOrCreate (){
+
+	//this process needs to be locking for multi-threaded applications
+	//lock(); --> done in caller
+
+	T* obj = get(false);
+
+	//object exists, we are done
+	if(obj != NULL){
+
+		//unlock();
+		return obj;
+	}
+
+	//MsgStream log(m_MS,"DataObjectHandle");
+	//log << MSG::DEBUG << "Object " << dataProductName() << " does not exist, creating it" << endmsg;
+
+	//create it
+	obj = new T();
+	put(obj);
+
+	//unlock();
+	return obj;
 }
                                            
 #endif

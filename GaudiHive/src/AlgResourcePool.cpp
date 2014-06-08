@@ -171,11 +171,18 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
   StatusCode sc = StatusCode::SUCCESS;
 
   std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
-  if (subAlgorithms->empty() and not (algo->type() == "GaudiSequencer")){
-    debug() << std::string(recursionDepth, ' ') << algo->name() << " is not a sequencer. Appending it" << endmsg;
-    alglist.emplace_back(algo);
-    m_CFGraph->addAlgorithmNode(algo,parentName,false,false);
+  if ( //we only want to add basic algorithms -> have no subAlgs
+		  // and exclude the case of empty GaudiSequencers
+	   (subAlgorithms->empty() and not (algo->type() == "GaudiSequencer"))
+	   // we want to add non-empty GaudiAtomicSequencers
+	   or (algo->type() == "GaudiAtomicSequencer" and not subAlgorithms->empty())){
 
+	  debug() << std::string(recursionDepth, ' ') << algo->name() << " is " <<
+			  (algo->type() != "GaudiAtomicSequencer" ? "not a sequencer" : "an atomic sequencer")
+			  << ". Appending it" << endmsg;
+
+	  alglist.emplace_back(algo);
+	  m_CFGraph->addAlgorithmNode(algo,parentName,false,false);
     return sc;
   }
 

@@ -279,8 +279,10 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
   tbb::tick_count starttbb=tbb::tick_count::now();
   logstream  << MSG::DEBUG << "Runtime will be: "<< runtime << endmsg;
   if (getContext())
-    logstream  << MSG::DEBUG << "Start event " <<  getContext()->m_evt_num
-               << " on pthreadID " << getContext()->m_thread_id << endmsg;
+    logstream  << MSG::DEBUG << "Start event " <<  getContext()->evt()
+	       << " in slot " << getContext()->slot()
+	       << " on pthreadID " << std::hex << pthread_self() << std::dec
+	       << endmsg;
 
   for (auto & inputHandle: m_inputHandles){
 	  if(!inputHandle->isValid())
@@ -319,8 +321,8 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
   const double actualRuntime=(endtbb-starttbb).seconds();
 
   if (getContext())
-    logstream << MSG::DEBUG << "Finish event " <<  getContext()->m_evt_num
-         << " on pthreadID " << getContext()->m_thread_id
+    logstream << MSG::DEBUG << "Finish event " <<  getContext()->evt()
+      //         << " on pthreadID " << getContext()->m_thread_id
          << " in " << actualRuntime  << " seconds" << endmsg;
 
   logstream << MSG::DEBUG << "Timing: ExpectedRuntime= " << runtime

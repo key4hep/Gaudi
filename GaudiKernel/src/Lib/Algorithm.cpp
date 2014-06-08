@@ -82,7 +82,7 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   declareProperty( "AuditStart"       , m_auditorStart        = audit ) ;
   declareProperty( "AuditStop"        , m_auditorStop         = audit ) ;
 
-  declareProperty( "Timeline"         , m_doTimeline          = true  ) ;
+  declareProperty( "Timeline"         , m_doTimeline          = false  ) ;
 
   declareProperty( "MonitorService"   , m_monitorSvcName      = "MonitorSvc" );
 
@@ -207,57 +207,30 @@ StatusCode Algorithm::sysInitialize() {
   }
 
 
-  //update DataHandles to point to full TES location
-
-  //get root of DataManager
-  SmartIF<IDataManagerSvc> dataMgrSvc (evtSvc());
-  std::string rootName(dataMgrSvc->rootName());
-  if ("" != rootName && '/'!=rootName[rootName.size()-1]){
-       rootName = rootName + "/";
-  }
-
-  auto fixLocation = [&] (const std::string & location) -> std::string {
-
-	  log << MSG::DEBUG << "Changing " << location << " to "
-	  			  << ('/' ? location : rootName + location) << endmsg;
-
-	  //check whether we have an absolute path if yes return it - else prepend DataManager Root
-	  return location[0] == '/' ? location : rootName + location;
-  };
-
-    //init data handle
-  for(auto tag : m_inputDataObjects){
+  //init data handle
+	for (auto tag : m_inputDataObjects) {
 		if (m_inputDataObjects[tag].isValid()) {
-			m_inputDataObjects[tag].setDataProductName(
-					fixLocation(m_inputDataObjects[tag].dataProductName()));
-
-			auto altAddress = m_inputDataObjects[tag].descriptor()->alternativeAddresses();
-			for (uint i = 0; i < altAddress.size(); ++i)
-				altAddress[i] = fixLocation(altAddress[i]);
-			m_inputDataObjects[tag].descriptor()->setAltAddress(altAddress);
-
-			  if(m_inputDataObjects[tag].initialize().isSuccess())
-					log << MSG::DEBUG << "Data Handle " << tag
-					<< " (" << m_inputDataObjects[tag].dataProductName()
-					<< ") initialized" << endmsg;
-			  else
-				  log << MSG::FATAL << "Data Handle " << tag
-					<< " (" << m_inputDataObjects[tag].dataProductName()
-					<< ") could NOT be initialized" << endmsg;
+			if (m_inputDataObjects[tag].initialize().isSuccess())
+				log << MSG::DEBUG << "Data Handle " << tag << " ("
+						<< m_inputDataObjects[tag].dataProductName()
+						<< ") initialized" << endmsg;
+			else
+				log << MSG::FATAL << "Data Handle " << tag << " ("
+						<< m_inputDataObjects[tag].dataProductName()
+						<< ") could NOT be initialized" << endmsg;
 		}
-  }
-  for(auto tag : m_outputDataObjects){
-	  if(m_outputDataObjects[tag].isValid()){
-		  m_outputDataObjects[tag].setDataProductName(fixLocation(m_outputDataObjects[tag].dataProductName()));
+	}
+	for (auto tag : m_outputDataObjects) {
+		if (m_outputDataObjects[tag].isValid()) {
 
-		  if(m_outputDataObjects[tag].initialize().isSuccess())
-			  log << MSG::DEBUG << "Data Handle " << tag
-			  << " (" << m_outputDataObjects[tag].dataProductName()
-			  << ") initialized" << endmsg;
-		  else
-			  log << MSG::FATAL << "Data Handle " << tag
-			  << " (" << m_outputDataObjects[tag].dataProductName()
-			  << ") could NOT be initialized" << endmsg;
+			if (m_outputDataObjects[tag].initialize().isSuccess())
+				log << MSG::DEBUG << "Data Handle " << tag << " ("
+						<< m_outputDataObjects[tag].dataProductName()
+						<< ") initialized" << endmsg;
+			else
+				log << MSG::FATAL << "Data Handle " << tag << " ("
+						<< m_outputDataObjects[tag].dataProductName()
+						<< ") could NOT be initialized" << endmsg;
 	  }
   }
 
@@ -723,7 +696,7 @@ StatusCode Algorithm::sysExecute() {
     ( this , registerContext() ? contextSvc().get() : 0 ) ;
 
   // HiveWhiteBoard stuff here
-  if(m_WB.isValid()) m_WB->selectStore(getContext() ? getContext()->m_evt_slot : 0).ignore();
+  if(m_WB.isValid()) m_WB->selectStore(getContext() ? getContext()->slot() : 0).ignore();
 
   Gaudi::Guards::AuditorGuard guard(this,
                                     // check if we want to audit the initialize
@@ -733,15 +706,18 @@ StatusCode Algorithm::sysExecute() {
 
   TimelineEvent timeline;
   timeline.algorithm = this->name();
-  timeline.thread = getContext() ? getContext()->m_thread_id : 0;
-  timeline.slot = getContext() ? getContext()->m_evt_slot : 0;
-  timeline.event = getContext() ? getContext()->m_evt_num : 0;
+  //  timeline.thread = getContext() ? getContext()->m_thread_id : 0;
+  timeline.slot = getContext() ? getContext()->slot() : 0;
+  timeline.event = getContext() ? getContext()->evt() : 0;
 
   try {
 
-	timeline.start = Clock::now();
+	if(UNLIKELY(m_doTimeline))
+		  timeline.start = Clock::now();
     status = execute();
-    timeline.end = Clock::now();
+
+    if(UNLIKELY(m_doTimeline))
+    	timeline.end = Clock::now();
 
     setExecuted(true);  // set the executed flag
 
@@ -790,7 +766,7 @@ StatusCode Algorithm::sysExecute() {
     status = exceptionSvc()->handle(*this);
   }
 
-  if(m_doTimeline)
+  if(UNLIKELY(m_doTimeline))
 	  timelineSvc()->registerTimelineEvent(timeline);
 
   if( status.isFailure() ) {
@@ -1359,6 +1335,49 @@ std::vector<IAlgTool *> & Algorithm::tools() {
 		initToolHandles();
 
 	return m_tools;
+}
+
+void Algorithm::addSubAlgorithmDataObjectHandles(){
+	//add all DOHs of SubAlgs to own collection
+
+	MsgStream log ( msgSvc() , name() ) ;
+
+	for(Algorithm * alg : *m_subAlgms){
+
+		assert(alg->isInitialized());
+
+		log << MSG::DEBUG << "Adding subAlg DOHs for " << alg->name() << endmsg;
+
+		for(auto tag : alg->inputDataObjects()){
+			auto doh = &alg->inputDataObjects()[tag];
+
+			if(!doh->isValid())
+				continue;
+
+			//if the output of an previous algorithm produces the required input don't add it
+			if(!m_outputDataObjects.contains(doh)){
+				log << MSG::DEBUG << "\tinput handle " << doh->dataProductName() << " is real input to sequence, adding as "
+					<< (alg->name() + "/" + doh->descriptor()->tag()) << endmsg;
+
+				m_inputDataObjects.insert(alg->name() + "/" + doh->descriptor()->tag() ,doh);
+			} else {
+				log << MSG::DEBUG << "\tinput handle " << doh->dataProductName() << " is produced by algorithm in sequence" << endmsg;
+			}
+		}
+
+		//add output after input to properly treat update DOH
+		for(auto tag : alg->outputDataObjects()){
+			auto doh = &alg->outputDataObjects()[tag];
+
+			if(!doh->isValid())
+				continue;
+
+			log << MSG::DEBUG << "\toutput handle " << doh->dataProductName() << " is output of sequence, adding as "
+				<< (alg->name() + "/" + doh->descriptor()->tag()) << endmsg;
+
+			m_outputDataObjects.insert(alg->name() + "/" + doh->descriptor()->tag(), doh);
+		}
+	}
 }
 
 /**

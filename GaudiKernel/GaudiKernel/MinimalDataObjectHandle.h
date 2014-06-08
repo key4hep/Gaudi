@@ -5,13 +5,18 @@
 
 #include <vector>
 #include <string>
+#include <map>
+
+#ifndef __GCCXML__
+#include <unordered_map>
+#endif
+
+#include <tbb/spin_mutex.h>
 
 class DataObjectDescriptor;
 class DataObjectDescriptorCollection;
 class Algorithm;
 class AlgTool;
-
-template <class U> class GaudiCommon;
 
 class MinimalDataObjectHandle {
 
@@ -30,7 +35,6 @@ public:
 	  friend class Algorithm;
 	  friend class AlgTool;
 	  friend class DataObjectDescriptorCollection;
-	  template <class U> friend class GaudiCommon;
 
 public:
 
@@ -56,7 +60,7 @@ public:
   void setOptional(bool optional = true);
 
   /// Return the product index
-  unsigned int dataProductIndex() const;
+  size_t dataProductIndex() const;
 
   /// Return the product name
   const std::string& dataProductName() const;
@@ -65,6 +69,7 @@ public:
 
   /// Update address of data product if possible -> not if was written
   StatusCode setDataProductName(const std::string & address);
+  StatusCode setAlternativeDataProductNames(const std::vector<std::string> & alternativeAddresses);
   StatusCode setDataProductNames(const std::vector<std::string> & addresses);
 
   /// Access type
@@ -80,6 +85,9 @@ public:
 
   bool initialized() const { return m_initialized; }
 
+  void lock();
+  void unlock();
+
 protected:
   DataObjectDescriptor * m_descriptor;
 
@@ -87,16 +95,28 @@ protected:
   void setWritten(bool wasWritten=true);
 
   DataObjectDescriptor * descriptor();
-  
+
 private:
-  const unsigned int m_dataProductIndex;
+
+  size_t updateDataProductIndex();
+
+  unsigned int m_dataProductIndex;
   bool m_wasRead;
   bool m_wasWritten;
   bool m_initialized;
   
-  // Temporary there waiting the mapping interface to be there
-  static unsigned int m_tmp_dpi;
+  //static map to hold the dataproduct index mapping
+  //is shared between all events in flight
+#ifndef __GCCXML__
+  static std::unordered_map<std::string, size_t> m_dataProductIndexMap;
+#else
+  static std::map<std::string, size_t> m_dataProductIndexMap;
+#endif
   
+  //map to hold locks per event in flight
+  static std::map<size_t, std::map<size_t, tbb::spin_mutex> > m_locks;
+  static const uint CLEANUP_THRESHOLD = 20;
+
   MinimalDataObjectHandle(const MinimalDataObjectHandle& );
   MinimalDataObjectHandle& operator=(const MinimalDataObjectHandle& );
   

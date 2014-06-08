@@ -9,6 +9,7 @@
 #include <boost/lexical_cast.hpp>
 #include <sstream>
 #include <csignal>
+#include <algorithm>
 
 #include <GaudiKernel/DataObjectDescriptor.h>
 
@@ -63,7 +64,7 @@ void DataObjectDescriptor::fromString(const std::string& s) {
 		boost::split(addr, items[1], boost::is_any_of(boost::lexical_cast<std::string>(ADDR_SEP)), boost::token_compress_on);
 
 		setAddress(addr[0]); //main address
-		setAltAddress(addr, true); //set alternatives, skipping first
+		setAltAddresses(addr, true); //set alternatives, skipping first
 	}
 
 	setOptional(boost::lexical_cast<bool>( items[2] ));
@@ -140,12 +141,12 @@ void DataObjectDescriptor::setAddresses(const std::vector<std::string>& addresse
 	//if(!m_handle || !m_handle->initialized()){
 	if(!addresses.empty()){
 		setAddress(addresses[0]);
-		setAltAddress(addresses, true);
+		setAltAddresses(addresses, true);
 	}
 	//}
 }
 
-void DataObjectDescriptor::setAltAddress(const std::vector<std::string> & addresses, bool skipFirst){
+void DataObjectDescriptor::setAltAddresses(const std::vector<std::string> & addresses, bool skipFirst){
 	//if(!m_handle || !m_handle->initialized())
 		m_altAddresses.assign(addresses.begin() + skipFirst, addresses.end());
 }
@@ -196,6 +197,41 @@ bool DataObjectDescriptorCollection::contains(const std::string & s) const {
 		//raise(SIGINT);
 
 	return s != "" && m_dataItems.find(s) != m_dataItems.end();
+}
+
+bool DataObjectDescriptorCollection::contains(const MinimalDataObjectHandle * o) const {
+
+	std::string productName = o->dataProductName();
+
+	std::vector<std::string> locations;
+
+	locations.emplace_back(productName);
+	locations.insert(locations.end(), o->alternativeDataProductNames().begin(), o->alternativeDataProductNames().end());
+	std::sort(locations.begin(), locations.end());
+
+	for(auto & item : m_dataItems){
+		//do deep search
+
+		//make the common case fast
+		if(item.second->dataProductName() == productName)
+			return true;
+
+		//otherwise we have to do a set intersection
+		std::vector<std::string> iLocations;
+		iLocations.emplace_back(item.second->dataProductName());
+		iLocations.insert(iLocations.end(), item.second->alternativeDataProductNames().begin(), item.second->alternativeDataProductNames().end());
+		std::sort(iLocations.begin(), iLocations.end());
+
+		auto it=std::set_intersection (iLocations.begin(), iLocations.end(), locations.begin(), locations.end(), iLocations.begin());
+
+		//check if we have a non-zero intersection size
+		if(std::distance(iLocations.begin(), it) > 0)
+			return true;
+
+	}
+
+	return false;
+
 }
 
 bool DataObjectDescriptorCollection::insert(const std::string& tag,

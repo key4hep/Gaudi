@@ -1,43 +1,16 @@
-#!/usr/bin/env gaudirun.py
-
-'''
-Reference optionfile which shows in a simple way how to take advantage of the
-Gaudi components desicated to concurrency.
-The components are:
- o HiveWhiteBoard: a convenient way to collect several TES (one per "processing
- slot"), accessible in a thread safe way, keeps a catalogue of the products
- written on each processing slot. The number of slots in the whiteboard
- determines also the number of events processed simultaneously by the scheduler.
- o ForwardSchedulerSvc: state machine of the algorithms interfaced with the
- TBB runtime. It is responsible for the submission of the algorithms. An
- algorithm is marked ready for submission when its needed input is available.
- It deals the asynchronous termination of algorithms with a "receiver" thread
- and a thread safe queue.
- o HiveSlimEventLoopMgr: an event factory. Pushes new events and pops finished
- events to/from the scheduler. It does not manage algorithms/streams.
- o AlgResourcePool: Service managing the creation of algorithms (through the
- algorithm manager), including clones. It also manages the algorithms according
- to the resources they need (parameter NeededResources - vector of strings - of
- the Algorithm class).
- o InertMessageSvc: as the TBBMsgSvc, it manages the printing of the messages in
- a multithreaded environment.
-
-The CPUCruncher is not a component dealing with concurrency, but a useful
-entity to test it. It's an algorithm that simply wastes cpu.
- 
-'''
 from Gaudi.Configuration import *
 from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
                            ForwardSchedulerSvc, AlgResourcePool,
                            CPUCruncher,
                            ContextEventCounterPtr,
-                           ContextEventCounterData)
+                           ContextEventCounterData,
+                           GaudiAtomicSequencer)
 
 # metaconfig -------------------------------------------------------------------
 # It's confortable to collect the relevant parameters at the top of the optionfile
-evtslots = 23
-evtMax = 50
-cardinality=10
+evtslots = 5
+evtMax = 20
+cardinality=5
 algosInFlight=10
 #-------------------------------------------------------------------------------
 
@@ -65,7 +38,8 @@ slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=DEBUG)
 
 scheduler = ForwardSchedulerSvc(MaxAlgosInFlight = algosInFlight,
                                 ThreadPoolSize = algosInFlight,
-                                OutputLevel=WARNING)
+                                useGraphFlowManagement = True,
+                                OutputLevel=DEBUG)
 
 #-------------------------------------------------------------------------------
 
@@ -80,46 +54,38 @@ AlgResourcePool(OutputLevel=DEBUG)
 a1 = CPUCruncher("A1")
 a1.Outputs.output_0.Path = '/Event/a1'
 
-a2 = CPUCruncher("A2") 
-a2.Inputs.input_0.Path = '/Event/a1'
+a2 = CPUCruncher("A2")
+a2.Inputs.input_0.Path = '/Skim/a1'
+a2.Inputs.input_0.AlternativePaths = ['/Event/a1']
 a2.Outputs.output_0.Path = '/Event/a2'
 
-a3 = CPUCruncher("A3") 
+a3 = CPUCruncher("A3")
 a3.Inputs.input_0.Path = '/Event/a1'
 a3.Outputs.output_0.Path = '/Event/a3'
 
-a4 = CPUCruncher("A4") 
+a4 = CPUCruncher("A4")
 a4.Inputs.input_0.Path = '/Event/a2'
-a4.Inputs.input_1.Path = '/Event/a3'
 a4.Outputs.output_0.Path = '/Event/a4'
 
 for algo in [a1, a2, a3, a4]:
   algo.shortCalib=True
-  algo.Cardinality = cardinality
   algo.OutputLevel=DEBUG
   algo.varRuntime=.3
-  algo.avgRuntime=.5  
+  algo.avgRuntime=.5
 
-ctrp = ContextEventCounterPtr("CNT*", Cardinality=0, OutputLevel=INFO)
-ctrd = ContextEventCounterData("CNT&", Cardinality=0, OutputLevel=INFO)
+for algo in [a3]:
+  algo.Cardinality = cardinality
+
+seq = GaudiAtomicSequencer("CriticalSection",
+                           Members=[a1,a2,a4],
+                           OutputLevel=VERBOSE)
 
 # Application Manager ----------------------------------------------------------
 # We put everything together and change the type of message service
-
-# to show EventContext slot (%s), event (%e), and thread (%X) in 
-#    MessageSvc output:
-msgFmt = "% F%30W%S%4W%s%e%15W%X%7W%R%T %0W%M"
-
-msgSvc = InertMessageSvc("MessageSvc",OutputLevel=INFO)
-msgSvc.Format = msgFmt
-ApplicationMgr().SvcMapping.append(msgSvc)
-
 
 ApplicationMgr( EvtMax = evtMax,
                 EvtSel = 'NONE',
                 ExtSvc =[whiteboard],
                 EventLoop = slimeventloopmgr,
-                TopAlg = [a1, a2, a3, a4, ctrp, ctrd],
+                TopAlg = [seq, a3],
                 MessageSvcType="InertMessageSvc")
-
-#-------------------------------------------------------------------------------

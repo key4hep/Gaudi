@@ -94,6 +94,11 @@ StatusCode GaudiSequencer::execute() {
     Algorithm* myAlg = itE->algorithm();
     if ( ! myAlg->isEnabled() ) continue;
     if ( ! myAlg->isExecuted() ) {
+
+    	//DF: if we have a context set by GaudiHive scheduler propagate it to the children
+    	if(getContext())
+    		myAlg->setContext(getContext());
+
       if ( m_measureTime ) m_timerTool->start( itE->timer() );
       result = myAlg->sysExecute();
       if ( m_measureTime ) m_timerTool->stop( itE->timer() );

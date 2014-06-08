@@ -1,6 +1,11 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-05-08 - Charles Leggett
+ - some special sauce for ATLAS
+
+#	modified:   GaudiPolicy/cmt/requirements
+
 ! 2014-03-11 - Marco Clemencic
  - Re-enabled change in Boost Spirit version for all the platforms (problem
    fixed in LHCb).
