@@ -5,6 +5,7 @@
 #include <sys/times.h>
 
 #include <tbb/tick_count.h>
+#include <thread>
 
 std::vector<unsigned int> CPUCruncher::m_niters_vect;
 std::vector<double> CPUCruncher::m_times_vect;
@@ -12,7 +13,7 @@ CPUCruncher::CHM CPUCruncher::m_name_ncopies_map;
 
 DECLARE_ALGORITHM_FACTORY(CPUCruncher)
 
-//------------------------------------------------------------------------------  
+//------------------------------------------------------------------------------
 
 CPUCruncher::CPUCruncher(const std::string& name, // the algorithm instance name
 		ISvcLocator*pSvc) :
@@ -46,6 +47,8 @@ CPUCruncher::CPUCruncher(const std::string& name, // the algorithm instance name
 			"Enable coarse grained calibration");
 	declareProperty("RwRepetitions", m_rwRepetitions = 1,
 			"Increase access to the WB");
+	declareProperty("SleepyExecution", m_sleepyExecution = false,
+	                "Sleep during execution instead of crunching");
 
 	// Register the algo in the static concurrent hash map in order to
 	// monitor the # of copies
@@ -171,7 +174,7 @@ unsigned long CPUCruncher::getNCaliIters(double runtime){
 }
 
 
-void CPUCruncher::findPrimes (const unsigned long int n_iterations)  { 
+void CPUCruncher::findPrimes (const unsigned long int n_iterations)  {
 
 
   MsgStream log(msgSvc(), name());
@@ -228,10 +231,25 @@ void CPUCruncher::findPrimes (const unsigned long int n_iterations)  {
 
 //------------------------------------------------------------------------------
 
-StatusCode CPUCruncher::execute  ()  // the execution of the algorithm 
+StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
 {
 
   MsgStream logstream(msgSvc(), name());
+
+  if (m_sleepyExecution) {
+    logstream  << MSG::DEBUG << "Going to dream for: "<< m_avg_runtime << endmsg;
+    std::chrono::duration<double> dreamtime( m_avg_runtime );
+
+    tbb::tick_count starttbb=tbb::tick_count::now();
+    std::this_thread::sleep_for(dreamtime);
+    tbb::tick_count endtbb=tbb::tick_count::now();
+    // actual sleeping time can be longer due to scheduling or resource contention delays
+    const double actualDreamTime=(endtbb-starttbb).seconds();
+
+    logstream  << MSG::DEBUG << "Actual dreaming time was: "<< actualDreamTime << "s" << endmsg;
+
+    return StatusCode::SUCCESS;
+  }
 
   float runtime;
 
@@ -267,13 +285,12 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
     const double normal = sqrt(-2.*log(unif1))*cos(2*M_PI*unif2);
     return normal*sigma + mean;
     };
-  runtime = fabs(getGausRandom( m_avg_runtime , m_var_runtime ));
-  //End Of temp block
-  }
-  else{
-  // Should be a member.
-  HiveRndm::HiveNumbers rndmgaus(randSvc(), Rndm::Gauss( m_avg_runtime , m_var_runtime ));
-  runtime = std::fabs(rndmgaus());
+    runtime = fabs(getGausRandom( m_avg_runtime , m_var_runtime ));
+    //End Of temp block
+  } else {
+    // Should be a member.
+    HiveRndm::HiveNumbers rndmgaus(randSvc(), Rndm::Gauss( m_avg_runtime , m_var_runtime ));
+    runtime = std::fabs(rndmgaus());
   }
 
   tbb::tick_count starttbb=tbb::tick_count::now();
@@ -295,7 +312,7 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
     if (obj == nullptr)
       logstream << MSG::ERROR << "A read object was a null pointer." << endmsg;
   }
-  
+
   const unsigned long n_iters= getNCaliIters(runtime);
   findPrimes( n_iters );
 
@@ -315,7 +332,7 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
       obj = inputHandle->get();
     }
   }
-  
+
   tbb::tick_count endtbb=tbb::tick_count::now();
 
   const double actualRuntime=(endtbb-starttbb).seconds();
@@ -336,8 +353,8 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
 
 //------------------------------------------------------------------------------
 
-StatusCode CPUCruncher::finalize () // the finalization of the algorithm 
-{ 
+StatusCode CPUCruncher::finalize () // the finalization of the algorithm
+{
   MsgStream log(msgSvc(), name());
 
   unsigned int ninstances;
