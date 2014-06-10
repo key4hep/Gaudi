@@ -1,6 +1,10 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2014-06-10 - Charles Leggett
+ - fix unchecked StatusCodes in AlgTool sysXXX methods
+M       src/Lib/AlgTool.cpp
+
 ! 2014-06-05 - Marco Clemencic
  - Fixed crash in genconfuser in a special case.
 
