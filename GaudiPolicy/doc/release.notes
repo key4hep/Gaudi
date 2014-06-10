@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-06-10 - Charles Leggett
+ - cmt: print warning message if client uses generate_rootmap pattern
+M       cmt/requirements
+
 ! 2014-05-27 - Marco Clemencic
  - Modified genconf patterns to avoid installation of .confdb files and
    produce a .confdb instead of _merged.confdb.
