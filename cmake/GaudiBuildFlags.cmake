@@ -275,5 +275,6 @@ if(LCG_COMP STREQUAL gcc AND LCG_COMPVERS STREQUAL 43)
 endif()
 
 if(GAUDI_ATLAS)
-  include(AthenaBuildFlags)
+  add_definitions(-DATLAS_GAUDI_V21)
+  include(AthenaBuildFlags OPTIONAL)
 endif()
