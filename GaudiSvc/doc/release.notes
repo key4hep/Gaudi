@@ -1,6 +1,10 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
 
+! 2014-06-11 - Charles Leggett
+ - FileMgr: execActs(): check iterator
+M       src/FileMgr/FileMgr.cpp
+
 ! 2014-06-09 - Charles Leggett
  - FileMgr: made execActions() const, fixed some mem isssues.
 M       src/FileMgr/FileMgr.h

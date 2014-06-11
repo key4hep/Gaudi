@@ -1622,11 +1622,10 @@ FileMgr::execActs(Io::FileAttr* fa, const std::string& caller,
 
   actionMap::const_iterator mitr = m.find(a);
 
-  if (mitr->second.size() == 0) {
-   // this should never happen
+  if (mitr == m.end() || mitr->second.size() == 0) {
     return StatusCode::SUCCESS;
   }
-
+      
   ON_DEBUG
     m_log << MSG::DEBUG 
 	  << "executing " << mitr->second.size()  << " " << a
