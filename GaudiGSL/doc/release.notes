@@ -3,6 +3,17 @@
 ! Responsible : Vanya Belyaev Ivan.Belyaev@itep.ru
 ! =============================================================================
 
+=============================== GaudiGSL v8r2 ================================
+! 2014-05-26 - Marco Clemencic
+ - Removed duplicated dictionary entries (already in RELAX).
+
+! 2014-04-25 - Marco Clemencic
+ - Removed duplicated dictionary entries (already in RELAX).
+
+=============================== GaudiGSL v8r1 ================================
+! 2014-03-18 - Ben Couturier
+ - Fixed bug #104127: remove hwaf configuration.
+
 =============================== GaudiGSL v8r0 ================================
 ! 2014-01-27 - Marco Clemencic
  - Fixed long standing issue with InterpTest test, actually due to a bug in the

@@ -1,5 +1,9 @@
 # Special wrapper to load the declared version of the heptools toolchain.
-set(heptools_version 66)
+set(heptools_version 68)
+
+if(DEFINED ENV{HEPTOOLS_VERSION})
+  set(heptools_version $ENV{HEPTOOLS_VERSION})
+endif()
 
 # this check is needed because the toolchain is called when checking the
 # compiler (without the proper cache)

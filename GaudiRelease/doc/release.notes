@@ -6,6 +6,15 @@ Maintainer: Marco Clemencic
 
 #	modified:   GaudiRelease/cmt/requirements
 
+============================= GaudiRelease v25r2 =============================
+============================ GaudiRelease v25r1p1 ============================
+============================= GaudiRelease v25r1 =============================
+! 2014-03-19 - Marco Clemencic
+ - Removed hwaf handling from update_versions.py
+
+! 2014-03-18 - Ben Couturier
+ - Fixed bug #104127: remove hwaf configuration.
+
 ============================= GaudiRelease v25r0 =============================
 ! 2014-02-14 - Marco Clemencic
  - minor fix to update_versions.py

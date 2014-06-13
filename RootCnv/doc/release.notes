@@ -4,6 +4,13 @@
 ! Purpose     : Root based persistency
 !-----------------------------------------------------------------------------
 
+! 2014-06-05 - Marco Cattaneo
+ - GAUDI-962: fix unprotected debug messages.
+
+============================== RootCnv v1r22p1 ===============================
+! 2014-03-18 - Ben Couturier
+ - Fixed bug #104127: remove hwaf configuration.
+
 ================================ RootCnv v1r22 ================================
 ! 2013-12-16 - Marco Clemencic
  - Clean-up of some leftover from the autoloading workaround.

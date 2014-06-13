@@ -6,6 +6,23 @@ Package manager : Marco Clemencic
 
 M	cmt/requirements
 
+! 2014-06-11 - Charles Leggett
+ - FileMgr: execActs(): check iterator
+M       src/FileMgr/FileMgr.cpp
+
+! 2014-06-09 - Charles Leggett
+ - FileMgr: made execActions() const, fixed some mem isssues.
+M       src/FileMgr/FileMgr.h
+M       src/FileMgr/FileMgr.cpp
+
+=============================== GaudiSvc v21r2 ===============================
+! 2014-04-14 - Marco Clemencic
+ - Removed obsolete/pointless call to 'generate_rootmap' pattern.
+
+=============================== GaudiSvc v21r1 ===============================
+! 2014-03-18 - Ben Couturier
+ - Fixed bug #104127: remove hwaf configuration.
+
 ! 2014-02-21 - Marco Clemencic
  - Modified the genconfig_add_extraModules pattern.
 

@@ -1,6 +1,12 @@
 package GaudiSys
 package manager: Pere Mato
 
+=============================== GaudiSys v25r2 ===============================
+============================== GaudiSys v25r1p1 ==============================
+=============================== GaudiSys v25r1 ===============================
+! 2014-03-18 - Ben Couturier
+ - Fixed bug #104127: remove hwaf configuration.
+
 =============================== GaudiSys v25r0 ===============================
 ! 2013-12-11 - Sebastien Binet
  - Added hwaf configuration files.

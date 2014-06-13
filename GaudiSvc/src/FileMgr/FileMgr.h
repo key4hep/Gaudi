@@ -143,9 +143,9 @@ private:
 
   typedef std::pair<Io::bfcn_action_t,std::string> bfcn_desc_t;
   typedef std::map<Io::Action, std::list<bfcn_desc_t> > actionMap;
-  StatusCode execAction(Io::FileAttr*, const std::string&, const Io::Action&);
+  StatusCode execAction(Io::FileAttr*, const std::string&, const Io::Action&) const;
   StatusCode execActs(Io::FileAttr*, const std::string&, const Io::Action&,
-		      actionMap& m);
+		      const actionMap& m) const;
 
   bool accessMatch(const Io::IoFlags&, const Io::IoFlags&, 
 		   bool strict=false) const;

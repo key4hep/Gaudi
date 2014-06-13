@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiPython v13r0)
+gaudi_subdir(GaudiPython v13r2)
 
 gaudi_depends_on_subdirs(GaudiAlg GaudiUtils GaudiKernel)
 
@@ -22,7 +22,7 @@ if(GAUDI_BUILD_TESTS)
   gaudi_add_library(GPyTest src/Test/*.cpp
                     LINK_LIBRARIES GaudiKernel PythonLibs CLHEP
                     NO_PUBLIC_HEADERS)
-  gaudi_add_dictionary(GPyTest src/Test/test.h src/Test/test_selection.xml
+  gaudi_add_dictionary(test_GPyTest src/Test/test.h src/Test/test_selection.xml
                        LINK_LIBRARIES GaudiKernel PythonLibs CLHEP)
   include_directories(src/Test)
 endif()

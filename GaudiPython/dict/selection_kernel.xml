@@ -42,9 +42,6 @@
   <class pattern = "PropertyVerifier<*>"/>
   <class name    = "PropertyCallbackFunctor"/>
 
-  <class name    = "GaudiHandleProperty"      />
-  <class name    = "GaudiHandleArrayProperty" />
-
   <class pattern = "GaudiAlg::*"              />
   <class name    = "GaudiAlgorithm"           />
   <class name    = "GaudiHistoAlg"            />
@@ -78,7 +75,6 @@
   <class name    = "GaudiPython::PyAlgorithm"/>
   <class name    = "GaudiPython::CallbackStreamBuf"/>
   <class name    = "ParticleProperty"/>
-  <class name    = "InterfaceID"/>
 
   <class name    = "Gaudi::StringKey" />
   <class name    = "Gaudi::Utils::MapBase" />
