@@ -683,6 +683,7 @@ macro(_gaudi_use_other_projects)
       set(suffixes)
       foreach(_s1 ${other_project}
                   ${other_project}/${other_project_version}
+                  ${other_project_upcase}/${other_project_version}
                   ${other_project_upcase}/${other_project_upcase}_${other_project_version}
                   ${other_project_upcase})
         foreach(_s2 "" "/InstallArea")
