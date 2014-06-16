@@ -1,10 +1,15 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2014-06-16 - Illya Shapoval
+ - Fix wrong handling of StatusCode in SysInitialize.
+   (fixing thus git commit #59d184b2ca275ed6ba798e7eab7c279756ae6698,
+   which broke compilation).
+
 ! 2014-06-03 - Charles Leggett
  - EventContext: turn it into a real class, remove thread info
  - ContextSpecificPtr: add evt num to thread local info
- - Message: print out current slot/evt/thread on demand 
+ - Message: print out current slot/evt/thread on demand
             via %E,%N,%X respectively
 
 ! 2014-05-08 - Charles Leggett

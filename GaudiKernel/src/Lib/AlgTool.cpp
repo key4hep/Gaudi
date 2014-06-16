@@ -285,6 +285,7 @@ AlgTool::AlgTool( const std::string& type,
 StatusCode AlgTool::sysInitialize() {
 //-----------------------------------------------------------------------------
 
+  StatusCode sc = StatusCode::FAILURE;
   MsgStream log ( msgSvc() , name() ) ;
 
   try {
@@ -293,7 +294,7 @@ StatusCode AlgTool::sysInitialize() {
                                       // check if we want to audit the initialize
                                       (m_auditorInitialize) ? auditorSvc() : 0,
                                       IAuditor::Initialize);
-    StatusCode sc = initialize();
+    sc = initialize();
     if (sc.isSuccess())
       m_state = m_targetState;
   }
