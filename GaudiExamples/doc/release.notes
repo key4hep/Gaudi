@@ -1,6 +1,10 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2014-06-17 - Marco Clemencic
+ - Added test to expose bug GAUDI-971 (successful failover to a replica in
+   IODataManager leads to non-zero exit code).
+
 ============================ GaudiExamples v25r2 =============================
 ! 2014-04-29 - Marco Clemencic
  - Added tests to check the multi-input example.
