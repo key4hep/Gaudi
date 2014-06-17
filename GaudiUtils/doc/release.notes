@@ -2,6 +2,12 @@ Package: GaudiUtils
 Package manager : Marco Clemencic
 
 ! 2014-06-17 - Marco Clemencic
+ - Fixed bug GAUDI-971 (successful failover to a replica in IODataManager leads
+   to non-zero exit code).
+   The application exit code set before the loop on the replicas is restored
+   if the access to any of the replicas succeeds.
+
+! 2014-06-17 - Marco Clemencic
  - Build test functions in XMLCatalogTest.cpp as proper tests (CMake only).
 
 ============================== GaudiUtils v5r1 ===============================

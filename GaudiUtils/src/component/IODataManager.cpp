@@ -7,6 +7,7 @@
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/IIncidentSvc.h"
+#include "GaudiKernel/AppReturnCode.h"
 
 #include <set>
 
@@ -276,6 +277,10 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
           error("connectDataIO> Failed to resolve FID:"+dsn,false).ignore();
           return IDataConnection::BAD_DATA_CONNECTION;
         }
+        // keep track of the current return code before we start iterating over
+        // replicas
+        SmartIF<IProperty> appmgr(serviceLocator());
+        int origReturnCode = Gaudi::getAppReturnCode(appmgr);
 	for(IFileCatalog::Files::const_iterator i=files.begin(); i!=files.end(); ++i)  {
 	  std::string pfn = (*i).first;
 	  if ( i != files.begin() )  {
@@ -289,6 +294,8 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
 	  }
 	  else   {
 	    m_fidMap[dsn] = m_fidMap[dataset] = m_fidMap[pfn] = dsn;
+	    // we found a working replica, let's reset the return code to the old value
+	    Gaudi::setAppReturnCode(appmgr, origReturnCode, true);
 	    return sc;
 	  }
 	}
