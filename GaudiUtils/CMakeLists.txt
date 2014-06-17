@@ -16,3 +16,22 @@ gaudi_add_library(GaudiUtilsLib src/Lib/*.cpp
 gaudi_add_module(GaudiUtils src/component/*.cpp
                  LINK_LIBRARIES GaudiUtilsLib XercesC UUID
                  INCLUDE_DIRS XercesC UUID)
+
+gaudi_add_unit_test(testXMLFileCatalogWrite
+                      src/component/XMLCatalogTest.cpp
+                      src/component/XMLFileCatalog.cpp
+                    LINK_LIBRARIES GaudiKernel XercesC UUID
+                    INCLUDE_DIRS XercesC UUID)
+set_property(TARGET testXMLFileCatalogWrite
+             APPEND PROPERTY COMPILE_DEFINITIONS testXMLFileCatalogWrite=main)
+
+gaudi_add_unit_test(testXMLFileCatalogRead
+                      src/component/XMLCatalogTest.cpp
+                      src/component/XMLFileCatalog.cpp
+                    LINK_LIBRARIES GaudiKernel XercesC UUID
+                    INCLUDE_DIRS XercesC UUID)
+set_property(TARGET testXMLFileCatalogRead
+             APPEND PROPERTY COMPILE_DEFINITIONS testXMLFileCatalogRead=main)
+
+set_property(TEST GaudiUtils.testXMLFileCatalogRead
+             PROPERTY DEPENDS GaudiUtils.testXMLFileCatalogWrite)

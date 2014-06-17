@@ -1,6 +1,9 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2014-06-17 - Marco Clemencic
+ - Build test functions in XMLCatalogTest.cpp as proper tests (CMake only).
+
 ============================== GaudiUtils v5r1 ===============================
 ! 2014-03-18 - Ben Couturier
  - Fixed bug #104127: remove hwaf configuration.
