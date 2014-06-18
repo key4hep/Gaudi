@@ -51,6 +51,8 @@ gaudi_add_test(ForwardSchedulerStall
 gaudi_add_test(SequentialSchedulerSimpleTest
                FRAMEWORK options/SequentialSchedulerSimpleTest.py)
 
+gaudi_add_test(GraphSchedulerSimpleTest
+               FRAMEWORK options/GraphSchedulerSimpleTest.py)
 
 # Test the AtomicSequencer
 gaudi_add_test(AtomicSequencer
