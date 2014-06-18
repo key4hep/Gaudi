@@ -4,6 +4,9 @@
 # Description: standard and commonly used components
 ################################################################################
 
+! 2014-07-18 - Marco Clemencic
+ - Fixed segmentation fault in genconf step in LHCb.
+
 ============================ GaudiCommonSvc v3r1 =============================
 ! 2014-03-18 - Ben Couturier
  - Fixed bug #104127: remove hwaf configuration.
