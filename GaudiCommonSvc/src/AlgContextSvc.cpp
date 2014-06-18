@@ -103,7 +103,7 @@ StatusCode AlgContextSvc::unSetCurrentAlg ( IAlgorithm* a )
 // ============================================================================
 IAlgorithm* AlgContextSvc::currentAlg  () const
 {
-  return (m_algorithms && ! m_algorithms->empty())
+  return (! m_algorithms.get() && ! m_algorithms->empty())
     ? m_algorithms->back()
     : nullptr;
 }
