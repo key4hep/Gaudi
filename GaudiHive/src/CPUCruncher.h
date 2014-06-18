@@ -81,5 +81,8 @@
 
     static CHM m_name_ncopies_map;
 
+    // Sleep during execution instead of real CPU crunching
+    bool m_sleepyExecution;
+
   };
 

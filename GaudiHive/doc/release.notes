@@ -1,0 +1,15 @@
+Package : GaudiKernel
+
+! 2014-06-03 - Charles Leggett
+  updates for EventContext class
+
+#	modified:   src/AlgoExecutionTask.cpp
+#	modified:   src/CPUCruncher.cpp
+#	modified:   src/ForwardSchedulerSvc.cpp
+#	modified:   src/HiveEventLoopMgr.cpp
+#	modified:   src/HiveReadAlgorithm.cpp
+#	modified:   src/HiveSlimEventLoopMgr.cpp
+#	modified:   src/HiveTestAlgorithm.cpp
+#	modified:   src/ParallelSequentialSchedulerSvc.cpp
+#	modified:   src/RoundRobinSchedulerSvc.cpp
+#	modified:   src/SequentialSchedulerSvc.cpp

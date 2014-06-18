@@ -1,6 +1,6 @@
-gaudi_subdir(GaudiExamples v25r0)
+gaudi_subdir(GaudiExamples v25r2)
 
-gaudi_depends_on_subdirs(GaudiKernel GaudiUtils GaudiGSL GaudiAlg)
+gaudi_depends_on_subdirs(GaudiKernel GaudiUtils GaudiGSL GaudiAlg RootCnv)
 
 find_package(HepPDT)
 find_package(ROOT COMPONENTS Tree RIO Hist Net)
@@ -25,7 +25,7 @@ set(GaudiExamples_srcs
     src/PartProp/*.cpp
     src/Properties/*.cpp
     src/ExtendedProperties/*.cpp
-    src/POOLIO/*.cpp
+    src/IO/*.cpp
     src/ColorMsg/ColorMsgAlg.cpp
     src/History/History.cpp
     src/THist/*.cpp
@@ -45,7 +45,8 @@ set(GaudiExamples_srcs
     src/FileMgr/*.cpp
     src/testing/*.cpp
     src/IntelProfiler/*.cpp
-    src/PluginService/*.cpp)
+    src/PluginService/*.cpp
+    src/MultiInput/*.cpp)
 
 gaudi_add_library(GaudiExamplesLib src/Lib/*.cpp
                   LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib HepPDT ROOT
@@ -69,7 +70,7 @@ gaudi_add_executable(Allocator src/Allocator/*.cpp
 
 
 #---Dictionaries------------------------------------------------------------
-gaudi_add_dictionary(GaudiExamples src/POOLIO/dict.h  src/POOLIO/dict.xml LINK_LIBRARIES GaudiExamplesLib)
+gaudi_add_dictionary(GaudiExamples src/IO/dict.h  src/IO/dict.xml LINK_LIBRARIES GaudiExamplesLib)
 
 
 #---Tests-------------------------------------------------------------------

@@ -16,6 +16,7 @@
 #include "ForwardSchedulerSvc.h"
 #include "AlgoExecutionTask.h"
 #include "AlgResourcePool.h"
+#include "EFGraphVisitors.h"
 
 // External libs
 // DP waiting for the TBB service
@@ -172,9 +173,8 @@ StatusCode ForwardSchedulerSvc::initialize(){
   // prepare the control flow part
   if (m_CFNext) m_DFNext = true; //force usage of new data flow machinery when new control flow is used
   const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>(m_algResourcePool.get());
-  sc = m_cfManager.initialize(algPool->getControlFlowGraph(), m_algname_index_map);
+  sc = m_cfManager.initialize(algPool->getControlFlowGraph(), m_algname_index_map, m_eventSlots);
   unsigned int controlFlowNodeNumber = m_cfManager.getControlFlowGraph()->getControlFlowNodeCounter();
-
   // Shortcut for the message service
   SmartIF<IMessageSvc> messageSvc (serviceLocator());
   if (!messageSvc.isValid())
@@ -189,11 +189,16 @@ StatusCode ForwardSchedulerSvc::initialize(){
   info() << " o Number of algorithms in flight: " << m_maxAlgosInFlight << endmsg;
   info() << " o TBB thread pool size: " << m_threadPoolSize << endmsg;
 
+  // Simulating execution flow by analyzing the graph topology and logic only
+
+  auto vis = concurrency::RunSimulator(0);
+  m_cfManager.simulateExecutionFlow(vis);
 
   // Activate the scheduler in another thread.
   info() << "Activating scheduler in a separate thread" << endmsg;
   m_thread = std::thread (std::bind(&ForwardSchedulerSvc::activate,
                                     this));
+
   return sc;
 
 }
@@ -331,19 +336,23 @@ StatusCode ForwardSchedulerSvc::pushNewEvent(EventContext* eventContext){
 
   auto action = [this,eventContext] () -> StatusCode {
     // Event processing slot forced to be the same as the wb slot
-    const unsigned int thisSlotNum = eventContext->m_evt_slot;
+    const unsigned int thisSlotNum = eventContext->slot();
     EventSlot& thisSlot = m_eventSlots[thisSlotNum];
     if (!thisSlot.complete)
       fatal() << "The slot " << thisSlotNum << " is supposed to be a finished event but it's not" << endmsg;
     info() << "A free processing slot was found." << endmsg;
     thisSlot.reset(eventContext);
     // XXX: CF tests
-    if (m_CFNext) m_cfManager.promoteToControlReadyState(thisSlot.algsStates,thisSlot.controlFlowState);
+    if (m_CFNext) {
+      auto vis = concurrency::TopDownParser(thisSlotNum);
+      m_cfManager.touchReadyAlgorithms(vis);
+    }
+
     return this->updateStates(thisSlotNum);
   }; // end of lambda
 
   // Kick off the scheduling!
-  verbose() << "Pushing the action to update the scheduler for slot " <<  eventContext->m_evt_slot << endmsg;
+  verbose() << "Pushing the action to update the scheduler for slot " <<  eventContext->slot() << endmsg;
   verbose() << "Free slots available " <<  m_freeSlots.load() << endmsg;
   m_actionsQueue.push(action);
 
@@ -392,8 +401,8 @@ StatusCode ForwardSchedulerSvc::popFinishedEvent(EventContext*& eventContext){
   } else {
     m_finishedEvents.pop(eventContext);
     m_freeSlots++;
-    debug() << "Popped slot " << eventContext->m_evt_slot << "(event "
-            << eventContext->m_evt_num << ")" << endmsg;
+    debug() << "Popped slot " << eventContext->slot() << "(event "
+            << eventContext->evt() << ")" << endmsg;
     return StatusCode::SUCCESS;
   }
 }
@@ -404,8 +413,8 @@ StatusCode ForwardSchedulerSvc::popFinishedEvent(EventContext*& eventContext){
 */
 StatusCode ForwardSchedulerSvc::tryPopFinishedEvent(EventContext*& eventContext){
   if (m_finishedEvents.try_pop(eventContext)){
-    debug() << "Try Pop successful slot " << eventContext->m_evt_slot
-            << "(event " << eventContext->m_evt_num << ")" << endmsg;
+    debug() << "Try Pop successful slot " << eventContext->slot()
+            << "(event " << eventContext->evt() << ")" << endmsg;
     m_freeSlots++;
     return StatusCode::SUCCESS;
   }
@@ -423,8 +432,8 @@ StatusCode ForwardSchedulerSvc::eventFailed(EventContext* eventContext){
   // Set the number of slots available to an error code
   m_freeSlots.store(0);
 
-  fatal() << "*** Event " << eventContext->m_evt_num << " on slot "
-          << eventContext->m_evt_slot << " failed! ***" << endmsg;
+  fatal() << "*** Event " << eventContext->evt() << " on slot "
+          << eventContext->slot() << " failed! ***" << endmsg;
 
   //dumpSchedulerState(-1);
 
@@ -457,6 +466,8 @@ StatusCode ForwardSchedulerSvc::eventFailed(EventContext* eventContext){
  * * No algorithms have been scheduled
 */
 StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_name){
+
+
 
   m_updateNeeded=true;
 
@@ -492,13 +503,13 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
      }
      std::sort(eventSlotsPtrs.begin(),
                eventSlotsPtrs.end(),
-               [](EventSlot* a, EventSlot* b) {return a->eventContext->m_evt_num < b->eventContext->m_evt_num;});
+               [](EventSlot* a, EventSlot* b) {return a->eventContext->evt() < b->eventContext->evt();});
    } else {
      eventSlotsPtrs.push_back(&m_eventSlots[si]);
    }
 
   for (EventSlot* thisSlotPtr : eventSlotsPtrs) {
-    int iSlot = thisSlotPtr->eventContext->m_evt_slot;
+    int iSlot = thisSlotPtr->eventContext->slot();
 
     // Cache the states of the algos to improve readability and performance
     auto& thisSlot = m_eventSlots[iSlot];
@@ -510,7 +521,7 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
       m_cfManager.updateEventState(thisAlgsStates,thisSlot.controlFlowState);
     } else {
       if (!algo_name.empty())
-        m_cfManager.updateDecision(algo_name,thisAlgsStates,thisSlot.controlFlowState);
+        m_cfManager.updateDecision(algo_name,iSlot,thisAlgsStates,thisSlot.controlFlowState);
     }
 
 
@@ -575,10 +586,10 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
       thisSlot.complete=true;
       // if the event did not fail, add it to the finished events
       // otherwise it is taken care of in the error handling already
-      if (!thisSlot.eventContext->m_evt_failed) {
+      if (!thisSlot.eventContext->evtFail()) {
         m_finishedEvents.push(thisSlot.eventContext);
-        debug() << "Event " << thisSlot.eventContext->m_evt_num << " finished (slot "
-                << thisSlot.eventContext->m_evt_slot << ")." << endmsg;
+        debug() << "Event " << thisSlot.eventContext->evt() << " finished (slot "
+                << thisSlot.eventContext->slot() << ")." << endmsg;
       }
       // now let's return the fully evaluated result of the control flow
       std::stringstream ss;
@@ -642,10 +653,10 @@ void ForwardSchedulerSvc::dumpSchedulerState(int iSlot) {
     if ( thisSlot.complete )
       continue;
 
-    outputMessageStream << "Dump of Scheduler State for slot " << thisSlot.eventContext->m_evt_num << std::endl;
+    outputMessageStream << "Dump of Scheduler State for slot " << thisSlot.eventContext->evt() << std::endl;
 
     if ( 0 > iSlot or iSlot == slotCount) {
-    	outputMessageStream << "Algorithms states for event " << thisSlot.eventContext->m_evt_num << std::endl;
+    	outputMessageStream << "Algorithms states for event " << thisSlot.eventContext->evt() << std::endl;
 
       const std::vector<std::string>& wbSlotContent ( thisSlot.dataFlowMgr.content() );
       for (unsigned int algoIdx=0; algoIdx < thisSlot.algsStates.size(); ++algoIdx ) {
@@ -723,7 +734,7 @@ StatusCode ForwardSchedulerSvc::promoteToDataReady(unsigned int iAlgo, int si) {
   if (!m_DFNext) {
     sc = m_eventSlots[si].dataFlowMgr.canAlgorithmRun(iAlgo);
   } else {
-    sc = m_cfManager.algoDataDependenciesSatisfied(index2algname(iAlgo),m_eventSlots[si].algsStates);
+    sc = m_cfManager.algoDataDependenciesSatisfied(index2algname(iAlgo),si);
   }
 
   StatusCode updateSc(StatusCode::FAILURE);
@@ -766,7 +777,7 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled(unsigned int iAlgo, int si) {
       theTask.execute();
     }
 
-    debug() << "Algorithm " << algName << " was submitted on event " << eventContext->m_evt_num
+    debug() << "Algorithm " << algName << " was submitted on event " << eventContext->evt()
             << ". Algorithms scheduled are " << m_algosInFlight << endmsg;
 
     StatusCode updateSc ( m_eventSlots[si].algsStates.updateState(iAlgo,AlgsExecutionStates::SCHEDULED) );
@@ -793,13 +804,13 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si, IA
   EventContext* eventContext = castedAlgo->getContext();
 
   // Check if the execution failed
-  if (eventContext->m_evt_failed)
+  if (eventContext->evtFail())
     eventFailed(eventContext);
 
   StatusCode sc = m_algResourcePool->releaseAlgorithm(algo->name(),algo);
 
   if (!sc.isSuccess()) {
-    error() << "[Event " << eventContext->m_evt_num << ", Slot " << eventContext->m_evt_slot  << "] "
+    error() << "[Event " << eventContext->evt() << ", Slot " << eventContext->slot()  << "] "
             << "Instance of algorithm " << algo->name() << " could not be properly put back." << endmsg;
     return StatusCode::FAILURE;
     }
@@ -810,7 +821,7 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si, IA
   // XXX: CF tests
   if (!m_DFNext) {
     // Update the catalog: some new products may be there
-    m_whiteboard->selectStore(eventContext->m_evt_slot).ignore();
+    m_whiteboard->selectStore(eventContext->slot()).ignore();
 
     // update prods in the dataflow
     // DP: Handles could be used. Just update what the algo wrote

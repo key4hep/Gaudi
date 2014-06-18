@@ -96,7 +96,7 @@ a4.Outputs.output_0.Path = '/Event/a4'
 for algo in [a1, a2, a3, a4]:
   algo.shortCalib=True
   algo.Cardinality = cardinality
-  algo.OutputLevel=WARNING
+  algo.OutputLevel=DEBUG
   algo.varRuntime=.3
   algo.avgRuntime=.5  
 
@@ -105,7 +105,16 @@ ctrd = ContextEventCounterData("CNT&", Cardinality=0, OutputLevel=INFO)
 
 # Application Manager ----------------------------------------------------------
 # We put everything together and change the type of message service
-  
+
+# to show EventContext slot (%s), event (%e), and thread (%X) in 
+#    MessageSvc output:
+msgFmt = "% F%30W%S%4W%s%e%15W%X%7W%R%T %0W%M"
+
+msgSvc = InertMessageSvc("MessageSvc",OutputLevel=INFO)
+msgSvc.Format = msgFmt
+ApplicationMgr().SvcMapping.append(msgSvc)
+
+
 ApplicationMgr( EvtMax = evtMax,
                 EvtSel = 'NONE',
                 ExtSvc =[whiteboard],

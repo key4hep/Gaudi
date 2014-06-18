@@ -1586,19 +1586,23 @@ FileMgr::listActions() const {
 
 StatusCode
 FileMgr::execAction( Io::FileAttr* fa, const std::string& caller,
-		      const Io::Action& a) {
+		      const Io::Action& a) const {
 
   Io::IoTech tech = fa->tech();
 
   StatusCode s1,s2;
 
-  if (m_actions[Io::UNKNOWN].size() != 0) {
-    actionMap &m = m_actions[Io::UNKNOWN];
+  std::map<IoTech, actionMap>::const_iterator itr;
+  itr = m_actions.find(Io::UNKNOWN);
+  
+  if (itr != m_actions.end() && itr->second.size() != 0) {
+    const actionMap &m = itr->second;
     s1 = execActs(fa, caller, a, m);
   }
 
-  if (m_actions[tech].size() != 0) {
-    actionMap &m = m_actions[tech];
+  itr = m_actions.find(tech);
+  if (itr != m_actions.end() && itr->second.size() != 0) {
+    const actionMap &m = itr->second;
     s2 = execActs(fa, caller, a, m);
   }
 
@@ -1614,15 +1618,17 @@ FileMgr::execAction( Io::FileAttr* fa, const std::string& caller,
 
 StatusCode 
 FileMgr::execActs(Io::FileAttr* fa, const std::string& caller, 
-		    const Io::Action& a, actionMap& m) {
+		    const Io::Action& a, const actionMap& m) const {
 
-  if (m[a].size() == 0) {
+  actionMap::const_iterator mitr = m.find(a);
+
+  if (mitr == m.end() || mitr->second.size() == 0) {
     return StatusCode::SUCCESS;
   }
-
+      
   ON_DEBUG
     m_log << MSG::DEBUG 
-	  << "executing " << m[a].size() << " " << a
+	  << "executing " << mitr->second.size()  << " " << a
 	  << " actions on " 
 	  << *fa << " from " 
 	  << caller
@@ -1642,8 +1648,8 @@ FileMgr::execActs(Io::FileAttr* fa, const std::string& caller,
     }
   }
 
-  for (list<bfcn_desc_t>::iterator itr = m[a].begin(); 
-       itr != m[a].end(); ++itr) {
+  for (list<bfcn_desc_t>::const_iterator itr = mitr->second.begin(); 
+       itr != mitr->second.end(); ++itr) {
 
     ON_DEBUG
       m_log << MSG::DEBUG << "executing " 

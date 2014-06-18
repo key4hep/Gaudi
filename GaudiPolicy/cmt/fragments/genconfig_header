@@ -8,7 +8,7 @@
 
 confpy  := ${CONSTITUENT}.py
 conflib := $(bin)$(library_prefix)$(library).$(shlibsuffix)
-dbpy    := $(library)_confDb.py
+confdb  := $(library).confdb
 instdir := $(CMTINSTALLAREA)$(shared_install_subdir)/python/$(package)
 product := $(instdir)/$(confpy)
 initpy  := $(instdir)/__init__.py
@@ -25,7 +25,7 @@ install :: ${CONSTITUENT}install
 
 ${CONSTITUENT}install : $(outdir)/$(confpy)
 	@echo "Installing $(outdir) in $(conf_destdir)" ; \
-	 $(install_command) --exclude="*.py?" --exclude="__init__.py" $(outdir) $(conf_destdir) ; \
+	 $(install_command) --exclude="*.py?" --exclude="__init__.py" --exclude="*.confdb" $(outdir) $(conf_destdir) ; \
 
 $(outdir)/$(confpy) : $(conflib) $(outdir)
 	$(genconf_silent) $(genconfig_cmd) $(library_preload) $(extra_modules) -o $(outdir) -p $(package) \
@@ -41,7 +41,7 @@ $(outdir):
 	@ if [ ! -d $(outdir) ] ; then mkdir -p $(outdir) ; fi ;
 
 ${CONSTITUENT}clean :: ${CONSTITUENT}uninstall
-	$(cleanup_silent) $(remove_command) $(outdir)/$(confpy) $(outdir)/$(dbpy)
+	$(cleanup_silent) $(remove_command) $(outdir)/$(confpy) $(outdir)/$(confdb)
 
 uninstall :: ${CONSTITUENT}uninstall
 

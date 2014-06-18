@@ -125,7 +125,7 @@ def main():
                     svn("cp", "/".join([proj, opts.branch, p]), pktagdir).wait()
             else:
                 if not no_tag:
-                    svn("up", "-N", pktagdir).wait() # needed for the copy in the global tag
+                    svn("up", "--depth=empty", pktagdir).wait() # needed for the copy in the global tag
 
         if not opts.pre:
             # prepare the full global tag too

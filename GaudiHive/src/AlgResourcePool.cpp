@@ -168,6 +168,8 @@ StatusCode AlgResourcePool::releaseResource(const std::string& name){
 
 StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, const std::string& parentName, unsigned int recursionDepth){
 
+  StatusCode sc = StatusCode::SUCCESS;
+
   std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
   if ( //we only want to add basic algorithms -> have no subAlgs
 		  // and exclude the case of empty GaudiSequencers
@@ -181,14 +183,14 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
 
 	  alglist.emplace_back(algo);
 	  m_CFGraph->addAlgorithmNode(algo,parentName,false,false);
-	  return StatusCode::SUCCESS;
+    return sc;
   }
 
   // Recursively unroll
   ++recursionDepth;
   debug() << std::string(recursionDepth, ' ') << algo->name() << " is a sequencer. Flattening it." << endmsg;
-  bool modeOR =false;
-  bool allPass =false;
+  bool modeOR = false;
+  bool allPass = false;
   bool isLazy = false;
   if ("GaudiSequencer" == algo->type()) {
     modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
@@ -196,16 +198,20 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
     isLazy = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
     if (allPass) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
   }
-  m_CFGraph->addDecisionHubNode(algo,parentName,modeOR,allPass,isLazy);
+  sc = m_CFGraph->addDecisionHubNode(algo,parentName,modeOR,allPass,isLazy);
+  if (sc.isFailure()) {
+    error() << "Failed to add DecisionHub " << algo->name() << " to execution flow graph" << endmsg;
+    return sc;
+  }
 
-  for (Algorithm* subalgo : *subAlgorithms ){
-    StatusCode sc (flattenSequencer(subalgo,alglist,algo->name(),recursionDepth));
-    if (sc.isFailure()){
+  for (Algorithm* subalgo : *subAlgorithms ) {
+    sc = flattenSequencer(subalgo,alglist,algo->name(),recursionDepth);
+    if (sc.isFailure()) {
       error() << "Algorithm " << subalgo->name() << " could not be flattened" << endmsg;
       return sc;
     }
   }
-  return StatusCode::SUCCESS;
+  return sc;
 }
 
 //---------------------------------------------------------------------------

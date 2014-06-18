@@ -4,6 +4,23 @@
 ! Purpose     : Provide a generic plugin service.
 !-----------------------------------------------------------------------------
 
+========================== GaudiPluginService v1r2 ===========================
+! 2014-05-12 - Marco Clemencic
+ - Fixed listcomponents command lines tests (CMake only).
+
+========================== GaudiPluginService v1r1 ===========================
+
+! 2014-05-19 - Charles Leggett
+ - add HAVE_GAUDI_PLUGINSVC tag for cmt requirements
+
+! 2014-05-09 - Charles Leggett
+ - add macro HAVE_GAUDI_PLUGINSVC so external packages can see if it's available
+
+! 2014-05-09 - Marco Clemencic
+ - Improved command line of listcomponents: now it accepts --output and --help.
+ - Modified the listcomponents CMT document to use --output instead of output
+   redirection. Fixes bug #104455
+
 ========================== GaudiPluginService v1r0 ===========================
 ! 2014-02-03 - Marco Clemencic
  - Added support for Reflex names for components, enabled with the compile flag

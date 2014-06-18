@@ -1,6 +1,16 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2014-06-16 - Illya Shapoval
+ - Fix wrong handling of StatusCode in SysInitialize.
+   (fixing thus git commit #59d184b2ca275ed6ba798e7eab7c279756ae6698,
+   which broke compilation).
+
+! 2014-06-03 - Charles Leggett
+ - EventContext: turn it into a real class, remove thread info
+ - ContextSpecificPtr: add evt num to thread local info
+ - Message: print out current slot/evt/thread on demand
+            via %E,%N,%X respectively
 
 ! 2014-05-08 - Charles Leggett
  - a few fixes for gcc47
@@ -12,6 +22,63 @@ Package manager : Marco Clemencic
 #	modified:   GaudiKernel/doc/release.notes
 #	modified:   GaudiKernel/src/Lib/ContextSpecificPtr.cpp
 #	modified:   GaudiKernel/src/Lib/MinimalEventLoopMgr.cpp
+
+! 2014-06-10 - Charles Leggett
+ - fix unchecked StatusCodes in AlgTool sysXXX methods
+M       src/Lib/AlgTool.cpp
+
+! 2014-06-05 - Marco Clemencic
+ - Fixed crash in genconfuser in a special case.
+
+! 2014-06-05 - Marco Clemencic
+ - Fixed spurious warning coming from genconfuser after the switch to the new
+   .confdb files.
+
+! 2014-06-04 - Marco Clemencic
+ - Tentative fix for genconfuser for the new .confdb files (without _merge).
+
+! 2014-05-27 - Marco Clemencic
+ - In order to remove the _merged.confdb and use a single installed .confdb:
+   - Modified loadConfigurableDb to handle transparently both plain .confdb
+     files and _merged.confdb files (if the merged one is present, ignore the
+     others).
+   - Minor code clean up in loadConfigurableDb.
+   - Added tests for loadConfigurableDb (CMake only).
+
+! 2014-05-06 - Sebastien Binet
+ - fix bug #102404: implement a pure ascii based configurable-db.
+   these ascii files are now named .confdb (for the per package ones)
+   *_user.confdb (for the user ones) and *_merged.confdb (for the merged ones.)
+
+============================= GaudiKernel v30r3 ==============================
+! 2014-05-27 - Marco Clemencic
+ - Minor fix to CMake configuration (CMT equivalence).
+
+! 2014-05-21 - Marco Clemencic
+ - Fixed minor typo in genconf.cpp.
+
+! 2014-04-30 - Marco Clemencic
+ - Added command line option --no-init to genconf.
+   It disable to creation of the dummy __init__.py so that we can have better
+   control on when it is created in the CMake build (was causing warnings with
+   Ninja).
+
+! 2014-05-21 - Marco Clemencic
+ - Moved dictionary for InterfaceID from GaudiPython to GaudiKernel.
+
+! 2014-05-21 - Marco Clemencic
+ - Moved dictionary for GaudiHandle*Property from GaudiPython to GaudiKernel.
+
+! 2014-05-15 - Beat Jost
+ - Added the interface IPublishSvc.
+
+============================= GaudiKernel v30r2 ==============================
+! 2014-03-21 - Marco Clemencic, Rolf Seuster, David Quarrie
+ - Re-enabled the DECLARE_FACTORY_ENTRIES family of macros (needed by ATLAS).
+
+============================= GaudiKernel v30r1 ==============================
+! 2014-03-18 - Ben Couturier
+ - Fixed bug #104127: remove hwaf configuration.
 
 ! 2014-03-03 - Marco Clemencic
  - Changed the namespace used for __Instanitations in the dictionary to avoid

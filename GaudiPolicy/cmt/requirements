@@ -1,5 +1,5 @@
 package GaudiPolicy
-version v14r0
+version v14r3
 
 branches cmt doc
 
@@ -492,9 +492,15 @@ pattern generate_componentslist \
     macro_append <library>MergeComponentsList_dependencies " <library>ComponentsList " ; \
   end_private
 
-# for backward compatibility
+# TEMPORARY alias for backward compatibility in ATLAS. FIXME!
 pattern generate_rootmap \
+  action warning_depr_rootmap "echo ; echo =========\> WARNING: in package <package>, pattern generate_rootmap is deprecated. use gerenate_componentslist instead; echo "  ; \
+  private ; \
+   macro_append all_dependencies " warning_depr_rootmap " ; \
+  end_private ; \
   apply_pattern generate_componentslist library=<library> group=<group>
+
+macro_remove cmt_actions_constituents "warning_depr_rootmap"
 
 # Tags and Global macros=====================================================
 
@@ -1363,15 +1369,15 @@ macro GenConfUser_script "genconfuser.py" \
                    target-winxp "genconfuser.bat"
 pattern real_genconfuser \
 	private ; \
-	macro <package>GenConfUser_output "$(<package>_root)$(genconfDir)<package>/<package>_user_confDb.py" \
-	                            target-winxp "$(<package>_root)$(genconfDir)<package>\<package>_user_confDb.py" ; \
+	macro <package>GenConfUser_output "$(<package>_root)$(genconfDir)<package>/<package>_user.confdb" \
+	                            target-winxp "$(<package>_root)$(genconfDir)<package>\<package>_user.confdb" ; \
 	macro <package>GenConfUser_python "$(<package>_root)/python" \
                                     target-winxp "$(<package>_root)\python" ; \
 	macro <package>GenConfUser_deps "FORCE" ; \
 	macro <package>GenConfUser_command "$(GenConfUser_script) --lockerpath $(GaudiPolicy_root)/scripts -r $(<package>GenConfUser_python) -o $(<package>GenConfUser_output) <package> $(<package>ConfUserModules)" ; \
 	apply_pattern CallCommand target=<package>GenConfUser ; \
 	document merge_genconfDb <package>ConfUserDbMerge -group=<group> \
-		inDir=$(<package>_root)$(genconfDir)<package> \
+        inDir=$(<package>_root)$(genconfDir)<package> \
 		library=<package>_user \
 		merge_genconfDb_switch="--do-merge" ; \
 	macro_append <package>_python_init_dependencies " <package>GenConfUser " ; \
@@ -1408,7 +1414,7 @@ pattern zip_python_modules \
 	private ; \
 	macro zip_<group><package>_python_modules_output "$(CMTINSTALLAREA)$(shared_install_subdir)/python.zip" ; \
 	macro zip_<group><package>_python_modules_deps "FORCE" ; \
-	macro zip_<group><package>_python_modules_command "python $(GaudiPolicy_root)/scripts/ZipPythonDir.py $(CMTINSTALLAREA)$(shared_install_subdir)/python" ; \
+	macro zip_<group><package>_python_modules_command "test -d $(CMTINSTALLAREA)$(shared_install_subdir)/python && python $(GaudiPolicy_root)/scripts/ZipPythonDir.py $(CMTINSTALLAREA)$(shared_install_subdir)/python || echo Nothing to zip." ; \
 	macro zip_<group><package>_python_modules_pattern_applied "CallCommand" \
 		no-pyzip&container-package "CallCommand" \
 		no-pyzip "NullCommand" ; \
@@ -1495,7 +1501,7 @@ set GAUDI_DOXY_HOME $(GAUDI_home)/GaudiRelease/doc
 # eg:  use_if pkg=Reflex tag=useReflex ver="*" root="LCG_Interfaces"
 #
 pattern use_if \
-    document use_if pkg=<pkg> tag=<tag> ver=<ver> root=<root> opt="<opt>" ; \
+#    document use_if pkg=<pkg> tag=<tag> ver=<ver> root=<root> opt="<opt>" ; \
     private ; \
     macro use_<pkg>_if "" <tag> "<pkg> <ver> <root> <opt>" ; \
     end_private ; \
