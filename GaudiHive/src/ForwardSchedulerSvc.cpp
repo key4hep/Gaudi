@@ -43,6 +43,7 @@ ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* 
   // XXX: CF tests. Temporary property to switch between ControlFlow implementations
   declareProperty("useGraphFlowManagement", m_CFNext = false );
   declareProperty("DataFlowManagerNext", m_DFNext = false );
+  declareProperty("SimulateExecution", m_simulateExecution = false );
 }
 
 //---------------------------------------------------------------------------
@@ -189,10 +190,11 @@ StatusCode ForwardSchedulerSvc::initialize(){
   info() << " o Number of algorithms in flight: " << m_maxAlgosInFlight << endmsg;
   info() << " o TBB thread pool size: " << m_threadPoolSize << endmsg;
 
-  // Simulating execution flow by analyzing the graph topology and logic only
-
-  auto vis = concurrency::RunSimulator(0);
-  m_cfManager.simulateExecutionFlow(vis);
+  // Simulating execution flow by only analyzing the graph topology and logic
+  if (m_simulateExecution) {
+    auto vis = concurrency::RunSimulator(0);
+    m_cfManager.simulateExecutionFlow(vis);
+  }
 
   // Activate the scheduler in another thread.
   info() << "Activating scheduler in a separate thread" << endmsg;
