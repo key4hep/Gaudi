@@ -4,6 +4,10 @@
 ! Purpose     : Root based persistency
 !-----------------------------------------------------------------------------
 
+! 2014-06-19 - Marco Clemencic
+ - Minor fix for unpredictable VERBOSE messages (message suppression not
+   correctly implemented).
+
 ! 2014-06-05 - Marco Cattaneo
  - GAUDI-962: fix unprotected debug messages.
 
