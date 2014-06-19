@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-06-19 - Marco Clemencic
+ - Modified createProjVersHeader.py to handle more nicely special cases like the
+   ATLAS "rel_1".
+
 ! 2014-06-10 - Charles Leggett
  - cmt: print warning message if client uses generate_rootmap pattern
 M       cmt/requirements
