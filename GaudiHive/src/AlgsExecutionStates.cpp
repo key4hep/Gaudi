@@ -11,7 +11,7 @@ std::map<AlgsExecutionStates::State,std::string> AlgsExecutionStates::stateNames
     {ERROR,"ERROR"}
     };
 
-StatusCode AlgsExecutionStates::updateState(unsigned int iAlgo,State newState){
+StatusCode AlgsExecutionStates::updateState(unsigned int iAlgo,State newState) {
 
 	MsgStream log(m_MS, "AlgExecutionStates");
 	const unsigned int states_size = m_states.size();
@@ -79,4 +79,4 @@ StatusCode AlgsExecutionStates::updateState(unsigned int iAlgo,State newState){
 	}
 
 	return StatusCode::FAILURE;
-};
+}
