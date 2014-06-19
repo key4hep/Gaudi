@@ -1062,7 +1062,7 @@ macro(gaudi_collect_subdir_deps)
       endforeach()
     endforeach()
     # Special dependency required for modules
-    string(REGEX MATCHALL "gaudi_add_module *\\(([^)]+)\\)" vars "${file_contents}")
+    string(REGEX MATCHALL "(gaudi|athena)_add_module *\\(([^)]+)\\)" vars "${file_contents}")
     if(vars AND NOT _p STREQUAL GaudiCoreSvc)
       list(APPEND ${_p}_DEPENDENCIES GaudiCoreSvc)
     endif()
