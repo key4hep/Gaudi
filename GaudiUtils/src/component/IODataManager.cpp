@@ -295,7 +295,7 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
 	  else   {
 	    m_fidMap[dsn] = m_fidMap[dataset] = m_fidMap[pfn] = dsn;
 	    // we found a working replica, let's reset the return code to the old value
-	    Gaudi::setAppReturnCode(appmgr, origReturnCode, true);
+	    Gaudi::setAppReturnCode(appmgr, origReturnCode, true).ignore();
 	    return sc;
 	  }
 	}

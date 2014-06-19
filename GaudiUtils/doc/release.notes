@@ -1,6 +1,9 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
 
+! 2014-06-19 - Marco Clemencic
+ - Fixed unchecked StatusCode.
+
 ! 2014-06-17 - Marco Clemencic
  - Fixed bug GAUDI-971 (successful failover to a replica in IODataManager leads
    to non-zero exit code).
