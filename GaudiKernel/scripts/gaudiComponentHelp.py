@@ -3,6 +3,7 @@
 Print help messages for gaudi components
 """
 from Gaudi import Configuration
+import Configurables
 import os, sys
 
 if __name__ == "__main__":
@@ -29,7 +30,7 @@ if __name__ == "__main__":
         print "  Package: %s" %(cfgDb[name]["package"])
         print "\nProperties:\n%s" %(11*"-")
         try:
-          properties = getattr(Configuration,name)().getPropertiesWithDescription()
+          properties = getattr(Configurables,name)().getPropertiesWithDescription()
         except AttributeError:
           print "  Not a configurable component. No properties to show." 
           sys.exit()  
