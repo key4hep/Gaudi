@@ -34,6 +34,6 @@ if __name__ == "__main__":
         except AttributeError:
           print "  Not a configurable component. No properties to show." 
           sys.exit()  
-        for label, (value, desc) in properties.iteritems():
+        for label, (value, desc) in sorted(properties.iteritems()):
             print ("  %s\t : %s\t (%s) " %(label, value, str(desc).replace("None", " no description ") )).expandtabs(30)
         sys.exit()
