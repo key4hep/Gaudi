@@ -72,16 +72,15 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
     audit = m_auditInit.value();
   }
 
-  declareProperty( "AuditInitialize"  , m_auditorInitialize   = audit ) ;
-  declareProperty( "AuditReinitialize", m_auditorReinitialize = audit ) ;
-  declareProperty( "AuditRestart"     , m_auditorRestart      = audit ) ;
-  declareProperty( "AuditExecute"     , m_auditorExecute      = audit ) ;
-  declareProperty( "AuditFinalize"    , m_auditorFinalize     = audit ) ;
-  declareProperty( "AuditBeginRun"    , m_auditorBeginRun     = audit ) ;
-  declareProperty( "AuditEndRun"      , m_auditorEndRun       = audit ) ;
-  declareProperty( "AuditStart"       , m_auditorStart        = audit ) ;
-  declareProperty( "AuditStop"        , m_auditorStop         = audit ) ;
-
+  declareProperty( "AuditInitialize"  , m_auditorInitialize   = audit, "audit the initialize()"   ) ;
+  declareProperty( "AuditReinitialize", m_auditorReinitialize = audit, "audit the reinitialize()" ) ;
+  declareProperty( "AuditRestart"     , m_auditorRestart      = audit, "audit the restart()"      ) ;
+  declareProperty( "AuditExecute"     , m_auditorExecute      = audit, "audit the execute()"      ) ;
+  declareProperty( "AuditFinalize"    , m_auditorFinalize     = audit, "audit the finalize()"     ) ;
+  declareProperty( "AuditBeginRun"    , m_auditorBeginRun     = audit, "audit the beginRun()"     ) ;
+  declareProperty( "AuditEndRun"      , m_auditorEndRun       = audit, "audit the endRun()"       ) ;
+  declareProperty( "AuditStart"       , m_auditorStart        = audit, "audit the start()"        ) ;
+  declareProperty( "AuditStop"        , m_auditorStop         = audit, "audit the stop()"         ) ;
   declareProperty( "Timeline"         , m_doTimeline          = false, "Log calls in timeline for debugging" ) ;
 
   declareProperty( "MonitorService"   , m_monitorSvcName      = "MonitorSvc" );
