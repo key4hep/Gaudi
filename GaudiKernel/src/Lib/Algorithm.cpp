@@ -82,7 +82,7 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   declareProperty( "AuditStart"       , m_auditorStart        = audit ) ;
   declareProperty( "AuditStop"        , m_auditorStop         = audit ) ;
 
-  declareProperty( "Timeline"         , m_doTimeline          = false  ) ;
+  declareProperty( "Timeline"         , m_doTimeline          = false, "Log calls in timeline for debugging" ) ;
 
   declareProperty( "MonitorService"   , m_monitorSvcName      = "MonitorSvc" );
 
@@ -91,9 +91,9 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
       m_registerContext  ,
       "The flag to enforce the registration for Algorithm Context Service") ;
 
-  declareProperty( "IsClonable"       , m_isClonable = false );
-  declareProperty( "Cardinality"      , m_cardinality = 1 );
-  declareProperty( "NeededResources"    , m_neededResources = std::vector<std::string>() );
+  declareProperty( "IsClonable"       , m_isClonable = false, "Thread-safe enough for cloning?" );
+  declareProperty( "Cardinality"      , m_cardinality = 1,    "How many clones to create" );
+  declareProperty( "NeededResources"  , m_neededResources = std::vector<std::string>() );
 
   // update handlers.
   m_outputLevel.declareUpdateHandler(&Algorithm::initOutputLevel, this);
