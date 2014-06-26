@@ -1915,8 +1915,12 @@ function(gaudi_add_dictionary dictionary header selection)
   set_target_properties(${dictionary}Dict PROPERTIES COMPILE_FLAGS "-Wno-overloaded-virtual")
   _gaudi_detach_debinfo(${dictionary}Dict)
 
-  gaudi_add_genheader_dependencies(${dictionary}Gen)
-
+  if(TARGET ${dictionary}GenDeps)
+    gaudi_add_genheader_dependencies(${dictionary}GenDeps)
+  else()
+    gaudi_add_genheader_dependencies(${dictionary}Gen)
+  endif()
+  
   # Notify the project level target
   get_property(rootmapname TARGET ${dictionary}Gen PROPERTY ROOTMAPFILE)
   gaudi_merge_files_append(DictRootmap ${dictionary}Gen ${CMAKE_CURRENT_BINARY_DIR}/${rootmapname})
