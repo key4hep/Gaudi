@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-07-01 - Marco Clemencic
+ - Fixed destination of the merged .confdb file when using shared directories in
+   InstallArea (ATLAS).
+
 ! 2014-06-19 - Marco Clemencic
  - Modified createProjVersHeader.py to handle more nicely special cases like the
    ATLAS "rel_1".
