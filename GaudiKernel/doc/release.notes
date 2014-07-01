@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2014-07-01 - Marco Clemencic
+ - removed some dead code in ConfigurableDb.py
+
 ! 2014-06-10 - Charles Leggett
  - fix unchecked StatusCodes in AlgTool sysXXX methods
 M       src/Lib/AlgTool.cpp
