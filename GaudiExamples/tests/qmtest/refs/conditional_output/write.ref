@@ -194,9 +194,9 @@ OutputStream        DEBUG Adding OutputStream item /Event/A with 1 level(s).
 OutputStream        DEBUG Adding OutputStream item /Event with 1 level(s).
 OutputStream        DEBUG Adding OutputStream item /Event/B with 1 level(s).
 OutputStream         INFO Data source: EventDataSvc output: DATAFILE='PFN:ConditionalOutput.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
-OutputStream        DEBUG AcceptAlgs  :  'AcceptAlgs':[  ]
-OutputStream        DEBUG RequireAlgs :  'RequireAlgs':[  ]
-OutputStream        DEBUG VetoAlgs    :  'VetoAlgs':[  ]
+OutputStream        DEBUG AcceptAlgs  : []
+OutputStream        DEBUG RequireAlgs : []
+OutputStream        DEBUG VetoAlgs    : []
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramDataSvc    DEBUG Service base class initialized successfully

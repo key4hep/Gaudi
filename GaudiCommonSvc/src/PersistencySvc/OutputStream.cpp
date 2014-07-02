@@ -115,7 +115,7 @@ StatusCode OutputStream::initialize() {
   clearItems(m_itemList);
 
   // Take the new item list from the properties.
-  log << MSG::DEBUG << "ItemList : " << m_itemNames << endmsg;
+  log << MSG::DEBUG << "ItemList    : " << m_itemNames << endmsg;
   for( ItemNames::const_iterator i = m_itemNames.begin();
        i != m_itemNames.end(); ++i )
   {
@@ -546,7 +546,7 @@ StatusCode OutputStream::connectConversionSvc()   {
 
 StatusCode OutputStream::decodeAcceptAlgs( ) {
   MsgStream log(msgSvc(), name());
-  log << MSG::DEBUG << "AcceptAlgs  : " << m_acceptNames << endmsg;
+  log << MSG::DEBUG << "AcceptAlgs  : " << m_acceptNames.value() << endmsg;
   return decodeAlgorithms( m_acceptNames, m_acceptAlgs );
 }
 
@@ -560,7 +560,7 @@ void OutputStream::acceptAlgsHandler( Property& /* theProp */ )  {
 
 StatusCode OutputStream::decodeRequireAlgs( )  {
   MsgStream log(msgSvc(), name());
-  log << MSG::DEBUG << "RequireAlgs : " << m_requireNames << endmsg;
+  log << MSG::DEBUG << "RequireAlgs : " << m_requireNames.value() << endmsg;
   return decodeAlgorithms( m_requireNames, m_requireAlgs );
 }
 
@@ -574,7 +574,7 @@ void OutputStream::requireAlgsHandler( Property& /* theProp */ )  {
 
 StatusCode OutputStream::decodeVetoAlgs( )  {
   MsgStream log(msgSvc(), name());
-  log << MSG::DEBUG << "VetoAlgs    : " << m_vetoNames << endmsg;
+  log << MSG::DEBUG << "VetoAlgs    : " << m_vetoNames.value() << endmsg;
   return decodeAlgorithms( m_vetoNames, m_vetoAlgs );
 }
 
