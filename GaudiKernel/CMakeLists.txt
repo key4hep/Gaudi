@@ -37,6 +37,23 @@ endif()
 gaudi_add_test(confdb
                COMMAND nosetests ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose/confdb)
 
+if(GAUDI_BUILD_TESTS)
+  add_library(test_CustomFactory MODULE tests/src/custom_factory.cpp)
+  target_link_libraries(test_CustomFactory GaudiPluginService)
+  install(TARGETS test_CustomFactory LIBRARY DESTINATION lib OPTIONAL)
+
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
+  gaudi_add_test(genconf_with_custom_factory
+                 COMMAND ${env_cmd} --xml ${env_xml}
+                           ${genconf_cmd}
+                             -o ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir
+                             -p CustomFactoryTest
+                         -i test_CustomFactory
+                 DEPENDS ${library} ${deps}
+                 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
+endif()
+
+
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIBRARIES GaudiKernel)
 

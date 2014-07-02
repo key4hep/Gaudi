@@ -1,6 +1,11 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2014-07-02 - Marco Clemencic
+ - GAUDI-975: relax the checks in genconf to allow custom component factories
+   Modified genconf not to fail if the return type of a factory is not known.
+   Added a test to verify the it works (CMake only).
+
 ! 2014-06-10 - Charles Leggett
  - fix unchecked StatusCodes in AlgTool sysXXX methods
 M       src/Lib/AlgTool.cpp
