@@ -1,6 +1,10 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-07-02 - Marco Clemencic
+ - Modified run_qmtest.py to accept nested test suites in
+   GAUDI_QMTEST_DEFAULT_SUITE.
+
 ! 2014-06-19 - Marco Clemencic
  - Modified createProjVersHeader.py to handle more nicely special cases like the
    ATLAS "rel_1".
