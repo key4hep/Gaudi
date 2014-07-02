@@ -23,6 +23,8 @@
 // Define the algorithm factory for the standard output data writer
 DECLARE_COMPONENT(OutputStream)
 
+#define ON_DEBUG if (log.level() <= MSG::DEBUG)
+
 // Standard Constructor
 OutputStream::OutputStream(const std::string& name, ISvcLocator* pSvcLocator)
 : Algorithm(name, pSvcLocator)
@@ -115,7 +117,7 @@ StatusCode OutputStream::initialize() {
   clearItems(m_itemList);
 
   // Take the new item list from the properties.
-  log << MSG::DEBUG << "ItemList    : " << m_itemNames << endmsg;
+  ON_DEBUG log << MSG::DEBUG << "ItemList    : " << m_itemNames << endmsg;
   for( ItemNames::const_iterator i = m_itemNames.begin();
        i != m_itemNames.end(); ++i )
   {
@@ -123,7 +125,7 @@ StatusCode OutputStream::initialize() {
   }
 
   // Take the new item list from the properties.
-  log << MSG::DEBUG << "OptItemList : " << m_optItemNames << endmsg;
+  ON_DEBUG log << MSG::DEBUG << "OptItemList : " << m_optItemNames << endmsg;
   for( ItemNames::const_iterator i = m_optItemNames.begin();
        i != m_optItemNames.end(); ++i )
   {
@@ -131,7 +133,7 @@ StatusCode OutputStream::initialize() {
   }
 
   // prepare the algorithm selected dependent locations
-  log << MSG::DEBUG << "AlgDependentItemList : " << m_algDependentItemList << endmsg;
+  ON_DEBUG log << MSG::DEBUG << "AlgDependentItemList : " << m_algDependentItemList << endmsg;
   for ( AlgDependentItemNames::const_iterator a = m_algDependentItemList.begin();
         a != m_algDependentItemList.end(); ++a )
   {
@@ -353,7 +355,7 @@ StatusCode OutputStream::collectObjects()   {
       iret = m_pDataManager->traverseSubTree(obj, m_agent);
     }
     if ( !iret.isSuccess() )    {
-      if(log.level() <= MSG::DEBUG )
+      ON_DEBUG
         log << MSG::DEBUG << "Ignore request to write non-mandatory object(s) "
             << m_currentItem->path() << endmsg;
     }
@@ -367,7 +369,8 @@ StatusCode OutputStream::collectObjects()   {
     const Items& items = iAlgItems->second;
     if ( alg->isExecuted() && alg->filterPassed() )
     {
-      log << MSG::DEBUG << "Algorithm '" << alg->name() << "' fired. Adding " << items << endmsg;
+      ON_DEBUG
+        log << MSG::DEBUG << "Algorithm '" << alg->name() << "' fired. Adding " << items << endmsg;
       for ( Items::const_iterator i = items.begin(); i != items.end(); ++i ) 
       {
         DataObject* obj = NULL;
@@ -456,7 +459,7 @@ void OutputStream::addItem(Items& itms, const std::string& descriptor)   {
     }
   }
   DataStoreItem* item = new DataStoreItem(obj_path, level);
-  if(log.level() <= MSG::DEBUG )
+  ON_DEBUG
     log << MSG::DEBUG << "Adding OutputStream item " << item->path()
         << " with " << item->depth()
         << " level(s)." << endmsg;
@@ -546,7 +549,8 @@ StatusCode OutputStream::connectConversionSvc()   {
 
 StatusCode OutputStream::decodeAcceptAlgs( ) {
   MsgStream log(msgSvc(), name());
-  log << MSG::DEBUG << "AcceptAlgs  : " << m_acceptNames.value() << endmsg;
+  ON_DEBUG
+    log << MSG::DEBUG << "AcceptAlgs  : " << m_acceptNames.value() << endmsg;
   return decodeAlgorithms( m_acceptNames, m_acceptAlgs );
 }
 
@@ -560,7 +564,8 @@ void OutputStream::acceptAlgsHandler( Property& /* theProp */ )  {
 
 StatusCode OutputStream::decodeRequireAlgs( )  {
   MsgStream log(msgSvc(), name());
-  log << MSG::DEBUG << "RequireAlgs : " << m_requireNames.value() << endmsg;
+  ON_DEBUG
+    log << MSG::DEBUG << "RequireAlgs : " << m_requireNames.value() << endmsg;
   return decodeAlgorithms( m_requireNames, m_requireAlgs );
 }
 
@@ -574,7 +579,8 @@ void OutputStream::requireAlgsHandler( Property& /* theProp */ )  {
 
 StatusCode OutputStream::decodeVetoAlgs( )  {
   MsgStream log(msgSvc(), name());
-  log << MSG::DEBUG << "VetoAlgs    : " << m_vetoNames.value() << endmsg;
+  ON_DEBUG
+    log << MSG::DEBUG << "VetoAlgs    : " << m_vetoNames.value() << endmsg;
   return decodeAlgorithms( m_vetoNames, m_vetoAlgs );
 }
 
