@@ -717,5 +717,6 @@ bool OutputStream::isEventAccepted( ) const  {
 }
 
 bool OutputStream::hasInput() const {
-  return !(m_itemNames.empty() && m_optItemNames.empty());
+  return !(m_itemNames.empty() && m_optItemNames.empty() &&
+           m_algDependentItemList.empty());
 }
