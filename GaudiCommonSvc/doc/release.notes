@@ -4,6 +4,9 @@
 # Description: standard and commonly used components
 ################################################################################
 
+! 2014-07-02 - Marco Clemencic
+ - Fixed logic of OutputStream::decodeAlgorithms.
+
 ! 2014-07-01 - Chris Jones
  - GAUDI-974: Add a new property to OutputStream, 'AlgDependentItemList' that
    allows for data locations to be conditionally added, only if a given

@@ -636,7 +636,7 @@ StatusCode OutputStream::decodeAlgorithms( StringArrayProperty& theNames,
   // Reset the list of Algorithms
   theAlgs->clear( );
 
-  StatusCode result = StatusCode::FAILURE;
+  StatusCode result = StatusCode::SUCCESS;
 
   // Build the list of Algorithms from the names list
   const std::vector<std::string> nameList = theNames.value( );
