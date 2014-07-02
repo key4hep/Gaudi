@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-07-02 - Marco Clemencic
+ - GAUDI-976: make GaudiTest.py more resilient towards unicode-ascii conversion failure
+
 ! 2014-07-01 - Marco Clemencic
  - Fixed destination of the merged .confdb file when using shared directories in
    InstallArea (ATLAS).

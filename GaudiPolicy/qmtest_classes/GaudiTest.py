@@ -15,6 +15,8 @@ import string
 import difflib
 import time
 import calendar
+import codecs
+
 from subprocess import Popen, PIPE, STDOUT
 
 try:
@@ -1727,7 +1729,7 @@ class GaudiExeTest(ExecTestBase):
         data["project"] = projectName.strip()
 
         # Template for the XML file, based on eclipse 3.4
-        xml = u"""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+        xml_template = u"""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.cdt.launch.applicationLaunchType">
 <booleanAttribute key="org.eclipse.cdt.debug.mi.core.AUTO_SOLIB" value="true"/>
 <listAttribute key="org.eclipse.cdt.debug.mi.core.AUTO_SOLIB_LIST"/>
@@ -1775,11 +1777,17 @@ class GaudiExeTest(ExecTestBase):
 <listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
 </listAttribute>
 </launchConfiguration>
-""" % data
+"""
+        try:
+            # ensure the correct encoding of data values
+            for k in data:
+                data[k] = codecs.decode(data[k], 'utf-8')
+            xml = xml_template % data
 
-        # Write the output file
-        open(destfile, "w").write(xml)
-        #open(destfile + "_copy.xml", "w").write(xml)
+            # Write the output file
+            codecs.open(destfile, "w", encoding='utf-8').write(xml)
+        except:
+            print 'WARNING: problem generating Eclipse launcher'
 
 
 try:
