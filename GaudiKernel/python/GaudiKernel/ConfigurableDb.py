@@ -32,7 +32,6 @@ class _CfgDb( dict ):
     def __init__(self):
         object.__init__(self)
         self._duplicates = {}
-        return
 
     def add( self, configurable, package, module, lib ):
         """Method to populate the Db.
@@ -55,13 +54,10 @@ class _CfgDb( dict ):
                     self._duplicates[configurable] += [ cfg ]
                 else:
                     self._duplicates[configurable]  = [ cfg ]
-                    pass
         else:
             log.debug( "added [%s] p=%s m=%s lib=%s",
                        configurable, package, module, lib )
             self[configurable] = cfg
-            pass
-        return
 
     def duplicates(self):
         return self._duplicates
@@ -85,10 +81,8 @@ class _CfgDb( dict ):
                     "invalid line format: %s:%d: %r" %
                     (fname, i+1, ll)
                     )
-            pass
         f.close()
 
-    pass # class _CfgDb
 
 class _Singleton( object ):
 
@@ -98,8 +92,6 @@ class _Singleton( object ):
 
     def __call__( self ):
         return self.__obj
-
-    pass # class _Singleton
 
 CfgDb = _Singleton()
 
@@ -143,13 +135,10 @@ def loadConfigurableDb():
             except Exception, err:
                 log.warning( "Could not load file [%s] !", confDb )
                 log.warning( "Reason: %s", err )
-                pass
             nFiles += 1
-            pass # loop over confdb-files
-        pass # loop over paths
     log.debug( "loading confDb files... [DONE]" )
     nPkgs = len( set([k['package'] for k in cfgDb.values()]) )
-    log.debug( "loaded %i confDb files", nPkgs )
+    log.debug( "loaded %i confDb packages", nPkgs )
     return nFiles
 
 

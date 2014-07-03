@@ -29,10 +29,16 @@ macro(use_heptools heptools_version)
     get_filename_component(LCG_releases ${LCG_TOOLCHAIN_INFO} PATH CACHE)
     set(LCG_external ${LCG_releases})
 
+    file(STRINGS ${LCG_TOOLCHAIN_INFO} _lcg_infos)
+
+    # This information should be found in ${LCG_TOOLCHAIN_INFO}
+    if (BINARY_TAG MATCHES "ubuntu")
+      set(LCG_USE_NATIVE_COMPILER TRUE)
+    endif()
+
     # Enable the right compiler (needs LCG_external)
     lcg_define_compiler()
 
-    file(STRINGS ${LCG_TOOLCHAIN_INFO} _lcg_infos)
     foreach(_l ${_lcg_infos})
       if(NOT _l MATCHES "^(PLATFORM|VERSION):")
         string(REGEX REPLACE "; *" ";" _l "${_l}")
