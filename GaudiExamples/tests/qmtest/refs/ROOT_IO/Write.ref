@@ -68,14 +68,32 @@ IODataManager       DEBUG Service base class initialized successfully
 FileCatalog         DEBUG Service base class initialized successfully
 EventPersistenc...VERBOSE ServiceLocatorHelper::service: found service Gaudi::RootCnvSvc/RootCnvSvc
 EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
+RootDst             DEBUG ItemList    : [/Event#999]
 RootDst             DEBUG Adding OutputStream item /Event with 999 level(s).
+RootDst             DEBUG OptItemList : []
+RootDst             DEBUG AlgDependentItemList : {}
 RootDst              INFO Data source: EventDataSvc output: DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
+RootDst             DEBUG AcceptAlgs  : []
+RootDst             DEBUG RequireAlgs : []
+RootDst             DEBUG VetoAlgs    : []
+RootMini            DEBUG ItemList    : [/Event#1]
 RootMini            DEBUG Adding OutputStream item /Event with 1 level(s).
+RootMini            DEBUG OptItemList : []
+RootMini            DEBUG AlgDependentItemList : {}
 RootMini             INFO Data source: EventDataSvc output: DATAFILE='PFN:ROOTIO.mdst' SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
+RootMini            DEBUG AcceptAlgs  : []
+RootMini            DEBUG RequireAlgs : []
+RootMini            DEBUG VetoAlgs    : []
 FileRecordPersi...VERBOSE ServiceLocatorHelper::service: found service Gaudi::RootCnvSvc/RootCnvSvc
 FileRecordPersi...   INFO Added successfully Conversion service:RootCnvSvc
+FileRecords         DEBUG ItemList    : [/FileRecords#999]
 FileRecords         DEBUG Adding OutputStream item /FileRecords with 999 level(s).
+FileRecords         DEBUG OptItemList : []
+FileRecords         DEBUG AlgDependentItemList : {}
 FileRecords          INFO Data source: FileRecordDataSvc/FileRecordDataSvc output: DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'
+FileRecords         DEBUG AcceptAlgs  : []
+FileRecords         DEBUG RequireAlgs : []
+FileRecords         DEBUG VetoAlgs    : []
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramDataSvc    DEBUG Service base class initialized successfully

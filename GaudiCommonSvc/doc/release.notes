@@ -4,6 +4,19 @@
 # Description: standard and commonly used components
 ################################################################################
 
+! 2014-07-02 - Marco Clemencic
+ - Fixed logic of OutputStream::decodeAlgorithms.
+
+! 2014-07-01 - Chris Jones
+ - GAUDI-974: Add a new property to OutputStream, 'AlgDependentItemList' that
+   allows for data locations to be conditionally added, only if a given
+   algorithm fired in a given event. Structure of the new option is
+   
+       std::map< std::string, std::vector<std::string> >
+   
+   where the first item is the algorithm name, and the second the list of
+   data locations to include in the output stream, when that algorithm fired.
+
 ============================ GaudiCommonSvc v3r1 =============================
 ! 2014-03-18 - Ben Couturier
  - Fixed bug #104127: remove hwaf configuration.

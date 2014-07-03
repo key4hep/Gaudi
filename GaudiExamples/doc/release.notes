@@ -1,6 +1,12 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
 
+! 2014-07-02 - Marco Clemencic
+ - Updated reference file after the changes in OutputStream.
+
+! 2014-07-01 - Marco Clemencic
+ - Added test for the conditional output in OutputStream (GAUDI-974).
+ 
 ! 2014-06-25 - Marco Clemencic
  - Minor change in event_timeout_abort test to avoid false positives.
 
