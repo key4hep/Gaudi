@@ -1,6 +1,9 @@
 package GaudiPolicy
 package manager: Marco Clemencic
 
+! 2014-07-04 - Marco Clemencic
+ - Fixed a problem with unicode-ascii conversion failure in CTestXML2HTML.
+
 ! 2014-07-02 - Marco Clemencic
  - Modified run_qmtest.py to accept nested test suites in
    GAUDI_QMTEST_DEFAULT_SUITE.

@@ -6,6 +6,7 @@ import re
 import shutil
 import bisect
 import time
+import codecs
 
 from datetime import  datetime,timedelta
 from optparse import OptionParser
@@ -628,7 +629,10 @@ def main():
                     value = Results.find("Measurement").find("Value")
                     stdout = open(os.path.join(testCaseDir,"stdout"),"w")
                     if value is not None and value.text is not None :
-                        stdout.write("<pre>"+value.text+"</pre>")
+                        stdout.write("<pre>" +
+                                     codecs.encode(value.text, 'utf-8',
+                                                   'xmlcharrefreplace') +
+                                     "</pre>")
                     else :
                         stdout.write("<pre></pre>")
                     stdout.close()
@@ -646,7 +650,10 @@ def main():
 
                         # Consider the void measurment
                         if value is not None and value.text is not None :
-                            NamedMeasurementFile.write("<pre>"+value.text+"</pre>")
+                            NamedMeasurementFile.write("<pre>" +
+                                                       codecs.encode(value.text, 'utf-8',
+                                                                     'xmlcharrefreplace') +
+                                                       "</pre>")
                         else :
                             NamedMeasurementFile.write("<pre></pre>")
                         NamedMeasurementFile.close()
@@ -661,7 +668,10 @@ def main():
 
                         # Consider the void measurment
                         if value is not None and value.text is not None :
-                            NamedMeasurementFile.write("<pre>"+value.text+"</pre>")
+                            NamedMeasurementFile.write("<pre>" +
+                                                       codecs.encode(value.text, 'utf-8',
+                                                                     'xmlcharrefreplace') +
+                                                       "</pre>")
                         else :
                             NamedMeasurementFile.write("<pre></pre>")
                         NamedMeasurementFile.close()
