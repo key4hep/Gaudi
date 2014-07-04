@@ -2,6 +2,9 @@ Package: GaudiRelease
 Maintainer: Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-07-04 - Marco Clemencic
+ - Added CMake target to build Doxigen documentation.
+
 ============================= GaudiRelease v25r3 =============================
 ============================= GaudiRelease v25r2 =============================
 ============================ GaudiRelease v25r1p1 ============================
