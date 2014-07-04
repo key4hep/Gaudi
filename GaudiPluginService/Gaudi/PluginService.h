@@ -12,6 +12,7 @@
 \*****************************************************************************/
 
 /// @author Marco Clemencic <marco.clemencic@cern.ch>
+/// @see @ref GaudiPluginService-readme
 
 #include <string>
 #include <typeinfo>
