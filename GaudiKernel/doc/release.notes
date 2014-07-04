@@ -1,6 +1,9 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
 
+! 2014-07-04 - Marco Clemencic
+ - Fixed the test for GAUDI-975 to work without build directory.
+
 ! 2014-07-01 - Marco Clemencic
  - removed some dead code in ConfigurableDb.py
 

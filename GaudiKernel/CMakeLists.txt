@@ -42,14 +42,14 @@ if(GAUDI_BUILD_TESTS)
   target_link_libraries(test_CustomFactory GaudiPluginService)
   install(TARGETS test_CustomFactory LIBRARY DESTINATION lib OPTIONAL)
 
+  get_filename_component(genconf_cmd_name ${genconf_cmd} NAME)
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
   gaudi_add_test(genconf_with_custom_factory
                  COMMAND ${env_cmd} --xml ${env_xml}
-                           ${genconf_cmd}
+                           ${genconf_cmd_name}
                              -o ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir
                              -p CustomFactoryTest
                          -i test_CustomFactory
-                 DEPENDS ${library} ${deps}
                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
 endif()
 
