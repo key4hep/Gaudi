@@ -5,6 +5,7 @@
 # Commit Id: $Format:%H$
 ################################################################################
 
+============================ GaudiCommonSvc v3r2 =============================
 ! 2014-07-02 - Marco Clemencic
  - Fixed logic of OutputStream::decodeAlgorithms.
 

@@ -55,6 +55,78 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
+<h2><a name="v25r3">Gaudi v25r3</a> (2014-07-03)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=69root6">LCGCMT_69root6</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>First production release based on ROOT 6 (6.00/01)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Updates in the CMake configuration to support ATLAS<br/>
+    (<span class="author">Marco Clemencic</span>,
+    <span class="author">David Quarrie</span>)</li>
+<li>GAUDI-425: implement a pure ascii based configurable-db<br/>
+    (<span class="author">Sebastien Binet</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v15r0):
+<ul>
+<li>GAUDI-425: implement a pure ascii based configurable-db<br/>
+    (<span class="author">Sebastien Binet</span>)</li>
+<li>Removed the partial .confdb from the InstallArea and keep only the merged one.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Minor fixes.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Deprecation warning if the obsolete CMT pattern generate_rootmap is used.<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v31r0):
+<ul>
+<li>GAUDI-425: implement a pure ascii based configurable-db<br/>
+    (<span class="author">Sebastien Binet</span>)</li>
+<li>Fixed unchecked StatusCodes<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiSvc (v21r3):
+<ul>
+<li>Fixes to FileMgr.<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiUtils (v5r2):
+<ul>
+<li>Fixed bug GAUDI-971: successful failover to a replica in IODataManager leads
+   to non-zero exit code.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>RootCnv (v1r22p2):
+<ul>
+<li>GAUDI-962: fix unprotected debug messages.<br/>
+    (<span class="author">Marco Cattaneo</span>)</li>
+<li>Fixed suppression of some VERBOSE messages.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiCommonSvc (v3r2):
+<ul>
+<li>GAUDI-974: Add a new property to OutputStream, 'AlgDependentItemList' that allows for data locations to be conditionally added, only if a given
+   algorithm fired in a given event.<br/>
+    (<span class="author">Chris Jones</span>)</li>
+<li>Fixed logic of OutputStream::decodeAlgorithms.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v25r3):
+<ul>
+<li>Added tests for GAUDI-971 and GAUDI-974.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
 <h2><a name="v25r2">Gaudi v25r2</a> (2014-06-02)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=68">LCGCMT_68</a></h3>
 <h3>General Changes</h3>

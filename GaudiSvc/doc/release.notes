@@ -2,6 +2,7 @@ Package: GaudiSvc
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+=============================== GaudiSvc v21r3 ===============================
 ! 2014-06-11 - Charles Leggett
  - FileMgr: execActs(): check iterator
 M       src/FileMgr/FileMgr.cpp

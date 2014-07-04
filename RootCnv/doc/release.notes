@@ -5,6 +5,7 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+============================== RootCnv v1r22p2 ===============================
 ! 2014-06-19 - Marco Clemencic
  - Minor fix for unpredictable VERBOSE messages (message suppression not
    correctly implemented).
