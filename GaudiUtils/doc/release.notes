@@ -1,5 +1,6 @@
 Package: GaudiUtils
 Package manager : Marco Clemencic
+Commit Id: $Format:%H$
 
 ! 2014-06-19 - Marco Clemencic
  - Fixed unchecked StatusCode.

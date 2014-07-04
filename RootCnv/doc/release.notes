@@ -2,6 +2,7 @@
 ! Package     : RootCnv
 ! Responsible : Markus Frank
 ! Purpose     : Root based persistency
+! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
 ! 2014-06-19 - Marco Clemencic

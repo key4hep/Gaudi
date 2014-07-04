@@ -1,5 +1,6 @@
 package GaudiPolicy
 package manager: Marco Clemencic
+Commit Id: $Format:%H$
 
 ! 2014-07-04 - Marco Clemencic
  - Fixed a problem with unicode-ascii conversion failure in CTestXML2HTML.

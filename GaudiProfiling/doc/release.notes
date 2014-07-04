@@ -2,6 +2,7 @@
 ! Package     : GaudiProfiling
 ! Responsible : Chris Jones, Karol Kruzelecki
 ! Purpose     : Profiling and performance monitoring of Gaudi/LHCb software
+! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
 ============================ GaudiProfiling v2r1 =============================

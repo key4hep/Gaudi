@@ -1,5 +1,6 @@
 Package : GaudiKernel
 Package manager : Marco Clemencic
+Commit Id: $Format:%H$
 
 ! 2014-07-04 - Marco Clemencic
  - Fixed the test for GAUDI-975 to work without build directory.

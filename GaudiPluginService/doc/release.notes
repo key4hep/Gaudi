@@ -2,6 +2,7 @@
 ! Package     : GaudiPluginService
 ! Responsible : Marco Clemencic
 ! Purpose     : Provide a generic plugin service.
+! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
 ========================== GaudiPluginService v1r2 ===========================

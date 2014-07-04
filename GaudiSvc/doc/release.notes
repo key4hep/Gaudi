@@ -1,5 +1,6 @@
 Package: GaudiSvc
 Package manager : Marco Clemencic
+Commit Id: $Format:%H$
 
 ! 2014-06-11 - Charles Leggett
  - FileMgr: execActs(): check iterator

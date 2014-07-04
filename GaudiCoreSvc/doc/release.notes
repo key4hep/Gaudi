@@ -2,6 +2,7 @@
 # Package: GaudiCoreSvc
 # Maintainer: Marco Clemencic
 # Description: basic and mandatory components for a Gaudi application
+# Commit Id: $Format:%H$
 ################################################################################
 
 ============================= GaudiCoreSvc v3r1 ==============================

@@ -2,6 +2,7 @@
 ! Package     : GaudiPartProp
 ! Responsible : Marco Clemencic
 ! Purpose     : Gaudi Particle Property Service
+! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
 ============================= GaudiPartProp v2r1 =============================

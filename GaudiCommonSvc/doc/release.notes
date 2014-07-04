@@ -2,6 +2,7 @@
 # Package: GaudiCommonSvc
 # Maintainer: Marco Clemencic
 # Description: standard and commonly used components
+# Commit Id: $Format:%H$
 ################################################################################
 
 ! 2014-07-02 - Marco Clemencic
