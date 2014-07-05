@@ -7,8 +7,9 @@ if(DOXYGEN_FOUND)
     set(DOXYGEN_INCLUDE_DIRS "${DOXYGEN_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/${package}")
   endforeach()
 
-  configure_file(Doxyfile.in ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/doxygen/Doxyfile @ONLY)
-  configure_file(mainpage.md.in ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/doxygen/mainpage.md @ONLY)
+  foreach(template Doxyfile mainpage.md externaldocs.md)
+    configure_file(${template}.in ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/doxygen/${template} @ONLY)
+  endforeach()
 
   add_custom_target(doc
                     COMMAND ${env_cmd} --xml ${env_xml}

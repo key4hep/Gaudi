@@ -2,31 +2,29 @@ Related external libraries    {#externaldocs}
 ==========================
 
 \htmlonly
-<h3><center>(from LCGCMT version $(LCGCMTVERS))</h3></center>
+<h3><center>(from LCGCMT version @heptools_version@)</h3></center>
  <UL>
   <li>LCG Application Area:
   <ul>
-    <LI> <a href="http://lcgapp.cern.ch/doxygen/CORAL/$(CORALVERS)/doxygen/html/" target="_blank">$(CORALVERS)</A> (relational access)
-    <LI> <a href="http://lcgapp.cern.ch/doxygen/COOL/$(COOLVERS)/doxygen/html/" target="_blank">$(COOLVERS)</A> (conditions database)
-    <LI> <a href="http://lcgapp.cern.ch/doxygen/ROOT/$(ROOTVERS)/doxygen/html/" target="_blank">ROOT $(ROOTVERS)</A> (persistency)
+    <LI> <a href="http://lcgapp.cern.ch/doxygen/CORAL/@CORAL_config_version@/doxygen/html/" target="_blank">@CORAL_config_version@</A> (relational access)
+    <LI> <a href="http://lcgapp.cern.ch/doxygen/COOL/@COOL_config_version@/doxygen/html/" target="_blank">@COOL_config_version@</A> (conditions database)
+    <LI> <a href="http://lcgapp.cern.ch/doxygen/ROOT/@ROOT_config_version@/doxygen/html/" target="_blank">ROOT @ROOT_config_version@</A> (persistency)
   </ul></li>
   <li>Externals:
   <UL>
     <script type="text/javascript" language="JavaScript">
-      var boostVers = "$(BoostVERS)";
+      var boostVers = "@Boost_config_version@";
       var url = "http://www.boost.org/doc/libs/" + boostVers.replace(/\./g,"_") + "/libs/libraries.htm";
       document.write("<LI> <a href=\"" + url + "\" target=\"_blank\">Boost " + boostVers + "</a>");
     </script>
-    <LI> <a href="http://lcgsoft.cern.ch/index.py?page=pkg_overview&pkg=uuid" target="_blank">uuid $(uuidVERS)</A>
-    <LI> <a href="http://lcgsoft.cern.ch/index.py?page=pkg_overview&pkg=gccxml" target="_blank">GCC-XML $(GCCXMLVERS)</A>
-    <LI> <a href="http://aida.freehep.org/doc/v$(AIDAVERS)/api/index.html" target="_blank">AIDA $(AIDAVERS)</A> (histogramming)
+    <LI> <a href="http://aida.freehep.org/doc/v$(AIDAVERS)/api/index.html" target="_blank">AIDA @AIDA_config_version@</A> (histogramming)
     <script type="text/javascript" language="JavaScript">
-      var xercesVers = "$(XercesCVERS)";
+      var xercesVers = "@XercesC_config_version@";
       var url = "http://xml.apache.org/xerces-c/apiDocs-" + xercesVers[0] + "/index.html";
       document.write("<LI> <a href=\"" + url + "\" target=\"_blank\">Xerces-C " + xercesVers + "</a>");
     </script>
     <LI> <a href="http://www.gnu.org/software/gsl/manual/html_node/index.html" target="_blank">GNU Scientific Library (GSL) $(GSLVERS)</A>
-    <LI> <a href="http://www.python.org/doc/$(PythonVERS)/" target="_blank">Python $(PythonVERS)</A> (scripting and interactivity)
+    <LI> <a href="http://www.python.org/doc/@Python_config_version@/" target="_blank">Python @Python_config_version@</A> (scripting and interactivity)
     <LI> <a href="http://lcgapp.cern.ch/project/simu/HepMC/" target="_blank">HepMC $(HepMCVERS)</A>
     <LI> <a href="http://www.codesourcery.com/qmtest/" target="_blank">QMTest $(QMtestVERS)</A>
   </UL></li>
