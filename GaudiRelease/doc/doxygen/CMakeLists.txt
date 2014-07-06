@@ -8,10 +8,10 @@ if(DOXYGEN_FOUND)
   endforeach()
 
   foreach(template Doxyfile mainpage.md externaldocs.md)
-    configure_file(${template}.in ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/doxygen/${template} @ONLY)
+    configure_file(${template}.in ${CMAKE_CURRENT_BINARY_DIR}/${template} @ONLY)
   endforeach()
 
   add_custom_target(doc
                     COMMAND ${env_cmd} --xml ${env_xml}
-                            ${DOXYGEN_EXECUTABLE} ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/doxygen/Doxyfile)
+                            ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 endif()
