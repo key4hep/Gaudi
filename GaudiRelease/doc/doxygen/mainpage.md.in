@@ -1,4 +1,4 @@
-Gaudi Software Framework    {#mainpage}
+%Gaudi Software Framework    {#mainpage}
 ========================
 
 This is the code reference manual for the GAUDI framework. These pages have
@@ -13,12 +13,12 @@ the [list of classes](annotated.html) or via the [class hierarchy](hierarchy.htm
 <table>
 <tr><th>Version</th><td>@CMAKE_PROJECT_VERSION@</td></tr>
 <tr><th>Description</th><td>Details of the constituent package versions are available in the...<br/>
-The [release notes](../release.notes.html) contain the details of changes
+The [release notes](release.notes.html) contain the details of changes
     since the previous release.</td></tr>
 <tr><th>Supported Platforms</th><td>Scientific Linux CERN 6 with gcc-4.8 (released with debug and non debug
     versions, 64 bits only, with C++11 enabled)</td></tr>
 <tr><th>Download</th><td>[Sources](http://lhcbproject.web.cern.ch/lhcbproject/dist/GAUDI/GAUDI_GAUDI_@CMAKE_PROJECT_VERSION@.tar.gz)</td></tr>
-<tr><th>Documentation</th><td>Gaudi Developers Guide [v9](http://cern.ch/lhcb-comp/Frameworks/Gaudi/Gaudi_v9/GUG/Output/GUG.htm)
+<tr><th>Documentation</th><td>%Gaudi Developers Guide [v9](http://cern.ch/lhcb-comp/Frameworks/Gaudi/Gaudi_v9/GUG/Output/GUG.htm)
     ([.pdf](http://cern.ch/lhcb-comp/Frameworks/Gaudi/Gaudi_v9/GUG/GUG.pdf),
     [.pdf 2up (for printing)](http://cern.ch/lhcb-comp/Frameworks/Gaudi/Gaudi_v9/GUG/GUG-2up.pdf))</td></tr>
 </table>
