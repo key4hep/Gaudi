@@ -7,6 +7,38 @@ if(DOXYGEN_FOUND)
     set(DOXYGEN_INCLUDE_DIRS "${DOXYGEN_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/${package}")
   endforeach()
 
+  # add the release notes of each package
+  set(rel_notes_main ${CMAKE_CURRENT_BINARY_DIR}/release_notes_main.md)
+  file(WRITE ${rel_notes_main} "Release Notes {#release_notes_main}
+==
+
+[Release notes of the project](release.notes.html)
+
+Release notes of the packages:
+")
+  foreach(package ${packages})
+    if(EXISTS ${CMAKE_SOURCE_DIR}/${package}/doc/release.notes)
+      file(APPEND ${rel_notes_main} "* @subpage ${package}-notes\n")
+      #configure_file(${CMAKE_SOURCE_DIR}/${package}/doc/release.notes
+      #               ${CMAKE_CURRENT_BINARY_DIR}/${package}-notes.md COPYONLY)
+      file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${package}-notes.md
+           "${package} {#${package}-notes}
+==
+
+\\verbinclude ${package}/doc/release.notes\n")
+    endif()
+  endforeach()
+
+  # add extra files for the HTML pages
+  file(GLOB project_rel_notes ${CMAKE_SOURCE_DIR}/GaudiRelease/doc/release.notes*.html)
+  set(DOXYGEN_HTML_EXTRA_FILES)
+  foreach(extra_file
+            ${CMAKE_CURRENT_SOURCE_DIR}/issue_tracker_links.js
+            ${project_rel_notes})
+    set(DOXYGEN_HTML_EXTRA_FILES "${DOXYGEN_HTML_EXTRA_FILES} ${extra_file}")
+  endforeach()
+
+  # copy the template files
   foreach(template Doxyfile mainpage.md externaldocs.md)
     configure_file(${template}.in ${CMAKE_CURRENT_BINARY_DIR}/${template} @ONLY)
   endforeach()
