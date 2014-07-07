@@ -1,32 +1,55 @@
-function LinkToSavannah()
-{
-  patch = "<a href='https://savannah.cern.ch/patch/index.php?$2'>$1&nbsp;#$2</a>";
-  bug = "<a href='https://savannah.cern.ch/bug/index.php?$2'>$1&nbsp;#$2</a>";
-  task = "<a href='https://savannah.cern.ch/task/index.php?$2'>$1&nbsp;#$2</a>";
-  s = document.getElementsByTagName("body")[0].innerHTML;
-  s = s.replace(/([Pp]atch) #([0-9]*)/g,patch);
-  s = s.replace(/([Tt]ask) #([0-9]*)/g,task);
-  s = s.replace(/([Bb]ug) #([0-9]*)/g,bug);
-  document.getElementsByTagName("body")[0].innerHTML = s;
+// Convert text referencing JIRA or Savannah items into links to the items.
+// Requires jQuery.
+
+function isTextNode() {
+  return this.nodeType == Node.TEXT_NODE;
 }
 
-// replaces the occurrences of ([A-Z]+-[0-9]+) with the link to the JIRA issue
-function LinkToJIRA()
-{
-  s = document.getElementsByTagName("body")[0].innerHTML;
-  s = s.replace(/([A-Z]+)-[0-9]+/g, function(match, p1) {
-    var url = "https://its.cern.ch/jira/browse/";
-    if (p1 == "ROOT" || p1 == "SPI" || p1 == "PF" || p1 == "CFHEP" ||
-        p1 == "CVM")
-        url = "https://sft.its.cern.ch/jira/browse/";
-    else if (p1 == "GUG")
-    	return match;
-    return '<a href="' + url + match + '">' + match + '</a>';
+JIRA_ITEM_REGEX = /\b([A-Z]+)-[0-9]+/g;
+SAVANNAH_ITEM_REGEX = /\b([Pp]atch|[Tt]ask|[Bb]ug) #([0-9]*)/g;
+
+function conatinsSavannahItems(text) {
+  return SAVANNAH_ITEM_REGEX.test(text);
+}
+
+jQuery.fn.linkToSavannah = function () {
+  this.contents()
+      .filter(isTextNode)
+      .filter(function() {return conatinsSavannahItems(this.nodeValue);})
+      .replaceWith(function() {
+        return this.nodeValue.replace(SAVANNAH_ITEM_REGEX,
+    	       function(match, p1, p2) {
+    		     p1 = p1.toLowerCase();
+    		     return '<a href="https://savannah.cern.ch/' + p1 +
+    		            '/index.php?' + p2 + '">' + match + '</a>';
+        });
   });
-  document.getElementsByTagName("body")[0].innerHTML = s;
+  return this;
 }
 
-$(function () {
-  LinkToSavannah();
-  LinkToJIRA();
+function conatinsJIRAItems(text) {
+  return JIRA_ITEM_REGEX.test(text);
+}
+
+jQuery.fn.linkToJIRA = function () {
+  this.contents()
+      .filter(isTextNode)
+      .filter(function() {return conatinsJIRAItems(this.nodeValue);})
+      .replaceWith(function() {
+        return this.nodeValue.replace(/\b([A-Z]+)-[0-9]+/g,
+               function(match, p1) {
+                 var url = "https://its.cern.ch/jira/browse/";
+                 if (p1 == "ROOT" || p1 == "SPI" || p1 == "PF" || p1 == "CFHEP" ||
+                     p1 == "CVM")
+                   url = "https://sft.its.cern.ch/jira/browse/";
+                 return '<a href="' + url + match + '">' + match + '</a>';
+               });
+        });
+  return this;
+};
+
+$(function() {
+  $(":not(a)", ".textblock")
+    .linkToJIRA()
+    .linkToSavannah();
 });
