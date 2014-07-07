@@ -48,7 +48,23 @@ Release notes of the packages:
     configure_file(${template}.in ${CMAKE_CURRENT_BINARY_DIR}/${template} @ONLY)
   endforeach()
 
-  add_custom_target(doc
+  # install MathJax Javascript math renderer
+  add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/doxygen/mathjax
+                     COMMAND ${CMAKE_COMMAND}
+                       -DTARFILE_DEST=${CMAKE_CURRENT_BINARY_DIR}
+                       -DINSTALL_DIR=${CMAKE_BINARY_DIR}/doxygen
+                       -P ${CMAKE_CURRENT_SOURCE_DIR}/get_mathjax.cmake
+                     COMMENT "Installing MathJax...")
+  # in principle this is not needed, but it allows to run Doxygen and install
+  # MathJax at the same time
+  add_custom_target(install-MathJax DEPENDS ${CMAKE_BINARY_DIR}/doxygen/mathjax)
+
+  # run Doxygen to generate the documentation
+  add_custom_target(run-doxygen
                     COMMAND ${env_cmd} --xml ${env_xml}
-                            ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+                            ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+                    COMMENT "Running Doxygen...")
+
+  # 'doc' target
+  add_custom_target(doc DEPENDS run-doxygen install-MathJax)
 endif()
