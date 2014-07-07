@@ -1,10 +1,10 @@
 %Gaudi Software Framework    {#mainpage}
 ========================
 
-This is the code reference manual for the GAUDI framework. These pages have
+This is the code reference manual for the %Gaudi Software Framework. These pages have
 been generated directly from the code and reflect the exact state of the software.
 For a more comprehensive and guiding manual for the user of the framework there
-exists the User Guide accessible from the [GAUDI Project Web page](http://cern.ch/gaudi)
+exists the User Guide accessible from the [Gaudi Project Web page](http://cern.ch/gaudi)
 
 Use the links in the menu at the top of the page to navigate. In particular using
 the [list of classes](annotated.html) or via the [class hierarchy](hierarchy.html).
