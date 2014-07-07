@@ -38,6 +38,11 @@ Release notes of the packages:
     set(DOXYGEN_HTML_EXTRA_FILES "${DOXYGEN_HTML_EXTRA_FILES} ${extra_file}")
   endforeach()
 
+  # massage some version numbers
+  string(REGEX REPLACE "_python.*" "" Boost_version "${Boost_config_version}")
+  string(REGEX REPLACE "\\." "_" Boost_url_version "${Boost_version}")
+  string(REGEX REPLACE "\\..*" "" XercesC_major_version "${XercesC_config_version}")
+
   # copy the template files
   foreach(template Doxyfile mainpage.md externaldocs.md)
     configure_file(${template}.in ${CMAKE_CURRENT_BINARY_DIR}/${template} @ONLY)
