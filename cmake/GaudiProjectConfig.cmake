@@ -1920,14 +1920,25 @@ function(gaudi_add_dictionary dictionary header selection)
   else()
     gaudi_add_genheader_dependencies(${dictionary}Gen)
   endif()
-  
+
   # Notify the project level target
   get_property(rootmapname TARGET ${dictionary}Gen PROPERTY ROOTMAPFILE)
   gaudi_merge_files_append(DictRootmap ${dictionary}Gen ${CMAKE_CURRENT_BINARY_DIR}/${rootmapname})
 
+  if(ROOT_HAS_PCMS)
+    get_property(pcmname TARGET ${dictionary}Gen PROPERTY PCMFILE)
+    add_custom_command(OUTPUT ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${pcmname}
+                       COMMAND ${CMAKE_COMMAND} -E copy ${pcmname} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${pcmname}
+                       DEPENDS ${pcmname})
+    add_custom_target(${dictionary}PCM ALL
+                      DEPENDS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${pcmname})
+  endif()
+
   #----Installation details-------------------------------------------------------
   install(TARGETS ${dictionary}Dict LIBRARY DESTINATION lib OPTIONAL)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}Dict_rdict.pcm DESTINATION lib OPTIONAL)
+  if(ROOT_HAS_PCMS)
+    install(FILES ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${pcmname} DESTINATION lib OPTIONAL)
+  endif()
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
