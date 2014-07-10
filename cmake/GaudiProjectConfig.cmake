@@ -1929,7 +1929,7 @@ function(gaudi_add_dictionary dictionary header selection)
     get_property(pcmname TARGET ${dictionary}Gen PROPERTY PCMFILE)
     add_custom_command(OUTPUT ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${pcmname}
                        COMMAND ${CMAKE_COMMAND} -E copy ${pcmname} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${pcmname}
-                       DEPENDS ${pcmname})
+                       DEPENDS ${dictionary}Gen)
     add_custom_target(${dictionary}PCM ALL
                       DEPENDS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${pcmname})
   endif()
