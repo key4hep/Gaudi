@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-07-11 - Marco Clemencic
+ - Removed references to the obsolete IFactory.
+
 ============================= GaudiKernel v31r0 ==============================
 ! 2014-07-04 - Marco Clemencic
  - Fixed the test for GAUDI-975 to work without build directory.

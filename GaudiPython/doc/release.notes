@@ -2,6 +2,9 @@ Package: GaudiPython
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-07-11 - Marco Clemencic
+ - Removed references to the obsolete IFactory.
+
 ============================= GaudiPython v13r2 ==============================
 ! 2014-05-27 - Marco Clemencic
  - Minor fix to CMake configuration (CMT equivalence).
