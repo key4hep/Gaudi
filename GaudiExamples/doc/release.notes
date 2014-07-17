@@ -2,6 +2,9 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-07-10 - Marco Clemencic
+ - Removed duplicated test.
+
 ============================ GaudiExamples v25r3 =============================
 ! 2014-07-02 - Marco Clemencic
  - Updated reference file after the changes in OutputStream.
