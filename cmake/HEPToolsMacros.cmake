@@ -236,7 +236,7 @@ function(lcg_get_target_platform)
   message(STATUS "Target system: ${LCG_TARGET}")
   message(STATUS "Build type: ${LCG_BUILD_TYPE}")
 
-  if(NOT LCG_HOST_SYSTEM STREQUAL LCG_TARGET)
+  if(LCG_HOST_SYSTEM AND NOT LCG_HOST_SYSTEM STREQUAL LCG_TARGET)
     message(STATUS "Host system: ${LCG_HOST_SYSTEM}")
   endif()
 
