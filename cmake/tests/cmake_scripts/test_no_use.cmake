@@ -1,6 +1,6 @@
 set(CMAKE_MODULE_PATH .. .)
 
-include(FindUsedProjects)
+include(GaudiToolchainMacros)
 
 init()
 find_projects(projects tools data/projects/BASE/BASE_v1r0/CMakeLists.txt)
