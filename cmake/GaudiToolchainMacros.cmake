@@ -161,7 +161,8 @@ macro(set_paths_from_projects)
         # we add the tool/project directory ...
         set(_path ${_root} ${_path}) # FIXME: is it needed?
         # ... and some optional extra entries
-        foreach(_root ${_root}/cmake ${_root}/AtlasExternalsRelease/cmake)
+        foreach(_root ${_root}/cmake ${_root}/AtlasExternalsRelease/cmake
+                      ${_root}/InstallArea/${BINARY_TAG}/cmake)
             if(EXISTS ${_root})
                 set(_path ${_root} ${_path})
             endif()
