@@ -105,7 +105,9 @@ function(_internal_find_projects projects_var tools_var config_file)
        	# look for the configuration file of the project
        	find_file(${name_upper}_CONFIG_FILE NAMES CMakeLists.txt
        	          PATH_SUFFIXES ${name}/${version}
-       	                        ${name_upper}/${name_upper}_${version})
+       	                        ${name_upper}/${name_upper}_${version}
+       	                        ${name}_${version}
+       	                        ${name})
         # recursion
         if(${name_upper}_CONFIG_FILE)
             _internal_find_projects(projects tools
