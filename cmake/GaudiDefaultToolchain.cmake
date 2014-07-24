@@ -1,6 +1,5 @@
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_MODULE_PATH})
 
-# it should be found in the current directory
 include(GaudiToolchainMacros)
 
 init()

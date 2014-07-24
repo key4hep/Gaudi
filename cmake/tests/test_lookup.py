@@ -24,5 +24,6 @@ def test_script():
     for test in ['no_use', 'simple_use', 'chain', 'diamond',
                  'with_tools', 'with_chained_tools',
                  'version_selection',
-                 'atlas_convention', 'special_conventions']:
+                 'atlas_convention', 'special_conventions',
+                 'guess_toolchain']:
         yield cmake_script_runner, test
