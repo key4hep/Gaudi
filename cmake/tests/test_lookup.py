@@ -23,5 +23,6 @@ def cmake_script_runner(name):
 def test_script():
     for test in ['no_use', 'simple_use', 'chain', 'diamond',
                  'with_tools', 'with_chained_tools',
-                 'version_selection']:
+                 'version_selection',
+                 'atlas_convention']:
         yield cmake_script_runner, test
