@@ -233,17 +233,18 @@ void ForwardSchedulerSvc::activate(){
 
   // -100 prevents the creation of the pool and the scheduler directly executes
   // the tasks.
-  if (-100 != m_threadPoolSize){
-    debug() << "Initialising a TBB thread pool of size " << m_threadPoolSize << endmsg;
+  if (-100 != m_threadPoolSize) {
+    debug() << "Initialising a TBB thread pool of requested size " << m_threadPoolSize << endmsg;
     // Leave -1 in case selected, increment otherwise
-    int thePoolSize=m_threadPoolSize;
-    if (thePoolSize!=-1)
-      thePoolSize+=1;
+    int thePoolSize = m_threadPoolSize;
+    if (thePoolSize == -1)
+      debug() << "...default TBB thread pool size amounts to " << tbb::task_scheduler_init::default_num_threads()<< endmsg;
+    if (thePoolSize != -1)
+      thePoolSize += 1;
     TBBSchedInit = new tbb::task_scheduler_init (thePoolSize);
-    }
-  else{
+  } else {
     debug() << "Thread pool size is one. Pool not initialised." << endmsg;
-    }
+  }
   // Wait for actions pushed into the queue by finishing tasks.
   action thisAction;
   StatusCode sc(StatusCode::SUCCESS);
@@ -254,9 +255,9 @@ void ForwardSchedulerSvc::activate(){
     m_actionsQueue.pop(thisAction);
     sc = thisAction();
     if (sc!=StatusCode::SUCCESS)
-      verbose() << "Action did not succed (which is not bad per se)." << endmsg;
+      verbose() << "Action did not succeed (which is not bad per se)." << endmsg;
     else
-      verbose() << "Action succeded." << endmsg;
+      verbose() << "Action succeeded." << endmsg;
   }
 
   if (TBBSchedInit)
@@ -456,8 +457,6 @@ StatusCode ForwardSchedulerSvc::eventFailed(EventContext* eventContext){
 */
 StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_name){
 
-
-
   m_updateNeeded=true;
 
   // Fill a map of initial state / action using closures.
@@ -581,9 +580,12 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
                 << thisSlot.eventContext->slot() << ")." << endmsg;
       }
       // now let's return the fully evaluated result of the control flow
-      std::stringstream ss;
-      m_cfManager.printEventState(ss, thisSlot.algsStates, thisSlot.controlFlowState,0);
-      debug() << ss.str() << endmsg;
+      if (msgLevel(MSG::DEBUG)) {
+        std::stringstream ss;
+        m_cfManager.printEventState(ss, thisSlot.algsStates, thisSlot.controlFlowState,0);
+        debug() << ss.str() << endmsg;
+      }
+
       thisSlot.eventContext= nullptr;
     } else {
       StatusCode eventStalledSC = isStalled(iSlot);
