@@ -203,6 +203,8 @@ private:
   bool m_CFNext;
   // XXX: CF tests. Temporary property to switch between DataFlow implementations
   bool m_DFNext;
+  // Flag to perform single-pass simulation of execution flow before the actual execution
+  bool m_simulateExecution;
 
   // Needed to queue actions on algorithm finishing and decrement algos in flight
   friend class AlgoExecutionTask;

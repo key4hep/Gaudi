@@ -45,8 +45,8 @@ namespace concurrency {
                             const std::vector<int>& node_decisions,
                             const unsigned int& recursionLevel) const = 0;
     /// XXX: CF tests.
-    unsigned int getNodeIndex() const { return m_nodeIndex; }
-    std::string getNodeName() const { return m_nodeName; }
+    const unsigned int& getNodeIndex() const { return m_nodeIndex; }
+    const std::string& getNodeName() const { return m_nodeName; }
     virtual void updateDecision(const int& slotNum,
                                 AlgsExecutionStates& states,
                                 std::vector<int>& node_decisions) const = 0;
@@ -88,7 +88,7 @@ namespace concurrency {
     /// Add a daughter node
     void addDaughterNode(ControlFlowNode* node);
     ///
-    std::vector<ControlFlowNode*> getDaughters() const {return m_children;}
+    const std::vector<ControlFlowNode*>& getDaughters() const {return m_children;}
     /// Print a string representing the control flow state
     virtual void printState(std::stringstream& output,
     						AlgsExecutionStates& states,
@@ -131,21 +131,21 @@ namespace concurrency {
     /// Associate an AlgorithmNode, which is a data consumer of this one
     void addConsumerNode(AlgorithmNode* node) { m_consumers.push_back(node); }
     /// Get all supplier nodes
-    std::vector<AlgorithmNode*> getSupplierNodes() {return m_suppliers;}
+    std::vector<AlgorithmNode*>& getSupplierNodes() {return m_suppliers;}
     /// Get all consumer nodes
-    std::vector<AlgorithmNode*> getConsumerNodes() {return m_consumers;}
+    std::vector<AlgorithmNode*>& getConsumerNodes() {return m_consumers;}
 
     /// Associate an AlgorithmNode, which is a data supplier for this one
     void addOutputDataNode(DataNode* node);
     /// Associate an AlgorithmNode, which is a data consumer of this one
     void addInputDataNode(DataNode* node);
     /// Get all supplier nodes
-    std::vector<DataNode*> getOutputDataNodes() {return m_outputs;}
+    std::vector<DataNode*>& getOutputDataNodes() {return m_outputs;}
     /// Get all consumer nodes
-    std::vector<DataNode*> getInputDataNodes() {return m_inputs;}
+    std::vector<DataNode*>& getInputDataNodes() {return m_inputs;}
 
     /// XXX: CF tests
-    unsigned int getAlgoIndex() const { return m_algoIndex; }
+    const unsigned int& getAlgoIndex() const { return m_algoIndex; }
     /// Method to check whether the Algorithm has its all data dependency satisfied
     bool dataDependenciesSatisfied(const int& slotNum) const;
     bool dataDependenciesSatisfied(AlgsExecutionStates& states) const;
@@ -198,7 +198,7 @@ public:
     DataNode(ControlFlowGraph& graph, const std::string& path) : m_graph(&graph), m_data_object_path(path) {};
     /// Destructor
     ~DataNode() {};
-    std::string getPath() {return m_data_object_path;}
+    std::string& getPath() {return m_data_object_path;}
     /// Associate an AlgorithmNode, which is a data supplier for this one
     void addProducerNode(AlgorithmNode* node) {
       if (std::find(m_producers.begin(),m_producers.end(),node) == m_producers.end())
@@ -210,9 +210,9 @@ public:
         m_consumers.push_back(node);
     }
     /// Get all data object producers
-    std::vector<AlgorithmNode*> getProducers() {return m_producers;}
+    std::vector<AlgorithmNode*>& getProducers() {return m_producers;}
     /// Get all data object consumers
-    std::vector<AlgorithmNode*> getConsumers() {return m_consumers;}
+    std::vector<AlgorithmNode*>& getConsumers() {return m_consumers;}
 private:
     ControlFlowGraph* m_graph;
     std::string m_data_object_path;

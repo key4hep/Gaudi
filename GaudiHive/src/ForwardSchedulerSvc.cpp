@@ -43,6 +43,7 @@ ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* 
   // XXX: CF tests. Temporary property to switch between ControlFlow implementations
   declareProperty("useGraphFlowManagement", m_CFNext = false );
   declareProperty("DataFlowManagerNext", m_DFNext = false );
+  declareProperty("SimulateExecution", m_simulateExecution = false );
 }
 
 //---------------------------------------------------------------------------
@@ -105,60 +106,47 @@ StatusCode ForwardSchedulerSvc::initialize(){
    1) Look for handles in algo, if none
    2) Assume none are required
   */
-	if (algosDependenciesSize == 0) {
-		for (IAlgorithm* ialgoPtr : algos) {
-			Algorithm* algoPtr = dynamic_cast<Algorithm*>(ialgoPtr);
-			if (nullptr == algoPtr) {
-				fatal()
-						<< "Could not convert IAlgorithm into Algorithm: this will result in a crash."
-						<< endmsg;
-			}
+  if (algosDependenciesSize == 0) {
+    for (IAlgorithm* ialgoPtr : algos) {
+      Algorithm* algoPtr = dynamic_cast<Algorithm*>(ialgoPtr);
+      if (nullptr == algoPtr)
+        fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
 
-			const std::vector<MinimalDataObjectHandle*>& algoHandles(
-					algoPtr->handles());
-			std::vector<std::string> algoDependencies;
-			if (!algoHandles.empty()) {
+      const std::vector<MinimalDataObjectHandle*>& algoHandles(algoPtr->handles());
+      std::vector<std::string> algoDependencies;
+      if (!algoHandles.empty()) {
+        info() << "Algorithm " << algoPtr->name() << " data dependencies:" << endmsg;
+        for (MinimalDataObjectHandle* handlePtr : algoHandles) {
+          if (handlePtr->isValid()) {
+            if (handlePtr->accessType() == MinimalDataObjectHandle::AccessType::READ) {
+              const std::string& productName = handlePtr->dataProductName();
+              info() << "  o READ Handle found for product " << productName << endmsg;
+              algoDependencies.emplace_back(productName);
 
-				info() << "Algorithm " << algoPtr->name()
-						<< " data dependencies:" << endmsg;
-				for (MinimalDataObjectHandle* handlePtr : algoHandles) {
-					if (handlePtr->isValid()) {
-						if (handlePtr->accessType()
-								== MinimalDataObjectHandle::AccessType::READ) {
-							const std::string& productName =
-									handlePtr->dataProductName();
-							info() << "  o READ Handle found for product "
-									<< productName << endmsg;
-							algoDependencies.emplace_back(productName);
-
-							//just for info output alternative locations
-							if (handlePtr->alternativeDataProductNames().size()
-									!= 0) {
-								info() << "\t\t alternative locations";
-								for (auto s : handlePtr->alternativeDataProductNames())
-									info() << " " << s;
-								info() << endmsg;
-							}
-						} else {
-							//output WRITE handles just for info
-							info() << "  o WRITE Handle found for product "
-									<< handlePtr->dataProductName() << endmsg;
-						}
-					}
-				}
-			} else {
-				info() << "Algorithm " << algoPtr->name()
-						<< " has no data dependencies." << endmsg;
-			}
-
-			m_algosDependencies.emplace_back(algoDependencies);
-		}
-	} else {
-		if (algsNumber != algosDependenciesSize){
-			error() << "number of Algorithms is different from size of Data Dependency list!" << endmsg;
-			return StatusCode::FAILURE;
-		}
-	}
+              //just for info output alternative locations
+              if (handlePtr->alternativeDataProductNames().size() != 0) {
+                info() << "\t\t alternative locations";
+                for (auto s : handlePtr->alternativeDataProductNames())
+                  info() << " " << s;
+                info() << endmsg;
+              }
+            } else {
+              //output WRITE handles just for info
+              info() << "  o WRITE Handle found for product " << handlePtr->dataProductName() << endmsg;
+            }
+          }
+        }
+      } else {
+        info() << "Algorithm " << algoPtr->name() << " has no data dependencies." << endmsg;
+      }
+      m_algosDependencies.emplace_back(algoDependencies);
+    }
+  } else {
+    if (algsNumber != algosDependenciesSize){
+      error() << "number of Algorithms is different from size of Data Dependency list!" << endmsg;
+      return StatusCode::FAILURE;
+    }
+  }
 
   // Fill the containers to convert algo names to index
   m_algname_vect.reserve(algsNumber);
@@ -189,10 +177,11 @@ StatusCode ForwardSchedulerSvc::initialize(){
   info() << " o Number of algorithms in flight: " << m_maxAlgosInFlight << endmsg;
   info() << " o TBB thread pool size: " << m_threadPoolSize << endmsg;
 
-  // Simulating execution flow by analyzing the graph topology and logic only
-
-  auto vis = concurrency::RunSimulator(0);
-  m_cfManager.simulateExecutionFlow(vis);
+  // Simulating execution flow by only analyzing the graph topology and logic
+  if (m_simulateExecution) {
+    auto vis = concurrency::RunSimulator(0);
+    m_cfManager.simulateExecutionFlow(vis);
+  }
 
   // Activate the scheduler in another thread.
   info() << "Activating scheduler in a separate thread" << endmsg;

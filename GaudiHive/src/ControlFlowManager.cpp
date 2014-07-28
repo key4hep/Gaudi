@@ -235,6 +235,7 @@ namespace concurrency {
         states.updateState(m_algoIndex, State::DATAREADY);
         result = true;
 
+        /*
         auto xtime = std::chrono::high_resolution_clock::now();
         std::stringstream s;
         s << getNodeName() << ", "
@@ -243,6 +244,7 @@ namespace concurrency {
         myfile.open("DRTiming.csv", std::ios::app);
         myfile << s.str();
         myfile.close();
+       */
       }
     } else if (State::DATAREADY == state) {
       result = true;
@@ -257,14 +259,8 @@ namespace concurrency {
   bool AlgorithmNode::dataDependenciesSatisfied(const int& slotNum) const {
 
     bool result = true;
-    /*
-    for (auto algoNode : m_suppliers)
-      if (State::EVTACCEPTED != states[algoNode->getAlgoIndex()]) {
-        result = false;
-        break;
-      }
-    */
-    auto states = m_graph->getAlgoStates(slotNum);
+    auto& states = m_graph->getAlgoStates(slotNum);
+
     for (auto dataNode : m_inputs) {
       result = false;
       for (auto algoNode : dataNode->getProducers())
@@ -272,7 +268,6 @@ namespace concurrency {
           result = true;
           break;
         }
-
       if (!result) break;
     }
 

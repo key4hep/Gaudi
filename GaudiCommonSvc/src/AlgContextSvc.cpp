@@ -65,10 +65,10 @@ StatusCode AlgContextSvc::setCurrentAlg  ( IAlgorithm* a )
   // check whether thread-local algorithm list already exists
   // if not, create it
   if ( NULL == m_algorithms.get()) {
-    m_algorithms.reset( new IAlgContextSvc::Algorithms() ); 
+    m_algorithms.reset( new IAlgContextSvc::Algorithms() );
   }
   m_algorithms->push_back ( a ) ;
-  
+
   return StatusCode::SUCCESS ;                                    // RETURN
 }
 // ============================================================================
@@ -95,14 +95,18 @@ StatusCode AlgContextSvc::unSetCurrentAlg ( IAlgorithm* a )
     return StatusCode::FAILURE ;
   }
   m_algorithms->pop_back() ;                                      // POP_BACK
-  
+
   return StatusCode::SUCCESS ;
 }
 // ============================================================================
 /// accessor to current algorithm: @see IAlgContextSvc
 // ============================================================================
 IAlgorithm* AlgContextSvc::currentAlg  () const
-{ return m_algorithms->empty() ? 0 : m_algorithms->back() ; }
+{
+  return (m_algorithms.get() && ! m_algorithms->empty())
+    ? m_algorithms->back()
+    : nullptr;
+}
 // ============================================================================
 
 // ============================================================================
