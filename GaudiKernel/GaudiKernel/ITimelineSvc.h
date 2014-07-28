@@ -33,6 +33,7 @@ public:
   DeclareInterfaceID(ITimelineSvc,1,0);
 
   virtual void registerTimelineEvent(const TimelineEvent & e) = 0;
+  virtual bool isEnabled() const = 0;
 
   /// virtual destructor
   virtual ~ITimelineSvc() {}

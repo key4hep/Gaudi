@@ -82,8 +82,6 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   declareProperty( "AuditStart"       , m_auditorStart        = audit ) ;
   declareProperty( "AuditStop"        , m_auditorStop         = audit ) ;
 
-  declareProperty( "Timeline"         , m_doTimeline          = false  ) ;
-
   declareProperty( "MonitorService"   , m_monitorSvcName      = "MonitorSvc" );
 
   declareProperty
@@ -140,6 +138,9 @@ StatusCode Algorithm::sysInitialize() {
 
   // Get WhiteBoard interface if implemented by EventDataSvc
   m_WB = service("EventDataSvc");
+
+  //check whether timeline should be done
+  m_doTimeline = timelineSvc()->isEnabled();
 
   // Invoke initialize() method of the derived class inside a try/catch clause
   try {
