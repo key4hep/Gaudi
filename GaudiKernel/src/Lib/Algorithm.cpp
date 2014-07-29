@@ -743,7 +743,7 @@ StatusCode Algorithm::sysExecute() {
 
     log << MSG::ERROR << Exception  << endmsg;
 
-    Stat stat( chronoSvc() , Exception.tag() ) ;
+    //Stat stat( chronoSvc() , Exception.tag() ) ;
     status = exceptionSvc()->handle(*this,Exception);
   }
   catch( const std::exception& Exception )
@@ -753,7 +753,7 @@ StatusCode Algorithm::sysExecute() {
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
     log << MSG::ERROR << Exception.what()  << endmsg;
-    Stat stat( chronoSvc() , "*std::exception*" ) ;
+    //Stat stat( chronoSvc() , "*std::exception*" ) ;
     status = exceptionSvc()->handle(*this,Exception);
   }
   catch(...)
@@ -762,7 +762,7 @@ StatusCode Algorithm::sysExecute() {
 
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
-    Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
+    //Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
 
     status = exceptionSvc()->handle(*this);
   }
