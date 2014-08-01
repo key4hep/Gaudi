@@ -206,7 +206,7 @@ public:
     }
     /// Associate an AlgorithmNode, which is a data consumer of this one
     void addConsumerNode(AlgorithmNode* node) {
-      if (std::find(m_producers.begin(),m_producers.end(),node) == m_producers.end())
+      if (std::find(m_consumers.begin(),m_consumers.end(),node) == m_consumers.end())
         m_consumers.push_back(node);
     }
     /// Get all data object producers
