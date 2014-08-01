@@ -416,6 +416,10 @@ namespace concurrency {
     if (!sc.isSuccess())
       error() << "Could not build the data dependency realm." << endmsg;
 
+    if (msgLevel(MSG::DEBUG)) {
+      dumpDataFlow();
+    }
+
     return sc;
   }
 
@@ -704,6 +708,27 @@ namespace concurrency {
     return result;
   }
 
+  //---------------------------------------------------------------------------
+  void ControlFlowGraph::dumpDataFlow() const {
+
+    debug() << "------------------------------------" << endmsg;
+    debug() << "Data origins and destinations:" << endmsg;
+
+    for (auto& pair : m_dataPathToDataNodeMap) {
+
+      for (auto algoNode : pair.second->getProducers())
+        debug() << algoNode->getNodeName() << endmsg;
+
+      debug() << "V" << endmsg;
+      debug() << "o " << pair.first << endmsg;
+      debug() << "V" << endmsg;
+
+      for (auto algoNode : pair.second->getConsumers())
+        debug() << algoNode->getNodeName() << endmsg;
+
+      debug() << "------------------------------------" << endmsg;
+    }
+  }
 
 
   //---------------------------------------------------------------------------

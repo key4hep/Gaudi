@@ -41,7 +41,7 @@ namespace concurrency {
                             std::vector<int>& node_decisions) const = 0;
     /// Print a string representing the control flow state
     virtual void printState(std::stringstream& output,
-    						AlgsExecutionStates& states,
+                            AlgsExecutionStates& states,
                             const std::vector<int>& node_decisions,
                             const unsigned int& recursionLevel) const = 0;
     /// XXX: CF tests.
@@ -91,7 +91,7 @@ namespace concurrency {
     const std::vector<ControlFlowNode*>& getDaughters() const {return m_children;}
     /// Print a string representing the control flow state
     virtual void printState(std::stringstream& output,
-    						AlgsExecutionStates& states,
+                            AlgsExecutionStates& states,
                             const std::vector<int>& node_decisions,
                             const unsigned int& recursionLevel) const;
   public:
@@ -164,7 +164,7 @@ namespace concurrency {
                                 std::vector<int>& node_decisions) const;
     /// Print a string representing the control flow state
     virtual void printState(std::stringstream& output,
-    			    AlgsExecutionStates& states,
+                            AlgsExecutionStates& states,
                             const std::vector<int>& node_decisions,
                             const unsigned int& recursionLevel) const;
   private:
@@ -289,6 +289,8 @@ public:
     AlgsExecutionStates& getAlgoStates(const int& slotNum) const {return m_eventSlots->at(slotNum).algsStates;};
     ///
     std::vector<int>& getNodeDecisions(const int& slotNum) const {return m_eventSlots->at(slotNum).controlFlowState;}
+    /// Print out all data origins and destinations, as reflected in the EF graph
+    void dumpDataFlow() const;
 
 private:
     /// the head node of the control flow graph; may want to have multiple ones once supporting trigger paths
