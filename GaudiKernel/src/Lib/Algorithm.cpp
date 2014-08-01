@@ -72,16 +72,15 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
     audit = m_auditInit.value();
   }
 
-  declareProperty( "AuditInitialize"  , m_auditorInitialize   = audit, "audit the initialize()"   ) ;
-  declareProperty( "AuditReinitialize", m_auditorReinitialize = audit, "audit the reinitialize()" ) ;
-  declareProperty( "AuditRestart"     , m_auditorRestart      = audit, "audit the restart()"      ) ;
-  declareProperty( "AuditExecute"     , m_auditorExecute      = audit, "audit the execute()"      ) ;
-  declareProperty( "AuditFinalize"    , m_auditorFinalize     = audit, "audit the finalize()"     ) ;
-  declareProperty( "AuditBeginRun"    , m_auditorBeginRun     = audit, "audit the beginRun()"     ) ;
-  declareProperty( "AuditEndRun"      , m_auditorEndRun       = audit, "audit the endRun()"       ) ;
-  declareProperty( "AuditStart"       , m_auditorStart        = audit, "audit the start()"        ) ;
-  declareProperty( "AuditStop"        , m_auditorStop         = audit, "audit the stop()"         ) ;
-  declareProperty( "Timeline"         , m_doTimeline          = false, "Log calls in timeline for debugging" ) ;
+  declareProperty( "AuditInitialize"  , m_auditorInitialize   = audit ) ;
+  declareProperty( "AuditReinitialize", m_auditorReinitialize = audit ) ;
+  declareProperty( "AuditRestart"     , m_auditorRestart      = audit ) ;
+  declareProperty( "AuditExecute"     , m_auditorExecute      = audit ) ;
+  declareProperty( "AuditFinalize"    , m_auditorFinalize     = audit ) ;
+  declareProperty( "AuditBeginRun"    , m_auditorBeginRun     = audit ) ;
+  declareProperty( "AuditEndRun"      , m_auditorEndRun       = audit ) ;
+  declareProperty( "AuditStart"       , m_auditorStart        = audit ) ;
+  declareProperty( "AuditStop"        , m_auditorStop         = audit ) ;
 
   declareProperty( "MonitorService"   , m_monitorSvcName      = "MonitorSvc" );
 
@@ -139,6 +138,9 @@ StatusCode Algorithm::sysInitialize() {
 
   // Get WhiteBoard interface if implemented by EventDataSvc
   m_WB = service("EventDataSvc");
+
+  //check whether timeline should be done
+  m_doTimeline = timelineSvc()->isEnabled();
 
   // Invoke initialize() method of the derived class inside a try/catch clause
   try {
@@ -741,7 +743,7 @@ StatusCode Algorithm::sysExecute() {
 
     log << MSG::ERROR << Exception  << endmsg;
 
-    Stat stat( chronoSvc() , Exception.tag() ) ;
+    //Stat stat( chronoSvc() , Exception.tag() ) ;
     status = exceptionSvc()->handle(*this,Exception);
   }
   catch( const std::exception& Exception )
@@ -751,7 +753,7 @@ StatusCode Algorithm::sysExecute() {
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
     log << MSG::ERROR << Exception.what()  << endmsg;
-    Stat stat( chronoSvc() , "*std::exception*" ) ;
+    //Stat stat( chronoSvc() , "*std::exception*" ) ;
     status = exceptionSvc()->handle(*this,Exception);
   }
   catch(...)
@@ -760,7 +762,7 @@ StatusCode Algorithm::sysExecute() {
 
     MsgStream log ( msgSvc() , name() );
     log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
-    Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
+    //Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
 
     status = exceptionSvc()->handle(*this);
   }

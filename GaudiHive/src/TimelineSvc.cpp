@@ -9,6 +9,7 @@ TimelineSvc::TimelineSvc(const std::string& name, ISvcLocator* svc )
 {
 
   declareProperty("TimelineFile", m_timelineFile = "timeline.csv");
+  declareProperty("RecordTimeline", m_isEnabled = false);
 
 }
 

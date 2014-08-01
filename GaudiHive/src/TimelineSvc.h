@@ -19,6 +19,8 @@ public:
 
   virtual void registerTimelineEvent(const TimelineEvent & e);
 
+  bool isEnabled() const { return m_isEnabled; }
+
   TimelineSvc( const std::string& name, ISvcLocator* svc );
 
   // Destructor.
@@ -28,6 +30,7 @@ private:
 
   void outputTimeline();
 
+  bool m_isEnabled;
   std::string m_timelineFile;
   tbb::concurrent_vector<TimelineEvent> m_events;
 
