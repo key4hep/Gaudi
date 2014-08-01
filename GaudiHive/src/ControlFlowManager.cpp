@@ -455,16 +455,16 @@ namespace concurrency {
       auto targetNode = m_algoNameToAlgoNodeMap[algo.first];
 
       // Find producers for all the inputs of the target node
-      const DataObjectDescriptorCollection& targetInCollection = *m_algoNameToAlgoInputsMap[algo.first];
+      auto& targetInCollection = *m_algoNameToAlgoInputsMap[algo.first];
       for (auto inputTag : targetInCollection) {
-        const std::string& input2Match = targetInCollection[inputTag].dataProductName();
+        auto& input2Match = targetInCollection[inputTag].dataProductName();
         for (auto producer : m_algoNameToAlgoOutputsMap) {
-          const DataObjectDescriptorCollection& outputs = *m_algoNameToAlgoOutputsMap[producer.first];
+          auto& outputs = *m_algoNameToAlgoOutputsMap[producer.first];
           for (auto outputTag : outputs) {
             if (outputs[outputTag].isValid() && outputs[outputTag].dataProductName() == input2Match) {
-              const std::vector<AlgorithmNode*>& known_producers = targetNode->getSupplierNodes();
+              auto& known_producers = targetNode->getSupplierNodes();
               auto valid_producer = m_algoNameToAlgoNodeMap[producer.first];
-              const std::vector<AlgorithmNode*>& known_consumers = valid_producer->getConsumerNodes();
+              auto& known_consumers = valid_producer->getConsumerNodes();
               if (std::find(known_producers.begin(),known_producers.end(),valid_producer) == known_producers.end())
                 targetNode->addSupplierNode(valid_producer);
               if (std::find(known_consumers.begin(),known_consumers.end(),targetNode) == known_consumers.end())
@@ -475,16 +475,16 @@ namespace concurrency {
       }
 
       // Find consumers for all the outputs of the target node
-      const DataObjectDescriptorCollection& targetOutCollection = *m_algoNameToAlgoOutputsMap[algo.first];
+      auto& targetOutCollection = *m_algoNameToAlgoOutputsMap[algo.first];
       for (auto outputTag : targetOutCollection) {
-        const std::string& output2Match = targetOutCollection[outputTag].dataProductName();
+        auto& output2Match = targetOutCollection[outputTag].dataProductName();
         for (auto consumer : m_algoNameToAlgoInputsMap) {
-          const DataObjectDescriptorCollection& inputs = *m_algoNameToAlgoInputsMap[consumer.first];
+          auto& inputs = *m_algoNameToAlgoInputsMap[consumer.first];
           for (auto inputTag : inputs) {
             if (inputs[inputTag].isValid() && inputs[inputTag].dataProductName() == output2Match) {
-              const std::vector<AlgorithmNode*>& known_consumers = targetNode->getConsumerNodes();
+              auto& known_consumers = targetNode->getConsumerNodes();
               auto valid_consumer = m_algoNameToAlgoNodeMap[consumer.first];
-              const std::vector<AlgorithmNode*>& known_producers = valid_consumer->getSupplierNodes();
+              auto& known_producers = valid_consumer->getSupplierNodes();
               if (std::find(known_producers.begin(),known_producers.end(),targetNode) == known_producers.end())
                 valid_consumer->addSupplierNode(targetNode);
               if (std::find(known_consumers.begin(),known_consumers.end(),valid_consumer) == known_consumers.end())
@@ -507,10 +507,10 @@ namespace concurrency {
     for (auto algo : m_algoNameToAlgoNodeMap) {
 
       StatusCode sc;
-      const DataObjectDescriptorCollection& outCollection = *m_algoNameToAlgoOutputsMap[algo.first];
+      auto& outCollection = *m_algoNameToAlgoOutputsMap[algo.first];
       for (auto outputTag : outCollection) {
         if (outCollection[outputTag].isValid()) {
-          const std::string& output = outCollection[outputTag].dataProductName();
+          auto& output = outCollection[outputTag].dataProductName();
           sc = addDataNode(output);
           if (!sc.isSuccess()) {
             error() << "Extra producer (" << algo.first << ") for DataObject @ " << output
@@ -526,11 +526,11 @@ namespace concurrency {
 
     // Connect previously created DO realm to DO consumers (AlgorithmNodes)
     for (auto algo : m_algoNameToAlgoNodeMap) {
-      const DataObjectDescriptorCollection& inCollection = *m_algoNameToAlgoInputsMap[algo.first];
+      auto& inCollection = *m_algoNameToAlgoInputsMap[algo.first];
       for (auto inputTag : inCollection) {
         if (inCollection[inputTag].isValid()) {
           DataNode* dataNode = nullptr;
-          auto primaryPath = inCollection[inputTag].dataProductName();
+          auto& primaryPath = inCollection[inputTag].dataProductName();
           auto itP = m_dataPathToDataNodeMap.find(primaryPath);
           if (itP != m_dataPathToDataNodeMap.end()) {
             dataNode = getDataNode(primaryPath);
@@ -565,7 +565,7 @@ namespace concurrency {
 
     StatusCode sc = StatusCode::SUCCESS;
 
-    const std::string& algoName = algo->name();
+    auto& algoName = algo->name();
 
     auto itP = m_decisionNameToDecisionHubMap.find(parentName);
     concurrency::DecisionNode* parentNode;
@@ -631,7 +631,7 @@ namespace concurrency {
 
     StatusCode sc = StatusCode::SUCCESS;
 
-    const std::string& decisionHubName = decisionHubAlgo->name();
+    auto& decisionHubName = decisionHubAlgo->name();
 
     auto itP = m_decisionNameToDecisionHubMap.find(parentName);
     concurrency::DecisionNode* parentNode;
