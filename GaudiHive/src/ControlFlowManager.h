@@ -131,18 +131,18 @@ namespace concurrency {
     /// Associate an AlgorithmNode, which is a data consumer of this one
     void addConsumerNode(AlgorithmNode* node) { m_consumers.push_back(node); }
     /// Get all supplier nodes
-    std::vector<AlgorithmNode*>& getSupplierNodes() {return m_suppliers;}
+    const std::vector<AlgorithmNode*>& getSupplierNodes() const {return m_suppliers;}
     /// Get all consumer nodes
-    std::vector<AlgorithmNode*>& getConsumerNodes() {return m_consumers;}
+    const std::vector<AlgorithmNode*>& getConsumerNodes() const {return m_consumers;}
 
     /// Associate an AlgorithmNode, which is a data supplier for this one
     void addOutputDataNode(DataNode* node);
     /// Associate an AlgorithmNode, which is a data consumer of this one
     void addInputDataNode(DataNode* node);
     /// Get all supplier nodes
-    std::vector<DataNode*>& getOutputDataNodes() {return m_outputs;}
+    const std::vector<DataNode*>& getOutputDataNodes() const {return m_outputs;}
     /// Get all consumer nodes
-    std::vector<DataNode*>& getInputDataNodes() {return m_inputs;}
+    const std::vector<DataNode*>& getInputDataNodes() const {return m_inputs;}
 
     /// XXX: CF tests
     const unsigned int& getAlgoIndex() const { return m_algoIndex; }
@@ -198,7 +198,7 @@ public:
     DataNode(ControlFlowGraph& graph, const std::string& path) : m_graph(&graph), m_data_object_path(path) {};
     /// Destructor
     ~DataNode() {};
-    std::string& getPath() {return m_data_object_path;}
+    const std::string& getPath() {return m_data_object_path;}
     /// Associate an AlgorithmNode, which is a data supplier for this one
     void addProducerNode(AlgorithmNode* node) {
       if (std::find(m_producers.begin(),m_producers.end(),node) == m_producers.end())
@@ -210,9 +210,9 @@ public:
         m_consumers.push_back(node);
     }
     /// Get all data object producers
-    std::vector<AlgorithmNode*>& getProducers() {return m_producers;}
+    const std::vector<AlgorithmNode*>& getProducers() const {return m_producers;}
     /// Get all data object consumers
-    std::vector<AlgorithmNode*>& getConsumers() {return m_consumers;}
+    const std::vector<AlgorithmNode*>& getConsumers() const {return m_consumers;}
 private:
     ControlFlowGraph* m_graph;
     std::string m_data_object_path;
@@ -278,7 +278,7 @@ public:
                     const std::vector<int>& node_decisions,
                     const unsigned int& recursionLevel) const {m_headNode->printState(output,states,node_decisions,recursionLevel);};
     ///
-    std::vector<AlgorithmNode*> getDataIndependentNodes() const;
+    const std::vector<AlgorithmNode*> getDataIndependentNodes() const;
     /// Retrieve name of the service
     const std::string& name() const {return m_name;}
     /// Retrieve pointer to service locator

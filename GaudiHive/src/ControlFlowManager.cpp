@@ -239,12 +239,12 @@ namespace concurrency {
         auto xtime = std::chrono::high_resolution_clock::now();
         std::stringstream s;
         s << getNodeName() << ", "
-          << std::chrono::duration_cast<std::chrono::nanoseconds>(xtime-m_graph->getInitTime()).count() << "\n";
+          << (xtime-m_graph->getInitTime()).count() << "\n";
         std::ofstream myfile;
         myfile.open("DRTiming.csv", std::ios::app);
         myfile << s.str();
         myfile.close();
-       */
+        */
       }
     } else if (State::DATAREADY == state) {
       result = true;
@@ -688,7 +688,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  std::vector<AlgorithmNode*> ControlFlowGraph::getDataIndependentNodes() const {
+  const std::vector<AlgorithmNode*> ControlFlowGraph::getDataIndependentNodes() const {
 
     std::vector<AlgorithmNode*> result;
 
