@@ -182,7 +182,7 @@ namespace concurrency {
       for (auto child : m_children) {
         bool keepGoing = child->accept(visitor);
         if (m_isLazy && !keepGoing)
-          break;
+          return false; //break;
       }
     }
 
@@ -711,22 +711,23 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   void ControlFlowGraph::dumpDataFlow() const {
 
-    debug() << "------------------------------------" << endmsg;
+    debug() << "====================================" << endmsg;
     debug() << "Data origins and destinations:" << endmsg;
+    debug() << "====================================" << endmsg;
 
     for (auto& pair : m_dataPathToDataNodeMap) {
 
       for (auto algoNode : pair.second->getProducers())
-        debug() << algoNode->getNodeName() << endmsg;
+        debug() << "  " << algoNode->getNodeName() << endmsg;
 
-      debug() << "V" << endmsg;
-      debug() << "o " << pair.first << endmsg;
-      debug() << "V" << endmsg;
+      debug() << "  V" << endmsg;
+      debug() << "  o " << pair.first << endmsg;
+      debug() << "  V" << endmsg;
 
       for (auto algoNode : pair.second->getConsumers())
-        debug() << algoNode->getNodeName() << endmsg;
+        debug() << "  " << algoNode->getNodeName() << endmsg;
 
-      debug() << "------------------------------------" << endmsg;
+      debug() << "  ====================================" << endmsg;
     }
   }
 
@@ -831,8 +832,8 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   void ControlFlowManager::touchReadyAlgorithms(IGraphVisitor& visitor) const {
 
-    auto states = m_CFGraph->getAlgoStates(visitor.m_slotNum);
-    auto decisions = m_CFGraph->getNodeDecisions(visitor.m_slotNum);
+    auto& states = m_CFGraph->getAlgoStates(visitor.m_slotNum);
+    auto& decisions = m_CFGraph->getNodeDecisions(visitor.m_slotNum);
 
     //m_CFGraph->m_headNode->promoteToControlReadyState(slotNum,states,decisions);
 
