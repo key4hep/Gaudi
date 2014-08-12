@@ -316,8 +316,9 @@ StatusCode ForwardSchedulerSvc::pushNewEvent(EventContext* eventContext){
     return StatusCode::FAILURE;
   }
 
-  if (m_freeSlots.load() == 0){
-    debug() << "A free processing slot could not be found." << endmsg;
+  if (m_freeSlots.load() == 0) {
+    if (msgLevel(MSG::DEBUG))
+      debug() << "A free processing slot could not be found." << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -342,8 +343,10 @@ StatusCode ForwardSchedulerSvc::pushNewEvent(EventContext* eventContext){
   }; // end of lambda
 
   // Kick off the scheduling!
-  verbose() << "Pushing the action to update the scheduler for slot " <<  eventContext->slot() << endmsg;
-  verbose() << "Free slots available " <<  m_freeSlots.load() << endmsg;
+  if (msgLevel(MSG::VERBOSE)) {
+    verbose() << "Pushing the action to update the scheduler for slot " <<  eventContext->slot() << endmsg;
+    verbose() << "Free slots available " <<  m_freeSlots.load() << endmsg;
+  }
   m_actionsQueue.push(action);
 
   return StatusCode::SUCCESS;
@@ -402,9 +405,10 @@ StatusCode ForwardSchedulerSvc::popFinishedEvent(EventContext*& eventContext){
 * Try to get a finished event, if not available just return a failure
 */
 StatusCode ForwardSchedulerSvc::tryPopFinishedEvent(EventContext*& eventContext){
-  if (m_finishedEvents.try_pop(eventContext)){
-    debug() << "Try Pop successful slot " << eventContext->slot()
-            << "(event " << eventContext->evt() << ")" << endmsg;
+  if (m_finishedEvents.try_pop(eventContext)) {
+    if (msgLevel(MSG::DEBUG))
+      debug() << "Try Pop successful slot " << eventContext->slot()
+              << "(event " << eventContext->evt() << ")" << endmsg;
     m_freeSlots++;
     return StatusCode::SUCCESS;
   }
@@ -515,23 +519,23 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
 
     //DF note: all this this is a loop over all algs and applies CR->DR and DR->SCHD transistions
     /*for (unsigned int iAlgo=0;iAlgo<m_algname_vect.size();++iAlgo){
-    	const AlgsExecutionStates::State& algState = thisAlgsStates[iAlgo];
-    	if (algState==AlgsExecutionStates::ERROR)
-    		error() << " Algo " << index2algname(iAlgo) << " is in ERROR state." << endmsg;
-    	// Loop on state transitions from the one suited to algo state up to the one for SCHEDULED.
-    	partial_sc=StatusCode::SUCCESS;
-    	for (auto state_transition = statesTransitions.find(algState);
-    			state_transition!=statesTransitions.end() && partial_sc.isSuccess();
-    			state_transition++){
-    		partial_sc = state_transition->second(iAlgo,iSlot);
-    		if (partial_sc.isFailure()){
-    			debug() << "Could not apply transition from "
-    					<< AlgsExecutionStates::stateNames[thisAlgsStates[iAlgo]]
-    					                                   << " for algorithm " << index2algname(iAlgo)
-    					                                   << " on processing slot " << iSlot << endmsg;
-    		}
-    		else{global_sc=partial_sc;}
-    	} // end loop on transitions
+        const AlgsExecutionStates::State& algState = thisAlgsStates[iAlgo];
+        if (algState==AlgsExecutionStates::ERROR)
+            error() << " Algo " << index2algname(iAlgo) << " is in ERROR state." << endmsg;
+        // Loop on state transitions from the one suited to algo state up to the one for SCHEDULED.
+        partial_sc=StatusCode::SUCCESS;
+        for (auto state_transition = statesTransitions.find(algState);
+                state_transition!=statesTransitions.end() && partial_sc.isSuccess();
+                state_transition++){
+            partial_sc = state_transition->second(iAlgo,iSlot);
+            if (partial_sc.isFailure()){
+                debug() << "Could not apply transition from "
+                        << AlgsExecutionStates::stateNames[thisAlgsStates[iAlgo]]
+                                                           << " for algorithm " << index2algname(iAlgo)
+                                                           << " on processing slot " << iSlot << endmsg;
+            }
+            else{global_sc=partial_sc;}
+        } // end loop on transitions
     }*/ // end loop on algos
 
 
@@ -543,11 +547,11 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
 
         uint algIndex = *it;
         partial_sc = promoteToDataReady(algIndex, iSlot);
-        if (partial_sc.isFailure()) {
-          debug() << "Could not apply transition from "
-                  << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::CONTROLREADY]
-                  << " for algorithm " << index2algname(algIndex) << " on processing slot " << iSlot << endmsg;
-        }
+        if (partial_sc.isFailure())
+          if (msgLevel(MSG::DEBUG))
+            debug() << "Could not apply transition from "
+                    << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::CONTROLREADY]
+                    << " for algorithm " << index2algname(algIndex) << " on processing slot " << iSlot << endmsg;
       }
     }
 
@@ -557,11 +561,11 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
 
       uint algIndex = *it;
       partial_sc = promoteToScheduled(algIndex, iSlot);
-      if (partial_sc.isFailure()) {
-        debug() << "Could not apply transition from "
-                << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::DATAREADY]
-                << " for algorithm " << index2algname(algIndex) << " on processing slot " << iSlot << endmsg;
-    	}
+      if (partial_sc.isFailure())
+        if (msgLevel(MSG::DEBUG))
+          debug() << "Could not apply transition from "
+                  << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::DATAREADY]
+                  << " for algorithm " << index2algname(algIndex) << " on processing slot " << iSlot << endmsg;
     }
 
     // Not complete because this would mean that the slot is already free!
@@ -576,8 +580,9 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
       // otherwise it is taken care of in the error handling already
       if (!thisSlot.eventContext->evtFail()) {
         m_finishedEvents.push(thisSlot.eventContext);
-        debug() << "Event " << thisSlot.eventContext->evt() << " finished (slot "
-                << thisSlot.eventContext->slot() << ")." << endmsg;
+        if (msgLevel(MSG::DEBUG))
+          debug() << "Event " << thisSlot.eventContext->evt() << " finished (slot "
+                  << thisSlot.eventContext->slot() << ")." << endmsg;
       }
       // now let's return the fully evaluated result of the control flow
       if (msgLevel(MSG::DEBUG)) {
@@ -647,7 +652,7 @@ void ForwardSchedulerSvc::dumpSchedulerState(int iSlot) {
     outputMessageStream << "Dump of Scheduler State for slot " << thisSlot.eventContext->evt() << std::endl;
 
     if ( 0 > iSlot or iSlot == slotCount) {
-    	outputMessageStream << "Algorithms states for event " << thisSlot.eventContext->evt() << std::endl;
+        outputMessageStream << "Algorithms states for event " << thisSlot.eventContext->evt() << std::endl;
 
       const std::vector<std::string>& wbSlotContent ( thisSlot.dataFlowMgr.content() );
       for (unsigned int algoIdx=0; algoIdx < thisSlot.algsStates.size(); ++algoIdx ) {
@@ -711,7 +716,8 @@ StatusCode ForwardSchedulerSvc::promoteToControlReady(unsigned int iAlgo, int si
   // Do the control flow
   StatusCode sc = m_eventSlots[si].algsStates.updateState(iAlgo,AlgsExecutionStates::CONTROLREADY);
   if (sc.isSuccess())
-    debug() << "Promoting " << index2algname(iAlgo) << " to CONTROLREADY" << endmsg;
+    if (msgLevel(MSG::DEBUG))
+      debug() << "Promoting " << index2algname(iAlgo) << " to CONTROLREADY" << endmsg;
 
   return sc;
 
@@ -733,7 +739,8 @@ StatusCode ForwardSchedulerSvc::promoteToDataReady(unsigned int iAlgo, int si) {
     updateSc = m_eventSlots[si].algsStates.updateState(iAlgo,AlgsExecutionStates::DATAREADY);
 
   if (updateSc.isSuccess())
-    debug() << "Promoting " << index2algname(iAlgo) << " to DATAREADY" << endmsg;
+    if (msgLevel(MSG::DEBUG))
+      debug() << "Promoting " << index2algname(iAlgo) << " to DATAREADY" << endmsg;
 
   return updateSc;
 
@@ -768,15 +775,19 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled(unsigned int iAlgo, int si) {
       theTask.execute();
     }
 
-    debug() << "Algorithm " << algName << " was submitted on event " << eventContext->evt()
-            << ". Algorithms scheduled are " << m_algosInFlight << endmsg;
+    if (msgLevel(MSG::DEBUG))
+      debug() << "Algorithm " << algName << " was submitted on event " << eventContext->evt()
+              << ". Algorithms scheduled are " << m_algosInFlight << endmsg;
 
     StatusCode updateSc ( m_eventSlots[si].algsStates.updateState(iAlgo,AlgsExecutionStates::SCHEDULED) );
+
     if (updateSc.isSuccess())
-      debug() << "Promoting " << index2algname(iAlgo) << " to SCHEDULED" << endmsg;
+      if (msgLevel(MSG::DEBUG))
+        debug() << "Promoting " << index2algname(iAlgo) << " to SCHEDULED" << endmsg;
     return updateSc;
   } else {
-    debug() << "Could not acquire instance for algorithm " << index2algname(iAlgo) << " on slot " << si << endmsg;
+    if (msgLevel(MSG::DEBUG))
+      debug() << "Could not acquire instance for algorithm " << index2algname(iAlgo) << " on slot " << si << endmsg;
     return sc;
   }
 
@@ -819,11 +830,13 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si, IA
     std::vector<std::string> new_products;
     m_whiteboard->getNewDataObjects(new_products).ignore();
     for (const auto& new_product : new_products)
-      debug() << "Found in WB: " << new_product << endmsg;
+      if (msgLevel(MSG::DEBUG))
+        debug() << "Found in WB: " << new_product << endmsg;
     thisSlot.dataFlowMgr.updateDataObjectsCatalog(new_products);
   }
 
-  debug() << "Algorithm " << algo->name() << " executed. Algorithms scheduled are " << m_algosInFlight << endmsg;
+  if (msgLevel(MSG::DEBUG))
+    debug() << "Algorithm " << algo->name() << " executed. Algorithms scheduled are " << m_algosInFlight << endmsg;
 
   // Limit number of updates
   if (m_CFNext) m_updateNeeded = true; // XXX: CF tests: with the new CF traversal the if clause below has to be removed
@@ -834,7 +847,8 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si, IA
     m_updateNeeded = false;
   }
 
-  debug() << "Trying to handle execution result of " << index2algname(iAlgo) << "." << endmsg;
+  if (msgLevel(MSG::DEBUG))
+    debug() << "Trying to handle execution result of " << index2algname(iAlgo) << "." << endmsg;
   State state;
   if (algo->filterPassed()) {
     state = State::EVTACCEPTED;
@@ -845,8 +859,9 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si, IA
   sc = thisSlot.algsStates.updateState(iAlgo,state);
 
   if (sc.isSuccess())
-    debug() << "Promoting " << index2algname(iAlgo) << " on slot " << si << " to "
-            << AlgsExecutionStates::stateNames[state] << endmsg;
+    if (msgLevel(MSG::DEBUG))
+      debug() << "Promoting " << index2algname(iAlgo) << " on slot " << si << " to "
+              << AlgsExecutionStates::stateNames[state] << endmsg;
 
   return sc;
 }
