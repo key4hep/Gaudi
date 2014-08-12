@@ -11,7 +11,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  bool RunSimulator::visit(DecisionNode& node) const {
+  bool RunSimulator::visit(DecisionNode& node) {
 
     //std::cout << "1-st level Decision: " << node.getNodeName() << std::endl;
     bool allChildDecisionsResolved = true;
@@ -94,7 +94,7 @@ namespace concurrency {
     }
 
     //---------------------------------------------------------------------------
-    bool TopDownParser::visit(DecisionNode& node) const {
+    bool TopDownParser::visit(DecisionNode& node) {
 
       //std::cout << "1-st level Decision: " << node.getNodeName() << std::endl;
       bool allChildDecisionsResolved = true;
@@ -158,6 +158,16 @@ namespace concurrency {
       return false;
     }
 
+
+    //--------------------------------------------------------------------------
+    bool AlgorithmOnDataOutputRanker::visit(AlgorithmNode& node) {
+
+      auto& products = node.getOutputDataNodes();
+      uint rank = products.size();
+      node.setOutputDataRank(rank);
+
+      return true;
+    }
 }
 
 

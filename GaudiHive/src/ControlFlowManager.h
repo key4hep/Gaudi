@@ -115,7 +115,7 @@ namespace concurrency {
     /// Constructor
     AlgorithmNode(ControlFlowGraph& graph, unsigned int nodeIndex, const std::string& algoName, bool inverted, bool allPass) :
       ControlFlowNode(graph, nodeIndex, algoName),
-      m_algoIndex(0),m_algoName(algoName),m_inverted(inverted),m_allPass(allPass)
+      m_algoIndex(0),m_algoName(algoName),m_inverted(inverted),m_allPass(allPass),m_outputRank(-1)
       {};
     /// Destructor
     ~AlgorithmNode();
@@ -143,6 +143,10 @@ namespace concurrency {
     const std::vector<DataNode*>& getOutputDataNodes() const {return m_outputs;}
     /// Get all consumer nodes
     const std::vector<DataNode*>& getInputDataNodes() const {return m_inputs;}
+    /// Set output data rank
+    void setOutputDataRank(unsigned int& rank) {m_outputRank = rank;}
+    /// Set output data rank
+    const int& getOutputDataRank() {return m_outputRank;}
 
     /// XXX: CF tests
     const unsigned int& getAlgoIndex() const { return m_algoIndex; }
@@ -190,6 +194,8 @@ namespace concurrency {
     std::vector<DataNode*> m_outputs;
     /// Inputs of the algorithm, represented as DataNode's
     std::vector<DataNode*> m_inputs;
+    /// Output rank, defined as number of output data products
+    int m_outputRank;
   };
 
 class DataNode {
@@ -226,11 +232,11 @@ typedef std::unordered_map<std::string,DataNode*> DataNodesMap;
 typedef std::unordered_map<std::string,const DataObjectDescriptorCollection*> AlgoInputsMap;
 typedef std::unordered_map<std::string,const DataObjectDescriptorCollection*> AlgoOutputsMap;
 
-class ControlFlowManager;
+class ExecutionFlowManager;
 class IControlFlowGraph {};
 
 class ControlFlowGraph : public CommonMessaging<IControlFlowGraph> {
-  friend ControlFlowManager;
+  friend ExecutionFlowManager;
 public:
     /// Constructor
     ControlFlowGraph(const std::string& name, SmartIF<ISvcLocator> svc) :
@@ -272,6 +278,8 @@ public:
                         const int& slotNum,
                         AlgsExecutionStates& states,
                         std::vector<int>& node_decisions) const;
+    /// Rank Algorithm nodes by the number of data outputs
+    void rankAlgorithmsByDataOutput(IGraphVisitor& ranker) const;
     /// Print a string representing the control flow state
     void printState(std::stringstream& output,
                     AlgsExecutionStates& states,
@@ -313,71 +321,6 @@ private:
     ///
     std::vector<EventSlot>* m_eventSlots;
   };
-
-
-class IControlFlowManager {};
-
-/**@class ControlFlowManager ControlFlowManager.h GaudiHive/src/ControlFlowManager.h
- *
- *  Manage the control flow using a tree structure
- *  Once initialized, the tree is const and can be shared across events
- *
- *  @author  Benedikt Hegner
- *  @version 1.0
- */
-class ControlFlowManager  : public CommonMessaging<IControlFlowManager> {
-public:
-  /// Constructor
-  ControlFlowManager() : m_name("ControlFlowManager"), m_CFGraph(0) {};
-  /// Destructor
-  virtual ~ControlFlowManager() {};
-  /// Initialize the control flow manager
-  /// It greps the topalg list and the index map for the algo names
-  StatusCode initialize(ControlFlowGraph* CFGraph,
-                          const std::unordered_map<std::string,unsigned int>& algname_index_map);
-  StatusCode initialize(ControlFlowGraph* CFGraph,
-                        const std::unordered_map<std::string,unsigned int>& algname_index_map,
-                        std::vector<EventSlot>& eventSlots);
-  ///
-  void simulateExecutionFlow(IGraphVisitor& visitor) const;
-  /// Get the flow graph instance
-  ControlFlowGraph* getControlFlowGraph() const {return m_CFGraph;}
-  /// A little bit silly, but who cares. ;-)
-  bool needsAlgorithmToRun(const unsigned int iAlgo) const;
-  /// Update the state of algorithms to controlready, where possible
-  void updateEventState(AlgsExecutionStates & algo_states,
-                        std::vector<int>& node_decisions) const;
-  ///
-  void updateDecision(const std::string& algo_name,
-                      const int& slotNum,
-                      AlgsExecutionStates& states,
-                      std::vector<int>& node_decisions) const;
-  /// XXX: CF tests.
-  void updateEventState(AlgsExecutionStates& algo_states) const;
-  /// XXX: CF tests
-  void promoteToControlReadyState(AlgsExecutionStates& algo_states,
-                                  std::vector<int>& node_decisions,
-                                  const int& slotNum=-1) const;
-  /// Check all data dependencies of an algorithm are satisfied
-  bool algoDataDependenciesSatisfied(const std::string& algo_name, const int& slotNum) const;
-  /// Check whether root decision was resolved
-  bool rootDecisionResolved(const std::vector<int>& node_decisions) const;
-  /// Print the state of the control flow for a given event
-  void printEventState(std::stringstream& ss,
-                       AlgsExecutionStates& states,
-                       const std::vector<int>& node_decisions,
-                       const unsigned int& recursionLevel) const {m_CFGraph->printState(ss,states,node_decisions,recursionLevel);}
-  /// Promote all algorithms, ready to be executed, to DataReady state
-  void touchReadyAlgorithms(IGraphVisitor& visitor) const;
-  /// Retrieve name of the service
-  const std::string& name() const {return m_name;}
-  /// Retrieve pointer to service locator
-  SmartIF<ISvcLocator>& serviceLocator() const {return m_CFGraph->serviceLocator();}
-private:
-  std::string m_name;
-  /// the control flow graph
-  ControlFlowGraph* m_CFGraph;
-};
 
 
 } // namespace concurrency

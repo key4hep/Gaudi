@@ -18,7 +18,7 @@ namespace concurrency {
 
     virtual bool visitEnter(DecisionNode& node) const;
 
-    virtual bool visit(DecisionNode& node) const;
+    virtual bool visit(DecisionNode& node);
 
     virtual bool visitLeave(DecisionNode& node) const;
 
@@ -41,7 +41,7 @@ namespace concurrency {
 
       virtual bool visitEnter(DecisionNode& node) const;
 
-      virtual bool visit(DecisionNode& node) const;
+      virtual bool visit(DecisionNode& node);
 
       virtual bool visitLeave(DecisionNode& node) const;
 
@@ -51,6 +51,29 @@ namespace concurrency {
       virtual bool visit(AlgorithmNode& node);
 
     };
+
+  class AlgorithmOnDataOutputRanker : public IGraphVisitor {
+    public:
+      /// Constructor
+      AlgorithmOnDataOutputRanker() {
+        m_nodesSucceeded = 0;
+        m_slotNum = -1;
+      };
+      /// Destructor
+      virtual ~AlgorithmOnDataOutputRanker() {};
+
+      virtual bool visitEnter(DecisionNode& node) const {return true;};
+
+      virtual bool visit(DecisionNode& node) {return true;};
+
+      virtual bool visitLeave(DecisionNode& node) const {return true;};
+
+
+      virtual bool visitEnter(AlgorithmNode& node) const {return true;};
+
+      virtual bool visit(AlgorithmNode& node);
+
+      };
 
 }
 

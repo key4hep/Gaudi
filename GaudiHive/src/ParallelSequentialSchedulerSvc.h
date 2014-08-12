@@ -3,14 +3,14 @@
 
 // Framework include files
 #include "GaudiKernel/IScheduler.h"
-#include "GaudiKernel/IRunable.h" 
-#include "GaudiKernel/Service.h" 
+#include "GaudiKernel/IRunable.h"
+#include "GaudiKernel/Service.h"
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/CommonMessaging.h"
 #include "GaudiKernel/EventContext.h"
 
 #include "AlgResourcePool.h"
-#include "ControlFlowManager.h"
+#include "ExecutionFlowManager.h"
 #include "DataFlowManager.h"
 
 // C++ include files
@@ -31,8 +31,8 @@ class SequentialTask; //forward declaration
 //---------------------------------------------------------------------------
 
 /**@class ParallelSequentialSchedulerSvc ParallelSequentialSchedulerSvc.h
- * 
- *  This SchedulerSvc implements the IScheduler interface. 
+ *
+ *  This SchedulerSvc implements the IScheduler interface.
  * It executes all the algorithms in sequence for several events in flight.
  * It pulls the algorithms from the AlgResourcePool
  *  @author  Daniel Funke
@@ -48,40 +48,40 @@ public:
 
   /// Initialise
   virtual StatusCode initialize();
-  
+
   /// Finalise
-  virtual StatusCode finalize();  
+  virtual StatusCode finalize();
 
   /// Make an event available to the scheduler
   virtual StatusCode pushNewEvent(EventContext* eventContext);
 
   // Make multiple events available to the scheduler
   virtual StatusCode pushNewEvents(std::vector<EventContext*>& eventContexts);
-  
+
   /// Blocks until an event is availble
-  virtual StatusCode popFinishedEvent(EventContext*& eventContext);  
+  virtual StatusCode popFinishedEvent(EventContext*& eventContext);
 
   /// Try to fetch an event from the scheduler
-  virtual StatusCode tryPopFinishedEvent(EventContext*& eventContext);  
+  virtual StatusCode tryPopFinishedEvent(EventContext*& eventContext);
 
   /// Get free slots number
   virtual unsigned int freeSlots();
 
 
 private:
-  
+
   /// Decide if the top alglist or its flat version has to be used
   bool m_useTopAlgList;
-  
+
   /// Cache the list of algs to be executed
   std::list<IAlgorithm*> m_algList;
-  
+
   /// The context of the event being processed
   EventContext* m_eventContext;
-  
+
   /// Queue of finished events
   tbb::concurrent_bounded_queue<EventContext*> m_finishedEvents;
-  
+
   /// Atomic to account for asyncronous updates by the scheduler wrt the rest
   // number of events in flight
   std::atomic_int m_freeSlots;
@@ -102,7 +102,7 @@ private:
    tbb::task_scheduler_init* m_tbb_sched;
 
    //control flow manager
-   concurrency::ControlFlowManager m_controlFlow;
+   concurrency::ExecutionFlowManager m_controlFlow;
 
    /// Vector to bookkeep the information necessary to the index2name conversion
    std::vector<std::string> m_algname_vect;
@@ -120,23 +120,23 @@ private:
 
 class SequentialTask: public tbb::task {
 public:
-	SequentialTask(ISvcLocator* svcLocator,
-				   EventContext* eventContext,
-				   ParallelSequentialSchedulerSvc* scheduler,
-				   IAlgResourcePool* algPool):
+    SequentialTask(ISvcLocator* svcLocator,
+                   EventContext* eventContext,
+                   ParallelSequentialSchedulerSvc* scheduler,
+                   IAlgResourcePool* algPool):
 
-				m_serviceLocator(svcLocator),
-				m_eventContext(eventContext),
-				m_scheduler(scheduler),
-				m_algPool(algPool){
+                m_serviceLocator(svcLocator),
+                m_eventContext(eventContext),
+                m_scheduler(scheduler),
+                m_algPool(algPool){
 
-	};
-	virtual tbb::task* execute();
+    };
+    virtual tbb::task* execute();
 private:
-	SmartIF<ISvcLocator> m_serviceLocator;
-	EventContext* m_eventContext;
-	SmartIF<ParallelSequentialSchedulerSvc> m_scheduler;
-	SmartIF<IAlgResourcePool> m_algPool;
+    SmartIF<ISvcLocator> m_serviceLocator;
+    EventContext* m_eventContext;
+    SmartIF<ParallelSequentialSchedulerSvc> m_scheduler;
+    SmartIF<IAlgResourcePool> m_algPool;
 };
 
 #endif // GAUDIHIVE_PARALLELSEQUENTIALSCHEDULERSVC_H

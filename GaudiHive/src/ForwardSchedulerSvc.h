@@ -11,7 +11,7 @@
 // Local includes
 #include "AlgsExecutionStates.h"
 #include "EventSlot.h"
-#include "ControlFlowManager.h"
+#include "ExecutionFlowManager.h"
 #include "DataFlowManager.h"
 
 // C++ include files
@@ -198,7 +198,7 @@ private:
   tbb::concurrent_bounded_queue<action> m_actionsQueue;
 
   /// Member to take care of the control flow
-  concurrency::ControlFlowManager m_cfManager;
+  concurrency::ExecutionFlowManager m_cfManager;
   // XXX: CF tests. Temporary property to switch between ControlFlow implementations
   bool m_CFNext;
   // XXX: CF tests. Temporary property to switch between DataFlow implementations

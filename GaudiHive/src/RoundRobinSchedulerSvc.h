@@ -3,12 +3,12 @@
 
 // Framework include files
 #include "GaudiKernel/IScheduler.h"
-#include "GaudiKernel/IRunable.h" 
-#include "GaudiKernel/Service.h" 
+#include "GaudiKernel/IRunable.h"
+#include "GaudiKernel/Service.h"
 #include "GaudiKernel/IAlgResourcePool.h"
 
 #include "AlgResourcePool.h"
-#include "ControlFlowManager.h"
+#include "ExecutionFlowManager.h"
 #include "DataFlowManager.h"
 
 
@@ -25,15 +25,15 @@
 
 //---------------------------------------------------------------------------
 
-/**@class RoundRobinSchedulerSvc RoundRobinSchedulerSvc.h 
- * 
+/**@class RoundRobinSchedulerSvc RoundRobinSchedulerSvc.h
+ *
  * The RoundRobinSchedulerSvc implements the IScheduler interface.
  * It deals with  multiple events and tries to handle all events
- * algorithm type by algorithm type, using one single thread. 
+ * algorithm type by algorithm type, using one single thread.
  * It serves as simple implementation against the concurrent state machine
- * and provides a test for instruction cache locality 
- * 
- *  @author  Benedikt Hegner 
+ * and provides a test for instruction cache locality
+ *
+ *  @author  Benedikt Hegner
  *  @version 1.0
  */
 class RoundRobinSchedulerSvc: public extends1<Service, IScheduler> {
@@ -46,36 +46,36 @@ public:
 
   /// Initialise
   virtual StatusCode initialize();
-  
+
   /// Finalise
-  virtual StatusCode finalize();  
+  virtual StatusCode finalize();
 
   /// Make an event available to the scheduler
   virtual StatusCode pushNewEvent(EventContext* eventContext);
 
   // Make multiple events available to the scheduler
   virtual StatusCode pushNewEvents(std::vector<EventContext*>& eventContexts);
-  
+
   /// Blocks until an event is availble
-  virtual StatusCode popFinishedEvent(EventContext*& eventContext);  
+  virtual StatusCode popFinishedEvent(EventContext*& eventContext);
 
   /// Try to fetch an event from the scheduler
-  virtual StatusCode tryPopFinishedEvent(EventContext*& eventContext);  
+  virtual StatusCode tryPopFinishedEvent(EventContext*& eventContext);
 
   /// Get free slots number
   virtual unsigned int freeSlots();
 
 
 private:
-  
+
   StatusCode processEvents();
 
   /// Decide if the top alglist or its flat version has to be used
   bool m_useTopAlgList;
   SmartIF<IAlgResourcePool> m_algResourcePool;
-  
+
   //control flow manager
-  concurrency::ControlFlowManager m_controlFlow;
+  concurrency::ExecutionFlowManager m_controlFlow;
 
   /// Vector to bookkeep the information necessary to the index2name conversion
   std::vector<std::string> m_algname_vect;
@@ -88,14 +88,14 @@ private:
 
   /// Cache the list of algs to be executed
   std::list<IAlgorithm*> m_algList;
-  
+
   /// Queue of finished events
   tbb::concurrent_bounded_queue<EventContext*> m_finishedEvents;
-  
+
   /// The number of free slots (0 or 1)
   int m_freeSlots;
   std::vector<EventContext*> m_evtCtx_buffer;
-  
+
 };
 
 #endif // GAUDIHIVE_ROUNDROBINSCHEDULERSVC_H
