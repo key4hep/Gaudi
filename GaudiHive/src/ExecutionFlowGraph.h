@@ -1,5 +1,5 @@
-#ifndef GAUDIHIVE_CONTROLFLOWMANAGER_H
-#define GAUDIHIVE_CONTROLFLOWMANAGER_H
+#ifndef GAUDIHIVE_EXECUTIONFLOWGRAPH_H
+#define GAUDIHIVE_EXECUTIONFLOWGRAPH_H
 
 // std includes
 #include <vector>
@@ -19,12 +19,12 @@
 namespace concurrency {
 
   typedef AlgsExecutionStates::State State;
-  class ControlFlowGraph;
+  class ExecutionFlowGraph;
 
   class ControlFlowNode {
   public:
     /// Constructor
-    ControlFlowNode(ControlFlowGraph& graph, unsigned int nodeIndex, const std::string& name) :
+    ControlFlowNode(ExecutionFlowGraph& graph, unsigned int nodeIndex, const std::string& name) :
       m_graph(&graph), m_nodeIndex(nodeIndex), m_nodeName(name) {};
     /// Destructor
     virtual ~ControlFlowNode() {};
@@ -51,7 +51,7 @@ namespace concurrency {
                                 AlgsExecutionStates& states,
                                 std::vector<int>& node_decisions) const = 0;
   public:
-    ControlFlowGraph* m_graph;
+    ExecutionFlowGraph* m_graph;
   protected:
     /// Translation between state id and name
     std::string stateToString(const int& stateId) const;
@@ -63,7 +63,7 @@ namespace concurrency {
   class DecisionNode : public ControlFlowNode {
   public:
     /// Constructor
-    DecisionNode(ControlFlowGraph& graph, unsigned int nodeIndex, const std::string& name, bool modeOR, bool allPass, bool isLazy) :
+    DecisionNode(ExecutionFlowGraph& graph, unsigned int nodeIndex, const std::string& name, bool modeOR, bool allPass, bool isLazy) :
       ControlFlowNode(graph, nodeIndex, name),
       m_modeOR(modeOR), m_allPass(allPass), m_isLazy(isLazy), m_children()
       {};
@@ -113,7 +113,7 @@ namespace concurrency {
   class AlgorithmNode : public ControlFlowNode {
   public:
     /// Constructor
-    AlgorithmNode(ControlFlowGraph& graph, unsigned int nodeIndex, const std::string& algoName, bool inverted, bool allPass) :
+    AlgorithmNode(ExecutionFlowGraph& graph, unsigned int nodeIndex, const std::string& algoName, bool inverted, bool allPass) :
       ControlFlowNode(graph, nodeIndex, algoName),
       m_algoIndex(0),m_algoName(algoName),m_inverted(inverted),m_allPass(allPass),m_outputRank(-1)
       {};
@@ -201,7 +201,7 @@ namespace concurrency {
 class DataNode {
 public:
     /// Constructor
-    DataNode(ControlFlowGraph& graph, const std::string& path) : m_graph(&graph), m_data_object_path(path) {};
+    DataNode(ExecutionFlowGraph& graph, const std::string& path) : m_graph(&graph), m_data_object_path(path) {};
     /// Destructor
     ~DataNode() {};
     const std::string& getPath() {return m_data_object_path;}
@@ -220,7 +220,7 @@ public:
     /// Get all data object consumers
     const std::vector<AlgorithmNode*>& getConsumers() const {return m_consumers;}
 private:
-    ControlFlowGraph* m_graph;
+    ExecutionFlowGraph* m_graph;
     std::string m_data_object_path;
     std::vector<AlgorithmNode*> m_producers;
     std::vector<AlgorithmNode*> m_consumers;
@@ -233,17 +233,17 @@ typedef std::unordered_map<std::string,const DataObjectDescriptorCollection*> Al
 typedef std::unordered_map<std::string,const DataObjectDescriptorCollection*> AlgoOutputsMap;
 
 class ExecutionFlowManager;
-class IControlFlowGraph {};
+class IExecutionFlowGraph {};
 
-class ControlFlowGraph : public CommonMessaging<IControlFlowGraph> {
+class ExecutionFlowGraph : public CommonMessaging<IExecutionFlowGraph> {
   friend ExecutionFlowManager;
 public:
     /// Constructor
-    ControlFlowGraph(const std::string& name, SmartIF<ISvcLocator> svc) :
+    ExecutionFlowGraph(const std::string& name, SmartIF<ISvcLocator> svc) :
      m_headNode(0), m_nodeCounter(0), m_svcLocator(svc), m_name(name), m_initTime(std::chrono::high_resolution_clock::now()),
      m_eventSlots(nullptr) {};
     /// Destructor
-    ~ControlFlowGraph() {
+    ~ExecutionFlowGraph() {
       if (m_headNode != 0) delete m_headNode;
     };
     /// Initialize graph

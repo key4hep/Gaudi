@@ -17,7 +17,7 @@ DECLARE_SERVICE_FACTORY(AlgResourcePool)
 
 // constructor
 AlgResourcePool::AlgResourcePool( const std::string& name, ISvcLocator* svc ) :
-  base_class(name,svc), m_available_resources(0), m_CFGraph(0)
+  base_class(name,svc), m_available_resources(0), m_EFGraph(0)
 {
   declareProperty("CreateLazily", m_lazyCreation = false );
   declareProperty("TopAlg", m_topAlgNames );
@@ -33,7 +33,7 @@ AlgResourcePool::~AlgResourcePool() {
     delete queue;
   }
 
-  delete m_CFGraph;
+  delete m_EFGraph;
 }
 
 //---------------------------------------------------------------------------
@@ -56,7 +56,7 @@ StatusCode AlgResourcePool::initialize(){
   // XXX: Prepare empty Control Flow graph
   const std::string& name = "ControlFlowGraph";
   SmartIF<ISvcLocator> svc = serviceLocator();
-  m_CFGraph = new concurrency::ControlFlowGraph(name, svc);
+  m_EFGraph = new concurrency::ExecutionFlowGraph(name, svc);
 
   sc = decodeTopAlgs();
   if (sc.isFailure())
@@ -184,7 +184,7 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
               << ". Appending it" << endmsg;
 
       alglist.emplace_back(algo);
-      m_CFGraph->addAlgorithmNode(algo,parentName,false,false);
+      m_EFGraph->addAlgorithmNode(algo,parentName,false,false);
     return sc;
   }
 
@@ -200,7 +200,7 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
     isLazy = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
     if (allPass) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
   }
-  sc = m_CFGraph->addDecisionHubNode(algo,parentName,modeOR,allPass,isLazy);
+  sc = m_EFGraph->addDecisionHubNode(algo,parentName,modeOR,allPass,isLazy);
   if (sc.isFailure()) {
     error() << "Failed to add DecisionHub " << algo->name() << " to execution flow graph" << endmsg;
     return sc;
@@ -264,7 +264,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
   // Top Alg list filled ----
 
   // start forming the control flow graph by adding the head node
-  m_CFGraph->addHeadNode("EVENT LOOP",true,true,false);
+  m_EFGraph->addHeadNode("EVENT LOOP",true,true,false);
 
   // Now we unroll it ----
   for (auto& algoSmartIF : m_topAlgList){

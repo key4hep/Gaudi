@@ -3,10 +3,10 @@
 namespace concurrency {
 
   //---------------------------------------------------------------------------
-  StatusCode ExecutionFlowManager::initialize(ControlFlowGraph* cf_graph,
+  StatusCode ExecutionFlowManager::initialize(ExecutionFlowGraph* ef_graph,
                                             const std::unordered_map<std::string,unsigned int>& algname_index_map){
-    m_CFGraph = cf_graph;
-    StatusCode sc = cf_graph->initialize(algname_index_map);
+    m_EFGraph = ef_graph;
+    StatusCode sc = ef_graph->initialize(algname_index_map);
     if (!sc.isSuccess())
       error() << "Could not initialize the flow graph." << endmsg;
 
@@ -14,16 +14,16 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  StatusCode ExecutionFlowManager::initialize(ControlFlowGraph* cf_graph,
+  StatusCode ExecutionFlowManager::initialize(ExecutionFlowGraph* ef_graph,
                                             const std::unordered_map<std::string,unsigned int>& algname_index_map,
                                             std::vector<EventSlot>& eventSlots){
-    m_CFGraph = cf_graph;
-    StatusCode sc = cf_graph->initialize(algname_index_map, eventSlots);
+    m_EFGraph = ef_graph;
+    StatusCode sc = ef_graph->initialize(algname_index_map, eventSlots);
     if (!sc.isSuccess())
       error() << "Could not initialize the flow graph." << endmsg;
 
     auto ranker = concurrency::AlgorithmOnDataOutputRanker();
-    m_CFGraph->rankAlgorithmsByDataOutput(ranker);
+    m_EFGraph->rankAlgorithmsByDataOutput(ranker);
 
     return sc;
   }
@@ -31,7 +31,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   void ExecutionFlowManager::simulateExecutionFlow(IGraphVisitor& visitor) const {
 
-    std::vector<int>& nodeDecisions = m_CFGraph->getNodeDecisions(0);
+    std::vector<int>& nodeDecisions = m_EFGraph->getNodeDecisions(0);
 
     std::vector<int> fixedNodeDecisions;
     int cntr = 0;
@@ -40,8 +40,8 @@ namespace concurrency {
       cntr += 1;
       int prevAlgosNum = visitor.m_nodesSucceeded;
       debug() << "  Proceeding with iteration #" << cntr << endmsg;
-      fixedNodeDecisions = m_CFGraph->getNodeDecisions(0);
-      m_CFGraph->m_headNode->accept(visitor);
+      fixedNodeDecisions = m_EFGraph->getNodeDecisions(0);
+      m_EFGraph->m_headNode->accept(visitor);
       if ( fixedNodeDecisions == nodeDecisions) {
         error() << "  No progress on iteration " << cntr << " detected" << endmsg;
         debug() << nodeDecisions << endmsg;
@@ -65,7 +65,7 @@ namespace concurrency {
     info() << "Asymptotical concurrency speedup depth: " << (float) visitor.m_nodesSucceeded / (float) counters.size() << endmsg;
 
     // Reset algorithm states and node decisions
-    m_CFGraph->getAlgoStates(0).reset();
+    m_EFGraph->getAlgoStates(0).reset();
     nodeDecisions.assign(nodeDecisions.size(),-1);
 
   }
@@ -73,7 +73,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   void ExecutionFlowManager::updateEventState(AlgsExecutionStates& algo_states,
                                             std::vector<int>& node_decisions) const {
-    m_CFGraph->updateEventState(algo_states, node_decisions);
+    m_EFGraph->updateEventState(algo_states, node_decisions);
   }
 
   //---------------------------------------------------------------------------
@@ -81,36 +81,36 @@ namespace concurrency {
                                           const int& slotNum,
                                           AlgsExecutionStates& algo_states,
                                           std::vector<int>& node_decisions) const {
-    m_CFGraph->updateDecision(algo_name, slotNum, algo_states, node_decisions);
+    m_EFGraph->updateDecision(algo_name, slotNum, algo_states, node_decisions);
   }
 
   //---------------------------------------------------------------------------
   void ExecutionFlowManager::promoteToControlReadyState(AlgsExecutionStates& algo_states,
                                                       std::vector<int>& node_decisions,
                                                       const int& slotNum) const {
-    m_CFGraph->m_headNode->promoteToControlReadyState(slotNum, algo_states, node_decisions);
+    m_EFGraph->m_headNode->promoteToControlReadyState(slotNum, algo_states, node_decisions);
   }
 
   //---------------------------------------------------------------------------
   bool ExecutionFlowManager::algoDataDependenciesSatisfied(const std::string& algo_name, const int& slotNum) const {
-    return m_CFGraph->getAlgorithmNode(algo_name)->dataDependenciesSatisfied(slotNum);
+    return m_EFGraph->getAlgorithmNode(algo_name)->dataDependenciesSatisfied(slotNum);
   }
 
   //---------------------------------------------------------------------------
   bool ExecutionFlowManager::rootDecisionResolved(const std::vector<int>& node_decisions) const {
 
-    return (-1 != node_decisions[m_CFGraph->m_headNode->getNodeIndex()]) ? true : false;
+    return (-1 != node_decisions[m_EFGraph->m_headNode->getNodeIndex()]) ? true : false;
   }
 
   //---------------------------------------------------------------------------
   void ExecutionFlowManager::touchReadyAlgorithms(IGraphVisitor& visitor) const {
 
-    auto& states = m_CFGraph->getAlgoStates(visitor.m_slotNum);
-    auto& decisions = m_CFGraph->getNodeDecisions(visitor.m_slotNum);
+    //auto& states = m_EFGraph->getAlgoStates(visitor.m_slotNum);
+    //auto& decisions = m_EFGraph->getNodeDecisions(visitor.m_slotNum);
 
-    //m_CFGraph->m_headNode->promoteToControlReadyState(slotNum,states,decisions);
+    //m_EFGraph->m_headNode->promoteToControlReadyState(slotNum,states,decisions);
 
-    m_CFGraph->m_headNode->accept(visitor);
+    m_EFGraph->m_headNode->accept(visitor);
 
   }
 }

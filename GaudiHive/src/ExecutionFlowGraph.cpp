@@ -1,4 +1,4 @@
-#include "ControlFlowManager.h"
+#include "ExecutionFlowGraph.h"
 
 namespace concurrency {
 
@@ -392,7 +392,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  StatusCode ControlFlowGraph::initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map){
+  StatusCode ExecutionFlowGraph::initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map){
 
     m_headNode->initialize(algname_index_map);
     //StatusCode sc = buildDataDependenciesRealm();
@@ -405,7 +405,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  StatusCode ControlFlowGraph::initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map,
+  StatusCode ExecutionFlowGraph::initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map,
                                           std::vector<EventSlot>& eventSlots){
 
     m_eventSlots = &eventSlots;
@@ -424,7 +424,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void ControlFlowGraph::registerIODataObjects(const Algorithm* algo) {
+  void ExecutionFlowGraph::registerIODataObjects(const Algorithm* algo) {
 
     const std::string& algoName = algo->name();
 
@@ -450,7 +450,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  StatusCode ControlFlowGraph::buildDataDependenciesRealm() {
+  StatusCode ExecutionFlowGraph::buildDataDependenciesRealm() {
 
     StatusCode global_sc(StatusCode::SUCCESS);
 
@@ -503,7 +503,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  StatusCode ControlFlowGraph::buildAugmentedDataDependenciesRealm() {
+  StatusCode ExecutionFlowGraph::buildAugmentedDataDependenciesRealm() {
 
     StatusCode global_sc(StatusCode::SUCCESS);
 
@@ -565,7 +565,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  StatusCode ControlFlowGraph::addAlgorithmNode(Algorithm* algo, const std::string& parentName, bool inverted, bool allPass) {
+  StatusCode ExecutionFlowGraph::addAlgorithmNode(Algorithm* algo, const std::string& parentName, bool inverted, bool allPass) {
 
     StatusCode sc = StatusCode::SUCCESS;
 
@@ -598,13 +598,13 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  AlgorithmNode* ControlFlowGraph::getAlgorithmNode(const std::string& algoName) const {
+  AlgorithmNode* ExecutionFlowGraph::getAlgorithmNode(const std::string& algoName) const {
 
     return m_algoNameToAlgoNodeMap.at(algoName);
   }
 
   //---------------------------------------------------------------------------
-  StatusCode ControlFlowGraph::addDataNode(const std::string& dataPath) {
+  StatusCode ExecutionFlowGraph::addDataNode(const std::string& dataPath) {
 
     StatusCode sc;
 
@@ -625,13 +625,13 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  DataNode* ControlFlowGraph::getDataNode(const std::string& dataPath) const {
+  DataNode* ExecutionFlowGraph::getDataNode(const std::string& dataPath) const {
 
     return m_dataPathToDataNodeMap.at(dataPath);
   }
 
   //---------------------------------------------------------------------------
-  StatusCode ControlFlowGraph::addDecisionHubNode(Algorithm* decisionHubAlgo, const std::string& parentName, bool modeOR, bool allPass, bool isLazy) {
+  StatusCode ExecutionFlowGraph::addDecisionHubNode(Algorithm* decisionHubAlgo, const std::string& parentName, bool modeOR, bool allPass, bool isLazy) {
 
     StatusCode sc = StatusCode::SUCCESS;
 
@@ -663,7 +663,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void ControlFlowGraph::addHeadNode(const std::string& headName, bool modeOR, bool allPass, bool isLazy) {
+  void ExecutionFlowGraph::addHeadNode(const std::string& headName, bool modeOR, bool allPass, bool isLazy) {
 
     auto itH = m_decisionNameToDecisionHubMap.find(headName);
     if ( itH != m_decisionNameToDecisionHubMap.end()) {
@@ -677,13 +677,13 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void ControlFlowGraph::updateEventState(AlgsExecutionStates& algo_states,
+  void ExecutionFlowGraph::updateEventState(AlgsExecutionStates& algo_states,
                                           std::vector<int>& node_decisions) const {
     m_headNode->updateState(algo_states, node_decisions);
   }
 
   //---------------------------------------------------------------------------
-  void ControlFlowGraph::updateDecision(const std::string& algo_name,
+  void ExecutionFlowGraph::updateDecision(const std::string& algo_name,
                                         const int& slotNum,
                                         AlgsExecutionStates& algo_states,
                                         std::vector<int>& node_decisions) const {
@@ -692,7 +692,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void ControlFlowGraph::rankAlgorithmsByDataOutput(IGraphVisitor& ranker) const {
+  void ExecutionFlowGraph::rankAlgorithmsByDataOutput(IGraphVisitor& ranker) const {
 
     info() << "Starting ranking by data outputs .. " << endmsg;
     for (auto& pair : m_algoNameToAlgoNodeMap) {
@@ -702,7 +702,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  const std::vector<AlgorithmNode*> ControlFlowGraph::getDataIndependentNodes() const {
+  const std::vector<AlgorithmNode*> ExecutionFlowGraph::getDataIndependentNodes() const {
 
     std::vector<AlgorithmNode*> result;
 
@@ -719,7 +719,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void ControlFlowGraph::dumpDataFlow() const {
+  void ExecutionFlowGraph::dumpDataFlow() const {
 
     debug() << "====================================" << endmsg;
     debug() << "Data origins and destinations:" << endmsg;

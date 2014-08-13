@@ -161,8 +161,8 @@ StatusCode ForwardSchedulerSvc::initialize(){
   // prepare the control flow part
   if (m_CFNext) m_DFNext = true; //force usage of new data flow machinery when new control flow is used
   const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>(m_algResourcePool.get());
-  sc = m_cfManager.initialize(algPool->getControlFlowGraph(), m_algname_index_map, m_eventSlots);
-  unsigned int controlFlowNodeNumber = m_cfManager.getControlFlowGraph()->getControlFlowNodeCounter();
+  sc = m_efManager.initialize(algPool->getExecutionFlowGraph(), m_algname_index_map, m_eventSlots);
+  unsigned int controlFlowNodeNumber = m_efManager.getExecutionFlowGraph()->getControlFlowNodeCounter();
   // Shortcut for the message service
   SmartIF<IMessageSvc> messageSvc (serviceLocator());
   if (!messageSvc.isValid())
@@ -180,7 +180,7 @@ StatusCode ForwardSchedulerSvc::initialize(){
   // Simulating execution flow by only analyzing the graph topology and logic
   if (m_simulateExecution) {
     auto vis = concurrency::RunSimulator(0);
-    m_cfManager.simulateExecutionFlow(vis);
+    m_efManager.simulateExecutionFlow(vis);
   }
 
   // Activate the scheduler in another thread.
@@ -336,7 +336,7 @@ StatusCode ForwardSchedulerSvc::pushNewEvent(EventContext* eventContext){
     // XXX: CF tests
     if (m_CFNext) {
       auto vis = concurrency::TopDownParser(thisSlotNum);
-      m_cfManager.touchReadyAlgorithms(vis);
+      m_efManager.touchReadyAlgorithms(vis);
     }
 
     return this->updateStates(thisSlotNum);
@@ -510,10 +510,10 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
     // Take care of the control ready update
     // XXX: CF tests
     if (!m_CFNext) {
-      m_cfManager.updateEventState(thisAlgsStates,thisSlot.controlFlowState);
+      m_efManager.updateEventState(thisAlgsStates,thisSlot.controlFlowState);
     } else {
       if (!algo_name.empty())
-        m_cfManager.updateDecision(algo_name,iSlot,thisAlgsStates,thisSlot.controlFlowState);
+        m_efManager.updateDecision(algo_name,iSlot,thisAlgsStates,thisSlot.controlFlowState);
     }
 
 
@@ -570,7 +570,7 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
 
     // Not complete because this would mean that the slot is already free!
     if (!thisSlot.complete &&
-        m_cfManager.rootDecisionResolved(thisSlot.controlFlowState) &&
+        m_efManager.rootDecisionResolved(thisSlot.controlFlowState) &&
         !thisSlot.algsStates.algsPresent(AlgsExecutionStates::CONTROLREADY) &&
         !thisSlot.algsStates.algsPresent(AlgsExecutionStates::DATAREADY) &&
         !thisSlot.algsStates.algsPresent(AlgsExecutionStates::SCHEDULED)) {
@@ -587,7 +587,7 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
       // now let's return the fully evaluated result of the control flow
       if (msgLevel(MSG::DEBUG)) {
         std::stringstream ss;
-        m_cfManager.printEventState(ss, thisSlot.algsStates, thisSlot.controlFlowState,0);
+        m_efManager.printEventState(ss, thisSlot.algsStates, thisSlot.controlFlowState,0);
         debug() << ss.str() << endmsg;
       }
 
@@ -699,7 +699,7 @@ void ForwardSchedulerSvc::dumpSchedulerState(int iSlot) {
       // Snapshot of the ControlFlow
       outputMessageStream << "The status of the control flow for this event was:\n";
       std::stringstream cFlowStateStringStream;
-      m_cfManager.printEventState(cFlowStateStringStream, thisSlot.algsStates, thisSlot.controlFlowState,0);
+      m_efManager.printEventState(cFlowStateStringStream, thisSlot.algsStates, thisSlot.controlFlowState,0);
 
       outputMessageStream << cFlowStateStringStream.str();
 
@@ -731,7 +731,7 @@ StatusCode ForwardSchedulerSvc::promoteToDataReady(unsigned int iAlgo, int si) {
   if (!m_DFNext) {
     sc = m_eventSlots[si].dataFlowMgr.canAlgorithmRun(iAlgo);
   } else {
-    sc = m_cfManager.algoDataDependenciesSatisfied(index2algname(iAlgo),si);
+    sc = m_efManager.algoDataDependenciesSatisfied(index2algname(iAlgo),si);
   }
 
   StatusCode updateSc(StatusCode::FAILURE);

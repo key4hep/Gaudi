@@ -9,7 +9,7 @@
 #include "GaudiKernel/Algorithm.h"
 
 // TODO: include here is only a workaround
-#include "ControlFlowManager.h"
+#include "ExecutionFlowGraph.h"
 
 // std includes
 #include <string>
@@ -40,16 +40,16 @@ public:
 
   virtual StatusCode start();
   virtual StatusCode initialize();
-  /// Acquire a certain algorithm using its name 
+  /// Acquire a certain algorithm using its name
   virtual StatusCode acquireAlgorithm(const std::string& name, IAlgorithm*& algo, bool blocking = false);
-  /// Release a certain algorithm 
+  /// Release a certain algorithm
   virtual StatusCode releaseAlgorithm(const std::string& name, IAlgorithm*& algo);
   /// Acquire a certain resource
   virtual StatusCode acquireResource(const std::string& name);
-  /// Release a certrain resource 
+  /// Release a certrain resource
   virtual StatusCode releaseResource(const std::string& name);
-  
-  virtual std::list<IAlgorithm*> getFlatAlgList();  
+
+  virtual std::list<IAlgorithm*> getFlatAlgList();
   virtual std::list<IAlgorithm*> getTopAlgList();
 
   virtual StatusCode beginRun();
@@ -57,13 +57,13 @@ public:
 
   virtual StatusCode stop();
 
-  virtual concurrency::ControlFlowGraph* getControlFlowGraph() const {return m_CFGraph;}
+  virtual concurrency::ExecutionFlowGraph* getExecutionFlowGraph() const {return m_EFGraph;}
 
 private:
   typedef tbb::concurrent_bounded_queue<IAlgorithm*> concurrentQueueIAlgPtr;
   typedef std::list<SmartIF<IAlgorithm> > ListAlg;
   typedef boost::dynamic_bitset<> state_type;
-  
+
   std::mutex m_resource_mutex;
   bool m_lazyCreation;
   state_type m_available_resources;
@@ -72,7 +72,7 @@ private:
   std::map<size_t,size_t> m_n_of_allowed_instances;
   std::map<size_t,unsigned int> m_n_of_created_instances;
   std::map<std::string,unsigned int> m_resource_indices;
-  
+
   /// Decode the top alg list
   StatusCode decodeTopAlgs();
 
@@ -101,7 +101,7 @@ private:
   bool m_doHacks;
 
   /// OMG yet another hack
-  concurrency::ControlFlowGraph* m_CFGraph;
+  concurrency::ExecutionFlowGraph* m_EFGraph;
 };
 
 #endif  // GAUDIHIVE_ALGRESOURCEPOOL_H

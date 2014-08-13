@@ -2,7 +2,7 @@
 #define EFGRAPHVISITORS_H_
 
 #include "IGraphVisitor.h"
-#include "ControlFlowManager.h"
+#include "ExecutionFlowGraph.h"
 
 namespace concurrency {
 
