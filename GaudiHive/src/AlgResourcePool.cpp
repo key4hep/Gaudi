@@ -91,24 +91,26 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
 
   std::hash<std::string> hash_function;
   size_t algo_id = hash_function(name);
+  auto itQueueIAlgPtr = m_algqueue_map.find(algo_id);
 
-  if (m_algqueue_map.find(algo_id) == m_algqueue_map.end()){
+  if (itQueueIAlgPtr == m_algqueue_map.end()) {
     error() << "Algorithm " << name << " requested, but not recognised"
             << endmsg;
-    algo=nullptr;
+    algo = nullptr;
     return StatusCode::FAILURE;
   }
 
   StatusCode sc;
-  if(blocking){
-	  m_algqueue_map[algo_id]->pop(algo);
-  	  sc = StatusCode::SUCCESS;
-  }  else {
-	  sc = m_algqueue_map[algo_id]->try_pop(algo);
+  if (blocking) {
+    itQueueIAlgPtr->second->pop(algo);
+    sc = StatusCode::SUCCESS;
+  } else {
+    sc = itQueueIAlgPtr->second->try_pop(algo);
   }
 
   if(sc.isFailure())
-	  debug() << "No instance of algorithm " << name << " could be retrieved in non-blocking mode" << endmsg;
+    if (msgLevel(MSG::DEBUG))
+      debug() << "No instance of algorithm " << name << " could be retrieved in non-blocking mode" << endmsg;
 
   //  if (m_lazyCreation ) {
   // TODO: fill the lazyCreation part
@@ -119,10 +121,10 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
     m_resource_mutex.lock();
     if (requirements.is_subset_of(m_available_resources)) {
       m_available_resources^=requirements;
-    } else{
+    } else {
       sc = StatusCode::FAILURE;
       error() << "Failure to allocate resources of algorithm " << name << endmsg;
-      m_algqueue_map[algo_id]->push(algo);
+      itQueueIAlgPtr->second->push(algo);
     }
     m_resource_mutex.unlock();
   }
@@ -172,17 +174,17 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
 
   std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
   if ( //we only want to add basic algorithms -> have no subAlgs
-		  // and exclude the case of empty GaudiSequencers
-	   (subAlgorithms->empty() and not (algo->type() == "GaudiSequencer"))
-	   // we want to add non-empty GaudiAtomicSequencers
-	   or (algo->type() == "GaudiAtomicSequencer" and not subAlgorithms->empty())){
+          // and exclude the case of empty GaudiSequencers
+       (subAlgorithms->empty() and not (algo->type() == "GaudiSequencer"))
+       // we want to add non-empty GaudiAtomicSequencers
+       or (algo->type() == "GaudiAtomicSequencer" and not subAlgorithms->empty())){
 
-	  debug() << std::string(recursionDepth, ' ') << algo->name() << " is " <<
-			  (algo->type() != "GaudiAtomicSequencer" ? "not a sequencer" : "an atomic sequencer")
-			  << ". Appending it" << endmsg;
+      debug() << std::string(recursionDepth, ' ') << algo->name() << " is " <<
+              (algo->type() != "GaudiAtomicSequencer" ? "not a sequencer" : "an atomic sequencer")
+              << ". Appending it" << endmsg;
 
-	  alglist.emplace_back(algo);
-	  m_CFGraph->addAlgorithmNode(algo,parentName,false,false);
+      alglist.emplace_back(algo);
+      m_CFGraph->addAlgorithmNode(algo,parentName,false,false);
     return sc;
   }
 
