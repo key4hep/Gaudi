@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <map>
 #include <sstream>
+#include <queue>
 
 // Local
 #include "ForwardSchedulerSvc.h"
@@ -44,6 +45,7 @@ ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* 
   declareProperty("useGraphFlowManagement", m_CFNext = false );
   declareProperty("DataFlowManagerNext", m_DFNext = false );
   declareProperty("SimulateExecution", m_simulateExecution = false );
+  declareProperty("ChasePopularData", m_chasePopularData = false );
 }
 
 //---------------------------------------------------------------------------
@@ -160,6 +162,10 @@ StatusCode ForwardSchedulerSvc::initialize(){
 
   // prepare the control flow part
   if (m_CFNext) m_DFNext = true; //force usage of new data flow machinery when new control flow is used
+  if (!m_CFNext && m_chasePopularData) {
+    fatal() << "Prioritizing popular data production mode is not available with old control and data flow management" << endmsg;
+    return StatusCode::FAILURE;
+  }
   const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>(m_algResourcePool.get());
   sc = m_efManager.initialize(algPool->getExecutionFlowGraph(), m_algname_index_map, m_eventSlots);
   unsigned int controlFlowNodeNumber = m_efManager.getExecutionFlowGraph()->getControlFlowNodeCounter();
@@ -556,16 +562,45 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
     }
 
     //now update DATAREADY to SCHEDULED
-    for(auto it = thisAlgsStates.begin(AlgsExecutionStates::State::DATAREADY);
-        it != thisAlgsStates.end(AlgsExecutionStates::State::DATAREADY); ++it) {
+    if (m_chasePopularData) {
+      auto comp_nodes = [this] (const uint& i,const uint& j) {
+          return (m_efManager.getExecutionFlowGraph()->getAlgorithmNode(index2algname(i))->getOutputDataRank() >
+          m_efManager.getExecutionFlowGraph()->getAlgorithmNode(index2algname(j))->getOutputDataRank());
+      };
+      std::priority_queue<uint,std::vector<uint>,std::function<bool(const uint&,const uint&)>> buffer(comp_nodes,std::vector<uint>());
+      for(auto it = thisAlgsStates.begin(AlgsExecutionStates::State::DATAREADY);
+          it != thisAlgsStates.end(AlgsExecutionStates::State::DATAREADY); ++it)
+        buffer.push(*it);
+      /*std::stringstream s;
+      auto buffer2 = buffer;
+      while (!buffer2.empty()) {
+        s << m_efManager.getExecutionFlowGraph()->getAlgorithmNode(index2algname(buffer2.top()))->getOutputDataRank() << ", ";
+        buffer2.pop();
+      }
+      info() << "DRBuffer is: [ " << s.str() << " ]" << endmsg;*/
 
-      uint algIndex = *it;
-      partial_sc = promoteToScheduled(algIndex, iSlot);
-      if (partial_sc.isFailure())
-        if (msgLevel(MSG::DEBUG))
-          debug() << "Could not apply transition from "
-                  << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::DATAREADY]
-                  << " for algorithm " << index2algname(algIndex) << " on processing slot " << iSlot << endmsg;
+      while (!buffer.empty()) {
+        partial_sc = promoteToScheduled(buffer.top(), iSlot);
+        if (partial_sc.isFailure())
+          if (msgLevel(MSG::DEBUG))
+            debug() << "Could not apply transition from "
+                    << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::DATAREADY]
+                    << " for algorithm " << index2algname(buffer.top()) << " on processing slot " << iSlot << endmsg;
+        buffer.pop();
+      }
+
+    } else {
+      for(auto it = thisAlgsStates.begin(AlgsExecutionStates::State::DATAREADY);
+          it != thisAlgsStates.end(AlgsExecutionStates::State::DATAREADY); ++it) {
+        uint algIndex = *it;
+        partial_sc = promoteToScheduled(algIndex, iSlot);
+        if (partial_sc.isFailure())
+          if (msgLevel(MSG::DEBUG))
+            debug() << "Could not apply transition from "
+                    << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::DATAREADY]
+                    << " for algorithm " << index2algname(algIndex) << " on processing slot " << iSlot << endmsg;
+
+      }
     }
 
     // Not complete because this would mean that the slot is already free!

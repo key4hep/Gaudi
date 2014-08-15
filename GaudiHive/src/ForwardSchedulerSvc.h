@@ -205,6 +205,8 @@ private:
   bool m_DFNext;
   // Flag to perform single-pass simulation of execution flow before the actual execution
   bool m_simulateExecution;
+  // Turn on/off a mode in which algorithms that produce more popular data are executed first
+  bool m_chasePopularData;
 
   // Needed to queue actions on algorithm finishing and decrement algos in flight
   friend class AlgoExecutionTask;
