@@ -54,7 +54,7 @@ StatusCode AlgResourcePool::initialize(){
   }
 
   // XXX: Prepare empty Control Flow graph
-  const std::string& name = "ControlFlowGraph";
+  const std::string& name = "ExecutionFlowGraph";
   SmartIF<ISvcLocator> svc = serviceLocator();
   m_EFGraph = new concurrency::ExecutionFlowGraph(name, svc);
 

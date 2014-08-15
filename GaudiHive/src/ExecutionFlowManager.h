@@ -32,7 +32,7 @@ namespace concurrency {
     ///
     void simulateExecutionFlow(IGraphVisitor& visitor) const;
     /// Get the flow graph instance
-    ExecutionFlowGraph* getExecutionFlowGraph() const {return m_EFGraph;}
+    inline ExecutionFlowGraph* getExecutionFlowGraph() const {return m_EFGraph;}
     /// A little bit silly, but who cares. ;-)
     bool needsAlgorithmToRun(const unsigned int iAlgo) const;
     /// Update the state of algorithms to controlready, where possible

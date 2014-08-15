@@ -163,7 +163,11 @@ namespace concurrency {
     bool AlgorithmOnDataOutputRanker::visit(AlgorithmNode& node) {
 
       auto& products = node.getOutputDataNodes();
-      uint rank = products.size();
+      uint rank = 0;
+
+      for (auto p : products)
+        rank += p->getConsumers().size();
+
       node.setOutputDataRank(rank);
 
       return true;
