@@ -564,7 +564,7 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
     //now update DATAREADY to SCHEDULED
     if (m_chasePopularData) {
       auto comp_nodes = [this] (const uint& i,const uint& j) {
-          return (m_efManager.getExecutionFlowGraph()->getAlgorithmNode(index2algname(i))->getOutputDataRank() >
+          return (m_efManager.getExecutionFlowGraph()->getAlgorithmNode(index2algname(i))->getOutputDataRank() <
           m_efManager.getExecutionFlowGraph()->getAlgorithmNode(index2algname(j))->getOutputDataRank());
       };
       std::priority_queue<uint,std::vector<uint>,std::function<bool(const uint&,const uint&)>> buffer(comp_nodes,std::vector<uint>());
