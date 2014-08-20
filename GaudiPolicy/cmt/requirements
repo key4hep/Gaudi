@@ -491,7 +491,7 @@ pattern generate_componentslist \
 
 # TEMPORARY alias for backward compatibility in ATLAS. FIXME!
 pattern generate_rootmap \
-  action warning_depr_rootmap "echo ; echo =========\> WARNING: in package <package>, pattern generate_rootmap is deprecated. use gerenate_componentslist instead; echo "  ; \
+  action warning_depr_rootmap "echo ; echo =========\> WARNING: in package <package>, pattern generate_rootmap is deprecated. use generate_componentslist instead; echo "  ; \
   private ; \
    macro_append all_dependencies " warning_depr_rootmap " ; \
   end_private ; \
