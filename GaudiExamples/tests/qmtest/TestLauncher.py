@@ -26,14 +26,24 @@ def XMLwriter(resultDic, fileName):
         except :
             cleanXml(fileName)
             tree = ET.parse(fileName)
-        root = tree.getroot()
+        #root = tree.getroot()
+        root = tree.find('Testing')
+        if root.find('StartTestTime') is None:
+            t = time.time()
+            ET.SubElement(root, 'StartTestTime').text = str(int(t))
+            StartDateTime = root.find('StartDateTime')
+            if StartDateTime is None:
+                StartDateTime = ET.SubElement(root, 'StartDateTime')
+            StartDateTime.text = time.strftime("%b %d %H:%M %Z", time.localtime(t))
 
         #Test is the root
         Test = ET.Element('Test')
         Test.set('Status',resultDic['Status'])
         del resultDic['Status']
         Name = ET.SubElement(Test,'Name')
-        Name.text= XSS.escape(resultDic['Name'][:-4])
+        test_file_name = resultDic['Name']
+        test_name = test_file_name.replace('.qmt', '').replace('.qms' + os.path.sep, '.')
+        Name.text= XSS.escape(test_name)
         del resultDic['Name']
 
         # Branch containing all the measurments
@@ -74,9 +84,20 @@ def XMLwriter(resultDic, fileName):
         Value['Measurement'] = ET.SubElement(Measurement,'Value')
         Value['Measurement'].text = XSS.escape(resultDic['Measurement'])
 
-
-
         root.append(Test)
+
+        end_time = time.time()
+
+        EndTestTime = root.find('EndTestTime')
+        if EndTestTime is not None:
+            root.remove(EndTestTime)
+        ET.SubElement(root, 'EndTestTime').text = str(int(end_time))
+
+        EndDateTime = root.find('EndDateTime')
+        if EndDateTime is not None:
+            root.remove(EndDateTime)
+        ET.SubElement(root, 'EndDateTime').text = time.strftime("%b %d %H:%M %Z", time.localtime(end_time))
+
         tree.write(fileName,encoding='utf-8')
 
 
@@ -96,18 +117,30 @@ def cleanXml(xmlFileName):
         xmlFile.close()
 
 #-------------------------------------------------------------------------#
+def siteAttrib():
+    import os
+    import socket
+    return {
+            "BuildName" : os.getenv("CMTCONFIG"),
+            "Name" : os.uname()[1],
+            "Generator" : __file__,
+            "OSName" : os.uname()[0],
+            "Hostname" : socket.gethostname(),
+            "OSRelease" : os.uname()[2],
+            "OSVersion" :os.uname()[3],
+            "OSPlatform" :os.uname()[4],
+            }
 
 def main(fileList):
-    if not os.path.exists("./results"):
-        os.makedirs("./results")
-    DOB = time.localtime()
-    dateOfBegining = str(DOB[1])+"-"+str(DOB[2])+"-"+str(DOB[0])+"_"+str(DOB[3])+":"+str(DOB[4])
     # Preparing the result file
-    nameResult = "./results/results_"+dateOfBegining+"_"+str(len(fileList))+".xml"
-    file = open(nameResult,"w+")
-    file.close()
-    Doc = ET.Element('Doc')
-    tree = ET.ElementTree(Doc)
+    nameResult = "Results_Test.xml"
+
+    Site = ET.Element('Site')
+    Site.attrib = siteAttrib()
+
+    Testing = ET.SubElement(Site, 'Testing')
+
+    tree = ET.ElementTree(Site)
     tree.write(nameResult)
 
 
@@ -130,5 +163,7 @@ def main(fileList):
             fileToTest.XMLParser(file)
             XMLwriter(fileToTest.runTest(),nameResult)
     cleanXml(nameResult)
+
+
 
 main(sys.argv)

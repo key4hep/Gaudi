@@ -134,7 +134,7 @@ class BaseTest :
             self.result,self.causes=self.ValidateOutput(stdout=self.out,stderr=self.err,result=validatorRes)
 
             #Setting status
-            self.status = "Failed"
+            self.status = "failed"
             if self.signal is not None :
                 if (int(self.returnedCode) - int(self.signal) - 128)!=0:
                     self.causes.append('wrong return code')
@@ -144,9 +144,9 @@ class BaseTest :
             if self.returnedCode!=0 and self.exit_code is None and self.signal is None:
                 self.causes.append("Return code !=0")
             if self.causes == []:
-                self.status = "Passed"
+                self.status = "passed"
         else :
-            self.status="SKIPPED"
+            self.status = "skipped"
 
         resultDic = {'Execution Time':lasted, 'Exit code':self.returnedCode, 'Start Time':dateOfBegining, 'End Time':dateOfEnding, 'Stderr':self.err,'Arguments':self.args, 'Environment':self.environment, 'Expected stderr':self.stderr, 'Status':self.status,  'Measurement':self.out, 'Program Name':self.program,'Name':self.name, 'Validator':self.validator,'Reference file':self.reference,'Error reference file':self.error_reference,'Causes':self.causes,'Validator results':self.result.annotations,'Unsupported platforms':self.unsupported_platforms}
         return resultDic

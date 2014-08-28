@@ -12,7 +12,7 @@ def main():
     import dependencyAnalysis as DA
 
     #dir = "./newFormat"
-    dir = './gaudiexamples.qms'
+    dir = 'gaudiexamples.qms'
     fileList = sorted([ l for l in os.listdir(dir) if not l.startswith('.')])
     for l in fileList:
         n=fileList.index(l)
@@ -25,7 +25,7 @@ def main():
 
 #     print DA.sniffer('/afs/cern.ch/user/v/valentin/workspace/Gaudi/GaudiExamples/tests/qmtest')\
     print fileList
-    proc= Popen(['python', 'TestLauncher.py'] + fileList)
+    proc= Popen(['python', 'TestLauncher.py'] + fileList[:2])
     proc.wait()
 
     print 'end'
