@@ -82,13 +82,14 @@ class BaseTest :
                 prog = which(prog) or prog
 
                 if prog_ext == ".py" :
-                    params = ["/afs/cern.ch/user/v/valentin/workspace/Gaudi/build.x86_64-slc6-gcc48-opt/run","/afs/cern.ch/sw/lcg/external/Python/2.7.3/x86_64-slc6-gcc48-opt/bin/python",RationalizePath(prog)]+self.args
+                    params = ['python', RationalizePath(prog)] + self.args
                 else :
-                    params = ["/afs/cern.ch/user/v/valentin/workspace/Gaudi/build.x86_64-slc6-gcc48-opt/run", RationalizePath(prog)]+self.args
+                    params = [RationalizePath(prog)] + self.args
 
                 print self.name
                 print params
-                self.proc= Popen(params,stdout=PIPE,stderr=PIPE, env=self.environment)
+                self.proc= Popen(params, stdout=PIPE, stderr=PIPE,
+                                 env=self.environment)
                 self.proc.wait()
 
             thread = threading.Thread(target=target)
