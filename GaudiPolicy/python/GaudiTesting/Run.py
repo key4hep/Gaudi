@@ -21,21 +21,27 @@ import logging
 def XMLwriter(resultDic, fileName):
     if resultDic is not None:
 
-        #Creating the xml tree
-        try :
-            tree = ET.parse(fileName)
-        except :
-            cleanXml(fileName)
-            tree = ET.parse(fileName)
+        if not os.path.exists(fileName):
+            # create initial XML file
+            site_el = ET.Element('Site', siteAttrib())
+            testing_el = ET.SubElement(site_el, 'Testing')
+            start_time = int(time.time())
+            time_str = time.strftime("%b %d %H:%M %Z",
+                                     time.localtime(start_time))
+            ET.SubElement(testing_el, 'StartTestTime').text = str(start_time)
+            ET.SubElement(testing_el, 'StartDateTime').text = time_str
+            tree = ET.ElementTree(site_el)
+
+        else:
+            # use the existing XML file
+            try:
+                tree = ET.parse(fileName)
+            except:
+                cleanXml(fileName)
+                tree = ET.parse(fileName)
+
         #root = tree.getroot()
         root = tree.find('Testing')
-        if root.find('StartTestTime') is None:
-            t = time.time()
-            ET.SubElement(root, 'StartTestTime').text = str(int(t))
-            StartDateTime = root.find('StartDateTime')
-            if StartDateTime is None:
-                StartDateTime = ET.SubElement(root, 'StartDateTime')
-            StartDateTime.text = time.strftime("%b %d %H:%M %Z", time.localtime(t))
 
         #Test is the root
         Test = ET.Element('Test')
@@ -85,6 +91,10 @@ def XMLwriter(resultDic, fileName):
         Value['Measurement'] = ET.SubElement(Measurement,'Value')
         Value['Measurement'].text = XSS.escape(resultDic['Measurement'])
 
+        # replace the previous results of the test we are adding
+        for t in [t for t in root.findall('Test[Name]')
+                  if t.find('Name').text == test_name]:
+            root.remove(t)
         root.append(Test)
 
         end_time = time.time()
@@ -99,7 +109,7 @@ def XMLwriter(resultDic, fileName):
             root.remove(EndDateTime)
         ET.SubElement(root, 'EndDateTime').text = time.strftime("%b %d %H:%M %Z", time.localtime(end_time))
 
-        tree.write(fileName,encoding='utf-8')
+        tree.write(fileName, encoding='utf-8')
 
 
 #----------------------------------------------------------------------------------------#
@@ -172,16 +182,6 @@ def main():
     opts, fileList = parser.parse_args()
 
     logging.basicConfig(level=opts.log_level)
-
-    # Preparing the result file
-    Site = ET.Element('Site')
-    Site.attrib = siteAttrib()
-
-    Testing = ET.SubElement(Site, 'Testing')
-
-    tree = ET.ElementTree(Site)
-    tree.write(opts.output)
-
 
 
     #fileList=["/afs/cern.ch/user/v/valentin/workspace/Gaudi/GaudiExamples/tests/qmtest/gaudiexamples.qms/event_timeout_abort.qmt"]
