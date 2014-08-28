@@ -71,7 +71,7 @@ class BaseTest :
             def target (self=self) :
                 prog=''
                 if self.program != '' :
-                    prog = RationalizePath(self.program)
+                    prog = self.program
                 elif "GAUDIEXE" in os.environ :
                     prog = os.environ["GAUDIEXE"]
                 else :
@@ -455,7 +455,6 @@ def RationalizePath(p) :
     newPath = os.path.normpath(os.path.expandvars(p))
     if os.path.exists(newPath) :
         p = os.path.realpath(newPath)
-    p = os.path.realpath(newPath)
     return p
 
 
