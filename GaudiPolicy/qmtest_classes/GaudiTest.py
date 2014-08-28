@@ -2028,7 +2028,7 @@ class XMLResultStream(ResultStream):
                       "LogicalProcessorsPerPhysical" : "0" ,
                       "ProcessorClockFrequency" : "0" ,
                       }
-            self._site = ET.SubElement(newdataset, "site", attrib)
+            self._site = ET.SubElement(newdataset, "Site", attrib)
             self._Testing = ET.SubElement(self._site,"Testing")
 
             # Start time elements
