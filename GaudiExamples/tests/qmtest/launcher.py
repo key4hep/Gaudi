@@ -25,7 +25,7 @@ def main():
     #import dependencyAnalysis as DA
     #print DA.sniffer('/afs/cern.ch/user/v/valentin/workspace/Gaudi/GaudiExamples/tests/qmtest')\
     print fileList
-    proc= Popen(['python', '-m', 'GaudiTesting.Run'] + fileList[:2])
+    proc= Popen(['python', '-m', 'GaudiTesting.Run', '--debug'] + fileList[:8])
     proc.wait()
 
     print 'end'

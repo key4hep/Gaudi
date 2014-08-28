@@ -9,6 +9,7 @@ import BaseTest as GT
 import QMTTest as QT
 import re
 import time
+import logging
 
 
 #-------------------------------------------------------------------------#
@@ -131,17 +132,55 @@ def siteAttrib():
             "OSPlatform" :os.uname()[4],
             }
 
-def main(fileList):
-    # Preparing the result file
-    nameResult = "Results_Test.xml"
+def main():
+    from optparse import OptionParser, OptionGroup
+    parser = OptionParser()
 
+    parser.add_option('--output',
+                      help='name of the output file [default: %default]')
+
+
+    verbosity_opts = OptionGroup(parser, 'Verbosity Level',
+                                 'set the verbosity level of messages')
+    verbosity_opts.add_option('--silent',
+                      action='store_const', dest='log_level',
+                      const=logging.CRITICAL,
+                      help='only critical error messages')
+    verbosity_opts.add_option('--quiet',
+                      action='store_const', dest='log_level',
+                      const=logging.ERROR,
+                      help='error messages')
+    verbosity_opts.add_option('--warning',
+                      action='store_const', dest='log_level',
+                      const=logging.WARNING,
+                      help='warning and error messages')
+    verbosity_opts.add_option('--verbose',
+                      action='store_const', dest='log_level',
+                      const=logging.INFO,
+                      help='progress information messages')
+    verbosity_opts.add_option('--debug',
+                      action='store_const', dest='log_level',
+                      const=logging.DEBUG,
+                      help='debugging messages')
+    parser.add_option_group(verbosity_opts)
+
+
+    parser.set_defaults(log_level=logging.WARNING,
+                        output='Results_Test.xml')
+
+
+    opts, fileList = parser.parse_args()
+
+    logging.basicConfig(level=opts.log_level)
+
+    # Preparing the result file
     Site = ET.Element('Site')
     Site.attrib = siteAttrib()
 
     Testing = ET.SubElement(Site, 'Testing')
 
     tree = ET.ElementTree(Site)
-    tree.write(nameResult)
+    tree.write(opts.output)
 
 
 
@@ -151,19 +190,20 @@ def main(fileList):
 
     # Testing the file begining with "Test" or if it is a qmt file and doing the test
     for file in fileList :
+        logging.debug('processing %s', file)
         if file.endswith('_test.py') :
             indexFilePart= file.rfind("/")
             fileToImport = file[indexFilePart+1:]
             sys.path.append(GT.RationalizePath(file)[:-len(fileToImport)-1])
             imp = __import__(fileToImport[:-3])
             fileToExec = imp.Test()
-            XMLwriter(fileToExec.runTest(),nameResult)
+            XMLwriter(fileToExec.runTest(), opts.output)
         if file.endswith(".qmt"):
             fileToTest = QT.QMTTest()
             fileToTest.XMLParser(file)
-            XMLwriter(fileToTest.runTest(),nameResult)
-    cleanXml(nameResult)
+            XMLwriter(fileToTest.runTest(), opts.output)
+    cleanXml(opts.output)
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main()

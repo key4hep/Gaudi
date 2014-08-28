@@ -12,6 +12,7 @@ import tempfile
 import inspect
 import re
 import xml.sax.saxutils as XSS
+import logging
 
 #-------------------------------------------------------------------------#
 class BaseTest :
@@ -44,6 +45,8 @@ class BaseTest :
         pass
 
     def runTest (self):
+        logging.debug('running test %s', self.name)
+
         #Setting time
         begining = int(time.time())
         DOB = time.localtime()
@@ -86,8 +89,7 @@ class BaseTest :
                 else :
                     params = [RationalizePath(prog)] + self.args
 
-                print self.name
-                print params
+                logging.debug('executing %r', params)
                 self.proc= Popen(params, stdout=PIPE, stderr=PIPE,
                                  env=self.environment)
                 self.proc.wait()
@@ -99,9 +101,12 @@ class BaseTest :
 
             if thread.is_alive():
                 self.proc.send_signal(signal.SIGABRT)
-                print "abortion"
+                logging.warning('time out in test %s', self.name)
                 thread.join()
                 self.timeOut = True
+            else:
+                logging.debug('completed test %s', self.name)
+
             self.out = self.proc.stdout.read()
             if self.traceback:
                 self.err = self.proc.stderr.read()
@@ -124,7 +129,9 @@ class BaseTest :
         DOE = time.localtime()
         dateOfEnding = str(DOE[1])+"/"+str(DOE[2])+"/"+str(DOE[0])+" "+str(DOE[3])+":"+str(DOE[4])+":"+str(DOE[5])
 
+
         if unsupPlat :
+            logging.debug('validating test...')
             validatorRes = Result({'CAUSE':None,'EXCEPTION':None,'RESOURCE':None,'TARGET':None,'TRACEBACK':None,'START_TIME':None,'END_TIME':None,'TIMEOUT_DETAIL':None})
             self.result=validatorRes
 
@@ -148,7 +155,25 @@ class BaseTest :
         else :
             self.status = "skipped"
 
-        resultDic = {'Execution Time':lasted, 'Exit code':self.returnedCode, 'Start Time':dateOfBegining, 'End Time':dateOfEnding, 'Stderr':self.err,'Arguments':self.args, 'Environment':self.environment, 'Expected stderr':self.stderr, 'Status':self.status,  'Measurement':self.out, 'Program Name':self.program,'Name':self.name, 'Validator':self.validator,'Reference file':self.reference,'Error reference file':self.error_reference,'Causes':self.causes,'Validator results':self.result.annotations,'Unsupported platforms':self.unsupported_platforms}
+        logging.info('%s: %s', self.name, self.status)
+        resultDic = {'Execution Time':lasted,
+                     'Exit code':self.returnedCode,
+                     'Start Time':dateOfBegining,
+                     'End Time':dateOfEnding,
+                     'Stderr':self.err,
+                     'Arguments':self.args,
+                     'Environment':self.environment,
+                     'Expected stderr':self.stderr,
+                     'Status':self.status,
+                     'Measurement':self.out,
+                     'Program Name':self.program,
+                     'Name':self.name,
+                     'Validator':self.validator,
+                     'Reference file':self.reference,
+                     'Error reference file':self.error_reference,
+                     'Causes':self.causes,
+                     'Validator results':self.result.annotations,
+                     'Unsupported platforms':self.unsupported_platforms}
         return resultDic
 
 
