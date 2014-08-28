@@ -165,5 +165,5 @@ def main(fileList):
     cleanXml(nameResult)
 
 
-
-main(sys.argv)
+if __name__ == '__main__':
+    main(sys.argv)

@@ -1,13 +1,14 @@
-import BaseTest
+# -*- coding: utf-8 -*-
 from BaseTest import *
 
 class QMTTest(BaseTest):
 
     def __init__(self):
         BaseTest.__init__(self)
-        self.validator =''
+        self.validator = ''
 
     def XMLParser(self,path) :
+        import xml.etree.ElementTree as ET
 
         dic = self.__dict__
 
@@ -89,7 +90,7 @@ class QMTTest(BaseTest):
                                                                        "result":result,
                                                                        "causes":self.causes})
                                 }
-            exec self.validator in globals(),exported_symbols
+            exec self.validator in globals(), exported_symbols
         else:
             if self.stderr=='':
                 self.validateWithReference(stdout, stderr, result, self.causes)

@@ -2,6 +2,7 @@ gaudi_subdir(GaudiPolicy v15r0)
 
 #---Installation-----------------------------------------------------------------------------
 gaudi_install_scripts()
+gaudi_install_python_modules()
 
 # Set environment to access the custom QMTest classes (at build time).
 gaudi_build_env(PREPEND QMTEST_CLASS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/qmtest_classes)
@@ -24,7 +25,7 @@ if(GAUDI_BUILD_TESTS)
   # GAUDI-976: make GaudiTest.py more resilient towards unicode-ascii conversion failure
   # https://its.cern.ch/jira/browse/GAUDI-976
   configure_file(tests/GAUDI-976/test.qmt GAUDI-976/test.qmt COPYONLY)
-  configure_file(tests/GAUDI-976/QMTest/configuration GAUDI-976/QMTest/configuration COPYONLY)  
+  configure_file(tests/GAUDI-976/QMTest/configuration GAUDI-976/QMTest/configuration COPYONLY)
   gaudi_add_test(GAUDI-976
                  COMMAND ${env_cmd} --xml ${env_xml} TESTENV=à qmtest run
                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/GAUDI-976

@@ -9,7 +9,6 @@ import os
 def main():
 
     print 'starting'
-    import dependencyAnalysis as DA
 
     #dir = "./newFormat"
     dir = 'gaudiexamples.qms'
@@ -23,9 +22,10 @@ def main():
     for l in fileList :
         testList+= l+" "
 
-#     print DA.sniffer('/afs/cern.ch/user/v/valentin/workspace/Gaudi/GaudiExamples/tests/qmtest')\
+    #import dependencyAnalysis as DA
+    #print DA.sniffer('/afs/cern.ch/user/v/valentin/workspace/Gaudi/GaudiExamples/tests/qmtest')\
     print fileList
-    proc= Popen(['python', 'TestLauncher.py'] + fileList[:2])
+    proc= Popen(['python', '-m', 'GaudiTesting.Run'] + fileList[:2])
     proc.wait()
 
     print 'end'
