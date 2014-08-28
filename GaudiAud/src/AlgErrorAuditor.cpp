@@ -46,7 +46,7 @@ AlgErrorAuditor:: afterExecute(INamedInterface* alg, const StatusCode& sc) {
     os << "Illegal Return Code: Algorithm " << alg->name()
        << " reported an ERROR, but returned a StatusCode \"" << sc << "\"";
     os << std::endl << "Error policy described in "
-	 << "https://twiki.cern.ch/twiki/bin/view/Atlas/ReportingErrors";
+	 << "https://twiki.cern.ch/twiki/bin/view/AtlasComputing/ReportingErrors";
 
     MsgStream log(msgSvc(), name());
     log << MSG::ERROR << os.str() << endmsg;
@@ -64,7 +64,7 @@ AlgErrorAuditor:: afterExecute(INamedInterface* alg, const StatusCode& sc) {
     os << "Illegal Return Code: Algorithm " << alg->name()
        << " reported a FATAL, but returned a StatusCode \"" << sc << "\"";
     os << std::endl << "Error policy described in "
-	 << "https://twiki.cern.ch/twiki/bin/view/Atlas/ReportingErrors";
+	 << "https://twiki.cern.ch/twiki/bin/view/AtlasComputing/ReportingErrors";
 
     MsgStream log(msgSvc(), name());
     log << MSG::ERROR << os.str() << endmsg;

@@ -45,17 +45,17 @@ MyAudAlgorithm       INFO executing....
 MyAudAlgorithm      ERROR testing AlgErrorAud
 MyAudAlgorithm    SUCCESS This message should never be suppressed
 AlgErrorAuditor     ERROR Illegal Return Code: Algorithm MyAudAlgorithm reported an ERROR, but returned a StatusCode "SUCCESS"
-Error policy described in https://twiki.cern.ch/twiki/bin/view/Atlas/ReportingErrors
+Error policy described in https://twiki.cern.ch/twiki/bin/view/AtlasComputing/ReportingErrors
 MyAudAlgorithm       INFO executing....
 ToolSvc.MyAudTool   ERROR doErr() has been called
 MyAudAlgorithm    SUCCESS This message should never be suppressed
 AlgErrorAuditor     ERROR Illegal Return Code: Algorithm MyAudAlgorithm reported an ERROR, but returned a StatusCode "SUCCESS"
-Error policy described in https://twiki.cern.ch/twiki/bin/view/Atlas/ReportingErrors
+Error policy described in https://twiki.cern.ch/twiki/bin/view/AtlasComputing/ReportingErrors
 MyAudAlgorithm       INFO executing....
 ToolSvc.MyAudTool   FATAL doFatal() has been called
 MyAudAlgorithm    SUCCESS This message should never be suppressed
 AlgErrorAuditor     ERROR Illegal Return Code: Algorithm MyAudAlgorithm reported a FATAL, but returned a StatusCode "SUCCESS"
-Error policy described in https://twiki.cern.ch/twiki/bin/view/Atlas/ReportingErrors
+Error policy described in https://twiki.cern.ch/twiki/bin/view/AtlasComputing/ReportingErrors
 MyAudAlgorithm    WARNING INFO message limit (7) reached for MyAudAlgorithm. Suppressing further output.
 MyAudAlgorithm    SUCCESS This message should never be suppressed
 MyAudAlgorithm    SUCCESS This message should never be suppressed
@@ -63,7 +63,7 @@ ToolSvc.MyAudTool   ERROR doErr() has been called
 MyAudAlgorithm      ERROR testing AlgErrorAud
 MyAudAlgorithm    SUCCESS This message should never be suppressed
 AlgErrorAuditor     ERROR Illegal Return Code: Algorithm MyAudAlgorithm reported an ERROR, but returned a StatusCode "SUCCESS"
-Error policy described in https://twiki.cern.ch/twiki/bin/view/Atlas/ReportingErrors
+Error policy described in https://twiki.cern.ch/twiki/bin/view/AtlasComputing/ReportingErrors
 ToolSvc.MyAudTool   FATAL doFatal() has been called
 MyAudAlgorithm    SUCCESS This message should never be suppressed
 AlgErrorAuditor   WARNING ERROR message limit (5) reached for AlgErrorAuditor. Suppressing further output.
