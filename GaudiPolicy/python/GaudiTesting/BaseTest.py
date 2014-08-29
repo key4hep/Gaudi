@@ -44,7 +44,7 @@ class BaseTest :
     def validator(self, stdout='',stderr=''):
         pass
 
-    def runTest (self):
+    def run(self):
         logging.debug('running test %s', self.name)
 
         #Setting time
@@ -66,9 +66,14 @@ class BaseTest :
         if self.environment is None : self.environment = os.environ
         else : self.environment=dict(self.environment.items()+os.environ.items())
 
-        #launching test in a different thread to handle timeout exception
-        def run (self=self):
-            def target (self=self) :
+        unsupPlat = True
+        for p in self.unsupported_platforms :
+            if re.search(p,platform.platform()):
+                unsupPlat=False
+
+        if unsupPlat :
+            #launching test in a different thread to handle timeout exception
+            def target() :
                 prog=''
                 if self.program != '' :
                     prog = self.program
@@ -112,14 +117,6 @@ class BaseTest :
                 self.err = self.proc.stderr.read()
             #Getting the error code
             self.returnedCode = self.proc.returncode
-
-        unsupPlat = True
-        for p in self.unsupported_platforms :
-            if re.search(p,platform.platform()):
-                unsupPlat=False
-
-        if unsupPlat :
-            run()
 
         #End time
         end=time.time()

@@ -200,11 +200,11 @@ def main():
             sys.path.append(GT.RationalizePath(file)[:-len(fileToImport)-1])
             imp = __import__(fileToImport[:-3])
             fileToExec = imp.Test()
-            XMLwriter(fileToExec.runTest(), opts.output)
+            XMLwriter(fileToExec.run(), opts.output)
         if file.endswith(".qmt"):
             from QMTTest import QMTTest
             fileToTest = QMTTest(file)
-            XMLwriter(fileToTest.runTest(), opts.output)
+            XMLwriter(fileToTest.run(), opts.output)
     cleanXml(opts.output)
 
 
