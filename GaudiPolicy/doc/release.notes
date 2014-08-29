@@ -3,6 +3,10 @@ package manager: Marco Clemencic
 Commit Id: $Format:%H$
 
 ! 2014-08-29 - Marco Clemencic
+ - Modified CTestXML2HTML to ignore tests with label 'test-wrapper', if they are
+   successful.
+
+! 2014-08-29 - Marco Clemencic
  - Made run_qmtest and CTestXML2HTML more resilient to configuration mistakes.
 
 ! 2014-08-28 - Marco Clemencic
