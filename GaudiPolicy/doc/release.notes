@@ -2,6 +2,9 @@ package GaudiPolicy
 package manager: Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-08-29 - Marco Clemencic
+ - Made run_qmtest and CTestXML2HTML more resilient to configuration mistakes.
+
 ! 2014-08-28 - Marco Clemencic
  - Minor fixes to GaudiTest.py and CTestXML2HTML.
 
