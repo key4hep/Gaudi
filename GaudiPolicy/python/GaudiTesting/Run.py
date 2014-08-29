@@ -21,6 +21,9 @@ def XMLwriter(resultDic, fileName):
     if resultDic is not None:
 
         if not os.path.exists(fileName):
+            # create the container directory, if needed
+            if not os.path.exists(os.path.dirname(fileName)):
+                os.makedirs(os.path.dirname(fileName))
             # create initial XML file
             site_el = ET.Element('Site', siteAttrib())
             testing_el = ET.SubElement(site_el, 'Testing')
