@@ -3,11 +3,13 @@ from BaseTest import *
 
 class QMTTest(BaseTest):
 
-    def __init__(self):
+    def __init__(self, path=None):
         BaseTest.__init__(self)
         self.validator = ''
+        if path:
+            self.XMLParser(path)
 
-    def XMLParser(self,path) :
+    def XMLParser(self, path) :
         import xml.etree.ElementTree as ET
 
         dic = self.__dict__

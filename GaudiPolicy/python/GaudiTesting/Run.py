@@ -6,7 +6,6 @@ import xml.etree.ElementTree as ET
 import sys
 import xml.sax.saxutils as XSS
 import BaseTest as GT
-import QMTTest as QT
 import re
 import time
 import logging
@@ -129,17 +128,21 @@ def cleanXml(xmlFileName):
 
 #-------------------------------------------------------------------------#
 def siteAttrib():
-    import os
     import socket
+    #keys = ["Generator", "Hostname", "BuildName",
+    #        "OSName", "Name", "OSRelease", "OSVersion", "OSPlatform"]
+    #values = ([__file__, socket.gethostname(), os.getenv("CMTCONFIG")] +
+    #          os.uname())
+    #return dict(zip(keys, values))
     return {
-            "BuildName" : os.getenv("CMTCONFIG"),
-            "Name" : os.uname()[1],
-            "Generator" : __file__,
-            "OSName" : os.uname()[0],
-            "Hostname" : socket.gethostname(),
-            "OSRelease" : os.uname()[2],
-            "OSVersion" :os.uname()[3],
-            "OSPlatform" :os.uname()[4],
+            "Generator":  __file__,
+            "Hostname":   socket.gethostname(),
+            "BuildName":  os.getenv("CMTCONFIG"),
+            "OSName":     os.uname()[0],
+            "Name":       os.uname()[1],
+            "OSRelease":  os.uname()[2],
+            "OSVersion":  os.uname()[3],
+            "OSPlatform": os.uname()[4],
             }
 
 def main():
@@ -199,8 +202,8 @@ def main():
             fileToExec = imp.Test()
             XMLwriter(fileToExec.runTest(), opts.output)
         if file.endswith(".qmt"):
-            fileToTest = QT.QMTTest()
-            fileToTest.XMLParser(file)
+            from QMTTest import QMTTest
+            fileToTest = QMTTest(file)
             XMLwriter(fileToTest.runTest(), opts.output)
     cleanXml(opts.output)
 
