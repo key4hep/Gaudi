@@ -2087,7 +2087,8 @@ endfunction()
 #                [ENVIRONMENT variable[+]=value ...]
 #                [DEPENDS other_test ...]
 #                [FAILS] [PASSREGEX regex] [FAILREGEX regex]
-#                [TIMEOUT seconds])
+#                [TIMEOUT seconds]
+#                [LABELS label1 label2 ...])
 #
 # Declare a run-time test in the subdirectory.
 # The test can be of the types:
@@ -2105,10 +2106,13 @@ endfunction()
 #            test if the write one failed)
 #  PASSREGEX - Specify a regexp; if matched in the output the test is successful
 #  FAILREGEX - Specify a regexp; if matched in the output the test is failed
+#  LABELS - list of labels to add to the test (for categorization)
 #
 #-------------------------------------------------------------------------------
 function(gaudi_add_test name)
-  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST;FAILS" "TIMEOUT;WORKING_DIRECTORY" "ENVIRONMENT;FRAMEWORK;COMMAND;DEPENDS;PASSREGEX;FAILREGEX" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST;FAILS"
+                            "TIMEOUT;WORKING_DIRECTORY"
+                            "ENVIRONMENT;FRAMEWORK;COMMAND;DEPENDS;PASSREGEX;FAILREGEX;LABELS" ${ARGN})
 
   gaudi_get_package_name(package)
 
@@ -2121,6 +2125,7 @@ function(gaudi_add_test name)
                         GAUDI_QMTEST_HTML_OUTPUT=${CMAKE_BINARY_DIR}/test_results
                         GAUDI_QMTEST_XML_OUTPUT=${CMAKE_BINARY_DIR}/Testing/xml_test_results)
     set(cmdline run_qmtest.py ${package})
+    set(ARG_LABELS ${ARG_LABELS} test-wrapper)
 
   elseif(ARG_FRAMEWORK)
     foreach(optfile  ${ARG_FRAMEWORK})
@@ -2158,6 +2163,9 @@ function(gaudi_add_test name)
            WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY}
            COMMAND ${env_cmd} ${extra_env} --xml ${env_xml}
                ${cmdline})
+
+  set_property(TEST ${package}.${name} PROPERTY LABELS ${package} ${ARG_LABELS})
+
 
   if(ARG_DEPENDS)
     foreach(t ${ARG_DEPENDS})
