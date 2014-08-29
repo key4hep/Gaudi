@@ -22,3 +22,5 @@ gaudi_add_test(cmake.EnvConfigTests
 gaudi_add_test(cmake.project_manifest.doctest
                COMMAND ${PYTHON_EXECUTABLE} -m doctest
                        ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/project_manifest.py)
+gaudi_add_test(cmake.CMakeModules
+               COMMAND nosetests ${CMAKE_SOURCE_DIR}/cmake/tests)

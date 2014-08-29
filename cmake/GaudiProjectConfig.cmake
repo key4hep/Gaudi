@@ -1127,8 +1127,10 @@ function(gaudi_get_packages var)
   get_directory_property(_ignored_subdirs GAUDI_IGNORE_SUBDIRS)
   file(GLOB_RECURSE cmakelist_files RELATIVE ${CMAKE_SOURCE_DIR} CMakeLists.txt)
   foreach(file ${cmakelist_files})
-    # ignore the source directory itself and files in the build directory
-    if(NOT file STREQUAL CMakeLists.txt AND NOT file MATCHES "^${rel_build_dir}")
+    # ignore the source directory itself, files in the build directory and
+    # files in the cmake/tests directory
+    if(NOT file STREQUAL CMakeLists.txt AND
+       NOT file MATCHES "^(${rel_build_dir}|cmake/tests)")
       get_filename_component(package ${file} PATH)
       list(FIND _ignored_subdirs ${package} _ignored)
       if(_ignored EQUAL -1) # not ignored
