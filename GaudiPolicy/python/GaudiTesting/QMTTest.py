@@ -31,8 +31,10 @@ class QMTTest(BaseTest):
                      for el in envList :
                          indexDictPart= el.text.rfind("=")
                          dic[type][el.text[:indexDictPart]]=el.text[indexDictPart+1:]
-                else :
+                else:
                     dic[type] = child[0].text
+                    if child[0].tag == 'integer':
+                        dic[type] = int(dic[type])
 
 
     def ValidateOutput(self, stdout, stderr, result):
