@@ -3,6 +3,10 @@
 
 cmake_minimum_required(VERSION 2.8.5)
 
+# FIXME: this is for backward compatibility with the olf LHCb minimal toolchain
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_MODULE_PATH})
+list(REMOVE_DUPLICATES CMAKE_MODULE_PATH)
+
 # detect the required heptols version
 function(guess_heptools_version var)
 
@@ -29,8 +33,11 @@ endfunction()
 include(UseHEPTools)
 
 macro(inherit_heptools)
-  guess_heptools_version(heptools_version)
-  if(heptools_version)
-    use_heptools(${heptools_version})
+  # FIXME: this is for backward compatibility with the olf LHCb minimal toolchain
+  if(NOT CMAKE_SOURCE_DIR MATCHES "CMakeTmp")
+    guess_heptools_version(heptools_version)
+    if(heptools_version)
+      use_heptools(${heptools_version})
+    endif()
   endif()
 endmacro()
