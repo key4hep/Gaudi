@@ -535,6 +535,11 @@ def main():
         for site in sites :
             #print "    -> Process the site : "+site.get("BuildStamp")
             Testing = site.find("Testing")
+            tests = Testing.findall('Test')
+            if not tests:
+                # no tests in this "site", let's ignore it
+                continue
+            
             #create a directory containing the html file for each site
             outputTemp = output #os.path.join(output,os.path.split(fileName)[1][:-8]+str(site.get("BuildStamp")))
             if not os.path.isdir(outputTemp) :
