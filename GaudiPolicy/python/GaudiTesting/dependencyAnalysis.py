@@ -4,9 +4,8 @@ import xml.etree.ElementTree as ET
 import sys
 
 
-def QMTsniffer(path) :
-
-    tree = ET.parse(RationalizePath(path))
+def QMTsniffer(path):
+    tree = ET.parse(path)
     root = tree.getroot()
     finalList=[]
     for child in root:
@@ -19,7 +18,7 @@ def QMTsniffer(path) :
     return finalList
 
 def QMSsniffer(path):
-    tree = ET.parse(RationalizePath(path))
+    tree = ET.parse(path)
     root = tree.getroot()
     finalList=[]
     for child in root:
@@ -31,17 +30,7 @@ def QMSsniffer(path):
                 finalList.append(tl[0].text)
     return finalList
 
-def RationalizePath(p) :
-
-    newPath = os.path.normpath(os.path.expandvars(p))
-    if os.path.exists(newPath) :
-        p = os.path.realpath(newPath)
-    p = os.path.realpath(newPath)
-    return p
-
-
-def sniffer(dir,originDirectory='',package=''):
-    dir = RationalizePath(dir)
+def sniffer(dir, originDirectory='', package=''):
     os.chdir(dir)
     finalList = dict()
     newPackage=package
@@ -55,12 +44,10 @@ def sniffer(dir,originDirectory='',package=''):
         elif file.endswith(".qms") and os.path.isfile(file):
             finalList[newPackage+os.path.basename(file)]=QMSsniffer(file)
         elif file.endswith(".qms"):
-            file=RationalizePath(file)
             newResult=sniffer(file,dir,package=newPackage)
             finalList=dict(finalList.items()+newResult.items())
             finalList[newPackage+os.path.basename(file)]=[ ld for ld in os.listdir(file) if (not l.startswith('.') and (l.endswith('.qmt') or not l.endswith('.qms')))]
         elif os.path.isdir(file):
-            file=RationalizePath(file)
             newResult=sniffer(file,dir,package=newPackage)
             finalList=dict(finalList.items()+newResult.items())
     if originDirectory!='' :

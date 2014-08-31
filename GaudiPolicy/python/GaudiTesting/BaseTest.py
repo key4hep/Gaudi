@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 
-import subprocess
-import time
-from subprocess import *
 import os
+import sys
+import time
 import signal
 import threading
-import sys
 import platform
 import tempfile
 import inspect
 import re
-import xml.sax.saxutils as XSS
 import logging
+
+from subprocess import Popen, PIPE
 
 #-------------------------------------------------------------------------#
 class BaseTest :
@@ -411,14 +410,10 @@ class BaseTest :
 #---------------------------------------------------------------------------------------------------#
 #---------------------------------------------------------------------------------------------------#
 
-import os
 import shutil
 import string
 import difflib
 import calendar
-from subprocess import Popen, PIPE, STDOUT
-import re
-import xml.etree.ElementTree as ET
 
 try:
     from GaudiKernel import ROOT6WorkAroundEnabled
@@ -426,22 +421,6 @@ except ImportError:
     def ROOT6WorkAroundEnabled(id=None):
         # dummy implementation
         return False
-
-if sys.platform == "win32":
-    import msvcrt
-    import pywintypes
-    from   threading import *
-    import win32api
-    import win32con
-    import win32event
-    import win32file
-    import win32pipe
-    import win32process
-else:
-    import cPickle
-    import fcntl
-    import select
-
 
 #--------------------------------- TOOLS ---------------------------------#
 
