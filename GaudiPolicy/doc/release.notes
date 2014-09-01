@@ -2,6 +2,9 @@ package GaudiPolicy
 package manager: Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-09-01 - Marco Clemencic
+ - Fixed use of "-ansi" gcc option.
+
 ============================= GaudiPolicy v15r0p1 ============================
 ! 2014-08-20 - Charles Leggett
  - fixed typo in generate_rootmap warning
