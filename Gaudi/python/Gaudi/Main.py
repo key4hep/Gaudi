@@ -161,40 +161,164 @@ class gaudimain(object) :
             result = self.runParallel(ncpus)
         return result
 
+    def basicInit(self):
+        '''
+        Bootstrap the application with minimal use of Python bindings.
+        '''
+        import cppyy
+        import GaudiKernel.Proxy.Configurable
+        if hasattr(GaudiKernel.Proxy.Configurable, "applyConfigurableUsers"):
+            GaudiKernel.Proxy.Configurable.applyConfigurableUsers()
+
+        try:
+            from GaudiKernel.Proxy.Configurable import expandvars
+        except ImportError:
+            # pass-through implementation if expandvars is not defined (AthenaCommon)
+            expandvars = lambda data : data
+
+        from GaudiKernel.Proxy.Configurable import Configurable, getNeededConfigurables
+
+        cppyy.gbl.DataObject
+        self.g = cppyy.gbl.Gaudi.createApplicationMgr()
+
+        ip = cppyy.libPyROOT.MakeNullPointer(cppyy.gbl.IProperty)
+        if self.g.queryInterface(cppyy.gbl.IProperty.interfaceID(), ip).isFailure():
+            self.log.error('Cannot get IProperty interface of ApplicationMgr')
+            sys.exit(10)
+        self.ip = ip
+
+        # set ApplicationMgr properties
+        comp = 'ApplicationMgr'
+        props = Configurable.allConfigurables.get(comp, {})
+        if props:
+            props = expandvars(props.getValuedProperties())
+        for p, v in props.items() + [('JobOptionsType', 'NONE')]:
+            if not ip.setProperty(p, str(v)).isSuccess():
+                self.log.error('Cannot set property %s.%s to %s', comp, p, v)
+                sys.exit(10)
+        self.g.configure()
+
+        svcloc = cppyy.libPyROOT.MakeNullPointer(cppyy.gbl.ISvcLocator)
+        if self.g.queryInterface(cppyy.gbl.ISvcLocator.interfaceID(), svcloc).isFailure():
+            self.log.error('Cannot get ISvcLocator interface of ApplicationMgr')
+            sys.exit(10)
+
+        # set MessageSvc properties
+        comp = 'MessageSvc'
+        ms = cppyy.gbl.GaudiPython.Helper.service(svcloc, comp)
+        msp = cppyy.libPyROOT.MakeNullPointer(cppyy.gbl.IProperty)
+        if ms.queryInterface(cppyy.gbl.IProperty.interfaceID(), msp).isFailure():
+            self.log.error('Cannot get IProperty interface of %s', comp)
+            sys.exit(10)
+        props = Configurable.allConfigurables.get(comp, {})
+        if props:
+            props = expandvars(props.getValuedProperties())
+        for p, v in props.items():
+            if not msp.setProperty(p, str(v)).isSuccess():
+                self.log.error('Cannot set property %s.%s to %s', comp, p, v)
+                sys.exit(10)
+
+        # feed JobOptionsSvc
+        comp = 'JobOptionsSvc'
+        jos = cppyy.gbl.GaudiPython.Helper.service(svcloc, comp)
+        josp = cppyy.libPyROOT.MakeNullPointer(cppyy.gbl.IJobOptionsSvc)
+        if jos.queryInterface(cppyy.gbl.IJobOptionsSvc.interfaceID(), josp).isFailure():
+            self.log.error('Cannot get IJobOptionsSvc interface of %s', comp)
+            sys.exit(10)
+        for n in getNeededConfigurables():
+            c = Configurable.allConfigurables[n]
+            if n in ['ApplicationMgr','MessageSvc']:
+                continue # These are already done
+            for p, v in  c.getValuedProperties().items() :
+                v = expandvars(v)
+                # Note: AthenaCommon.Configurable does not have Configurable.PropertyReference
+                if hasattr(Configurable,"PropertyReference") and type(v) == Configurable.PropertyReference:
+                    # this is done in "getFullName", but the exception is ignored,
+                    # so we do it again to get it
+                    v = v.__resolve__()
+                if   type(v) == str : v = '"%s"' % v # need double quotes
+                elif type(v) == long: v = '%d'   % v # prevent pending 'L'
+                josp.addPropertyToCatalogue(n, cppyy.gbl.StringProperty(p,str(v)))
+        if hasattr(Configurable,"_configurationLocked"):
+            Configurable._configurationLocked = True
+
+    def gaudiPythonInit(self):
+        '''
+        Initialize the application with full Python bindings.
+        '''
+        import GaudiPython
+        self.g = GaudiPython.AppMgr()
+        self.ip = self.g._ip
 
     def runSerial(self) :
         #--- Instantiate the ApplicationMgr------------------------------
-        import GaudiPython
+        if self.printsequence or self.mainLoop:
+            self.gaudiPythonInit()
+        else:
+            self.basicInit()
+
         self.log.debug('-'*80)
         self.log.debug('%s: running in serial mode', __name__)
         self.log.debug('-'*80)
         sysStart = time()
-        self.g = GaudiPython.AppMgr()
+
         self._printsequence()
-        runner = self.mainLoop or (lambda app, nevt: app.run(nevt))
+
+        if self.mainLoop:
+            runner = self.mainLoop
+        else:
+            def runner(app, nevt):
+                import cppyy
+                ep = cppyy.libPyROOT.MakeNullPointer(cppyy.gbl.IEventProcessor)
+                if app.queryInterface(cppyy.gbl.IEventProcessor.interfaceID(), ep).isFailure():
+                    self.log.error('Cannot get IEventProcessor')
+                    return False
+                self.log.debug('initialize')
+                sc = app.initialize()
+                if sc.isSuccess():
+                    self.log.debug('start')
+                    sc = app.start()
+                    if sc.isSuccess():
+                        self.log.debug('run(%d)', nevt)
+                        sc = ep.executeRun(nevt)
+                        self.log.debug('stop')
+                        app.stop().ignore()
+                    self.log.debug('finalize')
+                    app.finalize().ignore()
+                self.log.debug('terminate')
+                sc1 = app.terminate()
+                if sc.isSuccess():
+                    sc = sc1
+                else:
+                    sc1.ignore()
+                self.log.debug('status code: %s',
+                               'SUCCESS' if sc.isSuccess() else 'FAILURE')
+                return sc
+
         try:
-            statuscode = runner(self.g, self.g.EvtMax)
+            statuscode = runner(self.g, int(self.ip.getProperty('EvtMax').toString()))
         except SystemError:
             # It may not be 100% correct, but usually it means a segfault in C++
-            self.g.ReturnCode = 128 + 11
+            self.ip.setProperty('ReturnCode', str(128 + 11))
             statuscode = False
-        except:
+        except Exception, x:
+            print 'Exception:', x
             # for other exceptions, just set a generic error code
-            self.g.ReturnCode = 1
+            self.ip.setProperty('ReturnCode', '1')
             statuscode = False
         if hasattr(statuscode, "isSuccess"):
             success = statuscode.isSuccess()
         else:
             success = statuscode
-        success = self.g.exit().isSuccess() and success
-        if not success and self.g.ReturnCode == 0:
+        #success = self.g.exit().isSuccess() and success
+        if not success and self.ip.getProperty('ReturnCode').toString() == '0':
             # ensure that the return code is correctly set
-            self.g.ReturnCode = 1
+            self.ip.setProperty('ReturnCode', '1')
         sysTime = time()-sysStart
         self.log.debug('-'*80)
         self.log.debug('%s: serial system finished, time taken: %5.4fs', __name__, sysTime)
         self.log.debug('-'*80)
-        return self.g.ReturnCode
+        return int(self.ip.getProperty('ReturnCode').toString())
 
     def runParallel(self, ncpus) :
         if self.mainLoop:
