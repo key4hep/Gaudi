@@ -233,7 +233,7 @@ if __name__ == "__main__":
     level = logging.INFO
     if opts.debug:
         level = logging.DEBUG
-    InstallRootLoggingHandler(prefix, level = level)
+    InstallRootLoggingHandler(prefix, level = level, with_time = opts.debug)
     root_logger = logging.getLogger()
 
     # tcmalloc support
