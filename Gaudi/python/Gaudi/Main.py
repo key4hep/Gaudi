@@ -5,6 +5,90 @@ import logging
 
 log = logging.getLogger(__name__)
 
+class BootstrapHelper(object):
+    class StatusCode(object):
+        def __init__(self, value):
+            self.value = value
+        def __bool__(self):
+            return self.value
+        __nonzero__ = __bool__
+        def isSuccess(self):
+            return self.value
+        def isFailure(self):
+            return not self.value
+        def ignore(self):
+            pass
+    class Property(object):
+        def __init__(self, value):
+            self.value = value
+        def __str__(self):
+            return str(self.value)
+        toString = __str__
+    class AppMgr(object):
+        def __init__(self, ptr, lib):
+            self.ptr = ptr
+            self.lib = lib
+            self._as_parameter_ = ptr
+        def configure(self):
+            return BootstrapHelper.StatusCode(self.lib.py_bootstrap_fsm_configure(self.ptr))
+        def initialize(self):
+            return BootstrapHelper.StatusCode(self.lib.py_bootstrap_fsm_initialize(self.ptr))
+        def start(self):
+            return BootstrapHelper.StatusCode(self.lib.py_bootstrap_fsm_start(self.ptr))
+        def run(self, nevt):
+            return BootstrapHelper.StatusCode(self.lib.py_bootstrap_app_run(self.ptr, nevt))
+        def stop(self):
+            return BootstrapHelper.StatusCode(self.lib.py_bootstrap_fsm_stop(self.ptr))
+        def finalize(self):
+            return BootstrapHelper.StatusCode(self.lib.py_bootstrap_fsm_finalize(self.ptr))
+        def terminate(self):
+            return BootstrapHelper.StatusCode(self.lib.py_bootstrap_fsm_terminate(self.ptr))
+        def getService(self, name):
+            return self.lib.py_bootstrap_getService(self.ptr, name)
+        def setProperty(self, name, value):
+            return BootstrapHelper.StatusCode(self.lib.py_bootstrap_setProperty(self.ptr, name, value))
+        def getProperty(self, name):
+            return BootstrapHelper.Property(self.lib.py_bootstrap_getProperty(self.ptr, name))
+
+
+    def __init__(self):
+        from ctypes import CDLL, c_void_p, c_bool, c_char_p, c_int
+        self.log = logging.getLogger('BootstrapHelper')
+
+        libname = 'libGaudiKernel.so'
+        self.log.debug('loading GaudiKernel (%s)', libname)
+
+        gkl = CDLL(libname)
+
+        functions = [('getService', c_void_p, [c_void_p, c_char_p]),
+                     ('setProperty', c_bool, [c_void_p, c_char_p, c_char_p]),
+                     ('getProperty', c_char_p, [c_void_p, c_char_p]),
+                     ('addPropertyToCatalogue', c_bool, [c_void_p, c_char_p, c_char_p, c_char_p]),
+                     ]
+
+        for name, restype, args in functions:
+            f = getattr(gkl, 'py_bootstrap_%s' % name)
+            f.restype, f.args = restype, args
+            setattr(self, name, f)
+        gkl.py_bootstrap_createApplicationMgr.restype = c_void_p
+        gkl.py_bootstrap_createApplicationMgr.args = []
+
+
+        for name in ('configure', 'initialize', 'start',
+                     'stop', 'finalize', 'terminate'):
+            f = getattr(gkl, 'py_bootstrap_fsm_%s' % name)
+            f.restype, f.args = c_bool, [c_void_p]
+        gkl.py_bootstrap_app_run.restype = c_bool
+        gkl.py_bootstrap_app_run.args = [c_void_p, c_int]
+
+        self.lib = gkl
+
+    def createApplicationMgr(self):
+        ptr = self.lib.py_bootstrap_createApplicationMgr()
+        return self.AppMgr(ptr, self.lib)
+
+_bootstrap = None
+
 def toOpt(value):
     '''
     Helper to convert values to old .opts format.
@@ -165,11 +249,6 @@ class gaudimain(object) :
         '''
         Bootstrap the application with minimal use of Python bindings.
         '''
-        import cppyy
-        import GaudiKernel.Proxy.Configurable
-        if hasattr(GaudiKernel.Proxy.Configurable, "applyConfigurableUsers"):
-            GaudiKernel.Proxy.Configurable.applyConfigurableUsers()
-
         try:
             from GaudiKernel.Proxy.Configurable import expandvars
         except ImportError:
@@ -178,14 +257,14 @@ class gaudimain(object) :
 
         from GaudiKernel.Proxy.Configurable import Configurable, getNeededConfigurables
 
-        cppyy.gbl.DataObject
-        self.g = cppyy.gbl.Gaudi.createApplicationMgr()
+        global _bootstrap
+        if _bootstrap is None:
+            _bootstrap = BootstrapHelper()
 
-        ip = cppyy.libPyROOT.MakeNullPointer(cppyy.gbl.IProperty)
-        if self.g.queryInterface(cppyy.gbl.IProperty.interfaceID(), ip).isFailure():
-            self.log.error('Cannot get IProperty interface of ApplicationMgr')
-            sys.exit(10)
-        self.ip = ip
+        self.log.debug('basicInit: instantiate ApplicationMgr')
+        self.ip = self.g = _bootstrap.createApplicationMgr()
+
+        self.log.debug('basicInit: apply options')
 
         # set ApplicationMgr properties
         comp = 'ApplicationMgr'
@@ -193,37 +272,31 @@ class gaudimain(object) :
         if props:
             props = expandvars(props.getValuedProperties())
         for p, v in props.items() + [('JobOptionsType', 'NONE')]:
-            if not ip.setProperty(p, str(v)).isSuccess():
+            if not self.g.setProperty(p, str(v)):
                 self.log.error('Cannot set property %s.%s to %s', comp, p, v)
                 sys.exit(10)
-        self.g.configure()
 
-        svcloc = cppyy.libPyROOT.MakeNullPointer(cppyy.gbl.ISvcLocator)
-        if self.g.queryInterface(cppyy.gbl.ISvcLocator.interfaceID(), svcloc).isFailure():
-            self.log.error('Cannot get ISvcLocator interface of ApplicationMgr')
-            sys.exit(10)
+        self.g.configure()
 
         # set MessageSvc properties
         comp = 'MessageSvc'
-        ms = cppyy.gbl.GaudiPython.Helper.service(svcloc, comp)
-        msp = cppyy.libPyROOT.MakeNullPointer(cppyy.gbl.IProperty)
-        if ms.queryInterface(cppyy.gbl.IProperty.interfaceID(), msp).isFailure():
-            self.log.error('Cannot get IProperty interface of %s', comp)
+        msp = self.g.getService(comp)
+        if not msp:
+            self.log.error('Cannot get service %s', comp)
             sys.exit(10)
         props = Configurable.allConfigurables.get(comp, {})
         if props:
             props = expandvars(props.getValuedProperties())
         for p, v in props.items():
-            if not msp.setProperty(p, str(v)).isSuccess():
+            if not _bootstrap.setProperty(msp, p, str(v)):
                 self.log.error('Cannot set property %s.%s to %s', comp, p, v)
                 sys.exit(10)
 
         # feed JobOptionsSvc
         comp = 'JobOptionsSvc'
-        jos = cppyy.gbl.GaudiPython.Helper.service(svcloc, comp)
-        josp = cppyy.libPyROOT.MakeNullPointer(cppyy.gbl.IJobOptionsSvc)
-        if jos.queryInterface(cppyy.gbl.IJobOptionsSvc.interfaceID(), josp).isFailure():
-            self.log.error('Cannot get IJobOptionsSvc interface of %s', comp)
+        jos = self.g.getService(comp)
+        if not jos:
+            self.log.error('Cannot get service %s', comp)
             sys.exit(10)
         for n in getNeededConfigurables():
             c = Configurable.allConfigurables[n]
@@ -238,17 +311,21 @@ class gaudimain(object) :
                     v = v.__resolve__()
                 if   type(v) == str : v = '"%s"' % v # need double quotes
                 elif type(v) == long: v = '%d'   % v # prevent pending 'L'
-                josp.addPropertyToCatalogue(n, cppyy.gbl.StringProperty(p,str(v)))
+                _bootstrap.addPropertyToCatalogue(jos, n, p, str(v))
         if hasattr(Configurable,"_configurationLocked"):
             Configurable._configurationLocked = True
+        self.log.debug('basicInit: done')
 
     def gaudiPythonInit(self):
         '''
         Initialize the application with full Python bindings.
         '''
+        self.log.debug('gaudiPythonInit: import GaudiPython')
         import GaudiPython
+        self.log.debug('gaudiPythonInit: instantiate ApplicationMgr')
         self.g = GaudiPython.AppMgr()
         self.ip = self.g._ip
+        self.log.debug('gaudiPythonInit: done')
 
     def runSerial(self) :
         #--- Instantiate the ApplicationMgr------------------------------
@@ -268,11 +345,6 @@ class gaudimain(object) :
             runner = self.mainLoop
         else:
             def runner(app, nevt):
-                import cppyy
-                ep = cppyy.libPyROOT.MakeNullPointer(cppyy.gbl.IEventProcessor)
-                if app.queryInterface(cppyy.gbl.IEventProcessor.interfaceID(), ep).isFailure():
-                    self.log.error('Cannot get IEventProcessor')
-                    return False
                 self.log.debug('initialize')
                 sc = app.initialize()
                 if sc.isSuccess():
@@ -280,7 +352,7 @@ class gaudimain(object) :
                     sc = app.start()
                     if sc.isSuccess():
                         self.log.debug('run(%d)', nevt)
-                        sc = ep.executeRun(nevt)
+                        sc = app.run(nevt)
                         self.log.debug('stop')
                         app.stop().ignore()
                     self.log.debug('finalize')

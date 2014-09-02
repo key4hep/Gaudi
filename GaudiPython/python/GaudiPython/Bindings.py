@@ -939,6 +939,8 @@ class AppMgr(iService) :
         return self._appmgr.configure()
     def start(self) :
         return self._appmgr.start()
+    def terminate(self):
+        return self._appmgr.terminate()
     def run(self, n) :
         if self.FSMState() == Gaudi.StateMachine.CONFIGURED :
             sc = self.initialize()

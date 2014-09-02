@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-04-10 - Marco Clemencic
+ - Added C helper functions to bootstrap from Python without GaudiPython.
+
 ! 2015-03-15 - Marco Clemencic
  - GAUDI-1023: fail when re-declaring a property
    - added hasProperty method to IProperty.

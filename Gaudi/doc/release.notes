@@ -2,6 +2,11 @@ Package : Gaudi
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-04-10 - Marco Clemencic
+ - Replaced GaudiPython/cppyy with ctypes in Gaudi.Main.
+   GaudiPython is still used for the --printsequence and custom main loop
+   cases.
+
 ================================ Gaudi v26r1 =================================
 ! 2015-02-02 - Marco Clemencic
  - Fixed GAUDI-1001: '\' and '\n' not correctly interpreted by gaudirun.py
