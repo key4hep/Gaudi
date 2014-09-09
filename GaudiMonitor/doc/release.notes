@@ -2,6 +2,9 @@ Package: GaudiMonitor
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2013-09-09 - Marco Clemencic
+ - Removed an occurrence of 'endreq', slipped in with a relatively recent patch.
+
 ============================= GaudiMonitor v5r1 ==============================
 ! 2014-03-18 - Ben Couturier
  - Fixed bug #104127: remove hwaf configuration.
