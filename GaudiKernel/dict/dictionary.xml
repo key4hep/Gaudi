@@ -17,7 +17,7 @@
   <class name="GaudiHandleBase"/>
   <class name="GaudiHandleArrayBase"/>
   <class name="GaudiHandleProperty"/>
-  <class name="GaudiHandleArrayProperty"/>  
+  <class name="GaudiHandleArrayProperty"/>
 
   <class name="LinkManager"/>
   <class name="LinkManager::Link">
@@ -66,7 +66,6 @@
   <class name="IEventTimeDecoder"/>
   <class name="IEvtSelector"/>
   <class name="IExceptionSvc"/>
-  <!--class name="IFactory"/-->
   <class name="IHistogramSvc"/>
   <class name="IHistorySvc"/>
   <class name="IIncidentListener"/>

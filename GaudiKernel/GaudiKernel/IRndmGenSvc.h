@@ -10,7 +10,6 @@
 #include "GaudiKernel/IRndmGen.h"
 
 // Forward declarations
-class IFactory;
 class IRndmGen;
 class StreamBuffer;
 class IRndmEngine;

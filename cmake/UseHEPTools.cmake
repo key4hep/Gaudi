@@ -15,7 +15,8 @@ macro(use_heptools heptools_version)
   # Find the toolchain descriptions (base and overrides)
   set(LCG_TOOLCHAIN_INFOS)
   file(TO_CMAKE_PATH "$ENV{CMTPROJECTPATH}" _cmt_pp)
-  foreach(_base_dir ${CMAKE_PREFIX_PATH} ${_cmt_pp})
+  file(TO_CMAKE_PATH "$ENV{CMAKE_PREFIX_PATH}" _cmake_pp)
+  foreach(_base_dir ${CMAKE_PREFIX_PATH} ${_cmake_pp} ${_cmt_pp})
     foreach(_name LCG_${heptools_version}_${BINARY_TAG}.txt
                   LCG_${heptools_version}_${LCG_platform}.txt
                   LCG_${heptools_version}_${LCG_system}.txt

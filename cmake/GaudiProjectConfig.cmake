@@ -7,6 +7,14 @@
 
 cmake_minimum_required(VERSION 2.8.5)
 
+# FIXME: use of LOCATION property is deprecated and should be replaced with the
+#        generator expression $<TARGET_FILE>, but the way we use it requires
+#        CMake >= 2.8.12, so we must keep the old behavior until we bump the
+#        cmake_minimum_required version. (policy added in CMake 3.0)
+if(NOT CMAKE_VERSION VERSION_LESS 3.0) # i.e CMAKE_VERSION >= 3.0
+  cmake_policy(SET CMP0026 OLD)
+endif()
+
 # Preset the CMAKE_MODULE_PATH from the environment, if not already defined.
 if(NOT CMAKE_MODULE_PATH)
   # Note: this works even if the envirnoment variable is not set.
@@ -35,34 +43,79 @@ set(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON)
 set(GAUDI_VERSION_REGEX "v?([0-9]+)[r.]([0-9]+)([p.]([0-9]+)(([a-z.])([0-9]+))?)?")
 
 if (GAUDI_BUILD_PREFIX_CMD)
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${GAUDI_BUILD_PREFIX_CMD}")
-  message(STATUS "Prefix build commands with '${GAUDI_BUILD_PREFIX_CMD}'")
-else()
-  find_program(ccache_cmd NAMES ccache ccache-swig)
-  find_program(distcc_cmd distcc)
-  mark_as_advanced(ccache_cmd distcc_cmd)
+  set(GAUDI_RULE_LAUNCH_COMPILE "${GAUDI_RULE_LAUNCH_COMPILE} ${GAUDI_BUILD_PREFIX_CMD}")
+endif()
 
-  if(ccache_cmd)
-    option(CMAKE_USE_CCACHE "Use ccache to speed up compilation." OFF)
-    if(CMAKE_USE_CCACHE)
-      set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${ccache_cmd})
-      message(STATUS "Using ccache for building")
-    endif()
+find_program(ccache_cmd NAMES ccache ccache-swig)
+find_program(distcc_cmd distcc)
+mark_as_advanced(ccache_cmd distcc_cmd)
+
+if(ccache_cmd)
+  option(CMAKE_USE_CCACHE "Use ccache to speed up compilation." OFF)
+  if(CMAKE_USE_CCACHE)
+    set(GAUDI_RULE_LAUNCH_COMPILE "${GAUDI_RULE_LAUNCH_COMPILE} ${ccache_cmd}")
+    message(STATUS "Using ccache for building")
   endif()
+endif()
 
-  if(distcc_cmd)
-    option(CMAKE_USE_DISTCC "Use distcc to speed up compilation." OFF)
-    if(CMAKE_USE_DISTCC)
-      if(CMAKE_USE_CCACHE)
-        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "CCACHE_PREFIX=${distcc_cmd} ${ccache_cmd}")
-        message(STATUS "Enabling distcc builds in ccache")
-      else()
-        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${distcc_cmd})
-        message(STATUS "Using distcc for building")
-      endif()
+if(distcc_cmd)
+  option(CMAKE_USE_DISTCC "Use distcc to speed up compilation." OFF)
+  if(CMAKE_USE_DISTCC)
+    if(CMAKE_USE_CCACHE)
+      set(GAUDI_RULE_LAUNCH_COMPILE "${GAUDI_RULE_LAUNCH_COMPILE} CCACHE_PREFIX=${distcc_cmd} ${ccache_cmd}")
+      message(STATUS "Enabling distcc builds in ccache")
+    else()
+      set(GAUDI_RULE_LAUNCH_COMPILE "${GAUDI_RULE_LAUNCH_COMPILE} ${distcc_cmd}")
+      message(STATUS "Using distcc for building")
     endif()
   endif()
 endif()
+
+option(GAUDI_USE_CTEST_LAUNCHERS "Use CTest launchers to record details about warnings and errors." OFF)
+if(GAUDI_USE_CTEST_LAUNCHERS)
+  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/launch_logs)
+
+  # Code copied and adapted from the CTestUseLaunchers.cmake module
+  set(__launch_common_options
+    "--target-name <TARGET_NAME> --build-dir <CMAKE_CURRENT_BINARY_DIR>")
+
+  set(__launch_compile_options
+    "${__launch_common_options} --output <OBJECT> --source <SOURCE> --language <LANGUAGE>")
+
+  set(__launch_link_options
+    "${__launch_common_options} --output <TARGET> --target-type <TARGET_TYPE> --language <LANGUAGE>")
+
+  set(__launch_custom_options
+    "${__launch_common_options} --output <OUTPUT>")
+
+  if("${CMAKE_GENERATOR}" MATCHES "Ninja" AND NOT CMAKE_VERSION VERSION_LESS 3.0)
+    # this make sense only with CMamke >= 3.0
+    set(__launch_compile_options "${__launch_compile_options} --filter-prefix <CMAKE_CL_SHOWINCLUDES_PREFIX>")
+  endif()
+
+  set(GAUDI_RULE_LAUNCH_COMPILE
+    "CTEST_LAUNCH_LOGS=${CMAKE_BINARY_DIR}/launch_logs \"${CMAKE_CTEST_COMMAND}\" --launch ${__launch_compile_options} -- ${GAUDI_RULE_LAUNCH_COMPILE}")
+
+  set(GAUDI_RULE_LAUNCH_LINK
+    "CTEST_LAUNCH_LOGS=${CMAKE_BINARY_DIR}/launch_logs \"${CMAKE_CTEST_COMMAND}\" --launch ${__launch_link_options} -- ${GAUDI_RULE_LAUNCH_LINK}")
+
+  set(GAUDI_RULE_LAUNCH_CUSTOM
+    "CTEST_LAUNCH_LOGS=${CMAKE_BINARY_DIR}/launch_logs \"${CMAKE_CTEST_COMMAND}\" --launch ${__launch_custom_options} -- ${GAUDI_RULE_LAUNCH_CUSTOM}")
+
+  if("${CMAKE_GENERATOR}" MATCHES "Make")
+    set(GAUDI_RULE_LAUNCH_LINK "env ${GAUDI_RULE_LAUNCH_LINK}")
+  endif()
+endif()
+
+# apply launch rules
+foreach(_rule COMPILE LINK CUSTOM)
+  if(GAUDI_RULE_LAUNCH_${_rule})
+    string(STRIP "${GAUDI_RULE_LAUNCH_${_rule}}" GAUDI_RULE_LAUNCH_${_rule})
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_${_rule} "${GAUDI_RULE_LAUNCH_${_rule}}")
+    message(STATUS "Prefix ${_rule} commands with '${GAUDI_RULE_LAUNCH_${_rule}}'")
+  endif()
+endforeach()
+
 
 # If Vera++ is available and it is requested by the user, check every source
 # file for style problems.
@@ -1127,8 +1180,10 @@ function(gaudi_get_packages var)
   get_directory_property(_ignored_subdirs GAUDI_IGNORE_SUBDIRS)
   file(GLOB_RECURSE cmakelist_files RELATIVE ${CMAKE_SOURCE_DIR} CMakeLists.txt)
   foreach(file ${cmakelist_files})
-    # ignore the source directory itself and files in the build directory
-    if(NOT file STREQUAL CMakeLists.txt AND NOT file MATCHES "^${rel_build_dir}")
+    # ignore the source directory itself, files in the build directory and
+    # files in the cmake/tests directory
+    if(NOT file STREQUAL CMakeLists.txt AND
+       NOT file MATCHES "^(${rel_build_dir}|cmake/tests)")
       get_filename_component(package ${file} PATH)
       list(FIND _ignored_subdirs ${package} _ignored)
       if(_ignored EQUAL -1) # not ignored
@@ -1244,16 +1299,25 @@ endfunction()
 function(gaudi_resolve_link_libraries variable)
   #message(STATUS "gaudi_resolve_link_libraries input: ${ARGN}")
   set(collected)
-  set(to_be_resolved)
   foreach(package ${ARGN})
     # check if it is an actual library or a target first
     if(TARGET ${package})
       #message(STATUS "${package} is a TARGET")
-      set(collected ${collected} ${package})
-      get_target_property(libs ${package} REQUIRED_LIBRARIES)
-      if(libs)
-        set(to_be_resolved ${to_be_resolved} ${libs})
+      get_property(already_resolved TARGET ${package}
+                   PROPERTY RESOLVED_REQUIRED_LIBRARIES SET)
+      if(already_resolved)
+        #message(STATUS "(${package} required libraries cached)")
+        get_target_property(libs ${package} RESOLVED_REQUIRED_LIBRARIES)
+      else()
+        #message(STATUS "(${package} required libraries to be resolved)")
+        get_target_property(libs ${package} REQUIRED_LIBRARIES)
+        if(libs)
+          gaudi_resolve_link_libraries(libs ${libs})
+          set_property(TARGET ${package}
+                       PROPERTY RESOLVED_REQUIRED_LIBRARIES ${libs})
+        endif()
       endif()
+      set(collected ${collected} ${package} ${libs})
     elseif(EXISTS ${package}) # it's a real file
       #message(STATUS "${package} is a FILE")
       set(collected ${collected} ${package})
@@ -1277,11 +1341,6 @@ function(gaudi_resolve_link_libraries variable)
       endif()
     endif()
   endforeach()
-  _gaudi_strip_build_type_libs(to_be_resolved)
-  if(to_be_resolved)
-    gaudi_resolve_link_libraries(to_be_resolved ${to_be_resolved})
-    set(collected ${collected} ${to_be_resolved})
-  endif()
   #message(STATUS "gaudi_resolve_link_libraries collected: ${collected}")
   _gaudi_strip_build_type_libs(collected)
   #message(STATUS "gaudi_resolve_link_libraries output: ${collected}")
@@ -1684,6 +1743,7 @@ macro(gaudi_common_add_build)
     set(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${ARG_LIBRARIES})
   endif()
 
+  #message(STATUS "gaudi_common_add_build calling gaudi_resolve_link_libraries")
   gaudi_resolve_link_libraries(ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES})
 
   # find the sources
@@ -2082,7 +2142,8 @@ endfunction()
 #                [ENVIRONMENT variable[+]=value ...]
 #                [DEPENDS other_test ...]
 #                [FAILS] [PASSREGEX regex] [FAILREGEX regex]
-#                [TIMEOUT seconds])
+#                [TIMEOUT seconds]
+#                [LABELS label1 label2 ...])
 #
 # Declare a run-time test in the subdirectory.
 # The test can be of the types:
@@ -2100,10 +2161,13 @@ endfunction()
 #            test if the write one failed)
 #  PASSREGEX - Specify a regexp; if matched in the output the test is successful
 #  FAILREGEX - Specify a regexp; if matched in the output the test is failed
+#  LABELS - list of labels to add to the test (for categorization)
 #
 #-------------------------------------------------------------------------------
 function(gaudi_add_test name)
-  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST;FAILS" "TIMEOUT;WORKING_DIRECTORY" "ENVIRONMENT;FRAMEWORK;COMMAND;DEPENDS;PASSREGEX;FAILREGEX" ${ARGN})
+  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST;FAILS"
+                            "TIMEOUT;WORKING_DIRECTORY"
+                            "ENVIRONMENT;FRAMEWORK;COMMAND;DEPENDS;PASSREGEX;FAILREGEX;LABELS" ${ARGN})
 
   gaudi_get_package_name(package)
 
@@ -2114,8 +2178,9 @@ function(gaudi_add_test name)
                         QMTESTRESULTS=${CMAKE_CURRENT_BINARY_DIR}/tests/qmtest/results.qmr
                         QMTESTRESULTSDIR=${CMAKE_CURRENT_BINARY_DIR}/tests/qmtest
                         GAUDI_QMTEST_HTML_OUTPUT=${CMAKE_BINARY_DIR}/test_results
-                        GAUDI_QMTEST_XML_OUTPUT=${CMAKE_BINARY_DIR}/xml_test_results)
+                        GAUDI_QMTEST_XML_OUTPUT=${CMAKE_BINARY_DIR}/Testing/xml_test_results)
     set(cmdline run_qmtest.py ${package})
+    set(ARG_LABELS ${ARG_LABELS} test-wrapper)
 
   elseif(ARG_FRAMEWORK)
     foreach(optfile  ${ARG_FRAMEWORK})
@@ -2153,6 +2218,9 @@ function(gaudi_add_test name)
            WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY}
            COMMAND ${env_cmd} ${extra_env} --xml ${env_xml}
                ${cmdline})
+
+  set_property(TEST ${package}.${name} PROPERTY LABELS ${package} ${ARG_LABELS})
+
 
   if(ARG_DEPENDS)
     foreach(t ${ARG_DEPENDS})

@@ -17,7 +17,6 @@
 
   <class name    = "std::list<IAlgorithm*>"/>
   <class name    = "std::list<IService*>"/>
-  <class name    = "std::list<const IFactory*>"/>
 
   <class name    = "std::allocator<IRegistry*>"/>
   <class name    = "std::allocator<IAlgorithm*>"/>

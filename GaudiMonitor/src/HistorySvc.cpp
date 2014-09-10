@@ -1103,7 +1103,7 @@ HistorySvc::dumpState(const INamedInterface *in, std::ofstream& ofs) const {
   } else {
     m_log << MSG::ERROR
 	  << "Could not dcast interface to accepted History Obj type for "
-	  << in->name() << endreq;
+	  << in->name() << endmsg;
     return;
   }
 

@@ -7,7 +7,6 @@
 #include <string>
 
 // Forward class declaration
-class IFactory;
 class ISvcLocator;
 
 /** @class IClassManager IClassManager.h GaudiKernel/IClassManager.h

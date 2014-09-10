@@ -188,28 +188,6 @@ IInterface* Gaudi::createInstance( const std::string& name,
   }
 }
 
-namespace {
-  class ShadowEntry    {
-  public:
-    std::string dllName;
-    std::string facName;
-    IFactory*   fac;
-  public:
-    ShadowEntry() {
-    }
-    ShadowEntry(const std::string& d, const std::string& n, const IFactory* f) {
-      dllName = d;
-      facName = n;
-      fac     = const_cast<IFactory*>(f);
-    }
-    ShadowEntry(const ShadowEntry& copy)   {
-      dllName = copy.dllName;
-      facName = copy.facName;
-      fac     = copy.fac;
-    }
-  };
-}
-
 //------------------------------------------------------------------------------
 IAppMgrUI* Gaudi::createApplicationMgr(const std::string& dllname )    {
 //------------------------------------------------------------------------------
