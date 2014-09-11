@@ -2,6 +2,10 @@ package GaudiPolicy
 package manager: Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-09-11 - Marco Clemencic
+ - Fixed issue in run_qmtest when called from CMT.
+   (introduced with commit c4dff5)
+
 ! 2014-08-29 - Marco Clemencic
  - Modified CTestXML2HTML to ignore tests with label 'test-wrapper', if they are
    successful.
