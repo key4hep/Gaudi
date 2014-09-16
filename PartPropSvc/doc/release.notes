@@ -2,6 +2,18 @@ Package : ParticleProp
 Package manager : Charles Leggett
 Commit Id: $Format:%H$
 
+============================== PartPropSvc v6r0 ==============================
+! 2014-09-16 - Charles Leggett
+ - updated PDGTABLE.MeV to 2011 numbers
+ - moved old PDGTABLE.MeV to PDGTABLE.2002.MeV
+ - added PDGTABLE.2014.MeV
+ - deleted PDGTABLE (2002 in GeV) as nobody is using it
+
+D       share/PDGTABLE
+M       share/PDGTABLE.MeV
+A       share/PDGTABLE.2002.MeV
+A       share/PDGTABLE.2014.MeV
+
 ============================== PartPropSvc v5r1 ==============================
 ! 2014-03-18 - Ben Couturier
  - Fixed bug #104127: remove hwaf configuration.
