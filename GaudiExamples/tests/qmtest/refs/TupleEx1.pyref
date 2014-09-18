@@ -8,8 +8,8 @@
 
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r1)
-                                          running on lbcsrv01 on Mon May 14 21:28:45 2012
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r1)
+                                          running on pclhcb117 on Wed Sep 17 14:00:24 2014
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ApplicationMgr       INFO Successfully loaded modules : GaudiAlg, RootHistCnv
@@ -37,7 +37,7 @@ RRWNTupleCnv         INFO ID 1: added branch: poiss3 / poiss3/l
 RRWNTupleCnv         INFO ID 1: added branch: binom3 / binom3/l
 RRWNTupleCnv         INFO ID 1: added branch: poiss4 / poiss4/I
 RRWNTupleCnv         INFO ID 1: added branch: binom4 / binom4/I
-RRWNTupleCnv         INFO ID 1: added branch: poisb / poisb/I
+RRWNTupleCnv         INFO ID 1: added branch: poisb / poisb/O
 RRWNTupleCnv         INFO Booked TTree with ID:1 "Trivial Row-Wise Tuple"
 RCWNTupleCnv         INFO Booked TTree with ID: 2 "Trivial Column-Wise Tuple" in directory TupleEx1.root:/TupleEx1
 RCWNTupleCnv         INFO Booked TTree with ID: 3 "Fixed-size arrays/vectors" in directory TupleEx1.root:/TupleEx1
@@ -53,8 +53,8 @@ RFileCnv             INFO dumping contents of /NTUPLES/MYLUN
 TFile: name=TupleEx1.root, title=Gaudi Trees, option=CREATE
 ******************************************************************************
 *Tree    :1         : Trivial Row-Wise Tuple                                 *
-*Entries :       20 : Total =            9367 bytes  File  Size =       3062 *
-*        :          : Tree compression factor =   1.32                       *
+*Entries :       20 : Total =            9308 bytes  File  Size =       3063 *
+*        :          : Tree compression factor =   1.30                       *
 ******************************************************************************
 *Br    0 :gauss     : gauss/D                                                *
 *Entries :       20 : Total  Size=        719 bytes  File Size  =        212 *
@@ -104,14 +104,14 @@ TFile: name=TupleEx1.root, title=Gaudi Trees, option=CREATE
 *Entries :       20 : Total  Size=        636 bytes  File Size  =        114 *
 *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.32     *
 *............................................................................*
-*Br   12 :poisb     : poisb/I                                                *
-*Entries :       20 : Total  Size=        631 bytes  File Size  =        106 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.41     *
+*Br   12 :poisb     : poisb/O                                                *
+*Entries :       20 : Total  Size=        565 bytes  File Size  =         89 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
 *............................................................................*
 ******************************************************************************
 *Tree    :2         : Trivial Column-Wise Tuple                              *
-*Entries :       20 : Total =            5158 bytes  File  Size =       1987 *
-*        :          : Tree compression factor =   1.12                       *
+*Entries :       20 : Total =            5099 bytes  File  Size =       2016 *
+*        :          : Tree compression factor =   1.08                       *
 ******************************************************************************
 *Br    0 :gauss     : gauss/D                                                *
 *Entries :       20 : Total  Size=        719 bytes  File Size  =        212 *
@@ -137,9 +137,9 @@ TFile: name=TupleEx1.root, title=Gaudi Trees, option=CREATE
 *Entries :       20 : Total  Size=        631 bytes  File Size  =        118 *
 *Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.26     *
 *............................................................................*
-*Br    6 :poisb     : poisb/I                                                *
-*Entries :       20 : Total  Size=        631 bytes  File Size  =        102 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.46     *
+*Br    6 :poisb     : poisb/O                                                *
+*Entries :       20 : Total  Size=        565 bytes  File Size  =         89 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
 *............................................................................*
 ******************************************************************************
 *Tree    :3         : Fixed-size arrays/vectors                              *

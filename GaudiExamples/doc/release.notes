@@ -2,6 +2,9 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2013-09-18 - Marco Clemencic
+ - Fixed reference file after the fix of ROOT-6697.
+
 ! 2013-08-28 - Marco Clemencic
  - Fixed GAUDI-985: update references to ATLAS TWiki pages.
 
