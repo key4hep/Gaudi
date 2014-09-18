@@ -2,6 +2,9 @@ Package : ParticleProp
 Package manager : Charles Leggett
 Commit Id: $Format:%H$
 
+! 2014-09-18 - Marco Clemencic
+ - Updated CMake configuration.
+
 ============================== PartPropSvc v6r0 ==============================
 ! 2014-09-16 - Charles Leggett
  - updated PDGTABLE.MeV to 2011 numbers

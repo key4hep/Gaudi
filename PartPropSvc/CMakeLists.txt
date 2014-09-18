@@ -12,7 +12,8 @@ gaudi_add_module(PartPropSvc src/*.cpp
 
 #---Installation------------------------------------------------------------
 gaudi_install_joboptions(share/PartPropSvc.py)
-install(FILES share/PDGTABLE share/PDGTABLE.MeV DESTINATION share)
+file(GLOB PDG_files share/PDGTABLE*)
+install(FILES ${PDG_files} DESTINATION share)
 
 #---Environment-------------------------------------------------------------
 # The order is important to have the right precedence when running from build.
