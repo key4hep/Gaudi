@@ -100,8 +100,6 @@ protected:
   /// Reference to the incident service
   SmartIF<IIncidentSvc>     m_incidentSvc;
 
-  bool m_reconfigure;
-
   Streams::iterator getStreamIterator ( const std::string& );
 
 private:

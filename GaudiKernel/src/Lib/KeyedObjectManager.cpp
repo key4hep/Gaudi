@@ -89,7 +89,7 @@ void Containers::invalidContainerOperation()   {
 
 template <class T>
 Containers::KeyedObjectManager<T>::KeyedObjectManager()
-: m_direct(0)
+: m_seq(nullptr), m_direct(0)
 {
   if ( sizeof(typename T::map_type) > sizeof(m_setup.buffer) )    {
     throw GaudiException("Basic STL contaier sizes are incompatible",

@@ -2,6 +2,9 @@ Package: GaudiUtils
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-09-18 - Marco Clemencic
+ - Fixed Eclipse Code Analysis warning.
+
 ============================== GaudiUtils v5r2 ===============================
 ! 2014-06-19 - Marco Clemencic
  - Fixed unchecked StatusCode.
