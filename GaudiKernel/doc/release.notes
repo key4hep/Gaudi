@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-09-18 - Marco Clemencic
+ - Fixed warnings from genreflex (ROOT 6).
+
 ! 2014-07-11 - Marco Clemencic
  - Removed references to the obsolete IFactory.
 
