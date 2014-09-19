@@ -5,6 +5,11 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+============================== RootCnv v1r23p1 ===============================
+! 2014-09-19 - Marco Clemencic
+ - Merged changes between Gaudi RootCnv (commit 8583adc) and LHCb
+   Online/RootCnv (r176626).
+
 ============================== RootCnv v1r22p2 ===============================
 ! 2014-06-19 - Marco Clemencic
  - Minor fix for unpredictable VERBOSE messages (message suppression not
