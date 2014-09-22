@@ -1324,11 +1324,13 @@ function(gaudi_resolve_link_libraries variable)
           gaudi_resolve_link_libraries(libs ${libs})
           set_property(TARGET ${package}
                        PROPERTY RESOLVED_REQUIRED_LIBRARIES ${libs})
+        else()
+          # this is to avoid that libs gets defined as libs-NOTFOUND
+          # (it may happen in some rare conditions)
+          set(libs)
         endif()
       endif()
-      if(libs)
-        set(collected ${collected} ${package} ${libs})
-      endif()
+      set(collected ${collected} ${package} ${libs})
     elseif(EXISTS ${package}) # it's a real file
       #message(STATUS "${package} is a FILE")
       set(collected ${collected} ${package})
