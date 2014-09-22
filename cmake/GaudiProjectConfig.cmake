@@ -990,11 +990,12 @@ macro(_gaudi_handle_data_packages)
 endmacro()
 
 #-------------------------------------------------------------------------------
-# include_package_directories(Package1 [Package2 ...])
+# gaudi_resolve_include_dirs(variable dir_or_package1 dir_or_package2 ...)
 #
-# Adde the include directories of each package to the include directories.
+# Expand the pacakge names in absolute paths to the include directories.
 #-------------------------------------------------------------------------------
-function(include_package_directories)
+function(gaudi_resolve_include_dirs variable)
+  set(collected)
   #message(STATUS "include_package_directories(${ARGN})")
   foreach(package ${ARGN})
     # we need to ensure that the user can call this function also for directories
@@ -1002,17 +1003,17 @@ function(include_package_directories)
       get_target_property(to_incl ${package} SOURCE_DIR)
       if(to_incl)
         #message(STATUS "include_package_directories1 include_directories(${to_incl})")
-        include_directories(${to_incl})
+        set(collected ${collected} ${to_incl})
       endif()
     elseif(IS_ABSOLUTE ${package} AND IS_DIRECTORY ${package})
       #message(STATUS "include_package_directories2 include_directories(${package})")
-      include_directories(${package})
+      set(collected ${collected} ${package})
     elseif(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${package})
       #message(STATUS "include_package_directories3 include_directories(${package})")
-      include_directories(${CMAKE_CURRENT_SOURCE_DIR}/${package})
+      set(collected ${collected} ${CMAKE_CURRENT_SOURCE_DIR}/${package})
     elseif(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/${package}) # package can be the name of a subdir
       #message(STATUS "include_package_directories4 include_directories(${package})")
-      include_directories(${CMAKE_SOURCE_DIR}/${package})
+      set(collected ${collected} ${CMAKE_SOURCE_DIR}/${package})
     else()
       # ensure that the current directory knows about the package
       find_package(${package} QUIET)
@@ -1033,11 +1034,15 @@ function(include_package_directories)
         endif()
         # Include the directories
         #message(STATUS "include_package_directories5 include_directories(${${to_incl}})")
-        include_directories(${${to_incl}})
+        set(collected ${collected} ${${to_incl}})
         set_property(GLOBAL APPEND PROPERTY INCLUDE_PATHS ${${to_incl}})
       endif()
     endif()
   endforeach()
+  if(collected)
+    list(REMOVE_DUPLICATES collected)
+  endif()
+  set(${variable} ${collected} PARENT_SCOPE)
 endfunction()
 
 #-------------------------------------------------------------------------------
@@ -1761,7 +1766,8 @@ macro(gaudi_common_add_build)
 
   #message(STATUS "gaudi_common_add_build ${ARG_INCLUDE_DIRS}")
   # add the package includes to the current list
-  include_package_directories(${ARG_INCLUDE_DIRS})
+  gaudi_resolve_include_dirs(ARG_INCLUDE_DIRS ${ARG_INCLUDE_DIRS})
+  include_directories(${ARG_INCLUDE_DIRS})
 
   #message(STATUS "gaudi_common_add_build ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES}")
   # get the library dirs required to get the libraries we use
@@ -2897,7 +2903,10 @@ get_filename_component(_IMPORT_PREFIX \"\${_IMPORT_PREFIX}\" PATH)
         foreach(pn REQUIRED_INCLUDE_DIRS REQUIRED_LIBRARIES)
           get_property(prop TARGET ${library} PROPERTY ${pn})
           if (prop)
-            _make_relocatable(prop VARS LCG_releases LCG_external)
+            # Note: relocate an include path against CMAKE_SOURCE_DIR allows
+            #       to correctly relocate the include path to the current project
+            #       if there is a local copy of the subdir
+            _make_relocatable(prop VARS LCG_releases LCG_external CMAKE_SOURCE_DIR)
             file(APPEND ${pkg_exp_file} "  ${pn} \"${prop}\"\n")
           endif()
         endforeach()
