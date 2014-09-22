@@ -1302,6 +1302,10 @@ function(gaudi_resolve_link_libraries variable)
   foreach(package ${ARGN})
     # check if it is an actual library or a target first
     if(TARGET ${package})
+      get_property(target_type TARGET ${package} PROPERTY TYPE)
+      if(NOT target_type MATCHES "(SHARED|STATIC)_LIBRARY")
+        message(FATAL_ERROR "${package} is a ${target_type}: you cannot link against it")
+      endif()
       #message(STATUS "${package} is a TARGET")
       get_property(already_resolved TARGET ${package}
                    PROPERTY RESOLVED_REQUIRED_LIBRARIES SET)
