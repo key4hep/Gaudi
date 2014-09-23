@@ -19,7 +19,7 @@
 // standard use, 0 arguments
 class Base {
 public:
-  typedef Gaudi::PluginService::Factory0<Base*> Factory;
+  typedef Gaudi::PluginService::Factory<Base*> Factory;
   virtual ~Base() {}
 };
 class Component0: public Base { };
@@ -60,7 +60,7 @@ DECLARE_COMPONENT_WITH_PROPS(Component1)
 // standard use, 2 arguments
 class Base2 {
 public:
-  typedef Gaudi::PluginService::Factory2<Base2*, const std::string&, int> Factory;
+  typedef Gaudi::PluginService::Factory<Base2*, const std::string&, int> Factory;
   virtual ~Base2() {}
 };
 class Component2: public Base2 {

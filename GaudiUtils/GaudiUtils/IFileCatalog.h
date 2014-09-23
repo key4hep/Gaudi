@@ -27,9 +27,11 @@ namespace Gaudi {
     /// InterfaceID
     DeclareInterfaceID(IFileCatalog,2,0);
 
-    typedef Gaudi::PluginService::Factory2<IInterface*,
-                                           const std::string&,
-                                           IMessageSvc*> Factory;
+#ifndef __REFLEX__
+    typedef Gaudi::PluginService::Factory<IInterface*,
+                                          const std::string&,
+                                          IMessageSvc*> Factory;
+#endif
 
     /// Public type definitions
     typedef std::pair<std::string,std::string>  NamedItem;

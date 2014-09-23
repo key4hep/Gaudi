@@ -2,6 +2,10 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-05-07 - Sebastien Binet
+ - use new PluginService API (with C++11 variadic templates for the factories.)
+ - hide the C++11 constructs from Reflex as GCC-XML parser predates C++11
+
 ! 2014-09-18 - Marco Clemencic
  - Fixed Eclipse Code Analysis warning.
 

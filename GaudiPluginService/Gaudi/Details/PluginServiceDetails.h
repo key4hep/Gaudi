@@ -18,6 +18,7 @@
 #include <map>
 #include <set>
 #include <typeinfo>
+#include <utility>
 
 #if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
 #include <mutex>
@@ -53,30 +54,12 @@ namespace Gaudi { namespace PluginService {
     template <class T>
     class Factory {
     public:
-
-      template <typename S>
-      static typename S::ReturnType create() {
-        return new T();
+#ifndef __REFLEX__
+      template <typename S, typename... Args>
+        static typename S::ReturnType create(Args&&... args) {
+        return new T(std::forward<Args>(args)...);
       }
-
-      template <typename S>
-      static typename S::ReturnType create(typename S::Arg1Type a1) {
-        return new T(a1);
-      }
-
-      template <typename S>
-      static typename S::ReturnType create(typename S::Arg1Type a1,
-                                           typename S::Arg2Type a2) {
-        return new T(a1, a2);
-      }
-
-      template <typename S>
-      static typename S::ReturnType create(typename S::Arg1Type a1,
-                                           typename S::Arg2Type a2,
-                                           typename S::Arg3Type a3) {
-        return new T(a1, a2, a3);
-      }
-
+#endif
     };
 
     /// Function used to load a specific factory function.
