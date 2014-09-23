@@ -9,7 +9,7 @@
 #include "Gaudi/PluginService.h"
 
 struct IMyInterface {
-  typedef Gaudi::PluginService::Factory0<IMyInterface*> Factory;
+  typedef Gaudi::PluginService::Factory<IMyInterface*> Factory;
 };
 
 struct MyImplementation: virtual public IMyInterface {
