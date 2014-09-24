@@ -2,6 +2,9 @@ package GaudiPolicy
 package manager: Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-09-24 - Marco Clemencic
+ - Added support for gcc49.
+
 ! 2014-09-11 - Marco Clemencic
  - Fixed issue in run_qmtest when called from CMT.
    (introduced with commit c4dff5)

@@ -18,6 +18,7 @@ tag x86_64-slc5-gcc43-test   x86_64-slc5-gcc43-opt target-test
 tag x86_64-slc5-gcc46-test   x86_64-slc5-gcc46-opt target-test
 tag x86_64-slc6-gcc46-test   x86_64-slc6-gcc46-opt target-test
 tag x86_64-slc6-gcc48-test   x86_64-slc6-gcc48-opt target-test
+tag x86_64-slc6-gcc49-test   x86_64-slc6-gcc49-opt target-test
 
 # Add Google malloc replacement to the LD_LIBRARY_PATH
 use tcmalloc * LCG_Interfaces -no_auto_imports
@@ -668,6 +669,7 @@ macro cppdebugflags    "" \
       target-opt        "$(cppoptimized_s)"
 macro cppdebugflags_s  "-g" \
       target-gcc48     "-Og -g" \
+      target-gcc49     "-Og -g" \
       target-winxp            "/Od /Z7"
 macro cppoptimized_s   "-O2 -DNDEBUG" \
       use-O3&target-gcc "-O3 -DNDEBUG" \
@@ -683,6 +685,7 @@ macro cdebugflags     "" \
       target-opt           "$(coptimized_s)"
 macro cdebugflags_s   "-g" \
       target-gcc48    "-Og -g" \
+      target-gcc49    "-Og -g" \
       target-winxp           "/Od /Z7"
 macro coptimized_s    "-O2 -DNDEBUG" \
       use-O3&target-gcc "-O3 -DNDEBUG" \
@@ -693,6 +696,7 @@ macro fdebugflags      "" \
       target-dbg            "$(fdebugflags_s)"
 macro fdebugflags_s    "-g"\
       target-gcc48     "-Og -g" \
+      target-gcc49     "-Og -g" \
       target-winxp            "/nopdbfile /debug:full /optimize:0"
 macro foptimized_s     "-O2 -DNDEBUG" \
       use-O3&target-gcc  "-O3 -DNDEBUG" \
@@ -828,12 +832,14 @@ macro_append cppflags "" \
          target-gcc46 " -Wno-deprecated" \
          target-gcc47 " -Wno-deprecated" \
          target-gcc48 " -Wno-deprecated" \
+         target-gcc49 " -Wno-deprecated" \
          target-gccmax " -Wno-deprecated" \
          target-clang " -Wno-deprecated"
 # FIXME: (MCl) hide ~900 warnings from Boost
 macro_append cppflags "" \
          no-hide-warnings "" \
          target-gcc48 " -Wno-unused-local-typedefs" \
+         target-gcc49 " -Wno-unused-local-typedefs" \
          target-gccmax " -Wno-unused-local-typedefs"
 # FIXME: (MCl)
 macro_append cppflags "" \
