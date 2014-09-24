@@ -266,6 +266,7 @@ void ForwardSchedulerSvc::activate(){
       verbose() << "Action succeeded." << endmsg;
   }
 
+  //m_efManager.getExecutionFlowGraph()->dumpExecutionPlan();
   if (TBBSchedInit)
     delete TBBSchedInit;
 }

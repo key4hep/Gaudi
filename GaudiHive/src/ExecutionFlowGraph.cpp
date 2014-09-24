@@ -83,7 +83,8 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   void DecisionNode::updateDecision(const int& slotNum,
                                     AlgsExecutionStates& states,
-                                    std::vector<int>& node_decisions) const {
+                                    std::vector<int>& node_decisions,
+                                    const AlgorithmNode* requestor) const {
 
     int decision = ((m_allPass && m_isLazy) ? 1 : -1);
     bool keepGoing = true;
@@ -110,10 +111,12 @@ namespace concurrency {
           auto algod = (AlgorithmNode*) daughter;
           algod->promoteToControlReadyState(slotNum,states,node_decisions);
           bool result = algod->promoteToDataReadyState(slotNum);
-          if (result)
+          if (result) {
             keepGoing = false;
+            //m_graph->addEdgeToExecutionPlan(requestor, algod);
+          }
         } else {
-          daughter->updateDecision(slotNum, states, node_decisions);
+          daughter->updateDecision(slotNum, states, node_decisions, requestor);
         }
 
       // "and"-mode (once first result false, the overall decision is false)
@@ -144,7 +147,7 @@ namespace concurrency {
     // propagate decision upwards through the decision graph
     if (-1 != decision)
       for (auto p : m_parents)
-          p->updateDecision(slotNum, states, node_decisions);
+          p->updateDecision(slotNum, states, node_decisions, requestor);
 
     //std::cout << "++++++++++++++++++++END(UPDATING)++++++++++++++++++++" << std::endl;
   }
@@ -330,10 +333,12 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   void AlgorithmNode::updateDecision(const int& slotNum,
                                      AlgsExecutionStates& states,
-                                     std::vector<int>& node_decisions) const {
+                                     std::vector<int>& node_decisions,
+                                     const AlgorithmNode* requestor) const {
 
     const State& state = states[m_algoIndex];
     int decision = -1;
+    requestor = this;
 
     // now derive the proper result to pass back
     if (true == m_allPass) {
@@ -350,11 +355,14 @@ namespace concurrency {
 
     if (-1 != decision) {
       for (auto output : m_outputs)
-        for (auto consumer : output->getConsumers())
-          consumer->promoteToDataReadyState(slotNum);
+        for (auto consumer : output->getConsumers()) {
+          auto result = consumer->promoteToDataReadyState(slotNum);
+          //if (result)
+          //  m_graph->addEdgeToExecutionPlan(requestor, consumer);
+        }
 
       for (auto p : m_parents)
-        p->updateDecision(slotNum, states, node_decisions);
+        p->updateDecision(slotNum, states, node_decisions, requestor);
     }
   }
 
@@ -740,5 +748,45 @@ namespace concurrency {
       debug() << "  ====================================" << endmsg;
     }
   }
+
+  void ExecutionFlowGraph::dumpExecutionPlan() {
+    std::ofstream myfile;
+    myfile.open("ExecutionPlan.graphml", std::ios::app);
+
+    boost::dynamic_properties dp;
+    dp.property("name", boost::get(&boost::AlgoNodeStruct::m_name, m_ExecPlan));
+    dp.property("index", boost::get(&boost::AlgoNodeStruct::m_index, m_ExecPlan));
+    dp.property("dataRank", boost::get(&boost::AlgoNodeStruct::m_dataRank, m_ExecPlan));
+
+    boost::write_graphml(myfile, m_ExecPlan, dp);
+
+    myfile.close();
+  }
+
+  void ExecutionFlowGraph::addEdgeToExecutionPlan(const AlgorithmNode* u, const AlgorithmNode* v) {
+
+    boost::AlgoVertex source;
+    auto itS = m_exec_plan_map.find(u->getNodeName());
+    if ( itS != m_exec_plan_map.end()) {
+      source = itS->second;
+    } else {
+      source = boost::add_vertex(boost::AlgoNodeStruct(u->getNodeName(),u->getAlgoIndex(),u->getOutputDataRank()), m_ExecPlan);
+      m_exec_plan_map[u->getNodeName()] = source;
+    }
+
+    boost::AlgoVertex target;
+    auto itP = m_exec_plan_map.find(v->getNodeName());
+    if ( itP != m_exec_plan_map.end()) {
+      target = itP->second;
+    } else {
+      target = boost::add_vertex(boost::AlgoNodeStruct(v->getNodeName(),v->getAlgoIndex(),v->getOutputDataRank()), m_ExecPlan);
+      m_exec_plan_map[v->getNodeName()] = target;
+    }
+
+    if (m_ExecPlan[target].m_reached == false) {
+      boost::add_edge(source, target, m_ExecPlan);
+      m_ExecPlan[target].m_reached = true;
+    }
+      }
 
 } // namespace

@@ -9,12 +9,31 @@
 #include <fstream>
 #include <sstream>
 
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/graphml.hpp>
+
 // fwk includes
 #include "AlgsExecutionStates.h"
 #include "EventSlot.h"
 #include "IGraphVisitor.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/CommonMessaging.h"
+
+namespace boost {
+
+  struct AlgoNodeStruct {
+    AlgoNodeStruct () {}
+    AlgoNodeStruct (const std::string& name, const int index = -1, const int& data_rank = -1) :
+      m_name(name), m_index(index), m_dataRank(data_rank), m_reached(false) {}
+    std::string m_name;
+    int m_index;
+    int m_dataRank;
+    bool m_reached;
+  };
+
+  typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, AlgoNodeStruct> ExecPlan;
+  typedef graph_traits<ExecPlan>::vertex_descriptor AlgoVertex;
+}
 
 namespace concurrency {
 
@@ -49,7 +68,8 @@ namespace concurrency {
     const std::string& getNodeName() const { return m_nodeName; }
     virtual void updateDecision(const int& slotNum,
                                 AlgsExecutionStates& states,
-                                std::vector<int>& node_decisions) const = 0;
+                                std::vector<int>& node_decisions,
+                                const AlgorithmNode* requestor = nullptr) const = 0;
   public:
     ExecutionFlowGraph* m_graph;
   protected:
@@ -79,7 +99,8 @@ namespace concurrency {
     /// XXX: CF tests
     virtual void updateDecision(const int& slotNum,
                                 AlgsExecutionStates& states,
-                                std::vector<int>& node_decisions) const;
+                                std::vector<int>& node_decisions,
+                                const AlgorithmNode* requestor = nullptr) const;
     /// Method to set algos to CONTROLREADY, if possible
     virtual int updateState(AlgsExecutionStates& states,
                             std::vector<int>& node_decisions) const;
@@ -146,7 +167,7 @@ namespace concurrency {
     /// Set output data rank
     void setOutputDataRank(unsigned int& rank) {m_outputRank = rank;}
     /// Set output data rank
-    const int& getOutputDataRank() {return m_outputRank;}
+    const int& getOutputDataRank() const {return m_outputRank;}
 
     /// XXX: CF tests
     const unsigned int& getAlgoIndex() const { return m_algoIndex; }
@@ -165,7 +186,8 @@ namespace concurrency {
     /// XXX: CF tests
     virtual void updateDecision(const int& slotNum,
                                 AlgsExecutionStates& states,
-                                std::vector<int>& node_decisions) const;
+                                std::vector<int>& node_decisions,
+                                const AlgorithmNode* requestor = nullptr) const;
     /// Print a string representing the control flow state
     virtual void printState(std::stringstream& output,
                             AlgsExecutionStates& states,
@@ -299,6 +321,10 @@ public:
     std::vector<int>& getNodeDecisions(const int& slotNum) const {return m_eventSlots->at(slotNum).controlFlowState;}
     /// Print out all data origins and destinations, as reflected in the EF graph
     void dumpDataFlow() const;
+    /// dump to file encountered execution plan
+    void dumpExecutionPlan();
+    /// set cause-effect connection between two algorithms in the execution plan
+    void addEdgeToExecutionPlan(const AlgorithmNode* u, const AlgorithmNode* v);
 
 private:
     /// the head node of the control flow graph; may want to have multiple ones once supporting trigger paths
@@ -320,6 +346,9 @@ private:
     const std::chrono::system_clock::time_point m_initTime;
     ///
     std::vector<EventSlot>* m_eventSlots;
+    /// temporary items to experiment with execution planning
+    boost::ExecPlan m_ExecPlan;
+    std::map<std::string,boost::AlgoVertex> m_exec_plan_map;
   };
 
 
