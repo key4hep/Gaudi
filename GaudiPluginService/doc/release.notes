@@ -5,6 +5,10 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+! 2014-09-30 - David Quarrie
+ - do not hide C++11 constructs from Reflex for ATLAS (different version of
+   GCCXML)
+
 ! 2014-05-07 - Sebastien Binet
  - leverage C++11 variadic templates for the factories.
  - internally, also use l-value references and std::forward

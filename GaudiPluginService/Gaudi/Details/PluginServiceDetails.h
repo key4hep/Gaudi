@@ -54,7 +54,7 @@ namespace Gaudi { namespace PluginService {
     template <class T>
     class Factory {
     public:
-#ifndef __REFLEX__
+#if !defined(__REFLEX__) || defined(ATLAS)
       template <typename S, typename... Args>
         static typename S::ReturnType create(Args&&... args) {
         return new T(std::forward<Args>(args)...);

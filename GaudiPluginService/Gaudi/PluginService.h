@@ -40,7 +40,7 @@
 
 namespace Gaudi { namespace PluginService {
 
-#ifndef __REFLEX__
+#if !defined(__REFLEX__) || defined(ATLAS)
   /// Class wrapping the signature for a factory with any number of arguments.
   template <typename R, typename... Args>
   class Factory {
