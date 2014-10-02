@@ -1,7 +1,7 @@
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r0)
-                                          running on lxplus437.cern.ch on Mon Feb 27 15:14:11 2012
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r1)
+                                          running on pclhcb117 on Thu Oct  2 11:51:42 2014
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 NTupleSvc            INFO Added stream file:TupleEx4_1.root as MYLUN1
@@ -36,7 +36,7 @@ ARGS: ('FixSymMatrices', 'N-tuple: FixSymMatrices')
 RCWNTupleCnv         INFO Booked TTree with ID: FixSymMatrices "N-tuple: FixSymMatrices" in directory TupleEx4_2.root:/another/path
 ARGS: ('Time', 'N-tuple: Gaudi::Time')
 RCWNTupleCnv         INFO Booked TTree with ID: Time "N-tuple: Gaudi::Time" in directory TupleEx4_2.root:/another/path2
- /afs/cern.ch/user/m/marcocle/scratch0/workspace/Gaudi/InstallArea/x86_64-slc5-gcc43-opt/python/GaudiPython/TupleUtils.pyc/GaudiPython.TupleUtils: release all pending ITupleTools: 9
+ /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiPython/python/GaudiPython/TupleUtils.pyc/GaudiPython.TupleUtils: release all pending ITupleTools: 9
 RootHistSvc       WARNING no ROOT output file name, Histograms cannot be persistified
 EventLoopMgr         INFO Histograms converted successfully according to request.
 ToolSvc              INFO Removing all tools created by ToolSvc
@@ -71,8 +71,8 @@ RFileCnv             INFO dumping contents of /NTUPLES/MYLUN1
 TFile: name=TupleEx4_1.root, title=Gaudi Trees, option=CREATE
 ******************************************************************************
 *Tree    :It is a title for my n-tuple: It is a title for my n-tuple                           *
-*Entries :     5000 : Total =          122901 bytes  File  Size =      59257 *
-*        :          : Tree compression factor =   2.06                       *
+*Entries :     5000 : Total =          107902 bytes  File  Size =      58231 *
+*        :          : Tree compression factor =   1.84                       *
 ******************************************************************************
 *Br    0 :i         : i/I                                                    *
 *Entries :     5000 : Total  Size=      20558 bytes  File Size  =       7102 *
@@ -86,9 +86,9 @@ TFile: name=TupleEx4_1.root, title=Gaudi Trees, option=CREATE
 *Entries :     5000 : Total  Size=      40668 bytes  File Size  =      24562 *
 *Baskets :        2 : Basket Size=      32000 bytes  Compression=   1.64     *
 *............................................................................*
-*Br    3 :b1        : b1/I                                                   *
-*Entries :     5000 : Total  Size=      20563 bytes  File Size  =       2293 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   8.76     *
+*Br    3 :b1        : b1/O                                                   *
+*Entries :     5000 : Total  Size=       5557 bytes  File Size  =       1250 *
+*Baskets :        1 : Basket Size=      32000 bytes  Compression=   4.07     *
 *............................................................................*
 ******************************************************************************
 *Tree    :MyTupleLV : N-tuple: Lorentz Vectors                               *

@@ -2,6 +2,9 @@ Package: GaudiPython
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-10-02 - Marco Clemencic
+ - Introduced work-around for ROOT-6697 (wrong overloaded method called).
+
 ! 2014-09-18 - Marco Clemencic
  - Fixed Eclipse Code Analysis warning.
 
