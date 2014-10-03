@@ -334,6 +334,8 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
       }
     }
 
+    //m_EFGraph->attachAlgorithmsToNodes<concurrentQueueIAlgPtr>(item_name,*queue);
+
   }
 
   // Now resize all the requirement bitsets to the same size

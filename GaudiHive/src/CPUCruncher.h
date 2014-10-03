@@ -36,6 +36,8 @@
     /// Get the outputs
     virtual const std::vector<std::string> get_outputs();
 
+    double get_runtime() const { return m_avg_runtime; };
+
   protected:
 
     CPUCruncher

@@ -19,16 +19,19 @@
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/CommonMessaging.h"
 
+#include "CPUCruncher.h"
+
 namespace boost {
 
   struct AlgoNodeStruct {
     AlgoNodeStruct () {}
-    AlgoNodeStruct (const std::string& name, const int index = -1, const int& data_rank = -1) :
-      m_name(name), m_index(index), m_dataRank(data_rank), m_reached(false) {}
+    AlgoNodeStruct (const std::string& name, const int index = -1, const int& data_rank = -1, const double& runtime = -1) :
+      m_name(name), m_index(index), m_dataRank(data_rank), m_reached(false), m_runtime(runtime) {}
     std::string m_name;
     int m_index;
     int m_dataRank;
     bool m_reached;
+    double m_runtime;
   };
 
   typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, AlgoNodeStruct> ExecPlan;
@@ -151,6 +154,10 @@ namespace concurrency {
     void addSupplierNode(AlgorithmNode* node) { m_suppliers.push_back(node); }
     /// Associate an AlgorithmNode, which is a data consumer of this one
     void addConsumerNode(AlgorithmNode* node) { m_consumers.push_back(node); }
+    /// Attach Algorithm representative
+    void attachAlgorithm(IAlgorithm* ialgo) { m_representatives.push_back(ialgo); }
+    /// get Algorithm representatives
+    const std::vector<IAlgorithm*>& getAlgorithmRepresentatives () const { return m_representatives; }
     /// Get all supplier nodes
     const std::vector<AlgorithmNode*>& getSupplierNodes() const {return m_suppliers;}
     /// Get all consumer nodes
@@ -218,6 +225,8 @@ namespace concurrency {
     std::vector<DataNode*> m_inputs;
     /// Output rank, defined as number of output data products
     int m_outputRank;
+    /// Representatives (including clones) of the node
+    std::vector<IAlgorithm*> m_representatives;
   };
 
 class DataNode {
@@ -282,6 +291,13 @@ public:
     void addHeadNode(const std::string& headName, bool modeOR, bool allPass, bool isLazy);
     /// Add algorithm node
     StatusCode addAlgorithmNode(Algorithm* daughterAlgo, const std::string& parentName, bool inverted, bool allPass);
+    /// Attach pointers to real Algorithms (and their clones) to Algorithm nodes of the graph
+    template<class T>
+    void attachAlgorithmsToNodes(const std::string& algo_name, const T& container) {
+      auto node = getAlgorithmNode(algo_name);
+      for (auto ialgoIt = container.unsafe_begin(); ialgoIt != container.unsafe_end(); ++ialgoIt)
+        node->attachAlgorithm(*ialgoIt);
+    }
     /// Get the AlgorithmNode from by algorithm name using graph index
     AlgorithmNode* getAlgorithmNode(const std::string& algoName) const;
     /// Add DataNode that represents DataObject

@@ -757,6 +757,7 @@ namespace concurrency {
     dp.property("name", boost::get(&boost::AlgoNodeStruct::m_name, m_ExecPlan));
     dp.property("index", boost::get(&boost::AlgoNodeStruct::m_index, m_ExecPlan));
     dp.property("dataRank", boost::get(&boost::AlgoNodeStruct::m_dataRank, m_ExecPlan));
+    dp.property("runtime", boost::get(&boost::AlgoNodeStruct::m_runtime, m_ExecPlan));
 
     boost::write_graphml(myfile, m_ExecPlan, dp);
 
@@ -770,7 +771,9 @@ namespace concurrency {
     if ( itS != m_exec_plan_map.end()) {
       source = itS->second;
     } else {
-      source = boost::add_vertex(boost::AlgoNodeStruct(u->getNodeName(),u->getAlgoIndex(),u->getOutputDataRank()), m_ExecPlan);
+      auto cruncher = dynamic_cast<CPUCruncher*> ( u->getAlgorithmRepresentatives()[0] );
+      if (!cruncher) fatal() << "Conversion from IAlgorithm to CPUCruncher failed" << endmsg;
+      source = boost::add_vertex(boost::AlgoNodeStruct(u->getNodeName(),u->getAlgoIndex(),u->getOutputDataRank(),cruncher->get_runtime()), m_ExecPlan);
       m_exec_plan_map[u->getNodeName()] = source;
     }
 
@@ -779,7 +782,9 @@ namespace concurrency {
     if ( itP != m_exec_plan_map.end()) {
       target = itP->second;
     } else {
-      target = boost::add_vertex(boost::AlgoNodeStruct(v->getNodeName(),v->getAlgoIndex(),v->getOutputDataRank()), m_ExecPlan);
+      auto cruncher = dynamic_cast<CPUCruncher*> ( u->getAlgorithmRepresentatives()[0] );
+      if (!cruncher) fatal() << "Conversion from IAlgorithm to CPUCruncher failed" << endmsg;
+      target = boost::add_vertex(boost::AlgoNodeStruct(v->getNodeName(),v->getAlgoIndex(),v->getOutputDataRank(),cruncher->get_runtime()), m_ExecPlan);
       m_exec_plan_map[v->getNodeName()] = target;
     }
 
