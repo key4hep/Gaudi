@@ -3,6 +3,9 @@ Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
 ! 2014-10-06 - Marco Clemencic
+ - Added (build-time) tests for GAUDI-905 and GAUDI-973.
+
+! 2014-10-06 - Marco Clemencic
  - GAUDI-973: make it possible to use StringKey in std::unordered_map
 
 ! 2014-10-06 - Gerhard Raven
