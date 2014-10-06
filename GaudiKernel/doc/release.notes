@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-10-06 - Gerhard Raven
+ - GAUDI-905: Add Gaudi::StringKey constructor from plain C-string
+
 ! 2014-09-18 - Marco Clemencic
  - Fixed a test after the change in PluginService.
 

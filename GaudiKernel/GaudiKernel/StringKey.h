@@ -36,8 +36,10 @@ namespace Gaudi
   {
   public:
     // ========================================================================
-    /// constructor from the string, perform hashing
-    StringKey ( const std::string& key = "" ) ; // constructor, perform hashing
+    /// constructor from plain C-string, perform hashing
+    StringKey ( const char* key = "" ) ; // constructor, perform hashing
+    /// constructor from std::string, perform hashing
+    StringKey ( const std::string& key ) ; // constructor, perform hashing
     // ========================================================================
   public:
     // ========================================================================
