@@ -782,7 +782,7 @@ namespace concurrency {
     if ( itP != m_exec_plan_map.end()) {
       target = itP->second;
     } else {
-      auto cruncher = dynamic_cast<CPUCruncher*> ( u->getAlgorithmRepresentatives()[0] );
+      auto cruncher = dynamic_cast<CPUCruncher*> ( v->getAlgorithmRepresentatives()[0] );
       if (!cruncher) fatal() << "Conversion from IAlgorithm to CPUCruncher failed" << endmsg;
       target = boost::add_vertex(boost::AlgoNodeStruct(v->getNodeName(),v->getAlgoIndex(),v->getOutputDataRank(),cruncher->get_runtime()), m_ExecPlan);
       m_exec_plan_map[v->getNodeName()] = target;
