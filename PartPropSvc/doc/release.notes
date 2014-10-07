@@ -2,6 +2,13 @@ Package : ParticleProp
 Package manager : Charles Leggett
 Commit Id: $Format:%H$
 
+============================== PartPropSvc v6r1 ==============================
+! 2014-10-07 - Charles Leggett
+ - added missing Geantinos to PDGTABLE.MeV and PDGTABLE.2014.MeV
+
+M       share/PDGTABLE.2002.MeV
+M       share/PDGTABLE.2014.MeV
+
 ! 2014-09-18 - Marco Clemencic
  - Updated CMake configuration.
 
