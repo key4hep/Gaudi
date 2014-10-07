@@ -110,11 +110,9 @@ namespace concurrency {
         if (typeid(*daughter) != typeid(concurrency::DecisionNode)) {
           auto algod = (AlgorithmNode*) daughter;
           algod->promoteToControlReadyState(slotNum,states,node_decisions);
-          bool result = algod->promoteToDataReadyState(slotNum);
-          if (result) {
+          bool result = algod->promoteToDataReadyState(slotNum, requestor);
+          if (result)
             keepGoing = false;
-            //m_graph->addEdgeToExecutionPlan(requestor, algod);
-          }
         } else {
           daughter->updateDecision(slotNum, states, node_decisions, requestor);
         }
@@ -226,7 +224,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  bool AlgorithmNode::promoteToDataReadyState(const int& slotNum) const {
+  bool AlgorithmNode::promoteToDataReadyState(const int& slotNum, const AlgorithmNode* requestor) const {
 
     auto& states = m_graph->getAlgoStates(slotNum);
     auto& state = states[m_algoIndex];
@@ -237,6 +235,8 @@ namespace concurrency {
         //std::cout << "----> UPDATING ALGORITHM to DATAREADY: " << m_algoName << std::endl;
         states.updateState(m_algoIndex, State::DATAREADY);
         result = true;
+
+        //m_graph->addEdgeToExecutionPlan(requestor, this);
 
         /*
         auto xtime = std::chrono::high_resolution_clock::now();
@@ -355,11 +355,8 @@ namespace concurrency {
 
     if (-1 != decision) {
       for (auto output : m_outputs)
-        for (auto consumer : output->getConsumers()) {
-          auto result = consumer->promoteToDataReadyState(slotNum);
-          //if (result)
-          //  m_graph->addEdgeToExecutionPlan(requestor, consumer);
-        }
+        for (auto consumer : output->getConsumers())
+          consumer->promoteToDataReadyState(slotNum, requestor);
 
       for (auto p : m_parents)
         p->updateDecision(slotNum, states, node_decisions, requestor);
@@ -767,14 +764,24 @@ namespace concurrency {
   void ExecutionFlowGraph::addEdgeToExecutionPlan(const AlgorithmNode* u, const AlgorithmNode* v) {
 
     boost::AlgoVertex source;
-    auto itS = m_exec_plan_map.find(u->getNodeName());
-    if ( itS != m_exec_plan_map.end()) {
-      source = itS->second;
+    if (u == nullptr) {
+      auto itT = m_exec_plan_map.find("ENTRY");
+      if ( itT != m_exec_plan_map.end()) {
+        source = itT->second;
+      } else {
+        source = boost::add_vertex(boost::AlgoNodeStruct("ENTRY",-999,-999, 0), m_ExecPlan);
+        m_exec_plan_map["ENTRY"] = source;
+      }
     } else {
-      auto cruncher = dynamic_cast<CPUCruncher*> ( u->getAlgorithmRepresentatives()[0] );
-      if (!cruncher) fatal() << "Conversion from IAlgorithm to CPUCruncher failed" << endmsg;
-      source = boost::add_vertex(boost::AlgoNodeStruct(u->getNodeName(),u->getAlgoIndex(),u->getOutputDataRank(),cruncher->get_runtime()), m_ExecPlan);
-      m_exec_plan_map[u->getNodeName()] = source;
+      auto itS = m_exec_plan_map.find(u->getNodeName());
+      if ( itS != m_exec_plan_map.end()) {
+        source = itS->second;
+      } else {
+        auto cruncher = dynamic_cast<CPUCruncher*> ( u->getAlgorithmRepresentatives()[0] );
+        if (!cruncher) fatal() << "Conversion from IAlgorithm to CPUCruncher failed" << endmsg;
+        source = boost::add_vertex(boost::AlgoNodeStruct(u->getNodeName(),u->getAlgoIndex(),u->getOutputDataRank(),cruncher->get_runtime()), m_ExecPlan);
+        m_exec_plan_map[u->getNodeName()] = source;
+      }
     }
 
     boost::AlgoVertex target;
@@ -788,10 +795,8 @@ namespace concurrency {
       m_exec_plan_map[v->getNodeName()] = target;
     }
 
-    if (m_ExecPlan[target].m_reached == false) {
+      debug() << "Edge added to execution plan" << endmsg;
       boost::add_edge(source, target, m_ExecPlan);
-      m_ExecPlan[target].m_reached = true;
-    }
-      }
+  }
 
 } // namespace

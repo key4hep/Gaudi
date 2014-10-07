@@ -215,6 +215,8 @@ StatusCode ForwardSchedulerSvc::finalize(){
   info() << "Joining Scheduler thread" << endmsg;
   m_thread.join();
 
+  //m_efManager.getExecutionFlowGraph()->dumpExecutionPlan();
+
   return sc;
 
   }
@@ -266,7 +268,6 @@ void ForwardSchedulerSvc::activate(){
       verbose() << "Action succeeded." << endmsg;
   }
 
-  //m_efManager.getExecutionFlowGraph()->dumpExecutionPlan();
   if (TBBSchedInit)
     delete TBBSchedInit;
 }
@@ -342,7 +343,7 @@ StatusCode ForwardSchedulerSvc::pushNewEvent(EventContext* eventContext){
     thisSlot.reset(eventContext);
     // XXX: CF tests
     if (m_CFNext) {
-      auto vis = concurrency::TopDownParser(thisSlotNum);
+      auto vis = concurrency::Trigger(thisSlotNum);
       m_efManager.touchReadyAlgorithms(vis);
     }
 

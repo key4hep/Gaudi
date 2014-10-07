@@ -86,7 +86,7 @@ namespace concurrency {
 
 
   //---------------------------------------------------------------------------
-    bool TopDownParser::visitEnter(DecisionNode& node) const {
+    bool Trigger::visitEnter(DecisionNode& node) const {
 
       if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != 1)
         return true;
@@ -94,7 +94,7 @@ namespace concurrency {
     }
 
     //---------------------------------------------------------------------------
-    bool TopDownParser::visit(DecisionNode& node) {
+    bool Trigger::visit(DecisionNode& node) {
 
       //std::cout << "1-st level Decision: " << node.getNodeName() << std::endl;
       bool allChildDecisionsResolved = true;
@@ -118,7 +118,7 @@ namespace concurrency {
     }
 
     //---------------------------------------------------------------------------
-    bool TopDownParser::visitLeave(DecisionNode& node) const {
+    bool Trigger::visitLeave(DecisionNode& node) const {
 
       if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != 1)
         return true;
@@ -128,7 +128,7 @@ namespace concurrency {
 
 
     //---------------------------------------------------------------------------
-    bool TopDownParser::visitEnter(AlgorithmNode& node) const {
+    bool Trigger::visitEnter(AlgorithmNode& node) const {
 
       if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != 1)
         return true;
@@ -136,26 +136,17 @@ namespace concurrency {
     }
 
     //--------------------------------------------------------------------------
-    bool TopDownParser::visit(AlgorithmNode& node) {
+    bool Trigger::visit(AlgorithmNode& node) {
 
-      std::vector<int>& decisions = node.m_graph->getNodeDecisions(m_slotNum);
-      AlgsExecutionStates& states = node.m_graph->getAlgoStates(m_slotNum);
-      int& decision = decisions[node.getNodeIndex()];
+      bool result = false;
 
-      if (State::INITIAL == states[node.getAlgoIndex()]) {
-        states.updateState(node.getAlgoIndex(), State::CONTROLREADY);
-        if (node.dataDependenciesSatisfied(m_slotNum)) {
-          states.updateState(node.getAlgoIndex(), State::DATAREADY);
-          //std::cout << "Algorithm decided: " << node.getNodeName() << std::endl;
-          return true;
-        }
-      } else if (State::CONTROLREADY == states[node.getAlgoIndex()] && node.dataDependenciesSatisfied(m_slotNum)) {
-        states.updateState(node.getAlgoIndex(), State::DATAREADY);
-        //std::cout << "Algorithm decided: " << node.getNodeName() << std::endl;
-        return true;
-      }
+      auto& decisions = node.m_graph->getNodeDecisions(m_slotNum);
+      auto& states = node.m_graph->getAlgoStates(m_slotNum);
 
-      return false;
+      if (node.promoteToControlReadyState(m_slotNum,states,decisions))
+        result = node.promoteToDataReadyState(m_slotNum);
+
+      return result;
     }
 
 
@@ -169,6 +160,12 @@ namespace concurrency {
         rank += p->getConsumers().size();
 
       node.setOutputDataRank(rank);
+      /*std::stringstream s;
+      s << node.getNodeName() << ", " << rank << "\n";
+      std::ofstream myfile;
+      myfile.open("AlgoRank.csv", std::ios::app);
+      myfile << s.str();
+      myfile.close();*/
 
       return true;
     }

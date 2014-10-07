@@ -29,15 +29,18 @@ namespace concurrency {
 
   };
 
-  class TopDownParser : public IGraphVisitor {
+  /** A visitor, performing full top-down traversals of a graph
+   *
+   */
+  class Trigger : public IGraphVisitor {
     public:
       /// Constructor
-      TopDownParser(const int& slotNum) {
+      Trigger(const int& slotNum) {
         m_nodesSucceeded = 0;
         m_slotNum = slotNum;
       };
       /// Destructor
-      virtual ~TopDownParser() {};
+      virtual ~Trigger() {};
 
       virtual bool visitEnter(DecisionNode& node) const;
 

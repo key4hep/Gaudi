@@ -334,7 +334,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
       }
     }
 
-    //m_EFGraph->attachAlgorithmsToNodes<concurrentQueueIAlgPtr>(item_name,*queue);
+    m_EFGraph->attachAlgorithmsToNodes<concurrentQueueIAlgPtr>(item_name,*queue);
 
   }
 

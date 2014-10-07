@@ -26,11 +26,10 @@ namespace boost {
   struct AlgoNodeStruct {
     AlgoNodeStruct () {}
     AlgoNodeStruct (const std::string& name, const int index = -1, const int& data_rank = -1, const double& runtime = -1) :
-      m_name(name), m_index(index), m_dataRank(data_rank), m_reached(false), m_runtime(runtime) {}
+      m_name(name), m_index(index), m_dataRank(data_rank), m_runtime(runtime) {}
     std::string m_name;
     int m_index;
     int m_dataRank;
-    bool m_reached;
     double m_runtime;
   };
 
@@ -189,7 +188,7 @@ namespace concurrency {
                                             AlgsExecutionStates& states,
                                             std::vector<int>& node_decisions) const;
     ///
-    bool promoteToDataReadyState(const int& slotNum) const;
+    bool promoteToDataReadyState(const int& slotNum, const AlgorithmNode* requestor = nullptr) const;
     /// XXX: CF tests
     virtual void updateDecision(const int& slotNum,
                                 AlgsExecutionStates& states,
