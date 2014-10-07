@@ -732,9 +732,9 @@ macro cppflags         " -fmessage-length=0 -Df2cFortran -fPIC -D_GNU_SOURCE -Dl
       target-vc7       '$(includes) /D "WIN32" /D "_MBCS"  /D "_WINDOWS" /FD /c /nologo /W3 /GX /MD /GR /Zm500'
 
 # The -pedantic flag gives problems on GCC 4.3.
-macro_append cppflags "" \
+macro_append cppflags "-pedantic -Wno-long-long " \
     target-gcc43 "" \
-    GAUDI_PEDANTIC&target-gcc "-pedantic -Wno-long-long "
+    GAUDI_NO_PEDANTIC ""
 
 ##############################################################################
 # Intel compiler support

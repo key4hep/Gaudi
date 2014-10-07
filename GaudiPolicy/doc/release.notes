@@ -2,6 +2,10 @@ package GaudiPolicy
 package manager: Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-10-07 - Marco Clemencic
+ - LBCORE-632: Enable -pedantic flag by default.
+   (can be disabled with the CMT tag GAUDI_NO_PEDANTIC)
+
 ! 2014-09-24 - Marco Clemencic
  - Added support for gcc49.
 
