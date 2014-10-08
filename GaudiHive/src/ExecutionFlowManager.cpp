@@ -23,7 +23,7 @@ namespace concurrency {
       error() << "Could not initialize the flow graph." << endmsg;
 
     auto ranker = concurrency::AlgorithmOnDataOutputRanker();
-    m_EFGraph->rankAlgorithmsByDataOutput(ranker);
+    m_EFGraph->rankAlgorithms(ranker);
 
     return sc;
   }

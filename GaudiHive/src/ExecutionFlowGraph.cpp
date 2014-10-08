@@ -697,7 +697,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void ExecutionFlowGraph::rankAlgorithmsByDataOutput(IGraphVisitor& ranker) const {
+  void ExecutionFlowGraph::rankAlgorithms(IGraphVisitor& ranker) const {
 
     info() << "Starting ranking by data outputs .. " << endmsg;
     for (auto& pair : m_algoNameToAlgoNodeMap) {

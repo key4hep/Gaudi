@@ -316,7 +316,7 @@ public:
                         AlgsExecutionStates& states,
                         std::vector<int>& node_decisions) const;
     /// Rank Algorithm nodes by the number of data outputs
-    void rankAlgorithmsByDataOutput(IGraphVisitor& ranker) const;
+    void rankAlgorithms(IGraphVisitor& ranker) const;
     /// Print a string representing the control flow state
     void printState(std::stringstream& output,
                     AlgsExecutionStates& states,
