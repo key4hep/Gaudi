@@ -151,7 +151,7 @@ namespace concurrency {
 
 
     //--------------------------------------------------------------------------
-    bool AlgorithmOnDataOutputRanker::visit(AlgorithmNode& node) {
+    bool RankerByProductConsumption::visit(AlgorithmNode& node) {
 
       auto& products = node.getOutputDataNodes();
       uint rank = 0;
@@ -159,7 +159,7 @@ namespace concurrency {
       for (auto p : products)
         rank += p->getConsumers().size();
 
-      node.setOutputDataRank(rank);
+      node.setRank(rank);
       /*std::stringstream s;
       s << node.getNodeName() << ", " << rank << "\n";
       std::ofstream myfile;
@@ -168,6 +168,54 @@ namespace concurrency {
       myfile.close();*/
 
       return true;
+    }
+
+    //--------------------------------------------------------------------------
+    bool RankerByExecutionBranchPotential::visit(AlgorithmNode& node) {
+
+      std::ifstream myfile;
+      myfile.open("InputExecutionPlan.graphml", std::ios::in);
+
+      boost::ExecPlan execPlan;
+
+      boost::dynamic_properties dp;
+      dp.property("name", boost::get(&boost::AlgoNodeStruct::m_name, execPlan));
+      dp.property("index", boost::get(&boost::AlgoNodeStruct::m_index, execPlan));
+      dp.property("dataRank", boost::get(&boost::AlgoNodeStruct::m_dataRank, execPlan));
+      dp.property("runtime", boost::get(&boost::AlgoNodeStruct::m_runtime, execPlan));
+
+      boost::read_graphml(myfile, execPlan, dp);
+
+      typedef boost::graph_traits<boost::ExecPlan>::vertex_iterator itV;
+      std::pair<itV, itV> vp;
+      typedef boost::graph_traits<boost::ExecPlan>::vertex_descriptor AlgoVertex;
+
+      for (vp = boost::vertices(execPlan); vp.first != vp.second; ++vp.first) {
+        AlgoVertex v = *vp.first;
+        auto index = boost::get(&boost::AlgoNodeStruct::m_name, execPlan);
+        if (index[v] == node.getNodeName()) {
+          runThroughAdjacents(v,execPlan);
+          uint rank = m_nodesSucceeded;
+          node.setRank(rank);
+          reset();
+          //std::cout << "Rank of " << index[v] << " is " << rank << std::endl;
+        }
+      }
+
+      return true;
+    }
+
+    //--------------------------------------------------------------------------
+    void RankerByExecutionBranchPotential::runThroughAdjacents(boost::graph_traits<boost::ExecPlan>::vertex_descriptor vertex,
+                                                               boost::ExecPlan graph) {
+      typename boost::graph_traits<boost::ExecPlan>::adjacency_iterator itVB;
+      typename boost::graph_traits<boost::ExecPlan>::adjacency_iterator itVE;
+
+      for (boost::tie(itVB, itVE) = adjacent_vertices(vertex, graph); itVB != itVE; ++itVB) {
+        m_nodesSucceeded += 1;
+        runThroughAdjacents(*itVB, graph);
+      }
+
     }
 }
 

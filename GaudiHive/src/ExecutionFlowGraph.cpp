@@ -702,7 +702,7 @@ namespace concurrency {
     info() << "Starting ranking by data outputs .. " << endmsg;
     for (auto& pair : m_algoNameToAlgoNodeMap) {
       pair.second->accept(ranker);
-      info() << "  Rank of " << pair.first << ": " << pair.second->getOutputDataRank() << endmsg;
+      debug() << "  Rank of " << pair.first << ": " << pair.second->getRank() << endmsg;
     }
   }
 
@@ -779,7 +779,7 @@ namespace concurrency {
       } else {
         auto cruncher = dynamic_cast<CPUCruncher*> ( u->getAlgorithmRepresentatives()[0] );
         if (!cruncher) fatal() << "Conversion from IAlgorithm to CPUCruncher failed" << endmsg;
-        source = boost::add_vertex(boost::AlgoNodeStruct(u->getNodeName(),u->getAlgoIndex(),u->getOutputDataRank(),cruncher->get_runtime()), m_ExecPlan);
+        source = boost::add_vertex(boost::AlgoNodeStruct(u->getNodeName(),u->getAlgoIndex(),u->getRank(),cruncher->get_runtime()), m_ExecPlan);
         m_exec_plan_map[u->getNodeName()] = source;
       }
     }
@@ -791,7 +791,7 @@ namespace concurrency {
     } else {
       auto cruncher = dynamic_cast<CPUCruncher*> ( v->getAlgorithmRepresentatives()[0] );
       if (!cruncher) fatal() << "Conversion from IAlgorithm to CPUCruncher failed" << endmsg;
-      target = boost::add_vertex(boost::AlgoNodeStruct(v->getNodeName(),v->getAlgoIndex(),v->getOutputDataRank(),cruncher->get_runtime()), m_ExecPlan);
+      target = boost::add_vertex(boost::AlgoNodeStruct(v->getNodeName(),v->getAlgoIndex(),v->getRank(),cruncher->get_runtime()), m_ExecPlan);
       m_exec_plan_map[v->getNodeName()] = target;
     }
 

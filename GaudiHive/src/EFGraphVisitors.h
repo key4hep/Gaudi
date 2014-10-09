@@ -27,6 +27,9 @@ namespace concurrency {
 
     virtual bool visit(AlgorithmNode& node);
 
+
+    virtual void reset() { m_nodesSucceeded = 0; }
+
   };
 
   /** A visitor, performing full top-down traversals of a graph
@@ -53,28 +56,62 @@ namespace concurrency {
 
       virtual bool visit(AlgorithmNode& node);
 
+
+      virtual void reset() { m_nodesSucceeded = 0; }
+
     };
 
-  class AlgorithmOnDataOutputRanker : public IGraphVisitor {
+  class RankerByProductConsumption : public IGraphVisitor {
     public:
       /// Constructor
-      AlgorithmOnDataOutputRanker() {
+      RankerByProductConsumption() {
         m_nodesSucceeded = 0;
         m_slotNum = -1;
       };
       /// Destructor
-      virtual ~AlgorithmOnDataOutputRanker() {};
+      virtual ~RankerByProductConsumption() {};
 
-      virtual bool visitEnter(DecisionNode& node) const {return true;};
+      virtual bool visitEnter(DecisionNode&) const {return true;};
 
-      virtual bool visit(DecisionNode& node) {return true;};
+      virtual bool visit(DecisionNode&) {return true;};
 
-      virtual bool visitLeave(DecisionNode& node) const {return true;};
+      virtual bool visitLeave(DecisionNode&) const {return true;};
 
 
-      virtual bool visitEnter(AlgorithmNode& node) const {return true;};
+      virtual bool visitEnter(AlgorithmNode&) const {return true;};
 
       virtual bool visit(AlgorithmNode& node);
+
+
+      virtual void reset() { m_nodesSucceeded = 0; }
+
+      };
+
+  class RankerByExecutionBranchPotential : public IGraphVisitor {
+    public:
+      /// Constructor
+    RankerByExecutionBranchPotential() {
+        m_nodesSucceeded = 0;
+        m_slotNum = -1;
+      };
+      /// Destructor
+      virtual ~RankerByExecutionBranchPotential() {};
+
+      virtual bool visitEnter(DecisionNode&) const {return true;};
+
+      virtual bool visit(DecisionNode&) {return true;};
+
+      virtual bool visitLeave(DecisionNode&) const {return true;};
+
+
+      virtual bool visitEnter(AlgorithmNode&) const {return true;};
+
+      virtual bool visit(AlgorithmNode& node);
+
+
+      virtual void reset() { m_nodesSucceeded = 0; }
+
+      void runThroughAdjacents(boost::graph_traits<boost::ExecPlan>::vertex_descriptor vertex, boost::ExecPlan graph);
 
       };
 

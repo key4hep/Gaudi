@@ -17,6 +17,8 @@ namespace concurrency {
     virtual bool visitEnter(AlgorithmNode&) const = 0;
     virtual bool visit(AlgorithmNode& node) = 0;
 
+    virtual void reset() = 0;
+
   public:
     int m_nodesSucceeded;
     int m_slotNum;

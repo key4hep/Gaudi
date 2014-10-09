@@ -22,7 +22,8 @@ namespace concurrency {
     if (!sc.isSuccess())
       error() << "Could not initialize the flow graph." << endmsg;
 
-    auto ranker = concurrency::AlgorithmOnDataOutputRanker();
+    //auto ranker = concurrency::RankerByProductConsumption();
+    auto ranker = concurrency::RankerByExecutionBranchPotential();
     m_EFGraph->rankAlgorithms(ranker);
 
     return sc;

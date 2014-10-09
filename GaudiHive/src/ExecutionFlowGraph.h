@@ -138,7 +138,7 @@ namespace concurrency {
     /// Constructor
     AlgorithmNode(ExecutionFlowGraph& graph, unsigned int nodeIndex, const std::string& algoName, bool inverted, bool allPass) :
       ControlFlowNode(graph, nodeIndex, algoName),
-      m_algoIndex(0),m_algoName(algoName),m_inverted(inverted),m_allPass(allPass),m_outputRank(-1)
+      m_algoIndex(0),m_algoName(algoName),m_inverted(inverted),m_allPass(allPass),m_rank(-1)
       {};
     /// Destructor
     ~AlgorithmNode();
@@ -170,10 +170,10 @@ namespace concurrency {
     const std::vector<DataNode*>& getOutputDataNodes() const {return m_outputs;}
     /// Get all consumer nodes
     const std::vector<DataNode*>& getInputDataNodes() const {return m_inputs;}
-    /// Set output data rank
-    void setOutputDataRank(unsigned int& rank) {m_outputRank = rank;}
-    /// Set output data rank
-    const int& getOutputDataRank() const {return m_outputRank;}
+    /// Set Algorithm rank
+    void setRank(unsigned int& rank) {m_rank = rank;}
+    /// Get Algorithm rank
+    const int& getRank() const {return m_rank;}
 
     /// XXX: CF tests
     const unsigned int& getAlgoIndex() const { return m_algoIndex; }
@@ -222,8 +222,8 @@ namespace concurrency {
     std::vector<DataNode*> m_outputs;
     /// Inputs of the algorithm, represented as DataNode's
     std::vector<DataNode*> m_inputs;
-    /// Output rank, defined as number of output data products
-    int m_outputRank;
+    /// Algorithm rank of any kind
+    int m_rank;
     /// Representatives (including clones) of the node
     std::vector<IAlgorithm*> m_representatives;
   };
