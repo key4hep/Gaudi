@@ -5,6 +5,9 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+! 2014-10-10 - Marco Clemencic
+ - Removed PoolDbNTupleDescriptor from genreflex selection file.
+
 ============================== RootCnv v1r23p1 ===============================
 ! 2014-09-19 - Marco Clemencic
  - Merged changes between Gaudi RootCnv (commit 8583adc) and LHCb
