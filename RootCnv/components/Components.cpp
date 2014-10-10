@@ -2,7 +2,7 @@
 #include "RootCnv/RootEvtSelector.h"
 #include "RootCnv/RootPerfMonSvc.h"
 
-#if ROOT_VERSION_CODE < ROOT_VERSION(6,0,0)
+#ifndef DECLARE_COMPONENT
 #include "GaudiKernel/SvcFactory.h"
 #define DECLARE_COMPONENT(x) DECLARE_SERVICE_FACTORY(x)
 #endif

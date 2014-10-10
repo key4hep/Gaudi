@@ -6,6 +6,10 @@
 !-----------------------------------------------------------------------------
 
 ! 2014-10-10 - Marco Clemencic
+ - Fixed warning about redeclared macro when building the latest Gaudi with
+   ROOT 5.
+
+! 2014-10-10 - Marco Clemencic
  - Removed PoolDbNTupleDescriptor from genreflex selection file.
 
 ============================== RootCnv v1r23p1 ===============================
