@@ -38,7 +38,7 @@ use GaudiSys       v25r4
 use GaudiMonitor   v5r2
 
 # Profiling components and tools
-use GaudiProfiling v2r1
+use GaudiProfiling v2r2
 
 # Multi Processing libraries
 use GaudiMP v3r2
