@@ -2,6 +2,9 @@ Package: GaudiUtils
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-10-10 - Marco Clemencic
+ - Added optional 'se' attribute the the XML file catalog DTD.
+
 ! 2014-09-18 - Marco Clemencic
  - Fixed Eclipse Code Analysis warning.
 
