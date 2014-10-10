@@ -2,6 +2,7 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+============================ GaudiExamples v25r4 =============================
 ! 2013-10-02 - Marco Clemencic
  - Fixed reference file after the work-around for ROOT-6697.
 

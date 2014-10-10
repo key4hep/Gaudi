@@ -2,6 +2,7 @@ Package: GaudiMonitor
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+============================= GaudiMonitor v5r2 ==============================
 ! 2013-09-09 - Marco Clemencic
  - Removed an occurrence of 'endreq', slipped in with a relatively recent patch.
 

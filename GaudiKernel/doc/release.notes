@@ -2,6 +2,7 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+============================= GaudiKernel v31r1 ==============================
 ! 2014-10-06 - Marco Clemencic
  - Added (build-time) tests for GAUDI-905 and GAUDI-973.
 

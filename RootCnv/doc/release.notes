@@ -5,6 +5,7 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+============================== RootCnv v1r23p2 ===============================
 ! 2014-10-10 - Marco Clemencic
  - Fixed warning about redeclared macro when building the latest Gaudi with
    ROOT 5.

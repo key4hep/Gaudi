@@ -3,39 +3,39 @@
 
 package GaudiRelease
 
-version v25r3
+version v25r4
 branches doc cmt
 
 # CMT and Gaudi policy
-use GaudiPolicy	   v15r0
+use GaudiPolicy	   v15r1
 
 # Gaudi executable
-use Gaudi          v25r3
+use Gaudi          v25r4
 
 # Gaudi Plugin Service
-use GaudiPluginService    v1r2
+use GaudiPluginService    v2r0
 
 # Gaudi libraries - generic
-use GaudiKernel    v31r0
+use GaudiKernel    v31r1
 use GaudiCoreSvc   v3r1
 use GaudiCommonSvc v3r2
-use GaudiSvc       v21r3
-use GaudiAud       v10r1
-use GaudiAlg       v15r1
-use GaudiGSL       v8r2
-use GaudiUtils     v5r2
+use GaudiSvc       v21r4
+use GaudiAud       v10r2
+use GaudiAlg       v15r2
+use GaudiGSL       v8r3
+use GaudiUtils     v5r3
 use GaudiPartProp  v2r1
 
 # Technology-specific Persistency packages
-use RootCnv        v1r22p2
+use RootCnv        v1r23p1
 use RootHistCnv    v12r1
-use GaudiPython    v13r2
+use GaudiPython    v13r3
 
 # Container package specifying the minimum set of core packages
-use GaudiSys       v25r3
+use GaudiSys       v25r4
 
 # Monitoring utilities.
-use GaudiMonitor   v5r1
+use GaudiMonitor   v5r2
 
 # Profiling components and tools
 use GaudiProfiling v2r1
@@ -44,11 +44,11 @@ use GaudiProfiling v2r1
 use GaudiMP v3r2
 
 # Examples packages
-use GaudiExamples   v25r3
+use GaudiExamples   v25r4
 
 
 # Atlas packages
-use PartPropSvc      v5r1
+use PartPropSvc      v6r1
 
 ### Mark the package as the container package of the project.
 apply_pattern container_package

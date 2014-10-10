@@ -2,6 +2,7 @@ Package: GaudiPython
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+============================= GaudiPython v13r3 ==============================
 ! 2014-10-02 - Marco Clemencic
  - Introduced work-around for ROOT-6697 (wrong overloaded method called).
 

@@ -55,6 +55,84 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
+<h2><a name="v25r4">Gaudi v25r4</a> (2014-10-10)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=69">LCGCMT_69</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Improvements and fixes to the CMake configuration system.<br/>
+    (<span class="author">Marco Clemencic, David Quarrie</span>)</li>
+<li>Fixed some minor warnings.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Updated test reference files.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v15r1):
+<ul>
+<li>LBCORE-632: Enable -pedantic flag by default.
+   (can be disabled with the CMT tag GAUDI_NO_PEDANTIC)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added support for gcc49.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed use of "-ansi" gcc option.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixes and improvements to test reports (CTest and QMTest)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiPluginService (v2r0):
+<ul>
+<li>GAUDI-430: leverage c++11 variadic templates in pluginsvc API<br/>
+    (<span class="author">Sebastien Binet</span>)</li>
+<li>do not hide C++11 constructs from Reflex for ATLAS<br/>
+    (<span class="author">David Quarrie</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v31r1):
+<ul>
+<li>GAUDI-905: Add Gaudi::StringKey constructor from plain C-string<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-973: make it possible to use StringKey in std::unordered_map<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiUtils (v5r3):
+<ul>
+<li>Added optional 'se' attribute the the XML file catalog DTD.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiAud (v10r2):
+<ul>
+<li>GAUDI-985: update references to ATLAS TWiki pages.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiPython (v13r3):
+<ul>
+<li>Introduced work-around for ROOT-6697 (wrong overloaded method called).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>PartPropSvc (v6r1):
+<ul>
+<li>Updated PDG tables.<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Added missing Geantinos.<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>RootCnv (v1r23p2):
+<ul>
+<li>Merged the LHCb version.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Minor fixes.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
 <h2><a name="v25r3">Gaudi v25r3</a> (2014-07-03)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=69root6">LCGCMT_69root6</a></h3>
 <h3>General Changes</h3>
