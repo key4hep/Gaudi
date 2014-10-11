@@ -24,6 +24,7 @@ namespace concurrency {
 
     auto ranker = concurrency::RankerByProductConsumption();
     //auto ranker = concurrency::RankerByExecutionBranchPotential();
+    //auto ranker = concurrency::RankerByTiming();
     m_EFGraph->rankAlgorithms(ranker);
 
     return sc;

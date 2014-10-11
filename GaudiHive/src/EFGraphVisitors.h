@@ -90,7 +90,7 @@ namespace concurrency {
   class RankerByExecutionBranchPotential : public IGraphVisitor {
     public:
       /// Constructor
-    RankerByExecutionBranchPotential() {
+      RankerByExecutionBranchPotential() {
         m_nodesSucceeded = 0;
         m_slotNum = -1;
       };
@@ -112,6 +112,32 @@ namespace concurrency {
       virtual void reset() { m_nodesSucceeded = 0; }
 
       void runThroughAdjacents(boost::graph_traits<boost::ExecPlan>::vertex_descriptor vertex, boost::ExecPlan graph);
+
+      };
+
+  class RankerByTiming : public IGraphVisitor {
+    public:
+      /// Constructor
+      RankerByTiming() {
+        m_nodesSucceeded = 0;
+        m_slotNum = -1;
+      };
+      /// Destructor
+      virtual ~RankerByTiming() {};
+
+      virtual bool visitEnter(DecisionNode&) const {return true;};
+
+      virtual bool visit(DecisionNode&) {return true;};
+
+      virtual bool visitLeave(DecisionNode&) const {return true;};
+
+
+      virtual bool visitEnter(AlgorithmNode&) const {return true;};
+
+      virtual bool visit(AlgorithmNode& node);
+
+
+      virtual void reset() { m_nodesSucceeded = 0; }
 
       };
 

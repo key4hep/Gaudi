@@ -154,7 +154,7 @@ namespace concurrency {
     bool RankerByProductConsumption::visit(AlgorithmNode& node) {
 
       auto& products = node.getOutputDataNodes();
-      uint rank = 0;
+      float rank = 0;
 
       for (auto p : products)
         rank += p->getConsumers().size();
@@ -195,7 +195,7 @@ namespace concurrency {
         auto index = boost::get(&boost::AlgoNodeStruct::m_name, execPlan);
         if (index[v] == node.getNodeName()) {
           runThroughAdjacents(v,execPlan);
-          uint rank = m_nodesSucceeded;
+          float rank = m_nodesSucceeded;
           node.setRank(rank);
           reset();
           //std::cout << "Rank of " << index[v] << " is " << rank << std::endl;
@@ -217,8 +217,37 @@ namespace concurrency {
       }
 
     }
+
+    //--------------------------------------------------------------------------
+    bool RankerByTiming::visit(AlgorithmNode& node) {
+
+      std::ifstream myfile;
+      myfile.open("InputExecutionPlan.graphml", std::ios::in);
+
+      boost::ExecPlan execPlan;
+
+      boost::dynamic_properties dp;
+      dp.property("name", boost::get(&boost::AlgoNodeStruct::m_name, execPlan));
+      dp.property("index", boost::get(&boost::AlgoNodeStruct::m_index, execPlan));
+      dp.property("dataRank", boost::get(&boost::AlgoNodeStruct::m_dataRank, execPlan));
+      dp.property("runtime", boost::get(&boost::AlgoNodeStruct::m_runtime, execPlan));
+
+      boost::read_graphml(myfile, execPlan, dp);
+
+      typedef boost::graph_traits<boost::ExecPlan>::vertex_iterator itV;
+      std::pair<itV, itV> vp;
+      typedef boost::graph_traits<boost::ExecPlan>::vertex_descriptor AlgoVertex;
+
+      for (vp = boost::vertices(execPlan); vp.first != vp.second; ++vp.first) {
+        AlgoVertex v = *vp.first;
+        auto index = boost::get(&boost::AlgoNodeStruct::m_name, execPlan);
+        if (index[v] == node.getNodeName()) {
+          auto index_runtime = boost::get(&boost::AlgoNodeStruct::m_runtime, execPlan);
+          float rank = index_runtime[v];
+          node.setRank(rank);
+          std::cout << "Rank of " << index[v] << " is " << rank << std::endl;
+        }
+      }
+      return true;
+    }
 }
-
-
-
-

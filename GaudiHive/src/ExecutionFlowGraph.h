@@ -171,9 +171,9 @@ namespace concurrency {
     /// Get all consumer nodes
     const std::vector<DataNode*>& getInputDataNodes() const {return m_inputs;}
     /// Set Algorithm rank
-    void setRank(unsigned int& rank) {m_rank = rank;}
+    void setRank(float& rank) {m_rank = rank;}
     /// Get Algorithm rank
-    const int& getRank() const {return m_rank;}
+    const float& getRank() const {return m_rank;}
 
     /// XXX: CF tests
     const unsigned int& getAlgoIndex() const { return m_algoIndex; }
@@ -223,7 +223,7 @@ namespace concurrency {
     /// Inputs of the algorithm, represented as DataNode's
     std::vector<DataNode*> m_inputs;
     /// Algorithm rank of any kind
-    int m_rank;
+    float m_rank;
     /// Representatives (including clones) of the node
     std::vector<IAlgorithm*> m_representatives;
   };

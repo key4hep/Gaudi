@@ -565,11 +565,11 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
 
     //now update DATAREADY to SCHEDULED
     if (m_chasePopularData) {
-      auto comp_nodes = [this] (const uint& i,const uint& j) {
+      auto comp_nodes = [this] (const float& i,const float& j) {
           return (m_efManager.getExecutionFlowGraph()->getAlgorithmNode(index2algname(i))->getRank() <
           m_efManager.getExecutionFlowGraph()->getAlgorithmNode(index2algname(j))->getRank());
       };
-      std::priority_queue<uint,std::vector<uint>,std::function<bool(const uint&,const uint&)>> buffer(comp_nodes,std::vector<uint>());
+      std::priority_queue<float,std::vector<float>,std::function<bool(const float&,const float&)>> buffer(comp_nodes,std::vector<float>());
       for(auto it = thisAlgsStates.begin(AlgsExecutionStates::State::DATAREADY);
           it != thisAlgsStates.end(AlgsExecutionStates::State::DATAREADY); ++it)
         buffer.push(*it);
