@@ -245,7 +245,7 @@ namespace concurrency {
           auto index_runtime = boost::get(&boost::AlgoNodeStruct::m_runtime, execPlan);
           float rank = index_runtime[v];
           node.setRank(rank);
-          std::cout << "Rank of " << index[v] << " is " << rank << std::endl;
+          //std::cout << "Rank of " << index[v] << " is " << rank << std::endl;
         }
       }
       return true;
