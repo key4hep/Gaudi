@@ -2,6 +2,7 @@ Package : Gaudi
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v25r5 =================================
 ! 2014-09-25 - Marco Clemencic
  - Bump package version to allow detection of the backward incompatible change
    in the Plugin Service via the GAUDI_VERSION cpp macro.
