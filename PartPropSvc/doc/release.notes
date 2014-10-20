@@ -2,6 +2,13 @@ Package : ParticleProp
 Package manager : Charles Leggett
 Commit Id: $Format:%H$
 
+============================== PartPropSvc v6r2 ==============================
+! 2014-10-07 - Charles Leggett
+ - added missing neutrinos and gluon to PDGTABLE.MeV and PDGTABLE.2014.MeV
+
+M       share/PDGTABLE.MeV
+M       share/PDGTABLE.2014.MeV
+
 ============================== PartPropSvc v6r1 ==============================
 ! 2014-10-07 - Charles Leggett
  - added missing Geantinos to PDGTABLE.MeV and PDGTABLE.2014.MeV
