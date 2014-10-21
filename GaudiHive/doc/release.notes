@@ -1,5 +1,10 @@
 Package : GaudiKernel
 
+! 2014-10-21 - Charles Leggett
+  - fixed requirements for boost graph
+
+#	modified:   cmt/requirements
+
 ! 2014-06-03 - Charles Leggett
   updates for EventContext class
 
