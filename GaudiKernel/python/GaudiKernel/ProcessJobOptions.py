@@ -311,10 +311,10 @@ class JobOptsParser:
             else : # otherwise replace all {} with []
                 value = value.replace('{','[').replace('}',']')
 
-        # We must escape '\' because eval tends to interpret them
-        value = value.replace('\\','\\\\')
         # Replace literal '\n' and '\t' with spaces (bug #47258)
         value = value.replace("\\n", " ").replace("\\t", " ")
+        # We must escape '\' because eval tends to interpret them
+        value = value.replace('\\','\\\\')
 
         # interprete the @ operator
         m = self.reference.match(value)
