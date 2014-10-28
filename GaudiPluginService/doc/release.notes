@@ -5,6 +5,9 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+! 2014-10-28 - Marco Clemencic
+ - Demangle factory types in warning messages.
+
 ========================== GaudiPluginService v2r0 ===========================
 ! 2014-09-30 - David Quarrie
  - do not hide C++11 constructs from Reflex for ATLAS (different version of
