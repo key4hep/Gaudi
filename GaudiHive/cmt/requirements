@@ -10,6 +10,8 @@ use GaudiAlg     *
 library GaudiHive -import=Boost -import=tbb -no_static ../src/*.cpp
 apply_pattern component_library library=GaudiHive
 
+macro_append Boost_linkopts ' $(Boost_linkopts_graph) '
+
 macro_append GaudiHive_use_linkopts " -lrt "
 
 include_dirs $(GAUDIHIVEROOT)
