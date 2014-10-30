@@ -576,7 +576,7 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
       /*std::stringstream s;
       auto buffer2 = buffer;
       while (!buffer2.empty()) {
-        s << m_efManager.getExecutionFlowGraph()->getAlgorithmNode(index2algname(buffer2.top()))->getOutputDataRank() << ", ";
+        s << m_efManager.getExecutionFlowGraph()->getAlgorithmNode(index2algname(buffer2.top()))->getRank() << ", ";
         buffer2.pop();
       }
       info() << "DRBuffer is: [ " << s.str() << " ]" << endmsg;*/

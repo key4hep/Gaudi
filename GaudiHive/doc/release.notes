@@ -1,5 +1,8 @@
 Package : GaudiKernel
 
+! 2014-10-30 - Illya Shapoval
+  o new mode for execution planner added: based on algorithm eccentricities
+
 ! 2014-06-03 - Charles Leggett
   updates for EventContext class
 

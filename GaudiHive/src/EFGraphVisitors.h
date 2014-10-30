@@ -141,6 +141,32 @@ namespace concurrency {
 
       };
 
+  class RankerByEccentricity : public IGraphVisitor {
+    public:
+      /// Constructor
+      RankerByEccentricity() {
+        m_nodesSucceeded = 0;
+        m_slotNum = -1;
+      };
+      /// Destructor
+      virtual ~RankerByEccentricity() {};
+
+      virtual bool visitEnter(DecisionNode&) const {return true;};
+
+      virtual bool visit(DecisionNode&) {return true;};
+
+      virtual bool visitLeave(DecisionNode&) const {return true;};
+
+
+      virtual bool visitEnter(AlgorithmNode&) const {return true;};
+
+      virtual bool visit(AlgorithmNode& node);
+
+
+      virtual void reset() { m_nodesSucceeded = 0; }
+
+      };
+
 }
 
 

@@ -25,12 +25,13 @@ namespace boost {
 
   struct AlgoNodeStruct {
     AlgoNodeStruct () {}
-    AlgoNodeStruct (const std::string& name, const int index = -1, const int& data_rank = -1, const double& runtime = -1) :
-      m_name(name), m_index(index), m_dataRank(data_rank), m_runtime(runtime) {}
+    AlgoNodeStruct (const std::string& name, const int index = -1, const int& rank = -1, const double& runtime = -1, const double& eccentricity = -1.0) :
+      m_name(name), m_index(index), m_rank(rank), m_runtime(runtime), m_eccentricity(eccentricity) {}
     std::string m_name;
     int m_index;
-    int m_dataRank;
+    int m_rank;
     double m_runtime;
+    double m_eccentricity;
   };
 
   typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, AlgoNodeStruct> ExecPlan;
