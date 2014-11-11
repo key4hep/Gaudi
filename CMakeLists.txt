@@ -18,7 +18,7 @@ gaudi_project(Gaudi v25r5)
 
 # These tests do not really fit in a subdirectory.
 gaudi_add_test(cmake.EnvConfigTests
-               COMMAND nosetests ${CMAKE_SOURCE_DIR}/cmake/EnvConfig)
+               COMMAND nosetests --with-doctest ${CMAKE_SOURCE_DIR}/cmake/EnvConfig)
 gaudi_add_test(cmake.project_manifest.doctest
                COMMAND ${PYTHON_EXECUTABLE} -m doctest
                        ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/project_manifest.py)
