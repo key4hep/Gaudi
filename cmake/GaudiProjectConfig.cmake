@@ -304,11 +304,11 @@ macro(gaudi_project project version)
   # (python scripts are located as such but run through python)
   set(binary_paths ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts ${CMAKE_SOURCE_DIR}/GaudiKernel/scripts ${CMAKE_SOURCE_DIR}/Gaudi/scripts ${binary_paths})
 
-  find_program(env_cmd env.py HINTS ${binary_paths})
+  find_program(env_cmd xenv HINTS ${binary_paths})
   set(env_cmd ${PYTHON_EXECUTABLE} ${env_cmd})
 
-  find_program(merge_cmd merge_files.py HINTS ${binary_paths})
-  set(merge_cmd ${PYTHON_EXECUTABLE} ${merge_cmd} --no-stamp)
+  find_program(default_merge_cmd merge_files.py HINTS ${binary_paths})
+  set(default_merge_cmd ${PYTHON_EXECUTABLE} ${default_merge_cmd} --no-stamp)
 
   find_program(versheader_cmd createProjVersHeader.py HINTS ${binary_paths})
   if(versheader_cmd)
@@ -352,14 +352,14 @@ macro(gaudi_project project version)
     set(genwindef_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genwindef.exe)
   endif()
 
-  mark_as_advanced(env_cmd merge_cmd versheader_cmd genconfuser_cmd
+  mark_as_advanced(env_cmd default_merge_cmd versheader_cmd genconfuser_cmd
                    zippythondir_cmd gaudirun_cmd)
 
   #--- Project Installations------------------------------------------------------------------------
   install(DIRECTORY cmake/ DESTINATION cmake
                            FILES_MATCHING PATTERN "*.cmake"
                            PATTERN ".svn" EXCLUDE)
-  install(PROGRAMS cmake/env.py DESTINATION scripts OPTIONAL)
+  install(PROGRAMS cmake/xenv DESTINATION scripts OPTIONAL)
   install(DIRECTORY cmake/EnvConfig DESTINATION scripts
           FILES_MATCHING PATTERN "*.py" PATTERN "*.conf")
 
@@ -1373,15 +1373,21 @@ macro(gaudi_global_target_append global_target local_target)
 endmacro()
 
 #-------------------------------------------------------------------------------
-# gaudi_global_target_get_info(global_target local_targets_var files_var)
+# gaudi_global_target_get_info(global_target local_targets_var files_var cmd_var)
 # (macro)
 #
 # Put the information to configure the global target 'global_target' in the
-# two variables local_targets_var and files_var.
+# two variables local_targets_var, files_var and cmd_var.
 #-------------------------------------------------------------------------------
-macro(gaudi_global_target_get_info global_target local_targets_var files_var)
+macro(gaudi_global_target_get_info global_target local_targets_var files_var cmd_var)
   get_property(${files_var} GLOBAL PROPERTY ${global_target}_SOURCES)
   get_property(${local_targets_var} GLOBAL PROPERTY ${global_target}_DEPENDS)
+  get_property(cmd_is_set GLOBAL PROPERTY ${global_target}_COMMAND SET)
+  if(cmd_is_set)
+    get_property(${cmd_var} GLOBAL PROPERTY ${global_target}_COMMAND)
+  else()
+    set(${cmd_var})
+  endif()
 endmacro()
 
 
@@ -1402,12 +1408,15 @@ endfunction()
 # from the packages (declared with gaudi_merge_files_append).
 #-------------------------------------------------------------------------------
 function(gaudi_merge_files merge_tgt dest filename)
-  gaudi_global_target_get_info(Merged${merge_tgt} deps parts)
+  gaudi_global_target_get_info(Merged${merge_tgt} deps parts cmd)
+  if(NOT cmd)
+    set(cmd ${default_merge_cmd})
+  endif()
   if(parts)
     # create the targets
     set(output ${CMAKE_BINARY_DIR}/${dest}/${filename})
     add_custom_command(OUTPUT ${output}
-                       COMMAND ${merge_cmd} ${parts} ${output}
+                       COMMAND ${cmd} ${parts} ${output}
                        DEPENDS ${parts})
     add_custom_target(Merged${merge_tgt} ALL DEPENDS ${output})
     # prepare the high level dependencies
@@ -1415,13 +1424,13 @@ function(gaudi_merge_files merge_tgt dest filename)
 
     # target to generate a partial merged file
     add_custom_command(OUTPUT ${output}_force
-                       COMMAND ${merge_cmd} --ignore-missing ${parts} ${output})
+                       COMMAND ${cmd} --ignore-missing ${parts} ${output})
     add_custom_target(Merged${merge_tgt}_force DEPENDS ${output}_force)
     # ensure that we merge what we have before installing if the output was not
     # produced
     install(CODE "if(NOT EXISTS ${output})
                   message(WARNING \"creating partial ${output}\")
-                  execute_process(COMMAND ${merge_cmd} --ignore-missing ${parts} ${output})
+                  execute_process(COMMAND ${cmd} --ignore-missing ${parts} ${output})
                   endif()")
 
     # install rule for the merged DB
