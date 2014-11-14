@@ -233,10 +233,10 @@ macro(gaudi_project project version)
   # ensure the directory exists (this is not a standard CMake variable)
   file(MAKE_DIRECTORY ${CMAKE_CONFIG_OUTPUT_DIRECTORY})
 
-  set(env_xml ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/${project}BuildEnvironment.xml
+  set(env_xml ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/${project}-build.xenv
       CACHE STRING "path to the XML file for the environment to be used in building and testing")
 
-  set(env_release_xml ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/${project}Environment.xml
+  set(env_release_xml ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/${project}.xenv
       CACHE STRING "path to the XML file for the environment to be used once the project is installed")
 
   mark_as_advanced(CMAKE_RUNTIME_OUTPUT_DIRECTORY CMAKE_LIBRARY_OUTPUT_DIRECTORY
@@ -875,7 +875,8 @@ endfunction()
 #
 #  <prefix>/<name>/<version>
 #
-# with a file called <name>Environment.xml inside.
+# with a file called <name>.xenv inside (or <name>Environment.xml for backward
+# compatibility).
 #
 # <name> can contain '/'s, but they are replaced by '_'s when looking for the
 # XML file.
@@ -910,7 +911,7 @@ function(gaudi_find_data_package name)
     endif()
     # At this point, ARGN contains only the suffixes, if any.
 
-    string(REPLACE / _ envname ${name}Environment.xml)
+    string(REPLACE / _ envname ${name})
 
     set(candidate_version)
     set(candidate_path)
@@ -920,8 +921,11 @@ function(gaudi_find_data_package name)
         if(IS_DIRECTORY ${prefix}/${suffix}/${name})
           #message(STATUS "gaudi_find_data_package: scanning ${prefix}/${suffix}/${name}")
           # Look for env files with the matching version.
-          file(GLOB envfiles RELATIVE ${prefix}/${suffix}/${name} ${prefix}/${suffix}/${name}/${version}/${envname})
+          file(GLOB envfiles RELATIVE ${prefix}/${suffix}/${name}
+               ${prefix}/${suffix}/${name}/${version}/${envname}.xenv
+               ${prefix}/${suffix}/${name}/${version}/${envname}Environment.xml)
           # Translate the list of env files into the list of available versions
+          # (directories)
           set(versions)
           foreach(f ${envfiles})
             get_filename_component(f ${f} PATH)
@@ -942,7 +946,13 @@ function(gaudi_find_data_package name)
     if(candidate_version)
       set(${name}_FOUND TRUE CACHE INTERNAL "")
       set(${name}_DIR ${candidate_path} CACHE PATH "Location of ${name}")
-      mark_as_advanced(${name}_FOUND ${name}_DIR)
+      if(EXISTS ${candidate_path}/${envname}.xenv)
+        set(candidate_env ${candidate_path}/${envname}.xenv)
+      else()
+        set(candidate_env ${candidate_path}/${envname}Environment.xml)
+      endif()
+      set(${name}_XENV ${candidate_env} CACHE PATH "${name} environment file")
+      mark_as_advanced(${name}_FOUND ${name}_DIR ${name}_XENV)
       message(STATUS "Found ${name} ${candidate_version}: ${${name}_DIR}")
     else()
       message(FATAL_ERROR "Cannot find ${name} ${version}")
@@ -983,8 +993,7 @@ macro(_gaudi_handle_data_packages)
       message(STATUS "Using ${_data_package}: ${${_data_package}_DIR}")
     endif()
     if(${_data_package}_FOUND)
-      string(REPLACE / _ _data_pkg_env ${_data_package}Environment.xml)
-      set(project_environment ${project_environment} INCLUDE ${${_data_package}_DIR}/${_data_pkg_env})
+      set(project_environment ${project_environment} INCLUDE ${${_data_package}_XENV})
     endif()
   endwhile()
 endmacro()
@@ -1524,7 +1533,7 @@ function(gaudi_generate_configurables library)
     else()
       get_filename_component(genconf_dir ${genconf_cmd} PATH)
       get_filename_component(genconf_dir ${genconf_dir} PATH)
-      file(GLOB genconf_env "${genconf_dir}/*Environment.xml")
+      file(GLOB genconf_env "${genconf_dir}/*.xenv")
       #message(STATUS "... running genconf --help ...")
       execute_process(COMMAND ${env_cmd} --xml ${genconf_env}
                               ${genconf_cmd} --help
@@ -2715,7 +2724,7 @@ function(gaudi_generate_env_conf filename)
     set(data "${data}  <env:search_path>${${other_project}_DIR}</env:search_path>\n")
   endforeach()
   foreach(other_project ${used_gaudi_projects})
-    set(data "${data}  <env:include>${other_project}Environment.xml</env:include>\n")
+    set(data "${data}  <env:include>${other_project}.xenv</env:include>\n")
   endforeach()
 
   set(commands ${ARGN})
