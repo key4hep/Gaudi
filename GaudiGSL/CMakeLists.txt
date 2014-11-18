@@ -5,10 +5,6 @@ gaudi_depends_on_subdirs(GaudiAlg)
 find_package(CLHEP)
 find_package(GSL)
 
-if(NOT APPLE AND NOT WIN32)
-  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-as-needed")
-endif()
-
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiGSLLib src/Lib/*.cpp
                   LINK_LIBRARIES GaudiAlgLib GSL CLHEP
