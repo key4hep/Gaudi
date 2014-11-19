@@ -657,6 +657,12 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
          "${_env_cmd_line} --xml ${env_xml} %1 %2 %3 %4 %5 %6 %7 %8 %9\n")
   endif() # ignore other systems
 
+  # "precompile" project XML env after installation
+  get_filename_component(installed_env_release_xml "${env_release_xml}" NAME)
+  set(installed_env_release_xml "${CMAKE_INSTALL_PREFIX}/${installed_env_release_xml}")
+  add_custom_target(precompile-project-xenv
+                    COMMAND ${env_cmd} --xml "${installed_env_release_xml}" true)
+  add_dependencies(post-install precompile-project-xenv)
 
   #--- Special target to print the summary of QMTest runs.
   if(GAUDI_BUILD_TESTS)
