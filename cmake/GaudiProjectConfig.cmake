@@ -246,6 +246,12 @@ macro(gaudi_project project version)
     enable_testing()
   endif()
 
+  #--- Allow installation on failed builds
+  add_custom_target(unsafe-install
+                    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/cmake_install.cmake)
+  #--- Special target to group actions that must be run after the installation
+  add_custom_target(post-install)
+
   #--- Find subdirectories
   message(STATUS "Looking for local directories...")
   # Locate packages
@@ -454,6 +460,7 @@ macro(gaudi_project project version)
     # still need a fake python.zip target, expected by the nightly builds.
     add_custom_target(python.zip)
   endif()
+  add_dependencies(post-install python.zip)
 
   #--- Prepare environment configuration
   message(STATUS "Preparing environment configuration:")
