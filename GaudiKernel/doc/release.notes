@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-11-19 - Marco Clemencic
+ - Fixed extra ';'.
+
 ! 2014-10-25 - Marco Clemencic
  - Fixed a problem with the interpretation of \n and \t in .opts files.
 
