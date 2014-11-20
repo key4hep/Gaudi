@@ -1512,9 +1512,9 @@ function(gaudi_generate_configurables library)
   endif()
 
   if(NOT GaudiCoreSvcIsImported) # it's a local target
-    set(deps GaudiCoreSvc genconf)
+    set(conf_depends ${conf_depends} GaudiCoreSvc genconf)
   else()
-    set(deps genconf)
+    set(conf_depends ${conf_depends} genconf)
   endif()
 
   if(ARG_USER_MODULE)
@@ -1580,7 +1580,7 @@ function(gaudi_generate_configurables library)
               ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
                 ${genconf_opts}
                 -i ${library}
-    DEPENDS ${library} ${deps})
+    DEPENDS ${conf_depends})
   add_custom_target(${library}Conf ALL DEPENDS ${outdir}/${library}.confdb)
   # Add the target to the target that groups all of them for the package.
   if(NOT TARGET ${package}ConfAll)
