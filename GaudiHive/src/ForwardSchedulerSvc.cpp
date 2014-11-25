@@ -45,7 +45,7 @@ ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* 
   declareProperty("useGraphFlowManagement", m_CFNext = false );
   declareProperty("DataFlowManagerNext", m_DFNext = false );
   declareProperty("SimulateExecution", m_simulateExecution = false );
-  declareProperty("ChasePopularData", m_chasePopularData = false );
+  declareProperty("Optimizer", m_optimizationMode = "", "The following modes are currently available: PCE, COD, E" );
 }
 
 //---------------------------------------------------------------------------
@@ -162,12 +162,12 @@ StatusCode ForwardSchedulerSvc::initialize(){
 
   // prepare the control flow part
   if (m_CFNext) m_DFNext = true; //force usage of new data flow machinery when new control flow is used
-  if (!m_CFNext && m_chasePopularData) {
-    fatal() << "Prioritizing popular data production mode is not available with old control and data flow management" << endmsg;
+  if (!m_CFNext && !m_optimizationMode.empty()) {
+    fatal() << "Execution optimization is only available with the graph-based execution flow management" << endmsg;
     return StatusCode::FAILURE;
   }
   const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>(m_algResourcePool.get());
-  sc = m_efManager.initialize(algPool->getExecutionFlowGraph(), m_algname_index_map, m_eventSlots);
+  sc = m_efManager.initialize(algPool->getExecutionFlowGraph(), m_algname_index_map, m_eventSlots, m_optimizationMode);
   unsigned int controlFlowNodeNumber = m_efManager.getExecutionFlowGraph()->getControlFlowNodeCounter();
   // Shortcut for the message service
   SmartIF<IMessageSvc> messageSvc (serviceLocator());
@@ -564,7 +564,7 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
     }
 
     //now update DATAREADY to SCHEDULED
-    if (m_chasePopularData) {
+    if (!m_optimizationMode.empty()) {
       auto comp_nodes = [this] (const uint& i,const uint& j) {
           return (m_efManager.getExecutionFlowGraph()->getAlgorithmNode(index2algname(i))->getRank() <
           m_efManager.getExecutionFlowGraph()->getAlgorithmNode(index2algname(j))->getRank());
@@ -579,7 +579,7 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
         s << m_efManager.getExecutionFlowGraph()->getAlgorithmNode(index2algname(buffer2.top()))->getRank() << ", ";
         buffer2.pop();
       }
-      info() << "DRBuffer is: [ " << s.str() << " ]" << endmsg;*/
+      info() << "DRBuffer is: [ " << s.str() << " ]  <--" << algo_name << " executed" << endmsg;*/
 
       while (!buffer.empty()) {
         partial_sc = promoteToScheduled(buffer.top(), iSlot);

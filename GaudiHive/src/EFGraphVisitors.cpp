@@ -171,7 +171,7 @@ namespace concurrency {
     }
 
     //--------------------------------------------------------------------------
-    bool RankerByExecutionBranchPotential::visit(AlgorithmNode& node) {
+    bool RankerByCummulativeOutDegree::visit(AlgorithmNode& node) {
 
       std::ifstream myfile;
       myfile.open("InputExecutionPlan.graphml", std::ios::in);
@@ -206,7 +206,7 @@ namespace concurrency {
     }
 
     //--------------------------------------------------------------------------
-    void RankerByExecutionBranchPotential::runThroughAdjacents(boost::graph_traits<boost::ExecPlan>::vertex_descriptor vertex,
+    void RankerByCummulativeOutDegree::runThroughAdjacents(boost::graph_traits<boost::ExecPlan>::vertex_descriptor vertex,
                                                                boost::ExecPlan graph) {
       typename boost::graph_traits<boost::ExecPlan>::adjacency_iterator itVB;
       typename boost::graph_traits<boost::ExecPlan>::adjacency_iterator itVE;

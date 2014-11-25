@@ -753,7 +753,7 @@ namespace concurrency {
     boost::dynamic_properties dp;
     dp.property("name", boost::get(&boost::AlgoNodeStruct::m_name, m_ExecPlan));
     dp.property("index", boost::get(&boost::AlgoNodeStruct::m_index, m_ExecPlan));
-    dp.property("dataRank", boost::get(&boost::AlgoNodeStruct::m_rank, m_ExecPlan));
+    dp.property("rank", boost::get(&boost::AlgoNodeStruct::m_rank, m_ExecPlan));
     dp.property("runtime", boost::get(&boost::AlgoNodeStruct::m_runtime, m_ExecPlan));
 
     boost::write_graphml(myfile, m_ExecPlan, dp);

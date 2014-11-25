@@ -16,17 +16,32 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   StatusCode ExecutionFlowManager::initialize(ExecutionFlowGraph* ef_graph,
                                             const std::unordered_map<std::string,unsigned int>& algname_index_map,
-                                            std::vector<EventSlot>& eventSlots){
+                                            std::vector<EventSlot>& eventSlots,
+                                            const std::string& mode){
     m_EFGraph = ef_graph;
     StatusCode sc = ef_graph->initialize(algname_index_map, eventSlots);
-    if (!sc.isSuccess())
-      error() << "Could not initialize the flow graph." << endmsg;
+    if (!sc.isSuccess()) {
+      error() << "Could not initialize the execution flow graph." << endmsg;
+      return sc;
+    }
 
-    auto ranker = concurrency::RankerByProductConsumption();
-    //auto ranker = concurrency::RankerByExecutionBranchPotential();
-    //auto ranker = concurrency::RankerByTiming();
-    //auto ranker = concurrency::RankerByEccentricity();
-    m_EFGraph->rankAlgorithms(ranker);
+    // Rank algorithms if any known optimization mode is supplied
+    if (mode == "PCE") {
+      auto ranker = concurrency::RankerByProductConsumption();
+      m_EFGraph->rankAlgorithms(ranker);
+    } else if (mode == "COD") {
+      auto ranker = concurrency::RankerByCummulativeOutDegree();
+      m_EFGraph->rankAlgorithms(ranker);
+    } else if (mode == "E") {
+      auto ranker = concurrency::RankerByEccentricity();
+      m_EFGraph->rankAlgorithms(ranker);
+    } else if (mode == "T") {
+      auto ranker = concurrency::RankerByTiming();
+      m_EFGraph->rankAlgorithms(ranker);
+    } else if (!mode.empty()){
+      error() << "Requested optimization mode '" << mode << "' is not known." << endmsg;
+      sc = StatusCode::FAILURE;
+    }
 
     return sc;
   }

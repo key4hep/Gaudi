@@ -87,15 +87,15 @@ namespace concurrency {
 
       };
 
-  class RankerByExecutionBranchPotential : public IGraphVisitor {
+  class RankerByCummulativeOutDegree : public IGraphVisitor {
     public:
       /// Constructor
-      RankerByExecutionBranchPotential() {
+      RankerByCummulativeOutDegree() {
         m_nodesSucceeded = 0;
         m_slotNum = -1;
       };
       /// Destructor
-      virtual ~RankerByExecutionBranchPotential() {};
+      virtual ~RankerByCummulativeOutDegree() {};
 
       virtual bool visitEnter(DecisionNode&) const {return true;};
 

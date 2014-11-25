@@ -28,7 +28,8 @@ namespace concurrency {
                             const std::unordered_map<std::string,unsigned int>& algname_index_map);
     StatusCode initialize(ExecutionFlowGraph* CFGraph,
                           const std::unordered_map<std::string,unsigned int>& algname_index_map,
-                          std::vector<EventSlot>& eventSlots);
+                          std::vector<EventSlot>& eventSlots,
+                          const std::string& mode);
     ///
     void simulateExecutionFlow(IGraphVisitor& visitor) const;
     /// Get the flow graph instance

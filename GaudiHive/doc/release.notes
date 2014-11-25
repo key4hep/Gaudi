@@ -1,5 +1,9 @@
 Package : GaudiKernel
 
+! 2014-11-25 - Illya Shapoval
+  o proper switcher between execution optimization modes is introduced
+    (use the ForwardSchedulerSvc property "Optimizer" to set the mode)
+
 ! 2014-10-30 - Illya Shapoval
   o new mode for execution planner added: based on algorithm eccentricities
 
