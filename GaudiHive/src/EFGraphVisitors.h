@@ -167,6 +167,45 @@ namespace concurrency {
 
       };
 
+  class RankerByDataRealmEccentricity : public IGraphVisitor {
+    public:
+      /// Constructor
+      RankerByDataRealmEccentricity() {
+        m_nodesSucceeded = 0;
+        m_slotNum = -1;
+        m_currentDepth = 0;
+        m_maxKnownDepth = 0;
+      };
+      /// Destructor
+      virtual ~RankerByDataRealmEccentricity() {};
+
+      virtual bool visitEnter(DecisionNode&) const {return true;};
+
+      virtual bool visit(DecisionNode&) {return true;};
+
+      virtual bool visitLeave(DecisionNode&) const {return true;};
+
+
+      virtual bool visitEnter(AlgorithmNode&) const {return true;};
+
+      virtual bool visit(AlgorithmNode& node);
+
+
+      virtual void reset() {
+        m_nodesSucceeded = 0;
+        m_currentDepth = 0;
+        m_maxKnownDepth = 0;
+      }
+
+      /// Depth-first node parser to calculate node eccentricity
+      /// (only within the data realm of the execution flow graph)
+      void recursiveVisit(AlgorithmNode& node);
+
+      uint m_currentDepth;
+      uint m_maxKnownDepth;
+
+      };
+
 }
 
 

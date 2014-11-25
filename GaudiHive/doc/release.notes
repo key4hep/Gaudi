@@ -1,6 +1,10 @@
 Package : GaudiKernel
 
 ! 2014-11-25 - Illya Shapoval
+  o First implementation of the optimizer mode, using data realm eccentricity
+    to rank algorithms.
+
+! 2014-11-25 - Illya Shapoval
   o proper switcher between execution optimization modes is introduced
     (use the ForwardSchedulerSvc property "Optimizer" to set the mode)
 

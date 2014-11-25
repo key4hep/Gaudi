@@ -38,6 +38,9 @@ namespace concurrency {
     } else if (mode == "T") {
       auto ranker = concurrency::RankerByTiming();
       m_EFGraph->rankAlgorithms(ranker);
+    } else if (mode == "DRE") {
+      auto ranker = concurrency::RankerByDataRealmEccentricity();
+      m_EFGraph->rankAlgorithms(ranker);
     } else if (!mode.empty()){
       error() << "Requested optimization mode '" << mode << "' is not known." << endmsg;
       sc = StatusCode::FAILURE;

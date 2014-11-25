@@ -207,7 +207,7 @@ namespace concurrency {
 
     //--------------------------------------------------------------------------
     void RankerByCummulativeOutDegree::runThroughAdjacents(boost::graph_traits<boost::ExecPlan>::vertex_descriptor vertex,
-                                                               boost::ExecPlan graph) {
+                                                           boost::ExecPlan graph) {
       typename boost::graph_traits<boost::ExecPlan>::adjacency_iterator itVB;
       typename boost::graph_traits<boost::ExecPlan>::adjacency_iterator itVE;
 
@@ -280,5 +280,39 @@ namespace concurrency {
         }
       }
       return true;
+    }
+
+    //--------------------------------------------------------------------------
+    bool RankerByDataRealmEccentricity::visit(AlgorithmNode& node) {
+
+      // Find eccentricity of the node (only within the data realm of the execution flow graph)
+      recursiveVisit(node);
+
+      float rank = m_maxKnownDepth;
+      node.setRank(rank);
+
+      // Reset visitor for next nodes, if any
+      reset();
+
+      return true;
+    }
+
+    //--------------------------------------------------------------------------
+    void RankerByDataRealmEccentricity::recursiveVisit(AlgorithmNode& node) {
+
+      m_currentDepth += 1;
+
+      auto& products = node.getOutputDataNodes();
+
+      if (products.empty())
+        if ( (m_currentDepth - 1) > m_maxKnownDepth)
+          m_maxKnownDepth = m_currentDepth - 1;
+
+      for (auto p : products)
+        for ( auto algoNode : p->getConsumers())
+          recursiveVisit(*algoNode);
+
+      m_currentDepth -= 1;
+
     }
 }
