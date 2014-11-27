@@ -9,12 +9,8 @@ endif()
 # compiler (without the proper cache)
 if(NOT CMAKE_SOURCE_DIR MATCHES "CMakeTmp")
 
-  find_file(default_toolchain NAMES GaudiDefaultToolchain.cmake
-            HINTS ${CMAKE_SOURCE_DIR}/cmake)
-  if(default_toolchain)
-    include(${default_toolchain})
-  else()
-    message(FATAL_ERROR "Cannot find GaudiDefaultToolchain.cmake")
-  endif()
+ # Note: normally we should look for GaudiDefaultToolchain.cmake, but in Gaudi
+ # it is not needed
+ include(${CMAKE_SOURCE_DIR}/cmake/GaudiDefaultToolchain.cmake)
 
 endif()
