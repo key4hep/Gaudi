@@ -176,7 +176,7 @@ if __name__ == '__main__':
         '''
         logging.debug('getting version of %s', ext)
         vers = Popen(['cmt', 'show', 'macro_value',
-                      '%s_config_version' % ext],
+                      '%s_native_version' % ext],
                      stdout=PIPE).communicate()[0].strip()
         logging.debug('using %s %s', ext, vers)
         if vers == 'dummy': # special case in LCG
