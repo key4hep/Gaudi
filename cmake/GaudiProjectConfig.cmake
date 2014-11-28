@@ -694,9 +694,12 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
   endforeach()
   set(CPACK_SYSTEM_NAME ${BINARY_TAG})
 
-  set(CPACK_GENERATOR TGZ)
+  set(CPACK_GENERATOR "RPM")
+  set(CPACK_PACKAGE_DEFAULT_LOCATION "/usr")
+  set(CPACK_SOURCE_GENERATOR "RPM")
+  set(CPACK_SOURCE_RPM "ON")
 
-  set(CPACK_SOURCE_IGNORE_FILES "/InstallArea/;/build\\\\..*/;/\\\\.svn/;/\\\\.settings/;\\\\..*project;\\\\.gitignore")
+  set(CPACK_SOURCE_IGNORE_FILES "/InstallArea/;/build\\\\..*/;/\\\\.svn/;/\\\\.git/;/\\\\.settings/;\\\\..*project;\\\\.gitignore")
 
   include(CPack)
 
