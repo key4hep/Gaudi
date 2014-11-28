@@ -1574,6 +1574,12 @@ macro_append pp_cflags   " $(CppSpecificFlags)"
 
 #-------------------------------------------------------------------
 
+# Declare a special tag to avoid CMT warnings
+#
+#  lcg-nightlies: used in LHCb nightly builds to switch between the LCG nightly
+#                 builds layout and the LCG release layout.
+tag lcg-nightlies
+
 # FIXME: This should be the kind of pattern to enable custom test settings, but
 # an environment variable is not so safe to use.
 #

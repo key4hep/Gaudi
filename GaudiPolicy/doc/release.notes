@@ -3,6 +3,9 @@ package manager: Marco Clemencic
 Commit Id: $Format:%H$
 
 ! 2014-11-27 - Marco Clemencic
+ - Added the declaration of the CMT tag lcg-nightlies to avoid CMT warnings.
+
+! 2014-11-27 - Marco Clemencic
  - Use <package>_native_version instead of <package>_config_version in
    project_manifest.py for the dependencies on externals.
 
