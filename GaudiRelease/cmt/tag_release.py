@@ -98,11 +98,7 @@ def main():
         # prepare project tag
         ptagdir = "%s/tags/%s/%s" % (proj, proj.upper(), pvers)
         if not svn_exists(ptagdir):
-            svn("mkdir", ptagdir).wait()
-            for f in ["cmt", "Makefile.cmt",
-                      "Makefile-cmake.mk", "cmake", "CMakeLists.txt",
-                      "configure", "toolchain.cmake"]:
-                svn("cp", "/".join([proj, opts.branch, f]), "/".join([ptagdir, f])).wait()
+            svn('cp', '/'.join([proj, opts.branch]), ptagdir).wait()
 
         # prepare package tags
         tag_re = re.compile(r"^v(\d+)r(\d+)(?:p(\d+))?$")
