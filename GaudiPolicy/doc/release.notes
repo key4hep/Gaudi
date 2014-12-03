@@ -2,6 +2,10 @@ package GaudiPolicy
 package manager: Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-12-03 - Marco Clemencic
+ - Fixed inconsistency with the rpm and LCG_interface name of expat in
+   project_manifest.py
+
 ! 2014-11-27 - Marco Clemencic
  - Added the declaration of the CMT tag lcg-nightlies to avoid CMT warnings.
 

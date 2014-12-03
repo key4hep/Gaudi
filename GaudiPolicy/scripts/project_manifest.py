@@ -168,7 +168,6 @@ if __name__ == '__main__':
                     'LCG_Interfaces' in l]
     externals.sort()
 
-
     # get the versions of the externals
     def get_ext_vers(ext):
         '''
@@ -183,8 +182,12 @@ if __name__ == '__main__':
             vers = ''
         return vers
 
+    # mapping between LCG_Interface name and RPM name for special cases
+    rpm_names = {'Expat': 'expat'}
+    fix_rpm_name = lambda n: rpm_names.get(n, n)
+
     packages = ET.Element('packages')
-    packages.extend([ET.Element('package', name=ext, version=vers)
+    packages.extend([ET.Element('package', name=fix_rpm_name(ext), version=vers)
                      for ext, vers in [(ext, get_ext_vers(ext))
                                        for ext in externals]
                      if vers])
