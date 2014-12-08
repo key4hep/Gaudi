@@ -2,6 +2,7 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+============================ GaudiExamples v25r6 =============================
 ! 2014-11-14 - Marco Clemencic
  - Added an example on how to add custom option types.
    (src/Properties/CustomPropertiesAlg.cpp)

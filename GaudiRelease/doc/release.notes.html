@@ -55,6 +55,80 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
+<h2><a name="v25r6">Gaudi v25r6</a> (2014-12-08)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=71">LCGCMT_71</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Monor fixes.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Improvements to the CMake configuration.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>CMake
+<ul>
+<li>Handle compiler declaration in LCG_externals_*.txt.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Modified the selection of C++ standard and use c++14(1y) with gcc 4.9<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-988: allow passing env vars through the call to env.py<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-989: renamed env.py to xenv<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-972: allow different merge commands for different targets<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added special targets unsafe-install and post-install<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-977 Added target to "precompile" the project xenv file<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added the list of heptools dependencies in manifest.xml<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Modified CPack settings to produce RPMs<br/>
+    (<span class="author">A. S. Thompson</span>)</li>
+</ul>
+</li>
+<li>GaudiPluginService (v2r1):
+<ul>
+<li>Demangle factory types in warning messages.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiProfiling (v2r3):
+<ul>
+<li>Fix implementation of Google profilers to properly support auditing during
+   different processing phases.<br/>
+    (<span class="author">Chris Jones</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v31r2):
+<ul>
+<li>Fixed a problem with the interpretation of \n and \t in .opts files.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiPolicy (v15r2):
+<ul>
+<li>Updated project_manifest.py to generate the correct list of externals in
+   the manifest.xml file (see LBCORE-677).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiRelease (v25r6):
+<ul>
+<li>GAUDI-979: modified GaudiRelease scripts to use CMake configuration<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v25r6):
+<ul>
+<li>Added an example on how to add custom option types.
+   (src/Properties/CustomPropertiesAlg.cpp)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
 <h2><a name="v25r5">Gaudi v25r5</a> (2014-10-15)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=70root6">LCGCMT_70root6</a></h3>
 <h3>General Changes</h3>

@@ -1,7 +1,7 @@
 # Provide a simple and generic plugin system.
 # author: Marco Clemencic <marco.clemencic@cern.ch>
 
-gaudi_subdir(GaudiPluginService v2r0)
+gaudi_subdir(GaudiPluginService v2r1)
 
 # Local build options
 option(GAUDI_REFLEX_COMPONENT_ALIASES

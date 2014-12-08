@@ -1,2 +1,2 @@
 # Dummy configuration for an empty subdir (used in CMT to group dependencies).
-gaudi_subdir(GaudiRelease v25r5)
+gaudi_subdir(GaudiRelease v25r6)

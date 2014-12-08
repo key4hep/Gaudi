@@ -2,6 +2,7 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+============================= GaudiKernel v31r2 ==============================
 ! 2014-11-19 - Marco Clemencic
  - Fixed extra ';'.
 

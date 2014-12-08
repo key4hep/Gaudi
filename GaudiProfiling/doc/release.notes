@@ -5,6 +5,7 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+============================ GaudiProfiling v2r3 =============================
 ! 2014-11-11 - Chris Jones
  - Fix implementation of Google profilers to properly support auditing during
    different processing phases.
