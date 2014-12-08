@@ -123,13 +123,6 @@ def main():
                 if not no_tag:
                     svn("up", "--depth=empty", pktagdir).wait() # needed for the copy in the global tag
 
-        if not opts.pre:
-            # prepare the full global tag too
-            for p in packages:
-                tag = packages[p]
-                pktagdir = "%s/tags/%s/%s" % (proj, p, tag)
-                svn("cp", pktagdir, "%s/%s" % (ptagdir, p)).wait()
-
         svn("ci").wait()
 
     finally:
