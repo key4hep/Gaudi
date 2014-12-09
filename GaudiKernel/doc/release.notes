@@ -2,6 +2,11 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-12-09 - Gerhard Raven
+ - GAUDI-992: improve StatusCode::~StatusCode
+   Use small inlined destructor that delegates to another method for the check,
+   instead of using an off-lined destructor.
+
 ============================= GaudiKernel v31r2 ==============================
 ! 2014-11-19 - Marco Clemencic
  - Fixed extra ';'.

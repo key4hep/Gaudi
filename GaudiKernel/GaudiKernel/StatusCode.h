@@ -54,7 +54,8 @@ public:
     { rhs.m_checked = true; }
 
   /// Destructor.
-  GAUDI_API ~StatusCode();
+  ~StatusCode() 
+  { if(UNLIKELY(s_checking)) check(); }
 
   /** Test for a status code of SUCCESS.
    * N.B. This is the only case where a function has succeeded.
@@ -149,6 +150,9 @@ protected:
   SeverityPtr     m_severity;  ///< Pointer to a IssueSeverity
 
   static bool     s_checking;  ///< Global flag to control if StatusCode need to be checked
+
+private:
+   void StatusCode::check();
 };
 
 inline std::ostream& operator<< ( std::ostream& s , const StatusCode& sc )

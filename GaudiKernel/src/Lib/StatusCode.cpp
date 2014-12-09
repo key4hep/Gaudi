@@ -30,8 +30,7 @@ const IssueSeverity& StatusCode::severity() const {
   else            return dummy;
 }
 
-StatusCode::~StatusCode() {
-  if(UNLIKELY(s_checking)) {
+void StatusCode::check() {
 
     if (!m_checked && !GaudiException::s_proc && !std::uncaught_exception() ) {
 
@@ -64,6 +63,5 @@ StatusCode::~StatusCode() {
 
       }
     }
-  }
 }
 
