@@ -69,9 +69,9 @@ namespace Gaudi { namespace PluginService {
 
     /// Convoluted implementation of getCreator with an embedded
     /// reinterpret_cast, used to avoid the warning
-    /// <verbatim>
+    /// <pre>
     /// warning: ISO C++ forbids casting between pointer-to-function and pointer-to-object
-    /// </verbatim>
+    /// </pre>
     /// It is an ugly trick but works.<br/>
     /// See:
     /// <ul>

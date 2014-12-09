@@ -1,5 +1,5 @@
-GaudiPluginService
-=====================
+Gaudi Plugin Service Instructions              {#GaudiPluginService-readme}
+==================================
 
 Introduction
 ------------
@@ -91,7 +91,7 @@ For example, for a templated plug-in class you may have:
     typedef TemplatedBar<int, std::vector<double> > MyBar;
     DECLARE_COMPONENT(MyBar)
 
-but to instatiate it you must call
+but to instantiate it you must call
 
     Foo* b = Foo::Factory::create("TemplatedBar<int, std::vector<double> >",
                                   "MyTemplatedBar");

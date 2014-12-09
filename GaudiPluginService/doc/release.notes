@@ -5,6 +5,9 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+! 2014-07-04 - Marco Clemencic
+ - Improved Doxygen documentation.
+
 ========================== GaudiPluginService v2r1 ===========================
 ! 2014-10-28 - Marco Clemencic
  - Demangle factory types in warning messages.
