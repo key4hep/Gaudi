@@ -39,14 +39,29 @@
 #include <algorithm>
 #include <sstream>
 
+#include "boost/utility/string_ref.hpp"
+
+
 namespace {
   /// Helper function to convert item numbers to path strings
   /// i.e. int -> "/" + int
   inline std::string itemToPath(int item) {
-    std::ostringstream path;
-    path << '/' << item;
-    return path.str();
+    return std::string{'/'} + std::to_string(item);
   }
+
+  // Helper to convert string_ref back into string
+  // (for interoperability with not-yet migrated interface)
+  inline std::string to_string(boost::string_ref r) {
+        return { r.data(), r.size() };
+  }
+
+  inline boost::string_ref::size_type find( boost::string_ref s, char c, size_t o ) {
+        if (s.empty()) return boost::string_ref::npos;
+        s.remove_prefix(o);
+        auto r = s.find(c);
+        return r==boost::string_ref::npos ? r : r+o ;
+  }
+
 }
 
 // If you absolutely need optimization: switch off dynamic_cast.
@@ -488,7 +503,7 @@ StatusCode DataSvc::registerObject(DataObject* parentObj,
           par_entry = node_entry->findLeaf(p_path);
         }
         else if ( 0 != par_entry && par_entry->object() == 0 )  {
-          status = retrieveEntry( node_entry, p_path, par_entry);
+          status = _retrieveEntry( node_entry, p_path, par_entry);
           if ( !status.isSuccess() && !par_entry->address() && m_forceLeaves )  {
             DataObject *pLeaf = createDefaultObject();
             StatusCode sc = registerObject(parentObj, p_path, pLeaf);
@@ -638,27 +653,31 @@ StatusCode DataSvc::unregisterObject(DataObject* pParentObj, int item)    {
 
 /** Invoke data fault handling if enabled
   */
-DataObject* DataSvc::handleDataFault(IRegistry* pReg, const std::string& path)
+DataObject* DataSvc::handleDataFault(IRegistry* pReg, const std::string& path) {
+    return _handleDataFault(pReg,path);
+}
+
+DataObject* DataSvc::_handleDataFault(IRegistry* pReg, boost::string_ref path)
 {
   if ( m_enableFaultHdlr )  {
     IRegistry* pLeaf = 0;
-    if ( pReg && path.length() == 0 )   {
+    if ( pReg && path.empty() )   {
       DataIncident incident(name(), m_faultName, pReg->identifier());
       m_incidentSvc->fireIncident(incident);
       return pReg->object();
     }
     else if ( pReg )  {
       std::string p = pReg->identifier();
-      if (path[0] != SEPARATOR ) p += SEPARATOR;
-      p += path;
+      if (path.front() != SEPARATOR ) p += SEPARATOR;
+      p.append(path.data(),path.size());
       DataIncident incident(name(), m_faultName, p);
       m_incidentSvc->fireIncident(incident);
       pLeaf = m_root->findLeaf(p);
     }
     else  {
       std::string p = m_root->identifier();
-      if (path[0] != SEPARATOR ) p += SEPARATOR;
-      p += path;
+      if (path.front() != SEPARATOR ) p += SEPARATOR;
+      p.append(path.data(),path.size());
       DataIncident incident(name(), m_faultName, p);
       m_incidentSvc->fireIncident(incident);
       pLeaf = m_root->findLeaf(p);
@@ -762,34 +781,40 @@ StatusCode DataSvc::loadObject(IConversionSvc* pLoader, IRegistry* pRegistry) {
 StatusCode DataSvc::retrieveEntry(RegEntry* parentObj,
                                   const std::string& path,
                                   RegEntry*& pEntry)  {
-  std::string::size_type        sep    = path.find(SEPARATOR,1);
+    return _retrieveEntry(parentObj,path,pEntry);
+}
+
+StatusCode DataSvc::_retrieveEntry(RegEntry* parentObj,
+                                  boost::string_ref path,
+                                  RegEntry*& pEntry)  {
+  static const auto empty = boost::string_ref{};
+  auto sep    = find(path,SEPARATOR,1);
   StatusCode status = StatusCode(INVALID_ROOT,true);
-  pEntry = 0;
+  pEntry = nullptr;
   // A.Valassi 16.08.2001 avoid core dump if store is empty
   if ( checkRoot() )  {
-    if ( 0 == parentObj )    {
-      if ( path.length() == 0 || path == m_rootName )   {
-        return retrieveEntry(m_root, "", pEntry);
+    if ( !parentObj )    {
+      if ( path.empty() || path == m_rootName )   {
+        return _retrieveEntry(m_root, empty, pEntry);
       }
-      else if ( path[0] != SEPARATOR )  {
-        return retrieveEntry(m_root, path, pEntry);
+      else if ( path.front() != SEPARATOR )  {
+        return _retrieveEntry(m_root, path, pEntry);
       }
-      else if ( sep != std::string::npos )    {
-        if ( m_root->object() == 0 )  {
-          RegEntry* r = 0;
-          status = retrieveEntry(m_root, "", r);
+      else if ( sep != boost::string_ref::npos )    {
+        if ( !m_root->object() )  {
+          RegEntry* r = nullptr;
+          status = _retrieveEntry(m_root, empty, r);
           if ( !status.isSuccess() )  {
             return status;
           }
         }
-        std::string o_path (path, sep, path.length());
-        return retrieveEntry(m_root, o_path, pEntry);
+        return _retrieveEntry(m_root, path.substr(sep), pEntry);
       }
       return INVALID_OBJ_PATH;
     }
-    if ( sep != std::string::npos )  { // the string contains a separator (after pos 0)
-      std::string p_path (path,0,sep);
-      std::string o_path (path,sep,path.length());
+    if ( sep != boost::string_ref::npos )  { // the string contains a separator (after pos 0)
+      auto p_path = path.substr(0,sep);
+      auto o_path = path.substr(sep);
       if (!parentObj->object()) { // if the parent object has not been loaded yet, load it now
         status = loadObject(parentObj);
         if ( !status.isSuccess() )  {
@@ -800,12 +825,12 @@ StatusCode DataSvc::retrieveEntry(RegEntry* parentObj,
       if ( !root_entry && m_enableFaultHdlr )    {
         // If not even the parent is there, an incident
         // to load the parent must be fired...
-        handleDataFault(parentObj, p_path);
+        _handleDataFault(parentObj, p_path);
         root_entry = parentObj->findLeaf(p_path);
       }
       if ( root_entry )    {
         DataObject* pO = root_entry->object();
-        if ( 0 == pO )  {
+        if ( !pO )  {
           // Object is not loaded: load the object if at all possible
           status = loadObject(root_entry);
           if ( !status.isSuccess() )  {
@@ -815,11 +840,11 @@ StatusCode DataSvc::retrieveEntry(RegEntry* parentObj,
         if ( root_entry->isSoft() )    {
           root_entry = CAST_REGENTRY(RegEntry*,pO->registry());
         }
-        return retrieveEntry (root_entry, o_path, pEntry);
+        return _retrieveEntry (root_entry, o_path, pEntry);
       }
       return status;
     }
-    else if ( path.length() == 0 )    {
+    else if ( path.empty() )    {
       pEntry = parentObj;
     }
     else {
@@ -833,15 +858,15 @@ StatusCode DataSvc::retrieveEntry(RegEntry* parentObj,
       pEntry = parentObj->findLeaf(path);
       // If no registry entry was found, trigger incident for action-on-demand
       if ( !pEntry && m_enableFaultHdlr )  {
-        handleDataFault(parentObj, path);
-        pEntry = (0==path.length()) ? parentObj : parentObj->findLeaf(path);
+        _handleDataFault(parentObj, path);
+        pEntry = (path.empty() ? parentObj : parentObj->findLeaf(path) );
       }
     }
     // Check results and return
-    if ( 0 == pEntry )  {
+    if ( !pEntry )  {
       status = INVALID_OBJ_PATH;
     }
-    else if ( 0 == pEntry->object() )  {
+    else if ( !pEntry->object() )  {
       status = loadObject(pEntry);
     }
     else if ( m_enableAccessHdlr )  {
@@ -864,9 +889,9 @@ StatusCode DataSvc::retrieveEntry(RegEntry* parentObj,
 StatusCode DataSvc::retrieveObject(IRegistry* pRegistry,
                                    const std::string& path,
                                    DataObject*& pObject)   {
-  pObject = 0;
-  RegEntry *result = 0, *parent = CAST_REGENTRY(RegEntry*,pRegistry);
-  StatusCode status = retrieveEntry(parent, path, result);
+  pObject = nullptr;
+  RegEntry *result = nullptr, *parent = CAST_REGENTRY(RegEntry*,pRegistry);
+  StatusCode status = _retrieveEntry(parent, path, result);
   if ( status.isSuccess() )   {
     pObject = result->object();
   }
@@ -876,7 +901,7 @@ StatusCode DataSvc::retrieveObject(IRegistry* pRegistry,
 /// Retrieve object identified by its full path from the data store.
 StatusCode DataSvc::retrieveObject(const std::string& fullPath,
                                    DataObject*& pObject)   {
-  IRegistry* nullDir = 0;
+  IRegistry* nullDir = nullptr;
   return retrieveObject(nullDir, fullPath, pObject);
 }
 
@@ -884,7 +909,7 @@ StatusCode DataSvc::retrieveObject(const std::string& fullPath,
 StatusCode DataSvc::retrieveObject(const std::string& parentPath,
                                    const std::string& objectPath,
                                    DataObject*& pObject)   {
-  DataObject* parent = 0;
+  DataObject* parent = nullptr;
   StatusCode status = retrieveObject(parentPath, parent);
   if ( status.isSuccess() )   {
     status = retrieveObject (parent, objectPath, pObject);

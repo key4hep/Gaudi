@@ -8,6 +8,7 @@
 // Framework include files
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/IRegistry.h"
+#include <boost/utility/string_ref.hpp>
 
 // Forward declarations
 class DataSvc;
@@ -17,7 +18,7 @@ class IOpaqueAddress;
 class IDataStoreAgent;
 
 
-namespace DataSvcHelpers   {
+namespace DataSvcHelpers {
   /**
    * @class RegistryEntry RegistryEntry.h GaudiKernel/RegistryEntry.h
    *
@@ -31,7 +32,7 @@ namespace DataSvcHelpers   {
    * @author Markus Frank
    * @author Sebastien Ponce
    */
-  class GAUDI_API RegistryEntry : public IRegistry  {
+  class GAUDI_API RegistryEntry : public IRegistry {
   private:
     /// Definition of datastore type
     typedef std::vector<IRegistry*> Store;
@@ -70,7 +71,7 @@ namespace DataSvcHelpers   {
     /// Internal method to retrieve data directory
     IRegistry* i_find ( const IRegistry* pDirectory )  const;
     /// Internal method to retrieve data directory
-    RegistryEntry* i_find ( const std::string& path )  const;
+    RegistryEntry* i_find ( boost::string_ref path )  const;
     /// Internal method to locate object entry
     RegistryEntry* i_find ( const DataObject* pObject )  const;
     /// Internal method to add entries
@@ -86,7 +87,7 @@ namespace DataSvcHelpers   {
       return m_pParent;
     }
     /// Find identified leaf in this registry node
-    RegistryEntry* findLeaf(const std::string& path)  const    {
+    RegistryEntry* findLeaf(boost::string_ref path)  const    {
       return i_find(path);
     }
     /// Find identified leaf in this registry node

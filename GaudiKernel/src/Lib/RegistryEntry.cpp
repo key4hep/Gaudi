@@ -39,8 +39,21 @@
 //
 #define CAST_REGENTRY(x,y) dynamic_cast<x>(y)
 //#define CAST_REGENTRY(x,y) (x)(y)
-enum Seperator { SEPARATOR='/' };
+constexpr char SEPARATOR { '/' };
 
+namespace {
+  inline boost::string_ref::size_type find_( boost::string_ref s, char c, size_t o ) {
+        if (!s.empty()) s.remove_prefix(o);
+        auto r = s.find(c);
+        return (r == boost::string_ref::npos) ? r : (r + o);
+  }
+  inline std::string operator+(std::string s, boost::string_ref p) {
+        return s.append(p.data(),p.size());
+  }
+  inline std::string to_string(boost::string_ref p) {
+        return { p.data(), p.size() };
+  }
+}
 /// Standard Constructor
 DataSvcHelpers::RegistryEntry::RegistryEntry(const std::string& path, RegistryEntry* parent)
 : m_refCount(0),
@@ -166,9 +179,9 @@ long DataSvcHelpers::RegistryEntry::remove ( const std::string& nam )  {
     return remove(path);
   }
   // if this object is already present, this is an error....
-  for (Store::iterator i = m_store.begin(); i != m_store.end(); i++ )   {
-    if ( nam == (*i)->name() )   {
-      remove(*i);
+  for (auto& i : m_store ) {
+    if ( nam == i->name() )   {
+      remove(i);
       return StatusCode::SUCCESS;
     }
   }
@@ -178,14 +191,12 @@ long DataSvcHelpers::RegistryEntry::remove ( const std::string& nam )  {
 /// Internal method to add entries
 DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_add(const std::string& nam)    {
   if ( nam[0] != SEPARATOR )   {
-    std::string path = nam;
-    path.insert(path.begin(), SEPARATOR);
-    return i_add(path);
+    return i_add( SEPARATOR + nam );
   }
   // if this object is already present, this is an error....
-  for (Store::iterator i = m_store.begin(); i != m_store.end(); i++ )   {
-    if ( nam == (*i)->name() )  {
-      return 0;
+  for (auto& i : m_store ) {
+    if ( nam == i->name() )  {
+      return nullptr;
     }
   }
   return new RegistryEntry( nam, this );
@@ -231,9 +242,9 @@ long DataSvcHelpers::RegistryEntry::add ( const std::string& name, IOpaqueAddres
 
 /// Delete recursively all elements pending from the current store item
 long DataSvcHelpers::RegistryEntry::deleteElements()   {
-  for (Store::iterator i = m_store.begin(); i != m_store.end(); i++ )   {
-    RegistryEntry* entry = CAST_REGENTRY(RegistryEntry*, *i);
-    if ( 0 != entry )   {
+  for (auto& i : m_store ) {
+    RegistryEntry* entry = CAST_REGENTRY(RegistryEntry*, i);
+    if ( entry )   {
       entry->deleteElements();
       entry->release();
     }
@@ -244,55 +255,48 @@ long DataSvcHelpers::RegistryEntry::deleteElements()   {
 
 /// Try to find an object identified by its pointer
 IRegistry* DataSvcHelpers::RegistryEntry::i_find( const IRegistry* obj )  const  {
-  Store::const_iterator i = std::find(m_store.begin(),m_store.end(),obj);
-  return (i==m_store.end()) ? 0 : (*i);
+  auto i = std::find(m_store.begin(),m_store.end(),obj);
+  return (i!=m_store.end()) ? (*i) : nullptr;
 }
 
 /// Find identified leaf in this registry node
-DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find(const std::string& path)   const    {
-  if ( path[0] != SEPARATOR )    {
-    std::string thePath = path;
-    thePath.insert(thePath.begin(), SEPARATOR);
-    return i_find(thePath);
-  }
-  else  {
-    std::string::size_type len  = path.length();
-    std::string::size_type loc1 = path.find(SEPARATOR,1);
-    std::string::size_type len2 = loc1 != std::string::npos ? loc1 : len;
-    for (Store::const_iterator i = m_store.begin(); i != m_store.end(); i++ )   {
-      RegistryEntry* regEnt = CAST_REGENTRY(RegistryEntry*, *i);
-      const std::string& nam = regEnt->name();
-      // check that the first len2 chars of path are the same as nam
-      // (i.e. match {len2:3 nam:"/Ab" path:"/Ab/C"}
-      // but not {len2:3 nam:"/Abc" path:"/Ab/C"})
-      if ( path.compare(0, len2, nam) == 0 ) {
-        try {
-          if ( loc1 != std::string::npos ) {
-            std::string search_path(path, loc1, len);
-            IRegistry* pDir = regEnt->find(search_path);
-            if ( 0 != pDir )    {
-              return CAST_REGENTRY(RegistryEntry*, pDir);
-            }
-            return 0;
+DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find(boost::string_ref path)   const    {
+  if ( path.front() != SEPARATOR )    return i_find(std::string{SEPARATOR}+path);
+  auto len  = path.size();
+  auto loc1 = find_(path,SEPARATOR,1);
+  auto len2 = (loc1 != boost::string_ref::npos) ? loc1 : len;
+  for (const auto& i : m_store )   {
+    RegistryEntry* regEnt = CAST_REGENTRY(RegistryEntry*, i);
+    const std::string& nam = regEnt->name();
+    // check that the first len2 chars of path are the same as nam
+    // (i.e. match {len2:3 nam:"/Ab" path:"/Ab/C"}
+    // but not {len2:3 nam:"/Abc" path:"/Ab/C"})
+    if ( path.substr(0, len2) == nam ) {
+      try {
+        if ( loc1 != boost::string_ref::npos ) {
+          auto  search_path = path.substr(loc1, len);
+          IRegistry* pDir = regEnt->find(to_string(search_path));
+          if ( pDir )    {
+            return CAST_REGENTRY(RegistryEntry*, pDir);
           }
-          else  {
-            return CAST_REGENTRY(RegistryEntry*, *i);
-          }
+          return nullptr;
         }
-        catch (...)   {
+        else  {
+          return CAST_REGENTRY(RegistryEntry*, i);
         }
       }
-    }
-    // If this node is "/NodeA", this part allows to find "/NodeA/NodeB" as
-    // our "/NodeB" child.
-    if ( path.compare(0, len2, m_path) == 0 ) {
-      if (len2 < len)   {
-        std::string search_path(path, loc1, len);
-        return i_find(search_path);
+      catch (...)   {
       }
     }
   }
-  return 0;
+  // If this node is "/NodeA", this part allows to find "/NodeA/NodeB" as
+  // our "/NodeB" child.
+  if ( path.substr(0, len2) == m_path ) {
+    if (len2 < len)   {
+      return i_find(path.substr(loc1, len));
+    }
+  }
+  return nullptr;
 }
 
 /// Find identified leaf in this registry node
@@ -322,9 +326,9 @@ long DataSvcHelpers::RegistryEntry::traverseTree(IDataStoreAgent* pAgent, int le
   bool go_down = pAgent->analyse(this, level);
   long status = StatusCode::SUCCESS;
   if ( go_down )    {
-    for ( Store::iterator i = m_store.begin(); i != m_store.end(); i++ )   {
+    for ( auto& i : m_store )   {
       try   {
-        RegistryEntry* entry = CAST_REGENTRY(RegistryEntry*, *i);
+        RegistryEntry* entry = CAST_REGENTRY(RegistryEntry*, i);
         entry->traverseTree(pAgent, level+1);
       }
       catch (...)   {
@@ -337,7 +341,7 @@ long DataSvcHelpers::RegistryEntry::traverseTree(IDataStoreAgent* pAgent, int le
 
 // Recursive helper to assemble the full path name of the entry
 void DataSvcHelpers::RegistryEntry::assemblePath(std::string& buffer)  const  {
-  if ( m_pParent != 0 )    {
+  if ( m_pParent )    {
     m_pParent->assemblePath(buffer);
   }
   buffer += m_path;

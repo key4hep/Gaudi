@@ -2,6 +2,10 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-12-10 - Gerhard Raven
+ - GAUDI-993: Improve string handling in DataSvc::retrieveEntry
+   Use boost::string_ref too speed up string manipulations.
+
 ! 2014-12-10 - Marco Clemencic
  - Fixed mistake in patch GAUDI-992.
 
