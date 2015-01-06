@@ -3,6 +3,10 @@ Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
 ! 2015-01-06 - Marco Clemencic
+ - Added StatusCode::checkingEnabled() static method to check if the checking
+   is enabled or not.
+
+! 2015-01-06 - Marco Clemencic
  - Fixed wrong "unchecked StatusCode" reporting after patch GAUDI-992.
    Modified the StatusCode::check() to correctly report the function also when
    StatusCode::~StatusCode() is not inlined.

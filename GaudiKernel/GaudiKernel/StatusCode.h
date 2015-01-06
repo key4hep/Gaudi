@@ -133,6 +133,7 @@ public:
 
   static GAUDI_API void enableChecking();
   static GAUDI_API void disableChecking();
+  static GAUDI_API bool checkingEnabled();
 
 protected:
   /// The status code.

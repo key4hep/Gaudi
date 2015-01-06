@@ -24,6 +24,10 @@ void StatusCode::disableChecking() {
   s_checking = false;
 }
 
+bool StatusCode::checkingEnabled() {
+  return s_checking;
+}
+
 const IssueSeverity& StatusCode::severity() const {
   static IssueSeverity dummy;
   if (m_severity) return *m_severity;
