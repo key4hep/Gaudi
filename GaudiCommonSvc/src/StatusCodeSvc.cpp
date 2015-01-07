@@ -81,13 +81,18 @@ StatusCodeSvc::reinitialize() {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 StatusCode
 StatusCodeSvc::finalize() {
+  MsgStream log( msgSvc(), name() );
 
   if (m_dat.size() > 0) {
-    MsgStream log( msgSvc(), name() );
 
     log << MSG::INFO << "listing all unchecked return codes:" << endmsg;
 
     list();
+
+  } else {
+
+    if (msgLevel(MSG::DEBUG))
+      log << MSG::DEBUG << "all StatusCode instances where checked" << endmsg;
 
   }
 
