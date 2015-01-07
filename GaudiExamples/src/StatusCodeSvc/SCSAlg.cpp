@@ -53,11 +53,13 @@ void SCSAlg::fncUnchecked() {
 
 }
 
+#ifndef special_fncUnchecked2
 void SCSAlg::fncUnchecked2() {
 
   test();
 
 }
+#endif
 
 // Static Factory declaration
 DECLARE_COMPONENT(SCSAlg)
