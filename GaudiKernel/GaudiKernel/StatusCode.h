@@ -40,8 +40,12 @@ public:
     d_code(SUCCESS), m_checked(false), m_severity() {}
   StatusCode( unsigned long code, const IssueSeverity& sev ):
     d_code(code),m_checked(false), m_severity() {
-    try { // ensure that we do not throw even if the we cannot copy the severity
+    try { // ensure that we do not throw even if we cannot copy the severity
+#if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
+      m_severity = std::make_shared<IssueSeverity>(sev);
+#else
       m_severity = SeverityPtr(new IssueSeverity(sev));
+#endif
     }
     catch (...) {}
   }
@@ -53,9 +57,17 @@ public:
     m_severity(rhs.m_severity)
     { rhs.m_checked = true; }
 
+#ifndef __GCCXML__
+  /// Move constructor.
+  StatusCode( StatusCode&& rhs ):
+    d_code(rhs.d_code), m_checked(rhs.m_checked),
+    m_severity( std::move(rhs.m_severity) )
+  { rhs.m_checked = true; }
+#endif
+
   /// Destructor.
   ~StatusCode()
-  { if(UNLIKELY(s_checking)) check(); }
+  { if (UNLIKELY(s_checking)) check(); }
 
   /** Test for a status code of SUCCESS.
    * N.B. This is the only case where a function has succeeded.

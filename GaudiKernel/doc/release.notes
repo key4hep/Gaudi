@@ -2,6 +2,11 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-01-07 - Gerhard Raven
+ - Small performance improvements to StatusCode:
+   - added move constructor
+   - use std::make_shared instead of std::shared_ptr constructor
+
 ! 2015-01-06 - Marco Clemencic
  - Added StatusCode::checkingEnabled() static method to check if the checking
    is enabled or not.
