@@ -2,6 +2,9 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-01-07 - Marco Clemencic
+ - Reorganized and improved StatusCodeSvc tests.
+
 =========================== GaudiExamples v25r6p1 ============================
 ============================ GaudiExamples v25r6 =============================
 ! 2014-11-14 - Marco Clemencic
