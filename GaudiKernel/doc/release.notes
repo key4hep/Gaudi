@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-01-07 - Gerhard Raven
+ - GAUDI-993: more speed improvements in DataSvc::retrieveEntry
+
 ! 2015-01-07 - Marco Clemencic
  - Fixed g++ 4.9 warning (unused typedef).
 

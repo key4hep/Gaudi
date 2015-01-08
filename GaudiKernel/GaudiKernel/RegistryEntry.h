@@ -74,8 +74,10 @@ namespace DataSvcHelpers {
     RegistryEntry* i_find ( boost::string_ref path )  const;
     /// Internal method to locate object entry
     RegistryEntry* i_find ( const DataObject* pObject )  const;
+    /// Internal method to create entries
+    RegistryEntry* i_create ( std::string name );
     /// Internal method to add entries
-    RegistryEntry* i_add ( const std::string& name );
+    long i_add ( RegistryEntry* entry );
     /// Set new parent pointer
     void setParent(RegistryEntry* pParent);
     /// Set the transient data store
@@ -104,7 +106,7 @@ namespace DataSvcHelpers {
     void makeSoft (IOpaqueAddress* pAddress);
   public:
     /// Standard Constructor
-    RegistryEntry(const std::string& path, RegistryEntry* parent = 0);
+    RegistryEntry(std::string path, RegistryEntry* parent = 0);
     /// Standard Destructor
     virtual ~RegistryEntry();
     /// IInterface implementation: Reference the object

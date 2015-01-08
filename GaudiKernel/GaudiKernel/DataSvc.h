@@ -417,10 +417,10 @@ protected:
     */
   DataObject* handleDataFault(IRegistry* pReg, const std::string& path="");
 private:
-  StatusCode _retrieveEntry(DataSvcHelpers::RegistryEntry* parentObj,
-                            boost::string_ref path,
-                            DataSvcHelpers::RegistryEntry*& pEntry) ;
-  DataObject* _handleDataFault(IRegistry* pReg, boost::string_ref path = boost::string_ref{});
+  StatusCode i_retrieveEntry(DataSvcHelpers::RegistryEntry* parentObj,
+                             boost::string_ref path,
+                             DataSvcHelpers::RegistryEntry*& pEntry) ;
+  DataObject* i_handleDataFault(IRegistry* pReg, boost::string_ref path = boost::string_ref{});
 };
 #endif // GAUDIKERNEL_DATASVC_H
 
