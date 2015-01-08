@@ -171,7 +171,7 @@ DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_create(std::stri
   if ( nam.front() != SEPARATOR ) nam.insert(0,1,SEPARATOR);
   // if this object is already present, this is an error....
   auto not_present = std::none_of( std::begin(m_store), std::end(m_store),
-                                   [&](IRegistry* i) { return nam == i->name(); 
+                                   [&](IRegistry* i) { return nam == i->name();
   } );
   return not_present ? new RegistryEntry( std::move(nam), this ) : nullptr;
 }
@@ -184,16 +184,16 @@ long DataSvcHelpers::RegistryEntry::add( IRegistry* obj ) {
 
 ///Add object to the container
 long DataSvcHelpers::RegistryEntry::i_add( RegistryEntry* pEntry ) {
-//TODO: if this is the sole place where items are added to m_store, 
-//      and we know here that they must be RegisteryEntry, can we 
+//TODO: if this is the sole place where items are added to m_store,
+//      and we know here that they must be RegisteryEntry, can we
 //      drop the dynamic_cast every where else???
-//TODO: if so, can we also change m_store to be std::vector<RegistryEntry*> 
+//TODO: if so, can we also change m_store to be std::vector<RegistryEntry*>
 //      instead
 //TODO: if so, can we not make it std::vector<RegistryEntry> instead?
 //TODO: if so, should make sure that a RegistryEntry can be std::move'ed
   try {
     pEntry->setDataSvc(m_pDataProviderSvc);
-    m_store.push_back(pEntry); 
+    m_store.push_back(pEntry);
     pEntry->setParent(this);
     if ( !pEntry->isSoft() && pEntry->address() )   {
       pEntry->address()->setRegistry(pEntry);
@@ -242,28 +242,30 @@ IRegistry* DataSvcHelpers::RegistryEntry::i_find( const IRegistry* obj )  const 
 }
 
 /// Find identified leaf in this registry node
-DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find(boost::string_ref path)   const    {
-  if ( path.front() == SEPARATOR ) return i_find(path.substr(1)); // strip leading '/'
-  auto loc1 = path.find(SEPARATOR);
-  auto len2 = (loc1 != boost::string_ref::npos) ? loc1 : path.size();
-  for (const auto& i : m_store ) {
-    RegistryEntry* regEnt = CAST_REGENTRY(RegistryEntry*, i);
-    // check that the first len2 chars of path are the same as regEng->name()
-    // (i.e. match {len2:3 nam:"/Ab"  path:"/Ab/C"}
-    // but not     {len2:3 nam:"/Abc" path:"/Ab/C"})
-    if ( path.substr(0, len2) == boost::string_ref{regEnt->m_path}.substr(1) ) {
-      try {
-        return ( loc1 == boost::string_ref::npos ) ? 
-                    regEnt : 
-                    regEnt->i_find(path.substr(loc1));
-      }
-      catch (...)   { }
+DataSvcHelpers::RegistryEntry* DataSvcHelpers::RegistryEntry::i_find(boost::string_ref path) const {
+  if ( path.front() == SEPARATOR ) path.remove_prefix(1);  // strip leading '/', if present
+  while (!path.empty()) {
+    // check that the chars of path prior to / are the same as regEnt->name()
+    // (i.e. match { nam:"/Ab"  path:"/Ab/C"}
+    // but not     { nam:"/Abc" path:"/Ab/C"})
+    auto loc1 = path.find(SEPARATOR);
+    auto cpath = path.substr(0,loc1);
+    if (loc1 != boost::string_ref::npos) {
+      path.remove_prefix(loc1+1);
+    } else {
+      path.clear();
     }
-  }
-  // If this node is "/NodeA", this part allows to find "/NodeA/NodeB" as
-  // our "/NodeB" child.
-  if ( len2 < path.size() && path.substr(0, len2) == boost::string_ref{m_path}.substr(1) ) {
-     return i_find(path.substr(loc1));
+    auto i = std::find_if( std::begin(m_store), std::end(m_store),
+                           [&](decltype(m_store)::const_reference reg) {
+      return cpath == boost::string_ref{reg->name()}.substr(1);
+    });
+    if ( i!=std::end(m_store) ) {
+      RegistryEntry* regEnt = CAST_REGENTRY(RegistryEntry*, *i);
+      return  path.empty() ?  regEnt : regEnt->i_find(path);
+    }
+    // If this node is "/NodeA", this part allows to find "/NodeA/NodeB" as
+    // our "/NodeB" child.
+    if ( cpath != boost::string_ref{m_path}.substr(1) ) break;
   }
   return nullptr;
 }
