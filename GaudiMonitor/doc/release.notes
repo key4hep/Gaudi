@@ -2,8 +2,12 @@ Package: GaudiMonitor
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-01-07 - Marco Clemencic
+ - Adapted HistorySvc to the changes introduced with GAUDI-995 (backward
+   incompatible change in IAlgManager).
+
 ============================= GaudiMonitor v5r2 ==============================
-! 2013-09-09 - Marco Clemencic
+! 2014-09-09 - Marco Clemencic
  - Removed an occurrence of 'endreq', slipped in with a relatively recent patch.
 
 ============================= GaudiMonitor v5r1 ==============================

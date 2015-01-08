@@ -244,23 +244,20 @@ StatusCode HistorySvc::captureState() {
     m_log << MSG::ERROR << "Could not get AlgManager" << endmsg;
     return StatusCode::FAILURE;
   } else {
-
-    std::list<IAlgorithm*> algs;
-    algs = algMgr->getAlgorithms();
-    std::list<IAlgorithm*>::const_iterator itr;
-    for (itr=algs.begin(); itr!=algs.end(); ++itr) {
-      Algorithm* alg = dynamic_cast<Algorithm*> (*itr);
+    size_t count = 0;
+    for (auto ialg: algMgr->getAlgorithms()) {
+      Algorithm* alg = dynamic_cast<Algorithm*>(ialg);
       if (alg == 0) {
-	m_log << MSG::WARNING << "Algorithm " << (*itr)->name()
+	m_log << MSG::WARNING << "Algorithm " << ialg->name()
 	      << " does not inherit from Algorithm. Not registering it."
 	      << endmsg;
       } else {
+        ++count;
 	registerAlg( *alg ).ignore();
       }
     }
 
-    m_log << MSG::INFO;
-    m_log << "Registered " << algs.size() << " Algorithms" << endmsg;
+    m_log << MSG::INFO << "Registered " << count << " Algorithms" << endmsg;
 
   }
 
