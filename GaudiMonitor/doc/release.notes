@@ -2,6 +2,9 @@ Package: GaudiMonitor
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-01-08 - Marco Clemencic
+ - Refactored HistorySvc implementation using some C++11 constructs.
+
 ! 2015-01-07 - Marco Clemencic
  - Adapted HistorySvc to the changes introduced with GAUDI-995 (backward
    incompatible change in IAlgManager).
