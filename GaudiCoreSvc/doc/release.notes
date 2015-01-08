@@ -5,6 +5,9 @@
 # Commit Id: $Format:%H$
 ################################################################################
 
+! 2015-01-07 - Gerhard Raven
+ - GAUDI-995: improve Algorithm storage/management in AlgorithmManager
+
 ============================= GaudiCoreSvc v3r1 ==============================
 ! 2014-03-18 - Ben Couturier
  - Fixed bug #104127: remove hwaf configuration.

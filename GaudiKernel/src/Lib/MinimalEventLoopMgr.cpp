@@ -14,6 +14,8 @@
 
 #include "GaudiKernel/MinimalEventLoopMgr.h"
 
+#include <algorithm>
+
 namespace {
   class AbortEventListener: public implements1<IIncidentListener> {
   public:
@@ -393,10 +395,11 @@ StatusCode MinimalEventLoopMgr::executeEvent(void* /* par */)    {
   // (before we were reseting only the topalgs)
   SmartIF<IAlgManager> algMan(serviceLocator());
   if (LIKELY(algMan.isValid())) {
-    const ListAlgPtrs& allAlgs = algMan->getAlgorithms() ;
-    for( ListAlgPtrs::const_iterator ialg = allAlgs.begin() ; allAlgs.end() != ialg ; ++ialg ) {
-      if (LIKELY(0 != *ialg)) (*ialg)->resetExecuted();
-    }
+    const auto& allAlgs = algMan->getAlgorithms();
+    std::for_each( std::begin(allAlgs), std::end(allAlgs),
+                   [](IAlgorithm* alg) {
+                        if (LIKELY(alg!=nullptr)) alg->resetExecuted();
+    } );
   }
 
   // Get the IProperty interface of the ApplicationMgr to pass it to RetCodeGuard

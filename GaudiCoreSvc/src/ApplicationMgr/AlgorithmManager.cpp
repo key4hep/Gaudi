@@ -123,12 +123,15 @@ bool AlgorithmManager::existsAlgorithm(const std::string& name) const {
 }
 
   // Return the list of Algorithms
-const std::list<IAlgorithm*>& AlgorithmManager::getAlgorithms() const
+const std::vector<IAlgorithm*>& AlgorithmManager::getAlgorithms() const
 {
   m_listOfPtrs.clear();
-  for (ListAlg::const_iterator it = m_listalg.begin(); it != m_listalg.end(); ++it) {
-    m_listOfPtrs.push_back(const_cast<IAlgorithm*>(it->algorithm.get()));
-  }
+  m_listOfPtrs.reserve(m_listalg.size());
+  std::transform( std::begin(m_listalg), std::end(m_listalg),
+                  std::back_inserter(m_listOfPtrs),
+                  [](ListAlg::const_reference alg) {
+                      return const_cast<IAlgorithm*>(alg.algorithm.get());
+                  } );
   return m_listOfPtrs;
 }
 
