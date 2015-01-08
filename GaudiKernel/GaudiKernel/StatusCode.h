@@ -147,6 +147,31 @@ public:
   static GAUDI_API void disableChecking();
   static GAUDI_API bool checkingEnabled();
 
+  /**
+   * Simple RAII class to ignore unchecked StatusCode instances in a scope.
+   *
+   * Example:
+   * @code{.cpp}
+   * void myFunction() {
+   *   StatusCode sc1 = aFunction(); // must be checked
+   *   {
+   *     StatusCode::ScopedDisableChecking _sc_ignore;
+   *     StatusCode sc2 = anotherFunction(); // automatically ignored
+   *   }
+   * }
+   * @endcode
+   */
+  class ScopedDisableChecking {
+    bool m_enabled;
+  public:
+    ScopedDisableChecking(): m_enabled(StatusCode::checkingEnabled()) {
+      if (m_enabled) StatusCode::disableChecking();
+    }
+    ~ScopedDisableChecking() {
+      if (m_enabled) StatusCode::enableChecking();
+    }
+  };
+
 protected:
   /// The status code.
   unsigned long   d_code;      ///< The status code

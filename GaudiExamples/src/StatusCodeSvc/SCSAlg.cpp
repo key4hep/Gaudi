@@ -25,7 +25,7 @@ StatusCode SCSAlg::execute() {
   fncChecked();
   fncUnchecked();
   fncUnchecked2();
-
+  fncIgnored();
 
   return StatusCode::SUCCESS;
 
@@ -60,6 +60,14 @@ void SCSAlg::fncUnchecked2() {
 
 }
 #endif
+
+void SCSAlg::fncIgnored() {
+  // Ignore all unchecked StatusCode instances in the current scope.
+  StatusCode::ScopedDisableChecking _sc_ignore;
+
+  test();
+
+}
 
 // Static Factory declaration
 DECLARE_COMPONENT(SCSAlg)

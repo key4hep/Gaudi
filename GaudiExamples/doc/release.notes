@@ -2,6 +2,10 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-01-08 - Marco Clemencic
+ - Extended StatusCodeSvc tests to check the new class
+   StatusCode::ScopedDisableChecking.
+
 ! 2015-01-07 - Marco Clemencic
  - Implemented a special test to expose the regression introduced with
    GAUDI-992 (only in CMake build).

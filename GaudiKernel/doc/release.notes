@@ -2,6 +2,10 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-01-08 - Marco Clemencic
+ - Added the class StatusCode::ScopedDisableChecking to ignore all the
+   StatusCode instances produced in a scope.
+
 ! 2015-01-07 - Gerhard Raven
  - GAUDI-995: improve Algorithm storage/management in AlgorithmManager
 
