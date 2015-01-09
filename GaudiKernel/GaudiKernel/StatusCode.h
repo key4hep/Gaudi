@@ -41,7 +41,7 @@ public:
   StatusCode( unsigned long code, const IssueSeverity& sev ):
     d_code(code),m_checked(false), m_severity() {
     try { // ensure that we do not throw even if we cannot copy the severity
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
+#if (defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L) && ! defined(__GCCXML__)
       m_severity = std::make_shared<IssueSeverity>(sev);
 #else
       m_severity = SeverityPtr(new IssueSeverity(sev));

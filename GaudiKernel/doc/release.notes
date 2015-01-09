@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-01-09 - Marco Clemencic
+ - Modified GCCXML exclusions to work with the ATLAS version of gccxml.
+
 ! 2015-01-08 - Marco Clemencic
  - Added the class StatusCode::ScopedDisableChecking to ignore all the
    StatusCode instances produced in a scope.
