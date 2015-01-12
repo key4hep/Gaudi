@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-01-12 - Gerhard Raven
+ - GAUDI-993: Avoid recursion in DataSvc::i_retrieveEntry.
+
 ! 2015-01-09 - Marco Clemencic
  - Modified GCCXML exclusions to work with the ATLAS version of gccxml.
 

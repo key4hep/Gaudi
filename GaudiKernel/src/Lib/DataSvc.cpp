@@ -692,102 +692,90 @@ StatusCode DataSvc::retrieveEntry(RegEntry* parentObj,
 StatusCode DataSvc::i_retrieveEntry(RegEntry* parentObj,
                                   boost::string_ref path,
                                   RegEntry*& pEntry)  {
+  // A.Valassi 16.08.2001 avoid core dump if store is empty
+  if ( !checkRoot() )  return StatusCode(INVALID_ROOT,true);
+
   static const auto empty = boost::string_ref{};
   auto sep    = find(path,SEPARATOR,1); 
-  StatusCode status = StatusCode(INVALID_ROOT,true);
   pEntry = nullptr;
-  // A.Valassi 16.08.2001 avoid core dump if store is empty
-  if ( checkRoot() )  {
-    if ( !parentObj )    {
-      if ( path.empty() || path == m_rootName )   {
-        return i_retrieveEntry(m_root, empty, pEntry);
+
+  if ( !parentObj )    {
+    if ( path.empty() || path == m_rootName )   {
+      parentObj = m_root;
+      path = empty;
+    } else if ( path.front() != SEPARATOR )  {
+      parentObj = m_root;
+    } else if ( sep != boost::string_ref::npos )    {
+      if ( !m_root->object() )  {
+        RegEntry* r = nullptr;
+        auto status = i_retrieveEntry(m_root, empty, r);
+        if ( !status.isSuccess() )  return status;
       }
-      else if ( path.front() != SEPARATOR )  {
-        return i_retrieveEntry(m_root, path, pEntry);
-      }
-      else if ( sep != boost::string_ref::npos )    {
-        if ( !m_root->object() )  {
-          RegEntry* r = nullptr;
-          status = i_retrieveEntry(m_root, empty, r);
-          if ( !status.isSuccess() )  {
-            return status;
-          }
-        }
-        return i_retrieveEntry(m_root, path.substr(sep), pEntry);
-      }
+      parentObj = m_root;
+      path = path.substr(sep);
+    } else {
       return INVALID_OBJ_PATH;
     }
-    if ( sep != boost::string_ref::npos )  { // the string contains a separator (after pos 0)
-      auto p_path = path.substr(0,sep);
-      auto o_path = path.substr(sep);
-      if (!parentObj->object()) { // if the parent object has not been loaded yet, load it now
-        status = loadObject(parentObj);
-        if ( !status.isSuccess() )  {
-          return status;
-        }
+    sep = find(path,SEPARATOR,1);
+  }
+
+  StatusCode status = StatusCode(INVALID_ROOT,true);
+  if ( sep != boost::string_ref::npos )  { // the string contains a separator (after pos 0)
+    if (!parentObj->object()) { // if the parent object has not been loaded yet, load it now
+      status = loadObject(parentObj);
+      if ( !status.isSuccess() )  return status;
+    }
+    auto p_path = path.substr(0,sep);
+    RegEntry* root_entry = parentObj->findLeaf(p_path);
+    if ( !root_entry && m_enableFaultHdlr )    {
+      // If not even the parent is there, an incident
+      // to load the parent must be fired...
+      i_handleDataFault(parentObj, p_path);
+      root_entry = parentObj->findLeaf(p_path);
+    }
+    if ( root_entry )    {
+      DataObject* pO = root_entry->object();
+      if ( !pO )  {
+        // Object is not loaded: load the object if at all possible
+        status = loadObject(root_entry);
+        if ( !status.isSuccess() )  return status;
       }
-      RegEntry* root_entry = parentObj->findLeaf(p_path);
-      if ( !root_entry && m_enableFaultHdlr )    {
-        // If not even the parent is there, an incident
-        // to load the parent must be fired...
-        i_handleDataFault(parentObj, p_path);
-        root_entry = parentObj->findLeaf(p_path);
+      if ( root_entry->isSoft() ) {
+        root_entry = CAST_REGENTRY(RegEntry*,pO->registry());
       }
-      if ( root_entry )    {
-        DataObject* pO = root_entry->object();
-        if ( !pO )  {
-          // Object is not loaded: load the object if at all possible
-          status = loadObject(root_entry);
-          if ( !status.isSuccess() )  {
-            return status;
-          }
-        }
-        if ( root_entry->isSoft() )    {
-          root_entry = CAST_REGENTRY(RegEntry*,pO->registry());
-        }
-        return i_retrieveEntry (root_entry, o_path, pEntry);
-      }
-      return status;
+      return i_retrieveEntry(root_entry, path.substr(sep), pEntry);
     }
-    else if ( path.empty() )    {
-      pEntry = parentObj;
+    return status;
+  } else if ( path.empty() )    {
+    pEntry = parentObj;
+  } else {
+    if (!parentObj->object()) { // if the parent object has not been loaded yet, load it now
+      status = loadObject(parentObj);
+      if ( !status.isSuccess() )  return status;
     }
-    else {
-      if (!parentObj->object()) { // if the parent object has not been loaded yet, load it now
-        status = loadObject(parentObj);
-        if ( !status.isSuccess() )  {
-          return status;
-        }
-      }
-      // last leave in search: find leaf and load
-      pEntry = parentObj->findLeaf(path);
-      // If no registry entry was found, trigger incident for action-on-demand
-      if ( !pEntry && m_enableFaultHdlr )  {
-        i_handleDataFault(parentObj, path);
-        pEntry = (path.empty() ? parentObj : parentObj->findLeaf(path) );
-      }
-    }
-    // Check results and return
-    if ( !pEntry )  {
-      status = INVALID_OBJ_PATH;
-    }
-    else if ( !pEntry->object() )  {
-      status = loadObject(pEntry);
-    }
-    else if ( m_enableAccessHdlr )  {
-      // Fire data access incident
-      // I do not know if this is a good idea....
-      // This fires too often!
-      //
-      //DataIncident incident(name(), m_accessName, pEntry->identifier());
-      //m_incidentSvc->fireIncident(incident);
-      status = SUCCESS;
-    }
-    else  {
-      status = SUCCESS;
+    // last leave in search: find leaf and load
+    pEntry = parentObj->findLeaf(path);
+    // If no registry entry was found, trigger incident for action-on-demand
+    if ( !pEntry && m_enableFaultHdlr )  {
+      i_handleDataFault(parentObj, path);
+      pEntry = (path.empty() ? parentObj : parentObj->findLeaf(path) );
     }
   }
-  return status;
+
+  // Check results and return
+  if ( !pEntry )            return INVALID_OBJ_PATH;
+  if ( !pEntry->object() )  return loadObject(pEntry);
+
+  if ( m_enableAccessHdlr )  {
+    // Fire data access incident
+    // I do not know if this is a good idea....
+    // This fires too often!
+    //
+    //DataIncident incident(name(), m_accessName, pEntry->identifier());
+    //m_incidentSvc->fireIncident(incident);
+    return SUCCESS;
+  } 
+  return SUCCESS;
 }
 
 /// Retrieve object identified by its directory from the data store.
