@@ -2,6 +2,7 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+============================ GaudiExamples v26r0 =============================
 ! 2015-01-08 - Marco Clemencic
  - Extended StatusCodeSvc tests to check the new class
    StatusCode::ScopedDisableChecking.

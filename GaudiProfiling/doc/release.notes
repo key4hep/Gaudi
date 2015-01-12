@@ -5,6 +5,7 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+============================ GaudiProfiling v2r4 =============================
 ! 2014-07-06 - Marco Clemencic
  - Modified interlprofiler.md to use Doxygen flavour of markdown.
 

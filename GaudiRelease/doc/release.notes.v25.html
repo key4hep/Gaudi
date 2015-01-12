@@ -1,0 +1,570 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+  <title>Gaudi Release Notes</title>
+  <script type="text/javascript" language="JavaScript">
+<!-- Work around for old browsers
+  function addLinks(){
+    // do nothing
+  }
+//-->
+  </script>
+  <script type="text/javascript" language="JavaScript1.2">
+<!-- This function requires JavaScript 1.2
+  // replaces the occurrences of (patch|task|bug)+number with the link to the savannah page
+  function LinkToSavannah()
+  {
+    patch = "<a href='https://savannah.cern.ch/patch/index.php?$2'>$1&nbsp;#$2</a>";
+    bug = "<a href='https://savannah.cern.ch/bug/index.php?$2'>$1&nbsp;#$2</a>";
+    task = "<a href='https://savannah.cern.ch/task/index.php?$2'>$1&nbsp;#$2</a>";
+    s = document.getElementsByTagName("body")[0].innerHTML;
+    s = s.replace(/([Pp]atch) #([0-9]*)/g,patch);
+    s = s.replace(/([Tt]ask) #([0-9]*)/g,task);
+    s = s.replace(/([Bb]ug) #([0-9]*)/g,bug);
+    document.getElementsByTagName("body")[0].innerHTML = s;
+  }
+  // replaces the occurrences of ([A-Z]+-[0-9]+) with the link to the JIRA issue
+  function LinkToJIRA()
+  {
+    s = document.getElementsByTagName("body")[0].innerHTML;
+    s = s.replace(/([A-Z]+)-[0-9]+/g, function(match, p1) {
+      var url = "https://its.cern.ch/jira/browse/";
+      if (p1 == "ROOT" || p1 == "SPI" || p1 == "PF" || p1 == "CFHEP" ||
+          p1 == "CVM")
+          url = "https://sft.its.cern.ch/jira/browse/";
+      return '<a href="' + url + match + '">' + match + '</a>';
+    });
+    document.getElementsByTagName("body")[0].innerHTML = s;
+  }
+  function addLinks() {
+    LinkToSavannah();
+    LinkToJIRA();
+  }
+// -->
+  </script>
+  <style type="text/css">
+span.author { color: #737373; }
+  </style>
+</head>
+<body onload="javascript:addLinks()">
+<pre>
+Package: GaudiRelease<br>
+Package Coordinator: Marco Clemencic, Charles Leggett<br>
+Purpose: Gaudi common set of packages<br><br>
+</pre>
+<!-- ====================================================================== -->
+<h2><a name="v25r6p1">Gaudi v25r6p1</a> (2014-12-08)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=71root6">LCGCMT_71root6</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Changed the version LCG to 71root6.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v25r6">Gaudi v25r6</a> (2014-12-08)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=71">LCGCMT_71</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Monor fixes.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Improvements to the CMake configuration.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>CMake
+<ul>
+<li>Handle compiler declaration in LCG_externals_*.txt.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Modified the selection of C++ standard and use c++14(1y) with gcc 4.9<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-988: allow passing env vars through the call to env.py<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-989: renamed env.py to xenv<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-972: allow different merge commands for different targets<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added special targets unsafe-install and post-install<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-977 Added target to "precompile" the project xenv file<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added the list of heptools dependencies in manifest.xml<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Modified CPack settings to produce RPMs<br/>
+    (<span class="author">A. S. Thompson</span>)</li>
+</ul>
+</li>
+<li>GaudiPluginService (v2r1):
+<ul>
+<li>Demangle factory types in warning messages.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiProfiling (v2r3):
+<ul>
+<li>Fix implementation of Google profilers to properly support auditing during
+   different processing phases.<br/>
+    (<span class="author">Chris Jones</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v31r2):
+<ul>
+<li>Fixed a problem with the interpretation of \n and \t in .opts files.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiPolicy (v15r2):
+<ul>
+<li>Updated project_manifest.py to generate the correct list of externals in
+   the manifest.xml file (see LBCORE-677).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiRelease (v25r6):
+<ul>
+<li>GAUDI-979: modified GaudiRelease scripts to use CMake configuration<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v25r6):
+<ul>
+<li>Added an example on how to add custom option types.
+   (src/Properties/CustomPropertiesAlg.cpp)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v25r5">Gaudi v25r5</a> (2014-10-15)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=70root6">LCGCMT_70root6</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Identical to v25r4, except for the version of LCG.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Minor fix to CMake configuration.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v25r4">Gaudi v25r4</a> (2014-10-10)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=69">LCGCMT_69</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Improvements and fixes to the CMake configuration system.<br/>
+    (<span class="author">Marco Clemencic, David Quarrie</span>)</li>
+<li>Fixed some minor warnings.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Updated test reference files.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v15r1):
+<ul>
+<li>LBCORE-632: Enable -pedantic flag by default.
+   (can be disabled with the CMT tag GAUDI_NO_PEDANTIC)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added support for gcc49.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed use of "-ansi" gcc option.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixes and improvements to test reports (CTest and QMTest)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiPluginService (v2r0):
+<ul>
+<li>GAUDI-430: leverage c++11 variadic templates in pluginsvc API<br/>
+    (<span class="author">Sebastien Binet</span>)</li>
+<li>do not hide C++11 constructs from Reflex for ATLAS<br/>
+    (<span class="author">David Quarrie</span>)</li>
+</ul>
+</li>
+<li>GaudiProfiling (v2r2):
+<ul>
+<li>LBCORE-587: CallgrindProfile algorithm to enable/disable Callgrind profile<br/>
+    (<span class="author">Ben Couturier</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v31r1):
+<ul>
+<li>GAUDI-905: Add Gaudi::StringKey constructor from plain C-string<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-973: make it possible to use StringKey in std::unordered_map<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiUtils (v5r3):
+<ul>
+<li>Added optional 'se' attribute the the XML file catalog DTD.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiAud (v10r2):
+<ul>
+<li>GAUDI-985: update references to ATLAS TWiki pages.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiPython (v13r3):
+<ul>
+<li>Introduced work-around for ROOT-6697 (wrong overloaded method called).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>PartPropSvc (v6r1):
+<ul>
+<li>Updated PDG tables.<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Added missing Geantinos.<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>RootCnv (v1r23p2):
+<ul>
+<li>Merged the LHCb version.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Minor fixes.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v25r3">Gaudi v25r3</a> (2014-07-03)</h2>
+<h3>Externals version: <a href="http://lcgsoft.web.cern.ch/lcgsoft/release/69root6">LCGCMT_69root6</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>First production release based on ROOT 6 (6.00/01)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Updates in the CMake configuration to support ATLAS<br/>
+    (<span class="author">Marco Clemencic</span>,
+    <span class="author">David Quarrie</span>)</li>
+<li>GAUDI-425: implement a pure ascii based configurable-db<br/>
+    (<span class="author">Sebastien Binet</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v15r0):
+<ul>
+<li>GAUDI-425: implement a pure ascii based configurable-db<br/>
+    (<span class="author">Sebastien Binet</span>)</li>
+<li>Removed the partial .confdb from the InstallArea and keep only the merged one.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Minor fixes.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Deprecation warning if the obsolete CMT pattern generate_rootmap is used.<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v31r0):
+<ul>
+<li>GAUDI-425: implement a pure ascii based configurable-db<br/>
+    (<span class="author">Sebastien Binet</span>)</li>
+<li>Fixed unchecked StatusCodes<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiSvc (v21r3):
+<ul>
+<li>Fixes to FileMgr.<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiUtils (v5r2):
+<ul>
+<li>Fixed bug GAUDI-971: successful failover to a replica in IODataManager leads
+   to non-zero exit code.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>RootCnv (v1r22p2):
+<ul>
+<li>GAUDI-962: fix unprotected debug messages.<br/>
+    (<span class="author">Marco Cattaneo</span>)</li>
+<li>Fixed suppression of some VERBOSE messages.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiCommonSvc (v3r2):
+<ul>
+<li>GAUDI-974: Add a new property to OutputStream, 'AlgDependentItemList' that allows for data locations to be conditionally added, only if a given
+   algorithm fired in a given event.<br/>
+    (<span class="author">Chris Jones</span>)</li>
+<li>Fixed logic of OutputStream::decodeAlgorithms.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v25r3):
+<ul>
+<li>Added tests for GAUDI-971 and GAUDI-974.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v25r2">Gaudi v25r2</a> (2014-06-02)</h2>
+<h3>Externals version: <a href="http://lcgsoft.web.cern.ch/lcgsoft/release/68">LCGCMT_68</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Fixes to support ROOT 6.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v14r3):
+<ul>
+<li>Improvements to locker.py.<br/>
+    (<span class="author">Graeme Stewart</span>)</li>
+<li>Minor improvements to GaudiTest.py.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed LBCORE-463 (build error when no 'python' dir in InstallArea).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Alias cmt pattern generate_rootmap to generate_componentslist for backward compatibility.<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiPluginService (v1r2):
+<ul>
+<li>Improved command line of listcomponents.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Modified the listcomponents CMT document to use --output instead of output redirection. Fixes bug #104455.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added CMT tag HAVE_GAUDI_PLUGINSVC and preprocessor macro HAVE_GAUDI_PLUGINSVC to simplify migration.<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v30r2):
+<ul>
+<li>Minor fixes for CMake.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added option "--no-init" to genconf.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Moved some dictionaries from GaudiPython to GaudiKernel (ROOT 6 support).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added the interface IPublishSvc.<br/>
+    (<span class="author">Beat Jost</span>)</li>
+<li>Re-enabled the DECLARE_FACTORY_ENTRIES family of macros (needed by ATLAS).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiSvc (v21r2):
+<ul>
+<li>Removed obsolete/pointless call to 'generate_rootmap' pattern.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiGSL (v8r2):
+<ul>
+<li>Removed duplicated dictionary entries (already in RELAX).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiPython (v13r2):
+<ul>
+<li>Optional enum workaround (see ROOT-6315).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Moved some dictionaries from GaudiPython to GaudiKernel (ROOT 6 support).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v25r2):
+<ul>
+<li>Reverted work-around for ROOT-6125 (fixed upstream).<br/>
+</ul>
+</li>
+<li>GaudiExamples (v25r2):
+<ul>
+<li>Renamed POOLIO subdirectory to IO.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added an example to demonstrate how to access at run time in the TES data
+   from a secondary file.  <br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v25r1p1">Gaudi v25r1p1</a> (2014-03-21)</h2>
+<h3>Externals version: <a href="http://lcgsoft.web.cern.ch/lcgsoft/release/68_root6">LCGCMT_68_root6</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Changed the version of LCGCMT used, to test ROOT 6 beta.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v25r1">Gaudi v25r1</a> (2014-03-19)</h2>
+<h3>Externals version: <a href="http://lcgsoft.web.cern.ch/lcgsoft/release/68">LCGCMT_68</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Use LCG 68, which is now built using the SFT build procedure.<br/>
+    (Note: CMake configuration was not validated for this version of LCG externals)</li>
+<li>Fixed bug #104127: remove hwaf configuration. (required a bump of all the packages versions)<br/>
+    (<span class="author">Ben Couturier</span>)</li>
+<li>Fixes and workarounds required for ROOT 6 support.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v14r1):
+<ul>
+<li>Fixed LBCORE-331: Generate manifest.xml for CMT built projects<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v25r0">Gaudi v25r0</a> (2014-02-14)</h2>
+<h3>Externals version: <a href="http://lcgsoft.web.cern.ch/lcgsoft/release/66">LCGCMT_66</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>This is the first version of Gaudi that can be built with both ROOT 5.x and
+    ROOT 6.x.<br/>
+    All the packages have the major version increased to reflect the change.</li>
+<li>Replaced Reflex Plugin Service with a new Reflex-free and ROOT-free Plugin Service.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Several improvements to the CMake configuration.<br/>
+    (<span class="author">Marco Clemencic, Hubert Degaundenzi</span>)</li>
+<li>Added configuration files for the <code>hwaf</code> system.<br/>
+    (<span class="author">Sebastien Binet</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiPolicy (v14r0):
+<ul>
+<li>Prevent path normalization in test arguments if they do not point to a file.
+   Needed because sometimes an argument is a URL and it must not be normalized.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed LBCORE-370: Some test results do not show up in the new HTML summary.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed LBCORE-292: added project and slot details to the test summaries<br/>
+   The test results page now contains the project name, version, and platform
+   (CMake builds only), and the slot name and date (CMT and CMake).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added tool CTestXML2HTML, to convert CTest-compatible XML files into web
+   pages easy to navigate.<br/>
+    (<span class="author">Marco Clemencic, Kevin Win-Lime</span>)</li>
+<li>Override the pattern reflex_dictionary because of an issue with ROOT6.<br/>
+   With ROOT 6 the '_Instantiations' dummy class used in the dictionaries
+   must have a different name in each dictionary.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added the possibility to produce CTest compatible XML files from QMTest.<br/>
+    (<span class="author">Kevin Win-Lime</span>)</li>
+</ul>
+</li>
+<li>GaudiPluginService (v1r0):
+<ul>
+<li>First version (see package release notes and README.md file)<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added optional metadata (properties) to the factories, and a Python module
+    to query the list of factories (based on ctypes).<br/>
+    (<span class="author">Sebastien Binet</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v30r0):
+<ul>
+<li>Fixed logic of <code>applyConfigurableUsers()</code> (see bug #103803 and bug #103808).<br/>
+    The old <i>buggy</i> logic is still present and used by default for backward compatibility,
+    but the new one can be enabled via a command line switch or an environment variable.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added a small Python function to simplify enabling and disabling of
+   specific ROOT 6 work-arounds.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiCoreSvc (v3r0):
+<ul>
+<li>Replaced Reflex queries with TClass queries.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Renamed the ApplicationMgr property ReflexPluginDebugLevel to
+    PluginDebugLevel.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>PartPropSvc (v5r0): minor changes.
+</li>
+<li>GaudiMonitor (v5r0): minor changes.
+</li>
+<li>RootHistCnv (v12r0): minor changes.
+</li>
+<li>GaudiPartProp (v2r0): minor changes.
+</li>
+<li>GaudiSvc (v21r0): minor changes.
+</li>
+<li>GaudiUtils (v5r0): minor changes.
+</li>
+<li>RootCnv (v1r22):
+<ul>
+<li>Made the data member of pool::Token transient (it was implicit in ROOT 5, but
+   must be explicit in ROOT 6).<br/>
+   See ROOT-5700.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Made PoolClasses.h a public header (needed for relocatability of dictionaries).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Replaced Reflex queries with TClass queries, and the obsolete
+   <code>gROOT-&gt;GetClass</code> with <code>TClass::GetClass</code>.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiAlg (v15r0): minor changes.
+</li>
+<li>GaudiProfiling (v2r0): minor changes.
+</li>
+<li>GaudiGSL (v8r0):
+<ul>
+<li>Fixed long standing issue with InterpTest test, actually due to a bug in the
+   copy constructor of SplineBase.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiAud (v10r0): minor changes.
+</li>
+<li>GaudiCommonSvc (v3r0): minor changes.
+</li>
+<li>GaudiPython (v13r0):
+<ul>
+<li>Added workaround for ROOT-6028... or ROOT-6054 or ROOT-6073.. depending on the point of view.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added workaround for ROOT-6032.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Several fixes and tweaks to work with ROOT 6.x.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiMP (v3r0):
+<ul>
+<li>Modified IoComponentMgr::initialize to print the Python error in case of
+   failure when importing 'GaudiMP.IoRegistry'.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiSys (v25r0): minor changes.
+</li>
+<li>Gaudi (v25r0):
+<ul>
+<li>Added tests for bug #103803 and bug #103808<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v25r0):
+<ul>
+<li>Made the workaround for ROOT-5836 a permanent fix.
+   The rationale is that the new warning message we are getting with ROOT 6 is
+   an acceptable behavior.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Made public the test event model headers of GaudiExamplesLib (needed to
+   support ROOT 6.00-beta).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Many fixes and tweaks to work with ROOT 6.x.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiRelease (v25r0): minor changes.
+</li>
+</ul>
+<hr/>
+<a href="release.notes.v24.html">Older versions</a>
+</body>
+</html>

@@ -5,6 +5,7 @@
 # Commit Id: $Format:%H$
 ################################################################################
 
+============================= GaudiCoreSvc v3r2 ==============================
 ! 2015-01-07 - Gerhard Raven
  - GAUDI-995: improve Algorithm storage/management in AlgorithmManager
 

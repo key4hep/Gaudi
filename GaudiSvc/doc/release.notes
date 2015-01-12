@@ -2,6 +2,7 @@ Package: GaudiSvc
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+=============================== GaudiSvc v21r5 ===============================
 ! 2015-01-07 - Marco Clemencic
  - Fixed g++ 4.9 warning (unused typedef).
 

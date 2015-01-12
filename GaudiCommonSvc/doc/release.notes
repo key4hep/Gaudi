@@ -5,6 +5,7 @@
 # Commit Id: $Format:%H$
 ################################################################################
 
+============================ GaudiCommonSvc v3r3 =============================
 ! 2015-01-07 - Marco Clemencic
  - Modified StatusCodeSvc to report that there is no "unchecked" StatusCode, to
    simplify the testing (DEBUG).
