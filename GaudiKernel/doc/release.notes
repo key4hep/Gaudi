@@ -3,6 +3,10 @@ Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
 ============================= GaudiKernel v31r3 ==============================
+! 2015-01-13 - Marco Clemencic
+ - Fixed regression introduced with commit f0b0a33
+   (GAUDI-993: more speed improvements in DataSvc::retrieveEntry)
+
 ! 2015-01-12 - Gerhard Raven
  - GAUDI-993: Avoid recursion in DataSvc::i_retrieveEntry.
 

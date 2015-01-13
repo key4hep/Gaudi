@@ -267,7 +267,7 @@ StatusCode DataSvc::registerAddress(IRegistry* parentObj,
                                     IOpaqueAddress* pAddress)   {
   if ( !checkRoot() )  return INVALID_ROOT;
   if ( objPath.empty() )  return INVALID_OBJ_PATH;
-  
+
   if ( !parentObj )   {
     if ( objPath.front() != SEPARATOR )    {
       return registerAddress(m_root, objPath, pAddress);
@@ -285,7 +285,7 @@ StatusCode DataSvc::registerAddress(IRegistry* parentObj,
   }
   RegEntry* par_entry = CAST_REGENTRY(RegEntry*,parentObj);
   if ( !par_entry ) return INVALID_PARENT;
-  
+
   std::string::size_type sep = objPath.rfind(SEPARATOR);
   if ( sep > 0 && sep != std::string::npos )    {
     auto p_path = objPath.substr( 0, sep);
@@ -311,7 +311,7 @@ StatusCode DataSvc::registerAddress(IRegistry* parentObj,
 ///  IDataManagerSvc: Unregister object address from the data store.
 StatusCode DataSvc::unregisterAddress(const std::string& fullPath)    {
   if ( fullPath.empty() )  return INVALID_OBJ_PATH;
-  return unregisterAddress( fullPath.front() != SEPARATOR ? m_root  :  nullptr, 
+  return unregisterAddress( fullPath.front() != SEPARATOR ? m_root  :  nullptr,
                             fullPath );
 }
 
@@ -327,13 +327,13 @@ StatusCode DataSvc::unregisterAddress(IRegistry* pParent,
                                       const std::string& objPath)   {
   if ( !checkRoot() )  return INVALID_ROOT;
   if ( objPath.empty() )   return INVALID_OBJ_PATH;
-  
+
   if ( !pParent )   {
     if ( objPath.front() != SEPARATOR )    {
       return unregisterAddress(m_root, objPath);
     }
     std::string::size_type sep = objPath.find(SEPARATOR,1);
-    if ( sep != std::string::npos && 
+    if ( sep != std::string::npos &&
          objPath.compare( 0, sep, m_rootName) == 0 )   {
         return unregisterAddress(m_root, objPath.substr(sep));
     }
@@ -398,7 +398,7 @@ StatusCode DataSvc::registerObject(DataObject* parentObj,
                                    const std::string& objPath,
                                    DataObject* pObject)   {
   if ( !checkRoot() )  return INVALID_ROOT;
-  
+
   if ( !parentObj )   {
     if ( !objPath.empty() )   {
       if ( objPath.front() == SEPARATOR )    {
@@ -486,12 +486,12 @@ StatusCode DataSvc::unregisterObject(const std::string& fullPath)   {
   if ( status.isFailure() )    return status;
   RegEntry* pEntry = CAST_REGENTRY(RegEntry*,pObject->registry());
   if ( !pEntry )    return INVALID_ROOT;
-  
+
   if ( !pEntry->isEmpty() )    return DIR_NOT_EMPTY;
-  
+
   RegEntry* pParent = pEntry->parentEntry();
   if ( !pParent )   return INVALID_PARENT;
-  
+
   if ( pObject )    pObject->addRef();
   pParent->remove(pEntry);
   return StatusCode::SUCCESS;
@@ -517,8 +517,8 @@ StatusCode DataSvc::unregisterObject(DataObject* pObject)    {
   RegEntry* entry = m_root->findLeaf(pObject);
   if ( !entry )   return INVALID_OBJECT;
   RegEntry* parent = entry->parentEntry();
-  if ( parent )    return DIR_NOT_EMPTY;
-  if ( !entry->isEmpty() )    return INVALID_PARENT;
+  if ( !parent )     return INVALID_PARENT;
+  if ( !entry->isEmpty() )   return DIR_NOT_EMPTY;
   if ( entry->object() ) entry->object()->addRef();
   if ( parent )  parent->remove(entry);
   return SUCCESS;
@@ -626,7 +626,7 @@ StatusCode DataSvc::loadObject(IConversionSvc* pLoader, IRegistry* pRegistry) {
     m_incidentSvc->fireIncident(incident);
   }
   if ( !m_inhibitPathes.empty() )   {
-    auto inhibit = std::find(m_inhibitPathes.begin(), m_inhibitPathes.end(), 
+    auto inhibit = std::find(m_inhibitPathes.begin(), m_inhibitPathes.end(),
                              pRegistry->identifier());
     if ( inhibit != m_inhibitPathes.end() )   {
       return NO_ACCESS;
@@ -696,7 +696,7 @@ StatusCode DataSvc::i_retrieveEntry(RegEntry* parentObj,
   if ( !checkRoot() )  return StatusCode(INVALID_ROOT,true);
 
   static const auto empty = boost::string_ref{};
-  auto sep    = find(path,SEPARATOR,1); 
+  auto sep    = find(path,SEPARATOR,1);
   pEntry = nullptr;
 
   if ( !parentObj )    {
@@ -774,7 +774,7 @@ StatusCode DataSvc::i_retrieveEntry(RegEntry* parentObj,
     //DataIncident incident(name(), m_accessName, pEntry->identifier());
     //m_incidentSvc->fireIncident(incident);
     return SUCCESS;
-  } 
+  }
   return SUCCESS;
 }
 
@@ -942,7 +942,7 @@ StatusCode DataSvc::updateObject(DataObject* toUpdate)    {
     return NO_DATA_LOADER;                     // Data loader must be present
   }
   if ( !m_inhibitPathes.empty() )   {
-    auto inhibit = std::find( m_inhibitPathes.begin(), m_inhibitPathes.end(), 
+    auto inhibit = std::find( m_inhibitPathes.begin(), m_inhibitPathes.end(),
                               pRegistry->identifier());
     if ( inhibit != m_inhibitPathes.end() )   {
       return NO_ACCESS;
@@ -1150,7 +1150,7 @@ StatusCode DataSvc::addPreLoadItem(const std::string& itemPath)    {
 
 /// Remove an item from the preload list
 StatusCode DataSvc::removePreLoadItem(const DataStoreItem& item)   {
-  m_preLoads.erase(std::remove(std::begin(m_preLoads), std::end(m_preLoads), item), 
+  m_preLoads.erase(std::remove(std::begin(m_preLoads), std::end(m_preLoads), item),
                    std::end(m_preLoads));
   return StatusCode::SUCCESS;
 }
