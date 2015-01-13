@@ -3,6 +3,9 @@ Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
 ============================= GaudiPython v13r4 ==============================
+! 2015-01-13 - Marco Clemencic
+ - Fixed a problem building with the latest ROOT 6.02.
+
 ! 2015-01-08 - Marco Clemencic
  - Adapted GaudiPython.Bindings to the changes introduced with GAUDI-995
    (backward incompatible change in IAlgManager).
