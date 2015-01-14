@@ -255,7 +255,7 @@
     <!-- Marco Cl.: This is needed because with ROOT >= 5.16 we get some dictionaries that we do not need. -->
     <class name="NTuple::Item&lt;IOpaqueAddress*&gt;"/>
 
-    <class pattern="NTuple::Item&lt;bool&gt;">
+    <class name="NTuple::Item&lt;bool&gt;">
       <method pattern="=*"/>
     </class>
     <class pattern="NTuple::*&lt;*&gt;">
