@@ -2269,7 +2269,7 @@ function(gaudi_add_test name)
 
   add_test(NAME ${package}.${name}
            WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY}
-           COMMAND ${env_cmd} ${extra_env} --xml ${env_xml}
+           COMMAND ${env_cmd} --xml ${env_xml} ${extra_env}
                ${cmdline})
 
   set_property(TEST ${package}.${name} PROPERTY LABELS ${package} ${ARG_LABELS})
@@ -2707,7 +2707,7 @@ macro(_env_line cmd var val output)
   if(${cmd} STREQUAL "SET")
     set(${output} "<env:set variable=\"${var}\">${val_}</env:set>")
   elseif(${cmd} STREQUAL "UNSET")
-    set(${output} "<env:unset variable=\"${var}\"><env:unset>")
+    set(${output} "<env:unset variable=\"${var}\"/>")
   elseif(${cmd} STREQUAL "PREPEND")
     set(${output} "<env:prepend variable=\"${var}\">${val_}</env:prepend>")
   elseif(${cmd} STREQUAL "APPEND")
