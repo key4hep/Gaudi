@@ -488,6 +488,11 @@ macro(gaudi_project project version)
         PREPEND ROOT_INCLUDE_PATH ${_inc_dir})
   endforeach()
 
+  # - add current project name and version to the environment
+  set(project_environment ${project_environment}
+      SET     GAUDIAPPNAME    ${CMAKE_PROJECT_NAME}
+      SET     GAUDIAPPVERSION ${CMAKE_PROJECT_VERSION})
+
   # (so far, the build and the release envirnoments are identical)
   set(project_build_environment ${project_environment})
 
