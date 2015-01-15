@@ -100,6 +100,10 @@ gaudi_build_env(SET     STDOPTS          ${CMAKE_CURRENT_SOURCE_DIR}/options
                 PREPEND JOBOPTSEARCHPATH ${CMAKE_CURRENT_SOURCE_DIR}/options
                 PREPEND PYTHONPATH       ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
 
+# FIXME: these variables must be unset in the tests for compatibility with CMT
+gaudi_build_env(UNSET GAUDIAPPNAME
+                UNSET GAUDIAPPVERSION)
+
 gaudi_add_test(QMTest QMTEST
                ENVIRONMENT
                  STDOPTS=${CMAKE_CURRENT_SOURCE_DIR}/options

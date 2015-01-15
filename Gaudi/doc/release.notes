@@ -3,6 +3,10 @@ Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
 ================================ Gaudi v26r0 =================================
+! 2015-01-15 - Marco Clemencic
+ - Minor change in the CMake configuration to fix backward compatibility of the
+   test environment with CMT.
+
 =============================== Gaudi v25r6p1 ================================
 ================================ Gaudi v25r6 =================================
 ================================ Gaudi v25r5 =================================
