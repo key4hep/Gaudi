@@ -83,7 +83,7 @@ StatusCode GaudiSequencer::execute() {
 
   if (msgLevel(MSG::DEBUG)) debug() << "==> Execute" << endmsg;
 
-  StatusCode result = StatusCode::SUCCESS;
+  StatusCode result = StatusCode(StatusCode::SUCCESS, true);
 
   bool seqPass = !m_modeOR; //  for OR, result will be false, unless (at least) one is true
                             //  for AND, result will be true, unless (at least) one is false
@@ -140,7 +140,7 @@ StatusCode GaudiSequencer::execute() {
 
   if ( m_measureTime ) m_timerTool->stop( m_timer );
 
-  return m_returnOK ? StatusCode::SUCCESS : result;
+  return m_returnOK ? (result.ignore(), StatusCode::SUCCESS) : result;
 }
 
 //=============================================================================

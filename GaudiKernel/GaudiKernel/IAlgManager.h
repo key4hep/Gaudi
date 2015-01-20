@@ -28,7 +28,7 @@ class ISvcLocator;
 class GAUDI_API IAlgManager: virtual public IComponentManager {
 public:
   /// InterfaceID
-  DeclareInterfaceID(IAlgManager,5,0);
+  DeclareInterfaceID(IAlgManager, 6, 0);
 
   /// Add an algorithm to the list of known algorithms
   virtual StatusCode addAlgorithm( IAlgorithm* alg     // Pointer to the Algorithm
@@ -57,7 +57,7 @@ public:
   virtual bool existsAlgorithm( const std::string& name            // Algorithm name to be searched
                               ) const = 0;
   /// Return the list of Algorithms
-  virtual const std::list<IAlgorithm*>& getAlgorithms() const = 0;
+  virtual const std::vector<IAlgorithm*>& getAlgorithms() const = 0;
 
 #if !defined(GAUDI_V22_API) || defined(G22_NEW_SVCLOCATOR)
   /// Initializes the list of "managed" algorithms

@@ -33,9 +33,11 @@ class Algorithm;
 */
 class GAUDI_API Auditor : public implements2<IAuditor, IProperty> {
 public:
-  typedef Gaudi::PluginService::Factory2<IAuditor*,
-                                         const std::string&,
-                                         ISvcLocator*> Factory;
+#ifndef __REFLEX__
+  typedef Gaudi::PluginService::Factory<IAuditor*,
+                                        const std::string&,
+                                        ISvcLocator*> Factory;
+#endif
 
   /** Constructor
       @param name    The algorithm object's name
@@ -258,11 +260,12 @@ public:
 template <class T>
 class AudFactory {
 public:
-  template <typename S>
-  static typename S::ReturnType create(typename S::Arg1Type a1,
-                                       typename S::Arg2Type a2) {
-    return new T(a1, a2);
+#ifndef __REFLEX__
+  template <typename S, typename... Args>
+  static typename S::ReturnType create(Args... args) {
+    return new T(args...);
   }
+#endif
 };
 
 // Macros to declare component factories

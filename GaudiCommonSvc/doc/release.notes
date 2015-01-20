@@ -5,6 +5,11 @@
 # Commit Id: $Format:%H$
 ################################################################################
 
+============================ GaudiCommonSvc v3r3 =============================
+! 2015-01-07 - Marco Clemencic
+ - Modified StatusCodeSvc to report that there is no "unchecked" StatusCode, to
+   simplify the testing (DEBUG).
+
 ============================ GaudiCommonSvc v3r2 =============================
 ! 2014-07-02 - Marco Clemencic
  - Fixed logic of OutputStream::decodeAlgorithms.
@@ -13,9 +18,9 @@
  - GAUDI-974: Add a new property to OutputStream, 'AlgDependentItemList' that
    allows for data locations to be conditionally added, only if a given
    algorithm fired in a given event. Structure of the new option is
-   
+
        std::map< std::string, std::vector<std::string> >
-   
+
    where the first item is the algorithm name, and the second the list of
    data locations to include in the output stream, when that algorithm fired.
 

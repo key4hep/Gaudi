@@ -24,46 +24,46 @@ void StatusCode::disableChecking() {
   s_checking = false;
 }
 
+bool StatusCode::checkingEnabled() {
+  return s_checking;
+}
+
 const IssueSeverity& StatusCode::severity() const {
   static IssueSeverity dummy;
   if (m_severity) return *m_severity;
   else            return dummy;
 }
 
-StatusCode::~StatusCode() {
-  if(UNLIKELY(s_checking)) {
+void StatusCode::check() {
 
-    if (!m_checked && !GaudiException::s_proc && !std::uncaught_exception() ) {
+  if (!m_checked && !GaudiException::s_proc && !std::uncaught_exception() ) {
 
-      SmartIF<IMessageSvc> msg(Gaudi::svcLocator());
+    SmartIF<IMessageSvc> msg(Gaudi::svcLocator());
 
-      SmartIF<IStatusCodeSvc> scs(Gaudi::svcLocator()->service("StatusCodeSvc"));
+    SmartIF<IStatusCodeSvc> scs(Gaudi::svcLocator()->service("StatusCodeSvc"));
 
-      const size_t depth = 21;
-      void* addresses[depth];
+    const size_t depth = 21;
+    void* addresses[depth];
 
-      std::string lib, fnc;
-      void* addr = 0;
-      /// @FIXME : (MCl) use backTrace(std::string&, const int, const int) instead
-      if (System::backTrace(addresses, depth)) {
+    std::string lib, fnc;
+    void* addr = 0;
+    /// @FIXME : (MCl) use backTrace(std::string&, const int, const int) instead
+    if (System::backTrace(addresses, depth)) {
 
-        if (System::getStackLevel(addresses[2], addr, fnc, lib)) {
+      for(size_t idx: {2, 3})
+        if (System::getStackLevel(addresses[idx], addr, fnc, lib) &&
+            fnc != "StatusCode::~StatusCode()") {
 
           if (scs) {
-            scs->regFnc(fnc,lib);
+            scs->regFnc(fnc, lib);
           } else {
-            if (msg) {
-              MsgStream log(msg,"StatusCode");
-              log << MSG::WARNING << "Unchecked in " << fnc << " " << lib << endmsg;
-            } else {
-              std::cout << MSG::WARNING << "Unchecked in " << fnc << " " << lib << std::endl;
-            }
+            MsgStream log(msg, "StatusCode");
+            log << MSG::WARNING << "Unchecked in " << fnc
+                << " (" << lib << ")" << endmsg;
           }
-
+          break;
         }
 
-      }
     }
   }
 }
-

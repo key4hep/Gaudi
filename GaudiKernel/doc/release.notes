@@ -2,6 +2,92 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-01-13 - Marco Clemencic
+ - Fixed warning in genreflex with ROOT 6.02.03.
+
+============================= GaudiKernel v31r3 ==============================
+! 2015-01-13 - Marco Clemencic
+ - Fixed regression introduced with commit f0b0a33
+   (GAUDI-993: more speed improvements in DataSvc::retrieveEntry)
+
+! 2015-01-12 - Gerhard Raven
+ - GAUDI-993: Avoid recursion in DataSvc::i_retrieveEntry.
+
+! 2015-01-09 - Marco Clemencic
+ - Modified GCCXML exclusions to work with the ATLAS version of gccxml.
+
+! 2015-01-08 - Marco Clemencic
+ - Added the class StatusCode::ScopedDisableChecking to ignore all the
+   StatusCode instances produced in a scope.
+
+! 2015-01-07 - Gerhard Raven
+ - GAUDI-995: improve Algorithm storage/management in AlgorithmManager
+
+! 2015-01-07 - Gerhard Raven
+ - GAUDI-993: removed recursion in DataSvcHelpers::RegistryEntry::i_find
+
+! 2015-01-07 - Gerhard Raven
+ - GAUDI-993: more speed improvements in DataSvc::retrieveEntry
+
+! 2015-01-07 - Marco Clemencic
+ - Fixed g++ 4.9 warning (unused typedef).
+
+! 2015-01-07 - Gerhard Raven
+ - Small performance improvements to StatusCode:
+   - added move constructor
+   - use std::make_shared instead of std::shared_ptr constructor
+
+! 2015-01-06 - Marco Clemencic
+ - Added StatusCode::checkingEnabled() static method to check if the checking
+   is enabled or not.
+
+! 2015-01-06 - Marco Clemencic
+ - Fixed wrong "unchecked StatusCode" reporting after patch GAUDI-992.
+   Modified the StatusCode::check() to correctly report the function also when
+   StatusCode::~StatusCode() is not inlined.
+
+! 2014-12-10 - Gerhard Raven
+ - GAUDI-993: Improve string handling in DataSvc::retrieveEntry
+   Use boost::string_ref too speed up string manipulations.
+
+! 2014-12-10 - Marco Clemencic
+ - Fixed mistake in patch GAUDI-992.
+
+! 2014-12-09 - Gerhard Raven
+ - GAUDI-992: improve StatusCode::~StatusCode
+   Use small inlined destructor that delegates to another method for the check,
+   instead of using an off-lined destructor.
+
+============================= GaudiKernel v31r2 ==============================
+! 2014-11-19 - Marco Clemencic
+ - Fixed extra ';'.
+
+! 2014-10-25 - Marco Clemencic
+ - Fixed a problem with the interpretation of \n and \t in .opts files.
+
+============================= GaudiKernel v31r1 ==============================
+! 2014-10-06 - Marco Clemencic
+ - Added (build-time) tests for GAUDI-905 and GAUDI-973.
+
+! 2014-10-06 - Marco Clemencic
+ - GAUDI-973: make it possible to use StringKey in std::unordered_map
+
+! 2014-10-06 - Gerhard Raven
+ - GAUDI-905: Add Gaudi::StringKey constructor from plain C-string
+
+! 2014-09-18 - Marco Clemencic
+ - Fixed a test after the change in PluginService.
+
+! 2014-05-07 - Sebastien Binet
+ - use new PluginService API (with C++11 variadic templates for the factories.)
+ - hide the C++11 constructs from Reflex as GCC-XML parser predates C++11
+
+! 2014-09-18 - Marco Clemencic
+ - Fixed Eclipse Code Analysis warning.
+
+! 2014-09-18 - Marco Clemencic
+ - Fixed warnings from genreflex (ROOT 6).
+
 ! 2014-07-11 - Marco Clemencic
  - Removed references to the obsolete IFactory.
 

@@ -27,7 +27,7 @@ namespace GaudiSvcTest  {
   public:
     /// Constructor: A constructor of this form must be provided.
     CounterTestAlg(const std::string& name, ISvcLocator* pSvcLocator)
-    :	Algorithm(name, pSvcLocator), m_cntSvc(0) {
+    :	Algorithm(name, pSvcLocator), m_evtCount(0), m_total(0), m_cntSvc(0) {
     }
     /// Standard Destructor
     virtual ~CounterTestAlg() {

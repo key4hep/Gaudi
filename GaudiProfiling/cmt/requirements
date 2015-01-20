@@ -1,6 +1,6 @@
 # =============================================================================
 package GaudiProfiling
-version v2r1
+version v2r4
 
 # ============== structure ====================================================
 branches        GaudiProfiling src cmt doc data python scripts
@@ -18,11 +18,13 @@ application     GaudiGenProfilingHtml app/pfm_gen_analysis.cpp
 library         GaudiGoogleProfiling    component/google/*.cpp -import=GaudiAlg -import=tcmalloc -no_static
 
 library         IntelProfiler    component/intel/*.cpp -no_static
+library         GaudiValgrindProfiling    component/valgrind/*.cpp -import=GaudiAlg -no_static
 
 # ============== patterns =====================================================
 apply_pattern   component_library library="GaudiProfiling"
 apply_pattern   component_library library="GaudiGoogleProfiling"
 apply_pattern   component_library library="IntelProfiler"
+apply_pattern   component_library library="GaudiValgrindProfiling"
 apply_pattern   install_python_modules
 apply_pattern   install_scripts
 

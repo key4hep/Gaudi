@@ -89,7 +89,7 @@ void Containers::invalidContainerOperation()   {
 
 template <class T>
 Containers::KeyedObjectManager<T>::KeyedObjectManager()
-: m_direct(0)
+: m_seq(nullptr), m_direct(0)
 {
   if ( sizeof(typename T::map_type) > sizeof(m_setup.buffer) )    {
     throw GaudiException("Basic STL contaier sizes are incompatible",
@@ -271,7 +271,6 @@ void Containers::KeyedObjectManager<T>::clear()
 template <class T>
 void Containers::KeyedObjectManager<T>::clearDirect()
 {
-  typedef typename T::map_type MTYP;
   switch( m_direct )   {
   case 1:
     m_setup.s->m.clear();
@@ -474,8 +473,6 @@ void* KeyedObjectManager< __A >::erase(long key,
 {
   typedef std::vector<long> id_type;
   typedef id_type::iterator id_iter;
-  typedef __A::map_type MTYP;
-  typedef find<MTYP> FND;
   if ( 0 == m_direct )    {
     onDirty();
     return erase(key, obj);

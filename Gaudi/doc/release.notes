@@ -2,6 +2,18 @@ Package : Gaudi
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v26r0 =================================
+! 2015-01-15 - Marco Clemencic
+ - Minor change in the CMake configuration to fix backward compatibility of the
+   test environment with CMT.
+
+=============================== Gaudi v25r6p1 ================================
+================================ Gaudi v25r6 =================================
+================================ Gaudi v25r5 =================================
+! 2014-09-25 - Marco Clemencic
+ - Bump package version to allow detection of the backward incompatible change
+   in the Plugin Service via the GAUDI_VERSION cpp macro.
+
 ================================ Gaudi v25r3 =================================
 ================================ Gaudi v25r2 =================================
 ! 2014-03-26 - Marco Clemencic

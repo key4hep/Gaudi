@@ -1,6 +1,6 @@
 # =============================================================================
 package GaudiUtils
-version v5r2
+version v5r3
 
 # ============== structure ====================================================
 branches        GaudiUtils src cmt doc

@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiProfiling v2r1)
+gaudi_subdir(GaudiProfiling v2r4)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiAlg)
 
@@ -88,6 +88,14 @@ if(VTune_FOUND)
 else()
   message(WARNING "VTune libraries not found, the module IntelProfiler is disabled")
 endif()
+
+#-----------------------------------
+# Valgrind profiler
+#-----------------------------------
+gaudi_add_module(GaudiValgrindProfiling src/component/valgrind/*.cpp
+                 LINK_LIBRARIES GaudiKernel GaudiAlgLib z
+                 INCLUDE_DIRS tcmalloc)
+
 
 #---Installation------------------------------------------------------------
 gaudi_install_python_modules()

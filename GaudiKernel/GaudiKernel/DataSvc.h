@@ -7,6 +7,8 @@
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 
+#include <boost/utility/string_ref.hpp>
+
 // Forward declarations
 // Incident service
 class IIncidentSvc;
@@ -24,7 +26,6 @@ namespace DataSvcHelpers    {
   // Generic registry entry
   class RegistryEntry;
 }
-
 
 /**
  * @class DataSvc DataSvc.h GaudiKernel/DataSvc.h
@@ -415,6 +416,11 @@ protected:
     * @return Object corresponding to the specified leaf
     */
   DataObject* handleDataFault(IRegistry* pReg, const std::string& path="");
+private:
+  StatusCode i_retrieveEntry(DataSvcHelpers::RegistryEntry* parentObj,
+                             boost::string_ref path,
+                             DataSvcHelpers::RegistryEntry*& pEntry) ;
+  DataObject* i_handleDataFault(IRegistry* pReg, boost::string_ref path = boost::string_ref{});
 };
 #endif // GAUDIKERNEL_DATASVC_H
 

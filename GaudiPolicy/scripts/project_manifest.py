@@ -4,7 +4,9 @@
 import sys
 import os
 from xml.etree import ElementTree as ET
+from subprocess import Popen, PIPE
 import re
+import logging
 
 def indent(elem, level=0):
     '''
@@ -89,6 +91,8 @@ if __name__ == '__main__':
 
     cmake_lists, lcg_version, platform = args
 
+    logging.basicConfig(level=logging.INFO)
+
     # look for the CMake configuration file
     if not os.path.exists(cmake_lists):
         print 'The project does not have a CMake configuration, I cannot produce a manifest.xml'
@@ -155,7 +159,49 @@ if __name__ == '__main__':
                               for pkg, vers in data_pkgs(parsed_args['DATA']))
         manifest.append(used_data_pkgs)
 
+
+    logging.debug('collecting external dependencies info (with CMT)')
+    p = Popen(['cmt', 'show', 'uses'], stdout=PIPE)
+    externals = [l.split()[1]
+                 for l in p.stdout
+                 if l.startswith('use') and
+                    'LCG_Interfaces' in l]
+    externals.sort()
+
+    # get the versions of the externals
+    def get_ext_vers(ext):
+        '''
+        Ask CMT the version of an external.
+        '''
+        logging.debug('getting version of %s', ext)
+        vers = Popen(['cmt', 'show', 'macro_value',
+                      '%s_native_version' % ext],
+                     stdout=PIPE).communicate()[0].strip()
+        logging.debug('using %s %s', ext, vers)
+        if vers == 'dummy': # special case in LCG
+            vers = ''
+        return vers
+
+    # mapping between LCG_Interface name and RPM name for special cases
+    rpm_names = {'Expat': 'expat'}
+    fix_rpm_name = lambda n: rpm_names.get(n, n)
+
+    packages = ET.Element('packages')
+    packages.extend([ET.Element('package', name=fix_rpm_name(ext), version=vers)
+                     for ext, vers in [(ext, get_ext_vers(ext))
+                                       for ext in externals]
+                     if vers])
+    heptools.append(packages)
+
+    destdir = os.path.dirname(output)
+    if not os.path.exists(destdir):
+        logging.debug('creating directory %s', destdir)
+        os.makedirs(destdir)
+
     # finally write the produced XML
+    logging.debug('writing manifest file %s', output)
     indent(manifest)
     ET.ElementTree(manifest).write(output,
                                    encoding="UTF-8", xml_declaration=True)
+
+    logging.debug('%s written', output)

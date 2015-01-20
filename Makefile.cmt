@@ -272,6 +272,15 @@ endif
 	@$(call clean_banner,$*)
 	@cd $*/cmt && cmt make clean binclean
 
+## --- Special targets for compatibility with CMake
+install:
+	@echo "$@ is a no-op with CMT"
+post-install:
+	@echo "$@ is a no-op with CMT"
+unsafe-install:
+	@echo "$@ is a no-op with CMT"
+help:
+	@echo "help not available with CMT"
 
 ## --- Dependencies between packages
 # The PKG_ONLY macro can be used to build a single package disregarding the

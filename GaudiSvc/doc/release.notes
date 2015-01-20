@@ -2,6 +2,14 @@ Package: GaudiSvc
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+=============================== GaudiSvc v21r5 ===============================
+! 2015-01-07 - Marco Clemencic
+ - Fixed g++ 4.9 warning (unused typedef).
+
+=============================== GaudiSvc v21r4 ===============================
+! 2014-09-18 - Marco Clemencic
+ - Fixed Eclipse Code Analysis warning.
+
 =============================== GaudiSvc v21r3 ===============================
 ! 2014-06-11 - Charles Leggett
  - FileMgr: execActs(): check iterator

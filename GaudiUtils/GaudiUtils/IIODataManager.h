@@ -42,7 +42,7 @@ namespace Gaudi  {
   public:
     /// Standard constructor
     IDataConnection(const IInterface* own, const std::string& nam)
-    : m_name(nam), m_owner(own) {}
+    : m_name(nam), m_age(0), m_owner(own) {}
     /// Standard destructor
     virtual ~IDataConnection() {}
     /// Connection name

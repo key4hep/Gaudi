@@ -2,6 +2,23 @@ Package: GaudiRelease
 Maintainer: Marco Clemencic
 Commit Id: $Format:%H$
 
+============================= GaudiRelease v26r0 =============================
+! 2014-07-04 - Marco Clemencic
+ - Added CMake target to build Doxygen documentation.
+
+============================ GaudiRelease v25r6p1 ============================
+============================= GaudiRelease v25r6 =============================
+! 2014-12-01 - Marco Clemencic
+ - GAUDI-979: modified GaudiRelease scripts to use CMake configuration
+   - update_versions.py uses CMake configuration as source, but still
+     updates CMT requirements
+   - git_tag_pacakges.py extracts the versions from CMake configuration
+     modified update_versions.py to use CMake configuration files
+   - tag_release.py make the project SVN tag as a copy of the trunk
+     (to match the git tag)
+
+============================= GaudiRelease v25r5 =============================
+============================= GaudiRelease v25r4 =============================
 ============================= GaudiRelease v25r3 =============================
 ============================= GaudiRelease v25r2 =============================
 ============================ GaudiRelease v25r1p1 ============================

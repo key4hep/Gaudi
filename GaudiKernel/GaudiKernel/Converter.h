@@ -23,8 +23,10 @@ class IRegistry;
 */
 class GAUDI_API Converter : public implements1<IConverter> {
 public:
-  typedef Gaudi::PluginService::Factory1<IConverter*,
-                                         ISvcLocator*> Factory;
+#ifndef __REFLEX__
+  typedef Gaudi::PluginService::Factory<IConverter*,
+                                        ISvcLocator*> Factory;
+#endif
 
   /// Initialize the converter
   virtual StatusCode initialize();
@@ -167,10 +169,12 @@ inline std::ostream& operator << ( std::ostream& s, const ConverterID& id) {
 template <class T>
 class CnvFactory {
 public:
-  template <typename S>
-  static typename S::ReturnType create(typename S::Arg1Type a1) {
-    return new T(a1);
+#ifndef __REFLEX__
+  template <typename S, typename... Args>
+  static typename S::ReturnType create(Args... a1) {
+    return new T(a1...);
   }
+#endif
 };
 
 // Macro to declare component factories

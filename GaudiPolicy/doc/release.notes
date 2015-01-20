@@ -2,6 +2,39 @@ package GaudiPolicy
 package manager: Marco Clemencic
 Commit Id: $Format:%H$
 
+============================= GaudiPolicy v15r3 ==============================
+! 2015-01-07 - Marco Clemencic
+ - Ignore "success" StatusCodeSvc message in the tests' output.
+
+============================= GaudiPolicy v15r2 ==============================
+! 2014-12-03 - Marco Clemencic
+ - Fixed inconsistency with the rpm and LCG_interface name of expat in
+   project_manifest.py
+
+! 2014-11-27 - Marco Clemencic
+ - Added the declaration of the CMT tag lcg-nightlies to avoid CMT warnings.
+
+! 2014-11-27 - Marco Clemencic
+ - Use <package>_native_version instead of <package>_config_version in
+   project_manifest.py for the dependencies on externals.
+
+! 2014-11-26 - Marco Clemencic
+ - Updated project_manifest.py to generate the correct list of externals in
+   the manifest.xml file (see LBCORE-677).
+   Note that this is only for CMT builds at the moment.
+
+============================= GaudiPolicy v15r1 ==============================
+! 2014-10-07 - Marco Clemencic
+ - LBCORE-632: Enable -pedantic flag by default.
+   (can be disabled with the CMT tag GAUDI_NO_PEDANTIC)
+
+! 2014-09-24 - Marco Clemencic
+ - Added support for gcc49.
+
+! 2014-09-11 - Marco Clemencic
+ - Fixed issue in run_qmtest when called from CMT.
+   (introduced with commit c4dff5)
+
 ! 2014-08-29 - Marco Clemencic
  - Modified CTestXML2HTML to ignore tests with label 'test-wrapper', if they are
    successful.
@@ -12,6 +45,17 @@ Commit Id: $Format:%H$
 ! 2014-08-28 - Marco Clemencic
  - Minor fixes to GaudiTest.py and CTestXML2HTML.
 
+<<<<<<< HEAD
+=======
+! 2014-09-01 - Marco Clemencic
+ - Fixed use of "-ansi" gcc option.
+
+============================= GaudiPolicy v15r0p1 ============================
+! 2014-08-20 - Charles Leggett
+ - fixed typo in generate_rootmap warning
+M       cmt/requirements
+
+>>>>>>> master
 ============================= GaudiPolicy v15r0 ==============================
 ! 2014-07-04 - Marco Clemencic
  - Fixed a problem with unicode-ascii conversion failure in CTestXML2HTML.

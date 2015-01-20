@@ -36,8 +36,10 @@ namespace Gaudi
   {
   public:
     // ========================================================================
-    /// constructor from the string, perform hashing
-    StringKey ( const std::string& key = "" ) ; // constructor, perform hashing
+    /// constructor from plain C-string, perform hashing
+    StringKey ( const char* key = "" ) ; // constructor, perform hashing
+    /// constructor from std::string, perform hashing
+    StringKey ( const std::string& key ) ; // constructor, perform hashing
     // ========================================================================
   public:
     // ========================================================================
@@ -289,7 +291,19 @@ namespace Gaudi
   // ==========================================================================
 } //                                                     end of namespace Gaudi
 // ============================================================================
-// The END
+#if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
+namespace std {
+  /// Implementation of hash function used in C++11 collections like
+  /// std::unordered_map
+  /// \see https://its.cern.ch/jira/browse/GAUDI-973
+  template <>
+  struct hash<Gaudi::StringKey> {
+    inline std::size_t operator()(Gaudi::StringKey const& s) const {
+      return hash_value(s);
+    }
+  };
+}
+#endif
 // ============================================================================
 #endif // GAUDIKERNEL_STRINGKEY_H
 // ============================================================================

@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiKernel v31r0)
+gaudi_subdir(GaudiKernel v31r3)
 
 gaudi_depends_on_subdirs(GaudiPluginService)
 
@@ -26,9 +26,15 @@ gaudi_add_unit_test(Parsers_test tests/src/parsers.cpp
                     LINK_LIBRARIES GaudiKernel)
 gaudi_add_unit_test(Memory_test tests/src/Memory_test.cpp
                     LINK_LIBRARIES GaudiKernel)
-# This is just a compile-time tests.
+# These are a compile-time tests.
 gaudi_add_unit_test(test_headers_build tests/src/test_headers_build.cpp
                     LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(test_GAUDI-905 tests/src/GAUDI-905.cpp
+                    LINK_LIBRARIES GaudiKernel)
+if(GAUDI_CPP11)
+  gaudi_add_unit_test(test_GAUDI-973 tests/src/GAUDI-973.cpp
+                      LINK_LIBRARIES GaudiKernel)
+endif()
 
 if(GAUDI_BUILD_TESTS)
   set_property(TEST GaudiKernel.PathResolver_test PROPERTY WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)

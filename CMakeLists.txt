@@ -14,11 +14,13 @@ find_package(GaudiProject)
 option(GAUDI_ATLAS "Enable ATLAS-specific settings" OFF)
 
 # Declare project name and version
-gaudi_project(Gaudi v25r3)
+gaudi_project(Gaudi v26r0)
 
 # These tests do not really fit in a subdirectory.
 gaudi_add_test(cmake.EnvConfigTests
-               COMMAND nosetests ${CMAKE_SOURCE_DIR}/cmake/EnvConfig)
+               COMMAND nosetests --with-doctest ${CMAKE_SOURCE_DIR}/cmake/EnvConfig)
 gaudi_add_test(cmake.project_manifest.doctest
                COMMAND ${PYTHON_EXECUTABLE} -m doctest
                        ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts/project_manifest.py)
+gaudi_add_test(cmake.CMakeModules
+               COMMAND nosetests ${CMAKE_SOURCE_DIR}/cmake/tests)

@@ -2,6 +2,13 @@ Package: GaudiUtils
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+============================== GaudiUtils v5r3 ===============================
+! 2014-10-10 - Marco Clemencic
+ - Added optional 'se' attribute the the XML file catalog DTD.
+
+! 2014-09-18 - Marco Clemencic
+ - Fixed Eclipse Code Analysis warning.
+
 ============================== GaudiUtils v5r2 ===============================
 ! 2014-06-19 - Marco Clemencic
  - Fixed unchecked StatusCode.
@@ -14,6 +21,10 @@ Commit Id: $Format:%H$
 
 ! 2014-06-17 - Marco Clemencic
  - Build test functions in XMLCatalogTest.cpp as proper tests (CMake only).
+
+! 2014-05-07 - Sebastien Binet
+ - use new PluginService API (with C++11 variadic templates for the factories.)
+ - hide the C++11 constructs from Reflex as GCC-XML parser predates C++11
 
 ============================== GaudiUtils v5r1 ===============================
 ! 2014-03-18 - Ben Couturier

@@ -7,6 +7,14 @@
 
 cmake_minimum_required(VERSION 2.8.5)
 
+# FIXME: use of LOCATION property is deprecated and should be replaced with the
+#        generator expression $<TARGET_FILE>, but the way we use it requires
+#        CMake >= 2.8.12, so we must keep the old behavior until we bump the
+#        cmake_minimum_required version. (policy added in CMake 3.0)
+if(NOT CMAKE_VERSION VERSION_LESS 3.0) # i.e CMAKE_VERSION >= 3.0
+  cmake_policy(SET CMP0026 OLD)
+endif()
+
 # Preset the CMAKE_MODULE_PATH from the environment, if not already defined.
 if(NOT CMAKE_MODULE_PATH)
   # Note: this works even if the envirnoment variable is not set.
@@ -35,34 +43,79 @@ set(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON)
 set(GAUDI_VERSION_REGEX "v?([0-9]+)[r.]([0-9]+)([p.]([0-9]+)(([a-z.])([0-9]+))?)?")
 
 if (GAUDI_BUILD_PREFIX_CMD)
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${GAUDI_BUILD_PREFIX_CMD}")
-  message(STATUS "Prefix build commands with '${GAUDI_BUILD_PREFIX_CMD}'")
-else()
-  find_program(ccache_cmd NAMES ccache ccache-swig)
-  find_program(distcc_cmd distcc)
-  mark_as_advanced(ccache_cmd distcc_cmd)
+  set(GAUDI_RULE_LAUNCH_COMPILE "${GAUDI_RULE_LAUNCH_COMPILE} ${GAUDI_BUILD_PREFIX_CMD}")
+endif()
 
-  if(ccache_cmd)
-    option(CMAKE_USE_CCACHE "Use ccache to speed up compilation." OFF)
-    if(CMAKE_USE_CCACHE)
-      set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${ccache_cmd})
-      message(STATUS "Using ccache for building")
-    endif()
+find_program(ccache_cmd NAMES ccache ccache-swig)
+find_program(distcc_cmd distcc)
+mark_as_advanced(ccache_cmd distcc_cmd)
+
+if(ccache_cmd)
+  option(CMAKE_USE_CCACHE "Use ccache to speed up compilation." OFF)
+  if(CMAKE_USE_CCACHE)
+    set(GAUDI_RULE_LAUNCH_COMPILE "${GAUDI_RULE_LAUNCH_COMPILE} ${ccache_cmd}")
+    message(STATUS "Using ccache for building")
   endif()
+endif()
 
-  if(distcc_cmd)
-    option(CMAKE_USE_DISTCC "Use distcc to speed up compilation." OFF)
-    if(CMAKE_USE_DISTCC)
-      if(CMAKE_USE_CCACHE)
-        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "CCACHE_PREFIX=${distcc_cmd} ${ccache_cmd}")
-        message(STATUS "Enabling distcc builds in ccache")
-      else()
-        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${distcc_cmd})
-        message(STATUS "Using distcc for building")
-      endif()
+if(distcc_cmd)
+  option(CMAKE_USE_DISTCC "Use distcc to speed up compilation." OFF)
+  if(CMAKE_USE_DISTCC)
+    if(CMAKE_USE_CCACHE)
+      set(GAUDI_RULE_LAUNCH_COMPILE "${GAUDI_RULE_LAUNCH_COMPILE} CCACHE_PREFIX=${distcc_cmd} ${ccache_cmd}")
+      message(STATUS "Enabling distcc builds in ccache")
+    else()
+      set(GAUDI_RULE_LAUNCH_COMPILE "${GAUDI_RULE_LAUNCH_COMPILE} ${distcc_cmd}")
+      message(STATUS "Using distcc for building")
     endif()
   endif()
 endif()
+
+option(GAUDI_USE_CTEST_LAUNCHERS "Use CTest launchers to record details about warnings and errors." OFF)
+if(GAUDI_USE_CTEST_LAUNCHERS)
+  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/launch_logs)
+
+  # Code copied and adapted from the CTestUseLaunchers.cmake module
+  set(__launch_common_options
+    "--target-name <TARGET_NAME> --build-dir <CMAKE_CURRENT_BINARY_DIR>")
+
+  set(__launch_compile_options
+    "${__launch_common_options} --output <OBJECT> --source <SOURCE> --language <LANGUAGE>")
+
+  set(__launch_link_options
+    "${__launch_common_options} --output <TARGET> --target-type <TARGET_TYPE> --language <LANGUAGE>")
+
+  set(__launch_custom_options
+    "${__launch_common_options} --output <OUTPUT>")
+
+  if("${CMAKE_GENERATOR}" MATCHES "Ninja" AND NOT CMAKE_VERSION VERSION_LESS 3.0)
+    # this make sense only with CMamke >= 3.0
+    set(__launch_compile_options "${__launch_compile_options} --filter-prefix <CMAKE_CL_SHOWINCLUDES_PREFIX>")
+  endif()
+
+  set(GAUDI_RULE_LAUNCH_COMPILE
+    "CTEST_LAUNCH_LOGS=${CMAKE_BINARY_DIR}/launch_logs \"${CMAKE_CTEST_COMMAND}\" --launch ${__launch_compile_options} -- ${GAUDI_RULE_LAUNCH_COMPILE}")
+
+  set(GAUDI_RULE_LAUNCH_LINK
+    "CTEST_LAUNCH_LOGS=${CMAKE_BINARY_DIR}/launch_logs \"${CMAKE_CTEST_COMMAND}\" --launch ${__launch_link_options} -- ${GAUDI_RULE_LAUNCH_LINK}")
+
+  set(GAUDI_RULE_LAUNCH_CUSTOM
+    "CTEST_LAUNCH_LOGS=${CMAKE_BINARY_DIR}/launch_logs \"${CMAKE_CTEST_COMMAND}\" --launch ${__launch_custom_options} -- ${GAUDI_RULE_LAUNCH_CUSTOM}")
+
+  if("${CMAKE_GENERATOR}" MATCHES "Make")
+    set(GAUDI_RULE_LAUNCH_LINK "env ${GAUDI_RULE_LAUNCH_LINK}")
+  endif()
+endif()
+
+# apply launch rules
+foreach(_rule COMPILE LINK CUSTOM)
+  if(GAUDI_RULE_LAUNCH_${_rule})
+    string(STRIP "${GAUDI_RULE_LAUNCH_${_rule}}" GAUDI_RULE_LAUNCH_${_rule})
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_${_rule} "${GAUDI_RULE_LAUNCH_${_rule}}")
+    message(STATUS "Prefix ${_rule} commands with '${GAUDI_RULE_LAUNCH_${_rule}}'")
+  endif()
+endforeach()
+
 
 # If Vera++ is available and it is requested by the user, check every source
 # file for style problems.
@@ -180,10 +233,10 @@ macro(gaudi_project project version)
   # ensure the directory exists (this is not a standard CMake variable)
   file(MAKE_DIRECTORY ${CMAKE_CONFIG_OUTPUT_DIRECTORY})
 
-  set(env_xml ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/${project}BuildEnvironment.xml
+  set(env_xml ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/${project}-build.xenv
       CACHE STRING "path to the XML file for the environment to be used in building and testing")
 
-  set(env_release_xml ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/${project}Environment.xml
+  set(env_release_xml ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/${project}.xenv
       CACHE STRING "path to the XML file for the environment to be used once the project is installed")
 
   mark_as_advanced(CMAKE_RUNTIME_OUTPUT_DIRECTORY CMAKE_LIBRARY_OUTPUT_DIRECTORY
@@ -192,6 +245,12 @@ macro(gaudi_project project version)
   if(GAUDI_BUILD_TESTS)
     enable_testing()
   endif()
+
+  #--- Allow installation on failed builds
+  add_custom_target(unsafe-install
+                    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/cmake_install.cmake)
+  #--- Special target to group actions that must be run after the installation
+  add_custom_target(post-install)
 
   #--- Find subdirectories
   message(STATUS "Looking for local directories...")
@@ -251,11 +310,11 @@ macro(gaudi_project project version)
   # (python scripts are located as such but run through python)
   set(binary_paths ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_SOURCE_DIR}/GaudiPolicy/scripts ${CMAKE_SOURCE_DIR}/GaudiKernel/scripts ${CMAKE_SOURCE_DIR}/Gaudi/scripts ${binary_paths})
 
-  find_program(env_cmd env.py HINTS ${binary_paths})
+  find_program(env_cmd xenv HINTS ${binary_paths})
   set(env_cmd ${PYTHON_EXECUTABLE} ${env_cmd})
 
-  find_program(merge_cmd merge_files.py HINTS ${binary_paths})
-  set(merge_cmd ${PYTHON_EXECUTABLE} ${merge_cmd} --no-stamp)
+  find_program(default_merge_cmd merge_files.py HINTS ${binary_paths})
+  set(default_merge_cmd ${PYTHON_EXECUTABLE} ${default_merge_cmd} --no-stamp)
 
   find_program(versheader_cmd createProjVersHeader.py HINTS ${binary_paths})
   if(versheader_cmd)
@@ -299,14 +358,14 @@ macro(gaudi_project project version)
     set(genwindef_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genwindef.exe)
   endif()
 
-  mark_as_advanced(env_cmd merge_cmd versheader_cmd genconfuser_cmd
+  mark_as_advanced(env_cmd default_merge_cmd versheader_cmd genconfuser_cmd
                    zippythondir_cmd gaudirun_cmd)
 
   #--- Project Installations------------------------------------------------------------------------
   install(DIRECTORY cmake/ DESTINATION cmake
                            FILES_MATCHING PATTERN "*.cmake"
                            PATTERN ".svn" EXCLUDE)
-  install(PROGRAMS cmake/env.py DESTINATION scripts OPTIONAL)
+  install(PROGRAMS cmake/xenv DESTINATION scripts OPTIONAL)
   install(DIRECTORY cmake/EnvConfig DESTINATION scripts
           FILES_MATCHING PATTERN "*.py" PATTERN "*.conf")
 
@@ -401,6 +460,7 @@ macro(gaudi_project project version)
     # still need a fake python.zip target, expected by the nightly builds.
     add_custom_target(python.zip)
   endif()
+  add_dependencies(post-install python.zip)
 
   #--- Prepare environment configuration
   message(STATUS "Preparing environment configuration:")
@@ -427,6 +487,11 @@ macro(gaudi_project project version)
     set(project_environment ${project_environment}
         PREPEND ROOT_INCLUDE_PATH ${_inc_dir})
   endforeach()
+
+  # - add current project name and version to the environment
+  set(project_environment ${project_environment}
+      SET     GAUDIAPPNAME    ${CMAKE_PROJECT_NAME}
+      SET     GAUDIAPPVERSION ${CMAKE_PROJECT_VERSION})
 
   # (so far, the build and the release envirnoments are identical)
   set(project_build_environment ${project_environment})
@@ -570,7 +635,7 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
       PREPEND PYTHONPATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
       PREPEND PYTHONPATH ${CMAKE_BINARY_DIR}/python)
   if(GAUDI_ATLAS)
-	set(project_build_environment ${project_build_environment}
+    set(project_build_environment ${project_build_environment}
         PREPEND JOBOPTSEARCHPATH ${CMAKE_BINARY_DIR}/jobOptions
         PREPEND ROOTMAPSEARCHPATH ${CMAKE_BINARY_DIR}/rootmap
         PREPEND DATAPATH ${CMAKE_BINARY_DIR}/share
@@ -597,6 +662,12 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
          "${_env_cmd_line} --xml ${env_xml} %1 %2 %3 %4 %5 %6 %7 %8 %9\n")
   endif() # ignore other systems
 
+  # "precompile" project XML env after installation
+  get_filename_component(installed_env_release_xml "${env_release_xml}" NAME)
+  set(installed_env_release_xml "${CMAKE_INSTALL_PREFIX}/${installed_env_release_xml}")
+  add_custom_target(precompile-project-xenv
+                    COMMAND ${env_cmd} --xml "${installed_env_release_xml}" true)
+  add_dependencies(post-install precompile-project-xenv)
 
   #--- Special target to print the summary of QMTest runs.
   if(GAUDI_BUILD_TESTS)
@@ -628,9 +699,12 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
   endforeach()
   set(CPACK_SYSTEM_NAME ${BINARY_TAG})
 
-  set(CPACK_GENERATOR TGZ)
+  set(CPACK_GENERATOR "RPM")
+  set(CPACK_PACKAGE_DEFAULT_LOCATION "/usr")
+  set(CPACK_SOURCE_GENERATOR "RPM")
+  set(CPACK_SOURCE_RPM "ON")
 
-  set(CPACK_SOURCE_IGNORE_FILES "/InstallArea/;/build\\\\..*/;/\\\\.svn/;/\\\\.settings/;\\\\..*project;\\\\.gitignore")
+  set(CPACK_SOURCE_IGNORE_FILES "/InstallArea/;/build\\\\..*/;/\\\\.svn/;/\\\\.git/;/\\\\.settings/;\\\\..*project;\\\\.gitignore")
 
   include(CPack)
 
@@ -822,7 +896,8 @@ endfunction()
 #
 #  <prefix>/<name>/<version>
 #
-# with a file called <name>Environment.xml inside.
+# with a file called <name>.xenv inside (or <name>Environment.xml for backward
+# compatibility).
 #
 # <name> can contain '/'s, but they are replaced by '_'s when looking for the
 # XML file.
@@ -857,7 +932,7 @@ function(gaudi_find_data_package name)
     endif()
     # At this point, ARGN contains only the suffixes, if any.
 
-    string(REPLACE / _ envname ${name}Environment.xml)
+    string(REPLACE / _ envname ${name})
 
     set(candidate_version)
     set(candidate_path)
@@ -867,8 +942,11 @@ function(gaudi_find_data_package name)
         if(IS_DIRECTORY ${prefix}/${suffix}/${name})
           #message(STATUS "gaudi_find_data_package: scanning ${prefix}/${suffix}/${name}")
           # Look for env files with the matching version.
-          file(GLOB envfiles RELATIVE ${prefix}/${suffix}/${name} ${prefix}/${suffix}/${name}/${version}/${envname})
+          file(GLOB envfiles RELATIVE ${prefix}/${suffix}/${name}
+               ${prefix}/${suffix}/${name}/${version}/${envname}.xenv
+               ${prefix}/${suffix}/${name}/${version}/${envname}Environment.xml)
           # Translate the list of env files into the list of available versions
+          # (directories)
           set(versions)
           foreach(f ${envfiles})
             get_filename_component(f ${f} PATH)
@@ -889,7 +967,13 @@ function(gaudi_find_data_package name)
     if(candidate_version)
       set(${name}_FOUND TRUE CACHE INTERNAL "")
       set(${name}_DIR ${candidate_path} CACHE PATH "Location of ${name}")
-      mark_as_advanced(${name}_FOUND ${name}_DIR)
+      if(EXISTS ${candidate_path}/${envname}.xenv)
+        set(candidate_env ${candidate_path}/${envname}.xenv)
+      else()
+        set(candidate_env ${candidate_path}/${envname}Environment.xml)
+      endif()
+      set(${name}_XENV ${candidate_env} CACHE PATH "${name} environment file")
+      mark_as_advanced(${name}_FOUND ${name}_DIR ${name}_XENV)
       message(STATUS "Found ${name} ${candidate_version}: ${${name}_DIR}")
     else()
       message(FATAL_ERROR "Cannot find ${name} ${version}")
@@ -930,18 +1014,18 @@ macro(_gaudi_handle_data_packages)
       message(STATUS "Using ${_data_package}: ${${_data_package}_DIR}")
     endif()
     if(${_data_package}_FOUND)
-      string(REPLACE / _ _data_pkg_env ${_data_package}Environment.xml)
-      set(project_environment ${project_environment} INCLUDE ${${_data_package}_DIR}/${_data_pkg_env})
+      set(project_environment ${project_environment} INCLUDE ${${_data_package}_XENV})
     endif()
   endwhile()
 endmacro()
 
 #-------------------------------------------------------------------------------
-# include_package_directories(Package1 [Package2 ...])
+# gaudi_resolve_include_dirs(variable dir_or_package1 dir_or_package2 ...)
 #
-# Adde the include directories of each package to the include directories.
+# Expand the pacakge names in absolute paths to the include directories.
 #-------------------------------------------------------------------------------
-function(include_package_directories)
+function(gaudi_resolve_include_dirs variable)
+  set(collected)
   #message(STATUS "include_package_directories(${ARGN})")
   foreach(package ${ARGN})
     # we need to ensure that the user can call this function also for directories
@@ -949,17 +1033,17 @@ function(include_package_directories)
       get_target_property(to_incl ${package} SOURCE_DIR)
       if(to_incl)
         #message(STATUS "include_package_directories1 include_directories(${to_incl})")
-        include_directories(${to_incl})
+        set(collected ${collected} ${to_incl})
       endif()
     elseif(IS_ABSOLUTE ${package} AND IS_DIRECTORY ${package})
       #message(STATUS "include_package_directories2 include_directories(${package})")
-      include_directories(${package})
+      set(collected ${collected} ${package})
     elseif(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${package})
       #message(STATUS "include_package_directories3 include_directories(${package})")
-      include_directories(${CMAKE_CURRENT_SOURCE_DIR}/${package})
+      set(collected ${collected} ${CMAKE_CURRENT_SOURCE_DIR}/${package})
     elseif(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/${package}) # package can be the name of a subdir
       #message(STATUS "include_package_directories4 include_directories(${package})")
-      include_directories(${CMAKE_SOURCE_DIR}/${package})
+      set(collected ${collected} ${CMAKE_SOURCE_DIR}/${package})
     else()
       # ensure that the current directory knows about the package
       find_package(${package} QUIET)
@@ -980,11 +1064,15 @@ function(include_package_directories)
         endif()
         # Include the directories
         #message(STATUS "include_package_directories5 include_directories(${${to_incl}})")
-        include_directories(${${to_incl}})
+        set(collected ${collected} ${${to_incl}})
         set_property(GLOBAL APPEND PROPERTY INCLUDE_PATHS ${${to_incl}})
       endif()
     endif()
   endforeach()
+  if(collected)
+    list(REMOVE_DUPLICATES collected)
+  endif()
+  set(${variable} ${collected} PARENT_SCOPE)
 endfunction()
 
 #-------------------------------------------------------------------------------
@@ -1127,8 +1215,10 @@ function(gaudi_get_packages var)
   get_directory_property(_ignored_subdirs GAUDI_IGNORE_SUBDIRS)
   file(GLOB_RECURSE cmakelist_files RELATIVE ${CMAKE_SOURCE_DIR} CMakeLists.txt)
   foreach(file ${cmakelist_files})
-    # ignore the source directory itself and files in the build directory
-    if(NOT file STREQUAL CMakeLists.txt AND NOT file MATCHES "^${rel_build_dir}")
+    # ignore the source directory itself, files in the build directory and
+    # files in the cmake/tests directory
+    if(NOT file STREQUAL CMakeLists.txt AND
+       NOT file MATCHES "^(${rel_build_dir}|cmake/tests)")
       get_filename_component(package ${file} PATH)
       list(FIND _ignored_subdirs ${package} _ignored)
       if(_ignored EQUAL -1) # not ignored
@@ -1247,6 +1337,10 @@ function(gaudi_resolve_link_libraries variable)
   foreach(package ${ARGN})
     # check if it is an actual library or a target first
     if(TARGET ${package})
+      get_property(target_type TARGET ${package} PROPERTY TYPE)
+      if(NOT target_type MATCHES "(SHARED|STATIC)_LIBRARY")
+        message(FATAL_ERROR "${package} is a ${target_type}: you cannot link against it")
+      endif()
       #message(STATUS "${package} is a TARGET")
       get_property(already_resolved TARGET ${package}
                    PROPERTY RESOLVED_REQUIRED_LIBRARIES SET)
@@ -1260,6 +1354,10 @@ function(gaudi_resolve_link_libraries variable)
           gaudi_resolve_link_libraries(libs ${libs})
           set_property(TARGET ${package}
                        PROPERTY RESOLVED_REQUIRED_LIBRARIES ${libs})
+        else()
+          # this is to avoid that libs gets defined as libs-NOTFOUND
+          # (it may happen in some rare conditions)
+          set(libs)
         endif()
       endif()
       set(collected ${collected} ${package} ${libs})
@@ -1305,15 +1403,21 @@ macro(gaudi_global_target_append global_target local_target)
 endmacro()
 
 #-------------------------------------------------------------------------------
-# gaudi_global_target_get_info(global_target local_targets_var files_var)
+# gaudi_global_target_get_info(global_target local_targets_var files_var cmd_var)
 # (macro)
 #
 # Put the information to configure the global target 'global_target' in the
-# two variables local_targets_var and files_var.
+# two variables local_targets_var, files_var and cmd_var.
 #-------------------------------------------------------------------------------
-macro(gaudi_global_target_get_info global_target local_targets_var files_var)
+macro(gaudi_global_target_get_info global_target local_targets_var files_var cmd_var)
   get_property(${files_var} GLOBAL PROPERTY ${global_target}_SOURCES)
   get_property(${local_targets_var} GLOBAL PROPERTY ${global_target}_DEPENDS)
+  get_property(cmd_is_set GLOBAL PROPERTY ${global_target}_COMMAND SET)
+  if(cmd_is_set)
+    get_property(${cmd_var} GLOBAL PROPERTY ${global_target}_COMMAND)
+  else()
+    set(${cmd_var})
+  endif()
 endmacro()
 
 
@@ -1334,12 +1438,15 @@ endfunction()
 # from the packages (declared with gaudi_merge_files_append).
 #-------------------------------------------------------------------------------
 function(gaudi_merge_files merge_tgt dest filename)
-  gaudi_global_target_get_info(Merged${merge_tgt} deps parts)
+  gaudi_global_target_get_info(Merged${merge_tgt} deps parts cmd)
+  if(NOT cmd)
+    set(cmd ${default_merge_cmd})
+  endif()
   if(parts)
     # create the targets
     set(output ${CMAKE_BINARY_DIR}/${dest}/${filename})
     add_custom_command(OUTPUT ${output}
-                       COMMAND ${merge_cmd} ${parts} ${output}
+                       COMMAND ${cmd} ${parts} ${output}
                        DEPENDS ${parts})
     add_custom_target(Merged${merge_tgt} ALL DEPENDS ${output})
     # prepare the high level dependencies
@@ -1347,13 +1454,13 @@ function(gaudi_merge_files merge_tgt dest filename)
 
     # target to generate a partial merged file
     add_custom_command(OUTPUT ${output}_force
-                       COMMAND ${merge_cmd} --ignore-missing ${parts} ${output})
+                       COMMAND ${cmd} --ignore-missing ${parts} ${output})
     add_custom_target(Merged${merge_tgt}_force DEPENDS ${output}_force)
     # ensure that we merge what we have before installing if the output was not
     # produced
     install(CODE "if(NOT EXISTS ${output})
                   message(WARNING \"creating partial ${output}\")
-                  execute_process(COMMAND ${merge_cmd} --ignore-missing ${parts} ${output})
+                  execute_process(COMMAND ${cmd} --ignore-missing ${parts} ${output})
                   endif()")
 
     # install rule for the merged DB
@@ -1413,9 +1520,9 @@ function(gaudi_generate_configurables library)
   endif()
 
   if(NOT GaudiCoreSvcIsImported) # it's a local target
-    set(deps GaudiCoreSvc genconf)
+    set(conf_depends ${conf_depends} GaudiCoreSvc genconf)
   else()
-    set(deps genconf)
+    set(conf_depends ${conf_depends} genconf)
   endif()
 
   if(ARG_USER_MODULE)
@@ -1447,7 +1554,7 @@ function(gaudi_generate_configurables library)
     else()
       get_filename_component(genconf_dir ${genconf_cmd} PATH)
       get_filename_component(genconf_dir ${genconf_dir} PATH)
-      file(GLOB genconf_env "${genconf_dir}/*Environment.xml")
+      file(GLOB genconf_env "${genconf_dir}/*.xenv")
       #message(STATUS "... running genconf --help ...")
       execute_process(COMMAND ${env_cmd} --xml ${genconf_env}
                               ${genconf_cmd} --help
@@ -1481,7 +1588,7 @@ function(gaudi_generate_configurables library)
               ${genconf_cmd} ${library_preload} -o ${outdir} -p ${package}
                 ${genconf_opts}
                 -i ${library}
-    DEPENDS ${library} ${deps})
+    DEPENDS ${conf_depends})
   add_custom_target(${library}Conf ALL DEPENDS ${outdir}/${library}.confdb)
   # Add the target to the target that groups all of them for the package.
   if(NOT TARGET ${package}ConfAll)
@@ -1700,7 +1807,8 @@ macro(gaudi_common_add_build)
 
   #message(STATUS "gaudi_common_add_build ${ARG_INCLUDE_DIRS}")
   # add the package includes to the current list
-  include_package_directories(${ARG_INCLUDE_DIRS})
+  gaudi_resolve_include_dirs(ARG_INCLUDE_DIRS ${ARG_INCLUDE_DIRS})
+  include_directories(${ARG_INCLUDE_DIRS})
 
   #message(STATUS "gaudi_common_add_build ARG_LINK_LIBRARIES ${ARG_LINK_LIBRARIES}")
   # get the library dirs required to get the libraries we use
@@ -1801,14 +1909,14 @@ function(gaudi_add_library library)
   endif()
 
   if(WIN32)
-	add_library( ${library}-arc STATIC EXCLUDE_FROM_ALL ${srcs})
+    add_library( ${library}-arc STATIC EXCLUDE_FROM_ALL ${srcs})
     set_target_properties(${library}-arc PROPERTIES COMPILE_DEFINITIONS GAUDI_LINKER_LIBRARY)
     add_custom_command(
       OUTPUT ${library}.def
-	  COMMAND ${genwindef_cmd} -o ${library}.def -l ${library} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/${library}-arc.lib
-	  DEPENDS ${library}-arc genwindef)
-	#---Needed to create a dummy source file to please Windows IDE builds with the manifest
-	file( WRITE ${CMAKE_CURRENT_BINARY_DIR}/${library}.cpp "// empty file\n" )
+      COMMAND ${genwindef_cmd} -o ${library}.def -l ${library} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_CFG_INTDIR}/${library}-arc.lib
+      DEPENDS ${library}-arc genwindef)
+    #---Needed to create a dummy source file to please Windows IDE builds with the manifest
+    file( WRITE ${CMAKE_CURRENT_BINARY_DIR}/${library}.cpp "// empty file\n" )
     add_library( ${library} SHARED ${library}.cpp ${library}.def)
     target_link_libraries(${library} ${library}-arc ${ARG_LINK_LIBRARIES})
     set_target_properties(${library} PROPERTIES LINK_INTERFACE_LIBRARIES "${ARG_LINK_LIBRARIES}" )
@@ -2161,7 +2269,7 @@ function(gaudi_add_test name)
 
   add_test(NAME ${package}.${name}
            WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY}
-           COMMAND ${env_cmd} ${extra_env} --xml ${env_xml}
+           COMMAND ${env_cmd} --xml ${env_xml} ${extra_env}
                ${cmdline})
 
   set_property(TEST ${package}.${name} PROPERTY LABELS ${package} ${ARG_LABELS})
@@ -2347,7 +2455,8 @@ macro(gaudi_install_cmake_modules)
             PATTERN "*.cmake"
             PATTERN "CVS" EXCLUDE
             PATTERN ".svn" EXCLUDE)
-  set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} PARENT_SCOPE)
+  set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} PARENT_SCOPE)
   set_property(DIRECTORY PROPERTY GAUDI_EXPORTED_CMAKE ON)
 endmacro()
 
@@ -2598,7 +2707,7 @@ macro(_env_line cmd var val output)
   if(${cmd} STREQUAL "SET")
     set(${output} "<env:set variable=\"${var}\">${val_}</env:set>")
   elseif(${cmd} STREQUAL "UNSET")
-    set(${output} "<env:unset variable=\"${var}\"><env:unset>")
+    set(${output} "<env:unset variable=\"${var}\"/>")
   elseif(${cmd} STREQUAL "PREPEND")
     set(${output} "<env:prepend variable=\"${var}\">${val_}</env:prepend>")
   elseif(${cmd} STREQUAL "APPEND")
@@ -2636,7 +2745,7 @@ function(gaudi_generate_env_conf filename)
     set(data "${data}  <env:search_path>${${other_project}_DIR}</env:search_path>\n")
   endforeach()
   foreach(other_project ${used_gaudi_projects})
-    set(data "${data}  <env:include>${other_project}Environment.xml</env:include>\n")
+    set(data "${data}  <env:include>${other_project}.xenv</env:include>\n")
   endforeach()
 
   set(commands ${ARGN})
@@ -2836,7 +2945,10 @@ get_filename_component(_IMPORT_PREFIX \"\${_IMPORT_PREFIX}\" PATH)
         foreach(pn REQUIRED_INCLUDE_DIRS REQUIRED_LIBRARIES)
           get_property(prop TARGET ${library} PROPERTY ${pn})
           if (prop)
-            _make_relocatable(prop VARS LCG_releases LCG_external)
+            # Note: relocate an include path against CMAKE_SOURCE_DIR allows
+            #       to correctly relocate the include path to the current project
+            #       if there is a local copy of the subdir
+            _make_relocatable(prop VARS LCG_releases LCG_external CMAKE_SOURCE_DIR)
             file(APPEND ${pkg_exp_file} "  ${pn} \"${prop}\"\n")
           endif()
         endforeach()
@@ -2903,6 +3015,50 @@ function(gaudi_generate_project_manifest filename project version)
     # platform specifications
     set(data "${data}    <binary_tag>${BINARY_TAG}</binary_tag>\n")
     set(data "${data}    <lcg_system>${LCG_SYSTEM}</lcg_system>\n")
+    # look for packages provided by heptools
+    # - compile a list of the paths required at runtime
+    #message(STATUS "project_environment -> ${project_environment}")
+    set(required_paths)
+    foreach(path ${project_environment})
+      #message(STATUS "maybe path -> ${path}")
+      if(EXISTS "${path}")
+        get_filename_component(path "${path}" REALPATH)
+        #message(STATUS "path -> ${path}")
+        set(required_paths ${required_paths} ${path})
+      endif()
+    endforeach()
+    if(required_paths)
+      list(REMOVE_DUPLICATES required_paths)
+    endif()
+    #message(STATUS "required_paths -> ${required_paths}")
+    # - check if the "<ext>_home" directory of each external is used
+    set(used_externals)
+    foreach(ext ${LCG_projects} ${LCG_externals})
+      #message(STATUS "checking use of ${ext}")
+      foreach(h ${${ext}_home})
+        get_filename_component(h "${h}" REALPATH)
+        #message(STATUS "  dir ${h}")
+        foreach(path ${required_paths})
+          string(FIND "${path}" "${h}" hpos)
+          if(hpos EQUAL 0)
+            #message(STATUS "  found in ${ext}")
+            set(used_externals ${used_externals} ${ext})
+            break()
+          endif()
+        endforeach()
+      endforeach()
+    endforeach()
+    # set(used_externals Python ROOT Qt)
+    # - add the packages list to the data
+    if(used_externals)
+      list(REMOVE_DUPLICATES used_externals)
+      list(SORT used_externals)
+      set(data "${data}    <packages>\n")
+      foreach(ext ${used_externals})
+        set(data "${data}      <package name=\"${ext}\" version=\"${${ext}_config_version}\" />\n")
+      endforeach()
+      set(data "${data}    </packages>\n")
+    endif()
     set(data "${data}  </heptools>\n")
   endif()
 
