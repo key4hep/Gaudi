@@ -43,19 +43,6 @@ endif()
 gaudi_add_test(confdb
                COMMAND nosetests ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose/confdb)
 
-file(GLOB_RECURSE qmt_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest *.qmt)
-string(TOLOWER "${subdir_name}" subdir_name_lower)
-foreach(qmt_file ${qmt_files})
-  string(REPLACE ".qms/" "." qmt_name "${qmt_file}")
-  string(REPLACE ".qmt" "" qmt_name "${qmt_name}")
-  string(REPLACE "${subdir_name_lower}." "" qmt_name "${qmt_name}")
-  message(STATUS "adding test ${qmt_file} as ${qmt_name}")
-  gaudi_add_test(${qmt_name}
-                 COMMAND python -m GaudiTesting.Run --report ctest ${qmt_file}
-                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
-                 LABELS QMTest)
-endforeach()
-
 if(GAUDI_BUILD_TESTS)
   add_library(test_CustomFactory MODULE tests/src/custom_factory.cpp)
   target_link_libraries(test_CustomFactory GaudiPluginService)
@@ -84,7 +71,7 @@ gaudi_install_python_modules()
 gaudi_install_scripts()
 
 #---Test-----------------------------------------------------------------------
-#gaudi_add_test(QMTest QMTEST)
+gaudi_add_test(QMTest QMTESTNEW)
 
 #---Special options
 if(GAUDI_HIDE_WARNINGS)

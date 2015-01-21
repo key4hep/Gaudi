@@ -2223,13 +2223,28 @@ endfunction()
 #
 #-------------------------------------------------------------------------------
 function(gaudi_add_test name)
-  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST;FAILS"
+  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST;QMTESTNEW;FAILS"
                             "TIMEOUT;WORKING_DIRECTORY"
                             "ENVIRONMENT;FRAMEWORK;COMMAND;DEPENDS;PASSREGEX;FAILREGEX;LABELS" ${ARGN})
 
   gaudi_get_package_name(package)
 
-  if(ARG_QMTEST)
+  if(ARG_QMTESTNEW)
+    file(GLOB_RECURSE qmt_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest *.qmt)
+    string(TOLOWER "${subdir_name}" subdir_name_lower)
+    foreach(qmt_file ${qmt_files})
+      string(REPLACE ".qms/" "." qmt_name "${qmt_file}")
+      string(REPLACE ".qmt" "" qmt_name "${qmt_name}")
+      string(REPLACE "${subdir_name_lower}." "" qmt_name "${qmt_name}")
+      message(STATUS "adding test ${qmt_file} as ${qmt_name}")
+      gaudi_add_test(${qmt_name}
+                     COMMAND python -m GaudiTesting.Run --report ctest ${qmt_file}
+                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
+                     LABELS QMTest ${ARG_LABELS}
+                     ENVIRONMENT ${ARG_ENVIRONMENT})
+    endforeach()
+    return()
+  elseif(ARG_QMTEST)
     find_package(QMTest QUIET)
     set(ARG_ENVIRONMENT ${ARG_ENVIRONMENT}
                         QMTESTLOCALDIR=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
