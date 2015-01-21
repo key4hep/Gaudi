@@ -109,8 +109,11 @@ def main():
     report = globals()[opts.report + '_report']
     report(results)
 
-    logging.debug('test exit code: %s', results.get('Exit Code', '0'))
-    return int(results.get('Exit Code', '0'))
+    if results.get('Causes'): # this is a failure in QMTest
+        logging.debug('test failed: unexpected %s',
+                      ', '.join(results['Causes']))
+        return int(results.get('Exit Code', '1'))
+    return 0
 
 if __name__ == '__main__':
     sys.exit(main())
