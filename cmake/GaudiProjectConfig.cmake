@@ -2121,7 +2121,8 @@ endfunction()
 #                     [WORKING_DIRECTORY dir]
 #                     [ENVIRONMENT variable[+]=value ...]
 #                     [TIMEOUT seconds]
-#                     [TYPE Boost|CppUnit])
+#                     [TYPE Boost|CppUnit]
+#                     [LABELS label1 label2 ...])
 #
 # Special version of gaudi_add_executable which automatically adds the dependency
 # on CppUnit and declares the test to CTest (add_test).
@@ -2135,7 +2136,10 @@ endfunction()
 function(gaudi_add_unit_test executable)
   if(GAUDI_BUILD_TESTS)
 
-    CMAKE_PARSE_ARGUMENTS(${executable}_UNIT_TEST "" "TYPE;TIMEOUT;WORKING_DIRECTORY" "ENVIRONMENT" ${ARGN})
+    CMAKE_PARSE_ARGUMENTS(${executable}_UNIT_TEST
+                          ""
+                          "TYPE;TIMEOUT;WORKING_DIRECTORY"
+                          "ENVIRONMENT;LABELS" ${ARGN})
 
     gaudi_common_add_build(${${executable}_UNIT_TEST_UNPARSED_ARGUMENTS})
 
@@ -2179,6 +2183,7 @@ function(gaudi_add_unit_test executable)
              WORKING_DIRECTORY ${${executable}_UNIT_TEST_WORKING_DIRECTORY}
              COMMAND ${env_cmd} ${extra_env} --xml ${env_xml}
                ${executable}${exec_suffix})
+    set_property(TEST ${package}.${executable} PROPERTY LABELS ${package} ${ARG_LABELS})
 
     if(${executable}_UNIT_TEST_TIMEOUT)
       set_property(TEST ${package}.${executable} PROPERTY TIMEOUT ${${executable}_UNIT_TEST_TIMEOUT})
