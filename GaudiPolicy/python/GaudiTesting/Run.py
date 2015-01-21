@@ -16,6 +16,13 @@ def basic_report(results):
     print results.get('stderr', '')
 
 
+def quiet_report(results):
+    '''
+    Do not report anything from the result of the test.
+    '''
+    pass
+
+
 def ctest_report(results):
     '''
     Report function taking the dictionary from BasicTest.run() and report data
@@ -28,11 +35,13 @@ def ctest_report(results):
     id_handler = lambda v: str(v)
     ignore = set(['Status', 'Name', 'stdout', 'stderr', 'Exit Code'])
     template = ('<DartMeasurement type="text/string" name="{0}">{1}</DartMeasurement>')
+
     for key in results:
         if key in ignore:
             continue
-        sys.stdout.write(template.format(key,
-                                         XSS.escape(handler.get(key, id_handler)(results[key]))))
+        hndlr = handler.get(key, id_handler)
+        data = XSS.escape(GT.sanitize_for_xml(hndlr(results[key])))
+        sys.stdout.write(template.format(key, data))
 
 
 def pprint_report(results):
@@ -109,7 +118,7 @@ def main():
     report = globals()[opts.report + '_report']
     report(results)
 
-    if results.get('Causes'): # this is a failure in QMTest
+    if results.get('Status') == 'failed':
         logging.debug('test failed: unexpected %s',
                       ', '.join(results['Causes']))
         return int(results.get('Exit Code', '1'))

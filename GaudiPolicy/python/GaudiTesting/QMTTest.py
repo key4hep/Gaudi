@@ -43,7 +43,7 @@ class QMTTest(BaseTest):
 
 
     def ValidateOutput(self, stdout, stderr, result):
-        if self.validator != '' :
+        if self.validator:
             class CallWrapper(object):
                 """
                     Small wrapper class to dynamically bind some default arguments
@@ -99,14 +99,15 @@ class QMTTest(BaseTest):
                                                                        "result":result,
                                                                        "causes":self.causes})
                                 }
+            #print self.validator
             exec self.validator in globals(), exported_symbols
         else:
-            if self.stderr=='':
+            if self.stderr == '':
                 self.validateWithReference(stdout, stderr, result, self.causes)
-            elif stderr!=self.stderr:
-                self.causes.append("DIFFERENT STDERR THAN EXPECTED")
+            elif stderr != self.stderr:
+                self.causes.append('standard error')
 
-        return result,self.causes
+        return result, self.causes
 
 
 def qmt_filename_to_name(path):

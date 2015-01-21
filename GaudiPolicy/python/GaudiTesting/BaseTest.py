@@ -13,6 +13,20 @@ import logging
 
 from subprocess import Popen, PIPE
 
+def sanitize_for_xml(data):
+    '''
+    Take a string with invalid ASCII/UTF characters and quote them so that the
+    string can be used in an XML text.
+
+    >>> sanitize_for_xml('this is \x1b')
+    'this is [NON-XML-CHAR-0x1B]'
+    '''
+    bad_chars = re.compile(u'[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]')
+    def quote(match):
+        'helper function'
+        return ''.join('[NON-XML-CHAR-0x%2X]' % ord(c) for c in match.group())
+    return bad_chars.sub(quote, data)
+
 #-------------------------------------------------------------------------#
 class BaseTest :
     def __init__(self):
@@ -62,14 +76,14 @@ class BaseTest :
 
         unsupPlat = True
         for p in self.unsupported_platforms :
-            if re.search(p,platform.platform()):
-                unsupPlat=False
+            if re.search(p, platform.platform()):
+                unsupPlat = False
 
-        if unsupPlat :
+        if unsupPlat:
             #launching test in a different thread to handle timeout exception
             def target() :
                 prog=''
-                if self.program != '' :
+                if self.program != '':
                     prog = self.program
                 elif "GAUDIEXE" in os.environ :
                     prog = os.environ["GAUDIEXE"]
@@ -111,33 +125,42 @@ class BaseTest :
             self.out = self.proc.stdout.read()
             if self.traceback:
                 self.err = self.proc.stderr.read()
+
             #Getting the error code
             logging.debug('returnedCode = %s', self.proc.returncode)
             self.returnedCode = self.proc.returncode
 
-        if unsupPlat :
             logging.debug('validating test...')
-            validatorRes = Result({'CAUSE':None,'EXCEPTION':None,'RESOURCE':None,'TARGET':None,'TRACEBACK':None,'START_TIME':None,'END_TIME':None,'TIMEOUT_DETAIL':None})
-            self.result=validatorRes
+            validatorRes = Result({'CAUSE': None, 'EXCEPTION': None,
+                                   'RESOURCE': None, 'TARGET': None,
+                                   'TRACEBACK': None, 'START_TIME': None,
+                                   'END_TIME': None, 'TIMEOUT_DETAIL': None})
+            self.result = validatorRes
 
             if self.timeOut:
                 self.result["Abort cause"]=self.result.Quote("Event Timeout")
 
-            self.result,self.causes=self.ValidateOutput(stdout=self.out,stderr=self.err,result=validatorRes)
+            self.result, self.causes = self.ValidateOutput(stdout=self.out,
+                                                           stderr=self.err,
+                                                           result=validatorRes)
 
-            #Setting status
-            self.status = "failed"
             if self.signal is not None :
-                if (int(self.returnedCode) - int(self.signal) - 128)!=0:
+                if (int(self.returnedCode) - int(self.signal) - 128) != 0:
                     self.causes.append('wrong return code')
+
             if self.exit_code is not None:
-                if int(self.returnedCode) != int(self.exit_code) :
+                if int(self.returnedCode) != int(self.exit_code):
                     self.causes.append('wrong return code')
-            if self.returnedCode!=0 and self.exit_code is None and self.signal is None:
+
+            if self.returnedCode != 0 and self.exit_code is None and self.signal is None:
                 self.causes.append("exit code")
-            if self.causes == []:
+
+            if self.causes:
+                self.status = "failed"
+            else:
                 self.status = "passed"
-        else :
+
+        else:
             self.status = "skipped"
 
         logging.debug('%s: %s', self.name, self.status)
@@ -150,7 +173,7 @@ class BaseTest :
                          'Program Name': 'program',
                          'Name': 'name',
                          'Validator': 'validator',
-                         'Reference File': 'reference',
+                         'Output Reference File': 'reference',
                          'Error Reference File': 'error_reference',
                          'Causes': 'causes',
                          #'Validator Result': 'result.annotations',
@@ -161,6 +184,9 @@ class BaseTest :
         resultDict.append(('Working Directory',
                            RationalizePath(os.path.join(os.getcwd(),
                                                         self.workdir))))
+        #print dict(resultDict).keys()
+        resultDict.extend(self.result.annotations.iteritems())
+        #print self.result.annotations.keys()
         return dict(resultDict)
 
 
@@ -169,22 +195,18 @@ class BaseTest :
     #-------------------------------------------------#
 
     def ValidateOutput(self, stdout, stderr, result):
-        causes = self.causes
-        reference =self.reference
-        error_reference=self.error_reference
-        #checking if default validation or not
-        if inspect.getsource(self.validator)!="""    def validator(self, stdout='',stderr=''):
-        pass
-""" :
-            self.validator(stdout, stderr, result, causes, reference, error_reference)
+        # checking if default validation or not
+        if self.validator is not BaseTest.validator:
+            self.validator(stdout, stderr, result, self.causes,
+                           self.reference, self.error_reference)
         else:
-            if self.stderr=='':
+            if self.stderr == '':
                 self.validateWithReference(stdout, stderr, result, causes)
-            elif stderr!=self.stderr:
-                self.causes.append("DIFFERENT STDERR THAN EXPECTED")
+            elif stderr != self.stderr:
+                self.causes.append('standard error')
 
 
-        return result,causes
+        return result, causes
 
 
 
@@ -340,29 +362,29 @@ class BaseTest :
 
         return causes
 
-    def validateWithReference(self, stdout=None, stderr=None, result=None, causes=None, preproc = None):
-        """
-            Default validation action: compare standard output and error to the
-            reference files.
-            """
+    def validateWithReference(self, stdout=None, stderr=None, result=None,
+                              causes=None, preproc=None):
+        '''
+        Default validation acti*on: compare standard output and error to the
+        reference files.
+        '''
 
-        if stdout is None : stdout=self.out
-        if stderr is None : stderr=self.err
-        if result is None : result=self.result
-        if causes is None : causes=self.causes
+        if stdout is None : stdout = self.out
+        if stderr is None : stderr = self.err
+        if result is None : result = self.result
+        if causes is None : causes = self.causes
 
         # set the default output preprocessor
         if preproc is None:
             preproc = normalizeExamples
         # check standard output
-        lreference = _expandReferenceFileName(self,self.reference)
+        lreference = _expandReferenceFileName(self, self.reference)
         # call the validator if the file exists
         if lreference and os.path.isfile(lreference):
-            result["GaudiTest.output_reference"] = lreference
             causes += ReferenceFileValidator(lreference,
                                              "standard output",
-                                             "GaudiTest.output_diff",
-                                             preproc = preproc)(stdout, result)
+                                             "Output Diff",
+                                             preproc=preproc)(stdout, result)
         # Compare TTree summaries
         causes = self.CheckTTreesSummaries(stdout, result, causes)
         causes = self.CheckHistosSummaries(stdout, result, causes)
@@ -382,8 +404,10 @@ class BaseTest :
         lreference = _expandReferenceFileName(self,self.error_reference)
         # call the validator if we have a file to use
         if lreference and os.path.isfile(self.error_reference):
-            result["GaudiTest.error_reference"] = self.error_reference
-            newcauses = ReferenceFileValidator(lreference, "standard error", "GaudiTest.error_diff", preproc = preproc)(stderr, result)
+            newcauses = ReferenceFileValidator(lreference,
+                                               "standard error",
+                                               "Error Diff",
+                                               preproc=preproc)(stderr, result)
             causes += newcauses
             if newcauses: # Write a new reference file for stdedd
                 newref = open(self.reference + ".new","w")
@@ -618,7 +642,7 @@ class RegexpReplacer(FilePreprocessor):
 
 # Common preprocessors
 maskPointers  = RegexpReplacer("0x[0-9a-fA-F]{4,16}","0x########")
-normalizeDate = RegexpReplacer("[0-2]?[0-9]:[0-5][0-9]:[0-5][0-9] [0-9]{4}[-/][01][0-9][-/][0-3][0-9] *(CES?T)?",
+normalizeDate = RegexpReplacer("[0-2]?[0-9]:[0-5][0-9]:[0-5][0-9] [0-9]{4}[-/][01][0-9][-/][0-3][0-9] *(CES?T|PST)?",
                                "00:00:00 1970-01-01")
 normalizeEOL = FilePreprocessor()
 normalizeEOL.__processLine__ = lambda line: str(line).rstrip() + '\n'
