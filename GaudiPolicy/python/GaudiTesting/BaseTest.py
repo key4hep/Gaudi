@@ -38,6 +38,7 @@ class BaseTest :
         self.returnedCode=0
         self.out = ''
         self.err = ''
+        self.workdir = os.curdir
         self.proc=None
 
     def validator(self, stdout='',stderr=''):
@@ -87,9 +88,11 @@ class BaseTest :
                 else :
                     params = [RationalizePath(prog)] + self.args
 
-                logging.debug('executing %r', params)
+                logging.debug('executing %r in %s',
+                              params, self.workdir)
                 self.proc= Popen(params, stdout=PIPE, stderr=PIPE,
-                                 env=self.environment)
+                                 env=self.environment,
+                                 cwd=self.workdir)
                 self.proc.wait()
 
             thread = threading.Thread(target=target)
