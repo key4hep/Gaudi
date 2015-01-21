@@ -46,12 +46,6 @@ class BaseTest :
     def run(self):
         logging.debug('running test %s', self.name)
 
-        #Setting time
-        begining = int(time.time())
-        DOB = time.localtime()
-        dateOfBegining = str(DOB[1])+"/"+str(DOB[2])+"/"+str(DOB[0])+" "+str(DOB[3])+":"+str(DOB[4])+":"+str(DOB[5])
-
-
         if self.options != '' :
             if self.options.startswith("import") or self.options.startswith("from") or self.options.startswith("\nfrom") or self.options.startswith("\nimport") or (self.options.startswith("\n#") and not self.options.startswith('\n#include')):
                 optionFile = tempfile.NamedTemporaryFile(suffix='.py')
@@ -117,15 +111,6 @@ class BaseTest :
             #Getting the error code
             self.returnedCode = self.proc.returncode
 
-        #End time
-        end=time.time()
-        #Time lasted
-        lasted = end-begining
-        #Getting date and local time
-        DOE = time.localtime()
-        dateOfEnding = str(DOE[1])+"/"+str(DOE[2])+"/"+str(DOE[0])+" "+str(DOE[3])+":"+str(DOE[4])+":"+str(DOE[5])
-
-
         if unsupPlat :
             logging.debug('validating test...')
             validatorRes = Result({'CAUSE':None,'EXCEPTION':None,'RESOURCE':None,'TARGET':None,'TRACEBACK':None,'START_TIME':None,'END_TIME':None,'TIMEOUT_DETAIL':None})
@@ -145,32 +130,32 @@ class BaseTest :
                 if int(self.returnedCode) != int(self.exit_code) :
                     self.causes.append('wrong return code')
             if self.returnedCode!=0 and self.exit_code is None and self.signal is None:
-                self.causes.append("Return code !=0")
+                self.causes.append("exit code")
             if self.causes == []:
                 self.status = "passed"
         else :
             self.status = "skipped"
 
         logging.debug('%s: %s', self.name, self.status)
-        resultDic = {'Execution Time':lasted,
-                     'Exit code':self.returnedCode,
-                     'Start Time':dateOfBegining,
-                     'End Time':dateOfEnding,
-                     'Stderr':self.err,
-                     'Arguments':self.args,
-                     'Environment':self.environment,
-                     'Expected stderr':self.stderr,
-                     'Status':self.status,
-                     'Measurement':self.out,
-                     'Program Name':self.program,
-                     'Name':self.name,
-                     'Validator':self.validator,
-                     'Reference file':self.reference,
-                     'Error reference file':self.error_reference,
-                     'Causes':self.causes,
-                     'Validator results':self.result.annotations,
-                     'Unsupported platforms':self.unsupported_platforms}
-        return resultDic
+        field_mapping = {'Exit Code': 'returnedCode',
+                         'stderr': 'err',
+                         'Arguments': 'args',
+                         'Environment': 'environment',
+                         'Status': 'status',
+                         'stdout': 'out',
+                         'Program Name': 'program',
+                         'Name': 'name',
+                         'Validator': 'validator',
+                         'Reference File': 'reference',
+                         'Error Reference File': 'error_reference',
+                         'Causes': 'causes',
+                         #'Validator Result': 'result.annotations',
+                         'Unsupported Platforms': 'unsupported_platforms'}
+        resultDict = [(key, getattr(self, attr))
+                      for key, attr in field_mapping.iteritems()
+                      if getattr(self, attr)]
+        resultDict.append(('Working Directory', os.getcwd()))
+        return dict(resultDict)
 
 
     #-------------------------------------------------#
