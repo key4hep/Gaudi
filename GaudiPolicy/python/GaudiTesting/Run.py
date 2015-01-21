@@ -185,31 +185,28 @@ def main():
                         output='Results_Test.xml')
 
 
-    opts, fileList = parser.parse_args()
+    opts, args = parser.parse_args()
+    if len(args) != 1:
+        parser.error('only one test allowed')
+    filename = args[0]
 
     logging.basicConfig(level=opts.log_level)
 
-
-    #fileList=["/afs/cern.ch/user/v/valentin/workspace/Gaudi/GaudiExamples/tests/qmtest/gaudiexamples.qms/event_timeout_abort.qmt"]
-
-    #fileList = ['./gaudiexamples.qms/root_io.qms/read.qmt']
-
-    # Testing the file begining with "Test" or if it is a qmt file and doing the test
-    for file in fileList :
-        logging.debug('processing %s', file)
-        if file.endswith('_test.py') :
-            indexFilePart= file.rfind("/")
-            fileToImport = file[indexFilePart+1:]
-            sys.path.append(GT.RationalizePath(file)[:-len(fileToImport)-1])
-            imp = __import__(fileToImport[:-3])
-            fileToExec = imp.Test()
-            XMLwriter(fileToExec.run(), opts.output)
-        if file.endswith(".qmt"):
-            from QMTTest import QMTTest
-            fileToTest = QMTTest(file)
-            XMLwriter(fileToTest.run(), opts.output)
+    # Testing the file beginning with "Test" or if it is a qmt file and doing the test
+    logging.debug('processing %s', filename)
+    if filename.endswith('_test.py') :
+        indexFilePart= filename.rfind("/")
+        fileToImport = filename[indexFilePart+1:]
+        sys.path.append(GT.RationalizePath(filename)[:-len(fileToImport)-1])
+        imp = __import__(fileToImport[:-3])
+        fileToExec = imp.Test()
+        result = fileToExec.run()
+    if filename.endswith(".qmt"):
+        from QMTTest import QMTTest
+        fileToTest = QMTTest(filename)
+        result = fileToTest.run()
+    XMLwriter(result, opts.output)
     cleanXml(opts.output)
-
 
 if __name__ == '__main__':
     main()
