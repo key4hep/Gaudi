@@ -151,7 +151,7 @@ class BaseTest :
         else :
             self.status = "skipped"
 
-        logging.info('%s: %s', self.name, self.status)
+        logging.debug('%s: %s', self.name, self.status)
         resultDic = {'Execution Time':lasted,
                      'Exit code':self.returnedCode,
                      'Start Time':dateOfBegining,

@@ -148,13 +148,33 @@ def siteAttrib():
             "OSPlatform": os.uname()[4],
             }
 
+def ctest_report(results):
+    handler = {'Environment': lambda v: '\n'.join('{0}={1}'.format(*item)
+                                                  for item in sorted(v.iteritems()))}
+    id_handler = lambda v: str(v)
+    template = ('<DartMeasurement type="text/string" name="{0}">{1}</DartMeasurement>')
+    for key in results:
+        sys.stdout.write(template.format(key,
+                                         XSS.escape(handler.get(key, id_handler)(results[key]))))
+
+def basic_report(results):
+    print '=== stdout ==='
+    print results.get('Measurement', '')
+    print '=== stderr ==='
+    print results.get('Stderr', '')
+
+def pprint_report(results):
+    from pprint import pprint
+    pprint(results)
+
 def main():
     from optparse import OptionParser, OptionGroup
     parser = OptionParser()
 
-    parser.add_option('--output',
-                      help='name of the output file [default: %default]')
-
+    parser.add_option('--report', action='store',
+                      choices=[n.replace('_report', '')
+                               for n in globals() if n.endswith('_report')],
+                      help='choose a report method [default %default]')
 
     verbosity_opts = OptionGroup(parser, 'Verbosity Level',
                                  'set the verbosity level of messages')
@@ -182,7 +202,7 @@ def main():
 
 
     parser.set_defaults(log_level=logging.WARNING,
-                        output='Results_Test.xml')
+                        report='basic')
 
 
     opts, args = parser.parse_args()
@@ -200,13 +220,16 @@ def main():
         sys.path.append(GT.RationalizePath(filename)[:-len(fileToImport)-1])
         imp = __import__(fileToImport[:-3])
         fileToExec = imp.Test()
-        result = fileToExec.run()
-    if filename.endswith(".qmt"):
+        results = fileToExec.run()
+    elif filename.endswith(".qmt"):
         from QMTTest import QMTTest
         fileToTest = QMTTest(filename)
-        result = fileToTest.run()
-    XMLwriter(result, opts.output)
-    cleanXml(opts.output)
+        results = fileToTest.run()
+
+    report = globals()[opts.report + '_report']
+    report(results)
+
+    return 1 if results.get('Status', 'failed') == 'failed' else 0
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
