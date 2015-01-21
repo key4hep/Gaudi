@@ -2230,6 +2230,7 @@ function(gaudi_add_test name)
   gaudi_get_package_name(package)
 
   if(ARG_QMTESTNEW)
+    # add .qmt files as tests
     file(GLOB_RECURSE qmt_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest *.qmt)
     string(TOLOWER "${subdir_name}" subdir_name_lower)
     foreach(qmt_file ${qmt_files})
@@ -2243,6 +2244,17 @@ function(gaudi_add_test name)
                      LABELS QMTest ${ARG_LABELS}
                      ENVIRONMENT ${ARG_ENVIRONMENT})
     endforeach()
+    # extract dependencies
+    execute_process(COMMAND ${env_cmd} --xml ${env_xml}
+                    python -m GaudiTesting.QMTTest
+                      ${package} ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
+                    OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/qmt_deps.cmake
+                    RESULT_VARIABLE qmt_deps_retcode)
+    if(NOT qmt_deps_retcode EQUAL 0)
+      message(WARNING "failure computing dependencies of QMTest tests")
+    endif()
+    include(${CMAKE_CURRENT_BINARY_DIR}/qmt_deps.cmake)
+    # no need to continue
     return()
   elseif(ARG_QMTEST)
     find_package(QMTest QUIET)

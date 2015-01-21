@@ -31,3 +31,7 @@ if(GAUDI_BUILD_TESTS)
                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/GAUDI-976
                  PASSREGEX "1 \\(100%\\) tests PASS")
 endif()
+
+gaudi_add_test(GaudiTesting.nose
+               COMMAND nosetests --with-doctest
+                 ${CMAKE_CURRENT_SOURCE_DIR}/python/GaudiTesting)
