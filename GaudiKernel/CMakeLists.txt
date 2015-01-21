@@ -44,7 +44,8 @@ gaudi_add_test(confdb
                COMMAND nosetests ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose/confdb)
 
 gaudi_add_test(parsers_2
-               COMMAND python -m GaudiTesting.Run --output ${CMAKE_BINARY_DIR}/GaudiKernel_Results_Test.xml --verbose gaudikernel.qms/parsers.qmt
+               COMMAND python -m GaudiTesting.Run
+                  --output ${CMAKE_BINARY_DIR}/Testing/xml_test_results/GaudiKernel_Results_Test.xml --verbose gaudikernel.qms/parsers.qmt
                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
 
 if(GAUDI_BUILD_TESTS)
