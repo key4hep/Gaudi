@@ -26,6 +26,7 @@ if(GAUDI_BUILD_TESTS)
   # https://its.cern.ch/jira/browse/GAUDI-976
   configure_file(tests/GAUDI-976/test.qmt GAUDI-976/test.qmt COPYONLY)
   configure_file(tests/GAUDI-976/QMTest/configuration GAUDI-976/QMTest/configuration COPYONLY)
+  find_package(QMTest)
   gaudi_add_test(GAUDI-976
                  COMMAND ${env_cmd} --xml ${env_xml} TESTENV=à qmtest run
                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/GAUDI-976

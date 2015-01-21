@@ -104,7 +104,7 @@ gaudi_build_env(SET     STDOPTS          ${CMAKE_CURRENT_SOURCE_DIR}/options
 gaudi_build_env(UNSET GAUDIAPPNAME
                 UNSET GAUDIAPPVERSION)
 
-gaudi_add_test(QMTest QMTEST
+gaudi_add_test(QMTest QMTESTNEW
                ENVIRONMENT
                  STDOPTS=${CMAKE_CURRENT_SOURCE_DIR}/options
                  JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options
