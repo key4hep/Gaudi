@@ -13,7 +13,11 @@ gaudi_install_scripts()
 # FIXME: these variables must be unset in the tests for compatibility with CMT
 gaudi_build_env(UNSET GAUDIAPPNAME
                 UNSET GAUDIAPPVERSION)
-gaudi_add_test(QMTest QMTEST
+
+gaudi_add_test(QMTest QMTESTNEW
                ENVIRONMENT
                  JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/tests/pyjobopts:${CMAKE_CURRENT_SOURCE_DIR}/tests
                  PYTHONPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/python)
+
+gaudi_add_test(nose
+               COMMAND nosetests ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose)
