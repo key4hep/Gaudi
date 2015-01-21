@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from BaseTest import *
+import logging
 
 class QMTTest(BaseTest):
 
@@ -10,31 +11,33 @@ class QMTTest(BaseTest):
             self.XMLParser(path)
 
     def XMLParser(self, path) :
+        '''
+        Parse a QMTest XML test description (.qmt file) to initialize the test
+        instance.
+        '''
+        log = logging.getLogger('QMTest.XMLParser')
         import xml.etree.ElementTree as ET
+        log.debug('parsing %s', path)
 
-        dic = self.__dict__
+        self.name = path
 
-        tree = ET.parse(RationalizePath(path))
-        root = tree.getroot()
-
-        for child in root:
-            type = child.attrib['name']
-            dic['name']=path
-            if type in dic :
-                if type == 'args' or type == 'unsupported_platforms':
-                    textList = child[0].findall('text')
-                    for tl in textList :
-                        dic[type]+=[tl.text]
-                elif type == 'environment':
-                     dic[type]={}
-                     envList= child[0].findall('text')
-                     for el in envList :
-                         indexDictPart= el.text.rfind("=")
-                         dic[type][el.text[:indexDictPart]]=el.text[indexDictPart+1:]
+        tree = ET.parse(path)
+        for child in tree.getroot():
+            name = child.attrib['name']
+            if hasattr(self, name):
+                log.debug('setting %s', name)
+                value = child[0]
+                if name in ('args', 'unsupported_platforms'):
+                    setattr(self, name, [el.text
+                                         for el in value.findall('text')])
+                elif name == 'environment':
+                    setattr(self, name, dict(el.text.split('=', 1)
+                                             for el in value.findall('text')))
                 else:
-                    dic[type] = child[0].text
-                    if child[0].tag == 'integer':
-                        dic[type] = int(dic[type])
+                    data = value.text
+                    if value.tag == 'integer':
+                        data = int(data)
+                    setattr(self, name, data)
 
 
     def ValidateOutput(self, stdout, stderr, result):

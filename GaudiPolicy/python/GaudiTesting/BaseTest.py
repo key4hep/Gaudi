@@ -112,6 +112,7 @@ class BaseTest :
             if self.traceback:
                 self.err = self.proc.stderr.read()
             #Getting the error code
+            logging.debug('returnedCode = %s', self.proc.returncode)
             self.returnedCode = self.proc.returncode
 
         if unsupPlat :
@@ -157,7 +158,9 @@ class BaseTest :
         resultDict = [(key, getattr(self, attr))
                       for key, attr in field_mapping.iteritems()
                       if getattr(self, attr)]
-        resultDict.append(('Working Directory', os.getcwd()))
+        resultDict.append(('Working Directory',
+                           RationalizePath(os.path.join(os.getcwd(),
+                                                        self.workdir))))
         return dict(resultDict)
 
 

@@ -109,7 +109,8 @@ def main():
     report = globals()[opts.report + '_report']
     report(results)
 
-    return int(results.get('Exit Code', '1'))
+    logging.debug('test exit code: %s', results.get('Exit Code', '0'))
+    return int(results.get('Exit Code', '0'))
 
 if __name__ == '__main__':
     sys.exit(main())
