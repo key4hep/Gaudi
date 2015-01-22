@@ -11,7 +11,7 @@ import inspect
 import re
 import logging
 
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, STDOUT
 
 def sanitize_for_xml(data):
     '''
@@ -39,7 +39,7 @@ class BaseTest(object):
         self.error_reference = ''
         self.options = ''
         self.stderr = ''
-        self.timeout = 120
+        self.timeout = 600
         self.exit_code = None
         self.environment = None
         self.unsupported_platforms = []
@@ -55,6 +55,7 @@ class BaseTest(object):
         self.out = ''
         self.err = ''
         self.proc = None
+        self.stack_trace = None
         self.basedir = os.getcwd()
 
     def validator(self, stdout='',stderr=''):
@@ -111,6 +112,12 @@ class BaseTest(object):
             else :
                 params = [RationalizePath(prog)] + self.args
 
+            validatorRes = Result({'CAUSE': None, 'EXCEPTION': None,
+                                   'RESOURCE': None, 'TARGET': None,
+                                   'TRACEBACK': None, 'START_TIME': None,
+                                   'END_TIME': None, 'TIMEOUT_DETAIL': None})
+            self.result = validatorRes
+
             # we need to switch directory because the validator expects to run
             # in the same dir as the program
             os.chdir(workdir)
@@ -129,27 +136,29 @@ class BaseTest(object):
             thread.join(self.timeout)
 
             if thread.is_alive():
-                self.proc.send_signal(signal.SIGABRT)
-                logging.warning('time out in test %s', self.name)
+                # get the stack trace of the stuck process
+                cmd = ['gdb', '-p', str(self.proc.pid), '-n', '-q']
+                gdb = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+                self.stack_trace = gdb.communicate('set pagination off\n'
+                                                   'set confirm off\n'
+                                                   'thread apply all backtrace\n'
+                                                   'quit\n')[0]
+
+                self.proc.send_signal(signal.SIGKILL)
+                logging.debug('time out in test %s', self.name)
                 thread.join()
-                self.causes.append = 'timeout'
+                self.causes.append('timeout')
             else:
                 logging.debug('completed test %s', self.name)
 
-            #Getting the error code
-            logging.debug('returnedCode = %s', self.proc.returncode)
-            self.returnedCode = self.proc.returncode
+                #Getting the error code
+                logging.debug('returnedCode = %s', self.proc.returncode)
+                self.returnedCode = self.proc.returncode
 
-            logging.debug('validating test...')
-            validatorRes = Result({'CAUSE': None, 'EXCEPTION': None,
-                                   'RESOURCE': None, 'TARGET': None,
-                                   'TRACEBACK': None, 'START_TIME': None,
-                                   'END_TIME': None, 'TIMEOUT_DETAIL': None})
-            self.result = validatorRes
-
-            self.result, self.causes = self.ValidateOutput(stdout=self.out,
-                                                           stderr=self.err,
-                                                           result=validatorRes)
+                logging.debug('validating test...')
+                self.result, self.causes = self.ValidateOutput(stdout=self.out,
+                                                               stderr=self.err,
+                                                               result=validatorRes)
 
             # remove the temporary directory if we created it
             if self.use_temp_dir and not self._common_tmpdir:
@@ -191,7 +200,8 @@ class BaseTest(object):
                          'Error Reference File': 'error_reference',
                          'Causes': 'causes',
                          #'Validator Result': 'result.annotations',
-                         'Unsupported Platforms': 'unsupported_platforms'}
+                         'Unsupported Platforms': 'unsupported_platforms',
+                         'Stack Trace': 'stack_trace'}
         resultDict = [(key, getattr(self, attr))
                       for key, attr in field_mapping.iteritems()
                       if getattr(self, attr)]
