@@ -64,6 +64,8 @@ def main():
                       choices=[n.replace('_report', '')
                                for n in globals() if n.endswith('_report')],
                       help='choose a report method [default %default]')
+    parser.add_option('--common-tmpdir', action='store',
+                      help='directory to be used as common temporary directory')
 
     verbosity_opts = OptionGroup(parser, 'Verbosity Level',
                                  'set the verbosity level of messages')
@@ -98,6 +100,11 @@ def main():
     if len(args) != 1:
         parser.error('only one test allowed')
     filename = args[0]
+
+    if opts.common_tmpdir:
+        if not os.path.isdir(opts.common_tmpdir):
+            os.makedirs(opts.common_tmpdir)
+        GT.BaseTest._common_tmpdir = opts.common_tmpdir
 
     logging.basicConfig(level=opts.log_level)
 

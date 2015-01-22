@@ -2239,7 +2239,10 @@ function(gaudi_add_test name)
       string(REPLACE "${subdir_name_lower}." "" qmt_name "${qmt_name}")
       message(STATUS "adding test ${qmt_file} as ${qmt_name}")
       gaudi_add_test(${qmt_name}
-                     COMMAND python -m GaudiTesting.Run --report ctest ${qmt_file}
+                     COMMAND python -m GaudiTesting.Run
+                       --common-tmpdir ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp
+                       --report ctest
+                       ${qmt_file}
                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
                      LABELS QMTest ${ARG_LABELS}
                      ENVIRONMENT ${ARG_ENVIRONMENT})

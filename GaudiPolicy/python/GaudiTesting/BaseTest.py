@@ -28,32 +28,34 @@ def sanitize_for_xml(data):
     return bad_chars.sub(quote, data)
 
 #-------------------------------------------------------------------------#
-class BaseTest :
+class BaseTest(object):
+
+    _common_tmpdir = None
+
     def __init__(self):
-        self.program=''
-        self.args=[]
-        self.reference=''
-        self.error_reference=''
-        self.options=''
-        self.stderr=''
-        self.timeout=120
-        self.exit_code=None
-        self.environment=None
-        self.target='local'
-        self.traceback=True
-        self.unsupported_platforms=[]
-        self.signal=None
+        self.program = ''
+        self.args = []
+        self.reference = ''
+        self.error_reference = ''
+        self.options = ''
+        self.stderr = ''
+        self.timeout = 120
+        self.exit_code = None
+        self.environment = None
+        self.unsupported_platforms = []
+        self.signal = None
+        self.workdir = os.curdir
+        self.use_temp_dir = False
         #Variables not for users
-        self.status=None
-        self.name=''
+        self.status = None
+        self.name = ''
         self.causes = []
-        self.timeOut=False
         self.result = Result(self)
-        self.returnedCode=0
+        self.returnedCode = 0
         self.out = ''
         self.err = ''
-        self.workdir = os.curdir
-        self.proc=None
+        self.proc = None
+        self.basedir = os.getcwd()
 
     def validator(self, stdout='',stderr=''):
         pass
@@ -80,34 +82,46 @@ class BaseTest :
                 unsupPlat = False
 
         if unsupPlat:
+            # handle working/temporary directory options
+            workdir = self.workdir
+            if self.use_temp_dir:
+                if self._common_tmpdir:
+                    workdir = self._common_tmpdir
+                else:
+                    workdir = tempfile.mkdtemp()
+
+            # prepare the command to execute
+            prog=''
+            if self.program != '':
+                prog = self.program
+            elif "GAUDIEXE" in os.environ :
+                prog = os.environ["GAUDIEXE"]
+            else :
+                prog = "Gaudi.exe"
+
+            dummy, prog_ext = os.path.splitext(prog)
+            if prog_ext not in [ ".exe", ".py", ".bat" ]:
+                prog += ".exe"
+                prog_ext = ".exe"
+
+            prog = which(prog) or prog
+
+            if prog_ext == ".py" :
+                params = ['python', RationalizePath(prog)] + self.args
+            else :
+                params = [RationalizePath(prog)] + self.args
+
+            # we need to switch directory because the validator expects to run
+            # in the same dir as the program
+            os.chdir(workdir)
+
             #launching test in a different thread to handle timeout exception
             def target() :
-                prog=''
-                if self.program != '':
-                    prog = self.program
-                elif "GAUDIEXE" in os.environ :
-                    prog = os.environ["GAUDIEXE"]
-                else :
-                    prog = "Gaudi.exe"
-
-                dummy, prog_ext = os.path.splitext(prog)
-                if prog_ext not in [ ".exe", ".py", ".bat" ]:
-                    prog += ".exe"
-                    prog_ext = ".exe"
-
-                prog = which(prog) or prog
-
-                if prog_ext == ".py" :
-                    params = ['python', RationalizePath(prog)] + self.args
-                else :
-                    params = [RationalizePath(prog)] + self.args
-
                 logging.debug('executing %r in %s',
-                              params, self.workdir)
-                self.proc= Popen(params, stdout=PIPE, stderr=PIPE,
-                                 env=self.environment,
-                                 cwd=self.workdir)
-                self.proc.wait()
+                              params, workdir)
+                self.proc = Popen(params, stdout=PIPE, stderr=PIPE,
+                                  env=self.environment)
+                self.out, self.err = self.proc.communicate()
 
             thread = threading.Thread(target=target)
             thread.start()
@@ -118,13 +132,9 @@ class BaseTest :
                 self.proc.send_signal(signal.SIGABRT)
                 logging.warning('time out in test %s', self.name)
                 thread.join()
-                self.timeOut = True
+                self.causes.append = 'timeout'
             else:
                 logging.debug('completed test %s', self.name)
-
-            self.out = self.proc.stdout.read()
-            if self.traceback:
-                self.err = self.proc.stderr.read()
 
             #Getting the error code
             logging.debug('returnedCode = %s', self.proc.returncode)
@@ -137,13 +147,17 @@ class BaseTest :
                                    'END_TIME': None, 'TIMEOUT_DETAIL': None})
             self.result = validatorRes
 
-            if self.timeOut:
-                self.result["Abort cause"]=self.result.Quote("Event Timeout")
-
             self.result, self.causes = self.ValidateOutput(stdout=self.out,
                                                            stderr=self.err,
                                                            result=validatorRes)
 
+            # remove the temporary directory if we created it
+            if self.use_temp_dir and not self._common_tmpdir:
+                shutil.rmtree(workdir, True)
+
+            os.chdir(self.basedir)
+
+            # handle application exit code
             if self.signal is not None:
                 if int(self.returnedCode) != -int(self.signal):
                     self.causes.append('exit code')
@@ -300,7 +314,7 @@ class BaseTest :
         if result is None : result=self.result
         if causes is None : causes=self.causes
         if trees_dict is None:
-            lreference = _expandReferenceFileName(self,self.reference)
+            lreference = self._expandReferenceFileName(self.reference)
             # call the validator if the file exists
             if lreference and os.path.isfile(lreference):
                 trees_dict = findTTreeSummaries(open(lreference).read())
@@ -338,7 +352,7 @@ class BaseTest :
         if causes is None : causes=self.causes
 
         if dict is None:
-            lreference = _expandReferenceFileName(self,self.reference)
+            lreference = self._expandReferenceFileName(self.reference)
             # call the validator if the file exists
             if lreference and os.path.isfile(lreference):
                 dict = findHistosSummaries(open(lreference).read())
@@ -378,7 +392,7 @@ class BaseTest :
         if preproc is None:
             preproc = normalizeExamples
         # check standard output
-        lreference = _expandReferenceFileName(self, self.reference)
+        lreference = self._expandReferenceFileName(self.reference)
         # call the validator if the file exists
         if lreference and os.path.isfile(lreference):
             causes += ReferenceFileValidator(lreference,
@@ -401,9 +415,9 @@ class BaseTest :
                 pass
 
         # check standard error
-        lreference = _expandReferenceFileName(self,self.error_reference)
+        lreference = self._expandReferenceFileName(self.error_reference)
         # call the validator if we have a file to use
-        if lreference and os.path.isfile(self.error_reference):
+        if lreference and os.path.isfile(lreference):
             newcauses = ReferenceFileValidator(lreference,
                                                "standard error",
                                                "Error Diff",
@@ -418,6 +432,41 @@ class BaseTest :
         else:
             causes += BasicOutputValidator(lreference, "standard error", "ExecTest.expected_stderr")(stderr, result)
         return causes
+
+    def _expandReferenceFileName(self, reffile):
+        # if no file is passed, do nothing
+        if not reffile:
+            return ""
+
+        # function to split an extension in constituents parts
+        platformSplit = lambda p: set(p.split('-' in p and '-' or '_'))
+
+        reference = os.path.normpath(os.path.join(self.basedir,
+                                                  os.path.expandvars(reffile)))
+
+        # old-style platform-specific reference name
+        spec_ref = reference[:-3] + GetPlatform(self)[0:3] + reference[-3:]
+        if os.path.isfile(spec_ref):
+            reference = spec_ref
+        else: # look for new-style platform specific reference files:
+            # get all the files whose name start with the reference filename
+            dirname, basename = os.path.split(reference)
+            if not dirname: dirname = '.'
+            head = basename + "."
+            head_len = len(head)
+            platform = platformSplit(GetPlatform(self))
+            candidates = []
+            for f in os.listdir(dirname):
+                if f.startswith(head):
+                    req_plat = platformSplit(f[head_len:])
+                    if platform.issuperset(req_plat):
+                        candidates.append( (len(req_plat), f) )
+            if candidates: # take the one with highest matching
+                # FIXME: it is not possible to say if x86_64-slc5-gcc43-dbg
+                #        has to use ref.x86_64-gcc43 or ref.slc5-dbg
+                candidates.sort()
+                reference = os.path.join(dirname, candidates[-1][1])
+        return reference
 
 #---------------------------------------------------------------------------------------------------#
 #---------------------------------------------------------------------------------------------------#
@@ -642,7 +691,7 @@ class RegexpReplacer(FilePreprocessor):
 
 # Common preprocessors
 maskPointers  = RegexpReplacer("0x[0-9a-fA-F]{4,16}","0x########")
-normalizeDate = RegexpReplacer("[0-2]?[0-9]:[0-5][0-9]:[0-5][0-9] [0-9]{4}[-/][01][0-9][-/][0-3][0-9] *[A-Z]+",
+normalizeDate = RegexpReplacer("[0-2]?[0-9]:[0-5][0-9]:[0-5][0-9] [0-9]{4}[-/][01][0-9][-/][0-3][0-9][ A-Z]*",
                                "00:00:00 1970-01-01")
 normalizeEOL = FilePreprocessor()
 normalizeEOL.__processLine__ = lambda line: str(line).rstrip() + '\n'
@@ -1013,39 +1062,3 @@ def isWinPlatform(self):
    platform = GetPlatform(self)
    return "winxp" in platform or platform.startswith("win")
 
-
-def _expandReferenceFileName(self, reffile):
-    # if no file is passed, do nothing
-    if not reffile:
-        return ""
-
-    # function to split an extension in constituents parts
-    platformSplit = lambda p: set(p.split('-' in p and '-' or '_'))
-
-    reference = os.path.normpath(os.path.expandvars(reffile))
-    # old-style platform-specific reference name
-    spec_ref = reference[:-3] + GetPlatform(self)[0:3] + reference[-3:]
-    if os.path.isfile(spec_ref):
-        reference = spec_ref
-    else: # look for new-style platform specific reference files:
-        # get all the files whose name start with the reference filename
-        dirname, basename = os.path.split(reference)
-        if not dirname: dirname = '.'
-        head = basename + "."
-        head_len = len(head)
-        platform = platformSplit(GetPlatform(self))
-        candidates = []
-        for f in os.listdir(dirname):
-            if f.startswith(head):
-                req_plat = platformSplit(f[head_len:])
-                if platform.issuperset(req_plat):
-                    candidates.append( (len(req_plat), f) )
-        if candidates: # take the one with highest matching
-            # FIXME: it is not possible to say if x86_64-slc5-gcc43-dbg
-            #        has to use ref.x86_64-gcc43 or ref.slc5-dbg
-            candidates.sort()
-            reference = os.path.join(dirname, candidates[-1][1])
-    return reference
-
-
-#-------------------------------------------------------------------------#
