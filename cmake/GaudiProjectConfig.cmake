@@ -321,6 +321,9 @@ macro(gaudi_project project version)
     set(versheader_cmd ${PYTHON_EXECUTABLE} ${versheader_cmd})
   endif()
 
+  find_program(qmt_deps_cmd extract_qmt_deps.py HINTS ${binary_paths})
+  set(qmt_deps_cmd ${PYTHON_EXECUTABLE} ${qmt_deps_cmd})
+
   find_program(genconfuser_cmd genconfuser.py HINTS ${binary_paths})
   set(genconfuser_cmd ${PYTHON_EXECUTABLE} ${genconfuser_cmd})
 
@@ -358,8 +361,9 @@ macro(gaudi_project project version)
     set(genwindef_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genwindef.exe)
   endif()
 
-  mark_as_advanced(env_cmd default_merge_cmd versheader_cmd genconfuser_cmd
-                   zippythondir_cmd gaudirun_cmd)
+  mark_as_advanced(env_cmd default_merge_cmd versheader_cmd
+                   qmt_deps_cmd
+                   genconfuser_cmd zippythondir_cmd gaudirun_cmd)
 
   #--- Project Installations------------------------------------------------------------------------
   install(DIRECTORY cmake/ DESTINATION cmake
@@ -2231,13 +2235,14 @@ function(gaudi_add_test name)
 
   if(ARG_QMTESTNEW)
     # add .qmt files as tests
+    message(STATUS "Addind QMTest tests")
     file(GLOB_RECURSE qmt_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest *.qmt)
     string(TOLOWER "${subdir_name}" subdir_name_lower)
     foreach(qmt_file ${qmt_files})
       string(REPLACE ".qms/" "." qmt_name "${qmt_file}")
       string(REPLACE ".qmt" "" qmt_name "${qmt_name}")
       string(REPLACE "${subdir_name_lower}." "" qmt_name "${qmt_name}")
-      message(STATUS "adding test ${qmt_file} as ${qmt_name}")
+      #message(STATUS "adding test ${qmt_file} as ${qmt_name}")
       gaudi_add_test(${qmt_name}
                      COMMAND python -m GaudiTesting.Run
                        --common-tmpdir ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp
@@ -2248,8 +2253,7 @@ function(gaudi_add_test name)
                      ENVIRONMENT ${ARG_ENVIRONMENT})
     endforeach()
     # extract dependencies
-    execute_process(COMMAND ${env_cmd} --xml ${env_xml}
-                    python -m GaudiTesting.QMTTest
+    execute_process(COMMAND ${qmt_deps_cmd}
                       ${package} ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
                     OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/qmt_deps.cmake
                     RESULT_VARIABLE qmt_deps_retcode)
