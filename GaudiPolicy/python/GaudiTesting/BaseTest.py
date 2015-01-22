@@ -144,15 +144,15 @@ class BaseTest :
                                                            stderr=self.err,
                                                            result=validatorRes)
 
-            if self.signal is not None :
-                if (int(self.returnedCode) - int(self.signal) - 128) != 0:
-                    self.causes.append('wrong return code')
+            if self.signal is not None:
+                if int(self.returnedCode) != -int(self.signal):
+                    self.causes.append('exit code')
 
-            if self.exit_code is not None:
+            elif self.exit_code is not None:
                 if int(self.returnedCode) != int(self.exit_code):
-                    self.causes.append('wrong return code')
+                    self.causes.append('exit code')
 
-            if self.returnedCode != 0 and self.exit_code is None and self.signal is None:
+            elif self.returnedCode != 0:
                 self.causes.append("exit code")
 
             if self.causes:
