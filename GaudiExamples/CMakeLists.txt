@@ -98,6 +98,7 @@ gaudi_add_test(AlgTools FRAMEWORK options/AlgTools.opts ENVIRONMENT JOBOPTSEARCH
 # (for easier debugging).
 gaudi_build_env(SET     STDOPTS          ${CMAKE_CURRENT_SOURCE_DIR}/options
                 PREPEND JOBOPTSEARCHPATH ${CMAKE_CURRENT_SOURCE_DIR}/options
+                PREPEND JOBOPTSEARCHPATH ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
                 PREPEND PYTHONPATH       ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
 
 # FIXME: these variables must be unset in the tests for compatibility with CMT
@@ -107,5 +108,6 @@ gaudi_build_env(UNSET GAUDIAPPNAME
 gaudi_add_test(QMTest QMTESTNEW
                ENVIRONMENT
                  STDOPTS=${CMAKE_CURRENT_SOURCE_DIR}/options
-                 JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options
+                 JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/options
+                 JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
                  PYTHONPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
