@@ -642,7 +642,7 @@ class RegexpReplacer(FilePreprocessor):
 
 # Common preprocessors
 maskPointers  = RegexpReplacer("0x[0-9a-fA-F]{4,16}","0x########")
-normalizeDate = RegexpReplacer("[0-2]?[0-9]:[0-5][0-9]:[0-5][0-9] [0-9]{4}[-/][01][0-9][-/][0-3][0-9] *(CES?T|PST)?",
+normalizeDate = RegexpReplacer("[0-2]?[0-9]:[0-5][0-9]:[0-5][0-9] [0-9]{4}[-/][01][0-9][-/][0-3][0-9] *[A-Z]+",
                                "00:00:00 1970-01-01")
 normalizeEOL = FilePreprocessor()
 normalizeEOL.__processLine__ = lambda line: str(line).rstrip() + '\n'
@@ -724,9 +724,11 @@ lineSkipper = LineSkipper(["//GP:",
                                         r"^[-+]*\s*$",
                                         # Hide the fake error message coming from POOL/ROOT (ROOT 5.21)
                                         r"ERROR Failed to modify file: .* Errno=2 No such file or directory",
-                                        # Hide unckeched StatusCodes  from dictionaries
+                                        # Hide unchecked StatusCodes from dictionaries
                                         r"^ +[0-9]+ \|.*ROOT",
                                         r"^ +[0-9]+ \|.*\|.*Dict",
+                                        # Hide success StatusCodeSvc message
+                                        r"StatusCodeSvc.*all StatusCode instances where checked",\
                                         # Remove ROOT TTree summary table, which changes from one version to the other
                                         r"^\*.*\*$",
                                         # Remove Histos Summaries
