@@ -321,8 +321,8 @@ macro(gaudi_project project version)
     set(versheader_cmd ${PYTHON_EXECUTABLE} ${versheader_cmd})
   endif()
 
-  find_program(qmt_deps_cmd extract_qmt_deps.py HINTS ${binary_paths})
-  set(qmt_deps_cmd ${PYTHON_EXECUTABLE} ${qmt_deps_cmd})
+  find_program(qmtest_metadata_cmd extract_qmtest_metadata.py HINTS ${binary_paths})
+  set(qmtest_metadata_cmd ${PYTHON_EXECUTABLE} ${qmtest_metadata_cmd})
 
   find_program(genconfuser_cmd genconfuser.py HINTS ${binary_paths})
   set(genconfuser_cmd ${PYTHON_EXECUTABLE} ${genconfuser_cmd})
@@ -362,7 +362,7 @@ macro(gaudi_project project version)
   endif()
 
   mark_as_advanced(env_cmd default_merge_cmd versheader_cmd
-                   qmt_deps_cmd
+                   qmtest_metadata_cmd
                    genconfuser_cmd zippythondir_cmd gaudirun_cmd)
 
   #--- Project Installations------------------------------------------------------------------------
@@ -2253,7 +2253,7 @@ function(gaudi_add_test name)
                      ENVIRONMENT ${ARG_ENVIRONMENT})
     endforeach()
     # extract dependencies
-    execute_process(COMMAND ${qmt_deps_cmd}
+    execute_process(COMMAND ${qmtest_metadata_cmd}
                       ${package} ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
                     OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/qmt_deps.cmake
                     RESULT_VARIABLE qmt_deps_retcode)

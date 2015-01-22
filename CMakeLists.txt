@@ -25,4 +25,4 @@ gaudi_add_test(cmake.project_manifest.doctest
 gaudi_add_test(cmake.CMakeModules
                COMMAND nosetests ${CMAKE_SOURCE_DIR}/cmake/tests)
 gaudi_add_test(cmake.QMTDeps
-               COMMAND nosetests --with-doctest ${CMAKE_SOURCE_DIR}/cmake/extract_qmt_deps.py)
+               COMMAND nosetests --with-doctest ${CMAKE_SOURCE_DIR}/cmake/extract_qmtest_metadata.py)
