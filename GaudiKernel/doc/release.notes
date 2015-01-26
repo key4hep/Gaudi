@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-01-26 - Marco Clemencic
+ - Removed duplicated tests.
+
 ! 2015-01-13 - Marco Clemencic
  - Fixed warning in genreflex with ROOT 6.02.03.
 
