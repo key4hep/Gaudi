@@ -2233,9 +2233,9 @@ function(gaudi_add_test name)
 
   gaudi_get_package_name(package)
 
-  if(ARG_QMTESTNEW)
+  if(ARG_QMTESTNEW OR (ARG_QMTEST AND DEFINED ENV{GAUDI_USE_QMTESTNEW}))
     # add .qmt files as tests
-    message(STATUS "Addind QMTest tests")
+    message(STATUS "Addind QMTest tests...")
     file(GLOB_RECURSE qmt_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest *.qmt)
     string(TOLOWER "${subdir_name}" subdir_name_lower)
     foreach(qmt_file ${qmt_files})
@@ -2261,6 +2261,8 @@ function(gaudi_add_test name)
       message(WARNING "failure computing dependencies of QMTest tests")
     endif()
     include(${CMAKE_CURRENT_BINARY_DIR}/qmt_deps.cmake)
+    list(LENGTH qmt_files qmt_count)
+    message(STATUS "... added ${qmt_count} tests.")
     # no need to continue
     return()
   elseif(ARG_QMTEST)
