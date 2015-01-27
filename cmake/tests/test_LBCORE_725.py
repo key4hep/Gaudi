@@ -43,7 +43,9 @@ def test_A_env():
 
     assert out['A_PROJECT_ROOT'] == os.path.join(release_dir, 'A')
 
-def test_B_env():
+def _test_B_env():
+    # Note: this test cannot work because the relocation is handled either at
+    #       build time (test_C_env) or at runtime (with other tools)
     assert build_returncode == 0
 
     envfile = os.path.join(release_dir,
