@@ -14,6 +14,10 @@ def basic_report(results):
     print results.get('stdout', '')
     print '=== stderr ==='
     print results.get('stderr', '')
+    print '=== result ==='
+    print results.get('Status')
+    if results.get('Status') != 'passed' and 'Causes' in results:
+        print '   ', 'unexpected ' + ', '.join(results['Causes'])
 
 
 def quiet_report(results):
