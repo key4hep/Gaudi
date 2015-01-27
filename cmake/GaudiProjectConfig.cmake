@@ -460,7 +460,7 @@ macro(gaudi_project project version)
                       COMMAND ${zippythondir_cmd} ${CMAKE_INSTALL_PREFIX}/python
                       COMMENT "Zipping Python modules")
   else()
-    # if we cannot zip the Python directory (e.g. projects not usng Gaudi) we
+    # if we cannot zip the Python directory (e.g. projects not using Gaudi) we
     # still need a fake python.zip target, expected by the nightly builds.
     add_custom_target(python.zip)
   endif()
@@ -717,7 +717,7 @@ endmacro()
 #-------------------------------------------------------------------------------
 # _gaudi_use_other_projects([project version [project version]...])
 #
-# Internal macro implementing the handline of the "USE" option.
+# Internal macro implementing the handling of the "USE" option.
 # (improve readability)
 #-------------------------------------------------------------------------------
 macro(_gaudi_use_other_projects)
@@ -731,7 +731,7 @@ macro(_gaudi_use_other_projects)
     message(STATUS "Looking for projects")
   endif()
 
-  # this is neede because of the way variable expansion works in macros
+  # this is needed because of the way variable expansion works in macros
   set(ARGN_ ${ARGN})
   while(ARGN_)
     list(LENGTH ARGN_ len)
@@ -742,7 +742,7 @@ macro(_gaudi_use_other_projects)
     list(GET ARGN_ 1 other_project_version)
     list(REMOVE_AT ARGN_ 0 1)
 
-    #message(STATUS "project -> ${other_project}, version -> ${other_project_version}")
+    message(STATUS "project -> ${other_project}, version -> ${other_project_version}")
     if(other_project_version MATCHES "${GAUDI_VERSION_REGEX}")
       set(other_project_cmake_version "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}")
       foreach(_i 4 7)
@@ -787,7 +787,7 @@ macro(_gaudi_use_other_projects)
               set(hint_message "without the option '-DCMAKE_TOOLCHAIN_FILE=...'")
             endif()
             message(FATAL_ERROR "Incompatible versions of heptools toolchains:
-  ${CMAKE_PROJECT_NAME} -> ${heptools_version}
+  ${CMAKE_PROJECT_NAME} ${CMAKE_PROJECT_VERSION} -> ${heptools_version}
   ${other_project} ${${other_project}_VERSION} -> ${${other_project}_heptools_version}
 
   You need to call cmake ${hint_message}
@@ -802,8 +802,13 @@ macro(_gaudi_use_other_projects)
   Check your configuration.
 ")
         endif()
-        include_directories(${${other_project}_INCLUDE_DIRS})
-        set_property(GLOBAL APPEND PROPERTY INCLUDE_PATHS ${${other_project}_INCLUDE_DIRS})
+        # include directories of other projects must be appended to the current
+        # list to preserve the order of overriding
+        include_directories(AFTER ${${other_project}_INCLUDE_DIRS})
+        # but in the INCLUDE_PATHS property the order gets reversed afterwards
+        # so we need to prepend instead of append
+        get_property(_inc_dirs GLOBAL PROPERTY INCLUDE_PATHS)
+        set_property(GLOBAL PROPERTY INCLUDE_PATHS ${${other_project}_INCLUDE_DIRS} ${_inc_dirs})
         set(binary_paths ${${other_project}_BINARY_PATH} ${binary_paths})
         foreach(exported ${${other_project}_EXPORTED_SUBDIRS})
           list(FIND known_packages ${exported} is_needed)
@@ -815,11 +820,11 @@ macro(_gaudi_use_other_projects)
           endif()
         endforeach()
         list(APPEND known_packages ${${other_project}_OVERRIDDEN_SUBDIRS})
-        # Note: we add them in reverse order so that they appear in the correct
-        # inclusion order in the environment XML.
+        # Note: we add them to used_gaudi_projects in reverse order so that they
+        # appear in the correct inclusion order in the environment XML.
         set(used_gaudi_projects ${other_project} ${used_gaudi_projects})
         if(${other_project}_USES)
-          list(INSERT ARGN_ 0 ${${other_project}_USES})
+          list(APPEND ARGN_ ${${other_project}_USES})
         endif()
       else()
         message(FATAL_ERROR "Cannot find project ${other_project} ${other_project_version}")
