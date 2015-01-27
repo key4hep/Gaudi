@@ -2236,7 +2236,8 @@ function(gaudi_add_test name)
   if(ARG_QMTESTNEW OR (ARG_QMTEST AND DEFINED ENV{GAUDI_USE_QMTESTNEW}))
     # add .qmt files as tests
     message(STATUS "Addind QMTest tests...")
-    file(GLOB_RECURSE qmt_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest *.qmt)
+    set(qmtest_root_dir ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
+    file(GLOB_RECURSE qmt_files RELATIVE ${qmtest_root_dir} *.qmt)
     string(TOLOWER "${subdir_name}" subdir_name_lower)
     foreach(qmt_file ${qmt_files})
       string(REPLACE ".qms/" "." qmt_name "${qmt_file}")
@@ -2245,16 +2246,17 @@ function(gaudi_add_test name)
       #message(STATUS "adding test ${qmt_file} as ${qmt_name}")
       gaudi_add_test(${qmt_name}
                      COMMAND python -m GaudiTesting.Run
+                       --workdir ${qmtest_root_dir}
                        --common-tmpdir ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp
                        --report ctest
                        ${qmt_file}
-                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
+                     WORKING_DIRECTORY ${qmtest_root_dir}
                      LABELS QMTest ${ARG_LABELS}
                      ENVIRONMENT ${ARG_ENVIRONMENT})
     endforeach()
     # extract dependencies
     execute_process(COMMAND ${qmtest_metadata_cmd}
-                      ${package} ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
+                      ${package} ${qmtest_root_dir}
                     OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/qmt_deps.cmake
                     RESULT_VARIABLE qmt_deps_retcode)
     if(NOT qmt_deps_retcode EQUAL 0)

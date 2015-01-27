@@ -70,6 +70,8 @@ def main():
                       help='choose a report method [default %default]')
     parser.add_option('--common-tmpdir', action='store',
                       help='directory to be used as common temporary directory')
+    parser.add_option('-C', '--workdir', action='store',
+                      help='directory to change to before starting the test')
 
     verbosity_opts = OptionGroup(parser, 'Verbosity Level',
                                  'set the verbosity level of messages')
@@ -97,7 +99,8 @@ def main():
 
 
     parser.set_defaults(log_level=logging.WARNING,
-                        report='basic')
+                        report='basic',
+                        workdir=os.curdir)
 
 
     opts, args = parser.parse_args()
@@ -105,12 +108,14 @@ def main():
         parser.error('only one test allowed')
     filename = args[0]
 
+    logging.basicConfig(level=opts.log_level)
+
     if opts.common_tmpdir:
         if not os.path.isdir(opts.common_tmpdir):
             os.makedirs(opts.common_tmpdir)
         GT.BaseTest._common_tmpdir = opts.common_tmpdir
 
-    logging.basicConfig(level=opts.log_level)
+    os.chdir(opts.workdir)
 
     # Testing the file beginning with "Test" or if it is a qmt file and doing the test
     logging.debug('processing %s', filename)
