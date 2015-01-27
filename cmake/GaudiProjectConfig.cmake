@@ -794,10 +794,10 @@ macro(_gaudi_use_other_projects)
 ")
           endif()
         endif()
-        if(NOT LCG_SYSTEM STREQUAL ${other_project}_heptools_system)
+        if(NOT "${LCG_SYSTEM}" STREQUAL "${${other_project}_heptools_system}")
           message(FATAL_ERROR "Incompatible values of LCG_SYSTEM:
-  ${CMAKE_PROJECT_NAME} -> ${LCG_SYSTEM}
-  ${other_project} ${${other_project}_VERSION} -> ${${other_project}_heptools_system}
+  ${CMAKE_PROJECT_NAME} ${CMAKE_PROJECT_VERSION} -> '${LCG_SYSTEM}'
+  ${other_project} ${${other_project}_VERSION} -> '${${other_project}_heptools_system}'
 
   Check your configuration.
 ")
