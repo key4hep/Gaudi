@@ -738,7 +738,7 @@ macro(_gaudi_use_other_projects)
     list(GET ARGN_ 1 other_project_version)
     list(REMOVE_AT ARGN_ 0 1)
 
-    message(STATUS "project -> ${other_project}, version -> ${other_project_version}")
+    #message(STATUS "project -> ${other_project}, version -> ${other_project_version}")
     if(other_project_version MATCHES "${GAUDI_VERSION_REGEX}")
       set(other_project_cmake_version "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}")
       foreach(_i 4 7)
