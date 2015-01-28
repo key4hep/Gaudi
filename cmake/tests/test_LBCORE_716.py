@@ -55,6 +55,9 @@ def test_env():
     root_inc_path = [os.path.relpath(l, base_dir)[0]
                      for l in out.strip().split(os.pathsep)
                      if 'InstallArea' in l]
+    # if we run the test after "make install" is called, we get one extra '.'
+    # in the list (because of the InstallArea of Gaudi itself)
+    root_inc_path = [l for l in root_inc_path if l != '.']
     assert root_inc_path == ['D', 'B', 'C', 'A'], root_inc_path
 
 def teardown():
