@@ -326,6 +326,9 @@ macro(gaudi_project project version)
     set(versheader_cmd ${PYTHON_EXECUTABLE} ${versheader_cmd})
   endif()
 
+  find_program(qmtest_metadata_cmd extract_qmtest_metadata.py HINTS ${binary_paths})
+  set(qmtest_metadata_cmd ${PYTHON_EXECUTABLE} ${qmtest_metadata_cmd})
+
   find_program(genconfuser_cmd genconfuser.py HINTS ${binary_paths})
   set(genconfuser_cmd ${PYTHON_EXECUTABLE} ${genconfuser_cmd})
 
@@ -363,8 +366,9 @@ macro(gaudi_project project version)
     set(genwindef_cmd ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/genwindef.exe)
   endif()
 
-  mark_as_advanced(env_cmd default_merge_cmd versheader_cmd genconfuser_cmd
-                   zippythondir_cmd gaudirun_cmd)
+  mark_as_advanced(env_cmd default_merge_cmd versheader_cmd
+                   qmtest_metadata_cmd
+                   genconfuser_cmd zippythondir_cmd gaudirun_cmd)
 
   #--- Project Installations------------------------------------------------------------------------
   install(DIRECTORY cmake/ DESTINATION cmake
@@ -743,7 +747,7 @@ macro(_gaudi_use_other_projects)
     list(GET ARGN_ 1 other_project_version)
     list(REMOVE_AT ARGN_ 0 1)
 
-    #message(STATUS "project -> ${other_project}, version -> ${other_project_version}")
+    message(STATUS "project -> ${other_project}, version -> ${other_project_version}")
     if(other_project_version MATCHES "${GAUDI_VERSION_REGEX}")
       set(other_project_cmake_version "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}")
       foreach(_i 4 7)
@@ -2147,7 +2151,8 @@ endfunction()
 #                     [WORKING_DIRECTORY dir]
 #                     [ENVIRONMENT variable[+]=value ...]
 #                     [TIMEOUT seconds]
-#                     [TYPE Boost|CppUnit])
+#                     [TYPE Boost|CppUnit]
+#                     [LABELS label1 label2 ...])
 #
 # Special version of gaudi_add_executable which automatically adds the dependency
 # on CppUnit and declares the test to CTest (add_test).
@@ -2161,7 +2166,10 @@ endfunction()
 function(gaudi_add_unit_test executable)
   if(GAUDI_BUILD_TESTS)
 
-    CMAKE_PARSE_ARGUMENTS(${executable}_UNIT_TEST "" "TYPE;TIMEOUT;WORKING_DIRECTORY" "ENVIRONMENT" ${ARGN})
+    CMAKE_PARSE_ARGUMENTS(${executable}_UNIT_TEST
+                          ""
+                          "TYPE;TIMEOUT;WORKING_DIRECTORY"
+                          "ENVIRONMENT;LABELS" ${ARGN})
 
     gaudi_common_add_build(${${executable}_UNIT_TEST_UNPARSED_ARGUMENTS})
 
@@ -2205,6 +2213,7 @@ function(gaudi_add_unit_test executable)
              WORKING_DIRECTORY ${${executable}_UNIT_TEST_WORKING_DIRECTORY}
              COMMAND ${env_cmd} ${extra_env} --xml ${env_xml}
                ${executable}${exec_suffix})
+    set_property(TEST ${package}.${executable} PROPERTY LABELS ${package} ${ARG_LABELS})
 
     if(${executable}_UNIT_TEST_TIMEOUT)
       set_property(TEST ${package}.${executable} PROPERTY TIMEOUT ${${executable}_UNIT_TEST_TIMEOUT})
@@ -2244,13 +2253,47 @@ endfunction()
 #
 #-------------------------------------------------------------------------------
 function(gaudi_add_test name)
-  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST;FAILS"
+  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST;QMTESTNEW;FAILS"
                             "TIMEOUT;WORKING_DIRECTORY"
                             "ENVIRONMENT;FRAMEWORK;COMMAND;DEPENDS;PASSREGEX;FAILREGEX;LABELS" ${ARGN})
 
   gaudi_get_package_name(package)
 
-  if(ARG_QMTEST)
+  if(ARG_QMTESTNEW OR (ARG_QMTEST AND DEFINED ENV{GAUDI_USE_QMTESTNEW}))
+    # add .qmt files as tests
+    message(STATUS "Addind QMTest tests...")
+    set(qmtest_root_dir ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
+    file(GLOB_RECURSE qmt_files RELATIVE ${qmtest_root_dir} *.qmt)
+    string(TOLOWER "${subdir_name}" subdir_name_lower)
+    foreach(qmt_file ${qmt_files})
+      string(REPLACE ".qms/" "." qmt_name "${qmt_file}")
+      string(REPLACE ".qmt" "" qmt_name "${qmt_name}")
+      string(REPLACE "${subdir_name_lower}." "" qmt_name "${qmt_name}")
+      #message(STATUS "adding test ${qmt_file} as ${qmt_name}")
+      gaudi_add_test(${qmt_name}
+                     COMMAND python -m GaudiTesting.Run
+                       --workdir ${qmtest_root_dir}
+                       --common-tmpdir ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp
+                       --report ctest
+                       ${qmt_file}
+                     WORKING_DIRECTORY ${qmtest_root_dir}
+                     LABELS QMTest ${ARG_LABELS}
+                     ENVIRONMENT ${ARG_ENVIRONMENT})
+    endforeach()
+    # extract dependencies
+    execute_process(COMMAND ${qmtest_metadata_cmd}
+                      ${package} ${qmtest_root_dir}
+                    OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/qmt_deps.cmake
+                    RESULT_VARIABLE qmt_deps_retcode)
+    if(NOT qmt_deps_retcode EQUAL 0)
+      message(WARNING "failure computing dependencies of QMTest tests")
+    endif()
+    include(${CMAKE_CURRENT_BINARY_DIR}/qmt_deps.cmake)
+    list(LENGTH qmt_files qmt_count)
+    message(STATUS "... added ${qmt_count} tests.")
+    # no need to continue
+    return()
+  elseif(ARG_QMTEST)
     find_package(QMTest QUIET)
     set(ARG_ENVIRONMENT ${ARG_ENVIRONMENT}
                         QMTESTLOCALDIR=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest

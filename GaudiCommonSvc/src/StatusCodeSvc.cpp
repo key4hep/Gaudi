@@ -115,6 +115,8 @@ StatusCodeSvc::regFnc(const std::string& fnc, const std::string& lib) {
   if (m_dict && lib.rfind("Dict.so") == (lib.length()-7) ) {
     return;
   }
+  // this appears only with gcc 4.9...
+  if (fnc == "_PyObject_GC_Malloc") return;
 
   {
     const string rlib = lib.substr(lib.rfind("/") + 1);

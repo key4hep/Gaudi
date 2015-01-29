@@ -2,6 +2,9 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-01-26 - Marco Clemencic
+ - Removed duplicated tests.
+
 ============================ GaudiExamples v26r0 =============================
 ! 2015-01-15 - Marco Clemencic
  - Minor change in the CMake configuration to fix backward compatibility of the

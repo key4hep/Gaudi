@@ -71,7 +71,7 @@ gaudi_install_python_modules()
 gaudi_install_scripts()
 
 #---Test-----------------------------------------------------------------------
-gaudi_add_test(QMTest QMTEST)
+gaudi_add_test(QMTest QMTESTNEW)
 
 #---Special options
 if(GAUDI_HIDE_WARNINGS)

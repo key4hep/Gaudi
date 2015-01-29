@@ -91,21 +91,20 @@ gaudi_add_dictionary(GaudiExamples src/IO/dict.h  src/IO/dict.xml LINK_LIBRARIES
 
 
 #---Tests-------------------------------------------------------------------
-gaudi_add_test(Properties FRAMEWORK options/Properties.opts ENVIRONMENT JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options)
-gaudi_add_test(AlgTools FRAMEWORK options/AlgTools.opts ENVIRONMENT JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options)
-
 # Ensure that we have the test variables in the build-time environment
 # (for easier debugging).
 gaudi_build_env(SET     STDOPTS          ${CMAKE_CURRENT_SOURCE_DIR}/options
                 PREPEND JOBOPTSEARCHPATH ${CMAKE_CURRENT_SOURCE_DIR}/options
+                PREPEND JOBOPTSEARCHPATH ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
                 PREPEND PYTHONPATH       ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
 
 # FIXME: these variables must be unset in the tests for compatibility with CMT
 gaudi_build_env(UNSET GAUDIAPPNAME
                 UNSET GAUDIAPPVERSION)
 
-gaudi_add_test(QMTest QMTEST
+gaudi_add_test(QMTest QMTESTNEW
                ENVIRONMENT
                  STDOPTS=${CMAKE_CURRENT_SOURCE_DIR}/options
-                 JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/options
+                 JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/options
+                 JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
                  PYTHONPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)

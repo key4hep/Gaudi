@@ -33,4 +33,4 @@ endif()
 gaudi_install_python_modules()
 
 #---Test-----------------------------------------------------------------------
-gaudi_add_test(QMTest QMTEST)
+gaudi_add_test(QMTest QMTESTNEW)
