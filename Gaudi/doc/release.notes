@@ -2,6 +2,10 @@ Package : Gaudi
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-01-30 - Marco Clemencic
+ - Added command line option to restart gaudirun.py from old options (smaller
+   memory footprint) after having parsed the options in Python.
+
 ! 2015-01-26 - Marco Clemencic
  - Replaced the only QMTest test not based on GaudiTest with a Nose-based test.
 
