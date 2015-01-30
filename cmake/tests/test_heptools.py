@@ -12,5 +12,7 @@ class Tests(CMakeTestScripts):
     def setup(self):
         os.environ['CMAKE_PREFIX_PATH'] = join(self.base_dir, 'data', 'heptools')
         os.environ['CMTCONFIG'] = 'x86_64-slc6-gcc48-opt'
+        if 'CMTPROJECTPATH' in os.environ:
+            del os.environ['CMTPROJECTPATH']
 
     tests = ['heptools_parsing']
