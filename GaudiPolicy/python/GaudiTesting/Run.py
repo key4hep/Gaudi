@@ -117,6 +117,11 @@ def main():
 
     os.chdir(opts.workdir)
 
+    # FIXME: whithout this, we get some spurious '\x1b[?1034' in the std out on SLC6
+    if "slc6" in (os.environ.get('BINARY_TAG', '') or
+                  os.environ.get('CMTCONFIG', '')):
+        os.environ['TERM'] = 'dumb'
+
     # Testing the file beginning with "Test" or if it is a qmt file and doing the test
     logging.debug('processing %s', filename)
     if filename.endswith('_test.py') :
