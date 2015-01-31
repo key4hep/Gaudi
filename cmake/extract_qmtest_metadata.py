@@ -9,6 +9,7 @@ __author__ = 'Marco Clemencic <marco.clemencic@cern.ch>'
 import os
 import xml.etree.ElementTree as ET
 import collections
+import re
 
 def qmt_filename_to_name(path):
     '''
@@ -20,9 +21,20 @@ def qmt_filename_to_name(path):
     >>> qmt_filename_to_name('some_suite.qms/sub.qms/mytest.qmt')
     'some_suite.sub.mytest'
     '''
-    import re
     return '.'.join(re.sub(r'\.qm[st]$', '', p)
                     for p in path.split(os.path.sep))
+
+def fix_test_name(name, pkg):
+    '''
+    Convert the QMTest test name to the name used in CTest.
+
+    >>> fix_test_name('package.bug.123', 'Package')
+    'Package.bug.123'
+
+    >>> fix_test_name('simple', 'Package')
+    'Package.simple'
+    '''
+    return re.sub(r'^(%s\.)?' % pkg.lower(), '%s.' % pkg, name)
 
 def find_files(rootdir, ext):
     '''
@@ -43,16 +55,13 @@ def analyze_deps(pkg, rootdir):
                 the CMake ones
     @param rootdir: directory containing the QMTest tests (usually tests/qmtest)
     '''
-    pkg_cmake_prefix = pkg + '.'
-    pkg_qmt_prefix = pkg.lower() + '.'
-
     prereq_xpath = 'argument[@name="prerequisites"]/set/tuple/text'
     for path in find_files(rootdir, '.qmt'):
         name = qmt_filename_to_name(os.path.relpath(path, rootdir))
-        name = name.replace(pkg_qmt_prefix, pkg_cmake_prefix)
+        name = fix_test_name(name, pkg)
 
         tree = ET.parse(path)
-        prereqs = [el.text.replace(pkg_qmt_prefix, pkg_cmake_prefix)
+        prereqs = [fix_test_name(el.text, pkg)
                    for el in tree.findall(prereq_xpath)]
         if prereqs:
             print ('set_property(TEST {0} APPEND PROPERTY DEPENDS {1})'
@@ -63,20 +72,17 @@ def analyze_suites(pkg, rootdir):
     Find all the suites (.qms files) defined in a directory and use it as a
     label for the tests in it.
     '''
-    pkg_cmake_prefix = pkg + '.'
-    pkg_qmt_prefix = pkg.lower() + '.'
-
     labels = collections.defaultdict(list)
 
     tests_xpath = 'argument[@name="test_ids"]/set/text'
     suites_xpath = 'argument[@name="suite_ids"]/set/text'
     for path in find_files(rootdir, '.qms'):
         name = qmt_filename_to_name(os.path.relpath(path, rootdir))
-        name = name.replace(pkg_qmt_prefix, pkg_cmake_prefix)
+        name = fix_test_name(name, pkg)
 
         tree = ET.parse(path)
 
-        labels[name].extend(el.text.replace(pkg_qmt_prefix, pkg_cmake_prefix)
+        labels[name].extend(fix_test_name(el.text, pkg)
                             for el in tree.findall(tests_xpath))
 
         if tree.findall(suites_xpath):

@@ -2268,7 +2268,7 @@ function(gaudi_add_test name)
     foreach(qmt_file ${qmt_files})
       string(REPLACE ".qms/" "." qmt_name "${qmt_file}")
       string(REPLACE ".qmt" "" qmt_name "${qmt_name}")
-      string(REPLACE "${subdir_name_lower}." "" qmt_name "${qmt_name}")
+      string(REGEX REPLACE "^${subdir_name_lower}\\." "" qmt_name "${qmt_name}")
       #message(STATUS "adding test ${qmt_file} as ${qmt_name}")
       gaudi_add_test(${qmt_name}
                      COMMAND python -m GaudiTesting.Run
