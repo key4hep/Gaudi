@@ -77,12 +77,15 @@ class BaseTest(object):
         if self.environment is None : self.environment = os.environ
         else : self.environment=dict(self.environment.items()+os.environ.items())
 
-        unsupPlat = True
-        for p in self.unsupported_platforms :
-            if re.search(p, platform.platform()):
-                unsupPlat = False
+        platform_id = (os.environ.get('BINARY_TAG') or
+                       os.environ.get('CMTCONFIG') or
+                       platform.platform())
+        # If at least one regex matches we skip the test.
+        skip_test = bool([None
+                          for prex in self.unsupported_platforms
+                          if re.search(prex, platform_id)])
 
-        if unsupPlat:
+        if not skip_test:
             # handle working/temporary directory options
             workdir = self.workdir
             if self.use_temp_dir:
