@@ -79,6 +79,7 @@ class TestOrganizer :
                    "passed" :"PASS",
                    "failed" :"FAIL",
                    "skipped" : "SKIPPED",
+                   "notrun" : "SKIPPED",
                    "error" : "ERROR",
                    "untested" :"UNTESTED"
                    }
@@ -584,19 +585,9 @@ def main():
                            "fields" : ["end_time", "start_time","stdout"], # some interface specific field
                            "cause" : ""
                            }
-                if Test.get("Status") == "passed" :
-                    summary["outcome"] = "PASS"
-                elif Test.get("Status") == "failed" :
-                    summary["outcome"] = "FAIL"
-                elif Test.get("Status") == "skipped" :
-                    summary["outcome"] = "SKIPPED"
-                elif Test.get("Status") == "error" :
-                    summary["outcome"] = "ERROR"
-                elif Test.get("Status") == "untested" :
-                    summary["outcome"] = "UNTESTED"
-                else :
-                    summary["outcome"] = cleanSpace(cleanWebChar(Test.get("Status")))
-                ## TODO : Complete with all other possible ctest outcomes
+                status = Test.get("Status")
+                summary["outcome"] = TestOrganizer.status.get(status,
+                                               cleanSpace(cleanWebChar(status)))
 
                 if 'test-wrapper' in labels and summary["outcome"] == 'PASS':
                     # we should not report the results of test wrappers (like

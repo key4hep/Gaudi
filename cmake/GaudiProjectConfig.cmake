@@ -2278,15 +2278,29 @@ function(gaudi_add_test name)
       string(REPLACE ".qmt" "" qmt_name "${qmt_name}")
       string(REGEX REPLACE "^${subdir_name_lower}\\." "" qmt_name "${qmt_name}")
       #message(STATUS "adding test ${qmt_file} as ${qmt_name}")
-      gaudi_add_test(${qmt_name}
-                     COMMAND python -m GaudiTesting.Run
+      set(test_cmd python -m GaudiTesting.Run)
+      if(NOT CMAKE_VERSION VERSION_LESS 3.0)
+        set(test_cmd ${test_cmd} --skip-return-code 77)
+      endif()
+      set(test_cmd ${test_cmd}
                        --workdir ${qmtest_root_dir}
                        --common-tmpdir ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp
                        --report ctest
-                       ${qmt_file}
+                       ${qmt_file})
+      gaudi_add_test(${qmt_name}
+                     COMMAND ${test_cmd}
                      WORKING_DIRECTORY ${qmtest_root_dir}
                      LABELS QMTest ${ARG_LABELS}
                      ENVIRONMENT ${ARG_ENVIRONMENT})
+      # we need to reapply the logic to qmt_name
+      if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+        set(test_name ${qmt_name})
+      else()
+        set(test_name ${package}.${qmt_name})
+      endif()
+      if(NOT CMAKE_VERSION VERSION_LESS 3.0)
+        set_property(TEST ${test_name} PROPERTY SKIP_RETURN_CODE 77)
+      endif()
     endforeach()
     # extract dependencies
     execute_process(COMMAND ${qmtest_metadata_cmd}
