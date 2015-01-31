@@ -100,8 +100,31 @@ def analyze_suites(pkg, rootdir):
         print ('set_property(TEST {0} APPEND PROPERTY LABELS {1})'
                .format(test, ' '.join(labels)))
 
+def analyze_disabling(pkg, rootdir):
+    '''
+    Set the label 'disabled' for tests that are not supported on a platform.
+    '''
+    platform_id = (os.environ.get('BINARY_TAG') or
+                   os.environ.get('CMTCONFIG') or
+                   platform.platform())
+
+    unsupp_xpath = 'argument[@name="unsupported_platforms"]/set/text'
+    for path in find_files(rootdir, '.qmt'):
+        name = qmt_filename_to_name(os.path.relpath(path, rootdir))
+        name = fix_test_name(name, pkg)
+
+        tree = ET.parse(path)
+        # If at least one regex matches the test is disabled.
+        skip_test = [None
+                     for el in tree.findall(unsupp_xpath)
+                     if re.search(el.text, platform_id)]
+        if skip_test:
+            print ('set_property(TEST {0} APPEND PROPERTY LABELS disabled)'
+                   .format(name))
+
 
 if __name__ == '__main__':
     import sys
     analyze_deps(*sys.argv[1:])
     analyze_suites(*sys.argv[1:])
+    analyze_disabling(*sys.argv[1:])
