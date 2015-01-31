@@ -2259,6 +2259,14 @@ function(gaudi_add_test name)
 
   gaudi_get_package_name(package)
 
+  # prefix "Package." to the test name only if we are in a package
+  # (project level tests do not need a prefix)
+  if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(test_name ${name})
+  else()
+    set(test_name ${package}.${name})
+  endif()
+
   if(ARG_QMTESTNEW OR (ARG_QMTEST AND DEFINED ENV{GAUDI_USE_QMTESTNEW}))
     # add .qmt files as tests
     message(STATUS "Addind QMTest tests...")
@@ -2336,35 +2344,40 @@ function(gaudi_add_test name)
     endif()
   endforeach()
 
-  add_test(NAME ${package}.${name}
+  add_test(NAME ${test_name}
            WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY}
            COMMAND ${env_cmd} --xml ${env_xml} ${extra_env}
                ${cmdline})
 
-  set_property(TEST ${package}.${name} PROPERTY LABELS ${package} ${ARG_LABELS})
+  set_property(TEST ${test_name} PROPERTY LABELS ${package} ${ARG_LABELS})
 
 
   if(ARG_DEPENDS)
-    foreach(t ${ARG_DEPENDS})
-      list(APPEND depends ${package}.${t})
-    endforeach()
-    set_property(TEST ${package}.${name} PROPERTY DEPENDS ${depends})
+    # Dependencies are only allowed within the same subdir (or at project level)
+    if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+      set(depends ${ARG_DEPENDS})
+    else()
+      foreach(t ${ARG_DEPENDS})
+        list(APPEND depends ${package}.${t})
+      endforeach()
+    endif()
+    set_property(TEST ${test_name} PROPERTY DEPENDS ${depends})
   endif()
 
   if(ARG_FAILS)
-    set_property(TEST ${package}.${name} PROPERTY WILL_FAIL TRUE)
+    set_property(TEST ${test_name} PROPERTY WILL_FAIL TRUE)
   endif()
 
   if(ARG_PASSREGEX)
-    set_property(TEST ${package}.${name} PROPERTY PASS_REGULAR_EXPRESSION ${ARG_PASSREGEX})
+    set_property(TEST ${test_name} PROPERTY PASS_REGULAR_EXPRESSION ${ARG_PASSREGEX})
   endif()
 
   if(ARG_FAILREGEX)
-    set_property(TEST ${package}.${name} PROPERTY FAIL_REGULAR_EXPRESSION ${ARG_FAILREGEX})
+    set_property(TEST ${test_name} PROPERTY FAIL_REGULAR_EXPRESSION ${ARG_FAILREGEX})
   endif()
 
   if(ARG_TIMEOUT)
-    set_property(TEST ${package}.${name} PROPERTY TIMEOUT ${ARG_TIMEOUT})
+    set_property(TEST ${test_name} PROPERTY TIMEOUT ${ARG_TIMEOUT})
   endif()
 
 endfunction()
