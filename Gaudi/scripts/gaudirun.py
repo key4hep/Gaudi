@@ -2,6 +2,7 @@
 
 import os
 import sys
+from tempfile import mkstemp
 
 def getArgsWithoutoProfilerInfo(args):
     """
@@ -178,6 +179,12 @@ if __name__ == "__main__":
         parser.add_option("--profilerExtraOptions", type="string",
                           help="Specify additional options for the profiler. The '--' string should be expressed as '__' (--my-opt becomes __my-opt)")
 
+    parser.add_option('--use-temp-opts', action='store_true',
+                      help='when this option is enabled, the options are parsed'
+                           ' and stored in a temporary file, then the job is '
+                           'restarted using that file as input (to save '
+                           'memory)')
+
     parser.set_defaults(options = [],
                         tcmalloc = False,
                         profilerName = '',
@@ -218,7 +225,8 @@ if __name__ == "__main__":
 
     # configure the logging
     import logging
-    from GaudiKernel.ProcessJobOptions import InstallRootLoggingHandler
+    from GaudiKernel.ProcessJobOptions import (InstallRootLoggingHandler,
+                                               PrintOff)
 
     if opts.old_opts: prefix = "// "
     else: prefix = "# "
@@ -359,6 +367,12 @@ if __name__ == "__main__":
             raise self.exception
     sys.modules["GaudiPython"] = FakeModule(RuntimeError("GaudiPython cannot be used in option files"))
 
+    # when the special env GAUDI_TEMP_OPTS_FILE is set, it overrides any
+    # option(file) on the command line
+    if 'GAUDI_TEMP_OPTS_FILE' in os.environ:
+        options = ['importOptions(%r)' % os.environ['GAUDI_TEMP_OPTS_FILE']]
+        PrintOff(100)
+
     # "execute" the configuration script generated (if any)
     if options:
         g = {}
@@ -390,10 +404,22 @@ if __name__ == "__main__":
             logging.debug(o)
             exec o in g, l
 
-    if opts.verbose:
+    if 'GAUDI_TEMP_OPTS_FILE' in os.environ:
+        os.remove(os.environ['GAUDI_TEMP_OPTS_FILE'])
+        opts.use_temp_opts = False
+
+    if opts.verbose and not opts.use_temp_opts:
         c.printconfig(opts.old_opts, opts.all_opts)
     if opts.output:
         c.writeconfig(opts.output, opts.all_opts)
+
+    if opts.use_temp_opts:
+        fd, tmpfile = mkstemp('.opts')
+        os.close(fd)
+        c.writeconfig(tmpfile, opts.all_opts)
+        os.environ['GAUDI_TEMP_OPTS_FILE'] = tmpfile
+        logging.info('Restarting from pre-parsed options')
+        os.execv(sys.executable, [sys.executable] + sys.argv)
 
     c.printsequence = opts.printsequence
     if opts.printsequence:
