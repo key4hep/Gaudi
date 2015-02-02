@@ -239,7 +239,7 @@ class JobOptsParser:
             if self.statement_sep in l:
                 i = l.index(self.statement_sep)
                 statement += l[:i]
-                self._eval_statement(statement.replace("\n","").strip())
+                self._eval_statement(statement.strip().replace("\n","\\n"))
                 statement = l[i+1:]
                 # it may happen (bug #37479) that the rest of the statement
                 # contains a comment.
@@ -311,10 +311,12 @@ class JobOptsParser:
             else : # otherwise replace all {} with []
                 value = value.replace('{','[').replace('}',']')
 
-        # Replace literal '\n' and '\t' with spaces (bug #47258)
-        value = value.replace("\\n", " ").replace("\\t", " ")
         # We must escape '\' because eval tends to interpret them
-        value = value.replace('\\','\\\\')
+        value = value.replace('\\', '\\\\')
+        # Restore special cases ('\n', '\t' and '\"') (see GAUDI-1001)
+        value = (value.replace(r"\\n", r"\n")
+                      .replace(r"\\t", r"\t")
+                      .replace(r'\\"', r'\"'))
 
         # interprete the @ operator
         m = self.reference.match(value)

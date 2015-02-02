@@ -2,6 +2,9 @@ Package : Gaudi
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-02-02 - Marco Clemencic
+ - Fixed GAUDI-1001: '\' and '\n' not correctly interpreted by gaudirun.py
+
 ! 2015-01-30 - Marco Clemencic
  - Added command line option to restart gaudirun.py from old options (smaller
    memory footprint) after having parsed the options in Python.

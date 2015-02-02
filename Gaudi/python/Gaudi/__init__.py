@@ -15,6 +15,7 @@ class _ConfigurablesModule(object):
     def __init__(self):
         ## If set to true, does not raise an AttributeError if the configurable is not found.
         self.ignoreMissingConfigurables = False
+        self.__name__ = __configurables_module_fullname__
 
     def __getattr__(self, name):
         # trigger the load of the configurables database

@@ -20,4 +20,6 @@ gaudi_add_test(QMTest QMTESTNEW
                  PYTHONPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/python)
 
 gaudi_add_test(nose
-               COMMAND nosetests ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose)
+               COMMAND nosetests --with-doctest -v
+                  ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose
+                  ${CMAKE_CURRENT_SOURCE_DIR}/python/Gaudi)
