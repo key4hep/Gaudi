@@ -73,6 +73,10 @@ def main():
     parser.add_option('-C', '--workdir', action='store',
                       help='directory to change to before starting the test')
 
+    parser.add_option('--skip-return-code', type='int',
+                      help='return code to use to flag a test as skipped '
+                           '[default %default]')
+
     verbosity_opts = OptionGroup(parser, 'Verbosity Level',
                                  'set the verbosity level of messages')
     verbosity_opts.add_option('--silent',
@@ -100,7 +104,8 @@ def main():
 
     parser.set_defaults(log_level=logging.WARNING,
                         report='basic',
-                        workdir=os.curdir)
+                        workdir=os.curdir,
+                        skip_return_code=0)
 
 
     opts, args = parser.parse_args()
@@ -116,6 +121,11 @@ def main():
         GT.BaseTest._common_tmpdir = opts.common_tmpdir
 
     os.chdir(opts.workdir)
+
+    # FIXME: whithout this, we get some spurious '\x1b[?1034' in the std out on SLC6
+    if "slc6" in (os.environ.get('BINARY_TAG', '') or
+                  os.environ.get('CMTCONFIG', '')):
+        os.environ['TERM'] = 'dumb'
 
     # Testing the file beginning with "Test" or if it is a qmt file and doing the test
     logging.debug('processing %s', filename)
@@ -138,6 +148,8 @@ def main():
         logging.debug('test failed: unexpected %s',
                       ', '.join(results['Causes']))
         return int(results.get('Exit Code', '1'))
+    elif results.get('Status') == 'skipped':
+        return opts.skip_return_code
     return 0
 
 if __name__ == '__main__':

@@ -2,6 +2,9 @@ package GaudiPolicy
 package manager: Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-01-30 - Marco Clemencic
+ - Added to GaudiTesting.Run a small workaround from the old GaudiTest.py.
+
 ! 2015-01-26 - Marco Clemencic
  - Several fixes, improvements and clean up in the QMTest replacement modules.
 

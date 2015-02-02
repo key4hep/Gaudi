@@ -1967,10 +1967,9 @@ function(gaudi_add_library library)
   gaudi_add_genheader_dependencies(${library})
 
   #----Installation details-------------------------------------------------------
-  install(TARGETS ${library} EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION lib OPTIONAL)
+  install(TARGETS ${library} DESTINATION lib OPTIONAL)
   gaudi_export(LIBRARY ${library})
   gaudi_install_headers(${ARG_PUBLIC_HEADERS})
-  install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake OPTIONAL)
 endfunction()
 
 # Backward compatibility macro
@@ -2137,8 +2136,7 @@ function(gaudi_add_executable executable)
   gaudi_add_genheader_dependencies(${executable})
 
   #----Installation details-------------------------------------------------------
-  install(TARGETS ${executable} EXPORT ${CMAKE_PROJECT_NAME}Exports RUNTIME DESTINATION bin OPTIONAL)
-  install(EXPORT ${CMAKE_PROJECT_NAME}Exports DESTINATION cmake OPTIONAL)
+  install(TARGETS ${executable} RUNTIME DESTINATION bin OPTIONAL)
   gaudi_export(EXECUTABLE ${executable})
 
 endfunction()
@@ -2259,6 +2257,14 @@ function(gaudi_add_test name)
 
   gaudi_get_package_name(package)
 
+  # prefix "Package." to the test name only if we are in a package
+  # (project level tests do not need a prefix)
+  if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(test_name ${name})
+  else()
+    set(test_name ${package}.${name})
+  endif()
+
   if(ARG_QMTESTNEW OR (ARG_QMTEST AND DEFINED ENV{GAUDI_USE_QMTESTNEW}))
     # add .qmt files as tests
     message(STATUS "Addind QMTest tests...")
@@ -2268,17 +2274,31 @@ function(gaudi_add_test name)
     foreach(qmt_file ${qmt_files})
       string(REPLACE ".qms/" "." qmt_name "${qmt_file}")
       string(REPLACE ".qmt" "" qmt_name "${qmt_name}")
-      string(REPLACE "${subdir_name_lower}." "" qmt_name "${qmt_name}")
+      string(REGEX REPLACE "^${subdir_name_lower}\\." "" qmt_name "${qmt_name}")
       #message(STATUS "adding test ${qmt_file} as ${qmt_name}")
-      gaudi_add_test(${qmt_name}
-                     COMMAND python -m GaudiTesting.Run
+      set(test_cmd python -m GaudiTesting.Run)
+      if(NOT CMAKE_VERSION VERSION_LESS 3.0)
+        set(test_cmd ${test_cmd} --skip-return-code 77)
+      endif()
+      set(test_cmd ${test_cmd}
                        --workdir ${qmtest_root_dir}
                        --common-tmpdir ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp
                        --report ctest
-                       ${qmt_file}
+                       ${qmt_file})
+      gaudi_add_test(${qmt_name}
+                     COMMAND ${test_cmd}
                      WORKING_DIRECTORY ${qmtest_root_dir}
                      LABELS QMTest ${ARG_LABELS}
                      ENVIRONMENT ${ARG_ENVIRONMENT})
+      # we need to reapply the logic to qmt_name
+      if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+        set(test_name ${qmt_name})
+      else()
+        set(test_name ${package}.${qmt_name})
+      endif()
+      if(NOT CMAKE_VERSION VERSION_LESS 3.0)
+        set_property(TEST ${test_name} PROPERTY SKIP_RETURN_CODE 77)
+      endif()
     endforeach()
     # extract dependencies
     execute_process(COMMAND ${qmtest_metadata_cmd}
@@ -2336,35 +2356,40 @@ function(gaudi_add_test name)
     endif()
   endforeach()
 
-  add_test(NAME ${package}.${name}
+  add_test(NAME ${test_name}
            WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY}
            COMMAND ${env_cmd} --xml ${env_xml} ${extra_env}
                ${cmdline})
 
-  set_property(TEST ${package}.${name} PROPERTY LABELS ${package} ${ARG_LABELS})
+  set_property(TEST ${test_name} PROPERTY LABELS ${package} ${ARG_LABELS})
 
 
   if(ARG_DEPENDS)
-    foreach(t ${ARG_DEPENDS})
-      list(APPEND depends ${package}.${t})
-    endforeach()
-    set_property(TEST ${package}.${name} PROPERTY DEPENDS ${depends})
+    # Dependencies are only allowed within the same subdir (or at project level)
+    if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+      set(depends ${ARG_DEPENDS})
+    else()
+      foreach(t ${ARG_DEPENDS})
+        list(APPEND depends ${package}.${t})
+      endforeach()
+    endif()
+    set_property(TEST ${test_name} PROPERTY DEPENDS ${depends})
   endif()
 
   if(ARG_FAILS)
-    set_property(TEST ${package}.${name} PROPERTY WILL_FAIL TRUE)
+    set_property(TEST ${test_name} PROPERTY WILL_FAIL TRUE)
   endif()
 
   if(ARG_PASSREGEX)
-    set_property(TEST ${package}.${name} PROPERTY PASS_REGULAR_EXPRESSION ${ARG_PASSREGEX})
+    set_property(TEST ${test_name} PROPERTY PASS_REGULAR_EXPRESSION ${ARG_PASSREGEX})
   endif()
 
   if(ARG_FAILREGEX)
-    set_property(TEST ${package}.${name} PROPERTY FAIL_REGULAR_EXPRESSION ${ARG_FAILREGEX})
+    set_property(TEST ${test_name} PROPERTY FAIL_REGULAR_EXPRESSION ${ARG_FAILREGEX})
   endif()
 
   if(ARG_TIMEOUT)
-    set_property(TEST ${package}.${name} PROPERTY TIMEOUT ${ARG_TIMEOUT})
+    set_property(TEST ${test_name} PROPERTY TIMEOUT ${ARG_TIMEOUT})
   endif()
 
 endfunction()
@@ -2638,7 +2663,6 @@ macro(gaudi_generate_project_platform_config_file)
 
 # Get the exported informations about the targets
 get_filename_component(_dir \"\${CMAKE_CURRENT_LIST_FILE}\" PATH)
-#include(\${_dir}/${CMAKE_PROJECT_NAME}Exports.cmake)
 
 # Set useful properties
 get_filename_component(_dir \"\${_dir}\" PATH)
@@ -2999,12 +3023,17 @@ macro(gaudi_generate_exports)
     if (exported_libs OR exported_execs OR exported_mods
         OR exported_cmake OR ${package}_DEPENDENCIES OR subdir_version)
       set(pkg_exp_file ${pkgname}Export.cmake)
-
       #message(STATUS "Generating ${pkg_exp_file}")
       set(pkg_exp_file ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/${pkg_exp_file})
 
       file(WRITE ${pkg_exp_file}
-"# File automatically generated: DO NOT EDIT.
+"# Generated by GaudiProjectConfig.cmake (with CMake ${CMAKE_VERSION})
+
+if(\"\${CMAKE_MAJOR_VERSION}.\${CMAKE_MINOR_VERSION}\" LESS 2.5)
+   message(FATAL_ERROR \"CMake >= 2.6.0 required\")
+endif()
+cmake_policy(PUSH)
+cmake_policy(VERSION 2.6)
 
 # Compute the installation prefix relative to this file.
 get_filename_component(_IMPORT_PREFIX \"\${CMAKE_CURRENT_LIST_FILE}\" PATH)
@@ -3052,14 +3081,17 @@ get_filename_component(_IMPORT_PREFIX \"\${_IMPORT_PREFIX}\" PATH)
       endforeach()
 
       if(${package}_DEPENDENCIES)
-        file(APPEND ${pkg_exp_file} "set(${package}_DEPENDENCIES ${${package}_DEPENDENCIES})\n")
+        file(APPEND ${pkg_exp_file} "\nset(${package}_DEPENDENCIES ${${package}_DEPENDENCIES})\n")
       endif()
 
       if(subdir_version)
-        file(APPEND ${pkg_exp_file} "set(${package}_VERSION ${subdir_version})\n")
+        file(APPEND ${pkg_exp_file} "\nset(${package}_VERSION ${subdir_version})\n")
       endif()
+      file(APPEND ${pkg_exp_file} "\n# Commands beyond this point should not need to know the version.
+set(CMAKE_IMPORT_FILE_VERSION)
+cmake_policy(POP)\n")
+      install(FILES ${pkg_exp_file} DESTINATION cmake)
     endif()
-    install(FILES ${pkg_exp_file} DESTINATION cmake)
   endforeach()
 endmacro()
 
