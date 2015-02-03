@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-02-03 - Marco Clemencic
+ - Fixed issue introduced with the fix to GAUDI-1001.
+
 ! 2015-02-02 - Marco Clemencic
  - Fixed GAUDI-1001: '\' and '\n' not correctly interpreted by gaudirun.py
 

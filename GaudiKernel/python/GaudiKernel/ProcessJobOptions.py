@@ -317,6 +317,9 @@ class JobOptsParser:
         value = (value.replace(r"\\n", r"\n")
                       .replace(r"\\t", r"\t")
                       .replace(r'\\"', r'\"'))
+        # replace r'\n' and r'\t' that are outside double quoted strings
+        value = '"'.join([(v if i % 2 else re.sub(r'\\[nt]', ' ', v))
+                          for i, v in enumerate(value.split('"'))])
 
         # interprete the @ operator
         m = self.reference.match(value)
