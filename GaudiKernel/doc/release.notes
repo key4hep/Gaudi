@@ -2,6 +2,10 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-02-03 - Marco Clemencic
+ - Added small tool to report the CPU capabilities (GAUDI-999) and a simple test
+   relying on the content of /proc/cpuinfo.
+
 ! 2015-02-03 - Gerhard Raven
  - GAUDI-999: Add code which determines the 'instruction level' of the CPU
 

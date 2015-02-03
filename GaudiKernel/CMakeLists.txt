@@ -41,7 +41,12 @@ if(GAUDI_BUILD_TESTS)
 endif()
 
 gaudi_add_test(confdb
-               COMMAND nosetests ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose/confdb)
+               COMMAND nosetests -v
+                ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose/confdb)
+
+gaudi_add_test(nose
+               COMMAND nosetests -v
+                ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose)
 
 if(GAUDI_BUILD_TESTS)
   add_library(test_CustomFactory MODULE tests/src/custom_factory.cpp)

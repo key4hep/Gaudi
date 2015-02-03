@@ -14,3 +14,6 @@ gaudi_add_executable(genconf genconf.cpp
 if(WIN32)
   gaudi_add_executable(genwindef genwindef.cpp LibSymbolInfo.cpp)
 endif()
+
+gaudi_add_executable(instructionsetLevel instructionsetLevel.cpp
+                 LINK_LIBRARIES GaudiKernel GaudiPluginService)
