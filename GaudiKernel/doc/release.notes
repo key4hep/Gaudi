@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-02-03 - Gerhard Raven
+ - GAUDI-999: Add code which determines the 'instruction level' of the CPU
+
 ! 2015-02-03 - Marco Clemencic
  - Fixed issue introduced with the fix to GAUDI-1001.
 

@@ -21,6 +21,7 @@
 #include <typeinfo>
 
 #include "GaudiKernel/System.h"
+#include "instrset.h"
 
 #ifdef _WIN32
   #define strcasecmp  _stricmp
@@ -497,6 +498,15 @@ const std::string& System::machineType() {
 #endif
   return mach;
 }
+
+int System::instructionsetLevel() {
+    return instrset_detect();
+}
+
+
+
+
+
 
 /// User login name
 const std::string& System::accountName() {
