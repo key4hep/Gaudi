@@ -5,6 +5,9 @@ import xml.sax.saxutils as XSS
 import BaseTest as GT
 import logging
 
+# FIXME: module alias for backward compatibility
+sys.modules['GaudiTest'] = GT
+
 def basic_report(results):
     '''
     Report function taking the dictionary from BasicTest.run() and display

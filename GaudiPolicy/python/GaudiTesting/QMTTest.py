@@ -104,7 +104,7 @@ class QMTTest(BaseTest):
         else:
             if self.stderr == '':
                 self.validateWithReference(stdout, stderr, result, self.causes)
-            elif stderr != self.stderr:
+            elif stderr.strip() != self.stderr.strip():
                 self.causes.append('standard error')
 
         return result, self.causes

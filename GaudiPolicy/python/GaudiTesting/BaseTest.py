@@ -110,10 +110,12 @@ class BaseTest(object):
 
             prog = which(prog) or prog
 
+            args = map(RationalizePath, self.args)
+
             if prog_ext == ".py" :
-                params = ['python', RationalizePath(prog)] + self.args
+                params = ['python', RationalizePath(prog)] + args
             else :
-                params = [RationalizePath(prog)] + self.args
+                params = [RationalizePath(prog)] + args
 
             validatorRes = Result({'CAUSE': None, 'EXCEPTION': None,
                                    'RESOURCE': None, 'TARGET': None,
@@ -229,7 +231,7 @@ class BaseTest(object):
         else:
             if self.stderr == '':
                 self.validateWithReference(stdout, stderr, result, causes)
-            elif stderr != self.stderr:
+            elif stderr.strip() != self.stderr.strip():
                 self.causes.append('standard error')
 
 
