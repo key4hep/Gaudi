@@ -2265,7 +2265,11 @@ function(gaudi_add_test name)
     set(test_name ${package}.${name})
   endif()
 
-  if(ARG_QMTESTNEW OR (ARG_QMTEST AND DEFINED ENV{GAUDI_USE_QMTESTNEW}))
+  if(ARG_QMTESTNEW OR
+      (ARG_QMTEST AND (
+        (DEFINED ENV{GAUDI_USE_QMTESTNEW}) OR
+        ("$ENV{CMTEXTRATAGS}" MATCHES "gaudi-use-qmtestnew")
+        )))
     # add .qmt files as tests
     message(STATUS "Addind QMTest tests...")
     set(qmtest_root_dir ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
