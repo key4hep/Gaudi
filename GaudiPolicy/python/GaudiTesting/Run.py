@@ -35,6 +35,8 @@ def ctest_report(results):
     Report function taking the dictionary from BasicTest.run() and report data
     from it in a CTest-friendly way.
     '''
+    # It's weird, I know, but it tells CTest not to cut the output.
+    print 'CTEST_FULL_OUTPUT'
     basic_report(results)
     handler = {'Environment': lambda v: '\n'.join('{0}={1}'.format(*item)
                                                   for item in sorted(v.iteritems())),
