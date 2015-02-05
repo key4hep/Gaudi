@@ -2251,7 +2251,7 @@ endfunction()
 #
 #-------------------------------------------------------------------------------
 function(gaudi_add_test name)
-  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST;QMTESTNEW;FAILS"
+  CMAKE_PARSE_ARGUMENTS(ARG "QMTEST;FAILS"
                             "TIMEOUT;WORKING_DIRECTORY"
                             "ENVIRONMENT;FRAMEWORK;COMMAND;DEPENDS;PASSREGEX;FAILREGEX;LABELS" ${ARGN})
 
@@ -2265,11 +2265,7 @@ function(gaudi_add_test name)
     set(test_name ${package}.${name})
   endif()
 
-  if(ARG_QMTESTNEW OR
-      (ARG_QMTEST AND (
-        (DEFINED ENV{GAUDI_USE_QMTESTNEW}) OR
-        ("$ENV{CMTEXTRATAGS}" MATCHES "gaudi-use-qmtestnew")
-        )))
+  if(ARG_QMTEST)
     # add .qmt files as tests
     message(STATUS "Addind QMTest tests...")
     set(qmtest_root_dir ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
@@ -2317,16 +2313,6 @@ function(gaudi_add_test name)
     message(STATUS "... added ${qmt_count} tests.")
     # no need to continue
     return()
-  elseif(ARG_QMTEST)
-    find_package(QMTest QUIET)
-    set(ARG_ENVIRONMENT ${ARG_ENVIRONMENT}
-                        QMTESTLOCALDIR=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
-                        QMTESTRESULTS=${CMAKE_CURRENT_BINARY_DIR}/tests/qmtest/results.qmr
-                        QMTESTRESULTSDIR=${CMAKE_CURRENT_BINARY_DIR}/tests/qmtest
-                        GAUDI_QMTEST_HTML_OUTPUT=${CMAKE_BINARY_DIR}/test_results
-                        GAUDI_QMTEST_XML_OUTPUT=${CMAKE_BINARY_DIR}/Testing/xml_test_results)
-    set(cmdline run_qmtest.py ${package})
-    set(ARG_LABELS ${ARG_LABELS} test-wrapper)
 
   elseif(ARG_FRAMEWORK)
     foreach(optfile  ${ARG_FRAMEWORK})

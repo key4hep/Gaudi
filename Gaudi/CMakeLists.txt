@@ -14,7 +14,7 @@ gaudi_install_scripts()
 gaudi_build_env(UNSET GAUDIAPPNAME
                 UNSET GAUDIAPPVERSION)
 
-gaudi_add_test(QMTest QMTESTNEW
+gaudi_add_test(QMTest QMTEST
                ENVIRONMENT
                  JOBOPTSEARCHPATH=${CMAKE_CURRENT_SOURCE_DIR}/tests/pyjobopts:${CMAKE_CURRENT_SOURCE_DIR}/tests
                  PYTHONPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/python)
