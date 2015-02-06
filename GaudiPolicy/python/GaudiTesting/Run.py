@@ -37,12 +37,12 @@ def ctest_report(results):
     '''
     # It's weird, I know, but it tells CTest not to cut the output.
     print 'CTEST_FULL_OUTPUT'
-    basic_report(results)
+    print results.get('stdout', '')
     handler = {'Environment': lambda v: '\n'.join('{0}={1}'.format(*item)
                                                   for item in sorted(v.iteritems())),
                'Causes': lambda v: 'unexpected ' + ', '.join(v)}
     id_handler = lambda v: str(v)
-    ignore = set(['Status', 'Name', 'stdout', 'stderr', 'Exit Code'])
+    ignore = set(['Status', 'Name', 'stdout', 'Exit Code'])
     template = ('<DartMeasurement type="text/string" name="{0}">{1}</DartMeasurement>')
 
     for key in results:
