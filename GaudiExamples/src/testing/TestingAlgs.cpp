@@ -298,6 +298,25 @@ namespace GaudiTesting {
     }
   };
 
+
+  /**
+   * Simple algorithm that creates dummy objects in the transient store.
+   */
+  class ListTools: public GaudiAlgorithm {
+  public:
+    ListTools(const std::string& name, ISvcLocator *pSvcLocator):
+      GaudiAlgorithm(name, pSvcLocator){}
+
+    StatusCode execute() {
+      StatusCode sc = StatusCode::SUCCESS;
+      info() << "All tool instances:" << endmsg;
+      for (auto& tool: toolSvc()->getTools()) {
+        info() << "  " << tool->name() << endmsg;
+      }
+      return sc;
+    }
+  };
+
 }
 
 #include "GaudiKernel/AlgFactory.h"
@@ -312,4 +331,5 @@ namespace GaudiTesting {
   DECLARE_COMPONENT(GetDataObjectAlg)
   DECLARE_COMPONENT(OddEventsFilter)
   DECLARE_COMPONENT(EvenEventsFilter)
+  DECLARE_COMPONENT(ListTools)
 }

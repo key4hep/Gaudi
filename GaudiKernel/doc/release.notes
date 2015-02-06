@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-02-06 - Marco Clemencic
+ - Added methods to IToolSvc to get all the tool instances.
+
 ! 2015-02-03 - Marco Clemencic
  - Added small tool to report the CPU capabilities (GAUDI-999) and a simple test
    relying on the content of /proc/cpuinfo.

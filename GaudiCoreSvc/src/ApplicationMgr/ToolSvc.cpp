@@ -372,15 +372,31 @@ std::vector<std::string> ToolSvc::getInstances( const std::string& toolType )
 
   std::vector<std::string> tools;
 
-  ListTools::const_iterator it;
-  for (it = m_instancesTools.begin(); it != m_instancesTools.end(); ++it) {
-    if ((*it)->type() == toolType) {
-      tools.push_back( (*it)->name() );
+  for(auto tool: m_instancesTools) {
+    if (tool->type() == toolType) {
+      tools.push_back( tool->name() );
     }
   }
 
   return tools;
 
+}
+//------------------------------------------------------------------------------
+std::vector<std::string> ToolSvc::getInstances() const
+//------------------------------------------------------------------------------
+{
+  std::vector<std::string> tools{m_instancesTools.size()};
+  std::transform(std::begin(m_instancesTools), std::end(m_instancesTools),
+                 std::begin(tools),
+                 [](IAlgTool* tool) {return tool->name();});
+  return tools;
+}
+//------------------------------------------------------------------------------
+std::vector<IAlgTool*> ToolSvc::getTools() const
+//------------------------------------------------------------------------------
+{
+  return std::vector<IAlgTool*>{std::begin(m_instancesTools),
+                                std::end(m_instancesTools)};
 }
 //------------------------------------------------------------------------------
 StatusCode ToolSvc::releaseTool( IAlgTool* tool )

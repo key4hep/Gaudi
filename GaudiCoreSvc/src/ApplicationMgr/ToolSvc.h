@@ -35,7 +35,7 @@ public:
 
   // Start transition for tools
   virtual StatusCode start();
-  
+
   // Stop transition for tools
   virtual StatusCode stop();
 
@@ -51,6 +51,12 @@ public:
 
   /// Get names of all tool instances of a given type
   virtual std::vector<std::string> getInstances( const std::string& toolType );
+
+  /// Get names of all tool instances
+  virtual std::vector<std::string> getInstances() const;
+
+  /// Get pointers to all tool instances
+  virtual std::vector<IAlgTool*> getTools() const;
 
   /// Release tool
   virtual StatusCode releaseTool( IAlgTool* tool );

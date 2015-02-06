@@ -1,0 +1,37 @@
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+  <argument name="program"><text>gaudirun.py</text></argument>
+  <argument name="args"><set>
+    <text>$GAUDIEXAMPLESROOT/options/AlgTools.py</text>
+  </set></argument>
+  <argument name="options"><text>
+from Configurables import GaudiTesting__ListTools, ApplicationMgr
+ApplicationMgr(EvtMax=1).TopAlg.append(GaudiTesting__ListTools('ListTools'))
+</text></argument>
+  <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+  <argument name="validator"><text>
+import re
+tools = [l.strip().split()[-1]
+         for l in stdout.splitlines()
+         if re.match(r'^ListTools +INFO   \S+', l)]
+tools.sort()
+
+expected = ['ToolSvc.MyTool',
+            'MyAlg.MyTool',
+            'ToolSvc.MyGaudiTool',
+            'MyAlg.MyGaudiTool',
+            'MyAlg.ToolWithName',
+            'MyGaudiAlg.MyTool',
+            'MyGaudiAlg.MyGaudiTool',
+            'MyGaudiAlg.ToolWithName',
+            'MyGaudiAlg.PrivToolHandle',
+            'ToolSvc.TestPubToolHandle',
+            'ToolSvc.ToolA',
+            'ToolSvc.ToolB',
+            ]
+expected.sort()
+
+if tools != expected:
+    causes.append('list of tools')
+</text></argument>
+</extension>

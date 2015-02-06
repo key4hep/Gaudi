@@ -2,6 +2,9 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-02-06 - Marco Clemencic
+ - Added test for the IToolSvc method to get the list of tools.
+
 ! 2015-01-26 - Marco Clemencic
  - Removed duplicated tests.
 

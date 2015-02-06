@@ -5,6 +5,9 @@
 # Commit Id: $Format:%H$
 ################################################################################
 
+! 2015-02-06 - Marco Clemencic
+ - Added methods to IToolSvc to get all the tool instances.
+
 ============================= GaudiCoreSvc v3r2 ==============================
 ! 2015-01-07 - Gerhard Raven
  - GAUDI-995: improve Algorithm storage/management in AlgorithmManager
