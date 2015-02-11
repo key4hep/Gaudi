@@ -14,4 +14,4 @@ def test():
     print "---------- stderr ----------"
     print err
     assert returncode != 0
-    assert 'Infinite recursion detected at project Loop' in err
+    assert 'Infinite recursion detected at project LOOP' in err
