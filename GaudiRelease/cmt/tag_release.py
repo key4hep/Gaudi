@@ -9,28 +9,7 @@ __author__ = "Marco Clemencic <Marco.Clemencic@cern.ch>"
 
 import os, re, sys, tempfile, shutil
 from subprocess import Popen, PIPE
-
-_req_version_pattern = re.compile(r"^\s*version\s*(v[0-9]+r[0-9]+(?:p[0-9]+)?)\s*$")
-def extract_version(f):
-    """
-    Find the version number in a requirements file.
-    """
-    global _req_version_pattern
-    for l in open(f):
-        m = _req_version_pattern.match(l)
-        if m:
-            return m.group(1)
-    return None
-
-_use_pattern = re.compile(r"^\s*use\s*(\w+)\s*(v[0-9]+r[0-9]+(?:p[0-9]+)?)\s*(\w+)?\s*$")
-def gather_new_versions(f):
-    global _use_pattern
-    versions = {}
-    for l in open(f):
-        m = _use_pattern.match(l)
-        if m:
-            versions[m.group(1)] = m.group(2)
-    return versions
+from ConfigParser import ConfigParser
 
 def svn(*args, **kwargs):
     print "> svn", " ".join(args)
@@ -84,8 +63,10 @@ def main():
     url = "svn+ssh://svn.cern.ch/reps/gaudi"
     proj = "Gaudi"
     container = "GaudiRelease"
-    packages = gather_new_versions("requirements")
-    packages[container] = extract_version("requirements")
+    project_info = ConfigParser()
+    project_info.optionxform = str # make options case sensitive
+    project_info.read('project.info')
+    packages = dict(project_info.items('Packages'))
     tempdir = tempfile.mkdtemp()
     try:
         os.chdir(tempdir)

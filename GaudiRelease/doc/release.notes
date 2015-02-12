@@ -7,6 +7,7 @@ Commit Id: $Format:%H$
    - update_versions.py also generates a 'project.info' file (.ini format) with
      the list of packages and their versions (possible future replacement of the
      explicit versions in GaudiRelease/cmt/requirements).
+   - tag_release.py extracts the list of versions from 'project.info'.
 
 ============================= GaudiRelease v26r0 =============================
 ! 2014-07-04 - Marco Clemencic
