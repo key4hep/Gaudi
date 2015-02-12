@@ -2,6 +2,7 @@ Package: GaudiRelease
 Maintainer: Marco Clemencic
 Commit Id: $Format:%H$
 
+============================= GaudiRelease v26r1 =============================
 ! 2015-02-12 - Marco Clemencic
  - GAUDI-979: modified GaudiRelease scripts to use CMake configuration
    - update_versions.py also generates a 'project.info' file (.ini format) with

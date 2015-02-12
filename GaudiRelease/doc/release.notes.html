@@ -55,6 +55,56 @@ Package Coordinator: Marco Clemencic, Charles Leggett<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
 <!-- ====================================================================== -->
+<h2><a name="v26r1">Gaudi v26r1</a> (2015-02-12)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=74root6">LCGCMT_74root6</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Fixes and improvements to the CMake configuration system
+    <ul>
+    <li>LBCORE-716: include path order not correct</li>
+    <li>LBCORE-725: relocatability of CMake builds</li>
+    <li>added the possibility to extend the toolchain for a project</li>
+    <li>GAUDI-1004: avoid cmake segfault when there is a loop in the dependencies between projects</li>
+    </ul>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Replaced QMTest with a home made test wrapper.<br/>
+    (<span class="author">Marco Clemencic</span>, <span class="author">Valentin Comte</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>Gaudi (v26r1):
+<ul>
+<li>Fixed GAUDI-1001: '\' and '\n' not correctly interpreted by gaudirun.py<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added command line option to restart gaudirun.py from old options (smaller
+   memory footprint) after having parsed the options in Python.<br/>
+   (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v31r4):
+<ul>
+<li>Added methods to IToolSvc to get all the tool instances.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-999: Add code which determines the 'instruction level' of the CPU.<br/>
+    (<span class="author">Gerhard Raven</span>)</li>
+</ul>
+</li>
+<li>GaudiPolicy (v15r4):
+<ul>
+<li>Introduced the Python module GaudiTesting as a replacement for QMTest with
+    the GaudiTest extension.<br/>
+    (<span class="author">Marco Clemencic</span>, <span class="author">Valentin Comte</span>)</li>
+</ul>
+</li>
+<li>GaudiCommonSvc (v3r4):
+<ul>
+<li>Added _PyObject_GC_Malloc to the whitelist of StatusCodeSvc (visible only
+   with gcc4.9).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
 <h2><a name="v26r0">Gaudi v26r0</a> (2015-01-12)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=72root6">LCGCMT_72root6</a></h3>
 <h3>General Changes</h3>

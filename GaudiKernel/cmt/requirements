@@ -1,5 +1,5 @@
 package GaudiKernel
-version v31r3
+version v31r4
 author "LHCb Gaudi Team"
 
 branches GaudiKernel cmt doc src

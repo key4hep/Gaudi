@@ -5,6 +5,7 @@
 # Commit Id: $Format:%H$
 ################################################################################
 
+============================= GaudiCoreSvc v3r3 ==============================
 ! 2015-02-06 - Marco Clemencic
  - Added methods to IToolSvc to get all the tool instances.
 

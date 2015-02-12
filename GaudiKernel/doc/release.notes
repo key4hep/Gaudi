@@ -2,6 +2,7 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+============================= GaudiKernel v31r4 ==============================
 ! 2015-02-06 - Marco Clemencic
  - Added methods to IToolSvc to get all the tool instances.
 

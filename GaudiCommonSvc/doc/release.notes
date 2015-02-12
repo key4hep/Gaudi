@@ -5,6 +5,7 @@
 # Commit Id: $Format:%H$
 ################################################################################
 
+============================ GaudiCommonSvc v3r4 =============================
 ! 2015-01-07 - Marco Clemencic
  - Added _PyObject_GC_Malloc to the whitelist of StatusCodeSvc (visible only
    with gcc4.9).
