@@ -4,6 +4,7 @@ __author__ = "Marco Clemencic <Marco.Clemencic@cern.ch>"
 __version__ = "$Id: update_versions.py,v 1.3 2008/11/10 19:43:31 marcocle Exp $"
 
 import os, re, sys, time
+import ConfigParser
 
 # special_packages = [ "Gaudi", "GaudiSys", "GaudiExamples" ]
 
@@ -180,7 +181,6 @@ def main():
                 add_release_separator_bar(relnotefile, pkg, new_versions[pkg])
         print "=" * 80
     # The changes in the GaudiRelease requirements for the other packages can be postponed to now
-    # FIXME: we need another file with the list of versions for CMake
     reqfile = os.path.join('GaudiRelease', 'cmt', 'requirements')
     out = []
     for l in open(reqfile):
@@ -191,45 +191,56 @@ def main():
                     l = l.replace(sl[2], new_versions[sl[1]])
         out.append(l)
     open(reqfile, "w").writelines(out)
+    # Update project.info
+    config = ConfigParser.ConfigParser()
+    config.optionxform = str # make the options case sensitive
+    if os.path.exists('project.info'):
+        config.read('project.info')
+    if not config.has_section('Packages'):
+        config.add_section('Packages')
+    for pack_vers in sorted(new_versions.items()):
+        config.set('Packages', *pack_vers)
+    config.write(open('project.info', 'wb'))
 
-    # update the global release notes
-    new_lines = []
-    new_lines.append("<!-- ====================================================================== -->")
-    data = { "vers": new_version, "date": time.strftime("%Y-%m-%d") }
-    new_lines.append('<h2><a name="%(vers)s">Gaudi %(vers)s</a> (%(date)s)</h2>' % data)
-    data = { "vers": HEPToolsVers }
-    new_lines.append('<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=%(vers)s">LCGCMT_%(vers)s</a></h3>' % data)
-    new_lines.append("<h3>General Changes</h3>")
-    new_lines.append('<ul>\n<li><br/>\n    (<span class="author"></span>)</li>\n</ul>')
-    new_lines.append("<h3>Packages Changes</h3>")
-    new_lines.append("<ul>")
-    for pkg in release_notes:
-        if release_notes[pkg]:
-            new_lines.append('<li>%s (%s):\n<ul>\n<li><br/>\n    (<span class="author"></span>)</li>\n</ul>\n<pre>'%(pkg,new_versions[pkg]))
-            new_lines.append(release_notes[pkg].replace('&','&amp;') \
-                                               .replace('<','&lt;') \
-                                               .replace('>','&gt;') + "</pre>")
-            new_lines.append("</li>")
-    new_lines.append("</ul>")
+    if new_version != old_version:
+        # update the global release notes
+        new_lines = []
+        new_lines.append("<!-- ====================================================================== -->")
+        data = { "vers": new_version, "date": time.strftime("%Y-%m-%d") }
+        new_lines.append('<h2><a name="%(vers)s">Gaudi %(vers)s</a> (%(date)s)</h2>' % data)
+        data = { "vers": HEPToolsVers }
+        new_lines.append('<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=%(vers)s">LCGCMT_%(vers)s</a></h3>' % data)
+        new_lines.append("<h3>General Changes</h3>")
+        new_lines.append('<ul>\n<li><br/>\n    (<span class="author"></span>)</li>\n</ul>')
+        new_lines.append("<h3>Packages Changes</h3>")
+        new_lines.append("<ul>")
+        for pkg in release_notes:
+            if release_notes[pkg]:
+                new_lines.append('<li>%s (%s):\n<ul>\n<li><br/>\n    (<span class="author"></span>)</li>\n</ul>\n<pre>'%(pkg,new_versions[pkg]))
+                new_lines.append(release_notes[pkg].replace('&','&amp;') \
+                                                   .replace('<','&lt;') \
+                                                   .replace('>','&gt;') + "</pre>")
+                new_lines.append("</li>")
+        new_lines.append("</ul>")
 
-    global_rel_notes = os.path.join("GaudiRelease", "doc", "release.notes.html")
-    out = []
-    separator = re.compile("<!-- =+ -->")
-    block_added = False
-    for l in open(global_rel_notes):
-        if not block_added and separator.match(l.strip()):
-            out.append("\n".join(new_lines) + "\n")
-            block_added = True
-        out.append(l)
-    open(global_rel_notes, "w").writelines(out)
+        global_rel_notes = os.path.join("GaudiRelease", "doc", "release.notes.html")
+        out = []
+        separator = re.compile("<!-- =+ -->")
+        block_added = False
+        for l in open(global_rel_notes):
+            if not block_added and separator.match(l.strip()):
+                out.append("\n".join(new_lines) + "\n")
+                block_added = True
+            out.append(l)
+        open(global_rel_notes, "w").writelines(out)
 
-    # update the global CMakeLists.txt
-    out = []
-    for l in open('CMakeLists.txt'):
-        if l.strip().startswith('gaudi_project'):
-            l = 'gaudi_project(Gaudi %s)\n' % new_version
-        out.append(l)
-    open('CMakeLists.txt', "w").writelines(out)
+        # update the global CMakeLists.txt
+        out = []
+        for l in open('CMakeLists.txt'):
+            if l.strip().startswith('gaudi_project'):
+                l = 'gaudi_project(Gaudi %s)\n' % new_version
+            out.append(l)
+        open('CMakeLists.txt', "w").writelines(out)
 
 
 if __name__ == '__main__':
