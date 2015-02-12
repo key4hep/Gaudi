@@ -8,6 +8,7 @@ Commit Id: $Format:%H$
      the list of packages and their versions (possible future replacement of the
      explicit versions in GaudiRelease/cmt/requirements).
    - tag_release.py extracts the list of versions from 'project.info'.
+   - renamed tag_release.py as svn_tag_release.py
 
 ============================= GaudiRelease v26r0 =============================
 ! 2014-07-04 - Marco Clemencic
