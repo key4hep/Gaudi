@@ -116,7 +116,7 @@ function(_internal_find_projects projects_var tools_var config_file)
         if(${name_upper}_CONFIG_FILE)
             # protect against infinit recursion
             list(FIND collected_config ${${name_upper}_CONFIG_FILE} conf_pos)
-            if(conf_pos EQUAL -1)
+            if(NOT conf_pos EQUAL -1)
               message(FATAL_ERROR "Infinite recursion detected at project ${name}")
             endif()
             _internal_find_projects(projects tools
