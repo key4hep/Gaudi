@@ -50,6 +50,7 @@ include(CMakeParseArguments)
 ## Helper for recursion and ordering of found projects.
 function(_internal_find_projects projects_var tools_var config_file)
     #message(STATUS "processing ${config_file}")
+    set(collected_config ${collected_config} ${config_file})
     # Extract information from configuration file
     file(READ ${config_file} config_file_data)
     # Warning: this regular expression implies that 'gaudi_project' is not on the
@@ -68,11 +69,6 @@ function(_internal_find_projects projects_var tools_var config_file)
     # get the project name and add it to the list of used projects
     list(GET PROJECT_UNPARSED_ARGUMENTS 0 proj_name)
     string(TOUPPER ${proj_name} proj_name)
-    # protect against infinite recursion
-    list(FIND ${projects_var} ${proj_name} proj_pos)
-    if(proj_pos EQUAL -1)
-        message(FATAL_ERROR "Infinite recursion detected at project ${proj_name}")
-    endif()
     print_var(proj_name)
     set(projects ${proj_name} ${${projects_var}})
 
@@ -107,18 +103,22 @@ function(_internal_find_projects projects_var tools_var config_file)
         # PROJECT_USE format is "<proj1> <vers1> <proj2> <vers2>..."
         # we extract two entries per iteration
         list(GET PROJECT_USE 0 name)
-        list(GET PROJECT_USE 1 version)
-        list(REMOVE_AT PROJECT_USE 0 1)
-
-        string(TOUPPER ${name} name_upper)
-        # look for the configuration file of the project
-        find_file(${name_upper}_CONFIG_FILE NAMES CMakeLists.txt
-                  PATH_SUFFIXES ${name}/${version}
-                                ${name_upper}/${name_upper}_${version}
-                                ${name}_${version}
-                                ${name})
+           list(GET PROJECT_USE 1 version)
+           list(REMOVE_AT PROJECT_USE 0 1)
+           string(TOUPPER ${name} name_upper)
+           # look for the configuration file of the project
+           find_file(${name_upper}_CONFIG_FILE NAMES CMakeLists.txt
+                     PATH_SUFFIXES ${name}/${version}
+                                   ${name_upper}/${name_upper}_${version}
+                                   ${name}_${version}
+                                   ${name})
         # recursion
         if(${name_upper}_CONFIG_FILE)
+            # protect against infinit recursion
+            list(FIND collected_config ${${name_upper}_CONFIG_FILE} conf_pos)
+            if(NOT conf_pos EQUAL -1)
+              message(FATAL_ERROR "Infinite recursion detected at project ${name}")
+            endif()
             _internal_find_projects(projects tools
                                     ${${name_upper}_CONFIG_FILE} ${name_upper})
         endif()
@@ -133,6 +133,7 @@ endfunction()
 function(find_projects projects_var tools_var config_file)
     set(projects)
     set(tools)
+    set(collected_config)
     _internal_find_projects(projects tools ${config_file})
     if(projects)
         list(REMOVE_DUPLICATES projects)
