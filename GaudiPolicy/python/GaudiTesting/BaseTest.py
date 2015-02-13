@@ -64,10 +64,11 @@ class BaseTest(object):
     def run(self):
         logging.debug('running test %s', self.name)
 
-        if self.options != '' :
-            if self.options.startswith("import") or self.options.startswith("from") or self.options.startswith("\nfrom") or self.options.startswith("\nimport") or (self.options.startswith("\n#") and not self.options.startswith('\n#include')):
+        if self.options:
+            if re.search(r'from\s+Gaudi.Configuration\s+import\s+\*|'
+                          'from\s+Configurables\s+import', self.options):
                 optionFile = tempfile.NamedTemporaryFile(suffix='.py')
-            else :
+            else:
                 optionFile = tempfile.NamedTemporaryFile(suffix='.opts')
             optionFile.file.write(self.options)
             optionFile.seek(0)

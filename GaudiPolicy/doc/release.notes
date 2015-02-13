@@ -3,6 +3,9 @@ package manager: Marco Clemencic
 Commit Id: $Format:%H$
 
 ============================= GaudiPolicy v15r4 ==============================
+! 2015-02-13 - Marco Clemencic
+ - Fixed some special cases in GaudiTesting.
+
 ! 2015-02-06 - Marco Clemencic
  - Separated stderr from stdout in GaudiTesting CTest reports.
 

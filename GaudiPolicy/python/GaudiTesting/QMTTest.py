@@ -37,9 +37,10 @@ class QMTTest(BaseTest):
                                              for el in value.findall('text')))
                 else:
                     data = value.text
-                    if value.tag == 'integer':
-                        data = int(data)
-                    setattr(self, name, data)
+                    if data is not None:
+                        if value.tag == 'integer':
+                            data = int(data)
+                        setattr(self, name, data)
 
 
     def ValidateOutput(self, stdout, stderr, result):
