@@ -680,12 +680,8 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
                     COMMAND ${env_cmd} --xml "${installed_env_release_xml}" true)
   add_dependencies(post-install precompile-project-xenv)
 
-  #--- Special target to print the summary of QMTest runs.
   if(GAUDI_BUILD_TESTS)
-    add_custom_target(QMTestSummary)
-    add_custom_command(TARGET QMTestSummary
-                       COMMAND ${env_cmd} --xml ${env_xml}
-                               qmtest_summarize.py)
+    #--- Special target to generate HTML reports from CTest XML reports.
     add_custom_target(HTMLSummary)
     add_custom_command(TARGET HTMLSummary
                        COMMAND ${env_cmd} --xml ${env_xml}
