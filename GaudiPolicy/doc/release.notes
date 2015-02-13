@@ -4,6 +4,9 @@ Commit Id: $Format:%H$
 
 ============================= GaudiPolicy v15r4 ==============================
 ! 2015-02-13 - Marco Clemencic
+ - Fixed showing of test failure causes in the HTML report.
+
+! 2015-02-13 - Marco Clemencic
  - Fixed some special cases in GaudiTesting.
 
 ! 2015-02-06 - Marco Clemencic

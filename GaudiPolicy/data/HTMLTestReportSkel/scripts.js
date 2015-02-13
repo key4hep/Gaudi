@@ -307,7 +307,7 @@ function openlink2(){
 /// Code executed when the page is ready.
 $(function () {
 	$(".loading").loadingIcon().removeClass("loading");
-	var ignore_fields = ["qmtest.cause", "qmtest.target"];
+	var ignore_fields = ["qmtest.cause", "qmtest.target", "causes"];
 	var fields_order = ["start_time", "end_time"];
 
 	// Add details about the project (if available)

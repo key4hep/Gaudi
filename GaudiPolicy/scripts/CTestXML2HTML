@@ -240,7 +240,7 @@ class TestOrganizer :
 
         for namedMeasurment in testElement.find("Results").getiterator("NamedMeasurement"):
             name = namedMeasurment.get("name")
-            if name == 'Cause':
+            if name == 'Causes':
                 cause = namedMeasurment.find("Value")
                 if cause is not None:
                     ET.SubElement(span2, "span", {"class": "cause"}).text = cause.text + " "
