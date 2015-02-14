@@ -45,7 +45,8 @@ ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* 
   declareProperty("useGraphFlowManagement", m_CFNext = false );
   declareProperty("DataFlowManagerNext", m_DFNext = false );
   declareProperty("SimulateExecution", m_simulateExecution = false );
-  declareProperty("Optimizer", m_optimizationMode = "", "The following modes are currently available: PCE, COD, E" );
+  declareProperty("Optimizer", m_optimizationMode = "", "The following modes are currently available: PCE, COD, DRE, E" );
+  declareProperty("DumpIntraEventDynamics", m_dumpIntraEventDynamics = false, "Dump intra-event concurrency dynamics to csv file" );
 }
 
 //---------------------------------------------------------------------------
@@ -604,6 +605,20 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
 
       }
     }
+
+    if (m_dumpIntraEventDynamics) {
+      std::stringstream s;
+      s << algo_name << ", " << thisAlgsStates.sizeOfSubset(State::CONTROLREADY)
+                     << ", " << thisAlgsStates.sizeOfSubset(State::DATAREADY)
+                     << ", " << thisAlgsStates.sizeOfSubset(State::SCHEDULED) << "\n";
+      auto threads = (m_threadPoolSize != -1) ? std::to_string(m_threadPoolSize)
+                                              : std::to_string(tbb::task_scheduler_init::default_num_threads());
+      std::ofstream myfile;
+      myfile.open("IntraEventConcurrencyDynamics_" + threads + "T.csv", std::ios::app);
+      myfile << s.str();
+      myfile.close();
+    }
+
 
     // Not complete because this would mean that the slot is already free!
     if (!thisSlot.complete &&

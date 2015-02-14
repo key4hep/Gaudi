@@ -207,6 +207,8 @@ private:
   bool m_simulateExecution;
   // Optimization mode in which algorithms, ready for execution, are prioritized in special way
   std::string m_optimizationMode;
+  // Dump intra-event concurrency dynamics to csv file
+  bool m_dumpIntraEventDynamics;
 
   // Needed to queue actions on algorithm finishing and decrement algos in flight
   friend class AlgoExecutionTask;

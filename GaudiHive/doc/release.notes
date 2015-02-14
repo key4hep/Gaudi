@@ -1,5 +1,9 @@
 Package : GaudiKernel
 
+! 2015-02-14 - Illya Shapoval
+  o Expose the possibility to dump intra-event concurrency dynamics to a csv file
+    (controlled by the DumpIntraEventDynamics property of the FWD scheduler )
+
 ! 2014-11-25 - Illya Shapoval
   o First implementation of the optimizer mode, using data realm eccentricity
     to rank algorithms.
