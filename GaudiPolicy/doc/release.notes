@@ -3,6 +3,9 @@ package manager: Marco Clemencic
 Commit Id: $Format:%H$
 
 ============================= GaudiPolicy v15r4 ==============================
+! 2015-02-16 - Marco Clemencic
+ - Fixed generation of .new reference file for stderr.
+
 ! 2015-02-13 - Marco Clemencic
  - Fixed showing of test failure causes in the HTML report.
 

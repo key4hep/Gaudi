@@ -440,7 +440,7 @@ class BaseTest(object):
                                                preproc=preproc)(stderr, result)
             causes += newcauses
             if newcauses: # Write a new reference file for stdedd
-                newref = open(self.reference + ".new","w")
+                newref = open(lreference + ".new","w")
                 # sanitize newlines
                 for l in stderr.splitlines():
                     newref.write(l.rstrip() + '\n')
