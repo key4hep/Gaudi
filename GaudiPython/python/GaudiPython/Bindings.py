@@ -11,7 +11,7 @@ __all__ = [ 'gbl','InterfaceCast', 'Interface', 'PropertyEntry',
             'AppMgr', 'PyAlgorithm', 'CallbackStreamBuf',
             'iAlgorithm', 'iDataSvc', 'iHistogramSvc','iNTupleSvc','iService', 'iAlgTool', 'Helper',
             'SUCCESS', 'FAILURE', 'toArray',
-            'ROOT', 'makeNullPointer', 'makeClass', 'setOwnership',
+            'ROOT', 'makeNullPointer', 'setOwnership',
             'getClass', 'loaddict', 'deprecation' ]
 
 from GaudiKernel import ROOT6WorkAroundEnabled
@@ -68,7 +68,6 @@ else:
 #----Convenient accessors to PyROOT functionality ---------------------------------------
 ROOT            = cppyy.libPyROOT
 makeNullPointer = cppyy.libPyROOT.MakeNullPointer
-makeClass       = cppyy.libPyROOT.MakeRootClass
 setOwnership    = cppyy.libPyROOT.SetOwnership
 
 def deprecation(message):
