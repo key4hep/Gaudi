@@ -2267,7 +2267,7 @@ function(gaudi_add_test name)
     # add .qmt files as tests
     message(STATUS "Addind QMTest tests...")
     set(qmtest_root_dir ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
-    file(GLOB_RECURSE qmt_files RELATIVE ${qmtest_root_dir} *.qmt)
+    file(GLOB_RECURSE qmt_files RELATIVE ${qmtest_root_dir} ${qmtest_root_dir}/*.qmt)
     string(TOLOWER "${subdir_name}" subdir_name_lower)
     # ensure that the tests in a directory are declared in alphabetical order
     # (see GAUDI-1007)
