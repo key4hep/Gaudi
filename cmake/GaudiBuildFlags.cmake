@@ -38,6 +38,10 @@ option(GAUDI_CMT_RELEASE
        "use CMT deafult release flags instead of the CMake ones"
        ON)
 
+option(GAUDI_SLOW_DEBUG
+       "turn off all optimizations in debug builds"
+       OFF)
+
 if(DEFINED GAUDI_CPP11)
   message(WARNING "GAUDI_CPP11 is an obsolete option, use GAUDI_CXX_STANDARD=c++11 instead")
 endif()
@@ -256,6 +260,12 @@ if(GAUDI_HIDE_WARNINGS)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-local-typedefs")
     endif()
   endif()
+endif()
+
+if(GAUDI_SLOW_DEBUG)
+  string(REPLACE "-Og" "-O0" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+  string(REPLACE "-Og" "-O0" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+  string(REPLACE "-Og" "-O0" CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG}")
 endif()
 
 #--- Special flags -------------------------------------------------------------
