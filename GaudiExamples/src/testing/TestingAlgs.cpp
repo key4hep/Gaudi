@@ -167,11 +167,11 @@ namespace GaudiTesting {
   };
 
   /**
-   * Simple algorithm that raise a signal after N events.
+   * Simple algorithm that creates dummy objects in the transient store.
    */
-  class GetDataObjectAlg: public GaudiAlgorithm {
+  class PutDataObjectAlg: public GaudiAlgorithm {
   public:
-    GetDataObjectAlg(const std::string& name, ISvcLocator *pSvcLocator):
+    PutDataObjectAlg(const std::string& name, ISvcLocator *pSvcLocator):
       GaudiAlgorithm(name, pSvcLocator){
       declareProperty("Paths", m_paths,
                       "List of paths in the transient store to load");
@@ -191,14 +191,13 @@ namespace GaudiTesting {
 
     StatusCode execute() {
       StatusCode sc = StatusCode::SUCCESS;
-      info() << "Getting " << m_paths.size() << " objects from " << m_dataSvc << endmsg;
-      std::vector<std::string>::iterator p;
-      for (p = m_paths.begin(); p != m_paths.end(); ++p) {
-        info() << "Getting '" << *p << "'" << endmsg;
-        DataObject *obj;
-        sc = m_dataProvider->retrieveObject(*p, obj);
+      info() << "Adding " << m_paths.size() << " objects to " << m_dataSvc << endmsg;
+      for (auto& p: m_paths) {
+        info() << "Adding '" << p << "'" << endmsg;
+        DataObject *obj = new DataObject();
+        sc = m_dataProvider->registerObject(p, obj);
         if (sc.isFailure())
-          warning() << "Cannot retrieve object '" << *p << "'" << endmsg;
+          warning() << "Cannot register object '" << p << "'" << endmsg;
       }
 
       return sc;
@@ -212,6 +211,61 @@ namespace GaudiTesting {
     std::vector<std::string> m_paths;
     std::string m_dataSvc;
     SmartIF<IDataProviderSvc> m_dataProvider;
+  };
+
+
+  /**
+   * Simple algorithm that retrieves objects from the transient store.
+   */
+  class GetDataObjectAlg: public GaudiAlgorithm {
+  public:
+    GetDataObjectAlg(const std::string& name, ISvcLocator *pSvcLocator):
+      GaudiAlgorithm(name, pSvcLocator){
+      declareProperty("Paths", m_paths,
+                      "List of paths in the transient store to load");
+      declareProperty("DataSvc", m_dataSvc = "EventDataSvc",
+                      "Name of the data service to use");
+      declareProperty("IgnoreMissing", m_ignoreMissing=false,
+                      "if True, missing objects will not beconsidered an error");
+    }
+
+    StatusCode initialize() {
+      StatusCode sc = GaudiAlgorithm::initialize();
+      if (sc.isFailure()) return sc;
+
+      m_dataProvider = service(m_dataSvc);
+      if (!m_dataProvider) return StatusCode::FAILURE;
+
+      return StatusCode::SUCCESS;
+    }
+
+    StatusCode execute() {
+      info() << "Getting " << m_paths.size() << " objects from " << m_dataSvc << endmsg;
+      bool missing = false;
+      for (auto& p: m_paths) {
+        info() << "Getting '" << p << "'" << endmsg;
+        DataObject *obj;
+        StatusCode sc = m_dataProvider->retrieveObject(p, obj);
+        if (sc.isFailure()) {
+          warning() << "Cannot retrieve object '" << p << "'" << endmsg;
+          missing = true;
+        }
+      }
+
+      return (missing && ! m_ignoreMissing)
+          ? StatusCode::FAILURE
+          : StatusCode::SUCCESS;
+    }
+
+    StatusCode finalize() {
+      m_dataProvider.reset();
+      return GaudiAlgorithm::finalize();
+    }
+  private:
+    std::vector<std::string> m_paths;
+    std::string m_dataSvc;
+    SmartIF<IDataProviderSvc> m_dataProvider;
+    bool m_ignoreMissing;
   };
 
   class OddEventsFilter: public GaudiAlgorithm {
@@ -244,6 +298,25 @@ namespace GaudiTesting {
     }
   };
 
+
+  /**
+   * Simple algorithm that creates dummy objects in the transient store.
+   */
+  class ListTools: public GaudiAlgorithm {
+  public:
+    ListTools(const std::string& name, ISvcLocator *pSvcLocator):
+      GaudiAlgorithm(name, pSvcLocator){}
+
+    StatusCode execute() {
+      StatusCode sc = StatusCode::SUCCESS;
+      info() << "All tool instances:" << endmsg;
+      for (auto& tool: toolSvc()->getTools()) {
+        info() << "  " << tool->name() << endmsg;
+      }
+      return sc;
+    }
+  };
+
 }
 
 #include "GaudiKernel/AlgFactory.h"
@@ -254,7 +327,9 @@ namespace GaudiTesting {
   DECLARE_COMPONENT(SignallingAlg)
   DECLARE_COMPONENT(StopLoopAlg)
   DECLARE_COMPONENT(CustomIncidentAlg)
+  DECLARE_COMPONENT(PutDataObjectAlg)
   DECLARE_COMPONENT(GetDataObjectAlg)
   DECLARE_COMPONENT(OddEventsFilter)
   DECLARE_COMPONENT(EvenEventsFilter)
+  DECLARE_COMPONENT(ListTools)
 }

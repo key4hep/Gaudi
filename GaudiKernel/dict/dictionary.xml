@@ -20,7 +20,7 @@
   <class name="GaudiHandleBase"/>
   <class name="GaudiHandleArrayBase"/>
   <class name="GaudiHandleProperty"/>
-  <class name="GaudiHandleArrayProperty"/>  
+  <class name="GaudiHandleArrayProperty"/>
 
   <class name="LinkManager"/>
   <class name="LinkManager::Link">
@@ -69,7 +69,6 @@
   <class name="IEventTimeDecoder"/>
   <class name="IEvtSelector"/>
   <class name="IExceptionSvc"/>
-  <!--class name="IFactory"/-->
   <class name="IHistogramSvc"/>
   <class name="IHistorySvc"/>
   <class name="IIncidentListener"/>
@@ -249,7 +248,6 @@
   <enum name="MSG::Color"/>
 
   <class pattern="SmartIF&lt;*&gt;"/>
-  <class pattern="SmartIFBase&lt;*&gt;"/>
 
   <!-- Temporary work-around for ROOT bug #44916 -->
   <class name="std::string"/>
@@ -260,13 +258,10 @@
     <!-- Marco Cl.: This is needed because with ROOT >= 5.16 we get some dictionaries that we do not need. -->
     <class name="NTuple::Item&lt;IOpaqueAddress*&gt;"/>
 
-    <class pattern="NTuple::Item&lt;bool&gt;">
+    <class name="NTuple::Item&lt;bool&gt;">
       <method pattern="=*"/>
     </class>
     <class pattern="NTuple::*&lt;*&gt;">
-      <method name="="/>
-    </class>
-    <class pattern="NTuple::_Acc*::_Acc*">
       <method name="="/>
     </class>
     <class pattern="Rndm::*">

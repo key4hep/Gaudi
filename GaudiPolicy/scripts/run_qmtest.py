@@ -77,6 +77,10 @@ def main(argv = None):
 
     print "==========> Running tests for package %s" % opts.package
 
+    if not os.path.isdir(opts.qmtest_dir):
+        print "==========> No test directory, exiting"
+        return
+        
     # create the destination directory if necessary
     if opts.output:
         results_dest_dir = os.path.realpath(os.path.join(opts.qmtest_dir, os.path.dirname(opts.output)))
@@ -130,7 +134,8 @@ def main(argv = None):
                            for s in os.environ["GAUDI_QMTEST_DEFAULT_SUITE"].split(",")])
         suites.append(opts.package.lower())
         for s in suites:
-            if os.path.exists("%s.qms" % s):
+            real_name = os.path.join(*[x + '.qms' for x in s.split('.')])
+            if os.path.exists(real_name):
                 cmd += " %s" % s
                 break
 

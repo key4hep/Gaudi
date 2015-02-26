@@ -1,0 +1,24 @@
+[Packages]
+GaudiSys = v26r1
+GaudiAud = v10r2
+GaudiMonitor = v5r3
+GaudiAlg = v15r2
+GaudiPluginService = v2r2
+Gaudi = v26r1
+PartPropSvc = v6r2
+GaudiPartProp = v2r1
+GaudiUtils = v5r3
+GaudiSvc = v21r5
+GaudiGSL = v8r4
+RootHistCnv = v12r1
+GaudiProfiling = v2r4
+RootCnv = v1r23p1
+GaudiKernel = v31r4
+GaudiPython = v13r4
+GaudiMP = v3r2
+GaudiCoreSvc = v3r3
+GaudiPolicy = v15r4
+GaudiRelease = v26r1
+GaudiCommonSvc = v3r4
+GaudiExamples = v26r1
+

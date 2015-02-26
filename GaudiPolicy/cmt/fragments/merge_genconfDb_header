@@ -9,7 +9,7 @@
 # default is already '#'
 #genconfDb_comment_char := "'#'"
 
-instdir      := ${CMTINSTALLAREA}$(shared_install_subdir)
+instdir      := ${CMTINSTALLAREA}/$(tag)
 confDbRef    := $(inDir)/$(library).confdb
 stampConfDb  := $(confDbRef).stamp
 mergedConfDb := $(instdir)/lib/$(project).confdb

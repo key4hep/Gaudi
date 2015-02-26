@@ -15,6 +15,8 @@ import string
 import difflib
 import time
 import calendar
+import codecs
+
 from subprocess import Popen, PIPE, STDOUT
 
 try:
@@ -564,9 +566,11 @@ lineSkipper = LineSkipper(["//GP:",
                                  r"^[-+]*\s*$",
                                  # Hide the fake error message coming from POOL/ROOT (ROOT 5.21)
                                  r"ERROR Failed to modify file: .* Errno=2 No such file or directory",
-                                 # Hide unckeched StatusCodes  from dictionaries
+                                 # Hide unchecked StatusCodes from dictionaries
                                  r"^ +[0-9]+ \|.*ROOT",
                                  r"^ +[0-9]+ \|.*\|.*Dict",
+                                 # Hide success StatusCodeSvc message
+                                 r"StatusCodeSvc.*all StatusCode instances where checked",
                                  # Remove ROOT TTree summary table, which changes from one version to the other
                                  r"^\*.*\*$",
                                  # Remove Histos Summaries
@@ -1730,7 +1734,7 @@ class GaudiExeTest(ExecTestBase):
         data["project"] = projectName.strip()
 
         # Template for the XML file, based on eclipse 3.4
-        xml = u"""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+        xml_template = u"""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.cdt.launch.applicationLaunchType">
 <booleanAttribute key="org.eclipse.cdt.debug.mi.core.AUTO_SOLIB" value="true"/>
 <listAttribute key="org.eclipse.cdt.debug.mi.core.AUTO_SOLIB_LIST"/>
@@ -1778,11 +1782,17 @@ class GaudiExeTest(ExecTestBase):
 <listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
 </listAttribute>
 </launchConfiguration>
-""" % data
+"""
+        try:
+            # ensure the correct encoding of data values
+            for k in data:
+                data[k] = codecs.decode(data[k], 'utf-8')
+            xml = xml_template % data
 
-        # Write the output file
-        open(destfile, "w").write(xml)
-        #open(destfile + "_copy.xml", "w").write(xml)
+            # Write the output file
+            codecs.open(destfile, "w", encoding='utf-8').write(xml)
+        except:
+            print 'WARNING: problem generating Eclipse launcher'
 
 
 try:
@@ -2023,7 +2033,7 @@ class XMLResultStream(ResultStream):
                       "LogicalProcessorsPerPhysical" : "0" ,
                       "ProcessorClockFrequency" : "0" ,
                       }
-            self._site = ET.SubElement(newdataset, "site", attrib)
+            self._site = ET.SubElement(newdataset, "Site", attrib)
             self._Testing = ET.SubElement(self._site,"Testing")
 
             # Start time elements

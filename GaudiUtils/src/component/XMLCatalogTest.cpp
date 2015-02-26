@@ -57,8 +57,9 @@ extern "C" int testXMLFileCatalogWrite(int argc, char** argv)   {
   }
   else {
     std::cout << "Error: Catalog is not dirty after inserting records." << std::endl;
+    return 1;
   }
-  return 1;
+  return 0;
 }
 
 extern "C" int testXMLFileCatalogRead(int argc, char** argv)  {
@@ -86,20 +87,24 @@ extern "C" int testXMLFileCatalogRead(int argc, char** argv)  {
     for(size_t l1=0; l1<lfn.size(); ++l1)  {
       if ( !c.existsLFN(lfn[l1].first) )  {
         std::cout << "Error LFN existence of :" << lfn[l1].second << std::endl;
+        return 1;
       }
       std::string f = c.lookupLFN(lfn[l1].first);
       if ( f != fid )  {
         std::cout << "Error LFN lookup of :" << lfn[l1].second << std::endl;
+        return 1;
       }
     }
     c.getPFN(fid, pfn);
     for(size_t l2=0; l2<pfn.size(); ++l2)  {
       if ( !c.existsPFN(pfn[l2].first) )  {
         std::cout << "Error PFN existence of :" << pfn[l2].second << std::endl;
+        return 1;
       }
       std::string f = c.lookupPFN(pfn[l2].first);
       if ( f != fid )  {
         std::cout << "Error PFN lookup of :" << pfn[l2].second << std::endl;
+        return 1;
       }
     }
     c.getMetaData(fid, attrs);
@@ -122,5 +127,5 @@ extern "C" int testXMLFileCatalogRead(int argc, char** argv)  {
   std::cout << "Used " << end << " seconds (" << (long)fids.size()*mult << " entries)."
             << " Corresponding to " << float(end)/float(fids.size()*mult) << " entries/second."
             << std::endl;
-  return 1;
+  return 0;
 }

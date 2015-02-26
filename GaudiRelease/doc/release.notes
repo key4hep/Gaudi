@@ -1,11 +1,39 @@
 Package: GaudiRelease
 Maintainer: Marco Clemencic
+Commit Id: $Format:%H$
 
 ! 2014-05-08 - Charles Leggett
  - include GaudiHive in cmt/requirements
 
 #	modified:   GaudiRelease/cmt/requirements
 
+============================= GaudiRelease v26r1 =============================
+! 2015-02-12 - Marco Clemencic
+ - GAUDI-979: modified GaudiRelease scripts to use CMake configuration
+   - update_versions.py also generates a 'project.info' file (.ini format) with
+     the list of packages and their versions (possible future replacement of the
+     explicit versions in GaudiRelease/cmt/requirements).
+   - tag_release.py extracts the list of versions from 'project.info'.
+   - renamed tag_release.py as svn_tag_release.py
+
+============================= GaudiRelease v26r0 =============================
+! 2014-07-04 - Marco Clemencic
+ - Added CMake target to build Doxygen documentation.
+
+============================ GaudiRelease v25r6p1 ============================
+============================= GaudiRelease v25r6 =============================
+! 2014-12-01 - Marco Clemencic
+ - GAUDI-979: modified GaudiRelease scripts to use CMake configuration
+   - update_versions.py uses CMake configuration as source, but still
+     updates CMT requirements
+   - git_tag_pacakges.py extracts the versions from CMake configuration
+     modified update_versions.py to use CMake configuration files
+   - tag_release.py make the project SVN tag as a copy of the trunk
+     (to match the git tag)
+
+============================= GaudiRelease v25r5 =============================
+============================= GaudiRelease v25r4 =============================
+============================= GaudiRelease v25r3 =============================
 ============================= GaudiRelease v25r2 =============================
 ============================ GaudiRelease v25r1p1 ============================
 ============================= GaudiRelease v25r1 =============================

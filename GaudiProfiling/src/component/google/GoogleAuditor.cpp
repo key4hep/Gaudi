@@ -47,10 +47,15 @@ namespace Google
     {
       m_log << MSG::INFO << "Initialised" << endmsg;
 
+      // add a listener for begin event
       SmartIF<IIncidentSvc> inSvc(serviceLocator()->service("IncidentSvc"));
       if ( ! inSvc.isValid() ) return StatusCode::FAILURE;
-
       inSvc->addListener( this, IncidentType::BeginEvent );
+
+      // sort various lists for speed when searching
+      std::sort( m_when.begin(), m_when.end() );
+      std::sort( m_veto.begin(), m_veto.end() );
+      std::sort( m_list.begin(), m_list.end() );
 
       return StatusCode::SUCCESS;
     }
@@ -65,7 +70,7 @@ namespace Google
   private:
 
     /// Start a full event audit
-    void startAudit()
+    inline void startAudit()
     {
       m_log << MSG::INFO << " -> Starting full audit from event " << m_nEvts << " to "
             << m_nEvts+m_nSampleEvents << endmsg;
@@ -77,7 +82,7 @@ namespace Google
     }
 
     /// stop a full event audit
-    void stopAudit()
+    inline void stopAudit()
     {
       m_log << MSG::INFO << " -> Stopping full audit" << endmsg;
       std::ostringstream t;
@@ -89,10 +94,34 @@ namespace Google
 
     /** Check if the component in question is a GaudiSequencer or
      *  a Sequencer */
-    bool isSequencer( INamedInterface* i ) const
+    inline bool isSequencer( INamedInterface* i ) const
     {
       return ( dynamic_cast<GaudiSequencer*>(i) != NULL ||
                dynamic_cast<Sequencer*>(i)      != NULL );
+    }
+
+    /// Check if auditing is enabled for the current processing phase
+    inline bool isPhaseEnabled( const CustomEventTypeRef& type ) const
+    {
+      return ( std::find(m_when.begin(),m_when.end(),type) != m_when.end() );
+    }
+
+    /// Check if auditing is enabled for the given component
+    inline bool isComponentEnabled( const std::string& name ) const
+    {
+      return ( std::find(m_veto.begin(),m_veto.end(),name) == m_veto.end() &&
+               ( m_list.empty() || 
+                 std::find(m_list.begin(),m_list.end(),name) != m_list.end() ) );
+    }
+
+    // Construct the dump name based on processing phase and component name
+    std::string getDumpName( const CustomEventTypeRef& type, 
+                             const std::string& name ) const
+    {
+      std::ostringstream t;
+      t << name << "-" << type;
+      if ( type == "Execute" ) t << "-Event" << m_nEvts;
+      return t.str();
     }
 
   public:
@@ -141,7 +170,7 @@ namespace Google
     {
       if ( !m_skipSequencers || !isSequencer(i) )
       {
-        before(type,i->name());
+        before( type, i->name() );
       }
     }
 
@@ -149,7 +178,7 @@ namespace Google
     {
       if ( !m_skipSequencers || !isSequencer(i) )
       {
-        before(type,i->name());
+        before( type, i->name() );
       }
     }
 
@@ -157,22 +186,21 @@ namespace Google
     {
       std::ostringstream t;
       t << type;
-      before(t.str(),s);
+      before( t.str(), s );
     }
 
-    void before(CustomEventTypeRef, const std::string& s)
+    void before(CustomEventTypeRef type, const std::string& s)
     {
-      if ( !m_fullEventAudit && m_audit &&
-           std::find(m_veto.begin(),m_veto.end(),s) == m_veto.end() &&
-           ( m_list.empty() || std::find(m_list.begin(),m_list.end(),s) != m_list.end() ) )
+      if ( !m_fullEventAudit && m_audit && 
+           isPhaseEnabled(type) && isComponentEnabled(s) )
       {
         if ( !alreadyRunning() )
         {
-          m_log << MSG::INFO << "Starting Auditor for " << s << endmsg;
+          m_log << MSG::INFO 
+                << "Starting Auditor for " << s << ":" << type 
+                << endmsg;
           m_startedBy = s;
-          std::ostringstream t;
-          t << s << "-Event" << m_nEvts;
-          google_before(t.str());
+          google_before( getDumpName(type,s) );
         }
         else
         {
@@ -189,7 +217,7 @@ namespace Google
       {
         std::ostringstream t;
         t << type;
-        after(t.str(),i,sc);
+        after( t.str(), i, sc );
       }
     }
 
@@ -197,7 +225,7 @@ namespace Google
     {
       if ( !m_skipSequencers || !isSequencer(i) )
       {
-        after(type,i->name(),sc);
+        after( type, i->name(), sc );
       }
     }
 
@@ -205,21 +233,15 @@ namespace Google
     {
       std::ostringstream t;
       t << type;
-      after(t.str(),s,sc);
+      after( t.str(), s, sc );
     }
 
-    void after(CustomEventTypeRef, const std::string& s, const StatusCode&)
+    void after(CustomEventTypeRef type, const std::string& s, const StatusCode&)
     {
-      if ( !m_fullEventAudit && m_audit &&
-           std::find(m_veto.begin(),m_veto.end(),s) == m_veto.end() &&
-           ( m_list.empty() || std::find(m_list.begin(),m_list.end(),s) != m_list.end() ) )
+      if ( !m_fullEventAudit && m_audit && 
+           isPhaseEnabled(type) && isComponentEnabled(s) )
       {
-        if ( s == m_startedBy )
-        {
-          std::ostringstream t;
-          t << s << "-Event" << m_nEvts;
-          google_after(t.str());
-        }
+        if ( s == m_startedBy ) { google_after( getDumpName(type,s) ); }
       }
     }
 
@@ -285,7 +307,7 @@ namespace Google
                             ISvcLocator* pSvcLocator )
     : base_class ( name , pSvcLocator )
     , m_log      ( msgSvc() , name )
-    , m_audit    ( false )
+    , m_audit    ( true )
     , m_nEvts    ( 0 )
     , m_sampleEventCount( 0 )
     , m_inFullAudit ( false )

@@ -61,6 +61,7 @@ public:
     : m_service(msg.m_service),
       m_active(msg.m_active),
       m_level(msg.m_level),
+      m_currLevel(msg.m_currLevel),
       m_useColors(msg.m_useColors),
       m_inactCounter(msg.m_inactCounter)
   {

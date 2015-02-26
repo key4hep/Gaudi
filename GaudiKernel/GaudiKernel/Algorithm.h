@@ -76,9 +76,11 @@ class ToolHandleInfo;
  */
 class GAUDI_API Algorithm: public implements3<IAlgorithm, IProperty, IStateful> {
 public:
-  typedef Gaudi::PluginService::Factory2<IAlgorithm*,
-                                         const std::string&,
-                                         ISvcLocator*> Factory;
+#ifndef __REFLEX__
+  typedef Gaudi::PluginService::Factory<IAlgorithm*,
+                                        const std::string&,
+                                        ISvcLocator*> Factory;
+#endif
 
   /** Constructor
    *  @param name    The algorithm object's name
@@ -924,11 +926,12 @@ private:
 template <class T>
 class AlgFactory {
 public:
-  template <typename S>
-  static typename S::ReturnType create(typename S::Arg1Type a1,
-                                       typename S::Arg2Type a2) {
-    return new T(a1, a2);
+#ifndef __REFLEX__
+  template <typename S, typename... Args>
+  static typename S::ReturnType create(Args... args) {
+    return new T(args...);
   }
+#endif
 };
 
 // Macros to declare component factories

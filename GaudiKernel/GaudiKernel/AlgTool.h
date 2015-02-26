@@ -44,10 +44,12 @@ class ToolHandleInfo;
 class GAUDI_API AlgTool: public implements3<IAlgTool, IProperty, IStateful> {
   friend class ToolSvc;
 public:
-  typedef Gaudi::PluginService::Factory3<IAlgTool*,
-                                         const std::string&,
-                                         const std::string&,
-                                         const IInterface*> Factory;
+#ifndef __REFLEX__
+  typedef Gaudi::PluginService::Factory<IAlgTool*,
+                                        const std::string&,
+                                        const std::string&,
+                                        const IInterface*> Factory;
+#endif
 
   /// Query for a given interface
   virtual StatusCode queryInterface(const InterfaceID& riid, void** ppvUnknown);
@@ -623,12 +625,12 @@ private:
 template <class T>
 class ToolFactory {
 public:
-  template <typename S>
-  static typename S::ReturnType create(typename S::Arg1Type a1,
-                                       typename S::Arg2Type a2,
-                                       typename S::Arg3Type a3) {
-    return new T(a1, a2, a3);
+#ifndef __REFLEX__
+  template <typename S, typename... Args>
+  static typename S::ReturnType create(Args... args) {
+    return new T(args...);
   }
+#endif
 };
 
 // Macros to declare component factories

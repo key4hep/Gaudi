@@ -387,9 +387,8 @@ StatusCode HiveEventLoopMgr::executeEvent(void* /*par*/)    {
 	// (before we were reseting only the topalgs)
 	SmartIF<IAlgManager> algMan(serviceLocator());
 	if (LIKELY(algMan.isValid())) {
-		const ListAlgPtrs& allAlgs = algMan->getAlgorithms() ;
-		for( ListAlgPtrs::const_iterator ialg = allAlgs.begin() ; allAlgs.end() != ialg ; ++ialg ) {
-			if (LIKELY(0 != *ialg)) (*ialg)->resetExecuted();
+		for(auto ialg: algMan->getAlgorithms()) {
+			if (LIKELY(0 != ialg)) ialg->resetExecuted();
 		}
 	}
 
@@ -478,7 +477,7 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
     std::list<contextSchedState_tuple> events_in_flight;
 
     // Loop until no more evts are there
-  
+
     while( maxevt == -1 ? !eof : n_processed_events < maxevt ){// TODO Fix the condition in case of -1
 
         const unsigned int n_events_in_flight = events_in_flight.size();
@@ -502,7 +501,7 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
             const int evt_num =  n_processed_events + offset + n_events_in_flight;
 	    evtContext->set(evt_num,  m_whiteboard->allocateStore(evt_num) );
             m_whiteboard->selectStore(evtContext->slot()).ignore();
- 
+
             if( m_evtContext ) {
                 //---This is the "event iterator" context from EventSelector
                 IOpaqueAddress* pAddr = 0;
@@ -548,15 +547,15 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
                 for (unsigned int algo_counter=0; algo_counter<m_topAlgList.size(); algo_counter++) { // loop on algos
                     // check whether all requirements/dependencies for the algorithm are fulfilled...
                     const state_type& algo_requirements = m_all_requirements[algo_counter];
-                    // Very verbose!					
-                    //      log << MSG::VERBOSE << "Checking dependencies for algo " << algo_counter << ":\n" 
+                    // Very verbose!
+                    //      log << MSG::VERBOSE << "Checking dependencies for algo " << algo_counter << ":\n"
                     //          << "  o Requirements: " <<  algo_requirements << std::endl
                     //          << "  o State: " << event_state->state() << endmsg;
-          
+
                     // ...and whether the algorithm was already started and if it can be started
                     bool algo_not_started_and_dependencies_there = (algo_requirements.is_subset_of(event_state->state()) &&
 								    (event_state->hasStarted(algo_counter) ) == false);
-		
+
                     // It could run, just the maximum number of algos in flight has been reached
                     if (algo_not_started_and_dependencies_there)
                         no_algo_can_run = false;
@@ -584,7 +583,7 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 		    } // End scheduling if block
 
                }// end loop on algo indices
- 
+
                // update the event state with what has been put into the DataSvc
                std::vector<std::string> new_products;
                m_whiteboard->selectStore(event_Context->slot()).ignore();
@@ -600,31 +599,31 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
                    }
                }
 
-				
+
                /* Check if we stall on the current event
                 * One should check if:
-                * - Nothing can run 
+                * - Nothing can run
                 * - Nothing is running
                 * - No new product is available
                 * - The event is not finished
                 * At this point one could claim a stall.
-                * The implementation poses a challenge though, which resides in the 
-                * asyncronous termination of algorithm and potential writing in the 
+                * The implementation poses a challenge though, which resides in the
+                * asyncronous termination of algorithm and potential writing in the
                 * store. Therefore one checks the 4 aforementioned conditions.
-                * Then, the store is again checked (without removing the new 
-                * elements). If something new is there the stall is not sure 
+                * Then, the store is again checked (without removing the new
+                * elements). If something new is there the stall is not sure
                 * anymore.
-                * Another possibility could be to check if any algo terminated 
+                * Another possibility could be to check if any algo terminated
                 * during the checks made to the wb probably.
                 */
                 if (no_algo_can_run && // nothing could run
                     m_total_algos_in_flight==0 && // nothing is running
                     new_products.size() == 0 && // no new product available
                     ! event_state->hasFinished() ){ // the event is not finished
-					
+
                     // Check if something arrived on the wb meanwhile
                     if(!m_whiteboard->newDataObjectsPresent()){
-            
+
                         std::string errorMessage("No algorithm can run, "
                                                  "no algorithm in flight, "
                                                  "no new products in the store, "
@@ -641,7 +640,7 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
                             algo_counter++;
                         } // End ofloop on algos
                         fatal() << endmsg;
-                        throw GaudiException (errorMessage,"HiveEventLoopMgr",StatusCode::FAILURE);          
+                        throw GaudiException (errorMessage,"HiveEventLoopMgr",StatusCode::FAILURE);
                     }
 		}
             }// end loop on evts in flight
@@ -673,8 +672,8 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 				unsigned int evt_backlog=max_event_num-min_event_num;
 				info() << "Event backlog (max= " << max_event_num << ", min= "
 						<< min_event_num<<" ) = " << evt_backlog << endmsg;
-                 
-            
+
+
          // Output
          // Call the execute() method of all output streams
   for (ListAlg::iterator ito = m_outStreamList.begin(); ito != m_outStreamList.end(); ito++ ) {
@@ -685,7 +684,7 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
       warning() << "Execution of output stream " << (*ito)->name() << " failed" << endmsg;
     }
   }
-            
+
 				sc = m_whiteboard->clearStore(evt_slot);
 				if( !sc.isSuccess() )  {
 					warning() << "Clear of Event data store failed" << endmsg;
@@ -706,7 +705,7 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
             }
         }
         // End scheduling session ------------------------------------------------
-    
+
     } // End while loop on events
 
     always() << "---> Loop Finished (seconds): " << secsFromStart() <<endmsg;
@@ -766,7 +765,7 @@ HiveEventLoopMgr::find_dependencies() {
 			if (ret.second==true) ++input_counter;
 			// in any case the return value holds the proper product index
 			requirements[ret.first->second] = true;
-			log << MSG::DEBUG << "  - Requirements now: " << requirements[ret.first->second] << endmsg; 
+			log << MSG::DEBUG << "  - Requirements now: " << requirements[ret.first->second] << endmsg;
 		}// end loop on single dependencies
 
 		all_requirements[algo_counter] = requirements;

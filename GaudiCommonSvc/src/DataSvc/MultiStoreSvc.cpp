@@ -257,12 +257,12 @@ public:
     return STATUS::FAILURE;
   }
   /// IDataManagerSvc: Pass a default data loader to the service.
-  virtual STATUS setDataLoader(IConversionSvc* pDataLoader, IDataProviderSvc* pdsvc = nullptr)  {
+  virtual STATUS setDataLoader(IConversionSvc* pDataLoader, IDataProviderSvc* dpsvc = nullptr)  {
     Partitions::iterator i;
     if ( 0 != pDataLoader  ) pDataLoader->addRef();
     if ( 0 != m_dataLoader ) m_dataLoader->release();
     if ( 0 != pDataLoader  )    {
-      pDataLoader->setDataProvider(this);
+      pDataLoader->setDataProvider(dpsvc == nullptr ? this : dpsvc);
     }
     m_dataLoader = pDataLoader;
     for(i=m_partitions.begin(); i != m_partitions.end(); ++i) {

@@ -68,6 +68,8 @@ from GaudiPython.Bindings import (
 from GaudiPython.Bindings   import gbl as cpp         ##  global C++ namepspace
 from GaudiPython.HistoUtils import aida2root          ## AIDA -> ROTO converter
 
+from GaudiKernel import ROOT6WorkAroundEnabled
+
 # =============================================================================
 # std C++ namespace
 std = cpp.std                                         ## std C++ namespace
@@ -1040,6 +1042,29 @@ _decorate_tuples_ ( TupleAlgo )
 # "decorate N-Tuple object
 Tuple = cpp.Tuples.Tuple
 _Dec  = TupleDecorator
+
+class TupleDecColumnDispatcher(object):
+    '''Helper decorator class to workaround ROOT-6697'''
+    def __init__(self, func):
+        self.func = func
+        self.__doc__ = func.__doc__
+    def __call__(self, *a):
+        '''
+        Explicitly call the explicit signature for the case with 3 arguments and
+        the last one is 'int', 'bool' or 'float', for the other cases fall back
+        on the default dispatcher.
+        '''
+        if len(a) == 3:
+            t = type(a[-1])
+            mapping = {int: 'int', bool: 'bool', float: 'double'}
+            if t in mapping:
+                signature = 'const Tuples::Tuple& tuple, const string& name, const %s value' % mapping[t]
+                return self.func.disp(signature)(*a)
+        return self.func(*a)
+
+if ROOT6WorkAroundEnabled('ROOT-6697'):
+    _Dec.column = TupleDecColumnDispatcher(_Dec.column)
+
 def _t_nTuple_      ( s , *a ) :
     """
     Access to underlying INTuple object

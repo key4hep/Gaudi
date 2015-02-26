@@ -211,6 +211,12 @@ AlgTool::AlgTool( const std::string& type,
   , m_toolHandlesInit(false)
   , m_pAuditorSvc   ( 0     )
   , m_auditInit     ( false )
+  , m_auditorInitialize(false)
+  , m_auditorStart(false)
+  , m_auditorStop(false)
+  , m_auditorFinalize(false)
+  , m_auditorReinitialize(false)
+  , m_auditorRestart(false)
   , m_state         ( Gaudi::StateMachine::CONFIGURED )
   , m_targetState   ( Gaudi::StateMachine::CONFIGURED )
 {

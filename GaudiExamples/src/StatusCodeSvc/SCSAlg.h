@@ -1,14 +1,12 @@
 #ifndef SCS_SCSALG_H
 #define SCS_SCSALG_H
 
-//<<<<<< INCLUDES                                                       >>>>>>
 #include "GaudiKernel/Algorithm.h"
-//<<<<<< CLASS DECLARATIONS                                             >>>>>>
-/** @class ColorMgs
- * @brief  an algorithm to test the StatusCodeSvc
- * @author Charles Leggett
- */
 
+/**
+ * @brief  an algorithm to test the StatusCodeSvc
+ * @author Charles Leggett, Marco Clemencic
+ */
 class SCSAlg : public Algorithm {
 
 public:
@@ -22,9 +20,10 @@ public:
   void fncChecked();
   void fncUnchecked();
   void fncUnchecked2();
-  
+  void fncIgnored();
+
 private:
 
 };
 
-#endif // SCS_SCSALG_H
+#endif

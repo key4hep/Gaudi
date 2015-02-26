@@ -2,7 +2,16 @@
 # Package: GaudiCoreSvc
 # Maintainer: Marco Clemencic
 # Description: basic and mandatory components for a Gaudi application
+# Commit Id: $Format:%H$
 ################################################################################
+
+============================= GaudiCoreSvc v3r3 ==============================
+! 2015-02-06 - Marco Clemencic
+ - Added methods to IToolSvc to get all the tool instances.
+
+============================= GaudiCoreSvc v3r2 ==============================
+! 2015-01-07 - Gerhard Raven
+ - GAUDI-995: improve Algorithm storage/management in AlgorithmManager
 
 ============================= GaudiCoreSvc v3r1 ==============================
 ! 2014-03-18 - Ben Couturier

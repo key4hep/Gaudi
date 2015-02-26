@@ -131,6 +131,7 @@ namespace {
         <!ATTLIST File ID ID  #REQUIRED>\
         <!ATTLIST pfn name ID #REQUIRED>\
         <!ATTLIST pfn filetype CDATA #IMPLIED>\
+        <!ATTLIST pfn se CDATA #IMPLIED>\
         <!ATTLIST lfn name ID #REQUIRED>\
         <!ATTLIST metadata att_name  CDATA #REQUIRED>\
         <!ATTLIST metadata att_value CDATA #REQUIRED>\

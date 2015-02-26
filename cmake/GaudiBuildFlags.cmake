@@ -1,9 +1,12 @@
 # Special defaults
 if (LCG_COMPVERS VERSION_LESS "47")
-  set(GAUDI_CPP11_DEFAULT OFF)
+  set(GAUDI_CXX_STANDARD_DEFAULT "c++98")
+elseif(LCG_COMPVERS VERSION_LESS "49")
+  # C++11 is enable by default on 4.7 <= gcc < 4.9
+  set(GAUDI_CXX_STANDARD_DEFAULT "c++11")
 else()
-  # C++11 is enable by default on gcc >= 4.7
-  set(GAUDI_CPP11_DEFAULT ON)
+  # C++14(1y) is enable by default on gcc >= 4.9
+  set(GAUDI_CXX_STANDARD_DEFAULT "c++1y")
 endif()
 # special for GaudiHive
 set(GAUDI_CPP11_DEFAULT ON)
@@ -37,10 +40,16 @@ option(GAUDI_CMT_RELEASE
        "use CMT deafult release flags instead of the CMake ones"
        ON)
 
-option(GAUDI_CPP11
-       "enable C++11 compilation"
-       ${GAUDI_CPP11_DEFAULT})
+option(GAUDI_SLOW_DEBUG
+       "turn off all optimizations in debug builds"
+       OFF)
 
+if(DEFINED GAUDI_CPP11)
+  message(WARNING "GAUDI_CPP11 is an obsolete option, use GAUDI_CXX_STANDARD=c++11 instead")
+endif()
+
+set(GAUDI_CXX_STANDARD "${GAUDI_CXX_STANDARD_DEFAULT}"
+    CACHE STRING "Version of the C++ standard to be used.")
 
 #--- Compilation Flags ---------------------------------------------------------
 add_definitions(-DGOD_NOALLOC)
@@ -69,11 +78,11 @@ if(NOT GAUDI_FLAGS_SET)
 
     # Common compilation flags
     set(CMAKE_CXX_FLAGS
-        "-fmessage-length=0 -pipe -ansi -Wall -Wextra -Werror=return-type -pthread -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long"
+        "-fmessage-length=0 -pipe -Wall -Wextra -Werror=return-type -pthread -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long"
         CACHE STRING "Flags used by the compiler during all build types."
         FORCE)
     set(CMAKE_C_FLAGS
-        "-fmessage-length=0 -pipe -ansi -Wall -Wextra -Werror=return-type -pthread -pedantic -Wwrite-strings -Wpointer-arith -Wno-long-long"
+        "-fmessage-length=0 -pipe -Wall -Wextra -Werror=return-type -pthread -pedantic -Wwrite-strings -Wpointer-arith -Wno-long-long"
         CACHE STRING "Flags used by the compiler during all build types."
         FORCE)
     set(CMAKE_Fortran_FLAGS
@@ -94,7 +103,7 @@ if(NOT GAUDI_FLAGS_SET)
           FORCE)
     endif()
 
-    if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND LCG_COMPVERS VERSION_GREATER "47")
+    if (LCG_COMPVERS VERSION_GREATER "47")
       # Use -Og with Debug builds in gcc >= 4.8
       set(CMAKE_CXX_FLAGS_DEBUG "-Og -g"
           CACHE STRING "Flags used by the compiler during Debug builds."
@@ -102,7 +111,7 @@ if(NOT GAUDI_FLAGS_SET)
       set(CMAKE_C_FLAGS_DEBUG "-Og -g"
           CACHE STRING "Flags used by the compiler during Debug builds."
           FORCE)
-      set(CMAKE_C_FLAGS_DEBUG "-Og -g"
+      set(CMAKE_Fortran_FLAGS_DEBUG "-Og -g"
           CACHE STRING "Flags used by the compiler during Debug builds."
           FORCE)
     endif()
@@ -200,13 +209,17 @@ if ((GAUDI_V21 OR G21_HIDE_SYMBOLS) AND (LCG_COMP STREQUAL gcc AND LCG_COMPVERS 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden")
 endif()
 
-if (GAUDI_CPP11)
-  if (LCG_COMPVERS VERSION_LESS "47")
-    # gcc 4.6 only understands c++0x
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-  else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+# handle options to choose the  version of the C++ standard
+string(TOLOWER "${GAUDI_CXX_STANDARD}" GAUDI_CXX_STANDARD)
+if(GAUDI_CXX_STANDARD STREQUAL "ansi")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ansi")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ansi")
+else()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=${GAUDI_CXX_STANDARD}")
+  if(NOT GAUDI_CXX_STANDARD STREQUAL "c++98")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
+  else()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ansi")
   endif()
 endif()
 
@@ -253,6 +266,12 @@ if(GAUDI_HIDE_WARNINGS)
   endif()
 endif()
 
+if(GAUDI_SLOW_DEBUG)
+  string(REPLACE "-Og" "-O0" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+  string(REPLACE "-Og" "-O0" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+  string(REPLACE "-Og" "-O0" CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG}")
+endif()
+
 #--- Special flags -------------------------------------------------------------
 # FIXME: enforce the use of Boost Filesystem V3 to be compatible between 1.44 and 1.48
 add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
@@ -260,13 +279,6 @@ add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
 #        see http://stackoverflow.com/q/20721486
 #        and http://stackoverflow.com/a/20440238/504346
 add_definitions(-DBOOST_SPIRIT_USE_PHOENIX_V3)
-
-# FIXME: this macro is used in ATLAS to simplify the migration to Gaudi v25,
-#        unfortunately it's not possible to detect the version of Gaudi at this point
-#        so we assume that any CMake-based build in ATLAS uses Gaudi >= v25
-if(GAUDI_ATLAS)
-  add_definitions(-DHAVE_GAUDI_PLUGINSVC)
-endif()
 
 if((LCG_COMP STREQUAL gcc AND LCG_COMPVERS MATCHES "47|max") OR GAUDI_CPP11)
   set(GCCXML_CXX_FLAGS "${GCCXML_CXX_FLAGS} -D__STRICT_ANSI__")
@@ -279,6 +291,17 @@ if(LCG_COMP STREQUAL gcc AND LCG_COMPVERS STREQUAL 43)
 endif()
 
 if(GAUDI_ATLAS)
+  # FIXME: this macro is used in ATLAS to simplify the migration to Gaudi v25,
+  #        unfortunately it's not possible to detect the version of Gaudi at this point
+  #        so we assume that any CMake-based build in ATLAS uses Gaudi >= v25
+  add_definitions(-DHAVE_GAUDI_PLUGINSVC)
+
   add_definitions(-DATLAS_GAUDI_V21)
   include(AthenaBuildFlags OPTIONAL)
+else()
+  # FIXME: these macros are LHCb specific, but we do not have yet a way to set
+  # compile flags in a project, such that they are inherited by other projects.
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions(-DGOD_NOALLOC)
+  endif()
 endif()

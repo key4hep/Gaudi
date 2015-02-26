@@ -28,6 +28,8 @@ class OutputStream : public Algorithm     {
 public:
   typedef std::vector<DataStoreItem*> Items;
   typedef std::vector<std::string>    ItemNames;
+  typedef std::map< Algorithm*,  Items     > AlgDependentItems;
+  typedef std::map< std::string, ItemNames > AlgDependentItemNames;
 protected:
   /// Reference to the incident service
   SmartIF<IIncidentSvc> m_incidentSvc;
@@ -65,6 +67,11 @@ protected:
   ItemNames                m_optItemNames;
   /// Vector of optional items to be saved to this stream
   Items                    m_optItemList;
+  /** Mapping between algorithm names, and a list of items for which, if the
+   *  algorithm in question accepted the event, they should be also stored. */
+  AlgDependentItemNames    m_algDependentItemList;
+  /// Items to be saved for specific algorithms
+  AlgDependentItems        m_algDependentItems;
   /// Collection of objects being selected
   IDataSelector            m_objects;
   /// Number of events written to this output stream
@@ -100,6 +107,8 @@ protected:
   StatusCode decodeVetoAlgs();
   /// Handler for VetoAlgs Property
   void vetoAlgsHandler( Property& theProp );
+  /// Decode a single algorithm name
+  Algorithm* decodeAlgorithm( const std::string& theName );
   /// Decode specified list of Algorithms
   StatusCode decodeAlgorithms( StringArrayProperty& theNames,
                                std::vector<Algorithm*>* theAlgs );

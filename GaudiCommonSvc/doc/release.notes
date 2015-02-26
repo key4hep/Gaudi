@@ -2,6 +2,7 @@
 # Package: GaudiCommonSvc
 # Maintainer: Marco Clemencic
 # Description: standard and commonly used components
+# Commit Id: $Format:%H$
 ################################################################################
 
 ! 2014-07-18 - Illya Shapoval
@@ -9,6 +10,30 @@
 
 ! 2014-07-18 - Marco Clemencic
  - Fixed segmentation fault in genconf step in LHCb.
+
+============================ GaudiCommonSvc v3r4 =============================
+! 2015-01-07 - Marco Clemencic
+ - Added _PyObject_GC_Malloc to the whitelist of StatusCodeSvc (visible only
+   with gcc4.9).
+
+============================ GaudiCommonSvc v3r3 =============================
+! 2015-01-07 - Marco Clemencic
+ - Modified StatusCodeSvc to report that there is no "unchecked" StatusCode, to
+   simplify the testing (DEBUG).
+
+============================ GaudiCommonSvc v3r2 =============================
+! 2014-07-02 - Marco Clemencic
+ - Fixed logic of OutputStream::decodeAlgorithms.
+
+! 2014-07-01 - Chris Jones
+ - GAUDI-974: Add a new property to OutputStream, 'AlgDependentItemList' that
+   allows for data locations to be conditionally added, only if a given
+   algorithm fired in a given event. Structure of the new option is
+
+       std::map< std::string, std::vector<std::string> >
+
+   where the first item is the algorithm name, and the second the list of
+   data locations to include in the output stream, when that algorithm fired.
 
 ============================ GaudiCommonSvc v3r1 =============================
 ! 2014-03-18 - Ben Couturier

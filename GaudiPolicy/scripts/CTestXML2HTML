@@ -6,6 +6,7 @@ import re
 import shutil
 import bisect
 import time
+import codecs
 
 from datetime import  datetime,timedelta
 from optparse import OptionParser
@@ -78,6 +79,7 @@ class TestOrganizer :
                    "passed" :"PASS",
                    "failed" :"FAIL",
                    "skipped" : "SKIPPED",
+                   "notrun" : "SKIPPED",
                    "error" : "ERROR",
                    "untested" :"UNTESTED"
                    }
@@ -238,7 +240,7 @@ class TestOrganizer :
 
         for namedMeasurment in testElement.find("Results").getiterator("NamedMeasurement"):
             name = namedMeasurment.get("name")
-            if name == 'Cause':
+            if name == 'Causes':
                 cause = namedMeasurment.find("Value")
                 if cause is not None:
                     ET.SubElement(span2, "span", {"class": "cause"}).text = cause.text + " "
@@ -400,6 +402,7 @@ def updateAnnotations(site,Testing,outputTemp,annotationsList):
                        }
         if site.get("qmtest.run.userid") is not None:
             annotations["qmtest.run.userid"] = cleanWebChar(site.get("qmtest.run.userid"))
+        if site.get("BuildName") is not None:
             annotations["cmt.cmtconfig"] = cleanWebChar(site.get("BuildName"))
         if site.get("qmtest.run.username") is not None:
             annotations["qmtest.run.username"] = cleanWebChar(site.get("qmtest.run.username"))
@@ -533,6 +536,11 @@ def main():
         for site in sites :
             #print "    -> Process the site : "+site.get("BuildStamp")
             Testing = site.find("Testing")
+            tests = Testing.findall('Test')
+            if not tests:
+                # no tests in this "site", let's ignore it
+                continue
+
             #create a directory containing the html file for each site
             outputTemp = output #os.path.join(output,os.path.split(fileName)[1][:-8]+str(site.get("BuildStamp")))
             if not os.path.isdir(outputTemp) :
@@ -565,7 +573,8 @@ def main():
                     shutil.copy(src, dst)
 
             # process each test case
-            for Test in Testing.findall("Test") :
+            for Test in tests:
+                labels = [l.text for l in Test.findall('Labels/Label')]
 
                 Results = Test.find("Results")
 
@@ -576,20 +585,14 @@ def main():
                            "fields" : ["end_time", "start_time","stdout"], # some interface specific field
                            "cause" : ""
                            }
-                if Test.get("Status") == "passed" :
-                    summary["outcome"] = "PASS"
-                elif Test.get("Status") == "failed" :
-                    summary["outcome"] = "FAIL"
-                elif Test.get("Status") == "skipped" :
-                    summary["outcome"] = "SKIPPED"
-                elif Test.get("Status") == "error" :
-                    summary["outcome"] = "ERROR"
-                elif Test.get("Status") == "untested" :
-                    summary["outcome"] = "UNTESTED"
-                else :
-                    summary["outcome"] = cleanSpace(cleanWebChar(Test.get("Status")))
-                ## TODO : Complete with all other possible ctest outcomes
+                status = Test.get("Status")
+                summary["outcome"] = TestOrganizer.status.get(status,
+                                               cleanSpace(cleanWebChar(status)))
 
+                if 'test-wrapper' in labels and summary["outcome"] == 'PASS':
+                    # we should not report the results of test wrappers (like
+                    # QMTest) if they are successful
+                    continue
 
                 organizer_all.classify(Test)
                 if summary["outcome"] != "PASS":
@@ -628,7 +631,10 @@ def main():
                     value = Results.find("Measurement").find("Value")
                     stdout = open(os.path.join(testCaseDir,"stdout"),"w")
                     if value is not None and value.text is not None :
-                        stdout.write("<pre>"+value.text+"</pre>")
+                        stdout.write("<pre>" +
+                                     codecs.encode(value.text, 'utf-8',
+                                                   'xmlcharrefreplace') +
+                                     "</pre>")
                     else :
                         stdout.write("<pre></pre>")
                     stdout.close()
@@ -646,7 +652,10 @@ def main():
 
                         # Consider the void measurment
                         if value is not None and value.text is not None :
-                            NamedMeasurementFile.write("<pre>"+value.text+"</pre>")
+                            NamedMeasurementFile.write("<pre>" +
+                                                       codecs.encode(value.text, 'utf-8',
+                                                                     'xmlcharrefreplace') +
+                                                       "</pre>")
                         else :
                             NamedMeasurementFile.write("<pre></pre>")
                         NamedMeasurementFile.close()
@@ -661,7 +670,10 @@ def main():
 
                         # Consider the void measurment
                         if value is not None and value.text is not None :
-                            NamedMeasurementFile.write("<pre>"+value.text+"</pre>")
+                            NamedMeasurementFile.write("<pre>" +
+                                                       codecs.encode(value.text, 'utf-8',
+                                                                     'xmlcharrefreplace') +
+                                                       "</pre>")
                         else :
                             NamedMeasurementFile.write("<pre></pre>")
                         NamedMeasurementFile.close()

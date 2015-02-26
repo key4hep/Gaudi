@@ -1,5 +1,27 @@
 Package: GaudiPython
 Package manager : Marco Clemencic
+Commit Id: $Format:%H$
+
+! 2015-02-19 - Marco Clemencic
+ - GAUDI-1009: remove GaudiPython.Bindings.makeClass
+
+============================= GaudiPython v13r4 ==============================
+! 2015-01-13 - Marco Clemencic
+ - Fixed a problem building with the latest ROOT 6.02.
+
+! 2015-01-08 - Marco Clemencic
+ - Adapted GaudiPython.Bindings to the changes introduced with GAUDI-995
+   (backward incompatible change in IAlgManager).
+
+============================= GaudiPython v13r3 ==============================
+! 2014-10-02 - Marco Clemencic
+ - Introduced work-around for ROOT-6697 (wrong overloaded method called).
+
+! 2014-09-18 - Marco Clemencic
+ - Fixed Eclipse Code Analysis warning.
+
+! 2014-07-11 - Marco Clemencic
+ - Removed references to the obsolete IFactory.
 
 ============================= GaudiPython v13r2 ==============================
 ! 2014-05-27 - Marco Clemencic

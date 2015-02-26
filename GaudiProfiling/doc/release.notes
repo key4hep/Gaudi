@@ -2,7 +2,21 @@
 ! Package     : GaudiProfiling
 ! Responsible : Chris Jones, Karol Kruzelecki
 ! Purpose     : Profiling and performance monitoring of Gaudi/LHCb software
+! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
+
+============================ GaudiProfiling v2r4 =============================
+! 2014-07-06 - Marco Clemencic
+ - Modified interlprofiler.md to use Doxygen flavour of markdown.
+
+============================ GaudiProfiling v2r3 =============================
+! 2014-11-11 - Chris Jones
+ - Fix implementation of Google profilers to properly support auditing during
+   different processing phases.
+
+============================ GaudiProfiling v2r2 =============================
+! 2014-08-27 - Ben Couturier
+ - LBCORE-587: CallgrindProfile algorithm to enable/disable Callgrind profile
 
 ============================ GaudiProfiling v2r1 =============================
 ! 2014-03-18 - Ben Couturier

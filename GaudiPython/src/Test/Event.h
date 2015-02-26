@@ -25,7 +25,7 @@ class Event : public DataObject {
 
 public:
   /// Constructors
-  Event() : DataObject() { }
+  Event(): DataObject(), m_event(0), m_run(0) { }
   /// Destructor
   virtual ~Event() { }
 

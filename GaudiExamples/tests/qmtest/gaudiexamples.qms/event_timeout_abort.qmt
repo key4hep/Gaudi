@@ -9,7 +9,7 @@ from Configurables import StalledEventMonitor
 
 importOptions("Common.opts")
 
-alg = SleepyAlg("Sleepy", SleepTime = 10)
+alg = SleepyAlg("Sleepy", SleepTime = 30)
 sem = StalledEventMonitor(EventTimeout = 5,
                           MaxTimeoutCount = 1,
                           StackTrace = True)

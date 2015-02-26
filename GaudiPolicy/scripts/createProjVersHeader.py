@@ -21,17 +21,18 @@ def main():
     project, version, outputfile = args
     if not opts.quiet:
         print "Creating %s for %s %s" % (outputfile, project, version)
-
-    if version.startswith('HEAD'):
-        majver, minver, patver = 999, 999, 0 # special handling
+    
+    for style in [lhcb_ver_style, atlas_ver_style, plain_ver_style ] :
+        m = re.match(style, version)
+        if m :
+            majver = int(m.groupdict()['maj_ver'])
+            minver = int(m.groupdict()['min_ver'])
+            patver = int(m.groupdict()['pat_ver'] or 0)
+            break
     else:
-        for style in [lhcb_ver_style, atlas_ver_style, plain_ver_style ] :
-            m = re.match(style, version)
-            if m :
-                break
-        majver = int(m.groupdict()['maj_ver'])
-        minver = int(m.groupdict()['min_ver'])
-        patver = int(m.groupdict()['pat_ver'] or 0)
+        # anything that is not one of the explicit version syntaxes is handled
+        # in the same way, e.g. "HEAD"
+        majver, minver, patver = 999, 999, 0
 
     outdir = os.path.dirname(outputfile)
     if not os.path.exists(outdir):

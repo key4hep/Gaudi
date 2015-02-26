@@ -1,5 +1,11 @@
 Package: GaudiAlg
 Package manager : Marco Clemencic
+Commit Id: $Format:%H$
+
+=============================== GaudiAlg v15r2 ===============================
+! 2014-09-18 - Marco Clemencic
+ - Fixed Eclipse Code Analysis warning.
+ - Fixed unchecked StatusCode.
 
 =============================== GaudiAlg v15r1 ===============================
 ! 2014-03-18 - Ben Couturier

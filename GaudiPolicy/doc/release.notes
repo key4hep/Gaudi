@@ -1,5 +1,102 @@
 package GaudiPolicy
 package manager: Marco Clemencic
+Commit Id: $Format:%H$
+
+! 2015-02-21 - Marco Clemencic
+ - Fixed issue in run_qmtest when called from CMT.
+   (it should have been fixed already, but the fix disappeared in the merge)
+
+============================= GaudiPolicy v15r4 ==============================
+! 2015-02-16 - Marco Clemencic
+ - Fixed generation of .new reference file for stderr.
+
+! 2015-02-13 - Marco Clemencic
+ - Fixed showing of test failure causes in the HTML report.
+
+! 2015-02-13 - Marco Clemencic
+ - Fixed some special cases in GaudiTesting.
+
+! 2015-02-06 - Marco Clemencic
+ - Separated stderr from stdout in GaudiTesting CTest reports.
+
+! 2015-02-04 - Marco Clemencic
+ - Fixed a few problems in the GaudiTesting Python module.
+
+! 2015-01-30 - Marco Clemencic
+ - Added to GaudiTesting.Run a small workaround from the old GaudiTest.py.
+
+! 2015-01-26 - Marco Clemencic
+ - Several fixes, improvements and clean up in the QMTest replacement modules.
+
+============================= GaudiPolicy v15r3 ==============================
+! 2015-01-07 - Marco Clemencic
+ - Ignore "success" StatusCodeSvc message in the tests' output.
+
+============================= GaudiPolicy v15r2 ==============================
+! 2014-12-03 - Marco Clemencic
+ - Fixed inconsistency with the rpm and LCG_interface name of expat in
+   project_manifest.py
+
+! 2014-11-27 - Marco Clemencic
+ - Added the declaration of the CMT tag lcg-nightlies to avoid CMT warnings.
+
+! 2014-11-27 - Marco Clemencic
+ - Use <package>_native_version instead of <package>_config_version in
+   project_manifest.py for the dependencies on externals.
+
+! 2014-11-26 - Marco Clemencic
+ - Updated project_manifest.py to generate the correct list of externals in
+   the manifest.xml file (see LBCORE-677).
+   Note that this is only for CMT builds at the moment.
+
+============================= GaudiPolicy v15r1 ==============================
+! 2014-10-07 - Marco Clemencic
+ - LBCORE-632: Enable -pedantic flag by default.
+   (can be disabled with the CMT tag GAUDI_NO_PEDANTIC)
+
+! 2014-09-24 - Marco Clemencic
+ - Added support for gcc49.
+
+! 2014-09-11 - Marco Clemencic
+ - Fixed issue in run_qmtest when called from CMT.
+   (introduced with commit c4dff5)
+
+! 2014-08-29 - Marco Clemencic
+ - Modified CTestXML2HTML to ignore tests with label 'test-wrapper', if they are
+   successful.
+
+! 2014-08-29 - Marco Clemencic
+ - Made run_qmtest and CTestXML2HTML more resilient to configuration mistakes.
+
+! 2014-08-28 - Marco Clemencic
+ - Minor fixes to GaudiTest.py and CTestXML2HTML.
+
+! 2014-09-01 - Marco Clemencic
+ - Fixed use of "-ansi" gcc option.
+
+============================= GaudiPolicy v15r0p1 ============================
+! 2014-08-20 - Charles Leggett
+ - fixed typo in generate_rootmap warning
+M       cmt/requirements
+
+============================= GaudiPolicy v15r0 ==============================
+! 2014-07-04 - Marco Clemencic
+ - Fixed a problem with unicode-ascii conversion failure in CTestXML2HTML.
+
+! 2014-07-02 - Marco Clemencic
+ - Modified run_qmtest.py to accept nested test suites in
+   GAUDI_QMTEST_DEFAULT_SUITE.
+
+! 2014-07-02 - Marco Clemencic
+ - GAUDI-976: make GaudiTest.py more resilient towards unicode-ascii conversion failure
+
+! 2014-07-01 - Marco Clemencic
+ - Fixed destination of the merged .confdb file when using shared directories in
+   InstallArea (ATLAS).
+
+! 2014-06-19 - Marco Clemencic
+ - Modified createProjVersHeader.py to handle more nicely special cases like the
+   ATLAS "rel_1".
 
 ! 2014-05-08 - Charles Leggett
  - some special sauce for ATLAS

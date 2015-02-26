@@ -18,7 +18,7 @@ class IAlgTool;
 class GAUDI_API IToolSvc: virtual public IInterface {
 public:
   /// InterfaceID
-  DeclareInterfaceID(IToolSvc,2,0);
+  DeclareInterfaceID(IToolSvc,2,1);
 
   // Typedefs
   typedef std::list<IAlgTool*>     ListTools;
@@ -59,10 +59,18 @@ public:
                                 const IInterface*  parent   = 0    ,
                                 bool               createIf = true ) = 0 ;
 
-  /** Get all instance of tool by type
+  /** Get the names of all instances of tools of a given type.
    *  @param toolType type of tool
    */
   virtual std::vector<std::string> getInstances( const std::string& toolType ) = 0;
+
+  /** Get the names all tool instances.
+   */
+  virtual std::vector<std::string> getInstances() const = 0;
+
+  /** Get pointers to all tool instances.
+   */
+  virtual std::vector<IAlgTool*> getTools() const = 0;
 
   /** Release the tool
    *  @param tool to be released

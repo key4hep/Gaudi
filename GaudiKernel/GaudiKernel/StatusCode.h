@@ -40,8 +40,12 @@ public:
     d_code(SUCCESS), m_checked(false), m_severity() {}
   StatusCode( unsigned long code, const IssueSeverity& sev ):
     d_code(code),m_checked(false), m_severity() {
-    try { // ensure that we do not throw even if the we cannot copy the severity
+    try { // ensure that we do not throw even if we cannot copy the severity
+#if (defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L) && ! defined(__GCCXML__)
+      m_severity = std::make_shared<IssueSeverity>(sev);
+#else
       m_severity = SeverityPtr(new IssueSeverity(sev));
+#endif
     }
     catch (...) {}
   }
@@ -53,8 +57,17 @@ public:
     m_severity(rhs.m_severity)
     { rhs.m_checked = true; }
 
+#ifndef __GCCXML__
+  /// Move constructor.
+  StatusCode( StatusCode&& rhs ):
+    d_code(rhs.d_code), m_checked(rhs.m_checked),
+    m_severity( std::move(rhs.m_severity) )
+  { rhs.m_checked = true; }
+#endif
+
   /// Destructor.
-  GAUDI_API ~StatusCode();
+  ~StatusCode()
+  { if (UNLIKELY(s_checking)) check(); }
 
   /** Test for a status code of SUCCESS.
    * N.B. This is the only case where a function has succeeded.
@@ -132,6 +145,32 @@ public:
 
   static GAUDI_API void enableChecking();
   static GAUDI_API void disableChecking();
+  static GAUDI_API bool checkingEnabled();
+
+  /**
+   * Simple RAII class to ignore unchecked StatusCode instances in a scope.
+   *
+   * Example:
+   * @code{.cpp}
+   * void myFunction() {
+   *   StatusCode sc1 = aFunction(); // must be checked
+   *   {
+   *     StatusCode::ScopedDisableChecking _sc_ignore;
+   *     StatusCode sc2 = anotherFunction(); // automatically ignored
+   *   }
+   * }
+   * @endcode
+   */
+  class ScopedDisableChecking {
+    bool m_enabled;
+  public:
+    ScopedDisableChecking(): m_enabled(StatusCode::checkingEnabled()) {
+      if (m_enabled) StatusCode::disableChecking();
+    }
+    ~ScopedDisableChecking() {
+      if (m_enabled) StatusCode::enableChecking();
+    }
+  };
 
 protected:
   /// The status code.
@@ -149,6 +188,9 @@ protected:
   SeverityPtr     m_severity;  ///< Pointer to a IssueSeverity
 
   static bool     s_checking;  ///< Global flag to control if StatusCode need to be checked
+
+private:
+   void check();
 };
 
 inline std::ostream& operator<< ( std::ostream& s , const StatusCode& sc )

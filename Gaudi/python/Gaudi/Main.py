@@ -5,6 +5,28 @@ import logging
 
 log = logging.getLogger(__name__)
 
+def toOpt(value):
+    '''
+    Helper to convert values to old .opts format.
+
+    >>> print toOpt('some "text"')
+    "some \\"text\\""
+    >>> print toOpt('first\\nsecond')
+    "first
+    second"
+    >>> print toOpt({'a': [1, 2, '3']})
+    {"a": [1, 2, "3"]}
+    '''
+    if isinstance(value, basestring):
+        return '"{0}"'.format(value.replace('"', '\\"'))
+    elif isinstance(value, dict):
+        return '{{{0}}}'.format(', '.join('{0}: {1}'.format(toOpt(k), toOpt(v))
+                                          for k, v in value.iteritems()))
+    elif hasattr(value, '__iter__'):
+        return '[{0}]'.format(', '.join(map(toOpt, value)))
+    else:
+        return repr(value)
+
 class gaudimain(object) :
     # main loop implementation, None stands for the default
     mainLoop = None
@@ -68,7 +90,7 @@ class gaudimain(object) :
             props = conf_dict[n].keys()
             props.sort()
             for p in props:
-                out.append('%s.%s = %s;' % (n,p, repr(conf_dict[n][p])))
+                out.append('%s.%s = %s;' % (n,p, toOpt(conf_dict[n][p])))
         return "\n".join(out)
 
     def _writepickle(self, filename) :

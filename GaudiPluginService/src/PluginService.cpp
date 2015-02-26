@@ -120,6 +120,19 @@ namespace Gaudi { namespace PluginService {
       return Registry::instance().get(id, type);
     }
 
+    std::string demangle(const std::string& id) {
+      int   status;
+      char* realname;
+      realname = abi::__cxa_demangle(id.c_str(), 0, 0, &status);
+      if (realname == 0) return id;
+      std::string result(realname);
+      free(realname);
+      return result;
+    }
+    std::string demangle(const std::type_info& id) {
+      return demangle(id.name());
+    }
+
     Registry& Registry::instance() {
       SINGLETON_LOCK
       static Registry r;
@@ -281,7 +294,7 @@ namespace Gaudi { namespace PluginService {
           return f->second.ptr;
         } else {
           logger().warning("found factory " + id + ", but of wrong type: " +
-                           f->second.type + " instead of " + type);
+              demangle(f->second.type) + " instead of " + demangle(type));
         }
       }
       return 0; // factory not found
@@ -324,16 +337,6 @@ namespace Gaudi { namespace PluginService {
           l.insert(f->first);
       }
       return l;
-    }
-
-    std::string demangle(const std::type_info& id) {
-      int   status;
-      char* realname;
-      realname = abi::__cxa_demangle(id.name(), 0, 0, &status);
-      if (realname == 0) return id.name();
-      std::string result(realname);
-      free(realname);
-      return result;
     }
 
     void Logger::report(Level lvl, const std::string& msg) {

@@ -274,7 +274,7 @@ RootCnvSvc::connectDatabase(CSTR dataset, int mode, RootDataConnection** con)  {
             if ( !pc->mergeFIDs().empty() )
               fid = pc->mergeFIDs()[i];
             if ( !createAddress(repSvcType(),CLID_DataObject,par,ipar,pAddr).isSuccess() ) {
-              if( log().level() <= MSG::VERBOSE ) 
+              if( log().level() <= MSG::VERBOSE )
                 log() << MSG::VERBOSE << "Failed to create address for " << m_recordName << " in:" << fid
                       << " [" << pc->fid() << "][" << i << "]" << endmsg;
               continue;
@@ -285,11 +285,11 @@ RootCnvSvc::connectDatabase(CSTR dataset, int mode, RootDataConnection** con)  {
           }
         }
         else {
-          if( log().level() <= MSG::VERBOSE ) 
+          if( log().level() <= MSG::VERBOSE )
             log() << MSG::VERBOSE << "No valid Records " << m_recordName << " present in:" << pc->fid() << endmsg;
         }
       }
-      
+
       // We can remove retired connections, which are no longer used....
       IIODataManager::Connections cons = m_ioMgr->connections(this);
       for(IIODataManager::Connections::iterator i=cons.begin(); i != cons.end(); ++i)  {
@@ -533,7 +533,6 @@ StatusCode RootCnvSvc::i__fillObjRefs(IOpaqueAddress* pA, DataObject* pObj) {
         SmartIF<IService> isvc(pR->dataSvc());
 	SmartIF<IDataManagerSvc> dataMgr(pR->dataSvc());
         LinkManager* mgr = pObj->linkMgr();
-        bool active = log().isActive();
         for(vector<int>::const_iterator i=refs.links.begin(); i!=refs.links.end();++i) {
           mgr->addLink(con->getLink(*i),0);
         }
@@ -546,11 +545,9 @@ StatusCode RootCnvSvc::i__fillObjRefs(IOpaqueAddress* pA, DataObject* pObj) {
           nipar[1] = r.entry;
           StatusCode sc = addressCreator()->createAddress(r.svc,r.clid,npar,nipar,nPA);
           if ( sc.isSuccess() ) {
-            if ( active )  {
-              if( log().level() <= MSG::VERBOSE ) 
-                log() << MSG::VERBOSE << isvc->name() << " -> Register:" << pA->registry()->identifier()
-                      << "#" << npar[2] << "[" << r.entry << "]" << endmsg;
-            }
+            if( log().level() <= MSG::VERBOSE )
+              log() << MSG::VERBOSE << isvc->name() << " -> Register:" << pA->registry()->identifier()
+                    << "#" << npar[2] << "[" << r.entry << "]" << endmsg;
             sc = dataMgr->registerAddress(pA->registry(),npar[2],nPA);
             if ( sc.isSuccess() ) {
               continue;

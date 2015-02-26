@@ -7,11 +7,11 @@ class IInterface;
 class DataObject;
 class ContainedObject;
 
-typedef Gaudi::PluginService::Factory1<IInterface*,
-                                       IInterface*> ObjFactory;
+typedef Gaudi::PluginService::Factory<IInterface*,
+                                      IInterface*> ObjFactory;
 
-typedef Gaudi::PluginService::Factory0<DataObject*> DataObjFactory;
-typedef Gaudi::PluginService::Factory0<ContainedObject*> ContainedObjFactory;
+typedef Gaudi::PluginService::Factory<DataObject*> DataObjFactory;
+typedef Gaudi::PluginService::Factory<ContainedObject*> ContainedObjFactory;
 
 // Macros to declare component factories
 #define DECLARE_OBJECT_FACTORY(x)              DECLARE_FACTORY(x, ObjFactory)

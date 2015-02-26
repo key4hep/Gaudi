@@ -1,1 +1,2 @@
 cmake/GaudiProjectConfig.cmake export-subst
+release.notes export-subst

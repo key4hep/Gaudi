@@ -1,5 +1,10 @@
 Package: GaudiAud
 Package manager : David Quarrie, Marco Clemencic
+Commit Id: $Format:%H$
+
+=============================== GaudiAud v10r2 ===============================
+! 2013-08-28 - Marco Clemencic
+ - Fixed GAUDI-985: update references to ATLAS TWiki pages.
 
 =============================== GaudiAud v10r1 ===============================
 ! 2014-03-18 - Ben Couturier

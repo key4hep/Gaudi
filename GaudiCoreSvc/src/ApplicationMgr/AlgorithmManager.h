@@ -64,7 +64,7 @@ public:
   /// implementation of IAlgManager::existsAlgorithm
   virtual bool existsAlgorithm(const std::string& name) const;
   /// implementation of IAlgManager::getAlgorithms
-  virtual const std::list<IAlgorithm*>& getAlgorithms() const;
+  virtual const std::vector<IAlgorithm*>& getAlgorithms() const;
 
   /// Initialization (from CONFIGURED to INITIALIZED).
   virtual StatusCode initialize();
@@ -95,7 +95,7 @@ private:
   ListAlg      m_listalg;     ///< List of algorithms maintained by AlgorithmManager
 
   /// List of pointers to the know services used to implement getAlgorithms()
-  mutable std::list<IAlgorithm*> m_listOfPtrs;
+  mutable std::vector<IAlgorithm*> m_listOfPtrs;
 
   AlgTypeAliasesMap m_algTypeAliases;
 

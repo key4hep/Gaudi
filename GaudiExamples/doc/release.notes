@@ -1,5 +1,67 @@
 Package GaudiExamples
 Package manager : Marco Clemencic
+Commit Id: $Format:%H$
+
+============================ GaudiExamples v26r1 =============================
+! 2015-02-06 - Marco Clemencic
+ - Added test for the IToolSvc method to get the list of tools.
+
+! 2015-01-26 - Marco Clemencic
+ - Removed duplicated tests.
+
+============================ GaudiExamples v26r0 =============================
+! 2015-01-15 - Marco Clemencic
+ - Minor change in the CMake configuration to fix backward compatibility of the
+   test environment with CMT.
+
+! 2015-01-08 - Marco Clemencic
+ - Extended StatusCodeSvc tests to check the new class
+   StatusCode::ScopedDisableChecking.
+
+! 2015-01-07 - Marco Clemencic
+ - Implemented a special test to expose the regression introduced with
+   GAUDI-992 (only in CMake build).
+
+! 2015-01-07 - Marco Clemencic
+ - Reorganized and improved StatusCodeSvc tests.
+
+=========================== GaudiExamples v25r6p1 ============================
+============================ GaudiExamples v25r6 =============================
+! 2014-11-14 - Marco Clemencic
+ - Added an example on how to add custom option types.
+   (src/Properties/CustomPropertiesAlg.cpp)
+
+! 2014-11-12 - Marco Clemencic
+ - Fixed reference files after commit 0075497b (patch for Google profiler
+   auditors).
+
+============================ GaudiExamples v25r5 =============================
+============================ GaudiExamples v25r4 =============================
+! 2013-10-02 - Marco Clemencic
+ - Fixed reference file after the work-around for ROOT-6697.
+
+! 2013-09-18 - Marco Clemencic
+ - Fixed reference file after the fix of ROOT-6697.
+
+! 2013-08-28 - Marco Clemencic
+ - Fixed GAUDI-985: update references to ATLAS TWiki pages.
+
+! 2014-07-10 - Marco Clemencic
+ - Removed duplicated test.
+
+============================ GaudiExamples v25r3 =============================
+! 2014-07-02 - Marco Clemencic
+ - Updated reference file after the changes in OutputStream.
+
+! 2014-07-01 - Marco Clemencic
+ - Added test for the conditional output in OutputStream (GAUDI-974).
+
+! 2014-06-25 - Marco Clemencic
+ - Minor change in event_timeout_abort test to avoid false positives.
+
+! 2014-06-17 - Marco Clemencic
+ - Added test to expose bug GAUDI-971 (successful failover to a replica in
+   IODataManager leads to non-zero exit code).
 
 ! 2014-06-03 - Charles Leggett
  - updates for EventContext class

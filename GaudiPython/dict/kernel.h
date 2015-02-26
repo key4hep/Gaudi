@@ -122,7 +122,6 @@ namespace GaudiPython
 
     std::list<IAlgorithm*>              i01     ;
     std::list<IService*>                i02     ;
-    std::list<const IFactory*>          i023    ;
 
     std::vector<IService*>              i05_1   ;
     std::vector<IAlgTool*>              i05_2   ;

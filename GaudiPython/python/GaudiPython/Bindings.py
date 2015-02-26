@@ -11,7 +11,7 @@ __all__ = [ 'gbl','InterfaceCast', 'Interface', 'PropertyEntry',
             'AppMgr', 'PyAlgorithm', 'CallbackStreamBuf',
             'iAlgorithm', 'iDataSvc', 'iHistogramSvc','iNTupleSvc','iService', 'iAlgTool', 'Helper',
             'SUCCESS', 'FAILURE', 'toArray',
-            'ROOT', 'makeNullPointer', 'makeClass', 'setOwnership',
+            'ROOT', 'makeNullPointer', 'setOwnership',
             'getClass', 'loaddict', 'deprecation' ]
 
 from GaudiKernel import ROOT6WorkAroundEnabled
@@ -68,7 +68,6 @@ else:
 #----Convenient accessors to PyROOT functionality ---------------------------------------
 ROOT            = cppyy.libPyROOT
 makeNullPointer = cppyy.libPyROOT.MakeNullPointer
-makeClass       = cppyy.libPyROOT.MakeRootClass
 setOwnership    = cppyy.libPyROOT.SetOwnership
 
 def deprecation(message):
@@ -789,24 +788,14 @@ class AppMgr(iService) :
         return Helper.service( self._svcloc, name, True )
     def services(self) :
         l = self._svcloc.getServices()
-        nl = l.__class__(l)  # get a copy
-        s = []
-        for i in range(l.size()) :
-            s.append(nl.front().name())
-            nl.pop_front()
-        return s
+        return [s.name() for s in l]
     def algorithm(self, name , createIf = False ) :
         alg = Helper.algorithm( self._algmgr, name , createIf )
         if not alg : return iAlgorithm ( name       , alg )
         else       : return iAlgorithm ( alg.name() , alg )
     def algorithms(self) :
         l = self._algmgr.getAlgorithms()
-        nl = l.__class__(l)  # get a copy
-        s = []
-        for i in range(l.size()) :
-            s.append(nl.front().name())
-            nl.pop_front()
-        return s
+        return [a.name() for a in l]
     def tool(self, name ) :
         return iAlgTool(name)
     def property( self , name ) :

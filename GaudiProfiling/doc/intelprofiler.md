@@ -28,7 +28,7 @@ Run
 
 Simple example of using IntelProfilerAuditor configurables:
 
-```python
+~~~~~~~~{.py}
 #!/usr/bin/env gaudirun.py
 from Configurables import IntelProfilerAuditor
 #...
@@ -41,14 +41,13 @@ profiler.StopAtEventN = 500
 profiler.IncludeAlgorithms = ["TopSequence"]
 AuditorSvc().Auditors +=  [profiler]
 ApplicationMgr().AuditAlgorithms = True
-```
-
+~~~~~~~~
 
 ### Setup Intel Environment
 
-```sh
+~~~~~~~~{.sh}
 $> . /afs/cern.ch/sw/IntelSoftware/linux/all-setup.sh
-```
+~~~~~~~~
 
 The script change  environment variables:
 
@@ -56,9 +55,9 @@ The script change  environment variables:
   * set `INTEL_LICENSE_FILE`.
 
 ### Collect Profiling Information
-```sh
+~~~~~~~~{.sh}
 $> intelprofiler -o ~/profiler myoptions.py
-```
+~~~~~~~~
 
 , where ```~/profiler``` is a directorory where a profiling database will be 
 stored. After the each run of a profiling job you will get directories 
@@ -82,19 +81,19 @@ Analyze
 
 (setup intel environment)
 
-```sh
+~~~~~~~~{.sh}
 $> amplxe-gui ~/profiler/r000hs
-```
+~~~~~~~~
 
 An argument is a path to profiling database.
 
 ### From Command Line
 
-```sh
+~~~~~~~~{.sh}
  $> amplxe-cl -report hotspots -r ~/profiler/r000hs
  $> amplxe-cl -report hotspots -r ~/profiler/r000hs -group-by=task
  $> amplxe-cl -report hotspots -r ~/profiler/r000hs -group-by=task-function
-```
+~~~~~~~~
 
 * [Intel Amplifier documentation][amplxe].
 * [Documentation about group-by opiton][groupby].
