@@ -24,15 +24,15 @@ JobOptionsSvc        INFO # (3,1): ApplicationMgr.TopAlg += ["Aida2Root"]
 JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Aida2Root.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r4)
-                                          running on pclhcb117 on Mon Nov 18 10:10:07 2013
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r3)
+                                          running on pclhcb117 on Fri Feb 27 11:34:08 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 SimpleHistos        DEBUG Property update for OutputLevel : new value = 2
 SimpleHistos        DEBUG Property update for OutputLevel : new value = 2
 SimpleHistos        DEBUG Initialize base class GaudiCommon<Algorithm>
 SimpleHistos        DEBUG could not locate CounterSummarySvc, no counter summary will be made
-SimpleHistos        DEBUG List of ALL properties of GaudiHistoAlgorithm/SimpleHistos  #properties = 50
+SimpleHistos        DEBUG List of ALL properties of GaudiHistoAlgorithm/SimpleHistos  #properties = 52
 SimpleHistos        DEBUG Property ['Name': Value] =  'AutoStringIDPurgeMap':{ '/' : '=SLASH=' }
 SimpleHistos        DEBUG Property ['Name': Value] =  'UseSequencialNumericAutoIDs':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'HeaderFor1DHistoTable':|   Title                                       |    #    |     Mean   |    RMS     |  Skewness  |  Kurtosis  |
@@ -79,6 +79,8 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'AuditRestart':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'AuditInitialize':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
+SimpleHistos        DEBUG Property ['Name': Value] =  'Outputs':
+SimpleHistos        DEBUG Property ['Name': Value] =  'Inputs':
 SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorCount':0
 SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorMax':1
 SimpleHistos        DEBUG Property ['Name': Value] =  'Enable':True
@@ -90,7 +92,7 @@ HistogramDataSvc     INFO Added stream file:../data/input.hbook as InFile
 HistogramDataSvc     INFO  Predefined 1D-Histograms:
 HistogramDataSvc     INFO  Path='Histos2/2' Description ('TEST2',-100,200,100)
 SimpleHistos        DEBUG GaudiHistoAlgorithm:: The histogram path is set to be 'SimpleHistos'
-Histos2           SUCCESS List of ALL properties of Gaudi::Examples::HistoProps/Histos2  #properties = 52
+Histos2           SUCCESS List of ALL properties of Gaudi::Examples::HistoProps/Histos2  #properties = 54
 Histos2           SUCCESS Property ['Name': Value] =  'Histo2':('',-5.00000,5.00000,200)
 Histos2           SUCCESS Property ['Name': Value] =  'Histo1':('Histogram1',-3.00000,3.00000,200)
 Histos2           SUCCESS Property ['Name': Value] =  'AutoStringIDPurgeMap':{ '/' : '=SLASH=' }
@@ -139,11 +141,13 @@ Histos2           SUCCESS Property ['Name': Value] =  'AuditRestart':False
 Histos2           SUCCESS Property ['Name': Value] =  'AuditReinitialize':False
 Histos2           SUCCESS Property ['Name': Value] =  'AuditInitialize':False
 Histos2           SUCCESS Property ['Name': Value] =  'AuditAlgorithms':False
+Histos2           SUCCESS Property ['Name': Value] =  'Outputs':
+Histos2           SUCCESS Property ['Name': Value] =  'Inputs':
 Histos2           SUCCESS Property ['Name': Value] =  'ErrorCount':0
 Histos2           SUCCESS Property ['Name': Value] =  'ErrorMax':1
 Histos2           SUCCESS Property ['Name': Value] =  'Enable':True
 Histos2           SUCCESS Property ['Name': Value] =  'OutputLevel':3
-Aida2Root         SUCCESS List of ALL properties of Aida2Root/Aida2Root  #properties = 55
+Aida2Root         SUCCESS List of ALL properties of Aida2Root/Aida2Root  #properties = 57
 Aida2Root         SUCCESS Property ['Name': Value] =  'Profs2D':[ 'SimpleHistos/321' , 'SimpleHistos/2dprof' ]
 Aida2Root         SUCCESS Property ['Name': Value] =  'Profs1D':[ 'SimpleHistos/Expo V Gauss 1DProf' ]
 Aida2Root         SUCCESS Property ['Name': Value] =  'Histos3D':[ 'SimpleHistos/3D plot AutoID' , 'SimpleHistos/3d' ]
@@ -195,6 +199,8 @@ Aida2Root         SUCCESS Property ['Name': Value] =  'AuditRestart':False
 Aida2Root         SUCCESS Property ['Name': Value] =  'AuditReinitialize':False
 Aida2Root         SUCCESS Property ['Name': Value] =  'AuditInitialize':False
 Aida2Root         SUCCESS Property ['Name': Value] =  'AuditAlgorithms':False
+Aida2Root         SUCCESS Property ['Name': Value] =  'Outputs':
+Aida2Root         SUCCESS Property ['Name': Value] =  'Inputs':
 Aida2Root         SUCCESS Property ['Name': Value] =  'ErrorCount':0
 Aida2Root         SUCCESS Property ['Name': Value] =  'ErrorMax':1
 Aida2Root         SUCCESS Property ['Name': Value] =  'Enable':True
@@ -270,6 +276,7 @@ SimpleHistos         INFO GaudiHistoAlgorithm:: Filling Histograms...... Please 
 Histos2           WARNING Gaudi::Examples::HistoProps:: Cannot generate automatic literal ID from an empty title ! Using numeric ID instead for histogram ID
 HistogramDataSvc    DEBUG  Redefine the parameters for the histogram 'Histos2/2' to be ('TEST2',-100,200,100)
 ChronoStatSvc        INFO  Number of skipped events for MemStat-1
+EventLoopMgr         INFO ---> Loop Finished -  WSS 100.516 | total time (skipping 1st evt) 1256059395
 ApplicationMgr       INFO Application Manager Stopped successfully
 SimpleHistos      SUCCESS Booked 30 Histogram(s) : 1D=10 2D=5 3D=3 1DProf=9 2DProf=3
 SimpleHistos      SUCCESS List of booked 1D histograms in directory         "SimpleHistos" :-
@@ -326,7 +333,7 @@ Aida2Root            INFO  | 'mean'         |   -0.0098319667 | -0.0098319667   
 Aida2Root            INFO  | 'meanErr'      |    0.0044725853 |  0.0044725853   |         0       |
 Aida2Root            INFO  | 'rms'          |       1.0001005 |  1.0001005      |         0       |
 Aida2Root            INFO  | 'rmsErr'       |    0.0031550521 |  0.0031625954   |  -7.5432549e-06 |
-Aida2Root            INFO  | 'skewness'     |    0.0095032078 |  0.0095032078   |  -1.9602375e-16 |
+Aida2Root            INFO  | 'skewness'     |    0.0095032078 |  0.0095032078   |  -1.8735014e-16 |
 Aida2Root            INFO  | 'skewnessErr'  |     0.010953794 |  0.010954451    |  -6.5724078e-07 |
 Aida2Root            INFO  | 'kurtosis'     |   -0.0095692109 | -0.0095692109   |  -4.4408921e-16 |
 Aida2Root            INFO  | 'kurtosisErr'  |     0.021905616 |  0.021908902    |  -3.2860385e-06 |
@@ -337,7 +344,7 @@ Aida2Root            INFO  | 'mean'         |       0.9691422 |  0.9691422      
 Aida2Root            INFO  | 'meanErr'      |    0.0040628269 |  0.0040628269   |         0       |
 Aida2Root            INFO  | 'rms'          |      0.90534515 |  0.90534515     |         0       |
 Aida2Root            INFO  | 'rmsErr'       |    0.0041791285 |  0.0028728524   |   0.0013062761  |
-Aida2Root            INFO  | 'skewness'     |       1.4868621 |  1.4868621      |         0       |
+Aida2Root            INFO  | 'skewness'     |       1.4868621 |  1.4868621      |   2.220446e-16  |
 Aida2Root            INFO  | 'skewnessErr'  |     0.010991666 |  0.01099233     |  -6.6408212e-07 |
 Aida2Root            INFO  | 'kurtosis'     |       2.2322439 |  2.2322439      |         0       |
 Aida2Root            INFO  | 'kurtosisErr'  |      0.02198134 |  0.02198466     |  -3.3202423e-06 |
@@ -359,7 +366,7 @@ Aida2Root            INFO  | 'mean'         |   -0.0098319667 | -0.0098319667   
 Aida2Root            INFO  | 'meanErr'      |    0.0044725853 |  0.0044725853   |         0       |
 Aida2Root            INFO  | 'rms'          |       1.0001005 |  1.0001005      |         0       |
 Aida2Root            INFO  | 'rmsErr'       |    0.0031550521 |  0.0031625954   |  -7.5432549e-06 |
-Aida2Root            INFO  | 'skewness'     |    0.0095032078 |  0.0095032078   |  -1.9602375e-16 |
+Aida2Root            INFO  | 'skewness'     |    0.0095032078 |  0.0095032078   |  -1.8735014e-16 |
 Aida2Root            INFO  | 'skewnessErr'  |     0.010953794 |  0.010954451    |  -6.5724078e-07 |
 Aida2Root            INFO  | 'kurtosis'     |   -0.0095692109 | -0.0095692109   |  -4.4408921e-16 |
 Aida2Root            INFO  | 'kurtosisErr'  |     0.021905616 |  0.021908902    |  -3.2860385e-06 |
@@ -370,7 +377,7 @@ Aida2Root            INFO  | 'mean'         |   -0.0098319667 | -0.0098319667   
 Aida2Root            INFO  | 'meanErr'      |    0.0044725853 |  0.0044725853   |         0       |
 Aida2Root            INFO  | 'rms'          |       1.0001005 |  1.0001005      |         0       |
 Aida2Root            INFO  | 'rmsErr'       |    0.0031550521 |  0.0031625954   |  -7.5432549e-06 |
-Aida2Root            INFO  | 'skewness'     |    0.0095032078 |  0.0095032078   |  -1.9602375e-16 |
+Aida2Root            INFO  | 'skewness'     |    0.0095032078 |  0.0095032078   |  -1.8735014e-16 |
 Aida2Root            INFO  | 'skewnessErr'  |     0.010953794 |  0.010954451    |  -6.5724078e-07 |
 Aida2Root            INFO  | 'kurtosis'     |   -0.0095692109 | -0.0095692109   |  -4.4408921e-16 |
 Aida2Root            INFO  | 'kurtosisErr'  |     0.021905616 |  0.021908902    |  -3.2860385e-06 |
@@ -381,9 +388,9 @@ Aida2Root            INFO  | 'mean'         |       1.9060989 |  1.9060989      
 Aida2Root            INFO  | 'meanErr'      |     0.005047036 |  0.005047036    |         0       |
 Aida2Root            INFO  | 'rms'          |       1.1128114 |  1.1128114      |         0       |
 Aida2Root            INFO  | 'rmsErr'       |    0.0029106545 |  0.0035687934   |  -0.00065813892 |
-Aida2Root            INFO  | 'skewness'     |      0.25726049 |  0.25726049     |   2.7755576e-16 |
+Aida2Root            INFO  | 'skewness'     |      0.25726049 |  0.25726049     |   2.220446e-16  |
 Aida2Root            INFO  | 'skewnessErr'  |     0.011108711 |  0.011109397    |  -6.8552544e-07 |
-Aida2Root            INFO  | 'kurtosis'     |     -0.66968326 | -0.66968326     |  -8.8817842e-16 |
+Aida2Root            INFO  | 'kurtosis'     |     -0.66968326 | -0.66968326     |  -4.4408921e-16 |
 Aida2Root            INFO  | 'kurtosisErr'  |     0.022215366 |  0.022218794    |  -3.4274498e-06 |
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/subdir1/bino':
 TH1.Print Name  = Binominal, Entries= 50000, Total sum= 48615
@@ -392,9 +399,9 @@ Aida2Root            INFO  | 'mean'         |       1.9060989 |  1.9060989      
 Aida2Root            INFO  | 'meanErr'      |     0.005047036 |  0.005047036    |         0       |
 Aida2Root            INFO  | 'rms'          |       1.1128114 |  1.1128114      |         0       |
 Aida2Root            INFO  | 'rmsErr'       |    0.0029106545 |  0.0035687934   |  -0.00065813892 |
-Aida2Root            INFO  | 'skewness'     |      0.25726049 |  0.25726049     |   2.7755576e-16 |
+Aida2Root            INFO  | 'skewness'     |      0.25726049 |  0.25726049     |   2.220446e-16  |
 Aida2Root            INFO  | 'skewnessErr'  |     0.011108711 |  0.011109397    |  -6.8552544e-07 |
-Aida2Root            INFO  | 'kurtosis'     |     -0.66968326 | -0.66968326     |  -8.8817842e-16 |
+Aida2Root            INFO  | 'kurtosis'     |     -0.66968326 | -0.66968326     |  -4.4408921e-16 |
 Aida2Root            INFO  | 'kurtosisErr'  |     0.022215366 |  0.022218794    |  -3.4274498e-06 |
 Aida2Root            INFO The native ROOT printout for 1D-histogram 'SimpleHistos/poisson':
 TH1.Print Name  = Poisson, Entries= 50000, Total sum= 47512
@@ -405,7 +412,7 @@ Aida2Root            INFO  | 'rms'          |       1.1765222 |  1.1765222      
 Aida2Root            INFO  | 'rmsErr'       |    0.0030077251 |  0.00381666     |  -0.00080893493 |
 Aida2Root            INFO  | 'skewness'     |      0.32643021 |  0.32643021     |   3.3306691e-16 |
 Aida2Root            INFO  | 'skewnessErr'  |     0.011236901 |  0.01123761     |  -7.0953469e-07 |
-Aida2Root            INFO  | 'kurtosis'     |      -0.7579914 | -0.7579914      |         0       |
+Aida2Root            INFO  | 'kurtosis'     |      -0.7579914 | -0.7579914      |   4.4408921e-16 |
 Aida2Root            INFO  | 'kurtosisErr'  |     0.022471673 |  0.022475221    |  -3.5474855e-06 |
 Aida2Root            INFO The native ROOT printout for 2D-histogram 'SimpleHistos/Gaussian V Flat':
 TH1.Print Name  = Gaussian V Flat, Entries= 50000, Total sum= 24949
@@ -429,11 +436,11 @@ EventLoopMgr         INFO Histograms converted successfully according to request
 *****Chrono*****     INFO ****************************************************************************************************
 *****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)
 *****Chrono*****     INFO ****************************************************************************************************
-1DForcedNumericID    INFO Time User   : Tot=   14 [ms] Ave/Min/Max= 0.28(+- 16.7)/    0/1e+03 [us] #=49999
-1DAutoID             INFO Time User   : Tot=   27 [ms] Ave/Min/Max= 0.54(+- 23.2)/    0/1e+03 [us] #=49999
-1DForcedAlphaID      INFO Time User   : Tot=   21 [ms] Ave/Min/Max= 0.42(+- 20.5)/    0/1e+03 [us] #=49999
-1DOldStyle           INFO Time User   : Tot=   28 [ms] Ave/Min/Max= 0.56(+- 23.7)/    0/1e+03 [us] #=49999
-ChronoStatSvc        INFO Time User   : Tot= 2.41  [s]                                             #=  1
+1DOldStyle           INFO Time User   : Tot=   15 [ms] Ave/Min/Max=  0.3(+- 17.3)/    0/1e+03 [us] #=49999
+1DAutoID             INFO Time User   : Tot=   22 [ms] Ave/Min/Max= 0.44(+-   21)/    0/1e+03 [us] #=49999
+1DForcedAlphaID      INFO Time User   : Tot=   23 [ms] Ave/Min/Max= 0.46(+- 21.4)/    0/1e+03 [us] #=49999
+1DForcedNumericID    INFO Time User   : Tot=   26 [ms] Ave/Min/Max= 0.52(+- 22.8)/    0/1e+03 [us] #=49999
+ChronoStatSvc        INFO Time User   : Tot= 1.19  [s]                                             #=  1
 *****Chrono*****     INFO ****************************************************************************************************
 ChronoStatSvc.f...   INFO  Service finalized successfully
 HistogramDataSvc    DEBUG  Substituted histograms #1 :

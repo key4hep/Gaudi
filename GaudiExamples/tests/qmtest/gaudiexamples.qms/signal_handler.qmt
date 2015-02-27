@@ -21,7 +21,7 @@ MessageSvc().setDebug.append("EventLoopMgr")
 <argument name="validator"><text>
 stdout = '\n'.join(l for l in stdout.splitlines()
                    if 'EventLoopMgr      SUCCESS Event Number =' not in l and
-                      'EventLoopMgr      SUCCESS ---> Loop Finished' not in l)
+                      ' ---> Loop Finished' not in l)
 findReferenceBlock("""
 GaudiTesting::S...   INFO 3 events to go
 GaudiTesting::S...   INFO 2 events to go

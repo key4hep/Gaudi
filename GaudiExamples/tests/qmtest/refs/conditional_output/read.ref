@@ -1,5 +1,6 @@
-# --> Including file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/ConditionalOutput/Read.py'
-# <-- End of file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/ConditionalOutput/Read.py'
+# setting LC_ALL to "C"
+# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/ConditionalOutput/Read.py'
+# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/ConditionalOutput/Read.py'
 # applying configuration of GaudiPersistency
 # /***** User GaudiPersistency/GaudiPersistency ******************************************************
 # |-<no properties>
@@ -13,7 +14,10 @@
                                       'Gaudi::IODataManager/IODataManager',
                                       'Gaudi::RootCnvSvc/RootCnvSvc'],
                     'TopAlg': ['GaudiTesting::GetDataObjectAlg/DataReader']},
- 'DataReader': {'IgnoreMissing': True, 'Paths': ['A', 'B', 'C', 'D']},
+ 'DataReader': {'IgnoreMissing': True,
+                'Inputs': DataObjectDescriptorCollection(),
+                'Outputs': DataObjectDescriptorCollection(),
+                'Paths': ['A', 'B', 'C', 'D']},
  'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
  'EventSelector': {'FirstEvent': 1,
                    'Input': ["DATAFILE='PFN:ConditionalOutput.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"],
@@ -23,8 +27,8 @@
  'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r1)
-                                          running on pcphlbc16 on Wed Jul  2 15:30:12 2014
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r3)
+                                          running on pclhcb117 on Fri Feb 27 12:11:48 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
@@ -113,9 +117,10 @@ DataReader           INFO Getting 'C'
 DataReader           INFO Getting 'D'
 DataReader        WARNING Cannot retrieve object 'D'
 EventLoopMgr         INFO No more events in event selection
+EventLoopMgr         INFO ---> Loop Finished -  WSS 277.691 | total time (skipping 1st evt) 1330130 ns
 ApplicationMgr       INFO Application Manager Stopped successfully
 EventLoopMgr         INFO Histograms converted successfully according to request.
-RootCnvSvc           INFO Disconnected data IO:083797A0-EC01-E411-B1CA-B499BAF088DC [ConditionalOutput.dst]
+RootCnvSvc           INFO Disconnected data IO:D08C338A-DCBD-E411-B615-082E5F2B1B1D [ConditionalOutput.dst]
 ToolSvc              INFO Removing all tools created by ToolSvc
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
