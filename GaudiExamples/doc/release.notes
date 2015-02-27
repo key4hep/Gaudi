@@ -3,6 +3,9 @@ Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
 ! 2015-02-27 - Marco Clemencic
+ - Added timeout (120s) for test CloneWithPrivateTools.
+
+! 2015-02-27 - Marco Clemencic
  - Moved files from src/POOLIO to src/IO (and removed src/POOLIO).
 
 ============================ GaudiExamples v26r1 =============================
