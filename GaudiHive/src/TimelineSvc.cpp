@@ -29,7 +29,7 @@ TimelineSvc::initialize() {
   if (!sc.isSuccess()) return sc;
 
   MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << "initialize" << endmsg;
+  log << MSG::DEBUG << "initialize" << endmsg;
 
   m_events.clear();
 
@@ -43,7 +43,7 @@ StatusCode
 TimelineSvc::reinitialize() {
 
   MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << "reinitialize" << endmsg;
+  log << MSG::DEBUG << "reinitialize" << endmsg;
 
   m_events.clear();
 

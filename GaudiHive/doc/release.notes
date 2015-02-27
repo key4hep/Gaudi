@@ -1,4 +1,8 @@
 Package : GaudiKernel
+Commit Id: $Format:%H$
+
+! 2015-02-27 - Marco Clemencic
+ - Changed level of some messages in TimelineSvc.
 
 ! 2015-02-14 - Illya Shapoval
   o Expose the possibility to dump intra-event concurrency dynamics to a csv file
