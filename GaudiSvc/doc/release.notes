@@ -2,6 +2,9 @@ Package: GaudiSvc
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-02-27 - Marco Clemencic
+ - Updated test reference file.
+
 ! 2014-04-24 - Charles Leggett
  - updated generate_rootmap to generate_componentlist
 
