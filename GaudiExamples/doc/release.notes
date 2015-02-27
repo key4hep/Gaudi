@@ -3,6 +3,10 @@ Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
 ! 2015-02-27 - Marco Clemencic
+ - Minor change to test WriteAndReadHandleError, which failed for the wrong
+   reason.
+
+! 2015-02-27 - Marco Clemencic
  - Updated test reference files and validators.
 
 ! 2015-02-27 - Marco Clemencic

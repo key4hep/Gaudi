@@ -118,7 +118,7 @@ gaudi_add_test(WriteAndReadHandle
                FRAMEWORK options/ROOT_IO/WriteAndReadHandle.py)
 
 gaudi_add_test(WriteAndReadHandleError
-               FRAMEWORK options/ROOT_IO/WriteAndReadHandleError.py.
+               FRAMEWORK options/ROOT_IO/WriteAndReadHandleError.py
                FAILS)
 
 gaudi_add_test(WriteAndReadHandleWhiteBoard
