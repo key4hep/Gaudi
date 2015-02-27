@@ -2,6 +2,9 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-02-27 - Marco Clemencic
+ - Moved files from src/POOLIO to src/IO (and removed src/POOLIO).
+
 ============================ GaudiExamples v26r1 =============================
 ! 2015-02-06 - Marco Clemencic
  - Added test for the IToolSvc method to get the list of tools.
