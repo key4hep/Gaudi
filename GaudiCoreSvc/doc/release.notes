@@ -5,6 +5,9 @@
 # Commit Id: $Format:%H$
 ################################################################################
 
+! 2015-02-27 - Marco Clemencic
+ - Minor change in stats report at the end of loop in EventLoopMgr.
+
 ============================= GaudiCoreSvc v3r3 ==============================
 ! 2015-02-06 - Marco Clemencic
  - Added methods to IToolSvc to get all the tool instances.
