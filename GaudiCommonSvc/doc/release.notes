@@ -5,6 +5,10 @@
 # Commit Id: $Format:%H$
 ################################################################################
 
+! 2015-03-04 - Marco Clemencic
+ - Fixed GAUDI-1014: Unchecked StatusCode with gcc 4.9
+   A spurious unchecked StatusCode seems to come from libCling.so.
+
 ============================ GaudiCommonSvc v3r4 =============================
 ! 2015-01-07 - Marco Clemencic
  - Added _PyObject_GC_Malloc to the whitelist of StatusCodeSvc (visible only
