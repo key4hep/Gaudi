@@ -6,7 +6,6 @@ import re
 import shutil
 import bisect
 import time
-import codecs
 
 from datetime import  datetime,timedelta
 from optparse import OptionParser
@@ -49,6 +48,15 @@ def cleanXml(xmlFileName):
         xmlFile = open(xmlFileName,'w')
         xmlFile.write(_illegal_xml_chars_Re.sub("", data))
         xmlFile.close()
+
+def formatMeasurementText(txt):
+    '''
+    Helper to correctly convert plain text to valid HTML (in a <pre> tag).
+    '''
+    from xml.sax.saxutils import escape
+    from codecs import encode
+    return '<pre>{0}</pre>'.format(escape(encode(txt, 'utf-8',
+                                                 'xmlcharrefreplace')))
 
 ## Some regular expression that is going to be used in the next functions
 space_Re = re.compile(r"[ ]")
@@ -629,13 +637,10 @@ def main():
                 # write the stdout
                 if Results.find("Measurement") is not None :
                     value = Results.find("Measurement").find("Value")
-                    stdout = open(os.path.join(testCaseDir,"stdout"),"w")
+                    stdout = open(os.path.join(testCaseDir, "stdout"), "w")
                     if value is not None and value.text is not None :
-                        stdout.write("<pre>" +
-                                     codecs.encode(value.text, 'utf-8',
-                                                   'xmlcharrefreplace') +
-                                     "</pre>")
-                    else :
+                        stdout.write(formatMeasurementText(value.text))
+                    else:
                         stdout.write("<pre></pre>")
                     stdout.close()
                 else :
@@ -652,10 +657,7 @@ def main():
 
                         # Consider the void measurment
                         if value is not None and value.text is not None :
-                            NamedMeasurementFile.write("<pre>" +
-                                                       codecs.encode(value.text, 'utf-8',
-                                                                     'xmlcharrefreplace') +
-                                                       "</pre>")
+                            NamedMeasurementFile.write(formatMeasurementText(value.text))
                         else :
                             NamedMeasurementFile.write("<pre></pre>")
                         NamedMeasurementFile.close()
@@ -670,10 +672,7 @@ def main():
 
                         # Consider the void measurment
                         if value is not None and value.text is not None :
-                            NamedMeasurementFile.write("<pre>" +
-                                                       codecs.encode(value.text, 'utf-8',
-                                                                     'xmlcharrefreplace') +
-                                                       "</pre>")
+                            NamedMeasurementFile.write(formatMeasurementText(value.text))
                         else :
                             NamedMeasurementFile.write("<pre></pre>")
                         NamedMeasurementFile.close()
