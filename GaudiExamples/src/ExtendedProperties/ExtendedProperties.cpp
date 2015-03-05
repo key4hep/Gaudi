@@ -7,6 +7,13 @@
 #include <map>
 #include <string>
 #include <utility>
+#include <tuple>
+#include <array>
+// ============================================================================
+// Include parsers for createing parser that handles tuple 
+// ============================================================================
+#include "GaudiKernel/StdArrayAsProperty.h"
+
 // ============================================================================
 // GaudiAlg
 // ============================================================================
@@ -25,6 +32,8 @@
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date  2006-03-21
  */
+
+ 
 
 
 /** @class ExtendedProperties
@@ -59,6 +68,7 @@ public:
     , m_12()
     , m_13()
     , m_14()
+    , m_22()
   {
     declareProperty ( "PairDD"                   , m_1 ) ;
 
@@ -84,6 +94,9 @@ public:
 
     declareProperty ( "EmptyMap"                 , m_20) ;
     declareProperty ( "EmptyVector"              , m_21) ;
+
+    declareProperty ( "TupleStringIntDouble"     , m_22) ;
+    declareProperty ( "StdArrayDouble3"          , m_23) ;
 
     setProperty ("PropertiesPrint", "true").ignore() ;
 
@@ -126,6 +139,9 @@ private:
 
   std::map<std::string, std::string>   m_20;
   std::vector<int> m_21;
+
+  std::tuple<std::string, int, double> m_22;
+  std::array<double, 3> m_23;
 };
 // ============================================================================
 /// factory
@@ -222,6 +238,8 @@ StatusCode ExtendedProperties::execute()
 
   always () << " \t" << SimplePropertyRef<std::map<std::string, std::string> >( "EmptyMap", m_20 ) << endmsg ;
   always () << " \t" << SimplePropertyRef<std::vector<int> >( "EmptyVector", m_21 ) << endmsg ;
+  always () << " \t" << Gaudi::Utils::toString( m_22 ) << endmsg ;
+  always () << " \t" << Gaudi::Utils::toString( m_23 ) << endmsg ;
 
   // some properties could be created from other (convertible) types:
   SimpleProperty<short>     m1 ( "a" , 0  ) ;

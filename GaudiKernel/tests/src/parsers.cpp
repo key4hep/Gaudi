@@ -1,12 +1,11 @@
 #include "GaudiKernel/VectorsAsProperty.h"
 #include "GaudiKernel/StringKey.h"
 #include "GaudiKernel/VectorMap.h"
+#include "GaudiKernel/StdArrayAsProperty.h"
 #include <boost/test/minimal.hpp>
 
 #include "GaudiKernel/ToStream.h"
-
-#include "GaudiKernel/Parsers.h"
-
+#include "GaudiKernel/ParsersFactory.h"
 
 using namespace Gaudi::Parsers;
 
@@ -197,8 +196,6 @@ int test_main(int /*argc*/, char** /*argv*/)             // note the name!
         BOOST_CHECK (result.lowEdge() == 1.0);
         BOOST_CHECK (result.highEdge() == 2.0);
         BOOST_CHECK (result.bins() == 100);
-        Gaudi::Utils::toStream(result, std::cout);
-        std::cout << result << std::endl;
     }
 
     {
@@ -210,6 +207,57 @@ int test_main(int /*argc*/, char** /*argv*/)             // note the name!
         BOOST_CHECK (result.bins() == 100);
     }
 
+//==============================================================================
+// Tuples
+//==============================================================================
+  {
+    std::tuple<int> result;
+    BOOST_REQUIRE(Gaudi::Parsers::parse_(result,"(2)"));
+    BOOST_CHECK(std::get<0>(result) == 2);
+  }
+  {
+    std::tuple<int, std::string> result;
+    BOOST_REQUIRE(Gaudi::Parsers::parse_(result, "(2, 'hello')"));
+    BOOST_CHECK(std::get<0>(result) == 2);
+    BOOST_CHECK(std::get<1>(result) == "hello");
+  }
+
+  {
+    std::tuple<int, std::string, bool> result;
+    BOOST_REQUIRE(Gaudi::Parsers::parse(result, "(2, 'hello', True)"));
+    BOOST_CHECK(std::get<0>(result) == 2);
+    BOOST_CHECK(std::get<1>(result) == "hello");
+    BOOST_CHECK(std::get<2>(result) == true);
+  }
+
+  {
+    std::vector<std::tuple<int, std::string, bool>> result;
+    BOOST_REQUIRE(Gaudi::Parsers::parse(result, 
+        "[(2, 'hello', True), (3, 'world', False)]"));
+    BOOST_REQUIRE(result.size() == 2);
+    BOOST_CHECK(std::get<0>(result[0]) == 2);
+    BOOST_CHECK(std::get<0>(result[1]) == 3);
+    BOOST_CHECK(std::get<1>(result[0]) == "hello");
+    BOOST_CHECK(std::get<1>(result[1]) == "world");
+    BOOST_CHECK(std::get<2>(result[0]));
+    BOOST_CHECK(!std::get<2>(result[1]));
+  }
+
+  
+  {
+    std::tuple<int, std::string> result;
+    BOOST_CHECK(!Gaudi::Parsers::parse(result, "(2, 'hello', 1.0)"));
+  }
+
+//==============================================================================
+// Array
+//==============================================================================
+ {
+    std::array<int, 2> result;
+    BOOST_REQUIRE(Gaudi::Parsers::parse(result, "(1, 2)"));
+    BOOST_CHECK(result[0] == 1);
+    BOOST_CHECK(result[1] == 2); 
+ }
 //==============================================================================
     return 0;
 }

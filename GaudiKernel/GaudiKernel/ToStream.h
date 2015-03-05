@@ -356,6 +356,42 @@ namespace Gaudi
       return s ;
     }
     // ========================================================================
+     // helper function to print a tuple of any size
+    template<class Tuple, std::size_t N>
+    struct TuplePrinter {
+        static std::ostream& toStream(const Tuple& t, std::ostream& s) 
+        {
+            TuplePrinter<Tuple, N-1>::toStream(t, s);
+            s << " , ";
+            Gaudi::Utils::toStream(std::get<N-1>(t), s);
+            return s;
+        }
+    };
+     
+    template<class Tuple>
+    struct TuplePrinter<Tuple, 1>{
+        static std::ostream& toStream(const Tuple& t, std::ostream& s) 
+        {
+            Gaudi::Utils::toStream(std::get<0>(t), s);
+            return s;
+        }
+    };  
+
+    /** the helper function to print the tuple
+     *  @param tulpe (INPUT)  tuple
+     *  @return the stream
+     *  @author Aleander Mazurov alexander.mazurov@cern.ch
+     *  @date 2015-03-21
+     */
+     template<typename... Args>
+     inline std::ostream& toStream(const std::tuple<Args...>& tuple, std::ostream& s) {
+        s << " ( ";
+        TuplePrinter<decltype(tuple), sizeof...(Args)>::toStream(tuple, s);
+        s << " ) ";
+        return s;
+     }
+
+    // ========================================================================
     /** the generic implementation of the type conversion to the string
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
