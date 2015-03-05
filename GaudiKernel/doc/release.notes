@@ -2,6 +2,12 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-03-05 - Marco Clemencic
+ - GAUDI-1016: add GaudiHandle::isSet() or isValid() method
+   Renamed getObject as isValid and made it public, added method "get" to get
+   the wrapped pointer without trying to retrieve it, and the method isSet() to
+   check if the wrapped pointer is not null (without trying to retrieve it).
+
 ============================= GaudiKernel v31r4 ==============================
 ! 2015-02-06 - Marco Clemencic
  - Added methods to IToolSvc to get all the tool instances.
