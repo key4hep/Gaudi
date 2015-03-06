@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-03-06 - Marco Clemencic
+ - Fixed GAUDI-1017: GaudiUtils::Map cannot be used as property after GAUDI-1011
+
 ! 2015-03-05 - Sasha Mazurov
  - GAUDI-1011: Support std::tuple and std::array properties in jobs options
 

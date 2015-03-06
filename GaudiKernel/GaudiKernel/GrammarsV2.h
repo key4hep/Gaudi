@@ -142,7 +142,7 @@ struct IntGrammar : qi::grammar<Iterator, RT(), Skipper>
 {
     typedef RT ResultT;
     IntGrammar() : IntGrammar::base_type( integer ) {
-        integer = qi::int_parser<RT>()[qi::_val = qi::_1] 
+        integer = qi::int_parser<RT>()[qi::_val = qi::_1]
             >> -qi::no_case[qi::char_('L')];
     }
     qi::rule<Iterator, RT(), Skipper> integer;
@@ -223,7 +223,7 @@ struct TupleInnerGrammar : qi::grammar<Iterator,
             res = std::tuple_cat(std::tuple<HeadT>(head), tail);
         }
         //----------------------------------------------------------------------
-    };  
+    };
   //---------------------------------------------------------------------------
   TupleInnerGrammar(): TupleInnerGrammar::base_type(tup) {
     tup = grHead[qi::_a = qi::_1] >> ',' >> grLast[op(qi::_val, qi::_a, qi::_1)];
@@ -258,7 +258,7 @@ struct TupleInnerGrammar<Iterator, TupleT, 1, Skipper>: qi::grammar<Iterator,
             std::get<0>(res) = val;
         }
         //----------------------------------------------------------------------
-    };  
+    };
   //---------------------------------------------------------------------------
   TupleInnerGrammar(): TupleInnerGrammar::base_type(tup) {
     tup = grFirst[op(qi::_val, qi::_1)];

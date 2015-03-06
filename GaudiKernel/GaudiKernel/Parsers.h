@@ -449,6 +449,17 @@ namespace Gaudi
     ( std::map<std::string, unsigned int>& result ,
       const std::string&          input  ) ;
     // ========================================================================
+    /** parse the <c>GaudiUtils::Map\<K, V, M\></c> objects
+     *
+     *  @see Gaudi::Parsers::MapGrammar
+     */
+    template <typename K, typename V, typename M>
+    GAUDI_API StatusCode parse
+    ( GaudiUtils::Map<K, V, M>& result ,
+      const std::string&          input  ) {
+      return parse((M&)result, input);
+    }
+    // ========================================================================
     /** parse the pair expression (map-component)  " 'name' :value"
      *
      *  @code
