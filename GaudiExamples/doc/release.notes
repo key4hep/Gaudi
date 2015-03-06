@@ -2,6 +2,10 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-03-06 - Marco Clemencic
+ - Added test for GAUDI-1017
+ - Fixed ExtendedProperties test to actually check if GAUDI-1011 works.
+
 ! 2015-03-05 - Marco Clemencic
  - Added workaround for ROOT-7142 (exposed after GAUDI-1011).
 
