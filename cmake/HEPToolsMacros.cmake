@@ -423,6 +423,12 @@ macro(lcg_prepare_paths)
     string(REGEX MATCH "[0-9]+" _qt_major_version ${Qt_config_version})
     set(DESIRED_QT_VERSION ${_qt_major_version} CACHE STRING "Pick a version of QT to use: 3 or 4")
     mark_as_advanced(DESIRED_QT_VERSION)
+    if(Qt5_config_version)
+      # Required if both Qt(4) and Qt5 are available.
+      if(EXISTS "${Qt_home}/bin/qmake")
+        set(QT_QMAKE_EXECUTABLE "${Qt_home}/bin/qmake" CACHE INTERNAL "")
+      endif()
+    endif()
   endif()
 
   if(LCG_COMP MATCHES "clang")
