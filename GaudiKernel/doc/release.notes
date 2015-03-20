@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-03-20 - Marco Clemencic
+ - GAUDI-1018: Respect VERBOSE setting in genconf and genconfuser.
+
 ! 2015-03-06 - Marco Clemencic
  - Fixed GAUDI-1017: GaudiUtils::Map cannot be used as property after GAUDI-1011
 
