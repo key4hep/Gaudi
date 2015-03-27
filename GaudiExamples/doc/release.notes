@@ -2,6 +2,11 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+============================ GaudiExamples v26r1p1 ===========================
+! 2015-03-27 - Charles Leggett
+ - don't build MultiInput example for tag ATLAS as Atlas doesn't build RootCnv
+   package. Move source file list to a macro.
+
 ============================ GaudiExamples v26r1 =============================
 ! 2015-02-06 - Marco Clemencic
  - Added test for the IToolSvc method to get the list of tools.
