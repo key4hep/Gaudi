@@ -1,9 +1,0 @@
-!-----------------------------------------------------------------------------
-! Package: GaudiGPU
-! Responsible : Illya Shapoval
-! Purpose     : The package for Gaudi GPU developments
-!-----------------------------------------------------------------------------
-
-! 2015-03-10 - Illya Shapoval
-  o A new package is added to encompass GPU-related developments.
-  o An empty GPUTestAlg gaudi-algorithm added for initial studies.
