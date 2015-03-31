@@ -15,12 +15,8 @@
 // ============================================================================
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/HistoDef.h"
+#include "GaudiKernel/Map.h"
 // ============================================================================
-// If there no precompiled parse's functions specialization (overloading) then
-// the parser will be created during the compilation.
-#include "GaudiKernel/ParsersFactory.h"
-// ============================================================================
-
 #define PARSERS_DECL_FOR_SINGLE(Type)\
     GAUDI_API StatusCode parse(Type& result, const std::string& input);
 
