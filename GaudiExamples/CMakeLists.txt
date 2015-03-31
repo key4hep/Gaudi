@@ -47,8 +47,11 @@ set(GaudiExamples_srcs
     src/FileMgr/*.cpp
     src/testing/*.cpp
     src/IntelProfiler/*.cpp
-    src/PluginService/*.cpp
-    src/MultiInput/*.cpp)
+    src/PluginService/*.cpp)
+
+if(TARGET RootCnvLib)
+  list(APPEND GaudiExamples_srcs src/MultiInput/*.cpp)
+endif()
 
 gaudi_add_library(GaudiExamplesLib src/Lib/*.cpp
                   LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib HepPDT ROOT
