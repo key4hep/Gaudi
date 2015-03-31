@@ -2,6 +2,11 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-03-06 - Charles Leggett
+ - make ToolHandle constructor explicit
+         ToolHandle( const IInterface* parent = 0, bool createIf = true )
+   as it is badly abused. Also declare ToolHandle(int) as deleted.
+
 ============================= GaudiKernel v31r4 ==============================
 ! 2015-02-06 - Marco Clemencic
  - Added methods to IToolSvc to get all the tool instances.

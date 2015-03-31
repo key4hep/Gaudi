@@ -85,11 +85,13 @@ public:
   /** Constructor for a tool with default tool type and name.
       Can be called only if the type T is a concrete tool type (not an interface),
       and you want to use the default name. */
-  ToolHandle( const IInterface* parent = 0, bool createIf = true )
+  ToolHandle( int ) = delete;
+
+  explicit ToolHandle( const IInterface* parent = 0, bool createIf = true )
     : ToolHandleInfo(parent,createIf),
       GaudiHandle<T>( GaudiHandle<T>::getDefaultType(),
-		      ToolHandleInfo::toolComponentType(parent),
-		      ToolHandleInfo::toolParentName(parent) ),
+                      ToolHandleInfo::toolComponentType(parent),
+                      ToolHandleInfo::toolParentName(parent) ),
       m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
   {}
 
