@@ -2,6 +2,21 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-03-20 - Marco Clemencic
+ - GAUDI-1018: Respect VERBOSE setting in genconf and genconfuser.
+
+! 2015-03-06 - Marco Clemencic
+ - Fixed GAUDI-1017: GaudiUtils::Map cannot be used as property after GAUDI-1011
+
+! 2015-03-05 - Sasha Mazurov
+ - GAUDI-1011: Support std::tuple and std::array properties in jobs options
+
+! 2015-03-05 - Marco Clemencic
+ - GAUDI-1016: add GaudiHandle::isSet() or isValid() method
+   Renamed getObject as isValid and made it public, added method "get" to get
+   the wrapped pointer without trying to retrieve it, and the method isSet() to
+   check if the wrapped pointer is not null (without trying to retrieve it).
+
 ! 2015-03-06 - Charles Leggett
  - make ToolHandle constructor explicit
          ToolHandle( const IInterface* parent = 0, bool createIf = true )

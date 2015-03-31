@@ -207,9 +207,9 @@ class iProperty(object) :
                 raise AttributeError, 'property %s does not exist' % name
             prop = ip.getProperty(name)
 
-            if ROOT6WorkAroundEnabled('ROOT-6032'):
+            if ROOT6WorkAroundEnabled('ROOT-7201'):
                 canSetValue = (hasattr(prop, 'value') and
-                               'const(&)[' not in prop.value.func_doc and
+                               'const&[' not in prop.value.func_doc and
                                type(value) == type(prop.value()))
             else:
                 canSetValue = (hasattr(prop, 'value') and

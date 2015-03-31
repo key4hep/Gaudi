@@ -112,7 +112,9 @@ StatusCodeSvc::regFnc(const std::string& fnc, const std::string& lib) {
     return;
   }
 
-  if (m_dict && lib.rfind("Dict.so") == (lib.length()-7) ) {
+  if (m_dict &&
+      (lib.compare(lib.length()-7, 7, "Dict.so") == 0 ||
+       lib.compare(lib.length()-8, 8, "Cling.so") == 0)) {
     return;
   }
   // this appears only with gcc 4.9...

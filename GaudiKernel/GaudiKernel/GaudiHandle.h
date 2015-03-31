@@ -204,10 +204,25 @@ public:
     return StatusCode::SUCCESS;
   }
 
+  /// Check if the handle is valid (try to retrive the object is not done yet).
+  bool isValid() const { // not really const, because it may update m_pObject
+    return m_pObject || retrieve().isSuccess();
+  }
+
   /** For testing if handle has component. Does retrieve() if needed.
       If this returns false, the component could not be retrieved. */
   operator bool() const { // not really const, because it may update m_pObject
-    return getObject();
+    return isValid();
+  }
+
+  /// Return the wrapped pointer, not calling retrieve() if null.
+  T* get() const {
+    return m_pObject;
+  }
+
+  /// True if the wrapped pointer is not null.
+  bool isSet() const {
+    return get();
   }
 
   T& operator*() {
@@ -264,15 +279,10 @@ private:
     GaudiHandleBase::setTypeAndName( getDefaultType() );
   }
 
-  /** Load the pointer to the component. Do a retrieve if needed */
-  bool getObject() const { // not really const, because it may update m_pObject
-    return m_pObject || retrieve().isSuccess();
-  }
-
   /** Load the pointer to the component. Do a retrieve if needed. Throw an exception if
       retrieval fails. */
   void assertObject() const { // not really const, because it may update m_pObject
-    if ( !getObject() ) {
+    if ( !isValid() ) {
       throw GaudiException("Failed to retrieve " + componentType() + ": " + typeAndName(),
 			   componentType() + " retrieve", StatusCode::FAILURE);
     }

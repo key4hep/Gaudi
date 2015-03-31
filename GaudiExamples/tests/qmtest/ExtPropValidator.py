@@ -36,8 +36,11 @@ def validate(stdout,stderr,result,causes):
            'vector<vector<double> >': [[0.0, 1.0, 2.0], [0.0, -0.5, -0.25]],
            'vector<vector<string> >': [['a', 'b', 'c'], ['A', 'B', 'C']],
            'EmptyMap' : {},
-           'EmptyVector' : []
-               }
+           'EmptyVector' : [],
+           'tuple<string,int,double>': ("hello", 10, 0.001),
+           'array<double,3ul>': (3.3, 2.2, 1.1),
+           'GaudiUtils::Map<string,string,map<string,string> >': {'a': '1', 'b': '2'}
+        }
 
     # Hack for win32: 'string' become 'basic_string...', so I have to
     #                 modify the keys of the dictionary

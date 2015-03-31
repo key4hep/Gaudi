@@ -2,11 +2,15 @@ gaudi_subdir(Util v31r4)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiPluginService)
 
-find_package(Boost COMPONENTS program_options regex)
+find_package(Boost COMPONENTS program_options regex log log_setup)
 find_package(ROOT)
 
 #---Util Executables--------------------------------------------------------
 #set(CMAKE_BUILD_TYPE Release)
+
+# Needed to link against Boost log.
+add_definitions(-DBOOST_LOG_DYN_LINK)
+
 gaudi_add_executable(genconf genconf.cpp
                  LINK_LIBRARIES GaudiKernel GaudiPluginService
                                 ${Boost_LIBRARIES} ${ROOT_LIBRARIES}

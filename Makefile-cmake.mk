@@ -111,6 +111,13 @@ endif
 test: $(BUILDDIR)/$(BUILD_CONF_FILE)
 	cd $(BUILDDIR) && $(CTEST) -T test $(ARGS)
 
+ifeq ($(VERBOSE),)
+# less verbose install (see GAUDI-1018)
+# (emulate the default CMake install target)
+install: all
+	cd $(BUILDDIR) && $(CMAKE) -P cmake_install.cmake| grep -v "^-- Up-to-date:"
+endif
+
 # ensure that the target are always passed to the CMake Makefile
 FORCE:
 	@ # dummy target
