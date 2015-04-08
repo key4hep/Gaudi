@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-04-08 - Marco Clemencic
+ - Disable CPU features detection on aarch64 (ARM64).
+
 ! 2015-03-31 - Marco Clemencic
  - Removed inclusion of ParsersFactory.h from Parsers.h (added with GAUDI-1011)
    The inclusion of ParsersFactory.h simplify the creation of custom parsers,
