@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////
 // IFileMgr.h
 // Manages all file open/reopen/close
-// Author: C.Leggett 
-/////////////////////////////////////////////////////////////////// 
+// Author: C.Leggett
+///////////////////////////////////////////////////////////////////
 
 #ifndef GAUDIKERNEL_IFILEMGR_H
 #define GAUDIKERNEL_IFILEMGR_H 1
@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 #include <fcntl.h>
-#include "boost/function.hpp"
+#include <functional>
 
 namespace Io {
 
@@ -26,16 +26,16 @@ namespace Io {
     READ =  O_RDONLY,
     WRITE = O_WRONLY,
     RDWR =  O_RDWR,
-    
+
     CREATE = O_CREAT,
     EXCL   = O_EXCL,
     TRUNC =  O_TRUNC,
-    
+
     APPEND = O_APPEND,
-    
+
     INVALID = 1<<31
   };
-    
+
   class IoFlags {
   public:
     IoFlags():_f(INVALID){};
@@ -72,7 +72,7 @@ namespace Io {
 
       for ( int i = 1; i <= SHIFT + 1; i++ ) {
 	s += ( f & MASK ? '1' : '0' );
-	f <<= 1;	
+	f <<= 1;
 	if ( i % 8 == 0 )
 	    s += ' ';
       }
@@ -95,11 +95,11 @@ namespace Io {
       s_names[APPEND] = "APPEND";
       s_names[INVALID] = "INVALID";
     }
-    
+
     if ( f.isRead() ) {
       return s_names[READ];
     }
-    
+
     std::string ff;
     for (int i=0; i<32; ++i) {
       if ( ( (1<<i) & f) != 0) {
@@ -108,8 +108,8 @@ namespace Io {
     }
     ff.erase(ff.length()-1);
     return ff;
-  }    
-  
+  }
+
 
   inline IoFlags IoFlagFromName(const std::string& f) {
     static std::map<std::string, IoFlag> s_n;
@@ -125,7 +125,7 @@ namespace Io {
     }
 
     IoFlags fl(Io::INVALID);
-    size_t j(0),k(0);      
+    size_t j(0),k(0);
     std::string fs;
     while ( (k=f.find("|",j)) != std::string::npos) {
       fs = f.substr(j,k-j);
@@ -173,7 +173,7 @@ namespace Io {
     ROOT,
     BS,
     HDF5,
-    SQLITE    
+    SQLITE
   };
 
   inline std::ostream & operator << (std::ostream & s, const IoTech &t) {
@@ -183,7 +183,7 @@ namespace Io {
     case ROOT    : return s << "ROOT";
     case BS      : return s << "BS";
     case HDF5    : return s << "HDF5";
-    case SQLITE  : return s << "SQLITE";      
+    case SQLITE  : return s << "SQLITE";
     }
     return s;
   }
@@ -201,7 +201,7 @@ namespace Io {
 
     FileAttr():m_fd(-1),m_name(""),m_desc(""),m_tech(UNKNOWN),m_flags(INVALID),
 	       m_iflags(INVALID),m_fptr(0),m_isOpen(false), m_shared(false){};
-    FileAttr(Fd f, const std::string& n, const std::string& d, IoTech t, 
+    FileAttr(Fd f, const std::string& n, const std::string& d, IoTech t,
 	     IoFlags fa, void* p, bool o, bool s=false):
       m_fd(f),m_name(n),m_desc(d),m_tech(t),m_flags(fa),m_iflags(fa),m_fptr(p),
       m_isOpen(o),m_shared(s){};
@@ -229,14 +229,14 @@ namespace Io {
 
 
     friend std::ostream& operator<< (std::ostream& os, const FileAttr& fa) {
-      os << "name: \"" << fa.name() << "\"  tech: " << fa.tech() 
-	 << "  desc: " << fa.desc() 
+      os << "name: \"" << fa.name() << "\"  tech: " << fa.tech()
+	 << "  desc: " << fa.desc()
 	 << "  flags: " << IoFlagName(fa.flags())
 	 << "  i_flags: " << IoFlagName(fa.iflags())
 	 << "  Fd: " << fa.fd() << "  ptr: " << fa.fptr()
 	 << (fa.isOpen() ? "  [o]" : "  [c]" )
 	 << (fa.isShared() ? " [s]" : " [u]" );
-      
+
       return os;
     }
 
@@ -273,17 +273,17 @@ namespace Io {
 
   //
   // Handler functions
-  // 
+  //
 
   typedef int open_t;
   typedef int close_t;
   typedef int reopen_t;
 
-  typedef boost::function<Io::open_t(const std::string&, Io::IoFlags, const std::string&, Io::Fd&, void*&)> bfcn_open_t;
-  typedef boost::function<Io::close_t(Io::Fd)> bfcn_close_t;
-  typedef boost::function<Io::close_t(void*)>  bfcn_closeP_t;
-  typedef boost::function<Io::reopen_t(Io::Fd,Io::IoFlags)> bfcn_reopen_t;
-  typedef boost::function<Io::reopen_t(void*,Io::IoFlags)> bfcn_reopenP_t;
+  typedef std::function<Io::open_t(const std::string&, Io::IoFlags, const std::string&, Io::Fd&, void*&)> bfcn_open_t;
+  typedef std::function<Io::close_t(Io::Fd)> bfcn_close_t;
+  typedef std::function<Io::close_t(void*)>  bfcn_closeP_t;
+  typedef std::function<Io::reopen_t(Io::Fd,Io::IoFlags)> bfcn_reopen_t;
+  typedef std::function<Io::reopen_t(void*,Io::IoFlags)> bfcn_reopenP_t;
 
   // file handler functions: open, close, reopen
   struct FileHdlr {
@@ -300,9 +300,9 @@ namespace Io {
       : tech(t), b_open_fcn(o), b_close_fcn(c), b_reopen_fcn(r){};
     FileHdlr( IoTech t, bfcn_open_t o, bfcn_closeP_t c, bfcn_reopenP_t r)
       : tech(t), b_open_fcn(o), b_closeP_fcn(c), b_reopenP_fcn(r){};
-    FileHdlr( IoTech t, bfcn_open_t o, bfcn_close_t c1, bfcn_closeP_t c2, 
+    FileHdlr( IoTech t, bfcn_open_t o, bfcn_close_t c1, bfcn_closeP_t c2,
 	      bfcn_reopen_t r1,bfcn_reopenP_t r2)
-      : tech(t), b_open_fcn(o), b_close_fcn(c1), b_closeP_fcn(c2), 
+      : tech(t), b_open_fcn(o), b_close_fcn(c1), b_closeP_fcn(c2),
 	b_reopen_fcn(r1), b_reopenP_fcn(r2){};
 
   };
@@ -325,19 +325,19 @@ namespace Io {
 
   inline std::ostream & operator << (std::ostream & s, const Action &t) {
     switch (t) {
-    case OPEN       :  return s << "OPEN"; 
-    case CLOSE      :  return s << "CLOSE"; 
-    case REOPEN     :  return s << "REOPEN"; 
-    case OPEN_ERR   :  return s << "OPEN_ERR"; 
-    case CLOSE_ERR  :  return s << "CLOSE_ERR"; 
-    case REOPEN_ERR :  return s << "REOPEN_ERR"; 
-    case INVALID_ACTION :  return s << "INVALID_ACTION"; 
+    case OPEN       :  return s << "OPEN";
+    case CLOSE      :  return s << "CLOSE";
+    case REOPEN     :  return s << "REOPEN";
+    case OPEN_ERR   :  return s << "OPEN_ERR";
+    case CLOSE_ERR  :  return s << "CLOSE_ERR";
+    case REOPEN_ERR :  return s << "REOPEN_ERR";
+    case INVALID_ACTION :  return s << "INVALID_ACTION";
     }
     return s;
   }
 
   #define FILEMGR_CALLBACK_ARGS const Io::FileAttr*, const std::string&
-  typedef boost::function<StatusCode (FILEMGR_CALLBACK_ARGS) > bfcn_action_t;
+  typedef std::function<StatusCode (FILEMGR_CALLBACK_ARGS) > bfcn_action_t;
 
 }
 
@@ -349,11 +349,11 @@ class GAUDI_API IFileMgr: virtual public IService {
  public:
 
   virtual ~IFileMgr();
-  
+
   DeclareInterfaceID(IFileMgr,1,0);
-  
+
  public:
-  
+
   // register handler function for file technology
   virtual StatusCode regHandler(Io::FileHdlr) = 0;
 
@@ -367,39 +367,39 @@ class GAUDI_API IFileMgr: virtual public IService {
   virtual StatusCode getHandler(const std::string&, Io::FileHdlr&) const = 0;
 
   // get file attributes from file name
-  virtual int getFileAttr(const std::string&, 
+  virtual int getFileAttr(const std::string&,
 			  std::vector<const Io::FileAttr*>&) const = 0;
   // get file attributes from file descriptor
   virtual StatusCode getFileAttr(const Io::Fd, const Io::FileAttr*&) const = 0;
   // get file attributes from file ptr
   virtual StatusCode getFileAttr(void*, const Io::FileAttr*&) const = 0;
-  
+
   virtual void listHandlers() const = 0;
   virtual void listFiles() const = 0;
 
-  // get all files known to mgr. return numbers found. 
+  // get all files known to mgr. return numbers found.
   // will replace contents of FILES
-  virtual int getFiles(std::vector<std::string> & FILES, 
+  virtual int getFiles(std::vector<std::string> & FILES,
 		       bool onlyOpen=true) const = 0;
-  virtual int getFiles(std::vector<const Io::FileAttr*> & FILES, 
+  virtual int getFiles(std::vector<const Io::FileAttr*> & FILES,
 		       bool onlyOpen=true) const = 0;
 
-  // get all files of specific IoTech. returns number found. 
+  // get all files of specific IoTech. returns number found.
   // will replace contents of FILES
-  virtual int getFiles(const Io::IoTech&, std::vector<std::string>& FILES, 
+  virtual int getFiles(const Io::IoTech&, std::vector<std::string>& FILES,
 		       bool onlyOpen=true) const = 0;
-  virtual int getFiles(const Io::IoTech&, 
-		       std::vector<const Io::FileAttr*>& FILES, 
+  virtual int getFiles(const Io::IoTech&,
+		       std::vector<const Io::FileAttr*>& FILES,
 		       bool onlyOpen=true) const = 0;
 
-  // get all file of specific IoTech and access mode. 
+  // get all file of specific IoTech and access mode.
   // will replace contents of FILES
   // If IoTech == UNKNOWN, get all. returns number found
-  virtual int getFiles(const Io::IoTech&, const Io::IoFlags& , 
-		       std::vector<std::string> &FILES, 
+  virtual int getFiles(const Io::IoTech&, const Io::IoFlags& ,
+		       std::vector<std::string> &FILES,
 		       bool onlyOpen=true) const =0;
-  virtual int getFiles(const Io::IoTech&, const Io::IoFlags& , 
-		       std::vector<const Io::FileAttr*> &FILES, 
+  virtual int getFiles(const Io::IoTech&, const Io::IoFlags& ,
+		       std::vector<const Io::FileAttr*> &FILES,
 		       bool onlyOpen=true) const =0;
 
 
@@ -407,15 +407,15 @@ class GAUDI_API IFileMgr: virtual public IService {
   virtual int getFd (std::vector<Io::Fd > & ) const = 0;
   // get all descriptors of specific IoTech. return number found
   virtual int getFd(const Io::IoTech&, std::vector<Io::Fd>&) const = 0;
-  // get all descriptors of specific IoTech and access mode. 
+  // get all descriptors of specific IoTech and access mode.
   // If IoTech == INVALID, get all. returns number found
-  virtual int getFd(const Io::IoTech&, const Io::IoFlags& , 
+  virtual int getFd(const Io::IoTech&, const Io::IoFlags& ,
 		    std::vector<Io::Fd> &) const = 0;
-				  
+
   // get file name given Fd or ptr. Returns empty string if fails
   virtual const std::string& fname(const Io::Fd&) const = 0;
   virtual const std::string& fname(void*) const = 0;
-  
+
   // get Fd given file name. Returns -1 if fails
   virtual Io::Fd fd(const std::string&) const = 0;
   virtual Io::Fd fd(void* fptr) const = 0;
@@ -427,11 +427,11 @@ class GAUDI_API IFileMgr: virtual public IService {
 
   virtual int getLastError(std::string&) const = 0;
 
- 
+
   // Open file, get Fd and ptr
   virtual Io::open_t open(const Io::IoTech&, const std::string& caller,
                           const std::string& fname,
-			  const Io::IoFlags&, Io::Fd&, void*&, 
+			  const Io::IoFlags&, Io::Fd&, void*&,
 			  const std::string& desc,
 			  const bool shared=false
 			  ) = 0;
@@ -456,16 +456,16 @@ class GAUDI_API IFileMgr: virtual public IService {
   virtual Io::close_t  close(void*, const std::string& caller) = 0;
 
   // Reopen file by Fd or ptr
-  virtual Io::reopen_t reopen(const Io::Fd, const Io::IoFlags&, 
+  virtual Io::reopen_t reopen(const Io::Fd, const Io::IoFlags&,
 			      const std::string& ) = 0;
   virtual Io::reopen_t reopen(void*, const Io::IoFlags&,
 			      const std::string& ) = 0;
 
 
   // Callback actions
-  virtual StatusCode regAction(Io::bfcn_action_t, const Io::Action&, 
+  virtual StatusCode regAction(Io::bfcn_action_t, const Io::Action&,
 			       const std::string& d="") = 0;
-  virtual StatusCode regAction(Io::bfcn_action_t, const Io::Action&, 
+  virtual StatusCode regAction(Io::bfcn_action_t, const Io::Action&,
 			       const Io::IoTech&, const std::string& d="") = 0;
 
   // Suppress callback action(s) for specific file.

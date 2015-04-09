@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-04-09 - Marco Clemencic
+ - Use C++11 functional instead of boost/function.hpp in IFileMgr.
+
 ! 2015-04-08 - Marco Clemencic
  - Disable CPU features detection on aarch64 (ARM64).
 
