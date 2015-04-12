@@ -89,7 +89,7 @@ all:
 # deep clean
 purge:
 	$(RM) -r $(BUILDDIR) $(CURDIR)/InstallArea/$(BINARY_TAG)
-	find $(CURDIR) -name "*.pyc" -exec $(RM) -v \{} \;
+	find $(CURDIR) "(" -name "InstallArea" -prune -o -name "*.pyc" ")" -a -type f -exec $(RM) -v \{} \;
 
 # delegate any target to the build directory (except 'purge')
 ifneq ($(MAKECMDGOALS),purge)
