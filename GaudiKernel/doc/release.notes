@@ -2,6 +2,10 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-04-12 - Marco Clemencic
+ - Added I/O dictionaries for KeyedContainerManager, missing when we do not
+   import GaudiPython in guadirun.py.
+
 ! 2015-04-10 - Marco Clemencic
  - Added C helper functions to bootstrap from Python without GaudiPython.
 
