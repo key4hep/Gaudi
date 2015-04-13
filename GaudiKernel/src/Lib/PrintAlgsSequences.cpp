@@ -43,9 +43,15 @@ namespace {
   }
 }
 
+#ifdef GAUDI_HASCLASSVISIBILITY
+#pragma GCC visibility push(default)
+#endif
 extern "C" {
   /// Helper to call printAlgsSequences from Pyhton ctypes.
   void py_helper_printAlgsSequences(IInterface* app) {
     printAlgsSequences(app);
   }
 }
+#ifdef GAUDI_HASCLASSVISIBILITY
+#pragma GCC visibility pop
+#endif

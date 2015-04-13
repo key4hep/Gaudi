@@ -269,6 +269,9 @@ SmartIF<IService>& Gaudi::BootSvcLocator::service(const Gaudi::Utils::TypeNameSt
 }
 
 
+#ifdef GAUDI_HASCLASSVISIBILITY
+#pragma GCC visibility push(default)
+#endif
 // Python bootstrap helpers
 extern "C" {
 #define PyHelper(x) py_bootstrap_ ## x
@@ -330,3 +333,6 @@ extern "C" {
     return false;
   }
 }
+#ifdef GAUDI_HASCLASSVISIBILITY
+#pragma GCC visibility pop
+#endif

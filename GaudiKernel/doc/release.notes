@@ -3,6 +3,9 @@ Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
 ! 2015-04-13 - Marco Clemencic
+ - Fixed visibility of gaudirun.py Python helper functions.
+
+! 2015-04-13 - Marco Clemencic
  - Implemented printing of alg sequences in C++ as a private function
    (to avoid GaudiPython in gaudirun.py).
 
