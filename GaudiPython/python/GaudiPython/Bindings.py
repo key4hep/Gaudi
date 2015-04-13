@@ -875,6 +875,22 @@ class AppMgr(iService) :
             self.pyalgorithms.remove(alg)
             setOwnership(alg,1)
         self.topAlg = tmp
+    def printAlgsSequences(self):
+        """
+        Print the sequence of Algorithms.
+        """
+        def printAlgo( algName, appMgr, prefix = ' ') :
+            print prefix + algName
+            alg = appMgr.algorithm( algName.split( "/" )[ -1 ] )
+            prop = alg.properties()
+            if prop.has_key( "Members" ) :
+                subs = prop[ "Members" ].value()
+                for i in subs : printAlgo( i.strip( '"' ), appMgr, prefix + "     " )
+        mp = self.properties()
+        prefix = 'ApplicationMgr    SUCCESS '
+        print prefix + "****************************** Algorithm Sequence ****************************"
+        for i in mp["TopAlg"].value(): printAlgo( i, self, prefix )
+        print prefix + "******************************************************************************"
     def config ( self, **args ):
         """
         Simple utility to perform the configuration of Gaudi application.

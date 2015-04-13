@@ -2,6 +2,10 @@ Package: GaudiPython
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-04-13 - Marco Clemencic
+ - Refactored printing of alg sequences and moved it after the initialize,
+   to allow an implemetation in C++ (to avoid GaudiPython in gaudirun.py).
+
 ! 2015-04-10 - Marco Clemencic
  - Added missing 'terminate' method to AppMgr.
 

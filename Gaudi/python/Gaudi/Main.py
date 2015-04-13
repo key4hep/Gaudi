@@ -49,7 +49,8 @@ class BootstrapHelper(object):
             return BootstrapHelper.StatusCode(self.lib.py_bootstrap_setProperty(self.ptr, name, value))
         def getProperty(self, name):
             return BootstrapHelper.Property(self.lib.py_bootstrap_getProperty(self.ptr, name))
-
+        def printAlgsSequences(self):
+            return self.lib.py_helper_printAlgsSequences(self.ptr)
 
     def __init__(self):
         from ctypes import CDLL, c_void_p, c_bool, c_char_p, c_int
@@ -80,6 +81,9 @@ class BootstrapHelper(object):
             f.restype, f.args = c_bool, [c_void_p]
         gkl.py_bootstrap_app_run.restype = c_bool
         gkl.py_bootstrap_app_run.args = [c_void_p, c_int]
+
+        gkl.py_helper_printAlgsSequences.restype = None
+        gkl.py_helper_printAlgsSequences.args = [c_void_p]
 
         self.lib = gkl
 
@@ -213,27 +217,6 @@ class gaudimain(object) :
             log.error("Unknown file type '%s'. Must be any of %r.", ext, write.keys())
             sys.exit(1)
 
-    def _printsequence(self):
-        if not self.printsequence:
-            # No printing requested
-            return
-
-        def printAlgo( algName, appMgr, prefix = ' ') :
-            print prefix + algName
-            alg = appMgr.algorithm( algName.split( "/" )[ -1 ] )
-            prop = alg.properties()
-            if prop.has_key( "Members" ) :
-                subs = prop[ "Members" ].value()
-                for i in subs : printAlgo( i.strip( '"' ), appMgr, prefix + "     " )
-            elif prop.has_key( "DetectorList" ) :
-                subs = prop[ "DetectorList" ].value()
-                for i in subs : printAlgo( algName.split( "/" )[ -1 ] + i.strip( '"' ) + "Seq", appMgr, prefix + "     ")
-
-        mp = self.g.properties()
-        print "\n ****************************** Algorithm Sequence **************************** \n"
-        for i in mp["TopAlg"].value(): printAlgo( i, self.g )
-        print "\n ****************************************************************************** \n"
-
     ## Instantiate and run the application.
     #  Depending on the number of CPUs (ncpus) specified, it start
     def run(self, ncpus = None):
@@ -329,7 +312,7 @@ class gaudimain(object) :
 
     def runSerial(self) :
         #--- Instantiate the ApplicationMgr------------------------------
-        if (self.printsequence or self.mainLoop or
+        if (self.mainLoop or
             os.environ.get('GAUDIRUN_USE_GAUDIPYTHON')):
             self.gaudiPythonInit()
         else:
@@ -340,8 +323,6 @@ class gaudimain(object) :
         self.log.debug('-'*80)
         sysStart = time()
 
-        self._printsequence()
-
         if self.mainLoop:
             runner = self.mainLoop
         else:
@@ -349,6 +330,8 @@ class gaudimain(object) :
                 self.log.debug('initialize')
                 sc = app.initialize()
                 if sc.isSuccess():
+                    if self.printsequence:
+                        app.printAlgsSequences()
                     self.log.debug('start')
                     sc = app.start()
                     if sc.isSuccess():

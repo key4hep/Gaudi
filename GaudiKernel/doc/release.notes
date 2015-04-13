@@ -2,6 +2,10 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-04-13 - Marco Clemencic
+ - Implemented printing of alg sequences in C++ as a private function
+   (to avoid GaudiPython in gaudirun.py).
+
 ! 2015-04-12 - Marco Clemencic
  - Added I/O dictionaries for KeyedContainerManager, missing when we do not
    import GaudiPython in guadirun.py.
