@@ -237,8 +237,9 @@ void init_logging(boost::log::trivial::severity_level level)
 int main ( int argc, char** argv )
 //-----------------------------------------------------------------------------
 {
-  init_logging(System::isEnvSet("VERBOSE") ? boost::log::trivial::info
-                                           : boost::log::trivial::warning);
+  init_logging((System::isEnvSet("VERBOSE") && !System::getEnv("VERBOSE").empty())
+               ? boost::log::trivial::info
+               : boost::log::trivial::warning);
 
   fs::path pwd = fs::initial_path();
   fs::path out;

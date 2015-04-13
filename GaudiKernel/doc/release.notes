@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-04-13 - Marco Clemencic
+ - GAUDI-1018: Made empty VERBOSE equivalent to unset
+
 ! 2015-04-14 - Marco Clemencic
  - Hide warning introduced with fix to GAUDI-312.
 
