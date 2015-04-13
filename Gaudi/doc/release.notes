@@ -2,6 +2,11 @@ Package : Gaudi
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-04-13 - Marco Clemencic
+ - Enable GaudiPython in gaudirun.py with an environment variable.
+   Setting GAUDIRUN_USE_GAUDIPYTHON (any non-empty value) forces the use of
+   GaudiPython for bootstrapping in gaudirun.py.
+
 ! 2015-04-10 - Marco Clemencic
  - Replaced GaudiPython/cppyy with ctypes in Gaudi.Main.
    GaudiPython is still used for the --printsequence and custom main loop

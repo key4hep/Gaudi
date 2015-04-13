@@ -329,7 +329,8 @@ class gaudimain(object) :
 
     def runSerial(self) :
         #--- Instantiate the ApplicationMgr------------------------------
-        if self.printsequence or self.mainLoop:
+        if (self.printsequence or self.mainLoop or
+            os.environ.get('GAUDIRUN_USE_GAUDIPYTHON')):
             self.gaudiPythonInit()
         else:
             self.basicInit()
