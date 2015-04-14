@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/Tokenizer.cpp,v 1.4 2008/10/27 16:41:33 marcocle Exp $
 //==============================================================================
 // Tokenizer.h
 //------------------------------------------------------------------------------
@@ -88,13 +87,13 @@ void Tokenizer::Token::make(const std::string& s, long st, const char* delim, co
     m_length = posVal+m_value.length()+lenValEnd-st;
   }
 
-  if (start + m_length >= s.size()) {
+  if (start + m_length >= long(s.size())) {
     return;
   }
 
   while(::strncmp(s.c_str()+start+m_length,delim,lenDelim)==0) {
     m_length += lenDelim;
-    if (start+m_length >= s.size()) {
+    if (start + m_length >= long(s.size())) {
       return;
     }
   }
