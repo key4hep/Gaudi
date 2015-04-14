@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-04-14 - Marco Clemencic
+ - Hide warning introduced with fix to GAUDI-312.
+
 ! 2015-04-14 - Stewart Martin-Haugh
  - Fixed GAUDI-312: invalid read in Tokenizer.
 
