@@ -2,7 +2,7 @@
 
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Tokenizer.h"
+#include "GaudiKernel/AttribStringParser.h"
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/Time.h"
 
@@ -157,42 +157,33 @@ StatusCode
 IssueLogger::connect(const std::string& ident) {
 
   MsgStream log ( msgSvc(), name() );
-  Tokenizer tok(true);
 
   string::size_type loc = ident.find(" ");
 //  string stream = ident.substr(0,loc); // icc remark #177: variable "stream" was declared but never referenced
 //   typedef std::pair<std::string,std::string>      Prop;
 //   std::vector<Prop> props;
-  string val,VAL,TAG,filename;
 
-  tok.analyse(ident.substr(loc+1,ident.length()), " ", "", "", "=", "'", "'");
-
-  for ( Tokenizer::Items::iterator i = tok.items().begin();
-	i != tok.items().end(); i++)    {
-    const std::string& tag = (*i).tag();
-    TAG = tag;
-    toupper(TAG);
-
-    val = (*i).value();
-    VAL = val;
-    toupper(VAL);
+  using Parser = Gaudi::Utils::AttribStringParser;
+  // note: if loc == string::npos then loc + 1 == 0
+  for (auto attrib: Parser(ident.substr(loc + 1))) {
+    toupper(attrib.tag);
 
     IssueSeverity::Level level;
 
-    if (TAG == "DEBUG") {
+    if (attrib.tag == "DEBUG") {
       level = IssueSeverity::DEBUG;
-    } else if ( TAG == "INFO") {
+    } else if ( attrib.tag == "INFO") {
       level = IssueSeverity::INFO;
-    } else if ( TAG == "WARNING") {
+    } else if ( attrib.tag == "WARNING") {
       level = IssueSeverity::WARNING;
-    } else if ( TAG == "RECOVERABLE") {
+    } else if ( attrib.tag == "RECOVERABLE") {
       level = IssueSeverity::RECOVERABLE;
-    } else if ( TAG == "ERROR") {
+    } else if ( attrib.tag == "ERROR") {
       level = IssueSeverity::ERROR;
-    } else if ( TAG == "FATAL") {
+    } else if ( attrib.tag == "FATAL") {
       level = IssueSeverity::FATAL;
     } else {
-      log << MSG::ERROR << "Unknown output level \"" << TAG << "\""
+      log << MSG::ERROR << "Unknown output level \"" << attrib.tag << "\""
 	  << endmsg;
       continue;
     }
@@ -204,29 +195,29 @@ IssueLogger::connect(const std::string& ident) {
       m_logger[level] = 0;
     }
 
-    if (val == "MsgSvc") {
+    if (attrib.value == "MsgSvc") {
       m_logger[level] = new StreamLogger(msgSvc(), m_sevMsgMap[level]);
       m_log[level] =
 	boost::bind(&StreamLogger::WriteToMsgSvc, m_logger[level],
 		    _1);
-    } else if (val == "STDERR") {
+    } else if (attrib.value == "STDERR") {
       m_logger[level] = new StreamLogger(std::cerr);
       m_log[level] =
 	boost::bind(&StreamLogger::WriteToStream, m_logger[level],
 		    _1);
-    } else if (val == "STDOUT") {
+    } else if (attrib.value == "STDOUT") {
       m_logger[level] = new StreamLogger(std::cout);
       m_log[level] =
 	boost::bind(&StreamLogger::WriteToStream, m_logger[level],
 		    _1);
     } else { // A file
       try {
-        m_logger[level] = new StreamLogger(val.c_str());
+        m_logger[level] = new StreamLogger(attrib.value.c_str());
       }
       catch (std::exception&) {
         m_logger[level] = 0;
-        log << MSG::ERROR << "Unable to open file \"" << VAL
-	    << "\" for writing issues at level " << TAG << endmsg;
+        log << MSG::ERROR << "Unable to open file \"" << attrib.value
+	    << "\" for writing issues at level " << attrib.tag << endmsg;
         return StatusCode::FAILURE;
       }
       m_log[level] =

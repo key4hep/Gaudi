@@ -84,7 +84,7 @@ namespace Gaudi {
 // Include files
 #include "GaudiKernel/ClassID.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Tokenizer.h"
+#include "GaudiKernel/AttribStringParser.h"
 #include "GaudiKernel/TypeNameString.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IPersistencySvc.h"
@@ -311,36 +311,35 @@ RootEvtSelector::resetCriteria(const string& criteria, Context& context)  const
       db = criteria.substr(5);
     }
     else  {
-      Tokenizer tok(true);
-      tok.analyse(criteria," ","","","=","'","'");
-      for(Tokenizer::Items::iterator i=tok.items().begin(); i!=tok.items().end();i++) {
-        string tmp = (*i).tag().substr(0,3);
+      using Parser = Gaudi::Utils::AttribStringParser;
+      for(auto attrib: Parser(criteria)) {
+        string tmp = attrib.tag.substr(0,3);
         if(tmp=="DAT")  {
-          db = (*i).value();
+          db = std::move(attrib.value);
         }
-        if(tmp=="OPT")   {
-          if((*i).value() != "REA")   {
-            log << MSG::ERROR << "Option:\"" << (*i).value() << "\" not valid" << endmsg;
+        else if(tmp=="OPT")   {
+          if(attrib.value.substr(0, 3) != "REA")   {
+            log << MSG::ERROR << "Option:\"" << attrib.value << "\" not valid" << endmsg;
             return StatusCode::FAILURE;
           }
         }
-        if (tmp=="TYP") {
-          typ = (*i).value();
+        else if (tmp=="TYP") {
+          typ = std::move(attrib.value);
         }
-        if(tmp=="ADD")  {
-          item = (*i).value();
+        else if(tmp=="ADD")  {
+          item = std::move(attrib.value);
         }
-        if(tmp=="SEL")  {
-          sel = (*i).value();
+        else if(tmp=="SEL")  {
+          sel = std::move(attrib.value);
         }
-        if(tmp=="FUN")  {
-          stmt = (*i).value();
+        else if(tmp=="FUN")  {
+          stmt = std::move(attrib.value);
         }
-        if(tmp=="AUT")  {
-          aut = (*i).value();
+        else if(tmp=="AUT")  {
+          aut = std::move(attrib.value);
         }
-        if(tmp=="COL")  {
-          addr = (*i).value();
+        else if(tmp=="COL")  {
+          addr = std::move(attrib.value);
         }
       }
     }

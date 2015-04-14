@@ -7,7 +7,7 @@
 #include "THistSvc.h"
 
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/Tokenizer.h"
+#include "GaudiKernel/AttribStringParser.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/Property.h"
 #include "GaudiKernel/IIncidentSvc.h"
@@ -1511,54 +1511,51 @@ THistSvc::write() {
 StatusCode
 THistSvc::connect(const std::string& ident) {
 
-  Tokenizer tok(true);
-
   string::size_type loc = ident.find(" ");
   string stream = ident.substr(0,loc);
   char typ(0);
   typedef std::pair<std::string,std::string>      Prop;
   std::vector<Prop> props;
-  string val,VAL,TAG,filename,db_typ("ROOT");
+  string filename, db_typ("ROOT");
   int cl(1);
 
-  tok.analyse(ident.substr(loc+1,ident.length()), " ", "", "", "=", "'", "'");
+  if (loc != string::npos) {
+    using Parser = Gaudi::Utils::AttribStringParser;
+    for (auto attrib: Parser(ident.substr(loc + 1))) {
+      auto TAG = attrib.tag;
+      toupper(TAG);
 
-  for ( Tokenizer::Items::iterator i = tok.items().begin(); i != tok.items().end(); i++)    {
-    const std::string& tag = (*i).tag();
-    TAG = tag;
-    toupper(TAG);
+      auto VAL = attrib.value;
+      toupper(VAL);
 
-    val = (*i).value();
-    VAL = val;
-    toupper(VAL);
-
-    if (TAG == "FILE" || TAG == "DATAFILE") {
-      filename = val;
-      removeDoubleSlash( filename );
-    } else if ( TAG == "OPT" ) {
-      if ( VAL == "APPEND" || VAL == "UPDATE" ) {
-        typ = 'A';
-      } else if ( VAL == "CREATE" || VAL == "NEW" || VAL == "WRITE" ) {
-        typ = 'N';
-      } else if ( VAL == "RECREATE" ) {
-        typ = 'R';
-      } else if (VAL == "SHARE") {
-        typ = 'S';
-      } else if ( VAL == "OLD" || VAL == "READ" ) {
-        typ = 'O';
+      if (TAG == "FILE" || TAG == "DATAFILE") {
+        filename = attrib.value;
+        removeDoubleSlash( filename );
+      } else if ( TAG == "OPT" ) {
+        if ( VAL == "APPEND" || VAL == "UPDATE" ) {
+          typ = 'A';
+        } else if ( VAL == "CREATE" || VAL == "NEW" || VAL == "WRITE" ) {
+          typ = 'N';
+        } else if ( VAL == "RECREATE" ) {
+          typ = 'R';
+        } else if (VAL == "SHARE") {
+          typ = 'S';
+        } else if ( VAL == "OLD" || VAL == "READ" ) {
+          typ = 'O';
+        } else {
+          m_log << MSG::ERROR << "Unknown OPT: \"" << attrib.value << "\""
+              << endmsg;
+          typ = 0;
+        }
+      } else if (TAG == "TYP") {
+        db_typ = std::move(attrib.value);
+      } else if (TAG == "CL") {
+        cl = atoi(attrib.value.c_str());
       } else {
-        m_log << MSG::ERROR << "Unknown OPT: \"" << (*i).value() << "\""
-            << endmsg;
-        typ = 0;
+        props.push_back( Prop(attrib.tag, attrib.value));
       }
-    } else if (TAG == "TYP") {
-      db_typ = (*i).value();
-    } else if (TAG == "CL") {
-      cl = atoi(val.c_str());
-    } else {
-      props.push_back( Prop((*i).tag(), (*i).value()));
-    }
 
+    }
   }
 
   if (stream == "temp") {

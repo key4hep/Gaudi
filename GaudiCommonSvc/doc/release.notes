@@ -5,6 +5,9 @@
 # Commit Id: $Format:%H$
 ################################################################################
 
+! 2015-03-14 - Marco Clemencic
+ - GAUDI-1024: Replaced GaudiKernel/Tokenizer with the new AttribStringParser.
+
 ! 2015-03-04 - Marco Clemencic
  - Fixed GAUDI-1014: Unchecked StatusCode with gcc 4.9
    A spurious unchecked StatusCode seems to come from libCling.so.

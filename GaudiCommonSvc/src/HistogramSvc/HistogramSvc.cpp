@@ -23,7 +23,7 @@
 // ============================================================================
 #include "GaudiKernel/xtoa.h"
 #include "GaudiKernel/Property.h"
-#include "GaudiKernel/Tokenizer.h"
+#include "GaudiKernel/AttribStringParser.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IConversionSvc.h"
@@ -215,25 +215,22 @@ HistogramSvc::~HistogramSvc()   {
 }
 //------------------------------------------------------------------------------
 StatusCode HistogramSvc::connectInput(CSTR ident) {
+  using Parser = Gaudi::Utils::AttribStringParser;
   MsgStream log (msgSvc(), name());
   DataObject* pO = 0;
   StatusCode status = this->findObject(m_rootName, pO);
   if (status.isSuccess())   {
-    Tokenizer tok(true);
     std::string::size_type loc = ident.find(" ");
     std::string filename, auth, svc = "", typ = "";
-    std::string logname = ident.substr(0,loc);
-    tok.analyse(ident.substr(loc+1,ident.length()), " ", "", "", "=", "'", "'");
-    for (Tokenizer::Items::iterator i = tok.items().begin();
-         i != tok.items().end(); i++) {
-      CSTR tag = (*i).tag();
-      switch(::toupper(tag[0]))   {
+    std::string logname = ident.substr(0, loc);
+    for (auto attrib: Parser(ident.substr(loc+1))) {
+      switch(::toupper(attrib.tag[0]))   {
       case 'F':   // FILE='<file name>'
       case 'D':   // DATAFILE='<file name>'
-        filename = (*i).value();
+        filename = std::move(attrib.value);
         break;
       case 'T':   // TYP='<HBOOK,ROOT,OBJY,...>'
-        typ = (*i).value();
+        typ = std::move(attrib.value);
         break;
       default:
         break;

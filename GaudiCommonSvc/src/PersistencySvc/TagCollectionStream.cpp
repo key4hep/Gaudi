@@ -2,7 +2,7 @@
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/Tokenizer.h"
+#include "GaudiKernel/AttribStringParser.h"
 #include "GaudiKernel/SmartDataPtr.h"
 #include "GaudiKernel/IDataSourceMgr.h"
 #include "GaudiKernel/IDataManagerSvc.h"
@@ -58,27 +58,25 @@ StatusCode TagCollectionStream::connectAddress()  {
 
 // initialize data writer
 StatusCode TagCollectionStream::initialize() {
+  using Parser = Gaudi::Utils::AttribStringParser;
   std::string log_node, log_file, logical_name;
   StatusCode sc = service(m_collSvcName, m_collectionSvc, true);
   if ( sc.isSuccess() )  {
-    Tokenizer tok(true);
-    tok.analyse(m_output, " ", "", "", "=", "'", "'");
-    m_output = "";
-    for(Tokenizer::Items::iterator i = tok.items().begin(); i != tok.items().end(); ++i)   {
-      const std::string& tag = (*i).tag();
-      const std::string& val = (*i).value();
-      switch( ::toupper(tag[0]) )    {
+    std::string tmp;
+    for(auto attrib: Parser(m_output)) {
+      switch( ::toupper(attrib.tag[0]) )    {
       case 'C':
-        m_tagName = val;
+        m_tagName = std::move(attrib.value);
         break;
       case 'A':
-        m_addrLeaf = val;
+        m_addrLeaf = std::move(attrib.value);
         break;
       default:
-        m_output += tag + "='" + val + "' ";
+        tmp += attrib.tag + "='" + attrib.value + "' ";
         break;
       }
     }
+    m_output = std::move(tmp);
     std::string::size_type idx = m_tagName[0]==SEPARATOR ? m_tagName.find(SEPARATOR,1) : 0;
     log_node = m_tagName.substr(idx,m_tagName.find(SEPARATOR,idx+1));
     log_file = log_node + " " + m_output + " SHARED='YES'";

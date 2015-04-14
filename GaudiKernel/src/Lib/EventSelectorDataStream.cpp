@@ -12,7 +12,7 @@
 //====================================================================
 #define GAUDISVC_EVENTSELECTOR_EVENTSELECTORDATASTREAM_CPP 1
 // Include files
-#include "GaudiKernel/Tokenizer.h"
+#include "GaudiKernel/AttribStringParser.h"
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IConversionSvc.h"
@@ -85,7 +85,6 @@ StatusCode EventSelectorDataStream::initialize()   {
   std::string auth, dbtyp, collsvc, item, crit, sel, svc, stmt;
   std::string cnt    = "/Event";
   std::string db     = "<Unknown>";
-  Tokenizer tok(true);
 
   SmartIF<IDataManagerSvc> eds(m_pSvcLocator->service("EventDataSvc"));
   if( !eds.isValid() ) {
@@ -99,75 +98,74 @@ StatusCode EventSelectorDataStream::initialize()   {
   m_selectorType = m_criteria = m_dbName= "";
   m_properties->erase(m_properties->begin(), m_properties->end());
 
-  tok.analyse(m_definition, " ", "", "", "=", "'", "'");
-  for ( Tokenizer::Items::iterator i = tok.items().begin(); i != tok.items().end(); i++ )   {
+  using Parser = Gaudi::Utils::AttribStringParser;
+  for (auto attrib: Parser(m_definition)) {
     long hash = -1;
-    const std::string& tag = (*i).tag();
-    const std::string& val = (*i).value();
-    switch( ::toupper(tag[0]) )    {
+    switch( ::toupper(attrib.tag[0]) )    {
     case 'A':
-      auth = val;
+      auth = std::move(attrib.value);
       break;
     case 'C':
       svc  = "EvtTupleSvc";
       isData = false;
+      /* no break */
     case 'E':
-      hash = val.find('#');
+      hash = attrib.value.find('#');
       if ( hash > 0 )   {
-        cnt  = val.substr(0,hash);
-        item = val.substr(hash+1, val.length()-hash-1);
+        cnt  = attrib.value.substr(0, hash);
+        item = attrib.value.substr(hash + 1);
       }
       else    {
-        cnt  = val;
+        cnt  = std::move(attrib.value);
         item = "Address";
       }
       break;
     case 'D':
-      m_criteria     = "FILE " + val;
-      m_dbName=val;
+      m_criteria     = "FILE " + attrib.value;
+      m_dbName = std::move(attrib.value);
       break;
     case 'F':
-      switch( ::toupper(tag[1]) )    {
+      switch( ::toupper(attrib.tag[1]) )    {
       case 'I':
-        m_criteria   = "FILE " + val;
-	m_dbName=val;
+        m_criteria   = "FILE " + attrib.value;
+	m_dbName = std::move(attrib.value);
         break;
       case 'U':
-        stmt = val;
+        stmt = std::move(attrib.value);
         break;
       default:
         break;
       }
       break;
     case 'J':
-      m_criteria     = "JOBID " + val;
-      m_dbName=val;
+      m_criteria     = "JOBID " + attrib.value;
+      m_dbName = std::move(attrib.value);
       dbtyp          = "SICB";
       break;
     case 'T':
-      switch( ::toupper(tag[1]) )    {
+      switch( ::toupper(attrib.tag[1]) )    {
       case 'Y':
-        dbtyp = val;
+        dbtyp = std::move(attrib.value);
         break;
       default:
         break;
       }
       break;
     case 'S':
-      switch( ::toupper(tag[1]) )    {
+      switch( ::toupper(attrib.tag[1]) )    {
       case 'E':
-        sel = val;
+        sel = std::move(attrib.value);
         break;
       case 'V':
-        svc = val;
-	collsvc = val;
+        svc = std::move(attrib.value);
+	collsvc = svc;
         break;
       default:
         break;
       }
       break;
     default:
-      m_properties->push_back(StringProperty(tag,val));
+      m_properties->push_back(StringProperty(attrib.tag, attrib.value));
       break;
     }
   }

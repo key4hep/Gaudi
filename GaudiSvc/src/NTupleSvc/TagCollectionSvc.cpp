@@ -23,7 +23,7 @@
 
 // Framework include files
 #include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/Tokenizer.h"
+#include "GaudiKernel/AttribStringParser.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/ObjectFactory.h"
 #include "GaudiKernel/GenericAddress.h"
@@ -73,31 +73,31 @@ StatusCode TagCollectionSvc::connect(const std::string& ident, std::string& logn
     status = INVALID_ROOT;
     if ( 0 != pO->registry() )   {
       char typ=0;
-      Tokenizer tok(true);
       std::vector<Prop> props;
       long loc = ident.find(" ");
       std::string filename, auth, svc = "DbCnvSvc";
       logname = ident.substr(0,loc);
-      tok.analyse(ident.substr(loc+1,ident.length()), " ", "", "", "=", "'", "'");
-      for ( Tokenizer::Items::iterator i = tok.items().begin(); i != tok.items().end(); i++)    {
-        const std::string& tag = (*i).tag();
-        switch( ::toupper(tag[0]) )   {
+      using Parser = Gaudi::Utils::AttribStringParser;
+      // we assume that there is always a " "
+      // (but if it is not there, we probably will not match the pattern)
+      for (auto attrib: Parser(ident.substr(loc + 1))) {
+        switch( ::toupper(attrib.tag[0]) )   {
         case 'A':
-          props.push_back( Prop("Server", (*i).value()));
+          props.push_back( Prop("Server", attrib.value));
           break;
         case 'F': /* FILE='<file name>' */
         case 'D': /* DATAFILE='<file name>' */
-          filename = (*i).value();
+          filename = std::move(attrib.value);
           break;
         case 'O': /* OPT='<NEW<CREATE,WRITE>, UPDATE, READ>' */
-          switch( ::toupper((*i).value()[0]) )   {
+          switch( ::toupper(attrib.value[0]) )   {
           case 'C':
           case 'N':
           case 'W':                   typ = 'N';            break;
           case 'U':                   typ = 'U';            break;
           case 'O':
           case 'R':
-            switch( ::toupper((*i).value()[2]) )   {
+            switch( ::toupper(attrib.value[2]) )   {
             case 'C': /* RECREATE */  typ = 'R';            break;
             case 'A': /* READ     */
             default:                  typ = 'O';            break;
@@ -107,34 +107,34 @@ StatusCode TagCollectionSvc::connect(const std::string& ident, std::string& logn
           }
           break;
         case 'S':   // SVC='<service type>'
-          switch( ::toupper(tag[1]) )   {
-          case 'V':                   svc = (*i).value();   break;
+          switch( ::toupper(attrib.tag[1]) )   {
+          case 'V':                   svc = std::move(attrib.value);   break;
           case 'H':
-            switch(::toupper((*i).value()[0]))  {
+            switch(::toupper(attrib.value[0]))  {
               case 'Y':
-               props.push_back( Prop("ShareFiles", (*i).value()));
+               props.push_back( Prop("ShareFiles", attrib.value));
                break ;
             }
             break;
           }
           break;
         case 'T':   // TYP='<HBOOK,ROOT,OBJY,...>'
-          switch(::toupper((*i).value()[0]))  {
+          switch(::toupper(attrib.value[0]))  {
           case 'H':
             svc = "HbookCnv::ConvSvc";
             break;
           case 'P':
-            props.push_back( Prop("DbType", (*i).value()));
+            props.push_back( Prop("DbType", attrib.value));
             svc = "PoolDbCnvSvc";
             break;
           default:
-            props.push_back( Prop("DbType", (*i).value()));
+            props.push_back( Prop("DbType", attrib.value));
             svc = "DbCnvSvc";
             break;
           }
           break;
         default:
-          props.push_back( Prop((*i).tag(), (*i).value()));
+          props.push_back( Prop(attrib.tag, attrib.value));
           break;
         }
       }

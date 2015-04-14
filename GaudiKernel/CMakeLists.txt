@@ -2,7 +2,7 @@ gaudi_subdir(GaudiKernel v31r4)
 
 gaudi_depends_on_subdirs(GaudiPluginService)
 
-find_package(Boost REQUIRED COMPONENTS filesystem thread system)
+find_package(Boost REQUIRED COMPONENTS filesystem thread system regex)
 find_package(ROOT REQUIRED COMPONENTS Core)
 
 #---Libraries---------------------------------------------------------------
@@ -31,6 +31,7 @@ gaudi_add_unit_test(test_headers_build tests/src/test_headers_build.cpp
                     LINK_LIBRARIES GaudiKernel)
 gaudi_add_unit_test(test_GAUDI-905 tests/src/GAUDI-905.cpp
                     LINK_LIBRARIES GaudiKernel)
+
 if(GAUDI_CPP11)
   gaudi_add_unit_test(test_GAUDI-973 tests/src/GAUDI-973.cpp
                       LINK_LIBRARIES GaudiKernel)
@@ -64,6 +65,8 @@ if(GAUDI_BUILD_TESTS)
                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/custom_factory_testdir)
 endif()
 
+gaudi_add_unit_test(AttribStringParser_test tests/src/test_AttribStringParser.cpp
+                    LINK_LIBRARIES GaudiKernel)
 
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIBRARIES GaudiKernel)

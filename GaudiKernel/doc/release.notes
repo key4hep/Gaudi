@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-03-14 - Marco Clemencic
+ - GAUDI-1024: Added Gaudi::Utils::AttribStringParser to replace Tokenizer
+
 ! 2015-04-13 - Marco Clemencic
  - GAUDI-1018: Made empty VERBOSE equivalent to unset
 
