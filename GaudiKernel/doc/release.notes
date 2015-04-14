@@ -2,6 +2,22 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-04-14 - Stewart Martin-Haugh
+ - Fixed GAUDI-312: invalid read in Tokenizer.
+
+! 2015-04-09 - Marco Clemencic
+ - Use C++11 functional instead of boost/function.hpp in IFileMgr.
+
+! 2015-04-08 - Marco Clemencic
+ - Disable CPU features detection on aarch64 (ARM64).
+
+! 2015-03-31 - Marco Clemencic
+ - Removed inclusion of ParsersFactory.h from Parsers.h (added with GAUDI-1011)
+   The inclusion of ParsersFactory.h simplify the creation of custom parsers,
+   but (because of the way ROOT 6 used headers) was causing huge penalties in
+   start up time (Gaudi tests taking twice the time) and an increased memory use
+   (detected in some LHCb tests).
+
 ! 2015-03-20 - Marco Clemencic
  - GAUDI-1018: Respect VERBOSE setting in genconf and genconfuser.
 

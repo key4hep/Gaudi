@@ -2,6 +2,10 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-03-31 - Marco Clemencic
+ - Adapted ExtendedProperties.cpp after the removal of ParsersFactory.h from
+   Parsers.h.
+
 ! 2015-03-06 - Marco Clemencic
  - Added test for GAUDI-1017
  - Fixed ExtendedProperties test to actually check if GAUDI-1011 works.
