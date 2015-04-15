@@ -8,7 +8,6 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/PathResolver.h"
-#include "GaudiKernel/Tokenizer.h"
 
 #include "PartPropSvc.h"
 
@@ -19,7 +18,7 @@
 #include <cstdlib>
 #include <fstream>
 
-using namespace std;
+#include <boost/regex.hpp>
 
 inline void toupper(std::string &s)
 {
@@ -58,13 +57,12 @@ PartPropSvc::initialize() {
 
   std::string key = m_pdtFiles.value();
 
-  Tokenizer tok(true);
-
-  tok.analyse( key, " ", "", "", "=", "", "");
-
-  for ( Tokenizer::Items::iterator i = tok.items().begin();
-	i != tok.items().end(); i++)    {
-    const std::string& fname = (*i).tag();
+  static const boost::regex exp{"[[:space:]]*([^[:space:]]+)[[:space:]]*=[[:space:]]*([^[:space:]]+)"};
+  static const auto tok_end = boost::sregex_iterator();
+  for (auto tok_iter = boost::sregex_iterator(begin(key), end(key), exp);
+       tok_iter != tok_end; ++tok_iter)
+  {
+    const std::string fname = (*tok_iter)[1];
 
     // see if input file exists in $DATAPATH
     std::string rfile = System::PathResolver::find_file(fname,"DATAPATH");
@@ -83,9 +81,8 @@ PartPropSvc::initialize() {
       return StatusCode::FAILURE;
     }
 
-    std::string val,VAL;
-    val = (*i).value();
-    VAL = val;
+    std::string val = (*tok_iter)[1];
+    std::string VAL = val;
     toupper(VAL);
 
     // default: no type specified, assume PDG
@@ -202,7 +199,7 @@ PartPropSvc::createTable() {
   std::vector< std::pair<std::string,
     bool(*) (std::istream&,HepPDT::TableBuilder&)> >::const_iterator itr;
   for (itr = m_inputs.begin(); itr != m_inputs.end(); ++itr) {
-    string f = itr->first;
+    std::string f = itr->first;
     bool (*pF) (std::istream&,HepPDT::TableBuilder&) = itr->second;
 
     m_log << MSG::DEBUG << "Reading PDT file \"" << f << "\""
