@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-03-15 - Marco Clemencic
+ - GAUDI-1024: Added deprecation warning to Tokenizer.h.
+
 ! 2015-03-14 - Marco Clemencic
  - GAUDI-1024: Added Gaudi::Utils::AttribStringParser to replace Tokenizer
 
