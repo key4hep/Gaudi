@@ -1,6 +1,3 @@
-// $Id: PropertyMgr.cpp,v 1.23 2008/04/03 17:27:01 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.23 $
 // ============================================================================
 // Include files
 // ============================================================================
@@ -16,6 +13,8 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/PropertyMgr.h"
+#include "GaudiKernel/INamedInterface.h"
+#include "GaudiKernel/GaudiException.h"
 // ============================================================================
 namespace
 {
@@ -255,6 +254,24 @@ StatusCode PropertyMgr::queryInterface(const InterfaceID& iid, void** pinterface
   // fall back on the owner
   return (0 != m_pOuter)? m_pOuter->queryInterface(iid, pinterface)
                         : sc; // FAILURE
+}
+// =====================================================================
+// Implementation of IProperty::hasProperty
+// =====================================================================
+bool PropertyMgr::hasProperty(const std::string& name) const {
+  return any_of(begin(m_properties), end(m_properties),
+      [&name](Property* prop) {
+    return Nocase()(prop->name(), name);
+  });
+}
+void PropertyMgr::assertUniqueName(const std::string& name) const {
+  if (UNLIKELY(hasProperty(name))) {
+    // TODO: queryInterface should be const
+    SmartIF<INamedInterface> ownerName(const_cast<PropertyMgr*>(this));
+    throw GaudiException("duplicated property name " + name,
+                         ownerName ? ownerName->name() : "PropertyMgr",
+                         StatusCode::FAILURE);
+  }
 }
 // =====================================================================
 // The END

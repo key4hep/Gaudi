@@ -1159,6 +1159,9 @@ StatusCode Algorithm::getProperty(const std::string& n, std::string& v ) const {
 const std::vector<Property*>& Algorithm::getProperties( ) const {
   return m_propertyMgr->getProperties();
 }
+bool Algorithm::hasProperty(const std::string& name) const {
+  return m_propertyMgr->hasProperty(name);
+}
 
 /**
  ** Protected Member Functions

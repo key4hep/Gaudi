@@ -67,6 +67,9 @@ endif()
 
 gaudi_add_unit_test(AttribStringParser_test tests/src/test_AttribStringParser.cpp
                     LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(test_PropertyMgr tests/src/test_PropertyMgr.cpp
+                    LINK_LIBRARIES GaudiKernel
+                    TYPE Boost)
 
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIBRARIES GaudiKernel)

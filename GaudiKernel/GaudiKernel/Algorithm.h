@@ -353,6 +353,8 @@ public:
   virtual StatusCode getProperty( const std::string& n, std::string& v ) const;
   /// Implementation of IProperty::getProperties
   virtual const std::vector<Property*>& getProperties( ) const;
+  /// Implementation of IProperty::hasProperty
+  virtual bool hasProperty(const std::string& name) const;
 
   /** Set the algorithm's properties.
    *  This method requests the job options service

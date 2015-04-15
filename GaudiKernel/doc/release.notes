@@ -3,6 +3,12 @@ Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
 ! 2015-03-15 - Marco Clemencic
+ - GAUDI-1023: fail when re-declaring a property
+   - added hasProperty method to IProperty.
+   - added check to all the declareProperty methods in PropertyMgr
+   - added unit test executable for PropertyMgr
+
+! 2015-03-15 - Marco Clemencic
  - GAUDI-1024: Added deprecation warning to Tokenizer.h.
 
 ! 2015-03-14 - Marco Clemencic
