@@ -217,6 +217,11 @@
   </class>
   <class name="std::vector<SmartRef<KeyedObject<unsigned long> > >"/>
 
+  <class name="Containers::KeyedObjectManager<Containers::hashmap>"/>
+  <class name="Containers::KeyedObjectManager<Containers::map>"/>
+  <class name="Containers::KeyedObjectManager<Containers::array>"/>
+  <class name="Containers::KeyedObjectManager<Containers::vector>"/>
+
   <!--class name="std::vector<std::basic_string<char> >"/-->
 
   <!-- Gaudi N-tuples -->

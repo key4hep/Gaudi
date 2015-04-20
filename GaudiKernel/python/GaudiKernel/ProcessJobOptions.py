@@ -1,15 +1,19 @@
 import os, sys, re
+import time
 
 import logging
 _log = logging.getLogger(__name__)
 
 class LogFormatter(logging.Formatter):
-    def __init__(self, fmt=None, datefmt=None, prefix = "# "):
+    def __init__(self, fmt=None, datefmt=None, prefix = "# ", with_time = False):
         logging.Formatter.__init__(self, fmt, datefmt)
         self.prefix = prefix
+        self.with_time = with_time
     def format(self, record):
         fmsg = logging.Formatter.format(self, record)
         prefix = self.prefix
+        if self.with_time:
+            prefix += '%f ' % time.time()
         if record.levelno >= logging.WARNING:
             prefix += record.levelname + ": "
         s = "\n".join([ prefix + line
@@ -50,14 +54,14 @@ class LogFilter(logging.Filter):
         self.threshold = allowed
 
 class ConsoleHandler(logging.StreamHandler):
-    def __init__(self, stream = None, prefix = None):
+    def __init__(self, stream = None, prefix = None, with_time = False):
         if stream is None:
             stream = sys.stdout
         logging.StreamHandler.__init__(self, stream)
         if prefix is None:
             prefix = "# "
         self._filter = LogFilter(_log.name)
-        self._formatter = LogFormatter(prefix = prefix)
+        self._formatter = LogFormatter(prefix = prefix, with_time = with_time)
         self.setFormatter(self._formatter)
         self.addFilter(self._filter)
     def setPrefix(self, prefix):
@@ -80,18 +84,18 @@ class ConsoleHandler(logging.StreamHandler):
         self._filter.enable(allowed)
 
 _consoleHandler = None
-def GetConsoleHandler(prefix = None, stream = None):
+def GetConsoleHandler(prefix = None, stream = None, with_time = False):
     global _consoleHandler
     if _consoleHandler is None:
-        _consoleHandler = ConsoleHandler(prefix = prefix, stream = stream)
+        _consoleHandler = ConsoleHandler(prefix = prefix, stream = stream, with_time = with_time)
     elif prefix is not None:
         _consoleHandler.setPrefix(prefix)
     return _consoleHandler
 
-def InstallRootLoggingHandler(prefix = None, level = None, stream = None):
+def InstallRootLoggingHandler(prefix = None, level = None, stream = None, with_time = False):
     root_logger = logging.getLogger()
     if not root_logger.handlers:
-        root_logger.addHandler(GetConsoleHandler(prefix, stream))
+        root_logger.addHandler(GetConsoleHandler(prefix, stream, with_time))
         root_logger.setLevel(logging.WARNING)
     if level is not None:
         root_logger.setLevel(level)

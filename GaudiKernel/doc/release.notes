@@ -2,6 +2,24 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-04-20 - Marco Clemencic
+ - Added a (C) function that returns the ROOT version (code), to be used in
+   Python to get the version of ROOT without importing cppyy.
+
+! 2015-04-13 - Marco Clemencic
+ - Fixed visibility of gaudirun.py Python helper functions.
+
+! 2015-04-13 - Marco Clemencic
+ - Implemented printing of alg sequences in C++ as a private function
+   (to avoid GaudiPython in gaudirun.py).
+
+! 2015-04-12 - Marco Clemencic
+ - Added I/O dictionaries for KeyedContainerManager, missing when we do not
+   import GaudiPython in guadirun.py.
+
+! 2015-04-10 - Marco Clemencic
+ - Added C helper functions to bootstrap from Python without GaudiPython.
+
 ! 2015-03-15 - Marco Clemencic
  - GAUDI-1023: fail when re-declaring a property
    - added hasProperty method to IProperty.

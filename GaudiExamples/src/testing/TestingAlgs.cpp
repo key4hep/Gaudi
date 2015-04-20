@@ -10,6 +10,7 @@
 #include "GaudiKernel/IEventProcessor.h"
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/IIncidentSvc.h"
+#include "GaudiKernel/Memory.h"
 
 #include <iostream>
 
@@ -298,7 +299,6 @@ namespace GaudiTesting {
     }
   };
 
-
   /**
    * Simple algorithm that creates dummy objects in the transient store.
    */
@@ -317,6 +317,39 @@ namespace GaudiTesting {
     }
   };
 
+  /**
+   * Simple algorithm that prints the memory usage every N events (property "Frequency").
+   */
+  class PrintMemoryUsage: public GaudiAlgorithm {
+  public:
+    PrintMemoryUsage(const std::string& name, ISvcLocator *pSvcLocator):
+      GaudiAlgorithm(name, pSvcLocator), m_counter(0)
+    {
+      declareProperty("Frequency", m_frequency=1,
+                      "How often to print the memory usage (number of events)");
+    }
+    StatusCode initialize() {
+      m_counter = 0;
+      return GaudiAlgorithm::initialize();
+    }
+    StatusCode execute() {
+      if ((m_frequency <= 1) || ((m_counter) % m_frequency == 0))
+        print();
+      return StatusCode::SUCCESS;
+    }
+    StatusCode finalize() {
+      print();
+      return GaudiAlgorithm::finalize();
+    }
+  protected:
+    int m_counter;
+    int m_frequency;
+    void print() {
+      info() << "vmem: " << System::virtualMemory() << " kB"<< endmsg;
+      info() << "rss:  " << System::mappedMemory() << " kB"<< endmsg;
+    }
+  };
+
 }
 
 #include "GaudiKernel/AlgFactory.h"
@@ -332,4 +365,5 @@ namespace GaudiTesting {
   DECLARE_COMPONENT(OddEventsFilter)
   DECLARE_COMPONENT(EvenEventsFilter)
   DECLARE_COMPONENT(ListTools)
+  DECLARE_COMPONENT(PrintMemoryUsage)
 }
