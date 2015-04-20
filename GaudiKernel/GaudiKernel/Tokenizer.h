@@ -14,7 +14,7 @@
 #define KERNEL_TOKENIZER_H
 
 #ifndef KERNEL_TOKENIZER_CPP
-#warning GaudiKernel/Tokenizer.h is deprecated, see GAUDI-12345 \
+#warning GaudiKernel/Tokenizer.h is deprecated, see GAUDI-1024 \
          consider alternative methods like GaudiKernel/AttribStringParser.h or \
          regular expressions
 #endif
