@@ -3,6 +3,11 @@ Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
 ! 2015-04-20 - Marco Clemencic
+ - GAUDI-1023: issue a warning when re-declaring a property
+   The anti-pattern is used a bit too often to just fail: we need some time to
+   fix the code before before enforcing the correct behavior.
+
+! 2015-04-20 - Marco Clemencic
  - Added a (C) function that returns the ROOT version (code), to be used in
    Python to get the version of ROOT without importing cppyy.
 

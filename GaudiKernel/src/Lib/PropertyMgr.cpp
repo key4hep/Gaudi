@@ -15,6 +15,9 @@
 #include "GaudiKernel/PropertyMgr.h"
 #include "GaudiKernel/INamedInterface.h"
 #include "GaudiKernel/GaudiException.h"
+#include "GaudiKernel/Bootstrap.h"
+#include "GaudiKernel/ISvcLocator.h"
+#include "GaudiKernel/IMessageSvc.h"
 // ============================================================================
 namespace
 {
@@ -268,9 +271,10 @@ void PropertyMgr::assertUniqueName(const std::string& name) const {
   if (UNLIKELY(hasProperty(name))) {
     // TODO: queryInterface should be const
     SmartIF<INamedInterface> ownerName(const_cast<PropertyMgr*>(this));
-    throw GaudiException("duplicated property name " + name,
-                         ownerName ? ownerName->name() : "PropertyMgr",
-                         StatusCode::FAILURE);
+    auto msgSvc = Gaudi::svcLocator()->service<IMessageSvc>("MessageSvc");
+    MsgStream log(msgSvc, ownerName ? ownerName->name() : "PropertyMgr");
+    log << MSG::WARNING << "duplicated property name '" << name
+        << "', see https://its.cern.ch/jira/browse/GAUDI-1023"<< endmsg;
   }
 }
 // =====================================================================
