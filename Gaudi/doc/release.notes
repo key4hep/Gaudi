@@ -2,6 +2,10 @@ Package : Gaudi
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-04-20 - Marco Clemencic
+ - Modified the minimal boostrap function to force the import of GaudiPython
+   with ROOT <= 6.2.5, to work around a bug in ROOT.
+
 ! 2015-04-13 - Marco Clemencic
  - Refactored printing of alg sequences and moved it after the initialize,
    to allow an implemetation in C++ (to avoid GaudiPython in gaudirun.py).

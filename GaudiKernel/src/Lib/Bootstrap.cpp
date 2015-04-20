@@ -17,6 +17,8 @@
 #include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/IEventProcessor.h"
 
+#include "RVersion.h"
+
 namespace Gaudi
 {
 
@@ -312,6 +314,9 @@ extern "C" {
       return jos->addPropertyToCatalogue(comp, StringProperty(name, value)).isSuccess();
     }
     return false;
+  }
+  int PyHelper(ROOT_VERSION_CODE)() {
+    return ROOT_VERSION_CODE;
   }
 
 #define PyFSMHelper(s) bool py_bootstrap_fsm_ ## s (IInterface* i) { \

@@ -59,21 +59,23 @@ class BootstrapHelper(object):
         libname = 'libGaudiKernel.so'
         self.log.debug('loading GaudiKernel (%s)', libname)
 
-        gkl = CDLL(libname)
+        self.lib = gkl = CDLL(libname)
 
-        functions = [('getService', c_void_p, [c_void_p, c_char_p]),
+        functions = [('createApplicationMgr', c_void_p, []),
+                     ('getService', c_void_p, [c_void_p, c_char_p]),
                      ('setProperty', c_bool, [c_void_p, c_char_p, c_char_p]),
                      ('getProperty', c_char_p, [c_void_p, c_char_p]),
                      ('addPropertyToCatalogue', c_bool, [c_void_p, c_char_p, c_char_p, c_char_p]),
+                     ('ROOT_VERSION_CODE', c_int, []),
                      ]
 
         for name, restype, args in functions:
             f = getattr(gkl, 'py_bootstrap_%s' % name)
             f.restype, f.args = restype, args
-            setattr(self, name, f)
-        gkl.py_bootstrap_createApplicationMgr.restype = c_void_p
-        gkl.py_bootstrap_createApplicationMgr.args = []
-
+            # create a delegate method if not already present
+            # (we do not want to use hasattr because it calls "properties")
+            if name not in self.__class__.__dict__:
+                setattr(self, name, f)
 
         for name in ('configure', 'initialize', 'start',
                      'stop', 'finalize', 'terminate'):
@@ -85,11 +87,22 @@ class BootstrapHelper(object):
         gkl.py_helper_printAlgsSequences.restype = None
         gkl.py_helper_printAlgsSequences.args = [c_void_p]
 
-        self.lib = gkl
-
     def createApplicationMgr(self):
         ptr = self.lib.py_bootstrap_createApplicationMgr()
         return self.AppMgr(ptr, self.lib)
+
+    @property
+    def ROOT_VERSION_CODE(self):
+        return self.lib.py_bootstrap_ROOT_VERSION_CODE()
+
+    @property
+    def ROOT_VERSION(self):
+        root_version_code = self.ROOT_VERSION_CODE
+        a = root_version_code >> 16 & 0xff
+        b = root_version_code >> 8 & 0xff
+        c = root_version_code & 0xff
+        return (a, b, c)
+
 
 _bootstrap = None
 
@@ -258,6 +271,10 @@ class gaudimain(object) :
             if not self.g.setProperty(p, str(v)):
                 self.log.error('Cannot set property %s.%s to %s', comp, p, v)
                 sys.exit(10)
+        # issue with missing dictionary with ROOT < 6.2.7
+        if _bootstrap.ROOT_VERSION < (6, 2, 7):
+            # we need to load GaudiPython
+            import GaudiPython
 
         self.g.configure()
 

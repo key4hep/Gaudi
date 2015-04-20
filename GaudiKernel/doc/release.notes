@@ -2,6 +2,10 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-04-20 - Marco Clemencic
+ - Added a (C) function that returns the ROOT version (code), to be used in
+   Python to get the version of ROOT without importing cppyy.
+
 ! 2015-04-13 - Marco Clemencic
  - Fixed visibility of gaudirun.py Python helper functions.
 
