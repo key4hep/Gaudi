@@ -900,6 +900,7 @@ void configGenerator::pythonizeValue( const Property* p,
   }
 }
 
+#include "GaudiKernel/IMessageSvc.h"
 //-----------------------------------------------------------------------------
 int createAppMgr()
 //-----------------------------------------------------------------------------
@@ -913,6 +914,9 @@ int createAppMgr()
     propMgr->setProperty( "AppName", "");              // No initial printout message
     propMgr->setProperty( "OutputLevel", "7");         // No other printout messages
     appUI->configure();
+    SmartIF<IProperty> msgSvc{SmartIF<IMessageSvc>{iface}};
+    msgSvc->setProperty("setWarning", "['DefaultName', 'PropertyMgr']");
+    msgSvc->setProperty("Format", "%T %0W%M");
     return EXIT_SUCCESS;
   }
   else {

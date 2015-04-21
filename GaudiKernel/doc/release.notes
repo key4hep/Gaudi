@@ -2,6 +2,10 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-04-21 - Marco Clemencic
+ - GAUDI-1023: ensure that the waring is printed by genconf
+   Also fixed the retrieval of the PropertyMgr owner name (if it was set).
+
 ! 2015-04-20 - Marco Clemencic
  - GAUDI-1023: issue a warning when re-declaring a property
    The anti-pattern is used a bit too often to just fail: we need some time to

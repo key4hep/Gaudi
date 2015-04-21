@@ -270,10 +270,17 @@ bool PropertyMgr::hasProperty(const std::string& name) const {
 void PropertyMgr::assertUniqueName(const std::string& name) const {
   if (UNLIKELY(hasProperty(name))) {
     // TODO: queryInterface should be const
-    SmartIF<INamedInterface> ownerName(const_cast<PropertyMgr*>(this));
+    // Note: using SmartIF causes a segfault in genconf (wrong ref. count)
+    INamedInterface* owner = nullptr;
+    std::string ownerName{"PropertyMgr"};
+    if (m_pOuter &&
+        const_cast<IInterface*>(m_pOuter)->queryInterface(INamedInterface::interfaceID(), (void**)&owner).isSuccess()) {
+      ownerName = owner->name();
+    }
     auto msgSvc = Gaudi::svcLocator()->service<IMessageSvc>("MessageSvc");
-    MsgStream log(msgSvc, ownerName ? ownerName->name() : "PropertyMgr");
-    log << MSG::WARNING << "duplicated property name '" << name
+    MsgStream log(msgSvc, ownerName);
+    log << MSG::WARNING
+        << "duplicated property name '" << name
         << "', see https://its.cern.ch/jira/browse/GAUDI-1023"<< endmsg;
   }
 }
