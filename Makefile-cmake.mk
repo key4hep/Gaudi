@@ -109,7 +109,9 @@ endif
 # This wrapping around the test target is used to ensure the generation of
 # the XML output from ctest. 
 test: $(BUILDDIR)/$(BUILD_CONF_FILE)
-	cd $(BUILDDIR) && $(CTEST) -T test $(ARGS)
+	$(RM) -r $(BUILDDIR)/Testing $(BUILDDIR)/html
+	-cd $(BUILDDIR) && $(CTEST) -T test $(ARGS)
+	+$(BUILD_CMD) HTMLSummary
 
 ifeq ($(VERBOSE),)
 # less verbose install (see GAUDI-1018)
