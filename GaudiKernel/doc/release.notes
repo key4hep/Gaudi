@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-04-23 - Rosen Matev
+ - Fixed GAUDI-1028: typo in ConfigurableUser
+
 ! 2015-04-21 - Marco Clemencic
  - GAUDI-1023: ensure that the waring is printed by genconf
    Also fixed the retrieval of the PropertyMgr owner name (if it was set).
