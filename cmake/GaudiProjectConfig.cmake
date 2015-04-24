@@ -140,6 +140,16 @@ else()
   set(GAUDI_DETACHED_DEBINFO OFF)
 endif()
 
+# FIXME: workaroud to use LCG_releases_base also when we have an old toolchain
+#        that does not define it
+if(NOT LCG_releases_base AND LCG_TOOLCHAIN_INFO)
+  if(LCG_releases MATCHES "LCG_${heptools_version}\$")
+    get_filename_component(LCG_releases_base ${LCG_releases} PATH)
+  else()
+    set(LCG_releases_base ${LCG_releases})
+  endif()
+endif()
+
 #---------------------------------------------------------------------------------------------------
 # Programs and utilities needed for the build
 #---------------------------------------------------------------------------------------------------
