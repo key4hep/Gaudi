@@ -1,27 +1,27 @@
-// Framework includes
-#include "GaudiKernel/SvcFactory.h"
-#include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/Algorithm.h" // will be IAlgorithm if context getter promoted to interface
-#include <GaudiAlg/GaudiAlgorithm.h>
-#include <GaudiKernel/IDataManagerSvc.h>
-#include "tbb/task.h"
-
-// C++
 #include <unordered_set>
 #include <algorithm>
 #include <map>
 #include <sstream>
 #include <queue>
 
+// External libs
+#include "tbb/task.h"
+// DP waiting for the TBB service
+#include "tbb/task_scheduler_init.h"
+
+// Framework includes
+#include "GaudiKernel/SvcFactory.h"
+#include "GaudiKernel/IAlgorithm.h"
+#include "GaudiKernel/IDataManagerSvc.h"
+#include "GaudiKernel/Algorithm.h" // will be IAlgorithm if context getter promoted to interface
+#include "GaudiAlg/GaudiAlgorithm.h"
+
 // Local
 #include "ForwardSchedulerSvc.h"
+#include "AccelAlgoExecutionTask.h"
 #include "AlgoExecutionTask.h"
 #include "AlgResourcePool.h"
 #include "EFGraphVisitors.h"
-
-// External libs
-// DP waiting for the TBB service
-#include "tbb/task_scheduler_init.h"
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY(ForwardSchedulerSvc)
@@ -38,6 +38,7 @@ ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* 
   declareProperty("MaxEventsInFlight", m_maxEventsInFlight = 0 );
   declareProperty("ThreadPoolSize", m_threadPoolSize = -1 );
   declareProperty("WhiteboardSvc", m_whiteboardSvcName = "EventDataSvc" );
+  declareProperty("AcceleratorSvc", m_accelSchedSvcName = "AcceleratorSchedulerSvc" );
   // Will disappear when dependencies are properly propagated into the C++ code of the algos
   declareProperty("AlgosDependencies", m_algosDependencies);
   declareProperty("MaxAlgosInFlight", m_maxAlgosInFlight = 0, "Taken from the whiteboard. Deprecated" );
@@ -47,6 +48,7 @@ ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* 
   declareProperty("SimulateExecution", m_simulateExecution = false );
   declareProperty("Optimizer", m_optimizationMode = "", "The following modes are currently available: PCE, COD, DRE, E" );
   declareProperty("DumpIntraEventDynamics", m_dumpIntraEventDynamics = false, "Dump intra-event concurrency dynamics to csv file" );
+  declareProperty("UseAccelerator", m_useAccelerator = false , "Turn on opportunistic use of an accelerator for scheduling of 'superfluous' algorithms");
 }
 
 //---------------------------------------------------------------------------
@@ -90,6 +92,12 @@ StatusCode ForwardSchedulerSvc::initialize(){
     }
   }
 
+  // Get accelerator scheduler
+  if (m_useAccelerator) {
+    m_acceleratorScheduler = serviceLocator()->service(m_accelSchedSvcName);
+    if (!m_acceleratorScheduler.isValid())
+      fatal() << "Error retrieving AcceleratorSvc interface IAccelerator." << endmsg;
+  }
   // Align the two quantities
   m_maxEventsInFlight = numberOfWBSlots;
 
@@ -803,14 +811,15 @@ StatusCode ForwardSchedulerSvc::promoteToDataReady(unsigned int iAlgo, int si) {
 StatusCode ForwardSchedulerSvc::promoteToScheduled(unsigned int iAlgo, int si) {
 
   if (m_algosInFlight == m_maxAlgosInFlight)
-    return StatusCode::FAILURE;
+    if (!m_useAccelerator)
+      return StatusCode::FAILURE;
 
   const std::string& algName(index2algname(iAlgo));
 
   IAlgorithm* ialgoPtr=nullptr;
   StatusCode sc ( m_algResourcePool->acquireAlgorithm(algName,ialgoPtr) );
 
-  if (sc.isSuccess()) {
+  if (sc.isSuccess()) { // if we managed to get an algorithm instance try to schedule it
     Algorithm* algoPtr = dynamic_cast<Algorithm*> (ialgoPtr); // DP: expose the setter of the context?
     EventContext* eventContext ( m_eventSlots[si].eventContext );
     if (!eventContext)
@@ -818,13 +827,19 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled(unsigned int iAlgo, int si) {
 
     algoPtr->setContext(m_eventSlots[si].eventContext);
     ++m_algosInFlight;
-    // Avoid to use tbb if the pool size is 1 and run in this thread
-    if (-100 != m_threadPoolSize) {
-      tbb::task* t = new( tbb::task::allocate_root() ) AlgoExecutionTask(ialgoPtr, iAlgo, serviceLocator(), this);
-      tbb::task::enqueue( *t);
+    if (!m_useAccelerator) {
+      // Avoid to use tbb if the pool size is 1 and run in this thread
+      if (-100 != m_threadPoolSize) {
+        tbb::task* t = new( tbb::task::allocate_root() ) AlgoExecutionTask(ialgoPtr, iAlgo, serviceLocator(), this);
+        tbb::task::enqueue( *t);
+      } else {
+        AlgoExecutionTask theTask(ialgoPtr, iAlgo, serviceLocator(), this);
+        theTask.execute();
+      }
     } else {
-      AlgoExecutionTask theTask(ialgoPtr, iAlgo, serviceLocator(), this);
-      theTask.execute();
+      // Can we use tbb-based overloaded new-operator for a "custom" task (an algorithm wrapper, not derived from tbb::task)? it seems it works..
+      AccelAlgoExecutionTask* theTask = new( tbb::task::allocate_root() ) AccelAlgoExecutionTask(ialgoPtr, iAlgo, serviceLocator(), this);
+      m_acceleratorScheduler->push(*theTask);
     }
 
     if (msgLevel(MSG::DEBUG))

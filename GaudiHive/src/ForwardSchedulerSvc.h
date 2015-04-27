@@ -1,20 +1,6 @@
 #ifndef GAUDIHIVE_FORWARDSCHEDULERSVC_H
 #define GAUDIHIVE_FORWARDSCHEDULERSVC_H
 
-// Framework include files
-#include "GaudiKernel/IScheduler.h"
-#include "GaudiKernel/IRunable.h"
-#include "GaudiKernel/Service.h"
-#include "GaudiKernel/IAlgResourcePool.h"
-#include "GaudiKernel/IHiveWhiteBoard.h"
-
-// Local includes
-#include "AlgsExecutionStates.h"
-#include "EventSlot.h"
-#include "ExecutionFlowManager.h"
-#include "DataFlowManager.h"
-
-// C++ include files
 #include <vector>
 #include <string>
 #include <unordered_map>
@@ -23,6 +9,20 @@
 
 // External libs
 #include "tbb/concurrent_queue.h"
+
+// Framework include files
+#include "GaudiKernel/IScheduler.h"
+#include "GaudiKernel/IRunable.h"
+#include "GaudiKernel/Service.h"
+#include "GaudiKernel/IAlgResourcePool.h"
+#include "GaudiKernel/IHiveWhiteBoard.h"
+#include "GaudiKernel/IAccelerator.h"
+
+// Local includes
+#include "AlgsExecutionStates.h"
+#include "EventSlot.h"
+#include "ExecutionFlowManager.h"
+#include "DataFlowManager.h"
 
 typedef AlgsExecutionStates::State State;
 
@@ -133,6 +133,12 @@ private:
   /// The whiteboard name
   std::string m_whiteboardSvcName;
 
+  /// A shortcut to accelerator scheduler
+  SmartIF<IAccelerator> m_acceleratorScheduler;
+
+  /// The accelerator scheduler's name
+  std::string m_accelSchedSvcName;
+
   /// Vector of events slots
   std::vector<EventSlot> m_eventSlots;
 
@@ -209,9 +215,12 @@ private:
   std::string m_optimizationMode;
   // Dump intra-event concurrency dynamics to csv file
   bool m_dumpIntraEventDynamics;
+  // Flag to control opportunistic use of an accelerator for scheduling of 'superfluous' algorithms
+  bool m_useAccelerator;
 
   // Needed to queue actions on algorithm finishing and decrement algos in flight
   friend class AlgoExecutionTask;
+  friend class AccelAlgoExecutionTask;
 
 };
 
