@@ -13,28 +13,28 @@
 #include "GaudiKernel/IDataManagerSvc.h"
 
 // Local
-#include "AcceleratorSchedulerSvc.h"
+#include "IOBoundAlgSchedulerSvc.h"
 
 // Instantiation of a static factory class used by clients to create instances of this service
-DECLARE_SERVICE_FACTORY(AcceleratorSchedulerSvc)
+DECLARE_SERVICE_FACTORY(IOBoundAlgSchedulerSvc)
 
 //===========================================================================
 // Infrastructure methods
 
-AcceleratorSchedulerSvc::AcceleratorSchedulerSvc( const std::string& name, ISvcLocator* svcLoc ):
+IOBoundAlgSchedulerSvc::IOBoundAlgSchedulerSvc( const std::string& name, ISvcLocator* svcLoc ):
  base_class(name,svcLoc),
  m_isActive(false)
 {}
 
 //---------------------------------------------------------------------------
-AcceleratorSchedulerSvc::~AcceleratorSchedulerSvc(){}
+IOBoundAlgSchedulerSvc::~IOBoundAlgSchedulerSvc(){}
 //---------------------------------------------------------------------------
 
 /**
  * Here, among some "bureaucracy" operations, the scheduler is activated,
  * executing the activate() function in a new thread.
 **/
-StatusCode AcceleratorSchedulerSvc::initialize(){
+StatusCode IOBoundAlgSchedulerSvc::initialize(){
 
   // Initialise mother class (read properties, ...)
   StatusCode sc(Service::initialize());
@@ -43,7 +43,7 @@ StatusCode AcceleratorSchedulerSvc::initialize(){
 
   // Activate the scheduler in another thread.
   info() << "Activating scheduler in a separate thread" << endmsg;
-  m_thread = std::thread (std::bind(&AcceleratorSchedulerSvc::activate,
+  m_thread = std::thread (std::bind(&IOBoundAlgSchedulerSvc::activate,
                                     this));
 
   return sc;
@@ -54,7 +54,7 @@ StatusCode AcceleratorSchedulerSvc::initialize(){
 /**
  * Here the scheduler is deactivated and the thread joined.
 **/
-StatusCode AcceleratorSchedulerSvc::finalize(){
+StatusCode IOBoundAlgSchedulerSvc::finalize(){
 
   StatusCode sc(Service::finalize());
   if (!sc.isSuccess())
@@ -64,7 +64,7 @@ StatusCode AcceleratorSchedulerSvc::finalize(){
   if (!sc.isSuccess())
     warning () << "Scheduler could not be deactivated" << endmsg;
 
-  info() << "Joining Accelerator Scheduler thread" << endmsg;
+  info() << "Joining preemptive scheduler's thread" << endmsg;
   m_thread.join();
 
   return sc;
@@ -77,7 +77,7 @@ StatusCode AcceleratorSchedulerSvc::finalize(){
  * queue is not empty. This will guarantee that all actions are executed and
  * a stall is not created.
  **/
-void AcceleratorSchedulerSvc::activate(){
+void IOBoundAlgSchedulerSvc::activate(){
 
   // Now it's running
   m_isActive=true;
@@ -87,7 +87,7 @@ void AcceleratorSchedulerSvc::activate(){
   StatusCode sc(StatusCode::SUCCESS);
 
   // Continue to wait if the scheduler is running or there is something to do
-  info() << "Start checking accelerator actionsQueue" << endmsg;
+  info() << "Start checking the queue of I/O-bound algorithm tasks.." << endmsg;
   while(m_isActive or m_actionsQueue.size() > 0){
     m_actionsQueue.pop(thisAction);
     std::thread th(thisAction);
@@ -103,11 +103,11 @@ void AcceleratorSchedulerSvc::activate(){
  *  2) Flip the status flag m_isActive to false
  * This second action is the last one to be executed by the scheduler.
  */
-StatusCode AcceleratorSchedulerSvc::deactivate(){
+StatusCode IOBoundAlgSchedulerSvc::deactivate(){
 
   if (m_isActive){
     // Drain the scheduler
-    //m_actionsQueue.push(std::bind(&AcceleratorSchedulerSvc::m_drain,
+    //m_actionsQueue.push(std::bind(&IOBoundSchedulerSvc::m_drain,
     //                              this));
     // we set the flag in this thread, not in the last action, to avoid stall,
     // since we execute tasks asynchronously, in a detached thread, and it's possible that
@@ -120,11 +120,11 @@ StatusCode AcceleratorSchedulerSvc::deactivate(){
   return StatusCode::SUCCESS;
 }
 
-StatusCode AcceleratorSchedulerSvc::push(IAlgTask& task) {
+StatusCode IOBoundAlgSchedulerSvc::push(IAlgTask& task) {
 
   // the temporary lambda should be moved into the queue in here
   auto actionn = [&](){
-    debug() << " .. launching algo-closure .. " << endmsg;
+    debug() << " .. launching I/O-bound algo-closure .. " << endmsg;
     return task.execute();
   };
 

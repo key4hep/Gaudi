@@ -1,5 +1,5 @@
-#ifndef GAUDIHIVE_ACCELERATORSCHEDULERSVC_H
-#define GAUDIHIVE_ACCELERATORSCHEDULERSVC_H
+#ifndef GAUDIHIVE_IOBOUNDALGSCHEDULERSVC_H
+#define GAUDIHIVE_IOBOUNDALGSCHEDULERSVC_H
 
 #include <functional>
 #include <thread>
@@ -15,20 +15,20 @@
 
 //---------------------------------------------------------------------------
 
-/**@class AcceleratorSchedulerSvc AcceleratorSchedulerSvc.h GaudiHive/src/AcceleratorSchedulerSvc.h
+/**@class IOBoundAlgSchedulerSvc IOBoundAlgSchedulerSvc.h GaudiHive/src/IOBoundAlgSchedulerSvc.h
  *
  * Please refer to the full documentation of the methods for more details.
  *
  *  @author  Illya Shapoval
  *  @version 1.0
  */
-class AcceleratorSchedulerSvc: public extends1<Service, IAccelerator> {
+class IOBoundAlgSchedulerSvc: public extends1<Service, IAccelerator> {
 public:
   /// Constructor
-  AcceleratorSchedulerSvc( const std::string& name, ISvcLocator* svc );
+  IOBoundAlgSchedulerSvc( const std::string& name, ISvcLocator* svc );
 
   /// Destructor
-  ~AcceleratorSchedulerSvc();
+  ~IOBoundAlgSchedulerSvc();
 
   /// Initialise
   virtual StatusCode initialize();
@@ -65,4 +65,4 @@ private:
 
 };
 
-#endif // GAUDIHIVE_ACCELERATORSCHEDULERSVC_H
+#endif // GAUDIHIVE_IOBOUNDALGSCHEDULERSVC_H

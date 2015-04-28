@@ -1,5 +1,5 @@
-#ifndef GAUDIHIVE_ACCELALGOEXECUTIONTASK_H
-#define GAUDIHIVE_ACCELALGOEXECUTIONTASK_H
+#ifndef GAUDIHIVE_IOBOUNDALGTASK_H
+#define GAUDIHIVE_IOBOUNDALGTASK_H
 
 // Framework include files
 #include "GaudiKernel/IAlgTask.h"
@@ -9,17 +9,18 @@
 
 #include "ForwardSchedulerSvc.h"
 
-/**@class AccelAlgoExecutionTask AccelAlgoExecutionTask.h GaudiHive/src/AccelAlgoExecutionTask.h
+/**@class IOBoundAlgTask IOBoundAlgTask.h GaudiHive/src/IOBoundAlgTask.h
  *
- *  Wrapper around Gaudi algorithm, specializing on accelerator-targeted Gaudi algorithm.
+ *  Wrapper around I/O-bound Gaudi-algorithms. It may also cover the accelerator-targeted algorithms.
+ *  It must be used to prepare algorithms before sending them to I/O-bound scheduler.
  *
  *  @author  Illya Shapoval
  *  @version 1.0
  */
 
-class AccelAlgoExecutionTask : public IAlgTask {
+class IOBoundAlgTask : public IAlgTask {
 public:
-    AccelAlgoExecutionTask(IAlgorithm* algorithm,
+    IOBoundAlgTask(IAlgorithm* algorithm,
                            unsigned int algoIndex,
                            ISvcLocator* svcLocator,
                            ForwardSchedulerSvc* schedSvc):
@@ -28,7 +29,7 @@ public:
     m_schedSvc(schedSvc),
     m_serviceLocator(svcLocator){};
 
-    ~AccelAlgoExecutionTask() {};
+    ~IOBoundAlgTask() {};
 
     virtual StatusCode execute();
 
@@ -36,7 +37,7 @@ private:
   SmartIF<IAlgorithm> m_algorithm;
   const unsigned int m_algoIndex;
   // For the callbacks on task finishing
-  SmartIF<ForwardSchedulerSvc> m_schedSvc;
+  SmartIF<ForwardSchedulerSvc> m_schedSvc; // TODO consider using it through its interface (IScheduler?)
   SmartIF<ISvcLocator> m_serviceLocator;
 };
 

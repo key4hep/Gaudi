@@ -133,11 +133,11 @@ private:
   /// The whiteboard name
   std::string m_whiteboardSvcName;
 
-  /// A shortcut to accelerator scheduler
-  SmartIF<IAccelerator> m_acceleratorScheduler;
+  /// A shortcut to IO-bound algorithm scheduler
+  SmartIF<IAccelerator> m_IOBoundAlgScheduler;
 
-  /// The accelerator scheduler's name
-  std::string m_accelSchedSvcName;
+  /// The IO-bound algorithm scheduler's name
+  std::string m_IOBoundAlgSchedulerSvcName;
 
   /// Vector of events slots
   std::vector<EventSlot> m_eventSlots;
@@ -215,12 +215,12 @@ private:
   std::string m_optimizationMode;
   // Dump intra-event concurrency dynamics to csv file
   bool m_dumpIntraEventDynamics;
-  // Flag to control opportunistic use of an accelerator for scheduling of 'superfluous' algorithms
-  bool m_useAccelerator;
+  // Flag to control cooperative use of the scheduler, dedicated to I/O-bound algorithms
+  bool m_useIOBoundAlgScheduler;
 
   // Needed to queue actions on algorithm finishing and decrement algos in flight
   friend class AlgoExecutionTask;
-  friend class AccelAlgoExecutionTask;
+  friend class IOBoundAlgTask;
 
 };
 

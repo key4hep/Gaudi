@@ -5,12 +5,12 @@
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/ContextSpecificPtr.h"
+#include "IOBoundAlgTask.h"
 
 // local includes
-#include "AccelAlgoExecutionTask.h"
 #include "RetCodeGuard.h"
 
-StatusCode AccelAlgoExecutionTask::execute() {
+StatusCode IOBoundAlgTask::execute() {
 
   Algorithm* this_algo = dynamic_cast<Algorithm*>(m_algorithm.get());
    if (!this_algo){

@@ -18,10 +18,10 @@
 
 // Local
 #include "ForwardSchedulerSvc.h"
-#include "AccelAlgoExecutionTask.h"
 #include "AlgoExecutionTask.h"
 #include "AlgResourcePool.h"
 #include "EFGraphVisitors.h"
+#include "IOBoundAlgTask.h"
 
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY(ForwardSchedulerSvc)
@@ -38,7 +38,7 @@ ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* 
   declareProperty("MaxEventsInFlight", m_maxEventsInFlight = 0 );
   declareProperty("ThreadPoolSize", m_threadPoolSize = -1 );
   declareProperty("WhiteboardSvc", m_whiteboardSvcName = "EventDataSvc" );
-  declareProperty("AcceleratorSvc", m_accelSchedSvcName = "AcceleratorSchedulerSvc" );
+  declareProperty("IOBoundAlgSchedulerSvc", m_IOBoundAlgSchedulerSvcName = "IOBoundAlgSchedulerSvc" );
   // Will disappear when dependencies are properly propagated into the C++ code of the algos
   declareProperty("AlgosDependencies", m_algosDependencies);
   declareProperty("MaxAlgosInFlight", m_maxAlgosInFlight = 0, "Taken from the whiteboard. Deprecated" );
@@ -48,7 +48,7 @@ ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* 
   declareProperty("SimulateExecution", m_simulateExecution = false );
   declareProperty("Optimizer", m_optimizationMode = "", "The following modes are currently available: PCE, COD, DRE, E" );
   declareProperty("DumpIntraEventDynamics", m_dumpIntraEventDynamics = false, "Dump intra-event concurrency dynamics to csv file" );
-  declareProperty("UseAccelerator", m_useAccelerator = false , "Turn on opportunistic use of an accelerator for scheduling of 'superfluous' algorithms");
+  declareProperty("PreemptiveIOBoundTasks", m_useIOBoundAlgScheduler = false , "Turn on preemptive way of scheduling of I/O-bound algorithms");
 }
 
 //---------------------------------------------------------------------------
@@ -92,11 +92,11 @@ StatusCode ForwardSchedulerSvc::initialize(){
     }
   }
 
-  // Get accelerator scheduler
-  if (m_useAccelerator) {
-    m_acceleratorScheduler = serviceLocator()->service(m_accelSchedSvcName);
-    if (!m_acceleratorScheduler.isValid())
-      fatal() << "Error retrieving AcceleratorSvc interface IAccelerator." << endmsg;
+  // Get dedicated scheduler for I/O-bound algorithms
+  if (m_useIOBoundAlgScheduler) {
+    m_IOBoundAlgScheduler = serviceLocator()->service(m_IOBoundAlgSchedulerSvcName);
+    if (!m_IOBoundAlgScheduler.isValid())
+      fatal() << "Error retrieving IOBoundSchedulerAlgSvc interface IAccelerator." << endmsg;
   }
   // Align the two quantities
   m_maxEventsInFlight = numberOfWBSlots;
@@ -811,7 +811,7 @@ StatusCode ForwardSchedulerSvc::promoteToDataReady(unsigned int iAlgo, int si) {
 StatusCode ForwardSchedulerSvc::promoteToScheduled(unsigned int iAlgo, int si) {
 
   if (m_algosInFlight == m_maxAlgosInFlight)
-    if (!m_useAccelerator)
+    if (!m_useIOBoundAlgScheduler)
       return StatusCode::FAILURE;
 
   const std::string& algName(index2algname(iAlgo));
@@ -827,7 +827,7 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled(unsigned int iAlgo, int si) {
 
     algoPtr->setContext(m_eventSlots[si].eventContext);
     ++m_algosInFlight;
-    if (!m_useAccelerator) {
+    if (!m_useIOBoundAlgScheduler) {
       // Avoid to use tbb if the pool size is 1 and run in this thread
       if (-100 != m_threadPoolSize) {
         tbb::task* t = new( tbb::task::allocate_root() ) AlgoExecutionTask(ialgoPtr, iAlgo, serviceLocator(), this);
@@ -838,8 +838,8 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled(unsigned int iAlgo, int si) {
       }
     } else {
       // Can we use tbb-based overloaded new-operator for a "custom" task (an algorithm wrapper, not derived from tbb::task)? it seems it works..
-      AccelAlgoExecutionTask* theTask = new( tbb::task::allocate_root() ) AccelAlgoExecutionTask(ialgoPtr, iAlgo, serviceLocator(), this);
-      m_acceleratorScheduler->push(*theTask);
+      IOBoundAlgTask* theTask = new( tbb::task::allocate_root() ) IOBoundAlgTask(ialgoPtr, iAlgo, serviceLocator(), this);
+      m_IOBoundAlgScheduler->push(*theTask);
     }
 
     if (msgLevel(MSG::DEBUG))
