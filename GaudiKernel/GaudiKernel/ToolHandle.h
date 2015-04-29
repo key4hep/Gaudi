@@ -86,6 +86,7 @@ public:
       Can be called only if the type T is a concrete tool type (not an interface),
       and you want to use the default name. */
   ToolHandle( int ) = delete;
+  ToolHandle( nullptr ) = delete;
 
   explicit ToolHandle( const IInterface* parent = 0, bool createIf = true )
     : ToolHandleInfo(parent,createIf),
