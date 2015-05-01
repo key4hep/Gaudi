@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-05-01 - Charles Leggett
+ - compiler doesn't like nullptr. have to use std::nullptr_t
+
 ! 2015-04-29 - Charles Leggett
  - mark ToolHandle(nullptr) constructor as deleted to avoid abuse
 
