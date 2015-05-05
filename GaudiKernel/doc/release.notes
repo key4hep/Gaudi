@@ -2,6 +2,11 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-05-05 - Marco Clemencic
+ - Fixed GAUDI-1030: remove Algorithm property "ErrorCount"
+   Renamed the property to "ErrorCounter".
+   Added accessor Algorithm::errorCount().
+
 ! 2015-04-23 - Rosen Matev
  - Fixed GAUDI-1028: typo in ConfigurableUser
 
