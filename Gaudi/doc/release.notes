@@ -2,6 +2,13 @@ Package : Gaudi
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-05-07 - Marco Clemencic
+ - Fixed GAUDI-1033: segfaults when calling Python functions from C++
+   Use ctypes.PyDLL instead of ctypes.CDLL. This prevents python threads to run
+   in parallel to the C++ code, but is consistent with the bootstrap via ROOT.
+   Once the user code is instrumented to correctly acquire the GIL, we can
+   revert to ctypes.CDLL.
+
 ! 2015-04-20 - Marco Clemencic
  - Modified the minimal boostrap function to force the import of GaudiPython
    with ROOT <= 6.2.5, to work around a bug in ROOT.

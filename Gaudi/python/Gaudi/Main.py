@@ -53,13 +53,15 @@ class BootstrapHelper(object):
             return self.lib.py_helper_printAlgsSequences(self.ptr)
 
     def __init__(self):
-        from ctypes import CDLL, c_void_p, c_bool, c_char_p, c_int
+        from ctypes import PyDLL, c_void_p, c_bool, c_char_p, c_int
         self.log = logging.getLogger('BootstrapHelper')
 
         libname = 'libGaudiKernel.so'
         self.log.debug('loading GaudiKernel (%s)', libname)
 
-        self.lib = gkl = CDLL(libname)
+        # FIXME: note that we need PyDLL instead of CDLL if the calls to
+        #        Python functions are not protected with the GIL.
+        self.lib = gkl = PyDLL(libname)
 
         functions = [('createApplicationMgr', c_void_p, []),
                      ('getService', c_void_p, [c_void_p, c_char_p]),
