@@ -38,9 +38,14 @@ option(GAUDI_CMT_RELEASE
        "use CMT deafult release flags instead of the CMake ones"
        ON)
 
+if(BINARY_TAG MATCHES "-do0$")
+  set(GAUDI_SLOW_DEBUG_DEFAULT ON)
+else()
+  set(GAUDI_SLOW_DEBUG_DEFAULT OFF)
+endif()
 option(GAUDI_SLOW_DEBUG
        "turn off all optimizations in debug builds"
-       OFF)
+       ${GAUDI_SLOW_DEBUG_DEFAULT})
 
 if(DEFINED GAUDI_CPP11)
   message(WARNING "GAUDI_CPP11 is an obsolete option, use GAUDI_CXX_STANDARD=c++11 instead")
