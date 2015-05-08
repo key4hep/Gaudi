@@ -4,9 +4,12 @@ if (LCG_COMPVERS VERSION_LESS "47")
 elseif(LCG_COMPVERS VERSION_LESS "49")
   # C++11 is enable by default on 4.7 <= gcc < 4.9
   set(GAUDI_CXX_STANDARD_DEFAULT "c++11")
-else()
-  # C++14(1y) is enable by default on gcc >= 4.9
+elseif(LCG_COMPVERS VERSION_LESS "51")
+  # C++1y (C++14 preview) is enable by default on 4.9 <= gcc < 5.1
   set(GAUDI_CXX_STANDARD_DEFAULT "c++1y")
+else()
+  # C++14 is enable by default on gcc >= 5.1
+  set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
 endif()
 
 #--- Gaudi Build Options -------------------------------------------------------
