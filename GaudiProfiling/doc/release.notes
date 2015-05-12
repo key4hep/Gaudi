@@ -5,6 +5,9 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+! 2015-05-12 - Marco Clemencic
+ - Modified GoogleAuditor.cpp to support new gperftools headers path.
+
 ============================ GaudiProfiling v2r4 =============================
 ! 2014-07-06 - Marco Clemencic
  - Modified interlprofiler.md to use Doxygen flavour of markdown.

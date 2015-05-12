@@ -77,6 +77,12 @@ foreach(undef_symbol IsHeapProfilerRunning
 endforeach()
 set_target_properties(GaudiGoogleProfiling PROPERTIES LINK_FLAGS "${gprof_linker_flags}")
 
+if(NOT EXISTS ${TCMALLOC_INCLUDE_DIR}/gperftools/tcmalloc.h)
+  # assume old-style tcmalloc headers
+  set_property(TARGET GaudiGoogleProfiling
+               APPEND PROPERTY COMPILE_DEFINITIONS TCMALLOC_OLD_GOOGLE_HEADERS)
+endif()
+
 
 #-----------------------------------
 # Intel VTune profiler
