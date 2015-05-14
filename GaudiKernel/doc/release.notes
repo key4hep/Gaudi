@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-05-14 - Marco Clemencic
+ - Fixed a build warning in test_PropertyMgr.
+
 ! 2015-05-05 - Marco Clemencic
  - Fixed GAUDI-1030: remove Algorithm property "ErrorCount"
    Renamed the property to "ErrorCounter".
