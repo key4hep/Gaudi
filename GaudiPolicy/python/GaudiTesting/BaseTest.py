@@ -471,6 +471,8 @@ class BaseTest(object):
             head = basename + "."
             head_len = len(head)
             platform = platformSplit(GetPlatform(self))
+            if 'do0' in platform:
+                platform.add('dbg')
             candidates = []
             for f in os.listdir(dirname):
                 if f.startswith(head):

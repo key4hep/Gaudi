@@ -1243,6 +1243,8 @@ class GaudiExeTest(ExecTestBase):
             head = basename + "."
             head_len = len(head)
             platform = platformSplit(self.GetPlatform())
+            if 'do0' in platform:
+                platform.add('dbg')
             candidates = []
             for f in os.listdir(dirname):
                 if f.startswith(head):
