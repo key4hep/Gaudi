@@ -44,7 +44,7 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   declareProperty( "OutputLevel",        m_outputLevel = MSG::NIL);
   declareProperty( "Enable",             m_isEnabled = true);
   declareProperty( "ErrorMax",           m_errorMax  = 1);
-  declareProperty( "ErrorCount",         m_errorCount = 0);
+  declareProperty( "ErrorCounter",       m_errorCount = 0);
   // Auditor monitoring properties
 
   // Get the default setting for service auditing from the AppMgr
@@ -1158,6 +1158,9 @@ StatusCode Algorithm::getProperty(const std::string& n, std::string& v ) const {
 }
 const std::vector<Property*>& Algorithm::getProperties( ) const {
   return m_propertyMgr->getProperties();
+}
+bool Algorithm::hasProperty(const std::string& name) const {
+  return m_propertyMgr->hasProperty(name);
 }
 
 /**

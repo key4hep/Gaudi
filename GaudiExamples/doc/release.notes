@@ -2,6 +2,13 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-05-14 - Marco Clemencic
+ - Minor change to heapchecker test to work with latest tcmalloc.
+
+! 2015-05-05 - Marco Clemencic
+ - Fixed GAUDI-1030: remove Algorithm property "ErrorCount"
+   Updated reference files.
+
 ! 2015-03-31 - Marco Clemencic
  - Adapted ExtendedProperties.cpp after the removal of ParsersFactory.h from
    Parsers.h.

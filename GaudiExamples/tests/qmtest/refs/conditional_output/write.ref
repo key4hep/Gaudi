@@ -95,7 +95,7 @@ DataCreator         DEBUG Property ['Name': Value] =  'AuditRestart':False
 DataCreator         DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 DataCreator         DEBUG Property ['Name': Value] =  'AuditInitialize':False
 DataCreator         DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-DataCreator         DEBUG Property ['Name': Value] =  'ErrorCount':0
+DataCreator         DEBUG Property ['Name': Value] =  'ErrorCounter':0
 DataCreator         DEBUG Property ['Name': Value] =  'ErrorMax':1
 DataCreator         DEBUG Property ['Name': Value] =  'Enable':True
 DataCreator         DEBUG Property ['Name': Value] =  'OutputLevel':1
@@ -137,7 +137,7 @@ OddEvents           DEBUG Property ['Name': Value] =  'AuditRestart':False
 OddEvents           DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 OddEvents           DEBUG Property ['Name': Value] =  'AuditInitialize':False
 OddEvents           DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-OddEvents           DEBUG Property ['Name': Value] =  'ErrorCount':0
+OddEvents           DEBUG Property ['Name': Value] =  'ErrorCounter':0
 OddEvents           DEBUG Property ['Name': Value] =  'ErrorMax':1
 OddEvents           DEBUG Property ['Name': Value] =  'Enable':True
 OddEvents           DEBUG Property ['Name': Value] =  'OutputLevel':1
@@ -174,7 +174,7 @@ EvenEvents          DEBUG Property ['Name': Value] =  'AuditRestart':False
 EvenEvents          DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 EvenEvents          DEBUG Property ['Name': Value] =  'AuditInitialize':False
 EvenEvents          DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-EvenEvents          DEBUG Property ['Name': Value] =  'ErrorCount':0
+EvenEvents          DEBUG Property ['Name': Value] =  'ErrorCounter':0
 EvenEvents          DEBUG Property ['Name': Value] =  'ErrorMax':1
 EvenEvents          DEBUG Property ['Name': Value] =  'Enable':True
 EvenEvents          DEBUG Property ['Name': Value] =  'OutputLevel':1
@@ -332,8 +332,8 @@ ServiceManager      DEBUG Finalizing service FileRecordDataSvc
 IncidentSvc         DEBUG Removing [SAVE_FILE_RECORD] listener 'FileRecordDataSvc'
 IncidentSvc         DEBUG Removing [FILE_OPEN_READ] listener 'FileRecordDataSvc'
 ServiceManager      DEBUG Looping over all active services...
-ServiceManager      DEBUG ---- MessageSvc (refCount = 20)
-ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 5)
+ServiceManager      DEBUG ---- MessageSvc (refCount = 16)
+ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)
 ServiceManager      DEBUG ---- FileRecordDataSvc (refCount = 3)
 ServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)
 ServiceManager      DEBUG ---- IncidentSvc (refCount = 3)

@@ -1,10 +1,7 @@
-// $Id: PartitionSwitchTool.cpp,v 1.2 2006/01/10 20:09:25 hmd Exp $
-
 // Framework include files
 #include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Tokenizer.h"
 #include "GaudiKernel/ToolFactory.h"
 #include "GaudiKernel/IPartitionControl.h"
 

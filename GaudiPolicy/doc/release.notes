@@ -2,6 +2,13 @@ package GaudiPolicy
 package manager: Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-05-14 - Marco Clemencic
+ - Select 'dbg' in test reference files if the platform contains 'do0'.
+
+! 2015-05-11 - Marco Clemencic
+ - In the test comparison with reference files, absorb the change of the
+   property name introduced with GAUDI-1030.
+
 ! 2015-03-04 - Marco Clemencic
  - Fixed escaping of special XML/HTML chars in CTestXML2HTML.
 

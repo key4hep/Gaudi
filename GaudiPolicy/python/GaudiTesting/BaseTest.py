@@ -471,6 +471,8 @@ class BaseTest(object):
             head = basename + "."
             head_len = len(head)
             platform = platformSplit(GetPlatform(self))
+            if 'do0' in platform:
+                platform.add('dbg')
             candidates = []
             for f in os.listdir(dirname):
                 if f.startswith(head):
@@ -748,6 +750,8 @@ for w,o,r in [
               (None, r"e([-+])0([0-9][0-9])", r"e\1\2"),
               # Output line changed in Gaudi v24
               (None, r'Service reference count check:', r'Looping over all active services...'),
+              # Change of property name in Algorithm (GAUDI-1030)
+              (None, r"Property(.*)'ErrorCount':", r"Property\1'ErrorCounter':"),
               ]: #[ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
     normalizeExamples += RegexpReplacer(o,r,w)
 

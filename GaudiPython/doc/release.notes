@@ -2,6 +2,13 @@ Package: GaudiPython
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-04-13 - Marco Clemencic
+ - Refactored printing of alg sequences and moved it after the initialize,
+   to allow an implemetation in C++ (to avoid GaudiPython in gaudirun.py).
+
+! 2015-04-10 - Marco Clemencic
+ - Added missing 'terminate' method to AppMgr.
+
 ! 2015-03-23 - Marco Clemencic
  - Removed workaround for ROOT-6032 and added workaround for ROOT-7201
    (it's practically the same bug)

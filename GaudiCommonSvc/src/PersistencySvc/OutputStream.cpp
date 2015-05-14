@@ -1,5 +1,4 @@
 // Framework include files
-#include "GaudiKernel/Tokenizer.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/ISvcLocator.h"
@@ -15,6 +14,8 @@
 #include "GaudiKernel/strcasecmp.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/DataStoreItem.h"
+#include "GaudiKernel/AttribStringParser.h"
+
 #include "OutputStream.h"
 #include "OutputStreamAgent.h"
 
@@ -371,17 +372,17 @@ StatusCode OutputStream::collectObjects()   {
     {
       ON_DEBUG
         log << MSG::DEBUG << "Algorithm '" << alg->name() << "' fired. Adding " << items << endmsg;
-      for ( Items::const_iterator i = items.begin(); i != items.end(); ++i ) 
+      for ( Items::const_iterator i = items.begin(); i != items.end(); ++i )
       {
         DataObject* obj = NULL;
         m_currentItem = (*i);
         StatusCode iret = m_pDataProvider->retrieveObject(m_currentItem->path(),obj);
-        if ( iret.isSuccess() ) 
+        if ( iret.isSuccess() )
         {
           iret = m_pDataManager->traverseSubTree(obj,m_agent);
           if ( !iret.isSuccess() ) { status = iret; }
         }
-        else  
+        else
         {
           log << MSG::ERROR << "Cannot write mandatory (algorithm dependent) object(s) (Not found) "
               << m_currentItem->path() << endmsg;
@@ -472,11 +473,9 @@ StatusCode OutputStream::connectConversionSvc()   {
   MsgStream log(msgSvc(), name());
   // Get output file from input
   std::string dbType, svc, shr;
-  Tokenizer tok(true);
-  tok.analyse(m_output, " ", "", "", "=", "'", "'");
-  for(Tokenizer::Items::iterator i = tok.items().begin(); i != tok.items().end(); ++i)   {
-    const std::string& tag = (*i).tag();
-    const std::string& val = (*i).value();
+  for(auto attrib: Gaudi::Utils::AttribStringParser(m_output)) {
+    const std::string& tag = attrib.tag;
+    const std::string& val = attrib.value;
     switch( ::toupper(tag[0]) )    {
     case 'D':
       m_outputName = val;
@@ -536,7 +535,7 @@ StatusCode OutputStream::connectConversionSvc()   {
     // Increase reference count and keep service.
     m_pConversionSvc = cnvSvc;
   }
-  else  
+  else
   {
     log << MSG::FATAL
         << "Unable to locate IConversionSvc interface (Unknown technology) " << endmsg

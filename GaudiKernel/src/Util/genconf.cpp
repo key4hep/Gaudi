@@ -237,8 +237,9 @@ void init_logging(boost::log::trivial::severity_level level)
 int main ( int argc, char** argv )
 //-----------------------------------------------------------------------------
 {
-  init_logging(System::isEnvSet("VERBOSE") ? boost::log::trivial::info
-                                           : boost::log::trivial::warning);
+  init_logging((System::isEnvSet("VERBOSE") && !System::getEnv("VERBOSE").empty())
+               ? boost::log::trivial::info
+               : boost::log::trivial::warning);
 
   fs::path pwd = fs::initial_path();
   fs::path out;
@@ -899,6 +900,7 @@ void configGenerator::pythonizeValue( const Property* p,
   }
 }
 
+#include "GaudiKernel/IMessageSvc.h"
 //-----------------------------------------------------------------------------
 int createAppMgr()
 //-----------------------------------------------------------------------------
@@ -912,6 +914,9 @@ int createAppMgr()
     propMgr->setProperty( "AppName", "");              // No initial printout message
     propMgr->setProperty( "OutputLevel", "7");         // No other printout messages
     appUI->configure();
+    SmartIF<IProperty> msgSvc{SmartIF<IMessageSvc>{iface}};
+    msgSvc->setProperty("setWarning", "['DefaultName', 'PropertyMgr']");
+    msgSvc->setProperty("Format", "%T %0W%M");
     return EXIT_SUCCESS;
   }
   else {

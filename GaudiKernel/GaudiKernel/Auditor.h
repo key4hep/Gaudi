@@ -149,6 +149,8 @@ public:
   /// Get all properties.
   const std::vector<Property*>& getProperties( ) const;
 
+  /// Implementation of IProperty::hasProperty
+  virtual bool hasProperty(const std::string& name) const;
 
   /** set the property form the value
    *

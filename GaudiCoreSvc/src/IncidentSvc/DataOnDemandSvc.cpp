@@ -11,7 +11,7 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Tokenizer.h"
+#include "GaudiKernel/AttribStringParser.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/ISvcLocator.h"
@@ -508,24 +508,19 @@ StatusCode DataOnDemandSvc::setup()
 // ============================================================================
 StatusCode DataOnDemandSvc::setupNodeHandlers()
 {
-  Setup::const_iterator j;
   std::string nam, typ, tag;
   StatusCode sc = StatusCode::SUCCESS;
   // Setup for node leafs, where simply a constructor is called...
-  for ( j=m_nodeMapping.begin(); j != m_nodeMapping.end(); ++j)
+  for (auto node: m_nodeMapping)
   {
-    Tokenizer tok(true);
-    tok.analyse(*j, " ", "", "", "=", "'", "'");
-    for ( Tokenizer::Items::iterator i = tok.items().begin();
-          i != tok.items().end(); i++ )   {
-      const std::string& t = (*i).tag();
-      const std::string& v = (*i).value();
-      switch( ::toupper(t[0]) )    {
+    using Parser = Gaudi::Utils::AttribStringParser;
+    for (auto attrib: Parser(node)) {
+      switch( ::toupper(attrib.tag[0]) ) {
       case 'D':
-        tag = v;
+        tag = std::move(attrib.value);
         break;
       case 'T':
-        nam = v;
+        nam = std::move(attrib.value);
         break;
       }
     }
@@ -550,22 +545,18 @@ StatusCode DataOnDemandSvc::setupNodeHandlers()
 // ============================================================================
 StatusCode DataOnDemandSvc::setupAlgHandlers()
 {
-  Setup::const_iterator j;
   std::string typ, tag;
 
-  for(j=m_algMapping.begin(); j != m_algMapping.end(); ++j)
+  for (auto alg: m_algMapping)
   {
-    Tokenizer tok(true);
-    tok.analyse(*j, " ", "", "", "=", "'", "'");
-    for(Tokenizer::Items::iterator i = tok.items().begin(); i != tok.items().end(); i++ )   {
-      const std::string& t = (*i).tag();
-      const std::string& v = (*i).value();
-      switch( ::toupper(t[0]) )    {
+    using Parser = Gaudi::Utils::AttribStringParser;
+    for (auto attrib: Parser(alg)) {
+      switch( ::toupper(attrib.tag[0]) ) {
       case 'D':
-        tag = v;
+        tag = std::move(attrib.value);
         break;
       case 'T':
-        typ = v;
+        typ = std::move(attrib.value);
         break;
       }
     }

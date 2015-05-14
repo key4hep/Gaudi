@@ -14,6 +14,11 @@
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/Algorithm.h"
 
+#include "GaudiKernel/IJobOptionsSvc.h"
+#include "GaudiKernel/IEventProcessor.h"
+
+#include "RVersion.h"
+
 namespace Gaudi
 {
 
@@ -264,3 +269,75 @@ SmartIF<IService>& Gaudi::BootSvcLocator::service(const Gaudi::Utils::TypeNameSt
     return s_bootService;
   }
 }
+
+
+#ifdef GAUDI_HASCLASSVISIBILITY
+#pragma GCC visibility push(default)
+#endif
+// Python bootstrap helpers
+extern "C" {
+#define PyHelper(x) py_bootstrap_ ## x
+  IInterface* PyHelper(createApplicationMgr)() {
+    return Gaudi::createApplicationMgr();
+  }
+  IInterface* PyHelper(getService)(IInterface* app, char* name) {
+    auto svcloc = SmartIF<ISvcLocator>(app);
+    if (svcloc) {
+      return SmartIF<IInterface>(svcloc->service(name)).get();
+    }
+    return nullptr;
+  }
+  bool PyHelper(setProperty)(IInterface* p, char* name, char* value) {
+    auto prop =  SmartIF<IProperty>(p);
+    if (prop) {
+      return prop->setProperty(name, value).isSuccess();
+    }
+    return false;
+  }
+  const char* PyHelper(getProperty)(IInterface* p, char* name) {
+    auto prop = SmartIF<IProperty>(p);
+    if (prop) {
+      return prop->getProperty(name).toString().c_str();
+    }
+    return nullptr;
+  }
+  bool PyHelper(configureApp)(IInterface* app) {
+    auto ui = SmartIF<IAppMgrUI>(app);
+    if (ui) {
+      return ui->configure().isSuccess();
+    }
+    return false;
+  }
+  bool PyHelper(addPropertyToCatalogue)(IInterface* p, char* comp, char* name, char* value) {
+    auto jos = SmartIF<IJobOptionsSvc>(p);
+    if (jos) {
+      return jos->addPropertyToCatalogue(comp, StringProperty(name, value)).isSuccess();
+    }
+    return false;
+  }
+  int PyHelper(ROOT_VERSION_CODE)() {
+    return ROOT_VERSION_CODE;
+  }
+
+#define PyFSMHelper(s) bool py_bootstrap_fsm_ ## s (IInterface* i) { \
+    auto fsm = SmartIF<IStateful>(i); \
+    if (fsm) { return fsm-> s ().isSuccess(); } \
+    return false; \
+    }
+
+  PyFSMHelper(configure)
+  PyFSMHelper(initialize)
+  PyFSMHelper(start)
+  PyFSMHelper(stop)
+  PyFSMHelper(finalize)
+  PyFSMHelper(terminate)
+
+  bool py_bootstrap_app_run(IInterface* i, int maxevt) {
+    auto ep = SmartIF<IEventProcessor>(i);
+    if (ep) { return ep->executeRun(maxevt).isSuccess(); }
+    return false;
+  }
+}
+#ifdef GAUDI_HASCLASSVISIBILITY
+#pragma GCC visibility pop
+#endif

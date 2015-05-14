@@ -1,6 +1,3 @@
-// $Id: PropertyMgr.cpp,v 1.23 2008/04/03 17:27:01 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.23 $
 // ============================================================================
 // Include files
 // ============================================================================
@@ -16,6 +13,11 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/PropertyMgr.h"
+#include "GaudiKernel/INamedInterface.h"
+#include "GaudiKernel/GaudiException.h"
+#include "GaudiKernel/Bootstrap.h"
+#include "GaudiKernel/ISvcLocator.h"
+#include "GaudiKernel/IMessageSvc.h"
 // ============================================================================
 namespace
 {
@@ -255,6 +257,32 @@ StatusCode PropertyMgr::queryInterface(const InterfaceID& iid, void** pinterface
   // fall back on the owner
   return (0 != m_pOuter)? m_pOuter->queryInterface(iid, pinterface)
                         : sc; // FAILURE
+}
+// =====================================================================
+// Implementation of IProperty::hasProperty
+// =====================================================================
+bool PropertyMgr::hasProperty(const std::string& name) const {
+  return any_of(begin(m_properties), end(m_properties),
+      [&name](Property* prop) {
+    return Nocase()(prop->name(), name);
+  });
+}
+void PropertyMgr::assertUniqueName(const std::string& name) const {
+  if (UNLIKELY(hasProperty(name))) {
+    // TODO: queryInterface should be const
+    // Note: using SmartIF causes a segfault in genconf (wrong ref. count)
+    INamedInterface* owner = nullptr;
+    std::string ownerName{"PropertyMgr"};
+    if (m_pOuter &&
+        const_cast<IInterface*>(m_pOuter)->queryInterface(INamedInterface::interfaceID(), (void**)&owner).isSuccess()) {
+      ownerName = owner->name();
+    }
+    auto msgSvc = Gaudi::svcLocator()->service<IMessageSvc>("MessageSvc");
+    MsgStream log(msgSvc, ownerName);
+    log << MSG::WARNING
+        << "duplicated property name '" << name
+        << "', see https://its.cern.ch/jira/browse/GAUDI-1023"<< endmsg;
+  }
 }
 // =====================================================================
 // The END
