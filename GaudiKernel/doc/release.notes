@@ -2,6 +2,7 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+============================= GaudiKernel v31r5 ==============================
 ! 2015-05-01 - Charles Leggett
  - compiler doesn't like nullptr. have to use std::nullptr_t
 
@@ -20,7 +21,7 @@ Commit Id: $Format:%H$
  - Fixed GAUDI-1028: typo in ConfigurableUser
 
 ! 2015-04-21 - Marco Clemencic
- - GAUDI-1023: ensure that the waring is printed by genconf
+ - GAUDI-1023: ensure that the warning is printed by genconf
    Also fixed the retrieval of the PropertyMgr owner name (if it was set).
 
 ! 2015-04-20 - Marco Clemencic
