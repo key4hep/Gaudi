@@ -66,7 +66,8 @@ set_property(SOURCE src/StatusCodeSvc/SCSAlg.cpp
              PROPERTY COMPILE_DEFINITIONS special_fncUnchecked2)
 
 find_file(StatusCodeHeader NAMES GaudiKernel/StatusCode.h
-          PATHS ${CMAKE_SOURCE_DIR}/GaudiKernel)
+          PATHS ${CMAKE_SOURCE_DIR}/GaudiKernel
+          HINTS ${Gaudi_DIR}/include)
 if(NOT StatusCodeHeader)
   message(FATAL_ERROR "Cannot file StatusCode.h for the StatusCodeSvc test")
 endif()
