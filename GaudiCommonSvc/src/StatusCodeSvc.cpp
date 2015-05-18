@@ -119,6 +119,9 @@ StatusCodeSvc::regFnc(const std::string& fnc, const std::string& lib) {
   }
   // this appears only with gcc 4.9...
   if (fnc == "_PyObject_GC_Malloc") return;
+  // GAUDI-1036
+  if (fnc == "PyThread_get_thread_ident") return;
+  if (fnc == "local") return;
 
   {
     const string rlib = lib.substr(lib.rfind("/") + 1);
