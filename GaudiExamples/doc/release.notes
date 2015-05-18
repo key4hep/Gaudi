@@ -2,6 +2,11 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+============================ GaudiExamples v26r2 =============================
+! 2015-05-18 - Marco Clemencic
+ - fixed GAUDI-1035: cannot build a satellite project with only GaudiExamples
+   Now we look for StatusCode.h in ${Gaudi_DIR}.
+
 ! 2015-05-14 - Marco Clemencic
  - Minor change to heapchecker test to work with latest tcmalloc.
 

@@ -5,6 +5,7 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+============================ GaudiProfiling v2r5 =============================
 ! 2015-05-12 - Marco Clemencic
  - Modified GoogleAuditor.cpp to support new gperftools headers path.
 

@@ -5,6 +5,7 @@
 # Commit Id: $Format:%H$
 ################################################################################
 
+============================= GaudiCoreSvc v3r4 ==============================
 ! 2015-03-14 - Marco Clemencic
  - GAUDI-1024: Replaced GaudiKernel/Tokenizer with the new AttribStringParser.
 

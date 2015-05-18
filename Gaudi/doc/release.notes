@@ -2,6 +2,7 @@ Package : Gaudi
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v26r2 =================================
 ! 2015-05-07 - Marco Clemencic
  - Fixed GAUDI-1033: segfaults when calling Python functions from C++
    Use ctypes.PyDLL instead of ctypes.CDLL. This prevents python threads to run
