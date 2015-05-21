@@ -3,6 +3,9 @@ Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
 =============================== GaudiSvc v21r6 ===============================
+! 2015-05-21 - Marco Clemencic
+ - Fixed compilation with CMT.
+
 ! 2015-03-14 - Marco Clemencic
  - GAUDI-1024: Replaced GaudiKernel/Tokenizer with the new AttribStringParser.
 
