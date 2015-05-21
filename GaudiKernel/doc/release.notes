@@ -3,6 +3,9 @@ Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
 ============================= GaudiKernel v31r5 ==============================
+! 2015-05-21 - Marco Clemencic
+ - Fixed compilation with CMT.
+
 ! 2015-05-01 - Charles Leggett
  - compiler doesn't like nullptr. have to use std::nullptr_t
 
