@@ -20,6 +20,8 @@ path_append DATAPATH "${PARTPROPSVCROOT}/share"
 #=======================================================
 private
 
+macro_append Boost_linkopts " $(Boost_linkopts_regex)"
+
 # get flags to build shared Component library
 
 # apply_pattern package_Cshlibflags

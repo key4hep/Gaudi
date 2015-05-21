@@ -39,6 +39,7 @@ macro_append ROOT_linkopts     "" \
     ROOT_GE_5_15           " -lNet"
 
 macro_append Boost_linkopts "" target-winxp " $(Boost_linkopts_date_time) "
+macro_append Boost_linkopts " $(Boost_linkopts_regex)"
 
 #application fileparse_test -group=tests ../src/tests/fileparser_test.cpp -import=Boost
 #macro_append fileparse_testlinkopts     " -L../$(tag) -lGaudiSvc" \

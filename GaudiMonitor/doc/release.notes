@@ -3,6 +3,9 @@ Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
 ============================= GaudiMonitor v5r4 ==============================
+! 2015-05-21 - Marco Clemencic
+ - Fixed compilation with CMT.
+
 ! 2015-04-15 - Marco Clemencic
  - GAUDI-1024: Replaced Tokenizer (special use) with regular expression.
 

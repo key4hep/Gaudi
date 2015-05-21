@@ -6,6 +6,9 @@
 ################################################################################
 
 ============================ GaudiCommonSvc v3r5 =============================
+! 2015-05-21 - Marco Clemencic
+ - Fixed compilation with CMT.
+
 ! 2015-05-18 - Marco Clemencic
  - Fixed GAUDI-1036: Unchecked StatusCodes
 

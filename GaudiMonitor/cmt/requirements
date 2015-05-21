@@ -25,3 +25,7 @@ library GaudiMonitor -no_static *.cpp
 # define component library link options
 # ============================================================================
 apply_pattern component_library library=GaudiMonitor
+
+private
+macro_append Boost_linkopts " $(Boost_linkopts_regex)"
+end_private
