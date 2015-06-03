@@ -2,6 +2,9 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-06-03 - Marco Clemencic
+ - Added example/test of how to declare a custom factory for an algorithm.
+
 ============================ GaudiExamples v26r2 =============================
 ! 2015-05-18 - Marco Clemencic
  - fixed GAUDI-1035: cannot build a satellite project with only GaudiExamples
