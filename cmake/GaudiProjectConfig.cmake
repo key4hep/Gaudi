@@ -1316,6 +1316,8 @@ macro(gaudi_subdir name)
   execute_process(COMMAND
                   ${versheader_cmd} --quiet
                      ${name} ${subdir_version} ${CMAKE_CURRENT_BINARY_DIR}/${name}Version.h)
+  # Add a macro for the version of the package
+  add_definitions("-DPACKAGE_NAME=\"${subdir_name}\"" "-DPACKAGE_VERSION=\"${subdir_version}\"")
 endmacro()
 
 #-------------------------------------------------------------------------------
