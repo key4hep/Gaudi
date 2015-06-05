@@ -1289,11 +1289,11 @@ endfunction()
 
 
 #-------------------------------------------------------------------------------
-# gaudi_subdir(name version)
+# gaudi_subdir(name [version])
 #
 # Declare name and version of the subdirectory.
 #-------------------------------------------------------------------------------
-macro(gaudi_subdir name version)
+macro(gaudi_subdir name)
   gaudi_get_package_name(_guessed_name)
   if (NOT _guessed_name STREQUAL "${name}")
     message(WARNING "Declared subdir name (${name}) does not match the name of the directory (${_guessed_name})")
@@ -1301,14 +1301,21 @@ macro(gaudi_subdir name version)
 
   # Set useful variables and properties
   set(subdir_name ${name})
-  set(subdir_version ${version})
-  set_directory_properties(PROPERTIES name ${name})
-  set_directory_properties(PROPERTIES version ${version})
+  if(NOT "${ARGV1}" STREQUAL "")
+    set(subdir_version ${ARGV1})
+  elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/package_version.txt)
+    file(READ ${CMAKE_CURRENT_SOURCE_DIR}/package_version.txt subdir_version)
+    string(STRIP "${subdir_version}" subdir_version)
+  else()
+    set(subdir_version unknown)
+  endif()
+  set_directory_properties(PROPERTIES name ${subdir_name})
+  set_directory_properties(PROPERTIES version ${subdir_version})
 
   # Generate the version header for the package.
   execute_process(COMMAND
                   ${versheader_cmd} --quiet
-                     ${name} ${version} ${CMAKE_CURRENT_BINARY_DIR}/${name}Version.h)
+                     ${name} ${subdir_version} ${CMAKE_CURRENT_BINARY_DIR}/${name}Version.h)
 endmacro()
 
 #-------------------------------------------------------------------------------
