@@ -727,6 +727,7 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
 
   # for the RPMs
   set(CPACK_PACKAGE_DEFAULT_LOCATION "/usr")
+  set(CPACK_GENERATOR "RPM")
   set(CPACK_RPM_PACKAGE_VERSION "${version}")
   set(CPACK_SOURCE_GENERATOR "RPM")
   set(CPACK_SOURCE_RPM "ON")
