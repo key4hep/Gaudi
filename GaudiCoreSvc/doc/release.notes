@@ -5,6 +5,9 @@
 # Commit Id: $Format:%H$
 ################################################################################
 
+! 2015-06-17 - Marco Clemencic
+ - GAUDI-1044: allow 'L' numeric suffix in .opts files parsed with Gaudi.exe.
+
 ============================= GaudiCoreSvc v3r4 ==============================
 ! 2015-03-14 - Marco Clemencic
  - GAUDI-1024: Replaced GaudiKernel/Tokenizer with the new AttribStringParser.
