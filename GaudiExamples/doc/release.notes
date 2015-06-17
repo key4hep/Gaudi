@@ -2,6 +2,9 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-06-17 - Marco Clemencic
+ - GAUDI-1044: added test
+
 ! 2015-06-03 - Marco Clemencic
  - Added example/test of how to declare a custom factory for an algorithm.
 
