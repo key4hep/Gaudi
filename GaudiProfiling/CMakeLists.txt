@@ -115,9 +115,9 @@ gaudi_add_module(GaudiJemalloc src/component/jemalloc/*.cpp
 # use the profilers without preloading the libraries.
 set(GaudiJemalloc_linker_flags)
 foreach(undef_symbol mallctl)
-  set(gprof_linker_flags "${gprof_linker_flags} -Wl,--defsym,${undef_symbol}=0")
+  set(GaudiJemalloc_linker_flags "${GaudiJemalloc_linker_flags} -Wl,--defsym,${undef_symbol}=0")
 endforeach()
-set_target_properties(GaudiJemalloc PROPERTIES LINK_FLAGS "${gprof_linker_flags}")
+set_target_properties(GaudiJemalloc PROPERTIES LINK_FLAGS "${GaudiJemalloc_linker_flags}")
 
 #---Installation------------------------------------------------------------
 gaudi_install_python_modules()
