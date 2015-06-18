@@ -15,7 +15,7 @@ Commit Id: $Format:%H$
    instance = lib.myFactory()
    lib.doSomething(instance)
    ```
-   my give a segfault if the pointer returned by lib.myFactory is too big (as
+   may give a segfault if the pointer returned by lib.myFactory is too big (as
    it happens with jemalloc).
 
    The work-around is to ensure that the void* returned by lib.myFactory is
