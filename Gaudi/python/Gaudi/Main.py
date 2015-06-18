@@ -54,6 +54,12 @@ class BootstrapHelper(object):
 
     def __init__(self):
         from ctypes import PyDLL, c_void_p, c_bool, c_char_p, c_int
+        # Helper class to avoid void* to int conversion
+        # (see http://stackoverflow.com/questions/17840144)
+        class IInterface_p(c_void_p):
+            def __repr__(self):
+                return "IInterface_p(0x%x)" % (0 if self.value is None
+                                               else self.value)
         self.log = logging.getLogger('BootstrapHelper')
 
         libname = 'libGaudiKernel.so'
@@ -63,11 +69,11 @@ class BootstrapHelper(object):
         #        Python functions are not protected with the GIL.
         self.lib = gkl = PyDLL(libname)
 
-        functions = [('createApplicationMgr', c_void_p, []),
-                     ('getService', c_void_p, [c_void_p, c_char_p]),
-                     ('setProperty', c_bool, [c_void_p, c_char_p, c_char_p]),
-                     ('getProperty', c_char_p, [c_void_p, c_char_p]),
-                     ('addPropertyToCatalogue', c_bool, [c_void_p, c_char_p, c_char_p, c_char_p]),
+        functions = [('createApplicationMgr', IInterface_p, []),
+                     ('getService', IInterface_p, [IInterface_p, c_char_p]),
+                     ('setProperty', c_bool, [IInterface_p, c_char_p, c_char_p]),
+                     ('getProperty', c_char_p, [IInterface_p, c_char_p]),
+                     ('addPropertyToCatalogue', c_bool, [IInterface_p, c_char_p, c_char_p, c_char_p]),
                      ('ROOT_VERSION_CODE', c_int, []),
                      ]
 
@@ -82,12 +88,12 @@ class BootstrapHelper(object):
         for name in ('configure', 'initialize', 'start',
                      'stop', 'finalize', 'terminate'):
             f = getattr(gkl, 'py_bootstrap_fsm_%s' % name)
-            f.restype, f.args = c_bool, [c_void_p]
+            f.restype, f.args = c_bool, [IInterface_p]
         gkl.py_bootstrap_app_run.restype = c_bool
-        gkl.py_bootstrap_app_run.args = [c_void_p, c_int]
+        gkl.py_bootstrap_app_run.args = [IInterface_p, c_int]
 
         gkl.py_helper_printAlgsSequences.restype = None
-        gkl.py_helper_printAlgsSequences.args = [c_void_p]
+        gkl.py_helper_printAlgsSequences.args = [IInterface_p]
 
     def createApplicationMgr(self):
         ptr = self.lib.py_bootstrap_createApplicationMgr()

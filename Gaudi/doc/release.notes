@@ -2,6 +2,27 @@ Package : Gaudi
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-06-18 - Marco Clemencic
+ - Fixed GAUDI-1045: segfault running "LD_PRELOAD=libjemalloc.so gaudirun.py"
+
+   The segfault was due to a Python ctypes "feature": Python integers passed to
+   C functions are truncated to 32 bits even if the function is declared
+   expecting 64 bits numbers (like void*).
+   In addition, C functions declared to return void* get the return value
+   converted to (Python) int.
+   The net result is that the sequence:
+   ```
+   instance = lib.myFactory()
+   lib.doSomething(instance)
+   ```
+   my give a segfault if the pointer returned by lib.myFactory is too big (as
+   it happens with jemalloc).
+
+   The work-around is to ensure that the void* returned by lib.myFactory is
+   wrapped in a ctypes.c_void_p instance.
+
+   See http://stackoverflow.com/questions/17840144.
+
 ================================ Gaudi v26r2 =================================
 ! 2015-05-07 - Marco Clemencic
  - Fixed GAUDI-1033: segfaults when calling Python functions from C++

@@ -5,7 +5,10 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
-! 2015-06-16 - Ben Couturier 
+! 2015-06-18 - Marco Clemencic
+ - Added test for GAUDI-1045 (segfault with LD_PRELOAD=libjemalloc.so).
+
+! 2015-06-16 - Ben Couturier
  - Added JemallocProfile algorithm to dump heap with Jemalloc at regular
  intervals.
 
