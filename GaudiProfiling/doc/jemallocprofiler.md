@@ -39,7 +39,7 @@ GaudiSequencer("PhysicsSeq").Members += [ jp ]
 
 ### Run the job
 ~~~~~~~~{.sh}
-$> lb-run Brunel vXrY gaudirun.py --profilerName=jemalloc --run-info-file=runinfo.json myoptions.py 
+$> gaudirun.py --profilerName=jemalloc --run-info-file=runinfo.json myoptions.py 
 ~~~~~~~~
 
 Please note the the --profilerName=jemalloc to enbale the profiling, and the run-info-file that produces
@@ -64,5 +64,3 @@ $>  pprof -text --base=<firstheap>.heap <executable name> <comparewith>.heap
 ~~~~~~~~{.sh}
 $>  pprof -gv --base=<firstheap>.heap <executable name> <comparewith>.heap
 ~~~~~~~~
-
-
