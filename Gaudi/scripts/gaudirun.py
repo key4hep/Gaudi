@@ -294,8 +294,6 @@ if __name__ == "__main__":
         profilerName = opts.profilerName
         profilerExecName = ""
         profilerOutput = opts.profilerOutput or (profilerName + ".output")
-        profilerHasExec	 = True # Variable to choose whether the profiler is an executable to be run
-        # Thee is none for jemalloc, just a library to preload...
         
         # To restart the application removing the igprof option and prepending the string
         args = getArgsWithoutoProfilerInfo(sys.argv)
@@ -335,8 +333,6 @@ if __name__ == "__main__":
         elif profilerName == "jemalloc":
             opts.preload.insert(0, os.environ.get("JEMALLOCLIB", "libjemalloc.so"))
             os.environ['MALLOC_CONF'] = "prof:true,prof_leak:true"
-            profilerHasExec = False
-            profilerPath = None
         else:
             root_logger.warning("Profiler %s not recognized!" % profilerName)
 
@@ -347,7 +343,7 @@ if __name__ == "__main__":
             profilerOptions += " %s" % profilerExtraOptions
 
         # now we look for the full path of the profiler: is it really there?
-        if profilerHasExec:
+        if profilerExecName:
             import distutils.spawn
             profilerPath = distutils.spawn.find_executable(profilerExecName)
             if not profilerPath:
@@ -357,7 +353,7 @@ if __name__ == "__main__":
         root_logger.info("------ Profiling options are on ------ \n"\
                          " o Profiler: %s\n"\
                          " o Options: '%s'.\n"\
-                         " o Output: %s" % (profilerExecName, profilerOptions, profilerOutput))
+                         " o Output: %s" % (profilerExecName or profilerName, profilerOptions, profilerOutput))
 
         # allow preloading of libraries
         # That code need to be acsracted from above
@@ -365,7 +361,7 @@ if __name__ == "__main__":
         if opts.preload:
             to_reload = setLibraryPreload(opts.preload)
                 
-        if profilerHasExec:
+        if profilerExecName:
             # We profile python
             profilerOptions += " python"
 
@@ -484,7 +480,12 @@ if __name__ == "__main__":
         if opts.run_info_file:
             import os, json
             run_info = {}
-            run_info["PID"] = os.getpid()
+            run_info["pid"] = os.getpid()
+            run_info["retcode"] = retcode
+            if os.path.exists('/proc/self/exe'):
+                # These options can be used only on unix platforms
+                run_info["exe"] = os.readlink('/proc/self/exe')
+
             logging.info("Saving run info to: %s" % opts.run_info_file)
             with open(opts.run_info_file, "w") as f:
                 json.dump(run_info, f)
