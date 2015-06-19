@@ -5,6 +5,9 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+! 2015-06-19 - Ben Couturier
+ - Added Jemalloc profiling feature to gaudirun.py
+
 ! 2015-06-18 - Marco Clemencic
  - Added test for GAUDI-1045 (segfault with LD_PRELOAD=libjemalloc.so).
 
