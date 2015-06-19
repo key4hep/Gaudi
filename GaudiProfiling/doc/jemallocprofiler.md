@@ -11,7 +11,7 @@ To run the profiler, it is necessary to:
   * preload libjemalloc.so, using the LD_PRELOAD environment variable
   * set the MALLOC_CONF environment variable to enable profiling
 
-gaudirun.py has been updated to set the environemnt accordingly (a prerequisite is however
+gaudirun.py has been updated to set the environment accordingly (a prerequisite is however
 that libjemalloc.so has to be available in the library path).
 
 A Gaudi algorithm has also been developped to perform memory heap dumps at various event,
