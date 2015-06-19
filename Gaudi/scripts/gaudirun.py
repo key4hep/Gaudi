@@ -476,7 +476,8 @@ if __name__ == "__main__":
         # Do the real processing
         retcode = c.run(opts.ncpus)
 
-        # Now saving the main pid to a file if requested
+        # Now saving the run information pid, retcode and executable path to
+        # a file is requested
         if opts.run_info_file:
             import os, json
             run_info = {}
