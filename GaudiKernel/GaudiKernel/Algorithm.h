@@ -169,7 +169,7 @@ public:
   virtual void setType(const std::string& type) { m_type = type;} //BH, TODO: move to proper place
 
   virtual const std::string& version() const;
-  
+
   virtual unsigned int index();
 
   /// Dummy implementation of IStateful::configure() method
@@ -343,7 +343,7 @@ public:
   SmartIF<ISvcLocator>& serviceLocator() const;
   /// shortcut for method serviceLocator
   SmartIF<ISvcLocator>& svcLoc        () const { return serviceLocator() ; }
-  
+
   SmartIF<IHiveWhiteBoard>& whiteboard() const;
 
   /// register for Algorithm Context Service?
@@ -553,246 +553,248 @@ public:
                             bool is_optional=false) {
 
     // GCCXML cannot understand c++11 yet, NULL used.
-	  std::string::size_type slashPos = address.find_last_of('/');
-	  std::string tag = address.substr(slashPos != std::string::npos ? slashPos : 0);
+      std::string::size_type slashPos = address.find_last_of('/');
+      std::string tag = address.substr(slashPos != std::string::npos ? slashPos : 0);
 
-	  if(accesstype == MinimalDataObjectHandle::READ || accesstype == MinimalDataObjectHandle::UPDATE)
-		  return declareInput<T>(tag, *doh, address, is_optional, accesstype);
-	  else
-		  return declareOutput<T>(tag, *doh, address, is_optional, accesstype);
+      if(accesstype == MinimalDataObjectHandle::READ || accesstype == MinimalDataObjectHandle::UPDATE)
+          return declareInput<T>(tag, *doh, address, is_optional, accesstype);
+      else
+          return declareOutput<T>(tag, *doh, address, is_optional, accesstype);
 
   }
-  
+
   /** Declare input data object
-  	 *
-  	 *  @param propertyName to identify input object in python config
-  	 *  @param handle data handle
-  	 *  @param address relative or absolute address in TES
-  	 *  @param optional optional input
-  	 *  @param accessType read, write or update
-  	 */
-
-  	template<class T>
-  	StatusCode declareInput(const std::string& propertyName, DataObjectHandle<T> & handle,
-  			const std::string& address = DataObjectDescriptor::NULL_,
-  			bool optional = false, MinimalDataObjectHandle::AccessType accessType =
-  					MinimalDataObjectHandle::READ) {
-
-  		bool res = m_inputDataObjects.insert(propertyName, &handle);
-
-  		handle.descriptor()->setTag(propertyName);
-  		handle.descriptor()->setAddress(address);
-  		handle.descriptor()->setAccessType(accessType);
-  		handle.descriptor()->setOptional(optional);
-
-  		handle.setOwner(this);
-
-  		MsgStream log(msgSvc(), name());
-
-  		if (LIKELY(res)) {
-  			log << MSG::DEBUG << "Handle for " << propertyName << " ("
-  					<< address << ")" << " successfully created and stored."
-  					<< endmsg;
-  		} else {
-  			log << MSG::ERROR << "Handle for " << propertyName << " ("
-  					<< address << ")" << " could not be created." << endmsg;
-  		}
-
-  		return res;
-
-  	}
-
-  	/** Declare input data object
-  	 *
-  	 *  @param propertyName to identify input object in python config
+       *
+       *  @param propertyName to identify input object in python config
        *  @param handle data handle
-  	 *  @param addresses relative or absolute addresses in TES, first is main address
-  	 *  @param optional optional input
-  	 *  @param accessType read, write or update
-  	 */
+       *  @param address relative or absolute address in TES
+       *  @param optional optional input
+       *  @param accessType read, write or update
+       */
 
-  	template<class T>
-  	StatusCode declareInput(const std::string& propertyName, DataObjectHandle<T> & handle,
-  			const std::vector<std::string>& addresses,
-  			bool optional = false, MinimalDataObjectHandle::AccessType accessType =
-  					MinimalDataObjectHandle::READ) {
+      template<class T>
+      StatusCode declareInput(const std::string& propertyName, DataObjectHandle<T> & handle,
+              const std::string& address = DataObjectDescriptor::NULL_,
+              bool optional = false, MinimalDataObjectHandle::AccessType accessType =
+                      MinimalDataObjectHandle::READ) {
 
-  		bool res = m_inputDataObjects.insert(propertyName, &handle);
+          bool res = m_inputDataObjects.insert(propertyName, &handle);
 
-  		handle.descriptor()->setTag(propertyName);
-  		handle.descriptor()->setAddresses(addresses);
-  		handle.descriptor()->setAccessType(accessType);
-  		handle.descriptor()->setOptional(optional);
+          handle.descriptor()->setTag(propertyName);
+          handle.descriptor()->setAddress(address);
+          handle.descriptor()->setAccessType(accessType);
+          handle.descriptor()->setOptional(optional);
 
-  		handle.setOwner(this);
+          handle.setOwner(this);
 
-  		MsgStream log(msgSvc(), name());
+          MsgStream log(msgSvc(), name());
 
-  		if (LIKELY(res)) {
-  			log << MSG::DEBUG << "Handle for " << propertyName << " ("
-  					<< (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " successfully created and stored."
-  					<< endmsg;
-  		} else {
-  			log << MSG::ERROR << "Handle for " << propertyName << " ("
-  					<< (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " could not be created." << endmsg;
-  		}
+          if (LIKELY(res)) {
+              log << MSG::DEBUG << "Handle for " << propertyName << " ("
+                      << address << ")" << " successfully created and stored."
+                      << endmsg;
+          } else {
+              log << MSG::ERROR << "Handle for " << propertyName << " ("
+                      << address << ")" << " could not be created." << endmsg;
+          }
 
-  		return res;
+          return res;
 
-  	}
+      }
 
-  	/** Declare output data object
-  	 *
-  	 *  @param propertyName to identify input object in python config
-  	 *  @param handle data handle
-  	 *  @param address relative or absolute address in TES
-  	 *  @param optional optional input
-  	 *  @param accessType write or update
-  	 */
-  	template<class T>
-  	StatusCode declareOutput(const std::string& propertyName, DataObjectHandle<T> & handle,
-  			const std::string& address = DataObjectDescriptor::NULL_,
-  			bool optional = false,
-  			MinimalDataObjectHandle::AccessType accessType = MinimalDataObjectHandle::WRITE) {
+      /** Declare input data object
+       *
+       *  @param propertyName to identify input object in python config
+       *  @param handle data handle
+       *  @param addresses relative or absolute addresses in TES, first is main address
+       *  @param optional optional input
+       *  @param accessType read, write or update
+       */
 
-  		bool res = m_outputDataObjects.insert(propertyName, &handle);
+      template<class T>
+      StatusCode declareInput(const std::string& propertyName, DataObjectHandle<T> & handle,
+              const std::vector<std::string>& addresses,
+              bool optional = false, MinimalDataObjectHandle::AccessType accessType =
+                      MinimalDataObjectHandle::READ) {
 
-  		handle.descriptor()->setTag(propertyName);
-  		handle.descriptor()->setAddress(address);
-  		handle.descriptor()->setAccessType(accessType);
-  		handle.descriptor()->setOptional(optional);
+          bool res = m_inputDataObjects.insert(propertyName, &handle);
 
-  		handle.setOwner(this);
+          handle.descriptor()->setTag(propertyName);
+          handle.descriptor()->setAddresses(addresses);
+          handle.descriptor()->setAccessType(accessType);
+          handle.descriptor()->setOptional(optional);
+
+          handle.setOwner(this);
+
+          MsgStream log(msgSvc(), name());
+
+          if (LIKELY(res)) {
+              log << MSG::DEBUG << "Handle for " << propertyName << " ("
+                      << (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " successfully created and stored."
+                      << endmsg;
+          } else {
+              log << MSG::ERROR << "Handle for " << propertyName << " ("
+                      << (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " could not be created." << endmsg;
+          }
+
+          return res;
+
+      }
+
+      /** Declare output data object
+       *
+       *  @param propertyName to identify input object in python config
+       *  @param handle data handle
+       *  @param address relative or absolute address in TES
+       *  @param optional optional input
+       *  @param accessType write or update
+       */
+      template<class T>
+      StatusCode declareOutput(const std::string& propertyName, DataObjectHandle<T> & handle,
+              const std::string& address = DataObjectDescriptor::NULL_,
+              bool optional = false,
+              MinimalDataObjectHandle::AccessType accessType = MinimalDataObjectHandle::WRITE) {
+
+          bool res = m_outputDataObjects.insert(propertyName, &handle);
+
+          handle.descriptor()->setTag(propertyName);
+          handle.descriptor()->setAddress(address);
+          handle.descriptor()->setAccessType(accessType);
+          handle.descriptor()->setOptional(optional);
+
+          handle.setOwner(this);
 
 
-  		MsgStream log(msgSvc(), name());
+          MsgStream log(msgSvc(), name());
 
-  		if (LIKELY(res)) {
-  			log << MSG::DEBUG << "Handle for " << propertyName << " ("
-  					<< address << ")" << " successfully created and stored."
-  					<< endmsg;
-  		} else {
-  			log << MSG::ERROR << "Handle for " << propertyName << " ("
-  					<< address << ")" << " could not be created." << endmsg;
-  		}
+          if (LIKELY(res)) {
+              log << MSG::DEBUG << "Handle for " << propertyName << " ("
+                      << address << ")" << " successfully created and stored."
+                      << endmsg;
+          } else {
+              log << MSG::ERROR << "Handle for " << propertyName << " ("
+                      << address << ")" << " could not be created." << endmsg;
+          }
 
-  		return res;
+          return res;
 
-  	}
+      }
 
-	/// Return the handles declared in the algorithm
-	__attribute__ ((deprecated)) virtual const std::vector<
-			MinimalDataObjectHandle*> handles();
+    /// Return the handles declared in the algorithm
+    __attribute__ ((deprecated)) virtual const std::vector<
+            MinimalDataObjectHandle*> handles();
 
-	const DataObjectDescriptorCollection & inputDataObjects() const {
-		return m_inputDataObjects;
-	}
-	const DataObjectDescriptorCollection & outputDataObjects() const {
-		return m_outputDataObjects;
-	}
+    const DataObjectDescriptorCollection & inputDataObjects() const {
+        return m_inputDataObjects;
+    }
+    const DataObjectDescriptorCollection & outputDataObjects() const {
+        return m_outputDataObjects;
+    }
 
-	void registerTool(IAlgTool * tool) const {
+    void registerTool(IAlgTool * tool) const {
 
-		MsgStream log(msgSvc(), name());
+        MsgStream log(msgSvc(), name());
 
-		log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
+        log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
 
-		m_tools.push_back(tool);
-	}
+        m_tools.push_back(tool);
+    }
 
-	void deregisterTool(IAlgTool * tool) const {
-		std::vector<IAlgTool *>::iterator it = std::find(m_tools.begin(),
-				m_tools.end(), tool);
+    void deregisterTool(IAlgTool * tool) const {
+        std::vector<IAlgTool *>::iterator it = std::find(m_tools.begin(),
+                m_tools.end(), tool);
 
-		MsgStream log(msgSvc(), name());
-		if (it != m_tools.end()) {
+        MsgStream log(msgSvc(), name());
+        if (it != m_tools.end()) {
 
-			log << MSG::DEBUG << "De-Registering tool " << tool->name()
-					<< endmsg;
+            log << MSG::DEBUG << "De-Registering tool " << tool->name()
+                    << endmsg;
 
-			m_tools.erase(it);
-		} else {
-			log << MSG::DEBUG << "Could not de-register tool " << tool->name()
-					<< endmsg;
-		}
-	}
+            m_tools.erase(it);
+        } else {
+            log << MSG::DEBUG << "Could not de-register tool " << tool->name()
+                    << endmsg;
+        }
+    }
 
-	/** Declare used Private tool
-	 *
-	 *  @param handle ToolHandle<T>
-	 *  @param toolTypeAndName
-	 *  @param parent, default public tool
-	 *  @param create if necessary, default true
-	 */
-	template<class T>
-	StatusCode declarePrivateTool(ToolHandle<T> & handle,
-			std::string toolTypeAndName = "",
-			bool createIf = true) {
+    /** Declare used Private tool
+     *
+     *  @param handle ToolHandle<T>
+     *  @param toolTypeAndName
+     *  @param parent, default public tool
+     *  @param create if necessary, default true
+     */
+    template<class T>
+    StatusCode declarePrivateTool(ToolHandle<T> & handle,
+            std::string toolTypeAndName = "",
+            bool createIf = true) {
 
-		if (toolTypeAndName == "")
-			toolTypeAndName = System::typeinfoName(typeid(T));
+        if (toolTypeAndName == "")
+            toolTypeAndName = System::typeinfoName(typeid(T));
 
-		StatusCode sc = handle.initialize(toolTypeAndName, this, createIf);
+        StatusCode sc = handle.initialize(toolTypeAndName, this, createIf);
 
-		m_toolHandles.push_back(&handle);
+        m_toolHandles.push_back(&handle);
 
-		MsgStream log(msgSvc(), name());
+        MsgStream log(msgSvc(), name());
 
-		if (sc.isSuccess()) {
-			log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
-					<< " successfully created and stored." << endmsg;
-		} else {
+        if (sc.isSuccess()) {
+            log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
+                    << " successfully created and stored." << endmsg;
+        } else {
 
-			log << MSG::ERROR << "Handle for private tool" << toolTypeAndName
-					<< " could not be created." << endmsg;
-		}
+            log << MSG::ERROR << "Handle for private tool" << toolTypeAndName
+                    << " could not be created." << endmsg;
+        }
 
-		return sc;
+        return sc;
 
-	}
+    }
 
-	/** Declare used Public tool
-	 *
-	 *  @param handle ToolHandle<T>
-	 *  @param toolTypeAndName
-	 *  @param parent, default public tool
-	 *  @param create if necessary, default true
-	 */
-	template<class T>
-	StatusCode declarePublicTool(ToolHandle<T> & handle, std::string toolTypeAndName = "",
-			bool createIf = true) {
+    /** Declare used Public tool
+     *
+     *  @param handle ToolHandle<T>
+     *  @param toolTypeAndName
+     *  @param parent, default public tool
+     *  @param create if necessary, default true
+     */
+    template<class T>
+    StatusCode declarePublicTool(ToolHandle<T> & handle, std::string toolTypeAndName = "",
+            bool createIf = true) {
 
-		if (toolTypeAndName == "")
-			toolTypeAndName = System::typeinfoName(typeid(T));
+        if (toolTypeAndName == "")
+            toolTypeAndName = System::typeinfoName(typeid(T));
 
-		StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
+        StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
 
-		m_toolHandles.push_back(&handle);
+        m_toolHandles.push_back(&handle);
 
-		MsgStream log(msgSvc(), name());
+        MsgStream log(msgSvc(), name());
 
-		if (sc.isSuccess()) {
-			log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
-					<< " successfully created and stored." << endmsg;
-		} else {
+        if (sc.isSuccess()) {
+            log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
+                    << " successfully created and stored." << endmsg;
+        } else {
 
-			log << MSG::ERROR << "Handle for public tool" << toolTypeAndName
-					<< " could not be created." << endmsg;
-		}
+            log << MSG::ERROR << "Handle for public tool" << toolTypeAndName
+                    << " could not be created." << endmsg;
+        }
 
-		return sc;
+        return sc;
 
-	}
+    }
 
   const std::vector<IAlgTool *> & tools() const;
+
+  virtual bool isIOBound() const {return false;};
 
 protected:
 
    DataObjectDescriptorCollection & inputDataObjects() {
-	  return m_inputDataObjects;
+      return m_inputDataObjects;
   }
    DataObjectDescriptorCollection & outputDataObjects() {
-	  return m_outputDataObjects;
+      return m_outputDataObjects;
   }
 
    std::vector<IAlgTool *> & tools();
@@ -809,8 +811,8 @@ public:
 
   /// Specifies the clonability of the algorithm
   virtual bool isClonable () const { return m_isClonable; }
-  
-  /// Return the cardinality 
+
+  /// Return the cardinality
   virtual unsigned int cardinality () const { return m_cardinality; }
 
   virtual const std::vector<std::string>& neededResources () const { return m_neededResources; }
@@ -833,12 +835,12 @@ protected:
   void initOutputLevel(Property& prop);
 
   /// Event specific data for multiple event processing
-  EventContext* m_event_context; 
+  EventContext* m_event_context;
 
 private:
 
   std::string m_name;            ///< Algorithm's name for identification
-  std::string m_type;            ///< Algorithm's type 
+  std::string m_type;            ///< Algorithm's type
   std::string m_version;         ///< Algorithm's version
   unsigned int m_index;          ///< Algorithm's index
   std::vector<Algorithm *>* m_subAlgms; ///< Sub algorithms
@@ -901,7 +903,7 @@ private:
 
   bool         m_isClonable; ///< The algorithm clonability of the algorithm
   unsigned int m_cardinality; ///< The maximum number of clones that can exist
-  std::vector<std::string> m_neededResources; ///< The named resources needed during event looping 
+  std::vector<std::string> m_neededResources; ///< The named resources needed during event looping
 
   /// implementation of service method
   StatusCode service_i(const std::string& svcName,

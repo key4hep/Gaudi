@@ -16,56 +16,56 @@ DECLARE_ALGORITHM_FACTORY(CPUCruncher)
 //------------------------------------------------------------------------------
 
 CPUCruncher::CPUCruncher(const std::string& name, // the algorithm instance name
-		ISvcLocator*pSvc) :
-		GaudiAlgorithm(name, pSvc), m_avg_runtime(1.), m_var_runtime(.01), m_shortCalib(
-				false) {
+        ISvcLocator*pSvc) :
+        GaudiAlgorithm(name, pSvc), m_avg_runtime(1.), m_var_runtime(.01), m_shortCalib(
+                false) {
 
-	// For Concurrent run
-	m_inputHandles.resize(MAX_INPUTS);
-	for (uint i = 0; i < MAX_INPUTS; ++i){
-		m_inputHandles[i] = new DataObjectHandle<DataObject>();
-		declareInput("input_" + std::to_string(i), *m_inputHandles[i]);
-	}
+    // For Concurrent run
+    m_inputHandles.resize(MAX_INPUTS);
+    for (uint i = 0; i < MAX_INPUTS; ++i){
+        m_inputHandles[i] = new DataObjectHandle<DataObject>();
+        declareInput("input_" + std::to_string(i), *m_inputHandles[i]);
+    }
 
-	m_outputHandles.resize(MAX_OUTPUTS);
-	for (uint i = 0; i < MAX_OUTPUTS; ++i){
-		m_outputHandles[i] = new DataObjectHandle<DataObject>();
-		declareOutput("output_" + std::to_string(i), *m_outputHandles[i]);
-	}
+    m_outputHandles.resize(MAX_OUTPUTS);
+    for (uint i = 0; i < MAX_OUTPUTS; ++i){
+        m_outputHandles[i] = new DataObjectHandle<DataObject>();
+        declareOutput("output_" + std::to_string(i), *m_outputHandles[i]);
+    }
 
-	declareProperty("avgRuntime", m_avg_runtime,
-			"Average runtime of the module.");
-	declareProperty("varRuntime", m_var_runtime,
-			"Variance of the runtime of the module.");
-	declareProperty("localRndm", m_local_rndm_gen = true,
-			"Decide if the local random generator is to be used");
-	declareProperty("NIterationsVect", m_niters_vect,
-			"Number of iterations for the calibration.");
-	declareProperty("NTimesVect", m_times_vect,
-			"Number of seconds for the calibration.");
-	declareProperty("shortCalib", m_shortCalib = false,
-			"Enable coarse grained calibration");
-	declareProperty("RwRepetitions", m_rwRepetitions = 1,
-			"Increase access to the WB");
-	declareProperty("SleepyExecution", m_sleepyExecution = false,
-	                "Sleep during execution instead of crunching");
+    declareProperty("avgRuntime", m_avg_runtime,
+            "Average runtime of the module.");
+    declareProperty("varRuntime", m_var_runtime,
+            "Variance of the runtime of the module.");
+    declareProperty("localRndm", m_local_rndm_gen = true,
+            "Decide if the local random generator is to be used");
+    declareProperty("NIterationsVect", m_niters_vect,
+            "Number of iterations for the calibration.");
+    declareProperty("NTimesVect", m_times_vect,
+            "Number of seconds for the calibration.");
+    declareProperty("shortCalib", m_shortCalib = false,
+            "Enable coarse grained calibration");
+    declareProperty("RwRepetitions", m_rwRepetitions = 1,
+            "Increase access to the WB");
+    declareProperty("SleepyExecution", m_sleepyExecution = false,
+                    "Sleep during execution instead of crunching");
 
-	// Register the algo in the static concurrent hash map in order to
-	// monitor the # of copies
-	CHM::accessor name_ninstances;
-	m_name_ncopies_map.insert(name_ninstances, name);
-	name_ninstances->second += 1;
+    // Register the algo in the static concurrent hash map in order to
+    // monitor the # of copies
+    CHM::accessor name_ninstances;
+    m_name_ncopies_map.insert(name_ninstances, name);
+    name_ninstances->second += 1;
 }
 
 CPUCruncher::~CPUCruncher() {
-	for (uint i = 0; i < MAX_INPUTS; ++i) {
-		delete m_inputHandles[i];
-	}
+    for (uint i = 0; i < MAX_INPUTS; ++i) {
+        delete m_inputHandles[i];
+    }
 
-	m_outputHandles.resize(MAX_OUTPUTS);
-	for (uint i = 0; i < MAX_OUTPUTS; ++i) {
-		delete m_outputHandles[i];
-	}
+    m_outputHandles.resize(MAX_OUTPUTS);
+    for (uint i = 0; i < MAX_OUTPUTS; ++i) {
+        delete m_outputHandles[i];
+    }
 }
 
 StatusCode CPUCruncher::initialize(){
@@ -236,22 +236,24 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
 
   MsgStream logstream(msgSvc(), name());
 
-  if (m_sleepyExecution) {
-    logstream  << MSG::DEBUG << "Going to dream for: "<< m_avg_runtime << endmsg;
+  if (isIOBound()) {
+    //logstream  << MSG::DEBUG << "Going to dream for: "<< m_avg_runtime << endmsg;
     std::chrono::duration<double> dreamtime( m_avg_runtime );
 
-    tbb::tick_count starttbb=tbb::tick_count::now();
+    //tbb::tick_count starttbb=tbb::tick_count::now();
     std::this_thread::sleep_for(dreamtime);
-    tbb::tick_count endtbb=tbb::tick_count::now();
+    //tbb::tick_count endtbb=tbb::tick_count::now();
     // actual sleeping time can be longer due to scheduling or resource contention delays
-    const double actualDreamTime=(endtbb-starttbb).seconds();
+    //const double actualDreamTime=(endtbb-starttbb).seconds();
 
-    logstream  << MSG::DEBUG << "Actual dreaming time was: "<< actualDreamTime << "s" << endmsg;
+    //logstream  << MSG::DEBUG << "Actual dreaming time was: "<< actualDreamTime << "s" << endmsg;
 
-    return StatusCode::SUCCESS;
+    //return StatusCode::SUCCESS;
   }
 
   float runtime;
+  //const std::chrono::duration<double> dreamtime( m_avg_runtime + m_avg_runtime/2.);
+  //std::this_thread::sleep_for(dreamtime);
 
   if (m_local_rndm_gen){
   /* This will disappear with a thread safe random number generator svc
@@ -297,13 +299,13 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
   logstream  << MSG::DEBUG << "Runtime will be: "<< runtime << endmsg;
   if (getContext())
     logstream  << MSG::DEBUG << "Start event " <<  getContext()->evt()
-	       << " in slot " << getContext()->slot()
-	       << " on pthreadID " << std::hex << pthread_self() << std::dec
-	       << endmsg;
+           << " in slot " << getContext()->slot()
+           << " on pthreadID " << std::hex << pthread_self() << std::dec
+           << endmsg;
 
   for (auto & inputHandle: m_inputHandles){
-	  if(!inputHandle->isValid())
-		continue;
+      if(!inputHandle->isValid())
+        continue;
 
     DataObject* obj = nullptr;
     for (unsigned int i=0; i<m_rwRepetitions;++i){
@@ -317,15 +319,15 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
   findPrimes( n_iters );
 
   for (auto & outputHandle: m_outputHandles){
-	  if(!outputHandle->isValid())
-		continue;
+      if(!outputHandle->isValid())
+        continue;
 
-	  outputHandle->put(new DataObject());
+      outputHandle->put(new DataObject());
   }
 
   for (auto & inputHandle: m_inputHandles){
-	  if(!inputHandle->isValid())
-		continue;
+      if(!inputHandle->isValid())
+        continue;
 
     DataObject* obj = nullptr;
     for (unsigned int i=1; i<m_rwRepetitions;++i){
@@ -387,8 +389,8 @@ CPUCruncher::get_inputs()
 {
   std::vector<std::string> di;
   for (auto & h: m_inputHandles){
-  	  if(h->isValid())
-  		di.push_back(h->dataProductName());
+        if(h->isValid())
+          di.push_back(h->dataProductName());
   }
 
   return di;
@@ -399,13 +401,13 @@ CPUCruncher::get_inputs()
 const std::vector<std::string>
 CPUCruncher::get_outputs()
 {
-	  std::vector<std::string> di;
-	  for (auto & h: m_outputHandles){
-	  	  if(h->isValid())
-	  		di.push_back(h->dataProductName());
-	  }
+      std::vector<std::string> di;
+      for (auto & h: m_outputHandles){
+            if(h->isValid())
+              di.push_back(h->dataProductName());
+      }
 
-	  return di;
+      return di;
 }
 
 //------------------------------------------------------------------------------

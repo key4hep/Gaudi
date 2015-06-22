@@ -38,6 +38,8 @@
 
     double get_runtime() const { return m_avg_runtime; };
 
+    virtual bool isIOBound() const {return m_sleepyExecution;};
+
   protected:
 
     CPUCruncher
@@ -85,6 +87,5 @@
 
     // Sleep during execution instead of real CPU crunching
     bool m_sleepyExecution;
-
   };
 

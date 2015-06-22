@@ -810,9 +810,9 @@ StatusCode ForwardSchedulerSvc::promoteToDataReady(unsigned int iAlgo, int si) {
 
 StatusCode ForwardSchedulerSvc::promoteToScheduled(unsigned int iAlgo, int si) {
 
-  if (m_algosInFlight == m_maxAlgosInFlight)
-    if (!m_useIOBoundAlgScheduler)
-      return StatusCode::FAILURE;
+  //if (m_algosInFlight == m_maxAlgosInFlight)
+    //if (!m_useIOBoundAlgScheduler)
+  //    return StatusCode::FAILURE;
 
   const std::string& algName(index2algname(iAlgo));
 
@@ -837,9 +837,14 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled(unsigned int iAlgo, int si) {
         theTask.execute();
       }
     } else {
-      // Can we use tbb-based overloaded new-operator for a "custom" task (an algorithm wrapper, not derived from tbb::task)? it seems it works..
-      IOBoundAlgTask* theTask = new( tbb::task::allocate_root() ) IOBoundAlgTask(ialgoPtr, iAlgo, serviceLocator(), this);
-      m_IOBoundAlgScheduler->push(*theTask);
+      if (!algoPtr->isIOBound()) {
+        tbb::task* t = new( tbb::task::allocate_root() ) AlgoExecutionTask(ialgoPtr, iAlgo, serviceLocator(), this);
+        tbb::task::enqueue( *t);
+      } else {
+        // Can we use tbb-based overloaded new-operator for a "custom" task (an algorithm wrapper, not derived from tbb::task)? it seems it works..
+        IOBoundAlgTask* theTask = new( tbb::task::allocate_root() ) IOBoundAlgTask(ialgoPtr, iAlgo, serviceLocator(), this);
+        m_IOBoundAlgScheduler->push(*theTask);
+      }
     }
 
     if (msgLevel(MSG::DEBUG))
