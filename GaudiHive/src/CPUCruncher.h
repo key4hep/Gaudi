@@ -38,8 +38,6 @@
 
     double get_runtime() const { return m_avg_runtime; };
 
-    virtual bool isIOBound() const {return m_sleepyExecution;};
-
   protected:
 
     CPUCruncher
@@ -85,7 +83,7 @@
 
     static CHM m_name_ncopies_map;
 
-    // Sleep during execution instead of real CPU crunching
-    bool m_sleepyExecution;
+    // Fraction of total execution time, during which an algorithm is actually sleeping instead of crunching CPU
+    float m_sleepFraction;
   };
 
