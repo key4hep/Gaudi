@@ -786,7 +786,8 @@ public:
 
   const std::vector<IAlgTool *> & tools() const;
 
-  virtual bool isIOBound() const {return false;};
+  // Return the I/O-boundness flag
+  virtual bool isIOBound() const {return m_isIOBound;};
 
 protected:
 
@@ -889,21 +890,22 @@ private:
   bool         m_auditorFinalize;  ///< flag for auditors in "finalize()"
   bool         m_auditorBeginRun;  ///< flag for auditors in "beginRun()"
   bool         m_auditorEndRun;    ///< flag for auditors in "endRun()"
-  bool         m_auditorStart;///< flag for auditors in "initialize()"
-  bool         m_auditorStop;///< flag for auditors in "Reinitialize()"
+  bool         m_auditorStart;     ///< flag for auditors in "initialize()"
+  bool         m_auditorStop;      ///< flag for auditors in "Reinitialize()"
   bool         m_filterPassed;     ///< Filter passed flag
   bool         m_isEnabled;        ///< Algorithm is enabled flag
   bool         m_isExecuted;       ///< Algorithm is executed flag
-  mutable bool m_toolHandlesInit;  /// flag indicating whether ToolHandle tools have been added to m_tools
+  mutable bool m_toolHandlesInit;  ///< flag indicating whether ToolHandle tools have been added to m_tools
   Gaudi::StateMachine::State m_state;            ///< Algorithm has been initialized flag
   Gaudi::StateMachine::State m_targetState;      ///< Algorithm has been initialized flag
   bool         m_isFinalized;      ///< Algorithm has been finalized flag
 
-  bool		   m_doTimeline; // send events to TimelineSvc
+  bool		   m_doTimeline;       ///< send events to TimelineSvc
 
-  bool         m_isClonable; ///< The algorithm clonability of the algorithm
-  unsigned int m_cardinality; ///< The maximum number of clones that can exist
+  bool         m_isClonable;       ///< The algorithm clonability of the algorithm
+  unsigned int m_cardinality;      ///< The maximum number of clones that can exist
   std::vector<std::string> m_neededResources; ///< The named resources needed during event looping
+  bool         m_isIOBound;        ///< If an algorithm is I/O-bound (in the broad sense of Von Neumann bottleneck)
 
   /// implementation of service method
   StatusCode service_i(const std::string& svcName,

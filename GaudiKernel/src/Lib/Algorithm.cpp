@@ -41,7 +41,8 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
     m_isExecuted(false),
     m_toolHandlesInit(false),
     m_state(Gaudi::StateMachine::CONFIGURED),
-    m_targetState(Gaudi::StateMachine::CONFIGURED)
+    m_targetState(Gaudi::StateMachine::CONFIGURED),
+    m_isIOBound(false)
 {
   m_propertyMgr = new PropertyMgr();
   m_subAlgms = new std::vector<Algorithm *>();
@@ -84,14 +85,14 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
 
   declareProperty( "MonitorService"   , m_monitorSvcName      = "MonitorSvc" );
 
-  declareProperty
-    ( "RegisterForContextService" ,
-      m_registerContext  ,
-      "The flag to enforce the registration for Algorithm Context Service") ;
+  declareProperty( "RegisterForContextService" , m_registerContext , "The flag to enforce the registration "
+                                                                     "for Algorithm Context Service") ;
 
   declareProperty( "IsClonable"       , m_isClonable = false, "Thread-safe enough for cloning?" );
   declareProperty( "Cardinality"      , m_cardinality = 1,    "How many clones to create" );
   declareProperty( "NeededResources"  , m_neededResources = std::vector<std::string>() );
+  declareProperty( "IsIOBound"        , m_isIOBound = false,  "If an algorithm is I/O-bound (in the broad "
+                                                              "sense of Von Neumann bottleneck)" );
 
   // update handlers.
   m_outputLevel.declareUpdateHandler(&Algorithm::initOutputLevel, this);
@@ -107,7 +108,7 @@ Algorithm::~Algorithm() {
 // IAlgorithm implementation
 StatusCode Algorithm::sysInitialize() {
 
-	  MsgStream log ( msgSvc() , name() ) ;
+  MsgStream log ( msgSvc() , name() ) ;
 
   // Bypass the initialization if the algorithm
   // has already been initialized.
@@ -160,16 +161,16 @@ StatusCode Algorithm::sysInitialize() {
       std::vector<Algorithm *>::iterator it;
       bool fail(false);
       for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-	if ((*it)->sysInitialize().isFailure()) fail = true;
+    if ((*it)->sysInitialize().isFailure()) fail = true;
       }
       if( fail ) {
-	sc = StatusCode::FAILURE;
-	MsgStream log ( msgSvc() , name() );
-	log << MSG::ERROR << " Error initializing one or several sub-algorithms"
-	    << endmsg;
+    sc = StatusCode::FAILURE;
+    MsgStream log ( msgSvc() , name() );
+    log << MSG::ERROR << " Error initializing one or several sub-algorithms"
+        << endmsg;
       } else {
-	// Update the state.
-	m_state = m_targetState;
+    // Update the state.
+    m_state = m_targetState;
       }
     }
   }
@@ -209,69 +210,69 @@ StatusCode Algorithm::sysInitialize() {
 
 
   //init data handle
-	for (auto tag : m_inputDataObjects) {
-		if (m_inputDataObjects[tag].isValid()) {
-			if (m_inputDataObjects[tag].initialize().isSuccess())
-				log << MSG::DEBUG << "Data Handle " << tag << " ("
-						<< m_inputDataObjects[tag].dataProductName()
-						<< ") initialized" << endmsg;
-			else
-				log << MSG::FATAL << "Data Handle " << tag << " ("
-						<< m_inputDataObjects[tag].dataProductName()
-						<< ") could NOT be initialized" << endmsg;
-		}
-	}
-	for (auto tag : m_outputDataObjects) {
-		if (m_outputDataObjects[tag].isValid()) {
+    for (auto tag : m_inputDataObjects) {
+        if (m_inputDataObjects[tag].isValid()) {
+            if (m_inputDataObjects[tag].initialize().isSuccess())
+                log << MSG::DEBUG << "Data Handle " << tag << " ("
+                        << m_inputDataObjects[tag].dataProductName()
+                        << ") initialized" << endmsg;
+            else
+                log << MSG::FATAL << "Data Handle " << tag << " ("
+                        << m_inputDataObjects[tag].dataProductName()
+                        << ") could NOT be initialized" << endmsg;
+        }
+    }
+    for (auto tag : m_outputDataObjects) {
+        if (m_outputDataObjects[tag].isValid()) {
 
-			if (m_outputDataObjects[tag].initialize().isSuccess())
-				log << MSG::DEBUG << "Data Handle " << tag << " ("
-						<< m_outputDataObjects[tag].dataProductName()
-						<< ") initialized" << endmsg;
-			else
-				log << MSG::FATAL << "Data Handle " << tag << " ("
-						<< m_outputDataObjects[tag].dataProductName()
-						<< ") could NOT be initialized" << endmsg;
-	  }
+            if (m_outputDataObjects[tag].initialize().isSuccess())
+                log << MSG::DEBUG << "Data Handle " << tag << " ("
+                        << m_outputDataObjects[tag].dataProductName()
+                        << ") initialized" << endmsg;
+            else
+                log << MSG::FATAL << "Data Handle " << tag << " ("
+                        << m_outputDataObjects[tag].dataProductName()
+                        << ") could NOT be initialized" << endmsg;
+      }
   }
 
   //all TES accessing tools have been created in initialize() of derived class
   //query toolSvc for own tools and build dependencies
   std::function<void(const IInterface *)> addToolDOD = [&] (const IInterface * parent) {
 
-	  MsgStream log ( msgSvc() , name() ) ;
+      MsgStream log ( msgSvc() , name() ) ;
 
-	  std::vector<IAlgTool *> tools;
+      std::vector<IAlgTool *> tools;
 
-	  const Algorithm * alg = dynamic_cast<const Algorithm *>(parent);
-	  if(alg != NULL)
-		  tools = alg->tools();
-	  else{
-		  const AlgTool * algTool = dynamic_cast<const AlgTool *>(parent);
-		  if(algTool != NULL)
-			  tools = algTool->tools();
-		  else
-			  log << MSG::FATAL << "Could not build data dependencies of algorithm, wrong parameter" << endmsg;
+      const Algorithm * alg = dynamic_cast<const Algorithm *>(parent);
+      if(alg != NULL)
+          tools = alg->tools();
+      else{
+          const AlgTool * algTool = dynamic_cast<const AlgTool *>(parent);
+          if(algTool != NULL)
+              tools = algTool->tools();
+          else
+              log << MSG::FATAL << "Could not build data dependencies of algorithm, wrong parameter" << endmsg;
 
-	  }
+      }
 
-	  for(auto tool : tools){
+      for(auto tool : tools){
 
-		  log << MSG::DEBUG << "Adding data dependencies for tool " << tool->name() << " (" << tool->type() << ")" << endmsg;
-		  auto inputs = tool->inputDataObjects();
-		  for(auto dod : inputs){
-			  log << MSG::DEBUG << "\tInput: " << dod << endmsg;
-			  m_inputDataObjects.insert(&inputs[dod]);
-		  }
+          log << MSG::DEBUG << "Adding data dependencies for tool " << tool->name() << " (" << tool->type() << ")" << endmsg;
+          auto inputs = tool->inputDataObjects();
+          for(auto dod : inputs){
+              log << MSG::DEBUG << "\tInput: " << dod << endmsg;
+              m_inputDataObjects.insert(&inputs[dod]);
+          }
 
-		  auto outputs = tool->outputDataObjects();
-		  for(auto dod : outputs){
-			  log << MSG::DEBUG << "\tOutput: " << dod << endmsg;
-			  m_outputDataObjects.insert(&outputs[dod]);
-		  }
+          auto outputs = tool->outputDataObjects();
+          for(auto dod : outputs){
+              log << MSG::DEBUG << "\tOutput: " << dod << endmsg;
+              m_outputDataObjects.insert(&outputs[dod]);
+          }
 
-		  addToolDOD(tool);
-	  }
+          addToolDOD(tool);
+      }
   };
 
   log << MSG::DEBUG << "Adding tools for " << this->name() << endmsg;
@@ -316,16 +317,16 @@ StatusCode Algorithm::sysStart() {
       std::vector<Algorithm *>::iterator it;
       bool fail(false);
       for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-	if ((*it)->sysStart().isFailure()) fail = true;
+    if ((*it)->sysStart().isFailure()) fail = true;
       }
       if( fail ) {
-	sc = StatusCode::FAILURE;
-	MsgStream log ( msgSvc() , name() );
-	log << MSG::ERROR << " Error starting one or several sub-algorithms"
-	    << endmsg;
+    sc = StatusCode::FAILURE;
+    MsgStream log ( msgSvc() , name() );
+    log << MSG::ERROR << " Error starting one or several sub-algorithms"
+        << endmsg;
       } else {
-	// Update the state.
-	m_state = m_targetState;
+    // Update the state.
+    m_state = m_targetState;
       }
     }
   }
@@ -401,15 +402,15 @@ StatusCode Algorithm::sysReinitialize() {
       std::vector<Algorithm *>::iterator it;
       bool fail(false);
       for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-	if((*it)->sysReinitialize().isFailure()) fail = true;
+    if((*it)->sysReinitialize().isFailure()) fail = true;
       }
 
       if (fail) {
-	sc = StatusCode::FAILURE;
-	MsgStream log ( msgSvc() , name() );
-	log << MSG::ERROR
-	    << "sysReinitialize(): Error reinitializing one or several "
-	    << "sub-algorithms" << endmsg;
+    sc = StatusCode::FAILURE;
+    MsgStream log ( msgSvc() , name() );
+    log << MSG::ERROR
+        << "sysReinitialize(): Error reinitializing one or several "
+        << "sub-algorithms" << endmsg;
       }
     }
   }
@@ -485,14 +486,14 @@ StatusCode Algorithm::sysRestart() {
       std::vector<Algorithm *>::iterator it;
       bool fail(false);
       for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-	if ((*it)->sysRestart().isFailure()) fail = true;
+    if ((*it)->sysRestart().isFailure()) fail = true;
       }
       if( fail ) {
-	sc = StatusCode::FAILURE;
-	MsgStream log ( msgSvc() , name() );
-	log << MSG::ERROR
-	    << "sysRestart(): Error restarting one or several sub-algorithms"
-	    << endmsg;
+    sc = StatusCode::FAILURE;
+    MsgStream log ( msgSvc() , name() );
+    log << MSG::ERROR
+        << "sysRestart(): Error restarting one or several sub-algorithms"
+        << endmsg;
       }
     }
   }
@@ -559,12 +560,12 @@ StatusCode Algorithm::sysBeginRun() {
       std::vector<Algorithm *>::iterator it;
       bool fail(false);
       for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-	if((*it)->sysBeginRun().isFailure()) fail = true;
+    if((*it)->sysBeginRun().isFailure()) fail = true;
       }
       if( fail ) {
-	sc = StatusCode::FAILURE;
-	MsgStream log ( msgSvc() , name() );
-	log << MSG::ERROR << " Error executing BeginRun for one or several sub-algorithms"
+    sc = StatusCode::FAILURE;
+    MsgStream log ( msgSvc() , name() );
+    log << MSG::ERROR << " Error executing BeginRun for one or several sub-algorithms"
           << endmsg;
       }
     }
@@ -635,13 +636,13 @@ StatusCode Algorithm::sysEndRun() {
       std::vector<Algorithm *>::iterator it;
       bool fail(false);
       for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-	if ((*it)->sysEndRun().isFailure()) fail = true;
+    if ((*it)->sysEndRun().isFailure()) fail = true;
       }
       if( fail ) {
-	sc = StatusCode::FAILURE;
-	MsgStream log ( msgSvc() , name() );
-	log << MSG::ERROR << " Error calling endRun for one or several sub-algorithms"
-	    << endmsg;
+    sc = StatusCode::FAILURE;
+    MsgStream log ( msgSvc() , name() );
+    log << MSG::ERROR << " Error calling endRun for one or several sub-algorithms"
+        << endmsg;
       }
     }
   }
@@ -713,12 +714,12 @@ StatusCode Algorithm::sysExecute() {
 
   try {
 
-	if(UNLIKELY(m_doTimeline))
-		  timeline.start = Clock::now();
+    if(UNLIKELY(m_doTimeline))
+          timeline.start = Clock::now();
     status = execute();
 
     if(UNLIKELY(m_doTimeline))
-    	timeline.end = Clock::now();
+        timeline.end = Clock::now();
 
     setExecuted(true);  // set the executed flag
 
@@ -768,7 +769,7 @@ StatusCode Algorithm::sysExecute() {
   }
 
   if(UNLIKELY(m_doTimeline))
-	  timelineSvc()->registerTimelineEvent(timeline);
+      timelineSvc()->registerTimelineEvent(timeline);
 
   if( status.isFailure() ) {
     MsgStream log ( msgSvc() , name() );
@@ -884,7 +885,7 @@ StatusCode Algorithm::sysFinalize() {
 
       // Release all sub-algorithms
       for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-	(*it)->release();
+    (*it)->release();
       }
       // Indicate that this Algorithm has been finalized to prevent duplicate attempts
       m_state = m_targetState;
@@ -1290,95 +1291,95 @@ const std::vector<Property*>& Algorithm::getProperties( ) const {
 
 const std::vector<MinimalDataObjectHandle*> Algorithm::handles(){
 
-	std::vector<MinimalDataObjectHandle*> handles;
+    std::vector<MinimalDataObjectHandle*> handles;
 
-	for(auto it : m_inputDataObjects)
-		handles.push_back(&m_inputDataObjects[it]);
+    for(auto it : m_inputDataObjects)
+        handles.push_back(&m_inputDataObjects[it]);
 
-	for(auto it : m_outputDataObjects)
-		handles.push_back(&m_outputDataObjects[it]);
+    for(auto it : m_outputDataObjects)
+        handles.push_back(&m_outputDataObjects[it]);
 
-	return handles;
+    return handles;
 
 }
 
 void Algorithm::initToolHandles() const{
 
-	MsgStream log ( msgSvc() , name() ) ;
+    MsgStream log ( msgSvc() , name() ) ;
 
-	for(auto th : m_toolHandles){
-		IAlgTool * tool = nullptr;
+    for(auto th : m_toolHandles){
+        IAlgTool * tool = nullptr;
 
-		//if(th->retrieve().isFailure())
-			//log << MSG::DEBUG << "Error in retrieving tool from ToolHandle" << endmsg;
+        //if(th->retrieve().isFailure())
+            //log << MSG::DEBUG << "Error in retrieving tool from ToolHandle" << endmsg;
 
-		//get generic tool interface from ToolHandle
-		if(th->retrieve(tool).isSuccess() && tool != nullptr){
-			m_tools.push_back(tool);
-			log << MSG::DEBUG << "Adding ToolHandle tool " << tool->name() << " (" << tool->type() << ")" << endmsg;
-		} else {
-			log << MSG::DEBUG << "Trying to add nullptr tool" << endmsg;
-		}
-	}
+        //get generic tool interface from ToolHandle
+        if(th->retrieve(tool).isSuccess() && tool != nullptr){
+            m_tools.push_back(tool);
+            log << MSG::DEBUG << "Adding ToolHandle tool " << tool->name() << " (" << tool->type() << ")" << endmsg;
+        } else {
+            log << MSG::DEBUG << "Trying to add nullptr tool" << endmsg;
+        }
+    }
 
-	m_toolHandlesInit = true;
+    m_toolHandlesInit = true;
 }
 
 const std::vector<IAlgTool *> & Algorithm::tools() const {
-	if(UNLIKELY(!m_toolHandlesInit))
-		initToolHandles();
+    if(UNLIKELY(!m_toolHandlesInit))
+        initToolHandles();
 
-	return m_tools;
+    return m_tools;
 }
 
 std::vector<IAlgTool *> & Algorithm::tools() {
-	if(UNLIKELY(!m_toolHandlesInit))
-		initToolHandles();
+    if(UNLIKELY(!m_toolHandlesInit))
+        initToolHandles();
 
-	return m_tools;
+    return m_tools;
 }
 
 void Algorithm::addSubAlgorithmDataObjectHandles(){
-	//add all DOHs of SubAlgs to own collection
+    //add all DOHs of SubAlgs to own collection
 
-	MsgStream log ( msgSvc() , name() ) ;
+    MsgStream log ( msgSvc() , name() ) ;
 
-	for(Algorithm * alg : *m_subAlgms){
+    for(Algorithm * alg : *m_subAlgms){
 
-		assert(alg->isInitialized());
+        assert(alg->isInitialized());
 
-		log << MSG::DEBUG << "Adding subAlg DOHs for " << alg->name() << endmsg;
+        log << MSG::DEBUG << "Adding subAlg DOHs for " << alg->name() << endmsg;
 
-		for(auto tag : alg->inputDataObjects()){
-			auto doh = &alg->inputDataObjects()[tag];
+        for(auto tag : alg->inputDataObjects()){
+            auto doh = &alg->inputDataObjects()[tag];
 
-			if(!doh->isValid())
-				continue;
+            if(!doh->isValid())
+                continue;
 
-			//if the output of an previous algorithm produces the required input don't add it
-			if(!m_outputDataObjects.contains(doh)){
-				log << MSG::DEBUG << "\tinput handle " << doh->dataProductName() << " is real input to sequence, adding as "
-					<< (alg->name() + "/" + doh->descriptor()->tag()) << endmsg;
+            //if the output of an previous algorithm produces the required input don't add it
+            if(!m_outputDataObjects.contains(doh)){
+                log << MSG::DEBUG << "\tinput handle " << doh->dataProductName() << " is real input to sequence, adding as "
+                    << (alg->name() + "/" + doh->descriptor()->tag()) << endmsg;
 
-				m_inputDataObjects.insert(alg->name() + "/" + doh->descriptor()->tag() ,doh);
-			} else {
-				log << MSG::DEBUG << "\tinput handle " << doh->dataProductName() << " is produced by algorithm in sequence" << endmsg;
-			}
-		}
+                m_inputDataObjects.insert(alg->name() + "/" + doh->descriptor()->tag() ,doh);
+            } else {
+                log << MSG::DEBUG << "\tinput handle " << doh->dataProductName() << " is produced by algorithm in sequence" << endmsg;
+            }
+        }
 
-		//add output after input to properly treat update DOH
-		for(auto tag : alg->outputDataObjects()){
-			auto doh = &alg->outputDataObjects()[tag];
+        //add output after input to properly treat update DOH
+        for(auto tag : alg->outputDataObjects()){
+            auto doh = &alg->outputDataObjects()[tag];
 
-			if(!doh->isValid())
-				continue;
+            if(!doh->isValid())
+                continue;
 
-			log << MSG::DEBUG << "\toutput handle " << doh->dataProductName() << " is output of sequence, adding as "
-				<< (alg->name() + "/" + doh->descriptor()->tag()) << endmsg;
+            log << MSG::DEBUG << "\toutput handle " << doh->dataProductName() << " is output of sequence, adding as "
+                << (alg->name() + "/" + doh->descriptor()->tag()) << endmsg;
 
-			m_outputDataObjects.insert(alg->name() + "/" + doh->descriptor()->tag(), doh);
-		}
-	}
+            m_outputDataObjects.insert(alg->name() + "/" + doh->descriptor()->tag(), doh);
+        }
+    }
 }
 
 /**
