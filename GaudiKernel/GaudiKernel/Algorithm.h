@@ -787,7 +787,10 @@ public:
   const std::vector<IAlgTool *> & tools() const;
 
   // Return the I/O-boundness flag
-  virtual bool isIOBound() const {return m_isIOBound;};
+  bool isIOBound() const {return m_isIOBound;};
+  // Set the I/O-boundness flag
+  void setIOBound(bool value) { m_isIOBound = value;};
+
 
 protected:
 
