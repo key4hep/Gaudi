@@ -59,7 +59,7 @@ StatusCode IOBoundAlgTask::execute() {
   eventContext->setFail(eventfailed);
 
   // Push in the scheduler queue an action to be performed
-  auto action_promote2Executed = std::bind(&ForwardSchedulerSvc::promoteToExecuted,
+  auto action_promote2Executed = std::bind(&ForwardSchedulerSvc::promoteToAsyncExecuted,
                                            m_schedSvc,
                                            m_algoIndex,
                                            eventContext->slot(),

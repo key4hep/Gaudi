@@ -159,9 +159,13 @@ private:
 
   /// Maximum number of simultaneous algorithms
   unsigned int m_maxAlgosInFlight;
-
   /// Number of algoritms presently in flight
   unsigned int m_algosInFlight;
+
+  /// Maximum number of simultaneous algorithms
+  unsigned int m_maxIOBoundAlgosInFlight;
+  /// Number of algoritms presently in flight
+  unsigned int m_IOBoundAlgosInFlight;
 
   /// Loop on algorithm in the slots and promote them to successive states (-1 means all slots, while empty string
   /// means skipping an update of the Control Flow state)
@@ -171,7 +175,9 @@ private:
   StatusCode promoteToControlReady(unsigned int iAlgo, int si);
   StatusCode promoteToDataReady(unsigned int iAlgo, int si);
   StatusCode promoteToScheduled(unsigned int iAlgo, int si);
+  StatusCode promoteToAsyncScheduled(unsigned int iAlgo, int si); // tests of an asynchronous scheduler
   StatusCode promoteToExecuted(unsigned int iAlgo, int si, IAlgorithm* algo);
+  StatusCode promoteToAsyncExecuted(unsigned int iAlgo, int si, IAlgorithm* algo); // tests of an asynchronous scheduler
   StatusCode promoteToFinished(unsigned int iAlgo, int si);
 
   /// Check if the scheduling is in a stall
