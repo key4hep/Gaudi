@@ -2,6 +2,9 @@ Package: GaudiAlg
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-07-09 - Gerhard Raven
+ - Fixed GAUDI-996: GaudiSeqeuncer calls resetExecuted of subAlgorithms
+
 =============================== GaudiAlg v15r2 ===============================
 ! 2014-09-18 - Marco Clemencic
  - Fixed Eclipse Code Analysis warning.
