@@ -5,6 +5,7 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+============================ GaudiProfiling v2r6 =============================
 ! 2015-06-19 - Ben Couturier
  - Added Jemalloc profiling feature to gaudirun.py
 

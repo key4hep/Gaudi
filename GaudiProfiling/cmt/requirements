@@ -1,6 +1,6 @@
 # =============================================================================
 package GaudiProfiling
-version v2r5
+version v2r6
 
 # ============== structure ====================================================
 branches        GaudiProfiling src cmt doc data python scripts

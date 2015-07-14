@@ -2,6 +2,7 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+============================= GaudiKernel v31r6 ==============================
 ! 2015-06-09 - Marco Clemencic
  - GAUDI-1042: replaced "static const" with "constexpr" in physics constants.
 

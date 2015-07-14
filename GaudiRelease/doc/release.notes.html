@@ -51,9 +51,72 @@ span.author { color: #737373; }
 <body onload="javascript:addLinks()">
 <pre>
 Package: GaudiRelease<br>
-Package Coordinator: Marco Clemencic, Charles Leggett<br>
+Package Coordinator: Marco Clemencic, Charles Leggett, Benedikt Hegner<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
+<!-- ====================================================================== -->
+<h2><a name="v26r3">Gaudi v26r3</a> (2015-07-14)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=79root6">LCGCMT_79root6</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Fixed GAUDI-996: GaudiSequencer calls resetExecuted of subAlgorithms<br/>
+    (<span class="author">Gerhard Raven</span>)</li>
+<li>Fixed GAUDI-1045: segfault running "LD_PRELOAD=libjemalloc.so gaudirun.py"<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added Jemalloc profiling.<br/>
+    (<span class="author">Ben Couturier</span>)</li>
+<li>GAUDI-1042: replaced "static const" with "constexpr" in physics constants.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-1044: allow 'L' numeric suffix in .opts files parsed with Gaudi.exe.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added example/test of how to declare a custom factory for an algorithm.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Minor bugfixes</li>
+</ul>
+See also the <a href="https://its.cern.ch/jira/secure/ReleaseNote.jspa?projectId=14707&version=23503">release notes on JIRA</a>.
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiAlg (v15r3):
+<ul>
+<li>Fixed GAUDI-996: GaudiSequencer calls resetExecuted of subAlgorithms<br/>
+    (<span class="author">Gerhard Raven</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v26r3):
+<ul>
+<li>Fixed GAUDI-1045: segfault running "LD_PRELOAD=libjemalloc.so gaudirun.py"<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiProfiling (v2r6):
+<ul>
+<li>Added Jemalloc profiling.<br/>
+    (<span class="author">Ben Couturier</span>)</li>
+<li>Added test for GAUDI-1045 (segfault with LD_PRELOAD=libjemalloc.so).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v31r6):
+<ul>
+<li>GAUDI-1042: replaced "static const" with "constexpr" in physics constants.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiCoreSvc (v3r5):
+<ul>
+<li>GAUDI-1044: allow 'L' numeric suffix in .opts files parsed with Gaudi.exe.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v26r3):
+<ul>
+<li>GAUDI-1044: added test<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added example/test of how to declare a custom factory for an algorithm.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
 <!-- ====================================================================== -->
 <h2><a name="v26r2">Gaudi v26r2</a> (2015-05-15)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=76root6">LCGCMT_76root6</a></h3>

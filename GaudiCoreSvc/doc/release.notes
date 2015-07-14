@@ -5,6 +5,7 @@
 # Commit Id: $Format:%H$
 ################################################################################
 
+============================= GaudiCoreSvc v3r5 ==============================
 ! 2015-06-17 - Marco Clemencic
  - GAUDI-1044: allow 'L' numeric suffix in .opts files parsed with Gaudi.exe.
 
