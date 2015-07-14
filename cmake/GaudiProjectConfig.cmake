@@ -727,6 +727,7 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
 
   # for the RPMs
   set(CPACK_PACKAGE_DEFAULT_LOCATION "/usr")
+  set(CPACK_GENERATOR "RPM")
   set(CPACK_RPM_PACKAGE_VERSION "${version}")
   set(CPACK_SOURCE_GENERATOR "RPM")
   set(CPACK_SOURCE_RPM "ON")
@@ -1289,11 +1290,11 @@ endfunction()
 
 
 #-------------------------------------------------------------------------------
-# gaudi_subdir(name version)
+# gaudi_subdir(name [version])
 #
 # Declare name and version of the subdirectory.
 #-------------------------------------------------------------------------------
-macro(gaudi_subdir name version)
+macro(gaudi_subdir name)
   gaudi_get_package_name(_guessed_name)
   if (NOT _guessed_name STREQUAL "${name}")
     message(WARNING "Declared subdir name (${name}) does not match the name of the directory (${_guessed_name})")
@@ -1301,14 +1302,23 @@ macro(gaudi_subdir name version)
 
   # Set useful variables and properties
   set(subdir_name ${name})
-  set(subdir_version ${version})
-  set_directory_properties(PROPERTIES name ${name})
-  set_directory_properties(PROPERTIES version ${version})
+  if(NOT "${ARGV1}" STREQUAL "")
+    set(subdir_version ${ARGV1})
+  elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/package_version.txt)
+    file(READ ${CMAKE_CURRENT_SOURCE_DIR}/package_version.txt subdir_version)
+    string(STRIP "${subdir_version}" subdir_version)
+  else()
+    set(subdir_version unknown)
+  endif()
+  set_directory_properties(PROPERTIES name ${subdir_name})
+  set_directory_properties(PROPERTIES version ${subdir_version})
 
   # Generate the version header for the package.
   execute_process(COMMAND
                   ${versheader_cmd} --quiet
-                     ${name} ${version} ${CMAKE_CURRENT_BINARY_DIR}/${name}Version.h)
+                     ${name} ${subdir_version} ${CMAKE_CURRENT_BINARY_DIR}/${name}Version.h)
+  # Add a macro for the version of the package
+  add_definitions("-DPACKAGE_NAME=\"${subdir_name}\"" "-DPACKAGE_VERSION=\"${subdir_version}\"")
 endmacro()
 
 #-------------------------------------------------------------------------------
@@ -2666,9 +2676,9 @@ macro(gaudi_generate_project_platform_config_file)
 
   set(project_environment_ ${project_environment})
   if(LCG_releases_base)
-    _make_relocatable(project_environment_ VARS LCG_releases_base)
+    _make_relocatable(project_environment_ VARS ${GAUDI_ENV_SUBSTITUTE_VARS} LCG_releases_base)
   else()
-    _make_relocatable(project_environment_ VARS LCG_releases LCG_external)
+    _make_relocatable(project_environment_ VARS ${GAUDI_ENV_SUBSTITUTE_VARS} LCG_releases LCG_external)
   endif()
   string(REPLACE "\$" "\\\$" project_environment_string "${project_environment_}")
 
@@ -2784,9 +2794,11 @@ function(_make_relocatable var)
   foreach(val ${${var}})
     foreach(root_var ${ARG_VARS})
       if(${root_var})
-        if(val MATCHES "^${${root_var}}")
+        if(IS_ABSOLUTE ${${root_var}} AND val MATCHES "^${${root_var}}")
           file(RELATIVE_PATH val ${${root_var}} ${val})
           set(val \${${root_var}}/${val})
+        elseif(val MATCHES "${${root_var}}")
+          string(REPLACE "${${root_var}}" "\${${root_var}}" val "${val}")
         endif()
       endif()
     endforeach()
@@ -2797,6 +2809,10 @@ function(_make_relocatable var)
           list(FIND map_keys "${key}" idx)
           list(GET map_values ${idx} map_val)
           set(val ${map_val}/${val})
+        elseif(val MATCHES "${key}")
+          list(FIND map_keys "${key}" idx)
+          list(GET map_values ${idx} map_val)
+          string(REPLACE "${key}" "${map_val}" val "${val}")
         endif()
       endforeach()
     endif()
@@ -2844,9 +2860,9 @@ function(gaudi_generate_env_conf filename)
 
   # variables that need to be used to make the environment relative
   if(LCG_releases_base)
-    set(root_vars LCG_releases_base)
+    set(root_vars ${GAUDI_ENV_SUBSTITUTE_VARS} LCG_releases_base)
   else()
-    set(root_vars LCG_releases LCG_external)
+    set(root_vars ${GAUDI_ENV_SUBSTITUTE_VARS} LCG_releases LCG_external)
   endif()
   foreach(root_var ${root_vars})
     set(data "${data}  <env:default variable=\"${root_var}\">${${root_var}}</env:default>\n")
@@ -2855,7 +2871,9 @@ function(gaudi_generate_env_conf filename)
   # include inherited environments
   # (note: it's important that the full search path is ready before we start including)
   foreach(other_project ${used_gaudi_projects} ${used_data_packages} ${inherited_data_packages})
-    set(data "${data}  <env:search_path>${${other_project}_DIR}</env:search_path>\n")
+    set(val "${${other_project}_DIR}")
+    _make_relocatable(val VARS ${root_vars})
+    set(data "${data}  <env:search_path>${val}</env:search_path>\n")
   endforeach()
   foreach(other_project ${used_gaudi_projects})
     set(data "${data}  <env:include>${other_project}.xenv</env:include>\n")
@@ -3055,9 +3073,9 @@ macro(gaudi_generate_exports)
   message(STATUS "Generating 'export' files.")
 
   if(LCG_releases_base)
-    set(_relocation_bases LCG_releases_base CMAKE_SOURCE_DIR)
+    set(_relocation_bases ${GAUDI_ENV_SUBSTITUTE_VARS} LCG_releases_base CMAKE_SOURCE_DIR)
   else()
-    set(_relocation_bases LCG_releases LCG_external CMAKE_SOURCE_DIR)
+    set(_relocation_bases ${GAUDI_ENV_SUBSTITUTE_VARS} LCG_releases LCG_external CMAKE_SOURCE_DIR)
   endif()
 
   foreach(package ${ARGN})

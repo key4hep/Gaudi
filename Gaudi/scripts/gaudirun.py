@@ -32,6 +32,30 @@ def getArgsWithoutoProfilerInfo(args):
             newargs.append(o)
     return newargs
 
+def setLibraryPreload(newpreload):
+    ''' Adds  a list of libraries to LD_PRELOAD '''
+    preload = os.environ.get("LD_PRELOAD", "")
+    if preload:
+        preload = preload.replace(" ", ":").split(":")
+    else:
+        preload = []
+
+    for libname in set(preload).intersection(newpreload):
+        logging.warning("Ignoring preload of library %s because it is "
+                        "already in LD_PRELOAD.", libname)
+
+    to_load = [libname
+               for libname in newpreload
+               if libname not in set(preload)]
+    
+    if to_load:
+        preload += to_load
+        preload = ":".join(preload)
+        os.environ["LD_PRELOAD"] = preload
+        logging.info("Setting LD_PRELOAD='%s'", preload)
+
+    return to_load
+
 def rationalizepath(path):
     '''
     Convert the given path to a real path if the pointed file exists, otherwise
@@ -184,7 +208,9 @@ if __name__ == "__main__":
                            ' and stored in a temporary file, then the job is '
                            'restarted using that file as input (to save '
                            'memory)')
-
+    parser.add_option("--run-info-file", type="string",
+                      help="Save gaudi process information to the file specified (in JSON format)")
+    
     parser.set_defaults(options = [],
                         tcmalloc = False,
                         profilerName = '',
@@ -193,7 +219,8 @@ if __name__ == "__main__":
                         preload = [],
                         ncpus = None,
                         # the old logic can be turned off with an env variable
-                        old_conf_user_apply='GAUDI_FIXED_APPLY_CONF' not in os.environ)
+                        old_conf_user_apply='GAUDI_FIXED_APPLY_CONF' not in os.environ,
+                        run_info_file = None)
 
     # replace .qmt files in the command line with their contained args
     argv = []
@@ -267,7 +294,7 @@ if __name__ == "__main__":
         profilerName = opts.profilerName
         profilerExecName = ""
         profilerOutput = opts.profilerOutput or (profilerName + ".output")
-
+        
         # To restart the application removing the igprof option and prepending the string
         args = getArgsWithoutoProfilerInfo(sys.argv)
 
@@ -303,6 +330,9 @@ if __name__ == "__main__":
             profilerOptions = "--tool=%s %s=%s" % (toolname, outoption, profilerOutput)
             profilerExecName = "valgrind"
 
+        elif profilerName == "jemalloc":
+            opts.preload.insert(0, os.environ.get("JEMALLOCLIB", "libjemalloc.so"))
+            os.environ['MALLOC_CONF'] = "prof:true,prof_leak:true"
         else:
             root_logger.warning("Profiler %s not recognized!" % profilerName)
 
@@ -313,27 +343,38 @@ if __name__ == "__main__":
             profilerOptions += " %s" % profilerExtraOptions
 
         # now we look for the full path of the profiler: is it really there?
-        import distutils.spawn
-        profilerPath = distutils.spawn.find_executable(profilerExecName)
-        if not profilerPath:
-            root_logger.error("Cannot locate profiler %s" % profilerExecName)
-            sys.exit(1)
+        if profilerExecName:
+            import distutils.spawn
+            profilerPath = distutils.spawn.find_executable(profilerExecName)
+            if not profilerPath:
+                root_logger.error("Cannot locate profiler %s" % profilerExecName)
+                sys.exit(1)
 
         root_logger.info("------ Profiling options are on ------ \n"\
                          " o Profiler: %s\n"\
                          " o Options: '%s'.\n"\
-                         " o Output: %s" % (profilerExecName, profilerOptions, profilerOutput))
+                         " o Output: %s" % (profilerExecName or profilerName, profilerOptions, profilerOutput))
 
-        # We profile python
-        profilerOptions += " python"
+        # allow preloading of libraries
+        # That code need to be acsracted from above
+        to_reload = []
+        if opts.preload:
+            to_reload = setLibraryPreload(opts.preload)
+                
+        if profilerExecName:
+            # We profile python
+            profilerOptions += " python"
 
-        # now we have all the ingredients to prepare our command
-        arglist = [profilerPath] + profilerOptions.split() + args
-        arglist = [ a for a in arglist if a!='' ]
-        #print profilerPath
-        #for arg in arglist:
-            #print arg
-        os.execv(profilerPath, arglist)
+            # now we have all the ingredients to prepare our command
+            arglist = [profilerPath] + profilerOptions.split() + args
+            arglist = [ a for a in arglist if a!='' ]
+            #print profilerPath
+            #for arg in arglist:
+                #print arg
+            os.execv(profilerPath, arglist)
+        else:
+            arglist = [a for a in  sys.argv if not a.startswith("--profiler")]
+            os.execv(sys.executable, [sys.executable] + arglist)
 
     # End Profiler Support ------
 
@@ -433,4 +474,21 @@ if __name__ == "__main__":
 
     if not opts.dry_run:
         # Do the real processing
-        sys.exit(c.run(opts.ncpus))
+        retcode = c.run(opts.ncpus)
+
+        # Now saving the run information pid, retcode and executable path to
+        # a file is requested
+        if opts.run_info_file:
+            import os, json
+            run_info = {}
+            run_info["pid"] = os.getpid()
+            run_info["retcode"] = retcode
+            if os.path.exists('/proc/self/exe'):
+                # These options can be used only on unix platforms
+                run_info["exe"] = os.readlink('/proc/self/exe')
+
+            logging.info("Saving run info to: %s" % opts.run_info_file)
+            with open(opts.run_info_file, "w") as f:
+                json.dump(run_info, f)
+        
+        sys.exit(retcode)

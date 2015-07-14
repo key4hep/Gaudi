@@ -1,5 +1,4 @@
 // -*- C++ -*-
-// $Id: SystemOfUnits.h,v 1.3 2007/09/24 15:11:47 hmd Exp $
 // ----------------------------------------------------------------------
 // HEP coherent system of Units
 //
@@ -36,8 +35,8 @@
 // 20.05.98   names: meter, second, gram, radian, degree
 //            (from Brian.Lasiuk@yale.edu (STAR)). Added luminous units.
 // 05.08.98   angstrom, picobarn, microsecond, picosecond, petaelectronvolt
-// 01.03.01   parsec    
-// 28.04.06   import from CLHEP to GaudiKernel -- HD   
+// 01.03.01   parsec
+// 28.04.06   import from CLHEP to GaudiKernel -- HD
 // 11.05.06   Rename pascal to Pa to avoid warnings on Windows - MC
 
 #ifndef GAUDI_SYSTEM_OF_UNITS_H
@@ -47,240 +46,240 @@
 namespace Gaudi {
   namespace Units {
 
-    // 
+    //
     // Length [L]
     //
-    static const double millimeter  = 1.;                        
-    static const double millimeter2 = millimeter*millimeter;
-    static const double millimeter3 = millimeter*millimeter*millimeter;
-    
-    static const double centimeter  = 10.*millimeter;   
-    static const double centimeter2 = centimeter*centimeter;
-    static const double centimeter3 = centimeter*centimeter*centimeter;
-    
-    static const double meter  = 1000.*millimeter;                  
-    static const double meter2 = meter*meter;
-    static const double meter3 = meter*meter*meter;
-    
-    static const double kilometer = 1000.*meter;                   
-    static const double kilometer2 = kilometer*kilometer;
-    static const double kilometer3 = kilometer*kilometer*kilometer;
-    
-    static const double parsec = 3.0856775807e+16*meter;
-    
-    static const double micrometer = 1.e-6 *meter;             
-    static const double  nanometer = 1.e-9 *meter;
-    static const double  angstrom  = 1.e-10*meter;
-    static const double  fermi     = 1.e-15*meter;
-    
-    static const double      barn = 1.e-28*meter2;
-    static const double millibarn = 1.e-3 *barn;
-    static const double microbarn = 1.e-6 *barn;
-    static const double  nanobarn = 1.e-9 *barn;
-    static const double  picobarn = 1.e-12*barn;
-    
+    constexpr double millimeter  = 1.;
+    constexpr double millimeter2 = millimeter*millimeter;
+    constexpr double millimeter3 = millimeter*millimeter*millimeter;
+
+    constexpr double centimeter  = 10.*millimeter;
+    constexpr double centimeter2 = centimeter*centimeter;
+    constexpr double centimeter3 = centimeter*centimeter*centimeter;
+
+    constexpr double meter  = 1000.*millimeter;
+    constexpr double meter2 = meter*meter;
+    constexpr double meter3 = meter*meter*meter;
+
+    constexpr double kilometer = 1000.*meter;
+    constexpr double kilometer2 = kilometer*kilometer;
+    constexpr double kilometer3 = kilometer*kilometer*kilometer;
+
+    constexpr double parsec = 3.0856775807e+16*meter;
+
+    constexpr double micrometer = 1.e-6 *meter;
+    constexpr double  nanometer = 1.e-9 *meter;
+    constexpr double  angstrom  = 1.e-10*meter;
+    constexpr double  fermi     = 1.e-15*meter;
+
+    constexpr double      barn = 1.e-28*meter2;
+    constexpr double millibarn = 1.e-3 *barn;
+    constexpr double microbarn = 1.e-6 *barn;
+    constexpr double  nanobarn = 1.e-9 *barn;
+    constexpr double  picobarn = 1.e-12*barn;
+
     // symbols
-    static const double nm  = nanometer;                        
-    static const double um  = micrometer;                        
-    
-    static const double mm  = millimeter;                        
-    static const double mm2 = millimeter2;
-    static const double mm3 = millimeter3;
-    
-    static const double cm  = centimeter;   
-    static const double cm2 = centimeter2;
-    static const double cm3 = centimeter3;
-    
-    static const double m  = meter;                  
-    static const double m2 = meter2;
-    static const double m3 = meter3;
-    
-    static const double km  = kilometer;                   
-    static const double km2 = kilometer2;
-    static const double km3 = kilometer3;
-    
-    static const double pc = parsec;
-    
+    constexpr double nm  = nanometer;
+    constexpr double um  = micrometer;
+
+    constexpr double mm  = millimeter;
+    constexpr double mm2 = millimeter2;
+    constexpr double mm3 = millimeter3;
+
+    constexpr double cm  = centimeter;
+    constexpr double cm2 = centimeter2;
+    constexpr double cm3 = centimeter3;
+
+    constexpr double m  = meter;
+    constexpr double m2 = meter2;
+    constexpr double m3 = meter3;
+
+    constexpr double km  = kilometer;
+    constexpr double km2 = kilometer2;
+    constexpr double km3 = kilometer3;
+
+    constexpr double pc = parsec;
+
     //
     // Angle
     //
-    static const double radian      = 1.;                  
-    static const double milliradian = 1.e-3*radian;
-    static const double degree = (3.14159265358979323846/180.0)*radian;
-    
-    static const double   steradian = 1.;
-	
+    constexpr double radian      = 1.;
+    constexpr double milliradian = 1.e-3*radian;
+    constexpr double degree = (3.14159265358979323846/180.0)*radian;
+
+    constexpr double   steradian = 1.;
+
     // symbols
-    static const double rad  = radian;	
-    static const double mrad = milliradian;
-    static const double sr   = steradian;
-    static const double deg  = degree;
-    
+    constexpr double rad  = radian;
+    constexpr double mrad = milliradian;
+    constexpr double sr   = steradian;
+    constexpr double deg  = degree;
+
     //
     // Time [T]
     //
-    static const double nanosecond  = 1.;
-    static const double second      = 1.e+9 *nanosecond;
-    static const double millisecond = 1.e-3 *second;
-    static const double microsecond = 1.e-6 *second;
-    static const double  picosecond = 1.e-12*second;
-    static const double femtosecond = 1.e-15*second;
-    
-    static const double hertz = 1./second;
-    static const double kilohertz = 1.e+3*hertz;
-    static const double megahertz = 1.e+6*hertz;
-    
+    constexpr double nanosecond  = 1.;
+    constexpr double second      = 1.e+9 *nanosecond;
+    constexpr double millisecond = 1.e-3 *second;
+    constexpr double microsecond = 1.e-6 *second;
+    constexpr double  picosecond = 1.e-12*second;
+    constexpr double femtosecond = 1.e-15*second;
+
+    constexpr double hertz = 1./second;
+    constexpr double kilohertz = 1.e+3*hertz;
+    constexpr double megahertz = 1.e+6*hertz;
+
     // symbols
-    static const double ns = nanosecond;			
-    static const double  s = second;
-    static const double ms = millisecond;
-    
+    constexpr double ns = nanosecond;
+    constexpr double  s = second;
+    constexpr double ms = millisecond;
+
     //
     // Electric charge [Q]
     //
-    static const double eplus = 1. ;		// positron charge
-    static const double e_SI  = 1.60217733e-19;	// positron charge in coulomb
-    static const double coulomb = eplus/e_SI;	// coulomb = 6.24150 e+18 * eplus
-    
+    constexpr double eplus = 1. ;		// positron charge
+    constexpr double e_SI  = 1.60217733e-19;	// positron charge in coulomb
+    constexpr double coulomb = eplus/e_SI;	// coulomb = 6.24150 e+18 * eplus
+
     //
     // Energy [E]
     //
-    static const double megaelectronvolt = 1. ;
-    static const double     electronvolt = 1.e-6*megaelectronvolt;
-    static const double kiloelectronvolt = 1.e-3*megaelectronvolt;
-    static const double gigaelectronvolt = 1.e+3*megaelectronvolt;
-    static const double teraelectronvolt = 1.e+6*megaelectronvolt;
-    static const double petaelectronvolt = 1.e+9*megaelectronvolt;
-    
-    static const double joule = electronvolt/e_SI;	// joule = 6.24150 e+12 * MeV
-    
+    constexpr double megaelectronvolt = 1.;
+    constexpr double     electronvolt = 1.e-6*megaelectronvolt;
+    constexpr double kiloelectronvolt = 1.e-3*megaelectronvolt;
+    constexpr double gigaelectronvolt = 1.e+3*megaelectronvolt;
+    constexpr double teraelectronvolt = 1.e+6*megaelectronvolt;
+    constexpr double petaelectronvolt = 1.e+9*megaelectronvolt;
+
+    constexpr double joule = electronvolt/e_SI;	// joule = 6.24150 e+12 * MeV
+
     // symbols
-    static const double MeV = megaelectronvolt;
-    static const double  eV = electronvolt;
-    static const double keV = kiloelectronvolt;
-    static const double GeV = gigaelectronvolt;
-    static const double TeV = teraelectronvolt;
-    static const double PeV = petaelectronvolt;
-    
+    constexpr double MeV = megaelectronvolt;
+    constexpr double  eV = electronvolt;
+    constexpr double keV = kiloelectronvolt;
+    constexpr double GeV = gigaelectronvolt;
+    constexpr double TeV = teraelectronvolt;
+    constexpr double PeV = petaelectronvolt;
+
     //
     // Mass [E][T^2][L^-2]
     //
-    static const double  kilogram = joule*second*second/(meter*meter);   
-    static const double      gram = 1.e-3*kilogram;
-    static const double milligram = 1.e-3*gram;
-    
+    constexpr double  kilogram = joule*second*second/(meter*meter);
+    constexpr double      gram = 1.e-3*kilogram;
+    constexpr double milligram = 1.e-3*gram;
+
     // symbols
-    static const double  kg = kilogram;
-    static const double   g = gram;
-    static const double  mg = milligram;
-    
+    constexpr double  kg = kilogram;
+    constexpr double   g = gram;
+    constexpr double  mg = milligram;
+
     //
     // Power [E][T^-1]
     //
-    static const double watt = joule/second;	// watt = 6.24150 e+3 * MeV/ns
-    
+    constexpr double watt = joule/second;	// watt = 6.24150 e+3 * MeV/ns
+
 //
 // Force [E][L^-1]
 //
-    static const double newton = joule/meter;	// newton = 6.24150 e+9 * MeV/mm
-    
+    constexpr double newton = joule/meter;	// newton = 6.24150 e+9 * MeV/mm
+
     //
     // Pressure [E][L^-3]
     //
-    static const double Pa         = newton/m2; // pascal = 6.24150 e+3 * MeV/mm3
-    static const double bar        = 100000*Pa; // bar    = 6.24150 e+8 * MeV/mm3
-    static const double atmosphere = 101325*Pa; // atm    = 6.32420 e+8 * MeV/mm3
-    
+    constexpr double Pa         = newton/m2; // pascal = 6.24150 e+3 * MeV/mm3
+    constexpr double bar        = 100000*Pa; // bar    = 6.24150 e+8 * MeV/mm3
+    constexpr double atmosphere = 101325*Pa; // atm    = 6.32420 e+8 * MeV/mm3
+
     //
     // Electric current [Q][T^-1]
     //
-    static const double      ampere = coulomb/second; // ampere = 6.24150 e+9 * eplus/ns
-    static const double milliampere = 1.e-3*ampere;
-    static const double microampere = 1.e-6*ampere;
-    static const double  nanoampere = 1.e-9*ampere;
-    
+    constexpr double      ampere = coulomb/second; // ampere = 6.24150 e+9 * eplus/ns
+    constexpr double milliampere = 1.e-3*ampere;
+    constexpr double microampere = 1.e-6*ampere;
+    constexpr double  nanoampere = 1.e-9*ampere;
+
     //
     // Electric potential [E][Q^-1]
     //
-    static const double megavolt = megaelectronvolt/eplus;
-    static const double kilovolt = 1.e-3*megavolt;
-    static const double     volt = 1.e-6*megavolt;
-    
+    constexpr double megavolt = megaelectronvolt/eplus;
+    constexpr double kilovolt = 1.e-3*megavolt;
+    constexpr double     volt = 1.e-6*megavolt;
+
     //
     // Electric resistance [E][T][Q^-2]
     //
-    static const double ohm = volt/ampere;	// ohm = 1.60217e-16*(MeV/eplus)/(eplus/ns)
-    
+    constexpr double ohm = volt/ampere;	// ohm = 1.60217e-16*(MeV/eplus)/(eplus/ns)
+
     //
     // Electric capacitance [Q^2][E^-1]
     //
-    static const double farad = coulomb/volt;	// farad = 6.24150e+24 * eplus/Megavolt
-    static const double millifarad = 1.e-3*farad;
-    static const double microfarad = 1.e-6*farad;
-    static const double  nanofarad = 1.e-9*farad;
-    static const double  picofarad = 1.e-12*farad;
-    
+    constexpr double farad = coulomb/volt;	// farad = 6.24150e+24 * eplus/Megavolt
+    constexpr double millifarad = 1.e-3*farad;
+    constexpr double microfarad = 1.e-6*farad;
+    constexpr double  nanofarad = 1.e-9*farad;
+    constexpr double  picofarad = 1.e-12*farad;
+
     //
     // Magnetic Flux [T][E][Q^-1]
     //
-    static const double weber = volt*second;	// weber = 1000*megavolt*ns
-    
+    constexpr double weber = volt*second;	// weber = 1000*megavolt*ns
+
     //
     // Magnetic Field [T][E][Q^-1][L^-2]
     //
-    static const double tesla     = volt*second/meter2;	// tesla =0.001*megavolt*ns/mm2
-    
-    static const double gauss     = 1.e-4*tesla;
-    static const double kilogauss = 1.e-1*tesla;
-    
+    constexpr double tesla     = volt*second/meter2;	// tesla =0.001*megavolt*ns/mm2
+
+    constexpr double gauss     = 1.e-4*tesla;
+    constexpr double kilogauss = 1.e-1*tesla;
+
     //
     // Inductance [T^2][E][Q^-2]
     //
-    static const double henry = weber/ampere;	// henry = 1.60217e-7*MeV*(ns/eplus)**2
-    
+    constexpr double henry = weber/ampere;	// henry = 1.60217e-7*MeV*(ns/eplus)**2
+
     //
     // Temperature
     //
-    static const double kelvin = 1.;
-    
+    constexpr double kelvin = 1.;
+
     //
     // Amount of substance
     //
-    static const double mole = 1.;
-    
+    constexpr double mole = 1.;
+
     //
     // Activity [T^-1]
     //
-    static const double becquerel = 1./second ;
-    static const double curie = 3.7e+10 * becquerel;
-    
+    constexpr double becquerel = 1./second;
+    constexpr double curie = 3.7e+10 * becquerel;
+
     //
     // Absorbed dose [L^2][T^-2]
     //
-    static const double gray = joule/kilogram ;
-    
+    constexpr double gray = joule/kilogram;
+
     //
     // Luminous intensity [I]
     //
-    static const double candela = 1.;
-    
+    constexpr double candela = 1.;
+
     //
     // Luminous flux [I]
     //
-    static const double lumen = candela*steradian;
-    
+    constexpr double lumen = candela*steradian;
+
     //
     // Illuminance [I][L^-2]
     //
-    static const double lux = lumen/meter2;
-    
+    constexpr double lux = lumen/meter2;
+
     //
     // Miscellaneous
     //
-    static const double perCent     = 0.01 ;
-    static const double perThousand = 0.001;
-    static const double perMillion  = 0.000001;
-    
+    constexpr double perCent     = 0.01;
+    constexpr double perThousand = 0.001;
+    constexpr double perMillion  = 0.000001;
+
   }  // namespace Units
 } // namespace Gaudi
 

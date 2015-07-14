@@ -103,6 +103,34 @@ gaudi_add_module(GaudiValgrindProfiling src/component/valgrind/*.cpp
                  INCLUDE_DIRS tcmalloc)
 
 
+#-----------------------------------
+# jemalloc
+#-----------------------------------
+gaudi_add_module(GaudiJemalloc src/component/jemalloc/*.cpp
+                 LINK_LIBRARIES GaudiKernel GaudiAlgLib)
+
+# Special handling of unresolved symbols in Jemmalloc.
+# The profilers need to have libjemalloc.so o pre-loaded to
+# work, so it's better if the symbols stay undefined in case somebody tries to
+# use the profilers without preloading the libraries.
+set(GaudiJemalloc_linker_flags)
+foreach(undef_symbol mallctl)
+  set(GaudiJemalloc_linker_flags "${GaudiJemalloc_linker_flags} -Wl,--defsym,${undef_symbol}=0")
+endforeach()
+set_target_properties(GaudiJemalloc PROPERTIES LINK_FLAGS "${GaudiJemalloc_linker_flags}")
+
+find_library(jemalloc_lib NAMES jemalloc)
+if(jemalloc_lib)
+  message(STATUS "Found jemalloc: ${jemalloc_lib}")
+  gaudi_add_test(jira.gaudi_1045
+                 COMMAND gaudirun.py
+                 ENVIRONMENT LD_PRELOAD=${jemalloc_lib})
+  get_filename_component(jemalloc_libdir "${jemalloc_lib}" PATH)
+  gaudi_env(PREPEND LD_LIBRARY_PATH "${jemalloc_libdir}")
+else()
+  message(STATUS "jemalloc not found, cannot test GAUDI-1045")
+endif()
+
 #---Installation------------------------------------------------------------
 gaudi_install_python_modules()
 gaudi_install_scripts()

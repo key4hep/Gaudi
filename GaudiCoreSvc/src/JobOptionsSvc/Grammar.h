@@ -115,7 +115,7 @@ struct RealGrammar: qi::grammar<Iterator, Node(), Skipper> {
   RealGrammar() : RealGrammar::base_type(real) {
       real = qi::raw[qi::double_][op(qi::_val, qi::_1)]
                    [op(qi::_val, Node::kReal)]
-                     >> -(-qi::char_('*') >> gunit[op(qi::_val,qi::_1)]);
+                   >> -qi::char_('L') >> -(-qi::char_('*') >> gunit[op(qi::_val,qi::_1)]);
 
   }
 // ----------------------------------------------------------------------------

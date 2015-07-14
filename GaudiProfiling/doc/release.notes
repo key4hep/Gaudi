@@ -5,6 +5,16 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+! 2015-06-19 - Ben Couturier
+ - Added Jemalloc profiling feature to gaudirun.py
+
+! 2015-06-18 - Marco Clemencic
+ - Added test for GAUDI-1045 (segfault with LD_PRELOAD=libjemalloc.so).
+
+! 2015-06-16 - Ben Couturier
+ - Added JemallocProfile algorithm to dump heap with Jemalloc at regular
+ intervals.
+
 ============================ GaudiProfiling v2r5 =============================
 ! 2015-05-12 - Marco Clemencic
  - Modified GoogleAuditor.cpp to support new gperftools headers path.
