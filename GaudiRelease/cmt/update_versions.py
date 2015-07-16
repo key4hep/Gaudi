@@ -209,7 +209,7 @@ def main():
         data = { "vers": new_version, "date": time.strftime("%Y-%m-%d") }
         new_lines.append('<h2><a name="%(vers)s">Gaudi %(vers)s</a> (%(date)s)</h2>' % data)
         data = { "vers": HEPToolsVers }
-        new_lines.append('<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=%(vers)s">LCGCMT_%(vers)s</a></h3>' % data)
+        new_lines.append('<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=%(vers)s">LCG %(vers)s</a></h3>' % data)
         new_lines.append("<h3>General Changes</h3>")
         new_lines.append('<ul>\n<li><br/>\n    (<span class="author"></span>)</li>\n</ul>')
         new_lines.append("<h3>Packages Changes</h3>")
