@@ -1,5 +1,5 @@
 package RootCnv
-version           v1r23p2
+version           v1r23p3
 
 author Markus Frank
 
@@ -41,5 +41,7 @@ macro_append ROOT_linkopts " -lTreePlayer -lMathCore " \
 
 macro_append ROOT_cppflags '' \
              target-winxp '-FI"$(ROOTSYS)/include/w32pragma.h"'
+
+macro_append Boost_linkopts " $(Boost_linkopts_regex)"
 
 end_private

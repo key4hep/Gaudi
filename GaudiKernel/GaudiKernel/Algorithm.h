@@ -225,6 +225,9 @@ public:
   /// Set the filter passed flag to the specified state
   virtual void setFilterPassed( bool state );
 
+  /// Get the number of failures of the algorithm.
+  inline int errorCount() const { return m_errorCount; }
+
   /// Access a service by name, creating it if it doesn't already exist.
   template <class T>
   StatusCode service
@@ -381,6 +384,8 @@ public:
   virtual StatusCode getProperty( const std::string& n, std::string& v ) const;
   /// Implementation of IProperty::getProperties
   virtual const std::vector<Property*>& getProperties( ) const;
+  /// Implementation of IProperty::hasProperty
+  virtual bool hasProperty(const std::string& name) const;
 
   /** Set the algorithm's properties.
    *  This method requests the job options service

@@ -2,6 +2,16 @@ Package: GaudiMonitor
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+============================= GaudiMonitor v5r4 ==============================
+! 2015-05-21 - Marco Clemencic
+ - Fixed compilation with CMT.
+
+! 2015-04-15 - Marco Clemencic
+ - GAUDI-1024: Replaced Tokenizer (special use) with regular expression.
+
+! 2015-03-14 - Marco Clemencic
+ - GAUDI-1024: Replaced GaudiKernel/Tokenizer with the new AttribStringParser.
+
 ============================= GaudiMonitor v5r3 ==============================
 ! 2015-01-08 - Marco Clemencic
  - Refactored HistorySvc implementation using some C++11 constructs.

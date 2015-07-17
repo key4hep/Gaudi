@@ -5,6 +5,112 @@ Commit Id: $Format:%H$
 ! 2015-02-27 - Marco Clemencic
  - Removed duplicated (wrong) test.
 
+============================= GaudiKernel v31r6 ==============================
+! 2015-06-09 - Marco Clemencic
+ - GAUDI-1042: replaced "static const" with "constexpr" in physics constants.
+
+============================= GaudiKernel v31r5 ==============================
+! 2015-05-21 - Marco Clemencic
+ - Fixed compilation with CMT.
+
+! 2015-05-01 - Charles Leggett
+ - compiler doesn't like nullptr. have to use std::nullptr_t
+
+! 2015-04-29 - Charles Leggett
+ - mark ToolHandle(nullptr) constructor as deleted to avoid abuse
+
+! 2015-05-14 - Marco Clemencic
+ - Fixed a build warning in test_PropertyMgr.
+
+! 2015-05-05 - Marco Clemencic
+ - Fixed GAUDI-1030: remove Algorithm property "ErrorCount"
+   Renamed the property to "ErrorCounter".
+   Added accessor Algorithm::errorCount().
+
+! 2015-04-23 - Rosen Matev
+ - Fixed GAUDI-1028: typo in ConfigurableUser
+
+! 2015-04-21 - Marco Clemencic
+ - GAUDI-1023: ensure that the warning is printed by genconf
+   Also fixed the retrieval of the PropertyMgr owner name (if it was set).
+
+! 2015-04-20 - Marco Clemencic
+ - GAUDI-1023: issue a warning when re-declaring a property
+   The anti-pattern is used a bit too often to just fail: we need some time to
+   fix the code before before enforcing the correct behavior.
+
+! 2015-04-20 - Marco Clemencic
+ - Added a (C) function that returns the ROOT version (code), to be used in
+   Python to get the version of ROOT without importing cppyy.
+
+! 2015-04-13 - Marco Clemencic
+ - Fixed visibility of gaudirun.py Python helper functions.
+
+! 2015-04-13 - Marco Clemencic
+ - Implemented printing of alg sequences in C++ as a private function
+   (to avoid GaudiPython in gaudirun.py).
+
+! 2015-04-12 - Marco Clemencic
+ - Added I/O dictionaries for KeyedContainerManager, missing when we do not
+   import GaudiPython in guadirun.py.
+
+! 2015-04-10 - Marco Clemencic
+ - Added C helper functions to bootstrap from Python without GaudiPython.
+
+! 2015-03-15 - Marco Clemencic
+ - GAUDI-1023: fail when re-declaring a property
+   - added hasProperty method to IProperty.
+   - added check to all the declareProperty methods in PropertyMgr
+   - added unit test executable for PropertyMgr
+
+! 2015-03-15 - Marco Clemencic
+ - GAUDI-1024: Added deprecation warning to Tokenizer.h.
+
+! 2015-03-14 - Marco Clemencic
+ - GAUDI-1024: Added Gaudi::Utils::AttribStringParser to replace Tokenizer
+
+! 2015-04-13 - Marco Clemencic
+ - GAUDI-1018: Made empty VERBOSE equivalent to unset
+
+! 2015-04-14 - Marco Clemencic
+ - Hide warning introduced with fix to GAUDI-312.
+
+! 2015-04-14 - Stewart Martin-Haugh
+ - Fixed GAUDI-312: invalid read in Tokenizer.
+
+! 2015-04-09 - Marco Clemencic
+ - Use C++11 functional instead of boost/function.hpp in IFileMgr.
+
+! 2015-04-08 - Marco Clemencic
+ - Disable CPU features detection on aarch64 (ARM64).
+
+! 2015-03-31 - Marco Clemencic
+ - Removed inclusion of ParsersFactory.h from Parsers.h (added with GAUDI-1011)
+   The inclusion of ParsersFactory.h simplify the creation of custom parsers,
+   but (because of the way ROOT 6 used headers) was causing huge penalties in
+   start up time (Gaudi tests taking twice the time) and an increased memory use
+   (detected in some LHCb tests).
+
+! 2015-03-20 - Marco Clemencic
+ - GAUDI-1018: Respect VERBOSE setting in genconf and genconfuser.
+
+! 2015-03-06 - Marco Clemencic
+ - Fixed GAUDI-1017: GaudiUtils::Map cannot be used as property after GAUDI-1011
+
+! 2015-03-05 - Sasha Mazurov
+ - GAUDI-1011: Support std::tuple and std::array properties in jobs options
+
+! 2015-03-05 - Marco Clemencic
+ - GAUDI-1016: add GaudiHandle::isSet() or isValid() method
+   Renamed getObject as isValid and made it public, added method "get" to get
+   the wrapped pointer without trying to retrieve it, and the method isSet() to
+   check if the wrapped pointer is not null (without trying to retrieve it).
+
+! 2015-03-06 - Charles Leggett
+ - make ToolHandle constructor explicit
+         ToolHandle( const IInterface* parent = 0, bool createIf = true )
+   as it is badly abused. Also declare ToolHandle(int) as deleted.
+
 ============================= GaudiKernel v31r4 ==============================
 ! 2015-02-06 - Marco Clemencic
  - Added methods to IToolSvc to get all the tool instances.

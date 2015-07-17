@@ -1,5 +1,3 @@
-// $Id: Service.cpp,v 1.35 2008/10/23 15:57:37 marcocle Exp $
-
 // Include Files
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/PropertyMgr.h"
@@ -365,6 +363,10 @@ StatusCode Service::getProperty(const std::string& n, std::string& v ) const {
 
 const std::vector<Property*>& Service::getProperties() const {
   return m_propertyMgr->getProperties();
+}
+
+bool Service::hasProperty(const std::string& name) const {
+  return m_propertyMgr->hasProperty(name);
 }
 
 // Use the job options service to set declared properties

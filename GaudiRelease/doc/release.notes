@@ -7,6 +7,9 @@ Commit Id: $Format:%H$
 
 #	modified:   GaudiRelease/cmt/requirements
 
+
+============================= GaudiRelease v26r3 =============================
+============================= GaudiRelease v26r2 =============================
 ============================= GaudiRelease v26r1 =============================
 ! 2015-02-12 - Marco Clemencic
  - GAUDI-979: modified GaudiRelease scripts to use CMake configuration

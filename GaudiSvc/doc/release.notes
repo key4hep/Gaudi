@@ -10,6 +10,16 @@ Commit Id: $Format:%H$
 
 M	cmt/requirements
 
+=============================== GaudiSvc v21r6 ===============================
+! 2015-05-21 - Marco Clemencic
+ - Fixed compilation with CMT.
+
+! 2015-03-14 - Marco Clemencic
+ - GAUDI-1024: Replaced GaudiKernel/Tokenizer with the new AttribStringParser.
+
+! 2015-04-09 - Marco Clemencic
+ - Use C++11 lambdas instead of boost::bind in FileMgr.
+
 =============================== GaudiSvc v21r5 ===============================
 ! 2015-01-07 - Marco Clemencic
  - Fixed g++ 4.9 warning (unused typedef).

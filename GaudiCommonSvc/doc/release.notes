@@ -11,6 +11,20 @@
 ! 2014-07-18 - Marco Clemencic
  - Fixed segmentation fault in genconf step in LHCb.
 
+============================ GaudiCommonSvc v3r5 =============================
+! 2015-05-21 - Marco Clemencic
+ - Fixed compilation with CMT.
+
+! 2015-05-18 - Marco Clemencic
+ - Fixed GAUDI-1036: Unchecked StatusCodes
+
+! 2015-03-14 - Marco Clemencic
+ - GAUDI-1024: Replaced GaudiKernel/Tokenizer with the new AttribStringParser.
+
+! 2015-03-04 - Marco Clemencic
+ - Fixed GAUDI-1014: Unchecked StatusCode with gcc 4.9
+   A spurious unchecked StatusCode seems to come from libCling.so.
+
 ============================ GaudiCommonSvc v3r4 =============================
 ! 2015-01-07 - Marco Clemencic
  - Added _PyObject_GC_Malloc to the whitelist of StatusCodeSvc (visible only

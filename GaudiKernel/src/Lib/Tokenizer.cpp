@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/Tokenizer.cpp,v 1.4 2008/10/27 16:41:33 marcocle Exp $
 //==============================================================================
 // Tokenizer.h
 //------------------------------------------------------------------------------
@@ -25,7 +24,7 @@ Tokenizer::Token& Tokenizer::Token::operator=(const Token& copy)     {
   return *this;
 }
 
-// Resolve value from environment 
+// Resolve value from environment
 void Tokenizer::Token::resolveValue()  {
   std::string res;
   if ( System::resolveEnv(m_value, res).isSuccess() )  {
@@ -45,7 +44,7 @@ void Tokenizer::analyse(const std::string& s, const char* delim, const char* tag
       start += tok.length();
       m_tokens.push_back(tok);
     }
-    else  { 
+    else  {
       start += s.length();
     }
   } while ( start < long(s.length()) );
@@ -87,6 +86,16 @@ void Tokenizer::Token::make(const std::string& s, long st, const char* delim, co
     m_value  = s.substr(posVal, lenVal);
     m_length = posVal+m_value.length()+lenValEnd-st;
   }
-  while(::strncmp(s.c_str()+start+m_length,delim,lenDelim)==0) m_length += lenDelim;
+
+  if (start + m_length >= long(s.size())) {
+    return;
+  }
+
+  while(::strncmp(s.c_str()+start+m_length,delim,lenDelim)==0) {
+    m_length += lenDelim;
+    if (start + m_length >= long(s.size())) {
+      return;
+    }
+  }
 }
 

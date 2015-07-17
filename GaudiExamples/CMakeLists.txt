@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiExamples v26r1)
+gaudi_subdir(GaudiExamples v26r3)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiUtils GaudiGSL GaudiAlg RootCnv)
 
@@ -46,8 +46,11 @@ set(GaudiExamples_srcs
     src/FileMgr/*.cpp
     src/testing/*.cpp
     src/IntelProfiler/*.cpp
-    src/PluginService/*.cpp
-    src/MultiInput/*.cpp)
+    src/PluginService/*.cpp)
+
+if(TARGET RootCnvLib)
+  list(APPEND GaudiExamples_srcs src/MultiInput/*.cpp)
+endif()
 
 gaudi_add_library(GaudiExamplesLib src/Lib/*.cpp
                   LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib HepPDT ROOT
@@ -68,7 +71,8 @@ set_property(SOURCE src/StatusCodeSvc/SCSAlg.cpp
              PROPERTY COMPILE_DEFINITIONS special_fncUnchecked2)
 
 find_file(StatusCodeHeader NAMES GaudiKernel/StatusCode.h
-          PATHS ${CMAKE_SOURCE_DIR}/GaudiKernel)
+          PATHS ${CMAKE_SOURCE_DIR}/GaudiKernel
+          HINTS ${Gaudi_DIR}/include)
 if(NOT StatusCodeHeader)
   message(FATAL_ERROR "Cannot file StatusCode.h for the StatusCodeSvc test")
 endif()

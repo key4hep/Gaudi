@@ -9,12 +9,13 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/Tokenizer.h"
 // ============================================================================
 //Local
 // ============================================================================
 #include "ExceptionSvc.h"
 // ============================================================================
+
+#include <boost/regex.hpp>
 
 using namespace std;
 
@@ -86,21 +87,19 @@ ExceptionSvc::initialize() {
   if (loc == string::npos) {
     key = "";
   } else {
-    key = key.substr(loc+1,key.length());
+    key = key.substr(loc+1);
   }
 
-  Tokenizer tok(true);
-  std::string val,VAL,TAG;
+  std::string VAL, TAG;
 
-  tok.analyse( key, " ", "", "", "=", "", "");
+  static const boost::regex exp{"[[:space:]]*([^[:space:]]+)[[:space:]]*=[[:space:]]*([^[:space:]]+)"};
+  static const auto tok_end = boost::sregex_iterator();
+  for (auto tok_iter = boost::sregex_iterator(begin(key), end(key), exp);
+       tok_iter != tok_end; ++tok_iter)
+  {
+    TAG = (*tok_iter)[1];
 
-  for ( Tokenizer::Items::iterator i = tok.items().begin();
-	i != tok.items().end(); i++)    {
-    const std::string& tag = (*i).tag();
-    TAG = tag;
-
-    val = (*i).value();
-    VAL = val;
+    VAL = (*tok_iter)[2];
     toupper(VAL);
 
     if (VAL == "SUCCESS") {
@@ -154,19 +153,15 @@ ExceptionSvc::initialize() {
   if (loc == string::npos) {
     key = "";
   } else {
-    key = key.substr(loc+1,key.length());
+    key = key.substr(loc+1);
   }
 
-  Tokenizer tok2(true);
-  tok2.analyse( key, " ", "", "", "=", "", "");
+  for (auto tok_iter = boost::sregex_iterator(begin(key), end(key), exp);
+       tok_iter != tok_end; ++tok_iter)
+  {
+    TAG = (*tok_iter)[1];
 
-  for ( Tokenizer::Items::iterator i = tok2.items().begin();
-        i != tok2.items().end(); i++)    {
-    const std::string& tag = (*i).tag();
-    TAG = tag;
-
-    val = (*i).value();
-    VAL = val;
+    VAL = (*tok_iter)[2];
     toupper(VAL);
 
     if (VAL == "SUCCESS") {

@@ -4,9 +4,12 @@ if (LCG_COMPVERS VERSION_LESS "47")
 elseif(LCG_COMPVERS VERSION_LESS "49")
   # C++11 is enable by default on 4.7 <= gcc < 4.9
   set(GAUDI_CXX_STANDARD_DEFAULT "c++11")
-else()
-  # C++14(1y) is enable by default on gcc >= 4.9
+elseif(LCG_COMPVERS VERSION_LESS "51")
+  # C++1y (C++14 preview) is enable by default on 4.9 <= gcc < 5.1
   set(GAUDI_CXX_STANDARD_DEFAULT "c++1y")
+else()
+  # C++14 is enable by default on gcc >= 5.1
+  set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
 endif()
 # special for GaudiHive
 set(GAUDI_CPP11_DEFAULT ON)
@@ -40,9 +43,14 @@ option(GAUDI_CMT_RELEASE
        "use CMT deafult release flags instead of the CMake ones"
        ON)
 
+if(BINARY_TAG MATCHES "-do0$")
+  set(GAUDI_SLOW_DEBUG_DEFAULT ON)
+else()
+  set(GAUDI_SLOW_DEBUG_DEFAULT OFF)
+endif()
 option(GAUDI_SLOW_DEBUG
        "turn off all optimizations in debug builds"
-       OFF)
+       ${GAUDI_SLOW_DEBUG_DEFAULT})
 
 if(DEFINED GAUDI_CPP11)
   message(WARNING "GAUDI_CPP11 is an obsolete option, use GAUDI_CXX_STANDARD=c++11 instead")
@@ -230,7 +238,7 @@ if(NOT GAUDI_V21)
     add_definitions(-DGAUDI_V20_COMPAT)
   endif()
   # special case
-  if(G21_HIDE_SYMBOLS AND (comp MATCHES gcc4))
+  if(G21_HIDE_SYMBOLS AND (LCG_COMP STREQUAL gcc AND LCG_COMPVERS MATCHES "^4"))
     add_definitions(-DG21_HIDE_SYMBOLS)
   endif()
   #

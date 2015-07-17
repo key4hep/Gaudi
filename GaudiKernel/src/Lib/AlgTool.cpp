@@ -159,6 +159,10 @@ const std::vector<Property*>& AlgTool::getProperties() const
   return m_propertyMgr->getProperties();
 }
 
+bool AlgTool::hasProperty(const std::string& name) const {
+  return m_propertyMgr->hasProperty(name);
+}
+
 //------------------------------------------------------------------------------
 StatusCode AlgTool::setProperties()
 //------------------------------------------------------------------------------

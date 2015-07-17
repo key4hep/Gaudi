@@ -207,9 +207,9 @@ class iProperty(object) :
                 raise AttributeError, 'property %s does not exist' % name
             prop = ip.getProperty(name)
 
-            if ROOT6WorkAroundEnabled('ROOT-6032'):
+            if ROOT6WorkAroundEnabled('ROOT-7201'):
                 canSetValue = (hasattr(prop, 'value') and
-                               'const(&)[' not in prop.value.func_doc and
+                               'const&[' not in prop.value.func_doc and
                                type(value) == type(prop.value()))
             else:
                 canSetValue = (hasattr(prop, 'value') and
@@ -875,6 +875,22 @@ class AppMgr(iService) :
             self.pyalgorithms.remove(alg)
             setOwnership(alg,1)
         self.topAlg = tmp
+    def printAlgsSequences(self):
+        """
+        Print the sequence of Algorithms.
+        """
+        def printAlgo( algName, appMgr, prefix = ' ') :
+            print prefix + algName
+            alg = appMgr.algorithm( algName.split( "/" )[ -1 ] )
+            prop = alg.properties()
+            if prop.has_key( "Members" ) :
+                subs = prop[ "Members" ].value()
+                for i in subs : printAlgo( i.strip( '"' ), appMgr, prefix + "     " )
+        mp = self.properties()
+        prefix = 'ApplicationMgr    SUCCESS '
+        print prefix + "****************************** Algorithm Sequence ****************************"
+        for i in mp["TopAlg"].value(): printAlgo( i, self, prefix )
+        print prefix + "******************************************************************************"
     def config ( self, **args ):
         """
         Simple utility to perform the configuration of Gaudi application.
@@ -939,6 +955,8 @@ class AppMgr(iService) :
         return self._appmgr.configure()
     def start(self) :
         return self._appmgr.start()
+    def terminate(self):
+        return self._appmgr.terminate()
     def run(self, n) :
         if self.FSMState() == Gaudi.StateMachine.CONFIGURED :
             sc = self.initialize()

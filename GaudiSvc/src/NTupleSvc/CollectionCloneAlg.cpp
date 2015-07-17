@@ -10,7 +10,7 @@
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/GenericAddress.h"
 #include "GaudiKernel/SmartDataPtr.h"
-#include "GaudiKernel/Tokenizer.h"
+#include "GaudiKernel/AttribStringParser.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/MsgStream.h"
@@ -164,20 +164,17 @@ public:
     StatusCode sc = service(m_tupleSvc, m_dataSvc, true);
     if ( sc.isSuccess() )  {
       std::string fun;
-      Tokenizer tok(true);
-      tok.analyse(m_output, " ", "", "", "=", "'", "'");
-      for ( Tokenizer::Items::iterator i = tok.items().begin(); i != tok.items().end(); i++ )   {
-        const std::string& tag = (*i).tag();
-        const std::string& val = (*i).value();
-        switch( ::toupper(tag[0]) )    {
+      using Parser = Gaudi::Utils::AttribStringParser;
+      for (auto attrib: Parser(m_output)) {
+        switch( ::toupper(attrib.tag[0]) ) {
         case 'D':
-          m_outName = val;
+          m_outName = std::move(attrib.value);
           break;
         case 'S':
-          m_criteria = val;
+          m_criteria = std::move(attrib.value);
           break;
         case 'F':
-          fun = val;
+          fun = std::move(attrib.value);
           break ;
         default:
           break;

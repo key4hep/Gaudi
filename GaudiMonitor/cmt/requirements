@@ -3,7 +3,7 @@
 # Maintainer : Marco Clemencic
 # ============================================================================
 package    GaudiMonitor
-version    v5r3
+version    v5r4
 
 # ============================================================================
 # Structure, i.e. directories to process.
@@ -25,3 +25,7 @@ library GaudiMonitor -no_static *.cpp
 # define component library link options
 # ============================================================================
 apply_pattern component_library library=GaudiMonitor
+
+private
+macro_append Boost_linkopts " $(Boost_linkopts_regex)"
+end_private

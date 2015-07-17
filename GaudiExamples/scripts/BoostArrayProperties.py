@@ -57,8 +57,13 @@ if '__main__' == __name__ :
 
     bap.PropertiesPrint = True
 
-    bap.Doubles = [ -1 , -2 , -3 , -4 , -5 ]
-    bap.Strings = [ 'a1' , 'a2' , 'a3' , 'a4' ]
+    from GaudiKernel import ROOT6WorkAroundEnabled
+    import warnings
+    with warnings.catch_warnings():
+        if ROOT6WorkAroundEnabled('ROOT-7142'):
+            warnings.simplefilter("ignore")
+        bap.Doubles = [ -1 , -2 , -3 , -4 , -5 ]
+        bap.Strings = [ 'a1' , 'a2' , 'a3' , 'a4' ]
 
     bap.PropertiesPrint = True
 

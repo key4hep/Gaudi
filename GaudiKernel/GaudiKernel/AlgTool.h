@@ -101,6 +101,7 @@ public:
   virtual const Property& getProperty( const std::string& name) const;
   virtual StatusCode getProperty( const std::string& n, std::string& v ) const;
   virtual const std::vector<Property*>& getProperties( ) const;
+  virtual bool hasProperty(const std::string& name) const;
 
   inline PropertyMgr * getPropertyMgr() { return m_propertyMgr; }
 

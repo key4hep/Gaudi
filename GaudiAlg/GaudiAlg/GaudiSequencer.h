@@ -38,8 +38,6 @@ public:
   virtual StatusCode beginRun  ();    ///< Algorithm beginRun
   virtual StatusCode endRun    ();    ///< Algorithm endRun
 
-  void resetExecuted();         ///< Called before an event processing
-
   /** for asynchronous changes in the list of algorithms */
   void membershipHandler( Property& theProp );
 

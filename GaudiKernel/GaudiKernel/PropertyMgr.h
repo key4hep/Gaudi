@@ -1,7 +1,3 @@
-// $Id: PropertyMgr.h,v 1.22 2008/04/03 17:27:01 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.22 $
-// ============================================================================
 #ifndef GAUDIKERNEL_PROPERTYMGR_H
 #define GAUDIKERNEL_PROPERTYMGR_H
 // ============================================================================
@@ -88,9 +84,9 @@ public:
   /// Declare a property (specialization)
   template<class TYPE>
   Property* declareProperty
-  ( const std::string& name, 
-    ServiceHandleArray<TYPE>& ref, 
-    const std::string& doc = "none" ) ;  
+  ( const std::string& name,
+    ServiceHandleArray<TYPE>& ref,
+    const std::string& doc = "none" ) ;
   /// Declare a property (specialization)
   Property* declareProperty
   ( const std::string& name,
@@ -107,12 +103,12 @@ public:
     IProperty*         rsvc       ,
     const std::string& rname = "" ) ;
   // ==========================================================================
-	// IProperty implementation
+  // IProperty implementation
   // ==========================================================================
   /** set the property form another property
    *  @see IProperty
    */
-	StatusCode setProperty(const Property& p);
+  StatusCode setProperty(const Property& p);
   // ==========================================================================
   /** set the property from the property formatted string
    *  @see IProperty
@@ -127,7 +123,7 @@ public:
   /** get the property
    *  @see IProperty
    */
-	StatusCode getProperty(Property* p) const;
+  StatusCode getProperty(Property* p) const;
   // ==========================================================================
   /** get the property by name
    *  @see IProperty
@@ -144,6 +140,11 @@ public:
    */
   const std::vector<Property*>& getProperties( ) const;
   // ==========================================================================
+  /** Return true if we have a property with the given name.
+   *  @see IProperty
+   */
+  bool hasProperty(const std::string& name) const;
+  // ==========================================================================
   // IInterface implementation
   StatusCode queryInterface(const InterfaceID& iid, void** pinterface);
   // ==========================================================================
@@ -157,6 +158,10 @@ private:
   Property* property
   ( const std::string&             name  ,
     const std::vector<Property*>&  props ) const ;
+
+  /// Throw an exception if the name is already present in the
+  /// list of properties (see GAUDI-1023).
+  void assertUniqueName(const std::string& name) const;
 
 private:
 
@@ -189,6 +194,7 @@ PropertyMgr::declareProperty
   TYPE&              value,
   const std::string& doc )
 {
+  assertUniqueName(name);
   Property* p = new SimplePropertyRef<TYPE> ( name , value ) ;
   //
   p->setDocumentation( doc );
@@ -207,6 +213,7 @@ PropertyMgr::declareProperty
   SimpleProperty<TYPE>&    prop,
   const std::string&       doc )
 {
+  assertUniqueName(name);
   Property* p = &prop ;
   //
   p -> setName           ( name  ) ;
@@ -225,6 +232,7 @@ PropertyMgr::declareProperty
   SimplePropertyRef<TYPE>& prop,
   const std::string&       doc )
 {
+  assertUniqueName(name);
   Property* p = &prop ;
   //
   p -> setName             ( name  ) ;
@@ -243,6 +251,7 @@ PropertyMgr::declareProperty
   ToolHandle<TYPE>& ref,
   const std::string& doc )
 {
+  assertUniqueName(name);
   Property* p = new GaudiHandleProperty( name, ref );
   //
   p -> setDocumentation    ( doc ) ;
@@ -259,6 +268,7 @@ PropertyMgr::declareProperty
   ServiceHandle<TYPE>& ref,
   const std::string& doc )
 {
+  assertUniqueName(name);
   Property* p = new GaudiHandleProperty( name, ref );
   //
   p -> setDocumentation    ( doc ) ;
@@ -275,6 +285,7 @@ PropertyMgr::declareProperty
   ToolHandleArray<TYPE>& ref,
   const std::string& doc )
 {
+  assertUniqueName(name);
   Property* p = new GaudiHandleArrayProperty( name, ref );
   //
   p -> setDocumentation    ( doc ) ;
@@ -285,12 +296,13 @@ PropertyMgr::declareProperty
 }
 // ============================================================================
 template<class TYPE>
-inline Property* 
+inline Property*
 PropertyMgr::declareProperty
-( const std::string& name, 
-  ServiceHandleArray<TYPE>& ref, 
-  const std::string& doc ) 
+( const std::string& name,
+  ServiceHandleArray<TYPE>& ref,
+  const std::string& doc )
 {
+  assertUniqueName(name);
   Property* p = new GaudiHandleArrayProperty( name, ref );
   //
   p -> setDocumentation    ( doc ) ;

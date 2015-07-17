@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiProfiling v2r4)
+gaudi_subdir(GaudiProfiling v2r6)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiAlg)
 
@@ -77,6 +77,12 @@ foreach(undef_symbol IsHeapProfilerRunning
 endforeach()
 set_target_properties(GaudiGoogleProfiling PROPERTIES LINK_FLAGS "${gprof_linker_flags}")
 
+if(NOT EXISTS ${TCMALLOC_INCLUDE_DIR}/gperftools/tcmalloc.h)
+  # assume old-style tcmalloc headers
+  set_property(TARGET GaudiGoogleProfiling
+               APPEND PROPERTY COMPILE_DEFINITIONS TCMALLOC_OLD_GOOGLE_HEADERS)
+endif()
+
 
 #-----------------------------------
 # Intel VTune profiler
@@ -96,6 +102,34 @@ gaudi_add_module(GaudiValgrindProfiling src/component/valgrind/*.cpp
                  LINK_LIBRARIES GaudiKernel GaudiAlgLib z
                  INCLUDE_DIRS tcmalloc)
 
+
+#-----------------------------------
+# jemalloc
+#-----------------------------------
+gaudi_add_module(GaudiJemalloc src/component/jemalloc/*.cpp
+                 LINK_LIBRARIES GaudiKernel GaudiAlgLib)
+
+# Special handling of unresolved symbols in Jemmalloc.
+# The profilers need to have libjemalloc.so o pre-loaded to
+# work, so it's better if the symbols stay undefined in case somebody tries to
+# use the profilers without preloading the libraries.
+set(GaudiJemalloc_linker_flags)
+foreach(undef_symbol mallctl)
+  set(GaudiJemalloc_linker_flags "${GaudiJemalloc_linker_flags} -Wl,--defsym,${undef_symbol}=0")
+endforeach()
+set_target_properties(GaudiJemalloc PROPERTIES LINK_FLAGS "${GaudiJemalloc_linker_flags}")
+
+find_library(jemalloc_lib NAMES jemalloc)
+if(jemalloc_lib)
+  message(STATUS "Found jemalloc: ${jemalloc_lib}")
+  gaudi_add_test(jira.gaudi_1045
+                 COMMAND gaudirun.py
+                 ENVIRONMENT LD_PRELOAD=${jemalloc_lib})
+  get_filename_component(jemalloc_libdir "${jemalloc_lib}" PATH)
+  gaudi_env(PREPEND LD_LIBRARY_PATH "${jemalloc_libdir}")
+else()
+  message(STATUS "jemalloc not found, cannot test GAUDI-1045")
+endif()
 
 #---Installation------------------------------------------------------------
 gaudi_install_python_modules()

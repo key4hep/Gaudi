@@ -109,6 +109,11 @@ xProps.MapUIntString = {
 xProps.EmptyMap = {}
 xProps.EmptyVector = []
 
+xProps.TupleStringIntDouble = ("hello", 10, 0.001)
+xProps.StdArrayDouble3 = (3.3, 2.2, 1.1)
+
+xProps.GaudiMapSS = {'a': '1', 'b': '2'}
+
 ######### END of xProp configuration
 
 app = ApplicationMgr(TopAlg = [ xProps ],

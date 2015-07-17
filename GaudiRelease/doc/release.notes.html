@@ -51,9 +51,223 @@ span.author { color: #737373; }
 <body onload="javascript:addLinks()">
 <pre>
 Package: GaudiRelease<br>
-Package Coordinator: Marco Clemencic, Charles Leggett<br>
+Package Coordinator: Marco Clemencic, Charles Leggett, Benedikt Hegner<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
+<!-- ====================================================================== -->
+<h2><a name="v26r3">Gaudi v26r3</a> (2015-07-14)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=79">LCG_79</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Fixed GAUDI-996: GaudiSequencer calls resetExecuted of subAlgorithms<br/>
+    (<span class="author">Gerhard Raven</span>)</li>
+<li>Fixed GAUDI-1045: segfault running "LD_PRELOAD=libjemalloc.so gaudirun.py"<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added Jemalloc profiling.<br/>
+    (<span class="author">Ben Couturier</span>)</li>
+<li>GAUDI-1042: replaced "static const" with "constexpr" in physics constants.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-1044: allow 'L' numeric suffix in .opts files parsed with Gaudi.exe.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added example/test of how to declare a custom factory for an algorithm.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Minor bugfixes</li>
+</ul>
+See also the <a href="https://its.cern.ch/jira/secure/ReleaseNote.jspa?projectId=14707&version=23503">release notes on JIRA</a>.
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiAlg (v15r3):
+<ul>
+<li>Fixed GAUDI-996: GaudiSequencer calls resetExecuted of subAlgorithms<br/>
+    (<span class="author">Gerhard Raven</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v26r3):
+<ul>
+<li>Fixed GAUDI-1045: segfault running "LD_PRELOAD=libjemalloc.so gaudirun.py"<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiProfiling (v2r6):
+<ul>
+<li>Added Jemalloc profiling.<br/>
+    (<span class="author">Ben Couturier</span>)</li>
+<li>Added test for GAUDI-1045 (segfault with LD_PRELOAD=libjemalloc.so).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v31r6):
+<ul>
+<li>GAUDI-1042: replaced "static const" with "constexpr" in physics constants.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiCoreSvc (v3r5):
+<ul>
+<li>GAUDI-1044: allow 'L' numeric suffix in .opts files parsed with Gaudi.exe.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v26r3):
+<ul>
+<li>GAUDI-1044: added test<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added example/test of how to declare a custom factory for an algorithm.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v26r2">Gaudi v26r2</a> (2015-05-15)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=76root6">LCGCMT_76root6</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Fixes and improvements to the CMake configuration system
+    <ul>
+    <li>Fixed GAUDI-981: -DNDEBUG not passed to genreflex</li>
+    <li>Modified Findtcmalloc.cmake to support new gperftools headers path.</li>
+    <li>Use "c++14" (instead of "c++1y") for gcc >= 5.1</li>
+    <li>LHCBPS-1394: disable optimizations in debug with -do0 BINARY_TAG suffix</li>
+    <li>Fixed GAUDI-1031: improve XML errors report in xenv</li>
+    <li>Fixed GAUDI-1019: use relocatable path for gcc</li>
+    <li>Fixed LBCORE-766: simultaneous use of Qt4 and Qt5</li>
+    <li>Fixed GAUDI-991: toolchain.cmake should fail when a project is missing</li>
+    <li>GAUDI-1012: disable optimization in debug if GAUDI_SLOW_DEBUG=TRUE</li>
+    <li>Fixed GAUDI-1010: too aggressive search of .qmt files</li>
+    <li>Fixed GAUDI-1007: tests in a directory are added in alphabetical order</li>
+    </ul>
+    (<span class="author">Marco Clemencic</span>)</li>
+    <li>LBCORE-716: include path order not correct</li>
+    <li>LBCORE-725: relocatability of CMake builds</li>
+    <li>added the possibility to extend the toolchain for a project</li>
+    <li>GAUDI-1004: avoid cmake segfault when there is a loop in the dependencies between projects.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+    <li>GAUDI-1024: Replaced Tokenizer with AttribStringParser or a regular expression.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+    <li>GAUDI-986: Improve memory and time usage of application bootstrap with gaudirun.py.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+    <li>GAUDI-986: Improve memory and time usage of application bootstrap with gaudirun.py.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+    <li>GAUDI-1023: issue a warning when re-declaring a property<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+    <li>Fixes to build on aarch64 (ARM64).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+See also the <a href="https://its.cern.ch/jira/secure/ReleaseNote.jspa?projectId=14707&version=19334">release notes on JIRA</a>.
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiMonitor (v5r4):
+<ul>
+<li>GAUDI-1024: Replaced Tokenizer with AttribStringParser or a regular expression.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v26r2):
+<ul>
+<li>GAUDI-986: Improve memory and time usage of application bootstrap with gaudirun.py.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed GAUDI-1033: segfaults when calling Python functions from C++.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>PartPropSvc (v6r3):
+<ul>
+<li>GAUDI-1024: Replaced Tokenizer with AttribStringParser or a regular expression.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiSvc (v21r6):
+<ul>
+<li>GAUDI-1024: Replaced Tokenizer with AttribStringParser or a regular expression.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Use C++11 lambdas instead of boost::bind in FileMgr<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiProfiling (v2r5):
+<ul>
+<li>Modified GoogleAuditor.cpp to support new gperftools headers path.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>RootCnv (v1r23p2):
+<ul>
+<li>GAUDI-1024: Replaced Tokenizer with AttribStringParser or a regular expression.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v31r5):
+<ul>
+<li>Improved ToolHandle constructor.<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Fixed GAUDI-312: invalid read in Tokenizer.<br/>
+    (<span class="author">Stewart Martin-Haugh</span>)</li>
+<li>GAUDI-1024: Replaced Tokenizer with AttribStringParser or a regular expression.
+   <ul><li>Added Gaudi::Utils::AttribStringParser to replace Tokenizer</li>
+       <li>Added deprecation warning to Tokenizer.h.</li></ul>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-1023: issue a warning when re-declaring a property<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-1018: Respect VERBOSE setting in genconf and genconfuser.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Use C++11 functional instead of boost/function.hpp in IFileMgr.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed GAUDI-1028: typo in ConfigurableUser<br/>
+    (<span class="author">Rosen Matev</span>)</li>
+<li>Fixed GAUDI-1030: remove Algorithm property "ErrorCount"
+    <ul><li>Renamed the property to "ErrorCounter".</li>
+    <li>Added accessor Algorithm::errorCount().</li></ul>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-1016: allow checking of GaudiHandle wrapped pointer without retrieving it<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-1011: Support std::tuple and std::array properties in jobs options<br/>
+    (<span class="author">Sasha Mazurov</span>)</li>
+<li>Fixed GAUDI-1017: GaudiUtils::Map cannot be used as property after GAUDI-1011<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</li>
+<li>GaudiPython (v13r5):
+<ul>
+<li>GAUDI-1009: remove GaudiPython.Bindings.makeClass<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Faster version of the workaround for ROOT-6697.<br/>
+    (<span class="author">Rosen Matev</span>)</li>
+</ul>
+</li>
+<li>GaudiCoreSvc (v3r4):
+<ul>
+<li>GAUDI-1024: Replaced Tokenizer with AttribStringParser or a regular expression.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiPolicy (v15r5):
+<ul>
+<li>Fixed GAUDI-1035: cannot build a satellite project with only GaudiExamples<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed escaping of special XML/HTML chars in CTestXML2HTML.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Select 'dbg' in test reference files if the platform contains 'do0'.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiCommonSvc (v3r5):
+<ul>
+<li>Fixed GAUDI-1036: Unchecked StatusCodes.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-1024: Replaced Tokenizer with AttribStringParser or a regular expression.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed GAUDI-1014: Unchecked StatusCode with gcc 4.9<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v26r2):
+<ul>
+<li>Do not build MultiInput example if RootCnvLib is not built (CMake version).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Updated test reference files.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
 <!-- ====================================================================== -->
 <h2><a name="v26r1">Gaudi v26r1</a> (2015-02-16)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=74root6">LCGCMT_74root6</a></h3>

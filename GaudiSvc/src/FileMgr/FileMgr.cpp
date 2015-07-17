@@ -102,10 +102,19 @@ FileMgr::initialize() {
     msgSvc()->setOutputLevel( "RootFileHandler", m_outputLevel.value());
     m_rfh = new RootFileHandler(msgSvc(), m_ssl_proxy, m_ssl_cert);
 
+    auto rfh = m_rfh; // used in the lambdas to avoid capturing 'this'
     Io::FileHdlr hdlr(Io::ROOT,
-		      boost::bind( &RootFileHandler::openRootFile, m_rfh, _1,_2,_3,_4,_5),
-		      (Io::bfcn_closeP_t) boost::bind( &RootFileHandler::closeRootFile, m_rfh, _1),
-		      (Io::bfcn_reopenP_t) boost::bind( &RootFileHandler::reopenRootFile, m_rfh, _1,_2) );
+                      [rfh](const std::string& n, const Io::IoFlags& f,
+                         const std::string& desc, Io::Fd& fd,
+                         void*& ptr) -> Io::open_t {
+                           return rfh->openRootFile(n, f, desc, fd, ptr);
+                      },
+                      [rfh](void* ptr) -> Io::close_t {
+                        return rfh->closeRootFile(ptr);
+                      },
+                      [rfh](void* ptr, const Io::IoFlags& f) -> Io::reopen_t {
+                        return rfh->reopenRootFile(ptr, f);
+                      });
 
     if (regHandler(hdlr).isFailure()) {
       m_log << MSG::ERROR
@@ -121,10 +130,19 @@ FileMgr::initialize() {
     msgSvc()->setOutputLevel( "POSIXFileHandler", m_outputLevel.value());
     m_pfh = new POSIXFileHandler(msgSvc());
 
+    auto pfh = m_pfh; // used in the lambdas to avoid capturing 'this'
     Io::FileHdlr hdlp(Io::POSIX,
-		      boost::bind( &POSIXFileHandler::openPOSIXFile, m_pfh, _1,_2,_3,_4,_5),
-		      (Io::bfcn_close_t) boost::bind( &POSIXFileHandler::closePOSIXFile, m_pfh, _1),
-		      (Io::bfcn_reopen_t) boost::bind( &POSIXFileHandler::reopenPOSIXFile, m_pfh, _1,_2) );
+                      [pfh](const std::string& n, const Io::IoFlags& f,
+                            const std::string& desc, Io::Fd& fd,
+                            void*& ptr) -> Io::open_t {
+                        return pfh->openPOSIXFile(n, f, desc, fd, ptr);
+                      },
+                      [pfh](Io::Fd fd) -> Io::close_t {
+                        return pfh->closePOSIXFile(fd);
+                      },
+                      [pfh](Io::Fd fd, const Io::IoFlags& f) -> Io::reopen_t {
+                         return pfh->reopenPOSIXFile(fd, f);
+                      });
 
     if (regHandler(hdlp).isFailure()) {
       m_log << MSG::ERROR
@@ -245,21 +263,21 @@ FileMgr::regHandler(FileHdlr fh) {
     return StatusCode::SUCCESS;
   }
 
-  if (fh.b_open_fcn.empty()) {
+  if ( ! fh.b_open_fcn ) {
     m_log << MSG::ERROR
 	  << "open handler for tech " << tech << " is NULL"
 	  << endmsg;
     return StatusCode::FAILURE;
   }
 
-  if (fh.b_close_fcn.empty() && fh.b_closeP_fcn.empty()) {
+  if ( ! fh.b_close_fcn && ! fh.b_closeP_fcn ) {
     m_log << MSG::ERROR
 	  << "no close handler for tech " << tech << " registered"
 	  << endmsg;
     return StatusCode::FAILURE;
   }
 
-  if (fh.b_reopen_fcn.empty() && fh.b_reopenP_fcn.empty()) {
+  if ( ! fh.b_reopen_fcn && ! fh.b_reopenP_fcn) {
     m_log << MSG::ERROR
 	  << "no reopen handler for tech " << tech << " registered"
 	  << endmsg;
@@ -566,7 +584,7 @@ FileMgr::close( Fd fd, const std::string& caller ) {
     return r;
   }
 
-  if (fh.b_close_fcn.empty()) {
+  if (! fh.b_close_fcn) {
     m_log << MSG::ERROR << "no close(" << tech << ",Fd) function registered"
 	  << endmsg;
     return -1;
@@ -700,7 +718,7 @@ FileMgr::close(void* vp, const std::string& caller) {
   if (getHandler(tech,fh).isFailure()) {
     return r;
   }
-  if (fh.b_closeP_fcn.empty()) {
+  if (! fh.b_closeP_fcn) {
     m_log << MSG::ERROR << "no close(" << tech << ",void*) function registered"
 	  << endmsg;
     return -1;
@@ -830,7 +848,7 @@ FileMgr::reopen(Fd fd, const IoFlags& flags, const std::string& caller) {
 
   fa->flags( flags );
 
-  if (fh.b_reopen_fcn.empty()) {
+  if ( ! fh.b_reopen_fcn ) {
     m_log << MSG::ERROR << "no reopen(" << tech << ",Fd) function registered"
 	  << endmsg;
     return -1;
@@ -917,7 +935,7 @@ FileMgr::reopen(void* vp, const IoFlags& flags, const std::string& caller) {
     return r;
   }
 
-  if (fh.b_reopenP_fcn.empty()) {
+  if ( ! fh.b_reopenP_fcn ) {
     m_log << MSG::ERROR << "no reopen(" << tech << ",void*) function registered"
 	  << endmsg;
     return -1;

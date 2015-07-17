@@ -81,6 +81,7 @@ public:
   virtual const Property& getProperty( const std::string& name) const;
   virtual StatusCode getProperty( const std::string& n, std::string& v ) const;
   virtual const std::vector<Property*>& getProperties( ) const;
+  virtual bool hasProperty(const std::string& name) const;
 
   /** set the property form the value
    *

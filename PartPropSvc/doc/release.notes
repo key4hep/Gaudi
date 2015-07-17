@@ -2,6 +2,13 @@ Package : ParticleProp
 Package manager : Charles Leggett
 Commit Id: $Format:%H$
 
+============================== PartPropSvc v6r3 ==============================
+! 2015-05-21 - Marco Clemencic
+ - Fixed compilation with CMT.
+
+! 2015-04-15 - Marco Clemencic
+ - GAUDI-1024: Replaced Tokenizer with regular expression.
+
 ============================== PartPropSvc v6r2 ==============================
 ! 2014-10-07 - Charles Leggett
  - added missing neutrinos and gluon to PDGTABLE.MeV and PDGTABLE.2014.MeV

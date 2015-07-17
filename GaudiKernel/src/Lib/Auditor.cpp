@@ -1,5 +1,3 @@
-// $Id: Auditor.cpp,v 1.20 2008/10/27 19:22:21 marcocle Exp $
-
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IMessageSvc.h"
@@ -273,4 +271,7 @@ StatusCode Auditor::getProperty(const std::string& n, std::string& v ) const {
 }
 const std::vector<Property*>& Auditor::getProperties( ) const {
   return m_PropertyMgr->getProperties();
+}
+bool Auditor::hasProperty(const std::string& name) const {
+  return m_PropertyMgr->hasProperty(name);
 }

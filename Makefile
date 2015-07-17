@@ -48,6 +48,9 @@ NINJA := $(shell which ninja 2> /dev/null)
 ifneq ($(wildcard $(CURDIR)/toolchain.cmake),)
   override CMAKEFLAGS += -DCMAKE_TOOLCHAIN_FILE=$(CURDIR)/toolchain.cmake
 endif
+ifneq ($(wildcard $(CURDIR)/cache_preload.cmake),)
+  override CMAKEFLAGS += -C$(CURDIR)/cache_preload.cmake
+endif
 
 ifndef BINARY_TAG
   ifdef CMAKECONFIG
@@ -89,7 +92,7 @@ all:
 # deep clean
 purge:
 	$(RM) -r $(BUILDDIR) $(CURDIR)/InstallArea/$(BINARY_TAG)
-	find $(CURDIR) -name "*.pyc" -exec $(RM) -v \{} \;
+	find $(CURDIR) "(" -name "InstallArea" -prune -o -name "*.pyc" ")" -a -type f -exec $(RM) -v \{} \;
 
 # delegate any target to the build directory (except 'purge')
 ifneq ($(MAKECMDGOALS),purge)
@@ -109,7 +112,16 @@ endif
 # This wrapping around the test target is used to ensure the generation of
 # the XML output from ctest. 
 test: $(BUILDDIR)/$(BUILD_CONF_FILE)
-	cd $(BUILDDIR) && $(CTEST) -T test $(ARGS)
+	$(RM) -r $(BUILDDIR)/Testing $(BUILDDIR)/html
+	-cd $(BUILDDIR) && $(CTEST) -T test $(ARGS)
+	+$(BUILD_CMD) HTMLSummary
+
+ifeq ($(VERBOSE),)
+# less verbose install (see GAUDI-1018)
+# (emulate the default CMake install target)
+install: all
+	cd $(BUILDDIR) && $(CMAKE) -P cmake_install.cmake| grep -v "^-- Up-to-date:"
+endif
 
 # ensure that the target are always passed to the CMake Makefile
 FORCE:

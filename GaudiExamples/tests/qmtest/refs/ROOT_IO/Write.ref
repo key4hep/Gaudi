@@ -1342,9 +1342,9 @@ ServiceManager      DEBUG Finalizing service AppMgrRunable
 ServiceManager      DEBUG Finalizing service FileRecordDataSvc
 IncidentSvc         DEBUG Removing [SAVE_FILE_RECORD] listener 'FileRecordDataSvc'
 IncidentSvc         DEBUG Removing [FILE_OPEN_READ] listener 'FileRecordDataSvc'
-ServiceManager      DEBUG Looping over all active services...
-ServiceManager      DEBUG ---- MessageSvc (refCount = 22)
-ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 5)
+ServiceManager      DEBUG Service reference count check:
+ServiceManager      DEBUG ---- MessageSvc (refCount = 17)
+ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)
 ServiceManager      DEBUG ---- RndmGenSvc.Engine (refCount = 2)
 ServiceManager      DEBUG ---- FileRecordDataSvc (refCount = 4)
 ServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)

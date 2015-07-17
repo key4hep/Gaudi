@@ -140,6 +140,16 @@ else()
   set(GAUDI_DETACHED_DEBINFO OFF)
 endif()
 
+# FIXME: workaroud to use LCG_releases_base also when we have an old toolchain
+#        that does not define it
+if(NOT LCG_releases_base AND LCG_TOOLCHAIN_INFO)
+  if(LCG_releases MATCHES "LCG_${heptools_version}\$")
+    get_filename_component(LCG_releases_base ${LCG_releases} PATH)
+  else()
+    set(LCG_releases_base ${LCG_releases})
+  endif()
+endif()
+
 #---------------------------------------------------------------------------------------------------
 # Programs and utilities needed for the build
 #---------------------------------------------------------------------------------------------------
@@ -706,12 +716,23 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
   endforeach()
   set(CPACK_SYSTEM_NAME ${BINARY_TAG})
 
-  set(CPACK_GENERATOR "RPM")
+  set(CPACK_SOURCE_IGNORE_FILES "/InstallArea/;/build\\\\..*/;/\\\\.svn/;/\\\\.git/;/\\\\.settings/;\\\\..*project;\\\\.gitignore")
+
+  # for the binary
+  set(CPACK_INSTALL_PREFIX "usr/${project}/${version}/InstallArea/${BINARY_TAG}")
+  set(CPACK_INSTALL_SCRIPT "${GaudiProject_DIR}/cpack_install.cmake")
+
+  # for the source
+  set(CPACK_SOURCE_INSTALLED_DIRECTORIES "${CMAKE_SOURCE_DIR};/usr/${project}/${version}")
+
+  # for the RPMs
   set(CPACK_PACKAGE_DEFAULT_LOCATION "/usr")
+  set(CPACK_GENERATOR "RPM")
+  set(CPACK_RPM_PACKAGE_VERSION "${version}")
   set(CPACK_SOURCE_GENERATOR "RPM")
   set(CPACK_SOURCE_RPM "ON")
-
-  set(CPACK_SOURCE_IGNORE_FILES "/InstallArea/;/build\\\\..*/;/\\\\.svn/;/\\\\.git/;/\\\\.settings/;\\\\..*project;\\\\.gitignore")
+  set(CPACK_SOURCE_RPM_PACKAGE_ARCHITECTURE "noarch")
+  set(CPACK_SOURCE_RPM_PACKAGE_NAME "${project}-source")
 
   include(CPack)
 
@@ -1269,11 +1290,11 @@ endfunction()
 
 
 #-------------------------------------------------------------------------------
-# gaudi_subdir(name version)
+# gaudi_subdir(name [version])
 #
 # Declare name and version of the subdirectory.
 #-------------------------------------------------------------------------------
-macro(gaudi_subdir name version)
+macro(gaudi_subdir name)
   gaudi_get_package_name(_guessed_name)
   if (NOT _guessed_name STREQUAL "${name}")
     message(WARNING "Declared subdir name (${name}) does not match the name of the directory (${_guessed_name})")
@@ -1281,14 +1302,23 @@ macro(gaudi_subdir name version)
 
   # Set useful variables and properties
   set(subdir_name ${name})
-  set(subdir_version ${version})
-  set_directory_properties(PROPERTIES name ${name})
-  set_directory_properties(PROPERTIES version ${version})
+  if(NOT "${ARGV1}" STREQUAL "")
+    set(subdir_version ${ARGV1})
+  elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/package_version.txt)
+    file(READ ${CMAKE_CURRENT_SOURCE_DIR}/package_version.txt subdir_version)
+    string(STRIP "${subdir_version}" subdir_version)
+  else()
+    set(subdir_version unknown)
+  endif()
+  set_directory_properties(PROPERTIES name ${subdir_name})
+  set_directory_properties(PROPERTIES version ${subdir_version})
 
   # Generate the version header for the package.
   execute_process(COMMAND
                   ${versheader_cmd} --quiet
-                     ${name} ${version} ${CMAKE_CURRENT_BINARY_DIR}/${name}Version.h)
+                     ${name} ${subdir_version} ${CMAKE_CURRENT_BINARY_DIR}/${name}Version.h)
+  # Add a macro for the version of the package
+  add_definitions("-DPACKAGE_NAME=\"${subdir_name}\"" "-DPACKAGE_VERSION=\"${subdir_version}\"")
 endmacro()
 
 #-------------------------------------------------------------------------------
@@ -2645,7 +2675,11 @@ macro(gaudi_generate_project_platform_config_file)
   get_property(component_libraries GLOBAL PROPERTY COMPONENT_LIBRARIES)
 
   set(project_environment_ ${project_environment})
-  _make_relocatable(project_environment_ VARS LCG_releases LCG_external)
+  if(LCG_releases_base)
+    _make_relocatable(project_environment_ VARS ${GAUDI_ENV_SUBSTITUTE_VARS} LCG_releases_base)
+  else()
+    _make_relocatable(project_environment_ VARS ${GAUDI_ENV_SUBSTITUTE_VARS} LCG_releases LCG_external)
+  endif()
   string(REPLACE "\$" "\\\$" project_environment_string "${project_environment_}")
 
   set(filename ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}PlatformConfig.cmake)
@@ -2760,9 +2794,11 @@ function(_make_relocatable var)
   foreach(val ${${var}})
     foreach(root_var ${ARG_VARS})
       if(${root_var})
-        if(val MATCHES "^${${root_var}}")
+        if(IS_ABSOLUTE ${${root_var}} AND val MATCHES "^${${root_var}}")
           file(RELATIVE_PATH val ${${root_var}} ${val})
           set(val \${${root_var}}/${val})
+        elseif(val MATCHES "${${root_var}}")
+          string(REPLACE "${${root_var}}" "\${${root_var}}" val "${val}")
         endif()
       endif()
     endforeach()
@@ -2773,6 +2809,10 @@ function(_make_relocatable var)
           list(FIND map_keys "${key}" idx)
           list(GET map_values ${idx} map_val)
           set(val ${map_val}/${val})
+        elseif(val MATCHES "${key}")
+          list(FIND map_keys "${key}" idx)
+          list(GET map_values ${idx} map_val)
+          string(REPLACE "${key}" "${map_val}" val "${val}")
         endif()
       endforeach()
     endif()
@@ -2819,7 +2859,11 @@ function(gaudi_generate_env_conf filename)
 <env:config xmlns:env=\"EnvSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"EnvSchema EnvSchema.xsd \">\n")
 
   # variables that need to be used to make the environment relative
-  set(root_vars LCG_releases LCG_external)
+  if(LCG_releases_base)
+    set(root_vars ${GAUDI_ENV_SUBSTITUTE_VARS} LCG_releases_base)
+  else()
+    set(root_vars ${GAUDI_ENV_SUBSTITUTE_VARS} LCG_releases LCG_external)
+  endif()
   foreach(root_var ${root_vars})
     set(data "${data}  <env:default variable=\"${root_var}\">${${root_var}}</env:default>\n")
   endforeach()
@@ -2827,7 +2871,9 @@ function(gaudi_generate_env_conf filename)
   # include inherited environments
   # (note: it's important that the full search path is ready before we start including)
   foreach(other_project ${used_gaudi_projects} ${used_data_packages} ${inherited_data_packages})
-    set(data "${data}  <env:search_path>${${other_project}_DIR}</env:search_path>\n")
+    set(val "${${other_project}_DIR}")
+    _make_relocatable(val VARS ${root_vars})
+    set(data "${data}  <env:search_path>${val}</env:search_path>\n")
   endforeach()
   foreach(other_project ${used_gaudi_projects})
     set(data "${data}  <env:include>${other_project}.xenv</env:include>\n")
@@ -2912,8 +2958,12 @@ macro(gaudi_external_project_environment)
 
       set(executable ${${_pack_upper}_EXECUTABLE})
       # special cases
-      if(pack MATCHES "^Qt")
+      if(pack MATCHES "^Qt4?\$")
         set(executable ${QT_QMAKE_EXECUTABLE})
+      elseif(pack MATCHES "^Qt5")
+        if(TARGET "Qt5::qmake")
+          get_property(executable TARGET Qt5::qmake PROPERTY IMPORTED_LOCATION)
+        endif()
       elseif(pack STREQUAL "Oracle")
         set(executable ${SQLPLUS_EXECUTABLE})
       elseif(pack STREQUAL "GCCXML")
@@ -2929,6 +2979,24 @@ macro(gaudi_external_project_environment)
         list(APPEND binary_path ${bin_path})
       endif()
 
+      if(pack MATCHES "^Qt5")
+        string(REPLACE "Qt5" "Qt5::" tgt_name "${pack}")
+        if(TARGET "${tgt_name}")
+          # FIXME: I'm not sure it's good to rely on the "_RELEASE" suffix
+          get_property(lib_path TARGET "${tgt_name}" PROPERTY IMPORTED_LOCATION_RELEASE)
+          get_filename_component(${pack}_LIBRARY_DIR "${lib_path}" PATH)
+          # FIXME: this should be handled in qt.conf
+          if(NOT environment MATCHES QT_QPA_PLATFORM_PLUGIN_PATH)
+            get_filename_component(plugin_path "${${pack}_LIBRARY_DIR}" PATH)
+            list(APPEND environment SET QT_QPA_PLATFORM_PLUGIN_PATH "${plugin_path}/plugins")
+          endif()
+          # FIXME: this should not be needed, but it seems that LCG Qt5 requires it
+          if(NOT environment MATCHES QT_XKB_CONFIG_ROOT)
+            list(APPEND environment SET QT_XKB_CONFIG_ROOT "/usr/share/X11/xkb")
+          endif()
+        endif()
+      endif()
+
       list(APPEND binary_path   ${${pack}_BINARY_PATH})
       list(APPEND python_path   ${${pack}_PYTHON_PATH})
       list(APPEND environment   ${${pack}_ENVIRONMENT})
@@ -2941,6 +3009,7 @@ macro(gaudi_external_project_environment)
         list(APPEND environment   ${${_pack_upper}_ENVIRONMENT})
         list(APPEND library_path2 ${${_pack_upper}_LIBRARY_DIR} ${${_pack_upper}_LIBRARY_DIRS})
       endif()
+
       # use also the libraries variable
       foreach(_lib ${${pack}_LIBRARIES} ${${_pack_upper}_LIBRARIES})
         if(EXISTS ${_lib})
@@ -3002,6 +3071,13 @@ endfunction()
 #-------------------------------------------------------------------------------
 macro(gaudi_generate_exports)
   message(STATUS "Generating 'export' files.")
+
+  if(LCG_releases_base)
+    set(_relocation_bases ${GAUDI_ENV_SUBSTITUTE_VARS} LCG_releases_base CMAKE_SOURCE_DIR)
+  else()
+    set(_relocation_bases ${GAUDI_ENV_SUBSTITUTE_VARS} LCG_releases LCG_external CMAKE_SOURCE_DIR)
+  endif()
+
   foreach(package ${ARGN})
     # we do not use the "Hat" for the export names
     get_filename_component(pkgname ${package} NAME)
@@ -3042,7 +3118,7 @@ get_filename_component(_IMPORT_PREFIX \"\${_IMPORT_PREFIX}\" PATH)
             # Note: relocate an include path against CMAKE_SOURCE_DIR allows
             #       to correctly relocate the include path to the current project
             #       if there is a local copy of the subdir
-            _make_relocatable(prop VARS LCG_releases LCG_external CMAKE_SOURCE_DIR)
+            _make_relocatable(prop VARS ${_relocation_bases})
             file(APPEND ${pkg_exp_file} "  ${pn} \"${prop}\"\n")
           endif()
         endforeach()

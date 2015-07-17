@@ -22,7 +22,7 @@
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/TypeNameString.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Tokenizer.h"
+#include "GaudiKernel/AttribStringParser.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/ISvcManager.h"
@@ -727,22 +727,17 @@ public:
 
   /// Create all partitions according to job options
   STATUS makePartitions()  {
+    using Parser = Gaudi::Utils::AttribStringParser;
     std::string typ, nam;
-    PartitionDefs::iterator j;
     clearPartitions().ignore();
-    for(j=m_partitionDefs.begin(); j != m_partitionDefs.end(); ++j)  {
-      Tokenizer tok(true);
-      Tokenizer::Items::iterator i;
-      tok.analyse(*j, " ", "", "", "=", "'", "'");
-      for(i = tok.items().begin(); i != tok.items().end(); i++ )   {
-        CSTR& t = (*i).tag();
-        CSTR& v = (*i).value();
-        switch( ::toupper(t[0]) )    {
+    for(auto part: m_partitionDefs)  {
+      for(auto attrib: Parser(std::move(part)))   {
+        switch( ::toupper(attrib.tag[0]) )    {
         case 'N':
-          nam = v;
+          nam = std::move(attrib.value);
           break;
         case 'T':
-          typ = v;
+          typ = std::move(attrib.value);
           break;
         }
       }

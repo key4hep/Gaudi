@@ -180,17 +180,6 @@ StatusCode GaudiSequencer::endRun ( ) {
 }
 
 //=========================================================================
-// reset the executed status of all members
-//=========================================================================
-void GaudiSequencer::resetExecuted ( ) {
-  Algorithm::resetExecuted();
-  // algorithm doesn't call resetExecuted of subalgos! should it???
-  std::vector<AlgorithmEntry>::const_iterator itE;
-  for ( itE = m_entries.begin(); m_entries.end() != itE; ++itE ) {
-    itE->algorithm()->resetExecuted();
-  }
-}
-//=========================================================================
 //  Decode the input names and fills the m_algs vector.
 //=========================================================================
 #ifdef __ICC

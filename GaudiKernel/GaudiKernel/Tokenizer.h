@@ -7,11 +7,17 @@
 //
 // Author  : M.Frank
 //
-// Changes : M.Frank ,  01/10/00: Initialil version
+// Changes : M.Frank ,  01/10/00: Initial version
 //
 //==============================================================================
 #ifndef KERNEL_TOKENIZER_H
 #define KERNEL_TOKENIZER_H
+
+#ifndef KERNEL_TOKENIZER_CPP
+#warning GaudiKernel/Tokenizer.h is deprecated, see GAUDI-1024 \
+         consider alternative methods like GaudiKernel/AttribStringParser.h or \
+         regular expressions
+#endif
 
 /// STL Include files
 #include "GaudiKernel/Kernel.h"
