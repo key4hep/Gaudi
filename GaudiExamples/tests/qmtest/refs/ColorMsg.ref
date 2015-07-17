@@ -18,8 +18,8 @@ JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/wor
 [92;1mApplicationMgr      DEBUG Getting my own properties[m
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r6)
-                                          running on pclhcb117 on Tue Oct  1 14:11:03 2013
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
+                                          running on pclhcb117 on Fri Jul 17 18:18:10 2015
 ====================================================================================================================================[m
 [96;1mApplicationMgr       INFO Application Manager Configured successfully[m
 [92;1mServiceManager      DEBUG Initializing service StatusCodeSvc[m
@@ -36,6 +36,10 @@ ApplicationMgr    SUCCESS
 [95;4mEventDataSvc      VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
 [92;1mEventPersistenc...  DEBUG Service base class initialized successfully[m
 [95;4mColorMsgAlg       VERBOSE ServiceLocatorHelper::service: found service EventDataSvc[m
+[92;1mTimelineSvc         DEBUG Service base class initialized successfully[m
+[92;1mTimelineSvc         DEBUG initialize[m
+[95;4mColorMsgAlg       VERBOSE ServiceLocatorHelper::service: found service TimelineSvc[m
+[92;1mColorMsgAlg         DEBUG Adding tools for ColorMsgAlg[m
 [98;1mEventLoopMgr      WARNING Unable to locate service "EventSelector" [m
 [98;1mEventLoopMgr      WARNING No events will be processed from external input.[m
 [92;1mHistogramDataSvc    DEBUG Service base class initialized successfully[m
@@ -50,6 +54,7 @@ ApplicationMgr    SUCCESS
 [92;1mServiceManager      DEBUG Starting service IncidentSvc[m
 [92;1mServiceManager      DEBUG Starting service EventPersistencySvc[m
 [92;1mServiceManager      DEBUG Starting service EventDataSvc[m
+[92;1mServiceManager      DEBUG Starting service TimelineSvc[m
 [92;1mServiceManager      DEBUG Starting service HistogramPersistencySvc[m
 [92;1mServiceManager      DEBUG Starting service HistogramDataSvc[m
 [92;1mServiceManager      DEBUG Starting service EventLoopMgr[m
@@ -78,9 +83,11 @@ ApplicationMgr    SUCCESS
 [96;1mColorMsgAlg          INFO setting....[93;1mthis should be in yellow[91;1m and red[m
 [96;1mColorMsgAlg          INFO multicolor: [94;102;1mthis is blue on green[95;107;1m and purple on white[m
 [96;1mColorMsgAlg          INFO [92;1mThis is green. [93;104;1mThis is in yellow on blue. [m[96;1mThis is back to normal[m
+[96;1mEventLoopMgr         INFO ---> Loop Finished -  WSS 26.6211 | total time (skipping 1st evt) 96217 ns[m
 [92;1mServiceManager      DEBUG Stopping service EventLoopMgr[m
 [92;1mServiceManager      DEBUG Stopping service HistogramDataSvc[m
 [92;1mServiceManager      DEBUG Stopping service HistogramPersistencySvc[m
+[92;1mServiceManager      DEBUG Stopping service TimelineSvc[m
 [92;1mServiceManager      DEBUG Stopping service EventDataSvc[m
 [92;1mServiceManager      DEBUG Stopping service EventPersistencySvc[m
 [92;1mServiceManager      DEBUG Stopping service IncidentSvc[m
@@ -92,13 +99,15 @@ ApplicationMgr    SUCCESS
 [96;1mEventLoopMgr         INFO Histograms converted successfully according to request.[m
 [92;1mServiceManager      DEBUG Finalizing service HistogramDataSvc[m
 [92;1mServiceManager      DEBUG Finalizing service HistogramPersistencySvc[m
+[92;1mServiceManager      DEBUG Finalizing service TimelineSvc[m
 [92;1mServiceManager      DEBUG Finalizing service EventDataSvc[m
 [92;1mServiceManager      DEBUG Finalizing service EventPersistencySvc[m
 [92;1mServiceManager      DEBUG Finalizing service IncidentSvc[m
 [92;1mIncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0(+-0)/0/0[ms] Total:0[s][m
 [92;1mServiceManager      DEBUG Finalizing service AppMgrRunable[m
 [92;1mServiceManager      DEBUG Finalizing service StatusCodeSvc[m
-[92;1mServiceManager      DEBUG Service reference count check:[m
+[92;1mStatusCodeSvc       DEBUG all StatusCode instances where checked[m
+[92;1mServiceManager      DEBUG Looping over all active services...[m
 [92;1mServiceManager      DEBUG ---- StatusCodeSvc (refCount = 2)[m
 [92;1mServiceManager      DEBUG ---- MessageSvc (refCount = 12)[m
 [92;1mServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)[m
@@ -106,6 +115,7 @@ ApplicationMgr    SUCCESS
 [92;1mServiceManager      DEBUG ---- IncidentSvc (refCount = 2)[m
 [92;1mServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)[m
 [92;1mServiceManager      DEBUG ---- EventDataSvc (refCount = 3)[m
+[92;1mServiceManager      DEBUG ---- TimelineSvc (refCount = 2)[m
 [92;1mServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 2)[m
 [92;1mServiceManager      DEBUG ---- HistogramDataSvc (refCount = 3)[m
 [92;1mServiceManager      DEBUG ---- EventLoopMgr (refCount = 3)[m
