@@ -209,69 +209,77 @@ StatusCode Algorithm::sysInitialize() {
 
 
   //init data handle
-	for (auto tag : m_inputDataObjects) {
-		if (m_inputDataObjects[tag].isValid()) {
-			if (m_inputDataObjects[tag].initialize().isSuccess())
-				log << MSG::DEBUG << "Data Handle " << tag << " ("
-						<< m_inputDataObjects[tag].dataProductName()
-						<< ") initialized" << endmsg;
-			else
-				log << MSG::FATAL << "Data Handle " << tag << " ("
-						<< m_inputDataObjects[tag].dataProductName()
-						<< ") could NOT be initialized" << endmsg;
-		}
-	}
-	for (auto tag : m_outputDataObjects) {
-		if (m_outputDataObjects[tag].isValid()) {
+  for (auto tag : m_inputDataObjects) {
+    if (m_inputDataObjects[tag].isValid()) {
+      if (m_inputDataObjects[tag].initialize().isSuccess())
+        log << MSG::DEBUG << "Data Handle " << tag << " ("
+            << m_inputDataObjects[tag].dataProductName()
+            << ") initialized" << endmsg;
+      else
+        log << MSG::FATAL << "Data Handle " << tag << " ("
+            << m_inputDataObjects[tag].dataProductName()
+            << ") could NOT be initialized" << endmsg;
+    }
+  }
+  for (auto tag : m_outputDataObjects) {
+    if (m_outputDataObjects[tag].isValid()) {
 
-			if (m_outputDataObjects[tag].initialize().isSuccess())
-				log << MSG::DEBUG << "Data Handle " << tag << " ("
-						<< m_outputDataObjects[tag].dataProductName()
-						<< ") initialized" << endmsg;
-			else
-				log << MSG::FATAL << "Data Handle " << tag << " ("
-						<< m_outputDataObjects[tag].dataProductName()
-						<< ") could NOT be initialized" << endmsg;
-	  }
+      if (m_outputDataObjects[tag].initialize().isSuccess())
+        log << MSG::DEBUG << "Data Handle " << tag << " ("
+            << m_outputDataObjects[tag].dataProductName()
+            << ") initialized" << endmsg;
+      else
+        log << MSG::FATAL << "Data Handle " << tag << " ("
+            << m_outputDataObjects[tag].dataProductName()
+            << ") could NOT be initialized" << endmsg;
+    }
   }
 
+  std::set<const IInterface*> visited_parents;
   //all TES accessing tools have been created in initialize() of derived class
   //query toolSvc for own tools and build dependencies
   std::function<void(const IInterface *)> addToolDOD = [&] (const IInterface * parent) {
 
-	  MsgStream log ( msgSvc() , name() ) ;
+    MsgStream log ( msgSvc() , name() ) ;
 
-	  std::vector<IAlgTool *> tools;
+    if (visited_parents.find(parent) != end(visited_parents)) {
+      log << MSG::DEBUG << "parent object already visited: stopping recursion"
+          << endmsg;
+      return;
+    }
+    visited_parents.insert(parent);
 
-	  const Algorithm * alg = dynamic_cast<const Algorithm *>(parent);
-	  if(alg != NULL)
-		  tools = alg->tools();
-	  else{
-		  const AlgTool * algTool = dynamic_cast<const AlgTool *>(parent);
-		  if(algTool != NULL)
-			  tools = algTool->tools();
-		  else
-			  log << MSG::FATAL << "Could not build data dependencies of algorithm, wrong parameter" << endmsg;
+    std::vector<IAlgTool *> tools;
 
-	  }
+    const Algorithm * alg = dynamic_cast<const Algorithm *>(parent);
+    if(alg != NULL)
+      tools = alg->tools();
+    else{
+      const AlgTool * algTool = dynamic_cast<const AlgTool *>(parent);
+      if(algTool != NULL)
+        tools = algTool->tools();
+      else
+        log << MSG::FATAL << "Could not build data dependencies of algorithm, wrong parameter" << endmsg;
 
-	  for(auto tool : tools){
+    }
 
-		  log << MSG::DEBUG << "Adding data dependencies for tool " << tool->name() << " (" << tool->type() << ")" << endmsg;
-		  auto inputs = tool->inputDataObjects();
-		  for(auto dod : inputs){
-			  log << MSG::DEBUG << "\tInput: " << dod << endmsg;
-			  m_inputDataObjects.insert(&inputs[dod]);
-		  }
+    for(auto tool : tools){
 
-		  auto outputs = tool->outputDataObjects();
-		  for(auto dod : outputs){
-			  log << MSG::DEBUG << "\tOutput: " << dod << endmsg;
-			  m_outputDataObjects.insert(&outputs[dod]);
-		  }
+      log << MSG::DEBUG << "Adding data dependencies for tool " << tool->name() << " (" << tool->type() << ")" << endmsg;
+      auto inputs = tool->inputDataObjects();
+      for(auto dod : inputs){
+        log << MSG::DEBUG << "\tInput: " << dod << endmsg;
+        m_inputDataObjects.insert(&inputs[dod]);
+      }
 
-		  addToolDOD(tool);
-	  }
+      auto outputs = tool->outputDataObjects();
+      for(auto dod : outputs){
+        log << MSG::DEBUG << "\tOutput: " << dod << endmsg;
+        m_outputDataObjects.insert(&outputs[dod]);
+      }
+
+      addToolDOD(tool);
+    }
   };
 
   log << MSG::DEBUG << "Adding tools for " << this->name() << endmsg;

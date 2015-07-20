@@ -26,10 +26,11 @@ MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
 
   declareOutput("trackSelection", m_selectedTracks, "/Event/MyAnalysis/Tracks");
 
-  std::cout << "handle " << m_tracks.dataProductName() << " is " << (m_tracks.isValid() ? "" : "NOT") << " valid" << std::endl;
-  std::cout << "handle " << m_hits.dataProductName() << " is " << (m_hits.isValid() ? "" : "NOT") << " valid" << std::endl;
-  std::cout << "handle " << m_raw.dataProductName() << " is " << (m_raw.isValid() ? "" : "NOT") << " valid" << std::endl;
-  std::cout << "handle " << m_selectedTracks.dataProductName() << " is " << (m_selectedTracks.isValid() ? "" : "NOT") << " valid" << std::endl;
+  // FIXME what are these print-outs about?
+  //std::cout << "handle " << m_tracks.dataProductName() << " is " << (m_tracks.isValid() ? "" : "NOT") << " valid" << std::endl;
+  //std::cout << "handle " << m_hits.dataProductName() << " is " << (m_hits.isValid() ? "" : "NOT") << " valid" << std::endl;
+  //std::cout << "handle " << m_raw.dataProductName() << " is " << (m_raw.isValid() ? "" : "NOT") << " valid" << std::endl;
+  //std::cout << "handle " << m_selectedTracks.dataProductName() << " is " << (m_selectedTracks.isValid() ? "" : "NOT") << " valid" << std::endl;
 
   declarePrivateTool(m_myPrivToolHandle, "MyTool/PrivToolHandle");
   declarePublicTool(m_myPubToolHandle, "MyTool/PubToolHandle");

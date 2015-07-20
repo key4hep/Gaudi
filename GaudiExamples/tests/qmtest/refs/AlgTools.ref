@@ -1,8 +1,8 @@
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/Services.opts)
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Services.opts
 JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/Common.opts)
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Common.opts
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/AlgTools.opts)
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/AlgTools.opts
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.TopAlg = ["MyAlgorithm/MyAlg"]
 JobOptionsSvc        INFO # (12,1): MessageSvc.OutputLevel = 3
 JobOptionsSvc        INFO # (17,1): ApplicationMgr.EvtMax = 10
@@ -23,11 +23,11 @@ JobOptionsSvc        INFO # (43,1): ToolSvc.ToolA.Tools = ["TestTool/ToolB"]
 JobOptionsSvc        INFO # (44,1): ToolSvc.ToolB.Tools = ["TestTool/ToolA"]
 JobOptionsSvc        INFO # (45,1): ToolSvc.ToolA.OutputLevel = 2
 JobOptionsSvc        INFO # (46,1): ToolSvc.ToolB.OutputLevel = 2
-JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/AlgTools.opts
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/AlgTools.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r1)
-                                          running on lxplus445.cern.ch on Thu Jun 28 15:28:31 2012
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
+                                          running on pclhcb117 on Mon Jul 20 18:07:16 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -37,16 +37,16 @@ ToolSvc.MyTool       INFO Int    = 201
 ToolSvc.MyTool       INFO Double = 2.011e+12
 ToolSvc.MyTool       INFO String = two hundred and one
 ToolSvc.MyTool       INFO Bool   = 1
-MyAlg.MyTool         INFO intialize() has been called
-MyAlg.MyTool         INFO Int    = 101
-MyAlg.MyTool         INFO Double = 1.011e+12
-MyAlg.MyTool         INFO String = hundred one
-MyAlg.MyTool         INFO Bool   = 0
 ToolSvc.MyGaudi...   INFO intialize() has been called
 ToolSvc.MyGaudi...   INFO Int    = 100
 ToolSvc.MyGaudi...   INFO Double = 100
 ToolSvc.MyGaudi...   INFO String = hundred
 ToolSvc.MyGaudi...   INFO Bool   = 1
+MyAlg.MyTool         INFO intialize() has been called
+MyAlg.MyTool         INFO Int    = 101
+MyAlg.MyTool         INFO Double = 1.011e+12
+MyAlg.MyTool         INFO String = hundred one
+MyAlg.MyTool         INFO Bool   = 0
 MyAlg.MyGaudiTool    INFO intialize() has been called
 MyAlg.MyGaudiTool    INFO Int    = 100
 MyAlg.MyGaudiTool    INFO Double = 100
@@ -118,8 +118,8 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditTools':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'OutputLevel':2
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 ToolSvc.ToolB       DEBUG Loading tool ToolA of type TestTool
-ToolSvc.ToolB       DEBUG The tool of type 'TestTool' has been added with the name 'ToolSvc.ToolA'
-ToolSvc.ToolA       DEBUG The tool of type 'TestTool' has been added with the name 'ToolSvc.ToolB'
+ToolSvc.ToolB       DEBUG Registering tool ToolSvc.ToolA
+ToolSvc.ToolA       DEBUG Registering tool ToolSvc.ToolB
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramPersis...WARNING Histograms saving not required.
@@ -127,99 +127,102 @@ ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
+EventLoopMgr         INFO ---> Loop Finished -  WSS 35.4453 | total time (skipping 1st evt) 759846 ns
 ApplicationMgr       INFO Application Manager Stopped successfully
 MyAlg                INFO finalizing....
 EventLoopMgr         INFO Histograms converted successfully according to request.
 ToolSvc              INFO Removing all tools created by ToolSvc
 MyAlg.ToolWithName   INFO finalize() has been called
 MyAlg.MyGaudiTool    INFO finalize() has been called
-ToolSvc.MyGaudi...   INFO finalize() has been called
 MyAlg.MyTool         INFO finalize() has been called
+ToolSvc.MyGaudi...   INFO finalize() has been called
 ToolSvc.MyTool       INFO finalize() has been called
 ToolSvc.ToolB       DEBUG Finalize
 ToolSvc.ToolB       DEBUG  ==> Finalize the base class GaudiTool
 ToolSvc.ToolB       DEBUG Tools to release : ToolSvc.ToolA
 ToolSvc.ToolB       DEBUG Releasing tool 'ToolSvc.ToolA'
+ToolSvc.ToolB       DEBUG De-Registering tool ToolSvc.ToolA
 ToolSvc.ToolB       DEBUG The tool 'ToolSvc.ToolA' of type 'TestTool' is released
 ToolSvc.ToolB       DEBUG Services to release :
 ToolSvc.ToolA       DEBUG Finalize
 ToolSvc.ToolA       DEBUG  ==> Finalize the base class GaudiTool
 ToolSvc.ToolA       DEBUG Tools to release : ToolSvc.ToolB
 ToolSvc.ToolA       DEBUG Releasing tool 'ToolSvc.ToolB'
+ToolSvc.ToolA       DEBUG De-Registering tool ToolSvc.ToolB
 ToolSvc.ToolA       DEBUG The tool 'ToolSvc.ToolB' of type 'TestTool' is released
 ToolSvc.ToolA       DEBUG Services to release :
 MyAlg.ToolWithName   INFO destructor has been called
 MyAlg.MyGaudiTool    INFO destructor has been called
-ToolSvc.MyGaudi...   INFO destructor has been called
 MyAlg.MyTool         INFO destructor has been called
+ToolSvc.MyGaudi...   INFO destructor has been called
 ToolSvc.MyTool       INFO destructor has been called
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully

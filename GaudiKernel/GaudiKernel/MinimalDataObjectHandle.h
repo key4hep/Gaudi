@@ -21,20 +21,20 @@ class AlgTool;
 class MinimalDataObjectHandle {
 
 public:
-	  /// The type of the access
-	  // Genreflex cannot compile it with the c++11 features (strong typed + enum type)
-	  enum AccessType {
-	    /// Read only access to the data object
-	    READ,
-	    /// Data object is produced
-	    WRITE,
-	    /// Update of data object is allowed
-	    UPDATE
-	    };
+  /// The type of the access
+  // Genreflex cannot compile it with the c++11 features (strong typed + enum type)
+  enum AccessType {
+    /// Read only access to the data object
+    READ,
+    /// Data object is produced
+    WRITE,
+    /// Update of data object is allowed
+    UPDATE
+  };
 
-	  friend class Algorithm;
-	  friend class AlgTool;
-	  friend class DataObjectDescriptorCollection;
+  friend class Algorithm;
+  friend class AlgTool;
+  friend class DataObjectDescriptorCollection;
 
 public:
 
@@ -48,13 +48,13 @@ public:
 
   /// Initialize
   virtual StatusCode initialize();
-  
+
   /// Finalize
   virtual StatusCode finalize();
-  
+
   /// Reinitialize -> may be overwritten in derived class
   virtual StatusCode reinitialize();
-  
+
   /// Check if the data object declared is optional for the algorithm
   bool isOptional() const;
   void setOptional(bool optional = true);
@@ -65,7 +65,7 @@ public:
   /// Return the product name
   const std::string& dataProductName() const;
   const std::vector<std::string> & alternativeDataProductNames() const;
-  
+
 
   /// Update address of data product if possible -> not if was written
   StatusCode setDataProductName(const std::string & address);
@@ -74,10 +74,10 @@ public:
 
   /// Access type
   AccessType accessType() const ;
-  
+
   /// Check if operation was performed
   bool wasRead() const;
-  
+
   /// Check if operation was performed
   bool wasWritten() const;
 
@@ -104,7 +104,7 @@ private:
   bool m_wasRead;
   bool m_wasWritten;
   bool m_initialized;
-  
+
   //static map to hold the dataproduct index mapping
   //is shared between all events in flight
 #ifndef __GCCXML__
@@ -112,14 +112,14 @@ private:
 #else
   static std::map<std::string, size_t> m_dataProductIndexMap;
 #endif
-  
+
   //map to hold locks per event in flight
   static std::map<size_t, std::map<size_t, tbb::spin_mutex> > m_locks;
   static const uint CLEANUP_THRESHOLD = 20;
 
   MinimalDataObjectHandle(const MinimalDataObjectHandle& );
   MinimalDataObjectHandle& operator=(const MinimalDataObjectHandle& );
-  
+
 };
 
 

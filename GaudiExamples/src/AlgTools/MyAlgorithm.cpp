@@ -42,7 +42,7 @@ StatusCode MyAlgorithm::initialize() {
       return sc;
     }
   }
-  
+
   sc = toolSvc()->retrieveTool("MyTool", m_privateTool, this );
   if( sc.isFailure() ) {
     log << MSG::ERROR<< "Error retrieving the private tool" << endmsg;
@@ -83,7 +83,7 @@ StatusCode MyAlgorithm::execute() {
   if ( !m_privateToolsOnly ){
     m_publicTool->doIt();
     m_publicGTool->doIt();
-    }  
+  }
   m_privateTool->doIt();
   m_privateGTool->doIt();
   m_privateToolWithName->doIt();
@@ -101,8 +101,8 @@ StatusCode MyAlgorithm::finalize() {
 
   if ( !m_privateToolsOnly ){
     toolSvc()->releaseTool( m_publicTool ).ignore();
-    toolSvc()->releaseTool( m_publicGTool ).ignore();    
-    }
+    toolSvc()->releaseTool( m_publicGTool ).ignore();
+  }
   toolSvc()->releaseTool( m_privateTool ).ignore();
   toolSvc()->releaseTool( m_privateGTool ).ignore();
   toolSvc()->releaseTool( m_privateToolWithName ).ignore();
