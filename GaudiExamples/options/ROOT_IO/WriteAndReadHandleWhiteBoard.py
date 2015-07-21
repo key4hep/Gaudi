@@ -38,24 +38,24 @@ GaudiPersistency()
 
 product_name="MyCollision"
 
-writer = WriteHandleAlg ("Writer",
-                         Output="/Event/"+product_name,
-                         OutputLevel=DEBUG,
-                         UseHandle=True,
-                         IsClonable=True)
-                         
-reader = ReadHandleAlg ("Reader",
-                         Input=product_name,
-                         OutputLevel=DEBUG,
-                         IsClonable=True)                         
+writer = WriteHandleAlg("Writer",
+                        OutputLevel=DEBUG,
+                        UseHandle=True,
+                        IsClonable=True)
+writer.Outputs.Output.Path = "/Event/"+product_name
 
-                         
+reader = ReadHandleAlg("Reader",
+                       OutputLevel=DEBUG,
+                       IsClonable=True)
+reader.Inputs.Input.Path = product_name
+
+
 evtslots = 15
 algoparallel = 10
 
 whiteboard   = HiveWhiteBoard("EventDataSvc",
                               EventSlots = evtslots)
-                                                                                     
+
 eventloopmgr = HiveEventLoopMgr(MaxEventsParallel = evtslots,
                                 MaxAlgosParallel  = algoparallel,
                                 CloneAlgorithms = True,
@@ -63,13 +63,13 @@ eventloopmgr = HiveEventLoopMgr(MaxEventsParallel = evtslots,
                                 NumThreads = algoparallel,
                                 AlgosDependencies = [[],[product_name],[product_name]])
 
-                                
+
 # Application setup
 app = ApplicationMgr()
 # - I/O
 # Do not put them here, but as normal algorithms.
 # Putting two of them in the top alg list will not work if more than one
-# algo is allowed to be in flight: at some point they will write to disk 
+# algo is allowed to be in flight: at some point they will write to disk
 # simultaneously, with catastrophic effects.
 
 #app.OutStream += [ mini ]

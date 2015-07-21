@@ -92,10 +92,10 @@ StatusCode DataObjectHandle<T>::initialize(){
 
   // GCCXML cannot understand c++11 yet, NULL used.
 
-  MinimalDataObjectHandle::initialize();
+  MinimalDataObjectHandle::initialize().ignore();
 
   if(m_fatherAlg == 0 && m_fatherTool == 0){
-	return StatusCode::FAILURE;
+    return StatusCode::FAILURE;
   }
 
   if (m_fatherAlg != 0) {

@@ -2,6 +2,10 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-07-21 - Marco Clemencic
+ - Fixed some unchecked StatusCode.
+ - Fixed some whitespaces.
+
 ! 2015-07-20 - Marco Clemencic
  - Fixed infinite recursion when collecting data dependencies from tools.
  - Minor clean up.

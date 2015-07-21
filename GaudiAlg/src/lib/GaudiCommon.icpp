@@ -264,39 +264,38 @@ StatusCode GaudiCommon<PBASE>::
   //update DataHandles to point to full TES location
 
   //get root of DataManager
-	SmartIF<IDataManagerSvc> dataMgrSvc(PBASE::evtSvc());
-	std::string rootName(dataMgrSvc->rootName());
-	if ("" != rootName && '/' != rootName[rootName.size() - 1]) {
-		rootName = rootName + "/";
-	}
+  SmartIF<IDataManagerSvc> dataMgrSvc(PBASE::evtSvc());
+  std::string rootName(dataMgrSvc->rootName());
+  if ("" != rootName && '/' != rootName[rootName.size() - 1]) {
+    rootName = rootName + "/";
+  }
 
   auto fixLocation = [&] (const std::string & location) -> std::string {
-	  std::string result = fullTESLocation(location, UseRootInTES);
-	  //check whether we have an absolute path if yes return it - else prepend DataManager Root
-	  result = (result[0] == '/' ? result : rootName + result);
+    std::string result = fullTESLocation(location, UseRootInTES);
+    //check whether we have an absolute path if yes return it - else prepend DataManager Root
+    result = (result[0] == '/' ? result : rootName + result);
 
+    debug() << "Changing " << location << " to " << result << endmsg;
 
-	  debug() << "Changing " << location << " to " << result << endmsg;
-
-	  return result;
+    return result;
   };
 
   for(auto tag : PBASE::inputDataObjects()){
-	  if(PBASE::inputDataObjects()[tag].isValid()){
-		  PBASE::inputDataObjects()[tag].setDataProductName(
-				  fixLocation(PBASE::inputDataObjects()[tag].dataProductName()));
+    if(PBASE::inputDataObjects()[tag].isValid()){
+      PBASE::inputDataObjects()[tag].setDataProductName(
+          fixLocation(PBASE::inputDataObjects()[tag].dataProductName())).ignore();
 
-		  auto altAddress = PBASE::inputDataObjects()[tag].alternativeDataProductNames();
-		  for(uint i = 0; i < altAddress.size(); ++i)
-			  altAddress[i] = fixLocation(altAddress[i]);
-		  PBASE::inputDataObjects()[tag].setAlternativeDataProductNames(altAddress);
-	  }
+      auto altAddress = PBASE::inputDataObjects()[tag].alternativeDataProductNames();
+      for(uint i = 0; i < altAddress.size(); ++i)
+        altAddress[i] = fixLocation(altAddress[i]);
+      PBASE::inputDataObjects()[tag].setAlternativeDataProductNames(altAddress).ignore();
+    }
   }
   for(auto tag : PBASE::outputDataObjects()){
-	  if(PBASE::outputDataObjects()[tag].isValid()){
-		  PBASE::outputDataObjects()[tag].setDataProductName(
-				  fixLocation(PBASE::outputDataObjects()[tag].dataProductName()));
-	  }
+    if(PBASE::outputDataObjects()[tag].isValid()){
+      PBASE::outputDataObjects()[tag].setDataProductName(
+          fixLocation(PBASE::outputDataObjects()[tag].dataProductName())).ignore();
+    }
   }
 
   return sc;

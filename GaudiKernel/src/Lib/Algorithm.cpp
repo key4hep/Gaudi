@@ -101,13 +101,12 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
 Algorithm::~Algorithm() {
   delete m_subAlgms;
   delete m_propertyMgr;
-
 }
 
 // IAlgorithm implementation
 StatusCode Algorithm::sysInitialize() {
 
-	  MsgStream log ( msgSvc() , name() ) ;
+  MsgStream log ( msgSvc() , name() ) ;
 
   // Bypass the initialization if the algorithm
   // has already been initialized.
@@ -154,8 +153,8 @@ StatusCode Algorithm::sysInitialize() {
       // Invoke the initialize() method of the derived class
       sc = initialize();
     }
-    if( sc.isSuccess() ) {
 
+    if( sc.isSuccess() ) {
       // Now initialize care of any sub-algorithms
       std::vector<Algorithm *>::iterator it;
       bool fail(false);
@@ -223,7 +222,6 @@ StatusCode Algorithm::sysInitialize() {
   }
   for (auto tag : m_outputDataObjects) {
     if (m_outputDataObjects[tag].isValid()) {
-
       if (m_outputDataObjects[tag].initialize().isSuccess())
         log << MSG::DEBUG << "Data Handle " << tag << " ("
             << m_outputDataObjects[tag].dataProductName()
@@ -260,7 +258,6 @@ StatusCode Algorithm::sysInitialize() {
         tools = algTool->tools();
       else
         log << MSG::FATAL << "Could not build data dependencies of algorithm, wrong parameter" << endmsg;
-
     }
 
     for(auto tool : tools){

@@ -1,13 +1,14 @@
-# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/AlgTools.py'
-# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/AlgTools.py'
+# --> Including file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/AlgTools.py'
+# <-- End of file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/AlgTools.py'
 # applying configuration of GaudiExamplesCommonConf
 # /***** User GaudiExamplesCommonConf/GaudiExamplesCommonConf ****************************************
 # |-OutputLevel = 3
+# |-DummyEvents = -1
 # \----- (End of User GaudiExamplesCommonConf/GaudiExamplesCommonConf) -------------------------------
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r1)
-                                          running on lxplus445.cern.ch on Thu Jun 28 15:28:33 2012
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
+                                          running on pcphlbc16 on Tue Jul 21 08:34:03 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -17,16 +18,16 @@ ToolSvc.MyTool       INFO Int    = 201
 ToolSvc.MyTool       INFO Double = 2.011e+12
 ToolSvc.MyTool       INFO String = two hundred and one
 ToolSvc.MyTool       INFO Bool   = 1
-MyAlg.MyTool         INFO intialize() has been called
-MyAlg.MyTool         INFO Int    = 101
-MyAlg.MyTool         INFO Double = 1.011e+12
-MyAlg.MyTool         INFO String = hundred one
-MyAlg.MyTool         INFO Bool   = 0
 ToolSvc.MyGaudi...   INFO intialize() has been called
 ToolSvc.MyGaudi...   INFO Int    = 100
 ToolSvc.MyGaudi...   INFO Double = 100
 ToolSvc.MyGaudi...   INFO String = hundred
 ToolSvc.MyGaudi...   INFO Bool   = 1
+MyAlg.MyTool         INFO intialize() has been called
+MyAlg.MyTool         INFO Int    = 101
+MyAlg.MyTool         INFO Double = 1.011e+12
+MyAlg.MyTool         INFO String = hundred one
+MyAlg.MyTool         INFO Bool   = 0
 MyAlg.MyGaudiTool    INFO intialize() has been called
 MyAlg.MyGaudiTool    INFO Int    = 100
 MyAlg.MyGaudiTool    INFO Double = 100
@@ -64,6 +65,10 @@ ToolSvc.TestPub...   INFO Int    = 100
 ToolSvc.TestPub...   INFO Double = 100
 ToolSvc.TestPub...   INFO String = Is a public tool
 ToolSvc.TestPub...   INFO Bool   = 1
+MyGaudiAlg           INFO /Event/Rec/Tracks
+MyGaudiAlg           INFO /Event/Rec/Hits
+MyGaudiAlg           INFO /Rec/RAW
+MyGaudiAlg           INFO /Event/MyAnalysis/Tracks
 MyGaudiAlg           INFO ....initialization done
 ToolSvc.ToolA       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolA       DEBUG Property update for OutputLevel : new value = 2
@@ -125,8 +130,8 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditTools':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'OutputLevel':2
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 ToolSvc.ToolB       DEBUG Loading tool ToolA of type TestTool
-ToolSvc.ToolB       DEBUG The tool of type 'TestTool' has been added with the name 'ToolSvc.ToolA'
-ToolSvc.ToolA       DEBUG The tool of type 'TestTool' has been added with the name 'ToolSvc.ToolB'
+ToolSvc.ToolB       DEBUG Registering tool ToolSvc.ToolA
+ToolSvc.ToolA       DEBUG Registering tool ToolSvc.ToolB
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramPersis...WARNING Histograms saving not required.
@@ -134,164 +139,185 @@ ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyGaudiAlg           INFO executing....
+MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
+MyGaudiAlg           INFO tools created via ToolHandle<T>....
 MyGaudiAlg.Priv...   INFO doIt() has been called
 ToolSvc.TestPub...   INFO doIt() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyGaudiAlg           INFO executing....
+MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
+MyGaudiAlg           INFO tools created via ToolHandle<T>....
 MyGaudiAlg.Priv...   INFO doIt() has been called
 ToolSvc.TestPub...   INFO doIt() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyGaudiAlg           INFO executing....
+MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
+MyGaudiAlg           INFO tools created via ToolHandle<T>....
 MyGaudiAlg.Priv...   INFO doIt() has been called
 ToolSvc.TestPub...   INFO doIt() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyGaudiAlg           INFO executing....
+MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
+MyGaudiAlg           INFO tools created via ToolHandle<T>....
 MyGaudiAlg.Priv...   INFO doIt() has been called
 ToolSvc.TestPub...   INFO doIt() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyGaudiAlg           INFO executing....
+MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
+MyGaudiAlg           INFO tools created via ToolHandle<T>....
 MyGaudiAlg.Priv...   INFO doIt() has been called
 ToolSvc.TestPub...   INFO doIt() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyGaudiAlg           INFO executing....
+MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
+MyGaudiAlg           INFO tools created via ToolHandle<T>....
 MyGaudiAlg.Priv...   INFO doIt() has been called
 ToolSvc.TestPub...   INFO doIt() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyGaudiAlg           INFO executing....
+MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
+MyGaudiAlg           INFO tools created via ToolHandle<T>....
 MyGaudiAlg.Priv...   INFO doIt() has been called
 ToolSvc.TestPub...   INFO doIt() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyGaudiAlg           INFO executing....
+MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
+MyGaudiAlg           INFO tools created via ToolHandle<T>....
 MyGaudiAlg.Priv...   INFO doIt() has been called
 ToolSvc.TestPub...   INFO doIt() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyGaudiAlg           INFO executing....
+MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
+MyGaudiAlg           INFO tools created via ToolHandle<T>....
 MyGaudiAlg.Priv...   INFO doIt() has been called
 ToolSvc.TestPub...   INFO doIt() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyGaudiAlg           INFO executing....
+MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
+MyGaudiAlg           INFO tools created via ToolHandle<T>....
 MyGaudiAlg.Priv...   INFO doIt() has been called
 ToolSvc.TestPub...   INFO doIt() has been called
+EventLoopMgr         INFO ---> Loop Finished -  WSS 45.1133 | total time (skipping 1st evt) 972751 ns
 ApplicationMgr       INFO Application Manager Stopped successfully
 MyAlg                INFO finalizing....
 MyGaudiAlg           INFO finalizing....
@@ -302,19 +328,21 @@ MyGaudiAlg.MyGa...   INFO finalize() has been called
 MyGaudiAlg.MyTool    INFO finalize() has been called
 MyAlg.ToolWithName   INFO finalize() has been called
 MyAlg.MyGaudiTool    INFO finalize() has been called
-ToolSvc.MyGaudi...   INFO finalize() has been called
 MyAlg.MyTool         INFO finalize() has been called
+ToolSvc.MyGaudi...   INFO finalize() has been called
 ToolSvc.MyTool       INFO finalize() has been called
 ToolSvc.ToolB       DEBUG Finalize
 ToolSvc.ToolB       DEBUG  ==> Finalize the base class GaudiTool
 ToolSvc.ToolB       DEBUG Tools to release : ToolSvc.ToolA
 ToolSvc.ToolB       DEBUG Releasing tool 'ToolSvc.ToolA'
+ToolSvc.ToolB       DEBUG De-Registering tool ToolSvc.ToolA
 ToolSvc.ToolB       DEBUG The tool 'ToolSvc.ToolA' of type 'TestTool' is released
 ToolSvc.ToolB       DEBUG Services to release :
 ToolSvc.ToolA       DEBUG Finalize
 ToolSvc.ToolA       DEBUG  ==> Finalize the base class GaudiTool
 ToolSvc.ToolA       DEBUG Tools to release : ToolSvc.ToolB
 ToolSvc.ToolA       DEBUG Releasing tool 'ToolSvc.ToolB'
+ToolSvc.ToolA       DEBUG De-Registering tool ToolSvc.ToolB
 ToolSvc.ToolA       DEBUG The tool 'ToolSvc.ToolB' of type 'TestTool' is released
 ToolSvc.ToolA       DEBUG Services to release :
 ToolSvc.TestPub...   INFO finalize() has been called
@@ -324,8 +352,8 @@ MyGaudiAlg.MyGa...   INFO destructor has been called
 MyGaudiAlg.MyTool    INFO destructor has been called
 MyAlg.ToolWithName   INFO destructor has been called
 MyAlg.MyGaudiTool    INFO destructor has been called
-ToolSvc.MyGaudi...   INFO destructor has been called
 MyAlg.MyTool         INFO destructor has been called
+ToolSvc.MyGaudi...   INFO destructor has been called
 ToolSvc.MyTool       INFO destructor has been called
 ToolSvc.TestPub...   INFO destructor has been called
 MyGaudiAlg.Priv...   INFO destructor has been called

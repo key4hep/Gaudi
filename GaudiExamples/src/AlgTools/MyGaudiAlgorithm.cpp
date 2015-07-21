@@ -19,12 +19,12 @@ MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
   declareProperty("PrivToolHandle", m_myPrivToolHandle);
   declareProperty("PubToolHandle", m_myPubToolHandle);
 
-  declareInput("tracks", m_tracks, "/Event/Rec/Tracks");
-  declareInput("hits", m_hits, "/Event/Rec/Hits");
+  declareInput("tracks", m_tracks, "/Event/Rec/Tracks").ignore();
+  declareInput("hits", m_hits, "/Event/Rec/Hits").ignore();
 
-  declareInput("raw", m_raw, std::vector<std::string>({"/Rec/RAW", "/DAQ/RAW"}));
+  declareInput("raw", m_raw, std::vector<std::string>({"/Rec/RAW", "/DAQ/RAW"})).ignore();
 
-  declareOutput("trackSelection", m_selectedTracks, "/Event/MyAnalysis/Tracks");
+  declareOutput("trackSelection", m_selectedTracks, "/Event/MyAnalysis/Tracks").ignore();
 
   // FIXME what are these print-outs about?
   //std::cout << "handle " << m_tracks.dataProductName() << " is " << (m_tracks.isValid() ? "" : "NOT") << " valid" << std::endl;
