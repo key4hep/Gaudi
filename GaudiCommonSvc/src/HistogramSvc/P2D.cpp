@@ -37,7 +37,7 @@ namespace Gaudi {
     /// Default Constructor with representation object
     Profile2D(TProfile2D* rep);
     /// Destructor.
-    virtual ~Profile2D()  {}
+    virtual ~Profile2D() = default;
     /// Fill bin content
     bool fill(double x,double y,double z,double weight)  {
       m_rep->Fill(x,y,z,weight);
@@ -58,7 +58,7 @@ namespace Gaudi {
       return const_cast<AIDA::IProfile*>((AIDA::IProfile*)this);
     else if (className == "AIDA::IBaseHistogram")
       return const_cast<AIDA::IBaseHistogram*>((AIDA::IBaseHistogram*)this);
-    return 0;
+    return nullptr;
   }
 
   template <>

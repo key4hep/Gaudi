@@ -19,10 +19,10 @@ class  Annotation  : virtual public IAnnotation {
 
 public:
   /// Constructor
-  Annotation(){ /* nop */ }
+  Annotation() = default;
 
   /// Destructor
-  virtual ~Annotation(){ /* nop */ }
+  virtual ~Annotation() = default;
 
   /// Add a key/value pair with a given sticky.
   bool addItem( const std::string & key,
@@ -60,10 +60,10 @@ private:
     AnnotationItem( std::string k = "",
 		    std::string v = "",
 		    bool vis = true):
-      m_key( k ), m_value( v ), m_sticky( vis )
+      m_key( std::move(k) ), m_value( std::move(v) ), m_sticky( vis )
     {/* nop */};
 
-    ~AnnotationItem(){ /* nop */};
+    ~AnnotationItem() = default;
 
     std::string m_key;
     std::string m_value;

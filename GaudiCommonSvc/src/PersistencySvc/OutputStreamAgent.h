@@ -34,7 +34,7 @@ public:
   /// Standard Constructor
   OutputStreamAgent(OutputStream* OutputStream);
   /// Standard Destructor
-  virtual ~OutputStreamAgent();
+  virtual ~OutputStreamAgent() = default;
   /// Analysis callback
   virtual bool analyse(IRegistry* dir, int level);
 };

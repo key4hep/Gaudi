@@ -78,7 +78,7 @@ public:
 
 protected:
 
-  virtual ~ITupleTool( ); ///< Destructor
+  virtual ~ITupleTool( ) = default; ///< Destructor
 
 };
 

@@ -100,10 +100,6 @@ AuditorSvc::AuditorSvc( const std::string& name, ISvcLocator* svc )
   m_pAudList.clear();
 }
 
-// Destructor.
-AuditorSvc::~AuditorSvc() {
-}
-
 // Inherited Service overrides:
 //
   // Initialize the service.

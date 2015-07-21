@@ -24,7 +24,7 @@ namespace Gaudi {
     /// Standard initializing Constructor with TH2D representation to be adopted
     Histogram2D(TH2D* rep);
     /// Destructor.
-    virtual ~Histogram2D() {}
+    virtual ~Histogram2D() = default;
     /// Fill the Histogram2D with a value and the
     bool  fill(double x,double y,double weight = 1.);
     /// Fast filling method for a given bin. It can be also the over/underflow bin

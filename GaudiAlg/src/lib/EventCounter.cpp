@@ -5,19 +5,12 @@
  ** Constructor(s)
  **/
 EventCounter::EventCounter(const std::string& name, ISvcLocator* pSvcLocator) :
-  Algorithm(name, pSvcLocator),
+  Algorithm( name, pSvcLocator),
   m_skip ( 0 ),
   m_total( 0 )
 {
     declareProperty( "Frequency", m_frequency=1 );
     m_frequency.verifier().setBounds( 0, 1000 );
-}
-
-/**
- ** Destructor
- **/
-EventCounter::~EventCounter( )
-{
 }
 
 StatusCode

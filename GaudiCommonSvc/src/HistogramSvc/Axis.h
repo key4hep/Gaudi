@@ -64,14 +64,14 @@ namespace Gaudi {
 
   public:
 
-    Axis() : taxis_(0) {}
+    Axis() = default;
 
     explicit Axis ( TAxis * itaxi ) : taxis_(itaxi) {}
 
     void initialize (TAxis * itaxi , bool ) { taxis_ = itaxi; }
 
     /// Destructor.
-    virtual ~Axis()    {}
+    virtual ~Axis() = default;
 
     /**
     * Check if the IAxis has fixed binning, i.e. if all the bins have the same width.
@@ -153,7 +153,7 @@ namespace Gaudi {
     self & me() const { return const_cast<self&>(*this);}
 
 
-    TAxis * taxis_;
+    TAxis * taxis_ = nullptr;
 
   }; // class
 

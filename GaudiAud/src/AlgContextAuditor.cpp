@@ -42,12 +42,7 @@ AlgContextAuditor::AlgContextAuditor
 ( const std::string& name ,
   ISvcLocator*       pSvc )
   : Auditor( name , pSvc )
-  , m_svc   ( 0    )
 {}
-// ============================================================================
-// destructor
-// ============================================================================
-AlgContextAuditor::~AlgContextAuditor() {}
 // ============================================================================
 // standard initialization, see @IAuditor
 // ============================================================================

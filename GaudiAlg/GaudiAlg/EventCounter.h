@@ -12,7 +12,7 @@ public:
     /**
      ** Destructor
      **/
-    virtual ~EventCounter( );
+    virtual ~EventCounter( ) = default;
 
     /*****************************
      ** Public Function Members **

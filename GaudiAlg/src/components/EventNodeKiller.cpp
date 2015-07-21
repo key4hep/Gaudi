@@ -21,10 +21,6 @@ EventNodeKiller::EventNodeKiller( const std::string& name,
 {
   declareProperty( "Nodes", m_nodes );
 }
-//=============================================================================
-// Destructor
-//=============================================================================
-EventNodeKiller::~EventNodeKiller() {}
 
 //=============================================================================
 // Main execution

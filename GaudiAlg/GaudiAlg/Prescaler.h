@@ -15,7 +15,7 @@ public:
     /**
      ** Destructor
      **/
-    virtual ~Prescaler( );
+    virtual ~Prescaler( ) = default;
 
     /*****************************
      ** Public Function Members **

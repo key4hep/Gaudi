@@ -29,7 +29,7 @@ namespace Gaudi
       /// the only one essential method:
       virtual bool operator() ( const IAlgorithm* ) const = 0 ;
       // virtual destructor
-      virtual ~AlgSelector () ;
+      virtual ~AlgSelector () = default;
     };
     // ========================================================================
     /** @class AlgTypeSelector

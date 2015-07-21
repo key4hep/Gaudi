@@ -11,10 +11,6 @@ Prescaler::Prescaler(const std::string& name, ISvcLocator* pSvcLocator) :
   m_percentPass.verifier().setBounds( 0.0, 100.0 );
 }
 
-Prescaler::~Prescaler( )
-{
-}
-
 StatusCode
 Prescaler::initialize()
 {

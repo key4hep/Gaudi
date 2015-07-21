@@ -36,10 +36,6 @@ AlgContextSvc::AlgContextSvc
   declareProperty ( "Check" , m_check , "Flag to perform more checks" );
 }
 // ============================================================================
-// Standard Destructor
-// ============================================================================
-AlgContextSvc::~AlgContextSvc() {}
-// ============================================================================
 // standard initialization of the service
 // ============================================================================
 StatusCode AlgContextSvc::initialize ()

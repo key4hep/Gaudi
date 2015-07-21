@@ -101,7 +101,7 @@ public:
 protected:
   // ==========================================================================
   // protected and virtual destructor
-  virtual ~IChronoSvc(); ///< protected and virtual destructor
+  virtual ~IChronoSvc() = default; ///< protected and virtual destructor
   // ==========================================================================
 };
 // ============================================================================

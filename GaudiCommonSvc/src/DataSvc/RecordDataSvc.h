@@ -38,7 +38,7 @@ class RecordDataSvc  : public extends1<DataSvc, IIncidentListener> {
   RecordDataSvc(const std::string& name, ISvcLocator* svc);
 
   /// Standard Destructor
-  virtual ~RecordDataSvc();
+  virtual ~RecordDataSvc() = default;
 
  protected:
   /// Load new record into the data store if necessary

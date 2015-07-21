@@ -31,7 +31,7 @@ namespace Gaudi {
     /// Standard Constructor
     Histogram3D(TH3D* rep);
     /// Destructor.
-    virtual ~Histogram3D() {}
+    virtual ~Histogram3D() = default;
     /// Fill bin content
     bool fill ( double x, double y, double z, double weight);
     /// Fast filling method for a given bin. It can be also the over/underflow bin
@@ -50,9 +50,9 @@ namespace Gaudi {
 
   protected:
     // cache sumwx and sumwy  when setting contents since I don't have bin mean
-    double m_sumwx;
-    double m_sumwy;
-    double m_sumwz;
+    double m_sumwx = 0;
+    double m_sumwy = 0;
+    double m_sumwz = 0;
   };
 }
 

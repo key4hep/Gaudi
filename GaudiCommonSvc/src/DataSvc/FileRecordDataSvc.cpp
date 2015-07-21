@@ -40,14 +40,14 @@ class FileRecordDataSvc  : public RecordDataSvc   {
 
   /// Standard Constructor
   FileRecordDataSvc(const std::string& nam, ISvcLocator* svc) : RecordDataSvc(nam,svc) {
-    m_cnvSvc           = 0;
+    m_cnvSvc           = nullptr;
     m_rootName         = "/FileRecords";
     m_incidentName     = "NEW_FILE_RECORD";
     m_saveIncidentName = "SAVE_FILE_RECORD";
     m_persSvcName      = "PersistencySvc/FileRecordPersistencySvc";
   }
   /// Standard Destructor
-  virtual ~FileRecordDataSvc() {}
+  virtual ~FileRecordDataSvc() = default;
 };
 
 // Instantiation of a static factory class used by clients to create instances of this service

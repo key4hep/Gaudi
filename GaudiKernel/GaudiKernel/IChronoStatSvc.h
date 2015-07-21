@@ -42,7 +42,7 @@ public:
   DeclareInterfaceIDMultiBase(IChronoStatSvc,6,0);
 protected:
   // protected and virtual destructor
-  virtual ~IChronoStatSvc(); ///< virtual desctructor
+  virtual ~IChronoStatSvc() = default; ///< virtual desctructor
 };
 // ============================================================================
 // The END

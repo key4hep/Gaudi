@@ -92,7 +92,7 @@ public:
   AuditorSvc( const std::string& name, ISvcLocator* svc );
 
   // Destructor.
-  virtual ~AuditorSvc();
+  virtual ~AuditorSvc() = default;
 
 private:
   // management helper

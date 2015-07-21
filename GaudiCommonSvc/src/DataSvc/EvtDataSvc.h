@@ -22,7 +22,7 @@ public:
   EvtDataSvc(const std::string& name, ISvcLocator* svc);
 
   /// Standard Destructor
-  virtual ~EvtDataSvc();
+  virtual ~EvtDataSvc() = default;
 private:
   SmartIF<IConversionSvc> m_cnvSvc;
 };

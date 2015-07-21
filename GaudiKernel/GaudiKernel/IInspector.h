@@ -29,7 +29,7 @@ protected:
     void* m_P;
     IValue()                      {                            }
   public:
-    virtual ~IValue()             { }
+    virtual ~IValue() = default;
     virtual void release()        {      delete this;          }
     void* ptr()                   {      return m_P;           }
     const void* ptr()  const      {      return m_P;           }

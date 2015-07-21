@@ -50,7 +50,7 @@ public:
   ( const std::string& name ,
     ISvcLocator*       svc  ) ;
   /// Standard Destructor
-  virtual ~AlgContextSvc();
+  virtual ~AlgContextSvc() = default;
 private:
   // default constructor is disabled
   AlgContextSvc () ; ///< no default constructor

@@ -90,7 +90,7 @@ StatusCode RecordDataSvc::reinitialize()    {
 StatusCode RecordDataSvc::finalize()    {
   if( m_incidentSvc ) m_incidentSvc->removeListener(this);
   if( m_cnvSvc ) m_cnvSvc->release();
-  m_cnvSvc = 0;
+  m_cnvSvc = nullptr;
   DataSvc::finalize().ignore();
   return StatusCode::SUCCESS ;
 }
@@ -174,8 +174,4 @@ RecordDataSvc::RecordDataSvc(const string& name,ISvcLocator* svc)
   declareProperty("IncidentName",   m_incidentName = "");
   declareProperty("SaveIncident",   m_saveIncidentName = "SAVE_RECORD");
   declareProperty("PersistencySvc", m_persSvcName = "PersistencySvc/RecordPersistencySvc");
-}
-
-/// Standard Destructor
-RecordDataSvc::~RecordDataSvc()  {
 }

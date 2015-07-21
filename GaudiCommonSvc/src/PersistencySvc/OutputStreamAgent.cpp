@@ -24,10 +24,6 @@ OutputStreamAgent::OutputStreamAgent(OutputStream* OutputStream)
 {
 }
 
-/// Standard Destructor
-OutputStreamAgent::~OutputStreamAgent()  {
-}
-
 /// Analysis callback
 bool OutputStreamAgent::analyse(IRegistry* pRegistry, int level)   {
   return m_OutputStream->collect(pRegistry, level);

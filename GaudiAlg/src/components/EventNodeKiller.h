@@ -20,11 +20,9 @@ public:
   /// Standard constructor
   EventNodeKiller( const std::string& name, ISvcLocator* pSvcLocator );
 
-  virtual ~EventNodeKiller( ); ///< Destructor
+  virtual ~EventNodeKiller( ) = default; ///< Destructor
 
   virtual StatusCode execute   ();    ///< Algorithm execution
-
-protected:
 
 private:
   std::vector<std::string> m_nodes; ///< String property "Nodes"

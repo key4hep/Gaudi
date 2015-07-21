@@ -39,14 +39,13 @@ public:
 
   /// Standard algorithm constructor
   PartitionSwitchAlg(CSTR name, ISvcLocator* pSvcLocator)
-  : base_class(name, pSvcLocator), m_actor(0)
+  : base_class(name, pSvcLocator), m_actor(nullptr)
   {
     declareProperty("Partition",  m_partName);
     declareProperty("Tool",       m_toolType="PartitionSwitchTool");
   }
   /// Standard Destructor
-  virtual ~PartitionSwitchAlg()     {
-  }
+  virtual ~PartitionSwitchAlg() = default;
 
   /// Initialize
   virtual STATUS initialize()   {

@@ -19,7 +19,7 @@ public:
   virtual bool suppressCheck() const = 0;
 
   /// virtual destructor
-  virtual ~IStatusCodeSvc() {}
+  virtual ~IStatusCodeSvc() = default;
 };
 
 #endif

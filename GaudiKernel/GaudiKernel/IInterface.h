@@ -67,7 +67,7 @@ public:
   InterfaceID( const char* name, unsigned long major, unsigned long minor = 0)
     : m_id( hash32(name) ), m_major_ver( major ), m_minor_ver( minor ) { }
   /// destructor
-  ~InterfaceID() { }
+  ~InterfaceID() = default;
 #if defined(GAUDI_V20_COMPAT) && !defined(G21_NEW_INTERFACES)
   /// conversion to unsigned long
   operator unsigned long() const {
@@ -98,9 +98,8 @@ public:
   bool operator == (const InterfaceID& iid ) const { return fullMatch(iid); }
   /// one-at-time hash function
   static unsigned int hash32(const char* key) {
-    unsigned int hash;
-    const char* k;
-    for (hash = 0, k = key; *k; k++) {
+    unsigned int hash = 0;
+    for (const char* k = key; *k; ++k) {
       hash += *k; hash += (hash << 10); hash ^= (hash >> 6);
     }
     hash += (hash << 3); hash ^= (hash >> 11); hash += (hash << 15);
@@ -226,7 +225,7 @@ public:
   };
 
   /// Virtual destructor
-  virtual ~IInterface() {}
+  virtual ~IInterface() = default;
 };
 
 namespace Gaudi {

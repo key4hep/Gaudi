@@ -48,7 +48,7 @@ class RunRecordDataSvc  : public RecordDataSvc   {
   }
 
   /// Standard Destructor
-  virtual ~RunRecordDataSvc() {}
+  virtual ~RunRecordDataSvc() = default;
 
 };
 

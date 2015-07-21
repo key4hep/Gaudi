@@ -54,7 +54,7 @@ protected:
                  ISvcLocator*       svc  );
 
   /// destructor
-  virtual ~GaudiTupleAlg();
+  virtual ~GaudiTupleAlg() = default;
 
   /** standard initialization method
    *  @see  Algorithm

@@ -197,7 +197,7 @@ public:
   virtual StatusCode updateRepRefs(IOpaqueAddress* pAddress, DataObject* pObject) = 0;
 
   /// Virtual destructor
-  virtual ~IConverter() {}
+  virtual ~IConverter() = default;
 
   /// Status code
   enum Status {

@@ -15,7 +15,7 @@ class IMessageSvc;
 class AlgErrorAuditor : virtual public Auditor {
 public:
   AlgErrorAuditor(const std::string& name, ISvcLocator* pSvcLocator);
-  virtual ~AlgErrorAuditor();
+  virtual ~AlgErrorAuditor() = default;
 
   virtual StatusCode initialize();
   virtual StatusCode finalize();

@@ -994,7 +994,7 @@ public:  // non-virtual methods
 
 protected:
 
-  virtual ~IHistoTool() ;
+  virtual ~IHistoTool() = default;
 
 };
 

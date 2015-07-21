@@ -30,7 +30,7 @@ protected:
   virtual void                setType (long typ)            = 0;
 public:
   /// destructor
-  virtual ~INTupleItem() { }
+  virtual ~INTupleItem() = default;
 
   /// Destruct object
   virtual void                release()                     = 0;
