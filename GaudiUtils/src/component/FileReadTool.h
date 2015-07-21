@@ -23,10 +23,7 @@ public:
                 const std::string& name,
                 const IInterface* parent);
 
-  virtual ~FileReadTool();
-
-  //virtual StatusCode initialize();
-  //virtual StatusCode finalize();
+  virtual ~FileReadTool() = default;
 
   virtual std::auto_ptr<std::istream> open(const std::string &url);
 
@@ -36,7 +33,7 @@ public:
 private:
 
   /// Vector of supported protocols.
-  std::vector<std::string> m_protocols;
+  std::vector<std::string> m_protocols = {{{"file"}}};
 
 };
 

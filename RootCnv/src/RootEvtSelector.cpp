@@ -305,7 +305,7 @@ RootEvtSelector::resetCriteria(const string& criteria, Context& context)  const
   RootEvtSelectorContext* ctxt = dynamic_cast<RootEvtSelectorContext*>(&context);
   string db, typ, item, sel, stmt, aut, addr;
   if ( ctxt )  {
-    if ( criteria.substr(0,5) == "FILE " )  {
+    if ( criteria.compare(0,5,"FILE ")==0 )  {
       // The format for the criteria is:
       //        FILE  filename1, filename2 ...
       db = criteria.substr(5);
@@ -318,7 +318,7 @@ RootEvtSelector::resetCriteria(const string& criteria, Context& context)  const
           db = std::move(attrib.value);
         }
         else if(tmp=="OPT")   {
-          if(attrib.value.substr(0, 3) != "REA")   {
+          if(attrib.value.compare(0, 3,"REA") != 0)   {
             log << MSG::ERROR << "Option:\"" << attrib.value << "\" not valid" << endmsg;
             return StatusCode::FAILURE;
           }

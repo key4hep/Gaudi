@@ -27,7 +27,7 @@ extern "C" GAUDI_API int GaudiMain(int argc,char **argv) {
 
   propMgr->setProperty( "JobOptionsPath", opts ).ignore();
 
-  if( opts.substr( opts.length() - 3, 3 ) == ".py" ) {
+  if( opts.compare( opts.length() - 3, 3, ".py" ) == 0 ) {
     propMgr->setProperty( "EvtSel",         "NONE" ).ignore();
     propMgr->setProperty( "JobOptionsType", "NONE" ).ignore();
     propMgr->setProperty( "DLLs",           "['GaudiPython']" ).ignore();

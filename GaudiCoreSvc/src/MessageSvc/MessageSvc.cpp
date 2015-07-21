@@ -227,7 +227,7 @@ void MessageSvc::setupColors(Property& prop) {
 
     if (*itr == "") {
       code = "";
-    } else if (itr->substr(0,1) == "[") {
+    } else if (itr->compare(0,1,"[") == 0) {
       code = "\033" + *itr;
     } else {
       code = "\033[" + colTrans(*itr, 90) + ";1m";

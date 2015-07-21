@@ -115,7 +115,7 @@ int SequencerTimerTool::indexByName ( const std::string& name )
   for ( unsigned int kk=0 ; m_timerList.size() > kk ; kk++ ) {
     beg =  m_timerList[kk].name().find_first_not_of(" \t");
     end =  m_timerList[kk].name().find_last_not_of(" \t");
-    if ( m_timerList[kk].name().substr(beg,end-beg+1) == temp ) return kk;
+    if ( m_timerList[kk].name().compare(beg,end-beg+1,temp) == 0 ) return kk;
   }
   return -1;
 }

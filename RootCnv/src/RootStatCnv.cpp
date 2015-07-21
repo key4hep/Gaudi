@@ -63,7 +63,7 @@ const string RootStatCnv::containerName(IRegistry* pReg) const {
   if ( loc > 0 )  {
     loc = path.find('/',++loc);
     if ( loc > 0 )  {
-      local += path.substr(loc,path.length()-loc);
+      local += path.substr(loc);
     }
   }
   //for(size_t i=0; i<local.length();++i)

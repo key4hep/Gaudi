@@ -144,8 +144,7 @@ std::pair<std::string,std::string> HistogramSvc::i_splitPath(CSTR full)   {
     tmp.erase(tmp.rfind(SEPARATOR),1);
   }
   int sep = tmp.rfind(SEPARATOR);
-  return std::pair<std::string,std::string>
-    (tmp.substr(0,sep),tmp.substr(sep,tmp.length()-sep));
+  return { tmp.substr(0,sep), tmp.substr(sep) };
 }
 //------------------------------------------------------------------------------
 DataObject* HistogramSvc::createPath(CSTR newPath)  {
@@ -158,7 +157,7 @@ DataObject* HistogramSvc::createPath(CSTR newPath)  {
   if (tmpPath.rfind(SEPARATOR) == tmpPath.length()-1) {
     tmpPath.erase(tmpPath.rfind(SEPARATOR),1);
   }
-  DataObject* pObject = 0;
+  DataObject* pObject = nullptr;
   StatusCode sc = DataSvc::findObject(tmpPath, pObject);
   if(sc.isSuccess()) {
     return pObject;

@@ -10,15 +10,12 @@ FileReadTool::FileReadTool( const std::string& type,
   base_class(type, name, parent)
 {
   //declareInterface<IFileAccess>(this);
-  m_protocols.push_back("file");
 }
-
-FileReadTool::~FileReadTool(){}
 
 std::auto_ptr<std::istream> FileReadTool::open(const std::string &url) {
   // remove the optional "file://" from the beginning of the url
   std::string path;
-  if ( url.substr(0,7) == "file://" ) {
+  if ( url.compare(0,7,"file://") == 0 ) {
     path = url.substr(7);
   } else {
     path = url;

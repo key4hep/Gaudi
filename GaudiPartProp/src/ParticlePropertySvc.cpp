@@ -376,12 +376,12 @@ StatusCode ParticlePropertySvc::parse( const std::string& file )
 
     // In SICb cdf file mass and lifetime units are GeV and sec, specify it so
     // that they are converted to Gaudi units (MeV and ns)
-    double mass = atof( mas.c_str() ) * Gaudi::Units::GeV;
-    double tlife = atof( lif.c_str() ) * Gaudi::Units::s;
-    long   ljid = atoi( jid.c_str() );
-    long   lgid = atoi( gid.c_str() );
-    long   lpyt = atoi( pyt.c_str() ) ;
-    double mW = atof( mwi.c_str() ) * Gaudi::Units::GeV ;
+    double mass = std::stod( mas ) * Gaudi::Units::GeV;
+    double tlife = std::stod( lif ) * Gaudi::Units::s;
+    long   ljid = std::stoi( jid );
+    long   lgid = std::stoi( gid );
+    long   lpyt = std::stoi( pyt ) ;
+    double mW = std::stod( mwi ) * Gaudi::Units::GeV ;
 
     // Change the particles that do not correspond to a pdg number
     if ( ljid == 0 ) {
@@ -390,7 +390,7 @@ StatusCode ParticlePropertySvc::parse( const std::string& file )
 
     // add a particle property
     sc = push_back( par, lgid, ljid,
-                    atof( chg.c_str() ), mass, tlife, evt, lpyt, mW ) ;
+                    std::stod( chg ), mass, tlife, evt, lpyt, mW ) ;
     if ( sc.isFailure() )
     {
       log << MSG::ERROR

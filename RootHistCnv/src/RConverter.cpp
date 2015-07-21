@@ -58,19 +58,18 @@ StatusCode RootHistCnv::RConverter::createDirectory(const std::string& loc)
     lpath.push_back(s);
     i = p+1;
   }
-  lpath.push_back( full.substr(i,full.length()-i) );
+  lpath.push_back( full.substr(i) );
 
-  if ( full.substr(0,1) == "/") {
+  if ( full.compare(0,1,"/") == 0 ) {
     gDirectory->cd("/");
   }
 
-  std::list<std::string>::const_iterator litr;
-  for(litr=lpath.begin(); litr!=lpath.end(); ++litr) {
-    cur = *litr;
-    if (! gDirectory->GetKey(litr->c_str()) ) {
-      gDirectory->mkdir(litr->c_str());
+  for(const auto& litr : lpath ) {
+    cur = litr;
+    if (! gDirectory->GetKey(litr.c_str()) ) {
+      gDirectory->mkdir(litr.c_str());
     }
-    gDirectory->cd(litr->c_str());
+    gDirectory->cd(litr.c_str());
   }
 
   gDirectory = gDir;
@@ -98,12 +97,12 @@ std::string RootHistCnv::RConverter::diskDirectory(const std::string& loc)
 	<< " --> no leading /NTUPLES/ or /stat/" << endmsg;
     return loc;
   }
-  //  dir = loc.substr(ll+8,loc.length()-ll-8);
+  //  dir = loc.substr(ll+8);
 
   if (ll == -1) {
     dir = "/";
   } else {
-    dir = loc.substr(ll,loc.length()-ll);
+    dir = loc.substr(ll);
   }
 
   return dir;
@@ -148,7 +147,7 @@ void RootHistCnv::RConverter::setDirectory(const std::string& loc)
 
     i = p+1;
   }
-  gDirectory->cd( full.substr(i,full.length()-i).c_str() );
+  gDirectory->cd( full.substr(i).c_str() );
 }
 
 //-----------------------------------------------------------------------------

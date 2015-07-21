@@ -140,7 +140,7 @@ unsigned long System::loadDynamicLib(const std::string& name, ImageHandle* handl
       // (i.e. without 'lib' and '.so')
       if (dllName.find('/') == std::string::npos) {
 #if defined(__linux) || defined(__APPLE__)
-        if (dllName.substr(0, 3) != "lib")
+        if (dllName.compare(0, 3, "lib") != 0)
           dllName = "lib" + dllName;
 #endif
         if (dllName.find(SHLIB_SUFFIX) == std::string::npos)

@@ -55,7 +55,7 @@ StatusCode RootHistCnv::RFileCnv::createObj( IOpaqueAddress* pAddress,
 
   const std::string* spar = pAddress->par();
   // Strip of store name to get the top level RZ directory
-  std::string oname = spar[1].substr(spar[1].find("/",1)+1, spar[1].length());
+  std::string oname = spar[1].substr(spar[1].find("/",1)+1);
 
   // Protect against multiple instances of TROOT
   if ( 0 == gROOT )   {

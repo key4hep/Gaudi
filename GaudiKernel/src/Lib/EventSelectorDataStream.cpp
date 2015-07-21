@@ -173,7 +173,7 @@ StatusCode EventSelectorDataStream::initialize()   {
     m_selectorType = "EventCollectionSelector";
     svc  = "EvtTupleSvc";
   }
-  else if ( dbtyp.substr(0,4) == "POOL" )    {
+  else if ( dbtyp.compare(0,4,"POOL") == 0 )    {
     m_selectorType = "PoolDbEvtSelector";
   }
   else if ( svc.empty() ) {

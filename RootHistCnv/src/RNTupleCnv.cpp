@@ -253,7 +253,7 @@ bool RootHistCnv::parseName(std::string full, std::string &blk, std::string &var
   int sp;
   if ( (sp=full.find("/")) != -1 ) {
     blk = full.substr(0,sp);
-    var = full.substr(sp+1,full.length());
+    var = full.substr(sp+1);
     return true;
   } else {
     blk = "AUTO_BLK";

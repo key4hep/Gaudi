@@ -29,7 +29,7 @@ bool RootCd(const std::string& full)
 
     i = p+1;
   }
-  gDirectory->cd( full.substr(i,full.length()-i).c_str() );
+  gDirectory->cd( full.substr(i).c_str() );
 
   return true;
 
@@ -62,9 +62,9 @@ bool RootMkdir(const std::string& full)
     lpath.push_back(s);
     i = p+1;
   }
-  lpath.push_back( full.substr(i,full.length()-i) );
+  lpath.push_back( full.substr(i) );
 
-  if ( full.substr(0,1) == "/") {
+  if ( full.compare(0,1,"/") == 0 ) {
     gDirectory->cd("/");
   }
 
@@ -96,11 +96,11 @@ bool RootTrimLeadingDir(std::string &full, std::string dir)
 //-----------------------------------------------------------------------------
 {
 
-  if (dir.substr(0,1) != "/") {
+  if (dir.compare(0,1,"/") != 0) {
     dir.insert(0,"/");
   }
 
-  if (dir.substr(dir.length()-1,1) != "/") {
+  if (dir.compare(dir.length()-1,1,"/") != 0) {
     dir += "/";
   }
 

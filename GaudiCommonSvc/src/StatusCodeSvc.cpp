@@ -249,7 +249,7 @@ StatusCodeSvc::parseFilter(const string& str, string& fnc, string& lib) {
   } else {
     string key,val;
     key = str.substr(0,loc);
-    val = str.substr(loc+1,str.length()-loc-1);
+    val = str.substr(loc+1);
 
     toupper(key);
 

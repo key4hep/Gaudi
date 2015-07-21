@@ -193,7 +193,7 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
         } else if ( "RootInTES" == (*iter)->name() ) {
           m_rootInTES = sp->value();
         } else if ( "GlobalTimeOffset" == (*iter)->name() ) {
-          m_globalTimeOffset = atof( sp->value().c_str() );
+          m_globalTimeOffset = std::stod( sp->value() );
         }
       }
     }

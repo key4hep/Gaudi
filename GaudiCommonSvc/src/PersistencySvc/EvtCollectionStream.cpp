@@ -86,15 +86,17 @@ void EvtCollectionStream::clearItems()     {
 // Add item to output streamer list
 void EvtCollectionStream::addItem(const std::string& descriptor)   {
   MsgStream log(msgSvc(), name());
-  int sep = descriptor.rfind("#");
+  auto  sep = descriptor.rfind("#");
   int level = 0;
-  std::string obj_path (descriptor,0,sep);
-  std::string slevel   (descriptor,sep+1,descriptor.length());
-  if ( slevel == "*" )  {
-    level = 9999999;
-  }
-  else   {
-    level = ::atoi(slevel.c_str());
+  std::string obj_path = descriptor.substr(0,sep);
+  if ( sep != std::string::npos ) {
+    std::string slevel = descriptor.substr(sep+1) ;
+    if ( slevel == "*" )  {
+       level = 9999999;
+    }
+    else   {
+       level = std::stoi(slevel);
+    }
   }
   DataStoreItem* item = new DataStoreItem(obj_path, level);
   log << MSG::INFO << "Adding OutputStream item " << item->path()

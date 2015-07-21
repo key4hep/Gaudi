@@ -139,7 +139,7 @@ namespace Io {
       }
       j = k+1;
     }
-    fs = f.substr(j,f.length()-j);
+    fs = f.substr(j);
     if (s_n.find(fs) == s_n.end()) {
       return Io::INVALID;
     }

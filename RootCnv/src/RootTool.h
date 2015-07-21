@@ -138,16 +138,15 @@ namespace Gaudi {
         size_t id2 = dsc.find("[START=");
         size_t id3 = dsc.find("[LEN=");
         if ( id1 != string::npos && id2 != string::npos && id3 != string::npos ) {
-          string tmp;
           string cnt = dsc.substr(id1+5, id2-1-5);
-          int section_start  = ::atoi((tmp=dsc.substr(id2+7,id3-id2-8)).c_str());
-          int section_length = ::atoi((tmp=dsc.substr(id3+5,dsc.find("]",id3+5)-id3-5)).c_str());
+          int section_start  = std::stoi(dsc.substr(id2+7,id3-id2-8));
+          int section_length = std::stoi(dsc.substr(id3+5,dsc.find("]",id3+5)-id3-5));
           e.first = cnt;
           e.second = ContainerSection(section_start,section_length);
           return true;
         }
       }
-      e.first = "";
+      e.first.clear();
       e.second = ContainerSection(-1,-1);
       return false;
     }

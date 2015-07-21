@@ -440,14 +440,16 @@ OutputStream::findItem(const std::string& path)  {
 void OutputStream::addItem(Items& itms, const std::string& descriptor)   {
   MsgStream log(msgSvc(), name());
   int level = 0;
-  size_t sep = descriptor.rfind("#");
-  std::string obj_path (descriptor,0,sep);
-  std::string slevel   (descriptor,sep+1,descriptor.length());
-  if ( slevel == "*" )  {
-    level = 9999999;
-  }
-  else   {
-    level = atoi(slevel.c_str());
+  auto  sep = descriptor.rfind("#");
+  std::string obj_path = descriptor.substr(0,sep);
+  if ( sep != std::string::npos ) {
+    std::string slevel = descriptor.substr(sep+1);
+    if ( slevel == "*" )  {
+      level = 9999999;
+    }
+    else   {
+      level = std::stoi(slevel);
+    }
   }
   if ( m_verifyItems )  {
     size_t idx = obj_path.find("/",1);

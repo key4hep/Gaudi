@@ -299,7 +299,7 @@ void Message::makeFormattedMsg( const std::string& format ) const
 //#############################################################################
 // ---------------------------------------------------------------------------
 // Routine: decodeFormat
-// Purpose: This the work horse that check for a valid format string.
+// Purpose: This the work horse that checks for a valid format string.
 // ---------------------------------------------------------------------------
 //
 void Message::decodeFormat( const std::string& format ) const
@@ -405,13 +405,7 @@ void Message::setWidth( const std::string& formatArg ) const
   }
 
   // Convert string to int.
-  if ( only_digits ) {
-#ifdef __GNUG__
-    m_width = atoi( formatArg.c_str() );
-#else
-    m_width = atoi( formatArg.data() );
-#endif
-  }
+  if ( only_digits ) m_width = std::stoi( formatArg );
 }
 
 //#############################################################################

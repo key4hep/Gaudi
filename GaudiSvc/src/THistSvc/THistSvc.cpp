@@ -1264,10 +1264,10 @@ THistSvc::parseString(const string& id, string& root, string& rem) const {
   }
 
   if (pos == 0) {
-    parseString(id.substr(1,id.length()),root,rem);
+    parseString(id.substr(1),root,rem);
   } else {
     root = id.substr(0,pos);
-    rem = id.substr(pos+1,id.length());
+    rem = id.substr(pos+1);
   }
 
 }
@@ -1550,7 +1550,7 @@ THistSvc::connect(const std::string& ident) {
       } else if (TAG == "TYP") {
         db_typ = std::move(attrib.value);
       } else if (TAG == "CL") {
-        cl = atoi(attrib.value.c_str());
+        cl = std::stoi(attrib.value);
       } else {
         props.push_back( Prop(attrib.tag, attrib.value));
       }

@@ -21,10 +21,6 @@ AlgorithmManager::AlgorithmManager(IInterface* application):
   addRef(); // Initial count set to 1
 }
 
-// destructor
-AlgorithmManager::~AlgorithmManager() {
-}
-
 // addAlgorithm
 StatusCode AlgorithmManager::addAlgorithm(IAlgorithm* alg) {
   m_listalg.push_back(alg);
@@ -54,10 +50,10 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype,
   }
   std::string actualalgtype(algtype);
   // a '\' in front of the type name prevents alias replacement
-  if ((actualalgtype.size() > 8) && (actualalgtype.substr(0, 8) == "unalias:")) {
+  if ((actualalgtype.size() > 8) && (actualalgtype.compare(0, 8,"unalias:") == 0)) {
     actualalgtype = actualalgtype.substr(8);
   } else {
-    AlgTypeAliasesMap::iterator typeAlias = m_algTypeAliases.find(algtype);
+    auto typeAlias = m_algTypeAliases.find(algtype);
     if (typeAlias != m_algTypeAliases.end()) {
       actualalgtype = typeAlias->second;
     }
