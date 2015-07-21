@@ -277,7 +277,7 @@ inline void GaudiCommon<PBASE>::Assert( const bool        ok  ,
 #define ALG_ERROR( message , code )                                     \
   ( Error( message                                   +                  \
            std::string             ( " [ at line " ) +                  \
-           GaudiAlg::fileLine      (   __LINE__    ) +                  \
+           std::to_string          (   __LINE__    ) +                  \
            std::string             ( " in file '"  ) +                  \
            std::string             (   __FILE__    ) + "']" , code ) )
 
