@@ -1,8 +1,6 @@
 // boost
 #include <boost/numeric/conversion/bounds.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
-#include <boost/lexical_cast.hpp>
 
 // Framework include files
 #include "GaudiKernel/IRegistry.h"
@@ -19,8 +17,6 @@ DECLARE_COMPONENT( SequentialOutputStream )
 
 using namespace std;
 namespace bf = boost::filesystem;
-using boost::lexical_cast;
-using boost::bad_lexical_cast;
 
 //=============================================================================
 SequentialOutputStream::SequentialOutputStream( const string& name,
@@ -83,12 +79,11 @@ void SequentialOutputStream::makeFilename()
    if ( m_numericFilename ) {
       if ( m_events == 0 ) {
          try {
-            m_iFile = lexical_cast< unsigned int >( stem );
-         } catch( const bad_lexical_cast& /* cast */ ) {
-            stringstream stream;
-            stream << "Filename " << filename
-                   << " is not a number, which was needed.";
-            throw GaudiException( stream.str(), "error", StatusCode::FAILURE );
+            m_iFile = std::stoi( stem );
+         } catch( ... ) {
+            string msg = "Filename " +  filename
+                       + " is not a number, which was needed.";
+            throw GaudiException( msg, "error", StatusCode::FAILURE );
          }
       }
       stringstream iFileStream;
@@ -115,9 +110,7 @@ void SequentialOutputStream::makeFilename()
          stem = stem.substr( 0, pos );
       }
 
-      stringstream iFileStream;
-      iFileStream << m_iFile;
-      string iFile( iFileStream.str() );
+      string iFile = std::to_string(m_iFile);
 
       unsigned int length = 0;
       if ( m_nNumbersAdded > iFile.length() ) {

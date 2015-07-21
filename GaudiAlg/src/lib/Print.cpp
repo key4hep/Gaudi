@@ -33,13 +33,7 @@
 // ============================================================================
 // Boost
 // ============================================================================
-#ifdef __ICC
-// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
-//   coming from boost/lexical_cast.hpp
-#pragma warning(disable:2259)
-#endif
 #include "boost/format.hpp"
-#include "boost/lexical_cast.hpp"
 // ============================================================================
 /** @file
  *  Implementation file for functions for namespace GaudiAlg::Print
@@ -187,15 +181,15 @@ namespace
   std::string _print ( const INTuple::ItemContainer& items )
   {
     std::string str ;
-    for ( INTuple::ItemContainer::const_iterator iitem = items.begin() ;
+    for ( auto  iitem = items.begin() ;
           items.end() != iitem ; ++iitem )
     {
       if ( items.begin() != iitem ) { str +="," ; }
       const INTupleItem* item = *iitem ;
-      if ( 0 == item ) { continue ; }
+      if ( !item ) { continue ; }
       str += item->name() ;
       if ( 0 != item->ndim() )
-      { str += '[' + boost::lexical_cast<std::string>( item->ndim() ) + ']'; }
+      { str += '[' + std::to_string( item->ndim() ) + ']'; }
       if ( item->hasIndex() ) { str += "/V" ; }
     }
     return str ;

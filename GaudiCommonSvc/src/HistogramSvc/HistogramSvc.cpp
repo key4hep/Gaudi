@@ -65,11 +65,6 @@ namespace
   // ==========================================================================
 }
 //------------------------------------------------------------------------------
-std::string HistogramSvc::_STR(int i)  {
-  std::ostringstream txt; txt << i;
-  return txt.str();
-}
-//------------------------------------------------------------------------------
 StatusCode HistogramSvc::registerObject(CSTR full, IBaseHistogram* obj)  {
   std::pair<std::string,std::string> split=i_splitPath(full);
   return registerObject(split.first, split.second, obj);

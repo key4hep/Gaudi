@@ -46,7 +46,7 @@ namespace {
   /// Helper function to convert item numbers to path strings
   /// i.e. int -> "/" + int
   inline std::string itemToPath(int item) {
-    return std::string{'/'} + std::to_string(item);
+    return '/' + std::to_string(item);
   }
 
   inline boost::string_ref::size_type find( boost::string_ref s, char c, size_t o ) {

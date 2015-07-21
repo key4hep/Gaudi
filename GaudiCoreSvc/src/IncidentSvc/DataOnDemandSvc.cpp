@@ -31,13 +31,7 @@
 // ============================================================================
 // Boost
 // ============================================================================
-#ifdef __ICC
-// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
-//   TODO: To be removed, since it comes from Boost
-#pragma warning(disable:2259)
-#endif
 #include "boost/format.hpp"
-#include "boost/lexical_cast.hpp"
 #include "GaudiKernel/Property.h"
 // ============================================================================
 // Constructors and Destructor
@@ -45,9 +39,9 @@
 DataOnDemandSvc::DataOnDemandSvc
 ( const std::string& name, ISvcLocator* svc )
   : base_class(name, svc)
-  , m_incSvc   ( 0 )
-  , m_algMgr   ( 0 )
-  , m_dataSvc  ( 0 )
+  , m_incSvc   ( nullptr )
+  , m_algMgr   ( nullptr )
+  , m_dataSvc  ( nullptr )
   //
   , m_trapType    ( "DataFault")
   , m_dataSvcName ( "EventDataSvc" )
@@ -883,15 +877,14 @@ void DataOnDemandSvc::dump
     //
     std::string val ;
     if ( mode ) { val = ( 0 == l.algorithm ) ? "F" : "T" ; }
-    else { val = boost::lexical_cast<std::string>( l.num ) ; }
+    else { val = std::to_string( l.num ) ; }
     //
-    _m[ no_prefix ( alg->first , m_prefix ) ] = std::make_pair ( nam , val ) ;
+    _m[ no_prefix ( alg->first , m_prefix ) ] = { nam , val } ;
   }
   // nodes:
-  for ( NodeMap::const_iterator node = m_nodes.begin() ;
-        m_nodes.end() != node ; ++node )
+  for ( const auto& node : m_nodes )
   {
-    PMap::const_iterator check = _m.find(node->first) ;
+    auto check = _m.find(node.first) ;
     if ( _m.end() != check )
     {
       stream()
@@ -899,7 +892,7 @@ void DataOnDemandSvc::dump
         << " The data item is already activated for '"
         << check->first << "' as '" << check->second.first << "'" << endmsg ;
     }
-    const Node& n = node->second ;
+    const Node& n = node.second ;
     std::string nam = "'" + n.name + "'"  ;
     //
     std::string val ;
@@ -907,9 +900,9 @@ void DataOnDemandSvc::dump
     if ( !mode && 0 == n.num ) { continue ; }
 
     if ( mode ) { val = ( 0 == n.clazz ) ? "F" : "T" ; }
-    else { val = boost::lexical_cast<std::string>( n.num ) ; }
+    else { val = std::to_string( n.num ) ; }
     //
-    _m[ no_prefix ( node->first , m_prefix ) ] = std::make_pair ( nam , val ) ;
+    _m[ no_prefix ( node.first , m_prefix ) ] = { nam , val } ;
   }
   //
   if ( _m.empty() ) { return ; }

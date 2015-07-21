@@ -69,18 +69,15 @@ public:
     declareProperty("AccessForeign",    m_accessForeign = false);
   }
   /// Standard Destructor
-  virtual ~StoreExplorerAlg()     {
-  }
+  virtual ~StoreExplorerAlg()   = default;
 
   template <class T>
   std::string access(T* p)  {
     if ( p )  {
-      std::stringstream s;
-      for (typename T::const_iterator i = p->begin(); i != p->end(); ++i )  {
-        int idx = p->index(*i);
-        s << idx << ":" << (*i)->clID() << ",";
+      std::string result;
+      for (const auto& i : *p ) {
+        result += std::to_string(p->index(i)) + ":" + std::to_string(i->clID()) + ",";
       }
-      std::string result = s.str();
       return result.substr(0, result.length()-2);
     }
     return "Access FAILED.";
