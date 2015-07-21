@@ -19,7 +19,7 @@
 namespace Gaudi { namespace Parsers {
 class Messages {
  public:
-   Messages(MsgStream& stream): stream_(stream), m_currentFilename() {}
+   Messages(MsgStream& stream): stream_(stream) {}
    //Messages(const MsgStream& stream):stream_(stream){}
    void AddInfo(const std::string& info) {
      AddMessage(MSG::INFO, info);

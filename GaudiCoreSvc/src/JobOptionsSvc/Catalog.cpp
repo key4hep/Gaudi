@@ -3,28 +3,35 @@
 // ============================================================================
 // Boost:
 // ============================================================================
-#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 // ============================================================================
 // Namesapce aliases:
 // ============================================================================
 namespace gp = Gaudi::Parsers;
 // ============================================================================
+namespace {
+    constexpr struct select1st_t {
+        template <typename S, typename T> const S& operator()(const std::pair<S,T>& p) const
+        { return p.first; }
+        template <typename S, typename T> S& operator()(std::pair<S,T>& p) const
+        { return p.first; }
+    } select1st {};
+}
+// ============================================================================
 std::vector<std::string> gp::Catalog::ClientNames() const {
     std::vector<std::string> result;
-    BOOST_FOREACH(const CatalogSet::value_type& prop, catalog_) {
-        result.push_back(prop.first);
-    }
+    std::transform( std::begin(catalog_), std::end(catalog_),
+                    std::back_inserter(result), select1st );
     return result;
 }
 // ============================================================================
 bool gp::Catalog::Add(Property* property) {
-  assert( property != NULL);
+  assert( property != nullptr);
   CatalogSet::iterator it = catalog_.find(property->ClientName());
   if (it == catalog_.end()) {
     CatalogSet::mapped_type properties;
     properties.insert(property);
-    catalog_.insert(CatalogSet::value_type(property->ClientName(), properties));
+    catalog_.insert( { property->ClientName(), properties } );
     return true;
   }
   it->second.erase(*property);
@@ -36,21 +43,19 @@ bool gp::Catalog::Add(Property* property) {
 gp::Property* gp::Catalog::Find(const std::string& client,
     const std::string& name) {
   CatalogSet::iterator it = catalog_.find(client);
-  if (it == catalog_.end()) return NULL;
+  if (it == catalog_.end()) return nullptr;
 
-  CatalogSet::mapped_type::iterator pit = std::find_if(it->second.begin(),
-      it->second.end(), Property::Equal(name));
-  if (pit == it->second.end()) return NULL;
-  return &*pit;
+  auto pit = std::find_if(it->second.begin(), it->second.end(),
+                          Property::Equal(name));
+  return  (pit != it->second.end()) ? &*pit : nullptr;
 
 }
 // ============================================================================
 std::string gp::Catalog::ToString() const {
   std::string result;
-  BOOST_FOREACH(const CatalogSet::value_type& client, catalog_) {
-    for (CatalogSet::mapped_type::const_iterator current = client.second.begin();
-        current != client.second.end(); ++current) {
-      result += current->ToString()+"\n";
+  for(const CatalogSet::value_type& client: catalog_) {
+    for (const auto& current : client.second) {
+      result += current.ToString()+"\n";
     }
   }
   return result;
@@ -67,22 +72,21 @@ std::ostream& Gaudi::Parsers::Catalog::fillStream ( std::ostream& o ) const
   size_t nComponents = 0 ;
   size_t nProperties = 0 ;
 
-  BOOST_FOREACH(const CatalogSet::value_type& client, catalog_)   {
+  for(const CatalogSet::value_type& client: catalog_)   {
     o << boost::format("// Properties of '%1%' %|43t|# = %2%" )
         % client.first % client.second.size() << std::endl ;
         ++nComponents ;
         nProperties += client.second.size() ;
-   for (CatalogSet::mapped_type::const_iterator current = client.second.begin();
-       current != client.second.end(); ++current) {
+   for (const auto& current : client.second) {
      o << boost::format("%1%   %|44t| = %2% ; ")
-           % current->FullName()
-           % current->ValueAsString()
-       << std::endl;
+           % current.FullName()
+           % current.ValueAsString()
+       << '\n';
    }
   }
-  o << "// " << std::string(82,'=') << std::endl
+  o << "// " << std::string(82,'=') << '\n'
       << boost::format("// End parser catalog #Components=%1% #Properties=%2%")
-  % nComponents % nProperties     << std::endl
+  % nComponents % nProperties     << '\n'
   << "// " << std::string(82,'=') << std::endl ;
   return o ;
 }
