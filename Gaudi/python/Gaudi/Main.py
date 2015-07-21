@@ -240,14 +240,29 @@ class gaudimain(object) :
 
     ## Instantiate and run the application.
     #  Depending on the number of CPUs (ncpus) specified, it start
-    def run(self, ncpus = None):
+    def run(self, attach_debugger, ncpus = None):
         if not ncpus:
             # Standard sequential mode
-            result = self.runSerial()
+            result = self.runSerial(attach_debugger)
         else:
             # Otherwise, run with the specified number of cpus
             result = self.runParallel(ncpus)
         return result
+
+    def hookDebugger(self,debugger='gdb'):
+        import os
+        self.log.info('attaching debugger to PID ' + str(os.getpid()))
+        pid =  os.spawnvp(os.P_NOWAIT,
+                          debugger, [debugger, '-q', 'python', str(os.getpid())])
+        
+        # give debugger some time to attach to the python process
+        import time
+        time.sleep( 1 )
+        
+        # verify the process' existence (will raise OSError if failed)
+        os.waitpid( pid, os.WNOHANG )
+        os.kill( pid, 0 )
+        return
 
     def basicInit(self):
         '''
@@ -335,7 +350,7 @@ class gaudimain(object) :
         self.ip = self.g._ip
         self.log.debug('gaudiPythonInit: done')
 
-    def runSerial(self) :
+    def runSerial(self,attach_debugger) :
         #--- Instantiate the ApplicationMgr------------------------------
         if (self.mainLoop or
             os.environ.get('GAUDIRUN_USE_GAUDIPYTHON')):
@@ -375,6 +390,8 @@ class gaudimain(object) :
                 self.log.debug('status code: %s',
                                'SUCCESS' if sc.isSuccess() else 'FAILURE')
                 return sc
+
+        if (attach_debugger == True) : self.hookDebugger()
 
         try:
             statuscode = runner(self.g, int(self.ip.getProperty('EvtMax').toString()))
