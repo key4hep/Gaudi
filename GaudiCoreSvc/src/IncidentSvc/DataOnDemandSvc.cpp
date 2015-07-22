@@ -38,39 +38,7 @@
 // ============================================================================
 DataOnDemandSvc::DataOnDemandSvc
 ( const std::string& name, ISvcLocator* svc )
-  : base_class(name, svc)
-  , m_incSvc   ( nullptr )
-  , m_algMgr   ( nullptr )
-  , m_dataSvc  ( nullptr )
-  //
-  , m_trapType    ( "DataFault")
-  , m_dataSvcName ( "EventDataSvc" )
-  , m_partialPath ( true  )
-  , m_dump        ( false )
-  , m_init        ( false )
-  , m_allowInitFailure(false)
-  //
-  , m_algMapping  ()
-  , m_nodeMapping ()
-  //
-  , m_algMap   (   )
-  , m_nodeMap  (   )
-  //
-  , m_updateRequired ( true )
-  , m_prefix         ( "/Event/" )
-  , m_log      ( 0 )
-  , m_total    (   )
-  , m_statAlg  ( 0 )
-  , m_statNode ( 0 )
-  , m_stat     ( 0 )
-  //
-  , m_timer_nodes  ()
-  , m_timer_algs   ()
-  , m_timer_all    ()
-  , m_locked_nodes ( false )
-  , m_locked_algs  ( false )
-  , m_locked_all   ( false )
-  //
+  : base_class( name, svc )
 {
   // ==========================================================================
   declareProperty
@@ -189,19 +157,17 @@ namespace
     // empty  prefix
     if ( prefix.empty() ) { return 0 ; }                    // RETURN
     /// loop over all entries to find the  proper keys
-    for ( typename MAP::iterator it = _map.begin() ; _map.end() != it ; ++it )
-    {
-      if ( 0 != it->first.find(prefix) )  // valid prefix?
-      {
-        std::string key   = prefix + it->first ;
-        std::string value = it->second ;
-        _map.erase ( it ) ;
-        _map[ key ] = value  ;
-        return 1 + add_prefix ( _map , prefix ) ;    // RETURN, recursion
-      }
-    }
+    auto it = std::find_if( _map.begin(), _map.end(), 
+                            [&](typename MAP::const_reference i) {
+                                return i.first.find(prefix)!=0;
+    } );
+    if ( it == _map.end() ) return 0 ;
+    std::string key   = prefix + it->first ;
+    std::string value = it->second ;
+    _map.erase ( it ) ;
+    _map[ key ] = value  ;
+    return 1 + add_prefix ( _map , prefix ) ;    // RETURN, recursion
     //
-    return 0 ;
   }
   // ==========================================================================
   /** get the list of directories for a certain TES location
@@ -231,8 +197,8 @@ namespace
   inline size_t get_dirs ( const MAP& _map, SET& _set )
   {
     size_t size = _set.size() ;
-    for ( typename MAP::const_iterator item = _map.begin() ;
-          _map.end() != item ; ++item ) {  get_dir ( item->first , _set ) ; }
+    for ( const auto& item : _map )
+    {  get_dir ( item.first , _set ) ; }
     return _set.size() - size ;
   }
   // ==========================================================================
@@ -293,47 +259,39 @@ StatusCode DataOnDemandSvc::update ()
   /// add the default prefix
   add_prefix ( m_nodeMap , m_prefix ) ;
   /// get all directories
-  typedef std::set<std::string> Set ;
-  Set dirs ;
+  std::set<std::string> dirs ;
   if ( m_partialPath ){ get_dirs ( m_algMap  , dirs ) ; }
   if ( m_partialPath ){ get_dirs ( m_nodeMap , dirs ) ; }
   //
-  Set::iterator _e = dirs.find("/Event") ;
+  auto _e = dirs.find("/Event") ;
   if ( dirs.end() != _e ) { dirs.erase( _e ) ; }
   // add all directories as nodes
-  for ( Set::const_iterator dir = dirs.begin() ; dirs.end() != dir ; ++dir )
+  for ( const auto& dir : dirs )
   {
-    if ( m_algMap  .end () != m_algMap  .find ( *dir ) ) { continue ; }
-    if ( m_nodeMap .end () != m_nodeMap .find ( *dir ) ) { continue ; }
-    m_nodeMap [*dir] = "DataObject" ;
+    if ( m_algMap  .end () == m_algMap  .find ( dir ) &&
+         m_nodeMap .end () == m_nodeMap .find ( dir ) )
+            m_nodeMap [dir] = "DataObject" ;
   }
   //
   m_algs  .clear  () ;
   m_nodes .clear  () ;
   //
   /// setup algorithms
-  for ( Map::const_iterator ialg = m_algMap.begin() ;
-        m_algMap.end() != ialg ; ++ialg )
+  for ( const auto& alg : m_algMap )
   {
-    if (i_setAlgHandler(ialg->first, ialg->second).isFailure())
+    if (i_setAlgHandler(alg.first, alg.second).isFailure())
       return StatusCode::FAILURE;
   }
   /// setup nodes
-  for ( Map::const_iterator inode = m_nodeMap.begin() ;
-        m_nodeMap.end() != inode ; ++inode )
+  for ( const auto& node : m_nodeMap )
   {
-    i_setNodeHandler(inode->first, inode->second);
+    i_setNodeHandler(node.first, node.second);
   }
   ///
   m_updateRequired = false ;
   //
   return StatusCode::SUCCESS ;
 }
-// ============================================================================
-// destructor
-// ============================================================================
-DataOnDemandSvc::~DataOnDemandSvc()
-{ if ( 0 != m_log      ) { delete m_log      ; m_log      = 0 ; } }
 //=============================================================================
 // Inherited Service overrides:
 //=============================================================================
@@ -400,10 +358,8 @@ StatusCode DataOnDemandSvc::finalize()
   if (m_toolSvc) { // we may not have retrieved the ToolSvc
     // Do not call releaseTool if the ToolSvc was already finalized.
     if (SmartIF<IStateful>(m_toolSvc)->FSMState() > Gaudi::StateMachine::CONFIGURED) {
-      for(std::list<IDODNodeMapper*>::iterator i = m_nodeMappers.begin(); i != m_nodeMappers.end(); ++i)
-        m_toolSvc->releaseTool(*i).ignore();
-      for(std::list<IDODAlgMapper*>::iterator i = m_algMappers.begin(); i != m_algMappers.end(); ++i)
-        m_toolSvc->releaseTool(*i).ignore();
+      for(const auto& i : m_nodeMappers ) m_toolSvc->releaseTool(i).ignore();
+      for(const auto& i : m_algMappers ) m_toolSvc->releaseTool(i).ignore();
     } else {
       warning() << "ToolSvc already finalized: cannot release tools. Check options." << endmsg;
     }
@@ -419,21 +375,19 @@ StatusCode DataOnDemandSvc::finalize()
 StatusCode DataOnDemandSvc::reinitialize()
 {
   // reinitialize the Service Base class
-  if ( 0 != m_incSvc )
+  if ( m_incSvc )
   {
     m_incSvc -> removeListener ( this , m_trapType );
     m_incSvc.reset();
   }
   m_algMgr.reset();
   m_dataSvc.reset();
-  for(std::list<IDODNodeMapper*>::iterator i = m_nodeMappers.begin(); i != m_nodeMappers.end(); ++i)
-      m_toolSvc->releaseTool(*i).ignore();
+  for(const auto& i : m_nodeMappers ) m_toolSvc->releaseTool(i).ignore();
   m_nodeMappers.clear();
-  for(std::list<IDODAlgMapper*>::iterator i = m_algMappers.begin(); i != m_algMappers.end(); ++i)
-    m_toolSvc->releaseTool(*i).ignore();
+  for(const auto& i : m_algMappers ) m_toolSvc->releaseTool(i).ignore();
   m_algMappers.clear();
   m_toolSvc.reset();
-  if ( 0 != m_log     ) { delete m_log ; m_log = 0 ; }
+  m_log.reset();
   //
   StatusCode sc = Service::reinitialize();
   if ( sc.isFailure() )  { return sc; }
@@ -481,16 +435,15 @@ StatusCode DataOnDemandSvc::setup()
     }
 
     // load the node mapping tools
-    std::vector<std::string>::iterator i;
-    IDODNodeMapper *nodetool = 0;
-    for(i = m_nodeMapTools.begin(); i != m_nodeMapTools.end(); ++i) {
-      const StatusCode sc = m_toolSvc->retrieveTool(*i, nodetool);
+    IDODNodeMapper *nodetool = nullptr;
+    for(const auto& i : m_nodeMapTools) {
+      const StatusCode sc = m_toolSvc->retrieveTool(i, nodetool);
       if (sc.isFailure()) return sc;
       m_nodeMappers.push_back(nodetool);
     }
-    IDODAlgMapper *algtool = 0;
-    for(i = m_algMapTools.begin(); i != m_algMapTools.end(); ++i) {
-      const StatusCode sc = m_toolSvc->retrieveTool(*i, algtool);
+    IDODAlgMapper *algtool = nullptr;
+    for(const auto& i : m_algMapTools) {
+      const StatusCode sc = m_toolSvc->retrieveTool(i, algtool);
       if (sc.isFailure()) return sc;
       m_algMappers.push_back(algtool);
     }
@@ -574,10 +527,10 @@ StatusCode DataOnDemandSvc::setupAlgHandlers()
 // ============================================================================
 StatusCode DataOnDemandSvc::configureHandler(Leaf& l)
 {
-  if ( 0 != l.algorithm ) { return StatusCode::SUCCESS ; }
-  if ( 0 == m_algMgr  ) { return StatusCode::FAILURE ; }
+  if ( l.algorithm ) { return StatusCode::SUCCESS ; }
+  if ( ! m_algMgr  ) { return StatusCode::FAILURE ; }
   l.algorithm = m_algMgr->algorithm(l.name, false);
-  if ( 0 != l.algorithm ) { return StatusCode::SUCCESS ; }
+  if ( l.algorithm ) { return StatusCode::SUCCESS ; }
   // create it!
   StatusCode sc = m_algMgr->createAlgorithm ( l.type , l.name , l.algorithm , true ) ;
   if ( sc.isFailure() )
@@ -586,7 +539,7 @@ StatusCode DataOnDemandSvc::configureHandler(Leaf& l)
       << MSG::ERROR
       << "Failed to create algorithm "
       << l.type << "('" << l.name<< "')" << endmsg;
-    l.algorithm = 0 ;
+    l.algorithm = nullptr ;
     return sc ;                                                    // RETURN
   }
   if ( l.algorithm->isInitialized() ) { return StatusCode:: SUCCESS ;}
@@ -598,7 +551,7 @@ StatusCode DataOnDemandSvc::configureHandler(Leaf& l)
       << MSG::ERROR
       << "Failed to initialize algorithm "
       << l.type << "('" << l.name<< "')" << endmsg;
-    l.algorithm = 0 ;
+    l.algorithm = nullptr ;
     return sc ;                                                    // RETURN
   }
   if ( Gaudi::StateMachine::RUNNING == l.algorithm->FSMState() )
@@ -611,7 +564,7 @@ StatusCode DataOnDemandSvc::configureHandler(Leaf& l)
       << MSG::ERROR
       << "Failed to 'run'      algorithm "
       << l.type << "('" << l.name<< "')" << endmsg;
-    l.algorithm = 0 ;
+    l.algorithm = nullptr ;
     return sc ;                                                    // RETURN
   }
   return StatusCode::SUCCESS  ;
@@ -646,23 +599,22 @@ namespace {
   /// type/name given a path and a list of mapping tools.
   class Finder {
     const ToolGetter getter;
-    const std::list<IDODNodeMapper*> &nodes;
-    const std::list<IDODAlgMapper*> &algs;
+    const std::vector<IDODNodeMapper*> &nodes;
+    const std::vector<IDODAlgMapper*> &algs;
     /// Looping algorithm.
-    template <class R, class T>
-    R find(const std::list<T*> &l) const {
-      typename std::list<T*>::const_iterator i;
-      for(i = l.begin(); i != l.end(); ++i) {
-        R result = getter(*i);
+    template <class R, class C>
+    R find(const C& l) const {
+      for(auto& i : l ){
+        auto  result = getter(i);
         if (isGood(result)) return result;
       }
-      return R("");
+      return {""};
     }
   public:
     /// Constructor.
     Finder(const std::string &_path,
-           const std::list<IDODNodeMapper*> &_nodes,
-           const std::list<IDODAlgMapper*> &_algs): getter(_path), nodes(_nodes), algs(_algs) {
+           const std::vector<IDODNodeMapper*> &_nodes,
+           const std::vector<IDODAlgMapper*> &_algs): getter(_path), nodes(_nodes), algs(_algs) {
     }
     /// Find the node type for the requested path.
     inline std::string node() const {
@@ -689,7 +641,7 @@ void DataOnDemandSvc::handle ( const Incident& incident )
   // proper incident type?
   if ( incident.type() != m_trapType ) { return ; }             // RETURN
   const DataIncident* inc = dynamic_cast<const DataIncident*>(&incident);
-  if ( 0 == inc                      ) { return ; }             // RETURN
+  if ( ! inc                         ) { return ; }             // RETURN
   // update if needed!
   if ( m_updateRequired ) { update() ; }
 
@@ -701,10 +653,9 @@ void DataOnDemandSvc::handle ( const Incident& incident )
       << " Location:"  << inc->tag()         << endmsg;
   }
   // ==========================================================================
-  // const std::string& tag = inc->tag();
   Gaudi::StringKey tag ( inc->tag() ) ;
   // ==========================================================================
-  NodeMap::iterator icl = m_nodes.find ( tag ) ;
+  auto icl = m_nodes.find ( tag ) ;
   if ( icl != m_nodes.end() )
   {
     StatusCode sc = execHandler ( tag , icl->second ) ;
@@ -712,7 +663,7 @@ void DataOnDemandSvc::handle ( const Incident& incident )
     return ;                                                        // RETURN
   }
   // ==========================================================================
-  AlgMap::iterator ialg = m_algs.find ( tag ) ;
+  auto ialg = m_algs.find ( tag ) ;
   if ( ialg != m_algs.end() )
   {
     StatusCode sc = execHandler ( tag , ialg->second ) ;
@@ -762,9 +713,9 @@ DataOnDemandSvc::execHandler ( const std::string& tag, Node& n)
 
   Protection p(n.executing);
 
-  DataObject* object= 0 ;
+  std::unique_ptr<DataObject> object;
 
-  if ( n.dataObject )  { object = new DataObject() ; }
+  if ( n.dataObject )  { object.reset( new DataObject() ) ; }
   else
   {
     // try to recover the handler
@@ -779,7 +730,7 @@ DataOnDemandSvc::execHandler ( const std::string& tag, Node& n)
       return StatusCode::FAILURE ;                               // RETURN
     }
 
-    object = reinterpret_cast<DataObject*>(n.clazz->New());
+    object.reset(  reinterpret_cast<DataObject*>(n.clazz->New()) );
 
     if ( !object )
     {
@@ -792,7 +743,7 @@ DataOnDemandSvc::execHandler ( const std::string& tag, Node& n)
     }
   }
   //
-  StatusCode sc = m_dataSvc->registerObject(tag, object );
+  StatusCode sc = m_dataSvc->registerObject(tag, object.release() );
   if ( sc.isFailure() )
   {
     stream()
@@ -815,7 +766,7 @@ DataOnDemandSvc::execHandler(const std::string& tag, Leaf& l)
   //
   if ( l.executing ) { return StatusCode::FAILURE ; }             // RETURN
   //
-  if ( 0 == l.algorithm )
+  if ( ! l.algorithm )
   {
     StatusCode sc = configureHandler ( l ) ;
     if ( sc.isFailure() )
@@ -856,13 +807,10 @@ void DataOnDemandSvc::dump
   if ( m_algs.empty()  &&  m_nodes.empty() ) { return ; }
 
   typedef std::pair<std::string,std::string> Pair ;
-  typedef std::map<std::string,Pair>         PMap ;
-
-  PMap _m ;
-  for ( AlgMap::const_iterator alg = m_algs.begin() ;
-        m_algs.end() != alg ; ++alg )
+  std::map<std::string,Pair>  _m ;
+  for ( auto& alg : m_algs )
   {
-    PMap::const_iterator check = _m.find(alg->first) ;
+    auto check = _m.find(alg.first) ;
     if ( _m.end() != check )
     {
       stream()
@@ -870,16 +818,16 @@ void DataOnDemandSvc::dump
         << " The data item is activated for '"
         << check->first << "' as '" << check->second.first << "'" << endmsg ;
     }
-    const Leaf& l = alg->second ;
+    const Leaf& l = alg.second ;
     std::string nam = ( l.name == l.type ? l.type  : (l.type+"/"+l.name) ) ;
     //
     if ( !mode && 0 == l.num ) { continue ; }
     //
     std::string val ;
-    if ( mode ) { val = ( 0 == l.algorithm ) ? "F" : "T" ; }
+    if ( mode ) { val = ( ! l.algorithm ) ? "F" : "T" ; }
     else { val = std::to_string( l.num ) ; }
     //
-    _m[ no_prefix ( alg->first , m_prefix ) ] = { nam , val } ;
+    _m[ no_prefix ( alg.first , m_prefix ) ] = { nam , val } ;
   }
   // nodes:
   for ( const auto& node : m_nodes )
@@ -911,11 +859,11 @@ void DataOnDemandSvc::dump
   size_t n1 = 0 ;
   size_t n2 = 0 ;
   size_t n3 = 0 ;
-  for  ( PMap::const_iterator it = _m.begin() ; _m.end() != it ; ++it )
+  for  ( const auto& i : _m )
   {
-    n1 = std::max ( n1 , it->first.size()         ) ;
-    n2 = std::max ( n2 , it->second.first.size()  ) ;
-    n3 = std::max ( n3 , it->second.second.size() ) ;
+    n1 = std::max ( n1 , i.first.size()         ) ;
+    n2 = std::max ( n2 , i.second.first.size()  ) ;
+    n3 = std::max ( n3 , i.second.second.size() ) ;
   }
   if ( 10 > n1 ) { n1 = 10 ; }
   if ( 10 > n2 ) { n2 = 10 ; }
@@ -941,20 +889,19 @@ void DataOnDemandSvc::dump
   std::string line = std::string( header.size() , '-' ) ;
   line[0] = ' ' ;
 
-  msg << std::endl << line
-      << std::endl << header
-      << std::endl << line ;
+  msg << '\n' << line
+      << '\n' << header
+      << '\n' << line ;
 
   // make the actual printout:
-  for ( PMap::const_iterator item = _m.begin() ;
-        _m.end() != item ; ++item )
+  for ( const auto& item : _m )
   {
     boost::format fmt( _format)  ;
-    msg << std::endl <<
-      ( fmt % item->first % item->second.first % item->second.second ) ;
+    msg << '\n' <<
+      ( fmt % item.first % item.second.first % item.second.second ) ;
   }
 
-  msg << std::endl << line << endmsg ;
+  msg << '\n' << line << endmsg ;
 
 }
 // ============================================================================

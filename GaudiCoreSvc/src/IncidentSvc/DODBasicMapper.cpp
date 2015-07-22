@@ -44,25 +44,18 @@ DODBasicMapper::DODBasicMapper(const std::string& type, const std::string& name,
                   "Map of algorithms to be used to produce entries (path -> alg_name).");
 }
 
-// ============================================================================
-// Destructor
-// ============================================================================
-DODBasicMapper::~DODBasicMapper() {}
-
 
 Gaudi::Utils::TypeNameString DODBasicMapper::algorithmForPath(const std::string & path)
 {
-  AlgMap::iterator alg = m_algMap.find(path);
+  auto alg = m_algMap.find(path);
   return (alg != m_algMap.end()) ? alg->second : "";
 }
 
 
 std::string DODBasicMapper::nodeTypeForPath(const std::string & path)
 {
-  NodeMap::iterator node = m_nodeMap.find(path);
+  auto node = m_nodeMap.find(path);
   return (node != m_nodeMap.end()) ? node->second : "";
 }
-
-
 
 // ============================================================================

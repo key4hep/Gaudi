@@ -187,7 +187,7 @@ public:
   ( const std::string& name ,                    //       Service instance name
     ISvcLocator*       svc  ) ;                  //  Pointer to service locator
   /// Standard destructor.
-  virtual ~DataOnDemandSvc();                            // Standard destructor
+  virtual ~DataOnDemandSvc() = default;         // Standard destructor
   // ==========================================================================
 protected:
   // ==========================================================================
@@ -239,7 +239,7 @@ protected:
   /// get the message stream
   inline MsgStream& stream () const
   {
-    if ( 0 == m_log ) { m_log = new MsgStream( msgSvc() , name() ) ; }
+    if ( !m_log ) m_log.reset( new MsgStream( msgSvc() , name() ) ); 
     return *m_log;
   }
   /** dump the content of DataOnDemand service
@@ -251,26 +251,26 @@ protected:
 private:
   // ==========================================================================
   /// Incident service
-  SmartIF<IIncidentSvc>     m_incSvc;
+  SmartIF<IIncidentSvc>     m_incSvc = nullptr;
   /// Algorithm manager
-  SmartIF<IAlgManager>      m_algMgr;
+  SmartIF<IAlgManager>      m_algMgr = nullptr;
   /// Data provider reference
-  SmartIF<IDataProviderSvc> m_dataSvc;
+  SmartIF<IDataProviderSvc> m_dataSvc = nullptr;
   /// Data provider reference
   SmartIF<IToolSvc>         m_toolSvc;
   /// Trap name
-  std::string       m_trapType;
+  std::string       m_trapType = "DataFault";
   /// Data service name
-  std::string       m_dataSvcName;
+  std::string       m_dataSvcName = "EventDataSvc" ;
   /// Flag to allow for the creation of partial leaves
-  bool              m_partialPath;
+  bool              m_partialPath = true;
   /// flag to force the printout
-  bool              m_dump ;
+  bool              m_dump  = false;
   /// flag to warm up the configuration
-  bool              m_init ;
+  bool              m_init  = false;
   /// flag to allow DataOnDemand initialization to succeed even if the
   /// (pre)initialization of the algorithms fails (m_init).
-  bool              m_allowInitFailure;
+  bool              m_allowInitFailure = false;
   /// Mapping to algorithms
   Setup             m_algMapping;
   /// Mapping to nodes
@@ -285,26 +285,26 @@ private:
   Map                m_algMap          ; // { 'data' : 'algorithm' }
   /// the major configuration property  { 'data' : 'type' }
   Map                m_nodeMap         ; // { 'data' : 'type' }
-  bool               m_updateRequired  ;
-  std::string        m_prefix          ;
-  mutable MsgStream* m_log             ;
+  bool               m_updateRequired = true ;
+  std::string        m_prefix         = "/Event/"  ;
+  mutable std::unique_ptr<MsgStream> m_log ;
   // ==========================================================================
   ChronoEntity       m_total           ;
-  ulonglong          m_statAlg         ;
-  ulonglong          m_statNode        ;
-  ulonglong          m_stat            ;
+  ulonglong          m_statAlg        = 0;
+  ulonglong          m_statNode       = 0;
+  ulonglong          m_stat           = 0;
   // ==========================================================================
   ChronoEntity       m_timer_nodes     ;
   ChronoEntity       m_timer_algs      ;
   ChronoEntity       m_timer_all       ;
-  bool               m_locked_nodes    ;
-  bool               m_locked_algs     ;
-  bool               m_locked_all      ;
+  bool               m_locked_nodes   = false ;
+  bool               m_locked_algs    = false ;
+  bool               m_locked_all     = false ;
   // ==========================================================================
   std::vector<std::string> m_nodeMapTools;
-  std::list<IDODNodeMapper *> m_nodeMappers;
+  std::vector<IDODNodeMapper *> m_nodeMappers;
   std::vector<std::string> m_algMapTools;
-  std::list<IDODAlgMapper *> m_algMappers;
+  std::vector<IDODAlgMapper *> m_algMappers;
 };
 // ============================================================================
 
