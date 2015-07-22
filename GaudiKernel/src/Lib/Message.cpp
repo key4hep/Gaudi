@@ -180,7 +180,11 @@ const std::string Message::getDefaultFormat()
 //
 void Message::setFormat( std::string format ) const
 {
-    m_format = ( format.empty() ? DEFAULT_FORMAT : std::move(format) );
+    if (LIKELY(!format.empty())) {
+        m_format = std::move(format);
+    } else {
+        m_format = DEFAULT_FORMAT;
+    }
 }
 
 //#############################################################################
