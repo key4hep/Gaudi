@@ -100,16 +100,16 @@ namespace
     double maxY ( const bool withErr ) const
     {
       double _m  = std::max ( under.height , over.height  ) ;
-      for ( Bins::const_iterator ib = bins.begin() ; bins.end() != ib ; ++ib )
-      { _m = std::max ( _m  , withErr ?  ib->height +  ib->error :  ib->height ) ; }
+      for ( const auto& ib : bins )
+      { _m = std::max ( _m  , withErr ?  ib.height +  ib.error :  ib.height ) ; }
       return _m ;
     }
     /// get Y-min
     double minY ( const bool withErr ) const
     {
       double _m  = std::min ( under.height , over.height  ) ;
-      for ( Bins::const_iterator ib = bins.begin() ; bins.end() != ib ; ++ib )
-      { _m = std::min ( _m  , withErr ?  ib->height - ib->error :  ib->height ) ; }
+      for ( const auto& ib : bins )
+      { _m = std::min ( _m  , withErr ?  ib.height - ib.error :  ib.height ) ; }
       return _m ;
     }
     /// rebin the histogram
@@ -133,8 +133,8 @@ namespace
     // find "null-bin", if any
     int nullBin () const
     {
-      for ( Bins::const_iterator ib = bins.begin() ; bins.end() != ib + 1 ; ++ib )
-      { if ( ib->lower <= 0 && 0 < (ib+1)->lower ) { return ib - bins.begin() ; } }
+      for ( auto ib = bins.cbegin() ; bins.cend() != ib + 1 ; ++ib )
+      { if ( ib->lower <= 0 && 0 < (ib+1)->lower ) { return ib - bins.cbegin() ; } }
       return -1 ;
     }
     // ========================================================================
@@ -521,14 +521,14 @@ namespace
       //
       std::string line2 ;
       //
-      for  ( Histo::Bins::const_iterator ibin = histo.bins.begin() ;
-             histo.bins.end() != ibin ; ++ibin )
+      for  ( auto ibin = histo.bins.cbegin() ;
+             histo.bins.cend() != ibin ; ++ibin )
       {
         //char symb = ' ' ;
-        const int i = ibin - histo.bins.begin () ;
+        const int i = ibin - histo.bins.cbegin () ;
         //
         const bool xnull =
-          ibin->lower <= 0 && ( ibin + 1 ) != histo.bins.end() && 0 < (ibin+1)->lower ;
+          ibin->lower <= 0 && ( ibin + 1 ) != histo.bins.cend() && 0 < (ibin+1)->lower ;
         const bool xlab  =  iNull == i % xSkip ;
         //
         char symb = symbBin ( *ibin, yLow , yHigh , ynull , errors ) ;
@@ -561,8 +561,8 @@ namespace
 
     // get x-labels
     std::vector<std::string> xlabels ;
-    for ( Histo::Bins::const_iterator ib = histo.bins.begin() ; histo.bins.end() != ib ; ++ib )
-    { xlabels.push_back ( xLabel ( ib->lower )  ) ; }
+    for ( auto ib = histo.bins.cbegin() ; histo.bins.cend() != ib ; ++ib )
+    {  xlabels.push_back ( xLabel ( ib->lower ) ) ; }
     // overflow& underflow  label
     const std::string oLabel = xLabel ( histo.over.lower  ) ;
     const std::string uLabel = xLabel ( histo.under.lower ) ;
@@ -583,9 +583,9 @@ namespace
       if ( uLabel.size() > yLine ) { line += uLabel[yLine] ; }
       else                         { line += ' '           ; }
       //
-      for  ( Histo::Bins::const_iterator ibin = histo.bins.begin() ; histo.bins.end() != ibin ; ++ibin )
+      for  ( auto ibin = histo.bins.cbegin() ; histo.bins.cend() != ibin ; ++ibin )
       {
-        int ib  = ibin - histo.bins.begin() ;
+        int ib  = ibin - histo.bins.cbegin() ;
         const bool xlab  =  ( iNull == ib % xSkip ) ;
         if ( xlab && yLine < xlabels[ib].size() ) { line += xlabels[ib][yLine] ; }
         else { line += ' ' ; }
@@ -625,7 +625,7 @@ std::ostream& Gaudi::Utils::Histos::histoDump_
   const bool                errors  )
 {
   stream << std::endl ;
-  if ( 0 == histo     ) { return stream ; }  // RETURN
+  if ( !histo     ) { return stream ; }  // RETURN
   Histo hist ;
   StatusCode sc = _getHisto ( histo , hist ) ;
   if ( sc.isFailure() ) { return stream ; }  // RETURN
@@ -832,11 +832,11 @@ std::ostream& Gaudi::Utils::Histos::histoDump_
   const bool                errors )
 {
   const TProfile* profile = dynamic_cast<const TProfile*> ( histo ) ;
-  if ( 0 != profile )
+  if ( profile )
   { return histoDump_ ( profile , stream , width , height ) ; }
   //
   stream << std::endl ;
-  if ( 0 == histo     ) { return stream ; }  // RETURN
+  if ( !histo     ) { return stream ; }  // RETURN
   Histo hist ;
   StatusCode sc = _getHisto ( histo , hist ) ;
   if ( sc.isFailure() ) { return stream ; }  // RETURN
@@ -904,7 +904,7 @@ std::ostream& Gaudi::Utils::Histos::histoDump_
   const std::size_t         height )
 {
   stream << std::endl ;
-  if ( 0 == histo     ) { return stream ; }  // RETURN
+  if ( ! histo     ) { return stream ; }  // RETURN
   Histo hist ;
   StatusCode sc = _getHisto ( histo , hist , true ) ;
   if ( sc.isFailure() ) { return stream ; }  // RETURN
@@ -982,9 +982,6 @@ std::string Gaudi::Utils::Histos::histoDump
   return stream.str() ;
 }
 // ============================================================================
-
-
-
 
 // ============================================================================
 // The END

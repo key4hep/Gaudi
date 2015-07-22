@@ -23,12 +23,12 @@ public:
                 const std::string& name,
                 const IInterface* parent);
 
-  virtual ~FileReadTool() = default;
+  ~FileReadTool() override = default;
 
-  virtual std::auto_ptr<std::istream> open(const std::string &url);
+  std::auto_ptr<std::istream> open(const std::string &url) override;
 
   /// Protocols supported by the instance.
-  virtual const std::vector<std::string> &protocols() const;
+  const std::vector<std::string> &protocols() const override;
 
 private:
 
