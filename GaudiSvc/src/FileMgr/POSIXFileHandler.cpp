@@ -53,7 +53,7 @@ POSIXFileHandler::openPOSIXFile(const std::string& n, const Io::IoFlags& f,
   if (f.isRead()) {
     m = "r";
   } else if ( f.isWrite() ) {
-    if ( (f & Io::APPEND) != 0) {
+    if ( (f & Io::APPEND) ) {
       m = "a";
     } else {
       m = "w";
@@ -75,7 +75,7 @@ POSIXFileHandler::openPOSIXFile(const std::string& n, const Io::IoFlags& f,
   ierr = errno;
   ptr = (void*) fp;
 
-  if (ptr == 0) {
+  if (!ptr) {
     m_log << MSG::ERROR << "Error calling fdopen on \"" << n << "\": "
 	  << strerror(ierr)
 	  << endmsg;
