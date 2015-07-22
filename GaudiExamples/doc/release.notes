@@ -2,6 +2,10 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-07-22 - Marco Clemencic
+ - Changed the test GaudiExamples.CloneWithPrivateTools to QMTest to allow
+   debugging.
+
 ! 2015-07-21 - Marco Clemencic
  - Fixed some unchecked StatusCode.
  - Fixed some tests and references.
