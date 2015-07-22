@@ -181,8 +181,8 @@ namespace
   std::string _print ( const INTuple::ItemContainer& items )
   {
     std::string str ;
-    for ( auto  iitem = items.begin() ;
-          items.end() != iitem ; ++iitem )
+    for ( auto iitem = items.cbegin() ;
+          items.cend() != iitem ; ++iitem )
     {
       if ( items.begin() != iitem ) { str +="," ; }
       const INTupleItem* item = *iitem ;
