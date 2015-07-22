@@ -14,13 +14,14 @@
 #define GAUDI_RANDOMGENSVC_RNDMGEN_CPP
 
 #include <cfloat>
+#include <algorithm>
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IRndmEngine.h"
 #include "RndmGen.h"
 
 /// Standard Constructor
-RndmGen::RndmGen(IInterface* engine) : m_params(0), m_engine(0)   {
-  if ( 0 != engine )  {
+RndmGen::RndmGen(IInterface* engine) : m_engine(nullptr)   {
+  if ( engine )  {
     engine->queryInterface(IRndmEngine::interfaceID(), pp_cast<void>(&m_engine)).ignore();
   }
 }
@@ -28,19 +29,15 @@ RndmGen::RndmGen(IInterface* engine) : m_params(0), m_engine(0)   {
 /// Standard Destructor
 RndmGen::~RndmGen()   {
   if ( m_engine ) m_engine->release();
-  m_engine = 0;
-  if ( m_params ) delete m_params;
-  m_params = 0;
 }
 
 /// Initialize the generator
 StatusCode RndmGen::initialize(const IRndmGen::Param& par)   {
-  m_params = par.clone();
-  return (0==m_engine) ? StatusCode::FAILURE : StatusCode::SUCCESS;
+  m_params.reset(par.clone());
+  return (!m_engine) ? StatusCode::FAILURE : StatusCode::SUCCESS;
 }
 
-/// Initialize the RndmGen
-StatusCode RndmGen::finalize()   {
+StatusCode RndmGen::finalize() {
   return StatusCode::SUCCESS;
 }
 
@@ -51,14 +48,9 @@ double RndmGen::shoot()  const  {
 
 /// Multiple shots returning vector with random number according to specified distribution.
 StatusCode RndmGen::shootArray( std::vector<double>& array, long howmany, long start) const {
-  if ( 0 != m_engine )    {
-    long cnt = start;
-    array.resize(start+howmany);
-    for ( long i = start, num = start+howmany; i < num; i++ )     {
-      array[cnt++] = shoot();
-    }
-    return StatusCode::SUCCESS;
-  }
-  return StatusCode::FAILURE;
+  if ( !m_engine ) return StatusCode::FAILURE;
+  array.resize(start+howmany);
+  std::generate_n( std::next( std::begin(array), start ), howmany, [&](){ return this->shoot(); } );
+  return StatusCode::SUCCESS;
 }
 

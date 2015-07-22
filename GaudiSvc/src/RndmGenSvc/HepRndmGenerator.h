@@ -28,35 +28,29 @@ namespace HepRndm  {
   public:
     typedef TYPE Parameters;
   protected:
-    CLHEP::HepRandomEngine* m_hepEngine;
-    TYPE*            m_specs;
+    CLHEP::HepRandomEngine* m_hepEngine = nullptr;
+    TYPE*            m_specs = nullptr;
   public: 
-    Generator(IInterface* engine);
-    virtual ~Generator();
+    Generator(IInterface* engine) : RndmGen(engine) {} 
+    ~Generator() override= default;
     /// Initialize the generator
-    virtual StatusCode initialize(const IRndmGen::Param& par);
+    StatusCode initialize(const IRndmGen::Param& par) override;
     /// Single shot
-    virtual double shoot()  const;
+    double shoot()  const override;
   };
 
-  template <class TYPE> Generator<TYPE>::Generator(IInterface* engine)
-  : RndmGen (engine), m_hepEngine(0), m_specs(0)    {
-  }
-
-  template <class TYPE> Generator<TYPE>::~Generator()    {  
-  }
 
   /// Initialize the generator
   template <class TYPE> StatusCode Generator<TYPE>::initialize(const IRndmGen::Param& par)   {
     StatusCode status = RndmGen::initialize(par);
     if ( status.isSuccess() )   {
       try   {
-        m_specs = dynamic_cast<TYPE*>(m_params);
-        if ( 0 != m_specs )  {
+        m_specs = dynamic_cast<TYPE*>(m_params.get());
+        if ( m_specs )  {
           BaseEngine* engine = dynamic_cast<BaseEngine*>(m_engine);
-          if ( 0 != engine )    {
+          if ( engine )    {
             m_hepEngine = engine->hepEngine();
-            if ( 0 != m_hepEngine )   {
+            if ( m_hepEngine )   {
               return StatusCode::SUCCESS;
             }
           }
