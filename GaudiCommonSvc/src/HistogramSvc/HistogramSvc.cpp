@@ -52,9 +52,9 @@ namespace
   ( const DataObject*  obj ,
     const std::string& rel )
   {
-    if ( 0 == obj      ) { return rel  ; }
+    if ( !obj      ) { return rel  ; }
     IRegistry* reg = obj->registry() ;
-    if ( 0 == reg      ) { return rel  ; }
+    if ( !reg      ) { return rel  ; }
     const std::string& name = reg->identifier() ;
     //
     if ( rel  .empty() ) { return histoAddr ( name ) ; }
@@ -178,29 +178,27 @@ DataObject* HistogramSvc::createPath(CSTR newPath)  {
 }
 //------------------------------------------------------------------------------
 DataObject* HistogramSvc::createDirectory(CSTR parentDir,CSTR subDir) {
-  DataObject*  directory = new DataObject();
-  if (0 != directory)  {
+  std::unique_ptr<DataObject>  directory{ new DataObject() };
+  if (directory)  {
     DataObject* pnode;
     StatusCode status = DataSvc::retrieveObject(parentDir, pnode);
     if(status.isSuccess()) {
-      status = DataSvc::registerObject(pnode, subDir, directory);
+      status = DataSvc::registerObject(pnode, subDir, directory.get());
       if (!status.isSuccess())   {
         MsgStream log(msgSvc(), name());
         log << MSG::ERROR << "Unable to create the histogram directory: "
                           << parentDir << "/" << subDir << endmsg;
-        delete directory;
-        return 0;
+        return nullptr;
       }
     }
     else {
       MsgStream log(msgSvc(), name());
       log << MSG::ERROR << "Unable to create the histogram directory: "
                         << parentDir << "/" << subDir << endmsg;
-      delete directory;
-      return 0;
+      return nullptr;
     }
   }
-  return directory;
+  return directory.release();
 }
 //------------------------------------------------------------------------------
 HistogramSvc::~HistogramSvc()   {
@@ -266,11 +264,12 @@ StatusCode HistogramSvc::initialize()   {
   StatusCode status = DataSvc::initialize();
   // Set root object
   if (status.isSuccess()) {
-    DataObject* rootObj = new DataObject();
-    status = setRoot("/stat", rootObj);
-    if (!status.isSuccess()) {
+    std::unique_ptr<DataObject> rootObj{ new DataObject() };
+    status = setRoot("/stat", rootObj.get());
+    if (status.isSuccess()) { 
+        rootObj.release();
+    } else {
       log << MSG::ERROR << "Unable to set hstogram data store root." << endmsg;
-      delete rootObj;
       return status;
     }
     IConversionSvc* svc = 0;
@@ -353,7 +352,7 @@ HistogramSvc::sliceY(CSTR name,const IHistogram2D& h,int indexX1,int indexX2) {
 bool HistogramSvc::destroy( IBaseHistogram* hist ) {
   StatusCode sc = unregisterObject( dynamic_cast<IHistogram*>(hist) );
   if ( !sc.isSuccess() ) return false;
-  if ( hist ) delete hist;
+  delete hist;
   return true;
 }
 // ============================================================================
@@ -384,10 +383,8 @@ AIDA::IHistogram1D* HistogramSvc::book
 // ============================================================================
 // constructor
 // ============================================================================
-HistogramSvc::HistogramSvc(CSTR nam, ISvcLocator* svc)
+HistogramSvc::HistogramSvc(const std::string& nam, ISvcLocator* svc)
   : base_class(nam, svc)
-  , m_defs1D ()
-  , m_mods1D ()
 {
   // Properties can be declared here
   m_rootName = "/stat";
@@ -408,8 +405,7 @@ namespace
   inline size_t removeLeading
   ( HistogramSvc::Histo1DMap& m , const std::string& lead = "/stat/")
   {
-    for ( HistogramSvc::Histo1DMap::iterator it = m.begin() ;
-          m.end() != it ; ++it )
+    for ( auto it = m.begin() ; m.end() != it ; ++it )
     {
       if ( 0 == it->first.find ( lead ) )
       {

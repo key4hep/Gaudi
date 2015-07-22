@@ -9,6 +9,7 @@
 #include "GaudiKernel/HistogramBase.h"
 #include "AIDA/IHistogram3D.h"
 #include <stdexcept>
+#include <memory>
 
 /*
  *    Gaudi namespace
@@ -30,11 +31,15 @@ namespace Gaudi {
   public:
     typedef Generic3D<INTERFACE,IMPLEMENTATION> Base;
     /// Default constructor
-    Generic3D() : m_rep(0)  {}
+    Generic3D() = default;
+  protected:
+    /// constructor
+    Generic3D(IMPLEMENTATION* p) : m_rep(p) { }
+  public:
     /// Destructor.
-    virtual ~Generic3D()    { delete m_rep; }
+    ~Generic3D() override { } // TODO: replacing { } with '= default;' crashes gcc 4.8.1 ;-(
     /// ROOT object implementation
-    TObject* representation() const                      { return m_rep;                       }
+    TObject* representation() const                      { return m_rep.get();                       }
     /// Adopt ROOT histogram representation
     virtual void adoptRepresentation(TObject* rep);
 
@@ -74,13 +79,13 @@ namespace Gaudi {
 
     /// The weighted mean along the x axis of a given bin.
     double binMeanX(int indexX,int ,int ) const
-    { return (m_rep->GetXaxis())->GetBinCenter( rIndexX(indexX) ); }
+    { return m_rep->GetXaxis()->GetBinCenter( rIndexX(indexX) ); }
     /// The weighted mean along the y axis of a given bin.
     double binMeanY(int,int indexY,int  ) const
-    { return (m_rep->GetYaxis())->GetBinCenter( rIndexY(indexY) ); }
+    { return m_rep->GetYaxis()->GetBinCenter( rIndexY(indexY) ); }
     /// The weighted mean along the z axis of a given bin.
     double binMeanZ(int ,int ,int indexZ) const
-    { return (m_rep->GetYaxis())->GetBinCenter( rIndexY(indexZ) ); }
+    { return m_rep->GetYaxis()->GetBinCenter( rIndexY(indexZ) ); }
     /// Number of entries in the corresponding bin (ie the number of times fill was calle d for this bin).
     int binEntries(int indexX,int indexY,int indexZ) const    {
       if (binHeight(indexX, indexY, indexZ)<=0) return 0;
@@ -178,11 +183,9 @@ namespace Gaudi {
     /// Add to this Histogram3D the contents of another IHistogram3D.
     virtual bool  add ( const INTERFACE & hist ) {
       const Base* p = dynamic_cast<const Base*>(&hist);
-      if ( p )  {
-        m_rep->Add(p->m_rep);
-        return true;
-      }
-      throw std::runtime_error("Cannot add profile histograms of different implementations.");
+      if ( !p )  throw std::runtime_error("Cannot add profile histograms of different implementations.");
+      m_rep->Add(p->m_rep.get());
+      return true;
     }
 
     // overwrite extraentries
@@ -210,11 +213,11 @@ namespace Gaudi {
     /// Object annotations
     mutable AIDA::Annotation m_annotation;
     /// Reference to underlying implementation
-    IMPLEMENTATION*          m_rep;
+    std::unique_ptr<IMPLEMENTATION>          m_rep;
     // class type
     std::string              m_classType;
     // cache sumEntries (allEntries)   when setting contents since Root can't compute by himself
-    int                      m_sumEntries;
+    int                      m_sumEntries = 0;
   }; // end class IHistogram3D
 
   template <class INTERFACE, class IMPLEMENTATION>
@@ -235,7 +238,7 @@ namespace Gaudi {
   }
   template <class INTERFACE, class IMPLEMENTATION>
   int Generic3D<INTERFACE,IMPLEMENTATION>::entries() const                       {
-    return (int)m_rep->GetEntries();
+    return m_rep->GetEntries();
   }
 
   template <class INTERFACE, class IMPLEMENTATION>

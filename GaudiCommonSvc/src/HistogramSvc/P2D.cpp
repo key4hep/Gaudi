@@ -27,12 +27,11 @@ namespace Gaudi {
   class GAUDI_API Profile2D : public DataObject, public Generic2D<AIDA::IProfile2D,TProfile2D>   {
   public:
     /// Default Constructor
-    Profile2D() {
+    Profile2D()  : Base( new TProfile2D() )
+    {
       m_classType = "IProfile2D";
-      m_rep = new TProfile2D();
       m_rep->SetErrorOption("s");
       m_rep->SetDirectory(0);
-      m_sumEntries = 0;
     }
     /// Default Constructor with representation object
     Profile2D(TProfile2D* rep);
@@ -70,15 +69,11 @@ namespace Gaudi {
   template <>
   void Generic2D<AIDA::IProfile2D,TProfile2D>::adoptRepresentation(TObject* rep) {
     TProfile2D* imp = dynamic_cast<TProfile2D*>(rep);
-    if ( imp )  {
-      if ( m_rep ) delete m_rep;
-      m_rep = imp;
-      m_xAxis.initialize(m_rep->GetXaxis(),true);
-      m_yAxis.initialize(m_rep->GetYaxis(),true);
-      setTitle(m_rep->GetTitle());
-      return;
-    }
-    throw std::runtime_error("Cannot adopt native histogram representation.");
+    if ( !imp )  throw std::runtime_error("Cannot adopt native histogram representation.");
+    m_rep.reset( imp );
+    m_xAxis.initialize(m_rep->GetXaxis(),true);
+    m_yAxis.initialize(m_rep->GetYaxis(),true);
+    setTitle(m_rep->GetTitle());
   }
 }
 
@@ -101,7 +96,6 @@ std::pair<DataObject*,AIDA::IProfile2D*> Gaudi::createProf2D(const AIDA::IProfil
 }
 
 Gaudi::Profile2D::Profile2D(TProfile2D* rep)    {
-  m_rep = 0;
   m_classType = "IProfile2D";
   rep->SetDirectory(0);
   adoptRepresentation(rep);

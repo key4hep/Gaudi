@@ -4,6 +4,7 @@
 #include "AIDA_visibility_hack.h"
 
 #include <stdexcept>
+#include <memory>
 #include "Axis.h"
 #include "Annotation.h"
 #include "GaudiKernel/HistogramBase.h"
@@ -30,85 +31,89 @@ namespace Gaudi {
   public:
     typedef Generic1D<INTERFACE,IMPLEMENTATION> Base;
     /// Default constructor
-    Generic1D() : m_rep(0) {}
+    Generic1D() = default;
+  protected:
+    /// constructor
+    Generic1D(IMPLEMENTATION* p) : m_rep(p) { }
+  public:
     /// Default destructor
-    virtual ~Generic1D()                                 { delete m_rep;                       }
+    ~Generic1D() override { } // TODO: replacing { } with '= default;' crashes gcc 4.8.1 ;-(
     /// The AIDA user-level unterface leaf class type
-    virtual const std::string& userLevelClassType() const{ return m_classType;                 }
+    virtual const std::string& userLevelClassType() const { return m_classType;                 }
     /// Manual cast by class name
-    virtual void* cast(const std::string& cl) const;
+    void* cast(const std::string& cl) const override;
     /// ROOT object implementation
-    TObject* representation() const                      { return m_rep;                       }
+    TObject* representation() const                      { return m_rep.get();                 }
     /// Adopt ROOT histogram representation
-    virtual void adoptRepresentation(TObject*rep);
+    void adoptRepresentation(TObject*rep) override;
     /// Get the title of the object
-    virtual std::string title() const                    { return m_annotation.value("Title"); }
+    std::string title() const override                   { return m_annotation.value("Title"); }
     /// Set the title of the object
-    virtual bool setTitle(const std::string & title);
+    bool setTitle(const std::string & title) override;
     /// object name
     std::string name() const                             { return m_annotation.value("Name");  }
     /// Set the name of the object
     bool setName( const std::string& newName );
     /// Access annotation object
-    virtual AIDA::IAnnotation & annotation()             { return m_annotation;                }
+    AIDA::IAnnotation & annotation() override            { return m_annotation;                }
     /// Access annotation object (cons)
-    virtual const AIDA::IAnnotation & annotation() const { return m_annotation;                }
+    const AIDA::IAnnotation & annotation() const override { return m_annotation;                }
     /// Access to axis object
     Axis & axis ()                                       { return m_axis;                      }
     /// Get the x axis of the IHistogram1D.
     const Axis & axis () const                           { return m_axis;                      }
 
     /// Get the number or all the entries
-    virtual int entries() const                   { return (int)m_rep->GetEntries();           }
+    int entries() const override                  { return m_rep->GetEntries();           }
     /// Get the number or all the entries, both in range and underflow/overflow bins of the IProfile.
-    virtual int allEntries() const                { return int(m_rep->GetEntries());           }
+    int allEntries() const override               { return m_rep->GetEntries();           }
     /// Get the number of entries in the underflow and overflow bins.
-    virtual int extraEntries() const;
+    int extraEntries() const override;
     /// Number of entries in the corresponding bin (ie the number of times fill was called for this bin).
-    virtual int  binEntries ( int index ) const;
+    int  binEntries ( int index ) const override;
     // spread
     virtual double binRms(int index) const;
     /// Get the sum of in range bin heights in the IProfile.
-    virtual double sumBinHeights() const         { return m_rep->GetSumOfWeights();            }
+    double sumBinHeights() const override         { return m_rep->GetSumOfWeights();            }
     /// Get the sum of all the bins heights (including underflow and overflow bin).
-    virtual double sumAllBinHeights() const      { return m_rep->GetSum();                     }
+    double sumAllBinHeights() const override      { return m_rep->GetSum();                     }
     /// Get the sum of the underflow and overflow bin height.
-    virtual double  sumExtraBinHeights () const  { return  sumAllBinHeights()-sumBinHeights(); }
+    double  sumExtraBinHeights () const override  { return  sumAllBinHeights()-sumBinHeights(); }
     /// Get the minimum height of the in-range bins.
-    virtual double minBinHeight() const          { return m_rep->GetMinimum();                 }
+    double minBinHeight() const override         { return m_rep->GetMinimum();                 }
     /// Get the maximum height of the in-range bins.
-    virtual double maxBinHeight() const          { return m_rep->GetMaximum();                 }
+    double maxBinHeight() const override          { return m_rep->GetMaximum();                 }
 
     /// Number of equivalent entries, i.e. <tt>SUM[ weight ] ^ 2 / SUM[ weight^2 ]</tt>
-    virtual double equivalentBinEntries (  ) const;
+    virtual double equivalentBinEntries (  ) const ;
     /// Scale the weights and the errors of all the IHistogram's bins (in-range and out-of-range ones) by a given scale factor.
-    virtual bool scale( double scaleFactor );
+    virtual bool scale( double scaleFactor ) ;
     /// Reset the Histogram; as if just created.
-    virtual bool reset();
+    bool reset() override;
     /// Modifies this IProfile1D by adding the contents of profile to it.
-    virtual bool add(const INTERFACE & profile);
+    bool add(const INTERFACE & profile) override;
     /// operator methods
-    virtual int rIndex(int index) const          { return m_axis.rIndex(index);}
+    virtual int rIndex(int index) const { return m_axis.rIndex(index);}
     /// The weighted mean of a bin.
-    virtual double  binMean(int index) const;
+    double  binMean(int index) const override;
     /// Total height of the corresponding bin (ie the sum of the weights in this bin).
-    virtual double  binHeight(int index) const;
+    double  binHeight(int index) const override;
     /// The error of a given bin.
-    virtual double  binError(int index) const;
+    double  binError(int index) const override;
     /// The mean of the whole IHistogram1D.
-    virtual double  mean() const                 { return m_rep->GetMean();                    }
+    double  mean() const  override                { return m_rep->GetMean();                    }
     /// The RMS of the whole IHistogram1D.
-    virtual double  rms () const                 {  return m_rep->GetRMS();                    }
+    double  rms () const  override                {  return m_rep->GetRMS();                    }
     /// Get the bin number corresponding to a given coordinate along the x axis.
-    virtual int  coordToIndex ( double coord ) const { return axis().coordToIndex(coord);}
+    int  coordToIndex ( double coord ) const  override{ return axis().coordToIndex(coord);}
     /// Get the Histogram's dimension.
-    virtual int  dimension (  ) const  { return 1; }
+    int  dimension (  ) const  override { return 1; }
     /// Print (ASCII) the histogram into the output stream
-    virtual std::ostream& print( std::ostream& s ) const;
+    std::ostream& print( std::ostream& s ) const override;
     /// Write (ASCII) the histogram table into the output stream
-    virtual std::ostream& write( std::ostream& s ) const;
+    std::ostream& write( std::ostream& s ) const override;
     /// Write (ASCII) the histogram table into a file
-    virtual int write( const char* file_name ) const;
+    int write( const char* file_name ) const override;
 
   protected:
     /// Axis member
@@ -116,7 +121,7 @@ namespace Gaudi {
     /// Object annotations
     mutable AIDA::Annotation m_annotation;
     /// Reference to underlying implementation
-    IMPLEMENTATION*          m_rep;
+    std::unique_ptr<IMPLEMENTATION>   m_rep;
     // class type
     std::string              m_classType;
     // cache sumEntries (allEntries)   when setting contents since Root can't compute by himself
@@ -191,7 +196,7 @@ namespace Gaudi {
     const Generic1D<INTERFACE,IMPLEMENTATION>* p =
       dynamic_cast<const Generic1D<INTERFACE,IMPLEMENTATION>*>(&h);
     if ( p )  {
-      m_rep->Add(p->m_rep);
+      m_rep->Add(p->m_rep.get());
       return true;
     }
     throw std::runtime_error("Cannot add profile histograms of different implementations.");

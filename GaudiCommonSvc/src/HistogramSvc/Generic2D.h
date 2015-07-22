@@ -4,6 +4,7 @@
 #include "AIDA_visibility_hack.h"
 
 #include <stdexcept>
+#include <memory>
 #include "AIDA/IProfile2D.h"
 #include "GaudiKernel/HistogramBase.h"
 #include "Annotation.h"
@@ -31,13 +32,16 @@ namespace Gaudi {
   public:
     typedef Generic2D<INTERFACE,IMPLEMENTATION> Base;
 
-    Generic2D() : m_rep(0) {}
-
+    Generic2D() = default;
+  protected:
+    /// constructor
+    Generic2D(IMPLEMENTATION* p) : m_rep(p) { }
+ public:
     /// Destructor.
-    virtual ~Generic2D()   {  delete m_rep;    }
+    ~Generic2D() override { } // TODO: replacing { } with '= default;' crashes gcc 4.8.1 ;-(
 
     /// ROOT object implementation
-    TObject* representation() const                      { return m_rep;                       }
+    TObject* representation() const                      { return m_rep.get();                       }
     /// Adopt ROOT histogram representation
     virtual void adoptRepresentation(TObject* rep);
     /// Get the title of the object
@@ -140,11 +144,11 @@ namespace Gaudi {
     /// Object annotations
     mutable AIDA::Annotation m_annotation;
     /// Reference to underlying implementation
-    IMPLEMENTATION*          m_rep;
+    std::unique_ptr<IMPLEMENTATION> m_rep;
     /// class type
     std::string              m_classType;
     /// cache sumEntries (allEntries)   when setting contents since Root can't compute by himself
-    int                      m_sumEntries;
+    int                      m_sumEntries = 0;
   };
 
   template <class INTERFACE, class IMPLEMENTATION>
@@ -166,12 +170,12 @@ namespace Gaudi {
 
   template <class INTERFACE, class IMPLEMENTATION>
   int Generic2D<INTERFACE,IMPLEMENTATION>::entries() const                       {
-    return (int)m_rep->GetEntries();
+    return m_rep->GetEntries();
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
   int Generic2D<INTERFACE,IMPLEMENTATION>::allEntries (  ) const  {
-    return int(m_rep->GetEntries());
+    return m_rep->GetEntries();
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
@@ -201,12 +205,12 @@ namespace Gaudi {
 
   template <class INTERFACE, class IMPLEMENTATION>
   double Generic2D<INTERFACE,IMPLEMENTATION>::binMeanX(int indexX,int ) const {
-    return (m_rep->GetXaxis())->GetBinCenter( rIndexX(indexX) );
+    return m_rep->GetXaxis()->GetBinCenter( rIndexX(indexX) );
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
   double Generic2D<INTERFACE,IMPLEMENTATION>::binMeanY(int,int indexY) const  {
-    return (m_rep->GetYaxis())->GetBinCenter( rIndexY(indexY) );
+    return m_rep->GetYaxis()->GetBinCenter( rIndexY(indexY) );
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
@@ -286,7 +290,7 @@ namespace Gaudi {
   bool Generic2D<INTERFACE,IMPLEMENTATION>::add ( const INTERFACE & hist ) {
     const Base* p = dynamic_cast<const Base*>(&hist);
     if ( p )  {
-      m_rep->Add(p->m_rep);
+      m_rep->Add(p->m_rep.get());
       return true;
     }
     throw std::runtime_error("Cannot add profile histograms of different implementations.");

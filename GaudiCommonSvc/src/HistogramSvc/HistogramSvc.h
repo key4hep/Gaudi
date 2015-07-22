@@ -69,25 +69,25 @@ protected:
     HistogramSvc* m_svc;
     Helper(HistogramSvc* p) : m_svc(p) {}
     template <class A1, class A3> StatusCode retrieve(A1 a1, A3*& a3)  {
-      DataObject* pObject  = 0;
+      DataObject* pObject  = nullptr;
       StatusCode sc = m_svc->DataSvc::retrieveObject(a1,pObject);
       a3 = dynamic_cast<A3*>(pObject);
       return sc;
     }
     template <class A1, class A2, class A3> StatusCode retrieve(A1 a1, A2 a2, A3*& a3)  {
-      DataObject* pObject  = 0;
+      DataObject* pObject  = nullptr;
       StatusCode sc = m_svc->DataSvc::retrieveObject(a1,a2,pObject);
       a3 = dynamic_cast<A3*>(pObject);
       return sc;
     }
     template <class A1, class A3> StatusCode find(A1 a1, A3*& a3)  {
-      DataObject* pObject  = 0;
+      DataObject* pObject  = nullptr;
       StatusCode sc = m_svc->DataSvc::findObject(a1,pObject);
       a3 = dynamic_cast<A3*>(pObject);
       return sc;
     }
     template <class A1, class A2, class A3> StatusCode find(A1 a1, A2 a2, A3*& a3)  {
-      DataObject* pObject  = 0;
+      DataObject* pObject  = nullptr;
       StatusCode sc = m_svc->DataSvc::findObject(a1,a2,pObject);
       a3 = dynamic_cast<A3*>(pObject);
       return sc;
@@ -100,7 +100,7 @@ protected:
         (h1->*pmf)(h2,scale);
         return res;
       }
-      return 0;
+      return nullptr;
     }
     template <class R, class S, class T1, class T2>
     static R* act(R* res,const S& b, Bool_t (T1::*pmf)(const T2*,Double_t), Double_t scale)  {
@@ -110,7 +110,7 @@ protected:
         (h1->*pmf)(h2,scale);
         return res;
       }
-      return 0;
+      return nullptr;
     }
     template <class R, class S, class T1, class T2>
     static R* act(R* res,const S& b, void (T1::*pmf)(const T2*))  {
@@ -120,7 +120,7 @@ protected:
         (h1->*pmf)(h2);
         return res;
       }
-      return 0;
+      return nullptr;
     }
     template <class R, class S, class T1, class T2>
     static R* act(R* res,const S& b, Bool_t (T1::*pmf)(const T2*))  {
@@ -130,7 +130,7 @@ protected:
         (h1->*pmf)(h2);
         return res;
       }
-      return 0;
+      return nullptr;
     }
   };
 
@@ -143,7 +143,7 @@ public:
    *  @param name service name
    *  @param pointer to service locator interface
    */
-  HistogramSvc(CSTR name, ISvcLocator* svc );
+  HistogramSvc(const std::string& name, ISvcLocator* svc );
 
   /// Destructor
   virtual ~HistogramSvc();
@@ -170,7 +170,7 @@ public:
   }
   template <class T> static DataObject* __cast(T* p)  {
     DataObject* q = dynamic_cast<DataObject*>(p);
-    if ( 0 == q && 0 != p )  {
+    if ( !q && p )  {
       throw std::runtime_error("HistogramSvc: Unexpected object type.");
     }
     return q;

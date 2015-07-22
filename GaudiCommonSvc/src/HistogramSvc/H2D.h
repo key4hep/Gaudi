@@ -42,8 +42,8 @@ namespace Gaudi {
     static const CLID& classID()     { return CLID_H2D; }
   protected:
     // cache sumwx and sumwy  when setting contents since I don't have bin mean
-    double m_sumwx;
-    double m_sumwy;
+    double m_sumwx = 0;
+    double m_sumwy = 0;
   };
 }
 #endif // HISTOGRAMSVC_H2D_H
