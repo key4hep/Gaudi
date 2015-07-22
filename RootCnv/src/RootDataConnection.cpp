@@ -199,7 +199,7 @@ size_t RootDataConnection::removeClient(const IInterface* client) {
 
 /// Lookup client for this data source
 bool RootDataConnection::lookupClient(const IInterface* client)   const {
-  Clients::const_iterator i=m_clients.find(client);
+  auto i=m_clients.find(client);
   return i != m_clients.end();
 }
 
@@ -426,16 +426,15 @@ TTree* RootDataConnection::getSection(CSTR section, bool create) {
             t->AddBranchToCache("*",kTRUE);
           }
           else {
-            StringVec::const_iterator i;
             for(TIter it(t->GetListOfBranches()); it.Next(); )  {
               const char* n = ((TNamed*)(*it))->GetName();
-	      bool add = false, veto = false;
-              for(i=cB.begin(); i != cB.end();++i) {
-                if ( !match_wild(n,(*i).c_str()) ) continue;
+              bool add = false, veto = false;
+              for(const auto& i : cB ) {
+                if ( !match_wild(n,(i).c_str()) ) continue;
                 add = true;
                 break;
               }
-              for(i=vB.begin(); !add && i!=vB.end();++i) {
+              for(auto i=vB.cbegin(); !add && i!=vB.cend();++i) {
                 if ( !match_wild(n,(*i).c_str()) ) continue;
                 veto = true;
                 break;
@@ -618,11 +617,11 @@ pair<const RootRef*,const RootDataConnection::ContainerSection*>
 RootDataConnection::getMergeSection(const string& container, int entry) const {
   //size_t idx = cont.find('/',1);
   //string container = cont[0]=='/' ? cont.substr(1,idx==string::npos?idx:idx-1) : cont;
-  MergeSections::const_iterator i=m_mergeSects.find(container);
+  auto i=m_mergeSects.find(container);
   if ( i != m_mergeSects.end() ) {
     size_t cnt = 0;
     const ContainerSections& s = (*i).second;
-    for(ContainerSections::const_iterator j=s.begin(); j != s.end(); ++j,++cnt) {
+    for(auto j=s.cbegin(); j != s.cend(); ++j,++cnt) {
       const ContainerSection& c = *j;
       if ( entry >= c.start && entry < (c.start+c.length) ) {
         if ( m_linkSects.size() > cnt ) {

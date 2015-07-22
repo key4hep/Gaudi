@@ -111,9 +111,8 @@ StatusCode RootHistCnv::RCWNTupleCnv::book(const std::string& desc,
   std::vector<std::pair<std::string,std::string> > item_name;
 
   const INTuple::ItemContainer& cols = nt->items();
-  for (INTuple::ItemContainer::const_iterator i = cols.begin();
-       i != cols.end(); ++i ) {
-    std::string item = "";
+  for (auto i = cols.cbegin(); i != cols.cend(); ++i ) {
+    std::string item;
 
     switch( (*i)->type() )   {
     case DataTypeInfo::INT:               // int
@@ -216,12 +215,11 @@ StatusCode RootHistCnv::RCWNTupleCnv::book(const std::string& desc,
 
   char *buf_pos = buff;
 
-  std::vector<std::pair<std::string,std::string> >::const_iterator itr,end;
-  end = item_name.end();
+  auto end = item_name.cend();
 
   // Loop over items, creating a new branch for each one;
   unsigned int i_item = 0;
-  for (itr=item_name.begin(); itr!=end; ++itr, ++i_item) {
+  for (auto itr=item_name.cbegin(); itr!=end; ++itr, ++i_item) {
 
     buf_pos = buff + item_buf_pos[i_item];
 
@@ -295,7 +293,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::writeData(TTree* rtree, INTuple* nt)
   // Fill the tree;
   const INTuple::ItemContainer& cols = nt->items();
   char * tar = nt->buffer();
-  for (INTuple::ItemContainer::const_iterator i = cols.begin(); i != cols.end(); i++ )   {
+  for (auto i = cols.cbegin(); i != cols.cend(); i++ )   {
     switch( (*i)->type() )   {
     case DataTypeInfo::BOOL:              // bool
       tar += saveItem(tar, (bool*)(*i)->buffer(),   (*i)->length());
@@ -621,11 +619,10 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
 
   ntup->setBuffer(buf);
 
-  std::list< std::pair<TLeaf*,int> >::const_iterator iitr = itemList.begin();
   int ts = 0;
-  for (; iitr!= itemList.end(); ++iitr) {
-    TLeaf* leaf = (*iitr).first;
-    int isize   = (*iitr).second;
+  for (const auto& iitr : itemList) {
+    TLeaf* leaf = iitr.first;
+    int isize   = iitr.second;
 
     log << MSG::VERBOSE << "setting TBranch " << leaf->GetBranch()->GetName()
         << " buffer at " << (void*) bufpos << endmsg;

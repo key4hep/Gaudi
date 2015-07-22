@@ -135,8 +135,8 @@ StatusCode RootPerfMonSvc::stop() {
   char text[64];
   record(FSR);
   TMap *map = new TMap();
-  for(set<string>::const_iterator i=m_outputs.begin(); i!=m_outputs.end();++i) {
-    const char* fn = (*i).c_str();
+  for(const auto &i : m_outputs) {
+    const char* fn = i.c_str();
     Long_t id, siz, flags, tim;
     if ( 0 == gSystem->GetPathInfo(fn,&id,&siz,&flags,&tim) ) {
       ::sprintf(text,"%ld",siz);

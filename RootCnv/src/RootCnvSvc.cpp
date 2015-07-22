@@ -529,13 +529,11 @@ StatusCode RootCnvSvc::i__fillObjRefs(IOpaqueAddress* pA, DataObject* pObj) {
         string npar[3];
         unsigned long nipar[2];
         IOpaqueAddress* nPA;
-	IRegistry* pR = pObj->registry();
+        IRegistry* pR = pObj->registry();
         SmartIF<IService> isvc(pR->dataSvc());
-	SmartIF<IDataManagerSvc> dataMgr(pR->dataSvc());
+        SmartIF<IDataManagerSvc> dataMgr(pR->dataSvc());
         LinkManager* mgr = pObj->linkMgr();
-        for(vector<int>::const_iterator i=refs.links.begin(); i!=refs.links.end();++i) {
-          mgr->addLink(con->getLink(*i),0);
-        }
+        for(const auto& i : refs.links ) mgr->addLink(con->getLink(i),0);
         for(size_t j=0, n=refs.refs.size(); j<n; ++j)  {
           const RootRef& r = refs.refs[j];
           npar[0] = con->getDb(r.dbase);
