@@ -22,6 +22,13 @@
 // ============================================================================
 #include "ParticlePropertySvc.h"
 // ============================================================================
+namespace {
+    //@FIXME/@TODO remove once we can assume C++14...
+    template <typename T, class... Args>
+    std::unique_ptr<T> make_unique(Args&&... args) {
+        return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+    }
+}
 namespace Gaudi {
 /** Instantiation of a static factory class used by clients to create
  *  instances of this service
@@ -44,20 +51,6 @@ ParticlePropertySvc::ParticlePropertySvc
 ( const std::string& name ,
   ISvcLocator*       svc  )
   : base_class( name, svc )
-  // the default name of input data file
-  , m_filename ( "ParticleTable.txt" )
-  , m_other ()
-  , m_particles ()
-  // storages :
-  , m_vectpp  ()
-  , m_idmap   ()
-  , m_namemap ()
-  , m_stdhepidmap()
-  , m_pythiaidmap()
-  //
-  , m_owned ()
-  , m_replaced ()
-  , m_fileAccess (0)
 {
   /// @todo: remove reference to LHCb-specific environment variable
   // Redefine the default name:
@@ -69,14 +62,6 @@ ParticlePropertySvc::ParticlePropertySvc
   declareProperty ( "ParticlePropertiesFile" , m_filename  ) ;
   declareProperty ( "OtherFiles"             , m_other     ) ;
   declareProperty ( "Particles"              , m_particles ) ;
-}
-// ============================================================================
-/// destructor
-// ============================================================================
-ParticlePropertySvc::~ParticlePropertySvc()
-{
-  for ( Set::iterator i = m_owned.begin(); i != m_owned.end() ; ++i )
-  { if ( 0 != *i ) { delete *i ; } }
 }
 // ============================================================================
 /// initialize the service and setProperties
@@ -170,7 +155,7 @@ StatusCode ParticlePropertySvc::finalize()
 
   if (m_fileAccess) {
     m_fileAccess->release();
-    m_fileAccess = 0;
+    m_fileAccess = nullptr;
   }
 
   /// finalize the base class
@@ -190,26 +175,26 @@ StatusCode ParticlePropertySvc::push_back
   int                pythiaId ,
   double             maxWidth )
 {
-  ParticleProperty* pp = new ParticleProperty
-    ( particle , geantId  , jetsetId ,
-      charge   , mass     , tlife    ,
-      evtName  , pythiaId , maxWidth ) ;
   //
-  m_owned.insert ( pp ) ;
+  auto i = m_owned.insert(  
+    make_unique<ParticleProperty>( particle , geantId  , jetsetId ,
+                                   charge   , mass     , tlife    ,
+                                   evtName  , pythiaId , maxWidth ) 
+  ) ;
   //
-  return push_back( pp );
+  return i.second ? push_back( i.first->get() ) : StatusCode::FAILURE;
 }
 // =============================================================================
 /// Add a particle property.
 // =============================================================================
 StatusCode ParticlePropertySvc::push_back ( ParticleProperty* pp )
 {
-  if ( 0 == pp ) { return StatusCode::FAILURE ; }
+  if ( !pp ) { return StatusCode::FAILURE ; }
   //
   { // try to add into Geant(3)ID map
     const int ID = pp->geantID() ;
     // is this already in the map?
-    MapID::const_iterator ifind = m_idmap.find( ID ) ;
+    auto ifind = m_idmap.find( ID ) ;
     if ( m_idmap.end() != ifind && 0 != m_idmap[ ID ])
     {
       diff ( ifind->second , pp ) ;
@@ -222,7 +207,7 @@ StatusCode ParticlePropertySvc::push_back ( ParticleProperty* pp )
   { // try to add into Name map
     const std::string& particle = pp->particle() ;
     // is this already in the map?
-    MapName::const_iterator ifind = m_namemap.find( particle ) ;
+    auto ifind = m_namemap.find( particle ) ;
     if ( m_namemap.end() != ifind && 0 != m_namemap[ particle ] )
     {
       diff ( ifind->second , pp ) ;
@@ -238,7 +223,7 @@ StatusCode ParticlePropertySvc::push_back ( ParticleProperty* pp )
   { // try to add into StdHepID map
     const int ID = pp->jetsetID() ;
     // is this already in the map?
-    MapStdHepID::const_iterator ifind = m_stdhepidmap.find( ID ) ;
+    auto ifind = m_stdhepidmap.find( ID ) ;
     if ( m_stdhepidmap.end() != ifind && 0 != m_stdhepidmap[ ID ])
     {
       diff ( ifind->second , pp ) ;
@@ -256,7 +241,7 @@ StatusCode ParticlePropertySvc::push_back ( ParticleProperty* pp )
   { // try to add into PythiaID map
     const int ID = pp->pythiaID() ;
     // is this already in the map?
-    MapPythiaID::const_iterator ifind = m_pythiaidmap.find( ID ) ;
+    auto ifind = m_pythiaidmap.find( ID ) ;
     if ( m_pythiaidmap.end() != ifind && 0 != m_pythiaidmap[ ID ])
     {
       diff ( ifind->second , pp ) ;
@@ -276,15 +261,15 @@ namespace
   template <class MAP>
   void _remove_ ( MAP& m , const ParticleProperty* pp )
   {
-    typename MAP::iterator i = m.begin() ;
-    for ( ; m.end() != i ; ++i ) { if ( i->second == pp ) { break ; } }
-    if  ( m.end() != i ) { m.erase ( i ) ; }
+    auto i = std::find_if( m.begin(), m.end(), 
+                           [&](typename MAP::const_reference i) { return i.second == pp; } );
+    if  ( i != m.end() ) { m.erase ( i ) ; }
   }
 }
 // ============================================================================
 StatusCode ParticlePropertySvc::erase( const ParticleProperty* pp )
 {
-  if ( 0 == pp ) { return StatusCode::FAILURE ; }
+  if ( !pp ) { return StatusCode::FAILURE ; }
 
   _remove_ ( m_idmap       , pp ) ;
   _remove_ ( m_namemap     , pp ) ;
@@ -304,16 +289,15 @@ StatusCode ParticlePropertySvc::parse()
   if ( sc.isFailure() ) { return sc ; }
 
   // parse "other" files
-  for ( Files::const_iterator file = m_other.begin() ;
-        m_other.end() != file ; ++file )
+  for ( auto& file : m_other )
   {
-    sc = parse ( *file ) ;
+    sc = parse ( file ) ;
     if ( sc.isFailure() ) { return sc ; }
   }
 
   // Now check that the file format was consistent with what parser
   // expected
-  if ( m_namemap.size() == 0 )
+  if ( m_namemap.empty() )
   {
     MsgStream log( msgSvc(), name() );
     log << MSG::ERROR
@@ -332,26 +316,25 @@ StatusCode ParticlePropertySvc::parse( const std::string& file )
   MsgStream log( msgSvc(), name() );
   char line[ 255 ];
 
-  std::auto_ptr<std::istream> infileptr;
-  if (m_fileAccess) infileptr = m_fileAccess->open(file);
+  std::unique_ptr<std::istream> infile;
+  if (m_fileAccess) infile = m_fileAccess->open(file);
 
-  if ( infileptr.get() == 0 )
+  if ( !infile )
   {
     log << MSG::ERROR << "Unable to open properties file : " << file
         << endmsg;
     return StatusCode::FAILURE ;
   }
 
-  std::istream &infile = *infileptr;
   sc = StatusCode::SUCCESS;
   log << MSG::INFO
       << "Opened particle properties file : " << file << endmsg;
 
-  while( infile )
+  while( *infile )
   {
     // parse each line of the file (comment lines begin with # in the cdf
     // file,
-    infile.getline( line, 255 );
+    infile->getline( line, 255 );
 
     if ( line[0] == '#' ) continue;
 
@@ -363,16 +346,16 @@ StatusCode ParticlePropertySvc::parse( const std::string& file )
 #endif
     std::string par, gid, jid, chg, mas, lif, evt, pyt, mwi ;
     char* token = strtok( line, " " );
-    if ( token ) { par = token; token = strtok( NULL, " " );} else continue;
-    if ( token ) { gid = token; token = strtok( NULL, " " );} else continue;
-    if ( token ) { jid = token; token = strtok( NULL, " " );} else continue;
-    if ( token ) { chg = token; token = strtok( NULL, " " );} else continue;
-    if ( token ) { mas = token; token = strtok( NULL, " " );} else continue;
-    if ( token ) { lif = token; token = strtok( NULL, " " );} else continue;
-    if ( token ) { evt = token; token = strtok( NULL, " " );} else continue;
-    if ( token ) { pyt = token; token = strtok( NULL, " " );} else continue;
-    if ( token ) { mwi = token; token = strtok( NULL, " " );} else continue;
-    if ( token != NULL ) continue;
+    if ( token ) { par = token; token = strtok( nullptr, " " );} else continue;
+    if ( token ) { gid = token; token = strtok( nullptr, " " );} else continue;
+    if ( token ) { jid = token; token = strtok( nullptr, " " );} else continue;
+    if ( token ) { chg = token; token = strtok( nullptr, " " );} else continue;
+    if ( token ) { mas = token; token = strtok( nullptr, " " );} else continue;
+    if ( token ) { lif = token; token = strtok( nullptr, " " );} else continue;
+    if ( token ) { evt = token; token = strtok( nullptr, " " );} else continue;
+    if ( token ) { pyt = token; token = strtok( nullptr, " " );} else continue;
+    if ( token ) { mwi = token; token = strtok( nullptr, " " );} else continue;
+    if ( token != nullptr ) continue;
 
     // In SICb cdf file mass and lifetime units are GeV and sec, specify it so
     // that they are converted to Gaudi units (MeV and ns)
@@ -400,8 +383,6 @@ StatusCode ParticlePropertySvc::parse( const std::string& file )
 
   }
 
-  //infile.close();
-
   return StatusCode::SUCCESS ;
 }
 // ============================================================================
@@ -414,14 +395,12 @@ StatusCode ParticlePropertySvc::parse( const std::string& file )
 const ParticleProperty*
 ParticlePropertySvc::anti ( const ParticleProperty* pp ) const
 {
-  if ( 0 == pp ) { return 0 ; }
+  if ( !pp ) { return nullptr ; }
   const int     ID = pp->pdgID() ;
   const int antiID = -1 * ID     ;
-  for ( const_iterator it = m_vectpp.begin() ; m_vectpp.end() != it ; ++it )
+  for ( const auto& ap : m_vectpp ) 
   {
-    const ParticleProperty* ap = *it ;
-    if ( 0 == ap               ) { continue  ; }                // CONTINUE
-    if ( antiID == ap->pdgID() ) { return ap ; }                // RETURN
+    if ( ap && antiID == ap->pdgID() ) { return ap ; }          // RETURN
   };
   //
   return pp ;                                                   // RETURN
@@ -435,12 +414,11 @@ ParticlePropertySvc::anti ( const ParticleProperty* pp ) const
 StatusCode ParticlePropertySvc::setAntiParticles()
 {
   // initialize particle<-->antiParticle relations
-  for ( iterator ip = m_vectpp.begin() ; m_vectpp.end() != ip ; ++ip )
+  for ( auto& pp : m_vectpp )
   {
-    ParticleProperty* pp = *ip ;
-    if ( 0 == pp                    ) { continue ; }   // CONTINUE
+    if ( !pp                    ) { continue ; }   // CONTINUE
     const ParticleProperty* ap = anti ( pp ) ;
-    if ( 0 != ap                    ) { pp->setAntiParticle( ap ) ; }
+    if ( ap                    ) { pp->setAntiParticle( ap ) ; }
   }
   return StatusCode::SUCCESS ;
 }
@@ -450,17 +428,17 @@ StatusCode ParticlePropertySvc::setAntiParticles()
 namespace
 {
   /// load mapped values from maps into set
-  template <class MAP>
-  void _load_ ( MAP& m , ParticlePropertySvc::Set& result )
+  template <typename MAP, typename SET>
+  void _load_ ( MAP& m , SET& result )
   {
-    for ( typename MAP::iterator i = m.begin() ; m.end() != i ; ++i )
+    for ( auto i = m.begin() ; m.end() != i ; ++i )
     { result.insert ( i->second ); }
   }
 }
 // ============================================================================
 StatusCode ParticlePropertySvc::rebuild()
 {
-  Set local ;
+  std::set<mapped_type> local ;
   m_vectpp.clear() ;
   m_vectpp.reserve ( m_idmap.size() + 100 ) ;
   // load information from maps into the set
@@ -469,8 +447,7 @@ StatusCode ParticlePropertySvc::rebuild()
   _load_ ( m_stdhepidmap , local ) ;
   _load_ ( m_pythiaidmap , local ) ;
   // load information from set to the linear container vector
-  for ( Set::iterator i = local.begin() ; local.end() != i ; ++i )
-  { m_vectpp.push_back ( *i ) ; }
+  std::copy( std::begin(local), std::end(local), std::back_inserter(m_vectpp) );
   return setAntiParticles() ;
 }
 // ============================================================================
@@ -481,10 +458,8 @@ StatusCode ParticlePropertySvc::addParticles()
 
   MsgStream log ( msgSvc() , name() ) ;
   // loop over all "explicit" particles
-  for ( Particles::const_iterator ip = m_particles.begin() ;
-        m_particles.end() != ip ; ++ip )
+  for ( const auto& item : m_particles )
   {
-    const std::string item = *ip ;
     std::istringstream input( item ) ;
     // get the name
     std::string p_name   ;
@@ -558,7 +533,7 @@ bool ParticlePropertySvc::diff
   //
   MsgStream log ( msgSvc() , name() ) ;
   log << l ;
-  if ( 0 == o || 0 == n  )
+  if ( !o || !n  )
   {
     log << MSG::WARNING << " ParticleProperty* point to NULL" << endmsg ;
     return true ;                                                    // RETURN
@@ -623,4 +598,3 @@ bool ParticlePropertySvc::diff
 // ============================================================================
 // The END
 // ============================================================================
-

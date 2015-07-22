@@ -11,34 +11,22 @@
 
 #include "PartPropSvc.h"
 
-//#include "HepPDT/TableBuilder.hh"
 #include "HepPDT/HeavyIonUnknownID.hh"
 
-//#include <iostream>
-#include <cstdlib>
 #include <fstream>
 
 #include <boost/regex.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
 
-inline void toupper(std::string &s)
-{
-  std::transform(s.begin(), s.end(), s.begin(),
-                 (int(*)(int)) toupper);
-}
+
 
 //*************************************************************************//
 
-PartPropSvc::PartPropSvc( const std::string& name, ISvcLocator* svc )
-  : base_class( name, svc ),  m_upid(0), m_pdt(0), m_log(msgSvc(), name),
-    m_upid_local(false) {
+PartPropSvc::PartPropSvc( const std::string& name_, ISvcLocator* svc )
+  : base_class( name_, svc ),  m_log(msgSvc(), name())  {
 
   declareProperty( "InputFile", m_pdtFiles="PDGTABLE.MeV");
 
-}
-
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
-
-PartPropSvc::~PartPropSvc() {
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -66,12 +54,11 @@ PartPropSvc::initialize() {
 
     // see if input file exists in $DATAPATH
     std::string rfile = System::PathResolver::find_file(fname,"DATAPATH");
-    if (rfile == "") {
+    if (rfile.empty()) {
       m_log << MSG::ERROR << "Could not find PDT file: \"" << fname
 	    << "\" in $DATAPATH" << endmsg;
       return StatusCode::FAILURE;
     }
-
 
     // is the file readable?
     std::ifstream pdfile( rfile.c_str() );
@@ -82,8 +69,7 @@ PartPropSvc::initialize() {
     }
 
     std::string val = (*tok_iter)[1];
-    std::string VAL = val;
-    toupper(VAL);
+    std::string VAL = boost::algorithm::to_upper_copy(val);
 
     // default: no type specified, assume PDG
     if (val == fname) {
@@ -92,8 +78,7 @@ PartPropSvc::initialize() {
       VAL = "PDG";
     }
 
-    bool (*pF)  (std::istream &,
-		 HepPDT::TableBuilder &);
+    inputFunPtr pF = nullptr;
     try {
       pF = parseTableType(VAL);
     } catch (...) {
@@ -106,7 +91,7 @@ PartPropSvc::initialize() {
     m_log << MSG::DEBUG << "Adding PDT file \"" << rfile << "\" type "
 	  << VAL << endmsg;
 
-    m_inputs.push_back( make_pair( rfile, pF ) );
+    m_inputs.emplace_back( rfile, pF );
 
   }
 
@@ -116,28 +101,16 @@ PartPropSvc::initialize() {
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
 StatusCode
-PartPropSvc::reinitialize() {
-
-  return StatusCode::SUCCESS;
-
-}
-
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
-
-StatusCode
 PartPropSvc::finalize() {
 
-  if (m_pdt != 0) {
-    delete m_pdt;
-    m_pdt = 0;
-  }
+  m_pdt.reset(nullptr);
 
-  if (m_upid_local && m_upid != 0) {
+  if (m_upid_local && m_upid ) {
     m_upid_local = false;
     // This will cause a memory leak, but we can't delete it as the
     // destructor of HepPDT::processUnknownID is protected.
     // We need this though to call reinitialize successfully.
-    m_upid = 0;
+    m_upid = nullptr;
   }
 
   MsgStream m_log( msgSvc(), name() );
@@ -151,33 +124,24 @@ PartPropSvc::finalize() {
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-bool
-(*PartPropSvc::parseTableType(std::string& typ))(std::istream&,
-						 HepPDT::TableBuilder&) {
-
-  bool (*pF)  (std::istream &,
-	       HepPDT::TableBuilder &);
-
-  if (typ == "PDG") {
-    pF = &HepPDT::addPDGParticles;
-  } else if (typ == "PYTHIA") {
-    pF = &HepPDT::addPythiaParticles;
-  } else if (typ == "EVTGEN") {
-    pF = &HepPDT::addEvtGenParticles;
-  } else if (typ == "HERWIG") {
-    pF = &HepPDT::addHerwigParticles;
-  } else if (typ == "ISAJET") {
-    pF = &HepPDT::addIsajetParticles;
-  } else if (typ == "QQ") {
-    pF = &HepPDT::addQQParticles;
-  } else {
+PartPropSvc::inputFunPtr
+PartPropSvc::parseTableType(const std::string& typ)
+{
+  static const auto table = { std::make_pair( "PDG"    , &HepPDT::addPDGParticles ),
+                              std::make_pair( "PYTHIA" , &HepPDT::addPythiaParticles ),
+                              std::make_pair( "EVTGEN" , &HepPDT::addEvtGenParticles ),
+                              std::make_pair( "HERWIG" , &HepPDT::addHerwigParticles ),
+                              std::make_pair( "ISAJET" , &HepPDT::addIsajetParticles ),
+                              std::make_pair( "QQ"     , &HepPDT::addQQParticles ) };
+  auto i = std::find_if( std::begin(table), std::end(table), 
+                         [&](const std::pair<const char*,inputFunPtr>& p)
+                         { return typ == p.first; } );
+  if ( i == std::end(table) ) {
     m_log << MSG::ERROR << "Unknown Particle Data file type: \""
 	<< typ << "\"" << endmsg;
-     throw( std::runtime_error("error parsing particle table type") );
+     throw  std::runtime_error("error parsing particle table type");
   }
-
-  return pF;
-
+  return i->second;
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -186,21 +150,19 @@ StatusCode
 PartPropSvc::createTable() {
 
   // use a handler for unknown heavy ions
-  if ( m_upid == 0 ) {
+  if ( !m_upid  ) {
     setUnknownParticleHandler(new HepPDT::HeavyIonUnknownID,
 			      "Default Heavy Ion Handler");
     m_upid_local = true;
   }
 
-  m_pdt = new HepPDT::ParticleDataTable(m_upid_name, m_upid);
+  m_pdt.reset( new HepPDT::ParticleDataTable(m_upid_name, m_upid) );
 
   HepPDT::TableBuilder  tb( *m_pdt );
 
-  std::vector< std::pair<std::string,
-    bool(*) (std::istream&,HepPDT::TableBuilder&)> >::const_iterator itr;
-  for (itr = m_inputs.begin(); itr != m_inputs.end(); ++itr) {
-    std::string f = itr->first;
-    bool (*pF) (std::istream&,HepPDT::TableBuilder&) = itr->second;
+  for (auto& itr : m_inputs ) {
+    const auto& f = itr.first;
+    const auto& pF = itr.second;
 
     m_log << MSG::DEBUG << "Reading PDT file \"" << f << "\""
  	  << endmsg;
@@ -224,15 +186,15 @@ PartPropSvc::createTable() {
 HepPDT::ParticleDataTable*
 PartPropSvc::PDT() {
 
-  if (m_pdt == 0) {
+  if (!m_pdt ) {
     m_log << MSG::DEBUG << "creating ParticleDataTable" << endmsg;
     if (createTable().isFailure()) {
       m_log << MSG::FATAL << "Could not create ParticleDataTable" << endmsg;
-      m_pdt = 0;
+      m_pdt.reset(nullptr);
     }
   }
 
-  return m_pdt;
+  return m_pdt.get();
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -240,7 +202,7 @@ PartPropSvc::PDT() {
 void
 PartPropSvc::setUnknownParticleHandler(HepPDT::ProcessUnknownID* puid,
 				       const std::string& n) {
-  if (m_pdt != 0) {
+  if (m_pdt) {
     m_log << MSG::ERROR << "not setting Unknown Particle Handler \"" << n
 	  << "\" as ParticleDataTable already instantiated" << endmsg;
     return;
@@ -249,7 +211,7 @@ PartPropSvc::setUnknownParticleHandler(HepPDT::ProcessUnknownID* puid,
   m_log << MSG::DEBUG << "setting Unknown Particle Handler \"" << n
 	<< "\" at " << puid << endmsg;
 
-  if (m_upid != 0) {
+  if (m_upid) {
     m_log << MSG::WARNING
 	  << "overriding previously selected Unknown Particle Handler \""
 	  << m_upid_name << "\" with \"" << n << "\"" << endmsg;
