@@ -160,7 +160,7 @@ PartPropSvc::createTable() {
 
   HepPDT::TableBuilder  tb( *m_pdt );
 
-  for (auto& itr : m_inputs ) {
+  for (const auto& itr : m_inputs ) {
     const auto& f = itr.first;
     const auto& pF = itr.second;
 
@@ -225,5 +225,4 @@ PartPropSvc::setUnknownParticleHandler(HepPDT::ProcessUnknownID* puid,
 // Instantiation of a static factory class used by clients to create
 //  instances of this service
 DECLARE_COMPONENT(PartPropSvc)
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//

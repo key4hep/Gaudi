@@ -53,11 +53,11 @@ namespace
 const std::string& GaudiAlg::Print::location
 ( const AIDA::IHistogram* aida  )
 {
-  if ( 0 == aida     ) { return s_invalidLocation ; }
+  if ( !aida     ) { return s_invalidLocation ; }
   const DataObject* object   = dynamic_cast<const DataObject*>( aida ) ;
-  if ( 0 == object   ) { return s_invalidLocation ; }
+  if ( !object   ) { return s_invalidLocation ; }
   IRegistry*        registry = object->registry() ;
-  if ( 0 == registry ) { return s_invalidLocation ; }
+  if ( !registry ) { return s_invalidLocation ; }
   return registry->identifier() ;
 } 
 // ============================================================================
@@ -181,12 +181,10 @@ namespace
   std::string _print ( const INTuple::ItemContainer& items )
   {
     std::string str ;
-    for ( auto iitem = items.cbegin() ;
-          items.cend() != iitem ; ++iitem )
+    for ( const auto& item : items )
     {
-      if ( items.begin() != iitem ) { str +="," ; }
-      const INTupleItem* item = *iitem ;
       if ( !item ) { continue ; }
+      if ( !str.empty() ) { str +="," ; }
       str += item->name() ;
       if ( 0 != item->ndim() )
       { str += '[' + std::to_string( item->ndim() ) + ']'; }
@@ -208,8 +206,6 @@ std::string GaudiAlg::PrintTuple::print
 }
 // ============================================================================
 
-
 // ============================================================================
 // The END 
 // ============================================================================
-
