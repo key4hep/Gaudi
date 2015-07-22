@@ -476,7 +476,7 @@ if __name__ == "__main__":
 
     if not opts.dry_run:
         # Do the real processing
-        retcode = c.run(opt.gdb,opts.ncpus)
+        retcode = c.run(opts.gdb,opts.ncpus)
 
         # Now saving the run information pid, retcode and executable path to
         # a file is requested
