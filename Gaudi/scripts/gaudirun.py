@@ -257,11 +257,6 @@ if __name__ == "__main__":
     from GaudiKernel.ProcessJobOptions import (InstallRootLoggingHandler,
                                                PrintOff)
 
-    if opts.gdb:
-        attach_gdb = True
-    else:
-        attach_gdb = False
-
     if opts.old_opts: prefix = "// "
     else: prefix = "# "
     level = logging.INFO
@@ -481,7 +476,7 @@ if __name__ == "__main__":
 
     if not opts.dry_run:
         # Do the real processing
-        retcode = c.run(attach_gdb,opts.ncpus)
+        retcode = c.run(opt.gdb,opts.ncpus)
 
         # Now saving the run information pid, retcode and executable path to
         # a file is requested
