@@ -47,7 +47,7 @@ class FileRecordDataSvc  : public RecordDataSvc   {
     m_persSvcName      = "PersistencySvc/FileRecordPersistencySvc";
   }
   /// Standard Destructor
-  virtual ~FileRecordDataSvc() = default;
+  ~FileRecordDataSvc() override = default;
 };
 
 // Instantiation of a static factory class used by clients to create instances of this service

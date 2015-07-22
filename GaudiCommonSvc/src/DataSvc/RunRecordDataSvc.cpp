@@ -40,7 +40,7 @@ class RunRecordDataSvc  : public RecordDataSvc   {
 
   /// Standard Constructor
   RunRecordDataSvc(const std::string& nam, ISvcLocator* svc) : RecordDataSvc(nam,svc) {
-    m_cnvSvc = 0;
+    m_cnvSvc = nullptr;
     m_rootName = "/RunRecords";
     m_incidentName = "NEW_RUN_RECORD";
     m_saveIncidentName = "SAVE_RUN_RECORD";
@@ -48,7 +48,7 @@ class RunRecordDataSvc  : public RecordDataSvc   {
   }
 
   /// Standard Destructor
-  virtual ~RunRecordDataSvc() = default;
+  ~RunRecordDataSvc() override = default;
 
 };
 

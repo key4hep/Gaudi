@@ -42,26 +42,23 @@ public:
   Correlations m_corr, m_links;
 
   /// Standard algorithm constructor
-  StoreSnifferAlg(const string& name, ISvcLocator* pSvc) : Algorithm(name, pSvc)  {
-  }
+  StoreSnifferAlg(const string& name, ISvcLocator* pSvc) : Algorithm(name, pSvc)  
+  { }
   /// Standard Destructor
-  virtual ~StoreSnifferAlg()     {
-  }
+  ~StoreSnifferAlg() override = default;
 
   size_t explore(IRegistry* pObj)    {
-    if ( 0 != pObj )    {
+    if ( pObj )    {
       SmartIF<IDataManagerSvc> mgr(eventSvc());
       if ( mgr )    {
-        typedef vector<IRegistry*> Leaves;
-        Leaves leaves;
+        vector<IRegistry*> leaves;
         StatusCode sc = m_mgr->objectLeaves(pObj, leaves);
         if ( sc.isSuccess() )  {
-          for (Leaves::const_iterator i=leaves.begin(); i != leaves.end(); i++ )   {
-            IRegistry* pReg = *i;
+          for (auto& pReg : leaves ) {
             const string& id = pReg->identifier();
             /// We are only interested in leaves with an object
             if ( pReg->address() && pReg->object() )  {
-              SniffInfo::iterator j=m_info.find(id);
+              auto j=m_info.find(id);
               if ( j == m_info.end() )   {
                 m_info[id] = LeafInfo();
                 j = m_info.find(id);
@@ -81,30 +78,30 @@ public:
   }
 
   /// Initialize
-  virtual StatusCode initialize()   {
+  StatusCode initialize()   override {
     m_info.clear();
     m_mgr = eventSvc();
     return StatusCode::SUCCESS;
   }
 
   /// Finalize
-  virtual StatusCode finalize() {
+  StatusCode finalize() override {
     MsgStream log(msgSvc(), name());
     log << MSG::ALWAYS << "== BEGIN ============= Access list content:" << m_info.size() << endmsg;
-    for(SniffInfo::const_iterator i=m_info.begin(); i!=m_info.end();++i) {
-      const LeafInfo& info = (*i).second;
+    for(const auto&  i : m_info) {
+      const LeafInfo& info = i.second;
       log << "== ITEM == " << right << setw(4) << dec << info.id << " clid:"
           << right << setw(8) << hex << info.clid << " Count:"
           << right << setw(6) << dec << info.count << " "
-          << (*i).first+":"
+          << i.first+":"
           << endmsg;
-      Correlations::const_iterator c=m_corr.find((*i).first);
+      auto c=m_corr.find(i.first);
       if ( c != m_corr.end() ) {
         int cnt = 0;
         log << "== CORRELATIONS:" << (*c).second.size() << endmsg;
-        for(map<int,int>::const_iterator k=(*c).second.begin(); k!=(*c).second.end();++k) {
-          if ( (*k).second > 0 ) {
-            log << dec << (*k).first << ":" << (*k).second << "  ";
+        for(const auto&  k : c->second) {
+          if ( k.second > 0 ) {
+            log << dec << k.first << ":" << k.second << "  ";
             if ( ++cnt == 10 ) {
               cnt = 0;
               log << endmsg;
@@ -113,13 +110,13 @@ public:
         }
         if ( cnt > 0 ) log << endmsg;
       }
-      Correlations::const_iterator l=m_links.find((*i).first);
+      auto l=m_links.find(i.first);
       if ( l != m_links.end() ) {
         int cnt = 0;
-        log << "== LINKS:" << (*l).second.size() << endmsg;
-        for(map<int,int>::const_iterator k=(*l).second.begin(); k!=(*l).second.end();++k) {
-          if ( (*k).second > 0 ) {
-            log << dec << (*k).first << ":" << (*k).second << "  ";
+        log << "== LINKS:" << l->second.size() << endmsg;
+        for(const auto& k : l->second) {
+          if ( k.second > 0 ) {
+            log << dec << k.first << ":" << k.second << "  ";
             if ( ++cnt == 10 ) {
               cnt = 0;
               log << endmsg;
@@ -131,22 +128,20 @@ public:
     }
     log << MSG::ALWAYS << "== END =============== Access list content:" << m_info.size() << endmsg;
     m_info.clear();
-    m_mgr = 0;
+    m_mgr = nullptr;
     return StatusCode::SUCCESS;
   }
 
   /// Execute procedure
-  virtual StatusCode execute()    {
+  StatusCode execute() override   {
     SmartDataPtr<DataObject> root(eventSvc(),"/Event");
     if ( root )    {
       m_curr.clear();
-      m_curr["/Event"].count = explore(root->registry());
-      m_curr["/Event"].clid  = root->clID();
-      m_curr["/Event"].id    = m_curr.size();
-      for(SniffInfo::const_iterator i=m_curr.begin(); i!=m_curr.end();++i) {
-        LeafInfo& li = m_info[(*i).first];
-        li.count++;
-      }
+      auto& evnt = m_curr["/Event"];
+      evnt.count = explore(root->registry());
+      evnt.clid  = root->clID();
+      evnt.id    = m_curr.size();
+      for(const auto & i : m_curr ) m_info[i.first].count++;
       for(SniffInfo::const_iterator i=m_info.begin(); i!=m_info.end();++i) {
         const string& nam = (*i).first;
         // const LeafInfo& leaf = (*i).second;
@@ -155,16 +150,16 @@ public:
           m_corr[nam] = map<int,int>();
           c = m_corr.find(nam);
         }
-        for(SniffInfo::const_iterator l=m_curr.begin(); l!=m_curr.end();++l) {
-          const LeafInfo& li = (*l).second;
-          map<int,int>::iterator k = (*c).second.find(li.id);
-          if ( k==(*c).second.end() ) (*c).second[li.id] = 0;
-          ++((*c).second[li.id]);
+        for(const auto& l : m_curr) {
+          const LeafInfo& li = l.second;
+          auto k = c->second.find(li.id);
+          if ( k==c->second.end() ) c->second[li.id] = 0;
+          ++(c->second[li.id]);
         }
 
         c=m_links.find(nam);
         if ( c == m_links.end() )  {
-          m_links[nam] = map<int,int>();
+          m_links[nam] = { };
           c = m_links.find(nam);
         }
         if ( m_curr.find(nam) != m_curr.end() ) {
@@ -172,13 +167,13 @@ public:
           if ( obj ) {
             LinkManager* m = obj->linkMgr();
             for(long l=0; l<m->size(); ++l) {
-              LinkManager::Link* lnk=m->link(l);
-              SniffInfo::const_iterator il=m_curr.find(lnk->path());
+              auto* lnk=m->link(l);
+              auto il=m_curr.find(lnk->path());
               // cout << "Link:" << lnk->path() << " " << (char*)(il != m_curr.end() ? "Found" : "Not there") << endl;
               if ( il != m_curr.end() ) {
                 if ( lnk->object() ) {
                   const LeafInfo& li = (*il).second;
-                  map<int,int>::iterator k = (*c).second.find(li.id);
+                  auto k = (*c).second.find(li.id);
                   if ( k==(*c).second.end() ) (*c).second[li.id] = 0;
                   ++((*c).second[li.id]);
                 }
