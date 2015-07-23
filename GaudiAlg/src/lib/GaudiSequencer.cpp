@@ -53,12 +53,11 @@ StatusCode GaudiSequencer::initialize() {
     m_timerTool->increaseIndent();
   } else {
     release( m_timerTool );
-    m_timerTool = 0;
+    m_timerTool = nullptr;
   }
 
   //== Initialize the algorithms
-  std::vector<AlgorithmEntry>::iterator itE;
-  for ( itE = m_entries.begin(); m_entries.end() != itE; itE++ ) {
+  for (auto  itE = m_entries.begin(); m_entries.end() != itE; itE++ ) {
     if ( m_measureTime ) {
       itE->setTimer( m_timerTool->addTimer( itE->algorithm()->name() ) );
     }
@@ -89,8 +88,7 @@ StatusCode GaudiSequencer::execute() {
                             //  for AND, result will be true, unless (at least) one is false
                             //    also see comment below ....
 
-  std::vector<AlgorithmEntry>::const_iterator itE;
-  for ( itE = m_entries.begin(); m_entries.end() != itE; ++itE ) {
+  for (auto  itE = m_entries.begin(); m_entries.end() != itE; ++itE ) {
     Algorithm* myAlg = itE->algorithm();
     if ( ! myAlg->isEnabled() ) continue;
     if ( ! myAlg->isExecuted() ) {
@@ -198,8 +196,7 @@ StatusCode GaudiSequencer::decodeNames( )  {
   //= Get the Application manager, to see if algorithm exist
   IAlgManager* appMgr = svc<IAlgManager>("ApplicationMgr");
   const std::vector<std::string>& nameVector = m_names.value();
-  std::vector<std::string>::const_iterator it;
-  for ( it = nameVector.begin(); nameVector.end() != it; it++ ) {
+  for (auto  it = nameVector.begin(); nameVector.end() != it; it++ ) {
     const Gaudi::Utils::TypeNameString typeName(*it);
     const std::string &theName = typeName.name();
     const std::string &theType = typeName.type();
@@ -215,14 +212,14 @@ StatusCode GaudiSequencer::decodeNames( )  {
         bool foundContext = false;
         bool foundRootInTES = false;
         bool foundGlobalTimeOffset = false;
-        const std::vector<const Property*>* properties = jos->getProperties( theName );
-        if ( 0 != properties ) {
+        const auto* properties = jos->getProperties( theName );
+        if ( properties ) {
           // Iterate over the list to set the options
-          for ( std::vector<const Property*>::const_iterator itProp = properties->begin();
+          for ( auto itProp = properties->begin();
                itProp != properties->end();
                itProp++ )   {
             const StringProperty* sp = dynamic_cast<const StringProperty*>(*itProp);
-            if ( 0 != sp )    {
+            if ( sp )    {
               if ( "Context" == (*itProp)->name() ) {
                 foundContext = true;
               }
@@ -252,7 +249,7 @@ StatusCode GaudiSequencer::decodeNames( )  {
         }
       }
 
-      Algorithm *myAlg = 0;
+      Algorithm *myAlg = nullptr;
       result = createSubAlgorithm( theType, theName, myAlg );
       // (MCl) this should prevent bug #35199... even if I didn't manage to
       // reproduce it with a simple test.
@@ -305,7 +302,7 @@ StatusCode GaudiSequencer::decodeNames( )  {
       // TODO: (MCl) it is possible to avoid the dynamic_cast in most of the
       //             cases by keeping the result of createSubAlgorithm.
       Algorithm*  myAlg = dynamic_cast<Algorithm*>(myIAlg.get());
-      if (myAlg!=0) {
+      if (myAlg) {
         // Note: The reference counting is kept by the system of sub-algorithms
         m_entries.push_back( AlgorithmEntry( myAlg ) );
         if (msgLevel(MSG::DEBUG)) debug () << "Added algorithm " << theName << endmsg;
@@ -328,8 +325,7 @@ StatusCode GaudiSequencer::decodeNames( )  {
   MsgStream& msg = info();
   if ( m_modeOR ) msg << "OR ";
   msg << "Member list: ";
-  std::vector<AlgorithmEntry>::iterator itE;
-  for ( itE = m_entries.begin(); m_entries.end() != itE; itE++ ) {
+  for (auto itE = m_entries.begin(); m_entries.end() != itE; itE++ ) {
     Algorithm* myAlg = (*itE).algorithm();
     std::string myAlgType = System::typeinfoName( typeid( *myAlg) ) ;
     if ( myAlg->name() == myAlgType ) {
@@ -341,7 +337,7 @@ StatusCode GaudiSequencer::decodeNames( )  {
   }
   if ( "" != context() ) msg << ", with context '" << context() << "'";
   if ( "" != rootInTES() ) msg << ", with rootInTES '" << rootInTES() << "'";
-  if ( 0.0 != globalTimeOffset() ) msg << ", with globalTimeOffset " << globalTimeOffset();
+  if ( 0. != globalTimeOffset() ) msg << ", with globalTimeOffset " << globalTimeOffset();
   msg << endmsg;
 
   return final;
@@ -366,7 +362,7 @@ void GaudiSequencer::membershipHandler ( Property& /* p */ )
 
   // add the entries into timer table:
 
-  if ( 0 == m_timerTool )
+  if ( !m_timerTool )
   { m_timerTool = tool<ISequencerTimerTool>( "SequencerTimerTool" ) ; }
 
   if ( m_timerTool->globalTiming() ) m_measureTime = true;
@@ -374,8 +370,7 @@ void GaudiSequencer::membershipHandler ( Property& /* p */ )
   m_timer = m_timerTool->addTimer( name() );
   m_timerTool->increaseIndent();
 
-  for ( std::vector<AlgorithmEntry>::iterator itE = m_entries.begin() ;
-        m_entries.end() != itE; ++itE )
+  for ( auto itE = m_entries.begin() ; m_entries.end() != itE; ++itE )
   {
     itE->setTimer( m_timerTool->addTimer( itE->algorithm()->name() ) );
   }

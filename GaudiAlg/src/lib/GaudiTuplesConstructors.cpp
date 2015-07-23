@@ -22,7 +22,7 @@
 // should NEVER be used...
 //=============================================================================
 template <>
-GaudiTuples<GaudiHistoTool>::GaudiTuples( const std::string & /* name */,
+GaudiTuples<GaudiHistoTool>::GaudiTuples( const std::string&  /* name */,
                                           ISvcLocator * /* pSvcLocator */ )
   : GaudiHistoTool ( "ERROR" , "ERROR" , 0 )
 {
@@ -50,7 +50,7 @@ GaudiTuples<GaudiHistoAlg>::GaudiTuples( const std::string& /* type */  ,
 // Standard algorithm constructor, initializes variables
 //=============================================================================
 template <>
-GaudiTuples<GaudiHistoAlg>::GaudiTuples( const std::string & name,
+GaudiTuples<GaudiHistoAlg>::GaudiTuples( const std::string& name,
                                          ISvcLocator * pSvcLocator )
   : GaudiHistoAlg ( name , pSvcLocator )
 {

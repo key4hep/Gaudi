@@ -82,8 +82,8 @@ public:
    *  @param clid    N-Tuple class identifier (row or column wise)
    *  @return ntuple The ntuple object
    */
-  Tuple  nTuple ( const std::string& title                        ,
-                  const CLID&        clid  = CLID_ColumnWiseTuple ) const ;
+  Tuple  nTuple ( const std::string&   title,
+                  const CLID&   clid  = CLID_ColumnWiseTuple ) const ;
 
   /** Access an N-Tuple object (book on-demand) with forced identifier
    *
@@ -278,7 +278,7 @@ protected:
   virtual Tuples::TupleObj*
   createNTuple ( const std::string& name  ,
                  NTuple::Tuple*     tuple ,
-                 const CLID&        clid  ) const ;
+                 const CLID&        clid  ) const;
   /** create TupleObj for event tag collection
    *  @attention The method should never used directly by users
    *  @param name  name/title
@@ -289,26 +289,26 @@ protected:
   virtual Tuples::TupleObj*
   createEvtCol ( const std::string& name  ,
                  NTuple::Tuple*     tuple ,
-                 const CLID&        clid  ) const ;
+                 const CLID&        clid  ) const;
   // ==========================================================================
 public:
   // ==========================================================================
   /// Algorithm constructor
-  GaudiTuples ( const std::string & name,
+  GaudiTuples ( const std::string&   name,
                 ISvcLocator * pSvcLocator );
   /// Tool constructor
   GaudiTuples ( const std::string& type   ,
                 const std::string& name   ,
                 const IInterface*  parent );
   /// Destructor
-  virtual ~GaudiTuples();
+  ~GaudiTuples() override {}; // replaceing {} with = default crashes gcc 4.8.1
   // ==========================================================================
 protected:
   // ==========================================================================
   /** standard initialization method
    *  @return status code
    */
-  virtual StatusCode initialize()
+  StatusCode initialize() override
 #ifdef __ICC
     { return i_gtInitialize(); }
   StatusCode i_gtInitialize()
@@ -317,7 +317,7 @@ protected:
   /** standard finalization method
    *  @return status code
    */
-  virtual StatusCode finalize()
+  StatusCode finalize() override
 #ifdef __ICC
     { return i_gtFinalize(); }
   StatusCode i_gtFinalize()

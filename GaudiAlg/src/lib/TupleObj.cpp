@@ -30,6 +30,70 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  */
 // ============================================================================
+namespace {
+
+    template <typename T> struct tuple_type_ ;
+
+    template <> struct tuple_type_<typename Tuples::TupleObj::Float>  
+    { static constexpr const char* fmt = "F"; 
+      static constexpr const char* typ = "floats";  };
+    template <> struct tuple_type_<typename Tuples::TupleObj::Double> 
+    { static constexpr const char* fmt = "D"; 
+      static constexpr const char* typ = "doubles"; };
+    template <> struct tuple_type_<typename Tuples::TupleObj::Bool>   
+    { static constexpr const char* fmt = "I"; 
+      static constexpr const char* typ = "bools";};
+    template <> struct tuple_type_<typename Tuples::TupleObj::Char>   
+    { static constexpr const char* fmt = "I"; 
+      static constexpr const char* typ = "chars";};
+    template <> struct tuple_type_<typename Tuples::TupleObj::UChar>  
+    { static constexpr const char* fmt = "I"; 
+      static constexpr const char* typ = "uchars";};
+    template <> struct tuple_type_<typename Tuples::TupleObj::Short>  
+    { static constexpr const char* fmt = "I"; 
+      static constexpr const char* typ = "shorts";};
+    template <> struct tuple_type_<typename Tuples::TupleObj::UShort> 
+    { static constexpr const char* fmt = "I"; 
+      static constexpr const char* typ = "ushorts";};
+    template <> struct tuple_type_<typename Tuples::TupleObj::Int>    
+    { static constexpr const char* fmt = "I"; 
+      static constexpr const char* typ = "ints";};
+    template <> struct tuple_type_<typename Tuples::TupleObj::UInt>   
+    { static constexpr const char* fmt = "I"; 
+      static constexpr const char* typ = "uints";};
+    template <> struct tuple_type_<typename Tuples::TupleObj::LongLong> 
+    { static constexpr const char* fmt = "ULL"; 
+      static constexpr const char* typ = "longlongs";};
+    template <> struct tuple_type_<typename Tuples::TupleObj::ULongLong> 
+    { static constexpr const char* fmt = "ULL"; 
+      static constexpr const char* typ = "ulonglongs";};
+    template <> struct tuple_type_<typename Tuples::TupleObj::Address> 
+    { static constexpr const char* fmt = "IOpaqueAddress*" ; 
+      static constexpr const char* typ = "addresses";};
+    template <> struct tuple_type_<typename Tuples::TupleObj::FArray> 
+    { static constexpr const char* fmt = "FArray"; 
+      static constexpr const char* typ = "farray";};
+    template <> struct tuple_type_<typename Tuples::TupleObj::FMatrix> 
+    { static constexpr const char* fmt = "FMatrix"; 
+      static constexpr const char* typ = "fmatrix"; };
+
+    // helper function to simplify things...
+    template <typename C, typename AddItem>
+    typename C::mapped_type::pointer create_(Tuples::TupleObj* parent, C& container, const std::string& name, AddItem addItem  ) {
+        using element_t = typename C::mapped_type::element_type;
+        using map_t = struct tuple_type_<element_t> ;
+        auto item = container.insert({ name , std::unique_ptr<element_t>{new element_t()} }) ;
+        if (!item.second)
+        { parent->Error ( std::string{map_t::typ} + " ('" + name + "'): item is not inserted"   ) ; }
+        StatusCode sc = addItem( name , *(item.first->second) );
+        if ( sc.isFailure() )
+        { parent->Error ( std::string{map_t::typ} + " ('" + name + "'): item is not added",  sc ) ; }
+        if ( !parent->addItem(name,map_t::fmt) )
+        { parent->Error ( std::string{map_t::typ} + " ('" + name + "'): item is not unique"     ) ; }
+        return item.first->second.get() ;
+    }
+
+}
 namespace Tuples
 {
   namespace Local
@@ -38,34 +102,31 @@ namespace Tuples
     {
     public:
       // constructor
-      Counter ( const std::string& msg = " Misbalance ")
-        : m_map     ()
-        , m_message ( msg )
+      Counter ( std::string msg = " Misbalance ")
+        : m_message ( std::move(msg) )
       {}
       // destructor
-      ~Counter() { report() ; m_map.clear() ;}
+      ~Counter() { report(); }
       // make the increment
-      long increment ( const std::string& object ) { return ++m_map[object] ; }
+      long increment ( const std::string& object ) { return ++m_map[object]; }
       // make the decrement
-      long decrement ( const std::string& object ) { return --m_map[object] ; }
+      long decrement ( const std::string& object ) { return --m_map[object]; }
       // current count
-      long counts    ( const std::string& object ) { return   m_map[object] ; }
+      long counts    ( const std::string& object ) { return   m_map[object]; }
       // make a report
       void report() const
       {
-        for ( Map::const_iterator entry = m_map.begin() ;
-              m_map.end() != entry ; ++entry )
+        for ( auto& entry : m_map )
         {
-          if( 0 == entry->second ) { continue ; }
+          if( 0 == entry.second ) { continue ; }
           std::cout << "Tuples::TupleObj WARNING "          << m_message
-                    << "'" << entry->first << "' Counts = " << entry->second
+                    << "'" << entry.first << "' Counts = " << entry.second
                     << std::endl ;
         }
       };
 
     private:
-      typedef std::map<std::string,long> Map;
-      Map         m_map     ;
+      std::map<std::string,long> m_map     ;
       std::string m_message ;
     };
 
@@ -81,36 +142,17 @@ namespace Tuples
 // Standard constructor
 // ============================================================================
 Tuples::TupleObj::TupleObj
-( const std::string&    name  ,
+( std::string           name  ,
   NTuple::Tuple*        tuple ,
   const CLID&           clid  ,
   const Tuples::Type    type  )
 //
-  : m_name     ( name )
+  : m_name     ( std::move(name) )
   , m_tuple    ( tuple )
   , m_clid     ( clid )
   , m_type     ( type )
 // for error handling
   , m_refCount ( 0 )
-// columns
-  , m_bools     ()
-  , m_chars     ()
-  , m_uchars    ()
-  , m_shorts    ()
-  , m_ushorts   ()
-  , m_ints      ()
-  , m_uints     ()
-  , m_longlongs ()
-  , m_ulonglongs()
-  , m_floats    ()
-  , m_doubles   ()
-  , m_addresses ()
-  , m_farrays   ()
-  , m_arraysf   ()
-  , m_fmatrices ()
-  , m_matricesf ()
-//
-  , m_items     ()
 {
   // make counts
   Tuples::Local::s_InstanceCounter.increment ( m_name ) ;
@@ -120,103 +162,6 @@ Tuples::TupleObj::TupleObj
 // ============================================================================
 Tuples::TupleObj::~TupleObj()
 {
-  {// delete 'bool' columns
-    for( Bools::iterator it = m_bools.begin() ;
-         m_bools.end() != it ; ++it )
-    { if( 0 != it->second ) { delete it->second ; } }
-    m_bools.clear() ;
-  }
-  {// delete 'char' columns
-    for( Chars::iterator it = m_chars.begin() ;
-         m_chars.end() != it ; ++it )
-    { if( 0 != it->second ) { delete it->second ; } }
-    m_chars.clear() ;
-  }
-  {// delete 'unsigned char' columns
-    for( UChars::iterator it = m_uchars.begin() ;
-         m_uchars.end() != it ; ++it )
-    { if( 0 != it->second ) { delete it->second ; } }
-    m_uchars.clear() ;
-  }
-  {// delete 'short' columns
-    for( Shorts::iterator it = m_shorts.begin() ;
-         m_shorts.end() != it ; ++it )
-    { if( 0 != it->second ) { delete it->second ; } }
-    m_shorts.clear() ;
-  }
-  {// delete 'unsigned short' columns
-    for( UShorts::iterator it = m_ushorts.begin() ;
-         m_ushorts.end() != it ; ++it )
-    { if( 0 != it->second ) { delete it->second ; } }
-    m_ushorts.clear() ;
-  }
-  {// delete 'int' columns
-    for( Ints::iterator it = m_ints.begin() ;
-         m_ints.end() != it ; ++it )
-    { if( 0 != it->second ) { delete it->second ; } }
-    m_ints.clear() ;
-  }
-  {// delete 'unsigned int' columns
-    for( UInts::iterator it = m_uints.begin() ;
-         m_uints.end() != it ; ++it )
-    { if( 0 != it->second ) { delete it->second ; } }
-    m_uints.clear() ;
-  }
-  {// delete 'longlong' columns
-    for( LongLongs::iterator it = m_longlongs.begin() ;
-         m_longlongs.end() != it ; ++it )
-    { if( 0 != it->second ) { delete it->second ; } }
-    m_longlongs.clear() ;
-  }
-  {// delete 'ulonglong' columns
-    for( ULongLongs::iterator it = m_ulonglongs.begin() ;
-         m_ulonglongs.end() != it ; ++it )
-    { if( 0 != it->second ) { delete it->second ; } }
-    m_ulonglongs.clear() ;
-  }
-  {// delete 'float' columns
-    for( Floats::iterator it = m_floats.begin() ;
-         m_floats.end() != it ; ++it )
-    { if( 0 != it->second ) { delete it->second ; } }
-    m_floats.clear() ;
-  }
-  {// delete 'double' columns
-    for( Doubles::iterator it = m_doubles.begin() ;
-         m_doubles.end() != it ; ++it )
-    { if( 0 != it->second ) { delete it->second ; } }
-    m_doubles.clear() ;
-  }
-  {// delete 'fArray' columns
-    for( FArrays::iterator it = m_farrays.begin() ;
-         m_farrays.end() != it ; ++it )
-    { if( 0 != it->second ) { delete it->second ; } }
-    m_farrays.clear() ;
-  }
-  {// delete 'fArray' columns
-    for( FArrays::iterator it = m_arraysf.begin() ;
-         m_arraysf.end() != it ; ++it )
-    { if( 0 != it->second ) { delete it->second ; } }
-    m_arraysf.clear() ;
-  }
-  { // destroy and clean all "addresses"
-    for( Addresses::iterator it = m_addresses.begin() ;
-         m_addresses.end() != it ; ++it )
-    { if( 0 != it->second ) { delete it->second ; } }
-    m_addresses.clear();
-  }
-  { // destroy and clean all "matrices"
-    for( FMatrices::iterator it = m_fmatrices.begin() ;
-         m_fmatrices.end() != it ; ++it )
-    { if( 0 != it->second ) { delete it->second ; } }
-    m_fmatrices.clear();
-  }
-  { // destroy and clean all "matrices" (fixed)
-    for( FMatrices::iterator it = m_matricesf.begin() ;
-         m_matricesf.end() != it ; ++it )
-    { if( 0 != it->second ) { delete it->second ; } }
-    m_matricesf.clear();
-  }
-
   // make counts
   Tuples::Local::s_InstanceCounter.decrement ( m_name ) ;
 }
@@ -258,8 +203,8 @@ namespace
     // reset the existing tokens
     tokens.clear();
     if( value       .empty () ) { return tokens.size () ; }
-    std::string::const_iterator it1 = value.begin() ;
-    std::string::const_iterator it2 = value.begin() ;
+    auto it1 = value.begin() ;
+    auto it2 = value.begin() ;
     while( value.end() != it1 && value.end() != it2 )
     {
       it2 = std::find_first_of( it1                  ,
@@ -292,8 +237,8 @@ StatusCode Tuples::TupleObj::fill( const char*  format ... )
   va_start( valist , format ) ;
   // loop over all tokens
   StatusCode status = StatusCode::SUCCESS ;
-  for( Tokens::const_iterator token = tokens.begin() ;
-       tokens.end() != token && status.isSuccess() ; ++token )
+  for( auto token = tokens.cbegin() ;
+       tokens.cend() != token && status.isSuccess() ; ++token )
   {
     const double val = va_arg( valist , double );
     status = column( *token , val );
@@ -315,11 +260,11 @@ StatusCode Tuples::TupleObj::column
 {
   if (  invalid    () ) { return InvalidTuple     ; }
   if ( !evtColType () ) { return InvalidOperation ; }
-  if ( 0 == address )
+  if ( !address )
   { return Error ( "column('" + name +
                    "') IOpaqueAddress* is NULL!" , InvalidObject ) ; }
   Address* item = addresses( name );
-  if ( 0 == item      ) { return InvalidItem      ; }
+  if ( !item      ) { return InvalidItem      ; }
   *item = address ;
   return StatusCode::SUCCESS ;
 }
@@ -585,61 +530,41 @@ StatusCode Tuples::TupleObj::column ( const std::string& name  ,
 Tuples::TupleObj::Float* Tuples::TupleObj::floats
 ( const std::string& name )
 {
-  Floats::iterator found = m_floats.find( name ) ;
-  if ( m_floats.end() != found ) { return found->second ; }
-  Float* item = new Float() ;
-  m_floats[ name ] = item ;
-  const StatusCode sc = tuple()->addItem( name , *item );
-  if ( sc.isFailure() )
-  { Error ( "floats ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "F" ) )
-  { Error ( "floats ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  auto found = m_floats.find( name ) ;
+  if ( m_floats.end() != found ) { return found->second.get() ; }
+  return create_(this, m_floats,name,
+                 [&](const std::string& n, Float& i) 
+                 { return this->tuple()->addItem(n,i); });
 }
 // ============================================================================
 Tuples::TupleObj::Double*   Tuples::TupleObj::doubles
 ( const std::string& name )
 {
-  Doubles::iterator found = m_doubles.find( name ) ;
-  if ( m_doubles.end() != found ) { return found->second ; }
-  Double* item = new Double() ;
-  m_doubles[ name ] = item ;
-  const StatusCode sc = tuple()->addItem( name , *item );
-  if ( sc.isFailure() )
-  { Error ( "doubles ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "D" ) )
-  { Error ( "doubles ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  auto found = m_doubles.find( name ) ;
+  if ( m_doubles.end() != found ) { return found->second.get() ; }
+  return create_(this, m_doubles,name,
+                 [&](const std::string& n, Double& i) 
+                 { return this->tuple()->addItem(n,i); });
 }
 // ============================================================================
 Tuples::TupleObj::Bool*   Tuples::TupleObj::bools
 ( const std::string& name )
 {
-  Bools::iterator found = m_bools.find( name ) ;
-  if( m_bools.end() != found ) { return found->second ; }
-  Bool* item = new Bool() ;
-  m_bools[ name ] = item ;
-  StatusCode sc = tuple()->addItem( name , *item );
-  if( sc.isFailure() )
-  { Error ( "bools ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "I" ) )
-  { Error ( "bools ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  auto found = m_bools.find( name ) ;
+  if( m_bools.end() != found ) { return found->second.get() ; }
+  return create_(this, m_bools, name,
+                 [&](const std::string& n, Bool& i) 
+                 { return this->tuple()->addItem(n,i); });
 }
 // ============================================================================
 Tuples::TupleObj::Char*   Tuples::TupleObj::chars
 ( const std::string& name )
 {
-  Chars::iterator found = m_chars.find( name ) ;
-  if( m_chars.end() != found ) { return found->second ; }
-  Char* item = new Char() ;
-  m_chars[ name ] = item ;
-  StatusCode sc = tuple()->addItem( name , *item );
-  if( sc.isFailure() )
-  { Error ( "chars ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "I" ) )
-  { Error ( "chars ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  auto found = m_chars.find( name ) ;
+  if( m_chars.end() != found ) { return found->second.get() ; }
+  return create_(this, m_chars, name,
+                 [&](const std::string& n, Char& i) 
+                 { return this->tuple()->addItem(n,i); });
 }
 // ============================================================================
 Tuples::TupleObj::Char* Tuples::TupleObj::chars
@@ -647,31 +572,21 @@ Tuples::TupleObj::Char* Tuples::TupleObj::chars
   const char         minv ,
   const char         maxv )
 {
-  Chars::iterator found = m_chars.find( name ) ;
-  if( m_chars.end() != found ) { return found->second ; }
-  Char* item = new Char() ;
-  m_chars[ name ] = item ;
-  const StatusCode sc = tuple()->addItem( name , *item , minv , maxv );
-  if( sc.isFailure() )
-  { Error ( "chars ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "I" ) )
-  { Error ( "chars ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  auto found = m_chars.find( name ) ;
+  if( m_chars.end() != found ) { return found->second.get() ; }
+  return create_(this, m_chars, name,
+                 [&](const std::string& n, Char& i) 
+                 { return this->tuple()->addItem(n,i,minv,maxv); });
 }
 // ============================================================================
 Tuples::TupleObj::UChar* Tuples::TupleObj::uchars
 ( const std::string& name )
 {
-  UChars::iterator found = m_uchars.find( name ) ;
-  if( m_uchars.end() != found ) { return found->second ; }
-  UChar* item = new UChar() ;
-  m_uchars[ name ] = item ;
-  StatusCode sc = tuple()->addItem( name , *item );
-  if( sc.isFailure() )
-  { Error ( "uchars ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "I" ) )
-  { Error ( "uchars ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  auto found = m_uchars.find( name ) ;
+  if( m_uchars.end() != found ) { return found->second.get() ; }
+  return create_(this, m_uchars, name,
+                 [&](const std::string& n, UChar& i) 
+                 { return this->tuple()->addItem(n,i); });
 }
 // ============================================================================
 Tuples::TupleObj::UChar* Tuples::TupleObj::uchars
@@ -679,31 +594,21 @@ Tuples::TupleObj::UChar* Tuples::TupleObj::uchars
   const unsigned char minv ,
   const unsigned char maxv )
 {
-  UChars::iterator found = m_uchars.find( name ) ;
-  if( m_uchars.end() != found ) { return found->second ; }
-  UChar* item = new UChar() ;
-  m_uchars[ name ] = item ;
-  const StatusCode sc = tuple()->addItem( name , *item , minv , maxv );
-  if( sc.isFailure() )
-  { Error ( "uchars ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "I" ) )
-  { Error ( "uchars ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  auto found = m_uchars.find( name ) ;
+  if( m_uchars.end() != found ) { return found->second.get() ; }
+  return create_(this, m_uchars, name,
+                 [&](const std::string& n, UChar& i) 
+                 { return this->tuple()->addItem(n,i,minv,maxv); });
 }
 // ============================================================================
 Tuples::TupleObj::Short*   Tuples::TupleObj::shorts
 ( const std::string& name )
 {
-  Shorts::iterator found = m_shorts.find( name ) ;
-  if( m_shorts.end() != found ) { return found->second ; }
-  Short* item = new Short() ;
-  m_shorts[ name ] = item ;
-  StatusCode sc = tuple()->addItem( name , *item );
-  if( sc.isFailure() )
-  { Error ( "shorts ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "I" ) )
-  { Error ( "shorts ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  auto found = m_shorts.find( name ) ;
+  if( m_shorts.end() != found ) { return found->second.get() ; }
+  return create_(this, m_shorts, name,
+                 [&](const std::string& n, Short& i) 
+                 { return this->tuple()->addItem(n,i); });
 }
 // ============================================================================
 Tuples::TupleObj::Short* Tuples::TupleObj::shorts
@@ -711,31 +616,21 @@ Tuples::TupleObj::Short* Tuples::TupleObj::shorts
   const short        minv ,
   const short        maxv )
 {
-  Shorts::iterator found = m_shorts.find( name ) ;
-  if( m_shorts.end() != found ) { return found->second ; }
-  Short* item = new Short() ;
-  m_shorts[ name ] = item ;
-  const StatusCode sc = tuple()->addItem( name , *item , minv , maxv );
-  if( sc.isFailure() )
-  { Error ( "shorts ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "I" ) )
-  { Error ( "shorts ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  auto found = m_shorts.find( name ) ;
+  if( m_shorts.end() != found ) { return found->second.get(); }
+  return create_(this, m_shorts, name,
+                 [&](const std::string& n, Short& i) 
+                 { return this->tuple()->addItem(n,i,minv,maxv); });
 }
 // ============================================================================
 Tuples::TupleObj::UShort* Tuples::TupleObj::ushorts
 ( const std::string& name )
 {
-  UShorts::iterator found = m_ushorts.find( name ) ;
-  if( m_ushorts.end() != found ) { return found->second ; }
-  UShort* item = new UShort() ;
-  m_ushorts[ name ] = item ;
-  StatusCode sc = tuple()->addItem( name , *item );
-  if( sc.isFailure() )
-  { Error ( "ushorts ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "I" ) )
-  { Error ( "ushorts ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  auto found = m_ushorts.find( name ) ;
+  if( m_ushorts.end() != found ) { return found->second.get() ; }
+  return create_(this, m_ushorts, name,
+                 [&](const std::string& n, UShort& i) 
+                 { return this->tuple()->addItem(n,i); });
 }
 // ============================================================================
 Tuples::TupleObj::UShort* Tuples::TupleObj::ushorts
@@ -743,31 +638,21 @@ Tuples::TupleObj::UShort* Tuples::TupleObj::ushorts
   const unsigned short minv ,
   const unsigned short maxv )
 {
-  UShorts::iterator found = m_ushorts.find( name ) ;
-  if( m_ushorts.end() != found ) { return found->second ; }
-  UShort* item = new UShort() ;
-  m_ushorts[ name ] = item ;
-  const StatusCode sc = tuple()->addItem( name , *item , minv , maxv );
-  if( sc.isFailure() )
-  { Error ( "ushorts ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "I" ) )
-  { Error ( "ushorts ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  auto found = m_ushorts.find( name ) ;
+  if( m_ushorts.end() != found ) { return found->second.get() ; }
+  return create_(this, m_ushorts, name,
+                 [&](const std::string& n, UShort& i) 
+                 { return this->tuple()->addItem(n,i,minv,maxv); });
 }
 // ============================================================================
 Tuples::TupleObj::Int*   Tuples::TupleObj::ints
 ( const std::string& name )
 {
-  Ints::iterator found = m_ints.find( name ) ;
-  if( m_ints.end() != found ) { return found->second ; }
-  Int* item = new Int() ;
-  m_ints[ name ] = item ;
-  StatusCode sc = tuple()->addItem( name , *item );
-  if( sc.isFailure() )
-  { Error ( "ints ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "I" ) )
-  { Error ( "ints ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  auto found = m_ints.find( name ) ;
+  if( m_ints.end() != found ) { return found->second.get() ; }
+  return create_(this, m_ints, name,
+                 [&](const std::string& n, Int& i) 
+                 { return this->tuple()->addItem(n,i); });
 }
 // ============================================================================
 Tuples::TupleObj::Int* Tuples::TupleObj::ints
@@ -775,31 +660,21 @@ Tuples::TupleObj::Int* Tuples::TupleObj::ints
   const int          minv ,
   const int          maxv )
 {
-  Ints::iterator found = m_ints.find( name ) ;
-  if( m_ints.end() != found ) { return found->second ; }
-  Int* item = new Int() ;
-  m_ints[ name ] = item ;
-  const StatusCode sc = tuple()->addItem( name , *item , minv , maxv );
-  if( sc.isFailure() )
-  { Error ( "ints ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "I" ) )
-  { Error ( "ints ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  auto found = m_ints.find( name ) ;
+  if( m_ints.end() != found ) { return found->second.get() ; }
+  return create_(this, m_ints, name,
+                 [&](const std::string& n, Int& i) 
+                 { return this->tuple()->addItem(n,i,minv,maxv); });
 }
 // ============================================================================
 Tuples::TupleObj::UInt*   Tuples::TupleObj::uints
 ( const std::string& name )
 {
-  UInts::iterator found = m_uints.find( name ) ;
-  if( m_uints.end() != found ) { return found->second ; }
-  UInt* item = new UInt() ;
-  m_uints[ name ] = item ;
-  StatusCode sc = tuple()->addItem( name , *item );
-  if( sc.isFailure() )
-  { Error ( "uints ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "I" ) )
-  { Error ( "uints ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  auto found = m_uints.find( name ) ;
+  if( m_uints.end() != found ) { return found->second.get() ; }
+  return create_(this, m_uints, name,
+                 [&](const std::string& n, UInt& i) 
+                 { return this->tuple()->addItem(n,i); });
 }
 // ============================================================================
 Tuples::TupleObj::UInt* Tuples::TupleObj::uints
@@ -807,31 +682,21 @@ Tuples::TupleObj::UInt* Tuples::TupleObj::uints
   const unsigned int minv ,
   const unsigned int maxv )
 {
-  UInts::iterator found = m_uints.find( name ) ;
-  if( m_uints.end() != found ) { return found->second ; }
-  UInt* item = new UInt() ;
-  m_uints[ name ] = item ;
-  const StatusCode sc = tuple()->addItem( name , *item , minv , maxv );
-  if( sc.isFailure() )
-  { Error ( "uints ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "I" ) )
-  { Error ( "uints ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  auto found = m_uints.find( name ) ;
+  if( m_uints.end() != found ) { return found->second.get() ; }
+  return create_(this, m_uints, name,
+                 [&](const std::string& n, UInt& i) 
+                 { return this->tuple()->addItem(n,i,minv,maxv); });
 }
 // ============================================================================
 Tuples::TupleObj::LongLong* Tuples::TupleObj::longlongs
 ( const std::string& name )
 {
-  LongLongs::iterator found = m_longlongs.find( name ) ;
-  if( m_longlongs.end() != found ) { return found->second ; }
-  LongLong* item = new LongLong() ;
-  m_longlongs[ name ] = item ;
-  StatusCode sc = tuple()->addItem( name , *item );
-  if( sc.isFailure() )
-  { Error ( "ints ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "ULL" ) )
-  { Error ( "ints ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  auto found = m_longlongs.find( name ) ;
+  if( m_longlongs.end() != found ) { return found->second.get() ; }
+  return create_(this, m_longlongs, name,
+                 [&](const std::string& n, LongLong& i) 
+                 { return this->tuple()->addItem(n,i); });
 }
 // ============================================================================
 Tuples::TupleObj::LongLong* Tuples::TupleObj::longlongs
@@ -839,31 +704,21 @@ Tuples::TupleObj::LongLong* Tuples::TupleObj::longlongs
   const long long minv ,
   const long long maxv )
 {
-  LongLongs::iterator found = m_longlongs.find( name ) ;
-  if( m_longlongs.end() != found ) { return found->second ; }
-  LongLong* item = new LongLong() ;
-  m_longlongs[ name ] = item ;
-  const StatusCode sc = tuple()->addItem( name , *item , minv , maxv );
-  if( sc.isFailure() )
-  { Error ( "longlongs ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "ULL" ) )
-  { Error ( "longlongs ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  auto found = m_longlongs.find( name ) ;
+  if( m_longlongs.end() != found ) { return found->second.get() ; }
+  return create_(this, m_longlongs, name,
+                 [&](const std::string& n, LongLong& i) 
+                 { return this->tuple()->addItem(n,i,minv,maxv); });
 }
 // ============================================================================
 Tuples::TupleObj::ULongLong* Tuples::TupleObj::ulonglongs
 ( const std::string& name )
 {
-  ULongLongs::iterator found = m_ulonglongs.find( name ) ;
-  if( m_ulonglongs.end() != found ) { return found->second ; }
-  ULongLong* item = new ULongLong() ;
-  m_ulonglongs[ name ] = item ;
-  StatusCode sc = tuple()->addItem( name , *item );
-  if( sc.isFailure() )
-  { Error ( "ulonglongs ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "ULL" ) )
-  { Error ( "ulonglongs ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  auto found = m_ulonglongs.find( name ) ;
+  if( m_ulonglongs.end() != found ) { return found->second.get() ; }
+  return create_(this, m_ulonglongs, name,
+                 [&](const std::string& n, ULongLong& i) 
+                 { return this->tuple()->addItem(n,i); });
 }
 // ============================================================================
 Tuples::TupleObj::ULongLong* Tuples::TupleObj::ulonglongs
@@ -871,31 +726,21 @@ Tuples::TupleObj::ULongLong* Tuples::TupleObj::ulonglongs
   const unsigned long long minv ,
   const unsigned long long maxv )
 {
-  ULongLongs::iterator found = m_ulonglongs.find( name ) ;
-  if( m_ulonglongs.end() != found ) { return found->second ; }
-  ULongLong* item = new ULongLong() ;
-  m_ulonglongs[ name ] = item ;
-  const StatusCode sc = tuple()->addItem( name , *item , minv , maxv );
-  if( sc.isFailure() )
-  { Error ( "ulonglongs ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "ULL" ) )
-  { Error ( "ulonglongs ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  auto found = m_ulonglongs.find( name ) ;
+  if( m_ulonglongs.end() != found ) { return found->second.get() ; }
+  return create_(this, m_ulonglongs, name,
+                 [&](const std::string& n, ULongLong& i) 
+                 { return this->tuple()->addItem(n,i,minv,maxv); });
 }
 // ============================================================================
 Tuples::TupleObj::Address* Tuples::TupleObj::addresses
 ( const std::string& name )
 {
   Addresses::iterator found = m_addresses.find( name ) ;
-  if( m_addresses.end() != found ) { return found->second ; }
-  Address* item = new Address() ;
-  m_addresses[ name ] = item ;
-  const StatusCode sc = tuple()->addItem( name , *item );
-  if( sc.isFailure() )
-  { Error ( "addresses ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "IOpaqueAddress*" ) )
-  { Error ( "addresses ('" + name + "'): item is not unique"     ) ; }
-  return item ;
+  if( m_addresses.end() != found ) { return found->second.get() ; }
+  return create_(this, m_addresses, name,
+                 [&](const std::string& n, Address& i) 
+                 { return this->tuple()->addItem(n,i); });
 }
 // ============================================================================
 // retrieve (book on demand) array-items for ntuple
@@ -905,17 +750,11 @@ Tuples::TupleObj::FArray* Tuples::TupleObj::fArray
   Tuples::TupleObj::Int* length )
 {
   // existing array ?
-  FArrays::iterator found = m_farrays.find( name ) ;
-  if( m_farrays.end() != found ) { return found->second ; }
-  // create new array
-  FArray* array = new FArray () ;
-  m_farrays[ name] =      array    ;
-  const StatusCode sc = tuple() -> addIndexedItem( name , *length , *array) ;
-  if( sc.isFailure() )
-  { Error ( "farray ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "FArray" ) )
-  { Error ( "farray ('" + name + "'): item is not unique"     ) ; }
-  return array ;
+  auto found = m_farrays.find( name ) ;
+  if( m_farrays.end() != found ) { return found->second.get() ; }
+  return create_(this, m_farrays, name,
+                 [&](const std::string& n, FArray& i) 
+                 { return this->tuple()->addIndexedItem(n,*length,i); });
 }
 // ============================================================================
 // retrieve (book on demand) array-items for ntuple (fixed)
@@ -925,17 +764,11 @@ Tuples::TupleObj::FArray* Tuples::TupleObj::fArray
   const Tuples::TupleObj::MIndex& rows )
 {
   // existing array ?
-  FArrays::iterator found = m_arraysf.find( name ) ;
-  if( m_arraysf.end() != found ) { return found->second ; }
-  // create new array
-  FArray* array = new FArray () ;
-  m_arraysf[ name] =      array    ;
-  const StatusCode sc = tuple() -> addItem ( name , rows , *array) ;
-  if( sc.isFailure() )
-  { Error ( "array ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "FArray" ) )
-  { Error ( "array ('" + name + "'): item is not unique"     ) ; }
-  return array ;
+  auto found = m_arraysf.find( name ) ;
+  if( m_arraysf.end() != found ) { return found->second.get() ; }
+  return create_(this, m_arraysf, name,
+                 [&](const std::string& n, FArray& i) 
+                 { return this->tuple()->addItem(n,rows,i); });
 }
 // ============================================================================
 // retrieve (book on demand) matrix-items for ntuple
@@ -947,18 +780,11 @@ Tuples::TupleObj::fMatrix
   const Tuples::TupleObj::MIndex& cols   )
 {
   // existing array ?
-  FMatrices::iterator found = m_fmatrices.find( name ) ;
-  if( m_fmatrices.end() != found ) { return found->second ; }
-  // create new array
-  FMatrix* matrix = new FMatrix () ;
-  m_fmatrices[ name] =  matrix   ;
-  const StatusCode sc =
-    tuple() -> addIndexedItem( name , *length , cols , *matrix ) ;
-  if( sc.isFailure() )
-  { Error ( "fmatrix ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "FMatrix" ) )
-  { Error ( "fmatrix ('" + name + "'): item is not unique"     ) ; }
-  return matrix ;
+  auto found = m_fmatrices.find( name ) ;
+  if( m_fmatrices.end() != found ) { return found->second.get() ; }
+  return create_(this, m_fmatrices, name,
+                 [&](const std::string& n, FMatrix& i) 
+                 { return this->tuple()->addIndexedItem(n,*length,cols,i); });
 }
 // ============================================================================
 // retrieve (book on demand) matrix-items for ntuple (fixed)
@@ -970,18 +796,11 @@ Tuples::TupleObj::fMatrix
   const Tuples::TupleObj::MIndex& cols   )
 {
   // existing array ?
-  FMatrices::iterator found = m_matricesf.find( name ) ;
-  if( m_matricesf.end() != found ) { return found->second ; }
-  // create new array
-  FMatrix* matrix = new FMatrix () ;
-  m_matricesf[ name] =  matrix   ;
-  const StatusCode sc =
-    tuple() -> addItem( name , rows , cols , *matrix ) ;
-  if( sc.isFailure() )
-  { Error ( "matrix ('" + name + "'): item is not added",  sc ) ; }
-  if ( !addItem ( name , "FMatrix" ) )
-  { Error ( "matrix ('" + name + "'): item is not unique"     ) ; }
-  return matrix ;
+  auto found = m_matricesf.find( name ) ;
+  if( m_matricesf.end() != found ) { return found->second.get() ; }
+  return create_(this, m_matricesf, name,
+                 [&](const std::string& n, FMatrix& i) 
+                 { return this->tuple()->addItem(n,rows,cols,i); });
 }
 // ============================================================================
 // The END

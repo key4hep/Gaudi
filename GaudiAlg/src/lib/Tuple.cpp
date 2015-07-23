@@ -24,7 +24,7 @@
 Tuples::Tuple::Tuple( Tuples::TupleObj* tuple )
   : m_tuple( tuple )
 {
-  if( 0 != m_tuple ) { m_tuple -> addRef () ; }
+  if( m_tuple ) { m_tuple -> addRef () ; }
 }
 // ============================================================================
 
@@ -35,7 +35,7 @@ Tuples::Tuple::Tuple( Tuples::TupleObj* tuple )
 Tuples::Tuple::Tuple( const Tuples::Tuple&    tuple )
   : m_tuple ( tuple.m_tuple )
 {
-  if( 0 != m_tuple ) { m_tuple ->addRef() ; }
+  if( m_tuple ) { m_tuple ->addRef() ; }
 }
 // ============================================================================
 
@@ -50,11 +50,11 @@ Tuples::Tuple& Tuples::Tuple::operator=( const Tuples::Tuple& tuple )
   // self assigenment
   if( &tuple == this ) { return *this; }
   // temporary variable
-  Tuples::TupleObj* tmp = tuple.m_tuple ;
-  // increse reference count
-  if( 0 !=    tmp  ) { tmp     -> addRef  () ; }
+  auto  tmp = tuple.m_tuple ;
+  // increase reference count
+  if( tmp  ) { tmp     -> addRef  () ; }
   // decrease reference count
-  if( 0 != m_tuple ) { m_tuple -> release () ; }
+  if( m_tuple ) { m_tuple -> release () ; }
   // assign
   m_tuple = tmp ;
   //
@@ -67,12 +67,10 @@ Tuples::Tuple& Tuples::Tuple::operator=( const Tuples::Tuple& tuple )
 // ============================================================================
 Tuples::Tuple::~Tuple()
 {
-  if( 0 != m_tuple ) { m_tuple->release() ; }
+  if( m_tuple ) { m_tuple->release() ; }
 }
 // ============================================================================
 
 // ============================================================================
 // The END
 // ============================================================================
-
-

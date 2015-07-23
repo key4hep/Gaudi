@@ -3025,14 +3025,14 @@ public:
                 const IInterface*  parent );
   // ==========================================================================
   /// Destructor
-  virtual ~GaudiHistos() {}
+  ~GaudiHistos() override {}; // replace {} with = default crashes gcc 4.8.1...
   // ==========================================================================
 protected:
   // ==========================================================================
   /** standard initialization method
    *  @return status code
    */
-  virtual StatusCode initialize()
+  StatusCode initialize() override
 #ifdef __ICC
     { return i_ghInitialize(); }
   StatusCode i_ghInitialize()
@@ -3042,7 +3042,7 @@ protected:
   /** standard finalization method
    *  @return status code
    */
-  virtual StatusCode finalize()
+  StatusCode finalize() override
 #ifdef __ICC
     { return i_ghFinalize(); }
   StatusCode i_ghFinalize()

@@ -2,8 +2,8 @@
 
 #include "GaudiKernel/MsgStream.h"
 
-Prescaler::Prescaler(const std::string& name, ISvcLocator* pSvcLocator) :
-  GaudiAlgorithm(name, pSvcLocator) ,
+Prescaler::Prescaler(std::string name, ISvcLocator* pSvcLocator) :
+  GaudiAlgorithm( std::move(name), pSvcLocator) ,
   m_pass( 0 ),
   m_seen( 0 )
 {

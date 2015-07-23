@@ -40,16 +40,15 @@ namespace
     // remove long names
     if( 0 < maxLen &&  maxLen < (int) old.size() )
     {
-      std::string::iterator p1,p2;
-      p1 = old.begin();
+      auto p1 = old.begin();
       const char sep('/');
       while( old.end() != p1 )
       {
         p1 =
           std::find_if( p1        ,
                         old.end() ,
-                        std::bind2nd(std::not_equal_to<char>(),sep));
-        p2 = std::find( p1 , old.end() , sep ) ;
+                        [&](const char& c) { return c!=sep; } );
+        auto p2 = std::find( p1 , old.end() , sep ) ;
         if( ( p2 - p1 ) <= (int) maxLen  ) { p1 = p2 ; continue ; }
         old.insert( p1 + maxLen , sep ) ;
         p1 = old.begin() ;

@@ -95,7 +95,7 @@ protected: // few actual data types
   // ==========================================================================
   //protected members such that they can be used in the derived classes
   /// a pointer to the CounterSummarySvc
-  ICounterSummarySvc* m_counterSummarySvc;
+  ICounterSummarySvc* m_counterSummarySvc = nullptr;
   ///list of counters to declare. Set by property CounterList. This can be a regular expression.
   std::vector<std::string> m_counterList;
   //list of stat entities to write. Set by property StatEntityList. This can be a regular expression.
@@ -668,7 +668,7 @@ public:
   inline StatusCode runUpdate() { return updMgrSvc()->update(this); }
 public:
   /// Algorithm constructor
-  GaudiCommon ( const std::string & name,
+  GaudiCommon ( const std::string&   name,
                 ISvcLocator * pSvcLocator );
   /// Tool constructor
   GaudiCommon ( const std::string& type   ,
@@ -678,7 +678,7 @@ public:
   /** standard initialization method
    *  @return status code
    */
-  virtual StatusCode initialize()
+  StatusCode initialize() override
 #ifdef __ICC
    { return i_gcInitialize(); }
   StatusCode i_gcInitialize()
@@ -687,7 +687,7 @@ public:
   /** standard finalization method
    *  @return status code
    */
-  virtual StatusCode finalize()
+  StatusCode finalize() override
 #ifdef __ICC
    { return i_gcFinalize(); }
   StatusCode i_gcFinalize()
@@ -695,14 +695,11 @@ public:
   ;
 protected:
   /// Destructor
-  virtual ~GaudiCommon() {resetMsgStream();}
+  ~GaudiCommon() override {}; // replacing {} with = default crashes gcc 4.8.1
 private :
-  // default constructor is disabled
-  GaudiCommon() ;
-  // copy    constructor is disabled
-  GaudiCommon           ( const GaudiCommon& ) ;
-  // assignment operator is disabled
-  GaudiCommon& operator=( const GaudiCommon& ) ;
+  GaudiCommon() = delete;
+  GaudiCommon           ( const GaudiCommon& ) = delete;
+  GaudiCommon& operator=( const GaudiCommon& ) = delete;
 protected:
   /// manual forced (and 'safe') release of the tool
   StatusCode releaseTool ( const IAlgTool*   tool ) const ;
@@ -730,7 +727,7 @@ public:
    */
   StatusCode release ( const IInterface* interface ) const ;
   /// Un-hide IInterface::release (ICC warning #1125)
-  virtual inline unsigned long release() { return PBASE::release(); }
+  inline unsigned long release() override { return PBASE::release(); }
   // ==========================================================================
 public:
   // ==========================================================================
@@ -780,7 +777,7 @@ private:
   MSG::Level  m_msgLevel    ;
 private:
   /// The predefined message stream
-  mutable MsgStream* m_msgStream   ;
+  mutable std::unique_ptr<MsgStream> m_msgStream    ;
   /// List of active  tools
   mutable AlgTools   m_tools       ;
   /// List of active  services
@@ -798,7 +795,7 @@ private:
   mutable Statistics m_counters    ;
   // ==========================================================================
   /// Pointer to the Update Manager Service instance
-  mutable IUpdateManagerSvc* m_updMgrSvc;
+  mutable IUpdateManagerSvc* m_updMgrSvc = nullptr;
   // ==========================================================================
   /// insert  the actual C++ type of the algorithm in the messages?
   bool        m_typePrint     ;
@@ -818,7 +815,7 @@ private:
   /// Please update your code to use RootInTES instead. This option will be removed at some point.
   std::string m_rootOnTES;
   /// The globalTimeOffset value
-  double m_globalTimeOffset;
+  double m_globalTimeOffset = 0;
   // ==========================================================================
   // the header row
   std::string    m_header  ; ///< the header row

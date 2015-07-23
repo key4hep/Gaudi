@@ -42,13 +42,11 @@ namespace Tuples
     typedef GaudiUtils::HashMap<std::string,NTuple::Item<VALUE>*>  Store;
   public:
     /// constructor : create empty map
-    ItemStore() : m_map() {}
+    ItemStore()  = default;
     /// destructor : delete all known entries
     ~ItemStore()
     {
-      for ( typename Store::iterator ientry  = m_map.begin() ;
-            m_map.end() != ientry ; ++ientry )
-      { if ( 0 != ientry->second ) { delete ientry->second ; } }
+      for ( auto & i : m_map ) { delete i.second ; }
     }
   protected:
     /// the only one method:
@@ -60,21 +58,21 @@ namespace Tuples
       // existing item?
       if ( m_map.end() != ifound ) { return ifound->second ; }        // RETURN
       // check the tuple for booking:
-      if ( 0 == tuple ) { return 0 ; }
+      if ( !tuple ) { return nullptr ; }
       // check the existence of the name
       if ( !tuple->goodItem ( key ) )
       {
         tuple -> Error ( "ItemStore::getItem('" + key
                          + "') item name is not unique").ignore() ;
-        return 0 ;                                                    // RETURN
+        return nullptr ;                                                    // RETURN
       }
       // get the underlying object
       NTuple::Tuple* tup = tuple->tuple() ;
-      if ( 0 == tup )
+      if ( !tup )
       {
         tuple -> Error ( "ItemStore::getItem('" + key
                          + "') invalid NTuple::Tuple*" ).ignore() ;
-        return 0 ;                                                   // RETURN
+        return nullptr ;                                                   // RETURN
       }
       // create new item:
       NTuple::Item<VALUE>* item = new NTuple::Item<VALUE>() ;
@@ -84,7 +82,7 @@ namespace Tuples
       {
         tuple -> Error   ( "ItemStore::getItem('" + key
                            + "') cannot addItem" , sc ).ignore() ;
-        return 0 ;                                                  // RETURN
+        return nullptr ;                                                  // RETURN
       }
       // check the name again
       if ( !tuple->addItem( key , System::typeinfoName ( typeid ( VALUE ) ) ) )
@@ -102,10 +100,9 @@ namespace Tuples
       return item ;                                                  // RETURN
     }
   private:
-    // copy constructor is disabled
-    ItemStore           ( const ItemStore& ) ; ///< no copy is allowed
-    // assignment is disabled
-    ItemStore& operator=( const ItemStore& ) ; ///< no assignment is allowed
+    // delete copy constructor and assignment
+    ItemStore           ( const ItemStore& ) = delete;
+    ItemStore& operator=( const ItemStore& ) = delete;
   private:
     /// the underlying map
     Store m_map ; ///< the underlying map

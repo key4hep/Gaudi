@@ -50,34 +50,16 @@ protected:
    *  @see      Algorithm
    *  @see   IAlgFactory
    */
-  GaudiTupleAlg( const std::string& name ,
-                 ISvcLocator*       svc  );
+  GaudiTupleAlg( const std::string&  name ,
+                 ISvcLocator* svc  );
 
   /// destructor
-  virtual ~GaudiTupleAlg() = default;
+  ~GaudiTupleAlg() override = default;
 
-  /** standard initialization method
-   *  @see  Algorithm
-   *  @see IAlgorithm
-   *  @return status code
-   */
-  virtual StatusCode initialize ();
 
-  /** standard finalization method
-   *  @see  Algorithm
-   *  @see IAlgorithm
-   *  @return status code
-   */
-  virtual StatusCode finalize  ();
-
-private:
-
-  /// default constructor  is disabled
-  GaudiTupleAlg ();
-  /// copy constructor     is disabled
-  GaudiTupleAlg           ( const  GaudiTupleAlg& );
-  /// assignment operator is disabled
-  GaudiTupleAlg& operator=( const  GaudiTupleAlg& );
+  GaudiTupleAlg () = delete;
+  GaudiTupleAlg           ( const  GaudiTupleAlg& ) = delete;
+  GaudiTupleAlg& operator=( const  GaudiTupleAlg& ) = delete;
 
 };
 
@@ -85,4 +67,3 @@ private:
 // The END
 // ============================================================================
 #endif // GAUDIALG_GAUDITUPLEALG_H
-// ============================================================================

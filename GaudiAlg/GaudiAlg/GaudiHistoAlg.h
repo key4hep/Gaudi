@@ -50,30 +50,28 @@ protected:
                   ISvcLocator*       pSvc );
 
   /// virtual destructor
-  virtual ~GaudiHistoAlg( );
+  ~GaudiHistoAlg( ) override;
 
   /** standard initialization method
    *  @see  Algorithm
    *  @see      IAlgorithm
    *  @return status code
    */
-  virtual StatusCode initialize ();
+  StatusCode initialize () override;
 
   /** standard finalization method
    *  @see       Algorithm
    *  @see      IAlgorithm
    *  @return status code
    */
-  virtual StatusCode finalize  ();
+  StatusCode finalize  () override;
 
 private:
 
-  // default constructor  is disabled
-  GaudiHistoAlg ();
-  // copy constructor     is disabled
-  GaudiHistoAlg           ( const  GaudiHistoAlg& );
-  // assignment operator is disabled
-  GaudiHistoAlg& operator=( const  GaudiHistoAlg& );
+  // delete  default/copy constructor and assignment
+  GaudiHistoAlg () = delete;
+  GaudiHistoAlg           ( const  GaudiHistoAlg& ) = delete;
+  GaudiHistoAlg& operator=( const  GaudiHistoAlg& ) = delete;
 
 }; // end of class GaudiHistoAlg
 

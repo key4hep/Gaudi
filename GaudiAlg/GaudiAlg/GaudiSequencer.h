@@ -29,30 +29,25 @@ public:
   /// Standard constructor
   GaudiSequencer( const std::string& name, ISvcLocator* pSvcLocator );
 
-  virtual ~GaudiSequencer( ); ///< Destructor
+  ~GaudiSequencer( ) override; ///< Destructor
 
-  virtual StatusCode initialize();    ///< Algorithm initialization
-  virtual StatusCode execute   ();    ///< Algorithm execution
-  virtual StatusCode finalize  ();    ///< Algorithm finalization
+  StatusCode initialize() override;    ///< Algorithm initialization
+  StatusCode execute   () override;    ///< Algorithm execution
+  StatusCode finalize  () override;    ///< Algorithm finalization
 
-  virtual StatusCode beginRun  ();    ///< Algorithm beginRun
-  virtual StatusCode endRun    ();    ///< Algorithm endRun
+  StatusCode beginRun  () override;    ///< Algorithm beginRun
+  StatusCode endRun    () override;    ///< Algorithm endRun
 
   /** for asynchronous changes in the list of algorithms */
   void membershipHandler( Property& theProp );
 
 protected:
 
-  class AlgorithmEntry {
+  class AlgorithmEntry final {
   public:
     /// Standard constructor
-    AlgorithmEntry( Algorithm* alg ) {
-      m_algorithm = alg;
-      m_reverse = false;
-      m_timer = 0;
-    }
+    AlgorithmEntry( Algorithm* alg ) : m_algorithm(alg) { }
 
-    virtual ~AlgorithmEntry( ) {}; ///< Destructor
     void setReverse( bool flag )            { m_reverse   = flag; }
 
     Algorithm* algorithm()        const  { return m_algorithm; }
@@ -60,9 +55,9 @@ protected:
     void       setTimer( int nb )        { m_timer = nb;       }
     int        timer()            const  { return m_timer;     }
   private:
-    Algorithm*  m_algorithm;   ///< Algorithm pointer
-    bool        m_reverse;     ///< Indicates that the flag has to be inverted
-    int         m_timer;       ///< Timer number fo rthis algorithm
+    Algorithm*  m_algorithm = nullptr; ///< Algorithm pointer
+    bool        m_reverse = false;     ///< Indicates that the flag has to be inverted
+    int         m_timer = 0;           ///< Timer number for this algorithm
   };
 
   /** Decode a vector of string. */

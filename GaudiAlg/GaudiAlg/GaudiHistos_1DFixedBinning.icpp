@@ -11,12 +11,12 @@ AIDA::IHistogram1D*  GaudiHistos<PBASE>::book1D
   const unsigned long bins         ) const
 {
   //
-  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  if  ( !produceHistos() )                   { return nullptr ; } // RETURN
   //
   // exist?
   AIDA::IHistogram1D* hist = histo1D ( title ) ;
   // histogram is already booked
-  if( NULL != hist      )                    { return hist ; } // RETURN !!
+  if( hist      )                    { return hist ; } // RETURN !!
 
   // propose the histogram ID
   HistoID ID;
@@ -37,20 +37,20 @@ AIDA::IHistogram1D*  GaudiHistos<PBASE>::book1D
   const unsigned long           bins   ) const
 {
   //
-  if  ( !produceHistos() ) { return 0 ; }  // RETURN
+  if  ( !produceHistos() ) { return nullptr ; }  // RETURN
   //
 
   // Check ID
   if ( ID.undefined() )
   {
     this->Error("Undefined Histogram ID : Title='"+title+"'");
-    return NULL;
+    return nullptr;
   }
 
   // exist?
   AIDA::IHistogram1D* hist = histo1D ( ID ) ;
   // histogram is already booked
-  if ( NULL != hist       )                  { return hist ; } // RETURN !!
+  if ( hist       )                  { return hist ; } // RETURN !!
 
   // Histogram title
   const std::string & htitle =
@@ -77,7 +77,7 @@ AIDA::IHistogram1D*  GaudiHistos<PBASE>::book1D
   }
 
   // check OK
-  if( NULL == hist )
+  if( !hist )
   { this->Error( "IHistogram1D* points to NULL! ID='" + ID.idAsString() +
                  "' title='"+htitle+"'" ) ; return NULL; } // RETURN !!
 
@@ -107,7 +107,7 @@ AIDA::IHistogram1D* GaudiHistos<PBASE>::fill
   const double         weight ,
   const std::string&   title  ) const
 {
-  if ( 0 == histo     ) { return 0 ; }                          // RETURN
+  if ( !histo     ) { return nullptr ; }                          // RETURN
   //
   if ( !checkForNaN() )
   { Gaudi::Utils::Histos::fill ( histo , value , weight ) ; }
@@ -146,7 +146,7 @@ GaudiHistos<PBASE>::plot1D
   {
     // retrieve or book the histogram
     h = histo1D ( title ) ;
-    if ( NULL == h ) { h = book1D  ( title , low , high , bins ) ; }
+    if ( !h ) { h = book1D  ( title , low , high , bins ) ; }
     // fill the histogram
     h = fill ( h , value , weight , title );
   }
@@ -171,7 +171,7 @@ GaudiHistos<PBASE>::plot1D
   {
     // retrieve or book the histogram
     h = histo1D ( ID ) ;
-    if ( NULL == h ) {  h = book1D ( ID , title , low , high , bins ) ; }
+    if ( !h ) {  h = book1D ( ID , title , low , high , bins ) ; }
     // fill
     h = fill ( h , value , weight , title ) ;
   }
