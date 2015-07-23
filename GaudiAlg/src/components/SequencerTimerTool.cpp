@@ -27,13 +27,9 @@ DECLARE_COMPONENT(SequencerTimerTool)
                                           const std::string& name,
                                           const IInterface* parent )
     : GaudiHistoTool ( type, name , parent )
-    , m_indent( 0 )
-    , m_normFactor( 0.001 )
-    , m_speedRatio(0)
 {
   declareInterface<ISequencerTimerTool>(this);
 
-  m_shots = 3500000 ; // 1s on 2.8GHz Xeon, gcc 3.2, -o2
   declareProperty( "shots"        , m_shots );
   declareProperty( "Normalised"   , m_normalised = false );
   declareProperty( "GlobalTiming" , m_globalTiming = false );
@@ -42,12 +38,6 @@ DECLARE_COMPONENT(SequencerTimerTool)
   // Histograms are disabled by default in this tool.
   setProperty("HistoProduce", false).ignore();
 }
-//=============================================================================
-// Destructor
-//=============================================================================
-SequencerTimerTool::~SequencerTimerTool() {}
-
-
 //=========================================================================
 //
 //=========================================================================
@@ -71,9 +61,7 @@ StatusCode SequencerTimerTool::initialize ( )
   info() << "This machine has a speed about "
          << format( "%6.2f", 1000.*m_speedRatio)
          << " times the speed of a 2.8 GHz Xeon." << endmsg ;
-  if ( m_normalised ) {
-    m_normFactor = m_speedRatio;
-  }
+  if ( m_normalised ) m_normFactor = m_speedRatio;
   return sc;
 }
 
@@ -92,12 +80,12 @@ StatusCode SequencerTimerTool::finalize ( )
   info() << endmsg << TimerForSequencer::header( m_headerSize ) << endmsg
          << line << endmsg;
 
-  std::string lastName = "";
-  for ( unsigned int kk=0 ; m_timerList.size() > kk ; kk++ )
+  std::string lastName;
+  for ( const auto& timr : m_timerList) 
   {
-    if ( lastName == m_timerList[kk].name() ) continue; // suppress duplicate
-    lastName = m_timerList[kk].name();
-    info() << m_timerList[kk] << endmsg;
+    if ( lastName == timr.name() ) continue; // suppress duplicate
+    lastName = timr.name();
+    info() << timr << endmsg;
   }
   info() << line << endmsg;
 
@@ -109,15 +97,16 @@ StatusCode SequencerTimerTool::finalize ( )
 //=========================================================================
 int SequencerTimerTool::indexByName ( const std::string& name )
 {
-  std::string::size_type beg = name.find_first_not_of(" \t");
-  std::string::size_type end = name.find_last_not_of(" \t");
-  std::string temp = name.substr( beg, end-beg+1 );
-  for ( unsigned int kk=0 ; m_timerList.size() > kk ; kk++ ) {
-    beg =  m_timerList[kk].name().find_first_not_of(" \t");
-    end =  m_timerList[kk].name().find_last_not_of(" \t");
-    if ( m_timerList[kk].name().compare(beg,end-beg+1,temp) == 0 ) return kk;
-  }
-  return -1;
+  auto beg = name.find_first_not_of(" \t");
+  auto end = name.find_last_not_of(" \t");
+  auto temp = name.substr( beg, end-beg+1 );
+  auto i = std::find_if( std::begin(m_timerList), std::end(m_timerList),
+                         [&](const TimerForSequencer& timer) {
+    beg =  timer.name().find_first_not_of(" \t");
+    end =  timer.name().find_last_not_of(" \t");
+    return timer.name().compare(beg,end-beg+1,temp) == 0;
+  });
+  return i!=std::end(m_timerList) ? std::distance(std::begin(m_timerList),i) : -1;
 }
 
 //=========================================================================
@@ -135,9 +124,7 @@ void SequencerTimerTool::saveHistograms()
     TH1D* tHtime  = Gaudi::Utils::Aida2ROOT::aida2root(histoTime);
     TH1D* tHCPU   = Gaudi::Utils::Aida2ROOT::aida2root(histoCPU);
     TH1D* tHCount = Gaudi::Utils::Aida2ROOT::aida2root(histoCount);
-    for ( size_t kk = 0 ; bins > kk ; kk++ )
-    {
-      TimerForSequencer &tfsq = m_timerList[kk];
+    for (const auto& tfsq : m_timerList ) {
       tHtime->Fill(tfsq.name().c_str(), tfsq.elapsedTotal());
       tHCPU->Fill(tfsq.name().c_str(), tfsq.cpuTotal());
       tHCount->Fill(tfsq.name().c_str(), tfsq.count());
@@ -150,25 +137,12 @@ void SequencerTimerTool::saveHistograms()
 //=============================================================================
 int SequencerTimerTool::addTimer( const std::string& name )
 {
-  std::string myName;
-  if ( 0 < m_indent )
-  {
-    const std::string prefix( m_indent, ' ' );
-    myName += prefix;
-  }
+  std::string myName( 2*m_indent, ' ' );
   myName += name;
-  if ( myName.size() < m_headerSize )
-  {
-    const std::string space( m_headerSize - myName.size(), ' ' );
-    myName += space ;
+  if ( myName.size() < m_headerSize ) {
+    myName += std::string( m_headerSize - myName.size(), ' ' );
   }
-
-  //myName = myName.substr( 0, m_headerSize );
-
-  m_timerList.push_back( TimerForSequencer( myName,
-                                            m_headerSize,
-                                            m_normFactor ) );
-
+  m_timerList.emplace_back( std::move(myName), m_headerSize, m_normFactor );
   return m_timerList.size() - 1;
 }
 
