@@ -64,3 +64,7 @@ gaudi_add_test(AtomicSequencer
 gaudi_add_test(BugCFHEP114
                FRAMEWORK options/BugCFHEP114.py
                DEPENDS WhiteBoard)
+
+
+#---Installation-----------------------------------------------------------------------------
+gaudi_install_python_modules()
