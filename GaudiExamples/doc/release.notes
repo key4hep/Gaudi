@@ -2,6 +2,17 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-07-24 - Daniel Campora
+ - Added an algorithm to demonstrate that we can build/run code using OpenCL.
+   The algorithm in src/OpenCL/OpenCLAlg.cpp is mainly a proof of concept to
+   ensure that we can configure and build a package such that an algorithm can
+   invoke OpenCL code.
+
+     * options/OpenCL/basic.py: options to run the example
+     * src/OpenCL/OpenCLAlg.cpp: algorithm implementation
+
+   Note: it requires CMake >= 3.1.0 and OpenCL installed.
+
 ============================ GaudiExamples v26r3 =============================
 ! 2015-06-17 - Marco Clemencic
  - GAUDI-1044: added test
