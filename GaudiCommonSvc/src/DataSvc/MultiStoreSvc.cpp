@@ -121,55 +121,55 @@ public:
     P ? P->F ARGS : IDataProviderSvc::INVALID_ROOT
 
   /// IDataManagerSvc: Register object address with the data store.
-  virtual STATUS registerAddress(CSTR& path, ADDRESS* pAddr)   {
+  STATUS registerAddress(CSTR& path, ADDRESS* pAddr)   override {
     return _CALL(m_current.dataManager, registerAddress, (path, pAddr));
   }
   /// IDataManagerSvc: Register object address with the data store.
-  virtual STATUS registerAddress(OBJECT* parent, CSTR& path, ADDRESS* pAddr)  {
+  STATUS registerAddress(OBJECT* parent, CSTR& path, ADDRESS* pAddr)  override {
     return _CALL(m_current.dataManager, registerAddress, (parent, path, pAddr));
   }
   /// IDataManagerSvc: Register object address with the data store.
-  virtual STATUS registerAddress(IRegistry* parent, CSTR& path, ADDRESS* pAdd)  {
+  STATUS registerAddress(IRegistry* parent, CSTR& path, ADDRESS* pAdd)  override {
     return _CALL(m_current.dataManager, registerAddress, (parent, path, pAdd));
   }
   /// IDataManagerSvc: Unregister object address from the data store.
-  virtual STATUS unregisterAddress(CSTR& path)  {
+  STATUS unregisterAddress(CSTR& path)  override {
     return _CALL(m_current.dataManager, unregisterAddress, (path));
   }
   /// IDataManagerSvc: Unregister object address from the data store.
-  virtual STATUS unregisterAddress(OBJECT* pParent, CSTR& path)  {
+  STATUS unregisterAddress(OBJECT* pParent, CSTR& path)  override {
     return _CALL(m_current.dataManager, unregisterAddress, (pParent, path));
   }
   /// IDataManagerSvc: Unregister object address from the data store.
-  virtual STATUS unregisterAddress(IRegistry* pParent, CSTR& path)  {
+  STATUS unregisterAddress(IRegistry* pParent, CSTR& path)  override {
     return _CALL(m_current.dataManager, unregisterAddress, (pParent, path));
   }
   /// Explore the object store: retrieve all leaves attached to the object
-  virtual STATUS objectLeaves(const OBJECT*  pObject, std::vector<IRegistry*>& leaves)  {
+  STATUS objectLeaves(const OBJECT*  pObject, std::vector<IRegistry*>& leaves)  override {
     return _CALL(m_current.dataManager, objectLeaves, (pObject, leaves));
   }
   /// Explore the object store: retrieve all leaves attached to the object
-  virtual STATUS objectLeaves(const IRegistry* pObject, std::vector<IRegistry*>& leaves)  {
+  STATUS objectLeaves(const IRegistry* pObject, std::vector<IRegistry*>& leaves)  override {
     return _CALL(m_current.dataManager, objectLeaves, (pObject, leaves));
   }
   /// IDataManagerSvc: Explore the object store: retrieve the object's parent
-  virtual STATUS objectParent(const OBJECT* pObject, IRegistry*& refpParent)  {
+  STATUS objectParent(const OBJECT* pObject, IRegistry*& refpParent)  override {
     return _CALL(m_current.dataManager, objectParent, (pObject, refpParent));
   }
   /// IDataManagerSvc: Explore the object store: retrieve the object's parent
-  virtual STATUS objectParent(const IRegistry* pObject, IRegistry*& refpParent)  {
+  STATUS objectParent(const IRegistry* pObject, IRegistry*& refpParent)  override {
     return _CALL(m_current.dataManager, objectParent, (pObject, refpParent));
   }
   /// Remove all data objects below the sub tree identified
-  virtual STATUS clearSubTree(CSTR& path)  {
+  STATUS clearSubTree(CSTR& path)  override {
     return _CALL(m_current.dataManager, clearSubTree, (path));
   }
   /// Remove all data objects below the sub tree identified
-  virtual STATUS clearSubTree(OBJECT* pObject)  {
+  STATUS clearSubTree(OBJECT* pObject)  override {
     return _CALL(m_current.dataManager, clearSubTree, (pObject));
   }
   /// IDataManagerSvc: Remove all data objects in the data store.
-  virtual STATUS clearStore()  {
+  STATUS clearStore()  override {
     for(auto &i : m_partitions) {
       i.second.dataManager->clearStore().ignore();
     }
@@ -189,20 +189,20 @@ public:
     return STATUS::SUCCESS;
   }
   /// Analyze by traversing all data objects below the sub tree
-  virtual STATUS traverseSubTree(CSTR& path, AGENT* pAgent)  {
+  STATUS traverseSubTree(CSTR& path, AGENT* pAgent)  override {
     return _CALL(m_current.dataManager, traverseSubTree, (path, pAgent));
   }
   /// IDataManagerSvc: Analyze by traversing all data objects below the sub tree
-  virtual STATUS traverseSubTree(OBJECT* pObject, AGENT* pAgent)  {
+  STATUS traverseSubTree(OBJECT* pObject, AGENT* pAgent)  override {
     return _CALL(m_current.dataManager, traverseSubTree, (pObject, pAgent));
   }
   /// IDataManagerSvc: Analyze by traversing all data objects in the data store.
-  virtual STATUS traverseTree( AGENT* pAgent )  {
+  STATUS traverseTree( AGENT* pAgent )  override {
     return _CALL(m_current.dataManager, traverseTree, (pAgent));
   }
   /** Initialize data store for new event by giving new event path and root
       object. Takes care to clear the store before reinitializing it  */
-  virtual STATUS setRoot( CSTR& path, OBJECT* pObj)  {
+  STATUS setRoot( CSTR& path, OBJECT* pObj)  override {
     if ( m_root.root.object )  {
       switch ( m_root.type )  {
         case address_type:
@@ -222,7 +222,7 @@ public:
 
   /** Initialize data store for new event by giving new event path and address
       of root object. Takes care to clear the store before reinitializing it */
-  virtual STATUS setRoot (CSTR& path, ADDRESS* pAddr)  {
+  STATUS setRoot (CSTR& path, ADDRESS* pAddr)  override {
     if ( m_root.root.object )  {
       switch ( m_root.type )  {
         case address_type:
@@ -244,7 +244,7 @@ public:
     return STATUS::FAILURE;
   }
   /// IDataManagerSvc: Pass a default data loader to the service.
-  virtual STATUS setDataLoader(IConversionSvc* pDataLoader)  {
+  STATUS setDataLoader(IConversionSvc* pDataLoader)  override {
     if ( pDataLoader  ) pDataLoader->addRef();
     if ( m_dataLoader ) m_dataLoader->release();
     if ( pDataLoader  ) pDataLoader->setDataProvider(this);
@@ -255,182 +255,182 @@ public:
     return SUCCESS;
   }
   /// Add an item to the preload list
-  virtual STATUS addPreLoadItem(const DataStoreItem& item)    {
+  STATUS addPreLoadItem(const DataStoreItem& item)    override {
     return _CALL(m_current.dataProvider, addPreLoadItem, (item));
   }
   /// Add an item to the preload list
-  virtual STATUS addPreLoadItem(CSTR& item)   {
+  STATUS addPreLoadItem(CSTR& item)   override {
     return _CALL(m_current.dataProvider, addPreLoadItem, (item));
   }
   /// Remove an item from the preload list
-  virtual STATUS removePreLoadItem(const DataStoreItem& item)  {
+  STATUS removePreLoadItem(const DataStoreItem& item)  override {
     return _CALL(m_current.dataProvider, removePreLoadItem, (item));
   }
   /// Add an item to the preload list
-  virtual STATUS removePreLoadItem(CSTR& item)  {
+  STATUS removePreLoadItem(CSTR& item)  override {
     return _CALL(m_current.dataProvider, removePreLoadItem, (item));
   }
   /// Clear the preload list
-  virtual STATUS resetPreLoad() {
+  STATUS resetPreLoad() override {
     return _CALL(m_current.dataProvider, resetPreLoad, ());
   }
   /// load all preload items of the list
-  virtual STATUS preLoad()  {
+  STATUS preLoad()  override {
     return _CALL(m_current.dataProvider, preLoad, ());
   }
   /// Register object with the data store.
-  virtual STATUS registerObject(CSTR& path, OBJECT* pObj)  {
+  STATUS registerObject(CSTR& path, OBJECT* pObj)  override {
     return registerObject(nullptr, path, pObj);
   }
   /// Register object with the data store.
-  virtual STATUS registerObject(CSTR& parent, CSTR& obj, OBJECT* pObj)  {
+  STATUS registerObject(CSTR& parent, CSTR& obj, OBJECT* pObj)  override {
     return _CALL(m_current.dataProvider, registerObject, (parent, obj, pObj));
   }
   /// Register object with the data store.
-  virtual STATUS registerObject(CSTR& parent, int item, OBJECT* pObj)  {
+  STATUS registerObject(CSTR& parent, int item, OBJECT* pObj)  override {
     return _CALL(m_current.dataProvider, registerObject, (parent, item, pObj));
   }
   /// Register object with the data store.
-  virtual STATUS registerObject(OBJECT* parent, CSTR& obj, OBJECT* pObj)  {
+  STATUS registerObject(OBJECT* parent, CSTR& obj, OBJECT* pObj)  override {
     return _CALL(m_current.dataProvider, registerObject, (parent, obj, pObj));
   }
   /// Register object with the data store.
-  virtual STATUS registerObject(OBJECT* parent, int obj, OBJECT* pObj)  {
+  STATUS registerObject(OBJECT* parent, int obj, OBJECT* pObj)  override {
     return _CALL(m_current.dataProvider, registerObject, (parent, obj, pObj));
   }
   /// Unregister object from the data store.
-  virtual STATUS unregisterObject(CSTR& path)   {
+  STATUS unregisterObject(CSTR& path)   override {
     return _CALL(m_current.dataProvider, unregisterObject, (path));
   }
   /// Unregister object from the data store.
-  virtual STATUS unregisterObject(CSTR& parent, CSTR& obj)  {
+  STATUS unregisterObject(CSTR& parent, CSTR& obj)  override {
     return _CALL(m_current.dataProvider, unregisterObject, (parent, obj));
   }
   /// Unregister object from the data store.
-  virtual STATUS unregisterObject(CSTR& parent, int obj)  {
+  STATUS unregisterObject(CSTR& parent, int obj)  override {
     return _CALL(m_current.dataProvider, unregisterObject, (parent, obj));
   }
   /// Unregister object from the data store.
-  virtual STATUS unregisterObject(OBJECT* pObj)  {
+  STATUS unregisterObject(OBJECT* pObj)  override {
     return _CALL(m_current.dataProvider, unregisterObject, (pObj));
   }
   /// Unregister object from the data store.
-  virtual STATUS unregisterObject(OBJECT* pObj, CSTR& path)  {
+  STATUS unregisterObject(OBJECT* pObj, CSTR& path)  override {
     return _CALL(m_current.dataProvider, unregisterObject, (pObj, path));
   }
   /// Unregister object from the data store.
-  virtual STATUS unregisterObject(OBJECT* pObj, int item )  {
+  STATUS unregisterObject(OBJECT* pObj, int item )  override {
     return _CALL(m_current.dataProvider, unregisterObject, (pObj, item));
   }
   /// Retrieve object from data store.
-  virtual STATUS retrieveObject(IRegistry* parent, CSTR& path, OBJECT*& pObj )  {
+  STATUS retrieveObject(IRegistry* parent, CSTR& path, OBJECT*& pObj )  override {
     return _CALL(m_current.dataProvider, retrieveObject, (parent, path, pObj));
   }
   /// Retrieve object identified by its full path from the data store.
-  virtual STATUS retrieveObject(CSTR& path, OBJECT*& pObj)  {
+  STATUS retrieveObject(CSTR& path, OBJECT*& pObj)  override {
     return _CALL(m_current.dataProvider, retrieveObject, (path, pObj));
   }
   /// Retrieve object from data store.
-  virtual STATUS retrieveObject(CSTR& parent, CSTR& path, OBJECT*& pObj )  {
+  STATUS retrieveObject(CSTR& parent, CSTR& path, OBJECT*& pObj )  override {
     return _CALL(m_current.dataProvider, retrieveObject, (parent, path, pObj));
   }
   /// Retrieve object from data store.
-  virtual STATUS retrieveObject(CSTR& parent, int item, OBJECT*& pObj)  {
+  STATUS retrieveObject(CSTR& parent, int item, OBJECT*& pObj)  override {
     return _CALL(m_current.dataProvider, retrieveObject, (parent, item, pObj));
   }
   /// Retrieve object from data store.
-  virtual STATUS retrieveObject(OBJECT* parent, CSTR& path, OBJECT*& pObj )  {
+  STATUS retrieveObject(OBJECT* parent, CSTR& path, OBJECT*& pObj )  override {
     return _CALL(m_current.dataProvider, retrieveObject, (parent, path, pObj));
   }
   /// Retrieve object from data store.
-  virtual STATUS retrieveObject(OBJECT* parent, int item, OBJECT*& pObj )  {
+  STATUS retrieveObject(OBJECT* parent, int item, OBJECT*& pObj )  override {
     return _CALL(m_current.dataProvider, retrieveObject, (parent, item, pObj));
   }
   /// Find object identified by its full path in the data store.
-  virtual STATUS findObject(CSTR& path, OBJECT*& pObj)  {
+  STATUS findObject(CSTR& path, OBJECT*& pObj)  override {
     return _CALL(m_current.dataProvider, retrieveObject, (path, pObj));
   }
   /// Find object identified by its full path in the data store.
-  virtual STATUS findObject(IRegistry* parent, CSTR& path, OBJECT*& pObj)  {
+  STATUS findObject(IRegistry* parent, CSTR& path, OBJECT*& pObj)  override {
     return _CALL(m_current.dataProvider, retrieveObject, (parent, path, pObj));
   }
   /// Find object in the data store.
-  virtual STATUS findObject(CSTR& parent, CSTR& path, OBJECT*& pObj)  {
+  STATUS findObject(CSTR& parent, CSTR& path, OBJECT*& pObj)  override {
     return _CALL(m_current.dataProvider, retrieveObject, (parent, path, pObj));
   }
   /// Find object in the data store.
-  virtual STATUS findObject(CSTR& parent, int item, OBJECT*& pObject ) {
+  STATUS findObject(CSTR& parent, int item, OBJECT*& pObject ) override {
     return _CALL(m_current.dataProvider, findObject, (parent, item, pObject));
   }
   /// Find object in the data store.
-  virtual STATUS findObject(OBJECT* parent, CSTR& path, OBJECT*& pObject)  {
+  STATUS findObject(OBJECT* parent, CSTR& path, OBJECT*& pObject)  override {
     return _CALL(m_current.dataProvider, findObject, (parent, path, pObject));
   }
   /// Find object in the data store.
-  virtual STATUS findObject(OBJECT* parent, int item, OBJECT*& pObject)  {
+  STATUS findObject(OBJECT* parent, int item, OBJECT*& pObject)  override {
     return _CALL(m_current.dataProvider, findObject, (parent, item, pObject));
   }
   /// Add a link to another object.
-  virtual STATUS linkObject(IRegistry* from, CSTR& objPath, OBJECT* to)  {
+  STATUS linkObject(IRegistry* from, CSTR& objPath, OBJECT* to)  override {
     return _CALL(m_current.dataProvider, linkObject, (from, objPath, to));
   }
   /// Add a link to another object.
-  virtual STATUS linkObject(CSTR& from, CSTR& objPath, OBJECT* to)   {
+  STATUS linkObject(CSTR& from, CSTR& objPath, OBJECT* to)   override {
     return _CALL(m_current.dataProvider, linkObject, (from, objPath, to));
   }
   /// Add a link to another object.
-  virtual STATUS linkObject(OBJECT* from, CSTR& objPath, OBJECT* to)  {
+  STATUS linkObject(OBJECT* from, CSTR& objPath, OBJECT* to)  override {
     return _CALL(m_current.dataProvider, linkObject, (from, objPath, to));
   }
   /// Add a link to another object.
-  virtual STATUS linkObject(CSTR& fullPath, OBJECT* to)  {
+  STATUS linkObject(CSTR& fullPath, OBJECT* to)  override {
     return _CALL(m_current.dataProvider, linkObject, (fullPath, to));
   }
   /// Remove a link to another object.
-  virtual STATUS unlinkObject(IRegistry* from, CSTR& objPath)  {
+  STATUS unlinkObject(IRegistry* from, CSTR& objPath)  override {
     return _CALL(m_current.dataProvider, unlinkObject, (from, objPath));
   }
   /// Remove a link to another object.
-  virtual STATUS unlinkObject(CSTR& from, CSTR& objPath)  {
+  STATUS unlinkObject(CSTR& from, CSTR& objPath)  override {
     return _CALL(m_current.dataProvider, unlinkObject, (from, objPath));
   }
   /// Remove a link to another object.
-  virtual STATUS unlinkObject(OBJECT* from, CSTR& objPath)  {
+  STATUS unlinkObject(OBJECT* from, CSTR& objPath)  override {
     return _CALL(m_current.dataProvider, unlinkObject, (from, objPath));
   }
   /// Remove a link to another object.
-  virtual STATUS unlinkObject(CSTR& path) {
+  STATUS unlinkObject(CSTR& path) override {
     return _CALL(m_current.dataProvider, unlinkObject, (path));
   }
   /// Update object identified by its directory entry.
-  virtual STATUS updateObject(IRegistry* pDirectory )  {
+  STATUS updateObject(IRegistry* pDirectory )  override {
     return _CALL(m_current.dataProvider, updateObject, (pDirectory));
   }
   /// Update object.
-  virtual STATUS updateObject(CSTR& path)  {
+  STATUS updateObject(CSTR& path)  override {
     return _CALL(m_current.dataProvider, updateObject, (path));
   }
   /// Update object.
-  virtual STATUS updateObject(OBJECT* pObj )  {
+  STATUS updateObject(OBJECT* pObj )  override {
     return _CALL(m_current.dataProvider, updateObject, (pObj));
   }
   /// Update object.
-  virtual STATUS updateObject(CSTR& parent, CSTR& updatePath )  {
+  STATUS updateObject(CSTR& parent, CSTR& updatePath )  override {
     return _CALL(m_current.dataProvider, updateObject, (parent, updatePath));
   }
   /// Update object.
-  virtual STATUS updateObject(OBJECT* parent, CSTR& updatePath)  {
+  STATUS updateObject(OBJECT* parent, CSTR& updatePath)  override {
     return _CALL(m_current.dataProvider, updateObject, (parent, updatePath));
   }
 
   /// Create a partition object. The name identifies the partition uniquely
-  virtual STATUS create(CSTR& nam, CSTR& typ)  {
+  STATUS create(CSTR& nam, CSTR& typ)  override {
     IInterface* pPartition = nullptr;
     return create(nam, typ, pPartition);
   }
 
   /// Create a partition object. The name identifies the partition uniquely
-  virtual STATUS create(CSTR& nam, CSTR& typ, IInterface*& pPartition)  {
+  STATUS create(CSTR& nam, CSTR& typ, IInterface*& pPartition)  override {
     STATUS sc = get(nam, pPartition);
     if ( !sc.isSuccess() )  {
       Gaudi::Utils::TypeNameString item(typ);
@@ -463,7 +463,7 @@ public:
   }
 
   /// Drop a partition object. The name identifies the partition uniquely
-  virtual STATUS drop(CSTR& nam)   {
+  STATUS drop(CSTR& nam)   override {
     auto i = m_partitions.find(nam);
     if ( i != m_partitions.end() )  {
       if ( i->second.dataManager == m_current.dataManager )  {
@@ -479,7 +479,7 @@ public:
   }
 
   /// Drop a partition object. The name identifies the partition uniquely
-  virtual STATUS drop(IInterface* pPartition)  {
+  STATUS drop(IInterface* pPartition)  override {
     SmartIF<IDataProviderSvc> provider(pPartition);
     if ( !provider.isValid() )  return NO_INTERFACE;
     auto i = std::find_if( std::begin(m_partitions), std::end(m_partitions),
@@ -495,7 +495,7 @@ public:
   }
 
   /// Activate a partition object. The name identifies the partition uniquely.
-  virtual STATUS activate(CSTR& nam) {
+  STATUS activate(CSTR& nam) override {
     auto i = m_partitions.find(nam);
     if ( i != m_partitions.end() )  {
       m_current = i->second;
@@ -506,7 +506,7 @@ public:
   }
 
   /// Activate a partition object.
-  virtual STATUS activate(IInterface* pPartition) {
+  STATUS activate(IInterface* pPartition) override {
     SmartIF<IDataProviderSvc> provider(pPartition);
     m_current = Partition();
     if ( !provider )  return NO_INTERFACE;
@@ -520,7 +520,7 @@ public:
   }
 
   /// Access a partition object. The name identifies the partition uniquely.
-  virtual STATUS get(CSTR& nam, IInterface*& pPartition) const  {
+  STATUS get(CSTR& nam, IInterface*& pPartition) const  override {
     auto i = m_partitions.find(nam);
     if ( i != m_partitions.end() )  {
       pPartition = i->second.dataProvider;
@@ -531,7 +531,7 @@ public:
   }
 
   /// Access the active partition object.
-  virtual StatusCode activePartition(std::string& nam, IInterface*& pPartition) const  {
+  StatusCode activePartition(std::string& nam, IInterface*& pPartition) const  override {
     if ( m_current.dataProvider )  {
       nam = m_current.name;
       pPartition = m_current.dataProvider;
@@ -579,7 +579,7 @@ public:
   }
 
   /// Service initialisation
-  virtual STATUS initialize()    {
+  STATUS initialize()    override {
     // Nothing to do: just call base class initialisation
     STATUS sc = Service::initialize();
     if ( !sc.isSuccess() )  return sc;
@@ -593,7 +593,7 @@ public:
   }
 
   /// Service initialisation
-  virtual STATUS reinitialize()   {
+  STATUS reinitialize()   override {
     STATUS sc = Service::reinitialize();
     MsgStream log(msgSvc(), name());
     if (!sc.isSuccess()) {
@@ -617,7 +617,7 @@ public:
   }
 
   /// Service initialisation
-  virtual STATUS finalize()   {
+  STATUS finalize()   override {
     setDataLoader(nullptr).ignore();
     clearStore().ignore();
     clearPartitions().ignore();
@@ -641,7 +641,7 @@ public:
   }
 
   /// Standard Destructor
-  virtual ~MultiStoreSvc()  {
+  ~MultiStoreSvc()  override {
     setDataLoader(nullptr).ignore();
     resetPreLoad().ignore();
     clearStore().ignore();

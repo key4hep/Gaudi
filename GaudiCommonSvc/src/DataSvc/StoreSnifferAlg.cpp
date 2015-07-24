@@ -142,12 +142,12 @@ public:
       evnt.clid  = root->clID();
       evnt.id    = m_curr.size();
       for(const auto & i : m_curr ) m_info[i.first].count++;
-      for(SniffInfo::const_iterator i=m_info.begin(); i!=m_info.end();++i) {
-        const string& nam = (*i).first;
+      for(const auto & i : m_info ) {
+        const string& nam = i.first;
         // const LeafInfo& leaf = (*i).second;
-        Correlations::iterator c=m_corr.find(nam);
+        auto c=m_corr.find(nam);
         if ( c == m_corr.end() )  {
-          m_corr[nam] = map<int,int>();
+          m_corr[nam] = { };
           c = m_corr.find(nam);
         }
         for(const auto& l : m_curr) {
@@ -173,9 +173,9 @@ public:
               if ( il != m_curr.end() ) {
                 if ( lnk->object() ) {
                   const LeafInfo& li = (*il).second;
-                  auto k = (*c).second.find(li.id);
-                  if ( k==(*c).second.end() ) (*c).second[li.id] = 0;
-                  ++((*c).second[li.id]);
+                  auto k = c->second.find(li.id);
+                  if ( k==c->second.end() ) c->second[li.id] = 0;
+                  ++c->second[li.id];
                 }
               }
             }

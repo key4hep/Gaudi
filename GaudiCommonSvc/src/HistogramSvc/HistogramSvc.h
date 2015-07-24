@@ -146,7 +146,7 @@ public:
   HistogramSvc(const std::string& name, ISvcLocator* svc );
 
   /// Destructor
-  virtual ~HistogramSvc();
+  ~HistogramSvc() override;
 
   /** Split full path into its components
    *  @param full Full path of the object

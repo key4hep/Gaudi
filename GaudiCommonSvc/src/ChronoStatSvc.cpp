@@ -42,54 +42,23 @@ DECLARE_COMPONENT(ChronoStatSvc)
 // ============================================================================
 //  comparison functor
 // ============================================================================
-class ComparePairOfChronoEntityAndChronoTag
-  : public std::binary_function<
-  const std::pair<ChronoEntity*,const IChronoStatSvc::ChronoTag*> ,
-  const std::pair<ChronoEntity*,const IChronoStatSvc::ChronoTag*> , bool >
+constexpr struct  CompareFirstOfPointerPair_t
 {
-public:
-  inline bool operator()
-    ( const  std::pair<ChronoEntity*,
-      const IChronoStatSvc::ChronoTag*>& p1 ,
-      const  std::pair< ChronoEntity*,
-      const IChronoStatSvc::ChronoTag*>& p2 ) const
+  template <typename S, typename T>
+  inline bool operator() ( const std::pair<S*,T*>& p1, 
+                           const std::pair<S*,T*>& p2) const
   {
-    const ChronoEntity* e1 = p1.first;
-    const ChronoEntity* e2 = p2.first;
-    return ( ( 0 == e1 || 0 == e2 ) ? true : (*e1)<(*e2) ) ;
+    auto e1 = p1.first;
+    auto e2 = p2.first;
+    return ( !e1 || !e2 ) || *e1<*e2  ;
   }
-};
-// ============================================================================
-//  comparison functor
-// ============================================================================
-class ComparePairOfStatEntityAndStatTag
-  : public std::binary_function<
-  const std::pair<const StatEntity*,const IChronoStatSvc::StatTag*> ,
-  const std::pair<const StatEntity*,const IChronoStatSvc::StatTag*> , bool >
-{
-public:
-  ///
-  inline bool operator()
-    ( const std::pair<const StatEntity*,
-      const IChronoStatSvc::StatTag*>& p1,
-      const std::pair<const StatEntity*,
-      const IChronoStatSvc::StatTag*>& p2 ) const
-  {
-    const StatEntity* se1 = p1.first;
-    const StatEntity* se2 = p2.first;
-    return ( 0 == se1 || 0 == se2 ) ? true : (*se1)<(*se2) ;
-  }
-};
+} CompareFirstOfPointerPair {} ;
 // ============================================================================
 // Constructor
 // ============================================================================
 ChronoStatSvc::ChronoStatSvc
 ( const std::string& name, ISvcLocator* svcloc )
   : base_class( name , svcloc )
-  , m_chronoEntities   ()
-  , m_chronoPrintLevel ( MSG::INFO )
-  , m_statEntities     ()
-  , m_statPrintLevel   ( MSG::INFO )
   //
   // the header row
   , m_header  ( "     Counter     |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |")
@@ -97,8 +66,6 @@ ChronoStatSvc::ChronoStatSvc
   , m_format1 ( " %|-15.15s|%|17t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |" )
   // format for "efficiency" statistical printout rows
   , m_format2 ( "*%|-15.15s|%|17t||%|10d| |%|11.5g| |(%|#9.7g| +- %|-#9.7g|)%%|   -------   |   -------   |" )
-  // flag to use the special "efficiency" format
-  , m_useEffFormat ( true )
 {
   /// decide if the final printout should be performed
   declareProperty ( "ChronoPrintOutTable"    ,
@@ -166,16 +133,6 @@ ChronoStatSvc::ChronoStatSvc
 
 }
 // ============================================================================
-// Destructor.
-// ============================================================================
-ChronoStatSvc::~ChronoStatSvc()
-{
-  // clear the container of chrono entities
-  m_chronoEntities.clear();
-  // clear the container of stat   entities
-  m_statEntities.clear();
-}
-// ============================================================================
 // Implementation of IService::initialize()
 // ============================================================================
 StatusCode ChronoStatSvc::initialize()
@@ -194,7 +151,7 @@ StatusCode ChronoStatSvc::initialize()
   }
 
   // only add an EndEvent listener if per-event output requested
-  if (m_perEventFile != "") {
+  if (!m_perEventFile.empty()) {
     m_ofd.open(m_perEventFile.c_str());
     if (!m_ofd.is_open()) {
       log << MSG::ERROR << "unable to open per-event output file \""
@@ -203,8 +160,8 @@ StatusCode ChronoStatSvc::initialize()
     } else {
       SmartIF<IIncidentSvc> ii(serviceLocator()->service("IncidentSvc"));
       if (! ii) {
-	log << MSG::ERROR << "Unable to find IncidentSvc" << endmsg;
-	return StatusCode::FAILURE;
+        log << MSG::ERROR << "Unable to find IncidentSvc" << endmsg;
+        return StatusCode::FAILURE;
       }
       ii->addListener(this, IncidentType::EndEvent);
     }
@@ -255,15 +212,10 @@ StatusCode ChronoStatSvc::finalize()
   if (m_ofd.is_open()) {
     MsgStream log(msgSvc(), name());
     log << MSG::DEBUG << "writing per-event timing data to '" << m_perEventFile << "'" << endmsg;
-    std::string alg;
-    TimeMap::const_iterator itr;
-    for (itr=m_perEvtTime.begin(); itr != m_perEvtTime.end(); ++itr) {
-      alg = itr->first;
-      alg.erase(alg.length()-8,8);
-      m_ofd << alg << " ";
-      std::vector<IChronoSvc::ChronoTime>::const_iterator itt;
-      for (itt=itr->second.begin(); itt!=itr->second.end(); ++itt) {
-	m_ofd << " " << (long int)(*itt);
+    for (const auto& itr:m_perEvtTime) {
+      m_ofd << itr.first.substr(0,itr.first.length()-8 ) << " ";
+      for (const auto& itt:itr.second) {
+        m_ofd << " " << (long int)(itt);
       }
       m_ofd << std::endl;
     }
@@ -298,25 +250,21 @@ StatusCode ChronoStatSvc::finalize()
 	}
       ///
       {  // prepare container for printing
-	typedef std::pair<ChronoEntity*,const ChronoTag*>        MPair;
-	typedef std::vector<MPair>                               MCont;
-	MCont tmpCont;
-	for( ChronoMap::iterator it = m_chronoEntities.begin() ;
-       m_chronoEntities.end() != it ;  ++it )
-	  { tmpCont.push_back( MPair( &(it->second) , &(it->first) ) ) ; }
+    std::vector<std::pair<ChronoEntity*,const ChronoTag*>> tmpCont;
+    tmpCont.reserve(m_chronoEntities.size());
+	for( auto&  it : m_chronoEntities ) 
+	  { tmpCont.emplace_back(  &it.second , &it.first ) ; }
 	// sort it
-	if( m_chronoOrderFlag )
-  { std::sort( tmpCont.begin() ,
-               tmpCont.end()   ,
-               ComparePairOfChronoEntityAndChronoTag() ); }
+	if( m_chronoOrderFlag ) std::sort( tmpCont.begin(), tmpCont.end(),
+                                       CompareFirstOfPointerPair );
 	// print User Time statistics
         if( m_printUserTime   )
 	  {
-	    for( MCont::iterator iter = tmpCont.begin() ;  tmpCont.end() != iter ; ++iter )
+	    for( auto iter = tmpCont.begin() ;  tmpCont.end() != iter ; ++iter )
 	      {
 		//
-		ChronoEntity*    entity = iter->first  ; if( 0 == entity ) { continue ; } /// CONTINUE
-		const ChronoTag* tag    = iter->second ; if( 0 == tag    ) { continue ; } /// CONTINUE
+		ChronoEntity*    entity = iter->first  ; if( !entity ) { continue ; } /// CONTINUE
+		const ChronoTag* tag    = iter->second ; if( !tag    ) { continue ; } /// CONTINUE
 		///
 		entity->stop();              /// stop chrono (if it is still in RUNNING status)
 		///
@@ -340,11 +288,11 @@ StatusCode ChronoStatSvc::finalize()
 	    else if ( m_printUserTime && !m_chronoCoutFlag  )
 	      { log << (MSG::Level) m_chronoPrintLevel << stars << endmsg; }
 	    ///
-	    for( MCont::iterator iter = tmpCont.begin() ;  tmpCont.end() != iter ; ++iter )
+	    for( auto iter = tmpCont.begin() ;  tmpCont.end() != iter ; ++iter )
 	      {
 		///
-		ChronoEntity*    entity = iter->first  ; if( 0 == entity ) { continue ; } /// CONTINUE
-		const ChronoTag* tag    = iter->second ; if( 0 == tag    ) { continue ; } /// CONTINUE
+		ChronoEntity*    entity = iter->first  ; if( !entity ) { continue ; } /// CONTINUE
+		const ChronoTag* tag    = iter->second ; if( !tag    ) { continue ; } /// CONTINUE
 		///
 		entity->stop();              /// stop chrono (if it is still in RUNNING status)
 		///
@@ -368,11 +316,11 @@ StatusCode ChronoStatSvc::finalize()
 	    else if ( ( m_printUserTime || m_printSystemTime ) && !m_chronoCoutFlag  )
 	      { log << (MSG::Level) m_chronoPrintLevel << stars << endmsg; }
 	    ///
-	    for( MCont::iterator iter = tmpCont.begin() ;  tmpCont.end() != iter ; ++iter )
+	    for( const auto& i : tmpCont )
 	      {
 		///
-		ChronoEntity*    entity = iter->first  ; if( 0 == entity ) { continue ; } /// CONTINUE
-		const ChronoTag* tag    = iter->second ; if( 0 == tag    ) { continue ; } /// CONTINUE
+		ChronoEntity*    entity = i.first  ; if( !entity ) { continue ; } /// CONTINUE
+		const ChronoTag* tag    = i.second ; if( !tag    ) { continue ; } /// CONTINUE
 		///
 		entity->stop();              /// stop chrono (if it is still in RUNNING status)
 		///
@@ -471,9 +419,9 @@ void    ChronoStatSvc::stat
 ( const IChronoStatSvc::StatTag    & statTag    ,
   const IChronoStatSvc::StatFlag   & statFlag   )
 {
-  StatMap::iterator theIter=m_statEntities.find(statTag);
+  auto theIter=m_statEntities.find(statTag);
 
-  StatEntity * theStat=0 ;
+  StatEntity * theStat=nullptr ;
   // if new entity, specify the number of events to be skipped
   if (theIter==m_statEntities.end()){
     // new stat entity
@@ -484,7 +432,7 @@ void    ChronoStatSvc::stat
   else
   {
     //existing stat entity
-    theStat=&((*theIter).second);
+    theStat=&theIter->second;
   }
 
   theStat->addFlag ( statFlag ) ;
@@ -508,9 +456,8 @@ void    ChronoStatSvc::statPrint
 const ChronoEntity* ChronoStatSvc::chrono
 ( const IChronoStatSvc::ChronoTag& t ) const
 {
-  ChronoMap::const_iterator it = m_chronoEntities.find ( t ) ;
-  if ( m_chronoEntities.end() != it ) { return &(it->second) ; }
-  return 0 ;
+  auto it = m_chronoEntities.find ( t ) ;
+  return m_chronoEntities.end() != it ? &(it->second) : nullptr;
 }
 // ============================================================================
 /*  extract the stat   entity for the given tag (name)
@@ -522,9 +469,8 @@ const ChronoEntity* ChronoStatSvc::chrono
 const StatEntity*   ChronoStatSvc::stat
 ( const IChronoStatSvc::StatTag&   t ) const
 {
-  StatMap::const_iterator it = m_statEntities.find ( t ) ;
-  if ( m_statEntities.end() != it ) { return &(it->second) ; }
-  return 0 ;
+  auto it = m_statEntities.find ( t ) ;
+  return m_statEntities.end() != it ? &(it->second) : nullptr;
 }
 // ============================================================================
 // dump all the statistics into an ASCII file
@@ -546,30 +492,26 @@ void ChronoStatSvc::saveStats()
   }
 
   // ChronoEntity
-  typedef std::pair<ChronoEntity*, const ChronoTag*> MPair;
-  typedef std::vector<MPair>                         MCont;
-  MCont chronos;
-
-  for( ChronoMap::iterator it = m_chronoEntities.begin() ;
-       m_chronoEntities.end() != it ;  ++it ) {
-    chronos.push_back( MPair( &(it->second) , &(it->first) ) ) ;
-  }
+  std::vector<std::pair<const ChronoEntity*, const ChronoTag*> > chronos;
+  chronos.reserve(m_chronoEntities.size() );
+  std::transform( std::begin(m_chronoEntities), std::end(m_chronoEntities),
+                  std::back_inserter(chronos),
+                  [](ChronoMap::const_reference i) 
+                  { return std::make_pair( &i.second, &i.first ); } );
 
   // sort it
-  std::sort( chronos.begin() ,
-	     chronos.end()   ,
-	     ComparePairOfChronoEntityAndChronoTag() );
+  std::sort( std::begin(chronos) ,
+             std::end(chronos)   ,
+             CompareFirstOfPointerPair );
 
   // print User Time statistics
-  for( MCont::iterator iter = chronos.begin() ;
-       chronos.end() != iter;
-       ++iter ) {
+  for( const auto& iter : chronos ) {
     //
-    const ChronoEntity*    entity = iter->first;
-    if( 0 == entity ) { continue ; } /// CONTINUE
+    const ChronoEntity*    entity = iter.first;
+    if( !entity ) { continue ; } /// CONTINUE
 
-    const ChronoTag* tag    = iter->second ;
-    if( 0 == tag    ) { continue ; } /// CONTINUE
+    const ChronoTag* tag    = iter.second ;
+    if( !tag    ) { continue ; } /// CONTINUE
 
     // create an entry in the .INI-like table
     out << "\n[" << *tag << "]\n";
@@ -636,29 +578,22 @@ void ChronoStatSvc::printStats()
     typedef std::pair<const StatEntity*,const StatTag*>  SPair;
     typedef std::vector<SPair>                           SCont;
     SCont tmpCont;
-    for( StatMap::const_iterator it = m_statEntities.begin();
-         it != m_statEntities.end(); it++ )
-    { tmpCont.push_back( SPair( &(it->second) , &(it->first) ) ) ; }
+    for( const auto& it : m_statEntities )
+    { tmpCont.emplace_back( &it.second , &it.first ) ; }
     // sort it
-    if ( m_statOrderFlag )
-    { std::sort( tmpCont.begin() ,
-                 tmpCont.end()   ,
-                 ComparePairOfStatEntityAndStatTag() ); }
+    if ( m_statOrderFlag ) std::sort( tmpCont.begin(), tmpCont.end(),
+                                      CompareFirstOfPointerPair );
+    // print the table header
+    if ( m_statCoutFlag ) { std::cout <<                     m_header << std::endl ; }
+    else                  { log       << m_statPrintLevel << m_header << endmsg    ; }
 
-
-    {
-      // print the table header
-      if ( m_statCoutFlag ) { std::cout <<                     m_header << std::endl ; }
-      else                  { log       << m_statPrintLevel << m_header << endmsg    ; }
-    }
     // loop over counters and print them:
-    for ( SCont::iterator iter = tmpCont.begin() ; tmpCont.end() != iter ; ++iter )
-	  {
+    for ( const auto& iter : tmpCont ) {
 	    ///
-      const StatEntity* entity = iter->first  ;
-      if ( 0 == entity ) { continue ; } /// CONTINUE
-      const StatTag*    tag    = iter->second ;
-      if ( 0 == tag    ) { continue ; } /// CONTINUE
+      const StatEntity* entity = iter.first  ;
+      if ( !entity ) { continue ; } /// CONTINUE
+      const StatTag*    tag    = iter.second ;
+      if ( !tag    ) { continue ; } /// CONTINUE
 	    ///
 	    if ( m_statCoutFlag )
       {
@@ -689,27 +624,17 @@ void ChronoStatSvc::handle(const Incident& /* inc */) {
 
   if (! m_ofd.is_open()) return;
 
-  TimeMap::iterator itm;
-  ChronoMap::const_iterator itr;
-  for (itr=m_chronoEntities.begin(); itr != m_chronoEntities.end(); ++itr) {
-    if (itr->first.find(":Execute") == std::string::npos) continue;
+  for (const auto& itr:m_chronoEntities) {
+    if (itr.first.find(":Execute") == std::string::npos) continue;
 
-    itm = m_perEvtTime.find(itr->first);
+    auto itm = m_perEvtTime.find(itr.first);
     if (itm == m_perEvtTime.end()) {
-      // for when we move past gcc46....
-      // m_perEvtTime[itr->first] =
-      // 	std::vector<IChronoSvc::ChronoTime> {
-      // 	itr->second.delta(IChronoSvc::ELAPSED) };
-
-      m_perEvtTime[itr->first] = std::vector<IChronoSvc::ChronoTime>();
-      m_perEvtTime[itr->first].push_back(itr->second.delta(IChronoSvc::ELAPSED));
+      m_perEvtTime[itr.first] = { itr.second.delta(IChronoSvc::ELAPSED) };
     } else {
-      itm->second.push_back( itr->second.delta(IChronoSvc::ELAPSED) );
+      itm->second.push_back( itr.second.delta(IChronoSvc::ELAPSED) );
     }
   }
-
 }
-
 
 // ============================================================================
 // The END

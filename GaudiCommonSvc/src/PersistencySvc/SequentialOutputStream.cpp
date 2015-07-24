@@ -1,5 +1,5 @@
+#include <limits>
 // boost
-#include <boost/numeric/conversion/bounds.hpp>
 #include <boost/filesystem.hpp>
 
 // Framework include files
@@ -21,10 +21,10 @@ namespace bf = boost::filesystem;
 //=============================================================================
 SequentialOutputStream::SequentialOutputStream( const string& name,
 						ISvcLocator* svc )
-: OutputStream( name, svc ), m_events( 0 ), m_iFile( 1 )
+: OutputStream( name, svc )
 {
    declareProperty( "EventsPerFile", m_eventsPerFile
-		    = boost::numeric::bounds< unsigned int>::highest() );
+		    = std::numeric_limits< unsigned int>::max() );
    declareProperty( "NumericFilename", m_numericFilename = false );
    declareProperty( "NumbersAdded", m_nNumbersAdded = 6 );
 }
@@ -51,7 +51,7 @@ StatusCode SequentialOutputStream::execute()
    if ( isEventAccepted() )  {
       StatusCode sc = writeObjects();
       clearSelection();
-      m_events++;
+      ++m_events;
       return sc;
    }
    return StatusCode::SUCCESS;
@@ -86,9 +86,7 @@ void SequentialOutputStream::makeFilename()
             throw GaudiException( msg, "error", StatusCode::FAILURE );
          }
       }
-      stringstream iFileStream;
-      iFileStream << m_iFile;
-      string iFile( iFileStream.str() );
+      string iFile = std::to_string(m_iFile);
       unsigned int length = 0;
 
       if ( stem.length() > iFile.length() ) {
@@ -96,9 +94,7 @@ void SequentialOutputStream::makeFilename()
       }
 
       stringstream name;
-      if ( !dir.empty() ) {
-         name << dir << "/";
-      }
+      if ( !dir.empty() ) name << dir << "/";
       for ( unsigned int i = 0; i < length; ++i ) {
          name << "0";
       }

@@ -29,10 +29,6 @@ EvtCollectionStream::EvtCollectionStream(const std::string& name, ISvcLocator* p
   declareProperty("EvtDataSvc", m_storeName);
 }
 
-// Standard Destructor
-EvtCollectionStream::~EvtCollectionStream()   {
-}
-
 // initialize data writer
 StatusCode EvtCollectionStream::initialize() {
   MsgStream log(msgSvc(), name());
@@ -47,16 +43,14 @@ StatusCode EvtCollectionStream::initialize() {
   // Clear the item list
   clearItems();
   // Take the new item list from the properties.
-  for(ItemNames::iterator i = m_itemNames.begin(); i != m_itemNames.end(); i++)   {
-    addItem( *i );
-  }
+  for(const auto& i : m_itemNames) addItem( i );
   log << MSG::INFO << "Data source:             " << m_storeName  << endmsg;
   return StatusCode::SUCCESS;
 }
 
 // terminate data writer
 StatusCode EvtCollectionStream::finalize()    {
-  m_pTupleSvc = 0; // release
+  m_pTupleSvc = nullptr; // release
   clearItems();
   return StatusCode::SUCCESS;
 }
@@ -65,11 +59,9 @@ StatusCode EvtCollectionStream::finalize()    {
 StatusCode EvtCollectionStream::execute() {
   StatusCode status = (m_pTupleSvc) ? StatusCode::SUCCESS : StatusCode::FAILURE;
   if ( status.isSuccess() )   {
-    for ( Items::iterator i = m_itemList.begin(); i != m_itemList.end(); i++ )    {
-      StatusCode iret = m_pTupleSvc->writeRecord((*i)->path());
-      if ( !iret.isSuccess() )    {
-        status = iret;
-      }
+    for ( const auto& i : m_itemList) {
+      StatusCode iret = m_pTupleSvc->writeRecord(i->path());
+      if ( !iret.isSuccess() ) status = iret;
     }
   }
   return status;
@@ -77,10 +69,7 @@ StatusCode EvtCollectionStream::execute() {
 
 // Remove all items from the output streamer list;
 void EvtCollectionStream::clearItems()     {
-  for ( Items::iterator i = m_itemList.begin(); i != m_itemList.end(); i++ )    {
-    delete (*i);
-  }
-  m_itemList.erase(m_itemList.begin(), m_itemList.end());
+  m_itemList.clear();
 }
 
 // Add item to output streamer list
@@ -98,9 +87,9 @@ void EvtCollectionStream::addItem(const std::string& descriptor)   {
        level = std::stoi(slevel);
     }
   }
-  DataStoreItem* item = new DataStoreItem(obj_path, level);
+  m_itemList.emplace_back( new DataStoreItem(obj_path, level) );
+  const auto& item = m_itemList.back();
   log << MSG::INFO << "Adding OutputStream item " << item->path()
       << " with " << item->depth()
       << " level(s)." << endmsg;
-  m_itemList.push_back( item );
 }
