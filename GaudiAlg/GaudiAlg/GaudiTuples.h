@@ -301,7 +301,7 @@ public:
                 const std::string& name   ,
                 const IInterface*  parent );
   /// Destructor
-  ~GaudiTuples() override {}; // replaceing {} with = default crashes gcc 4.8.1
+  ~GaudiTuples() override = default;
   // ==========================================================================
 protected:
   // ==========================================================================

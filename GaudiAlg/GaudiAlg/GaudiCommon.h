@@ -695,7 +695,7 @@ public:
   ;
 protected:
   /// Destructor
-  ~GaudiCommon() override {}; // replacing {} with = default crashes gcc 4.8.1
+  ~GaudiCommon() override = default;
 private :
   GaudiCommon() = delete;
   GaudiCommon           ( const GaudiCommon& ) = delete;

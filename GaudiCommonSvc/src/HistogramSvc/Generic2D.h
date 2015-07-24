@@ -38,8 +38,7 @@ namespace Gaudi {
     Generic2D(IMPLEMENTATION* p) : m_rep(p) { }
  public:
     /// Destructor.
-    ~Generic2D() override { } // TODO: replacing { } with '= default;' crashes gcc 4.8.1 ;-(
-
+    ~Generic2D() override  = default;
     /// ROOT object implementation
     TObject* representation() const                      { return m_rep.get();                       }
     /// Adopt ROOT histogram representation

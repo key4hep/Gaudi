@@ -37,7 +37,7 @@ namespace Gaudi {
     Generic1D(IMPLEMENTATION* p) : m_rep(p) { }
   public:
     /// Default destructor
-    ~Generic1D() override { } // TODO: replacing { } with '= default;' crashes gcc 4.8.1 ;-(
+    ~Generic1D() override = default ;
     /// The AIDA user-level unterface leaf class type
     virtual const std::string& userLevelClassType() const { return m_classType;                 }
     /// Manual cast by class name
