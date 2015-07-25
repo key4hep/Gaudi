@@ -44,6 +44,11 @@ constexpr struct select1st_t {
     const T& operator()(const std::pair<T,S>& p) const { return p.first; }
 } select1st {} ;
 
+constexpr struct select2nd_t {
+    template <typename T, typename S> 
+    const S& operator()(const std::pair<T,S>& p) const { return p.second; }
+} select2nd {} ;
+
 template <typename InputIterator, typename OutputIterator, typename UnaryOperation, typename UnaryPredicate>
 OutputIterator transform_if( InputIterator first, InputIterator last,
                              OutputIterator result,
@@ -977,8 +982,7 @@ FileMgr::getFileAttr(const std::string& fname, vector<const FileAttr*>& fa) cons
   fa.clear();
 
   auto fitr = m_files.equal_range(fname);
-  std::transform( fitr.first, fitr.second, std::back_inserter(fa), 
-                  [](fileMap::const_reference i) { return i.second; } );
+  std::transform( fitr.first, fitr.second, std::back_inserter(fa), select2nd );
 
   std::copy_if( std::begin(m_oldFiles), std::end(m_oldFiles),
                 std::back_inserter(fa), [&](const FileAttr* f ) { return f->name() == fname; } );
@@ -1059,7 +1063,7 @@ FileMgr::getFiles(vector<const Io::FileAttr*>& files, bool op) const {
 
   files.clear();
   std::transform(std::begin(m_files), std::end(m_files), std::back_inserter(files),
-                 [](fileMap::const_reference f) { return f.second; } );
+                 select2nd );
   if (!op) {
     std::copy(std::begin(m_oldFiles), std::end(m_oldFiles), std::back_inserter(files));
   }
@@ -1102,7 +1106,7 @@ FileMgr::getFiles(const IoTech& tech, vector<const Io::FileAttr*>& files,
 
   files.clear();
   transform_copy_if( std::begin(m_files), std::end(m_files), std::back_inserter(files),
-                     [ ](fileMap::const_reference f ) { return f.second; },
+                     select2nd,
                      matches_tech );
   if (!op) {
     std::copy_if( std::begin(m_oldFiles), std::end(m_oldFiles), std::back_inserter(files),
@@ -1149,7 +1153,7 @@ FileMgr::getFiles(const IoTech& tech, const IoFlags& flags,
                                                              && f->flags() == flags ; } ;
 
   transform_copy_if( std::begin(m_files), std::end(m_files), std::back_inserter(files),
-                     [](fileMap::const_reference f) { return f.second; },
+                     select2nd,
                      matches_tech_and_flags );
   if (!op) {
     std::copy_if( std::begin(m_oldFiles), std::end(m_oldFiles), std::back_inserter(files),
@@ -1287,7 +1291,7 @@ FileMgr::listFiles() const {
 	<< (m_files.size() + m_oldFiles.size() )
 	<< "]:" << endl;
 
-  for (auto& itr : m_files    ) m_log << *(itr.second) << endl;
+  for (auto& itr : m_files    ) m_log << itr.second << endl;
   for (auto& it2 : m_oldFiles ) m_log << *it2 << endl;
 
   m_log << endmsg;
