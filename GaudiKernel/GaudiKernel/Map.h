@@ -170,9 +170,9 @@ namespace GaudiUtils
     template <typename ValueType>
     inline iterator insert( iterator /* pos */ , ValueType && val)
     { return m_map.insert( /* pos, */ std::forward<ValueType>(val) ).first ; }
-    inline void erase(iterator pos) { m_map.erase(pos); }
+    inline iterator erase(const_iterator pos) { return m_map.erase(pos); }
     inline size_type erase(const key_type &key) { return m_map.erase(key); }
-    inline void erase(iterator first, iterator last) { m_map.erase(first,last); }
+    inline iterator erase(const_iterator first, const_iterator last) { return m_map.erase(first,last); }
     inline void clear() { m_map.clear(); }
 
     //    -- container operations
