@@ -26,8 +26,8 @@ std::vector<std::string> gp::Catalog::ClientNames() const {
 }
 // ============================================================================
 bool gp::Catalog::Add(Property* property) {
-  assert( property != nullptr);
-  CatalogSet::iterator it = catalog_.find(property->ClientName());
+  assert( property );
+  auto it = catalog_.find(property->ClientName());
   if (it == catalog_.end()) {
     CatalogSet::mapped_type properties;
     properties.insert(property);
@@ -42,7 +42,7 @@ bool gp::Catalog::Add(Property* property) {
 // ============================================================================
 gp::Property* gp::Catalog::Find(const std::string& client,
     const std::string& name) {
-  CatalogSet::iterator it = catalog_.find(client);
+  auto it = catalog_.find(client);
   if (it == catalog_.end()) return nullptr;
 
   auto pit = std::find_if(it->second.begin(), it->second.end(),

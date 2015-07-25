@@ -2024,8 +2024,8 @@ namespace Tuples
       if ( invalid () ) { return InvalidTuple     ; }
       if ( rowWise () ) { return InvalidOperation ; }
 
-      typename GaudiUtils::VectorMap<KEY,VALUE>::const_iterator begin = info.begin () ;
-      typename GaudiUtils::VectorMap<KEY,VALUE>::const_iterator end   = info.end   () ;
+      auto begin = info.begin () ;
+      auto end   = info.end   () ;
 
       // adjust the length
       if ( maxv < info.size() )

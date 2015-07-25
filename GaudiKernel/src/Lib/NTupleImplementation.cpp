@@ -28,7 +28,6 @@ namespace NTuple   {
   : m_isBooked(false),
     m_title(title),
     m_pSelector(0),
-    m_buffer(0),
     m_ntupleSvc(0),
     m_cnvSvc(0)
   {
@@ -36,18 +35,13 @@ namespace NTuple   {
 
   /// Standard Destructor
   TupleImp::~TupleImp ()   {
-    for (ItemContainer::iterator i = m_items.begin(); i != m_items.end(); i++) {
-      (*i)->release();
-    }
-    m_items.erase(m_items.begin(), m_items.end());
-    delete  [] m_buffer;
-    m_buffer = 0;
+    for (auto &i : m_items) i->release();
   }
 
   /// Attach selector
   StatusCode TupleImp::attachSelector(ISelectStatement* sel)  {
-    if ( 0 != sel         ) sel->addRef();
-    if ( 0 != m_pSelector ) m_pSelector->release();
+    if ( sel         ) sel->addRef();
+    if ( m_pSelector ) m_pSelector->release();
     m_pSelector = sel;
     return StatusCode::SUCCESS;
   }
@@ -107,9 +101,14 @@ namespace NTuple   {
     return StatusCode::FAILURE;
   }
   /// Set N tuple data buffer
-  void TupleImp::setBuffer(char* buff)  {
-    if ( 0 != m_buffer ) delete m_buffer;
-    m_buffer = buff;
+  char* TupleImp::setBuffer(std::unique_ptr<char[]>&& buff)  {
+    m_buffer = std::move(buff);
+    return m_buffer.get();
+  }
+  /// Set N tuple data buffer
+  char* TupleImp::setBuffer(char* buff)  {
+    m_buffer.reset( buff );
+    return m_buffer.get();
   }
   /// Write record of the NTuple
   StatusCode TupleImp::write()    {

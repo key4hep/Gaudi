@@ -614,10 +614,9 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
   log << MSG::DEBUG << "Total buffer size of NTuple: " << totsize
       << " Bytes." << endmsg;
 
-  char* buf = new char[totsize];
+  char* buf = ntup->setBuffer( new char[totsize] );
   char* bufpos = buf;
 
-  ntup->setBuffer(buf);
 
   int ts = 0;
   for (const auto& iitr : itemList) {

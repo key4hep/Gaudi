@@ -56,8 +56,8 @@ ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
   addRef(); // Initial count set to 1
 
   // Initialize two basic services: messagesvc & joboptions
-  m_messageSvc        = 0;
-  m_jobOptionsSvc     = 0;
+  m_messageSvc        = nullptr;
+  m_jobOptionsSvc     = nullptr;
 
   // Instantiate component managers
   m_managers[IService::interfaceID().id()] = new ServiceManager(this);
@@ -386,7 +386,7 @@ StatusCode ApplicationMgr::configure() {
         << "List of ALL properties of "
         << System::typeinfoName ( typeid( *this ) ) << "/" << this->name()
         << "  #properties = " << properties.size() << endmsg ;
-    for ( Properties::const_iterator property = properties.begin() ;
+    for ( auto property = properties.begin() ;
           properties.end() != property ; ++property )
     { log << "Property ['Name': Value] = " << ( **property) << endmsg ; }
   }
@@ -404,8 +404,7 @@ StatusCode ApplicationMgr::configure() {
   }
 
   // set the requested environment variables
-  std::map<std::string,std::string>::iterator var;
-  for ( var = m_environment.begin(); var != m_environment.end(); ++var ) {
+  for ( auto var = m_environment.begin(); var != m_environment.end(); ++var ) {
     const std::string &name  = var->first;
     const std::string &value = var->second;
     std::string old = System::getEnv(name.c_str());
@@ -418,15 +417,14 @@ StatusCode ApplicationMgr::configure() {
   }
 
   //Declare Service Types
-  VectorName::const_iterator j;
-  for(j=m_svcMapping.begin(); j != m_svcMapping.end(); ++j)  {
+  for(auto j=m_svcMapping.begin(); j != m_svcMapping.end(); ++j)  {
     Gaudi::Utils::TypeNameString itm(*j);
     if ( declareMultiSvcType(itm.name(), itm.type()).isFailure() )  {
       log << MSG::ERROR << "configure: declaring svc type:'" << *j << "' failed." << endmsg;
       return StatusCode::FAILURE;
     }
   }
-  for(j=m_svcOptMapping.begin(); j != m_svcOptMapping.end(); ++j)  {
+  for(auto j=m_svcOptMapping.begin(); j != m_svcOptMapping.end(); ++j)  {
     Gaudi::Utils::TypeNameString itm(*j);
     if ( declareMultiSvcType(itm.name(), itm.type()).isFailure() )  {
       log << MSG::ERROR << "configure: declaring svc type:'" << *j << "' failed." << endmsg;
@@ -1029,9 +1027,9 @@ void ApplicationMgr::createSvcNameListHandler( Property& /* theProp */ ) {
 //============================================================================
 StatusCode ApplicationMgr::decodeCreateSvcNameList() {
   StatusCode result = StatusCode::SUCCESS;
-  const std::vector<std::string>& theNames = m_createSvcNameList.value( );
-  VectorName::const_iterator it(theNames.begin());
-  VectorName::const_iterator et(theNames.end());
+  const auto& theNames = m_createSvcNameList.value( );
+  auto it = theNames.begin();
+  auto et = theNames.end();
   while(result.isSuccess() && it != et) {
     Gaudi::Utils::TypeNameString item(*it++);
     if( (result = svcManager()->addService(item, ServiceManager::DEFAULT_SVC_PRIORITY) ).isFailure()) {
@@ -1066,13 +1064,13 @@ void ApplicationMgr::extSvcNameListHandler( Property& /* theProp */ ) {
 StatusCode ApplicationMgr::decodeExtSvcNameList( ) {
   StatusCode result = StatusCode::SUCCESS;
 
-  std::vector<std::string> theNames = m_extSvcNameList.value( );
+  const auto& theNames = m_extSvcNameList.value( );
 
-  VectorName::const_iterator it(theNames.begin());
-  VectorName::const_iterator et(theNames.end());
+  auto it = theNames.begin();
+  auto et = theNames.end();
   while(result.isSuccess() && it != et) {
     Gaudi::Utils::TypeNameString item(*it++);
-    if (m_extSvcCreates == true) {
+    if (m_extSvcCreates) {
       if ( (result = svcManager()->addService(item, ServiceManager::DEFAULT_SVC_PRIORITY)).isFailure()) {
         MsgStream log( m_messageSvc, m_name );
         log << MSG::ERROR << "decodeExtSvcNameList: Cannot create service "
@@ -1107,12 +1105,10 @@ void ApplicationMgr::multiThreadSvcNameListHandler( Property& /* theProp */ ) {
 //============================================================================
 StatusCode ApplicationMgr::decodeMultiThreadSvcNameList( ) {
   StatusCode result = StatusCode::SUCCESS;
-  const std::vector<std::string>& theNames = m_multiThreadSvcNameList.value( );
+  const auto& theNames = m_multiThreadSvcNameList.value( );
   for(int iCopy=0; iCopy<m_noOfEvtThreads; ++iCopy) {
-    for (VectorName::const_iterator it = theNames.begin();
-         it != theNames.end();
-         ++it) {
-      Gaudi::Utils::TypeNameString item(*it);
+    for (const auto& it : theNames ) {
+      Gaudi::Utils::TypeNameString item(it);
       result = addMultiSvc(item, ServiceManager::DEFAULT_SVC_PRIORITY);
       //FIXME SHOULD CLONE?
       if( result.isFailure() ) {
@@ -1225,20 +1221,18 @@ StatusCode ApplicationMgr::decodeDllNameList() {
   // -------------------------------------------------------------------------
   std::vector<std::string> newList;
   std::map<std::string,unsigned int> dllInList, duplicateList;
-  {for ( std::vector<std::string>::const_iterator it = m_dllNameList.value().begin();
-        it != m_dllNameList.value().end(); ++it ) {
-    if ( 0 == dllInList[*it] ) {
-      newList.push_back(*it);        // first instance of this module
-    } else { ++duplicateList[*it]; } // module listed multiple times
-    ++dllInList[*it];                // increment count for this module
+  {for ( const auto it : m_dllNameList.value()) {
+    if ( 0 == dllInList[it] ) {
+      newList.push_back(it);        // first instance of this module
+    } else { ++duplicateList[it]; } // module listed multiple times
+    ++dllInList[it];                // increment count for this module
   }}
   //m_dllNameList = newList; // update primary list to new, filtered list (do not use the
                              // property itself otherwise we get called again infinitely)
   // List modules that were in there twice..
   ON_DEBUG if ( !duplicateList.empty() ) {
     log << MSG::DEBUG << "Removed duplicate entries for modules : ";
-    for ( std::map<std::string,unsigned int>::const_iterator it = duplicateList.begin();
-          it != duplicateList.end(); ++it ) {
+    for ( auto it = duplicateList.begin(); it != duplicateList.end(); ++it ) {
       log << it->first << "(" << 1+it->second << ")";
       if ( it != --duplicateList.end() ) log << ", ";
     }
@@ -1252,18 +1246,16 @@ StatusCode ApplicationMgr::decodeDllNameList() {
   ON_DEBUG log << MSG::DEBUG << "Loading declared DLL's" << endmsg;
 
   std::vector<std::string> successNames, failNames;
-  std::vector<std::string>::const_iterator it;
-
-  for (it = theNames.begin(); it != theNames.end(); it++) {
-    if (std::find (m_okDlls.rbegin(), m_okDlls.rend(), *it) == m_okDlls.rend()){
+  for (const auto& it : theNames) {
+    if (std::find (m_okDlls.rbegin(), m_okDlls.rend(), it) == m_okDlls.rend()){
       // found a new module name
-      StatusCode status = m_classManager->loadModule( (*it) );
+      StatusCode status = m_classManager->loadModule( it );
       if( status.isFailure() ) {
-        failNames.push_back(*it);
+        failNames.push_back(it);
         result = StatusCode::FAILURE;
       }
       else {
-        successNames.push_back(*it);
+        successNames.push_back(it);
       }
     }
   }
@@ -1271,7 +1263,7 @@ StatusCode ApplicationMgr::decodeDllNameList() {
   // report back to the user and store the names of the succesfully loaded dlls
   if ( !successNames.empty() ) {
     log << MSG::INFO << "Successfully loaded modules : ";
-    for (it = successNames.begin(); it != successNames.end(); it++) {
+    for (auto it = successNames.begin(); it != successNames.end(); it++) {
       log<< (*it);
       if( (it+1) != successNames.end())  log << ", ";
       // save name
@@ -1282,7 +1274,7 @@ StatusCode ApplicationMgr::decodeDllNameList() {
 
   if ( result == StatusCode::FAILURE ) {
     log << MSG::WARNING << "Failed to load modules: ";
-    for (it = failNames.begin(); it != failNames.end(); it++) {
+    for (auto it = failNames.begin(); it != failNames.end(); it++) {
       log<< (*it);
       if( (it+1) != failNames.end())  log << ", ";
     }

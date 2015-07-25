@@ -54,7 +54,7 @@ namespace Tuples
     ( const std::string& key , Tuples::TupleObj* tuple )
     {
       // find the item by name
-      typename Store::iterator ifound = m_map.find( key ) ;
+      auto ifound = m_map.find( key ) ;
       // existing item?
       if ( m_map.end() != ifound ) { return ifound->second ; }        // RETURN
       // check the tuple for booking:

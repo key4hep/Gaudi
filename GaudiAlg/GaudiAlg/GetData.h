@@ -219,8 +219,8 @@ namespace Gaudi
       ( ITERATOR first ,
         ITERATOR last  ) const
       {
-        typename return_type::const_iterator* _begin = reinterpret_cast<typename return_type::const_iterator*>(&first);
-        typename return_type::const_iterator* _end   = reinterpret_cast<typename return_type::const_iterator*>(&last);
+        auto _begin = reinterpret_cast<typename return_type::const_iterator*>(&first);
+        auto _end   = reinterpret_cast<typename return_type::const_iterator*>(&last);
         return return_type(*_begin, *_end);
       }
       // ======================================================================

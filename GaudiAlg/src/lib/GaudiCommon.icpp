@@ -64,17 +64,11 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
 {
   // initialise data members
   m_msgLevel    = MSG::NIL;
-  m_msgStream   = 0;
-  m_updMgrSvc   = 0;
   m_typePrint   = true;
   m_propsPrint  = false;
   m_statPrint   = true;
   m_errorsPrint = true;
-  m_context     = "" ;
-  m_rootInTES   = "" ;
-  m_globalTimeOffset = 0.0 ;
   //data members for the CounterSummarySvc
-  m_counterSummarySvc=NULL;
   m_counterList=std::vector<std::string>(1,".*");
   m_statEntityList=std::vector<std::string>(0);
 
@@ -176,23 +170,20 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
   if (!jos.isValid()) Exception("Cannot get JobOptionsSvc");
 
   // Get the "Context" option if in the file...
-  const std::vector<const Property*>* myList = jos->getProperties( this->name() );
-  if ( 0 != myList )
+  const auto myList = jos->getProperties( this->name() );
+  if ( myList )
   {
     // Iterate over the list to set the options
-    for ( std::vector<const Property*>::const_iterator iter = myList->begin();
-          iter != myList->end();
-          ++iter )
+    for ( const auto& iter : *myList )
     {
-      const StringProperty* sp = dynamic_cast<const StringProperty*>(*iter);
-      if ( 0 != sp )
+      const StringProperty* sp = dynamic_cast<const StringProperty*>(iter);
+      if ( sp )
       {
-        if ( "Context" == (*iter)->name() )
-        {
+        if ( iter->name().compare("Context") == 0 ) {
           m_context = sp->value();
-        } else if ( "RootInTES" == (*iter)->name() ) {
+        } else if (  iter->name().compare("RootInTES") == 0 ) {
           m_rootInTES = sp->value();
-        } else if ( "GlobalTimeOffset" == (*iter)->name() ) {
+        } else if ( iter->name().compare("GlobalTimeOffset") == 0 ) {
           m_globalTimeOffset = std::stod( sp->value() );
         }
       }
@@ -288,25 +279,22 @@ StatusCode GaudiCommon<PBASE>::
   if(m_counterSummarySvc && this->svcLoc()->existsService("CounterSummarySvc"))
   {
     if ( msgLevel(MSG::DEBUG) ) debug() << "adding counters to CounterSummarySvc" << endmsg;
-    for(Statistics::const_iterator i=this->counters().begin();
-	i!=this->counters().end();
-	i++)
+    for( const auto& i : this->counters() )
     {
-      if(Gaudi::Utils::RegEx::matchOr(i->first,m_statEntityList))
-	m_counterSummarySvc->addCounter(this->name(),i->first,i->second,
-					Gaudi::CounterSummary::SaveStatEntity);
-      else if(Gaudi::Utils::RegEx::matchOr(i->first,m_counterList))
-	m_counterSummarySvc->addCounter(this->name(),i->first,i->second);
+      if(Gaudi::Utils::RegEx::matchOr(i.first,m_statEntityList))
+        m_counterSummarySvc->addCounter(this->name(),i.first,i.second,
+                                        Gaudi::CounterSummary::SaveStatEntity);
+      else if(Gaudi::Utils::RegEx::matchOr(i.first,m_counterList))
+        m_counterSummarySvc->addCounter(this->name(),i.first,i.second);
     }
   }
   // release all located tools and services
   if ( msgLevel(MSG::DEBUG) )
   {
     debug() << "Tools to release :";
-    for ( AlgTools::const_iterator i = m_tools.begin();
-          i != m_tools.end(); ++i )
+    for ( const auto& i : m_tools )
     {
-      debug() << " " << (*i)->name();
+      debug() << " " << i->name();
     }
     debug() << endmsg;
   }
@@ -316,10 +304,9 @@ StatusCode GaudiCommon<PBASE>::
   if ( msgLevel(MSG::DEBUG) )
   {
     debug() << "Services to release :";
-    for ( Services::const_iterator i = m_services.begin();
-          i != m_services.end(); ++i )
+    for ( const auto& i : m_services )
     {
-      debug() << " " << (*i).first;
+      debug() << " " << i.first;
     }
     debug() << endmsg;
   }
@@ -390,8 +377,7 @@ StatusCode GaudiCommon<PBASE>::releaseTool ( const IAlgTool* algTool ) const
   if( this->toolSvc() == 0 )
   { return Error ( "releaseTool(IAlgTool):: IToolSvc* points to NULL!" ) ; }
   // find a tool in the list of active tools
-  AlgTools::reverse_iterator it =
-    std::find( m_tools.rbegin() , m_tools.rend() , algTool ) ;
+  auto it = std::find( m_tools.rbegin() , m_tools.rend() , algTool ) ;
   if(  m_tools.rend() == it )
   { return Warning("releaseTool(IAlgTool):: IAlgTool* is not active"   ) ; }
   // get the tool
@@ -427,7 +413,7 @@ StatusCode GaudiCommon<PBASE>::releaseSvc ( const IInterface* Svc  ) const
   }
   SmartIF<IService> svc(const_cast<IInterface*>(Svc));
   if (svc.isValid()) {
-    Services::iterator it = m_services.find(svc->name());
+    auto it = m_services.find(svc->name());
     if (it == m_services.end()) {
       return Warning( "releaseSvc(IInterface):: IInterface* is not active" );
     }
@@ -624,13 +610,12 @@ long GaudiCommon<PBASE>::printStat( const MSG::Level level ) const
   //
   if ( !counters().empty() ) { msg << std::endl << m_header ; }
   //
-  for ( Statistics::const_iterator entry = counters().begin() ;
-        counters().end() != entry ; ++entry )
+  for ( const auto& entry : counters() ) 
   {
     msg << std::endl
         << Gaudi::Utils::formatAsTableRow
-      ( entry -> first  ,
-        entry -> second ,
+      ( entry.first  ,
+        entry.second ,
         m_useEffFormat  ,
         m_format1       , m_format2 );
   }
@@ -651,38 +636,34 @@ long GaudiCommon<PBASE>::printErrors ( const MSG::Level level ) const
   boost::format ftm ( " %s = %|.8s| %|23t| Message = '%s'" );
 
   { // print exceptions
-    for ( Counter::const_iterator excp = m_exceptions.begin() ;
-          excp  != m_exceptions.end() ; ++excp  )
+    for ( const auto&  excp : m_exceptions )
     {
       msgStream(level)
-        << ( ftm % "#EXCEPTIONS" % excp->second % excp->first       )
+        << ( ftm % "#EXCEPTIONS" % excp.second % excp.first       )
         << endmsg;
     }
   }
   { // print errors
-    for ( Counter::const_iterator error = m_errors.begin() ;
-          error != m_errors.end() ; ++error )
+    for ( const auto& error : m_errors )
     {
       msgStream(level)
-        << ( ftm % "#ERRORS    " % error->second % error->first     )
+        << ( ftm % "#ERRORS    " % error.second % error.first     )
         << endmsg;
     }
   }
   { // print warnings
-    for ( Counter::const_iterator warning = m_warnings.begin() ;
-          warning != m_warnings.end() ; ++warning )
+    for ( const auto& warning : m_warnings )
     {
       msgStream(level)
-        << ( ftm % "#WARNINGS  " % warning->second % warning->first )
+        << ( ftm % "#WARNINGS  " % warning.second % warning.first )
         << endmsg;
     }
   }
   { // print warnings
-    for ( Counter::const_iterator info = m_infos.begin() ;
-    info != m_infos.end() ; ++info )
+    for ( const auto& info : m_infos )
     {
       msgStream(level)
-        << ( ftm % "#INFOS     " % info->second % info->first )
+        << ( ftm % "#INFOS     " % info.second % info.first )
         << endmsg;
     }
   }
@@ -712,9 +693,8 @@ long GaudiCommon<PBASE>::printProps ( const MSG::Level level ) const
   msg << "List of ALL properties of "
       << System::typeinfoName( typeid( *this ) ) << "/" << this->name()
       << "  #properties = " << properties.size() << endmsg ;
-  for ( Properties::const_reverse_iterator property
-          = properties.rbegin() ;
-        properties.rend() != property ; ++property )
+  for ( auto property = properties.crbegin() ;
+        properties.crend() != property ; ++property )
   {
     msg << "Property ['Name': Value] = "
         << ( **property)
@@ -768,8 +748,8 @@ DataObject* GaudiCommon<PBASE>::put ( IDataProviderSvc*  svc     ,
                                const bool useRootInTES ) const
 {
   // check arguments
-  Assert ( 0 != svc              , "put():: Invalid 'service'!"       ) ;
-  Assert ( 0 != object           , "put():: Invalid 'Object'!"        ) ;
+  Assert (      svc              , "put():: Invalid 'service'!"       ) ;
+  Assert (      object           , "put():: Invalid 'Object'!"        ) ;
   Assert ( !location.empty()     , "put():: Invalid 'address' = '' "  ) ;
   // final data location
   const std::string & fullLocation = fullTESLocation( location, useRootInTES );
@@ -823,9 +803,6 @@ void GaudiCommon<PBASE>::printStatHandler ( Property& /* theProp */ )
 }
 // ============================================================================
 
-
 // ============================================================================
 // The END
 // ============================================================================
-
-

@@ -29,7 +29,7 @@ StatusCode AlgorithmManager::addAlgorithm(IAlgorithm* alg) {
 
 // removeAlgorithm
 StatusCode AlgorithmManager::removeAlgorithm(IAlgorithm* alg) {
-  ListAlg::iterator it = std::find(m_listalg.begin(), m_listalg.end(), alg);
+  auto it = std::find(m_listalg.begin(), m_listalg.end(), alg);
   if (it != m_listalg.end()) {
     m_listalg.erase(it);
     return StatusCode::SUCCESS;
@@ -99,7 +99,7 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype,
 }
 
 SmartIF<IAlgorithm>& AlgorithmManager::algorithm(const Gaudi::Utils::TypeNameString &typeName, const bool createIf) {
-  ListAlg::iterator it = std::find(m_listalg.begin(), m_listalg.end(), typeName.name());
+  auto it = std::find(m_listalg.begin(), m_listalg.end(), typeName.name());
   if (it != m_listalg.end()) { // found
     return it->algorithm;
   }
@@ -114,8 +114,7 @@ SmartIF<IAlgorithm>& AlgorithmManager::algorithm(const Gaudi::Utils::TypeNameStr
 
 // existsAlgorithm
 bool AlgorithmManager::existsAlgorithm(const std::string& name) const {
-  ListAlg::const_iterator it = std::find(m_listalg.begin(), m_listalg.end(), name);
-  return it != m_listalg.end();
+  return  m_listalg.end() != std::find(m_listalg.begin(), m_listalg.end(), name);
 }
 
   // Return the list of Algorithms
@@ -133,10 +132,9 @@ const std::vector<IAlgorithm*>& AlgorithmManager::getAlgorithms() const
 
 StatusCode AlgorithmManager::initialize() {
   StatusCode rc;
-  ListAlg::iterator it;
-  for (it = m_listalg.begin(); it != m_listalg.end(); ++it) {
-    if (!it->managed) continue;
-    rc = it->algorithm->sysInitialize();
+  for (auto& it : m_listalg ) {
+    if (!it.managed) continue;
+    rc = it.algorithm->sysInitialize();
     if ( rc.isFailure() ) return rc;
   }
   return rc;
@@ -144,10 +142,9 @@ StatusCode AlgorithmManager::initialize() {
 
 StatusCode AlgorithmManager::start() {
   StatusCode rc;
-  ListAlg::iterator it;
-  for (it = m_listalg.begin(); it != m_listalg.end(); ++it) {
-    if (!it->managed) continue;
-    rc = it->algorithm->sysStart();
+  for (auto& it : m_listalg ) {
+    if (!it.managed) continue;
+    rc = it.algorithm->sysStart();
     if ( rc.isFailure() ) return rc;
   }
   return rc;
@@ -155,10 +152,9 @@ StatusCode AlgorithmManager::start() {
 
 StatusCode AlgorithmManager::stop() {
   StatusCode rc;
-  ListAlg::iterator it;
-  for (it = m_listalg.begin(); it != m_listalg.end(); ++it) {
-    if (!it->managed) continue;
-    rc = it->algorithm->sysStop();
+  for (auto& it : m_listalg) {
+    if (!it.managed) continue;
+    rc = it.algorithm->sysStop();
     if ( rc.isFailure() ) return rc;
   }
   return rc;
@@ -166,7 +162,7 @@ StatusCode AlgorithmManager::stop() {
 
 StatusCode AlgorithmManager::finalize() {
   StatusCode rc;
-  ListAlg::iterator it = m_listalg.begin();
+  auto it = m_listalg.begin();
   while (it != m_listalg.end()){ // finalize and remove from the list the managed algorithms
     if (it->managed) {
       rc = it->algorithm->sysFinalize();
@@ -181,12 +177,11 @@ StatusCode AlgorithmManager::finalize() {
 
 StatusCode AlgorithmManager::reinitialize() {
   StatusCode rc;
-  ListAlg::iterator it;
-  for (it = m_listalg.begin(); it != m_listalg.end(); ++it) {
-    if (!it->managed) continue;
-    rc = it->algorithm->sysReinitialize();
+  for (auto& it : m_listalg ) {
+    if (!it.managed) continue;
+    rc = it.algorithm->sysReinitialize();
     if( rc.isFailure() ){
-      this->error() << "Unable to re-initialize algorithm: " << it->algorithm->name() << endmsg;
+      this->error() << "Unable to re-initialize algorithm: " << it.algorithm->name() << endmsg;
       return rc;
     }
   }
@@ -195,12 +190,11 @@ StatusCode AlgorithmManager::reinitialize() {
 
 StatusCode AlgorithmManager::restart() {
   StatusCode rc;
-  ListAlg::iterator it;
-  for (it = m_listalg.begin(); it != m_listalg.end(); ++it) {
-    if (!it->managed) continue;
-    rc = it->algorithm->sysRestart();
+  for (auto& it : m_listalg ) {
+    if (!it.managed) continue;
+    rc = it.algorithm->sysRestart();
     if( rc.isFailure() ){
-      this->error() << "Unable to re-initialize algorithm: " << it->algorithm->name() << endmsg;
+      this->error() << "Unable to re-initialize algorithm: " << it.algorithm->name() << endmsg;
       return rc;
     }
   }

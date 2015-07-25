@@ -2570,8 +2570,8 @@ public:
    */
   inline AIDA::IHistogram1D* histo1D ( const std::string& title  )  const
   {
-    Histo1DMapTitle::const_iterator found = histo1DMapTitle().find( title ) ;
-    return ( histo1DMapTitle().end() == found ? 0 : found->second );
+    auto found = histo1DMapTitle().find( title ) ;
+    return found != histo1DMapTitle().end() ? found->second : nullptr;
   }
   // ==========================================================================
   /** access the EXISTING 1D histogram by title
@@ -2591,8 +2591,8 @@ public:
    */
   inline AIDA::IHistogram2D* histo2D ( const std::string& title  )  const
   {
-    Histo2DMapTitle::const_iterator found = histo2DMapTitle().find( title ) ;
-    return ( histo2DMapTitle().end() == found ? 0 : found->second );
+    auto found = histo2DMapTitle().find( title ) ;
+    return histo2DMapTitle().end() != found ? found->second : nullptr;
   }
   // ==========================================================================
   /** access the EXISTING 3D histogram by title
@@ -2600,8 +2600,8 @@ public:
    */
   inline AIDA::IHistogram3D* histo3D ( const std::string& title  )  const
   {
-    Histo3DMapTitle::const_iterator found = histo3DMapTitle().find( title ) ;
-    return ( histo3DMapTitle().end() == found ? 0 : found->second );
+    auto found = histo3DMapTitle().find( title ) ;
+    return histo3DMapTitle().end() != found ? found->second : nullptr;
   }
   // ==========================================================================
   /** access the EXISTING 1D profile histogram by title
@@ -2609,8 +2609,8 @@ public:
    */
   inline AIDA::IProfile1D* profile1D ( const std::string& title  )  const
   {
-    Profile1DMapTitle::const_iterator found = profile1DMapTitle().find( title ) ;
-    return ( profile1DMapTitle().end() == found ? 0 : found->second );
+    auto found = profile1DMapTitle().find( title ) ;
+    return profile1DMapTitle().end() != found ? found->second : nullptr;
   }
   // ==========================================================================
   /** access the EXISTING 2D profile histogram by title
@@ -2618,8 +2618,8 @@ public:
    */
   inline AIDA::IProfile2D* profile2D ( const std::string& title  )  const
   {
-    Profile2DMapTitle::const_iterator found = profile2DMapTitle().find( title ) ;
-    return ( profile2DMapTitle().end() == found ? 0 : found->second );
+    auto found = profile2DMapTitle().find( title ) ;
+    return profile2DMapTitle().end() != found ? found->second : nullptr;
   }
   // ==========================================================================
 public:
@@ -2724,16 +2724,14 @@ public: // trivial & non-trivial accessors
    *
    *  @code
    *
-   *  const Histo1DMapTitle& histos = histo1DMapTitle() ;
    *  // iterate over the map!
-   *  for ( Histo1DMapTitle::const_iterator entry = histos.begin() ;
-   *        histos.end() != entry ; ++entry  )
+   *  for ( const auto& entry :histo1DMapTitle()  )
    *     {
    *        // histogram title
-   *        const std::string&   title = entry->first ;
+   *        const std::string&   title = entry.first ;
    *        // histogram itself
-   *        AIDA::IHistogram1D* hist  = entry->second ;
-   *        if( 0 == hist )  { continue ; }                // ATTENTION!
+   *        AIDA::IHistogram1D* hist  = entry.second ;
+   *        if( !hist )  { continue ; }                // ATTENTION!
    *
    *        std::cout << " Histogram title " << title << std::endl ;
    *

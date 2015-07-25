@@ -49,9 +49,8 @@ StatusCode SvcCatalog::addProperty
 }
 // ============================================================================
 StatusCode
-SvcCatalog::removeProperty
-( const std::string& client,
-  const std::string& name)
+SvcCatalog::removeProperty ( const std::string& client,
+                             const std::string& name)
 {
   auto  props = findProperties(client);
   if (props) {

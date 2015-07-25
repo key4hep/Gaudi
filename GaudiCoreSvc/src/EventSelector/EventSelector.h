@@ -60,14 +60,14 @@ public:
 
 protected:
   /// Reference to the indicent service
-  SmartIF<IIncidentSvc> m_incidentSvc;
+  SmartIF<IIncidentSvc> m_incidentSvc = nullptr;
 
-  SmartIF<IToolSvc>     m_toolSvc;
+  SmartIF<IToolSvc>     m_toolSvc = nullptr;
 
-  IDataStreamTool*      m_streamtool;
+  IDataStreamTool*      m_streamtool = nullptr;
 
   /// Reconfigure occurred
-  bool                  m_reconfigure;
+  bool                  m_reconfigure = false;
   /// Input stream specifiers (for job options)
   StreamSpecs           m_streamSpecs;
   /// Input stream specifiers (last used)
@@ -75,9 +75,9 @@ protected:
   /// Input streams
   Streams               m_streams;
   /// Input stream counter (0..oo, monotonely increasing)
-  int                   m_streamCount;
+  int                   m_streamCount = 0;
   /// First event to be processed
-  int                   m_firstEvent;
+  int                   m_firstEvent = 0;
   /// Maximum number of events to be processed
   int                   m_evtMax;
   /// Printout frequency
@@ -185,7 +185,7 @@ public:
   EventSelector( const std::string& name, ISvcLocator* svcloc );
 
   /// Standard Destructor
-  virtual ~EventSelector();
+  ~EventSelector() override = default;
 };
 
 #endif  // GAUDISVC_EVENTSELECTOR_EVENTSELECTOR_H

@@ -196,7 +196,7 @@ public:
   /// Standard Constructor
   EventCollectionSelector( const std::string& name, ISvcLocator* svcloc );
   /// Standard Destructor
-  virtual ~EventCollectionSelector();
+  ~EventCollectionSelector() override = default;
 };
 
 #endif  // GAUDISVC_EventCollectionSelector_EventCollectionSelector_H

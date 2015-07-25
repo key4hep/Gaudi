@@ -11,11 +11,8 @@ bool gp::Units::Add(const std::string& name, double value) {
 }
 // ============================================================================
 bool gp::Units::Add(const std::string& name, double value,
-    const Position& pos) {
-  std::pair<Container::iterator,bool> result =
-      units_.insert(
-          Container::value_type(name,ValueWithPosition(value, pos))
-      );
+                    const Position& pos) {
+  auto result = units_.insert( { name,ValueWithPosition(value, pos) } );
   return result.second;
 }
 // ============================================================================
@@ -30,8 +27,8 @@ bool gp::Units::Find(const std::string& name, double& result) const {
 }
 // ============================================================================
 bool gp::Units::Find(const std::string& name,
-    ValueWithPosition& result) const {
-  Container::const_iterator it = units_.find(name);
+                     ValueWithPosition& result) const {
+  auto it = units_.find(name);
   if (it != units_.end()) {
     result = it->second;
     return true;

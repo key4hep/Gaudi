@@ -736,7 +736,7 @@ Tuples::TupleObj::ULongLong* Tuples::TupleObj::ulonglongs
 Tuples::TupleObj::Address* Tuples::TupleObj::addresses
 ( const std::string& name )
 {
-  Addresses::iterator found = m_addresses.find( name ) ;
+  auto found = m_addresses.find( name ) ;
   if( m_addresses.end() != found ) { return found->second.get() ; }
   return create_(this, m_addresses, name,
                  [&](const std::string& n, Address& i) 
