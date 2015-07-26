@@ -15,18 +15,18 @@ static std::string _sDataObjectCppNotRegistered("NotRegistered");
 DataObject::DataObject()
  : m_refCount(0),
    m_version(0),
-   m_pRegistry(0)
+   m_pRegistry(nullptr),
+   m_pLinkMgr{  LinkManager::newInstance() }
 {
-  m_pLinkMgr = LinkManager::newInstance();
 }
 
 /// Standard Constructor
 DataObject::DataObject(const DataObject&)
  : m_refCount(0),
    m_version(0),
-   m_pRegistry(0)
+   m_pRegistry(nullptr),
+   m_pLinkMgr{  LinkManager::newInstance() }
 {
-  m_pLinkMgr = LinkManager::newInstance();
 }
 
 /// Standard Destructor
@@ -36,16 +36,12 @@ DataObject::~DataObject()   {
   if ( m_refCount > 0 ) {
     // Insert warning here
   }
-  if ( m_pLinkMgr ) delete m_pLinkMgr;
-  m_pLinkMgr = 0;
 }
 
 /// Decrease reference count
 unsigned long DataObject::release()  {
   unsigned long cnt = --m_refCount;
-  if ( 0 == m_refCount )   {
-    delete this;
-  }
+  if ( 0 == cnt ) delete this;
   return cnt;
 }
 
@@ -66,12 +62,7 @@ const CLID& DataObject::classID()    {
 
 /// Retrieve DataObject name. It is the name when included in the store.
 const std::string& DataObject::name() const {
-  if( m_pRegistry != 0) {
-    return m_pRegistry->name();
-  }
-  else {
-    return _sDataObjectCppNotRegistered;
-  }
+  return m_pRegistry ? m_pRegistry->name() : _sDataObjectCppNotRegistered;
 }
 
 /// Provide empty placeholder for internal object reconfiguration callback
@@ -79,14 +70,11 @@ StatusCode DataObject::update() {
   return StatusCode::SUCCESS;
 }
 
-static DataObject*       s_objPtr = 0;
+static DataObject*       s_objPtr = nullptr;
 static DataObject**      s_currObj = &s_objPtr;
 
 static std::vector<DataObject**>& objectStack() {
-  static std::auto_ptr<std::vector<DataObject**> > s_current;
-  if ( 0 == s_current.get() )  {
-    s_current = std::auto_ptr<std::vector<DataObject**> >(new std::vector<DataObject**>());
-  }
+  static std::unique_ptr<std::vector<DataObject**>> s_current{new std::vector<DataObject**>()};
   return *(s_current.get());
 }
 

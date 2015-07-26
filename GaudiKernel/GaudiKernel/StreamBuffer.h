@@ -5,6 +5,7 @@
 // STL include files
 #include <list>
 #include <vector>
+#include <algorithm>
 #include <string>
 #include <iostream>
 #include <cstring>
@@ -43,11 +44,9 @@ public:
   class DataIO   {
   public:
     /// Standard constructor
-    DataIO()    {
-    }
+    DataIO() = default;
     /// Standard destructor
-    virtual ~DataIO()    {
-    }
+    virtual ~DataIO() = default;
     /// Throw Exception
     void badStreamMode()    {
       throw("Not acceptable stream mode!");
@@ -80,8 +79,8 @@ public:
     Istream(std::istream& str) : m_stream(&str)   {
     }
     /// Destructor
-    virtual ~Istream()  {
-    }
+    virtual ~Istream()  = default;
+
     /// Data load method
     virtual void load(StreamBuffer& stream)   {
       // Generic implementation for istreams:
@@ -100,8 +99,8 @@ public:
     Ostream(std::ostream& str) : m_stream(&str)   {
     }
     /// Standard Destructor
-    virtual ~Ostream()  {
-    }
+    virtual ~Ostream()  = default;
+
     /// Output dumper
     virtual void dump(StreamBuffer& stream)   {
       // Generic implementation for ostreams:
@@ -134,13 +133,10 @@ public:
   /// Definition of the contained link set
   class IdentifiedLink   {
   public:
-    DataObject* first;
-    long second;
-    IdentifiedLink() : first(0), second(INVALID)  {
-    }
-    IdentifiedLink(const IdentifiedLink& copy)
-      : first(copy.first), second(copy.second)  {
-    }
+    DataObject* first = nullptr;
+    long second = INVALID;
+    IdentifiedLink() = default;
+    IdentifiedLink(const IdentifiedLink& copy) = default;
     IdentifiedLink(DataObject* pObj, long hint)
       : first(pObj), second(hint)  {
     }
@@ -156,19 +152,19 @@ public:
 
 protected:
   /// Boolean indicating wether the stream is in read or write mode
-  Mode             m_mode;
+  Mode             m_mode = UNINITIALIZED;
 
   /// Current buffer pointer
-  long             m_pointer;
+  long             m_pointer = 0;
 
   /// Total buffer length
-  long             m_length;
+  long             m_length = 0;
 
   /// Pointer to heap buffer
-  char*            m_buffer;
+  char*            m_buffer = nullptr;
 
   /// Flag indicating swapping
-  bool             m_swapEnabled;
+  bool             m_swapEnabled = true;
 
   /// Container with links to contained objects
   ContainedLinks   m_containedLinks;
@@ -177,7 +173,7 @@ protected:
   IdentifiedLinks  m_identifiedLinks;
 
   /// Hook function for analysis of data to the stream
-  AnalyzeFunction  m_analyzer;
+  AnalyzeFunction  m_analyzer = nullptr;
 
   /// Check for byte swapping
   SwapAction swapBuffer(int siz)  const;
@@ -205,13 +201,7 @@ protected:
 public:
   /// Standard constructor
   StreamBuffer(bool do_swap=true) :
-    m_mode(UNINITIALIZED),
-    m_pointer(0),
-    m_length(0),
-    m_buffer(0),
-    m_swapEnabled(do_swap)
-  {
-    m_analyzer = 0;
+    m_swapEnabled(do_swap) { 
   }
   /// Standard destructor
   virtual ~StreamBuffer()   {
@@ -294,7 +284,7 @@ public:
     m_pointer = ptr;
   }
   /// Enable user analysis function
-  void setAnalyzer(AnalyzeFunction fun=0)  {
+  void setAnalyzer(AnalyzeFunction fun=nullptr)  {
     m_analyzer = fun;
   }
   /// Swap buffers: int, long, short, float and double
@@ -307,7 +297,7 @@ public:
   StreamBuffer& writeBytes  (const char* str, long len)    {
     extend( m_pointer+len+4 );
     *this << len;
-    memcpy(data()+buffPointer(), str, len);
+    std::copy_n(str,len, data()+buffPointer());
     m_pointer += len;
     return *this;
   }
@@ -612,7 +602,7 @@ inline void StreamBuffer::swapToBuffer(const void* source, int siz)   {
     src = buff;
     /* no break */
   case NOSWAP:
-    memcpy(tar, src, siz);
+    std::copy_n(src,siz,tar);
     break;
   }
   m_pointer += siz;
@@ -634,7 +624,7 @@ inline void StreamBuffer::swapFromBuffer(void* target, int siz)   {
 #endif
     break;
   case NOSWAP:
-    ::memcpy(tar, src, siz);
+    std::copy_n(src,siz,tar);
     break;
   }
   m_pointer += siz;
@@ -644,9 +634,7 @@ inline void StreamBuffer::swapFromBuffer(void* target, int siz)   {
 template <class T> inline
 StreamBuffer& operator << (StreamBuffer& s, const std::vector<T>& v)  {
   s << v.size();
-  for ( typename std::vector<T>::const_iterator i = v.begin(); i != v.end(); i++ )  {
-    s << (*i);
-  }
+  for ( const auto& i : v ) s << i;
   return s;
 }
 
@@ -668,19 +656,17 @@ StreamBuffer& operator >> (StreamBuffer& s, std::vector<T>& v)  {
 template <class T> inline
 StreamBuffer& operator << (StreamBuffer& s, const std::list<T>& l)  {
   s << l.size();
-  for ( typename std::list<T>::const_iterator i = l.begin(); i != l.end(); i++ )  {
-    s << (*i);
-  }
+  for ( const auto& i : l ) s << i ; 
   return s;
 }
 
 // Input serialize a list of items
 template <class T> inline
 StreamBuffer& operator >> (StreamBuffer& s, std::list<T>& l)  {
-  long i, len;
+  long len;
   s >> len;
   l.clear();
-  for ( i = 0; i < len; i++ )  {
+  for ( long i = 0; i < len; i++ )  {
     T    temp;
     s >> temp;
     l.push_back(temp);

@@ -93,7 +93,7 @@ public:
   virtual const std::vector<Property*>& getProperties( ) const;
   virtual bool hasProperty(const std::string& name) const;
 
-  inline PropertyMgr * getPropertyMgr() { return m_propertyMgr; }
+  inline PropertyMgr * getPropertyMgr() { return m_propertyMgr.get(); }
 
 public:
 
@@ -141,7 +141,7 @@ public:
   StatusCode setProperty
   ( const std::string& name  ,
     const TYPE&        value )
-  { return Gaudi::Utils::setProperty ( m_propertyMgr , name , value ) ; }
+  { return Gaudi::Utils::setProperty ( m_propertyMgr.get() , name , value ) ; }
 
 
   /** Standard Constructor.
@@ -329,7 +329,7 @@ private:
   mutable IToolSvc*    m_ptoolSvc;         ///< Tool service
   mutable IMonitorSvc* m_pMonitorSvc;      ///< Online Monitoring Service
   std::string          m_monitorSvcName;   ///< Name to use for Monitor Service
-  PropertyMgr*         m_propertyMgr;      ///< Property Manager
+  std::unique_ptr<PropertyMgr>  m_propertyMgr;      ///< Property Manager
   InterfaceList        m_interfaceList;    ///< Interface list
   std::string          m_threadID;         ///< Thread Id for Alg Tool
 

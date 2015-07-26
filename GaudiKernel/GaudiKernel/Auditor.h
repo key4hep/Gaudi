@@ -44,7 +44,7 @@ public:
       @param svcloc  A pointer to a service location service */
   Auditor( const std::string& name, ISvcLocator *svcloc );
   /// Destructor
-  virtual ~Auditor();
+  ~Auditor() override = default;
 
   /** Initialization method invoked by the framework. This method is responsible
       for any bookkeeping of initialization required by the framework itself.
@@ -196,7 +196,7 @@ public:
   StatusCode setProperty
   ( const std::string& name  ,
     const TYPE&        value )
-  { return Gaudi::Utils::setProperty ( m_PropertyMgr , name , value ) ; }
+  { return Gaudi::Utils::setProperty ( m_PropertyMgr.get() , name , value ) ; }
 
   /** Set the auditor's properties. This method requests the job options service
       to set the values of any declared properties. The method is invoked from
@@ -245,7 +245,7 @@ public:
 
   mutable SmartIF<IMessageSvc> m_MS;            ///< Message service
   mutable SmartIF<ISvcLocator> m_pSvcLocator;   ///< Pointer to service locator service
-  PropertyMgr* m_PropertyMgr;   ///< For management of properties
+  std::unique_ptr<PropertyMgr> m_PropertyMgr;   ///< For management of properties
   int          m_outputLevel;   ///< Auditor output level
   bool         m_isEnabled;     ///< Auditor is enabled flag
   bool         m_isInitialized; ///< Auditor has been initialized flag

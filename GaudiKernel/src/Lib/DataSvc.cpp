@@ -426,9 +426,7 @@ StatusCode DataSvc::registerObject(DataObject* parentObj,
       if ( 0 == par_entry && m_forceLeaves )    {
         DataObject *pLeaf = createDefaultObject();
         StatusCode sc = registerObject(parentObj, p_path, pLeaf);
-        if ( ! sc.isSuccess() )   {
-          delete pLeaf;
-        }
+        if ( ! sc.isSuccess() )   delete pLeaf;
         par_entry = node_entry->findLeaf(p_path);
       }
       else if ( 0 != par_entry && par_entry->object() == 0 )  {
@@ -436,9 +434,7 @@ StatusCode DataSvc::registerObject(DataObject* parentObj,
         if ( !status.isSuccess() && !par_entry->address() && m_forceLeaves )  {
           DataObject *pLeaf = createDefaultObject();
           StatusCode sc = registerObject(parentObj, p_path, pLeaf);
-          if ( ! sc.isSuccess() )   {
-            delete pLeaf;
-          }
+          if ( ! sc.isSuccess() )   delete pLeaf;
           par_entry = node_entry->findLeaf(p_path);
         }
       }

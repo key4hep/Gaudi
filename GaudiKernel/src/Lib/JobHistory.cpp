@@ -104,21 +104,15 @@ JobHistory::dump(std::ostream& ost, const bool isXML, int /*ind*/) const {
     ost << "CMTCONFIG: " << cmtconfig() << endl;
     ost << "Job start time: " << start_time() << endl << endl;
     ost << "Properties: [" << endl;;
-    for ( JobHistory::PropertyPairList::const_iterator
-	    ipprop=propertyPairs().begin();
-	  ipprop!=propertyPairs().end(); ++ipprop ) {
-      std::string client = ipprop->first;
-      const Property* prop = ipprop->second;
+    for ( const auto& ipprop : propertyPairs() ) {
+      std::string client = ipprop.first;
+      const Property* prop = ipprop.second;
       ost << client << ":  ";
       prop->fillStream(ost);
       ost << endl;
     }
     ost << "]" << endl;
-    vector<string> env = environment();
-    for (vector<string>::const_iterator itr=env.begin();  itr != env.end(); 
-	 ++itr) {
-      ost << *itr << endl;
-    }
+    for (const auto& itr : environment() ) ost << itr << endl;
   } else {
 
   }

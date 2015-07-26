@@ -33,7 +33,7 @@ public:
   */
   class Token   {
     /// Toke length
-    long        m_length;
+    long        m_length = 0;
     /// Tag variable
     std::string m_tag;
     /// Value variable
@@ -43,13 +43,11 @@ public:
     Token(const Token& copy)  : m_length(copy.m_length), m_tag(copy.m_tag), m_value(copy.m_value)  {
     }
     /// Standard constructor
-    Token()  : m_length(0)  {
-    }
+    Token()  = default;
     /// Create token from string
     void make(const std::string& s, long st, const char* delim, const char* tagBegin, const char* tagEnd, const char* eq, const char* valBegin, const char* valEnd);
     /// Standard Destructor
-    virtual ~Token()    {
-    }
+    virtual ~Token()  = default;
     /// Assignment operator
     Token& operator=(const Token& copy);
     // Equality operator
@@ -77,16 +75,14 @@ protected:
   /// Assigned tokens within string
   Items m_tokens;
   /// Flag to resolve environment
-  bool  m_resolve;
+  bool  m_resolve = false;
 public:
   /// Standard (dummy) constructor
-  Tokenizer() : m_resolve(false)  {}
+  Tokenizer() = default;
   /// Initializing constructor
   Tokenizer(bool resolve) : m_resolve(resolve)  {}
   /// Standard destructor
-  virtual ~Tokenizer()    {
-    m_tokens.erase(m_tokens.begin(), m_tokens.end());
-  }
+  virtual ~Tokenizer() = default;
   /// Analyse tokens from string
   void analyse(const std::string& s, const char* delim, const char* tagBegin, const char* tagEnd, const char* eq, const char* valBegin, const char* valEnd);
   /// Analyse tokens from string

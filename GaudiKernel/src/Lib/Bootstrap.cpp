@@ -39,8 +39,8 @@ namespace Gaudi
 */
   class BootSvcLocator : public implements1<ISvcLocator> {
   public:
-    BootSvcLocator();
-    virtual ~BootSvcLocator();
+    BootSvcLocator() =default;
+    virtual ~BootSvcLocator() = default;
 #if !defined(GAUDI_V22_API)|| defined(G22_NEW_SVCLOCATOR)
     virtual StatusCode getService( const Gaudi::Utils::TypeNameString& typeName,
                                    const InterfaceID& iid,
@@ -214,11 +214,6 @@ static SmartIF<IService>    s_bootService;
 static SmartIF<IInterface>  s_bootInterface;
 
 using Gaudi::BootSvcLocator;
-
-BootSvcLocator::BootSvcLocator() {
-}
-BootSvcLocator::~BootSvcLocator() {
-}
 
 #if !defined(GAUDI_V22_API) || defined(G22_NEW_SVCLOCATOR)
 StatusCode Gaudi::BootSvcLocator::getService( const Gaudi::Utils::TypeNameString& typeName,

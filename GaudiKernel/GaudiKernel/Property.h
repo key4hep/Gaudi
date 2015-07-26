@@ -97,10 +97,10 @@ protected:
   /// constructor from the property name and the type
   Property
   ( const std::type_info& type      ,
-    const std::string&    name = "" ) ;
+    std::string    name = "" ) ;
   /// constructor from the property name and the type
   Property
-  ( const std::string&    name      ,
+  ( std::string    name      ,
     const std::type_info& type      ) ;
   /// copy constructor
   Property           ( const Property& right ) ;

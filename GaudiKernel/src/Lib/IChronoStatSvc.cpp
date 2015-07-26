@@ -1,6 +1,3 @@
-// $Id: IChronoStatSvc.cpp,v 1.2 2008/05/13 12:36:54 marcocle Exp $
-// ============================================================================
-// Include files
 // ============================================================================
 /** @file
  *  Implementation file for interfaces IChronoSvc & IChronoStatSvc

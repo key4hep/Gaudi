@@ -239,7 +239,7 @@ public:
    */
   class Observer {
   public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
     virtual void onCreate(const IAlgTool*) {}
     virtual void onRetrieve(const IAlgTool*) {}
   };

@@ -22,7 +22,7 @@ public:
 
   /// Declare a sharable library to be used for creating instances of a given algorithm type.
   virtual StatusCode loadModule( const std::string& module,
-				 bool fireIncident=true ) = 0;  // Sharable library name
+                                 bool fireIncident=true ) = 0;  // Sharable library name
 };
 
 #endif  // GAUDIKERNEL_ICLASSMANAGER_H

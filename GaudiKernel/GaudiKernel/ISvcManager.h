@@ -99,7 +99,16 @@ public:
     * assigns it a name. It returns a pointer to an IService.
     * @param nametype   name/type of the service to create
     *
-    * @return   SmartIF to the created service.
+    * @return   SmartIF& to the created service.
+    *
+    * NOTE: as this returns a &, the underlying implementation
+    *       must guarantee that once created, these SmartIF remain 
+    *       pinned in their location, thus constraining
+    *       the underlying implementation (i.e. one cannot use
+    *       something like std::vector<SmartIF<IService>>).
+    *       If this interface had used value-semantics, and returned
+    *       just plain SmartIF<IService> (i.e. WITHOUT the &) then
+    *       the underlying implementation would have much more freedom)
     */
   virtual SmartIF<IService>& createService(const Gaudi::Utils::TypeNameString& nametype) = 0;
 

@@ -28,7 +28,7 @@ namespace Gaudi { class Time; }
 class BaseObjectMemberFunction {
 public:
   /// Virtual destructor.
-  virtual ~BaseObjectMemberFunction() {};
+  virtual ~BaseObjectMemberFunction() = default;
 
   virtual StatusCode operator() () const = 0;
 

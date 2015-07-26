@@ -62,10 +62,8 @@ const std::string GaudiHandleBase::pythonRepr() const {
 //
 bool GaudiHandleArrayBase::setTypesAndNames(  const std::vector< std::string >& myTypesAndNamesList ) {
   clear();
-  std::vector< std::string >::const_iterator it = myTypesAndNamesList.begin(), 
-    itEnd = myTypesAndNamesList.end();
-  for ( ; it != itEnd; ++it ) {
-    if ( !push_back( *it ) ) return false;
+  for ( const auto& it : myTypesAndNamesList ) {
+    if ( !push_back( it ) ) return false;
   }
   return true;
 }
@@ -73,10 +71,7 @@ bool GaudiHandleArrayBase::setTypesAndNames(  const std::vector< std::string >& 
 const std::vector< std::string >
 GaudiHandleArrayBase::getBaseInfos( std::string (GaudiHandleBase::*pMemFunc)() const ) const {
   std::vector< std::string > theList;
-  const GaudiHandleArrayBase::ConstBaseHandleArray& baseArray = getBaseArray();
-  GaudiHandleArrayBase::ConstBaseHandleArray::const_iterator it = baseArray.begin(),
-    itEnd = baseArray.end();
-  for ( ; it != itEnd; ++it ) theList.push_back( ((*it)->*pMemFunc)() );
+  for ( const auto& it : getBaseArray() ) theList.push_back( (it->*pMemFunc)() );
   return theList;
 }
 
@@ -98,10 +93,10 @@ const std::string GaudiHandleArrayBase::pythonPropertyClassName() const {
 
 const std::string GaudiHandleArrayBase::pythonRepr() const {
   std::string repr = pythonPropertyClassName() + "([";
-  const std::vector< std::string >& theList = typesAndNames();
-  std::vector< std::string >::const_iterator it = theList.begin(),
-    itEnd = theList.end(), itLast = itEnd - 1;
-  for ( ; it != itEnd; ++it ) {
+  const auto& theList = typesAndNames();
+  auto itEnd = theList.end();
+  auto itLast = std::prev(itEnd);
+  for (auto it = theList.begin() ; it != itEnd; ++it ) {
     repr += "'" + *it + "'";
     if ( it != itLast ) repr += ",";
   }
@@ -115,7 +110,7 @@ const std::string GaudiHandleArrayBase::pythonRepr() const {
 //
 std::ostream& operator<<( std::ostream& os, const GaudiHandleInfo& handle ) {
   std::string msg;
-  const std::string& propName = handle.propertyName();
+  const auto& propName = handle.propertyName();
   if ( !propName.empty() ) msg += propName + " = ";
   msg += handle.pythonRepr();
   os << msg;

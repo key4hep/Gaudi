@@ -46,8 +46,8 @@ std::ostream& operator<<( std::ostream&   stream ,
 // ============================================================================
 Property::Property
 ( const std::type_info&  type , 
-  const std::string&     name ) 
-  : m_name            (  name ) 
+  std::string     name ) 
+  : m_name            (  std::move(name) ) 
   , m_documentation   ( name )
   , m_typeinfo        ( &type )
   , m_readCallBack    (  0  ) 
@@ -60,9 +60,9 @@ Property::Property
  */
 // ============================================================================
 Property::Property
-( const std::string&     name ,
+( std::string     name ,
   const std::type_info&  type )
-  : m_name            (  name ) 
+  : m_name            (  std::move(name) ) 
   , m_documentation   ( name )
   , m_typeinfo        ( &type )
   , m_readCallBack    (  0  ) 
@@ -111,10 +111,8 @@ Property& Property::operator=( const Property& right )
 // ============================================================================
 Property::~Property()
 {
-  if ( 0 != m_readCallBack   ) 
-  { delete m_readCallBack    ; m_readCallBack    = 0 ; }
-  if ( 0 != m_updateCallBack ) 
-  { delete m_updateCallBack  ; m_updateCallBack  = 0 ; }  
+  delete m_readCallBack    ; m_readCallBack    = 0 ;
+  delete m_updateCallBack  ; m_updateCallBack  = 0 ;
 } 
 // ============================================================================
 // Call-back functor at reading: the functor is ownered by property!
@@ -131,8 +129,7 @@ const PropertyCallbackFunctor* Property::updateCallBack () const
 // ============================================================================
 void  Property::declareReadHandler   ( PropertyCallbackFunctor* pf ) 
 {
-  if ( 0 != m_readCallBack   ) 
-  { delete m_readCallBack    ; m_readCallBack    = 0 ; }
+  delete m_readCallBack;
   m_readCallBack = pf ;
 } 
 // ============================================================================
@@ -140,8 +137,7 @@ void  Property::declareReadHandler   ( PropertyCallbackFunctor* pf )
 // ============================================================================
 void  Property::declareUpdateHandler ( PropertyCallbackFunctor* pf ) 
 {
-  if ( 0 != m_updateCallBack   ) 
-  { delete m_updateCallBack    ; m_updateCallBack    = 0 ; }
+  delete m_updateCallBack;
   m_updateCallBack = pf ;
 } 
 // ============================================================================
@@ -149,11 +145,11 @@ void  Property::declareUpdateHandler ( PropertyCallbackFunctor* pf )
 // ============================================================================
 void Property::useReadHandler   () const 
 {
-  if ( 0 == m_readCallBack ) { return ; }               // RETURN
+  if ( !m_readCallBack ) { return ; }               // RETURN
   const Property& p = *this ;
   PropertyCallbackFunctor* theCallBack = m_readCallBack;
   // avoid infinite loop
-  m_readCallBack = 0;
+  m_readCallBack = nullptr;
   (*theCallBack)( const_cast<Property&>(p) ) ;
   m_readCallBack = theCallBack;
 } 
@@ -163,10 +159,10 @@ void Property::useReadHandler   () const
 bool Property::useUpdateHandler () 
 {
   bool sc(true);
-  if ( 0 == m_updateCallBack ) { return sc; }  // RETURN
+  if ( !m_updateCallBack ) { return sc; }  // RETURN
   PropertyCallbackFunctor* theCallBack = m_updateCallBack;
   // avoid infinite loop
-  m_updateCallBack = 0;
+  m_updateCallBack = nullptr;
   try {
     (*theCallBack)( *this ) ;
   } catch(...) {
@@ -205,7 +201,7 @@ bool Gaudi::Utils::hasProperty
   const std::string& name ) 
 {
   // trivial check 
-  if ( 0 ==  p ) { return false ; }                                // RETURN 
+  if ( !p ) { return false ; }                                // RETURN 
   // gelegate to another method 
   return 0 != getProperty ( p , name ) ;
 } 
@@ -232,7 +228,7 @@ bool Gaudi::Utils::hasProperty
 ( const IProperty*   p    , 
   const std::string& name ) 
 {
-  if ( 0 == p ) { return false ; }
+  if ( !p ) { return false ; }
   // delegate the actual work to another method ;
   return 0 != getProperty ( p , name ) ;
 } 
@@ -299,7 +295,7 @@ StatusCode GaudiHandleArrayProperty::fromString( const std::string& source ) {
   std::vector< std::string > tmp;
   StatusCode sc = Gaudi::Parsers::parse ( tmp , source );
   if ( sc.isFailure() ) return sc;
-  if ( !m_pValue->setTypesAndNames( tmp ) ) return StatusCode::FAILURE;
+  if ( !m_pValue->setTypesAndNames( std::move(tmp) ) ) return StatusCode::FAILURE;
   return useUpdateHandler()?StatusCode::SUCCESS:StatusCode::FAILURE;
 }
 
@@ -317,7 +313,7 @@ namespace
     /// the most essential method:
     bool operator () ( const Property* p ) const 
     {
-      if ( 0 == p ) { return false ; }
+      if ( !p ) { return false ; }
       return m_name == boost::algorithm::to_lower_copy( p->name() ) ;
     } ;
   protected:
@@ -350,15 +346,12 @@ Property* Gaudi::Utils::getProperty
   const std::string& name ) 
 {
   // trivial check 
-  if ( 0 == p      ) { return 0 ; }                          // RETURN 
+  if ( !p      ) { return nullptr ; }                          // RETURN 
   // get all properties 
-  typedef std::vector<Property*> List ;
-  const List& lst = p->getProperties() ;
-  if ( lst.empty() ) { return 0 ; }                          // RETURN 
+  const auto& props = p->getProperties() ;
   // comparison criteria:
-  List::const_iterator ifound = 
-    std::find_if ( lst.begin() , lst.end() , _ByName_( name ) ) ;
-  if ( lst.end() == ifound ) { return 0 ; }                  // RETURN 
+  auto ifound = std::find_if ( props.begin() , props.end() , _ByName_( name ) ) ;
+  if ( ifound == props.end() ) { return nullptr ; }                  // RETURN 
   // OK 
   return *ifound ;
 } 
@@ -385,12 +378,12 @@ Property* Gaudi::Utils::getProperty
 ( const IInterface*   p , const std::string& name ) 
 {
   // trivial check 
-  if ( 0 ==  p        ) { return 0 ; }                                // RETURN 
+  if ( !p        ) { return nullptr ; }                                // RETURN 
   // remove const-qualifier 
   IInterface* _i = const_cast<IInterface*>( p ) ;
-  if ( 0 == _i        ) { return 0 ; }                                // RETURN
+  if ( !_i        ) { return nullptr ; }                                // RETURN
   SmartIF<IProperty> property ( _i ) ;
-  if ( !property      ) { return 0 ; }                                // RETURN
+  if ( !property      ) { return nullptr ; }                                // RETURN
   return getProperty ( property , name ) ;
 } 
 // ============================================================================
@@ -453,10 +446,9 @@ const Property* Gaudi::Utils::getProperty
   const std::string&                  name ) 
 {
   // trivial check 
-  if ( 0 == p             ) { return 0 ; }                 // RETURN 
-  std::vector<const Property*>::const_iterator ifound = 
-    std::find_if ( p->begin() , p->end() , _ByName_( name ) ) ;
-  if ( p->end() == ifound ) { return 0 ; }                 // RETURN 
+  if ( !p             ) { return nullptr ; }                 // RETURN 
+  auto ifound = std::find_if ( p->begin() , p->end() , _ByName_( name ) ) ;
+  if ( p->end() == ifound ) { return nullptr ; }                 // RETURN 
   // OK 
   return *ifound ;
 }
@@ -544,11 +536,9 @@ StatusCode Gaudi::Utils::setProperty
   const Property*    property  ,
   const std::string& doc       ) 
 {
-  if ( 0 == component || 0 == property   ) { return StatusCode::FAILURE ; }
-  if ( !hasProperty ( component , name ) ) { return StatusCode::FAILURE ; }
+  if ( !component || !property || !hasProperty ( component , name )  ) { return StatusCode::FAILURE ; }
   Property* p = getProperty ( component , name ) ;
-  if ( 0 == p                            ) { return StatusCode::FAILURE ; }
-  if ( !p->assign ( *property )          ) { return StatusCode::FAILURE ; }
+  if ( !p || !p->assign ( *property )                                ) { return StatusCode::FAILURE ; }
   if ( !doc.empty()  ) { p->setDocumentation( doc ) ; }
   return StatusCode::SUCCESS ;
 }
@@ -601,9 +591,9 @@ StatusCode Gaudi::Utils::setProperty
   const std::string& value     ,
   const std::string& doc       ) 
 {
-  if ( 0 == component ) { return StatusCode::FAILURE ; }
+  if ( !component ) { return StatusCode::FAILURE ; }
   SmartIF<IProperty> property ( component ) ;
-  if ( !property      ) { return StatusCode::FAILURE ; }
+  if ( !property  ) { return StatusCode::FAILURE ; }
   return setProperty ( property , name , value , doc ) ;
 }
 // ============================================================================
@@ -626,8 +616,7 @@ StatusCode Gaudi::Utils::setProperty
   const char*        value     ,
   const std::string& doc       ) 
 {
-  const std::string val = std::string( value ) ;
-  return setProperty ( component , name , val , doc ) ;
+  return setProperty ( component , name , std::string{ value } , doc ) ;
 }
 // ============================================================================
 /*  simple function to set the property of the given object from another 
@@ -658,7 +647,7 @@ StatusCode Gaudi::Utils::setProperty
   const Property*    property  ,
   const std::string& doc       ) 
 {
-  if ( 0 == component ) { return StatusCode::FAILURE ; }
+  if ( !component ) { return StatusCode::FAILURE ; }
   SmartIF<IProperty> prop  ( component ) ;
   if ( !prop          ) { return StatusCode::FAILURE ; }
   return setProperty ( prop  , name , property , doc ) ;
@@ -701,4 +690,3 @@ StatusCode Gaudi::Utils::setProperty
 // ============================================================================
 // The END 
 // ============================================================================
-

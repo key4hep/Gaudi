@@ -39,7 +39,7 @@ public:
   // copy constructor
   PropertyMgr ( const PropertyMgr& ) ;
   /// virtual destructor
-  virtual ~PropertyMgr();
+  ~PropertyMgr() override = default;
   // assignment operator
   PropertyMgr& operator=( const PropertyMgr& ) ;
 public:
@@ -167,7 +167,7 @@ private:
   /// Collection of all declared remote properties
   RemoteProperties       m_remoteProperties;  // Remote properties
   /// Properties to be deleted
-  Properties             m_todelete        ;  // properties to be deleted
+  std::vector<std::unique_ptr<Property>> m_todelete ;  // properties to be deleted
   ///  Flag to decide to delete or not a propertyRef
   std::vector<bool>      m_isOwned         ;  // flag to delete
   /// Interface hub reference (ApplicationMgr)
@@ -184,11 +184,11 @@ PropertyMgr::declareProperty
   const std::string& doc )
 {
   assertUniqueName(name);
-  Property* p = new SimplePropertyRef<TYPE> ( name , value ) ;
+  m_todelete   .emplace_back( new SimplePropertyRef<TYPE> ( name , value ) );
+  Property* p = m_todelete.back().get();
   //
   p->setDocumentation( doc );
   m_properties .push_back( p ) ;
-  m_todelete   .push_back( p ) ;
   //
   return p ;
 }
@@ -241,11 +241,11 @@ PropertyMgr::declareProperty
   const std::string& doc )
 {
   assertUniqueName(name);
-  Property* p = new GaudiHandleProperty( name, ref );
+  m_todelete   . emplace_back ( new GaudiHandleProperty( name, ref ) );
+  Property* p = m_todelete.back().get();
   //
   p -> setDocumentation    ( doc ) ;
   m_properties . push_back ( p   ) ;
-  m_todelete   . push_back ( p   ) ;
   //
   return p ;
 }
@@ -258,11 +258,11 @@ PropertyMgr::declareProperty
   const std::string& doc )
 {
   assertUniqueName(name);
-  Property* p = new GaudiHandleProperty( name, ref );
+  m_todelete   . emplace_back (new GaudiHandleProperty( name, ref ));
+  Property* p = m_todelete.back().get();
   //
   p -> setDocumentation    ( doc ) ;
   m_properties . push_back ( p   ) ;
-  m_todelete   . push_back ( p   ) ;
   //
   return p ;
 }
@@ -275,11 +275,11 @@ PropertyMgr::declareProperty
   const std::string& doc )
 {
   assertUniqueName(name);
-  Property* p = new GaudiHandleArrayProperty( name, ref );
+  m_todelete   . emplace_back ( new GaudiHandleArrayProperty( name, ref ) );
+  Property* p = m_todelete.back().get();
   //
   p -> setDocumentation    ( doc ) ;
   m_properties . push_back ( p   ) ;
-  m_todelete   . push_back ( p   ) ;
   //
   return p ;
 }
@@ -292,11 +292,11 @@ PropertyMgr::declareProperty
   const std::string& doc )
 {
   assertUniqueName(name);
-  Property* p = new GaudiHandleArrayProperty( name, ref );
+  m_todelete   . emplace_back ( new GaudiHandleArrayProperty( name, ref ) );
+  Property* p = m_todelete.back().get();
   //
   p -> setDocumentation    ( doc ) ;
   m_properties . push_back ( p   ) ;
-  m_todelete   . push_back ( p   ) ;
   //
   return p ;
 }

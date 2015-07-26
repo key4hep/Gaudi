@@ -17,7 +17,7 @@ class GAUDI_API IUpdateable {
 public:
 
   /// Default destructor
-  virtual ~IUpdateable() { }
+  virtual ~IUpdateable() = default;
 
   /** Output serialization to stream buffer. Saves the status of the object.
     * @param   flag    Flag to trigger implementation specific action.

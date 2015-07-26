@@ -5,7 +5,7 @@
  * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
  * $Id: DirSearchPath.h,v 1.2 2007/10/16 15:37:25 marcocle Exp $
  */
-#include <list>
+#include <vector>
 #include <functional>  /* binary_function */
 #include <string>
 #include "boost/filesystem/path.hpp"
@@ -78,6 +78,6 @@ private:
   //  typedef std::set<path, lessPath> PathSet; ///<a set ordered by path name
   //  PathSet m_dirs;   ///<the dir container
   //
-  std::list<path> m_dirs;   ///<the dir container
+  std::vector<path> m_dirs;   ///<the dir container
 };
 #endif // JOBOPTIONS_DIRSEARCHPATH_H

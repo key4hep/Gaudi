@@ -33,14 +33,14 @@ namespace NTuple   {
     IConversionSvc*   m_cnvSvc;
   private:
     /// Standard Copy Constructor
-    TupleImp(const TupleImp&) ;
+    TupleImp(const TupleImp&)  = delete;
 
   public:
     /// Internally used by abstract classes
     virtual INTupleItem* i_find(const std::string& name)  const;
   public:
     /// Standard Constructor
-    TupleImp( const std::string& title);
+    TupleImp( std::string title);
     /// Standard Destructor
     virtual ~TupleImp();
     /// Access item container
@@ -120,11 +120,10 @@ namespace NTuple   {
   class ColumnWiseTuple : public TupleImp    {
   public:
     /// Standard Constructor
-    ColumnWiseTuple(const std::string& title ) : TupleImp(title)    {
+    ColumnWiseTuple(std::string title ) : TupleImp(std::move(title))    {
     }
     /// Standard Destructor
-    virtual ~ColumnWiseTuple()   {
-    }
+    ~ColumnWiseTuple() override = default;
     /// Retrieve Reference to class defininition structure
     virtual const CLID& clID() const   {
       return classID();
@@ -139,11 +138,10 @@ namespace NTuple   {
   class RowWiseTuple : public TupleImp    {
   public:
     /// Standard Constructor
-    RowWiseTuple( const std::string& title ) : TupleImp(title)    {
+    RowWiseTuple( std::string title ) : TupleImp(std::move(title))    {
     }
     /// Standard Destructor
-    virtual ~RowWiseTuple()   {
-    }
+    ~RowWiseTuple() override = default;
     /// Retrieve Reference to class defininition structure
     virtual const CLID& clID() const   {
       return classID();

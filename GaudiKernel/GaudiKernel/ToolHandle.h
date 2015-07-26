@@ -25,7 +25,7 @@ protected:
     {}
 
 public:
-  virtual ~ToolHandleInfo() {};
+  virtual ~ToolHandleInfo() = default;
 
   bool isPublic() const {
      return !m_parent;

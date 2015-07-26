@@ -73,7 +73,7 @@ public:
   Algorithm( const std::string& name, ISvcLocator *svcloc,
              const std::string& version=PACKAGE_VERSION );
   /// Destructor
-  virtual ~Algorithm();
+  ~Algorithm() override = default;
 
   /** Reinitialization method invoked by the framework. This method is responsible
    *  for any reinitialization required by the framework itself.
@@ -144,28 +144,31 @@ public:
    *  whereas "ApproxTrackFit" and "BestTrackFit" may be two instantiations
    *  of the class configured to find tracks with different fit criteria.
    */
-  virtual const std::string& name() const;
+  const std::string& name() const override;
 
-  virtual const std::string& version() const;
+  const std::string& version() const override;
 
   /// Dummy implementation of IStateful::configure() method
-  virtual StatusCode configure () { return StatusCode::SUCCESS ; }
+  StatusCode configure() override { return StatusCode::SUCCESS ; }
   /// Dummy implementation of IStateful::terminate() method
-  virtual StatusCode terminate () { return StatusCode::SUCCESS ; }
+  StatusCode terminate() override { return StatusCode::SUCCESS ; }
 
   /// the default (empty) implementation of IStateful::initialize() method
-  virtual StatusCode initialize () { return StatusCode::SUCCESS ; }
+  StatusCode initialize() override { return StatusCode::SUCCESS ; }
   /// the default (empty) implementation of IStateful::start() method
-  virtual StatusCode start () { return StatusCode::SUCCESS ; }
+  StatusCode start() override { return StatusCode::SUCCESS ; }
   /// the default (empty) implementation of IStateful::stop() method
-  virtual StatusCode stop () { return StatusCode::SUCCESS ; }
+  StatusCode stop() override { return StatusCode::SUCCESS ; }
   /// the default (empty) implementation of IStateful::finalize() method
-  virtual StatusCode finalize   () { return StatusCode::SUCCESS ; }
-
+  StatusCode finalize() override { return StatusCode::SUCCESS ; }
   /// the default (empty) implementation of IStateful::reinitialize() method
-  virtual StatusCode reinitialize ();
+  StatusCode reinitialize() override;
   /// the default (empty) implementation of IStateful::restart() method
-  virtual StatusCode restart ();
+  StatusCode restart() override;
+  /// returns the current state of the algorithm
+  Gaudi::StateMachine::State FSMState() const override { return m_state; }
+  /// returns the state the algorithm will be in after the ongoing transition
+  Gaudi::StateMachine::State targetFSMState() const override { return m_targetState; }
 
   /// Has this algorithm been executed since the last reset?
   virtual bool isExecuted( ) const;
@@ -186,11 +189,6 @@ public:
   /// Algorithm end run. This method is called at the end of the event loop
   virtual StatusCode endRun();
 
-  /// returns the current state of the algorithm
-  virtual Gaudi::StateMachine::State FSMState() const { return m_state; }
-
-  /// returns the state the algorithm will be in after the ongoing transition
-  virtual Gaudi::StateMachine::State targetFSMState() const { return m_targetState; }
 
   /// Is this algorithm enabled or disabled?
   virtual bool isEnabled( ) const;
@@ -340,24 +338,27 @@ public:
                                  const std::string& name, Algorithm*& pSubAlg );
 
   /// List of sub-algorithms. Returns a pointer to a vector of (sub) Algorithms
-  std::vector<Algorithm*>* subAlgorithms() const;
+  const std::vector<Algorithm*>* subAlgorithms() const;
+
+  /// List of sub-algorithms. Returns a pointer to a vector of (sub) Algorithms
+  std::vector<Algorithm*>* subAlgorithms() ;
 
   /// Implementation of IProperty::setProperty
-  virtual StatusCode setProperty( const Property& p );
+  StatusCode setProperty( const Property& p ) override;
   /// Implementation of IProperty::setProperty
-  virtual StatusCode setProperty( const std::string& s );
+  StatusCode setProperty( const std::string& s ) override;
   /// Implementation of IProperty::setProperty
-  virtual StatusCode setProperty( const std::string& n, const std::string& v);
+  StatusCode setProperty( const std::string& n, const std::string& v) override;
   /// Implementation of IProperty::getProperty
-  virtual StatusCode getProperty(Property* p) const;
+  StatusCode getProperty(Property* p) const override;
   /// Implementation of IProperty::getProperty
-  virtual const Property& getProperty( const std::string& name) const;
+  const Property& getProperty( const std::string& name) const override;
   /// Implementation of IProperty::getProperty
-  virtual StatusCode getProperty( const std::string& n, std::string& v ) const;
+  StatusCode getProperty( const std::string& n, std::string& v ) const override;
   /// Implementation of IProperty::getProperties
-  virtual const std::vector<Property*>& getProperties( ) const;
+  const std::vector<Property*>& getProperties( ) const override;
   /// Implementation of IProperty::hasProperty
-  virtual bool hasProperty(const std::string& name) const;
+  bool hasProperty(const std::string& name) const override;
 
   /** Set the algorithm's properties.
    *  This method requests the job options service
@@ -512,7 +513,7 @@ public:
   StatusCode setProperty
   ( const std::string& name  ,
     const TYPE&        value )
-  { return Gaudi::Utils::setProperty ( m_propertyMgr , name , value ) ; }
+  { return Gaudi::Utils::setProperty ( m_propertyMgr.get() , name , value ) ; }
   // ==========================================================================
 protected:
 
@@ -536,7 +537,7 @@ private:
 
   std::string m_name;            ///< Algorithm's name for identification
   std::string m_version;         ///< Algorithm's version
-  std::vector<Algorithm *>* m_subAlgms; ///< Sub algorithms
+  std::vector<Algorithm *> m_subAlgms; ///< Sub algorithms
 
   mutable SmartIF<IMessageSvc>      m_MS;       ///< Message service
   mutable SmartIF<IDataProviderSvc> m_EDS;      ///< Event data service
@@ -556,7 +557,7 @@ private:
   bool  m_registerContext ; ///< flag to register for Algorithm Context Service
   std::string               m_monitorSvcName; ///< Name to use for Monitor Service
   SmartIF<ISvcLocator>  m_pSvcLocator;      ///< Pointer to service locator service
-  PropertyMgr* m_propertyMgr;      ///< For management of properties
+  std::unique_ptr<PropertyMgr> m_propertyMgr;      ///< For management of properties
   IntegerProperty m_outputLevel;   ///< Algorithm output level
   int          m_errorMax;         ///< Algorithm Max number of errors
   int          m_errorCount;       ///< Algorithm error counter

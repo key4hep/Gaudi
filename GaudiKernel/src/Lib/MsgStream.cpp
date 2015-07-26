@@ -66,9 +66,6 @@ MsgStream::MsgStream(IMessageSvc* svc, const std::string& source, int)
 #endif
 }
 
-MsgStream::~MsgStream()    {
-}
-
 MsgStream& MsgStream::doOutput()       {
   try {
     // This piece of code may throw and we cannot afford it when we print a message

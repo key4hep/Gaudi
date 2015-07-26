@@ -28,7 +28,7 @@ public:
   ServiceHistory(const IService*, const JobHistory* ) ;
   ServiceHistory(const IService&, const JobHistory* ) ;
 
-  virtual ~ServiceHistory();
+  virtual ~ServiceHistory() = default;
 
   // Class IDs
   virtual const CLID& clID() const { return classID(); }

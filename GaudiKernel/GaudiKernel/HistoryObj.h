@@ -23,7 +23,7 @@ class IVersHistoryObj;
 
 class GAUDI_API HistoryObj: public DataObject {
 public:
-  HistoryObj();
+  HistoryObj() = default;
   virtual ~HistoryObj();
 
   virtual const CLID& clID() const { return classID(); }
@@ -31,7 +31,7 @@ public:
   static std::string convert_string(const std::string&);
 
   virtual void dump(std::ostream&, const bool isXML=false,
-		    int indent=0) const = 0;
+ 		    int indent=0) const = 0;
 
  protected:
   virtual void indent(std::ostream&, int) const;

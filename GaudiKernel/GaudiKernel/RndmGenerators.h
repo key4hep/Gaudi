@@ -389,10 +389,10 @@ namespace Rndm   {
   class GAUDI_API Numbers   {
   protected:
     /// Pointer to random number generator
-    IRndmGen*           m_generator;
+    IRndmGen*           m_generator = nullptr;
   public:
     /// Standard constructor
-    Numbers();
+    Numbers() = default;
     /// Copy constructor
     Numbers(const Numbers& copy );
     /// Initializing constructor
@@ -411,7 +411,7 @@ namespace Rndm   {
     virtual StatusCode finalize();
     /// Check if the number supply is possible
     operator bool  ()  const  {
-      return m_generator != 0;
+      return m_generator;
     }
     /// Operator () for the use within STL
     double operator() ()   {
@@ -423,17 +423,13 @@ namespace Rndm   {
     }
     /// Pop a new number from the buffer
     double shoot()    {
-      if ( 0 != m_generator )   {
-        return m_generator->shoot();
-      }
-      return -1;
+      return m_generator ? m_generator->shoot() 
+                         : -1;
     }
     /// Pop a new number from the buffer
     StatusCode shootArray(std::vector<double>& array, long num, long start=0)  {
-      if ( 0 != m_generator )   {
-        return m_generator->shootArray(array, num, start);
-      }
-      return StatusCode::FAILURE;
+      return  m_generator ? m_generator->shootArray(array, num, start) 
+                          : StatusCode::FAILURE;
     }
   };
 }

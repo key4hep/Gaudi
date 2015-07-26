@@ -116,11 +116,11 @@ Gaudi::Guards::AuditorGuard::AuditorGuard ( INamedInterface*                   o
 {
   i_before();
 }
-Gaudi::Guards::AuditorGuard::AuditorGuard ( const std::string           &name      ,
+Gaudi::Guards::AuditorGuard::AuditorGuard ( std::string           name      ,
     IAuditor*                    svc      ,
     IAuditor::StandardEventType  evt      ):
-      m_obj(0),
-      m_objName(name),
+      m_obj(nullptr),
+      m_objName(std::move(name)),
       m_svc(svc),
       m_evt(evt),
       m_cevt(),
@@ -129,11 +129,11 @@ Gaudi::Guards::AuditorGuard::AuditorGuard ( const std::string           &name   
 {
   i_before();
 }
-Gaudi::Guards::AuditorGuard::AuditorGuard ( const std::string           &name      ,
+Gaudi::Guards::AuditorGuard::AuditorGuard ( std::string           name      ,
     IAuditor*                          svc      ,
     IAuditor::CustomEventTypeRef       evt      ):
-      m_obj(0),
-      m_objName(name),
+      m_obj(nullptr),
+      m_objName(std::move(name)),
       m_svc(svc),
       m_evt(IAuditor::Initialize), // Windows needs an explicit value
       m_cevt(evt),
@@ -142,12 +142,12 @@ Gaudi::Guards::AuditorGuard::AuditorGuard ( const std::string           &name   
 {
   i_before();
 }
-Gaudi::Guards::AuditorGuard::AuditorGuard ( const std::string           &name      ,
+Gaudi::Guards::AuditorGuard::AuditorGuard ( std::string           name      ,
     IAuditor*                    svc      ,
     IAuditor::StandardEventType  evt      ,
     const StatusCode            &sc       ):
-      m_obj(0),
-      m_objName(name),
+      m_obj(nullptr),
+      m_objName(std::move(name)),
       m_svc(svc),
       m_evt(evt),
       m_cevt(),
@@ -156,12 +156,12 @@ Gaudi::Guards::AuditorGuard::AuditorGuard ( const std::string           &name   
 {
   i_before();
 }
-Gaudi::Guards::AuditorGuard::AuditorGuard ( const std::string           &name      ,
+Gaudi::Guards::AuditorGuard::AuditorGuard ( std::string           name      ,
     IAuditor*                          svc      ,
     IAuditor::CustomEventTypeRef       evt      ,
     const StatusCode                  &sc       ):
-      m_obj(0),
-      m_objName(name),
+      m_obj(nullptr),
+      m_objName(std::move(name)),
       m_svc(svc),
       m_evt(IAuditor::Initialize), // Windows needs an explicit value
       m_cevt(evt),

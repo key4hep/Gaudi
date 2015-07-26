@@ -40,10 +40,10 @@ namespace Gaudi
      *  @param title the historgam title
      */
     Histo1DDef
-    ( const double       low         ,
-      const double       high        ,
-      const int          bins  = 100 ,
-      const std::string& title = ""  );
+    ( double       low         ,
+      double       high        ,
+      int          bins  = 100 ,
+      std::string  title = ""  );
     // ========================================================================
     /** full constructor from edges, #bins and the title
      *  @param title the historgam title
@@ -52,13 +52,13 @@ namespace Gaudi
      *  @param bins number of bins
      */
     Histo1DDef
-    ( const std::string& title = ""  ,
-      const double       low   = 0.0 ,
-      const double       high  = 1.0 ,
-      const int          bins  = 100 ) ;
+    ( std::string  title = ""  ,
+      double       low   = 0.0 ,
+      double       high  = 1.0 ,
+      int          bins  = 100 ) ;
     // ========================================================================
     /// destructor
-    virtual ~Histo1DDef( ); ///< virtual destructor
+    virtual ~Histo1DDef( ) = default; ///< virtual destructor
     // ========================================================================
   public:
     // ========================================================================
@@ -74,13 +74,13 @@ namespace Gaudi
   public:
     // ========================================================================
     /// set low edge
-    void setLowEdge  ( const double       value ) { m_low   = value ; }
+    void setLowEdge  ( double       value ) { m_low   = value ; }
     /// set high edge
-    void setHighEdge ( const double       value ) { m_high  = value ; }
+    void setHighEdge ( double       value ) { m_high  = value ; }
     /// set number of bis
-    void setBins     ( const int          value ) { m_bins  = value ; }
+    void setBins     ( int          value ) { m_bins  = value ; }
     /// set the title
-    void setTitle    ( const std::string& value ) { m_title = value ; }
+    void setTitle    ( std::string value ) { m_title = std::move(value); }
     // ========================================================================
   public:
     // ========================================================================

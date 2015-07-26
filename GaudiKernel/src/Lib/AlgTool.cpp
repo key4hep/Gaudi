@@ -19,31 +19,25 @@ StatusCode AlgTool::queryInterface
   void**             ppvi )
 //------------------------------------------------------------------------------
 {
-  if ( 0 == ppvi ) { return StatusCode::FAILURE ; } // RETURN
+  if ( !ppvi ) { return StatusCode::FAILURE ; } // RETURN
   StatusCode sc = base_class::queryInterface(riid,ppvi);
-  if (sc.isSuccess()) {
-    return sc;
+  if (sc.isSuccess()) return sc;
+  for ( auto& it : m_interfaceList ) 
+  {
+    if ( !it.first.versionMatch ( riid ) ) { continue ; }
+    // OK
+    *ppvi = it.second ;
+    addRef() ;
+    return SUCCESS ;     // RETURN
   }
-  else {
-    for ( InterfaceList::iterator it = m_interfaceList.begin() ;
-          m_interfaceList.end() != it ; ++it )
-    {
-      if ( !it->first.versionMatch ( riid ) ) { continue ; }
-      // OK
-      *ppvi = it->second ;
-      addRef() ;
-      return SUCCESS ;     // RETURN
-    }
-    *ppvi = 0 ;
-    return NO_INTERFACE ;  // RETURN
-  }
-  // cannot reach this point
+  *ppvi = 0 ;
+  return NO_INTERFACE ;  // RETURN
 }
 //------------------------------------------------------------------------------
 void AlgTool::declInterface( const InterfaceID& iid, void* ii)
 //------------------------------------------------------------------------------
 {
-  m_interfaceList.push_back(std::make_pair(iid, ii));
+  m_interfaceList.emplace_back(iid, ii);
 }
 
 
@@ -86,7 +80,7 @@ IMessageSvc* AlgTool::msgSvc()  const
 IToolSvc* AlgTool::toolSvc() const
 //------------------------------------------------------------------------------
 {
-  if ( 0 == m_ptoolSvc ) {
+  if ( !m_ptoolSvc ) {
     StatusCode sc = service( "ToolSvc", m_ptoolSvc, true );
     if( sc.isFailure() ) {
       throw GaudiException("Service [ToolSvc] not found", name(), sc);
@@ -169,7 +163,7 @@ StatusCode AlgTool::setProperties()
   }
 
   // Change my own outputlevel
-  if ( 0 != m_messageSvc )
+  if ( m_messageSvc )
   {
     if ( MSG::NIL != m_outputLevel )
     { m_messageSvc -> setOutputLevel ( name () , m_outputLevel ) ; }
@@ -188,14 +182,14 @@ AlgTool::AlgTool( const std::string& type,
   , m_type          ( type )
   , m_name          ( name )
   , m_parent        ( parent )
-  , m_svcLocator    ( 0 )
-  , m_messageSvc    ( 0 )
-  , m_ptoolSvc      ( 0 )
-  , m_pMonitorSvc   ( NULL )
+  , m_svcLocator    ( nullptr )
+  , m_messageSvc    ( nullptr )
+  , m_ptoolSvc      ( nullptr )
+  , m_pMonitorSvc   ( nullptr )
   , m_propertyMgr   ( new PropertyMgr() )
   , m_interfaceList (       )
   , m_threadID      (       )
-  , m_pAuditorSvc   ( 0     )
+  , m_pAuditorSvc   ( nullptr )
   , m_auditInit     ( false )
   , m_auditorInitialize(false)
   , m_auditorStart(false)
@@ -212,7 +206,7 @@ AlgTool::AlgTool( const std::string& type,
 
   { // get the "OutputLevel" property from parent
     const Property* _p = Gaudi::Utils::getProperty ( parent , "OutputLevel") ;
-    if ( 0 != _p ) { m_outputLevel.assign( *_p ) ; }
+    if ( _p ) { m_outputLevel.assign( *_p ) ; }
     declareProperty ( "OutputLevel"     , m_outputLevel ) ;
      m_outputLevel.declareUpdateHandler(&AlgTool::initOutputLevel, this);
   }
@@ -572,7 +566,6 @@ StatusCode AlgTool::restart()
 AlgTool::~AlgTool()
 //------------------------------------------------------------------------------
 {
-  delete m_propertyMgr;
   if( m_ptoolSvc ) m_ptoolSvc->release();
   if( m_pAuditorSvc ) m_pAuditorSvc->release();
   if ( m_pMonitorSvc ) { m_pMonitorSvc->undeclareAll(this); m_pMonitorSvc->release(); }

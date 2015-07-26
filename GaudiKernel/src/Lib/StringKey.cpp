@@ -11,7 +11,6 @@
 // Boost
 // ============================================================================
 #include "boost/functional/hash.hpp"
-#include "boost/bind.hpp"
 // ============================================================================
 /** @file
  *  Implementation file for class Gaudi::StringKey
@@ -22,8 +21,8 @@
 // ============================================================================
 // constructor from the string: perform hashing
 // ============================================================================
-Gaudi::StringKey::StringKey ( const std::string& key )
-  : m_str  ( key )
+Gaudi::StringKey::StringKey ( std::string key )
+  : m_str  ( std::move(key) )
   , m_hash ( boost::hash_value( m_str ) )  // NB! hashing here!!!
 {}
 // ============================================================================

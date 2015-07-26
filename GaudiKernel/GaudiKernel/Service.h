@@ -125,10 +125,10 @@ public:
   StatusCode setProperty
   ( const std::string& name  ,
     const TYPE&        value )
-  { return Gaudi::Utils::setProperty ( m_propertyMgr , name , value ) ; }
+  { return Gaudi::Utils::setProperty ( m_propertyMgr.get() , name , value ) ; }
 
   /** Standard Constructor                       */
-  Service( const std::string& name, ISvcLocator* svcloc);
+  Service( std::string name, ISvcLocator* svcloc);
   /** Retrieve pointer to service locator        */
   SmartIF<ISvcLocator>& serviceLocator() const;
 
@@ -151,7 +151,7 @@ public:
       return StatusCode::SUCCESS;
     }
     // else
-    psvc = 0;
+    psvc = nullptr;
     return StatusCode::FAILURE;
   }
 
@@ -167,7 +167,7 @@ public:
       return StatusCode::SUCCESS;
     }
     // else
-    psvc = 0;
+    psvc = nullptr;
     return StatusCode::FAILURE;
   }
 
@@ -239,13 +239,13 @@ public:
 
 protected:
   /** Standard Destructor                        */
-  virtual ~Service();
+  virtual ~Service() = default;
   /** Service output level                       */
-  IntegerProperty m_outputLevel;
+  IntegerProperty m_outputLevel = MSG::NIL;
   /** Service state                              */
-  Gaudi::StateMachine::State    m_state;
+  Gaudi::StateMachine::State    m_state = Gaudi::StateMachine::OFFLINE;
   /** Service state                              */
-  Gaudi::StateMachine::State    m_targetState;
+  Gaudi::StateMachine::State    m_targetState = Gaudi::StateMachine::OFFLINE;
 
   /// get the @c Service's output level
   int  outputLevel() const { return m_outputLevel.value(); }
@@ -257,7 +257,7 @@ private:
   mutable SmartIF<ISvcLocator> m_svcLocator;
   SmartIF<ISvcManager>  m_svcManager;
   /** Property Manager                           */
-  PropertyMgr*  m_propertyMgr;
+  std::unique_ptr<PropertyMgr>  m_propertyMgr;
 
   void setServiceManager(ISvcManager* ism);
 

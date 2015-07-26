@@ -49,9 +49,7 @@ void Tokenizer::analyse(const std::string& s, const char* delim, const char* tag
     }
   } while ( start < long(s.length()) );
   if ( m_resolve )  {
-    for(Items::iterator i=m_tokens.begin(); i != m_tokens.end(); ++i)  {
-      (*i).resolveValue();
-    }
+    for(auto&  i:m_tokens) i.resolveValue(); 
   }
 }
 
