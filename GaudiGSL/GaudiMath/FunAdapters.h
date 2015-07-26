@@ -5,6 +5,8 @@
 // ============================================================================
 // Include files
 // ============================================================================
+#include <memory>
+// ============================================================================
 // from CLHEP
 // ============================================================================
 #include "CLHEP/GenericFunctions/GenericFunctions.hh"
@@ -236,7 +238,7 @@ namespace Genfun
       SimpleFunction ( const SimpleFunction& ) ;
 
       // destructor
-      virtual ~SimpleFunction();
+      virtual ~SimpleFunction() = default;
     public:
 
       /// dimensionality of the problem
@@ -265,7 +267,7 @@ namespace Genfun
       Function1                    m_func1    ;
 
       Function2                    m_func2    ;
-      double*                      m_arg2     ;
+      std::unique_ptr<double[]>    m_arg2     ;
 
       Function3                    m_func3    ;
       mutable std::vector<double>  m_arg3     ;

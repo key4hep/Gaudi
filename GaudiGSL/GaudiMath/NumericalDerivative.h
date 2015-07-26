@@ -92,7 +92,7 @@ namespace Genfun
       ( const NumericalDerivative&   right    ) ;
 
       /// virtual destructor
-      virtual ~NumericalDerivative () ;
+      virtual ~NumericalDerivative () = default;
 
       /// dimensionality of the problem
       virtual unsigned int dimensionality() const { return m_DIM ; }
@@ -139,7 +139,7 @@ namespace Genfun
       NumericalDerivative& operator=( const NumericalDerivative& ) ;
 
     private:
-      const AbsFunction* m_function  ;
+      std::unique_ptr<const AbsFunction> m_function  ;
       size_t             m_index     ;
       size_t             m_DIM       ;
       Type               m_type      ;
